@@ -67,7 +67,7 @@ Since all the entries in the \code{data} slot of ctd objects are vectors, \code{
 library(oce)
 # Example 1: Range-check salinity
 data(ctdRaw)
-## Salinity and temperature range checks
+# Salinity and temperature range checks
 qc <- ctdRaw
 # Initialize flags to 2, meaning good data in the default
 # scheme for handleFlags(ctd).
@@ -143,6 +143,7 @@ Other things related to ctd data:
 \code{\link{ctdDecimate}()},
 \code{\link{ctdFindProfiles}()},
 \code{\link{ctdRaw}},
+\code{\link{ctdRepair}()},
 \code{\link{ctdTrim}()},
 \code{\link{ctd}},
 \code{\link{d200321-001.ctd}},

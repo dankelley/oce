@@ -321,10 +321,16 @@ drawPalette <- function(zlim, zlab="",
              argShow(fullpage),
              "...) {\n", sep="", unindent=1, style="bold")
     zlimGiven <- !missing(zlim)
-    if (zlimGiven && length(zlim) != 2)
-        stop("'zlim' must be of length 2")
-    if (zlimGiven && zlim[2] < zlim[1])
-        stop("'zlim' must be ordered")
+    if (zlimGiven) {
+        if (!is.numeric(zlim))
+            stop("zlim must be 'numeric', not '", class(zlim), "'")
+        if (sum(is.finite(zlim)) < 2L)
+            stop("zlim must hold 2 or more non-NA values")
+        if (length(zlim) > 2L)
+            zlim <- range(is.finite(zlim), na.rm=TRUE)
+        if (zlim[2] < zlim[1])
+            stop("zlim must be ordered")
+    }
     colGiven <- !missing(col)
     oceDebug(debug, "colGiven=", colGiven, "\n", sep="")
     colormapGiven <- !missing(colormap)

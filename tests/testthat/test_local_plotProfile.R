@@ -76,7 +76,7 @@ test_that("Test 11", {
 test_that("Test 12: how does plim for salinity", {
           ## Salinity has Slim. See how this interacts with xlim.
           plotProfile(ctd, xtype='salinity', ylim=plim)
-          expect_equal(par("usr"), c(29.99855641, 31.61705416, 104, -4))
+          expect_equal(par("usr"), c(29.856736, 31.467664, 104, -4))
 })
 
 test_that("Test 13: does providing both Slim and ylim work?", {
@@ -86,12 +86,12 @@ test_that("Test 13: does providing both Slim and ylim work?", {
 
 test_that("Test 14: does providing both xlim and ylim work?", {
           plotProfile(ctd, xtype='salinity', ylim=plim, xlim=c(30, 31.0))
-          expect_equal(par("usr"), c(29.99855641, 31.61705416, 104, -4))
+          expect_equal(par("usr"), c(29.8567362, 31.467664, 104, -4))
 })
 
 test_that("Test 15: does S range narrow when p range is narrowed?", {
           plotProfile(ctd, xtype='salinity', plim=c(8,6))
-          expect_equal(par("usr"), c(30.88451211, 31.15545961, 8.08, 5.92))
+          expect_equal(par("usr"), c(30.738512, 31.008188, 8.08, 5.92))
 })
 
 test_that("Test 16: does fake range narrow when p range is narrowed?", {

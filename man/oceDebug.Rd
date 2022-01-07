@@ -5,7 +5,7 @@
 \alias{oce.debug}
 \title{Print a debugging message}
 \usage{
-oceDebug(debug = 0, ..., style = "plain", unindent = 0)
+oceDebug(debug = 0, ..., style = "plain", unindent = 0, sep = "")
 }
 \arguments{
 \item{debug}{an integer, less than or equal to zero for no message, and
@@ -26,6 +26,9 @@ with control codes, as in the cyan-coloured example; note that
 
 \item{unindent}{integer giving the number of levels to un-indent,
 e.g. for start and end lines from a called function.}
+
+\item{sep}{character to insert between elements of \code{...}, by passing
+it to \code{\link[=cat]{cat()}}.}
 }
 \description{
 Print an indented debugging message.

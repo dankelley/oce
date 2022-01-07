@@ -30,8 +30,8 @@ be of the same length as \code{nfft} or be of length 1.  In the first case,
 the vector is multiplied into the timeseries subsample, and the length
 of \code{window} must equal \code{nfft} is that is supplied.
 In the second then \code{window} is taken to be the number
-of subintervals into which the time series is to be broken up, with a
-hamming window being used for each subintervl.  If \code{window} is not
+of sub-intervals into which the time series is to be broken up, with a
+hamming window being used for each sub-interval.  If \code{window} is not
 specified and \code{nfft} is given, then the window is constructed as
 a hamming window with length \code{nfft}.  And, if neither \code{window}
 nor \code{nfft} are specified, then \code{x} will be broken up

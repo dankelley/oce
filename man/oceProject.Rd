@@ -4,15 +4,7 @@
 \alias{oceProject}
 \title{Wrapper to sf::sf_project()}
 \usage{
-oceProject(
-  xy,
-  proj,
-  inv = FALSE,
-  use_ob_tran,
-  legacy,
-  passNA,
-  debug = getOption("oceDebug")
-)
+oceProject(xy, proj, inv = FALSE, debug = getOption("oceDebug"))
 }
 \arguments{
 \item{xy}{two-column numeric matrix specifying locations.  If \code{inv} is False, then \code{xy[,1]} will hold
@@ -23,8 +15,6 @@ and northing values (in metres).}
 see the documentation for \code{\link[sf:sf_project]{sf::sf_project()}}.}
 
 \item{inv}{logical value, False by default, indicating whether an inverse projection is requested.}
-
-\item{use_ob_tran, legacy, passNA}{ignored in oce 1.0.3, and will be disallowed in oce 1.0.4.}
 
 \item{debug}{an integer specifying whether debugging information is
 to be printed during the processing. This is a general parameter that

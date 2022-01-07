@@ -2,9 +2,7 @@
 % Please edit documentation in R/sw.R
 \name{swSpecificHeat}
 \alias{swSpecificHeat}
-\title{Seawater specific heat
-Source= http://sam.ucsd.edu/sio210/propseawater/ppsw_fortran/ppsw.f
-check value: cpsw = 3849.500 j/(kg deg. c) for s = 40 (ipss-78),}
+\title{Seawater specific heat}
 \usage{
 swSpecificHeat(
   salinity,
@@ -57,6 +55,8 @@ Other functions that calculate seawater properties:
 \code{\link{T68fromT90}()},
 \code{\link{T90fromT48}()},
 \code{\link{T90fromT68}()},
+\code{\link{computableWaterProperties}()},
+\code{\link{locationForGsw}()},
 \code{\link{swAbsoluteSalinity}()},
 \code{\link{swAlphaOverBeta}()},
 \code{\link{swAlpha}()},
@@ -71,6 +71,7 @@ Other functions that calculate seawater properties:
 \code{\link{swRho}()},
 \code{\link{swRrho}()},
 \code{\link{swSCTp}()},
+\code{\link{swSR}()},
 \code{\link{swSTrho}()},
 \code{\link{swSigma0}()},
 \code{\link{swSigma1}()},
@@ -83,6 +84,7 @@ Other functions that calculate seawater properties:
 \code{\link{swSoundAbsorption}()},
 \code{\link{swSoundSpeed}()},
 \code{\link{swSpice}()},
+\code{\link{swSstar}()},
 \code{\link{swTFreeze}()},
 \code{\link{swTSrho}()},
 \code{\link{swThermalConductivity}()},

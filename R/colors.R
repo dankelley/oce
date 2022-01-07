@@ -15,8 +15,13 @@
 #'
 #' @source The data come from the matplotlib site
 #' \url{https://github.com/matplotlib/matplotlib}.
+#'
+#' @template colourBlindnessTemplate
+#'
 #' @family datasets provided with oce
 #' @family things related to colors
+#'
+#' @template colourBlindnessTemplate
 NULL
 
 
@@ -321,7 +326,8 @@ colormapGmtNumeric <- function(x0, x1, col0, col1, bpl=1)
 #' 2. Information on GMT color schemes
 #' <https://docs.generic-mapping-tools.org/dev/cookbook/cpts.html>
 #' 3. Source of GMT specification files
-#' <https://beamreach.org/maps/gmt/share/cpt/>
+#' https://beamreach.org/maps/gmt/share/cpt/ (this link worked
+#' for years, but failed to respond in October 2021)
 #' 4. CPT (color palette table) format
 #' <https://www.soest.hawaii.edu/gmt/gmt/html/GMT_Docs.html#x1-820004.15>
 #'
@@ -634,7 +640,7 @@ colormapGMT <- function(name, debug=getOption("oceDebug"))
 #' `x1[i]`.  A value of 1 means to use `col1[i]` in that interval.  A
 #' value between 0 and 1 means to blend between the two colors according to
 #' the stated fraction.  Values exceeding 1 are an error at present, but there
-#' is a plan to use this to indicate subintervals, so a smooth palette can be
+#' is a plan to use this to indicate sub-intervals, so a smooth palette can be
 #' created from a few colors.
 #'
 #' @param missingColor color to use for missing values. This cannot be provided
@@ -739,6 +745,8 @@ colormapGMT <- function(name, debug=getOption("oceDebug"))
 #'}
 #'
 #' @family things related to colors
+#'
+#' @template colourBlindnessTemplate
 colormap <- function(z=NULL,
                      zlim, zclip=FALSE,
                      breaks, col=oceColorsViridis,

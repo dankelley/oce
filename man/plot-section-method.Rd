@@ -19,6 +19,8 @@
   xlim = NULL,
   ylim = NULL,
   zlim = NULL,
+  zbreaks = NULL,
+  zcol = NULL,
   map.xlim = NULL,
   map.ylim = NULL,
   clongitude,
@@ -30,9 +32,8 @@
   ztype = "contour",
   longitude0,
   latitude0,
-  zbreaks = NULL,
-  zcol = NULL,
   legend.loc = "bottomright",
+  legend.text = NULL,
   showStations = FALSE,
   showStart = TRUE,
   stationTicks = TRUE,
@@ -95,9 +96,20 @@ drawing a coastline.}
 
 \item{ylim}{Optional limit for y axis (only in sections, not map)}
 
-\item{zlim}{Optional two-element numerical vector specifying the
-limit on the plotted field. This is used only if \code{ztype="image"};
-see also \code{zbreaks} and \code{zcol}.}
+\item{zlim, zbreaks, zcol}{Elements that control colours for \code{image} and \code{points}
+plot types, i.e. if \code{ztype} is either \code{"points"} or \code{"image"}.
+\code{zlim} is a two-element numerical vector specifying the
+limit on the plotted field.  If not provided, it defaults to the data
+range.
+\code{zbreaks} controls the colour breaks, in a manner that is similar to
+the \code{\link[=image]{image()}} parameter named \code{breaks}.  If not provided, \code{zbreaks} is
+inferred from \code{zlim}.
+\code{zcol}, which controls the colour scheme, may be a vector of colours
+(of length 1 less than \code{zbreaks}), or a function that takes an
+integer as its sole argument and returns that number of colours.
+If not provided, \code{zcol} defaults to \code{\link[=oceColorsViridis]{oceColorsViridis()}}.
+These three parameters are used in Example 6, an illustration of
+Atlantic salinity along 36N.}
 
 \item{map.xlim, map.ylim}{Optional limits for station map; \code{map.ylim} is
 ignored if \code{map.xlim} is provided.}
@@ -131,15 +143,12 @@ each station.}
 \item{longitude0, latitude0}{Location of the point from which distance is measured.
 These values are ignored unless \code{xtype} is \code{"distance"}.}
 
-\item{zbreaks, zcol}{Indication of breaks and colors to be used if \code{ztype="points"} or
-\code{"image"}. If not provided, reasonable default are used. If \code{zlim}
-is given but \code{breaks} is not given, then \code{breaks} is computed to
-run from \code{zlim[1]} to \code{zlim[2]}. If \code{zcol} is a function,
-it will be invoked with an argument equal to
-\code{1+length(zbreaks)}.}
-
 \item{legend.loc}{Location of legend, as supplied to \code{\link[=legend]{legend()}}, or
 set to the empty string to avoid plotting a legend.}
+
+\item{legend.text}{character value indicating the text for the legend.
+If this is NULL (the default) then the legend is automatically
+constructed by \code{\link[=labelWithUnit]{labelWithUnit()}}, based on the value of \code{which}.}
 
 \item{showStations}{Logical indicating whether to draw station numbers on maps.}
 
@@ -176,8 +185,8 @@ ignored otherwise.}
 \item{mar}{Value to be used with \code{\link{par}}\code{("mar")}. If not provided,
 a default is set up.}
 
-\item{col}{Color, which defaults to \code{\link{par}}\code{("col")} for line types, but
-to \link{oceColorsViridis} for image types.}
+\item{col}{Color for line types.  If not provided, this defaults to
+\code{\link{par}}\code{("col")}.  See \code{zcol}, for \code{ztype="image"} and \code{ztype="points"}.}
 
 \item{cex}{Numerical character-expansion factor, which defaults to \code{\link{par}}\code{("cex")}.}
 
@@ -209,8 +218,8 @@ Creates a summary plot for a CTD section, with one panel for each value of
 \details{
 The type of plot is governed by \code{which}, as follows.
 \itemize{
-\item \code{which=0} or \code{"potential temperature"} for temperature contours
-\item \code{which=1} or \code{"temperature"} for temperature contours (the default)
+\item \code{which=0} or \code{"potential temperature"} for potential temperature contours
+\item \code{which=1} or \code{"temperature"} for in-situ temperature contours (the default)
 \item \code{which=2} or \code{"salinity"} for salinity contours
 \item \code{which=3} or \code{"sigmaTheta"} for sigma-theta contours
 \item \code{which=4} or \code{"nitrate"} for nitrate concentration contours
@@ -242,10 +251,10 @@ library(oce)
 data(section)
 sg <- sectionGrid(section)
 
-## 1. start of section, default fields.
+# 1. start of section, default fields.
 plot(head(section))
 
-## 2. Gulf Stream
+# 2. Gulf Stream
 GS <- subset(section, 109<=stationId&stationId<=129)
 GSg <- sectionGrid(GS, p=seq(0, 2000, 100))
 plot(GSg, which=c(1, 99), map.ylim=c(34, 42))
@@ -256,7 +265,7 @@ plot(GSg, which=1, ztype='image', zbreaks=seq(0,30,2))
 
 par(mfrow=c(1, 1))
 
-## 3. Image, with colored dots to indicate grid-data mismatch.
+# 3. Image, with colored dots to indicate grid-data mismatch.
 \dontrun{
 plot(GSg, which=1, ztype='image')
 T <- GS[['temperature']]
@@ -267,22 +276,30 @@ points(GS[['distance']],GS[['depth']],pch=20,cex=2.5,col=col)
 
 
 \dontrun{
-## 4. Image of Absolute Salinity, with 4-minute bathymetry
-## It's easy to calculate the desired area for the bathymetry,
-## but for brevity we'll hard-code it. Note that download.topo()
-## caches the file locally.
+# 4. Image of Absolute Salinity, with 4-minute bathymetry
+# It's easy to calculate the desired area for the bathymetry,
+# but for brevity we'll hard-code it. Note that download.topo()
+# caches the file locally.
 f <- download.topo(west=-80, east=0, south=35, north=40, resolution=4)
 t <- read.topo(f)
 plot(section, which="SA", xtype="longitude", ztype="image", showBottom=t)
 }
 
 \dontrun{
-## 5. Temperature with salinity added in red
+# 5. Temperature with salinity added in red
 s <- plot(section, which="temperature")
 distance <- s[["distance", "byStation"]]
 depth <- s[["station", 1]][["depth"]]
 salinity <- matrix(s[["salinity"]], byrow=TRUE, nrow=length(s[["station"]]))
 contour(distance, depth, salinity, col=2, add=TRUE)
+}
+
+\dontrun{
+# 6. Image with controlled colours
+plot(section, which="salinity", ztype="image",
+    zlim=c(35, 37.5),
+    zbreaks=seq(35, 37.5, 0.25),
+    zcol=oceColorsTurbo)
 }
 
 }

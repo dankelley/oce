@@ -1,4 +1,4 @@
-## vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
+# vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
 
 #' Class to Store Lowered-adp Data
 #'
@@ -77,11 +77,16 @@ setMethod(f="summary",
 #'
 #' @param x an [ladp-class] object.
 #'
-#' @template sub_subTemplate
+#' @section Details of the Specialized Method:
 #'
-#' @examples
-#' data(ctd)
-#' head(ctd[["temperature"]])
+#' If `i` is `"?"`, then the return value is a list containing four items, each
+#' of which is a character vector holding the names of things that can be
+#' accessed with `[[`. The `data` and `metadata` items hold the names of entries
+#' in the object's data and metadata slots, respectively. The `metadataDerived`
+#' item is NULL, and the `dataDerived` item holds the following synonyms: `"p"`
+#' for `"pressure"`, `"t"` for `"temperature"` and `"S"` for `"salinity"`.
+#'
+#' @template sub_subTemplate
 #'
 #' @author Dan Kelley
 #'
@@ -89,24 +94,19 @@ setMethod(f="summary",
 setMethod(f="[[",
           signature(x="ladp", i="ANY", j="ANY"),
           definition=function(x, i, j, ...) {
-              if (i == "pressure" || i == "p") {
-                  x@data$pressure
-              } else if (i == "u") {
-                  x@data$u
-              } else if (i == "v") {
-                  x@data$v
-              } else if (i == "uz") {
-                  x@data$uz
-              } else if (i == "vz") {
-                  x@data$vz
-              } else if (i == "temperature" || i == "t") {
-                  ## FIXME: document "t" part
-                  x@data$temperature
-              } else if (i == "salinity" || i == "S") {
-                  x@data$salinity
-              } else {
-                  callNextMethod()     # [[
-              }
+              dataDerived <- c("p", "t", "S")
+              if (i == "?")
+                  return(list(metadata=sort(names(x@metadata)),
+                          metadataDerived=NULL,
+                          data=sort(names(x@data)),
+                          dataDerived=sort(dataDerived)))
+              if (i == "p")
+                  return(x@data$pressure)
+              if (i == "t")
+                  return(x@data$temperature)
+              if (i == "S")
+                  return(x@data$salinity)
+              callNextMethod()     # [[
           })
 
 

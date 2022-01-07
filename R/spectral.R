@@ -27,8 +27,8 @@
 #' the vector is multiplied into the timeseries subsample, and the length
 #' of `window` must equal `nfft` is that is supplied.
 #' In the second then `window` is taken to be the number
-#' of subintervals into which the time series is to be broken up, with a
-#' hamming window being used for each subintervl.  If `window` is not
+#' of sub-intervals into which the time series is to be broken up, with a
+#' hamming window being used for each sub-interval.  If `window` is not
 #' specified and `nfft` is given, then the window is constructed as
 #' a hamming window with length `nfft`.  And, if neither `window`
 #' nor `nfft` are specified, then `x` will be broken up

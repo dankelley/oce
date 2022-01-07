@@ -143,11 +143,20 @@ setMethod(f="summary",
 #'
 #' @templateVar class echosounder
 #'
-#' @section Details of the specialized `echosounder` method:
+#' @section Details of the Specialized Method:
 #'
-#' If `i` is the string `"Sv"`, the return value is calculated according to
+#' * If `i` is `"?"`, then the return value is a list
+#' containing four items, each of which is a character vector
+#' holding the names of things that can be accessed with `[[`.
+#' The `data` and `metadata` items hold the names of
+#' entries in the object's data and metadata
+#' slots, respectively. The `metadataDerived` item
+#' is NULL, while the `dataDerived` item holds
+#' `"Sv"` and `"TS"` (see next).
+#'
+#' * If `i` is `"Sv"`, then the following is returned.
 #' \preformatted{
-#' Sv <- 20*log10(a) -
+#' 20*log10(a) -
 #'   (x@@metadata$sourceLevel+x@@metadata$receiverSensitivity+x@@metadata$transmitPower) +
 #'   20*log10(r) +
 #'   2*absorption*r -
@@ -155,23 +164,28 @@ setMethod(f="summary",
 #'   10*log10(soundSpeed*x@@metadata$pulseDuration/1e6*psi/2)
 #'}
 #'
-#' If `i` is the string `"TS"`,
+#' * If `i` is `"TS"`, then the following is returned.
 #' \preformatted{
-#' TS <- 20*log10(a) -
+#' 20*log10(a) -
 #'   (x@@metadata$sourceLevel+x@@metadata$receiverSensitivity+x@@metadata$transmitPower) +
 #'   40*log10(r) +
 #'   2*absorption*r +
 #'   x@@metadata$correction
 #'}
 #'
-#' Otherwise, the generic `[[` is used.
-#'
 #' @template sub_subTemplate
+#'
+#' @author Dan Kelley
 #'
 #' @family things related to echosounder data
 setMethod(f="[[",
           signature(x="echosounder", i="ANY", j="ANY"),
           definition=function(x, i, j, ...) {
+              if (i == "?")
+                  return(list(metadata=sort(names(x@metadata)),
+                          metadataDerived=NULL,
+                          data=sort(names(x@data)),
+                          dataDerived=c("Sv", "TS")))
               if (i %in% c("Sv", "TS")) {
                   range <- rev(x@data$depth)
                   a <- x@data$a

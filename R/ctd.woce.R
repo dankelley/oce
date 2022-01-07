@@ -543,7 +543,10 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missingValue, deploy
 
         ## Read the data into a buffer, since there will likely be
         ## a trailer line at the end, and read.table() cannot handle that.
-        lines <- readLines(file)
+        #> owarn <- options('warn')$warn
+        #> options(warn=-1)
+        lines <- readLines(file)# , warn=FALSE)
+        #> options(warn=owarn)
         nlines <- length(lines)
         if (length(grep("^END", lines[nlines])))
             lines <- lines[-nlines]

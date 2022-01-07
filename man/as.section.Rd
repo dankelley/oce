@@ -34,7 +34,7 @@ other arguments are ignored; see \sQuote{Details}.}
 
 \item{sectionId}{Section identifier.}
 
-\item{debug}{an integer value that controlls whether \code{as.section()} prints information
+\item{debug}{an integer value that controls whether \code{as.section()} prints information
 during its work.  The function works quietly if this is 0 and prints out some
 information if it is positive.}
 }

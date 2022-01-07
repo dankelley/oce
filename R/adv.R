@@ -134,22 +134,37 @@ setMethod(f="summary",
 #' head(adv[["q"]])            # in raw form
 #' head(adv[["q", "numeric"]]) # in numeric form
 #'
-#' @template sub_subTemplate
+#' @section Details of the Specialized Method:
 #'
-#' @section Details of the specialized `adv` method:
+#' * If `i` is `"?"`, then the return value is a list
+#' containing four items, each of which is a character vector
+#' holding the names of things that can be accessed with `[[`.
+#' The `data` and `metadata` items hold the names of
+#' entries in the object's data and metadata
+#' slots, respectively, while `dataDerived` and
+#' `metadataDerived` hold the names of related
+#' things that can be derived from the object's contents.
 #'
-#' In addition to the usual extraction of elements by name, some shortcuts
-#' are also provided, e.g. `u1` retrieves `v[,1]`, and similarly
-#' for the other velocity components. The `a` and `q`
-#' data can be retrieved in [raw()] form
-#' or numeric form; see \dQuote{Examples}.
+#' * If `i` is `"u1"` then the return value is `v[,1]`,
+#' and similarly for `"u2"` and `"u3"`.
 #'
-#' It is also worth noting that heading, pitch, etc. may be stored in
+#' * If `i` is `"a1"` then signal amplitude is returned, and similarly
+#' for `"a2"` and `"a3"`. The results can be in [raw()] or numeric form,
+#' as illustrated in the \dQuote{Examples}.
+#'
+#' * If `i` is `"q1"` then signal quality is returned, and similarly
+#' for `"q2"` and `"q3"`.  As with amplitude, the result can be in [raw()]
+#' or numeric form.
+#'
+#' * If `i` is `"heading"`, `"pitch"` or `"roll"`, then
+#' these values are extracted from the
 #' "slow" form in the object (e.g. in `headingSlow` within
 #' the `data` slot). In that case, accessing by full name, e.g.
 #' `x[["headingSlow"]]` retrieves the item as expected, but
 #' `x[["heading"]]` interpolates to the faster timescale, using
 #' [`approx`]`(timeSlow,headingSlow,time)`.
+#'
+#' @template sub_subTemplate
 #'
 #' @author Dan Kelley
 #'
@@ -158,6 +173,16 @@ setMethod(f="[[",
           signature(x="adv", i="ANY", j="ANY"),
           definition=function(x, i, j, ...) {
               haveSlow <- "timeSlow" %in% names(x@data)
+              dataDerived <- c(paste0("u", 1:3),
+                  paste0("a", 1:3),
+                  paste0("q", 1:3),
+                  "heading", "pitch", "roll")
+              if (i == "?")
+                  return(list(metadata=sort(names(x@metadata)),
+                          metadataDerived=NULL,
+                          data=sort(names(x@data)),
+                          dataDerived=sort(dataDerived)))
+
               if (i == "u1") {
                   return(x@data$v[, 1])
               } else if (i == "u2") {

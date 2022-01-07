@@ -67,6 +67,7 @@ Other things related to ctd data:
 \code{\link{ctdDecimate}()},
 \code{\link{ctdFindProfiles}()},
 \code{\link{ctdRaw}},
+\code{\link{ctdRepair}()},
 \code{\link{ctdTrim}()},
 \code{\link{d200321-001.ctd}},
 \code{\link{d201211_0011.cnv}},

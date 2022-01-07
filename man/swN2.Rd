@@ -53,9 +53,9 @@ may optionally be done with \code{\link[=smooth.spline]{smooth.spline()}}, unles
 provided, a possibly reasonable value computed from an analysis of the
 profile, based on the number of pressure levels.
 
-The core of the
-method involves differentiating potential density (referenced to median
-pressure) with respect to pressure, and the \code{derivs} argument is used
+The core of the method involves computing potential density referenced to median
+pressure, using the UNESCO-style \link{swSigmaTheta} function, and then differentiating
+this with respect to pressure. The \code{derivs} argument is used
 to control how this is done, as follows.
 \itemize{
 \item If \code{derivs} is not supplied, the action is as though it were
@@ -119,6 +119,8 @@ Other functions that calculate seawater properties:
 \code{\link{T68fromT90}()},
 \code{\link{T90fromT48}()},
 \code{\link{T90fromT68}()},
+\code{\link{computableWaterProperties}()},
+\code{\link{locationForGsw}()},
 \code{\link{swAbsoluteSalinity}()},
 \code{\link{swAlphaOverBeta}()},
 \code{\link{swAlpha}()},
@@ -132,6 +134,7 @@ Other functions that calculate seawater properties:
 \code{\link{swRho}()},
 \code{\link{swRrho}()},
 \code{\link{swSCTp}()},
+\code{\link{swSR}()},
 \code{\link{swSTrho}()},
 \code{\link{swSigma0}()},
 \code{\link{swSigma1}()},
@@ -145,6 +148,7 @@ Other functions that calculate seawater properties:
 \code{\link{swSoundSpeed}()},
 \code{\link{swSpecificHeat}()},
 \code{\link{swSpice}()},
+\code{\link{swSstar}()},
 \code{\link{swTFreeze}()},
 \code{\link{swTSrho}()},
 \code{\link{swThermalConductivity}()},

@@ -19,7 +19,7 @@ read.section(
 }
 \arguments{
 \item{file}{A file containing a set of CTD observations.  At present, only the
-\emph{exchange BOT} format is accepted (see Details).}
+\emph{exchange BOT} format is accepted (see \sQuote{Details}).}
 
 \item{directory}{A character string indicating the name of a  directory that
 contains a set of CTD files that hold individual stations in the section.}

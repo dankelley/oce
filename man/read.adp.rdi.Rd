@@ -271,7 +271,7 @@ and so produce a warning.
 \tab 0x00 \tab 0x0c \tab Sentinel vertical beam amplitude\cr
 \tab 0x00 \tab 0x0d \tab Sentinel vertical beam percent good\cr
 \tab 0x00 \tab 0x20 \tab VMDASS\cr
-\*\tab 0x00 \tab 0x30 \tab binary fixed attitude (see p169 of reference 3 for format)\cr
+\tab 0x00 \tab 0x30 \tab Binary Fixed Attitude header\cr
 \tab 0x00 \tab 0x32 \tab Sentinel transformation matrix\cr
 \tab 0x00 \tab 0x0a \tab Sentinel data\cr
 \tab 0x00 \tab 0x0b \tab Sentinel correlation\cr
@@ -390,7 +390,9 @@ Other things related to adp data:
 \code{\link{[[<-,adp-method}},
 \code{\link{ad2cpHeaderValue}()},
 \code{\link{adp-class}},
+\code{\link{adpConvertRawToNumeric}()},
 \code{\link{adpEnsembleAverage}()},
+\code{\link{adpFlagPastBoundary}()},
 \code{\link{adp_rdi.000}},
 \code{\link{adp}},
 \code{\link{as.adp}()},

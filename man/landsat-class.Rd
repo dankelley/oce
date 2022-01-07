@@ -184,7 +184,7 @@ and \code{tirs2} combined.  This may seem confusing, but it lets code like
 \item Yu, X. X. Guo and Z. Wu., 2014. Land Surface Temperature Retrieval from
 Landsat 8 TIRS-Comparison between Radiative Transfer Equation-Based Method,
 Split Window Algorithm and Single Channel Method, \emph{Remote Sensing}, 6,
-9829-9652.  \url{https://www.mdpi.com/2072-4292/6/10/9829}
+9829-9652.  \verb{https://www.mdpi.com/2072-4292/6/10/9829}
 \item Rajeshwari, A., and N. D. Mani, 2014.  Estimation of land surface
 temperature of Dindigul district using Landsat 8 data. \emph{International
 Journal of Research in Engineering and Technology}, 3(5), 122-126.

@@ -65,7 +65,20 @@ NULL
 #'
 #' @param x an [xbt-class] object.
 #'
+#' @section Details of the Specialized Method:
+#'
+#' * If `i` is `"?"`, then the return value is a list
+#' containing four items, each of which is a character vector
+#' holding the names of things that can be accessed with `[[`.
+#' The `data` and `metadata` items hold the names of
+#' entries in the object's data and metadata
+#' slots, respectively. The `dataDerived`
+#' and `metadataDerived` items are each NULL, because
+#' no derived values are defined by `cm` objects.
+#'
 #' @template sub_subTemplate
+#'
+#' @author Dan Kelley
 #'
 #' @family things related to xbt data
 setMethod(f="[[",
@@ -73,6 +86,13 @@ setMethod(f="[[",
           definition=function(x, i, j, ...) {
               dataNames <- names(x@data)
               S0 <- 35
+              metadataDerived <- NULL
+              dataDerived <- c("z", "pressure")
+              if (i == "?")
+                  return(list(metadata=sort(names(x@metadata)),
+                          metadataDerived=sort(metadataDerived),
+                          data=sort(names(x@data)),
+                          dataDerived=sort(dataDerived)))
               if (i == "depth") {
                   if ("depth" %in% dataNames)
                       x@data$depth
@@ -94,9 +114,9 @@ setMethod(f="[[",
                       swPressure(depth=-x@data$z, latitude=x[["latitude"]])
                   else if ("pressure" %in% dataNames)
                       x@data$pressure
-              } else if (i == "soundspeed") {
-                  if ("soundspeed" %in% dataNames)
-                      x@data$soundspeed
+              } else if (i == "soundSpeed") {
+                  if ("soundSpeed" %in% dataNames)
+                      x@data$soundSpeed
                   else
                       swSoundSpeed(S0, x[["temperature"]], x[["pressure"]])
               } else {

@@ -40,6 +40,7 @@ Boric
 CDOM
 CMD
 CNV
+CPT
 CRS
 CTD
 Caree
@@ -75,7 +76,9 @@ Dindigul
 Disambiguating
 Doodson
 Doppler
+ENR
 ENU
+ENX
 EO
 EOS
 ERDDAP
@@ -89,6 +92,7 @@ Emissivity
 Enu
 Eos
 ExpoCode
+FFFF
 FIXME
 FLtab
 FTU
@@ -100,6 +104,7 @@ Flamsteed
 Fofonoff
 Fofonoff's
 Foucault
+Foysi
 GCOM
 GDAC
 GEBCO
@@ -136,6 +141,7 @@ Helmert's
 Hernan
 Hetland
 Hidetoshi
+Holger
 Homann
 Hornik
 Hydroacoustics
@@ -184,6 +190,8 @@ LIBS
 LISST
 LOBO
 LSB
+LTA
+Lamontagne
 Leffler
 Lentz
 Levitus
@@ -304,6 +312,7 @@ Seapoint
 Seasoft
 Seatech
 SentinelV
+Siegen
 Simpson's
 Sippican
 SonTek
@@ -433,6 +442,7 @@ bcd
 beamAttenuateAdp
 beamUnattenuateAdp
 beamUnspreadAdp
+beamreach
 beamwidth
 beamwise
 behaviour
@@ -475,6 +485,7 @@ coefs
 colfunction
 colorbar
 colormap
+colormapGMT
 colorsGebco
 colorsJet
 colorsPalette
@@ -483,6 +494,7 @@ colorscale
 colour
 coloured
 colours
+computable
 conceptid
 conductivities
 connectPoints
@@ -496,6 +508,7 @@ correspondances
 covary
 cp
 cpsw
+cpt
 crosshairs
 cse
 csv
@@ -610,6 +623,7 @@ getOption
 giss
 github
 glovis
+gmt
 gps
 gridded
 gridding
@@ -661,6 +675,7 @@ keepNA
 kilometre
 kilometres
 kthyng
+l'Institut
 labelled
 labelling
 labelsTop
@@ -863,6 +878,7 @@ sas
 sbe
 scalebar
 scattergraph
+scattergraphs
 schmitt
 sdev
 seadatanet

@@ -1,4 +1,4 @@
-## vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
+# vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
 
 #' Class to Store GPS Data
 #'
@@ -61,12 +61,37 @@ setMethod(f="summary",
 #'
 #' @param x a [gps-class] object.
 #'
+#' @section Details of the Specialized Method:
+#'
+#' * If `i` is `"?"`, then the return value is a list
+#' containing four items, each of which is a character vector
+#' holding the names of things that can be accessed with `[[`.
+#' The `data` and `metadata` items hold the names of
+#' entries in the object's data and metadata
+#' slots, respectively. The `dataDerived`
+#' and `metadataDerived` items are each NULL, because
+#' no derived values are defined by `gps` objects.
+#'
+#' * If `i` is `"longitude"` or `"latitude"`, then the corresponding
+#' vector is returned.
+#'
+#' * If `i` is `"filename"` then a filename is returned, if
+#' known (i.e. if the object was created with [read.gps()] or
+#' with [as.gps()] with the `filename` argument specified).
+#'
 #' @template sub_subTemplate
+#'
+#' @author Dan Kelley
 #'
 #' @family things related to gps data
 setMethod(f="[[",
           signature(x="gps", i="ANY", j="ANY"),
           definition=function(x, i, j, ...) {
+              if (i == "?")
+                  return(list(metadata=sort(names(x@metadata)),
+                          metadataDerived=NULL,
+                          data=sort(names(x@data)),
+                          dataDerived=NULL))
               callNextMethod()         # [[
           })
 
@@ -426,6 +451,10 @@ setMethod(f="plot",
 #' @param filename name of file containing data (if applicable).
 #'
 #' @return A [gps-class] object.
+#'
+#' @examples
+#' # Location of the Tower Tank at Dalhousie University
+#' towerTank <- as.gps(-63.59428, 44.63572)
 #'
 #' @author Dan Kelley
 #'

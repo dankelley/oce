@@ -2,19 +2,21 @@
 % Please edit documentation in R/misc.R
 \name{renameData}
 \alias{renameData}
-\title{Rename items in the data slot of an oce object (\strong{deprecated})}
+\title{Rename items in the data slot of an oce object (defunct)}
 \usage{
 renameData(x, old = NULL, new = NULL)
 }
 \arguments{
-\item{x}{an \linkS4class{oce} object.}
+\item{x}{Ignored, since this function is defunct.}
 
-\item{old}{Vector of strings, containing old names.}
+\item{old}{Ignored, since this function is defunct.}
 
-\item{new}{Vector of strings, containing old names.}
+\item{new}{Ignored, since this function is defunct.}
 }
 \description{
-This was deprecated in December 2019, because \code{\link[=oceRenameData]{oceRenameData()}} does
-a better job and is more consistent with other functions that work
-with items in the \code{data} and \code{metadata} slots.
+\strong{WARNING:} This function will be removed in oce 1.6.0; see \link{oce-defunct}.
 }
+\author{
+Dan Kelley
+}
+\concept{deprecated functions}

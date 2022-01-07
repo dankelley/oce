@@ -9,7 +9,7 @@
 # result.
 # > sf::st_crs("+proj=longlat")$proj4string
 # [1] "+proj=longlat +datum=WGS84 +no_defs"
-longlatProj <- "+proj=longlat +datum=WGS84 +no_defs"
+longlatProjInitial <- "+proj=longlat +datum=WGS84 +no_defs"
 
 .Projection <- local({
     ## Save state, in a way that emulates mapproj.
@@ -17,6 +17,47 @@ longlatProj <- "+proj=longlat +datum=WGS84 +no_defs"
     val <- list(type="none", projection="")
     function(new) if (!missing(new)) val <<- new else val
 })
+
+# Change some projection names, and fix problem with ortho (which lacks full inverse coverage
+# unless a spherical earth is used).
+repairProjection <- function(projection, longlatProj, debug=getOption("oceDebug"))
+{
+    oceDebug(debug, "repairProjection(projection=\"", projection, "\", longlatProj=\"", longlatProj, "\"\n", sep="", unindent=1)
+    if (grepl("latlon( |$)", projection)) {
+        warning("converting old name 'latlon' to new name 'latlong'\n")
+        projection <- gsub("latlon", "latlong", projection)
+    }
+    if (grepl("lonlat", projection)) {
+        warning("converting old name 'lonlat' to new name 'longlat'\n")
+        projection <- gsub("lonlat", "longlat", projection)
+    }
+    if (packageVersion("sf") >= "1.0.0") {
+        if (grepl("ortho", projection)) {
+            oceDebug(debug, "Handling sf version >= 1.0.0 with +proj=ortho: change to spherical earth\n")
+            if (!grepl("+f=", projection)) {
+                oceDebug(debug, "+f= not present in proj, so adding it\n")
+                projection <- paste(projection, "+f=0")
+                longlatProj <- paste(longlatProj, "+f=0")
+                oceDebug(debug, "  new projection= \"", projection, "\"\n")
+                oceDebug(debug, "  new longlatProj=\"", longlatProj, "\"\n")
+            }
+            if (grepl("+a=", projection)) {
+                a <- gsub("^(.*)+a=([^ ])(.*)$", "\\2", projection)
+                longlatProj <- paste0(longlatProj, " +a=", a)
+                oceDebug(debug, "proj had +a, so inserting that in longlatProj\n")
+                oceDebug(debug, "  new longlatProj=\"", longlatProj, "\"\n")
+            } else {
+                oceDebug(debug, "+a= not present in proj, so adding it\n")
+                projection <- paste(projection, "+a=6371")
+                longlatProj <- paste(longlatProj, "+a=6371")
+                oceDebug(debug, "  new projection= \"", projection, "\"\n")
+                oceDebug(debug, "  new longlatProj=\"", longlatProj, "\"\n")
+            }
+        }
+    }
+    oceDebug(debug, "} #repairProjection()\n", sep="", unindent=1)
+    list(projection=projection, longlatProj=longlatProj)
+}
 
 #' Wrapper to sf::sf_project()
 #'
@@ -35,24 +76,22 @@ longlatProj <- "+proj=longlat +datum=WGS84 +no_defs"
 #'
 #' @param inv logical value, False by default, indicating whether an inverse projection is requested.
 #'
-#' @param use_ob_tran,legacy,passNA ignored in oce 1.0.3, and will be disallowed in oce 1.0.4.
+## @param use_ob_tran,legacy,passNA ignored in oce 1.0.3, and will be disallowed in oce 1.0.4.
 #'
 #' @template debugTemplate
 #'
 #' @return A two-column matrix, with first column holding either
 #' `longitude` or `x`, and second column holding either
 #' `latitude` or `y`.
-oceProject <- function(xy, proj, inv=FALSE, use_ob_tran, legacy, passNA, debug=getOption("oceDebug"))
+oceProject <- function(xy, proj, inv=FALSE, debug=getOption("oceDebug"))
 {
-    if (!missing(use_ob_tran))
-        warning("use_ob_tran is ignored in oce 1.3-0, and will be disallowed thereafter\n")
-    if (!missing(legacy))
-        warning("legacy is ignored in oce 1.3-0, and will be disallowed thereafter\n")
-    if (!missing(passNA))
-        warning("passNA is ignored in oce 1.3-0, and will be disallowed thereafter\n")
     if (!requireNamespace("sf", quietly=TRUE))
         stop('must install.packages("sf") to do map projections')
     oceDebug(debug, "oceProject(xy, proj=\"", proj, "\", inv=", inv, ", ...) {\n", sep="", unindent=1, style="bold")
+    repairedProjection <- repairProjection(proj, longlatProjInitial, debug=debug)
+    proj <- repairedProjection$projection
+    longlatProj <- repairedProjection$longlatProj
+
     owarn <- options()$warn # this, and the capture.output, quieten the processing
     options(warn=-1)
     ## <1629> ## {{{ OLD 'rgdal' method
@@ -105,6 +144,8 @@ oceProject <- function(xy, proj, inv=FALSE, use_ob_tran, legacy, passNA, debug=g
         cat("summary(xy[,2]) i.e. input lat follows\n")
         print(summary(xy[,2]))
     }
+    oceDebug(debug, "proj=        \"", proj, "\"\n", sep="")
+    oceDebug(debug, "longlatProj= \"", longlatProj, "\"\n", sep="")
     if (inv) {
         capture.output({XY <- try(unname(sf::sf_project(proj, longlatProj, xy, keep=TRUE)), silent=TRUE)})
     } else {
@@ -1590,16 +1631,8 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
     if (!missing(projection) && inherits(projection, "CRS")) {
         projection <- projection@projargs
     }
-    if (grepl("latlon( |$)", projection)) {
-        warning("converting old name 'latlong' to new name 'latlong'\n")
-        projection <- gsub("latlon", "latlong", projection)
-    }
-    if (grepl("lonlat", projection)) {
-        warning("converting old name 'lonlat' to new name 'longlat'\n")
-        projection <- gsub("lonlat", "longlat", projection)
-    }
     if (packageVersion("sf") >= "0.8.1") {
-        oceDebug(debug, "using sf version", as.character(packageVersion("sf")), "\n")
+        oceDebug(debug, "using sf version ", as.character(packageVersion("sf")), "\n")
         tmp <- sf::st_crs(projection)$proj4string
         if (is.na(tmp)) {
             oceDebug(debug, "original projection\n      '", projection, "'\n  not converted, owing to an error with sf::st_crs()\n", sep="")
@@ -1608,6 +1641,10 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
             projection <- tmp
         }
     }
+    # Work-around for some sf projection problems
+    repairedProjection <- repairProjection(projection, longlatProjInitial, debug=debug)
+    projection <- repairedProjection$projection
+    longlatProj <- repairedProjection$longlatProj
     if (missing(longitude)) {
         data("coastlineWorld", package="oce", envir=environment())
         longitude <- get("coastlineWorld")
@@ -1624,7 +1661,6 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
         }
         warning("In mapPlot() : 'fill' being accepted for backwards compatibility; please use 'col' instead", call.=FALSE)
     }
-
     isTopo <- FALSE
     if (inherits(longitude, "topo")) {
         topo <- longitude
