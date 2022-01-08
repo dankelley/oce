@@ -56,7 +56,7 @@ following commands in R.
 
 and most readers should also install Ocedata, with
 
-    remotes::install_github("dankelley/ocedata", ref="master")
+    remotes::install_github("dankelley/ocedata", ref="main")
 
 ## Evolution of oce
 
