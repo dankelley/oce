@@ -1,16 +1,17 @@
 # Submission of 1.5-0
 
-This resubmission (a) aligns oce with the Rcpp that Dirk Eddelbuettel plans to
-submit to CRAN next week and (b) incorporates 8 months of oce improvements and
-bug fixes.
+This submission (a) aligns oce with the version of the Rcpp package that Dirk
+Eddelbuettel plans to submit to CRAN next week and (b) incorporates 8 months of
+oce improvements and bug fixes.
 
 # Tests
 
 ## Local Tests
 
-Local MacOS-12.2(beta) R-4.1.2 CMD (BUILD, INSTALL, CHECK): no ERRORs or
-WARNINGs but the usual note naming the author, plus another NOTE on
-sub-directories of 1MB or more: (R 3.0Mb, data 1.0Mb, doc 2.0Mb, help 3.7Mb).
+Local MacOS-12.2(beta) R-4.1.2 CMD (BUILD, INSTALL, CHECK): no ERRORs, no
+WARNINGs, and 2 NOTEs, one naming the author the other reporting that
+sub-directories were of size of 1MB or more: R 3.0Mb, data 1.0Mb, doc 2.0Mb,
+and help 3.7Mb.
 
 ## Github R-CMD-check Action Tests
 
@@ -38,6 +39,5 @@ Using
 # devtools::install_github("r-lib/revdepcheck")
 revdepcheck::revdep_check(quiet=FALSE)
 ```
-identified no errors.
-
+identified no errors and no warnings.
 
