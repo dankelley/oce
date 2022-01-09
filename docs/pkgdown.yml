@@ -1,5 +1,5 @@
-pandoc: '2.13'
-pkgdown: 1.6.1
+pandoc: 2.14.0.3
+pkgdown: 2.0.1
 pkgdown_sha: ~
 articles:
   adp: adp.html
@@ -8,5 +8,5 @@ articles:
   map_projections: map_projections.html
   oce: oce.html
   subclassing: subclassing.html
-last_built: 2021-03-27T21:47Z
+last_built: 2022-01-08T23:17Z
 

@@ -15,19 +15,14 @@ downloads](https://cranlogs.r-pkg.org/badges/last-day/oce)
 
 ## Why use R for oceanographic analysis?
 
-The R language is popular in many branches of science, and Oceanography is not
-an exception. Perhaps because of its broad statistical support, R is especially
-popular in Biological Oceanography, and its popularity seems to be growing also
-among Chemical and Geological Oceanographers. In
-Physical Oceanography, however, many researchers remain attached to Matlab, which was
-the strongest choice for interactive work in the late 1900s. However, the
-commercial and closed-source nature of Matlab is a problem in the eyes of many
-people, and so open-source alternatives have become increasingly popular.  Of
-these, Python and R are the most popular languages at the moment, and many
-Oceanographers are conversant with each, switching between the two according to
-the task at hand. A strength of R in this regard is the availability of
-well-vetted and well-documented packages for handling a wide spectrum of
-specialized tasks. Of these, the oce package is particularly important.
+The R language is popular in many branches of science, and Oceanography is no
+exception. With its broad statistical support, R is a natural choice for
+oceanographers in the biological, chemical and geological sub-disciplines.
+However, some physical oceanographers have remained attached to Matlab, which
+was widely adopted during the 1990s. Lately, this has been changing, as
+oceanographers turn to open-source systems such as Python and R. A particular
+strength of R is its provision of many powerful and well-vetted packages for
+handling specialized calculations. The oce package is a prime example.
 
 ## About oce
 
