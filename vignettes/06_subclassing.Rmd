@@ -7,8 +7,8 @@ output:
     toc: true
     number_sections: true
     fig_caption: yes
-    fig_width: 3.5
-    fig_height: 3.5
+    fig_width: 4
+    fig_height: 4
     dpi: 72
     dev.args: list(pointsize=11)
 vignette: >
@@ -32,7 +32,7 @@ objects, in terms of operators such as `[[` and `[[<-`, functions such as
 `subset()`  and `summary()`, schemes for handling units, etc.
 
 
-## Initializing oce objects
+# Initializing oce objects
 
 Oce handles a wide variety of data types, creating sub-classes the inherit from
 the base class that is named `oce`. However, even if a dataset does not fit
@@ -46,14 +46,18 @@ first create some fake data:
 ```{r}
 lon <- -60
 lat <- -30
-t <- seq(as.POSIXct("2017-08-30"), as.POSIXct("2017-09-01"), by="15 min")
+t <- seq(as.POSIXct("2022-01-09"), as.POSIXct("2022-01-10"), by="15 min")
 tsec <- as.numeric(t)
-u <- sin(tsec * 2 * pi / (3600 * 12.4206))
-v <- 0.5 * cos(tsec * 2 * pi / (3600 * 12.4206))
+u <- 0.5 * sin(tsec * 2 * pi / (3600 * 12.4206))
+v <- 1.0 * cos(tsec * 2 * pi / (3600 * 12.4206) - 3600)
 ```
-```{r echo=FALSE, eval=FALSE}
-plot(t, u, type="l")
-lines(t, v, col=2)
+
+Before proceeding to the creation of an `oce` object, it makes sense to get a
+quick view of the variation.
+
+```{r fig.width=4, fig.height=4, dpi=72, fig.cap="**Figure 1.** Variation of $u=u(t)$ and $v=v(t)$."}
+matplot(t, cbind(u,v), ylab="u (black) and v (red)",
+    type="l", col=1:2, lty=1)
 ```
 
 These may be inserted into an `oce` object as follows. First, create the object.
@@ -70,14 +74,13 @@ As noted previously, it's possible to insert `t`, `u`, and `v` directly into
 the `data` slot, but it's better to use `oceSetData` to do that, because it
 can set up units, and it leaves a trail in the processing log.
 ```{R}
-o <- oceSetData(o, "t", t, list(unit=expression(s), scale=""))
+o <- oceSetData(o, "time", t, list(unit=expression(s), scale=""))
 o <- oceSetData(o, "u", u, list(unit=expression(m/s), scale=""))
 o <- oceSetData(o, "v", v, list(unit=expression(m/s), scale=""))
 ```
 
-Astute readers will realize that these data are akin to tidal velocities, and
-so might agree with the author that `lon` and `lat` belong in the `metadata`
-slot, not the `data` slot.
+These data are akin to tidal velocities, and so might make sense to store the
+sampling location in the `metadata` slot, as opposed to the `data` slot, using
 ```{R}
 o <- oceSetMetadata(o, "longitude", lon)
 o <- oceSetMetadata(o, "latitude", lat)
@@ -90,13 +93,13 @@ summary(o)
 and individual data components may be extracted with the `[[` notation
 ```{r}
 o[["latitude"]]                        # from metadata
-head(o[["t"]])                         # from data
+head(o[["time"]])                      # from data
 head(o[["u"]])
 head(o[["v"]])
 ```
 
 A crude plot can be done with
-```{r fig.cap="**Figure 11.** Crude plot of constructed `oce` object.", fig.width=4, fig.height=4, dpi=72}
+```{r fig.cap="**Figure 2.** Crude plot of constructed `oce` object.", fig.width=4, fig.height=4, dpi=72}
 plot(o)
 ```
 
@@ -105,7 +108,7 @@ Note that the plot uses the `pairs` function to show how all elements of the
 should be created, as in the next section.
 
 
-## Creating new oce object classes
+# Creating new oce object classes
 
 Let's call this new object class `uv`. With this, inventing a new object
 sub-class is as simple as invoking
@@ -120,39 +123,41 @@ one to summarize them (`"summary"`).
 The initialization can be handled with
 ```{r}
 setMethod(f="initialize",
-          signature="uv",
-          definition=function(.Object, time, u, v, longitude, latitude) {
-              if (missing(time)) stop("must provide 'time'")
-              ## repeat the above also for u, v, longitude, and latitude
-              .Object@metadata$units$u <- list(unit=expression(m/s), scale="")
-              .Object@metadata$units$v <- list(unit=expression(m/s), scale="")
-              .Object@metadata$longitude <- longitude
-              .Object@metadata$latitude <- latitude
-              .Object@data$time <- time
-              .Object@data$u <- u
-              .Object@data$v <- v
-              .Object@processingLog$time <- presentTime()
-              .Object@processingLog$value <- "create 'uv' object"
-              return(.Object)
-          })
+    signature="uv",
+    definition=function(.Object, time, u, v, longitude, latitude) {
+        if (missing(time)) stop("must provide 'time'")
+        ## repeat the above also for u, v, longitude, and latitude
+        .Object@metadata$units$u <- list(unit=expression(m/s), scale="")
+        .Object@metadata$units$v <- list(unit=expression(m/s), scale="")
+        .Object@metadata$longitude <- longitude
+        .Object@metadata$latitude <- latitude
+        .Object@data$time <- time
+        .Object@data$u <- u
+        .Object@data$v <- v
+        .Object@processingLog$time <- presentTime()
+        .Object@processingLog$value <- "create 'uv' object"
+        return(.Object)
+    })
 ```
-This is fairly arcane, but simply copying and pasting this will be enough to get the
-reader started. Let's try it:
+
+Admittedly, the above is fairly arcane, but simply copying and pasting this
+will be enough to get the reader started. Let's try it:
 ```{r}
 oo <- new("uv", t, u, v, lon, lat)
 ```
 
-Next, customize `summary` for this new class:
+Since `oce` objects all have specialized `summary` methods, we ought
+to create one for our new class, as follows.
 ```{r}
 setMethod(f="summary",
-          signature="uv",
-          definition=function(object, ...) {
-              cat("uv Summary\n-----------\n\n", ...)
-              cat(paste("* Location:           ",
-                        sprintf("%.5f N", object@metadata$latitude), ", ",
-                        sprintf("%.5f E", object@metadata$longitude), "\n", sep=''))
-              callNextMethod()
-          })
+    signature="uv",
+    definition=function(object, ...) {
+        cat("uv Summary\n----------\n\n", ...)
+        cat(paste("* Location:           ",
+                sprintf("%.5f N", object@metadata$latitude), ", ",
+                sprintf("%.5f E", object@metadata$longitude), "\n", sep=''))
+        callNextMethod()
+    })
 ```
 The `callNextMethod` will summarize the entries in the `data` slot adequately for this case. Let's try it:
 ```{r}
@@ -163,43 +168,40 @@ Finally, let's make a custom method for `plot`. This is usually the most
 complicated part of handling any new object class, because there are usually
 many ways to look at data. (Some `oce` objects have over a dozen specialized
 plot styles.) Let's suppose there are only two desired plot styles: one showing
-timeseries of `u` and `v` in a two panel plot, and the other showing how `u`
+time-series of `u` and `v` in a two panel plot, and the other showing how `u`
 and `v` covary.
 
 ```{r}
 setMethod(f="plot",
-          signature=signature("uv"),
-          definition=function(x, which=1, ...)
-          {
-              if (which == 1) {
-                  oce.plot.ts(x[["time"]], x[["u"]], ylab="u [m/s]", ...)
-              } else if (which == 2) {
-                  oce.plot.ts(x[["time"]], x[["v"]], ylab="v [m/s]", ...)
-              } else if (which == 3) {
-                  plot(x[["u"]], x[["v"]], xlab="u [m/s]", ylab="v [m/s]", ...)
-              }
-          })
+    signature=signature("uv"),
+    definition=function(x, which=1, drawTimeRange=FALSE, ...)
+    {
+        if (which == 1) {
+            oce.plot.ts(x[["time"]], x[["u"]],
+                ylab="u [m/s]", drawTimeRange=drawTimeRange, ...)
+        } else if (which == 2) {
+            oce.plot.ts(x[["time"]], x[["v"]],
+                ylab="v [m/s]", drawTimeRange=drawTimeRange, ...)
+        } else if (which == 3) {
+            plot(x[["u"]], x[["v"]],
+                xlab="u [m/s]", ylab="v [m/s]", asp=1, ...)
+        }
+    })
 ```
 
 ```{r echo=FALSE}
-par(mar=c(3, 3, 1, 1), mgp=c(2, 0.7, 0)) # thin margins
 ```
 
 An now, we can try it out
-```{r fig.cap="**Figure 12.** Time-series u(t) plot of newly-constructed `uv` object.", fig.width=4, fig.height=4, dpi=72}
-par(mfrow=c(2,1))
+```{r fig.cap="**Figure 3.** Velocities in newly-constructed `uv` object.", fig.width=4, fig.height=4, dpi=72}
+par(mar=c(3, 3, 1, 3), mgp=c(2, 0.7, 0)) # thin margins
+layout(matrix(c(1,3,2,3), nrow=2, byrow=TRUE))
 plot(oo, which=1)
 plot(oo, which=2)
-```
-```{r fig.cap="**Figure 13.** Hodograph plot of newly-constructed `uv` object.", fig.width=4, fig.height=4, dpi=72}
-plot(oo, which=3, asp=1)
+plot(oo, which=3)
 ```
 
-
-
-
-
-# Tutorial
+# A Detailed Example
 
 ## Defining a class
 
@@ -287,12 +289,12 @@ str(w[["metadata"]])
 verifies that this worked.
 
 Now, let's insert some data.  Imagine a half-minute dataset with 10Hz sampling,
-for a signal with a $1$m elevation wave with period $10$s, plus some noise
-of order $1$cm.
+for a signal with a $1$ m elevation wave with period $10$s, plus some noise of
+order $0.05$ m.
 ```{r}
-t <- as.POSIXct("2019-01-01 00:00:00", tz="UTC") + seq(0, 30, length.out=100)
+t <- as.POSIXct("2022-01-09 00:00:00", tz="UTC") + seq(0, 30, 0.1)
 tau <- 10
-e <- sin(as.numeric(2 * pi * as.numeric(t) / tau)) + rnorm(t, sd=0.01)
+e <- sin(as.numeric(2 * pi * as.numeric(t) / tau)) + rnorm(t, sd=0.05)
 ```
 (Notice that we are not using the R `ts` form to make this time-series.  This
 is because oceanographic data are commonly acquired on an irregular time
@@ -335,7 +337,7 @@ over direct insertion into an object.
 ## Adding specialized functions
 
 The most common function to add is a plot function. Since `plot` is a built-in
-function, we are subclassing it.  The details of doing this are provided by
+function, we are sub-classing it.  The details of doing this are provided by
 `?setMethod`. Again, studying the documentation for that function would be
 worthwhile, but the gist is provided by a simple example, e.g.
 ```{r}
@@ -343,7 +345,7 @@ setMethod(f="plot",
     signature=signature("wave"),
     definition=function(x, which=1, ...) {
         if (which == 1) {
-            plot(x[["time"]], x[["elevation"]], ...)
+            plot(x[["time"]], x[["elevation"]], xlab="Time", ylab="Elevation", ...)
         } else if (which == 2) {
             hist(x[["elevation"]], ...)
         } else {
@@ -356,8 +358,9 @@ object as its first argument ought to use the indicated function.  That
 function takes just two arguments: the object to be plotted, and `which`, an
 indication of the desired plot type.
 
-For example, since `which` defaults to 1, we can get a popular plot with
-```{r}
+For example, since `which` defaults to 1, we can get a useful default plot with
+
+```{r fig.width=4, fig.height=4, dpi=72, fig.cap="**Figure 4.** Time-series of wave elevation."}
 plot(w)
 ```
 
@@ -369,9 +372,9 @@ types: it is very convenient to have a simple function call that works for
 each.
 
 Since the `...` argument is passed into both the plotting methods. Thus, for
-example, a cleaner time-series plot might be created with
-```{r}
-plot(w, type="l", xlab="Time [s]", ylab="Elevation [m]")
+example, we can change symbols to lines with
+```{r fig.width=4, fig.height=4, dpi=72, fig.cap="**Figure 5.** As Figure 4, but with red lines between observations."}
+plot(w, type="l", col="red")
 ```
 
 # Advanced methods
@@ -422,9 +425,9 @@ setMethod(f="[[",
     signature(x="wave", i="ANY", j="ANY"),
     definition=function(x, i, j, ...) {
         if (i == "peak") {
-           return(max(x[["elevation"]], na.rm=TRUE))
+            return(max(x[["elevation"]], na.rm=TRUE))
         } else {
-           callNextMethod()
+            callNextMethod()
         }
     }
 )
