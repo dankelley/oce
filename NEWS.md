@@ -2,7 +2,7 @@
 
 ## 1.6.0
 
-* TBA
+* Improve sub-class vignette.
 
 ## 1.5.0
 
