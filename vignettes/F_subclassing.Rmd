@@ -1,4 +1,4 @@
-f--
+---
 title: "6. Subclassing oce objects"
 author: "Dan Kelley (https://orcid.org/0000-0001-7808-5911)"
 date: "`r Sys.Date()`"
@@ -10,9 +10,9 @@ output:
     fig_width: 4
     fig_height: 4
     dpi: 72
-    dev.args: list(pointsize=9)
+    dev.args: list(pointsize=11)
 vignette: >
-  %\VignetteIndexEntry{6. Subclassing oce objects}
+  %\VignetteIndexEntry{6. Creating new classes in the oce system}
   %\VignetteEngine{knitr::rmarkdown}
   \usepackage[utf8]{inputenc}
 ---
@@ -25,14 +25,13 @@ vignette: >
 knitr::opts_chunk$set(collapse=TRUE, comment="#>")
 ```
 
-**Abstract.** This vignette explains how new classes of objects can be created,
-using oce objects as a base class. The benefit of doing this is that the
-newly-formed objects will automatically have important properties of oce
-objects, in terms of operators such as `[[` and `[[<-`, functions such as
-`subset()`  and `summary()`, schemes for handling units, etc. The procedures
-for working with sub-classes, mainly through the use of the `setMethod()`
-function, are outlined here in a practical way, using data from a drifting buoy
-as an example.
+**Abstract.** This vignette explains how to create new object classes, using
+the low-level `oce` class as a foundation. This scheme is beneficial, because
+the newly-formed objects automatically gain the key properties of oce objects,
+in terms of operators such as `[[` and `[[<-`, functions such as `subset()` and
+`summary()`, schemes for handling units, etc. The `setMethod()` function is
+central to the process of creating new classes, as will be illustrated here in
+a practical way, using drifting-buoy data for example.
 
 
 # A drifting buoy
@@ -41,89 +40,92 @@ Data from buoy number 4201703 were downloaded from
 http://www.coriolis.eu.org/Data-Products/Data-Delivery/Data-selection on
 2022-01-09, by deselecting all data types except for "Drifting buoy", selecting
 a data window south of Nova Scotia and of area similar to that province,
-expanding the tarball created by the website and then focussing on the file
-named "`drifting-buoys-4201703.csv"`.
+expanding the tarball created by the website and then focussing on the
+downloaded file named `"drifting-buoys-4201703.csv`".
 
 There are many data in the source data file, but only a subset is used here:
-starting with 300 samples of just five of the data fields: time, longitude,
-latitude, temperature and atmospheric pressure. This was further trimmed by
-removing data ensembles in which temperature was not reported.  The result was
-146 observations of 5 variables.  Note that they are *not* spaced uniformly in
-time, a feature that is of importance only at the end of this document.
+starting with 300 samples of just five of the data fields: time (called `t` for
+brevity), longitude (`lon`), latitude (`lat`), temperature (`Tatm`) and
+atmospheric pressure (`Patm`). This set was further trimmed by removing data
+ensembles in which temperature was not reported.  The result was 146
+observations of 5 variables. (Note that they are *not* spaced uniformly in
+time, a feature that is of importance only at the end of this document.)
 
-The data were combined into a data frame and packaged in an rda file, as
-illustrated with
+The data were combined into a data frame named `db` and packaged in an RDA
+file, an overview of which is provided as follows.
 ```{r}
 library(oce)
 load(system.file("extdata", "drifter.rda", package="oce"))
 str(db)
 ```
 
+Before showing how to create a new sub-class, it will first be shown that such
+data could also be stored in the foundational class of the package.
 
-This dataset shows some intriguing patterns, so it seems a suitable choice for
-an illustration of sub-classing. But first, it is worth showing how to work
-with the base class.
-
-# Using base oce classes
+# Using the base oce class
 
 The base class is named `"oce"`, and so a new object of that type can be created with
 ```{r}
 o <- new("oce")
 ```
-At this point, the `summary()` method does not reveal much
+
+At this point, the `summary()` method does not reveal much:
 ```{r}
 summary(o)
 ```
-
-The next step is to populate the object with some data and metadata.
+but if we populate the object with some data and metadata
 ```{r}
 o <- oceSetData(o, "time", db$t)
 o <- oceSetData(o, "longitude", db$lon)
 o <- oceSetData(o, "latitude", db$lat)
 o <- oceSetMetadata(o, "ID", 4201703)
 ```
-
-Now the summary is more informative
+then the summary is more informative
 ```{r}
 summary(o)
 ```
-However, note that the `ID` we added is not listed, because metadata tend to be
-so varied and expansive that `summary,oce-method` does not bother our entry.
-Getting this listed will require specializing constructing a new object, and
-telling that object's `summary()` method that `"ID"` is something we want to
-know.
+
+Note, however, that the `ID` is not listed by `summary()`.  This is because the
+general form of that function is set up to focus on the contents of the `data`
+slot, not the `metadata` slot. (Extending `summary()` will described later.)
 
 Objects of `oce-class` automatically have other methods, besides
-`summary,oce-method()`.  For example, the accessing operator works
+`summary()`.  For example, the accessing operator `[[` works for the
+object that was just created:
 ```{r}
 str(o[["latitude"]])
 ```
-and we can also make a plot that shows the interdependence of entries in the
-`data` slot.
+
+We can also use the default `plot()` function to show the interdependence of
+entries in the `data` slot.
 ```{r fig.cap="**Figure 1.** Demonstration of base-level plot()."}
 plot(o)
 ```
 
-Although this plot is a good way to get an overview of the data, it is not
-something an analyst would consider publishing.  We need to specialize our
-object to fit the needs of this data type.  That is, we need to create a
-sub-class.
+Although this plot provides a useful overview of the data, it is not something
+an analyst would consider publishing.  To get more useful plot types, we must
+create a new sub-class that has a specialized `plot()` method.
 
-# Sub-classing
+# Creating a new sub-class
 
-If we wish to call the new subclass `drifter`, it can be defined with
+A reasonable name for our new sub-class might be `"drifter"`.  With this
+choice, the class can be defined in a single line of code:
 ```{r}
 drifter <- setClass(Class="drifter", contains="oce")
 ```
-and, once this is done, we can create new objects with e.g.
+
+Once this has been executed, the user can create a new object of this sub-class
+with
 ```{r}
 d <- new("drifter")
 ```
 
-Now, we can add data and metadata as in the previous section, but it is
-more convenient to do this when we call `new()`.  To accomplish this, we might
-use as follows (note that the illustration is skipping the temperature and
-pressure data; adding them would be a good exercise for the reader).
+Although it is simple to add data and metadata as in the previous section, it
+is more convenient to supply this information when `new()` is used.  To
+accomplish this, we must set up an initialization function, as follows.  (Note
+that the illustration skips the temperature and pressure data; adding them
+would be a good exercise for the reader.)
+
 ```{r}
 setMethod(f="initialize",
   signature="drifter",
@@ -143,22 +145,34 @@ setMethod(f="initialize",
       return(.Object)
 })
 ```
-Noting that an attempt to use `new("drifter")` without providing time, etc.,
-produces an error message
+
+This method takes away the choice of where to put things (in `data` or in
+`metadata`), saving users from having to make that decision, possibly breaking
+other code.  Also, note that some error checking has been used here, so that an
+attempt to use `new("drifter")` without providing time, etc., produces an error
+message, as shown below.
 ```
 d <- new("drifter")
 Error: In new(drifter) : must provide 'time'
 ```
-we may now create an object that we can use for the rest of this vignette.
+
+
+With this setup, we may now create an object that we can use for the rest of
+this vignette:
 ```{r}
 d <- new("drifter", time=db$t, longitude=db$lon, latitude=db$lat, ID=4201703)
 ```
-
-We will proceed in three steps, specializing the `plot()` and `summary()`
-methods, and then the `[[` accessor. In each case, we use `setMethod()` to
-accomplish our goals.
+and this will be used in the next three subsections, showing how to specialize
+the `plot()` method, the `summary()` method, and the `[[` accessor. Note the
+use of `setMethod()` in each instance.
 
 ## Specializing the plot() function
+
+The `f`, `signature` and `definition` arguments follow the same pattern as in
+the previous example, and readers ought to focus on last of these. Here, three
+plot types are provided, as selected by an argument called `which`. The first
+two give time-series plots of drifter longitude and latitude, and the third
+shows the trajectory.
 
 ```{r}
 setMethod(f="plot",
@@ -179,8 +193,9 @@ setMethod(f="plot",
     })
 ```
 
-The use of `...` in each call permits the user to control aspects of the plot,
-e.g. the following is a fairly useful display.
+The three plot types are fairly rudimentary, but the `...` argument can be used
+for customization, as in the following example.
+
 ```{r fig.cap="**Figure 2.** Demonstration of specialized plot()."}
 par(mar=c(3.3,3.3,1,1), mgp=c(2,0.7,0))
 layout(matrix(c(1,3,2,3),nrow=2,byrow=TRUE))
@@ -206,7 +221,8 @@ setMethod(f="summary",
         invisible(callNextMethod())
     })
 ```
-we get
+
+An example follows.
 ```{r}
 summary(d)
 ```
@@ -215,9 +231,9 @@ summary(d)
 
 ## Specializing the `[[` accessor
 
-Drifter position might give an indication of surface water flow, and this is of
-sufficient interest that it might be worth adding to `[[`.  This may be done as
-follows.
+The variation of drifter position provides information on ocean velocity, and
+this is of sufficient interest that it might be worth adding to `[[`.  This may
+be done as follows.
 
 ```{r}
 setMethod(f="[[",
@@ -254,20 +270,21 @@ oce.plot.ts(d[["time"]], uv$v, ylab="North velocity [m/s]", grid=TRUE)
 # Summary
 
 As has been illustrated above, the `setMethod()` function is the key to
-altering generic functions such as `plot()`, `summary()` and `[[`. The
-details of how this works are explained in numerous sources, but
-readers can save a bit of time by simply copying and expanding on the
-code provided here.
+altering generic functions such as `plot()`, `summary()` and `[[`. The details
+of how this works are explained in numerous manuals, books, and websites, but
+impatient readers can save some time by simply copying and expanding on the
+code provided in the previous sections.
 
 # Postscript
 
-A natural question arises as to the periodicity of the oscillations. The
-`acf()` function, which computes lagged autocorrelation, can be useful for
-investigating this periodicity, although with the caveat that it only really
-works if the data are sampled at a constant time interval, which is not the
-case here.
+As I wrote this, I became curious as to the source of periodicity of the
+oscillations. One way to study periodicity is by using the `acf()` function,
+to compute lagged autocorrelation.  Strictly speaking, this is not sensible in
+the present case, because the data sampling rate is not uniform. Although
+`approx()` could be used to make it uniform, it is not unreasonable to
+start without that step, as in the following.
 
-```{r fig.cap="**Figure 4.** Autocorrelation analysis of drifter velocities, showing also the M2 period. (As an exercise, the reader might find it informative to also show the local Coriolis period.)"}
+```{r fig.cap="**Figure 4.** Autocorrelation analysis of drifter velocities, showing also the M2 period. (Exercises for the reader: (1) use `approx()` to get new time-series with a constant sampling rate, (2) add lines for the local Coriolis period, and (3) use `nls()` to fit a model of a sine to the signal, fitting for amplitude, frequency and phase.)"}
 data(tidedata)
 M2period <- 1 / with(tidedata$const, freq[[which(name=="M2")]])
 uv <- d[["velocity"]]

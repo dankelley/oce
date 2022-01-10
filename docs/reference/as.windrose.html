@@ -18,15 +18,12 @@ plot,windrose-method()."><!-- mathjax --><script src="https://cdnjs.cloudflare.c
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.5-0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.6-0</span>
       </span>
     </div>
 
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav"><li>
-  <a href="../articles/oce.html">Get started</a>
-</li>
-<li>
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
@@ -36,19 +33,22 @@ plot,windrose-method()."><!-- mathjax --><script src="https://cdnjs.cloudflare.c
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu"><li>
-      <a href="../articles/adp.html">3. Analysis of acoustic-Doppler data</a>
+      <a href="../articles/A_oce.html">1. Introduction to Oce</a>
     </li>
     <li>
-      <a href="../articles/ctd.html">2. Analysis of CTD data</a>
+      <a href="../articles/B_ctd.html">2. Analysis of CTD data</a>
     </li>
     <li>
-      <a href="../articles/flags.html">5. Dealing with data-quality flags</a>
+      <a href="../articles/C_adp.html">3. Analysis of acoustic-Doppler data</a>
     </li>
     <li>
-      <a href="../articles/map_projections.html">4. Using map projections</a>
+      <a href="../articles/D_map_projections.html">4. Using map projections</a>
     </li>
     <li>
-      <a href="../articles/subclassing.html">6. Subclassing oce objects</a>
+      <a href="../articles/E_flags.html">5. Dealing with data-quality flags</a>
+    </li>
+    <li>
+      <a href="../articles/F_subclassing.html">6. Subclassing oce objects</a>
     </li>
   </ul></li>
 <li>
@@ -131,19 +131,19 @@ median, the upper hinge, and the max)</td></tr></table></div>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> * Data Overview</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                Min.       Mean     Max. Dim. NAs OriginalName</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     n           360        360      360    1   0            -</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     x.mean  0.98158    0.98158  0.98158    1   0            -</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     y.mean 0.095651   0.095651 0.095651    1   0            -</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     theta    -172.5 1.5618e-14    172.5   24   0            -</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     count         1         15       39   24   0            -</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     mean      0.655     1.3273   1.8527   24   0            -</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     fives   0.10167     1.3414     4.34 24x5   0            -</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                  Min.       Mean       Max. Dim. NAs OriginalName</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     n             360        360        360    1   0            -</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     x.mean    0.89463    0.89463    0.89463    1   0            -</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     y.mean -0.0039557 -0.0039557 -0.0039557    1   0            -</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     theta      -172.5 1.5618e-14      172.5   24   0            -</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     count           2         15         37   24   0            -</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     mean       0.2347      1.277      1.962   24   0            -</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     fives    0.079894     1.3143     4.5934 24x5   0            -</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> * Processing Log</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2022-01-08 23:18:03 UTC: `create 'windrose' object`</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2022-01-08 23:18:03 UTC: `as.windrose(x = xcomp, y = ycomp)`</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2022-01-10 19:35:57 UTC: `create 'windrose' object`</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2022-01-10 19:35:57 UTC: `as.windrose(x = xcomp, y = ycomp)`</span>
 <span class="r-in"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">wr</span><span class="op">)</span></span>
 <span class="r-plt img"><img src="as.windrose-1.png" alt="" width="700" height="433"></span>
 <span class="r-in"></span>
