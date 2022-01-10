@@ -17,6 +17,7 @@
 ^CODE_OF_CONDUCT.md$
 ^LICENSE$
 ^vignettes/figure$
+^vignettes/*.html$
 ^.*.org$
 .RData
 .travis.yml
