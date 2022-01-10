@@ -12,7 +12,7 @@ output:
     dpi: 72
     dev.args: list(pointsize=11)
 vignette: >
-  %\VignetteIndexEntry{6. Creating new classes in the oce system}
+  %\VignetteIndexEntry{6. Subclassing oce objects}
   %\VignetteEngine{knitr::rmarkdown}
   \usepackage[utf8]{inputenc}
 ---
@@ -59,7 +59,7 @@ load(system.file("extdata", "drifter.rda", package="oce"))
 str(db)
 ```
 
-Before showing how to create a new sub-class, it will first be shown that such
+Before showing how to create a new subclass, it will first be shown that such
 data could also be stored in the foundational class of the package.
 
 # Using the base oce class
@@ -104,17 +104,17 @@ plot(o)
 
 Although this plot provides a useful overview of the data, it is not something
 an analyst would consider publishing.  To get more useful plot types, we must
-create a new sub-class that has a specialized `plot()` method.
+create a new subclass that has a specialized `plot()` method.
 
-# Creating a new sub-class
+# Creating a new subclass
 
-A reasonable name for our new sub-class might be `"drifter"`.  With this
+A reasonable name for our new subclass might be `"drifter"`.  With this
 choice, the class can be defined in a single line of code:
 ```{r}
 drifter <- setClass(Class="drifter", contains="oce")
 ```
 
-Once this has been executed, the user can create a new object of this sub-class
+Once this has been executed, the user can create a new object of this subclass
 with
 ```{r}
 d <- new("drifter")
@@ -122,9 +122,7 @@ d <- new("drifter")
 
 Although it is simple to add data and metadata as in the previous section, it
 is more convenient to supply this information when `new()` is used.  To
-accomplish this, we must set up an initialization function, as follows.  (Note
-that the illustration skips the temperature and pressure data; adding them
-would be a good exercise for the reader.)
+accomplish this, we must set up an initialization function, as follows.
 
 ```{r}
 setMethod(f="initialize",
@@ -181,12 +179,15 @@ setMethod(f="plot",
         lonlab <- expression("Longitude ["*degree*"E]")
         latlab <- expression("Latitude ["*degree*"N]")
         if (which == 1) {
-            oce.plot.ts(x[["time"]], x[["longitude"]], ylab=lonlab, ...)
+            oce.plot.ts(x[["time"]], x[["longitude"]],
+                ylab=lonlab, ...)
         } else if (which == 2) {
-            oce.plot.ts(x[["time"]], x[["latitude"]], ylab=latlab,...)
+            oce.plot.ts(x[["time"]], x[["latitude"]],
+                ylab=latlab,...)
         } else if (which == 3) {
             asp <- 1 / cos(mean(range(x[["latitude"]]) * pi / 180))
-            plot(x[["longitude"]], x[["latitude"]], asp=asp, xlab=lonlab, ylab=latlab, ...)
+            plot(x[["longitude"]], x[["latitude"]],
+                asp=asp, xlab=lonlab, ylab=latlab, ...)
         } else {
             stop("In plot,drifter-method : try which=1, 2 or 3", call.=FALSE)
         }
@@ -264,27 +265,14 @@ As a test, we can plot the velocity components.
 uv <- d[["velocity"]]
 par(mfrow=c(2,1))
 oce.plot.ts(d[["time"]], uv$u, ylab="Eastward velocity [m/s]", grid=TRUE)
-oce.plot.ts(d[["time"]], uv$v, ylab="North velocity [m/s]", grid=TRUE)
+oce.plot.ts(d[["time"]], uv$v, ylab="Northward velocity [m/s]", grid=TRUE)
 ```
 
-# Summary
+The `acf()` function, which computes lagged autocorrelation, can shed some
+light on the periodicity of the velocity signals (but see Exercise 3), as
+follows.
 
-As has been illustrated above, the `setMethod()` function is the key to
-altering generic functions such as `plot()`, `summary()` and `[[`. The details
-of how this works are explained in numerous manuals, books, and websites, but
-impatient readers can save some time by simply copying and expanding on the
-code provided in the previous sections.
-
-# Postscript
-
-As I wrote this, I became curious as to the source of periodicity of the
-oscillations. One way to study periodicity is by using the `acf()` function,
-to compute lagged autocorrelation.  Strictly speaking, this is not sensible in
-the present case, because the data sampling rate is not uniform. Although
-`approx()` could be used to make it uniform, it is not unreasonable to
-start without that step, as in the following.
-
-```{r fig.cap="**Figure 4.** Autocorrelation analysis of drifter velocities, showing also the M2 period. (Exercises for the reader: (1) use `approx()` to get new time-series with a constant sampling rate, (2) add lines for the local Coriolis period, and (3) use `nls()` to fit a model of a sine to the signal, fitting for amplitude, frequency and phase.)"}
+```{r fig.cap="**Figure 4.** Autocorrelation analysis of drifter velocities, showing also the M2 period."}
 data(tidedata)
 M2period <- 1 / with(tidedata$const, freq[[which(name=="M2")]])
 uv <- d[["velocity"]]
@@ -296,4 +284,29 @@ abline(v=M2period, col=2)
 ```
 
 
+# Summary
+
+As has been illustrated above, the `setMethod()` function is the key to
+altering generic functions such as `plot()`, `summary()` and `[[`. The details
+of how this works are explained in numerous manuals, books, and websites, but
+impatient readers can save some time by simply copying and expanding on the
+code provided in the previous sections.
+
+# Appendix: exercises for the reader
+
+1. Add atmospheric temperature and pressure (both contained in the source RDA
+   file) to the `drifter` object initialization function.  Be sure to check
+   that they were provided or, if you choose, let them be optional.
+
+2. Think of other useful plot types, and add these to the `plot()` method.
+
+3. For the final lagged-autocorrelation function, use `approx()` to get new
+   time-series with a constant sampling rate.
+
+4. Again for the lagged-autocorrelation function, add a line for local Coriolis
+   period.
+
+5. As an alternative to the lagged-autocorrelation method, test for periodicity
+   of velocity by using `nls()`, supplied with a sinusoidal function that has
+   adjustable amplitude, phase, and frequency.
 
