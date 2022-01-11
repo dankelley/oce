@@ -2,6 +2,7 @@
 library(oce)
 CRATwarning <- "\"conductivity\" \\(code name \"CRAT_01\"\\)" # portion of the warning
 
+
 test_that("argument existence", {
     data(ctd)
     expect_error(initializeFlagScheme(ctd, mapping=list(unknown=1, good=2, bad=3)),
@@ -242,6 +243,7 @@ test_that("odf flag with subset() (issue 1410)", {
     }
 })
 
+
 test_that("adp flag with subset() (issue 1410)", {
     data(adp)
     v <- adp[["v"]]
@@ -304,5 +306,26 @@ test_that("handleFlags default flags (ctd)", {
     C2 <- handleFlags(ctd, flags=c(1, 3:9))
     expect_equal(C1@data, C2@data)
     expect_equal(C1@metadata, C2@metadata)
+})
+
+test_that("adp handleFlag gives error for raw data (issue 1914)", {
+    data(adp)
+    v <- adp[["v"]]
+    i2 <- array(FALSE, dim=dim(v))
+    g <- adp[["g", "numeric"]]
+    # Thresholds on percent "goodness" and error "velocity"
+    G <- 25
+    V4 <- 0.45
+    for (k in 1:3)
+        i2[,,k] <- ((g[,,k]+g[,,4]) < G) | (v[,,4] > V4)
+    # Can apply flags to velocity, because it is numeric
+    a <- initializeFlags(adp, "v", 2)
+    b <- setFlags(a, "v", i2, 3)
+    expect_silent(c <- handleFlags(b, flags=list(3), actions=list("NA")))
+    # Cannot apply flags to amplitude, because it is raw
+    a <- initializeFlags(adp, "a", 2)
+    b <- setFlags(a, "a", i2, 3)
+    expect_error(c <- handleFlags(b, flags=list(3), actions=list("NA")),
+        "use adpConvertRawToNumeric")
 })
 
