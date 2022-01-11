@@ -183,14 +183,14 @@ arguments, and for citations to external resources that explain what they mean.
 
 ## Mid-latitude views
 
-The Lambert Conformal view is often used in maps that span wide longitudinal
-ranges, e.g. a map of Canada may be produced as follows.
+The Lambert Conformal view is often used in maps that span wide
+longitudinal ranges, e.g. a map of Canada may be produced as follows.
 
 ```{r}
 par(mar=c(1.5, 1.5, 0.5, 0.5))
 mapPlot(coastlineWorld,
-         longitudelim=c(-130,-55), latitudelim=c(35, 60),
-         projection="+proj=lcc +lat_1=30 +lat_2=60 +lon_0=-100", col='gray')
+    longitudelim=c(-130,-55), latitudelim=c(45, 70),
+    projection="+proj=lcc +lat_1=50 +lat_2=65 +lon_0=-100", col='gray')
 ```
 
 Here, `lat_1` and `lat_2`, the latitudes where the projection cone intersects
