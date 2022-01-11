@@ -306,21 +306,21 @@ NULL
 #'
 #' @family things related to ctd data
 setMethod("handleFlags", signature=c(object="ctd", flags="ANY", actions="ANY", where="ANY", debug="ANY"),
-          definition=function(object, flags=NULL, actions=NULL, where=NULL, debug=getOption("oceDebug")) {
-              ## DEVELOPER 1: alter the next comment to explain your setup
-              if (is.null(flags)) {
-                  flags <- defaultFlags(object)
-                  if (is.null(flags))
-                      stop("must supply 'flags', or use initializeFlagScheme() on the ctd object first")
-              }
-              if (is.null(actions)) {
-                  actions <- list("NA") # DEVELOPER 3: alter this line to suit a new data class
-                  names(actions) <- names(flags)
-              }
-              if (any(names(actions)!=names(flags)))
-                  stop("names of flags and actions must match")
-              handleFlagsInternal(object=object, flags=flags, actions=actions, where=where, debug=debug)
-          })
+    definition=function(object, flags=NULL, actions=NULL, where=NULL, debug=getOption("oceDebug")) {
+        ## DEVELOPER 1: alter the next comment to explain your setup
+        if (is.null(flags)) {
+            flags <- defaultFlags(object)
+            if (is.null(flags))
+                stop("must supply 'flags', or use initializeFlagScheme() on the ctd object first")
+        }
+        if (is.null(actions)) {
+            actions <- list("NA") # DEVELOPER 2: alter this line to suit a new data class
+            names(actions) <- names(flags)
+        }
+        if (any(names(actions)!=names(flags)))
+            stop("names of flags and actions must match")
+        handleFlagsInternal(object=object, flags=flags, actions=actions, where=where, debug=debug)
+    })
 
 #' @templateVar class ctd
 #'

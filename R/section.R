@@ -131,25 +131,25 @@ setMethod(f="initialize",
 #' @family things related to section data
 #' @aliases handleFlags.section
 setMethod("handleFlags", signature=c(object="section", flags="ANY", actions="ANY", where="ANY", debug="ANY"),
-          definition=function(object, flags=NULL, actions=NULL, where=where, debug=getOption("oceDebug")) {
-              ## DEVELOPER 1: alter the next comment to explain your setup
-              if (is.null(flags)) {
-                  flags <- defaultFlags(object[["station", 1]])
-                  if (is.null(flags))
-                      stop("must supply 'flags', or use initializeFlagScheme() on the section object first")
-              }
-              if (is.null(actions)) {
-                  actions <- list("NA") # DEVELOPER 3: alter this line to suit a new data class
-                  names(actions) <- names(flags)
-              }
-              if (any(sort(names(actions)) != sort(names(flags))))
-                  stop("names of flags and actions must match")
-              res <- object
-              for (i in seq_along(res@data$station)) {
-                  res@data$station[[i]] <- handleFlags(res@data$station[[i]], flags, actions, where=where, debug)
-              }
-              res
-          })
+    definition=function(object, flags=NULL, actions=NULL, where=where, debug=getOption("oceDebug")) {
+        ## DEVELOPER 1: alter the next comment to explain your setup
+        if (is.null(flags)) {
+            flags <- defaultFlags(object[["station", 1]])
+            if (is.null(flags))
+                stop("must supply 'flags', or use initializeFlagScheme() on the section object first")
+        }
+        if (is.null(actions)) {
+            actions <- list("NA") # DEVELOPER 2: alter this line to suit a new data class
+            names(actions) <- names(flags)
+        }
+        if (any(sort(names(actions)) != sort(names(flags))))
+            stop("names of flags and actions must match")
+        res <- object
+        for (i in seq_along(res@data$station)) {
+            res@data$station[[i]] <- handleFlags(res@data$station[[i]], flags, actions, where=where, debug)
+        }
+        res
+    })
 
 #' @templateVar class section
 #' @templateVar details This applies `initializeFlagScheme` for each `ctd` station within the `stations` element of the `data` slot.

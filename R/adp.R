@@ -331,7 +331,6 @@ setMethod("handleFlags", signature=c(object="adp", flags="ANY", actions="ANY", w
     definition=function(object, flags=NULL, actions=NULL, where=NULL, debug=getOption("oceDebug")) {
         oceDebug(debug, "handleFlags,adp-method {\n", sep="", style="bold", unindent=1)
         ## DEVELOPER 1: alter the next comment to explain your setup
-        ## Flag=1 means bad velocity; 0 means good
         names <- names(object[["flags"]])
         for (name in names) {
             if (is.raw(object@data[[name]])) {
@@ -344,7 +343,7 @@ setMethod("handleFlags", signature=c(object="adp", flags="ANY", actions="ANY", w
                 stop("must supply 'flags', or use initializeFlagScheme() on the adp object first")
         }
         if (is.null(actions)) {
-            actions <- list("NA") # DEVELOPER 3: alter this line to suit a new data class
+            actions <- list("NA") # DEVELOPER 2: alter this line to suit a new data class
             names(actions) <- names(flags)
         }
         if (any(names(actions)!=names(flags)))
