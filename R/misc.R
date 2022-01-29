@@ -2519,9 +2519,9 @@ oce.spectrum <- oceSpectrum
 #' This is similar to [str()], but it shows data at the first and last of the
 #' vector, which can be quite helpful in debugging.
 #'
-#' @param v the item to be summarized.  If this is a list, then information is
-#' provided for each element. Otherwise, information is provided for the first and
-#' last `n` values.
+#' @param v the item to be summarized.  If this is a list of a vector of named
+#' items, then information is provided for each element. Otherwise, information
+#' is provided for the first and last `n` values.
 #'
 #' @param msg optional character value indicating a message to show,
 #' introducing the vector.  If not provided, then
@@ -2556,10 +2556,17 @@ oce.spectrum <- oceSpectrum
 #' # List
 #' limits <- list(low=0, high=1)
 #' vectorShow(limits)
+#'
+#' # Vector of named items
+#' planktonCount <- c(phytoplankton=100, zooplankton=20)
+#' vectorShow(planktonCount)
+#'
 #' # Vector
 #' vectorShow(pi)
+#'
 #' # Matrix
 #' vectorShow(volcano)
+#'
 #' # Other arguments
 #' knot2mps <- 0.5144444
 #' vectorShow(knot2mps, postscript="knots per m/s")
@@ -2572,7 +2579,7 @@ vectorShow <- function(v, msg="", postscript="", digits=5, n=2L, showNA=FALSE, s
     nv <- length(v)
     if (!nchar(msg))
         msg <- deparse(substitute(expr=v, env=environment()))
-    if (is.list(v)) {
+    if (is.list(v) || (is.vector(v) && length(names(v)) > 0L)) {
         names <- names(v)
         values <- unname(v)
         msg <- paste(msg, ": ", sep="")

@@ -15,9 +15,9 @@ vectorShow(
 )
 }
 \arguments{
-\item{v}{the item to be summarized.  If this is a list, then information is
-provided for each element. Otherwise, information is provided for the first and
-last \code{n} values.}
+\item{v}{the item to be summarized.  If this is a list of a vector of named
+items, then information is provided for each element. Otherwise, information
+is provided for the first and last \code{n} values.}
 
 \item{msg}{optional character value indicating a message to show,
 introducing the vector.  If not provided, then
@@ -57,10 +57,17 @@ vector, which can be quite helpful in debugging.
 # List
 limits <- list(low=0, high=1)
 vectorShow(limits)
+
+# Vector of named items
+planktonCount <- c(phytoplankton=100, zooplankton=20)
+vectorShow(planktonCount)
+
 # Vector
 vectorShow(pi)
+
 # Matrix
 vectorShow(volcano)
+
 # Other arguments
 knot2mps <- 0.5144444
 vectorShow(knot2mps, postscript="knots per m/s")
