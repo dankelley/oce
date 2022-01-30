@@ -4,17 +4,13 @@ library(oce)
 
 csv1 <- system.file("extdata", "test_met_vsn1.csv", package="oce")
 csv2 <- system.file("extdata", "test_met_vsn2.csv", package="oce")
+csv3 <- system.file("extdata", "test_met_vsn3.csv", package="oce")
 xml2 <- system.file("extdata", "test_met_xml2.xml", package="oce")
 
-test_that("oceMagic understands vsn1-style met data files", {
+test_that("oceMagic understands all types of met data files", {
     expect_equal("met/csv1", oceMagic(csv1))
-})
-
-test_that("oceMagic understands vsn2-style met data files", {
     expect_equal("met/csv2", oceMagic(csv2))
-})
-
-test_that("oceMagic understands xml2-style met data files", {
+    expect_equal("met/csv3", oceMagic(csv3))
     expect_equal("met/xml2", oceMagic(xml2))
 })
 
@@ -61,6 +57,31 @@ test_that("read.met() handles type=\"csv2\" files", {
             "time", "u", "v", "visibility", "weather", "wind",
             "windChill"))
 })
+
+test_that("read.met() handles type=\"csv3\" files", {
+    d <- read.met(csv3)
+    # Sort both because the ordering is different when done interactively
+    # and in the test (for reasons I don't understand).
+    expect_equal(sort(names(d@data)), sort(c(paste("Date/Time", "(LST)"), "dewPoint",
+            "direction", "humidex", "humidity", paste("Precip.", "Amount",
+                "(mm)"), paste("Precip.", "Amount", "Flag"), "pressure",
+            "speed", "temperature", "time", paste("Time", "(LST)"), "u", "v",
+            "visibility", "weather", "windChill")))
+    expect_equal(d[["latitude"]], 44.88)
+    expect_equal(d[["longitude"]], -63.51)
+    expect_equal(d[["station"]], "HALIFAX STANFIELD INT'L A")
+    expect_equal(d[["temperature"]], c(1.7, 1.9, 2, 2, 2.4))
+    expect_equal(d[["humidity"]], rep(100L, 5))
+    expect_equal(d[["speed"]], c(2.77777777777778, 2.77777777777778,
+            3.05555555555556, 2.77777777777778, 3.61111111111111))
+    expect_equal(d[["u"]], c(2.12790123088605, 1.78552113801816,
+            2.34069135397465, 1.38888888888889, 2.76627160015187))
+    expect_equal(d[["v"]], c(-1.78552113801816, -2.12790123088605,
+            -1.96407325181998, -2.40562612162344, -2.32117747942361))
+    expect_equal(d[["time"]], as.POSIXct(c("2022-01-01 00:00:00",
+                "2022-01-01 01:00:00", "2022-01-01 02:00:00",
+                "2022-01-01 03:00:00", "2022-01-01 04:00:00"),
+            tz="UTC")) })
 
 test_that("read.oce(file) and read.met(file, type=\"csv2\") give same metadata and data slots", {
     doce <- read.oce(csv2)
