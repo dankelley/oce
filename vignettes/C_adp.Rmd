@@ -27,8 +27,8 @@ knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
 **Abstract.** This vignette explains the basics of using the oce package to
 handle measurements made by both mooring and ship based acoustic Doppler
 profilers.  As in the related vignette about working with [data-quality
-flags](flags.html), the material is organized to reflect typical workflow.  See
-[the main oce vignette](oce.html) for general information about oce.  The
+flags](E_flags.html), the material is organized to reflect typical workflow.  See
+[the main oce vignette](A_oce.html) for general information about oce.  The
 sample code provided here relies on the oce package, loaded as follows.
 ```{r}
 library(oce)

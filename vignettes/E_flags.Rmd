@@ -26,9 +26,9 @@ knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
 ```
 
 **Abstract.** This vignette explains the basics of working with data-quality
-flags in oce. As in the vignette about working with [adp data](adp.html), the
+flags in oce. As in the vignette about working with [adp data](C_adp.html), the
 material is organized to reflect typical workflow.  See the main oce
-[vignette](oce.html) for general information about oce.  The sample code
+[vignette](A_oce.html) for general information about oce.  The sample code
 provided here relies on the oce package, loaded as follows.
 ```{r}
 library(oce)
