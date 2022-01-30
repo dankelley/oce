@@ -69,7 +69,8 @@ test_that("read.met() handles type=\"csv1\" files", {
 # users to tell me if they see a problem ... that is, users who will
 # be willing to do some tests that will be faster than my waiting 30min
 # for each win_builder test.
-if (.Platform$OS.type != "windows") {
+#>if (.Platform$OS.type != "windows") {
+if (FALSE) {
     test_that("read.met() handles type=\"csv3\" files", {
         d <- read.met(csv3)
         # Sort both because the ordering is different when done interactively
