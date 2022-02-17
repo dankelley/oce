@@ -253,7 +253,7 @@ quantities may not be set to <code>NA</code>.</p>
 <span class="r-in"><span class="va">v</span> <span class="op">&lt;-</span> <span class="va">adp</span><span class="op">[[</span><span class="st">"v"</span><span class="op">]</span><span class="op">]</span></span>
 <span class="r-in"><span class="va">i2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/array.html" class="external-link">array</a></span><span class="op">(</span><span class="cn">FALSE</span>, dim<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">v</span><span class="op">)</span><span class="op">)</span></span>
 <span class="r-in"><span class="va">g</span> <span class="op">&lt;-</span> <span class="va">adp</span><span class="op">[[</span><span class="st">"g"</span>, <span class="st">"numeric"</span><span class="op">]</span><span class="op">]</span></span>
-<span class="r-in"><span class="co"># Thresholds on percent "goodness" and error "velocity"</span></span>
+<span class="r-in"><span class="co"># Set thresholds on percent "goodness" and error "velocity".</span></span>
 <span class="r-in"><span class="va">G</span> <span class="op">&lt;-</span> <span class="fl">25</span></span>
 <span class="r-in"><span class="va">V4</span> <span class="op">&lt;-</span> <span class="fl">0.45</span></span>
 <span class="r-in"><span class="kw">for</span> <span class="op">(</span><span class="va">k</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">)</span></span>
@@ -263,8 +263,11 @@ quantities may not be set to <code>NA</code>.</p>
 <span class="r-in"><span class="va">adpClean</span> <span class="op">&lt;-</span> <span class="fu"><a href="handleFlags.html">handleFlags</a></span><span class="op">(</span><span class="va">adpQC</span>, flags<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fl">3</span><span class="op">)</span>, actions<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"NA"</span><span class="op">)</span><span class="op">)</span></span>
 <span class="r-in"><span class="co"># Demonstrate (subtle) change graphically.</span></span>
 <span class="r-in"><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mfcol<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">adp</span>, which<span class="op">=</span><span class="st">"u1"</span><span class="op">)</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">adpClean</span>, which<span class="op">=</span><span class="st">"u1"</span><span class="op">)</span></span>
+<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">adp</span>, which<span class="op">=</span><span class="st">"u1"</span>, drawTimeRange<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span></span>
+<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">adpClean</span>, which<span class="op">=</span><span class="st">"u1"</span>, drawTimeRange<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span></span>
+<span class="r-in"><span class="va">t0</span> <span class="op">&lt;-</span> <span class="fl">1214510000</span> <span class="co"># from locator()</span></span>
+<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/graphics/arrows.html" class="external-link">arrows</a></span><span class="op">(</span><span class="va">t0</span>, <span class="fl">20</span>, <span class="va">t0</span>, <span class="fl">35</span>, length<span class="op">=</span><span class="fl">0.1</span>, lwd<span class="op">=</span><span class="fl">3</span>, col<span class="op">=</span><span class="st">"magenta"</span><span class="op">)</span></span>
+<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/graphics/mtext.html" class="external-link">mtext</a></span><span class="op">(</span><span class="st">"Slight change above arrow"</span>, col<span class="op">=</span><span class="st">"magenta"</span>, font<span class="op">=</span><span class="fl">2</span><span class="op">)</span></span>
 <span class="r-plt img"><img src="handleFlags-adp-method-1.png" alt="" width="700" height="433"></span>
 <span class="r-in"></span>
 </code></pre></div>
@@ -281,7 +284,8 @@ quantities may not be set to <code>NA</code>.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.1.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a>
+2.0.2.</p>
 </div>
 
       </footer></div>
