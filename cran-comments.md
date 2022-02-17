@@ -16,6 +16,13 @@ and help 3.7Mb.
 
 ## Github R-CMD-check Action Tests
 
+Passes on all tested platforms:
+
+* windows-latest (release)
+* macOS-latest (release)
+* ubuntu-20.04 (release)
+* ubuntu-20.04 (devel)
+
 R-CMD-check github action reports no problems on
 * windows-latest (release)
 * macOS-latest (release)
