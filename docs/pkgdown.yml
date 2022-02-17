@@ -1,12 +1,12 @@
-pandoc: 2.14.0.3
-pkgdown: 2.0.1
+pandoc: 2.17.0.1
+pkgdown: 2.0.2
 pkgdown_sha: ~
 articles:
-  adp: adp.html
-  ctd: ctd.html
-  flags: flags.html
-  map_projections: map_projections.html
-  oce: oce.html
-  subclassing: subclassing.html
-last_built: 2022-01-08T23:17Z
+  A_oce: A_oce.html
+  B_ctd: B_ctd.html
+  C_adp: C_adp.html
+  D_map_projections: D_map_projections.html
+  E_flags: E_flags.html
+  F_subclassing: F_subclassing.html
+last_built: 2022-02-17T10:07Z
 

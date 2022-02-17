@@ -864,7 +864,7 @@ setMethod("handleFlags", signature=c(object="oce", flags="ANY", actions="ANY", w
 #' actions that alter the data.
 handleFlagsInternal <- function(object, flags, actions, where, debug=0) {
     oceDebug(debug, "handleFlagsInternal() {\n", sep="", unindent=1)
-    if (debug) {
+    if (debug > 0L) {
         cat("flags=c(", paste(flags, collapse=","), ")\n", sep="")
         cat("actions=c(", paste(actions, collapse=","), ")\n", sep="")
         cat("where='", where, "'\n", sep="")
@@ -909,7 +909,7 @@ handleFlagsInternal <- function(object, flags, actions, where, debug=0) {
                     odata[[name]][actionNeeded] <- actionsThis(object)[actionNeeded]
                 } else if (is.character(actionsThis)) {
                     oceDebug(debug>1, "  actionsThis is a string, '", actionsThis, "'\n", sep="")
-                    oceDebug(debug>1, "  actionNeeded=c(", paste(actionNeeded, collapse=","), ")\n", sep="")
+                    oceDebug(debug>1, "  head(actionNeeded)=c(", paste(head(actionNeeded), collapse=","), ")\n", sep="")
                     if (actionsThis == "NA") {
                         odata[[name]][actionNeeded] <- NA
                     } else {
@@ -924,48 +924,53 @@ handleFlagsInternal <- function(object, flags, actions, where, debug=0) {
             oceDebug(debug, "done handling flags for all data in object\n")
         } else { ## multiple flags: Apply individual flags to corresponding data fields
             for (name in names(odata)) {
-                oceDebug(debug, "handling flags for '", name, "'\n", sep="")
-                oceDebug(debug, "  initially, ", sum(is.na(odata[[name]])),
-                         " out of ", length(odata[[name]]), " are NA\n", sep="")
                 flagsObject <- oflags[[name]]
-                if (debug > 1) {
-                    cat("  unique(flagsObject) for ", name, ":\n")
-                    print(table(flagsObject))
-                }
-                if (!is.null(flagsObject)) {
-                    dataItemLength <- length(odata[[name]])
-                    ##flagsThis <- oflags[[name]]
-                    ##oceDebug(debug, "before converting to numbers, flagsThis=", paste(flagsThis, collapse=","), "\n")
-                    if (name %in% names(oflags)) {
-                        actionsThis <- if (length(names(actions))) actions[[name]] else actions[[1]]
-                        oceDebug(debug>1, "  actionsThis: \"", paste(actionsThis, collapse=","), "\"\n", sep="")
-                        actionNeeded <- oflags[[name]] %in% if (length(names(flags))) flags[[name]] else flags[[1]]
-                        oceDebug(debug>1, "  actionNeeded=c(", paste(actionNeeded, collapse=","), ")\n", sep="")
-                        if (any(actionNeeded)) {
-                            ## oceDebug(debug, "\"", name, "\" has ", dataItemLength, " data, of which ",
-                            ##          sum(actionNeeded), " are flagged\n", sep="")
-                            if (debug > 1) {
-                                cat("  actionsThis follows...\n")
-                                print(actionsThis)
-                            }
-                            if (is.function(actionsThis)) {
-                                odata[[name]][actionNeeded] <- actionsThis(object)[actionNeeded]
-                            } else if (is.character(actionsThis)) {
-                                if (actionsThis == "NA") {
-                                    odata[[name]][actionNeeded] <- NA
+                if (length(flagsObject) > 0L) {
+                    oceDebug(debug, "handling flags for '", name, "'\n", sep="")
+                    oceDebug(debug, "  initially, ", sum(is.na(odata[[name]])),
+                        " out of ", length(odata[[name]]), " are NA\n", sep="")
+                    #if (debug) {
+                    #    tab <- table(flagsObject)
+                    #    if (length(tab) > 0L) {
+                    #        cat("  unique(flagsObject) for ", name, ":\n")
+                    #        print(table(flagsObject))
+                    #    }
+                    #}
+                    if (!is.null(flagsObject)) {
+                        dataItemLength <- length(odata[[name]])
+                        ##flagsThis <- oflags[[name]]
+                        ##oceDebug(debug, "before converting to numbers, flagsThis=", paste(flagsThis, collapse=","), "\n")
+                        if (name %in% names(oflags)) {
+                            actionsThis <- if (length(names(actions))) actions[[name]] else actions[[1]]
+                            oceDebug(debug>1, "  actionsThis: \"", paste(actionsThis, collapse=","), "\"\n", sep="")
+                            actionNeeded <- oflags[[name]] %in% if (length(names(flags))) flags[[name]] else flags[[1]]
+                            oceDebug(debug>1, "  head(actionNeeded)=c(", paste(head(actionNeeded), collapse=","), ")\n", sep="")
+                            if (any(actionNeeded)) {
+                                ## oceDebug(debug, "\"", name, "\" has ", dataItemLength, " data, of which ",
+                                ##          sum(actionNeeded), " are flagged\n", sep="")
+                                #if (debug > 1) {
+                                #    cat("  actionsThis follows...\n")
+                                #    print(actionsThis)
+                                #}
+                                if (is.function(actionsThis)) {
+                                    odata[[name]][actionNeeded] <- actionsThis(object)[actionNeeded]
+                                } else if (is.character(actionsThis)) {
+                                    if (actionsThis == "NA") {
+                                        odata[[name]][actionNeeded] <- NA
+                                    } else {
+                                        stop("the only permitted character action is 'NA'")
+                                    }
                                 } else {
-                                    stop("the only permitted character action is 'NA'")
+                                    stop("action must be a character string or a function")
                                 }
                             } else {
-                                stop("action must be a character string or a function")
+                                oceDebug(debug, "  no action needed, since no \"", name, "\" data are flagged as stated\n", sep="")
                             }
-                        } else {
-                            oceDebug(debug, "  no action needed, since no \"", name, "\" data are flagged as stated\n", sep="")
                         }
                     }
+                    oceDebug(debug, "  finally, ", sum(is.na(odata[[name]])),
+                        " out of ", length(odata[[name]]), " are NA\n", sep="")
                 }
-                oceDebug(debug, "  finally, ", sum(is.na(odata[[name]])),
-                         " out of ", length(odata[[name]]), " are NA\n", sep="")
             }
         }                              # multiple flags
     } else {

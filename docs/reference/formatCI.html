@@ -17,15 +17,12 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.5-0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.6-0</span>
       </span>
     </div>
 
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav"><li>
-  <a href="../articles/oce.html">Get started</a>
-</li>
-<li>
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
@@ -35,19 +32,22 @@
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu"><li>
-      <a href="../articles/adp.html">3. Analysis of acoustic-Doppler data</a>
+      <a href="../articles/A_oce.html">1. Introduction to Oce</a>
     </li>
     <li>
-      <a href="../articles/ctd.html">2. Analysis of CTD data</a>
+      <a href="../articles/B_ctd.html">2. Analysis of CTD data</a>
     </li>
     <li>
-      <a href="../articles/flags.html">5. Dealing with data-quality flags</a>
+      <a href="../articles/C_adp.html">3. Analysis of acoustic-Doppler data</a>
     </li>
     <li>
-      <a href="../articles/map_projections.html">4. Using map projections</a>
+      <a href="../articles/D_map_projections.html">4. Using map projections</a>
     </li>
     <li>
-      <a href="../articles/subclassing.html">6. Subclassing oce objects</a>
+      <a href="../articles/E_flags.html">5. Dealing with data-quality flags</a>
+    </li>
+    <li>
+      <a href="../articles/F_subclassing.html">6. Subclassing oce objects</a>
     </li>
   </ul></li>
 <li>
@@ -163,8 +163,8 @@ value to the right of a <code>+-</code> sign is to be halved if put in</p>
 <span class="r-in"><span class="va">m</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm</a></span><span class="op">(</span><span class="va">y</span><span class="op">~</span><span class="va">x</span><span class="op">)</span></span>
 <span class="r-in"><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="fu">formatCI</span><span class="op">(</span>model<span class="op">=</span><span class="va">m</span><span class="op">)</span><span class="op">)</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>             value                     </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> (Intercept) "0.005410233+/-0.06970451"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> x           "9.980253+/-0.1206309"    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> (Intercept) "-0.03155189+/-0.06860697"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> x           "10.03904+/-0.1187315"    </span>
 </code></pre></div>
     </div>
   </div>
@@ -179,7 +179,8 @@ value to the right of a <code>+-</code> sign is to be halved if put in</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.1.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a>
+2.0.2.</p>
 </div>
 
       </footer></div>

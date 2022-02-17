@@ -1,4 +1,4 @@
-## vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
+# vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
 
 
 abbreviateVector <- function(x)
@@ -2514,12 +2514,14 @@ oceSpectrum <- function(x, ...)
 oce.spectrum <- oceSpectrum
 
 
-#' Show some values from a vector
+#' Show some values from a list, vector or matrix
 #'
-#' This is similar to [str()], but it shows data at the first and
-#' last of the vector, which can be quite helpful in debugging.
+#' This is similar to [str()], but it shows data at the first and last of the
+#' vector, which can be quite helpful in debugging.
 #'
-#' @param v the vector.
+#' @param v the item to be summarized.  If this is a list of a vector of named
+#' items, then information is provided for each element. Otherwise, information
+#' is provided for the first and last `n` values.
 #'
 #' @param msg optional character value indicating a message to show,
 #' introducing the vector.  If not provided, then
@@ -2542,38 +2544,71 @@ oce.spectrum <- oceSpectrum
 #' meaning that some values are skipped, because if all values are shown,
 #' it will be perfectly obvious whether there are any `NA` values.
 #'
+#' @param showNewline logical value indicating whether to put a newline
+#' character at the end of the output string.  The default, TRUE, is
+#' convenient for printing, but using FALSE makes more sense if
+#' the result is to be used with, e.g. [mtext()].
+#'
 #' @return A string ending in a newline character, suitable for
 #' display with [cat()] or [oceDebug()].
 #'
 #' @examples
+#' # List
+#' limits <- list(low=0, high=1)
+#' vectorShow(limits)
+#'
+#' # Vector of named items
+#' planktonCount <- c(phytoplankton=100, zooplankton=20)
+#' vectorShow(planktonCount)
+#'
+#' # Vector
 #' vectorShow(pi)
+#'
+#' # Matrix
 #' vectorShow(volcano)
+#'
+#' # Other arguments
 #' knot2mps <- 0.5144444
 #' vectorShow(knot2mps, postscript="knots per m/s")
 #' vectorShow("January", msg="The first month is")
 #'
 #' @author Dan Kelley
-vectorShow <- function(v, msg="", postscript="", digits=5, n=2L, showNA=FALSE)
+vectorShow <- function(v, msg="", postscript="", digits=5, n=2L, showNA=FALSE, showNewline=TRUE)
 {
     DIM <- dim(v)
     nv <- length(v)
     if (!nchar(msg))
         msg <- deparse(substitute(expr=v, env=environment()))
-    if (!is.null(DIM)) {
-        msg <- paste(msg,
-                     paste("[",
-                           paste(unlist(lapply(DIM, function(x) paste("1:",x,sep=""))),collapse=", "),
-                           "]",
-                           sep=""))
-    } else if (nv > 1) {
-        msg <- paste(msg, paste("[1:", nv, "]", sep=""))
-    }
-    if (nchar(msg) && !grepl(":$", msg)) {
-        msg <- paste0(msg, ": ")
+    if (is.list(v) || (is.vector(v) && length(names(v)) > 0L)) {
+        names <- names(v)
+        values <- unname(v)
+        msg <- paste(msg, ": ", sep="")
+        nv <- length(v)
+        for (iv in seq_len(nv)) {
+            msg <- paste(msg, names[iv], "=", paste(values[[iv]], collapse=" "), sep="")
+            if (iv < nv)
+                msg <- paste(msg, ", ", sep="")
+        }
+        if (showNewline)
+            msg <- paste(msg, "\n", sep="")
+        return(msg)
+    } else {
+        if (!is.null(DIM)) {
+            msg <- paste(msg,
+                paste("[",
+                    paste(unlist(lapply(DIM, function(x) paste("1:",x,sep=""))),collapse=", "),
+                    "]",
+                    sep=""))
+        } else if (nv > 1) {
+            msg <- paste(msg, paste("[1:", nv, "]", sep=""))
+        }
+        if (nchar(msg) && !grepl(":$", msg)) {
+            msg <- paste0(msg, ": ")
+        }
     }
     res <- msg
     if (nv == 0) {
-        res <- paste(res, "(empty vector)\n")
+        res <- paste(res, "(empty vector)")
     } else {
         if (n < 0 || nv <= 2*n) {
             showAll <- TRUE
@@ -2604,7 +2639,8 @@ vectorShow <- function(v, msg="", postscript="", digits=5, n=2L, showNA=FALSE)
     }
     if (nchar(postscript) > 0)
         res <- paste(res, postscript)
-    res <- paste(res, "\n", sep="")
+    if (showNewline)
+        res <- paste(res, "\n", sep="")
     res
 }
 

@@ -550,10 +550,8 @@ metNames2oceNames <- function(names, scheme)
 #'
 #' Reads some meteorological file formats used by the Environment
 #' Canada (see reference 1).  Since the agency does not publish the
-#' data formats, this function had to be based on some sample files, and it
-#' is likely to fail if Environment Canada changes their file format. For
-#' example, a change was required in October 2019, to accommodate changes
-#' to the file format noticed at that time (see the notes on the `type` argument).
+#' data formats, this function has to be adjusted every few years,
+#' when a user finds that the format has changed.
 #'
 #' @param file a character string naming a file that holds met data.
 #'
@@ -564,16 +562,27 @@ metNames2oceNames <- function(names, scheme)
 #' old CSV format no longer provided as of October 2019,
 #' (b) `"csv2"` for a CSV format noticed on the Environment Canada
 #' website in October 2019 (but note that the paired metadata file
-#' is ignored), and (c) `"xml2"` for an XML format that was noticed
+#' is ignored), (c) `"csv3"` for a CSV format noticed on the
+#' Environment Canada website in January 2020,
+#' and (d) `"xml2"` for an XML format that was noticed
 #' on the Environment Canada website in October 2019.
 #'
 #' @param skip number of lines of header that occur before the actual
 #' data.  This is ignored unless `type` is `"csv"` or `"csv1"`, in which case
 #' a non-`NULL` value of `skip` is taken as the number of lines preceding
 #' the columnar data ... and this is only needed if [read.met()] cannot
-#' find a line starting with `"Date/Time"`.
+#' find a line starting with `"Date/Time"` (for csv2 format)
+#' or `"Date/Time (LTC)"` (for csv3 format).
 #'
-#' @param tz timezone assumed for time data
+#' @param tz timezone assumed for time data.  This defaults to
+#' `getOption("oceTz")`, which is very likely to be wrong.  In
+#' a scientific context, where UTC is typically used for oceanographic
+#' measurement, it makes sense to set `tz="UTC"`.  Note that these
+#' data files do not contain timezone information, instead giving
+#' data in Local Standard Time (LST).  Since LST differs from city
+#' to city, users must make corrections to the time, as
+#' shown in the \dQuote{Examples}, which use data for
+#' Halifax Nova Scotia, where LST is UTC-4.
 #'
 #' @param debug a flag that turns on debugging.  Set to 1 to get a moderate
 #' amount of debugging information, or to 2 to get more.
@@ -583,23 +592,33 @@ metNames2oceNames <- function(names, scheme)
 #' @author Dan Kelley
 #'
 #' @examples
-#' # The old csv format (no longer supplied by Environment Canada as of Oct 2019)
+#' # Example 1: "csv1" Environment Canada format (found to be obsolete as of Oct 2019)
 #' csv1 <- read.met(system.file("extdata", "test_met_vsn1.csv", package="oce"))
+#' csv1 <- oceSetData(csv1, "time", csv1[["time"]]+4*3600,
+#'     note="add 4h to local time to get UTC time")
 #'
-#' # The new "csv2" format (provided by Environment Canada as of Oct 2019)
+#' # Example 2: "csv2" Environment Canada format (found to be obsolete as of Jan 2022)
 #' csv2 <- read.met(system.file("extdata", "test_met_vsn2.csv", package="oce"))
+#' csv2 <- oceSetData(csv2, "time", csv2[["time"]]+4*3600,
+#'     note="add 4h to local time to get UTC time")
 #'
-#' # "xml2" format
+#' # Example 3: "csv3" Environment Canada format. Note timezone correction
+#' csv3 <- read.met(system.file("extdata", "test_met_vsn3.csv", package="oce"))
+#' csv3 <- oceSetData(csv3, "time", csv3[["time"]]+4*3600,
+#'     note="add 4h to local time to get UTC time")
+#'
+#' # Example 4: "xml2" format. (Uncertain timezone, so not corrected.)
 #' if (requireNamespace("XML", quietly=TRUE))
 #'     xml2 <- read.met(system.file("extdata", "test_met_xml2.xml", package="oce"))
 #'
+#' # Example 5: download and plot
 #' \dontrun{
 #' library(oce)
 #' # Recreate data(met) and plot u(t) and v(t)
 #' metFile <- download.met(id=6358, year=2003, month=9, destdir=".")
 #' met <- read.met(metFile)
 #' met <- oceSetData(met, "time", met[["time"]]+4*3600,
-#'                   note="add 4h to local time to get UTC time")
+#'     note="add 4h to local time to get UTC time")
 #' plot(met)
 #' }
 #'
@@ -608,7 +627,8 @@ metNames2oceNames <- function(names, scheme)
 #' `https://climate.weather.gc.ca/index_e.html`
 #'
 #' @family things related to met data
-read.met <- function(file, type=NULL, skip=NULL, tz=getOption("oceTz"), debug=getOption("oceDebug"))
+read.met <- function(file, type=NULL, skip=NULL, tz=getOption("oceTz"),
+    debug=getOption("oceDebug"))
 {
     if (missing(file))
         stop("must supply 'file'")
@@ -630,18 +650,17 @@ read.met <- function(file, type=NULL, skip=NULL, tz=getOption("oceTz"), debug=ge
             ## must be a csv
             if (1 == length(grep('^.?"WMO Identifier",', someLines))) {
                 type <- "csv1"
-                oceDebug(debug, "examination of file contents reveals that type is 'csv1'\n")
             } else if (grepl('^.?"Longitude.[^"]*","Latitude[^"]*","Station Name","Climate ID"', someLines[1])) {
-                type <- "csv2"
-                oceDebug(debug, "examination of file contents reveals that type is 'csv2'\n")
+                type <- if (grepl("Time \\(LST\\)", someLines[1])) "csv3" else "csv2"
             } else {
                 stop("cannot determine type from file contents; the first line is '", someLines[1], "'")
             }
+            oceDebug(debug, "file contents suggest type=\"", type, "\"\n", sep="")
         }
     }
     if (type == "csv" || type == "csv1")
         res <- read.met.csv1(file, skip=skip, tz=tz, debug=debug-1)
-    else if (type == "csv2")
+    else if (type == "csv2" || type == "csv3")
         res <- read.met.csv2(file, skip=skip, tz=tz, debug=debug-1)
     else if (type == "xml2")
         res <- read.met.xml2(file, skip=skip, tz=tz, debug=debug-1)
@@ -651,14 +670,15 @@ read.met <- function(file, type=NULL, skip=NULL, tz=getOption("oceTz"), debug=ge
     res
 }
 
-read.met.csv1 <- function(file, skip=NULL, tz=getOption("oceTz"), debug=getOption("oceDebug"))
+read.met.csv1 <- function(file, skip=NULL, tz=getOption("oceTz"),
+    debug=getOption("oceDebug"))
 {
     if (missing(file))
         stop("must supply 'file'")
     if (!is.character(file))
         stop("'file' must be a character string")
     oceDebug(debug, "read.met.csv2(\"", file, "\") {\n", sep="", unindent=1, style="bold")
-    res <- new('met', time=1)
+    res <- new("met", time=1)
     text <- readLines(file, encoding="UTF-8", warn=FALSE)
     oceDebug(debug, "file has", length(text), "lines\n")
     ##print(header[1:19])
@@ -700,13 +720,13 @@ read.met.csv1 <- function(file, skip=NULL, tz=getOption("oceTz"), debug=getOptio
     rawData <- read.csv(text=text, skip=skip, encoding="UTF-8", header=TRUE, stringsAsFactors=TRUE)
     options(warn=owarn)
     names <- names(rawData)
-    ## FIXME: handle daily data, if the column names differ
+    # FIXME: handle daily data, if the column names differ
     time <- if ("Day" %in% names && "Time" %in% names) {
-        ## hourly data
+        # hourly data
         as.POSIXct(strptime(paste(rawData$Year, rawData$Month, rawData$Day, rawData$Time),
-                            "%Y %m %d %H:%M", tz=tz))
+                "%Y %m %d %H:%M", tz=tz))
     } else {
-        ## monthly data
+        # monthly data
         ISOdatetime(rawData$Year, rawData$Month, 15, 0, 0, 0, tz="UTC")
     }
     ## deltat <- if ("Date.Time" %in% names) "monthly" else "hourly"
@@ -877,15 +897,21 @@ read.met.csv1 <- function(file, skip=NULL, tz=getOption("oceTz"), debug=getOptio
     res
 }
 
-read.met.csv2 <- function(file, skip=NULL, tz=getOption("oceTz"), debug=getOption("oceDebug"))
+# This handles both csv2 and csv3 types
+read.met.csv2 <- function(file, skip=NULL, tz=getOption("oceTz"),
+    debug=getOption("oceDebug"))
 {
     if (!is.character(file))
         stop("'file' must be a character string")
     oceDebug(debug, "read.met.csv2(\"", file, "\") {\n", sep="", unindent=1, style="bold")
-    ## Sample first two lines (as of 2019 oct 12)
-    ## "Longitude (x)","Latitude (y)","Station Name","Climate ID","Date/Time","Year","Month","Day","Time","Temp (°C)","Temp Flag","Dew Point Temp (°C)","Dew Point Temp Flag","Rel Hum (%)","Rel Hum Flag","Wind Dir (10s deg)","Wind Dir Flag","Wind Spd (km/h)","Wind Spd Flag","Visibility (km)","Visibility Flag","Stn Press (kPa)","Stn Press Flag","Hmdx","Hmdx Flag","Wind Chill","Wind Chill Flag","Weather"
-    ## "-94.97","74.72","RESOLUTE BAY A","2403497","2019-10-01 00:00","2019","10","01","00:00","-3.2","","-4.6","","90","","18","","36","","","M","100.35","","","","-11","","NA"
-    res <- new('met', time=1)
+    # Sample first two lines of a csv2 type file (as of 2019 oct 12)
+    # "Longitude (x)","Latitude (y)","Station Name","Climate ID","Date/Time","Year","Month","Day","Time","Temp (°C)","Temp Flag","Dew Point Temp (°C)","Dew Point Temp Flag","Rel Hum (%)","Rel Hum Flag","Wind Dir (10s deg)","Wind Dir Flag","Wind Spd (km/h)","Wind Spd Flag","Visibility (km)","Visibility Flag","Stn Press (kPa)","Stn Press Flag","Hmdx","Hmdx Flag","Wind Chill","Wind Chill Flag","Weather"
+    # "-94.97","74.72","RESOLUTE BAY A","2403497","2019-10-01 00:00","2019","10","01","00:00","-3.2","","-4.6","","90","","18","","36","","","M","100.35","","","","-11","","NA"
+    #
+    # Sample first two lines of a csv3 type file (as of 2022 jan 30)
+    #"Longitude (x)","Latitude (y)","Station Name","Climate ID","Date/Time (LST)","Year","Month","Day","Time (LST)","Temp (°C)","Temp Flag","Dew Point Temp (°C)","Dew Point Temp Flag","Rel Hum (%)","Rel Hum Flag","Precip. Amount (mm)","Precip. Amount Flag","Wind Dir (10s deg)","Wind Dir Flag","Wind Spd (km/h)","Wind Spd Flag","Visibility (km)","Visibility Flag","Stn Press (kPa)","Stn Press Flag","Hmdx","Hmdx Flag","Wind Chill","Wind Chill Flag","Weather"
+    #"-63.51","44.88","HALIFAX STANFIELD INT'L A","8202251","2022-01-01 00:00","2022","01","01","00:00","1.7","","1.7","","100","","","","14","","10","","0.2","","99.83","","","","","","Rain,Drizzle,Fog"
+    res <- new("met", time=1)
     owarn <- options()$warn
     options(warn=-1)
     text <- readLines(file, 1, encoding="UTF-8", warn=FALSE)
@@ -909,6 +935,11 @@ read.met.csv2 <- function(file, skip=NULL, tz=getOption("oceTz"), debug=getOptio
     if ("Latitude (y)" %in% dataNames) {
         res@metadata$dataNamesOriginal$latitude <- "Latitude (y)"
         dataNames[dataNames == "Latitude (y)"] <- "latitude"
+    }
+    if ("Precip. Amount (mm)" %in% dataNames) {
+        res@metadata$units$precipitation <- list(unit=expression("mm"), scale="")
+        res@metadata$dataNamesOriginal$precipitation <- "Precip. Amount (mm)"
+        dataNames[dataNames == "Precip. Amount (mm)"] <- "precipitation"
     }
     if ("Rel Hum (%)" %in% dataNames) {
         res@metadata$units$humidity <- list(unit=expression("%"), scale="")
@@ -969,6 +1000,9 @@ read.met.csv2 <- function(file, skip=NULL, tz=getOption("oceTz"), debug=getOptio
     if ("Time" %in% dataNames) {
         hour <- as.numeric(lapply(as.character(data$Time), function(x) strsplit(x, ":")[[1]][1]))
         minute <- as.numeric(lapply(as.character(data$Time), function(x) strsplit(x, ":")[[1]][2]))
+    } else if ("Time (LST)" %in% dataNames) {
+        hour <- as.numeric(lapply(as.character(data[["Time (LST)"]]), function(x) strsplit(x, ":")[[1]][1]))
+        minute <- as.numeric(lapply(as.character(data[["Time (LST)"]]), function(x) strsplit(x, ":")[[1]][2]))
     } else {
         hour <- rep(0, nsamples)
         minute <- rep(0, nsamples)
@@ -1025,6 +1059,7 @@ read.met.csv2 <- function(file, skip=NULL, tz=getOption("oceTz"), debug=getOptio
                        humidex="Hmdx Flag",
                        direction="Wind Dir Flag",
                        humidity="Rel Hum Flag",
+                       precipitation="Precip. Amount Flag",
                        pressure="Stn Press Flag",
                        speed="Wind Spd Flag",
                        temperature="Temp Flag",
@@ -1043,7 +1078,8 @@ read.met.csv2 <- function(file, skip=NULL, tz=getOption("oceTz"), debug=getOptio
     res
 }
 
-read.met.xml2 <- function(file, skip=NULL, tz=getOption("oceTz"), debug=getOption("oceDebug"))
+read.met.xml2 <- function(file, skip=NULL, tz=getOption("oceTz"),
+    debug=getOption("oceDebug"))
 {
     oceDebug(debug, "read.met.xml2(file=\"", file, "\", ...) {\n", sep="", unindent=1, style="bold")
     if (!requireNamespace("XML", quietly=TRUE))

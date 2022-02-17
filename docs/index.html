@@ -40,15 +40,12 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.5-0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.6-0</span>
       </span>
     </div>
 
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
-<li>
-  <a href="articles/oce.html">Get started</a>
-</li>
 <li>
   <a href="reference/index.html">Reference</a>
 </li>
@@ -60,19 +57,22 @@
   </a>
   <ul class="dropdown-menu" role="menu">
 <li>
-      <a href="articles/adp.html">3. Analysis of acoustic-Doppler data</a>
+      <a href="articles/A_oce.html">1. Introduction to Oce</a>
     </li>
     <li>
-      <a href="articles/ctd.html">2. Analysis of CTD data</a>
+      <a href="articles/B_ctd.html">2. Analysis of CTD data</a>
     </li>
     <li>
-      <a href="articles/flags.html">5. Dealing with data-quality flags</a>
+      <a href="articles/C_adp.html">3. Analysis of acoustic-Doppler data</a>
     </li>
     <li>
-      <a href="articles/map_projections.html">4. Using map projections</a>
+      <a href="articles/D_map_projections.html">4. Using map projections</a>
     </li>
     <li>
-      <a href="articles/subclassing.html">6. Subclassing oce objects</a>
+      <a href="articles/E_flags.html">5. Dealing with data-quality flags</a>
+    </li>
+    <li>
+      <a href="articles/F_subclassing.html">6. Subclassing oce objects</a>
     </li>
   </ul>
 </li>
@@ -100,25 +100,48 @@
       </header><div class="row">
   <div class="contents col-md-9">
 <div class="section level1">
-<div class="page-header"><h1 id="oce-">oce <img src="https://raw.githubusercontent.com/dankelley/oce/develop/oce-logo-3.png" align="right" height="95"><a class="anchor" aria-label="anchor" href="#oce-"></a>
+<div class="page-header"><h1 id="oce-">oce
+<img src="https://raw.githubusercontent.com/dankelley/oce/develop/oce-logo-3.png" align="right" height="95"><a class="anchor" aria-label="anchor" href="#oce-"></a>
 </h1></div>
 <!-- badges: start -->
 
 <div class="section level2">
 <h2 id="why-use-r-for-oceanographic-analysis">Why use R for oceanographic analysis?<a class="anchor" aria-label="anchor" href="#why-use-r-for-oceanographic-analysis"></a>
 </h2>
-<p>The R language is popular in many branches of science, and Oceanography is no exception. With its broad statistical support, R is a natural choice for oceanographers in the biological, chemical and geological sub-disciplines. However, some physical oceanographers have remained attached to Matlab, which was widely adopted during the 1990s. Lately, this has been changing, as oceanographers turn to open-source systems such as Python and R. A particular strength of R is its provision of many powerful and well-vetted packages for handling specialized calculations. The oce package is a prime example.</p>
+<p>The R language is popular in many branches of science, and
+Oceanography is no exception. With its broad statistical support, R is a
+natural choice for oceanographers in the biological, chemical and
+geological sub-disciplines. However, some physical oceanographers have
+remained attached to Matlab, which was widely adopted during the 1990s.
+Lately, this has been changing, as oceanographers turn to open-source
+systems such as Python and R. A particular strength of R is its
+provision of many powerful and well-vetted packages for handling
+specialized calculations. The oce package is a prime example.</p>
 </div>
 <div class="section level2">
 <h2 id="about-oce">About oce<a class="anchor" aria-label="anchor" href="#about-oce"></a>
 </h2>
-<p>The oce package handles a wide variety of tasks that come up in the analysis of Oceanographic data. Its <a href="https://dankelley.github.io/oce/" class="external-link">webpage</a> provides details, of which this README file is just a sketch. A book by one of the oce co-authors provides more information on the package and its potential for oceanographic research (Kelley, Dan E., 2018. <a href="https://www.springer.com/us/book/9781493988426" class="external-link">Oceanographic Analysis with R</a>. New York. Springer-Verlag ISBN 978-1-4939-8844-0).</p>
+<p>The oce package handles a wide variety of tasks that come up in the
+analysis of Oceanographic data. Its <a href="https://dankelley.github.io/oce/" class="external-link">webpage</a> provides details, of
+which this README file is just a sketch. A book by one of the oce
+co-authors provides more information on the package and its potential
+for oceanographic research (Kelley, Dan E., 2018. <a href="https://www.springer.com/us/book/9781493988426" class="external-link">Oceanographic
+Analysis with R</a>. New York. Springer-Verlag ISBN
+978-1-4939-8844-0).</p>
 </div>
 <div class="section level2">
 <h2 id="installing-oce">Installing oce<a class="anchor" aria-label="anchor" href="#installing-oce"></a>
 </h2>
-<p>Stable versions of oce are available from CRAN, and may be installed from within R, in the same way as other packages. However, the CRAN version is only updated a few times a year (pursuant to policy), so many users install the <code>"develop"</code> branch instead. This branch may be updated several times per day, as the authors fix bugs or add features that are motivated by day-to-day usage. This is the branch favoured by users who need new features or who would wish to contribute to Oce development.</p>
-<p>The easy way to install the <code>"develop"</code> branch is to execute the following commands in R.</p>
+<p>Stable versions of oce are available from CRAN, and may be installed
+from within R, in the same way as other packages. However, the CRAN
+version is only updated a few times a year (pursuant to policy), so many
+users install the <code>"develop"</code> branch instead. This branch may
+be updated several times per day, as the authors fix bugs or add
+features that are motivated by day-to-day usage. This is the branch
+favoured by users who need new features or who would wish to contribute
+to Oce development.</p>
+<p>The easy way to install the <code>"develop"</code> branch is to
+execute the following commands in R.</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>remotes<span class="sc">::</span><span class="fu">install_github</span>(<span class="st">"dankelley/oce"</span>, <span class="at">ref=</span><span class="st">"develop"</span>)</span></code></pre></div>
 <p>and most readers should also install Ocedata, with</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>remotes<span class="sc">::</span><span class="fu">install_github</span>(<span class="st">"dankelley/ocedata"</span>, <span class="at">ref=</span><span class="st">"main"</span>)</span></code></pre></div>
@@ -126,7 +149,13 @@
 <div class="section level2">
 <h2 id="evolution-of-oce">Evolution of oce<a class="anchor" aria-label="anchor" href="#evolution-of-oce"></a>
 </h2>
-<p>Oce is emphatically an open-source system, and so the participation of users is very important. This is why Git is used for version control of the Oce source code, and why GitHub is the host for that code. Users are invited to take part in the development process, by suggesting features, by reporting bugs, or just by watching as others do such things. Oceanography is a collaborative discipline, so it makes sense that the evolution of Oce be similarly collaborative.</p>
+<p>Oce is emphatically an open-source system, and so the participation
+of users is very important. This is why Git is used for version control
+of the Oce source code, and why GitHub is the host for that code. Users
+are invited to take part in the development process, by suggesting
+features, by reporting bugs, or just by watching as others do such
+things. Oceanography is a collaborative discipline, so it makes sense
+that the evolution of Oce be similarly collaborative.</p>
 </div>
 <div class="section level2">
 <h2 id="examples-using-built-in-datasets">Examples using built-in datasets<a class="anchor" aria-label="anchor" href="#examples-using-built-in-datasets"></a>
@@ -264,7 +293,8 @@
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.1.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a>
+2.0.2.</p>
 </div>
 
       </footer>

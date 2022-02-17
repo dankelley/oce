@@ -306,21 +306,21 @@ NULL
 #'
 #' @family things related to ctd data
 setMethod("handleFlags", signature=c(object="ctd", flags="ANY", actions="ANY", where="ANY", debug="ANY"),
-          definition=function(object, flags=NULL, actions=NULL, where=NULL, debug=getOption("oceDebug")) {
-              ## DEVELOPER 1: alter the next comment to explain your setup
-              if (is.null(flags)) {
-                  flags <- defaultFlags(object)
-                  if (is.null(flags))
-                      stop("must supply 'flags', or use initializeFlagScheme() on the ctd object first")
-              }
-              if (is.null(actions)) {
-                  actions <- list("NA") # DEVELOPER 3: alter this line to suit a new data class
-                  names(actions) <- names(flags)
-              }
-              if (any(names(actions)!=names(flags)))
-                  stop("names of flags and actions must match")
-              handleFlagsInternal(object=object, flags=flags, actions=actions, where=where, debug=debug)
-          })
+    definition=function(object, flags=NULL, actions=NULL, where=NULL, debug=getOption("oceDebug")) {
+        ## DEVELOPER 1: alter the next comment to explain your setup
+        if (is.null(flags)) {
+            flags <- defaultFlags(object)
+            if (is.null(flags))
+                stop("must supply 'flags', or use initializeFlagScheme() on the ctd object first")
+        }
+        if (is.null(actions)) {
+            actions <- list("NA") # DEVELOPER 2: alter this line to suit a new data class
+            names(actions) <- names(flags)
+        }
+        if (any(names(actions)!=names(flags)))
+            stop("names of flags and actions must match")
+        handleFlagsInternal(object=object, flags=flags, actions=actions, where=where, debug=debug)
+    })
 
 #' @templateVar class ctd
 #'
@@ -3238,6 +3238,8 @@ setMethod(f="plot",
         if (lw > 1) on.exit(par(opar))
         if (missing(type))
             type <- rep("p", lw)
+        if (length(col) < lw)
+            col <- rep(col, lw)  # FIXME: recycle more sensibly
         if (length(type) < lw)
             type <- rep(type, lw)
         if (length(pch) < lw)
@@ -3374,7 +3376,7 @@ setMethod(f="plot",
                     xlim=Slim, ylim=plim,
                     useSmoothScatter=useSmoothScatter,
                     grid=grid, col.grid="lightgray", lty.grid="dotted",
-                    cex=cex[w], pch=pch[w],
+                    cex=cex[w], pch=pch[w], col=col[w],
                     type=if (!missing(type)) type[w],
                     keepNA=keepNA, inset=inset, add=add,
                     debug=debug-1,
@@ -3390,7 +3392,7 @@ setMethod(f="plot",
                     xlim=Tlim, ylim=plim,
                     useSmoothScatter=useSmoothScatter,
                     grid=grid, col.grid="lightgray", lty.grid="dotted",
-                    cex=cex[w], pch=pch[w],
+                    cex=cex[w], pch=pch[w], col=col[w],
                     type=if (!missing(type)) type[w],
                     keepNA=keepNA, inset=inset, add=add,
                     debug=debug-1,
@@ -3401,11 +3403,10 @@ setMethod(f="plot",
                     plim=plim,
                     densitylim=densitylim,
                     grid=grid,
-                    col=col,
                     eos=eos,
                     useSmoothScatter=useSmoothScatter,
                     col.grid="lightgray", lty.grid="dotted",
-                    cex=cex[w], pch=pch[w],
+                    cex=cex[w], pch=pch[w], col=col[w],
                     type=if (!missing(type)) type[w],
                     keepNA=keepNA, inset=inset, add=add,
                              debug=debug-1,
@@ -3431,12 +3432,11 @@ setMethod(f="plot",
                     plim=plim,
                     N2lim=N2lim,
                     grid=grid,
-                    col=col,
                     eos=eos,
                     df=df,
                     useSmoothScatter=useSmoothScatter,
                     col.grid="lightgray", lty.grid="dotted",
-                    cex=cex[w], pch=pch[w],
+                    cex=cex[w], pch=pch[w], col=col[w],
                     type=if (!missing(type)) type[w],
                     keepNA=keepNA, inset=inset, add=add,
                     debug=debug-1,
@@ -3444,11 +3444,10 @@ setMethod(f="plot",
             } else if (which[w] == "conductivity") { # a special case because can use Clim and plim
                 oceDebug(debug, "handling which[", w, "]=\"", whichOrig[w], "\" as a special case\n", sep="")
                 plotProfile(x, xtype="conductivity", Clim=Clim, plim=plim,
-                    col=col,
                     eos=eos,
                     useSmoothScatter=useSmoothScatter,
                     grid=grid, col.grid="lightgray", lty.grid="dotted",
-                    cex=cex[w], pch=pch[w],
+                    cex=cex[w], pch=pch[w], col=col[w],
                     type=if (!missing(type)) type[w],
                     keepNA=keepNA, inset=inset, add=add,
                     debug=debug-1,
@@ -4850,7 +4849,7 @@ plotProfile <- function(x,
     eos=getOption("oceEOS", default="gsw"),
     lty=1,
     xlab=NULL, ylab=NULL,
-    col='black',
+    col="black",
     col.salinity="darkgreen",
     col.temperature="red",
     col.rho="blue",
@@ -4886,6 +4885,7 @@ plotProfile <- function(x,
              ", plim=", if (missing(plim)) "MISSING" else paste("c(",paste(plim, collapse=","),")",sep=""),
              ", xlim=", if (missing(xlim)) "MISSING" else paste("c(",paste(xlim, collapse=","),")",sep=""),
              ", ylim=", if (missing(ylim)) "MISSING" else paste("c(",paste(ylim, collapse=","),")",sep=""),
+             ", col=", col,
              ", ...) {\n", sep="", style="bold", unindent=1)
     eos <- match.arg(eos, c("unesco", "gsw"))
     if (missing(mar)) {

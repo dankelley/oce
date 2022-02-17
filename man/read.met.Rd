@@ -22,16 +22,27 @@ argument.  The permitted choices are: (a) \code{"csv"} or \code{"csv1"} for an
 old CSV format no longer provided as of October 2019,
 (b) \code{"csv2"} for a CSV format noticed on the Environment Canada
 website in October 2019 (but note that the paired metadata file
-is ignored), and (c) \code{"xml2"} for an XML format that was noticed
+is ignored), (c) \code{"csv3"} for a CSV format noticed on the
+Environment Canada website in January 2020,
+and (d) \code{"xml2"} for an XML format that was noticed
 on the Environment Canada website in October 2019.}
 
 \item{skip}{number of lines of header that occur before the actual
 data.  This is ignored unless \code{type} is \code{"csv"} or \code{"csv1"}, in which case
 a non-\code{NULL} value of \code{skip} is taken as the number of lines preceding
 the columnar data ... and this is only needed if \code{\link[=read.met]{read.met()}} cannot
-find a line starting with \code{"Date/Time"}.}
+find a line starting with \code{"Date/Time"} (for csv2 format)
+or \code{"Date/Time (LTC)"} (for csv3 format).}
 
-\item{tz}{timezone assumed for time data}
+\item{tz}{timezone assumed for time data.  This defaults to
+\code{getOption("oceTz")}, which is very likely to be wrong.  In
+a scientific context, where UTC is typically used for oceanographic
+measurement, it makes sense to set \code{tz="UTC"}.  Note that these
+data files do not contain timezone information, instead giving
+data in Local Standard Time (LST).  Since LST differs from city
+to city, users must make corrections to the time, as
+shown in the \dQuote{Examples}, which use data for
+Halifax Nova Scotia, where LST is UTC-4.}
 
 \item{debug}{a flag that turns on debugging.  Set to 1 to get a moderate
 amount of debugging information, or to 2 to get more.}
@@ -42,29 +53,37 @@ A \linkS4class{met} object.
 \description{
 Reads some meteorological file formats used by the Environment
 Canada (see reference 1).  Since the agency does not publish the
-data formats, this function had to be based on some sample files, and it
-is likely to fail if Environment Canada changes their file format. For
-example, a change was required in October 2019, to accommodate changes
-to the file format noticed at that time (see the notes on the \code{type} argument).
+data formats, this function has to be adjusted every few years,
+when a user finds that the format has changed.
 }
 \examples{
-# The old csv format (no longer supplied by Environment Canada as of Oct 2019)
+# Example 1: "csv1" Environment Canada format (found to be obsolete as of Oct 2019)
 csv1 <- read.met(system.file("extdata", "test_met_vsn1.csv", package="oce"))
+csv1 <- oceSetData(csv1, "time", csv1[["time"]]+4*3600,
+    note="add 4h to local time to get UTC time")
 
-# The new "csv2" format (provided by Environment Canada as of Oct 2019)
+# Example 2: "csv2" Environment Canada format (found to be obsolete as of Jan 2022)
 csv2 <- read.met(system.file("extdata", "test_met_vsn2.csv", package="oce"))
+csv2 <- oceSetData(csv2, "time", csv2[["time"]]+4*3600,
+    note="add 4h to local time to get UTC time")
 
-# "xml2" format
+# Example 3: "csv3" Environment Canada format. Note timezone correction
+csv3 <- read.met(system.file("extdata", "test_met_vsn3.csv", package="oce"))
+csv3 <- oceSetData(csv3, "time", csv3[["time"]]+4*3600,
+    note="add 4h to local time to get UTC time")
+
+# Example 4: "xml2" format. (Uncertain timezone, so not corrected.)
 if (requireNamespace("XML", quietly=TRUE))
     xml2 <- read.met(system.file("extdata", "test_met_xml2.xml", package="oce"))
 
+# Example 5: download and plot
 \dontrun{
 library(oce)
 # Recreate data(met) and plot u(t) and v(t)
 metFile <- download.met(id=6358, year=2003, month=9, destdir=".")
 met <- read.met(metFile)
 met <- oceSetData(met, "time", met[["time"]]+4*3600,
-                  note="add 4h to local time to get UTC time")
+    note="add 4h to local time to get UTC time")
 plot(met)
 }
 

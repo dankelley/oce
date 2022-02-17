@@ -50,8 +50,8 @@ such as the equation of state, and with derived quantities such as the
 buoyancy frequency. Although simple enough to be used in a teaching
 context, `oce` is powerful enough for a research setting. These things
 are illustrated here in a general context; see also the vignettes on
-[using data-quality flags](flags.html) and processing data from
-[acoustic Doppler profilers](adp.html).
+[using data-quality flags](E_flags.html) and processing data from
+[acoustic Doppler profilers](C_adp.html).
 
 # Introduction
 
@@ -79,7 +79,7 @@ convenient to reach inside the data objects (see next section).
 As illustrated in Figure 1, each `oce` object contains three slots:
 
 -   `data`, a list containing the actual data, e.g., for a CTD object
-    (see also the [vignette about CTD data](ctd.html)), this will
+    (see also the [vignette about CTD data](B_ctd.html)), this will
     contain `pressure`, `temperature`, etc.
 -   `metadata`, a list containing information about the data, such as
     units, data-quality flags, sampling locations, etc.
@@ -339,7 +339,7 @@ the pressure to 200 dbar? e. Draw a blank $T$-$S$ diagram with $S$ from
 The `read.oce` function recognizes a wide variety of CTD data formats,
 and the associated `plot` function can produce many types of graphical
 display. In addition, there are several functions that aid in the
-analysis of such data. See the [ctd vignette](ctd.html) for more on
+analysis of such data. See the [ctd vignette](B_ctd.html) for more on
 dealing with CTD data.
 
 # Section plots
@@ -377,7 +377,7 @@ plot(GSg, which=c(1,99), map.xlim=c(-85,-(64+13/60)))
 **Exercise 2.** Draw a $T$-$S$ diagram for the section data, using black
 symbols to the east of 30W and gray symbols to the west, thus
 highlighting Mediterranean-derived waters. Use `handleFlags()` (see
-[using data-quality flags](flags.html)) to discard questionable data,
+[using data-quality flags](E_flags.html)) to discard questionable data,
 and use the accessor function `[[`.
 
 **Exercise 3.** Plot dynamic height and geostrophic velocity across the
@@ -389,7 +389,7 @@ Oce has several functions that facilitate the drawing of maps. A variety
 of projections are provided, with the mathematics of projection being
 handled behind the scenes with the `sf` package. An introduction to
 drawing maps is provided with `?mapPlot`, and the [map projection
-vignette](map_projections.html) provides much more detail.
+vignette](D_map_projections.html) provides much more detail.
 
 # Sea-level data
 
@@ -426,7 +426,7 @@ The following commands produce Figure 10, showing one velocity component
 of currents measured in the St Lawrence Estuary Internal Wave
 Experiment. This plot type is just one of many provided by the `adp`
 variant of the generic `plot` function (see `?"plot,adp-method"`). See
-[the adp vignette](adp.html) for much more on acoustic Doppler profiler
+[the adp vignette](C_adp.html) for much more on acoustic Doppler profiler
 data.
 
 ```{r fig.cap="**Figure 10.** Measurements made with a bottom-mounted ADP in the St Lawrence Estuary. The line near the surface indicates pressure measured by the ADP.", fig.width=4, fig.height=2, dpi=72}
@@ -442,7 +442,7 @@ Archives of CTD/bottle and Argo drifter measurements commonly supply
 data-quality flags that provide an indication of the trust to be put in
 individual data points. Oce has a flexible scheme for dealing with such
 flags, and also for inserting flags into these or any data type; see the
-[using data-quality flags vignette](flags.html) for more..
+[using data-quality flags vignette](E_flags.html) for more..
 
 # Working in non-English languages
 
@@ -478,7 +478,7 @@ the new types. For example, the accessing operator `[[` and `summary`
 function will work as expected, and so will such aspects as the handling
 of data-quality flags and units. More details on setting up classes that
 inherit from oce are provided in [the subclassing
-vignette](subclassing.html).
+vignette](F_subclassing.html).
 
 # The future of oce
 
@@ -529,7 +529,7 @@ the `as.ctd()` call.
 **Exercise 2.** Draw a $T$-$S$ diagram for the section data, using black
 symbols to the east of 30W and gray symbols to the west, thus
 highlighting Mediterranean-derived waters. Use `handleFlags()` (see
-[using data-quality flags](flags.html)) to discard questionable data,
+[using data-quality flags](E_flags.html)) to discard questionable data,
 and use the accessor function `[[`.
 
 We will use the Gibbs SeaWater system, so `as.ctd()` needs location

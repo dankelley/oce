@@ -19,15 +19,12 @@ used by analogy to ADVs."><!-- mathjax --><script src="https://cdnjs.cloudflare.
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.5-0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.6-0</span>
       </span>
     </div>
 
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav"><li>
-  <a href="../articles/oce.html">Get started</a>
-</li>
-<li>
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
@@ -37,19 +34,22 @@ used by analogy to ADVs."><!-- mathjax --><script src="https://cdnjs.cloudflare.
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu"><li>
-      <a href="../articles/adp.html">3. Analysis of acoustic-Doppler data</a>
+      <a href="../articles/A_oce.html">1. Introduction to Oce</a>
     </li>
     <li>
-      <a href="../articles/ctd.html">2. Analysis of CTD data</a>
+      <a href="../articles/B_ctd.html">2. Analysis of CTD data</a>
     </li>
     <li>
-      <a href="../articles/flags.html">5. Dealing with data-quality flags</a>
+      <a href="../articles/C_adp.html">3. Analysis of acoustic-Doppler data</a>
     </li>
     <li>
-      <a href="../articles/map_projections.html">4. Using map projections</a>
+      <a href="../articles/D_map_projections.html">4. Using map projections</a>
     </li>
     <li>
-      <a href="../articles/subclassing.html">6. Subclassing oce objects</a>
+      <a href="../articles/E_flags.html">5. Dealing with data-quality flags</a>
+    </li>
+    <li>
+      <a href="../articles/F_subclassing.html">6. Subclassing oce objects</a>
     </li>
   </ul></li>
 <li>
@@ -170,7 +170,7 @@ imaginary centre line that bisects all beam pairs).</p>
 <p>The diagram provided below indicates the coordinate-axis and beam-numbering
 conventions for three- and four-beam ADP devices, viewed as though the
 reader were looking towards the beams being emitted from the transducers.</p>
-<p><img src="figures/adp_beams.png" width="400px" alt="Figure: adp_beams.png"></p>
+<p><img src="figures/adp_beams.png" width="400" alt="Figure: adp_beams.png"></p>
 <p>The bin geometry of a four-beam profiler is illustrated below, for
 <code>adp[["beamAngle"]]</code> equal to 20 degrees, <code>adp[["bin1Distance"]]</code>
 equal to 2m, and <code>adp[["cellSize"]]</code> equal to 1m.   In the diagram, the
@@ -179,7 +179,7 @@ visible beams are separated by 40 degrees.  Circles indicate the centres of
 the range-gated bins within the beams.  The lines enclosing those circles
 indicate the coverage of beams that spread plus and minus 2.5 degrees from
 their centreline.</p>
-<p><img src="figures/adpgeometry2.png" width="400px" alt="Figure: adpgeometry2.png"></p>
+<p><img src="figures/adpgeometry2.png" width="400" alt="Figure: adpgeometry2.png"></p>
 <p>Note that <code>adp[["oceCoordinate"]]</code> stores the present coordinate system
 of the object, and it has possible values <code>"beam"</code>, <code>"xyz"</code>, <code>"sfm"</code> or
 <code>"enu"</code>.  (This should not be confused with
@@ -387,7 +387,8 @@ transfer either beam or xyz to enu.  Enu may be converted to other coordinates
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.1.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a>
+2.0.2.</p>
 </div>
 
       </footer></div>

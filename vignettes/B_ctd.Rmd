@@ -36,7 +36,7 @@ knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
 ```
 
 **Abstract.** The basics of working with CTD data are outlined in this
-vignette, as a supplement to a shorter entry in the [main vignette](oce.html).
+vignette, as a supplement to a shorter entry in the [main vignette](A_oce.html).
 
 
 

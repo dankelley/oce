@@ -1880,7 +1880,7 @@ oceMagic <- function(file, debug=getOption("oceDebug"))
             if (1 == length(grep('^.?"WMO Identifier",', someLines))) {
                 return("met/csv1") # FIXME: may be other things too ...
             } else if (grepl('^.?"Longitude.[^"]*","Latitude[^"]*","Station Name","Climate ID"', someLines[1])) {
-                return("met/csv2")
+                return(if (grepl("Time \\(LST\\)", someLines[1])) "met/csv3" else "met/csv2")
             } else if (1 == length(grep("^.?Station_Name,", someLines, useBytes=TRUE))) {
                 return("sealevel")
             } else if (1 == length(grep("^CTD,", someLines, useBytes=TRUE))) {
