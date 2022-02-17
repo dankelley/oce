@@ -2,6 +2,7 @@
 
 ## 1.6.0
 
+* Fix image-size declarations in 3 man pages (required by CRAN).
 * Improve sub-class vignette.
 
 ## 1.5.0
