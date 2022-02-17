@@ -1,8 +1,9 @@
-# Submission of 1.5-0
+# Submission of 1.6-0
 
-This submission (a) aligns oce with the version of the Rcpp package that Dirk
-Eddelbuettel plans to submit to CRAN next week and (b) incorporates 8 months of
-oce improvements and bug fixes.
+This submission solves a problem in which a figure referred to an image size
+with `width=400px` instead of `width="400"`.  Thanks to Kurt Hornik, for
+checking on this across the CRAN package list (and letting maintainers know on
+2022-02-17).
 
 # Tests
 
@@ -14,6 +15,13 @@ sub-directories were of size of 1MB or more: R 3.0Mb, data 1.0Mb, doc 2.0Mb,
 and help 3.7Mb.
 
 ## Github R-CMD-check Action Tests
+
+Passes on all tested platforms:
+
+* windows-latest (release)
+* macOS-latest (release)
+* ubuntu-20.04 (release)
+* ubuntu-20.04 (devel)
 
 R-CMD-check github action reports no problems on
 * windows-latest (release)
