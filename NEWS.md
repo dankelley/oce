@@ -1,5 +1,9 @@
 # oce
 
+## 1.6.1
+
+* Unlink a journal article that has become unavailable.
+
 ## 1.6.0
 
 * Fix image-size declarations in 3 man pages (required by CRAN).
