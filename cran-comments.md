@@ -1,9 +1,7 @@
-# Submission of 1.6-0
+# Submission of 1.6-1
 
-This submission solves a problem in which a figure referred to an image size
-with `width=400px` instead of `width="400"`.  Thanks to Kurt Hornik, for
-checking on this across the CRAN package list (and letting maintainers know on
-2022-02-17).
+This submission removes a link to a journal article that proved to be
+inaccessible to the CRAN checking procedures, in a submission of 1.6-0 made earlier today.
 
 # Tests
 
