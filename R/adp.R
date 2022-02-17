@@ -37,7 +37,7 @@
 #' conventions for three- and four-beam ADP devices, viewed as though the
 #' reader were looking towards the beams being emitted from the transducers.
 #'
-#' \if{html}{\figure{adp_beams.png}{options: width=400px alt="Figure: adp_beams.png"}}
+#' \if{html}{\figure{adp_beams.png}{options: width="400" alt="Figure: adp_beams.png"}}
 #'
 #' The bin geometry of a four-beam profiler is illustrated below, for
 #' `adp[["beamAngle"]]` equal to 20 degrees, `adp[["bin1Distance"]]`
@@ -48,7 +48,7 @@
 #' indicate the coverage of beams that spread plus and minus 2.5 degrees from
 #' their centreline.
 #'
-#' \if{html}{\figure{adpgeometry2.png}{options: width=400px alt="Figure: adpgeometry2.png"}}
+#' \if{html}{\figure{adpgeometry2.png}{options: width="400" alt="Figure: adpgeometry2.png"}}
 #'
 #' Note that `adp[["oceCoordinate"]]` stores the present coordinate system
 #' of the object, and it has possible values `"beam"`, `"xyz"`, `"sfm"` or
