@@ -165,7 +165,7 @@ much:</p>
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">o</span><span class="op">)</span>
 <span class="co">#&gt; * Processing Log</span>
 <span class="co">#&gt; </span>
-<span class="co">#&gt;     - 2022-02-18 12:05:14 UTC: `Create oce object`</span></code></pre></div>
+<span class="co">#&gt;     - 2022-02-18 14:11:37 UTC: `Create oce object`</span></code></pre></div>
 <p>but if we populate the object with some data and metadata</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">o</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/oceSetData.html">oceSetData</a></span><span class="op">(</span><span class="va">o</span>, <span class="st">"time"</span>, <span class="va">db</span><span class="op">$</span><span class="va">t</span><span class="op">)</span>
@@ -184,11 +184,11 @@ much:</p>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; * Processing Log</span>
 <span class="co">#&gt; </span>
-<span class="co">#&gt;     - 2022-02-18 12:05:14 UTC: `Create oce object`</span>
-<span class="co">#&gt;     - 2022-02-18 12:05:14 UTC: `oceSetData(object = o, name = "time", value = db$t)`</span>
-<span class="co">#&gt;     - 2022-02-18 12:05:14 UTC: `oceSetData(object = o, name = "longitude", value = db$lon)`</span>
-<span class="co">#&gt;     - 2022-02-18 12:05:14 UTC: `oceSetData(object = o, name = "latitude", value = db$lat)`</span>
-<span class="co">#&gt;     - 2022-02-18 12:05:14 UTC: `oceSetMetadata(object = o, name = "ID", value = 4201703)`</span></code></pre></div>
+<span class="co">#&gt;     - 2022-02-18 14:11:37 UTC: `Create oce object`</span>
+<span class="co">#&gt;     - 2022-02-18 14:11:37 UTC: `oceSetData(object = o, name = "time", value = db$t)`</span>
+<span class="co">#&gt;     - 2022-02-18 14:11:37 UTC: `oceSetData(object = o, name = "longitude", value = db$lon)`</span>
+<span class="co">#&gt;     - 2022-02-18 14:11:37 UTC: `oceSetData(object = o, name = "latitude", value = db$lat)`</span>
+<span class="co">#&gt;     - 2022-02-18 14:11:37 UTC: `oceSetMetadata(object = o, name = "ID", value = 4201703)`</span></code></pre></div>
 <p>Note, however, that the <code>ID</code> is not listed by
 <code><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary()</a></code>. This is because the general form of that
 function is set up to focus on the contents of the <code>data</code>
@@ -338,7 +338,7 @@ drifter. The rest of the information provided by the base-level
 <span class="co">#&gt; </span>
 <span class="co">#&gt; * Processing Log</span>
 <span class="co">#&gt; </span>
-<span class="co">#&gt;     - 2022-02-18 12:05:15 UTC: `create 'drifter' object`</span></code></pre></div>
+<span class="co">#&gt;     - 2022-02-18 14:11:38 UTC: `create 'drifter' object`</span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="specializing-the-accessor">Specializing the <code>[[</code> accessor<a class="anchor" aria-label="anchor" href="#specializing-the-accessor"></a>
