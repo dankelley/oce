@@ -91,7 +91,7 @@ STN1 <- handleFlags(stn, flags=list(c(1, 3:9)))
 data.frame(old=stn[["salinity"]], new=STN1[["salinity"]], salinityFlag=stn[["salinityFlag"]])
 
 # 2. Use bottle salinity, if it is good and ctd is bad
-replace <- 2 == stn[["salinityBottleFlag"]] && 2 != stn[["salinityFlag"]]
+replace <- 2 == stn[["salinityBottleFlag"]] & 2 != stn[["salinityFlag"]]
 S <- ifelse(replace, stn[["salinityBottle"]], stn[["salinity"]])
 STN2 <- oceSetData(stn, "salinity", S)
 

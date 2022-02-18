@@ -1,6 +1,7 @@
 # Submission of 1.6-1
 
-This submission addresses two problems of which I learned since a submission of 1.6-0 yesterday:
+This submission addresses two problems of which I learned since a submission of
+1.6-0 yesterday:
 
 1. Use a doi{} rather than a url{} for a journal article, preventing reliance
    on what seems to be an unstable website.
