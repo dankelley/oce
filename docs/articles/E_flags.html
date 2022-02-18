@@ -96,7 +96,7 @@
       <h1 data-toc-skip>5. Dealing with data-quality flags</h1>
                         <h4 data-toc-skip class="author">Dan Kelley (<a href="https://orcid.org/0000-0001-7808-5911" class="external-link uri">https://orcid.org/0000-0001-7808-5911</a>)</h4>
             
-            <h4 data-toc-skip class="date">2022-02-17</h4>
+            <h4 data-toc-skip class="date">2022-02-18</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/dankelley/oce/blob/HEAD/vignettes/E_flags.Rmd" class="external-link"><code>vignettes/E_flags.Rmd</code></a></small>
       <div class="hidden name"><code>E_flags.Rmd</code></div>
@@ -261,7 +261,7 @@ it would also be common to use e.g.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">S</span> <span class="op">&lt;-</span> <span class="va">ctdRaw</span><span class="op">[[</span><span class="st">"salinity"</span><span class="op">]</span><span class="op">]</span>
 <span class="cn">T</span> <span class="op">&lt;-</span> <span class="va">ctdRaw</span><span class="op">[[</span><span class="st">"temperature"</span><span class="op">]</span><span class="op">]</span>
-<span class="va">bad</span> <span class="op">&lt;-</span> <span class="op">(</span><span class="va">S</span> <span class="op">&lt;</span> <span class="fl">25</span> <span class="op">|</span> <span class="fl">40</span> <span class="op">&lt;</span> <span class="va">S</span><span class="op">)</span> <span class="op">||</span> <span class="op">(</span><span class="cn">T</span> <span class="op">&lt;</span> <span class="op">-</span><span class="fl">2</span> <span class="op">|</span> <span class="fl">40</span> <span class="op">&lt;</span> <span class="cn">T</span><span class="op">)</span></code></pre></div>
+<span class="va">bad</span> <span class="op">&lt;-</span> <span class="op">(</span><span class="va">S</span> <span class="op">&lt;</span> <span class="fl">25</span> <span class="op">|</span> <span class="fl">40</span> <span class="op">&lt;</span> <span class="va">S</span><span class="op">)</span> <span class="op">|</span> <span class="op">(</span><span class="cn">T</span> <span class="op">&lt;</span> <span class="op">-</span><span class="fl">2</span> <span class="op">|</span> <span class="fl">40</span> <span class="op">&lt;</span> <span class="cn">T</span><span class="op">)</span></code></pre></div>
 <p>Since the goal here is to illustrate setting multiple flags, the
 <code>badS</code> and <code>badT</code> values will be used. The first
 step is to copy the original data, so that the flag operations will not

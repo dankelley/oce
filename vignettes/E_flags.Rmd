@@ -173,7 +173,7 @@ In the above, `with` has been used to avoid inserting `salinity` and
 ```{r}
 S <- ctdRaw[["salinity"]]
 T <- ctdRaw[["temperature"]]
-bad <- (S < 25 | 40 < S) || (T < -2 | 40 < T)
+bad <- (S < 25 | 40 < S) | (T < -2 | 40 < T)
 ```
 
 Since the goal here is to illustrate setting multiple flags, the `badS` and

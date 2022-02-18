@@ -1,7 +1,14 @@
 # Submission of 1.6-1
 
-This submission removes a link to a journal article that proved to be
-inaccessible to the CRAN checking procedures, in a submission of 1.6-0 made earlier today.
+This submission addresses two problems of which I learned since a submission of
+1.6-0 yesterday:
+
+1. Use a doi{} rather than a url{} for a journal article, preventing reliance
+   on what seems to be an unstable website.
+2. Fix two "length_1" errors, kindly pointed out by B. Ripley in an email dated
+   2022-02-18.  (This involves using `&&` or `||` where `&` and `|` was
+   proper.)
+
 
 # Tests
 
