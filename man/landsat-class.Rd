@@ -191,7 +191,7 @@ Journal of Research in Engineering and Technology}, 3(5), 122-126.
 \verb{http://www.academia.edu/7655089/ESTIMATION_OF_LAND_SURFACE_TEMPERATURE_OF_DINDIGUL_DISTRICT_USING_LANDSAT_8_DATA}
 \item Konda, M. Imasato N., Nishi, K., and T. Toda, 1994.  Measurement of the Sea
 Surface Emissivity.  \emph{Journal of Oceanography}, 50, 17:30.
-\code{http://www.terrapub.co.jp/journals/JO/pdf/5001/50010017.pdf}
+\doi{10.1007/BF02233853}
 }
 }
 \seealso{
