@@ -22,7 +22,7 @@
 #' see the several vignettes that are provided with oce,
 #' and a book
 #' (Kelley, Dan E. Oceanographic Analysis with R. New York: Springer-Verlag, 2018.
-#' https://www.springer.com/us/book/9781493988426) written
+#' https://link.springer.com/us/book/9781493988426) written
 #' by one of the oce co-authors.
 #'
 #' @section Specialized Functions:
