@@ -31,7 +31,7 @@ Oceanographic data. Its [webpage](https://dankelley.github.io/oce/) provides
 details, of which this README file is just a sketch. A book by one of the oce
 co-authors provides more information on the package and its potential for
 oceanographic research (Kelley, Dan E., 2018. [Oceanographic Analysis with
-R](https://www.springer.com/us/book/9781493988426). New York. Springer-Verlag
+R](https://link.springer.com/us/book/9781493988426). New York. Springer-Verlag
 ISBN 978-1-4939-8844-0).
 
 ## Installing oce

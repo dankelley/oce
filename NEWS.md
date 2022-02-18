@@ -2,7 +2,7 @@
 
 ## 1.6.1
 
-* Unlink a journal article that has become unavailable.
+* Remove a journal link that has become unavailable.
 * fix "length_1" error (thanks to B. Ripley for the heads-up)
 
 ## 1.6.0
