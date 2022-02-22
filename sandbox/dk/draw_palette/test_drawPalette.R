@@ -22,6 +22,9 @@ f(drawPalette(zlim=c(0,20), breaks=seq(0,20,1)),
     "Expect: stepped gradient")
 f(drawPalette(zlim=c(0,20), breaks=seq(0,20,1), drawContours=TRUE),
     "Expect: stepped with lines")
+f(drawPalette(zlim=c(0,20), breaks=c(0, 2, 5, 15, 20),
+              at=c(0, 17, 20), labels = as.character(c(0, 17, 20))),
+    "Expect: breaks at 0, 2, 5, 15, 20 with labels at 0, 17, 20")
 
 if (!interactive())
     dev.off()
