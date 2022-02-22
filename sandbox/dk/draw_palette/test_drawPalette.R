@@ -2,12 +2,12 @@ library(oce)
 t <- 1
 f <- function(e, msg="", cex=0.8)
 {
-    E <- deparse(substitute(e))
+    E <- paste(strwrap(deparse(substitute(e)), 50), collapse="\n")
     eval(e)
     plot(0:1, 0:1, xlab="", ylab="", type="n", axes=FALSE)
-    text(0.5, 0.6, paste("Test", t), cex=cex)
-    text(0.5, 0.5, E, cex=cex)
-    text(0.5, 0.4, msg, cex=cex)
+    text(0.5, 0.9, paste("Test", t), cex=cex, font=2)
+    text(0.5, 0.8, msg, cex=cex, font=2)
+    text(0.5, 0.6, E, cex=cex)
     par(mar=c(3,2,2,1))
     t <<- t + 1
 }
