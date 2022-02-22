@@ -1,24 +1,27 @@
 library(oce)
 t <- 1
-e <- function(msg)
+f <- function(e, msg="", cex=0.8)
 {
-    plot(0:1, 0:1, xlab="", ylab="", axes=FALSE, type="n")
-    text(0.5, 0.5, paste0("Test ", t, ": ", msg))
-    par(mar=c(3,3,1,1))
+    E <- deparse(substitute(e))
+    eval(e)
+    plot(0:1, 0:1, xlab="", ylab="", type="n", axes=FALSE)
+    text(0.5, 0.6, paste("Test", t), cex=cex)
+    text(0.5, 0.5, E, cex=cex)
+    text(0.5, 0.4, msg, cex=cex)
+    par(mar=c(3,2,2,1))
     t <<- t + 1
 }
 
 if (!interactive())
     pdf("test_drawPalette.pdf")
+par(mar=c(3,3,2,1))
 
-drawPalette(c(0,10))
-e("Expect smooth gradation")
-
-drawPalette(c(0,10), breaks=seq(0,10,1))
-e("Expect colour shifts at 1, 2, ...")
-
-drawPalette(c(0,10), breaks=seq(0,10,1), drawContours=TRUE)
-e("Expect colour shifts and lines at 1, 2, ...")
+f(drawPalette(zlim=c(0,20)),
+    "Expect: continous gradient")
+f(drawPalette(zlim=c(0,20), breaks=seq(0,20,1)),
+    "Expect: stepped gradient")
+f(drawPalette(zlim=c(0,20), breaks=seq(0,20,1), drawContours=TRUE),
+    "Expect: stepped with lines")
 
 if (!interactive())
     dev.off()
