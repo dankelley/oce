@@ -1,9 +1,11 @@
 library(oce)
+t <- 1
 e <- function(msg)
 {
     plot(0:1, 0:1, xlab="", ylab="", axes=FALSE, type="n")
-    text(0.5, 0.5, msg)
+    text(0.5, 0.5, paste0("Test ", t, ": ", msg))
     par(mar=c(3,3,1,1))
+    t <<- t + 1
 }
 
 if (!interactive())
