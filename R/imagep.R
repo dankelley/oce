@@ -355,8 +355,10 @@ drawPalette <- function(zlim, zlab="",
     colormapGiven <- !missing(colormap)
     oceDebug(debug, "colormapGiven=", colormapGiven, "\n", sep="")
     ##message("missing(col) ", missing(col))
+    # Cannot plot if none of (zlim,breaks,at) was given.  But other computations
+    # are still undertaken, for other purposes.
     if (!zlimGiven && !colormapGiven && !breaksGiven && !atGiven)
-        stop("No scale can be computed without zlim, breaks, or colormap")
+        plot <- FALSE
     levelsGiven <- !missing(levels)
     if (zlimGiven)
         zlim <- range(zlim, na.rm=TRUE)
