@@ -1,10 +1,11 @@
 library(oce)
+library(cmocean)
 if (file.exists("~/git/oce/R/imagep.R"))
     source("~/git/oce/R/imagep.R")
 t <- 1
 f <- function(e, msg="", cex=0.8)
 {
-    E <- paste(strwrap(deparse1(substitute(e)), 80, exdent=4), collapse="\n")
+    E <- paste(strwrap(deparse1(substitute(e)), 70, exdent=4), collapse="\n")
     eval(e)
     plot(0:1, 0:1, xlab="", ylab="", type="n", axes=FALSE)
     text(0.5, 0.9, paste("Test", t), cex=cex, font=2)
@@ -36,6 +37,16 @@ f(drawPalette(at=c(0, 2, 5, 15, 20)),
 f(drawPalette(breaks=c(0, 2, 5, 15, 20),
         at=c(0, 17, 20), labels = as.character(c(0, 17, 20))),
     "Expect: breaks at 0, 2, 5, 15, 20 with labels at 0, 17, 20")
+
+# colormap
+f(drawPalette(colormap=colormap(zlim=c(0,20))),
+    "Expect: continous palette, set by colormap()")
+f(drawPalette(colormap=colormap(zlim=c(0,20))),
+    "Expect: continous palette, set by colormap()")
+f(drawPalette(colormap=colormap(zlim=c(-3e3,3e3), col=cmocean("topo"))),
+    "Expect: cmocean('topo') palette, set by colormap()")
+f(drawPalette(colormap=colormap(zlim=c(0,20), breaks=11)),
+    "Expect: 10-band palette, set by colormap()'s breaks arg")
 
 if (!interactive())
     dev.off()
