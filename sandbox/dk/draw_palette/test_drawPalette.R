@@ -45,8 +45,8 @@ f(drawPalette(colormap=colormap(zlim=c(0,20))),
     "Expect: continous palette, set by colormap()")
 f(drawPalette(colormap=colormap(zlim=c(-3e3,3e3), col=cmocean("topo"))),
     "Expect: cmocean('topo') palette, set by colormap()")
-f(drawPalette(colormap=colormap(zlim=c(0,20), breaks=11)),
-    "Expect: 10-band palette, set by colormap()'s breaks arg")
+f(drawPalette(colormap=colormap(zlim=c(0,20), col=oceColorsTemperature, breaks=11)),
+    "Expect: 10-band temperature palette, set by colormap()")
 
 if (!interactive())
     dev.off()
