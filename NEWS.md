@@ -1,16 +1,20 @@
 # oce
 
-## 1.6.1
+## 1.7.0
+
+* Fix `drawPalette()` to obey `at` and `labels` arguments.
+
+## 1.6.1 (on CRAN)
 
 * Remove a journal link that has become unavailable.
-* fix "length_1" error (thanks to B. Ripley for the heads-up)
+* Fix "length_1" error (thanks to B. Ripley for the heads-up).
 
 ## 1.6.0
 
 * Fix image-size declarations in 3 man pages (required by CRAN).
 * Improve sub-class vignette.
 
-## 1.5.0
+## 1.5.0 (on CRAN)
 
 * Add `[["?"]]` facility to all objects.
 * Add `showNA` argument to `vectorShow()`.

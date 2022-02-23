@@ -300,17 +300,17 @@ paletteCalculations <- function(separation=par('cin')[2]/2,
 #' contour(volcano, add=TRUE)
 #' drawPalette(c(90, 200), fullpage=TRUE, col=oce.colorsViridis)
 drawPalette <- function(zlim, zlab="",
-                        breaks, col, colormap,
-                        mai, cex=par("cex"),
-                        pos=4, las=0,
-                        labels=NULL, at=NULL,
-                        levels, drawContours=FALSE,
-                        plot=TRUE, fullpage=FALSE, drawTriangles=FALSE,
-                        axisPalette, tformat,
-                        debug=getOption("oceDebug"), ...)
+    breaks, col, colormap,
+    mai, cex=par("cex"),
+    pos=4, las=0,
+    labels=NULL, at=NULL,
+    levels, drawContours=FALSE,
+    plot=TRUE, fullpage=FALSE, drawTriangles=FALSE,
+    axisPalette, tformat,
+    debug=getOption("oceDebug"), ...)
 {
     debug <- max(0, min(debug, 2))
-    oceDebug(debug, gsub(" = [^,)]*", "", deparse(expr=match.call())), " {\n", style="bold", sep="", unindent=1)
+    #oceDebug(debug, gsub(" = [^,)]*", "", deparse(expr=match.call())), " {\n", style="bold", sep="", unindent=1)
 
     oceDebug(debug, "drawPalette(",
              argShow(zlab),
@@ -318,8 +318,12 @@ drawPalette <- function(zlim, zlab="",
              argShow(cex),
              argShow(mai),
              argShow(breaks),
+             argShow(at),
+             argShow(labels),
              argShow(fullpage),
              "...) {\n", sep="", unindent=1, style="bold")
+    atGiven <- !is.null(at)
+    labelsGiven <- !missing(labels)
     zlimGiven <- !missing(zlim)
     if (zlimGiven) {
         if (!is.numeric(zlim))
@@ -384,7 +388,7 @@ drawPalette <- function(zlim, zlab="",
             if (breaksGiven) {
                 breaksOrig <- breaks
                 contours <- breaks
-                oceDebug(debug, "user gave", length(breaks),"breaks\n")
+                oceDebug(debug, "user gave ", length(breaks)," breaks\n")
             } else {
                 zrange <- zlim
                 if (missing(col)) {
@@ -447,7 +451,7 @@ drawPalette <- function(zlim, zlab="",
                 stop("pos must be 1, 2, 3 or 4") # cannot be reached
             }
         } else {
-            oceDebug(debug, "'breaks' was given, starting with", vectorShow(breaks), "\n")
+            oceDebug(debug, "'breaks' was given, starting with ", vectorShow(breaks))
             palette <- seq(zlim[1], zlim[2], length.out=PLEN)
             oceDebug(debug, "drawing palette image, with", vectorShow(par('mai')))
             oceDebug(debug, "palette image width =",
@@ -527,11 +531,14 @@ drawPalette <- function(zlim, zlab="",
             if (missing(axisPalette)) {
                 ## NB. in next line, the '10' matches a call to pretty() in imagep().
                 at <- if (!is.null(contours) & is.null(at)) prettyLocal(contours, 10) else prettyLocal(palette, 10)
+                oceDebug(debug, "with no axisPalette, created 'at' as c(", paste(at,collapse=", "), ")\n")
             } else {
                 ## Guess that the axis labels may need more space
                 at <- if (!is.null(contours) & is.null(at)) prettyLocal(contours, 6) else prettyLocal(palette, 6)
+                oceDebug(debug, "with axisPalette given, created 'at' as c(", paste(at,collapse=", "), ")\n")
             }
         }
+        oceDebug(debug, "at=c(", paste(at, collapse=", "), ")\n")
         if (is.null(labels)) {
             if (zIsTime) {
                 if (!missing(tformat)) {
@@ -543,14 +550,17 @@ drawPalette <- function(zlim, zlab="",
                 labels <- format(at)
             }
         }
+        oceDebug(debug, "at step 1, labels is (", paste(at,collapse=", "), ")\n")
         labels <- sub("^[ ]*", "", labels)
+        oceDebug(debug, "at step 2, labels is (", paste(at,collapse=", "), ")\n")
         labels <- sub("[ ]*$", "", labels)
+        oceDebug(debug, "at step 3 (last), labels is (", paste(at,collapse=", "), ")\n")
         ## FIXME: just guessing on best 'line', used below
         if (!missing(axisPalette))
             axis <- axisPalette
         oceDebug(debug, "about to draw palette axis at pos=", pos, " with zlab=\"", zlab, "\" with cex=", cex, "\n", sep="")
-        # If zlim was given, we use that to determine the palette labels
-        if (zlimGiven) {
+        # Use 'zlim' to infer axis labels, unless 'at' was given
+        if (zlimGiven && is.null(at)) {
             if (zIsTime) {
                 oceDebug(debug, "palette axis labels inferred from temporal zlim=c(",
                          paste(numberAsPOSIXct(zlim), collapse=","), ")\n", sep="")
@@ -565,8 +575,8 @@ drawPalette <- function(zlim, zlab="",
                 at <- labels
             }
         }
-        oceDebug(debug, "palette axis labels:", vectorShow(labels))
-        oceDebug(debug, "palette axis labels positions:", vectorShow(at))
+        oceDebug(debug, "finally, palette axis labels:", vectorShow(labels))
+        oceDebug(debug, "finally, palette axis labels positions:", vectorShow(at))
         if (pos == 1) {
             axis(side=1, at=at, labels=labels, mgp=c(2.5, 0.7, 0), cex.axis=cex, las=las)
             if (haveZlab) mtext(zlab, side=1, line=getOption("oceMgp")[1], cex=cex)

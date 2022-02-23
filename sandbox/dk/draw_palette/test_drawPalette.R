@@ -1,4 +1,6 @@
 library(oce)
+if (file.exists("~/git/oce/R/imagep.R"))
+    source("~/git/oce/R/imagep.R")
 t <- 1
 f <- function(e, msg="", cex=0.8)
 {
