@@ -38,7 +38,7 @@ difficult to decode. Manufacturers usually provide software for accessing data
 produced by their instruments, but it is usually proprietary and closed-source,
 making it difficult for researchers to analyse their data in novel ways or to
 combine data from multiple instruments. The `oce` package
-[@kelley__aut_oce_2021] addresses such issues with functions that handle dozens
+[@kelley__aut_oce_2021] addresses such issues in the R language^[The authors are not aware of similarly comprehensive tools in other open-source languages, although there are tools for individual tasks, as noted at https://pyoceans.github.io/sea-py/, for Python tools.] with functions that handle dozens
 of data formats. It also has facilities for the specialized calculations and
 data displays that are particular to oceanography.  Since `oce` is written in
 the R language [@ihaka_r_1996;@r_core_team_introduction_2021], it forms a link
