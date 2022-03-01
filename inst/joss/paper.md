@@ -47,7 +47,7 @@ to a vast array of general tools that oceanographers use in their work
 
 # Overview
 
-The `oce` package has been hosted since 2019 on
+The `oce` package has been hosted since 2009 on
 CRAN^[https://cran.r-project.org], the Comprehensive R Archive Network
 [@hornik_comprehensive_2012].  The CRAN version, which is updated once or twice
 a year, may be installed by typing `install.packages("oce")` in an R console.
