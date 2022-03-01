@@ -21,17 +21,17 @@ colour deficiencies.
 Light, Adam, and Patrick J. Bartlein. "The End of the Rainbow? Color
 Schemes for Improved Data Graphics." \emph{Eos, Transactions American Geophysical
 Union} 85, no. 40 (2004): 385.
-\url{https://agupubs.onlinelibrary.wiley.com/doi/abs/10.1029/2004EO400002}
+\doi{doi/abs/10.1029/2004EO400002}
 
 Stephenson, David B. "Comment on 'Color Schemes for Improved Data
 Graphics', by A Light and P.J. Bartlein." \emph{Eos, Transactions American
 Geophysical Union} 86, no.  20 (2005): 196.
-\url{https://agupubs.onlinelibrary.wiley.com/doi/abs/10.1029/2005EO200005}.
+\doi{doi/abs/10.1029/2005EO200005}.
 
 Light, Adam, and Patrick J. Bartlein. "Reply to 'Comment on Color
 Schemes for Improved Data Graphics,' by A. Light and P.J.  Bartlein'."
 \emph{Eos, Transactions American Geophysical Union} 86, no. 20 (2005): 196–196.
-\url{https://agupubs.onlinelibrary.wiley.com/doi/abs/10.1029/2005EO200006}
+\doi{doi.org/10.1029/2005EO200006}
 
 The following references provide information on choosing
 colour schemes, that are suitable for viewers who have
@@ -40,17 +40,17 @@ colour deficiencies.
 Light, Adam, and Patrick J. Bartlein. "The End of the Rainbow? Color
 Schemes for Improved Data Graphics." \emph{Eos, Transactions American Geophysical
 Union} 85, no. 40 (2004): 385.
-\url{https://agupubs.onlinelibrary.wiley.com/doi/abs/10.1029/2004EO400002}
+\doi{doi/abs/10.1029/2004EO400002}
 
 Stephenson, David B. "Comment on 'Color Schemes for Improved Data
 Graphics', by A Light and P.J. Bartlein." \emph{Eos, Transactions American
 Geophysical Union} 86, no.  20 (2005): 196.
-\url{https://agupubs.onlinelibrary.wiley.com/doi/abs/10.1029/2005EO200005}.
+\doi{doi/abs/10.1029/2005EO200005}.
 
 Light, Adam, and Patrick J. Bartlein. "Reply to 'Comment on Color
 Schemes for Improved Data Graphics,' by A. Light and P.J.  Bartlein'."
 \emph{Eos, Transactions American Geophysical Union} 86, no. 20 (2005): 196–196.
-\url{https://agupubs.onlinelibrary.wiley.com/doi/abs/10.1029/2005EO200006}
+\doi{doi.org/10.1029/2005EO200006}
 }
 \seealso{
 Other datasets provided with oce: 
