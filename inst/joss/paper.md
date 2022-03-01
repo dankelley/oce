@@ -178,7 +178,7 @@ tide.)
 The `oce` package provides for many aspects of oceanographic analysis, having
 evolved in an open-source environment for more than a decade. For much of that
 time, the hosting has been on github.com/dankelley/oce, where users can see the
-details of about 9000 git commits and 1700 closed issues.  The developers have
+details of over 9000 git commits and 1700 closed issues.  The developers have
 benefited from a supportive user community, members of which have contributed
 insightful bug reports and suggestions for improvements.  New features are
 added continually, to handle new instrument types, new data repositories, and
