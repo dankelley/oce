@@ -3,6 +3,7 @@
 ## 1.7.0
 
 * Fix `drawPalette()` to obey `at` and `labels` arguments.
+* Change `plot,ctd-method()` to recognize `which=13` (for spice).
 
 ## 1.6.1 (on CRAN)
 

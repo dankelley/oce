@@ -83,7 +83,7 @@ computableWaterProperties <- function(x)
         haveLocation <- all(c("longitude", "latitude") %in% names)
         if (haveSTP) {
             res <- c(res, c("theta", paste("potential", "temperature"), "z",
-                    "depth", "spice", "Rrho", "sigmaTheta", "SP",
+                    "depth", "spice", "Rrho", "RrhoSF", "sigmaTheta", "SP",
                     "density", "N2", paste("sound", "speed")))
             if (haveLocation) {
                 res <- c(res, "SR", "Sstar", paste0("sigma", 0:4),
