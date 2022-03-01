@@ -48,12 +48,12 @@ to a vast array of general tools that oceanographers use in their work
 # Overview
 
 The `oce` package has been hosted since 2009 on
-CRAN^[https://cran.r-project.org], the Comprehensive R Archive Network
+CRAN^[CRAN is at https://cran.r-project.org.], the Comprehensive R Archive Network
 [@hornik_comprehensive_2012].  The CRAN version, which is updated once or twice
 a year, may be installed by typing `install.packages("oce")` in an R console.
 Users who need newer features may use
 `remotes::install_github("dankelley/oce",ref="develop")` to download and build
-the development branch. Those wishing to view or participate in the development
+the development branch^[Since some components of oce are written in lower-level languages such as Fortran, C and C++, building the package from source requires compilers for those languages. These are freely available, and an oce wiki page (https://github.com/dankelley/oce/wiki/Configuring-a-Linux-Mint-20-system-to-be-able-to-build-oce-from-source) explains how they and other things may be set up, on a variety of computer types.]. Those wishing to view or participate in the development
 process are welcome to do so, at \url{https://github.com/dankelley/oce}.
 
 The package has functions for decoding many data formats.  These functions
