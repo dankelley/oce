@@ -192,7 +192,7 @@ Our other goal is to encourage the development of new R packages, such as
 
 We thank the many users who have helped with `oce` development over the years,
 by finding bugs, suggesting new features, and providing us with manufacturers'
-documentation about data formats used by various oceanographic instruments.
+documentation about data formats for various oceanographic instruments.
 
 # References
 
