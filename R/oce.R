@@ -1897,10 +1897,10 @@ oceMagic <- function(file, debug=getOption("oceDebug"))
         if (grepl(".csv$", filename, ignore.case=TRUE)) {
             someLines <- readLines(filename, 30, encoding="UTF-8-BOM")
             #print(someLines[1])
-            if (1 == length(grep('^.?"WMO Identifier",', someLines))) {
+            if (1 == grepl('^.*"WMO Identifier",', someLines)) {
                 oceDebug(debug, "} # oceMagic returning met/csv1\n", unindent=1, style="bold")
                 return("met/csv1") # FIXME: may be other things too ...
-            } else if (grepl('^.?Longitude.[^"]*","Latitude[^"]*","Station Name","Climate ID".*"Dew Point', someLines[1])) {
+            } else if (grepl('^.*Longitude.[^"]*","Latitude[^"]*","Station Name","Climate ID".*"Dew Point', someLines[1])) {
                 oceDebug(debug, "} # oceMagic returning met/csv2 or met/csv3\n", unindent=1, style="bold")
                 return(if (grepl("Time \\(LST\\)", someLines[1])) "met/csv3" else "met/csv2")
             } else if (1 == length(grep("^Station_Name,", someLines, useBytes=TRUE))) {
