@@ -1796,27 +1796,35 @@ oceMagic <- function(file, debug=getOption("oceDebug"))
     isdir<- file.info(file)$isdir
     if (is.finite(isdir) && isdir) {
         tst <- file.info(paste(file, "/", file, "_MTL.txt", sep=""))$isdir
-        if (!is.na(tst) && !tst)
+        if (!is.na(tst) && !tst) {
+            oceDebug(debug, "} # oceMagic returning landsat\n", unindent=1)
             return("landsat")
-        stop("please supply a file name, not a directory name")
+        } else {
+            stop("please supply a file name, not a directory name")
+        }
     }
     if (is.character(file)) {
-        oceDebug(debug, "checking filename to see if it matches known patterns\n")
+        oceDebug(debug, "this is a textual file\n")
         if (length(grep(".asc$", filename))) {
             someLines <- readLines(file, encoding="UTF-8", n=1)
-            if (42 == length(strsplit(someLines[1], ' ')[[1]]))
+            if (42 == length(strsplit(someLines[1], ' ')[[1]])) {
+                oceDebug(debug, "} # oceMagic returning lisst\n", unindent=1, style="bold")
                 return("lisst")
+            }
         }
         if (length(grep(".adr$", filename))) {
             oceDebug(debug, "file names ends in .adr, so this is an adv/sontek/adr file.\n")
+            oceDebug(debug, "} # oceMagic returning adv/sontek/adr\n", unindent=1)
             return("adv/sontek/adr")
         }
         if (length(grep(".rsk$", filename))) {
             oceDebug(debug, "file names ends with \".rsk\", so this is an RBR/rsk file.\n")
+            oceDebug(debug, "} # oceMagic returning RBR/rsk\n", unindent=1)
             return("RBR/rsk")
         }
         if (length(grep(".s4a.", filename))) {
             oceDebug(debug, "file names contains \".s4a.\", so this is an interocean S4 file.\n")
+            oceDebug(debug, "} # oceMagic returning interocean/s4\n", unindent=1)
             return("interocean/s4")
         }
         if (grepl(".ODF$", filename, ignore.case=TRUE)) {
@@ -1829,12 +1837,12 @@ oceMagic <- function(file, debug=getOption("oceDebug"))
             subtype <- gsub("^\\s*", "", subtype)
             subtype <- gsub("\\s*$", "", subtype)
             res <- paste(subtype, "odf", sep="/")
-            oceDebug(debug, "file type:", res, "\n")
-            oceDebug(debug, "} # oceMagic()\n", unindent=1, style="bold")
+            oceDebug(debug, paste0("} # oceMagic() returning ", res, "\n"), unindent=1, style="bold")
             return(res)
         }
         if (length(grep(".WCT$", filename, ignore.case=TRUE))) {
             ## old-style WOCE
+            oceDebug(debug, "} # oceMagic returning ctd/woce/other\n", unindent=1)
             return("ctd/woce/other") # e.g. http://cchdo.ucsd.edu/data/onetime/atlantic/a01/a01e/a01ect.zip
         }
         if (length(grep(".nc$", filename, ignore.case=TRUE))) {
@@ -1847,11 +1855,21 @@ oceMagic <- function(file, debug=getOption("oceDebug"))
                 ## NOTE: need to name ncdf4 package because otherwise R checks give warnings.
                 f <- ncdf4::nc_open(filename)
                 if ("DATA_TYPE" %in% names(f$var)) {
-                    if (grep("argo", ncdf4::ncvar_get(f, "DATA_TYPE"), ignore.case=TRUE)) return("argo")
-                    else return("netcdf")
+                    if (grep("argo", ncdf4::ncvar_get(f, "DATA_TYPE"), ignore.case=TRUE))  {
+                        oceDebug(debug, "} # oceMagic returning argo (upper-case style)\n", unindent=1)
+                        return("argo")
+                    } else {
+                        oceDebug(debug, "} # oceMagic returning netcdf (upper-case style)\n", unindent=1)
+                        return("netcdf")
+                    }
                 } else if ("data_type" %in% names(f$var)) {
-                    if (grep("argo", ncdf4::ncvar_get(f, "data_type"), ignore.case=TRUE)) return("argo")
-                    else return("netcdf")
+                    if (grep("argo", ncdf4::ncvar_get(f, "data_type"), ignore.case=TRUE)) {
+                        oceDebug(debug, "} # oceMagic returning argo (lower-case style)\n", unindent=1)
+                        return("argo")
+                    } else {
+                        oceDebug(debug, "} # oceMagic returning netcdf (lower-case style)\n", unindent=1)
+                        return("netcdf")
+                    }
                 }
             } else {
                 stop('must install.packages("ncdf4") to read a NetCDF file')
@@ -1859,39 +1877,47 @@ oceMagic <- function(file, debug=getOption("oceDebug"))
         }
         if (length(grep(".xml$", filename, ignore.case=TRUE))) {
             firstLine <- readLines(filename, 1, encoding="UTF-8")
-            if (grepl(".weather.gc.ca", firstLine))
+            if (grepl(".weather.gc.ca", firstLine)) {
+                oceDebug(debug, "} # oceMagic returning met/xml2\n", unindent=1)
                 return("met/xml2")
+            }
         }
         if (length(grep(".osm.xml$", filename, ignore.case=TRUE))) {
-            ## openstreetmap
+            oceDebug(debug, "} # oceMagic returning openstreetmap (xml style)\n", unindent=1)
             return("openstreetmap")
         }
         if (length(grep(".osm$", filename, ignore.case=TRUE))) {
-            ## openstreetmap
+            oceDebug(debug, "} # oceMagic returning openstreetmap (non xml style)\n", unindent=1, style="bold")
             return("openstreetmap")
         }
         if (length(grep(".gpx$", filename, ignore.case=TRUE))) {
-            ## gpx (e.g. Garmin GPS)
+            oceDebug(debug, "} # oceMagic returning gpx (e.g. Garmin GPS data)\n", unindent=1, style="bold")
             return("gpx")
         }
         if (grepl(".csv$", filename, ignore.case=TRUE)) {
-            someLines <- readLines(filename, 30, encoding="UTF-8")
-            ## print(grepl('^"Longitude \\(x\\)","Latitude \\(y\\)","Station Name","Climate ID"', someLines[1]))
+            someLines <- readLines(filename, 30, encoding="UTF-8-BOM")
+            #print(someLines[1])
             if (1 == length(grep('^.?"WMO Identifier",', someLines))) {
+                oceDebug(debug, "} # oceMagic returning met/csv1\n", unindent=1, style="bold")
                 return("met/csv1") # FIXME: may be other things too ...
-            } else if (grepl('^.?"Longitude.[^"]*","Latitude[^"]*","Station Name","Climate ID"', someLines[1])) {
+            } else if (grepl('^.?Longitude.[^"]*","Latitude[^"]*","Station Name","Climate ID".*"Dew Point', someLines[1])) {
+                oceDebug(debug, "} # oceMagic returning met/csv2 or met/csv3\n", unindent=1, style="bold")
                 return(if (grepl("Time \\(LST\\)", someLines[1])) "met/csv3" else "met/csv2")
-            } else if (1 == length(grep("^.?Station_Name,", someLines, useBytes=TRUE))) {
+            } else if (1 == length(grep("^Station_Name,", someLines, useBytes=TRUE))) {
+                oceDebug(debug, "} # oceMagic returning sealevel\n", unindent=1, style="bold")
                 return("sealevel")
             } else if (1 == length(grep("^CTD,", someLines, useBytes=TRUE))) {
+                oceDebug(debug, "} # oceMagic returning ctd/woce/exchange\n", unindent=1, style="bold")
                 return("ctd/woce/exchange")
             } else if (1 == length(grep("^BOTTLE,", someLines, useBytes=TRUE))) {
+                oceDebug(debug, "} # oceMagic returning section\n", unindent=1, style="bold")
                 return("section")
             } else {
                 return("unknown")
             }
         }
         if (length(grep(".edf$", filename, ignore.case=TRUE))) {
+            oceDebug(debug, "} # oceMagic returning xbt/edf\n", unindent=1, style="bold")
             return("xbt/edf")
         }
         file <- file(file, "r")
@@ -1900,7 +1926,7 @@ oceMagic <- function(file, debug=getOption("oceDebug"))
         stop("argument `file' must be a character string or connection")
     if (!isOpen(file))
         open(file, "r")
-    ## Grab text at start of file.
+    # Grab text at start of file.
     lines <- readLines(file, n=2, skipNul=TRUE, encoding="UTF-8")
     line <- lines[1]
     line2 <- lines[2]
@@ -1911,37 +1937,31 @@ oceMagic <- function(file, debug=getOption("oceDebug"))
     bytes <- readBin(file, what="raw", n=4)
     oceDebug(debug, paste("first two bytes in file: 0x", bytes[1], " and 0x", bytes[2], "\n", sep=""))
     on.exit(close(file))
-    ##read.index()  ## check for an ocean index file e.g.
-    ##read.index()  # https://www.esrl.noaa.gov/psd/data/correlation/ao.data
-    ##read.index()  tokens <- scan(text=line, what='integer', n=2, quiet=TRUE)
-    ##read.index()  if (2 == length(tokens)) {
-    ##read.index()      tokens2 <- scan(text=line2, what='integer', quiet=TRUE)
-    ##read.index()      if (tokens[1] == tokens2[1])
-    ##read.index()          return("index")
-    ##read.index()  }
     if (bytes[1] == 0x00 && bytes[2] == 0x00 && bytes[3] == 0x27 && bytes[4] == 0x0a) {
         oceDebug(debug, "this is a shapefile; see e.g. http://en.wikipedia.org/wiki/Shapefile\n  }\n")
+        oceDebug(debug, "} # oceMagic returning shapefile\n", unindent=1, style="bold")
         return("shapefile")
     }
     if (bytes[3] == 0xff && bytes[4] == 0xff) {
-        oceDebug(debug, "this is a biosonics echosounder file")
+        oceDebug(debug, "} # oceMagic returning echosounder\n", unindent=1, style="bold")
         return("echosounder")
     }
     if (bytes[1] == 0x10 && bytes[2] == 0x02) {
-        ## 'ADPManual v710.pdf' p83
+        # 'ADPManual v710.pdf' p83
         if (96 == readBin(bytes[3:4], "integer", n=1, size=2, endian="little"))
             oceDebug(debug, "this is adp/sontek (4 byte match)\n  }\n")
         else
             oceDebug(debug, "this is adp/sontek (2 byte match, but bytes 3 and 4 should become integer 96)\n  }\n")
+        oceDebug(debug, "} # oceMagic returning adp/sontek\n", unindent=1, style="bold")
         return("adp/sontek")
     }
     if (bytes[1] == 0x7f && bytes[2] == 0x7f) {
-        oceDebug(debug, "this is adp/rdi\n  }\n")
+        oceDebug(debug, "} # oceMagic returning adp/rdi\n", unindent=1, style="bold")
         return("adp/rdi")
     }
     if (bytes[1] == 0xa5 && bytes[2] == 0x05) {
-        ## NorTek files require deeper inspection.  Here, SIG stands for "System Integrator Guide",
-        ## Dated Jue 2008 (Nortek Doc No PS100-0101-0608)
+        # NorTek files require deeper inspection.  Here, SIG stands for "System Integrator Guide",
+        # Dated Jue 2008 (Nortek Doc No PS100-0101-0608)
         seek(file, 0)
         oceDebug(debug, "This is probably a nortek file of some sort.  Reading further to see for sure ...\n")
         hardware.configuration <- readBin(file, what="raw", n=48) # FIXME: this hard-wiring is repeated elsewhere
@@ -1958,34 +1978,31 @@ oceMagic <- function(file, debug=getOption("oceDebug"))
                  paste("0x", nextTwoBytes[2], sep=''),
                  "(e.g. 0x5 0x12 is adv/nortek/vector)\n")
         if (nextTwoBytes[1] == 0xa5 && nextTwoBytes[2] == 0x12) {
-            oceDebug(debug, "these two bytes imply this is adv/nortek/vector\n")
+            oceDebug(debug, "} # oceMagic returning adv/nortek/vector\n", unindent=1, style="bold")
             return("adv/nortek/vector")
         }
         if (nextTwoBytes[1] == 0xa5 && nextTwoBytes[2] == 0x01) {
             oceDebug(debug, "these two bytes imply this is adp/nortek/aqudopp (see system-integrator-manual_jan2011.pdf Table 5.2)\n")
+            oceDebug(debug, "} # oceMagic returning adp/nortek/aquadopp\n", unindent=1, style="bold")
             return("adp/nortek/aquadopp")
         }
         if (nextTwoBytes[1] == 0xa5 && nextTwoBytes[2] == 0x81) {
             oceDebug(debug, "these two bytes imply this is adp/nortek/aqudopp (see N3015-023-Integrators-Guide-Classic_1220.pdf page 30)\n")
+            oceDebug(debug, "} # oceMagic returning adp/nortek/aquadoppPlusMagnetometer\n", unindent=1, style="bold")
             return("adp/nortek/aquadoppPlusMagnetometer")
         }
         if (nextTwoBytes[1] == 0xa5 && nextTwoBytes[2] == 0x21)  {
-            oceDebug(debug, "these two bytes imply this is adp/nortek/aqudoppProfiler\n")
+            oceDebug(debug, "} # oceMagic returning adp/nortek/aquadoppProfiler\n", unindent=1, style="bold")
             return("adp/nortek/aquadoppProfiler") # p37 SIG
         }
         if (nextTwoBytes[1] == 0xa5 && nextTwoBytes[2] == 0x2a)  {
-            oceDebug(debug, "these two bytes imply this is adp/nortek/aqudoppHR\n")
+            oceDebug(debug, "} # oceMagic returning adp/nortek/aquadoppHR\n", unindent=1, style="bold")
             return("adp/nortek/aquadoppHR") # p38 SIG
         }
         stop("some sort of nortek ... two bytes are 0x", nextTwoBytes[1], " and 0x", nextTwoBytes[2], " but cannot figure out what the type is")
-        ##} else if (as.integer(bytes[1]) == 81) {
-        ##    warning("possibly this file is a sontek ADV (first byte is 81)")
-        ##} else if (as.integer(bytes[1]) == 83) {
-        ##    warning("possibly this file is a sontek ADV (first byte is 83)")
-        ##} else if (as.integer(bytes[1]) == 87) {
-        ##    warning("possibly this file is a sontek ADV (first byte is 87)")
     }
     if (bytes[1] == 0xa5 && bytes[4] == 0x10) {
+        oceDebug(debug, "} # oceMagic returning adp/nortek/ad2cp\n", unindent=1)
         return("adp/nortek/ad2cp")
     }
     if (bytes[1] == 0x9b && bytes[2] == 0x00) {
@@ -1994,72 +2011,59 @@ oceMagic <- function(file, debug=getOption("oceDebug"))
                       " from RDI, please send them to dan.kelley@dal.ca so the format can be added."))
         return("possibly RDI CTD")
     }
-    ## if (substr(line, 1, 3) == "CTD")) {
     if (1 == length(grep("^CTD", line, useBytes=TRUE))) {
-        oceDebug(debug, "this is ctd/woce/exchange\n")
+        oceDebug(debug, "} # oceMagic returning ctd/woce/exchange\n", unindent=1, style="bold")
         return("ctd/woce/exchange")
     }
     if (1 == length(grep("^EXPOCODE", line, useBytes=TRUE))) {
-        oceDebug(debug, "this is ctd/woce/other\n")
+        oceDebug(debug, "} # oceMagic returning ctd/woce/other\n", unindent=1, style="bold")
         return("ctd/woce/other")
     }
     if (1 == length(grep("^\\s*ODF_HEADER", line, useBytes=TRUE))){
-        oceDebug(debug, "this is an ODF file\n")
+        oceDebug(debug, "} # oceMagic returning odf\n", unindent=1, style="bold")
         return("odf")
     }
     if (1 == length(grep("^\\* Sea-Bird", line, useBytes=TRUE))) {
-        oceDebug(debug, "this is ctd/sbe/19\n")
+        oceDebug(debug, "} # oceMagic returning ctd/sbe/19\n", unindent=1, style="bold")
         return("ctd/sbe/19")
     }
-    ## if ("%ITP" == substr(line, 1, 4)) {
     if (1 == length(grep("^%ITP", line, useBytes=TRUE))) {
-        oceDebug(debug, "this is ice-tethered profile\n")
+        oceDebug(debug, "} # oceMagic returning ctd/itp\n", unindent=1, style="bold")
         return("ctd/itp")
     }
-    ##if ("# -b" == substr(line, 1, 4)) {
     if (1 == length(grep("^# -b", line, useBytes=TRUE))) {
-        oceDebug(debug, "this is coastline\n")
+        oceDebug(debug, "} # oceMagic returning coastline\n", unindent=1, style="bold")
         return("coastline")
     }
-    ## if ("# Station_Name," == substr(line, 1, 15)) {
     if (1 == length(grep("^# Station_Name,", line, useBytes=TRUE))) {
-        oceDebug(debug, "this is sealevel\n")
+        oceDebug(debug, "} # oceMagic returning sealevel\n", unindent=1, style="bold")
         return("sealevel")
     }
-    ##if ("Station_Name," == substr(line, 1, 13)) {
     if (1 == length(grep("^Station_Name,", line, useBytes=TRUE))) {
-        oceDebug(debug, "this is sealevel\n")
+        oceDebug(debug, "} # oceMagic returning sealevel\n", unindent=1, style="bold")
         return("sealevel")
     }
     if (1 == length(grep("^[0-9][0-9][0-9][A-Z] ", line, useBytes=TRUE))) {
-        oceDebug(debug, "this is sealevel\n")
+        oceDebug(debug, "} # oceMagic returning sealevel\n", unindent=1, style="bold")
         return("sealevel")
     }
     if (1 == length(grep("^NCOLS[ ]*[0-9]*[ ]*$", line, useBytes=TRUE, ignore.case=TRUE))) {
-        oceDebug(debug, "this is topo\n")
+        oceDebug(debug, "} # oceMagic returning topo\n", unindent=1, style="bold")
         return("topo")
     }
-    ##if ("RBR TDR" == substr(line, 1, 7))  { ## FIXME: obsolete; to be removed Fall 2015
     if (1 == length(grep("^RBR TDR", line, useBytes=TRUE))) {
         ## FIXME: obsolete; to be removed Fall 2015
-        oceDebug(debug, "this is RBR/dat\n")
+        oceDebug(debug, "} # oceMagic returning RBR/dat\n", unindent=1, style="bold")
         return("RBR/dat")
     }
-    ## if ("Model=" == substr(line, 1, 6))  {
     if (1 == length(grep("^Model=", line, useBytes=TRUE))) {
-        oceDebug(debug, "this is RBR/txt\n")
+        oceDebug(debug, "} # oceMagic returning RBR/txt\n", unindent=1, style="bold")
         return("RBR/txt")
     }
-    ## if ("BOTTLE"  == substr(line, 1, 6))  {
     if (1 == length(grep("^BOTTLE", line, useBytes=TRUE)))  {
-        oceDebug(debug, "this is section\n")
+        oceDebug(debug, "} # oceMagic returning section\n", unindent=1, style="bold")
         return("section")
     }
-    ## if (length(grep("^//SDN_parameter_mapping", line, useBytes=TRUE)) ||
-    ##     length(grep("^//SDN_parameter_mapping", line2, useBytes=TRUE))) {
-    ##     oceDebug(debug, "this is ODV\n")
-    ##     return("ctd/odv")
-    ## }
     oceDebug(debug, "this is unknown\n")
     return("unknown")
 }
