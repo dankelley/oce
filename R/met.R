@@ -584,6 +584,14 @@ metNames2oceNames <- function(names, scheme)
 #' shown in the \dQuote{Examples}, which use data for
 #' Halifax Nova Scotia, where LST is UTC-4.
 #'
+#' @param encoding a character value indicating the encoding to use.  This
+#' parameter was added on 2022-03-03, when CRAN tests
+#' for R-devel/linux-debian-clang were found to report an error for
+#' a test file that began with a BOM (byte order
+#' marker) character. The default, `"UTF-8-BOM"` (changed from the
+#' old value of `"UTF-8"`) may handle
+#' such files, according to the documentation for [connections()].
+#'
 #' @param debug a flag that turns on debugging.  Set to 1 to get a moderate
 #' amount of debugging information, or to 2 to get more.
 #'
@@ -628,7 +636,7 @@ metNames2oceNames <- function(names, scheme)
 #'
 #' @family things related to met data
 read.met <- function(file, type=NULL, skip=NULL, tz=getOption("oceTz"),
-    debug=getOption("oceDebug"))
+    encoding="UTF-8-BOM", debug=getOption("oceDebug"))
 {
     if (missing(file))
         stop("must supply 'file'")
@@ -636,7 +644,7 @@ read.met <- function(file, type=NULL, skip=NULL, tz=getOption("oceTz"),
     ## We avoid some file() problems by insisting this is a string
     if (!is.character(file))
         stop("'file' must be a character string")
-    someLines <- readLines(file, 30, encoding="UTF-8", warn=FALSE)
+    someLines <- readLines(file, 30, encoding=encoding, warn=FALSE)
     if (length(someLines) == 0L)
         stop("no data in file")
     if (!is.null(type) && !(type %in% c("csv", "csv1", "csv2", "xml2")))
@@ -671,15 +679,15 @@ read.met <- function(file, type=NULL, skip=NULL, tz=getOption("oceTz"),
 }
 
 read.met.csv1 <- function(file, skip=NULL, tz=getOption("oceTz"),
-    debug=getOption("oceDebug"))
+    encoding="UTF-8-BOM", debug=getOption("oceDebug"))
 {
     if (missing(file))
         stop("must supply 'file'")
     if (!is.character(file))
         stop("'file' must be a character string")
-    oceDebug(debug, "read.met.csv2(\"", file, "\") {\n", sep="", unindent=1, style="bold")
+    oceDebug(debug, "read.met.csv1(\"", file, "\") {\n", sep="", unindent=1, style="bold")
     res <- new("met", time=1)
-    text <- readLines(file, encoding="UTF-8", warn=FALSE)
+    text <- readLines(file, encoding=encoding, warn=FALSE)
     oceDebug(debug, "file has", length(text), "lines\n")
     ##print(header[1:19])
     textItem <- function(text, name, numeric=TRUE) {
@@ -717,7 +725,7 @@ read.met.csv1 <- function(file, skip=NULL, tz=getOption("oceTz"),
     ## later on, when they are moved from 'data' into 'metadata$flags'.
     owarn <- options()$warn
     options(warn=-1)
-    rawData <- read.csv(text=text, skip=skip, encoding="UTF-8", header=TRUE, stringsAsFactors=TRUE)
+    rawData <- read.csv(text=text, skip=skip, encoding=encoding, header=TRUE, stringsAsFactors=TRUE)
     options(warn=owarn)
     names <- names(rawData)
     # FIXME: handle daily data, if the column names differ
@@ -899,11 +907,11 @@ read.met.csv1 <- function(file, skip=NULL, tz=getOption("oceTz"),
 
 # This handles both csv2 and csv3 types
 read.met.csv2 <- function(file, skip=NULL, tz=getOption("oceTz"),
-    debug=getOption("oceDebug"))
+    encoding="UTF-8-BOM", debug=getOption("oceDebug"))
 {
     if (!is.character(file))
         stop("'file' must be a character string")
-    oceDebug(debug, "read.met.csv2(\"", file, "\") {\n", sep="", unindent=1, style="bold")
+    oceDebug(debug, "read.met.csv2(\"", file, "\") { # for either type 2 or 3 \n", sep="", unindent=1, style="bold")
     # Sample first two lines of a csv2 type file (as of 2019 oct 12)
     # "Longitude (x)","Latitude (y)","Station Name","Climate ID","Date/Time","Year","Month","Day","Time","Temp (°C)","Temp Flag","Dew Point Temp (°C)","Dew Point Temp Flag","Rel Hum (%)","Rel Hum Flag","Wind Dir (10s deg)","Wind Dir Flag","Wind Spd (km/h)","Wind Spd Flag","Visibility (km)","Visibility Flag","Stn Press (kPa)","Stn Press Flag","Hmdx","Hmdx Flag","Wind Chill","Wind Chill Flag","Weather"
     # "-94.97","74.72","RESOLUTE BAY A","2403497","2019-10-01 00:00","2019","10","01","00:00","-3.2","","-4.6","","90","","18","","36","","","M","100.35","","","","-11","","NA"
@@ -914,9 +922,9 @@ read.met.csv2 <- function(file, skip=NULL, tz=getOption("oceTz"),
     res <- new("met", time=1)
     owarn <- options()$warn
     options(warn=-1)
-    text <- readLines(file, 1, encoding="UTF-8", warn=FALSE)
+    text <- readLines(file, 1, encoding=encoding, warn=FALSE)
     dataNames <- strsplit(gsub('"', '', text[1]), ",")[[1]]
-    data <- read.csv(file, skip=1, encoding="UTF-8", header=FALSE)
+    data <- read.csv(file, skip=1, encoding=encoding, header=FALSE)
     options(warn=owarn)
     if ("Dew Point Temp (\u00B0C)" %in% dataNames) {
         res@metadata$units$dewPoint <- list(unit=expression(degree*C), scale="ITS-90")
