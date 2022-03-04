@@ -222,6 +222,7 @@ Other things related to odf data:
 \code{\link{summary,odf-method}}
 
 Other functions that read ctd data: 
+\code{\link{read.ctd.aml}()},
 \code{\link{read.ctd.itp}()},
 \code{\link{read.ctd.sbe}()},
 \code{\link{read.ctd.woce.other}()},

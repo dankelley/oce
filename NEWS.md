@@ -2,6 +2,7 @@
 
 ## 1.7.0
 
+* Add `read.ctd.aml()`.
 * Change `read.met()` to handle a new `encoding` argument.
 * Fix `drawPalette()` to obey the `at` and `labels` arguments.
 * Fix `plot,ctd-method()` to recognize `which=13` for spice.

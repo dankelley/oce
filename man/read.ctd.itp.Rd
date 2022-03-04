@@ -132,6 +132,7 @@ Other things related to ctd data:
 \code{\link{write.ctd}()}
 
 Other functions that read ctd data: 
+\code{\link{read.ctd.aml}()},
 \code{\link{read.ctd.odf}()},
 \code{\link{read.ctd.sbe}()},
 \code{\link{read.ctd.woce.other}()},
