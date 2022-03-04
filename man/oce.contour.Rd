@@ -58,7 +58,7 @@ pressure or depth below the surface.
 \examples{
 library(oce)
 data(topoWorld)
-## coastline now, and in last glacial maximum
+# coastline now, and in last glacial maximum
 lon <- topoWorld[["longitude"]]
 lat <- topoWorld[["latitude"]]
 z <- topoWorld[["z"]]

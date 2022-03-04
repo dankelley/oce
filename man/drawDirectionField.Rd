@@ -106,7 +106,7 @@ plot(c(-1.5, 1.5), c(-1.5, 1.5), xlab="", ylab="", type='n')
 drawDirectionField(x=rep(0, 2), y=rep(0, 2), u=c(1, 1), v=c(1, -1), scalex=0.5, add=TRUE,
                    type=2)
 
-## 2D example
+# 2D example
 x <- seq(-2, 2, 0.1)
 y <- x
 xx <- expand.grid(x, y)[,1]
