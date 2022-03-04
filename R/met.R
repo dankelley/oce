@@ -656,10 +656,10 @@ read.met <- function(file, type=NULL, skip=NULL, tz=getOption("oceTz"),
                 type <- "xml2"
         } else {
             ## must be a csv
-            if (1 == length(grep('^.?"WMO Identifier",', someLines))) {
+            if (1 == length(grep('"WMO Identifier",', someLines))) {
                 type <- "csv1"
-            } else if (grepl('^.?"Longitude.[^"]*","Latitude[^"]*","Station Name","Climate ID"', someLines[1])) {
-                type <- if (grepl("Time \\(LST\\)", someLines[1])) "csv3" else "csv2"
+            } else if (grepl('Longitude.*Latitude.*Station Name.*Climate ID', someLines[1], useBytes=TRUE)) {
+                type <- if (grepl("Time \\(LST\\)", someLines[1], useBytes=TRUE)) "csv3" else "csv2"
             } else {
                 stop("cannot determine type from file contents; the first line is '", someLines[1], "'")
             }
