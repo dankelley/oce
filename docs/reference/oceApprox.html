@@ -18,7 +18,7 @@ tends minimize extrema that are not well-indicated by the data."><!-- mathjax --
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.6-1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-0</span>
       </span>
     </div>
 
@@ -159,7 +159,7 @@ Scientific and Cultural Organization, France.</p></li>
 <span class="r-in">    <span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">RRprofile</span><span class="op">)</span></span>
 <span class="r-in">    <span class="va">zz</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">2000</span>, <span class="fl">2</span><span class="op">)</span></span>
 <span class="r-in">    <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">RRprofile</span><span class="op">$</span><span class="va">temperature</span>, <span class="va">RRprofile</span><span class="op">$</span><span class="va">depth</span>, ylim<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">500</span>, <span class="fl">0</span><span class="op">)</span>, xlim<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">11</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in">    <span class="co">## Contrast two methods</span></span>
+<span class="r-in">    <span class="co"># Contrast two methods</span></span>
 <span class="r-in">    <span class="va">a1</span> <span class="op">&lt;-</span> <span class="fu">oce.approx</span><span class="op">(</span><span class="va">RRprofile</span><span class="op">$</span><span class="va">depth</span>, <span class="va">RRprofile</span><span class="op">$</span><span class="va">temperature</span>, <span class="va">zz</span>, <span class="st">"rr"</span><span class="op">)</span></span>
 <span class="r-in">    <span class="va">a2</span> <span class="op">&lt;-</span> <span class="fu">oce.approx</span><span class="op">(</span><span class="va">RRprofile</span><span class="op">$</span><span class="va">depth</span>, <span class="va">RRprofile</span><span class="op">$</span><span class="va">temperature</span>, <span class="va">zz</span>, <span class="st">"unesco"</span><span class="op">)</span></span>
 <span class="r-in">    <span class="fu"><a href="https://rdrr.io/r/graphics/lines.html" class="external-link">lines</a></span><span class="op">(</span><span class="va">a1</span>, <span class="va">zz</span><span class="op">)</span></span>

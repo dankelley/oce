@@ -20,7 +20,7 @@ when a user finds that the format has changed."><!-- mathjax --><script src="htt
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.6-1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-0</span>
       </span>
     </div>
 
@@ -89,6 +89,7 @@ when a user finds that the format has changed.</p>
   type <span class="op">=</span> <span class="cn">NULL</span>,
   skip <span class="op">=</span> <span class="cn">NULL</span>,
   tz <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"oceTz"</span><span class="op">)</span>,
+  encoding <span class="op">=</span> <span class="st">"UTF-8-BOM"</span>,
   debug <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"oceDebug"</span><span class="op">)</span>
 <span class="op">)</span></code></pre></div>
     </div>
@@ -126,6 +127,14 @@ data in Local Standard Time (LST).  Since LST differs from city
 to city, users must make corrections to the time, as
 shown in the “Examples”, which use data for
 Halifax Nova Scotia, where LST is UTC-4.</p></dd>
+<dt>encoding</dt>
+<dd><p>a character value indicating the encoding to use.  This
+parameter was added on 2022-03-03, when CRAN tests
+for R-devel/linux-debian-clang were found to report an error for
+a test file that began with a BOM (byte order
+marker) character. The default, <code>"UTF-8-BOM"</code> (changed from the
+old value of <code>"UTF-8"</code>) may handle
+such files, according to the documentation for <code><a href="https://rdrr.io/r/base/connections.html" class="external-link">connections()</a></code>.</p></dd>
 <dt>debug</dt>
 <dd><p>a flag that turns on debugging.  Set to 1 to get a moderate
 amount of debugging information, or to 2 to get more.</p></dd>

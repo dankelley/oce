@@ -22,7 +22,7 @@ inset."><!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/math
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.6-1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-0</span>
       </span>
     </div>
 
@@ -132,7 +132,7 @@ amount of debugging information, or to 2 to get more.</p></dd>
     <div id="ref-examples">
     <h2>Examples</h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dankelley.github.io/oce/" class="external-link">oce</a></span><span class="op">)</span></span>
-<span class="r-in"><span class="co">## power law in linear and log form</span></span>
+<span class="r-in"><span class="co"># power law in linear and log form</span></span>
 <span class="r-in"><span class="va">x</span> <span class="op">&lt;-</span> <span class="fl">1</span><span class="op">:</span><span class="fl">10</span></span>
 <span class="r-in"><span class="va">y</span> <span class="op">&lt;-</span> <span class="va">x</span><span class="op">^</span><span class="fl">2</span></span>
 <span class="r-in"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">y</span>, log<span class="op">=</span><span class="st">'xy'</span>,type<span class="op">=</span><span class="st">'l'</span><span class="op">)</span></span>
@@ -141,7 +141,7 @@ amount of debugging information, or to 2 to get more.</p></dd>
 <span class="r-in">          mar<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2.5</span>, <span class="fl">2.5</span>, <span class="fl">1</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span></span>
 <span class="r-plt img"><img src="plotInset-1.png" alt="" width="700" height="433"></span>
 <span class="r-in"></span>
-<span class="r-in"><span class="co">## CTD data with location</span></span>
+<span class="r-in"><span class="co"># CTD data with location</span></span>
 <span class="r-in"><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">ctd</span><span class="op">)</span></span>
 <span class="r-in"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">ctd</span>, which<span class="op">=</span><span class="st">"TS"</span><span class="op">)</span></span>
 <span class="r-in"><span class="fu">plotInset</span><span class="op">(</span><span class="fl">29.9</span>, <span class="fl">2.7</span>, <span class="fl">31</span>, <span class="fl">10</span>,</span>
