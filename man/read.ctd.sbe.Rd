@@ -169,11 +169,8 @@ Note that reading a file that contains IPTS-68 temperatures produces a warning.
 
 \examples{
 f <- system.file("extdata", "ctd.cnv", package="oce")
-## Read the file in the normal way
+# Read the file in the normal way
 d <- read.ctd(f)
-## Read an imaginary file, in which salinity is named 'salt'
-d <- read.ctd(f, columns=list(
-  salinity=list(name="salt", unit=list(unit=expression(), scale="PSS-78"))))
 
 }
 \references{

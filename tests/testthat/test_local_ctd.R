@@ -86,13 +86,18 @@ if (1 == length(list.files(path=".", pattern="local_data"))) {
         # pressure column was calculated and inserted into the file,
         # and in which also the header line was changed to say that
         # pressure is in English units.
-        expect_warning(d1 <- read.oce("local_data/ctd.cnv"),
-            "this CNV file has temperature in the IPTS-68 scale")
         expect_warning(
             expect_warning(
-                d2 <- read.oce("local_data/ctd_with_psi.cnv"),
-                "created 'pressure' from 'pressurePSI'"),
-            "this CNV file has temperature in the IPTS-68 scale")
+                d1 <- read.oce("local_data/ctd.cnv"),
+                "this CNV file has temperature in the IPTS-68 scale"),
+            "startTime < 1950, suggesting y2k problem in this cnv file")
+        expect_warning(
+            expect_warning(
+                expect_warning(
+                    d2 <- read.oce("local_data/ctd_with_psi.cnv"),
+                    "created 'pressure' from 'pressurePSI'"),
+                "this CNV file has temperature in the IPTS-68 scale"),
+            "startTime < 1950, suggesting y2k problem in this cnv file")
         # use 1e-5 to reflect the number of digits I was using in
         # creating and then cut/pasting the fake data
         expect_equal(d1[["pressure"]], d2[["pressure"]], tolerance=1e-5)
