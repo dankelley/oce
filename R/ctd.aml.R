@@ -33,12 +33,17 @@
 #'
 #' @template debugTemplate
 #'
+#' @param processingLog ignored.
+#'
+#' @param ... ignored.
+#'
 #' @return [read.ctd.aml()] returns a [ctd-class] object.
 #'
 #' @author Dan Kelley
 #'
 #' @family functions that read ctd data
-read.ctd.aml <- function(file, debug=getOption("oceDebug"))
+read.ctd.aml <- function(file, debug=getOption("oceDebug"),
+    processingLog, ...)
 {
     oceDebug(debug, "read.ctd.aml() {\n", unindent=1, style="bold")
     if (!missing(file) && is.character(file) && 0 == file.info(file)$size)
@@ -104,11 +109,13 @@ read.ctd.aml <- function(file, debug=getOption("oceDebug"))
     if (is.null(T))
         stop("depth not found, because no column was named \"Depth (m)\"")
     S <- swSCTp(conductivity=C, temperature=T, pressure=p, conductivityUnit="mS/cm", eos="unesco")
-    rval <- as.ctd(S, T, p, longitude=longitude, latitude=latitude,
+    res <- as.ctd(S, T, p, longitude=longitude, latitude=latitude,
         serialNumber=serialNumber)
-    rval@metadata$filename <- filename
-    rval@metadata$header <- header
-    rval@data$time <- time
+    res@metadata$filename <- filename
+    res@metadata$header <- header
+    res@data$time <- time
+    res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+
     oceDebug(debug, "} # read.ctd.aml() {\n", unindent=1, style="bold")
-    rval
+    res
 }

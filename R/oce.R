@@ -1670,7 +1670,19 @@ oceMagic <- function(file, debug=getOption("oceDebug"))
         }
     }
     if (is.character(file)) {
-        oceDebug(debug, "this is a textual file\n")
+        oceDebug(debug, "'file' is a character value\n")
+        # Check for an AML file
+        if (grepl(".txt$", filename)) {
+            someLines <- readLines(file, encoding="UTF-8", n=10L)
+            typeLine <- grep("Type=", someLines)
+            if (length(typeLine) > 0L) {
+                if (grepl("Base.X2", someLines[typeLine[1]])) {
+                    oceDebug(debug, "} # oceMagic returning aml/txt\n", unindent=1, style="bold")
+                    return("aml/txt")
+                }
+            }
+        }
+        # Check for a lisst file
         if (grepl(".asc$", filename)) {
             someLines <- readLines(file, encoding="UTF-8", n=1)
             if (42 == length(strsplit(someLines[1], ' ')[[1]])) {
@@ -1796,7 +1808,7 @@ oceMagic <- function(file, debug=getOption("oceDebug"))
     }
     if (!inherits(file, "connection"))
         stop("argument `file' must be a character string or connection")
-    oceDebug(debug, "working with a connection\n")
+    oceDebug(debug, "'file' is a connection\n")
     if (!isOpen(file))
         open(file, "r")
     # Grab text at start of file.
@@ -1978,8 +1990,8 @@ oceMagic <- function(file, debug=getOption("oceDebug"))
 read.oce <- function(file, ...)
 {
     dots <- list(...)
-    debug <- if ("debug" %in% names(dots)) dots$debug else 0L
-    debug <- round(max(0L, debug))
+    debug <- if ("debug" %in% names(dots)) as.integer(dots$debug) else 0L
+    debug <- max(0L, debug)
     if (missing(file))
         stop("must supply 'file'")
     if (is.character(file) && "http://" != substr(file, 1, 7) && !file.exists(file))
@@ -2020,6 +2032,8 @@ read.oce <- function(file, ...)
         res <- read.adv.nortek(file, processingLog=processingLog, ...)
     } else if (type == "adv/sontek/adr") {
         res <- read.adv.sontek.adr(file, processingLog=processingLog, ...)
+    } else if (type == "aml/txt") {
+        res <- read.ctd.aml(file, processingLog=processingLog, ...)
     # FIXME need adv/sontek (non adr)
     } else if (type == "interocean/s4") {
         res <- read.cm.s4(file, processingLog=processingLog, ...)

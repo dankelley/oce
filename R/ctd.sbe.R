@@ -760,8 +760,9 @@ cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
 #' and this was the reference version used in coding `oce`.
 #'
 #' @family functions that read ctd data
-read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue, deploymentType="unknown", btl=FALSE,
-                         monitor=FALSE, debug=getOption("oceDebug"), processingLog, ...)
+read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
+    deploymentType="unknown", btl=FALSE, monitor=FALSE,
+    debug=getOption("oceDebug"), processingLog, ...)
 {
     if (!missing(file) && is.character(file) && 0 == file.info(file)$size)
         stop("empty file")
@@ -1265,8 +1266,6 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue, deploym
     ## in user code, and it became unnecessary when the scale started being
     ## stored in the unit. See the "note on scales" in the documentation for
     ## the scheme used to prevent problems.
-
-
     oceDebug(debug, "} # read.ctd.sbe()\n")
     res
 }

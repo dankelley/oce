@@ -4,7 +4,7 @@
 \alias{read.ctd.aml}
 \title{Read an AML CTD file}
 \usage{
-read.ctd.aml(file, debug = getOption("oceDebug"))
+read.ctd.aml(file, debug = getOption("oceDebug"), processingLog, ...)
 }
 \arguments{
 \item{file}{a connection or a character string giving the name of the file to
@@ -17,6 +17,10 @@ turns off the printing, while higher values suggest that more information
 be printed. If one function calls another, it usually reduces the value of
 \code{debug} first, so that a user can often obtain deeper debugging
 by specifying higher \code{debug} values.}
+
+\item{processingLog}{ignored.}
+
+\item{...}{ignored.}
 }
 \value{
 \code{\link[=read.ctd.aml]{read.ctd.aml()}} returns a \linkS4class{ctd} object.
