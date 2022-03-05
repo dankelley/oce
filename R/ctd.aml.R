@@ -109,7 +109,8 @@ read.ctd.aml <- function(file, debug=getOption("oceDebug"),
     if (is.null(T))
         stop("depth not found, because no column was named \"Depth (m)\"")
     S <- swSCTp(conductivity=C, temperature=T, pressure=p, conductivityUnit="mS/cm", eos="unesco")
-    res <- as.ctd(S, T, p, longitude=longitude, latitude=latitude,
+    res <- as.ctd(salinity=S, temperature=T, pressure=p, conductivity=C,
+        longitude=longitude, latitude=latitude,
         serialNumber=serialNumber)
     res@metadata$filename <- filename
     res@metadata$header <- header
