@@ -2,7 +2,7 @@
 
 <!-- badges: start -->
 
-[![status](https://joss.theoj.org/papers/10.21105/joss.03594i/status.svg)](https://joss.theoj.org/papers/10.21105/joss.03594)
+[![status](https://joss.theoj.org/papers/10.21105/joss.03594/status.svg)](https://joss.theoj.org/papers/10.21105/joss.03594)
 [![R-CMD-check](https://github.com/dankelley/oce/workflows/R-CMD-check/badge.svg)](https://github.com/dankelley/oce/actions)
 [![Codecov test
 coverage](https://codecov.io/gh/dankelley/oce/branch/develop/graph/badge.svg)](https://app.codecov.io/gh/dankelley/oce?branch=develop)
