@@ -2814,7 +2814,9 @@ sectionGrid <- function(section, p, method="approx", trim=TRUE, debug=getOption(
 #' plot(gsBarnes, which="temperature")
 #' mtext("Barnes-smoothed")
 #'
-#' # Kriging
+#' # Kriging. This works one day, fails another, on linux/R-devel CRAN
+#' # machines, so it is marked as don't run.
+#'\dontrun{
 #'if (requireNamespace("automap",quietly=TRUE)&&requireNamespace("sp",quietly=TRUE)) {
 #'  krig <- function(x, y, F, xg, xr, yg, yr) {
 #'    xy <- data.frame(x=x/xr, y=y/yr)
@@ -2826,6 +2828,7 @@ sectionGrid <- function(section, p, method="approx", trim=TRUE, debug=getOption(
 #'  gsKrig <- sectionSmooth(gs, krig)
 #'  plot(gsKrig, which="temperature")
 #'  mtext("Kriging-smoothed")
+#'}
 #'}
 #'
 #' @author Dan Kelley

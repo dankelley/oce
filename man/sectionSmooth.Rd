@@ -161,7 +161,9 @@ gsBarnes <- sectionSmooth(gs, "barnes", xr=50, yr=200)
 plot(gsBarnes, which="temperature")
 mtext("Barnes-smoothed")
 
-# Kriging
+# Kriging. This works one day, fails another, on linux/R-devel CRAN
+# machines, so it is marked as don't run.
+\dontrun{
 if (requireNamespace("automap",quietly=TRUE)&&requireNamespace("sp",quietly=TRUE)) {
  krig <- function(x, y, F, xg, xr, yg, yr) {
    xy <- data.frame(x=x/xr, y=y/yr)
@@ -173,6 +175,7 @@ if (requireNamespace("automap",quietly=TRUE)&&requireNamespace("sp",quietly=TRUE
  gsKrig <- sectionSmooth(gs, krig)
  plot(gsKrig, which="temperature")
  mtext("Kriging-smoothed")
+}
 }
 
 }
