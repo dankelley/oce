@@ -297,16 +297,22 @@ test_that("ability to change conductivityUnit", {
 })
 
 test_that("column renaming with a cnv file", {
-    expect_warning(d1 <- read.oce(system.file("extdata", "ctd.cnv", package="oce")),
-        "this CNV file has temperature in the IPTS\\-68 scale")
+    expect_warning(
+        expect_warning(
+            d1 <- read.oce(system.file("extdata", "ctd.cnv", package="oce")),
+            "this CNV file has temperature in the IPTS\\-68 scale"),
+        "startTime < 1950, suggesting y2k problem in this cnv file")
     expect_equal(names(d1[["data"]]),
         c("scan","timeS","pressure","depth","temperature","salinity","flag"))
     expect_warning(
-        expect_warning(d2 <- read.oce(system.file("extdata", "ctd.cnv", package="oce"),
-                columns=list(FAKE=list(name="sal00",
-                        unit=list(unit=expression(), scale="PSS-78")))),
-            "this CNV file has temperature in the IPTS\\-68 scale"),
-        "cannot find salinity or conductivity in .cnv file")
+        expect_warning(
+            expect_warning(
+                d2 <- read.oce(system.file("extdata", "ctd.cnv", package="oce"),
+                    columns=list(FAKE=list(name="sal00",
+                            unit=list(unit=expression(), scale="PSS-78")))),
+                "this CNV file has temperature in the IPTS\\-68 scale"),
+            "cannot find salinity or conductivity in .cnv file"),
+        "startTime < 1950, suggesting y2k problem in this cnv file")
     expect_equal(names(d2[["data"]]),
         c("scan","timeS","pressure","depth","temperature","FAKE","flag"))
 })
@@ -320,8 +326,11 @@ test_that("column renaming with a cnv file", {
 ##'** Latitude:  N44 41.056'
 ##'** Longitude: w63 38.633'
 test_that("Dalhousie-produced cnv file", {
-    expect_warning(d1 <- read.oce(system.file("extdata", "ctd.cnv", package="oce")),
-        "this CNV file has temperature in the IPTS\\-68 scale")
+    expect_warning(
+        expect_warning(
+            d1 <- read.oce(system.file("extdata", "ctd.cnv", package="oce")),
+            "this CNV file has temperature in the IPTS\\-68 scale"),
+        "startTime < 1950, suggesting y2k problem in this cnv file")
     expect_equal(d1[["temperatureUnit"]]$unit, expression(degree*C))
     # NB. the file holds IPTS-68 but we # store ITS-90 internally
     expect_equal(d1[["temperatureUnit"]]$scale, "IPTS-68")
