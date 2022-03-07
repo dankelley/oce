@@ -70,3 +70,4 @@ CRAN-RELEASE
 inst/joss
 
 ^CRAN-SUBMISSION$
+README.tex
