@@ -70,3 +70,5 @@ CRAN-RELEASE
 inst/joss
 
 ^CRAN-SUBMISSION$
+doc/
+Meta/
