@@ -145,7 +145,7 @@ read.ctd.aml <- function(file, debug=getOption("oceDebug"),
     }
     S <- swSCTp(conductivity=data$conductivity,
         temperature=data$temperature, pressure=data$pressure,
-        conductivityUnit="mS/cm", eos="unesco")
+        conductivityUnit="mS/cm", eos="gsw") # use gsw to get better results for S<2.
     res <- as.ctd(salinity=S, temperature=data$temperature,
         pressure=data$pressure, conductivity=data$conductivity,
         longitude=longitude, latitude=latitude,
