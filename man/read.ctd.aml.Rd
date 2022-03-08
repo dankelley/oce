@@ -10,13 +10,9 @@ read.ctd.aml(file, debug = getOption("oceDebug"), processingLog, ...)
 \item{file}{a connection or a character string giving the name of the file to
 load.}
 
-\item{debug}{an integer specifying whether debugging information is
-to be printed during the processing. This is a general parameter that
-is used by many \code{oce} functions. Generally, setting \code{debug=0}
-turns off the printing, while higher values suggest that more information
-be printed. If one function calls another, it usually reduces the value of
-\code{debug} first, so that a user can often obtain deeper debugging
-by specifying higher \code{debug} values.}
+\item{debug}{an integer controlling whether to print debugging
+information during processing. Use 0 for quiet processing, or
+any positive number to see some output.}
 
 \item{processingLog}{ignored.}
 
@@ -36,45 +32,43 @@ with files that do not match the \code{\link[=read.ctd.aml]{read.ctd.aml()}}
 requirements.
 }
 \details{
-The sample file upon which \code{\link[=read.ctd.aml]{read.ctd.aml()}} is based starts
-with a line containing\preformatted{Date,Time,Conductivity (mS/cm),Temperature (C),Depth (m),Battery (V)
-}
+The first step in processing is to examine the first line of
+the file, and to interpret it as a comma-separated list of column
+names.  If this list does not contain each of \code{"Date"},
+\code{"Time"}, \code{"Conductivity (mS/cm)"} and \code{"Temperature (C)"},
+then an error message is printed.
 
-and this must also be true of any file provided to the function.
-The entries of this line are the names of columnar data that appear later
-in the file, in comma-separated format.
-Those columns are assumed to start two lines below
-a line starting with\preformatted{Comments:
-}
+The next step is to break up each line in the file into
+comma-separated elements, and to take note of the lines
+that have the same number of elements as the first line.
+Those lines are considered to be data, and are read with
+\code{\link[=read.csv]{read.csv()}}.  Lines after the first, and before the first
+data line are stored as \code{header} in the \code{metadata} slot
+of the returned value, while the data (with columns renamed
+to match oce conventions) are stored in the \code{data} slot.
+If pressure is not found in the data, but depth is, then
+pressure is computed with \code{\link[=swPressure]{swPressure()}} and stored in the
+\code{data} slot.  Salinity is then inferred with \code{\link[=swSCTp]{swSCTp()}}
+and inserted into the \code{data} slot.
 
-and the lines above that are copied to an item named \code{header} in the
-\code{metadata} slot of the returned value.  That slot also
-holds \code{Longitude} and \code{Latitude}, inferred from the header, along
-with some other items.
+Some extra processing is done to take account of units,
+and to extract certain elements from the header, particularly
+position (stored as \code{longitude} and \code{latitude} in the \code{metadata}
+slot), and these are inserted into the return value, which
+is constructed with \code{\link[=as.ctd]{as.ctd()}}.
 }
 \section{Alternatives to this function}{
 
-It is not difficult to read files that fail to meet the requirements of
-\code{\link[=read.ctd.aml]{read.ctd.aml()}}.  The first step is to examine the file (\emph{without}
-modifying it) using a text-based editor.  With this, it should be
-easy to recognize a header at the start of the file. Take
-note of the Longitude and Latitude, which you will need later,
-along with any other information (e.g. serial numbers, etc.) that
-you deem to be of interest.
-
-Next, find the line where the columnar data start.  This will be used as the
-\code{skip} argument in a call to e.g. \code{\link[=read.csv]{read.csv()}} or \code{\link[=read.delim]{read.delim()}} that you
-will use to read the data.  Use \code{header=FALSE} in that function call, so that
-the resultant value will be an object with entries named \code{V1}, \code{V2}, etc.  You
-must determine the meaning of those columns, from the header or from some
-other information.
-
-You will be creating a \linkS4class{ctd} object with \code{\link[=as.ctd]{as.ctd()}}. This function
-needs salinity, temperature, and pressure.  For modern computations phrased
-in terms of the TEOS-10 equation of state, it also needs longitude and
-latitude.  Pressure may be computed with \code{\link[=swPressure]{swPressure()}}, and
-salinity with \code{\link[=swSCTp]{swSCTp()}}. Given all these values, the
-final step is to use \code{\link[=as.ctd]{as.ctd()}} to create a \linkS4class{ctd} object.
+If \code{\link[=read.ctd.aml]{read.ctd.aml()}} fails to read a user's data file, all is
+not lost, because a bit of work in a plain-text editor is likely
+to reveal the data structure, so a user can extract elements
+to be used with \code{\link[=as.ctd]{as.ctd()}} using procedures akin to those listed
+in the \sQuote{Details} section.  Of course, the file must contain
+conductivity, temperature and pressure (or depth, from which pressure
+can be computed) because these three things are needed for
+\linkS4class{ctd} objects.  Adding longitude and latitude to the \code{\link[=as.ctd]{as.ctd()}}
+call is recommended, if the desire is to use the modern TEOS-10
+equation of state.
 }
 
 \seealso{

@@ -11,51 +11,49 @@
 #' with files that do not match the [read.ctd.aml()]
 #' requirements.
 #'
-#' The sample file upon which [read.ctd.aml()] is based starts
-#' with a line containing
-#'```
-#'Date,Time,Conductivity (mS/cm),Temperature (C),Depth (m),Battery (V)
-#'```
-#' and this must also be true of any file provided to the function.
-#' The entries of this line are the names of columnar data that appear later
-#' in the file, in comma-separated format.
-#' Those columns are assumed to start two lines below
-#' a line starting with
-#'```
-#'Comments:
-#'```
-#' and the lines above that are copied to an item named `header` in the
-#' `metadata` slot of the returned value.  That slot also
-#' holds `Longitude` and `Latitude`, inferred from the header, along
-#' with some other items.
+#' The first step in processing is to examine the first line of
+#' the file, and to interpret it as a comma-separated list of column
+#' names.  If this list does not contain each of `"Date"`,
+#' `"Time"`, `"Conductivity (mS/cm)"` and `"Temperature (C)"`,
+#' then an error message is printed.
+#'
+#' The next step is to break up each line in the file into
+#' comma-separated elements, and to take note of the lines
+#' that have the same number of elements as the first line.
+#' Those lines are considered to be data, and are read with
+#' [read.csv()].  Lines after the first, and before the first
+#' data line are stored as `header` in the `metadata` slot
+#' of the returned value, while the data (with columns renamed
+#' to match oce conventions) are stored in the `data` slot.
+#' If pressure is not found in the data, but depth is, then
+#' pressure is computed with [swPressure()] and stored in the
+#' `data` slot.  Salinity is then inferred with [swSCTp()]
+#' and inserted into the `data` slot.
+#'
+#' Some extra processing is done to take account of units,
+#' and to extract certain elements from the header, particularly
+#' position (stored as `longitude` and `latitude` in the `metadata`
+#' slot), and these are inserted into the return value, which
+#' is constructed with [as.ctd()].
 #'
 #' @section Alternatives to this function:
-#' It is not difficult to read files that fail to meet the requirements of
-#' [read.ctd.aml()].  The first step is to examine the file (*without*
-#' modifying it) using a text-based editor.  With this, it should be
-#' easy to recognize a header at the start of the file. Take
-#' note of the Longitude and Latitude, which you will need later,
-#' along with any other information (e.g. serial numbers, etc.) that
-#' you deem to be of interest.
-#'
-#' Next, find the line where the columnar data start.  This will be used as the
-#' `skip` argument in a call to e.g. [read.csv()] or [read.delim()] that you
-#' will use to read the data.  Use `header=FALSE` in that function call, so that
-#' the resultant value will be an object with entries named `V1`, `V2`, etc.  You
-#' must determine the meaning of those columns, from the header or from some
-#' other information.
-#'
-#' You will be creating a [ctd-class] object with [as.ctd()]. This function
-#' needs salinity, temperature, and pressure.  For modern computations phrased
-#' in terms of the TEOS-10 equation of state, it also needs longitude and
-#' latitude.  Pressure may be computed with [swPressure()], and
-#' salinity with [swSCTp()]. Given all these values, the
-#' final step is to use [as.ctd()] to create a [ctd-class] object.
+#' If [read.ctd.aml()] fails to read a user's data file, all is
+#' not lost, because a bit of work in a plain-text editor is likely
+#' to reveal the data structure, so a user can extract elements
+#' to be used with [as.ctd()] using procedures akin to those listed
+#' in the \sQuote{Details} section.  Of course, the file must contain
+#' conductivity, temperature and pressure (or depth, from which pressure
+#' can be computed) because these three things are needed for
+#' [ctd-class] objects.  Adding longitude and latitude to the [as.ctd()]
+#' call is recommended, if the desire is to use the modern TEOS-10
+#' equation of state.
 #'
 #' @param file a connection or a character string giving the name of the file to
 #' load.
 #'
-#' @template debugTemplate
+#' @param debug an integer controlling whether to print debugging
+#' information during processing. Use 0 for quiet processing, or
+#' any positive number to see some output.
 #'
 #' @param processingLog ignored.
 #'
@@ -69,6 +67,7 @@
 read.ctd.aml <- function(file, debug=getOption("oceDebug"),
     processingLog, ...)
 {
+    debug <- max(0L, as.integer(debug))
     oceDebug(debug, "read.ctd.aml() {\n", unindent=1, style="bold")
     if (!missing(file) && is.character(file) && 0 == file.info(file)$size)
         stop("empty file")
@@ -101,6 +100,7 @@ read.ctd.aml <- function(file, debug=getOption("oceDebug"),
         res
     }
     lines <- readLines(file, encoding="UTF-8-BOM", warn=FALSE)
+    oceDebug(debug, "read ", length(lines), " lines in this file\n")
     # FIXME: add other relevant metadata here.  This will require some
     # familiarity with the typical contents of the metadata.  For example,
     # I see 'SN' and 'BoardSN', and am inferring that we want to save
@@ -108,41 +108,69 @@ read.ctd.aml <- function(file, debug=getOption("oceDebug"),
     longitude <- getMetadataItem(lines, "Longitude")
     latitude <- getMetadataItem(lines, "Latitude")
     serialNumber <- getMetadataItem(lines, "SN")
-    Date <- getMetadataItem(lines, "Date", numeric=FALSE)
-    Time <- getMetadataItem(lines, "Time", numeric=FALSE)
-    time <- as.POSIXct(paste(Date, Time), tz="UTC")
+    #?Date <- getMetadataItem(lines, "Date", numeric=FALSE)
+    #?Time <- getMetadataItem(lines, "Time", numeric=FALSE)
+    #?time <- as.POSIXct(paste(Date, Time), tz="UTC")
     col.names <- strsplit(lines[1], ",")[[1]]
+    oceDebug(debug, "original column names: c(\"", paste(col.names, collapse="\", \""), "\")\n")
     if (length(col.names) < 3L) # need at least C, T and p/z
         stop("the first line, shown below, is not in the expected form.\n",lines[1])
-    CommentsLine <- grep("^Comments=", lines)
-    oceDebug(debug, "CommentsLine=", CommentsLine, "\n")
-    header <- lines[seq(1L, CommentsLine)]
-    data <- read.csv(text=lines, skip=CommentsLine+1, header=FALSE, col.names=col.names)
-    Date <- data[["Date"]]
-    if (is.null(Date))
-        stop("Date not found, because no column was named \"Date\"")
-    Time <- data[["Time"]]
-    if (is.null(Time))
-        stop("Time not found, because no column was named \"Time\"")
-    time <- as.POSIXct(paste(Date, Time), tz="UTC")
-    T <- data[["Temperature..C."]]
-    if (is.null(T))
-        stop("temperature not found, because no column was named \"Temperature (C)\"")
-    C <- data[["Conductivity..mS.cm."]]
-    if (is.null(T))
-        stop("conductivity not found, because no column was named \"Conductivity (mS/cm)\"")
-    p <- swPressure(data[["Depth..m."]], latitude)
-    if (is.null(T))
-        stop("depth not found, because no column was named \"Depth (m)\"")
-    S <- swSCTp(conductivity=C, temperature=T, pressure=p, conductivityUnit="mS/cm", eos="unesco")
-    res <- as.ctd(salinity=S, temperature=T, pressure=p, conductivity=C,
+    if (!("Date" %in% col.names))
+        stop("No 'Date' column found")
+    if (!("Time" %in% col.names))
+        stop("No 'Time' column found")
+    if (!("Temperature (C)" %in% col.names))
+        stop("No 'Temperature (C)' column found")
+    if (!("Conductivity (mS/cm)" %in% col.names))
+        stop("No 'Conductivity (mS/cm)' column found")
+    col.names[col.names == "Temperature (C)"] <- "temperature"
+    col.names[col.names == "Conductivity (mS/cm)"] <- "conductivity"
+    col.names[col.names == "Depth (m)"] <- "depth"
+    col.names[col.names == "Battery (V)"] <- "battery"
+    oceDebug(debug, "transformed column names: c(\"", paste(col.names, collapse="\", \""), "\")\n")
+    nfields <- length(col.names)
+    nfield <- unlist(lapply(lines, function(l) length(strsplit(l, ",")[[1]])))
+    look <- nfield == nfield[1]
+    header <- lines[seq(1L, which(look)[2]-1)]
+    data <- read.csv(text=lines[look[-1]], header=FALSE, col.names=col.names)
+    time <- as.POSIXct(paste(data$Date, data$Time), tz="UTC")
+    if ("depth" %in% names(data)) {
+        data$pressure <- swPressure(data$depth, latitude)
+        oceDebug(debug, "computed pressure from depth (assuming saltwater formula)\n")
+    }
+    S <- swSCTp(conductivity=data$conductivity,
+        temperature=data$temperature, pressure=data$pressure,
+        conductivityUnit="mS/cm", eos="unesco")
+    res <- as.ctd(salinity=S, temperature=data$temperature,
+        pressure=data$pressure, conductivity=data$conductivity,
         longitude=longitude, latitude=latitude,
         serialNumber=serialNumber)
+    oceDebug(debug, "created basic ctd object, with salinity, temperature, pressure, conductivity, longitude, latitude, and serial number\n")
     res@metadata$filename <- filename
     res@metadata$header <- header
     res@data$time <- time
+    dno <- list(salinity="-", temperature="Temperature (C)",
+        conductivity="Conductivity (mS/cm)", Date="Date", Time="Time")
+    if ("depth" %in% names(data))
+        dno$depth <- "Depth (m)"
+    if ("battery" %in% names(data))
+        dno$battery <- "Battery (V)"
+    res@metadata$dataNamesOriginal <- dno
+    for (name in names(data)) {
+        if (name != "temperature" && name != "salinity" && name != "pressure") {
+            res <- oceSetData(res, name, data[[name]], note=NULL)
+            oceDebug(debug, "added \"", name, "\" to the data slot\n", sep="")
+        }
+    }
+    # Add units for things not set up by as.ctd(). We know that conductivity
+    # has no unit, and we know that it's present, but we check on the other
+    # things.
+    res@metadata$units$conductivity <- list(unit=expression(mS/cm), scale="")
+    if ("battery" %in% names(res@data))
+        res@metadata$units$battery <- list(unit=expression(V), scale="")
+    if ("depth" %in% names(res@data))
+        res@metadata$units$depth <- list(unit=expression(m), scale="")
     res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
-
     oceDebug(debug, "} # read.ctd.aml() {\n", unindent=1, style="bold")
     res
 }
