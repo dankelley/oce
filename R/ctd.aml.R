@@ -83,9 +83,12 @@ read.ctd.aml <- function(file, debug=getOption("oceDebug"),
         open(file, "r")
         on.exit(close(file))
     }
-    getMetadataItem <- function(lines, name, numeric=TRUE)
+    getMetadataItem <- function(lines, name, numeric=TRUE, debug=0)
     {
+        oceDebug(debug, vectorShow(name))
         l <- grep(paste0("^",name,"="), lines)
+        oceDebug(debug, vectorShow(l))
+        res <- NULL
         if (length(l) > 0L) {
             # NOTE: we take first definition, ignoring others
             item <- lines[l[1]]
@@ -105,9 +108,9 @@ read.ctd.aml <- function(file, debug=getOption("oceDebug"),
     # familiarity with the typical contents of the metadata.  For example,
     # I see 'SN' and 'BoardSN', and am inferring that we want to save
     # the first, but maybe it's the second...
-    longitude <- getMetadataItem(lines, "Longitude")
-    latitude <- getMetadataItem(lines, "Latitude")
-    serialNumber <- getMetadataItem(lines, "SN")
+    longitude <- getMetadataItem(lines, "Longitude", debug=debug)
+    latitude <- getMetadataItem(lines, "Latitude", debug=debug)
+    serialNumber <- getMetadataItem(lines, "SN", debug=debug)
     #?Date <- getMetadataItem(lines, "Date", numeric=FALSE)
     #?Time <- getMetadataItem(lines, "Time", numeric=FALSE)
     #?time <- as.POSIXct(paste(Date, Time), tz="UTC")
@@ -126,15 +129,17 @@ read.ctd.aml <- function(file, debug=getOption("oceDebug"),
     col.names[col.names == "Temperature (C)"] <- "temperature"
     col.names[col.names == "Conductivity (mS/cm)"] <- "conductivity"
     col.names[col.names == "Depth (m)"] <- "depth"
+    col.names[col.names == "Pressure (dBar)"] <- "pressure"
     col.names[col.names == "Battery (V)"] <- "battery"
     oceDebug(debug, "transformed column names: c(\"", paste(col.names, collapse="\", \""), "\")\n")
     nfields <- length(col.names)
     nfield <- unlist(lapply(lines, function(l) length(strsplit(l, ",")[[1]])))
     look <- nfield == nfield[1]
-    header <- lines[seq(1L, which(look)[2]-1)]
-    data <- read.csv(text=lines[look[-1]], header=FALSE, col.names=col.names)
+    header <- lines[seq(1L, which(look)[2]-1L)]
+    look[1] <- FALSE
+    data <- read.csv(text=lines[look], header=FALSE, col.names=col.names)
     time <- as.POSIXct(paste(data$Date, data$Time), tz="UTC")
-    if ("depth" %in% names(data)) {
+    if (!("pressure" %in% names(data)) && "depth" %in% names(data)) {
         data$pressure <- swPressure(data$depth, latitude)
         oceDebug(debug, "computed pressure from depth (assuming saltwater formula)\n")
     }
