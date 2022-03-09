@@ -21,21 +21,25 @@
 #' files that lack any of these quantities.  The permitted formats are as
 #' follows.  The default, `format=1`, is *greatly* preferred, because it
 #' is more robust (see below on `format=2`) and it can be read by the
-#' AML Seacast software.
+#' AML SeaCast software.
 #'
 #' 1. If `format` is `1` then the file is in a format created by selecting
-#' **Export As ... Seacast (.csv)** in AML's Seacast software, with
+#' **Export As ... Seacast (.csv)** in AML's SeaCast software, with
 #' pressure (not depth) selected as an output variable, and with
 #' date, time, temperature and conductivity also selected for output.
-#' This format is recognized in the following way.
+#' Be sure also to set the delimiter to comma, the time format
+#' to UTC, and the date to the yyyy-mm-dd ISO format.
+#' These settings should yield a file that can be recognized by
+#' [read.ctd.aml()]. The assumed file format is as follows.
 #' The first line must be `[cast header]`.
 #' Following that must be a header, of which the only elements that
 #' are parsed individually are longitude, latitude and
 #' instrument serial number. These values are in separate lines,
-#' e.g. `longitude=-20` for a location at 20W.  Other header information
+#' e.g. `longitude=-20.0` or `lon=-20.0` for a location at 20W.
+#' Other header information
 #' follows, and this is stored, as-is, as `header` in the `metadata` slot
 #' of the returned value.
-#' The actual data are stored in comma-separated format, and begin
+#' Finally, the actual data are stored in comma-separated format, and begin
 #' just after a line containing the string `[data]`. The first
 #' data line is a comma-separated list of variable names, and the
 #' following lines hold the variable values, separated by commas.  In
@@ -43,8 +47,8 @@
 #' format as used by spreadsheet software.
 #'
 #' 2. If `format` is `2` then the file is another of the many formats
-#' that can be created with the AML Seacast software.  Since this format
-#' is not recommended, the details of the Seacast settings will not be listed
+#' that can be created with the AML SeaCast software.  Since this format
+#' is not recommended, the details of the SeaCast settings will not be listed
 #' here.  The file format is recognized by the first line
 #' containing the names of the data columns, separated by commas. This
 #' is followed by other information on things such as location,
@@ -98,6 +102,12 @@
 #'
 #' @return [read.ctd.aml()] returns a [ctd-class] object.
 #'
+#' @examples
+#' library(oce)
+#' f <- system.file("extdata", "ctd_aml.csv", package="oce")
+#' d <- read.ctd.aml(f)
+#' summary(d)
+#'
 #' @author Dan Kelley
 #'
 #' @family functions that read ctd data
@@ -105,11 +115,11 @@ read.ctd.aml <- function(file, format,
     debug=getOption("oceDebug"), processingLog, ...)
 {
     debug <- max(0L, as.integer(debug))
-    oceDebug(debug, "read.ctd.aml() {\n", unindent=1, style="bold")
     if (missing(file))
-        stop("must provide a file")
-    #if (is.character(file) && 0 == file.info(file)$size)
-    #    stop("empty file")
+        stop("must supply 'file'")
+    oceDebug(debug, "read.ctd.aml(file=\"", file, "\", ...) {\n", unindent=1, style="bold")
+    if (is.character(file) && 0 == file.info(file)$size)
+        stop("empty file")
     filename <- ""
     if (is.character(file)) {
         filename <- fullFilename(file)

@@ -29,7 +29,6 @@ man/figures/*png
 autom4te.cache
 *.nc
 *.zip
-*.csv
 *.out
 oce_[a-zA-Z]*.Rproj
 revdep

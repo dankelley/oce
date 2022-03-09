@@ -738,7 +738,6 @@ cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
 #'
 #' @examples
 #' f <- system.file("extdata", "ctd.cnv", package="oce")
-#' # Read the file in the normal way
 #' d <- read.ctd(f)
 #'
 #' @references

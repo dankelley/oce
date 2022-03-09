@@ -169,7 +169,6 @@ Note that reading a file that contains IPTS-68 temperatures produces a warning.
 
 \examples{
 f <- system.file("extdata", "ctd.cnv", package="oce")
-# Read the file in the normal way
 d <- read.ctd(f)
 
 }

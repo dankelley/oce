@@ -45,29 +45,33 @@ values for \code{Longitude} and \code{Latitude}.  An error results for
 files that lack any of these quantities.  The permitted formats are as
 follows.  The default, \code{format=1}, is \emph{greatly} preferred, because it
 is more robust (see below on \code{format=2}) and it can be read by the
-AML Seacast software.
+AML SeaCast software.
 \enumerate{
 \item If \code{format} is \code{1} then the file is in a format created by selecting
-\strong{Export As ... Seacast (.csv)} in AML's Seacast software, with
+\strong{Export As ... Seacast (.csv)} in AML's SeaCast software, with
 pressure (not depth) selected as an output variable, and with
 date, time, temperature and conductivity also selected for output.
-This format is recognized in the following way.
+Be sure also to set the delimiter to comma, the time format
+to UTC, and the date to the yyyy-mm-dd ISO format.
+These settings should yield a file that can be recognized by
+\code{\link[=read.ctd.aml]{read.ctd.aml()}}. The assumed file format is as follows.
 The first line must be \verb{[cast header]}.
 Following that must be a header, of which the only elements that
 are parsed individually are longitude, latitude and
 instrument serial number. These values are in separate lines,
-e.g. \code{longitude=-20} for a location at 20W.  Other header information
+e.g. \code{longitude=-20.0} or \code{lon=-20.0} for a location at 20W.
+Other header information
 follows, and this is stored, as-is, as \code{header} in the \code{metadata} slot
 of the returned value.
-The actual data are stored in comma-separated format, and begin
+Finally, the actual data are stored in comma-separated format, and begin
 just after a line containing the string \verb{[data]}. The first
 data line is a comma-separated list of variable names, and the
 following lines hold the variable values, separated by commas.  In
 other words, the material following the \verb{[data]} line is in a conventional
 format as used by spreadsheet software.
 \item If \code{format} is \code{2} then the file is another of the many formats
-that can be created with the AML Seacast software.  Since this format
-is not recommended, the details of the Seacast settings will not be listed
+that can be created with the AML SeaCast software.  Since this format
+is not recommended, the details of the SeaCast settings will not be listed
 here.  The file format is recognized by the first line
 containing the names of the data columns, separated by commas. This
 is followed by other information on things such as location,
@@ -106,6 +110,13 @@ call is recommended, if the desire is to use the modern TEOS-10
 equation of state.
 }
 
+\examples{
+library(oce)
+f <- system.file("extdata", "ctd_aml.csv", package="oce")
+d <- read.ctd.aml(f)
+summary(d)
+
+}
 \seealso{
 Other functions that read ctd data: 
 \code{\link{read.ctd.itp}()},
