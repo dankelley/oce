@@ -7,16 +7,20 @@
 read.ctd.aml(file, format, debug = getOption("oceDebug"), processingLog, ...)
 }
 \arguments{
-\item{file}{a connection or a character string giving the name of the file to
-load.}
+\item{file}{a connection or a character string giving the name of
+the file to load.}
 
-\item{format}{an integer indicating the format type.  If not supplied,
-\code{\link[=read.ctd.aml]{read.ctd.aml()}} reads the first line, to see whether the file seems
-to be of \code{format=1} or \code{format=2} style. \sQuote{Details}.}
+\item{format}{an integer indicating the format type.  If not supplied, the
+first line is examined to determine whether the file matches the \code{format=1} or
+\code{format=2} style (see \sQuote{Details}).}
 
-\item{debug}{an integer controlling whether to print debugging
-information during processing. Use 0 for quiet processing, or
-any positive number to see some output.}
+\item{debug}{an integer specifying whether debugging information is
+to be printed during the processing. This is a general parameter that
+is used by many \code{oce} functions. Generally, setting \code{debug=0}
+turns off the printing, while higher values suggest that more information
+be printed. If one function calls another, it usually reduces the value of
+\code{debug} first, so that a user can often obtain deeper debugging
+by specifying higher \code{debug} values.}
 
 \item{processingLog}{ignored.}
 
@@ -26,94 +30,54 @@ any positive number to see some output.}
 \code{\link[=read.ctd.aml]{read.ctd.aml()}} returns a \linkS4class{ctd} object.
 }
 \description{
-\code{\link[=read.ctd.aml]{read.ctd.aml()}} reads files that hold data acquired with an
-AML Oceanographic BaseX2 CTD instrument. In its present form,
-the function only works for .txt files that were created with
-certain settings in the AML software, as explained in
-\sQuote{Details} section.
-See \sQuote{Alternatives to this function} for hints on dealing
-with files that do not match the \code{\link[=read.ctd.aml]{read.ctd.aml()}}
-requirements.
+\code{\link[=read.ctd.aml]{read.ctd.aml()}} reads files that hold data acquired with an AML
+Oceanographic BaseX2 CTD instrument. The SeaCast software associated with
+this device can output data in several formats, of which only two are
+handled, and only one is recommended (see \sQuote{Details}).
 }
 \details{
-The processing depends on the \code{format} parameter.  There are \emph{many}
-varieties of formatting that are possible for AML files, and
-\code{\link[=read.ctd.aml]{read.ctd.aml()}} interprets only a few.  The assumed format matches
-files available to the author, and it might be worth noting that
-these contradict the AML documentation (see \dQuote{References}).
+The handled formats match files available to the author, both of which
+diverge slightly from the format described in the AML documentation (see
+\dQuote{References}).
 
-Regardless of the format, it is mandatory
-that the file contain the columns named: \code{Date}, \code{Time}, \code{Conductivity (mS/cm)}, \code{Temperature (C)} and \code{Pressure (dBar)}.  (Other quantities
-may also be named, in addition.)  It must also contain
-values for \code{Longitude} and \code{Latitude}.  An error results for
-files that lack any of these quantities.  The permitted formats are as
-follows.  The default, \code{format=1}, is \emph{greatly} preferred, because it
-is more robust (see below on \code{format=2}) and it can be read by the
-AML SeaCast software.
+Regardless of the format, files must contain columns named \code{Conductivity (mS/cm)}, \code{Temperature (C)} and \code{Pressure (dBar)}, because \linkS4class{ctd}
+objects need those quantities.  (Actually, if pressure is not found, but
+\code{Depth (m)} is, then pressure is estimated with \code{\link[=swDepth]{swDepth()}}, as a
+workaround.) Note that other columns will be also read and stored in the
+returned value, but they will not have proper units.  Attempts will be
+made to infer the sampling location from the file (by searching for strings
+like \verb{Latitude=}), along with the instrument serial number; these things will
+be included in the \code{metadata} slot of the returned value.  The entire header
+is stored there, as well, to let users glean more about dataset.
+
+Two formats are handled, as described below. Format 1 is greatly preferred,
+because it is more robust (see below on \code{format=2}) and also because it can
+be read by the AML SeaCast software.
 \enumerate{
-\item If \code{format} is \code{1} then the file is in a format created by selecting
-\strong{Export As ... Seacast (.csv)} in AML's SeaCast software, with
-pressure (not depth) selected as an output variable, and with
-date, time, temperature and conductivity also selected for output.
-Be sure also to set the delimiter to comma, the time format
-to UTC, and the date to the yyyy-mm-dd ISO format.
-These settings should yield a file that can be recognized by
-\code{\link[=read.ctd.aml]{read.ctd.aml()}}. The assumed file format is as follows.
-The first line must be \verb{[cast header]}.
-Following that must be a header, of which the only elements that
-are parsed individually are longitude, latitude and
-instrument serial number. These values are in separate lines,
-e.g. \code{longitude=-20.0} or \code{lon=-20.0} for a location at 20W.
-Other header information
-follows, and this is stored, as-is, as \code{header} in the \code{metadata} slot
-of the returned value.
-Finally, the actual data are stored in comma-separated format, and begin
-just after a line containing the string \verb{[data]}. The first
-data line is a comma-separated list of variable names, and the
-following lines hold the variable values, separated by commas.  In
-other words, the material following the \verb{[data]} line is in a conventional
-format as used by spreadsheet software.
-\item If \code{format} is \code{2} then the file is another of the many formats
-that can be created with the AML SeaCast software.  Since this format
-is not recommended, the details of the SeaCast settings will not be listed
-here.  The file format is recognized by the first line
-containing the names of the data columns, separated by commas. This
-is followed by other information on things such as location,
-expressed somewhat analogously with \code{format} 1, but using
-lower-case variable names. Other background information is
-stored, unparsed, in \code{header} in the \code{metadata} slot. After that
-sequence, the file ends with the dataset itself, recognized by
-having the same number of comma-separated
-tokens as the naming line.  (Obviously, this matching by comma
-counting is a risky procedure, for a user might have saved a comment with
-that number of commas.  This is one reason why this data format
-is not recommended.)
+\item If \code{format} is \code{1} then the file is assumed to be in a format created by
+selecting \emph{Export As ... Seacast (.csv)} in AML's SeaCast software, with
+settings to output pressure (or, as second-best, depth), temperature and
+conductivity, and perhaps other things.  The delimiter must be comma.  If
+date and time are output, their formats must be yyyy-mm-dd and UTC,
+respectively.  Decoding the file proceeds as follows.  First, a check is done
+to ensure that the first line consists of the string \verb{[cast header]}. Then an
+attempt is made to infer location and serial number from the header.  After
+this, \code{\link[=read.ctd.aml]{read.ctd.aml()}} searches down for a line containing the string
+\verb{[data]}. The first line thereafter is taken as a comma-separated list of
+variable names, and lines following that are taken to hold the variable
+values, separated by commas.
+\item If \code{format} is \code{2} then the first line must be a comma-separated list of
+column names.  This may be followed by header information, which is handled
+similarly as for \code{format=1}. The data are read from all lines that have the
+same number of commas as the first line, an admittedly brittle strategy
+developed as a way to handle some files that lacked other information about
+the end of the header.
 }
 
-In both cases, location information and serial number are stored
-in the metadata (as is the case for general \linkS4class{ctd} objects),
-and the data columns, renamed to oce convention, are stored in
-the \code{data} slot.
-Since the \code{header} item in the \code{metadata} slot contains the full
-header, users are free to do further processing, as befits their
-application.
+In both cases, the data columns, renamed to oce convention, are stored in the
+\code{data} slot.  For the mandatory variables, units are also stored, as for
+other \linkS4class{ctd} objects.
 }
-\section{Alternatives to this function}{
-
-If \code{\link[=read.ctd.aml]{read.ctd.aml()}} fails to read a user's data file, all is
-not lost, because a bit of work in a plain-text editor is likely
-to reveal the data structure, so a user can extract elements
-to be used with \code{\link[=as.ctd]{as.ctd()}} using procedures akin to those listed
-in the \sQuote{Details} section.  Of course, the file must contain
-conductivity, temperature and pressure (or depth, from which pressure
-can be computed \emph{if} an assumption is made about the density used
-within the AML software to compute depth from pressure)
-because these three things are needed for
-\linkS4class{ctd} objects.  Adding longitude and latitude to the \code{\link[=as.ctd]{as.ctd()}}
-call is recommended, if the desire is to use the modern TEOS-10
-equation of state.
-}
-
 \examples{
 library(oce)
 f <- system.file("extdata", "ctd_aml.csv", package="oce")
