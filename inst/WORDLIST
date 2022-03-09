@@ -5,6 +5,8 @@ ADVField
 ADVs
 AFL
 AGU
+AML
+AML's
 AMSR
 AXBT
 AXBTs
@@ -24,8 +26,10 @@ AvgInterval
 Azimuthal
 BAMS
 BCD
+BOM
 Baranova
 Bartlein
+BaseX
 Bedford
 Bernhard
 BioArgo
@@ -308,6 +312,7 @@ Schmid
 Scotian
 SeaBird
 SeaWater
+Seacast
 Sealevel
 Seapoint
 Seasoft
@@ -320,6 +325,7 @@ SonTek
 Sontek
 Soreide
 Springer
+Stanek
 Stereographic
 Stereopolar
 Subclassing
@@ -373,6 +379,7 @@ Vitkovsky
 VmDas
 Voxland
 Voxland
+WEP
 WETstar
 WG
 WHOI
@@ -528,6 +535,7 @@ dankelley
 dbar
 dbars
 de
+debian
 decibar
 decibars
 decodeTime
@@ -691,6 +699,7 @@ levitus
 library
 lightgray
 linegraphs
+linux
 lisst
 lobo
 lon
@@ -992,6 +1001,7 @@ unhandled
 uniroot
 unitless
 unlabelled
+unparsed
 unphysical
 unresolvable
 uoregon

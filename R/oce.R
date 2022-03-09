@@ -1671,17 +1671,17 @@ oceMagic <- function(file, debug=getOption("oceDebug"))
     }
     if (is.character(file)) {
         oceDebug(debug, "'file' is a character value\n")
-        # Check for an AML file
-        if (grepl(".txt$", filename)) {
-            someLines <- readLines(file, encoding="UTF-8", n=10L)
-            typeLine <- grep("Type=", someLines)
-            if (length(typeLine) > 0L) {
-                if (grepl("Base.X2", someLines[typeLine[1]])) {
-                    oceDebug(debug, "} # oceMagic returning aml/txt\n", unindent=1, style="bold")
-                    return("aml/txt")
-                }
-            }
-        }
+        #>>> # Check for an AML txt file (warning: this might be removed)
+        #>>> if (grepl(".txt$", filename)) {
+        #>>>     someLines <- readLines(file, encoding="UTF-8", n=10L)
+        #>>>     typeLine <- grep("Type=", someLines)
+        #>>>     if (length(typeLine) > 0L) {
+        #>>>         if (grepl("Base.X2", someLines[typeLine[1]])) {
+        #>>>             oceDebug(debug, "} # oceMagic returning aml/txt\n", unindent=1, style="bold")
+        #>>>             return("aml/txt")
+        #>>>         }
+        #>>>     }
+        #>>> }
         # Check for a lisst file
         if (grepl(".asc$", filename)) {
             someLines <- readLines(file, encoding="UTF-8", n=1)

@@ -4,11 +4,15 @@
 \alias{read.ctd.aml}
 \title{Read an AML CTD file}
 \usage{
-read.ctd.aml(file, debug = getOption("oceDebug"), processingLog, ...)
+read.ctd.aml(file, format, debug = getOption("oceDebug"), processingLog, ...)
 }
 \arguments{
 \item{file}{a connection or a character string giving the name of the file to
 load.}
+
+\item{format}{an integer indicating the format type.  If not supplied,
+\code{\link[=read.ctd.aml]{read.ctd.aml()}} reads the first line, to see whether the file seems
+to be of \code{format=1} or \code{format=2} style. \sQuote{Details}.}
 
 \item{debug}{an integer controlling whether to print debugging
 information during processing. Use 0 for quiet processing, or
@@ -24,7 +28,7 @@ any positive number to see some output.}
 \description{
 \code{\link[=read.ctd.aml]{read.ctd.aml()}} reads files that hold data acquired with an
 AML Oceanographic BaseX2 CTD instrument. In its present form,
-the fuction only works for .txt files that were created with
+the function only works for .txt files that were created with
 certain settings in the AML software, as explained in
 \sQuote{Details} section.
 See \sQuote{Alternatives to this function} for hints on dealing
@@ -32,30 +36,59 @@ with files that do not match the \code{\link[=read.ctd.aml]{read.ctd.aml()}}
 requirements.
 }
 \details{
-The first step in processing is to examine the first line of
-the file, and to interpret it as a comma-separated list of column
-names.  If this list does not contain each of \code{"Date"},
-\code{"Time"}, \code{"Conductivity (mS/cm)"} and \code{"Temperature (C)"},
-then an error message is printed.
+The processing depends on the \code{format} parameter.  There are \emph{many}
+varieties of formatting that are possible for AML files, and
+\code{\link[=read.ctd.aml]{read.ctd.aml()}} interprets only a few.  In each case, it is mandatory
+that the file contain the columns named: \code{Date}, \code{Time}, \code{Conductivity (mS/cm)}, \code{Temperature (C)} and \code{Pressure (dBar)}.  (Other quantities
+may also be named, in addition.)  It must also contain
+values for \code{Longitude} and \code{Latitude}.  An error results for
+files that lack any of these quantities.  The permitted formats are as
+follows.  The default, \code{format=1}, is \emph{greatly} preferred, because it
+is more robust (see below on \code{format=2}) and it can be read by the
+AML Seacast software.
+\enumerate{
+\item If \code{format} is \code{1} then the file is in a format created by selecting
+\strong{Export As ... Seacast (.csv)} in AML's Seacast software, with
+pressure (not depth) selected as an output variable, and with
+date, time, temperature and conductivity also selected for output.
+This format is recognized in the following way.
+The first line must be \verb{[cast header]}.
+Following that must be a header, of which the only elements that
+are parsed individually are longitude, latitude and
+instrument serial number. These values are in separate lines,
+e.g. \code{longitude=-20} for a location at 20W.  Other header information
+follows, and this is stored, as-is, as \code{header} in the \code{metadata} slot
+of the returned value.
+The actual data are stored in comma-separated format, and begin
+just after a line containing the string \verb{[data]}. The first
+data line is a comma-separated list of variable names, and the
+following lines hold the variable values, separated by commas.  In
+other words, the material following the \verb{[data]} line is in a conventional
+format as used by spreadsheet software.
+\item If \code{format} is \code{2} then the file is another of the many formats
+that can be created with the AML Seacast software.  Since this format
+is not recommended, the details of the Seacast settings will not be listed
+here.  The file format is recognized by the first line
+containing the names of the data columns, separated by commas. This
+is followed by other information on things such as location,
+expressed somewhat analogously with \code{format} 1, but using
+lower-case variable names. Other background information is
+stored, unparsed, in \code{header} in the \code{metadata} slot. After that
+sequence, the file ends with the dataset itself, recognized by
+having the same number of comma-separated
+tokens as the naming line.  (Obviously, this matching by comma
+counting is a risky procedure, for a user might have saved a comment with
+that number of commas.  This is one reason why this data format
+is not recommended.)
+}
 
-The next step is to break up each line in the file into
-comma-separated elements, and to take note of the lines
-that have the same number of elements as the first line.
-Those lines are considered to be data, and are read with
-\code{\link[=read.csv]{read.csv()}}.  Lines after the first, and before the first
-data line are stored as \code{header} in the \code{metadata} slot
-of the returned value, while the data (with columns renamed
-to match oce conventions) are stored in the \code{data} slot.
-If pressure is not found in the data, but depth is, then
-pressure is computed with \code{\link[=swPressure]{swPressure()}} and stored in the
-\code{data} slot.  Salinity is then inferred with \code{\link[=swSCTp]{swSCTp()}}
-and inserted into the \code{data} slot.
-
-Some extra processing is done to take account of units,
-and to extract certain elements from the header, particularly
-position (stored as \code{longitude} and \code{latitude} in the \code{metadata}
-slot), and these are inserted into the return value, which
-is constructed with \code{\link[=as.ctd]{as.ctd()}}.
+In both cases, location information and serial number are stored
+in the metadata (as is the case for general \linkS4class{ctd} objects),
+and the data columns, renamed to oce convention, are stored in
+the \code{data} slot.
+Since the \code{header} item in the \code{metadata} slot contains the full
+header, users are free to do further processing, as befits their
+application.
 }
 \section{Alternatives to this function}{
 
@@ -65,7 +98,9 @@ to reveal the data structure, so a user can extract elements
 to be used with \code{\link[=as.ctd]{as.ctd()}} using procedures akin to those listed
 in the \sQuote{Details} section.  Of course, the file must contain
 conductivity, temperature and pressure (or depth, from which pressure
-can be computed) because these three things are needed for
+can be computed \emph{if} an assumption is made about the density used
+within the AML software to compute depth from pressure)
+because these three things are needed for
 \linkS4class{ctd} objects.  Adding longitude and latitude to the \code{\link[=as.ctd]{as.ctd()}}
 call is recommended, if the desire is to use the modern TEOS-10
 equation of state.

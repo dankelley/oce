@@ -2,16 +2,20 @@
 % Please edit documentation in R/extdata.R
 \docType{data}
 \encoding{UTF-8}
-\name{d200321-001.ctd}
-\alias{d200321-001.ctd}
-\title{Sample ctd dataset in .ctd format}
+\name{ctd_aml.csv}
+\alias{ctd_aml.csv}
+\title{Sample ctd dataset in AML format}
 \description{
-Sample ctd dataset in .ctd format
+This file may be read with \code{\link[=read.ctd.aml]{read.ctd.aml()}}.  It is based
+on a file donated by Ashley Stanek, which was shortened to
+just 50 points for inclusion in oce, and which had some
+identifying information (serial number, IP address, and WEP
+code) zeroed-out.
 }
 \examples{
-\dontrun{
-read.oce(system.file("extdata", "d200321-001.ctd", package="oce"))
-}
+ctd <- read.ctd.aml(system.file("extdata", "ctd_aml.csv", package="oce"))
+summary(ctd)
+plot(ctd)
 
 }
 \seealso{
@@ -19,7 +23,7 @@ Other raw datasets:
 \code{\link{CTD_BCD2014666_008_1_DN.ODF.gz}},
 \code{\link{adp_rdi.000}},
 \code{\link{ctd.cnv}},
-\code{\link{ctd_aml.csv}},
+\code{\link{d200321-001.ctd}},
 \code{\link{d201211_0011.cnv}},
 \code{\link{test_met_csv1.csv}},
 \code{\link{test_met_csv2.csv}},
@@ -39,8 +43,8 @@ Other things related to ctd data:
 \code{\link{ctdRaw}},
 \code{\link{ctdRepair}()},
 \code{\link{ctdTrim}()},
-\code{\link{ctd_aml.csv}},
 \code{\link{ctd}},
+\code{\link{d200321-001.ctd}},
 \code{\link{d201211_0011.cnv}},
 \code{\link{handleFlags,ctd-method}},
 \code{\link{initialize,ctd-method}},
