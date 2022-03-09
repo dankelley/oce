@@ -106,7 +106,9 @@ read.ctd.aml <- function(file, format,
 {
     debug <- max(0L, as.integer(debug))
     oceDebug(debug, "read.ctd.aml() {\n", unindent=1, style="bold")
-    if (!missing(file) && is.character(file) && 0 == file.info(file)$size)
+    if (missing(file))
+        stop("must provide a file")
+    if (is.character(file) && 0 == file.info(file)$size)
         stop("empty file")
     filename <- ""
     if (is.character(file)) {
