@@ -122,10 +122,10 @@ read.ctd.aml <- function(file, format,
         open(file, "r")
         on.exit(close(file))
     }
-    getMetadataItem <- function(lines, name, numeric=TRUE, debug=0)
+    getMetadataItem <- function(lines, name, numeric=TRUE, ignore.case=FALSE, debug=0)
     {
         oceDebug(debug, "getMetadataItem(lines, \"", name, "\", numeric=", numeric, ")\n", style="bold", unindent=1)
-        l <- grep(paste0("^",name,"="), lines)
+        l <- grep(paste0("^",name,"="), lines, ignore.case=ignore.case)
         res <- NULL
         if (length(l) > 0L) {
             if (length(l) > 1L)
@@ -164,18 +164,14 @@ read.ctd.aml <- function(file, format,
     # familiarity with the typical contents of the metadata.  For example,
     # I see 'SN' and 'BoardSN', and am inferring that we want to save
     # the first, but maybe it's the second...
-    longitude <- latitude <- serialNumber <- NA
-    if (format == 1L) {
-        longitude <- getMetadataItem(lines, "longitude", debug=debug-1L)
-        latitude <- getMetadataItem(lines, "latitude", debug=debug-1L)
-        serialNumber <- getMetadataItem(lines, "sn", debug=debug-1L)
-    } else if (format == 2L) {
-        longitude <- getMetadataItem(lines, "Longitude", debug=debug-1L)
-        latitude <- getMetadataItem(lines, "Latitude", debug=debug-1L)
-        serialNumber <- getMetadataItem(lines, "SN", debug=debug-1L)
-    } else {
-        stop("unrecognized format value")
-    }
+    serialNumber <- NA
+    longitude <- getMetadataItem(lines, "longitude", ignore.case=TRUE, debug=debug-1L)
+    if (is.null(longitude))
+        longitude <- getMetadataItem(lines, "lon", ignore.case=TRUE, debug=debug-1L)
+    latitude <- getMetadataItem(lines, "latitude", ignore.case=TRUE, debug=debug-1L)
+    if (is.null(latitude))
+        latitude <- getMetadataItem(lines, "lat", ignore.case=TRUE, debug=debug-1L)
+    serialNumber <- getMetadataItem(lines, "sn", ignore.case=TRUE, debug=debug-1L)
     if (is.null(longitude) || is.null(latitude)) {
         oceDebug(debug, "cannot determine location\n")
         warning("cannot determine location\n")
