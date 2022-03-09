@@ -13,7 +13,11 @@
 #'
 #' The processing depends on the `format` parameter.  There are *many*
 #' varieties of formatting that are possible for AML files, and
-#' [read.ctd.aml()] interprets only a few.  In each case, it is mandatory
+#' [read.ctd.aml()] interprets only a few.  The assumed format matches
+#' files available to the author, and it might be worth noting that
+#' these contradict the AML documentation (see \dQuote{References}).
+#'
+#' Regardless of the format, it is mandatory
 #' that the file contain the columns named: `Date`, `Time`, `Conductivity
 #' (mS/cm)`, `Temperature (C)` and `Pressure (dBar)`.  (Other quantities
 #' may also be named, in addition.)  It must also contain
@@ -109,6 +113,11 @@
 #' summary(d)
 #'
 #' @author Dan Kelley
+#'
+#' @references
+#' AML Oceanographic. "SeaCast 4 User Manual (Version 2.06)." AML Oceanographic,
+#' Mahy 2016.
+#' \url{https://www.subseatechnologies.com/media/files/page/032e50ac/seacast-4-2-user-manual-sti.pdf}.
 #'
 #' @family functions that read ctd data
 read.ctd.aml <- function(file, format,

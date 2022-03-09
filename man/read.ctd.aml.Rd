@@ -38,7 +38,11 @@ requirements.
 \details{
 The processing depends on the \code{format} parameter.  There are \emph{many}
 varieties of formatting that are possible for AML files, and
-\code{\link[=read.ctd.aml]{read.ctd.aml()}} interprets only a few.  In each case, it is mandatory
+\code{\link[=read.ctd.aml]{read.ctd.aml()}} interprets only a few.  The assumed format matches
+files available to the author, and it might be worth noting that
+these contradict the AML documentation (see \dQuote{References}).
+
+Regardless of the format, it is mandatory
 that the file contain the columns named: \code{Date}, \code{Time}, \code{Conductivity (mS/cm)}, \code{Temperature (C)} and \code{Pressure (dBar)}.  (Other quantities
 may also be named, in addition.)  It must also contain
 values for \code{Longitude} and \code{Latitude}.  An error results for
@@ -116,6 +120,11 @@ f <- system.file("extdata", "ctd_aml.csv", package="oce")
 d <- read.ctd.aml(f)
 summary(d)
 
+}
+\references{
+AML Oceanographic. "SeaCast 4 User Manual (Version 2.06)." AML Oceanographic,
+Mahy 2016.
+\url{https://www.subseatechnologies.com/media/files/page/032e50ac/seacast-4-2-user-manual-sti.pdf}.
 }
 \seealso{
 Other functions that read ctd data: 
