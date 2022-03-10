@@ -16,15 +16,19 @@
 #' objects need those quantities.  (Actually, if pressure is not found, but
 #' `Depth (m)` is, then pressure is estimated with [swDepth()], as a
 #' workaround.) Note that other columns will be also read and stored in the
-#' returned value, but they will not have proper units.  Attempts will be
-#' made to infer the sampling location from the file (by searching for strings
-#' like `Latitude=`), along with the instrument serial number; these things will
-#' be included in the `metadata` slot of the returned value.  The entire header
-#' is stored there, as well, to let users glean more about dataset.
+#' returned value, but they will not have proper units.  Attempts are made to
+#' infer the sampling location from the file, by searching for strings like
+#' `Latitude=` in the header. Headers typicaly contain two values of the
+#' location, and it is the second pair that is used by this function, with a
+#' `NA` value being recorded if the value in the file is `no-lock`.  The
+#' instrument serial number is also read, although the individual serial numbers
+#' of the sensors are not read.  Position and serial number are stored in the
+#' the `metadata` slot of the returned value.  The entire header is also stored
+#' there, to let users glean more about dataset.
 #'
 #' Two formats are handled, as described below. Format 1 is greatly preferred,
 #' because it is more robust (see below on `format=2`) and also because it can
-#' be read by the AML SeaCast software.
+#' be read later by the AML SeaCast software.
 #'
 #' 1. If `format` is `1` then the file is assumed to be in a format created by
 #' selecting *Export As ... Seacast (.csv)* in AML's SeaCast software, with
@@ -107,12 +111,13 @@ read.ctd.aml <- function(file, format,
         res <- NA
         if (length(l) > 0L) {
             if (length(l) > 1L)
-                oceDebug(debug, "using first of ", length(l), " values\n")
-            # We take first definition, ignoring others; this could be changed.
-            item <- lines[l[1]]
+                oceDebug(debug, "using second of ", length(l), " values\n")
+            # We take second definition, ignoring first (or any others).
+            l <- l[2]
             res <- trimws(strsplit(lines[l], "=")[[1]][2])
-            if (numeric)
-                res <- as.numeric(res)
+            if (numeric) {
+                res <- if (grepl("no-lock", res, ignore.case=TRUE)) NA else as.numeric(res)
+            }
         }
         oceDebug(debug, "returning ", res, "\n")
         oceDebug(debug, "#} getMetadataItem()\n", style="bold", unindent=1)
@@ -144,7 +149,7 @@ read.ctd.aml <- function(file, format,
     latitude <- getMetadataItem(lines, "latitude", ignore.case=TRUE, debug=debug-1L)
     if (is.na(latitude))
         latitude <- getMetadataItem(lines, "lat", ignore.case=TRUE, debug=debug-1L)
-    serialNumber <- getMetadataItem(lines, "sn", ignore.case=TRUE, debug=debug-1L)
+    serialNumber <- getMetadataItem(lines, "sn", ignore.case=TRUE, numeric=FALSE, debug=debug-1L)
     oceDebug(debug, "inferred location ", longitude, "E, ", latitude, "N, ", " serialNumber ", serialNumber, "\n", sep="")
     header <- ""
     if (format == 1L) {

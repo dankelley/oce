@@ -44,15 +44,19 @@ Regardless of the format, files must contain columns named \code{Conductivity (m
 objects need those quantities.  (Actually, if pressure is not found, but
 \code{Depth (m)} is, then pressure is estimated with \code{\link[=swDepth]{swDepth()}}, as a
 workaround.) Note that other columns will be also read and stored in the
-returned value, but they will not have proper units.  Attempts will be
-made to infer the sampling location from the file (by searching for strings
-like \verb{Latitude=}), along with the instrument serial number; these things will
-be included in the \code{metadata} slot of the returned value.  The entire header
-is stored there, as well, to let users glean more about dataset.
+returned value, but they will not have proper units.  Attempts are made to
+infer the sampling location from the file, by searching for strings like
+\verb{Latitude=} in the header. Headers typicaly contain two values of the
+location, and it is the second pair that is used by this function, with a
+\code{NA} value being recorded if the value in the file is \code{no-lock}.  The
+instrument serial number is also read, although the individual serial numbers
+of the sensors are not read.  Position and serial number are stored in the
+the \code{metadata} slot of the returned value.  The entire header is also stored
+there, to let users glean more about dataset.
 
 Two formats are handled, as described below. Format 1 is greatly preferred,
 because it is more robust (see below on \code{format=2}) and also because it can
-be read by the AML SeaCast software.
+be read later by the AML SeaCast software.
 \enumerate{
 \item If \code{format} is \code{1} then the file is assumed to be in a format created by
 selecting \emph{Export As ... Seacast (.csv)} in AML's SeaCast software, with

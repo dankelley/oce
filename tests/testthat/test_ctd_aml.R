@@ -5,9 +5,9 @@ file <- system.file("extdata", "ctd_aml.csv", package="oce")
 # https://github.com/dankelley/oce/issues/1891
 test_that("read.ctd.aml() works (issue 1924)", {
     ctd <- read.ctd.aml(file)
-    expect_equal(ctd[["longitude"]], -146.0008)
-    expect_equal(ctd[["latitude"]], 70.2467 )
-    expect_equal(ctd[["serialNumber"]], 0)
+    expect_equal(ctd[["longitude"]], -145.8477)
+    expect_equal(ctd[["latitude"]], 70.2284 )
+    expect_true(is.na(ctd[["serialNumber"]]))
     expect_equal(length(ctd[["header"]]), 109L)
     expect_equal(head(ctd[["pressure"]],3),
         c(0.23, 0.22, 0.22))
