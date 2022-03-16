@@ -5,6 +5,8 @@ ADVField
 ADVs
 AFL
 AGU
+AML
+AML's
 AMSR
 AXBT
 AXBTs
@@ -24,8 +26,10 @@ AvgInterval
 Azimuthal
 BAMS
 BCD
+BOM
 Baranova
 Bartlein
+BaseX
 Bedford
 Bernhard
 BioArgo
@@ -207,6 +211,7 @@ MGL
 MLI
 MSB
 Macnab
+Mahy
 MapGen
 MathWorks
 McBryde
@@ -307,7 +312,9 @@ Scanwise
 Schmid
 Scotian
 SeaBird
+SeaCast
 SeaWater
+Seacast
 Sealevel
 Seapoint
 Seasoft
@@ -320,6 +327,7 @@ SonTek
 Sontek
 Soreide
 Springer
+Stanek
 Stereographic
 Stereopolar
 Subclassing
@@ -373,6 +381,7 @@ Vitkovsky
 VmDas
 Voxland
 Voxland
+WEP
 WETstar
 WG
 WHOI
@@ -528,6 +537,7 @@ dankelley
 dbar
 dbars
 de
+debian
 decibar
 decibars
 decodeTime
@@ -614,6 +624,7 @@ freesurface
 fullFilename
 fullpage
 gc
+gcc
 gebcoColors
 geod
 geodDist
@@ -691,6 +702,7 @@ levitus
 library
 lightgray
 linegraphs
+linux
 lisst
 lobo
 lon
@@ -992,6 +1004,7 @@ unhandled
 uniroot
 unitless
 unlabelled
+unparsed
 unphysical
 unresolvable
 uoregon
@@ -1050,6 +1063,7 @@ ylab
 ylim
 ylocations
 ytype
+yyyy
 zipfile
 zlim
 Šavrič

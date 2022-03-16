@@ -9,6 +9,7 @@ read.met(
   type = NULL,
   skip = NULL,
   tz = getOption("oceTz"),
+  encoding = "UTF-8-BOM",
   debug = getOption("oceDebug")
 )
 }
@@ -43,6 +44,14 @@ data in Local Standard Time (LST).  Since LST differs from city
 to city, users must make corrections to the time, as
 shown in the \dQuote{Examples}, which use data for
 Halifax Nova Scotia, where LST is UTC-4.}
+
+\item{encoding}{a character value indicating the encoding to use.  This
+parameter was added on 2022-03-03, when CRAN tests
+for R-devel/linux-debian-clang were found to report an error for
+a test file that began with a BOM (byte order
+marker) character. The default, \code{"UTF-8-BOM"} (changed from the
+old value of \code{"UTF-8"}) may handle
+such files, according to the documentation for \code{\link[=connections]{connections()}}.}
 
 \item{debug}{a flag that turns on debugging.  Set to 1 to get a moderate
 amount of debugging information, or to 2 to get more.}

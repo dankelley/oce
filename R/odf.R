@@ -22,20 +22,20 @@
 #'
 #' @references
 #'
-#' 1. Anthony W. Isenor and David Kellow, 2011. \emph{ODF Format Specification
-#' Version 2.0}. (This is a .doc file obtained in June 2011 by Dan Kelley,
+#' 1. Anthony W. Isenor and David Kellow, 2011. *ODF Format Specification
+#' Version 2.0*. (This is a .doc file obtained in June 2011 by Dan Kelley,
 #' which no longer seems to be made available at any DFO website.)
 #'
-#' 2. (Unknown authors), October 2014. \emph{ODF Format Description (MLI)},
-#' \url{https://ogsl.ca/wp-content/uploads/ODF_format_desc_en_0.pdf},
-#' (Link verified on May 1, 2021.)
+#' 2. (Unknown authors), October 2014. *ODF Format Description (MLI)*,
+#' `https://ogsl.ca/wp-content/uploads/ODF_format_desc_en_0.pdf`,
+#' (Link worked early on March 16, 2022, but failed later that day.)
 #'
 #' 3. A sample ODF file in the DFO format is available at
-#' \code{system.file("extdata","CTD_BCD2014666_008_1_DN.ODF.gz",package="oce")}
+#' `system.file("extdata","CTD_BCD2014666_008_1_DN.ODF.gz",package="oce")`
 #'
-#' 4. A sample ODF file in the MLI format is available at
-#' \url{https://ogsl.ca/wp-content/uploads/ODF_file_example_en_0.pdf}.
-#' (Link verified on May 1, 2021.)
+#' 4. A sample ODF file in the MLI format may be available at
+#' `https://ogsl.ca/wp-content/uploads/ODF_file_example_en_0.pdf`.
+#' (Link worked early on March 16, 2022, but failed later that day.)
 #'
 #' @author Dan Kelley
 #' @family things related to odf data

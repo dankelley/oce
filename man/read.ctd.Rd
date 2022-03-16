@@ -116,6 +116,7 @@ Other things related to ctd data:
 \code{\link{ctdRaw}},
 \code{\link{ctdRepair}()},
 \code{\link{ctdTrim}()},
+\code{\link{ctd_aml.csv}},
 \code{\link{ctd}},
 \code{\link{d200321-001.ctd}},
 \code{\link{d201211_0011.cnv}},
@@ -142,6 +143,7 @@ Other things related to ctd data:
 \code{\link{write.ctd}()}
 
 Other functions that read ctd data: 
+\code{\link{read.ctd.aml}()},
 \code{\link{read.ctd.itp}()},
 \code{\link{read.ctd.odf}()},
 \code{\link{read.ctd.sbe}()},

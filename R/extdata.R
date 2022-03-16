@@ -1,3 +1,26 @@
+#' Sample ctd dataset in AML format
+#'
+#' This file may be read with [read.ctd.aml()].  It is based
+#' on a file donated by Ashley Stanek, which was shortened to
+#' just 50 points for inclusion in oce, and which had some
+#' identifying information (serial number, IP address, and WEP
+#' code) zeroed-out.
+#'
+#' @name ctd_aml.csv
+#'
+#' @docType data
+#'
+#' @encoding UTF-8
+#'
+#' @examples
+#' ctd <- read.ctd.aml(system.file("extdata", "ctd_aml.csv", package="oce"))
+#' summary(ctd)
+#' plot(ctd)
+#'
+#' @family raw datasets
+#' @family things related to ctd data
+NULL
+
 #' Sample ctd dataset in odf format
 #'
 #' The location is approximately 30km southeast of Halifax Harbour,

@@ -297,16 +297,22 @@ test_that("ability to change conductivityUnit", {
 })
 
 test_that("column renaming with a cnv file", {
-    expect_warning(d1 <- read.oce(system.file("extdata", "ctd.cnv", package="oce")),
-        "this CNV file has temperature in the IPTS\\-68 scale")
+    expect_warning(
+        expect_warning(
+            d1 <- read.oce(system.file("extdata", "ctd.cnv", package="oce")),
+            "this CNV file has temperature in the IPTS\\-68 scale"),
+        "startTime < 1950, suggesting y2k problem in this cnv file")
     expect_equal(names(d1[["data"]]),
         c("scan","timeS","pressure","depth","temperature","salinity","flag"))
     expect_warning(
-        expect_warning(d2 <- read.oce(system.file("extdata", "ctd.cnv", package="oce"),
-                columns=list(FAKE=list(name="sal00",
-                        unit=list(unit=expression(), scale="PSS-78")))),
-            "this CNV file has temperature in the IPTS\\-68 scale"),
-        "cannot find salinity or conductivity in .cnv file")
+        expect_warning(
+            expect_warning(
+                d2 <- read.oce(system.file("extdata", "ctd.cnv", package="oce"),
+                    columns=list(FAKE=list(name="sal00",
+                            unit=list(unit=expression(), scale="PSS-78")))),
+                "this CNV file has temperature in the IPTS\\-68 scale"),
+            "cannot find salinity or conductivity in .cnv file"),
+        "startTime < 1950, suggesting y2k problem in this cnv file")
     expect_equal(names(d2[["data"]]),
         c("scan","timeS","pressure","depth","temperature","FAKE","flag"))
 })
@@ -320,8 +326,11 @@ test_that("column renaming with a cnv file", {
 ##'** Latitude:  N44 41.056'
 ##'** Longitude: w63 38.633'
 test_that("Dalhousie-produced cnv file", {
-    expect_warning(d1 <- read.oce(system.file("extdata", "ctd.cnv", package="oce")),
-        "this CNV file has temperature in the IPTS\\-68 scale")
+    expect_warning(
+        expect_warning(
+            d1 <- read.oce(system.file("extdata", "ctd.cnv", package="oce")),
+            "this CNV file has temperature in the IPTS\\-68 scale"),
+        "startTime < 1950, suggesting y2k problem in this cnv file")
     expect_equal(d1[["temperatureUnit"]]$unit, expression(degree*C))
     # NB. the file holds IPTS-68 but we # store ITS-90 internally
     expect_equal(d1[["temperatureUnit"]]$scale, "IPTS-68")
@@ -622,4 +631,54 @@ test_that("lon360() works", {
     ctdShifted <- lon360(ctd)
     expect_equal(360 + ctd[["longitude"]], ctdShifted[["longitude"]])
 })
+
+# Below an excerpt from the docs, as of 2022-03-01
+# 1 "salinity+temperature"
+# 2 "density+N2"
+# 3 "TS"
+# 4 "text"
+# 5 "map"
+# 5.1 as for which=5, except that the file name is drawn above the map.
+# 6 "density+dpdt"
+# 7 "density+time"
+# 8 "index"
+# 9 "salinity"
+# 10 "temperature"
+# 11 "density"
+# 12 "N2"
+# 13 "spice"
+# 14 "tritium"
+# 15 "Rrho"
+# 16 "RrhoSF"
+# 17 "conductivity"
+# 20 "CT"
+# 21 "SA"
+# 30 "Sts"
+# 31 "Tts"
+# 32 "pts"
+# 33 "rhots"
+
+test_that("erroneous numeric 'which' is handled", {
+    expect_error(plot(ctd, which=999), "which=\"999\" cannot be handled")
+})
+
+test_that("erroneous textual 'which' is handled", {
+    expect_error(plot(ctd, which="unhandled"), "which=\"unhandled\" cannot be handled")
+})
+
+test_that("numeric 'which' works", {
+    for (w in c(5.1, 1:13, 15:17, 20:21, 30:33)) {
+        expect_silent(plot(ctd, which=w))
+    }
+})
+
+test_that("character 'which' works", {
+    for (w in c("salinity+temperature", "density+N2", "TS", "text", "map",
+            "density+dpdt", "density+time", "index", "salinity", "temperature",
+            "density", "N2", "spice", "Rrho", "RrhoSF",
+            "conductivity", "CT", "SA", "Sts", "Tts", "pts", "rhots")) {
+        expect_silent(plot(ctd, which=w))
+    }
+})
+
 

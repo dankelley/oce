@@ -500,7 +500,9 @@ setMethod(f="[[",
                       return(NULL)
                   }
               } else if (i == "Rrho") {
-                  return(swRrho(x))
+                  return(swRrho(x, sense="diffusive"))
+              } else if (i == "RrhoSF") {
+                  return(swRrho(x, sense="finger"))
               } else if (i %in% c("salinity", "SP")) {
                   if ("salinity" %in% dataNames) {
                       S <- x@data$salinity

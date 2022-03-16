@@ -358,6 +358,9 @@
     <loc>/reference/ctdTrim.html</loc>
   </url>
   <url>
+    <loc>/reference/ctd_aml.csv.html</loc>
+  </url>
+  <url>
     <loc>/reference/ctimeToSeconds.html</loc>
   </url>
   <url>
@@ -1058,6 +1061,9 @@
   </url>
   <url>
     <loc>/reference/read.coastline.shapefile.html</loc>
+  </url>
+  <url>
+    <loc>/reference/read.ctd.aml.html</loc>
   </url>
   <url>
     <loc>/reference/read.ctd.html</loc>

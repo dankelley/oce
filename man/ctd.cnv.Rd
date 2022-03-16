@@ -18,6 +18,7 @@ read.oce(system.file("extdata", "ctd.cnv", package="oce"))
 Other raw datasets: 
 \code{\link{CTD_BCD2014666_008_1_DN.ODF.gz}},
 \code{\link{adp_rdi.000}},
+\code{\link{ctd_aml.csv}},
 \code{\link{d200321-001.ctd}},
 \code{\link{d201211_0011.cnv}},
 \code{\link{test_met_csv1.csv}},
@@ -37,6 +38,7 @@ Other things related to ctd data:
 \code{\link{ctdRaw}},
 \code{\link{ctdRepair}()},
 \code{\link{ctdTrim}()},
+\code{\link{ctd_aml.csv}},
 \code{\link{ctd}},
 \code{\link{d200321-001.ctd}},
 \code{\link{d201211_0011.cnv}},

@@ -738,11 +738,7 @@ cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
 #'
 #' @examples
 #' f <- system.file("extdata", "ctd.cnv", package="oce")
-#' ## Read the file in the normal way
 #' d <- read.ctd(f)
-#' ## Read an imaginary file, in which salinity is named 'salt'
-#' d <- read.ctd(f, columns=list(
-#'   salinity=list(name="salt", unit=list(unit=expression(), scale="PSS-78"))))
 #'
 #' @references
 #' 1. The Sea-Bird SBE 19plus profiler is described at
@@ -760,8 +756,9 @@ cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
 #' and this was the reference version used in coding `oce`.
 #'
 #' @family functions that read ctd data
-read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue, deploymentType="unknown", btl=FALSE,
-                         monitor=FALSE, debug=getOption("oceDebug"), processingLog, ...)
+read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
+    deploymentType="unknown", btl=FALSE, monitor=FALSE,
+    debug=getOption("oceDebug"), processingLog, ...)
 {
     if (!missing(file) && is.character(file) && 0 == file.info(file)$size)
         stop("empty file")
@@ -830,26 +827,21 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue, deploym
     namesUsed <- NULL
     for (iline in seq_along(nameLines)) {
         nu <- cnvName2oceName(lines[nameLines[iline]], columns, debug=debug-1)
-        ##newname <- unduplicateName(nu$name, colNamesInferred)
-        ##colNamesInferred <- c(colNamesInferred, newname)
-        ## dataNamesOriginal[[newname]] <- nu$nameOriginal
         if (nu$name %in% namesUsed) {
             trial <- 2
             while (paste(nu$name, trial, sep="") %in% namesUsed) {
                 trial <- trial + 1
-                ##message("trial=", trial)
-                if (trial > 10)
+                if (trial > 10L) {
+                    warning("stopped renaming ", nu$name, "after got to 10 variants\n")
                     break
+                }
             }
-            ## message("** REUSING NAME '", nu$name)
             nu$name <- paste(nu$name, trial, sep="")
-            ##message("  -> '", nu$name, "'")
         }
         namesUsed <- c(namesUsed, nu$name)
         dataNamesOriginal[[nu$name]] <- nu$nameOriginal
         colUnits[[iline]] <- nu$unit
         colNamesInferred <- c(colNamesInferred, nu$name)
-        ##message("SBE name=", nu$name, "; nameOriginal=", nu$nameOriginal, "; unit='", as.character(nu$unit$unit),"'")
     }
     colNamesInferred <- unduplicateNames(colNamesInferred)
     names(colUnits) <- colNamesInferred
@@ -1079,28 +1071,32 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue, deploym
     res@metadata$station <- station
     res@metadata$deploymentType <- deploymentType
     res@metadata$date <- date
+    if (!is.na(startTime) && startTime < as.POSIXct("1950-01-01"))
+        warning("startTime < 1950, suggesting y2k problem in this cnv file\n")
     res@metadata$startTime <- startTime
+    if (!is.na(recoveryTime) && recoveryTime < as.POSIXct("1950-01-01"))
+        warning("recoveryTime < 1950, suggesting y2k problem in this cnv file\n")
     res@metadata$recoveryTime <- recoveryTime
-##    res@metadata$time <- date          # standardized name
+    #res@metadata$time <- date          # standardized name
     res@metadata$latitude <- latitude
     res@metadata$longitude <- longitude
     res@metadata$waterDepth <- waterDepth # if NA, will update later
     res@metadata$sampleInterval <- sampleInterval
     res@metadata$sampleIntervalUnits <- sampleIntervalUnits
-    ##res@metadata$names <- colNamesInferred
-    ##res@metadata$labels <- colNamesInferred
+    #res@metadata$names <- colNamesInferred
+    #res@metadata$labels <- colNamesInferred
     res@metadata$filename <- filename
     if (fileType == "binary") {
         warning("can only handle non-binary .cnv files")
         res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
         return(res)
     }
-    ## Read the data as a table.
+    # Read the data as a table.
     if (btl) {
         pushBack(lines, file) # push back header so we can read from a file, not a text vector (for speed)
-        ## The .BTL format was reverse-engineered by inspecting some files, since I could
-        ## not discover any documentation on the format.  Therefore, there is a good chance
-        ## of errors in this code.  See https://github.com/dankelley/oce/issues/1681
+        # The .BTL format was reverse-engineered by inspecting some files, since I could
+        # not discover any documentation on the format.  Therefore, there is a good chance
+        # of errors in this code.  See https://github.com/dankelley/oce/issues/1681
         oceDebug(debug, "About to read .btl data\n")
         dataHeaderStartLine <- grep("^[^#^*]", lines)[1]
         if (!length(dataHeaderStartLine))
@@ -1116,19 +1112,19 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue, deploym
             stop("odd-numbered data lines in .btl files must end with `(avg)`, but lines ", paste(grep("(avg)$", lines[iodd], invert=TRUE), collapse=","), " do not")
         if (any(!grepl("^.*\\(sdev\\)$", lines[ieven])))
             stop("even-numbered data lines in .btl files must end with `(sdev)`, but lines ", paste(grep("(sdev)$", lines[ieven], invert=TRUE), collapse=","), " do not")
-        ## It's a multistep process, working with this odd paired-line format.  We
-        ## divide it into steps, in hopes of making it easier to modify the code later,
-        ## in case this fails on some files, or there is a need to change the output
-        ## scheme.
+        # It's a multistep process, working with this odd paired-line format.  We
+        # divide it into steps, in hopes of making it easier to modify the code later,
+        # in case this fails on some files, or there is a need to change the output
+        # scheme.
         dataInterwoven <- utils::read.fwf(file, widths=rep(11, length(colNames)), skip=1+dataHeaderStartLine,
                                           col.names=colNames)
         ndataInterwoven <- dim(dataInterwoven)[1]
-        ## Break up into two dataframes
+        # Break up into two dataframes
         iavgs <- seq(1, ndataInterwoven, by=2)
         isdevs <- seq(2, ndataInterwoven, by=2)
         avg <- dataInterwoven[iavgs, ]
         sdev <- dataInterwoven[isdevs,]
-        ## Get time-of-day from sdev, then trim out NA columns, and finally rename columns
+        # Get time-of-day from sdev, then trim out NA columns, and finally rename columns
         hms <- gsub(" ", "", sdev$Date)
         sdevValid <- !is.na(sdev[1,]) & !grepl("Date", names(sdev))
         sdev <- sdev[, sdevValid]
@@ -1146,7 +1142,7 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue, deploym
     } else {
         pushBack(lines, file) # push back header so we can read from a file, not a text vector (for speed)
         oceDebug(debug, "About to read .cnv data with these names: c(\"", paste(colNamesInferred, collapse='","'), "\")\n", sep="")
-        ##message("skipping ", iline-1, " lines at top of file")
+        #message("skipping ", iline-1, " lines at top of file")
         data <- as.list(read.table(file, skip=iline-1, header=FALSE))
 
         if (length(data) != length(colNamesInferred))
@@ -1156,13 +1152,13 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue, deploym
         if (0 < ndata) {
             haveData <- TRUE
             names <- names(data)
-            ##labels <- names
-            ## if (!found.scan) {
-            ##     data$scan <- 1:ndata
-            ##     names <- names(data)
-            ##     colNamesInferred <- c(colNamesInferred, "scan")
-            ##     colNamesOriginal <- c(colNamesOriginal, "scan")
-            ## }
+            #labels <- names
+            # if (!found.scan) {
+            #     data$scan <- 1:ndata
+            #     names <- names(data)
+            #     colNamesInferred <- c(colNamesInferred, "scan")
+            #     colNamesOriginal <- c(colNamesOriginal, "scan")
+            # }
         } else {
             haveData <- FALSE
             warning("no data in CTD file \"", filename, "\"")
@@ -1171,15 +1167,15 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue, deploym
     }
     if (missing(processingLog))
         processingLog <- paste(deparse(match.call()), sep="", collapse="")
-    ##hitem <- processingLogItem(processingLog)
-    ## replace any missingValue with NA
+    #hitem <- processingLogItem(processingLog)
+    # replace any missingValue with NA
     if (!missing(missingValue) && !is.null(missingValue)) {
         for (item in names(data)) {
             data[[item]] <- ifelse(data[[item]]==missingValue, NA, data[[item]])
         }
     }
     res@data <- data
-    ## Add standard things, if missing
+    # Add standard things, if missing
     if (haveData) {
         if (!foundSalinity) {
             if (foundConductivityRatio) {
@@ -1192,8 +1188,8 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue, deploym
                 C <- data$conductivity
                 if (!is.null(res@metadata$units$conductivity)) {
                     unit <- as.character(res@metadata$units$conductivity$unit)
-                    ## Conductivity Ratio is conductivity divided by 42.914 mS/cm (Culkin and Smith 1980
-                    ## see ?read.rsk for full citation)
+                    # Conductivity Ratio is conductivity divided by 42.914 mS/cm (Culkin and Smith 1980
+                    # see ?read.rsk for full citation)
                     if (length(unit)) {
                         oceDebug(debug, "'columns' indicates that the conductivity unit is '", unit, "'\n", sep="")
                         if ("uS/cm" == unit) {
@@ -1247,26 +1243,17 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue, deploym
             warning("created 'pressure' from 'depth'")
         }
     }
-    ##20181014(issue 1460) ## Store time in metadata, if it's not in the data. This was done
-    ##20181014(issue 1460) ## 2018-07-05 in response to issue 1434, on the assumption that
-    ##20181014(issue 1460) ## some other code might be relying on `d[["time"]]` retrieving
-    ##20181014(issue 1460) ## *something**.
-    ##20181014(issue 1460) if (!("time" %in% names(res@data)))
-    ##20181014(issue 1460)     res@metadata$time <- date
-    ##res@metadata$dataNamesOriginal <- colNamesOriginal
     res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
 
     if (("temperature" %in% names(res@metadata$units)) && res@metadata$units$temperature$scale == "IPTS-68") {
         warning("this CNV file has temperature in the IPTS-68 scale, and this is stored in the object; note that [[\"temperature\"]] and the sw* functions will convert to the modern ITS-90 value")
     }
-    ## Note: previously, at this spot, there was code to switch from the IPTS-68 scale
-    ## to the ITS-90 scale. The old-scale data were saved in a column named
-    ## "temperature68". However, that scheme could be confusing both in oce code and
-    ## in user code, and it became unnecessary when the scale started being
-    ## stored in the unit. See the "note on scales" in the documentation for
-    ## the scheme used to prevent problems.
-
-
+    # Note: previously, at this spot, there was code to switch from the IPTS-68 scale
+    # to the ITS-90 scale. The old-scale data were saved in a column named
+    # "temperature68". However, that scheme could be confusing both in oce code and
+    # in user code, and it became unnecessary when the scale started being
+    # stored in the unit. See the "note on scales" in the documentation for
+    # the scheme used to prevent problems.
     oceDebug(debug, "} # read.ctd.sbe()\n")
     res
 }

@@ -1,16 +1,34 @@
 # oce
 
-## 1.6.1
+## 1.7.1
+
+* Fix CRAN check warning about 2 uninitialized variables on
+  r-devel-linux-x86_64-debian-gcc.  (We thank K. Hornik, for an email dated
+  2022-03-16 notifying us about the problem.)
+* Fix CRAN check error on r-devel-linux-x86_6-debian-clang, -fedora-clang and
+  -fedora-gcc, relating to a byte-order-mark in a test file, which is evidently
+  treated differently on different systems.
+* Remove a kriging example because it causes problems on some CRAN check
+  machines.
+
+## 1.7.0
+
+* Add `read.ctd.aml()`.
+* Change `read.met()` to handle a new `encoding` argument.
+* Fix `drawPalette()` to obey the `at` and `labels` arguments.
+* Fix `plot,ctd-method()` to recognize `which=13` for spice.
+
+## 1.6.1 (on CRAN)
 
 * Remove a journal link that has become unavailable.
-* fix "length_1" error (thanks to B. Ripley for the heads-up)
+* Fix "length_1" error (thanks to B. Ripley for the heads-up).
 
 ## 1.6.0
 
 * Fix image-size declarations in 3 man pages (required by CRAN).
 * Improve sub-class vignette.
 
-## 1.5.0
+## 1.5.0 (on CRAN)
 
 * Add `[["?"]]` facility to all objects.
 * Add `showNA` argument to `vectorShow()`.

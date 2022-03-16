@@ -1,3 +1,4 @@
+^nohup.out$
 ^TAGS$
 ^R/TAGS$
 ^src/TAGS$
@@ -70,3 +71,6 @@ CRAN-RELEASE
 inst/joss
 
 ^CRAN-SUBMISSION$
+README.tex
+^check_package.R$
+

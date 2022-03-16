@@ -69,7 +69,7 @@ if (require(ocedata)) {
     data(RRprofile)
     zz <- seq(0, 2000, 2)
     plot(RRprofile$temperature, RRprofile$depth, ylim=c(500, 0), xlim=c(2, 11))
-    ## Contrast two methods
+    # Contrast two methods
     a1 <- oce.approx(RRprofile$depth, RRprofile$temperature, zz, "rr")
     a2 <- oce.approx(RRprofile$depth, RRprofile$temperature, zz, "unesco")
     lines(a1, zz)

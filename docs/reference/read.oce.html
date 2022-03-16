@@ -22,7 +22,7 @@ and with any additional arguments being supplied."><!-- mathjax --><script src="
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.6-1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-1</span>
       </span>
     </div>
 
@@ -123,6 +123,7 @@ type can be determined, then one of the following is called:
     <h2>Examples</h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dankelley.github.io/oce/" class="external-link">oce</a></span><span class="op">)</span></span>
 <span class="r-in"><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu">read.oce</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"ctd.cnv"</span>, package<span class="op">=</span><span class="st">"oce"</span><span class="op">)</span><span class="op">)</span></span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>startTime &lt; 1950, suggesting y2k problem in this cnv file</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>this CNV file has temperature in the IPTS-68 scale, and this is stored in the object; note that [["temperature"]] and the sw* functions will convert to the modern ITS-90 value</span>
 <span class="r-in"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="co"># summary with TS and profiles</span></span>
 <span class="r-plt img"><img src="read.oce-1.png" alt="" width="700" height="433"></span>

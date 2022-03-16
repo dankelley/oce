@@ -19,7 +19,7 @@ values equals the variance of the input x."><!-- mathjax --><script src="https:/
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.6-1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-1</span>
       </span>
     </div>
 
@@ -111,11 +111,11 @@ values equals the variance of the input <code>x</code>.</p>
 <span class="r-in">  <span class="va">s</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/spectrum.html" class="external-link">spectrum</a></span><span class="op">(</span><span class="va">x</span>, plot<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span></span>
 <span class="r-in">  <span class="va">ss</span> <span class="op">&lt;-</span> <span class="fu">oce.spectrum</span><span class="op">(</span><span class="va">x</span>, plot<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span></span>
 <span class="r-in">  <span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"variance of x="</span>, <span class="fu"><a href="https://rdrr.io/r/stats/cor.html" class="external-link">var</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span>, <span class="st">"\n"</span><span class="op">)</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> variance of x= 0.9916261 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> variance of x= 1.034969 </span>
 <span class="r-in">  <span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"integral of     spectrum="</span>, <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">s</span><span class="op">$</span><span class="va">spec</span><span class="op">)</span><span class="op">*</span><span class="fu"><a href="https://rdrr.io/r/base/diff.html" class="external-link">diff</a></span><span class="op">(</span><span class="va">s</span><span class="op">$</span><span class="va">freq</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">2</span><span class="op">]</span><span class="op">)</span>, <span class="st">"\n"</span><span class="op">)</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> integral of     spectrum= 0.5031305 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> integral of     spectrum= 0.5176442 </span>
 <span class="r-in">  <span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"integral of oce.spectrum="</span>, <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">ss</span><span class="op">$</span><span class="va">spec</span><span class="op">)</span><span class="op">*</span><span class="fu"><a href="https://rdrr.io/r/base/diff.html" class="external-link">diff</a></span><span class="op">(</span><span class="va">ss</span><span class="op">$</span><span class="va">freq</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">2</span><span class="op">]</span><span class="op">)</span>, <span class="st">"\n"</span><span class="op">)</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> integral of oce.spectrum= 0.9916261 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> integral of oce.spectrum= 1.034969 </span>
 </code></pre></div>
     </div>
   </div>

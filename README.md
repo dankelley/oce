@@ -1,7 +1,11 @@
+
+
+
 # oce <img src="https://raw.githubusercontent.com/dankelley/oce/develop/oce-logo-3.png" align="right" height="95" />
 
 <!-- badges: start -->
-[![status](https://joss.theoj.org/papers/4e11074685a0c614345560332cfd27e8/status.svg)](https://joss.theoj.org/papers/4e11074685a0c614345560332cfd27e8)
+
+[![status](https://joss.theoj.org/papers/10.21105/joss.03594/status.svg)](https://joss.theoj.org/papers/10.21105/joss.03594)
 [![R-CMD-check](https://github.com/dankelley/oce/workflows/R-CMD-check/badge.svg)](https://github.com/dankelley/oce/actions)
 [![Codecov test
 coverage](https://codecov.io/gh/dankelley/oce/branch/develop/graph/badge.svg)](https://app.codecov.io/gh/dankelley/oce?branch=develop)
@@ -27,12 +31,16 @@ handling specialized calculations. The oce package is a prime example.
 ## About oce
 
 The oce package handles a wide variety of tasks that come up in the analysis of
-Oceanographic data. Its [webpage](https://dankelley.github.io/oce/) provides
-details, of which this README file is just a sketch. A book by one of the oce
-co-authors provides more information on the package and its potential for
-oceanographic research (Kelley, Dan E., 2018. [Oceanographic Analysis with
+Oceanographic data. In addition to the present README file, a brief sketch of
+the package has been written by the core developers (Kelley Dan E., Clark
+Richards and Chantelle Layton, 2022. [oce: an R package for Oceanographic
+Analysis](https://doi.org/10.21105/joss.03594). Journal of Open Source
+Software, 7(71), 3594), and the primary developer uses the package extensively
+in his book about the place of R in oceanographic analysis (Kelley, Dan E.,
+2018. [Oceanographic Analysis with
 R](https://link.springer.com/us/book/9781493988426). New York. Springer-Verlag
-ISBN 978-1-4939-8844-0).
+ISBN 978-1-4939-8844-0).  Details of oce functions are provided within the
+R help system, and in the package [webpage](https://dankelley.github.io/oce/).
 
 ## Installing oce
 
