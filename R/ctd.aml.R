@@ -18,7 +18,7 @@
 #' workaround.) Note that other columns will be also read and stored in the
 #' returned value, but they will not have proper units.  Attempts are made to
 #' infer the sampling location from the file, by searching for strings like
-#' `Latitude=` in the header. Headers typicaly contain two values of the
+#' `Latitude=` in the header. Headers typically contain two values of the
 #' location, and it is the second pair that is used by this function, with a
 #' `NA` value being recorded if the value in the file is `no-lock`.  The
 #' instrument serial number is also read, although the individual serial numbers

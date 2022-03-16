@@ -1567,7 +1567,7 @@ mapLongitudeLatitudeXY <- function(longitude, latitude)
 #'
 #' 1. Snyder, John P., 1987.  Map Projections: A Working Manual.  USGS
 #' Professional Paper: 1395
-#' <https://pubs.er.usgs.gov/publication/pp1395>
+## <https://pubs.er.usgs.gov/publication/pp1395>
 #' \doi{10.3133/pp1395}
 #'
 #' 2. Natural Resources Canada
@@ -2605,7 +2605,7 @@ mapText <- function(longitude, latitude, labels, ...)
 #' @references
 #' 1. Snyder, John P., 1987.  Map Projections: A Working Manual.  USGS
 #' Professional Paper: 1395
-#' <https://pubs.er.usgs.gov/publication/pp1395>
+## <https://pubs.er.usgs.gov/publication/pp1395>
 #' \doi{10.3133/pp1395}
 #'
 #' @examples

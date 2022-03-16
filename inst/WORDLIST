@@ -211,6 +211,7 @@ MGL
 MLI
 MSB
 Macnab
+Mahy
 MapGen
 MathWorks
 McBryde
@@ -311,8 +312,9 @@ Scanwise
 Schmid
 Scotian
 SeaBird
-SeaWater
 SeaCast
+SeaWater
+Seacast
 Sealevel
 Seapoint
 Seasoft
@@ -622,6 +624,7 @@ freesurface
 fullFilename
 fullpage
 gc
+gcc
 gebcoColors
 geod
 geodDist
@@ -1060,6 +1063,7 @@ ylab
 ylim
 ylocations
 ytype
+yyyy
 zipfile
 zlim
 Šavrič
