@@ -1,6 +1,6 @@
 # Submission of 1.7-1
 
-This submission addresses two problems seen in CRAN checks of 1.7-0:
+This submission addresses three problems seen in CRAN checks of 1.7-0:
 
 1. Fix CRAN check warning about 2 uninitialized variables on
   r-devel-linux-x86_64-debian-gcc.  (We thank K. Hornik, for an email dated
@@ -8,6 +8,8 @@ This submission addresses two problems seen in CRAN checks of 1.7-0:
 2. Fix CRAN check error on r-devel-linux-x86_6-debian-clang, -fedora-clang and
   -fedora-gcc, relating to a byte-order-mark in a test file, which is evidently
   treated differently on different systems.
+3. Remove a kriging example because it causes problems on some CRAN check
+   machines.
 
 # Tests
 

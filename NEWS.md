@@ -8,6 +8,8 @@
 * Fix CRAN check error on r-devel-linux-x86_6-debian-clang, -fedora-clang and
   -fedora-gcc, relating to a byte-order-mark in a test file, which is evidently
   treated differently on different systems.
+* Remove a kriging example because it causes problems on some CRAN check
+  machines.
 
 ## 1.7.0
 

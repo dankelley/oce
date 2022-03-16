@@ -161,25 +161,6 @@ gsBarnes <- sectionSmooth(gs, "barnes", xr=50, yr=200)
 plot(gsBarnes, which="temperature")
 mtext("Barnes-smoothed")
 
-# Kriging.
-# As of early March, 2022, two CRAN test machines (running R-devel
-# on linux-fedora) started to fail on the code shown below, so it
-# was deactivated, as a cautionary measure.  It may reactivated
-# later, if the CRAN machines start handling it properly again.
-\dontrun{
-if (requireNamespace("automap",quietly=TRUE)&&requireNamespace("sp",quietly=TRUE)) {
-  krig <- function(x, y, F, xg, xr, yg, yr) {
-    xy <- data.frame(x=x/xr, y=y/yr)
-    K <- automap::autoKrige(F~1, remove_duplicates=TRUE,
-                            input_data=sp::SpatialPointsDataFrame(xy, data.frame(F)),
-                            new_data=sp::SpatialPoints(expand.grid(xg/xr, yg/yr)))
-    matrix(K$krige_output@data$var1.pred, nrow=length(xg), ncol=length(yg))
-  }
-  gsKrig <- sectionSmooth(gs, krig)
-  plot(gsKrig, which="temperature")
-  mtext("Kriging-smoothed")
-}
-}
 
 }
 \seealso{
