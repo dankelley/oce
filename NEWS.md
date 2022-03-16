@@ -1,5 +1,14 @@
 # oce
 
+## 1.7.1
+
+* Fix CRAN check warning about 2 uninitialized variables on
+  r-devel-linux-x86_64-debian-gcc.  (We thank K. Hornik, for an email dated
+  2022-03-16 notifying us about the problem.)
+* Fix CRAN check error on r-devel-linux-x86_6-debian-clang, -fedora-clang and
+  -fedora-gcc, relating to a byte-order-mark in a test file, which is evidently
+  treated differently on different systems.
+
 ## 1.7.0
 
 * Add `read.ctd.aml()`.

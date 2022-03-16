@@ -1,32 +1,24 @@
-# Submission of 1.6-1
+# Submission of 1.7-1
 
-This submission addresses two problems of which I learned since a submission of
-1.6-0 yesterday:
+This submission addresses two problems seen in CRAN checks of 1.7-0:
 
-1. Use a doi{} rather than a url{} for a journal article, preventing reliance
-   on what seems to be an unstable website.
-2. Fix two "length_1" errors, kindly pointed out by B. Ripley in an email dated
-   2022-02-18.  (This involves using `&&` or `||` where `&` and `|` was
-   proper.)
-
+1. Fix CRAN check warning about 2 uninitialized variables on
+  r-devel-linux-x86_64-debian-gcc.  (We thank K. Hornik, for an email dated
+  2022-03-16 notifying us about the problem.)
+2. Fix CRAN check error on r-devel-linux-x86_6-debian-clang, -fedora-clang and
+  -fedora-gcc, relating to a byte-order-mark in a test file, which is evidently
+  treated differently on different systems.
 
 # Tests
 
 ## Local Tests
 
-Local MacOS-12.2(beta) R-4.1.2 CMD (BUILD, INSTALL, CHECK): no ERRORs, no
+Local MacOS-12.2(beta) R-4.1.3 CMD (BUILD, INSTALL, CHECK): no ERRORs, no
 WARNINGs, and 2 NOTEs, one naming the author the other reporting that
 sub-directories were of size of 1MB or more: R 3.0Mb, data 1.0Mb, doc 2.0Mb,
 and help 3.7Mb.
 
 ## Github R-CMD-check Action Tests
-
-Passes on all tested platforms:
-
-* windows-latest (release)
-* macOS-latest (release)
-* ubuntu-20.04 (release)
-* ubuntu-20.04 (devel)
 
 R-CMD-check github action reports no problems on
 * windows-latest (release)

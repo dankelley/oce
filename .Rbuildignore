@@ -71,3 +71,5 @@ inst/joss
 
 ^CRAN-SUBMISSION$
 README.tex
+^check_package.R$
+
