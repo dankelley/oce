@@ -18,7 +18,7 @@ This submission addresses three problems seen in CRAN checks of 1.7-0:
 Local MacOS-12.2(beta) R-4.1.3 CMD (BUILD, INSTALL, CHECK): no ERRORs, no
 WARNINGs, and 2 NOTEs, one naming the author the other reporting that
 sub-directories were of size of 1MB or more: R 3.0Mb, data 1.0Mb, doc 2.0Mb,
-and help 3.7Mb.
+and help 3.5Mb.
 
 ## Github R-CMD-check Action Tests
 
