@@ -2615,8 +2615,8 @@ mapText <- function(longitude, latitude, labels, ...)
 #' par(mfrow=c(1, 1), mar=c(2, 2, 1, 1))
 #' p  <- "+proj=aea +lat_1=10 +lat_2=60 +lon_0=-45"
 #' mapPlot(coastlineWorld, projection=p, col="gray",
-#' longitudelim=c(-90,0), latitudelim=c(0, 50))
-#' mapTissot(c(15, 15), col='red')
+#'     longitudelim=c(-90,0), latitudelim=c(0, 50))
+#' mapTissot(c(15, 15), col="red")
 #'}
 #'
 #' @author Dan Kelley
@@ -2639,6 +2639,8 @@ mapTissot <- function(grid=rep(15, 2), scale=0.2, crosshairs=FALSE, ...)
             LAT <- lat + d*sin(theta)
             factor <- 1 / cos(lat * pi / 180)
             LON <- lon + d*cos(theta) * factor
+            LON <- ifelse(LON>180.0, 180.0, ifelse(LON < -180.0, -180.0, LON))
+            LAT <- ifelse(LAT> 90.0,  90.0, ifelse(LAT <  -90.0,  -90.0, LAT))
             mapLines(LON, LAT, ...)
             if (crosshairs) {
                 mapLines(rep(lon, ncr), seq(lat-d, lat+d, length.out=ncr), ...)
