@@ -1,6 +1,6 @@
-# oce 1.7.1
+# oce 1.7.0
 
-## Version 1.7.1
+## Version 1.7.0
 
 * Fix CRAN-check warning about 2 uninitialized variables on the
   `r-devel-linux-x86_64-debian-gcc` test system.  (We thank K. Hornik, for an
@@ -14,9 +14,6 @@
 * Change `mapTissot()` to trim shapes to earth limits.
 * Alter this `NEWS.md` file so `pkgdown::build_news()` will notice the
   subsections.
-
-## Version 1.7.0
-
 * Add `read.ctd.aml()`.
 * Change `read.met()` to handle a new `encoding` argument.
 * Fix `drawPalette()` to obey the `at` and `labels` arguments.
