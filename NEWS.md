@@ -1,8 +1,15 @@
-# oce 1.7.1
+# oce 1.7.2
+
+## Version 1.7.2
+
+* Remove a link to `https://pubs.usgs.gov/pp/1395/report.pdf`, which was
+  reported as unreachable during the attempted CRAN submission of version
+  1.7.1.
 
 ## Version 1.7.1
 
-* Fix error in comparing a `class()` result with a string.
+* Fix error in comparing a `class()` result with a string, which was reported
+  as an error during the attempted CRAN submission of version 1.7.1.
 
 ## Version 1.7.0
 
