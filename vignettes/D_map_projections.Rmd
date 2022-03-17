@@ -25,7 +25,9 @@ knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
 ```
 
 **Abstract.** An overview of the handling of map projections in oce is
-presented, along with a few examples of common projections.
+presented, along with a few examples of common projections. Readers are
+cautioned that oce has difficulties with some projections, which can cause
+spurious horizontal lines (or poor landmass filling) on plots.
 
 # Introduction
 
@@ -38,20 +40,20 @@ projection for a particular task. Snyder (1987), Snyder (1993) and Snyder and
 Voxland (1994) are all excellent sources on these topics, and the first and
 last of these are available for free online.
 
-Oce handles map projections by calling the `sf_project` function of the
-`sf` R package, and so the notation for representing the projection is
-borrowed from `sf`.  This system will be familiar to many readers,
-because it is used in other R packages, and more widely in the software called
-PROJ, which has interfaces in python and other programming languages (PROJ
-contributors, 2020). Since oce uses inverse projections in some of its
-graphical work, only PROJ projections that have inverses are incorporated into
-oce.  Furthermore, some projections are omitted from oce because they have been
-witnessed to cause problems on the oce developer's computers, including
-infinite loops and core dumps. See the help for the oce function `mapPlot` for
-a list of the available projections, and some advice on choosing them.
+Oce handles map projections by calling the `sf_project` function of the `sf` R
+package, and so the notation for representing the projection is borrowed from
+`sf`.  This system will be familiar to many readers, because it is used in
+other R packages, and more widely in the software called PROJ, which has
+interfaces in python and other programming languages (PROJ contributors, 2020).
+Since oce uses inverse projections in some of its graphical work, only PROJ
+projections that have inverses are incorporated into oce.  Furthermore, some
+projections are omitted from oce because they have been witnessed to cause
+problems on the oce developer's computers, including infinite loops and core
+dumps. See the help for the oce function `mapPlot` for a list of the available
+projections, and some advice on choosing them.
 
-You must ensure that the `sf` package is installed for the examples provided
-in this vignette to work.  If this package is not installed, it may be installed
+You must ensure that the `sf` package is installed for the examples provided in
+this vignette to work.  If this package is not installed, it may be installed
 with
 ```{r eval=FALSE}
 install.packages("sf")
@@ -311,7 +313,6 @@ Source Geospatial Foundation, 2020.
 
 Snyder, John P. "Map Projections-a Working Manual." Washington: U.S.
 Geological survey professional paper 1395, 1987.
-<https://pubs.usgs.gov/pp/1395/report.pdf>
 
 Snyder, John Parr. "Flattening the Earth: Two Thousand Years of Map
 Projections." Chicago, IL: University of Chicago Press, 1993.

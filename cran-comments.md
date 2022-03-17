@@ -1,6 +1,9 @@
-# Submission of 1.7-1
+# Submission of 1.7-2
 
-This fixes a problem in comparing class() result with a string, which was found upon submitting 1.7-0.
+Version 1.7-2 fixes a broken link (found upon submitting 1.7-1 to CRAN).
+
+Version 1.7-1 fixes a problem of comparing a `class()` result with a string
+(found upon submitting 1.7-0 to CRAN).
 
 Version 1.7-0 adds `read.ctd.aml()` and addresses three problems seen in CRAN
 checks of 1.6-0:
@@ -21,7 +24,7 @@ checks of 1.6-0:
 Local MacOS-12.2(beta) R-4.1.3 CMD (BUILD, INSTALL, CHECK): no ERRORs, no
 WARNINGs, and 2 NOTEs, one naming the author the other reporting that
 sub-directories were of size of 1MB or more: R 3.0Mb, data 1.0Mb, doc 2.0Mb,
-and help 3.5Mb.
+and help 3.6Mb.
 
 ## Github R-CMD-check Action Tests
 

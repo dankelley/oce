@@ -488,7 +488,6 @@ if (utils::packageVersion("sf") != "0.9.8") {
 \enumerate{
 \item Snyder, John P., 1987.  Map Projections: A Working Manual.  USGS
 Professional Paper: 1395
-\doi{10.3133/pp1395}
 \item Natural Resources Canada
 \url{https://www.nrcan.gc.ca/earth-sciences/geography/topographic-information/maps/9805}
 \item "List of Map Projections." In Wikipedia, January 26, 2021.
