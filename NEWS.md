@@ -1,4 +1,8 @@
-# oce 1.7.0
+# oce 1.7.1
+
+## Version 1.7.1
+
+* Fix error in comparing a `class()` result with a string.
 
 ## Version 1.7.0
 

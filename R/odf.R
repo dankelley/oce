@@ -855,7 +855,7 @@ ODFNames2oceNames <- function(ODFnames,
     #-         # print(names)
     #-         warning("unable to interpret ODFunits[", i, "]='", thisUnit, "', for item code-named '", names[i], "', so making an educated guess using parse() or, as a last-ditch effort, simply copying the string", sep="")
     #-         uu <- try(parse(text=thisUnit), silent=TRUE)
-    #-         if (class(uu) == "try-error")
+    #-         if (inherits(uu, "try-error"))
     #-             uu <- thisUnit
     #-         list(unit=uu, scale="")
     #-     }
@@ -1301,7 +1301,7 @@ read.odf <- function(file, columns=NULL, header="list", exclude=NULL, debug=getO
         nullValue <- NA
         t <- try({nullValue <- as.numeric(gsub("D\\+", "e+", findInHeader("NULL_VALUE", lines))[1])},
             silent=TRUE)
-        if (class(t) == "try-error") {
+        if (inherits(t, "try-error")) {
             nullValue <- findInHeader("NULL_VALUE", lines)[1]
         }
         options(warn=options$warn)

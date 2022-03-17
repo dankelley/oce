@@ -1,6 +1,8 @@
-# Submission of 1.7-0
+# Submission of 1.7-1
 
-This submission adds `read.ctd.aml()` and addresses three problems seen in CRAN
+This fixes a problem in comparing class() result with a string, which was found upon submitting 1.7-0.
+
+Version 1.7-0 adds `read.ctd.aml()` and addresses three problems seen in CRAN
 checks of 1.6-0:
 
 1. Fix CRAN check warning about 2 uninitialized variables on
