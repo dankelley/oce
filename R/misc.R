@@ -1096,7 +1096,7 @@ binApply1D <- function(x, f, xbreaks, FUN, ...)
     ##if ("data" %in% slotNames(x)) # oce objects have this
     ##    x <- x@data
     ##t <- try(x <- data.frame(x), silent=TRUE)
-    ##if (class(t) == "try-error")
+    ##if (inherits(t,"try-error"))
     ##    stop("cannot coerce 'data' into a data.frame")
     fSplit <- split(f, cut(x, xbreaks, include.lowest=TRUE, labels=FALSE))
     ##message("length(xbreaks)=", length(xbreaks))

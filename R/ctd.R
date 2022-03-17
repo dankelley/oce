@@ -1912,7 +1912,7 @@ ctdDecimate <- function(x, p=1, method="boxcar", rule=1, e=1.5, debug=getOption(
                                 if (datumName != "pressure") {
                                     yvar <- x@data[[datumName]][focus]
                                     m <- try(lm(yvar ~ xvar), silent=TRUE)
-                                    if (class(m) != "try-error")
+                                    if (!inherits(m, "try-error"))
                                         dataNew[[datumName]][i] <- predict(m, newdata=list(xvar=pt[i]))
                                     else
                                         dataNew[[datumName]][i] <- NA
@@ -2521,7 +2521,7 @@ ctdTrim <- function(x, method, removeDepthInversions=FALSE, parameters=NULL,
                                      ifelse(s < s0, p0, p0+dpds * (s-s0))
                                  },
                                  start=list(s0=s0, p0=0, dpds=dpds0)), silent=TRUE)
-                    scanStart <- if (class(m) == "try-error") 1 else max(1, floor(0.5 + coef(m)["s0"]))
+                    scanStart <- if (inherits(m,"try-error")) 1 else max(1, floor(0.5 + coef(m)["s0"]))
                 } else if (submethod == "B") {
                     oceDebug(debug, "method[3]=\"B\" so using two-segment model with zero near-surface pressure\n")
                     m <- try(nls(pp ~ function(ss, s0, dpds)
@@ -2530,7 +2530,7 @@ ctdTrim <- function(x, method, removeDepthInversions=FALSE, parameters=NULL,
                                      ifelse(s < s0, 0, dpds * (s-s0))
                                  },
                                  start=list(s0=s0, dpds=dpds0)), silent=TRUE)
-                    scanStart <- if (class(m) == "try-error") 1 else max(1, floor(0.5 + coef(m)["s0"]))
+                    scanStart <- if (inherits(m, "try-error")) 1 else max(1, floor(0.5 + coef(m)["s0"]))
                 } else {
                     stop("unknown submethod '", submethod, "'")
                 }
@@ -2588,7 +2588,7 @@ ctdTrim <- function(x, method, removeDepthInversions=FALSE, parameters=NULL,
                                      ifelse(s < s0, p0, p0+dpds * (s-s0))
                                  },
                                  start=list(s0=s0, p0=0, dpds=dpds0)), silent=TRUE)
-                    scanStart <- if (class(m) == "try-error") 1 else max(1, floor(0.5 + coef(m)["s0"]))
+                    scanStart <- if (inherits(m, "try-error")) 1 else max(1, floor(0.5 + coef(m)["s0"]))
                 } else if (submethod == "B") {
                     oceDebug(debug, "method[3]=\"B\" so using two-segment model with zero near-surface pressure\n")
                     m <- try(nls(pp ~ function(ss, s0, dpds)
@@ -2597,7 +2597,7 @@ ctdTrim <- function(x, method, removeDepthInversions=FALSE, parameters=NULL,
                                      ifelse(s < s0, 0, dpds * (s-s0))
                                  },
                                  start=list(s0=s0, dpds=dpds0)), silent=TRUE)
-                    scanStart <- if (class(m) == "try-error") 1 else max(1, floor(0.5 + coef(m)["s0"]))
+                    scanStart <- if (inherits(m, "try-error")) 1 else max(1, floor(0.5 + coef(m)["s0"]))
                 } else {
                     stop("unknown submethod '", submethod, "'")
                 }
