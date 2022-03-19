@@ -35,7 +35,7 @@ instead of the present function.
 \references{
 \enumerate{
 \item The \code{canadaHCD} package is in development by Gavin Simpson; see
-\url{https://github.com/gavinsimpson/canadaHCD} for instructions on how
+\verb{https://github.com/gavinsimpson/canadaHCD} for instructions on how
 to download and install from GitHub.
 \item Environment Canada website for Historical Climate Data
 \verb{https://climate.weather.gc.ca/index_e.html}

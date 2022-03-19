@@ -22,7 +22,7 @@ plot(as.ctd(rsk))
 
 }
 \references{
-\url{https://rbr-global.com/}
+\verb{https://rbr-global.com/}
 }
 \seealso{
 Other datasets provided with oce: 

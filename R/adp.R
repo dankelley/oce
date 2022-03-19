@@ -3140,7 +3140,7 @@ beamUnspreadAdp <- function(x, count2db=c(0.45, 0.45, 0.45, 0.45), asMatrix=FALS
 #' Calculations,} January 2010. P/N 951-6079-00.
 #'
 #' 2. WHOI/USGS-provided Matlab code for beam-enu transformation
-#' \samp{http://woodshole.er.usgs.gov/pubs/of2005-1429/MFILES/AQDPTOOLS/beam2enu.m}
+#' `http://woodshole.er.usgs.gov/pubs/of2005-1429/MFILES/AQDPTOOLS/beam2enu.m`
 #'
 #' @family things related to adp data
 beamToXyzAdp <- function(x, debug=getOption("oceDebug"))

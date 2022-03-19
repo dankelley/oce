@@ -14,7 +14,7 @@
 #' just one longitude-latitude pair for each vector.  By contrast,
 #' the [argo-class] stores `salinity` etc as matrices, and stores
 #' e.g. `longitude` as a vector of length matching the first
-#' dimension of `salinity`. 
+#' dimension of `salinity`.
 #'
 #' [locationForGsw] repeats location information as required,
 #' returning values with dimensionality matching `pressure`.
@@ -2130,7 +2130,7 @@ swSigma4 <- function(salinity, temperature=NULL, pressure=NULL,
 #' ocean measurements.  Part II: Boric acid contribution and equation for total
 #' absorption.  Journal of the Acoustical Society of America, 72(6):1879-1890.
 #'
-#' 3. \url{http://resource.npl.co.uk/acoustics/techguides/seaabsorption/}
+#' 3. `http://resource.npl.co.uk/acoustics/techguides/seaabsorption/`
 #'
 #' @examples
 #' ## Fisher & Simmons (1977 table IV) gives 0.52 dB/km for 35 PSU, 5 degC, 500 atm

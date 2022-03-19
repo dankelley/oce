@@ -14,7 +14,7 @@
 #'
 #' @references
 #' Several online sources list WHP names. An example is
-#' \url{https://cchdo.github.io/hdo-assets/documentation/manuals/pdf/90_1/chap4.pdf}
+#' `https://cchdo.github.io/hdo-assets/documentation/manuals/pdf/90_1/chap4.pdf`
 #'
 #' @family things related to ctd data
 #' @family functions that interpret variable names and units from headers
@@ -66,7 +66,7 @@ oceNames2whpNames <- function(names)
 #'
 #' @references
 #' Several online sources list WOCE names. An example is
-#' \url{https://cchdo.github.io/hdo-assets/documentation/manuals/pdf/90_1/chap4.pdf}
+#' `https://cchdo.github.io/hdo-assets/documentation/manuals/pdf/90_1/chap4.pdf`
 #'
 #' @family things related to ctd data
 #' @family functions that interpret variable names and units from headers
@@ -147,7 +147,7 @@ oceUnits2whpUnits <- function(units, scales)
 #'
 #' @references
 #' Several online sources list WOCE names. An example is
-#' \url{https://cchdo.github.io/hdo-assets/documentation/manuals/pdf/90_1/chap4.pdf}
+#' `https://cchdo.github.io/hdo-assets/documentation/manuals/pdf/90_1/chap4.pdf`
 #'
 #' @family things related to ctd data
 #' @family functions that interpret variable names and units from headers

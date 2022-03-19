@@ -74,7 +74,7 @@ oce.plot.ts(soirecent$t, soirecent$index)
 }
 }
 \references{
-See \url{https://psl.noaa.gov/data/climateindices/list/}
+See \verb{https://psl.noaa.gov/data/climateindices/list/}
 for a list of indices.
 }
 \author{

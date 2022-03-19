@@ -79,7 +79,7 @@ setClass("section", contains="oce")
 #' @usage data(section)
 #'
 #' @source This is based on the WOCE file named `a03_hy1.csv`, downloaded
-#' from \url{https://cchdo.ucsd.edu/cruise/90CT40_1}, 13 April 2015.
+#' from `https://cchdo.ucsd.edu/cruise/90CT40_1`, 13 April 2015.
 #'
 #' @family datasets provided with oce
 #' @family things related to section data
@@ -2149,7 +2149,7 @@ setMethod(f="plot",
 #'
 #' @references
 #' Several repository sites provide section data. A reasonably stable example is
-#' \url{https://cchdo.ucsd.edu}, but a search on \code{"WOCE bottle data"} should
+#' `https://cchdo.ucsd.edu`, but a search on `"WOCE bottle data"` should
 #' turn up other sites, if this ceases to exist. Only
 #' the so-called *exchange BOT* data format can be processed by [read.section()]
 #' at this time. Data names are inferred from column headings using

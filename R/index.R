@@ -43,7 +43,7 @@
 #'
 #' @author Dan Kelley
 #'
-#' @references See \url{https://psl.noaa.gov/data/climateindices/list/}
+#' @references See `https://psl.noaa.gov/data/climateindices/list/`
 #' for a list of indices.
 #'
 #' @examples

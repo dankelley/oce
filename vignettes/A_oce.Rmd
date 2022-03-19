@@ -498,7 +498,7 @@ to organize medical effort efficiently.
 
 # Development website
 
-The site <https://github.com/dankelley/oce> provides a window on the
+The site `https://github.com/dankelley/oce` provides a window on the
 development that goes on between the CRAN releases of the package.
 Readers are requested to visit the site to report bugs, to suggest new
 features, or just to see how `oce` development is coming along. Note

@@ -31,7 +31,7 @@ contour(x=degC, y=p, z=outer(degC,p,airRho), labcex=1)
 }
 \references{
 \enumerate{
-\item \url{https://en.wikipedia.org/wiki/Density_of_air}
+\item \verb{https://en.wikipedia.org/wiki/Density_of_air}
 \item National Oceanographic and Atmospheric Agency, 1976.  U.S.
 Standard Atmosphere, 1976.  NOAA-S/T 76-1562.  (A PDF of this document may
 be available at

@@ -14,7 +14,7 @@ Number of hours in offset, e.g. \code{AST} yields 4.
 }
 \description{
 The data are from
-\url{https://www.timeanddate.com/time/zones/} and were
+\verb{https://www.timeanddate.com/time/zones/} and were
 hand-edited to develop this code, so there may be errors.  Also, note that
 some of these contradict; if you examine the code, you'll see some
 commented-out portions that represent solving conflicting definitions by

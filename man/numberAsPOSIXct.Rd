@@ -82,11 +82,11 @@ numberAsPOSIXct(cbind(jd, 1e3 * 1 * 3600), type="epic", tz="UTC")
 \references{
 \enumerate{
 \item Matlab times:
-\url{https://www.mathworks.com/help/matlab/ref/datenum.html}
-\item NCEP times: \url{https://psl.noaa.gov/data/gridded/faq.html}
+\verb{https://www.mathworks.com/help/matlab/ref/datenum.html}
+\item NCEP times: \verb{https://psl.noaa.gov/data/gridded/faq.html}
 \item problem with NCEP times:
-\url{https://github.com/dankelley/oce/issues/738}
-\item EPIC times: software and manuals at \url{https://www.pmel.noaa.gov/epic/download/index.html#epslib};
+\verb{https://github.com/dankelley/oce/issues/738}
+\item EPIC times: software and manuals at \verb{https://www.pmel.noaa.gov/epic/download/index.html#epslib};
 see also Denbo, Donald W., and Nancy N. Soreide. \dQuote{EPIC.} Oceanography 9 (1996).
 \doi{10.5670/oceanog.1996.10}
 \item VMS times: https://en.wikipedia.org/wiki/Epoch_(computing)

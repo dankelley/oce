@@ -96,7 +96,7 @@
       <h1 data-toc-skip>4. Using map projections</h1>
                         <h4 data-toc-skip class="author">Dan Kelley (<a href="https://orcid.org/0000-0001-7808-5911" class="external-link uri">https://orcid.org/0000-0001-7808-5911</a>)</h4>
             
-            <h4 data-toc-skip class="date">2022-03-17</h4>
+            <h4 data-toc-skip class="date">2022-03-19</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/dankelley/oce/blob/HEAD/vignettes/D_map_projections.Rmd" class="external-link"><code>vignettes/D_map_projections.Rmd</code></a></small>
       <div class="hidden name"><code>D_map_projections.Rmd</code></div>
@@ -144,12 +144,14 @@ installed, it may be installed with</p>
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"sf"</span><span class="op">)</span></code></pre></div>
 <p>(Of course, this step need not be repeated to use
 <code>oce</code>.)</p>
-<p>There are far too many projections to illustrate here. See <a href="https://dankelley.github.io/r/2015/04/03/oce-proj.html" class="external-link uri">https://dankelley.github.io/r/2015/04/03/oce-proj.html</a>
-for a blog item that provides examples of the available projections.
-Note that some have a problem with spurious horizontal lines. This can
-result from coastline segments that cross the edge of the plotting area,
-and getting rid of this is tricky enough to be the heart of the
-longest-lived bug in the <code>oce</code> issue list, i.e. <a href="https://github.com/dankelley/oce/issues/388" class="external-link uri">https://github.com/dankelley/oce/issues/388</a>. In some
+<p>There are far too many projections to illustrate here. See
+<code>https://dankelley.github.io/r/2015/04/03/oce-proj.html</code> for
+a blog item that provides examples of the available projections. Note
+that some have a problem with spurious horizontal lines. This can result
+from coastline segments that cross the edge of the plotting area, and
+getting rid of this is tricky enough to be the heart of the
+longest-lived bug in the <code>oce</code> issue list, i.e.
+<code>https://github.com/dankelley/oce/issues/388</code>. In some
 instances the function <code><a href="../reference/coastlineCut.html">coastlineCut()</a></code> can help, but it is
 provisional and subject to change.</p>
 </div>
@@ -401,15 +403,17 @@ SST contours with the Goode projection
 <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
 </h2>
 <p>PROJ contributors. “PROJ Coordinate Transformation Software Library.”
-Open Source Geospatial Foundation, 2020. <a href="https://proj.org/" class="external-link uri">https://proj.org/</a></p>
+Open Source Geospatial Foundation, 2020.
+<code>https://proj.org/</code></p>
 <p>Snyder, John P. “Map Projections-a Working Manual.” Washington: U.S.
 Geological survey professional paper 1395, 1987.</p>
 <p>Snyder, John Parr. “Flattening the Earth: Two Thousand Years of Map
-Projections.” Chicago, IL: University of Chicago Press, 1993. <a href="https://press.uchicago.edu/ucp/books/book/chicago/F/bo3632853.html" class="external-link uri">https://press.uchicago.edu/ucp/books/book/chicago/F/bo3632853.html</a></p>
+Projections.” Chicago, IL: University of Chicago Press, 1993.
+<code>https://press.uchicago.edu/ucp/books/book/chicago/F/bo3632853.html</code></p>
 <p>Snyder, John P., and Philip M. Voxland. “An Album of Map
 Projections.” U. S. Geological Survey Professional Paper. Washington,
 DC, USA: U. S. Department of the Interior: U. S. Geological Survey,
-1994. <a href="https://pubs.er.usgs.gov/publication/pp1453" class="external-link uri">https://pubs.er.usgs.gov/publication/pp1453</a></p>
+1994. <code>https://pubs.er.usgs.gov/publication/pp1453</code></p>
 </div>
   </div>
 

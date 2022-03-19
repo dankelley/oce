@@ -107,7 +107,7 @@ met <- read.met(metFile)
 \item Environment Canada website for Historical Climate Data
 \verb{https://climate.weather.gc.ca/index_e.html}
 \item Gavin Simpson's \code{canadaHCD} package on GitHub
-\url{https://github.com/gavinsimpson/canadaHCD}
+\verb{https://github.com/gavinsimpson/canadaHCD}
 }
 }
 \seealso{

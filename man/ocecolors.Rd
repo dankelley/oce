@@ -6,7 +6,7 @@
 \title{Data that define some color palettes}
 \source{
 The data come from the matplotlib site
-\url{https://github.com/matplotlib/matplotlib}.
+\verb{https://github.com/matplotlib/matplotlib}.
 }
 \description{
 The \code{ocecolors} dataset is a list containing color-schemes, used

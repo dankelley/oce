@@ -14,7 +14,7 @@
 #' @author Authored by matplotlib contributers, packaged (with license permission) in oce by Dan Kelley
 #'
 #' @source The data come from the matplotlib site
-#' \url{https://github.com/matplotlib/matplotlib}.
+#' `https://github.com/matplotlib/matplotlib`.
 #'
 #' @template colourBlindnessTemplate
 #'
@@ -193,7 +193,7 @@ colormapGmtNumeric <- function(x0, x1, col0, col1, bpl=1)
 #>> #' Read a colormap from a GMT-type file
 #>> #'
 #>> #' Files of the GMT type may be found at
-#>> #' \url{https://beamreach.org/maps/gmt/share/cpt/}, and consist
+#>> #' `https://beamreach.org/maps/gmt/share/cpt/`, and consist
 #>> #' of one or more lines starting with the `#` character, followed by a sequence
 #>> #' of lines containing 8 numbers that, taken together, describe the color
 #>> #' scheme, followed by a line with the character `F` followed by three integers
@@ -322,14 +322,13 @@ colormapGmtNumeric <- function(x0, x1, col0, col1, bpl=1)
 #'
 #' @references
 #' 1. General overview of GMT system
-#' <https://www.generic-mapping-tools.org>.
+#' `https://www.generic-mapping-tools.org`.
 #' 2. Information on GMT color schemes
-#' <https://docs.generic-mapping-tools.org/dev/cookbook/cpts.html>
+#' `https://docs.generic-mapping-tools.org/dev/cookbook/cpts.html`
 #' 3. Source of GMT specification files
-#' https://beamreach.org/maps/gmt/share/cpt/ (this link worked
-#' for years, but failed to respond in October 2021)
+#' `https://beamreach.org/maps/gmt/share/cpt/`
 #' 4. CPT (color palette table) format
-#' <https://www.soest.hawaii.edu/gmt/gmt/html/GMT_Docs.html#x1-820004.15>
+#' `https://www.soest.hawaii.edu/gmt/gmt/html/GMT_Docs.html#x1-820004.15`
 #'
 #' @family things related to colors
 colormapGMT <- function(name, debug=getOption("oceDebug"))

@@ -17,9 +17,9 @@
 #' interest.
 #'
 #' @references
-#' 1. \url{https://www.bodc.ac.uk/resources/delivery_formats/odv_format/} describes
+#' 1. `https://www.bodc.ac.uk/resources/delivery_formats/odv_format/` describes
 #' the `ODV` format.
-#' 2. \url{https://vocab.nerc.ac.uk/collection/P07/current/} may be
+#' 2. `https://vocab.nerc.ac.uk/collection/P07/current/` may be
 #' worth consulting for variable names.
 read.ctd.odv <- function(file, columns=NULL, station=NULL, missingValue,
 			 deploymentType, monitor=FALSE,

@@ -95,7 +95,7 @@ the Nortek System Integrator Guide (2008) and on postings on the Nortek
 ``knowledge center'' discussion board.  One might assume that the latter is
 less authoritative than the former.  For example, the inference of cell size
 follows advice found at
-\url{https://www.nortekusa.com/en/knowledge-center/forum/hr-profilers/736804717},
+\verb{https://www.nortekusa.com/en/knowledge-center/forum/hr-profilers/736804717},
 which contains a typo in an early posting that is
 corrected later on.
 }
@@ -103,10 +103,10 @@ corrected later on.
 \enumerate{
 \item Information on Nortek profilers (including the System Integrator Guide,
 which explains the data format byte-by-byte) is available at
-\url{https://www.nortekusa.com/}.  (One must join the site to see the
+\verb{https://www.nortekusa.com/}.  (One must join the site to see the
 manuals.)
 \item The Nortek Knowledge Center
-\url{https://www.nortekusa.com/en/knowledge-center} may be of help if
+\verb{https://www.nortekusa.com/en/knowledge-center} may be of help if
 problems arise in dealing with data from Nortek instruments.
 }
 }

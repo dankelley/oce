@@ -167,11 +167,11 @@ summary(argo)
 }
 \references{
 \enumerate{
-\item \url{https://argo.ucsd.edu}
+\item \verb{https://argo.ucsd.edu}
 \item Argo User's Manual Version 3.2, Dec 29th, 2015, available at
-\url{https://archimer.ifremer.fr/doc/00187/29825/} online.
+\verb{https://archimer.ifremer.fr/doc/00187/29825/} online.
 \item User's Manual (ar-um-02-01) 13 July 2010, available at
-\url{http://www.argodatamgt.org/content/download/4729/34634/file/argo-dm-user-manual-version-2.3.pdf},
+\verb{http://www.argodatamgt.org/content/download/4729/34634/file/argo-dm-user-manual-version-2.3.pdf},
 which is the main document describing argo data.
 }
 }

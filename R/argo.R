@@ -482,10 +482,10 @@ getData <- function(file, name, quiet=FALSE)
 #'
 #' @references
 #' 1. Argo User's Manual Version 3.3, Nov 89th, 2019, available at
-#' \url{https://archimer.ifremer.fr/doc/00187/29825/} online.
+#' `https://archimer.ifremer.fr/doc/00187/29825/` online.
 #'
 #' 2. Argo list of parameters in an excel spreadsheet, available at
-#' \url{http://www.argodatamgt.org/content/download/27444/187206/file/argo-parameters-list-core-and-b.xlsx}
+#' `http://www.argodatamgt.org/content/download/27444/187206/file/argo-parameters-list-core-and-b.xlsx`
 #'
 #' @family things related to argo data
 argoNames2oceNames <- function(names, ignore.case=TRUE)
@@ -1123,13 +1123,13 @@ argoDecodeFlags <- function(f) # local function
 #' objects, and also outlines the other functions dealing with them.
 #'
 #' @references
-#' 1. \url{https://argo.ucsd.edu}
+#' 1. `https://argo.ucsd.edu`
 #'
 #' 2. Argo User's Manual Version 3.2, Dec 29th, 2015, available at
-#' \url{https://archimer.ifremer.fr/doc/00187/29825/} online.
+#' `https://archimer.ifremer.fr/doc/00187/29825/` online.
 #'
 #' 3. User's Manual (ar-um-02-01) 13 July 2010, available at
-#' \url{http://www.argodatamgt.org/content/download/4729/34634/file/argo-dm-user-manual-version-2.3.pdf},
+#' `http://www.argodatamgt.org/content/download/4729/34634/file/argo-dm-user-manual-version-2.3.pdf`,
 #' which is the main document describing argo data.
 #'
 #' @section Data sources:
@@ -2040,7 +2040,7 @@ setMethod(f="plot",
 #' @references
 #' 1. Wong, Annie, Robert Keeley, Thierry Carval, and Argo Data Management Team.
 #' "Argo Quality Control Manual for CTD and Trajectory Data," January 1, 2020.
-#' \url{https://archimer.ifremer.fr/doc/00228/33951/}.
+#' `https://archimer.ifremer.fr/doc/00228/33951/`.
 #'
 #' @examples
 #' library(oce)

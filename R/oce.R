@@ -165,7 +165,7 @@ NULL
 #'
 #' @seealso The \sQuote{Bioconductor} scheme for removing functions is
 #' described at
-#' \url{https://www.bioconductor.org/developers/how-to/deprecation/} and it is
+#' `https://www.bioconductor.org/developers/how-to/deprecation/` and it is
 #' extended here to function arguments.
 NULL
 
@@ -1604,7 +1604,7 @@ oce.write.table <- function (x, file="", ...)
 #' @references
 #' 1. Sverdrup, H U, Martin W Johnson, and Richard H Fleming. The Oceans,
 #' Their Physics, Chemistry, and General Biology. New York: Prentice-Hall, 1942.
-## \url{https://ark.cdlib.org/ark:/13030/kt167nb66r}
+## `https://ark.cdlib.org/ark:/13030/kt167nb66r`
 ## next worked well most of the time, but I got a failure on 2021-08-07 and
 ## I just don't see the point in retaining a link that will *ever* fail, given
 ## the possible consequence in terms of CRAN.
@@ -2476,7 +2476,7 @@ oceColorsClosure <- function(spec) {
 #' Mikhailo, Anton.
 #' \dQuote{Turbo, An Improved Rainbow Colormap for Visualization.}
 #' Google AI (blog), August 20, 2019.
-#' \url{https://ai.googleblog.com/2019/08/turbo-improved-rainbow-colormap-for.html}
+#' `https://ai.googleblog.com/2019/08/turbo-improved-rainbow-colormap-for.html`
 #'
 #' @author Dan Kelley
 #'
@@ -3310,14 +3310,14 @@ numberAsHMS <- function(t, default=0)
 #'
 #' @references
 #' 1. Matlab times:
-#' \url{https://www.mathworks.com/help/matlab/ref/datenum.html}
+#' `https://www.mathworks.com/help/matlab/ref/datenum.html`
 #'
-#' 2. NCEP times: \url{https://psl.noaa.gov/data/gridded/faq.html}
+#' 2. NCEP times: `https://psl.noaa.gov/data/gridded/faq.html`
 #'
 #' 3. problem with NCEP times:
-#' \url{https://github.com/dankelley/oce/issues/738}
+#' `https://github.com/dankelley/oce/issues/738`
 #'
-#' 4. EPIC times: software and manuals at \url{https://www.pmel.noaa.gov/epic/download/index.html#epslib};
+#' 4. EPIC times: software and manuals at `https://www.pmel.noaa.gov/epic/download/index.html#epslib`;
 #' see also Denbo, Donald W., and Nancy N. Soreide. \dQuote{EPIC.} Oceanography 9 (1996).
 #' \doi{10.5670/oceanog.1996.10}
 #'
