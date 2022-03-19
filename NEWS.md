@@ -1,3 +1,9 @@
+# oce 1.7.3
+
+* Speed up some tests.
+* Address unused-variable warnings in C++ code.
+* Change most documentation hyperlinks to plain-text.
+
 # oce 1.7.2
 
 ## Version 1.7.2

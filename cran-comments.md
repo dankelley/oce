@@ -1,3 +1,9 @@
+# Plans for submission of 1.7-3
+
+* Speed up some tests.
+* Address unused-variable warnings in C++ code.
+* Change most URLs in docs to code blocks.
+
 # Submission of 1.7-2
 
 Version 1.7-2 fixes a broken link (found upon submitting 1.7-1 to CRAN).

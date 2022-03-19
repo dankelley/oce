@@ -14,6 +14,7 @@ test_that("array values in data slot of 'adp' dataset are well-formed", {
 })
 
 test_that("test all 'which' values listed in ?'plot,adp-method' on 2019 May 23", {
+    skip_on_cran()
     ## Most of the numerical tests have character equivalents, but we
     ## test both. All this test really does is to ensure that the plots
     ## do not produce warnings, apart from known things, e.g. a warning
@@ -53,7 +54,8 @@ test_that("test all 'which' values listed in ?'plot,adp-method' on 2019 May 23",
 })
 
 test_that("some specialized plot types", {
-    expect_silent(plot(adp, which=23, control=list('bin'=1)))
+    skip_on_cran()
+    expect_silent(plot(adp, which=23, control=list("bin"=1)))
     expect_silent(plot(adp))
 })
 
@@ -69,7 +71,6 @@ test_that("as.adp() inserts data properly", {
 })
 
 test_that("adpEnsembleAverage() produces correctly-dimensioned results", {
-    data(adp)
     n <- 5
     adpAvg <- adpEnsembleAverage(adp, n=n)
     expect_equal(length(adp[["time"]]), n*length(adpAvg[["time"]]))
@@ -103,6 +104,7 @@ test_that("adpEnsembleAverage() produces correctly-dimensioned results", {
 
 f <- "~/Dropbox/data/archive/sleiwex/2008/moorings/m09/adp/rdi_2615/raw/adp_rdi_2615.000"
 if (file.exists(f)) {
+    skip_on_cran()
     test_that("details of a local RDI", {
         # args for read.adp.rdi() are file, from, to, by and tz
         expect_silent(d <- read.oce(f, 1, 3, 1, "UTC"))
