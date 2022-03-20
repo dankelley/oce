@@ -67,7 +67,7 @@ setClass("section", contains="oce")
 #' library(oce)
 #' # Gulf Stream
 #' data(section)
-#' GS <- subset(section, 109<=stationId&stationId<=129)
+#' GS <- subset(section, 113<=stationId&stationId<=129)
 #' GSg <- sectionGrid(GS, p=seq(0, 5000, 100))
 #' plot(GSg, map.xlim=c(-80,-60))
 #'}
@@ -649,7 +649,7 @@ setMethod(f="show",
 #' east <- subset(section, longitude > (-50))
 #'
 #' # Example 3. Gulf Stream
-#' GS <- subset(section, 109 <= stationId & stationId <= 129)
+#' GS <- subset(section, 113<=stationId&stationId<=129)
 #'
 #' # Example 4. Only stations with more than 5 pressure levels
 #' long <- subset(section, length(pressure) > 5)
@@ -2571,7 +2571,7 @@ read.section <- function(file, directory, sectionId="", flags,
 #' # Gulf Stream
 #' library(oce)
 #' data(section)
-#' GS <- subset(section, 109<=stationId&stationId<=129)
+#' GS <- subset(section, 113<=stationId&stationId<=129)
 #' GSg <- sectionGrid(GS, p=seq(0, 5000, 100))
 #' plot(GSg, which="temperature")
 ## plot(GSg, map.xlim=c(-80,-60))
@@ -3320,12 +3320,15 @@ as.section <- function(salinity, temperature, pressure, longitude, latitude, sta
 #' @examples
 #' library(oce)
 #' data(section)
-#' sectionWest <- subset(section, longitude < -60)
-#' spine <- list(longitude=c(-74.5, -69.2, -55), latitude=c(38.6, 36.25, 36.25))
-#' sectionWithSpine <- addSpine(sectionWest, spine)
-#' plot(sectionWithSpine, which="map")
-#' plot(sectionWithSpine, xtype="distance", which="temperature")
-#' plot(sectionWithSpine, xtype="spine", which="temperature")
+#' eastern <- subset(section, longitude < (-65))
+#' spine <- list(longitude=c(-74.5, -69.2, -55),
+#'     latitude=c(38.6, 36.25, 36.25))
+#' easternWithSpine <- addSpine(eastern, spine)
+#'\dontrun{
+#' # plot(easternWithSpine, which="map")
+#' # plot(easternWithSpine, xtype="distance", which="temperature")
+#' # plot(easternWithSpine, xtype="spine", which="temperature")
+#'}
 #'
 #' @author Dan Kelley
 addSpine <- function(section, spine, debug=getOption("oceDebug"))
