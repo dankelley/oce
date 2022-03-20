@@ -48,8 +48,9 @@ e.g. \code{rule} controls extrapolation beyond the observed pressure range,
 in the case where \code{method} equals \code{"approx"}.}
 }
 \value{
-A \linkS4class{section} object that contains stations whose
-pressure values match identically, and that has all flags set to \code{NA}.
+A \linkS4class{section} object that contains stations in which
+the pressure values match identically, and that has all
+flags set to \code{NA}.
 }
 \description{
 Grid a section, by interpolating to fixed pressure levels.  The
@@ -75,18 +76,7 @@ library(oce)
 data(section)
 GS <- subset(section, 109<=stationId&stationId<=129)
 GSg <- sectionGrid(GS, p=seq(0, 5000, 100))
-plot(GSg, map.xlim=c(-80,-60))
-# Show effects of various depth schemes
-par(mfrow=c(3, 1))
-default <- sectionGrid(GS)
-approxML <- sectionGrid(GS, method="approxML")
-standardDepths5 <- sectionGrid(GS, p=standardDepths(5))
-plot(default, which="temperature", ztype="image", ylim=c(200,0))
-mtext("default sectionGrid()")
-plot(approxML, which="temperature", ztype="image", ylim=c(200,0))
-mtext("sectionGrid(..., method=\"approxML\")")
-plot(standardDepths5, which="temperature", ztype="image", ylim=c(200,0))
-mtext("sectionGrid(..., p=standardDepths(5))")
+plot(GSg, which="temperature")
 
 }
 \seealso{
