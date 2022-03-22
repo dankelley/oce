@@ -15,7 +15,7 @@
 ## Version 1.7.1
 
 * Fix error in comparing a `class()` result with a string, which was reported
-  as an error during the attempted CRAN submission of version 1.7.1.
+  as an error during the attempted CRAN submission of version 1.7.0.
 
 ## Version 1.7.0
 
