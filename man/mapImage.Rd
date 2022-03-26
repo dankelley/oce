@@ -130,7 +130,7 @@ mapPolygon(coastlineWorld[['longitude']], coastlineWorld[['latitude']], col="tan
 }
 \references{
 \enumerate{
-\item \url{https://codedocean.wordpress.com/2014/02/03/anti-aliasing-and-image-plots/}
+\item \verb{https://codedocean.wordpress.com/2014/02/03/anti-aliasing-and-image-plots/}
 }
 }
 \seealso{

@@ -31,12 +31,15 @@ onto the spine.
 \examples{
 library(oce)
 data(section)
-sectionWest <- subset(section, longitude < -60)
-spine <- list(longitude=c(-74.5, -69.2, -55), latitude=c(38.6, 36.25, 36.25))
-sectionWithSpine <- addSpine(sectionWest, spine)
-plot(sectionWithSpine, which="map")
-plot(sectionWithSpine, xtype="distance", which="temperature")
-plot(sectionWithSpine, xtype="spine", which="temperature")
+eastern <- subset(section, longitude < (-65))
+spine <- list(longitude=c(-74.5, -69.2, -55),
+    latitude=c(38.6, 36.25, 36.25))
+easternWithSpine <- addSpine(eastern, spine)
+\dontrun{
+# plot(easternWithSpine, which="map")
+# plot(easternWithSpine, xtype="distance", which="temperature")
+# plot(easternWithSpine, xtype="spine", which="temperature")
+}
 
 }
 \author{

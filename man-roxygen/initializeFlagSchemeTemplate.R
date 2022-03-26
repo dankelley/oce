@@ -106,7 +106,7 @@
 #' 1. The codes for `"argo"` are derived from information in Table 4.1
 #' of Wong, Annie, Robert Keeley, Thierry Carval, and Argo Data Management Team
 #' (8 January 2020), "Argo Quality Control Manual for CTD and Trajectory Data, Version 3.3,"
-#' available at \url{https://archimer.ifremer.fr/doc/00228/33951/}
+#' available at `https://archimer.ifremer.fr/doc/00228/33951/`
 #' as of June 2020.
 #'
 #' 2. The codes for `"BODC"` are defined at

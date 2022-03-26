@@ -92,7 +92,7 @@ summary(d)
 \references{
 AML Oceanographic. "SeaCast 4 User Manual (Version 2.06)." AML Oceanographic,
 Mahy 2016.
-\url{https://www.subseatechnologies.com/media/files/page/032e50ac/seacast-4-2-user-manual-sti.pdf}.
+\verb{https://www.subseatechnologies.com/media/files/page/032e50ac/seacast-4-2-user-manual-sti.pdf}.
 }
 \seealso{
 Other functions that read ctd data: 

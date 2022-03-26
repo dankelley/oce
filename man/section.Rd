@@ -6,7 +6,7 @@
 \title{Hydrographic section}
 \source{
 This is based on the WOCE file named \code{a03_hy1.csv}, downloaded
-from \url{https://cchdo.ucsd.edu/cruise/90CT40_1}, 13 April 2015.
+from \verb{https://cchdo.ucsd.edu/cruise/90CT40_1}, 13 April 2015.
 }
 \usage{
 data(section)
@@ -28,7 +28,7 @@ but that was found to fail in December 2020.
 library(oce)
 # Gulf Stream
 data(section)
-GS <- subset(section, 109<=stationId&stationId<=129)
+GS <- subset(section, 113<=stationId&stationId<=129)
 GSg <- sectionGrid(GS, p=seq(0, 5000, 100))
 plot(GSg, map.xlim=c(-80,-60))
 }

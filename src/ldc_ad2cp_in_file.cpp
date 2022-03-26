@@ -170,7 +170,7 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, IntegerVector from, IntegerV
     Rprintf("  fileSize=%d\n", fileSize);
   }
   unsigned int chunk = 0;
-  unsigned int cindex = 0, cindex_last_good = 0;
+  long int cindex = 0;//, cindex_last_good = 0;
   int checksum_failures = 0;
 
   // Ensure that the first byte we point to equals SYNC.
@@ -229,47 +229,47 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, IntegerVector from, IntegerV
     size_t bytes_read;
     // read/check sync byte
     if (1 != fread(&header.sync, 1, 1, fp))
-      ::Rf_error("cannot read header.sync at cindex=%d (%7.4f%% through file)\n",
+      ::Rf_error("cannot read header.sync at cindex=%ld (%7.4f%% through file)\n",
           cindex, 100.0*cindex/fileSize);
     if (header.sync != SYNC)
-      ::Rf_error("expected header.sync to be 0x%02x but it was 0x%02x at cindex=%d (%7.4f%% through file) ... skipping to next 0x%02x chacter...\n", SYNC, header.sync, cindex, 100.0*cindex/fileSize, SYNC);
+      ::Rf_error("expected header.sync to be 0x%02x but it was 0x%02x at cindex=%ld (%7.4f%% through file) ... skipping to next 0x%02x chacter...\n", SYNC, header.sync, cindex, 100.0*cindex/fileSize, SYNC);
     if (1 != fread(&header.header_size, 1, 1, fp))
-      ::Rf_error("cannot read header_size at cindex=%d\n", cindex);
+      ::Rf_error("cannot read header_size at cindex=%ld\n", cindex);
     if (header.header_size < 2)
-      ::Rf_error("impossible header.header_size %d at cindex=%d (%7.4f%% through file)\n",
+      ::Rf_error("impossible header.header_size %d at cindex=%ld (%7.4f%% through file)\n",
           header.header_size, cindex, 100.0*cindex/fileSize);
     if (1 != fread(&header.id, 1, 1, fp))
-      ::Rf_error("cannot read header.id at cindex=%d (%7.4f%% through file)\n",
+      ::Rf_error("cannot read header.id at cindex=%ld (%7.4f%% through file)\n",
           cindex, 100.0*cindex/fileSize);
     if (1 != fread(&header.family, 1, 1, fp))
-      ::Rf_error("cannot read header.family at cindex=%d (%7.4f%% through file)\n",
+      ::Rf_error("cannot read header.family at cindex=%ld (%7.4f%% through file)\n",
           cindex, 100.0*cindex/fileSize);
     unsigned char family = header.family; // used in recovery attempt, if a checksum error occurs
     //unsigned char header_buffer[2];
     if (header.header_size == 10) {
       if (2 != fread(bytes2, 1, 2, fp))
-        ::Rf_error("cannot read bytes2 (for 16 bit header_size) at cindex=%d (%7.4f%% through file)\n",
+        ::Rf_error("cannot read bytes2 (for 16 bit header_size) at cindex=%ld (%7.4f%% through file)\n",
             cindex, 100.0*cindex/fileSize);
       header.data_size = bytes2[0] + 256 * bytes2[1];
     } else if (header.header_size == 12) {
       if (4 != fread(bytes4, 1, 4, fp))
-        ::Rf_error("cannot read bytes4 (for 32 bit header_size) at cindex=%d (%7.4f%% through file)\n",
+        ::Rf_error("cannot read bytes4 (for 32 bit header_size) at cindex=%ld (%7.4f%% through file)\n",
             cindex, 100.0*cindex/fileSize);
       header.data_size = bytes4[0] + 256 * (bytes4[1] + 256 * (bytes4[2] + 256 * bytes4[3]));
     } else {
-      ::Rf_error("header_size is %d, but it must be 10 or 12 at cindex=%d (%7.4f%% through file)\n",
+      ::Rf_error("header_size is %d, but it must be 10 or 12 at cindex=%ld (%7.4f%% through file)\n",
           header.header_size, cindex, 100.0*cindex/fileSize);
     }
     if (2 != fread(&bytes2, 1, 2, fp))
-      ::Rf_error("cannot read header.data_checksum at cindex=%d (%7.4f%% through file)\n",
+      ::Rf_error("cannot read header.data_checksum at cindex=%ld (%7.4f%% through file)\n",
           cindex, 100.0*cindex/fileSize);
     header.data_checksum = bytes2[0] + 256 * bytes2[1];
     if (2 != fread(&bytes2, 1, 2, fp))
-      ::Rf_error("cannot read header.header_checksum at cindex=%d (%7.4f%% through file)\n",
+      ::Rf_error("cannot read header.header_checksum at cindex=%ld (%7.4f%% through file)\n",
           cindex, 100.0*cindex/fileSize);
     header.header_checksum = bytes2[0] + 256 * bytes2[1];
     if (debug && debug > 1) {
-      Rprintf("Chunk %d at cindex=%d (%.4f%% through file) size=%d dataSize=%d id=0x%02x ",
+      Rprintf("Chunk %d at cindex=%ld (%.4f%% through file) size=%d dataSize=%d id=0x%02x ",
           chunk, cindex, 100.0*cindex/fileSize, header.header_size, header.data_size, header.id);
       if (header.id == 0xa0) Rprintf("(String)\n");
       else if (header.id == 0x15) Rprintf("(Burst data record)\n");
@@ -286,7 +286,7 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, IntegerVector from, IntegerV
       else if (header.id == 0x24) Rprintf("(Echo Sounder raw synthetic transmit pulse data record)\n");
       else Rprintf("(Unrecognized ID)\n");
       if (cindex != ftell(fp) - header.header_size)
-        Rprintf("Bug: cindex (%d) is not equal to ftell()-header_size (%d)\n",
+        Rprintf("Bug: cindex (%ld) is not equal to ftell()-header_size (%d)\n",
             cindex, ftell(fp)-header.header_size);
     }
     cindex = cindex + header.header_size;
@@ -300,15 +300,17 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, IntegerVector from, IntegerV
         break;
       }
     }
+    if (found == 0)
+      Rprintf("header.id (0x%02x) not recognized, but proceeding anyway.\n", header.id);
     id_buf[chunk] = header.id;
     // Check the header checksum.
     // Increase size of data buffer, if required.
     if (header.data_size > dbuflen) { // expand the buffer if required
       if (debug)
-        Rprintf("Increasing 'dbuf' size from %d to %d at cindex:%d (%.4f%%)\n",
+        Rprintf("Increasing 'dbuf' size from %d to %d at cindex:%ld (%.4f%%)\n",
             dbuflen, header.data_size, cindex, 100.0*cindex/fileSize);
       if (cindex != ftell(fp))
-        Rprintf("  *BUG*: cindex is out of synch with ftell()\n");
+        Rprintf("  *BUG*: cindex=%ld is out of synch with ftell(fp)=%ld\n", cindex, ftell(fp));
 
       dbuflen = header.data_size;
       dbuf = (unsigned char *)R_Realloc(dbuf, dbuflen, unsigned char);
@@ -317,7 +319,7 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, IntegerVector from, IntegerV
     bytes_read = fread(dbuf, 1, header.data_size, fp);
     // Check that we got all the data
     if (bytes_read != header.data_size) {
-      Rprintf("warning: ldc_ad2cp_in_file() got to end of file after cindex=%d (%7.4f%% through file); wanted %d bytes but got only %d\n",
+      Rprintf("warning: ldc_ad2cp_in_file() got to end of file after cindex=%ld (%7.4f%% through file); wanted %d bytes but got only %d\n",
           cindex-header.header_size, 100.0*cindex/fileSize, header.data_size, bytes_read);
       break; // give up
     }
@@ -326,14 +328,14 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, IntegerVector from, IntegerV
     unsigned short dbufcs;
     dbufcs = cs(dbuf, header.data_size);
     if (dbufcs == header.data_checksum) {
-      cindex_last_good = cindex - header.header_size - header.data_size;
+      //cindex_last_good = cindex - header.header_size - header.data_size;
       reset_cindex = 0;
     } else {
       checksum_failures++;
-      Rprintf("Data checksum error (expected 0x%02x but got 0x%02x) at index=%d (%7.4f%% through file)\n",
+      Rprintf("Data checksum error (expected 0x%02x but got 0x%02x) at cindex=%ld (%7.4f%% through file)\n",
           header.data_checksum, dbufcs, cindex, 100.0*cindex/fileSize);
       if (cindex != ftell(fp))
-        Rprintf("  *BUG*: cindex is out of synch with ftell()\n");
+        Rprintf("  *BUG*: cindex=%ld is out of synch with ftell(fp)=%ld\n", cindex, ftell(fp));
 
       while (1) {
         c = getc(fp);
@@ -351,8 +353,7 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, IntegerVector from, IntegerV
           int trial_header_size = getc(fp);
           cindex++;
           if (trial_header_size == EOF) {
-            Rprintf("    got to end of file while searching for a header-size character at cindex=%d\n",
-                cindex);
+            Rprintf("    got to end of file while searching for a header-size character at cindex=%ld\n", cindex);
             early_EOF = 1;
             break;
           }
@@ -382,9 +383,9 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, IntegerVector from, IntegerV
             //. Rprintf("            family=%d is consistent with previous family\n", family, cindex);
             cindex -= 4;
             fseek(fp, -4, SEEK_CUR);
-            Rprintf("   ... skipped forward to a possible header at index=%d\n", cindex);
+            Rprintf("   ... skipped forward to a possible header at cindex=%ld\n", cindex);
             if (cindex != ftell(fp))
-              Rprintf("  *BUG*: cindex is out of synch with ftell()\n");
+              Rprintf("  *BUG*: cindex=%ld is out of synch with ftell(fp)=%ld\n", cindex, ftell(fp));
             break;
           }
         }

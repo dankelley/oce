@@ -100,9 +100,9 @@ interest.
 }
 \references{
 \enumerate{
-\item \url{https://www.bodc.ac.uk/resources/delivery_formats/odv_format/} describes
+\item \verb{https://www.bodc.ac.uk/resources/delivery_formats/odv_format/} describes
 the \code{ODV} format.
-\item \url{https://vocab.nerc.ac.uk/collection/P07/current/} may be
+\item \verb{https://vocab.nerc.ac.uk/collection/P07/current/} may be
 worth consulting for variable names.
 }
 }

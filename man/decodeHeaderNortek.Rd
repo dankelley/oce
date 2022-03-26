@@ -46,7 +46,7 @@ corrected later on.
 \enumerate{
 \item Information on Nortek profilers (including the System
 Integrator Guide, which explains the data format byte-by-byte) is available
-at \url{https://www.nortekusa.com/usa?set_language=usa} after login.
+at \verb{https://www.nortekusa.com/usa?set_language=usa} after login.
 \item The Nortek Knowledge Center
 https://www.nortekusa.com/en/knowledge-center
 may be of help if problems arise in dealing with data from Nortek instruments.

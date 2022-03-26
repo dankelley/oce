@@ -133,9 +133,9 @@
 #'
 #' 3. see landsat.usgs.gov/calibration_notices.php
 #'
-#' 4. \url{https://dankelley.github.io/r/2014/07/01/landsat.html}
+#' 4. `https://dankelley.github.io/r/2014/07/01/landsat.html`
 #'
-#' 5. \url{https://scienceofdoom.com/2010/12/27/emissivity-of-the-ocean/}
+#' 5. `https://scienceofdoom.com/2010/12/27/emissivity-of-the-ocean/`
 #'
 #' 6. see landsat.usgs.gov/Landsat8_Using_Product.php
 #'

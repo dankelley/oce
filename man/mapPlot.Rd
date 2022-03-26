@@ -392,15 +392,15 @@ is disabled on i386/windows machines, on which the requisite
 inverse calculations.
 This is a also problem in the standalone PROJ.4 application version
 4.9.3, downloaded and built on OSX.
-See \url{https://github.com/dankelley/oce/issues/1319} for details.
+See \verb{https://github.com/dankelley/oce/issues/1319} for details.
 \item 2017-11-17: \code{lsat} removed, because it does not work in
 \CRANpkg{rgdal} or in the latest standalone PROJ.4 application.
 This is a also problem in the standalone PROJ.4 application version
 4.9.3, downloaded and built on OSX.
-See \url{https://github.com/dankelley/oce/issues/1337} for details.
+See \verb{https://github.com/dankelley/oce/issues/1337} for details.
 \item 2017-09-30: \code{lcca} removed, because its inverse was
 wildly inaccurate in a Pacific Antarctic-Alaska application
-(see \url{https://github.com/dankelley/oce/issues/1303}).
+(see \verb{https://github.com/dankelley/oce/issues/1303}).
 }
 }
 
@@ -488,23 +488,24 @@ if (utils::packageVersion("sf") != "0.9.8") {
 \enumerate{
 \item Snyder, John P., 1987.  Map Projections: A Working Manual.  USGS
 Professional Paper: 1395
+\verb{https://pubs.er.usgs.gov/publication/pp1395}
 \item Natural Resources Canada
-\url{https://www.nrcan.gc.ca/earth-sciences/geography/topographic-information/maps/9805}
+\verb{https://www.nrcan.gc.ca/earth-sciences/geography/topographic-information/maps/9805}
 \item "List of Map Projections." In Wikipedia, January 26, 2021.
-\url{https://en.wikipedia.org/w/index.php?title=List_of_map_projections}.
+\verb{https://en.wikipedia.org/w/index.php?title=List_of_map_projections}.
 \item PROJ contributors (2020).
 "PROJ Coordinate Transformation Software Library."
 Open Source Geospatial Foundation, n.d.
-\url{https://proj.org}.
+\verb{https://proj.org}.
 \item Bivand, Roger (2020) Why have CRS, projections and transformations changed?
 Vignette for rgdal 1.5-13
-\url{https://rgdal.r-forge.r-project.org/articles/CRS_projections_transformations.html}
+\verb{https://rgdal.r-forge.r-project.org/articles/CRS_projections_transformations.html}
 \item A gallery of map plots is provided at
-\url{https://dankelley.github.io/r/2020/08/02/oce-proj.html}
+\verb{https://dankelley.github.io/r/2020/08/02/oce-proj.html}
 \item Snyder, John Parr.
 Flattening the Earth: Two Thousand Years of Map Projections.
 Chicago, IL: University of Chicago Press, 1993.
-\url{https://press.uchicago.edu/ucp/books/book/chicago/F/bo3632853.html}
+\verb{https://press.uchicago.edu/ucp/books/book/chicago/F/bo3632853.html}
 \item Šavrič, Bojan, Tom Patterson, and Bernhard Jenny.
 "The Equal Earth Map Projection."
 International Journal of Geographical Information Science 33, no. 3 (March 4, 2019): 454-65.

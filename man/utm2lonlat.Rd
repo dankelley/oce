@@ -36,7 +36,7 @@ utm2lonlat(852863, 5029997, 19)
 
 }
 \references{
-\url{https://en.wikipedia.org/wiki/Universal_Transverse_Mercator_coordinate_system},
+\verb{https://en.wikipedia.org/wiki/Universal_Transverse_Mercator_coordinate_system},
 downloaded May 31, 2014.
 }
 \seealso{

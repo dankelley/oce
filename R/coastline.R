@@ -44,7 +44,7 @@ setClass("coastline", contains="oce")
 #' users find it convenient to do the loading in an [Rprofile()]
 #' startup file.
 #'
-#' @source Downloaded from \url{https://www.naturalearthdata.com}, in
+#' @source Downloaded from `https://www.naturalearthdata.com`, in
 #' `ne_110m_admin_0_countries.shp` in July 2015, with an
 #' update on December 16, 2017.
 #' @family datasets provided with oce
@@ -917,7 +917,7 @@ setMethod(f="plot",
 #'}
 #'
 #' @references
-#' 1. The NaturalEarth server is at \url{https://www.naturalearthdata.com}
+#' 1. The NaturalEarth server is at `https://www.naturalearthdata.com`
 #'
 #' @family functions that download files
 #' @family things related to coastline data
@@ -1090,11 +1090,10 @@ read.coastline <- function(file,
 #' @references
 #' 1. The ``shapefile'' format is described in
 #' *ESRI Shapefile Technical Description*, March 1998, available at
-## \url{https://www.esri.com/library/whitepapers/pdfs/shapefile.pdf}.
-#' \url{https://www.esri.com/content/dam/esrisites/sitecore-archive/Files/Pdfs/library/whitepapers/pdfs/shapefile.pdf}
+#' `https://www.esri.com/content/dam/esrisites/sitecore-archive/Files/Pdfs/library/whitepapers/pdfs/shapefile.pdf`
 #' (last checked 2021-03-24).
 #'
-#' 2. The NaturalEarth website \url{https://www.naturalearthdata.com/downloads/}
+#' 2. The NaturalEarth website `https://www.naturalearthdata.com/downloads/`
 #' provides coastline datasets in three resolutions, along with similar files
 #' lakes and rivers, for borders, etc. It is highly recommended.
 #'

@@ -221,7 +221,7 @@ plotTS(handleFlags(argo))
 "Algorithms for Computation of Fundamental Properties of Seawater."
 UNESCO Technical Papers in Marine Research. SCOR working group on Evaluation of CTD data;
 UNESCO/ICES/SCOR/IAPSO Joint Panel on Oceanographic Tables and Standards, 1983.
-\url{https://unesdoc.unesco.org/ark:/48223/pf0000059832}.
+\verb{https://unesdoc.unesco.org/ark:/48223/pf0000059832}.
 \item McDougall, Trevor J., David R. Jackett, Daniel G. Wright, and Rainer Feistel.
 "Accurate and Computationally Efficient Algorithms for Potential Temperature and Density of Seawater."
 Journal of Atmospheric and Oceanic Technology 20, no. 5 (May 1, 2003): 730-41.

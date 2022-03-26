@@ -204,7 +204,7 @@
 #' with `IMUdeltaVelocityX` disagreeing in the second decimal place,
 #' `IMUdeltaVelocityY` component disagreeing in the first, and
 #' `IMUdeltaVelocityZ` being out by a factor of about 10. This is github
-#' issue 893 (\url{https://github.com/dankelley/oce/issues/893}).
+#' issue 893 (`https://github.com/dankelley/oce/issues/893`).
 #'
 #' * Variety `c3` (signalled by byte 5 of a sequence being
 #' `0xc3`) provides information on what Nortek calls DeltaAngle,

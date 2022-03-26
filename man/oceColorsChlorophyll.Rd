@@ -55,10 +55,10 @@ imagep(volcano, col=viridis::inferno,
 Oceanography 29, no. 3 (September 1, 2016): 9–13.
 \doi{10.5670/oceanog.2016.66}
 \item Thyng, Kristen. Kthyng/Cmocean. Python, 2019.
-\url{https://github.com/kthyng/cmocean}.
+\verb{https://github.com/kthyng/cmocean}.
 \item Thyng, Kristen, Clark Richards, and Ivan Krylov.
 Cmocean: Beautiful Colour Maps for Oceanography (version 0.2), 2019.
-\url{https://CRAN.R-project.org/package=cmocean}.
+\verb{https://CRAN.R-project.org/package=cmocean}.
 }
 
 The following references provide information on choosing

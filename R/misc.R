@@ -3274,7 +3274,7 @@ lon360 <- function(x)
 #' Determine time offset from timezone
 #'
 #' The data are from
-#' \url{https://www.timeanddate.com/time/zones/} and were
+#' `https://www.timeanddate.com/time/zones/` and were
 #' hand-edited to develop this code, so there may be errors.  Also, note that
 #' some of these contradict; if you examine the code, you'll see some
 #' commented-out portions that represent solving conflicting definitions by
@@ -3472,7 +3472,7 @@ gravity <- function(latitude=45, degrees=TRUE)
 #'
 #' @references F. J. Harris, 1978.  On the use of windows for harmonic analysis
 #' with the discrete Fourier Transform.  *Proceedings of the IEEE*, 66(1),
-#' 51-83 (\url{http://web.mit.edu/xiphmont/Public/windows.pdf}.)
+#' 51-83 (`http://web.mit.edu/xiphmont/Public/windows.pdf`.)
 #'
 #' @examples
 #' library(oce)
@@ -4658,9 +4658,9 @@ integerToAscii <- function(i)
 #'
 #' @references
 #' 1. The underlying Fortran code for version 12 is from `igrf12.f`, downloaded the NOAA
-#' website (\url{https://www.ngdc.noaa.gov/IAGA/vmod/igrf.html}) on June 7,
+#' website (`https://www.ngdc.noaa.gov/IAGA/vmod/igrf.html`) on June 7,
 #' 2015. That for version 13 is `igrf13.f`, downloaded from the NOAA website
-#' (\url{https://www.ngdc.noaa.gov/IAGA/vmod/igrf.html} on March 3, 2020.
+#' (`https://www.ngdc.noaa.gov/IAGA/vmod/igrf.html` on March 3, 2020.
 #' 2. Witze, Alexandra. \dQuote{Earth's Magnetic Field Is Acting up and Geologists Don't Know Why.}
 #' Nature 565 (January 9, 2019): 143.
 #' \doi{10.1038/d41586-019-00007-1}

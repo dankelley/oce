@@ -1,3 +1,9 @@
+# oce 1.7.3
+
+* Speed up some tests.
+* Address unused-variable warnings in C++ code.
+* Change most documentation hyperlinks to plain-text.
+
 # oce 1.7.2
 
 ## Version 1.7.2
@@ -9,7 +15,7 @@
 ## Version 1.7.1
 
 * Fix error in comparing a `class()` result with a string, which was reported
-  as an error during the attempted CRAN submission of version 1.7.1.
+  as an error during the attempted CRAN submission of version 1.7.0.
 
 ## Version 1.7.0
 

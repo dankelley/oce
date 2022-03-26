@@ -89,6 +89,6 @@ The functionality is preserved, in the \code{col} argument.
 \seealso{
 The \sQuote{Bioconductor} scheme for removing functions is
 described at
-\url{https://www.bioconductor.org/developers/how-to/deprecation/} and it is
+\verb{https://www.bioconductor.org/developers/how-to/deprecation/} and it is
 extended here to function arguments.
 }

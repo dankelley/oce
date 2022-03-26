@@ -45,7 +45,7 @@ setClass("rsk", contains="oce")
 #'
 #' @docType data
 #'
-#' @references \url{https://rbr-global.com/}
+#' @references `https://rbr-global.com/`
 #'
 #' @examples
 #' library(oce)

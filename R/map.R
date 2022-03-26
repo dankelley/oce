@@ -1316,17 +1316,17 @@ mapLongitudeLatitudeXY <- function(longitude, latitude)
 #' inverse calculations.
 #' This is a also problem in the standalone PROJ.4 application version
 #' 4.9.3, downloaded and built on OSX.
-#' See \url{https://github.com/dankelley/oce/issues/1319} for details.
+#' See `https://github.com/dankelley/oce/issues/1319` for details.
 #'
 #' * 2017-11-17: `lsat` removed, because it does not work in
 #' \CRANpkg{rgdal} or in the latest standalone PROJ.4 application.
 #' This is a also problem in the standalone PROJ.4 application version
 #' 4.9.3, downloaded and built on OSX.
-#' See \url{https://github.com/dankelley/oce/issues/1337} for details.
+#' See `https://github.com/dankelley/oce/issues/1337` for details.
 #'
 #' * 2017-09-30: `lcca` removed, because its inverse was
 #' wildly inaccurate in a Pacific Antarctic-Alaska application
-#' (see \url{https://github.com/dankelley/oce/issues/1303}).
+#' (see `https://github.com/dankelley/oce/issues/1303`).
 #'
 #' @param longitude either a numeric vector of longitudes of points to be plotted, or
 #' something (an `oce` object, a list, or a data frame) from which both
@@ -1567,31 +1567,31 @@ mapLongitudeLatitudeXY <- function(longitude, latitude)
 #'
 #' 1. Snyder, John P., 1987.  Map Projections: A Working Manual.  USGS
 #' Professional Paper: 1395
-## <https://pubs.er.usgs.gov/publication/pp1395>
+#' `https://pubs.er.usgs.gov/publication/pp1395`
 ## \doi{10.3133/pp1395}
 #'
 #' 2. Natural Resources Canada
-#' \url{https://www.nrcan.gc.ca/earth-sciences/geography/topographic-information/maps/9805}
+#' `https://www.nrcan.gc.ca/earth-sciences/geography/topographic-information/maps/9805`
 #'
 #' 3. "List of Map Projections." In Wikipedia, January 26, 2021.
-#' \url{https://en.wikipedia.org/w/index.php?title=List_of_map_projections}.
+#' `https://en.wikipedia.org/w/index.php?title=List_of_map_projections`.
 #'
 #' 4. PROJ contributors (2020).
 #' "PROJ Coordinate Transformation Software Library."
 #' Open Source Geospatial Foundation, n.d.
-#' \url{https://proj.org}.
+#' `https://proj.org`.
 #'
 #' 5. Bivand, Roger (2020) Why have CRS, projections and transformations changed?
 #' Vignette for rgdal 1.5-13
-#' \url{https://rgdal.r-forge.r-project.org/articles/CRS_projections_transformations.html}
+#' `https://rgdal.r-forge.r-project.org/articles/CRS_projections_transformations.html`
 #'
 #' 6. A gallery of map plots is provided at
-#' \url{https://dankelley.github.io/r/2020/08/02/oce-proj.html}
+#' `https://dankelley.github.io/r/2020/08/02/oce-proj.html`
 #'
 #' 7. Snyder, John Parr.
 #' Flattening the Earth: Two Thousand Years of Map Projections.
 #' Chicago, IL: University of Chicago Press, 1993.
-#' \url{https://press.uchicago.edu/ucp/books/book/chicago/F/bo3632853.html}
+#' `https://press.uchicago.edu/ucp/books/book/chicago/F/bo3632853.html`
 #'
 #' 8. Šavrič, Bojan, Tom Patterson, and Bernhard Jenny.
 #' "The Equal Earth Map Projection."
@@ -2605,7 +2605,7 @@ mapText <- function(longitude, latitude, labels, ...)
 #' @references
 #' 1. Snyder, John P., 1987.  Map Projections: A Working Manual.  USGS
 #' Professional Paper: 1395
-## <https://pubs.er.usgs.gov/publication/pp1395>
+## `https://pubs.er.usgs.gov/publication/pp1395`
 ## \doi{10.3133/pp1395}
 #'
 #' @examples
@@ -3253,7 +3253,7 @@ mapPolygon <- function(longitude, latitude, density=NULL, angle=45,
 #' moderate amount of debugging information, or to 2 to get more.
 #'
 #' @references
-#' 1. \url{https://codedocean.wordpress.com/2014/02/03/anti-aliasing-and-image-plots/}
+#' 1. `https://codedocean.wordpress.com/2014/02/03/anti-aliasing-and-image-plots/`
 #'
 #' @examples
 #' \dontrun{
@@ -3671,7 +3671,7 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
 #' [map2lonlat()].
 #'
 #' @references
-#' \url{https://en.wikipedia.org/wiki/Universal_Transverse_Mercator_coordinate_system},
+#' `https://en.wikipedia.org/wiki/Universal_Transverse_Mercator_coordinate_system`,
 #' downloaded May 31, 2014.
 #'
 #' @examples
@@ -3765,7 +3765,7 @@ lonlat2utm <- function(longitude, latitude, zone, km=FALSE)
 #' [map2lonlat()].
 #'
 #' @references
-#' \url{https://en.wikipedia.org/wiki/Universal_Transverse_Mercator_coordinate_system},
+#' `https://en.wikipedia.org/wiki/Universal_Transverse_Mercator_coordinate_system`,
 #' downloaded May 31, 2014.
 #'
 #' @examples

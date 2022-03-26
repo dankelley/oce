@@ -65,7 +65,7 @@ where \eqn{\theta}{theta} is the angle the beams make to the axial direction
 \item Teledyne RD Instruments. \dQuote{ADCP Coordinate Transformation: Formulas and
 Calculations,} January 2010. P/N 951-6079-00.
 \item WHOI/USGS-provided Matlab code for beam-enu transformation
-\samp{http://woodshole.er.usgs.gov/pubs/of2005-1429/MFILES/AQDPTOOLS/beam2enu.m}
+\verb{http://woodshole.er.usgs.gov/pubs/of2005-1429/MFILES/AQDPTOOLS/beam2enu.m}
 }
 }
 \seealso{

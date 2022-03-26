@@ -56,7 +56,7 @@
 #'
 #' @references 1. Information on Nortek profilers (including the System
 #' Integrator Guide, which explains the data format byte-by-byte) is available
-#' at \url{https://www.nortekusa.com/usa?set_language=usa} after login.
+#' at `https://www.nortekusa.com/usa?set_language=usa` after login.
 #'
 #' 2. The Nortek Knowledge Center
 #' https://www.nortekusa.com/en/knowledge-center
@@ -2190,11 +2190,11 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, tz=getOption("oceTz"),
 #' @references
 #' 1. Information on Nortek profilers (including the System Integrator Guide,
 #' which explains the data format byte-by-byte) is available at
-#' \url{https://www.nortekusa.com/}.  (One must join the site to see the
+#' `https://www.nortekusa.com/`.  (One must join the site to see the
 #' manuals.)
 #'
 #' 2. The Nortek Knowledge Center
-#' \url{https://www.nortekusa.com/en/knowledge-center} may be of help if
+#' `https://www.nortekusa.com/en/knowledge-center` may be of help if
 #' problems arise in dealing with data from Nortek instruments.
 #'
 #' @template adpTemplate
@@ -2228,7 +2228,7 @@ read.aquadopp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
 #' ``knowledge center'' discussion board.  One might assume that the latter is
 #' less authoritative than the former.  For example, the inference of cell size
 #' follows advice found at
-#' \url{https://www.nortekusa.com/en/knowledge-center/forum/hr-profilers/736804717},
+#' `https://www.nortekusa.com/en/knowledge-center/forum/hr-profilers/736804717`,
 #' which contains a typo in an early posting that is
 #' corrected later on.
 #'
@@ -2250,11 +2250,11 @@ read.aquadopp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
 #' @references
 #' 1. Information on Nortek profilers (including the System Integrator Guide,
 #' which explains the data format byte-by-byte) is available at
-#' \url{https://www.nortekusa.com/}.  (One must join the site to see the
+#' `https://www.nortekusa.com/`.  (One must join the site to see the
 #' manuals.)
 #'
 #' 2. The Nortek Knowledge Center
-#' \url{https://www.nortekusa.com/en/knowledge-center} may be of help if
+#' `https://www.nortekusa.com/en/knowledge-center` may be of help if
 #' problems arise in dealing with data from Nortek instruments.
 #'
 #' @template adpTemplate
@@ -2288,7 +2288,7 @@ read.aquadoppHR <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
 #' ``knowledge center'' discussion board.  One might assume that the latter is
 #' less authoritative than the former.  For example, the inference of cell size
 #' follows advice found at
-#' \url{https://www.nortekusa.com/en/knowledge-center/forum/hr-profilers/736804717},
+#' `https://www.nortekusa.com/en/knowledge-center/forum/hr-profilers/736804717`,
 #' which contains a typo in an early posting that is
 #' corrected later on.
 #'
@@ -2310,11 +2310,11 @@ read.aquadoppHR <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
 #' @references
 #' 1. Information on Nortek profilers (including the System Integrator Guide,
 #' which explains the data format byte-by-byte) is available at
-#' \url{https://www.nortekusa.com/}.  (One must join the site to see the
+#' `https://www.nortekusa.com/`.  (One must join the site to see the
 #' manuals.)
 #'
 #' 2. The Nortek Knowledge Center
-#' \url{https://www.nortekusa.com/en/knowledge-center} may be of help if
+#' `https://www.nortekusa.com/en/knowledge-center` may be of help if
 #' problems arise in dealing with data from Nortek instruments.
 #'
 #' @template adpTemplate
@@ -2360,11 +2360,11 @@ read.aquadoppProfiler <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
 #' @references
 #' 1. Information on Nortek profilers (including the System Integrator Guide,
 #' which explains the data format byte-by-byte) is available at
-#' \url{https://www.nortekusa.com/}.  (One must join the site to see the
+#' `https://www.nortekusa.com/`.  (One must join the site to see the
 #' manuals.)
 #'
 #' 2. The Nortek Knowledge Center
-#' \url{https://www.nortekusa.com/en/knowledge-center} may be of help if
+#' `https://www.nortekusa.com/en/knowledge-center` may be of help if
 #' problems arise in dealing with data from Nortek instruments.
 #'
 #' @template adpTemplate

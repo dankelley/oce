@@ -176,8 +176,8 @@ and \code{tirs2} combined.  This may seem confusing, but it lets code like
 \item See the USGS "glovis" web site.
 \item see landsat.gsfc.nasa.gov/?page_id=5377
 \item see landsat.usgs.gov/calibration_notices.php
-\item \url{https://dankelley.github.io/r/2014/07/01/landsat.html}
-\item \url{https://scienceofdoom.com/2010/12/27/emissivity-of-the-ocean/}
+\item \verb{https://dankelley.github.io/r/2014/07/01/landsat.html}
+\item \verb{https://scienceofdoom.com/2010/12/27/emissivity-of-the-ocean/}
 \item see landsat.usgs.gov/Landsat8_Using_Product.php
 \item see landsathandbook.gsfc.nasa.gov/pdfs/Landsat7_Handbook.pdf
 \item see landsat.usgs.gov/band_designations_landsat_satellites.php

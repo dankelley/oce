@@ -108,7 +108,7 @@ legend("topright", col=c("gray", "red"), lwd=c(5, 1), cex=2/3,
 \references{
 F. J. Harris, 1978.  On the use of windows for harmonic analysis
 with the discrete Fourier Transform.  \emph{Proceedings of the IEEE}, 66(1),
-51-83 (\url{http://web.mit.edu/xiphmont/Public/windows.pdf}.)
+51-83 (\verb{http://web.mit.edu/xiphmont/Public/windows.pdf}.)
 }
 \author{
 Dan Kelley
