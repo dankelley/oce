@@ -666,9 +666,9 @@ read.met <- function(file, type=NULL, skip=NULL, tz=getOption("oceTz"),
         }
     }
     if (type == "csv" || type == "csv1")
-        res <- read.met.csv1(file, skip=skip, tz=tz, debug=debug-1)
+        res <- read.met.csv1(file, skip=skip, tz=tz, encoding=encoding, debug=debug-1)
     else if (type == "csv2" || type == "csv3")
-        res <- read.met.csv2(file, skip=skip, tz=tz, debug=debug-1)
+        res <- read.met.csv2(file, skip=skip, tz=tz, encoding=encoding, debug=debug-1)
     else if (type == "xml2")
         res <- read.met.xml2(file, skip=skip, tz=tz, debug=debug-1)
     else
