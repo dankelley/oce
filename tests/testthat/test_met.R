@@ -59,7 +59,7 @@ test_that("read.met() handles type=\"csv1\" files", {
 })
 
 # I removed this test entirely on 2022-03-26, because one of the linux-debian
-# machines balks with the test. This is discussed at
+# CRAN test machines balks with it. This is discussed at
 # https://github.com/dankelley/oce/issues/1926#issuecomment-1079664881
 #
 # This next test was added on 2022-01-30. Note that it is not run on windows
