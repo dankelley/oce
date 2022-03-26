@@ -113,18 +113,18 @@ setMethod(f="[[<-",
 NULL
 
 setMethod(f="initialize",
-          signature="met",
-          definition=function(.Object, time, temperature, pressure, u, v, filename="", ...) {
-              .Object <- callNextMethod(.Object, ...)
-              if (!missing(time)) .Object@data$time <- time
-              if (!missing(temperature)) .Object@data$temperature <-temperature
-              if (!missing(pressure)) .Object@data$pressure <- pressure
-              if (!missing(u)) .Object@data$u <- u
-              if (!missing(v)) .Object@data$v <- v
-              .Object@processingLog$time <- presentTime()
-              .Object@processingLog$value <- "create 'met' object"
-              return(.Object)
-          })
+    signature="met",
+    definition=function(.Object, time, temperature, pressure, u, v, filename="", ...) {
+        .Object <- callNextMethod(.Object, ...)
+        if (!missing(time)) .Object@data$time <- time
+        if (!missing(temperature)) .Object@data$temperature <-temperature
+        if (!missing(pressure)) .Object@data$pressure <- pressure
+        if (!missing(u)) .Object@data$u <- u
+        if (!missing(v)) .Object@data$v <- v
+        .Object@processingLog$time <- presentTime()
+        .Object@processingLog$value <- "create 'met' object"
+        return(.Object)
+    })
 
 
 #' Summarize a met Object
@@ -140,22 +140,22 @@ setMethod(f="initialize",
 #'
 #' @family things related to met data
 setMethod(f="summary",
-          signature="met",
-          definition=function(object, ...) {
-              cat("Met Summary\n-----------\n\n")
-              showMetadataItem(object, "filename",          "Source                     ", quote=TRUE)
-              showMetadataItem(object, "name",              "Name                       ")
-              showMetadataItem(object, "province",          "Province                   ")
-              showMetadataItem(object, "stationOperator",   "Station Operator           ")
-              showMetadataItem(object, "latitude",          "Latitude                   ")
-              showMetadataItem(object, "longitude",         "Longitude                  ")
-              showMetadataItem(object, "elevation",         "Elevation                  ")
-              showMetadataItem(object, "climateIdentifier", "Climate Identifer          ")
-              showMetadataItem(object, "WMOIdentifier",     "World Met Office Identifer ")
-              showMetadataItem(object, "TCIdentifier",      "Transport Canada Identifer ")
-              showMetadataItem(object, "note",              "Note                       ")
-              invisible(callNextMethod()) # summary
-          })
+    signature="met",
+    definition=function(object, ...) {
+        cat("Met Summary\n-----------\n\n")
+        showMetadataItem(object, "filename",          "Source                     ", quote=TRUE)
+        showMetadataItem(object, "name",              "Name                       ")
+        showMetadataItem(object, "province",          "Province                   ")
+        showMetadataItem(object, "stationOperator",   "Station Operator           ")
+        showMetadataItem(object, "latitude",          "Latitude                   ")
+        showMetadataItem(object, "longitude",         "Longitude                  ")
+        showMetadataItem(object, "elevation",         "Elevation                  ")
+        showMetadataItem(object, "climateIdentifier", "Climate Identifer          ")
+        showMetadataItem(object, "WMOIdentifier",     "World Met Office Identifer ")
+        showMetadataItem(object, "TCIdentifier",      "Transport Canada Identifer ")
+        showMetadataItem(object, "note",              "Note                       ")
+        invisible(callNextMethod()) # summary
+    })
 
 
 #' Subset a met Object
@@ -181,21 +181,21 @@ setMethod(f="summary",
 #' @family things related to met data
 #' @family functions that subset oce objects
 setMethod(f="subset",
-          signature="met",
-          definition=function(x, subset, ...) {
-              res <- new("met") # start afresh in case x@data is a data.frame
-              res@metadata <- x@metadata
-              res@processingLog <- x@processingLog
-              for (i in seq_along(x@data)) {
-                  r <- eval(substitute(expr=subset, env=environment()), x@data, parent.frame(2))
-                  r <- r & !is.na(r)
-                  res@data[[i]] <- x@data[[i]][r]
-              }
-              names(res@data) <- names(x@data)
-              subsetString <- paste(deparse(substitute(expr=subset, env=environment())), collapse=" ")
-              res@processingLog <- processingLogAppend(res@processingLog, paste("subset.met(x, subset=", subsetString, ")", sep=""))
-              res
-          })
+    signature="met",
+    definition=function(x, subset, ...) {
+        res <- new("met") # start afresh in case x@data is a data.frame
+        res@metadata <- x@metadata
+        res@processingLog <- x@processingLog
+        for (i in seq_along(x@data)) {
+            r <- eval(substitute(expr=subset, env=environment()), x@data, parent.frame(2))
+            r <- r & !is.na(r)
+            res@data[[i]] <- x@data[[i]][r]
+        }
+        names(res@data) <- names(x@data)
+        subsetString <- paste(deparse(substitute(expr=subset, env=environment())), collapse=" ")
+        res@processingLog <- processingLogAppend(res@processingLog, paste("subset.met(x, subset=", subsetString, ")", sep=""))
+        res
+    })
 
 
 
@@ -382,8 +382,8 @@ as.met <- function(time, temperature, pressure, u, v, filename="(constructed fro
 #' @family functions that download files
 #' @family things related to met data
 download.met <- function(id, year, month, deltat, type="xml",
-                         destdir=".", destfile, force=FALSE, quiet=FALSE,
-                         debug=getOption("oceDebug"))
+    destdir=".", destfile, force=FALSE, quiet=FALSE,
+    debug=getOption("oceDebug"))
 {
     if (missing(id))
         id <- 6358
@@ -641,10 +641,9 @@ read.met <- function(file, type=NULL, skip=NULL, tz=getOption("oceTz"),
     if (missing(file))
         stop("must supply 'file'")
     oceDebug(debug, "read.met(file=\"", file, "\", ...) {\n", sep="", unindent=1, style="bold")
-    ## We avoid some file() problems by insisting this is a string
     if (!is.character(file))
-        stop("'file' must be a character string")
-    someLines <- readLines(file, 30, encoding=encoding, warn=FALSE)
+        stop("'file' must be a string")
+    someLines <- readLines(file, 30L, warn=FALSE)
     if (length(someLines) == 0L)
         stop("no data in file")
     if (!is.null(type) && !(type %in% c("csv", "csv1", "csv2", "xml2")))
@@ -683,11 +682,15 @@ read.met.csv1 <- function(file, skip=NULL, tz=getOption("oceTz"),
 {
     if (missing(file))
         stop("must supply 'file'")
-    if (!is.character(file))
-        stop("'file' must be a character string")
     oceDebug(debug, "read.met.csv1(\"", file, "\") {\n", sep="", unindent=1, style="bold")
+    # I thank Ivan Krylov for telling me that the 'encoding' arg belongs in the
+    # file() call, not the readLines() call.
+    if (is.character(file)) {
+        file <- file(file, "r", encoding=encoding)
+        on.exit(close(file))
+    }
     res <- new("met", time=1)
-    text <- readLines(file, encoding=encoding, warn=FALSE)
+    text <- readLines(file, warn=FALSE)
     oceDebug(debug, "file has", length(text), "lines\n")
     ##print(header[1:19])
     textItem <- function(text, name, numeric=TRUE) {
@@ -725,7 +728,7 @@ read.met.csv1 <- function(file, skip=NULL, tz=getOption("oceTz"),
     ## later on, when they are moved from 'data' into 'metadata$flags'.
     owarn <- options()$warn
     options(warn=-1)
-    rawData <- read.csv(text=text, skip=skip, encoding=encoding, header=TRUE, stringsAsFactors=TRUE)
+    rawData <- read.csv(text=text, skip=skip, header=TRUE, stringsAsFactors=TRUE)
     options(warn=owarn)
     names <- names(rawData)
     # FIXME: handle daily data, if the column names differ
@@ -909,9 +912,15 @@ read.met.csv1 <- function(file, skip=NULL, tz=getOption("oceTz"),
 read.met.csv2 <- function(file, skip=NULL, tz=getOption("oceTz"),
     encoding="UTF-8-BOM", debug=getOption("oceDebug"))
 {
-    if (!is.character(file))
-        stop("'file' must be a character string")
+    if (missing(file))
+        stop("must supply 'file'")
     oceDebug(debug, "read.met.csv2(\"", file, "\") { # for either type 2 or 3 \n", sep="", unindent=1, style="bold")
+    # I thank Ivan Krylov for telling me that the 'encoding' arg belongs in the
+    # file() call, not the readLines() call.
+    if (is.character(file)) {
+        file <- file(file, "r", encoding=encoding)
+        on.exit(close(file))
+    }
     # Sample first two lines of a csv2 type file (as of 2019 oct 12)
     # "Longitude (x)","Latitude (y)","Station Name","Climate ID","Date/Time","Year","Month","Day","Time","Temp (°C)","Temp Flag","Dew Point Temp (°C)","Dew Point Temp Flag","Rel Hum (%)","Rel Hum Flag","Wind Dir (10s deg)","Wind Dir Flag","Wind Spd (km/h)","Wind Spd Flag","Visibility (km)","Visibility Flag","Stn Press (kPa)","Stn Press Flag","Hmdx","Hmdx Flag","Wind Chill","Wind Chill Flag","Weather"
     # "-94.97","74.72","RESOLUTE BAY A","2403497","2019-10-01 00:00","2019","10","01","00:00","-3.2","","-4.6","","90","","18","","36","","","M","100.35","","","","-11","","NA"
@@ -922,9 +931,9 @@ read.met.csv2 <- function(file, skip=NULL, tz=getOption("oceTz"),
     res <- new("met", time=1)
     owarn <- options()$warn
     options(warn=-1)
-    text <- readLines(file, 1, encoding=encoding, warn=FALSE)
-    dataNames <- strsplit(gsub('"', '', text[1]), ",")[[1]]
-    data <- read.csv(file, skip=1, encoding=encoding, header=FALSE)
+    firstLine <- readLines(file, 1L, warn=FALSE)
+    dataNames <- strsplit(gsub('"', '', firstLine[1]), ",")[[1]]
+    data <- read.csv(file, header=FALSE)
     options(warn=owarn)
     if ("Dew Point Temp (\u00B0C)" %in% dataNames) {
         res@metadata$units$dewPoint <- list(unit=expression(degree*C), scale="ITS-90")
