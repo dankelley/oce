@@ -102,14 +102,21 @@ if (.Platform$OS.type != "windows") {
 })
 }
 
-test_that("read.oce(file) and read.met(file, type=\"csv2\") give same metadata and data slots", {
-    doce <- read.oce(csv2)
-    dmet <- read.met(csv2)
-    expect_equal(doce[["data"]], dmet[["data"]])
-    moce <- doce[["metadata"]]
-    mmet <- dmet[["metadata"]]
-    expect_equal(moce[names(moce)!="filename"], mmet[names(mmet)!="filename"])
-})
+## Test removed 2022-03-27 because read.oce() does not try as hard to
+## decode met column names is read.met() does.  It's fine for read.met()
+## to do extra work, but it's risky for read.oce() to be polluted with
+## weird special cases, such as we see in the evolving files from
+## Environment Canada, which have multiple choices on (a) whether
+## to use a byte-order mark, whether to use parentheses on unit,
+## whether to use a degree symbol on temperatures, etc.
+#test_that("read.oce(file) and read.met(file, type=\"csv2\") give same metadata and data slots", {
+#    doce <- read.oce(csv2)
+#    dmet <- read.met(csv2)
+#    expect_equal(doce[["data"]], dmet[["data"]])
+#    moce <- doce[["metadata"]]
+#    mmet <- dmet[["metadata"]]
+#    expect_equal(moce[names(moce)!="filename"], mmet[names(mmet)!="filename"])
+#})
 
 if (requireNamespace("XML", quietly=TRUE)) {
     test_that("read.oce(file) and read.met(file, type=\"xml2\") give same metadata and data slots", {

@@ -486,13 +486,13 @@ metNames2oceNames <- function(names, scheme)
             res[grep("^Date.Time$", res)] <- "DateTime"
             res[grep("^Year$", res)] <- "Year"
             res[grep("^Month$", res)] <- "Month"
-            res[grep("^Mean.Max.Temp...C.$", res)] <- "temperatureMaximum"
-            res[grep("^Extr.Max.Temp...C.$", res)] <- "temperatureExtraMaximum"
+            res[grep("^Mean.Max.Temp.*C.$", res)] <- "temperatureMaximum"
+            res[grep("^Extr.Max.Temp.*C.$", res)] <- "temperatureExtraMaximum"
             res[grep("^Extr.Max.Temp.Flag$", res)] <- "temperatureExtraMaximumFlag"
-            res[grep("^Mean.Min.Temp...C.$", res)] <- "temperatureMinimum"
-            res[grep("^Extr.Min.Temp...C.$", res)] <- "temperatureExtraMinimum"
+            res[grep("^Mean.Min.Temp.*C.$", res)] <- "temperatureMinimum"
+            res[grep("^Extr.Min.Temp.*C.$", res)] <- "temperatureExtraMinimum"
             res[grep("^Extr.Min.Temp.Flag$", res)] <- "temperatureExtraMinimumFlag"
-            res[grep("^Mean.Temp...C.$", res)] <- "temperature"
+            res[grep("^Mean.Temp.*C.$", res)] <- "temperature"
             res[grep("^Mean.Max.Temp.Flag$", res)] <- "temperatureMaximumFlag"
             res[grep("^Mean.Min.Temp.Flag$", res)] <- "temperatureMinimumFlag"
             res[grep("^Mean.Temp.Flag$", res)] <- "temperatureFlag"
@@ -510,7 +510,7 @@ metNames2oceNames <- function(names, scheme)
             res[grep("^Spd.of.Max.Gust.Flag$", res)] <- "speedMaximumGustFlag"
             ## next block handles hourly data
             res[grep("^Data.Quality$", res)] <- "dataQuality"
-            res[grep("^Dew.Point.Temp.*C.$", res)] <- "dewPoint"
+            res[grep("^Dew.Point.Temp.*C.*$", res)] <- "dewPoint"
             res[grep("^Dew.Point.Temp.Flag$", res)] <- "dewPointFlag"
             res[grep("^Hmdx$", res)] <- "humidex"
             res[grep("^Hmdx.Flag$", res)] <- "humidexFlag"
@@ -539,8 +539,8 @@ metNames2oceNames <- function(names, scheme)
         if (1 == length(col))
             res[col] <- "temperature"
     }
-    ## cat("in metNames2oceNames:\n")
-    ## print(data.frame(names=names,res=res))
+    # cat("in metNames2oceNames:\n")
+    # print(data.frame(names=names,res=res))
     res
 }
 
@@ -567,12 +567,21 @@ metNames2oceNames <- function(names, scheme)
 #' and (d) `"xml2"` for an XML format that was noticed
 #' on the Environment Canada website in October 2019.
 #'
-#' @param skip number of lines of header that occur before the actual
+#' @param skip (possibly not working correctly)
+#' number of lines of header that occur before the actual
 #' data.  This is ignored unless `type` is `"csv"` or `"csv1"`, in which case
 #' a non-`NULL` value of `skip` is taken as the number of lines preceding
 #' the columnar data ... and this is only needed if [read.met()] cannot
 #' find a line starting with `"Date/Time"` (for csv2 format)
 #' or `"Date/Time (LTC)"` (for csv3 format).
+#'
+#' @param encoding a character value indicating the encoding to use.  This
+#' parameter was added on 2022-03-03, when CRAN tests
+#' for R-devel/linux-debian-clang were found to report an error for
+#' a test file that began with a BOM (byte order
+#' marker) character. The default, `"latin1"` (changed from the
+#' old value of `"latin1"`) may handle
+#' such files, according to the documentation for [connections()].
 #'
 #' @param tz timezone assumed for time data.  This defaults to
 #' `getOption("oceTz")`, which is very likely to be wrong.  In
@@ -583,14 +592,6 @@ metNames2oceNames <- function(names, scheme)
 #' to city, users must make corrections to the time, as
 #' shown in the \dQuote{Examples}, which use data for
 #' Halifax Nova Scotia, where LST is UTC-4.
-#'
-#' @param encoding a character value indicating the encoding to use.  This
-#' parameter was added on 2022-03-03, when CRAN tests
-#' for R-devel/linux-debian-clang were found to report an error for
-#' a test file that began with a BOM (byte order
-#' marker) character. The default, `"UTF-8-BOM"` (changed from the
-#' old value of `"UTF-8"`) may handle
-#' such files, according to the documentation for [connections()].
 #'
 #' @param debug a flag that turns on debugging.  Set to 1 to get a moderate
 #' amount of debugging information, or to 2 to get more.
@@ -635,8 +636,8 @@ metNames2oceNames <- function(names, scheme)
 #' `https://climate.weather.gc.ca/index_e.html`
 #'
 #' @family things related to met data
-read.met <- function(file, type=NULL, skip=NULL, tz=getOption("oceTz"),
-    encoding="UTF-8-BOM", debug=getOption("oceDebug"))
+read.met <- function(file, type=NULL, skip=NULL, encoding="latin1", tz=getOption("oceTz"),
+    debug=getOption("oceDebug"))
 {
     if (missing(file))
         stop("must supply 'file'")
@@ -666,9 +667,9 @@ read.met <- function(file, type=NULL, skip=NULL, tz=getOption("oceTz"),
         }
     }
     if (type == "csv" || type == "csv1")
-        res <- read.met.csv1(file, skip=skip, tz=tz, encoding=encoding, debug=debug-1)
+        res <- read.met.csv1(file, skip=skip, encoding=encoding, tz=tz, debug=debug-1)
     else if (type == "csv2" || type == "csv3")
-        res <- read.met.csv2(file, skip=skip, tz=tz, encoding=encoding, debug=debug-1)
+        res <- read.met.csv2(file, skip=skip, encoding=encoding, tz=tz, debug=debug-1)
     else if (type == "xml2")
         res <- read.met.xml2(file, skip=skip, tz=tz, debug=debug-1)
     else
@@ -677,21 +678,25 @@ read.met <- function(file, type=NULL, skip=NULL, tz=getOption("oceTz"),
     res
 }
 
-read.met.csv1 <- function(file, skip=NULL, tz=getOption("oceTz"),
-    encoding="UTF-8-BOM", debug=getOption("oceDebug"))
+read.met.csv1 <- function(file, skip=NULL, encoding="latin1", tz=getOption("oceTz"),
+    debug=getOption("oceDebug"))
 {
     if (missing(file))
         stop("must supply 'file'")
-    oceDebug(debug, "read.met.csv1(\"", file, "\") {\n", sep="", unindent=1, style="bold")
+    oceDebug(debug, "read.met.csv1(\"", file, "\", skip=", if (is.null(skip)) "NULL" else skip,
+        ", encoding=\"", encoding, "\", tz=\"", tz, "\") {\n", sep="", unindent=1, style="bold")
     # I thank Ivan Krylov for telling me that the 'encoding' arg belongs in the
     # file() call, not the readLines() call.
     if (is.character(file)) {
+        filename <- file
         file <- file(file, "r", encoding=encoding)
         on.exit(close(file))
+    } else {
+        filename <- "(a connection)"
     }
     res <- new("met", time=1)
     text <- readLines(file, warn=FALSE)
-    oceDebug(debug, "file has", length(text), "lines\n")
+    oceDebug(debug, "file has ", length(text), " lines\n")
     ##print(header[1:19])
     textItem <- function(text, name, numeric=TRUE) {
         i <- grep(name, text)
@@ -905,14 +910,17 @@ read.met.csv1 <- function(file, skip=NULL, tz=getOption("oceTz"),
         res@metadata$dataNamesOriginal[[dno]] <- o
     }
     res@data <- res@data[order(names(res@data))] # put in alphabetical order for easier scanning in summary() views
-    res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
-    oceDebug(debug, "} # read.met1()\n", unindent=1, style="bold")
+    res@processingLog <- processingLogAppend(res@processingLog,
+        paste("read.met.csv1(\"", filename, "\", skip=",
+           if (is.null(skip)) "NULL" else skip, ", encoding=\"",
+          encoding, "\", tz=\"", tz, "\")", sep="", collapse=""))
+    oceDebug(debug, "} # read.met.csv1()\n", unindent=1, style="bold")
     res
 }
 
 # This handles both csv2 and csv3 types
 read.met.csv2 <- function(file, skip=NULL, tz=getOption("oceTz"),
-    encoding="UTF-8-BOM", debug=getOption("oceDebug"))
+    encoding="latin1", debug=getOption("oceDebug"))
 {
     if (missing(file))
         stop("must supply 'file'")
@@ -920,8 +928,11 @@ read.met.csv2 <- function(file, skip=NULL, tz=getOption("oceTz"),
     # I thank Ivan Krylov for telling me that the 'encoding' arg belongs in the
     # file() call, not the readLines() call.
     if (is.character(file)) {
+        filename <- file
         file <- file(file, "r", encoding=encoding)
         on.exit(close(file))
+    } else {
+        filename <- "(a connection)"
     }
     # Sample first two lines of a csv2 type file (as of 2019 oct 12)
     # "Longitude (x)","Latitude (y)","Station Name","Climate ID","Date/Time","Year","Month","Day","Time","Temp (°C)","Temp Flag","Dew Point Temp (°C)","Dew Point Temp Flag","Rel Hum (%)","Rel Hum Flag","Wind Dir (10s deg)","Wind Dir Flag","Wind Spd (km/h)","Wind Spd Flag","Visibility (km)","Visibility Flag","Stn Press (kPa)","Stn Press Flag","Hmdx","Hmdx Flag","Wind Chill","Wind Chill Flag","Weather"
@@ -937,52 +948,61 @@ read.met.csv2 <- function(file, skip=NULL, tz=getOption("oceTz"),
     dataNames <- strsplit(gsub('"', '', firstLine[1]), ",")[[1]]
     data <- read.csv(file, header=FALSE)
     options(warn=owarn)
-    if ("Dew Point Temp (\u00B0C)" %in% dataNames) {
+    index <- grep("^Dew Point Temp.*C.*$", dataNames)
+    if (length(index) == 1L) {
         res@metadata$units$dewPoint <- list(unit=expression(degree*C), scale="ITS-90")
-        res@metadata$dataNamesOriginal$dewPoint <- "Dew Point Temp (\u00B0C)"
-        dataNames[dataNames == "Dew Point Temp (\u00B0C)"] <- "dewPoint"
+        res@metadata$dataNamesOriginal$dewPoint <- dataNames[index]
+        dataNames[index] <- "dewPoint"
     }
-    if ("Hmdx" %in% dataNames) {
+    index <- grep("^Hmdx$", dataNames)
+    if (length(index) == 1L) {
         res@metadata$units$humidex <- list(unit=expression(degree*C), scale="ITS-90")
-        res@metadata$dataNamesOriginal$humidex <- "Hmdx"
-        dataNames[dataNames == "Hmdx"] <- "humidex"
+        res@metadata$dataNamesOriginal$humidex <- dataNames[index]
+        dataNames[index] <- "humidex"
     }
-    if ("Longitude (x)" %in% dataNames) {
-        res@metadata$dataNamesOriginal$longitude <- "Longitude (x)"
-        dataNames[dataNames == "Longitude (x)"] <- "longitude"
+    index <- grep("Longitude", dataNames)
+    if (length(index) == 1L) {
+        res@metadata$dataNamesOriginal$longitude <- dataNames[index]
+        dataNames[index] <- "longitude"
     }
-    if ("Latitude (y)" %in% dataNames) {
-        res@metadata$dataNamesOriginal$latitude <- "Latitude (y)"
-        dataNames[dataNames == "Latitude (y)"] <- "latitude"
+    index <- grep("Latitude", dataNames)
+    if (length(index) == 1L) {
+        res@metadata$dataNamesOriginal$latitude <- dataNames[index]
+        dataNames[index] <- "latitude"
     }
-    if ("Precip. Amount (mm)" %in% dataNames) {
+    index <- grep("^Precip. Amount.*mm.*$", dataNames)
+    if (length(index) == 1L) {
         res@metadata$units$precipitation <- list(unit=expression("mm"), scale="")
-        res@metadata$dataNamesOriginal$precipitation <- "Precip. Amount (mm)"
-        dataNames[dataNames == "Precip. Amount (mm)"] <- "precipitation"
+        res@metadata$dataNamesOriginal$precipitation <- dataNames[index]
+        dataNames[index] <- "precipitation"
     }
-    if ("Rel Hum (%)" %in% dataNames) {
+    index <- grep("^Rel Hum \\(%\\)$", dataNames)
+    if (length(index) == 1L) {
         res@metadata$units$humidity <- list(unit=expression("%"), scale="")
-        res@metadata$dataNamesOriginal$humidity <- "Rel Hum (%)"
-        dataNames[dataNames == "Rel Hum (%)"] <- "humidity"
+        res@metadata$dataNamesOriginal$humidity <- dataNames[index]
+        dataNames[index] <- "humidity"
     }
     if ("Station Name" %in% dataNames) {
         res@metadata$dataNamesOriginal$latitude <- "Station Name"
         dataNames[dataNames == "Station Name"] <- "station"
     }
-    if ("Stn Press (kPa)" %in% dataNames) {
+    index <- grep("^Stn Press \\(kPa\\)$", dataNames)
+    if (length(index) == 1L) {
         res@metadata$units$pressure <- list(unit=expression(kPa), scale="")
-        res@metadata$dataNamesOriginal$pressure <- "Stn Press (kPa)"
-        dataNames[dataNames == "Stn Press (kPa)"] <- "pressure"
+        res@metadata$dataNamesOriginal$pressure <- dataNames[index]
+        dataNames[index] <- "pressure"
     }
-    if ("Temp (\u00B0C)" %in% dataNames) {
+    index <- grep("^Temp \\(.*C.*\\).*$", dataNames)
+    if (length(index) == 1L) {
         res@metadata$units$temperature <- list(unit=expression(degree*C), scale="ITS-90")
-        res@metadata$dataNamesOriginal$temperature <- "Temp (\u00B0C)"
-        dataNames[dataNames == "Temp (\u00B0C)"] <- "temperature"
+        res@metadata$dataNamesOriginal$temperature <- dataNames[index]
+        dataNames[index] <- "temperature"
     }
-    if ("Mean Temp (\u00B0C)" %in% dataNames) {
+    index <- grep("%Mean Temp \\(.*C.*\\).*$", dataNames)
+    if (length(index) == 1L) {
         res@metadata$units$temperature <- list(unit=expression(degree*C), scale="ITS-90")
-        res@metadata$dataNamesOriginal$temperature <- "Mean Temp (\u00B0C)"
-        dataNames[dataNames == "Mean Temp (\u00B0C)"] <- "temperature"
+        res@metadata$dataNamesOriginal$temperature <- dataNames[index]
+        dataNames[index] <- "temperature"
     }
      if ("Visibility (km)" %in% dataNames) {
         res@metadata$units$visibility <- list(unit=expression(km), scale="")
@@ -1092,7 +1112,10 @@ read.met.csv2 <- function(file, skip=NULL, tz=getOption("oceTz"),
         res@data[[knownFlags[[iflag]]]] <- NULL
     }
     res@data <- res@data[order(names(res@data))] # put in alphabetical order for easier scanning in summary() views
-    res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+    res@processingLog <- processingLogAppend(res@processingLog,
+        paste("read.met.csv2(\"", filename, "\", skip=",
+           if (is.null(skip)) "NULL" else skip, ", encoding=\"",
+          encoding, "\", tz=\"", tz, "\")", sep="", collapse=""))
     oceDebug(debug, "} # read.met.csv2()\n", unindent=1, style="bold")
     res
 }
