@@ -726,10 +726,12 @@ read.met.csv1 <- function(file, skip=NULL, tz=getOption("oceTz"),
     res@metadata$filename <- file
     ## Use stringsAsFactors=TRUE to compact weather conditions somewhat ... note that flags are converted to character type
     ## later on, when they are moved from 'data' into 'metadata$flags'.
-    owarn <- options()$warn
-    options(warn=-1)
-    rawData <- read.csv(text=text, skip=skip, header=TRUE, stringsAsFactors=TRUE)
-    options(warn=owarn)
+    #>owarn <- options()$warn
+    #>options(warn=-1)
+    capture.output({
+        rawData <- try(read.csv(text=text, skip=skip, header=TRUE, stringsAsFactors=TRUE), silent=TRUE)
+    })
+    #>options(warn=owarn)
     names <- names(rawData)
     # FIXME: handle daily data, if the column names differ
     time <- if ("Day" %in% names && "Time" %in% names) {
