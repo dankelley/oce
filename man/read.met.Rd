@@ -8,8 +8,8 @@ read.met(
   file,
   type = NULL,
   skip = NULL,
+  encoding = "latin1",
   tz = getOption("oceTz"),
-  encoding = "UTF-8-BOM",
   debug = getOption("oceDebug")
 )
 }
@@ -28,12 +28,21 @@ Environment Canada website in January 2020,
 and (d) \code{"xml2"} for an XML format that was noticed
 on the Environment Canada website in October 2019.}
 
-\item{skip}{number of lines of header that occur before the actual
+\item{skip}{(possibly not working correctly)
+number of lines of header that occur before the actual
 data.  This is ignored unless \code{type} is \code{"csv"} or \code{"csv1"}, in which case
 a non-\code{NULL} value of \code{skip} is taken as the number of lines preceding
 the columnar data ... and this is only needed if \code{\link[=read.met]{read.met()}} cannot
 find a line starting with \code{"Date/Time"} (for csv2 format)
 or \code{"Date/Time (LTC)"} (for csv3 format).}
+
+\item{encoding}{a character value indicating the encoding to use.  This
+parameter was added on 2022-03-03, when CRAN tests
+for R-devel/linux-debian-clang were found to report an error for
+a test file that began with a BOM (byte order
+marker) character. The default, \code{"latin1"} (changed from the
+old value of \code{"latin1"}) may handle
+such files, according to the documentation for \code{\link[=connections]{connections()}}.}
 
 \item{tz}{timezone assumed for time data.  This defaults to
 \code{getOption("oceTz")}, which is very likely to be wrong.  In
@@ -44,14 +53,6 @@ data in Local Standard Time (LST).  Since LST differs from city
 to city, users must make corrections to the time, as
 shown in the \dQuote{Examples}, which use data for
 Halifax Nova Scotia, where LST is UTC-4.}
-
-\item{encoding}{a character value indicating the encoding to use.  This
-parameter was added on 2022-03-03, when CRAN tests
-for R-devel/linux-debian-clang were found to report an error for
-a test file that began with a BOM (byte order
-marker) character. The default, \code{"UTF-8-BOM"} (changed from the
-old value of \code{"UTF-8"}) may handle
-such files, according to the documentation for \code{\link[=connections]{connections()}}.}
 
 \item{debug}{a flag that turns on debugging.  Set to 1 to get a moderate
 amount of debugging information, or to 2 to get more.}

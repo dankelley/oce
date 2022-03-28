@@ -63,7 +63,7 @@ A frustrating aspect of oceanographic analysis is that different data archiving
 agencies employ different systems for flags. For example, the World
 Hydrographic Programme designates good bottle/CTD data with a flag value of 2,
 whereas the World Ocean Database (which might be available at
-\code{https://www.ncei.noaa.gov/data/oceans/woa/WOD/CODES/TXT/Definition_of_Quality_Flags.txt},
+`https://www.ncei.noaa.gov/data/oceans/woa/WOD/CODES/TXT/Definition_of_Quality_Flags.txt`,
 although that link failed when tested on 2021-06-26) uses 0 for good data.
 
 Analysts must be aware of the scheme used for a particular dataset.  It is also

@@ -58,6 +58,10 @@ test_that("read.met() handles type=\"csv1\" files", {
             "windChill"))
 })
 
+# I removed this test entirely on 2022-03-26, because one of the linux-debian
+# CRAN test machines balks with it. This is discussed at
+# https://github.com/dankelley/oce/issues/1926#issuecomment-1079664881
+#
 # This next test was added on 2022-01-30. Note that it is not run on windows
 # machines, because the github R-CMD-check showed this test failing on that
 # platform, although it passed on macOS-latest(release), ubuntu-20.04(release)
@@ -70,7 +74,6 @@ test_that("read.met() handles type=\"csv1\" files", {
 # be willing to do some tests that will be faster than my waiting 30min
 # for each win_builder test.
 if (.Platform$OS.type != "windows") {
-#>if (FALSE) {
     test_that("read.met() handles type=\"csv3\" files", {
         expect_silent(d <- read.met(csv3))
         # Sort both because the ordering is different when done interactively
@@ -96,17 +99,24 @@ if (.Platform$OS.type != "windows") {
                     "2022-01-01 01:00:00", "2022-01-01 02:00:00",
                     "2022-01-01 03:00:00", "2022-01-01 04:00:00"),
                 tz="UTC"))
-    })
+})
 }
 
-test_that("read.oce(file) and read.met(file, type=\"csv2\") give same metadata and data slots", {
-    doce <- read.oce(csv2)
-    dmet <- read.met(csv2)
-    expect_equal(doce[["data"]], dmet[["data"]])
-    moce <- doce[["metadata"]]
-    mmet <- dmet[["metadata"]]
-    expect_equal(moce[names(moce)!="filename"], mmet[names(mmet)!="filename"])
-})
+## Test removed 2022-03-27 because read.oce() does not try as hard to
+## decode met column names is read.met() does.  It's fine for read.met()
+## to do extra work, but it's risky for read.oce() to be polluted with
+## weird special cases, such as we see in the evolving files from
+## Environment Canada, which have multiple choices on (a) whether
+## to use a byte-order mark, whether to use parentheses on unit,
+## whether to use a degree symbol on temperatures, etc.
+#test_that("read.oce(file) and read.met(file, type=\"csv2\") give same metadata and data slots", {
+#    doce <- read.oce(csv2)
+#    dmet <- read.met(csv2)
+#    expect_equal(doce[["data"]], dmet[["data"]])
+#    moce <- doce[["metadata"]]
+#    mmet <- dmet[["metadata"]]
+#    expect_equal(moce[names(moce)!="filename"], mmet[names(mmet)!="filename"])
+#})
 
 if (requireNamespace("XML", quietly=TRUE)) {
     test_that("read.oce(file) and read.met(file, type=\"xml2\") give same metadata and data slots", {

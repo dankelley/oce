@@ -37,7 +37,7 @@ a practical way, using drifting-buoy data for example.
 # A drifting buoy
 
 Data from buoy number 4201703 were downloaded from
-http://www.coriolis.eu.org/Data-Products/Data-Delivery/Data-selection on
+`http://www.coriolis.eu.org/Data-Products/Data-selection` on
 2022-01-09, by deselecting all data types except for "Drifting buoy", selecting
 a data window south of Nova Scotia and of area similar to that province,
 expanding the tarball created by the website and then focussing on the
