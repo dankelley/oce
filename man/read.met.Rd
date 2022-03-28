@@ -28,21 +28,14 @@ Environment Canada website in January 2020,
 and (d) \code{"xml2"} for an XML format that was noticed
 on the Environment Canada website in October 2019.}
 
-\item{skip}{(possibly not working correctly)
-number of lines of header that occur before the actual
+\item{skip}{integer giving the number of header lines that precede the
 data.  This is ignored unless \code{type} is \code{"csv"} or \code{"csv1"}, in which case
 a non-\code{NULL} value of \code{skip} is taken as the number of lines preceding
-the columnar data ... and this is only needed if \code{\link[=read.met]{read.met()}} cannot
-find a line starting with \code{"Date/Time"} (for csv2 format)
-or \code{"Date/Time (LTC)"} (for csv3 format).}
+the columnar data. Specifying \code{skip} is usually only needed if \code{\link[=read.met]{read.met()}}
+cannot find a line starting with \code{"Date/Time"} (or a similar string).}
 
-\item{encoding}{a character value indicating the encoding to use.  This
-parameter was added on 2022-03-03, when CRAN tests
-for R-devel/linux-debian-clang were found to report an error for
-a test file that began with a BOM (byte order
-marker) character. The default, \code{"latin1"} (changed from the
-old value of \code{"latin1"}) may handle
-such files, according to the documentation for \code{\link[=connections]{connections()}}.}
+\item{encoding}{a character value indicating the character
+encoding for the file (see \dQuote{Description}).}
 
 \item{tz}{timezone assumed for time data.  This defaults to
 \code{getOption("oceTz")}, which is very likely to be wrong.  In
@@ -64,48 +57,11 @@ A \linkS4class{met} object.
 Reads some meteorological file formats used by the Environment Canada (see
 reference 1).  Since the agency does not publish the data formats, this
 function has to be adjusted every few years, when a user finds that the
-format has changed. \emph{Caution:} as of March 2022, this function fails on some
+format has changed. \strong{Caution:} as of March 2022, this function fails on some
 on Windows machines, for reasons that seem to be related to the handling of
-both file encoding and system encoding. The workaround is not difficult
-for users: use \code{\link[=read.csv]{read.csv()}} on the file (with an appropriate value for
-the \code{skip} parameter) and then supply the relevant columns to \code{\link[=as.met]{as.met()}}.
-}
-\examples{
-# The examples do not run on some Windows machines, owing
-# to encoding issues, and so all these examples are marked
-# as "don't run".
-\dontrun{
-# Example 1: "csv1" Environment Canada format (found to be obsolete as of Oct 2019)
-csv1 <- read.met(system.file("extdata", "test_met_vsn1.csv", package="oce"))
-csv1 <- oceSetData(csv1, "time", csv1[["time"]]+4*3600,
-    note="add 4h to local time to get UTC time")
-
-# Example 2: "csv2" Environment Canada format (found to be obsolete as of Jan 2022)
-csv2 <- read.met(system.file("extdata", "test_met_vsn2.csv", package="oce"))
-csv2 <- oceSetData(csv2, "time", csv2[["time"]]+4*3600,
-    note="add 4h to local time to get UTC time")
-
-# Example 3: "csv3" Environment Canada format. Note timezone correction
-csv3 <- read.met(system.file("extdata", "test_met_vsn3.csv", package="oce"))
-csv3 <- oceSetData(csv3, "time", csv3[["time"]]+4*3600,
-    note="add 4h to local time to get UTC time")
-
-# Example 4: "xml2" format. (Uncertain timezone, so not corrected.)
-if (requireNamespace("XML", quietly=TRUE))
-    xml2 <- read.met(system.file("extdata", "test_met_xml2.xml", package="oce"))
-}
-
-# Example 5: download and plot
-\dontrun{
-library(oce)
-# Recreate data(met) and plot u(t) and v(t)
-metFile <- download.met(id=6358, year=2003, month=9, destdir=".")
-met <- read.met(metFile)
-met <- oceSetData(met, "time", met[["time"]]+4*3600,
-    note="add 4h to local time to get UTC time")
-plot(met)
-}
-
+both file encoding and system encoding. Adjusting the \code{encoding} parameter
+of this function might help.  If not, try reading the data with
+\code{\link[=read.csv]{read.csv()}} and then using \code{\link[=as.met]{as.met()}} to create a \linkS4class{met} object.
 }
 \references{
 \enumerate{
