@@ -551,11 +551,11 @@ metNames2oceNames <- function(names, scheme)
 #' Reads some meteorological file formats used by the Environment Canada (see
 #' reference 1).  Since the agency does not publish the data formats, this
 #' function has to be adjusted every few years, when a user finds that the
-#' format has changed. *Caution:* as of March 2022, this function fails on some
+#' format has changed. **Caution:** as of March 2022, this function fails on some
 #' on Windows machines, for reasons that seem to be related to the handling of
-#' both file encoding and system encoding. The workaround is not difficult
-#' for users: use [read.csv()] on the file (with an appropriate value for
-#' the `skip` parameter) and then supply the relevant columns to [as.met()].
+#' both file encoding and system encoding. Adjusting the `encoding` parameter
+#' of this function might help.  If not, try reading the data with
+#' [read.csv()] and then using [as.met()] to create a [met-class] object.
 #'
 #' @param file a character string naming a file that holds met data.
 #'
@@ -571,21 +571,14 @@ metNames2oceNames <- function(names, scheme)
 #' and (d) `"xml2"` for an XML format that was noticed
 #' on the Environment Canada website in October 2019.
 #'
-#' @param skip (possibly not working correctly)
-#' number of lines of header that occur before the actual
+#' @param skip integer giving the number of header lines that precede the
 #' data.  This is ignored unless `type` is `"csv"` or `"csv1"`, in which case
 #' a non-`NULL` value of `skip` is taken as the number of lines preceding
-#' the columnar data ... and this is only needed if [read.met()] cannot
-#' find a line starting with `"Date/Time"` (for csv2 format)
-#' or `"Date/Time (LTC)"` (for csv3 format).
+#' the columnar data. Specifying `skip` is usually only needed if [read.met()]
+#' cannot find a line starting with `"Date/Time"` (or a similar string).
 #'
-#' @param encoding a character value indicating the encoding to use.  This
-#' parameter was added on 2022-03-03, when CRAN tests
-#' for R-devel/linux-debian-clang were found to report an error for
-#' a test file that began with a BOM (byte order
-#' marker) character. The default, `"latin1"` (changed from the
-#' old value of `"latin1"`) may handle
-#' such files, according to the documentation for [connections()].
+#' @param encoding a character value indicating the character
+#' encoding for the file (see \dQuote{Description}).
 #'
 #' @param tz timezone assumed for time data.  This defaults to
 #' `getOption("oceTz")`, which is very likely to be wrong.  In
@@ -604,41 +597,41 @@ metNames2oceNames <- function(names, scheme)
 #'
 #' @author Dan Kelley
 #'
-#' @examples
-#' # The examples do not run on some Windows machines, owing
-#' # to encoding issues, and so all these examples are marked
-#' # as "don't run".
-#'\dontrun{
-#' # Example 1: "csv1" Environment Canada format (found to be obsolete as of Oct 2019)
-#' csv1 <- read.met(system.file("extdata", "test_met_vsn1.csv", package="oce"))
-#' csv1 <- oceSetData(csv1, "time", csv1[["time"]]+4*3600,
-#'     note="add 4h to local time to get UTC time")
-#'
-#' # Example 2: "csv2" Environment Canada format (found to be obsolete as of Jan 2022)
-#' csv2 <- read.met(system.file("extdata", "test_met_vsn2.csv", package="oce"))
-#' csv2 <- oceSetData(csv2, "time", csv2[["time"]]+4*3600,
-#'     note="add 4h to local time to get UTC time")
-#'
-#' # Example 3: "csv3" Environment Canada format. Note timezone correction
-#' csv3 <- read.met(system.file("extdata", "test_met_vsn3.csv", package="oce"))
-#' csv3 <- oceSetData(csv3, "time", csv3[["time"]]+4*3600,
-#'     note="add 4h to local time to get UTC time")
-#'
-#' # Example 4: "xml2" format. (Uncertain timezone, so not corrected.)
-#' if (requireNamespace("XML", quietly=TRUE))
-#'     xml2 <- read.met(system.file("extdata", "test_met_xml2.xml", package="oce"))
-#'}
-#'
-#' # Example 5: download and plot
-#' \dontrun{
-#' library(oce)
-#' # Recreate data(met) and plot u(t) and v(t)
-#' metFile <- download.met(id=6358, year=2003, month=9, destdir=".")
-#' met <- read.met(metFile)
-#' met <- oceSetData(met, "time", met[["time"]]+4*3600,
-#'     note="add 4h to local time to get UTC time")
-#' plot(met)
-#' }
+## @examples
+## # The examples do not run on some Windows machines, owing
+## # to encoding issues, and so all these examples are marked
+## # as "don't run".
+##\dontrun{
+## # Example 1: "csv1" Environment Canada format (found to be obsolete as of Oct 2019)
+## csv1 <- read.met(system.file("extdata", "test_met_vsn1.csv", package="oce"))
+## csv1 <- oceSetData(csv1, "time", csv1[["time"]]+4*3600,
+##     note="add 4h to local time to get UTC time")
+##
+## # Example 2: "csv2" Environment Canada format (found to be obsolete as of Jan 2022)
+## csv2 <- read.met(system.file("extdata", "test_met_vsn2.csv", package="oce"))
+## csv2 <- oceSetData(csv2, "time", csv2[["time"]]+4*3600,
+##     note="add 4h to local time to get UTC time")
+##
+## # Example 3: "csv3" Environment Canada format. Note timezone correction
+## csv3 <- read.met(system.file("extdata", "test_met_vsn3.csv", package="oce"))
+## csv3 <- oceSetData(csv3, "time", csv3[["time"]]+4*3600,
+##     note="add 4h to local time to get UTC time")
+##
+## # Example 4: "xml2" format. (Uncertain timezone, so not corrected.)
+## if (requireNamespace("XML", quietly=TRUE))
+##     xml2 <- read.met(system.file("extdata", "test_met_xml2.xml", package="oce"))
+##}
+##
+## # Example 5: download and plot
+## \dontrun{
+## library(oce)
+## # Recreate data(met) and plot u(t) and v(t)
+## metFile <- download.met(id=6358, year=2003, month=9, destdir=".")
+## met <- read.met(metFile)
+## met <- oceSetData(met, "time", met[["time"]]+4*3600,
+##     note="add 4h to local time to get UTC time")
+## plot(met)
+## }
 #'
 #' @references
 #' 1. Environment Canada website for Historical Climate Data
