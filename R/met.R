@@ -548,10 +548,14 @@ metNames2oceNames <- function(names, scheme)
 
 #' Read a met File
 #'
-#' Reads some meteorological file formats used by the Environment
-#' Canada (see reference 1).  Since the agency does not publish the
-#' data formats, this function has to be adjusted every few years,
-#' when a user finds that the format has changed.
+#' Reads some meteorological file formats used by the Environment Canada (see
+#' reference 1).  Since the agency does not publish the data formats, this
+#' function has to be adjusted every few years, when a user finds that the
+#' format has changed. *Caution:* as of March 2022, this function fails on some
+#' on Windows machines, for reasons that seem to be related to the handling of
+#' both file encoding and system encoding. The workaround is not difficult
+#' for users: use [read.csv()] on the file (with an appropriate value for
+#' the `skip` parameter) and then supply the relevant columns to [as.met()].
 #'
 #' @param file a character string naming a file that holds met data.
 #'
@@ -601,6 +605,10 @@ metNames2oceNames <- function(names, scheme)
 #' @author Dan Kelley
 #'
 #' @examples
+#' # The examples do not run on some Windows machines, owing
+#' # to encoding issues, and so all these examples are marked
+#' # as "don't run".
+#'\dontrun{
 #' # Example 1: "csv1" Environment Canada format (found to be obsolete as of Oct 2019)
 #' csv1 <- read.met(system.file("extdata", "test_met_vsn1.csv", package="oce"))
 #' csv1 <- oceSetData(csv1, "time", csv1[["time"]]+4*3600,
@@ -619,6 +627,7 @@ metNames2oceNames <- function(names, scheme)
 #' # Example 4: "xml2" format. (Uncertain timezone, so not corrected.)
 #' if (requireNamespace("XML", quietly=TRUE))
 #'     xml2 <- read.met(system.file("extdata", "test_met_xml2.xml", package="oce"))
+#'}
 #'
 #' # Example 5: download and plot
 #' \dontrun{
