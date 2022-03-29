@@ -114,74 +114,6 @@ NULL
 #' @family things related to ctd data
 NULL
 
-
-
-#' Sample met dataset (CSV format prior to October 2019)
-#'
-#' This is a subset of a file downloaded with [download.met()]
-#' from the Environment Canada "Climate Data"
-#' website `https://climate.weather.gc.ca/index_e.html`
-#' sometime before October 13, 2019.
-#'
-#' @name test_met_csv1.csv
-#'
-#' @docType data
-#'
-#' @encoding UTF-8
-#'
-#' @examples
-#'\dontrun{
-#' read.met(system.file("extdata", "test_met_csv1.csv", package="oce"))
-#'}
-#'
-#' @family raw datasets
-#' @family things related to met data
-NULL
-
-#' Sample met dataset (CSV format as of October 2019)
-#'
-#' This is a subset of a file downloaded with [download.met()]
-#' from the Environment Canada "Climate Data"
-#' website `https://climate.weather.gc.ca/index_e.html`
-#' on October 13, 2019.
-#'
-#' @name test_met_csv2.csv
-#'
-#' @docType data
-#'
-#' @encoding UTF-8
-#'
-#' @examples
-#'\dontrun{
-#' read.met(system.file("extdata", "test_met_csv2.csv", package="oce"))
-#'}
-#'
-#' @family raw datasets
-#' @family things related to met data
-NULL
-
-#' Sample met dataset (XML format as of October 2019)
-#'
-#' This is a subset of a file downloaded with [download.met()]
-#' from the Environment Canada "Climate Data"
-#' website `https://climate.weather.gc.ca/index_e.html`
-#' on October 13, 2019.
-#'
-#' @name test_met_xml2.xml
-#'
-#' @docType data
-#'
-#' @encoding UTF-8
-#'
-#' @examples
-#'\dontrun{
-#' read.met(system.file("extdata", "test_met_xml2.xml", package="oce"))
-#'}
-#'
-#' @family raw datasets
-#' @family things related to met data
-NULL
-
 #' Sample xbt dataset
 #'
 #' @name xbt.edf
@@ -198,7 +130,4 @@ NULL
 #' @family raw datasets
 #' @family things related to xbt data
 NULL
-
-
-
 

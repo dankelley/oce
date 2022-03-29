@@ -21,10 +21,7 @@ Other raw datasets:
 \code{\link{ctd.cnv}},
 \code{\link{ctd_aml.csv}},
 \code{\link{d200321-001.ctd}},
-\code{\link{d201211_0011.cnv}},
-\code{\link{test_met_csv1.csv}},
-\code{\link{test_met_csv2.csv}},
-\code{\link{test_met_xml2.xml}}
+\code{\link{d201211_0011.cnv}}
 
 Other things related to xbt data: 
 \code{\link{[[,xbt-method}},

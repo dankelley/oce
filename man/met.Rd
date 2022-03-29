@@ -64,10 +64,7 @@ Other things related to met data:
 \code{\link{plot,met-method}},
 \code{\link{read.met}()},
 \code{\link{subset,met-method}},
-\code{\link{summary,met-method}},
-\code{\link{test_met_csv1.csv}},
-\code{\link{test_met_csv2.csv}},
-\code{\link{test_met_xml2.xml}}
+\code{\link{summary,met-method}}
 }
 \concept{datasets provided with oce}
 \concept{things related to met data}
