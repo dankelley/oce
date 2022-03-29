@@ -65,7 +65,10 @@ String indicating the full pathname to the downloaded file.
 }
 \description{
 Data are downloaded from the Environment Canada's historical data
-website and cached locally.
+website and cached locally.  \strong{Caution.} this function can recover
+data for the Halifax station only for dates before 2012 month 10;
+the developers do not know whether this indicates the end of
+that station, or a change in the URI required to access the data.
 }
 \details{
 The data are downloaded
@@ -95,8 +98,10 @@ many important metadata blank.
 \examples{
 \dontrun{
 library(oce)
-## Download data for Halifax International Airport, in September
-## of 2003. (This dataset is used for data(met) provided with oce.)
+# Download data for Halifax International Airport, in September
+# of 2003. This dataset is used for data(met) provided with oce.
+# Note that requests for data after 2012 month 10 yield all
+# missing values (see Description).
 metFile <- download.met(6358, 2003, 9, destdir=".")
 met <- read.met(metFile)
 }

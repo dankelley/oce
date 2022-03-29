@@ -303,7 +303,10 @@ as.met <- function(time, temperature, pressure, u, v, filename="(constructed fro
 #' Download and Cache a met File
 #'
 #' Data are downloaded from the Environment Canada's historical data
-#' website and cached locally.
+#' website and cached locally.  **Caution.** this function can recover
+#' data for the Halifax station only for dates before 2012 month 10;
+#' the developers do not know whether this indicates the end of
+#' that station, or a change in the URI required to access the data.
 #'
 #' The data are downloaded
 #' using [utils::download.file()] based on a query devised by reverse-engineering
@@ -364,8 +367,10 @@ as.met <- function(time, temperature, pressure, u, v, filename="(constructed fro
 #' @examples
 #'\dontrun{
 #' library(oce)
-#' ## Download data for Halifax International Airport, in September
-#' ## of 2003. (This dataset is used for data(met) provided with oce.)
+#' # Download data for Halifax International Airport, in September
+#' # of 2003. This dataset is used for data(met) provided with oce.
+#' # Note that requests for data after 2012 month 10 yield all
+#' # missing values (see Description).
 #' metFile <- download.met(6358, 2003, 9, destdir=".")
 #' met <- read.met(metFile)
 #'}
