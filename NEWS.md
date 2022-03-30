@@ -3,7 +3,7 @@
 * Speed up some tests.
 * Address unused-variable warnings in C++ code.
 * Change most documentation hyperlinks to plain-text.
-* Possibly fix `read.met()` problems byte-order-marks.
+* Change `read.met()` file encoding; remove sample data.
 
 # oce 1.7.2
 
