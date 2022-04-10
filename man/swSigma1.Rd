@@ -43,15 +43,7 @@ or \code{"gsw"} (references 3 and 4).}
 Potential density anomaly (kg/m\eqn{^3}{^3}).
 }
 \description{
-Compute \eqn{\sigma_\theta}{sigma}, the potential density of seawater (minus
-1000 kg/m\eqn{^3}{^3}), referenced to 1000db pressure.
-}
-\details{
-Definition:
-\eqn{\sigma_1=\sigma_\theta=\rho(S,\theta(S,t,p),1000}{sigma_1=sigma_theta=rho(S,theta(S,t,p),1000)}
-\itemize{
-\item 1000 kg/m\eqn{^3}{^3}.
-}
+This is analagous to \code{\link[=swSigma0]{swSigma0()}}, but referenced to 1000db pressure.
 }
 \references{
 See citations provided in the \code{\link[=swRho]{swRho()}} documentation.

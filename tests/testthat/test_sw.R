@@ -82,11 +82,13 @@ test_that("rho and sigma", {
     options(oceEOS="unesco")
     expect_equal(stn[["sigmaTheta"]], stn[["sigma0", "unesco"]])
     options(oceEOS="gsw")
-    expect_equal(stn[["sigmaTheta"]], stn[["sigma0", "gsw"]])
+    #(before issue1933) expect_equal(stn[["sigmaTheta"]], stn[["sigma0", "gsw"]])
+    expect_false(identical(stn[["sigmaTheta"]], stn[["sigma0", "gsw"]]))
 
     # sigmaTheta and sigma0 should match within each EOS.
     expect_equal(stn[["sigmaTheta", "unesco"]], stn[["sigma0", "unesco"]])
-    expect_equal(stn[["sigmaTheta", "gsw"]], stn[["sigma0", "gsw"]])
+    #(before issue1933) expect_equal(stn[["sigmaTheta", "gsw"]], stn[["sigma0", "gsw"]])
+    expect_false(identical(stn[["sigmaTheta", "gsw"]], stn[["sigma0", "gsw"]]))
 
     # sigmaTheta and sigma0 ([[ form) should not match between unesco and gsw
     expect_false(identical(stn[["sigmaTheta", "gsw"]], stn[["sigmaTheta", "unesco"]]))
@@ -415,3 +417,15 @@ test_that("swRho handles matrix and array data", {
     expect_equal(swRho(Sa, Ta, pa, longitude=lon, latitude=lat, eos="gsw"),
         array(rho, dim=c(2, 2, 5)))
 })
+
+test_that("sigma0 works as expected (issue 1933)", {
+    # https://github.com/dankelley/oce/issues/1933
+    data(section)
+    ctd <- section[["station", 100]]
+    sigma0 <- ctd[["sigma0", "gsw"]]
+    CT <- ctd[["CT"]]
+    SA <- ctd[["SA"]]
+    sigma0direct <- gsw_sigma0(SA=SA, CT=CT)
+    expect_equal(sigma0, sigma0direct)
+})
+

@@ -540,6 +540,7 @@ setMethod(f="[[",
               } else if (i == "sigmaTheta") {
                   return(if (missing(j)) swSigmaTheta(x) else swSigmaTheta(x, eos=j))
               } else if (i == "sigma0") {
+                  #message("AllClass [[ about to call swSigma0 with j=", if (missing(j)) "?" else j)
                   return(if (missing(j)) swSigma0(x) else swSigma0(x, eos=j))
               } else if (i == "sigma1") {
                   return(if (missing(j)) swSigma1(x) else swSigma1(x, eos=j))

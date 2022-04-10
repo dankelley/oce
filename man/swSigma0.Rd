@@ -43,15 +43,11 @@ or \code{"gsw"} (references 3 and 4).}
 Potential density anomaly (kg/m\eqn{^3}{^3}).
 }
 \description{
-Compute \eqn{\sigma_\theta}{sigma}, the potential density of seawater (minus
-1000 kg/m\eqn{^3}{^3}), referenced to surface pressure.
-}
-\details{
-Definition:
-\eqn{\sigma_0=\sigma_\theta=\rho(S,\theta(S,t,p),0}{sigma_0=sigma_theta=rho(S,theta(S,t,p),0)}
-\itemize{
-\item 1000 kg/m\eqn{^3}{^3}.
-}
+Compute the potential density of seawater (minus
+1000 kg/m\eqn{^3}{^3}), referenced to surface pressure. This is done using
+\code{\link[gsw:gsw_sigma0]{gsw::gsw_sigma0()}} if \code{eos="gsw"}, or using \code{\link[=swSigmaTheta]{swSigmaTheta()}} if it is
+\code{"unesco"}. (The difference between the formulations is typically
+under 0.01 kg/m^3, corresponding to a few millidegrees of temperature.)
 }
 \references{
 See citations provided in the \code{\link[=swRho]{swRho()}} documentation.

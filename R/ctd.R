@@ -919,7 +919,7 @@ setMethod(f="[[",
                   #>} else if (i == "depth") {
                   #>    if ("depth" %in% names(data)) data$depth else swDepth(x) # FIXME-gsw: permit gsw version here
               } else {
-                  ## message("FIXME: [[,ctd-method calling next method")
+                  #message("FIXME: [[,ctd-method calling next method for i=", i)
                   callNextMethod()     # [[ defined in R/AllClass.R
               }
           })
@@ -4722,7 +4722,7 @@ drawIsopycnals <- function(nlevels=6, levels, rotate=TRUE, rho1000=FALSE, digits
 #'
 #' @param ytype variable to use on y axis. The valid choices are:
 #' `"pressure"` (the default), `"z"`,
-#' `"depth"` and `"sigmaTheta"`.
+#' `"depth"`, `"sigmaTheta"` and `"sigma0"`.
 #'
 #' @param eos equation of state to be used, either `"unesco"` or
 #' `"gsw"`.
@@ -4949,10 +4949,10 @@ plotProfile <- function(x,
     ylimGiven <- !missing(ylim)
     densitylimGiven <- !missing(densitylim)
     dots <- list(...)
-    ytypeChoices <- c("pressure", "z", "depth", "sigmaTheta")
+    ytypeChoices <- c("pressure", "z", "depth", "sigmaTheta", "sigma0")
     ytypeIndex <- pmatch(ytype, ytypeChoices)
     if (is.na(ytypeIndex))
-        stop('ytype must be one of: "pressure", "z", "depth", "sigmaTheta", but it is "', ytype, '"')
+        stop('ytype must be one of: "pressure", "z", "depth", "sigmaTheta" or "sigma0", but it is "', ytype, '"')
     ytype <- ytypeChoices[ytypeIndex]
     if (!is.null(ylab)) {
         yname <- ylab
@@ -4961,32 +4961,34 @@ plotProfile <- function(x,
             pressure=resizableLabel("p", "y", debug=debug-1),
             z=resizableLabel("z", "y", debug=debug-1),
             depth=resizableLabel("depth", "y", debug=debug-1),
-            sigmaTheta=resizableLabel("sigmaTheta", "y", debug=debug-1))
+            sigmaTheta=resizableLabel("sigmaTheta", "y", debug=debug-1),
+            sigma0=resizableLabel("sigma0", "y", debug=debug-1))
     }
     # If plim given on a pressure plot, then it takes precedence over ylim; same
     # for densitylim.
     if (ytype == "pressure" && plimGiven)
         ylim <- plim
-    if (ytype == "sigmaTheta" && densitylimGiven)
+    if ((ytype == "sigmaTheta" || ytype == "sigma0") && densitylimGiven)
         ylim <- densitylim
     if (missing(ylim))
         ylim <- switch(ytype,
             pressure=rev(range(x[["pressure"]], na.rm=TRUE)),
             z=range(swZ(x[["pressure"]]), na.rm=TRUE),
             depth=rev(range(x[["depth"]], na.rm=TRUE)),
-            sigmaTheta=rev(range(x[["sigmaTheta"]], na.rm=TRUE)))
+            sigmaTheta=rev(range(x[["sigmaTheta"]], na.rm=TRUE)),
+            sigma0=rev(range(x[["sigma0"]], na.rm=TRUE)))
     # issue 1137 Dec 27, 2016
     # Below, we used to trim the data to ylim, but this made it
     # look as though there were no data at top and bottom of the plot.
     # The new scheme is to retain 5% of data outside the limit, which
     # should be OK for the usual R convention of a 4% gap at axis ends.
-    if (ytype %in% c("pressure", "z", "depth", "sigmaTheta")) {
+    if (ytype %in% c("pressure", "z", "depth", "sigmaTheta", "sigma0")) {
         yy <- x[[ytype]]
         extra <- 0.05 * diff(range(yy, na.rm=TRUE)) # note larger than 0.04, just in case
         examineIndices <- if (is.na(extra)) seq_along(yy)
             else (min(ylim) - extra) <= yy & yy <= (max(ylim) + extra)
     } else {
-        warning("unknown \"ytype\"; must be one of \"pressure\", \"z\", \"depth\" or \"sigmaTheta\"")
+        warning("unknown \"ytype\"; must be one of \"pressure\", \"z\", \"depth\", \"sigmaTheta\" or \"sigma0\"")
         examineIndices <- seq_along(x[["pressure"]])
     }
     examineIndicesLength <- length(examineIndices)
@@ -5038,6 +5040,8 @@ plotProfile <- function(x,
         y <- x[["depth"]]
     } else if (ytype == "sigmaTheta") {
         y <- x[["sigmaTheta"]]
+    } else if (ytype == "sigma0") {
+        y <- x[["sigma0"]]
     }
     y <- as.vector(y)
 
