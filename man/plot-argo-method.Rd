@@ -14,7 +14,7 @@
   cex = 1,
   pch = 1,
   type = "p",
-  col,
+  col = 1,
   fill = FALSE,
   projection = NULL,
   mgp = getOption("oceMgp"),
