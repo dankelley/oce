@@ -276,6 +276,8 @@ export(abbreviateTimeLabels,
        read.aquadopp, # wrapper for read.adp.nortek()
        read.aquadoppProfiler, # wrapper for read.adp.nortek()
        read.aquadoppHR, # wrapper for read.adp.nortek()
+       read.argo,
+       read.argo.copernicus,
        read.bremen,
        read.cm,
        read.coastline,
@@ -289,7 +291,6 @@ export(abbreviateTimeLabels,
        read.ctd.odf,
        read.ctd.odv,
        read.ctd.itp,
-       read.argo,
        read.echosounder,
        read.g1sst,
        read.gps,

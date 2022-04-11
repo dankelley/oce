@@ -1,5 +1,6 @@
 # oce 1.7.3
 
+* Add `read.argo.copernicus()`.
 * Speed up some tests.
 * Address unused-variable warnings in C++ code.
 * Change most documentation hyperlinks to plain-text.
