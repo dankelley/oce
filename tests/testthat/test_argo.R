@@ -236,4 +236,16 @@ test_that("[[ handles both cycleNumber and cycle", {
     expect_equal(argo[["cycle"]], 1:223)
 })
 
+file <- "local_data/GL_PR_PF_4902489.nc"
+if (file.exists(file)) {
+    test_that("can read a Copernicus file",
+        {
+            expect_silent(d <- read.argo.copernicus(file))
+            expect_equal(d[["id"]], "4902489")
+            expect_equal(d[["temperature"]][1,1], 9.20700043730903)
+            expect_equal(d[["salinity"]][1,1], 34.4790016376646)
+            expect_equal(d[["pressure"]][1,1], 8.80000019073486)
+            expect_equal(dim(d[["pressure"]]), c(573, 93))
+        })
+}
 

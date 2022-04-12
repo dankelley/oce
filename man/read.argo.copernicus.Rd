@@ -21,14 +21,18 @@ This function was added to read a particular file downloaded from the
 Fleet Monitoring website (Reference 1).  The format was inferred
 through examination of the file and a brief study of a document
 (Reference 2) that describes the format.  Not all fields are read
-by this function.
+by this function; see Reference 3 for a full list and note that
+the author would be happy to add new entries (but not to spend hours
+entering then all).
 }
 \references{
 \enumerate{
 \item \verb{https://fleetmonitoring.euro-argo.eu/float/4902489}
 \item Copernicus Marine In Situ Tac Data Management Team. Copernicus Marine In
 Situ NetCDF Format Manual (version V1.43). Pdf. Copernicus in situ TAC, 2021.
-\verb{https://doi.org/10.13155/59938}.
+\verb{https://doi.org/10.13155/59938} (link checked 2022-04-11).
+\item Variable names are provided in files at
+\verb{https://doi.org/10.13155/53381} (link checked 2022-04-12)
 }
 }
 \author{
