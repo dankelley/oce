@@ -27,6 +27,8 @@
 #' 3. Variable names are provided in files at
 #' `https://doi.org/10.13155/53381` (link checked 2022-04-12)
 #'
+#' @family things related to argo data
+#'
 #' @author Dan Kelley
 read.argo.copernicus <- function(file,
     debug=getOption("oceDebug"),
@@ -83,44 +85,75 @@ read.argo.copernicus <- function(file,
     res@metadata$id <- getGlobalAttribute(file, "platform_code") # or "id"???
     res@metadata$dataNamesOriginal <- list()
     res@metadata$flags <- list()
+    #print(sort(varNames))
+    nameMap <- list(
+        "BBP700"="backscatter700", # not listed in official docs
+        "BBP700_ADJUSTED"="backscatterA700djusted",
+        "BBP700_ADJUSTED_ERROR"="backscatterA700djustedError",
+        "CNDC"="conductivity",
+        "CNDC_ADJUSTED"="conductivityAdjusted",
+        "CNDC_ADJUSTED_ERROR"="conductivityAdjustedError",
+        "CPHL"="chlorophyll",
+        "CPHL_ADJUSTED"="chlorophyllAdjusted",
+        "CPHL_ADJUSTED_ERROR"="chlorophyllAdjustedError",
+        "DIRECTION"="direction",
+        "DOX2"="oxygen",
+        "DOX2_ADJUSTED"="oxygenAdjusted",
+        "DOX2_ADJUSTED_ERROR"="oxygenAdjustedError",
+        "DOXY"="oxygen",
+        "DOXY_ADJUSTED"="oxygenAdjusted",
+        "DOXY_ADJUSTED_ERROR"="oxygenAdjustedError",
+        "NTAW"="nitrate",
+        "NTAW_ADJUSTED"="nitrateAdjusted",
+        "NTAW_ADJUSTED_ERROR"="nitrateAdjustedError",
+        "PHPH"="pH",
+        "PHPH_ADJUSTED"="pHAdjusted",
+        "PHPH_ADJUSTED_ERROR"="pHAdjustedError",
+        "PSAL"="salinity",
+        "PSAL_ADJUSTED"="salinityAdjusted",
+        "PSAL_ADJUSTED_ERROR"="salinityAdjustedError",
+        "PRES"="pressure",
+        "PRES_ADJUSTED"="pressureAdjusted",
+        "PRES_ADJUSTED_ERROR"="pressureAdjustedError",
+        "TEMP"="temperature",
+        "TEMP_ADJUSTED"="temperatureAdjusted",
+        "TEMP_ADJUSTED_ERROR"="temperatureAdjustedError",
+        "VERTICAL_SAMPLING_SCHEME"="verticalSamplingScheme"
+        )
+    varNamesKnown <- names(nameMap)
+    QCNamesKnown <- paste0(names(nameMap), "_QC")
+    #print(QCNamesKnown)
+    res@metadata$units <- list()
     for (name in varNames) {
-        if ("CNDC" == name) {
-            res@data$conductivity <- ncdf4::ncvar_get(file, name)
-            res@metadata$dataNamesOriginal$salinity <- name
-            oceDebug(debug, "inferring conductivity from ", name, "\n")
-            res@metadata$units$conductivity <- list(unit=expression(S/m), scale="")
-        } else if ("CNDC_QC" == name) {
-            res@metadata$flags$conductivity <- ncdf4::ncvar_get(file, "CNDC_QC")
-            oceDebug(debug, "inferring conductivity flag from CNDC_QC\n")
-        } else if ("DOXY" == name) {
-            res@data$oxygen <- ncdf4::ncvar_get(file, name)
-            res@metadata$dataNamesOriginal$oxygen <- name
-            oceDebug(debug, "inferring oxygen from ", name, "\n")
-            res@metadata$units$oxygen <- list(unit=expression(mmol/m^3), scale="")
-        } else if ("DOXY_QC" == name) {
-            res@metadata$flags$oxygen <- ncdf4::ncvar_get(file, "DOXY_QC")
-            oceDebug(debug, "inferring oxygen flag from DOXY_QC\n")
-        } else if ("PRES" == name) {
-            res@data$pressure <- ncdf4::ncvar_get(file, name)
-            res@metadata$dataNamesOriginal$pressure <- name
-            oceDebug(debug, "inferring pressure from ", name, "\n")
-        } else if ("PRES_QC" == name) {
-            res@metadata$flags$pressure <- ncdf4::ncvar_get(file, "PRES_QC")
-            oceDebug(debug, "inferring pressure flag from PRES_QC\n")
-        } else if ("PSAL" == name) {
-            res@data$salinity <- ncdf4::ncvar_get(file, name)
-            res@metadata$dataNamesOriginal$salinity <- name
-            oceDebug(debug, "inferring salinity from ", name, "\n")
-        } else if ("PSAL_QC" == name) {
-            res@metadata$flags$salinity <- ncdf4::ncvar_get(file, "PSAL_QC")
-            oceDebug(debug, "inferring salinity flag from PSAL_QC\n")
-        } else if ("TEMP" == name) {
-            res@data$temperature <- ncdf4::ncvar_get(file, name)
-            res@metadata$dataNamesOriginal$temperature <- name
-            oceDebug(debug, "inferring temperature from ", name, "\n")
-        } else if ("TEMP_QC" == name) {
-            res@metadata$flags$temperature <- ncdf4::ncvar_get(file, "TEMP_QC")
-            oceDebug(debug, "inferring temperature flag from TEMP_QC\n")
+        if (name %in% varNamesKnown) {
+            oceName <- nameMap[[name]]
+            res@data[[oceName]] <- ncdf4::ncvar_get(file, name)
+            res@metadata$dataNamesOriginal[oceName] <- name
+            oceDebug(debug, "inferring ", oceName, " from ", name, "\n")
+            if (grepl("^BBP700", name))
+                res@metadata$units[[oceName]] <- list(unit=expression(1/m), scale="")
+            else if (grepl("^CNDC", name))
+                res@metadata$units[[oceName]] <- list(unit=expression(S/m), scale="")
+            else if (grepl("^CPHL", name))
+                res@metadata$units[[oceName]] <- list(unit=expression(mg/m^3), scale="")
+            else if (grepl("^DOX2", name))
+                res@metadata$units[[oceName]] <- list(unit=expression(umol/kg), scale="")
+            else if (grepl("^DOXY", name))
+                res@metadata$units[[oceName]] <- list(unit=expression(mmol/m^3), scale="")
+            else if (grepl("^NTAW", name))
+                res@metadata$units[[oceName]] <- list(unit=expression(umol/kg), scale="")
+            else if (grepl("^PHPH", name))
+                res@metadata$units[[oceName]] <- list(unit=expression(), scale="")
+            else if (grepl("^PRES", name))
+                res@metadata$units[[oceName]] <- list(unit=expression(dbar), scale="")
+            else if (grepl("^PSAL", name))
+                res@metadata$units[[oceName]] <- list(unit=expression(), scale="")
+            else if (grepl("^TEMP", name))
+                res@metadata$units[[oceName]] <- list(unit=expression(degree*C), scale="")
+        } else if (name %in% QCNamesKnown) {
+            oceName <- nameMap[[gsub("_QC", "", name)]]
+            res@metadata$flags[[oceName]] <- ncdf4::ncvar_get(file, name)
+            oceDebug(debug, "inferring flags[", oceName, "] from ", name, "\n")
         } else if (!(name %in% c("TIME", "POSITION_QC", "TIME_QC"))) { # some special cases skipped
             oceDebug(debug, "saving \"", name, "\" to data slot, without renaming\n", sep="")
             res@data[[name]] <- ncdf4::ncvar_get(file, name)
