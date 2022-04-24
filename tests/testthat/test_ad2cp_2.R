@@ -87,9 +87,9 @@ if (file.exists(file)) {
                 tzone = "UTC"))
 
         # Pressure, temperature etc
-        expect_equal(d[["pressure"]], c(6.999, 7, 7.077, 6.979, 7.043, 7.044, 7.039))
+        expect_equal(d[["pressure"]], c(269.143, 269.144, 269.221, 269.123, 269.187, 269.188, 269.183))
         expect_equal(d[["pressure", "average"]], d[["pressure"]])
-        expect_equal(d[["pressure", "echosounder"]], c(6.97, 7.02))
+        expect_equal(d[["pressure", "echosounder"]], c(269.114, 269.164))
 
         expect_equal(d[["temperature"]], c(1.51, 1.48, 1.5, 1.48, 1.51, 1.49, 1.49))
         expect_equal(d[["temperature"]], d[["temperature", "average"]])
