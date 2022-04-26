@@ -1258,6 +1258,19 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, log="", logStyle="r", flipy=
     xrange <- range(x, na.rm=TRUE)
     yrange <- range(y, finite=TRUE)
     maybeflip <- function(y) if (flipy) rev(sort(y)) else y
+    # NOTE: In issue https://github.com/dankelley/oce/issues/1939 it was
+    # discovered that the quartz() device was unexpectedly slow.  Tests suggest
+    # that the time taken to draw the axis and write the time label is
+    # proportional to the number of data points.  Moving the plotting of points
+    # to after the drawing of axes and drawing of time range therefore smooths
+    # up plots on the quartz() device by a factor of 3.
+    #
+    # Yes, you read that right: reordering the plot(), axis() and mtext()
+    # commands can speed up data-heavy quartz plots by a factor of 3.
+    #
+    #  We use a 4-step process.
+    #
+    # Step 1: set up plot area and draw axis names
     if (!is.finite(yrange[1])) {
         plot(xrange, c(0, 1), axes=FALSE, xaxs=xaxs, yaxs=yaxs,
              xlim=if (xlimGiven) xlim else xrange,
@@ -1277,20 +1290,19 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, log="", logStyle="r", flipy=
                  xlim=if (xlimGiven) xlim else range(x, na.rm=TRUE),
                  ylim=if (missing(ylim)) maybeflip(range(y, na.rm=TRUE)) else maybeflip(ylim),
                  xlab="", ylab="",
-                 type=type, col=col, cex=cex, pch=pch, log=log, ...)
+                 type="n", log=log, ...)
             mtext(xlab, side=1, cex=cex.lab*par("cex"), line=mgp[1])
             mtext(ylab, side=2, cex=cex.lab*par("cex"), line=mgp[1])
-            fillcol <- if ("col" %in% names(args)) args$col else "lightgray" # FIXME: should this be a formal argument?
-            do.call(polygon, list(x=xx, y=yy, col=fillcol))
         } else {
             plot(x, y, axes=FALSE, xaxs=xaxs, yaxs=yaxs,
                  xlim=if (missing(xlim)) NULL else xlim,
                  ylim=if (missing(ylim)) maybeflip(range(y, na.rm=TRUE)) else maybeflip(ylim),
                  xlab="", ylab="",
-                 type=type, col=col, cex=cex, cex.axis=cex.axis, cex.lab=cex.lab, pch=pch, log=log, ...)
-            #mtext(paste("TEST: xlab at mgp[1]", xlab), side=1, cex=cex.lab*par('cex'), line=mgp[1])
+                 type="n", cex.axis=cex.axis, cex.lab=cex.lab, log=log, ...)
+            mtext(xlab, side=1, cex=cex.lab*par("cex"), line=mgp[1])
             mtext(ylab, side=2, cex=cex.lab*par('cex'), line=mgp[1])
         }
+        # Step 2: draw axes
         xat <- NULL
         yat <- NULL
         if (axes) {
@@ -1308,20 +1320,7 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, log="", logStyle="r", flipy=
                 xat <- xlabs
                 oceDebug(debug, "drawing x axis; set xat=c(", paste(xat, collapse=","), ")", "\n", sep="")
             }
-            if (FALSE && grid) { # FIXME: don't w do this below? Why here also?
-                lwd <- par("lwd")
-                if (drawxaxis)
-                    abline(v=xlabs, col="lightgray", lty="dotted", lwd=lwd)
-                yaxp <- par("yaxp")
-                if (log == "y") {
-                    abline(h=axTicks(2), col="lightgray", lty="dotted", lwd=lwd)
-                } else {
-                    abline(h=seq(yaxp[1], yaxp[2], length.out=1+yaxp[3]),
-                           col="lightgray", lty="dotted", lwd=lwd)
-                }
-            }
             box()
-            #cat("cex.axis=",cex.axis,"; par('cex.axis') is", par('cex.axis'), "; par('cex') is", par('cex'), "\n")
             if (drawyaxis) {
                 if (log != "y" || logStyle == "r") {
                     axis(2, cex.axis=cex.axis, cex=cex.axis)
@@ -1334,6 +1333,7 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, log="", logStyle="r", flipy=
                 }
             }
         }
+        # Step 3: handle grid
         if (grid) {
             if (log == "y") {
                 at <- axTicks(2)
@@ -1345,6 +1345,14 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, log="", logStyle="r", flipy=
                 abline(h=axTicks(2), col=grid.col, lty=grid.lty, lwd=grid.lwd)
             }
             abline(v=axTicks(1), col=grid.col, lty=grid.lty, lwd=grid.lwd)
+        }
+        # Step 4: finally, draw the points/curve/polygon
+        if (fill) {
+            fillcol <- if ("col" %in% names(args)) args$col else "lightgray"
+            points(x, y, type=type, col=col, cex=cex, pch=pch)
+            do.call(polygon, list(x=xx, y=yy, col=fillcol))
+        } else {
+            points(x, y, type=type, col=col, cex=cex, pch=pch)
         }
         oceDebug(debug, "} # oce.plot.ts()\n", unindent=1, style="bold")
         invisible(list(xat=xat, yat=yat))
