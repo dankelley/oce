@@ -329,11 +329,12 @@ setMethod(f="summary",
 #'
 #' If `j` is `"byStation"`, then a list is returned, with
 #' one (unnamed) item per station.
-## #' If `j` is `"grid:distance-pressure"`, then a gridded
-## #' representation of `i` is returned, as a list with elements
-## #' `distance` (in km), `pressure` (in dbar) and
-## #' `field` (in whatever unit is used for `i`). See Example
-## #' for in the documentation for [plot,section-method()].
+#'
+#' If `j` is `"grid:distance-pressure"` or `"grid:time-pressure"`, then a gridded
+#' representation of `i` is returned, as a list with elements:
+#' `distance` (in km) or `time` (in POSIXct); `pressure` (in dbar) and
+#' `field` (in whatever unit is used for `i`). See the
+#' examples in the documentation for [plot,section-method()].
 #'
 #' @examples
 #' data(section)
@@ -352,174 +353,177 @@ setMethod(f="summary",
 #'
 #' @family things related to section data
 setMethod(f="[[",
-          signature(x="section", i="ANY", j="ANY"),
-          definition=function(x, i, j, ...) {
-              # This is broken down into 3 cases.
-              #
-              # Case 1. Things that can be computed without looking deeply
-              # enough within @data$station to determine computable things.
-              # This determination is a bit slow, and is taken up in SECTION 2.
-              #
-              # Case 1.1 "station".
-              if (i == "station") {
-                  # All stations.
-                  if (missing(j))
-                      return(x@data$station)
-                  # A subset of stations, specified with j, which is either a
-                  # character value for station ID(s) or a numeric value for
-                  # sequence number(s).
-                  nj <- length(j)
-                  if (is.character(j)) { # station ID(s)
-                      stationNames <- unlist(lapply(x@data$station,
-                              function(station)
-                                  station@metadata$station))
-                      if (nj == 1L) {
-                          w <- which(stationNames == j)
-                          res <- if (length(w)) x@data$station[[w[1]]] else NULL
-                      } else {
-                          res <- vector("list", nj)
-                          for (jj in seq_len(nj)) {
-                              w <- which(stationNames == j[jj])
-                              res[[jj]] <- if (length(w)) x@data$station[[w[1]]] else NULL
-                          }
-                      }
-                  } else {             # sequence number(s)
-                      if (nj == 1L) {
-                          res <- x@data$station[[j]]
-                      } else {
-                          res <- vector("list", nj)
-                          for (jj in seq_len(nj)) {
-                              res[[jj]] <- x@data$station[[j[jj]]]
-                          }
-                      }
-                  }
-                  return(res)
-              }
-              # Case 1.2: data-quality flags.
-              if (1 == length(grep(".*Flag$", i))) {
-                  baseName <- gsub("Flag$", "", i)
-                  # FIXME: should check all stations, not just the first
-                  if (baseName %in% names(x@data$station[[1]]@metadata$flags)) {
-                      return(unlist(lapply(x@data$station, function(ctd) ctd[[i]])))
-                  } else {
-                      stop("First station lacks a '", baseName, "' flag, so assuming the same for all.")
-                  }
-              }
-              # Case 1.3: things stored in section@metadata.
-              if (i %in% names(x@metadata)) {
-                  if (i %in% c("longitude", "latitude")) {
-                      if (!missing(j) && j == "byStation") {
-                          return(x@metadata[[i]])
-                      } else {
-                          res <- NULL
-                          for (stn in seq_along(x@data$station))
-                              res <- c(res, rep(x@data$station[[stn]]@metadata[[i]], length(x@data$station[[stn]][["salinity"]])))
-                          return(res)
-                      }
-                  } else {
-                      return(x@metadata[[i]])
-                  }
-              }
-              # Case 1.4: station IDs.
-              if (i == "station ID")
-                  return(unlist(lapply(x@data$station, function(stn) stn[["station"]])))
-              # Case 1.5: dynamic height.
-              if (i == "dynamic height")
-                  return(swDynamicHeight(x))
-              # Case 1.6: distance along track.
-              if (i == "distance") {
-                  res <- NULL
-                  for (stn in seq_along(x@data$station)) {
-                      distance <- geodDist(x@data$station[[stn]][["longitude"]][1],
-                                           x@data$station[[stn]][["latitude"]][1],
-                                           x@data$station[[1]][["longitude"]][1],
-                                           x@data$station[[1]][["latitude"]][1])
-                      if (!missing(j) && j == "byStation")
-                          res <- c(res, distance)
-                      else
-                          res <- c(res, rep(distance, length(x@data$station[[stn]]@data$temperature)))
+    signature(x="section", i="ANY", j="ANY"),
+    definition=function(x, i, j, ...) {
+        # This is broken down into 3 cases.
+        #
+        # Case 1. Things that can be computed without looking deeply
+        # enough within @data$station to determine computable things.
+        # This determination is a bit slow, and is taken up in SECTION 2.
+        #
+        # Case 1.1 "station".
+        if (i == "station") {
+            # All stations.
+            if (missing(j))
+                return(x@data$station)
+            # A subset of stations, specified with j, which is either a
+            # character value for station ID(s) or a numeric value for
+            # sequence number(s).
+            nj <- length(j)
+            if (is.character(j)) { # station ID(s)
+                stationNames <- unlist(lapply(x@data$station,
+                        function(station)
+                            station@metadata$station))
+                if (nj == 1L) {
+                    w <- which(stationNames == j)
+                    res <- if (length(w)) x@data$station[[w[1]]] else NULL
+                } else {
+                    res <- vector("list", nj)
+                    for (jj in seq_len(nj)) {
+                        w <- which(stationNames == j[jj])
+                        res[[jj]] <- if (length(w)) x@data$station[[w[1]]] else NULL
+                    }
+                }
+            } else {             # sequence number(s)
+                if (nj == 1L) {
+                    res <- x@data$station[[j]]
+                } else {
+                    res <- vector("list", nj)
+                    for (jj in seq_len(nj)) {
+                        res[[jj]] <- x@data$station[[j[jj]]]
+                    }
+                }
+            }
+            return(res)
+        }
+        # Case 1.2: data-quality flags.
+        if (1 == length(grep(".*Flag$", i))) {
+            baseName <- gsub("Flag$", "", i)
+            # FIXME: should check all stations, not just the first
+            if (baseName %in% names(x@data$station[[1]]@metadata$flags)) {
+                return(unlist(lapply(x@data$station, function(ctd) ctd[[i]])))
+            } else {
+                stop("First station lacks a '", baseName, "' flag, so assuming the same for all.")
+            }
+        }
+        # Case 1.3: things stored in section@metadata.
+        if (i %in% names(x@metadata)) {
+            if (i %in% c("longitude", "latitude")) {
+                if (!missing(j) && j == "byStation") {
+                    return(x@metadata[[i]])
+                } else {
+                    res <- NULL
+                    for (stn in seq_along(x@data$station))
+                        res <- c(res, rep(x@data$station[[stn]]@metadata[[i]], length(x@data$station[[stn]][["salinity"]])))
+                    return(res)
+                }
+            } else {
+                return(x@metadata[[i]])
+            }
+        }
+        # Case 1.4: station IDs.
+        if (i == "station ID")
+            return(unlist(lapply(x@data$station, function(stn) stn[["station"]])))
+        # Case 1.5: dynamic height.
+        if (i == "dynamic height")
+            return(swDynamicHeight(x))
+        # Case 1.6: distance along track.
+        if (i == "distance") {
+            res <- NULL
+            for (stn in seq_along(x@data$station)) {
+                distance <- geodDist(x@data$station[[stn]][["longitude"]][1],
+                    x@data$station[[stn]][["latitude"]][1],
+                    x@data$station[[1]][["longitude"]][1],
+                    x@data$station[[1]][["latitude"]][1])
+                if (!missing(j) && j == "byStation")
+                    res <- c(res, distance)
+                else
+                    res <- c(res, rep(distance, length(x@data$station[[stn]]@data$temperature)))
 
-                  }
-                  return(res)
-              }
-              # Case 1.7: time.
-              if (i == "time")
-                  return(numberAsPOSIXct(unlist(lapply(x@data$station, function(stn) stn[["time"]]))))
+            }
+            return(res)
+        }
+        # Case 1.7: time.
+        if (i == "time")
+            return(numberAsPOSIXct(unlist(lapply(x@data$station, function(stn) stn[["time"]]))))
 
-              # Case 2. We are now done with things that can be determined by
-              # looking one level deep.  To extract individual data, we will
-              # need to know what is in each of the stations (and what can be
-              # computed from this content).
-              metadataStn <- dataStn <- metadataDerivedStn <- dataDerivedStn <- NULL
-              for (station in x@data$station) {
-                  q <- station[["?"]]
-                  metadataStn <- c(metadataStn, q$metadata)
-                  metadataDerivedStn <- c(metadataDerivedStn, q$metadataDerived)
-                  dataStn <- c(dataStn, q$data)
-                  dataDerivedStn <- c(dataDerivedStn, q$dataDerived)
-              }
-              metadataStn <- sort(unique(metadataStn))
-              metadataDerivedStn <- sort(c(
-                      "distance",
-                      paste("station", "ID"),
-                      paste("dynamic", "height"),
-                      unique(metadataDerivedStn)))
-              dataStn <- sort(unique(dataStn))
-              dataDerivedStn <- sort(unique(dataDerivedStn))
-              # Case 2.1: indication of available values for i.
-              if (i == "?") {
-                  return(list(metadata=metadataStn,
-                          metadataDerived=metadataDerivedStn,
-                          data=dataStn,
-                          dataDerived=dataDerivedStn))
-              }
-              # Case 2.2: something inside stations (or computable from such).
-              res <- NULL
-              nstation <- length(x@data$station)
-              if (i %in% c(dataStn, dataDerivedStn)) {
-                  if (!missing(j) && substr(j, 1, 4) == "grid") {
-                      if (j == "grid:distance-pressure") {
-                          numStations <- length(x@data$station)
-                          p1 <- x[["station", 1]][["pressure"]]
-                          np1 <- length(p1)
-                          field <- matrix(NA, nrow=numStations, ncol=np1)
-                          if (numStations > 1) {
-                              field[1, ] <- x[["station", 1]][[i]]
-                              for (istn in 2:numStations) {
-                                  pi <- x[["station", istn]][["pressure"]]
-                                  if (length(pi) != np1 || any(pi != p1)) {
-                                      warning("returning NULL because this section is not gridded")
-                                      return(NULL)
-                                  }
-                                  field[istn, ] <- x[["station", istn]][[i]]
-                              }
-                              res <- list(distance=x[["distance", "byStation"]], pressure=p1, field=field)
-                              return(res)
-                          } else {
-                              warning("returning NULL because this section contains only 1 station")
-                              return(NULL)
-                          }
-                      } else {
-                          warning("returning NULL because only grid:distance-pressure is permitted")
-                          return(NULL)
-                      }
-                  } else {
-                      # Note that nitrite and nitrate might be computed, not stored
-                      if (!missing(j) && j == "byStation") {
-                          res <- vector("list", nstation)
-                          for (istation in seq_len(nstation))
-                              res[[istation]] <- x@data$station[[istation]][[i]]
-                      } else {
-                          res <- NULL
-                          for (station in x[["station"]])
-                              res <- c(res, station[[i]])
-                      }
-                      return(res)
-                  }
-              }
-              # Case 3: unknown, so drop down a level.
-              callNextMethod()
-          })                           # [[
+        # Case 2. We are now done with things that can be determined by
+        # looking one level deep.  To extract individual data, we will
+        # need to know what is in each of the stations (and what can be
+        # computed from this content).
+        metadataStn <- dataStn <- metadataDerivedStn <- dataDerivedStn <- NULL
+        for (station in x@data$station) {
+            q <- station[["?"]]
+            metadataStn <- c(metadataStn, q$metadata)
+            metadataDerivedStn <- c(metadataDerivedStn, q$metadataDerived)
+            dataStn <- c(dataStn, q$data)
+            dataDerivedStn <- c(dataDerivedStn, q$dataDerived)
+        }
+        metadataStn <- sort(unique(metadataStn))
+        metadataDerivedStn <- sort(c(
+                "distance",
+                paste("station", "ID"),
+                paste("dynamic", "height"),
+                unique(metadataDerivedStn)))
+        dataStn <- sort(unique(dataStn))
+        dataDerivedStn <- sort(unique(dataDerivedStn))
+        # Case 2.1: indication of available values for i.
+        if (i == "?") {
+            return(list(metadata=metadataStn,
+                    metadataDerived=metadataDerivedStn,
+                    data=dataStn,
+                    dataDerived=dataDerivedStn))
+        }
+        # Case 2.2: something inside stations (or computable from such).
+        res <- NULL
+        nstation <- length(x@data$station)
+        if (i %in% c(dataStn, dataDerivedStn)) {
+            if (!missing(j) && substr(j, 1, 4) == "grid") {
+                if (j %in% c("grid:distance-pressure", "grid:time-pressure")) {
+                    numStations <- length(x@data$station)
+                    p1 <- x[["station", 1]][["pressure"]]
+                    np1 <- length(p1)
+                    field <- matrix(NA, nrow=numStations, ncol=np1)
+                    if (numStations > 1) {
+                        field[1, ] <- x[["station", 1]][[i]]
+                        for (istn in 2:numStations) {
+                            pi <- x[["station", istn]][["pressure"]]
+                            if (length(pi) != np1 || any(pi != p1)) {
+                                warning("returning NULL because this section is not gridded")
+                                return(NULL)
+                            }
+                            field[istn, ] <- x[["station", istn]][[i]]
+                        }
+                        if (j == "grid:distance-pressure")
+                            res <- list(distance=x[["distance", "byStation"]], pressure=p1, field=field)
+                        else if (j == "grid:time-pressure")
+                            res <- list(time=x[["time", "byStation"]], pressure=p1, field=field)
+                        return(res)
+                    } else {
+                        warning("returning NULL because this section contains only 1 station")
+                        return(NULL)
+                    }
+                } else {
+                    warning("only grid:distance-pressure and grid:time-pressure are permitted")
+                    return(NULL)
+                }
+            } else {
+                # Note that nitrite and nitrate might be computed, not stored
+                if (!missing(j) && j == "byStation") {
+                    res <- vector("list", nstation)
+                    for (istation in seq_len(nstation))
+                        res[[istation]] <- x@data$station[[istation]][[i]]
+                } else {
+                    res <- NULL
+                    for (station in x[["station"]])
+                        res <- c(res, station[[i]])
+                }
+                return(res)
+            }
+        }
+        # Case 3: unknown, so drop down a level.
+        callNextMethod()
+    })                           # [[
 
 #' Replace Parts of a Section Object
 #'
