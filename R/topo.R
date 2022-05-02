@@ -1,4 +1,4 @@
-## vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
+# vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
 
 
 #' Class to Store Topographic Data
@@ -235,19 +235,22 @@ setMethod(f="subset",
 
 #' Download and Cache a topo File
 #'
-#' Topographic data are downloaded from a data server that holds the ETOPO1
-#' dataset (Amante, C. and B.W. Eakins, 2009), and saved as a netCDF file whose
-#' name specifies the data request, if a file of that name is not already
-#' present on the local file system.  The return value is the name of the data
-#' file, and its typical use is as the filename for a call to [read.topo()].
-#' Given the rules on file naming, subsequent calls to `download.topo`
-#' with identical parameters will simply return the name of the cached file,
-#' assuming the user has not deleted it in the meantime.
+#' Topographic data are downloaded from a data server that holds the
+#' ETOPO1 dataset (Amante, C. and B.W. Eakins, 2009), and saved as a
+#' netCDF file whose name specifies the data request, if a file of
+#' that name is not already present on the local file system.  The
+#' return value is the name of the data file, and its typical use is
+#' as the filename for a call to [read.topo()].  Given the rules on
+#' file naming, subsequent calls to `download.topo` with identical
+#' parameters will simply return the name of the cached file, assuming
+#' the user has not deleted it in the meantime.  Note that
+#' `download.topo` uses the `"raster"` and `"ncdf4"` packages, so
+#' these must be installed, or an error is reported.
 #'
 #' The specified longitude and latitude limits are rounded to 2 digits
-#' (corresponding to a footprint of approximately 1km), and these are used
-#' in the server request. If the resultant request would generate under
-#' 1 row or column in the result, `download.topo` generates an
+#' (corresponding to a footprint of approximately 1km), and these are
+#' used in the server request. If the resultant request would generate
+#' under 1 row or column in the result, `download.topo` generates an
 #' error message and stops.
 #'
 #' @section Historical note relating to NOAA server changes:
@@ -291,7 +294,7 @@ setMethod(f="subset",
 #'\dontrun{
 #' library(oce)
 #' topoFile <- download.topo(west=-66, east=-60, south=43, north=47,
-#'                           resolution=1, destdir="~/data/topo")
+#'     resolution=1, destdir="~/data/topo")
 #' topo <- read.topo(topoFile)
 #' imagep(topo, zlim=c(-400, 400), col=oceColorsTwo, drawTriangles=TRUE)
 #' if (requireNamespace("ocedata", quietly=TRUE)) {
