@@ -246,6 +246,69 @@ to be the location, in arbitrary units, along the x-axis of labels specified by
 \code{labels}; the way this works is designed to be the same as for
 \code{\link[=axis]{axis()}}.
 }
+\section{Ancillary Examples}{
+
+
+The following examples were once part of the \dQuote{Examples}
+section, but were moved here in May 2022, to reduce the build-check
+time for CRAN submission.\preformatted{library(oce)
+data(section)
+GS <- subset(section, 113<=stationId&stationId<=129)
+GSg <- sectionGrid(GS, p=seq(0, 2000, 100))
+
+# Gulf Stream, salinity data and contoured
+par(mfrow=c(2, 1))
+plot(GS, which=1, ylim=c(2000, 0), ztype="points",
+     zbreaks=seq(0,30,2), pch=20, cex=3)
+plot(GSg, which=1, ztype="image", zbreaks=seq(0,30,2))
+
+# Gulf Stream, temperature grid (image) and data (dots)
+par(mfrow=c(1, 1))
+plot(GSg, which=1, ztype="image")
+T <- GS[["temperature"]]
+col <- oceColorsViridis(100)[rescale(T, rlow=1, rhigh=100)]
+points(GS[["distance"]],GS[["depth"]],pch=20,cex=3,col="white")
+points(GS[["distance"]],GS[["depth"]],pch=20,cex=2.5,col=col)
+
+# 4. Image of temperature, with a high-salinity contour on top;
+#    note the Mediterranean water.
+sec <- plot(section, which="temperature", ztype="image")
+S <- sec[["salinity", "grid:distance-pressure"]]
+contour(S$distance, S$pressure, S$field, level=35.8, lwd=3, add=TRUE)
+
+# 5. Contours of salinity, with dots for high pressure and spice
+plot(section, which="salinity")
+distance <- section[["distance"]]
+depth <- section[["depth"]]
+spice <- section[["spice"]]
+look <- spice > 1.8 & depth > 500
+points(distance[look], depth[look], col="red")
+
+# Image of Absolute Salinity, with 4-minute bathymetry
+# It's easy to calculate the desired area for the bathymetry,
+# but for brevity we'll hard-code it. Note that download.topo()
+# requires the "raster" and "ncdf4" packages to be installed.
+if (requireNamespace("raster") && requireNamespace("ncdf4")) \{
+    f <- download.topo(west=-80, east=0, south=35, north=40, resolution=4)
+    t <- read.topo(f)
+    plot(section, which="SA", xtype="longitude", ztype="image", showBottom=t)
+\}
+
+# Temperature with salinity added in red
+plot(GSg, which="temperature")
+distance <- GSg[["distance", "byStation"]]
+depth <- GSg[["station", 1]][["depth"]]
+S <- matrix(GSg[["salinity"]], byrow=TRUE, nrow=length(GSg[["station"]]))
+contour(distance, depth, S, col=2, add=TRUE)
+
+# Image with controlled colours
+plot(GSg, which="salinity", ztype="image",
+    zlim=c(35, 37.5),
+    zbreaks=seq(35, 37.5, 0.25),
+    zcol=oceColorsTurbo)
+}
+}
+
 \examples{
 library(oce)
 data(section)
@@ -258,8 +321,6 @@ plot(GSg, which=c("salinity", "temperature"))
 # Gulf Stream, Temperature image
 plot(GSg, which="temperature", ztype="image",
     zbreaks=seq(0,25,2), zcol=oceColorsTemperature)
-
-
 
 }
 \seealso{

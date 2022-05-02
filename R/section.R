@@ -40,7 +40,7 @@
 #' Tlim <- range(section[["temperature"]])
 #' ylim <- rev(range(section[["pressure"]]))
 #' for (stn in section[["station", 1:9]])
-#'     plotProfile(stn, xtype='potential temperature', ylim=ylim, Tlim=Tlim)
+#'     plotProfile(stn, xtype="potential temperature", ylim=ylim, Tlim=Tlim)
 #'
 #' @author Dan Kelley
 #'
@@ -1215,6 +1215,69 @@ sectionAddCtd <- sectionAddStation
 #' structure of section objects, and also outlines the other functions dealing
 #' with them.
 #'
+#' @section Ancillary Examples:
+#'
+#' The following examples were once part of the \dQuote{Examples}
+#' section, but were moved here in May 2022, to reduce the build-check
+#' time for CRAN submission.
+#'```
+#' library(oce)
+#' data(section)
+#' GS <- subset(section, 113<=stationId&stationId<=129)
+#' GSg <- sectionGrid(GS, p=seq(0, 2000, 100))
+#'
+#' # Gulf Stream, salinity data and contoured
+#' par(mfrow=c(2, 1))
+#' plot(GS, which=1, ylim=c(2000, 0), ztype="points",
+#'      zbreaks=seq(0,30,2), pch=20, cex=3)
+#' plot(GSg, which=1, ztype="image", zbreaks=seq(0,30,2))
+#'
+#' # Gulf Stream, temperature grid (image) and data (dots)
+#' par(mfrow=c(1, 1))
+#' plot(GSg, which=1, ztype="image")
+#' T <- GS[["temperature"]]
+#' col <- oceColorsViridis(100)[rescale(T, rlow=1, rhigh=100)]
+#' points(GS[["distance"]],GS[["depth"]],pch=20,cex=3,col="white")
+#' points(GS[["distance"]],GS[["depth"]],pch=20,cex=2.5,col=col)
+#'
+#' # 4. Image of temperature, with a high-salinity contour on top;
+#' #    note the Mediterranean water.
+#' sec <- plot(section, which="temperature", ztype="image")
+#' S <- sec[["salinity", "grid:distance-pressure"]]
+#' contour(S$distance, S$pressure, S$field, level=35.8, lwd=3, add=TRUE)
+#'
+#' # 5. Contours of salinity, with dots for high pressure and spice
+#' plot(section, which="salinity")
+#' distance <- section[["distance"]]
+#' depth <- section[["depth"]]
+#' spice <- section[["spice"]]
+#' look <- spice > 1.8 & depth > 500
+#' points(distance[look], depth[look], col="red")
+#'
+#' # Image of Absolute Salinity, with 4-minute bathymetry
+#' # It's easy to calculate the desired area for the bathymetry,
+#' # but for brevity we'll hard-code it. Note that download.topo()
+#' # requires the "raster" and "ncdf4" packages to be installed.
+#' if (requireNamespace("raster") && requireNamespace("ncdf4")) {
+#'     f <- download.topo(west=-80, east=0, south=35, north=40, resolution=4)
+#'     t <- read.topo(f)
+#'     plot(section, which="SA", xtype="longitude", ztype="image", showBottom=t)
+#' }
+#'
+#' # Temperature with salinity added in red
+#' plot(GSg, which="temperature")
+#' distance <- GSg[["distance", "byStation"]]
+#' depth <- GSg[["station", 1]][["depth"]]
+#' S <- matrix(GSg[["salinity"]], byrow=TRUE, nrow=length(GSg[["station"]]))
+#' contour(distance, depth, S, col=2, add=TRUE)
+#'
+#' # Image with controlled colours
+#' plot(GSg, which="salinity", ztype="image",
+#'     zlim=c(35, 37.5),
+#'     zbreaks=seq(35, 37.5, 0.25),
+#'     zcol=oceColorsTurbo)
+#'```
+#'
 #' @examples
 #' library(oce)
 #' data(section)
@@ -1227,64 +1290,6 @@ sectionAddCtd <- sectionAddStation
 #' # Gulf Stream, Temperature image
 #' plot(GSg, which="temperature", ztype="image",
 #'     zbreaks=seq(0,25,2), zcol=oceColorsTemperature)
-#'
-#'
-## # Gulf Stream, salinity data and contoured
-## par(mfrow=c(2, 1))
-## plot(GS, which=1, ylim=c(2000, 0), ztype='points',
-##      zbreaks=seq(0,30,2), pch=20, cex=3)
-## plot(GSg, which=1, ztype='image', zbreaks=seq(0,30,2))
-##
-## par(mfrow=c(1, 1))
-##
-## # Gulf Stream, temperature grid (image) and data (dots)
-##\dontrun{
-## plot(GSg, which=1, ztype="image")
-## T <- GS[["temperature"]]
-## col <- oceColorsViridis(100)[rescale(T, rlow=1, rhigh=100)]
-## points(GS[["distance"]],GS[["depth"]],pch=20,cex=3,col="white")
-## points(GS[["distance"]],GS[["depth"]],pch=20,cex=2.5,col=col)
-##}
-##
-## #' ## 4. Image of temperature, with a high-salinity contour on top;
-## #' ##    note the Mediterranean water.
-## #' sec <- plot(section, which='temperature', ztype='image')
-## #' S <- sec[["salinity", "grid:distance-pressure"]]
-## #' contour(S$distance, S$pressure, S$field, level=35.8, lwd=3, add=TRUE)
-## #'
-## #' ## 5. Contours of salinity, with dots for high pressure and spice
-## #' plot(section, which='salinity')
-## #' distance <- section[["distance"]]
-## #' depth <- section[["depth"]]
-## #' spice <- section[["spice"]]
-## #' look <- spice > 1.8 & depth > 500
-## #' points(distance[look], depth[look], col='red')
-##
-##\dontrun{
-## # Image of Absolute Salinity, with 4-minute bathymetry
-## # It's easy to calculate the desired area for the bathymetry,
-## # but for brevity we'll hard-code it. Note that download.topo()
-## # caches the file locally.
-## f <- download.topo(west=-80, east=0, south=35, north=40, resolution=4)
-## t <- read.topo(f)
-## plot(section, which="SA", xtype="longitude", ztype="image", showBottom=t)
-##}
-##\dontrun{
-## # Temperature with salinity added in red
-## plot(GSg, which="temperature")
-## distance <- GSg[["distance", "byStation"]]
-## depth <- GSg[["station", 1]][["depth"]]
-## S <- matrix(GSg[["salinity"]], byrow=TRUE, nrow=length(GSg[["station"]]))
-## contour(distance, depth, S, col=2, add=TRUE)
-##}
-##
-##\dontrun{
-## # Image with controlled colours
-## plot(GSg, which="salinity", ztype="image",
-##     zlim=c(35, 37.5),
-##     zbreaks=seq(35, 37.5, 0.25),
-##     zcol=oceColorsTurbo)
-##}
 #'
 #' @author Dan Kelley
 #'
@@ -1526,7 +1531,7 @@ setMethod(f="plot",
                     } else {
                         oceDebug(debug, "using", projection, "projection (specified)\n")
                     }
-                    mapPlot(coastline, longitudelim=map.xlim, latitudelim=map.ylim, projection=projection, col='gray')
+                    mapPlot(coastline, longitudelim=map.xlim, latitudelim=map.ylim, projection=projection, col="gray")
                     spine <- x[["spine"]]
                     if (showSpine && !is.null(spine))
                         mapLines(spine$longitude, spine$latitude, col="blue", lwd=1.4*par("lwd"))
@@ -1539,19 +1544,19 @@ setMethod(f="plot",
                 } else {
                     if (!is.null(map.xlim)) {
                         map.xlim <- sort(map.xlim)
-                        plot(lonr, latr, xlim=map.xlim, asp=asp, type='n',
+                        plot(lonr, latr, xlim=map.xlim, asp=asp, type="n",
                             xlab=gettext("Longitude", domain="R-oce"),
                             ylab=gettext("Latitude", domain="R-oce"))
                     } else if (!is.null(map.ylim)) {
                         map.ylim <- sort(map.ylim)
-                        plot(lonr, latr, ylim=map.ylim, asp=asp, type='n',
+                        plot(lonr, latr, ylim=map.ylim, asp=asp, type="n",
                             xlab=gettext("Longitude", domain="R-oce"),
                             ylab=gettext("Latitude", domain="R-oce"))
                     } else {
                         ##DEBUG message("CCC lonr=", paste(lonr, collapse=","))
                         ##DEBUG message("CCC latr=", paste(latr, collapse=","))
                         ##DEBUG message("CCC asp=", paste(asp, collapse=","))
-                        plot(lonr, latr, asp=asp, type='n',
+                        plot(lonr, latr, asp=asp, type="n",
                             xlab=gettext("Longitude", domain="R-oce"),
                             ylab=gettext("Latitude", domain="R-oce"))
                     }
@@ -1902,7 +1907,7 @@ setMethod(f="plot",
                 if (nchar(legend.loc)) {
                     legend(legend.loc, legend=vtitle, bg="white", x.intersp=0, y.intersp=0.5, cex=1)
                 }
-                ##lines(xx, -waterDepth[ox], col='red')
+                ##lines(xx, -waterDepth[ox], col="red")
 
                 ## undo negation of the y coordinate, so further can can make sense
                 usr <- par('usr')
@@ -2175,7 +2180,7 @@ read.section <- function(file, directory, sectionId="", flags,
         nstations <- length(files)
         stations <- vector("list", nstations)
         for (i in seq_along(files)) {
-            name <- paste(directory, files[i], sep='/')
+            name <- paste(directory, files[i], sep="/")
             stations[[i]] <- ctdTrim(read.oce(name))
         }
         return(as.section(stations))
@@ -2753,7 +2758,7 @@ sectionGrid <- function(section, p, method="approx", trim=TRUE, debug=getOption(
 #'
 #' @param yg,ygl similar to `xg` and `xgl`, but for pressure. (Note that
 #' trimming to the input `y` is not done, as it is for `xg` and `x`.)
-#" If `yg` is not given, it is determined from the deepest station in the section.
+#' If `yg` is not given, it is determined from the deepest station in the section.
 #' If `ygl` was not given, then a grid is constructed to span the pressures
 #' of that deepest station with `ygl` elements. On the other hand,
 #' if `ygl` was not given, then the y grid will constructed from the
