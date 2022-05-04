@@ -73,14 +73,12 @@ setClass("section", contains="oce")
 #' for data taken thirty years ago.
 #'
 #' @examples
-#'\dontrun{
 #' library(oce)
 #' # Gulf Stream
 #' data(section)
 #' GS <- subset(section, 113<=stationId&stationId<=129)
 #' GSg <- sectionGrid(GS, p=seq(0, 5000, 100))
-#' plot(GSg, map.xlim=c(-80,-60))
-#'}
+#' plot(GSg, span=1500) # increase span to show more coastline
 #'
 #' @name section
 #'
