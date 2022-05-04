@@ -878,7 +878,7 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
         }
         ##if (iline>129) browser()
         lline <- tolower(aline)
-        if (grepl("^.*date:", lline))
+        if (grepl("^.*date:", lline))  # assume UTC
             date <- as.POSIXct(gsub(".*date:(.*) utc","\\1", lline), tz="UTC")
         if (0 < regexpr(".*seacat profiler.*", lline))
             serialNumber <- gsub("[ ].*$", "", gsub(".*sn[ ]*", "", lline))
