@@ -1908,10 +1908,12 @@ oceMagic <- function(file, debug=getOption("oceDebug"))
         oceDebug(debug, "} # oceMagic returning odf\n", unindent=1, style="bold")
         return("odf")
     }
-    if (1 == length(grep("^\\* Sea-Bird", line, useBytes=TRUE))) {
-        oceDebug(debug, "} # oceMagic returning ctd/sbe/19\n", unindent=1, style="bold")
-        return("ctd/sbe/19")
+    if (grepl("^\\* Sea-Bird SBE", line, useBytes=TRUE) ||
+        grepl("^\\* Viking Buoy CTD file", line, useBytes=TRUE)) {
+        oceDebug(debug, "} # oceMagic returning ctd/sbe\n", unindent=1, style="bold")
+        return("ctd/sbe")
     }
+
     if (1 == length(grep("^%ITP", line, useBytes=TRUE))) {
         oceDebug(debug, "} # oceMagic returning ctd/itp\n", unindent=1, style="bold")
         return("ctd/itp")
@@ -2037,7 +2039,7 @@ read.oce <- function(file, ...)
     # FIXME need adv/sontek (non adr)
     } else if (type == "interocean/s4") {
         res <- read.cm.s4(file, processingLog=processingLog, ...)
-    } else if (type == "ctd/sbe/19") {
+    } else if (type == "ctd/sbe") {
         res <- read.ctd.sbe(file, processingLog=processingLog, ...)
     } else if (type == "ctd/woce/exchange") {
         res <- read.ctd.woce(file, processingLog=processingLog, ...)
