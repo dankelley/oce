@@ -62,6 +62,16 @@ setClass("section", contains="oce")
 #' `https://www.nodc.noaa.gov/woce/woce_v3/wocedata_1/whp/exchange/exchange_format_desc.htm`
 #' but that was found to fail in December 2020.
 #'
+#' @section Speculation on a timing error:
+#' In May 2022, it was discovered that the times in this dataset are not fully
+#' sequential, at two spots.  This might be a reporting error. Station 41 has
+#' time listed as 1993-10-03T00:06:00 and that leads to a time reversal.
+#' However, if that time were actually on the day before, then
+#' the time reversal would vanish, and the inter-station timing of
+#' about 5 to 6 hours would be recovered. A similar pattern is seen at station
+#' 45.  Of course, this hypothesis of incorrect recording is difficult to test,
+#' for data taken thirty years ago.
+#'
 #' @examples
 #'\dontrun{
 #' library(oce)
