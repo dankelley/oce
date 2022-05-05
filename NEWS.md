@@ -1,5 +1,6 @@
 # oce 1.7.3
 
+* Add `read.ctd.ssda()`.
 * Add `read.argo.copernicus()`.
 * Speed up some tests.
 * Address unused-variable warnings in C++ code.
