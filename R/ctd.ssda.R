@@ -14,10 +14,17 @@
 #' to be printed during the processing. If nonzero, some information
 #' is printed.
 #'
+#' @param processingLog ignored.
+#'
+#' @examples
+#' library(oce)
+#' f <- system.file("extdata", "ctd_ssda.csv", package="oce")
+#' d <- read.ctd(f)
+#'
 #' @family functions that read ctd data
 #'
-#' @author Dan Kelley, with help from (need permission to name)
-read.ctd.ssda <- function(file, debug=getOption("oceDebug"))
+#' @author Dan Kelley, with help from Liam MacNeil
+read.ctd.ssda <- function(file, debug=getOption("oceDebug"), processingLog)
 {
     debug <- max(0L, as.integer(debug))
     oceDebug(debug, "read.ctd.ssda(file=\"", file, "\") {\n", sep="", style="bold", unindent=1)
@@ -53,7 +60,7 @@ read.ctd.ssda <- function(file, debug=getOption("oceDebug"))
     names <- gsub("Druck", "pressure", names)
     names <- gsub("Lat", "latitude", names)
     names <- gsub("Leitf", "conductivity", names)
-    names <- gsub("Licor", "fluorescence", names)
+    names <- gsub("Licor", "PAR", names)
     names <- gsub("Long", "longitude", names)
     names <- gsub("RawO2", "oxygenVoltage", names)
     names <- gsub("SALIN", "salinity", names)
@@ -71,40 +78,48 @@ read.ctd.ssda <- function(file, debug=getOption("oceDebug"))
     latmin <- lat - latdeg*100
     latitude <- latdeg + latmin / 60.0
     oceDebug(debug, "lat=", lat, " deg=", latdeg, " min=", latmin, " -> latitude=", latitude, "\n")
-    ctd <- as.ctd(salinity=d$salinity, temperature=d$temperature, pressure=d$pressure,
+    res <- as.ctd(salinity=d$salinity, temperature=d$temperature, pressure=d$pressure,
         longitude=longitude, latitude=latitude)
     # Save header and original names
-    ctd@metadata$header <- header
+    res@metadata$header <- header
     dno <- list()
     for (i in seq_along(names))
         dno[[names[i]]] <- namesOriginal[[i]]
-    ctd@metadata$dataNamesOriginal <- dno
+    res@metadata$dataNamesOriginal <- dno
     # Now add in non-standard data
     for (n in names(d)) {
         if (!n %in% c(c("salinity", "pressure", "temperature", "latitude", "longitude"))) {
-            ctd <- oceSetData(ctd, n, d[[n]], note=NULL)
+            res <- oceSetData(res, n, d[[n]], note=NULL)
         }
     }
     # Add in time, removing the components (which serve no purpose)
     if (all(c("IntDT", "IntDT.1") %in% names(d))) {
         time <- as.POSIXct(paste(d$IntDT, d$IntDT.1), "%d.%m.%Y %H:%M:%S", tz="UTC")
-        ctd <- oceSetData(ctd, "time", time, note=NULL)
-        ctd@data$IntDT <- NULL
-        ctd@data$IntDT.1 <- NULL
+        res <- oceSetData(res, "time", time, note=NULL)
+        res@data$IntDT <- NULL
+        res@data$IntDT.1 <- NULL
     }
     # Handle some conversions and units
-    if ("oxygenVoltage" %in% names(ctd@data)) {
+    if ("oxygenVoltage" %in% names(res@data)) {
         # file has in mV but oce uses V
-        ctd@data$oxygenVoltage <- 0.001 * ctd@data$oxygenVoltage
-        ctd@metadata$units$oxygenVoltage <- list(unit=expression(V), scale="")
+        res@data$oxygenVoltage <- 0.001 * res@data$oxygenVoltage
+        res@metadata$units$oxygenVoltage <- list(unit=expression(V), scale="")
     }
-    if ("oxygenSaturation" %in% names(ctd@data))
-        ctd@metadata$units$oxygenSaturation<- list(unit=expression(percent), scale="")
-    if ("conductivity" %in% names(ctd@data))
-        ctd@metadata$units$conductivity <- list(unit=expression(mS/cm), scale="")
-    if ("sigma" %in% names(ctd@data))
-        ctd@metadata$units$sigma <- list(unit=expression(kg/m^3), scale="")
+    if ("oxygenSaturation" %in% names(res@data))
+        res@metadata$units$oxygenSaturation<- list(unit=expression(percent), scale="")
+    if ("oxygenMg" %in% names(res@data))
+        res@metadata$units$oxygenMg <- list(unit=expression(mg/L), scale="")
+    if ("oxygenMl" %in% names(res@data))
+        res@metadata$units$oxygenMl <- list(unit=expression(mL/L), scale="")
+    if ("conductivity" %in% names(res@data))
+        res@metadata$units$conductivity <- list(unit=expression(mS/cm), scale="")
+    if ("sigma" %in% names(res@data))
+        res@metadata$units$sigma <- list(unit=expression(kg/m^3), scale="")
+    if ("PAR" %in% names(res@data))
+        res@metadata$units$PAR <- list(unit=expression(pffr), scale="")
+    res@processingLog <- processingLogAppend(res@processingLog,
+        paste(deparse(match.call()), sep="", collapse=""))
     oceDebug(debug, "} # read.ctd.ssda()\n", sep="", style="bold", unindent=1)
-    ctd
+    res
 }
 

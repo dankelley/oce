@@ -145,6 +145,7 @@ and axes are drawn with ticks and labels alongside those ticks;
 (4) if \code{lonlabels} is  a vector of finite numerical values, then tick marks
 are placed  at those longitudes, and labels are put alongside them.
 Note that R tries to avoid overwriting labels on axes, so the instructions
+in case 4 might not be obeyed exactly.
 See also \code{latlabels}, and note that setting \code{axes=FALSE}
 ensures that no longitude or latitude axes will be drawn regardless
 of the values of \code{lonlabels} and \code{latlabels}.}

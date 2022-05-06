@@ -25,6 +25,7 @@ A \linkS4class{topo} object that.
 Read a file that contains topographic data in the ETOPO dataset, as was once provided by
 the NOAA website (see \code{\link[=download.topo]{download.topo()}} for a good server for such
 files. (As of May, 2020, there does not seem to be a way to download these
+fles from the NOAA website.)
 }
 \details{
 The three permitted file types are as follows.

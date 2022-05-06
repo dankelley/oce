@@ -33,6 +33,7 @@ to read Oceanographic data in raw format. This uses
 \code{\link[=oceMagic]{oceMagic()}} to try to detect the file type,
 based on the file name and contents. If this detection
 is not possible, users will need to go beyond \code{\link[=read.oce]{read.oce()}},
+using a more specialized function, e.g. \code{\link[=read.ctd]{read.ctd()}} for CTD files,
 \code{\link[=read.ctd.sbe]{read.ctd.sbe()}} for Teledyne-Seabird files, etc.
 }
 

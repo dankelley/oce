@@ -3040,7 +3040,7 @@ write.ctd <- function(object, file, metadata=TRUE, flags=TRUE, format="csv")
 #' @param keepNA logical value indicating whether `NA` values
 #' will yield breaks in lines drawn if `type` is `b`, `l`, or `o`.
 #' The default value is `FALSE`.  Setting `keepNA` to `TRUE`
-#" can be helpful when working with multiple profiles
+#' can be helpful when working with multiple profiles
 #' strung together into one [ctd-class] object, which otherwise
 #' would have extraneous lines joining the deepest point in one
 #' profile to the shallowest in the next profile.
@@ -3953,8 +3953,9 @@ plotScan <- function(x, which=1, xtype="scan", flipy=FALSE,
 #' and control is dispatched to [read.ctd.odv()].
 #'
 #' @family functions that read ctd data
-read.ctd <- function(file, type=NULL, columns=NULL, station=NULL, missingValue, deploymentType="unknown",
-                     monitor=FALSE, debug=getOption("oceDebug"), processingLog, ...)
+read.ctd <- function(file, type=NULL, columns=NULL, station=NULL, missingValue,
+    deploymentType="unknown", monitor=FALSE,
+    debug=getOption("oceDebug"), processingLog, ...)
 {
     if (!missing(file) && is.character(file) && 0 == file.info(file)$size)
         stop("empty file")
@@ -3963,8 +3964,8 @@ read.ctd <- function(file, type=NULL, columns=NULL, station=NULL, missingValue, 
     if (is.character(file) && length(grep(".rsk$", file))) {
         return(read.rsk(file=file, debug=debug))
     }
-
-    if (missing(processingLog)) processingLog <- paste(deparse(match.call()), sep="", collapse="")
+    if (missing(processingLog))
+        processingLog <- paste(deparse(match.call()), sep="", collapse="")
     ##ofile <- file
     ##filename <- NULL
     if (is.null(type)) {
@@ -3988,10 +3989,12 @@ read.ctd <- function(file, type=NULL, columns=NULL, station=NULL, missingValue, 
             type <- "WOCE"
         } else if ("* Sea-Bird" == substr(line, 1, 10)) {
             type <- "SBE19"
-        } else if (1 == length(grep("^[ ]*ODF_HEADER,[ ]*$", line))) {
+        } else if (grepl("^[ ]*ODF_HEADER,[ ]*$", line)) {
             type <- "ODF"
+        } else if (grepl("^SSDA Sea & Sun Technology", line)) {
+            type <- "SSDA"
         } else {
-            stop("Cannot discover type in line '", line, "'\n")
+            stop("Cannot discover type in line '", line, "' bird\n")
         }
     } else {
         if (!is.na(pmatch(type, "SBE19"))) {
@@ -4003,21 +4006,22 @@ read.ctd <- function(file, type=NULL, columns=NULL, station=NULL, missingValue, 
         }
     }                                   # FIXME: should just use oce.magic() here
     res <- switch(type,
-                  SBE19=read.ctd.sbe(file, columns=columns, station=station,
-                                     missingValue=missingValue, deploymentType=deploymentType,
-                                     monitor=monitor, debug=debug, processingLog=processingLog, ...),
-                  WOCE=read.ctd.woce(file, columns=columns, station=station,
-                                     missingValue=missingValue, deploymentType=deploymentType,
-                                     monitor=monitor, debug=debug, processingLog=processingLog, ...),
-                  ODF=read.ctd.odf(file, columns=columns, station=station,
-                                   missingValue=missingValue, deploymentType=deploymentType,
-                                   monitor=monitor, debug=debug, processingLog=processingLog, ...),
-                  ITP=read.ctd.itp(file, columns=columns, station=station,
-                                   missingValue=missingValue, deploymentType=deploymentType,
-                                   monitor=monitor, debug=debug, processingLog=processingLog, ...),
-                  ODV=read.ctd.odv(file, columns=columns, station=station,
-                                   missingValue=missingValue, deploymentType=deploymentType,
-                                   monitor=monitor, debug=debug, processingLog=processingLog, ...))
+        SSDA=read.ctd.ssda(file, debug=debug),
+        SBE19=read.ctd.sbe(file, columns=columns, station=station,
+            missingValue=missingValue, deploymentType=deploymentType,
+            monitor=monitor, debug=debug, processingLog=processingLog, ...),
+        WOCE=read.ctd.woce(file, columns=columns, station=station,
+            missingValue=missingValue, deploymentType=deploymentType,
+            monitor=monitor, debug=debug, processingLog=processingLog, ...),
+        ODF=read.ctd.odf(file, columns=columns, station=station,
+            missingValue=missingValue, deploymentType=deploymentType,
+            monitor=monitor, debug=debug, processingLog=processingLog, ...),
+        ITP=read.ctd.itp(file, columns=columns, station=station,
+            missingValue=missingValue, deploymentType=deploymentType,
+            monitor=monitor, debug=debug, processingLog=processingLog, ...),
+        ODV=read.ctd.odv(file, columns=columns, station=station,
+            missingValue=missingValue, deploymentType=deploymentType,
+            monitor=monitor, debug=debug, processingLog=processingLog, ...))
     res
 }
 

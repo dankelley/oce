@@ -15,9 +15,7 @@ data if not supplied.  In the present version, the only choice for
 
 \item{debug}{set to TRUE to print information about the header, etc.}
 
-\item{processingLog}{if provided, the action item to be stored in the log.
-(Typically only provided for internal calls; the default that it provides is
-better for normal calls by a user.)}
+\item{processingLog}{ignored.}
 }
 \value{
 A \linkS4class{gps} object.

@@ -31,7 +31,7 @@
 #' [oceMagic()] to try to detect the file type,
 #' based on the file name and contents. If this detection
 #' is not possible, users will need to go beyond [read.oce()],
-#" using a more specialized function, e.g. [read.ctd()] for CTD files,
+#' using a more specialized function, e.g. [read.ctd()] for CTD files,
 #' [read.ctd.sbe()] for Teledyne-Seabird files, etc.
 #'
 #' @section Generic Methods:
@@ -1683,6 +1683,7 @@ oceMagic <- function(file, debug=getOption("oceDebug"))
         #>>>     }
         #>>> }
         # Check for a lisst file
+
         if (grepl(".asc$", filename)) {
             someLines <- readLines(file, encoding="UTF-8", n=1)
             if (42 == length(strsplit(someLines[1], ' ')[[1]])) {
@@ -1775,7 +1776,9 @@ oceMagic <- function(file, debug=getOption("oceDebug"))
         if (grepl(".csv$", filename, ignore.case=TRUE)) {
             someLines <- readLines(filename, 30, encoding="UTF-8-BOM")
             #print(someLines[1])
-            if (1L == length(grep('^.*"WMO Identifier",', someLines))) {
+            if (grepl("^SSDA Sea & Sun Technology", someLines[1], useBytes=TRUE)) {
+                return("ctd/ssda")
+            } else if (1L == length(grep('^.*"WMO Identifier",', someLines))) {
                 oceDebug(debug, "} # oceMagic returning met/csv1\n", unindent=1, style="bold")
                 return("met/csv1") # FIXME: may be other things too ...
             } else if (grepl('^.*Longitude.*Latitude.*Station Name.*Climate ID.*Dew Point', someLines[1])) {
@@ -2086,6 +2089,8 @@ read.oce <- function(file, ...)
     #     return(read.ctd.odv(file, processingLog=processingLog, ...))
     } else if (type == "ctd/itp") {
         res <- read.ctd.itp(file, processingLog=processingLog, ...)
+    } else if (type == "ctd/ssda") {
+        res <- read.ctd.ssda(file, processingLog=processingLog, ...)
     } else if (type == "gpx") {
         res <- read.gps(file, type="gpx", processingLog=processingLog, ...)
     } else if (type == "coastline") {

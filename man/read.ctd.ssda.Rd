@@ -4,7 +4,7 @@
 \alias{read.ctd.ssda}
 \title{Read CTD format in SSDA format}
 \usage{
-read.ctd.ssda(file, debug = getOption("oceDebug"))
+read.ctd.ssda(file, debug = getOption("oceDebug"), processingLog)
 }
 \arguments{
 \item{file}{a connection or a character string giving the name of the file to
@@ -13,6 +13,8 @@ load.}
 \item{debug}{an integer specifying whether debugging information is
 to be printed during the processing. If nonzero, some information
 is printed.}
+
+\item{processingLog}{ignored.}
 }
 \value{
 \code{\link[=read.ctd.ssda]{read.ctd.ssda()}} returns a \linkS4class{ctd} object.
@@ -22,6 +24,12 @@ is printed.}
 Acquisition (SSDA) format. This function is somewhat preliminary, in the
 sense that header information is not scanned fully, and some guesses have
 been made about the meanings of variables and units.
+}
+\examples{
+library(oce)
+f <- system.file("extdata", "ctd_ssda.csv", package="oce")
+d <- read.ctd(f)
+
 }
 \seealso{
 Other functions that read ctd data: 
@@ -34,6 +42,6 @@ Other functions that read ctd data:
 \code{\link{read.ctd}()}
 }
 \author{
-Dan Kelley, with help from (need permission to name)
+Dan Kelley, with help from Liam MacNeil
 }
 \concept{functions that read ctd data}

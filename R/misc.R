@@ -2687,7 +2687,7 @@ fullFilename <- function(filename)
 #' `"spice"`, `"T"`, `"theta"`, `"tritium"`, `"u"`, `"v"`, `"w"`, or `"z"`.
 #' Other values may also be recognized, and if an unrecognized item is
 #' given, then it is returned, unaltered.
-#"
+#'
 #' @param axis a string indicating which axis to use; must be `x` or
 #' `y`.
 #'

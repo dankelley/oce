@@ -229,6 +229,7 @@ frequency; in that case, it is passed to \code{\link[=swN2]{swN2()}}.}
 \item{keepNA}{logical value indicating whether \code{NA} values
 will yield breaks in lines drawn if \code{type} is \code{b}, \code{l}, or \code{o}.
 The default value is \code{FALSE}.  Setting \code{keepNA} to \code{TRUE}
+can be helpful when working with multiple profiles
 strung together into one \linkS4class{ctd} object, which otherwise
 would have extraneous lines joining the deepest point in one
 profile to the shallowest in the next profile.}
