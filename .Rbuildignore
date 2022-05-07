@@ -1,3 +1,4 @@
+^nohup.out$
 ^TAGS$
 ^R/TAGS$
 ^src/TAGS$
@@ -17,6 +18,7 @@
 ^CODE_OF_CONDUCT.md$
 ^LICENSE$
 ^vignettes/figure$
+^vignettes/*.html$
 ^.*.org$
 .RData
 .travis.yml
@@ -67,4 +69,8 @@ Rplots.pdf
 ^README\.md$
 CRAN-RELEASE
 inst/joss
+
+^CRAN-SUBMISSION$
+README.tex
+^check_package.R$
 

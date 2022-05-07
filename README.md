@@ -1,10 +1,14 @@
+
+
+
 # oce <img src="https://raw.githubusercontent.com/dankelley/oce/develop/oce-logo-3.png" align="right" height="95" />
 
 <!-- badges: start -->
-[![status](https://joss.theoj.org/papers/4e11074685a0c614345560332cfd27e8/status.svg)](https://joss.theoj.org/papers/4e11074685a0c614345560332cfd27e8)
+
+[![status](https://joss.theoj.org/papers/10.21105/joss.03594/status.svg)](https://joss.theoj.org/papers/10.21105/joss.03594)
 [![R-CMD-check](https://github.com/dankelley/oce/workflows/R-CMD-check/badge.svg)](https://github.com/dankelley/oce/actions)
 [![Codecov test
-coverage](https://codecov.io/gh/dankelley/oce/branch/develop/graph/badge.svg)](https://codecov.io/gh/dankelley/oce?branch=develop)
+coverage](https://codecov.io/gh/dankelley/oce/branch/develop/graph/badge.svg)](https://app.codecov.io/gh/dankelley/oce?branch=develop)
 [![CRAN\_Status\_Badge](https://www.r-pkg.org/badges/version/oce)](https://cran.r-project.org/package=oce)
 ![RStudio CRAN mirror
 downloads](https://cranlogs.r-pkg.org/badges/last-month/oce) ![RStudio
@@ -15,29 +19,28 @@ downloads](https://cranlogs.r-pkg.org/badges/last-day/oce)
 
 ## Why use R for oceanographic analysis?
 
-The R language is popular in many branches of science, and Oceanography is not
-an exception. Perhaps because of its broad statistical support, R is especially
-popular in Biological Oceanography, and its popularity seems to be growing also
-among Chemical and Geological Oceanographers. In the remaining subdiscipline of
-Physical Oceanography, many researchers remain attached to Matlab, which was
-the strongest choice for interactive work in the late 1900s. However, the
-commercial and closed-source nature of Matlab is a problem in the eyes of many
-people, and so open-source alternatives have become increasingly popular.  Of
-these, Python and R are the most popular languages at the moment, and many
-Oceanographers are conversant with each, switching between the two according to
-the task at hand. A strength of R in this regard is the availability of
-well-vetted and well-documented packages for handling a wide spectrum of
-specialized tasks. Of these, the oce package is particularly important.
+The R language is popular in many branches of science, and Oceanography is no
+exception. With its broad statistical support, R is a natural choice for
+oceanographers in the biological, chemical and geological sub-disciplines.
+However, some physical oceanographers have remained attached to Matlab, which
+was widely adopted during the 1990s. Lately, this has been changing, as
+oceanographers turn to open-source systems such as Python and R. A particular
+strength of R is its provision of many powerful and well-vetted packages for
+handling specialized calculations. The oce package is a prime example.
 
 ## About oce
 
 The oce package handles a wide variety of tasks that come up in the analysis of
-Oceanographic data. Its [webpage](https://dankelley.github.io/oce/) provides
-details, of which this README file is just a sketch. A book by one of the oce
-co-authors provides more information on the package and its potential for
-oceanographic research (Kelley, Dan E., 2018. [Oceanographic Analysis with
-R](https://www.springer.com/us/book/9781493988426). New York. Springer-Verlag
-ISBN 978-1-4939-8844-0).
+Oceanographic data. In addition to the present README file, a brief sketch of
+the package has been written by the core developers (Kelley Dan E., Clark
+Richards and Chantelle Layton, 2022. [oce: an R package for Oceanographic
+Analysis](https://doi.org/10.21105/joss.03594). Journal of Open Source
+Software, 7(71), 3594), and the primary developer uses the package extensively
+in his book about the place of R in oceanographic analysis (Kelley, Dan E.,
+2018. [Oceanographic Analysis with
+R](https://link.springer.com/us/book/9781493988426). New York. Springer-Verlag
+ISBN 978-1-4939-8844-0).  Details of oce functions are provided within the
+R help system, and in the package [webpage](https://dankelley.github.io/oce/).
 
 ## Installing oce
 
@@ -56,7 +59,7 @@ following commands in R.
 
 and most readers should also install Ocedata, with
 
-    remotes::install_github("dankelley/ocedata", ref="master")
+    remotes::install_github("dankelley/ocedata", ref="main")
 
 ## Evolution of oce
 

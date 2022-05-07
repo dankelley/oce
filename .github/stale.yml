@@ -1,5 +1,5 @@
 # Number of days of inactivity before an issue becomes stale
-daysUntilStale: 30
+daysUntilStale: 100
 # Number of days of inactivity before a stale issue is closed
 daysUntilClose: 30
 # Issues with these labels will never be considered stale
@@ -11,7 +11,7 @@ staleLabel: stale
 # Comment to post when marking an issue as stale. Set to `false` to disable
 markComment: >
   An automated message from the stale bot -- this issue has been marked as stale
-  because no comments have been made in 30 days. The goal of this action is to
+  because no comments have been made in 100 days. The goal of this action is to
   remind reporter and developers alike that progress seems to have stalled.
   Please note that the issue will be automatically closed 30 days from now,
   unless a comment is made, or the pinned label is applied.  Thank you.

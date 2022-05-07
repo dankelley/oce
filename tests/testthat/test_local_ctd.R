@@ -61,13 +61,22 @@ if (1 == length(list.files(path=".", pattern="local_data"))) {
 if (file.exists("local_data/CTD_98911_1P_1_DN.txt")) {
     test_that("a broken ODF file that has theta but no S", {
         d <- read.oce("local_data/CTD_98911_1P_1_DN.txt")
-        # 1. test access
-        expect_equal(length(d[["theta"]]), 127)
-        expect_equal(head(d[['theta']]), c(0.0346, 0.1563, 0.2153, 0.1970, 0.1916, 0.2141))
-        # 2. test assignment
-        d[["theta"]] <- seq_along(d[["pressure"]])
-        expect_equal(length(d[["theta"]]), 127)
-        expect_equal(head(d[['theta']]), 1:6)
+        # Until 2021-12-21, we were extracting 'theta' directly from
+        # this broken file (which contains pressure, temperature,
+        # and theta, but no salinity).  On this day, though, it was
+        # decided to drop this special-case handling.  After all,
+        # it is a broken file.  Anyone needing to work with this could
+        # presumably go back to the source.  Besides, the user
+        # can always just do d@data$theta to get the data, if they
+        # really want that. The other factor in the decision is
+        # that there could be dozens of special cases that might
+        # need to be checked, and what's the point in confusing
+        # readers by making guesses for all of them?  (What formula
+        # for 'theta' was even used in this case?)
+        #
+        #20211121 expect_equal(length(d[["theta"]]), 127)
+        #20211121 expect_equal(head(d[['theta']]), c(0.0346, 0.1563, 0.2153, 0.1970, 0.1916, 0.2141))
+        expect_error(d[["theta"]], "the object's data slot lacks 'salinity'")
 })}
 
 if (1 == length(list.files(path=".", pattern="local_data"))) {
@@ -77,13 +86,18 @@ if (1 == length(list.files(path=".", pattern="local_data"))) {
         # pressure column was calculated and inserted into the file,
         # and in which also the header line was changed to say that
         # pressure is in English units.
-        expect_warning(d1 <- read.oce("local_data/ctd.cnv"),
-            "this CNV file has temperature in the IPTS-68 scale")
         expect_warning(
             expect_warning(
-                d2 <- read.oce("local_data/ctd_with_psi.cnv"),
-                "created 'pressure' from 'pressurePSI'"),
-            "this CNV file has temperature in the IPTS-68 scale")
+                d1 <- read.oce("local_data/ctd.cnv"),
+                "this CNV file has temperature in the IPTS-68 scale"),
+            "startTime < 1950, suggesting y2k problem in this cnv file")
+        expect_warning(
+            expect_warning(
+                expect_warning(
+                    d2 <- read.oce("local_data/ctd_with_psi.cnv"),
+                    "created 'pressure' from 'pressurePSI'"),
+                "this CNV file has temperature in the IPTS-68 scale"),
+            "startTime < 1950, suggesting y2k problem in this cnv file")
         # use 1e-5 to reflect the number of digits I was using in
         # creating and then cut/pasting the fake data
         expect_equal(d1[["pressure"]], d2[["pressure"]], tolerance=1e-5)

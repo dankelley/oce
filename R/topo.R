@@ -1,4 +1,4 @@
-## vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
+# vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
 
 
 #' Class to Store Topographic Data
@@ -136,14 +136,30 @@ setMethod(f="summary",
 #' data(topoWorld)
 #' dim(topoWorld[['z']])
 #'
-#' @section Details of the specialized topo method:
-#' There are no special features for [topo-class] data;
-#' the general method is used directly.
+#' @section Details of the Specialized Method:
+#'
+#' * If `i` is `"?"`, then the return value is a list
+#' containing four items, each of which is a character vector
+#' holding the names of things that can be accessed with `[[`.
+#' The `data` and `metadata` items hold the names of
+#' entries in the object's data and metadata
+#' slots, respectively. The `dataDerived`
+#' and `metadataDerived` items are each NULL, because
+#' no derived values are available for `topo` objects.
+#'
 #' @template sub_subTemplate
+#'
+#' @author Dan Kelley
+#'
 #' @family things related to topo data
 setMethod(f="[[",
           signature(x="topo", i="ANY", j="ANY"),
           definition=function(x, i, j, ...) {
+              if (i == "?")
+                  return(list(metadata=sort(names(x@metadata)),
+                          metadataDerived=NULL,
+                          data=sort(names(x@data)),
+                          dataDerived=NULL))
               callNextMethod()         # [[
           })
 
@@ -219,19 +235,22 @@ setMethod(f="subset",
 
 #' Download and Cache a topo File
 #'
-#' Topographic data are downloaded from a data server that holds the ETOPO1
-#' dataset (Amante, C. and B.W. Eakins, 2009), and saved as a netCDF file whose
-#' name specifies the data request, if a file of that name is not already
-#' present on the local file system.  The return value is the name of the data
-#' file, and its typical use is as the filename for a call to [read.topo()].
-#' Given the rules on file naming, subsequent calls to `download.topo`
-#' with identical parameters will simply return the name of the cached file,
-#' assuming the user has not deleted it in the meantime.
+#' Topographic data are downloaded from a data server that holds the
+#' ETOPO1 dataset (Amante, C. and B.W. Eakins, 2009), and saved as a
+#' netCDF file whose name specifies the data request, if a file of
+#' that name is not already present on the local file system.  The
+#' return value is the name of the data file, and its typical use is
+#' as the filename for a call to [read.topo()].  Given the rules on
+#' file naming, subsequent calls to `download.topo` with identical
+#' parameters will simply return the name of the cached file, assuming
+#' the user has not deleted it in the meantime.  Note that
+#' `download.topo` uses the `"raster"` and `"ncdf4"` packages, so
+#' these must be installed, or an error is reported.
 #'
 #' The specified longitude and latitude limits are rounded to 2 digits
-#' (corresponding to a footprint of approximately 1km), and these are used
-#' in the server request. If the resultant request would generate under
-#' 1 row or column in the result, `download.topo` generates an
+#' (corresponding to a footprint of approximately 1km), and these are
+#' used in the server request. If the resultant request would generate
+#' under 1 row or column in the result, `download.topo` generates an
 #' error message and stops.
 #'
 #' @section Historical note relating to NOAA server changes:
@@ -275,7 +294,7 @@ setMethod(f="subset",
 #'\dontrun{
 #' library(oce)
 #' topoFile <- download.topo(west=-66, east=-60, south=43, north=47,
-#'                           resolution=1, destdir="~/data/topo")
+#'     resolution=1, destdir="~/data/topo")
 #' topo <- read.topo(topoFile)
 #' imagep(topo, zlim=c(-400, 400), col=oceColorsTwo, drawTriangles=TRUE)
 #' if (requireNamespace("ocedata", quietly=TRUE)) {
@@ -789,7 +808,7 @@ setMethod(f="plot",
 #' Read a file that contains topographic data in the ETOPO dataset, as was once provided by
 #' the NOAA website (see [download.topo()] for a good server for such
 #' files. (As of May, 2020, there does not seem to be a way to download these
-#" fles from the NOAA website.)
+#' fles from the NOAA website.)
 #'
 #' The three permitted file types are as follows.
 #' 1. An ascii type

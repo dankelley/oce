@@ -26,8 +26,6 @@
   Rrholim,
   dpdtlim,
   timelim,
-  lonlim,
-  latlim,
   drawIsobaths = FALSE,
   clongitude,
   clatitude,
@@ -35,10 +33,10 @@
   showHemi = TRUE,
   lonlabels = TRUE,
   latlabels = TRUE,
-  projection = NULL,
   latlon.pch = 20,
   latlon.cex = 1.5,
   latlon.col = "red",
+  projection = NULL,
   cex = 1,
   cex.axis = par("cex.axis"),
   pch = 1,
@@ -57,78 +55,107 @@
 \arguments{
 \item{x}{a \linkS4class{ctd} object.}
 
-\item{which}{List of desired plot types, as given below. If \code{which} is not
-supplied, a default will be used. This default will be \code{c(1,2,3,5)} if the
-CTD is in profiling mode (i.e. if \code{deploymentType} in the \code{metadata}
-slot equals \code{"profile"},
-or is missing) or
-\code{"moored"}/\code{"thermosalinograph"}, the default will be \code{c(30, 3, 31, 5)}.  If it
-is \code{"towyo"}, \code{c(30, 31, 32, 3)} will be used. Details are as
-follows.
+\item{which}{a numeric or character vector specifying desired plot types. If
+\code{which} is not supplied, a default will be used. This default depends on
+\code{deploymentType} in the \code{metadata} slot of \code{x}.  If \code{deploymentType} is
+\code{"profile"} or missing, then \code{which} defaults to \code{c(1,2,3,5)}.  If
+\code{deploymentType} is \code{"moored"} or \code{"thermosalinograph"} then \code{which} defaults
+to \code{c(30, 3, 31, 5)}. Finally, if \code{deploymentType} is \code{towyo} then \code{which}
+defaults to \code{c(30, 31, 32, 3)}.
+
+The details of individual \code{which} values are as follows. Some of the entries
+refer to the EOS (equation of state for seawater), which may either \code{"gsw"}
+for the modern Gibbs Seawater system, or \code{"unesco"} for the older UNESCO
+system. The EOS may be set with the \code{eos} argument to \verb{plot,ctd-method()} or
+by using \code{\link[=options]{options()}}, with \code{options(oceEOS="unesco")} or
+\code{options(oceEOS="unesco")}. The default EOS is \code{"gsw"}.
 \itemize{
-\item \code{which=1} or \code{which="salinity+temperature"} gives
-a combined profile of temperature and salinity
-\item \code{which=2} or \code{which="density+N2"} gives a combined
-profile of \eqn{\sigma_\theta}{sigma-theta} and \eqn{N^2}{N^2}
-\item \code{which=3} or \code{which="TS"} gives a TS plot
-\item \code{which=4} or \code{which="text"} gives a textual
-summary of some aspects of the data
-\item \code{which=5} or \code{which="map"} gives a map plotted
-with \code{\link[=plot,coastline-method]{plot,coastline-method()}}, with a dot for
-the station location.  Notes near the top boundary of the map give the
-station number, the sampling date, and the name of the chief scientist,
-if these are known. Note that the longitude will be converted to a value
-between -180 and 180 before plotting.  (See also notes
-about \code{span}.)
+\item \code{which=1} or \code{which="salinity+temperature"} gives a combined profile of
+temperature and salinity.  If the EOS is \code{"gsw"} then Conservative
+Temperature and Absolute Salinity are shown; otherwise in-situ temperature
+and practical salinity are shown.
+\item \code{which=2} or \code{which="density+N2"} gives a combined profile of density
+anomaly, computed with \code{\link[=swSigma0]{swSigma0()}}, along with the square of the buoyancy
+frequency, computed with \code{\link[=swN2]{swN2()}}. The \code{eos} parameter is passed
+to each of these functions, so the desired EOS is used.
+\item \code{which=3} or \code{which="TS"} gives a TS plot. If the EOS is \code{"gsw"}, T is
+Conservative Temperature and S is Absolute Salinity; otherwise, they are
+in-situ temperature and practical salinity, respectively.
+\item \code{which=4} or \code{which="text"} gives a textual  summary of
+some aspects of the data.
+\item \code{which=5} or \code{which="map"} gives a map plotted with
+\code{\link[=plot,coastline-method]{plot,coastline-method()}}, with a dot for the station location.  Notes near
+the top boundary of the map give the station number, the sampling date, and
+the name of the chief scientist, if these are known. Note that the longitude
+will be converted to a value between -180 and 180 before plotting.  (See also
+notes about \code{span}.)
 \item \code{which=5.1} as for \code{which=5}, except that the file name
-is drawn above the map
-\item \code{which=6} or \code{which="density+dpdt"} gives a
-profile of density and \eqn{dP/dt}{dP/dt}, which is useful for
-evaluating whether the instrument is dropping properly through the
-water column
-\item \code{which=7} or \code{which="density+time"} gives a
-profile of density and time
-\item \code{which=8} or \code{which="index"} gives a profile of
-index number (especially useful for \code{\link[=ctdTrim]{ctdTrim()}})
-\item \code{which=9} or \code{which="salinity"} gives a salinity profile
-\item \code{which=10} or \code{which="temperature"} gives a temperature profile
-\item \code{which=11} or \code{which="density"} gives a density profile
-\item \code{which=12} or \code{which="N2"} gives an \eqn{N^2}{N^2} profile
-\item \code{which=13} or \code{which="spice"} gives a spiciness profile
-\item \code{which=14} or \code{which="tritium"} gives a tritium profile
-\item \code{which=15} or \code{which="Rrho"} gives an Rrho profile
-\item \code{which=16} or \code{which="RrhoSF"} gives an RrhoSF profile
-\item \code{which=17} or \code{which="conductivity"} gives a conductivity profile
-\item \code{which=20} or \code{which="CT"} gives a Conservative Temperature profile
-\item \code{which=21} or \code{which="SA"} gives an Absolute Salinity profile
-\item \code{which=30} gives a time series of Salinity
-\item \code{which=31} gives a time series of Temperature
-\item \code{which=32} gives a time series of pressure
-\item \code{which=33} gives a time series of sigmaTheta
+is drawn above the map.
+\item \code{which=6} or \code{which="density+dpdt"} gives a profile of density and
+\eqn{dP/dt}{dP/dt}, which is useful for evaluating whether the instrument is
+dropping properly through the water column.  If the EOS is \code{"gsw"} then
+\eqn{\sigma_0}{sigma[0]} is shown; otherwise,
+\eqn{\sigma_\theta}{sigma[theta]} is shown.
+\item \code{which=7} or \code{which="density+time"} gives a profile of density and time.
+\item \code{which=8} or \code{which="index"} gives a profile of index number, which can
+provide useful information for trimming with \code{\link[=ctdTrim]{ctdTrim()}}.
+\item \code{which=9} or \code{which="salinity"} gives a profile of Absolute
+Salinity if the EOS is \code{"gsw"}, or practical salinity otherwise.
+\item \code{which=10} or \code{which="temperature"} gives a profile
+of Conservative Temperature if the EOS is \code{"gsw"}, or
+in-situ temperature otherwise.
+\item \code{which=11} or \code{which="density"} gives a profile
+of density as computed with \code{\link[=swRho]{swRho()}}, to which the \code{eos}
+parameter is passed.
+\item \code{which=12} or \code{which="N2"} gives an \eqn{N^2}{N^2} profile.
+\item \code{which=13} or \code{which="spice"} gives a spiciness profile.
+\item \code{which=14} or \code{which="tritium"} gives a tritium profile.
+\item \code{which=15} or \code{which="Rrho"} gives a diffusive-case density
+ratio profile.
+\item \code{which=16} or \code{which="RrhoSF"} gives a salt-finger case
+density ratio profile.
+\item \code{which=17} or \code{which="conductivity"} gives a conductivity profile.
+\item \code{which=20} or \code{which="CT"} gives a profile of Conservative Temperature.
+\item \code{which=21} or \code{which="SA"} gives a profile of Absolute Salinity.
+\item \code{which=30} or \code{which="Sts"} gives a time series of Salinity Absolute
+Salinity if the EOS is \code{"gsw"} or practical salinity otherwise.
+\item \code{which=31} or \code{which="Tts"} gives a time series of Conservative Temperature
+if the EOS is \code{"gsw"} or in-situ temperature otherwise.
+\item \code{which=32} or \code{which="pts"} gives a time series of pressure
+\item \code{which=33} or \code{which="rhots"} gives a time series of density anomaly,
+\eqn{\sigma_0}{sigma[0]} if the EOS is \code{"gsw"}
+or \eqn{\sigma_\theta}{sigma[theta]} otherwise.
+\item otherwise, \code{which} is interpreted as a character value to be checked
+against the \code{data} and \code{dataDerived} fields returned by \verb{x[["?"]}. If a match
+is found then a profile of the corresponding quantity is plotted.  If there
+is no match, an error is reported.
 }}
 
-\item{col}{Color of lines or symbols.}
+\item{col}{color of lines or symbols.}
 
-\item{fill}{A legacy parameter that will be permitted only temporarily; see
+\item{fill}{a legacy parameter that will be permitted only temporarily; see
 \dQuote{History}.}
 
-\item{borderCoastline}{Color of coastlines and international borders, passed
+\item{borderCoastline}{color of coastlines and international borders, passed
 to \code{\link[=plot,coastline-method]{plot,coastline-method()}} if a map is included in \code{which}.}
 
-\item{colCoastline}{Fill color of coastlines and international borders, passed
+\item{colCoastline}{fill color of coastlines and international borders, passed
 to \code{\link[=plot,coastline-method]{plot,coastline-method()}} if a map is included in \code{which}. Set to
 \code{NULL} to avoid filling.}
 
-\item{eos}{String indicating the equation of state to be used, either
-\code{"unesco"} or \code{"gsw"}.}
+\item{eos}{character value indicating the equation of state to be used, either
+\code{"unesco"} or \code{"gsw"}.  The default is to use a value stored with
+\code{\link[=options]{options()}} as e.g. \code{options(oceEOS="unesco")}.}
 
-\item{ref.lat}{Latitude of reference point for distance calculation.}
+\item{ref.lat}{latitude of reference point for distance calculation.
+The permitted range is -90 to 90.}
 
-\item{ref.lon}{Longitude of reference point for distance calculation.}
+\item{ref.lon}{longitude of reference point for distance calculation.
+The permitted range is -180 to 180.}
 
-\item{grid}{Set \code{TRUE} to get a grid on all plots.}
+\item{grid}{logical value indicating whether to draw a grid on the plot.}
 
-\item{coastline}{A specification of the coastline to be used for
+\item{coastline}{a specification of the coastline to be used for
 \code{which="map"}.  This may be a coastline object, whether built-in or
 supplied by the user, or a character string.  If the later, it may be the
 name of a built-in coastline (\code{"coastlineWorld"},
@@ -142,32 +169,12 @@ the drawing of a coastline.  There is a speed penalty for providing
 coastline, it makes sense to load it in before the first call, and to
 supply the object as an argument, as opposed to the name of the object.}
 
-\item{Slim}{Optional limits of salinity axes.}
+\item{Slim, Clim, Tlim, plim, densitylim, N2lim, Rrholim, dpdtlim, timelim}{optional
+numeric vectors of length 2, that give axis limits for salinity,
+conductivity, temperature, pressure, the square of buoyancy frequency,
+density ratio, dp/dt, and time, respectively.}
 
-\item{Clim}{Optional limits of conductivity axes.}
-
-\item{Tlim}{Optional limits of temperature axes.}
-
-\item{plim}{Optional limits of pressure axes.}
-
-\item{densitylim}{Optional limits of density axis, whether that axis be horizontal
-or vertical.}
-
-\item{N2lim}{Optional limits of \eqn{N^2}{N^2} axis.}
-
-\item{Rrholim}{Optional limits of \eqn{R_rho}{R_rho} axis.}
-
-\item{dpdtlim}{Optional limits of dP/dt axis.}
-
-\item{timelim}{Optional limits of delta-time axis.}
-
-\item{lonlim}{Optional limits of longitude axis of map (ignored if no map
-plotted) DEPRECATED 2014-01-07.}
-
-\item{latlim}{Optional limits of latitude axis of map (ignored if no map
-plotted) DEPRECATED 2014-01-07.}
-
-\item{drawIsobaths}{An indication of whether to draw depth contours on
+\item{drawIsobaths}{logical value indicating whether to draw depth contours on
 maps, in addition to the coastline. The argument has no effect except
 for panels in which the value of \code{which} equals \code{"map"} or
 the equivalent numerical code, \code{5}. If \code{drawIsobaths} is
@@ -182,58 +189,52 @@ and otherwise \code{\link[=mapContour]{mapContour()}} is used. To customize
 the resultant contours, e.g. setting particular line types or colors,
 users should call these functions directly (see e.g. Example 2).}
 
-\item{clongitude}{Center longitude.}
+\item{clongitude, clatitude, span}{controls for the map area view,
+used only if \code{which="map"}.
+\code{clongitude} and \code{clatitude} specify the centre of the view, and
+\code{span} specifies the approximate extend of the view, in
+kilometres.  (If \code{span} is not given, it is be determined as a small
+multiple of the distance to the nearest point of land, in an attempt to show
+the station in familiar geographical context.)}
 
-\item{clatitude}{Center latitude.}
+\item{showHemi, lonlabels, latlabels}{controls for axis labelling, used only if \code{which="map"}.
+\code{showHemi} is logical value indicating whether to show hemisphere in axis tick
+labels. \code{lonlabels} and \code{latlabels} are numeric and character values that control the
+axis labelling.}
 
-\item{span}{Optional span of map, in km.  If not given, this will be determined
-as a small multiple of the distance to the nearest point of land, in an
-attempt to show some coastline in the plot.}
+\item{latlon.pch, latlon.cex, latlon.col}{controls for station location,
+used only if \code{which="map"}.  \code{latlon.pch} sets the symbol code,
+\code{latlon.cex} sets the character expansion
+factor, and \code{latlon.col} sets the colour.}
 
-\item{showHemi}{Logical indicating whether to show hemisphere in axis tick
-labels.}
+\item{projection}{controls the map projection (if any), and ignored unless
+\code{which="map"}. The possibilities are as follows.  (1) If \code{projection=NULL}
+(the default) then no projection will be used; the map will simply show
+longitude and latitude in a Cartesian frame, scaled to retain shapes at the
+centre.  (2) If \verb{projection=}"automatic"\verb{then either a Mercator or Stereographic projection will be used, depending on whether the CTD station is within 70 degrees of the equator or at higher latitudes. (3) If}projection` is a string in the format used by \code{\link[=mapPlot]{mapPlot()}}, then it is is
+passed to that function.}
 
-\item{lonlabels, latlabels}{Values that control the labelling of
-longitude and latitude along the sides of the plot, used only if
-\code{projection} is not \code{NULL}.  See \code{\link[=mapPlot]{mapPlot()}} for details.}
+\item{cex}{size to be used for plot symbols (see \code{\link[=par]{par()}}).}
 
-\item{projection}{Projection for map, if desired.  If this is \code{NULL}, no
-projection will be used; the map will simply show longitude and latitude in a
-cartesian frame, scaled to retain shapes at the centre.  If this is the string
-\code{"automatic"}, then either a Mercator or Stereographic projection will be
-used, depending on whether the CTD station is within 70 degrees of the equator
-or at higher latitudes.  Finally, if this is a string in the format used by
-\code{\link[=mapPlot]{mapPlot()}}, then it is is passed to that function.}
+\item{cex.axis}{size factor for axis labels (see \code{\link[=par]{par()}}).}
 
-\item{latlon.pch}{Symbol code for sample location (ignored if no map plotted).}
+\item{pch}{code for plotting symbol (see \code{\link[=par]{par()}}).}
 
-\item{latlon.cex}{Symbol expansion factor for sample location (ignored if no
-map plotted).}
+\item{useSmoothScatter}{logical value indicating whether to
+use \code{\link[=smoothScatter]{smoothScatter()}} instead of \code{\link[=plot]{plot()}} to draw the plot.}
 
-\item{latlon.col}{Color of symbol for sample location (ignored if no map
-plotted).}
-
-\item{cex}{Size to be used for plot symbols (see \code{\link[=par]{par()}}).}
-
-\item{cex.axis}{Size factor for axis labels (see \code{\link[=par]{par()}}).}
-
-\item{pch}{Code for plotting symbol (see \code{\link[=par]{par()}}).}
-
-\item{useSmoothScatter}{Boolean, set to \code{TRUE} to use
-\code{\link[=smoothScatter]{smoothScatter()}} instead of \code{\link[=plot]{plot()}} to draw the plot.}
-
-\item{df}{Optional argument that is ignored except for plotting buoyancy
-frequency; in that case, it is passed to \code{\link[=swN2]{swN2()}} as the argument
-named \code{df}.}
+\item{df}{optional numeric argument that is ignored except for plotting buoyancy
+frequency; in that case, it is passed to \code{\link[=swN2]{swN2()}}.}
 
 \item{keepNA}{logical value indicating whether \code{NA} values
 will yield breaks in lines drawn if \code{type} is \code{b}, \code{l}, or \code{o}.
 The default value is \code{FALSE}.  Setting \code{keepNA} to \code{TRUE}
+can be helpful when working with multiple profiles
 strung together into one \linkS4class{ctd} object, which otherwise
 would have extraneous lines joining the deepest point in one
 profile to the shallowest in the next profile.}
 
-\item{type}{The type of plot to draw, using the same scheme as
+\item{type}{the type of plot to draw, using the same scheme as
 \code{\link[=plot]{plot()}}. If supplied, this is increased to be the
 same length as \code{which}, if necessary, and then supplied to
 each of the individual plot calls. If it is not supplied,
@@ -241,11 +242,11 @@ then those plot calls use defaults (e.g. using a line for
 \code{\link[=plotProfile]{plotProfile()}}, using dots for \code{\link[=plotTS]{plotTS()}},
 etc).}
 
-\item{mgp}{Three-element numerical vector specifying axis-label geometry,
+\item{mgp}{three-element numerical vector specifying axis-label geometry,
 passed to \code{\link[=par]{par()}}.
 The default establishes tighter margins than in the usual R setup.}
 
-\item{mar}{Four-element numerical vector specifying margin geometry,
+\item{mar}{four-element numerical vector specifying margin geometry,
 passed to \code{\link[=par]{par()}}.
 The default establishes tighter margins than in the usual R setup.
 Note that the value of \code{mar} is ignored for the map panel
@@ -254,12 +255,13 @@ of multi-panel maps; instead, the present value of
 make the map plot region equal that of the previously-drawn
 profiles and TS plot.}
 
-\item{inset}{Set to \code{TRUE} for use within \code{\link[=plotInset]{plotInset()}}.  The
+\item{inset}{logical value indicating whether this
+function is being used as an inset.  The
 effect is to prevent the present function from adjusting margins, which is
 necessary because margin adjustment is the basis for the method used by
 \code{\link[=plotInset]{plotInset()}}.}
 
-\item{add}{Logical, indication of whether to add to an existing plot.  This
+\item{add}{logical value indicating whether to add to an existing plot.  This
 only works if \code{length(which)=1}, and it will yield odd results if the
 value of \code{which} does not match that in the previous plots.}
 
@@ -271,17 +273,20 @@ be printed. If one function calls another, it usually reduces the value of
 \code{debug} first, so that a user can often obtain deeper debugging
 by specifying higher \code{debug} values.}
 
-\item{...}{Optional arguments passed to plotting functions. A common example is
-to set \code{df}, for use in \code{\link[=swN2]{swN2()}} calculations.}
+\item{...}{optional arguments passed to plotting functions.}
 }
 \description{
-Plot CTD data, by default in a four-panel display showing (a) profiles of
-salinity and temperature, (b) profiles of density and the square of buoyancy
-frequency, (c) a TS diagram and (d) a coastline diagram indicating the station
-location.
+Plot CTD data in any of many different ways. In many cases,
+the best choice is to use default values for all parameters
+other than the first.  This yields a 4-panel plot that
+displays a basic overview of the data, with a combined
+profile of salinity and temperature at the top
+left, a combined plot of density and the square of buoyancy
+frequency at top right, a TS diagram at bottom left, and
+a map at bottom right.
 }
 \details{
-Creates a multi-panel summary plot of data measured in a CTD cast. The
+The
 default values of \code{which} and other arguments are chosen to be useful
 for quick overviews of data. However, for detailed work it is common
 to call the present function with just a single value of \code{which}, e.g.
@@ -297,12 +302,26 @@ it seems unlikely that this will help much ... the simple fact is that drawing t
 profiles in one graph is useful for a quick overview, but not useful for e.g. interactive
 analysis with \code{\link[=locator]{locator()}} to flag bad data, etc.
 }
-\section{History}{
+\section{History of Changes}{
 
-Until February, 2016, \code{\link[=plot,ctd-method]{plot,ctd-method()}} relied on a now-defunct argument
-\code{fill} to control colors; \code{colCoastline} is to be used now, instead.
-Also, now it is possible to set the color of coasts and international
-boundaries, with \code{borderCoastline}.
+\itemize{
+\item January 2022:
+\itemize{
+\item Add ability to profile anything stored in the \code{data} slot, and anything
+that can be computed from information in that slot. The list of
+possibilities is found by examining the \code{data} and \code{dataDerived} elements
+of \code{x[["?"]]}.
+\item Drop the \code{lonlim} and \code{latlim} parameters, marked for removal in 2014;
+use \code{clongitude}, \code{clatitude} and \code{span} instead (see
+\code{\link[=plot,coastline-method]{plot,coastline-method()}}).
+}
+\item February 2016:
+\itemize{
+\item Drop the \code{fill} parameter for land colour; use \code{colCoastline} instead.
+\item Add the \code{borderCoastline} argument, to control the colour of coastlines
+and international boundaries.
+}
+}
 }
 
 \examples{
@@ -315,8 +334,8 @@ plot(ctd)
 par(mfrow=c(1,2))
 data(section)
 stn <- section[["station", 105]]
-plot(stn, which='map', drawIsobaths=TRUE)
-plot(stn, which='map')
+plot(stn, which="map", drawIsobaths=TRUE)
+plot(stn, which="map")
 data(topoWorld)
 tlon <- topoWorld[["longitude"]]
 tlat <- topoWorld[["latitude"]]
@@ -373,6 +392,7 @@ Other things related to ctd data:
 \code{\link{ctdRaw}},
 \code{\link{ctdRepair}()},
 \code{\link{ctdTrim}()},
+\code{\link{ctd_aml.csv}},
 \code{\link{ctd}},
 \code{\link{d200321-001.ctd}},
 \code{\link{d201211_0011.cnv}},

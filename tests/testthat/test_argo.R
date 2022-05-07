@@ -42,7 +42,28 @@ test_that("[[,argo-method", {
     expect_equal(argo[["theta"]][1:2,1:2],
         structure(c(9.70945684069746, 9.70995897509861, 9.60251640507005,
                 9.59993195546977), .Dim=c(2L, 2L)))
-    ## test two ways of selecting by profile sequence number. We do not
+    # longitude/latitude expansion case 1: SA
+    # https://github.com/dankelley/oce/issues/1911
+    col <- 2
+    SP <- argo[["salinity"]][,col]
+    p <- argo[["pressure"]][,col]
+    lon <- rep(argo[["longitude"]][col], length(SP))
+    lat <- rep(argo[["latitude"]][col], length(SP))
+    SA <- swAbsoluteSalinity(SP, p, lon, lat)
+    expect_equal(argo[["SA"]][,col], SA)
+    # Verify that if we use wrong longitude (say), the results change. This
+    # helps to build confidence that we have decoded location correctly.
+    lon1 <- rep(argo[["longitude"]][1+col], length(SP))
+    lat1 <- rep(argo[["latitude"]][1+col], length(SP))
+    SA1 <- swAbsoluteSalinity(SP, p, lon1, lat1)
+    expect_false(identical(argo[["SA"]][,col], SA1))
+    # longitude/latitude expansion case 1: Sstar
+    Sstar <- swSstar(SP, p, lon, lat)
+    expect_equal(argo[["Sstar"]][,col], Sstar)
+    Sstar1 <- swSstar(SP, p, lon1, lat1)
+    expect_false(identical(argo[["Sstar"]][,col], Sstar1))
+
+    # test two ways of selecting by profile sequence number. We do not
     ## test for equality of the whole objects, because the processingLog
     ## slots are different.
     sub1 <- argo[["profile", 2:3]]
@@ -215,4 +236,16 @@ test_that("[[ handles both cycleNumber and cycle", {
     expect_equal(argo[["cycle"]], 1:223)
 })
 
+file <- "local_data/GL_PR_PF_5906438.nc"
+if (file.exists(file)) {
+    test_that("can read a Copernicus BGC file",
+        {
+            expect_silent(d <- read.argo.copernicus(file))
+            expect_equal(d[["id"]], "5906438")
+            expect_equal(d[["temperature"]][1,1], 20.5530009762151 )
+            expect_equal(d[["salinity"]][1,1], 36.8180017487612 )
+            expect_equal(d[["pressure"]][1,1], 4.30000019073486)
+            expect_equal(dim(d[["pressure"]]), c(501, 68))
+        })
+}
 

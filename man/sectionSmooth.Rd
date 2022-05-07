@@ -50,6 +50,7 @@ x grid will equal the input x grid.}
 
 \item{yg, ygl}{similar to \code{xg} and \code{xgl}, but for pressure. (Note that
 trimming to the input \code{y} is not done, as it is for \code{xg} and \code{x}.)
+If \code{yg} is not given, it is determined from the deepest station in the section.
 If \code{ygl} was not given, then a grid is constructed to span the pressures
 of that deepest station with \code{ygl} elements. On the other hand,
 if \code{ygl} was not given, then the y grid will constructed from the
@@ -161,19 +162,6 @@ gsBarnes <- sectionSmooth(gs, "barnes", xr=50, yr=200)
 plot(gsBarnes, which="temperature")
 mtext("Barnes-smoothed")
 
-# Kriging
-if (requireNamespace("automap",quietly=TRUE)&&requireNamespace("sp",quietly=TRUE)) {
- krig <- function(x, y, F, xg, xr, yg, yr) {
-   xy <- data.frame(x=x/xr, y=y/yr)
-   K <- automap::autoKrige(F~1, remove_duplicates=TRUE,
-                           input_data=sp::SpatialPointsDataFrame(xy, data.frame(F)),
-                           new_data=sp::SpatialPoints(expand.grid(xg/xr, yg/yr)))
-   matrix(K$krige_output@data$var1.pred, nrow=length(xg), ncol=length(yg))
- }
- gsKrig <- sectionSmooth(gs, krig)
- plot(gsKrig, which="temperature")
- mtext("Kriging-smoothed")
-}
 
 }
 \seealso{

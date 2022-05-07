@@ -1,4 +1,4 @@
-## vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4:foldmethod=marker
+# vim:textwidth=100:expandtab:shiftwidth=4:softtabstop=4:foldmethod=marker
 
 #' Class to Store Coastline Data
 #'
@@ -44,7 +44,7 @@ setClass("coastline", contains="oce")
 #' users find it convenient to do the loading in an [Rprofile()]
 #' startup file.
 #'
-#' @source Downloaded from \url{https://www.naturalearthdata.com}, in
+#' @source Downloaded from `https://www.naturalearthdata.com`, in
 #' `ne_110m_admin_0_countries.shp` in July 2015, with an
 #' update on December 16, 2017.
 #' @family datasets provided with oce
@@ -70,10 +70,20 @@ setMethod(f="initialize",
 #'
 #' @templateVar class coastline
 #'
-#' @section Details of the specialized `coastline` method:
-#' There are no specialized methods, and invocations such as
-#' `coastline[["longitude"]]` and `coastline[["latitude"]]`
-#' probably account for the vast majority of use cases.
+#' @section Details of the Specialized Method:
+#'
+#' * If `i` is `"?"`, then the return value is a list
+#' containing four items, each of which is a character vector
+#' holding the names of things that can be accessed with `[[`.
+#' The `data` and `metadata` items hold the names of
+#' entries in the object's data and metadata
+#' slots, respectively. The `dataDerived`
+#' and `metadataDerived` items are each NULL, because
+#' no derived values are defined for [coastline-class] objects.
+#'
+#' * In many cases, the focus will be on the coastline trace
+#' in longitude-latitude space, so `x[["longitude"]]`
+#' and `x[["latitude"]]` are commonly used.
 #'
 #' @template sub_subTemplate
 #'
@@ -83,6 +93,11 @@ setMethod(f="initialize",
 setMethod(f="[[",
           signature(x="coastline", i="ANY", j="ANY"),
           definition=function(x, i, j, ...) {
+              if (i == "?")
+                  return(list(metadata=sort(names(x@metadata)),
+                          metadataDerived=NULL,
+                          data=sort(names(x@data)),
+                          dataDerived=NULL))
               callNextMethod()         # [[
           })
 
@@ -902,7 +917,7 @@ setMethod(f="plot",
 #'}
 #'
 #' @references
-#' 1. The NaturalEarth server is at \url{https://www.naturalearthdata.com}
+#' 1. The NaturalEarth server is at `https://www.naturalearthdata.com`
 #'
 #' @family functions that download files
 #' @family things related to coastline data
@@ -1075,11 +1090,10 @@ read.coastline <- function(file,
 #' @references
 #' 1. The ``shapefile'' format is described in
 #' *ESRI Shapefile Technical Description*, March 1998, available at
-## \url{https://www.esri.com/library/whitepapers/pdfs/shapefile.pdf}.
-#' \url{https://www.esri.com/content/dam/esrisites/sitecore-archive/Files/Pdfs/library/whitepapers/pdfs/shapefile.pdf}
+#' `https://www.esri.com/content/dam/esrisites/sitecore-archive/Files/Pdfs/library/whitepapers/pdfs/shapefile.pdf`
 #' (last checked 2021-03-24).
 #'
-#' 2. The NaturalEarth website \url{https://www.naturalearthdata.com/downloads/}
+#' 2. The NaturalEarth website `https://www.naturalearthdata.com/downloads/`
 #' provides coastline datasets in three resolutions, along with similar files
 #' lakes and rivers, for borders, etc. It is highly recommended.
 #'

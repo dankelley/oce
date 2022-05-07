@@ -1,4 +1,4 @@
-## vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
+# vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
 
 
 abbreviateVector <- function(x)
@@ -221,6 +221,125 @@ argShow <- function(x, nshow=4, last=FALSE, sep="=")
     if (!last)
         res <- paste(res, ",", sep="")
     res
+}
+
+#' Create label with unit
+#'
+#' `labelWithUnit` creates a label with a unit, for graphical
+#' display, e.g. by \code{\link{plot,section-method}}.
+#' The unit is enclosed in square brackets, although setting
+#' `options(oceUnitBracket="(")` will cause parentheses to be
+#' used, instead.
+#'
+#' If `name` is in a standard list, then alterations are made as appropriate,
+#' e.g. `"SA"` or `"Absolute Salinity"` yields an S with subscript A; `"CT"` or
+#' `"Conservative Temperature"` yields an upper-case Theta, `sigmaTheta`
+#' yields a sigma with subscript theta, `sigma0` yields
+#' sigma with subscript 0 (with similar for 1 through 4), `"N2"` yields "N" with
+#' superscript 2, and `"pressure"` yields "p".
+#' These basic hydrographic quantities have default units that will
+#' be used if `unit` is not supplied (see \dQuote{Examples}).
+#'
+#' In addition to the above, several chemical names are recognized,
+#' but no unit is guessed for them, because the oceanographic
+#' community lacks agreed-upon standards.
+#'
+#' If `name` is not recognized, then it is simply repeated in the
+#' return value.
+#'
+#' @param name character value naming a quantity.
+#'
+#' @param unit a list containing items `unit` and (optionally) `scale`, only the
+#' first of which, an [expression()], is used.  If `unit` is not provided,
+#' then a default will be used (see \dQuote{Details}).
+#'
+#' @return `labelWithUnit` returns a language object, created with [bquote()],
+#' that that may supplied as a text string to [legend()], [mtext()], [text()],
+#' etc.
+#'
+#' @examples
+#' library(oce)
+#' # 1. temperature has a predefined unit, but this can be overruled
+#' labelWithUnit("temperature")
+#' labelWithUnit("temperature",
+#'     list(unit=expression(m/s), scale="erroneous"))
+#' # 2. phosphate lacks a predefined unit
+#' labelWithUnit("phosphate")
+#' data(section)
+#' labelWithUnit("phosphate",
+#'     section[["station",1]][["phosphateUnit"]])
+#'
+#' @family functions that create labels
+#'
+#' @author Dan Kelley
+labelWithUnit <- function(name, unit=NULL)
+{
+    u <- if (!is.null(unit) && length(unit$unit) > 0L) unit$unit[[1]] else "unitless"
+    L <- if (getOption("oceUnitBracket", "[") == "[") " [" else " ("
+    R <- if (getOption("oceUnitBracket", "[") == "[")  "]" else  ")"
+    # Note that the code is alphabetical in the first item of
+    # equivalents. Please follow that convention if adding new
+    # entries. Also, use paste() to combine words, to prevent
+    # text-editor reflow operations from inserting line breaks.
+    #
+    # There's no need to handle unitless quantities that don't
+    # need renaming, since they are handled by the final else.
+    if (name %in% c(paste("Absolute", "Salinity"), "SA")) {
+        rval <- if (is.null(unit)) bquote(S[A]*.(L)*g/kg*.(R)) else bquote(S[A]*.(L)*.(u)*.(R))
+    } else if (name %in% c(paste("Conservative", "Temperature"), "CT")) {
+        rval <- if (is.null(unit)) bquote(Theta*.(L)*degree*C*.(R)) else bquote(Theta*.(L)*.(u)*.(R))
+    } else if (name %in% c("density")) {
+        rval <- if (is.null(unit)) bquote(rho*.(L)*kg/m^3*.(R)) else bquote(rho*.(L)*.(u)*.(R))
+    } else if (name %in% c("depth")) {
+        rval <- if (is.null(unit)) bquote(depth*.(L)*m*.(R)) else bquote(depth*.(L)*.(u)*.(R))
+    } else if (name %in% "N2") {
+        rval <- if (is.null(unit)) bquote(N^2*.(L)*s^-2*.(R)) else bquote(N^2*.(L)*.(u)*.(R))
+    } else if (name == "nitrate") {
+        rval <- if (is.null(unit)) bquote(NO[3]) else bquote(NO[3]*.(L)*.(u)*.(R))
+    } else if (name == "nitrite") {
+        rval <- if (is.null(unit)) bquote(NO[2]) else bquote(NO[2]*.(L)*.(u)*.(R))
+    } else if (name == "NO2+NO3") {
+        rval <- if (is.null(unit)) bquote(NO[2]+NO[3]) else bquote(NO[2]+NO[3]*.(L)*.(u)*.(R))
+    } else if (name == "oxygen") {
+        rval <- if (is.null(unit)) bquote(O[2]) else bquote(O[2]*.(L)*.(u)*.(R))
+    } else if (name == "pressure") {
+        rval <- if (is.null(unit)) bquote(p*.(L)*dbar*.(R)) else bquote(p*.(L)*.(u)*.(R))
+    } else if (name == "phosphate") {
+        rval <- if (is.null(unit)) bquote(PO[4]) else bquote(PO[4]*.(L)*.(u)*.(R))
+    } else if (name %in% c(paste("potential", "temperature"), "theta")) {
+        rval <- if (is.null(unit)) bquote(theta*.(L)*degree*C*.(R)) else bquote(theta*.(L)*.(u)*.(R))
+    } else if (name == "Rrho") {
+        rval <- expression(R[rho])
+    } else if (name %in% c("salinity", "SP")) {
+        rval <- expression("S")
+    } else if (name == "sigma0") {
+        rval <- if (is.null(unit)) bquote(sigma[0]*.(L)*kg/m^3*.(R)) else bquote(sigma[0]*.(L)*.(u)*.(R))
+    } else if (name == "sigma1") {
+        rval <- if (is.null(unit)) bquote(sigma[1]*.(L)*kg/m^3*.(R)) else bquote(sigma[1]*.(L)*.(u)*.(R))
+    } else if (name == "sigma2") {
+        rval <- if (is.null(unit)) bquote(sigma[2]*.(L)*kg/m^3*.(R)) else bquote(sigma[2]*.(L)*.(u)*.(R))
+    } else if (name == "sigma3") {
+        rval <- if (is.null(unit)) bquote(sigma[3]*.(L)*kg/m^3*.(R)) else bquote(sigma[3]*.(L)*.(u)*.(R))
+    } else if (name == "sigma4") {
+        rval <- if (is.null(unit)) bquote(sigma[4]*.(L)*kg/m^3*.(R)) else bquote(sigma[4]*.(L)*.(u)*.(R))
+    } else if (name == "sigmaTheta") {
+        rval <- if (is.null(unit)) bquote(sigma[theta]*.(L)*kg/m^3*.(R)) else bquote(sigma[theta]*.(L)*.(u)*.(R))
+    } else if (name == "silicate") {
+        rval <- if (is.null(unit)) bquote(SiO[4]) else bquote(SiO[4]*.(L)*.(u)*.(R))
+    } else if (name == "spice") {
+        rval <- if (is.null(unit)) bquote(spice*.(L)*kg/m^3*.(R)) else bquote(spice*.(L)*.(u)*.(R))
+    } else if (name == "SR") {
+        rval <- if (is.null(unit)) bquote(S[R]*.(L)*kg/m^3*.(R)) else bquote(S[R]*.(L)*.(u)*.(R))
+    } else if (name == "Sstar") {
+        rval <- if (is.null(unit)) bquote(S["*"]*.(L)*kg/m^3*.(R)) else bquote(S["*"]*.(L)*.(u)*.(R))
+    } else if (name == "temperature") {
+        rval <- if (is.null(unit)) bquote(T*.(L)*degree*C*.(R)) else bquote(T*.(L)*.(u)*.(R))
+    } else if (name == "z") {
+        rval <- if (is.null(unit)) bquote(z*.(L)*m*.(R)) else bquote(z*.(L)*.(u)*.(R))
+    } else {
+        rval <- name
+    }
+    rval
 }
 
 #' Get first finite value in a vector or array, or NULL if none
@@ -635,21 +754,23 @@ unduplicateNames <- function(strings, style=1)
 }
 
 
-#' Rename items in the data slot of an oce object (**deprecated**)
+#' Rename items in the data slot of an oce object (defunct)
 #'
-#' This was deprecated in December 2019, because [oceRenameData()] does
-#' a better job and is more consistent with other functions that work
-#' with items in the `data` and `metadata` slots.
+#' **WARNING:** This function will be removed in oce 1.6.0; see [oce-defunct].
+##
+## This was deprecated in December 2019, because [oceRenameData()] does
+## a better job and is more consistent with other functions that work
+## with items in the `data` and `metadata` slots.
 ## This function may be used to rename elements within the
 ## `data` slot of `oce` objects. It also updates
 ## the processing log of the returned object, indicating
 ## the changes.
 #'
-#' @param x an [oce-class] object.
+#' @param x Ignored, since this function is defunct.
 #'
-#' @param old Vector of strings, containing old names.
+#' @param old Ignored, since this function is defunct.
 #'
-#' @param new Vector of strings, containing old names.
+#' @param new Ignored, since this function is defunct.
 #'
 ## @examples
 ## data(ctd)
@@ -657,8 +778,14 @@ unduplicateNames <- function(strings, style=1)
 ## new <- oceSetData(new, name="temperature",
 ##                   value=T90fromT68(new[["temperature68"]]),
 ##                   unit=list(unit=expression(degree*C),scale="ITS=90"))
+#'
+#' @author Dan Kelley
+#'
+#' @family deprecated functions
 renameData <- function(x, old=NULL, new=NULL)
 {
+    #1.6.0 .Defunct("renameData",
+    #1.6.0     msg="renameData() is disallowed and will be removed in oce 1.6.0.  Use oceRenameData() instead. See ?'oce-defunct'."
     .Deprecated("oceRenameData", msg="Superceded by oceRenameData(), as of December 2019")
     if (is.null(old)) stop("need to supply old")
     if (is.null(new)) stop("need to supply new")
@@ -673,7 +800,7 @@ renameData <- function(x, old=NULL, new=NULL)
         ## message("i: ", i, ", old[i]: ", old[i], ", w:", w)
         New[w] <- new[i]
     }
-    ## ensure unique ... this is a common user error
+    # ensure unique ... this is a common user error
     if (length(New) != length(unique(New))) stop("cannot have two columns of same name")
     names(x@data) <- New
     x@processingLog <- processingLogAppend(x@processingLog, paste(deparse(match.call()), sep="", collapse=""))
@@ -969,7 +1096,7 @@ binApply1D <- function(x, f, xbreaks, FUN, ...)
     ##if ("data" %in% slotNames(x)) # oce objects have this
     ##    x <- x@data
     ##t <- try(x <- data.frame(x), silent=TRUE)
-    ##if (class(t) == "try-error")
+    ##if (inherits(t,"try-error"))
     ##    stop("cannot coerce 'data' into a data.frame")
     fSplit <- split(f, cut(x, xbreaks, include.lowest=TRUE, labels=FALSE))
     ##message("length(xbreaks)=", length(xbreaks))
@@ -1528,25 +1655,6 @@ errorbars <- function(x, y, xe, ye, percent=FALSE, style=0, length=0.025, ...)
         }
     }
 }
-
-
-#' Find indices of times in an ordered vector (defunct)
-#'
-#' **WARNING:** This function will be removed soon; see [oce-defunct].
-#'
-#' @param x Ignored, since this function is defunct.
-#'
-#' @param f Ignored, since this function is defunct.
-#'
-#' @author Dan Kelley
-#'
-#' @family functions that will be removed soon
-findInOrdered <- function(x, f)
-{
-    .Defunct("findInterval",
-             msg="findInOrdered() is disallowed and will be removed soon. Use findInterval() instead. See ?'oce-defunct'.")
-}
-
 
 filterSomething <- function(x, filter)
 {
@@ -2406,12 +2514,14 @@ oceSpectrum <- function(x, ...)
 oce.spectrum <- oceSpectrum
 
 
-#' Show some values from a vector
+#' Show some values from a list, vector or matrix
 #'
-#' This is similar to [str()], but it shows data at the first and
-#' last of the vector, which can be quite helpful in debugging.
+#' This is similar to [str()], but it shows data at the first and last of the
+#' vector, which can be quite helpful in debugging.
 #'
-#' @param v the vector.
+#' @param v the item to be summarized.  If this is a list of a vector of named
+#' items, then information is provided for each element. Otherwise, information
+#' is provided for the first and last `n` values.
 #'
 #' @param msg optional character value indicating a message to show,
 #' introducing the vector.  If not provided, then
@@ -2434,38 +2544,71 @@ oce.spectrum <- oceSpectrum
 #' meaning that some values are skipped, because if all values are shown,
 #' it will be perfectly obvious whether there are any `NA` values.
 #'
+#' @param showNewline logical value indicating whether to put a newline
+#' character at the end of the output string.  The default, TRUE, is
+#' convenient for printing, but using FALSE makes more sense if
+#' the result is to be used with, e.g. [mtext()].
+#'
 #' @return A string ending in a newline character, suitable for
 #' display with [cat()] or [oceDebug()].
 #'
 #' @examples
+#' # List
+#' limits <- list(low=0, high=1)
+#' vectorShow(limits)
+#'
+#' # Vector of named items
+#' planktonCount <- c(phytoplankton=100, zooplankton=20)
+#' vectorShow(planktonCount)
+#'
+#' # Vector
 #' vectorShow(pi)
+#'
+#' # Matrix
 #' vectorShow(volcano)
+#'
+#' # Other arguments
 #' knot2mps <- 0.5144444
 #' vectorShow(knot2mps, postscript="knots per m/s")
 #' vectorShow("January", msg="The first month is")
 #'
 #' @author Dan Kelley
-vectorShow <- function(v, msg="", postscript="", digits=5, n=2L, showNA=FALSE)
+vectorShow <- function(v, msg="", postscript="", digits=5, n=2L, showNA=FALSE, showNewline=TRUE)
 {
     DIM <- dim(v)
     nv <- length(v)
     if (!nchar(msg))
         msg <- deparse(substitute(expr=v, env=environment()))
-    if (!is.null(DIM)) {
-        msg <- paste(msg,
-                     paste("[",
-                           paste(unlist(lapply(DIM, function(x) paste("1:",x,sep=""))),collapse=", "),
-                           "]",
-                           sep=""))
-    } else if (nv > 1) {
-        msg <- paste(msg, paste("[1:", nv, "]", sep=""))
-    }
-    if (nchar(msg) && !grepl(":$", msg)) {
-        msg <- paste0(msg, ": ")
+    if (is.list(v) || (is.vector(v) && length(names(v)) > 0L)) {
+        names <- names(v)
+        values <- unname(v)
+        msg <- paste(msg, ": ", sep="")
+        nv <- length(v)
+        for (iv in seq_len(nv)) {
+            msg <- paste(msg, names[iv], "=", paste(values[[iv]], collapse=" "), sep="")
+            if (iv < nv)
+                msg <- paste(msg, ", ", sep="")
+        }
+        if (showNewline)
+            msg <- paste(msg, "\n", sep="")
+        return(msg)
+    } else {
+        if (!is.null(DIM)) {
+            msg <- paste(msg,
+                paste("[",
+                    paste(unlist(lapply(DIM, function(x) paste("1:",x,sep=""))),collapse=", "),
+                    "]",
+                    sep=""))
+        } else if (nv > 1) {
+            msg <- paste(msg, paste("[1:", nv, "]", sep=""))
+        }
+        if (nchar(msg) && !grepl(":$", msg)) {
+            msg <- paste0(msg, ": ")
+        }
     }
     res <- msg
     if (nv == 0) {
-        res <- paste(res, "(empty vector)\n")
+        res <- paste(res, "(empty vector)")
     } else {
         if (n < 0 || nv <= 2*n) {
             showAll <- TRUE
@@ -2496,7 +2639,8 @@ vectorShow <- function(v, msg="", postscript="", digits=5, n=2L, showNA=FALSE)
     }
     if (nchar(postscript) > 0)
         res <- paste(res, postscript)
-    res <- paste(res, "\n", sep="")
+    if (showNewline)
+        res <- paste(res, "\n", sep="")
     res
 }
 
@@ -2543,7 +2687,7 @@ fullFilename <- function(filename)
 #' `"spice"`, `"T"`, `"theta"`, `"tritium"`, `"u"`, `"v"`, `"w"`, or `"z"`.
 #' Other values may also be recognized, and if an unrecognized item is
 #' given, then it is returned, unaltered.
-#"
+#'
 #' @param axis a string indicating which axis to use; must be `x` or
 #' `y`.
 #'
@@ -2565,30 +2709,34 @@ fullFilename <- function(filename)
 #' `"("`.  Whether spaces are used between the unit and these deliminators
 #' is set by `psep` or [`getOption`]`("oceUnitSep")`.
 #'
+#' @family functions that create labels
+#'
 #' @author Dan Kelley
-resizableLabel <- function(item, axis="x", sep, unit=NULL, debug=getOption("oceDebug"))
+resizableLabel <- function(item, axis="x", sep, unit=NULL,
+    debug=getOption("oceDebug"))
 {
     oceDebug(debug, "resizableLabel(item=\"", item,
-             "\", axis=\"", axis,
-             "\", sep=\"", if (missing(sep)) "(missing)" else sep, "\", ...) {\n",
-            sep="", unindent=1, style="bold")
+        "\", axis=\"", axis,
+        "\", sep=\"", if (missing(sep)) "(missing)" else sep, "\", ...) {\n",
+        sep="", unindent=1, style="bold")
     if (missing(item))
         stop("must provide 'item'")
     if (axis != "x" && axis != "y")
         stop("axis must be \"x\" or \"y\"")
-    itemAllowed <- c("S", "SA", "C", "CT", "conductivity mS/cm", "conductivity S/m", "T",
-                     "theta", "sigmaTheta", "conservative temperature",
-                     "absolute salinity", "N2", "nitrate", "nitrite",
-                     "oxygen", "oxygen saturation", "oxygen mL/L", "oxygen umol/L", "oxygen umol/kg",
-                     "phosphate", "silicate", "tritium", "spice",
-                     "fluorescence", "p", "z", "distance", "distance km",
-                     "along-spine distance km",
-                     "along-track distance km",
-                     "heading", "pitch", "roll", "u",
-                     "v", "w", "speed", "direction", "eastward", "northward",
-                     "depth", "elevation", "latitude", "longitude", "frequency cph",
-                     "sound speed", "spectral density m2/cph",
-                     "sigma0", "sigma1", "sigma2", "sigma3", "sigma4")
+    itemAllowed <- c("salinity", "S", "SA", "C", "CT", paste("conductivity", "mS/cm"),
+        paste("conductivity", "S/m"), "T", "temperature", "theta", "sigmaTheta",
+        paste("Conservative", "Temperature"), paste("Absolute", "Salinity"),
+        "N2", "nitrate", "nitrite", "oxygen", paste("oxygen", "saturation"),
+        paste("oxygen", "mL/L"), paste("oxygen", "umol/L"), paste("oxygen",
+            "umol/kg"), "phosphate", "silicate", "tritium", "spice",
+        "fluorescence", "p", "z", "distance", "distance km",
+        paste("along-spine", "distance", "km"), paste("along-track", "distance",
+            "km"), "heading", "pitch", "roll", "u", "v", "w", "speed",
+        "direction", "eastward", "northward", "depth", "elevation", "latitude",
+        "longitude", paste("frequency", "cph"), paste("sound", "speed"),
+        paste("spectral", "density", "m2/cph"), "sigma0", "sigma1", "sigma2",
+        "sigma3", "sigma4", "Sstar", "SR")
+
     ## FIXME: if anything is added, run the next, and paste results into roxygen.
     ## > A<-paste0("'",paste(sort(itemAllowed), collapse="'`, `'"),"'");A
     ## NOTE: some hand-tweaking must be done to fix linebreaks and (preferably) to
@@ -2628,11 +2776,11 @@ resizableLabel <- function(item, axis="x", sep, unit=NULL, debug=getOption("oceD
             full <- bquote(.(var)*.(L)*.(unit[[1]])*.(R))
             abbreviated <- bquote("T"*.(L)*.(unit[[1]])*.(R))
         }
-    } else if (item == "conductivity mS/cm") {
+    } else if (item == paste("conductivity", "mS/cm")) {
         var <- gettext("Conductivity", domain="R-oce")
         full <- bquote(.(var)*.(L)*mS/cm*.(R))
         abbreviated <- bquote("C"*.(L)*mS/cm*.(R))
-    } else if (item == "conductivity S/m") {
+    } else if (item == paste("conductivity", "S/m")) {
         var <- gettext("Conductivity", domain="R-oce")
         full <- bquote(.(var)*.(L)*S/m*.(R))
         abbreviated <- bquote("C"*.(L)*S/m*.(R))
@@ -2642,7 +2790,9 @@ resizableLabel <- function(item, axis="x", sep, unit=NULL, debug=getOption("oceD
         unit <- gettext("unitless", domain="R-oce")
         full <- bquote(.(var)*.(L)*.(unit[[1]])*.(R))
         abbreviated <- bquote("C")
-    } else if (item %in% c("CT", "conservative temperature")) {
+    } else if (item %in% c("CT",
+            paste("conservative", "temperature"),
+            paste("Conservative", "Temperature"))) {
         var <- gettext("Conservative Temperature", domain="R-oce")
         full <- bquote(.(var)*.(L)*degree*"C"*.(R))
         abbreviated <- bquote(Theta*.(L)*degree*"C"*.(R))
@@ -2670,6 +2820,15 @@ resizableLabel <- function(item, axis="x", sep, unit=NULL, debug=getOption("oceD
         var <- gettext("Potential density anomaly wrt 4000 dbar", domain="R-oce")
         full <- bquote(.(var)*.(L)*kg/m^3*.(R))
         abbreviated <- bquote(sigma[4]*.(L)*kg/m^3*.(R))
+    } else if (item %in% c("salinity", "SP")) {
+        var <- "Salinity"
+        abbreviated <- full <- bquote(.(var))
+    } else if (item == "SR") {
+        var <- "SR"
+        abbreviated <- full <- bquote(S[R]*.(L)*kg/m^3*.(R))
+    } else if (item == "Sstar") {
+        var <- "Sstar"
+        abbreviated <- full <- bquote(S["*"]*.(L)*kg/m^3*.(R))
     } else if (item == "theta") {
         var <- gettext("Potential Temperature", domain="R-oce")
         full <- bquote(.(var)*.(L)*degree*"C"*.(R))
@@ -2706,7 +2865,7 @@ resizableLabel <- function(item, axis="x", sep, unit=NULL, debug=getOption("oceD
             abbreviated <- bquote(N*O[2]*.(L)*.(unit[[1]])*.(R))
         }
     } else if (item == "oxygen") {
-        var <- gettext("oxygen", domain="R-oce")
+        var <- gettext("Oxygen", domain="R-oce")
         if (is.null(unit)) {
             full <- bquote(.(var))
             abbreviated <- bquote(O[2])
@@ -2714,19 +2873,19 @@ resizableLabel <- function(item, axis="x", sep, unit=NULL, debug=getOption("oceD
             full <- bquote(.(var)*.(L)*.(unit[[1]])*.(R))
             abbreviated <- bquote(O[2]*.(L)*.(unit[[1]])*.(R))
         }
-    } else if (item == "oxygen saturation") {
-        var <- gettext("Oxygen saturation", domain="R-oce")
+    } else if (item == paste("oxygen", "saturation")) {
+        var <- gettext("Oxygen Saturation", domain="R-oce")
         full <- bquote(.(var))
         abbreviated <- bquote(O[2]*.(L)*percent*saturation*.(R))
-    } else if (item ==  "oxygen mL/L") {
+    } else if (item ==  paste("oxygen", "mL/L")) {
         var <- gettext("Oxygen", domain="R-oce")
         full <- bquote(.(var)*.(L)*mL/L*.(R))
         abbreviated <- bquote(O[2]*.(L)*mL/L*.(R))
-    } else if (item == "oxygen umol/L") {
+    } else if (item == paste("oxygen", "umol/L")) {
         var <- gettext("Oxygen", domain="R-oce")
         full <- bquote(.(var)*.(L)*mu*mol/L*.(R))
         abbreviated <- bquote(O[2]*.(L)*mu*mol/L*.(R))
-    } else if (item == "oxygen umol/kg") {
+    } else if (item == paste("oxygen", "umol/kg")) {
         var <- gettext("Oxygen", domain="R-oce")
         full <- bquote(.(var)*.(L)*mu*mol/kg*.(R))
         abbreviated <- bquote(O[2]*.(L)*mu*mol/kg*.(R))
@@ -2738,6 +2897,24 @@ resizableLabel <- function(item, axis="x", sep, unit=NULL, debug=getOption("oceD
         } else {
             full <- bquote(.(var)*.(L)*.(unit[[1]])*.(R))
             abbreviated <- bquote(P*O[4]*.(L)*.(unit[[1]])*.(R))
+        }
+    } else if (item == paste("potential", "temperature")) {
+        var <- gettext("Potential Temperature", domain="R-oce")
+        if (is.null(unit)) {
+            full <- bquote(.(var)*.(L)*degree*C*.(R))
+            abbreviated <- bquote(theta*.(L)*degree*C*.(R))
+        } else {
+            full <- bquote(.(var)*.(L)*.(unit[[1]])*.(R))
+            abbreviated <- bquote(theta*.(L)*.(unit[[1]])*.(R))
+        }
+    } else if (item == "pressure") {
+        var <- gettext("Pressure", domain="R-oce")
+        if (is.null(unit)) {
+            full <- bquote(.(var)*.(L)*dbar*.(R))
+            abbreviated <- bquote(theta*.(L)*dbar*.(R))
+        } else {
+            full <- bquote(.(var)*.(L)*.(unit[[1]])*.(R))
+            abbreviated <- bquote(theta*.(L)*.(unit[[1]])*.(R))
         }
     } else if (item == "silicate") {
         var <- gettext("Silicate", domain="R-oce")
@@ -2768,9 +2945,11 @@ resizableLabel <- function(item, axis="x", sep, unit=NULL, debug=getOption("oceD
             abbreviated <- full
         }
     } else if (item == "S") {
-        full <- gettext("Practical Salinity", domain="R-oce")
+        full <- gettext("Salinity", domain="R-oce")
         abbreviated <- expression(S)
-    } else if (item %in% c("SA", "absolute salinity")) {
+    } else if (item %in% c("SA",
+            paste("absolute", "salinity"),
+            paste("Absolute", "Salinity"))) {
         var <- gettext("Absolute Salinity", domain="R-oce")
         full <- bquote(.(var)*.(L)*g/kg*.(R))
         abbreviated <- bquote(S[A]*.(L)*g/kg*.(R))
@@ -2787,10 +2966,10 @@ resizableLabel <- function(item, axis="x", sep, unit=NULL, debug=getOption("oceD
     } else if (item == "distance km") {
         var <- gettext("Distance", domain="R-oce")
         abbreviated <- full <- bquote(.(var)*.(L)*km*.(R))
-    } else if (item == "along-spine distance km") {
+    } else if (item == paste("along-spine", "distance", "km")) {
         var <- gettext("Along-spine Distance", domain="R-oce")
         abbreviated <- full <- bquote(.(var)*.(L)*km*.(R))
-    } else if (item == "along-track distance km") {
+    } else if (item == paste("along-track", "distance", "km")) {
         var <- gettext("Along-track Distance", domain="R-oce")
         abbreviated <- full <- bquote(.(var)*.(L)*km*.(R))
     } else if (item == "heading") {
@@ -2827,15 +3006,15 @@ resizableLabel <- function(item, axis="x", sep, unit=NULL, debug=getOption("oceD
         var <- gettext("Longitude", domain="R-oce")
         ## maybe add deg "E" "W" etc here, but maybe not (aesthetics)
         abbreviated <- full <- var
-    } else if (item == "frequency cph") {
+    } else if (item == paste("frequency", "cph")) {
         var <- gettext("Frequency", domain="R-oce")
         unit <- gettext("cph", domain="R-oce")
         abbreviated <- full <- bquote(.(var)*.(L)*.(unit[[1]])*.(R))
-    } else if (item == "sound speed") {
+    } else if (item == paste("sound", "speed")) {
         var <- gettext("Sound Speed", domain="R-oce")
         unit <- gettext("m/s", domain="R-oce")
         abbreviated <- full <- bquote(.(var)*.(L)*.(unit[[1]])*.(R))
-    } else if (item == "spectral density m2/cph") {
+    } else if (item == paste("spectral", "density", "m2/cph")) {
         var <- gettext("Spectral density", domain="R-oce")
         full <- bquote(.(var)*.(L)*m^2/cph*.(R))
         var <- gettext("Spec. dens.", domain="R-oce")
@@ -3095,7 +3274,7 @@ lon360 <- function(x)
 #' Determine time offset from timezone
 #'
 #' The data are from
-#' \url{https://www.timeanddate.com/time/zones/} and were
+#' `https://www.timeanddate.com/time/zones/` and were
 #' hand-edited to develop this code, so there may be errors.  Also, note that
 #' some of these contradict; if you examine the code, you'll see some
 #' commented-out portions that represent solving conflicting definitions by
@@ -3293,7 +3472,7 @@ gravity <- function(latitude=45, degrees=TRUE)
 #'
 #' @references F. J. Harris, 1978.  On the use of windows for harmonic analysis
 #' with the discrete Fourier Transform.  *Proceedings of the IEEE*, 66(1),
-#' 51-83 (\url{http://web.mit.edu/xiphmont/Public/windows.pdf}.)
+#' 51-83 (`http://web.mit.edu/xiphmont/Public/windows.pdf`.)
 #'
 #' @examples
 #' library(oce)
@@ -4479,9 +4658,9 @@ integerToAscii <- function(i)
 #'
 #' @references
 #' 1. The underlying Fortran code for version 12 is from `igrf12.f`, downloaded the NOAA
-#' website (\url{https://www.ngdc.noaa.gov/IAGA/vmod/igrf.html}) on June 7,
+#' website (`https://www.ngdc.noaa.gov/IAGA/vmod/igrf.html`) on June 7,
 #' 2015. That for version 13 is `igrf13.f`, downloaded from the NOAA website
-#' (\url{https://www.ngdc.noaa.gov/IAGA/vmod/igrf.html} on March 3, 2020.
+#' (`https://www.ngdc.noaa.gov/IAGA/vmod/igrf.html` on March 3, 2020.
 #' 2. Witze, Alexandra. \dQuote{Earth's Magnetic Field Is Acting up and Geologists Don't Know Why.}
 #' Nature 565 (January 9, 2019): 143.
 #' \doi{10.1038/d41586-019-00007-1}

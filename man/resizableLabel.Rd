@@ -55,6 +55,11 @@ Provide axis names in adjustable sizes, e.g. using T instead of Temperature,
 and including units as appropriate.
 Used by e.g. \code{\link[=plot,ctd-method]{plot,ctd-method()}}.
 }
+\seealso{
+Other functions that create labels: 
+\code{\link{labelWithUnit}()}
+}
 \author{
 Dan Kelley
 }
+\concept{functions that create labels}

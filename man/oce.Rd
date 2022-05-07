@@ -23,7 +23,7 @@ or type of dataset.  For a more task-oriented approach,
 see the several vignettes that are provided with oce,
 and a book
 (Kelley, Dan E. Oceanographic Analysis with R. New York: Springer-Verlag, 2018.
-https://www.springer.com/us/book/9781493988426) written
+https://link.springer.com/us/book/9781493988426) written
 by one of the oce co-authors.
 }
 \section{Specialized Functions}{
@@ -33,6 +33,7 @@ to read Oceanographic data in raw format. This uses
 \code{\link[=oceMagic]{oceMagic()}} to try to detect the file type,
 based on the file name and contents. If this detection
 is not possible, users will need to go beyond \code{\link[=read.oce]{read.oce()}},
+using a more specialized function, e.g. \code{\link[=read.ctd]{read.ctd()}} for CTD files,
 \code{\link[=read.ctd.sbe]{read.ctd.sbe()}} for Teledyne-Seabird files, etc.
 }
 

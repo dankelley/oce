@@ -91,7 +91,7 @@ The diagram provided below indicates the coordinate-axis and beam-numbering
 conventions for three- and four-beam ADP devices, viewed as though the
 reader were looking towards the beams being emitted from the transducers.
 
-\if{html}{\figure{adp_beams.png}{options: width=400px alt="Figure: adp_beams.png"}}
+\if{html}{\figure{adp_beams.png}{options: width="400" alt="Figure: adp_beams.png"}}
 
 The bin geometry of a four-beam profiler is illustrated below, for
 \code{adp[["beamAngle"]]} equal to 20 degrees, \code{adp[["bin1Distance"]]}
@@ -102,7 +102,7 @@ the range-gated bins within the beams.  The lines enclosing those circles
 indicate the coverage of beams that spread plus and minus 2.5 degrees from
 their centreline.
 
-\if{html}{\figure{adpgeometry2.png}{options: width=400px alt="Figure: adpgeometry2.png"}}
+\if{html}{\figure{adpgeometry2.png}{options: width="400" alt="Figure: adpgeometry2.png"}}
 
 Note that \code{adp[["oceCoordinate"]]} stores the present coordinate system
 of the object, and it has possible values \code{"beam"}, \code{"xyz"}, \code{"sfm"} or

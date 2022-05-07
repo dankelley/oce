@@ -1,6 +1,36 @@
 # vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
 library(oce)
 
+# https://github.com/dankelley/oce/issues/1891
+test_that("ctd[[\"?\"]] works (issue 1891)", {
+    data(section)
+    ctd <- section[["station", 10]]
+    # Test listing
+    available <- ctd[["?"]]
+    expect_true("time" %in% available$metadataDerived)
+    expect_true("SA" %in% available$dataDerived)
+    # Test whether missing still works
+    expect_true(is.null(ctd[["bark"]]))
+    # Test whether a stored value still works
+    expect_equal(ctd[["salinity"]], ctd@data$salinity)
+    # Test whether a computed value still works
+    expect_equal(ctd[["SA"]], swAbsoluteSalinity(ctd))
+})
+
+# https://github.com/dankelley/oce/issues/1898
+test_that("as.ctd() handles location well (issue 1898)", {
+    data(ctd)
+    l <- list(salinity=ctd[["salinity"]],
+        temperature=ctd[["temperature"]],
+        pressure=ctd[["pressure"]])
+    ctd1 <- as.ctd(l)
+    expect_false("longitude" %in% names(ctd1@metadata))
+    expect_false("latitude" %in% names(ctd1@metadata))
+    ctd2 <- as.ctd(l, longitude=-60, latitude=45)
+    expect_true("longitude" %in% names(ctd2@metadata))
+    expect_true("latitude" %in% names(ctd2@metadata))
+})
+
 test_that("ctdRepair() works as expected", {
     data(ctd)
     expect_warning(ctd <- ctdRepair(ctd), "^changed metadata\\$recoveryTime")
@@ -23,6 +53,7 @@ test_that("plotTS() handles differently EOSs correctly", {
 })
 
 test_that("as.ctd() with specified arguments, including salinity", {
+    data(ctd)
     ctd_ctd <- as.ctd(salinity=ctd[["salinity"]], temperature=ctd[["temperature"]], pressure=ctd[["pressure"]])
     expect_equal(ctd[["salinity"]], ctd_ctd[["salinity"]])
     expect_equal(ctd[["temperature"]], ctd_ctd[["temperature"]])
@@ -56,44 +87,49 @@ test_that("as.ctd() with a list of oce objects", {
     expect_equal(length(A[["longitude"]]), length(A[["pressure"]]))
 })
 
-
-test_that("ctd[[\"CT\"]] requires lon and lat", {
+test_that("ctd[[\"CT\"]], ctd[[\"SA\"]] and ctd[[\"Sstar\"]] require location", {
     a <- as.ctd(35,10,0)
-    expect_error(a[["CT"]])
+    expect_error(a[["CT"]], "need longitude and latitude to compute")
+    expect_error(a[["SA"]], "need longitude and latitude to compute")
+    expect_error(a[["Sstar"]], "need longitude and latitude to compute")
+    b <- as.ctd(35,10,100,longitude=-40, latitude=30)
+    expect_silent(b[["CT"]])
+    expect_silent(b[["SA"]])
+    expect_silent(b[["Sstar"]])
 })
 
-test_that("ctd[[\"Sstar\"]] requires lon and lat", {
-    a <- as.ctd(35,10,0)
-    expect_error(a[["Sstar"]])
-})
-
-test_that("ctd[[\"SA\"]] requires lon and lat", {
-    a <- as.ctd(35,10,0)
-    expect_error(a[["SA"]])
+test_that("ctd[[\"CT\"]], ctd[[\"SA\"]] and ctd[[\"Sstar\"]] give expected values", {
+    b <- as.ctd(35, 10, 1000, longitude=188, latitude=4)
+    expect_silent(b[["CT"]])
+    expect_equal(b[["SA"]], gsw::gsw_SA_from_SP(SP=35,p=1000,longitude=188,latitude=4))
+    expect_equal(b[["Sstar"]], gsw::gsw_Sstar_from_SP(SP=35,p=1000,longitude=188,latitude=4))
+    SA <- b[["SA"]]
+    expect_equal(b[["CT"]], gsw::gsw_CT_from_t(SA, 10, 1000))
 })
 
 test_that("as.ctd() with specified arguments, not including salinity", {
+    data(ctd)
     salinity <- ctd[["salinity"]]
     temperature <- ctd[["temperature"]]
     pressure <- ctd[["pressure"]]
     conductivity <- swCSTp(salinity, temperature, pressure)
     options(oceEOS="unesco")
     ctdNew <- as.ctd(conductivity=conductivity, temperature=temperature, pressure=pressure)
-    ## Test that all fields were created accurately.
+    # Test that all fields were created accurately.
     expect_equal(salinity, ctdNew[["salinity"]])
     expect_equal(temperature, ctdNew[["temperature"]])
     expect_equal(pressure, ctdNew[["pressure"]])
     ##
     options(oceEOS="gsw")
     ctdNew <- as.ctd(conductivity=conductivity, temperature=temperature, pressure=pressure)
-    ## Test that all fields were created accurately.
+    # Test that all fields were created accurately.
     expect_equal(salinity, ctdNew[["salinity"]])
     expect_equal(temperature, ctdNew[["temperature"]])
     expect_equal(pressure, ctdNew[["pressure"]])
 })
 
-
 test_that("as.ctd() with a data frame", {
+    data(ctd)
     ctd_df <- as.ctd(data.frame(pressure=ctd[["pressure"]],temperature=ctd[["temperature"]],salinity=ctd[["salinity"]]))
     expect_equal(ctd[["salinity"]], ctd_df[["salinity"]])
     expect_equal(ctd[["temperature"]], ctd_df[["temperature"]])
@@ -101,6 +137,7 @@ test_that("as.ctd() with a data frame", {
 })
 
 test_that("as.ctd() with a list", {
+    data(ctd)
     ctd_l <- as.ctd(list(pressure=ctd[["pressure"]],temperature=ctd[["temperature"]],salinity=ctd[["salinity"]]))
     expect_equal(ctd[["salinity"]], ctd_l[["salinity"]])
     expect_equal(ctd[["temperature"]], ctd_l[["temperature"]])
@@ -118,31 +155,31 @@ test_that("as.ctd() with an argo object, by profile", {
 test_that("ctdTrim indices argument", {
     data(ctdRaw)
     a <- ctdRaw
-    ## Insert a crazy flag, not for conventional use, but only
-    ## to trace whether subsetting works as intended.
+    # Insert a crazy flag, not for conventional use, but only
+    # to trace whether subsetting works as intended.
     a[["salinityFlag"]] <- seq_along(a[["salinity"]])
     b <- ctdTrim(a, method="sbe")
     c <- ctdTrim(a, method="sbe", indices=TRUE)
     for (name in names(b[["data"]])) {
-        ## Must use oceGetData because [["time"]] grabs 'time' from
-        ## the metadata, which is a scalar.
+        # Must use oceGetData because [["time"]] grabs 'time' from
+        # the metadata, which is a scalar.
         expect_equal(oceGetData(a, name)[c], oceGetData(b, name))
     }
-    ## Demonstrate that it works for flags
+    # Demonstrate that it works for flags
     for (name in names(a[["flags"]])) {
         expect_equal(a[[paste(name, "flag", sep="")]][c], b[[paste(name, "flag", sep="")]])
     }
 })
 
 test_that("ctd subsetting and trimming", {
-    ## NOTE: this is brittle to changes in data(ctd), but that's a good thing, because
-    ## changing the dataset should be done only when really necessary, e.g. the July 2015
-    ## transition to use ITS-90 based temperature (because IPTS-68 was not
-    ## yet handled by oce at that time), and the April 2016
-    ## transition back to IPTS-68 for this dataset, once oce could handle
-    ## both scales.
-    ##
-    ## 1. SBE trimming method
+    # NOTE: this is brittle to changes in data(ctd), but that's a good thing, because
+    # changing the dataset should be done only when really necessary, e.g. the July 2015
+    # transition to use ITS-90 based temperature (because IPTS-68 was not
+    # yet handled by oce at that time), and the April 2016
+    # transition back to IPTS-68 for this dataset, once oce could handle
+    # both scales.
+    #
+    # 1. SBE trimming method
     p <- c(rep(4, 1000),
         seq(4, 0.5, length.out = 50),
         seq(0.5, 100, length.out=1000),
@@ -154,31 +191,31 @@ test_that("ctd subsetting and trimming", {
     plotScan(d)
     dt <- ctdTrim(d, method="sbe")
     dt2 <- ctdTrim(d)
-    ##  2. trim by scan
+    #  2. trim by scan
     scanRange <- range(ctd[['scan']])
     newScanRange <- c(scanRange[1] + 20, scanRange[2] - 20)
     ctdTrimmed <- ctdTrim(ctd, "scan", parameters=newScanRange)
-    ## below are the data at the top of this trim spot
-    ## 150    149.000      6.198      6.148    11.7372    30.8882  0.000e+00
-    ## 151    150.000      6.437      6.384    11.6331    30.9301  0.000e+00
-    ## 152    151.000      6.770      6.715    11.4273    30.8928  0.000e+00
+    # below are the data at the top of this trim spot
+    # 150    149.000      6.198      6.148    11.7372    30.8882  0.000e+00
+    # 151    150.000      6.437      6.384    11.6331    30.9301  0.000e+00
+    # 152    151.000      6.770      6.715    11.4273    30.8928  0.000e+00
     expect_equal(ctdTrimmed[["scan"]][1:3], c(150,151,152))
     expect_equal(ctdTrimmed[["salinity"]][1:3], c(30.8882,30.9301,30.8928))
     expect_equal(ctdTrimmed[["pressure"]][1:3], c(6.198,6.437,6.770))
-    ## The next two lines check on whether the data in the object match
-    ## exactly the data file, and then whether the accessor converts from
-    ## the old temperature scale that is in the data file to the new one
-    ## that formulas are based on. There are changes here to account for
-    ## a change to data(ctd) that addressed a bug discussed in issue 1293.
+    # The next two lines check on whether the data in the object match
+    # exactly the data file, and then whether the accessor converts from
+    # the old temperature scale that is in the data file to the new one
+    # that formulas are based on. There are changes here to account for
+    # a change to data(ctd) that addressed a bug discussed in issue 1293.
     expect_equal(ctdTrimmed@data$temperature[1:3], c(11.7372,11.6331,11.4273))
     expect_equal(ctdTrimmed[["temperature"]][1:3], T90fromT68(c(11.7372,11.6331,11.4273)))
-    ## next is from a test for issue 669
+    # next is from a test for issue 669
     n <- length(ctd[["salinity"]])
     set.seed(669)
     lon <- ctd[["longitude"]] + rnorm(n, sd=0.05)
     lat <- ctd[["latitude"]] + rnorm(n, sd=0.05)
     ctdnew <- ctd
-    ## change from one-location object to multi-location one
+    # change from one-location object to multi-location one
     ctdnew@metadata$longitude <- NULL
     ctdnew@data$longitude <- lon
     ctdnew@metadata$latitude <- NULL
@@ -191,7 +228,6 @@ test_that("ctd subsetting and trimming", {
 })
 
 test_that("ctd subsetting by index", {
-    data(ctd)
     n <- 3                       # number of data to retain
     ctdTrimmed <- ctdTrim(ctd, "index", parameters=c(1, n))
     expect_equal(length(ctdTrimmed[["salinity"]]), n)
@@ -203,7 +239,7 @@ test_that("alter ctd metadata", {
     expect_equal(ctd[["longitude"]], 1)
     ctd[["latitude"]] <- 2
     expect_equal(ctd[["latitude"]], 2)
-    ## alter data
+    # alter data
     S <- ctd[["sal"]] # tests abbreviations also
     ctd[["salinity"]] <- S + 1
     expect_equal(ctd[["salinity"]], S+1)
@@ -228,6 +264,7 @@ test_that("gsw calculations on ctd data", {
     expect_equal(Sstar, nctd[["Sstar"]])
     SR <- gsw::gsw_SR_from_SP(SP=nctd[["SP"]])
     expect_equal(SR, nctd[["SR"]])
+    expect_equal(SR, swSR(nctd))
     SA <- gsw::gsw_SA_from_SP(SP=SP, p=p, longitude=lon, latitude=lat)
     expect_equal(SA, nctd[["SA"]])
     Sstar <- gsw::gsw_Sstar_from_SA(SA=SA, p=p, longitude=lon, latitude=lat)
@@ -235,12 +272,10 @@ test_that("gsw calculations on ctd data", {
 })
 
 test_that("accessors work as functions and [[", {
-    data(ctd)
     expect_equal(swSigmaTheta(ctd), ctd[["sigmaTheta"]])
 })
 
 test_that("[[ works on SA, CT and spelled-out variants", {
-    data(ctd)
     SA1 <- ctd[["SA"]]
     SA2 <- ctd[["Absolute Salinity"]]
     expect_equal(SA1, SA2)
@@ -250,8 +285,7 @@ test_that("[[ works on SA, CT and spelled-out variants", {
 })
 
 test_that("ability to change conductivityUnit", {
-    ## These came from issue 731
-    data(ctd)
+    # These came from issue 731
     ctd2 <- ctd
     ctd2@data$conductivity <- swCSTp(ctd2) * 42.914
     ctd2[['conductivityUnit']] <- list(unit=expression(mS/cm), scale="")
@@ -263,16 +297,22 @@ test_that("ability to change conductivityUnit", {
 })
 
 test_that("column renaming with a cnv file", {
-    expect_warning(d1 <- read.oce(system.file("extdata", "ctd.cnv", package="oce")),
-        "this CNV file has temperature in the IPTS\\-68 scale")
+    expect_warning(
+        expect_warning(
+            d1 <- read.oce(system.file("extdata", "ctd.cnv", package="oce")),
+            "this CNV file has temperature in the IPTS\\-68 scale"),
+        "startTime < 1950, suggesting y2k problem in this cnv file")
     expect_equal(names(d1[["data"]]),
         c("scan","timeS","pressure","depth","temperature","salinity","flag"))
     expect_warning(
-        expect_warning(d2 <- read.oce(system.file("extdata", "ctd.cnv", package="oce"),
-                columns=list(FAKE=list(name="sal00",
-                        unit=list(unit=expression(), scale="PSS-78")))),
-            "this CNV file has temperature in the IPTS\\-68 scale"),
-        "cannot find salinity or conductivity in .cnv file")
+        expect_warning(
+            expect_warning(
+                d2 <- read.oce(system.file("extdata", "ctd.cnv", package="oce"),
+                    columns=list(FAKE=list(name="sal00",
+                            unit=list(unit=expression(), scale="PSS-78")))),
+                "this CNV file has temperature in the IPTS\\-68 scale"),
+            "cannot find salinity or conductivity in .cnv file"),
+        "startTime < 1950, suggesting y2k problem in this cnv file")
     expect_equal(names(d2[["data"]]),
         c("scan","timeS","pressure","depth","temperature","FAKE","flag"))
 })
@@ -286,10 +326,13 @@ test_that("column renaming with a cnv file", {
 ##'** Latitude:  N44 41.056'
 ##'** Longitude: w63 38.633'
 test_that("Dalhousie-produced cnv file", {
-    expect_warning(d1 <- read.oce(system.file("extdata", "ctd.cnv", package="oce")),
-        "this CNV file has temperature in the IPTS\\-68 scale")
+    expect_warning(
+        expect_warning(
+            d1 <- read.oce(system.file("extdata", "ctd.cnv", package="oce")),
+            "this CNV file has temperature in the IPTS\\-68 scale"),
+        "startTime < 1950, suggesting y2k problem in this cnv file")
     expect_equal(d1[["temperatureUnit"]]$unit, expression(degree*C))
-    ## NB. the file holds IPTS-68 but we ## store ITS-90 internally
+    # NB. the file holds IPTS-68 but we # store ITS-90 internally
     expect_equal(d1[["temperatureUnit"]]$scale, "IPTS-68")
     expect_null(d1[["conductivityUnit"]]) # this file does not have conductivity
     expect_equal(d1[["pressureUnit"]]$unit, expression(dbar))
@@ -301,13 +344,13 @@ test_that("Dalhousie-produced cnv file", {
     expect_equal(d1[["longitude"]], -(63+38.633/60))
     expect_equal(d1[['salinity']][1:3], c(29.9210, 29.9205, 29.9206))
     expect_equal(d1[['pressure']][1:3], c(1.480, 1.671, 2.052))
-    ## Check on IPTS-68 vs ITS-90 issue[s]
+    # Check on IPTS-68 vs ITS-90 issue[s]
     expect_equal(d1@data$temperature[1:3], c(14.2245, 14.2299, 14.2285))
     expect_equal(d1[['temperature']][1:3], c(14.22108694, 14.22648564, 14.22508598))
-    ## Check that what we read here matches exactly data(ctd), as an
-    ## ensurance that any code changes to read.ctd.sbe() are always
-    ## followed by updates to data(ctd) via "make clean ; make ; make
-    ## install" carried out by the Makefile in the create_data/ctd directory.
+    # Check that what we read here matches exactly data(ctd), as an
+    # ensurance that any code changes to read.ctd.sbe() are always
+    # followed by updates to data(ctd) via "make clean ; make ; make
+    # install" carried out by the Makefile in the create_data/ctd directory.
     expect_equal(d1@data$temperature, ctd@data$temperature)
     expect_equal(d1[["temperature"]], ctd[["temperature"]])
 
@@ -369,35 +412,33 @@ test_that("Beaufort sea data II", {
 })
 
 test_that("pressure accessor handles psi unit", {
-    data(ctd)
     porig <- ctd@data$pressure
-    ## fake data in psi ... [[]] should return in dbar
+    # fake data in psi ... [[]] should return in dbar
     ctd@data$pressure <- porig / 0.6894757 # 1 psi=6894.757Pa=0.6894756 dbar
     ctd@metadata$units$pressure <- list(unit=expression(psi), scale="")
-    expect_equal(porig, ctd[['pressure']])
+    expect_warning(ptest <- ctd[["pressure"]], "converting pressure from PSI to dbar")
+    expect_equal(porig, ptest)
 })
 
 test_that("pressure accessor handles missing pressure", {
-    data(ctd)
     depth <- swDepth(ctd@data$pressure, latitude=ctd[["latitude"]], eos="unesco")
     porig <- ctd@data$pressure
-    ## remove existing
+    # remove existing
     ctd@data$pressure <- NULL
     ctd@metadata$units$pressure <- NULL
-    ## add new
+    # add new
     ctd2 <- oceSetData(ctd, name="depth", value=depth, unit=list(unit=expression(m), scale=""))
-    ## test
+    # test
     expect_equal(porig, ctd2[['pressure']], tolerance=0.0001) # swDepth is approximate; sub-mm is good enough anyway
 })
 
 test_that("salinity accessor computes value from conductivity", {
-    data(ctd)
     C <- swCSTp(ctd@data$salinity, ctd@data$temperature, ctd@data$pressure)
     Sorig <- ctd@data$salinity
-    ## remove existing
+    # remove existing
     ctd@data$salinity <- NULL
     ctd@metadata$units$salinity <- NULL
-    ## add new
+    # add new
     ctd2 <- oceSetData(ctd, name="conductivity", value=C, unit=list(unit=expression(), scale="PSS-78"))
     expect_warning(S <- ctd2[["salinity"]],
         "constructed salinity from temperature, conductivity-ratio and pressure")
@@ -434,7 +475,7 @@ test_that("as.ctd(rsk) transfers information properly", {
     expect_equal(ctd[['pressure']], rsk[['pressure']] - rsk[['pressureAtmospheric']])
     ctd <- as.ctd(rsk, pressureAtmospheric=1)
     expect_equal(ctd[['pressure']], rsk[['pressure']] - rsk[['pressureAtmospheric']] - 1)
-    ## specify some values to check that we can over-ride some metadata
+    # specify some values to check that we can over-ride some metadata
     latitude <- 42.244
     longitude <- -8.76
     ctd <- as.ctd(rsk,
@@ -453,7 +494,6 @@ test_that("as.ctd(rsk) transfers information properly", {
 })
 
 test_that("ctdFindProfiles", {
-    data(ctd)
     S <- ctd[["salinity"]]
     T <- ctd[["temperature"]]
     p <- ctd[["pressure"]]
@@ -467,7 +507,7 @@ test_that("ctdFindProfiles", {
 })
 
 test_that("original names pair with final names", {
-    ## This should help to ensure that bug 1141 does not return
+    # This should help to ensure that bug 1141 does not return
     f <- system.file("extdata", "d201211_0011.cnv", package="oce")
     d <- read.oce(f)
     expect_equal(names(d[["data"]]),
@@ -500,7 +540,7 @@ test_that("original names pair with final names", {
     expect_equal(dno$salinity, "sal00")
     expect_equal(dno$salinity2, "sal11")
     expect_equal(dno$theta, "potemp090C")
-    ## nexttest is commented out because it may not work on windows
+    # nexttest is commented out because it may not work on windows
     expect_equal(dno$sigmaTheta, "sigma-\xe900")
     expect_equal(dno$soundSpeed, "svCM")
     expect_equal(dno$nbin, "nbin")
@@ -508,7 +548,6 @@ test_that("original names pair with final names", {
 })
 
 test_that("setting and handling flags", {
-    data(ctd)
     ctdQC <- initializeFlags(ctd, name="salinity", 2)
     ctdQC <- setFlags(ctdQC, name="salinity", i=1:10, value=3)
     expect_equal(ctdQC[["salinityFlag"]], c(rep(3, 10), rep(2, length(ctdQC[["salinity"]])-10)))
@@ -518,11 +557,10 @@ test_that("setting and handling flags", {
 })
 
 test_that("conductivity unit", {
-    data(ctd)
-    ## Need to add conductivity; may as well shorten for speed.
+    # Need to add conductivity; may as well shorten for speed.
     ctd <- subset(ctd, pressure < 10)
     C <- swCSTp(ctd)
-    ## Try all possible combinations
+    # Try all possible combinations
     a <- oceSetData(ctd, "conductivity", C, list(unit=expression(), scale=""))
     expect_equal(C, a[["conductivity", "uS/cm"]] / 42914)
     expect_equal(C, a[["conductivity", "mS/cm"]] / 42.914)
@@ -550,7 +588,7 @@ test_that("conductivity unit", {
 })
 
 test_that("as.ctd() handles multiple longitude and latitude", {
-    ## test code for issue 1440 (https://github.com/dankelley/oce/issues/1440)
+    # test code for issue 1440 (https://github.com/dankelley/oce/issues/1440)
     for (n in c(1, 20)) {
         T <- seq(2,3, length.out=n)
         S <- seq(31.4, 31.6, length.out=n)
@@ -590,8 +628,57 @@ test_that("as.ctd() handles multiple longitude and latitude", {
 })
 
 test_that("lon360() works", {
-    data(ctd)
     ctdShifted <- lon360(ctd)
     expect_equal(360 + ctd[["longitude"]], ctdShifted[["longitude"]])
 })
+
+# Below an excerpt from the docs, as of 2022-03-01
+# 1 "salinity+temperature"
+# 2 "density+N2"
+# 3 "TS"
+# 4 "text"
+# 5 "map"
+# 5.1 as for which=5, except that the file name is drawn above the map.
+# 6 "density+dpdt"
+# 7 "density+time"
+# 8 "index"
+# 9 "salinity"
+# 10 "temperature"
+# 11 "density"
+# 12 "N2"
+# 13 "spice"
+# 14 "tritium"
+# 15 "Rrho"
+# 16 "RrhoSF"
+# 17 "conductivity"
+# 20 "CT"
+# 21 "SA"
+# 30 "Sts"
+# 31 "Tts"
+# 32 "pts"
+# 33 "rhots"
+
+test_that("erroneous numeric 'which' is handled", {
+    expect_error(plot(ctd, which=999), "which=\"999\" cannot be handled")
+})
+
+test_that("erroneous textual 'which' is handled", {
+    expect_error(plot(ctd, which="unhandled"), "which=\"unhandled\" cannot be handled")
+})
+
+test_that("numeric 'which' works", {
+    for (w in c(5.1, 1:13, 15:17, 20:21, 30:33)) {
+        expect_silent(plot(ctd, which=w))
+    }
+})
+
+test_that("character 'which' works", {
+    for (w in c("salinity+temperature", "density+N2", "TS", "text", "map",
+            "density+dpdt", "density+time", "index", "salinity", "temperature",
+            "density", "N2", "spice", "Rrho", "RrhoSF",
+            "conductivity", "CT", "SA", "Sts", "Tts", "pts", "rhots")) {
+        expect_silent(plot(ctd, which=w))
+    }
+})
+
 

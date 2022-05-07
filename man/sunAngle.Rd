@@ -28,7 +28,7 @@ A list containing the following:
 \item \code{distance} to sun, in astronomical units.
 \item \code{declination} angle in degrees, computed with \code{\link[=sunDeclinationRightAscension]{sunDeclinationRightAscension()}}.
 \item \code{rightAscension} angle in degrees, computed with \code{\link[=sunDeclinationRightAscension]{sunDeclinationRightAscension()}}.
-\if{html}{\figure{starCoords.png}{options:width=400px}}
+\if{html}{\figure{starCoords.png}{options: width="400"}}
 }
 }
 \description{

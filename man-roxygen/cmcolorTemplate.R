@@ -52,9 +52,9 @@
 #'   \doi{10.5670/oceanog.2016.66}
 #'
 #' * Thyng, Kristen. Kthyng/Cmocean. Python, 2019.
-#'   \url{https://github.com/kthyng/cmocean}.
+#'   `https://github.com/kthyng/cmocean`.
 #'
 #' * Thyng, Kristen, Clark Richards, and Ivan Krylov.
 #'   Cmocean: Beautiful Colour Maps for Oceanography (version 0.2), 2019.
-#'   \url{https://CRAN.R-project.org/package=cmocean}.
+#'   `https://CRAN.R-project.org/package=cmocean`.
 

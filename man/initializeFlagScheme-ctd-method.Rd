@@ -119,7 +119,7 @@ See reference 4 for a deeper explanation of the meanings of these codes.
 \item The codes for \code{"argo"} are derived from information in Table 4.1
 of Wong, Annie, Robert Keeley, Thierry Carval, and Argo Data Management Team
 (8 January 2020), "Argo Quality Control Manual for CTD and Trajectory Data, Version 3.3,"
-available at \url{https://archimer.ifremer.fr/doc/00228/33951/}
+available at \verb{https://archimer.ifremer.fr/doc/00228/33951/}
 as of June 2020.
 \item The codes for \code{"BODC"} are defined at
 http://seadatanet.maris2.nl/v_bodc_vocab_v2/browse.asp?order=conceptid&formname=search&screen=0&lib=l20
@@ -164,6 +164,7 @@ Other things related to ctd data:
 \code{\link{ctdRaw}},
 \code{\link{ctdRepair}()},
 \code{\link{ctdTrim}()},
+\code{\link{ctd_aml.csv}},
 \code{\link{ctd}},
 \code{\link{d200321-001.ctd}},
 \code{\link{d201211_0011.cnv}},

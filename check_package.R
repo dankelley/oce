@@ -1,0 +1,11 @@
+requireNamespace(c("devtools", "urlchecker", "rhub", "revdepcheck"))
+t <- devtools::spell_check()
+stopifnot(t == "No spelling errors found.")
+urlchecker::url_check()
+devtools::check_win_release(email="Dan.Kelley@Dal.Ca")
+devtools::check_win_devel(email="Dan.Kelley@Dal.Ca")
+devtools::check_win_oldrelease(email="Dan.Kelley@Dal.Ca")
+rhub::check_for_cran(email="Dan.Kelley@Dal.Ca")
+revdepcheck::revdep_reset()
+revdepcheck::revdep_check(num_workers=4)
+

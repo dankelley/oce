@@ -64,39 +64,27 @@ by specifying higher \code{debug} values.}
 String indicating the full pathname to the downloaded file.
 }
 \description{
-Data are downloaded from the Environment Canada's historical data
-website and cached locally.
+\code{\link[=download.met]{download.met()}} attempts to download data from Environment Canada's
+historical-data website, and to cache the files locally. Lacking a published
+API, this function must rely on reverse-engineering of queries handled by
+that web server.  For that reason, it is brittle.
 }
 \details{
-The data are downloaded
-using \code{\link[utils:download.file]{utils::download.file()}} based on a query devised by reverse-engineering
-queries create by the Environment Canada interface
-\verb{https://climate.weather.gc.ca/historical_data/search_historic_data_e.html}.
-The constructed query contains Station ID, as provided in the \code{id} argument.
-Note that this seems to be a creation of Environment Canada, alone;
-it is distinct from the more standard "Climate ID" and "WMO ID".
-To make things more difficult, Environment Canada states that the
-Station ID is subject to change over time. (Whether this applies to existing
-data is unclear.)
-
-Given these difficulties with Station ID, users are advised to consult
-the Environment Canada website (reference 1) before downloading any data,
-and to check it from time to time
-during the course of a research project, to see if the Station ID has changed.
-Another approach would be to use Gavin Simpson's
-\code{canadaHCD} package (reference 2) to look up Station IDs. This package maintains
-a copy of the Environment Canada listing of stations, and its
-\code{find_station} function provides an easy way to determine Station IDs.
-After that, its \code{hcd_hourly} function (and related functions) make
-it easy to read data. These data can then be converted to the
-\code{met} class with \code{\link[=as.met]{as.met()}}, although doing so leaves
-many important metadata blank.
+If this function fails, users might try using Gavin Simpson's \code{canadaHCD}
+package (reference 2). This package maintains a copy of the Environment
+Canada listing of stations, and its \code{find_station()} function provides an easy
+way to determine Station IDs.  After that, its \code{hcd_hourly} function (and
+related functions) make it easy to read data. These data can then be
+converted to the \code{met} class with \code{\link[=as.met]{as.met()}}, although doing so leaves many
+important metadata blank.
 }
 \examples{
 \dontrun{
 library(oce)
-## Download data for Halifax International Airport, in September
-## of 2003. (This dataset is used for data(met) provided with oce.)
+# Download data for Halifax International Airport, in September
+# of 2003. This dataset is used for data(met) provided with oce.
+# Note that requests for data after 2012 month 10 yield all
+# missing values, for reasons unknown to the author.
 metFile <- download.met(6358, 2003, 9, destdir=".")
 met <- read.met(metFile)
 }
@@ -107,7 +95,7 @@ met <- read.met(metFile)
 \item Environment Canada website for Historical Climate Data
 \verb{https://climate.weather.gc.ca/index_e.html}
 \item Gavin Simpson's \code{canadaHCD} package on GitHub
-\url{https://github.com/gavinsimpson/canadaHCD}
+\verb{https://github.com/gavinsimpson/canadaHCD}
 }
 }
 \seealso{
@@ -127,10 +115,7 @@ Other things related to met data:
 \code{\link{plot,met-method}},
 \code{\link{read.met}()},
 \code{\link{subset,met-method}},
-\code{\link{summary,met-method}},
-\code{\link{test_met_csv1.csv}},
-\code{\link{test_met_csv2.csv}},
-\code{\link{test_met_xml2.xml}}
+\code{\link{summary,met-method}}
 }
 \author{
 Dan Kelley

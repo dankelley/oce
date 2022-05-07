@@ -1,3 +1,4 @@
+^nohup.out$
 ^_snaps$
 Rplot.png
 Meta
@@ -29,7 +30,6 @@ man/figures/*png
 autom4te.cache
 *.nc
 *.zip
-*.csv
 *.out
 oce_[a-zA-Z]*.Rproj
 revdep
@@ -42,3 +42,6 @@ argo_bio-profile_index.rda
 Rplots.pdf
 inst/joss
 
+README.log
+/doc/
+/Meta/

@@ -33,6 +33,7 @@
   longitude0,
   latitude0,
   legend.loc = "bottomright",
+  legend.text = NULL,
   showStations = FALSE,
   showStart = TRUE,
   stationTicks = TRUE,
@@ -145,6 +146,10 @@ These values are ignored unless \code{xtype} is \code{"distance"}.}
 \item{legend.loc}{Location of legend, as supplied to \code{\link[=legend]{legend()}}, or
 set to the empty string to avoid plotting a legend.}
 
+\item{legend.text}{character value indicating the text for the legend.
+If this is NULL (the default) then the legend is automatically
+constructed by \code{\link[=labelWithUnit]{labelWithUnit()}}, based on the value of \code{which}.}
+
 \item{showStations}{Logical indicating whether to draw station numbers on maps.}
 
 \item{showStart}{Logical indicating whether to indicate the first station with}
@@ -213,8 +218,8 @@ Creates a summary plot for a CTD section, with one panel for each value of
 \details{
 The type of plot is governed by \code{which}, as follows.
 \itemize{
-\item \code{which=0} or \code{"potential temperature"} for temperature contours
-\item \code{which=1} or \code{"temperature"} for temperature contours (the default)
+\item \code{which=0} or \code{"potential temperature"} for potential temperature contours
+\item \code{which=1} or \code{"temperature"} for in-situ temperature contours (the default)
 \item \code{which=2} or \code{"salinity"} for salinity contours
 \item \code{which=3} or \code{"sigmaTheta"} for sigma-theta contours
 \item \code{which=4} or \code{"nitrate"} for nitrate concentration contours
@@ -241,61 +246,81 @@ to be the location, in arbitrary units, along the x-axis of labels specified by
 \code{labels}; the way this works is designed to be the same as for
 \code{\link[=axis]{axis()}}.
 }
-\examples{
-library(oce)
+\section{Ancillary Examples}{
+
+
+The following examples were once part of the \dQuote{Examples}
+section, but were moved here in May 2022, to reduce the build-check
+time for CRAN submission.\preformatted{library(oce)
 data(section)
-sg <- sectionGrid(section)
-
-# 1. start of section, default fields.
-plot(head(section))
-
-# 2. Gulf Stream
-GS <- subset(section, 109<=stationId&stationId<=129)
+GS <- subset(section, 113<=stationId&stationId<=129)
 GSg <- sectionGrid(GS, p=seq(0, 2000, 100))
-plot(GSg, which=c(1, 99), map.ylim=c(34, 42))
+
+# Gulf Stream, salinity data and contoured
 par(mfrow=c(2, 1))
-plot(GS, which=1, ylim=c(2000, 0), ztype='points',
+plot(GS, which=1, ylim=c(2000, 0), ztype="points",
      zbreaks=seq(0,30,2), pch=20, cex=3)
-plot(GSg, which=1, ztype='image', zbreaks=seq(0,30,2))
+plot(GSg, which=1, ztype="image", zbreaks=seq(0,30,2))
 
+# Gulf Stream, temperature grid (image) and data (dots)
 par(mfrow=c(1, 1))
-
-# 3. Image, with colored dots to indicate grid-data mismatch.
-\dontrun{
-plot(GSg, which=1, ztype='image')
-T <- GS[['temperature']]
+plot(GSg, which=1, ztype="image")
+T <- GS[["temperature"]]
 col <- oceColorsViridis(100)[rescale(T, rlow=1, rhigh=100)]
-points(GS[['distance']],GS[['depth']],pch=20,cex=3,col='white')
-points(GS[['distance']],GS[['depth']],pch=20,cex=2.5,col=col)
-}
+points(GS[["distance"]],GS[["depth"]],pch=20,cex=3,col="white")
+points(GS[["distance"]],GS[["depth"]],pch=20,cex=2.5,col=col)
 
+# 4. Image of temperature, with a high-salinity contour on top;
+#    note the Mediterranean water.
+sec <- plot(section, which="temperature", ztype="image")
+S <- sec[["salinity", "grid:distance-pressure"]]
+contour(S$distance, S$pressure, S$field, level=35.8, lwd=3, add=TRUE)
 
-\dontrun{
-# 4. Image of Absolute Salinity, with 4-minute bathymetry
+# 5. Contours of salinity, with dots for high pressure and spice
+plot(section, which="salinity")
+distance <- section[["distance"]]
+depth <- section[["depth"]]
+spice <- section[["spice"]]
+look <- spice > 1.8 & depth > 500
+points(distance[look], depth[look], col="red")
+
+# Image of Absolute Salinity, with 4-minute bathymetry
 # It's easy to calculate the desired area for the bathymetry,
 # but for brevity we'll hard-code it. Note that download.topo()
-# caches the file locally.
-f <- download.topo(west=-80, east=0, south=35, north=40, resolution=4)
-t <- read.topo(f)
-plot(section, which="SA", xtype="longitude", ztype="image", showBottom=t)
-}
+# requires the "raster" and "ncdf4" packages to be installed.
+if (requireNamespace("raster") && requireNamespace("ncdf4")) \{
+    f <- download.topo(west=-80, east=0, south=35, north=40, resolution=4)
+    t <- read.topo(f)
+    plot(section, which="SA", xtype="longitude", ztype="image", showBottom=t)
+\}
 
-\dontrun{
-# 5. Temperature with salinity added in red
-s <- plot(section, which="temperature")
-distance <- s[["distance", "byStation"]]
-depth <- s[["station", 1]][["depth"]]
-salinity <- matrix(s[["salinity"]], byrow=TRUE, nrow=length(s[["station"]]))
-contour(distance, depth, salinity, col=2, add=TRUE)
-}
+# Temperature with salinity added in red
+plot(GSg, which="temperature")
+distance <- GSg[["distance", "byStation"]]
+depth <- GSg[["station", 1]][["depth"]]
+S <- matrix(GSg[["salinity"]], byrow=TRUE, nrow=length(GSg[["station"]]))
+contour(distance, depth, S, col=2, add=TRUE)
 
-\dontrun{
-# 6. Image with controlled colours
-plot(section, which="salinity", ztype="image",
+# Image with controlled colours
+plot(GSg, which="salinity", ztype="image",
     zlim=c(35, 37.5),
     zbreaks=seq(35, 37.5, 0.25),
     zcol=oceColorsTurbo)
 }
+}
+
+\examples{
+library(oce)
+data(section)
+GS <- subset(section, 113<=stationId&stationId<=129)
+GSg <- sectionGrid(GS, p=seq(0, 2000, 100))
+
+# Gulf Stream, salinity and temperature contours
+plot(GSg, which=c("salinity", "temperature"))
+
+# Gulf Stream, Temperature image
+plot(GSg, which="temperature", ztype="image",
+    zbreaks=seq(0,25,2), zcol=oceColorsTemperature)
 
 }
 \seealso{

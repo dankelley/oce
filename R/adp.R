@@ -1,4 +1,4 @@
-## vim: tw=120 shiftwidth=4 softtabstop=4 expandtab:
+# vim: tw=80 shiftwidth=4 softtabstop=4 expandtab:
 
 #' Class to Store adp (ADCP) Data
 #'
@@ -37,7 +37,7 @@
 #' conventions for three- and four-beam ADP devices, viewed as though the
 #' reader were looking towards the beams being emitted from the transducers.
 #'
-#' \if{html}{\figure{adp_beams.png}{options: width=400px alt="Figure: adp_beams.png"}}
+#' \if{html}{\figure{adp_beams.png}{options: width="400" alt="Figure: adp_beams.png"}}
 #'
 #' The bin geometry of a four-beam profiler is illustrated below, for
 #' `adp[["beamAngle"]]` equal to 20 degrees, `adp[["bin1Distance"]]`
@@ -48,7 +48,7 @@
 #' indicate the coverage of beams that spread plus and minus 2.5 degrees from
 #' their centreline.
 #'
-#' \if{html}{\figure{adpgeometry2.png}{options: width=400px alt="Figure: adpgeometry2.png"}}
+#' \if{html}{\figure{adpgeometry2.png}{options: width="400" alt="Figure: adpgeometry2.png"}}
 #'
 #' Note that `adp[["oceCoordinate"]]` stores the present coordinate system
 #' of the object, and it has possible values `"beam"`, `"xyz"`, `"sfm"` or
@@ -310,7 +310,7 @@ setMethod(f="initialize",
 #' v <- adp[["v"]]
 #' i2 <- array(FALSE, dim=dim(v))
 #' g <- adp[["g", "numeric"]]
-#' # Thresholds on percent "goodness" and error "velocity"
+#' # Set thresholds on percent "goodness" and error "velocity".
 #' G <- 25
 #' V4 <- 0.45
 #' for (k in 1:3)
@@ -320,34 +320,38 @@ setMethod(f="initialize",
 #' adpClean <- handleFlags(adpQC, flags=list(3), actions=list("NA"))
 #' # Demonstrate (subtle) change graphically.
 #' par(mfcol=c(2, 1))
-#' plot(adp, which="u1")
-#' plot(adpClean, which="u1")
+#' plot(adp, which="u1", drawTimeRange=FALSE)
+#' plot(adpClean, which="u1", drawTimeRange=FALSE)
+#' t0 <- 1214510000 # from locator()
+#' arrows(t0, 20, t0, 35, length=0.1, lwd=3, col="magenta")
+#' mtext("Slight change above arrow", col="magenta", font=2)
 #'
 #' @family things related to adp data
 setMethod("handleFlags", signature=c(object="adp", flags="ANY", actions="ANY", where="ANY", debug="ANY"),
-          definition=function(object, flags=NULL, actions=NULL, where=NULL, debug=getOption("oceDebug")) {
-              ## DEVELOPER 1: alter the next comment to explain your setup
-              ## Flag=1 means bad velocity; 0 means good
-              names <- names(object[["flags"]])
-              for (name in names) {
-                  for (j in 1:length(object[[name]])) {
-                      if (any(class(object[[name]][j]) == "raw"))
-                          stop("use adpConvertRawToNumeric() first to convert raw values to numeric")
-                  }
-              }
-              if (is.null(flags)) {
-                  flags <- defaultFlags(object)
-                  if (is.null(flags))
-                      stop("must supply 'flags', or use initializeFlagScheme() on the adp object first")
-              }
-              if (is.null(actions)) {
-                  actions <- list("NA") # DEVELOPER 3: alter this line to suit a new data class
-                  names(actions) <- names(flags)
-              }
-              if (any(names(actions)!=names(flags)))
-                  stop("names of flags and actions must match")
-              handleFlagsInternal(object=object, flags=flags, actions=actions, where=where, debug=debug)
-          })
+    definition=function(object, flags=NULL, actions=NULL, where=NULL, debug=getOption("oceDebug")) {
+        oceDebug(debug, "handleFlags,adp-method {\n", sep="", style="bold", unindent=1)
+        ## DEVELOPER 1: alter the next comment to explain your setup
+        names <- names(object[["flags"]])
+        for (name in names) {
+            if (is.raw(object@data[[name]])) {
+                stop("use adpConvertRawToNumeric() first to convert raw values to numeric")
+            }
+        }
+        if (is.null(flags)) {
+            flags <- defaultFlags(object)
+            if (is.null(flags))
+                stop("must supply 'flags', or use initializeFlagScheme() on the adp object first")
+        }
+        if (is.null(actions)) {
+            actions <- list("NA") # DEVELOPER 2: alter this line to suit a new data class
+            names(actions) <- names(flags)
+        }
+        if (any(names(actions)!=names(flags)))
+            stop("names of flags and actions must match")
+        res <- handleFlagsInternal(object=object, flags=flags, actions=actions, where=where, debug=debug-1L)
+        oceDebug(debug, "} # handleFlags,adp-method()\n", sep="", style="bold", unindent=1)
+        res
+    })
 
 #' @templateVar class adp
 #' @templateVar details There are no agreed-upon flag schemes for adp data.
@@ -624,6 +628,38 @@ setMethod(f="concatenate",
 #'
 #' @param x an [adp-class] object.
 #'
+#' @section Details of the Specialized Method:
+#'
+#' Note that the entries within [adp-class] objects vary greatly, from
+#' instrument to instrument, and so are only sketched here, and in the output
+#' from `[["?"]]`.
+#'
+#' * If `i` is `"?"`, then the return value is a list
+#' containing four items, each of which is a character vector
+#' holding the names of things that can be accessed with `[[`.
+#' The `data` and `metadata` items hold the names of
+#' entries in the object's data and metadata
+#' slots, respectively. The `dataDerived`
+#' and `metadataDerived` items are *not* authoritative, because
+#' information provided by different instruments is so varied.
+#'
+#' * If `i` is `"u1"` then the return value is `v[,1]`. The
+#' same holds for 2, etc., depending on the number of beams in
+#' the instrument.
+#'
+#' * If `i` is `"a1"` then signal amplitude is returned, and similarly
+#' for other digits. The results can be in [raw()] or numeric form,
+#' as shown in the examples.
+#'
+#' * If `i` is `"q1"` then signal quality is returned, and similarly
+#' for other digits.  As with amplitude, the result can be in [raw()]
+#' or numeric form.
+#'
+#' * If `i` is `"coordinate"`, then the coordinate system is
+#' retrieved.
+#'
+#' @template sub_subTemplate
+#'
 #' @examples
 #' data(adp)
 #' # Tests for beam 1, distance bin 1, first 5 observation times
@@ -631,17 +667,6 @@ setMethod(f="concatenate",
 #' adp[["a"]][1:5,1,1]
 #' adp[["a", "numeric"]][1:5,1,1]
 #' as.numeric(adp[["a"]][1:5,1,1]) # same as above
-#'
-#' @template sub_subTemplate
-#'
-#' @section Details of the specialized `adp` method:
-#'
-#' In addition to the usual extraction of elements by name, some shortcuts
-#' are also provided, e.g. `x[["u1"]]` retrieves `v[,1]`, and similarly
-#' for the other velocity components. The `a` and `q`
-#' data can be retrieved in [raw()] form or numeric
-#' form (see examples). The coordinate system may be
-#' retrieved with e.g. `x[["coordinate"]]`.
 #'
 #' @author Dan Kelley
 #'
@@ -654,6 +679,20 @@ setMethod(f="[[",
                   stop("In [[,adp-method() : may only extract 1 item at a time.\n", call.=FALSE)
               ISAD2CP <- is.ad2cp(x)
               ##>message("ISAD2CP=", ISAD2CP)
+              metadataDerived <- c("coordinate")
+              numberOfBeams <- if (ISAD2CP) 4 else x@metadata$numberOfBeams
+              if (is.null(numberOfBeams)) {
+                  dataDerived <- c("a", "u", "q")
+              } else {
+                  dataDerived <- c(paste0("u", seq_len(numberOfBeams)),
+                      paste0("a", seq_len(numberOfBeams)),
+                      paste0("q", seq_len(numberOfBeams)))
+              }
+              if (i == "?")
+                  return(list(metadata=sort(names(x@metadata)),
+                          metadataDerived=sort(metadataDerived),
+                          data=sort(names(x@data)),
+                          dataDerived=sort(dataDerived)))
               if (i == "distance") {
                   ##>message("asking for 'distance'")
                   if (ISAD2CP) {
@@ -3101,7 +3140,7 @@ beamUnspreadAdp <- function(x, count2db=c(0.45, 0.45, 0.45, 0.45), asMatrix=FALS
 #' Calculations,} January 2010. P/N 951-6079-00.
 #'
 #' 2. WHOI/USGS-provided Matlab code for beam-enu transformation
-#' \samp{http://woodshole.er.usgs.gov/pubs/of2005-1429/MFILES/AQDPTOOLS/beam2enu.m}
+#' `http://woodshole.er.usgs.gov/pubs/of2005-1429/MFILES/AQDPTOOLS/beam2enu.m`
 #'
 #' @family things related to adp data
 beamToXyzAdp <- function(x, debug=getOption("oceDebug"))

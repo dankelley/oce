@@ -11,12 +11,11 @@ as.ctd(
   conductivity = NULL,
   scan = NULL,
   time = NULL,
-  other = NULL,
   units = NULL,
   flags = NULL,
   missingValue = NULL,
   type = "",
-  serialNumber = "",
+  serialNumber = NULL,
   ship = NULL,
   cruise = NULL,
   station = NULL,
@@ -25,54 +24,40 @@ as.ctd(
   latitude = NULL,
   deploymentType = "unknown",
   pressureAtmospheric = 0,
-  sampleInterval = NA,
+  sampleInterval = NULL,
   profile = NULL,
   debug = getOption("oceDebug")
 )
 }
 \arguments{
-\item{salinity}{There are several distinct choices for \code{salinity}.
-\itemize{
-\item It can be a
-vector indicating the practical salinity through the water column. In that case,
-\code{as.ctd} employs the other arguments listed below.
-\item It can be an \linkS4class{rsk} object (see \dQuote{Converting rsk objects} for details).
-\item It can be something (a data frame, a list or an \code{oce} object)
-from which practical salinity, temperature, pressure, and conductivity
-can be inferred. In this case, the relevant information
-is extracted  and the other arguments to \code{as.ctd} are ignored, except for
-\code{pressureAtmospheric}. If the first argument has salinity, etc., in
-matrix form (as can happen with some objects of \linkS4class{argo}),
-then only the first column is used, and a warning to that effect is given,
-unless the \code{profile} argument is specified and then that specific
-profile is extracted.
-\item It can be unspecified, in which case \code{conductivity} becomes a mandatory
-argument, because it will be needed for computing actual salinity,
-using \code{\link[=swSCTp]{swSCTp()}}.
-}}
+\item{salinity}{may be (1) a numeric vector holding Practical Salinity,
+(2) a list or data frame holding \code{salinity} and other
+hydrographic variables or (3) an \code{oce-class} object that holds
+hydrographic information. If \code{salinity} is not provided,
+then \code{conductivity} must be provided, so that \code{\link[=swSCTp]{swSCTp()}}
+can be used to compute salinity.}
 
-\item{temperature}{\emph{in-situ} temperature in \eqn{^\circ}{deg}C
-on the ITS-90 scale; see \dQuote{Temperature units} in the documentation for
-\code{\link[=swRho]{swRho()}}.}
+\item{temperature}{a numeric vector containing \emph{in-situ} temperature in
+\eqn{^\circ}{deg}C on the ITS-90 scale; see \dQuote{Temperature units} in the
+documentation for \code{\link[=swRho]{swRho()}}.}
 
-\item{pressure}{Vector of pressure values, one for each \code{salinity} and
-\code{temperature} pair, or just a single pressure, which is repeated to match
-the length of \code{salinity}.}
+\item{pressure}{a numeric vector containing sea pressure values, in decibars.
+Typically, this vector has the same length as \code{salinity} and \code{temperature},
+but it also possible to supply just one value, which will be repeated
+to get the right length. Note that \code{as.ctd()} stores the
+sum of \code{pressure} and \code{pressureAtmospheric} in the returned object,
+although the default value for \code{pressureAtmospheric} is zero, so
+in the default case, \code{pressure} is stored directly.}
 
-\item{conductivity}{electrical conductivity ratio through the water column
-(optional). To convert from raw conductivity in milliSeimens per centimeter
-divide by 42.914 to get conductivity ratio (see Culkin and Smith, 1980).}
+\item{conductivity}{an optional numeric vector containing electrical
+conductivity ratio through the water column. To convert from raw conductivity
+in milliSeimens per centimeter divide by 42.914 to get conductivity ratio
+(see Culkin and Smith, 1980).}
 
-\item{scan}{optional scan number.  If not provided, this will be set to
-\link{seq_along}\code{(salinity)}.}
+\item{scan}{optional numeric vector holding scan number.  If not provided,
+this is set to \link{seq_along}\code{(salinity)}.}
 
-\item{time}{optional vector of times of observation}
-
-\item{other}{optional list of other data columns that are not in the standard
-list. Note that this argument is \strong{deprecated}, meaning that it
-will be removed soon. Please use \code{as.ctd()} to construct a \linkS4class{ctd}
-object, and then use \code{\link[=oceSetData]{oceSetData()}} later, to add other data,
-as needed.}
+\item{time}{optional vector of times of observation.}
 
 \item{units}{an optional list containing units.  If not supplied,
 defaults are set for \code{pressure}, \code{temperature}, \code{salinity},
@@ -146,7 +131,13 @@ by specifying higher \code{debug} values.}
 A \linkS4class{ctd} object.
 }
 \description{
-Assemble data into a \linkS4class{ctd} object.
+Assemble data into a \linkS4class{ctd} object.  This function is complicated
+(spanning approximately 500 lines of code) because it tries to handle many
+special cases, and tries to make sensible defaults for unspecified
+parameters.  If odd results are found, users might find it helpful to call
+this function with the first argument being a simple vector of Practical
+Salinity values, in which case the processing of the other arguments is
+relatively straightforward.
 }
 \section{Converting rsk objects}{
 
@@ -228,6 +219,7 @@ Other things related to ctd data:
 \code{\link{ctdRaw}},
 \code{\link{ctdRepair}()},
 \code{\link{ctdTrim}()},
+\code{\link{ctd_aml.csv}},
 \code{\link{ctd}},
 \code{\link{d200321-001.ctd}},
 \code{\link{d201211_0011.cnv}},

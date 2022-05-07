@@ -35,7 +35,7 @@ instead of the present function.
 \references{
 \enumerate{
 \item The \code{canadaHCD} package is in development by Gavin Simpson; see
-\url{https://github.com/gavinsimpson/canadaHCD} for instructions on how
+\verb{https://github.com/gavinsimpson/canadaHCD} for instructions on how
 to download and install from GitHub.
 \item Environment Canada website for Historical Climate Data
 \verb{https://climate.weather.gc.ca/index_e.html}
@@ -51,10 +51,7 @@ Other things related to met data:
 \code{\link{plot,met-method}},
 \code{\link{read.met}()},
 \code{\link{subset,met-method}},
-\code{\link{summary,met-method}},
-\code{\link{test_met_csv1.csv}},
-\code{\link{test_met_csv2.csv}},
-\code{\link{test_met_xml2.xml}}
+\code{\link{summary,met-method}}
 }
 \author{
 Dan Kelley

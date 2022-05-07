@@ -19,7 +19,7 @@ read.section(
 }
 \arguments{
 \item{file}{A file containing a set of CTD observations.  At present, only the
-\emph{exchange BOT} format is accepted (see Details).}
+\emph{exchange BOT} format is accepted (see \sQuote{Details}).}
 
 \item{directory}{A character string indicating the name of a  directory that
 contains a set of CTD files that hold individual stations in the section.}
@@ -74,7 +74,7 @@ is stored as \code{salinityBottle}.
 
 \references{
 Several repository sites provide section data. A reasonably stable example is
-\url{https://cchdo.ucsd.edu}, but a search on \code{"WOCE bottle data"} should
+\verb{https://cchdo.ucsd.edu}, but a search on \code{"WOCE bottle data"} should
 turn up other sites, if this ceases to exist. Only
 the so-called \emph{exchange BOT} data format can be processed by \code{\link[=read.section]{read.section()}}
 at this time. Data names are inferred from column headings using

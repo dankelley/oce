@@ -38,7 +38,7 @@ difficult to decode. Manufacturers usually provide software for accessing data
 produced by their instruments, but it is usually proprietary and closed-source,
 making it difficult for researchers to analyse their data in novel ways or to
 combine data from multiple instruments. The `oce` package
-[@kelley__aut_oce_2021] addresses such issues with functions that handle dozens
+[@kelley__aut_oce_2021] addresses such issues in the R language^[The authors are not aware of similarly comprehensive tools in other open-source languages, although there are tools for individual tasks, as noted at https://pyoceans.github.io/sea-py/, for Python tools.] with functions that handle dozens
 of data formats. It also has facilities for the specialized calculations and
 data displays that are particular to oceanography.  Since `oce` is written in
 the R language [@ihaka_r_1996;@r_core_team_introduction_2021], it forms a link
@@ -47,13 +47,13 @@ to a vast array of general tools that oceanographers use in their work
 
 # Overview
 
-The `oce` package has been hosted since 2019 on
-CRAN^[https://cran.r-project.org], the Comprehensive R Archive Network
+The `oce` package has been hosted since 2009 on
+CRAN^[CRAN is at https://cran.r-project.org.], the Comprehensive R Archive Network
 [@hornik_comprehensive_2012].  The CRAN version, which is updated once or twice
 a year, may be installed by typing `install.packages("oce")` in an R console.
 Users who need newer features may use
 `remotes::install_github("dankelley/oce",ref="develop")` to download and build
-the development branch. Those wishing to view or participate in the development
+the development branch^[Since some components of oce are written in lower-level languages such as Fortran, C and C++, building the package from source requires compilers for those languages. These are freely available, and an oce wiki page (https://github.com/dankelley/oce/wiki/Configuring-a-Linux-Mint-20-system-to-be-able-to-build-oce-from-source) explains how they and other things may be set up, on a variety of computer types.]. Those wishing to view or participate in the development
 process are welcome to do so, at \url{https://github.com/dankelley/oce}.
 
 The package has functions for decoding many data formats.  These functions
@@ -178,7 +178,7 @@ tide.)
 The `oce` package provides for many aspects of oceanographic analysis, having
 evolved in an open-source environment for more than a decade. For much of that
 time, the hosting has been on github.com/dankelley/oce, where users can see the
-details of about 9000 git commits and 1700 closed issues.  The developers have
+details of over 9000 git commits and 1700 closed issues.  The developers have
 benefited from a supportive user community, members of which have contributed
 insightful bug reports and suggestions for improvements.  New features are
 added continually, to handle new instrument types, new data repositories, and
@@ -192,7 +192,9 @@ Our other goal is to encourage the development of new R packages, such as
 
 We thank the many users who have helped with `oce` development over the years,
 by finding bugs, suggesting new features, and providing us with manufacturers'
-documentation about data formats used by various oceanographic instruments.
+documentation about data formats for various oceanographic instruments. In
+addition, we thank the editor and reviewers of this manuscript, for their
+insights and also for their patience during the submission process.
 
 # References
 

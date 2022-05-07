@@ -1,4 +1,4 @@
-## vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
+# vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
 
 #' Class to Store GPS Data
 #'
@@ -61,12 +61,37 @@ setMethod(f="summary",
 #'
 #' @param x a [gps-class] object.
 #'
+#' @section Details of the Specialized Method:
+#'
+#' * If `i` is `"?"`, then the return value is a list
+#' containing four items, each of which is a character vector
+#' holding the names of things that can be accessed with `[[`.
+#' The `data` and `metadata` items hold the names of
+#' entries in the object's data and metadata
+#' slots, respectively. The `dataDerived`
+#' and `metadataDerived` items are each NULL, because
+#' no derived values are defined by `gps` objects.
+#'
+#' * If `i` is `"longitude"` or `"latitude"`, then the corresponding
+#' vector is returned.
+#'
+#' * If `i` is `"filename"` then a filename is returned, if
+#' known (i.e. if the object was created with [read.gps()] or
+#' with [as.gps()] with the `filename` argument specified).
+#'
 #' @template sub_subTemplate
+#'
+#' @author Dan Kelley
 #'
 #' @family things related to gps data
 setMethod(f="[[",
           signature(x="gps", i="ANY", j="ANY"),
           definition=function(x, i, j, ...) {
+              if (i == "?")
+                  return(list(metadata=sort(names(x@metadata)),
+                          metadataDerived=NULL,
+                          data=sort(names(x@data)),
+                          dataDerived=NULL))
               callNextMethod()         # [[
           })
 
@@ -427,6 +452,10 @@ setMethod(f="plot",
 #'
 #' @return A [gps-class] object.
 #'
+#' @examples
+#' # Location of the Tower Tank at Dalhousie University
+#' towerTank <- as.gps(-63.59428, 44.63572)
+#'
 #' @author Dan Kelley
 #'
 #' @family things related to gps data
@@ -454,9 +483,7 @@ as.gps <- function(longitude, latitude, filename="")
 #'
 #' @param debug set to TRUE to print information about the header, etc.
 #'
-#' @param processingLog if provided, the action item to be stored in the log.
-#' (Typically only provided for internal calls; the default that it provides is
-#' better for normal calls by a user.)
+#' @param processingLog ignored.
 #'
 #' @return A [gps-class] object.
 #'
@@ -467,7 +494,7 @@ read.gps <- function(file, type=NULL, debug=getOption("oceDebug"), processingLog
 {
     if (!missing(file) && is.character(file) && 0 == file.info(file)$size)
         stop("empty file")
-    oceDebug(debug, "read.gps(...) {\n", sep="", unindent=1)
+    oceDebug(debug, "read.gps(...) {\n", sep="", style="bold", unindent=1)
     filename <- NULL
     if (is.character(file)) {
         filename <- fullFilename(file)
@@ -497,6 +524,6 @@ read.gps <- function(file, type=NULL, debug=getOption("oceDebug"), processingLog
     latlonCleaned <- gsub("[a-zA-Z<>=\"/]*", "", latlon)
     latlon <- read.table(text=latlonCleaned)
     res <- new("gps", longitude=latlon[, 2], latitude=latlon[, 1], file=filename)
-    oceDebug(debug, "} # read.gps()\n", sep="", unindent=1)
+    oceDebug(debug, "} # read.gps()\n", sep="", style="bold", unindent=1)
     res
 }

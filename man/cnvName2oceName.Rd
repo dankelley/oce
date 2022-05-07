@@ -59,7 +59,7 @@ the SBE names in question. Then consult the SBE documentation to find
 an appropriate name for the data, and either manipulate the names in the object
 data slot directly or use
 \code{\link[=renameData]{renameData()}} to rename the elements. Finally, please publish
-an 'issue' on the oce Github site \url{https://github.com/dankelley/oce/issues}
+an 'issue' on the oce Github site \verb{https://github.com/dankelley/oce/issues}
 so that the developers can add the data type in question. (To save
 development time, there is no plan to add all possible data types without
 a reasonable and specific expression user interest. Oxygen alone has over forty
@@ -242,6 +242,7 @@ Other things related to ctd data:
 \code{\link{ctdRaw}},
 \code{\link{ctdRepair}()},
 \code{\link{ctdTrim}()},
+\code{\link{ctd_aml.csv}},
 \code{\link{ctd}},
 \code{\link{d200321-001.ctd}},
 \code{\link{d201211_0011.cnv}},

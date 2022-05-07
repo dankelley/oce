@@ -133,7 +133,7 @@ and sufficiently skilled users may even manipulate the contents directly.
 
 Archived CTD (and other) data may be found on servers such as
 \enumerate{
-\item \url{https://cchdo.ucsd.edu/}
+\item \verb{https://cchdo.ucsd.edu/}
 }
 }
 
@@ -162,6 +162,7 @@ Other things related to ctd data:
 \code{\link{ctdRaw}},
 \code{\link{ctdRepair}()},
 \code{\link{ctdTrim}()},
+\code{\link{ctd_aml.csv}},
 \code{\link{ctd}},
 \code{\link{d200321-001.ctd}},
 \code{\link{d201211_0011.cnv}},

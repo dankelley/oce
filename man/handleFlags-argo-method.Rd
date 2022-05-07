@@ -96,7 +96,7 @@ df[11:15,] # notice line 13
 \enumerate{
 \item Wong, Annie, Robert Keeley, Thierry Carval, and Argo Data Management Team.
 "Argo Quality Control Manual for CTD and Trajectory Data," January 1, 2020.
-\url{https://archimer.ifremer.fr/doc/00228/33951/}.
+\verb{https://archimer.ifremer.fr/doc/00228/33951/}.
 }
 }
 \seealso{
@@ -130,6 +130,7 @@ Other things related to argo data:
 \code{\link{argo}},
 \code{\link{as.argo}()},
 \code{\link{plot,argo-method}},
+\code{\link{read.argo.copernicus}()},
 \code{\link{read.argo}()},
 \code{\link{subset,argo-method}},
 \code{\link{summary,argo-method}}

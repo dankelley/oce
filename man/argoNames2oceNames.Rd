@@ -103,9 +103,9 @@ are translated to \code{Adjusted}, \code{Error}, and \code{QC}, respectively.
 \references{
 \enumerate{
 \item Argo User's Manual Version 3.3, Nov 89th, 2019, available at
-\url{https://archimer.ifremer.fr/doc/00187/29825/} online.
+\verb{https://archimer.ifremer.fr/doc/00187/29825/} online.
 \item Argo list of parameters in an excel spreadsheet, available at
-\url{http://www.argodatamgt.org/content/download/27444/187206/file/argo-parameters-list-core-and-b.xlsx}
+\verb{http://www.argodatamgt.org/content/download/27444/187206/file/argo-parameters-list-core-and-b.xlsx}
 }
 }
 \seealso{
@@ -118,6 +118,7 @@ Other things related to argo data:
 \code{\link{as.argo}()},
 \code{\link{handleFlags,argo-method}},
 \code{\link{plot,argo-method}},
+\code{\link{read.argo.copernicus}()},
 \code{\link{read.argo}()},
 \code{\link{subset,argo-method}},
 \code{\link{summary,argo-method}}

@@ -133,9 +133,9 @@
 #'
 #' 3. see landsat.usgs.gov/calibration_notices.php
 #'
-#' 4. \url{https://dankelley.github.io/r/2014/07/01/landsat.html}
+#' 4. `https://dankelley.github.io/r/2014/07/01/landsat.html`
 #'
-#' 5. \url{https://scienceofdoom.com/2010/12/27/emissivity-of-the-ocean/}
+#' 5. `https://scienceofdoom.com/2010/12/27/emissivity-of-the-ocean/`
 #'
 #' 6. see landsat.usgs.gov/Landsat8_Using_Product.php
 #'
@@ -146,7 +146,7 @@
 #' 9. Yu, X. X. Guo and Z. Wu., 2014. Land Surface Temperature Retrieval from
 #' Landsat 8 TIRS-Comparison between Radiative Transfer Equation-Based Method,
 #' Split Window Algorithm and Single Channel Method, *Remote Sensing*, 6,
-#' 9829-9652.  \url{https://www.mdpi.com/2072-4292/6/10/9829}
+#' 9829-9652.  `https://www.mdpi.com/2072-4292/6/10/9829`
 #'
 #' 10. Rajeshwari, A., and N. D. Mani, 2014.  Estimation of land surface
 #' temperature of Dindigul district using Landsat 8 data. *International
@@ -155,7 +155,8 @@
 #'
 #' 11. Konda, M. Imasato N., Nishi, K., and T. Toda, 1994.  Measurement of the Sea
 #' Surface Emissivity.  *Journal of Oceanography*, 50, 17:30.
-#' \url{http://www.terrapub.co.jp/journals/JO/pdf/5001/50010017.pdf}
+#' \doi{10.1007/BF02233853}
+## \code{http://www.terrapub.co.jp/journals/JO/pdf/5001/50010017.pdf}
 #'
 #' @author Dan Kelley and Clark Richards
 #'
@@ -256,12 +257,16 @@ setMethod(f="summary",
 #'
 #' @templateVar class landsat
 #'
-#' @template sub_subTemplate
+#' @section Details of the Specialized Method:
 #'
-#' @section Details of the specialized `landsat` method:
-#'
-#' Users are isolated from the details of the two-byte storage system
-#' by using the `[[` operator.
+#' If `i` is `"?"`, then the return value is a list
+#' containing four items, each of which is a character vector
+#' holding the names of things that can be accessed with `[[`.
+#' The `data` and `metadata` items hold the names of
+#' entries in the object's data and metadata
+#' slots, respectively. The `data` entries are difficult
+#' to deal with directly, and so users are advised to
+#' use `dataDerived` instead.
 #'
 #' *Accessing band data.*  The data may be accessed with e.g.
 #' `landsat[["panchromatic"]]`, for the panchromatic band.  If a new
@@ -312,6 +317,8 @@ setMethod(f="summary",
 #' decimation.  An exception is the lat-lon box, which is altered by
 #' [landsatTrim()].
 #'
+#' @template sub_subTemplate
+#'
 #' @author Dan Kelley
 #'
 #' @family things related to landsat data
@@ -322,9 +329,16 @@ setMethod(f="[[",
               oceDebug(debug, "landsat [[ {\n", unindent=1)
               if (missing(i))
                   stop("Must name a landsat item to retrieve, e.g. '[[\"panchromatic\"]]'", call.=FALSE)
-              i <- i[1]                # drop extras if more than one given
+              if (length(i) > 1L)
+                  stop("[[,landsat-method requires length(i) to be of 1\n")
               if (!is.character(i))
                   stop("landsat item must be specified by name", call.=FALSE)
+              dataDerived <- c("longitude", "latitude", "temperature", "panchromatic")
+              if (i == "?")
+                  return(list(metadata=sort(names(x@metadata)),
+                          metadataDerived=NULL,
+                          data=sort(names(x@data)),
+                          dataDerived=sort(dataDerived)))
               ## Handle cases one by one, starting with simplest.
               if (!(is.na(pmatch(i, "longitude")))) {
                   ## FIXME: ignoring decimation (may be best, anyway)
@@ -1055,9 +1069,9 @@ read.landsatmeta <- function(file, debug=getOption("oceDebug"))
 #' @references
 #'
 #' 1. Konda, M. Imasato N., Nishi, K., and T. Toda, 1994.  Measurement of the Sea
-#' Surface Emissivity.  *Journal of Oceanography*, 50, 17:30.  Available at
-#' \url{http://www.terrapub.co.jp/journals/JO/pdf/5001/50010017.pdf} as of
-#' February 2015.
+#' Surface Emissivity.  *Journal of Oceanography*, 50, 17:30.
+#' \doi{10.1007/BF02233853}
+## \code{http://www.terrapub.co.jp/journals/JO/pdf/5001/50010017.pdf}
 #'
 #' @author Dan Kelley
 #'

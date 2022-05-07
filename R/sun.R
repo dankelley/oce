@@ -23,7 +23,7 @@
 #' * `distance` to sun, in astronomical units.
 #' * `declination` angle in degrees, computed with [sunDeclinationRightAscension()].
 #' * `rightAscension` angle in degrees, computed with [sunDeclinationRightAscension()].
-#' \if{html}{\figure{starCoords.png}{options:width=400px}}
+#' \if{html}{\figure{starCoords.png}{options: width="400"}}
 #'
 #' @seealso The corresponding function for the moon is [moonAngle()].
 #'

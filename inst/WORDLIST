@@ -5,6 +5,8 @@ ADVField
 ADVs
 AFL
 AGU
+AML
+AML's
 AMSR
 AXBT
 AXBTs
@@ -24,8 +26,10 @@ AvgInterval
 Azimuthal
 BAMS
 BCD
+BOM
 Baranova
 Bartlein
+BaseX
 Bedford
 Bernhard
 BioArgo
@@ -40,6 +44,7 @@ Boric
 CDOM
 CMD
 CNV
+CPT
 CRS
 CTD
 Caree
@@ -75,7 +80,9 @@ Dindigul
 Disambiguating
 Doodson
 Doppler
+ENR
 ENU
+ENX
 EO
 EOS
 ERDDAP
@@ -89,6 +96,7 @@ Emissivity
 Enu
 Eos
 ExpoCode
+FFFF
 FIXME
 FLtab
 FTU
@@ -100,6 +108,7 @@ Flamsteed
 Fofonoff
 Fofonoff's
 Foucault
+Foysi
 GCOM
 GDAC
 GEBCO
@@ -136,6 +145,7 @@ Helmert's
 Hernan
 Hetland
 Hidetoshi
+Holger
 Homann
 Hornik
 Hydroacoustics
@@ -184,6 +194,9 @@ LIBS
 LISST
 LOBO
 LSB
+LST
+LTA
+Lamontagne
 Leffler
 Lentz
 Levitus
@@ -198,6 +211,7 @@ MGL
 MLI
 MSB
 Macnab
+Mahy
 MapGen
 MathWorks
 McBryde
@@ -298,18 +312,22 @@ Scanwise
 Schmid
 Scotian
 SeaBird
+SeaCast
 SeaWater
+Seacast
 Sealevel
 Seapoint
 Seasoft
 Seatech
 SentinelV
+Siegen
 Simpson's
 Sippican
 SonTek
 Sontek
 Soreide
 Springer
+Stanek
 Stereographic
 Stereopolar
 Subclassing
@@ -363,6 +381,7 @@ Vitkovsky
 VmDas
 Voxland
 Voxland
+WEP
 WETstar
 WG
 WHOI
@@ -433,6 +452,7 @@ bcd
 beamAttenuateAdp
 beamUnattenuateAdp
 beamUnspreadAdp
+beamreach
 beamwidth
 beamwise
 behaviour
@@ -475,6 +495,7 @@ coefs
 colfunction
 colorbar
 colormap
+colormapGMT
 colorsGebco
 colorsJet
 colorsPalette
@@ -483,6 +504,7 @@ colorscale
 colour
 coloured
 colours
+computable
 conceptid
 conductivities
 connectPoints
@@ -496,6 +518,7 @@ correspondances
 covary
 cp
 cpsw
+cpt
 crosshairs
 cse
 csv
@@ -514,6 +537,7 @@ dankelley
 dbar
 dbars
 de
+debian
 decibar
 decibars
 decodeTime
@@ -600,6 +624,7 @@ freesurface
 fullFilename
 fullpage
 gc
+gcc
 gebcoColors
 geod
 geodDist
@@ -610,6 +635,7 @@ getOption
 giss
 github
 glovis
+gmt
 gps
 gridded
 gridding
@@ -661,6 +687,7 @@ keepNA
 kilometre
 kilometres
 kthyng
+l'Institut
 labelled
 labelling
 labelsTop
@@ -675,6 +702,7 @@ levitus
 library
 lightgray
 linegraphs
+linux
 lisst
 lobo
 lon
@@ -863,6 +891,7 @@ sas
 sbe
 scalebar
 scattergraph
+scattergraphs
 schmitt
 sdev
 seadatanet
@@ -975,6 +1004,7 @@ unhandled
 uniroot
 unitless
 unlabelled
+unparsed
 unphysical
 unresolvable
 uoregon
@@ -1033,6 +1063,7 @@ ylab
 ylim
 ylocations
 ytype
+yyyy
 zipfile
 zlim
 Šavrič

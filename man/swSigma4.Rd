@@ -17,7 +17,8 @@ swSigma4(
 \item{salinity}{either practical salinity (in which case \code{temperature}
 and \code{pressure} must be provided) \emph{or} an \code{oce} object, in
 which case \code{salinity}, \code{temperature} (in the ITS-90 scale; see
-next item), etc. are inferred from the object.}
+next item), etc. are inferred from the object, ignoring the
+other parameters, if they are supplied.}
 
 \item{temperature}{\emph{in-situ} temperature (\eqn{^\circ}{deg}C), defined
 on the ITS-90 scale.  This scale is used by GSW-style calculation (as
@@ -42,13 +43,7 @@ or \code{"gsw"} (references 3 and 4).}
 Potential density anomaly (kg/m\eqn{^3}{^3}).
 }
 \description{
-Compute \eqn{\sigma_\theta}{sigma}, the potential density of seawater (minus
-1000 kg/m\eqn{^3}{^3}), referenced to 4000db pressures.
-This is defined as
-\eqn{\sigma_1=\sigma_\theta=\rho(S,\theta(S,t,p),4000}{sigma_1=sigma_theta=rho(S,theta(S,t,p),4000)}
-\itemize{
-\item 1000 kg/m\eqn{^3}{^3}.
-}
+This is analagous to \code{\link[=swSigma0]{swSigma0()}}, but referenced to 4000db pressure.
 }
 \references{
 See citations provided in the \code{\link[=swRho]{swRho()}} documentation.
@@ -58,6 +53,8 @@ Other functions that calculate seawater properties:
 \code{\link{T68fromT90}()},
 \code{\link{T90fromT48}()},
 \code{\link{T90fromT68}()},
+\code{\link{computableWaterProperties}()},
+\code{\link{locationForGsw}()},
 \code{\link{swAbsoluteSalinity}()},
 \code{\link{swAlphaOverBeta}()},
 \code{\link{swAlpha}()},
@@ -72,6 +69,7 @@ Other functions that calculate seawater properties:
 \code{\link{swRho}()},
 \code{\link{swRrho}()},
 \code{\link{swSCTp}()},
+\code{\link{swSR}()},
 \code{\link{swSTrho}()},
 \code{\link{swSigma0}()},
 \code{\link{swSigma1}()},
@@ -84,6 +82,7 @@ Other functions that calculate seawater properties:
 \code{\link{swSoundSpeed}()},
 \code{\link{swSpecificHeat}()},
 \code{\link{swSpice}()},
+\code{\link{swSstar}()},
 \code{\link{swTFreeze}()},
 \code{\link{swTSrho}()},
 \code{\link{swThermalConductivity}()},

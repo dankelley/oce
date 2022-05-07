@@ -55,10 +55,10 @@ imagep(volcano, col=viridis::inferno,
 Oceanography 29, no. 3 (September 1, 2016): 9–13.
 \doi{10.5670/oceanog.2016.66}
 \item Thyng, Kristen. Kthyng/Cmocean. Python, 2019.
-\url{https://github.com/kthyng/cmocean}.
+\verb{https://github.com/kthyng/cmocean}.
 \item Thyng, Kristen, Clark Richards, and Ivan Krylov.
 Cmocean: Beautiful Colour Maps for Oceanography (version 0.2), 2019.
-\url{https://CRAN.R-project.org/package=cmocean}.
+\verb{https://CRAN.R-project.org/package=cmocean}.
 }
 
 The following references provide information on choosing
@@ -68,17 +68,17 @@ colour deficiencies.
 Light, Adam, and Patrick J. Bartlein. "The End of the Rainbow? Color
 Schemes for Improved Data Graphics." \emph{Eos, Transactions American Geophysical
 Union} 85, no. 40 (2004): 385.
-\url{https://agupubs.onlinelibrary.wiley.com/doi/abs/10.1029/2004EO400002}
+DOI: 10.1029/2004EO400002
 
 Stephenson, David B. "Comment on 'Color Schemes for Improved Data
-Graphics,' by A Light and P.J. Bartlein." \emph{Eos, Transactions American
+Graphics', by A Light and P.J. Bartlein." \emph{Eos, Transactions American
 Geophysical Union} 86, no.  20 (2005): 196.
-\url{https://agupubs.onlinelibrary.wiley.com/doi/abs/10.1029/2005EO200005}.
+DOI: 10.1029/2005EO200005
 
-Light, Adam, and Patrick J. Bartlein. "Reply [to 'Comment on Color
-Schemes for Improved Data Graphics,’ by A. Light and P.J.  Bartlein']."
+Light, Adam, and Patrick J. Bartlein. "Reply to 'Comment on Color
+Schemes for Improved Data Graphics,' by A. Light and P.J.  Bartlein'."
 \emph{Eos, Transactions American Geophysical Union} 86, no. 20 (2005): 196–196.
-\url{https://agupubs.onlinelibrary.wiley.com/doi/abs/10.1029/2005EO200006}
+DOI: 10.1029/2005EO200006
 }
 \seealso{
 Other things related to colors: 

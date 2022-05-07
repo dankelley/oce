@@ -36,7 +36,7 @@ NULL
 #' @author Dan Kelley
 #'
 #' @references
-#' 1. <https://en.wikipedia.org/wiki/Density_of_air>
+#' 1. `https://en.wikipedia.org/wiki/Density_of_air`
 #' 2. National Oceanographic and Atmospheric Agency, 1976.  U.S.
 #' Standard Atmosphere, 1976.  NOAA-S/T 76-1562.  (A PDF of this document may
 #' be available at

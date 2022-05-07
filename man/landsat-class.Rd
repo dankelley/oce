@@ -176,22 +176,22 @@ and \code{tirs2} combined.  This may seem confusing, but it lets code like
 \item See the USGS "glovis" web site.
 \item see landsat.gsfc.nasa.gov/?page_id=5377
 \item see landsat.usgs.gov/calibration_notices.php
-\item \url{https://dankelley.github.io/r/2014/07/01/landsat.html}
-\item \url{https://scienceofdoom.com/2010/12/27/emissivity-of-the-ocean/}
+\item \verb{https://dankelley.github.io/r/2014/07/01/landsat.html}
+\item \verb{https://scienceofdoom.com/2010/12/27/emissivity-of-the-ocean/}
 \item see landsat.usgs.gov/Landsat8_Using_Product.php
 \item see landsathandbook.gsfc.nasa.gov/pdfs/Landsat7_Handbook.pdf
 \item see landsat.usgs.gov/band_designations_landsat_satellites.php
 \item Yu, X. X. Guo and Z. Wu., 2014. Land Surface Temperature Retrieval from
 Landsat 8 TIRS-Comparison between Radiative Transfer Equation-Based Method,
 Split Window Algorithm and Single Channel Method, \emph{Remote Sensing}, 6,
-9829-9652.  \url{https://www.mdpi.com/2072-4292/6/10/9829}
+9829-9652.  \verb{https://www.mdpi.com/2072-4292/6/10/9829}
 \item Rajeshwari, A., and N. D. Mani, 2014.  Estimation of land surface
 temperature of Dindigul district using Landsat 8 data. \emph{International
 Journal of Research in Engineering and Technology}, 3(5), 122-126.
 \verb{http://www.academia.edu/7655089/ESTIMATION_OF_LAND_SURFACE_TEMPERATURE_OF_DINDIGUL_DISTRICT_USING_LANDSAT_8_DATA}
 \item Konda, M. Imasato N., Nishi, K., and T. Toda, 1994.  Measurement of the Sea
 Surface Emissivity.  \emph{Journal of Oceanography}, 50, 17:30.
-\url{http://www.terrapub.co.jp/journals/JO/pdf/5001/50010017.pdf}
+\doi{10.1007/BF02233853}
 }
 }
 \seealso{

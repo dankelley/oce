@@ -95,9 +95,9 @@ Otherwise, \code{oce.plot.ts} creates \code{simplify} intervals ranging across
 the visible time range. Intervals with under 2 finite
 \code{y} data are ignored. In the rest, \code{y} values
 are replaced with their range, and \code{x} values are replaced
-with the repeated midpoint time. Thus, each retained subinterval
+with the repeated midpoint time. Thus, each retained sub-interval
 has exactly 2 data points.
-A warning is printed if this replacment is done.
+A warning is printed if this replacement is done.
 The default value of \code{simplify} means that cases with
 under 2560 visible points are plotted conventionally.}
 

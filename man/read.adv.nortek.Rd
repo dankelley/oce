@@ -230,7 +230,7 @@ pressure (\code{p}), the three components of IMU delta angle
 with \code{IMUdeltaVelocityX} disagreeing in the second decimal place,
 \code{IMUdeltaVelocityY} component disagreeing in the first, and
 \code{IMUdeltaVelocityZ} being out by a factor of about 10. This is github
-issue 893 (\url{https://github.com/dankelley/oce/issues/893}).
+issue 893 (\verb{https://github.com/dankelley/oce/issues/893}).
 \itemize{
 \item Variety \code{c3} (signalled by byte 5 of a sequence being
 \code{0xc3}) provides information on what Nortek calls DeltaAngle,

@@ -19,7 +19,8 @@ swSoundAbsorption(
 \item{salinity}{either practical salinity (in which case \code{temperature}
 and \code{pressure} must be provided) \emph{or} an \code{oce} object, in
 which case \code{salinity}, \code{temperature} (in the ITS-90 scale; see
-next item), etc. are inferred from the object.}
+next item), etc. are inferred from the object, ignoring the
+other parameters, if they are supplied.}
 
 \item{temperature}{\emph{in-situ} temperature (\eqn{^\circ}{deg}C), defined
 on the ITS-90 scale.  This scale is used by GSW-style calculation (as
@@ -69,7 +70,7 @@ sea water.  Journal of the Acoustical Society of America, 62(3), 558-564.
 \item R. E. Francois and G. R. Garrison, 1982.  Sound absorption based on
 ocean measurements.  Part II: Boric acid contribution and equation for total
 absorption.  Journal of the Acoustical Society of America, 72(6):1879-1890.
-\item \url{http://resource.npl.co.uk/acoustics/techguides/seaabsorption/}
+\item \verb{http://resource.npl.co.uk/acoustics/techguides/seaabsorption/}
 }
 }
 \seealso{
@@ -77,6 +78,8 @@ Other functions that calculate seawater properties:
 \code{\link{T68fromT90}()},
 \code{\link{T90fromT48}()},
 \code{\link{T90fromT68}()},
+\code{\link{computableWaterProperties}()},
+\code{\link{locationForGsw}()},
 \code{\link{swAbsoluteSalinity}()},
 \code{\link{swAlphaOverBeta}()},
 \code{\link{swAlpha}()},
@@ -91,6 +94,7 @@ Other functions that calculate seawater properties:
 \code{\link{swRho}()},
 \code{\link{swRrho}()},
 \code{\link{swSCTp}()},
+\code{\link{swSR}()},
 \code{\link{swSTrho}()},
 \code{\link{swSigma0}()},
 \code{\link{swSigma1}()},
@@ -103,6 +107,7 @@ Other functions that calculate seawater properties:
 \code{\link{swSoundSpeed}()},
 \code{\link{swSpecificHeat}()},
 \code{\link{swSpice}()},
+\code{\link{swSstar}()},
 \code{\link{swTFreeze}()},
 \code{\link{swTSrho}()},
 \code{\link{swThermalConductivity}()},

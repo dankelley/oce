@@ -104,9 +104,9 @@ lines(coastlineWorld[["longitude"]], coastlineWorld[["latitude"]])
 \references{
 \enumerate{
 \item The underlying Fortran code for version 12 is from \code{igrf12.f}, downloaded the NOAA
-website (\url{https://www.ngdc.noaa.gov/IAGA/vmod/igrf.html}) on June 7,
+website (\verb{https://www.ngdc.noaa.gov/IAGA/vmod/igrf.html}) on June 7,
 \item That for version 13 is \code{igrf13.f}, downloaded from the NOAA website
-(\url{https://www.ngdc.noaa.gov/IAGA/vmod/igrf.html} on March 3, 2020.
+(\verb{https://www.ngdc.noaa.gov/IAGA/vmod/igrf.html} on March 3, 2020.
 \item Witze, Alexandra. \dQuote{Earth's Magnetic Field Is Acting up and Geologists Don't Know Why.}
 Nature 565 (January 9, 2019): 143.
 \doi{10.1038/d41586-019-00007-1}

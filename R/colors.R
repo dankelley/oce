@@ -14,7 +14,7 @@
 #' @author Authored by matplotlib contributers, packaged (with license permission) in oce by Dan Kelley
 #'
 #' @source The data come from the matplotlib site
-#' \url{https://github.com/matplotlib/matplotlib}.
+#' `https://github.com/matplotlib/matplotlib`.
 #'
 #' @template colourBlindnessTemplate
 #'
@@ -193,7 +193,7 @@ colormapGmtNumeric <- function(x0, x1, col0, col1, bpl=1)
 #>> #' Read a colormap from a GMT-type file
 #>> #'
 #>> #' Files of the GMT type may be found at
-#>> #' \url{https://beamreach.org/maps/gmt/share/cpt/}, and consist
+#>> #' `https://beamreach.org/maps/gmt/share/cpt/`, and consist
 #>> #' of one or more lines starting with the `#` character, followed by a sequence
 #>> #' of lines containing 8 numbers that, taken together, describe the color
 #>> #' scheme, followed by a line with the character `F` followed by three integers
@@ -322,14 +322,13 @@ colormapGmtNumeric <- function(x0, x1, col0, col1, bpl=1)
 #'
 #' @references
 #' 1. General overview of GMT system
-#' <https://www.generic-mapping-tools.org>.
+#' `https://www.generic-mapping-tools.org`.
 #' 2. Information on GMT color schemes
-#' <https://docs.generic-mapping-tools.org/dev/cookbook/cpts.html>
+#' `https://docs.generic-mapping-tools.org/dev/cookbook/cpts.html`
 #' 3. Source of GMT specification files
-#' https://beamreach.org/maps/gmt/share/cpt/ (this link worked
-#' for years, but failed to respond in October 2021)
+#' `https://beamreach.org/maps/gmt/share/cpt/`
 #' 4. CPT (color palette table) format
-#' <https://www.soest.hawaii.edu/gmt/gmt/html/GMT_Docs.html#x1-820004.15>
+#' `https://www.soest.hawaii.edu/gmt/gmt/html/GMT_Docs.html#x1-820004.15`
 #'
 #' @family things related to colors
 colormapGMT <- function(name, debug=getOption("oceDebug"))
@@ -640,7 +639,7 @@ colormapGMT <- function(name, debug=getOption("oceDebug"))
 #' `x1[i]`.  A value of 1 means to use `col1[i]` in that interval.  A
 #' value between 0 and 1 means to blend between the two colors according to
 #' the stated fraction.  Values exceeding 1 are an error at present, but there
-#' is a plan to use this to indicate subintervals, so a smooth palette can be
+#' is a plan to use this to indicate sub-intervals, so a smooth palette can be
 #' created from a few colors.
 #'
 #' @param missingColor color to use for missing values. This cannot be provided

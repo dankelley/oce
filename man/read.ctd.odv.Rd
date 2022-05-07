@@ -100,9 +100,9 @@ interest.
 }
 \references{
 \enumerate{
-\item \url{https://www.bodc.ac.uk/resources/delivery_formats/odv_format/} describes
+\item \verb{https://www.bodc.ac.uk/resources/delivery_formats/odv_format/} describes
 the \code{ODV} format.
-\item \url{https://vocab.nerc.ac.uk/collection/P07/current/} may be
+\item \verb{https://vocab.nerc.ac.uk/collection/P07/current/} may be
 worth consulting for variable names.
 }
 }
@@ -120,6 +120,7 @@ Other things related to ctd data:
 \code{\link{ctdRaw}},
 \code{\link{ctdRepair}()},
 \code{\link{ctdTrim}()},
+\code{\link{ctd_aml.csv}},
 \code{\link{ctd}},
 \code{\link{d200321-001.ctd}},
 \code{\link{d201211_0011.cnv}},

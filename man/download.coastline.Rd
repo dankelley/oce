@@ -72,7 +72,7 @@ plot(coastline)
 }
 \references{
 \enumerate{
-\item The NaturalEarth server is at \url{https://www.naturalearthdata.com}
+\item The NaturalEarth server is at \verb{https://www.naturalearthdata.com}
 }
 }
 \seealso{

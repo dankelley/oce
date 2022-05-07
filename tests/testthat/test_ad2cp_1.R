@@ -33,6 +33,7 @@ f2 <- "~/Dropbox/oce_secret_data/ad2cp_secret_2.ad2cp"
 f3 <- "~/Dropbox/oce_secret_data/ad2cp_secret_3.ad2cp"
 
 if (file.exists(f1)) {
+    skip_on_cran()
     test_that("read.adp.ad2cp() on a private AD2CP file that has 'average' and 'burst' data", {
         expect_silent(read.adp.ad2cp(f1, 1, 100, 1, plan=0))
         expect_error(read.adp.ad2cp(f1, 1, 100, 1, plan=10),
@@ -298,6 +299,7 @@ if (file.exists(f1)) {
 
 
 if (file.exists(f2)) {
+    skip_on_cran()
     test_that("read.adp() on a private AD2CP file that has only 'burst' data", {
         N <- 500
         # Note: using read.adp() to ensure that it also works
@@ -351,6 +353,7 @@ if (file.exists(f2)) {
 }
 
 if (file.exists(f3)) {
+    skip_on_cran()
     test_that("read.oce() on a private AD2CP file that has 'burst' and 'interleavedBurst' data", {
         N <- 100
         ## Note: using read.oce() to ensure that it also works

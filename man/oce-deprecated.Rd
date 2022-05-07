@@ -21,7 +21,6 @@ last step before outright removal.
 
 \tabular{lllll}{
 \strong{Deprecated}             \tab \strong{Replacement}   \tab \strong{Deprecated}  \tab \strong{Defunct} \tab \strong{Removed} \cr
-\code{byteToBinary(x,"endian")} \tab \code{\link[=rawToBits]{rawToBits()}}     \tab 1.1-1           \tab 1.1-3       \tab 1.1-4       \cr
 \code{renameData()}             \tab \code{\link[=oceRenameData]{oceRenameData()}} \tab 1.1-2           \tab 1.1-3       \tab 1.1-4       \cr
 }
 
@@ -32,11 +31,12 @@ be slated for outright deletion in a subsequent release.
 
 \tabular{lll}{
 \strong{Defunct}         \tab \strong{Replacement}                \tab \strong{Version}\cr
-(none)              \tab (none)                         \tab (none)     \cr
+\code{renameData()}      \tab \code{\link[=oceRenameData]{oceRenameData()}}              \tab 1.5        \cr
+\code{byteToBinary()}    \tab \code{\link[=rawToBits]{rawToBits()}}                  \tab 1.5        \cr
 }
 
 The following functions were removed after having been marked as "deprecated"
-in at least one CRAN release, and thereafter as "defunct" in at least
+in at least one CRAN release, and possibly as "defunct" in at least
 one CRAN release.  (The version number in the table is the first
 version to lack the named function.)
 
@@ -77,12 +77,6 @@ function since February 2016.
 Several \sQuote{oce} function arguments are considered "defunct", which
 means they will be removed in the next CRAN release. They are as follows.
 \itemize{
-\item The \code{date} argument of \code{\link[=as.ctd]{as.ctd()}}
-was discovered to have been unused in early 2016. Since
-the \code{startTime} actually fills its role, \code{date}
-was considered to be deprecated in June 2016.
-\item The \code{quality} flag of \code{\link[=as.ctd]{as.ctd()}} was
-marked as deprecated in March 2016.
 \item The \code{fill} argument of \code{\link[=mapPlot]{mapPlot()}} was confusing
 to users, so it was designated as deprecated in June 2016.
 (The confusion stemmed from subtle differences between
@@ -95,6 +89,6 @@ The functionality is preserved, in the \code{col} argument.
 \seealso{
 The \sQuote{Bioconductor} scheme for removing functions is
 described at
-\url{https://www.bioconductor.org/developers/how-to/deprecation/} and it is
+\verb{https://www.bioconductor.org/developers/how-to/deprecation/} and it is
 extended here to function arguments.
 }

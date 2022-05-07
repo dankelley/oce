@@ -21,7 +21,7 @@ custom color schemes (see \dQuote{Examples}).
 }
 \examples{
 \dontrun{
-## Update oxygen color scheme to latest matplotlib value.
+# Update oxygen color scheme to latest matplotlib value.
 library(oce)
 oxy <- "https://raw.githubusercontent.com/matplotlib/cmocean/master/cmocean/rgb/oxy-rgb.txt"
 oxyrgb <- read.table(oxy, header=FALSE)

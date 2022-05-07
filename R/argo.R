@@ -1,4 +1,5 @@
-# vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4:foldmethod=marker
+# vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4:foldmethod=marker
+
 #' Class to Store Argo Data
 #'
 #' This class stores data from Argo floats.
@@ -64,18 +65,31 @@ NULL
 #'
 #' @templateVar class argo
 #'
-#' @section Details of the specialized `argo` method:
+#' @section Details of the Specialized Method:
 #'
-#' There are several possibilities, depending on the nature of `i`.
 #' Note that [argo-class] data may contain both unadjusted data and adjusted
 #' data.  By default, this extraction function refers to the former, but a
 #' preference for the latter may be set with [preferAdjusted()], the
 #' documentation of which explains (fairly complex) details.
 #'
+#' The results from `argo[[i]]` or `argo[[i,j]]` depend on the
+#' nature of `i` and (if provided) `j`. The details are as follows.
+#'
+#' * If `i` is `"?"`, then the return value is a list
+#' containing four items, each of which is a character vector
+#' holding the names of things that can be accessed with `[[`.
+#' The `data` and `metadata` items hold the names of
+#' entries in the object's data and metadata
+#' slots, respectively. The `dataDerived`
+#' and `metadataDerived` items hold the names of things
+#' that can be inferred from the object's contents, e.g.
+#' `"SA"` is named in `dataDerived`, indicating that
+#' `argo[["SA"]]` is permitted (to compute Absolute Salinity).
+#'
 #' * If `i` is `"profile"` and `j` is an integer vector,
 #' then an argo object is returned, as specified by `j`. For example,
 #' `argo[["profile", 2:5]]` is equivalent to
-#' `subset(argo, profile \%in\% 2:5)`.
+#' `subset(argo, profile %in% 2:5)`.
 #'
 #' * If `i` is `"CT"`, then
 #' Conservative Temperature is returned, as computed with
@@ -130,8 +144,9 @@ NULL
 #' fivenum(argo[["salinity"]],na.rm=TRUE)
 #' fivenum(argo[["salinity"]][argo[["salinityFlag"]]==1],na.rm=TRUE)
 #'
-#' @family things related to argo data
 #' @author Dan Kelley
+#'
+#' @family things related to argo data
 setMethod(f="[[",
           signature(x="argo", i="ANY", j="ANY"),
           definition=function(x, i, j, ...) {
@@ -139,6 +154,16 @@ setMethod(f="[[",
               dots <- list(...)
               debug <- if ("debug" %in% names(dots)) dots$debug else 0
               oceDebug(debug, "[[,argo-method(\"", i, "\") {\n", sep="", style="bold", unindent=1)
+              metadataDerived <- c("ID", "cycle", "*Flag", "*Unit")
+              dataDerived <- c("profile", "CT", "N2", "SA", "sigmaTheta",
+                  "theta", "sigma0", "sigma1", "sigma2", "sigma3", "sigma4",
+                  "z", "depth", paste("Absolute", "Salinity"),
+                  paste("Conservative", "Temperature"))
+              if (i == "?")
+                  return(list(metadata=sort(names(x@metadata)),
+                          metadataDerived=sort(metadataDerived),
+                          data=sort(names(x@data)),
+                          dataDerived=sort(dataDerived)))
               if (i == "profile") {
                   ## This assignment to profile is merely to prevent a NOTE from
                   ## the syntax checker. It is needed because of issues with non-standard
@@ -153,7 +178,10 @@ setMethod(f="[[",
               }
               namesData <- names(x@data)
               ## handle some computed items
-              if (i %in% c("CT", "N2", "SA", "sigmaTheta", "theta", "sigma0", "sigma1", "sigma2", "sigma3", "sigma4")) {
+              if (i %in% c("CT", paste("conservative", "temperature"), "N2",
+                      "SA", paste("Absolute", "Salinity"), "sigmaTheta",
+                      "theta", "sigma0", "sigma1", "sigma2", "sigma3",
+                      "sigma4")) {
                   salinity <- x[["salinity", debug=debug-1]]
                   pressure <- x[["pressure", debug=debug-1]]
                   temperature <- x[["temperature", debug=debug-1]]
@@ -161,7 +189,7 @@ setMethod(f="[[",
                   ## Do not need longitude and latitude if eos="unesco", but retain for code clarity
                   longitude <- rep(x@data$longitude, each=dim[1])
                   latitude <- rep(x@data$latitude, each=dim[1])
-                  if (i == "CT") {
+                  if (i %in% c("CT", "Conservative Temperature")) {
                       res <- gsw_CT_from_t(x[["SA"]], temperature, pressure)
                   } else if (i == "N2") {
                       ##nprofile <- dim[2]
@@ -180,7 +208,7 @@ setMethod(f="[[",
                               res[,i] <- rep(NA, length(salinity[,i]))
                           }
                       }
-                  } else if (i == "SA") {
+                  } else if (i %in% c("SA", "Absolute Salinity")) {
                       res <- gsw_SA_from_SP(salinity, pressure, longitude=longitude, latitude=latitude)
                   } else if (i %in% c("sigma0", "sigma1", "sigma2", "sigma3", "sigma4")) {
                       SA <- gsw_SA_from_SP(salinity, pressure, longitude=longitude, latitude=latitude)
@@ -454,10 +482,10 @@ getData <- function(file, name, quiet=FALSE)
 #'
 #' @references
 #' 1. Argo User's Manual Version 3.3, Nov 89th, 2019, available at
-#' \url{https://archimer.ifremer.fr/doc/00187/29825/} online.
+#' `https://archimer.ifremer.fr/doc/00187/29825/` online.
 #'
 #' 2. Argo list of parameters in an excel spreadsheet, available at
-#' \url{http://www.argodatamgt.org/content/download/27444/187206/file/argo-parameters-list-core-and-b.xlsx}
+#' `http://www.argodatamgt.org/content/download/27444/187206/file/argo-parameters-list-core-and-b.xlsx`
 #'
 #' @family things related to argo data
 argoNames2oceNames <- function(names, ignore.case=TRUE)
@@ -1095,13 +1123,13 @@ argoDecodeFlags <- function(f) # local function
 #' objects, and also outlines the other functions dealing with them.
 #'
 #' @references
-#' 1. \url{https://argo.ucsd.edu}
+#' 1. `https://argo.ucsd.edu`
 #'
 #' 2. Argo User's Manual Version 3.2, Dec 29th, 2015, available at
-#' \url{https://archimer.ifremer.fr/doc/00187/29825/} online.
+#' `https://archimer.ifremer.fr/doc/00187/29825/` online.
 #'
 #' 3. User's Manual (ar-um-02-01) 13 July 2010, available at
-#' \url{http://www.argodatamgt.org/content/download/4729/34634/file/argo-dm-user-manual-version-2.3.pdf},
+#' `http://www.argodatamgt.org/content/download/4729/34634/file/argo-dm-user-manual-version-2.3.pdf`,
 #' which is the main document describing argo data.
 #'
 #' @section Data sources:
@@ -1775,226 +1803,232 @@ as.argo <- function(time, longitude, latitude,
 #' @family functions that plot oce data
 #' @aliases plot.argo
 setMethod(f="plot",
-          signature=signature("argo"),
-          definition=function (x, which=1, level,
-                               coastline=c("best", "coastlineWorld", "coastlineWorldMedium",
-                                           "coastlineWorldFine", "none"),
-                               cex=1, pch=1, type='p', col, fill=FALSE,
-                               projection=NULL,
-                               mgp=getOption("oceMgp"), mar=c(mgp[1]+1.5, mgp[1]+1.5, 1.5, 1.5),
-                               tformat,
-                               debug=getOption("oceDebug"),
-                               ...)
-          {
-              if (!inherits(x, "argo"))
-                  stop("method is only for objects of class '", "argo", "'")
-              oceDebug(debug, "plot.argo(x, which=c(", paste(which, collapse=","), "),",
-                      argShow(mgp),
-                      argShow(mar),
-                      argShow(cex),
-                      " ...) {\n", sep="", unindent=1, style="bold")
-              coastline <- match.arg(coastline)
-              nw  <- length(which)
-              if (nw > 1)
-                  par(mfcol=c(1, nw))
-              par(mgp=mgp, mar=mar)
-              if (missing(level) || level == "all")
-                  level <- seq(1L, dim(x@data$temperature)[1])
-              longitude <- x[["longitude"]]
-              latitude <- x[["latitude"]]
-              dim <- dim(x@data$salinity)
-              if (length(longitude) < prod(dim)) {
-                  ## Copy across depths. This is inside a conditional because
-                  ## possibly argo[["longitude"]] should mimic section[["longitude"]],
-                  ## in doing the lengthing by itself unless the second argument is
-                  ## "byStation" (issue 1273 ... under consideration 2017jul12)
-                  longitude <- rep(x[["longitude"]], each=dim[1])
-                  latitude <- rep(x[["latitude"]], each=dim[1])
-              }
-              ctd <- as.ctd(x@data$salinity, x@data$temperature, x@data$pressure,
-                            longitude=longitude, latitude=latitude,
-                            units=list(temperature=list(unit=expression(degree*C), scale="ITS-90"),
-                                       conductivity=list(list=expression(), scale=""))) # guess on units
-              whichOrig <- which
-              which <- oce.pmatch(which,
-                                  list("trajectory"=1,
-                                       "map"=1,
-                                       "salinity ts"=2,
-                                       "temperature ts"=3,
-                                       "TS"=4,
-                                       "salinity profile"=5,
-                                       "temperature profile"=6))
-              if (any(is.na(which)))
-                  stop("In plot,argo-method() :\n  unrecognized value(s) of which: ", paste(whichOrig[is.na(which)], collapse=", "), call.=FALSE)
-              lw <- length(which)
-              par(mgp=mgp)
-              if (lw == 2) {
-                  par(mfcol=c(2, 1))
-              } else if (lw == 3) {
-                  par(mfcol=c(3, 1))
-              } else if (lw == 4) {
-                  par(mfrow=c(2, 2))
-              } else if (lw != 1) {
-                  nnn <- floor(sqrt(lw))
-                  par(mfcol=c(nnn, ceiling(lw/nnn)))
-                  rm(nnn)
-              }
-              for (w in 1:nw) {
-                  if (which[w] == 1) {
-                      oceDebug(debug, "which[", w, "] == 1, so plotting a map\n")
-                      oceDebug(debug, "note: par(\"mfrow\") = ", paste(par("mfrow"), collapse=","), "\n")
-                      ## map
-                      ## FIXME: coastline selection should be DRY
-                      haveCoastline <- FALSE
-                      haveOcedata <- requireNamespace("ocedata", quietly=TRUE)
-                      lonr <- range(x[["longitude"]], na.rm=TRUE)
-                      latr <- range(x[["latitude"]], na.rm=TRUE)
-                      if (coastline == "best") {
-                          if (haveOcedata) {
-                              bestcoastline <- coastlineBest(lonRange=lonr, latRange=latr)
-                              oceDebug(debug, " 'best' coastline is: \"", bestcoastline, '\"\n', sep="")
-                              if (bestcoastline == "coastlineWorld") {
-                                  data(list=bestcoastline, package="oce", envir=environment())
-                              } else {
-                                  data(list=bestcoastline, package="ocedata", envir=environment())
-                              }
-                              coastline <- get(bestcoastline)
-                          } else {
-                              bestcoastline <- coastlineBest(lonRange=lonr, latRange=latr)
-                              oceDebug(debug, " using \"coastlineWorld\" because ocedata package not installed\n")
-                              data("coastlineWorld", package="oce", envir=environment())
-                              coastline <- get("coastlineWorld")
-                          }
-                          haveCoastline <- TRUE
-                      } else {
-                          if (coastline != "none") {
-                              if (coastline == "coastlineWorld") {
-                                  data("coastlineWorld", package="oce", envir=environment())
-                                  coastline <- get("coastlineWorld")
-                              } else if (haveOcedata && coastline == "coastlineWorldFine") {
-                                  data("coastlineWorldFine", package="ocedata", envir=environment())
-                                  coastline <- get("coastlineWorldFine")
-                              } else if (haveOcedata && coastline == "coastlineWorldMedium") {
-                                  data("coastlineWorldMedium", package="ocedata", envir=environment())
-                                  coastline <- get("coastlineWorldMedium")
-                              }  else {
-                                  stop("there is no built-in coastline file of name \"", coastline, "\"")
-                              }
-                              haveCoastline <- TRUE
-                          }
-                      }
-                      ## if (!is.character(coastline)) stop("coastline must be a character string")
+    signature=signature("argo"),
+    definition=function (x, which=1, level,
+        coastline=c("best", "coastlineWorld", "coastlineWorldMedium",
+            "coastlineWorldFine", "none"),
+        cex=1, pch=1, type='p', col=1, fill=FALSE,
+        projection=NULL,
+        mgp=getOption("oceMgp"), mar=c(mgp[1]+1.5, mgp[1]+1.5, 1.5, 1.5),
+        tformat,
+        debug=getOption("oceDebug"),
+        ...)
+    {
+        debug <- min(3L, max(0L, as.integer(debug)))
+        if (!inherits(x, "argo"))
+            stop("method is only for objects of class '", "argo", "'")
+        oceDebug(debug, "plot.argo(x, which=c(", paste(which, collapse=","), "),",
+            argShow(mgp),
+            argShow(mar),
+            argShow(cex),
+            " ...) {\n", sep="", unindent=1, style="bold")
+        coastline <- match.arg(coastline)
+        nw  <- length(which)
+        if (nw > 1)
+            par(mfcol=c(1, nw))
+        par(mgp=mgp, mar=mar)
+        if (missing(level) || level == "all")
+            level <- seq(1L, dim(x@data$temperature)[1])
+        longitude <- x[["longitude"]]
+        latitude <- x[["latitude"]]
+        dim <- dim(x@data$salinity)
+        if (length(longitude) < prod(dim)) {
+            # Copy across depths. This is inside a conditional because possibly
+            # argo[["longitude"]] should mimic section[["longitude"]], in doing
+            # the lengthing by itself unless the second argument is "byStation"
+            # (issue 1273 ... under consideration 2017jul12)
+            longitude <- rep(x[["longitude"]], each=dim[1])
+            latitude <- rep(x[["latitude"]], each=dim[1])
+        }
+        ctd <- as.ctd(x@data$salinity, x@data$temperature, x@data$pressure,
+            longitude=longitude, latitude=latitude,
+            units=list(temperature=list(unit=expression(degree*C), scale="ITS-90"),
+                conductivity=list(list=expression(), scale=""))) # guess on units
+        whichOrig <- which
+        which <- oce.pmatch(which,
+            list("trajectory"=1,
+                "map"=1,
+                "salinity ts"=2,
+                "temperature ts"=3,
+                "TS"=4,
+                "salinity profile"=5,
+                "temperature profile"=6))
+        #if (any(is.na(which)))
+        #    stop("In plot,argo-method() :\n  unrecognized value(s) of which: ", paste(whichOrig[is.na(which)], collapse=", "), call.=FALSE)
+        lw <- length(which)
+        par(mgp=mgp)
+        if (lw == 2) {
+            par(mfcol=c(2, 1))
+        } else if (lw == 3) {
+            par(mfcol=c(3, 1))
+        } else if (lw == 4) {
+            par(mfrow=c(2, 2))
+        } else if (lw != 1) {
+            nnn <- floor(sqrt(lw))
+            par(mfcol=c(nnn, ceiling(lw/nnn)))
+            rm(nnn)
+        }
+        for (w in 1:nw) {
+            oceDebug(debug, "handling which[", w, "]=\"", whichOrig[w], "\"\n", sep="")
+            if (is.na(which[w])) {
+                oceDebug(debug, "not a special case, so passing 'which' to plot,ctd-method\n")
+                plot(ctd, which=whichOrig[w], debug=debug-1, ...)
+            } else if (which[w] == 1) {
+                oceDebug(debug, "note: par(\"mfrow\") = ", paste(par("mfrow"), collapse=","), "\n")
+                ## map
+                ## FIXME: coastline selection should be DRY
+                haveCoastline <- FALSE
+                haveOcedata <- requireNamespace("ocedata", quietly=TRUE)
+                lonr <- range(x[["longitude"]], na.rm=TRUE)
+                latr <- range(x[["latitude"]], na.rm=TRUE)
+                if (coastline == "best") {
+                    if (haveOcedata) {
+                        bestcoastline <- coastlineBest(lonRange=lonr, latRange=latr)
+                        oceDebug(debug, " 'best' coastline is: \"", bestcoastline, '\"\n', sep="")
+                        if (bestcoastline == "coastlineWorld") {
+                            data(list=bestcoastline, package="oce", envir=environment())
+                        } else {
+                            data(list=bestcoastline, package="ocedata", envir=environment())
+                        }
+                        coastline <- get(bestcoastline)
+                    } else {
+                        bestcoastline <- coastlineBest(lonRange=lonr, latRange=latr)
+                        oceDebug(debug, " using \"coastlineWorld\" because ocedata package not installed\n")
+                        data("coastlineWorld", package="oce", envir=environment())
+                        coastline <- get("coastlineWorld")
+                    }
+                    haveCoastline <- TRUE
+                } else {
+                    if (coastline != "none") {
+                        if (coastline == "coastlineWorld") {
+                            data("coastlineWorld", package="oce", envir=environment())
+                            coastline <- get("coastlineWorld")
+                        } else if (haveOcedata && coastline == "coastlineWorldFine") {
+                            data("coastlineWorldFine", package="ocedata", envir=environment())
+                            coastline <- get("coastlineWorldFine")
+                        } else if (haveOcedata && coastline == "coastlineWorldMedium") {
+                            data("coastlineWorldMedium", package="ocedata", envir=environment())
+                            coastline <- get("coastlineWorldMedium")
+                        }  else {
+                            stop("there is no built-in coastline file of name \"", coastline, "\"")
+                        }
+                        haveCoastline <- TRUE
+                    }
+                }
+                ## if (!is.character(coastline)) stop("coastline must be a character string")
 
-                      if (!is.null(projection)) {
-                          oceDebug(debug, "drawing an argo map with a projection\n")
-                          meanlat <- mean(x[['latitude']], na.rm=TRUE)
-                          meanlon <- mean(x[['longitude']], na.rm=TRUE)
-                          ## id <- pmatch(projection, "automatic")
-                          if (!is.na(pmatch(projection, "automatic"))) {
-                              projection <- if (meanlat > 70)
-                                  paste("+proj=stere +lon_0=", meanlon, sep="") else "+proj=merc"
-                              oceDebug(debug, "using", projection, "projection (chosen automatically)\n")
-                          } else {
-                              oceDebug(debug, "using", projection, "projection (specified)\n")
-                          }
-                          mapPlot(x[["longitude"]], x[["latitude"]],
-                                  projection=projection,
-                                  type='p', cex=cex, pch=pch,
-                                  col=if (missing(col)) "black" else col,
-                                  debug=debug-1)
-                          if (is.logical(fill) && fill) {
-                              mapPolygon(coastline[['longitude']], coastline[['latitude']], col='lightgray')
-                          } else {
-                              if (is.character(fill)) {
-                                  mapPolygon(coastline[['longitude']], coastline[['latitude']], col=fill)
-                              } else {
-                                  mapPolygon(coastline[['longitude']], coastline[['latitude']])
-                              }
-                          }
-                      } else {
-                          oceDebug(debug, "drawing an argo map without a projection\n")
-                          asp <- 1 / cos(mean(range(x@data$latitude, na.rm=TRUE)) * atan2(1, 1) / 45)
-                          plot(x@data$longitude, x@data$latitude, asp=asp,
-                               type=type, cex=cex, pch=pch,
-                               col=if (missing(col)) "black" else col,
-                               xlab=resizableLabel("longitude"), ylab=resizableLabel("latitude"), ...)
+                if (!is.null(projection)) {
+                    oceDebug(debug, "drawing an argo map with a projection\n")
+                    meanlat <- mean(x[['latitude']], na.rm=TRUE)
+                    meanlon <- mean(x[['longitude']], na.rm=TRUE)
+                    ## id <- pmatch(projection, "automatic")
+                    if (!is.na(pmatch(projection, "automatic"))) {
+                        projection <- if (meanlat > 70)
+                            paste("+proj=stere +lon_0=", meanlon, sep="") else "+proj=merc"
+                        oceDebug(debug, "using", projection, "projection (chosen automatically)\n")
+                    } else {
+                        oceDebug(debug, "using", projection, "projection (specified)\n")
+                    }
+                    mapPlot(x[["longitude"]], x[["latitude"]],
+                        projection=projection,
+                        type='p', cex=cex, pch=pch,
+                        col=col,
+                        debug=debug-1)
+                    if (is.logical(fill) && fill) {
+                        mapPolygon(coastline[['longitude']], coastline[['latitude']], col='lightgray')
+                    } else {
+                        if (is.character(fill)) {
+                            mapPolygon(coastline[['longitude']], coastline[['latitude']], col=fill)
+                        } else {
+                            mapPolygon(coastline[['longitude']], coastline[['latitude']])
+                        }
+                    }
+                } else {
+                    oceDebug(debug, "drawing an argo map without a projection\n")
+                    asp <- 1 / cos(mean(range(x@data$latitude, na.rm=TRUE)) * atan2(1, 1) / 45)
+                    plot(x@data$longitude, x@data$latitude, asp=asp,
+                        type=type, cex=cex, pch=pch,
+                        col=col,
+                        xlab=resizableLabel("longitude"), ylab=resizableLabel("latitude"), ...)
 
-                          if (haveCoastline) {
-                              if (!is.null(coastline@metadata$fillable) && coastline@metadata$fillable) {
-                                  polygon(coastline[["longitude"]], coastline[["latitude"]], col="lightgray", lwd=3/4)
-                                  polygon(coastline[["longitude"]]+360, coastline[["latitude"]], col="lightgray", lwd=3/4)
-                              } else {
-                                  lines(coastline[["longitude"]], coastline[["latitude"]], col="darkgray")
-                                  lines(coastline[["longitude"]]+360, coastline[["latitude"]], col="darkgray")
-                              }
-                          }
-                          if (!missing(coastline)) {
-                              polygon(coastline[["longitude"]], coastline[["latitude"]], col='lightgray')
-                              if (type[w] == 'l')
-                                  lines(x@data$longitude, x@data$latitude)
-                              else
-                                  points(x@data$longitude, x@data$latitude, cex=cex, pch=pch, col=if (!missing(col))col)
-                          }
-                      }
-                      par(mar=mar)
-                  } else if (which[w] == 2) {
-                      ## salinity timeseries
-                      if (0 != sum(!is.na(x@data$salinity))) {
-                          nlevels <- dim(x@data$salinity)[1]
-                          t <- if (length(level) > 1)
-                              numberAsPOSIXct(t(matrix(rep(x@data$time, nlevels), byrow=FALSE, ncol=nlevels)))
-                          else
-                              x@data$time
-                          oce.plot.ts(t, as.vector(x@data$salinity[level, ]),
-                                      ylab=resizableLabel("S", "y"), type=type,
-                                      col=if (missing(col)) "black" else col,
-                                      tformat=tformat, cex=cex)# , ...)
-                      } else {
-                          warning("no non-missing salinity data")
-                      }
-                  } else if (which[w] == 3) {
-                      ## temperature timeseries
-                      if (0 != sum(!is.na(x@data$temperature))) {
-                          nlevels <- dim(x@data$temperature)[1]
-                          t <- if (length(level) > 1)
-                              numberAsPOSIXct(t(matrix(rep(x@data$time, nlevels), byrow=FALSE, ncol=nlevels)))
-                          else
-                              x@data$time
-                          oce.plot.ts(t, x@data$temperature[level, ],
-                                      ylab=resizableLabel("T", "y"), type=type,
-                                      col=if (missing(col)) "black" else col,
-                                      tformat=tformat, ...)
-                      } else {
-                          warning("no non-missing temperature data")
-                      }
-                  } else if (which[w] == 4) {
-                      ## TS
-                      if (0 != sum(!is.na(x@data$temperature)) && 0 != sum(!is.na(x@data$salinity))) {
-                          plotTS(ctd, col=if (missing(col)) "black" else col, type=type, ..., debug=debug-1)
-                     } else {
-                          warning("no non-missing salinity data")
-                      }
-                  } else if (which[w] == 5) {
-                      ## S profile
-                      ## FIXME: how to handle the noise; if as below, document it
-                      plotProfile(ctd, xtype="salinity",
-                           Slim=quantile(x@data$salinity, c(0.01, 0.99), na.rm=TRUE),
-                           ylim=quantile(x@data$pressure, c(0.99, 0.01), na.rm=TRUE),
-                           col=if (missing(col)) "black" else col, type=type)
-                  } else if (which[w] == 6) {
-                      ## T profile
-                      ## FIXME: how to handle the noise; if as below, document it
-                      plotProfile(ctd, xtype="temperature",
-                           Tlim=quantile(x@data$temperature, c(0.01, 0.99), na.rm=TRUE),
-                           ylim=quantile(x@data$pressure, c(0.99, 0.01), na.rm=TRUE),
-                           col=if (missing(col)) "black" else col, type=type)
-                  } else {
-                      stop("Unknown value of which=", which[w], "\n", call.=FALSE)
-                  }
-              }
-              oceDebug(debug, "} # plot.argo()\n", unindent=1, style="bold")
-              invisible(NULL)
-          })
+                    if (haveCoastline) {
+                        if (!is.null(coastline@metadata$fillable) && coastline@metadata$fillable) {
+                            polygon(coastline[["longitude"]], coastline[["latitude"]], col="lightgray", lwd=3/4)
+                            polygon(coastline[["longitude"]]+360, coastline[["latitude"]], col="lightgray", lwd=3/4)
+                        } else {
+                            lines(coastline[["longitude"]], coastline[["latitude"]], col="darkgray")
+                            lines(coastline[["longitude"]]+360, coastline[["latitude"]], col="darkgray")
+                        }
+                    }
+                    if (!missing(coastline)) {
+                        polygon(coastline[["longitude"]], coastline[["latitude"]], col='lightgray')
+                        if (type[w] == 'l')
+                            lines(x@data$longitude, x@data$latitude)
+                        else
+                            points(x@data$longitude, x@data$latitude, cex=cex, pch=pch, col=col)
+                    }
+                }
+                par(mar=mar)
+            } else if (which[w] == 2) {
+                ## salinity timeseries
+                if (0 != sum(!is.na(x@data$salinity))) {
+                    nlevels <- dim(x@data$salinity)[1]
+                    t <- if (length(level) > 1)
+                        numberAsPOSIXct(t(matrix(rep(x@data$time, nlevels), byrow=FALSE, ncol=nlevels)))
+                    else
+                        x@data$time
+                    oce.plot.ts(t, as.vector(x@data$salinity[level, ]),
+                        ylab=resizableLabel("S", "y"),
+                        cex=cex, pch=pch, col=col, type=type,
+                        tformat=tformat)
+                } else {
+                    warning("no non-missing salinity data")
+                }
+            } else if (which[w] == 3) {
+                ## temperature timeseries
+                if (0 != sum(!is.na(x@data$temperature))) {
+                    nlevels <- dim(x@data$temperature)[1]
+                    t <- if (length(level) > 1)
+                        numberAsPOSIXct(t(matrix(rep(x@data$time, nlevels), byrow=FALSE, ncol=nlevels)))
+                    else
+                        x@data$time
+                    oce.plot.ts(t, x@data$temperature[level, ],
+                        ylab=resizableLabel("T", "y"),
+                        cex=cex, pch=pch, col=col, type=type,
+                        tformat=tformat)
+                } else {
+                    warning("no non-missing temperature data")
+                }
+            } else if (which[w] == 4) {
+                ## TS
+                if (0 != sum(!is.na(x@data$temperature)) && 0 != sum(!is.na(x@data$salinity))) {
+                    plotTS(ctd,
+                        cex=cex, pch=pch, col=col, type=type,
+                        debug=debug-1)
+                } else {
+                    warning("no non-missing salinity data")
+                }
+            } else if (which[w] == 5) {
+                ## S profile
+                ## FIXME: how to handle the noise; if as below, document it
+                plotProfile(ctd, xtype="salinity",
+                    Slim=quantile(x@data$salinity, c(0.01, 0.99), na.rm=TRUE),
+                    ylim=quantile(x@data$pressure, c(0.99, 0.01), na.rm=TRUE),
+                    cex=cex, pch=pch, col=col, type=type)
+            } else if (which[w] == 6) {
+                ## T profile
+                ## FIXME: how to handle the noise; if as below, document it
+                plotProfile(ctd, xtype="temperature",
+                    Tlim=quantile(x@data$temperature, c(0.01, 0.99), na.rm=TRUE),
+                    ylim=quantile(x@data$pressure, c(0.99, 0.01), na.rm=TRUE),
+                    cex=cex, pch=pch, col=col, type=type)
+            } else {
+                stop("Unknown value of which=", which[w], "\n", call.=FALSE)
+            }
+        }
+        oceDebug(debug, "} # plot.argo()\n", unindent=1, style="bold")
+        invisible(NULL)
+    })
 
 ## DEVELOPERS: please pattern functions and documentation on the 'ctd' code, for uniformity.
 ## DEVELOPERS: You will need to change the docs, and the 3 spots in the code
@@ -2008,7 +2042,7 @@ setMethod(f="plot",
 #' @references
 #' 1. Wong, Annie, Robert Keeley, Thierry Carval, and Argo Data Management Team.
 #' "Argo Quality Control Manual for CTD and Trajectory Data," January 1, 2020.
-#' \url{https://archimer.ifremer.fr/doc/00228/33951/}.
+#' `https://archimer.ifremer.fr/doc/00228/33951/`.
 #'
 #' @examples
 #' library(oce)
