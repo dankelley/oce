@@ -47,6 +47,7 @@
   cex,
   pch,
   labcex = 1,
+  transect = NULL,
   debug,
   ...
 )
@@ -195,7 +196,11 @@ a default is set up.}
 \item{labcex}{Size of characters in contour labels (passed to
 \code{\link[=contour]{contour()}}).}
 
-\item{debug}{an integer specifying whether debugging information is
+\item{transect}{An optional predefined set of stations (data frame with columns
+lat, lon, station).This is useful whencomparing an incomplet transects. Station
+needs to match with the station atribute in the section.}
+
+\item{debug}{An integer specifying whether debugging information is
 to be printed during the processing. This is a general parameter that
 is used by many \code{oce} functions. Generally, setting \code{debug=0}
 turns off the printing, while higher values suggest that more information
@@ -328,7 +333,7 @@ The documentation for \linkS4class{section} explains the
 structure of section objects, and also outlines the other functions dealing
 with them.
 
-Other functions that plot oce data: 
+Other functions that plot oce data:
 \code{\link{download.amsr}()},
 \code{\link{plot,adp-method}},
 \code{\link{plot,adv-method}},
@@ -357,7 +362,7 @@ Other functions that plot oce data:
 \code{\link{plotTS}()},
 \code{\link{tidem-class}}
 
-Other things related to section data: 
+Other things related to section data:
 \code{\link{[[,section-method}},
 \code{\link{[[<-,section-method}},
 \code{\link{as.section}()},
