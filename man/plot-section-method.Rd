@@ -47,7 +47,6 @@
   cex,
   pch,
   labcex = 1,
-  transect = NULL,
   debug,
   ...
 )
@@ -195,10 +194,6 @@ a default is set up.}
 
 \item{labcex}{Size of characters in contour labels (passed to
 \code{\link[=contour]{contour()}}).}
-
-\item{transect}{An optional predefined set of stations (data frame with columns
-lat, lon, station).This is useful whencomparing an incomplet transects. Station
-needs to match with the station atribute in the section.}
 
 \item{debug}{An integer specifying whether debugging information is
 to be printed during the processing. This is a general parameter that
