@@ -4237,22 +4237,26 @@ time.formats <- c("%b %d %Y %H:%M:%s", "%Y%m%d")
 #' [read.ctd()] scans it from a file.
 #'
 #' @examples
-#' ## For a simple ctd object
+#' # For a simple ctd object
 #' library(oce)
 #' data(ctd)
 #' plotTS(ctd)
 #'
-#' ## For a section object (note the outlier!)
+#' # For a section object (note the outlier!)
 #' data(section)
 #' plotTS(section)
 #'
-#' ## Adding a colormap based on a different variable, e.g. oxygen
+#' # For an argo object
+#' data(argo)
+#' plotTS(handleFlags(argo))
+#'
+#' # Oxygen-based colormap
 #' marOrig <- par("mar") # so later plots with palettes have same margins
 #' cm <- colormap(section[['oxygen']])
 #' drawPalette(colormap=cm, zlab='Oxygen')
 #' plotTS(section, pch=19, col=cm$zcol, mar=par('mar')) # the mar adjusts for the palette
 #'
-#' ## Coloring based on station:
+#' # Station-based colormap
 #' Tlim <- range(section[['temperature']], na.rm=TRUE)
 #' Slim <- range(section[['salinity']], na.rm=TRUE)
 #' cm <- colormap(seq_along(section[['latitude', 'byStation']]))
@@ -4265,9 +4269,16 @@ time.formats <- c("%b %d %Y %H:%M:%s", "%Y%m%d")
 #'     },
 #'     section[['station']], col=cm$zcol)
 #'
-#' ## Show TS for an argo object
-#' data(argo)
-#' plotTS(handleFlags(argo))
+#' # Add spiciness contours
+#' data(ctd)
+#' plotTS(ctd, eos="gsw") # MANDATORY so x=SA and y=CT
+#' usr <- par("usr")
+#' n <- 100
+#' SAgrid <- seq(usr[1], usr[2], length.out=n)
+#' CTgrid <- seq(usr[3], usr[4], length.out=n)
+#' g <- expand.grid(SA=SAgrid, CT=CTgrid)
+#' spiciness <- matrix(gsw::gsw_spiciness0(g$SA, g$CT), nrow=n)
+#' contour(SAgrid, CTgrid, spiciness, col=2, labcex=1, add=TRUE)
 #'
 #' @references
 #'
@@ -4285,32 +4296,32 @@ time.formats <- c("%b %d %Y %H:%M:%s", "%Y%m%d")
 #' @family functions that plot oce data
 #' @family things related to ctd data
 plotTS <- function (x,
-                    inSitu=FALSE,
-                    type='p',
-                    referencePressure=0,
-                    nlevels=6, levels,
-                    grid=TRUE,
-                    col.grid="lightgray",
-                    lty.grid="dotted",
-                    rho1000=FALSE,
-                    eos=getOption("oceEOS", default='gsw'),
-                    cex=par("cex"), col=par("col"), pch=par("pch"),
-                    bg="white", pt.bg="transparent",
-                    col.rho=gray(0.5),
-                    cex.rho=3/4*par("cex"),
-                    rotate=TRUE,
-                    useSmoothScatter=FALSE,
-                    xlab, ylab,
-                    Slim, Tlim,
-                    drawFreezing=TRUE,
-                    trimIsopycnals=TRUE,
-                    mgp=getOption("oceMgp"),
-                    mar=c(mgp[1]+1.5, mgp[1]+1.5, mgp[1], mgp[1]),
-                    lwd=par('lwd'), lty=par('lty'),
-                    lwd.rho=par("lwd"), lty.rho=par("lty"),
-                    add=FALSE, inset=FALSE,
-                    debug=getOption("oceDebug"),
-                    ...)
+    inSitu=FALSE,
+    type='p',
+    referencePressure=0,
+    nlevels=6, levels,
+    grid=TRUE,
+    col.grid="lightgray",
+    lty.grid="dotted",
+    rho1000=FALSE,
+    eos=getOption("oceEOS", default='gsw'),
+    cex=par("cex"), col=par("col"), pch=par("pch"),
+    bg="white", pt.bg="transparent",
+    col.rho=gray(0.5),
+    cex.rho=3/4*par("cex"),
+    rotate=TRUE,
+    useSmoothScatter=FALSE,
+    xlab, ylab,
+    Slim, Tlim,
+    drawFreezing=TRUE,
+    trimIsopycnals=TRUE,
+    mgp=getOption("oceMgp"),
+    mar=c(mgp[1]+1.5, mgp[1]+1.5, mgp[1], mgp[1]),
+    lwd=par('lwd'), lty=par('lty'),
+    lwd.rho=par("lwd"), lty.rho=par("lty"),
+    add=FALSE, inset=FALSE,
+    debug=getOption("oceDebug"),
+    ...)
 {
     oceDebug(debug, "plotTS(..., lwd.rho=", lwd.rho, ", lty.rho=", lty.rho, ",",
              "Slim=", if (!missing(Slim)) paste("c(", Slim[1], ",", Slim[2], ")") else "(missing)", ", ",
@@ -4544,9 +4555,11 @@ plotTS <- function (x,
 #' an image plot is used to show TS data density.
 #'
 #' @param nlevels suggested number of density levels (i.e. isopycnal curves);
-#' ignored if `levels` is supplied.
+#' ignored if `levels` is supplied.  If this is set to 0, no isopycnal
+#' are drawn (see also `levels`, next).
 #'
-#' @param levels optional density levels to draw.
+#' @param levels optional density levels to draw.  If this is `NULL`, then
+#' no isopycnals are drawn.
 #'
 #' @param rotate boolean, set to `TRUE` to write all density labels
 #' horizontally.
@@ -4593,9 +4606,9 @@ plotTS <- function (x,
 #'
 #' @author Dan Kelley
 drawIsopycnals <- function(nlevels=6, levels, rotate=TRUE, rho1000=FALSE, digits=2,
-                           eos=getOption("oceEOS", default='gsw'),
-                           trimIsopycnals=TRUE,
-                           cex=0.75*par('cex'), col="darkgray", lwd=par("lwd"), lty=par("lty"))
+    eos=getOption("oceEOS", default='gsw'),
+    trimIsopycnals=TRUE,
+    cex=0.75*par('cex'), col="darkgray", lwd=par("lwd"), lty=par("lty"))
 {
     eos <- match.arg(eos, c("unesco", "gsw"))
     usr <- par("usr")
@@ -4614,6 +4627,8 @@ drawIsopycnals <- function(nlevels=6, levels, rotate=TRUE, rho1000=FALSE, digits
     }
     rhoMin <- min(rhoCorners, na.rm=TRUE)
     rhoMax <- max(rhoCorners, na.rm=TRUE)
+    if (nlevels < 1L)
+        levels <- NULL
     if (missing(levels)) {
         levels <- pretty(c(rhoMin, rhoMax), n=nlevels)
         ## Trim first and last values, since not in box
