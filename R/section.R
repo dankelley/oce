@@ -935,7 +935,7 @@ setMethod(f="subset",
 #' @author Dan Kelley
 #'
 #' @family things related to section data
-sectionSort <- function(section, by, decreasing = FALSE)
+sectionSort <- function(section, by, decreasing=FALSE)
 {
     if (missing(by)) {
         by <- "stationId"
@@ -950,15 +950,15 @@ sectionSort <- function(section, by, decreasing = FALSE)
     if (by == "stationId") {
         o <- order(section@metadata$stationId)
     } else if (by == "distance") {
-        o <- order(section[["distance", "byStation"]], decreasing = decreasing)
+        o <- order(section[["distance", "byStation"]], decreasing=decreasing)
     } else if (by == "longitude") {
-        o <- order(section[["longitude", "byStation"]], decreasing = decreasing)
+        o <- order(section[["longitude", "byStation"]], decreasing=decreasing)
     } else if (by == "latitude") {
-        o <- order(section[["latitude", "byStation"]], decreasing = decreasing)
+        o <- order(section[["latitude", "byStation"]], decreasing=decreasing)
     } else if (by == "time") {
         ## FIXME: should check to see if startTime exists first?
         times <- unlist(lapply(section@data$station, function(x) x@metadata$startTime))
-        o <- order(times, decreasing = decreasing)
+        o <- order(times, decreasing=decreasing)
     } else if (by == "spine") {
         stop("not implemented for spine")
     } else {
@@ -1931,7 +1931,7 @@ setMethod(f="plot",
             par(mar=omar)
             oceDebug(debug, "} # plotSubsection()\n", unindent=1)
         }                        # plotSubsection()
-        opar <- par(no.readonly = TRUE)
+        opar <- par(no.readonly=TRUE)
         if (length(which) > 1) on.exit(par(opar))
         which.xtype <- match(xtype, c("distance", "track", "longitude", "latitude", "time", "spine"), nomatch=0)
         if (0 == which.xtype)
