@@ -182,22 +182,26 @@ to 33C, as in McDougall et al. (2003 section 3), even though the
 "funnel" imposes no upper limit on this variable.
 }
 \examples{
-## For a simple ctd object
+# For a simple ctd object
 library(oce)
 data(ctd)
 plotTS(ctd)
 
-## For a section object (note the outlier!)
+# For a section object (note the outlier!)
 data(section)
 plotTS(section)
 
-## Adding a colormap based on a different variable, e.g. oxygen
+# For an argo object
+data(argo)
+plotTS(handleFlags(argo))
+
+# Oxygen-based colormap
 marOrig <- par("mar") # so later plots with palettes have same margins
 cm <- colormap(section[['oxygen']])
 drawPalette(colormap=cm, zlab='Oxygen')
 plotTS(section, pch=19, col=cm$zcol, mar=par('mar')) # the mar adjusts for the palette
 
-## Coloring based on station:
+# Station-based colormap
 Tlim <- range(section[['temperature']], na.rm=TRUE)
 Slim <- range(section[['salinity']], na.rm=TRUE)
 cm <- colormap(seq_along(section[['latitude', 'byStation']]))
@@ -210,9 +214,16 @@ jnk <- mapply(
     },
     section[['station']], col=cm$zcol)
 
-## Show TS for an argo object
-data(argo)
-plotTS(handleFlags(argo))
+# Add spiciness contours
+data(ctd)
+plotTS(ctd, eos="gsw") # MANDATORY so x=SA and y=CT
+usr <- par("usr")
+n <- 100
+SAgrid <- seq(usr[1], usr[2], length.out=n)
+CTgrid <- seq(usr[3], usr[4], length.out=n)
+g <- expand.grid(SA=SAgrid, CT=CTgrid)
+spiciness <- matrix(gsw::gsw_spiciness0(g$SA, g$CT), nrow=n)
+contour(SAgrid, CTgrid, spiciness, col=2, labcex=1, add=TRUE)
 
 }
 \references{
