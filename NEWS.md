@@ -2,10 +2,12 @@
 
 * Add `read.ctd.ssda()`.
 * Add `read.argo.copernicus()`.
-* Speed up some tests.
+* Add `sectionSort()` parameter `decreasing` (thanks to M. Renner).
 * Address unused-variable warnings in C++ code.
+* Address byte-order mark problem in `read.met()` tests.
 * Change most documentation hyperlinks to plain-text.
 * Change `read.met()` file encoding; remove sample data.
+* Speed up some tests.
 
 # oce 1.7.2
 

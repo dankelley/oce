@@ -1,8 +1,7 @@
-# Plans for submission of 1.7-3
+# Submission of 1.7-3
 
-* Speed up some tests.
-* Address unused-variable warnings in C++ code.
-* Change most URLs in docs to code blocks.
+* Version 1.7-3 adds new features, and addresses an issue pointed out by Kurt
+  Hornik on 2022-05-09 relating to the encoding of a meteorological test file.
 
 # Submission of 1.7-2
 

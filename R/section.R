@@ -914,23 +914,20 @@ setMethod(f="subset",
 #' distance from the first station, `"longitude"`, for longitude,
 #' `"latitude"` for latitude, and `"time"`, for time.
 #'
-#' @param decreasing Default is FALSE.
+#' @param decreasing A logical value indicating whether to sort in decreasing
+#' order.  The default is FALSE. (Thanks to Martin Renner for adding this
+#' parameter.)
 #'
 #' @return object A [section-class] object that has been smoothed,
 #' so its data fields will station-to-station variation than
 #' is the case for the input section, \code{x}.
 #'
 #' @examples
-#'\dontrun{
-#' # Eastern North Atlantic, showing Mediterranean water;
-#' # sorting by longitude makes it easier to compare
-#' # the map and the section.
 #' library(oce)
 #' data(section)
-#' s <- sectionGrid(subset(section, -30 <= longitude))
-#' ss <- sectionSort(ss, by="longitude")
-#' plot(ss)
-#'}
+#' sectionByLongitude <- sectionSort(section, by="longitude")
+#' head(section)
+#' head(sectionByLongitude)
 #'
 #' @author Dan Kelley
 #'
@@ -948,7 +945,7 @@ sectionSort <- function(section, by, decreasing=FALSE)
     }
     res <- section
     if (by == "stationId") {
-        o <- order(section@metadata$stationId)
+        o <- order(section@metadata$stationId, decreasing=decreasing)
     } else if (by == "distance") {
         o <- order(section[["distance", "byStation"]], decreasing=decreasing)
     } else if (by == "longitude") {
@@ -962,7 +959,7 @@ sectionSort <- function(section, by, decreasing=FALSE)
     } else if (by == "spine") {
         stop("not implemented for spine")
     } else {
-        o <- seq_along(section[["station"]]) ## cannot ever get here, actually
+        o <- seq_along(section[["station"]]) # can't get here, actually
     }
     res@metadata$stationId <- res@metadata$stationId[o]
     res@metadata$longitude <- res@metadata$longitude[o]
