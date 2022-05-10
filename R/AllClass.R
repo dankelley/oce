@@ -555,7 +555,7 @@ setMethod(f="[[",
               } else if (i == paste("sound", "speed")) {
                   return(if (missing(j)) swSoundSpeed(x) else swSoundSpeed(x, eos=j))
               } else if (i == "spice") {
-                  return(swSpice(x))
+                  return(if (missing(j)) swSpice(x) else swSpice(x, eos=j))
               } else if (i == "SR") {
                   return(swSR(x))
               } else if (i == "Sstar") {

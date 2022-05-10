@@ -2498,7 +2498,7 @@ swSpecificHeat <- function(salinity, temperature=NULL, pressure=0,
 #'
 #' @family functions that calculate seawater properties
 swSpice <- function(salinity, temperature=NULL, pressure=NULL,
-                    longitude=NULL, latitude=NULL, eos=getOption("oceEOS", default="gsw"))
+    longitude=NULL, latitude=NULL, eos=getOption("oceEOS", default="gsw"))
 {
     if (missing(salinity))
         stop("must provide salinity")
