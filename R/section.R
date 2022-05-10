@@ -914,6 +914,8 @@ setMethod(f="subset",
 #' distance from the first station, `"longitude"`, for longitude,
 #' `"latitude"` for latitude, and `"time"`, for time.
 #'
+#' @param decreasing Default is FALSE.
+#'
 #' @return object A [section-class] object that has been smoothed,
 #' so its data fields will station-to-station variation than
 #' is the case for the input section, \code{x}.
@@ -933,7 +935,7 @@ setMethod(f="subset",
 #' @author Dan Kelley
 #'
 #' @family things related to section data
-sectionSort <- function(section, by)
+sectionSort <- function(section, by, decreasing = FALSE)
 {
     if (missing(by)) {
         by <- "stationId"
@@ -948,15 +950,15 @@ sectionSort <- function(section, by)
     if (by == "stationId") {
         o <- order(section@metadata$stationId)
     } else if (by == "distance") {
-        o <- order(section[["distance", "byStation"]])
+        o <- order(section[["distance", "byStation"]], decreasing = decreasing)
     } else if (by == "longitude") {
-        o <- order(section[["longitude", "byStation"]])
+        o <- order(section[["longitude", "byStation"]], decreasing = decreasing)
     } else if (by == "latitude") {
-        o <- order(section[["latitude", "byStation"]])
+        o <- order(section[["latitude", "byStation"]], decreasing = decreasing)
     } else if (by == "time") {
         ## FIXME: should check to see if startTime exists first?
         times <- unlist(lapply(section@data$station, function(x) x@metadata$startTime))
-        o <- order(times)
+        o <- order(times, decreasing = decreasing)
     } else if (by == "spine") {
         stop("not implemented for spine")
     } else {
