@@ -5,6 +5,9 @@
 
 <!-- badges: start -->
 
+[![Project Status: Active – The project has reached a stable, usable
+state and is being actively
+developed.](http://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/)
 [![status](https://joss.theoj.org/papers/10.21105/joss.03594/status.svg)](https://joss.theoj.org/papers/10.21105/joss.03594)
 [![R-CMD-check](https://github.com/dankelley/oce/workflows/R-CMD-check/badge.svg)](https://github.com/dankelley/oce/actions)
 [![Codecov test

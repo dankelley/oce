@@ -74,3 +74,4 @@ inst/joss
 README.tex
 ^check_package.R$
 
+^codemeta\.json$
