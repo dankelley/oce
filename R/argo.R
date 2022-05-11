@@ -1807,7 +1807,7 @@ setMethod(f="plot",
     definition=function (x, which=1, level,
         coastline=c("best", "coastlineWorld", "coastlineWorldMedium",
             "coastlineWorldFine", "none"),
-        cex=1, pch=1, type='p', col, fill=FALSE,
+        cex=1, pch=1, type='p', col=1, fill=FALSE,
         projection=NULL,
         mgp=getOption("oceMgp"), mar=c(mgp[1]+1.5, mgp[1]+1.5, 1.5, 1.5),
         tformat,
@@ -1932,7 +1932,7 @@ setMethod(f="plot",
                     mapPlot(x[["longitude"]], x[["latitude"]],
                         projection=projection,
                         type='p', cex=cex, pch=pch,
-                        col=if (missing(col)) "black" else col,
+                        col=col,
                         debug=debug-1)
                     if (is.logical(fill) && fill) {
                         mapPolygon(coastline[['longitude']], coastline[['latitude']], col='lightgray')
@@ -1948,7 +1948,7 @@ setMethod(f="plot",
                     asp <- 1 / cos(mean(range(x@data$latitude, na.rm=TRUE)) * atan2(1, 1) / 45)
                     plot(x@data$longitude, x@data$latitude, asp=asp,
                         type=type, cex=cex, pch=pch,
-                        col=if (missing(col)) "black" else col,
+                        col=col,
                         xlab=resizableLabel("longitude"), ylab=resizableLabel("latitude"), ...)
 
                     if (haveCoastline) {
@@ -1965,7 +1965,7 @@ setMethod(f="plot",
                         if (type[w] == 'l')
                             lines(x@data$longitude, x@data$latitude)
                         else
-                            points(x@data$longitude, x@data$latitude, cex=cex, pch=pch, col=if (!missing(col))col)
+                            points(x@data$longitude, x@data$latitude, cex=cex, pch=pch, col=col)
                     }
                 }
                 par(mar=mar)
@@ -1978,9 +1978,9 @@ setMethod(f="plot",
                     else
                         x@data$time
                     oce.plot.ts(t, as.vector(x@data$salinity[level, ]),
-                        ylab=resizableLabel("S", "y"), type=type,
-                        col=if (missing(col)) "black" else col,
-                        tformat=tformat, cex=cex)# , ...)
+                        ylab=resizableLabel("S", "y"),
+                        cex=cex, pch=pch, col=col, type=type,
+                        tformat=tformat)
                 } else {
                     warning("no non-missing salinity data")
                 }
@@ -1993,16 +1993,18 @@ setMethod(f="plot",
                     else
                         x@data$time
                     oce.plot.ts(t, x@data$temperature[level, ],
-                        ylab=resizableLabel("T", "y"), type=type,
-                        col=if (missing(col)) "black" else col,
-                        tformat=tformat, ...)
+                        ylab=resizableLabel("T", "y"),
+                        cex=cex, pch=pch, col=col, type=type,
+                        tformat=tformat)
                 } else {
                     warning("no non-missing temperature data")
                 }
             } else if (which[w] == 4) {
                 ## TS
                 if (0 != sum(!is.na(x@data$temperature)) && 0 != sum(!is.na(x@data$salinity))) {
-                    plotTS(ctd, col=if (missing(col)) "black" else col, type=type, ..., debug=debug-1)
+                    plotTS(ctd,
+                        cex=cex, pch=pch, col=col, type=type,
+                        debug=debug-1)
                 } else {
                     warning("no non-missing salinity data")
                 }
@@ -2012,14 +2014,14 @@ setMethod(f="plot",
                 plotProfile(ctd, xtype="salinity",
                     Slim=quantile(x@data$salinity, c(0.01, 0.99), na.rm=TRUE),
                     ylim=quantile(x@data$pressure, c(0.99, 0.01), na.rm=TRUE),
-                    col=if (missing(col)) "black" else col, type=type)
+                    cex=cex, pch=pch, col=col, type=type)
             } else if (which[w] == 6) {
                 ## T profile
                 ## FIXME: how to handle the noise; if as below, document it
                 plotProfile(ctd, xtype="temperature",
                     Tlim=quantile(x@data$temperature, c(0.01, 0.99), na.rm=TRUE),
                     ylim=quantile(x@data$pressure, c(0.99, 0.01), na.rm=TRUE),
-                    col=if (missing(col)) "black" else col, type=type)
+                    cex=cex, pch=pch, col=col, type=type)
             } else {
                 stop("Unknown value of which=", which[w], "\n", call.=FALSE)
             }

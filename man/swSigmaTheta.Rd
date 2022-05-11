@@ -53,7 +53,10 @@ Potential density anomaly (kg/m\eqn{^3}{^3}), defined as
 Compute the potential density (minus 1000 kg/m^3) that seawater would have if raised
 adiabatically to the surface.  In the UNESCO system, this quantity is
 is denoted \eqn{\sigma_\theta}{sigma-theta} (hence the function name), but in
-the GSW system, it is denoted \code{sigma0}.
+the GSW system, a somewhat related quantity is denoted \code{sigma0}. (In a
+deep-water CTD cast, the RMS deviation between sigma-theta and sigma0 is
+typically of order 0.0003 kg/m^3, corresponding to a temperature shift of
+about 0.002C, so the distinction between the quantities is not large.)
 }
 \details{
 If the first argument is an \code{oce} object, then salinity, etc., are

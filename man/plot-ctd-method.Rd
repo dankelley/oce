@@ -229,6 +229,7 @@ frequency; in that case, it is passed to \code{\link[=swN2]{swN2()}}.}
 \item{keepNA}{logical value indicating whether \code{NA} values
 will yield breaks in lines drawn if \code{type} is \code{b}, \code{l}, or \code{o}.
 The default value is \code{FALSE}.  Setting \code{keepNA} to \code{TRUE}
+can be helpful when working with multiple profiles
 strung together into one \linkS4class{ctd} object, which otherwise
 would have extraneous lines joining the deepest point in one
 profile to the shallowest in the next profile.}
@@ -403,10 +404,12 @@ Other things related to ctd data:
 \code{\link{plotProfile}()},
 \code{\link{plotScan}()},
 \code{\link{plotTS}()},
+\code{\link{read.ctd.aml}()},
 \code{\link{read.ctd.itp}()},
 \code{\link{read.ctd.odf}()},
 \code{\link{read.ctd.odv}()},
 \code{\link{read.ctd.sbe}()},
+\code{\link{read.ctd.ssda}()},
 \code{\link{read.ctd.woce.other}()},
 \code{\link{read.ctd.woce}()},
 \code{\link{read.ctd}()},

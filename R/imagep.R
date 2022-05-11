@@ -1081,10 +1081,11 @@ imagep <- function(x, y, z,
             stop("must supply z")
     }
     z[!is.finite(z)] <- NA # so range(z, na.rm=TRUE) will not be thwarted Inf
-    oceDebug(debug, "range(z):", range(z, na.rm=TRUE), "\n")
+    oceDebug(debug, "range(z):", paste(range(z, na.rm=TRUE), collapse=" to "), "\n")
     xIsTime <- inherits(x, "POSIXt") || inherits(x, "POSIXct") || inherits(x, "POSIXlt")
     # Handle TRUE/FALSE decimation
     dim <- dim(z)
+    oceDebug(debug, "dim(z): ", paste(dim(z), paste=" "), "\n")
     decimateLogical <- is.logical(decimate)
     if (decimateLogical) {
         ## this block makes decimate be a vector of length 2
@@ -1128,7 +1129,7 @@ imagep <- function(x, y, z,
     if (decimate[1] > 1) {
         ilook <- seq.int(1, dim[1], by=decimate[1])
         x <- x[ilook]
-        z <- z[ilook, ]
+        z <- z[ilook, , drop=FALSE]
         oceDebug(debug, "ilook:", paste(ilook[1:4], collapse=" "), "...\n")
         if (decimateLogical)
             warning("auto-decimating first index of large image by ", decimate[1], "; use decimate=FALSE to prevent this")
@@ -1136,7 +1137,7 @@ imagep <- function(x, y, z,
     if (decimate[2] > 1) {
         jlook <- seq.int(1, dim[2], by=decimate[2])
         y <- y[jlook]
-        z <- z[, jlook]
+        z <- z[, jlook, drop=FALSE]
         oceDebug(debug, "jlook:", paste(jlook[1:4], collapse=" "), "...\n")
         if (decimateLogical)
             warning("auto-decimating second index of large image by ", decimate[2], "; use decimate=FALSE to prevent this")

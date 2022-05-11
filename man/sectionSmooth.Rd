@@ -50,6 +50,7 @@ x grid will equal the input x grid.}
 
 \item{yg, ygl}{similar to \code{xg} and \code{xgl}, but for pressure. (Note that
 trimming to the input \code{y} is not done, as it is for \code{xg} and \code{x}.)
+If \code{yg} is not given, it is determined from the deepest station in the section.
 If \code{ygl} was not given, then a grid is constructed to span the pressures
 of that deepest station with \code{ygl} elements. On the other hand,
 if \code{ygl} was not given, then the y grid will constructed from the

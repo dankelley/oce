@@ -812,8 +812,10 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, tz=getOption("oceTz"),
                         tz="UTC")
     soundSpeed <- 0.1 * readBin(d$buf[pointer2 + 17], "integer", size=2, n=N, signed=FALSE, endian="little")
     temperature <- 0.01 * readBin(d$buf[pointer2 + 19], "integer", size=2, n=N, signed=FALSE, endian="little")
-    pressure <- 0.001 * readBin(d$buf[pointer2 + 21], "integer", size=2, n=N, signed=FALSE, endian="little")
-    heading <- 0.01 * readBin(d$buf[pointer2 + 25], "integer", size=2, n=N, endian="little")
+    # FIXME: docs say pressure is uint32, but R does not handle unsigned 32-bit chunks
+    #TEST<-list(buf=d$buf, pointer4=pointer4);save(TEST,file="TEST.rda")
+    pressure <- 0.001 * readBin(d$buf[pointer4 + 21], "integer", size=4, n=N, endian="little")
+    heading <- 0.01 * readBin(d$buf[pointer2 + 25], "integer", size=2, n=N, signed=FALSE, endian="little")
     pitch <- 0.01 * readBin(d$buf[pointer2 + 27], "integer", size=2, n=N, endian="little")
     roll <- 0.01 * readBin(d$buf[pointer2 + 29], "integer", size=2, n=N, endian="little")
     ## BCC (beam, coordinate system, and cell) uses packed bits to hold info on

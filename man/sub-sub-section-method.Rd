@@ -75,6 +75,12 @@ up for every station.
 
 If \code{j} is \code{"byStation"}, then a list is returned, with
 one (unnamed) item per station.
+
+If \code{j} is \code{"grid:distance-pressure"} or \code{"grid:time-pressure"}, then a gridded
+representation of \code{i} is returned, as a list with elements:
+\code{distance} (in km) or \code{time} (in POSIXct); \code{pressure} (in dbar) and
+\code{field} (in whatever unit is used for \code{i}). See the
+examples in the documentation for \code{\link[=plot,section-method]{plot,section-method()}}.
 }
 
 \section{Details of the General Method}{

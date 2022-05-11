@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-3</span>
       </span>
     </div>
 
@@ -73,45 +73,37 @@
     </div>
 
     <div class="section level2">
+<h2 class="page-header" data-toc-text="1.7.3" id="oce-173">oce 1.7.3<a class="anchor" aria-label="anchor" href="#oce-173"></a></h2>
+<ul><li>Add <code><a href="../reference/read.ctd.ssda.html">read.ctd.ssda()</a></code>.</li>
+<li>Add <code><a href="../reference/read.argo.copernicus.html">read.argo.copernicus()</a></code>.</li>
+<li>Add <code><a href="../reference/sectionSort.html">sectionSort()</a></code> parameter <code>decreasing</code> (thanks to M. Renner).</li>
+<li>Address unused-variable warnings in C++ code.</li>
+<li>Address byte-order mark problem in <code><a href="../reference/read.met.html">read.met()</a></code> tests.</li>
+<li>Change most documentation hyperlinks to plain-text.</li>
+<li>Change <code><a href="../reference/read.met.html">read.met()</a></code> file encoding; remove sample data.</li>
+<li>Speed up some tests.</li>
+</ul></div>
+    <div class="section level2">
 <h2 class="page-header" data-toc-text="1.7.2" id="oce-172">oce 1.7.2<a class="anchor" aria-label="anchor" href="#oce-172"></a></h2>
 <div class="section level3">
 <h3 id="version-1-7-2">Version 1.7.2<a class="anchor" aria-label="anchor" href="#version-1-7-2"></a></h3>
-<ul><li>Remove a link to
-<code>https://pubs.usgs.gov/pp/1395/report.pdf</code>, which was
-reported as unreachable during the attempted CRAN submission of version
-1.7.1.</li>
+<ul><li>Remove a link to <code>https://pubs.usgs.gov/pp/1395/report.pdf</code>, which was reported as unreachable during the attempted CRAN submission of version 1.7.1.</li>
 </ul></div>
 <div class="section level3">
 <h3 id="version-1-7-2-1">Version 1.7.1<a class="anchor" aria-label="anchor" href="#version-1-7-2-1"></a></h3>
-<ul><li>Fix error in comparing a <code><a href="https://rdrr.io/r/base/class.html" class="external-link">class()</a></code> result with a string,
-which was reported as an error during the attempted CRAN submission of
-version 1.7.1.</li>
+<ul><li>Fix error in comparing a <code><a href="https://rdrr.io/r/base/class.html" class="external-link">class()</a></code> result with a string, which was reported as an error during the attempted CRAN submission of version 1.7.0.</li>
 </ul></div>
 <div class="section level3">
 <h3 id="version-1-7-2-2">Version 1.7.0<a class="anchor" aria-label="anchor" href="#version-1-7-2-2"></a></h3>
-<ul><li>Fix CRAN-check warning about 2 uninitialized variables on the
-<code>r-devel-linux-x86_64-debian-gcc</code> test system. (We thank K.
-Hornik, for an email dated 2022-03-16 notifying us about the
-problem.)</li>
-<li>Fix CRAN-check error on the
-<code>r-devel-linux-x86_6-debian-clang</code>,
-<code>r-devel-linux-x86_6-fedora-clang</code> and
-<code>r-devel-linux-x86_6-fedora-gcc</code> test systems, relating to a
-byte-order-mark in a test file, which is evidently treated differently
-on different systems.</li>
-<li>Remove a kriging example because it causes CRAN-check problems on
-<code>r-devel-linux-*</code> machines (but, curiously, no other machines
-or systems).</li>
+<ul><li>Fix CRAN-check warning about 2 uninitialized variables on the <code>r-devel-linux-x86_64-debian-gcc</code> test system. (We thank K. Hornik, for an email dated 2022-03-16 notifying us about the problem.)</li>
+<li>Fix CRAN-check error on the <code>r-devel-linux-x86_6-debian-clang</code>, <code>r-devel-linux-x86_6-fedora-clang</code> and <code>r-devel-linux-x86_6-fedora-gcc</code> test systems, relating to a byte-order-mark in a test file, which is evidently treated differently on different systems.</li>
+<li>Remove a kriging example because it causes CRAN-check problems on <code>r-devel-linux-*</code> machines (but, curiously, no other machines or systems).</li>
 <li>Change <code><a href="../reference/mapTissot.html">mapTissot()</a></code> to trim shapes to earth limits.</li>
-<li>Alter this <code>NEWS.md</code> file so
-<code><a href="https://pkgdown.r-lib.org/reference/build_news.html" class="external-link">pkgdown::build_news()</a></code> will notice the subsections.</li>
+<li>Alter this <code>NEWS.md</code> file so <code><a href="https://pkgdown.r-lib.org/reference/build_news.html" class="external-link">pkgdown::build_news()</a></code> will notice the subsections.</li>
 <li>Add <code><a href="../reference/read.ctd.aml.html">read.ctd.aml()</a></code>.</li>
-<li>Change <code><a href="../reference/read.met.html">read.met()</a></code> to handle a new <code>encoding</code>
-argument.</li>
-<li>Fix <code><a href="../reference/drawPalette.html">drawPalette()</a></code> to obey the <code>at</code> and
-<code>labels</code> arguments.</li>
-<li>Fix <code>plot,ctd-method()</code> to recognize
-<code>which=13</code> for spice.</li>
+<li>Change <code><a href="../reference/read.met.html">read.met()</a></code> to handle a new <code>encoding</code> argument.</li>
+<li>Fix <code><a href="../reference/drawPalette.html">drawPalette()</a></code> to obey the <code>at</code> and <code>labels</code> arguments.</li>
+<li>Fix <code>plot,ctd-method()</code> to recognize <code>which=13</code> for spice.</li>
 </ul></div>
 <div class="section level3">
 <h3 id="version-on-cran-1-7-2">Version 1.6.1 (on CRAN)<a class="anchor" aria-label="anchor" href="#version-on-cran-1-7-2"></a></h3>
@@ -119,12 +111,12 @@ argument.</li>
 <li>Fix “length_1” error (thanks to B. Ripley for the heads-up).</li>
 </ul></div>
 <div class="section level3">
-<h3 id="160-1-7-2">1.6.0<a class="anchor" aria-label="anchor" href="#160-1-7-2"></a></h3>
+<h3 id="id_160-1-7-2">1.6.0<a class="anchor" aria-label="anchor" href="#id_160-1-7-2"></a></h3>
 <ul><li>Fix image-size declarations in 3 man pages (required by CRAN).</li>
 <li>Improve sub-class vignette.</li>
 </ul></div>
 <div class="section level3">
-<h3 id="150-on-cran-1-7-2">1.5.0 (on CRAN)<a class="anchor" aria-label="anchor" href="#150-on-cran-1-7-2"></a></h3>
+<h3 id="id_150-on-cran-1-7-2">1.5.0 (on CRAN)<a class="anchor" aria-label="anchor" href="#id_150-on-cran-1-7-2"></a></h3>
 <ul><li>Add <code>[["?"]]</code> facility to all objects.</li>
 <li>Add <code>showNA</code> argument to <code><a href="../reference/vectorShow.html">vectorShow()</a></code>.</li>
 <li>Add <code><a href="../reference/adpConvertRawToNumeric.html">adpConvertRawToNumeric()</a></code>.</li>
@@ -133,174 +125,117 @@ argument.</li>
 <li>Add <code><a href="../reference/labelWithUnit.html">labelWithUnit()</a></code>.</li>
 <li>Add <code><a href="../reference/swSR.html">swSR()</a></code>.</li>
 <li>Add <code><a href="../reference/swSstar.html">swSstar()</a></code>.</li>
-<li>Change <code><a href="../reference/as.ctd.html">as.ctd()</a></code> to drop <code>other</code> parameter,
-deprecated 4y ago.</li>
-<li>Change <code><a href="../reference/read.odf.html">read.odf()</a></code> to handle more CODE and UNIT
-values.</li>
-<li>Change <code><a href="../reference/oce.plot.ts.html">oce.plot.ts()</a></code> by adding <code>simplify</code>
-argument.</li>
-<li>Change <code>plot,section-method()</code>, correcting temperature
-label to “T” and adding many more plot types.</li>
+<li>Change <code><a href="../reference/as.ctd.html">as.ctd()</a></code> to drop <code>other</code> parameter, deprecated 4y ago.</li>
+<li>Change <code><a href="../reference/read.odf.html">read.odf()</a></code> to handle more CODE and UNIT values.</li>
+<li>Change <code><a href="../reference/oce.plot.ts.html">oce.plot.ts()</a></code> by adding <code>simplify</code> argument.</li>
+<li>Change <code>plot,section-method()</code>, correcting temperature label to “T” and adding many more plot types.</li>
 <li>Change <code><a href="../reference/pwelch.html">pwelch()</a></code>, improving low-frequency results.</li>
-<li>Fix <code>[[</code> to yield ITS90 temperature for all classes, not
-just <code>ctd</code>.</li>
-<li>Fix <code><a href="../reference/as.ctd.html">as.ctd()</a></code> handling of temperature scale of first
-argument.</li>
-<li>Fix <code><a href="../reference/as.section.html">as.section()</a></code> handling of list of <code>argo</code>
-objects as first argument.</li>
-<li>Fix <code><a href="../reference/colormap.html">colormap()</a></code> handling of <code>name</code>
-argument.</li>
-<li>Mark <code><a href="../reference/byteToBinary.html">byteToBinary()</a></code> as defunct (slated for removal in
-1.6.0).</li>
-<li>Mark <code><a href="../reference/renameData.html">renameData()</a></code> as defunct (slated for removal in
-1.6.0).</li>
+<li>Fix <code>[[</code> to yield ITS90 temperature for all classes, not just <code>ctd</code>.</li>
+<li>Fix <code><a href="../reference/as.ctd.html">as.ctd()</a></code> handling of temperature scale of first argument.</li>
+<li>Fix <code><a href="../reference/as.section.html">as.section()</a></code> handling of list of <code>argo</code> objects as first argument.</li>
+<li>Fix <code><a href="../reference/colormap.html">colormap()</a></code> handling of <code>name</code> argument.</li>
+<li>Mark <code><a href="../reference/byteToBinary.html">byteToBinary()</a></code> as defunct (slated for removal in 1.6.0).</li>
+<li>Mark <code><a href="../reference/renameData.html">renameData()</a></code> as defunct (slated for removal in 1.6.0).</li>
 </ul></div>
 <div class="section level3">
-<h3 id="140-1-7-2">1.4.0<a class="anchor" aria-label="anchor" href="#140-1-7-2"></a></h3>
+<h3 id="id_140-1-7-2">1.4.0<a class="anchor" aria-label="anchor" href="#id_140-1-7-2"></a></h3>
 <ul><li>
-<code><a href="../reference/colormap.html">colormap()</a></code> uses <code>oceColorsViridis</code> as
-default colour scheme.</li>
+<code><a href="../reference/colormap.html">colormap()</a></code> uses <code>oceColorsViridis</code> as default colour scheme.</li>
 <li>
 <code><a href="../reference/download.topo.html">download.topo()</a></code> uses new NOAA server.</li>
 <li>
-<code><a href="../reference/mapPlot.html">mapPlot()</a></code> docs warn about problems with version 0.9-8
-of sf package.</li>
+<code><a href="../reference/mapPlot.html">mapPlot()</a></code> docs warn about problems with version 0.9-8 of sf package.</li>
 <li>
 <code><a href="../reference/plotProfile.html">plotProfile()</a></code> handles units of added columns.</li>
 <li>
 <code><a href="../reference/read.argo.html">read.argo()</a></code> reads more metadata.</li>
 </ul></div>
 <div class="section level3">
-<h3 id="130-1-7-2">1.3.0<a class="anchor" aria-label="anchor" href="#130-1-7-2"></a></h3>
+<h3 id="id_130-1-7-2">1.3.0<a class="anchor" aria-label="anchor" href="#id_130-1-7-2"></a></h3>
 <ul><li>Remove a broken link (OK locally but failing in CRAN tests).</li>
-<li>Fix an error in the example for
-<code>setFlags,ctd-method</code>.</li>
+<li>Fix an error in the example for <code>setFlags,ctd-method</code>.</li>
 <li>Add <code><a href="../reference/addSpine.html">addSpine()</a></code> for defining section spines.</li>
 <li>Add <code><a href="../reference/angle2hms.html">angle2hms()</a></code>.</li>
 <li>Add <code><a href="../reference/argoJuldToTime.html">argoJuldToTime()</a></code>.</li>
-<li>Add <code>data(amsr)</code> and improve
-<code>subset,amsr-method()</code>.</li>
-<li>Add <code>data(tidalCurrent)</code> dataset of tidal currents from
-Foreman.</li>
+<li>Add <code>data(amsr)</code> and improve <code>subset,amsr-method()</code>.</li>
+<li>Add <code>data(tidalCurrent)</code> dataset of tidal currents from Foreman.</li>
 <li>Add <code><a href="../reference/oceAxis.html">oceAxis()</a></code>.</li>
-<li>Add <code><a href="../reference/preferAdjusted.html">preferAdjusted()</a></code> for <code>argo-class</code>
-data.</li>
+<li>Add <code><a href="../reference/preferAdjusted.html">preferAdjusted()</a></code> for <code>argo-class</code> data.</li>
 <li>Add <code><a href="../reference/read.ctd.odv.html">read.ctd.odv()</a></code>.</li>
-<li>Add <code><a href="../reference/snakeToCamel.html">snakeToCamel()</a></code> to convert variable names in
-e.g. Argo netcdf files.</li>
+<li>Add <code><a href="../reference/snakeToCamel.html">snakeToCamel()</a></code> to convert variable names in e.g. Argo netcdf files.</li>
 <li>Add <code><a href="../reference/timeToArgoJuld.html">timeToArgoJuld()</a></code>.</li>
-<li>Change <code><a href="../reference/drawPalette.html">drawPalette()</a></code> default colour palette to
-<code><a href="../reference/oceColorsViridis.html">oce.colorsViridis()</a></code>.</li>
-<li>Change <code><a href="../reference/imagep.html">imagep()</a></code> default colour palette to
-<code><a href="../reference/oceColorsViridis.html">oce.colorsViridis()</a></code>.</li>
-<li>Change <code>plot,amsr-method()</code> default colour palette to
-<code><a href="../reference/oceColorsViridis.html">oce.colorsViridis()</a></code>.</li>
-<li>Change <code>plot,section-method()</code> default colour palette to
-<code><a href="../reference/oceColorsViridis.html">oce.colorsViridis()</a></code>.</li>
-<li>Change <code><a href="../reference/plotTS.html">plotTS()</a></code> to trim isopycnals to realistic
-salinities and temperatures.</li>
-<li>Change <code><a href="../reference/read.argo.html">read.argo()</a></code> and <code>data(argo)</code> to use
-camelCase in all metadata.</li>
-<li>Change user-oriented github website generator to
-<code>pkgdown</code>.</li>
-<li>Extend <code>[[,argo-method</code> to accept <code>"ID"</code> as an
-alternative to <code>"id"</code>.</li>
-<li>Extend <code><a href="../reference/as.cm.html">as.cm()</a></code> to accept <code>adp</code> and
-<code>adv</code> objects.</li>
-<li>Extend <code><a href="../reference/oce.plot.ts.html">oce.plot.ts()</a></code>, adding argument
-<code>logStyle</code>.</li>
-<li>Extend <code><a href="../reference/read.adp.rdi.html">read.adp.rdi()</a></code> to handle 38kHz RDI adp
-files.</li>
-<li>Extend <code><a href="../reference/read.argo.html">read.argo()</a></code> and <code>data(argo)</code> by
-adding three more ‘CYCLE’ variables.</li>
-<li>Extend <code><a href="../reference/read.ctd.sbe.html">read.ctd.sbe()</a></code> to handle 4 new (Beckman) oxygen
-variables.</li>
-<li>Extend <code><a href="../reference/read.ctd.sbe.html">read.ctd.sbe()</a></code> to handle <code>.btl</code>
-files.</li>
+<li>Change <code><a href="../reference/drawPalette.html">drawPalette()</a></code> default colour palette to <code><a href="../reference/oceColorsViridis.html">oce.colorsViridis()</a></code>.</li>
+<li>Change <code><a href="../reference/imagep.html">imagep()</a></code> default colour palette to <code><a href="../reference/oceColorsViridis.html">oce.colorsViridis()</a></code>.</li>
+<li>Change <code>plot,amsr-method()</code> default colour palette to <code><a href="../reference/oceColorsViridis.html">oce.colorsViridis()</a></code>.</li>
+<li>Change <code>plot,section-method()</code> default colour palette to <code><a href="../reference/oceColorsViridis.html">oce.colorsViridis()</a></code>.</li>
+<li>Change <code><a href="../reference/plotTS.html">plotTS()</a></code> to trim isopycnals to realistic salinities and temperatures.</li>
+<li>Change <code><a href="../reference/read.argo.html">read.argo()</a></code> and <code>data(argo)</code> to use camelCase in all metadata.</li>
+<li>Change user-oriented github website generator to <code>pkgdown</code>.</li>
+<li>Extend <code>[[,argo-method</code> to accept <code>"ID"</code> as an alternative to <code>"id"</code>.</li>
+<li>Extend <code><a href="../reference/as.cm.html">as.cm()</a></code> to accept <code>adp</code> and <code>adv</code> objects.</li>
+<li>Extend <code><a href="../reference/oce.plot.ts.html">oce.plot.ts()</a></code>, adding argument <code>logStyle</code>.</li>
+<li>Extend <code><a href="../reference/read.adp.rdi.html">read.adp.rdi()</a></code> to handle 38kHz RDI adp files.</li>
+<li>Extend <code><a href="../reference/read.argo.html">read.argo()</a></code> and <code>data(argo)</code> by adding three more ‘CYCLE’ variables.</li>
+<li>Extend <code><a href="../reference/read.ctd.sbe.html">read.ctd.sbe()</a></code> to handle 4 new (Beckman) oxygen variables.</li>
+<li>Extend <code><a href="../reference/read.ctd.sbe.html">read.ctd.sbe()</a></code> to handle <code>.btl</code> files.</li>
 <li>Fix <code>plot,coastline-method</code> error in box drawing.</li>
-<li>Fix <code>plotTS</code> error in auto-scaling if S and T have mixed
-NA status.</li>
-<li>Fix <code>subset,argo-method()</code> error in <code>flags</code>,
-<code>location</code>, and <code>*QC</code> in
-<code>metadata</code>.</li>
-<li>Remove dependence on <code>rgdal</code> package, using
-<code>sf</code> for map projections.</li>
+<li>Fix <code>plotTS</code> error in auto-scaling if S and T have mixed NA status.</li>
+<li>Fix <code>subset,argo-method()</code> error in <code>flags</code>, <code>location</code>, and <code>*QC</code> in <code>metadata</code>.</li>
+<li>Remove dependence on <code>rgdal</code> package, using <code>sf</code> for map projections.</li>
 </ul></div>
 <div class="section level3">
-<h3 id="120-1-7-2">1.2.0<a class="anchor" aria-label="anchor" href="#120-1-7-2"></a></h3>
+<h3 id="id_120-1-7-2">1.2.0<a class="anchor" aria-label="anchor" href="#id_120-1-7-2"></a></h3>
 <ul><li>Address argument doc/code warning that blocked CRAN acceptance.</li>
-<li>Accommodate new ocedata (needed to meet new CRAN dependency
-rule).</li>
-<li>Add <code><a href="../reference/oceRenameData.html">oceRenameData()</a></code> and
-<code>oceRenamemetadata()</code>.</li>
+<li>Accommodate new ocedata (needed to meet new CRAN dependency rule).</li>
+<li>Add <code><a href="../reference/oceRenameData.html">oceRenameData()</a></code> and <code>oceRenamemetadata()</code>.</li>
 <li>Deprecate <code><a href="../reference/renameData.html">renameData()</a></code>.</li>
-<li>Improve axis control for <code><a href="../reference/mapPlot.html">mapPlot()</a></code> and
-<code>plot,coastline-method</code>.</li>
-<li>Remove <code>addColumn()</code>, <code>ctdAddColumn()</code>,
-<code>ctdUpdateHeader()</code>, <code>findInOrdered()</code>,
-<code>mapMeridians()</code>, <code>mapZones()</code>, and
-<code>oce.as.POSIXlt()</code>, all of which have been marked as
-“Deprecated” for the past two CRAN releases.</li>
-<li>Extend <code><a href="../reference/read.met.html">read.met()</a></code> to read a new Environment Canada data
-format.</li>
+<li>Improve axis control for <code><a href="../reference/mapPlot.html">mapPlot()</a></code> and <code>plot,coastline-method</code>.</li>
+<li>Remove <code>addColumn()</code>, <code>ctdAddColumn()</code>, <code>ctdUpdateHeader()</code>, <code>findInOrdered()</code>, <code>mapMeridians()</code>, <code>mapZones()</code>, and <code>oce.as.POSIXlt()</code>, all of which have been marked as “Deprecated” for the past two CRAN releases.</li>
+<li>Extend <code><a href="../reference/read.met.html">read.met()</a></code> to read a new Environment Canada data format.</li>
 <li>Handle some upcoming rgdal/R-devel changes.</li>
-<li>Extend <code><a href="../reference/sectionSmooth.html">sectionSmooth()</a></code> to handle grids beyond data
-range.</li>
-<li>Extend <code><a href="../reference/read.adp.rdi.html">read.adp.rdi()</a></code> to trim <code>time</code> if it
-longer than other data.</li>
-<li>Improve <code><a href="../reference/geodDist.html">geodDist()</a></code> to handle second location correctly
-when <code>alongPath=FALSE</code>.</li>
+<li>Extend <code><a href="../reference/sectionSmooth.html">sectionSmooth()</a></code> to handle grids beyond data range.</li>
+<li>Extend <code><a href="../reference/read.adp.rdi.html">read.adp.rdi()</a></code> to trim <code>time</code> if it longer than other data.</li>
+<li>Improve <code><a href="../reference/geodDist.html">geodDist()</a></code> to handle second location correctly when <code>alongPath=FALSE</code>.</li>
 <li>Improve vignettes.</li>
-<li>Fix itemized-list documentation problem pointed out by Kurt
-Hornik.</li>
+<li>Fix itemized-list documentation problem pointed out by Kurt Hornik.</li>
 </ul></div>
 <div class="section level3">
-<h3 id="11-1-7-2">1.1-1<a class="anchor" aria-label="anchor" href="#11-1-7-2"></a></h3>
+<h3 id="id_11-1-7-2">1.1-1<a class="anchor" aria-label="anchor" href="#id_11-1-7-2"></a></h3>
 <ul><li>Address “link-time-optimization” issues for CRAN submission.</li>
 </ul></div>
 <div class="section level3">
-<h3 id="11-1-7-2-1">1.1-0<a class="anchor" aria-label="anchor" href="#11-1-7-2-1"></a></h3>
+<h3 id="id_11-1-7-2-1">1.1-0<a class="anchor" aria-label="anchor" href="#id_11-1-7-2-1"></a></h3>
 <ul><li>fix argument error in a .C() call</li>
-<li>Extend <code><a href="../reference/read.odf.html">read.odf()</a></code> to store ODF header as a list in
-<code>metadata</code>.</li>
+<li>Extend <code><a href="../reference/read.odf.html">read.odf()</a></code> to store ODF header as a list in <code>metadata</code>.</li>
 <li>Add <code><a href="../reference/presentTime.html">presentTime()</a></code>.</li>
 <li>Add vignette on subclassing oce.</li>
-<li>Extend <code><a href="../reference/sectionSmooth.html">sectionSmooth()</a></code> to handle output grid better,
-and offer 2 new methods.</li>
+<li>Extend <code><a href="../reference/sectionSmooth.html">sectionSmooth()</a></code> to handle output grid better, and offer 2 new methods.</li>
 <li>Extend <code><a href="../reference/read.ctd.sbe.html">read.ctd.sbe()</a></code> to handle more column names.</li>
 <li>Extend mapping code to support i386/windows.</li>
-<li>Extend <code><a href="../reference/imagep.html">imagep()</a></code> to handle combined <code>flipy</code>
-and <code>ylim</code> arguments better.</li>
+<li>Extend <code><a href="../reference/imagep.html">imagep()</a></code> to handle combined <code>flipy</code> and <code>ylim</code> arguments better.</li>
 </ul></div>
 <div class="section level3">
-<h3 id="10-1-7-2">1.0-1<a class="anchor" aria-label="anchor" href="#10-1-7-2"></a></h3>
+<h3 id="id_10-1-7-2">1.0-1<a class="anchor" aria-label="anchor" href="#id_10-1-7-2"></a></h3>
 <ul><li>Renamed 0.9-24, released with OAR book publication.</li>
 </ul></div>
 <div class="section level3">
 <h3 id="version-1-7-2-3">Version 0.9-24<a class="anchor" aria-label="anchor" href="#version-1-7-2-3"></a></h3>
-<ul><li>Extend <code><a href="../reference/read.odf.html">read.odf()</a></code> to store ODF header in
-<code>metadata</code>.</li>
-<li>Remove <code>makeSection()</code>, after its deprecate/defunct
-period ended.</li>
-<li>Make defunct: <code>addColumn()</code>, <code><a href="../reference/byteToBinary.html">byteToBinary()</a></code>,
-<code>ctdAddColumn()</code>, <code>ctdUpdateHeader()</code>,
-<code>findInOrdered(),</code>mapZones()<code>,</code>mapMeridians()<code>,</code>oce.as.POSIXlt()<code>, and</code>oce.magic()`</li>
+<ul><li>Extend <code><a href="../reference/read.odf.html">read.odf()</a></code> to store ODF header in <code>metadata</code>.</li>
+<li>Remove <code>makeSection()</code>, after its deprecate/defunct period ended.</li>
+<li>Make defunct: <code>addColumn()</code>, <code><a href="../reference/byteToBinary.html">byteToBinary()</a></code>, <code>ctdAddColumn()</code>, <code>ctdUpdateHeader()</code>, <code>findInOrdered(),</code>mapZones()<code>,</code>mapMeridians()<code>,</code>oce.as.POSIXlt()<code>, and</code>oce.magic()`</li>
 <li>Add <code><a href="../reference/as.tidem.html">as.tidem()</a></code>.</li>
-<li>Extend <code><a href="../reference/read.odf.html">read.odf()</a></code> to handle multiple
-<code>NULL_VALUE</code>s.</li>
+<li>Extend <code><a href="../reference/read.odf.html">read.odf()</a></code> to handle multiple <code>NULL_VALUE</code>s.</li>
 <li>Improve <code><a href="../reference/handleFlags.html">handleFlags()</a></code>.</li>
 <li>Add <code><a href="../reference/rotateAboutZ.html">rotateAboutZ()</a></code>.</li>
 <li>Add <code><a href="../reference/concatenate.html">concatenate()</a></code>.</li>
 <li>Add <code><a href="../reference/read.woa.html">read.woa()</a></code>.</li>
-<li>Extend <code><a href="../reference/colormap.html">colormap()</a></code> to include <code>colfunction</code>
-in return value.</li>
+<li>Extend <code><a href="../reference/colormap.html">colormap()</a></code> to include <code>colfunction</code> in return value.</li>
 </ul></div>
 <div class="section level3">
 <h3 id="version-1-7-2-4">Version 0.9-23<a class="anchor" aria-label="anchor" href="#version-1-7-2-4"></a></h3>
 <ul><li>tidem() permits inferred constituents</li>
 <li>tidem() follows T_TIDE phase convention</li>
-<li>adorn argument removed from some plot functions (after being defunct
-1+ year)</li>
+<li>adorn argument removed from some plot functions (after being defunct 1+ year)</li>
 <li>deprecate findInOrdered()</li>
 </ul></div>
 <div class="section level3">
@@ -329,16 +264,13 @@ in return value.</li>
 </ul></div>
 <div class="section level3">
 <h3 id="version-1-7-2-7">Version 0.9-20<a class="anchor" aria-label="anchor" href="#version-1-7-2-7"></a></h3>
-<ul><li>remove observatory object type (changed format, seldom-used
-type)</li>
-<li>remove pangaea object type (undocumented format, seldom-used
-type)</li>
+<ul><li>remove observatory object type (changed format, seldom-used type)</li>
+<li>remove pangaea object type (undocumented format, seldom-used type)</li>
 <li>improvements for BioArgo data</li>
 <li>Spanish translation by Pablo Valdés</li>
 <li>make read.gps() handle more files</li>
 <li>deprecate ctdAddColumn() and ctdUpdateHeader()</li>
-<li>download.topo() added and read.topo() updated to handle new
-formats</li>
+<li>download.topo() added and read.topo() updated to handle new formats</li>
 <li>download.amsr() added</li>
 <li>composite() added</li>
 <li>addColumn() marked as deprecated</li>
@@ -355,14 +287,11 @@ formats</li>
 <li>improve map projections</li>
 <li>add renameData()</li>
 <li>improve support for SBE files</li>
-<li>remove is.beam(), is.xyz(), is.enu() and coordinate(), since
-x[[“coordinate”]] now permits these simply</li>
+<li>remove is.beam(), is.xyz(), is.enu() and coordinate(), since x[[“coordinate”]] now permits these simply</li>
 <li>replace several function-style accessors with [[ style</li>
 <li>fix test-suite error relating to an rgdal change</li>
-<li>add handleFlags() as generic plus specifics for ctd and argo
-classes</li>
-<li>use S4 documentation, e.g. ?‘plot,ctd-method’ instead of
-?plot.ctd</li>
+<li>add handleFlags() as generic plus specifics for ctd and argo classes</li>
+<li>use S4 documentation, e.g. ?‘plot,ctd-method’ instead of ?plot.ctd</li>
 <li>add subset(argo, “adjusted”)</li>
 <li>make read.argo() read all documented data and metadata fields</li>
 <li>add trimString()</li>
@@ -378,13 +307,11 @@ classes</li>
 <li>convert argo objects to sections</li>
 <li>makeSection() deprecated; use as.section() instead</li>
 <li>read.adp.rdi() handles Teledyne/RDI vsn 23.19 bottom-track data</li>
-<li>geodXyInverse() added; geod functions now spell out longitude
-etc</li>
+<li>geodXyInverse() added; geod functions now spell out longitude etc</li>
 <li>read.odf() speeded up by a factor of about 30</li>
 <li>add colour palettes from Kristen Thyng’s cmocean Python package</li>
 <li>as.oce() added</li>
-<li>rename ‘drifter’ class as ‘argo’ to recognize what it actually
-handles</li>
+<li>rename ‘drifter’ class as ‘argo’ to recognize what it actually handles</li>
 <li>add oceColorsViridis()</li>
 <li>interpBarnes() has new argument ‘pregrid’</li>
 <li>binMean2D() has new argument ‘flatten’</li>
@@ -407,8 +334,7 @@ handles</li>
 <div class="section level3">
 <h3 id="version-1-7-2-11">Version 0.9-16<a class="anchor" aria-label="anchor" href="#version-1-7-2-11"></a></h3>
 <ul><li>cite PROJ.4 contributors in DESCRIPTION</li>
-<li>address package-build warnings; improve DESCRIPTION (thanks,
-BR)</li>
+<li>address package-build warnings; improve DESCRIPTION (thanks, BR)</li>
 </ul></div>
 <div class="section level3">
 <h3 id="version-1-7-2-12">Version 0.9-15<a class="anchor" aria-label="anchor" href="#version-1-7-2-12"></a></h3>
@@ -420,13 +346,11 @@ BR)</li>
 <li>ctdTrim() can have “method” as a function</li>
 <li>as.topo() can convert “bathy” objects from the marmap package</li>
 <li>“+.section” renamed sectionAddStation()</li>
-<li>oceApprox() renamed oce.approx(), with an alias for
-compatibility</li>
+<li>oceApprox() renamed oce.approx(), with an alias for compatibility</li>
 <li>oce.grid() added</li>
 <li>“tdr” class renamed “logger”</li>
 <li>swCSTp() added</li>
-<li>swConductivity() now swThermalConductivity(); using Caldwell
-(1974).</li>
+<li>swConductivity() now swThermalConductivity(); using Caldwell (1974).</li>
 <li>many sw() functions handle eos=“gsw”</li>
 <li>library(gsw) replaces teos()</li>
 <li>curl() added</li>
@@ -448,20 +372,16 @@ compatibility</li>
 <div class="section level3">
 <h3 id="version-1-7-2-13">Version 0.9-14<a class="anchor" aria-label="anchor" href="#version-1-7-2-13"></a></h3>
 <ul><li>fix compile-time warning</li>
-<li>colormap() added, and functionality added to imagep() and
-drawPalette()</li>
-<li>imagep() and drawPalette() new arg. ‘axisPalette’ (suggested C.
-Richards)</li>
+<li>colormap() added, and functionality added to imagep() and drawPalette()</li>
+<li>imagep() and drawPalette() new arg. ‘axisPalette’ (suggested C. Richards)</li>
 <li>drawPalette() has new args: plot, pos, levels, and cex.axis</li>
 <li>ctdDecimate() permits user-supplied method function</li>
-<li>data(nao) added; data(soi) updated, and names improved in
-latter</li>
+<li>data(nao) added; data(soi) updated, and names improved in latter</li>
 <li>landsat support added</li>
 <li>plotProfile() and plotTS() get new argument ‘pt.bg’</li>
 <li>plot.section() grids the data if needed</li>
 <li>rename ‘sealevelHalifax’ dataset as ‘sealevel’</li>
-<li>translate some axis names (Spanish, French, German and
-Mandarin)</li>
+<li>translate some axis names (Spanish, French, German and Mandarin)</li>
 <li>plotProfile() now has ytype=“depth”</li>
 <li>mapImage() and friends now demand a map exists first</li>
 <li>runlm() added</li>
@@ -481,8 +401,7 @@ Mandarin)</li>
 <li>binCount1D(), binMean1D(), binCount2D(), and binMean2D() added</li>
 <li>numberAsHMS() added</li>
 <li>gps data type added (provisionally)</li>
-<li>various functions: reorder arguments putting longitude before
-latitude</li>
+<li>various functions: reorder arguments putting longitude before latitude</li>
 <li>magneticField() replaces magneticDeclination()</li>
 <li>ungrid() added</li>
 <li>mapPlot(): improve zone and meridian aesthetics</li>
@@ -491,8 +410,7 @@ latitude</li>
 <li>interpBarnes() has new arg ‘trim’</li>
 <li>standardDepths() added</li>
 <li>mapLongitudeLatitudeXY() added</li>
-<li>read.ctd.woce() now accepts a format used once by Arctic
-scientists</li>
+<li>read.ctd.woce() now accepts a format used once by Arctic scientists</li>
 <li>swRrho() added</li>
 <li>plotProfile() now accepts type=“o”</li>
 <li>read.adv.nortek(): read salinity</li>
@@ -521,8 +439,7 @@ scientists</li>
 <li>read.echosounder(): handle dual-beam and split-beam data</li>
 <li>read.echosounder(): decode bottom-pick</li>
 <li>swSoundAbsorption()</li>
-<li>read.adp: improve doc regarding variable orientation of RDI
-files</li>
+<li>read.adp: improve doc regarding variable orientation of RDI files</li>
 </ul></div>
 <div class="section level3">
 <h3 id="version-1-7-2-17">Version 0.9-10<a class="anchor" aria-label="anchor" href="#version-1-7-2-17"></a></h3>
@@ -530,8 +447,7 @@ files</li>
 </ul></div>
 <div class="section level3">
 <h3 id="version-1-7-2-18">Version 0.9-9<a class="anchor" aria-label="anchor" href="#version-1-7-2-18"></a></h3>
-<ul><li>mapPlot() uses … graphical parameters (e.g. cex) in labelling
-axes</li>
+<ul><li>mapPlot() uses … graphical parameters (e.g. cex) in labelling axes</li>
 <li>fix recent bug in reading CNV files (issue 318)</li>
 <li>plotTS(…, mar=NULL) now avoids setting par(mar)</li>
 </ul></div>
@@ -548,8 +464,7 @@ axes</li>
 <li>plot.lobo(): add ‘which’ argument</li>
 <li>read.coastline.openstreetmap() added</li>
 <li>data(levitus) added</li>
-<li>plot.coastline(): new arguments ‘projection’ etc to use
-mapPlot()</li>
+<li>plot.coastline(): new arguments ‘projection’ etc to use mapPlot()</li>
 <li>mapContour(): permit first argument to be a ‘topo’ object</li>
 <li>mapPlot(): add arguments axes, bg, fill, and drawBox</li>
 </ul></div>
@@ -584,8 +499,7 @@ mapPlot()</li>
 <li>read.lobo() is more flexible on column names</li>
 <li>imagep(…, axes=FALSE): no longer plots axis box [issue 249]</li>
 <li>oce.plot.ts(): alter time auto-ranging method</li>
-<li>oceBisect(): increase generality of function whose root is
-sought</li>
+<li>oceBisect(): increase generality of function whose root is sought</li>
 <li>plotTS(): clean axes after isopycnals drawn</li>
 <li>teos10: update test values (with help from PB)</li>
 <li>read.adp.nortek(): handle missing ‘to’ argument as documented</li>
@@ -643,8 +557,7 @@ sought</li>
 <li>add integrateTrapezoid()</li>
 <li>plotTS(): add argument teos</li>
 <li>add teos() as an interface to the TEOS-10 library</li>
-<li>add moonAngle() plus other astronomy functions,
-e.g. julianDay()</li>
+<li>add moonAngle() plus other astronomy functions, e.g. julianDay()</li>
 </ul></div>
 <div class="section level3">
 <h3 id="version-1-7-2-30">Version 0.8-7<a class="anchor" aria-label="anchor" href="#version-1-7-2-30"></a></h3>
@@ -652,8 +565,7 @@ e.g. julianDay()</li>
 <li>plotTS(): add ‘bg’ argument</li>
 <li>rename ‘dt’ object and functions to ‘tdr’</li>
 <li>plotTS(): add argument ‘inset’</li>
-<li>read.adp.rdi(): fix a bug in bottom-tracking; add soundSpeed
-vector</li>
+<li>read.adp.rdi(): fix a bug in bottom-tracking; add soundSpeed vector</li>
 <li>data(echosounder) created</li>
 <li>formatPosition() created</li>
 <li>plot(echosounder): new arguments atTop and labelsTop</li>
@@ -678,8 +590,7 @@ vector</li>
 </ul></div>
 <div class="section level3">
 <h3 id="version-1-7-2-33">Version 0.8-4<a class="anchor" aria-label="anchor" href="#version-1-7-2-33"></a></h3>
-<ul><li>replace ‘center’ argument for plotting topography and coastline with
-clatitude and clongitude</li>
+<ul><li>replace ‘center’ argument for plotting topography and coastline with clatitude and clongitude</li>
 <li>add ‘echosounder’ class</li>
 <li>fullFilename(): handle URLs properly</li>
 <li>ADV objects: add access to slow variables (e.g. headingSlow)</li>
@@ -700,8 +611,7 @@ clatitude and clongitude</li>
 </ul></div>
 <div class="section level3">
 <h3 id="version-1-7-2-36">Version 0.8-1<a class="anchor" aria-label="anchor" href="#version-1-7-2-36"></a></h3>
-<ul><li>switch to S4 classes, and add new accessors and ‘show’
-functions.</li>
+<ul><li>switch to S4 classes, and add new accessors and ‘show’ functions.</li>
 <li>add support for RBR ‘rsk’ files</li>
 <li>plot.section() now uses ‘col’ if supplied</li>
 </ul></div>
@@ -714,8 +624,7 @@ functions.</li>
 <li>add data(geosecs235)</li>
 <li>plotProfile() and plot.ctd(): add argument ‘keepNA’</li>
 <li>as.ctd(): add arguments ‘other’ and ‘missingValue’</li>
-<li>read.lobo(): tolerate more formats, including missing
-velocities</li>
+<li>read.lobo(): tolerate more formats, including missing velocities</li>
 <li>add data(schmitt)</li>
 <li>add accessor spice()</li>
 <li>handle O2 and nutrients in CTD data and sections</li>
@@ -746,11 +655,9 @@ velocities</li>
 <ul><li>plot.sealevel(): only show 3 panels, for clarity</li>
 <li>plot.ctd(): add argument ‘type’</li>
 <li>imagep(): handle x, y, and z as image() does</li>
-<li>oce.plot.ts(): inferred ylim matches data range within provided
-xlim</li>
+<li>oce.plot.ts(): inferred ylim matches data range within provided xlim</li>
 <li>read.adv.nortek(): handle extra analog data</li>
-<li>add CTD accessors longitude(), latitude(), time(), elevation(),
-etc</li>
+<li>add CTD accessors longitude(), latitude(), time(), elevation(), etc</li>
 </ul></div>
 <div class="section level3">
 <h3 id="version-1-7-2-41">Version 0.3-1<a class="anchor" aria-label="anchor" href="#version-1-7-2-41"></a></h3>
@@ -758,16 +665,12 @@ etc</li>
 <li>add findInOrdered</li>
 <li>generalize tidem() argument list</li>
 <li>read.adv.nortek(): handle burst-mode data</li>
-<li>add datasets wilson, redfieldNP, redfieldNC, redfieldPlankton, and
-riley</li>
+<li>add datasets wilson, redfieldNP, redfieldNC, redfieldPlankton, and riley</li>
 <li>change data(ctd) to be derived from data(ctdRaw)</li>
 <li>change to monitor=FALSE for all reading functions</li>
-<li>add accessor functions heading(), latitude(), longitude(), pitch(),
-pressure(), processingLog(), roll(), salinity(), temperature(), time(),
-and velocity()</li>
+<li>add accessor functions heading(), latitude(), longitude(), pitch(), pressure(), processingLog(), roll(), salinity(), temperature(), time(), and velocity()</li>
 <li>rename history as processingLog</li>
-<li>flatten data objects to be 1 level thick (for future matlab
-exports)</li>
+<li>flatten data objects to be 1 level thick (for future matlab exports)</li>
 <li>add threenum() added, and use it in all summaries (for speed)</li>
 </ul></div>
 <div class="section level3">
@@ -803,8 +706,7 @@ exports)</li>
 <ul><li>remove warning that occurs for R 2.13.0 (alpha)</li>
 <li>number.as.POSIXct(): accept GPS times</li>
 <li>rename e.g. adv.2enu() as to.enu.adv()</li>
-<li>speed up conversion of ADP and ADV to enu by more than a factor of
-10</li>
+<li>speed up conversion of ADP and ADV to enu by more than a factor of 10</li>
 <li>change RDI coordinate handling</li>
 <li>rename match.bytes() as matchBytes()</li>
 <li>add drawPalette()</li>
@@ -820,22 +722,18 @@ exports)</li>
 <li>read.adv.sontek.serial(): correct error in class of ‘a’ and ‘c’</li>
 <li>despike(): use string value for argument ‘method’</li>
 <li>logger.toc(): fix bug in discovering files ranging over days</li>
-<li>as.ctd(): make temperature and salinity into vectors, if not
-already</li>
+<li>as.ctd(): make temperature and salinity into vectors, if not already</li>
 <li>plot.TS(): add argument ‘use.smoothScatter’</li>
 <li>oce.debug(): flush the console after printing a message</li>
 <li>sw.theta(): rename the method possibilities, to lower case</li>
 <li>in some sw functions, rename ‘pref’ as ‘reference.pressure’</li>
 <li>read.ctd(): fix bug in getting start.time for some time formats</li>
 <li>pwelch() added</li>
-<li>plot.sealevel(): make y axis obey range in data subset, if xlim is
-given</li>
+<li>plot.sealevel(): make y axis obey range in data subset, if xlim is given</li>
 <li>adp.2enu() added</li>
 <li>coastline.world: improve resolution by a factor of 4 or so</li>
-<li>read.ctd.woce(): infer water depth as max(pressure) if not in
-header</li>
-<li>section.smooth(): handle misordered stations; handle missing values
-better</li>
+<li>read.ctd.woce(): infer water depth as max(pressure) if not in header</li>
+<li>section.smooth(): handle misordered stations; handle missing values better</li>
 <li>plot.section(): allow strings for ‘which’; improve contouring</li>
 <li>plot.ctd() and plot.profile(): add ‘use.smoothScatter’ argument</li>
 <li>coriolis(): improve omega value</li>
@@ -849,10 +747,8 @@ better</li>
 <li>add support for interocean ‘s4’ current meters</li>
 <li>add unwrap.angle()</li>
 <li>read.adv.nortek(): detect the velocity range</li>
-<li>add processing.log.add(), an alternative to
-processing.log.append()</li>
-<li>plot.ctd(): add more plot types; which=9 for salinity, not
-density</li>
+<li>add processing.log.add(), an alternative to processing.log.append()</li>
+<li>plot.ctd(): add more plot types; which=9 for salinity, not density</li>
 <li>as.ctd(): improve flexibilty</li>
 <li>predict.tidem(): add ‘newdata’ argument</li>
 <li>adv.2enu() added</li>
@@ -861,33 +757,25 @@ density</li>
 <li>improve (but temporarily limit) fill.gap</li>
 <li>plot.adp(): add ‘use.layout’ argument</li>
 <li>window.oce() added</li>
-<li>make objects remember full filename, not just local filename
-(issue8)</li>
-<li>plot.tidem(): remove argument ‘plot.type’, using ‘which’
-instead</li>
+<li>make objects remember full filename, not just local filename (issue8)</li>
+<li>plot.tidem(): remove argument ‘plot.type’, using ‘which’ instead</li>
 <li>read.pt(): add arguments from, by, and to</li>
 <li>fix issue 57 [read.adp.rdi() read the heading incorrectly]</li>
 <li>add “rr” method to ctdDecimate()</li>
 <li>oceApprox() added</li>
 <li>topoWorld dataset added</li>
-<li>plot.ctd(): by default, make coastlines extend to box
-boundaries</li>
+<li>plot.ctd(): by default, make coastlines extend to box boundaries</li>
 <li>reformulate sun.angle in R</li>
-<li>fix google-code issue 56 [plot.topo() should accept
-land.z=NULL]</li>
+<li>fix google-code issue 56 [plot.topo() should accept land.z=NULL]</li>
 <li>fix google-code issue 55 [plot.topo() could go past poles]</li>
-<li>fix google-code issue 54 [plot.topo() was resetting par() on
-exit]</li>
-<li>fix google-code issue 53 [interp.barnes() gives poor error msg for
-mismatched x and y]</li>
-<li>fix google-code issue 52 [plot.section() draws incorrect bottom
-shape]</li>
+<li>fix google-code issue 54 [plot.topo() was resetting par() on exit]</li>
+<li>fix google-code issue 53 [interp.barnes() gives poor error msg for mismatched x and y]</li>
+<li>fix google-code issue 52 [plot.section() draws incorrect bottom shape]</li>
 </ul></div>
 <div class="section level3">
 <h3 id="version-1-7-2-48">Version 0.1-80<a class="anchor" aria-label="anchor" href="#version-1-7-2-48"></a></h3>
 <ul><li>add sun.angle [not tested yet; needs R reformulation]</li>
-<li>fix google-code issue 51 [summary.section() does not report water
-depth]</li>
+<li>fix google-code issue 51 [summary.section() does not report water depth]</li>
 <li>fix google-code issue 50 [non-bug relating to sun elevation]</li>
 <li>fix google-code issue 49 [demo(TS) broken]</li>
 </ul></div>
@@ -906,8 +794,7 @@ depth]</li>
 <ul><li>refactor adp code wrt transformation matrices</li>
 <li>add matrix.smooth()</li>
 <li>improve labels for oce.axis.POSIXct()</li>
-<li>set default for ‘debug’ argument to getOption(“oceDebug”) in all
-functions</li>
+<li>set default for ‘debug’ argument to getOption(“oceDebug”) in all functions</li>
 <li>plot.profile(): add argument ytype; change ‘type’ to ‘xtype’</li>
 <li>add swZ()</li>
 <li>add oce.smooth()</li>
@@ -920,8 +807,7 @@ functions</li>
 <li>to most plot functions, add ‘mgp’ and ‘mar’ arguments</li>
 <li>plot.pt(): add plim and Tlim arguments</li>
 <li>gravity(): give default for latitude argument</li>
-<li>plot.sealevel(): remove argument focus.time and add argument
-which</li>
+<li>plot.sealevel(): remove argument focus.time and add argument which</li>
 <li>rename tdr functions as pt, to reflect oral convention</li>
 <li>add geod.xy()</li>
 <li>add argument ‘mgp’ to all plotting functions</li>
@@ -930,15 +816,13 @@ which</li>
 <li>add oce.colorsTwo(), oce.colorsJet(), and oce.colorsPalette()</li>
 <li>add byte2binary()</li>
 <li>add “lty.grid” to all CTD plotting functions</li>
-<li>add “+.section”, a more convenient way to build sections from
-stations</li>
+<li>add “+.section”, a more convenient way to build sections from stations</li>
 <li>rework summary() for all existing objects</li>
 <li>as.sealevel(): rename sampling.interval as deltat</li>
 </ul></div>
 <div class="section level3">
 <h3 id="version-1-7-2-52">Version 0.1-76<a class="anchor" aria-label="anchor" href="#version-1-7-2-52"></a></h3>
-<ul><li>sw.N2(): make it tolerate NAs; adjust df to make result
-smoother</li>
+<ul><li>sw.N2(): make it tolerate NAs; adjust df to make result smoother</li>
 <li>add makeFilter()</li>
 <li>add decimate(), which may eventually replace ctd.decimate()</li>
 <li>read.tdr(): handle 5-column data files; add tz argument</li>
@@ -946,8 +830,7 @@ smoother</li>
 <li>ctdTrim(): add pmin parameter</li>
 <li>plot.ctd(): add Slim, Tlim, plim, lonlim, latlim args; add maps</li>
 <li>add coastline.sle dataset</li>
-<li>plot.TS(): fix isopycnal labels for fresh water; add args Slim,
-Tlim</li>
+<li>plot.TS(): fix isopycnal labels for fresh water; add args Slim, Tlim</li>
 <li>read.ctd(): make it understand another SBE format</li>
 <li>add parseLatlon()</li>
 <li>oce.edit(): add argument ‘action’</li>
@@ -971,8 +854,7 @@ Tlim</li>
 <li>add arguments ‘xtype’ and ‘ytype’ to plot.section()</li>
 <li>improve accuracy of bottom drawn by plot.section()</li>
 <li>add section.smooth()</li>
-<li>fix bug making section.smooth() fail if &lt;4 good data at a level
-<a href="http://code.google.com/p/r-oce/issues/detail?id=36" class="external-link uri">http://code.google.com/p/r-oce/issues/detail?id=36</a>
+<li>fix bug making section.smooth() fail if &lt;4 good data at a level <a href="http://code.google.com/p/r-oce/issues/detail?id=36" class="external-link uri">http://code.google.com/p/r-oce/issues/detail?id=36</a>
 </li>
 <li>fix bug making summary.ctd() fail for results of section.smooth() <a href="http://code.google.com/p/r-oce/issues/detail?id=34" class="external-link uri">http://code.google.com/p/r-oce/issues/detail?id=34</a>
 </li>
@@ -995,19 +877,16 @@ Tlim</li>
 <li>speed up swSpice() <a href="http://code.google.com/p/r-oce/issues/detail?id=29" class="external-link uri">http://code.google.com/p/r-oce/issues/detail?id=29</a>
 </li>
 <li>add read.pt(), summary.pt(), plot.pt(), and ptTrim()</li>
-<li>make plot.TS() isopycnal label size be same on top and right sides
-<a href="http://code.google.com/p/r-oce/issues/detail?id=26" class="external-link uri">http://code.google.com/p/r-oce/issues/detail?id=26</a>
+<li>make plot.TS() isopycnal label size be same on top and right sides <a href="http://code.google.com/p/r-oce/issues/detail?id=26" class="external-link uri">http://code.google.com/p/r-oce/issues/detail?id=26</a>
 </li>
 <li>add lwd argument to plot.profile()</li>
-<li>give plot.section() ability to control contour levels and
-labels</li>
+<li>give plot.section() ability to control contour levels and labels</li>
 <li>give plot.section() tics for station-location</li>
 </ul></div>
 <div class="section level3">
 <h3 id="version-1-7-2-55">Version 0.1.73<a class="anchor" aria-label="anchor" href="#version-1-7-2-55"></a></h3>
 <ul><li>plot.topo() narrows autoscale to xlim-ylim region, if provided</li>
-<li>add plot.ctd() ‘textpanel’ option, and put the profiles in the same
-row</li>
+<li>add plot.ctd() ‘textpanel’ option, and put the profiles in the same row</li>
 <li>fix bug in plot.profile() to let it take Slim,…, as args <a href="http://code.google.com/p/r-oce/issues/detail?id=25" class="external-link uri">http://code.google.com/p/r-oce/issues/detail?id=25</a>
 </li>
 <li>fix bug in plot.profile() font size <a href="http://code.google.com/p/r-oce/issues/detail?id=24" class="external-link uri">http://code.google.com/p/r-oce/issues/detail?id=24</a>
@@ -1035,33 +914,27 @@ row</li>
 </ul></div>
 <div class="section level3">
 <h3 id="version-1-7-2-58">Version 0.1.70<a class="anchor" aria-label="anchor" href="#version-1-7-2-58"></a></h3>
-<ul><li>plot.TS(): make isopycnal list work better for nearly-fresh
-water</li>
+<ul><li>plot.TS(): make isopycnal list work better for nearly-fresh water</li>
 <li>trimCtd(): improve equilibration-phase deletion</li>
-<li>read.ctd(): handle cases without cruise information or scan
-column</li>
+<li>read.ctd(): handle cases without cruise information or scan column</li>
 <li>permit setting xlab and ylab in plot.TS()</li>
 <li>make processing log timestamps be in GMT</li>
 <li>add as.windrose() and plot.windrose()</li>
 <li>add sealevel.tuk sea-level dataset</li>
-<li>add tidem(), predict.tide(), summary.tide(), plot.tide(),
-data(tidedata)</li>
+<li>add tidem(), predict.tide(), summary.tide(), plot.tide(), data(tidedata)</li>
 <li>establish a uniform form for objects created by “read” and “as”</li>
-<li>let swRho() and similar functions take a ctd object as a single
-argument</li>
+<li>let swRho() and similar functions take a ctd object as a single argument</li>
 <li>add swDynamicHeight()</li>
 <li>make section.grid() and ctd.decimate() extrapolate to surface</li>
 <li>add summary.oce()</li>
 <li>make all objects inherit from a new class “oce”</li>
-<li>fix google-code issue 12: read.sealevel() had a hard-wired
-filename</li>
+<li>fix google-code issue 12: read.sealevel() had a hard-wired filename</li>
 </ul></div>
 <div class="section level3">
 <h3 id="version-1-7-2-59">Version 0.1.69<a class="anchor" aria-label="anchor" href="#version-1-7-2-59"></a></h3>
 <ul><li>modify documentation slightly</li>
 <li>start a migration to more uniform object structures</li>
-<li>rename as.CTD() to as.ctd(), to make it consistent with similar
-functions</li>
+<li>rename as.CTD() to as.ctd(), to make it consistent with similar functions</li>
 <li>add read.section()</li>
 <li>add sectionGrid(), which only grids in p at the moment</li>
 <li>add a03 dataset (renamed ‘section’ in 0.9-13)</li>
@@ -1079,28 +952,23 @@ functions</li>
 </ul></div>
 <div class="section level3">
 <h3 id="version-1-7-2-61">Version 0.1.67<a class="anchor" aria-label="anchor" href="#version-1-7-2-61"></a></h3>
-<ul><li>allow swRho() and similar take matrices as arguments for S, T,
-etc</li>
+<ul><li>allow swRho() and similar take matrices as arguments for S, T, etc</li>
 </ul></div>
 <div class="section level3">
 <h3 id="version-1-7-2-62">Version 0.1.66<a class="anchor" aria-label="anchor" href="#version-1-7-2-62"></a></h3>
-<ul><li>fix bug in plot.TS() that prevented it from showing some
-isopycnals</li>
+<ul><li>fix bug in plot.TS() that prevented it from showing some isopycnals</li>
 </ul></div>
 <div class="section level3">
 <h3 id="version-1-7-2-63">Version 0.1.65<a class="anchor" aria-label="anchor" href="#version-1-7-2-63"></a></h3>
-<ul><li>switch to UNESCO formulation for sw potential temperature by
-default</li>
+<ul><li>switch to UNESCO formulation for sw potential temperature by default</li>
 <li>prevent warnings with C90 compiler on some machines</li>
 </ul></div>
 <div class="section level3">
 <h3 id="version-1-7-2-64">Version 0.1.64<a class="anchor" aria-label="anchor" href="#version-1-7-2-64"></a></h3>
-<ul><li>add read.oce(), a generic function for reading several oceanographic
-files</li>
+<ul><li>add read.oce(), a generic function for reading several oceanographic files</li>
 <li>make read.ctd() understand WOCE-exchange files</li>
 <li>make read.sealevel() understand comma-separated data from MEDS</li>
-<li>make plot.sealevel() skip spectral graphs if timeseries has NA
-values</li>
+<li>make plot.sealevel() skip spectral graphs if timeseries has NA values</li>
 <li>improve aesthetics of plot.ctd()</li>
 <li>extend plot.sealevel() by adding focus.time argument</li>
 <li>add ctdDecimate()</li>
@@ -1118,8 +986,7 @@ values</li>
 </ul></div>
 <div class="section level3">
 <h3 id="version-1-7-2-66">Version 0.1.62<a class="anchor" aria-label="anchor" href="#version-1-7-2-66"></a></h3>
-<ul><li>add historyAppend() (later named processingLogAppend()) and related
-code</li>
+<ul><li>add historyAppend() (later named processingLogAppend()) and related code</li>
 <li>improve ctdTrim()</li>
 </ul></div>
 <div class="section level3">
@@ -1136,8 +1003,7 @@ code</li>
 </ul></div>
 <div class="section level3">
 <h3 id="version-1-7-2-70">Version 0.1.58<a class="anchor" aria-label="anchor" href="#version-1-7-2-70"></a></h3>
-<ul><li>rename all seawater-related functions to e.g. swTheta(), to allow
-for atmospheric analogs</li>
+<ul><li>rename all seawater-related functions to e.g. swTheta(), to allow for atmospheric analogs</li>
 </ul></div>
 <div class="section level3">
 <h3 id="version-1-7-2-71">Version 0.1.57<a class="anchor" aria-label="anchor" href="#version-1-7-2-71"></a></h3>
@@ -1185,8 +1051,7 @@ for atmospheric analogs</li>
 </ul></div>
 <div class="section level3">
 <h3 id="version-1-7-2-82">Version 0.1.46<a class="anchor" aria-label="anchor" href="#version-1-7-2-82"></a></h3>
-<ul><li>make geodDist() accept a vector for location 1 and a scalar for
-location 2</li>
+<ul><li>make geodDist() accept a vector for location 1 and a scalar for location 2</li>
 </ul></div>
 <div class="section level3">
 <h3 id="version-1-7-2-83">Version 0.1.45<a class="anchor" aria-label="anchor" href="#version-1-7-2-83"></a></h3>
@@ -1237,8 +1102,7 @@ location 2</li>
 </ul></div>
 <div class="section level3">
 <h3 id="version-1-7-2-94">Version 0.1.34<a class="anchor" aria-label="anchor" href="#version-1-7-2-94"></a></h3>
-<ul><li>make read.ctd() calculate S if missing but C, T, and p are
-given</li>
+<ul><li>make read.ctd() calculate S if missing but C, T, and p are given</li>
 <li>add swSCTp()</li>
 </ul></div>
 <div class="section level3">
@@ -1402,8 +1266,7 @@ given</li>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a>
-2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
 </div>
 
       </footer></div>

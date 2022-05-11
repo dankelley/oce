@@ -20,9 +20,11 @@ drawIsopycnals(
 }
 \arguments{
 \item{nlevels}{suggested number of density levels (i.e. isopycnal curves);
-ignored if \code{levels} is supplied.}
+ignored if \code{levels} is supplied.  If this is set to 0, no isopycnal
+are drawn (see also \code{levels}, next).}
 
-\item{levels}{optional density levels to draw.}
+\item{levels}{optional density levels to draw.  If this is \code{NULL}, then
+no isopycnals are drawn.}
 
 \item{rotate}{boolean, set to \code{TRUE} to write all density labels
 horizontally.}

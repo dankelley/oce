@@ -21,9 +21,6 @@ Other raw datasets:
 \code{\link{ctd.cnv}},
 \code{\link{ctd_aml.csv}},
 \code{\link{d201211_0011.cnv}},
-\code{\link{test_met_csv1.csv}},
-\code{\link{test_met_csv2.csv}},
-\code{\link{test_met_xml2.xml}},
 \code{\link{xbt.edf}}
 
 Other things related to ctd data: 
@@ -51,10 +48,12 @@ Other things related to ctd data:
 \code{\link{plotProfile}()},
 \code{\link{plotScan}()},
 \code{\link{plotTS}()},
+\code{\link{read.ctd.aml}()},
 \code{\link{read.ctd.itp}()},
 \code{\link{read.ctd.odf}()},
 \code{\link{read.ctd.odv}()},
 \code{\link{read.ctd.sbe}()},
+\code{\link{read.ctd.ssda}()},
 \code{\link{read.ctd.woce.other}()},
 \code{\link{read.ctd.woce}()},
 \code{\link{read.ctd}()},

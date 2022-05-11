@@ -4,7 +4,7 @@
 \alias{sectionSort}
 \title{Sort a Section}
 \usage{
-sectionSort(section, by)
+sectionSort(section, by, decreasing = FALSE)
 }
 \arguments{
 \item{section}{A \code{section} object containing the section whose stations
@@ -14,6 +14,10 @@ are to be sorted.}
 \code{"stationID"} will be assumed.  Other choices are \code{"distance"}, for
 distance from the first station, \code{"longitude"}, for longitude,
 \code{"latitude"} for latitude, and \code{"time"}, for time.}
+
+\item{decreasing}{A logical value indicating whether to sort in decreasing
+order.  The default is FALSE. (Thanks to Martin Renner for adding this
+parameter.)}
 }
 \value{
 object A \linkS4class{section} object that has been smoothed,
@@ -31,16 +35,11 @@ are more than 9 stations.) The purpose of \code{sectionSort} is to permit
 reordering the constituent stations in sensible ways.
 }
 \examples{
-\dontrun{
-# Eastern North Atlantic, showing Mediterranean water;
-# sorting by longitude makes it easier to compare
-# the map and the section.
 library(oce)
 data(section)
-s <- sectionGrid(subset(section, -30 <= longitude))
-ss <- sectionSort(ss, by="longitude")
-plot(ss)
-}
+sectionByLongitude <- sectionSort(section, by="longitude")
+head(section)
+head(sectionByLongitude)
 
 }
 \seealso{

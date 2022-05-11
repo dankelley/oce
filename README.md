@@ -5,6 +5,9 @@
 
 <!-- badges: start -->
 
+[![Project Status: Active – The project has reached a stable, usable
+state and is being actively
+developed.](http://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/)
 [![status](https://joss.theoj.org/papers/10.21105/joss.03594/status.svg)](https://joss.theoj.org/papers/10.21105/joss.03594)
 [![R-CMD-check](https://github.com/dankelley/oce/workflows/R-CMD-check/badge.svg)](https://github.com/dankelley/oce/actions)
 [![Codecov test
@@ -36,11 +39,12 @@ the package has been written by the core developers (Kelley Dan E., Clark
 Richards and Chantelle Layton, 2022. [oce: an R package for Oceanographic
 Analysis](https://doi.org/10.21105/joss.03594). Journal of Open Source
 Software, 7(71), 3594), and the primary developer uses the package extensively
-in his book about the place of R in oceanographic analysis (Kelley, Dan E.,
-2018. [Oceanographic Analysis with
-R](https://link.springer.com/us/book/9781493988426). New York. Springer-Verlag
-ISBN 978-1-4939-8844-0).  Details of oce functions are provided within the
-R help system, and in the package [webpage](https://dankelley.github.io/oce/).
+in his book about the place of R in oceanographic analysis
+(Kelley, Dan E., 2018.
+[Oceanographic Analysis with R](https://link.springer.com/book/10.1007/978-1-4939-8844-0).
+New York. Springer-Verlag ISBN 978-1-4939-8844-0).  Details of oce functions
+are provided within the R help system, and in the package
+[webpage](https://dankelley.github.io/oce/).
 
 ## Installing oce
 

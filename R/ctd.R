@@ -919,7 +919,7 @@ setMethod(f="[[",
                   #>} else if (i == "depth") {
                   #>    if ("depth" %in% names(data)) data$depth else swDepth(x) # FIXME-gsw: permit gsw version here
               } else {
-                  ## message("FIXME: [[,ctd-method calling next method")
+                  #message("FIXME: [[,ctd-method calling next method for i=", i)
                   callNextMethod()     # [[ defined in R/AllClass.R
               }
           })
@@ -3040,7 +3040,7 @@ write.ctd <- function(object, file, metadata=TRUE, flags=TRUE, format="csv")
 #' @param keepNA logical value indicating whether `NA` values
 #' will yield breaks in lines drawn if `type` is `b`, `l`, or `o`.
 #' The default value is `FALSE`.  Setting `keepNA` to `TRUE`
-#" can be helpful when working with multiple profiles
+#' can be helpful when working with multiple profiles
 #' strung together into one [ctd-class] object, which otherwise
 #' would have extraneous lines joining the deepest point in one
 #' profile to the shallowest in the next profile.
@@ -3953,8 +3953,9 @@ plotScan <- function(x, which=1, xtype="scan", flipy=FALSE,
 #' and control is dispatched to [read.ctd.odv()].
 #'
 #' @family functions that read ctd data
-read.ctd <- function(file, type=NULL, columns=NULL, station=NULL, missingValue, deploymentType="unknown",
-                     monitor=FALSE, debug=getOption("oceDebug"), processingLog, ...)
+read.ctd <- function(file, type=NULL, columns=NULL, station=NULL, missingValue,
+    deploymentType="unknown", monitor=FALSE,
+    debug=getOption("oceDebug"), processingLog, ...)
 {
     if (!missing(file) && is.character(file) && 0 == file.info(file)$size)
         stop("empty file")
@@ -3963,8 +3964,8 @@ read.ctd <- function(file, type=NULL, columns=NULL, station=NULL, missingValue, 
     if (is.character(file) && length(grep(".rsk$", file))) {
         return(read.rsk(file=file, debug=debug))
     }
-
-    if (missing(processingLog)) processingLog <- paste(deparse(match.call()), sep="", collapse="")
+    if (missing(processingLog))
+        processingLog <- paste(deparse(match.call()), sep="", collapse="")
     ##ofile <- file
     ##filename <- NULL
     if (is.null(type)) {
@@ -3988,10 +3989,12 @@ read.ctd <- function(file, type=NULL, columns=NULL, station=NULL, missingValue, 
             type <- "WOCE"
         } else if ("* Sea-Bird" == substr(line, 1, 10)) {
             type <- "SBE19"
-        } else if (1 == length(grep("^[ ]*ODF_HEADER,[ ]*$", line))) {
+        } else if (grepl("^[ ]*ODF_HEADER,[ ]*$", line)) {
             type <- "ODF"
+        } else if (grepl("^SSDA Sea & Sun Technology", line)) {
+            type <- "SSDA"
         } else {
-            stop("Cannot discover type in line '", line, "'\n")
+            stop("Cannot discover type in line '", line, "' bird\n")
         }
     } else {
         if (!is.na(pmatch(type, "SBE19"))) {
@@ -4003,21 +4006,22 @@ read.ctd <- function(file, type=NULL, columns=NULL, station=NULL, missingValue, 
         }
     }                                   # FIXME: should just use oce.magic() here
     res <- switch(type,
-                  SBE19=read.ctd.sbe(file, columns=columns, station=station,
-                                     missingValue=missingValue, deploymentType=deploymentType,
-                                     monitor=monitor, debug=debug, processingLog=processingLog, ...),
-                  WOCE=read.ctd.woce(file, columns=columns, station=station,
-                                     missingValue=missingValue, deploymentType=deploymentType,
-                                     monitor=monitor, debug=debug, processingLog=processingLog, ...),
-                  ODF=read.ctd.odf(file, columns=columns, station=station,
-                                   missingValue=missingValue, deploymentType=deploymentType,
-                                   monitor=monitor, debug=debug, processingLog=processingLog, ...),
-                  ITP=read.ctd.itp(file, columns=columns, station=station,
-                                   missingValue=missingValue, deploymentType=deploymentType,
-                                   monitor=monitor, debug=debug, processingLog=processingLog, ...),
-                  ODV=read.ctd.odv(file, columns=columns, station=station,
-                                   missingValue=missingValue, deploymentType=deploymentType,
-                                   monitor=monitor, debug=debug, processingLog=processingLog, ...))
+        SSDA=read.ctd.ssda(file, debug=debug),
+        SBE19=read.ctd.sbe(file, columns=columns, station=station,
+            missingValue=missingValue, deploymentType=deploymentType,
+            monitor=monitor, debug=debug, processingLog=processingLog, ...),
+        WOCE=read.ctd.woce(file, columns=columns, station=station,
+            missingValue=missingValue, deploymentType=deploymentType,
+            monitor=monitor, debug=debug, processingLog=processingLog, ...),
+        ODF=read.ctd.odf(file, columns=columns, station=station,
+            missingValue=missingValue, deploymentType=deploymentType,
+            monitor=monitor, debug=debug, processingLog=processingLog, ...),
+        ITP=read.ctd.itp(file, columns=columns, station=station,
+            missingValue=missingValue, deploymentType=deploymentType,
+            monitor=monitor, debug=debug, processingLog=processingLog, ...),
+        ODV=read.ctd.odv(file, columns=columns, station=station,
+            missingValue=missingValue, deploymentType=deploymentType,
+            monitor=monitor, debug=debug, processingLog=processingLog, ...))
     res
 }
 
@@ -4233,22 +4237,26 @@ time.formats <- c("%b %d %Y %H:%M:%s", "%Y%m%d")
 #' [read.ctd()] scans it from a file.
 #'
 #' @examples
-#' ## For a simple ctd object
+#' # For a simple ctd object
 #' library(oce)
 #' data(ctd)
 #' plotTS(ctd)
 #'
-#' ## For a section object (note the outlier!)
+#' # For a section object (note the outlier!)
 #' data(section)
 #' plotTS(section)
 #'
-#' ## Adding a colormap based on a different variable, e.g. oxygen
+#' # For an argo object
+#' data(argo)
+#' plotTS(handleFlags(argo))
+#'
+#' # Oxygen-based colormap
 #' marOrig <- par("mar") # so later plots with palettes have same margins
 #' cm <- colormap(section[['oxygen']])
 #' drawPalette(colormap=cm, zlab='Oxygen')
 #' plotTS(section, pch=19, col=cm$zcol, mar=par('mar')) # the mar adjusts for the palette
 #'
-#' ## Coloring based on station:
+#' # Station-based colormap
 #' Tlim <- range(section[['temperature']], na.rm=TRUE)
 #' Slim <- range(section[['salinity']], na.rm=TRUE)
 #' cm <- colormap(seq_along(section[['latitude', 'byStation']]))
@@ -4261,9 +4269,16 @@ time.formats <- c("%b %d %Y %H:%M:%s", "%Y%m%d")
 #'     },
 #'     section[['station']], col=cm$zcol)
 #'
-#' ## Show TS for an argo object
-#' data(argo)
-#' plotTS(handleFlags(argo))
+#' # Add spiciness contours
+#' data(ctd)
+#' plotTS(ctd, eos="gsw") # MANDATORY so x=SA and y=CT
+#' usr <- par("usr")
+#' n <- 100
+#' SAgrid <- seq(usr[1], usr[2], length.out=n)
+#' CTgrid <- seq(usr[3], usr[4], length.out=n)
+#' g <- expand.grid(SA=SAgrid, CT=CTgrid)
+#' spiciness <- matrix(gsw::gsw_spiciness0(g$SA, g$CT), nrow=n)
+#' contour(SAgrid, CTgrid, spiciness, col=2, labcex=1, add=TRUE)
 #'
 #' @references
 #'
@@ -4281,32 +4296,32 @@ time.formats <- c("%b %d %Y %H:%M:%s", "%Y%m%d")
 #' @family functions that plot oce data
 #' @family things related to ctd data
 plotTS <- function (x,
-                    inSitu=FALSE,
-                    type='p',
-                    referencePressure=0,
-                    nlevels=6, levels,
-                    grid=TRUE,
-                    col.grid="lightgray",
-                    lty.grid="dotted",
-                    rho1000=FALSE,
-                    eos=getOption("oceEOS", default='gsw'),
-                    cex=par("cex"), col=par("col"), pch=par("pch"),
-                    bg="white", pt.bg="transparent",
-                    col.rho=gray(0.5),
-                    cex.rho=3/4*par("cex"),
-                    rotate=TRUE,
-                    useSmoothScatter=FALSE,
-                    xlab, ylab,
-                    Slim, Tlim,
-                    drawFreezing=TRUE,
-                    trimIsopycnals=TRUE,
-                    mgp=getOption("oceMgp"),
-                    mar=c(mgp[1]+1.5, mgp[1]+1.5, mgp[1], mgp[1]),
-                    lwd=par('lwd'), lty=par('lty'),
-                    lwd.rho=par("lwd"), lty.rho=par("lty"),
-                    add=FALSE, inset=FALSE,
-                    debug=getOption("oceDebug"),
-                    ...)
+    inSitu=FALSE,
+    type='p',
+    referencePressure=0,
+    nlevels=6, levels,
+    grid=TRUE,
+    col.grid="lightgray",
+    lty.grid="dotted",
+    rho1000=FALSE,
+    eos=getOption("oceEOS", default='gsw'),
+    cex=par("cex"), col=par("col"), pch=par("pch"),
+    bg="white", pt.bg="transparent",
+    col.rho=gray(0.5),
+    cex.rho=3/4*par("cex"),
+    rotate=TRUE,
+    useSmoothScatter=FALSE,
+    xlab, ylab,
+    Slim, Tlim,
+    drawFreezing=TRUE,
+    trimIsopycnals=TRUE,
+    mgp=getOption("oceMgp"),
+    mar=c(mgp[1]+1.5, mgp[1]+1.5, mgp[1], mgp[1]),
+    lwd=par('lwd'), lty=par('lty'),
+    lwd.rho=par("lwd"), lty.rho=par("lty"),
+    add=FALSE, inset=FALSE,
+    debug=getOption("oceDebug"),
+    ...)
 {
     oceDebug(debug, "plotTS(..., lwd.rho=", lwd.rho, ", lty.rho=", lty.rho, ",",
              "Slim=", if (!missing(Slim)) paste("c(", Slim[1], ",", Slim[2], ")") else "(missing)", ", ",
@@ -4540,9 +4555,11 @@ plotTS <- function (x,
 #' an image plot is used to show TS data density.
 #'
 #' @param nlevels suggested number of density levels (i.e. isopycnal curves);
-#' ignored if `levels` is supplied.
+#' ignored if `levels` is supplied.  If this is set to 0, no isopycnal
+#' are drawn (see also `levels`, next).
 #'
-#' @param levels optional density levels to draw.
+#' @param levels optional density levels to draw.  If this is `NULL`, then
+#' no isopycnals are drawn.
 #'
 #' @param rotate boolean, set to `TRUE` to write all density labels
 #' horizontally.
@@ -4589,9 +4606,9 @@ plotTS <- function (x,
 #'
 #' @author Dan Kelley
 drawIsopycnals <- function(nlevels=6, levels, rotate=TRUE, rho1000=FALSE, digits=2,
-                           eos=getOption("oceEOS", default='gsw'),
-                           trimIsopycnals=TRUE,
-                           cex=0.75*par('cex'), col="darkgray", lwd=par("lwd"), lty=par("lty"))
+    eos=getOption("oceEOS", default='gsw'),
+    trimIsopycnals=TRUE,
+    cex=0.75*par('cex'), col="darkgray", lwd=par("lwd"), lty=par("lty"))
 {
     eos <- match.arg(eos, c("unesco", "gsw"))
     usr <- par("usr")
@@ -4610,6 +4627,8 @@ drawIsopycnals <- function(nlevels=6, levels, rotate=TRUE, rho1000=FALSE, digits
     }
     rhoMin <- min(rhoCorners, na.rm=TRUE)
     rhoMax <- max(rhoCorners, na.rm=TRUE)
+    if (nlevels < 1L)
+        levels <- NULL
     if (missing(levels)) {
         levels <- pretty(c(rhoMin, rhoMax), n=nlevels)
         ## Trim first and last values, since not in box
@@ -4722,7 +4741,7 @@ drawIsopycnals <- function(nlevels=6, levels, rotate=TRUE, rho1000=FALSE, digits
 #'
 #' @param ytype variable to use on y axis. The valid choices are:
 #' `"pressure"` (the default), `"z"`,
-#' `"depth"` and `"sigmaTheta"`.
+#' `"depth"`, `"sigmaTheta"` and `"sigma0"`.
 #'
 #' @param eos equation of state to be used, either `"unesco"` or
 #' `"gsw"`.
@@ -4949,10 +4968,10 @@ plotProfile <- function(x,
     ylimGiven <- !missing(ylim)
     densitylimGiven <- !missing(densitylim)
     dots <- list(...)
-    ytypeChoices <- c("pressure", "z", "depth", "sigmaTheta")
+    ytypeChoices <- c("pressure", "z", "depth", "sigmaTheta", "sigma0")
     ytypeIndex <- pmatch(ytype, ytypeChoices)
     if (is.na(ytypeIndex))
-        stop('ytype must be one of: "pressure", "z", "depth", "sigmaTheta", but it is "', ytype, '"')
+        stop('ytype must be one of: "pressure", "z", "depth", "sigmaTheta" or "sigma0", but it is "', ytype, '"')
     ytype <- ytypeChoices[ytypeIndex]
     if (!is.null(ylab)) {
         yname <- ylab
@@ -4961,32 +4980,34 @@ plotProfile <- function(x,
             pressure=resizableLabel("p", "y", debug=debug-1),
             z=resizableLabel("z", "y", debug=debug-1),
             depth=resizableLabel("depth", "y", debug=debug-1),
-            sigmaTheta=resizableLabel("sigmaTheta", "y", debug=debug-1))
+            sigmaTheta=resizableLabel("sigmaTheta", "y", debug=debug-1),
+            sigma0=resizableLabel("sigma0", "y", debug=debug-1))
     }
     # If plim given on a pressure plot, then it takes precedence over ylim; same
     # for densitylim.
     if (ytype == "pressure" && plimGiven)
         ylim <- plim
-    if (ytype == "sigmaTheta" && densitylimGiven)
+    if ((ytype == "sigmaTheta" || ytype == "sigma0") && densitylimGiven)
         ylim <- densitylim
     if (missing(ylim))
         ylim <- switch(ytype,
             pressure=rev(range(x[["pressure"]], na.rm=TRUE)),
             z=range(swZ(x[["pressure"]]), na.rm=TRUE),
             depth=rev(range(x[["depth"]], na.rm=TRUE)),
-            sigmaTheta=rev(range(x[["sigmaTheta"]], na.rm=TRUE)))
+            sigmaTheta=rev(range(x[["sigmaTheta"]], na.rm=TRUE)),
+            sigma0=rev(range(x[["sigma0"]], na.rm=TRUE)))
     # issue 1137 Dec 27, 2016
     # Below, we used to trim the data to ylim, but this made it
     # look as though there were no data at top and bottom of the plot.
     # The new scheme is to retain 5% of data outside the limit, which
     # should be OK for the usual R convention of a 4% gap at axis ends.
-    if (ytype %in% c("pressure", "z", "depth", "sigmaTheta")) {
+    if (ytype %in% c("pressure", "z", "depth", "sigmaTheta", "sigma0")) {
         yy <- x[[ytype]]
         extra <- 0.05 * diff(range(yy, na.rm=TRUE)) # note larger than 0.04, just in case
         examineIndices <- if (is.na(extra)) seq_along(yy)
             else (min(ylim) - extra) <= yy & yy <= (max(ylim) + extra)
     } else {
-        warning("unknown \"ytype\"; must be one of \"pressure\", \"z\", \"depth\" or \"sigmaTheta\"")
+        warning("unknown \"ytype\"; must be one of \"pressure\", \"z\", \"depth\", \"sigmaTheta\" or \"sigma0\"")
         examineIndices <- seq_along(x[["pressure"]])
     }
     examineIndicesLength <- length(examineIndices)
@@ -5038,6 +5059,8 @@ plotProfile <- function(x,
         y <- x[["depth"]]
     } else if (ytype == "sigmaTheta") {
         y <- x[["sigmaTheta"]]
+    } else if (ytype == "sigma0") {
+        y <- x[["sigma0"]]
     }
     y <- as.vector(y)
 

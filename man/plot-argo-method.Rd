@@ -14,7 +14,7 @@
   cex = 1,
   pch = 1,
   type = "p",
-  col,
+  col = 1,
   fill = FALSE,
   projection = NULL,
   mgp = getOption("oceMgp"),
@@ -125,6 +125,7 @@ Other things related to argo data:
 \code{\link{argo}},
 \code{\link{as.argo}()},
 \code{\link{handleFlags,argo-method}},
+\code{\link{read.argo.copernicus}()},
 \code{\link{read.argo}()},
 \code{\link{subset,argo-method}},
 \code{\link{summary,argo-method}}

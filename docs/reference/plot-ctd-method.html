@@ -24,7 +24,7 @@ a map at bottom right."><!-- mathjax --><script src="https://cdnjs.cloudflare.co
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-3</span>
       </span>
     </div>
 
@@ -317,6 +317,7 @@ frequency; in that case, it is passed to <code><a href="swN2.html">swN2()</a></c
 <dd><p>logical value indicating whether <code>NA</code> values
 will yield breaks in lines drawn if <code>type</code> is <code>b</code>, <code>l</code>, or <code>o</code>.
 The default value is <code>FALSE</code>.  Setting <code>keepNA</code> to <code>TRUE</code>
+can be helpful when working with multiple profiles
 strung together into one <a href="ctd-class.html">ctd</a> object, which otherwise
 would have extraneous lines joining the deepest point in one
 profile to the shallowest in the next profile.</p></dd>
@@ -453,10 +454,12 @@ objects, and also outlines the other functions dealing with them.</p>
 <code><a href="plotProfile.html">plotProfile</a>()</code>,
 <code><a href="plotScan.html">plotScan</a>()</code>,
 <code><a href="plotTS.html">plotTS</a>()</code>,
+<code><a href="read.ctd.aml.html">read.ctd.aml</a>()</code>,
 <code><a href="read.ctd.itp.html">read.ctd.itp</a>()</code>,
 <code><a href="read.ctd.odf.html">read.ctd.odf</a>()</code>,
 <code><a href="read.ctd.odv.html">read.ctd.odv</a>()</code>,
 <code><a href="read.ctd.sbe.html">read.ctd.sbe</a>()</code>,
+<code><a href="read.ctd.ssda.html">read.ctd.ssda</a>()</code>,
 <code><a href="read.ctd.woce.other.html">read.ctd.woce.other</a>()</code>,
 <code><a href="read.ctd.woce.html">read.ctd.woce</a>()</code>,
 <code><a href="read.ctd.html">read.ctd</a>()</code>,
@@ -510,8 +513,7 @@ objects, and also outlines the other functions dealing with them.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a>
-2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
 </div>
 
       </footer></div>

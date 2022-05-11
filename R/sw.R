@@ -1885,7 +1885,10 @@ swSigmaT <- function(salinity, temperature=NULL, pressure=NULL,
 #' Compute the potential density (minus 1000 kg/m^3) that seawater would have if raised
 #' adiabatically to the surface.  In the UNESCO system, this quantity is
 #' is denoted \eqn{\sigma_\theta}{sigma-theta} (hence the function name), but in
-#' the GSW system, it is denoted `sigma0`.
+#' the GSW system, a somewhat related quantity is denoted `sigma0`. (In a
+#' deep-water CTD cast, the RMS deviation between sigma-theta and sigma0 is
+#' typically of order 0.0003 kg/m^3, corresponding to a temperature shift of
+#' about 0.002C, so the distinction between the quantities is not large.)
 #'
 #' If the first argument is an `oce` object, then salinity, etc., are
 #' extracted from it, and used for the calculation instead of any values
@@ -1910,15 +1913,21 @@ swSigmaT <- function(salinity, temperature=NULL, pressure=NULL,
 swSigmaTheta <- function(salinity, temperature=NULL, pressure=NULL, referencePressure=0,
     longitude=NULL, latitude=NULL, eos=getOption("oceEOS", default="gsw"))
 {
+    #message("DEBUG: in swSigmaTheta with eos=", eos, ", referencePressure=", referencePressure)
     if (missing(salinity))
        stop("must provide salinity")
     if (inherits(salinity, "oce")) {
+        #message("DEBUG: it is an object")
         temperature <- salinity[["temperature"]]
         pressure <- salinity[["pressure"]]
-        if (is.null(longitude))
+        if (is.null(longitude)) {
             longitude <- salinity[["longitude"]]
-        if (is.null(latitude))
+            #message("DEBUG: got longitude=", longitude)
+        }
+        if (is.null(latitude)) {
             latitude <- salinity[["latitude"]]
+            #message("DEBUG: got latitude=", latitude)
+        }
         # we're done extracting other things, so now it's safe to rewrite 'salinity'
         salinity <- salinity[["salinity"]]
     }
@@ -1949,10 +1958,14 @@ swSigmaTheta <- function(salinity, temperature=NULL, pressure=NULL, referencePre
             referencePressure=referencePressure,
             longitude=longitude, latitude=latitude, eos=eos)
         res <- swRho(salinity=salinity, temperature=theta, pressure=referencePressure,
-            longitude=longitude, latitude=latitude, eos=eos) - 1000
+            longitude=longitude, latitude=latitude, eos=eos) - 1000.0
     } else if (eos == "gsw") {
         SA <- gsw::gsw_SA_from_SP(SP=salinity, p=pressure, longitude=longitude, latitude=latitude)
-        res <- gsw::gsw_pot_rho_t_exact(SA=SA, t=temperature, p=pressure, p_ref=referencePressure) - 1000
+        #CT <- gsw::gsw_CT_from_t(SA=SA, p=pressure, t=temperature)
+        res <- gsw::gsw_pot_rho_t_exact(SA=SA, t=temperature, p=pressure, p_ref=referencePressure) - 1000.0
+        #res <- gsw::gsw_sigma0(SA=SA, CT=CT)
+    } else {
+        stop("eos must be either \"gsw\" or \"unesco\"; \"", eos, "\" is not acceptable.")
     }
     if (!is.null(dim))
         dim(res) <- dim
@@ -1961,12 +1974,11 @@ swSigmaTheta <- function(salinity, temperature=NULL, pressure=NULL, referencePre
 
 #' Seawater potential density anomaly referenced to surface pressure
 #'
-#' Compute \eqn{\sigma_\theta}{sigma}, the potential density of seawater (minus
-#' 1000 kg/m\eqn{^3}{^3}), referenced to surface pressure.
-#'
-#' Definition:
-#' \eqn{\sigma_0=\sigma_\theta=\rho(S,\theta(S,t,p),0}{sigma_0=sigma_theta=rho(S,theta(S,t,p),0)}
-#' - 1000 kg/m\eqn{^3}{^3}.
+#' Compute the potential density of seawater (minus
+#' 1000 kg/m\eqn{^3}{^3}), referenced to surface pressure. This is done using
+#' [gsw::gsw_sigma0()] if `eos="gsw"`, or using [swSigmaTheta()] if it is
+#' `"unesco"`. (The difference between the formulations is typically
+#' under 0.01 kg/m^3, corresponding to a few millidegrees of temperature.)
 #'
 #' @inheritParams swRho
 #'
@@ -1980,66 +1992,79 @@ swSigmaTheta <- function(salinity, temperature=NULL, pressure=NULL, referencePre
 swSigma0 <- function(salinity, temperature=NULL, pressure=NULL,
     longitude=NULL, latitude=NULL, eos=getOption("oceEOS", default="gsw"))
 {
-    swSigmaTheta(salinity=salinity, temperature=temperature, pressure=pressure, referencePressure=0,
-        longitude=longitude, latitude=latitude, eos=eos)
-    #<2022-01-02> # Next is a remnant, commented out 2022-01-02 because sigma1, etc did not
-    #<2022-01-02> # have this, and worked fine.
-    #<2022-01-02> if (missing(salinity))
-    #<2022-01-02>     stop("must provide salinity")
-    #<2022-01-02> if (inherits(salinity, "oce")) {
-    #<2022-01-02>     temperature <- salinity[["temperature"]]
-    #<2022-01-02>     pressure <- salinity[["pressure"]]
-    #<2022-01-02>     if (eos == "gsw") {
-    #<2022-01-02>         if (is.null(longitude))
-    #<2022-01-02>             longitude <- salinity[["longitude"]]
-    #<2022-01-02>         if (is.null(latitude))
-    #<2022-01-02>             latitude <- salinity[["latitude"]]
-    #<2022-01-02>     }
-    #<2022-01-02>     salinity <- salinity[["salinity"]]
-    #<2022-01-02> }
-    #<2022-01-02> if (eos == "gsw") {
-    #<2022-01-02>     if (is.null(longitude))
-    #<2022-01-02>         stop("must supply longitude")
-    #<2022-01-02>     if (is.null(latitude))
-    #<2022-01-02>         stop("must supply latitude")
-    #<2022-01-02> }
-    #<2022-01-02> swSigmaTheta(salinity=salinity, temperature=temperature, pressure=pressure, referencePressure=0,
-    #<2022-01-02>     longitude=longitude, latitude=latitude, eos=eos)
+    if (missing(salinity))
+        stop("must provide salinity")
+    if (eos == "gsw") {
+        if (inherits(salinity, "oce")) {
+            temperature <- salinity[["temperature"]]
+            pressure <- salinity[["pressure"]]
+            if (is.null(longitude))
+                longitude <- salinity[["longitude"]]
+            if (is.null(latitude))
+                latitude <- salinity[["latitude"]]
+            salinity <- salinity[["salinity"]]
+        }
+        if (is.null(longitude))
+            stop("must supply longitude")
+        if (is.null(latitude))
+            stop("must supply latitude")
+        l <- lookWithin(list(salinity=salinity, temperature=temperature, pressure=pressure,
+                             longitude=longitude, latitude=latitude))
+        SA <- gsw_SA_from_SP(l$salinity, l$pressure, l$longitude, l$latitude)
+        CT <- gsw_CT_from_t(SA, l$temperature, l$pressure)
+        gsw_sigma0(SA=SA, CT=CT)
+    } else if (eos == "unesco") {
+        swSigmaTheta(salinity=salinity, temperature=temperature, pressure=pressure, referencePressure=0,
+            longitude=longitude, latitude=latitude, eos=eos)
+    } else {
+        stop("eos must be either \"gsw\" or \"unesco\", but it is \"", eos, "\"")
+    }
 }
 
 #' Seawater potential density anomaly referenced to 1000db pressure
 #'
-#' Compute \eqn{\sigma_\theta}{sigma}, the potential density of seawater (minus
-#' 1000 kg/m\eqn{^3}{^3}), referenced to 1000db pressure.
-#'
-#' Definition:
-#' \eqn{\sigma_1=\sigma_\theta=\rho(S,\theta(S,t,p),1000}{sigma_1=sigma_theta=rho(S,theta(S,t,p),1000)}
-#' - 1000 kg/m\eqn{^3}{^3}.
+#' This is analogous to [swSigma0()], but referenced to 1000db pressure.
 #'
 #' @inheritParams swRho
-#'
 #' @return Potential density anomaly (kg/m\eqn{^3}{^3}).
-#'
 #' @author Dan Kelley
-#'
 #' @references See citations provided in the [swRho()] documentation.
-#'
 #' @family functions that calculate seawater properties
 swSigma1 <- function(salinity, temperature=NULL, pressure=NULL,
     longitude=NULL, latitude=NULL, eos=getOption("oceEOS", default="gsw"))
 {
-    swSigmaTheta(salinity=salinity, temperature=temperature, pressure=pressure, referencePressure=1000,
-        longitude=longitude, latitude=latitude, eos=eos)
+    if (missing(salinity))
+        stop("must provide salinity")
+    if (eos == "gsw") {
+        if (inherits(salinity, "oce")) {
+            temperature <- salinity[["temperature"]]
+            pressure <- salinity[["pressure"]]
+            if (is.null(longitude))
+                longitude <- salinity[["longitude"]]
+            if (is.null(latitude))
+                latitude <- salinity[["latitude"]]
+            salinity <- salinity[["salinity"]]
+        }
+        if (is.null(longitude))
+            stop("must supply longitude")
+        if (is.null(latitude))
+            stop("must supply latitude")
+        l <- lookWithin(list(salinity=salinity, temperature=temperature, pressure=pressure,
+                             longitude=longitude, latitude=latitude))
+        SA <- gsw_SA_from_SP(l$salinity, l$pressure, l$longitude, l$latitude)
+        CT <- gsw_CT_from_t(SA, l$temperature, l$pressure)
+        gsw_sigma1(SA=SA, CT=CT)
+    } else if (eos == "unesco") {
+        swSigmaTheta(salinity=salinity, temperature=temperature, pressure=pressure, referencePressure=1000,
+            longitude=longitude, latitude=latitude, eos=eos)
+    } else {
+        stop("eos must be either \"gsw\" or \"unesco\", but it is \"", eos, "\"")
+    }
 }
 
 #' Seawater potential density anomaly referenced to 2000db pressure
 #'
-#' Compute \eqn{\sigma_\theta}{sigma}, the potential density of seawater (minus
-#' 1000 kg/m\eqn{^3}{^3}), referenced to 2000db pressure.
-#'
-#' Definition:
-#' \eqn{\sigma_1=\sigma_\theta=\rho(S,\theta(S,t,p),1000}{sigma_1=sigma_theta=rho(S,theta(S,t,p),2000)}
-#' - 2000 kg/m\eqn{^3}{^3}.
+#' This is analogous to [swSigma0()], but referenced to 2000db pressure.
 #'
 #' @inheritParams swRho
 #' @return Potential density anomaly (kg/m\eqn{^3}{^3}).
@@ -2049,18 +2074,38 @@ swSigma1 <- function(salinity, temperature=NULL, pressure=NULL,
 swSigma2 <- function(salinity, temperature=NULL, pressure=NULL,
     longitude=NULL, latitude=NULL, eos=getOption("oceEOS", default="gsw"))
 {
-    swSigmaTheta(salinity=salinity, temperature=temperature, pressure=pressure, referencePressure=2000,
-        longitude=longitude, latitude=latitude, eos=eos)
+    if (missing(salinity))
+        stop("must provide salinity")
+    if (eos == "gsw") {
+        if (inherits(salinity, "oce")) {
+            temperature <- salinity[["temperature"]]
+            pressure <- salinity[["pressure"]]
+            if (is.null(longitude))
+                longitude <- salinity[["longitude"]]
+            if (is.null(latitude))
+                latitude <- salinity[["latitude"]]
+            salinity <- salinity[["salinity"]]
+        }
+        if (is.null(longitude))
+            stop("must supply longitude")
+        if (is.null(latitude))
+            stop("must supply latitude")
+        l <- lookWithin(list(salinity=salinity, temperature=temperature, pressure=pressure,
+                             longitude=longitude, latitude=latitude))
+        SA <- gsw_SA_from_SP(l$salinity, l$pressure, l$longitude, l$latitude)
+        CT <- gsw_CT_from_t(SA, l$temperature, l$pressure)
+        gsw_sigma2(SA=SA, CT=CT)
+    } else if (eos == "unesco") {
+        swSigmaTheta(salinity=salinity, temperature=temperature, pressure=pressure, referencePressure=2000,
+            longitude=longitude, latitude=latitude, eos=eos)
+    } else {
+        stop("eos must be either \"gsw\" or \"unesco\", but it is \"", eos, "\"")
+    }
 }
 
 #' Seawater potential density anomaly referenced to 3000db pressure
 #'
-#' Compute \eqn{\sigma_\theta}{sigma}, the potential density of seawater (minus
-#' 1000 kg/m\eqn{^3}{^3}), referenced to 3000db pressure.
-#'
-#' Definition:
-#' \eqn{\sigma_1=\sigma_\theta=\rho(S,\theta(S,t,p),3000}{sigma_1=sigma_theta=rho(S,theta(S,t,p),3000)}
-#' - 1000 kg/m\eqn{^3}{^3}.
+#' This is analogous to [swSigma0()], but referenced to 3000db pressure.
 #'
 #' @inheritParams swRho
 #' @return Potential density anomaly (kg/m\eqn{^3}{^3}).
@@ -2070,32 +2115,74 @@ swSigma2 <- function(salinity, temperature=NULL, pressure=NULL,
 swSigma3 <- function(salinity, temperature=NULL, pressure=NULL,
     longitude=NULL, latitude=NULL, eos=getOption("oceEOS", default="gsw"))
 {
-    swSigmaTheta(salinity=salinity, temperature=temperature, pressure=pressure, referencePressure=3000,
-        longitude=longitude, latitude=latitude, eos=eos)
+    if (missing(salinity))
+        stop("must provide salinity")
+    if (eos == "gsw") {
+        if (inherits(salinity, "oce")) {
+            temperature <- salinity[["temperature"]]
+            pressure <- salinity[["pressure"]]
+            if (is.null(longitude))
+                longitude <- salinity[["longitude"]]
+            if (is.null(latitude))
+                latitude <- salinity[["latitude"]]
+            salinity <- salinity[["salinity"]]
+        }
+        if (is.null(longitude))
+            stop("must supply longitude")
+        if (is.null(latitude))
+            stop("must supply latitude")
+        l <- lookWithin(list(salinity=salinity, temperature=temperature, pressure=pressure,
+                             longitude=longitude, latitude=latitude))
+        SA <- gsw_SA_from_SP(l$salinity, l$pressure, l$longitude, l$latitude)
+        CT <- gsw_CT_from_t(SA, l$temperature, l$pressure)
+        gsw_sigma3(SA=SA, CT=CT)
+    } else if (eos == "unesco") {
+        swSigmaTheta(salinity=salinity, temperature=temperature, pressure=pressure, referencePressure=3000,
+            longitude=longitude, latitude=latitude, eos=eos)
+    } else {
+        stop("eos must be either \"gsw\" or \"unesco\", but it is \"", eos, "\"")
+    }
 }
 
 #' Seawater potential density anomaly referenced to 4000db pressure
 #'
-#' Compute \eqn{\sigma_\theta}{sigma}, the potential density of seawater (minus
-#' 1000 kg/m\eqn{^3}{^3}), referenced to 4000db pressures.
-#' This is defined as
-#' \eqn{\sigma_1=\sigma_\theta=\rho(S,\theta(S,t,p),4000}{sigma_1=sigma_theta=rho(S,theta(S,t,p),4000)}
-#' - 1000 kg/m\eqn{^3}{^3}.
+#' This is analogous to [swSigma0()], but referenced to 4000db pressure.
 #'
 #' @inheritParams swRho
-#'
 #' @return Potential density anomaly (kg/m\eqn{^3}{^3}).
-#'
 #' @author Dan Kelley
-#'
 #' @references See citations provided in the [swRho()] documentation.
-#'
 #' @family functions that calculate seawater properties
 swSigma4 <- function(salinity, temperature=NULL, pressure=NULL,
     longitude=NULL, latitude=NULL, eos=getOption("oceEOS", default="gsw"))
 {
-    swSigmaTheta(salinity=salinity, temperature=temperature, pressure=pressure, referencePressure=4000,
-        longitude=longitude, latitude=latitude, eos=eos)
+    if (missing(salinity))
+        stop("must provide salinity")
+    if (eos == "gsw") {
+        if (inherits(salinity, "oce")) {
+            temperature <- salinity[["temperature"]]
+            pressure <- salinity[["pressure"]]
+            if (is.null(longitude))
+                longitude <- salinity[["longitude"]]
+            if (is.null(latitude))
+                latitude <- salinity[["latitude"]]
+            salinity <- salinity[["salinity"]]
+        }
+        if (is.null(longitude))
+            stop("must supply longitude")
+        if (is.null(latitude))
+            stop("must supply latitude")
+        l <- lookWithin(list(salinity=salinity, temperature=temperature, pressure=pressure,
+                             longitude=longitude, latitude=latitude))
+        SA <- gsw_SA_from_SP(l$salinity, l$pressure, l$longitude, l$latitude)
+        CT <- gsw_CT_from_t(SA, l$temperature, l$pressure)
+        gsw_sigma4(SA=SA, CT=CT)
+    } else if (eos == "unesco") {
+        swSigmaTheta(salinity=salinity, temperature=temperature, pressure=pressure, referencePressure=4000,
+            longitude=longitude, latitude=latitude, eos=eos)
+    } else {
+        stop("eos must be either \"gsw\" or \"unesco\", but it is \"", eos, "\"")
+    }
 }
 
 
@@ -2411,7 +2498,7 @@ swSpecificHeat <- function(salinity, temperature=NULL, pressure=0,
 #'
 #' @family functions that calculate seawater properties
 swSpice <- function(salinity, temperature=NULL, pressure=NULL,
-                    longitude=NULL, latitude=NULL, eos=getOption("oceEOS", default="gsw"))
+    longitude=NULL, latitude=NULL, eos=getOption("oceEOS", default="gsw"))
 {
     if (missing(salinity))
         stop("must provide salinity")

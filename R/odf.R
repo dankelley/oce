@@ -1,4 +1,4 @@
-# vim:textwidth=120:expandtab:shiftwidth=4:softtabstop=4
+# vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
 
 
 #' Class to Store ODF Data
@@ -43,17 +43,17 @@
 setClass("odf", contains="oce")
 
 setMethod(f="initialize",
-          signature="odf",
-          definition=function(.Object, time, filename="", ...) {
-              .Object <- callNextMethod(.Object, ...)
-              ## Assign to some columns so they exist if needed later (even if they are NULL)
-              .Object@data$time <- if (missing(time)) NULL else time
-              .Object@metadata$filename <- filename
-              .Object@metadata$deploymentType <- "" # see ctd
-              .Object@processingLog$time <- presentTime()
-              .Object@processingLog$value <- "create 'odf' object"
-              return(.Object)
-          })
+    signature="odf",
+    definition=function(.Object, time, filename="", ...) {
+        .Object <- callNextMethod(.Object, ...)
+        ## Assign to some columns so they exist if needed later (even if they are NULL)
+        .Object@data$time <- if (missing(time)) NULL else time
+        .Object@metadata$filename <- filename
+        .Object@metadata$deploymentType <- "" # see ctd
+        .Object@processingLog$time <- presentTime()
+        .Object@processingLog$value <- "create 'odf' object"
+        return(.Object)
+    })
 
 #' Extract Something From an ODF Object
 #'
@@ -75,15 +75,15 @@ setMethod(f="initialize",
 #'
 #' @family things related to odf data
 setMethod(f="[[",
-          signature(x="odf", i="ANY", j="ANY"),
-          definition=function(x, i, j, ...) {
-              if (i == "?")
-                  return(list(metadata=sort(names(x@metadata)),
-                          metadataDerived=NULL,
-                          data=sort(names(x@data)),
-                          dataDerived=NULL))
-              callNextMethod()         # [[
-          })
+    signature(x="odf", i="ANY", j="ANY"),
+    definition=function(x, i, j, ...) {
+        if (i == "?")
+            return(list(metadata=sort(names(x@metadata)),
+                    metadataDerived=NULL,
+                    data=sort(names(x@data)),
+                    dataDerived=NULL))
+        callNextMethod()         # [[
+    })
 
 #' @title Replace Parts of an ODF Object
 #'
@@ -93,10 +93,10 @@ setMethod(f="[[",
 #'
 #' @family things related to odf data
 setMethod(f="[[<-",
-          signature(x="odf", i="ANY", j="ANY"),
-          definition=function(x, i, j, ..., value) {
-              callNextMethod(x=x, i=i, j=j, ...=..., value=value) # [[<-
-          })
+    signature(x="odf", i="ANY", j="ANY"),
+    definition=function(x, i, j, ..., value) {
+        callNextMethod(x=x, i=i, j=j, ...=..., value=value) # [[<-
+    })
 
 #' Subset an ODF object
 #'
@@ -120,27 +120,27 @@ setMethod(f="[[<-",
 #' @family things related to odf data
 #' @family functions that subset oce objects
 setMethod(f="subset",
-          signature="odf",
-          definition=function(x, subset, ...) {
-              subsetString <- paste(deparse(substitute(expr=subset, env=environment())), collapse=" ")
-              res <- x
-              ##dots <- list(...)
-              if (missing(subset))
-                  stop("must give 'subset'")
+    signature="odf",
+    definition=function(x, subset, ...) {
+        subsetString <- paste(deparse(substitute(expr=subset, env=environment())), collapse=" ")
+        res <- x
+        ##dots <- list(...)
+        if (missing(subset))
+            stop("must give 'subset'")
 
-              if (missing(subset))
-                  stop("must specify a 'subset'")
-              keep <- eval(substitute(expr=subset, env=environment()), envir=x@data, enclos=parent.frame(2)) # used for $ts and $ma, but $tsSlow gets another
-              res <- x
-              for (i in seq_along(x@data)) {
-                  res@data[[i]] <- x@data[[i]][keep]
-              }
-              for (i in seq_along(x@metadata$flags)) {
-                  res@metadata$flags[[i]] <- x@metadata$flags[[i]][keep]
-              }
-              res@processingLog <- processingLogAppend(res@processingLog, paste("subset(x, subset=", subsetString, ")", sep=""))
-              res
-          })
+        if (missing(subset))
+            stop("must specify a 'subset'")
+        keep <- eval(substitute(expr=subset, env=environment()), envir=x@data, enclos=parent.frame(2)) # used for $ts and $ma, but $tsSlow gets another
+        res <- x
+        for (i in seq_along(x@data)) {
+            res@data[[i]] <- x@data[[i]][keep]
+        }
+        for (i in seq_along(x@metadata$flags)) {
+            res@metadata$flags[[i]] <- x@metadata$flags[[i]][keep]
+        }
+        res@processingLog <- processingLogAppend(res@processingLog, paste("subset(x, subset=", subsetString, ")", sep=""))
+        res
+    })
 
 
 #' Plot an odf Object
@@ -172,62 +172,62 @@ setMethod(f="subset",
 #'
 #' @aliases plot.odf
 setMethod(f="plot",
-          signature=signature("odf"),
-          definition=function(x, blanks=TRUE,
-                              debug=getOption("oceDebug")) {
-              oceDebug(debug, "plot,odf-method(..., blanks=", blanks, "...) {\n", sep="", unindent=1)
-              data <- x@data
-              dataNames <- names(data)
-              ## At the start, n is the number of non-time variables, but
-              ## later on we might switch it to equal nok, which is the
-              ## number of non-time variables that contain finite data.
-              if (!("time" %in% dataNames)) {
-                  finite <- unlist(lapply(data, function(col) any(is.finite(col))))
-                  pairs(data.frame(data)[, finite], labels=dataNames[finite])
-              } else {
-                  ## Define n as the number of non-time data items and nok as the
-                  ## number of such columns that contain at least 1 finite value.
-                  n <- length(dataNames) - 1
-                  if (blanks) {
-                      nok <- n
-                  } else {
-                      nok <- 0
-                      for (i in 1:n) {
-                          if (dataNames[i] != "time" && any(is.finite(data[[i]])))
-                              nok <- nok + 1
-                      }
-                  }
-                  time <- data$time
-                  if (!is.null(time)) {
-                      if (!blanks)
-                          n <- nok
-                      if (n > 5) {
-                          ## make a roughly square grid
-                          N <- as.integer(0.5 + sqrt(n - 1))
-                          M <- as.integer(n / N)
-                          ## may need to add 1, but use a loop in case my logic is mixed up
-                          ## if that would
-                          while (N * M < n)
-                              M <- M + 1
-                          par(mfrow=c(N, M))
-                          oceDebug(debug, "N=", N, ", M=", M, ", prod=", N*M, ", n=", n, "\n", sep="")
-                      } else {
-                          par(mfrow=c(n, 1))
-                      }
-                      for (i in seq_along(dataNames)) {
-                          if (dataNames[i] != "time") {
-                              y <- data[[dataNames[i]]]
-                              yok <- any(is.finite(y))
-                              if (blanks || yok)
-                                  oce.plot.ts(time, y, ylab=dataNames[i], mar=c(2, 3, 0.5, 1), drawTimeRange=FALSE)
-                              if (!yok)
-                                  warning(paste("In plot,odf-method() : '", dataNames[i], "' has no finite data", sep=""), call.=FALSE)
-                          }
-                      }
-                  }
-              }
-              oceDebug(debug, "} # plot,odf-method\n", sep="", unindent=1)
-          })
+    signature=signature("odf"),
+    definition=function(x, blanks=TRUE,
+        debug=getOption("oceDebug")) {
+        oceDebug(debug, "plot,odf-method(..., blanks=", blanks, "...) {\n", sep="", unindent=1)
+        data <- x@data
+        dataNames <- names(data)
+        # At the start, n is the number of non-time variables, but
+        # later on we might switch it to equal nok, which is the
+        # number of non-time variables that contain finite data.
+        if (!("time" %in% dataNames)) {
+            finite <- unlist(lapply(data, function(col) any(is.finite(col))))
+            pairs(data.frame(data)[, finite], labels=dataNames[finite])
+        } else {
+            # Define n as the number of non-time data items and nok as the
+            # number of such columns that contain at least 1 finite value.
+            n <- length(dataNames) - 1
+            if (blanks) {
+                nok <- n
+            } else {
+                nok <- 0
+                for (i in 1:n) {
+                    if (dataNames[i] != "time" && any(is.finite(data[[i]])))
+                        nok <- nok + 1
+                }
+            }
+            time <- data$time
+            if (!is.null(time)) {
+                if (!blanks)
+                    n <- nok
+                if (n > 5) {
+                    # make a roughly square grid
+                    N <- as.integer(0.5 + sqrt(n - 1))
+                    M <- as.integer(n / N)
+                    # may need to add 1, but use a loop in case my logic is mixed up
+                    # if that would
+                    while (N * M < n)
+                        M <- M + 1
+                    par(mfrow=c(N, M))
+                    oceDebug(debug, "N=", N, ", M=", M, ", prod=", N*M, ", n=", n, "\n", sep="")
+                } else {
+                    par(mfrow=c(n, 1))
+                }
+                for (i in seq_along(dataNames)) {
+                    if (dataNames[i] != "time") {
+                        y <- data[[dataNames[i]]]
+                        yok <- any(is.finite(y))
+                        if (blanks || yok)
+                            oce.plot.ts(time, y, ylab=dataNames[i], mar=c(2, 3, 0.5, 1), drawTimeRange=FALSE)
+                        if (!yok)
+                            warning(paste("In plot,odf-method() : '", dataNames[i], "' has no finite data", sep=""), call.=FALSE)
+                    }
+                }
+            }
+        }
+        oceDebug(debug, "} # plot,odf-method\n", sep="", unindent=1)
+    })
 
 
 #' Summarize an ODF Object
@@ -246,30 +246,29 @@ setMethod(f="plot",
 #'
 #' @family things related to odf data
 setMethod(f="summary",
-          signature="odf",
-          definition=function(object, ...) {
-              cat("ODF Summary\n-----------\n\n")
-              showMetadataItem(object, "type",                     "Instrument:          ")
-              showMetadataItem(object, "model",                    "Instrument model:    ")
-              showMetadataItem(object, "serialNumber",             "Instr. serial no.:   ")
-              showMetadataItem(object, "serialNumberTemperature",  "Temp. serial no.:    ")
-              showMetadataItem(object, "serialNumberConductivity", "Cond. serial no.:    ")
-              showMetadataItem(object, "filename",                 "File source:         ")
-              showMetadataItem(object, "hexfilename",              "Orig. hex file:      ")
-              showMetadataItem(object, "institute",                "Institute:           ")
-              showMetadataItem(object, "scientist",                "Chief scientist:     ")
-              showMetadataItem(object, "date",                     "Date:                ", isdate=TRUE)
-              showMetadataItem(object, "startTime",                "Start time:          ", isdate=TRUE)
-              showMetadataItem(object, "systemUploadTime",         "System upload time:  ", isdate=TRUE)
-              showMetadataItem(object, "cruise",                   "Cruise:              ")
-              showMetadataItem(object, "ship",                     "Vessel:              ")
-              showMetadataItem(object, "station",                  "Station:             ")
-              invisible(callNextMethod()) # summary
-          })
+    signature="odf",
+    definition=function(object, ...) {
+        cat("ODF Summary\n-----------\n\n")
+        showMetadataItem(object, "type",                     "Instrument:          ")
+        showMetadataItem(object, "model",                    "Instrument model:    ")
+        showMetadataItem(object, "serialNumber",             "Instr. serial no.:   ")
+        showMetadataItem(object, "serialNumberTemperature",  "Temp. serial no.:    ")
+        showMetadataItem(object, "serialNumberConductivity", "Cond. serial no.:    ")
+        showMetadataItem(object, "filename",                 "File source:         ")
+        showMetadataItem(object, "hexfilename",              "Orig. hex file:      ")
+        showMetadataItem(object, "institute",                "Institute:           ")
+        showMetadataItem(object, "scientist",                "Chief scientist:     ")
+        showMetadataItem(object, "date",                     "Date:                ", isdate=TRUE)
+        showMetadataItem(object, "startTime",                "Start time:          ", isdate=TRUE)
+        showMetadataItem(object, "systemUploadTime",         "System upload time:  ", isdate=TRUE)
+        showMetadataItem(object, "cruise",                   "Cruise:              ")
+        showMetadataItem(object, "ship",                     "Vessel:              ")
+        showMetadataItem(object, "station",                  "Station:             ")
+        invisible(callNextMethod()) # summary
+    })
 
 
-
-## find first match in header
+# find first match in header
 findInHeader <- function(key, lines, returnOnlyFirst=TRUE, numeric=FALSE, prefix=TRUE) # local function
 {
     if (prefix)
@@ -278,30 +277,30 @@ findInHeader <- function(key, lines, returnOnlyFirst=TRUE, numeric=FALSE, prefix
     rval <- ""
     rval <- list()
     for (j in seq_along(i)) {
-        ##. cat("j=", j, ", i=", i, "\n")
-        ## ----------
-        ## RISKY CODE: only look at first match
-        ## ----------
-        ## isolate the RHS of the eqquality
+        #. cat("j=", j, ", i=", i, "\n")
+        # ----------
+        # RISKY CODE: only look at first match
+        # ----------
+        # isolate the RHS of the eqquality
         tmp <- gsub("\\s*$", "", gsub("^\\s*", "", gsub("'", "", gsub(",", "", strsplit(lines[i[j]], "=")[[1]][2]))))
-        ## convert e.g. D+00 to e+00
+        # convert e.g. D+00 to e+00
         if (length(grep("[-A-CF-Za-cf-z ]", tmp))) {
-            ##. cat("case A. tmp '", tmp, "'\n", sep="")
+            #. cat("case A. tmp '", tmp, "'\n", sep="")
             rval[[j]] <- tmp
         } else {
-            ##. cat("case B. tmp '", tmp, "'\n", sep="")
+            #. cat("case B. tmp '", tmp, "'\n", sep="")
             tmp <- gsub("(.*)D([-+])([0-9]{2})", "\\1e\\2\\3", tmp)
             number <- 0 == length(grep("[-+.0-9eEdD ]*", tmp))
-            ##. cat("number=", number, "\n")
+            #. cat("number=", number, "\n")
             rval[[j]] <- if (number && numeric) as.numeric(tmp) else tmp
         }
-        ##.message("j=", j, " end")
+        #.message("j=", j, " end")
     }
-    ##.message("A")
-    ##.print(rval)
-    ##? if (numeric)
-    ##?     rval <- as.numeric(rval)
-    ##.message("B")
+    #.message("A")
+    #.print(rval)
+    #? if (numeric)
+    #?     rval <- as.numeric(rval)
+    #.message("B")
     if (0 < length(rval)) {
         if (returnOnlyFirst) {
             rval[[1]]
@@ -529,8 +528,8 @@ findInHeader <- function(key, lines, returnOnlyFirst=TRUE, numeric=FALSE, prefix
 #'
 #' @family things related to odf data
 ODFNames2oceNames <- function(ODFnames,
-                              # ODFunits=NULL,
-                              columns=NULL, PARAMETER_HEADER=NULL, debug=getOption("oceDebug"))
+    # ODFunits=NULL,
+    columns=NULL, PARAMETER_HEADER=NULL, debug=getOption("oceDebug"))
 {
     oceDebug(debug, "ODFNames2oceNames() {\n", unindent=1, sep="", style="bold")
     n <- length(ODFnames)
@@ -915,8 +914,8 @@ ODFNames2oceNames <- function(ODFnames,
 #' @family things related to odf data
 ODF2oce <- function(ODF, coerce=TRUE, debug=getOption("oceDebug"))
 {
-    ## Stage 1. insert metadata (with odfHeader holding entire ODF header info)
-    ## FIXME: add other types, starting with ADCP perhaps
+    # Stage 1. insert metadata (with odfHeader holding entire ODF header info)
+    # FIXME: add other types, starting with ADCP perhaps
     isCTD <- FALSE
     isMCTD <- FALSE                    # nolint (variable not used)
     if (coerce) {
@@ -933,30 +932,28 @@ ODF2oce <- function(ODF, coerce=TRUE, debug=getOption("oceDebug"))
     } else {
         res <- new("odf")
     }
-    ## Save the whole header as read by BIO routine read_ODF()
-
+    # Save the whole header as read by BIO routine read_ODF()
     res@metadata$odfHeader <- list(ODF_HEADER=ODF$ODF_HEADER,
-                                    CRUISE_HEADER=ODF$CRUISE_HEADER,
-                                    EVENT_HEADER=ODF$EVENT_HEADER,
-                                    METEO_HEADER=ODF$METEO_HEADER,
-                                    INSTRUMENT_HEADER=ODF$INSTRUMENT_HEADER,
-                                    QUALITY_HEADER=ODF$QUALITY_HEADER,
-                                    GENERAL_CAL_HEADER=ODF$GENERAL_CAL_HEADER,
-                                    POLYNOMIAL_CAL_HEADER=ODF$POLYNOMIAL_CAL_HEADER,
-                                    COMPASS_CAL_HEADER=ODF$COMPASS_CAL_HEADER,
-                                    HISTORY_HEADER=ODF$HISTORY_HEADER,
-                                    PARAMETER_HEADER=ODF$PARAMETER_HEADER,
-                                    RECORD_HEADER=ODF$RECORD_HEADER,
-                                    INPUT_FILE=ODF$INPUT_FILE)
-
-    ## Define some standard items that are used in plotting and summaries
+        CRUISE_HEADER=ODF$CRUISE_HEADER,
+        EVENT_HEADER=ODF$EVENT_HEADER,
+        METEO_HEADER=ODF$METEO_HEADER,
+        INSTRUMENT_HEADER=ODF$INSTRUMENT_HEADER,
+        QUALITY_HEADER=ODF$QUALITY_HEADER,
+        GENERAL_CAL_HEADER=ODF$GENERAL_CAL_HEADER,
+        POLYNOMIAL_CAL_HEADER=ODF$POLYNOMIAL_CAL_HEADER,
+        COMPASS_CAL_HEADER=ODF$COMPASS_CAL_HEADER,
+        HISTORY_HEADER=ODF$HISTORY_HEADER,
+        PARAMETER_HEADER=ODF$PARAMETER_HEADER,
+        RECORD_HEADER=ODF$RECORD_HEADER,
+        INPUT_FILE=ODF$INPUT_FILE)
+    # Define some standard items that are used in plotting and summaries
     if (isCTD) {
         res@metadata$type <- res@metadata$odfHeader$INSTRUMENT_HEADER$INST_TYPE
         res@metadata$model <- res@metadata$odfHeader$INSTRUMENT_HEADER$INST_MODEL
         res@metadata$serialNumber <- res@metadata$odfHeader$INSTRUMENT_HEADER$SERIAL_NUMBER
     }
     res@metadata$startTime <- strptime(res@metadata$odfHeader$EVENT_HEADER$START_DATE_TIME,
-                                       "%d-%B-%Y %H:%M:%S", tz="UTC")
+        "%d-%B-%Y %H:%M:%S", tz="UTC")
     res@metadata$filename <- res@metadata$odfHeader$ODF_HEADER$FILE_SPECIFICATION
     res@metadata$serialNumber <- res@metadata$odfHeader$INSTRUMENT_HEADER$SERIAL_NUMBER
     res@metadata$ship <- res@metadata$odfHeader$CRUISE_HEADER$PLATFORM
@@ -965,24 +962,23 @@ ODF2oce <- function(ODF, coerce=TRUE, debug=getOption("oceDebug"))
     res@metadata$scientist <- res@metadata$odfHeader$CRUISE_HEADER$CHIEF_SCIENTIST
     res@metadata$latitude <- as.numeric(res@metadata$odfHeader$EVENT_HEADER$INITIAL_LATITUDE)
     res@metadata$longitude <- as.numeric(res@metadata$odfHeader$EVENT_HEADER$INITIAL_LONGITUDE)
-
-    ## Stage 2. insert data (renamed to Oce convention)
+    # Stage 2. insert data (renamed to Oce convention)
     xnames <- names(ODF$DATA)
     res@data <- as.list(ODF$DATA)
     resNames <- ODFNames2oceNames(xnames, columns=NULL, PARAMETER_HEADER=ODF$PARAMETER_HEADER, debug=debug)
     names(res@data) <- resNames
-    ## Obey missing values ... only for numerical things (which might be everything, for all I know)
+    # Obey missing values ... only for numerical things (which might be everything, for all I know)
     nd <- length(resNames)
     for (i in 1:nd) {
         if (is.numeric(res@data[[i]])) {
-            ##message("NULL_VALUE='", ODF$PARAMETER_HEADER[[i]]$NULL_VALUE, "'")
+            #message("NULL_VALUE='", ODF$PARAMETER_HEADER[[i]]$NULL_VALUE, "'")
             NAvalue <- as.numeric(gsub("D", "e", ODF$PARAMETER_HEADER[[i]]$NULL_VALUE))
-            ##message("NAvalue=", NAvalue)
-            ## message("NAvalue: ", NAvalue)
+            #message("NAvalue=", NAvalue)
+            # message("NAvalue: ", NAvalue)
             res@data[[i]][res@data[[i]] == NAvalue] <- NA
         }
     }
-    ## Stage 3. rename QQQQ_* columns as flags on the previous column
+    # Stage 3. rename QQQQ_* columns as flags on the previous column
     names <- names(res@data)
     #- message("names 1");print(names)
     for (i in seq_along(names)) {
@@ -1008,7 +1004,7 @@ ODF2oce <- function(ODF, coerce=TRUE, debug=getOption("oceDebug"))
 #' @family things related to odf data
 ODFListFromHeader <- function(header)
 {
-    ## remove trailing blanks
+    # remove trailing blanks
     header <- gsub("[ ]*$", "", header)
     A <- grep("^[A-Z].*,$", header)
     h <- vector("list", length=length(A))
@@ -1017,24 +1013,24 @@ ODFListFromHeader <- function(header)
     starts <- A + 1
     ends <- c(A[-1], length(header) + 1) - 1
     for (i in seq_along(starts)) {
-        ##msg(header[A[i]], "\n")
+        #msg(header[A[i]], "\n")
         nitems <- 1 + ends[i] - starts[i]
-        ##msg("  nitems: ", nitems)
+        #msg("  nitems: ", nitems)
         h[[i]] <- vector("list", length=nitems)
         itemsNames <- NULL
         itemsI <- 1
         for (ii in starts[i]:ends[i]) {
-            ##msg("line <", header[ii], ">")
+            #msg("line <", header[ii], ">")
             name <- gsub("^[ ]*([^=]*)[ ]*=.*$", "\\1", header[ii])
-            ##msg("    name  <", name, ">")
+            #msg("    name  <", name, ">")
             value <- gsub("^[ ]*([^=]*)[ ]*=[ ]*", "", header[ii])
-            ##msg("    value <", value, "> (original)")
-            ## Trim trailing comma (which seems to occur for all but last item in a list)
+            #msg("    value <", value, "> (original)")
+            # Trim trailing comma (which seems to occur for all but last item in a list)
             if ("," == substr(value, nchar(value), nchar(value)))
                 value <- substr(value, 1, nchar(value)-1)
-            ##msg("    value <", value, ">  (after trailing-comma removal)")
-            ## Trim leading single-quote, and its matching trailing single-quote; warn
-            ## if former is present but latter is missing.
+            #msg("    value <", value, ">  (after trailing-comma removal)")
+            # Trim leading single-quote, and its matching trailing single-quote; warn
+            # if former is present but latter is missing.
             if ("'" == substr(value, 1, 1)) {
                 value <- substr(value, 2, nchar(value))
                 if ("'" == substr(value, nchar(value), nchar(value))) {
@@ -1043,7 +1039,7 @@ ODFListFromHeader <- function(header)
                     warning("malformed string in ODF header line <", header[ii], ">\n", sep="")
                 }
             }
-            ##msg("    value <", value, ">    (after '' removal)")
+            #msg("    value <", value, ">    (after '' removal)")
             itemsNames <- c(itemsNames, name)
             h[[i]][[itemsI]] <- value
             itemsI <- itemsI + 1
@@ -1216,29 +1212,29 @@ read.odf <- function(file, columns=NULL, header="list", exclude=NULL, debug=getO
         open(file, "r")
         on.exit(close(file))
     }
-    ## Read the full file.   (In a previous version, we only read the first 1000 lines
-    ## at the start, and later read the whole thing if we didn't find the DATA line.)
+    # Read the full file.   (In a previous version, we only read the first 1000 lines
+    # at the start, and later read the whole thing if we didn't find the DATA line.)
     lines <- readLines(file, encoding="latin1") # issue 1430 re encoding
-    ## Trim excluded lines.
+    # Trim excluded lines.
     if (!is.null(exclude)) {
         oldLength <- length(lines)
         lines <- lines[grep(exclude, lines, invert=TRUE)]
         oceDebug(debug, "the 'exclude' argument reduced the file line count from", oldLength, "to", length(lines), "lines\n")
     }
-    ## Locate the header/data separator
+    # Locate the header/data separator
     dataStart <- grep("^[ ]*-- DATA --[ ]*$", lines) # issue 1430 re leading/trailing spaces
     if (!length(dataStart))
         stop("ODF files must contain a line with \"-- DATA --\"")
     res <- new("odf")
 
     nlines <- length(lines)
-    ## Make a list holding all the information in the header. Note that this is entirely
-    ## separate from e.g. inference of longitude and latitude from a header.
+    # Make a list holding all the information in the header. Note that this is entirely
+    # separate from e.g. inference of longitude and latitude from a header.
     h <- gsub(",[ ]*$", "", lines[seq(1L, dataStart - 1)]) # note trimming trailing comma and maybe whitespace
-    ## Handle the case where there is a blank at the start of each line. (We only check
-    ## the first line, actually.) I have no idea whether this start-with-blank is part of the
-    ## ODF format, but I *can* say that quite a few of the ODF files on my computer have
-    ## this property.
+    # Handle the case where there is a blank at the start of each line. (We only check
+    # the first line, actually.) I have no idea whether this start-with-blank is part of the
+    # ODF format, but I *can* say that quite a few of the ODF files on my computer have
+    # this property.
     if (length(grep("^ ", h)))
         h <- gsub("^ ", "", h)
 
@@ -1266,8 +1262,8 @@ read.odf <- function(file, columns=NULL, header="list", exclude=NULL, debug=getO
                 header <- NULL
                 break
             }
-            ## Use regexp to find lhs and rhs. This is better than using strsplit on '=' because some
-            ## rhs have '=' in them.
+            # Use regexp to find lhs and rhs. This is better than using strsplit on '=' because some
+            # rhs have '=' in them.
             lhs <- gsub("^[ ]*([^=]*)=(.*)$","\\1", h[i])
             if (!(lhs %in% names(lhsc))) {
                 lhsc[[lhs]] <- 1
@@ -1285,17 +1281,15 @@ read.odf <- function(file, columns=NULL, header="list", exclude=NULL, debug=getO
         names(headerlist) <- unduplicateNames(names(headerlist))
     }
     res@metadata$header <- headerlist
-
-    ## Learn about each parameter from its own header block
+    # Learn about each parameter from its own header block
     linePARAMETER_HEADER <- grep("^\\s*PARAMETER_HEADER,\\s*$", lines)
     nPARAMETER_HEADER <- length(linePARAMETER_HEADER)
     if (nPARAMETER_HEADER < 1)
         stop("cannot locate any lines containing 'PARAMETER_HEADER'")
-    ## namesWithin <- parameterStart[1]:dataStart[1]
-    ## extract column codes in a step-by-step way, to make it easier to adjust if the format changes
-
+    # namesWithin <- parameterStart[1]:dataStart[1]
+    # extract column codes in a step-by-step way, to make it easier to adjust if the format changes
     if (TRUE) { # FIXME: delete this later, after recoding to get individualized NA codes
-        ## The mess below hides warnings on non-numeric missing-value codes.
+        # The mess below hides warnings on non-numeric missing-value codes.
         options <- options('warn')
         options(warn=-1)
         nullValue <- NA
@@ -1475,27 +1469,27 @@ read.odf <- function(file, columns=NULL, header="list", exclude=NULL, debug=getO
     res@metadata$date <- res@metadata$time
     res@metadata$eventNumber <- findInHeader("EVENT_NUMBER", lines) # synchronize with ctd.R at ODFMETADATA tag
     res@metadata$eventQualifier <- findInHeader("EVENT_QUALIFIER", lines)# synchronize with ctd.R at ODFMETADATA tag
-    ## } ODF_CTD_LINK
+    # } ODF_CTD_LINK
 
-    ## endTime <- strptime(tolower(findInHeader("END_DATE_TIME", lines)), "%d-%b-%Y %H:%M:%S", tz="UTC")
+    # endTime <- strptime(tolower(findInHeader("END_DATE_TIME", lines)), "%d-%b-%Y %H:%M:%S", tz="UTC")
 
-    ## FIXME: The next block tries to infer a single numeric NA value, if
-    ## FIXME: possible; otherwise it returns the first value.  Perhaps we should be
-    ## FIXME: keeping all these values and using them for individual columns, but (a)
-    ## FIXME: non-numeric values seem to be restricted to times, and times seem never
-    ## FIXME: to equal NULL_VALUE and (b) all files that I've seen have just a single
-    ## FIXME: numerical NULL_VALUE and (c) what should we do if there are elements in
-    ## FIXME: the header, which are not in columns?
+    # FIXME: The next block tries to infer a single numeric NA value, if
+    # FIXME: possible; otherwise it returns the first value.  Perhaps we should be
+    # FIXME: keeping all these values and using them for individual columns, but (a)
+    # FIXME: non-numeric values seem to be restricted to times, and times seem never
+    # FIXME: to equal NULL_VALUE and (b) all files that I've seen have just a single
+    # FIXME: numerical NULL_VALUE and (c) what should we do if there are elements in
+    # FIXME: the header, which are not in columns?
     NAvalue <- unlist(findInHeader("NULL_VALUE", lines, FALSE))
     oceDebug(debug, "NAvalue (step 1): ", paste(deparse(NAvalue),collapse=""), "\n", sep="")
-    ##> message("NAvalue=", paste(NAvalue, collapse=" "))
+    #> message("NAvalue=", paste(NAvalue, collapse=" "))
     NAvalue <- gsub("D([+-])+", "e\\1", NAvalue)
     oceDebug(debug, "NAvalue (step 2): ", paste(deparse(NAvalue),collapse=""), "\n", sep="")
-    ##> message("NAvalue=", paste(NAvalue, collapse=" "))
+    #> message("NAvalue=", paste(NAvalue, collapse=" "))
     #? NAvalue <- NAvalue[!grepl("[a-df-zA-DFZ]+", NAvalue)] # remove e.g. times
     NAvalue[NAvalue == "NA"] <- NA
     oceDebug(debug, "NAvalue (step 3): ", paste(deparse(NAvalue),collapse=""), "\n", sep="")
-    ##> message("NAvalue=", paste(NAvalue, collapse=" "))
+    #> message("NAvalue=", paste(NAvalue, collapse=" "))
     if (length(NAvalue) > 1) {
         NAvalue <- gsub("D", "e", NAvalue) # R does not like e.g. "-.99D+02"
         options <- options('warn')
@@ -1509,7 +1503,7 @@ read.odf <- function(file, columns=NULL, header="list", exclude=NULL, debug=getO
     res@metadata$depthMin <- as.numeric(findInHeader("MIN_DEPTH", lines))
     res@metadata$depthMax <- as.numeric(findInHeader("MAX_DEPTH", lines))
     res@metadata$sounding <- as.numeric(findInHeader("SOUNDING", lines))
-    ## Compute waterDepth from "SOUNDING" by preference, or from "MAX_DEPTH" if necessary
+    # Compute waterDepth from "SOUNDING" by preference, or from "MAX_DEPTH" if necessary
     res@metadata$waterDepth <- NA
     if (length(res@metadata$sounding)) {
         res@metadata$waterDepth <- res@metadata$sounding[1]
@@ -1529,8 +1523,8 @@ read.odf <- function(file, columns=NULL, header="list", exclude=NULL, debug=getO
     } else {
         stop("problem decoding header argument; please report an error")
     }
-    ## catch erroneous units on CRAT, which should be in a ratio, and hence have no units.
-    ## This is necessary for the sample file inst/extdata/CTD_BCD2014666_008_1_DN.ODF.gz
+    # catch erroneous units on CRAT, which should be in a ratio, and hence have no units.
+    # This is necessary for the sample file inst/extdata/CTD_BCD2014666_008_1_DN.ODF.gz
     wCRAT <- grep("CRAT", parameterTable$code, ignore.case=TRUE)
     if (length(wCRAT)) {
         for (w in wCRAT) {
@@ -1554,13 +1548,13 @@ read.odf <- function(file, columns=NULL, header="list", exclude=NULL, debug=getO
     res@metadata$recovery <- NULL
     res@metadata$sampleInterval <- NA
     res@metadata$filename <- filename
-    ##> ## fix issue 768
-    ##> lines <- lines[grep('%[0-9.]*f', lines,invert=TRUE)]
-    ## issue1226 data <- read.table(file, skip=dataStart, stringsAsFactors=FALSE)
+    #> ## fix issue 768
+    #> lines <- lines[grep('%[0-9.]*f', lines,invert=TRUE)]
+    # issue1226 data <- read.table(file, skip=dataStart, stringsAsFactors=FALSE)
     data <- scan(text=lines, what="character", skip=dataStart, quiet=TRUE)
     data <- matrix(data, ncol=length(oceNames2$names), byrow=TRUE)
     data <- as.data.frame(data, stringsAsFactors=FALSE)
-    ## some files have text string for e.g. dates, species lengths, etc.
+    # some files have text string for e.g. dates, species lengths, etc.
     colIsChar <- as.logical(lapply(seq_len(dim(data)[2]),
                                    function(j) any(grep("[ a-zA-Z\\(\\)]", data[,j]))))
     for (j in 1:dim(data)[2]) {
@@ -1634,9 +1628,9 @@ read.odf <- function(file, columns=NULL, header="list", exclude=NULL, debug=getO
     if (exists("DATA_TYPE") && DATA_TYPE == "CTD")
         res@metadata$pressureType <- "sea"
     res@processingLog <- processingLogAppend(res@processingLog,
-                                             paste("read.odf(\"", filename, "\", ",
-                                                   "columns=c(\"", paste(columns, collapse="\", \""), "\"), ",
-                                                   "debug=", debug, ")", sep=""))
+        paste("read.odf(\"", filename, "\", ",
+            "columns=c(\"", paste(columns, collapse="\", \""), "\"), ",
+            "debug=", debug, ")", sep=""))
     oceDebug(debug, "} # read.odf()\n", sep="", style="bold", unindent=1)
     res
 }
@@ -1672,13 +1666,13 @@ read.odf <- function(file, columns=NULL, header="list", exclude=NULL, debug=getO
 #'
 #' @author Dan Kelley
 read.ctd.odf <- function(file, columns=NULL, station=NULL, missingValue, deploymentType="unknown",
-                         monitor=FALSE, exclude=NULL, debug=getOption("oceDebug"), processingLog, ...)
+    monitor=FALSE, exclude=NULL, debug=getOption("oceDebug"), processingLog, ...)
 {
     oceDebug(debug, "read.ctd.odf(\"", file, "\", ...) {\n", sep="", unindent=1, style="bold")
     if (!is.null(columns)) warning("'columns' is ignored by read.ctd.odf() at present")
     odf <- read.odf(file=file, columns=columns, exclude=exclude, debug=debug-1)
     res <- as.ctd(odf, debug=debug-1)
-    ## replace any missingValue with NA
+    # replace any missingValue with NA
     if (!missing(missingValue) && !is.null(missingValue)) {
         for (item in names(res@data)) {
             res@data[[item]] <- ifelse(res@data[[item]]==missingValue, NA, res@data[[item]])

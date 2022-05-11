@@ -22,7 +22,7 @@
 #' see the several vignettes that are provided with oce,
 #' and a book
 #' (Kelley, Dan E. Oceanographic Analysis with R. New York: Springer-Verlag, 2018.
-#' https://link.springer.com/us/book/9781493988426) written
+#' https://link.springer.com/book/10.1007/978-1-4939-8844-0) written
 #' by one of the oce co-authors.
 #'
 #' @section Specialized Functions:
@@ -31,7 +31,7 @@
 #' [oceMagic()] to try to detect the file type,
 #' based on the file name and contents. If this detection
 #' is not possible, users will need to go beyond [read.oce()],
-#" using a more specialized function, e.g. [read.ctd()] for CTD files,
+#' using a more specialized function, e.g. [read.ctd()] for CTD files,
 #' [read.ctd.sbe()] for Teledyne-Seabird files, etc.
 #'
 #' @section Generic Methods:
@@ -1683,6 +1683,7 @@ oceMagic <- function(file, debug=getOption("oceDebug"))
         #>>>     }
         #>>> }
         # Check for a lisst file
+
         if (grepl(".asc$", filename)) {
             someLines <- readLines(file, encoding="UTF-8", n=1)
             if (42 == length(strsplit(someLines[1], ' ')[[1]])) {
@@ -1775,7 +1776,9 @@ oceMagic <- function(file, debug=getOption("oceDebug"))
         if (grepl(".csv$", filename, ignore.case=TRUE)) {
             someLines <- readLines(filename, 30, encoding="UTF-8-BOM")
             #print(someLines[1])
-            if (1L == length(grep('^.*"WMO Identifier",', someLines))) {
+            if (grepl("^SSDA Sea & Sun Technology", someLines[1], useBytes=TRUE)) {
+                return("ctd/ssda")
+            } else if (1L == length(grep('^.*"WMO Identifier",', someLines))) {
                 oceDebug(debug, "} # oceMagic returning met/csv1\n", unindent=1, style="bold")
                 return("met/csv1") # FIXME: may be other things too ...
             } else if (grepl('^.*Longitude.*Latitude.*Station Name.*Climate ID.*Dew Point', someLines[1])) {
@@ -1908,10 +1911,12 @@ oceMagic <- function(file, debug=getOption("oceDebug"))
         oceDebug(debug, "} # oceMagic returning odf\n", unindent=1, style="bold")
         return("odf")
     }
-    if (1 == length(grep("^\\* Sea-Bird", line, useBytes=TRUE))) {
-        oceDebug(debug, "} # oceMagic returning ctd/sbe/19\n", unindent=1, style="bold")
-        return("ctd/sbe/19")
+    if (grepl("^\\* Sea-Bird SBE", line, useBytes=TRUE) ||
+        grepl("^\\* Viking Buoy CTD file", line, useBytes=TRUE)) {
+        oceDebug(debug, "} # oceMagic returning ctd/sbe\n", unindent=1, style="bold")
+        return("ctd/sbe")
     }
+
     if (1 == length(grep("^%ITP", line, useBytes=TRUE))) {
         oceDebug(debug, "} # oceMagic returning ctd/itp\n", unindent=1, style="bold")
         return("ctd/itp")
@@ -2037,7 +2042,7 @@ read.oce <- function(file, ...)
     # FIXME need adv/sontek (non adr)
     } else if (type == "interocean/s4") {
         res <- read.cm.s4(file, processingLog=processingLog, ...)
-    } else if (type == "ctd/sbe/19") {
+    } else if (type == "ctd/sbe") {
         res <- read.ctd.sbe(file, processingLog=processingLog, ...)
     } else if (type == "ctd/woce/exchange") {
         res <- read.ctd.woce(file, processingLog=processingLog, ...)
@@ -2084,6 +2089,8 @@ read.oce <- function(file, ...)
     #     return(read.ctd.odv(file, processingLog=processingLog, ...))
     } else if (type == "ctd/itp") {
         res <- read.ctd.itp(file, processingLog=processingLog, ...)
+    } else if (type == "ctd/ssda") {
+        res <- read.ctd.ssda(file, processingLog=processingLog, ...)
     } else if (type == "gpx") {
         res <- read.gps(file, type="gpx", processingLog=processingLog, ...)
     } else if (type == "coastline") {

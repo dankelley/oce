@@ -40,7 +40,7 @@
 #' Tlim <- range(section[["temperature"]])
 #' ylim <- rev(range(section[["pressure"]]))
 #' for (stn in section[["station", 1:9]])
-#'     plotProfile(stn, xtype='potential temperature', ylim=ylim, Tlim=Tlim)
+#'     plotProfile(stn, xtype="potential temperature", ylim=ylim, Tlim=Tlim)
 #'
 #' @author Dan Kelley
 #'
@@ -62,15 +62,23 @@ setClass("section", contains="oce")
 #' `https://www.nodc.noaa.gov/woce/woce_v3/wocedata_1/whp/exchange/exchange_format_desc.htm`
 #' but that was found to fail in December 2020.
 #'
+#' @section Speculation on a timing error:
+#' In May 2022, it was discovered that the times in this dataset are not fully
+#' sequential, at two spots.  This might be a reporting error. Station 41 has
+#' time listed as 1993-10-03T00:06:00 and that leads to a time reversal.
+#' However, if that time were actually on the day before, then
+#' the time reversal would vanish, and the inter-station timing of
+#' about 5 to 6 hours would be recovered. A similar pattern is seen at station
+#' 45.  Of course, this hypothesis of incorrect recording is difficult to test,
+#' for data taken thirty years ago.
+#'
 #' @examples
-#'\dontrun{
 #' library(oce)
 #' # Gulf Stream
 #' data(section)
 #' GS <- subset(section, 113<=stationId&stationId<=129)
 #' GSg <- sectionGrid(GS, p=seq(0, 5000, 100))
-#' plot(GSg, map.xlim=c(-80,-60))
-#'}
+#' plot(GSg, span=1500) # increase span to show more coastline
 #'
 #' @name section
 #'
@@ -329,11 +337,12 @@ setMethod(f="summary",
 #'
 #' If `j` is `"byStation"`, then a list is returned, with
 #' one (unnamed) item per station.
-## #' If `j` is `"grid:distance-pressure"`, then a gridded
-## #' representation of `i` is returned, as a list with elements
-## #' `distance` (in km), `pressure` (in dbar) and
-## #' `field` (in whatever unit is used for `i`). See Example
-## #' for in the documentation for [plot,section-method()].
+#'
+#' If `j` is `"grid:distance-pressure"` or `"grid:time-pressure"`, then a gridded
+#' representation of `i` is returned, as a list with elements:
+#' `distance` (in km) or `time` (in POSIXct); `pressure` (in dbar) and
+#' `field` (in whatever unit is used for `i`). See the
+#' examples in the documentation for [plot,section-method()].
 #'
 #' @examples
 #' data(section)
@@ -352,174 +361,177 @@ setMethod(f="summary",
 #'
 #' @family things related to section data
 setMethod(f="[[",
-          signature(x="section", i="ANY", j="ANY"),
-          definition=function(x, i, j, ...) {
-              # This is broken down into 3 cases.
-              #
-              # Case 1. Things that can be computed without looking deeply
-              # enough within @data$station to determine computable things.
-              # This determination is a bit slow, and is taken up in SECTION 2.
-              #
-              # Case 1.1 "station".
-              if (i == "station") {
-                  # All stations.
-                  if (missing(j))
-                      return(x@data$station)
-                  # A subset of stations, specified with j, which is either a
-                  # character value for station ID(s) or a numeric value for
-                  # sequence number(s).
-                  nj <- length(j)
-                  if (is.character(j)) { # station ID(s)
-                      stationNames <- unlist(lapply(x@data$station,
-                              function(station)
-                                  station@metadata$station))
-                      if (nj == 1L) {
-                          w <- which(stationNames == j)
-                          res <- if (length(w)) x@data$station[[w[1]]] else NULL
-                      } else {
-                          res <- vector("list", nj)
-                          for (jj in seq_len(nj)) {
-                              w <- which(stationNames == j[jj])
-                              res[[jj]] <- if (length(w)) x@data$station[[w[1]]] else NULL
-                          }
-                      }
-                  } else {             # sequence number(s)
-                      if (nj == 1L) {
-                          res <- x@data$station[[j]]
-                      } else {
-                          res <- vector("list", nj)
-                          for (jj in seq_len(nj)) {
-                              res[[jj]] <- x@data$station[[j[jj]]]
-                          }
-                      }
-                  }
-                  return(res)
-              }
-              # Case 1.2: data-quality flags.
-              if (1 == length(grep(".*Flag$", i))) {
-                  baseName <- gsub("Flag$", "", i)
-                  # FIXME: should check all stations, not just the first
-                  if (baseName %in% names(x@data$station[[1]]@metadata$flags)) {
-                      return(unlist(lapply(x@data$station, function(ctd) ctd[[i]])))
-                  } else {
-                      stop("First station lacks a '", baseName, "' flag, so assuming the same for all.")
-                  }
-              }
-              # Case 1.3: things stored in section@metadata.
-              if (i %in% names(x@metadata)) {
-                  if (i %in% c("longitude", "latitude")) {
-                      if (!missing(j) && j == "byStation") {
-                          return(x@metadata[[i]])
-                      } else {
-                          res <- NULL
-                          for (stn in seq_along(x@data$station))
-                              res <- c(res, rep(x@data$station[[stn]]@metadata[[i]], length(x@data$station[[stn]][["salinity"]])))
-                          return(res)
-                      }
-                  } else {
-                      return(x@metadata[[i]])
-                  }
-              }
-              # Case 1.4: station IDs.
-              if (i == "station ID")
-                  return(unlist(lapply(x@data$station, function(stn) stn[["station"]])))
-              # Case 1.5: dynamic height.
-              if (i == "dynamic height")
-                  return(swDynamicHeight(x))
-              # Case 1.6: distance along track.
-              if (i == "distance") {
-                  res <- NULL
-                  for (stn in seq_along(x@data$station)) {
-                      distance <- geodDist(x@data$station[[stn]][["longitude"]][1],
-                                           x@data$station[[stn]][["latitude"]][1],
-                                           x@data$station[[1]][["longitude"]][1],
-                                           x@data$station[[1]][["latitude"]][1])
-                      if (!missing(j) && j == "byStation")
-                          res <- c(res, distance)
-                      else
-                          res <- c(res, rep(distance, length(x@data$station[[stn]]@data$temperature)))
+    signature(x="section", i="ANY", j="ANY"),
+    definition=function(x, i, j, ...) {
+        # This is broken down into 3 cases.
+        #
+        # Case 1. Things that can be computed without looking deeply
+        # enough within @data$station to determine computable things.
+        # This determination is a bit slow, and is taken up in SECTION 2.
+        #
+        # Case 1.1 "station".
+        if (i == "station") {
+            # All stations.
+            if (missing(j))
+                return(x@data$station)
+            # A subset of stations, specified with j, which is either a
+            # character value for station ID(s) or a numeric value for
+            # sequence number(s).
+            nj <- length(j)
+            if (is.character(j)) { # station ID(s)
+                stationNames <- unlist(lapply(x@data$station,
+                        function(station)
+                            station@metadata$station))
+                if (nj == 1L) {
+                    w <- which(stationNames == j)
+                    res <- if (length(w)) x@data$station[[w[1]]] else NULL
+                } else {
+                    res <- vector("list", nj)
+                    for (jj in seq_len(nj)) {
+                        w <- which(stationNames == j[jj])
+                        res[[jj]] <- if (length(w)) x@data$station[[w[1]]] else NULL
+                    }
+                }
+            } else {             # sequence number(s)
+                if (nj == 1L) {
+                    res <- x@data$station[[j]]
+                } else {
+                    res <- vector("list", nj)
+                    for (jj in seq_len(nj)) {
+                        res[[jj]] <- x@data$station[[j[jj]]]
+                    }
+                }
+            }
+            return(res)
+        }
+        # Case 1.2: data-quality flags.
+        if (1 == length(grep(".*Flag$", i))) {
+            baseName <- gsub("Flag$", "", i)
+            # FIXME: should check all stations, not just the first
+            if (baseName %in% names(x@data$station[[1]]@metadata$flags)) {
+                return(unlist(lapply(x@data$station, function(ctd) ctd[[i]])))
+            } else {
+                stop("First station lacks a '", baseName, "' flag, so assuming the same for all.")
+            }
+        }
+        # Case 1.3: things stored in section@metadata.
+        if (i %in% names(x@metadata)) {
+            if (i %in% c("longitude", "latitude")) {
+                if (!missing(j) && j == "byStation") {
+                    return(x@metadata[[i]])
+                } else {
+                    res <- NULL
+                    for (stn in seq_along(x@data$station))
+                        res <- c(res, rep(x@data$station[[stn]]@metadata[[i]], length(x@data$station[[stn]][["salinity"]])))
+                    return(res)
+                }
+            } else {
+                return(x@metadata[[i]])
+            }
+        }
+        # Case 1.4: station IDs.
+        if (i == "station ID")
+            return(unlist(lapply(x@data$station, function(stn) stn[["station"]])))
+        # Case 1.5: dynamic height.
+        if (i == "dynamic height")
+            return(swDynamicHeight(x))
+        # Case 1.6: distance along track.
+        if (i == "distance") {
+            res <- NULL
+            for (stn in seq_along(x@data$station)) {
+                distance <- geodDist(x@data$station[[stn]][["longitude"]][1],
+                    x@data$station[[stn]][["latitude"]][1],
+                    x@data$station[[1]][["longitude"]][1],
+                    x@data$station[[1]][["latitude"]][1])
+                if (!missing(j) && j == "byStation")
+                    res <- c(res, distance)
+                else
+                    res <- c(res, rep(distance, length(x@data$station[[stn]]@data$temperature)))
 
-                  }
-                  return(res)
-              }
-              # Case 1.7: time.
-              if (i == "time")
-                  return(numberAsPOSIXct(unlist(lapply(x@data$station, function(stn) stn[["time"]]))))
+            }
+            return(res)
+        }
+        # Case 1.7: time.
+        if (i == "time")
+            return(numberAsPOSIXct(unlist(lapply(x@data$station, function(stn) stn[["time"]]))))
 
-              # Case 2. We are now done with things that can be determined by
-              # looking one level deep.  To extract individual data, we will
-              # need to know what is in each of the stations (and what can be
-              # computed from this content).
-              metadataStn <- dataStn <- metadataDerivedStn <- dataDerivedStn <- NULL
-              for (station in x@data$station) {
-                  q <- station[["?"]]
-                  metadataStn <- c(metadataStn, q$metadata)
-                  metadataDerivedStn <- c(metadataDerivedStn, q$metadataDerived)
-                  dataStn <- c(dataStn, q$data)
-                  dataDerivedStn <- c(dataDerivedStn, q$dataDerived)
-              }
-              metadataStn <- sort(unique(metadataStn))
-              metadataDerivedStn <- sort(c(
-                      "distance",
-                      paste("station", "ID"),
-                      paste("dynamic", "height"),
-                      unique(metadataDerivedStn)))
-              dataStn <- sort(unique(dataStn))
-              dataDerivedStn <- sort(unique(dataDerivedStn))
-              # Case 2.1: indication of available values for i.
-              if (i == "?") {
-                  return(list(metadata=metadataStn,
-                          metadataDerived=metadataDerivedStn,
-                          data=dataStn,
-                          dataDerived=dataDerivedStn))
-              }
-              # Case 2.2: something inside stations (or computable from such).
-              res <- NULL
-              nstation <- length(x@data$station)
-              if (i %in% c(dataStn, dataDerivedStn)) {
-                  if (!missing(j) && substr(j, 1, 4) == "grid") {
-                      if (j == "grid:distance-pressure") {
-                          numStations <- length(x@data$station)
-                          p1 <- x[["station", 1]][["pressure"]]
-                          np1 <- length(p1)
-                          field <- matrix(NA, nrow=numStations, ncol=np1)
-                          if (numStations > 1) {
-                              field[1, ] <- x[["station", 1]][[i]]
-                              for (istn in 2:numStations) {
-                                  pi <- x[["station", istn]][["pressure"]]
-                                  if (length(pi) != np1 || any(pi != p1)) {
-                                      warning("returning NULL because this section is not gridded")
-                                      return(NULL)
-                                  }
-                                  field[istn, ] <- x[["station", istn]][[i]]
-                              }
-                              res <- list(distance=x[["distance", "byStation"]], pressure=p1, field=field)
-                              return(res)
-                          } else {
-                              warning("returning NULL because this section contains only 1 station")
-                              return(NULL)
-                          }
-                      } else {
-                          warning("returning NULL because only grid:distance-pressure is permitted")
-                          return(NULL)
-                      }
-                  } else {
-                      # Note that nitrite and nitrate might be computed, not stored
-                      if (!missing(j) && j == "byStation") {
-                          res <- vector("list", nstation)
-                          for (istation in seq_len(nstation))
-                              res[[istation]] <- x@data$station[[istation]][[i]]
-                      } else {
-                          res <- NULL
-                          for (station in x[["station"]])
-                              res <- c(res, station[[i]])
-                      }
-                      return(res)
-                  }
-              }
-              # Case 3: unknown, so drop down a level.
-              callNextMethod()
-          })                           # [[
+        # Case 2. We are now done with things that can be determined by
+        # looking one level deep.  To extract individual data, we will
+        # need to know what is in each of the stations (and what can be
+        # computed from this content).
+        metadataStn <- dataStn <- metadataDerivedStn <- dataDerivedStn <- NULL
+        for (station in x@data$station) {
+            q <- station[["?"]]
+            metadataStn <- c(metadataStn, q$metadata)
+            metadataDerivedStn <- c(metadataDerivedStn, q$metadataDerived)
+            dataStn <- c(dataStn, q$data)
+            dataDerivedStn <- c(dataDerivedStn, q$dataDerived)
+        }
+        metadataStn <- sort(unique(metadataStn))
+        metadataDerivedStn <- sort(c(
+                "distance",
+                paste("station", "ID"),
+                paste("dynamic", "height"),
+                unique(metadataDerivedStn)))
+        dataStn <- sort(unique(dataStn))
+        dataDerivedStn <- sort(unique(dataDerivedStn))
+        # Case 2.1: indication of available values for i.
+        if (i == "?") {
+            return(list(metadata=metadataStn,
+                    metadataDerived=metadataDerivedStn,
+                    data=dataStn,
+                    dataDerived=dataDerivedStn))
+        }
+        # Case 2.2: something inside stations (or computable from such).
+        res <- NULL
+        nstation <- length(x@data$station)
+        if (i %in% c(dataStn, dataDerivedStn)) {
+            if (!missing(j) && substr(j, 1, 4) == "grid") {
+                if (j %in% c("grid:distance-pressure", "grid:time-pressure")) {
+                    numStations <- length(x@data$station)
+                    p1 <- x[["station", 1]][["pressure"]]
+                    np1 <- length(p1)
+                    field <- matrix(NA, nrow=numStations, ncol=np1)
+                    if (numStations > 1) {
+                        field[1, ] <- x[["station", 1]][[i]]
+                        for (istn in 2:numStations) {
+                            pi <- x[["station", istn]][["pressure"]]
+                            if (length(pi) != np1 || any(pi != p1)) {
+                                warning("returning NULL because this section is not gridded")
+                                return(NULL)
+                            }
+                            field[istn, ] <- x[["station", istn]][[i]]
+                        }
+                        if (j == "grid:distance-pressure")
+                            res <- list(distance=x[["distance", "byStation"]], pressure=p1, field=field)
+                        else if (j == "grid:time-pressure")
+                            res <- list(time=x[["time", "byStation"]], pressure=p1, field=field)
+                        return(res)
+                    } else {
+                        warning("returning NULL because this section contains only 1 station")
+                        return(NULL)
+                    }
+                } else {
+                    warning("only grid:distance-pressure and grid:time-pressure are permitted")
+                    return(NULL)
+                }
+            } else {
+                # Note that nitrite and nitrate might be computed, not stored
+                if (!missing(j) && j == "byStation") {
+                    res <- vector("list", nstation)
+                    for (istation in seq_len(nstation))
+                        res[[istation]] <- x@data$station[[istation]][[i]]
+                } else {
+                    res <- NULL
+                    for (station in x[["station"]])
+                        res <- c(res, station[[i]])
+                }
+                return(res)
+            }
+        }
+        # Case 3: unknown, so drop down a level.
+        callNextMethod()
+    })                           # [[
 
 #' Replace Parts of a Section Object
 #'
@@ -902,26 +914,25 @@ setMethod(f="subset",
 #' distance from the first station, `"longitude"`, for longitude,
 #' `"latitude"` for latitude, and `"time"`, for time.
 #'
+#' @param decreasing A logical value indicating whether to sort in decreasing
+#' order.  The default is FALSE. (Thanks to Martin Renner for adding this
+#' parameter.)
+#'
 #' @return object A [section-class] object that has been smoothed,
 #' so its data fields will station-to-station variation than
 #' is the case for the input section, \code{x}.
 #'
 #' @examples
-#'\dontrun{
-#' # Eastern North Atlantic, showing Mediterranean water;
-#' # sorting by longitude makes it easier to compare
-#' # the map and the section.
 #' library(oce)
 #' data(section)
-#' s <- sectionGrid(subset(section, -30 <= longitude))
-#' ss <- sectionSort(ss, by="longitude")
-#' plot(ss)
-#'}
+#' sectionByLongitude <- sectionSort(section, by="longitude")
+#' head(section)
+#' head(sectionByLongitude)
 #'
 #' @author Dan Kelley
 #'
 #' @family things related to section data
-sectionSort <- function(section, by)
+sectionSort <- function(section, by, decreasing=FALSE)
 {
     if (missing(by)) {
         by <- "stationId"
@@ -934,21 +945,21 @@ sectionSort <- function(section, by)
     }
     res <- section
     if (by == "stationId") {
-        o <- order(section@metadata$stationId)
+        o <- order(section@metadata$stationId, decreasing=decreasing)
     } else if (by == "distance") {
-        o <- order(section[["distance", "byStation"]])
+        o <- order(section[["distance", "byStation"]], decreasing=decreasing)
     } else if (by == "longitude") {
-        o <- order(section[["longitude", "byStation"]])
+        o <- order(section[["longitude", "byStation"]], decreasing=decreasing)
     } else if (by == "latitude") {
-        o <- order(section[["latitude", "byStation"]])
+        o <- order(section[["latitude", "byStation"]], decreasing=decreasing)
     } else if (by == "time") {
         ## FIXME: should check to see if startTime exists first?
         times <- unlist(lapply(section@data$station, function(x) x@metadata$startTime))
-        o <- order(times)
+        o <- order(times, decreasing=decreasing)
     } else if (by == "spine") {
         stop("not implemented for spine")
     } else {
-        o <- seq_along(section[["station"]]) ## cannot ever get here, actually
+        o <- seq_along(section[["station"]]) # can't get here, actually
     }
     res@metadata$stationId <- res@metadata$stationId[o]
     res@metadata$longitude <- res@metadata$longitude[o]
@@ -1215,6 +1226,69 @@ sectionAddCtd <- sectionAddStation
 #' structure of section objects, and also outlines the other functions dealing
 #' with them.
 #'
+#' @section Ancillary Examples:
+#'
+#' The following examples were once part of the \dQuote{Examples}
+#' section, but were moved here in May 2022, to reduce the build-check
+#' time for CRAN submission.
+#'```
+#' library(oce)
+#' data(section)
+#' GS <- subset(section, 113<=stationId&stationId<=129)
+#' GSg <- sectionGrid(GS, p=seq(0, 2000, 100))
+#'
+#' # Gulf Stream, salinity data and contoured
+#' par(mfrow=c(2, 1))
+#' plot(GS, which=1, ylim=c(2000, 0), ztype="points",
+#'      zbreaks=seq(0,30,2), pch=20, cex=3)
+#' plot(GSg, which=1, ztype="image", zbreaks=seq(0,30,2))
+#'
+#' # Gulf Stream, temperature grid (image) and data (dots)
+#' par(mfrow=c(1, 1))
+#' plot(GSg, which=1, ztype="image")
+#' T <- GS[["temperature"]]
+#' col <- oceColorsViridis(100)[rescale(T, rlow=1, rhigh=100)]
+#' points(GS[["distance"]],GS[["depth"]],pch=20,cex=3,col="white")
+#' points(GS[["distance"]],GS[["depth"]],pch=20,cex=2.5,col=col)
+#'
+#' # 4. Image of temperature, with a high-salinity contour on top;
+#' #    note the Mediterranean water.
+#' sec <- plot(section, which="temperature", ztype="image")
+#' S <- sec[["salinity", "grid:distance-pressure"]]
+#' contour(S$distance, S$pressure, S$field, level=35.8, lwd=3, add=TRUE)
+#'
+#' # 5. Contours of salinity, with dots for high pressure and spice
+#' plot(section, which="salinity")
+#' distance <- section[["distance"]]
+#' depth <- section[["depth"]]
+#' spice <- section[["spice"]]
+#' look <- spice > 1.8 & depth > 500
+#' points(distance[look], depth[look], col="red")
+#'
+#' # Image of Absolute Salinity, with 4-minute bathymetry
+#' # It's easy to calculate the desired area for the bathymetry,
+#' # but for brevity we'll hard-code it. Note that download.topo()
+#' # requires the "raster" and "ncdf4" packages to be installed.
+#' if (requireNamespace("raster") && requireNamespace("ncdf4")) {
+#'     f <- download.topo(west=-80, east=0, south=35, north=40, resolution=4)
+#'     t <- read.topo(f)
+#'     plot(section, which="SA", xtype="longitude", ztype="image", showBottom=t)
+#' }
+#'
+#' # Temperature with salinity added in red
+#' plot(GSg, which="temperature")
+#' distance <- GSg[["distance", "byStation"]]
+#' depth <- GSg[["station", 1]][["depth"]]
+#' S <- matrix(GSg[["salinity"]], byrow=TRUE, nrow=length(GSg[["station"]]))
+#' contour(distance, depth, S, col=2, add=TRUE)
+#'
+#' # Image with controlled colours
+#' plot(GSg, which="salinity", ztype="image",
+#'     zlim=c(35, 37.5),
+#'     zbreaks=seq(35, 37.5, 0.25),
+#'     zcol=oceColorsTurbo)
+#'```
+#'
 #' @examples
 #' library(oce)
 #' data(section)
@@ -1227,64 +1301,6 @@ sectionAddCtd <- sectionAddStation
 #' # Gulf Stream, Temperature image
 #' plot(GSg, which="temperature", ztype="image",
 #'     zbreaks=seq(0,25,2), zcol=oceColorsTemperature)
-#'
-#'
-## # Gulf Stream, salinity data and contoured
-## par(mfrow=c(2, 1))
-## plot(GS, which=1, ylim=c(2000, 0), ztype='points',
-##      zbreaks=seq(0,30,2), pch=20, cex=3)
-## plot(GSg, which=1, ztype='image', zbreaks=seq(0,30,2))
-##
-## par(mfrow=c(1, 1))
-##
-## # Gulf Stream, temperature grid (image) and data (dots)
-##\dontrun{
-## plot(GSg, which=1, ztype="image")
-## T <- GS[["temperature"]]
-## col <- oceColorsViridis(100)[rescale(T, rlow=1, rhigh=100)]
-## points(GS[["distance"]],GS[["depth"]],pch=20,cex=3,col="white")
-## points(GS[["distance"]],GS[["depth"]],pch=20,cex=2.5,col=col)
-##}
-##
-## #' ## 4. Image of temperature, with a high-salinity contour on top;
-## #' ##    note the Mediterranean water.
-## #' sec <- plot(section, which='temperature', ztype='image')
-## #' S <- sec[["salinity", "grid:distance-pressure"]]
-## #' contour(S$distance, S$pressure, S$field, level=35.8, lwd=3, add=TRUE)
-## #'
-## #' ## 5. Contours of salinity, with dots for high pressure and spice
-## #' plot(section, which='salinity')
-## #' distance <- section[["distance"]]
-## #' depth <- section[["depth"]]
-## #' spice <- section[["spice"]]
-## #' look <- spice > 1.8 & depth > 500
-## #' points(distance[look], depth[look], col='red')
-##
-##\dontrun{
-## # Image of Absolute Salinity, with 4-minute bathymetry
-## # It's easy to calculate the desired area for the bathymetry,
-## # but for brevity we'll hard-code it. Note that download.topo()
-## # caches the file locally.
-## f <- download.topo(west=-80, east=0, south=35, north=40, resolution=4)
-## t <- read.topo(f)
-## plot(section, which="SA", xtype="longitude", ztype="image", showBottom=t)
-##}
-##\dontrun{
-## # Temperature with salinity added in red
-## plot(GSg, which="temperature")
-## distance <- GSg[["distance", "byStation"]]
-## depth <- GSg[["station", 1]][["depth"]]
-## S <- matrix(GSg[["salinity"]], byrow=TRUE, nrow=length(GSg[["station"]]))
-## contour(distance, depth, S, col=2, add=TRUE)
-##}
-##
-##\dontrun{
-## # Image with controlled colours
-## plot(GSg, which="salinity", ztype="image",
-##     zlim=c(35, 37.5),
-##     zbreaks=seq(35, 37.5, 0.25),
-##     zcol=oceColorsTurbo)
-##}
 #'
 #' @author Dan Kelley
 #'
@@ -1526,7 +1542,7 @@ setMethod(f="plot",
                     } else {
                         oceDebug(debug, "using", projection, "projection (specified)\n")
                     }
-                    mapPlot(coastline, longitudelim=map.xlim, latitudelim=map.ylim, projection=projection, col='gray')
+                    mapPlot(coastline, longitudelim=map.xlim, latitudelim=map.ylim, projection=projection, col="gray")
                     spine <- x[["spine"]]
                     if (showSpine && !is.null(spine))
                         mapLines(spine$longitude, spine$latitude, col="blue", lwd=1.4*par("lwd"))
@@ -1539,19 +1555,19 @@ setMethod(f="plot",
                 } else {
                     if (!is.null(map.xlim)) {
                         map.xlim <- sort(map.xlim)
-                        plot(lonr, latr, xlim=map.xlim, asp=asp, type='n',
+                        plot(lonr, latr, xlim=map.xlim, asp=asp, type="n",
                             xlab=gettext("Longitude", domain="R-oce"),
                             ylab=gettext("Latitude", domain="R-oce"))
                     } else if (!is.null(map.ylim)) {
                         map.ylim <- sort(map.ylim)
-                        plot(lonr, latr, ylim=map.ylim, asp=asp, type='n',
+                        plot(lonr, latr, ylim=map.ylim, asp=asp, type="n",
                             xlab=gettext("Longitude", domain="R-oce"),
                             ylab=gettext("Latitude", domain="R-oce"))
                     } else {
                         ##DEBUG message("CCC lonr=", paste(lonr, collapse=","))
                         ##DEBUG message("CCC latr=", paste(latr, collapse=","))
                         ##DEBUG message("CCC asp=", paste(asp, collapse=","))
-                        plot(lonr, latr, asp=asp, type='n',
+                        plot(lonr, latr, asp=asp, type="n",
                             xlab=gettext("Longitude", domain="R-oce"),
                             ylab=gettext("Latitude", domain="R-oce"))
                     }
@@ -1902,7 +1918,7 @@ setMethod(f="plot",
                 if (nchar(legend.loc)) {
                     legend(legend.loc, legend=vtitle, bg="white", x.intersp=0, y.intersp=0.5, cex=1)
                 }
-                ##lines(xx, -waterDepth[ox], col='red')
+                ##lines(xx, -waterDepth[ox], col="red")
 
                 ## undo negation of the y coordinate, so further can can make sense
                 usr <- par('usr')
@@ -1912,7 +1928,7 @@ setMethod(f="plot",
             par(mar=omar)
             oceDebug(debug, "} # plotSubsection()\n", unindent=1)
         }                        # plotSubsection()
-        opar <- par(no.readonly = TRUE)
+        opar <- par(no.readonly=TRUE)
         if (length(which) > 1) on.exit(par(opar))
         which.xtype <- match(xtype, c("distance", "track", "longitude", "latitude", "time", "spine"), nomatch=0)
         if (0 == which.xtype)
@@ -2175,7 +2191,7 @@ read.section <- function(file, directory, sectionId="", flags,
         nstations <- length(files)
         stations <- vector("list", nstations)
         for (i in seq_along(files)) {
-            name <- paste(directory, files[i], sep='/')
+            name <- paste(directory, files[i], sep="/")
             stations[[i]] <- ctdTrim(read.oce(name))
         }
         return(as.section(stations))
@@ -2753,7 +2769,7 @@ sectionGrid <- function(section, p, method="approx", trim=TRUE, debug=getOption(
 #'
 #' @param yg,ygl similar to `xg` and `xgl`, but for pressure. (Note that
 #' trimming to the input `y` is not done, as it is for `xg` and `x`.)
-#" If `yg` is not given, it is determined from the deepest station in the section.
+#' If `yg` is not given, it is determined from the deepest station in the section.
 #' If `ygl` was not given, then a grid is constructed to span the pressures
 #' of that deepest station with `ygl` elements. On the other hand,
 #' if `ygl` was not given, then the y grid will constructed from the

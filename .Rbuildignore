@@ -45,7 +45,7 @@ man/figures/Makefile
 man/figures/*.R
 tests_private
 tests/testthat/Rplots.pdf
-tests/testthat/test_local_*.R
+tests/testthat/test_local_.*
 tests/testthat/local_data
 tests/testthat/valgrind_tests.*
 tests/testthat/_snaps
@@ -74,3 +74,4 @@ inst/joss
 README.tex
 ^check_package.R$
 
+^codemeta\.json$

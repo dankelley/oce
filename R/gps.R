@@ -483,9 +483,7 @@ as.gps <- function(longitude, latitude, filename="")
 #'
 #' @param debug set to TRUE to print information about the header, etc.
 #'
-#' @param processingLog if provided, the action item to be stored in the log.
-#' (Typically only provided for internal calls; the default that it provides is
-#' better for normal calls by a user.)
+#' @param processingLog ignored.
 #'
 #' @return A [gps-class] object.
 #'
@@ -496,7 +494,7 @@ read.gps <- function(file, type=NULL, debug=getOption("oceDebug"), processingLog
 {
     if (!missing(file) && is.character(file) && 0 == file.info(file)$size)
         stop("empty file")
-    oceDebug(debug, "read.gps(...) {\n", sep="", unindent=1)
+    oceDebug(debug, "read.gps(...) {\n", sep="", style="bold", unindent=1)
     filename <- NULL
     if (is.character(file)) {
         filename <- fullFilename(file)
@@ -526,6 +524,6 @@ read.gps <- function(file, type=NULL, debug=getOption("oceDebug"), processingLog
     latlonCleaned <- gsub("[a-zA-Z<>=\"/]*", "", latlon)
     latlon <- read.table(text=latlonCleaned)
     res <- new("gps", longitude=latlon[, 2], latitude=latlon[, 1], file=filename)
-    oceDebug(debug, "} # read.gps()\n", sep="", unindent=1)
+    oceDebug(debug, "} # read.gps()\n", sep="", style="bold", unindent=1)
     res
 }

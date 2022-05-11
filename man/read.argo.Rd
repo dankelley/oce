@@ -189,6 +189,7 @@ Other things related to argo data:
 \code{\link{as.argo}()},
 \code{\link{handleFlags,argo-method}},
 \code{\link{plot,argo-method}},
+\code{\link{read.argo.copernicus}()},
 \code{\link{subset,argo-method}},
 \code{\link{summary,argo-method}}
 }

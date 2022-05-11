@@ -89,7 +89,7 @@ to 0dbar (i.e. the surface), 1000dbar, 2000dbar, 3000dbar, and 4000dbar.
 
 \item{ytype}{variable to use on y axis. The valid choices are:
 \code{"pressure"} (the default), \code{"z"},
-\code{"depth"} and \code{"sigmaTheta"}.}
+\code{"depth"}, \code{"sigmaTheta"} and \code{"sigma0"}.}
 
 \item{eos}{equation of state to be used, either \code{"unesco"} or
 \code{"gsw"}.}
@@ -278,10 +278,12 @@ Other things related to ctd data:
 \code{\link{plot,ctd-method}},
 \code{\link{plotScan}()},
 \code{\link{plotTS}()},
+\code{\link{read.ctd.aml}()},
 \code{\link{read.ctd.itp}()},
 \code{\link{read.ctd.odf}()},
 \code{\link{read.ctd.odv}()},
 \code{\link{read.ctd.sbe}()},
+\code{\link{read.ctd.ssda}()},
 \code{\link{read.ctd.woce.other}()},
 \code{\link{read.ctd.woce}()},
 \code{\link{read.ctd}()},
