@@ -808,7 +808,7 @@ setMethod(f="plot",
 #' Read a file that contains topographic data in the ETOPO dataset, as was once provided by
 #' the NOAA website (see [download.topo()] for a good server for such
 #' files. (As of May, 2020, there does not seem to be a way to download these
-#' fles from the NOAA website.)
+#' files from the NOAA website.)
 #'
 #' The three permitted file types are as follows.
 #' 1. An ascii type

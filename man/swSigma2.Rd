@@ -43,7 +43,7 @@ or \code{"gsw"} (references 3 and 4).}
 Potential density anomaly (kg/m\eqn{^3}{^3}).
 }
 \description{
-This is analagous to \code{\link[=swSigma0]{swSigma0()}}, but referenced to 2000db pressure.
+This is analogous to \code{\link[=swSigma0]{swSigma0()}}, but referenced to 2000db pressure.
 }
 \references{
 See citations provided in the \code{\link[=swRho]{swRho()}} documentation.
