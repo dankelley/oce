@@ -19,7 +19,7 @@ an image plot is used to show TS data density."><!-- mathjax --><script src="htt
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-3</span>
       </span>
     </div>
 
@@ -101,9 +101,11 @@ an image plot is used to show TS data density.</p>
     <h2>Arguments</h2>
     <dl><dt>nlevels</dt>
 <dd><p>suggested number of density levels (i.e. isopycnal curves);
-ignored if <code>levels</code> is supplied.</p></dd>
+ignored if <code>levels</code> is supplied.  If this is set to 0, no isopycnal
+are drawn (see also <code>levels</code>, next).</p></dd>
 <dt>levels</dt>
-<dd><p>optional density levels to draw.</p></dd>
+<dd><p>optional density levels to draw.  If this is <code>NULL</code>, then
+no isopycnals are drawn.</p></dd>
 <dt>rotate</dt>
 <dd><p>boolean, set to <code>TRUE</code> to write all density labels
 horizontally.</p></dd>
@@ -170,8 +172,7 @@ Journal of Atmospheric and Oceanic Technology 20, no. 5 (May 1, 2003): 730-41.
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a>
-2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
 </div>
 
       </footer></div>

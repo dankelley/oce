@@ -33,7 +33,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-3</span>
       </span>
     </div>
 
@@ -96,7 +96,7 @@
       <h1 data-toc-skip>6. Subclassing oce objects</h1>
                         <h4 data-toc-skip class="author">Dan Kelley (<a href="https://orcid.org/0000-0001-7808-5911" class="external-link uri">https://orcid.org/0000-0001-7808-5911</a>)</h4>
             
-            <h4 data-toc-skip class="date">2022-03-19</h4>
+            <h4 data-toc-skip class="date">2022-05-11</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/dankelley/oce/blob/HEAD/vignettes/F_subclassing.Rmd" class="external-link"><code>vignettes/F_subclassing.Rmd</code></a></small>
       <div class="hidden name"><code>F_subclassing.Rmd</code></div>
@@ -119,8 +119,9 @@ practical way, using drifting-buoy data for example.</p>
 <div class="section level2">
 <h2 id="a-drifting-buoy">A drifting buoy<a class="anchor" aria-label="anchor" href="#a-drifting-buoy"></a>
 </h2>
-<p>Data from buoy number 4201703 were downloaded from <a href="http://www.coriolis.eu.org/Data-Products/Data-Delivery/Data-selection" class="external-link uri">http://www.coriolis.eu.org/Data-Products/Data-Delivery/Data-selection</a>
-on 2022-01-09, by deselecting all data types except for “Drifting buoy”,
+<p>Data from buoy number 4201703 were downloaded from
+<code>http://www.coriolis.eu.org/Data-Products/Data-selection</code> on
+2022-01-09, by deselecting all data types except for “Drifting buoy”,
 selecting a data window south of Nova Scotia and of area similar to that
 province, expanding the tarball created by the website and then
 focussing on the downloaded file named
@@ -165,7 +166,7 @@ much:</p>
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">o</span><span class="op">)</span>
 <span class="co">#&gt; * Processing Log</span>
 <span class="co">#&gt; </span>
-<span class="co">#&gt;     - 2022-03-19 16:22:48 UTC: `Create oce object`</span></code></pre></div>
+<span class="co">#&gt;     - 2022-05-11 16:52:53 UTC: `Create oce object`</span></code></pre></div>
 <p>but if we populate the object with some data and metadata</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">o</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/oceSetData.html">oceSetData</a></span><span class="op">(</span><span class="va">o</span>, <span class="st">"time"</span>, <span class="va">db</span><span class="op">$</span><span class="va">t</span><span class="op">)</span>
@@ -184,11 +185,11 @@ much:</p>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; * Processing Log</span>
 <span class="co">#&gt; </span>
-<span class="co">#&gt;     - 2022-03-19 16:22:48 UTC: `Create oce object`</span>
-<span class="co">#&gt;     - 2022-03-19 16:22:48 UTC: `oceSetData(object = o, name = "time", value = db$t)`</span>
-<span class="co">#&gt;     - 2022-03-19 16:22:48 UTC: `oceSetData(object = o, name = "longitude", value = db$lon)`</span>
-<span class="co">#&gt;     - 2022-03-19 16:22:48 UTC: `oceSetData(object = o, name = "latitude", value = db$lat)`</span>
-<span class="co">#&gt;     - 2022-03-19 16:22:48 UTC: `oceSetMetadata(object = o, name = "ID", value = 4201703)`</span></code></pre></div>
+<span class="co">#&gt;     - 2022-05-11 16:52:53 UTC: `Create oce object`</span>
+<span class="co">#&gt;     - 2022-05-11 16:52:54 UTC: `oceSetData(object = o, name = "time", value = db$t)`</span>
+<span class="co">#&gt;     - 2022-05-11 16:52:54 UTC: `oceSetData(object = o, name = "longitude", value = db$lon)`</span>
+<span class="co">#&gt;     - 2022-05-11 16:52:54 UTC: `oceSetData(object = o, name = "latitude", value = db$lat)`</span>
+<span class="co">#&gt;     - 2022-05-11 16:52:54 UTC: `oceSetMetadata(object = o, name = "ID", value = 4201703)`</span></code></pre></div>
 <p>Note, however, that the <code>ID</code> is not listed by
 <code><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary()</a></code>. This is because the general form of that
 function is set up to focus on the contents of the <code>data</code>
@@ -338,7 +339,7 @@ drifter. The rest of the information provided by the base-level
 <span class="co">#&gt; </span>
 <span class="co">#&gt; * Processing Log</span>
 <span class="co">#&gt; </span>
-<span class="co">#&gt;     - 2022-03-19 16:22:49 UTC: `create 'drifter' object`</span></code></pre></div>
+<span class="co">#&gt;     - 2022-05-11 16:52:54 UTC: `create 'drifter' object`</span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="specializing-the-accessor">Specializing the <code>[[</code> accessor<a class="anchor" aria-label="anchor" href="#specializing-the-accessor"></a>
@@ -449,8 +450,7 @@ frequency.</p></li>
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a>
-2.0.2.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
 </div>
 
       </footer>

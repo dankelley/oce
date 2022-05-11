@@ -20,7 +20,7 @@ processing.'><!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-3</span>
       </span>
     </div>
 
@@ -132,8 +132,9 @@ in the case where <code>method</code> equals <code>"approx"</code>.</p></dd>
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>A <a href="section-class.html">section</a> object that contains stations whose
-pressure values match identically, and that has all flags set to <code>NA</code>.</p>
+    <p>A <a href="section-class.html">section</a> object that contains stations in which
+the pressure values match identically, and that has all
+flags set to <code>NA</code>.</p>
     </div>
     <div id="details">
     <h2>Details</h2>
@@ -175,22 +176,10 @@ a flag system, for possible use in later processing steps.</p>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="co"># Gulf Stream</span></span>
 <span class="r-in"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dankelley.github.io/oce/" class="external-link">oce</a></span><span class="op">)</span></span>
 <span class="r-in"><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">section</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">GS</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset</a></span><span class="op">(</span><span class="va">section</span>, <span class="fl">109</span><span class="op">&lt;=</span><span class="va">stationId</span><span class="op">&amp;</span><span class="va">stationId</span><span class="op">&lt;=</span><span class="fl">129</span><span class="op">)</span></span>
+<span class="r-in"><span class="va">GS</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset</a></span><span class="op">(</span><span class="va">section</span>, <span class="fl">113</span><span class="op">&lt;=</span><span class="va">stationId</span><span class="op">&amp;</span><span class="va">stationId</span><span class="op">&lt;=</span><span class="fl">129</span><span class="op">)</span></span>
 <span class="r-in"><span class="va">GSg</span> <span class="op">&lt;-</span> <span class="fu">sectionGrid</span><span class="op">(</span><span class="va">GS</span>, p<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">5000</span>, <span class="fl">100</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">GSg</span>, map.xlim<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">80</span>,<span class="op">-</span><span class="fl">60</span><span class="op">)</span><span class="op">)</span></span>
+<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">GSg</span>, which<span class="op">=</span><span class="st">"temperature"</span><span class="op">)</span></span>
 <span class="r-plt img"><img src="sectionGrid-1.png" alt="" width="700" height="433"></span>
-<span class="r-in"><span class="co"># Show effects of various depth schemes</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mfrow<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">default</span> <span class="op">&lt;-</span> <span class="fu">sectionGrid</span><span class="op">(</span><span class="va">GS</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">approxML</span> <span class="op">&lt;-</span> <span class="fu">sectionGrid</span><span class="op">(</span><span class="va">GS</span>, method<span class="op">=</span><span class="st">"approxML"</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">standardDepths5</span> <span class="op">&lt;-</span> <span class="fu">sectionGrid</span><span class="op">(</span><span class="va">GS</span>, p<span class="op">=</span><span class="fu"><a href="standardDepths.html">standardDepths</a></span><span class="op">(</span><span class="fl">5</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">default</span>, which<span class="op">=</span><span class="st">"temperature"</span>, ztype<span class="op">=</span><span class="st">"image"</span>, ylim<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">200</span>,<span class="fl">0</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/graphics/mtext.html" class="external-link">mtext</a></span><span class="op">(</span><span class="st">"default sectionGrid()"</span><span class="op">)</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">approxML</span>, which<span class="op">=</span><span class="st">"temperature"</span>, ztype<span class="op">=</span><span class="st">"image"</span>, ylim<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">200</span>,<span class="fl">0</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/graphics/mtext.html" class="external-link">mtext</a></span><span class="op">(</span><span class="st">"sectionGrid(..., method=\"approxML\")"</span><span class="op">)</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">standardDepths5</span>, which<span class="op">=</span><span class="st">"temperature"</span>, ztype<span class="op">=</span><span class="st">"image"</span>, ylim<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">200</span>,<span class="fl">0</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/graphics/mtext.html" class="external-link">mtext</a></span><span class="op">(</span><span class="st">"sectionGrid(..., p=standardDepths(5))"</span><span class="op">)</span></span>
-<span class="r-plt img"><img src="sectionGrid-2.png" alt="" width="700" height="433"></span>
 <span class="r-in"></span>
 </code></pre></div>
     </div>
@@ -206,8 +195,7 @@ a flag system, for possible use in later processing steps.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a>
-2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
 </div>
 
       </footer></div>

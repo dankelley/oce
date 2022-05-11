@@ -21,6 +21,7 @@
 #' f <- system.file("extdata", "ctd_ssda.csv", package="oce")
 #' d <- read.ctd(f)
 #'
+#' @family things related to ctd data
 #' @family functions that read ctd data
 #'
 #' @author Dan Kelley, with help from Liam MacNeil
