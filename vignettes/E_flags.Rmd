@@ -83,12 +83,11 @@ flags must have the same dimensionality as the data.
 
 ## Flag inspection
 
-It is possible to inspect flags using e.g.
-\code{a[["metadata"]]\$flags\$salinity} to see flags corresponding to
-\code{a[["data"]]\$salinity}, but a simpler notation is also provided, with
-e.g. \code{a[["salinityFlag"]]} returning the flags for the salinity data.
-(Note the \code{Flag} suffix in this notation; without that, the salinity data
-would be returned.)
+It is possible to inspect flags using e.g. `a[["metadata"]]\$flags\$salinity`
+to see flags corresponding to `a[["data"]]\$salinity`, but a simpler notation
+is also provided, with e.g. `a[["salinityFlag"]]` returning the flags for the
+salinity data. (Note the `Flag` suffix in this notation; without that, the
+salinity data would be returned.)
 
 ## Flag creation
 

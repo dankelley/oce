@@ -1,45 +1,43 @@
 # Submission of 1.7-4
 
-Version 1.7-4 tries to address the fact that version 1.7-3 took 13 minutes on
-a CRAN check machine, exceeding the 10 minute limit. The method involved two
-things: (a) Eliminating the test suite for CRAN builds, while retaining it in
-local builds from github source and (b) trimming slow examples in documentation
-to under 1 second elapsed time on my computer. To test the speedup, I compared
-the devtools::check_win_devel() elapsed time before these changes (18.3 min
-total) with that after the changes (X.XX min). The ratio of these being XXX,
-I am hopeful that the 13 minutes of version my previously submitted 1.7-3 will
-be reduced to XXX minutes for the present submission.
+I am submitting oce 1.7-4 even though I fear it will exceed the 10-min limit
+that caused rejection of the 1.7-3 version that was rejected yesterday. In the
+following, I sketch the efforts I've made to speed things up, the difficulty of
+meeting the limit for such a large package, and my hope that an exception can
+be made to the rule.
 
-# Submission of 1.7-3
+Version 1.7-3 took 13 min on the CRAN check machine. To try to speed things up,
+I tried three things: (A) eliminating the test suite for CRAN builds (whilst
+retaining it in builds from the github source); (B) shortening several examples
+in the documentation and (C) more radically, removing the vignettes. I used
+devtools::check_win_devel() as a tool to gauge speedup. The results were as
+follows.
 
-Version 1.7-3 adds new features, and addresses an issue pointed out by Kurt
-Hornik on 2022-05-09 relating to the encoding of a meteorological test file.
+* A and B: Before making these changes, check_win_devel() reported 18.3 min
+  elapsed time.  After making these changes, the time dropped to 17.5 min. The
+  speedup amounts to only 4.4 percent, clearly insufficient to meet the
+  requirement. Testing suggested a speedup of 9.3 percent might result from
+  removing *all* the example code in the documentation, but even this extreme
+  measure would likely yield 11.9 min on the CRAN machine.
 
-# Submission of 1.7-2
+* C: After additionally removing the vignettes, the check_win_devel() time was
+  reduced to 10.3 min, which amounts to a 44 percent reduction compared to the
+  original.  This suggests that even a partial thinning of the vignettes might
+  get the package under the 10-min limit.
 
-Version 1.7-2 fixes a broken link (found upon submitting 1.7-1 to CRAN).
+OLD OLD OLD Based on the above, it seems to me that the oce package cannot fulfill the
+10-min requirement. It is, after all, quite a big package, with 68k lines in
+R to be examined (and used to build of 54k lines of Rd), in addition to 8k
+lines of C, C++ and Fortran to be compiled.
 
-Version 1.7-1 fixes a problem of comparing a `class()` result with a string
-(found upon submitting 1.7-0 to CRAN).
-
-Version 1.7-0 adds `read.ctd.aml()` and addresses three problems seen in CRAN
-checks of 1.6-0:
-
-1. Fix CRAN check warning about 2 uninitialized variables on
-  r-devel-linux-x86_64-debian-gcc.  (We thank K. Hornik, for an email dated
-  2022-03-16 notifying us about the problem.)
-2. Fix CRAN check error on r-devel-linux-x86_6-debian-clang, -fedora-clang and
-  -fedora-gcc, relating to a byte-order-mark in a test file, which is evidently
-  treated differently on different systems.
-3. Remove a kriging example because it causes problems on some CRAN check
-   machines.
+I wonder, would it possible to get an exception to the 10-min rule?
 
 # Tests
 
 ## Local Tests
 
-Local MacOS-12.2(beta) R-4.1.3 CMD (BUILD, INSTALL, CHECK): no ERRORs, no
-WARNINGs, and 2 NOTEs, one naming the author the other reporting that
+Local MacOS-12.4(beta 21F5071b) R-4.2.0 CMD (BUILD, INSTALL, CHECK): no ERRORs,
+no WARNINGs, and 2 NOTEs, one naming the author the other reporting that
 sub-directories were of size of 1MB or more: R 3.0Mb, data 1.0Mb, doc 2.0Mb,
 and help 3.6Mb.
 
