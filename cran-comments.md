@@ -1,7 +1,19 @@
+# Submission of 1.7-4
+
+Version 1.7-4 tries to address the fact that version 1.7-3 took 13 minutes on
+a CRAN check machine, exceeding the 10 minute limit. The method involved two
+things: (a) Eliminating the test suite for CRAN builds, while retaining it in
+local builds from github source and (b) trimming slow examples in documentation
+to under 1 second elapsed time on my computer. To test the speedup, I compared
+the devtools::check_win_devel() elapsed time before these changes (18.3 min
+total) with that after the changes (X.XX min). The ratio of these being XXX,
+I am hopeful that the 13 minutes of version my previously submitted 1.7-3 will
+be reduced to XXX minutes for the present submission.
+
 # Submission of 1.7-3
 
-* Version 1.7-3 adds new features, and addresses an issue pointed out by Kurt
-  Hornik on 2022-05-09 relating to the encoding of a meteorological test file.
+Version 1.7-3 adds new features, and addresses an issue pointed out by Kurt
+Hornik on 2022-05-09 relating to the encoding of a meteorological test file.
 
 # Submission of 1.7-2
 

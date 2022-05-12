@@ -172,8 +172,7 @@ setMethod(f="summary",
 #' @examples
 #' library(oce)
 #' data(cm)
-#' plot(cm)
-#' plot(subset(cm, time < mean(range(cm[['time']]))))
+#' cmEarly <- subset(cm, time < mean(range(cm[['time']])))
 #'
 #' @family things related to cm data
 #' @family functions that subset oce objects
@@ -754,10 +753,9 @@ read.cm.s4 <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
 #' @param ... Optional arguments passed to plotting functions.
 #'
 #' @examples
-#'   library(oce)
-#'   data(cm)
-#'   summary(cm)
-#'   plot(cm)
+#' library(oce)
+#' data(cm)
+#' plot(cm)
 #'
 #' @family functions that plot oce data
 #' @family things related to cm data

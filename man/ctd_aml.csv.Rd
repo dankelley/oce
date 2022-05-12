@@ -12,12 +12,6 @@ just 50 points for inclusion in oce, and which had some
 identifying information (serial number, IP address, and WEP
 code) zeroed-out.
 }
-\examples{
-ctd <- read.ctd.aml(system.file("extdata", "ctd_aml.csv", package="oce"))
-summary(ctd)
-plot(ctd)
-
-}
 \seealso{
 Other raw datasets: 
 \code{\link{CTD_BCD2014666_008_1_DN.ODF.gz}},

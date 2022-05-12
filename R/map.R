@@ -281,15 +281,16 @@ usrLonLat <- function(n=25, debug=getOption("oceDebug"))
 #' `"North Pacific"`, `"South Pacific"`, `"Pacific"`,
 #' `"Arctic"`,  and `"Antarctic"`.
 #'
-#' @return string contain a CRS, which can be used as `projection`
-#' in [mapPlot()].
+#' @section Supplementary Examples:
 #'
-#' @author Dan Kelley
+#' The following code was present in the Examples section until the Spring of
+#' 2022, when it was moved here in an attempt to reduce the total build/test
+#' time from 13 minutes to something below the CRAN limit of 10 min.  This
+#' movement means that this code is not tested during the building process, so
+#' it may act incorrectly, if the function changes.  Please report any problems
+#' you encounter.
 #'
-#' @family functions related to maps
-#'
-#' @examples
-#'\donttest{
+#'```
 #' library(oce)
 #' data(coastlineWorld)
 #' par(mar=c(2, 2, 1, 1))
@@ -304,7 +305,18 @@ usrLonLat <- function(n=25, debug=getOption("oceDebug"))
 #' plot(pacific, proj=oceCRS("Pacific"), span=15000, col=NULL)
 #' plot(pacific, proj=oceCRS("North Pacific"), span=12000, col=NULL)
 #' plot(pacific, proj=oceCRS("South Pacific"), span=12000, col=NULL)
-#'}
+#'```
+#'
+#' @return string contain a CRS, which can be used as `projection`
+#' in [mapPlot()].
+#'
+#' @author Dan Kelley
+#'
+#' @family functions related to maps
+#'
+#' @examples
+#' library(oce)
+#' oceCRS("Atlantic")
 oceCRS <- function(region)
 {
     regionChoices <- c("North Atlantic", "South Atlantic", "Atlantic", "Arctic", "Antarctic",
@@ -3109,22 +3121,15 @@ map2lonlat <- function(x, y, init=NULL, debug=getOption("oceDebug"))
 ## @param fillOddEven as for [polygon()].
 #'
 #' @examples
-#' \donttest{
 #' library(oce)
 #' data(coastlineWorld)
-#' data(topoWorld)
-#'
-#' ## Bathymetry near southeastern Canada
-#' par(mfrow=c(1,1), mar=c(2,2,1,1))
-#' cm <- colormap(zlim=c(-5000, 0), col=oceColorsGebco)
-#' drawPalette(colormap=cm)
-#' lonlim<- c(-60,-50)
-#' latlim<- c(40,60)
-#' mapPlot(coastlineWorld, longitudelim=lonlim,
-#' latitudelim=latlim, projection="+proj=merc", grid=FALSE)
-#' mapImage(topoWorld, colormap=cm)
-#' mapPolygon(coastlineWorld[['longitude']], coastlineWorld[['latitude']], col="lightgray")
-#'}
+#' # Draw just coastline
+#' mapPlot(coastlineWorld,
+#'     longitudelim=c(-60,-50), latitudelim=c(40,60),
+#'     projection="+proj=merc", grid=FALSE)
+#' # Fill in land
+#' mapPolygon(coastlineWorld[['longitude']], coastlineWorld[['latitude']],
+#'     col="tan")
 #'
 #' @author Dan Kelley
 #'

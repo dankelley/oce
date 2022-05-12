@@ -2184,6 +2184,7 @@ detrend <- function(x, y)
 #' @author Dan Kelley
 #'
 #' @examples
+#' library(oce)
 #' n <- 50
 #' x <- 1:n
 #' y <- rnorm(n=n)
@@ -2194,17 +2195,8 @@ detrend <- function(x, y)
 #' lines(x, despike(y, reference="trim", min=-3, max=3), col='blue')
 #' legend("topright", lwd=1, col=c("black", "red", "darkgreen", "blue"),
 #'        legend=c("raw", "median", "smooth", "trim"))
-#'
-#' # add a spike to a CTD object
-#' data(ctd)
-#' plot(ctd)
-#' T <- ctd[["temperature"]]
-#' T[10] <- T[10] + 10
-#' ctd[["temperature"]] <- T
-#' CTD <- despike(ctd)
-#' plot(CTD)
 despike <- function(x, reference=c("median", "smooth", "trim"), n=4, k=7, min=NA, max=NA,
-                    replace=c("reference", "NA"), skip)
+    replace=c("reference", "NA"), skip)
 {
     if (is.vector(x)) {
         x <- despikeColumn(x, reference=reference, n=n, k=k, min=min, max=max, replace=replace)
@@ -4651,27 +4643,22 @@ integerToAscii <- function(i)
 #' SM to DK dated June 5, 2015).
 #'
 #' @section Historical Notes:
-#' For about a decade, `magneticField` used the version 12 formulae provided
+#' For about a decade, [magneticField()] used the version 12 formulae provided
 #' by IAGA, but the code was updated on March 3, 2020, to version 13.  Example
 #' 3 shows that the differences in declination are typically under 2 degrees
 #' (with 95 percent of the data lying between -1.7 and 0.7 degrees).
 #'
-#' @references
-#' 1. The underlying Fortran code for version 12 is from `igrf12.f`, downloaded the NOAA
-#' website (`https://www.ngdc.noaa.gov/IAGA/vmod/igrf.html`) on June 7,
-#' 2015. That for version 13 is `igrf13.f`, downloaded from the NOAA website
-#' (`https://www.ngdc.noaa.gov/IAGA/vmod/igrf.html` on March 3, 2020.
-#' 2. Witze, Alexandra. \dQuote{Earth's Magnetic Field Is Acting up and Geologists Don't Know Why.}
-#' Nature 565 (January 9, 2019): 143.
-#' \doi{10.1038/d41586-019-00007-1}
+#' @section Supplementary Examples:
 #'
-#' @examples
-#' library(oce)
-#' # 1. Today's value at Halifax NS
-#' magneticField(-(63+36/60), 44+39/60, Sys.Date())
+#' The following code was present in the Examples section until the Spring of
+#' 2022, when it was moved here in an attempt to reduce the total build/test
+#' time from 13 minutes to something below the CRAN limit of 10 min.  This
+#' movement means that this code is not tested during the building process, so
+#' it may act incorrectly, if the function changes.  Please report any problems
+#' you encounter.
 #'
+#'```
 #' # 2. World map of declination in year 2000.
-#'\donttest{
 #' data(coastlineWorld)
 #' par(mar=rep(0.5, 4)) # no axes on whole-world projection
 #' mapPlot(coastlineWorld, projection="+proj=robin", col="lightgray")
@@ -4691,10 +4678,8 @@ integerToAscii <- function(i)
 #' mapContour(lon, lat, dec, col='red', levels=seq(20, 180, 20))
 #' mapContour(lon, lat, dec, levels=180, col='black', lwd=2, drawlabels=FALSE)
 #' mapContour(lon, lat, dec, levels=0, col='black', lwd=2)
-#'}
 #'
 #' # 3. Declination differences between versions 12 and 13
-#'\donttest{
 #' lon <- seq(-180, 180)
 #' lat <- seq(-90, 90)
 #' decDiff <- function(lon, lat) {
@@ -4715,7 +4700,22 @@ integerToAscii <- function(i)
 #' # Note that the large differences are at high latitudes
 #' imagep(lon,lat,decDiff, zlim=c(-1,1)*max(abs(decDiff)))
 #' lines(coastlineWorld[["longitude"]], coastlineWorld[["latitude"]])
-#'}
+#'```
+#'
+#' @references
+#' 1. The underlying Fortran code for version 12 is from `igrf12.f`, downloaded the NOAA
+#' website (`https://www.ngdc.noaa.gov/IAGA/vmod/igrf.html`) on June 7,
+#' 2015. That for version 13 is `igrf13.f`, downloaded from the NOAA website
+#' (`https://www.ngdc.noaa.gov/IAGA/vmod/igrf.html` on March 3, 2020.
+#' 2. Witze, Alexandra. \dQuote{Earth's Magnetic Field Is Acting up and Geologists Don't Know Why.}
+#' Nature 565 (January 9, 2019): 143.
+#' \doi{10.1038/d41586-019-00007-1}
+#'
+#' @examples
+#' library(oce)
+#' # 1. Today's value at Halifax NS
+#' magneticField(-(63+36/60), 44+39/60, Sys.Date())
+#'
 #' @family things related to magnetism
 magneticField <- function(longitude, latitude, time, version=13)
 {

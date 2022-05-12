@@ -33,11 +33,10 @@ then that expression is used to subset each item within the
 \examples{
 library(oce)
 data(ctd)
-plot(ctd)
-## Example 1
-plot(subset(ctd, pressure<10))
-## Example 2
-plot(subset(ctd, indices=1:10))
+A <- subset(ctd, pressure<10)
+B <- subset(ctd, indices=1:10)
+# plot(A)
+# plot(B)
 
 }
 \seealso{

@@ -1,3 +1,8 @@
+# oce 1.7.4
+
+* Try to speed up the CRAN build-check procedure, since 1.7-3 was rejected for
+  taking 13 minutes, in excess of the 10 minute limit.
+
 # oce 1.7.3
 
 * Add `read.ctd.ssda()`.

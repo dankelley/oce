@@ -181,13 +181,15 @@ The Conservative Temperature range is set to run from -2C
 to 33C, as in McDougall et al. (2003 section 3), even though the
 "funnel" imposes no upper limit on this variable.
 }
-\examples{
-# For a simple ctd object
-library(oce)
-data(ctd)
-plotTS(ctd)
+\section{Supplementary Examples}{
 
-# For a section object (note the outlier!)
+
+The following code was present in the Examples section until the Spring of
+2022, when it was moved here in an attempt to reduce the total build/test
+time from 13 minutes to something below the CRAN limit of 10 min.  This
+movement means that this code is not tested during the building process, so
+it may act incorrectly, if the function changes.  Please report any problems
+you encounter.\preformatted{# For a section object (note the outlier!)
 data(section)
 plotTS(section)
 
@@ -209,9 +211,9 @@ par(mar=marOrig) # same as previous plot
 drawPalette(colormap=cm, zlab='Latitude')
 plotTS(section, Tlim=Tlim, Slim=Slim, pch=NA, mar=par('mar'))
 jnk <- mapply(
-    function(s, col) {
+    function(s, col) \{
         plotTS(s, col=col, add=TRUE, type='l')
-    },
+    \},
     section[['station']], col=cm$zcol)
 
 # Add spiciness contours
@@ -224,6 +226,13 @@ CTgrid <- seq(usr[3], usr[4], length.out=n)
 g <- expand.grid(SA=SAgrid, CT=CTgrid)
 spiciness <- matrix(gsw::gsw_spiciness0(g$SA, g$CT), nrow=n)
 contour(SAgrid, CTgrid, spiciness, col=2, labcex=1, add=TRUE)
+}
+}
+
+\examples{
+library(oce)
+data(ctd)
+plotTS(ctd)
 
 }
 \references{

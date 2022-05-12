@@ -43,19 +43,21 @@ but that only dates from 1945 to 2015 are to be considered definitive.
 }
 \section{Historical Notes}{
 
-For about a decade, \code{magneticField} used the version 12 formulae provided
+For about a decade, \code{\link[=magneticField]{magneticField()}} used the version 12 formulae provided
 by IAGA, but the code was updated on March 3, 2020, to version 13.  Example
 3 shows that the differences in declination are typically under 2 degrees
 (with 95 percent of the data lying between -1.7 and 0.7 degrees).
 }
 
-\examples{
-library(oce)
-# 1. Today's value at Halifax NS
-magneticField(-(63+36/60), 44+39/60, Sys.Date())
+\section{Supplementary Examples}{
 
-# 2. World map of declination in year 2000.
-\donttest{
+
+The following code was present in the Examples section until the Spring of
+2022, when it was moved here in an attempt to reduce the total build/test
+time from 13 minutes to something below the CRAN limit of 10 min.  This
+movement means that this code is not tested during the building process, so
+it may act incorrectly, if the function changes.  Please report any problems
+you encounter.\preformatted{# 2. World map of declination in year 2000.
 data(coastlineWorld)
 par(mar=rep(0.5, 4)) # no axes on whole-world projection
 mapPlot(coastlineWorld, projection="+proj=robin", col="lightgray")
@@ -75,17 +77,15 @@ mapContour(lon, lat, dec, col='red', levels=seq(5, 180, 5),
 mapContour(lon, lat, dec, col='red', levels=seq(20, 180, 20))
 mapContour(lon, lat, dec, levels=180, col='black', lwd=2, drawlabels=FALSE)
 mapContour(lon, lat, dec, levels=0, col='black', lwd=2)
-}
 
 # 3. Declination differences between versions 12 and 13
-\donttest{
 lon <- seq(-180, 180)
 lat <- seq(-90, 90)
-decDiff <- function(lon, lat) {
+decDiff <- function(lon, lat) \{
     old <- magneticField(lon, lat, 2020, version=13)$declination
     new <- magneticField(lon, lat, 2020, version=12)$declination
     new - old
-}
+\}
 decDiff <- outer(lon, lat, decDiff)
 decDiff <- ifelse(decDiff > 180, decDiff - 360, decDiff)
 # Overall (mean) shift -0.1deg
@@ -100,6 +100,13 @@ print(quantile(decDiff, c(0.025, 0.975)))
 imagep(lon,lat,decDiff, zlim=c(-1,1)*max(abs(decDiff)))
 lines(coastlineWorld[["longitude"]], coastlineWorld[["latitude"]])
 }
+}
+
+\examples{
+library(oce)
+# 1. Today's value at Halifax NS
+magneticField(-(63+36/60), 44+39/60, Sys.Date())
+
 }
 \references{
 \enumerate{

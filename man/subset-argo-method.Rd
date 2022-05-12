@@ -49,39 +49,42 @@ Note that subsetting by \code{pressure}
 preserves matrix shape, by setting discarded values to \code{NA}, as opposed
 to dropping data (as is the case with \code{time}, for example).
 }
+\section{Supplementary Examples}{
+
+
+The following code was present in the Examples section until the Spring of
+2022, when it was moved here in an attempt to reduce the total build/test
+time from 13 minutes to something below the CRAN limit of 10 min.  This
+movement means that this code is not tested during the building process, so
+it may act incorrectly, if the function changes.  Please report any problems
+you encounter.\preformatted{# Example 2: restrict attention to delayed-mode profiles.
+par(mfrow=c(1, 1))
+plot(subset(argo, dataMode == "D"))
+
+# Example 3: contrast adjusted and unadjusted data
+par(mfrow=c(1, 2))
+plotTS(argo)
+plotTS(subset(argo, "adjusted"))
+
+# Example 4. Subset by a polygon determined with locator()
+par(mfrow=c(1, 2))
+plot(argo, which="map")
+# Can get a boundary with e.g. locator(4)
+boundary <- list(x=c(-65, -40, -40, -65), y=c(65, 65, 45, 45))
+argoSubset <- subset(argo, within=boundary)
+plot(argoSubset, which="map")
+}
+}
+
 \examples{
 library(oce)
 data(argo)
 
 # Example 1: subset by time, longitude, and pressure
-par(mfrow=c(2,2))
-plot(argo)
-plot(subset(argo, time > mean(time)))
-plot(subset(argo, longitude > mean(longitude)))
-plot(subset(argoGrid(argo), pressure > 500 & pressure < 1000), which=5)
+A <- subset(argo, time > mean(time))
+B <- subset(argo, longitude > mean(longitude))
+C <- subset(argoGrid(argo), pressure > 500 & pressure < 1000)
 
-# Example 2: restrict attention to delayed-mode profiles.
-\dontrun{
-par(mfrow=c(1, 1))
-plot(subset(argo, dataMode == "D"))
-}
-
-# Example 3: contrast adjusted and unadjusted data
-\dontrun{
-par(mfrow=c(1, 2))
-plotTS(argo)
-plotTS(subset(argo, "adjusted"))
-}
-
-# Example 4. Subset by a polygon determined with locator()
-\dontrun{
-par(mfrow=c(1, 2))
-plot(argo, which="map")
-## Can get a boundary with e.g. locator(4)
-boundary <- list(x=c(-65, -40, -40, -65), y=c(65, 65, 45, 45))
-argoSubset <- subset(argo, within=boundary)
-plot(argoSubset, which="map")
-}
 }
 \seealso{
 Other things related to argo data: 

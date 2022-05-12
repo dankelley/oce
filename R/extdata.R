@@ -12,11 +12,6 @@
 #'
 #' @encoding UTF-8
 #'
-#' @examples
-#' ctd <- read.ctd.aml(system.file("extdata", "ctd_aml.csv", package="oce"))
-#' summary(ctd)
-#' plot(ctd)
-#'
 #' @family raw datasets
 #' @family things related to ctd data
 NULL

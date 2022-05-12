@@ -3759,11 +3759,10 @@ setMethod(f="plot",
 #' @examples
 #' library(oce)
 #' data(ctd)
-#' plot(ctd)
-#' ## Example 1
-#' plot(subset(ctd, pressure<10))
-#' ## Example 2
-#' plot(subset(ctd, indices=1:10))
+#' A <- subset(ctd, pressure<10)
+#' B <- subset(ctd, indices=1:10)
+#' # plot(A)
+#' # plot(B)
 #'
 #' @author Dan Kelley
 #'
@@ -4241,17 +4240,16 @@ time.formats <- c("%b %d %Y %H:%M:%s", "%Y%m%d")
 #' @return A list is silently returned, containing `xat` and `yat`,
 #' values that can be used by [oce.grid()] to add a grid to the plot.
 #'
-#' @author Dan Kelley
+#' @section Supplementary Examples:
 #'
-#' @seealso [summary,ctd-method()] summarizes the information, while
-#' [read.ctd()] scans it from a file.
+#' The following code was present in the Examples section until the Spring of
+#' 2022, when it was moved here in an attempt to reduce the total build/test
+#' time from 13 minutes to something below the CRAN limit of 10 min.  This
+#' movement means that this code is not tested during the building process, so
+#' it may act incorrectly, if the function changes.  Please report any problems
+#' you encounter.
 #'
-#' @examples
-#' # For a simple ctd object
-#' library(oce)
-#' data(ctd)
-#' plotTS(ctd)
-#'
+#'```
 #' # For a section object (note the outlier!)
 #' data(section)
 #' plotTS(section)
@@ -4289,6 +4287,17 @@ time.formats <- c("%b %d %Y %H:%M:%s", "%Y%m%d")
 #' g <- expand.grid(SA=SAgrid, CT=CTgrid)
 #' spiciness <- matrix(gsw::gsw_spiciness0(g$SA, g$CT), nrow=n)
 #' contour(SAgrid, CTgrid, spiciness, col=2, labcex=1, add=TRUE)
+#'```
+#'
+#' @author Dan Kelley
+#'
+#' @seealso [summary,ctd-method()] summarizes the information, while
+#' [read.ctd()] scans it from a file.
+#'
+#' @examples
+#' library(oce)
+#' data(ctd)
+#' plotTS(ctd)
 #'
 #' @references
 #'
@@ -5488,7 +5497,7 @@ plotProfile <- function(x,
         oceDebug(debug ,"case 10: xtype is \"temperature\", \"T\" or \"CT\"\n")
         oceDebug(debug, "recognized T, CT, or temperature\n")
         #>temperature <- if (eos == "gsw" || xtype == "CT") swConservativeTemperature(x) else x[["temperature"]]
-        temperature <- if (xtype %in% c("T", "temperature")) x[["temperature"]] 
+        temperature <- if (xtype %in% c("T", "temperature")) x[["temperature"]]
             else if (xtype == "CT") x[["CT"]]
         unit <- x@metadata$units[["temperature"]]
         if (!any(is.finite(temperature))) {

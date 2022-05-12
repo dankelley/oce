@@ -29,9 +29,15 @@ with the results being very likely to change through the autumn of 2016,
 guided by real-world usage.
 }
 
-\examples{
-\donttest{
-library(oce)
+\section{Supplementary Examples}{
+
+
+The following code was present in the Examples section until the Spring of
+2022, when it was moved here in an attempt to reduce the total build/test
+time from 13 minutes to something below the CRAN limit of 10 min.  This
+movement means that this code is not tested during the building process, so
+it may act incorrectly, if the function changes.  Please report any problems
+you encounter.\preformatted{library(oce)
 data(coastlineWorld)
 par(mar=c(2, 2, 1, 1))
 plot(coastlineWorld, projection=oceCRS("Atlantic"), span=12000)
@@ -46,6 +52,11 @@ plot(pacific, proj=oceCRS("Pacific"), span=15000, col=NULL)
 plot(pacific, proj=oceCRS("North Pacific"), span=12000, col=NULL)
 plot(pacific, proj=oceCRS("South Pacific"), span=12000, col=NULL)
 }
+}
+
+\examples{
+library(oce)
+oceCRS("Atlantic")
 }
 \seealso{
 Other functions related to maps: 

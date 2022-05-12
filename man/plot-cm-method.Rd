@@ -87,10 +87,9 @@ case, but with an added arrow indicating the mean current.
 }
 }
 \examples{
-  library(oce)
-  data(cm)
-  summary(cm)
-  plot(cm)
+library(oce)
+data(cm)
+plot(cm)
 
 }
 \seealso{
