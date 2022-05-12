@@ -2,6 +2,8 @@
 
 library(oce)
 
+if (dir.exists("local_data")) { # skip tests to meet CRAN build 10min limit
+
 f <- "~/Dropbox/data/archive/sleiwex/2008/moorings/m07/adp/sontek_h53/raw/adp_sontek_h53.adp"
 if (file.exists(f)) {
     test_that("Sontek adp", {
@@ -189,4 +191,6 @@ if (1 == length(list.files(path=".", pattern="local_data"))) {
             expect_equal(keepSlant, dim(dsd[[slant]])[2])
         }
 })}
+
+} # skipped all tests
 

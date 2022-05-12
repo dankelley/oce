@@ -1,4 +1,7 @@
 library(oce)
+
+if (dir.exists("local_data")) { # skip tests to meet CRAN build 10min limit
+
 test_that("coastline shapefile", {
           if (1 == length(list.files(path=".", pattern="local_data"))) {
               cl <- read.oce("local_data/ne_110m_admin_0_countries.shp")
@@ -8,4 +11,6 @@ test_that("coastline shapefile", {
 
           }
 })
+
+} # skipped all tests
 

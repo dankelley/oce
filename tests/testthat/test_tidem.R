@@ -1,6 +1,9 @@
 # vim:textwidth=140:expandtab:shiftwidth=4:softtabstop=4
 
 library(oce)
+
+if (dir.exists("local_data")) { # skip tests to meet CRAN build 10min limit
+
 data(sealevel)
 
 rms <- function(x) sqrt(mean(x^2, na.rm=TRUE))
@@ -202,6 +205,7 @@ test_that("Foreman (1977 App 7.3) and T-TIDE (Pawlowciz 2002 Table 1) test", {
     # for one thing.
     expect_lt(max(abs(foreman$A - ttide$amplitude)), 0.000201)
     expect_lt(max(abs(foreman$G - ttide$phase)), 0.121)
-}
-    )
+})
+
+} # skipped all tests
 

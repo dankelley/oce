@@ -1,8 +1,8 @@
 # vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
 
-# test oce.R
-
 library(oce)
+
+if (dir.exists("local_data")) { # skip tests to meet CRAN build 10min limit
 
 test_that("as.oce", {
     d <- data.frame(x=seq(0,1,length.out=20), y=seq(0,100,length.out=20))
@@ -429,4 +429,6 @@ Columns     = z:u:v:ev
      t <- numberAsPOSIXct(cbind(jd, 1e3 * 1 * 3600), type="epic", tz="UTC")
      expect_equal(t, as.POSIXct("2018-07-01 01:00:00", tz="UTC"))
 })
+
+} # skipped all tests
 

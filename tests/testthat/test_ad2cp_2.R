@@ -12,6 +12,8 @@
 
 library(oce)
 
+if (dir.exists("local_data")) { # skip tests to meet CRAN build 10min limit
+
 #file <- list.files(path="local_data", pattern="ad2cp_01.ad2cp", full.names=TRUE)
 file <- "local_data/ad2cp_01.ad2cp"
 
@@ -112,4 +114,6 @@ if (file.exists(file)) {
         # sink('b');dput(d[["roll", "echosounder"]]);sink()
 })
 }
+
+} # skipped all tests
 

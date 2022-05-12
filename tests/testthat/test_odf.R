@@ -1,6 +1,8 @@
 # vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
 library(oce)
 
+if (dir.exists("local_data")) { # skip tests to meet CRAN build 10min limit
+
 file <- system.file("extdata", "CTD_BCD2014666_008_1_DN.ODF.gz", package="oce")
 CRATwarning <- "\"conductivity\" \\(code name \"CRAT_01\"\\)" # portion of the warning
 
@@ -85,4 +87,6 @@ test_that("ODF temperature scale, IPTS68 and ITS90", {
     expect_equal(ctd3B@data$temperature, Tref68)
     expect_equal(ctd3B[["temperature"]], Tref90)
 })
+
+} # skipped all tests
 

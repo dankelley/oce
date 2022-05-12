@@ -1,5 +1,7 @@
 library(oce)
 
+if (dir.exists("local_data")) { # skip tests to meet CRAN build 10min limit
+
 test_that("lowered adcp", {
           if (1 == length(list.files(path=".", pattern="local_data"))) {
               b <- read.bremen("local_data/msm27_003.ladcp")
@@ -15,4 +17,5 @@ test_that("lowered adcp", {
           }
 })
 
+} # skipped all tests
 

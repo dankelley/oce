@@ -14,6 +14,8 @@
 
 library(oce)
 
+if (dir.exists("local_data")) { # skip tests to meet CRAN build 10min limit
+
 if (1L == length(list.files(path=".", pattern="local_data"))) {
 
     csv1 <- "local_data/met/test_met_vsn1.csv"
@@ -109,3 +111,6 @@ if (1L == length(list.files(path=".", pattern="local_data"))) {
             })
     }
 }
+
+} # skipped all tests
+

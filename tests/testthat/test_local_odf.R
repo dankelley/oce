@@ -4,6 +4,9 @@
 # some tests here.
 
 library(oce)
+
+if (dir.exists("local_data")) { # skip tests to meet CRAN build 10min limit
+
 CRATwarning <- "\"conductivity\" \\(code name \"CRAT_01\"\\)" # portion of the warning
 
 if (1 == length(list.files(path=".", pattern="local_data"))) {
@@ -233,4 +236,6 @@ if (1 == length(list.files(path=".", pattern="local_data"))) {
         expect_equal(d[["oxygenUnit"]]$unit, expression(ml/l))
         expect_equal(d[["sigmaThetaUnit"]]$unit, expression(kg/m^3))
 })}
+
+} # skipped all tests
 

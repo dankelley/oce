@@ -1,6 +1,8 @@
 # vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
 library(oce)
 
+if (dir.exists("local_data")) { # skip tests to meet CRAN build 10min limit
+
 test_that("general", {
     o <- new("oce")
     expect_equal(c("data", "metadata", "processingLog"), sort(slotNames(o)))
@@ -40,4 +42,6 @@ test_that("oceDeleteData clears flags and units", {
             "nitriteFlag", "NO2+NO3", "NO2+NO3Flag", "phosphate",
             "phosphateFlag"))
 })
+
+} # skipped all tests
 

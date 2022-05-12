@@ -1,5 +1,7 @@
 library(oce)
 
+if (dir.exists("local_data")) { # skip tests to meet CRAN build 10min limit
+
 test_that("amsr[['SSST']]", {
           data(amsr)
           SST <- amsr[["SST"]]
@@ -33,4 +35,6 @@ test_that("subset(amsr)", {
           sub <- subset(sub,  -68 <= longitude & longitude <= -65)
           expect_equal(dim(sub[["SST"]]), c(12, 8))
 })
+
+} # skipped all tests
 

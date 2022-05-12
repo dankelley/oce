@@ -3,6 +3,9 @@
 # Test Sun & Sea CTD data file.
 # https://github.com/dankelley/oce/discussions/1929
 library(oce)
+
+if (dir.exists("local_data")) { # skip tests to meet CRAN build 10min limit
+
 test_that("read.ctd.ssda() works (discussions/1929)", {
     file <- system.file("extdata", "ctd_ssda.csv", package="oce")
     ctd <- read.oce(file)
@@ -17,4 +20,5 @@ test_that("read.ctd.ssda() works (discussions/1929)", {
         c(0, -0.01, -0.02, -0.01, -0.02, -0.02))
 })
 
+} # skipped all tests
 

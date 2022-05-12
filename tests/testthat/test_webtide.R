@@ -1,6 +1,8 @@
 # vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
 library(oce)
 
+if (dir.exists("local_data")) { # skip tests to meet CRAN build 10min limit
+
 if (file.exists("/data/nwatl")) {
     test_that("webtide", {
         path <- paste(getOption("webtide"), "/data/nwatl", sep="")
@@ -23,3 +25,6 @@ if (file.exists("/data/nwatl")) {
             }
         }
 })}
+
+} # skipped all tests
+

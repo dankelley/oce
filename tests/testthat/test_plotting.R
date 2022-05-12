@@ -1,4 +1,7 @@
 library(oce)
+
+if (dir.exists("local_data")) { # skip tests to meet CRAN build 10min limit
+
 test_that("multi-panel plots leave usr as it was originally", {
     skip_on_cran()
     orig <- par('usr')
@@ -46,4 +49,6 @@ test_that("oce.plot.ts() catches xlim errors", {
     expect_error(oce.plot.ts(t,y, xlim=rev(xlim)), "the elements of xlim must be in order")
     expect_error(oce.plot.ts(t,y, xlim=c(xlim[1], NA)), "missing value where TRUE/FALSE needed")
 })
+
+} # skipped all tests
 

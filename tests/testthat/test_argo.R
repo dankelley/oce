@@ -1,5 +1,8 @@
 # vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
 library(oce)
+
+if (dir.exists("local_data")) { # skip tests to meet CRAN build 10min limit
+
 data(argo)
 
 test_that("as.ctd works with multi-column argo", {
@@ -248,4 +251,6 @@ if (file.exists(file)) {
             expect_equal(dim(d[["pressure"]]), c(501, 68))
         })
 }
+
+} # skipped all tests
 

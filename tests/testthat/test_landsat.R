@@ -2,6 +2,8 @@
 
 library(oce)
 
+if (dir.exists("local_data")) { # skip tests to meet CRAN build 10min limit
+
 f <- "~/Dropbox/data/archive/landsat/LC80080292014065LGN00"
 
 # Note the check on whether tiff is installed; otherwise we will get an error.
@@ -44,4 +46,5 @@ test_that("landsatTrim", {
     expect_equal(c(27, 38), dim(lt[["tirs1"]]))
 })
 
+} # skipped all tests
 

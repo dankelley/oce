@@ -1,6 +1,9 @@
 # vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
 
 library(oce)
+
+if (dir.exists("local_data")) { # skip tests to meet CRAN build 10min limit
+
 if (1 == length(list.files(path=".", pattern="local_data"))) {
     test_that("nortek vector with integer from and to", {
         beam <- read.oce("local_data/adv_nortek_vector", from=1, to=10,
@@ -28,4 +31,6 @@ if (1 == length(list.files(path=".", pattern="local_data"))) {
         expect_equal("xyz", xyz[["originalCoordinate"]])
         # FIXME: add some tests on the data here
 })}
+
+} # skipped all tests
 

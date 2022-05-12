@@ -1,4 +1,7 @@
 library(oce)
+
+if (dir.exists("local_data")) { # skip tests to meet CRAN build 10min limit
+
 test_that("forward=inverse", {
           data(section)
           lon <- section[["longitude", "byStation"]]
@@ -53,4 +56,6 @@ test_that("geodDist() with vector locations", {
           expect_equal(d1, c(0, 111.141548474209))
           expect_equal(d1, geodDist(lon1, lat1, lon1[1], lat1[1], alongPath=FALSE))
 })
+
+} # skipped all tests
 

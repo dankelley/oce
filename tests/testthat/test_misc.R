@@ -1,6 +1,8 @@
 # vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
 library(oce)
 
+if (dir.exists("local_data")) { # skip tests to meet CRAN build 10min limit
+
 test_that("approx3d", {
     ## Test values from the .c code, before converting to .cpp
     n <- 5
@@ -427,4 +429,6 @@ test_that("times", {
     expect_equal(as.numeric(numberAsPOSIXct(725738, "ncep2")),
         as.numeric(as.POSIXct("1988-01-01 00:00:00", tz="UTC")), tolerance=1)
 })
+
+} # skipped all tests
 

@@ -1,5 +1,7 @@
 library(oce)
 
+if (dir.exists("local_data")) { # skip tests to meet CRAN build 10min limit
+
 ## See page 2 of Foreman 1977 for the format of tide3.dat,
 ## which is provided in t-tide as (what seems to be) an exact
 ## copy of the appendix in Foreman (1977).
@@ -269,4 +271,6 @@ test_that("ancillary code", {
     expect_equal(vuf$u, c(0.00295677805220,0.00180270946435), tolerance=1e-8)
     expect_equal(vuf$f, c(0.96893771510868,0.98142639461951), tolerance=1e-8)
 })
+
+} # skipped all tests
 

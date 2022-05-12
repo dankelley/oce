@@ -1,6 +1,9 @@
 # vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
 
 library(oce)
+
+if (dir.exists("local_data")) { # skip tests to meet CRAN build 10min limit
+
 data("argo")
 data(section)                          # 124 stations (slow for tests)
 eastern <- subset(section, longitude < (-72.5)) # 8 stations (faster)
@@ -277,4 +280,6 @@ test_that("lon360 works as intended", {
     expect_equal(360 + section[["longitude"]], sectionShifted[["longitude"]])
     expect_equal(c(179, 181), lon360(c(179, -179)))
 })
+
+} # skipped all tests
 

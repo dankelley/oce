@@ -1,5 +1,8 @@
 # vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
 library(oce)
+
+if (dir.exists("local_data")) { # skip tests to meet CRAN build 10min limit
+
 file <- system.file("extdata", "ctd_aml.csv", package="oce")
 
 # https://github.com/dankelley/oce/issues/1891
@@ -16,4 +19,6 @@ test_that("read.ctd.aml() works (issue 1924)", {
     expect_equal(head(ctd[["temperature"]],3),
         c(5.671, 5.509, 5.4))
 })
+
+} # skipped all tests
 

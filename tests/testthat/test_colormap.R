@@ -1,6 +1,9 @@
 # vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
 
 library(oce)
+
+if (dir.exists("local_data")) { # skip tests to meet CRAN build 10min limit
+
 set.seed(441)
 z <- rnorm(20)
 
@@ -224,4 +227,6 @@ test_that("colormap case C with z plus name", {
     expect_true(!any(is.na(cm$zcol)))
     z <- seq(-5000, 0, 100)
 })
+
+} # skipped all tests
 

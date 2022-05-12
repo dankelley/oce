@@ -1,6 +1,8 @@
 # vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
 library(oce)
 
+if (dir.exists("local_data")) { # skip tests to meet CRAN build 10min limit
+
 test_that("as.lisst()", {
     set.seed(1333334L)
     t <- seq(0, 6, 1/15) * 3600 + as.POSIXct("2012-01-01 00:00:00", tz="UTC")
@@ -29,4 +31,6 @@ test_that("as.lisst()", {
     lisst <- as.lisst(data, filename="(constructed)", year=2012, "UTC")
     expect_equal(lisst[["beam"]], 40-20*data[,41])
 })
+
+} # skipped all tests
 

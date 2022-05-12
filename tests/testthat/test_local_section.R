@@ -1,4 +1,7 @@
 library(oce)
+
+if (dir.exists("local_data")) { # skip tests to meet CRAN build 10min limit
+
 test_that("BOTTLE type", {
     if (1 == length(list.files(path=".", pattern="local_data"))) {
         s <- read.oce("local_data/77DN20020420_hy1.csv")
@@ -10,4 +13,5 @@ test_that("BOTTLE type", {
     }
 })
 
+} # skipped all tests
 

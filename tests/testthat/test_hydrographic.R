@@ -3,6 +3,9 @@
 # Test whether base-level [[ can handle hydrographic computations
 
 library(oce)
+
+if (dir.exists("local_data")) { # skip tests to meet CRAN build 10min limit
+
 data(ctd)
 
 S <- ctd[["salinity"]]
@@ -79,4 +82,5 @@ test_that("base-level [[\"?\"]] all names work (GSW)", {
     expect_true(all(nlevel == sapply(a, function(i) sum(is.finite(ng[[i]])))))
 })
 
+} # skipped all tests
 

@@ -2,6 +2,8 @@
 
 library(oce)
 
+if (dir.exists("local_data")) { # skip tests to meet CRAN build 10min limit
+
 # The files used here are in the possession of Dan Kelley, but cannot
 # be shared with anyone else, since they were provided to him in
 # confidence, to help with testing.
@@ -468,4 +470,6 @@ if (file.exists(f3)) {
         expect_silent(plot(d3enu, which=3, zlim=zlim/4, drawTimeRange=FALSE))
 })
 }
+
+} # skipped all tests
 

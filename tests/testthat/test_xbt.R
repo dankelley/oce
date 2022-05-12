@@ -1,5 +1,8 @@
 # vim:textwidth=140:expandtab:shiftwidth=4:softtabstop=4
 library(oce)
+
+if (dir.exists("local_data")) { # skip tests to meet CRAN build 10min limit
+
 data("xbt")
 
 test_that("as.xbt() works", {
@@ -38,4 +41,6 @@ test_that("[[ works for 'z', 'depth', and 'pressure' (given depth)", {
     expect_equal(xbt[["depth"]], c(5.4, 6, 6.7, 7.4, 8, 8.7))
     expect_equal(xbt[["pressure"]], swPressure(-xbt[["z"]], xbt[["latitude"]]))
 })
+
+} # skipped all tests
 

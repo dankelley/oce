@@ -1,6 +1,8 @@
 # vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
 library(oce)
 
+if (dir.exists("local_data")) { # skip tests to meet CRAN build 10min limit
+
 test_that("as.unit", {
     expect_equal(as.unit("DBAR"), list(unit=expression(dbar), scale=""))
     expect_equal(as.unit("IPTS-68"), list(unit=expression(degree*C), scale="IPTS-68"))
@@ -19,4 +21,6 @@ if (1 == length(list.files(path=".", pattern="local_data"))) {
         expect_equal(woce[["salinityUnit"]], list(unit=expression(), scale="PSS-78"))
         expect_equal(woce[["oxygenUnit"]], list(unit=expression(mu*mol/kg), scale=""))
 })}
+
+} # skipped all tests
 

@@ -1,6 +1,8 @@
 # vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
 library(oce)
 
+if (dir.exists("local_data")) { # skip tests to meet CRAN build 10min limit
+
 test_that("as.cm() works with vectors", {
     n <- 10
     seconds <- seq(0, 100, length.out=n)
@@ -26,4 +28,6 @@ test_that("sumamry,cm-method() works", {
     data(cm)
     expect_output(summary(cm))
 })
+
+} # skipped all tests
 

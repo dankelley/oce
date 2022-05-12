@@ -1,3 +1,5 @@
+if (dir.exists("local_data")) { # skip tests to meet CRAN build 10min limit
+
 test_that("Can read type 1 data",
           {
               data <- paste("Station_Name,HALIFAX",
@@ -73,4 +75,5 @@ test_that("Can read type 3 data",
           }
 )
 
+} # skipped all tests
 

@@ -7,6 +7,8 @@
 
 library(oce)
 
+if (dir.exists("local_data")) { # skip tests to meet CRAN build 10min limit
+
 RPD <- atan2(1, 1) / 45            # radians per degree
 
 test_that("Angles", {
@@ -109,4 +111,6 @@ test_that("Sun Declination and Right Ascension", {
     expect_equal(b$declination, -7.785464443, tolerance=0.000000001)
     expect_equal(b$rightAscension, -161.6183305, tolerance=0.0000001)
 })
+
+} # skipped all tests
 

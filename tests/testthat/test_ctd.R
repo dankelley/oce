@@ -1,6 +1,8 @@
 # vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
 library(oce)
 
+if (dir.exists("local_data")) { # skip tests to meet CRAN build 10min limit
+
 # https://github.com/dankelley/oce/issues/1891
 test_that("ctd[[\"?\"]] works (issue 1891)", {
     data(section)
@@ -681,4 +683,5 @@ test_that("character 'which' works", {
     }
 })
 
+} # skipped all tests
 

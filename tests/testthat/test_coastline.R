@@ -2,6 +2,8 @@
 
 library(oce)
 
+if (dir.exists("local_data")) { # skip tests to meet CRAN build 10min limit
+
 test_that("various methods of coastline creation", {
     lon <- c(1,2,1)
     lat <- c(0,1,0)
@@ -23,4 +25,6 @@ test_that("coastlineCut", {
     data(coastlineWorld)
     expect_silent(coastlineCut(coastlineWorld, lon_0=100))
 })
+
+} # skipped all tests
 

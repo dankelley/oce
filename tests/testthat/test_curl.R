@@ -1,5 +1,7 @@
 library(oce)
 
+if (dir.exists("local_data")) { # skip tests to meet CRAN build 10min limit
+
 test_that("curl 1", {
           lat <- c(85,82.5,80,77.5)
           lon <- c(160,162.5,165,167.5)
@@ -21,3 +23,6 @@ test_that("curl 2", {
           C2 <- curl(u=u, v=v, x=x, y=y, geographical=FALSE, method=2)
           expect_equal(C2$curl, matrix(-1, nrow=3, ncol=9))
 })
+
+} # skipped all tests
+

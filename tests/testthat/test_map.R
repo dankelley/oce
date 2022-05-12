@@ -1,6 +1,8 @@
 # vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
 library(oce)
 
+if (dir.exists("local_data")) { # skip tests to meet CRAN build 10min limit
+
 if (requireNamespace("sf", quietly=TRUE)) {
     test_that("utm2lonlat() and lonlat2utm() on some points known from Landsat metadata", {
         longitude <- c(-40.27900, -38.22680, -40.28255, -38.22465,
@@ -60,4 +62,6 @@ if (requireNamespace("sf", quietly=TRUE)) {
             expect_equal(cs, cs2)
         }})
 }
+
+} # skipped all tests
 

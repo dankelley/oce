@@ -1,5 +1,8 @@
 # vim:textwidth=140:expandtab:shiftwidth=4:softtabstop=4
 library(oce)
+
+if (dir.exists("local_data")) { # skip tests to meet CRAN build 10min limit
+
 CRATwarning <- "\"conductivity\" \\(code name \"CRAT_01\"\\)" # portion of the warning
 
 
@@ -328,4 +331,6 @@ test_that("adp handleFlag gives error for raw data (issue 1914)", {
     expect_error(c <- handleFlags(b, flags=list(3), actions=list("NA")),
         "use adpConvertRawToNumeric")
 })
+
+} # skipped all tests
 

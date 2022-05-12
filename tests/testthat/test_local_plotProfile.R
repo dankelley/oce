@@ -1,4 +1,7 @@
 library(oce)
+
+if (dir.exists("local_data")) { # skip tests to meet CRAN build 10min limit
+
 ## Need to set EOS because we are testing ranges on salinity profiles,
 ## and these vary according to the EOS.
 options(oceEOS="gsw")
@@ -98,3 +101,6 @@ test_that("Test 16: does fake range narrow when p range is narrowed?", {
           plotProfile(ctd, xtype='fake', plim=c(8,6))
           expect_equal(par("usr"), c(-8.86696, -5.00704, 8.08, 5.92))
 })
+
+} # skipped all tests
+

@@ -3,8 +3,10 @@
 #ncvar_get() failed for "HISTORY_STOP_PRES", so it isn't stored in metadata
 #ncvar_get() failed for "HISTORY_PREVIOUS_VALUE", so it isn't stored in metadata
 
-
 library(oce)
+
+if (dir.exists("local_data")) { # skip tests to meet CRAN build 10min limit
+
 test_that("the data(argo) dataset", {
     data(argo)
     expect_equal(argo[["id"]][1], "6900388")
@@ -51,4 +53,6 @@ if (1 == length(list.files("BR5904179_001.nc", path="local_data")) && requireNam
                         "UVIntensityDarkNitrate", "UVIntensityNitrate")))
         }
 })}
+
+} # skipped all tests
 

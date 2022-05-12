@@ -1,5 +1,8 @@
 # vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
 library(oce)
+
+if (dir.exists("local_data")) { # skip tests to meet CRAN build 10min limit
+
 data(adp)
 
 test_that("array values in data slot of 'adp' dataset are well-formed", {
@@ -318,3 +321,6 @@ test_that("adpConvertRawToNumeric", {
     ADP <- adpConvertRawToNumeric(adp)
     expect_equal(class(ADP[["a"]][,,1][,1][1]), "numeric")
 })
+
+} # skipped all tests
+

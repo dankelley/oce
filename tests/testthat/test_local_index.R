@@ -1,4 +1,7 @@
 library(oce)
+
+if (dir.exists("local_data")) { # skip tests to meet CRAN build 10min limit
+
 test_that("SOI index", {
           if (1 == length(list.files(path=".", pattern="local_data"))) {
               SOI <- read.index("local_data/SOI.signal.ascii")
@@ -7,4 +10,6 @@ test_that("SOI index", {
               expect_equal(SOI$index[1:3], c(-1.2, -0.3, -1.0))
           }
 })
+
+} # skipped all tests
 

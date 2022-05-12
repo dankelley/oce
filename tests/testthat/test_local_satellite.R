@@ -1,4 +1,7 @@
 library(oce)
+
+if (dir.exists("local_data")) { # skip tests to meet CRAN build 10min limit
+
 test_that("amsr", {
           if (1 == length(list.files(path=".", pattern="local_data"))) {
               amsr <- read.amsr("local_data/f34_20160808v7.2.gz")
@@ -12,4 +15,6 @@ test_that("amsr", {
               expect_warning(plot(amsr), "auto-decimating first index of large image by 3")
           }
 })
+
+} # skipped all tests
 

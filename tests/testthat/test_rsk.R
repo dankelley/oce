@@ -1,5 +1,8 @@
 ## vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
 library(oce)
+
+if (dir.exists("local_data")) { # skip tests to meet CRAN build 10min limit
+
 data(rsk)
 test_that("as.ctd(rsk)", {
     ctd <- as.ctd(rsk)
@@ -45,4 +48,6 @@ if (requireNamespace("RSQLite", quietly=TRUE)) {
             expect_equal(sort(names(rsk[["data"]])), c("conductivity","pressure","temperature","time"))
         }
 })}
+
+} # skipped all tests
 

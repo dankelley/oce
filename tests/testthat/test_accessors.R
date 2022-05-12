@@ -1,6 +1,8 @@
 # vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
 library(oce)
 
+if (dir.exists("local_data")) { # skip tests to meet CRAN build 10min limit
+
 test_that("[[\"?\"]] is handled by all object classes", {
     # The object names was created by saving the output of `git grep setClass R`
     # and reformulating into R code.
@@ -187,4 +189,6 @@ test_that("argo original names (issue 1640)", {
     data(argo)
     expect_equal(argo[["temperature"]], argo[["TEMP"]])
 })
+
+} # skipped all tests
 

@@ -1,4 +1,7 @@
 library(oce)
+
+if (dir.exists("local_data")) { # skip tests to meet CRAN build 10min limit
+
 test_that("tab-delimited (may be specific to Dalhousie)", {
           if (1 == length(list.files(path=".", pattern="local_data"))) {
               cm <- read.oce("local_data/cm_interocean_0811786.s4a.tab")
@@ -9,3 +12,6 @@ test_that("tab-delimited (may be specific to Dalhousie)", {
                              -1.396, -1.388, -1.396, -1.390, -1.396))
           }
 })
+
+} # skipped all tests
+

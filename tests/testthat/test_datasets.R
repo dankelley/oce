@@ -1,6 +1,8 @@
 ## vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
 library(oce)
 
+if (dir.exists("local_data")) { # skip tests to meet CRAN build 10min limit
+
 ## FIXME: commented-out data() lines indicate things to be done.
 
 ## Part 1: various tests, some of them ad-hock
@@ -102,3 +104,6 @@ test_that("units", {
               }
           }
 })
+
+} # skipped all tests
+

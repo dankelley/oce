@@ -246,12 +246,15 @@ to be the location, in arbitrary units, along the x-axis of labels specified by
 \code{labels}; the way this works is designed to be the same as for
 \code{\link[=axis]{axis()}}.
 }
-\section{Ancillary Examples}{
+\section{Supplementary Examples}{
 
 
-The following examples were once part of the \dQuote{Examples}
-section, but were moved here in May 2022, to reduce the build-check
-time for CRAN submission.\preformatted{library(oce)
+The following code was present in the Examples section until the Spring of
+2022, when it was moved here in an attempt to reduce the total build/test
+time from 13 minutes to something below the CRAN limit of 10 min.  This
+movement means that this code is not tested during the building process, so
+it may act incorrectly, if the function changes.  Please report any problems
+you encounter.\preformatted{library(oce)
 data(section)
 GS <- subset(section, 113<=stationId&stationId<=129)
 GSg <- sectionGrid(GS, p=seq(0, 2000, 100))
@@ -310,17 +313,12 @@ plot(GSg, which="salinity", ztype="image",
 }
 
 \examples{
+# S and T contours for Gulf Stream
 library(oce)
 data(section)
 GS <- subset(section, 113<=stationId&stationId<=129)
 GSg <- sectionGrid(GS, p=seq(0, 2000, 100))
-
-# Gulf Stream, salinity and temperature contours
 plot(GSg, which=c("salinity", "temperature"))
-
-# Gulf Stream, Temperature image
-plot(GSg, which="temperature", ztype="image",
-    zbreaks=seq(0,25,2), zcol=oceColorsTemperature)
 
 }
 \seealso{

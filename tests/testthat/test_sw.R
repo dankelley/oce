@@ -1,6 +1,9 @@
 # vim:textwidth=140:expandtab:shiftwidth=4:softtabstop=4
 
 library(oce)
+
+if (dir.exists("local_data")) { # skip tests to meet CRAN build 10min limit
+
 # Table of contents.
 #  1. rho and sigma
 #  2. potential temperature and temperature scales
@@ -428,4 +431,6 @@ test_that("sigma0 works as expected (issue 1933)", {
     sigma0direct <- gsw_sigma0(SA=SA, CT=CT)
     expect_equal(sigma0, sigma0direct)
 })
+
+} # skipped all tests
 

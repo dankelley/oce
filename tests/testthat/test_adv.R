@@ -1,5 +1,8 @@
 # vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
 library(oce)
+
+if (dir.exists("local_data")) { # skip tests to meet CRAN build 10min limit
+
 data(adp)
 
 test_that("enuToOther(adv) test of rotation", {
@@ -63,4 +66,7 @@ if (file.exists(f)) {
                 byrow=TRUE, ncol=3))
 })
 }
+
+} # skipped all tests
+
 

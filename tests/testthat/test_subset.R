@@ -6,6 +6,8 @@
 
 library(oce)
 
+if (dir.exists("local_data")) { # skip tests to meet CRAN build 10min limit
+
 test_that("subset a CTD by pressure (1)", {
     make_ctd <- function(start, end) {
         p <- seq(0, 100, 1)
@@ -94,4 +96,6 @@ test_that("subset a CTD by pressure (6)", {
     d <- make_ctd(focus[1], focus[2])
     expect_equal(d[["pressure"]], 20:30)
 })
+
+} # skipped all tests
 

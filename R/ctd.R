@@ -3104,13 +3104,17 @@ write.ctd <- function(object, file, metadata=TRUE, flags=TRUE, format="csv")
 #'     - Add the `borderCoastline` argument, to control the colour of coastlines
 #'     and international boundaries.
 #'
-#' @examples
-#' ## 1. simple plot
-#' library(oce)
-#' data(ctd)
-#' plot(ctd)
+#' @section Supplementary Examples:
 #'
-#' ## 2. how to customize depth contours
+#' The following code was present in the Examples section until the Spring of
+#' 2022, when it was moved here in an attempt to reduce the total build/test
+#' time from 13 minutes to something below the CRAN limit of 10 min.  This
+#' movement means that this code is not tested during the building process, so
+#' it may act incorrectly, if the function changes.  Please report any problems
+#' you encounter.
+#'
+#'```
+#' # Customized depth contours
 #' par(mfrow=c(1,2))
 #' data(section)
 #' stn <- section[["station", 105]]
@@ -3124,6 +3128,12 @@ write.ctd <- function(object, file, metadata=TRUE, flags=TRUE, format="csv")
 #'         levels=seq(1000,6000,1000), col='lightblue', add=TRUE)
 #' contour(tlon, tlat, tdep, vfont=c("sans serif", "bold"),
 #'         levels=stn[['waterDepth']], col='red', lwd=2, add=TRUE)
+#'```
+#'
+#' @examples
+#' library(oce)
+#' data(ctd)
+#' plot(ctd)
 #'
 #' @author Dan Kelley
 #'
