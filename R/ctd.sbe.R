@@ -658,11 +658,18 @@ cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
 #' Read a Seabird CTD File
 #'
 #' @template readCtdTemplate
+#'
 #' @param btl a logical value, with `TRUE` indicating that this is a `.BTL` file and `FALSE`
 #' (the default) indicating a `.CNV` file.  Note that if `btl` is `TRUE`, the data column
 #' names are taken directly from the file (without e.g. translating to `"Sal00"`
 #' to `"salinity"`.  Also, the "avg" and "sdev" columns are blended together, with
 #' all the latter named as in the file, but with `"_sdev"` appended.
+#'
+#' @param humanDateFormat optional character string specifying the format for dates
+#' in the human-entered header line that starts with "`** Date:`". See the
+#' \dQuote{A note on human-entered field} section for the reason for this parameter.
+#' If supplied, then `humanDateFormat` is supplied as the `format` argument to
+#' [as.POSIXct()], which is supplied with the information on this date line.
 #'
 #' @author Dan Kelley and Clark Richards
 #'
@@ -688,7 +695,24 @@ cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
 #' However, for the case of `.btl` files, the column names are as described
 #' in the documentation entry for the `btl` argument.
 #'
+#' @section A note on human-entered fields:
+#'
+#' CNV files have a section for human-entered information. This is detected by
+#' `read.ctd.sbe()` as lines that begin with two asterisks. Decoding this
+#' information can be tricky, because humans have many ways of writing things.
+#' For example, a line starting with "`** Date:` may hold a hand-entered date,
+#' but its format may not be in a format that [as.POSIXct()] can
+#' decode. If problems arise with this field, the user may find the
+#' `humanDateFormat` parameter to be helpful. But similar problems can also
+#' arise in the specification of longitude and latitude, and `read.ctd.sbe()`
+#' may have difficulty decoding these things, and may store NA in the the
+#' `metadata` slot of the returned value is set to NA. A careful
+#' analyst would be well-advised to spend some time checking these
+#' human-entered header fields, lest `read.ctd.sbe()` inferred an
+#' incorrect sampling time, location, etc.
+#'
 #' @section A note on sampling times:
+#'
 #' Until November of 2018,
 #' there was a possibility for great confusion in the storage
 #' of the time entries within the `data` slot, because `read.ctd.sbe`
@@ -758,6 +782,7 @@ cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
 #' @family functions that read ctd data
 read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
     deploymentType="unknown", btl=FALSE, monitor=FALSE,
+    humanDateFormat=NULL,
     debug=getOption("oceDebug"), processingLog, ...)
 {
     if (!missing(file) && is.character(file) && 0 == file.info(file)$size)
@@ -878,8 +903,40 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
         }
         ##if (iline>129) browser()
         lline <- tolower(aline)
-        if (grepl("^.*date:", lline))  # assume UTC
-            date <- as.POSIXct(gsub(".*date:(.*) utc","\\1", lline), tz="UTC")
+        if (grepl("^.*date:", lline)) {  # assume UTC
+            # Decoding dates is tricky.  To solve
+            # https://github.com/dankelley/oce/issues/1947
+            # we added a humanDateFormat argument.
+            #> message(aline)
+            dateString <- gsub(".*date:(.*)","\\1", lline)
+            #> message(dateString)
+            # Remove a timezone, if there is one, because timezones are often
+            # contradictory, e.g. AST could be a time in Atlantic Canada, or
+            # Australia, or in some other place.
+            #>>>dateString <- gsub(" [a-zA-Z]$", "", dateString)
+            #> message(dateString)
+            dateString <- trimws(dateString)
+            #> message(dateString)
+            if (!is.null(humanDateFormat)) {
+                dateTry <- try(as.POSIXct(dateString, format=humanDateFormat, tz="UTC"), silent=TRUE)
+                if (inherits(dateTry, "try-error")) {
+                    warning("cannot decode human-entered date in header line `", aline, "` using humanDateFormat=`", humanDateFormat, "`\n", sep="")
+                    date <- NA
+                } else {
+                    date <- dateTry
+                }
+                #> message("date=", date, " with humanDateFormat")
+            } else {
+                dateTry <- try(as.POSIXct(dateString, tz="UTC"), silent=TRUE)
+                if (inherits(dateTry, "try-error")) {
+                    warning("cannot decode human-entered date in header line `", aline, "`. Try supplying humanDateFormat\n", sep="")
+                    date <- NA
+                } else {
+                    date <- dateTry
+                }
+                #> message("date=", date, " without humanDateFormat")
+            }
+        }
         if (0 < regexpr(".*seacat profiler.*", lline))
             serialNumber <- gsub("[ ].*$", "", gsub(".*sn[ ]*", "", lline))
         if (length(grep("^\\* Temperature SN", lline, ignore.case=TRUE)))

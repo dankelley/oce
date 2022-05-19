@@ -12,6 +12,7 @@ read.ctd.sbe(
   deploymentType = "unknown",
   btl = FALSE,
   monitor = FALSE,
+  humanDateFormat = NULL,
   debug = getOption("oceDebug"),
   processingLog,
   ...
@@ -72,6 +73,12 @@ all the latter named as in the file, but with \code{"_sdev"} appended.}
 \item{monitor}{boolean, set to \code{TRUE} to provide an indication of
 progress.  This is useful if \code{filename} is a wildcard.}
 
+\item{humanDateFormat}{optional character string specifying the format for dates
+in the human-entered header line that starts with "\verb{** Date:}". See the
+\dQuote{A note on human-entered field} section for the reason for this parameter.
+If supplied, then \code{humanDateFormat} is supplied as the \code{format} argument to
+\code{\link[=as.POSIXct]{as.POSIXct()}}, which is supplied with the information on this date line.}
+
 \item{debug}{an integer specifying whether debugging information is
 to be printed during the processing. This is a general parameter that
 is used by many \code{oce} functions. Generally, setting \code{debug=0}
@@ -115,7 +122,26 @@ names (in the "Short Name" column of the table spanning pages 161 through 172).
 However, for the case of \code{.btl} files, the column names are as described
 in the documentation entry for the \code{btl} argument.
 }
+\section{A note on human-entered fields}{
+
+
+CNV files have a section for human-entered information. This is detected by
+\code{read.ctd.sbe()} as lines that begin with two asterisks. Decoding this
+information can be tricky, because humans have many ways of writing things.
+For example, a line starting with "\verb{** Date:} may hold a hand-entered date,
+but its format may not be in a format that \code{\link[=as.POSIXct]{as.POSIXct()}} can
+decode. If problems arise with this field, the user may find the
+\code{humanDateFormat} parameter to be helpful. But similar problems can also
+arise in the specification of longitude and latitude, and \code{read.ctd.sbe()}
+may have difficulty decoding these things, and may store NA in the the
+\code{metadata} slot of the returned value is set to NA. A careful
+analyst would be well-advised to spend some time checking these
+human-entered header fields, lest \code{read.ctd.sbe()} inferred an
+incorrect sampling time, location, etc.
+}
+
 \section{A note on sampling times}{
+
 
 Until November of 2018,
 there was a possibility for great confusion in the storage

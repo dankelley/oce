@@ -1,6 +1,6 @@
 # oce 1.7.4
 
-* Work in progress.
+* Improve `read.ctd.sbe()` re handling of Date header.
 
 # oce 1.7.3
 
