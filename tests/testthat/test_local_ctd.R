@@ -2,6 +2,21 @@
 
 library(oce)
 
+if (file.exists("local_data/AZMP-HLX_2018-02-07_20h03m.cnv")) {
+    test_that("Viking buoy", {
+        v <- read.ctd.sbe("local_data/AZMP-HLX_2018-02-07_20h03m.cnv")
+        expect_equal(v[["date"]], as.POSIXct("2018-02-07 20:03:21", tz="UTC"))
+        expect_equal(v[["latitude"]], 44+41.48/60)
+        expect_equal(v[["longitude"]], -(63+38.41/60))
+        expect_equal(v[["station"]], "AZMP-HLX (Halifax)")
+        expect_equal(v[["waterDepth"]], 70)
+        expect_equal(v[["institute"]],
+            "Bedford Institute of Oceanography, Dept. of Fisheries and Oceans")
+        expect_equal(v[["address"]],
+            "1 Challenger Dr, Dartmouth, NS B2Y 4A2, Canada")
+})}
+
+
 if (file.exists("local_data/itp99grd0000.dat")) {
     test_that("ice-tethered profiler", {
         itp <- read.ctd.itp("local_data/itp99grd0000.dat")
