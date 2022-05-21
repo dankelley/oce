@@ -3959,6 +3959,8 @@ read.ctd <- function(file, type=NULL, columns=NULL, station=NULL, missingValue,
 {
     if (!missing(file) && is.character(file) && 0 == file.info(file)$size)
         stop("empty file")
+    if (is.na(file))
+        stop("cannot read a NA file")
     oceDebug(debug, "read.ctd(..., type=", if (is.null(type)) "NULL" else "\"", type, "\") {\n", sep="")
     ## Special case: ruskin files are handled by read.rsk()
     if (is.character(file) && length(grep(".rsk$", file))) {

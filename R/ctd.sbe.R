@@ -1,3 +1,5 @@
+# vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
+
 #' Infer variable name, units and scale from a Seabird (.cnv) header line
 #'
 #' This function is used by [read.ctd.sbe()] to infer data names
@@ -112,16 +114,17 @@
 #'   `pumps`       \tab `pumpStatus`                   \tab                      \tab   \cr
 #'   `rhodflTC~`   \tab `Rhodamine`                    \tab ppb; Turner Cyclops  \tab   \cr
 #'   `sal~~`       \tab `salinity`                     \tab -, PSS-78            \tab 4 \cr
+#'   `sbox~dV/dT`  \tab `oxygen`                       \tab dov/dt; SBE43        \tab   \cr
 #'   `sbeox~ML/L`  \tab `oxygen`                       \tab ml/l; SBE43          \tab   \cr
-#'   `sbox~ML/L`   \tab `oxygen`                       \tab ml/l; SBE43 (?)      \tab   \cr
+#    `sbox~ML/L`   \tab `oxygen`                       \tab ml/l; SBE43          \tab   \cr
 #'   `sbeox~Mm/Kg` \tab `oxygen`                       \tab umol/kg; SBE43       \tab   \cr
-#'   `sbox~Mm/Kg`  \tab `oxygen`                       \tab umol/kg; SBE43 (?)   \tab   \cr
+#'   `sbox~Mm/Kg`  \tab `oxygen`                       \tab umol/kg; SBE43       \tab   \cr
 #'   `sbeox~Mm/L`  \tab `oxygen`                       \tab umol/l; SBE43        \tab   \cr
-#'   `sbox~Mm/L`   \tab `oxygen`                       \tab umol/l; SBE43 (?)    \tab   \cr
+#'   `sbox~Mm/L`   \tab `oxygen`                       \tab umol/l; SBE43        \tab   \cr
 #'   `sbeox~PS`    \tab `oxygen`                       \tab percent; SBE43       \tab   \cr
-#'   `sbox~PS`     \tab `oxygen`                       \tab percent; SBE43 (?)   \tab   \cr
+#'   `sbox~PS`     \tab `oxygen`                       \tab percent; SBE43       \tab   \cr
 #'   `sbeox~V`     \tab `oxygenRaw`                    \tab V; SBE43             \tab   \cr
-#'   `sbox~V`      \tab `oxygenRaw`                    \tab V; SBE43 (?)         \tab   \cr
+#'   `sbox~V`      \tab `oxygenRaw`                    \tab V; SBE43             \tab   \cr
 #'   `scan`        \tab `scan`                         \tab -                    \tab   \cr
 #'   `seaTurbMtr~` \tab `turbidity`                    \tab FTU; Seapoint        \tab   \cr
 #'   `secS-priS`   \tab `salinityDifference`           \tab -, PSS-78            \tab   \cr
@@ -455,35 +458,26 @@ cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
         name <- "salinity"
         unit <- list(unit=expression(), scale="PSS-78") # FIXME: guess on scale
     } else if (1 == length(grep("^sbe?ox[0-9]ML/L$", name, useBytes=TRUE))) {
-        if (length(grep("^sbo", name, useBytes=TRUE)))
-            warning("assuming '", name, "' is equivalent to '", gsub("^sb", "sbe", name), "'", sep="")
         name <- "oxygen"
         unit <- list(unit=expression(ml/l), scale="SBE43")
     } else if (1 == length(grep("^sbe?ox[0-9]Mg/L$", name, useBytes=TRUE))) {
-        if (length(grep("^sbo", name, useBytes=TRUE)))
-            warning("assuming '", name, "' is equivalent to '", gsub("^sb", "sbe", name), "'", sep="")
         name <- "oxygen"
         unit <- list(unit=expression(mg/l), scale="SBE43")
     } else if (1 == length(grep("^sbe?ox[0-9]Mm/Kg$", name, useBytes=TRUE))) {
-        if (length(grep("^sbo", name, useBytes=TRUE)))
-            warning("assuming '", name, "' is equivalent to '", gsub("^sb", "sbe", name), "'", sep="")
         name <- "oxygen"
         unit <- list(unit=expression(mu*mol/kg), scale="SBE43")
     } else if (1 == length(grep("^sbe?ox[0-9]Mm/L$", name, useBytes=TRUE))) {
-        if (length(grep("^sbo", name, useBytes=TRUE)))
-            warning("assuming '", name, "' is equivalent to '", gsub("^sb", "sbe", name), "'", sep="")
         name <- "oxygen"
         unit <- list(unit=expression(mu*mol/l), scale="SBE43")
     } else if (1 == length(grep("^sbe?ox[0-9]PS$", name, useBytes=TRUE))) {
-        if (length(grep("^sbo", name, useBytes=TRUE)))
-            warning("assuming '", name, "' is equivalent to '", gsub("^sb", "sbe", name), "'", sep="")
         name <- "oxygen"
         unit <- list(unit=expression(percent), scale="SBE43")
     } else if (1 == length(grep("^sbe?ox[0-9]V$", name, useBytes=TRUE))) {
-        if (length(grep("^sbo", name, useBytes=TRUE)))
-            warning("assuming '", name, "' is equivalent to '", gsub("^sb", "sbe", name), "'", sep="")
         name <- "oxygenRaw"
         unit <- list(unit=expression(V), scale="SBE43")
+    } else if (1 == length(grep("^sbe?ox[0-9]dV/dT$", name, useBytes=TRUE))) {
+        name <- "oxygen"
+        unit <- list(unit=expression(dov/dt), scale="SBE43")
     } else if (1 == length(grep("^scan$", name, useBytes=TRUE))) {
         name <- "scan"
         unit <- list(unit=expression(), scale="")
@@ -665,11 +659,11 @@ cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
 #' to `"salinity"`.  Also, the "avg" and "sdev" columns are blended together, with
 #' all the latter named as in the file, but with `"_sdev"` appended.
 #'
-#' @param humanDateFormat optional character string specifying the format for dates
-#' in the human-entered header line that starts with "`** Date:`". See the
-#' \dQuote{A note on human-entered field} section for the reason for this parameter.
-#' If supplied, then `humanDateFormat` is supplied as the `format` argument to
-#' [as.POSIXct()], which is supplied with the information on this date line.
+## @param humanDateFormat optional character string specifying the format for dates
+## in the human-entered header line that starts with "`** Date:`". See the
+## \dQuote{A note on hand-entered headers} section for the reason for this parameter.
+## If supplied, then `humanDateFormat` is supplied as the `format` argument to
+## [as.POSIXct()], which is supplied with the information on this date line.
 #'
 #' @author Dan Kelley and Clark Richards
 #'
@@ -695,21 +689,33 @@ cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
 #' However, for the case of `.btl` files, the column names are as described
 #' in the documentation entry for the `btl` argument.
 #'
-#' @section A note on human-entered fields:
+#' @section A note on hand-entered headers:
 #'
-#' CNV files have a section for human-entered information. This is detected by
+#' CNV files may have a section that contains human-entered information. This is detected by
 #' `read.ctd.sbe()` as lines that begin with two asterisks. Decoding this
 #' information can be tricky, because humans have many ways of writing things.
-#' For example, a line starting with "`** Date:` may hold a hand-entered date,
-#' but its format may not be in a format that [as.POSIXct()] can
-#' decode. If problems arise with this field, the user may find the
-#' `humanDateFormat` parameter to be helpful. But similar problems can also
-#' arise in the specification of longitude and latitude, and `read.ctd.sbe()`
-#' may have difficulty decoding these things, and may store NA in the the
-#' `metadata` slot of the returned value is set to NA. A careful
-#' analyst would be well-advised to spend some time checking these
-#' human-entered header fields, lest `read.ctd.sbe()` inferred an
-#' incorrect sampling time, location, etc.
+#' For example, `read.ctd.sbe()` tries to interpret a "`** Date:`" using
+#' [as.POSIXct()], saving the result as `date` in the
+#' `metadata` slot of the returned object.
+#' This stores NA if the date is in a format that [as.POSIXct()] does not parse.
+#' Similar problems can arise with location information.
+#' Correcting problems with individual files
+#' may be done with [oceSetMetadata()], but if many files are
+#' systematically problematic, and if there is no need to trace the change
+#' in the `metadata` slot of the returned object
+#' (which [oceSetMetadata()] does), then it might sense to set up
+#' a wrapper function. As an example, following handles dates
+#' specified in a nonstandard way.
+#'
+#'```
+#' read.ctd.sbe.wrapper <- function(cnv)
+#' {
+#'     lines <- readLines(cnv)
+#'     # Change month-day-year to year-month-day, so as.POSIXct() can parse it.
+#'     lines <- gsub("^\\*\\* Date: (.*)-(.*)-(.*)", "** Date: \\3-\\1-\\2", lines)
+#'     read.ctd.sbe(textConnection(lines))
+#' }
+#'```
 #'
 #' @section A note on sampling times:
 #'
@@ -782,12 +788,18 @@ cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
 #' @family functions that read ctd data
 read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
     deploymentType="unknown", btl=FALSE, monitor=FALSE,
-    humanDateFormat=NULL,
+    #humanDateFormat=NULL,
     debug=getOption("oceDebug"), processingLog, ...)
 {
-    if (!missing(file) && is.character(file) && 0 == file.info(file)$size)
-        stop("empty file")
-    if (length(grep("\\*", file, ignore.case=TRUE))) {
+    if (missing(file))
+        stop("must supply 'file'")
+    if (is.character(file)) {
+        if (!file.exists(file))
+            stop("cannot find file '", file, "'")
+        if (0L == file.info(file)$size)
+            stop("empty file '", file, "'")
+    }
+    if (is.character(file) && grepl("\\*", file, ignore.case=TRUE)) {
         oceDebug(debug, "read.ctd.sbe(file=\"", file, "\") { # will read a series of files\n", unindent=1)
         files <- list.files(pattern=file)
         nfiles <- length(files)
@@ -802,7 +814,7 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
         oceDebug(debug, "} # read.ctd.sbe() {\n")
         return(res)
     }
-    oceDebug(debug, "read.ctd.sbe(file=\"", file, "\") { # will read an individual file\n", unindent=1)
+    oceDebug(debug, "read.ctd.sbe(file=\"", file, "\") {\n", unindent=1)
 
     ## Read Seabird data file.  Note on headers: '*' is machine-generated,
     ## '**' is a user header, and '#' is a post-processing header.
@@ -888,7 +900,7 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
         line <- lines[iline]
         ##message(line)
         #line <- scan(file, what='char', sep="\n", n=1, quiet=TRUE)
-        oceDebug(debug, paste("Examining header line ", iline, " '", line, "'\n", sep=""))
+        oceDebug(debug > 1L, paste("Examining header line ", iline, " '", line, "'\n", sep=""))
         header <- c(header, line)
         ##if (length(grep("\*END\*", line))) #BUG# why is this regexp no good (new with R-2.1.0)
         aline <- iconv(line, from="UTF-8", to="ASCII", sub="?")
@@ -902,10 +914,23 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
         }
         ##if (iline>129) browser()
         lline <- tolower(aline)
-        if (grepl("^.*date:", lline)) {  # assume UTC
-            # Decoding dates is tricky.  To solve
-            # https://github.com/dankelley/oce/issues/1947
-            # we added a humanDateFormat argument.
+        # Use NMEA (if present) in preference to a hand-entered date.
+        # See https://github.com/dankelley/oce/issues/1949#issuecomment-1133613831
+        # * NMEA UTC (Time) = Aug 09 2012 06:34:34
+        if (grepl("^\\* NMEA.*Time.*=", aline)) {  # NMD
+            rhs <- trimws(gsub("^\\* NMEA.*Time.*=(.*)", "\\1", aline))
+            dateTry <- try(as.POSIXct(rhs,
+                    tryFormats=c("%Y-%m-%d %H:%M:%S", "%b %d %Y %H:%M:%S"),
+                    tz="UTC"), silent=TRUE)
+            if (inherits(dateTry, "try-error")) {
+                warning("cannot parse date in `", aline, "`, but will try a '** Date:' line, if there is one", sep="")
+            } else {
+                date <- dateTry
+                oceDebug(debug, "inferred date=", format(date), " from automatically-generated NMEA-time line\n")
+            }
+        }
+        # Look at hand-entered date only if an NMEA time was not found, or was unparseable
+        if (is.na(date) && grepl("^\\*\\*.*Date:", aline)) {
             #> message(aline)
             dateString <- gsub(".*date:(.*)","\\1", lline)
             #> message(dateString)
@@ -916,25 +941,36 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
             #> message(dateString)
             dateString <- trimws(dateString)
             #> message(dateString)
-            if (!is.null(humanDateFormat)) {
-                dateTry <- try(as.POSIXct(dateString, format=humanDateFormat, tz="UTC"), silent=TRUE)
-                if (inherits(dateTry, "try-error")) {
-                    warning("cannot decode human-entered date in header line `", aline, "` using humanDateFormat=`", humanDateFormat, "`\n", sep="")
-                    date <- NA
-                } else {
-                    date <- dateTry
-                }
-                #> message("date=", date, " with humanDateFormat")
+            dateTry <- try(as.POSIXct(dateString, tz="UTC"), silent=TRUE)
+            if (inherits(dateTry, "try-error")) {
+                warning("cannot parse date in `", aline, "`; see 'A note on hand-entered headers' in ?read.ctd.sbe", sep="")
             } else {
-                dateTry <- try(as.POSIXct(dateString, tz="UTC"), silent=TRUE)
-                if (inherits(dateTry, "try-error")) {
-                    warning("cannot decode human-entered date in header line `", aline, "`. Try supplying humanDateFormat\n", sep="")
-                    date <- NA
+                if (dateTry < as.POSIXct("1900-01-01")) {
+                    warning("impossible date in `", aline, "` is being ignored\n", sep="")
                 } else {
+                    oceDebug(debug, "inferred date=", format(date), " from `", aline, "`\n", sep="")
                     date <- dateTry
                 }
-                #> message("date=", date, " without humanDateFormat")
             }
+            #>>> if (!is.null(humanDateFormat)) {
+            #>>>     dateTry <- try(as.POSIXct(dateString, format=humanDateFormat, tz="UTC"), silent=TRUE)
+            #>>>     if (inherits(dateTry, "try-error")) {
+            #>>>         warning("cannot decode human-entered date in header line `", aline, "` using humanDateFormat=`", humanDateFormat, "`\n", sep="")
+            #>>>         date <- NA
+            #>>>     } else {
+            #>>>         date <- dateTry
+            #>>>     }
+            #>>>     #> message("date=", date, " with humanDateFormat")
+            #>>> } else {
+            #>>>     dateTry <- try(as.POSIXct(dateString, tz="UTC"), silent=TRUE)
+            #>>>     if (inherits(dateTry, "try-error")) {
+            #>>>         warning("cannot decode human-entered date in header line `", aline, "`. Try supplying humanDateFormat\n", sep="")
+            #>>>         date <- NA
+            #>>>     } else {
+            #>>>         date <- dateTry
+            #>>>     }
+            #>>>     #> message("date=", date, " without humanDateFormat")
+            #>>> }
         }
         if (0 < regexpr(".*seacat profiler.*", lline))
             serialNumber <- gsub("[ ].*$", "", gsub(".*sn[ ]*", "", lline))
@@ -956,15 +992,18 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
         }
         ##* NMEA UTC (Time) = Jul 28 2011  04:17:53
         ##* system upload time = jan 26 2010 13:02:57
-        if (length(grep("^\\* .*time.*=.*$", lline))) {
-            if (0 == length(grep("real-time sample interval", lline))) {
-                oceDebug(debug, "found 'real-time sample interval' header line\n")
-                d <- sub(".*=", "", lline)
-                d <- sub("^ *", "", d)
-                d <- sub(" *$", "", d)
-                date <- decodeTime(d)
-            }
-        }
+        #> See https://github.com/dankelley/oce/issues/1949#issuecomment-1133053873
+        #> if (length(grep("^\\* .*time.*=.*$", lline))) {
+        #>     if (is.na(date) && 0 == length(grep("real-time sample interval", lline))) {
+        #>         warning("inferring date from `", aline, "`. This behaviour is slated for removal!!!\n")
+        #>         #oceDebug(debug, "found 'real-time sample interval' header line\n")
+        #>         d <- sub(".*=", "", lline)
+        #>         d <- sub("^ *", "", d)
+        #>         d <- sub(" *$", "", d)
+        #>         date <- decodeTime(d)
+        #>         message("L987: date=", date[1], " DANDANDAN\n")
+        #>     }
+        #> }
         if (length(grep("^\\* Sea-Bird SBE (.*) Data File:$", lline, ignore.case=TRUE))) {
             model <- gsub("^\\* sea-bird sbe (.*) data file:$", "\\1", lline)
             res@metadata$model <- model
@@ -1033,13 +1072,11 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
             #> look <- sub("[a-z:()]*", "", lline, ignore.case=TRUE)
             #> look <- gsub("^[*a-zA-Z\\(\\) :]*", "", lline, ignore.case=TRUE)
             #> look <- gsub("[ ]*", "", look, ignore.case=TRUE)
-            oceDebug(debug, "    pruned '", aline, "' to '", look, "'\n", sep="")
-            if (!length(grep('[a-zA-Z]', look))) {
-                waterDepth<- as.numeric(look)
-                oceDebug(debug, "    inferred waterDepth = ", waterDepth, " (assumed to be in m)\n")
-            } else {
-                warning("cannot infer water depth from '", aline, "' (found letters to right of ':')\n", sep="")
-            }
+            #> oceDebug(debug, "    pruned '", aline, "' to '", look, "'\n", sep="")
+            # Remove any non-numeric (e.g. sometimes a unit is here)
+            look <- gsub("[a-zA-Z]", "", look)
+            waterDepth<- as.numeric(look)
+            oceDebug(debug, "inferred waterDepth=", waterDepth, "[m] from '", aline, "'\n", sep="")
         }
         # if (0 < (r<-regexpr("water depth:", lline))
         #     || 0 < (r<-regexpr(pattern="profondeur", text=lline))) {

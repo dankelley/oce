@@ -2,9 +2,23 @@
 
 library(oce)
 
-if (file.exists("local_data/AZMP-HLX_2018-02-07_20h03m.cnv")) {
+if (file.exists("local_data/ctd/2021-01-13_alongbay_skb11_cast116_5028.cnv")) {
+    test_that("file with an odd Date format", {
+        expect_warning(
+            d <- read.ctd.sbe("local_data/ctd/2021-01-13_alongbay_skb11_cast116_5028.cnv"),
+            "cannot parse date in")
+})}
+
+if (file.exists("local_data/ctd/2022_01-31_ab_s02_cast052_4141.cnv")) {
+    test_that("file with an odd Date format", {
+        expect_warning(d <- read.ctd.sbe("local_data/ctd/2022_01-31_ab_s02_cast052_4141.cnv"),
+            "cannot parse date in")
+})}
+
+
+if (file.exists("local_data/ctd/AZMP-HLX_2018-02-07_20h03m.cnv")) {
     test_that("Viking buoy", {
-        v <- read.ctd.sbe("local_data/AZMP-HLX_2018-02-07_20h03m.cnv")
+        v <- read.ctd.sbe("local_data/ctd/AZMP-HLX_2018-02-07_20h03m.cnv")
         expect_equal(v[["date"]], as.POSIXct("2018-02-07 20:03:21", tz="UTC"))
         expect_equal(v[["latitude"]], 44+41.48/60)
         expect_equal(v[["longitude"]], -(63+38.41/60))
@@ -17,22 +31,22 @@ if (file.exists("local_data/AZMP-HLX_2018-02-07_20h03m.cnv")) {
 })}
 
 
-if (file.exists("local_data/itp99grd0000.dat")) {
+if (file.exists("local_data/ctd/itp99grd0000.dat")) {
     test_that("ice-tethered profiler", {
-        itp <- read.ctd.itp("local_data/itp99grd0000.dat")
+        itp <- read.ctd.itp("local_data/ctd/itp99grd0000.dat")
         expect_equal(itp[["latitude"]], 77.8840)
         expect_equal(itp[["longitude"]], 360 + (-145.0856))
 })}
 
-if (file.exists("local_data/18HU2010014_00003_00001_ct1.csv")) {
+if (file.exists("local_data/ctd/18HU2010014_00003_00001_ct1.csv")) {
     test_that("woce 1", {
-        woce <- read.ctd.woce("local_data/18HU2010014_00003_00001_ct1.csv")
+        woce <- read.ctd.woce("local_data/ctd/18HU2010014_00003_00001_ct1.csv")
         expect_equal(woce[["longitude"]], -52.5945)
         expect_equal(woce[["latitude"]], 47.5483)
         expect_equal(woce[["station"]], 3)
 })}
 
-if (file.exists("local_data/example_ct1.csv")) {
+if (file.exists("local_data/ctd/example_ct1.csv")) {
     test_that("woce 2", {
         woce <- read.ctd.woce("local_data/example_ct1.csv")
         expect_equal(woce[["latitude"]], -17.5102)
@@ -47,9 +61,10 @@ if (file.exists("local_data/example_ct1.csv")) {
 
 # I dump files here sometimes, when I download new data that seem to provide
 # useful test cases.
-if (1 == length(list.files(path=".", pattern="local_data"))) {
+if (dir.exists("local_data")) {
     test_that("various ctd files", {
-        files <- c("77DN20020420_hy1.csv",
+        files <- c(
+            "77DN20020420_hy1.csv",
             "p10_00026_00001_ct1.csv",
             "sr01_l_00001_00003_ct1.csv",
             "p02_2004a_00175_00002_ct1.csv",
@@ -58,24 +73,23 @@ if (1 == length(list.files(path=".", pattern="local_data"))) {
             "a22_00025_00001_ct1.csv",
             "a03_3_00001_ct1.csv",
             "a22_2003a_00001_00001_ct1.csv",
-            "18HU2010014_00003_00001_ct1.csv",
-            "18HU20130507_00235_00001_ct1.csv")
+            "18HU2010014_00003_00001_ct1.csv")
         for (file in files) {
             #> cat(file, "\n")
             if (file == "18HU20130507_00235_00001_ct1.csv")
-                expect_warning(d <- read.oce(paste("local_data", file, sep="/")),
+                expect_warning(d <- read.oce(paste("local_data/ctd/", file, sep="")),
                     "missingValue inferred as -999 from S and T minima")
             else
-                d <- read.oce(paste("local_data", file, sep="/"))
+                d <- expect_silent(read.oce(paste("local_data/ctd", file, sep="/")))
             #> ## summarizing and plotting can depend on the data, so try both
             #> summary(d)
             #> plot(d)
         }
 })}
 
-if (file.exists("local_data/CTD_98911_1P_1_DN.txt")) {
+if (file.exists("local_data/ctd/CTD_98911_1P_1_DN.txt")) {
     test_that("a broken ODF file that has theta but no S", {
-        d <- read.oce("local_data/CTD_98911_1P_1_DN.txt")
+        d <- read.oce("local_data/ctd/CTD_98911_1P_1_DN.txt")
         # Until 2021-12-21, we were extracting 'theta' directly from
         # this broken file (which contains pressure, temperature,
         # and theta, but no salinity).  On this day, though, it was
@@ -103,13 +117,13 @@ if (1 == length(list.files(path=".", pattern="local_data"))) {
         # pressure is in English units.
         expect_warning(
             expect_warning(
-                d1 <- read.oce("local_data/ctd.cnv"),
+                d1 <- read.oce("local_data/ctd/ctd.cnv"),
                 "this CNV file has temperature in the IPTS-68 scale"),
             "startTime < 1950, suggesting y2k problem in this cnv file")
         expect_warning(
             expect_warning(
                 expect_warning(
-                    d2 <- read.oce("local_data/ctd_with_psi.cnv"),
+                    d2 <- read.oce("local_data/ctd/ctd_with_psi.cnv"),
                     "created 'pressure' from 'pressurePSI'"),
                 "this CNV file has temperature in the IPTS-68 scale"),
             "startTime < 1950, suggesting y2k problem in this cnv file")
