@@ -827,7 +827,7 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
     latitude <- longitude <- NA
     waterDepth <- NA
     startTime <- recoveryTime <- NA
-    date <- NA # is this used? (or useful?)
+    date <- NA
     header <- c()
     ##conductivity.standard <- 4.2914
     foundHeaderLatitude <- foundHeaderLongitude <- FALSE
@@ -885,11 +885,10 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
     fileType <- "unknown"
 
     for (iline in seq_along(lines)) {
-        ##message("** scan at iline ", iline)
         line <- lines[iline]
         ##message(line)
         #line <- scan(file, what='char', sep="\n", n=1, quiet=TRUE)
-        oceDebug(debug, paste("Examining header line '", line, "'\n", sep=""))
+        oceDebug(debug, paste("Examining header line ", iline, " '", line, "'\n", sep=""))
         header <- c(header, line)
         ##if (length(grep("\*END\*", line))) #BUG# why is this regexp no good (new with R-2.1.0)
         aline <- iconv(line, from="UTF-8", to="ASCII", sub="?")
@@ -1024,40 +1023,47 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
             if (missing(missingValue))
                 missingValue <- as.numeric(bad_flag)
         }
-        if (0 < (r<-regexpr("depth", lline))) {
-            ## "** Depth (m): 3447 "
-            look <- sub("[a-z:()]*", "", lline, ignore.case=TRUE)
-            look <- gsub("^[*a-zA-Z\\(\\) :]*", "", lline, ignore.case=TRUE)
-            look <- gsub("[ ]*", "", look, ignore.case=TRUE)
-            oceDebug(debug, " trying to get water depth from '", lline, "', reduced to '", look, "'\n", sep="")
+        # Water depth
+        # See https://github.com/dankelley/oce/issues/1950
+        if (grepl("^\\*\\* Depth.*:.*$", aline)
+            || grepl("^\\*\\* Water Depth.*:.*$", aline)
+            || grepl("^\\*\\* profondeur.*:.*$", aline, ignore.case=TRUE)) {
+            look <- gsub(".*:", "", lline)
+            #> ## "** Depth (m): 3447 "
+            #> look <- sub("[a-z:()]*", "", lline, ignore.case=TRUE)
+            #> look <- gsub("^[*a-zA-Z\\(\\) :]*", "", lline, ignore.case=TRUE)
+            #> look <- gsub("[ ]*", "", look, ignore.case=TRUE)
+            oceDebug(debug, "    pruned '", aline, "' to '", look, "'\n", sep="")
             if (!length(grep('[a-zA-Z]', look))) {
                 waterDepth<- as.numeric(look)
-                oceDebug(debug, "got waterDepth: ", waterDepth, "\n")
-            }
-        }
-        if (0 < (r<-regexpr("water depth:", lline))
-            || 0 < (r<-regexpr(pattern="profondeur", text=lline))) {
-            ## Examples from files in use by author:
-            ##** Profondeur: 76
-            ##** Water Depth:   40 m
-            look <- sub("[ ]*$", "", sub(".*:[ ]*", "", lline))
-            linesplit <- strsplit(look, " ")[[1]]
-            nitems <- length(linesplit)
-            if (nitems == 1) {
-                waterDepth <- as.numeric(linesplit[1])
-            } else if (nitems == 2) {
-                unit <- linesplit[2]
-                if (unit == "m") {
-                    waterDepth <- as.numeric(linesplit[1])
-                } else if (unit == "km") {
-                    waterDepth <- 1000 * as.numeric(linesplit[1])
-                } else {
-                    warning("ignoring unit on water depth '", look, "'")
-                }
+                oceDebug(debug, "    inferred waterDepth = ", waterDepth, " (assumed to be in m)\n")
             } else {
-                warning("cannot interpret water depth from '", lline, "'")
+                warning("cannot infer water depth from '", aline, "' (found letters to right of ':')\n", sep="")
             }
         }
+        # if (0 < (r<-regexpr("water depth:", lline))
+        #     || 0 < (r<-regexpr(pattern="profondeur", text=lline))) {
+        #     ## Examples from files in use by author:
+        #     ##** Profondeur: 76
+        #     ##** Water Depth:   40 m
+        #     look <- sub("[ ]*$", "", sub(".*:[ ]*", "", lline))
+        #     linesplit <- strsplit(look, " ")[[1]]
+        #     nitems <- length(linesplit)
+        #     if (nitems == 1) {
+        #         waterDepth <- as.numeric(linesplit[1])
+        #     } else if (nitems == 2) {
+        #         unit <- linesplit[2]
+        #         if (unit == "m") {
+        #             waterDepth <- as.numeric(linesplit[1])
+        #         } else if (unit == "km") {
+        #             waterDepth <- 1000 * as.numeric(linesplit[1])
+        #         } else {
+        #             warning("ignoring unit on water depth '", look, "'")
+        #         }
+        #     } else {
+        #         warning("cannot interpret water depth from '", lline, "'")
+        #     }
+        # }
         ## [1] "# interval = seconds: 1
         ## [1] "# interval = decibars: 1
         if (length(grep("^# interval = .*$", lline))) {
