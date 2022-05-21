@@ -1,3 +1,5 @@
+# vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
+
 ## Data format overview
 ## hardware [a5 05 X1 X2]  48 bytes, 2*(short word made from X1 and X2)
 ## head     [a5 04 X1 X2] 224 bytes, 2*(short word made from X1 and X2)
@@ -61,7 +63,14 @@
 #' 2. The Nortek Knowledge Center
 #' https://www.nortekusa.com/en/knowledge-center
 #' may be of help if problems arise in dealing with data from Nortek instruments.
-decodeHeaderNortek <- function(buf, type=c("aquadoppHR", "aquadoppProfiler", "aquadopp", "aquadoppPlusMagnetometer", "vector"), debug=getOption("oceDebug"), ...)
+decodeHeaderNortek <- function(buf,
+    type=c("aquadoppHR",
+        "aquadoppProfiler",
+        "aquadopp",
+        "aquadoppPlusMagnetometer",
+        "vector"),
+    debug=getOption("oceDebug"),
+    ...)
 {
     type <- match.arg(type)
     oceDebug(debug, "decodeHeaderNortek(buf, type=\"", type, "\", ...) {\n", sep="", unindent=1)
@@ -561,15 +570,21 @@ is.ad2cp <- function(x)
 #'
 #' @family things related to adp data
 read.adp.ad2cp <- function(file, from=1, to=0, by=1, tz=getOption("oceTz"),
-                           longitude=NA, latitude=NA,
-                           orientation, distance, plan, type,
-                           monitor=FALSE, despike=FALSE, processingLog,
-                           debug=getOption("oceDebug"), ...)
+    longitude=NA, latitude=NA,
+    orientation, distance, plan, type,
+    monitor=FALSE, despike=FALSE, processingLog,
+    debug=getOption("oceDebug"), ...)
 {
+    if (missing(file))
+        stop("must supply 'file'")
+    if (is.character(file)) {
+        if (!file.exists(file))
+            stop("cannot find file '", file, "'")
+        if (0L == file.info(file)$size)
+            stop("empty file '", file, "'")
+    }
     if (!interactive())
         monitor <- FALSE
-    if (!missing(file) && is.character(file) && 0 == file.info(file)$size)
-        stop("empty file")
     if (!missing(orientation))
         warning("ignoring 'orientation' (see documentation)")
     if (!missing(distance))
@@ -2204,15 +2219,30 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, tz=getOption("oceTz"),
 #' @author Dan Kelley and Clark Richards
 #'
 #' @family things related to adp data
-read.aquadopp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
-                          longitude=NA, latitude=NA,
-                          type="aquadopp",
-                          orientation, distance,
-                          monitor=FALSE, despike=FALSE, processingLog,
-                          debug=getOption("oceDebug"), ...)
+read.aquadopp <- function(file,
+    from=1,
+    to,
+    by=1,
+    tz=getOption("oceTz"),
+    longitude=NA,
+    latitude=NA,
+    type="aquadopp",
+    orientation,
+    distance,
+    monitor=FALSE,
+    despike=FALSE,
+    processingLog,
+    debug=getOption("oceDebug"),
+    ...)
 {
-    if (!missing(file) && is.character(file) && 0 == file.info(file)$size)
-        stop("empty file")
+    if (missing(file))
+        stop("must supply 'file'")
+    if (is.character(file)) {
+        if (!file.exists(file))
+            stop("cannot find file '", file, "'")
+        if (0L == file.info(file)$size)
+            stop("empty file '", file, "'")
+    }
     if (!interactive())
         monitor <- FALSE
     return(read.adp.nortek(file, from=from, to=to, by=by, tz=tz,
@@ -2264,22 +2294,37 @@ read.aquadopp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
 #' @author Dan Kelley
 #'
 #' @family things related to adp data
-read.aquadoppHR <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
-                            longitude=NA, latitude=NA,
-                            orientation=orientation, distance,
-                            monitor=FALSE, despike=FALSE, processingLog,
-                            debug=getOption("oceDebug"), ...)
+read.aquadoppHR <- function(file,
+    from=1,
+    to,
+    by=1,
+    tz=getOption("oceTz"),
+    longitude=NA,
+    latitude=NA,
+    orientation=orientation,
+    distance,
+    monitor=FALSE,
+    despike=FALSE,
+    processingLog,
+    debug=getOption("oceDebug"),
+    ...)
 {
-    if (!missing(file) && is.character(file) && 0 == file.info(file)$size)
-        stop("empty file")
+    if (missing(file))
+        stop("must supply 'file'")
+    if (is.character(file)) {
+        if (!file.exists(file))
+            stop("cannot find file '", file, "'")
+        if (0L == file.info(file)$size)
+            stop("empty file '", file, "'")
+    }
     if (!interactive())
         monitor <- FALSE
     return(read.adp.nortek(file, from=from, to=to, by=by, tz=tz,
-                           longitude=longitude, latitude=latitude,
-                           type="aquadoppHR",
-                           orientation=orientation, distance=distance,
-                           monitor=monitor, despike=despike, processingLog=processingLog,
-                           debug=debug, ...))
+            longitude=longitude, latitude=latitude,
+            type="aquadoppHR",
+            orientation=orientation, distance=distance,
+            monitor=monitor, despike=despike, processingLog=processingLog,
+            debug=debug, ...))
 }
 
 
@@ -2324,14 +2369,29 @@ read.aquadoppHR <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
 #' @author Dan Kelley
 #'
 #' @family things related to adp data
-read.aquadoppProfiler <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
-                                  longitude=NA, latitude=NA,
-                                  orientation, distance,
-                                  monitor=FALSE, despike=FALSE, processingLog,
-                                  debug=getOption("oceDebug"), ...)
+read.aquadoppProfiler <- function(file,
+    from=1,
+    to,
+    by=1,
+    tz=getOption("oceTz"),
+    longitude=NA,
+    latitude=NA,
+    orientation,
+    distance,
+    monitor=FALSE,
+    despike=FALSE,
+    processingLog,
+    debug=getOption("oceDebug"),
+    ...)
 {
-    if (!missing(file) && is.character(file) && 0 == file.info(file)$size)
-        stop("empty file")
+    if (missing(file))
+        stop("must supply 'file'")
+    if (is.character(file)) {
+        if (!file.exists(file))
+            stop("cannot find file '", file, "'")
+        if (0L == file.info(file)$size)
+            stop("empty file '", file, "'")
+    }
     return(read.adp.nortek(file, from=from, to=to, by=by, tz=tz,
                            longitude=longitude, latitude=latitude,
                            type="aquadoppProfiler",
@@ -2375,15 +2435,24 @@ read.aquadoppProfiler <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
 #'
 #' @family things related to adp data
 read.adp.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
-                            longitude=NA, latitude=NA,
-                            type=c("aquadoppHR", "aquadoppProfiler", "aquadopp", "aquadoppPlusMagnetometer"),
-                            orientation, distance,
-                            monitor=FALSE, despike=FALSE, processingLog,
-                            debug=getOption("oceDebug"),
-                            ...)
+    longitude=NA, latitude=NA,
+    type=c("aquadoppHR",
+        "aquadoppProfiler",
+        "aquadopp",
+        "aquadoppPlusMagnetometer"),
+    orientation, distance,
+    monitor=FALSE, despike=FALSE, processingLog,
+    debug=getOption("oceDebug"),
+    ...)
 {
-    if (!missing(file) && is.character(file) && 0 == file.info(file)$size)
-        stop("empty file")
+    if (missing(file))
+        stop("must supply 'file'")
+    if (is.character(file)) {
+        if (!file.exists(file))
+            stop("cannot find file '", file, "'")
+        if (0L == file.info(file)$size)
+            stop("empty file '", file, "'")
+    }
     if (!interactive())
         monitor <- FALSE
     ##degToRad <- atan2(1, 1) / 45

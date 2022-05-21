@@ -1180,14 +1180,20 @@ ODFListFromHeader <- function(header)
 #' @author Dan Kelley, with help from Chantelle Layton
 #'
 #' @family things related to odf data
-read.odf <- function(file, columns=NULL, header="list", exclude=NULL, debug=getOption("oceDebug"))
+read.odf <- function(file,
+    columns=NULL,
+    header="list",
+    exclude=NULL,
+    debug=getOption("oceDebug"))
 {
     if (missing(file))
-        stop("must supply 'file', a character value holding the name of an ODF file")
-    if (length(file) > 1)
-        stop("can only handle one file at a time (the length of 'file' is ", length(file), ", not 1)")
-    if (is.character(file) && 0 == file.info(file)$size)
-        stop("the file named '", file, "' is empty, and so cannot be read")
+        stop("must supply 'file'")
+    if (is.character(file)) {
+        if (!file.exists(file))
+            stop("cannot find file '", file, "'")
+        if (0L == file.info(file)$size)
+            stop("empty file '", file, "'")
+    }
     debug <- as.integer(min(max(debug, 0), 3))
     oceDebug(debug, "read.odf(\"", file, "\", exclude=",
              if (is.null(exclude)) "NULL" else paste0("'", exclude, "'"), ", ...) {\n", unindent=1, sep="", style="bold")
@@ -1665,9 +1671,25 @@ read.odf <- function(file, columns=NULL, header="list", exclude=NULL, debug=getO
 #' @family functions that read ctd data
 #'
 #' @author Dan Kelley
-read.ctd.odf <- function(file, columns=NULL, station=NULL, missingValue, deploymentType="unknown",
-    monitor=FALSE, exclude=NULL, debug=getOption("oceDebug"), processingLog, ...)
+read.ctd.odf <- function(file,
+    columns=NULL,
+    station=NULL,
+    missingValue,
+    deploymentType="unknown",
+    monitor=FALSE,
+    exclude=NULL,
+    debug=getOption("oceDebug"),
+    processingLog,
+    ...)
 {
+    if (missing(file))
+        stop("must supply 'file'")
+    if (is.character(file)) {
+        if (!file.exists(file))
+            stop("cannot find file '", file, "'")
+        if (0L == file.info(file)$size)
+            stop("empty file '", file, "'")
+    }
     oceDebug(debug, "read.ctd.odf(\"", file, "\", ...) {\n", sep="", unindent=1, style="bold")
     if (!is.null(columns)) warning("'columns' is ignored by read.ctd.odf() at present")
     odf <- read.odf(file=file, columns=columns, exclude=exclude, debug=debug-1)

@@ -689,10 +689,17 @@ download.amsr <- function(year, month, day, destdir=".", server="http://data.rem
 #' @author Dan Kelley and Chantelle Layton
 #'
 #' @family things related to amsr data
-read.amsr <- function(file, debug=getOption("oceDebug"))
+read.amsr <- function(file,
+    debug=getOption("oceDebug"))
 {
-    if (!missing(file) && is.character(file) && 0 == file.info(file)$size)
-        stop("empty file")
+    if (missing(file))
+        stop("must supply 'file'")
+    if (is.character(file)) {
+        if (!file.exists(file))
+            stop("cannot find file '", file, "'")
+        if (0L == file.info(file)$size)
+            stop("empty file '", file, "'")
+    }
     oceDebug(debug, "read.amsr(file=\"", file, "\",",
              #if (length(band) > 1) paste("band=c(\"", paste(band, collapse="\",\""), "\")", sep="") else
                  ", debug=", debug, ") {\n", sep="", unindent=1)

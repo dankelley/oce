@@ -1,4 +1,4 @@
-## vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
+# vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
 
 #' Class to Store Rsk Data
 #'
@@ -642,11 +642,24 @@ setMethod(f="plot",
 #' @author Dan Kelley and Clark Richards
 #'
 #' @family things related to rsk data
-read.rsk <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", default="UTC"),
-                        patm=FALSE, processingLog, debug=getOption("oceDebug"))
+read.rsk <- function(file,
+    from=1,
+    to,
+    by=1,
+    type,
+    tz=getOption("oceTz", default="UTC"),
+    patm=FALSE,
+    processingLog,
+    debug=getOption("oceDebug"))
 {
-    if (!missing(file) && is.character(file) && 0 == file.info(file)$size)
-        stop("empty file")
+    if (missing(file))
+        stop("must supply 'file'")
+    if (is.character(file)) {
+        if (!file.exists(file))
+            stop("cannot find file '", file, "'")
+        if (0L == file.info(file)$size)
+            stop("empty file '", file, "'")
+    }
     debug <- max(0, min(debug, 2))
     oceDebug(debug, "read.rsk(file=\"", file, "\", from=", format(from),
              ", to=", if (missing(to))"(not given)" else format(to),

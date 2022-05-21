@@ -1,3 +1,5 @@
+# vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
+
 #' Class to Store adv Data
 #'
 #' This class holds data from acoustic-Doppler velocimeters.
@@ -380,14 +382,20 @@ setMethod(f="subset",
 #' (This will not be the case for files that are created by data loggers that
 #' chop the raw data up into a series of sub-files, e.g. once per hour.)
 read.adv <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
-                     type=c("nortek", "sontek", "sontek.adr", "sontek.text"),
-                     header=TRUE,
-                     longitude=NA, latitude=NA,
-                     start=NULL, deltat=NA,
-                     debug=getOption("oceDebug"), monitor=FALSE, processingLog=NULL)
+    type=c("nortek", "sontek", "sontek.adr", "sontek.text"),
+    header=TRUE,
+    longitude=NA, latitude=NA,
+    start=NULL, deltat=NA,
+    debug=getOption("oceDebug"), monitor=FALSE, processingLog=NULL)
 {
-    if (!missing(file) && is.character(file) && 0 == file.info(file)$size)
-        stop("empty file")
+    if (missing(file))
+        stop("must supply 'file'")
+    if (is.character(file)) {
+        if (!file.exists(file))
+            stop("cannot find file '", file, "'")
+        if (0L == file.info(file)$size)
+            stop("empty file '", file, "'")
+    }
     if (!interactive())
         monitor <- FALSE
     type <- match.arg(type)

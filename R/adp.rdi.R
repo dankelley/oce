@@ -1,4 +1,4 @@
-## vim: tw=100 shiftwidth=4 softtabstop=4 expandtab:
+# vim: tw=80 shiftwidth=4 softtabstop=4 expandtab:
 
 ## byte sequences at start of items
 ## FLH 00 00; VLH 00 80; vel 00 01; Cor 00 02;  echo 00 03; percent 00 04; bottom-track 00 06
@@ -677,14 +677,22 @@ decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceT
 #'
 #' @family things related to adp data
 read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
-                         longitude=NA, latitude=NA,
-                         type=c("workhorse"),
-                         monitor=FALSE, despike=FALSE, processingLog,
-                         testing=FALSE,
-                         debug=getOption("oceDebug"),
-                         ...)
+    longitude=NA, latitude=NA,
+    type=c("workhorse"),
+    monitor=FALSE, despike=FALSE, processingLog,
+    testing=FALSE,
+    debug=getOption("oceDebug"),
+    ...)
 {
     ##. warningBinaryFixedAttitudeCount <- 0
+    if (missing(file))
+        stop("must supply 'file'")
+    if (is.character(file)) {
+        if (!file.exists(file))
+            stop("cannot find file '", file, "'")
+        if (0L == file.info(file)$size)
+            stop("empty file '", file, "'")
+    }
     if (!interactive())
         monitor <- FALSE
     warningUnknownCode <- list()
@@ -704,8 +712,6 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
         to <- 0
     profileStart <- NULL # prevent scope warning from rstudio; defined later anyway
     if (is.character(file)) {
-        if (0 == file.info(file)$size)
-            stop("empty file")
         filename <- fullFilename(file)
         file <- file(file, "rb")
         on.exit(close(file))

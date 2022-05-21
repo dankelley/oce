@@ -1,4 +1,4 @@
-## vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
+# vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
 
 ## REFERENCES:
 ##   [1] "DT4 Data File Format Specification" [July, 2010] DT4_format_2010.pdf
@@ -827,12 +827,21 @@ setMethod(f="plot",
 #' Advanced Digital Hydroacoustics. July, 2010.  SOFTWARE AND ENGINEERING
 #' LIBRARY REPORT BS&E-2004-07-0009-2.0.
 #' @family things related to echosounder data
-read.echosounder <- function(file, channel=1, soundSpeed,
-                             tz=getOption("oceTz"), debug=getOption("oceDebug"),
-                             processingLog)
+read.echosounder <- function(file,
+    channel=1,
+    soundSpeed,
+    tz=getOption("oceTz"),
+    debug=getOption("oceDebug"),
+    processingLog)
 {
-    if (!missing(file) && is.character(file) && 0 == file.info(file)$size)
-        stop("empty file")
+    if (missing(file))
+        stop("must supply 'file'")
+    if (is.character(file)) {
+        if (!file.exists(file))
+            stop("cannot find file '", file, "'")
+        if (0L == file.info(file)$size)
+            stop("empty file '", file, "'")
+    }
     oceDebug(debug, "read.echosounder(file=\"", file, "\", tz=\"", tz, "\", debug=", debug, ") {\n", sep="", unindent=1, style="bold")
     ##ofile <- file
     filename <- NULL

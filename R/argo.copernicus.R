@@ -1,3 +1,5 @@
+# vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
+
 #' Read argo file in Copernicus format
 #'
 #' This function was added to read a particular file downloaded from the
@@ -32,10 +34,17 @@
 #' @author Dan Kelley
 read.argo.copernicus <- function(file,
     debug=getOption("oceDebug"),
-    processingLog, ...)
+    processingLog,
+    ...)
 {
-    if (!missing(file) && is.character(file) && 0 == file.info(file)$size)
-        stop("empty file")
+    if (missing(file))
+        stop("must supply 'file'")
+    if (is.character(file)) {
+        if (!file.exists(file))
+            stop("cannot find file '", file, "'")
+        if (0L == file.info(file)$size)
+            stop("empty file '", file, "'")
+    }
     if (!requireNamespace("ncdf4", quietly=TRUE))
         stop("must install.packages(\"ncdf4\") to read argo data")
     if (missing(processingLog)) processingLog <- paste(deparse(match.call()), sep="", collapse="")
