@@ -18,8 +18,8 @@ read.ctd.sbe(
 )
 }
 \arguments{
-\item{file}{a connection or a character string giving the name of the file to
-load.  For \code{\link[=read.ctd.sbe]{read.ctd.sbe()}} and \code{\link[=read.ctd.woce]{read.ctd.woce()}}, this may be a
+\item{file}{either a connection or a character value naming a file.
+For \code{\link[=read.ctd.sbe]{read.ctd.sbe()}} and \code{\link[=read.ctd.woce]{read.ctd.woce()}}, this may be a
 wildcard (e.g. \code{"*.cnv"} or \code{"*.csv"}) in which case the return
 value is a vector containing CTD objects created by reading the files from
 \code{\link[=list.files]{list.files()}} with \code{pattern} set to the specified wildcard
@@ -85,10 +85,7 @@ better for normal calls by a user.}
 \item{...}{additional arguments, passed to called routines.}
 }
 \value{
-a \linkS4class{ctd} object. The details of the contents
-depend on the source file. The \code{metadata} slot is particularly
-variable across data formats, because the meta-information provided
-in those formats varies so widely.
+This function returns a \linkS4class{ctd} object.
 }
 \description{
 Read a Seabird CTD File
@@ -118,21 +115,53 @@ in the documentation entry for the \code{btl} argument.
 \section{A note on hand-entered headers}{
 
 
-CNV files may have a section that contains human-entered information. This is detected by
-\code{read.ctd.sbe()} as lines that begin with two asterisks. Decoding this
-information can be tricky, because humans have many ways of writing things.
-For example, \code{read.ctd.sbe()} tries to interpret a "\verb{** Date:}" using
-\code{\link[=as.POSIXct]{as.POSIXct()}}, saving the result as \code{date} in the
-\code{metadata} slot of the returned object.
-This stores NA if the date is in a format that \code{\link[=as.POSIXct]{as.POSIXct()}} does not parse.
-Similar problems can arise with location information.
-Correcting problems with individual files
-may be done with \code{\link[=oceSetMetadata]{oceSetMetadata()}}, but if many files are
-systematically problematic, and if there is no need to trace the change
-in the \code{metadata} slot of the returned object
-(which \code{\link[=oceSetMetadata]{oceSetMetadata()}} does), then it might sense to set up
-a wrapper function. As an example, following handles dates
-specified in a nonstandard way.\preformatted{read.ctd.sbe.wrapper <- function(cnv)
+CNV files may have a section that contains human-entered information. This is
+detected by \code{read.ctd.sbe()} as lines that begin with two asterisks. Decoding
+this information can be tricky, because humans have many ways of writing
+things.
+
+For example, consider the \code{date} item in the \code{metadata} slot of the returned
+value.  \code{read.ctd.sbe()} infers this value in one of two ways.  First, if
+there is a header line staring with\preformatted{* NMEA UTC (Time) =
+}
+
+then that value is decoded and used for \code{date}.  This header line, preceded
+by a single asterisk, is not human-entered, and so there is reason to hope
+for a uniform format that can be handled by \code{read.ctd.sbe()}.  However, if
+there is no NMEA header line, then \code{read.ctd.sbe()} will look for a line
+starting with\preformatted{** Date:
+}
+
+which was human-entered. This is the second choice, because humans write
+dates in a bewildering variety of ways, and \code{\link[=as.POSIXct]{as.POSIXct()}}, which
+\code{read.ctd.sbe} uses to parse the date, cannot handle them all. If there is a
+problem, \code{read.ctd.sbe()} issues a warning and stores NA in \code{date}.
+
+A similar error-detection procedure is used for human-entered location data,
+which appear in lines starting with either\preformatted{** Longitude:
+}
+
+or\preformatted{** Latitude:
+}
+
+which often take forms that \code{read.ctd.sbe()} cannot parse.
+
+It is important to note that, even if no warnings are issued, there is a
+reasonably high chance that human-entered data will be scanned incorrectly.
+(Did the operator remember to indicate the hemisphere? Does 123.456 indicate
+decimal degrees, or 123 degrees plus 45.6 minutes? Is hemisphere indicated by
+sign or by letter, and, if the latter, where does it appear?)
+
+In deep-sea work, a ship might steam for 6 hours between CTD stations, so the
+ship-time cost of each CTD file can be several thousand dollars.  Surely it
+is not unreasonable for an analyst to take a minute to glance at the CNV
+file, to ascertain whether \code{read.ctd.sbe()} inferred correct values.
+
+\code{\link[=oceSetMetadata]{oceSetMetadata()}} is helpful for correcting problems with individual files,
+but if many files are systematically problematic, say for a whole cruise or
+perhaps even for a whole institution, then it might sense to set up a wrapper
+function to correct deficiencies in the CNV files. As an example, the
+following handles dates specified in a particular nonstandard way.\preformatted{read.ctd.sbe.wrapper <- function(cnv)
 \{
     lines <- readLines(cnv)
     # Change month-day-year to year-month-day, so as.POSIXct() can parse it.
@@ -145,18 +174,17 @@ specified in a nonstandard way.\preformatted{read.ctd.sbe.wrapper <- function(cn
 \section{A note on sampling times}{
 
 
-Until November of 2018,
-there was a possibility for great confusion in the storage
-of the time entries within the \code{data} slot, because \code{read.ctd.sbe}
-renamed each of the ten variants of time (see reference 2 for a list)
-as \code{"time"} in the \code{data} slot of the returned value.
-For CTD profiles, this was perhaps not a great problem, but it could
-lead to great confusion for moored data. Therefore, a change to \code{read.ctd.sbe} was
-made, so that it would Seabird times, using the \code{start_time} entry in
-the CNV file header (which is stored as \code{startTime} in the object
-\code{metadata} slot), along with specific time columns as follows
-(and as documented, with uneven clarity, in the
-SBE Seasoft data processing manual, revision 7.26.8, Appendix VI):
+Until November of 2018, there was a possibility for great confusion in the
+storage of the time entries within the \code{data} slot, because \code{read.ctd.sbe}
+renamed each of the ten variants of time (see reference 2 for a list) as
+\code{"time"} in the \code{data} slot of the returned value.  For CTD profiles, this
+was perhaps not a great problem, but it could lead to significant confusion
+for moored data. Therefore, a change to \code{read.ctd.sbe} was made, so that it
+would Seabird times, using the \code{start_time} entry in the CNV file header
+(which is stored as \code{startTime} in the object \code{metadata} slot), along with
+specific time columns as follows (and as documented, with uneven clarity, in
+the SBE Seasoft data processing manual, revision 7.26.8, Appendix VI):
+
 \tabular{rl}{
 \strong{Item} \tab \strong{Meaning}\cr
 \code{timeS}   \tab seconds elapsed since \code{start_time}\cr
@@ -176,6 +204,7 @@ be improved.
 }
 
 \section{A note on scales}{
+
 
 The user might encounter data files with a variety of scales for temperature and
 salinity. Oce keeps track of these scales in the units it sets up for the stored

@@ -17,8 +17,8 @@ read.ctd.odv(
 )
 }
 \arguments{
-\item{file}{a connection or a character string giving the name of the file to
-load.  For \code{\link[=read.ctd.sbe]{read.ctd.sbe()}} and \code{\link[=read.ctd.woce]{read.ctd.woce()}}, this may be a
+\item{file}{either a connection or a character value naming a file.
+For \code{\link[=read.ctd.sbe]{read.ctd.sbe()}} and \code{\link[=read.ctd.woce]{read.ctd.woce()}}, this may be a
 wildcard (e.g. \code{"*.cnv"} or \code{"*.csv"}) in which case the return
 value is a vector containing CTD objects created by reading the files from
 \code{\link[=list.files]{list.files()}} with \code{pattern} set to the specified wildcard
@@ -78,10 +78,7 @@ better for normal calls by a user.}
 \item{...}{additional arguments, passed to called routines.}
 }
 \value{
-a \linkS4class{ctd} object. The details of the contents
-depend on the source file. The \code{metadata} slot is particularly
-variable across data formats, because the meta-information provided
-in those formats varies so widely.
+This function returns a \linkS4class{ctd} object.
 }
 \description{
 Read an ODV-type CTD File

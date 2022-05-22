@@ -197,12 +197,12 @@
 #'
 #' @param h The header line.
 #'
-#' @param columns Optional list containing name correspondances, as described for
+#' @param columns Optional list containing name correspondences, as described for
 #' [read.ctd.sbe()].
 #'
 #' @template debugTemplate
 #'
-#' @return [read.ctd.sbe()] returns a list containing `name` (the oce name), `nameOriginal` (the SBE name) and `unit`.
+## NOTE: @return is handled in readCtdTemplate
 #'
 #' @author Dan Kelley
 #'
@@ -691,22 +691,57 @@ cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
 #'
 #' @section A note on hand-entered headers:
 #'
-#' CNV files may have a section that contains human-entered information. This is detected by
-#' `read.ctd.sbe()` as lines that begin with two asterisks. Decoding this
-#' information can be tricky, because humans have many ways of writing things.
-#' For example, `read.ctd.sbe()` tries to interpret a "`** Date:`" using
-#' [as.POSIXct()], saving the result as `date` in the
-#' `metadata` slot of the returned object.
-#' This stores NA if the date is in a format that [as.POSIXct()] does not parse.
-#' Similar problems can arise with location information.
-#' Correcting problems with individual files
-#' may be done with [oceSetMetadata()], but if many files are
-#' systematically problematic, and if there is no need to trace the change
-#' in the `metadata` slot of the returned object
-#' (which [oceSetMetadata()] does), then it might sense to set up
-#' a wrapper function. As an example, following handles dates
-#' specified in a nonstandard way.
+#' CNV files may have a section that contains human-entered information. This is
+#' detected by `read.ctd.sbe()` as lines that begin with two asterisks. Decoding
+#' this information can be tricky, because humans have many ways of writing
+#' things.
 #'
+#' For example, consider the `date` item in the `metadata` slot of the returned
+#' value.  `read.ctd.sbe()` infers this value in one of two ways.  First, if
+#' there is a header line staring with
+#'```
+#'* NMEA UTC (Time) =
+#'```
+#' then that value is decoded and used for `date`.  This header line, preceded
+#' by a single asterisk, is not human-entered, and so there is reason to hope
+#' for a uniform format that can be handled by `read.ctd.sbe()`.  However, if
+#' there is no NMEA header line, then `read.ctd.sbe()` will look for a line
+#' starting with
+#'```
+#'** Date:
+#'```
+#' which was human-entered. This is the second choice, because humans write
+#' dates in a bewildering variety of ways, and [as.POSIXct()], which
+#' `read.ctd.sbe` uses to parse the date, cannot handle them all. If there is a
+#' problem, `read.ctd.sbe()` issues a warning and stores NA in `date`.
+#'
+#' A similar error-detection procedure is used for human-entered location data,
+#' which appear in lines starting with either
+#'```
+#'** Longitude:
+#'```
+#' or
+#'```
+#'** Latitude:
+#'```
+#' which often take forms that `read.ctd.sbe()` cannot parse.
+#'
+#' It is important to note that, even if no warnings are issued, there is a
+#' reasonably high chance that human-entered data will be scanned incorrectly.
+#' (Did the operator remember to indicate the hemisphere? Does 123.456 indicate
+#' decimal degrees, or 123 degrees plus 45.6 minutes? Is hemisphere indicated by
+#' sign or by letter, and, if the latter, where does it appear?)
+#'
+#' In deep-sea work, a ship might steam for 6 hours between CTD stations, so the
+#' ship-time cost of each CTD file can be several thousand dollars.  Surely it
+#' is not unreasonable for an analyst to take a minute to glance at the CNV
+#' file, to ascertain whether `read.ctd.sbe()` inferred correct values.
+#'
+#' [oceSetMetadata()] is helpful for correcting problems with individual files,
+#' but if many files are systematically problematic, say for a whole cruise or
+#' perhaps even for a whole institution, then it might sense to set up a wrapper
+#' function to correct deficiencies in the CNV files. As an example, the
+#' following handles dates specified in a particular nonstandard way.
 #'```
 #' read.ctd.sbe.wrapper <- function(cnv)
 #' {
@@ -719,18 +754,17 @@ cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
 #'
 #' @section A note on sampling times:
 #'
-#' Until November of 2018,
-#' there was a possibility for great confusion in the storage
-#' of the time entries within the `data` slot, because `read.ctd.sbe`
-#' renamed each of the ten variants of time (see reference 2 for a list)
-#' as `"time"` in the `data` slot of the returned value.
-#' For CTD profiles, this was perhaps not a great problem, but it could
-#' lead to great confusion for moored data. Therefore, a change to `read.ctd.sbe` was
-#' made, so that it would Seabird times, using the `start_time` entry in
-#' the CNV file header (which is stored as `startTime` in the object
-#' `metadata` slot), along with specific time columns as follows
-#' (and as documented, with uneven clarity, in the
-#' SBE Seasoft data processing manual, revision 7.26.8, Appendix VI):
+#' Until November of 2018, there was a possibility for great confusion in the
+#' storage of the time entries within the `data` slot, because `read.ctd.sbe`
+#' renamed each of the ten variants of time (see reference 2 for a list) as
+#' `"time"` in the `data` slot of the returned value.  For CTD profiles, this
+#' was perhaps not a great problem, but it could lead to significant confusion
+#' for moored data. Therefore, a change to `read.ctd.sbe` was made, so that it
+#' would Seabird times, using the `start_time` entry in the CNV file header
+#' (which is stored as `startTime` in the object `metadata` slot), along with
+#' specific time columns as follows (and as documented, with uneven clarity, in
+#' the SBE Seasoft data processing manual, revision 7.26.8, Appendix VI):
+#'
 #' \tabular{rl}{
 #' **Item** \tab **Meaning**\cr
 #' `timeS`   \tab seconds elapsed since `start_time`\cr
@@ -749,6 +783,7 @@ cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
 #' be improved.
 #'
 #' @section A note on scales:
+#'
 #' The user might encounter data files with a variety of scales for temperature and
 #' salinity. Oce keeps track of these scales in the units it sets up for the stored
 #' variables. For example, if `A` is a CTD object, then
@@ -1348,7 +1383,7 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
     res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
 
     if (("temperature" %in% names(res@metadata$units)) && res@metadata$units$temperature$scale == "IPTS-68") {
-        warning("this CNV file has temperature in the IPTS-68 scale, and this is stored in the object; note that [[\"temperature\"]] and the sw* functions will convert to the modern ITS-90 value")
+        warning("this CNV file has temperature in the IPTS-68 scale and this is stored in the object, but note that [[\"temperature\"]] and the sw* functions convert the numbers to ITS-90 values")
     }
     # Note: previously, at this spot, there was code to switch from the IPTS-68 scale
     # to the ITS-90 scale. The old-scale data were saved in a column named

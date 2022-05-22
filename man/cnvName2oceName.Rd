@@ -9,7 +9,7 @@ cnvName2oceName(h, columns = NULL, debug = getOption("oceDebug"))
 \arguments{
 \item{h}{The header line.}
 
-\item{columns}{Optional list containing name correspondances, as described for
+\item{columns}{Optional list containing name correspondences, as described for
 \code{\link[=read.ctd.sbe]{read.ctd.sbe()}}.}
 
 \item{debug}{an integer specifying whether debugging information is
@@ -19,9 +19,6 @@ turns off the printing, while higher values suggest that more information
 be printed. If one function calls another, it usually reduces the value of
 \code{debug} first, so that a user can often obtain deeper debugging
 by specifying higher \code{debug} values.}
-}
-\value{
-\code{\link[=read.ctd.sbe]{read.ctd.sbe()}} returns a list containing \code{name} (the oce name), \code{nameOriginal} (the SBE name) and \code{unit}.
 }
 \description{
 This function is used by \code{\link[=read.ctd.sbe]{read.ctd.sbe()}} to infer data names
