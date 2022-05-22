@@ -1109,7 +1109,7 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
             #> look <- gsub("[ ]*", "", look, ignore.case=TRUE)
             #> oceDebug(debug, "    pruned '", aline, "' to '", look, "'\n", sep="")
             # Remove any non-numeric (e.g. sometimes a unit is here)
-            look <- gsub("[a-zA-Z]", "", look)
+            look <- trimws(gsub("[-a-zA-Z]", "", look))
             waterDepth<- as.numeric(look)
             oceDebug(debug, "inferred waterDepth=", waterDepth, "[m] from '", aline, "'\n", sep="")
         }
