@@ -28,11 +28,13 @@ pattern.}
 \item{columns}{an optional \link{list} that can be used to convert unrecognized
 data names to resultant variable names.  This is used only by
 \code{\link[=read.ctd.sbe]{read.ctd.sbe()}} and \code{\link[=read.ctd.odf]{read.ctd.odf()}}. For example,
-if a data file named salinity as \code{"SAL"}, then using\preformatted{d <- read.ctd(f, columns=list(
+if a data file named salinity as \code{"SAL"}, then using
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{d <- read.ctd(f, columns=list(
     salinity=list(name="SAL",
                   unit=list(unit=expression(),
                   scale="PSS-78"))))
-}
+}\if{html}{\out{</div>}}
 
 would assign the \code{"SAL"} column to the \code{salinity} entry in the data
 slot of the CTD object returned by the \verb{read.*} function.}
@@ -122,15 +124,19 @@ things.
 
 For example, consider the \code{date} item in the \code{metadata} slot of the returned
 value.  \code{read.ctd.sbe()} infers this value in one of two ways.  First, if
-there is a header line staring with\preformatted{* NMEA UTC (Time) =
-}
+there is a header line staring with
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{* NMEA UTC (Time) =
+}\if{html}{\out{</div>}}
 
 then that value is decoded and used for \code{date}.  This header line, preceded
 by a single asterisk, is not human-entered, and so there is reason to hope
 for a uniform format that can be handled by \code{read.ctd.sbe()}.  However, if
 there is no NMEA header line, then \code{read.ctd.sbe()} will look for a line
-starting with\preformatted{** Date:
-}
+starting with
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{** Date:
+}\if{html}{\out{</div>}}
 
 which was human-entered. This is the second choice, because humans write
 dates in a bewildering variety of ways, and \code{\link[=as.POSIXct]{as.POSIXct()}}, which
@@ -138,11 +144,15 @@ dates in a bewildering variety of ways, and \code{\link[=as.POSIXct]{as.POSIXct(
 problem, \code{read.ctd.sbe()} issues a warning and stores NA in \code{date}.
 
 A similar error-detection procedure is used for human-entered location data,
-which appear in lines starting with either\preformatted{** Longitude:
-}
+which appear in lines starting with either
 
-or\preformatted{** Latitude:
-}
+\if{html}{\out{<div class="sourceCode">}}\preformatted{** Longitude:
+}\if{html}{\out{</div>}}
+
+or
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{** Latitude:
+}\if{html}{\out{</div>}}
 
 which often take forms that \code{read.ctd.sbe()} cannot parse.
 
@@ -161,14 +171,16 @@ file, to ascertain whether \code{read.ctd.sbe()} inferred correct values.
 but if many files are systematically problematic, say for a whole cruise or
 perhaps even for a whole institution, then it might sense to set up a wrapper
 function to correct deficiencies in the CNV files. As an example, the
-following handles dates specified in a particular nonstandard way.\preformatted{read.ctd.sbe.wrapper <- function(cnv)
+following handles dates specified in a particular nonstandard way.
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{read.ctd.sbe.wrapper <- function(cnv)
 \{
     lines <- readLines(cnv)
     # Change month-day-year to year-month-day, so as.POSIXct() can parse it.
     lines <- gsub("^\\\\*\\\\* Date: (.*)-(.*)-(.*)", "** Date: \\\\3-\\\\1-\\\\2", lines)
     read.ctd.sbe(textConnection(lines))
 \}
-}
+}\if{html}{\out{</div>}}
 }
 
 \section{A note on sampling times}{

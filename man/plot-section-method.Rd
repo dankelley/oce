@@ -251,7 +251,9 @@ to be the location, in arbitrary units, along the x-axis of labels specified by
 
 The following examples were once part of the \dQuote{Examples}
 section, but were moved here in May 2022, to reduce the build-check
-time for CRAN submission.\preformatted{library(oce)
+time for CRAN submission.
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{library(oce)
 data(section)
 GS <- subset(section, 113<=stationId&stationId<=129)
 GSg <- sectionGrid(GS, p=seq(0, 2000, 100))
@@ -306,7 +308,7 @@ plot(GSg, which="salinity", ztype="image",
     zlim=c(35, 37.5),
     zbreaks=seq(35, 37.5, 0.25),
     zcol=oceColorsTurbo)
-}
+}\if{html}{\out{</div>}}
 }
 
 \examples{

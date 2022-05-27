@@ -43,11 +43,13 @@ and control is dispatched to \code{\link[=read.ctd.odv]{read.ctd.odv()}}.}
 \item{columns}{an optional \link{list} that can be used to convert unrecognized
 data names to resultant variable names.  This is used only by
 \code{\link[=read.ctd.sbe]{read.ctd.sbe()}} and \code{\link[=read.ctd.odf]{read.ctd.odf()}}. For example,
-if a data file named salinity as \code{"SAL"}, then using\preformatted{d <- read.ctd(f, columns=list(
+if a data file named salinity as \code{"SAL"}, then using
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{d <- read.ctd(f, columns=list(
     salinity=list(name="SAL",
                   unit=list(unit=expression(),
                   scale="PSS-78"))))
-}
+}\if{html}{\out{</div>}}
 
 would assign the \code{"SAL"} column to the \code{salinity} entry in the data
 slot of the CTD object returned by the \verb{read.*} function.}

@@ -28,10 +28,12 @@ the present function is based on inspection of a suite of CNV files
 available to the \code{oce} developers.
 }
 \details{
-A few sample header lines that have been encountered are:\preformatted{# name 4 = t068: temperature, IPTS-68 [deg C]
+A few sample header lines that have been encountered are:
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{# name 4 = t068: temperature, IPTS-68 [deg C]
 # name 3 = t090C: Temperature [ITS-90, deg C]
 # name 4 = t190C: Temperature, 2 [ITS-90, deg C]
-}
+}\if{html}{\out{</div>}}
 
 Examination of several CNV files suggests that it is best to
 try to infer the name from the characters between the "\code{=}"
