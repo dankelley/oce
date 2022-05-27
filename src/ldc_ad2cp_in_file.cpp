@@ -213,7 +213,7 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, IntegerVector from, IntegerV
   unsigned int *id_buf = (unsigned int*)R_Calloc((size_t)nchunk, unsigned int);
   int early_EOF = 0;
   int reset_cindex = 0; // set to 1 if we skipped to find a new header start, after a bad checksum
-  while (chunk < to_value) { // FIXME: use whole file here
+  while (chunk < to_value && cindex < fileSize) { // FIXME: use whole file here
     if (checksum_failures > 100)
       ::Rf_error("more than 100 checksum errors");
     if (chunk > nchunk - 1) {
@@ -229,8 +229,7 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, IntegerVector from, IntegerV
     size_t bytes_read;
     // read/check sync byte
     if (1 != fread(&header.sync, 1, 1, fp))
-      ::Rf_error("cannot read header.sync at cindex=%ld (%7.4f%% through file)\n",
-          cindex, 100.0*cindex/fileSize);
+      ::Rf_error("cannot read header.sync at cindex=%ld of %ld byte file\n", cindex, fileSize);
     if (header.sync != SYNC)
       ::Rf_error("expected header.sync to be 0x%02x but it was 0x%02x at cindex=%ld (%7.4f%% through file) ... skipping to next 0x%02x chacter...\n", SYNC, header.sync, cindex, 100.0*cindex/fileSize, SYNC);
     if (1 != fread(&header.header_size, 1, 1, fp))

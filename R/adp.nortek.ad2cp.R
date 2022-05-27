@@ -692,6 +692,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, tz=getOption("oceTz"),
     }
 
     if (length(p$bottomTrack) > 0) {   # key=0x17
+        message("DEVELOPER NOTE: exporting 'DAN' for ad2cp debugging");DAN<<-list(p=p,version=version)
         if (any(version[p$bottomTrack] != 3))
             stop("can only decode 'bottomTrack' data records that are in 'version 3' format")
         nbeamsBottomTrack <- nbeams[p$bottomTrack[1]]
