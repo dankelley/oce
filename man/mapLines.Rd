@@ -7,9 +7,9 @@
 mapLines(longitude, latitude, greatCircle = FALSE, ...)
 }
 \arguments{
-\item{longitude}{vector of longitudes of points to be plotted, or an
+\item{longitude}{numeric vector of longitudes of points to be plotted, or an
 object from which longitude and latitude can be inferred (e.g. a coastline
-file, or the return value from \code{\link{mapLocator}}), in which case the
+file, or the return value from \code{\link[=mapLocator]{mapLocator()}}), in which case the
 following two arguments are ignored.}
 
 \item{latitude}{vector of latitudes of points to be plotted.}
@@ -17,43 +17,55 @@ following two arguments are ignored.}
 \item{greatCircle}{a logical value indicating whether to render line
 segments as great circles.  (Ignored.)}
 
-\item{\dots}{optional arguments passed to \code{\link{lines}}.}
+\item{\dots}{optional arguments passed to \code{\link[=lines]{lines()}}.}
 }
 \description{
-Plot lines on an existing map
-}
-\details{
-Adds lines to an existing map, by analogy to \code{\link{lines}}.
+Plot lines on an existing map, by analogy to \code{\link[=lines]{lines()}}.
 }
 \examples{
-\dontrun{
-library(oce)
-data(coastlineWorld)
-mapPlot(coastlineWorld, type='l',
-        longitudelim=c(-80, 10), latitudelim=c(0, 120),
-        projection="+proj=ortho +lon_0=-40")
-lon <- c(-63.5744, 0.1062)             # Halifax CA to London UK
-lat <- c(44.6479, 51.5171)
-mapPoints(lon, lat, col='red')
-mapLines(lon, lat, col='red')
+\donttest{
+if (utils::packageVersion("sf") != "0.9.8") {
+    # sf version 0.9-8 has a problem with this projection
+    library(oce)
+    data(coastlineWorld)
+    mapPlot(coastlineWorld, type='l',
+            longitudelim=c(-80, 10), latitudelim=c(0, 120),
+            projection="+proj=ortho +lon_0=-40")
+    lon <- c(-63.5744, 0.1062)             # Halifax CA to London UK
+    lat <- c(44.6479, 51.5171)
+    mapPoints(lon, lat, col='red')
+    mapLines(lon, lat, col='red')
+}
 }
 
 }
 \seealso{
-A map must first have been created with \code{\link{mapPlot}}.
+A map must first have been created with \code{\link[=mapPlot]{mapPlot()}}.
 
-Other functions related to maps: \code{\link{lonlat2map}},
-  \code{\link{lonlat2utm}}, \code{\link{map2lonlat}},
-  \code{\link{mapArrows}}, \code{\link{mapAxis}},
-  \code{\link{mapContour}},
-  \code{\link{mapDirectionField}}, \code{\link{mapGrid}},
-  \code{\link{mapImage}}, \code{\link{mapLocator}},
-  \code{\link{mapLongitudeLatitudeXY}},
-  \code{\link{mapPlot}}, \code{\link{mapPoints}},
-  \code{\link{mapPolygon}}, \code{\link{mapScalebar}},
-  \code{\link{mapText}}, \code{\link{mapTissot}},
-  \code{\link{oceCRS}}, \code{\link{shiftLongitude}},
-  \code{\link{usrLonLat}}, \code{\link{utm2lonlat}}
+Other functions related to maps: 
+\code{\link{formatPosition}()},
+\code{\link{lonlat2map}()},
+\code{\link{lonlat2utm}()},
+\code{\link{map2lonlat}()},
+\code{\link{mapArrows}()},
+\code{\link{mapAxis}()},
+\code{\link{mapContour}()},
+\code{\link{mapCoordinateSystem}()},
+\code{\link{mapDirectionField}()},
+\code{\link{mapGrid}()},
+\code{\link{mapImage}()},
+\code{\link{mapLocator}()},
+\code{\link{mapLongitudeLatitudeXY}()},
+\code{\link{mapPlot}()},
+\code{\link{mapPoints}()},
+\code{\link{mapPolygon}()},
+\code{\link{mapScalebar}()},
+\code{\link{mapText}()},
+\code{\link{mapTissot}()},
+\code{\link{oceCRS}()},
+\code{\link{shiftLongitude}()},
+\code{\link{usrLonLat}()},
+\code{\link{utm2lonlat}()}
 }
 \author{
 Dan Kelley

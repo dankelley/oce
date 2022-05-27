@@ -6,45 +6,101 @@
 \title{Data that define some color palettes}
 \source{
 The data come from the matplotlib site
-\url{https://github.com/matplotlib/matplotlib}.
+\verb{https://github.com/matplotlib/matplotlib}.
 }
 \description{
 The \code{ocecolors} dataset is a list containing color-schemes, used
-by \code{\link{oceColorsClosure}} to create functions such as
-\code{\link{oceColorsViridis}}.
+by \code{\link[=oceColorsClosure]{oceColorsClosure()}} to create functions such as
+\code{\link[=oceColorsViridis]{oceColorsViridis()}}.
+}
+\references{
+The following references provide information on choosing
+colour schemes, that are suitable for viewers who have
+colour deficiencies.
+
+Light, Adam, and Patrick J. Bartlein. "The End of the Rainbow? Color
+Schemes for Improved Data Graphics." \emph{Eos, Transactions American Geophysical
+Union} 85, no. 40 (2004): 385.
+DOI: 10.1029/2004EO400002
+
+Stephenson, David B. "Comment on 'Color Schemes for Improved Data
+Graphics', by A Light and P.J. Bartlein." \emph{Eos, Transactions American
+Geophysical Union} 86, no.  20 (2005): 196.
+DOI: 10.1029/2005EO200005
+
+Light, Adam, and Patrick J. Bartlein. "Reply to 'Comment on Color
+Schemes for Improved Data Graphics,' by A. Light and P.J.  Bartlein'."
+\emph{Eos, Transactions American Geophysical Union} 86, no. 20 (2005): 196–196.
+DOI: 10.1029/2005EO200006
+
+The following references provide information on choosing
+colour schemes, that are suitable for viewers who have
+colour deficiencies.
+
+Light, Adam, and Patrick J. Bartlein. "The End of the Rainbow? Color
+Schemes for Improved Data Graphics." \emph{Eos, Transactions American Geophysical
+Union} 85, no. 40 (2004): 385.
+DOI: 10.1029/2004EO400002
+
+Stephenson, David B. "Comment on 'Color Schemes for Improved Data
+Graphics', by A Light and P.J. Bartlein." \emph{Eos, Transactions American
+Geophysical Union} 86, no.  20 (2005): 196.
+DOI: 10.1029/2005EO200005
+
+Light, Adam, and Patrick J. Bartlein. "Reply to 'Comment on Color
+Schemes for Improved Data Graphics,' by A. Light and P.J.  Bartlein'."
+\emph{Eos, Transactions American Geophysical Union} 86, no. 20 (2005): 196–196.
+DOI: 10.1029/2005EO200006
 }
 \seealso{
-Other datasets provided with \code{oce}: \code{\link{adp}},
-  \code{\link{adv}}, \code{\link{argo}}, \code{\link{cm}},
-  \code{\link{coastlineWorld}}, \code{\link{ctdRaw}},
-  \code{\link{ctd}}, \code{\link{echosounder}},
-  \code{\link{landsat}}, \code{\link{lisst}},
-  \code{\link{lobo}}, \code{\link{met}}, \code{\link{rsk}},
-  \code{\link{sealevelTuktoyaktuk}},
-  \code{\link{sealevel}}, \code{\link{section}},
-  \code{\link{topoWorld}}, \code{\link{wind}}
+Other datasets provided with oce: 
+\code{\link{adp}},
+\code{\link{adv}},
+\code{\link{amsr}},
+\code{\link{argo}},
+\code{\link{cm}},
+\code{\link{coastlineWorld}},
+\code{\link{ctdRaw}},
+\code{\link{ctd}},
+\code{\link{echosounder}},
+\code{\link{landsat}},
+\code{\link{lisst}},
+\code{\link{lobo}},
+\code{\link{met}},
+\code{\link{rsk}},
+\code{\link{sealevelTuktoyaktuk}},
+\code{\link{sealevel}},
+\code{\link{section}},
+\code{\link{topoWorld}},
+\code{\link{wind}},
+\code{\link{xbt}}
 
-Other things related to colors: \code{\link{colormap}},
-  \code{\link{oceColors9B}}, \code{\link{oceColorsCDOM}},
-  \code{\link{oceColorsChlorophyll}},
-  \code{\link{oceColorsClosure}},
-  \code{\link{oceColorsDensity}},
-  \code{\link{oceColorsFreesurface}},
-  \code{\link{oceColorsGebco}}, \code{\link{oceColorsJet}},
-  \code{\link{oceColorsOxygen}},
-  \code{\link{oceColorsPAR}},
-  \code{\link{oceColorsPalette}},
-  \code{\link{oceColorsPhase}},
-  \code{\link{oceColorsSalinity}},
-  \code{\link{oceColorsTemperature}},
-  \code{\link{oceColorsTurbidity}},
-  \code{\link{oceColorsTwo}},
-  \code{\link{oceColorsVelocity}},
-  \code{\link{oceColorsViridis}},
-  \code{\link{oceColorsVorticity}}
+Other things related to colors: 
+\code{\link{colormapGMT}()},
+\code{\link{colormap}()},
+\code{\link{oceColors9B}()},
+\code{\link{oceColorsCDOM}()},
+\code{\link{oceColorsChlorophyll}()},
+\code{\link{oceColorsClosure}()},
+\code{\link{oceColorsDensity}()},
+\code{\link{oceColorsFreesurface}()},
+\code{\link{oceColorsGebco}()},
+\code{\link{oceColorsJet}()},
+\code{\link{oceColorsOxygen}()},
+\code{\link{oceColorsPAR}()},
+\code{\link{oceColorsPalette}()},
+\code{\link{oceColorsPhase}()},
+\code{\link{oceColorsSalinity}()},
+\code{\link{oceColorsTemperature}()},
+\code{\link{oceColorsTurbidity}()},
+\code{\link{oceColorsTurbo}()},
+\code{\link{oceColorsTwo}()},
+\code{\link{oceColorsVelocity}()},
+\code{\link{oceColorsViridis}()},
+\code{\link{oceColorsVorticity}()}
 }
 \author{
 Authored by matplotlib contributers, packaged (with license permission) in oce by Dan Kelley
 }
-\concept{datasets provided with \code{oce}}
+\concept{datasets provided with oce}
 \concept{things related to colors}

@@ -7,15 +7,15 @@
 mapCoordinateSystem(longitude, latitude, L = 100, phi = 0, ...)
 }
 \arguments{
-\item{longitude}{numeric value of longitude in degrees.}
+\item{longitude}{numeric vector of longitudes in degrees.}
 
-\item{latitude}{numeric value of latitude in degrees.}
+\item{latitude}{numeric vector of latitudes in degrees.}
 
 \item{L}{axis length in km.}
 
 \item{phi}{angle, in degrees counterclockwise, that the "x" axis makes to a line of latitude.}
 
-\item{...}{plotting arguments, passed to \code{\link{mapArrows}};
+\item{...}{plotting arguments, passed to \code{\link[=mapArrows]{mapArrows()}};
 see \dQuote{Examples} for how to control the arrow-head size.}
 }
 \description{
@@ -30,15 +30,45 @@ works if the lines of constant latitude are horizontal on the plot.
 \examples{
 \dontrun{
 library(oce)
-data(coastlineWorldFine, package='ocedata')
-HfxLon <- -63.5752
-HfxLat <- 44.6488
-mapPlot(coastlineWorldFine, proj='+proj=merc',
-        longitudelim=HfxLon+c(-2,2), latitudelim=HfxLat+c(-2,2),
-        col='lightgrey')
-mapCoordinateSystem(HfxLon, HfxLat, phi=45, length=0.05)
+if (requireNamespace("ocedata", quietly=TRUE)) {
+    data(coastlineWorldFine, package='ocedata')
+    HfxLon <- -63.5752
+    HfxLat <- 44.6488
+    mapPlot(coastlineWorldFine, proj='+proj=merc',
+            longitudelim=HfxLon+c(-2,2), latitudelim=HfxLat+c(-2,2),
+            col='lightgrey')
+    mapCoordinateSystem(HfxLon, HfxLat, phi=45, length=0.05)
+   }
 }
+
+}
+\seealso{
+Other functions related to maps: 
+\code{\link{formatPosition}()},
+\code{\link{lonlat2map}()},
+\code{\link{lonlat2utm}()},
+\code{\link{map2lonlat}()},
+\code{\link{mapArrows}()},
+\code{\link{mapAxis}()},
+\code{\link{mapContour}()},
+\code{\link{mapDirectionField}()},
+\code{\link{mapGrid}()},
+\code{\link{mapImage}()},
+\code{\link{mapLines}()},
+\code{\link{mapLocator}()},
+\code{\link{mapLongitudeLatitudeXY}()},
+\code{\link{mapPlot}()},
+\code{\link{mapPoints}()},
+\code{\link{mapPolygon}()},
+\code{\link{mapScalebar}()},
+\code{\link{mapText}()},
+\code{\link{mapTissot}()},
+\code{\link{oceCRS}()},
+\code{\link{shiftLongitude}()},
+\code{\link{usrLonLat}()},
+\code{\link{utm2lonlat}()}
 }
 \author{
 Chantelle Layton
 }
+\concept{functions related to maps}

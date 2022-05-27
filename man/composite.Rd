@@ -7,22 +7,22 @@
 composite(object, ...)
 }
 \arguments{
-\item{object}{Either a \code{\link{list}} of \link{oce-class} objects, in
-which case this is the only argument, or a single \link{oce-class} object,
+\item{object}{either a \link{list} of \linkS4class{oce} objects, in
+which case this is the only argument, or a single \linkS4class{oce} object,
 in which case at least one other argument (an object of the same size)
 must be supplied.}
 
 \item{...}{Ignored, if \code{object} is a list. Otherwise, one or more
-\code{oce-class} objects of the same sub-class as the first argument.}
+\linkS4class{oce} objects of the same sub-class as the first argument.}
 }
 \description{
-Items within the \code{data} slots of the
 objects that are supplied as arguments are averaged in a way that
 makes sense for the object class, i.e. taking into account
 the particular bad-data codes of that particular class.
 }
 \seealso{
-Other functions that create composite objects: \code{\link{composite,amsr-method}},
-  \code{\link{composite,list-method}}
+Other functions that create composite objects: 
+\code{\link{composite,amsr-method}},
+\code{\link{composite,list-method}}
 }
 \concept{functions that create composite objects}

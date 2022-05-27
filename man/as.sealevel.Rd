@@ -4,11 +4,23 @@
 \alias{as.sealevel}
 \title{Coerce Data Into a Sealevel Object}
 \usage{
-as.sealevel(elevation, time, header = NULL, stationNumber = NA,
-  stationVersion = NA, stationName = NULL, region = NULL,
-  year = NA, longitude = NA, latitude = NA, GMTOffset = NA,
-  decimationMethod = NA, referenceOffset = NA, referenceCode = NA,
-  deltat)
+as.sealevel(
+  elevation,
+  time,
+  header = NULL,
+  stationNumber = NA,
+  stationVersion = NA,
+  stationName = NULL,
+  region = NULL,
+  year = NA,
+  longitude = NA,
+  latitude = NA,
+  GMTOffset = NA,
+  decimationMethod = NA,
+  referenceOffset = NA,
+  referenceCode = NA,
+  deltat
+)
 }
 \arguments{
 \item{elevation}{a list of sea-level heights in metres, in an hourly
@@ -49,20 +61,19 @@ other method.}
 \item{referenceCode}{?}
 
 \item{deltat}{optional interval between samples, in hours (as for the
-\code{\link{ts}} timeseries function). If this is not provided, and \code{t}
+\code{\link[=ts]{ts()}} timeseries function). If this is not provided, and \code{t}
 can be understood as a time, then the difference between the first two times
 is used.  If this is not provided, and \code{t} cannot be understood as a
 time, then 1 hour is assumed.}
 }
 \value{
-An object of \code{\link[base]{class}} \code{"sealevel"} (for
-details, see \code{\link{read.sealevel}}).
+A \linkS4class{sealevel} object (for details, see \code{\link[=read.sealevel]{read.sealevel()}}).
 }
 \description{
 Coerces a dataset (minimally, a sequence of times and heights) into a
 sealevel dataset.
 The arguments are based on the standard data format, as were described in a
-file formerly available at [1].
+file formerly available at reference 1.
 }
 \examples{
 library(oce)
@@ -80,25 +91,26 @@ sl <- as.sealevel(elevation, time)
 summary(sl)
 }
 \references{
-\code{http://ilikai.soest.hawaii.edu/rqds/hourly.fmt} (this link
+\verb{http://ilikai.soest.hawaii.edu/rqds/hourly.fmt} (this link
 worked for years but failed at least temporarily on December 4, 2016).
 }
 \seealso{
-The documentation for \code{\link{sealevel-class}} explains the
+The documentation for the \linkS4class{sealevel} class explains the
 structure of sealevel objects, and also outlines the other functions dealing
 with them.
 
-Other things related to \code{sealevel} data: \code{\link{[[,sealevel-method}},
-  \code{\link{[[<-,sealevel-method}},
-  \code{\link{plot,sealevel-method}},
-  \code{\link{read.sealevel}},
-  \code{\link{sealevel-class}},
-  \code{\link{sealevelTuktoyaktuk}},
-  \code{\link{sealevel}},
-  \code{\link{subset,sealevel-method}},
-  \code{\link{summary,sealevel-method}}
+Other things related to sealevel data: 
+\code{\link{[[,sealevel-method}},
+\code{\link{[[<-,sealevel-method}},
+\code{\link{plot,sealevel-method}},
+\code{\link{read.sealevel}()},
+\code{\link{sealevel-class}},
+\code{\link{sealevelTuktoyaktuk}},
+\code{\link{sealevel}},
+\code{\link{subset,sealevel-method}},
+\code{\link{summary,sealevel-method}}
 }
 \author{
 Dan Kelley
 }
-\concept{things related to \code{sealevel} data}
+\concept{things related to sealevel data}

@@ -12,21 +12,18 @@ longitude and latitude can be inferred in which case the following two
 arguments are ignored.  This objects that are possible include those of type
 \code{coastline}.}
 
-\item{latitude}{Latitudes of points to be plotted.}
+\item{latitude}{numeric vector of latitudes of points to be plotted.}
 
 \item{debug}{A flag that turns on debugging.  Set to 1 to get a moderate amount
 of debugging information, or to 2 to get more.}
 
-\item{...}{Optional arguments passed to \code{\link{points}}.}
+\item{...}{Optional arguments passed to \code{\link[=points]{points()}}.}
 }
 \description{
-Plot points on an existing map.
-}
-\details{
-Adds points to an existing map, by analogy to \code{\link{points}}.
+Plot points on an existing map, by analogy to \code{\link[=points]{points()}}.
 }
 \examples{
-\dontrun{
+\donttest{
 library(oce)
 data(coastlineWorld)
 mapPlot(coastlineWorld, longitudelim=c(-80, 0), latitudelim=c(20, 50),
@@ -37,23 +34,34 @@ mapPoints(section)
 
 }
 \seealso{
-A map must first have been created with \code{\link{mapPlot}}.
+A map must first have been created with \code{\link[=mapPlot]{mapPlot()}}.
 
-A map must first have been created with \code{\link{mapPlot}}.
+A map must first have been created with \code{\link[=mapPlot]{mapPlot()}}.
 
-Other functions related to maps: \code{\link{lonlat2map}},
-  \code{\link{lonlat2utm}}, \code{\link{map2lonlat}},
-  \code{\link{mapArrows}}, \code{\link{mapAxis}},
-  \code{\link{mapContour}},
-  \code{\link{mapDirectionField}}, \code{\link{mapGrid}},
-  \code{\link{mapImage}}, \code{\link{mapLines}},
-  \code{\link{mapLocator}},
-  \code{\link{mapLongitudeLatitudeXY}},
-  \code{\link{mapPlot}}, \code{\link{mapPolygon}},
-  \code{\link{mapScalebar}}, \code{\link{mapText}},
-  \code{\link{mapTissot}}, \code{\link{oceCRS}},
-  \code{\link{shiftLongitude}}, \code{\link{usrLonLat}},
-  \code{\link{utm2lonlat}}
+Other functions related to maps: 
+\code{\link{formatPosition}()},
+\code{\link{lonlat2map}()},
+\code{\link{lonlat2utm}()},
+\code{\link{map2lonlat}()},
+\code{\link{mapArrows}()},
+\code{\link{mapAxis}()},
+\code{\link{mapContour}()},
+\code{\link{mapCoordinateSystem}()},
+\code{\link{mapDirectionField}()},
+\code{\link{mapGrid}()},
+\code{\link{mapImage}()},
+\code{\link{mapLines}()},
+\code{\link{mapLocator}()},
+\code{\link{mapLongitudeLatitudeXY}()},
+\code{\link{mapPlot}()},
+\code{\link{mapPolygon}()},
+\code{\link{mapScalebar}()},
+\code{\link{mapText}()},
+\code{\link{mapTissot}()},
+\code{\link{oceCRS}()},
+\code{\link{shiftLongitude}()},
+\code{\link{usrLonLat}()},
+\code{\link{utm2lonlat}()}
 }
 \author{
 Dan Kelley

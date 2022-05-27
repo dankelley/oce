@@ -14,7 +14,7 @@ Number of hours in offset, e.g. \code{AST} yields 4.
 }
 \description{
 The data are from
-\url{https://www.timeanddate.com/library/abbreviations/timezones/} and were
+\verb{https://www.timeanddate.com/time/zones/} and were
 hand-edited to develop this code, so there may be errors.  Also, note that
 some of these contradict; if you examine the code, you'll see some
 commented-out portions that represent solving conflicting definitions by
@@ -24,10 +24,7 @@ choosing the more common timezone abbreviation over a the less common one.
 library(oce)
 cat("Atlantic Standard Time is ", GMTOffsetFromTz("AST"), "hours after UTC")
 }
-\seealso{
-Other functions relating to time: \code{\link{decodeTime}}
-}
 \author{
 Dan Kelley
 }
-\concept{functions relating to time}
+\concept{things relating to time}

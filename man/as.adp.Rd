@@ -4,8 +4,15 @@
 \alias{as.adp}
 \title{Create an ADP Object}
 \usage{
-as.adp(time, distance, v, a = NULL, q = NULL, orientation = "upward",
-  coordinate = "enu")
+as.adp(
+  time,
+  distance,
+  v,
+  a = NULL,
+  q = NULL,
+  orientation = "upward",
+  coordinate = "enu"
+)
 }
 \arguments{
 \item{time}{of observations in POSIXct format}
@@ -14,25 +21,25 @@ as.adp(time, distance, v, a = NULL, q = NULL, orientation = "upward",
 
 \item{v}{array of velocities, with first index for time, second for bin number, and third for beam number}
 
-\item{a}{amplitude, a \code{\link{raw}} array with dimensions matching \code{u}}
+\item{a}{amplitude, a \code{\link[=raw]{raw()}} array with dimensions matching \code{u}}
 
-\item{q}{quality, a \code{\link{raw}} array with dimensions matching \code{u}}
+\item{q}{quality, a \code{\link[=raw]{raw()}} array with dimensions matching \code{u}}
 
 \item{orientation}{a string indicating sensor orientation, e.g. \code{"upward"} and \code{"downward"}}
 
 \item{coordinate}{a string indicating the coordinate system, \code{"enu"}, \code{"beam"}, \code{"xy"}, or \code{"other"}}
 }
 \value{
-An object of \code{\link{adp-class}}.
+An \linkS4class{adp} object.
 }
 \description{
 Create an ADP Object
 }
 \details{
-Construct an object of \code{\link{adp-class}}.  Only a basic
+Construct an \linkS4class{adp} object.  Only a basic
 subset of the typical \code{data} slot is represented in the arguments
 to this function, on the assumption that typical usage in reading data
-is to set up a nearly-blank \code{\link{adp-class}} object, the \code{data}
+is to set up a nearly-blank \linkS4class{adp} object, the \code{data}
 slot of which is then inserted.  However, in some testing situations it
 can be useful to set up artificial \code{adp} objects, so the other
 arguments may be useful.
@@ -43,39 +50,56 @@ t <- adp[["time"]]
 d <- adp[["distance"]]
 v <- adp[["v"]]
 a <- as.adp(time=t, distance=d, v=v)
-\dontrun{
+\donttest{
 plot(a)
 }
 
 }
 \seealso{
-Other things related to \code{adp} data: \code{\link{[[,adp-method}},
-  \code{\link{[[<-,adp-method}},
-  \code{\link{ad2cpHeaderValue}}, \code{\link{adp-class}},
-  \code{\link{adpEnsembleAverage}}, \code{\link{adp}},
-  \code{\link{beamName}}, \code{\link{beamToXyzAdpAD2CP}},
-  \code{\link{beamToXyzAdp}}, \code{\link{beamToXyzAdv}},
-  \code{\link{beamToXyz}}, \code{\link{beamUnspreadAdp}},
-  \code{\link{binmapAdp}}, \code{\link{enuToOtherAdp}},
-  \code{\link{enuToOther}},
-  \code{\link{handleFlags,adp-method}},
-  \code{\link{is.ad2cp}}, \code{\link{plot,adp-method}},
-  \code{\link{read.adp.ad2cp}},
-  \code{\link{read.adp.nortek}},
-  \code{\link{read.adp.rdi}},
-  \code{\link{read.adp.sontek.serial}},
-  \code{\link{read.adp.sontek}}, \code{\link{read.adp}},
-  \code{\link{read.aquadoppHR}},
-  \code{\link{read.aquadoppProfiler}},
-  \code{\link{read.aquadopp}}, \code{\link{rotateAboutZ}},
-  \code{\link{setFlags,adp-method}},
-  \code{\link{subset,adp-method}},
-  \code{\link{summary,adp-method}}, \code{\link{toEnuAdp}},
-  \code{\link{toEnu}}, \code{\link{velocityStatistics}},
-  \code{\link{xyzToEnuAdpAD2CP}},
-  \code{\link{xyzToEnuAdp}}, \code{\link{xyzToEnu}}
+Other things related to adp data: 
+\code{\link{[[,adp-method}},
+\code{\link{[[<-,adp-method}},
+\code{\link{ad2cpHeaderValue}()},
+\code{\link{adp-class}},
+\code{\link{adpConvertRawToNumeric}()},
+\code{\link{adpEnsembleAverage}()},
+\code{\link{adpFlagPastBoundary}()},
+\code{\link{adp_rdi.000}},
+\code{\link{adp}},
+\code{\link{beamName}()},
+\code{\link{beamToXyzAdpAD2CP}()},
+\code{\link{beamToXyzAdp}()},
+\code{\link{beamToXyzAdv}()},
+\code{\link{beamToXyz}()},
+\code{\link{beamUnspreadAdp}()},
+\code{\link{binmapAdp}()},
+\code{\link{enuToOtherAdp}()},
+\code{\link{enuToOther}()},
+\code{\link{handleFlags,adp-method}},
+\code{\link{is.ad2cp}()},
+\code{\link{plot,adp-method}},
+\code{\link{read.adp.ad2cp}()},
+\code{\link{read.adp.nortek}()},
+\code{\link{read.adp.rdi}()},
+\code{\link{read.adp.sontek.serial}()},
+\code{\link{read.adp.sontek}()},
+\code{\link{read.adp}()},
+\code{\link{read.aquadoppHR}()},
+\code{\link{read.aquadoppProfiler}()},
+\code{\link{read.aquadopp}()},
+\code{\link{rotateAboutZ}()},
+\code{\link{setFlags,adp-method}},
+\code{\link{subset,adp-method}},
+\code{\link{subtractBottomVelocity}()},
+\code{\link{summary,adp-method}},
+\code{\link{toEnuAdp}()},
+\code{\link{toEnu}()},
+\code{\link{velocityStatistics}()},
+\code{\link{xyzToEnuAdpAD2CP}()},
+\code{\link{xyzToEnuAdp}()},
+\code{\link{xyzToEnu}()}
 }
 \author{
 Dan Kelley
 }
-\concept{things related to \code{adp} data}
+\concept{things related to adp data}

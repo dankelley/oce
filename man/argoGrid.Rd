@@ -13,35 +13,35 @@ argoGrid(argo, p, debug = getOption("oceDebug"), ...)
 should be done.  If this is not supplied, the pressure levels will be
 calculated based on the existing values, using medians. If \code{p="levitus"},
 then pressures will be set to be those of the Levitus atlas, given by
-\code{\link{standardDepths}}, trimmed to the maximum pressure in \code{argo}.
+\code{\link[=standardDepths]{standardDepths()}}, trimmed to the maximum pressure in \code{argo}.
 If \code{p} is a single numerical value, it is taken as the number of
-subdivisions to use in a call to \code{\link{seq}} that has range from 0 to the
+subdivisions to use in a call to \code{\link[=seq]{seq()}} that has range from 0 to the
 maximum pressure in \code{argo}.  Finally, if a vector numerical values is
 provided, then it is used as is.}
 
 \item{debug}{A flag that turns on debugging.  Higher values provide deeper
 debugging.}
 
-\item{...}{Optional arguments to \code{\link{approx}}, which is used to do the
+\item{...}{Optional arguments to \code{\link[=approx]{approx()}}, which is used to do the
 gridding.}
 }
 \value{
-An object of \code{\link{argo-class}} that contains a pressure matrix
-with constant values along the first index.
+x an \linkS4class{argo} object.
 }
 \description{
 Grid an Argo float, by interpolating to fixed pressure levels.
-The gridding is done with \code{\link{approx}}.  If there is
+The gridding is done with \code{\link[=approx]{approx()}}.  If there is
 sufficient user demand, other methods may be added, by analogy to
-\code{\link{sectionGrid}}.
+\code{\link[=sectionGrid]{sectionGrid()}}.
 }
 \section{A note about flags}{
+
 
 Data-quality flags contained within the original object are ignored by this
 function, and the returned value contains no such flags.  This is because such
 flags represent an assessment of the original data, not of quantities derived
 from those data.  This function produces a warning to this effect. The
-recommended practice is to use \code{\link{handleFlags}} or some other means to
+recommended practice is to use \code{\link[=handleFlags]{handleFlags()}} or some other means to
 deal with flags before calling the present function.
 }
 
@@ -58,16 +58,21 @@ imagep(t, z, t(g[['salinity']]), ylim=c(-100,0))
 
 }
 \seealso{
-Other things related to \code{argo} data: \code{\link{[[,argo-method}},
-  \code{\link{[[<-,argo-method}}, \code{\link{argo-class}},
-  \code{\link{argoNames2oceNames}}, \code{\link{argo}},
-  \code{\link{as.argo}},
-  \code{\link{handleFlags,argo-method}},
-  \code{\link{plot,argo-method}}, \code{\link{read.argo}},
-  \code{\link{subset,argo-method}},
-  \code{\link{summary,argo-method}}
+Other things related to argo data: 
+\code{\link{[[,argo-method}},
+\code{\link{[[<-,argo-method}},
+\code{\link{argo-class}},
+\code{\link{argoNames2oceNames}()},
+\code{\link{argo}},
+\code{\link{as.argo}()},
+\code{\link{handleFlags,argo-method}},
+\code{\link{plot,argo-method}},
+\code{\link{read.argo.copernicus}()},
+\code{\link{read.argo}()},
+\code{\link{subset,argo-method}},
+\code{\link{summary,argo-method}}
 }
 \author{
 Dan Kelley and Clark Richards
 }
-\concept{things related to \code{argo} data}
+\concept{things related to argo data}

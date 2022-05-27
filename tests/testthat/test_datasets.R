@@ -9,8 +9,6 @@ library(oce)
 ##data("adv")
 ##data("argo")
 
-context("datasets")
-
 test_that("cm", {
           data("cm")
           S <- cm[["salinity"]]
@@ -67,8 +65,8 @@ test_that("sealevel", {
 ##data("tidedata")
 test_that("topoWorld", {
           data("topoWorld")
-          expect_equal(range(topoWorld[["longitude"]]), c(-179.5, 180))
-          expect_equal(range(topoWorld[["latitude"]]), c(-89.5, 90))
+          expect_equal(range(topoWorld[["longitude"]]), 179.75*c(-1, 1))
+          expect_equal(range(topoWorld[["latitude"]]), 89.75*c(-1, 1))
 })
 ##data("wind")
 

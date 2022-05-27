@@ -1,5 +1,4 @@
 library(oce)
-context("Geodesics")
 test_that("forward=inverse", {
           data(section)
           lon <- section[["longitude", "byStation"]]
@@ -45,5 +44,13 @@ test_that("geodDist()", {
           expect_equal(tail(geodDist(section, alongPath=FALSE)),
                        c(5587.849412, 5599.757509, 5610.041722, 5621.557394,
                          5629.160056, 5633.492666))
+})
+
+test_that("geodDist() with vector locations", {
+          lon1 <- c(-63, -63)
+          lat1 <- c(45, 46)
+          d1 <- geodDist(lon1, lat1, alongPath=FALSE)
+          expect_equal(d1, c(0, 111.141548474209))
+          expect_equal(d1, geodDist(lon1, lat1, lon1[1], lat1[1], alongPath=FALSE))
 })
 

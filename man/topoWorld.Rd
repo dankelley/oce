@@ -5,27 +5,48 @@
 \alias{topoWorld}
 \title{Global Topographic Dataset at Half-degree Resolution}
 \source{
-The binary ETOPO5 dataset was downloaded in late 2009 from the NOAA website,
-\samp{http://www.ngdc.noaa.gov/mgg/global/relief/ETOPO5/TOPO/ETOPO5},
-decoded, decimated from 1/12th degree resolution to 1/2 degree resolution, and
-passed through \code{\link{matrixShiftLongitude}} so that longitude is
-between -180 and 180 degrees.
+This is created with \code{\link[=read.topo]{read.topo()}}, using a file downloaded with
+\preformatted{
+topoFile <- download.topo(west=-180, east=180, south=-90, north=90,
+                         resolution=30, destdir=".")
+}
 }
 \usage{
 data(topoWorld)
 }
 \description{
-Global topographic dataset at half-degree resolution, created by decimating the
-ETOPO5 dataset.  Its longitude ranges from -179.5 to 180, and its latitude
-ranges from -89.5 to 90.  Height is measured in metres above nominal sea level.
+Global topographic dataset at half-degree resolution, downloaded from
+a NOAA server on May 18, 2019.  Longitude, accessible as
+\code{topoWorld[["longitude"]]}, ranges from -179.75 to 129.75 degrees north.
+Latitude (\code{topoWorld[["latitude"]]}) ranges from -89.75 to 89.75 degrees east.
+Height (\code{topoWorld[["z"]]}) is measured in metres above nominal sea level.
 
 The coarse resolution can be a problem in plotting depth contours along with
 coastlines in regions of steep topography. For example, near the southeast
 corner of Newfoundland, a 200m contour will overlap a coastline drawn with
-\code{\link[ocedata]{coastlineWorldFine}}. The solution in such cases is to
-download a higher-resolution topography file and create a \code{topo} object
-with \code{\link{read.topo}} or \code{\link{as.topo}}.
+\code{coastlineWorldFine} from the \CRANpkg{ocedata} package. The solution in such cases is to
+download a higher-resolution topography file, perhaps using
+\code{\link[=download.topo]{download.topo()}}, and then use \code{\link[=read.topo]{read.topo()}}
+to create another \code{topo} object.  (With other data
+sources, \code{\link[=as.topo]{as.topo()}} may be helpful.)
 }
+\section{Historical note}{
+
+From late 2009 until May 18, 2019, the \code{topoWorld} dataset was created
+with a fairly complicated code that read a binary file downloaded from NOAA
+(\samp{http://www.ngdc.noaa.gov/mgg/global/relief/ETOPO5/TOPO/ETOPO5}),
+decoded, decimated from 1/12th degree resolution to 1/2 degree resolution, and
+passed through \code{\link[=matrixShiftLongitude]{matrixShiftLongitude()}} to put longitude
+between -180 and 180 degrees. The new scheme for creating the dataset,
+(see \dQuote{Source}) is much simpler, and also a much better model
+of how users are likely to deal with topography files in the more
+modern netCDF format. Note that the new version differs from the old one
+in longitude and latitude being shifted by 1/4 degree,
+and by a mean  elevation difference of under 10m. The old and new
+versions appear identical when plotted at the global scale that is
+the recommended for such a coarse topographic file.
+}
+
 \examples{
 \dontrun{
 library(oce)
@@ -37,24 +58,39 @@ imagep(topoWorld)
 
 }
 \seealso{
-Other datasets provided with \code{oce}: \code{\link{adp}},
-  \code{\link{adv}}, \code{\link{argo}}, \code{\link{cm}},
-  \code{\link{coastlineWorld}}, \code{\link{ctdRaw}},
-  \code{\link{ctd}}, \code{\link{echosounder}},
-  \code{\link{landsat}}, \code{\link{lisst}},
-  \code{\link{lobo}}, \code{\link{met}},
-  \code{\link{ocecolors}}, \code{\link{rsk}},
-  \code{\link{sealevelTuktoyaktuk}},
-  \code{\link{sealevel}}, \code{\link{section}},
-  \code{\link{wind}}
+Other datasets provided with oce: 
+\code{\link{adp}},
+\code{\link{adv}},
+\code{\link{amsr}},
+\code{\link{argo}},
+\code{\link{cm}},
+\code{\link{coastlineWorld}},
+\code{\link{ctdRaw}},
+\code{\link{ctd}},
+\code{\link{echosounder}},
+\code{\link{landsat}},
+\code{\link{lisst}},
+\code{\link{lobo}},
+\code{\link{met}},
+\code{\link{ocecolors}},
+\code{\link{rsk}},
+\code{\link{sealevelTuktoyaktuk}},
+\code{\link{sealevel}},
+\code{\link{section}},
+\code{\link{wind}},
+\code{\link{xbt}}
 
-Other things related to \code{topo} data: \code{\link{[[,topo-method}},
-  \code{\link{[[<-,topo-method}}, \code{\link{as.topo}},
-  \code{\link{download.topo}},
-  \code{\link{plot,topo-method}}, \code{\link{read.topo}},
-  \code{\link{subset,topo-method}},
-  \code{\link{summary,topo-method}},
-  \code{\link{topo-class}}, \code{\link{topoInterpolate}}
+Other things related to topo data: 
+\code{\link{[[,topo-method}},
+\code{\link{[[<-,topo-method}},
+\code{\link{as.topo}()},
+\code{\link{download.topo}()},
+\code{\link{plot,topo-method}},
+\code{\link{read.topo}()},
+\code{\link{subset,topo-method}},
+\code{\link{summary,topo-method}},
+\code{\link{topo-class}},
+\code{\link{topoInterpolate}()}
 }
-\concept{datasets provided with \code{oce}}
-\concept{things related to \code{topo} data}
+\concept{datasets provided with oce}
+\concept{things related to topo data}

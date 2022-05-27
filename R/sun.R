@@ -1,30 +1,38 @@
 #' Solar Angle as Function of Space and Time
 #'
-#' Solar angle as function of space and time.
+#' This calculates solar angle, based on a NASA-provided Fortran
+#' program, which (according to comments in the code) is in turn
+#' based on "The Astronomical Almanac".
 #'
-#' Based on NASA-provided Fortran program, in turn (according to comments in
-#' the code) based on "The Astronomical Almanac".
-#'
-#' @param t time, a POSIXt object (converted to timezone \code{"UTC"},
+#' @param t time, a POSIXt object (converted to timezone `"UTC"`,
 #' if it is not already in that timezone), a character or numeric value that
 #' corresponds to such a time.
-#' @param longitude observer longitude in degrees east
-#' @param latitude observer latitude in degrees north
-#' @param useRefraction boolean, set to \code{TRUE} to apply a correction for
-#' atmospheric refraction
-#' @return A list containing the following.  \item{time}{time}
-#' \item{azimuth}{azimuth, in degrees eastward of north, from 0 to 360.  (See
-#' diagram below.)} \item{altitude}{altitude, in degrees above the horizon,
-#' ranging from -90 to 90.  (See diagram below.)} \item{diameter}{solar
-#' diameter, in degrees} \item{distance}{distance to sun, in astronomical
-#' units}
-#' \if{html}{\figure{starCoords.png options:width=400px}{starCoords.png}}
 #'
-#' @author Dan Kelley
-#' @seealso The equivalent function for the moon is \code{\link{moonAngle}}.
-#' @references Based on Fortran code retrieved from
-#' ftp://climate1.gsfc.nasa.gov/wiscombe/Solar_Rad/SunAngles/sunae.f on
-#' 2009-11-1.  Comments in that code list as references:
+#' @param longitude observer longitude in degrees east.
+#'
+#' @param latitude observer latitude in degrees north.
+#'
+#' @param useRefraction boolean, set to `TRUE` to apply a correction for
+#' atmospheric refraction.
+#'
+#' @return A list containing the following:
+#' * `time` the time
+#' * `azimuth`, in degrees eastward of north, from 0 to 360.
+#' * `altitude`, in degrees above the horizon,  ranging from -90 to 90.
+#' * `diameter`, solar diameter, in degrees.
+#' * `distance` to sun, in astronomical units.
+#' * `declination` angle in degrees, computed with [sunDeclinationRightAscension()].
+#' * `rightAscension` angle in degrees, computed with [sunDeclinationRightAscension()].
+#' \if{html}{\figure{starCoords.png}{options: width="400"}}
+#'
+#' @seealso The corresponding function for the moon is [moonAngle()].
+#'
+#' @references Regarding `declination` and `rightAscension`, see
+#' references in the documentation for [sunDeclinationRightAscension()].
+#' The other items are based on Fortran code retrieved from
+#' the file `sunae.f`, downloaded from the ftp site
+#' \code{climate1.gsfc.nasa.gov/wiscombe/Solar_Rad/SunAngles}
+#' on 2009-11-1.  Comments in that code list as references:
 #'
 #' Michalsky, J., 1988: The Astronomical Almanac's algorithm for approximate
 #' solar position (1950-2050), Solar Energy 40, 227-235
@@ -34,16 +42,19 @@
 #'
 #' The code comments suggest that the appendix in Michalsky (1988) contains
 #' errors, and declares the use of the following formulae in the 1995 version
-#' the Almanac: \itemize{ \item p. A12: approximation to sunrise/set times;
-#' \item p. B61: solar altitude (AKA elevation) and azimuth; \item p. B62:
-#' refraction correction; \item p. C24: mean longitude, mean anomaly, ecliptic
+#' the Almanac:
+#' * p. A12: approximation to sunrise/set times
+#' * p. B61: solar altitude (AKA elevation) and azimuth
+#' * p. B62: refraction correction
+#' * p. C24: mean longitude, mean anomaly, ecliptic
 #' longitude, obliquity of ecliptic, right ascension, declination, Earth-Sun
-#' distance, angular diameter of Sun; \item p. L2: Greenwich mean sidereal time
-#' (ignoring T^2, T^3 terms).  }
+#' distance, angular diameter of Sun
+#' * p. L2: Greenwich mean sidereal time (ignoring T^2, T^3 terms)
 #'
 #' The code lists authors as Dr. Joe Michalsky and Dr. Lee Harrison (State
 #' University of New York), with modifications by Dr. Warren Wiscombe (NASA
 #' Goddard Space Flight Center).
+#'
 #' @examples
 #'
 #' rise <- as.POSIXct("2011-03-03 06:49:00", tz="UTC") + 4*3600
@@ -58,7 +69,10 @@
 #' dist <- geodDist(result$par[1], result$par[2], lon.hfx, lat.hfx)
 #' cat(sprintf("Infer Halifax latitude %.2f and longitude %.2f; distance mismatch %.0f km",
 #'             result$par[2], result$par[1], dist))
+#'
 #' @family things related to astronomy
+#'
+#' @author Dan Kelley
 sunAngle <- function(t, longitude=0, latitude=0, useRefraction=FALSE)
 {
     if (missing(t)) stop("must provide t")
@@ -107,7 +121,7 @@ sunAngle <- function(t, longitude=0, latitude=0, useRefraction=FALSE)
         stop("t must be in UTC")
     year <- t$year + 1900
     if (any(year < 1950) || any(year > 2050))
-        stop("year=", year, " is outside acceptable range")
+        warning("year=", year[year<1950|year>2050][1], " (and possibly others) is outside the acceptable range of 1950-2050")
     day <- t$yday + 1
     if (any(day < 1) || any(day > 366))
         stop("day is not in range 1 to 366")
@@ -195,5 +209,90 @@ sunAngle <- function(t, longitude=0, latitude=0, useRefraction=FALSE)
     elOut[ok] <- el
     soldiaOut[ok] <- soldia
     soldstOut[ok] <- soldst
-    list(time=tOrig, azimuth=azOut, altitude=elOut, diameter=soldiaOut, distance=soldstOut)
+    sunDRA <- sunDeclinationRightAscension(tOrig, apparent=FALSE)
+    list(time=tOrig, azimuth=azOut, altitude=elOut, diameter=soldiaOut, distance=soldstOut,
+         declination=sunDRA$declination, rightAscension=sunDRA$rightAscension)
 }
+
+#' Sun Declination and Right Ascension
+#'
+#' The formulae are from Meeus (1991), chapter 24 (which uses chapter 21).
+#'
+#' @param time a POSIXct time. This ought to be in UTC timezone; if not,
+#' the behaviour of this function is unlikely to be correct.
+#'
+#' @param apparent logical value indicating whether to return
+#' the 'apparent' angles.
+#'
+#' @return A list containing `declination` and `rightAscension`, in degrees.
+#'
+#' @examples
+#' ## Example 24.a in Meeus (1991) (page 158 PDF, 153 print)
+#' time <- as.POSIXct("1992-10-13 00:00:00", tz="UTC")
+#' a <- sunDeclinationRightAscension(time, apparent=TRUE)
+#' stopifnot(abs(a$declination - (-7.78507)) < 0.00004)
+#' stopifnot(abs(a$rightAscension - (-161.61919)) < 0.00003)
+#' b <- sunDeclinationRightAscension(time)
+#' ## check against previous results, to protect aginst code-drift errors
+#' stopifnot(abs(b$declination - (-7.785464443)) < 0.000000001)
+#' stopifnot(abs(b$rightAscension - (-161.6183305)) < 0.0000001)
+#'
+#' @references
+#' * Meeus, Jean. Astronomical Algorithms. Second Edition.
+#' Richmond, Virginia, USA: Willmann-Bell, 1991.
+#'
+#' @family things related to astronomy
+#' @author Dan Kelley, based on formulae in Meeus (1991).
+sunDeclinationRightAscension <- function(time, apparent=FALSE)
+{
+    ##<UNUSED> year <- as.numeric(format(time, "%Y"))
+    k <-  2 * pi / 360                     # k*degrees == radians
+    ## Meeus 1991 pdf page 158, print page 153
+    JD <- julianDay(time)
+    T <- (JD - 2451545.0) / 36525          # Meeus (1991) eq (24.1)
+    ## L0 = geometric mean longitude of sun, referred to mean equinox of date
+    L0 <- 280.46645 + 36000.76983*T + 0.0003032*T^2 # Meeus (1991) eq (24.2)
+    L0 <- L0 %% 360
+    ## mean anomaly of sun
+    M <- 357.52910 + 35999.05030*T - 0.0001558*T^2 - 0.00000048*T^3
+    M <- M %% 360
+    ## e = eccentricity of earth's orbit, Meeus (1991) first unnumbered eqn after (24.4)
+    ##<UNUSED> e <- 0.016708617 - 0.000042037*T - 0.0000001236*T^2
+    ## sun equation of center C
+    C <- (1.914600-0.004817*T-0.000014*T^2)*sin(k*M) + (0.019993-0.000101*T)*sin(k*2*M) + 0.000290*sin(3*k*M)
+    ## sun true longitude: Meeus (1991) second eqn after eqn (24.4)
+    Theta <- L0 + C
+    ## sun true anomaly
+    ##<UNUSED> nu <- M + C
+    ##> sun radius vector (dist earth to sun, in AU)
+    ##<UNUSED> R <- (1.000001018 * (1 - e^2)) / (1 + e * cos(k * nu))
+    ## first unnumbered eqn after Meeus (1991) eqn (24.5)
+    Omega <- 125.04 - 1934.136 * T
+    ## second unnumbered eqn after Meeus (1991) eqn (24.5)
+    lambda <- Theta - 0.00569 - 0.00478 * sin(k*Omega)
+    ##<UNUSED> Theta2000 <- Theta - 0.01397 * (year - 2000)
+    ## epsilon: Meeus (1991) eqn (21.1) (PDF page 140, print page 135)
+    ## mean obliquity of ecliptic
+    epsilon0 <- 23+(26+21.448/60)/60 - 46.8150/60^2*T - 0.00059/60^2*T^2 + 0.001813/60^2*T^3
+    L <- 280.4665 + 36000.7698*T           # Meeus (1991) PDF page 137, print page 132
+    Lprime <- 218.3165 + 481267.8813*T     # Meeus (1991) PDF page 137, print page 132
+    ## NOT same Omega as above, but we are following the trail of equations step by step,
+    ## and the following actually passes the test above so perhaps the previous eqn for
+    ## Omega was an approximation.
+    ## Omega <- 125.04452 - 1934.136261*T + 0.0020708*T^2 + T^3/450000 # Meeus (1991) PDF page 137, print page 132
+    ## But he then says to drop the T^2 and T^3 terms before giving the DeltaEpsilon eqn, so we do that.
+    Omega <- 125.04452 - 1934.136261*T # Meeus (1991) PDF page 137, print page 132
+    DeltaEpsilon <- 9.20/60^2*cos(k*Omega) + 0.57/60^2*cos(k*2*L) + 0.10/60^2*cos(k*2*Lprime) - 0.09/60^2*cos(k*2*Omega)
+    epsilon <- epsilon0 + DeltaEpsilon
+    ## alpha Meeus (1991)  eqn (24.6) PDF page 158, print page 153
+    if (apparent) {
+        epsilonA <- epsilon + 0.00256*cos(k*Omega)
+        alpha <- 1/k * atan2(cos(k*epsilonA) * sin(k*lambda), cos(k*lambda))
+        delta <- 1/k * asin(sin(k*epsilonA) * sin(k*lambda)) # Meeus (1991) eqn (24.7) (PDF 1ige 58 print page 153)
+    } else {
+        alpha <- 1/k * atan2(cos(k*epsilon) * sin(k*Theta), cos(k*Theta))
+        delta <- 1/k * asin(sin(k*epsilon) * sin(k*Theta)) # Meeus (1991) eqn (24.7) (PDF 1ige 58 print page 153)
+    }
+    list(declination=delta, rightAscension=alpha)
+}
+

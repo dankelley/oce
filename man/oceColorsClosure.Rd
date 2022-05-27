@@ -9,19 +9,19 @@ oceColorsClosure(spec)
 \arguments{
 \item{spec}{Specification of the color scheme. This may be a
 character string, in which case it must be the name of an item stored
-in \code{data(\link{ocecolors})}, or either a 3-column data frame or
+in \code{data(ocecolors)}, or either a 3-column data frame or
 matrix, in which case the columns specify red, green and blue values
 (in range from 0 to 1).}
 }
 \description{
 This function generates other functions that are used to specify colors.
-It is used within oce to create \code{\link{oceColorsTemperature}}
+It is used within oce to create \code{\link[=oceColorsTemperature]{oceColorsTemperature()}}
 and its many cousins. Users may also find it helpful, for creating
 custom color schemes (see \dQuote{Examples}).
 }
 \examples{
 \dontrun{
-## Update oxygen color scheme to latest matplotlib value.
+# Update oxygen color scheme to latest matplotlib value.
 library(oce)
 oxy <- "https://raw.githubusercontent.com/matplotlib/cmocean/master/cmocean/rgb/oxy-rgb.txt"
 oxyrgb <- read.table(oxy, header=FALSE)
@@ -31,25 +31,30 @@ m <- matrix(1:256)
 imagep(m, col=oceColorsOxygen, zlab="oxygen")
 imagep(m, col=oceColorsOxygenUpdated, zlab="oxygenUpdated")
 }
-
 }
 \seealso{
-Other things related to colors: \code{\link{colormap}},
-  \code{\link{oceColors9B}}, \code{\link{oceColorsCDOM}},
-  \code{\link{oceColorsChlorophyll}},
-  \code{\link{oceColorsDensity}},
-  \code{\link{oceColorsFreesurface}},
-  \code{\link{oceColorsGebco}}, \code{\link{oceColorsJet}},
-  \code{\link{oceColorsOxygen}},
-  \code{\link{oceColorsPAR}},
-  \code{\link{oceColorsPalette}},
-  \code{\link{oceColorsPhase}},
-  \code{\link{oceColorsSalinity}},
-  \code{\link{oceColorsTemperature}},
-  \code{\link{oceColorsTurbidity}},
-  \code{\link{oceColorsTwo}},
-  \code{\link{oceColorsVelocity}},
-  \code{\link{oceColorsViridis}},
-  \code{\link{oceColorsVorticity}}, \code{\link{ocecolors}}
+Other things related to colors: 
+\code{\link{colormapGMT}()},
+\code{\link{colormap}()},
+\code{\link{oceColors9B}()},
+\code{\link{oceColorsCDOM}()},
+\code{\link{oceColorsChlorophyll}()},
+\code{\link{oceColorsDensity}()},
+\code{\link{oceColorsFreesurface}()},
+\code{\link{oceColorsGebco}()},
+\code{\link{oceColorsJet}()},
+\code{\link{oceColorsOxygen}()},
+\code{\link{oceColorsPAR}()},
+\code{\link{oceColorsPalette}()},
+\code{\link{oceColorsPhase}()},
+\code{\link{oceColorsSalinity}()},
+\code{\link{oceColorsTemperature}()},
+\code{\link{oceColorsTurbidity}()},
+\code{\link{oceColorsTurbo}()},
+\code{\link{oceColorsTwo}()},
+\code{\link{oceColorsVelocity}()},
+\code{\link{oceColorsViridis}()},
+\code{\link{oceColorsVorticity}()},
+\code{\link{ocecolors}}
 }
 \concept{things related to colors}

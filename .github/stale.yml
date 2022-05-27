@@ -1,21 +1,25 @@
 # Number of days of inactivity before an issue becomes stale
-daysUntilStale: 56
+daysUntilStale: 100
 # Number of days of inactivity before a stale issue is closed
-daysUntilClose: 14
+daysUntilClose: 30
 # Issues with these labels will never be considered stale
 exemptLabels:
   - pinned
+  - security
 # Label to use when marking an issue as stale
 staleLabel: stale
 # Comment to post when marking an issue as stale. Set to `false` to disable
 markComment: >
-  This issue has been automatically marked as stale because 8 weeks have passed
-  with no activity. (Adding the 'pinned' label will prevent this issue from ever
-  going stale.)
+  An automated message from the stale bot -- this issue has been marked as stale
+  because no comments have been made in 100 days. The goal of this action is to
+  remind reporter and developers alike that progress seems to have stalled.
+  Please note that the issue will be automatically closed 30 days from now,
+  unless a comment is made, or the pinned label is applied.  Thank you.
 # Comment to post when closing a stale issue. Set to `false` to disable
 closeComment: >
-  This issue has been closed because it has been stale for two weeks. If the
-  reporter or one of the developers thinks that the issue has not been
-  addressed properly, then they are asked to reopen it, ideally adding a
-  comment that sheds more light on the matter.
+  An automated message from the stale bot -- this issue has been closed
+  automatically, because no comments have been made in the 30 days since
+  inactivity was first reported. It is easy to reopen issues, and both reporters
+  and developers should feel free to do so, if warranted. It can help to add an
+  informative comment during the reopening process.
 

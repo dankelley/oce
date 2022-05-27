@@ -22,5 +22,5 @@ longitude=180, and swaps the pieces so that the dateline
 is at the left of the matrix, not in the middle.
 }
 \seealso{
-\code{\link{shiftLongitude}} and \code{\link{standardizeLongitude}}.
+\code{\link[=shiftLongitude]{shiftLongitude()}} and \code{\link[=standardizeLongitude]{standardizeLongitude()}}.
 }

@@ -18,20 +18,28 @@ Equator.}
 \item{filename}{name of file containing data (if applicable).}
 }
 \value{
-An object of \code{\link{gps-class}}.
+A \linkS4class{gps} object.
 }
 \description{
 Coerces a sequence of longitudes and latitudes into a GPS dataset.
-This may be used when \code{\link{read.gps}} cannot read a file, or when the
+This may be used when \code{\link[=read.gps]{read.gps()}} cannot read a file, or when the
 data have been manipulated.
 }
+\examples{
+# Location of the Tower Tank at Dalhousie University
+towerTank <- as.gps(-63.59428, 44.63572)
+
+}
 \seealso{
-Other things related to \code{gps} data: \code{\link{[[,gps-method}},
-  \code{\link{[[<-,gps-method}}, \code{\link{gps-class}},
-  \code{\link{plot,gps-method}}, \code{\link{read.gps}},
-  \code{\link{summary,gps-method}}
+Other things related to gps data: 
+\code{\link{[[,gps-method}},
+\code{\link{[[<-,gps-method}},
+\code{\link{gps-class}},
+\code{\link{plot,gps-method}},
+\code{\link{read.gps}()},
+\code{\link{summary,gps-method}}
 }
 \author{
 Dan Kelley
 }
-\concept{things related to \code{gps} data}
+\concept{things related to gps data}

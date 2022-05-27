@@ -4,11 +4,18 @@
 \alias{swRrho}
 \title{Density ratio}
 \usage{
-swRrho(ctd, sense = c("diffusive", "finger"), smoothingLength = 10, df,
-  eos = getOption("oceEOS", default = "gsw"))
+swRrho(
+  ctd,
+  sense = c("diffusive", "finger"),
+  smoothingLength = 10,
+  df,
+  eos = getOption("oceEOS", default = "gsw")
+)
 }
 \arguments{
-\item{ctd}{an object of class \code{ctd}}
+\item{ctd}{an \linkS4class{oce} object that holds \code{salinity}, \code{temperature}, and
+\code{pressure}.  If \code{eos} is \code{"gsw"}, then it must also hold \code{longitude} and
+\code{latitude}.}
 
 \item{sense}{an indication of the sense of double diffusion under study and
 therefore of the definition of Rrho; see \sQuote{Details}}
@@ -17,7 +24,7 @@ therefore of the definition of Rrho; see \sQuote{Details}}
 latter is calculated as the number of data points, divided by the number
 within a depth interval of \code{smoothingLength} metres.}
 
-\item{df}{if given, this is provided to \code{\link{smooth.spline}}.}
+\item{df}{if given, this is provided to \code{\link[=smooth.spline]{smooth.spline()}}.}
 
 \item{eos}{equation of state, either \code{"unesco"} or \code{"gsw"}.}
 }
@@ -40,9 +47,9 @@ the reciprocal for \code{"finger"}.
 
 If \code{eos="gsw"}, this is done by extracting absolute salinity and
 conservative temperature, smoothing with a smoothing spline as in the
-\code{"unesco"} case, and then calling \code{\link[gsw]{gsw_Turner_Rsubrho}}
+\code{"unesco"} case, and then calling \code{\link[gsw:gsw_Turner_Rsubrho]{gsw::gsw_Turner_Rsubrho()}}
 on these smoothed fields. Since the gsw function works on mid-point
-pressures, \code{\link{approx}} is used to interpolate back to the original
+pressures, \code{\link[=approx]{approx()}} is used to interpolate back to the original
 pressures.
 
 If the default arguments are acceptable, \code{ctd[["Rrho"]]} may be used
@@ -60,27 +67,46 @@ legend("topright", lty=1:2, legend=c("unesco", "gsw"), col=c("black", "red"))
 
 }
 \seealso{
-Other functions that calculate seawater properties: \code{\link{T68fromT90}},
-  \code{\link{T90fromT48}}, \code{\link{T90fromT68}},
-  \code{\link{swAbsoluteSalinity}},
-  \code{\link{swAlphaOverBeta}}, \code{\link{swAlpha}},
-  \code{\link{swBeta}}, \code{\link{swCSTp}},
-  \code{\link{swConservativeTemperature}},
-  \code{\link{swDepth}}, \code{\link{swDynamicHeight}},
-  \code{\link{swLapseRate}}, \code{\link{swN2}},
-  \code{\link{swPressure}}, \code{\link{swRho}},
-  \code{\link{swSCTp}}, \code{\link{swSTrho}},
-  \code{\link{swSigma0}}, \code{\link{swSigma1}},
-  \code{\link{swSigma2}}, \code{\link{swSigma3}},
-  \code{\link{swSigma4}}, \code{\link{swSigmaTheta}},
-  \code{\link{swSigmaT}}, \code{\link{swSigma}},
-  \code{\link{swSoundAbsorption}},
-  \code{\link{swSoundSpeed}}, \code{\link{swSpecificHeat}},
-  \code{\link{swSpice}}, \code{\link{swTFreeze}},
-  \code{\link{swTSrho}},
-  \code{\link{swThermalConductivity}},
-  \code{\link{swTheta}}, \code{\link{swViscosity}},
-  \code{\link{swZ}}
+Other functions that calculate seawater properties: 
+\code{\link{T68fromT90}()},
+\code{\link{T90fromT48}()},
+\code{\link{T90fromT68}()},
+\code{\link{computableWaterProperties}()},
+\code{\link{locationForGsw}()},
+\code{\link{swAbsoluteSalinity}()},
+\code{\link{swAlphaOverBeta}()},
+\code{\link{swAlpha}()},
+\code{\link{swBeta}()},
+\code{\link{swCSTp}()},
+\code{\link{swConservativeTemperature}()},
+\code{\link{swDepth}()},
+\code{\link{swDynamicHeight}()},
+\code{\link{swLapseRate}()},
+\code{\link{swN2}()},
+\code{\link{swPressure}()},
+\code{\link{swRho}()},
+\code{\link{swSCTp}()},
+\code{\link{swSR}()},
+\code{\link{swSTrho}()},
+\code{\link{swSigma0}()},
+\code{\link{swSigma1}()},
+\code{\link{swSigma2}()},
+\code{\link{swSigma3}()},
+\code{\link{swSigma4}()},
+\code{\link{swSigmaTheta}()},
+\code{\link{swSigmaT}()},
+\code{\link{swSigma}()},
+\code{\link{swSoundAbsorption}()},
+\code{\link{swSoundSpeed}()},
+\code{\link{swSpecificHeat}()},
+\code{\link{swSpice}()},
+\code{\link{swSstar}()},
+\code{\link{swTFreeze}()},
+\code{\link{swTSrho}()},
+\code{\link{swThermalConductivity}()},
+\code{\link{swTheta}()},
+\code{\link{swViscosity}()},
+\code{\link{swZ}()}
 }
 \author{
 Dan Kelley and Chantelle Layton

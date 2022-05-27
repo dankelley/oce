@@ -2,12 +2,21 @@
 % Please edit documentation in R/map.R
 \name{mapGrid}
 \alias{mapGrid}
-\title{Add a Longitude and Latitude Grid to a Map}
+\title{Add a Longitude and Latitude Grid to an Existing Map}
 \usage{
-mapGrid(dlongitude = 15, dlatitude = 15, longitude, latitude,
-  col = "darkgray", lty = "solid", lwd = 0.5 * par("lwd"),
-  polarCircle = 0, longitudelim, latitudelim,
-  debug = getOption("oceDebug"))
+mapGrid(
+  dlongitude = 15,
+  dlatitude = 15,
+  longitude,
+  latitude,
+  col = "darkgray",
+  lty = "solid",
+  lwd = 0.5 * par("lwd"),
+  polarCircle = 0,
+  longitudelim,
+  latitudelim,
+  debug = getOption("oceDebug")
+)
 }
 \arguments{
 \item{dlongitude}{increment in longitude, ignored if \code{longitude}
@@ -16,10 +25,10 @@ is supplied, but otherwise determines the longitude sequence.}
 \item{dlatitude}{increment in latitude, ignored if \code{latitude}
 is supplied, but otherwise determines the latitude sequence.}
 
-\item{longitude}{vector of longitudes, or \code{NULL} to prevent drawing
+\item{longitude}{numeric vector of longitudes, or \code{NULL} to prevent drawing
 longitude lines.}
 
-\item{latitude}{vector of latitudes, or \code{NULL} to prevent drawing
+\item{latitude}{numeric vector of latitudes, or \code{NULL} to prevent drawing
 latitude lines.}
 
 \item{col}{color of lines}
@@ -35,54 +44,77 @@ extending from the poles, within which zones are not drawn.}
 for the grid. If this is not supplied, grid lines are drawn for the
 whole globe, which can yield excessively slow drawing speeds for
 small-region plots. This, and \code{latitudelim}, are both set by
-\code{\link{mapPlot}} if the arguments of the same name are passed to
+\code{\link[=mapPlot]{mapPlot()}} if the arguments of the same name are passed to
 that function.}
 
 \item{latitudelim}{similar to \code{longitudelim}.}
 
 \item{debug}{a flag that turns on debugging.  Set to 1 to get a moderate
-amount of debugging information, or to 2 to get more.}
+amount of debugging information, 2 to go two function levels deep, or
+3 to go all the way to the core functions. Any value above 3 will be
+truncated to 3.}
+}
+\value{
+A \link{data.frame}, returned silently, containing
+\code{"side"}, \code{"value"}, \code{"type"}, and \code{"at"}.
+A default call to \code{\link[=mapPlot]{mapPlot()}} ensures agreement of grid and axes by using
+this return value in a call to \code{\link[=mapAxis]{mapAxis()}}.
 }
 \description{
 Plot longitude and latitude grid on an existing map.
+This is an advanced function, requiring
+coordination with \code{\link[=mapPlot]{mapPlot()}} and (possibly) also with \code{\link[=mapAxis]{mapAxis()}},
+and so it is best avoided by novices, who may be satisfied
+with the defaults used by \code{\link[=mapPlot]{mapPlot()}}.
 }
 \details{
-This is somewhat analogous to \code{\link{grid}}, except that the
+This is somewhat analogous to \code{\link[=grid]{grid()}}, except that the
 first two arguments of the latter supply the number of lines in the grid,
 whereas the present function has increments for the first two arguments.
 }
-\section{Plans}{
-
-At the moment, the function cannot determine which lines might
-work with labels on axes, but this could perhaps be added later, making
-this more analogous with \code{\link{grid}}.
-}
-
 \examples{
-\dontrun{
-library(oce)
-data(coastlineWorld)
-mapPlot(coastlineWorld, type='l', grid=FALSE,
-longitudelim=c(-80, 10), latitudelim=c(0, 120),
-projection="+proj=ortho")
-mapGrid(15, 15, polarCircle=15)
+\donttest{
+if (utils::packageVersion("sf") != "0.9.8") {
+    # sf version 0.9-8 has a problem with this projection
+    library(oce)
+    data(coastlineWorld)
+    par(mar=c(2, 2, 1, 1))
+    # In mapPlot() call, note axes and grid args, to
+    # prevent over-plotting of defaults.
+    mapPlot(coastlineWorld, type="l", projection="+proj=ortho",
+            axes=FALSE, grid=FALSE)
+    mapGrid(15, 15)
 }
+}
+
 }
 \seealso{
-A map must first have been created with \code{\link{mapPlot}}.
+A map must first have been created with \code{\link[=mapPlot]{mapPlot()}}.
 
-Other functions related to maps: \code{\link{lonlat2map}},
-  \code{\link{lonlat2utm}}, \code{\link{map2lonlat}},
-  \code{\link{mapArrows}}, \code{\link{mapAxis}},
-  \code{\link{mapContour}},
-  \code{\link{mapDirectionField}}, \code{\link{mapImage}},
-  \code{\link{mapLines}}, \code{\link{mapLocator}},
-  \code{\link{mapLongitudeLatitudeXY}},
-  \code{\link{mapPlot}}, \code{\link{mapPoints}},
-  \code{\link{mapPolygon}}, \code{\link{mapScalebar}},
-  \code{\link{mapText}}, \code{\link{mapTissot}},
-  \code{\link{oceCRS}}, \code{\link{shiftLongitude}},
-  \code{\link{usrLonLat}}, \code{\link{utm2lonlat}}
+Other functions related to maps: 
+\code{\link{formatPosition}()},
+\code{\link{lonlat2map}()},
+\code{\link{lonlat2utm}()},
+\code{\link{map2lonlat}()},
+\code{\link{mapArrows}()},
+\code{\link{mapAxis}()},
+\code{\link{mapContour}()},
+\code{\link{mapCoordinateSystem}()},
+\code{\link{mapDirectionField}()},
+\code{\link{mapImage}()},
+\code{\link{mapLines}()},
+\code{\link{mapLocator}()},
+\code{\link{mapLongitudeLatitudeXY}()},
+\code{\link{mapPlot}()},
+\code{\link{mapPoints}()},
+\code{\link{mapPolygon}()},
+\code{\link{mapScalebar}()},
+\code{\link{mapText}()},
+\code{\link{mapTissot}()},
+\code{\link{oceCRS}()},
+\code{\link{shiftLongitude}()},
+\code{\link{usrLonLat}()},
+\code{\link{utm2lonlat}()}
 }
 \author{
 Dan Kelley

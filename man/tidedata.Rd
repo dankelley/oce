@@ -7,13 +7,13 @@
 \source{
 The data come from the \code{tide3.dat} file of the \code{T_TIDE}
 package (Pawlowicz et al., 2002), and derive from Appendices provided by
-Foreman (1977).  The data are scanned using \file{tests/tide.R} in this
+Foreman (1978).  The data are scanned using \file{tests/tide.R} in this
 package, which also performs some tests using \code{T_TIDE} values as a
 reference.
 }
 \description{
 The \code{tidedata} dataset contains Tide-constituent information that is
-use by \code{\link{tidem}} to fit tidal models.  \code{tidedata} is a list
+use by \code{\link[=tidem]{tidem()}} to fit tidal models.  \code{tidedata} is a list
 containing
 \describe{
 \item{\code{const}}{
@@ -52,27 +52,33 @@ and
 }
 Apart from the use of \code{d1} through \code{d6}, the naming and content
 follows \code{T_TIDE} (see Pawlowicz et al. 2002), which in turn builds upon
-the analysis of Foreman (1977).
+the analysis of Foreman (1978).
 }
 \references{
-Foreman, M. G. G., 1977.  Manual for tidal heights analysis and
-prediction.  Pacific Marine Science Report 77-10, Institute of Ocean
-Sciences, Patricia Bay, Sidney, BC, 58pp.
+Foreman, M. G. G., 1978. Manual for Tidal Currents Analysis and Prediction.
+Pacific Marine Science Report. British Columbia, Canada: Institute of Ocean
+Sciences, Patricia Bay.
 
 Pawlowicz, Rich, Bob Beardsley, and Steve Lentz, 2002.  Classical tidal
 harmonic analysis including error estimates in MATLAB using \code{T_TIDE}.
 Computers and Geosciences, 28, 929-937.
 }
 \seealso{
-Other things related to \code{tidem} data: \code{\link{[[,tidem-method}},
-  \code{\link{[[<-,tidem-method}},
-  \code{\link{plot,tidem-method}},
-  \code{\link{predict.tidem}},
-  \code{\link{summary,tidem-method}},
-  \code{\link{tidem-class}}, \code{\link{tidemAstron}},
-  \code{\link{tidemVuf}}, \code{\link{tidem}}
+Other things related to tides: 
+\code{\link{[[,tidem-method}},
+\code{\link{[[<-,tidem-method}},
+\code{\link{as.tidem}()},
+\code{\link{plot,tidem-method}},
+\code{\link{predict.tidem}()},
+\code{\link{summary,tidem-method}},
+\code{\link{tidalCurrent}},
+\code{\link{tidem-class}},
+\code{\link{tidemAstron}()},
+\code{\link{tidemVuf}()},
+\code{\link{tidem}},
+\code{\link{webtide}()}
 }
 \author{
 Dan Kelley
 }
-\concept{things related to \code{tidem} data}
+\concept{things related to tides}

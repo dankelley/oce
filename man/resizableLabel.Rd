@@ -4,32 +4,36 @@
 \alias{resizableLabel}
 \title{Provide axis names in adjustable sizes}
 \usage{
-resizableLabel(item, axis = "x", sep, unit = NULL,
-  debug = getOption("oceDebug"))
+resizableLabel(
+  item,
+  axis = "x",
+  sep,
+  unit = NULL,
+  debug = getOption("oceDebug")
+)
 }
 \arguments{
-\item{item}{code for the label.  This must be an element from the following
-list, or an abbreviation that uniquely identifies an element through its
-first letters: \code{"S"}, \code{"C"}, \code{"conductivity mS/cm"},
-\code{"conductivity S/m"}, \code{"T"}, \code{"theta"}, \code{"sigmaTheta"},
-\code{"conservative temperature"}, \code{"absolute salinity"},
-\code{"nitrate"}, \code{"nitrite"}, \code{"oxygen"}, \code{"oxygen
-saturation"}, \code{"oxygen mL/L"}, \code{"oxygen umol/L"}, \code{"oxygen
-umol/kg"}, \code{"phosphate"}, \code{"silicate"}, \code{"tritium"},
-\code{"spice"}, \code{"fluorescence"}, \code{"p"}, \code{"z"},
-\code{"distance"}, \code{"distance km"}, \code{"along-track distance km"},
-\code{"heading"}, \code{"pitch"}, \code{"roll"}, \code{"u"}, \code{"v"},
-\code{"w"}, \code{"speed"}, \code{"direction"}, \code{"eastward"},
-\code{"northward"}, \code{"depth"}, \code{"elevation"}, \code{"latitude"},
-\code{"longitude"}, \code{"frequency cph"}, or \code{"spectral density
-m2/cph"}.}
+\item{item}{code for the label. The following common values are recognized:
+\code{"absolute salinity"}, \code{"along-spine distance km"}, \code{"along-track distance km"},
+\code{"C"}, \code{"conductivity mS/cm"}, \code{"conductivity S/m"}, \code{"conservative temperature"},
+\code{"CT"}, \code{"depth"}, \code{"direction"}, \code{"distance"}, \code{"distance km"}, \code{"eastward"},
+\code{"elevation"}, \code{"fluorescence"}, \code{"frequency cph"}, \code{"heading"}, \code{"latitude"},
+\code{"longitude"}, \code{"N2"}, \code{"nitrate"}, \code{"nitrite"}, \code{"northward"}, \code{"oxygen"},
+\code{"oxygen mL/L"}, \code{"oxygen saturation"}, \code{"oxygen umol/kg"}, \code{"oxygen umol/L"},
+\code{"p"}, \code{"phosphate"}, \code{"pitch"}, \code{"roll"}, \code{"S"}, \code{"SA"},
+\code{"sigma0"}, \code{"sigma1"}, \code{"sigma2"}, \code{"sigma3"}, \code{"sigma4"},
+\code{"sigmaTheta"},
+\code{"silicate"}, \code{"sound speed"}, \code{"spectral density m2/cph"}, \code{"speed"},
+\code{"spice"}, \code{"T"}, \code{"theta"}, \code{"tritium"}, \code{"u"}, \code{"v"}, \code{"w"}, or \code{"z"}.
+Other values may also be recognized, and if an unrecognized item is
+given, then it is returned, unaltered.}
 
 \item{axis}{a string indicating which axis to use; must be \code{x} or
 \code{y}.}
 
 \item{sep}{optional character string inserted between the unit and the
 parentheses or brackets that enclose it. If not provided, then
-\code{\link{getOption}("oceUnitSep")} is checked. If that exists, then it is
+\code{\link{getOption}}\code{("oceUnitSep")} is checked. If that exists, then it is
 used as the separator; if not, no separator is used.}
 
 \item{unit}{optional unit to use, if the default is not satisfactory. This
@@ -44,13 +48,18 @@ format, for use in the indicated axis at the present plot size.  Whether the
 unit is enclosed in parentheses or square brackets is determined by the
 value of \code{getOption("oceUnitBracket")}, which may be \code{"["} or
 \code{"("}.  Whether spaces are used between the unit and these deliminators
-is set by \code{psep} or \code{\link{getOption}("oceUnitSep")}.
+is set by \code{psep} or \code{\link{getOption}}\code{("oceUnitSep")}.
 }
 \description{
 Provide axis names in adjustable sizes, e.g. using T instead of Temperature,
 and including units as appropriate.
-Used by e.g. \code{\link{plot,ctd-method}}.
+Used by e.g. \code{\link[=plot,ctd-method]{plot,ctd-method()}}.
+}
+\seealso{
+Other functions that create labels: 
+\code{\link{labelWithUnit}()}
 }
 \author{
 Dan Kelley
 }
+\concept{functions that create labels}

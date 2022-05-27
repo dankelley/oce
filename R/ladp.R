@@ -1,5 +1,4 @@
-## vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
-
+# vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
 
 #' Class to Store Lowered-adp Data
 #'
@@ -20,13 +19,13 @@
 #'
 #' @author Dan Kelley
 #'
-#' @family things related to \code{ladp} data
+#' @family things related to ladp data
 setClass("ladp", contains="oce")
 
 setMethod(f="initialize",
           signature="ladp",
-          definition=function(.Object, longitude, latitude, station, waterDepth, time,
-                              pressure, u, v, salinity, temperature, ...) {
+          definition=function(.Object, longitude, latitude, station, waterDepth, time, pressure, u, v, uz, vz, salinity, temperature, ...) {
+              .Object <- callNextMethod(.Object, ...)
               ## Assign to some columns so they exist if needed later (even if they are NULL)
               .Object@metadata$longitude <- if (missing(longitude)) "?" else longitude
               .Object@metadata$latitude <- if (missing(latitude)) "?" else latitude
@@ -36,6 +35,8 @@ setMethod(f="initialize",
               .Object@data$pressure <- if (missing(pressure)) NULL else pressure
               .Object@data$u <- if (missing(u)) NULL else u
               .Object@data$v <- if (missing(v)) NULL else v
+              .Object@data$uz <- if (missing(uz)) NULL else uz
+              .Object@data$vz <- if (missing(vz)) NULL else vz
               .Object@data$salinity <- if (missing(salinity)) NULL else salinity
               .Object@data$temperature <- if (missing(temperature)) NULL else temperature
               dots <- list(...)
@@ -44,7 +45,7 @@ setMethod(f="initialize",
                   ##message("extra column named: ", dotsNames[i])
                   .Object@data[dotsNames[i]] <- dots[i]
               }
-              .Object@processingLog$time <- as.POSIXct(Sys.time())
+              .Object@processingLog$time <- presentTime()
               .Object@processingLog$value <- "create 'ladp' object"
               return(.Object)
           })
@@ -55,16 +56,15 @@ setMethod(f="initialize",
 #' Pertinent summary information is presented, including the station name,
 #' sampling location, data ranges, etc.
 #'
-#' @param object An object of class \code{"ladp"}, usually, a result of a call to
-#' \code{\link{as.ladp}}.
+#' @param object an [ladp-class] object.
 #'
 #' @param ... Further arguments passed to or from other methods.
 #'
-#' @return A matrix containing statistics of the elements of the \code{data} slot.
+#' @return A matrix containing statistics of the elements of the `data` slot.
 #'
 #' @author Dan Kelley
 #'
-#' @family things related to \code{ladp} data
+#' @family things related to ladp data
 setMethod(f="summary",
           signature="ladp",
           definition=function(object, ...) {
@@ -73,62 +73,70 @@ setMethod(f="summary",
               invisible(callNextMethod()) # summary
           })
 
-#' @title Extract Something From an ladp Object
-#' @param x A \code{ladp} object, i.e. one inheriting from \code{\link{ladp-class}}.
+#' Extract Something From an ladp Object
+#'
+#' @param x an [ladp-class] object.
+#'
+#' @section Details of the Specialized Method:
+#'
+#' If `i` is `"?"`, then the return value is a list containing four items, each
+#' of which is a character vector holding the names of things that can be
+#' accessed with `[[`. The `data` and `metadata` items hold the names of entries
+#' in the object's data and metadata slots, respectively. The `metadataDerived`
+#' item is NULL, and the `dataDerived` item holds the following synonyms: `"p"`
+#' for `"pressure"`, `"t"` for `"temperature"` and `"S"` for `"salinity"`.
+#'
 #' @template sub_subTemplate
-#' @examples
-#' data(ctd)
-#' head(ctd[["temperature"]])
+#'
 #' @author Dan Kelley
-#' @family things related to \code{ladp} data
+#'
+#' @family things related to ladp data
 setMethod(f="[[",
           signature(x="ladp", i="ANY", j="ANY"),
           definition=function(x, i, j, ...) {
-              if (i == "pressure" || i == "p") {
-                  x@data$pressure
-              } else if (i == "u") {
-                  x@data$u
-              } else if (i == "v") {
-                  x@data$v
-              } else if (i == "uz") {
-                  x@data$uz
-              } else if (i == "vz") {
-                  x@data$vz
-              } else if (i == "temperature" || i == "t") {
-                  ## FIXME: document "t" part
-                  x@data$temperature
-              } else if (i == "salinity" || i == "S") {
-                  x@data$salinity
-              } else {
-                  callNextMethod()     # [[
-              }
+              dataDerived <- c("p", "t", "S")
+              if (i == "?")
+                  return(list(metadata=sort(names(x@metadata)),
+                          metadataDerived=NULL,
+                          data=sort(names(x@data)),
+                          dataDerived=sort(dataDerived)))
+              if (i == "p")
+                  return(x@data$pressure)
+              if (i == "t")
+                  return(x@data$temperature)
+              if (i == "S")
+                  return(x@data$salinity)
+              callNextMethod()     # [[
           })
 
 
-#' @title Replace Parts of a ladp Object
-#' @param x A \code{ladp} object, i.e. one inheriting from \code{\link{ladp-class}}.
+#' title Replace Parts of a ladp Object
+#'
+#' @param x an [ladp-class] object.
+#'
 #' @template sub_subsetTemplate
 #'
-#' @family things related to \code{ladp} data
+#' @family things related to ladp data
 setMethod(f="[[<-",
           signature(x="ladp", i="ANY", j="ANY"),
           definition=function(x, i, j, ..., value) {
               callNextMethod(x=x, i=i, j=j, ..., value=value) # [[<-
           })
 
-#' Plot an ladp object
+#' Plot an ladp Object
 #'
-#' Uses \code{\link{plotProfile}} to create panels of depth variation of easterly
+#' Uses [plotProfile()] to create panels of depth variation of easterly
 #' and northerly velocity components.
 #'
-#' @param x A \code{ladp} object, e.g. as read by \code{\link{as.ladp}}.
-#' @param which Vector of names of items to be plotted.
+#' @param x an [ladp-class] object.
+#' @param which a character vector storing names of items to be plotted.
 #' @param ... Other arguments, passed to plotting functions.
 #'
 #' @author Dan Kelley
 #'
-#' @family things related to \code{ladp} data
-#' @family functions that plot \code{oce} data
+#' @family things related to ladp data
+#' @family functions that plot oce data
+#'
 #' @aliases plot.ladp
 setMethod(f="plot",
           signature=signature("ladp"),
@@ -144,32 +152,42 @@ fixColumn <- function(x) {
 }
 
 
-
 #' Coerce data into an ladp object
 #'
 #' This function assembles vectors of pressure and velocity, possibly also with
 #' shears, salinity, temperature, etc.
 #'
-#' @param longitude longitude in degrees east, or an \code{oce} object that
-#' contains the data otherwise given by \code{longitude} and the
+#' @param longitude longitude in degrees east, or an `oce` object that
+#' contains the data otherwise given by `longitude` and the
 #' other arguments.
+#'
 #' @param latitude latitude in degrees east (use negative in southern hemisphere).
+#'
 #' @param station number or string indicating station ID.
-#' @param time time at the start of the profile, constructed by e.g. \code{\link{as.POSIXct}}.
+#'
+#' @param time time at the start of the profile, constructed by e.g. [as.POSIXct()].
+#'
 #' @param pressure pressure in decibars, through the water column.
+#'
 #' @param u eastward velocity (m/s).
+#'
 #' @param v northward velocity (m/s).
+#'
 #' @param uz vertical derivative of eastward velocity (1/s).
+#'
 #' @param vz vertical derivative of northward velocity (1/s).
+#'
 #' @param salinity salinity through the water column, in practical salinity units.
+#'
 #' @param temperature temperature through the water column.
+#'
 #' @param \dots optional additional data columns.
 #'
-#' @return An object of \code{\link{ladp-class}}.
+#' @return An [ladp-class] object.
 #'
 #' @author Dan Kelley
 #'
-#' @family things related to \code{ladp} data
+#' @family things related to ladp data
 as.ladp <- function(longitude, latitude, station, time, pressure, u, v, uz, vz, salinity, temperature, ...)
 {
     if (inherits(longitude, "oce")) {

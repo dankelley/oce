@@ -4,8 +4,15 @@
 \alias{plotInset}
 \title{Plot an Inset Diagram}
 \usage{
-plotInset(xleft, ybottom, xright, ytop, expr, mar = c(2, 2, 1, 1),
-  debug = getOption("oceDebug"))
+plotInset(
+  xleft,
+  ybottom,
+  xright,
+  ytop,
+  expr,
+  mar = c(2, 2, 1, 1),
+  debug = getOption("oceDebug")
+)
 }
 \arguments{
 \item{xleft}{location of left-hand of the inset diagram, in the existing
@@ -39,9 +46,8 @@ within the inset, so it is essential to finish a plot before drawing an
 inset.
 }
 \examples{
-
 library(oce)
-## power law in linear and log form
+# power law in linear and log form
 x <- 1:10
 y <- x^2
 plot(x, y, log='xy',type='l')
@@ -49,7 +55,7 @@ plotInset(3, 1, 10, 8,
           expr=plot(x,y,type='l',cex.axis=3/4,mgp=c(3/2, 1/2, 0)),
           mar=c(2.5, 2.5, 1, 1))
 
-## CTD data with location
+# CTD data with location
 data(ctd)
 plot(ctd, which="TS")
 plotInset(29.9, 2.7, 31, 10,

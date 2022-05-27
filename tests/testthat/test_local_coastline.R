@@ -1,5 +1,4 @@
 library(oce)
-context("coastline")
 test_that("coastline shapefile", {
           if (1 == length(list.files(path=".", pattern="local_data"))) {
               cl <- read.oce("local_data/ne_110m_admin_0_countries.shp")

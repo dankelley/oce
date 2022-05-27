@@ -5,6 +5,11 @@
 
 using namespace Rcpp;
 
+#ifdef RCPP_USE_GLOBAL_ROSTREAM
+Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
+Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
+#endif
+
 // do_ad2cp_ahrs
 NumericMatrix do_ad2cp_ahrs(NumericMatrix v, NumericMatrix ahrs);
 RcppExport SEXP _oce_do_ad2cp_ahrs(SEXP vSEXP, SEXP ahrsSEXP) {
@@ -277,8 +282,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // do_ldc_ad2cp_in_file
-List do_ldc_ad2cp_in_file(CharacterVector filename, IntegerVector from, IntegerVector to, IntegerVector by);
-RcppExport SEXP _oce_do_ldc_ad2cp_in_file(SEXP filenameSEXP, SEXP fromSEXP, SEXP toSEXP, SEXP bySEXP) {
+List do_ldc_ad2cp_in_file(CharacterVector filename, IntegerVector from, IntegerVector to, IntegerVector by, IntegerVector DEBUG);
+RcppExport SEXP _oce_do_ldc_ad2cp_in_file(SEXP filenameSEXP, SEXP fromSEXP, SEXP toSEXP, SEXP bySEXP, SEXP DEBUGSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -286,13 +291,14 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< IntegerVector >::type from(fromSEXP);
     Rcpp::traits::input_parameter< IntegerVector >::type to(toSEXP);
     Rcpp::traits::input_parameter< IntegerVector >::type by(bySEXP);
-    rcpp_result_gen = Rcpp::wrap(do_ldc_ad2cp_in_file(filename, from, to, by));
+    Rcpp::traits::input_parameter< IntegerVector >::type DEBUG(DEBUGSEXP);
+    rcpp_result_gen = Rcpp::wrap(do_ldc_ad2cp_in_file(filename, from, to, by, DEBUG));
     return rcpp_result_gen;
 END_RCPP
 }
 // do_ldc_rdi_in_file
-List do_ldc_rdi_in_file(StringVector filename, IntegerVector from, IntegerVector to, IntegerVector by, IntegerVector mode, IntegerVector debug);
-RcppExport SEXP _oce_do_ldc_rdi_in_file(SEXP filenameSEXP, SEXP fromSEXP, SEXP toSEXP, SEXP bySEXP, SEXP modeSEXP, SEXP debugSEXP) {
+List do_ldc_rdi_in_file(StringVector filename, IntegerVector from, IntegerVector to, IntegerVector by, IntegerVector startIndex, IntegerVector mode, IntegerVector debug);
+RcppExport SEXP _oce_do_ldc_rdi_in_file(SEXP filenameSEXP, SEXP fromSEXP, SEXP toSEXP, SEXP bySEXP, SEXP startIndexSEXP, SEXP modeSEXP, SEXP debugSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -300,9 +306,10 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< IntegerVector >::type from(fromSEXP);
     Rcpp::traits::input_parameter< IntegerVector >::type to(toSEXP);
     Rcpp::traits::input_parameter< IntegerVector >::type by(bySEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type startIndex(startIndexSEXP);
     Rcpp::traits::input_parameter< IntegerVector >::type mode(modeSEXP);
     Rcpp::traits::input_parameter< IntegerVector >::type debug(debugSEXP);
-    rcpp_result_gen = Rcpp::wrap(do_ldc_rdi_in_file(filename, from, to, by, mode, debug));
+    rcpp_result_gen = Rcpp::wrap(do_ldc_rdi_in_file(filename, from, to, by, startIndex, mode, debug));
     return rcpp_result_gen;
 END_RCPP
 }

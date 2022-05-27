@@ -1,16 +1,16 @@
-## vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
+# vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
 
 
 #' Class to Store Topographic Data
 #'
 #' This class stores topographic data, as read with
-#' \code{\link{read.topo}} or assembled with \code{\link{as.topo}}.
-#' Plotting is handled with \code{\link{plot,topo-method}}
-#' and summaries with \code{\link{summary,topo-method}}.
+#' [read.topo()] or assembled with [as.topo()].
+#' Plotting is handled with [plot,topo-method()]
+#' and summaries with [summary,topo-method()].
 #'
 #' @templateVar class topo
 #'
-#' @templateVar dataExample The key items stored in this slot are: \code{longititude}, \code{latitude}, and \code{z}.
+#' @templateVar dataExample The key items stored in this slot are: `longititude`, `latitude`, and `z`.
 #'
 #' @templateVar metadataExample {}
 #'
@@ -22,23 +22,43 @@
 #'
 #' @author Dan Kelley
 #'
-#' @family classes provided by \code{oce}
-#' @family things related to \code{topo} data
+#' @family classes provided by oce
+#'
+#' @family things related to topo data
 setClass("topo", contains="oce")
 
 #' @title Global Topographic Dataset at Half-degree Resolution
 #'
 #' @description
-#' Global topographic dataset at half-degree resolution, created by decimating the
-#' ETOPO5 dataset.  Its longitude ranges from -179.5 to 180, and its latitude
-#' ranges from -89.5 to 90.  Height is measured in metres above nominal sea level.
+#' Global topographic dataset at half-degree resolution, downloaded from
+#' a NOAA server on May 18, 2019.  Longitude, accessible as
+#' `topoWorld[["longitude"]]`, ranges from -179.75 to 129.75 degrees north.
+#' Latitude (`topoWorld[["latitude"]]`) ranges from -89.75 to 89.75 degrees east.
+#' Height (`topoWorld[["z"]]`) is measured in metres above nominal sea level.
 #'
 #' The coarse resolution can be a problem in plotting depth contours along with
 #' coastlines in regions of steep topography. For example, near the southeast
 #' corner of Newfoundland, a 200m contour will overlap a coastline drawn with
-#' \code{\link[ocedata]{coastlineWorldFine}}. The solution in such cases is to
-#' download a higher-resolution topography file and create a \code{topo} object
-#' with \code{\link{read.topo}} or \code{\link{as.topo}}.
+#' `coastlineWorldFine` from the \CRANpkg{ocedata} package. The solution in such cases is to
+#' download a higher-resolution topography file, perhaps using
+#' [download.topo()], and then use [read.topo()]
+#' to create another `topo` object.  (With other data
+#' sources, [as.topo()] may be helpful.)
+#'
+#' @section Historical note:
+#' From late 2009 until May 18, 2019, the `topoWorld` dataset was created
+#' with a fairly complicated code that read a binary file downloaded from NOAA
+#' (\samp{http://www.ngdc.noaa.gov/mgg/global/relief/ETOPO5/TOPO/ETOPO5}),
+#' decoded, decimated from 1/12th degree resolution to 1/2 degree resolution, and
+#' passed through [matrixShiftLongitude()] to put longitude
+#' between -180 and 180 degrees. The new scheme for creating the dataset,
+#' (see \dQuote{Source}) is much simpler, and also a much better model
+#' of how users are likely to deal with topography files in the more
+#' modern netCDF format. Note that the new version differs from the old one
+#' in longitude and latitude being shifted by 1/4 degree,
+#' and by a mean  elevation difference of under 10m. The old and new
+#' versions appear identical when plotted at the global scale that is
+#' the recommended for such a coarse topographic file.
 #'
 #' @name topoWorld
 #' @docType data
@@ -46,34 +66,35 @@ setClass("topo", contains="oce")
 #' @usage data(topoWorld)
 #'
 #' @source
-#' The binary ETOPO5 dataset was downloaded in late 2009 from the NOAA website,
-#' \samp{http://www.ngdc.noaa.gov/mgg/global/relief/ETOPO5/TOPO/ETOPO5},
-#' decoded, decimated from 1/12th degree resolution to 1/2 degree resolution, and
-#' passed through \code{\link{matrixShiftLongitude}} so that longitude is
-#' between -180 and 180 degrees.
+#' This is created with [read.topo()], using a file downloaded with
+#'\preformatted{
+#'topoFile <- download.topo(west=-180, east=180, south=-90, north=90,
+#'                          resolution=30, destdir=".")
+#'}
 #'
 #' @examples
-#' \dontrun{
+#'\dontrun{
 #' library(oce)
 #' data(topoWorld)
 #' par(mfrow=c(2, 1))
 #' plot(topoWorld, location=NULL)
 #' imagep(topoWorld)
-#' }
+#'}
 #'
-#' @family datasets provided with \code{oce}
-#' @family things related to \code{topo} data
+#' @family datasets provided with oce
+#' @family things related to topo data
 NULL
 
 setMethod(f="initialize",
           signature="topo",
-          definition=function(.Object, longitude, latitude, z, filename="", units) {
+          definition=function(.Object, longitude, latitude, z, filename="", units, ...) {
+              .Object <- callNextMethod(.Object, ...)
               if (!missing(longitude)) .Object@data$longitude <- longitude
               if (!missing(latitude)) .Object@data$latitude <- latitude
               if (!missing(z)) .Object@data$z <- z
               if (!missing(units)) .Object@metadata$units <- units
               .Object@metadata$filename <- filename
-              .Object@processingLog$time <- as.POSIXct(Sys.time())
+              .Object@processingLog$time <- presentTime()
               .Object@processingLog$value <- "create 'topo' object"
               return(.Object)
           })
@@ -85,11 +106,11 @@ setMethod(f="initialize",
 #' Pertinent summary information is presented, including the longitude and
 #' latitude range, and the range of elevation.
 #'
-#' @param object A \code{topo} object, i.e. inheriting from \code{\link{topo-class}}.
+#' @param object A [topo-class] object.
 #'
 #' @param \dots Further arguments passed to or from other methods.
 #'
-#' @return A matrix containing statistics of the elements of the \code{data} slot.
+#' @return A matrix containing statistics of the elements of the `data` slot.
 #'
 #' @examples
 #' library(oce)
@@ -98,7 +119,7 @@ setMethod(f="initialize",
 #'
 #' @author Dan Kelley
 #'
-#' @family things related to \code{topo} data
+#' @family things related to topo data
 setMethod(f="summary",
           signature="topo",
           definition=function(object, ...) {
@@ -108,25 +129,46 @@ setMethod(f="summary",
           })
 
 #' @title Extract Something From a Topo Object
-#' @param x A topo object, i.e. one inheriting from \code{\link{topo-class}}.
+#'
+#' @param x a [topo-class] object.
+#'
 #' @examples
 #' data(topoWorld)
 #' dim(topoWorld[['z']])
 #'
-#' @section Details of the specialized topo method:
-#' There are no special features for \code{\link{topo-class}} data;
-#' the general method is used directly.
+#' @section Details of the Specialized Method:
+#'
+#' * If `i` is `"?"`, then the return value is a list
+#' containing four items, each of which is a character vector
+#' holding the names of things that can be accessed with `[[`.
+#' The `data` and `metadata` items hold the names of
+#' entries in the object's data and metadata
+#' slots, respectively. The `dataDerived`
+#' and `metadataDerived` items are each NULL, because
+#' no derived values are available for `topo` objects.
+#'
 #' @template sub_subTemplate
-#' @family things related to \code{topo} data
+#'
+#' @author Dan Kelley
+#'
+#' @family things related to topo data
 setMethod(f="[[",
           signature(x="topo", i="ANY", j="ANY"),
           definition=function(x, i, j, ...) {
+              if (i == "?")
+                  return(list(metadata=sort(names(x@metadata)),
+                          metadataDerived=NULL,
+                          data=sort(names(x@data)),
+                          dataDerived=NULL))
               callNextMethod()         # [[
           })
 
 #' @title Replace Parts of a Topo Object
-#' @param x An \code{topo} object, i.e. inheriting from \code{\link{topo-class}}
-#' @family things related to \code{topo} data
+#'
+#' @param x a [topo-class] object.
+#'
+#' @family things related to topo data
+#'
 #' @template sub_subsetTemplate
 setMethod(f="[[<-",
           signature(x="topo", i="ANY", j="ANY"),
@@ -137,18 +179,18 @@ setMethod(f="[[<-",
 #' @title Subset a Topo Object
 #'
 #' @description
-#' This function is somewhat analogous to \code{\link{subset.data.frame}}.
-#' Subsetting can be by \code{time} or \code{distance}, but these may not be
+#' This function is somewhat analogous to [subset.data.frame()].
+#' Subsetting can be by `time` or `distance`, but these may not be
 #' combined; use a sequence of calls to subset by both.
 #'
-#' @param x A \code{topo} object, i.e. inheriting from \code{\link{topo-class}}.
+#' @param x a [topo-class] object.
 #'
-#' @param subset A condition to be applied to the \code{data} portion of \code{x}.
+#' @param subset A condition to be applied to the `data` portion of `x`.
 #' See \sQuote{Details}.
 #'
 #' @param ... Ignored.
 #'
-#' @return A new \code{\link{topo-class}} object.
+#' @return A new [topo-class] object.
 #'
 #' @examples
 #' ## northern hemisphere
@@ -158,12 +200,12 @@ setMethod(f="[[<-",
 #'
 #' @author Dan Kelley
 #'
-#' @family things related to \code{topo} data
-#' @family functions that subset \code{oce} objects
+#' @family things related to topo data
+#' @family functions that subset oce objects
 setMethod(f="subset",
           signature="topo",
           definition=function(x, subset, ...) {
-              subsetString <- paste(deparse(substitute(subset)), collapse=" ")
+              subsetString <- paste(deparse(substitute(expr=subset, env=environment())), collapse=" ")
               res <- x
               dots <- list(...)
               debug <- getOption("oceDebug")
@@ -173,13 +215,13 @@ setMethod(f="subset",
                   stop("must give 'subset'")
               if (length(grep("longitude", subsetString))) {
                   oceDebug(debug, "subsetting a topo object by longitude\n")
-                  keep <- eval(substitute(subset), x@data, parent.frame(2))
+                  keep <- eval(expr=substitute(expr=subset, env=environment()), envir=x@data, enclos=parent.frame(2))
                   oceDebug(debug, "keeping", 100*sum(keep)/length(keep), "% of longitudes\n")
                   res[["longitude"]] <- x[["longitude"]][keep]
                   res[["z"]] <- x[["z"]][keep, ]
               } else if (length(grep("latitude", subsetString))) {
                   oceDebug(debug, "subsetting a topo object by latitude\n")
-                  keep <- eval(substitute(subset), x@data, parent.frame(2))
+                  keep <- eval(expr=substitute(expr=subset, env=environment()), envir=x@data, enclos=parent.frame(2))
                   oceDebug(debug, "keeping", 100*sum(keep)/length(keep), "% of latitudes\n")
                   res[["latitude"]] <- x[["latitude"]][keep]
                   res[["z"]] <- x[["z"]][, keep]
@@ -193,56 +235,54 @@ setMethod(f="subset",
 
 #' Download and Cache a topo File
 #'
-#' Data are downloaded (from \samp{https://maps.ngdc.noaa.gov/viewers/wcs-client/}, by
-#' default) and a string containing the full path to the downloaded file is returned.
-#' Typically, this return value is used with \code{\link{read.topo}} to read the
-#' data. Subsequent calls to \code{download.topo}
-#' with identical parameters will simply return the name of the cached file,
-#' assuming the user has not deleted it in the meantime.
-#' For convenience, if \code{destfile} is not
-#' given, then \code{download.topo} will construct a filename from the other arguments,
-#' rounding longitude and latitude limits to 0.01 degrees.
+#' Topographic data are downloaded from a data server that holds the
+#' ETOPO1 dataset (Amante, C. and B.W. Eakins, 2009), and saved as a
+#' netCDF file whose name specifies the data request, if a file of
+#' that name is not already present on the local file system.  The
+#' return value is the name of the data file, and its typical use is
+#' as the filename for a call to [read.topo()].  Given the rules on
+#' file naming, subsequent calls to `download.topo` with identical
+#' parameters will simply return the name of the cached file, assuming
+#' the user has not deleted it in the meantime.  Note that
+#' `download.topo` uses the `"raster"` and `"ncdf4"` packages, so
+#' these must be installed, or an error is reported.
 #'
-#' @details
-#' The data are downloaded with \code{\link[utils]{download.file}}, using a URL
-#' devised from reverse engineering web-based queries constructed by
-#' the default \code{server} used here. Note that the data source is "etopo1",
-#' which is a 1 arc-second file [1,2].
+#' The specified longitude and latitude limits are rounded to 2 digits
+#' (corresponding to a footprint of approximately 1km), and these are
+#' used in the server request. If the resultant request would generate
+#' under 1 row or column in the result, `download.topo` generates an
+#' error message and stops.
 #'
-#' Three values are permitted for \code{format},
-#' each named after the
-#' targets of menu items on the
-#' NOAA website (as of August 2016): (1) \code{"aaigrid"} (for
-#' the menu item "ArcGIS ASCII Grid"), which
-#' yields a text file, (2) \code{"netcdf"} (the default,
-#' for the menu item named
-#' "NetCDF"), which yields a NetCDF file
-#' and (3) \code{"gmt"} (for the menu item named
-#' "GMT NetCDF"), which yields a NetCDF file in
-#' another format. All of these file formats are
-#' recognized by \code{\link{read.topo}}.
-#' (The NOAA server has more options, and if
-#' \code{\link{read.topo}} is extended to handle them, they will
-#' also be added here.)
+#' @section Historical note relating to NOAA server changes:
+#' In May of 2020, `download.topo` stopped working, evidently owing
+#' to changes in the NOAA server API, which had been inferred by reverse
+#' engineering a NOAA data-request website. However, the
+#' `marmap` function `getNOAA.bathy`
+#' was found to be working at that time, and so `download.topo` was revised based on
+#' that function.  The problem of keeping up with changing data-server APIs should
+#' be easier in the future, since NOAA has made the API public.
 #'
-#' @param west,east Longitudes of the western and eastern sides of the box.
+#' @param west,east numeric values for the limits of the data-selection box, in degrees.
+#' These are converted to the -180 to 180 degree notation, if needed.
+#' Then, `west` is rounded down to the nearest 1/100th degree, and `east`
+#' is rounded up to the the nearest 1/100th degree. The results of these
+#' operations are used in constructing the query for the NOAA data server.
 #'
-#' @param south,north Latitudes of the southern and northern sides of the box.
+#' @param south,north latitude limits, treated in a way that
+#' corresponds to the longitude limits.
 #'
-#' @param resolution Optional grid spacing, in minutes. If not supplied,
-#' a default value of 4 (corresponding to 7.4km, or 4 nautical
-#' miles) is used. Note that (as of August 2016) the original data are on
-#' a 1-minute grid, which limits the possibilities for \code{resolution}.
+#' @param resolution numeric value of grid spacing, in geographical minutes.
+#' The default value is 4 minutes, corresponding to 4 nautical miles (approx. 7.4km)
+#' in the north-south direction, and less in the east-west direction.
 #'
 #' @template downloadDestTemplate
 #'
-#' @param format Optional string indicating the type of file to download. If
-#' not supplied, this defaults to \code{"gmt"}. See \dQuote{Details}.
+#' @param format Deprecated, and ignored, as of June 2020.
 #'
-#' @param server Optional string indicating the server from which to get the data.
-#' If not supplied, the default
-#' \samp{"https://gis.ngdc.noaa.gov/cgi-bin/public/wcs/etopo1.xyz"}
-#' will be used.
+#' @param server character value specifying the base from which a
+#' download URL will be constructed.  It is unlikely that any value
+#' other than the default will work, unless it is a similarly-constructed
+#' mirrored site.
 #'
 #' @template debugTemplate
 #'
@@ -253,114 +293,100 @@ setMethod(f="subset",
 #' @examples
 #'\dontrun{
 #' library(oce)
-#' topoFile <- download.topo(west=-64, east=-60, south=43, north=46,
-#'                           resolution=1, destdir="~/data/topo")
+#' topoFile <- download.topo(west=-66, east=-60, south=43, north=47,
+#'     resolution=1, destdir="~/data/topo")
 #' topo <- read.topo(topoFile)
-#' imagep(topo, zlim=c(-400, 400), drawTriangles=TRUE)
-#' data(coastlineWorldFine, package="ocedata")
-#' lines(coastlineWorldFine[["longitude"]], coastlineWorldFine[["latitude"]])
+#' imagep(topo, zlim=c(-400, 400), col=oceColorsTwo, drawTriangles=TRUE)
+#' if (requireNamespace("ocedata", quietly=TRUE)) {
+#'     data(coastlineWorldFine, package="ocedata")
+#'     lines(coastlineWorldFine[["longitude"]], coastlineWorldFine[["latitude"]])
+#' }
 #'}
 #'
-#' @section Webserver history:
-#' All versions of \code{download.topo} to date have used a NOAA server as
-#' the data source, but the URL has not been static. A list of the
-#' servers that have been used is provided below,
-#' in hopes that it can help users to make guesses
-#' for \code{server}, should \code{download.topo} fail because of
-#' a fail to download the data. Another
-#' hint is to look at the source code for
-#' \code{\link[marmap]{getNOAA.bathy}} in the \CRANpkg{marmap} package,
-#' which is also forced to track the moving target that is NOAA.
-#'
-#' \itemize{
-#' \item August 2016.
-#' \samp{http://maps.ngdc.noaa.gov/mapviewer-support/wcs-proxy/wcs.groovy}
-#'
-#' \item December 2016.
-#' \samp{http://mapserver.ngdc.noaa.gov/cgi-bin/public/wcs/etopo1.xyz}
-#'
-#' \item June-September 2017.
-#' \samp{https://gis.ngdc.noaa.gov/cgi-bin/public/wcs/etopo1.xyz}
-#' }
-#'
-#' @seealso The work is done with \code{\link[utils]{download.file}}.
-#'
 #' @references
-#' 1. \samp{https://www.ngdc.noaa.gov/mgg/global/global.html}
-#'
-#' 2. Amante, C. and B.W. Eakins, 2009. ETOPO1 1 Arc-Minute Global Relief
+#' * Amante, C. and B.W. Eakins, 2009. ETOPO1 1 Arc-Minute Global Relief
 #' Model: Procedures, Data Sources and Analysis. NOAA Technical Memorandum
 #' NESDIS NGDC-24. National Geophysical Data Center, NOAA. doi:10.7289/V5C8276M
-#' [access date: Aug 30, 2017].
 #'
 #' @family functions that download files
-#' @family things related to \code{topo} data
-download.topo <- function(west, east, south, north, resolution,
-                           destdir, destfile, format,
-                           server, debug=getOption("oceDebug"))
+#' @family things related to topo data
+download.topo <- function(west, east, south, north, resolution=4,
+                           destdir=".", destfile, format,
+                           server="https://gis.ngdc.noaa.gov",
+                           debug=getOption("oceDebug"))
 {
-    if (missing(server)) {
-        server <- "https://gis.ngdc.noaa.gov/cgi-bin/public/wcs/etopo1.xyz"
-        ## server <- "http://mapserver.ngdc.noaa.gov/cgi-bin/public/wcs/etopo1.xyz"
-        ## server <- "http://maps.ngdc.noaa.gov/mapviewer-support/wcs-proxy/wcs.groovy"
-    }
-    if (missing(destdir))
-        destdir <- "."
-    if (missing(format))
-        format <- "gmt"
-    if (missing(resolution))
-        resolution <- 4
-    res <- resolution / 60
+    oceDebug(debug, "download.topo(west=", west,
+             ", east=", east,
+             ", south=", south,
+             ", north=", north,
+             ", resolution=", resolution,
+             ", destdir='", destdir,
+             ", server='", server,
+             "')\n",
+             sep="", style="bold", unindent=1)
+    if (resolution < 1)
+        warning("resolution is < 1, which may cause errors or incorrect results\n")
+    ## The +-0.005 is to get rounding down for west and south, and rounding up for east and north.
+    east <- round(east + 0.005, 2)
+    west <- round(west - 0.005, 2)
+    south <- round(south - 0.005, 2)
+    north <- round(north + 0.005, 2)
     if (west > 180)
         west <- west - 360
     if (east > 180)
         east <- east - 360
-    wName <- paste(abs(round(west,2)), if (west <= 0) "W" else "E", sep="")
-    eName <- paste(abs(round(east,2)), if (east <= 0) "W" else "E", sep="")
-    sName <- paste(abs(round(south,2)), if (south <= 0) "S" else "N", sep="")
-    nName <- paste(abs(round(north,2)), if (north <= 0) "S" else "N", sep="")
+    wName <- paste(abs(west), if (west <= 0) "W" else "E", sep="")
+    eName <- paste(abs(east), if (east <= 0) "W" else "E", sep="")
+    sName <- paste(abs(south), if (south <= 0) "S" else "N", sep="")
+    nName <- paste(abs(north), if (north <= 0) "S" else "N", sep="")
     resolutionName <- paste(resolution, "min", sep="")
     if (missing(destfile))
-        destfile <- paste("topo", wName, eName, sName, nName, resolutionName, sep="_")
-    formatChoices <- c("aaigrid", "gmt", "netcdf")
-    formatId <- pmatch(format, formatChoices)
-    if (is.na(formatId))
-        stop("'format' must be one of the following: '", paste(formatChoices, collapse="' '"), "', but it is '", format, "'")
-    format <- formatChoices[formatId]
-    filename <- ""
-    if (format=="netcdf") {
-        destfile <- paste(destfile, "_netcdf.nc", sep="")
-        filename <- "etopo1.nc"
-    } else if (format=="gmt") {
-        destfile <- paste(destfile, "_gmt.nc", sep="")
-        filename <- "etopo1.grd"
-    } else if (format=="aiagrid") {
-        destfile <- paste(destfile, "_aiagrid.asc", sep="")
-        filename <- "etopo1.asc"
-    } else {
-        stop("unrecognized file format")
+        destfile <- paste0(paste("topo", wName, eName, sName, nName, resolutionName, sep="_"), ".nc")
+    destination <- paste0(destdir, "/", destfile)
+    oceDebug(debug, "destination='", destination, "'\n", sep="")
+    if (file.exists(destination)) {
+        oceDebug(debug, "using existing file \"", destination, "\"\n", sep="")
+        oceDebug(debug, "} # download.topo\n", sep="", style="bold", unindent=1)
+        return(destination)
     }
-    destination <- paste(destdir, destfile, sep="/")
-    ## The URLS are reverse engineered from the website
-    ##
-    ## Menu item 'ArcGIS ASCII Grid'
-    ## http://maps.ngdc.noaa.gov/mapviewer-support/wcs-proxy/wcs.groovy?filename=etopo1.asc&request=getcoverage&version=1.0.0&service=wcs&coverage=etopo1&CRS=EPSG:4326&format=aaigrid&resx=0.016666666666666667&resy=0.016666666666666667&bbox=-66.26953124998283,42.03297433243247,-57.788085937485086,46.95026224217615
-
-    ## Menu item 'NetCDF' yields format="netcdf", as below
-    ## http://maps.ngdc.noaa.gov/mapviewer-support/wcs-proxy/wcs.groovy?filename=etopo1.nc&request=getcoverage&version=1.0.0&service=wcs&coverage=etopo1&CRS=EPSG:4326&format=netcdf&resx=0.016666666666666667&resy=0.016666666666666667&bbox=-63.69873046873296,44.824708282290764,-62.3803710937333,45.259422036342194
-    ##
-    ## Menu item 'GMT NetCDF' yields format="gmt", as below
-    ## http://maps.ngdc.noaa.gov/mapviewer-support/wcs-proxy/wcs.groovy?filename=etopo1.grd&request=getcoverage&version=1.0.0&service=wcs&coverage=etopo1&CRS=EPSG:4326&format=gmt&resx=0.016666666666666667&resy=0.016666666666666667&bbox=-66.26953124998283,42.03297433243247,-57.788085937485086,46.95026224217615
-    ## http://maps.ngdc.noaa.gov/mapviewer-support/wcs-proxy/wcs.groovy?filename=etopo1.grd&request=getcoverage&version=1.0.0&service=wcs&coverage=etopo1&CRS=EPSG:4326&format=gmt&resx=0.016666666666666667&resy=0.016666666666666667&bbox=-63.69873046873296,44.824708282290764,-62.3803710937333,45.259422036342194
-    url <- sprintf("%s?filename=%s&request=getcoverage&version=1.0.0&service=wcs&coverage=etopo1&CRS=EPSG:4326&format=%s&resx=%f&resy=%f&bbox=%f,%f,%f,%f",
-                   server, filename, format, res, res, west, south, east, north)
-    oceDebug(debug, "source url:", url, "\n")
-    if (1 == length(list.files(path=destdir, pattern=paste("^", destfile, "$", sep="")))) {
-        oceDebug(debug, "Not downloading", destfile, "because it is already present in", destdir, "\n")
-    } else {
-        download.file(url, destination)
-        oceDebug(debug, "Downloaded file stored as '", destination, "'\n", sep="")
-    }
+    nlon <- as.integer((east - west) * 60.0 / resolution)
+    if (nlon < 1L)
+        stop("Cannot download topo file, since east-west (=", east-west, " deg) is less than resolution (=", resolution, " min)")
+    nlat <- as.integer((north - south) * 60.0 / resolution)
+    if (nlat < 1L)
+        stop("Cannot download topo file, since north-south(=", north-south, " deg) is less than resolution (=", resolution, " min)")
+    url <- paste0(server, "/arcgis/rest/services/DEM_mosaics/ETOPO1_bedrock/ImageServer/exportImage",
+                  "?bbox=", west, ",", south, ",", east, ",", north,
+                  "&bboxSR=4326",
+                  "&size=", nlon, ",", nlat,
+                  "&imageSR=4326",
+                  "&format=tiff",
+                  "&pixelType=S16",
+                  "&interpolation=+RSP_NearestNeighbor",
+                  "&compression=LZW",
+                  "&f=image")
+    oceDebug(debug, "querying \"", url, "\"\n", sep="")
+    if (!requireNamespace("raster", quietly=TRUE))
+        stop('must install.packages("raster"), which is required to translate downloaded data')
+    if (!requireNamespace("ncdf4", quietly=TRUE))
+        stop('must install.packages("ncdf4"), which is required to save topo data')
+    r <- raster::raster(x=url)
+    oceDebug(debug, "converting data\n", sep="")
+    longitude <- seq(r@extent@xmin, r@extent@xmax, length.out=r@ncols)
+    latitude <- seq(r@extent@ymin, r@extent@ymax, length.out=r@nrows)
+    z <- t(raster::as.matrix(raster::flip(r, direction="y")))
+    oceDebug(debug, "saving to \"", destination, "\"\n", sep="")
+    ## create netcdf file
+    ## dimensions
+    #side <- ncdf4::ncdim_def("side", units="", vals=2.0)
+    fillvalue <- 1e32
+    lonDim <- ncdf4::ncdim_def("lon", "degrees_east", as.double(longitude))
+    latDim <- ncdf4::ncdim_def("lat", "degrees_north", as.double(latitude))
+    Band1 <- ncdf4::ncvar_def("Band1", "m", list(lonDim, latDim), fillvalue, "elevation m", prec="double")
+    nc <- ncdf4::nc_create(destination, list(Band1))
+    ncdf4::ncvar_put(nc, "Band1", z)
+    ncdf4::nc_close(nc)
+    oceDebug(debug, "} # download.topo()\n", sep="", style="bold", unindent=1)
     destination
 }
 
@@ -369,17 +395,15 @@ download.topo <- function(west, east, south, north, resolution,
 #' @description
 #' Bilinear interpolation is used so that values will vary smoothly within a
 #' longitude-latitude grid cell. Note that the sign convention for
-#' \code{longitude} and \code{latitude} must match that in \code{topo}.
+#' `longitude` and `latitude` must match that in `topo`.
 #'
 #' @param longitude Vector of longitudes (in the same sign convention as used in
-#' \code{topo}).
+#' `topo`).
 #'
 #' @param latitude Vector of latitudes (in the same sign convention as used in
-#' \code{topo}).
+#' `topo`).
 #'
-#' @param topo A \code{topo} object, i.e. inheriting from
-#' \code{\link{topo-class}}.
-#'
+#' @param topo A [topo-class] object.
 #'
 #' @return Vector of heights giving the elevation of the earth above means sea
 #' level at the indicated location on the earth.
@@ -392,7 +416,7 @@ download.topo <- function(west, east, south, north, resolution,
 #'
 #' @author Dan Kelley
 #'
-#' @family things related to \code{topo} data
+#' @family things related to topo data
 topoInterpolate <- function(longitude, latitude, topo)
 {
     if (missing(longitude)) stop("must supply longitude")
@@ -403,63 +427,62 @@ topoInterpolate <- function(longitude, latitude, topo)
 }
 
 
-#' @title Plot a Topo Object
+#' Plot a topo Object
 #'
-#' @description
 #' This plots contours of topographic elevation.  The plot aspect ratio is set
 #' based on the middle latitude in the plot.  The line properties, such as
-#' \code{land.lwd}, may either be a single item, or a vector; in the latter case,
+#' `land.lwd`, may either be a single item, or a vector; in the latter case,
 #' the length must match the length of the corresponding properties, e.g.
-#' \code{land.z}.
+#' `land.z`.
 #'
-#' @param x A \code{topo} object, i.e. inheriting from \code{\link{topo-class}}.
+#' @param x a [topo-class] object.
 #'
 #' @param xlab,ylab Character strings giving a label for the x and y axes.
 #'
-#' @param asp Aspect ratio for plot.  The default is for \code{plot.coastline} to
+#' @param asp Aspect ratio for plot.  The default is for `plot.coastline` to
 #' set the aspect ratio to give natural latitude-longitude scaling somewhere near
-#' the centre latitude on the plot. Often, it makes sense to set \code{asp}
-#' yourself, e.g. to get correct shapes at 45N, use \code{asp=1/cos(45*pi/180)}.
+#' the centre latitude on the plot. Often, it makes sense to set `asp`
+#' yourself, e.g. to get correct shapes at 45N, use `asp=1/cos(45*pi/180)`.
 #' Note that the land mass is not symmetric about the equator, so to get good
-#' world views you should set \code{asp=1} or set \code{ylim} to be symmetric
-#' about zero.  Any given value of \code{asp} is ignored, if \code{clongitude} and
-#' \code{clatitude} are given.
+#' world views you should set `asp=1` or set `ylim` to be symmetric
+#' about zero.  Any given value of `asp` is ignored, if `clongitude` and
+#' `clatitude` are given.
 #'
 #' @param clatitude Optional center latitude of map, in degrees north.  If this
-#' and \code{clongitude} are provided, then any provided value of \code{asp} is
+#' and `clongitude` are provided, then any provided value of `asp` is
 #' ignored, and instead the plot aspect ratio is computed based on the center
-#' latitude.  Also, if \code{clongitude} and \code{clatitude} are provided, then
-#' \code{span} must be, also.
+#' latitude.  Also, if `clongitude` and `clatitude` are provided, then
+#' `span` must be, also.
 #'
 #' @param clongitude Optional center longitude of map, in degrees east; see
-#' \code{clatitude}.
+#' `clatitude`.
 #'
 #' @param span Optional suggested span of plot, in kilometers (must be supplied,
-#' if \code{clongitude} and \code{clatitude} are supplied).
+#' if `clongitude` and `clatitude` are supplied).
 #'
 #' @param expand Numerical factor for the expansion of plot limits, showing area
 #' outside the plot, e.g. if showing a ship track as a coastline, and then an
-#' actual coastline to show the ocean boundary.  The value of \code{expand} is
-#' ignored if either \code{xlim} or \code{ylim} is given.
+#' actual coastline to show the ocean boundary.  The value of `expand` is
+#' ignored if either `xlim` or `ylim` is given.
 #'
 #' @param water.z Depths at which to plot water contours.  If not provided, these
 #' are inferred from the data.
 #'
-#' @param col.water Colors corresponding to \code{water.z} values.  If not
-#' provided, these will be \code{"fill"} colors from
-#' \code{\link{oce.colorsGebco}}.
+#' @param col.water Colors corresponding to `water.z` values.  If not
+#' provided, these will be `"fill"` colors from
+#' [oce.colorsGebco()].
 #'
 #' @param lty.water Line type(s) for water contours.
 #'
 #' @param lwd.water Line width(s) for water contours.
 #'
 #' @param land.z Depths at which to plot land contours.  If not provided, these
-#' are inferred from the data.  If set to \code{NULL}, no land contours will be
+#' are inferred from the data.  If set to `NULL`, no land contours will be
 #' plotted.
 #'
-#' @param col.land Colors corresponding to \code{land.z} values.  If not
-#' provided, these will be \code{"fill"} colors from
-#' \code{\link{oce.colorsGebco}}.
+#' @param col.land Colors corresponding to `land.z` values.  If not
+#' provided, these will be `"fill"` colors from
+#' [oce.colorsGebco()].
 #'
 #' @param lty.land Line type(s) for land contours.
 #'
@@ -468,20 +491,19 @@ topoInterpolate <- function(longitude, latitude, topo)
 #' @param geographical Logical, indicating whether to plot latitudes and
 #' longitudes without minus signs.
 #'
-#' @param location Location for a legend (or \code{"none"}, for no legend).
+#' @param location Location for a legend (or `"none"`, for no legend).
 #'
-#' @param mgp 3-element numerical vector to use for \code{par(mgp)}, and also for
-#' \code{par(mar)}, computed from this.  The default is tighter than the R
+#' @param mgp 3-element numerical vector to use for `par(mgp)`, and also for
+#' `par(mar)`, computed from this.  The default is tighter than the R
 #' default, in order to use more space for the data and less for the axes.
 #'
 #' @param mar Four-element numerical vector to be used with
-#' \code{\link{par}("mar")}.
+#' [`par`]`("mar")`.
 #'
 #' @param debug Numerical value, with positive values indicating higher levels of
 #' debugging.
 #'
 #' @param ... Additional arguments passed on to plotting functions.
-#'
 #'
 #' @examples
 #' library(oce)
@@ -490,8 +512,8 @@ topoInterpolate <- function(longitude, latitude, topo)
 #'
 #' @author Dan Kelley
 #'
-#' @family functions that plot \code{oce} data
-#' @family things related to \code{topo} data
+#' @family functions that plot oce data
+#' @family things related to topo data
 #' @aliases plot.topo
 setMethod(f="plot",
           signature=signature("topo"),
@@ -777,24 +799,26 @@ setMethod(f="plot",
                   legend(location, lwd=lwd[o], lty=lty[o], bg="white", legend=legend[o], col=col[o])
               }
               oceDebug(debug, "} # plot.topo()\n", unindent=1)
-              invisible()
+              invisible(NULL)
           })
 
 
-#' @title Read a Topo File
+#' Read a Topo File
 #'
-#' @description
-#' Read a file that contains topographic data in the ETOPO dataset, as provided by
-#' the NOAA website (see \code{\link{download.topo}} for a good server for such
-#' files.
+#' Read a file that contains topographic data in the ETOPO dataset, as was once provided by
+#' the NOAA website (see [download.topo()] for a good server for such
+#' files. (As of May, 2020, there does not seem to be a way to download these
+#' files from the NOAA website.)
 #'
-#' @details
-#' The three permitted file types are as follows: (1) an ascii type described
-#' by NOAA as "?"; (2) a NetCDF format described by NOAA as "GMT NetCDF"
-#' (recognized by the presence of a variable named \code{}), and
-#' (3) another NetCDF format described by NOAA as "NetCDF" (recognized
-#' by the presence of a variable called \code{}). Files in each of these formats
-#' can be downloaded with \code{\link{download.topo}}.
+#' The three permitted file types are as follows.
+#' 1. An ascii type
+#' in which line 1 holds a label (which is ignored), whitespace, and then
+#' the number of columns in the matrix (i.e. the number of longitude values),
+#' line 2 is similar but for latitude, line 3 is similar but for the westernmost
+#' longitude, line 4 is similar but for southernmost latitude, line 5
+#' is similar but for cell size, and lines after that hold the grid.
+#' 2. A NetCDF format that was once described by NOAA as "GMT NetCDF".
+#' 3. A NetCDF format that was once described by NOAA as "NetCDF".
 #'
 #' @param file Name of a file containing an ETOPO-format dataset. Three
 #' types are permitted; see \dQuote{Details}.
@@ -802,27 +826,33 @@ setMethod(f="plot",
 #' @template debugTemplate
 #'
 #' @return
-#' An object of type \code{\link{topo-class}} that which has the following slots.
-#' \item{\code{data}}{: a data frame containing \code{lat}, \code{lon}, and
-#'   \code{z}}
-#' \item{\code{metadata}}{: a list containing the source filename}
-#' \item{\code{processingLog}}{: a log, in the standard \code{oce} format.}
-#'
+#' A [topo-class] object that.
 #'
 #' @examples
-#' \dontrun{
+#'\dontrun{
 #' library(oce)
 #' topoMaritimes <- read.topo("topoMaritimes.asc")
 #' plot(topographyMaritimes)
-#' }
+#'}
 #'
 #' @author Dan Kelley
-#' @family things related to \code{topo} data
-read.topo <- function(file, debug=getOption("oceDebug"))
+#' @family things related to topo data
+read.topo <- function(file,
+    debug=getOption("oceDebug"))
 {
+    if (missing(file))
+        stop("must supply 'file'")
+    if (is.character(file)) {
+        if (!file.exists(file))
+            stop("cannot find file '", file, "'")
+        if (0L == file.info(file)$size)
+            stop("empty file '", file, "'")
+    }
+    oceDebug(debug, "read.topo(file=\"", file, "\") {\n", sep="", style="bold", unindent=1)
     ## handle GEBCO netcdf files or an ascii format
     dataNamesOriginal <- list()
     if (is.character(file) && length(grep(".nc$", file))) {
+        oceDebug(debug, "this is a netcdf file\n")
         if (!requireNamespace("ncdf4", quietly=TRUE)) {
             stop('must install.packages("ncdf4") to read topo data from a NetCDF file')
         } else {
@@ -832,12 +862,14 @@ read.topo <- function(file, debug=getOption("oceDebug"))
             ncdf <- ncdf4::nc_open(file)
             dataNamesOriginal <- list()
             if ("Band1" %in% names(ncdf$var)) {
+                oceDebug(debug, "file has a variable named 'Band1', so reading longitude as 'lon', latitude as 'lat', and z as 'Band1'\n")
                 z <- ncdf4::ncvar_get(ncdf, "Band1")
-                longitude <- ncdf4::ncvar_get(ncdf, "lon")
-                latitude <- ncdf4::ncvar_get(ncdf, "lat")
+                longitude <- as.vector(ncdf4::ncvar_get(ncdf, "lon"))
+                latitude <- as.vector(ncdf4::ncvar_get(ncdf, "lat"))
                 dataNamesOriginal <- list(longitude="lon", latitude="lat", z="Band1")
                 ##cat(vectorShow(longitude, "longitude in reading Band1"))
             } else {
+                oceDebug(debug, "file has no variable named 'Band1', so computing longitude and latitude from 'x_range' and 'y_range' together with 'spacing', and reading z as 'z'\n")
                 xrange <- ncdf4::ncvar_get(ncdf, "x_range")
                 yrange <- ncdf4::ncvar_get(ncdf, "y_range")
                 ##zrange <- ncdf4::ncvar_get(ncdf, "z_range")
@@ -853,16 +885,19 @@ read.topo <- function(file, debug=getOption("oceDebug"))
             ## FIXME(DK 2016-08-20): Sometimes length is off by 1. I'm not sure why, and
             ## FIXME(DK 2016-08-20): this should be figured out by inspection of files.
             if (length(longitude) == dim(z)[1]+1) {
+                oceDebug(debug, "offsetting longitude of a netcdf topo file by half a step\n")
                 warning("offsetting longitude of a netcdf topo file by half a step")
                 longitude <- longitude[-1] - diff(longitude[1:2])/2
             }
             if (length(latitude) == dim(z)[2]+1) {
+                oceDebug(debug, "offsetting latitude of a netcdf topo file by half a step")
                 warning("offsetting latitude of a netcdf topo file by half a step")
                 latitude <- latitude[-1] - diff(latitude[1:2])/2
             }
             res <- as.topo(longitude, latitude, z, filename=file)
         }
     } else {
+        oceDebug(debug, "this is an ASCII (text) file\n")
         ## ASCII
         ## NOTE: on 2014-11-13 it came to light that the old dataset website
         ##          http://www.ngdc.noaa.gov/mgg/gdas/gd_designagrid.html
@@ -884,7 +919,8 @@ read.topo <- function(file, debug=getOption("oceDebug"))
         latitudeLowerLeft <- as.numeric(strsplit(header[4], "[ ]+", perl=TRUE)[[1]][2])
         cellSize <- as.numeric(strsplit(header[5], "[ ]+", perl=TRUE)[[1]][2])
         missingValue <- NA
-        if (length(i <- grep("nodata", header)))
+        i <- grep("nodata", header)
+        if (length(i))
             missingValue <- as.numeric(strsplit(header[i], "[ ]+", perl=TRUE)[[1]][2])
         zz <- as.matrix(read.table(file, header=FALSE, skip=nh), byrow=TRUE)
         rownames(zz) <- NULL
@@ -899,6 +935,7 @@ read.topo <- function(file, debug=getOption("oceDebug"))
     res@metadata$dataNamesOriginal <- dataNamesOriginal
     res@processingLog <- processingLogAppend(res@processingLog,
                                               paste(deparse(match.call()), sep="", collapse=""))
+    oceDebug(debug, "} # read.topo\n", sep="", style="bold", unindent=1)
     res
 }
 
@@ -906,20 +943,20 @@ read.topo <- function(file, debug=getOption("oceDebug"))
 #' Coerce Data into Topo Object
 #'
 #' @param longitude Either a vector of longitudes (in degrees east, and bounded by
-#' -180 and 180), or a \code{bathy} object created by \code{getNOAA.bathy()} from
-#' the \code{marmap} package; in the second case, all other arguments are ignored.
+#' -180 and 180), or a `bathy` object created by `getNOAA.bathy()` from
+#' the `marmap` package; in the second case, all other arguments are ignored.
 #'
 #' @param latitude A vector of latitudes.
 #'
 #' @param z A matrix of heights (positive over land).
 #'
-#' @param filename Name of data (used when called by \code{\link{read.topo}}.
+#' @param filename Name of data (used when called by [read.topo()].
 #'
-#' @return An object of \code{\link{topo-class}}.
+#' @return A [topo-class] object.
 #'
 #' @author Dan Kelley
 #'
-#' @family things related to \code{topo} data
+#' @family things related to topo data
 as.topo <- function(longitude, latitude, z, filename="")
 {
     if (inherits(longitude, "bathy")) {

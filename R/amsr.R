@@ -1,4 +1,4 @@
-## vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
+# vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
 
 #' Class to Store AMSR-2 Satellite Data
 #'
@@ -9,53 +9,52 @@
 #' May 2012. Data are processed by Remote Sensing Systems. The satellite
 #' completes an ascending and descending pass during local daytime and nighttime
 #' hours respectively. Each daily file contains 7 daytime and 7 nighttime
-#' maps of variables named as follows within the \code{data}
-#' slot of amsr objects: \code{timeDay},
-#' \code{SSTDay}, \code{LFwindDay} (wind at 10m sensed in
-#' the 10.7GHz band), \code{MFwindDay} (wind at 10m sensed at 18.7GHz),
-#' \code{vaporDay}, \code{cloudDay}, and \code{rainDay}, along with
-#' similarly-named items that end in \code{Night}.
-#' See [1] for additional information on the instrument, how
+#' maps of variables named as follows within the `data`
+#' slot of amsr objects: `timeDay`,
+#' `SSTDay`, `LFwindDay` (wind at 10m sensed in
+#' the 10.7GHz band), `MFwindDay` (wind at 10m sensed at 18.7GHz),
+#' `vaporDay`, `cloudDay`, and `rainDay`, along with
+#' similarly-named items that end in `Night`.
+#' See reference 1 for additional information on the instrument, how
 #' to cite the data source in a paper, etc.
 #'
-#' The bands are stored in \code{\link{raw}} form, to save storage. The accessor
-#' function \code{\link{[[,amsr-method}} can provide these values in \code{raw}
-#' form or in physical units; \code{\link{plot,amsr-method}}, and
-#' \code{\link{summary,amsr-method}} work with physical units.
+#' The bands are stored in [raw()] form, to save storage. The accessor
+#' function \code{\link{[[,amsr-method}} can provide these values in `raw`
+#' form or in physical units; [plot,amsr-method()], and
+#' [summary,amsr-method()] work with physical units.
 #'
 #' @templateVar class amsr
 #'
 #' @templateVar dataExample {}
 #'
-#' @templateVar metadataExample Examples that are of common interest include  \code{longitude} and \code{latitude}, which define the grid.
+#' @templateVar metadataExample Examples that are of common interest include  `longitude` and `latitude`, which define the grid.
 #'
 #' @template slot_summary
 #'
 #' @template slot_put
 #'
 #' @template slot_get
-#
 #'
 #' @author Dan Kelley and Chantelle Layton
-#' @concept satellite
+#'
 #' @references
 #' 1. Information on the satellite, how to cite the data, etc. is
-#' provided at \code{http://www.remss.com/missions/amsr/}.
+#' provided at `http://www.remss.com/missions/amsr/`.
 #'
 #' 2. A simple interface for viewing and downloading data is at
-#' \code{http://images.remss.com/amsr/amsr2_data_daily.html}.
+#' `http://images.remss.com/amsr/amsr2_data_daily.html`.
 #'
-#' @seealso \code{\link{landsat-class}} for handling data from the Landsat-8 satellite.
-#'
-#' @family things related to \code{amsr} data
+#' @family classes holding satellite data
+#' @family things related to amsr data
 setClass("amsr", contains="satellite")
 
 setMethod(f="initialize",
           signature="amsr",
-          definition=function(.Object, filename) {
+          definition=function(.Object, filename, ...) {
+              .Object <- callNextMethod(.Object, ...)
               if (!missing(filename))
                   .Object@metadata$filename <- filename
-              .Object@processingLog$time <- as.POSIXct(Sys.time())
+              .Object@processingLog$time <- presentTime()
               .Object@processingLog$value <- "create 'amsr' object"
               return(.Object)
           })
@@ -72,16 +71,54 @@ setMethod(f="show",
           })
 
 
-#' Summarize an AMSR Object
+#' An amsr dataset for waters near Nova Scotia
 #'
-#' Although the data are stored in \code{\link{raw}} form, the summary
+#' This is a composite satellite image combining views for
+#' 2020 August 9, 10 and 11, trimmed from a world view to a view
+#' spanning 30N to 60N and 80W to 40W; see \dQuote{Details}.
+#'
+#' The following code was used to create this dataset.
+#'\preformatted{
+#' library(oce)
+#' data(coastlineWorldFine, package="ocedata")
+#' d1 <- read.amsr(download.amsr(2020, 8,  9, "~/data/amsr"))
+#' d2 <- read.amsr(download.amsr(2020, 8, 10, "~/data/amsr"))
+#' d3 <- read.amsr(download.amsr(2020, 8, 11, "~/data/amsr"))
+#' d <- composite(d1, d2, d3)
+#' amsr <- subset(d,    -80 < longitude & longitude < -40)
+#' amsr <- subset(amsr,  30 < latitude  &  latitude <  60)
+#'}
+#'
+#' @name amsr
+#' @docType data
+#'
+#' @usage data(amsr)
+#'
+#' @examples
+#' library(oce)
+#' data(coastlineWorld)
+#' data(amsr)
+#' plot(amsr, "SST")
+#' lines(coastlineWorld[["longitude"]], coastlineWorld[["latitude"]])
+#'
+#' @family satellite datasets provided with oce
+#' @family datasets provided with oce
+#' @family things related to amsr data
+NULL
+
+
+#' Summarize an amsr Object
+#'
+#' Although the data are stored in [raw()] form, the summary
 #' presents results in physical units.
 #'
-#' @param object The object to be summarized.
-#' @param ... Ignored.
+#' @param object an [amsr-class] object.
+#'
+#' @param ... ignored.
+#'
 #' @author Dan Kelley
-#' @concept satellite
-#' @family things related to \code{amsr} data
+#'
+#' @family things related to amsr data
 setMethod(f="summary",
           signature="amsr",
           definition=function(object, ...) {
@@ -97,34 +134,45 @@ setMethod(f="summary",
 
 #' Extract Something From an amsr Object
 #'
-#' Extract something from the \code{metadata} or \code{data} slot of an
-#' \code{\link{amsr-class}} object.
+#' @param x an [amsr-class] object.
 #'
-#' @details
-#' Partial matches for \code{i}
-#' are permitted for \code{metadata}, and \code{j} is ignored for
-#' \code{metadata}.
+#' @section Details of the Specialized Method:
 #'
-#' Data within the \code{data} slot may be found directly, e.g.
-#' \code{j="SSTDay"} will yield sea-surface temperature in the daytime
-#' satellite, and \code{j="SSTNight"} is used to access the nighttime data. In
-#' addition, \code{j="SST"} yields an average of the night and day values
-#' (using just one of these, if the other is missing). This scheme works for
-#' all the data stored in \code{amsr} objects, namely:
-#' \code{time}, \code{SST}, \code{LFwind}, \code{MFwind},
-#' \code{vapor}, \code{cloud} and \code{rain}.  In each case, the default
-#' is to calculate values in scientific units, unless \code{j="raw"}, in
+#' If `i` is `"?"`, then the return value is a list
+#' containing four items, each of which is a character vector
+#' holding the names of things that can be accessed with `[[`.
+#' The `data` and `metadata` items hold the names of
+#' entries in the object's data and metadata
+#' slots, respectively. The `dataDerived`
+#' and `metadataDerived` items are each NULL, because
+#' no derived values are defined by [cm-class] objects.
+#'
+#' Data within the `data` slot may be found directly, e.g.
+#' `i="SSTDay"` will yield sea-surface temperature in the daytime
+#' satellite, and `i="SSTNight"` is used to access the nighttime data. In
+#' addition, `i="SST"` yields a computed average of the night and day values
+#' (using just one of these, if the other is missing). This scheme of
+#' providing computed averages works for
+#' all the data stored in `amsr` objects, namely:
+#' `time`, `SST`, `LFwind`, `MFwind`,
+#' `vapor`, `cloud` and `rain`.  In each case, the default
+#' is to calculate values in scientific units, unless `j="raw"`, in
 #' which case the raw data are returned.
 #'
-#' The \code{"raw"} mode can be useful
-#' in decoding the various types of missing value that are used by \code{amsr}
-#' data, namely \code{as.raw(255)} for land, \code{as.raw(254)} for
-#' a missing observation, \code{as.raw(253)} for a bad observation,
-#' \code{as.raw(252)} for sea ice, or \code{as.raw(251)} for missing SST
+#' The conversion from raw to scientific units is done with formulae
+#' found at `http://www.remss.com/missions/amsre`, e.g. SST is
+#' computed by converting the raw value to an integer (between 0 and 255),
+#' multiplying by 0.15C, and subtracting 3C.
+#'
+#' The `"raw"` mode can be useful
+#' in decoding the various types of missing value that are used by `amsr`
+#' data, namely `as.raw(255)` for land, `as.raw(254)` for
+#' a missing observation, `as.raw(253)` for a bad observation,
+#' `as.raw(252)` for sea ice, or `as.raw(251)` for missing SST
 #' due to rain or missing water vapour due to heavy rain. Note that
-#' something special has to be done for e.g. \code{d[["SST", "raw"]]}
+#' something special has to be done for e.g. `d[["SST","raw"]]`
 #' because the idea is that this syntax (as opposed to specifying
-#' \code{"SSTDay"}) is a request to try to find good
+#' `"SSTDay"`) is a request to try to find good
 #' data by looking at both the Day and Night measurements. The scheme
 #' employed is quite detailed. Denote by "A" the raw value of the desired field
 #' in the daytime pass, and by "B" the corresponding value in the
@@ -136,31 +184,21 @@ setMethod(f="summary",
 #'
 #' @return
 #' In all cases, the returned value is a matrix with
-#' with \code{NA} values inserted at locations where
-#' the raw data equal \code{as.raw(251:255)}, as explained
+#' with `NA` values inserted at locations where
+#' the raw data equal `as.raw(251:255)`, as explained
 #' in \dQuote{Details}.
 #'
-#' @param x An \code{amsr} object, i.e. one inheriting from \code{\link{amsr-class}}.
-#' @author Dan Kelley
-#' @template sub_subTemplate
 #' @examples
-#' \dontrun{
-#' # Show a daytime SST image, along with an indication of whether
-#' # the NA values are from rain.
+#' # Histogram of SST values
 #' library(oce)
-#' earth <- read.amsr("f34_20160102v7.2.gz")
-#' fclat <- subset(earth , 35 <= latitude & latitude <= 55)
-#' fc <- subset(fclat , -70 <= longitude & longitude <= -30)
-#' par(mfrow=c(2, 1))
-#' plot(fc, "SSTDay")
-#' rainy <- fc[["SSTDay", "raw"]] == as.raw(0xfb)
-#' lon <- fc[["longitude"]]
-#' lat <- fc[["latitude"]]
-#' asp <- 1 / cos(pi*mean(lat)/180)
-#' imagep(lon, lat, rainy, asp=asp)
-#' mtext("red: too rainy to sense SSTDay")
-#' }
-#' @family things related to \code{amsr} data
+#' data(amsr)
+#' hist(amsr[["SST"]])
+#'
+#' @template sub_subTemplate
+#'
+#' @author Dan Kelley
+#'
+#' @family things related to amsr data
 setMethod(f="[[",
           signature(x="amsr", i="ANY", j="ANY"),
           definition=function(x, i, j, ...) {
@@ -171,15 +209,22 @@ setMethod(f="[[",
               i <- i[1]                # drop extras if more than one given
               if (!is.character(i))
                   stop("amsr item must be specified by name", call.=FALSE)
+              dataDerived <- c("cloud", "LFwind", "MFwind", "rain", "SST",
+                  "time", "vapor")
+              if (i == "?")
+                  return(list(metadata=sort(names(x@metadata)),
+                          metadataDerived=NULL,
+                          data=sort(names(x@data)),
+                          dataDerived=sort(dataDerived)))
               if (is.character(i) && !is.na(pmatch(i, names(x@metadata)))) {
                   oceDebug(debug, "} # amsr [[\n", unindent=1)
                   return(x@metadata[[i]])
               }
-              namesAllowed <- c(names(x@data), "SST", "LFwindDay", "MFwindDay", "vaporDay", "cloudDay", "rainDay")
+              namesAllowed <- c(names(x@data), dataDerived)
               if (!(i %in% namesAllowed))
                   stop("band '", i, "' is not available in this object; try one of: ",
                        paste(namesAllowed, collapse=" "))
-              #' get numeric band, changing land, n-obs, bad-obs, sea-ice and windy to NA
+              # get numeric band, changing land, n-obs, bad-obs, sea-ice and windy to NA
               getBand<-function(b) {
                   bad <- b == as.raw(0xff)| # land mass
                   b == as.raw(0xfe)| # no observations
@@ -245,10 +290,13 @@ setMethod(f="[[",
               res
           })
 
-#' @title Replace Parts of an AMSR Object
-#' @param x An \code{amsr} object, i.e. inheriting from \code{\link{amsr-class}}
-#' @family things related to \code{amsr} data
+#' Replace Parts of an amsr Object
+#'
+#' @param x an [amsr-class] object.
+#'
 #' @template sub_subsetTemplate
+#'
+#' @family things related to amsr data
 setMethod(f="[[<-",
           signature(x="amsr", i="ANY", j="ANY"),
           definition=function(x, i, j, ..., value) {
@@ -257,95 +305,148 @@ setMethod(f="[[<-",
 
 #' Subset an amsr Object
 #'
-#' @description
-#' This function is somewhat analogous to
-#' \code{\link{subset.data.frame}}, but only one independent variable may be
-#' used in \code{subset} in any call to the function, which means that
-#' repeated calls will be necessary to subset based on more than one
-#' independent variable (e.g. latitude and longitude).
+#' Return a subset of a [amsr-class] object.
 #'
-#' @param x A \code{amsr} object, i.e. one inheriting from \code{\link{amsr-class}}.
-#' @param subset An expression indicating how to subset \code{x}.
-#' @param ... Ignored.
-#' @return An \code{amsr} object.
+#' This function is used to subset data within an [amsr-class]
+#' object by `longitude` or by `latitude`.  These two methods cannot
+#' be combined in a single call, so two calls are required, as shown
+#' in the Example.
+#'
+#' @param x an [amsr-class] object.
+#'
+#' @param subset an expression indicating how to subset `x`.
+#'
+#' @param ... ignored.
+#'
+#' @return An [amsr-class] object.
+#'
 #' @examples
-#' \dontrun{
 #' library(oce)
-#' earth <- read.amsr("f34_20160102v7.2.gz") # not provided with oce
-#' fclat <- subset(earth , 45<=latitude & latitude <= 49)
-#' fc <- subset(fclat , longitude <= -47 & longitude <= -43)
-#' plot(fc)
-#' }
+#' data(amsr) # see ?amsr for how to read and composite such objects
+#' sub <- subset(amsr, -75 < longitude & longitude < -45)
+#' sub <- subset(sub,   40 < latitude  &  latitude <  50)
+#' plot(sub)
+#' data(coastlineWorld)
+#' lines(coastlineWorld[['longitude']], coastlineWorld[['latitude']])
+#'
 #' @author Dan Kelley
 #'
-#' @family things related to \code{amsr} data
-#' @family functions that subset \code{oce} objects
+#' @family things related to amsr data
+#' @family functions that subset oce objects
 setMethod(f="subset",
           signature="amsr",
           definition=function(x, subset, ...) {
+              dots <- list(...)
+              debug <- if ("debug" %in% names(dots)) dots$debug else 0
+              oceDebug(debug, "subset,amsr-method() {\n", style="bold", sep="", unindent=1)
               res <- x
-              subsetString <- paste(deparse(substitute(subset)), collapse=" ")
+              ## subsetString <- paste(deparse(substitute(subset)), collapse=" ")
+              subsetString <- paste(deparse(substitute(expr=subset, env=environment())), collapse=" ")
               if (length(grep("longitude", subsetString))) {
                   if (length(grep("latitude", subsetString)))
                       stop("the subset must not contain both longitude and latitude. Call this twice, to combine these")
-                  keep <- eval(substitute(subset),
-                               envir=data.frame(longitude=x@metadata$longitude))
-                  for (name in names(res@data))
-                      res@data[[name]] <- res@data[[name]][keep, ]
+                  ##keep <- eval(expr=substitute(expr=subset, env=environment()), envir=data.frame(longitude=x@metadata$longitude))
+                  keep <- eval(expr=substitute(expr=subset, env=environment()),
+                               envir=data.frame(longitude=x@metadata$longitude), enclos=parent.frame(2))
+                  oceDebug(debug, "keeping", sum(keep), "of", length(keep), "longitudes\n")
+                  for (name in names(res@data)) {
+                      oceDebug(debug, "processing", name, "\n")
+                      res@data[[name]] <- res[[name, "raw"]][keep, ]
+                  }
                   res@metadata$longitude <- x@metadata$longitude[keep]
               } else if (length(grep("latitude", subsetString))) {
-                  keep <- eval(substitute(subset),
-                               envir=data.frame(latitude=x@metadata$latitude))
-                  for (name in names(res@data))
-                      res@data[[name]] <- res@data[[name]][, keep]
+                  if (length(grep("longitude", subsetString)))
+                      stop("the subset must not contain both longitude and latitude. Call this twice, to combine these")
+                  keep <- eval(expr=substitute(expr=subset, env=environment()),
+                               envir=data.frame(latitude=x@metadata$latitude), enclos=parent.frame(2))
+                  oceDebug(debug, "keeping", sum(keep), "of", length(keep), "latitudes\n")
+                  for (name in names(res@data)) {
+                      oceDebug(debug, "processing", name, "\n")
+                      res@data[[name]] <- x[[name, "raw"]][, keep]
+                  }
                   res@metadata$latitude <- res@metadata$latitude[keep]
               } else {
                   stop("may only subset by longitude or latitude")
               }
               res@processingLog <- processingLogAppend(res@processingLog, paste("subset(x, subset=", subsetString, ")", sep=""))
+              oceDebug(debug, "} # subset,amsr-method()\n", style="bold", sep="", unindent=1)
               res
           })
 
-
 #' Plot an amsr Object
 #'
-#' @param x An object inheriting from \code{\link{amsr-class}}.
-#' @param y String indicating the name of the band to plot; if not provided,
-#' \code{SST} is used; see \code{\link{amsr-class}} for a list of bands.
-#' @param asp Optional aspect ratio for plot.
+#' Plot an image of a component of an [amsr-class] object.
+#'
+#' In addition to fields named directly in the object, such as `SSTDay` and
+#' `SSTNight`, it is also possible to plot computed fields, such as `SST`,
+#' which combines the day and night fields.
+#'
+#' @param x an [amsr-class] object.
+#'
+#' @param y character value indicating the name of the band to plot; if not provided,
+#' `SST` is used; see the documentation for the [amsr-class] class for a list of bands.
+#'
+#' @param asp optional numerical value giving the aspect ratio for plot.  The
+#' default value, `NULL`, means to use an aspect ratio of 1 for world views,
+#' and a value computed from `ylim`, if the latter is specified in the
+#' `...` argument.
+#'
+#' @param breaks optional numeric vector of the z values for breaks in the color scheme.
+#' If `colormap` is provided, it takes precedence over `breaks` and `col`.
+#'
+#' @param col optional argument, either a vector of colors corresponding to the breaks, of length
+#' 1 less than the number of breaks, or a function specifying colors.
+#' If neither `col` or `colormap` is provided, then `col` defaults to
+#' [oceColorsTemperature()].
+#' If `colormap` is provided, it takes precedence over `breaks` and `col`.
+#'
+#' @param colormap a specification of the colormap to use, as created
+#' with [colormap()].  If `colormap` is NULL, which is the default, then
+#' a colormap is created to cover the range of data values, using
+#' [oceColorsTemperature] colour scheme.
+#' If `colormap` is provided, it takes precedence over `breaks` and `col`.
+#' See \dQuote{Examples} for an example of using the "turbo" colour scheme.
+#'
+#' @param zlim optional numeric vector of length 2, giving the limits
+#' of the plotted quantity.  A reasonable default is computed, if this
+#' is not given.
 #'
 #' @param missingColor List of colors for problem cases. The names of the
 #' elements in this list must be as in the default, but the colors may
 #' be changed to any desired values. These default values work reasonably
 #' well for SST images, which are the default image, and which employ a
 #' blue-white-red blend of colors, no mixture of which matches the
-#' default values in \code{missingColor}.
+#' default values in `missingColor`.
 #'
 #' @param debug A debugging flag, integer.
 #'
-#' @param ... extra arguments passed to \code{\link{imagep}}, e.g. set
-#' \code{col} to control colors.
-#'
-#' @concept satellite
+#' @param ... extra arguments passed to [imagep()], e.g. to control
+#' the view with `xlim` (for longitude) and `ylim` (for latitude).
 #'
 #' @examples
-#' \dontrun{
-#' d <- read.amsr("f34_20160102v7.2.gz")
-#' asp <- 1/cos(pi*40/180)
-#' plot(d, "SST", col=oceColorsJet, xlim=c(-80,0), ylim=c(20,60), asp=asp)
-#' data(coastlineWorldMedium, package="ocedata")
-#' lines(coastlineWorldMedium[['longitude']], coastlineWorldMedium[['latitude']])
-#' }
+#' library(oce)
+#' data(coastlineWorld)
+#' data(amsr) # see ?amsr for how to read and composite such objects
+#'
+#' # Example 1: plot with default colour scheme, oceColorsTemperature()
+#' plot(amsr, "SST")
+#' lines(coastlineWorld[['longitude']], coastlineWorld[['latitude']])
+#'
+#' # Example 2: 'turbo' colour scheme
+#' plot(amsr, "SST", col=oceColorsTurbo)
+#' lines(coastlineWorld[['longitude']], coastlineWorld[['latitude']])
 #'
 #' @author Dan Kelley
 #'
-#' @family functions that plot \code{oce} data
-#' @family things related to \code{amsr} data
+#' @family things related to amsr data
+#' @family functions that plot oce data
+#'
 #' @aliases plot.amsr
 setMethod(f="plot",
           signature=signature("amsr"),
           ## FIXME: how to let it default on band??
-          definition=function(x, y, asp,
+          definition=function(x, y, asp=NULL,
+                              breaks, col, colormap, zlim,
                               missingColor=list(land='papayaWhip',
                                                 none='lightGray',
                                                 bad='gray',
@@ -353,20 +454,82 @@ setMethod(f="plot",
                                                 ice='mediumVioletRed'),
                               debug=getOption("oceDebug"), ...)
           {
+              dots <- list(...)
               oceDebug(debug, "plot.amsr(..., y=c(",
-                       if (missing(y)) "(missing)" else y, ", ...) {\n", sep="", unindent=1)
+                       if (missing(y)) "(missing)" else y, ", ...) {\n", sep="", style="bold", unindent=1)
+              zlimGiven <- !missing(zlim)
               if (missing(y))
                   y <- "SST"
               lon <- x[["longitude"]]
               lat <- x[["latitude"]]
-              if ("ylim" %in% names(list(...))) {
-                  if (missing(asp)) asp <- 1/cos(pi/180*abs(mean(list(...)$ylim)))
+              ## Examine ylim (if asp is not NULL) and also at
+              #' both xlim and ylim to compute zrange
+              xlim <- dots$xlim
+              ylim <- dots$ylim
+              if (is.null(asp)) {
+                  if (!is.null(ylim)) {
+                      asp <- 1 / cos(pi/180*abs(mean(ylim, na.rm=TRUE)))
+                      oceDebug(debug, "inferred asp=", asp, " from ylim argument\n", sep="")
+                  } else {
+                      asp <- 1 / cos(pi/180*abs(mean(lat, na.rm=TRUE)))
+                      oceDebug(debug, "inferred asp=", asp, " from ylim argument\n", sep="")
+                  }
               } else {
-                  if (missing(asp)) asp <- 1/cos(pi/180*abs(mean(lat, na.rm=TRUE)))
+                  oceDebug(debug, "using supplied asp=", asp, "\n", sep="")
               }
               z <- x[[y]]
-              i <- if ("zlab" %in% names(list(...))) imagep(lon, lat, z, asp=asp, ...)
-                  else imagep(lon, lat, z, zlab=y, asp=asp, ...)
+              ## Compute zrange for world data, or data narrowed to xlim and ylim.
+              if (!is.null(xlim)) {
+                  if (!is.null(ylim)) {
+                      oceDebug(debug, "computing range based on z trimmed by xlim and ylim\n")
+                      zrange <- range(z[xlim[1] <= lon & lon <= xlim[2], ylim[1] <= lat & lat <= ylim[2]], na.rm=TRUE)
+                  } else {
+                      oceDebug(debug, "computing range based on z trimmed by xlim alone\n")
+                      zrange <- range(z[xlim[1] <= lon & lon <= xlim[2], ], na.rm=TRUE)
+                  }
+              } else {
+                  if (!is.null(ylim)) {
+                      oceDebug(debug, "computing range based on z trimmed by ylim alone\n")
+                      zrange <- range(z[, ylim[1] <= lat & lat <= ylim[2]], na.rm=TRUE)
+                  } else {
+                      oceDebug(debug, "computing range based on whole-world data\n")
+                      zrange <- range(z, na.rm=TRUE)
+                  }
+              }
+              oceDebug(debug, "zrange: ", paste(zrange, collapse=" to "), "\n")
+              ## Determine colormap, if not given as an argument.
+              if (missing(colormap)) {
+                  oceDebug(debug, "case 1: 'colormap' not given, so will be computed here\n")
+                  if (!missing(breaks)) {
+                      oceDebug(debug, "case 1.1: 'breaks' was specified\n")
+                      cat("FYI breaks are as follows:\n");print(breaks)
+                      if (!missing(col)) {
+                          oceDebug(debug, "case 1.1.1: computing colormap from specified breaks and specified col\n")
+                          colormap <- oce::colormap(zlim=if (zlimGiven) zlim else range(breaks), col=col)
+                      } else {
+                          oceDebug(debug, "case 1.1.2: computing colormap from specified breaks and computed col\n")
+                          colormap <- oce::colormap(zlim=if (zlimGiven) zlim else range(breaks), col=oceColorsTemperature)
+                      }
+                  } else {
+                      oceDebug(debug, "case 1.2: 'breaks' was not specified\n")
+                      if (!missing(col)) {
+                          oceDebug(debug, "case 1.2.1: computing colormap from and computed breaks and specified col\n")
+                          colormap <- oce::colormap(zlim=if (zlimGiven) zlim else zrange, col=col)
+                      } else {
+                          oceDebug(debug, "case 1.2.2: computing colormap from computed breaks and computed col\n")
+                          colormap <- oce::colormap(zlim=if (zlimGiven) zlim else zrange, col=oceColorsTemperature)
+                      }
+                  }
+              } else {
+                  oceDebug(debug, "using specified colormap, ignoring breaks and col, whether they were supplied or not\n")
+              }
+              i <- if ("zlab" %in% names(dots)) {
+                  oceDebug(debug, "calling imagep() with asp=", asp, ", and zlab=\"", dots$zlab, "\"\n", sep="")
+                  imagep(lon, lat, z, colormap=colormap, asp=asp, debug=debug-1, ...)
+              } else {
+                  oceDebug(debug, "calling imagep() with asp=", asp, ", and no zlab argument\n", sep="")
+                  imagep(lon, lat, z, colormap=colormap, zlab=y, asp=asp, debug=debug-1, ...)
+              }
               ## Handle missing-data codes by redrawing the (decimate) image.
               ## Perhaps imagep() should be able to do this, but imagep() is a
               ## long function with a lot of interlocking arguments so I'll
@@ -395,51 +558,51 @@ setMethod(f="plot",
                   ##message("did code ", codes[[codeName]], " (color ", missingColor[[codeName]], ")")
               }
               box()
-              oceDebug(debug, "} # plot.amsr()\n", unindent=1)
+              oceDebug(debug, "} # plot.amsr()\n", sep="", style="bold", unindent=1)
           })
 
 
 #' Download and Cache an amsr File
 #'
-#' If the file is already present in \code{destdir}, then it is not
-#' downloaded again. The default \code{destdir} is the present directory,
-#' but it probably makes more sense to use something like \code{"~/data/amsr"}
+#' If the file is already present in `destdir`, then it is not
+#' downloaded again. The default `destdir` is the present directory,
+#' but it probably makes more sense to use something like `"~/data/amsr"`
 #' to make it easy for scripts in other directories to use the cached data.
-#' The file is downloaded with \code{\link{download.file}}.
+#' The file is downloaded with [download.file()].
 #'
 #' @param year,month,day Numerical values of the year, month, and day
 #' of the desired dataset. Note that one file is archived per day,
 #' so these three values uniquely identify a dataset.
-#' If \code{day} and \code{month} are not provided but \code{day} is,
+#' If `day` and `month` are not provided but `day` is,
 #' then the time is provided in a relative sense, based on the present
-#' date, with \code{day} indicating the number of days in the past.
+#' date, with `day` indicating the number of days in the past.
 #' Owing to issues with timezones and the time when the data
-#' are uploaded to the server, \code{day=3} may yield the
+#' are uploaded to the server, `day=3` may yield the
 #' most recent available data. For this reason, there is a
-#' third option, which is to leave \code{day} unspecified, which
-#' works as though \code{day=3} had been given.
+#' third option, which is to leave `day` unspecified, which
+#' works as though `day=3` had been given.
 #'
 #' @param destdir A string naming the directory in which to cache the downloaded file.
 #' The default is to store in the present directory, but many users find it more
-#' helpful to use something like \code{"~/data/amsr"} for this, to collect all
+#' helpful to use something like `"~/data/amsr"` for this, to collect all
 #' downloaded amsr files in one place.
 #' @param server A string naming the server from which data
 #' are to be acquired. See \dQuote{History}.
 #'
 #' @section History:
 #' Until 25 March 2017, the default server was
-#' \code{"ftp.ssmi.com/amsr2/bmaps_v07.2"}, but this was changed when the author
+#' `"ftp.ssmi.com/amsr2/bmaps_v07.2"`, but this was changed when the author
 #' discovered that this FTP site had been changed to require users to create
 #' accounts to register for downloads.  The default was changed to
-#' \code{"http://data.remss.com/amsr2/bmaps_v07.2"} on the named date.
+#' `"http://data.remss.com/amsr2/bmaps_v07.2"` on the named date.
 #' This site was found by a web search, but it seems to provide proper data.
 #' It is assumed that users will do some checking on the best source.
 #'
 #' On 23 January 2018, it was noticed that the server-url naming convention
 #' had changed, e.g.
-#' \code{http://data.remss.com/amsr2/bmaps_v07.2/y2017/m01/f34_20170114v7.2.gz}
+#' `http://data.remss.com/amsr2/bmaps_v07.2/y2017/m01/f34_20170114v7.2.gz`
 #' becoming
-#' \code{http://data.remss.com/amsr2/bmaps_v08/y2017/m01/f34_20170114v8.gz}
+#' `http://data.remss.com/amsr2/bmaps_v08/y2017/m01/f34_20170114v8.gz`
 #'
 #' @return A character value indicating the filename of the result; if
 #' there is a problem of any kind, the result will be the empty
@@ -453,10 +616,13 @@ setMethod(f="plot",
 #' plot(d)
 #' mtext(d[["filename"]], side=3, line=0, adj=0)
 #'}
+#'
 #' @family functions that download files
-#' @family things related to \code{amsr} data
+#' @family functions that plot oce data
+#' @family things related to amsr data
+#'
 #' @references
-#' \code{http://images.remss.com/amsr/amsr2_data_daily.html}
+#' `http://images.remss.com/amsr/amsr2_data_daily.html`
 #' provides daily images going back to 2012. Three-day,
 #' monthly, and monthly composites are also provided on that site.
 download.amsr <- function(year, month, day, destdir=".", server="http://data.remss.com/amsr2/bmaps_v08")
@@ -495,36 +661,45 @@ download.amsr <- function(year, month, day, destdir=".", server="http://data.rem
 
 #' Read an amsr File
 #'
-#' Read a compressed amsr file, generating an object that inherits from
-#' \code{\link{amsr-class}}.  Note that only compressed files are read in
-#' this version.
+#' Read a compressed amsr file, generating an [amsr-class] object.
+#' Note that only compressed files are read in this version.
 #'
-#' @section File sources:
-#' AMSR files are provided at the FTP site
-#' \code{ftp://ftp.ssmi.com/amsr2/bmaps_v07.2/} and login as "guest",
-#' enter a year-based directory (e.g. \code{y2016} for the year 2016),
-#' then enter a month-based directory (e.g. \code{m08} for August, the 8th
+#' AMSR files are provided at the FTP site, at
+#' \code{ftp.ssmi.com/amsr2/bmaps_v07.2} as of April 2021.
+#' To acquire such files,
+#' log in as "guest",
+#' then enter a year-based directory (e.g. `y2016` for the year 2016),
+#' then enter a month-based directory (e.g. `m08` for August, the 8th
 #' month), and then download a file for the present date, e.g.
-#' \code{f34_20160803v7.2.gz} for August 3rd, 2016. Do not uncompress
-#' this file, since \code{read.amsr} can only read uncompressed files.
-#' If \code{read.amsr} reports an error on the number of chunks, try
+#' `f34_20160803v7.2.gz` for August 3rd, 2016. Do not uncompress
+#' this file, since `read.amsr` can only read the raw files from the server.
+#' If `read.amsr` reports an error on the number of chunks, try
 #' downloading a similarly-named file (e.g. in the present example,
-#' \code{read.amsr("f34_20160803v7.2_d3d.gz")} will report an error
+#' `read.amsr("f34_20160803v7.2_d3d.gz")` will report an error
 #' about inability to read a 6-chunk file, but
-#' \code{read.amsr("f34_20160803v7.2.gz")} will work properly.
+#' `read.amsr("f34_20160803v7.2.gz")` will work properly.
 #'
 #' @param file String indicating the name of a compressed file. See
 #' \dQuote{File sources}.
 #'
 #' @param debug A debugging flag, integer.
 #'
-#' @concept satellite
-#' @seealso \code{\link{plot,amsr-method}} for an example.
+#' @seealso [plot,amsr-method()] for an example.
+#'
 #' @author Dan Kelley and Chantelle Layton
 #'
-#' @family things related to \code{amsr} data
-read.amsr <- function(file, debug=getOption("oceDebug"))
+#' @family things related to amsr data
+read.amsr <- function(file,
+    debug=getOption("oceDebug"))
 {
+    if (missing(file))
+        stop("must supply 'file'")
+    if (is.character(file)) {
+        if (!file.exists(file))
+            stop("cannot find file '", file, "'")
+        if (0L == file.info(file)$size)
+            stop("empty file '", file, "'")
+    }
     oceDebug(debug, "read.amsr(file=\"", file, "\",",
              #if (length(band) > 1) paste("band=c(\"", paste(band, collapse="\",\""), "\")", sep="") else
                  ", debug=", debug, ") {\n", sep="", unindent=1)
@@ -616,10 +791,12 @@ read.amsr <- function(file, debug=getOption("oceDebug"))
     res
 }
 
-#' @title Create a composite of amsr satellite data
-#' @details
-#' Form averages for each item in the \code{data} slot of the supplied objects,
-#' taking into account the bad-data codes. If none of the objects has good
+#' Create a composite of amsr satellite data
+#'
+#' Form averages for each item in the `data` slot of the supplied objects,
+#' taking into account the bad-data codes.
+#'
+#' If none of the objects has good
 #' data at any particular pixel (i.e. particular latitude and longitude),
 #' the resultant will have the bad-data code of the last item in the argument
 #' list.
@@ -627,10 +804,12 @@ read.amsr <- function(file, debug=getOption("oceDebug"))
 #' final argument, except that the filename is set to a comma-separated list
 #' of the component filenames.
 #'
-#' @param object An object inheriting from \link{amsr-class}.
+#' @param object An [amsr-class] object.
+#'
 #' @param ... Other amsr objects.
 #'
-#' @family things related to \code{amsr} data
+#' @family things related to amsr data
+#'
 #' @template compositeTemplate
 setMethod("composite",
           c(object="amsr"),

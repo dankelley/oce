@@ -4,8 +4,13 @@
 \alias{geodXy}
 \title{Convert From Geographical to Geodesic Coordinates}
 \usage{
-geodXy(longitude, latitude, longitudeRef, latitudeRef,
-  debug = getOption("oceDebug"))
+geodXy(
+  longitude,
+  latitude,
+  longitudeRef,
+  latitudeRef,
+  debug = getOption("oceDebug")
+)
 }
 \arguments{
 \item{longitude, latitude}{vector of longitude and latitude}
@@ -35,9 +40,9 @@ along geodesic curves.  See \dQuote{Caution}.
 \details{
 The calculation is as follows.
 Consider the \code{i}-th point in the \code{longitude} and \code{latitude}
-vectors.  To calculate \code{x[i]}, \code{\link{geodDist}} is
-used is to find the distance \emph{along a
-geodesic curve} connecting (\code{longitude[i]}, \code{latitude[i]}) with
+vectors.  To calculate \code{x[i]}, \code{\link[=geodDist]{geodDist()}} is
+used is to find the distance
+\emph{along a geodesic curve} connecting (\code{longitude[i]}, \code{latitude[i]}) with
 (\code{longitudeRef}, \code{latitude[i]}). The resultant distance
 is multiplied by -1 if \code{longitude[i]-longitudeRef} is negative,
 and the result is assigned to \code{x[i]}.
@@ -54,16 +59,18 @@ On 2015-11-02, the names of the arguments were changed from \code{lon}, etc., to
 \code{longitude}, etc., to be in keeping with other oce functions.
 
 On 2017-04-05, four changes were made.
-1. Default values of \code{longitudeRef} and \code{latitudeRef} were removed,
+\enumerate{
+\item Default values of \code{longitudeRef} and \code{latitudeRef} were removed,
 since the old defaults were inappropriate to most work.
-2. The argument called \code{rotate} was eliminated, because it only made
+\item The argument called \code{rotate} was eliminated, because it only made
 sense if the mean resultant x and y were zero.
-3. The example was made more useful.
-4. Pointers were made to \code{\link{lonlat2utm}}, which may be more useful.
+\item The example was made more useful.
+\item Pointers were made to \code{\link[=lonlat2utm]{lonlat2utm()}}, which may be more useful.
+}
 }
 
 \examples{
-\dontrun{
+\donttest{
 # Develop a transect-based axis system for final data(section) stations
 library(oce)
 data(section)
@@ -72,7 +79,7 @@ lat <- tail(section[["latitude", "byStation"]], 26)
 lonR <- tail(lon, 1)
 latR <- tail(lat, 1)
 data(coastlineWorld)
-mapPlot(coastlineWorld, proj="+proj=merc",
+mapPlot(coastlineWorld, projection="+proj=merc",
         longitudelim=c(-75,-65), latitudelim=c(35,43), col="gray")
 mapPoints(lon, lat)
 XY <- geodXy(lon,lat,mean(lon), mean(lat))
@@ -83,14 +90,17 @@ UTM <- lonlat2utm(lon, lat, zone=18) # we need to set the zone for this task!
 angleUTM <- 180/pi*atan(coef(lm(northing~easting, data=UTM))[2])
 mapCoordinateSystem(lonR, latR, 500, angleUTM, col=3)
 legend("topright", lwd=1, col=2:3, bg="white", title="Axis Rotation Angle",
-       legend=c(sprintf("geod: \%.1f deg", angle), sprintf("utm: \%.1f deg",angleUTM)))
+       legend=c(sprintf("geod: \%.1f deg", angle),
+                sprintf("utm:  \%.1f deg", angleUTM)))
 }
 }
 \seealso{
-\code{\link{geodDist}}
+\code{\link[=geodDist]{geodDist()}}
 
-Other functions relating to geodesy: \code{\link{geodDist}},
-  \code{\link{geodGc}}, \code{\link{geodXyInverse}}
+Other functions relating to geodesy: 
+\code{\link{geodDist}()},
+\code{\link{geodGc}()},
+\code{\link{geodXyInverse}()}
 }
 \author{
 Dan Kelley

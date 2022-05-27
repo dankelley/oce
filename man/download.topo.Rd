@@ -4,18 +4,32 @@
 \alias{download.topo}
 \title{Download and Cache a topo File}
 \usage{
-download.topo(west, east, south, north, resolution, destdir, destfile,
-  format, server, debug = getOption("oceDebug"))
+download.topo(
+  west,
+  east,
+  south,
+  north,
+  resolution = 4,
+  destdir = ".",
+  destfile,
+  format,
+  server = "https://gis.ngdc.noaa.gov",
+  debug = getOption("oceDebug")
+)
 }
 \arguments{
-\item{west, east}{Longitudes of the western and eastern sides of the box.}
+\item{west, east}{numeric values for the limits of the data-selection box, in degrees.
+These are converted to the -180 to 180 degree notation, if needed.
+Then, \code{west} is rounded down to the nearest 1/100th degree, and \code{east}
+is rounded up to the the nearest 1/100th degree. The results of these
+operations are used in constructing the query for the NOAA data server.}
 
-\item{south, north}{Latitudes of the southern and northern sides of the box.}
+\item{south, north}{latitude limits, treated in a way that
+corresponds to the longitude limits.}
 
-\item{resolution}{Optional grid spacing, in minutes. If not supplied,
-a default value of 4 (corresponding to 7.4km, or 4 nautical
-miles) is used. Note that (as of August 2016) the original data are on
-a 1-minute grid, which limits the possibilities for \code{resolution}.}
+\item{resolution}{numeric value of grid spacing, in geographical minutes.
+The default value is 4 minutes, corresponding to 4 nautical miles (approx. 7.4km)
+in the north-south direction, and less in the east-west direction.}
 
 \item{destdir}{Optional string indicating the directory in which to store
 downloaded files. If not supplied, \code{"."} is used, i.e. the data file
@@ -27,13 +41,12 @@ parameters of the function call, so subsequent calls with the same
 parameters will yield the same result, thus providing the key
 to the caching scheme.}
 
-\item{format}{Optional string indicating the type of file to download. If
-not supplied, this defaults to \code{"gmt"}. See \dQuote{Details}.}
+\item{format}{Deprecated, and ignored, as of June 2020.}
 
-\item{server}{Optional string indicating the server from which to get the data.
-If not supplied, the default
-\samp{"https://gis.ngdc.noaa.gov/cgi-bin/public/wcs/etopo1.xyz"}
-will be used.}
+\item{server}{character value specifying the base from which a
+download URL will be constructed.  It is unlikely that any value
+other than the default will work, unless it is a similarly-constructed
+mirrored site.}
 
 \item{debug}{an integer specifying whether debugging information is
 to be printed during the processing. This is a general parameter that
@@ -47,99 +60,77 @@ by specifying higher \code{debug} values.}
 String indicating the full pathname to the downloaded file.
 }
 \description{
-Data are downloaded (from \samp{https://maps.ngdc.noaa.gov/viewers/wcs-client/}, by
-default) and a string containing the full path to the downloaded file is returned.
-Typically, this return value is used with \code{\link{read.topo}} to read the
-data. Subsequent calls to \code{download.topo}
-with identical parameters will simply return the name of the cached file,
-assuming the user has not deleted it in the meantime.
-For convenience, if \code{destfile} is not
-given, then \code{download.topo} will construct a filename from the other arguments,
-rounding longitude and latitude limits to 0.01 degrees.
+Topographic data are downloaded from a data server that holds the
+ETOPO1 dataset (Amante, C. and B.W. Eakins, 2009), and saved as a
+netCDF file whose name specifies the data request, if a file of
+that name is not already present on the local file system.  The
+return value is the name of the data file, and its typical use is
+as the filename for a call to \code{\link[=read.topo]{read.topo()}}.  Given the rules on
+file naming, subsequent calls to \code{download.topo} with identical
+parameters will simply return the name of the cached file, assuming
+the user has not deleted it in the meantime.  Note that
+\code{download.topo} uses the \code{"raster"} and \code{"ncdf4"} packages, so
+these must be installed, or an error is reported.
 }
 \details{
-The data are downloaded with \code{\link[utils]{download.file}}, using a URL
-devised from reverse engineering web-based queries constructed by
-the default \code{server} used here. Note that the data source is "etopo1",
-which is a 1 arc-second file [1,2].
-
-Three values are permitted for \code{format},
-each named after the
-targets of menu items on the
-NOAA website (as of August 2016): (1) \code{"aaigrid"} (for
-the menu item "ArcGIS ASCII Grid"), which
-yields a text file, (2) \code{"netcdf"} (the default,
-for the menu item named
-"NetCDF"), which yields a NetCDF file
-and (3) \code{"gmt"} (for the menu item named
-"GMT NetCDF"), which yields a NetCDF file in
-another format. All of these file formats are
-recognized by \code{\link{read.topo}}.
-(The NOAA server has more options, and if
-\code{\link{read.topo}} is extended to handle them, they will
-also be added here.)
+The specified longitude and latitude limits are rounded to 2 digits
+(corresponding to a footprint of approximately 1km), and these are
+used in the server request. If the resultant request would generate
+under 1 row or column in the result, \code{download.topo} generates an
+error message and stops.
 }
-\section{Webserver history}{
+\section{Historical note relating to NOAA server changes}{
 
-All versions of \code{download.topo} to date have used a NOAA server as
-the data source, but the URL has not been static. A list of the
-servers that have been used is provided below,
-in hopes that it can help users to make guesses
-for \code{server}, should \code{download.topo} fail because of
-a fail to download the data. Another
-hint is to look at the source code for
-\code{\link[marmap]{getNOAA.bathy}} in the \CRANpkg{marmap} package,
-which is also forced to track the moving target that is NOAA.
-
-\itemize{
-\item August 2016.
-\samp{http://maps.ngdc.noaa.gov/mapviewer-support/wcs-proxy/wcs.groovy}
-
-\item December 2016.
-\samp{http://mapserver.ngdc.noaa.gov/cgi-bin/public/wcs/etopo1.xyz}
-
-\item June-September 2017.
-\samp{https://gis.ngdc.noaa.gov/cgi-bin/public/wcs/etopo1.xyz}
-}
+In May of 2020, \code{download.topo} stopped working, evidently owing
+to changes in the NOAA server API, which had been inferred by reverse
+engineering a NOAA data-request website. However, the
+\code{marmap} function \code{getNOAA.bathy}
+was found to be working at that time, and so \code{download.topo} was revised based on
+that function.  The problem of keeping up with changing data-server APIs should
+be easier in the future, since NOAA has made the API public.
 }
 
 \examples{
 \dontrun{
 library(oce)
-topoFile <- download.topo(west=-64, east=-60, south=43, north=46,
-                          resolution=1, destdir="~/data/topo")
+topoFile <- download.topo(west=-66, east=-60, south=43, north=47,
+    resolution=1, destdir="~/data/topo")
 topo <- read.topo(topoFile)
-imagep(topo, zlim=c(-400, 400), drawTriangles=TRUE)
-data(coastlineWorldFine, package="ocedata")
-lines(coastlineWorldFine[["longitude"]], coastlineWorldFine[["latitude"]])
+imagep(topo, zlim=c(-400, 400), col=oceColorsTwo, drawTriangles=TRUE)
+if (requireNamespace("ocedata", quietly=TRUE)) {
+    data(coastlineWorldFine, package="ocedata")
+    lines(coastlineWorldFine[["longitude"]], coastlineWorldFine[["latitude"]])
+}
 }
 
 }
 \references{
-1. \samp{https://www.ngdc.noaa.gov/mgg/global/global.html}
-
-2. Amante, C. and B.W. Eakins, 2009. ETOPO1 1 Arc-Minute Global Relief
+\itemize{
+\item Amante, C. and B.W. Eakins, 2009. ETOPO1 1 Arc-Minute Global Relief
 Model: Procedures, Data Sources and Analysis. NOAA Technical Memorandum
 NESDIS NGDC-24. National Geophysical Data Center, NOAA. doi:10.7289/V5C8276M
-[access date: Aug 30, 2017].
+}
 }
 \seealso{
-The work is done with \code{\link[utils]{download.file}}.
+Other functions that download files: 
+\code{\link{download.amsr}()},
+\code{\link{download.coastline}()},
+\code{\link{download.met}()}
 
-Other functions that download files: \code{\link{download.amsr}},
-  \code{\link{download.coastline}},
-  \code{\link{download.met}}
-
-Other things related to \code{topo} data: \code{\link{[[,topo-method}},
-  \code{\link{[[<-,topo-method}}, \code{\link{as.topo}},
-  \code{\link{plot,topo-method}}, \code{\link{read.topo}},
-  \code{\link{subset,topo-method}},
-  \code{\link{summary,topo-method}},
-  \code{\link{topo-class}}, \code{\link{topoInterpolate}},
-  \code{\link{topoWorld}}
+Other things related to topo data: 
+\code{\link{[[,topo-method}},
+\code{\link{[[<-,topo-method}},
+\code{\link{as.topo}()},
+\code{\link{plot,topo-method}},
+\code{\link{read.topo}()},
+\code{\link{subset,topo-method}},
+\code{\link{summary,topo-method}},
+\code{\link{topo-class}},
+\code{\link{topoInterpolate}()},
+\code{\link{topoWorld}}
 }
 \author{
 Dan Kelley
 }
 \concept{functions that download files}
-\concept{things related to \code{topo} data}
+\concept{things related to topo data}

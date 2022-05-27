@@ -3,25 +3,25 @@
 \name{oce-deprecated}
 \alias{oce-deprecated}
 \alias{oce-defunct}
-\title{Deprecated and Defunct Elements of package \sQuote{oce}}
+\title{Deprecated and Defunct Elements of the oce package}
 \description{
 Certain functions and function arguments are still provided for
-compatibility with older versions of \sQuote{oce}, but will be removed soon.
-The \sQuote{oce} scheme for removing functions is similar to that used by
-\sQuote{Bioconductor}: items are marked as "deprecated" in one release, marked as
+compatibility with older versions of \CRANpkg{oce}, but will be removed soon.
+The \CRANpkg{oce} scheme for removing functions is similar to that used by
+\code{Bioconductor}: items are marked as "deprecated" in one release, marked as
 "defunct" in the next, and removed in the next after that. This goal is to provide a
 gentle migration path for users who keep their packages reasonably
 up-to-date.
 }
 \details{
-Several \sQuote{oce} functions are marked "deprecated" in the present
-release of oce. Please use the replacement functions as listed below.
-The next CRAN release of \sQuote{oce} will designate these functions as
-"defunct".
+The following are marked "deprecated" in the present CRAN release of \CRANpkg{oce}.
+Please use the replacement functions as listed below. The upcoming CRAN
+release of \CRANpkg{oce} will mark these as "defunct", which is the
+last step before outright removal.
 
-\tabular{lll}{
-\strong{Deprecated}       \tab \strong{Replacement}            \tab \strong{Notes}\cr
-\code{byteToBinary}       \tab \code{\link{rawToBits}}         \tab Deprecated in 2016?\cr
+\tabular{lllll}{
+\strong{Deprecated}             \tab \strong{Replacement}   \tab \strong{Deprecated}  \tab \strong{Defunct} \tab \strong{Removed} \cr
+\code{renameData()}             \tab \code{\link[=oceRenameData]{oceRenameData()}} \tab 1.1-2           \tab 1.1-3       \tab 1.1-4       \cr
 }
 
 The following are marked "defunct", so calling them in the
@@ -30,75 +30,65 @@ function. Once a function is marked "defunct" on one CRAN release, it will
 be slated for outright deletion in a subsequent release.
 
 \tabular{lll}{
-\strong{Defunct}       \tab \strong{Replacement}                     \tab \strong{Version} \cr
-\code{addColumn}       \tab \code{\link{oceSetData}}                 \tab  0.9.24\cr
-\code{byteToBinary}    \tab \code{\link{rawToBits}}                  \tab  0.9.24 'endian="little" disallowed\cr
-\code{findInOrdered}   \tab \code{\link{findInterval}}               \tab  0.9.24\cr
-\code{ctdAddColumn}    \tab \code{\link{oceSetData}}                 \tab  0.9.24\cr
-\code{ctdUpdateHeader} \tab \code{\link{oceSetMetadata}}             \tab  0.9.24\cr
-\code{mapZones}        \tab \code{\link{mapGrid}}                    \tab  0.9.24\cr
-\code{mapMeridians}    \tab \code{\link{mapGrid}}                    \tab  0.9.24\cr
-\code{oce.as.POSIXlt}  \tab \code{\link[lubridate]{parse_date_time}} \tab  0.9.24\cr
-\code{oce.magic}       \tab \code{\link{oceMagic}}                   \tab  0.9.24\cr
+\strong{Defunct}         \tab \strong{Replacement}                \tab \strong{Version}\cr
+\code{renameData()}      \tab \code{\link[=oceRenameData]{oceRenameData()}}              \tab 1.5        \cr
+\code{byteToBinary()}    \tab \code{\link[=rawToBits]{rawToBits()}}                  \tab 1.5        \cr
 }
 
-The following were removed recently, having been marked as "deprecated"
-in at least one CRAN release, and thereafter as "defunct" in at least
-one CRAN release.
+The following functions were removed after having been marked as "deprecated"
+in at least one CRAN release, and possibly as "defunct" in at least
+one CRAN release.  (The version number in the table is the first
+version to lack the named function.)
 
 \tabular{lll}{
-\strong{Function}      \tab \strong{Replacement}         \tab \strong{Version}\cr
-\code{makeSection}     \tab \code{\link{as.section}}     \tab           0.9.24\cr
+\strong{Function}        \tab \strong{Replacement}                \tab \strong{Version}\cr
+\code{addColumn()}       \tab \code{\link[=oceSetData]{oceSetData()}}                 \tab 1.1-2      \cr
+\code{ctdAddColumn()}    \tab \code{\link[=oceSetData]{oceSetData()}}                 \tab 1.1-2      \cr
+\code{ctdUpdateHeader()} \tab \code{\link[=oceSetMetadata]{oceSetMetadata()}}             \tab 1.1-2      \cr
+\code{findInOrdered()}   \tab \code{\link[=findInterval]{findInterval()}}               \tab 1.1-2      \cr
+\code{makeSection()}     \tab \code{\link[=as.section]{as.section()}}                 \tab 0.9.24     \cr
+\code{mapMeridians()}    \tab \code{\link[=mapGrid]{mapGrid()}}                    \tab 1.1-2      \cr
+\code{mapZones()}        \tab \code{\link[=mapGrid]{mapGrid()}}                    \tab 1.1-2      \cr
+\code{oce.as.POSIXlt()}  \tab \code{\link[lubridate:parse_date_time]{lubridate::parse_date_time()}} \tab 1.1-2      \cr
 }
 
-Several \sQuote{oce} function arguments are considered "deprecated", which
+Several \CRANpkg{oce} function arguments are considered "deprecated", which
 means they will be marked "defunct" in the next CRAN release. These are normally
 listed in the help page for the function in question. A few that may be
 of general interest are also listed below.
-
 \itemize{
-
-\item The \code{endian} argument of \code{\link{byteToBinary}} will be removed sometime
+\item The \code{adorn} argument was still being checked for (in the dots argument)
+until 2020 August 11.
+\item The \code{eos} argument of \code{\link[=swN2]{swN2()}} was removed on 2019
+April 11; for details, see the \dQuote{Deprecation Notation} section
+of the documentation for \code{\link[=swN2]{swN2()}}.
+\item The \code{endian} argument of \code{\link[=byteToBinary]{byteToBinary()}} will be removed sometime
 in the year 2017, and should be set to \code{"big"} in the meantime.
-
-\item The \code{parameters} argument of \code{\link{plot,ctd-method}}
+\item The \code{parameters} argument of \code{\link[=plot,ctd-method]{plot,ctd-method()}}
 was deprecated on 2016-12-30.  It was once used by
-\code{\link{plot,coastline-method}} but has been ignored by that
+\code{\link[=plot,coastline-method]{plot,coastline-method()}} but has been ignored by that
 function since February 2016.
-
-\item The \code{orientation} argument of \code{\link{plot,ctd-method}}
+\item The \code{orientation} argument of \code{\link[=plot,ctd-method]{plot,ctd-method()}}
 was deprecated on 2016-12-30.  It was once used by
-\code{\link{plot,coastline-method}} but has been ignored by that
+\code{\link[=plot,coastline-method]{plot,coastline-method()}} but has been ignored by that
 function since February 2016.
-
 }
 
 Several \sQuote{oce} function arguments are considered "defunct", which
 means they will be removed in the next CRAN release. They are as follows.
-
 \itemize{
-
-\item The \code{date} argument of \code{\link{as.ctd}}
-was discovered to have been unused in early 2016. Since
-the \code{startTime} actually fills its role, \code{date}
-was considered to be deprecated in June 2016.
-
-\item The \code{quality} flag of \code{\link{as.ctd}} was
-marked as deprecated in March 2016.
-
-\item The \code{fill} argument of \code{\link{mapPlot}} was confusing
+\item The \code{fill} argument of \code{\link[=mapPlot]{mapPlot()}} was confusing
 to users, so it was designated as deprecated in June 2016.
 (The confusion stemmed from subtle differences between
-\code{\link{plot}} and \code{\link{polygon}}, and the problem is that
-\code{\link{mapPlot}} can use either of these functions, according
+\code{\link[=plot]{plot()}} and \code{\link[=polygon]{polygon()}}, and the problem is that
+\code{\link[=mapPlot]{mapPlot()}} can use either of these functions, according
 to whether coastlines are to be filled.)
 The functionality is preserved, in the \code{col} argument.
-
 }
 }
 \seealso{
 The \sQuote{Bioconductor} scheme for removing functions is
 described at
-\url{https://www.bioconductor.org/developers/how-to/deprecation/} and it is
+\verb{https://www.bioconductor.org/developers/how-to/deprecation/} and it is
 extended here to function arguments.
 }

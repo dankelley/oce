@@ -13,27 +13,45 @@ requirements of this package, yielding a spatial resolution of about 2km.
 \details{
 The original data were downloaded from the USGS earthexplorer website, although
 other sites can also be used to uncover it by name.  The original
-data were decimation by a factor of 100 to reduce the file size from about 1GB
-to under 100Kb.
+data were decimated by a factor of 100 in longitude and latitude,
+to reduce the file size from 1G to 100K.
 }
 \seealso{
-Other datasets provided with \code{oce}: \code{\link{adp}},
-  \code{\link{adv}}, \code{\link{argo}}, \code{\link{cm}},
-  \code{\link{coastlineWorld}}, \code{\link{ctdRaw}},
-  \code{\link{ctd}}, \code{\link{echosounder}},
-  \code{\link{lisst}}, \code{\link{lobo}},
-  \code{\link{met}}, \code{\link{ocecolors}},
-  \code{\link{rsk}}, \code{\link{sealevelTuktoyaktuk}},
-  \code{\link{sealevel}}, \code{\link{section}},
-  \code{\link{topoWorld}}, \code{\link{wind}}
+Other satellite datasets provided with oce: 
+\code{\link{amsr}}
 
-Other things related to \code{landsat} data: \code{\link{[[,landsat-method}},
-  \code{\link{[[<-,landsat-method}},
-  \code{\link{landsat-class}}, \code{\link{landsatAdd}},
-  \code{\link{landsatTrim}},
-  \code{\link{plot,landsat-method}},
-  \code{\link{read.landsat}},
-  \code{\link{summary,landsat-method}}
+Other datasets provided with oce: 
+\code{\link{adp}},
+\code{\link{adv}},
+\code{\link{amsr}},
+\code{\link{argo}},
+\code{\link{cm}},
+\code{\link{coastlineWorld}},
+\code{\link{ctdRaw}},
+\code{\link{ctd}},
+\code{\link{echosounder}},
+\code{\link{lisst}},
+\code{\link{lobo}},
+\code{\link{met}},
+\code{\link{ocecolors}},
+\code{\link{rsk}},
+\code{\link{sealevelTuktoyaktuk}},
+\code{\link{sealevel}},
+\code{\link{section}},
+\code{\link{topoWorld}},
+\code{\link{wind}},
+\code{\link{xbt}}
+
+Other things related to landsat data: 
+\code{\link{[[,landsat-method}},
+\code{\link{[[<-,landsat-method}},
+\code{\link{landsat-class}},
+\code{\link{landsatAdd}()},
+\code{\link{landsatTrim}()},
+\code{\link{plot,landsat-method}},
+\code{\link{read.landsat}()},
+\code{\link{summary,landsat-method}}
 }
-\concept{datasets provided with \code{oce}}
-\concept{things related to \code{landsat} data}
+\concept{datasets provided with oce}
+\concept{satellite datasets provided with oce}
+\concept{things related to landsat data}

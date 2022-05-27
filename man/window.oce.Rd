@@ -4,12 +4,21 @@
 \alias{window.oce}
 \title{Window an Oce Object by Time or Distance}
 \usage{
-\method{window}{oce}(x, start = NULL, end = NULL, frequency = NULL,
-  deltat = NULL, extend = FALSE, which = c("time", "distance"),
-  indexReturn = FALSE, debug = getOption("oceDebug"), ...)
+\method{window}{oce}(
+  x,
+  start = NULL,
+  end = NULL,
+  frequency = NULL,
+  deltat = NULL,
+  extend = FALSE,
+  which = c("time", "distance"),
+  indexReturn = FALSE,
+  debug = getOption("oceDebug"),
+  ...
+)
 }
 \arguments{
-\item{x}{an \code{oce} object.}
+\item{x}{an \linkS4class{oce} object.}
 
 \item{start}{the start time (or distance) of the time (or space) region of
 interest.  This may be a single value or a vector.}
@@ -52,7 +61,7 @@ integers, to indicate a portion of the time or distance range.  If
 \code{which} is \code{"time"}, then the \code{start} and \code{end} values
 may also be provided as POSIX times, or character strings indicating times
 (in time zone given by the value of \code{getOption("oceTz")}).
-Note that \code{\link{subset}} may be more useful than this function.
+Note that \code{\link[=subset]{subset()}} may be more useful than this function.
 }
 \examples{
 library(oce)
@@ -64,7 +73,7 @@ bottom <- window(adp, start=0, end=20, which="distance")
 plot(bottom)
 }
 \seealso{
-\code{\link{subset}} provides more flexible selection of subsets.
+\code{\link[=subset]{subset()}} provides more flexible selection of subsets.
 }
 \author{
 Dan Kelley

@@ -14,34 +14,57 @@ oceColorsPalette(n, which = 1)
 to use; see \dQuote{Details}.}
 }
 \description{
-Create a vector of colors
-}
-\details{
 The available schemes are:
 \itemize{
 \item \code{which=1} for a red-white-blue scheme.
 \item \code{which=2} for a red-yellow-blue scheme.
-\item \code{which=9.01}, \code{which="9A"} or \code{which="jet"}
-for \code{\link{oceColorsJet}(n)}.
-\item \code{which=9.02} or \code{which="9B"} for \code{\link{oceColors9B}(n)}.
+\item \code{which=9.01}, \code{which="9A"} or \code{which="jet"} for \code{\link{oceColorsJet}}\code{(n)}.
+\item \code{which=9.02} or \code{which="9B"} for \code{\link{oceColors9B}}\code{(n)}.
 }
+}
+\references{
+The following references provide information on choosing
+colour schemes, that are suitable for viewers who have
+colour deficiencies.
+
+Light, Adam, and Patrick J. Bartlein. "The End of the Rainbow? Color
+Schemes for Improved Data Graphics." \emph{Eos, Transactions American Geophysical
+Union} 85, no. 40 (2004): 385.
+DOI: 10.1029/2004EO400002
+
+Stephenson, David B. "Comment on 'Color Schemes for Improved Data
+Graphics', by A Light and P.J. Bartlein." \emph{Eos, Transactions American
+Geophysical Union} 86, no.  20 (2005): 196.
+DOI: 10.1029/2005EO200005
+
+Light, Adam, and Patrick J. Bartlein. "Reply to 'Comment on Color
+Schemes for Improved Data Graphics,' by A. Light and P.J.  Bartlein'."
+\emph{Eos, Transactions American Geophysical Union} 86, no. 20 (2005): 196–196.
+DOI: 10.1029/2005EO200006
 }
 \seealso{
-Other things related to colors: \code{\link{colormap}},
-  \code{\link{oceColors9B}}, \code{\link{oceColorsCDOM}},
-  \code{\link{oceColorsChlorophyll}},
-  \code{\link{oceColorsClosure}},
-  \code{\link{oceColorsDensity}},
-  \code{\link{oceColorsFreesurface}},
-  \code{\link{oceColorsGebco}}, \code{\link{oceColorsJet}},
-  \code{\link{oceColorsOxygen}},
-  \code{\link{oceColorsPAR}}, \code{\link{oceColorsPhase}},
-  \code{\link{oceColorsSalinity}},
-  \code{\link{oceColorsTemperature}},
-  \code{\link{oceColorsTurbidity}},
-  \code{\link{oceColorsTwo}},
-  \code{\link{oceColorsVelocity}},
-  \code{\link{oceColorsViridis}},
-  \code{\link{oceColorsVorticity}}, \code{\link{ocecolors}}
+Other things related to colors: 
+\code{\link{colormapGMT}()},
+\code{\link{colormap}()},
+\code{\link{oceColors9B}()},
+\code{\link{oceColorsCDOM}()},
+\code{\link{oceColorsChlorophyll}()},
+\code{\link{oceColorsClosure}()},
+\code{\link{oceColorsDensity}()},
+\code{\link{oceColorsFreesurface}()},
+\code{\link{oceColorsGebco}()},
+\code{\link{oceColorsJet}()},
+\code{\link{oceColorsOxygen}()},
+\code{\link{oceColorsPAR}()},
+\code{\link{oceColorsPhase}()},
+\code{\link{oceColorsSalinity}()},
+\code{\link{oceColorsTemperature}()},
+\code{\link{oceColorsTurbidity}()},
+\code{\link{oceColorsTurbo}()},
+\code{\link{oceColorsTwo}()},
+\code{\link{oceColorsVelocity}()},
+\code{\link{oceColorsViridis}()},
+\code{\link{oceColorsVorticity}()},
+\code{\link{ocecolors}}
 }
 \concept{things related to colors}

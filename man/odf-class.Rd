@@ -7,7 +7,7 @@
 \description{
 This class is for data stored in a format used at Canadian
 Department of Fisheries and Oceans laboratories. It is somewhat
-similar to the \code{\link{bremen-class}}, in the sense
+similar to the \linkS4class{bremen} class, in the sense
 that it does not apply just to a particular instrument.
 }
 \section{Slots}{
@@ -15,84 +15,113 @@ that it does not apply just to a particular instrument.
 \describe{
 \item{\code{data}}{As with all \code{oce} objects, the \code{data} slot
 for \code{odf} objects is a
-\code{\link{list}} containing the main data for the object.
+\link{list} containing the main data for the object.
 {}}
 
 \item{\code{metadata}}{As with all \code{oce} objects, the \code{metadata} slot
-for \code{odf} objects is a \code{\link{list}} containing
+for \code{odf} objects is a \link{list} containing
 information about the \code{data} or about the object itself.
 {}}
 
 \item{\code{processingLog}}{As with all \code{oce} objects, the \code{processingLog} slot
 for \code{odf} objects is a
-\code{\link{list}} with entries describing the creation and evolution
+\link{list} with entries describing the creation and evolution
 of the object. The contents are updated by various \code{oce} functions to
 keep a record of processing steps.  Object summaries and
-\code{\link{processingLogShow}} both display the log.}
+\code{\link[=processingLogShow]{processingLogShow()}} both display the log.}
 }}
 
 \section{Modifying slot contents}{
 
 
 Although the \code{[[<-} operator may permit modification of the contents
-of \code{odf} objects (see \code{\link{[[<-,odf-method}}),
-it is better to use \code{\link{oceSetData}}
-and \code{\link{oceSetMetadata}}, because that will save an entry
-in the \code{processingLog} to describe the change.
+of \linkS4class{odf} objects (see \code{\link{[[<-,odf-method}}),
+it is better to use \code{\link[=oceSetData]{oceSetData()}} and \code{\link[=oceSetMetadata]{oceSetMetadata()}},
+because those functions save an entry in the \code{processingLog}
+that describes the change.
 }
 
 \section{Retrieving slot contents}{
 
 
-The full contents of the \code{data} and \code{metadata} slots of a \code{odf}
-object named \code{odf} may be retrieved in the standard R way. For example,
-\code{slot(odf, "data")} and \code{slot(odf, "metadata")} return
-the \code{data} and \code{metadata} slots, respectively. The
-\code{\link{[[,odf-method}} operator can also be used to access slots,
-with \code{odf[["data"]]} and \code{odf[["metadata"]]}, respectively.
-Furthermore, \code{\link{[[,odf-method}} can be used to retrieve
-named items (and potentially some derived items) within the
-\code{metadata} and \code{data} slots, the former taking precedence
-over the latter in the lookup. It is also possible
-to find items more directly, using \code{\link{oceGetData}} and
-\code{\link{oceGetMetadata}}, but this cannot retrieve derived items.
+The full contents of the \code{data} and \code{metadata} slots of a \linkS4class{odf}
+object may be retrieved in the standard R way using \code{\link[=slot]{slot()}}. For
+example \code{slot(o,"data")} returns the \code{data} slot of an object named \code{o},
+and similarly \code{slot(o,"metadata")} returns
+the \code{metadata} slot.
+
+The slots may also be obtained with the \code{\link{[[,odf-method}}
+operator, as e.g. \code{o[["data"]]} and \code{o[["metadata"]]}, respectively.
+
+The \code{\link{[[,odf-method}} operator can also
+be used to retrieve items from within the \code{data} and \code{metadata} slots.
+For example, \code{o[["temperature"]]} can be used to retrieve temperature
+from an object containing that quantity. The rule is that a named
+quantity is sought first within the object's \code{metadata} slot,
+with the \code{data} slot being checked only if \code{metadata} does not
+contain the item. This \code{[[} method can also be used to get
+certain derived quantities, if the object contains sufficient
+information to calculate them. For example, an object that holds
+(practical) salinity, temperature and pressure, along with
+longitude and latitude, has sufficient information to compute
+Absolute Salinity, and so \code{o[["SA"]]} will yield the
+calculated Absolute Salinity.
+
+It is also possible to find items more directly, using \code{\link[=oceGetData]{oceGetData()}} and
+\code{\link[=oceGetMetadata]{oceGetMetadata()}}, but neither of these functions can
+retrieve derived items.
 }
 
 \references{
-[1] Anthony W. Isenor and David Kellow, 2011. ODF Format Specification
-Version 2.0. (This is a .doc file downloaded from a now-forgotten URL by Dan Kelley,
-in June 2011.)
-
-[2] The St Lawrence Global Observatory website has information on ODF format at
-\url{https://slgo.ca/app-sgdo/en/docs_reference/format_odf.html}
-
-[3] List of variable codes:
-\url{https://slgo.ca/app-sgdo/en/docs_reference/code_parametre_odf.html}
-(checked 2018-02-11); only a subset are handled.
+\enumerate{
+\item Anthony W. Isenor and David Kellow, 2011. \emph{ODF Format Specification
+Version 2.0}. (This is a .doc file obtained in June 2011 by Dan Kelley,
+which no longer seems to be made available at any DFO website.)
+\item (Unknown authors), October 2014. \emph{ODF Format Description (MLI)},
+\verb{https://ogsl.ca/wp-content/uploads/ODF_format_desc_en_0.pdf},
+(Link worked early on March 16, 2022, but failed later that day.)
+\item A sample ODF file in the DFO format is available at
+\code{system.file("extdata","CTD_BCD2014666_008_1_DN.ODF.gz",package="oce")}
+\item A sample ODF file in the MLI format may be available at
+\verb{https://ogsl.ca/wp-content/uploads/ODF_file_example_en_0.pdf}.
+(Link worked early on March 16, 2022, but failed later that day.)
+}
 }
 \seealso{
-Other things related to \code{odf} data: \code{\link{ODF2oce}},
-  \code{\link{ODFListFromHeader}},
-  \code{\link{ODFNames2oceNames}},
-  \code{\link{[[,odf-method}},
-  \code{\link{[[<-,odf-method}},
-  \code{\link{plot,odf-method}},
-  \code{\link{read.ctd.odf}}, \code{\link{read.odf}},
-  \code{\link{subset,odf-method}},
-  \code{\link{summary,odf-method}}
+Other things related to odf data: 
+\code{\link{CTD_BCD2014666_008_1_DN.ODF.gz}},
+\code{\link{ODF2oce}()},
+\code{\link{ODFListFromHeader}()},
+\code{\link{ODFNames2oceNames}()},
+\code{\link{[[,odf-method}},
+\code{\link{[[<-,odf-method}},
+\code{\link{plot,odf-method}},
+\code{\link{read.ctd.odf}()},
+\code{\link{read.odf}()},
+\code{\link{subset,odf-method}},
+\code{\link{summary,odf-method}}
 
-Other classes provided by \code{oce}: \code{\link{adp-class}},
-  \code{\link{adv-class}}, \code{\link{argo-class}},
-  \code{\link{bremen-class}}, \code{\link{cm-class}},
-  \code{\link{coastline-class}}, \code{\link{ctd-class}},
-  \code{\link{lisst-class}}, \code{\link{lobo-class}},
-  \code{\link{met-class}}, \code{\link{oce-class}},
-  \code{\link{rsk-class}}, \code{\link{sealevel-class}},
-  \code{\link{section-class}}, \code{\link{topo-class}},
-  \code{\link{windrose-class}}
+Other classes provided by oce: 
+\code{\link{adp-class}},
+\code{\link{adv-class}},
+\code{\link{argo-class}},
+\code{\link{bremen-class}},
+\code{\link{cm-class}},
+\code{\link{coastline-class}},
+\code{\link{ctd-class}},
+\code{\link{lisst-class}},
+\code{\link{lobo-class}},
+\code{\link{met-class}},
+\code{\link{oce-class}},
+\code{\link{rsk-class}},
+\code{\link{sealevel-class}},
+\code{\link{section-class}},
+\code{\link{topo-class}},
+\code{\link{windrose-class}},
+\code{\link{xbt-class}}
 }
 \author{
 Dan Kelley
 }
-\concept{classes provided by \code{oce}}
-\concept{things related to \code{odf} data}
+\concept{classes provided by oce}
+\concept{things related to odf data}

@@ -7,31 +7,42 @@
 shiftLongitude(longitudes)
 }
 \arguments{
-\item{longitudes}{a numerical vector of longitudes}
+\item{longitudes}{numerical vector of longitudes.}
 }
 \value{
 vector of longitudes, shifted to the desired range.
 }
 \description{
-This is a utility function used by \code{\link{mapGrid}}. It works
+This is a utility function used by \code{\link[=mapGrid]{mapGrid()}}. It works
 simply by subtracting 180 from each longitude, if any longitude
 in the vector exceeds 180.
 }
 \seealso{
-\code{\link{matrixShiftLongitude}} and \code{\link{standardizeLongitude}}.
+\code{\link[=matrixShiftLongitude]{matrixShiftLongitude()}} and \code{\link[=standardizeLongitude]{standardizeLongitude()}}.
 
-Other functions related to maps: \code{\link{lonlat2map}},
-  \code{\link{lonlat2utm}}, \code{\link{map2lonlat}},
-  \code{\link{mapArrows}}, \code{\link{mapAxis}},
-  \code{\link{mapContour}},
-  \code{\link{mapDirectionField}}, \code{\link{mapGrid}},
-  \code{\link{mapImage}}, \code{\link{mapLines}},
-  \code{\link{mapLocator}},
-  \code{\link{mapLongitudeLatitudeXY}},
-  \code{\link{mapPlot}}, \code{\link{mapPoints}},
-  \code{\link{mapPolygon}}, \code{\link{mapScalebar}},
-  \code{\link{mapText}}, \code{\link{mapTissot}},
-  \code{\link{oceCRS}}, \code{\link{usrLonLat}},
-  \code{\link{utm2lonlat}}
+Other functions related to maps: 
+\code{\link{formatPosition}()},
+\code{\link{lonlat2map}()},
+\code{\link{lonlat2utm}()},
+\code{\link{map2lonlat}()},
+\code{\link{mapArrows}()},
+\code{\link{mapAxis}()},
+\code{\link{mapContour}()},
+\code{\link{mapCoordinateSystem}()},
+\code{\link{mapDirectionField}()},
+\code{\link{mapGrid}()},
+\code{\link{mapImage}()},
+\code{\link{mapLines}()},
+\code{\link{mapLocator}()},
+\code{\link{mapLongitudeLatitudeXY}()},
+\code{\link{mapPlot}()},
+\code{\link{mapPoints}()},
+\code{\link{mapPolygon}()},
+\code{\link{mapScalebar}()},
+\code{\link{mapText}()},
+\code{\link{mapTissot}()},
+\code{\link{oceCRS}()},
+\code{\link{usrLonLat}()},
+\code{\link{utm2lonlat}()}
 }
 \concept{functions related to maps}

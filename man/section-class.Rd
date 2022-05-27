@@ -8,67 +8,80 @@
 This class stores data from oceanographic section surveys.
 }
 \details{
-Sections can be read with \code{\link{read.section}} or created with
-\code{\link{read.section}} or created from CTD objects by using
-\code{\link{as.section}} or by adding a ctd station to an existing section with
-\code{\link{sectionAddStation}}.
+Sections can be read with \code{\link[=read.section]{read.section()}} or created with
+\code{\link[=read.section]{read.section()}} or created from CTD objects by using
+\code{\link[=as.section]{as.section()}} or by adding a ctd station to an existing section with
+\code{\link[=sectionAddStation]{sectionAddStation()}}.
 
-Sections may be sorted with \code{\link{sectionSort}}, subsetted with
-\code{\link{subset,section-method}}, smoothed with \code{\link{sectionSmooth}}, and
-gridded with \code{\link{sectionGrid}}.  Gridded sections may be plotted with
-\code{\link{plot,section-method}}.
+Sections may be sorted with \code{\link[=sectionSort]{sectionSort()}}, subsetted with
+\code{\link[=subset,section-method]{subset,section-method()}}, smoothed with \code{\link[=sectionSmooth]{sectionSmooth()}}, and
+gridded with \code{\link[=sectionGrid]{sectionGrid()}}.  A "spine" may be added to a section
+with \code{\link[=addSpine]{addSpine()}}.  Sections may be summarized with
+\code{\link[=summary,section-method]{summary,section-method()}} and plotted
+with \code{\link[=plot,section-method]{plot,section-method()}}.
 
-Statistical summaries are provided by \code{\link{summary,section-method}}, while
-overviews are provided by \code{show}.
-
-The sample dataset \code{\link{section}} contains data along WOCE line A03.
+The sample dataset \code{\link[=section]{section()}} contains data along WOCE line A03.
 }
 \section{Slots}{
 
 \describe{
 \item{\code{data}}{As with all \code{oce} objects, the \code{data} slot
 for \code{section} objects is a
-\code{\link{list}} containing the main data for the object.
+\link{list} containing the main data for the object.
 {}}
 
 \item{\code{metadata}}{As with all \code{oce} objects, the \code{metadata} slot
-for \code{section} objects is a \code{\link{list}} containing
+for \code{section} objects is a \link{list} containing
 information about the \code{data} or about the object itself.
 Examples that are of common interest include \code{stationId}, \code{longitude}, \code{latitude} and \code{time}.}
 
 \item{\code{processingLog}}{As with all \code{oce} objects, the \code{processingLog} slot
 for \code{section} objects is a
-\code{\link{list}} with entries describing the creation and evolution
+\link{list} with entries describing the creation and evolution
 of the object. The contents are updated by various \code{oce} functions to
 keep a record of processing steps.  Object summaries and
-\code{\link{processingLogShow}} both display the log.}
+\code{\link[=processingLogShow]{processingLogShow()}} both display the log.}
 }}
 
 \section{Modifying slot contents}{
 
 
 Although the \code{[[<-} operator may permit modification of the contents
-of \code{section} objects (see \code{\link{[[<-,section-method}}),
-it is better to use \code{\link{oceSetData}}
-and \code{\link{oceSetMetadata}}, because that will save an entry
-in the \code{processingLog} to describe the change.
+of \linkS4class{section} objects (see \code{\link{[[<-,section-method}}),
+it is better to use \code{\link[=oceSetData]{oceSetData()}} and \code{\link[=oceSetMetadata]{oceSetMetadata()}},
+because those functions save an entry in the \code{processingLog}
+that describes the change.
 }
 
 \section{Retrieving slot contents}{
 
 
-The full contents of the \code{data} and \code{metadata} slots of a \code{section}
-object named \code{section} may be retrieved in the standard R way. For example,
-\code{slot(section, "data")} and \code{slot(section, "metadata")} return
-the \code{data} and \code{metadata} slots, respectively. The
-\code{\link{[[,section-method}} operator can also be used to access slots,
-with \code{section[["data"]]} and \code{section[["metadata"]]}, respectively.
-Furthermore, \code{\link{[[,section-method}} can be used to retrieve
-named items (and potentially some derived items) within the
-\code{metadata} and \code{data} slots, the former taking precedence
-over the latter in the lookup. It is also possible
-to find items more directly, using \code{\link{oceGetData}} and
-\code{\link{oceGetMetadata}}, but this cannot retrieve derived items.
+The full contents of the \code{data} and \code{metadata} slots of a \linkS4class{section}
+object may be retrieved in the standard R way using \code{\link[=slot]{slot()}}. For
+example \code{slot(o,"data")} returns the \code{data} slot of an object named \code{o},
+and similarly \code{slot(o,"metadata")} returns
+the \code{metadata} slot.
+
+The slots may also be obtained with the \code{\link{[[,section-method}}
+operator, as e.g. \code{o[["data"]]} and \code{o[["metadata"]]}, respectively.
+
+The \code{\link{[[,section-method}} operator can also
+be used to retrieve items from within the \code{data} and \code{metadata} slots.
+For example, \code{o[["temperature"]]} can be used to retrieve temperature
+from an object containing that quantity. The rule is that a named
+quantity is sought first within the object's \code{metadata} slot,
+with the \code{data} slot being checked only if \code{metadata} does not
+contain the item. This \code{[[} method can also be used to get
+certain derived quantities, if the object contains sufficient
+information to calculate them. For example, an object that holds
+(practical) salinity, temperature and pressure, along with
+longitude and latitude, has sufficient information to compute
+Absolute Salinity, and so \code{o[["SA"]]} will yield the
+calculated Absolute Salinity.
+
+It is also possible to find items more directly, using \code{\link[=oceGetData]{oceGetData()}} and
+\code{\link[=oceGetMetadata]{oceGetMetadata()}}, but neither of these functions can
+retrieve derived items.
 }
 
 \examples{
@@ -81,35 +94,47 @@ par(mfrow=c(3,3))
 Tlim <- range(section[["temperature"]])
 ylim <- rev(range(section[["pressure"]]))
 for (stn in section[["station", 1:9]])
-    plotProfile(stn, xtype='potential temperature', ylim=ylim, Tlim=Tlim)
+    plotProfile(stn, xtype="potential temperature", ylim=ylim, Tlim=Tlim)
 
 }
 \seealso{
-Other classes provided by \code{oce}: \code{\link{adp-class}},
-  \code{\link{adv-class}}, \code{\link{argo-class}},
-  \code{\link{bremen-class}}, \code{\link{cm-class}},
-  \code{\link{coastline-class}}, \code{\link{ctd-class}},
-  \code{\link{lisst-class}}, \code{\link{lobo-class}},
-  \code{\link{met-class}}, \code{\link{oce-class}},
-  \code{\link{odf-class}}, \code{\link{rsk-class}},
-  \code{\link{sealevel-class}}, \code{\link{topo-class}},
-  \code{\link{windrose-class}}
+Other classes provided by oce: 
+\code{\link{adp-class}},
+\code{\link{adv-class}},
+\code{\link{argo-class}},
+\code{\link{bremen-class}},
+\code{\link{cm-class}},
+\code{\link{coastline-class}},
+\code{\link{ctd-class}},
+\code{\link{lisst-class}},
+\code{\link{lobo-class}},
+\code{\link{met-class}},
+\code{\link{oce-class}},
+\code{\link{odf-class}},
+\code{\link{rsk-class}},
+\code{\link{sealevel-class}},
+\code{\link{topo-class}},
+\code{\link{windrose-class}},
+\code{\link{xbt-class}}
 
-Other things related to \code{section} data: \code{\link{[[,section-method}},
-  \code{\link{[[<-,section-method}},
-  \code{\link{as.section}},
-  \code{\link{handleFlags,section-method}},
-  \code{\link{initializeFlagScheme,section-method}},
-  \code{\link{plot,section-method}},
-  \code{\link{read.section}},
-  \code{\link{sectionAddStation}},
-  \code{\link{sectionGrid}}, \code{\link{sectionSmooth}},
-  \code{\link{sectionSort}}, \code{\link{section}},
-  \code{\link{subset,section-method}},
-  \code{\link{summary,section-method}}
+Other things related to section data: 
+\code{\link{[[,section-method}},
+\code{\link{[[<-,section-method}},
+\code{\link{as.section}()},
+\code{\link{handleFlags,section-method}},
+\code{\link{initializeFlagScheme,section-method}},
+\code{\link{plot,section-method}},
+\code{\link{read.section}()},
+\code{\link{sectionAddStation}()},
+\code{\link{sectionGrid}()},
+\code{\link{sectionSmooth}()},
+\code{\link{sectionSort}()},
+\code{\link{section}},
+\code{\link{subset,section-method}},
+\code{\link{summary,section-method}}
 }
 \author{
 Dan Kelley
 }
-\concept{classes provided by \code{oce}}
-\concept{things related to \code{section} data}
+\concept{classes provided by oce}
+\concept{things related to section data}

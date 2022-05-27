@@ -4,11 +4,10 @@
 \alias{swDepth}
 \title{Water depth}
 \usage{
-swDepth(pressure, latitude = 45, eos = getOption("oceEOS", default =
-  "gsw"))
+swDepth(pressure, latitude = 45, eos = getOption("oceEOS", default = "gsw"))
 }
 \arguments{
-\item{pressure}{either pressure [dbar], in which case \code{lat} must also
+\item{pressure}{either pressure (dbar), in which case \code{lat} must also
 be given, or a \code{ctd} object, in which case \code{lat} will be inferred
 from the object.}
 
@@ -23,55 +22,74 @@ Depth below the ocean surface, in metres.
 }
 \description{
 Compute depth below the surface (i.e. a positive number within the
-water column) based on pressure and latitude. (Use \code{\link{swZ}}
+water column) based on pressure and latitude. (Use \code{\link[=swZ]{swZ()}}
 to get the vertical coordinate, which is negative within the water
 column.)
 }
 \details{
 If \code{eos="unesco"} then depth is calculated from pressure using Saunders
 and Fofonoff's method, with the formula refitted for 1980 UNESCO equation of
-state [1].  If \code{eos="gsw"}, then \code{\link[gsw]{gsw_z_from_p}} from
-the \code{gsw} package [2,3] is used.
+state (reference 1).  If \code{eos="gsw"}, then \code{\link[gsw:gsw_z_from_p]{gsw::gsw_z_from_p()}} from
+the \CRANpkg{gsw} package (references 2 and 3) is used.
 }
 \examples{
 d <- swDepth(10, 45)
 
 }
 \references{
-1. Unesco 1983. Algorithms for computation of fundamental
+\enumerate{
+\item Unesco 1983. Algorithms for computation of fundamental
 properties of seawater, 1983. \emph{Unesco Tech. Pap. in Mar. Sci.}, No. 44,
 53 pp.
-
-2. IOC, SCOR, and IAPSO (2010). The international thermodynamic equation of
+\item IOC, SCOR, and IAPSO (2010). The international thermodynamic equation of
 seawater-2010: Calculation and use of thermodynamic properties.  Technical
 Report 56, Intergovernmental Oceanographic Commission, Manuals and Guide.
-
-3. McDougall, T.J. and P.M. Barker, 2011: Getting started with TEOS-10 and
+\item McDougall, T.J. and P.M. Barker, 2011: Getting started with TEOS-10 and
 the Gibbs Seawater (GSW) Oceanographic Toolbox, 28pp., SCOR/IAPSO WG127,
 ISBN 978-0-646-55621-5.
 }
+}
 \seealso{
-Other functions that calculate seawater properties: \code{\link{T68fromT90}},
-  \code{\link{T90fromT48}}, \code{\link{T90fromT68}},
-  \code{\link{swAbsoluteSalinity}},
-  \code{\link{swAlphaOverBeta}}, \code{\link{swAlpha}},
-  \code{\link{swBeta}}, \code{\link{swCSTp}},
-  \code{\link{swConservativeTemperature}},
-  \code{\link{swDynamicHeight}}, \code{\link{swLapseRate}},
-  \code{\link{swN2}}, \code{\link{swPressure}},
-  \code{\link{swRho}}, \code{\link{swRrho}},
-  \code{\link{swSCTp}}, \code{\link{swSTrho}},
-  \code{\link{swSigma0}}, \code{\link{swSigma1}},
-  \code{\link{swSigma2}}, \code{\link{swSigma3}},
-  \code{\link{swSigma4}}, \code{\link{swSigmaTheta}},
-  \code{\link{swSigmaT}}, \code{\link{swSigma}},
-  \code{\link{swSoundAbsorption}},
-  \code{\link{swSoundSpeed}}, \code{\link{swSpecificHeat}},
-  \code{\link{swSpice}}, \code{\link{swTFreeze}},
-  \code{\link{swTSrho}},
-  \code{\link{swThermalConductivity}},
-  \code{\link{swTheta}}, \code{\link{swViscosity}},
-  \code{\link{swZ}}
+Other functions that calculate seawater properties: 
+\code{\link{T68fromT90}()},
+\code{\link{T90fromT48}()},
+\code{\link{T90fromT68}()},
+\code{\link{computableWaterProperties}()},
+\code{\link{locationForGsw}()},
+\code{\link{swAbsoluteSalinity}()},
+\code{\link{swAlphaOverBeta}()},
+\code{\link{swAlpha}()},
+\code{\link{swBeta}()},
+\code{\link{swCSTp}()},
+\code{\link{swConservativeTemperature}()},
+\code{\link{swDynamicHeight}()},
+\code{\link{swLapseRate}()},
+\code{\link{swN2}()},
+\code{\link{swPressure}()},
+\code{\link{swRho}()},
+\code{\link{swRrho}()},
+\code{\link{swSCTp}()},
+\code{\link{swSR}()},
+\code{\link{swSTrho}()},
+\code{\link{swSigma0}()},
+\code{\link{swSigma1}()},
+\code{\link{swSigma2}()},
+\code{\link{swSigma3}()},
+\code{\link{swSigma4}()},
+\code{\link{swSigmaTheta}()},
+\code{\link{swSigmaT}()},
+\code{\link{swSigma}()},
+\code{\link{swSoundAbsorption}()},
+\code{\link{swSoundSpeed}()},
+\code{\link{swSpecificHeat}()},
+\code{\link{swSpice}()},
+\code{\link{swSstar}()},
+\code{\link{swTFreeze}()},
+\code{\link{swTSrho}()},
+\code{\link{swThermalConductivity}()},
+\code{\link{swTheta}()},
+\code{\link{swViscosity}()},
+\code{\link{swZ}()}
 }
 \author{
 Dan Kelley

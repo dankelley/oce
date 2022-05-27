@@ -4,11 +4,23 @@
 \alias{read.adp.nortek}
 \title{Read a Nortek ADP File}
 \usage{
-read.adp.nortek(file, from = 1, to, by = 1, tz = getOption("oceTz"),
-  longitude = NA, latitude = NA, type = c("aquadoppHR",
-  "aquadoppProfiler", "aquadopp"), orientation, distance,
-  monitor = FALSE, despike = FALSE, processingLog,
-  debug = getOption("oceDebug"), ...)
+read.adp.nortek(
+  file,
+  from = 1,
+  to,
+  by = 1,
+  tz = getOption("oceTz"),
+  longitude = NA,
+  latitude = NA,
+  type = c("aquadoppHR", "aquadoppProfiler", "aquadopp", "aquadoppPlusMagnetometer"),
+  orientation,
+  distance,
+  monitor = FALSE,
+  despike = FALSE,
+  processingLog,
+  debug = getOption("oceDebug"),
+  ...
+)
 }
 \arguments{
 \item{file}{a connection or a character string giving the name of the file
@@ -43,23 +55,24 @@ North.}
 
 \item{type}{a character string indicating the type of instrument.}
 
-\item{orientation}{optional character string specifying the orientation of
+\item{orientation}{an optional character string specifying the orientation of
 the sensor, provided for those cases in which it cannot be inferred from the
 data file.  The valid choices are \code{"upward"}, \code{"downward"}, and
 \code{"sideward"}.}
 
-\item{distance}{optional vector holding the distances of bin centres from
+\item{distance}{an optional vector holding the distances of bin centres from
 the sensor.  This argument is ignored except for Nortek profilers, and need
 not be given if the function determines the distances correctly from the
 data.  The problem is that the distance is poorly documented in the Nortek
 System Integrator Guide (2008 edition, page 31), so the function must rely
 on word-of-mouth formulae that do not work in all cases.}
 
-\item{monitor}{boolean, set to \code{TRUE} to provide an indication of progress
-in reading the file, either by printing a dot for each profile or by writing
-a textual progress bar with \code{\link{txtProgressBar}}.}
+\item{monitor}{boolean value indicating whether to indicate the progress
+of reading the file, by using \code{\link[=txtProgressBar]{txtProgressBar()}} or otherwise.  The value
+of \code{monitor} is changed to \code{FALSE} automatically, for non-interactive
+sessions.}
 
-\item{despike}{if \code{TRUE}, \code{\link{despike}} will be used to clean
+\item{despike}{a logical value indicating whether to use \code{\link[=despike]{despike()}} to remove
 anomalous spikes in heading, etc.}
 
 \item{processingLog}{if provided, the action item to be stored in the log.
@@ -69,55 +82,75 @@ better for normal calls by a user.)}
 \item{debug}{a flag that turns on debugging.  Set to 1 to get a moderate
 amount of debugging information, or to 2 to get more.}
 
-\item{\dots}{additional arguments, passed to called routines.}
+\item{\dots}{optional additional arguments that some (but not all)
+\verb{read.adp.*()} functions pass to lower-level functions.}
 }
 \value{
-An \code{adp} object, i.e. one inheriting from \code{\link{adp-class}}.
-The form of this object varies with instrument type. In some cases
-navigational data may be included, e.g. \code{read.adp.rdi} can
-read NMEA strings (which get stored in an item called \code{nmea}
-in the \code{data} slot).
+An \linkS4class{adp} object.
+The contents of that object make sense for the particular instrument
+type under study, e.g. if the data file contains
+NMEA strings, then navigational data will be stored in an item
+called \code{nmea} in the \code{data} slot).
 }
 \description{
 Read a Nortek ADP File
 }
 \references{
-1. Information on Nortek profilers (including the System Integrator Guide,
+\enumerate{
+\item Information on Nortek profilers (including the System Integrator Guide,
 which explains the data format byte-by-byte) is available at
-\url{http://www.nortekusa.com/}.  (One must join the site to see the
+\verb{https://www.nortekusa.com/}.  (One must join the site to see the
 manuals.)
-
-2. The Nortek Knowledge Center
-\url{http://www.nortekusa.com/en/knowledge-center} may be of help if
+\item The Nortek Knowledge Center
+\verb{https://www.nortekusa.com/en/knowledge-center} may be of help if
 problems arise in dealing with data from Nortek instruments.
 }
+}
 \seealso{
-Other things related to \code{adp} data: \code{\link{[[,adp-method}},
-  \code{\link{[[<-,adp-method}},
-  \code{\link{ad2cpHeaderValue}}, \code{\link{adp-class}},
-  \code{\link{adpEnsembleAverage}}, \code{\link{adp}},
-  \code{\link{as.adp}}, \code{\link{beamName}},
-  \code{\link{beamToXyzAdpAD2CP}},
-  \code{\link{beamToXyzAdp}}, \code{\link{beamToXyzAdv}},
-  \code{\link{beamToXyz}}, \code{\link{beamUnspreadAdp}},
-  \code{\link{binmapAdp}}, \code{\link{enuToOtherAdp}},
-  \code{\link{enuToOther}},
-  \code{\link{handleFlags,adp-method}},
-  \code{\link{is.ad2cp}}, \code{\link{plot,adp-method}},
-  \code{\link{read.adp.ad2cp}}, \code{\link{read.adp.rdi}},
-  \code{\link{read.adp.sontek.serial}},
-  \code{\link{read.adp.sontek}}, \code{\link{read.adp}},
-  \code{\link{read.aquadoppHR}},
-  \code{\link{read.aquadoppProfiler}},
-  \code{\link{read.aquadopp}}, \code{\link{rotateAboutZ}},
-  \code{\link{setFlags,adp-method}},
-  \code{\link{subset,adp-method}},
-  \code{\link{summary,adp-method}}, \code{\link{toEnuAdp}},
-  \code{\link{toEnu}}, \code{\link{velocityStatistics}},
-  \code{\link{xyzToEnuAdpAD2CP}},
-  \code{\link{xyzToEnuAdp}}, \code{\link{xyzToEnu}}
+Other things related to adp data: 
+\code{\link{[[,adp-method}},
+\code{\link{[[<-,adp-method}},
+\code{\link{ad2cpHeaderValue}()},
+\code{\link{adp-class}},
+\code{\link{adpConvertRawToNumeric}()},
+\code{\link{adpEnsembleAverage}()},
+\code{\link{adpFlagPastBoundary}()},
+\code{\link{adp_rdi.000}},
+\code{\link{adp}},
+\code{\link{as.adp}()},
+\code{\link{beamName}()},
+\code{\link{beamToXyzAdpAD2CP}()},
+\code{\link{beamToXyzAdp}()},
+\code{\link{beamToXyzAdv}()},
+\code{\link{beamToXyz}()},
+\code{\link{beamUnspreadAdp}()},
+\code{\link{binmapAdp}()},
+\code{\link{enuToOtherAdp}()},
+\code{\link{enuToOther}()},
+\code{\link{handleFlags,adp-method}},
+\code{\link{is.ad2cp}()},
+\code{\link{plot,adp-method}},
+\code{\link{read.adp.ad2cp}()},
+\code{\link{read.adp.rdi}()},
+\code{\link{read.adp.sontek.serial}()},
+\code{\link{read.adp.sontek}()},
+\code{\link{read.adp}()},
+\code{\link{read.aquadoppHR}()},
+\code{\link{read.aquadoppProfiler}()},
+\code{\link{read.aquadopp}()},
+\code{\link{rotateAboutZ}()},
+\code{\link{setFlags,adp-method}},
+\code{\link{subset,adp-method}},
+\code{\link{subtractBottomVelocity}()},
+\code{\link{summary,adp-method}},
+\code{\link{toEnuAdp}()},
+\code{\link{toEnu}()},
+\code{\link{velocityStatistics}()},
+\code{\link{xyzToEnuAdpAD2CP}()},
+\code{\link{xyzToEnuAdp}()},
+\code{\link{xyzToEnu}()}
 }
 \author{
 Dan Kelley
 }
-\concept{things related to \code{adp} data}
+\concept{things related to adp data}

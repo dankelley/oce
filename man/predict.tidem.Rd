@@ -2,20 +2,19 @@
 % Please edit documentation in R/tides.R
 \name{predict.tidem}
 \alias{predict.tidem}
-\title{Predict a Time Series from a Tidal Model}
+\title{Predict a Tidal Signal}
 \usage{
 \method{predict}{tidem}(object, newdata, ...)
 }
 \arguments{
-\item{object}{A \code{tidem} object, i.e. one inheriting from
-\code{\link{tidem-class}}.}
+\item{object}{a \linkS4class{tidem} object.}
 
 \item{newdata}{vector of POSIXt times at which to make the
-prediction.  For models created with \code{\link{tidem}},
-\code{newdata} is optional, and if it is not provided, then
+prediction.  For models created with \code{\link[=tidem]{tidem()}},
+the \code{newdata} argument is optional, and if it is not provided, then
 the predictions are at the observation times given to
-\code{\link{tidem}}. However, \code{newdata} is required,
-if \code{\link{as.tidem}} had been used to create \code{object}.}
+\code{\link[=tidem]{tidem()}}. However, \code{newdata} is required  if \code{\link[=as.tidem]{as.tidem()}}
+had been used to create \code{object}.}
 
 \item{\dots}{optional arguments passed on to children.}
 }
@@ -23,7 +22,8 @@ if \code{\link{as.tidem}} had been used to create \code{object}.}
 A vector of predictions.
 }
 \description{
-Predict a time series from a tidal model.
+This creates a time-series of predicted tides, based on a
+tidal model object that was created by \code{\link[=as.tidem]{as.tidem()}} or \code{\link[=tidem]{tidem()}}.
 }
 \examples{
 
@@ -55,15 +55,21 @@ legend=c("data","model"),lwd=1)
 
 }
 \seealso{
-Other things related to \code{tidem} data: \code{\link{[[,tidem-method}},
-  \code{\link{[[<-,tidem-method}},
-  \code{\link{plot,tidem-method}},
-  \code{\link{summary,tidem-method}},
-  \code{\link{tidedata}}, \code{\link{tidem-class}},
-  \code{\link{tidemAstron}}, \code{\link{tidemVuf}},
-  \code{\link{tidem}}
+Other things related to tides: 
+\code{\link{[[,tidem-method}},
+\code{\link{[[<-,tidem-method}},
+\code{\link{as.tidem}()},
+\code{\link{plot,tidem-method}},
+\code{\link{summary,tidem-method}},
+\code{\link{tidalCurrent}},
+\code{\link{tidedata}},
+\code{\link{tidem-class}},
+\code{\link{tidemAstron}()},
+\code{\link{tidemVuf}()},
+\code{\link{tidem}},
+\code{\link{webtide}()}
 }
 \author{
 Dan Kelley
 }
-\concept{things related to \code{tidem} data}
+\concept{things related to tides}

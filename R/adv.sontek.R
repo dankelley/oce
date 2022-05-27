@@ -1,13 +1,35 @@
+# vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
+
 #' @template readAdvTemplate
+#'
 #' @param start the time of the first sample, typically created with
-#' \code{\link{as.POSIXct}}.  This may be a vector of times,
-#' if \code{filename} is a vector of file names.
+#' [as.POSIXct()].  This may be a vector of times,
+#' if `filename` is a vector of file names.
+#'
 #' @param deltat the time between samples.
-read.adv.sontek.serial <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
-                                   longitude=NA, latitude=NA,
-                                   start=NULL, deltat=NULL,
-                                   debug=getOption("oceDebug"), monitor=FALSE, processingLog=NULL)
+read.adv.sontek.serial <- function(file,
+    from=1,
+    to,
+    by=1,
+    tz=getOption("oceTz"),
+    longitude=NA,
+    latitude=NA,
+    start=NULL,
+    deltat=NULL,
+    debug=getOption("oceDebug"),
+    monitor=FALSE,
+    processingLog=NULL)
 {
+    if (missing(file))
+        stop("must supply 'file'")
+    if (is.character(file)) {
+        if (!file.exists(file))
+            stop("cannot find file '", file, "'")
+        if (0L == file.info(file)$size)
+            stop("empty file '", file, "'")
+    }
+    if (!interactive())
+        monitor <- FALSE
     oceDebug(debug, paste("read.adv.sontek.serial(file[1]=\"", file[1],
                            "\", from=", format(from),
                            if (!missing(to)) sprintf(", to=%s, ", format(to)),
@@ -146,14 +168,32 @@ read.adv.sontek.serial <- function(file, from=1, to, by=1, tz=getOption("oceTz")
 }
 
 #' @template readAdvTemplate
+#'
 #' @param header A logical value indicating whether the file starts with a header.
 #' (This will not be the case for files that are created by data loggers that
 #' chop the raw data up into a series of sub-files, e.g. once per hour.)
-read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
-                                header=TRUE,
-                                longitude=NA, latitude=NA,
-                                debug=getOption("oceDebug"), monitor=FALSE, processingLog=NULL)
+read.adv.sontek.adr <- function(file,
+    from=1,
+    to,
+    by=1,
+    tz=getOption("oceTz"),
+    header=TRUE,
+    longitude=NA,
+    latitude=NA,
+    debug=getOption("oceDebug"),
+    monitor=FALSE,
+    processingLog=NULL)
 {
+    if (missing(file))
+        stop("must supply 'file'")
+    if (is.character(file)) {
+        if (!file.exists(file))
+            stop("cannot find file '", file, "'")
+        if (0L == file.info(file)$size)
+            stop("empty file '", file, "'")
+    }
+    if (!interactive())
+        monitor <- FALSE
     bisectAdvSontekAdr <- function(burstTime, tFind, add=0, debug=0) {
         oceDebug(debug, "bisectAdvSontekAdr(tFind=", format(tFind), ", add=", add, "\n")
         len <- length(burstTime)
@@ -621,24 +661,44 @@ read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
 }
 
 #' @template readAdvTemplate
+#'
 #' @param originalCoordinate character string indicating coordinate system, one
-#' of \code{"beam"}, \code{"xyz"}, \code{"enu"} or \code{"other"}.  (This is
+#' of `"beam"`, `"xyz"`, `"enu"` or `"other"`.  (This is
 #' needed for the case of multiple files that were created by a data logger,
 #' because the header information is normally lost in such instances.)
+#'
 #' @param transformationMatrix transformation matrix to use in converting beam
 #' coordinates to xyz coordinates.  This will over-ride the matrix in the file
 #' header, if there is one.  An example is \code{rbind(c(2.710, -1.409,
 #' -1.299), c(0.071, 2.372, -2.442), c(0.344, 0.344, 0.344))}.
+#'
 #' @section Note on file name:
-#' The \code{file} argument does not actually name a file. It names a basename
+#' The `file` argument does not actually name a file. It names a basename
 #' for a file. The actual file names are created by appending suffix
-#' \code{.hd1} for one file and \code{.ts1} for another.
-read.adv.sontek.text <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
-                                 originalCoordinate="xyz", transformationMatrix,
-                                 longitude=NA, latitude=NA,
-                                 debug=getOption("oceDebug"), monitor=FALSE,
-                                 processingLog=NULL)
+#' `.hd1` for one file and `.ts1` for another.
+read.adv.sontek.text <- function(file,
+    from=1,
+    to,
+    by=1,
+    tz=getOption("oceTz"),
+    originalCoordinate="xyz",
+    transformationMatrix,
+    longitude=NA,
+    latitude=NA,
+    debug=getOption("oceDebug"),
+    monitor=FALSE,
+    processingLog=NULL)
 {
+    if (missing(file))
+        stop("must supply 'file'")
+    if (is.character(file)) {
+        if (!file.exists(file))
+            stop("cannot find file '", file, "'")
+        if (0L == file.info(file)$size)
+            stop("empty file '", file, "'")
+    }
+    if (!interactive())
+        monitor <- FALSE
     ## FIXME: It would be better to deal with the binary file, but the format is unclear to me;
     ## FIXME: two files are available to me, and they differ considerably, neither matching the
     ## FIXME: SonTek documentation.
@@ -759,7 +819,7 @@ read.adv.sontek.text <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                      pitch=pitch,
                      roll=roll,
                      temperature=temperature,
-                     pressure <- pressure)
+                     pressure=pressure)
     res@metadata$manufacturer <- "sontek"
     res@metadata$instrumentType <- "adv" # FIXME or "adr"?
     res@metadata$filename <- basefile

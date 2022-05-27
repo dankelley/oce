@@ -4,10 +4,27 @@
 \alias{drawDirectionField}
 \title{Draw a Direction Field}
 \usage{
-drawDirectionField(x, y, u, v, scalex, scaley, skip, length = 0.05,
-  add = FALSE, type = 1, col = par("fg"), pch = 1,
-  cex = par("cex"), lwd = par("lwd"), lty = par("lty"), xlab = "",
-  ylab = "", debug = getOption("oceDebug"), ...)
+drawDirectionField(
+  x,
+  y,
+  u,
+  v,
+  scalex,
+  scaley,
+  skip,
+  length = 0.05,
+  add = FALSE,
+  type = 1,
+  col = par("fg"),
+  pch = 1,
+  cex = par("cex"),
+  lwd = par("lwd"),
+  lty = par("lty"),
+  xlab = "",
+  ylab = "",
+  debug = getOption("oceDebug"),
+  ...
+)
 }
 \arguments{
 \item{x, y}{coordinates at which velocities are specified. The
@@ -15,7 +32,7 @@ length of \code{x} and \code{y} depends on the form of \code{u}
 and \code{v} (vectors or matrices).}
 
 \item{u, v}{velocity components in the x and y directions. Can be
-either vectors with the same length as \code{x, y}, or
+either vectors with the same length as \verb{x, y}, or
 matrices, of dimension \code{length(x)} by \code{length(y)}.}
 
 \item{scalex, scaley}{scale to be used for the velocity arrows.
@@ -26,20 +43,20 @@ argument is given.}
 
 \item{skip}{either an integer, or a two-element vector indicating
 the number of points to skip when plotting arrows (for the
-matrix \code{u, v} case). If a single value, the same
+matrix \verb{u, v} case). If a single value, the same
 \code{skip} is applied to both the \code{x} and \code{y}
 directions. If a two-element vector, specifies different values
 for the \code{x} and \code{y} directions.}
 
-\item{length}{indication of \strong{width} of arrowheads. The
+\item{length}{indication of \emph{width} of arrowheads. The
 somewhat confusing name of this argument is a consequence of
-the fact that it is passed to \code{\link{arrows}} for drawing
+the fact that it is passed to \code{\link[=arrows]{arrows()}} for drawing
 arrows.  Note that the present default is smaller than the
-default used by \code{\link{arrows}}.}
+default used by \code{\link[=arrows]{arrows()}}.}
 
 \item{add}{if \code{TRUE}, the arrows are added to an existing
 plot; otherwise, a new plot is started by calling
-\code{\link{plot}} with \code{x}, \code{y} and \code{type="n"}.
+\code{\link[=plot]{plot()}} with \code{x}, \code{y} and \code{type="n"}.
 In other words, the plot will be very basic. In most cases, the
 user will probably want to draw a diagram first, and \code{add}
 the direction field later.}
@@ -47,12 +64,12 @@ the direction field later.}
 \item{type}{indication of the style of arrow-like indication of the
 direction.}
 
-\item{col}{color of line segments or arrows}
+\item{col}{color of line segments or arrows; see \code{\link[=par]{par()}} for meaning}
 
 \item{pch, cex}{plot character and expansion factor, used for
-\code{type=1}}
+\code{type=1}; see \code{\link[=par]{par()}} for meanings}
 
-\item{lwd, lty}{line width and type, used for \code{type=2}}
+\item{lwd, lty}{line width and type, used for \code{type=2}; see \code{\link[=par]{par()}} for meaning}
 
 \item{xlab, ylab}{\code{x} and \code{y} axis labels}
 
@@ -67,7 +84,10 @@ None.
 }
 \description{
 The direction field is indicated variously, depending on the value of
-\code{type}:\itemize{
+\code{type}:
+}
+\details{
+\itemize{
 \item For \code{type=1}, each indicator is drawn with a symbol, according to the
 value of \code{pch} (either supplied globally, or as an element of the
 \code{...} list) and of size \code{cex}, and color \code{col}.   Then, a
@@ -86,7 +106,7 @@ plot(c(-1.5, 1.5), c(-1.5, 1.5), xlab="", ylab="", type='n')
 drawDirectionField(x=rep(0, 2), y=rep(0, 2), u=c(1, 1), v=c(1, -1), scalex=0.5, add=TRUE,
                    type=2)
 
-## 2D example
+# 2D example
 x <- seq(-2, 2, 0.1)
 y <- x
 xx <- expand.grid(x, y)[,1]
@@ -95,6 +115,7 @@ z <- matrix(xx*exp(-xx^2 -yy^2), nrow=length(x))
 gz <- grad(z, x, y)
 drawDirectionField(x, y, gz$gx, gz$gy, scalex=0.5, type=2, len=0.02)
 oceContour(x, y, z, add=TRUE)
+
 }
 \author{
 Dan Kelley and Clark Richards

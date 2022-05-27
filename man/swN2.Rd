@@ -4,25 +4,29 @@
 \alias{swN2}
 \title{Squared buoyancy frequency for seawater}
 \usage{
-swN2(pressure, sigmaTheta = NULL, derivs, df, eos = getOption("oceEOS",
-  default = "gsw"), debug = getOption("oceDebug"), ...)
+swN2(
+  pressure,
+  sigmaTheta = NULL,
+  derivs,
+  df,
+  debug = getOption("oceDebug"),
+  ...
+)
 }
 \arguments{
-\item{pressure}{either pressure [dbar] (in which case \code{sigmaTheta} must
-be provided) \strong{or} an object of class \code{ctd} object (in which case
+\item{pressure}{either pressure (dbar) (in which case \code{sigmaTheta} must
+be provided) \emph{or} an object of class \code{ctd} object (in which case
 \code{sigmaTheta} is inferred from the object.}
 
 \item{sigmaTheta}{Surface-referenced potential density minus 1000
-[kg/m\eqn{^3}{^3}]}
+(kg/m\eqn{^3}{^3}).}
 
 \item{derivs}{optional argument to control how the derivative
 \eqn{d\sigma_\theta/dp}{d(sigmaTheta)/d(pressure)} is calculated.  This may
 be a character string or a function of two arguments.  See \dQuote{Details}.}
 
-\item{df}{argument passed to \code{\link{smooth.spline}} if this function is
+\item{df}{argument passed to \code{\link[=smooth.spline]{smooth.spline()}} if this function is
 used for smoothing; set to \code{NA} to prevent smoothing.}
-
-\item{eos}{equation of state, either \code{"unesco"} or \code{"gsw"}.}
 
 \item{debug}{an integer specifying whether debugging information is
 to be printed during the processing. This is a general parameter that
@@ -32,11 +36,11 @@ be printed. If one function calls another, it usually reduces the value of
 \code{debug} first, so that a user can often obtain deeper debugging
 by specifying higher \code{debug} values.}
 
-\item{\dots}{additional argument, passed to \code{\link{smooth.spline}}, in
+\item{\dots}{additional argument, passed to \code{\link[=smooth.spline]{smooth.spline()}}, in
 the case that \code{derivs="smoothing"}.  See \dQuote{Details}.}
 }
 \value{
-Square of buoyancy frequency [\eqn{radian^2/s^2}{radian^2/s^2}].
+Square of buoyancy frequency (\eqn{radian^2/s^2}{radian^2/s^2}).
 }
 \description{
 Compute \eqn{N^2}{N^2}, the square of the buoyancy frequency for a seawater
@@ -44,90 +48,113 @@ profile.
 }
 \details{
 Smoothing is often useful prior to computing buoyancy frequency, and so this
-may optionally be done with \code{\link{smooth.spline}}, unless
+may optionally be done with \code{\link[=smooth.spline]{smooth.spline()}}, unless
 \code{df=NA}, in which case raw data are used.  If \code{df} is not
 provided, a possibly reasonable value computed from an analysis of the
 profile, based on the number of pressure levels.
 
-If \code{eos="gsw"}, then the first argument must be a \code{ctd} object,
-and processing is done with \code{\link[gsw]{gsw_Nsquared}}, based on
-extracted values of Absolute Salinity and Conservative Temperature (possibly
-smoothed, depending on \code{df}).
-
-If \code{eos="unesco"}, then the processing is as follows.  The core of the
-method involves differentiating potential density (referenced to median
-pressure) with respect to pressure, and the \code{derivs} argument is used
+The core of the method involves computing potential density referenced to median
+pressure, using the UNESCO-style \link{swSigmaTheta} function, and then differentiating
+this with respect to pressure. The \code{derivs} argument is used
 to control how this is done, as follows.
-
 \itemize{
-
-\item if \code{derivs} is not supplied, the action is as though it were
+\item If \code{derivs} is not supplied, the action is as though it were
 given as the string \code{"smoothing"}
-
-\item if \code{derivs} equals \code{"simple"}, then the derivative of
+\item If \code{derivs} equals \code{"simple"}, then the derivative of
 density with respect to pressure is calculated as the ratio of first-order
 derivatives of density and pressure, each calculated using
-\code{\link{diff}}.  (A zero is appended at the top level.)
-
-\item if \code{derivs} equals \code{"smoothing"}, then the processing
+\code{\link[=diff]{diff()}}.  (A zero is appended at the top level.)
+\item If \code{derivs} equals \code{"smoothing"}, then the processing
 depends on the number of data in the profile, and on whether \code{df} is
 given as an optional argument.  When the number of points exceeds 4, and
-when \code{df} exceeds 1, \code{\link{smooth.spline}} is used to calculate
+when \code{df} exceeds 1, \code{\link[=smooth.spline]{smooth.spline()}} is used to calculate
 smoothing spline representation the variation of density as a function of
 pressure, and derivatives are extracted from the spline using
-\code{predict}.  Otherwise, density is smoothed using \code{\link{smooth}},
+\code{predict}.  Otherwise, density is smoothed using \code{\link[=smooth]{smooth()}},
 and derivatives are calculated as with the \code{"simple"} method.
-
-\item if \code{derivs} is a function taking two arguments (first pressure,
+\item If \code{derivs} is a function taking two arguments (first pressure,
 then density) then that function is called directly to calculate the
-derivative, and no smoothing is done before or after that call.  }
-
-For deep-sea work, the \code{eos="gsw"} option is the best scheme, because
-it uses derivatives of density computed with \emph{local} reference
-pressure.
+derivative, and no smoothing is done before or after that call.
+}
 
 For precise work, it makes sense to skip \code{swN2} entirely, choosing
 whether, what, and how to smooth based on an understanding of fundamental
 principles as well as data practicalities.
 }
+\section{Deprecation Notice}{
+
+Until 2019 April 11, \code{swN2} had an argument named \code{eos}. However,
+this did not work as stated, unless the first argument was a \code{ctd}
+object. Besides, the argument name was inherently deceptive, because the UNESCO
+scheme does not specify how N2 is to be calculated.
+Nothing is really lost by making this change, because the new default is the
+same as was previously available with the \code{eos="unesco"}
+setup, and the gsw-formulated estimate of N2 is provided
+by \code{\link[gsw:gsw_Nsquared]{gsw::gsw_Nsquared()}} in the \CRANpkg{gsw} package.
+}
+
 \examples{
 
 library(oce)
 data(ctd)
-# Illustrate difference between UNESCO and GSW
+# Left panel: density
 p <- ctd[["pressure"]]
 ylim <- rev(range(p))
-par(mfrow=c(1,3), mar=c(3, 3, 1, 1), mgp=c(2, 0.7, 0))
+par(mfrow=c(1, 2), mar=c(3, 3, 1, 1), mgp=c(2, 0.7, 0))
 plot(ctd[["sigmaTheta"]], p, ylim=ylim, type='l', xlab=expression(sigma[theta]))
-N2u <- swN2(ctd, eos="unesco")
-N2g <- swN2(ctd, eos="gsw")
-plot(N2u, p, ylim=ylim, xlab="N2 Unesco", ylab="p", type="l")
-d <- 100 * (N2u - N2g) / N2g
-plot(d, p, ylim=ylim, xlab="N2 UNESCO-GSW diff. [\%]", ylab="p", type="l")
-abline(v=0)
+# Right panel: N2, with default settings (black) and with df=2 (red)
+N2 <- swN2(ctd)
+plot(N2, p, ylim=ylim, xlab="N2 [1/s^2]", ylab="p", type="l")
+lines(swN2(ctd, df=3), p, col=2)
+
 }
 \seealso{
-Other functions that calculate seawater properties: \code{\link{T68fromT90}},
-  \code{\link{T90fromT48}}, \code{\link{T90fromT68}},
-  \code{\link{swAbsoluteSalinity}},
-  \code{\link{swAlphaOverBeta}}, \code{\link{swAlpha}},
-  \code{\link{swBeta}}, \code{\link{swCSTp}},
-  \code{\link{swConservativeTemperature}},
-  \code{\link{swDepth}}, \code{\link{swDynamicHeight}},
-  \code{\link{swLapseRate}}, \code{\link{swPressure}},
-  \code{\link{swRho}}, \code{\link{swRrho}},
-  \code{\link{swSCTp}}, \code{\link{swSTrho}},
-  \code{\link{swSigma0}}, \code{\link{swSigma1}},
-  \code{\link{swSigma2}}, \code{\link{swSigma3}},
-  \code{\link{swSigma4}}, \code{\link{swSigmaTheta}},
-  \code{\link{swSigmaT}}, \code{\link{swSigma}},
-  \code{\link{swSoundAbsorption}},
-  \code{\link{swSoundSpeed}}, \code{\link{swSpecificHeat}},
-  \code{\link{swSpice}}, \code{\link{swTFreeze}},
-  \code{\link{swTSrho}},
-  \code{\link{swThermalConductivity}},
-  \code{\link{swTheta}}, \code{\link{swViscosity}},
-  \code{\link{swZ}}
+The \code{\link[gsw:gsw_Nsquared]{gsw::gsw_Nsquared()}} function of the \CRANpkg{gsw}
+provides an alternative to this, as formulated in the GSW system. It
+has a more sophisticated treatment of potential density, but it is based
+on simple first-difference derivatives, so its results may require
+smoothing, depending on the dataset and purpose of the analysis.
+
+Other functions that calculate seawater properties: 
+\code{\link{T68fromT90}()},
+\code{\link{T90fromT48}()},
+\code{\link{T90fromT68}()},
+\code{\link{computableWaterProperties}()},
+\code{\link{locationForGsw}()},
+\code{\link{swAbsoluteSalinity}()},
+\code{\link{swAlphaOverBeta}()},
+\code{\link{swAlpha}()},
+\code{\link{swBeta}()},
+\code{\link{swCSTp}()},
+\code{\link{swConservativeTemperature}()},
+\code{\link{swDepth}()},
+\code{\link{swDynamicHeight}()},
+\code{\link{swLapseRate}()},
+\code{\link{swPressure}()},
+\code{\link{swRho}()},
+\code{\link{swRrho}()},
+\code{\link{swSCTp}()},
+\code{\link{swSR}()},
+\code{\link{swSTrho}()},
+\code{\link{swSigma0}()},
+\code{\link{swSigma1}()},
+\code{\link{swSigma2}()},
+\code{\link{swSigma3}()},
+\code{\link{swSigma4}()},
+\code{\link{swSigmaTheta}()},
+\code{\link{swSigmaT}()},
+\code{\link{swSigma}()},
+\code{\link{swSoundAbsorption}()},
+\code{\link{swSoundSpeed}()},
+\code{\link{swSpecificHeat}()},
+\code{\link{swSpice}()},
+\code{\link{swSstar}()},
+\code{\link{swTFreeze}()},
+\code{\link{swTSrho}()},
+\code{\link{swThermalConductivity}()},
+\code{\link{swTheta}()},
+\code{\link{swViscosity}()},
+\code{\link{swZ}()}
 }
 \author{
 Dan Kelley

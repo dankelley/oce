@@ -4,21 +4,29 @@
 \alias{binMean2D}
 \title{Bin-average f=f(x,y)}
 \usage{
-binMean2D(x, y, f, xbreaks, ybreaks, flatten = FALSE, fill = FALSE,
-  fillgap = -1)
+binMean2D(
+  x,
+  y,
+  f,
+  xbreaks,
+  ybreaks,
+  flatten = FALSE,
+  fill = FALSE,
+  fillgap = -1
+)
 }
 \arguments{
-\item{x}{Vector of numerical values.}
+\item{x}{vector of numerical values.}
 
-\item{y}{Vector of numerical values.}
+\item{y}{vector of numerical values.}
 
 \item{f}{Matrix of numerical values, a matrix f=f(x,y).}
 
 \item{xbreaks}{Vector of values of \code{x} at the boundaries between bins, calculated using
-\code{\link{pretty}(x)} if not supplied.}
+\code{\link{pretty}}\code{(x)} if not supplied.}
 
 \item{ybreaks}{Vector of values of \code{y} at the boundaries between bins, calculated using
-\code{\link{pretty}(y)} if not supplied.}
+\code{\link{pretty}}\code{(y)} if not supplied.}
 
 \item{flatten}{A logical value indicating whether
 the return value also contains equilength
@@ -60,10 +68,13 @@ contour(m$xmids, m$ymids, m$result, add=TRUE, levels=seq(0, 2, 0.5), labcex=1)
 
 }
 \seealso{
-Other bin-related functions: \code{\link{binApply1D}},
-  \code{\link{binApply2D}}, \code{\link{binAverage}},
-  \code{\link{binCount1D}}, \code{\link{binCount2D}},
-  \code{\link{binMean1D}}
+Other bin-related functions: 
+\code{\link{binApply1D}()},
+\code{\link{binApply2D}()},
+\code{\link{binAverage}()},
+\code{\link{binCount1D}()},
+\code{\link{binCount2D}()},
+\code{\link{binMean1D}()}
 }
 \author{
 Dan Kelley

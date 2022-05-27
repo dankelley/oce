@@ -4,8 +4,7 @@
 \alias{read.gps}
 \title{Read a GPS File}
 \usage{
-read.gps(file, type = NULL, debug = getOption("oceDebug"),
-  processingLog)
+read.gps(file, type = NULL, debug = getOption("oceDebug"), processingLog)
 }
 \arguments{
 \item{file}{name of file containing gps data.}
@@ -16,24 +15,25 @@ data if not supplied.  In the present version, the only choice for
 
 \item{debug}{set to TRUE to print information about the header, etc.}
 
-\item{processingLog}{if provided, the action item to be stored in the log.
-(Typically only provided for internal calls; the default that it provides is
-better for normal calls by a user.)}
+\item{processingLog}{ignored.}
 }
 \value{
-An object of \code{\link[base]{class}} \code{"gps"}.
+A \linkS4class{gps} object.
 }
 \description{
 Reads GPX format files by simply finding all longitudes and latitudes; in
 other words, information on separate tracks, or waypoints, etc., is lost.
 }
 \seealso{
-Other things related to \code{gps} data: \code{\link{[[,gps-method}},
-  \code{\link{[[<-,gps-method}}, \code{\link{as.gps}},
-  \code{\link{gps-class}}, \code{\link{plot,gps-method}},
-  \code{\link{summary,gps-method}}
+Other things related to gps data: 
+\code{\link{[[,gps-method}},
+\code{\link{[[<-,gps-method}},
+\code{\link{as.gps}()},
+\code{\link{gps-class}},
+\code{\link{plot,gps-method}},
+\code{\link{summary,gps-method}}
 }
 \author{
 Dan Kelley
 }
-\concept{things related to \code{gps} data}
+\concept{things related to gps data}

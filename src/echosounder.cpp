@@ -64,7 +64,7 @@ void rle(unsigned char *samp, int ns, int spp, int byte_per_sample)
       samp[0], samp[1], samp[2], samp[3], ns, spp, byte_per_sample);
 #endif
   int i = 0, k = 0;
-  unsigned char b1, b2, b3, b4;
+  unsigned char b1 = 0x00, b2 = 0x00, b3 = 0x00, b4 = 0x00;
   int NS = ns * byte_per_sample;
   int SPP = spp * byte_per_sample;
   while (i < NS) {

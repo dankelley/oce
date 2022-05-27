@@ -4,20 +4,48 @@
 \alias{plotTS}
 \title{Plot Temperature-Salinity Diagram}
 \usage{
-plotTS(x, inSitu = FALSE, type = "p", referencePressure = 0,
-  nlevels = 6, levels, grid = TRUE, col.grid = "lightgray",
-  lty.grid = "dotted", rho1000 = FALSE, eos = getOption("oceEOS",
-  default = "gsw"), cex = par("cex"), col = par("col"),
-  pch = par("pch"), bg, pt.bg = "transparent", col.rho = "darkgray",
-  cex.rho = 3/4 * par("cex"), rotate = TRUE,
-  useSmoothScatter = FALSE, xlab, ylab, Slim, Tlim,
-  drawFreezing = TRUE, mgp = getOption("oceMgp"), mar = c(mgp[1] +
-  1.5, mgp[1] + 1.5, mgp[1], mgp[1]), lwd = par("lwd"),
-  lty = par("lty"), lwd.rho = par("lwd"), lty.rho = par("lty"),
-  add = FALSE, inset = FALSE, debug = getOption("oceDebug"), ...)
+plotTS(
+  x,
+  inSitu = FALSE,
+  type = "p",
+  referencePressure = 0,
+  nlevels = 6,
+  levels,
+  grid = TRUE,
+  col.grid = "lightgray",
+  lty.grid = "dotted",
+  rho1000 = FALSE,
+  eos = getOption("oceEOS", default = "gsw"),
+  cex = par("cex"),
+  col = par("col"),
+  pch = par("pch"),
+  bg = "white",
+  pt.bg = "transparent",
+  col.rho = gray(0.5),
+  cex.rho = 3/4 * par("cex"),
+  rotate = TRUE,
+  useSmoothScatter = FALSE,
+  xlab,
+  ylab,
+  Slim,
+  Tlim,
+  drawFreezing = TRUE,
+  trimIsopycnals = TRUE,
+  mgp = getOption("oceMgp"),
+  mar = c(mgp[1] + 1.5, mgp[1] + 1.5, mgp[1], mgp[1]),
+  lwd = par("lwd"),
+  lty = par("lty"),
+  lwd.rho = par("lwd"),
+  lty.rho = par("lty"),
+  add = FALSE,
+  inset = FALSE,
+  debug = getOption("oceDebug"),
+  ...
+)
 }
 \arguments{
-\item{x}{A \code{ctd} object, i.e. one inheriting from \code{\link{ctd-class}}.}
+\item{x}{a \linkS4class{ctd}, \linkS4class{argo} or \linkS4class{section} object, or a list
+containing solely \linkS4class{ctd} objects or \linkS4class{argo} objects.}
 
 \item{inSitu}{A boolean indicating whether to use in-situ temperature or
 (the default) potential temperature, calculated with reference pressure
@@ -48,49 +76,54 @@ e.g. 24}
 \item{eos}{equation of state to be used, either \code{"unesco"} or
 \code{"gsw"}.}
 
-\item{cex}{character-expansion factor for symbols, as in
-\code{\link{par}("cex")}.}
+\item{cex}{character-expansion factor for symbols, as in \link{par}\code{("cex")}.}
 
 \item{col}{color for symbols.}
 
-\item{pch}{symbol type, as in \code{\link{par}("pch")}.}
+\item{pch}{symbol type, as in \link{par}\code{("pch")}.}
 
 \item{bg}{optional color to be painted under plotting area, before
 plotting.  (This is useful for cases in which \code{inset=TRUE}.)}
 
 \item{pt.bg}{inside color for symbols with \code{pch} in 21:25}
 
-\item{col.rho}{color for isopycnal lines.}
+\item{col.rho}{color for isopycnal lines and their labels.}
 
-\item{cex.rho}{size of isopycnal labels.}
+\item{cex.rho}{size of the isopycnal labels.}
 
 \item{rotate}{if TRUE, labels in right-hand margin are written vertically}
 
-\item{useSmoothScatter}{if TRUE, use \code{\link{smoothScatter}} to plot the
+\item{useSmoothScatter}{if TRUE, use \code{\link[=smoothScatter]{smoothScatter()}} to plot the
 points.}
 
 \item{xlab}{optional label for the x axis, with default "Salinity [PSU]".}
 
 \item{ylab}{optional label for the y axis, with default "Temperature [C]".}
 
-\item{Slim}{optional limits for salinity axis, otherwise inferred from data.}
+\item{Slim}{optional limits for salinity axis, otherwise inferred from visible data
+(i.e. the data that have finite values for both salinity and temperature).}
 
-\item{Tlim}{optional limits for temperature axis, otherwise inferred from
-data.}
+\item{Tlim}{as \code{Slim}, but for temperature.}
 
 \item{drawFreezing}{logical indication of whether to draw a freezing-point
 line. This is based on zero pressure. If \code{eos="unesco"} then
-\code{\link{swTFreeze}} is used to compute the curve, whereas if
-\code{eos="gsw"} then \code{\link[gsw]{gsw_CT_freezing}} is used;
+\code{\link[=swTFreeze]{swTFreeze()}} is used to compute the curve, whereas if
+\code{eos="gsw"} then \code{\link[gsw:gsw_CT_freezing]{gsw::gsw_CT_freezing()}} is used;
 in each case, zero pressure is used.}
 
-\item{mgp}{3-element numerical vector to use for \code{par(mgp)}, and also
-for \code{par(mar)}, computed from this.  The default is tighter than the R
+\item{trimIsopycnals}{logical value (\code{TRUE} by default) that
+indicates whether to trim isopycnal curves
+to the region of temperature-salinity space for which density
+computations are considered to be valid in the context of the
+chosen \code{eos}; see \dQuote{Details}.}
+
+\item{mgp}{3-element numerical vector to use for \verb{[par](mgp)}, and also
+for \link{par}\code{(mar)}, computed from this.  The default is tighter than the R
 default, in order to use more space for the data and less for the axes.}
 
-\item{mar}{value to be used with \code{\link{par}("mar")}.  If set to
-\code{NULL}, then \code{par("mar")} is used.  A good choice for a TS diagram
-with a palette to the right is \code{mar=par("mar")+c(0, 0, 0, 1))}.}
+\item{mar}{value to be used with \link{par}\code{("mar")}.  If set to
+\code{NULL}, then \link{par}\code{("mar")} is used.  A good choice for a TS diagram
+with a palette to the right is \verb{mar=par("mar")+c(0, 0, 0, 1))}.}
 
 \item{lwd}{line width of lines or symbols.}
 
@@ -102,12 +135,12 @@ with a palette to the right is \code{mar=par("mar")+c(0, 0, 0, 1))}.}
 
 \item{add}{a flag that controls whether to add to an existing plot.  (It
 makes sense to use \code{add=TRUE} in the \code{panel} argument of a
-\code{\link{coplot}}, for example.)}
+\code{\link[=coplot]{coplot()}}, for example.)}
 
-\item{inset}{set to \code{TRUE} for use within \code{\link{plotInset}}.  The
+\item{inset}{set to \code{TRUE} for use within \code{\link[=plotInset]{plotInset()}}.  The
 effect is to prevent the present function from adjusting margins, which is
 necessary because margin adjustment is the basis for the method used by
-\code{\link{plotInset}}.}
+\code{\link[=plotInset]{plotInset()}}.}
 
 \item{debug}{a flag that turns on debugging.  Set to 1 to get a moderate
 amount of debugging information, or to 2 to get more.}
@@ -116,70 +149,172 @@ amount of debugging information, or to 2 to get more.}
 }
 \value{
 A list is silently returned, containing \code{xat} and \code{yat},
-values that can be used by \code{\link{oce.grid}} to add a grid to the plot.
+values that can be used by \code{\link[=oce.grid]{oce.grid()}} to add a grid to the plot.
 }
 \description{
 Creates a temperature-salinity plot for a CTD cast, with labeled isopycnals.
 }
-\examples{
+\details{
+The isopycnal curves (along which density is constant) are
+drawn with \code{\link[=drawIsopycnals]{drawIsopycnals()}}, which also places
+labels in the margins showing density minus 1000 \eqn{kg/m^3}{kg/m^3}.
+If \code{trimIsopycnals} is \code{TRUE} (which is the default), these curves
+are trimmed to the region within which the results of density calculation
+in the chosen equation of state (\code{eos}) are considered to be reliable.
 
+With \code{eos="unesco"} this region includes
+Practical Salinity from 0 to 42 and Potential Temperature
+from -2C to 40C, in accordance with Fofonoff and Millard
+(1983, page 23).
+
+With \code{eos="gsw"} the lower
+limit of Absolute Salinity validity is taken as 0 g/kg,
+in accordance with both McDougall et al. (2003 section 3)
+and the TEOS-10/gsw Matlab code for the so-called "funnel" of validity.
+However, an appropriate upper limit on Absolute Salinity is not as clear.
+Here, the value 42 g/kg is chosen to match the "funnel" Matlab code
+as of July 2020, but two other choices might have been
+made. One is 50 g/kg, since \code{\link[gsw:gsw_SA_from_rho]{gsw::gsw_SA_from_rho()}} returns \code{NA} values
+for Absolute Salinities exceeding that value, and another is
+40 g/kg, as in McDougall et al. (2003 section 3).
+The Conservative Temperature range is set to run from -2C
+to 33C, as in McDougall et al. (2003 section 3), even though the
+"funnel" imposes no upper limit on this variable.
+}
+\examples{
+# For a simple ctd object
 library(oce)
 data(ctd)
 plotTS(ctd)
 
+# For a section object (note the outlier!)
+data(section)
+plotTS(section)
+
+# For an argo object
+data(argo)
+plotTS(handleFlags(argo))
+
+# Oxygen-based colormap
+marOrig <- par("mar") # so later plots with palettes have same margins
+cm <- colormap(section[['oxygen']])
+drawPalette(colormap=cm, zlab='Oxygen')
+plotTS(section, pch=19, col=cm$zcol, mar=par('mar')) # the mar adjusts for the palette
+
+# Station-based colormap
+Tlim <- range(section[['temperature']], na.rm=TRUE)
+Slim <- range(section[['salinity']], na.rm=TRUE)
+cm <- colormap(seq_along(section[['latitude', 'byStation']]))
+par(mar=marOrig) # same as previous plot
+drawPalette(colormap=cm, zlab='Latitude')
+plotTS(section, Tlim=Tlim, Slim=Slim, pch=NA, mar=par('mar'))
+jnk <- mapply(
+    function(s, col) {
+        plotTS(s, col=col, add=TRUE, type='l')
+    },
+    section[['station']], col=cm$zcol)
+
+# Add spiciness contours
+data(ctd)
+plotTS(ctd, eos="gsw") # MANDATORY so x=SA and y=CT
+usr <- par("usr")
+n <- 100
+SAgrid <- seq(usr[1], usr[2], length.out=n)
+CTgrid <- seq(usr[3], usr[4], length.out=n)
+g <- expand.grid(SA=SAgrid, CT=CTgrid)
+spiciness <- matrix(gsw::gsw_spiciness0(g$SA, g$CT), nrow=n)
+contour(SAgrid, CTgrid, spiciness, col=2, labcex=1, add=TRUE)
+
+}
+\references{
+\itemize{
+\item Fofonoff, N. P., and R. C. Millard.
+"Algorithms for Computation of Fundamental Properties of Seawater."
+UNESCO Technical Papers in Marine Research. SCOR working group on Evaluation of CTD data;
+UNESCO/ICES/SCOR/IAPSO Joint Panel on Oceanographic Tables and Standards, 1983.
+\verb{https://unesdoc.unesco.org/ark:/48223/pf0000059832}.
+\item McDougall, Trevor J., David R. Jackett, Daniel G. Wright, and Rainer Feistel.
+"Accurate and Computationally Efficient Algorithms for Potential Temperature and Density of Seawater."
+Journal of Atmospheric and Oceanic Technology 20, no. 5 (May 1, 2003): 730-41.
+\code{https://journals.ametsoc.org/jtech/article/20/5/730/2543/Accurate-and-Computationally-Efficient-Algorithms}.
+}
 }
 \seealso{
-\code{\link{summary,ctd-method}} summarizes the information, while
-\code{\link{read.ctd}} scans it from a file.
+\code{\link[=summary,ctd-method]{summary,ctd-method()}} summarizes the information, while
+\code{\link[=read.ctd]{read.ctd()}} scans it from a file.
 
-Other functions that plot \code{oce} data: \code{\link{plot,adp-method}},
-  \code{\link{plot,adv-method}},
-  \code{\link{plot,amsr-method}},
-  \code{\link{plot,argo-method}},
-  \code{\link{plot,bremen-method}},
-  \code{\link{plot,cm-method}},
-  \code{\link{plot,coastline-method}},
-  \code{\link{plot,ctd-method}},
-  \code{\link{plot,gps-method}},
-  \code{\link{plot,ladp-method}},
-  \code{\link{plot,landsat-method}},
-  \code{\link{plot,lisst-method}},
-  \code{\link{plot,lobo-method}},
-  \code{\link{plot,met-method}},
-  \code{\link{plot,odf-method}},
-  \code{\link{plot,rsk-method}},
-  \code{\link{plot,satellite-method}},
-  \code{\link{plot,sealevel-method}},
-  \code{\link{plot,section-method}},
-  \code{\link{plot,tidem-method}},
-  \code{\link{plot,topo-method}},
-  \code{\link{plot,windrose-method}},
-  \code{\link{plotProfile}}, \code{\link{plotScan}},
-  \code{\link{tidem-class}}
+Other functions that plot oce data: 
+\code{\link{download.amsr}()},
+\code{\link{plot,adp-method}},
+\code{\link{plot,adv-method}},
+\code{\link{plot,amsr-method}},
+\code{\link{plot,argo-method}},
+\code{\link{plot,bremen-method}},
+\code{\link{plot,cm-method}},
+\code{\link{plot,coastline-method}},
+\code{\link{plot,ctd-method}},
+\code{\link{plot,gps-method}},
+\code{\link{plot,ladp-method}},
+\code{\link{plot,landsat-method}},
+\code{\link{plot,lisst-method}},
+\code{\link{plot,lobo-method}},
+\code{\link{plot,met-method}},
+\code{\link{plot,odf-method}},
+\code{\link{plot,rsk-method}},
+\code{\link{plot,satellite-method}},
+\code{\link{plot,sealevel-method}},
+\code{\link{plot,section-method}},
+\code{\link{plot,tidem-method}},
+\code{\link{plot,topo-method}},
+\code{\link{plot,windrose-method}},
+\code{\link{plot,xbt-method}},
+\code{\link{plotProfile}()},
+\code{\link{plotScan}()},
+\code{\link{tidem-class}}
 
-Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
-  \code{\link{[[<-,ctd-method}}, \code{\link{as.ctd}},
-  \code{\link{cnvName2oceName}}, \code{\link{ctd-class}},
-  \code{\link{ctdDecimate}}, \code{\link{ctdFindProfiles}},
-  \code{\link{ctdRaw}}, \code{\link{ctdTrim}},
-  \code{\link{ctd}}, \code{\link{handleFlags,ctd-method}},
-  \code{\link{initialize,ctd-method}},
-  \code{\link{initializeFlagScheme,ctd-method}},
-  \code{\link{oceNames2whpNames}},
-  \code{\link{oceUnits2whpUnits}},
-  \code{\link{plot,ctd-method}}, \code{\link{plotProfile}},
-  \code{\link{plotScan}}, \code{\link{read.ctd.itp}},
-  \code{\link{read.ctd.odf}}, \code{\link{read.ctd.sbe}},
-  \code{\link{read.ctd.woce.other}},
-  \code{\link{read.ctd.woce}}, \code{\link{read.ctd}},
-  \code{\link{setFlags,ctd-method}},
-  \code{\link{subset,ctd-method}},
-  \code{\link{summary,ctd-method}},
-  \code{\link{woceNames2oceNames}},
-  \code{\link{woceUnit2oceUnit}}, \code{\link{write.ctd}}
+Other things related to ctd data: 
+\code{\link{CTD_BCD2014666_008_1_DN.ODF.gz}},
+\code{\link{[[,ctd-method}},
+\code{\link{[[<-,ctd-method}},
+\code{\link{as.ctd}()},
+\code{\link{cnvName2oceName}()},
+\code{\link{ctd-class}},
+\code{\link{ctd.cnv}},
+\code{\link{ctdDecimate}()},
+\code{\link{ctdFindProfiles}()},
+\code{\link{ctdRaw}},
+\code{\link{ctdRepair}()},
+\code{\link{ctdTrim}()},
+\code{\link{ctd_aml.csv}},
+\code{\link{ctd}},
+\code{\link{d200321-001.ctd}},
+\code{\link{d201211_0011.cnv}},
+\code{\link{handleFlags,ctd-method}},
+\code{\link{initialize,ctd-method}},
+\code{\link{initializeFlagScheme,ctd-method}},
+\code{\link{oceNames2whpNames}()},
+\code{\link{oceUnits2whpUnits}()},
+\code{\link{plot,ctd-method}},
+\code{\link{plotProfile}()},
+\code{\link{plotScan}()},
+\code{\link{read.ctd.aml}()},
+\code{\link{read.ctd.itp}()},
+\code{\link{read.ctd.odf}()},
+\code{\link{read.ctd.odv}()},
+\code{\link{read.ctd.sbe}()},
+\code{\link{read.ctd.ssda}()},
+\code{\link{read.ctd.woce.other}()},
+\code{\link{read.ctd.woce}()},
+\code{\link{read.ctd}()},
+\code{\link{setFlags,ctd-method}},
+\code{\link{subset,ctd-method}},
+\code{\link{summary,ctd-method}},
+\code{\link{woceNames2oceNames}()},
+\code{\link{woceUnit2oceUnit}()},
+\code{\link{write.ctd}()}
 }
 \author{
 Dan Kelley
 }
-\concept{functions that plot \code{oce} data}
-\concept{things related to \code{ctd} data}
+\concept{functions that plot oce data}
+\concept{things related to ctd data}

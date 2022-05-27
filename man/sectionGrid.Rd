@@ -2,10 +2,16 @@
 % Please edit documentation in R/section.R
 \name{sectionGrid}
 \alias{sectionGrid}
-\title{Grid a Section}
+\title{Grid a Section in Pressure Space}
 \usage{
-sectionGrid(section, p, method = "approx", trim = TRUE,
-  debug = getOption("oceDebug"), ...)
+sectionGrid(
+  section,
+  p,
+  method = "approx",
+  trim = TRUE,
+  debug = getOption("oceDebug"),
+  ...
+)
 }
 \arguments{
 \item{section}{A \code{section} object containing the section to be gridded.}
@@ -14,17 +20,17 @@ sectionGrid(section, p, method = "approx", trim = TRUE,
 should be done.  If this is not supplied, the pressure levels will be
 calculated based on the typical spacing in the ctd profiles stored within
 \code{section}.  If \code{p="levitus"}, then pressures will be set to be those
-of the Levitus atlas, given by \code{\link{standardDepths}}.
+of the Levitus atlas, given by \code{\link[=standardDepths]{standardDepths()}}.
 If \code{p} is a single numerical value,
-it is taken as the number of subdivisions to use in a call to \code{\link{seq}}
+it is taken as the number of subdivisions to use in a call to \code{\link[=seq]{seq()}}
 that has range from 0 to the maximum pressure in \code{section}.  Finally, if a
-vector numerical values is provided, perhaps. constructed with \code{\link{seq}}
-or \code{\link{standardDepths}(5)} (as in the examples),
+vector numerical values is provided, perhaps. constructed with \code{\link[=seq]{seq()}}
+or \code{\link{standardDepths}}\code{(5)} (as in the examples),
 then it is used as is, after trimming any values that exceed the maximum
 pressure in the station data stored within \code{section}.}
 
 \item{method}{The method to use to decimate data within the stations; see
-\code{\link{ctdDecimate}}, which is used for the decimation.}
+\code{\link[=ctdDecimate]{ctdDecimate()}}, which is used for the decimation.}
 
 \item{trim}{Logical value indicating whether to trim gridded pressures
 to the range of the data in \code{section}.}
@@ -37,68 +43,60 @@ be printed. If one function calls another, it usually reduces the value of
 \code{debug} first, so that a user can often obtain deeper debugging
 by specifying higher \code{debug} values.}
 
-\item{...}{Optional arguments to be supplied to \code{\link{ctdDecimate}},
+\item{...}{Optional arguments to be supplied to \code{\link[=ctdDecimate]{ctdDecimate()}},
 e.g. \code{rule} controls extrapolation beyond the observed pressure range,
 in the case where \code{method} equals \code{"approx"}.}
 }
 \value{
-An object of \code{\link{section-class}} that contains stations whose
-pressure values match identically.
+A \linkS4class{section} object that contains stations in which
+the pressure values match identically, and that has all
+flags set to \code{NA}.
 }
 \description{
 Grid a section, by interpolating to fixed pressure levels.  The
 \code{"approx"}, \code{"boxcar"} and \code{"lm"} methods are described in the
-documentation for \code{\link{ctdDecimate}}, which is used to do this
-processing.  The default \code{"approx"} method is best for bottle data, the
+documentation for \code{\link[=ctdDecimate]{ctdDecimate()}}, which is used to do this
+processing.
+}
+\details{
+The default \code{"approx"} method is best for bottle data, the
 \code{"boxcar"} is best for ctd data, and the \code{"lm"} method is probably
 too slow to recommend for exploratory work, in which it is common to do trials
 with a variety of \code{"p"} values.
-}
-\section{A note about flags}{
 
-Data-quality flags contained within the original object are ignored by this
-function, and the returned value contains no such flags.  This is because such
-flags represent an assessment of the original data, not of quantities derived
-from those data.  This function produces a warning to this effect. The
-recommended practice is to use \code{\link{handleFlags}} or some other means to
-deal with flags before calling the present function.
+The stations in the returned value have flags with names that match those
+of the corresponding stations in the original \code{section}, but the values
+of these flags are all set to \code{NA}. This recognizes that it makes
+no sense to grid flag values, but that there is merit in initializing
+a flag system, for possible use in later processing steps.
 }
-
 \examples{
 # Gulf Stream
 library(oce)
 data(section)
-GS <- subset(section, 109<=stationId&stationId<=129)
+GS <- subset(section, 113<=stationId&stationId<=129)
 GSg <- sectionGrid(GS, p=seq(0, 5000, 100))
-plot(GSg, map.xlim=c(-80,-60))
-# Show effects of various depth schemes
-par(mfrow=c(3, 1))
-default <- sectionGrid(GS)
-approxML <- sectionGrid(GS, method="approxML")
-standardDepths5 <- sectionGrid(GS, p=standardDepths(5))
-plot(default, which="temperature", ztype="image", ylim=c(200,0))
-mtext("default sectionGrid()")
-plot(approxML, which="temperature", ztype="image", ylim=c(200,0))
-mtext("sectionGrid(..., method=\\"approxML\\")")
-plot(standardDepths5, which="temperature", ztype="image", ylim=c(200,0))
-mtext("sectionGrid(..., p=standardDepths(5))")
+plot(GSg, which="temperature")
 
 }
 \seealso{
-Other things related to \code{section} data: \code{\link{[[,section-method}},
-  \code{\link{[[<-,section-method}},
-  \code{\link{as.section}},
-  \code{\link{handleFlags,section-method}},
-  \code{\link{initializeFlagScheme,section-method}},
-  \code{\link{plot,section-method}},
-  \code{\link{read.section}}, \code{\link{section-class}},
-  \code{\link{sectionAddStation}},
-  \code{\link{sectionSmooth}}, \code{\link{sectionSort}},
-  \code{\link{section}},
-  \code{\link{subset,section-method}},
-  \code{\link{summary,section-method}}
+Other things related to section data: 
+\code{\link{[[,section-method}},
+\code{\link{[[<-,section-method}},
+\code{\link{as.section}()},
+\code{\link{handleFlags,section-method}},
+\code{\link{initializeFlagScheme,section-method}},
+\code{\link{plot,section-method}},
+\code{\link{read.section}()},
+\code{\link{section-class}},
+\code{\link{sectionAddStation}()},
+\code{\link{sectionSmooth}()},
+\code{\link{sectionSort}()},
+\code{\link{section}},
+\code{\link{subset,section-method}},
+\code{\link{summary,section-method}}
 }
 \author{
 Dan Kelley
 }
-\concept{things related to \code{section} data}
+\concept{things related to section data}

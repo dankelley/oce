@@ -4,28 +4,42 @@
 \alias{unitFromString}
 \title{Decode units, from strings}
 \usage{
-unitFromString(s)
+unitFromString(unit, scale = NULL)
 }
 \arguments{
-\item{s}{A string.}
+\item{unit}{a character value indicating the unit. These
+are matched according to rules developed to work with actual
+data files, and so the list is not by any means exhaustive.}
+
+\item{scale}{a character value indicating the scale.  The default value
+of \code{NULL} dictates that the scale is to be inferred from the unit. If
+a non-\code{NULL} value is supplied, it will be used, even if it makes no sense
+in relation to value of \code{unit}.}
 }
 \value{
-A \code{\link{list}} of two items: \code{unit} which is an
-\code{\link{expression}}, and \code{scale}, which is a string.
+A \code{\link[=list]{list()}} of two items: \code{unit} which is an
+\code{\link[=expression]{expression()}}, and \code{scale}, which is a string.
 }
 \description{
-Decode units, from strings
+This is mainly intended for internal use within the package, e.g. by
+\code{\link[=read.odf]{read.odf()}}, and so the list of string-to-unit mappings is not
+documented, since developers can learn it from simple examination
+of the code.  The focus of \code{unitFromString()} is on strings that are
+found in oceanographic files available to the author, \emph{not} on all
+possible units.
 }
 \examples{
-unitFromString("DB") # dbar
+unitFromString("dbar")   # dbar (no scale)
+unitFromString("deg c")  # modern temperature (ITS-90 scale)
 }
 \seealso{
-Other functions that interpret variable names and units from headers: \code{\link{ODFNames2oceNames}},
-  \code{\link{cnvName2oceName}},
-  \code{\link{oceNames2whpNames}},
-  \code{\link{oceUnits2whpUnits}},
-  \code{\link{unitFromStringRsk}},
-  \code{\link{woceNames2oceNames}},
-  \code{\link{woceUnit2oceUnit}}
+Other functions that interpret variable names and units from headers: 
+\code{\link{ODFNames2oceNames}()},
+\code{\link{cnvName2oceName}()},
+\code{\link{oceNames2whpNames}()},
+\code{\link{oceUnits2whpUnits}()},
+\code{\link{unitFromStringRsk}()},
+\code{\link{woceNames2oceNames}()},
+\code{\link{woceUnit2oceUnit}()}
 }
 \concept{functions that interpret variable names and units from headers}

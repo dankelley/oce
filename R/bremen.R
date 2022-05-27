@@ -1,14 +1,14 @@
-## vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
+# vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
 
 #' Class to Store Bremen-formatted Data
 #'
 #' This class is for data stored in a format used at Bremen.
-#' It is somewhat similar to the \code{\link{odf-class}}, in the sense
+#' It is somewhat similar to the [odf-class], in the sense
 #' that it does not apply just to a particular instrument.
 #' Although some functions are provided for dealing with these
 #' data (see \dQuote{Details}), the most common action is to read the
-#' data with \code{\link{read.bremen}}, and then to coerce the object to
-#' another storage class (e.g. using \code{\link{as.ctd}} for CTD-style
+#' data with [read.bremen()], and then to coerce the object to
+#' another storage class (e.g. using [as.ctd()] for CTD-style
 #' data) so that specialized functions can be used thereafter.
 #'
 #' @templateVar class bremen
@@ -24,56 +24,87 @@
 #' @template slot_get
 #'
 #' @author Dan Kelley
-#' @family classes provided by \code{oce}
-#' @family things related to \code{bremen} data
+#'
+#' @family classes provided by oce
+#' @family things related to bremen data
 setClass("bremen", contains="oce") # 20150528 may be called "geomar" or something later
 
 setMethod(f="initialize",
           signature="bremen",
-          definition=function(.Object, filename="") {
+          definition=function(.Object, filename="", ...) {
+              .Object <- callNextMethod(.Object, ...)
               ## Assign to some columns so they exist if needed later (even if they are NULL)
               .Object@metadata$filename <- filename
-              .Object@processingLog$time <- as.POSIXct(Sys.time())
+              .Object@processingLog$time <- presentTime()
               .Object@processingLog$value <- "create 'bremen' object"
               return(.Object)
           })
 
-#' @title Extract Something From a Bremen Object
-#' @param x A bremen object, i.e. one inheriting from \code{\link{bremen-class}}.
+#' Extract Something From a Bremen Object
+#'
+#' @param x a [bremen-class] object.
+#'
+#' @section Details of the Specialized Method:
+#'
+#' * If `i` is `"?"`, then the return value is a list
+#' containing four items, each of which is a character vector
+#' holding the names of things that can be accessed with `[[`.
+#' The `data` and `metadata` items hold the names of
+#' entries in the object's data and metadata
+#' slots, respectively. The `dataDerived`
+#' and `metadataDerived` items are each NULL, because
+#' no derived values are defined by [bremen-class] objects.
+#'
+#'
 #' @template sub_subTemplate
-#' @family things related to \code{bremen} data
+#'
+#' @author Dan Kelley
+#'
+#' @family things related to bremen data
 setMethod(f="[[",
           signature(x="bremen", i="ANY", j="ANY"),
           definition=function(x, i, j, ...) {
+              if (i == "?")
+                  return(list(metadata=sort(names(x@metadata)),
+                          metadataDerived=NULL,
+                          data=sort(names(x@data)),
+                          dataDerived=NULL))
               callNextMethod()         # [[
           })
 
-#' @title Replace Parts of a Bremen Object
-#' @param x An \code{bremen} object, i.e. inheriting from \code{\link{bremen-class}}
+#' Replace Parts of a Bremen Object
+#'
+#' @param x a [bremen-class] object.
+#'
 #' @template sub_subsetTemplate
-#' @family things related to \code{bremen} data
+#'
+#' @family things related to bremen data
 setMethod(f="[[<-",
           signature(x="bremen", i="ANY", j="ANY"),
           definition=function(x, i, j, ..., value) {
               callNextMethod(x=x, i=i, j=j, ...=..., value=value) # [[<-
           })
 
-#' @title Plot a Bremen Object
+#' Plot a bremen Object
 #'
-#' @description
-#' Plot a \code{bremen} object, i.e. one inheriting from \code{\link{bremen-class}}.
-#' If \code{x} seems to be a CTD dataset, uses \code{\link{plot,ctd-method}};
-#' otherwise, \code{x} is assumed to be a lowered-adp object, and a two-panel
-#' plot is created with \code{\link{plot,ladp-method}} to show velocity variation with
+#' Plot a [bremen-class] object.
+#' If the first argument seems to be a CTD dataset, this uses [plot,ctd-method()];
+#' otherwise, that argument is assumed to be a [ladp-class] object, and a two-panel
+#' plot is created with [plot,ladp-method()] to show velocity variation with
 #' pressure.
 #'
-#' @param x A \code{bremen} object, e.g. as read by \code{\link{read.bremen}}.
-#' @param type Optional string indicating the type to which \code{x} should be
-#' coerced before plotting. The choices are \code{ctd} and \code{ladp}.
+#' @param x a [bremen-class] object.
+#'
+#' @param type Optional string indicating the type to which `x` should be
+#' coerced before plotting. The choices are `ctd` and `ladp`.
+#'
 #' @param ... Other arguments, passed to plotting functions.
+#'
 #' @author Dan Kelley
-#' @family functions that plot \code{oce} data
-#' @family things related to \code{bremen} data
+#'
+#' @family functions that plot oce data
+#' @family things related to bremen data
+#'
 #' @aliases plot.bremen
 setMethod(f="plot",
           signature=signature("bremen"),
@@ -90,17 +121,18 @@ setMethod(f="plot",
           })
 
 
-#' @title Summarize a Bremen Object
+#' Summarize a Bremen Object
 #'
-#' @description
 #' Pertinent summary information is presented, including the station name,
 #' sampling location, data ranges, etc.
 #'
-#' @param object A \code{bremen} object, i.e. one inheriting from \code{\link{bremen-class}}.
-#' call to \code{\link{read.bremen}}.
+#' @param object a [bremen-class] object.
+#'
 #' @param ... Further arguments passed to or from other methods.
+#'
 #' @author Dan Kelley
-#' @family things related to \code{bremen} data
+#'
+#' @family things related to bremen data
 setMethod(f="summary",
           signature="bremen",
           definition=function(object, ...) {
@@ -132,21 +164,18 @@ findInHeaderBremen <- function(key, lines)
 }
 
 
-#' @title Read a Bremen File
+#' Read a Bremen File
 #'
-#' @description
-#' Read a file in Bremen format, producing an object inheriting from
-#' \code{\link{bremen-class}}.
+#' Read a file in Bremen format.
 #'
-#' @details
 #' Velocities are assumed to be in
 #' cm/s, and are converted to m/s to follow the oce convention. Shears
-#' (which is what the variables named \code{uz} and \code{vz} are assumed
+#' (which is what the variables named `uz` and `vz` are assumed
 #' to represent) are assumed to be in (cm/s)/m, although they could be in 1/s
 #' or something else; the lack of documentation is a problem here. Also,
 #' note that the assumed shears are not just first-difference estimates
 #' of velocity, given the results of a sample dataset:
-#' \preformatted{
+#'```
 #' > head(data.frame(b[["data"]]))
 #'   pressure      u      v       uz       vz
 #' 1        0  0.092 -0.191  0.00000  0.00000
@@ -155,18 +184,30 @@ findInHeaderBremen <- function(key, lines)
 #' 4       30  0.026 -0.246 -0.03948  0.02169
 #' 5       40 -0.003 -0.212 -0.02614  0.03111
 #' 6       50 -0.023 -0.169 -0.03791  0.01706
-#' }
+#'```
 #'
 #' @param file a connection or a character string giving the name of the file
 #' to load.
-#' @return An object of \code{\link{bremen-class}}.
+#'
+#' @return A [bremen-class] object.
+#'
 #' @section Issues: This function may be renamed (or removed) without notice.
 #' It was created to read some data being used in a particular research
 #' project, and will be rendered useless if Bremen changes this data format.
+#'
 #' @author Dan Kelley
-#' @family things related to \code{bremen} data
+#'
+#' @family things related to bremen data
 read.bremen <- function(file)
 {
+    if (missing(file))
+        stop("must supply 'file'")
+    if (is.character(file)) {
+        if (!file.exists(file))
+            stop("cannot find file '", file, "'")
+        if (0L == file.info(file)$size)
+            stop("empty file '", file, "'")
+    }
     if (is.character(file)) {
         filename <- fullFilename(file)
         file <- file(file, "r")

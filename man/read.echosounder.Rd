@@ -4,9 +4,14 @@
 \alias{read.echosounder}
 \title{Read an Echosounder File}
 \usage{
-read.echosounder(file, channel = 1, soundSpeed,
-  tz = getOption("oceTz"), debug = getOption("oceDebug"),
-  processingLog)
+read.echosounder(
+  file,
+  channel = 1,
+  soundSpeed,
+  tz = getOption("oceTz"),
+  debug = getOption("oceDebug"),
+  processingLog
+)
 }
 \arguments{
 \item{file}{a connection or a character string giving the name of the file
@@ -16,7 +21,7 @@ to load.}
 files.}
 
 \item{soundSpeed}{sound speed, in m/s. If not provided, this is calculated
-using \code{\link{swSoundSpeed}(35, 15, 30, eos="unesco")}.  (In theory,
+using \code{\link{swSoundSpeed}}\verb{(35,15,30,eos="unesco")}.  (In theory,
 it could be calculated using the temperature and salinity that are stored
 in the data file, but these will just be nominal values, anyway.}
 
@@ -29,10 +34,7 @@ amount of debugging information, or to 2 to get more.}
 typically only provided for internal calls.}
 }
 \value{
-An object of \code{\link[base]{class}} \code{"echosounder"} with
-standard slots \code{metadata}, \code{data} and \code{processingLog} that
-are described in the documentation for the object
-\code{\link{echosounder-class}}.
+An \linkS4class{echosounder} object.
 }
 \description{
 Reads a biosonics echosounder file.  This function was written for and
@@ -51,30 +53,33 @@ angle data being ignored.
 
 \references{
 Various echosounder instruments provided by BioSonics are
-described at the company website, \url{https://www.biosonicsinc.com/}.  The
-document listed as [1] below was provided to the author of this function in
+described at the company website, \verb{https://www.biosonicsinc.com/}.  The
+document listed as reference 1 below was provided to the author of this function in
 November 2011, which suggests that the data format was not changed since
 July 2010.
-
-[1] Biosonics, 2010.  DT4 Data File Format Specification.  BioSonics
+\enumerate{
+\item Biosonics, 2010.  DT4 Data File Format Specification.  BioSonics
 Advanced Digital Hydroacoustics. July, 2010.  SOFTWARE AND ENGINEERING
 LIBRARY REPORT BS&E-2004-07-0009-2.0.
 }
+}
 \seealso{
-The documentation for \code{\link{echosounder-class}} explains the
+The documentation for \linkS4class{echosounder} explains the
 structure of \code{ctd} objects, and also outlines the other functions
 dealing with them.
 
-Other things related to \code{echosounder} data: \code{\link{[[,echosounder-method}},
-  \code{\link{[[<-,echosounder-method}},
-  \code{\link{as.echosounder}},
-  \code{\link{echosounder-class}},
-  \code{\link{echosounder}}, \code{\link{findBottom}},
-  \code{\link{plot,echosounder-method}},
-  \code{\link{subset,echosounder-method}},
-  \code{\link{summary,echosounder-method}}
+Other things related to echosounder data: 
+\code{\link{[[,echosounder-method}},
+\code{\link{[[<-,echosounder-method}},
+\code{\link{as.echosounder}()},
+\code{\link{echosounder-class}},
+\code{\link{echosounder}},
+\code{\link{findBottom}()},
+\code{\link{plot,echosounder-method}},
+\code{\link{subset,echosounder-method}},
+\code{\link{summary,echosounder-method}}
 }
 \author{
 Dan Kelley, with help from Clark Richards
 }
-\concept{things related to \code{echosounder} data}
+\concept{things related to echosounder data}

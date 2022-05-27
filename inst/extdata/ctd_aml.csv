@@ -1,0 +1,162 @@
+[cast header]
+
+
+depthinmeters=no
+seacast version= Version 4.4.0
+[cast header]
+display options
+[instrument]
+
+type=base.x2
+emulationmode=disabled
+usecustomheader=yes
+sn=0
+firmware=v5.01
+sampleunits=continuous
+sampleinterval=0
+pressureinc=0.00
+soundinc=0.00
+logfile=test. 
+dateformat=iso
+date=2021-07-25
+time=18:22:27
+memorysize=968.5 mb
+memoryused=3.8 mb
+displaytime=yes
+displaydate=yes
+displaysalinity=no
+displaydensity=no
+displaysoundvelocity=no
+displaybattery=yes
+relaymode=rs232 mode
+realtimelogging=yes
+loggingtimeout=0
+startupdelay=10
+displayheader=yes
+startupmode=prompt
+characterreception=yes
+loggingbreakmode=no
+detectionmode=a3
+batteryacoefficient=+3.500000e-01
+batterybcoefficient=+2.500000e-02
+shutdownvoltage=6.5
+warningvoltage=6.9
+pressureoffset=0.00
+usepressureoffset=no
+soundvelocitythreshold=1375.00
+delimtermode=space
+sensordetectionmode=once
+traceability=yes
+skippoweroff=no
+analogchannels=disabled
+latitude=70.2467
+longitude=-146.0008
+automonitorseconds=0
+fixedpressure=0.0000
+usefixedpressure=no
+biofoulingpwralways=no
+ledtimeoutsecs=300
+displayincrement=no
+autozero=no
+docompensation=no
+scandelay=7
+
+[slot 1]
+sensorname=sv-c-ct.xchange ct.x c sn 0 05/08/20 t sn 0 05/07/20
+boardsn=13949
+
+[slot 3]
+sensorname=p-t-tu-do-uv.xchange p.x sn 0 04/25/20
+boardsn=15581
+
+
+[data.x]
+data.x sn =0
+ssid =aml_04
+ip address =0.0.0.0
+geo-location source =gps
+c-sensor in-water threshold (ms/cm) =0.005
+sleep timeout enabled =yes
+sleep timeout (mins) =5
+shutdown timeout enabled =no
+shutdown timeout (mins) =60
+wi-fi sleep timeout enabled =yes
+
+wi-fi sleep timeout (secs) =20
+low batt shutdown threshold voltage =6.5
+wep key =0
+wi-fi channel =10
+in-water instrument access =no
+wi-fi enabled =yes
+verbose output enabled =no
+terminal baud rate =115200
+latitude=70.2284
+longitude=-145.8477
+hdop=2.60
+water detect source =c sensor
+log trigger source =time increment
+verbose =no
+terminal baud =115200
+c position =1
+sv position =0
+real positions =3
+
+
+
+
+ 
+comments= 
+ 
+[data]
+Date,Time,Conductivity (mS/cm),Temperature (C),Pressure (dBar),Battery (V)
+2021-07-25,18:22:28.74,02.245,05.922,0000.23,007.93
+2021-07-25,18:22:28.78,06.281,05.671,0000.23,007.93
+2021-07-25,18:22:28.82,10.742,05.509,0000.22,007.93
+2021-07-25,18:22:28.86,15.253,05.400,0000.22,007.93
+2021-07-25,18:22:28.91,19.738,05.325,0000.24,007.93
+2021-07-25,18:22:28.94,24.099,05.274,0000.26,007.93
+2021-07-25,18:22:28.98,25.713,05.241,0000.28,007.93
+2021-07-25,18:22:29.02,25.851,05.217,0000.30,007.93
+2021-07-25,18:22:29.06,25.861,05.191,0000.33,007.93
+2021-07-25,18:22:29.10,25.912,05.140,0000.35,007.93
+2021-07-25,18:22:29.14,26.076,05.122,0000.36,007.93
+2021-07-25,18:22:29.18,26.747,05.107,0000.41,007.93
+2021-07-25,18:22:29.22,27.094,05.093,0000.42,007.93
+2021-07-25,18:22:29.26,27.139,05.082,0000.46,007.93
+2021-07-25,18:22:29.30,27.138,05.073,0000.48,007.93
+2021-07-25,18:22:29.33,27.133,05.065,0000.51,007.93
+2021-07-25,18:22:29.41,27.126,05.051,0000.57,007.93
+2021-07-25,18:22:29.44,27.122,05.039,0000.59,007.93
+2021-07-25,18:22:29.48,27.120,05.027,0000.61,007.93
+2021-07-25,18:22:29.52,27.113,05.016,0000.67,007.93
+2021-07-25,18:22:29.56,27.107,05.012,0000.69,007.93
+2021-07-25,18:22:29.60,27.101,05.006,0000.71,007.93
+2021-07-25,18:22:29.64,27.095,05.002,0000.74,007.93
+2021-07-25,18:22:29.67,27.091,04.998,0000.76,007.93
+2021-07-25,18:22:29.71,27.087,04.990,0000.78,007.93
+2021-07-25,18:22:29.75,27.082,04.983,0000.81,007.93
+2021-07-25,18:22:29.79,27.076,04.972,0000.84,007.93
+2021-07-25,18:22:29.84,27.069,04.964,0000.89,007.93
+2021-07-25,18:22:29.88,27.063,04.960,0000.93,007.93
+2021-07-25,18:22:29.92,27.057,04.957,0000.95,007.93
+2021-07-25,18:22:29.96,27.050,04.949,0000.97,007.93
+2021-07-25,18:22:30.00,27.042,04.933,0001.00,007.93
+2021-07-25,18:22:30.03,27.037,04.917,0001.02,007.93
+2021-07-25,18:22:30.07,27.028,04.905,0001.04,007.93
+2021-07-25,18:22:30.11,27.006,04.868,0001.08,007.93
+2021-07-25,18:22:30.15,26.994,04.846,0001.13,007.93
+2021-07-25,18:22:30.19,26.980,04.817,0001.14,007.93
+2021-07-25,18:22:30.23,26.958,04.781,0001.17,007.93
+2021-07-25,18:22:30.27,26.931,04.721,0001.21,007.93
+2021-07-25,18:22:30.32,26.903,04.658,0001.25,007.93
+2021-07-25,18:22:30.35,26.879,04.617,0001.28,007.93
+2021-07-25,18:22:30.39,26.856,04.590,0001.32,007.93
+2021-07-25,18:22:30.43,26.835,04.559,0001.37,007.93
+2021-07-25,18:22:30.47,26.813,04.507,0001.40,007.93
+2021-07-25,18:22:30.51,26.794,04.425,0001.44,007.93
+2021-07-25,18:22:30.55,26.778,04.342,0001.49,007.93
+2021-07-25,18:22:30.59,26.753,04.280,0001.53,007.93
+2021-07-25,18:22:30.63,26.718,04.189,0001.57,007.93
+2021-07-25,18:22:30.67,26.676,04.027,0001.60,007.93
+2021-07-25,18:22:30.71,26.642,03.812,0001.65,007.93
+2021-07-25,18:22:30.75,26.594,03.414,0001.69,007.93

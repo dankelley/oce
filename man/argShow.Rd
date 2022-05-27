@@ -4,7 +4,7 @@
 \alias{argShow}
 \title{Show an argument to a function, e.g. for debugging}
 \usage{
-argShow(x, nshow = 2, last = FALSE, sep = "=")
+argShow(x, nshow = 4, last = FALSE, sep = "=")
 }
 \arguments{
 \item{x}{the argument}

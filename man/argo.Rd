@@ -5,57 +5,65 @@
 \alias{argo}
 \title{ARGO float dataset}
 \source{
-This file was downloaded using the unix command
-\preformatted{
-ftp ftp://ftp.ifremer.fr/ifremer/argo/dac/bodc/6900388/6900388_prof.nc
-} issued on 2017 July 7.
+The netcdf file used by \code{\link[=read.argo]{read.argo()}} to create this \linkS4class{argo}
+object was downloaded using FTP to
+\code{ftp.ifremer.fr/ifremer/argo/dac/bodc/6900388/6900388_prof.nc}
+on 2020 June 24.
 }
 \description{
 This holds data from ARGO 6900388 in the North Atlantic.
 }
 \details{
-To quote Argo's website: "These data were collected and made freely
-available by the International Argo Program and the national programs
-that contribute to it.  (http//www.argo.ucsd.edu,
-http://argo.jcommops.org).  The Argo Program is part of the
-Global Ocean Observing System."
-
 Below is the official citation (note that this DOI has web links for
 downloads):
 Argo (2017). Argo float data and metadata from Global Data Assembly Centre
 (Argo GDAC) - Snapshot of Argo GDAC of July, 8st 2017. SEANOE.
-\url{http://doi.org/10.17882/42182#50865}
+\doi{10.17882/42182#50865}
 }
 \examples{
-\dontrun{
 library(oce)
 data(argo)
 summary(argo)
 data(coastlineWorld)
-plot(argo, which="trajectory", coastline=coastlineWorld)
-}
+plot(argo, which="trajectory")
 
 }
 \seealso{
-Other datasets provided with \code{oce}: \code{\link{adp}},
-  \code{\link{adv}}, \code{\link{cm}},
-  \code{\link{coastlineWorld}}, \code{\link{ctdRaw}},
-  \code{\link{ctd}}, \code{\link{echosounder}},
-  \code{\link{landsat}}, \code{\link{lisst}},
-  \code{\link{lobo}}, \code{\link{met}},
-  \code{\link{ocecolors}}, \code{\link{rsk}},
-  \code{\link{sealevelTuktoyaktuk}},
-  \code{\link{sealevel}}, \code{\link{section}},
-  \code{\link{topoWorld}}, \code{\link{wind}}
+Other datasets provided with oce: 
+\code{\link{adp}},
+\code{\link{adv}},
+\code{\link{amsr}},
+\code{\link{cm}},
+\code{\link{coastlineWorld}},
+\code{\link{ctdRaw}},
+\code{\link{ctd}},
+\code{\link{echosounder}},
+\code{\link{landsat}},
+\code{\link{lisst}},
+\code{\link{lobo}},
+\code{\link{met}},
+\code{\link{ocecolors}},
+\code{\link{rsk}},
+\code{\link{sealevelTuktoyaktuk}},
+\code{\link{sealevel}},
+\code{\link{section}},
+\code{\link{topoWorld}},
+\code{\link{wind}},
+\code{\link{xbt}}
 
-Other things related to \code{argo} data: \code{\link{[[,argo-method}},
-  \code{\link{[[<-,argo-method}}, \code{\link{argo-class}},
-  \code{\link{argoGrid}}, \code{\link{argoNames2oceNames}},
-  \code{\link{as.argo}},
-  \code{\link{handleFlags,argo-method}},
-  \code{\link{plot,argo-method}}, \code{\link{read.argo}},
-  \code{\link{subset,argo-method}},
-  \code{\link{summary,argo-method}}
+Other things related to argo data: 
+\code{\link{[[,argo-method}},
+\code{\link{[[<-,argo-method}},
+\code{\link{argo-class}},
+\code{\link{argoGrid}()},
+\code{\link{argoNames2oceNames}()},
+\code{\link{as.argo}()},
+\code{\link{handleFlags,argo-method}},
+\code{\link{plot,argo-method}},
+\code{\link{read.argo.copernicus}()},
+\code{\link{read.argo}()},
+\code{\link{subset,argo-method}},
+\code{\link{summary,argo-method}}
 }
-\concept{datasets provided with \code{oce}}
-\concept{things related to \code{argo} data}
+\concept{datasets provided with oce}
+\concept{things related to argo data}

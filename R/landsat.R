@@ -1,10 +1,10 @@
-## vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
+# vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
 
 
 #' Class to Store landsat Data
 #'
 #' This class holds landsat data. Such are available at several
-#' websites (e.g. [1]).
+#' websites (e.g. reference 1).
 #' Although the various functions may work for other satellites, the
 #' discussion here focusses on Landsat 8 and Landsat 7.
 #'
@@ -24,41 +24,41 @@
 #'
 #' The data are stored with 16-bit resolution.  Oce
 #' breaks these 16 bits up into most-significant and least-significant bytes.
-#' For example, the aerosol band of a Landsat object named \code{x} are
-#' contained within \code{x@@data$aerosol$msb} and \code{x@@data$aerosol$lsb},
+#' For example, the aerosol band of a Landsat object named `x` are
+#' contained within `x@@data$aerosol$msb` and `x@@data$aerosol$lsb`,
 #' each of which is a matrix of raw values.  The results may be combined as e.g.
 #' \preformatted{
 #' 256L*as.integer(x@@data[[i]]$msb) + as.integer(x@@data[[i]]$lsb)
 #' }
-#' and this is what is returned by executing \code{x[["aerosol"]]}.
+#' and this is what is returned by executing `x[["aerosol"]]`.
 #'
 #' Landsat data files typically occupy approximately a
 #' gigabyte of storage.  That means that corresponding Oce objects are about
 #' the same size, and this can pose significant problems on computers with
 #' less than 8GB of memory.  It is sensible to specify bands of interest when
-#' reading data with \code{\link{read.landsat}}, and also to use
-#' \code{\link{landsatTrim}} to isolate geographical regions that need
+#' reading data with [read.landsat()], and also to use
+#' [landsatTrim()] to isolate geographical regions that need
 #' processing.
 #'
 #' Experts may need to get direct access to the data, and this is easy because
 #' all Landsat objects (regardless of satellite) use a similar storage form.
 #' Band information is stored in byte form, to conserve space.  Two bytes are
 #' used for each pixel in Landsat-8 objects, with just one for other objects.
-#' For example, if a Landsat-8 object named \code{L} contains the \code{tirs1}
+#' For example, if a Landsat-8 object named `L` contains the `tirs1`
 #' band, the most- and least-significant bytes will be stored in matrices
-#' \code{L@@data$tirs1$msb} and \code{L@@data$tirs1$lsb}.  A similar Landsat-7
-#' object would have the same items, but \code{msb} would be just the value
-#' \code{0x00}.
+#' `L@@data$tirs1$msb` and `L@@data$tirs1$lsb`.  A similar Landsat-7
+#' object would have the same items, but `msb` would be just the value
+#' `0x00`.
 #'
 #' Derived bands, which may be added to a landsat object with
-#' \code{\link{landsatAdd}}, are not stored in byte matrices.  Instead they
+#' [landsatAdd()], are not stored in byte matrices.  Instead they
 #' are stored in numerical matrices, which means that they use 4X more storage
 #' space for Landsat-8 images, and 8X more storage space for other satellites.
 #' A computer needs at least 8GB of RAM to work with such data.
 #'
 #' @section Landsat 8:
 #'
-#' The Landsat 8 satellite has 11 frequency bands, listed below (see [2]).
+#' The Landsat 8 satellite has 11 frequency bands, listed below (see reference 2]).
 #' \preformatted{
 #' .------------------------------------------------------------------------------.
 #' | Band | Band                      | Band         | Wavelength    | Resolution |
@@ -77,24 +77,24 @@
 #' |   11 | Thermal Infrared (TIRS) 2 | tirs2        | 11.50 - 12.51 |        100 |
 #' .------------------------------------------------------------------------------.
 #' }
-#' In addition to the above, setting \code{band="terralook"} may be used as
-#' an abbreviation for \code{band=c("red", "green", "nir")}.
+#' In addition to the above, setting `band="terralook"` may be used as
+#' an abbreviation for `band=c("red", "green", "nir")`.
 #'
 #' Band 8 is panchromatic, and has the highest resolution.  For convenience of
-#' programming, \code{\link{read.landsat}} subsamples the \code{tirs1} and
-#' \code{tirs2} bands to the 30m resolution of the other bands.  See Reference
-#' [3] for information about the evolution of Landsat 8 calibration
+#' programming, [read.landsat()] subsamples the `tirs1` and
+#' `tirs2` bands to the 30m resolution of the other bands.  See Reference
+#' 3 for information about the evolution of Landsat 8 calibration
 #' coefficients, which as of summer 2014 are still subject to change.
 #'
 #' @section Landsat 7:
 #'
-#' Band information is as follows (from [8]).  The names are not official, but
+#' Band information is as follows (from reference 8).  The names are not official, but
 #' are set up to roughly correspond with Landsat-8 names, according to wavelength.
-#' An exception is the Landsat-7 bands named \code{tirs1} and \code{tirs2}, which
+#' An exception is the Landsat-7 bands named `tirs1` and `tirs2`, which
 #' are at two different gain settings, with identical wavelength span for
-#' each, which roughly matches the range of the Landsat-8 bands \code{tirs1}
-#' and \code{tirs2} combined.  This may seem confusing, but it lets code like
-#' \code{plot(im, band="tirs1")} to work with both Landsat-8 and Landsat-7.
+#' each, which roughly matches the range of the Landsat-8 bands `tirs1`
+#' and `tirs2` combined.  This may seem confusing, but it lets code like
+#' `plot(im, band="tirs1")` to work with both Landsat-8 and Landsat-7.
 #'
 #' \preformatted{
 #' .------------------------------------------------------------------------------.
@@ -115,16 +115,16 @@
 #'
 #' @seealso
 #'
-#' Data from AMSR satellites are handled with \code{\link{amsr-class}}.
+#' Data from AMSR satellites are handled with [amsr-class].
 #'
-#' A file containing Landsat data may be read with \code{\link{read.landsat}} or
-#' \code{\link{read.oce}}, and one such file is provided by the \CRANpkg{ocedata}
-#' package as a dataset named \code{landsat}.
+#' A file containing Landsat data may be read with [read.landsat()] or
+#' [read.oce()], and one such file is provided by the \CRANpkg{ocedata}
+#' package as a dataset named `landsat`.
 #'
-#' Plots may be made with \code{\link{plot,landsat-method}}.  Since plotting can be quite
+#' Plots may be made with [plot,landsat-method()].  Since plotting can be quite
 #' slow, decimation is available both in the plotting function and as the separate
-#' function \code{\link{decimate}}.  Images may be subsetted with
-#' \code{\link{landsatTrim}}.
+#' function [decimate()].  Images may be subsetted with
+#' [landsatTrim()].
 #'
 #' @references
 #' 1. See the USGS "glovis" web site.
@@ -133,9 +133,9 @@
 #'
 #' 3. see landsat.usgs.gov/calibration_notices.php
 #'
-#' 4. \url{http://dankelley.github.io/r/2014/07/01/landsat.html}
+#' 4. `https://dankelley.github.io/r/2014/07/01/landsat.html`
 #'
-#' 5. \url{http://scienceofdoom.com/2010/12/27/emissivity-of-the-ocean/}
+#' 5. `https://scienceofdoom.com/2010/12/27/emissivity-of-the-ocean/`
 #'
 #' 6. see landsat.usgs.gov/Landsat8_Using_Product.php
 #'
@@ -145,23 +145,23 @@
 #'
 #' 9. Yu, X. X. Guo and Z. Wu., 2014. Land Surface Temperature Retrieval from
 #' Landsat 8 TIRS-Comparison between Radiative Transfer Equation-Based Method,
-#' Split Window Algorithm and Single Channel Method, \emph{Remote Sensing}, 6,
-#' 9829-9652.  \url{http://www.mdpi.com/2072-4292/6/10/9829}
+#' Split Window Algorithm and Single Channel Method, *Remote Sensing*, 6,
+#' 9829-9652.  `https://www.mdpi.com/2072-4292/6/10/9829`
 #'
 #' 10. Rajeshwari, A., and N. D. Mani, 2014.  Estimation of land surface
-#' temperature of Dindigul district using Landsat 8 data.  \emph{International
-#'     Journal of Research in Engineering and Technology}, 3(5), 122-126.
-#' \code{http://www.academia.edu/7655089/ESTIMATION_OF_LAND_SURFACE_TEMPERATURE_OF_DINDIGUL_DISTRICT_USING_LANDSAT_8_DATA}
+#' temperature of Dindigul district using Landsat 8 data. *International
+#'     Journal of Research in Engineering and Technology*, 3(5), 122-126.
+#' `http://www.academia.edu/7655089/ESTIMATION_OF_LAND_SURFACE_TEMPERATURE_OF_DINDIGUL_DISTRICT_USING_LANDSAT_8_DATA`
 #'
 #' 11. Konda, M. Imasato N., Nishi, K., and T. Toda, 1994.  Measurement of the Sea
-#' Surface Emissivity.  \emph{Journal of Oceanography}, 50, 17:30.
-#' \url{http://www.terrapub.co.jp/journals/JO/pdf/5001/50010017.pdf}
+#' Surface Emissivity.  *Journal of Oceanography*, 50, 17:30.
+#' \doi{10.1007/BF02233853}
+## \code{http://www.terrapub.co.jp/journals/JO/pdf/5001/50010017.pdf}
 #'
-#' @concept satellite
 #' @author Dan Kelley and Clark Richards
-#' @seealso \code{\link{landsat-class}} for handling data from the Landsat-8 satellite.
-#' @family things related to \code{landsat} data
-#' @family things related to \code{landsat} data
+#'
+#' @family classes holding satellite data
+#' @family things related to landsat data
 setClass("landsat", contains="satellite")
 
 
@@ -175,14 +175,15 @@ setClass("landsat", contains="satellite")
 #' @details
 #' The original data were downloaded from the USGS earthexplorer website, although
 #' other sites can also be used to uncover it by name.  The original
-#' data were decimation by a factor of 100 to reduce the file size from about 1GB
-#' to under 100Kb.
+#' data were decimated by a factor of 100 in longitude and latitude,
+#' to reduce the file size from 1G to 100K.
 #'
 #' @name landsat
 #' @docType data
 #'
-#' @family datasets provided with \code{oce}
-#' @family things related to \code{landsat} data
+#' @family satellite datasets provided with oce
+#' @family datasets provided with oce
+#' @family things related to landsat data
 NULL
 
 
@@ -204,28 +205,26 @@ setMethod(f="show",
 
 setMethod(f="initialize",
           signature="landsat",
-          definition=function(.Object, filename) {
+          definition=function(.Object, filename, ...) {
+              .Object <- callNextMethod(.Object, ...)
               if (!missing(filename))
                   .Object@metadata$filename <- filename
-              .Object@processingLog$time <- as.POSIXct(Sys.time())
+              .Object@processingLog$time <- presentTime()
               .Object@processingLog$value <- "create 'landsat' object"
               return(.Object)
           })
 
 #' Summarize a landsat Object
 #'
-#' Provides a summary of a some information about an object of
-#' \code{\link{landsat-class}}.
+#' Provides a summary of a some information about a [landsat-class] object.
 #'
-#' @param object An object of \code{\link{landsat-class}}, usually a result of a
-#' call to \code{\link{read.landsat}}.
+#' @param object A [landsat-class] object.
+#'
 #' @param ... Ignored.
-#'
-#' @concept satellite
 #'
 #' @author Dan Kelley
 #'
-#' @family things related to \code{landsat} data
+#' @family things related to landsat data
 setMethod(f="summary",
           signature="landsat",
           definition=function(object, ...) {
@@ -254,23 +253,27 @@ setMethod(f="summary",
 
 #' @title Extract Something From a landsat Object
 #'
-#' @param x An landsat object, i.e. one inheriting from \code{\link{landsat-class}}.
+#' @param x a [landsat-class] object.
 #'
 #' @templateVar class landsat
 #'
-#' @template sub_subTemplate
+#' @section Details of the Specialized Method:
 #'
-#' @section Details of the specialized \code{landsat} method:
+#' If `i` is `"?"`, then the return value is a list
+#' containing four items, each of which is a character vector
+#' holding the names of things that can be accessed with `[[`.
+#' The `data` and `metadata` items hold the names of
+#' entries in the object's data and metadata
+#' slots, respectively. The `data` entries are difficult
+#' to deal with directly, and so users are advised to
+#' use `dataDerived` instead.
 #'
-#' Users are isolated from the details of the two-byte storage system
-#' by using the \code{[[} operator.
-#'
-#' \emph{Accessing band data.}  The data may be accessed with e.g.
-#' \code{landsat[["panchromatic"]]}, for the panchromatic band.  If a new
-#' ``band'' is added with \code{\link{landsatAdd}}, it may be referred by
+#' *Accessing band data.*  The data may be accessed with e.g.
+#' `landsat[["panchromatic"]]`, for the panchromatic band.  If a new
+#' ``band'' is added with [landsatAdd()], it may be referred by
 #' name.  In all cases, a second argument can be provided, to govern
 #' decimation.  If this is missing, all the relevant data are returned.  If
-#' this is present and equal to \code{TRUE}, then the data will be
+#' this is present and equal to `TRUE`, then the data will be
 #' automatically decimated (subsampled) to give approximately 800 elements in
 #' the longest side of the matrix.  If this is present and numerical, then its
 #' value governs decimation.  For example,
@@ -279,46 +282,46 @@ setMethod(f="summary",
 #' \code{landsat[["panchromatic",10]]} will reduce width and height to about
 #' 1600.  On machines with limited RAM (e.g. under about 6GB), decimation is a
 #' good idea in almost all processing steps.  It also makes sense for
-#' plotting, and in fact is done through the \code{decimate} argument of
-#' \code{\link{plot,landsat-method}}.
+#' plotting, and in fact is done through the `decimate` argument of
+#' [plot,landsat-method()].
 #'
-#' \emph{Accessing derived data.}  One may retrieve several derived quantities
+#' *Accessing derived data.*  One may retrieve several derived quantities
 #' that are calculated from data stored in the object:
-#' \code{landsat[["longitude"]]} and \code{landsat[["latitude"]]} give pixel
-#' locations.  Accessing \code{landsat[["temperature"]]} creates an estimate
-#' of ground temperature as follows (see [4]).  First, the ``count value'' in
+#' `landsat[["longitude"]]` and `landsat[["latitude"]]` give pixel
+#' locations.  Accessing `landsat[["temperature"]]` creates an estimate
+#' of ground temperature as follows (see reference 4).  First, the ``count value'' in
 #' band 10, denoted \eqn{b_{10}}{b_10} say, is scaled with coefficients stored
 #' in the image metadata using
 #' \eqn{\lambda_L=b_{10}M_L+A_L}{lambda_L=b_10*M_L+A_L} where \eqn{M_L}{M_L}
 #' and \eqn{A_L}{A_L} are values stored in the metadata (e.g.  the first in
-#' \code{landsat@@metadata$header$radiance_mult_band_10}) Then the result is
+#' `landsat@@metadata$header$radiance_mult_band_10`) Then the result is
 #' used, again with coefficients in the metadata, to compute Celcius
 #' temperature \eqn{T=K_2/ln(\epsilon
 #'     K_1/\lambda_L+1)-273.15}{T=K_2/ln(epsilon*K_1/\lambda_L+1)-273.15}.
 #' The value of the emissivity \eqn{\epsilon}{epsilon} is set to unity by
-#' \code{\link{read.landsat}}, although it can be changed easily later, by
-#' assigning a new value to \code{landsat@@metadata$emissivity}. The default
-#' emissivity value set by \code{\link{read.landsat}} is from [11], and is
-#' within the oceanic range suggested by [5]. Adjustment is as simple as
-#' altering \code{landsat@@metadata$emissivity}. This value can be a single
+#' [read.landsat()], although it can be changed easily later, by
+#' assigning a new value to `landsat@@metadata$emissivity`. The default
+#' emissivity value set by [read.landsat()] is from reference 11, and is
+#' within the oceanic range suggested by reference 5. Adjustment is as simple as
+#' altering `landsat@@metadata$emissivity`. This value can be a single
 #' number meant to apply for the whole image, or a matrix with dimensions
 #' matching those of band 10.  The matrix case is probably more useful for
 #' images of land, where one might wish to account for the different
-#' emissivities of soil and vegetation, etc.; for example, Table 4 of [9]
-#' lists 0.9668 for soil and 0.9863 for vegetation, while Table 5 of [10]
-#' lists 0.971 and 0.987 for the same quantities.
+#' emissivities of soil and vegetation, etc.; for example, Table 4 of
+#' reference 9 lists 0.9668 for soil and 0.9863 for vegetation,
+#' while Table 5 of reference 10 lists 0.971 and 0.987 for the same quantities.
 #'
-#' \emph{Accessing metadata.} Anything in the metadata can be accessed by
-#' name, e.g. \code{landsat[["time"]]}.  Note that some items are simply
+#' *Accessing metadata.* Anything in the metadata can be accessed by
+#' name, e.g. `landsat[["time"]]`.  Note that some items are simply
 #' copied over from the source data file and are not altered by e.g.
 #' decimation.  An exception is the lat-lon box, which is altered by
-#' \code{\link{landsatTrim}}.
+#' [landsatTrim()].
 #'
-#' @concept satellite
+#' @template sub_subTemplate
 #'
 #' @author Dan Kelley
 #'
-#' @family things related to \code{landsat} data
+#' @family things related to landsat data
 setMethod(f="[[",
           signature(x="landsat", i="ANY", j="ANY"),
           definition=function(x, i, j, ...) {
@@ -326,9 +329,16 @@ setMethod(f="[[",
               oceDebug(debug, "landsat [[ {\n", unindent=1)
               if (missing(i))
                   stop("Must name a landsat item to retrieve, e.g. '[[\"panchromatic\"]]'", call.=FALSE)
-              i <- i[1]                # drop extras if more than one given
+              if (length(i) > 1L)
+                  stop("[[,landsat-method requires length(i) to be of 1\n")
               if (!is.character(i))
                   stop("landsat item must be specified by name", call.=FALSE)
+              dataDerived <- c("longitude", "latitude", "temperature", "panchromatic")
+              if (i == "?")
+                  return(list(metadata=sort(names(x@metadata)),
+                          metadataDerived=NULL,
+                          data=sort(names(x@data)),
+                          dataDerived=sort(dataDerived)))
               ## Handle cases one by one, starting with simplest.
               if (!(is.na(pmatch(i, "longitude")))) {
                   ## FIXME: ignoring decimation (may be best, anyway)
@@ -525,10 +535,12 @@ setMethod(f="[[",
 
 
 #' @title Replace Parts of a landsat Object
-#' @param x A \code{landsat} object, i.e. one inheriting from \code{\link{landsat-class}}.
+#'
+#' @param x a [landsat-class] object.
+#'
 #' @template sub_subsetTemplate
 #'
-#' @family things related to \code{landsat} data
+#' @family things related to landsat data
 setMethod(f="[[<-",
           signature(x="landsat", i="ANY", j="ANY"),
           definition=function(x, i, j, ..., value) {
@@ -540,81 +552,81 @@ setMethod(f="[[<-",
 #'
 #' Plot the data within a landsat image, or information computed from the
 #' data. The second category includes possibilities such as an estimate of
-#' surface temperature and the \code{"terralook"} estimate of a natural-color
+#' surface temperature and the `"terralook"` estimate of a natural-color
 #' view.
 #'
 #' @details
-#' For Landsat-8 data, the \code{band} may be
-#' one of: \code{"aerosol"}, \code{"blue"}, \code{"green"}, \code{"red"},
-#' \code{"nir"}, \code{"swir1"}, \code{"swir2"}, \code{"panchromatic"},
-#' \code{"cirrus"}, \code{"tirs1"}, or \code{"tirs2"}.
+#' For Landsat-8 data, the `band` may be
+#' one of: `"aerosol"`, `"blue"`, `"green"`, `"red"`,
+#' `"nir"`, `"swir1"`, `"swir2"`, `"panchromatic"`,
+#' `"cirrus"`, `"tirs1"`, or `"tirs2"`.
 #'
-#' For Landsat-7 data, \code{band} may be one of \code{"blue"}, \code{"green"}, \code{"red"},
-#' \code{"nir"}, \code{"swir1"}, \code{"tirs1"}, \code{"tirs2"},
-#' \code{"swir2"}, or \code{"panchromatic"}.
+#' For Landsat-7 data, `band` may be one of `"blue"`, `"green"`, `"red"`,
+#' `"nir"`, `"swir1"`, `"tirs1"`, `"tirs2"`,
+#' `"swir2"`, or `"panchromatic"`.
 #'
 #' For Landsat data prior to
-#' Landsat-7, \code{band} may be one of \code{"blue"}, \code{"green"},
-#' \code{"red"}, \code{"nir"}, \code{"swir1"}, \code{"tirs1"},
-#' \code{"tirs2"}, or \code{"swir2"}.
+#' Landsat-7, `band` may be one of `"blue"`, `"green"`,
+#' `"red"`, `"nir"`, `"swir1"`, `"tirs1"`,
+#' `"tirs2"`, or `"swir2"`.
 #'
-#' If \code{band} is not given, the
-#' (\code{"tirs1"}) will be used if it exists in the object data, or
+#' If `band` is not given, the
+#' (`"tirs1"`) will be used if it exists in the object data, or
 #' otherwise the first band will be used.
 #'
 #' In addition to the above there are also some pseudo-bands that
 #' can be plotted, as follows.
-#' \itemize{
-#' \item Setting \code{band="temperature"} will plot an estimate
+#'
+#' * Setting `band="temperature"` will plot an estimate
 #' of at-satellite brightness temperature, computed from the
-#' \code{tirs1} band.
-#' \item Setting \code{band="terralook"} will plot a sort of natural
-#' color by combining the \code{red}, \code{green}, \code{blue} and
-#' \code{nir} bands according to the formula provided at
-#' \code{https://lta.cr.usgs.gov/terralook/what_is_terralook} (a
+#' `tirs1` band.
+#'
+#' * Setting `band="terralook"` will plot a sort of natural
+#' color by combining the `red`, `green`, `blue` and
+#' `nir` bands according to the formula provided at
+#' `https://lta.cr.usgs.gov/terralook/what_is_terralook` (a
 #' website that worked once, but failed as of Feb 2, 2017), namely
-#' that the \code{red}-band data are provided as the \code{red}
-#' argument of the \code{\link{rgb}} function, while
-#' the \code{green} argument is computed as
-#' 2/3 of the \code{green}-band data plus 1/3 of the \code{nir}-band data, and
-#' the \code{blue} argument is computed as 2/3 of the \code{green}-band
-#' data minus 1/3 of the \code{nir}-band data. (This is not a typo: the
-#' \code{blue} band is not used.)
-#' }
+#' that the `red`-band data are provided as the `red`
+#' argument of the [rgb()] function, while
+#' the `green` argument is computed as
+#' 2/3 of the `green`-band data plus 1/3 of the `nir`-band data, and
+#' the `blue` argument is computed as 2/3 of the `green`-band
+#' data minus 1/3 of the `nir`-band data. (This is not a typo: the
+#' `blue` band is not used.)
 #'
 #'
-#' @param x A \code{landsat} object, e.g. as read by \code{\link{read.landsat}}.
+#' @param x a [landsat-class] object.
 #'
 #' @param band If given, the name of the band.  For Landsat-8 data, this may be
-#' one of: \code{"aerosol"}, \code{"blue"}, \code{"green"}, \code{"red"},
-#' \code{"nir"}, \code{"swir1"}, \code{"swir2"}, \code{"panchromatic"},
-#' \code{"cirrus"}, \code{"tirs1"}, or \code{"tirs2"}.  For Landsat-7 data,
-#' this may be one of \code{"blue"}, \code{"green"}, \code{"red"},
-#' \code{"nir"}, \code{"swir1"}, \code{"tirs1"}, \code{"tirs2"},
-#' \code{"swir2"}, or \code{"panchromatic"}.  For Landsat data prior to
-#' Landsat-7, this may be one of \code{"blue"}, \code{"green"},
-#' \code{"red"}, \code{"nir"}, \code{"swir1"}, \code{"tirs1"},
-#' \code{"tirs2"}, or \code{"swir2"}.  If \code{band} is not given, the
-#' (\code{"tirs1"}) will be used if it exists in the object data, or
+#' one of: `"aerosol"`, `"blue"`, `"green"`, `"red"`,
+#' `"nir"`, `"swir1"`, `"swir2"`, `"panchromatic"`,
+#' `"cirrus"`, `"tirs1"`, or `"tirs2"`.  For Landsat-7 data,
+#' this may be one of `"blue"`, `"green"`, `"red"`,
+#' `"nir"`, `"swir1"`, `"tirs1"`, `"tirs2"`,
+#' `"swir2"`, or `"panchromatic"`.  For Landsat data prior to
+#' Landsat-7, this may be one of `"blue"`, `"green"`,
+#' `"red"`, `"nir"`, `"swir1"`, `"tirs1"`,
+#' `"tirs2"`, or `"swir2"`.  If `band` is not given, the
+#' (`"tirs1"`) will be used if it exists in the object data, or
 #' otherwise the first band will be used.  In addition to the above, using
-#' \code{band="temperature"} will plot an estimate of at-satellite
-#' brightness temperature, computed from the \code{tirs1} band, and
-#' \code{band="terralook"} will plot a sort of natural color by combining
-#' the \code{red}, \code{green}, \code{blue} and \code{nir} bands
+#' `band="temperature"` will plot an estimate of at-satellite
+#' brightness temperature, computed from the `tirs1` band, and
+#' `band="terralook"` will plot a sort of natural color by combining
+#' the `red`, `green`, `blue` and `nir` bands
 #' according to the formula provided at
-#' \code{https://lta.cr.usgs.gov/terralook/what_is_terralook} (a
+#' `https://lta.cr.usgs.gov/terralook/what_is_terralook` (a
 #' website that worked once, but failed as of Feb 2, 2017).
 #'
 #' @param which Desired plot type; 1=image, 2=histogram.
 #'
 #' @param decimate An indication of the desired decimation,
-#' passed to \code{\link{imagep}} for image plots.
+#' passed to [imagep()] for image plots.
 #' The default yields faster plotting.  Some decimation is sensible for
 #' full-size images, since no graphical displays can show 16 thousand pixels
 #' on a side.
 #'
 #' @param zlim Either a pair of numbers giving the limits for the colorscale,
-#' or \code{"histogram"} to have a flattened histogram (i.e. to maximally
+#' or `"histogram"` to have a flattened histogram (i.e. to maximally
 #' increase contrast throughout the domain.)  If not given, the 1 and 99
 #' percent quantiles are calculated and used as limits.
 #'
@@ -623,49 +635,48 @@ setMethod(f="[[<-",
 #'
 #' @param col Either a function yielding colors, taking a single integer
 #' argument with the desired number of colors, or the string
-#' \code{"natural"}, which combines the information in the \code{red},
-#' \code{green} and \code{blue} bands and produces a natural-hue image.  In
+#' `"natural"`, which combines the information in the `red`,
+#' `green` and `blue` bands and produces a natural-hue image.  In
 #' the latter case, the band designation is ignored, and the object must
 #' contain the three color bands.
 #'
 #' @param drawPalette Indication of the type of palette to draw, if
-#' any. See \code{\link{imagep}} for details.
+#' any. See [imagep()] for details.
 #'
 #' @param showBandName A logical indicating whether the band name is to
 #' plotted in the top margin, near the right-hand side.
 #'
-#' @param alpha.f Argument used if \code{col="natural"}, to adjust colors
-#' with \code{\link{adjustcolor}}.
+#' @param alpha.f Argument used if `col="natural"`, to adjust colors
+#' with [adjustcolor()].
 #'
-#' @param red.f Argument used if \code{col="natural"}, to adjust colors with
-#' \code{\link{adjustcolor}}.  Higher values of \code{red.f} cause red hues
+#' @param red.f Argument used if `col="natural"`, to adjust colors with
+#' [adjustcolor()].  Higher values of `red.f` cause red hues
 #' to be emphasized (e.g. dry land).
 #'
-#' @param green.f Argument used if \code{col="natural"}, to adjust colors with
-#' \code{\link{adjustcolor}}.  Higher values of \code{green.f} emphasize
+#' @param green.f Argument used if `col="natural"`, to adjust colors with
+#' [adjustcolor()].  Higher values of `green.f` emphasize
 #' green hues (e.g. forests).
 #'
-#' @param blue.f Argument used if \code{band="terralook"}, to adjust colors with
-#' \code{\link{adjustcolor}}.  Higher values of \code{blue.f} emphasize blue
+#' @param blue.f Argument used if `band="terralook"`, to adjust colors with
+#' [adjustcolor()].  Higher values of `blue.f` emphasize blue
 #' hues (e.g. ocean).
 #'
-#' @param offset Argument used if \code{band="terralook"}, to adjust colors with
-#' \code{\link{adjustcolor}}.
+#' @param offset Argument used if `band="terralook"`, to adjust colors with
+#' [adjustcolor()].
 #'
-#' @param transform Argument used if \code{band="terralook"}, to adjust colors
-#' with \code{\link{adjustcolor}}.
+#' @param transform Argument used if `band="terralook"`, to adjust colors
+#' with [adjustcolor()].
 #'
 #' @param debug Set to a positive value to get debugging information during
 #' processing.
 #'
 #' @param ... optional arguments passed to plotting functions.
 #'
-#' @concept satellite
-#'
 #' @author Dan Kelley
 #'
-#' @family things related to \code{landsat} data
-#' @family functions that plot \code{oce} data
+#' @family things related to landsat data
+#' @family functions that plot oce data
+#'
 #' @aliases plot.landsat
 setMethod(f="plot",
           signature=signature("landsat"),
@@ -684,7 +695,7 @@ setMethod(f="plot",
                        ", ...) {\n", sep="", unindent=1)
               if (!length(x@data)) {
                   warning("In plot,landsat-method(): object contains no band data\n", call.=FALSE)
-                  return(invisible())
+                  return(invisible(NULL))
               }
               terralook <- FALSE
               datanames <- names(x@data)
@@ -864,7 +875,8 @@ setMethod(f="plot",
           })
 
 
-read.landsatmeta <- function(file, debug=getOption("oceDebug"))
+read.landsatmeta <- function(file,
+    debug=getOption("oceDebug"))
 {
     getItem <- function(info, name, numeric=TRUE)
     {
@@ -966,34 +978,34 @@ read.landsatmeta <- function(file, debug=getOption("oceDebug"))
 
 #' Read a landsat File Directory
 #'
-#' Read a landsat data file, producing an object of \code{\link{landsat-class}}.
-#' The actual reading is done with \link[tiff]{readTIFF} in the
+#' Read a landsat data file, producing an object of [landsat-class].
+#' The actual reading is done with [tiff::readTIFF()] in the
 #' \CRANpkg{tiff} package, so that package must be installed for
-#' \code{read.landsat} to work.
+#' `read.landsat` to work.
 #'
 #' @details
 #' Landsat data are provided in directories that contain TIFF files and header
-#' information, and \code{read.landsat} relies on a strict convention for the
+#' information, and `read.landsat` relies on a strict convention for the
 #' names of the files in those directories.  Those file names were found by
 #' inspection of some data, on the assumption that similar patterns will hold for
 #' other datasets for any given satellite. This is a brittle approach and it
-#' should be born in mind if \code{read.landsat} fails for a given dataset.
+#' should be born in mind if `read.landsat` fails for a given dataset.
 #'
-#' For Landsat 8, there are 11 bands, with names \code{"aerosol"} (band 1),
-#' \code{"blue"} (band 2), \code{"green"} (band 3), \code{"red"} (band 4),
-#' \code{"nir"} (band 5), \code{"swir1"} (band 6), \code{"swir2"} (band 7),
-#' \code{"panchromatic"} (band 8), \code{"cirrus"} (band 9), \code{"tirs1"} (band
-#' 10), and \code{"tirs2"} (band 11).
-#' In addition to the above, setting \code{band="terralook"} may be used as
-#' an abbreviation for \code{band=c("red", "green", "nir")}.
+#' For Landsat 8, there are 11 bands, with names `"aerosol"` (band 1),
+#' `"blue"` (band 2), `"green"` (band 3), `"red"` (band 4),
+#' `"nir"` (band 5), `"swir1"` (band 6), `"swir2"` (band 7),
+#' `"panchromatic"` (band 8), `"cirrus"` (band 9), `"tirs1"` (band
+#' 10), and `"tirs2"` (band 11).
+#' In addition to the above, setting `band="terralook"` may be used as
+#' an abbreviation for `band=c("red", "green", "nir")`.
 #'
-#' For Landsat 7, there 8 bands, with names \code{"blue"} (band 1), \code{"green"}
-#' (band 2), \code{"red"} (band 3), \code{"nir"} (band 4), \code{"swir1"} (band
-#' 5), \code{"tir1"} (band 6A), \code{"tir2"} (band 6B), \code{"swir2"} (band 7)
-#' and \code{"panchromatic"} (band 8).
+#' For Landsat 7, there 8 bands, with names `"blue"` (band 1), `"green"`
+#' (band 2), `"red"` (band 3), `"nir"` (band 4), `"swir1"` (band
+#' 5), `"tir1"` (band 6A), `"tir2"` (band 6B), `"swir2"` (band 7)
+#' and `"panchromatic"` (band 8).
 #'
 #' For Landsat 4 and 5, the bands similar to Landsat 7 but without
-#' \code{"panchromatic"} (band 8).
+#' `"panchromatic"` (band 8).
 #'
 #
 #' @param file A connection or a character string giving the name of the file to
@@ -1006,21 +1018,21 @@ read.landsatmeta <- function(file, debug=getOption("oceDebug"))
 #' bands, some of which are pseudo-bands, computed from the actual data.
 #'
 #' @param emissivity Value of the emissivity of the surface, stored as
-#' \code{emissivity} in the \code{metadata} slot of the
+#' `emissivity` in the `metadata` slot of the
 #' resultant object. This is used in the
 #' calculation of surface temperature, as explained in the discussion of
-#' accessor functions for \code{\link{landsat-class}}. The default value is
+#' accessor functions for [landsat-class]. The default value is
 #' from Konda et al.  (1994). These authors suggest an uncertainty of 0.04,
 #' but a wider range of values can be found in the literature.  The value of
-#' \code{metadata$emissivity} is easy to alter, either as a single value or
+#' `metadata$emissivity` is easy to alter, either as a single value or
 #' as a matrix, yielding flexibility of calculation.
 #'
 #' @param decimate optional positive integer indicating the degree to which
 #' the data should be subsampled after reading and before storage. Setting
 #' this to 10 can speed up reading by a factor of 3 or more, but higher values
 #' have diminishing effect.  In exploratory work, it is useful to set
-#' \code{decimate=10}, to plot the image to determine a subregion
-#' of interest, and then to use \code{\link{landsatTrim}} to trim the image.
+#' `decimate=10`, to plot the image to determine a subregion
+#' of interest, and then to use [landsatTrim()] to trim the image.
 #'
 #' @param debug a flag that turns on debugging.  Set to 1 to get a moderate
 #' amount of debugging information, or to 2 to get more.
@@ -1029,43 +1041,56 @@ read.landsatmeta <- function(file, debug=getOption("oceDebug"))
 #'
 #' Landsat data files (directories, really) are large, accounting for
 #' approximately 1 gigabyte each.  The storage of the Oce object is
-#' similar (see \code{\link{landsat-class}}).  In R, many operations involving
+#' similar (see [landsat-class]).  In R, many operations involving
 #' copying data, so that dealing with full-scale landsat images can overwhelm
 #' computers with storage under 8GB.  For this reason, it is typical to read just
 #' the bands that are of interest.  It is also helpful to use
-#' \code{\link{landsatTrim}} to trim the data to a geographical range, or
-#' to use \code{\link{decimate}} to get a coarse view of the domain, especially
+#' [landsatTrim()] to trim the data to a geographical range, or
+#' to use [decimate()] to get a coarse view of the domain, especially
 #' early in an analysis.
 #'
-#' @return An object of \code{\link{landsat-class}}, with the conventional Oce
-#' slots \code{metadata}, \code{data} and \code{processingLog}.  The
-#' \code{metadata} is mainly intended for use by Oce functions, but for generality
-#' it also contains an entry named \code{header} that represents the full image
-#' header in a list (with names made lower-case).  The \code{data} slot holds
+#' @return A [landsat-class] object, with the conventional Oce
+#' slots `metadata`, `data` and `processingLog`.  The
+#' `metadata` is mainly intended for use by Oce functions, but for generality
+#' it also contains an entry named `header` that represents the full image
+#' header in a list (with names made lower-case).  The `data` slot holds
 #' matrices of the data in the requested bands, and users may add extra matrices
 #' if desired, e.g. to store calculated quantities.
 #'
 #' @seealso
 #'
-#' \code{\link{landsat-class}} for more information on \code{landsat} objects,
-#' especially band information.  Use \code{\link{landsatTrim}} to trim Landsat
-#' objects geographically and \code{\link{landsatAdd}} to add new ``bands.''  The
-#' accessor operator (\code{[[}) is used to access band information, full or
+#' See the documentation for the [landsat-class] class
+#' for more information on `landsat` objects,
+#' especially band information.  Use [landsatTrim()] to trim Landsat
+#' objects geographically and [landsatAdd()] to add new ``bands.''  The
+#' accessor operator (`[[`) is used to access band information, full or
 #' decimated, and to access certain derived quantities.  A sample dataset named
-#' \code{\link{landsat}} is provided by the \CRANpkg{oce} package.
+#' [landsat()] is provided by the \CRANpkg{oce} package.
 #'
 #' @references
 #'
 #' 1. Konda, M. Imasato N., Nishi, K., and T. Toda, 1994.  Measurement of the Sea
-#' Surface Emissivity.  \emph{Journal of Oceanography}, 50, 17:30.  Available at
-#' \url{http://www.terrapub.co.jp/journals/JO/pdf/5001/50010017.pdf} as of
-#' February 2015.
+#' Surface Emissivity.  *Journal of Oceanography*, 50, 17:30.
+#' \doi{10.1007/BF02233853}
+## \code{http://www.terrapub.co.jp/journals/JO/pdf/5001/50010017.pdf}
 #'
 #' @author Dan Kelley
-#' @concept satellite
-#' @family things related to \code{landsat} data
-read.landsat <- function(file, band="all", emissivity=0.984, decimate, debug=getOption("oceDebug"))
+#'
+#' @family things related to landsat data
+read.landsat <- function(file,
+    band="all",
+    emissivity=0.984,
+    decimate,
+    debug=getOption("oceDebug"))
 {
+    if (missing(file))
+        stop("must supply 'file'")
+    if (is.character(file)) {
+        if (!file.exists(file))
+            stop("cannot find file '", file, "'")
+        if (0L == file.info(file)$size)
+            stop("empty file '", file, "'")
+    }
     oceDebug(debug, "read.landsat(file=\"", file, "\",",
              if (length(band) > 1) paste("band=c(\"", paste(band, collapse="\",\""), "\")", sep="") else
                  paste("band=\"", band, "\"", sep=""),
@@ -1120,7 +1145,7 @@ read.landsat <- function(file, band="all", emissivity=0.984, decimate, debug=get
     options <- options('warn') # avoid readTIFF() warnings about geo tags
     options(warn=-1)
     ##> cat("BEFORE\n")
-    ##> print(Sys.time())
+    ##> print(presentTime())
     for (b in seq_along(band)) {
         ## 'band' is numeric
         ## message("b:", b, " band: ", header$bandnames[b], " suffix: ", header$filesuffices[b])
@@ -1158,7 +1183,7 @@ read.landsat <- function(file, band="all", emissivity=0.984, decimate, debug=get
         ##> print("--DONE assembling bytes")
     }
     ##> cat("AFTER\n")
-    ##> print(Sys.time())
+    ##> print(presentTime())
     options(warn=options$warn)
     res@metadata$satellite <- "landsat"
     res@processingLog <- processingLogAppend(res@processingLog,
@@ -1170,29 +1195,32 @@ read.landsat <- function(file, band="all", emissivity=0.984, decimate, debug=get
 
 #' Add a Band to a landsat Object
 #'
-#' Add a band to an object of \code{\link{landsat-class}}. Note that
+#' Add a band to a [landsat-class] object. Note that
 #' it will be stored in numeric form, not raw form, and therefore
 #' it will require much more storage than data read with
-#' \code{\link{read.landsat}}.
+#' [read.landsat()].
 #'
-#' @param x A \code{landsat} object, e.g. as read by \code{\link{read.landsat}}.
-#' @param data A matrix of data, with dimensions matching that of entries already in \code{x}.
+#' @param x a [landsat-class] object.
+#'
+#' @param data A matrix of data, with dimensions matching that of entries already in `x`.
+#'
 #' @param name The name to be used for the data, i.e. the data can later be
-#' accessed with \code{d[[name]]} where \code{d} is the name of the return value
+#' accessed with `d[[name]]` where `d` is the name of the return value
 #' from the present function.
+#'
 #' @param debug A flag that turns on debugging.  Set to 1 to get a moderate amount of debugging
 #' information, or a higher value for more debugging.
 #'
-#' @return An object of \code{\link{landsat-class}}, with a new data band.
+#' @return A [landsat-class] object, with a new data band.
 #'
 #' @seealso
-#' The documentation for \code{\link{landsat-class}} explains the
+#' The documentation for the [landsat-class] class explains the
 #' structure of landsat objects, and also outlines the other functions dealing
 #' with them.
 #'
 #' @author Dan Kelley
-#' @concept satellite
-#' @family things related to \code{landsat} data
+#'
+#' @family things related to landsat data
 landsatAdd <- function(x, data, name, debug=getOption("oceDebug"))
 {
     if (!is.matrix(data))
@@ -1216,42 +1244,43 @@ landsatAdd <- function(x, data, name, debug=getOption("oceDebug"))
 #'
 #' @details
 #' As of June 25, 2015, the matrices storing the image data are trimmed to indices
-#' determined by linear interpolation based on the location of the \code{ll} and
-#' \code{ur} corners within the lon-lat corners specified in the image data. (A
+#' determined by linear interpolation based on the location of the `ll` and
+#' `ur` corners within the lon-lat corners specified in the image data. (A
 #' previous version trimmed in UTM space, and in fact this may be done in future
 #' also, if a problem in lonlat/utm conversion is resolved.) An error results if
 #' there is no intersection between the trimming box and the image box.
 #'
-#' @param x A \code{landsat} object, e.g. as read by \code{\link{read.landsat}}.
+#' @param x a [landsat-class] object.
 #'
-#' @param ll A list containing \code{longitude} and \code{latitude}, for the
+#' @param ll A list containing `longitude` and `latitude`, for the
 #' lower-left corner of the portion of the image to retain, or a vector
 #' with first element longitude and second element latitude. If provided,
-#' then \code{ur} must also be provided, but \code{box} cannot.
+#' then `ur` must also be provided, but `box` cannot.
 #'
-#' @param ur A list containing \code{longitude} and \code{latitude}, for the
+#' @param ur A list containing `longitude` and `latitude`, for the
 #' upper-right corner of the portion of the image to retain, or a vector
 #' with first element longitude and second element latitude. If provided,
-#' then \code{ll} must also be provided, but \code{box} cannot.
+#' then `ll` must also be provided, but `box` cannot.
 #'
-#' @param box A list containing \code{x} and \code{y} (each of length 2),
-#' corresponding to the values for \code{ll} and \code{ur}, such as would
-#' be produced by a call to \code{locator(2)}. If provided, neither
-#' \code{ll} nor \code{ur} may be provided.
+#' @param box A list containing `x` and `y` (each of length 2),
+#' corresponding to the values for `ll` and `ur`, such as would
+#' be produced by a call to `locator(2)`. If provided, neither
+#' `ll` nor `ur` may be provided.
 #'
 #' @param debug A flag that turns on debugging.  Set to 1 to get a moderate
 #' amount of debugging information, or a higher value for more debugging.
 #'
-#' @return An object of \code{\link{landsat-class}}, with data having
-#' been trimmed approximately as specified.
+#' @return A [landsat-class] object, with data having
+#' been trimmed as specified.
 #'
 #' @seealso
-#' The documentation for \code{\link{landsat-class}} explains the
+#' The documentation for the [landsat-class] class explains the
 #' structure of landsat objects, and also outlines the other functions dealing
 #' with them.
+#'
 #' @author Dan Kelley and Clark Richards
-#' @concept satellite
-#' @family things related to \code{landsat} data
+#'
+#' @family things related to landsat data
 landsatTrim <- function(x, ll, ur, box, debug=getOption("oceDebug"))
 {
     if (!inherits(x, "landsat"))

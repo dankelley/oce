@@ -5,18 +5,30 @@
 \alias{oce.debug}
 \title{Print a debugging message}
 \usage{
-oceDebug(debug = 0, ..., unindent = 0)
+oceDebug(debug = 0, ..., style = "plain", unindent = 0, sep = "")
 }
 \arguments{
 \item{debug}{an integer, less than or equal to zero for no message, and
 greater than zero for increasing levels of debugging.  Values greater than 4
 are treated like 4.}
 
-\item{\dots}{items to be supplied to \code{\link{cat}}, which does the
-printing.  Almost always, this should include a trailing newline.}
+\item{\dots}{items to be supplied to \code{\link[=cat]{cat()}}, which does the
+printing.  Note that no newline will be printed unless \dots
+contains a string with a newline character (as in the example).}
 
-\item{unindent}{Number of levels to un-indent, e.g. for start and end lines
-from a called function.}
+\item{style}{either a string or a function. If a string,
+it must be \code{"plain"} (the default) for plain text,
+\code{"bold"}, \code{"italic"}, \code{"red"}, \code{"green"} or \code{"blue"} (with
+obvious meanings).
+If \code{style} is a function, it must prepend and postpend the text
+with control codes, as in the cyan-coloured example; note that
+\CRANpkg{crayon} provides many functions that work well for \code{style}.}
+
+\item{unindent}{integer giving the number of levels to un-indent,
+e.g. for start and end lines from a called function.}
+
+\item{sep}{character to insert between elements of \code{...}, by passing
+it to \code{\link[=cat]{cat()}}.}
 }
 \description{
 Print an indented debugging message.
@@ -25,14 +37,14 @@ functions, so the effect is a nesting, with more space for deeper function
 level.
 }
 \examples{
-
-foo <- function(debug)
-{
-   oceDebug(debug, "in function foo\\n")
-}
-debug <- 1
-oceDebug(debug, "in main")
-foo(debug=debug-1)
+oceDebug(debug=1, "Example", 1, "Plain text")
+oceDebug(debug=1, "Example", 2, "Bold", style="bold")
+oceDebug(debug=1, "Example", 3, "Italic", style="italic")
+oceDebug(debug=1, "Example", 4, "Red", style="red")
+oceDebug(debug=1, "Example", 5, "Green", style="green")
+oceDebug(debug=1, "Example", 6, "Blue", style="blue")
+mycyan <- function(...) paste("\033[36m", paste(..., sep=" "), "\033[0m", sep="")
+oceDebug(debug=1, "Example", 7, "User-set cyan", style=mycyan)
 }
 \author{
 Dan Kelley

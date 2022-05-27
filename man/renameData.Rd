@@ -2,28 +2,21 @@
 % Please edit documentation in R/misc.R
 \name{renameData}
 \alias{renameData}
-\title{Rename items in the data slot of an oce object}
+\title{Rename items in the data slot of an oce object (defunct)}
 \usage{
 renameData(x, old = NULL, new = NULL)
 }
 \arguments{
-\item{x}{An \code{oce} object, i.e. one inheriting from
-\code{\link{oce-class}}.}
+\item{x}{Ignored, since this function is defunct.}
 
-\item{old}{Vector of strings, containing old names.}
+\item{old}{Ignored, since this function is defunct.}
 
-\item{new}{Vector of strings, containing old names.}
+\item{new}{Ignored, since this function is defunct.}
 }
 \description{
-This function may be used to rename elements within the
-\code{data} slot of \code{oce} objects. It also updates
-the processing log of the returned object, indicating
-the changes.
+\strong{WARNING:} This function will be removed in oce 1.6.0; see \link{oce-defunct}.
 }
-\examples{
-data(ctd)
-new <- renameData(ctd, "temperature", "temperature68")
-new <- oceSetData(new, name="temperature",
-                  value=T90fromT68(new[["temperature68"]]),
-                  unit=list(unit=expression(degree*C),scale="ITS=90"))
+\author{
+Dan Kelley
 }
+\concept{deprecated functions}

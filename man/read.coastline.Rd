@@ -4,9 +4,13 @@
 \alias{read.coastline}
 \title{Read a Coastline File}
 \usage{
-read.coastline(file, type = c("R", "S", "mapgen", "shapefile",
-  "openstreetmap"), debug = getOption("oceDebug"), monitor = FALSE,
-  processingLog)
+read.coastline(
+  file,
+  type = c("R", "S", "mapgen", "shapefile", "openstreetmap"),
+  debug = getOption("oceDebug"),
+  monitor = FALSE,
+  processingLog
+)
 }
 \arguments{
 \item{file}{name of file containing coastline data.}
@@ -24,7 +28,7 @@ for reading "shapefile" type)}
 better for normal calls by a user.)}
 }
 \value{
-An object of \code{\link{coastline-class}}.
+a \linkS4class{coastline} object.
 }
 \description{
 Read a coastline file in R, Splus, mapgen, shapefile, or openstreetmap

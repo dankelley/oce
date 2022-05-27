@@ -4,13 +4,22 @@
 \alias{ctdFindProfiles}
 \title{Find Profiles within a Tow-Yow CTD Record}
 \usage{
-ctdFindProfiles(x, cutoff = 0.5, minLength = 10, minHeight = 0.1 *
-  diff(range(x[["pressure"]])), smoother = smooth.spline,
-  direction = c("descending", "ascending"), breaks, arr.ind = FALSE,
-  distinct, debug = getOption("oceDebug"), ...)
+ctdFindProfiles(
+  x,
+  cutoff = 0.5,
+  minLength = 10,
+  minHeight = 0.1 * diff(range(x[["pressure"]])),
+  smoother = smooth.spline,
+  direction = c("descending", "ascending"),
+  breaks,
+  arr.ind = FALSE,
+  distinct,
+  debug = getOption("oceDebug"),
+  ...
+)
 }
 \arguments{
-\item{x}{A \code{ctd} object, i.e. one inheriting from \code{\link{ctd-class}}.}
+\item{x}{a \linkS4class{ctd} object.}
 
 \item{cutoff}{criterion on pressure difference; see \dQuote{Details}.}
 
@@ -23,7 +32,7 @@ casts. The default is \code{smooth.spline}, which performs well for
 a small number of cycles; see \dQuote{Examples} for a method that is
 better for a long tow-yo. The return value from \code{smoother} must
 be either a list containing an element named \code{y} or something
-that can be coerced to a vector with \code{\link{as.vector}}. To
+that can be coerced to a vector with \code{\link[=as.vector]{as.vector()}}. To
 turn smoothing off, so that cycles in pressure are determined by
 simple first difference, set \code{smoother} to \code{NULL}.}
 
@@ -36,8 +45,7 @@ to \code{breaks[1]}.  If \code{breaks} is given, then all
 other arguments except \code{x} are ignored. Using \code{breaks}
 is handy in cases where other schemes fail, or when the author
 has independent knowledge of how the profiles are strung together
-in \code{x}; see example 3 for how \code{breaks} might be used
-for towyo data.}
+in \code{x}.}
 
 \item{arr.ind}{Logical indicating whether the array indices should be returned;
 the alternative is to return a vector of ctd objects.}
@@ -73,80 +81,98 @@ either indices to these events or a vector of CTD records containing the events.
 \details{
 The method works by examining the pressure record.  First, this is smoothed using
 \code{smoother()} (see \dQuote{Arguments}), and then the result is first-differenced
-using \code{\link{diff}}.  Median values of the positive and
+using \code{\link[=diff]{diff()}}.  Median values of the positive and
 negative first-difference values are then multiplied by \code{cutoff}.  This establishes criteria
 for any given point to be in an ascending profile, a descending profile, or a non-profile.
 Contiguous regions are then found, and those that have fewer than \code{minLength} points are
 discarded.  Then, those that have pressure ranges less than \code{minHeight} are discarded.
 
 Caution: this method is not well-suited to all datasets. For example, the default
-value of \code{smoother} is \code{\link{smooth.spline}}, and this works well for just a few
+value of \code{smoother} is \code{\link[=smooth.spline]{smooth.spline()}}, and this works well for just a few
 profiles, but poorly for a tow-yo with a long sequence of profiles; in the latter case,
 it can be preferable to use simpler smoothers (see \dQuote{Examples}). Also, depending
 on the sampling protocol, it is often necessary to pass the resultant profiles through
-\code{\link{ctdTrim}}, to remove artifacts such as an equilibration phase, etc.
+\code{\link[=ctdTrim]{ctdTrim()}}, to remove artifacts such as an equilibration phase, etc.
 Generally, one is well-advised to use the present function for a quick look at the data,
-relying on e.g. \code{\link{plotScan}} to identify profiles visually, for a final product.
+relying on e.g. \code{\link[=plotScan]{plotScan()}} to identify profiles visually, for a final product.
 }
 \examples{
-\dontrun{
 library(oce)
-## Example 1.
-d <- read.csv("towyow.csv", header=TRUE)
-towyow <- as.ctd(d$salinity, d$temperature, d$pressure)
 
-casts <- ctdFindProfiles(towyow)
-par(mfrow=c(length(casts), 3))
-for (cast in casts) {
-  plotProfile(cast, "salinity")
-  plotProfile(cast, "temperature")
-  plotTS(cast, type='o')
+\dontrun{
+# Example 1. Find profiles within a towyo file, as can result
+# if the CTD is cycled within the water column as the ship
+# moves.
+profiles <- ctdFindProfiles(towyo)
 }
 
-## Example 2.
-## Using a moving average to smooth pressure, instead of the default
-## smooth.spline() method. This avoids a tendency of smooth.spline()
-## to smooth out the profiles in a tow-yo with many (dozens or more) cycles.
+\dontrun{
+# Example 2. Use a moving average to smooth pressure, instead of the
+# default smooth.spline() method. This might avoid a tendency of
+# the default scheme to miss some profiles in a long towyo.
 movingAverage <- function(x, n = 11, ...)
 {
-   f <- rep(1/n, n)
-   stats::filter(x, f, ...)
+    f <- rep(1/n, n)
+    stats::filter(x, f, ...)
 }
 casts <- ctdFindProfiles(towyo, smoother=movingAverage)
+}
 
-## Example 3: glider data, with profiles separated by >10dbar jump.
-breaks <- which(diff(ctd[["pressure"]]) > 10))
-profiles <- ctdFindProfiles(ctd, breaks=breaks)
+\dontrun{
+# Example 3: glider data read into a ctd object. Chop
+# into profiles by looking for pressure jumps exceeding
+# 10 dbar.
+breaks <- which(diff(gliderAsCtd[["pressure"]]) > 10)
+profiles <- ctdFindProfiles(gliderAsCtd, breaks=breaks)
 }
 
 }
 \seealso{
-The documentation for \code{\link{ctd-class}} explains the structure
+The documentation for \linkS4class{ctd} explains the structure
 of CTD objects, and also outlines the other functions dealing with them.
 
-Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
-  \code{\link{[[<-,ctd-method}}, \code{\link{as.ctd}},
-  \code{\link{cnvName2oceName}}, \code{\link{ctd-class}},
-  \code{\link{ctdDecimate}}, \code{\link{ctdRaw}},
-  \code{\link{ctdTrim}}, \code{\link{ctd}},
-  \code{\link{handleFlags,ctd-method}},
-  \code{\link{initialize,ctd-method}},
-  \code{\link{initializeFlagScheme,ctd-method}},
-  \code{\link{oceNames2whpNames}},
-  \code{\link{oceUnits2whpUnits}},
-  \code{\link{plot,ctd-method}}, \code{\link{plotProfile}},
-  \code{\link{plotScan}}, \code{\link{plotTS}},
-  \code{\link{read.ctd.itp}}, \code{\link{read.ctd.odf}},
-  \code{\link{read.ctd.sbe}},
-  \code{\link{read.ctd.woce.other}},
-  \code{\link{read.ctd.woce}}, \code{\link{read.ctd}},
-  \code{\link{setFlags,ctd-method}},
-  \code{\link{subset,ctd-method}},
-  \code{\link{summary,ctd-method}},
-  \code{\link{woceNames2oceNames}},
-  \code{\link{woceUnit2oceUnit}}, \code{\link{write.ctd}}
+Other things related to ctd data: 
+\code{\link{CTD_BCD2014666_008_1_DN.ODF.gz}},
+\code{\link{[[,ctd-method}},
+\code{\link{[[<-,ctd-method}},
+\code{\link{as.ctd}()},
+\code{\link{cnvName2oceName}()},
+\code{\link{ctd-class}},
+\code{\link{ctd.cnv}},
+\code{\link{ctdDecimate}()},
+\code{\link{ctdRaw}},
+\code{\link{ctdRepair}()},
+\code{\link{ctdTrim}()},
+\code{\link{ctd_aml.csv}},
+\code{\link{ctd}},
+\code{\link{d200321-001.ctd}},
+\code{\link{d201211_0011.cnv}},
+\code{\link{handleFlags,ctd-method}},
+\code{\link{initialize,ctd-method}},
+\code{\link{initializeFlagScheme,ctd-method}},
+\code{\link{oceNames2whpNames}()},
+\code{\link{oceUnits2whpUnits}()},
+\code{\link{plot,ctd-method}},
+\code{\link{plotProfile}()},
+\code{\link{plotScan}()},
+\code{\link{plotTS}()},
+\code{\link{read.ctd.aml}()},
+\code{\link{read.ctd.itp}()},
+\code{\link{read.ctd.odf}()},
+\code{\link{read.ctd.odv}()},
+\code{\link{read.ctd.sbe}()},
+\code{\link{read.ctd.ssda}()},
+\code{\link{read.ctd.woce.other}()},
+\code{\link{read.ctd.woce}()},
+\code{\link{read.ctd}()},
+\code{\link{setFlags,ctd-method}},
+\code{\link{subset,ctd-method}},
+\code{\link{summary,ctd-method}},
+\code{\link{woceNames2oceNames}()},
+\code{\link{woceUnit2oceUnit}()},
+\code{\link{write.ctd}()}
 }
 \author{
 Dan Kelley and Clark Richards
 }
-\concept{things related to \code{ctd} data}
+\concept{things related to ctd data}

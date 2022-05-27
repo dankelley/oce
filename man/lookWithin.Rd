@@ -43,5 +43,5 @@ str(lookWithin(list(salinity=ctd, temperature=NULL)))
 ## 4. How it is used by swRho()
 rho1 <- swRho(ctd, eos="unesco")
 rho2 <- swRho(ctd[["salinity"]], ctd[["temperature"]], ctd[["pressure"]], eos="unesco")
-expect_equal(rho1, rho2)
+stopifnot(all.equal(rho1, rho2))
 }

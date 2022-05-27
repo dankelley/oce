@@ -22,14 +22,13 @@ Detrends \code{y} by subtracting a linear trend in \code{x}, to create
 a vector that is zero for its first and last finite value.
 If the second parameter (\code{y}) is missing, then \code{x} is
 taken to be \code{y}, and a new \code{x} is constructed with
-\code{\link{seq_along}}.  Any \code{NA} values are left as-is.
+\code{\link[=seq_along]{seq_along()}}.  Any \code{NA} values are left as-is.
 }
 \details{
 A common application is to bring the end points of a time series
 down to zero, prior to applying a digital filter. (See examples.)
 }
 \examples{
-
 x <- seq(0, 0.9 * pi, length.out=50)
 y <- sin(x)
 y[1] <- NA

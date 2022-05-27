@@ -4,19 +4,24 @@
 \alias{swConservativeTemperature}
 \title{Seawater conservative temperature, in GSW formulation}
 \usage{
-swConservativeTemperature(salinity, temperature = NULL,
-  pressure = NULL, longitude = NULL, latitude = NULL)
+swConservativeTemperature(
+  salinity,
+  temperature = NULL,
+  pressure = NULL,
+  longitude = NULL,
+  latitude = NULL
+)
 }
 \arguments{
 \item{salinity}{either practical salinity (in which case \code{temperature}
-and \code{pressure} must be provided) \strong{or} an \code{oce} object (in
+and \code{pressure} must be provided) \emph{or} an \code{oce} object (in
 which case \code{salinity}, etc. are inferred from the object).}
 
-\item{temperature}{\emph{in-situ} temperature [\eqn{^\circ}{deg}C], defined
+\item{temperature}{\emph{in-situ} temperature (\eqn{^\circ}{deg}C), defined
 on the ITS-90 scale; see \dQuote{Temperature units} in the documentation for
-\code{\link{swRho}}.}
+\code{\link[=swRho]{swRho()}}.}
 
-\item{pressure}{pressure [dbar]}
+\item{pressure}{pressure (dbar)}
 
 \item{longitude}{longitude of observation.}
 
@@ -35,7 +40,7 @@ etc., are extracted from it, and used for the calculation, and the
 corresponding arguments to the present function are ignored.
 
 The conservative temperature is calculated using the TEOS-10 function
-\code{\link[gsw]{gsw_CT_from_t}} from the \code{gsw} package.
+\link[gsw:gsw_CT_from_t]{gsw::gsw_CT_from_t} from the \CRANpkg{gsw} package.
 }
 \examples{
 swConservativeTemperature(35,10,1000,188,4) # 9.86883
@@ -48,30 +53,50 @@ SCOR/IAPSO WG127, ISBN 978-0-646-55621-5.
 }
 \seealso{
 The related TEOS-10 quantity ``absolute salinity'' may be computed
-with \code{\link{swAbsoluteSalinity}}.  For a ctd object, conservative
+with \code{\link[=swAbsoluteSalinity]{swAbsoluteSalinity()}}.  For a ctd object, conservative
 temperature may also be recovered by indexing as e.g.
 \code{ctd[["conservativeTemperature"]]} or \code{ctd[["CT"]]}.
 
-Other functions that calculate seawater properties: \code{\link{T68fromT90}},
-  \code{\link{T90fromT48}}, \code{\link{T90fromT68}},
-  \code{\link{swAbsoluteSalinity}},
-  \code{\link{swAlphaOverBeta}}, \code{\link{swAlpha}},
-  \code{\link{swBeta}}, \code{\link{swCSTp}},
-  \code{\link{swDepth}}, \code{\link{swDynamicHeight}},
-  \code{\link{swLapseRate}}, \code{\link{swN2}},
-  \code{\link{swPressure}}, \code{\link{swRho}},
-  \code{\link{swRrho}}, \code{\link{swSCTp}},
-  \code{\link{swSTrho}}, \code{\link{swSigma0}},
-  \code{\link{swSigma1}}, \code{\link{swSigma2}},
-  \code{\link{swSigma3}}, \code{\link{swSigma4}},
-  \code{\link{swSigmaTheta}}, \code{\link{swSigmaT}},
-  \code{\link{swSigma}}, \code{\link{swSoundAbsorption}},
-  \code{\link{swSoundSpeed}}, \code{\link{swSpecificHeat}},
-  \code{\link{swSpice}}, \code{\link{swTFreeze}},
-  \code{\link{swTSrho}},
-  \code{\link{swThermalConductivity}},
-  \code{\link{swTheta}}, \code{\link{swViscosity}},
-  \code{\link{swZ}}
+Other functions that calculate seawater properties: 
+\code{\link{T68fromT90}()},
+\code{\link{T90fromT48}()},
+\code{\link{T90fromT68}()},
+\code{\link{computableWaterProperties}()},
+\code{\link{locationForGsw}()},
+\code{\link{swAbsoluteSalinity}()},
+\code{\link{swAlphaOverBeta}()},
+\code{\link{swAlpha}()},
+\code{\link{swBeta}()},
+\code{\link{swCSTp}()},
+\code{\link{swDepth}()},
+\code{\link{swDynamicHeight}()},
+\code{\link{swLapseRate}()},
+\code{\link{swN2}()},
+\code{\link{swPressure}()},
+\code{\link{swRho}()},
+\code{\link{swRrho}()},
+\code{\link{swSCTp}()},
+\code{\link{swSR}()},
+\code{\link{swSTrho}()},
+\code{\link{swSigma0}()},
+\code{\link{swSigma1}()},
+\code{\link{swSigma2}()},
+\code{\link{swSigma3}()},
+\code{\link{swSigma4}()},
+\code{\link{swSigmaTheta}()},
+\code{\link{swSigmaT}()},
+\code{\link{swSigma}()},
+\code{\link{swSoundAbsorption}()},
+\code{\link{swSoundSpeed}()},
+\code{\link{swSpecificHeat}()},
+\code{\link{swSpice}()},
+\code{\link{swSstar}()},
+\code{\link{swTFreeze}()},
+\code{\link{swTSrho}()},
+\code{\link{swThermalConductivity}()},
+\code{\link{swTheta}()},
+\code{\link{swViscosity}()},
+\code{\link{swZ}()}
 }
 \author{
 Dan Kelley

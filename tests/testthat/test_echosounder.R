@@ -1,8 +1,7 @@
 library(oce)
-context("echosounder")
-test_that("private biosonics file", {
-          f <- "/data/archive/sleiwex/2008/fielddata/2008-07-01/Merlu/Biosonics/20080701_163942.dt4"
-          if (file.exists(f)) {
+f <- "~/Dropbox/data/archive/sleiwex/2008/fielddata/2008-07-01/Merlu/Biosonics/20080701_163942.dt4"
+if (file.exists(f)) {
+    test_that("private biosonics file", {
               echosounder <- read.oce(f)
               echosounder <- subset(echosounder, depth < 40)
               echosounder <- decimate(echosounder, c(2, 40))
@@ -24,6 +23,6 @@ test_that("private biosonics file", {
                            c(-69.72364436, -69.72366061, -69.72367686, -69.72368808,
                              -69.72369625, -69.72370900))
               expect_silent(plot(echosounder))
-          }
 })
+}
 

@@ -18,40 +18,49 @@ be printed. If one function calls another, it usually reduces the value of
 by specifying higher \code{debug} values.}
 }
 \value{
-a list containing \code{lonmin}, \code{lonmax},
-\code{latmin}, \code{latmax}, and \code{ok}; the last
-of which indicates whether at least one point on the plot box
-is invertible. Note that longitude are expressed in the
-range from -180 to 180 degrees.
+A list containing numerical
+values \code{lonmin}, \code{lonmax}, \code{latmin}, and \code{latmax}, along
+with logical value \code{ok}. The last of these indicates
+whether at least one point on the plot box is invertible.
+Note that longitudes are in the range from -180 to 180 degrees.
 }
 \description{
 Trace along the plot box, converting from xy coordinates to lonlat
-coordinates. The results are used by \code{\link{mapGrid}}
-and \code{\link{mapAxis}} to ignore out-of-frame grid
+coordinates. The results are used by \code{\link[=mapGrid]{mapGrid()}}
+and \code{\link[=mapAxis]{mapAxis()}} to ignore out-of-frame grid
 lines and axis labels.
 }
 \details{
-Note: this procedure does not work for projections that have trouble
-inverting points that are "off the globe". For this reason, this function
-examines .Projection()$projection and if it contains the string
-\code{"wintri"}, then the above-stated procedure is skipped, and
-the return value has each of the numerical quantities set to \code{NA},
-and \code{ok} set to \code{FALSE}.
+Some projections, such as \code{"wintri"}, have trouble inverting
+points that are "off the globe".  In such cases,
+the returned value has \code{lonmin}, \code{lonmax}, \code{latmin} and
+\code{latmax} set to \code{NA}, and \code{ok} set to \code{FALSE}.
 }
 \seealso{
-Other functions related to maps: \code{\link{lonlat2map}},
-  \code{\link{lonlat2utm}}, \code{\link{map2lonlat}},
-  \code{\link{mapArrows}}, \code{\link{mapAxis}},
-  \code{\link{mapContour}},
-  \code{\link{mapDirectionField}}, \code{\link{mapGrid}},
-  \code{\link{mapImage}}, \code{\link{mapLines}},
-  \code{\link{mapLocator}},
-  \code{\link{mapLongitudeLatitudeXY}},
-  \code{\link{mapPlot}}, \code{\link{mapPoints}},
-  \code{\link{mapPolygon}}, \code{\link{mapScalebar}},
-  \code{\link{mapText}}, \code{\link{mapTissot}},
-  \code{\link{oceCRS}}, \code{\link{shiftLongitude}},
-  \code{\link{utm2lonlat}}
+Other functions related to maps: 
+\code{\link{formatPosition}()},
+\code{\link{lonlat2map}()},
+\code{\link{lonlat2utm}()},
+\code{\link{map2lonlat}()},
+\code{\link{mapArrows}()},
+\code{\link{mapAxis}()},
+\code{\link{mapContour}()},
+\code{\link{mapCoordinateSystem}()},
+\code{\link{mapDirectionField}()},
+\code{\link{mapGrid}()},
+\code{\link{mapImage}()},
+\code{\link{mapLines}()},
+\code{\link{mapLocator}()},
+\code{\link{mapLongitudeLatitudeXY}()},
+\code{\link{mapPlot}()},
+\code{\link{mapPoints}()},
+\code{\link{mapPolygon}()},
+\code{\link{mapScalebar}()},
+\code{\link{mapText}()},
+\code{\link{mapTissot}()},
+\code{\link{oceCRS}()},
+\code{\link{shiftLongitude}()},
+\code{\link{utm2lonlat}()}
 }
 \author{
 Dan Kelley

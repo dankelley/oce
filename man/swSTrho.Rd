@@ -4,20 +4,24 @@
 \alias{swSTrho}
 \title{Seawater salinity from temperature and density}
 \usage{
-swSTrho(temperature, density, pressure, eos = getOption("oceEOS", default
-  = "gsw"))
+swSTrho(
+  temperature,
+  density,
+  pressure,
+  eos = getOption("oceEOS", default = "gsw")
+)
 }
 \arguments{
-\item{temperature}{\emph{in-situ} temperature [\eqn{^\circ}{deg}C], defined
+\item{temperature}{\emph{in-situ} temperature (\eqn{^\circ}{deg}C), defined
 on the ITS-90 scale; see \dQuote{Temperature units} in the documentation for
-\code{\link{swRho}}.}
+\code{\link[=swRho]{swRho()}}.}
 
-\item{density}{\emph{in-situ} density or sigma value [\eqn{kg/m^3}{kg/m^3}]}
+\item{density}{\emph{in-situ} density or sigma value (\eqn{kg/m^3}{kg/m^3})}
 
-\item{pressure}{\emph{in-situ} pressure [dbar]}
+\item{pressure}{\emph{in-situ} pressure (dbar)}
 
-\item{eos}{equation of state, either \code{"unesco"} [1,2] or \code{"gsw"}
-[3,4].}
+\item{eos}{equation of state, either \code{"unesco"} (see references 1 and 2)
+or \code{"gsw"} (see references 3 and 4).}
 }
 \value{
 Practical Salinity, if \code{eos="unesco"}, or Absolute Salinity, if
@@ -33,7 +37,7 @@ depending on the value of \code{eos}.
 For \code{eos="unesco"}, finds the practical salinity that yields the given
 density, with the given in-situ temperature and pressure.  The method is a
 bisection search with a salinity tolerance of 0.001.  For \code{eos="gsw"},
-the function \code{\link[gsw]{gsw_SA_from_rho}} in the \code{gsw}
+the function \code{\link[gsw:gsw_SA_from_rho]{gsw::gsw_SA_from_rho()}} in the \CRANpkg{gsw}
 package is used
 to infer Absolute Salinity from Conservative Temperature.
 }
@@ -43,45 +47,63 @@ swSTrho(10, 22, 0, eos="unesco") # 28.651625
 
 }
 \references{
-1. Fofonoff, P. and R. C. Millard Jr, 1983. Algorithms for computation of
+\enumerate{
+\item Fofonoff, P. and R. C. Millard Jr, 1983. Algorithms for computation of
 fundamental properties of seawater. \emph{Unesco Technical Papers in Marine
-Science}, \bold{44}, 53 pp
-
-2. Gill, A.E., 1982. \emph{Atmosphere-ocean Dynamics}, Academic Press, New
+Science}, \emph{44}, 53 pp
+\item Gill, A.E., 1982. \emph{Atmosphere-ocean Dynamics}, Academic Press, New
 York, 662 pp.
-
-3. IOC, SCOR, and IAPSO (2010). The international thermodynamic equation of
+\item IOC, SCOR, and IAPSO (2010). The international thermodynamic equation of
 seawater-2010: Calculation and use of thermodynamic properties.  Technical
 Report 56, Intergovernmental Oceanographic Commission, Manuals and Guide.
-
-4. McDougall, T.J. and P.M. Barker, 2011: Getting started with TEOS-10 and
+\item McDougall, T.J. and P.M. Barker, 2011: Getting started with TEOS-10 and
 the Gibbs Seawater (GSW) Oceanographic Toolbox, 28pp., SCOR/IAPSO WG127,
 ISBN 978-0-646-55621-5.
 }
+}
 \seealso{
-\code{\link{swTSrho}}
+\code{\link[=swTSrho]{swTSrho()}}
 
-Other functions that calculate seawater properties: \code{\link{T68fromT90}},
-  \code{\link{T90fromT48}}, \code{\link{T90fromT68}},
-  \code{\link{swAbsoluteSalinity}},
-  \code{\link{swAlphaOverBeta}}, \code{\link{swAlpha}},
-  \code{\link{swBeta}}, \code{\link{swCSTp}},
-  \code{\link{swConservativeTemperature}},
-  \code{\link{swDepth}}, \code{\link{swDynamicHeight}},
-  \code{\link{swLapseRate}}, \code{\link{swN2}},
-  \code{\link{swPressure}}, \code{\link{swRho}},
-  \code{\link{swRrho}}, \code{\link{swSCTp}},
-  \code{\link{swSigma0}}, \code{\link{swSigma1}},
-  \code{\link{swSigma2}}, \code{\link{swSigma3}},
-  \code{\link{swSigma4}}, \code{\link{swSigmaTheta}},
-  \code{\link{swSigmaT}}, \code{\link{swSigma}},
-  \code{\link{swSoundAbsorption}},
-  \code{\link{swSoundSpeed}}, \code{\link{swSpecificHeat}},
-  \code{\link{swSpice}}, \code{\link{swTFreeze}},
-  \code{\link{swTSrho}},
-  \code{\link{swThermalConductivity}},
-  \code{\link{swTheta}}, \code{\link{swViscosity}},
-  \code{\link{swZ}}
+Other functions that calculate seawater properties: 
+\code{\link{T68fromT90}()},
+\code{\link{T90fromT48}()},
+\code{\link{T90fromT68}()},
+\code{\link{computableWaterProperties}()},
+\code{\link{locationForGsw}()},
+\code{\link{swAbsoluteSalinity}()},
+\code{\link{swAlphaOverBeta}()},
+\code{\link{swAlpha}()},
+\code{\link{swBeta}()},
+\code{\link{swCSTp}()},
+\code{\link{swConservativeTemperature}()},
+\code{\link{swDepth}()},
+\code{\link{swDynamicHeight}()},
+\code{\link{swLapseRate}()},
+\code{\link{swN2}()},
+\code{\link{swPressure}()},
+\code{\link{swRho}()},
+\code{\link{swRrho}()},
+\code{\link{swSCTp}()},
+\code{\link{swSR}()},
+\code{\link{swSigma0}()},
+\code{\link{swSigma1}()},
+\code{\link{swSigma2}()},
+\code{\link{swSigma3}()},
+\code{\link{swSigma4}()},
+\code{\link{swSigmaTheta}()},
+\code{\link{swSigmaT}()},
+\code{\link{swSigma}()},
+\code{\link{swSoundAbsorption}()},
+\code{\link{swSoundSpeed}()},
+\code{\link{swSpecificHeat}()},
+\code{\link{swSpice}()},
+\code{\link{swSstar}()},
+\code{\link{swTFreeze}()},
+\code{\link{swTSrho}()},
+\code{\link{swThermalConductivity}()},
+\code{\link{swTheta}()},
+\code{\link{swViscosity}()},
+\code{\link{swZ}()}
 }
 \author{
 Dan Kelley

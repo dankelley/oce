@@ -13,14 +13,14 @@ salinity, temperature and pressure instead (or in addition). For this
 reason, \code{ctd} objects are required to hold \code{salinity},
 \code{temperature} and \code{pressure} in their \code{data} slot,
 with other data being optional. Formulae are available for converting
-between variants of these data triplets, e.g. \code{\link{swSCTp}}
+between variants of these data triplets, e.g. \code{\link[=swSCTp]{swSCTp()}}
 can calculate \code{salinity} given \code{conductivity}, \code{temperature}
 and \code{pressure}, and these are used by the main functions that
-create \code{ctd} objects. For example, if \code{\link{read.ctd.sbe}}
+create \code{ctd} objects. For example, if \code{\link[=read.ctd.sbe]{read.ctd.sbe()}}
 is used to read a Seabird file that contains only conductivity, temperature
 and pressure, then that function will automatically append a data
-item to hold salinity.  \code{\link{as.ctd}} acts similarly. The result
-this is that all \code{ctd} objects hold \code{salinity},
+item to hold salinity.  Since \code{\link[=as.ctd]{as.ctd()}} does the same with
+salinity, the result this is that all \code{ctd} objects hold \code{salinity},
 \code{temperature} and \code{pressure}, which are henceforth called
 the three basic quantities.
 }
@@ -29,12 +29,12 @@ Different units and scales are permitted for the three basic quantities, and
 most \code{oce} functions check those units and scales before
 doing calculations (e.g. of seawater density), because those calculations
 demand certain units and scales. The way this is handled is that the
-accessor function \code{\link{[[,ctd-method}} returns values in standardized
+accessor function \code{\link{[[,ctd-method}}] returns values in standardized
 form. For example, a \code{ctd} object might hold temperature defined on the
 IPTS-68 scale, but e.g. \code{ctd[["temperature"]]} returns a value on the ITS-90
-scale. (The conversion is done with \code{\link{T90fromT68}}.)  Similarly,
+scale. (The conversion is done with \code{\link[=T90fromT68]{T90fromT68()}}.)  Similarly,
 pressure may be stored in either dbars or PSI, but e.g. \code{ctd[["pressure"]]}
-returns a value in dbars, after multiplying by 0.689476 if the value is
+returns a value in dbars, after dividing by 0.689476 if the value is
 stored in PSI. Luckily, there is (as of early 2016) only one salinity scale in
 common use in data files, namely PSS-78.
 }
@@ -43,74 +43,98 @@ common use in data files, namely PSS-78.
 \describe{
 \item{\code{data}}{As with all \code{oce} objects, the \code{data} slot
 for \code{ctd} objects is a
-\code{\link{list}} containing the main data for the object.
+\link{list} containing the main data for the object.
 The key items stored in this slot are: \code{salinity}, \code{temperature}, and \code{pressure}, although in many instances there are quite a few additional items.}
 
 \item{\code{metadata}}{As with all \code{oce} objects, the \code{metadata} slot
-for \code{ctd} objects is a \code{\link{list}} containing
+for \code{ctd} objects is a \link{list} containing
 information about the \code{data} or about the object itself.
 An example of the former might be the location at which a \code{ctd} measurement was made, stored in \code{longitude} and \code{latitude}, and of the latter might be \code{filename}, the name of the data source.}
 
 \item{\code{processingLog}}{As with all \code{oce} objects, the \code{processingLog} slot
 for \code{ctd} objects is a
-\code{\link{list}} with entries describing the creation and evolution
+\link{list} with entries describing the creation and evolution
 of the object. The contents are updated by various \code{oce} functions to
 keep a record of processing steps.  Object summaries and
-\code{\link{processingLogShow}} both display the log.}
+\code{\link[=processingLogShow]{processingLogShow()}} both display the log.}
 }}
 
 \section{Modifying slot contents}{
 
 
 Although the \code{[[<-} operator may permit modification of the contents
-of \code{ctd} objects (see \code{\link{[[<-,ctd-method}}),
-it is better to use \code{\link{oceSetData}}
-and \code{\link{oceSetMetadata}}, because that will save an entry
-in the \code{processingLog} to describe the change.
+of \linkS4class{ctd} objects (see \code{\link{[[<-,ctd-method}}),
+it is better to use \code{\link[=oceSetData]{oceSetData()}} and \code{\link[=oceSetMetadata]{oceSetMetadata()}},
+because those functions save an entry in the \code{processingLog}
+that describes the change.
 }
 
 \section{Retrieving slot contents}{
 
 
-The full contents of the \code{data} and \code{metadata} slots of a \code{ctd}
-object named \code{ctd} may be retrieved in the standard R way. For example,
-\code{slot(ctd, "data")} and \code{slot(ctd, "metadata")} return
-the \code{data} and \code{metadata} slots, respectively. The
-\code{\link{[[,ctd-method}} operator can also be used to access slots,
-with \code{ctd[["data"]]} and \code{ctd[["metadata"]]}, respectively.
-Furthermore, \code{\link{[[,ctd-method}} can be used to retrieve
-named items (and potentially some derived items) within the
-\code{metadata} and \code{data} slots, the former taking precedence
-over the latter in the lookup. It is also possible
-to find items more directly, using \code{\link{oceGetData}} and
-\code{\link{oceGetMetadata}}, but this cannot retrieve derived items.
+The full contents of the \code{data} and \code{metadata} slots of a \linkS4class{ctd}
+object may be retrieved in the standard R way using \code{\link[=slot]{slot()}}. For
+example \code{slot(o,"data")} returns the \code{data} slot of an object named \code{o},
+and similarly \code{slot(o,"metadata")} returns
+the \code{metadata} slot.
+
+The slots may also be obtained with the \code{\link{[[,ctd-method}}
+operator, as e.g. \code{o[["data"]]} and \code{o[["metadata"]]}, respectively.
+
+The \code{\link{[[,ctd-method}} operator can also
+be used to retrieve items from within the \code{data} and \code{metadata} slots.
+For example, \code{o[["temperature"]]} can be used to retrieve temperature
+from an object containing that quantity. The rule is that a named
+quantity is sought first within the object's \code{metadata} slot,
+with the \code{data} slot being checked only if \code{metadata} does not
+contain the item. This \code{[[} method can also be used to get
+certain derived quantities, if the object contains sufficient
+information to calculate them. For example, an object that holds
+(practical) salinity, temperature and pressure, along with
+longitude and latitude, has sufficient information to compute
+Absolute Salinity, and so \code{o[["SA"]]} will yield the
+calculated Absolute Salinity.
+
+It is also possible to find items more directly, using \code{\link[=oceGetData]{oceGetData()}} and
+\code{\link[=oceGetMetadata]{oceGetMetadata()}}, but neither of these functions can
+retrieve derived items.
 }
 
 \section{Reading/creating \code{ctd} objects}{
 
 A file containing CTD profile data may be read with
-\code{\link{read.ctd}}, and a CTD object can also be created with
-\code{\link{as.ctd}}.  See \code{\link{read.ctd}} for references on data
+\code{\link[=read.ctd]{read.ctd()}}, and a CTD object can also be created with
+\code{\link[=as.ctd]{as.ctd()}}.  See \code{\link[=read.ctd]{read.ctd()}} for references on data
 formats used in CTD files. Data can also be assembled into
-\code{ctd} objects with \code{\link{as.ctd}}.
+\code{ctd} objects with \code{\link[=as.ctd]{as.ctd()}}.
 
-Statistical summaries are provided by \code{\link{summary,ctd-method}}, while
-\code{\link{show}} displays an overview.
+Statistical summaries are provided by \code{\link[=summary,ctd-method]{summary,ctd-method()}}, while
+\code{\link[=show]{show()}} displays an overview.
 
-CTD objects may be plotted with \code{\link{plot,ctd-method}}, which does much of its
-work by calling \code{\link{plotProfile}} or \code{\link{plotTS}}, both of
+CTD objects may be plotted with \code{\link[=plot,ctd-method]{plot,ctd-method()}}, which does much of its
+work by calling \code{\link[=plotProfile]{plotProfile()}} or \code{\link[=plotTS]{plotTS()}}, both of
 which can also be called by the user, to get fine control over the plots.
 
-A CTD profile can be isolated from a larger record with \code{\link{ctdTrim}},
-a task made easier when \code{\link{plotScan}} is used to examine the results.
+A CTD profile can be isolated from a larger record with \code{\link[=ctdTrim]{ctdTrim()}},
+a task made easier when \code{\link[=plotScan]{plotScan()}} is used to examine the results.
 Towyow data can be split up into sets of profiles (ascending or descending)
-with \code{\link{ctdFindProfiles}}.  CTD data may be smoothed and/or cast onto
-specified pressure levels with \code{\link{ctdDecimate}}.
+with \code{\link[=ctdFindProfiles]{ctdFindProfiles()}}.  CTD data may be smoothed and/or cast onto
+specified pressure levels with \code{\link[=ctdDecimate]{ctdDecimate()}}.
 
 As with all oce objects, low-level manipulation may be done with
-\code{\link{oceSetData}} and \code{\link{oceSetMetadata}}. Additionally,
-many of the contents of CTD objects may be altered with the \code{\link{[[,ctd-method}} scheme
-discussed above, and skilled users may also manipulate the contents directly.
+\code{\link[=oceSetData]{oceSetData()}} and \code{\link[=oceSetMetadata]{oceSetMetadata()}}. Additionally,
+many of the contents of CTD objects may be altered with the
+\code{\link{[[<-,ctd-method}} scheme,
+and sufficiently skilled users may even manipulate the contents directly.
+}
+
+\section{Data sources}{
+
+
+Archived CTD (and other) data may be found on servers such as
+\enumerate{
+\item \verb{https://cchdo.ucsd.edu/}
+}
 }
 
 \examples{
@@ -126,40 +150,68 @@ ctd <- oceSetMetadata(ctd, "latitude", ctd[["latitude"]]-0.001,
 
 }
 \seealso{
-Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
-  \code{\link{[[<-,ctd-method}}, \code{\link{as.ctd}},
-  \code{\link{cnvName2oceName}}, \code{\link{ctdDecimate}},
-  \code{\link{ctdFindProfiles}}, \code{\link{ctdRaw}},
-  \code{\link{ctdTrim}}, \code{\link{ctd}},
-  \code{\link{handleFlags,ctd-method}},
-  \code{\link{initialize,ctd-method}},
-  \code{\link{initializeFlagScheme,ctd-method}},
-  \code{\link{oceNames2whpNames}},
-  \code{\link{oceUnits2whpUnits}},
-  \code{\link{plot,ctd-method}}, \code{\link{plotProfile}},
-  \code{\link{plotScan}}, \code{\link{plotTS}},
-  \code{\link{read.ctd.itp}}, \code{\link{read.ctd.odf}},
-  \code{\link{read.ctd.sbe}},
-  \code{\link{read.ctd.woce.other}},
-  \code{\link{read.ctd.woce}}, \code{\link{read.ctd}},
-  \code{\link{setFlags,ctd-method}},
-  \code{\link{subset,ctd-method}},
-  \code{\link{summary,ctd-method}},
-  \code{\link{woceNames2oceNames}},
-  \code{\link{woceUnit2oceUnit}}, \code{\link{write.ctd}}
+Other things related to ctd data: 
+\code{\link{CTD_BCD2014666_008_1_DN.ODF.gz}},
+\code{\link{[[,ctd-method}},
+\code{\link{[[<-,ctd-method}},
+\code{\link{as.ctd}()},
+\code{\link{cnvName2oceName}()},
+\code{\link{ctd.cnv}},
+\code{\link{ctdDecimate}()},
+\code{\link{ctdFindProfiles}()},
+\code{\link{ctdRaw}},
+\code{\link{ctdRepair}()},
+\code{\link{ctdTrim}()},
+\code{\link{ctd_aml.csv}},
+\code{\link{ctd}},
+\code{\link{d200321-001.ctd}},
+\code{\link{d201211_0011.cnv}},
+\code{\link{handleFlags,ctd-method}},
+\code{\link{initialize,ctd-method}},
+\code{\link{initializeFlagScheme,ctd-method}},
+\code{\link{oceNames2whpNames}()},
+\code{\link{oceUnits2whpUnits}()},
+\code{\link{plot,ctd-method}},
+\code{\link{plotProfile}()},
+\code{\link{plotScan}()},
+\code{\link{plotTS}()},
+\code{\link{read.ctd.aml}()},
+\code{\link{read.ctd.itp}()},
+\code{\link{read.ctd.odf}()},
+\code{\link{read.ctd.odv}()},
+\code{\link{read.ctd.sbe}()},
+\code{\link{read.ctd.ssda}()},
+\code{\link{read.ctd.woce.other}()},
+\code{\link{read.ctd.woce}()},
+\code{\link{read.ctd}()},
+\code{\link{setFlags,ctd-method}},
+\code{\link{subset,ctd-method}},
+\code{\link{summary,ctd-method}},
+\code{\link{woceNames2oceNames}()},
+\code{\link{woceUnit2oceUnit}()},
+\code{\link{write.ctd}()}
 
-Other classes provided by \code{oce}: \code{\link{adp-class}},
-  \code{\link{adv-class}}, \code{\link{argo-class}},
-  \code{\link{bremen-class}}, \code{\link{cm-class}},
-  \code{\link{coastline-class}}, \code{\link{lisst-class}},
-  \code{\link{lobo-class}}, \code{\link{met-class}},
-  \code{\link{oce-class}}, \code{\link{odf-class}},
-  \code{\link{rsk-class}}, \code{\link{sealevel-class}},
-  \code{\link{section-class}}, \code{\link{topo-class}},
-  \code{\link{windrose-class}}
+Other classes provided by oce: 
+\code{\link{adp-class}},
+\code{\link{adv-class}},
+\code{\link{argo-class}},
+\code{\link{bremen-class}},
+\code{\link{cm-class}},
+\code{\link{coastline-class}},
+\code{\link{lisst-class}},
+\code{\link{lobo-class}},
+\code{\link{met-class}},
+\code{\link{oce-class}},
+\code{\link{odf-class}},
+\code{\link{rsk-class}},
+\code{\link{sealevel-class}},
+\code{\link{section-class}},
+\code{\link{topo-class}},
+\code{\link{windrose-class}},
+\code{\link{xbt-class}}
 }
 \author{
 Dan Kelley
 }
-\concept{classes provided by \code{oce}}
-\concept{things related to \code{ctd} data}
+\concept{classes provided by oce}
+\concept{things related to ctd data}

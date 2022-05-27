@@ -30,34 +30,44 @@ A list containing \code{longitude} and \code{latitude}.
 Convert UTM to Longitude and Latitude
 }
 \examples{
-
 library(oce)
 ## Cape Split, in the Minas Basin of the Bay of Fundy
 utm2lonlat(852863, 5029997, 19)
 
 }
 \references{
-\url{https://en.wikipedia.org/wiki/Universal_Transverse_Mercator_coordinate_system},
+\verb{https://en.wikipedia.org/wiki/Universal_Transverse_Mercator_coordinate_system},
 downloaded May 31, 2014.
 }
 \seealso{
-\code{\link{lonlat2utm}} does the inverse operation.  For general
-projections and their inverses, use \code{\link{lonlat2map}} and
-\code{\link{map2lonlat}}.
+\code{\link[=lonlat2utm]{lonlat2utm()}} does the inverse operation.  For general
+projections and their inverses, use \code{\link[=lonlat2map]{lonlat2map()}} and
+\code{\link[=map2lonlat]{map2lonlat()}}.
 
-Other functions related to maps: \code{\link{lonlat2map}},
-  \code{\link{lonlat2utm}}, \code{\link{map2lonlat}},
-  \code{\link{mapArrows}}, \code{\link{mapAxis}},
-  \code{\link{mapContour}},
-  \code{\link{mapDirectionField}}, \code{\link{mapGrid}},
-  \code{\link{mapImage}}, \code{\link{mapLines}},
-  \code{\link{mapLocator}},
-  \code{\link{mapLongitudeLatitudeXY}},
-  \code{\link{mapPlot}}, \code{\link{mapPoints}},
-  \code{\link{mapPolygon}}, \code{\link{mapScalebar}},
-  \code{\link{mapText}}, \code{\link{mapTissot}},
-  \code{\link{oceCRS}}, \code{\link{shiftLongitude}},
-  \code{\link{usrLonLat}}
+Other functions related to maps: 
+\code{\link{formatPosition}()},
+\code{\link{lonlat2map}()},
+\code{\link{lonlat2utm}()},
+\code{\link{map2lonlat}()},
+\code{\link{mapArrows}()},
+\code{\link{mapAxis}()},
+\code{\link{mapContour}()},
+\code{\link{mapCoordinateSystem}()},
+\code{\link{mapDirectionField}()},
+\code{\link{mapGrid}()},
+\code{\link{mapImage}()},
+\code{\link{mapLines}()},
+\code{\link{mapLocator}()},
+\code{\link{mapLongitudeLatitudeXY}()},
+\code{\link{mapPlot}()},
+\code{\link{mapPoints}()},
+\code{\link{mapPolygon}()},
+\code{\link{mapScalebar}()},
+\code{\link{mapText}()},
+\code{\link{mapTissot}()},
+\code{\link{oceCRS}()},
+\code{\link{shiftLongitude}()},
+\code{\link{usrLonLat}()}
 }
 \author{
 Dan Kelley

@@ -4,8 +4,13 @@
 \alias{read.index}
 \title{Read a NOAA ocean index file}
 \usage{
-read.index(file, format, missingValue, tz = getOption("oceTz"),
-  debug = getOption("oceDebug"))
+read.index(
+  file,
+  format,
+  missingValue,
+  tz = getOption("oceTz"),
+  debug = getOption("oceDebug")
+)
 }
 \arguments{
 \item{file}{a connection or a character string giving the name of the file
@@ -58,7 +63,8 @@ for January, February, etc.
 library(oce)
 par(mfrow=c(2, 1))
 # 1. AO, Arctic oscillation
-ao <- read.index("https://www.esrl.noaa.gov/psd/data/correlation/ao.data")
+#  Note that data used to be at https://www.esrl.noaa.gov/psd/data/correlation/ao.data
+ao <- read.index("https://psl.noaa.gov/data/correlation/ao.data")
 aorecent <- subset(ao, t > as.POSIXct("2000-01-01"))
 oce.plot.ts(aorecent$t, aorecent$index)
 # 2. SOI, probably more up-to-date then data(soi, package="ocedata")
@@ -68,7 +74,7 @@ oce.plot.ts(soirecent$t, soirecent$index)
 }
 }
 \references{
-See \url{https://www.esrl.noaa.gov/psd/data/climateindices/list/}
+See \verb{https://psl.noaa.gov/data/climateindices/list/}
 for a list of indices.
 }
 \author{

@@ -36,9 +36,7 @@ The computed component of the curl is defined by \eqn{\partial }{dv/dx -
 du/dy}\eqn{ v/\partial x - \partial u/\partial y}{dv/dx - du/dy} and the
 estimate is made using first-difference approximations to the derivatives.
 Two methods are provided, selected by the value of \code{method}.
-
 \itemize{
-
 \item For \code{method=1}, a centred-difference, 5-point stencil is used in
 the interior of the domain.  For example, \eqn{\partial v/\partial x}{dv/dx}
 is given by the ratio of \eqn{v_{i+1,j}-v_{i-1,j}}{v[i+1,j]-v[i-1,j]} to the
@@ -51,7 +49,6 @@ earth shape is approximated as a sphere with radius 6371km.  The resultant
 \code{x} and \code{y} are identical to the provided values, and the
 resultant \code{curl} is a matrix with dimension identical to that of
 \code{u}.
-
 \item For \code{method=2}, each interior cell in the grid is considered
 individually, with derivatives calculated at the cell center. For example,
 \eqn{\partial v/\partial x}{dv/dx} is given by the ratio of
@@ -101,9 +98,10 @@ imagep(x, y, C$curl, zlab="curl", asp=1)
 hist(C$curl, breaks=100)
 }
 \seealso{
-Other functions relating to vector calculus: \code{\link{grad}}
+Other things relating to vector calculus: 
+\code{\link{grad}()}
 }
 \author{
 Dan Kelley and Chantelle Layton
 }
-\concept{functions relating to vector calculus}
+\concept{things relating to vector calculus}

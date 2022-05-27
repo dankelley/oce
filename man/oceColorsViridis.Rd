@@ -11,49 +11,89 @@ oceColorsViridis(n)
 \item{n}{number of colors to create.}
 }
 \description{
-This is patterned on a matlab/python scheme [1] that blends
+This is patterned on a \proglang{matlab}/\proglang{python} scheme that blends
 from yellow to blue in a way that is designed to reproduce well
 in black-and-white, and to be interpretable by those with
-certain forms of color blindness [3-4].
+certain forms of color blindness.  See the references for
+notes about issues of colour blindness in computer graphics.
+An alternative
+to \link{oceColorsViridis} is provided in the \CRANpkg{viridis} package, as illustrated
+in Example 2.
 }
 \examples{
 library(oce)
+# Example 1: oceColorsViridis
 imagep(volcano, col=oceColorsViridis(128),
        zlab="oceColorsViridis")
+# Example 2: viridis::viridis
+\dontrun{
+imagep(volcano, col=viridis::viridis,
+       zlab="viridis::viridis")}
+
 }
 \references{
-[1] A blog item on the Viridis (and related) matplotlib color
-scales is at \url{http://bids.github.io/colormap/}.
+The following references provide information on choosing
+colour schemes, that are suitable for viewers who have
+colour deficiencies.
 
-[2] Light, A., and P. J. Bartlein, 2004. The End of the Rainbow? Color
-Schemes for Improved Data Graphics. \emph{Eos Trans. AGU}, 85(40),
-doi:10.1029/2004EO400002.
+Light, Adam, and Patrick J. Bartlein. "The End of the Rainbow? Color
+Schemes for Improved Data Graphics." \emph{Eos, Transactions American Geophysical
+Union} 85, no. 40 (2004): 385.
+DOI: 10.1029/2004EO400002
 
-[3] Martin Jakobsson, Ron Macnab, and Members of the Editorial Board, IBCAO.
-Selective comparisons of GEBCO (1979) and IBCAO (2000) maps.
-\samp{https://www.ngdc.noaa.gov/mgg/bathymetry/arctic/ibcao_gebco_comp.html}.
+Stephenson, David B. "Comment on 'Color Schemes for Improved Data
+Graphics', by A Light and P.J. Bartlein." \emph{Eos, Transactions American
+Geophysical Union} 86, no.  20 (2005): 196.
+DOI: 10.1029/2005EO200005
 
-[4] Stephenson, David B., 2005. Comment on ``Color schemes for improved data
-graphics,'' by A. Light and P. J. Bartlein. \emph{Eos Trans. AGU}, 86(20).
+Light, Adam, and Patrick J. Bartlein. "Reply to 'Comment on Color
+Schemes for Improved Data Graphics,' by A. Light and P.J.  Bartlein'."
+\emph{Eos, Transactions American Geophysical Union} 86, no. 20 (2005): 196–196.
+DOI: 10.1029/2005EO200006
+
+The following references provide information on choosing
+colour schemes, that are suitable for viewers who have
+colour deficiencies.
+
+Light, Adam, and Patrick J. Bartlein. "The End of the Rainbow? Color
+Schemes for Improved Data Graphics." \emph{Eos, Transactions American Geophysical
+Union} 85, no. 40 (2004): 385.
+DOI: 10.1029/2004EO400002
+
+Stephenson, David B. "Comment on 'Color Schemes for Improved Data
+Graphics', by A Light and P.J. Bartlein." \emph{Eos, Transactions American
+Geophysical Union} 86, no.  20 (2005): 196.
+DOI: 10.1029/2005EO200005
+
+Light, Adam, and Patrick J. Bartlein. "Reply to 'Comment on Color
+Schemes for Improved Data Graphics,' by A. Light and P.J.  Bartlein'."
+\emph{Eos, Transactions American Geophysical Union} 86, no. 20 (2005): 196–196.
+DOI: 10.1029/2005EO200006
 }
 \seealso{
-Other things related to colors: \code{\link{colormap}},
-  \code{\link{oceColors9B}}, \code{\link{oceColorsCDOM}},
-  \code{\link{oceColorsChlorophyll}},
-  \code{\link{oceColorsClosure}},
-  \code{\link{oceColorsDensity}},
-  \code{\link{oceColorsFreesurface}},
-  \code{\link{oceColorsGebco}}, \code{\link{oceColorsJet}},
-  \code{\link{oceColorsOxygen}},
-  \code{\link{oceColorsPAR}},
-  \code{\link{oceColorsPalette}},
-  \code{\link{oceColorsPhase}},
-  \code{\link{oceColorsSalinity}},
-  \code{\link{oceColorsTemperature}},
-  \code{\link{oceColorsTurbidity}},
-  \code{\link{oceColorsTwo}},
-  \code{\link{oceColorsVelocity}},
-  \code{\link{oceColorsVorticity}}, \code{\link{ocecolors}}
+Other things related to colors: 
+\code{\link{colormapGMT}()},
+\code{\link{colormap}()},
+\code{\link{oceColors9B}()},
+\code{\link{oceColorsCDOM}()},
+\code{\link{oceColorsChlorophyll}()},
+\code{\link{oceColorsClosure}()},
+\code{\link{oceColorsDensity}()},
+\code{\link{oceColorsFreesurface}()},
+\code{\link{oceColorsGebco}()},
+\code{\link{oceColorsJet}()},
+\code{\link{oceColorsOxygen}()},
+\code{\link{oceColorsPAR}()},
+\code{\link{oceColorsPalette}()},
+\code{\link{oceColorsPhase}()},
+\code{\link{oceColorsSalinity}()},
+\code{\link{oceColorsTemperature}()},
+\code{\link{oceColorsTurbidity}()},
+\code{\link{oceColorsTurbo}()},
+\code{\link{oceColorsTwo}()},
+\code{\link{oceColorsVelocity}()},
+\code{\link{oceColorsVorticity}()},
+\code{\link{ocecolors}}
 }
 \author{
 Dan Kelley

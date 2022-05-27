@@ -4,17 +4,22 @@
 \alias{read.odf}
 \title{Read an ODF file}
 \usage{
-read.odf(file, columns = NULL, header = NULL,
-  debug = getOption("oceDebug"))
+read.odf(
+  file,
+  columns = NULL,
+  header = "list",
+  exclude = NULL,
+  debug = getOption("oceDebug")
+)
 }
 \arguments{
 \item{file}{the file containing the data.}
 
-\item{columns}{An optional \code{\link{list}} that can be used to convert unrecognized
+\item{columns}{An optional \link{list} that can be used to convert unrecognized
 data names to resultant variable names.  For example,
-\code{columns=list(salinity=list(name="salt", unit=list(unit=expression(), scale="PSS-78"))}
+\verb{columns=list(salinity=list(name="salt", unit=list(unit=expression(), scale="PSS-78"))}
 states that a short-name of \code{"salt"} represents salinity, and that the unit is
-as indicated. This is passed to \code{\link{cnvName2oceName}} or \code{\link{ODFNames2oceNames}},
+as indicated. This is passed to \code{\link[=cnvName2oceName]{cnvName2oceName()}} or \code{\link[=ODFNames2oceNames]{ODFNames2oceNames()}},
 as appropriate, and takes precedence over the lookup table in that function.}
 
 \item{header}{An indication of whether, or how, to store the entire
@@ -29,8 +34,23 @@ a character string for each line of the header within the ODF file.
 returned object will contain a \code{list} named \code{header} that
 has lists as its entries. (The sub-lists are in the form of
 key-value pairs.) The naming of list entries is patterned on
-that in the ODF header, except that \code{\link{unduplicateNames}}
-is used to transform repeated names by adding numerical suffices.}
+that in the ODF header, except that \code{\link[=unduplicateNames]{unduplicateNames()}}
+is used to transform repeated names by adding numerical suffices.
+Note: on June 6, 2019, the default value of \code{header} was
+changed from \code{NULL} to \code{"list"}; in addition, the resultant
+list was made to contain every single item in the ODF header, with
+\code{\link[=unduplicateNames]{unduplicateNames()}} being used to append integers to
+distinguish between repeated names in the ODF format.}
+
+\item{exclude}{either a character value holding a regular
+expression that is used with \code{\link[=grep]{grep()}} to remove lines from the
+header before processing, or \code{NULL} (the default), meaning
+not to exclude any such lines.  The purpose of this argument
+is to solve problems with some files, which can have
+thousands of lines that indicate details that are may be of
+little value in processing.  For example, some files have thousands
+of lines that would be excluded by using
+\code{exclude="PROCESS='Nulled the .* value"} in the function call.}
 
 \item{debug}{an integer specifying whether debugging information is
 to be printed during the processing. This is a general parameter that
@@ -41,18 +61,16 @@ be printed. If one function calls another, it usually reduces the value of
 by specifying higher \code{debug} values.}
 }
 \value{
-An object of class \code{oce}. It is up to a calling function to determine what to do with this object.
+An \linkS4class{oce} object.
 }
 \description{
 ODF (Ocean Data Format) is a
 format developed at the Bedford Institute of Oceanography and also used
 at other Canadian Department of Fisheries and Oceans (DFO) facilities
-(see [1] and [2]).
+(see references 1 and 2).
 It can hold various types of time-series data, which includes a variety
-of instrument types. Thus, \code{read.odf}
-is used by \code{read.ctd.odf} for CTD data, etc. As of mid-2018,
-\code{read.odf} is still in development, with features being added as a
-project with DFO makes available more files.
+of instrument types. Thus, \code{\link[=read.odf]{read.odf()}}
+is used by \code{read.ctd.odf} for CTD data, etc.
 }
 \details{
 Note that some elements of the metadata are particular to ODF objects,
@@ -63,11 +81,8 @@ item \code{waterDepth}, which is used in \code{ctd} objects to refer to
 the total water depth, is set to \code{sounding} if that is finite,
 or to \code{maxDepth} otherwise.
 
-The function \code{\link{ODFNames2oceNames}} is used to translate
-data names from the ODF file to standard \code{oce} names, and
-handles conversion for a few non-standard units. The documentation
-of \code{\link{ODFNames2oceNames}} should be consulted for more
-details.
+The function \code{\link[=ODFNames2oceNames]{ODFNames2oceNames()}} is used to translate
+data names from the ODF file to standard \code{oce} names.
 }
 \section{Metadata conventions}{
 
@@ -82,23 +97,51 @@ have a metadata item named \code{depthOffBottom} (called
 present in \code{ctd} files. This item illustrates the renaming
 convention, from the CAMEL_CASE used in ODF files to the snakeCase
 used in oce. Bearing this conversion in mind, users should not
-find it difficult to understand the meaning of items that \code{read.odf}
+find it difficult to understand the meaning of items that \code{\link[=read.odf]{read.odf()}}
 stores within the \code{metadata} slot. Users should bear in mind
-that the intirety of the ODF header is saved as list by
+that the whole ODF header is saved as a list by
 calling the function with \code{header="list"}, after which
-e.g. \code{\link{str}(rval[["header"]])} or \code{\link{View}(rval[["header"]])}
+e.g. \link{str}\code{(rval[["header"]])} or \link{View}\code{(rval[["header"]])}
 can be used to isolate any information of interest (but bear in mind
 that suffices are used to disambiguate sibling items of identical
 name in the ODF header).
 }
 
+\section{Handling of temperature scales}{
+
+\code{read.odf()} stores temperature data directly as read from the file, which
+might mean the IPTS-68 scale.  These values should not be used to calculate
+other seawater quantities, because formulae are generally based in ITS90
+temperatures. To avoid problems, the accessor function converts to the modern
+scale, e.g. \code{x[["temperature"]]} yields temperature in the ITS90
+scale, whether temperatures in the original file were reported on that scale
+or the older IPTS-68 scale.
+}
+
 \section{Caution}{
 
-ODF files do not store information on the temperature or salinity scale, and \code{read.odf}
-assumes these to be ITS-90 and PSS-78, respectively. These scales may be incorrect for old
-data files. Note that the temperature scale can be converted from old scales
-using \code{\link{T90fromT68}} and \code{\link{T90fromT48}}, although the change will be in
-a fraction of a millidegree, which probably exceeds reasonable confidence in old data.
+
+Lacking detailed documentation of the ODF file format, the \code{\link[=read.odf]{read.odf()}} and
+\code{\link[=read.ctd.odf]{read.ctd.odf()}} functions were crafted based on inspection of data files, and
+so some guesses had to be made.
+
+The \code{PARAMETER_HEADER} chunks describing quality-control flags are
+a case in point.  These contain \code{NAME} components that
+refer to other \code{PARAMETER_HEADER} chunks that hold measured data.  However,
+those references are not always matched well with the data names, and
+even if they do match, the cross-reference syntax used by
+the Bedford Institute of Oceanography differs from that used by
+l’Institut Maurice-Lamontagne. To simplify coding, it was assumed that
+each quality-control sequence applies to the data sequence
+immediately preceding it.  (This assumption is made in other
+analysis systems.)
+
+It is also prudent to pay attention to the units decoding,
+which \code{\link[=read.odf]{read.odf()}} handles by calling \code{\link[=unitFromString]{unitFromString()}}.
+Be on the lookout for incorrect temperature scales, which
+are sometimes reported with nonstandard strings in ODF files.
+Also, note that you may see warnings about conductivity ratios,
+which some ODF files incorrectly suggest have dimensions.
 }
 
 \examples{
@@ -125,30 +168,27 @@ points(ctd[['salinity']][bad],ctd[['theta']][bad],col='red',pch=20)
 
 }
 \references{
-\itemize{
-
-\item [1] Anthony W. Isenor and David Kellow, 2011. ODF Format Specification
-Version 2.0. (This is a .doc file downloaded from a now-forgotten URL by Dan Kelley,
-in June 2011.)
-
-\item [2] The St Lawrence Global Observatory website has information on ODF format at
-\url{https://slgo.ca/app-sgdo/en/docs_reference/documents.html} (link checked
-2018-06-06) and this is perhaps the best resource to learn more.
-
-}
+For sources that describe the ODF format, see the documentation
+for the \linkS4class{odf} class.
 }
 \seealso{
-\code{\link{ODF2oce}} will be an alternative to this, once (or perhaps if) a \code{ODF}
+\code{\link[=ODF2oce]{ODF2oce()}} will be an alternative to this, once (or perhaps if) a \code{ODF}
 package is released by the Canadian Department of Fisheries and Oceans.
 
-Other things related to \code{odf} data: \code{\link{ODF2oce}},
-  \code{\link{ODFListFromHeader}},
-  \code{\link{ODFNames2oceNames}},
-  \code{\link{[[,odf-method}},
-  \code{\link{[[<-,odf-method}}, \code{\link{odf-class}},
-  \code{\link{plot,odf-method}},
-  \code{\link{read.ctd.odf}},
-  \code{\link{subset,odf-method}},
-  \code{\link{summary,odf-method}}
+Other things related to odf data: 
+\code{\link{CTD_BCD2014666_008_1_DN.ODF.gz}},
+\code{\link{ODF2oce}()},
+\code{\link{ODFListFromHeader}()},
+\code{\link{ODFNames2oceNames}()},
+\code{\link{[[,odf-method}},
+\code{\link{[[<-,odf-method}},
+\code{\link{odf-class}},
+\code{\link{plot,odf-method}},
+\code{\link{read.ctd.odf}()},
+\code{\link{subset,odf-method}},
+\code{\link{summary,odf-method}}
 }
-\concept{things related to \code{odf} data}
+\author{
+Dan Kelley, with help from Chantelle Layton
+}
+\concept{things related to odf data}

@@ -88,12 +88,12 @@ do_landsat_numeric_to_bytes <- function(m, bits) {
     .Call(`_oce_do_landsat_numeric_to_bytes`, m, bits)
 }
 
-do_ldc_ad2cp_in_file <- function(filename, from, to, by) {
-    .Call(`_oce_do_ldc_ad2cp_in_file`, filename, from, to, by)
+do_ldc_ad2cp_in_file <- function(filename, from, to, by, DEBUG) {
+    .Call(`_oce_do_ldc_ad2cp_in_file`, filename, from, to, by, DEBUG)
 }
 
-do_ldc_rdi_in_file <- function(filename, from, to, by, mode, debug) {
-    .Call(`_oce_do_ldc_rdi_in_file`, filename, from, to, by, mode, debug)
+do_ldc_rdi_in_file <- function(filename, from, to, by, startIndex, mode, debug) {
+    .Call(`_oce_do_ldc_rdi_in_file`, filename, from, to, by, startIndex, mode, debug)
 }
 
 do_matrix_smooth <- function(mat) {

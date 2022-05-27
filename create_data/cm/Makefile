@@ -1,6 +1,4 @@
-SOURCES=$(wildcard *.R)
-OBJECTS=$(SOURCES:.R=.out)
-all: $(OBJECTS)
+all: create_cm.out check_cm.out
 %.out: %.R
 	R --no-save < $< > $@
 clean:

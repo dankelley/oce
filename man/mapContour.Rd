@@ -4,74 +4,128 @@
 \alias{mapContour}
 \title{Add Contours on a Existing map}
 \usage{
-mapContour(longitude = seq(0, 1, length.out = nrow(z)),
-  latitude = seq(0, 1, length.out = ncol(z)), z, nlevels = 10,
-  levels = pretty(range(z, na.rm = TRUE), nlevels), col = par("fg"),
-  lty = par("lty"), lwd = par("lwd"))
+mapContour(
+  longitude,
+  latitude,
+  z,
+  nlevels = 10,
+  levels = pretty(range(z, na.rm = TRUE), nlevels),
+  labcex = 0.6,
+  drawlabels = TRUE,
+  underlay = "erase",
+  col = par("fg"),
+  lty = par("lty"),
+  lwd = par("lwd"),
+  debug = getOption("oceDebug")
+)
 }
 \arguments{
-\item{longitude}{vector of longitudes of points to be plotted, or an object of
-class \code{topo} (see \code{\link{topo-class}}), in which case
+\item{longitude}{numeric vector of longitudes of points to be plotted, or an object of
+class \code{topo} (see \linkS4class{topo}), in which case
 \code{longitude}, \code{latitude} and \code{z} are inferred from that object.}
 
-\item{latitude}{vector of latitudes of points to be plotted.}
+\item{latitude}{numeric vector of latitudes of points to be plotted.}
 
-\item{z}{matrix to be contoured.}
+\item{z}{matrix to be contoured. The number of rows and columns in \code{z}
+must equal the lengths of \code{longitude} and \code{latitude}, respectively.}
 
 \item{nlevels}{number of contour levels, if and only if \code{levels} is not supplied.}
 
 \item{levels}{vector of contour levels.}
 
-\item{col}{line color.}
+\item{labcex}{\code{cex} value used for contour labelling. As with
+\code{\link[=contour]{contour()}}, this is an absolute size, not a multiple of
+\code{\link{par}}\code{("cex")}.}
 
-\item{lty}{line type.}
+\item{drawlabels}{logical value or vector indicating whether to draw contour
+labels.  If the length of \code{drawlabels} is less than the number of
+levels specified, then \code{\link[=rep]{rep()}} is used to increase the length,
+providing a value for each contour line. For those levels that are thus
+indicated, labels are added, at a spot where the contour line is
+closest to horizontal on the page. First, though, the region underneath
+the label is filled with the colour given by \code{\link{par}}\code{("bg")}.
+See \dQuote{Limitations} for notes on the status of contour
+labelling, and its limitations.}
 
-\item{lwd}{line width.}
+\item{underlay}{character value relating to handling labels. If
+this equals \code{"erase"} (which is the default), then the contour line
+is drawn  first, then the area under the label is erased (filled with
+white 'ink'), and then the label is drawn. This can be useful
+in drawing coarsely-spaced labelled contours on top of finely-spaced
+unlabelled contours. On the other hand, if \code{underlay} equals
+\code{"interrupt"}, then the contour line is interrupted in the
+region of the label, which is closer to the scheme used by the
+base \code{\link[=contour]{contour()}} function.}
+
+\item{col}{colour of the contour line, as for \code{\link{par}}\code{("col")},
+except here \code{col} gets lengthened by calling \code{\link[=rep]{rep()}},
+so that individual contours can be coloured distinctly.}
+
+\item{lty}{type of the contour line, as for \code{\link{par}}\code{("lty")},
+except for lengthening, as described for \code{col}.}
+
+\item{lwd}{width of the contour line, as for \code{\link{par}}\code{("lwd")},
+except for lengthening, as described for \code{col} and \code{lty}.}
+
+\item{debug}{an integer specifying whether debugging information is
+to be printed during the processing. This is a general parameter that
+is used by many \code{oce} functions. Generally, setting \code{debug=0}
+turns off the printing, while higher values suggest that more information
+be printed. If one function calls another, it usually reduces the value of
+\code{debug} first, so that a user can often obtain deeper debugging
+by specifying higher \code{debug} values.}
 }
 \description{
 Plot contours on an existing map.
 }
 \details{
-Adds contour lines to an existing map, using \code{\link{mapLines}}.
-The arguments are based on those to \code{\link{contour}} and
-\code{\link{contourLines}}.
-}
-\section{Bugs}{
+Adds contour lines to an existing map, using \code{\link[=mapLines]{mapLines()}}.
 
-As with \code{\link{mapLines}}, long lines should be subdivided
-into multiple segments so that e.g. great circle lines will be curved.
+The ability to label the contours was added in February, 2019, and
+how this works may change through the summer months of that year.
+Note that label placement in \code{mapContour} is handled differently
+than in \code{\link[=contour]{contour()}}.
 }
-
 \examples{
 \dontrun{
 library(oce)
 data(coastlineWorld)
-par(mar=rep(1, 4))
-## Arctic 100m, 2km, 3km isobaths, showing shelves and ridges.
-mapPlot(coastlineWorld, latitudelim=c(60, 120), longitudelim=c(-130,-50),
-        projection="+proj=stere +lat_0=90")
-data(topoWorld)
-lon <- topoWorld[['longitude']]
-lat <- topoWorld[['latitude']]
-z <- topoWorld[['z']]
-mapContour(lon, lat, z, levels=c(-100, -2000, -3000), col=1:3, lwd=2)
+if (requireNamespace("ocedata", quietly=TRUE)) {
+    data(levitus, package="ocedata")
+    par(mar=rep(1, 4))
+    mapPlot(coastlineWorld, projection="+proj=robin", col="lightgray")
+    mapContour(levitus[['longitude']], levitus[['latitude']], levitus[['SST']])
 }
+}
+
 }
 \seealso{
-A map must first have been created with \code{\link{mapPlot}}.
+A map must first have been created with \code{\link[=mapPlot]{mapPlot()}}.
 
-Other functions related to maps: \code{\link{lonlat2map}},
-  \code{\link{lonlat2utm}}, \code{\link{map2lonlat}},
-  \code{\link{mapArrows}}, \code{\link{mapAxis}},
-  \code{\link{mapDirectionField}}, \code{\link{mapGrid}},
-  \code{\link{mapImage}}, \code{\link{mapLines}},
-  \code{\link{mapLocator}},
-  \code{\link{mapLongitudeLatitudeXY}},
-  \code{\link{mapPlot}}, \code{\link{mapPoints}},
-  \code{\link{mapPolygon}}, \code{\link{mapScalebar}},
-  \code{\link{mapText}}, \code{\link{mapTissot}},
-  \code{\link{oceCRS}}, \code{\link{shiftLongitude}},
-  \code{\link{usrLonLat}}, \code{\link{utm2lonlat}}
+Other functions related to maps: 
+\code{\link{formatPosition}()},
+\code{\link{lonlat2map}()},
+\code{\link{lonlat2utm}()},
+\code{\link{map2lonlat}()},
+\code{\link{mapArrows}()},
+\code{\link{mapAxis}()},
+\code{\link{mapCoordinateSystem}()},
+\code{\link{mapDirectionField}()},
+\code{\link{mapGrid}()},
+\code{\link{mapImage}()},
+\code{\link{mapLines}()},
+\code{\link{mapLocator}()},
+\code{\link{mapLongitudeLatitudeXY}()},
+\code{\link{mapPlot}()},
+\code{\link{mapPoints}()},
+\code{\link{mapPolygon}()},
+\code{\link{mapScalebar}()},
+\code{\link{mapText}()},
+\code{\link{mapTissot}()},
+\code{\link{oceCRS}()},
+\code{\link{shiftLongitude}()},
+\code{\link{usrLonLat}()},
+\code{\link{utm2lonlat}()}
 }
 \author{
 Dan Kelley

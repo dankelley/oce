@@ -8,7 +8,7 @@ as.windrose(x, y, dtheta = 15, debug = getOption("oceDebug"))
 }
 \arguments{
 \item{x}{The x component of wind speed (or stress) \emph{or} an object of class
-\code{met} (see \code{\link{met-class}}), in which case the \code{u} and
+\code{met} (see \linkS4class{met}), in which case the \code{u} and
 \code{v} components of that object are used for the components of wind speed,
 and \code{y} here is ignored.}
 
@@ -20,25 +20,24 @@ and \code{y} here is ignored.}
 of debugging information, or to 2 to get more.}
 }
 \value{
-An object of \code{\link{windrose-class}} that contains the standard
-\code{oce} slots named \code{data}, \code{metadata} and \code{proxessingLog}.
-The \code{data} slot contains
+A \linkS4class{windrose} object, with \code{data} slot containing
 
-\describe{
-    \item{\code{n}}{the number of x values}
-    \item{\code{x.mean}}{the mean of the x values}
-    \item{\code{y.mean}}{the mean of the y values}
-    \item{\code{theta}}{the central angle (in degrees) for the class}
-    \item{\code{count}}{the number of observations in this class}
-    \item{\code{mean}}{the mean of the observations in this class}
-    \item{\code{fivenum}}{the \code{\link{fivenum}} vector for
-        observations in this class (the min, the lower hinge, the
-        median, the upper hinge, and the max)}
+\tabular{ll}{
+\strong{Item}   \tab \strong{Meaning}\cr
+\code{n}       \tab the number of \code{x} values\cr
+\code{x.mean}  \tab the mean of the \code{x} values\cr
+\code{y.mean}  \tab the mean of the \code{y} values\cr
+\code{theta}   \tab the central angle (in degrees) for the class\cr
+\code{count}   \tab the number of observations in this class\cr
+\code{mean}    \tab the mean of the observations in this class\cr
+\code{fivenum} \tab the \code{\link[=fivenum]{fivenum()}} vector for
+observations in this class (the min, the lower hinge, the
+median, the upper hinge, and the max)\cr
 }
 }
 \description{
 Create a wind-rose object, typically for plotting with
-\code{\link{plot,windrose-method}}.
+\code{\link[=plot,windrose-method]{plot,windrose-method()}}.
 }
 \examples{
 library(oce)
@@ -50,13 +49,14 @@ plot(wr)
 
 }
 \seealso{
-Other things related to \code{windrose} data: \code{\link{[[,windrose-method}},
-  \code{\link{[[<-,windrose-method}},
-  \code{\link{plot,windrose-method}},
-  \code{\link{summary,windrose-method}},
-  \code{\link{windrose-class}}
+Other things related to windrose data: 
+\code{\link{[[,windrose-method}},
+\code{\link{[[<-,windrose-method}},
+\code{\link{plot,windrose-method}},
+\code{\link{summary,windrose-method}},
+\code{\link{windrose-class}}
 }
 \author{
 Dan Kelley, with considerable help from Alex Deckmyn.
 }
-\concept{things related to \code{windrose} data}
+\concept{things related to windrose data}

@@ -4,16 +4,22 @@
 \alias{mapScalebar}
 \title{Add a Scalebar to a Map}
 \usage{
-mapScalebar(x, y = NULL, length, lwd = 1.5 * par("lwd"),
-  cex = par("cex"), col = "black")
+mapScalebar(
+  x,
+  y = NULL,
+  length,
+  lwd = 1.5 * par("lwd"),
+  cex = par("cex"),
+  col = "black"
+)
 }
 \arguments{
 \item{x, y}{position of the scalebar.  Eventually this may be similar to
-the corresponding arguments in \code{\link{legend}}, but at the moment
-\code{y} must be \code{NULL} and \code{x} must be \code{"topleft"}.}
+the corresponding arguments in \code{\link[=legend]{legend()}}, but at the moment
+\code{y} must be \code{NULL} and \code{x} must be \code{"topleft"} or \code{"topright"}.}
 
 \item{length}{the distance to indicate, in kilometres.  If not provided, a
-reasonable choice is made, based on the underlying map.}
+reasonable choice is made, based on the existing plot.}
 
 \item{lwd}{line width of the scalebar.}
 
@@ -22,15 +28,18 @@ reasonable choice is made, based on the underlying map.}
 \item{col}{color of the scalebar.}
 }
 \description{
-Draw a scalebar on an existing map.
+Draw a scalebar on a map created by \code{\link[=mapPlot]{mapPlot()}} or otherwise.
 }
 \details{
 The scale is appropriate to the centre of the plot, and will become
 increasingly inaccurate away from that spot, with the error depending on
 the projection and the fraction of the earth that is shown.
+
+Until December 2020, it was required that the map had been drawn by \code{\link[=mapPlot]{mapPlot()}},
+but now it can be any diagram showing longitude and latitude in degrees.
 }
 \examples{
-\dontrun{
+\donttest{
 library(oce)
 data(coastlineWorld)
 ## Arctic Ocean
@@ -39,23 +48,35 @@ mapPlot(coastlineWorld, latitudelim=c(60, 120), longitudelim=c(-130,-50),
         col="lightgray", projection="+proj=stere +lat_0=90")
 mapScalebar()
 }
+
 }
 \seealso{
-A map must first have been created with \code{\link{mapPlot}}.
+A map must first have been created with \code{\link[=mapPlot]{mapPlot()}}.
 
-Other functions related to maps: \code{\link{lonlat2map}},
-  \code{\link{lonlat2utm}}, \code{\link{map2lonlat}},
-  \code{\link{mapArrows}}, \code{\link{mapAxis}},
-  \code{\link{mapContour}},
-  \code{\link{mapDirectionField}}, \code{\link{mapGrid}},
-  \code{\link{mapImage}}, \code{\link{mapLines}},
-  \code{\link{mapLocator}},
-  \code{\link{mapLongitudeLatitudeXY}},
-  \code{\link{mapPlot}}, \code{\link{mapPoints}},
-  \code{\link{mapPolygon}}, \code{\link{mapText}},
-  \code{\link{mapTissot}}, \code{\link{oceCRS}},
-  \code{\link{shiftLongitude}}, \code{\link{usrLonLat}},
-  \code{\link{utm2lonlat}}
+Other functions related to maps: 
+\code{\link{formatPosition}()},
+\code{\link{lonlat2map}()},
+\code{\link{lonlat2utm}()},
+\code{\link{map2lonlat}()},
+\code{\link{mapArrows}()},
+\code{\link{mapAxis}()},
+\code{\link{mapContour}()},
+\code{\link{mapCoordinateSystem}()},
+\code{\link{mapDirectionField}()},
+\code{\link{mapGrid}()},
+\code{\link{mapImage}()},
+\code{\link{mapLines}()},
+\code{\link{mapLocator}()},
+\code{\link{mapLongitudeLatitudeXY}()},
+\code{\link{mapPlot}()},
+\code{\link{mapPoints}()},
+\code{\link{mapPolygon}()},
+\code{\link{mapText}()},
+\code{\link{mapTissot}()},
+\code{\link{oceCRS}()},
+\code{\link{shiftLongitude}()},
+\code{\link{usrLonLat}()},
+\code{\link{utm2lonlat}()}
 }
 \author{
 Dan Kelley

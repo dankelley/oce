@@ -6,16 +6,15 @@
 \title{Class to Store Satellite Data}
 \description{
 This class holds satellite data of various types, including
-\code{\link{amsr-class}} and \code{\link{g1sst-class}}.
+\linkS4class{amsr} and \linkS4class{g1sst}.
 }
 \seealso{
-Other things related to satellite data: \code{\link{g1sst-class}},
-  \code{\link{plot,satellite-method}},
-  \code{\link{read.g1sst}},
-  \code{\link{summary,satellite-method}}
+Other classes holding satellite data: 
+\code{\link{amsr-class}},
+\code{\link{g1sst-class}},
+\code{\link{landsat-class}}
 }
 \author{
 Dan Kelley and Chantelle Layton
 }
-\concept{satellite}
-\concept{things related to satellite data}
+\concept{classes holding satellite data}

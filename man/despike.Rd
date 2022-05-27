@@ -4,12 +4,20 @@
 \alias{despike}
 \title{Remove spikes from a time series}
 \usage{
-despike(x, reference = c("median", "smooth", "trim"), n = 4, k = 7,
-  min = NA, max = NA, replace = c("reference", "NA"), skip)
+despike(
+  x,
+  reference = c("median", "smooth", "trim"),
+  n = 4,
+  k = 7,
+  min = NA,
+  max = NA,
+  replace = c("reference", "NA"),
+  skip
+)
 }
 \arguments{
 \item{x}{a vector of (time-series) values, a list of vectors, a data frame,
-or an object that inherits from class \code{oce}.}
+or an \linkS4class{oce} object.}
 
 \item{reference}{indication of the type of reference time series to be used
 in the detection of spikes; see \sQuote{Details}.}
@@ -49,13 +57,11 @@ to the value of \code{action}; see \dQuote{Details}.
 \details{
 Three modes of operation are permitted, depending on the value of
 \code{reference}.
-
-\itemize{
-
+\enumerate{
 \item For \code{reference="median"}, the first step is to linearly interpolate
-across any gaps (spots where \code{x==NA}), using \code{\link{approx}} with
+across any gaps (spots where \code{x==NA}), using \code{\link[=approx]{approx()}} with
 \code{rule=2}. The second step is to pass this through
-\code{\link{runmed}} to get a running median spanning \code{k}
+\code{\link[=runmed]{runmed()}} to get a running median spanning \code{k}
 elements. The result of these two steps is the "reference" time-series.
 Then, the standard deviation of the difference between \code{x}
 and the reference is calculated.  Any \code{x} values that differ from
@@ -64,14 +70,12 @@ to be spikes.  If \code{replace="reference"}, the spike values are
 replaced with the reference, and the resultant time series is
 returned.  If \code{replace="NA"}, the spikes are replaced with \code{NA},
 and that result is returned.
-
 \item For \code{reference="smooth"}, the processing is the same as for
-\code{"median"}, except that \code{\link{smooth}} is used to calculate the
+\code{"median"}, except that \code{\link[=smooth]{smooth()}} is used to calculate the
 reference time series.
-
 \item For \code{reference="trim"}, the reference time series is constructed by
 linear interpolation across any regions in which \code{x<min} or
-\code{x>max}.  (Again, this is done with \code{\link{approx}} with
+\code{x>max}.  (Again, this is done with \code{\link[=approx]{approx()}} with
 \code{rule=2}.) In this case, the value of \code{n} is ignored, and the
 return value is the same as \code{x}, except that spikes are replaced
 with the reference series (if \code{replace="reference"} or with
@@ -79,7 +83,6 @@ with the reference series (if \code{replace="reference"} or with
 }
 }
 \examples{
-
 n <- 50
 x <- 1:n
 y <- rnorm(n=n)

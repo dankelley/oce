@@ -4,24 +4,25 @@
 \alias{read.g1sst}
 \title{Read a G1SST file}
 \usage{
-read.g1sst(filename)
+read.g1sst(file)
 }
 \arguments{
-\item{filename}{name of a netcdf file containing G1SST data.}
+\item{file}{character value containing the name of a netcdf file containing G1SST data.}
 }
 \value{
-An object of \code{\link{g1sst-class}}.
+A \linkS4class{g1sst} object.
 }
 \description{
-Read a G1SST file in the netcdf format provided by the ERDAPP server [1].
+Read a G1SST file in the netcdf format provided by the ERDDAP server
+(see reference 1).
 }
 \details{
-As noted in the documentation for \code{\link{g1sst-class}}, one
+As noted in the documentation for the \linkS4class{g1sst} class, one
 must be aware of the incorporation of model simulations in the
 \code{g1sst} product. For example, the code presented below
 might lead one to believe that the mapped field represents
 observations, whereas in fact it can be verified by
-consulting [2] (clicking and unclicking the radio button to
+consulting reference 2 (clicking and unclicking the radio button to
 show just the data) that the field mostly derives from simulation.
 }
 \examples{
@@ -41,24 +42,28 @@ source <- paste("https://coastwatch.pfeg.noaa.gov/erddap/griddap/",
 if (!length(list.files(pattern="^a.nc$")))
     download.file(source, "a.nc")
 d <- read.g1sst("a.nc")
-plot(d, "SST", col=oceColorsJet)
-data(coastlineWorldFine, package="ocedata")
-lines(coastlineWorldFine[['longitude']],coastlineWorldFine[['latitude']])
+plot(d, "SST", col=oceColorsTemperature)
+if (requireNamespace("ocedata", quietly=TRUE)) {
+    data(coastlineWorldFine, package="ocedata")
+    lines(coastlineWorldFine[['longitude']],coastlineWorldFine[['latitude']])
+}
 }
 
 }
 \references{
-1. ERDDAP Portal \url{https://coastwatch.pfeg.noaa.gov/erddap/}
-2. JPO OurOcean Portal \code{https://ourocean.jpl.nasa.gov/SST/}
+\enumerate{
+\item ERDDAP Portal \verb{https://coastwatch.pfeg.noaa.gov/erddap/}
+\item JPO OurOcean Portal \verb{https://ourocean.jpl.nasa.gov/SST/}
 (link worked in 2016 but was seen to fail 2017 Feb 2).
 }
+}
 \seealso{
-Other things related to satellite data: \code{\link{g1sst-class}},
-  \code{\link{plot,satellite-method}},
-  \code{\link{satellite-class}},
-  \code{\link{summary,satellite-method}}
+Other things related to g1sst data: 
+\code{\link{[[,g1sst-method}},
+\code{\link{[[<-,g1sst-method}},
+\code{\link{g1sst-class}}
 }
 \author{
 Dan Kelley
 }
-\concept{things related to satellite data}
+\concept{things related to g1sst data}

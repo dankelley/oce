@@ -6,7 +6,7 @@
 \title{Hydrographic section}
 \source{
 This is based on the WOCE file named \code{a03_hy1.csv}, downloaded
-from \url{https://cchdo.ucsd.edu/cruise/90CT40_1}, 13 April 2015.
+from \verb{https://cchdo.ucsd.edu/cruise/90CT40_1}, 13 April 2015.
 }
 \usage{
 data(section)
@@ -18,45 +18,70 @@ Multanovsky, undertaking a westward transect from the Mediterranean outflow
 region across to North America, with a change of heading in the last few dozen
 stations to run across the nominal Gulf Stream axis.
 The data flags follow the "WHP Bottle"convention, set by
-\code{\link{initializeFlagScheme,section-method}} to \code{"WHP bottle"}; see
-\url{https://www.nodc.noaa.gov/woce/woce_v3/wocedata_1/whp/exchange/exchange_format_desc.htm}
-for more information on World Hydrographic Program flag conventions.
+\code{\link[=initializeFlagScheme,section-method]{initializeFlagScheme,section-method()}} to \code{"WHP bottle"}.  This convention
+used to be described at the link
+\verb{https://www.nodc.noaa.gov/woce/woce_v3/wocedata_1/whp/exchange/exchange_format_desc.htm}
+but that was found to fail in December 2020.
 }
+\section{Speculation on a timing error}{
+
+In May 2022, it was discovered that the times in this dataset are not fully
+sequential, at two spots.  This might be a reporting error. Station 41 has
+time listed as 1993-10-03T00:06:00 and that leads to a time reversal.
+However, if that time were actually on the day before, then
+the time reversal would vanish, and the inter-station timing of
+about 5 to 6 hours would be recovered. A similar pattern is seen at station
+45.  Of course, this hypothesis of incorrect recording is difficult to test,
+for data taken thirty years ago.
+}
+
 \examples{
-\dontrun{
 library(oce)
 # Gulf Stream
 data(section)
-GS <- subset(section, 109<=stationId&stationId<=129)
+GS <- subset(section, 113<=stationId&stationId<=129)
 GSg <- sectionGrid(GS, p=seq(0, 5000, 100))
-plot(GSg, map.xlim=c(-80,-60))
-}
+plot(GSg, span=1500) # increase span to show more coastline
 
 }
 \seealso{
-Other datasets provided with \code{oce}: \code{\link{adp}},
-  \code{\link{adv}}, \code{\link{argo}}, \code{\link{cm}},
-  \code{\link{coastlineWorld}}, \code{\link{ctdRaw}},
-  \code{\link{ctd}}, \code{\link{echosounder}},
-  \code{\link{landsat}}, \code{\link{lisst}},
-  \code{\link{lobo}}, \code{\link{met}},
-  \code{\link{ocecolors}}, \code{\link{rsk}},
-  \code{\link{sealevelTuktoyaktuk}},
-  \code{\link{sealevel}}, \code{\link{topoWorld}},
-  \code{\link{wind}}
+Other datasets provided with oce: 
+\code{\link{adp}},
+\code{\link{adv}},
+\code{\link{amsr}},
+\code{\link{argo}},
+\code{\link{cm}},
+\code{\link{coastlineWorld}},
+\code{\link{ctdRaw}},
+\code{\link{ctd}},
+\code{\link{echosounder}},
+\code{\link{landsat}},
+\code{\link{lisst}},
+\code{\link{lobo}},
+\code{\link{met}},
+\code{\link{ocecolors}},
+\code{\link{rsk}},
+\code{\link{sealevelTuktoyaktuk}},
+\code{\link{sealevel}},
+\code{\link{topoWorld}},
+\code{\link{wind}},
+\code{\link{xbt}}
 
-Other things related to \code{section} data: \code{\link{[[,section-method}},
-  \code{\link{[[<-,section-method}},
-  \code{\link{as.section}},
-  \code{\link{handleFlags,section-method}},
-  \code{\link{initializeFlagScheme,section-method}},
-  \code{\link{plot,section-method}},
-  \code{\link{read.section}}, \code{\link{section-class}},
-  \code{\link{sectionAddStation}},
-  \code{\link{sectionGrid}}, \code{\link{sectionSmooth}},
-  \code{\link{sectionSort}},
-  \code{\link{subset,section-method}},
-  \code{\link{summary,section-method}}
+Other things related to section data: 
+\code{\link{[[,section-method}},
+\code{\link{[[<-,section-method}},
+\code{\link{as.section}()},
+\code{\link{handleFlags,section-method}},
+\code{\link{initializeFlagScheme,section-method}},
+\code{\link{plot,section-method}},
+\code{\link{read.section}()},
+\code{\link{section-class}},
+\code{\link{sectionAddStation}()},
+\code{\link{sectionGrid}()},
+\code{\link{sectionSmooth}()},
+\code{\link{sectionSort}()},
+\code{\link{subset,section-method}},
+\code{\link{summary,section-method}}
 }
-\concept{datasets provided with \code{oce}}
-\concept{things related to \code{section} data}
+\concept{datasets provided with oce}
+\concept{things related to section data}

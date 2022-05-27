@@ -22,17 +22,18 @@ last of which is always zero.
 Convert a Numeric Time to Hour, Minute, and Second
 }
 \examples{
-
 t <- c("0900", "1234")
 numberAsHMS(t)
 
 }
 \seealso{
-Other things related to time: \code{\link{ctimeToSeconds}},
-  \code{\link{julianCenturyAnomaly}},
-  \code{\link{julianDay}}, \code{\link{numberAsPOSIXct}},
-  \code{\link{secondsToCtime}},
-  \code{\link{unabbreviateYear}}
+Other things related to time: 
+\code{\link{ctimeToSeconds}()},
+\code{\link{julianCenturyAnomaly}()},
+\code{\link{julianDay}()},
+\code{\link{numberAsPOSIXct}()},
+\code{\link{secondsToCtime}()},
+\code{\link{unabbreviateYear}()}
 }
 \author{
 Dan Kelley

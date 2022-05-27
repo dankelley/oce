@@ -5,7 +5,7 @@
 \alias{coastlineWorld}
 \title{World Coastline}
 \source{
-Downloaded from \url{https://www.naturalearthdata.com}, in
+Downloaded from \verb{https://www.naturalearthdata.com}, in
 \code{ne_110m_admin_0_countries.shp} in July 2015, with an
 update on December 16, 2017.
 }
@@ -21,37 +21,48 @@ described in \dQuote{Details}, where of course your source file will differ.
 Also, you should change the name of the coastline object from
 \code{coastlineWorld}, to avoid conflicts with the built-in dataset. Save
 the \code{.rda} file to some directory of your choosing, e.g. perhaps
-\code{/data/coastlines} or \code{~/data/coastlines} on a unix-type machine.
-Then, whenever you need the file, use \code{\link{load}} to load it.  Most
-users find it convenient to do the loading in an \code{\link{Rprofile}}
+\verb{/data/coastlines} or \verb{~/data/coastlines} on a unix-type machine.
+Then, whenever you need the file, use \code{\link[=load]{load()}} to load it.  Most
+users find it convenient to do the loading in an \code{\link[=Rprofile]{Rprofile()}}
 startup file.
 }
 
 \seealso{
-Other datasets provided with \code{oce}: \code{\link{adp}},
-  \code{\link{adv}}, \code{\link{argo}}, \code{\link{cm}},
-  \code{\link{ctdRaw}}, \code{\link{ctd}},
-  \code{\link{echosounder}}, \code{\link{landsat}},
-  \code{\link{lisst}}, \code{\link{lobo}},
-  \code{\link{met}}, \code{\link{ocecolors}},
-  \code{\link{rsk}}, \code{\link{sealevelTuktoyaktuk}},
-  \code{\link{sealevel}}, \code{\link{section}},
-  \code{\link{topoWorld}}, \code{\link{wind}}
+Other datasets provided with oce: 
+\code{\link{adp}},
+\code{\link{adv}},
+\code{\link{amsr}},
+\code{\link{argo}},
+\code{\link{cm}},
+\code{\link{ctdRaw}},
+\code{\link{ctd}},
+\code{\link{echosounder}},
+\code{\link{landsat}},
+\code{\link{lisst}},
+\code{\link{lobo}},
+\code{\link{met}},
+\code{\link{ocecolors}},
+\code{\link{rsk}},
+\code{\link{sealevelTuktoyaktuk}},
+\code{\link{sealevel}},
+\code{\link{section}},
+\code{\link{topoWorld}},
+\code{\link{wind}},
+\code{\link{xbt}}
 
-Other things related to \code{coastline} data: \code{\link{[[,coastline-method}},
-  \code{\link{[[<-,coastline-method}},
-  \code{\link{as.coastline}},
-  \code{\link{coastline-class}},
-  \code{\link{coastlineBest}}, \code{\link{coastlineCut}},
-  \code{\link{download.coastline}},
-  \code{\link{plot,coastline-method}},
-  \code{\link{read.coastline.openstreetmap}},
-  \code{\link{read.coastline.shapefile}},
-  \code{\link{subset,coastline-method}},
-  \code{\link{summary,coastline-method}}
+Other things related to coastline data: 
+\code{\link{[[,coastline-method}},
+\code{\link{[[<-,coastline-method}},
+\code{\link{as.coastline}()},
+\code{\link{coastline-class}},
+\code{\link{coastlineBest}()},
+\code{\link{coastlineCut}()},
+\code{\link{download.coastline}()},
+\code{\link{plot,coastline-method}},
+\code{\link{read.coastline.openstreetmap}()},
+\code{\link{read.coastline.shapefile}()},
+\code{\link{subset,coastline-method}},
+\code{\link{summary,coastline-method}}
 }
-\author{
-Dan Kelley
-}
-\concept{datasets provided with \code{oce}}
-\concept{things related to \code{coastline} data}
+\concept{datasets provided with oce}
+\concept{things related to coastline data}

@@ -4,11 +4,17 @@
 \alias{xyzToEnuAdv}
 \title{Convert an ADP from XYZ to ENU Coordinates}
 \usage{
-xyzToEnuAdv(x, declination = 0, cabled = FALSE, horizontalCase,
-  sensorOrientation, debug = getOption("oceDebug"))
+xyzToEnuAdv(
+  x,
+  declination = 0,
+  cabled = FALSE,
+  horizontalCase,
+  sensorOrientation,
+  debug = getOption("oceDebug")
+)
 }
 \arguments{
-\item{x}{An \code{adv} object, i.e. one inheriting from \code{\link{adv-class}}.}
+\item{x}{an \linkS4class{adv} object.}
 
 \item{declination}{magnetic declination to be added to the heading, to get
 ENU with N as "true" north.}
@@ -25,7 +31,7 @@ See \dQuote{Details}.}
 the sensor points.  The value, which must be \code{"upward"} or
 \code{"downward"}, over-rides the value of \code{orientation},
 in the \code{metadata} slot,
-which will have been set by \code{\link{read.adv}}, \emph{provided} that the
+which will have been set by \code{\link[=read.adv]{read.adv()}}, \emph{provided} that the
 data file contained the full header.  See \dQuote{Details}.}
 
 \item{debug}{a flag that, if non-zero, turns on debugging.  Higher values
@@ -63,65 +69,87 @@ should not be difficult to tailor the code, if needed.
 
 The code handles every case individually, based on the table given below.
 The table comes from Clark Richards, a former PhD student at Dalhousie
-University [2], who developed it based on instrument documentation,
+University (reference 2), who developed it based on instrument documentation,
 discussion on user groups, and analysis of measurements acquired with Nortek
 and Sontek velocimeters in the SLEIWEX experiment.
 
-The column labelled ``Cabled'' indicates whether the sensor and the pressure
-case are connected with a flexible cable, and the column labelled ``H.case''
+The column labelled \verb{Cabled'' indicates whether the sensor and the pressure case are connected with a flexible cable, and the column labelled }H.case''
 indicates whether the pressure case is oriented horizontally.  These two
 properties are not discoverable in the headers of the data files, and so
 they must be supplied with the arguments \code{cabled} and
 \code{horizontalCase}.  The source code refers to the information in this
 table by case numbers.  (Cases 5 and 6 are not handled.)  Angles are
-abbreviated as follows:: heading ``H,'' pitch ``P,'' and roll ``R''.
+abbreviated as follows:: heading \verb{H,'' pitch }P,'' and roll ``R''.
 Entries X, Y and Z refer to instrument coordinates of the same names.
 Entries S, F and M refer to so-called ship coordinates starboard, forward,
 and mast; it is these that are used together with a rotation matrix to get
 velocity components in the east, north, and upward directions.
 
-\tabular{rrrrrrrrrrrr}{ \strong{Case} \tab \strong{Mfr.} \tab
-\strong{Instr.} \tab \strong{Cabled} \tab \strong{H. case} \tab
-\strong{Orient.} \tab \strong{H} \tab \strong{P} \tab \strong{R} \tab
-\strong{S} \tab \strong{F} \tab \strong{M}\cr 1 \tab Nortek \tab vector \tab
-no \tab - \tab up \tab H-90 \tab R \tab -P \tab X \tab -Y \tab -Z\cr 2 \tab
-Nortek \tab vector \tab no \tab - \tab down \tab H-90 \tab R \tab -P \tab X
-\tab Y \tab Z\cr 3 \tab Nortek \tab vector \tab yes \tab yes \tab up \tab
-H-90 \tab R \tab -P \tab X \tab Y \tab Z\cr 4 \tab Nortek \tab vector \tab
-yes \tab yes \tab down \tab H-90 \tab R \tab P \tab X \tab -Y \tab -Z\cr 5
-\tab Nortek \tab vector \tab yes \tab no \tab up \tab - \tab - \tab - \tab -
-\tab - \tab -\cr 6 \tab Nortek \tab vector \tab yes \tab no \tab down \tab -
-\tab - \tab - \tab - \tab - \tab -\cr 7 \tab Sontek \tab adv \tab - \tab -
-\tab up \tab H-90 \tab R \tab -P \tab X \tab -Y \tab -Z\cr 8 \tab Sontek
-\tab adv \tab - \tab - \tab down \tab H-90 \tab R \tab -P \tab X \tab Y \tab
-Z\cr }
+\tabular{rrrrrrrrrrrr}{
+\strong{\code{Case}} \tab \strong{\code{Mfr.}} \tab
+\strong{\code{Instr.}} \tab \strong{\code{Cabled}} \tab \strong{\verb{H. case}} \tab
+\strong{\code{Orient.}} \tab \strong{\code{H}} \tab \strong{\code{P}} \tab \strong{\code{R}} \tab
+\strong{\code{S}} \tab \strong{\code{F}} \tab \strong{\code{M}}\cr
+
+1 \tab Nortek \tab vector \tab
+no \tab - \tab up \tab H-90 \tab R \tab -P \tab X \tab -Y \tab -Z\cr
+
+2 \tab Nortek \tab vector \tab no \tab - \tab down \tab H-90 \tab R \tab -P \tab X
+\tab Y \tab Z\cr
+
+3 \tab Nortek \tab vector \tab yes \tab yes \tab up \tab
+H-90 \tab R \tab -P \tab X \tab Y \tab Z\cr
+
+4 \tab Nortek \tab vector \tab
+yes \tab yes \tab down \tab H-90 \tab R \tab P \tab X \tab -Y \tab -Z\cr
+
+5 \tab Nortek \tab vector \tab yes \tab no \tab up \tab - \tab - \tab - \tab -
+\tab - \tab -\cr
+
+6 \tab Nortek \tab vector \tab yes \tab no \tab down \tab -
+\tab - \tab - \tab - \tab - \tab -\cr
+
+7 \tab Sontek \tab adv \tab - \tab -
+\tab up \tab H-90 \tab R \tab -P \tab X \tab -Y \tab -Z\cr
+
+8 \tab Sontek \tab adv \tab - \tab - \tab down \tab H-90 \tab R \tab -P \tab X \tab Y \tab Z\cr
+}
 }
 \references{
-1. \url{https://www.nortekgroup.com/faq/how-is-a-coordinate-transformation-done}
-
-2. Clark Richards, 2012, PhD Dalhousie University Department of
+\enumerate{
+\item @template nortekCoordTemplate
+\item Clark Richards, 2012, PhD Dalhousie University Department of
 Oceanography.
 }
+}
 \seealso{
-See \code{\link{read.adv}} for notes on functions relating to
+See \code{\link[=read.adv]{read.adv()}} for notes on functions relating to
 \code{adv} objects.
 
-Other things related to \code{adv} data: \code{\link{[[,adv-method}},
-  \code{\link{[[<-,adv-method}}, \code{\link{adv-class}},
-  \code{\link{adv}}, \code{\link{beamName}},
-  \code{\link{beamToXyz}}, \code{\link{enuToOtherAdv}},
-  \code{\link{enuToOther}}, \code{\link{plot,adv-method}},
-  \code{\link{read.adv.nortek}},
-  \code{\link{read.adv.sontek.adr}},
-  \code{\link{read.adv.sontek.serial}},
-  \code{\link{read.adv.sontek.text}},
-  \code{\link{read.adv}}, \code{\link{rotateAboutZ}},
-  \code{\link{subset,adv-method}},
-  \code{\link{summary,adv-method}}, \code{\link{toEnuAdv}},
-  \code{\link{toEnu}}, \code{\link{velocityStatistics}},
-  \code{\link{xyzToEnu}}
+Other things related to adv data: 
+\code{\link{[[,adv-method}},
+\code{\link{[[<-,adv-method}},
+\code{\link{adv-class}},
+\code{\link{adv}},
+\code{\link{beamName}()},
+\code{\link{beamToXyz}()},
+\code{\link{enuToOtherAdv}()},
+\code{\link{enuToOther}()},
+\code{\link{plot,adv-method}},
+\code{\link{read.adv.nortek}()},
+\code{\link{read.adv.sontek.adr}()},
+\code{\link{read.adv.sontek.serial}()},
+\code{\link{read.adv.sontek.text}()},
+\code{\link{read.adv}()},
+\code{\link{rotateAboutZ}()},
+\code{\link{subset,adv-method}},
+\code{\link{summary,adv-method}},
+\code{\link{toEnuAdv}()},
+\code{\link{toEnu}()},
+\code{\link{velocityStatistics}()},
+\code{\link{xyzToEnu}()}
 }
 \author{
 Dan Kelley, in collaboration with Clark Richards
 }
-\concept{things related to \code{adv} data}
+\concept{things related to adv data}

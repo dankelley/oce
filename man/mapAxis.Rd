@@ -4,54 +4,86 @@
 \alias{mapAxis}
 \title{Add Axis Labels to an Existing Map}
 \usage{
-mapAxis(side = 1:2, longitude = NULL, latitude = NULL, tick = TRUE,
-  line = NA, pos = NA, outer = FALSE, font = NA, lty = "solid",
-  lwd = 1, lwd.ticks = lwd, col = NULL, col.ticks = NULL,
-  hadj = NA, padj = NA, tcl = -0.3, cex.axis = 1, mgp = c(0, 0.5,
-  0), debug = getOption("oceDebug"))
+mapAxis(
+  side = 1:2,
+  longitude = TRUE,
+  latitude = TRUE,
+  axisStyle = 1,
+  tick = TRUE,
+  line = NA,
+  pos = NA,
+  outer = FALSE,
+  font = NA,
+  lty = "solid",
+  lwd = 1,
+  lwd.ticks = lwd,
+  col = NULL,
+  col.ticks = NULL,
+  hadj = NA,
+  padj = NA,
+  tcl = -0.3,
+  cex.axis = 1,
+  mgp = c(0, 0.5, 0),
+  debug = getOption("oceDebug")
+)
 }
 \arguments{
 \item{side}{the side at which labels are to be drawn.  If not provided,
 sides 1 and 2 will be used (i.e. bottom and left-hand sides).}
 
-\item{longitude}{vector of longitudes to indicate.  If not provided, and if
-a grid has already been drawn, then the labels will be at the
-intersections of the grid lines with the plotting box.}
+\item{longitude}{either a logical value or a numeric vector of longitudes. There
+are three possible cases:
+(1) If \code{longitude=TRUE} (the default) then ticks and nearby numbers will occur at the
+longitude grid established by the previous call to \code{\link[=mapPlot]{mapPlot()}};
+(2) if \code{longitude=FALSE} then no longitude ticks or numbers are
+drawn;
+(3) if \code{longitude} is a vector of numerical values, then those ticks
+are placed at those values, and numbers are written beside them.
+Note that in cases 1 and 3, efforts are made to avoid overdrawing text,
+so some longitude values might get ticks but not numbers. To get ticks
+but not numbers, set \code{cex.axis=0}.}
 
-\item{latitude}{vector of latitudes to indicate.  If not provided, and if a
-grid has already been drawn, then the labels will be at the
-interesections of the grid lines with the plotting box.}
+\item{latitude}{similar to \code{longitude} but for latitude.}
 
-\item{tick}{parameter passed to \code{\link{axis}}.}
+\item{axisStyle}{an integer specifying the style of labels for the numbers
+on axes.  The choices are:
+1 for signed numbers without additional labels;
+2 (the default) for unsigned numbers followed by letters indicating the hemisphere;
+3 for signed numbers followed by a degree sign;
+4 for unsigned numbers followed by a degree sign; and
+5 for signed numbers followed by a degree sign and letters indicating the hemisphere.}
 
-\item{line}{parameter passed to \code{\link{axis}}.}
+\item{tick}{parameter passed to \code{\link[=axis]{axis()}}.}
 
-\item{pos}{parameter passed to \code{\link{axis}}.}
+\item{line}{parameter passed to \code{\link[=axis]{axis()}}.}
 
-\item{outer}{parameter passed to \code{\link{axis}}.}
+\item{pos}{parameter passed to \code{\link[=axis]{axis()}}.}
 
-\item{font}{axis font, passed to \code{\link{axis}}.}
+\item{outer}{parameter passed to \code{\link[=axis]{axis()}}.}
 
-\item{lty}{axis line type, passed to \code{\link{axis}}.}
+\item{font}{axis font, passed to \code{\link[=axis]{axis()}}.}
 
-\item{lwd}{axis line width, passed to \code{\link{axis}}).}
+\item{lty}{axis line type, passed to \code{\link[=axis]{axis()}}.}
 
-\item{lwd.ticks}{tick line width, passed to \code{\link{axis}}.}
+\item{lwd}{axis line width, passed to \code{\link[=axis]{axis()}}).}
 
-\item{col}{axis color, passed to \code{\link{axis}}.}
+\item{lwd.ticks}{tick line width, passed to \code{\link[=axis]{axis()}}.}
 
-\item{col.ticks}{axis tick color, passed to \code{\link{axis}}.}
+\item{col}{axis color, passed to \code{\link[=axis]{axis()}}.}
 
-\item{hadj}{an argument that is transmitted to \code{\link{axis}}.}
+\item{col.ticks}{axis tick color, passed to \code{\link[=axis]{axis()}}.}
 
-\item{padj}{an argument that is transmitted to \code{\link{axis}}.}
+\item{hadj}{an argument that is transmitted to \code{\link[=axis]{axis()}}.}
 
-\item{tcl}{axis-tick size (see \code{\link{par}}).}
+\item{padj}{an argument that is transmitted to \code{\link[=axis]{axis()}}.}
 
-\item{cex.axis}{axis-label expansion factor (see \code{\link{par}}).}
+\item{tcl}{axis-tick size (see \code{\link[=par]{par()}}).}
+
+\item{cex.axis}{axis-label expansion factor (see \code{\link[=par]{par()}}); set to 0
+to prevent numbers from being placed in axes.}
 
 \item{mgp}{three-element numerical vector describing axis-label
-placement (see \code{\link{par}}). It usually makes sense to set
+placement (see \code{\link[=par]{par()}}). It usually makes sense to set
 the first and third elements to zero.}
 
 \item{debug}{a flag that turns on debugging.  Set to 1 to get a moderate
@@ -59,43 +91,59 @@ amount of debugging information, or to 2 to get more.}
 }
 \description{
 Plot axis labels on an existing map.
-}
-\details{
-This function is still in development, and the argument list as well as the
-action taken are both subject to change, hence the brevity of this help page.
-
-Note that if a grid line crosses the axis twice, only one label will be drawn.
+This is an advanced function, requiring
+coordination with \code{\link[=mapPlot]{mapPlot()}} and (possibly) also with \code{\link[=mapGrid]{mapGrid()}},
+and so it is best avoided by novices, who may be satisfied
+with the defaults used by \code{\link[=mapPlot]{mapPlot()}}.
 }
 \examples{
-\dontrun{
+\donttest{
 library(oce)
 data(coastlineWorld)
-par(mar=c(2, 2, 3, 1))
+par(mar=c(2, 2, 1, 1))
 lonlim <- c(-180, 180)
-latlim <- c(60, 120)
+latlim <- c(70, 110)
+# In mapPlot() call, note axes and grid args, to
+# prevent over-plotting of defaults.  Some adjustments
+# might be required to the mapGrid() arguments, to
+# get agreement with the axis. This is why both
+# mapGrid() and mapAxis() are best avoided; it is
+# simpler to let mapPlot() handle these things.
 mapPlot(coastlineWorld, projection="+proj=stere +lat_0=90",
         longitudelim=lonlim, latitudelim=latlim,
-        grid=FALSE)
-mapGrid(15, 15, polarCircle=1/2)
-mapAxis()
+        col="tan", axes=FALSE, grid=FALSE)
+mapGrid(15, 15)
+mapAxis(axisStyle=5)
 }
 
 }
 \seealso{
-A map must first have been created with \code{\link{mapPlot}}.
+A map must first have been created with \code{\link[=mapPlot]{mapPlot()}}.
 
-Other functions related to maps: \code{\link{lonlat2map}},
-  \code{\link{lonlat2utm}}, \code{\link{map2lonlat}},
-  \code{\link{mapArrows}}, \code{\link{mapContour}},
-  \code{\link{mapDirectionField}}, \code{\link{mapGrid}},
-  \code{\link{mapImage}}, \code{\link{mapLines}},
-  \code{\link{mapLocator}},
-  \code{\link{mapLongitudeLatitudeXY}},
-  \code{\link{mapPlot}}, \code{\link{mapPoints}},
-  \code{\link{mapPolygon}}, \code{\link{mapScalebar}},
-  \code{\link{mapText}}, \code{\link{mapTissot}},
-  \code{\link{oceCRS}}, \code{\link{shiftLongitude}},
-  \code{\link{usrLonLat}}, \code{\link{utm2lonlat}}
+Other functions related to maps: 
+\code{\link{formatPosition}()},
+\code{\link{lonlat2map}()},
+\code{\link{lonlat2utm}()},
+\code{\link{map2lonlat}()},
+\code{\link{mapArrows}()},
+\code{\link{mapContour}()},
+\code{\link{mapCoordinateSystem}()},
+\code{\link{mapDirectionField}()},
+\code{\link{mapGrid}()},
+\code{\link{mapImage}()},
+\code{\link{mapLines}()},
+\code{\link{mapLocator}()},
+\code{\link{mapLongitudeLatitudeXY}()},
+\code{\link{mapPlot}()},
+\code{\link{mapPoints}()},
+\code{\link{mapPolygon}()},
+\code{\link{mapScalebar}()},
+\code{\link{mapText}()},
+\code{\link{mapTissot}()},
+\code{\link{oceCRS}()},
+\code{\link{shiftLongitude}()},
+\code{\link{usrLonLat}()},
+\code{\link{utm2lonlat}()}
 }
 \author{
 Dan Kelley

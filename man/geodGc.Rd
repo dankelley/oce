@@ -22,12 +22,12 @@ Each pair in the \code{longitude} and \code{latitude} vectors is considered
 in turn.  For long vectors, this may be slow.
 }
 \examples{
-\dontrun{
+\donttest{
 library(oce)
 data(coastlineWorld)
-mapPlot(coastlineWorld, type='l',
+mapPlot(coastlineWorld, type="l",
         longitudelim=c(-80,10), latitudelim=c(35,80),
-        projection="+proj=ortho", orientation=c(35, -35, 0))
+        projection="+proj=merc")
 ## Great circle from New York to Paris (Lindberg's flight)
 l <- geodGc(c(-73.94,2.35), c(40.67,48.86), 1)
 mapLines(l$longitude, l$latitude, col='red', lwd=2)
@@ -35,15 +35,19 @@ mapLines(l$longitude, l$latitude, col='red', lwd=2)
 
 }
 \references{
-1. \code{http://williams.best.vwh.net/avform.htm#Intermediate}
+\enumerate{
+\item \verb{http://williams.best.vwh.net/avform.htm#Intermediate}
 (link worked for years but failed 2017-01-16).
 }
+}
 \seealso{
-Other functions relating to geodesy: \code{\link{geodDist}},
-  \code{\link{geodXyInverse}}, \code{\link{geodXy}}
+Other functions relating to geodesy: 
+\code{\link{geodDist}()},
+\code{\link{geodXyInverse}()},
+\code{\link{geodXy}()}
 }
 \author{
 Dan Kelley, based on code from Clark Richards, in turn based on
-formulae provided by Ed Williams [1].
+formulae provided by Ed Williams (see reference 1)].
 }
 \concept{functions relating to geodesy}

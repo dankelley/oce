@@ -4,7 +4,7 @@
 \alias{map2lonlat}
 \title{Convert X and Y to Longitude and Latitude}
 \usage{
-map2lonlat(x, y, init = c(0, 0))
+map2lonlat(x, y, init = NULL, debug = getOption("oceDebug"))
 }
 \arguments{
 \item{x}{vector containing the x component of points in the projected space, or
@@ -16,6 +16,14 @@ argument is ignored.}
 
 \item{init}{vector containing the initial guesses for longitude and latitude,
 presently ignored.}
+
+\item{debug}{an integer specifying whether debugging information is
+to be printed during the processing. This is a general parameter that
+is used by many \code{oce} functions. Generally, setting \code{debug=0}
+turns off the printing, while higher values suggest that more information
+be printed. If one function calls another, it usually reduces the value of
+\code{debug} first, so that a user can often obtain deeper debugging
+by specifying higher \code{debug} values.}
 }
 \value{
 A list containing \code{longitude} and \code{latitude}, with \code{NA}
@@ -24,47 +32,55 @@ values indicating points that are off the globe as displayed.
 \description{
 Convert from x-y coordinates to longitude and latitude. This is normally called
 internally within oce; see \sQuote{Bugs}.
-}
-\details{
-A projection must already have been set up, by a call to \code{\link{mapPlot}}
-or \code{\link{lonlat2map}}. It should be noted that not all projections are
+A projection must already have been set up, by a call to \code{\link[=mapPlot]{mapPlot()}}
+or \code{\link[=lonlat2map]{lonlat2map()}}. It should be noted that not all projections are
 handled well; see \sQuote{Bugs}.
 }
 \section{Bugs}{
 
-\code{oce} uses \link[rgdal]{project} in the \CRANpkg{rgdal}
-package to handle projections. Only those projections that have inverses are
-permitted within \code{oce}, and even those can sometimes yield errors, owing
-to limitations in \CRANpkg{rgdal}.
+\code{oce} uses the \code{\link[sf:sf_project]{sf::sf_project()}} function to handle projections.
+Only those projections that
+have inverses are permitted within \code{oce}, and of that subset, some are omitted
+because the \code{oce} developers have experienced problems with them.
 }
 
 \examples{
-\dontrun{
 library(oce)
 ## Cape Split, in the Minas Basin of the Bay of Fundy
 cs <- list(longitude=-64.49657, latitude=45.33462)
 xy <- lonlat2map(cs, projection="+proj=merc")
 map2lonlat(xy)
-}
 
 }
 \seealso{
-\code{\link{lonlat2map}} does the inverse operation.
+\code{\link[=lonlat2map]{lonlat2map()}} does the inverse operation.
 
-A map must first have been created with \code{\link{mapPlot}}.
+A map must first have been created with \code{\link[=mapPlot]{mapPlot()}}.
 
-Other functions related to maps: \code{\link{lonlat2map}},
-  \code{\link{lonlat2utm}}, \code{\link{mapArrows}},
-  \code{\link{mapAxis}}, \code{\link{mapContour}},
-  \code{\link{mapDirectionField}}, \code{\link{mapGrid}},
-  \code{\link{mapImage}}, \code{\link{mapLines}},
-  \code{\link{mapLocator}},
-  \code{\link{mapLongitudeLatitudeXY}},
-  \code{\link{mapPlot}}, \code{\link{mapPoints}},
-  \code{\link{mapPolygon}}, \code{\link{mapScalebar}},
-  \code{\link{mapText}}, \code{\link{mapTissot}},
-  \code{\link{oceCRS}}, \code{\link{shiftLongitude}},
-  \code{\link{usrLonLat}}, \code{\link{utm2lonlat}}
+Other functions related to maps: 
+\code{\link{formatPosition}()},
+\code{\link{lonlat2map}()},
+\code{\link{lonlat2utm}()},
+\code{\link{mapArrows}()},
+\code{\link{mapAxis}()},
+\code{\link{mapContour}()},
+\code{\link{mapCoordinateSystem}()},
+\code{\link{mapDirectionField}()},
+\code{\link{mapGrid}()},
+\code{\link{mapImage}()},
+\code{\link{mapLines}()},
+\code{\link{mapLocator}()},
+\code{\link{mapLongitudeLatitudeXY}()},
+\code{\link{mapPlot}()},
+\code{\link{mapPoints}()},
+\code{\link{mapPolygon}()},
+\code{\link{mapScalebar}()},
+\code{\link{mapText}()},
+\code{\link{mapTissot}()},
+\code{\link{oceCRS}()},
+\code{\link{shiftLongitude}()},
+\code{\link{usrLonLat}()},
+\code{\link{utm2lonlat}()}
 }
 \author{
 Dan Kelley

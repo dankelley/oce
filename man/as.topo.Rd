@@ -15,25 +15,28 @@ the \code{marmap} package; in the second case, all other arguments are ignored.}
 
 \item{z}{A matrix of heights (positive over land).}
 
-\item{filename}{Name of data (used when called by \code{\link{read.topo}}.}
+\item{filename}{Name of data (used when called by \code{\link[=read.topo]{read.topo()}}.}
 }
 \value{
-An object of \code{\link{topo-class}}.
+A \linkS4class{topo} object.
 }
 \description{
 Coerce Data into Topo Object
 }
 \seealso{
-Other things related to \code{topo} data: \code{\link{[[,topo-method}},
-  \code{\link{[[<-,topo-method}},
-  \code{\link{download.topo}},
-  \code{\link{plot,topo-method}}, \code{\link{read.topo}},
-  \code{\link{subset,topo-method}},
-  \code{\link{summary,topo-method}},
-  \code{\link{topo-class}}, \code{\link{topoInterpolate}},
-  \code{\link{topoWorld}}
+Other things related to topo data: 
+\code{\link{[[,topo-method}},
+\code{\link{[[<-,topo-method}},
+\code{\link{download.topo}()},
+\code{\link{plot,topo-method}},
+\code{\link{read.topo}()},
+\code{\link{subset,topo-method}},
+\code{\link{summary,topo-method}},
+\code{\link{topo-class}},
+\code{\link{topoInterpolate}()},
+\code{\link{topoWorld}}
 }
 \author{
 Dan Kelley
 }
-\concept{things related to \code{topo} data}
+\concept{things related to topo data}

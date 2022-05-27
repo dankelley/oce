@@ -1,11 +1,12 @@
+# vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
+
 #' Read an ITP-type CTD File
 #'
 #' @template readCtdTemplate
 #'
 #' @author Dan Kelley
 #'
-#' @details
-#' \code{read.ctd.itp()} reads ice-tethered-profiler data that are stored
+#' `read.ctd.itp` reads ice-tethered-profiler data that are stored
 #' in a format files used by WHOI servers as of 2016-2017. Lacking
 #' documentation on the format, the author constructed this function
 #' to work with some files that were on-hand. Whether the function will
@@ -13,12 +14,22 @@
 #'
 #' @references
 #' Information about ice-tethered profile data is provided at
-#' \url{http://www.whoi.edu/page.do?pid=23096}, which also provides a link for
+#' \code{https://www.whoi.edu/page.do?pid=23096}, which also provides a link for
 #' downloading data.  Note that the present version only handles data in
 #' profiler-mode, not fixed-depth mode.
+#'
+#' @family functions that read ctd data
 read.ctd.itp <- function(file, columns=NULL, station=NULL, missingValue, deploymentType="unknown",
                          monitor=FALSE, debug=getOption("oceDebug"), processingLog, ...)
 {
+    if (missing(file))
+        stop("must supply 'file'")
+    if (is.character(file)) {
+        if (!file.exists(file))
+            stop("cannot find file '", file, "'")
+        if (0L == file.info(file)$size)
+            stop("empty file '", file, "'")
+    }
     oceDebug(debug, "read.ctd.itp() {\n", unindent=1)
     if (is.character(file)) {
         filename <- fullFilename(file)
@@ -43,7 +54,7 @@ read.ctd.itp <- function(file, columns=NULL, station=NULL, missingValue, deploym
     if (nlines < 2)
         stop("file is too short; must have more than 2 lines")
     isProfile <- '%' != substr(lines[2], 1, 1)
-    ## see e.g. http://www.whoi.edu/page.do?pid=125516
+    ## see e.g. https://www.whoi.edu/page.do?pid=125516
     if (isProfile) {
         ## %ITP 59, profile 2: year day longitude(E+) latitude(N+) ndepths
         ## 2013  247.25002   156.2163  80.3189  371

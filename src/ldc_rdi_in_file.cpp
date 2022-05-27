@@ -12,6 +12,8 @@ using namespace Rcpp;
 
 #define OUTLIM 10000000
 
+static int warnings = 10;
+
 // If memory-fault problems occur, look at the Calloc() and Realloc()
 // calls, and at the spots where information is stored in the relevant
 // arrays. Note that arrows grow by a factor of 3/2 whenever needed;
@@ -53,6 +55,16 @@ double oce_timegm(struct tm *t)
 
   day = t->tm_mday - 1;
   year0 = year_base + t->tm_year;
+  // FIXME: is there a better way to decide when results are odd?
+  // FIXME: Should this be a user-controlled thing at the read.adp.rdi()
+  // FIXME: level, in R?
+  if (year0 > 2050) {
+    if (warnings > 0) {
+      Rprintf("oce_timegm(): year %d > 2050, so subtracting 100 y (will warn at most 10 times)\n", year0, t->tm_year);
+      warnings--;
+    }
+    year0 = year0 - 100;
+  }
   /* safety check for unbounded loops */
   if (year0 > 3000) {
     excess = (int)(year0/2000) - 1;
@@ -131,6 +143,8 @@ within the file.
 a value of 1 means to retrieve all the profiles, while a value of 2
 means to get every second profile.
 
+@param startIndex integer giving the location of the first 7f7f byte pair.
+
 @param mode integer, 0 if 'from' etc are profile numbers or 1 if they
 are the numerical values of unix times.
 
@@ -170,7 +184,10 @@ Dan Kelley
 */
 
 // [[Rcpp::export]]
-List do_ldc_rdi_in_file(StringVector filename, IntegerVector from, IntegerVector to, IntegerVector by, IntegerVector mode,
+List do_ldc_rdi_in_file(StringVector filename,
+    IntegerVector from, IntegerVector to, IntegerVector by,
+    IntegerVector startIndex,
+    IntegerVector mode,
     IntegerVector debug)
 {
   struct tm etime; // time of the ensemble under examination
@@ -190,6 +207,7 @@ List do_ldc_rdi_in_file(StringVector filename, IntegerVector from, IntegerVector
   if (by[0] < 0)
     ::Rf_error("'by' must be positive");
   unsigned long int by_value = by[0];
+  unsigned long int start_index = startIndex[0];
   int mode_value = mode[0];
   if (mode_value != 0 && mode_value != 1)
     ::Rf_error("'mode' must be 0 or 1");
@@ -197,7 +215,7 @@ List do_ldc_rdi_in_file(StringVector filename, IntegerVector from, IntegerVector
   if (debug_value < 0)
     debug_value = 0;
   if (debug_value > 0)
-    Rprintf("In C++ function named do_ldc_rdi_in_file. Diagnostics will be printed because debug>0\n");
+    Rprintf("In C++ function named do_ldc_rdi_in_file: diagnostics will be printed because debug>0\n");
   //Rprintf("from=%d, to=%d, by=%d, mode_value=%d\n", from_value, to_value, by_value, mode_value);
   int c, clast=0x00;
   int byte1 = 0x7f;
@@ -207,6 +225,13 @@ List do_ldc_rdi_in_file(StringVector filename, IntegerVector from, IntegerVector
   unsigned int bytes_to_check_last = 0; // used to prevent freakouts if the chunk length is wrong (issue 1437)
   unsigned long int cindex = 0;
   unsigned long outEnsemblePointer = 1;
+  if (start_index > 1) {
+    Rprintf("In C++ function named ldc_rdi_in_file: skipping %d bytes at the start of the file, to get to 7F7F byte pair\n", start_index-1);
+    for (unsigned int i=1; i < start_index; i++) {
+      fgetc(fp);
+      cindex++;
+    }
+  }
   clast = fgetc(fp);
   cindex++;
   if (clast == EOF)
@@ -214,7 +239,7 @@ List do_ldc_rdi_in_file(StringVector filename, IntegerVector from, IntegerVector
   // 'obuf' is a growable C buffer to hold the output, which eventually
   // gets saved in the R item "buf".
   unsigned long int nobuf = 100000; // BUFFER SIZE
-  unsigned char *obuf = (unsigned char *)Calloc((size_t)nobuf, unsigned char);
+  unsigned char *obuf = (unsigned char *)R_Calloc((size_t)nobuf, unsigned char);
   unsigned long int iobuf = 0;
 
   // 'ensembles', 'times' and 'sec100s' are growable buffers of equal length, with one
@@ -225,12 +250,12 @@ List do_ldc_rdi_in_file(StringVector filename, IntegerVector from, IntegerVector
   // Note that we do not check the Calloc() results because the R docs say that
   // Calloc() performs its won tests, and that R will handle any problems.
   unsigned long int nensembles = 100000; // BUFFER SIZE
-  unsigned int *ensemble_in_files = (unsigned int *)Calloc((size_t)nensembles, unsigned int);
-  int *ensembles = (int *)Calloc((size_t)nensembles, int);
-  int *times = (int *)Calloc((size_t)nensembles, int);
-  int *sec100s = (int *)Calloc((size_t)nensembles, int);
+  unsigned int *ensemble_in_files = (unsigned int *)R_Calloc((size_t)nensembles, unsigned int);
+  int *ensembles = (int *)R_Calloc((size_t)nensembles, int);
+  int *times = (int *)R_Calloc((size_t)nensembles, int);
+  int *sec100s = (int *)R_Calloc((size_t)nensembles, int);
   unsigned long int nebuf = 50000; // BUFFER SIZE
-  unsigned char *ebuf = (unsigned char *)Calloc((size_t)nebuf, unsigned char);
+  unsigned char *ebuf = (unsigned char *)R_Calloc((size_t)nebuf, unsigned char);
 
   unsigned long int in_ensemble = 1, out_ensemble = 0;
   int b1, b2;
@@ -242,7 +267,7 @@ List do_ldc_rdi_in_file(StringVector filename, IntegerVector from, IntegerVector
     c = fgetc(fp);
     cindex++;
     if (c == EOF) {
-      Rprintf("Got to end of data while trying to read the first header byte of an RDI file (cindex=%d)\n", cindex);
+      Rprintf("Got to end of data while trying to read the first header byte of an RDI file (cindex=%d; last7f7f=%d)\n", cindex, last7f7f);
       break;
     }
     // Locate "ensemble starts", spots where a 0x7f is followed by a second 0x7f,
@@ -260,14 +285,14 @@ List do_ldc_rdi_in_file(StringVector filename, IntegerVector from, IntegerVector
       b1 = fgetc(fp);
       cindex++;
       if (b1 == EOF) {
-        Rprintf("Got to end of data while trying to read the 'b1' byte of an RDI file (cindex=%d)\n", cindex);
+        Rprintf("Got to end of data while trying to read the 'b1' byte of an RDI file (cindex=%d; last7f7f=%d)\n", cindex, last7f7f);
         break;
       }
       check_sum += (unsigned short int)b1;
       b2 = fgetc(fp);
       cindex++;
       if (b2 == EOF) {
-        Rprintf("Got to end of data while trying to read the 'b2' byte of an RDI file (cindex=%d)\n", cindex);
+        Rprintf("Got to end of data while trying to read the 'b2' byte of an RDI file (cindex=%d; last7f7f=%d)\n", cindex, last7f7f);
         break;
       }
       check_sum += (unsigned short int)b2;
@@ -279,10 +304,10 @@ List do_ldc_rdi_in_file(StringVector filename, IntegerVector from, IntegerVector
       if (debug_value > 0)
         Rprintf("\nbytes_to_check=%d based on b1=%d(0x%02x) and b2=%d(0x%02x)\n", bytes_to_check, b1, b1, b2, b2);
       if (bytes_to_check < 5) { // this will only happen in error; we check so bytes_to_read won't be crazy
-        Free(ensembles);
-        Free(times);
-        Free(sec100s);
-        Free(ebuf);
+        R_Free(ensembles);
+        R_Free(times);
+        R_Free(sec100s);
+        R_Free(ebuf);
         ::Rf_error("cannot decode the length of ensemble number %d", in_ensemble);
       }
       if (bytes_to_check < 4)
@@ -293,14 +318,14 @@ List do_ldc_rdi_in_file(StringVector filename, IntegerVector from, IntegerVector
       if (bytes_to_read > nebuf) {
         if (debug_value > 0)
           Rprintf("Increasing 'ebuf' buffer size from %d bytes to %d bytes\n", nebuf, bytes_to_read);
-        ebuf = (unsigned char *)Realloc(ebuf, bytes_to_read, unsigned char);
+        ebuf = (unsigned char *)R_Realloc(ebuf, bytes_to_read, unsigned char);
         nebuf = bytes_to_read;
       }
       // Read the bytes in one operation, because fgetc() is too slow.
       unsigned int bytesRead;
       bytesRead = fread(ebuf, bytes_to_read, sizeof(unsigned char), fp);
       if (feof(fp) || bytesRead == 0) {
-        Rprintf("Got to end of data while trying to read an RDI file (cindex=%d)\n", cindex);
+        Rprintf("Got to end of data while trying to read an RDI file (cindex=%d; last7f7f=%d)\n", cindex, last7f7f);
         break;
       }
       cindex += bytes_to_read;
@@ -311,13 +336,13 @@ List do_ldc_rdi_in_file(StringVector filename, IntegerVector from, IntegerVector
       cs1 = fgetc(fp);
       cindex++;
       if (cs1 == EOF) {
-        Rprintf("Got to end of data while trying to get the first checksum byte in an RDI file (cindex=%d)\n", cindex);
+        Rprintf("Got to end of data while trying to get the first checksum byte in an RDI file (cindex=%d; last7f7f=%d)\n", cindex, last7f7f);
         break;
       }
       cs2 = fgetc(fp);
       cindex++;
       if (cs2 == EOF) {
-        Rprintf("Got to end of data while trying to get second checksum byte in an RDI file (cindex=%d)\n", cindex);
+        Rprintf("Got to end of data while trying to get second checksum byte in an RDI file (cindex=%d; last7f7f=%d)\n", cindex, last7f7f);
         break;
       }
       desired_check_sum = ((unsigned short int)cs1) | ((unsigned short int)(cs2 << 8));
@@ -339,10 +364,10 @@ List do_ldc_rdi_in_file(StringVector filename, IntegerVector from, IntegerVector
           nensembles = 3 * nensembles / 2;
           if (debug_value > -1)
             Rprintf("Increasing ensembles,times,sec100s storage to %d elements ...\n", nensembles);
-          ensemble_in_files = (unsigned int *) Realloc(ensemble_in_files, nensembles, unsigned int);
-          ensembles = (int *) Realloc(ensembles, nensembles, int);
-          times = (int *) Realloc(times, nensembles, int);
-          sec100s = (int *)Realloc(sec100s, nensembles, int);
+          ensemble_in_files = (unsigned int *) R_Realloc(ensemble_in_files, nensembles, unsigned int);
+          ensembles = (int *) R_Realloc(ensembles, nensembles, int);
+          times = (int *) R_Realloc(times, nensembles, int);
+          sec100s = (int *)R_Realloc(sec100s, nensembles, int);
         }
         // We will decide whether to keep this ensemble, based on ensemble
         // number, if mode_value==0 or on time, if mode_value==1. That
@@ -395,7 +420,7 @@ List do_ldc_rdi_in_file(StringVector filename, IntegerVector from, IntegerVector
               nobuf = nobuf + 100 + bytes_to_read + nobuf / 2;
               if (debug_value > 0)
                 Rprintf("about to enlarge obuf storage to %d elements ...\n", nobuf);
-              obuf = (unsigned char *)Realloc(obuf, nobuf, unsigned char);
+              obuf = (unsigned char *)R_Realloc(obuf, nobuf, unsigned char);
               if (debug_value > 0)
                 Rprintf("    ... allocation was successful\n");
             }
@@ -528,15 +553,15 @@ List do_ldc_rdi_in_file(StringVector filename, IntegerVector from, IntegerVector
     sec100[i] = sec100s[i];
     //Rprintf("i=%d ensemble=%d time=%d sec100=%d\n", i, ensemble[i], time[i], (int)sec100[i]);
   }
-  Free(ensemble_in_files);
-  Free(ensembles);
-  Free(times);
-  Free(sec100s);
-  Free(ebuf);
+  R_Free(ensemble_in_files);
+  R_Free(ensembles);
+  R_Free(times);
+  R_Free(sec100s);
+  R_Free(ebuf);
   for (unsigned long int i = 0; i < iobuf; i++) {
     buf[i] = obuf[i];
   }
-  Free(obuf);
+  R_Free(obuf);
   if (debug_value > 0)
     Rprintf("Returning from C++ function named do_ldc_rdi_in_file.\n");
   return(List::create(Named("ensembleStart")=ensemble, Named("time")=time,

@@ -8,14 +8,13 @@
 oceSmooth(x, ...)
 }
 \arguments{
-\item{x}{an \code{oce} object.}
+\item{x}{an \linkS4class{oce} object.}
 
-\item{\dots}{parameters to be supplied to \code{\link{smooth}}, which does
+\item{\dots}{parameters to be supplied to \code{\link[=smooth]{smooth()}}, which does
 the actual work.}
 }
 \value{
-An object of \code{\link[base]{class}} \code{"oce"} that has been
-smoothed appropriately.
+An \linkS4class{oce} object that has been smoothed appropriately.
 }
 \description{
 Each data element is smoothed as a timeseries. For ADP data, this is done
@@ -29,7 +28,7 @@ d <- oce.smooth(ctd)
 plot(d)
 }
 \seealso{
-The work is done with \code{\link{smooth}}, and the \code{...}
+The work is done with \code{\link[=smooth]{smooth()}}, and the \code{...}
 arguments are handed to it directly by \code{oce.smooth}.
 }
 \author{

@@ -9,19 +9,19 @@ oceCRS(region)
 \arguments{
 \item{region}{character string indicating the region. This must be
 in the following list (or a string that matches to just one entry,
-with \code{\link{pmatch}}):
+with \code{\link[=pmatch]{pmatch()}}):
 \code{"North Atlantic"}, \code{"South Atlantic"}, \code{"Atlantic"},
 \code{"North Pacific"}, \code{"South Pacific"}, \code{"Pacific"},
 \code{"Arctic"},  and \code{"Antarctic"}.}
 }
 \value{
 string contain a CRS, which can be used as \code{projection}
-in \code{\link{mapPlot}}.
+in \code{\link[=mapPlot]{mapPlot()}}.
 }
 \description{
 Create a coordinate reference string (CRS), suitable for use as a
-\code{projection} argument to \code{\link{mapPlot}} or
-\code{\link{plot,coastline-method}}.
+\code{projection} argument to \code{\link[=mapPlot]{mapPlot()}} or
+\code{\link[=plot,coastline-method]{plot,coastline-method()}}.
 }
 \section{Caution}{
  This is a preliminary version of this function,
@@ -30,15 +30,15 @@ guided by real-world usage.
 }
 
 \examples{
-\dontrun{
+\donttest{
 library(oce)
 data(coastlineWorld)
 par(mar=c(2, 2, 1, 1))
-plot(coastlineWorld, proj=oceCRS("Atlantic"), span=12000)
-plot(coastlineWorld, proj=oceCRS("North Atlantic"), span=8000)
-plot(coastlineWorld, proj=oceCRS("South Atlantic"), span=8000)
-plot(coastlineWorld, proj=oceCRS("Arctic"), span=4000)
-plot(coastlineWorld, proj=oceCRS("Antarctic"), span=10000)
+plot(coastlineWorld, projection=oceCRS("Atlantic"), span=12000)
+plot(coastlineWorld, projection=oceCRS("North Atlantic"), span=8000)
+plot(coastlineWorld, projection=oceCRS("South Atlantic"), span=8000)
+plot(coastlineWorld, projection=oceCRS("Arctic"), span=4000)
+plot(coastlineWorld, projection=oceCRS("Antarctic"), span=10000)
 # Avoid ugly horizontal lines, an artifact of longitude shifting.
 # Note: we cannot fill the land once we shift, either.
 pacific <- coastlineCut(coastlineWorld, -180)
@@ -48,19 +48,30 @@ plot(pacific, proj=oceCRS("South Pacific"), span=12000, col=NULL)
 }
 }
 \seealso{
-Other functions related to maps: \code{\link{lonlat2map}},
-  \code{\link{lonlat2utm}}, \code{\link{map2lonlat}},
-  \code{\link{mapArrows}}, \code{\link{mapAxis}},
-  \code{\link{mapContour}},
-  \code{\link{mapDirectionField}}, \code{\link{mapGrid}},
-  \code{\link{mapImage}}, \code{\link{mapLines}},
-  \code{\link{mapLocator}},
-  \code{\link{mapLongitudeLatitudeXY}},
-  \code{\link{mapPlot}}, \code{\link{mapPoints}},
-  \code{\link{mapPolygon}}, \code{\link{mapScalebar}},
-  \code{\link{mapText}}, \code{\link{mapTissot}},
-  \code{\link{shiftLongitude}}, \code{\link{usrLonLat}},
-  \code{\link{utm2lonlat}}
+Other functions related to maps: 
+\code{\link{formatPosition}()},
+\code{\link{lonlat2map}()},
+\code{\link{lonlat2utm}()},
+\code{\link{map2lonlat}()},
+\code{\link{mapArrows}()},
+\code{\link{mapAxis}()},
+\code{\link{mapContour}()},
+\code{\link{mapCoordinateSystem}()},
+\code{\link{mapDirectionField}()},
+\code{\link{mapGrid}()},
+\code{\link{mapImage}()},
+\code{\link{mapLines}()},
+\code{\link{mapLocator}()},
+\code{\link{mapLongitudeLatitudeXY}()},
+\code{\link{mapPlot}()},
+\code{\link{mapPoints}()},
+\code{\link{mapPolygon}()},
+\code{\link{mapScalebar}()},
+\code{\link{mapText}()},
+\code{\link{mapTissot}()},
+\code{\link{shiftLongitude}()},
+\code{\link{usrLonLat}()},
+\code{\link{utm2lonlat}()}
 }
 \author{
 Dan Kelley

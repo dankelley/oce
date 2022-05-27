@@ -3,22 +3,22 @@
 #' together data linearly if they are vectors, by row if they are matrices,
 #' and by second index if they are arrays. It has been tested for the following
 #' classes:
-#' \code{\link{adp-class}},
-#' \code{\link{adv-class}},
-#' \code{\link{ctd-class}},
+#' [adp-class],
+#' [adv-class],
+#' [ctd-class],
 #' and
-#' \code{\link{met-class}}. It may do useful things for other classes, and
+#' [met-class]. It may do useful things for other classes, and
 #' so users are encouraged to try, and to report problems to the developers.
 #' It is unlikely that the function will do anything even remotely useful
 #' for image and topographic data, to name just two cases that do not fit
 #' the sampled-over-time category.
 #'
-#' @param object An object of \code{\link{<%=class%>-class}}, or a list containing such
+#' @param object An object of [<%=class%>-class], or a list containing such
 #' objects (in which case the remaining arguments are ignored).
 #'
-#' @param ... Optional additional objects of \code{\link{<%=class%>-class}}.
+#' @param ... Optional additional objects of [<%=class%>-class].
 #'
-#' @return An object of \code{\link{<%=class%>-class}}.
+#' @return An object of [<%=class%>-class].
 #'
 #' @examples
 #' ## 1. Split, then recombine, a ctd object.
@@ -43,4 +43,5 @@
 #'
 #' @author Dan Kelley
 #'
-#' @family functions that concatenate \code{oce} objects.
+#' @family functions that concatenate oce objects
+

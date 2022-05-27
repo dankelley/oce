@@ -4,17 +4,30 @@
 \alias{mapImage}
 \title{Add an Image to a Map}
 \usage{
-mapImage(longitude, latitude, z, zlim, zclip = FALSE, breaks, col,
-  colormap, border = NA, lwd = par("lwd"), lty = par("lty"),
-  missingColor = NA, filledContour = FALSE, gridder = "binMean2D",
-  debug = getOption("oceDebug"))
+mapImage(
+  longitude,
+  latitude,
+  z,
+  zlim,
+  zclip = FALSE,
+  breaks,
+  col,
+  colormap,
+  border = NA,
+  lwd = par("lwd"),
+  lty = par("lty"),
+  missingColor = NA,
+  filledContour = FALSE,
+  gridder = "binMean2D",
+  debug = getOption("oceDebug")
+)
 }
 \arguments{
-\item{longitude}{vector of longitudes corresponding to \code{z} matrix.}
+\item{longitude}{numeric vector of longitudes corresponding to \code{z} matrix.}
 
-\item{latitude}{vector of latitudes corresponding to \code{z} matrix.}
+\item{latitude}{numeric vector of latitudes corresponding to \code{z} matrix.}
 
-\item{z}{matrix to be represented as an image.}
+\item{z}{numeric matrix to be represented as an image.}
 
 \item{zlim}{limit for z (color).}
 
@@ -29,19 +42,19 @@ action is as if \code{zclip} were \code{FALSE}.}
 
 \item{breaks}{The z values for breaks in the color scheme.  If this is of
 length 1, the value indicates the desired number of breaks, which is
-supplied to \code{\link{pretty}}, in determining clean break points.}
+supplied to \code{\link[=pretty]{pretty()}}, in determining clean break points.}
 
 \item{col}{Either a vector of colors corresponding to the breaks, of length
 1 plus the number of breaks, or a function specifying colors,
-e.g. \code{\link{oce.colorsJet}} for a rainbow.}
+e.g. \code{\link[=oce.colorsViridis]{oce.colorsViridis()}} for the Viridis scheme.}
 
-\item{colormap}{optional colormap, as created by \code{\link{colormap}}.
+\item{colormap}{optional colormap, as created by \code{\link[=colormap]{colormap()}}.
 If a \code{colormap} is provided, then its properties takes precedence
 over \code{breaks}, \code{col}, \code{missingColor}, and \code{zclip}
 specified to \code{mapImage}.}
 
 \item{border}{Color used for borders of patches (passed to
-\code{\link{polygon}}); the default \code{NA} means no border.}
+\code{\link[=polygon]{polygon()}}); the default \code{NA} means no border.}
 
 \item{lwd}{line width, used if borders are drawn.}
 
@@ -59,9 +72,9 @@ x-y coordinates.  See \dQuote{Details} for how this interacts with
 
 \item{gridder}{Name of gridding function used if \code{filledContour} is
 \code{TRUE}.  This can be either \code{"binMean2D"} to select
-\code{\link{binMean2D}} or \code{"interp"} for
-\code{\link[akima]{interp}}. If not provided, then a selection is made
-automatically, with \code{\link{binMean2D}} being used if there are
+\code{\link[=binMean2D]{binMean2D()}} or \code{"interp"} for
+\code{\link[akima:interp]{akima::interp()}}. If not provided, then a selection is made
+automatically, with \code{\link[=binMean2D]{binMean2D()}} being used if there are
 more than 10,000 data points in the present graphical view. This
 \code{"binMean2D"} method is much faster than \code{"interp"}.}
 
@@ -69,25 +82,20 @@ more than 10,000 data points in the present graphical view. This
 moderate amount of debugging information, or to 2 to get more.}
 }
 \description{
-Plot an image on an existing map that was created with \code{\link{mapPlot}}.
+Plot an image on an existing map that was created with \code{\link[=mapPlot]{mapPlot()}}.
 (See example 4 for a way to start  with a blank map.)
 }
 \details{
-Adds an image to an existing map, by analogy to \code{\link{image}}.
-
 The data are on a regular grid in lon-lat space, but not in the projected
-x-y space.  This means that \code{\link{image}} cannot be used.  Instead,
+x-y space.  This means that \code{\link[=image]{image()}} cannot be used.  Instead,
 there are two approaches, depending on the value of \code{filledContour}.
 
-If \code{filledContour} is \code{FALSE}, the image ``pixels'' are with
-\code{\link{polygon}}, which can be prohibitively slow for fine grids.
-However, if \code{filledContour} is \code{TRUE} or a numerical value, then the
-``pixels'' are remapped into a regular grid and then displayed with
-\code{\link{.filled.contour}}.  The remapping starts by converting the
+If \code{filledContour} is \code{FALSE}, the image \verb{pixels'' are with [polygon()], which can be prohibitively slow for fine grids. However, if `filledContour` is `TRUE` or a numerical value, then the }pixels'' are remapped into a regular grid and then displayed with
+\code{\link[=.filled.contour]{.filled.contour()}}.  The remapping starts by converting the
 regular lon-lat grid to an irregular x-y grid using
-\code{\link{lonlat2map}}.  This irregular grid is then interpolated onto a
-regular x-y grid  with \code{\link{binMean2D}} or with
-\code{\link[akima]{interp}} from the \code{akima} package, as determined by
+\code{\link[=lonlat2map]{lonlat2map()}}.  This irregular grid is then interpolated onto a
+regular x-y grid  with \code{\link[=binMean2D]{binMean2D()}} or with
+\code{\link[akima:interp]{akima::interp()}} from the \code{akima} package, as determined by
 the \code{gridder} argument.   If \code{filledContour} is \code{TRUE}, the
 dimensions of the regular x-y grid is the same as that of the original
 lon-lat grid; otherwise, the number of rows and columns are multiplied by
@@ -99,8 +107,8 @@ involves interpolation, so the data are not represented exactly and
 analysts are advised to compare the results from the two methods (and
 perhaps various grid refinement values) to guard against misinterpretation.
 
-If a \code{\link{png}} device is to be used, it is advised to supply
-arguments \code{type="cairo"} and \code{antialias="none"}; see [1].
+If a \code{\link[=png]{png()}} device is to be used, it is advised to supply
+arguments \code{type="cairo"} and \code{antialias="none"}; see reference 1.
 }
 \examples{
 \dontrun{
@@ -108,75 +116,50 @@ library(oce)
 data(coastlineWorld)
 data(topoWorld)
 
-## 1. topography
-par(mfrow=c(2, 1), mar=c(2, 2, 1, 1))
-lonlim <- c(-70, -50)
-latlim <- c(40, 50)
-topo <- decimate(topoWorld, by=2) # coarse to illustrate filled contours
-topo <- subset(topo, latlim[1] < latitude & latitude < latlim[2])
-topo <- subset(topo, lonlim[1] < longitude & longitude < lonlim[2])
-mapPlot(coastlineWorld, type='l',
-        longitudelim=lonlim, latitudelim=latlim,
-        projection="+proj=lcc +lat_1=40 +lat_2=50 +lon_0=-60")
-breaks <- seq(-5000, 1000, 500)
-mapImage(topo, col=oce.colorsGebco, breaks=breaks)
-mapLines(coastlineWorld)
-box()
-mapPlot(coastlineWorld, type='l',
-        longitudelim=lonlim, latitudelim=latlim,
-        projection="+proj=lcc +lat_1=40 +lat_2=50 +lon_0=-60")
-mapImage(topo, filledContour=TRUE, col=oce.colorsGebco, breaks=breaks)
-box()
-mapLines(coastlineWorld)
-
-## 2. Northern polar region, with color-coded bathymetry
-par(mfrow=c(1,1))
-drawPalette(c(-5000, 0), zlim=c(-5000, 0), col=oce.colorsJet)
-mapPlot(coastlineWorld, projection="+proj=stere +lat_0=90",
-        longitudelim=c(-180,180), latitudelim=c(60,120))
-mapImage(topoWorld, zlim=c(-5000, 0), col=oce.colorsJet)
-mapLines(coastlineWorld[['longitude']], coastlineWorld[['latitude']])
-
-## 3. Levitus SST
-par(mfrow=c(1,1))
-data(levitus, package='ocedata')
-lon <- levitus$longitude
-lat <- levitus$latitude
-SST <- levitus$SST
-par(mar=rep(1, 4))
-Tlim <- c(-2, 30)
-drawPalette(Tlim, col=oce.colorsJet)
-mapPlot(coastlineWorld, projection="+proj=moll", grid=FALSE)
-mapImage(lon, lat, SST, col=oce.colorsJet, zlim=Tlim)
-mapPolygon(coastlineWorld, col='gray')
-
-## 4. Topography without drawing a coastline first
-data(topoWorld)
-cm <- colormap(topoWorld[['z']], name='gmt_relief')
+## Northern polar region, with color-coded bathymetry
+par(mfrow=c(1,1), mar=c(2,2,1,1))
+cm <- colormap(zlim=c(-5000, 0), col=oceColorsGebco)
 drawPalette(colormap=cm)
-mapPlot(c(-180,180), c(-90,90), type="n") # defaults to moll projection
+mapPlot(coastlineWorld, projection="+proj=stere +lat_0=90",
+        longitudelim=c(-180,180), latitudelim=c(70,110))
 mapImage(topoWorld, colormap=cm)
+mapGrid(15, 15, polarCircle=1, col=gray(0.2))
+mapPolygon(coastlineWorld[['longitude']], coastlineWorld[['latitude']], col="tan")
 }
 
 }
 \references{
-1. \url{http://codedocean.wordpress.com/2014/02/03/anti-aliasing-and-image-plots/}
+\enumerate{
+\item \verb{https://codedocean.wordpress.com/2014/02/03/anti-aliasing-and-image-plots/}
+}
 }
 \seealso{
-A map must first have been created with \code{\link{mapPlot}}.
+A map must first have been created with \code{\link[=mapPlot]{mapPlot()}}.
 
-Other functions related to maps: \code{\link{lonlat2map}},
-  \code{\link{lonlat2utm}}, \code{\link{map2lonlat}},
-  \code{\link{mapArrows}}, \code{\link{mapAxis}},
-  \code{\link{mapContour}},
-  \code{\link{mapDirectionField}}, \code{\link{mapGrid}},
-  \code{\link{mapLines}}, \code{\link{mapLocator}},
-  \code{\link{mapLongitudeLatitudeXY}},
-  \code{\link{mapPlot}}, \code{\link{mapPoints}},
-  \code{\link{mapPolygon}}, \code{\link{mapScalebar}},
-  \code{\link{mapText}}, \code{\link{mapTissot}},
-  \code{\link{oceCRS}}, \code{\link{shiftLongitude}},
-  \code{\link{usrLonLat}}, \code{\link{utm2lonlat}}
+Other functions related to maps: 
+\code{\link{formatPosition}()},
+\code{\link{lonlat2map}()},
+\code{\link{lonlat2utm}()},
+\code{\link{map2lonlat}()},
+\code{\link{mapArrows}()},
+\code{\link{mapAxis}()},
+\code{\link{mapContour}()},
+\code{\link{mapCoordinateSystem}()},
+\code{\link{mapDirectionField}()},
+\code{\link{mapGrid}()},
+\code{\link{mapLines}()},
+\code{\link{mapLocator}()},
+\code{\link{mapLongitudeLatitudeXY}()},
+\code{\link{mapPlot}()},
+\code{\link{mapPoints}()},
+\code{\link{mapPolygon}()},
+\code{\link{mapScalebar}()},
+\code{\link{mapText}()},
+\code{\link{mapTissot}()},
+\code{\link{oceCRS}()},
+\code{\link{shiftLongitude}()},
+\code{\link{usrLonLat}()},
+\code{\link{utm2lonlat}()}
 }
 \author{
 Dan Kelley

@@ -3,69 +3,72 @@
 \docType{package}
 \name{oce}
 \alias{oce}
-\alias{oce-package}
-\title{oce: A Package for Oceanographic Analysis}
+\title{oce: A Package for Oceanographic Analysis.}
 \description{
 The oce package provides functions for working with
 Oceanographic data, for calculations that are specific
 to Oceanography, and for producing graphics that
 match the conventions of the field.
 }
-\section{Specialized functions}{
-
-A key function is \code{\link{read.oce}}, which will attempt
-to read Oceanographic data in raw format. This uses
-\code{\link{oceMagic}} to try to detect the file type,
-based on the file name and contents. If it proves impossible
-to detect the type, users should next try a more specialized
-function, e.g. \code{\link{read.ctd}} for CTD files, or
-\code{\link{read.ctd.sbe}} for Teledyne-Seabird files.
-}
-
-\section{Generic methods}{
-
-A list of the generic methods in oce is provided by
-`methods(class="oce")`; a few that are used frequently
-are as follows.
-\describe{
-\item{[[}{Find the value of an item in the object's
-    \code{metadata} or \code{data} slot. If the item does
-    not exist, but can be calculated from the other items,
-    then the calculated value is returned. As an example of the
-    latter, consider the built-in \code{ctd} dataset, which does
-    not contain potential temperature, "\code{theta}". Using
-    \code{ctd[["theta"]]} therefore causes \code{\link{swTheta}}
-    to be called, to calculate \code{theta}.
-    See \link{[[,oce-method} or type \code{?"[[,oce-method"}
-    to learn more.}
-\item{[[<-}{Alters the named item in the object's \code{metadata} or
-    \code{data} slot.  If the item does not exist, it is created.
-    See \link{[[<-,oce-method} or type \code{?"[[<-,oce-method"}
-    to learn more.}
-\item{summary}{Displays some information about the object named as an
-    argument, including a few elements from its \code{metadata} slot
-    and some statistics of the contents of its \code{data} slot.
-    See \link{summary,oce-method} or type \code{?"summary,oce-method"}
-    to learn more.}
-\item{subset}{Takes a subset of an oce object.
-    See \link{subset,oce-method} or type \code{?"subset,oce-method"}
-    to learn more.}
-}
-}
-
-\section{Oceanographic data types handled}{
-
+\details{
 Over a dozen specialized data types are handled by oce,
 with generic plots and summaries for each, along with
 the specialized functions needed for typical Oceanographic
 analysis.
-}
 
-\section{Oce object structure}{
-
-See \code{\link{oce-class}} for a summary of the class structure
+See \linkS4class{oce} for a summary of the class structure
 and links to documentation for the many subclasses of
 oce objects, each aligned with a class of instrument or
-or type of dataset.
+or type of dataset.  For a more task-oriented approach,
+see the several vignettes that are provided with oce,
+and a book
+(Kelley, Dan E. Oceanographic Analysis with R. New York: Springer-Verlag, 2018.
+https://link.springer.com/book/10.1007/978-1-4939-8844-0) written
+by one of the oce co-authors.
+}
+\section{Specialized Functions}{
+
+A key function is \code{\link[=read.oce]{read.oce()}}, which will attempt
+to read Oceanographic data in raw format. This uses
+\code{\link[=oceMagic]{oceMagic()}} to try to detect the file type,
+based on the file name and contents. If this detection
+is not possible, users will need to go beyond \code{\link[=read.oce]{read.oce()}},
+using a more specialized function, e.g. \code{\link[=read.ctd]{read.ctd()}} for CTD files,
+\code{\link[=read.ctd.sbe]{read.ctd.sbe()}} for Teledyne-Seabird files, etc.
+}
+
+\section{Generic Methods}{
+
+A list of the generic methods in oce is provided by
+\link{methods}\code{(class="oce")}; a few that are used frequently
+are as follows.
+\itemize{
+\item \code{[[} Finds the value of an item in the object's
+\code{metadata} or \code{data} slot. If the item does
+not exist, but can be calculated from the other items,
+then the calculated value is returned. As an example of the
+latter, consider the built-in \code{ctd} dataset, which does
+not contain potential temperature, "\code{theta}". Using
+\code{ctd[["theta"]]} therefore causes \code{\link[=swTheta]{swTheta()}}
+to be called, to calculate \code{theta}.
+See \link{[[,oce-method} or type \code{?"[[,oce-method"}
+to learn more about general functioning, or a specialized
+method like \link{[[,ctd-method} for CTD data, etc.
+\item \verb{[[<-} Alters the named item in the object's \code{metadata} or
+\code{data} slot.  If the item does not exist, it is created.
+See \link{[[<-,oce-method} or type \code{?"[[<-,oce-method"}
+to learn more about the general methodology, or a specialized
+method like \link{[[<-,ctd-method} for CTD data, etc.
+\item \code{summary()} Displays some information about the object named as an
+argument, including a few elements from its \code{metadata} slot
+and some statistics of the contents of its \code{data} slot.
+See \link{summary,oce-method} or type \code{?"summary,oce-method"}
+to learn more about general functioning, or a specialized
+method like \link{summary,ctd-method} for CTD data, etc.
+\item \code{subset()} Takes a subset of an oce object.
+See \link{subset,oce-method} or type \code{?"subset,oce-method"}
+to learn more about general functioning, or a specialized
+method like \link{subset,ctd-method} for CTD data, etc.
+}
 }
 

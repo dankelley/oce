@@ -4,9 +4,16 @@
 \alias{as.rsk}
 \title{Coerce Data Into a Rsk Object}
 \usage{
-as.rsk(time, columns, filename = "", instrumentType = "rbr",
-  serialNumber = "", model = "", sampleInterval = NA,
-  debug = getOption("oceDebug"))
+as.rsk(
+  time,
+  columns,
+  filename = "",
+  instrumentType = "rbr",
+  serialNumber = "",
+  model = "",
+  sampleInterval = NA,
+  debug = getOption("oceDebug")
+)
 }
 \arguments{
 \item{time}{a vector of times for the data.}
@@ -28,7 +35,7 @@ estimated as the median difference in times.}
 \item{debug}{a flag that can be set to \code{TRUE} to turn on debugging.}
 }
 \value{
-An object of \code{\link{rsk-class}} \code{"rsk"}.
+An \linkS4class{rsk} object.
 }
 \description{
 Create a rsk object.
@@ -37,7 +44,7 @@ Create a rsk object.
 The contents of \code{columns} are be copied into the \code{data} slot
 of the returned object directly, so it is critical that the names and units
 correspond to those expected by other code dealing with
-\code{\link{rsk-class}} objects. If there is a conductivity, it must be called
+\linkS4class{rsk} objects. If there is a conductivity, it must be called
 \code{conductivity}, and it must be in units of mS/cm. If there is a
 temperature, it must be called \code{temperature}, and it must be an in-situ
 value recorded in ITS-90 units.  And if there is a pressure, it must be
@@ -47,15 +54,19 @@ these rules, but if they are broken, you may expect problems with any further
 processing.
 }
 \seealso{
-Other things related to \code{rsk} data: \code{\link{[[,rsk-method}},
-  \code{\link{[[<-,rsk-method}},
-  \code{\link{plot,rsk-method}}, \code{\link{read.rsk}},
-  \code{\link{rsk-class}}, \code{\link{rskPatm}},
-  \code{\link{rskToc}}, \code{\link{rsk}},
-  \code{\link{subset,rsk-method}},
-  \code{\link{summary,rsk-method}}
+Other things related to rsk data: 
+\code{\link{[[,rsk-method}},
+\code{\link{[[<-,rsk-method}},
+\code{\link{plot,rsk-method}},
+\code{\link{read.rsk}()},
+\code{\link{rsk-class}},
+\code{\link{rskPatm}()},
+\code{\link{rskToc}()},
+\code{\link{rsk}},
+\code{\link{subset,rsk-method}},
+\code{\link{summary,rsk-method}}
 }
 \author{
 Dan Kelley
 }
-\concept{things related to \code{rsk} data}
+\concept{things related to rsk data}

@@ -4,45 +4,62 @@
 \alias{interpBarnes}
 \title{Grid data using Barnes algorithm}
 \usage{
-interpBarnes(x, y, z, w, xg, yg, xgl, ygl, xr, yr, gamma = 0.5,
-  iterations = 2, trim = 0, pregrid = FALSE,
-  debug = getOption("oceDebug"))
+interpBarnes(
+  x,
+  y,
+  z,
+  w,
+  xg,
+  yg,
+  xgl,
+  ygl,
+  xr,
+  yr,
+  gamma = 0.5,
+  iterations = 2,
+  trim = 0,
+  pregrid = FALSE,
+  debug = getOption("oceDebug")
+)
 }
 \arguments{
-\item{x, y}{a vector of x and ylocations.}
+\item{x, y}{a vector of x and y locations.}
 
 \item{z}{a vector of z values, one at each (x,y) location.}
 
 \item{w}{a optional vector of weights at the (x,y) location.  If not
 supplied, then a weight of 1 is used for each point, which means equal
-weighting.  Higher weights give data points more influence.}
+weighting.  Higher weights give data points more influence. If \code{pregrid}
+is \code{TRUE}, then any supplied value of \code{w} is ignored, and instead
+each of the pregriddd points is given equal weight.}
 
 \item{xg, yg}{optional vectors defining the x and y grids.  If not supplied,
 these values are inferred from the data, using e.g. \code{pretty(x, n=50)}.}
 
 \item{xgl, ygl}{optional lengths of the x and y grids, to be constructed with
-\code{\link{seq}} spanning the data range.  These values \code{xgl} are only
+\code{\link[=seq]{seq()}} spanning the data range.  These values \code{xgl} are only
 examined if \code{xg} and \code{yg} are not supplied.}
 
-\item{xr, yr}{optional values defining the width of the radius ellipse in the
-x and y directions.  If not supplied, these are calculated as the span of x
+\item{xr, yr}{optional values defining the x and y radii of the weighting ellipse.
+If not supplied, these are calculated as the span of x
 and y over the square root of the number of data.}
 
-\item{gamma}{grid-focussing parameter.  At each iteration, \code{xr} and
+\item{gamma}{grid-focussing parameter.  At each successive iteration, \code{xr} and
 \code{yr} are reduced by a factor of \code{sqrt(gamma)}.}
 
-\item{iterations}{number of iterations.}
+\item{iterations}{number of iterations.  Set this to 1 to perform just
+one iteration, using the radii as described at \verb{xr,yr} above.}
 
 \item{trim}{a number between 0 and 1, indicating the quantile of data weight
 to be used as a criterion for blanking out the gridded value (using
 \code{NA}).  If 0, the whole \code{zg} grid is returned.  If >0, any spots
 on the grid where the data weight is less than the \code{trim}-th
-\code{\link{quantile}} are set to \code{NA}.  See examples.}
+\code{\link[=quantile]{quantile()}} are set to \code{NA}.  See examples.}
 
 \item{pregrid}{an indication of whether to pre-grid the data. If
 \code{FALSE}, this is not done, i.e. conventional Barnes interpolation is
 performed.  Otherwise, then the data are first averaged within grid cells
-using \code{\link{binMean2D}}.  If \code{pregrid} is \code{TRUE} or
+using \code{\link[=binMean2D]{binMean2D()}}.  If \code{pregrid} is \code{TRUE} or
 \code{4}, then this averaging is done within a grid that is 4 times finer
 than the grid that will be used for the Barnes interpolation. Otherwise,
 \code{pregrid} may be a single integer indicating the grid refinement (4
@@ -65,13 +82,13 @@ interpolation at its final iteration; and \code{zd}, a vector of the same
 length as \code{x}, which holds the interpolated values at the data points.
 }
 \description{
-The algorithm follows that described by Koch et al. (1983), with the
-addition of the ability to blank out the grid in spots where data are
-sparse, using the \code{trim} argument, and the ability to pre-grid, with
-the \code{pregrid} argument.
+The algorithm follows that described by Koch et al. (1983), except
+that \code{interpBarnes} adds (1) the ability to
+blank out the grid where data are
+sparse, using the \code{trim} argument, and (2) the ability to
+pre-grid, with the \code{pregrid} argument.
 }
 \examples{
-
 library(oce)
 
 # 1. contouring example, with wind-speed data from Koch et al. (1983)
@@ -93,7 +110,6 @@ mismatch <- 100 * (wind$z - u$zd) / wind$z
 text(wind$x, wind$y, round(mismatch), col="blue")
 title("Numbers are percent mismatch between grid and data")
 
-
 # 4. As 3, but contour the mismatch
 mismatchGrid <- interpBarnes(wind$x, wind$y, mismatch)
 contour(mismatchGrid$xg, mismatchGrid$yg, mismatchGrid$zg, labcex=1)
@@ -114,7 +130,7 @@ interactive Barnes objective map analysis scheme for use with satellite and
 conventional data,'' \emph{J.  Climate Appl.  Met.}, vol 22, p. 1487-1503.
 }
 \seealso{
-See \code{\link{wind}}.
+See \code{\link[=wind]{wind()}}.
 }
 \author{
 Dan Kelley

@@ -25,8 +25,7 @@ will be calculated as the maximum value of \code{x}}
 spanned by \code{rlow} and \code{rhigh}.}
 }
 \value{
-A new vector, which has minimum \code{lim[1]} and maximum
-\code{lim[2]}.
+A new vector, which has minimum \code{lim[1]} and maximum \code{lim[2]}.
 }
 \description{
 This is helpful in e.g. developing a color scale for an image plot.  It is
@@ -40,7 +39,7 @@ t <- seq(0, 600, 5)
 x <- 0.5 * t
 z <- 50 * (-1 + sin(2 * pi * t / 360))
 T <- 5 + 10 * exp(z / 100)
-palette <- oce.colorsJet(100)
+palette <- oce.colorsViridis(100)
 zlim <- range(T)
 drawPalette(zlim=zlim, col=palette)
 plot(x, z, type='p', pch=20, cex=3,

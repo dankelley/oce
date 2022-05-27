@@ -14,57 +14,60 @@ binApply2D(x, y, f, xbreaks, ybreaks, FUN, ...)
 \item{f}{a vector of data to which the elements of \code{FUN} may be
 supplied}
 
-\item{xbreaks}{values of x at the boundaries between bins; calculated using
-\code{\link{pretty}} if not supplied.}
+\item{xbreaks}{values of \code{x} at the boundaries between the
+bins; calculated using \code{\link[=pretty]{pretty()}} if not supplied.}
 
-\item{ybreaks}{values of y at the boundaries between bins; calculated using
-\code{\link{pretty}} if not supplied.}
+\item{ybreaks}{as \code{xbreaks}, but for \code{y}.}
 
-\item{FUN}{function to apply to the data}
+\item{FUN}{univariate function that is applied to the \code{f} data within
+any given bin}
 
 \item{\dots}{arguments to pass to the function \code{FUN}}
 }
 \value{
-A list with the following elements: the breaks in x and y
-(\code{xbreaks} and \code{ybreaks}), the break mid-points (\code{xmids} and
-\code{ymids}), and a matrix containing the result of applying function
-\code{FUN} to \code{f} subsetted by these breaks.
+A list with the following elements: the breaks in \code{x} and
+\code{y} (i.e. \code{xbreaks} and \code{ybreaks}), the break mid-points
+(i.e. \code{xmids} and \code{ymids}), and a matrix containing the
+result of applying \code{FUN()} to the \code{f} values, as
+subsetted by these breaks.
 }
 \description{
 The function \code{FUN} is applied to \code{f} in bins specified by
-\code{xbreaks} and \code{ybreaks}.  (If \code{FUN} is \code{\link{mean}},
-consider using \code{\link{binMean2D}} instead, since it should be faster.)
+\code{xbreaks} and \code{ybreaks}.  (If \code{FUN} is \code{\link[=mean]{mean()}},
+consider using \code{\link[=binMean2D]{binMean2D()}} instead, since it should be faster.)
 }
 \examples{
 library(oce)
-\dontrun{
+\donttest{
 ## secchi depths in lat and lon bins
-if (require(ocedata)) {
+if (requireNamespace("ocedata", quietly=TRUE)) {
     data(secchi, package="ocedata")
-    col <- rev(oce.colorsJet(100))[rescale(secchi$depth,
-                                           xlow=0, xhigh=20,
-                                           rlow=1, rhigh=100)]
-    zlim <- c(0, 20)
-    breaksPalette <- seq(min(zlim), max(zlim), 1)
-    colPalette <- rev(oce.colorsJet(length(breaksPalette)-1))
-    drawPalette(zlim, "Secchi Depth", breaksPalette, colPalette)
+    ## Note that zlim is provided to the colormap(), to prevent a few
+    ## points from setting a very wide scale.
+    cm <- colormap(z=secchi$depth, col=oceColorsViridis, zlim=c(0, 15))
+    par(mar=c(2, 2, 2, 2))
+    drawPalette(colormap=cm, zlab="Secchi Depth")
     data(coastlineWorld)
     mapPlot(coastlineWorld, longitudelim=c(-5, 20), latitudelim=c(50, 66),
-      grid=5, fill='gray', projection="+proj=lcc +lat_1=50 +lat_2=65")
+      grid=5, col='gray', projection="+proj=lcc +lat_1=50 +lat_2=65")
     bc <- binApply2D(secchi$longitude, secchi$latitude,
                      pretty(secchi$longitude, 80),
                      pretty(secchi$latitude, 40),
                      f=secchi$depth, FUN=mean)
-    mapImage(bc$xmids, bc$ymids, bc$result, zlim=zlim, col=colPalette)
-    mapPolygon(coastlineWorld, col='gray')
+    mapImage(bc$xmids, bc$ymids, bc$result, zlim=cm$zlim, col=cm$zcol)
+    mapPolygon(coastlineWorld, col="gray")
 }
 }
+
 }
 \seealso{
-Other bin-related functions: \code{\link{binApply1D}},
-  \code{\link{binAverage}}, \code{\link{binCount1D}},
-  \code{\link{binCount2D}}, \code{\link{binMean1D}},
-  \code{\link{binMean2D}}
+Other bin-related functions: 
+\code{\link{binApply1D}()},
+\code{\link{binAverage}()},
+\code{\link{binCount1D}()},
+\code{\link{binCount2D}()},
+\code{\link{binMean1D}()},
+\code{\link{binMean2D}()}
 }
 \author{
 Dan Kelley

@@ -2,14 +2,13 @@
 
 #' Class to Store Windrose Data
 #'
-#' Windrose objects store statistical information about winds, mainly for
-#' plotting as "wind rose" plots (see \code{\link{plot,windrose-method}}.
-#' There is no reading method, because there is no standard way to store
-#' wind data in files; instead, \code{\link{as.windrose}} is provided
-#' to construct \code{windrose} objects.  Data elements may be retrieved
-#' with \code{\link{[[,windrose-method}} or replaced with
-#' \code{\link{[[<-,windrose-method}}. Data summaries are provided with
-#' \code{\link{summary,windrose-method}}.
+#' This class stores `windrose` objects, which
+#' store statistical information about winds, mainly for
+#' plotting as "wind rose" plots with [plot,windrose-method()].
+#' Unlike most other [oce-class] objects, there is no reading
+#' method for `windrose` objects, because there is no standard way to store
+#' wind data in files; instead, [as.windrose()] is provided
+#' to construct `windrose` objects.
 #'
 #' @templateVar class windrose
 #'
@@ -22,33 +21,31 @@
 #' @template slot_put
 #'
 #' @template slot_get
-##'
-#' @family classes provided by \code{oce}
-#' @family things related to \code{windrose} data
+#'
+#' @family classes provided by oce
+#' @family things related to windrose data
 setClass("windrose", contains="oce")
 
 setMethod(f="initialize",
           signature="windrose",
-          definition=function(.Object) {
-              .Object@processingLog$time <- as.POSIXct(Sys.time())
+          definition=function(.Object, ...) {
+              .Object <- callNextMethod(.Object, ...)
+              .Object@processingLog$time <- presentTime()
               .Object@processingLog$value <- "create 'windrose' object"
               return(.Object)
           })
 
-#' Summarize a \code{windrose} object
+#' Summarize a `windrose` object
 #'
-#' Summarizes some of the data in a \code{windrose} object.
+#' Summarizes some of the data in a `windrose` object.
 #'
-#' @param object An \code{windrose} object, i.e. inheriting from \code{\link{windrose-class}}.
+#' @param object A [windrose-class] object.
 #'
 #' @param ... Further arguments passed to or from other methods.
 #'
-#' @seealso The documentation for \code{\link{windrose-class}} explains the structure
-#' of \code{windrose} objects, and also outlines the other functions dealing with them.
-#'
 #' @author Dan Kelley
 #'
-#' @family things related to \code{windrose} data
+#' @family things related to windrose data
 setMethod(f="summary",
           signature="windrose",
           definition=function(object, ...) {
@@ -61,22 +58,40 @@ setMethod(f="summary",
 
 
 #' @title Extract Something From a Windrose Object
-#' @param x A windrose object, i.e. one inheriting from \code{\link{windrose-class}}.
-#' @section Details of the specialized windrose method:
-#' There are no special features for \code{\link{windrose-class}} data;
-#' the general method is used directly.
+#'
+#' @param x a [windrose-class] object.
+#'
+#' @section Details of the Specialized Method:
+#'
+#' * If `i` is `"?"`, then the return value is a list
+#' containing four items, each of which is a character vector
+#' holding the names of things that can be accessed with `[[`.
+#' The `data` and `metadata` items hold the names of
+#' entries in the object's data and metadata
+#' slots, respectively. The `metadataDerived` and
+#' `dataDerived` items are both NULL.
+#'
 #' @template sub_subTemplate
-#' @family things related to \code{windrose} data
+#'
+#' @family things related to windrose data
 setMethod(f="[[",
           signature(x="windrose", i="ANY", j="ANY"),
           definition=function(x, i, j, ...) {
+              if (i == "?")
+                  return(list(metadata=sort(names(x@metadata)),
+                          metadataDerived=NULL,
+                          data=sort(names(x@data)),
+                          dataDerived=NULL))
               callNextMethod()         # [[
           })
 
 #' @title Replace Parts of a Windrose Object
-#' @param x An \code{windrose} object, i.e. inheriting from \code{\link{windrose-class}}
+#'
+#' @param x a [windrose-class] object.
+#'
 #' @template sub_subsetTemplate
-#' @family things related to \code{windrose} data
+#'
+#' @family things related to windrose data
 setMethod(f="[[<-",
           signature(x="windrose", i="ANY", j="ANY"),
           definition=function(x, i, j, ..., value) {
@@ -87,12 +102,12 @@ setMethod(f="[[<-",
 #' Create a Windrose Object
 #'
 #' Create a wind-rose object, typically for plotting with
-#' \code{\link{plot,windrose-method}}.
+#' [plot,windrose-method()].
 #'
-#' @param x The x component of wind speed (or stress) \emph{or} an object of class
-#' \code{met} (see \code{\link{met-class}}), in which case the \code{u} and
-#' \code{v} components of that object are used for the components of wind speed,
-#' and \code{y} here is ignored.
+#' @param x The x component of wind speed (or stress) *or* an object of class
+#' `met` (see [met-class]), in which case the `u` and
+#' `v` components of that object are used for the components of wind speed,
+#' and `y` here is ignored.
 #'
 #' @param y The y component of wind speed (or stress).
 #'
@@ -101,20 +116,19 @@ setMethod(f="[[<-",
 #' @param debug A flag that turns on debugging.  Set to 1 to get a moderate amount
 #' of debugging information, or to 2 to get more.
 #'
-#' @return An object of \code{\link{windrose-class}} that contains the standard
-#' \code{oce} slots named \code{data}, \code{metadata} and \code{proxessingLog}.
-#' The \code{data} slot contains
+#' @return A [windrose-class] object, with `data` slot containing
 #'
-#' \describe{
-#'     \item{\code{n}}{the number of x values}
-#'     \item{\code{x.mean}}{the mean of the x values}
-#'     \item{\code{y.mean}}{the mean of the y values}
-#'     \item{\code{theta}}{the central angle (in degrees) for the class}
-#'     \item{\code{count}}{the number of observations in this class}
-#'     \item{\code{mean}}{the mean of the observations in this class}
-#'     \item{\code{fivenum}}{the \code{\link{fivenum}} vector for
+#' \tabular{ll}{
+#' **Item**   \tab **Meaning**\cr
+#'  `n`       \tab the number of `x` values\cr
+#'  `x.mean`  \tab the mean of the `x` values\cr
+#'  `y.mean`  \tab the mean of the `y` values\cr
+#'  `theta`   \tab the central angle (in degrees) for the class\cr
+#'  `count`   \tab the number of observations in this class\cr
+#'  `mean`    \tab the mean of the observations in this class\cr
+#'  `fivenum` \tab the [fivenum()] vector for
 #'         observations in this class (the min, the lower hinge, the
-#'         median, the upper hinge, and the max)}
+#'         median, the upper hinge, and the max)\cr
 #' }
 #'
 #' @examples
@@ -127,7 +141,7 @@ setMethod(f="[[<-",
 #'
 #' @author Dan Kelley, with considerable help from Alex Deckmyn.
 #'
-#' @family things related to \code{windrose} data
+#' @family things related to windrose data
 as.windrose <- function(x, y, dtheta = 15, debug=getOption("oceDebug"))
 {
     oceDebug(debug, "as.windrose(x, y, dtheta=", dtheta, ", debug=", debug, ") {\n", sep="", unindent=1)
@@ -181,34 +195,33 @@ as.windrose <- function(x, y, dtheta = 15, debug=getOption("oceDebug"))
 }
 
 
-#' @title Plot Windrose data
+#' Plot a windrose Object
 #'
-#' @description
-#' Plot a \code{windrose} object, i.e. one inheriting from \code{\link{windrose-class}}.
+#' Plot a [windrose-class] object.
 #'
-#' @param x A \code{windrose} object, e.g. inheriting from \code{\link{windrose-class}}.
+#' @param x a [windrose-class] object.
 #'
 #' @param type The thing to be plotted, either the number of counts in the angle
 #' interval, the mean of the values in the interval, the median of the values, or
-#' a \code{\link{fivenum}} representation of the values.
+#' a [fivenum()] representation of the values.
 #'
 #' @param convention String indicating whether to use meteorological convention or
 #' oceanographic convention for the arrows that emanate from the centre of the
 #' rose.  In meteorological convection, an arrow emanates towards the right on
 #' the diagram if the wind is from the east; in oceanographic convention, such an
-#' arrow indicates flow \emph{to} the east.
+#' arrow indicates flow *to* the east.
 #'
-#' @param mgp Three-element numerical vector to use for \code{par(mgp)}, and also
-#' for \code{par(mar)}, computed from this.  The default is tighter than the R
+#' @param mgp Three-element numerical vector to use for [`par`]`(mgp)`, and also
+#' for [`par`]`(mar)`, computed from this.  The default is tighter than the R
 #' default, in order to use more space for the data and less for the axes.
 #'
-#' @param mar Four-element numerical vector to be used with \code{\link{par}("mar")}.
+#' @param mar Four-element numerical vector to be used with [`par`]`("mar")`.
 #'
 #' @param col Optional list of colors to use.  If not set, the colors will be
-#' \code{c("red", "pink", "blue", "lightgray")}.  For the first three types of
+#' `c("red", "pink", "blue", "lightgray")`.  For the first three types of
 #' plot, the first color in this list is used to fill in the rose, the third is
 #' used for the petals of the rose, and the fourth is used for grid lines. For the
-#' \code{"fivenum"} type, the first color is used for the inter-quartile range,
+#' `"fivenum"` type, the first color is used for the inter-quartile range,
 #' the second is used outside this range, the third is used for the median, and
 #' the fourth is, again, used for the grid lines.
 #'
@@ -227,8 +240,9 @@ as.windrose <- function(x, y, dtheta = 15, debug=getOption("oceDebug"))
 #'
 #' @author Dan Kelley
 #'
-#' @family functions that plot \code{oce} data
-#' @family things related to \code{windrose} data
+#' @family functions that plot oce data
+#' @family things related to windrose data
+#'
 #' @aliases plot.windrose
 setMethod(f="plot",
           signature=signature("windrose"),
@@ -328,5 +342,5 @@ setMethod(f="plot",
                   }
                   title(paste("Fiveum (max ", sprintf(max, fmt="%.3g"), ")", sep=""))
               }
-              invisible()
+              invisible(NULL)
           })

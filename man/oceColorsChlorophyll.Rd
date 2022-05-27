@@ -11,43 +11,99 @@ oceColorsChlorophyll(n)
 \item{n}{number of colors to create.}
 }
 \value{
-A vector of color specificications.
+A vector of color specifications.
 }
 \description{
 Create a set of colors for displaying chlorophyll values,
-based on the scheme devised by Kristen M. Thyng
-in her \code{cmcolor} Python package, which is available at
-\url{https://github.com/kthyng/cmocean}. The
-color specifications were downloaded for use here
-on 2015-09-29. To avoid changes in \code{oce} scripts,
-more recent changes to \code{cmcolor} have not been
-tracked; \code{\link{oceColorsClosure}}
-has an example of how to incorporate such changes.
+based on the scheme devised by Thyng et al. (2016) and
+presented in a python package by Thyng (2019).
+The color specifications were transliterated from
+python to R on 2015-09-29, but have not been adjusted
+since, even though the python source has changed.  This
+is to prevent breaking old \code{oce} code.  To get the
+latest versions of these colours or other colours,
+use the \CRANpkg{cmocean} R package
+(Thyng, Richards, and Krylov, 2019) directly, as is
+illustrated (with the "matter" scheme) in Example 2.
+Note that the \CRANpkg{cmocean} core functions provide a way
+to select between various versions of the colour schemes.
+It is also worth considering the palettes provided by the
+\CRANpkg{viridis} package, as illustrated (with the
+"inferno" scheme) in Example 3.
 }
 \examples{
 library(oce)
+
+# Example 1
 imagep(volcano, col=oceColorsChlorophyll(128),
        zlab="oceColorsChlorophyll")
+\dontrun{
+# Example 2 (requires the cmocean package)
+imagep(volcano, col=cmocean::cmocean("matter"),
+       zlab='cmocean::cmocean("matter")')}
+
+\dontrun{
+# Example 3 (requires the viridis package)
+imagep(volcano, col=viridis::inferno,
+       zlab='viridis::inferno')}
 
 }
+\references{
+\itemize{
+\item Thyng, Kristen, Chad Greene, Robert Hetland, Heather Zimmerle, and Steven DiMarco.
+\dQuote{True Colors of Oceanography: Guidelines for Effective and Accurate Colormap Selection.}
+Oceanography 29, no. 3 (September 1, 2016): 9–13.
+\doi{10.5670/oceanog.2016.66}
+\item Thyng, Kristen. Kthyng/Cmocean. Python, 2019.
+\verb{https://github.com/kthyng/cmocean}.
+\item Thyng, Kristen, Clark Richards, and Ivan Krylov.
+Cmocean: Beautiful Colour Maps for Oceanography (version 0.2), 2019.
+\verb{https://CRAN.R-project.org/package=cmocean}.
+}
+
+The following references provide information on choosing
+colour schemes, that are suitable for viewers who have
+colour deficiencies.
+
+Light, Adam, and Patrick J. Bartlein. "The End of the Rainbow? Color
+Schemes for Improved Data Graphics." \emph{Eos, Transactions American Geophysical
+Union} 85, no. 40 (2004): 385.
+DOI: 10.1029/2004EO400002
+
+Stephenson, David B. "Comment on 'Color Schemes for Improved Data
+Graphics', by A Light and P.J. Bartlein." \emph{Eos, Transactions American
+Geophysical Union} 86, no.  20 (2005): 196.
+DOI: 10.1029/2005EO200005
+
+Light, Adam, and Patrick J. Bartlein. "Reply to 'Comment on Color
+Schemes for Improved Data Graphics,' by A. Light and P.J.  Bartlein'."
+\emph{Eos, Transactions American Geophysical Union} 86, no. 20 (2005): 196–196.
+DOI: 10.1029/2005EO200006
+}
 \seealso{
-Other things related to colors: \code{\link{colormap}},
-  \code{\link{oceColors9B}}, \code{\link{oceColorsCDOM}},
-  \code{\link{oceColorsClosure}},
-  \code{\link{oceColorsDensity}},
-  \code{\link{oceColorsFreesurface}},
-  \code{\link{oceColorsGebco}}, \code{\link{oceColorsJet}},
-  \code{\link{oceColorsOxygen}},
-  \code{\link{oceColorsPAR}},
-  \code{\link{oceColorsPalette}},
-  \code{\link{oceColorsPhase}},
-  \code{\link{oceColorsSalinity}},
-  \code{\link{oceColorsTemperature}},
-  \code{\link{oceColorsTurbidity}},
-  \code{\link{oceColorsTwo}},
-  \code{\link{oceColorsVelocity}},
-  \code{\link{oceColorsViridis}},
-  \code{\link{oceColorsVorticity}}, \code{\link{ocecolors}}
+Other things related to colors: 
+\code{\link{colormapGMT}()},
+\code{\link{colormap}()},
+\code{\link{oceColors9B}()},
+\code{\link{oceColorsCDOM}()},
+\code{\link{oceColorsClosure}()},
+\code{\link{oceColorsDensity}()},
+\code{\link{oceColorsFreesurface}()},
+\code{\link{oceColorsGebco}()},
+\code{\link{oceColorsJet}()},
+\code{\link{oceColorsOxygen}()},
+\code{\link{oceColorsPAR}()},
+\code{\link{oceColorsPalette}()},
+\code{\link{oceColorsPhase}()},
+\code{\link{oceColorsSalinity}()},
+\code{\link{oceColorsTemperature}()},
+\code{\link{oceColorsTurbidity}()},
+\code{\link{oceColorsTurbo}()},
+\code{\link{oceColorsTwo}()},
+\code{\link{oceColorsVelocity}()},
+\code{\link{oceColorsViridis}()},
+\code{\link{oceColorsVorticity}()},
+\code{\link{ocecolors}}
 }
 \author{
 Krysten M. Thyng (Python version), Dan Kelley (R transliteration)

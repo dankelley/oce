@@ -13,46 +13,67 @@ oceNames2whpNames(names)
 vector of strings holding WHP-style names.
 }
 \description{
-Translate oce-style names to WOCE names, using \code{\link{gsub}}
+Translate oce-style names to WOCE names, using \code{\link[=gsub]{gsub()}}
 to match patterns. For example, the pattern \code{"oxygen"}
 is taken to mean \code{"CTDOXY"}.
 }
 \references{
 Several online sources list WHP names. An example is
-\url{https://geo.h2o.ucsd.edu/documentation/manuals/pdf/90_1/chap4.pdf}
+\verb{https://cchdo.github.io/hdo-assets/documentation/manuals/pdf/90_1/chap4.pdf}
 }
 \seealso{
-Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
-  \code{\link{[[<-,ctd-method}}, \code{\link{as.ctd}},
-  \code{\link{cnvName2oceName}}, \code{\link{ctd-class}},
-  \code{\link{ctdDecimate}}, \code{\link{ctdFindProfiles}},
-  \code{\link{ctdRaw}}, \code{\link{ctdTrim}},
-  \code{\link{ctd}}, \code{\link{handleFlags,ctd-method}},
-  \code{\link{initialize,ctd-method}},
-  \code{\link{initializeFlagScheme,ctd-method}},
-  \code{\link{oceUnits2whpUnits}},
-  \code{\link{plot,ctd-method}}, \code{\link{plotProfile}},
-  \code{\link{plotScan}}, \code{\link{plotTS}},
-  \code{\link{read.ctd.itp}}, \code{\link{read.ctd.odf}},
-  \code{\link{read.ctd.sbe}},
-  \code{\link{read.ctd.woce.other}},
-  \code{\link{read.ctd.woce}}, \code{\link{read.ctd}},
-  \code{\link{setFlags,ctd-method}},
-  \code{\link{subset,ctd-method}},
-  \code{\link{summary,ctd-method}},
-  \code{\link{woceNames2oceNames}},
-  \code{\link{woceUnit2oceUnit}}, \code{\link{write.ctd}}
+Other things related to ctd data: 
+\code{\link{CTD_BCD2014666_008_1_DN.ODF.gz}},
+\code{\link{[[,ctd-method}},
+\code{\link{[[<-,ctd-method}},
+\code{\link{as.ctd}()},
+\code{\link{cnvName2oceName}()},
+\code{\link{ctd-class}},
+\code{\link{ctd.cnv}},
+\code{\link{ctdDecimate}()},
+\code{\link{ctdFindProfiles}()},
+\code{\link{ctdRaw}},
+\code{\link{ctdRepair}()},
+\code{\link{ctdTrim}()},
+\code{\link{ctd_aml.csv}},
+\code{\link{ctd}},
+\code{\link{d200321-001.ctd}},
+\code{\link{d201211_0011.cnv}},
+\code{\link{handleFlags,ctd-method}},
+\code{\link{initialize,ctd-method}},
+\code{\link{initializeFlagScheme,ctd-method}},
+\code{\link{oceUnits2whpUnits}()},
+\code{\link{plot,ctd-method}},
+\code{\link{plotProfile}()},
+\code{\link{plotScan}()},
+\code{\link{plotTS}()},
+\code{\link{read.ctd.aml}()},
+\code{\link{read.ctd.itp}()},
+\code{\link{read.ctd.odf}()},
+\code{\link{read.ctd.odv}()},
+\code{\link{read.ctd.sbe}()},
+\code{\link{read.ctd.ssda}()},
+\code{\link{read.ctd.woce.other}()},
+\code{\link{read.ctd.woce}()},
+\code{\link{read.ctd}()},
+\code{\link{setFlags,ctd-method}},
+\code{\link{subset,ctd-method}},
+\code{\link{summary,ctd-method}},
+\code{\link{woceNames2oceNames}()},
+\code{\link{woceUnit2oceUnit}()},
+\code{\link{write.ctd}()}
 
-Other functions that interpret variable names and units from headers: \code{\link{ODFNames2oceNames}},
-  \code{\link{cnvName2oceName}},
-  \code{\link{oceUnits2whpUnits}},
-  \code{\link{unitFromStringRsk}},
-  \code{\link{unitFromString}},
-  \code{\link{woceNames2oceNames}},
-  \code{\link{woceUnit2oceUnit}}
+Other functions that interpret variable names and units from headers: 
+\code{\link{ODFNames2oceNames}()},
+\code{\link{cnvName2oceName}()},
+\code{\link{oceUnits2whpUnits}()},
+\code{\link{unitFromStringRsk}()},
+\code{\link{unitFromString}()},
+\code{\link{woceNames2oceNames}()},
+\code{\link{woceUnit2oceUnit}()}
 }
 \author{
 Dan Kelley
 }
 \concept{functions that interpret variable names and units from headers}
-\concept{things related to \code{ctd} data}
+\concept{things related to ctd data}

@@ -1,5 +1,4 @@
 library(oce)
-context("index")
 test_that("SOI index", {
           if (1 == length(list.files(path=".", pattern="local_data"))) {
               SOI <- read.index("local_data/SOI.signal.ascii")

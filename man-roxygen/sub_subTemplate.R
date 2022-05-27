@@ -1,64 +1,80 @@
-#' @param i Character string indicating the name of item to extract.
-#' @param j Optional additional information on the \code{i} item.
-#' @param ... Optional additional information (ignored).
+# vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
+ 
+#' @param i character value indicating the name of an item to extract.
+#'
+#' @param j optional additional information on the `i` item.
+#'
+#' @param ... ignored.
 #'
 #' @description
-#' The \code{[[} method works for all \code{oce} objects, i.e.
-#' objects inheriting from \code{\link{oce-class}}.  The purpose
-#' is to insulate users from the internal details of \code{oce}
-#' objects, by looking for items within the various storage
-#' slots of the object. Items not actually stored can also be
-#' extracted, including derived data, units of measurement,
-#' and data-quality flags.
+#'
+#' Generally, the \code{[[} method lets users extract information from `oce`
+#' objects, without having to know the details of the internal storage.  For
+#' many `oce` sub-classes, `[[` can also return quantities that are computed
+#' from the object's contents.
 #'
 #' @details
 #'
-#' A two-step process is used to try to find the
-#' requested information. First, a class-specific function
-#' tries to find it (see
-#' \dQuote{Details of the specialized ... method}), but
-#' if that fails, then a general function is used
-#' (see \sQuote{Details of the general method}). If both
-#' fail, \code{NULL} is returned.
+#' A two-step process is used to try to find the requested information. First, a
+#' class-specific function is used (see \dQuote{Details of the Specialized
+#' Method}).  If this yields nothing, then a general method is used (see
+#' \dQuote{Details of the General Method}).  If both methods fail, then `[[`
+#' returns NULL.
 #'
-#' @section Details of the general method:
+#' Some understanding of the subclass is required to know what can be retrieved
+#' with `[[`. When dealing with an unfamiliar subclass, it can be useful to
+#' first use `x[["?"]]` to get a listing of the retrievable items. See
+#' \dQuote{Details of the Specialized Method} for more information.
+#'
+## NOTE: Roxygen2 puts this after the Specialized method, which is where I want
+## it.  I don't understand why, though and therefore will be on the lookout for
+## changes that might occur in either R itself, or in Roxygen2.
+#'
+#' @section Details of the General Method:
+#'
+#' Note: the text of this section is identical for all `oce` subclasses, and so
+#' some of what you read here may not be relevant to the class being described
+#' in this help page.
 #'
 #' If the specialized method produces no matches, the following generalized
-#' method is applied. As with the specialized method, the procedure hinges
-#' first on the value of \code{i}.
+#' method is applied. As with the specialized method, the procedure hinges first
+#' on the values of `i` and, optionally, `j`. The work proceeds in steps, by
+#' testing a sequence of possible conditions in sequence.
 #'
-#' First, a check is made as to whether \code{i} names one of the standard
-#' \code{oce} slots, and returns the slot contents if so. Thus,
-#' \code{x[["metadata"]]} will retrieve the \code{metadata} slot,
-#' while \code{x[["data"]]} and \code{x[["processingLog"]]} return
-#' those slots.
+#' 1. A check is made as to whether `i` names one of the standard `oce` slots.
+#' If so, `[[` returns the slot contents of that slot.  Thus, `x[["metadata"]]`
+#' will retrieve the `metadata` slot, while `x[["data"]]` and
+#' `x[["processingLog"]]` return those slots.
 #'
-#' Next, if \code{i} is a string ending in the
-#' \code{"Unit"}, then the characters preceding that string
-#' are taken to be the name of an item in the data object, and a list
-#' containing the unit is returned. This list consists of an item
-#' named \code{unit}, which is an \code{\link{expression}}, and
-#' an item named \code{scale}, which is a string describing the
-#' measurement scale.  If the string ends in \code{" unit"}, e.g.
-#' \code{x[["temperature unit"]]}, then just the expression is returned,
-#' and if it ends in \code{" scale"}, then just the scale is returned.
+#' 2. If `i` is a string ending in the `"Unit"`, then the characters preceding
+#' that string are taken to be the name of an item in the data object, and a
+#' list containing the unit is returned (or `NULL` if there is no such unit).
+#' This list consists of an item named `unit`, which is an [expression()], and
+#' an item named `scale`, which is a string describing the measurement scale.
+#' If the string ends in `" unit"`, e.g.  `x[["temperature unit"]]` (note the
+#' space), then just the expression is returned, and if it ends in `" scale"`,
+#' then just the scale is returned.
 #'
-#' Next, if \code{i} is a string ending in \code{"Flag"}, then the corresponding
-#' data-quality flag is returned (or \code{NULL} if there is no such flag).
-#' For example, \code{x[["salinityFlag"]]} returns a vector of salinity
-#' flags if \code{x} is a ctd object.
+#' 3. If `i` is a string ending in `"Flag"`, then the corresponding data-quality
+#' flag is returned (or `NULL` if there is no such flag).
 #'
-#' If none of the preceding conditions are met, a check is done
-#' to see if the \code{metadata} slot contains an item with
-#' the provided name, and that is returned, if so. A direct match
-#' is required for this condition.
+#' 4. If the object holds hydrographic information (pressure, salinity,
+#' temperature, longitude and latitude) then another set of possibilities
+#' arises.  If `i` is `"sigmaTheta"`, then the value of [swSigmaTheta()] is
+#' called with \code{x} as the sole argument, and the results are returned.
+#' Similarly, [swSigma0()] is used if `i="sigma0"`, and [swSpice()] is used if
+#' `i="spice"`. Of course, these actions only make sense for objects that
+#' contain the relevant items within their `data` slot.
 #'
-#' Finally, the \code{data} slot is checked to see if it contains
-#' an item with the name indicated by \code{i}. In this case, a partial
-#' match will work; this is accomplished by using \code{\link{pmatch}}.
+#' 5. After these possibilities are eliminated, the action depends on whether
+#' `j` has been provided.  If `j` is not provided, or is the string `""`, then
+#' `i` is sought in the `metadata` slot, and then in the `data` slot, returning
+#' whichever is found first.  In other words, if `j` is not provided, the
+#' `metadata` slot takes preference over the `data` slot. However, if `j` is
+#' provided, then it must be either the string `"metadata"` or `"data"`, and it
+#' directs where to look.
 #'
-#' If none of the above-listed conditions holds, then \code{NULL} is returned.
+#' 6. If none of the above-listed conditions holds, then `NULL` is returned.
 #'
-#' @family functions that extract parts of \code{oce} objects
-
+#' @family functions that extract parts of oce objects
 

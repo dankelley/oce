@@ -44,12 +44,9 @@ Setting \code{method="unesco"} yields the method that is used by the U.S.
 National Oceanographic Data Center. It is described in pages 48-50 of
 reference 2; reference 3 presumably contains the same information but it is
 not as easily accessible.  The method works as follows.
-
 \itemize{
-
 \item If there are data above 5m depth, then the surface value is taken to
 equal to the shallowest recorded value.
-
 \item Distance bounds are put on the four neighboring points, and the
 Reiniger-Ross method is used for interpolated points with sufficiently four
 close neighbors.  The bounds are described in table 15 of reference 2 only
@@ -60,7 +57,6 @@ otherwise.  Outer neighbors must be within 200m above 500m, 400m above
 1300m, or 1000m otherwise.  If two or more points meet these criteria,
 Lagrangian interpolation is used.  If not, \code{NA} is used as the
 interpolant.
-
 }
 
 After these rules are applied, the interpolated value is compared with the
@@ -68,13 +64,12 @@ values immediately above and below it, and if it is outside the range,
 simple linear interpolation is used.
 }
 \examples{
-
 library(oce)
 if (require(ocedata)) {
     data(RRprofile)
     zz <- seq(0, 2000, 2)
     plot(RRprofile$temperature, RRprofile$depth, ylim=c(500, 0), xlim=c(2, 11))
-    ## Contrast two methods
+    # Contrast two methods
     a1 <- oce.approx(RRprofile$depth, RRprofile$temperature, zz, "rr")
     a2 <- oce.approx(RRprofile$depth, RRprofile$temperature, zz, "unesco")
     lines(a1, zz)
@@ -84,20 +79,16 @@ if (require(ocedata)) {
 }
 \references{
 \enumerate{
-
 \item R.F. Reiniger and C.K. Ross, 1968.  A method of interpolation with
-application to oceanographic data.  \emph{Deep Sea Research}, \bold{15},
+application to oceanographic data.  \emph{Deep Sea Research}, \strong{15},
 185-193.
-
 \item Daphne R. Johnson, Tim P. Boyer, Hernan E. Garcia, Ricardo A.
 Locarnini, Olga K. Baranova, and Melissa M. Zweng, 2011. World Ocean
 Database 2009 Documentation.  NODC Internal report 20.  Ocean Climate
 Laboratory, National Oceanographic Data Center.  Silver Spring, Maryland.
-
 \item UNESCO, 1991. Processing of oceanographic station data, 138 pp.,
 Imprimerie des Presses Universitaires de France, United Nations Educational,
 Scientific and Cultural Organization, France.
-
 }
 }
 \author{

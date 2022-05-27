@@ -1,14 +1,14 @@
-## vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
+# vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
 
 #' Class to Store Rsk Data
 #'
-#' This class stores ``Ruskin'' data, from RBR [1].
+#' This class stores Ruskin data, from RBR (see reference 1).
 #'
-#' A \code{rsk} object may be read with \code{\link{read.rsk}} or created with
-#' \code{\link{as.rsk}}.  Plots can be made with \code{\link{plot,rsk-method}}, while
-#' \code{\link{summary,rsk-method}} produces statistical summaries and \code{show}
+#' A [rsk-class] object may be read with [read.rsk()] or created with
+#' [as.rsk()].  Plots can be made with [plot,rsk-method()], while
+#' [summary,rsk-method()] produces statistical summaries and `show`
 #' produces overviews.   If atmospheric pressure has not been removed from the
-#' data, the functions \code{\link{rskPatm}} may provide guidance as to its value;
+#' data, the functions [rskPatm()] may provide guidance as to its value;
 #' however, this last function is no equal to decent record-keeping at sea.
 #'
 #' @templateVar class rsk
@@ -24,27 +24,29 @@
 #' @template slot_get
 #'
 #' @references
-#' 1. \href{https://www.rbr-global.com/products}{RBR website: www.rbr-global.com/products}
+#' 1. RBR website (https://www.rbr-global.com/products)
 #'
 #' @author Dan Kelley and Clark Richards
 #'
-#' @family classes provided by \code{oce}
-#' @family things related to \code{rsk} data
+#' @family classes provided by oce
+#' @family things related to rsk data
 setClass("rsk", contains="oce")
 
-#' @title Sample Rsk Dataset
+#' Sample Rsk Dataset
 #'
-#' @description
-#' A sample \code{rsk} object derived from a Concerto CTD manufactured by RBR Ltd.
+#' A sample `rsk` object derived from a Concerto CTD manufactured by RBR Ltd.
 #'
-#' @details The data were obtained September 2015, off the west coast
+#' The data were obtained September 2015, off the west coast
 #' of Greenland, by Matt Rutherford and Nicole Trenholm of the
 #' Ocean Research Project, in collaboration with RBR and with the
 #' NASA Oceans Melting Greenland project.
 #'
 #' @name rsk
+#'
 #' @docType data
-#' @references \url{https://rbr-global.com/}
+#'
+#' @references `https://rbr-global.com/`
+#'
 #' @examples
 #' library(oce)
 #' data(rsk)
@@ -52,14 +54,15 @@ setClass("rsk", contains="oce")
 #' plot(rsk)
 #' plot(as.ctd(rsk))
 #'
-#' @family datasets provided with \code{oce}
-#' @family things related to \code{rsk} data
+#' @family datasets provided with oce
+#' @family things related to rsk data
 NULL
 
 
 setMethod(f="initialize",
           signature="rsk",
-          definition=function(.Object, time, pressure, temperature, filename="") {
+          definition=function(.Object, time, pressure, temperature, filename="", ...) {
+              .Object <- callNextMethod(.Object, ...)
               if (!missing(time)) .Object@data$time <- time
               if (!missing(pressure)) .Object@data$pressure <- pressure
               if (!missing(temperature)) .Object@data$temperature <- temperature
@@ -74,23 +77,21 @@ setMethod(f="initialize",
               ## 20160515 ## .Object@metadata$units$pressure <- list(unit=expression(dbar), scale="")
               .Object@metadata$pressureType <- "absolute"
               .Object@metadata$pressureAtmospheric <- 10.1325
-              .Object@processingLog$time <- as.POSIXct(Sys.time())
+              .Object@processingLog$time <- presentTime()
               .Object@processingLog$value <- "create 'rsk' object"
               return(.Object)
           })
 
-#' @title Summarize a Rsk Object
+#' Summarize a Rsk Object
 #'
-#' @description
-#' Summarizes some of the data in a \code{rsk} object, presenting such information
+#' Summarizes some of the data in a [rsk-class] object, presenting such information
 #' as the station name, sampling location, data ranges, etc.
 #'
-#' @param object An object of class \code{"rsk"}, usually, a result of a call to
-#' \code{\link{read.rsk}}, \code{\link{read.oce}}, or \code{\link{as.rsk}}.
+#' @param object An [rsk-class] object.
 #'
 #' @param ... Further arguments passed to or from other methods.
 #'
-#' @seealso The documentation for \code{\link{rsk-class}} explains the structure
+#' @seealso The documentation for [rsk-class] explains the structure
 #' of CTD objects, and also outlines the other functions dealing with them.
 #'
 #' @examples
@@ -100,7 +101,7 @@ setMethod(f="initialize",
 #'
 #' @author Dan Kelley
 #'
-#' @family things related to \code{rsk} data
+#' @family things related to rsk data
 setMethod(f="summary",
           signature="rsk",
           definition=function(object, ...) {
@@ -117,21 +118,44 @@ setMethod(f="summary",
               invisible(callNextMethod()) # summary
           })
 
-#' @title Extract Something From a Rsk Object
-#' @param x A rsk object, i.e. one inheriting from \code{\link{rsk-class}}.
+#' Extract Something From a Rsk Object
+#'
+#' @param x an [rsk-class] object.
+#'
+#' @section Details of the Specialized Method:
+#'
+#' * If `i` is `"?"`, then the return value is a list
+#' containing four items, each of which is a character vector
+#' holding the names of things that can be accessed with `[[`.
+#' The `data` and `metadata` items hold the names of
+#' entries in the object's data and metadata
+#' slots, respectively. The `dataDerived`
+#' and `metadataDerived` items are each NULL, because
+#' no derived values are defined by [rsk-class] objects.
+#'
 #' @template sub_subTemplate
+#'
 #' @author Dan Kelley
-#' @family things related to \code{rsk} data
+#'
+#' @family things related to rsk data
 setMethod(f="[[",
           signature(x="rsk", i="ANY", j="ANY"),
           definition=function(x, i, j, ...) {
+              if (i == "?")
+                  return(list(metadata=sort(names(x@metadata)),
+                          metadataDerived=NULL,
+                          data=sort(names(x@data)),
+                          dataDerived=NULL))
               callNextMethod()         # [[
           })
 
-#' @title Replace Parts of a Rsk Object
-#' @param x An \code{rsk} object, i.e. inheriting from \code{\link{rsk-class}}
+#' Replace Parts of a Rsk Object
+#'
+#' @param x an [rsk-class] object.
+#'
 #' @template sub_subsetTemplate
-#' @family things related to \code{rsk} data
+#'
+#' @family things related to rsk data
 setMethod(f="[[<-",
           signature(x="rsk", i="ANY", j="ANY"),
           definition=function(x, i, j, ..., value) {
@@ -140,22 +164,20 @@ setMethod(f="[[<-",
 
 
 
-#' @title Subset a Rsk Object
+#' Subset a Rsk Object
 #'
-#' @description
 #' Subset a rsk object.  This function is somewhat analogous to
-#' \code{\link{subset.data.frame}}, but subsetting is only permitted by time.
+#' [subset.data.frame()], but subsetting is only permitted by time.
 #'
-#' @param x a \code{rsk} object, i.e. inheriting from \code{\link{rsk-class}}.
+#' @param x an [rsk-class] object.
 #'
-#' @param subset a condition to be applied to the \code{data} portion of \code{x}.
+#' @param subset a condition to be applied to the `data` portion of `x`.
 #' See \sQuote{Details}.
 #'
 #' @param \dots ignored.
 #'
-#'
 #' @return
-#' A new \code{rsk} object.
+#' An [rsk-class] object.
 #'
 #' @examples
 #' library(oce)
@@ -164,8 +186,9 @@ setMethod(f="[[<-",
 #' plot(subset(rsk, time < mean(range(rsk[['time']]))))
 #'
 #' @author Dan Kelley
-#' @family things related to \code{rsk} data
-#' @family functions that subset \code{oce} objects
+#'
+#' @family things related to rsk data
+#' @family functions that subset oce objects
 setMethod(f="subset",
           signature="rsk",
           definition=function(x, subset, ...) {
@@ -190,29 +213,30 @@ setMethod(f="subset",
                   ## in other "subset" definitions, but my tests are suggesting parent.frame(2)
                   ## will work more generally: (a) within flat code and (b) within a function
                   ## that is passed items to go in the subset.
-                  r <- eval(substitute(subset), x@data, parent.frame(2))
+                  r <- eval(substitute(expr=subset, env=environment()), envir=x@data, enclos=parent.frame(2))
                   ####  str(r)
                   r <- r & !is.na(r)
                   res@data[[i]] <- x@data[[i]][r]
               }
               names(res@data) <- names(x@data)
-              subsetString <- paste(deparse(substitute(subset)), collapse=" ")
+              subsetString <- paste(deparse(substitute(expr=subset, env=environment())), collapse=" ")
               res@processingLog <- processingLogAppend(res@processingLog, paste("subset.rsk(x, subset=", subsetString, ")", sep=""))
               res
           })
 
 #' Infer Rsk units from a vector of strings
 #'
-#' This is used by \code{\link{read.rsk}} to infer the units of data, based
-#' on strings stored in \code{.rsk} files. Lacking a definitive guide
+#' This is used by [read.rsk()] to infer the units of data, based
+#' on strings stored in `.rsk` files. Lacking a definitive guide
 #' to the format of these file, this function was based on visual inspection
 #' of the data contained within a few sample files; unusual sensors may
 #' not be handled properly.
 #'
 #' @param s Vector of character strings, holding the `units` entry in the
-#' \code{channels} table of the \code{.rsk} database.
+#' `channels` table of the `.rsk` database.
 #'
 #' @return List of unit lists.
+#'
 #' @family functions that interpret variable names and units from headers
 unitFromStringRsk <- function(s)
 {
@@ -260,21 +284,19 @@ unitFromStringRsk <- function(s)
     }
 }
 
-#' @title Coerce Data Into a Rsk Object
+#' Coerce Data Into a Rsk Object
 #'
-#' @description
 #' Create a rsk object.
 #'
-#' @details
-#' The contents of \code{columns} are be copied into the \code{data} slot
+#' The contents of `columns` are be copied into the `data` slot
 #' of the returned object directly, so it is critical that the names and units
 #' correspond to those expected by other code dealing with
-#' \code{\link{rsk-class}} objects. If there is a conductivity, it must be called
-#' \code{conductivity}, and it must be in units of mS/cm. If there is a
-#' temperature, it must be called \code{temperature}, and it must be an in-situ
+#' [rsk-class] objects. If there is a conductivity, it must be called
+#' `conductivity`, and it must be in units of mS/cm. If there is a
+#' temperature, it must be called `temperature`, and it must be an in-situ
 #' value recorded in ITS-90 units.  And if there is a pressure, it must be
-#' \emph{absolute} pressure (sea pressure plus atmospheric pressure) and it must
-#' be named \code{pressure}. No checks are made within \code{as.rsk} on any of
+#' *absolute* pressure (sea pressure plus atmospheric pressure) and it must
+#' be named `pressure`. No checks are made within `as.rsk` on any of
 #' these rules, but if they are broken, you may expect problems with any further
 #' processing.
 #'
@@ -289,18 +311,18 @@ unitFromStringRsk <- function(s)
 #'
 #' @param serialNumber serial number for instrument.
 #'
-#' @param model instrument model type, e.g. \code{"RBRduo"}.
+#' @param model instrument model type, e.g. `"RBRduo"`.
 #'
-#' @param sampleInterval sampling interval. If given as \code{NA}, then this is
+#' @param sampleInterval sampling interval. If given as `NA`, then this is
 #' estimated as the median difference in times.
 #'
-#' @param debug a flag that can be set to \code{TRUE} to turn on debugging.
+#' @param debug a flag that can be set to `TRUE` to turn on debugging.
 #'
-#' @return
-#' An object of \code{\link{rsk-class}} \code{"rsk"}.
+#' @return An [rsk-class] object.
 #'
 #' @author Dan Kelley
-#' @family things related to \code{rsk} data
+#'
+#' @family things related to rsk data
 as.rsk <- function(time, columns,
                    filename="", instrumentType="rbr", serialNumber="", model="",
                    sampleInterval=NA,
@@ -337,35 +359,34 @@ as.rsk <- function(time, columns,
 }
 
 
-#' @title Plot Rsk Data
+#' Plot a rsk Object
 #'
-#' @description
 #' Rsk data may be in many forms, and it is not easy to devise a general plotting
 #' strategy for all of them. The present function is quite crude, on the
 #' assumption that users will understand their own datasets, and that they can
 #' devise plots that are best-suited to their applications.  Sometimes, the
 #' sensible scheme is to coerce the object into another form, e.g. using
-#' \code{plot(as.ctd(rsk))} if the object contains CTD-like data.  Other times,
-#' users should extract data from the \code{rsk} object and construct plots
+#' `plot(as.ctd(rsk))` if the object contains CTD-like data.  Other times,
+#' users should extract data from the `rsk` object and construct plots
 #' themselves. The idea is to use the present function mainly to get an overview,
-#' and for that reason, the default plot type (set by \code{which}) is a set of
+#' and for that reason, the default plot type (set by `which`) is a set of
 #' time-series plots, because the one thing that is definitely known about
-#' \code{rsk} objects is that they contain a \code{time} vector in their
-#' \code{data} slot.
+#' `rsk` objects is that they contain a `time` vector in their
+#' `data` slot.
 #'
 #' @details Plots produced are time series plots of the data in the
-#'     object. The default, \code{which="timeseries"} plots all data
+#'     object. The default, `which="timeseries"` plots all data
 #'     fields, and over-rides any other specification. Specific fields
 #'     can be plotted by naming the field,
-#'     e.g. \code{which="temperature"} to plot a time series of just
+#'     e.g. `which="temperature"` to plot a time series of just
 #'     the temperature field.
 #'
-#' @param x \code{rsk} object, typically result of \code{\link{read.rsk}}.
+#' @param x an [rsk-class] object.
 #'
 #' @param which character indicating desired plot types.  These are
 #'     graphed in panels running down from the top of the page.  See
 #'     \dQuote{Details} for the meanings of various values of
-#'     \code{which}.
+#'     `which`.
 #'
 #' @param tlim optional limits for time axis.  If not provided, the value will be
 #' inferred from the data.
@@ -374,18 +395,18 @@ as.rsk <- function(time, columns,
 #'     value will be inferred from the data.  (It is helpful to
 #'     specify this, if the auto-scaled value will be inappropriate,
 #'     e.g. if more lines are to be added later). Note that this is
-#'     ignored, unless \code{length(which) == 1} and \code{which}
+#'     ignored, unless `length(which) == 1` and `which`
 #'     corresponds to one of the data fields. If a multipanel plot of
 #'     a specific subset of the data fields is desired with
-#'     \code{ylim} control, it should be done panel by panel (see
+#'     `ylim` control, it should be done panel by panel (see
 #'     Examples).
 #'
 #' @param xlab optional label for x axis.
 #'
 #' @param ylab optional label for y axis.
 #'
-#' @param tformat optional argument passed to \code{\link{oce.plot.ts}}, for plot
-#' types that call that function.  (See \code{\link{strptime}} for the format
+#' @param tformat optional argument passed to [oce.plot.ts()], for plot
+#' types that call that function.  (See [strptime()] for the format
 #' used.)
 #'
 #' @param drawTimeRange boolean that applies to panels with time as the horizontal
@@ -397,14 +418,14 @@ as.rsk <- function(time, columns,
 #' range (e.g. skipping the year, month, day, etc. if it's the same as the start
 #' time).
 #'
-#' @param useSmoothScatter a boolean to cause \code{\link{smoothScatter}} to be
-#' used for profile plots, instead of \code{\link{plot}}.
+#' @param useSmoothScatter a boolean to cause [smoothScatter()] to be
+#' used for profile plots, instead of [plot()].
 #'
-#' @param mgp 3-element numerical vector to use for \code{par(mgp)}, and
-#' also for \code{par(mar)}, computed from this.  The default is tighter than the
+#' @param mgp 3-element numerical vector to use for [`par`]`("mgp")`, and
+#' also for `par(mar)`, computed from this.  The default is tighter than the
 #' R default, in order to use more space for the data and less for the axes.
 #'
-#' @param mar value to be used with \code{\link{par}("mar")}.
+#' @param mar value to be used with [`par`]`("mar")`.
 #'
 #' @param main main title for plot, used just on the top panel, if there are several panels.
 #'
@@ -423,13 +444,14 @@ as.rsk <- function(time, columns,
 #' plot(rsk, which="temperature", ylim=c(2, 4))
 #'
 #' @seealso
-#' The documentation for \code{\link{rsk-class}} explains the structure of
-#' \code{rsk} objects, and also outlines the other functions dealing with them.
+#' The documentation for [rsk-class] explains the structure of
+#' `rsk` objects, and also outlines the other functions dealing with them.
 #'
 #' @author Dan Kelley and Clark Richards
 #'
-#' @family functions that plot \code{oce} data
-#' @family things related to \code{rsk} data
+#' @family functions that plot oce data
+#' @family things related to rsk data
+#'
 #' @aliases plot.rsk
 setMethod(f="plot",
           signature=signature("rsk"),
@@ -446,8 +468,6 @@ setMethod(f="plot",
                               debug=getOption("oceDebug"),
                               ...)
           {
-              if ("adorn" %in% names(list(...)))
-                  warning("In plot,rsk-method() : the 'adorn' argument was removed in November 2017", call.=FALSE)
               oceDebug(debug, "plot.rsk(..., which=", which, ", ...) {\n", unindent=1)
               dotsNames <- names(list(...))
               ## FIXME: In the below, we could be more clever for single-panel plots
@@ -519,40 +539,80 @@ setMethod(f="plot",
                   }
               }
               oceDebug(debug, "} # plot.rsk()\n", unindent=1)
-              invisible()
+              invisible(NULL)
           })
 
 
 
-#' @title Read a Rsk file
+#' Read a Rsk file
 #'
-#' @description
 #' Read an RBR rsk or txt file, e.g. as produced by an RBR logger, producing an
-#' object of class \code{rsk}.
+#' object of class `rsk`.
+#'
+#' This can read files produced by several RBR instruments.  At the moment, five
+#' styles are understood: (1) text file produced as an export of an RBR `hex`
+#' or `rsk` file; (2) text file with columns for temperature and pressure
+#' (with sampling times indicated in the header); (3) text file with four columns,
+#' in which the date the time of day are given in the first two columns, followed
+#' by the temperature, and pressure; (4) text file with five columns, in which
+#' depth in the water column is given after the pressure; (5) an SQLite-based
+#' database format. The first four options are provided mainly for historical
+#' reasons, since RBR instruments at the date of writing commonly use the SQLite
+#' format, though the first option is common for all instruments that produce a
+#' `hex` file that can be read using Ruskin.
+#'
+#' Options 2-4 are mostly obsolete, and will be removed from future versions.
+#'
+#' *A note on conductivity.* RBR devices record conductivity in mS/cm, and it
+#' is this value that is stored in the object returned by `read.rsk`. This can
+#' be converted to conductivity ratio (which is what many other instruments report)
+#' by dividing by 42.914 (see Culkin and Smith, 1980) which will be necessary in
+#' any seawater-related function that takes conductivity ratio as an argument (see
+#' \dQuote{Examples}).
+#'
+#'   *A note on pressure.* RBR devices tend to record absolute pressure (i.e.
+#'   sea pressure plus atmospheric pressure), unlike most oceanographic instruments
+#'   that record sea pressure (or an estimate thereof).  The handling of pressure
+#'   is controlled with the `patm` argument, for which there are three
+#'   possibilities.  (1) If `patm` is `FALSE` (the default), then
+#'   pressure read from the data file is stored in the `data` slot of return
+#'   value, and the `metadata` item `pressureType` is set to the string
+#'   `"absolute"`.  (2) If `patm` is `TRUE`, then an estimate of
+#'   atmospheric pressure is subtracted from the raw data. For data files in the
+#'   SQLite format (i.e.  `*.rsk` files), this estimate will be the value read
+#'   from the file, or the ``standard atmosphere'' value 10.1325 dbar, if the file
+#'   lacks this information.  (3) If `patm` is a numerical value (or list of
+#'   values, one for each sampling time), then `patm` is subtracted from the
+#'   raw data.  In cases 2 and 3, an additional column named
+#'   `pressureOriginal` is added to the `data` slot to store the value
+#'   contained in the data file, and `pressureType` is set to a string
+#'   starting with `"sea"`.  See [as.ctd()] for details of how this
+#'   setup facilitates the conversion of [rsk-class] objects to
+#'   [ctd-class] objects.
 #'
 #' @param file a connection or a character string giving the name of the file to
-#' load. Note that \code{file} must be a character string, because connections are
+#' load. Note that `file` must be a character string, because connections are
 #' not used in that case, which is instead handled with database calls.
 #'
 #' @param from indication of the first datum to read.  This can a positive integer
 #' to indicate sequence number, the POSIX time of the first datum, or a character
 #' string that can be converted to a POSIX time.  (For POSIX times, be careful
-#' about the \code{tz} argument.)
+#' about the `tz` argument.)
 #'
 #' @param to an indication of the last datum to be read, in the same format as
-#' \code{from}.  If \code{to} is missing, data will be read to the end of the file.
+#' `from`.  If `to` is missing, data will be read to the end of the file.
 #'
 #' @param by an indication of the stride length to use while walking through the
-#' file.  If this is an integer, then \code{by-1} samples are skipped between each
+#' file.  If this is an integer, then `by-1` samples are skipped between each
 #' pair of samples that is read.  If this is a string representing a time interval,
 #' in colon-separated format (HH:MM:SS or MM:SS), then this interval is divided by
 #' the sampling interval, to get the stride length.
 #'
-#' @param type optional file type, presently can be \code{rsk} or \code{txt} (for a
+#' @param type optional file type, presently can be `rsk` or `txt` (for a
 #' text export of an RBR rsk or hex file). If this argument is not provided, an
 #' attempt will be made to infer the type from the file name and contents.
 #'
-#' @param tz time zone.  The value \code{oceTz} is set at package setup.
+#' @param tz time zone.  The value `oceTz` is set at package setup.
 #'
 #' @param patm controls the handling of atmospheric pressure, an important issue
 #' for RBR instruments that record absolute pressure; see \dQuote{Details}.
@@ -561,73 +621,45 @@ setMethod(f="plot",
 #' This is typically only provided for internal calls; the default that it provides
 #' is better for normal calls by a user.
 #'
-#' @param debug a flag that can be set to \code{TRUE} to turn on debugging.
+#' @param debug a flag that can be set to `TRUE` to turn on debugging.
 #'
-#'
-#' @details
-#' This can read files produced by several RBR instruments.  At the moment, five
-#' styles are understood: (1) text file produced as an export of an RBR \code{hex}
-#' or \code{rsk} file; (2) text file with columns for temperature and pressure
-#' (with sampling times indicated in the header); (3) text file with four columns,
-#' in which the date the time of day are given in the first two columns, followed
-#' by the temperature, and pressure; (4) text file with five columns, in which
-#' depth in the water column is given after the pressure; (5) an SQLite-based
-#' database format. The first four options are provided mainly for historical
-#' reasons, since RBR instruments at the date of writing commonly use the SQLite
-#' format, though the first option is common for all instruments that produce a
-#' \code{hex} file that can be read using Ruskin.
-#'
-#' Options 2-4 are mostly obsolete, and will be removed from future versions.
-#'
-#' \emph{A note on conductivity.} RBR devices record conductivity in mS/cm, and it
-#' is this value that is stored in the object returned by \code{read.rsk}. This can
-#' be converted to conductivity ratio (which is what many other instruments report)
-#' by dividing by 42.914 (see Culkin and Smith, 1980) which will be necessary in
-#' any seawater-related function that takes conductivity ratio as an argument (see
-#' \dQuote{Examples}).
-#'
-#'   \emph{A note on pressure.} RBR devices tend to record absolute pressure (i.e.
-#'   sea pressure plus atmospheric pressure), unlike most oceanographic instruments
-#'   that record sea pressure (or an estimate thereof).  The handling of pressure
-#'   is controlled with the \code{patm} argument, for which there are three
-#'   possibilities.  (1) If \code{patm} is \code{FALSE} (the default), then
-#'   pressure read from the data file is stored in the \code{data} slot of return
-#'   value, and the \code{metadata} item \code{pressureType} is set to the string
-#'   \code{"absolute"}.  (2) If \code{patm} is \code{TRUE}, then an estimate of
-#'   atmospheric pressure is subtracted from the raw data. For data files in the
-#'   SQLite format (i.e.  \code{*.rsk} files), this estimate will be the value read
-#'   from the file, or the ``standard atmosphere'' value 10.1325 dbar, if the file
-#'   lacks this information.  (3) If \code{patm} is a numerical value (or list of
-#'   values, one for each sampling time), then \code{patm} is subtracted from the
-#'   raw data.  In cases 2 and 3, an additional column named
-#'   \code{pressureOriginal} is added to the \code{data} slot to store the value
-#'   contained in the data file, and \code{pressureType} is set to a string
-#'   starting with \code{"sea"}.  See \code{\link{as.ctd}} for details of how this
-#'   setup facilitates the conversion of \code{\link{rsk-class}} objects to
-#'   \code{\link{ctd-class}} objects.
-#'
-#' @return An object of \code{\link{rsk-class}}.
+#' @return An [rsk-class] object.
 #'
 #' @seealso
-#' The documentation for \code{\link{rsk-class}} explains the structure of
-#' \code{rsk} objects, and also outlines other functions dealing with them.  Since
-#' RBR has a wide variety of instruments, \code{rsk} datasets can be quite general,
-#' and it is common to coerce \code{rsk} objects to other forms for specialized
-#' work, e.g. \code{\link{as.ctd}} can be used to create CTD object, so that the
+#' The documentation for [rsk-class] explains the structure of
+#' `rsk` objects, and also outlines other functions dealing with them.  Since
+#' RBR has a wide variety of instruments, `rsk` datasets can be quite general,
+#' and it is common to coerce `rsk` objects to other forms for specialized
+#' work, e.g. [as.ctd()] can be used to create CTD object, so that the
 #' generic plot obeys the CTD format.
 #'
 #' @references
 #' Culkin, F., and Norman D. Smith, 1980. Determination of the concentration of
 #' potassium chloride solution having the same electrical conductivity, at 15 C and
 #' infinite frequency, as standard seawater of salinity 35.0000 ppt (Chlorinity
-#' 19.37394 ppt). \emph{IEEE Journal of Oceanic Engineering}, \bold{5}, pp 22-23.
+#' 19.37394 ppt). *IEEE Journal of Oceanic Engineering*, **5**, pp 22-23.
 #'
 #' @author Dan Kelley and Clark Richards
 #'
-#' @family things related to \code{rsk} data
-read.rsk <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", default="UTC"),
-                        patm=FALSE, processingLog, debug=getOption("oceDebug"))
+#' @family things related to rsk data
+read.rsk <- function(file,
+    from=1,
+    to,
+    by=1,
+    type,
+    tz=getOption("oceTz", default="UTC"),
+    patm=FALSE,
+    processingLog,
+    debug=getOption("oceDebug"))
 {
+    if (missing(file))
+        stop("must supply 'file'")
+    if (is.character(file)) {
+        if (!file.exists(file))
+            stop("cannot find file '", file, "'")
+        if (0L == file.info(file)$size)
+            stop("empty file '", file, "'")
+    }
     debug <- max(0, min(debug, 2))
     oceDebug(debug, "read.rsk(file=\"", file, "\", from=", format(from),
              ", to=", if (missing(to))"(not given)" else format(to),
@@ -782,25 +814,25 @@ read.rsk <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", default
             } else if (inherits(to, 'character')) {
                 to <- as.character(as.numeric(as.POSIXct(to, tz=tz))*1000)
             } else if (is.numeric(to)) {
-                res <- DBI::dbSendQuery(con,
-                                        if (packageVersion("RSQLite") < "2.0")
-                                            "select 1.0*tstamp from data order by tstamp;"
-                                        else
-                                            "select tstamp from data order by tstamp;")
-                t1000 <- DBI::dbFetch(res, n=-1)[[1]]
-                RSQLite::dbClearResult(res)
+                qres <- DBI::dbSendQuery(con,
+                                         if (packageVersion("RSQLite") < "2.0")
+                                             "select 1.0*tstamp from data order by tstamp;"
+                                         else
+                                             "select tstamp from data order by tstamp;")
+                t1000 <- DBI::dbFetch(qres, n=-1)[[1]]
+                RSQLite::dbClearResult(qres)
                 time <- numberAsPOSIXct(as.numeric(t1000) / 1000, type='unix')
             }
         }
 
         if (is.numeric(from) & from != 1 & all(is.na(time))) {
-            res <- DBI::dbSendQuery(con,
-                                    if (packageVersion("RSQLite") < "2.0")
-                                        "select 1.0*tstamp from data order by tstamp;"
-                                    else
-                                        "select tstamp from data order by tstamp;")
-            t1000 <- DBI::dbFetch(res, n=-1)[[1]]
-            RSQLite::dbClearResult(res)
+            qres <- DBI::dbSendQuery(con,
+                                     if (packageVersion("RSQLite") < "2.0")
+                                         "select 1.0*tstamp from data order by tstamp;"
+                                     else
+                                         "select tstamp from data order by tstamp;")
+            t1000 <- DBI::dbFetch(qres, n=-1)[[1]]
+            RSQLite::dbClearResult(qres)
             time <- numberAsPOSIXct(as.numeric(t1000) / 1000, type='unix')
         }
 
@@ -824,22 +856,22 @@ read.rsk <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", default
         ## Generate the sql that contains the time filters
         if (missing(to)) {
             if (is.numeric(from)) {
-                res <- DBI::dbSendQuery(con, paste(sql_fields, ";"))
+                qres <- DBI::dbSendQuery(con, paste(sql_fields, ";"))
             } else {
-                res <- DBI::dbSendQuery(con, paste(sql_fields, "where tstamp >=",  from, ";"))
+                qres <- DBI::dbSendQuery(con, paste(sql_fields, "where tstamp >=",  from, ";"))
             }
         } else {
             if (missing(to)) {
-                res <- DBI::dbSendQuery(con, paste(sql_fields, "where tstamp >=",  from, ";"))
+                qres <- DBI::dbSendQuery(con, paste(sql_fields, "where tstamp >=",  from, ";"))
             } else if (from==1) {
-                res <- DBI::dbSendQuery(con, paste(sql_fields, "where tstamp <=",  to, ";"))
+                qres <- DBI::dbSendQuery(con, paste(sql_fields, "where tstamp <=",  to, ";"))
             } else {
-                res <- DBI::dbSendQuery(con, paste(sql_fields, "where tstamp between",  from, "and", to, ";"))
+                qres <- DBI::dbSendQuery(con, paste(sql_fields, "where tstamp between",  from, "and", to, ";"))
             }
         }
 
         ## Now, get only the specified time range
-        data <- DBI::dbFetch(res, n=-1)
+        data <- DBI::dbFetch(qres, n=-1)
         data <- data[order(data$tstamp),]
         time <- numberAsPOSIXct(as.numeric(data[,1])/1000, type='unix')
 
@@ -851,7 +883,7 @@ read.rsk <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", default
             data <- data[, -grep('datasetID', names(data)), drop=FALSE]
         }
         data <- data[,c(-1), drop=FALSE] # drop the corrupted time column
-        DBI::dbClearResult(res)
+        DBI::dbClearResult(qres)
         ## Get column names from the 'channels' table.
         names <- tolower(RSQLite::dbReadTable(con, "channels")$longName)
         ## FIXME: some longnames have UTF-8 characters, and/or
@@ -871,6 +903,7 @@ read.rsk <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", default
             ##warning("old Ruskin file detected; if problems arise, update file with Ruskin software")
         }
         dataNamesOriginal <- c("-", channelsTable$shortName[isMeasured])
+        ##1491> message("below is dataNamesOriginal: (at start)");print(dataNamesOriginal)
         ##[issue 1483] print(cbind(channelsTable,isMeasured))
         names <- names[isMeasured] # only take names of things that are in the data table
         unitsRsk <- channelsTable$units[isMeasured]
@@ -893,6 +926,7 @@ read.rsk <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", default
         sampleInterval <- schedules$samplingPeriod/1000 # stored as milliseconds in rsk
         RSQLite::dbDisconnect(con)
         res <- new("rsk", time=time, filename=filename)
+        res@metadata$dataNamesOriginal <- dataNamesOriginal
         for (iname in seq_along(names)) {
             res@data[[names[iname]]] <- data[[names[iname]]]
             res@metadata$units[[names[iname]]] <- unitFromStringRsk(unitsRsk[iname])
@@ -904,6 +938,8 @@ read.rsk <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", default
             }
         }
         res@metadata$units$pressure$scale <- "absolute"
+        ##1491> message("res@metadata$dataNamesOriginal L909:");print(res@metadata$dataNamesOriginal)
+        ##?browser()
         if ("pressure" %in% names) {
             ## possibly compute sea pressure
             if (is.logical(patm)) {
@@ -915,7 +951,7 @@ read.rsk <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", default
                     res@metadata$units$pressureOriginal <- list(unit=expression(dbar), scale="absolute")
                     res@data$pressure <- res@data$pressureOriginal - 10.1325
                     res@metadata$units$pressure <- list(unit=expression(dbar), scale="sea")
-                    res@metadata$dataNamesOriginal <- c(res@metadata$dataNamesOriginal, "")
+                    res@metadata$dataNamesOriginal <- c(res@metadata$dataNamesOriginal, "-")
                     res@metadata$pressureType <- "sea"
                     oceDebug(debug, "patm=TRUE, so removing std atmospheric pressure, 10.1325 dbar\n")
                 }
@@ -931,18 +967,21 @@ read.rsk <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", default
                 res@metadata$units$pressureOriginal <- list(unit=expression(dbar), scale="absolute")
                 res@data$pressure <- res@data$pressureOriginal - patm
                 res@metadata$units$pressure <- list(unit=expression(dbar), scale="sea")
-                res@metadata$dataNamesOriginal <- c(res@metadata$dataNamesOriginal, "")
+                res@metadata$dataNamesOriginal <- c(res@metadata$dataNamesOriginal, "-")
                 res@metadata$pressureType <- "sea"
             } else {
                 stop("patm must be logical or numeric")
             }
         }
+        ##1491> message("res@metadata$dataNamesOriginal L944:");print(res@metadata$dataNamesOriginal)
         res@metadata$model <- model
         res@metadata$serialNumber <- serialNumber
         res@metadata$sampleInterval <- sampleInterval
         res@metadata$rskVersion <- rskVersion
         res@metadata$ruskinVersion <- ruskinVersion
-        res@metadata$dataNamesOriginal <- as.list(dataNamesOriginal)
+        ##1491> message("res@metadata$dataNamesOriginal L951:");print(res@metadata$dataNamesOriginal)
+        ##1491> message("names(res@data) L952:");print(names(res@data))
+        ## HERE
         names(res@metadata$dataNamesOriginal) <- names(res@data)
         if (hasDatasetID) res@metadata$datasetID <- datasetID
         ## There is actually no need to set the conductivity unit since new()
@@ -971,6 +1010,7 @@ read.rsk <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", default
             ## FIXME: will this work for all RBR rsks that don't contain cond12?
             res@metadata$units$conductivity <- list(unit=expression(mS/cm), scale="")
         }
+        ##1491> message("str(dataNamesOriginal) L984:");print(res@metadata$dataNamesOriginal)
         res@metadata$pressureAtmospheric <- pressureAtmospheric
         res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
         oceDebug(debug, "} # read.rsk()\n", sep="", unindent=1)
@@ -1189,34 +1229,41 @@ read.rsk <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", default
 
 #' Create a ctd Object from an rsk Object
 #'
-#' A new \code{ctd} object is assembled from the contents of the \code{rsk} object.
+#' A new `ctd` object is assembled from the contents of the `rsk` object.
 #' The data and metadata are mostly unchanged, with an important exception: the
-#' \code{pressure} item in the \code{data} slot may altered, because \code{rsk}
+#' `pressure` item in the `data` slot may altered, because `rsk`
 #' instruments measure total pressure, not sea pressure; see \dQuote{Details}.
 #'
-#' @details
-#' The \code{pressureType} element of the
-#' \code{metadata} of \code{rsk} objects defines the pressure type, and this controls
-#' how pressure is set up in the returned object. If \code{object@@metadata$pressureType}
-#' is \code{"absolute"} (or \code{NULL}) then the resultant pressure will be adjusted
-#' to make it into \code{"sea"} pressure. To do this, the value of
-#' \code{object@@metadata$pressureAtmospheric} is inspected. If this is present, then
-#' it is subtracted from \code{pressure}. If this is missing, then
+#' The `pressureType` element of the
+#' `metadata` of `rsk` objects defines the pressure type, and this controls
+#' how pressure is set up in the returned object. If `object@@metadata$pressureType`
+#' is `"absolute"` (or `NULL`) then the resultant pressure will be adjusted
+#' to make it into `"sea"` pressure. To do this, the value of
+#' `object@@metadata$pressureAtmospheric` is inspected. If this is present, then
+#' it is subtracted from `pressure`. If this is missing, then
 #' standard pressure (10.1325 dbar) will be subtracted. At this stage, the
 #' pressure should be near zero at the ocean surface, but some additional adjustment
-#' might be necessary, and this may be indicated by setting the argument \code{pressureAtmospheric} to
+#' might be necessary, and this may be indicated by setting the argument `pressureAtmospheric` to
 #' a non-zero value to be subtracted from pressure.
 #'
-#' @param x An \code{rsk} object, i.e. one inheriting from \code{\link{rsk-class}}.
+#' @param x an [rsk-class] object.
+#'
 #' @param pressureAtmospheric A numerical value (a constant or a vector),
-#' that is subtracted from the pressure in \code{object} before storing it in the return value.
+#' that is subtracted from the pressure in `object` before storing it in the return value.
+#'
 #' @param longitude numerical value of longitude, in degrees East.
+#'
 #' @param latitude numerical value of latitude, in degrees North.
+#'
 #' @param ship optional string containing the ship from which the observations were made.
+#'
 #' @param cruise optional string containing a cruise identifier.
+#'
 #' @param station optional string containing a station identifier.
+#'
 #' @param deploymentType character string indicating the type of deployment (see
-#' \code{\link{as.ctd}}).
+#' [as.ctd()]).
+#'
 #' @template debugTemplate
 rsk2ctd <- function(x, pressureAtmospheric=0, longitude=NULL, latitude=NULL,
                     ship=NULL, cruise=NULL, station=NULL, deploymentType=NULL,
@@ -1324,30 +1371,26 @@ rsk2ctd <- function(x, pressureAtmospheric=0, longitude=NULL, latitude=NULL,
 }
 
 
-#' @title Estimate Atmospheric Pressure in Rsk Object
+#' Estimate Atmospheric Pressure in Rsk Object
 #'
-#' @description
 #' Estimate atmospheric pressure in rsk record.
 #'
-#' @details
 #' Pressures must be in decibars for this to work.  First, a subset of pressures is
-#' created, in which the range is \code{sap-dp} to \code{sap+dp}.  Here,
-#' \code{sap}=10.1325 dbar is standard sealevel atmospheric pressure.  Within this
+#' created, in which the range is `sap-dp` to `sap+dp`.  Here,
+#' `sap`=10.1325 dbar is standard sealevel atmospheric pressure.  Within this
 #' window, three measures of central tendency are calculated: the median, the mean,
 #' and a weighted mean that has weight given by \eqn{exp(-2*((p
 #'     - sap) / dp)^2)}{exp(-2*((p - sap) / dp)^2)}.
-##'
-#' @param x A \code{rsk} object, or a list of pressures (in decibars).
+#'
+#' @param x an [rsk-class] object.
 #'
 #' @param dp Half-width of pressure window to be examined (in decibars).
 #'
-#' @return
-#' A list of four estimates: \code{sap}, the median, the mean, and the weighted
-#' mean.
+#' @return A list of four estimates: `sap`, the median, the mean, and the weighted mean.
 #'
 #' @seealso
-#' The documentation for \code{\link{rsk-class}} explains the structure of
-#' \code{rsk} objects, and also outlines the other functions dealing with them.
+#' The documentation for [rsk-class] explains the structure of
+#' `rsk` objects, and also outlines the other functions dealing with them.
 #'
 #' @examples
 #' library(oce)
@@ -1356,7 +1399,7 @@ rsk2ctd <- function(x, pressureAtmospheric=0, longitude=NULL, latitude=NULL,
 #'
 #' @author Dan Kelley
 #'
-#' @family things related to \code{rsk} data
+#' @family things related to rsk data
 rskPatm <- function(x, dp=0.5)
 {
     p <- if (inherits(x, "rsk")) x@data$pressure else x
@@ -1372,54 +1415,52 @@ rskPatm <- function(x, dp=0.5)
 }
 
 
-#' @title Decode table-of-contents File from a Rsk File
+#' Decode table-of-contents File from a Rsk File
 #'
-#' @description
 #' Decode table-of-contents file from a rsk file, of the sort used by some
 #' researchers at Dalhousie University.
 #'
-#' @details
-#' It is assumed that the \code{.TBL} file contains lines of the form \code{"File
+#' It is assumed that the `.TBL` file contains lines of the form \code{"File
 #'   \\day179\\SL08A179.023 started at Fri Jun 27 22:00:00 2008"} The first step is
 #' to parse these lines to get day and hour information, i.e.  179 and 023 in the
 #' line above.  Then, recognizing that it is common to change the names of such
 #' files, the rest of the file-name information in the line is ignored, and instead
 #' a new file name is constructed based on the data files that are found in the
-#' directory.  (In other words, the \code{"\\day179\\SL08A"} portion of the line is
+#' directory.  (In other words, the `"\\day179\\SL08A"` portion of the line is
 #' replaced.)  Once the file list is complete, with all times put into R format,
 #' then (optionally) the list is trimmed to the time interval indicated by
-#' \code{from} and \code{to}.  It is important that \code{from} and \code{to} be in
-#' the \code{UTC} time zone, because that time zone is used in decoding the lines
-#' in the \code{.TBL} file.
+#' `from` and `to`.  It is important that `from` and `to` be in
+#' the `UTC` time zone, because that time zone is used in decoding the lines
+#' in the `.TBL` file.
 #'
 #' @param dir name of a directory containing a single table-of-contents file, with
-#' \code{.TBL} at the end of its file name.
+#' `.TBL` at the end of its file name.
 #'
-#' @param from optional \code{\link{POSIXct}} time, indicating the beginning of a
-#' data interval of interest.  This must have timezone \code{"UTC"}.
+#' @param from optional [POSIXct()] time, indicating the beginning of a
+#' data interval of interest.  This must have timezone `"UTC"`.
 #'
-#' @param to optional \code{\link{POSIXct}} time, indicating the end of a data
-#' interval of interest.  This must have timezone \code{"UTC"}.
+#' @param to optional [POSIXct()] time, indicating the end of a data
+#' interval of interest.  This must have timezone `"UTC"`.
 #'
 #' @param debug optional integer to control debugging, with positive values
 #' indicating to print information about the processing.
 #'
 #' @examples
-#' \dontrun{
+#'\dontrun{
 #' table <- rskToc("/data/archive/sleiwex/2008/moorings/m05/adv/sontek_202h/raw",
 #' from=as.POSIXct("2008-07-01 00:00:00", tz="UTC"),
 #'     to=as.POSIXct("2008-07-01 12:00:00", tz="UTC"))
 #' print(table)
-#' }
+#'}
 #'
 #' @return
-#' A list with two elements: \code{filename}, a vector of file names, and
-#' \code{startTime}, a vector of \code{\link{POSIXct}} times indicating the (real)
+#' A list with two elements: `filename`, a vector of file names, and
+#' `startTime`, a vector of [POSIXct()] times indicating the (real)
 #' times of the first datum in the corresponding files.
 #'
 #' @author Dan Kelley
 #'
-#' @family things related to \code{rsk} data
+#' @family things related to rsk data
 rskToc <- function(dir, from, to, debug=getOption("oceDebug"))
 {
     if (missing(dir))

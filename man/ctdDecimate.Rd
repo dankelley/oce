@@ -4,11 +4,17 @@
 \alias{ctdDecimate}
 \title{Decimate a CTD profile}
 \usage{
-ctdDecimate(x, p = 1, method = "boxcar", rule = 1, e = 1.5,
-  debug = getOption("oceDebug"))
+ctdDecimate(
+  x,
+  p = 1,
+  method = "boxcar",
+  rule = 1,
+  e = 1.5,
+  debug = getOption("oceDebug")
+)
 }
 \arguments{
-\item{x}{A \code{ctd} object, i.e. one inheriting from \code{\link{ctd-class}}.}
+\item{x}{a \linkS4class{ctd} object.}
 
 \item{p}{pressure increment, or vector of pressures.  In the first case,
 pressures from 0dbar to the rounded maximum pressure are used, incrementing by
@@ -21,25 +27,25 @@ as follows.
 \itemize{
 \item \code{"boxcar"} (based on a local average)
 \item \code{"approx"} (based on linear
-interpolation between neighboring points, using \code{\link{approx}}
+interpolation between neighboring points, using \code{\link[=approx]{approx()}}
 with the \code{rule} argument specified here)
 \item \code{"approxML"} as \code{"approx"},
 except that a mixed layer is assumed to apply above the top data value; this
-is done by setting the \code{yleft} argument to \code{\link{approx}}, and
-by calling that function with \code{rule=c(2,1))}
+is done by setting the \code{yleft} argument to \code{\link[=approx]{approx()}}, and
+by calling that function with \verb{rule=c(2,1))}
 \item \code{"lm"} (based on local
 regression, with \code{e} setting the size of the local region);
-\item \code{"rr"} for the Reiniger and Ross method, carried out with \code{\link{oce.approx}};
-\item \code{"unesco"} (for the UNESCO method, carried out with.
-\code{\link{oce.approx}}.
+\item \code{"rr"} for the Reiniger and Ross method, carried out with \code{\link[=oce.approx]{oce.approx()}};
+\item \code{"unesco"} (for the UNESCO method, carried out with \code{\link[=oce.approx]{oce.approx()}}.
 }
+
 On the other hand, if \code{method} is a function, then it must take
 three arguments, the first being pressure, the second being an arbitrary
 variable in another column of the data, and the third being a vector of target
 pressures at which the calculation is carried out, and the return value must be
 a vector.  See \dQuote{Examples}.}
 
-\item{rule}{an integer that is passed to \code{\link{approx}}, in the
+\item{rule}{an integer that is passed to \code{\link[=approx]{approx()}}, in the
 case where \code{method} is \code{"approx"}. Note that the default value
 for \code{rule} is 1, which will inhibit extrapolation beyond the observed
 pressure range. This is a change from the behaviour previous to May 8, 2017,
@@ -63,12 +69,12 @@ be printed. If one function calls another, it usually reduces the value of
 by specifying higher \code{debug} values.}
 }
 \value{
-An object of \code{\link{ctd-class}}, with pressures that are as set by
+A \linkS4class{ctd} object, with pressures that are as set by
 the \code{"p"} parameter and all other properties modified appropriately.
 }
 \description{
 Interpolate a CTD profile to specified pressure values.  This is used
-by \code{\link{sectionGrid}}, but is also useful for dealing with individual
+by \code{\link[=sectionGrid]{sectionGrid()}}, but is also useful for dealing with individual
 CTD/bottle profiles.
 }
 \details{
@@ -83,15 +89,16 @@ boxcar method.)
 
 For widely-spaced data, a sort of numerical cabeling effect can result when
 density is computed based on interpolated salinity and temperature.
-See reference [2] for a discussion of this issue and possible solutions.
+See reference 2 for a discussion of this issue and possible solutions.
 }
 \section{A note about flags}{
+
 
 Data-quality flags contained within the original object are ignored by this
 function, and the returned value contains no such flags.  This is because such
 flags represent an assessment of the original data, not of quantities derived
 from those data.  This function produces a warning to this effect. The
-recommended practice is to use \code{\link{handleFlags}} or some other means to
+recommended practice is to use \code{\link[=handleFlags]{handleFlags()}} or some other means to
 deal with flags before calling the present function.
 }
 
@@ -110,42 +117,62 @@ lines(ctd3[["salinity"]], ctd3[["pressure"]], col="red")
 
 }
 \references{
-1. R.F. Reiniger and C.K. Ross, 1968.  A method of interpolation with
-application to oceanographic data.  \emph{Deep Sea Research}, \bold{15},
+\enumerate{
+\item R.F. Reiniger and C.K. Ross, 1968.  A method of interpolation with
+application to oceanographic data.  \emph{Deep Sea Research}, \strong{15},
 185-193.
-
-2. Oguma, Sachiko, Toru Suzuki, Yutaka Nagata, Hidetoshi Watanabe, Hatsuyo Yamaguchi,
-and Kimio Hanawa. “Interpolation Scheme for Standard Depth Data Applicable for Areas
-with a Complex Hydrographical Structure.” Journal of Atmospheric and Oceanic Technology
-21, no. 4 (April 1, 2004): 704–15.
+\item Oguma, Sachiko, Toru Suzuki, Yutaka Nagata, Hidetoshi Watanabe, Hatsuyo Yamaguchi,
+and Kimio Hanawa. \dQuote{Interpolation Scheme for Standard Depth Data Applicable for Areas
+with a Complex Hydrographical Structure.} Journal of Atmospheric and Oceanic Technology
+21, no. 4 (April 1, 2004): 704-15.
+}
 }
 \seealso{
-The documentation for \code{\link{ctd-class}} explains the structure of
+The documentation for \linkS4class{ctd} explains the structure of
 CTD objects, and also outlines the other functions dealing with them.
 
-Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
-  \code{\link{[[<-,ctd-method}}, \code{\link{as.ctd}},
-  \code{\link{cnvName2oceName}}, \code{\link{ctd-class}},
-  \code{\link{ctdFindProfiles}}, \code{\link{ctdRaw}},
-  \code{\link{ctdTrim}}, \code{\link{ctd}},
-  \code{\link{handleFlags,ctd-method}},
-  \code{\link{initialize,ctd-method}},
-  \code{\link{initializeFlagScheme,ctd-method}},
-  \code{\link{oceNames2whpNames}},
-  \code{\link{oceUnits2whpUnits}},
-  \code{\link{plot,ctd-method}}, \code{\link{plotProfile}},
-  \code{\link{plotScan}}, \code{\link{plotTS}},
-  \code{\link{read.ctd.itp}}, \code{\link{read.ctd.odf}},
-  \code{\link{read.ctd.sbe}},
-  \code{\link{read.ctd.woce.other}},
-  \code{\link{read.ctd.woce}}, \code{\link{read.ctd}},
-  \code{\link{setFlags,ctd-method}},
-  \code{\link{subset,ctd-method}},
-  \code{\link{summary,ctd-method}},
-  \code{\link{woceNames2oceNames}},
-  \code{\link{woceUnit2oceUnit}}, \code{\link{write.ctd}}
+Other things related to ctd data: 
+\code{\link{CTD_BCD2014666_008_1_DN.ODF.gz}},
+\code{\link{[[,ctd-method}},
+\code{\link{[[<-,ctd-method}},
+\code{\link{as.ctd}()},
+\code{\link{cnvName2oceName}()},
+\code{\link{ctd-class}},
+\code{\link{ctd.cnv}},
+\code{\link{ctdFindProfiles}()},
+\code{\link{ctdRaw}},
+\code{\link{ctdRepair}()},
+\code{\link{ctdTrim}()},
+\code{\link{ctd_aml.csv}},
+\code{\link{ctd}},
+\code{\link{d200321-001.ctd}},
+\code{\link{d201211_0011.cnv}},
+\code{\link{handleFlags,ctd-method}},
+\code{\link{initialize,ctd-method}},
+\code{\link{initializeFlagScheme,ctd-method}},
+\code{\link{oceNames2whpNames}()},
+\code{\link{oceUnits2whpUnits}()},
+\code{\link{plot,ctd-method}},
+\code{\link{plotProfile}()},
+\code{\link{plotScan}()},
+\code{\link{plotTS}()},
+\code{\link{read.ctd.aml}()},
+\code{\link{read.ctd.itp}()},
+\code{\link{read.ctd.odf}()},
+\code{\link{read.ctd.odv}()},
+\code{\link{read.ctd.sbe}()},
+\code{\link{read.ctd.ssda}()},
+\code{\link{read.ctd.woce.other}()},
+\code{\link{read.ctd.woce}()},
+\code{\link{read.ctd}()},
+\code{\link{setFlags,ctd-method}},
+\code{\link{subset,ctd-method}},
+\code{\link{summary,ctd-method}},
+\code{\link{woceNames2oceNames}()},
+\code{\link{woceUnit2oceUnit}()},
+\code{\link{write.ctd}()}
 }
 \author{
 Dan Kelley
 }
-\concept{things related to \code{ctd} data}
+\concept{things related to ctd data}

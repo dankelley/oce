@@ -6,13 +6,23 @@
 \source{
 The WebTide software may be downloaded for free at the
 Department of Fisheries and Oceans (Canada) website at
-\code{http://www.bio.gc.ca/science/research-recherche/ocean/webtide/index-en.php}
+\verb{http://www.bio.gc.ca/science/research-recherche/ocean/webtide/index-en.php}
 (checked February 2016 and May 2017).
 }
 \usage{
-webtide(action = c("map", "predict"), longitude, latitude, node, time,
-  basedir = getOption("webtide"), region = "nwatl", plot = TRUE,
-  tformat, debug = getOption("oceDebug"), ...)
+webtide(
+  action = c("map", "predict"),
+  longitude,
+  latitude,
+  node,
+  time,
+  basedir = getOption("webtide"),
+  region = "nwatl",
+  plot = TRUE,
+  tformat,
+  debug = getOption("oceDebug"),
+  ...
+)
 }
 \arguments{
 \item{action}{An indication of the action, either \code{action="map"} to
@@ -25,12 +35,13 @@ draw a map or \code{action="predict"} to get a prediction; see
 \item{node}{optional integer relating to a node in the database. If \code{node}
 is given, then neither \code{latitude} nor \code{longitude} may be given.
 If \code{node} is positive, then specifies indicates the node. If it is negative,
-\code{\link{locator}} is called so that the user can click (once) on the map, after
+\code{\link[=locator]{locator()}} is called so that the user can click (once) on the map, after
 which the node is displayed on the map.}
 
-\item{time}{a vector of times at which prediction is to be made.
+\item{time}{a vector of times (in the UTC timezone)
+at which prediction is to be made.
 If not supplied, this will be the week starting at the present time,
-incrementing by 15 minutes.}
+computed with \code{\link[=presentTime]{presentTime()}}, with a 15 minute increment.}
 
 \item{basedir}{directory containing the \code{WebTide} application.}
 
@@ -41,8 +52,8 @@ Gulf of Maine.}
 
 \item{plot}{boolean indicating whether to plot.}
 
-\item{tformat}{optional argument passed to \code{\link{oce.plot.ts}}, for
-plot types that call that function.  (See \code{\link{strptime}} for the
+\item{tformat}{optional argument passed to \code{\link[=oce.plot.ts]{oce.plot.ts()}}, for
+plot types that call that function.  (See \code{\link[=strptime]{strptime()}} for the
 format used.)}
 
 \item{debug}{an integer specifying whether debugging information is
@@ -57,26 +68,28 @@ by specifying higher \code{debug} values.}
 example is to set \code{xlim} and \code{ylim}, to focus a map region.}
 }
 \value{
-If \code{action="map"} the return value is a
+The value depends on \code{action}:
+\itemize{
+\item If \code{action="map"} the return value is a
 list containing the index of the nearest node, along with the
 \code{latitude} and \code{longitude} of that node.  If
 \code{plot} is \code{FALSE}, this value is returned invisibly.
-
-If \code{action="predict"}, the return value is a list containing a vector
+\item If \code{action="predict"}, the return value is a list containing a vector
 of times (\code{time}), as well as vectors of the predicted \code{elevation}
 in metres and the predicted horizontal components of velocity, \code{u} and
 \code{v}, along with the \code{node} number, and the \code{basedir} and
-\code{region} as supplied to this function.
-If \code{plot} is \code{FALSE}, this value is returned invisibly.
-
-a list containing \code{node}, \code{longitude} and \code{latitude}. If
-no node was provided to \code{webtide} then this list will cover the whole
-set of nodes in the WebTide model; otherwise, it will be just the node that
-was requested.
+\code{region} as supplied to this function. If \code{plot} is \code{FALSE},
+this value is returned invisibly.
+}
 }
 \description{
-Get a tidal prediction from a WebTide database. There are two distinct cases.
-
+Get a tidal prediction from a WebTide database. This only
+works if the standalone WebTide application is installed,
+and if it is installed in a standard location. The details
+of installation are not within the oce purview.
+}
+\details{
+There are two methods of using this function.
 \emph{Case 1:} \code{action="map"}. In this case, if
 \code{plot} is \code{FALSE}, a list is returned, containing
 all the \code{node}s in the selected database, along with all
@@ -87,11 +100,11 @@ a plot is drawn to indicate the node locations. If \code{latitude} and
 the map; otherwise, if \code{node} is given, then the location of that
 node is indicated. There is also a special case: if \code{node} is negative
 and \code{interactive()} is \code{TRUE},
-then \code{\link{locator}} is called, and the node nearest the spot
+then \code{\link[=locator]{locator()}} is called, and the node nearest the spot
 where the user clicks the mouse is indicated in the plot and in the
 return value.
 
-\code{Case 2:} \code{action="predict"}. If \code{plot} is \code{FALSE},
+\emph{Case 2:} \code{action="predict"}. If \code{plot} is \code{FALSE},
 then a list is returned, indicating \code{time}, predicted
 \code{elevation}, velocity components \code{u} and \code{v},
 \code{node} number, the name of the \code{basedir}, and
@@ -120,7 +133,24 @@ mtext(sprintf("prediction at \%fN \%fE", latitude, longitude), line=0.75, side=3
 ## 2. map
 webtide(lon=-63.57,lat=44.65,xlim=c(-64,-63),ylim=c(43.0,46))
 }
+
+}
+\seealso{
+Other things related to tides: 
+\code{\link{[[,tidem-method}},
+\code{\link{[[<-,tidem-method}},
+\code{\link{as.tidem}()},
+\code{\link{plot,tidem-method}},
+\code{\link{predict.tidem}()},
+\code{\link{summary,tidem-method}},
+\code{\link{tidalCurrent}},
+\code{\link{tidedata}},
+\code{\link{tidem-class}},
+\code{\link{tidemAstron}()},
+\code{\link{tidemVuf}()},
+\code{\link{tidem}}
 }
 \author{
 Dan Kelley
 }
+\concept{things related to tides}

@@ -4,43 +4,59 @@
 \alias{read.ctd}
 \title{Read a General CTD File}
 \usage{
-read.ctd(file, type = NULL, columns = NULL, station = NULL,
-  missingValue, deploymentType = "unknown", monitor = FALSE,
-  debug = getOption("oceDebug"), processingLog, ...)
+read.ctd(
+  file,
+  type = NULL,
+  columns = NULL,
+  station = NULL,
+  missingValue,
+  deploymentType = "unknown",
+  monitor = FALSE,
+  debug = getOption("oceDebug"),
+  processingLog,
+  ...
+)
 }
 \arguments{
-\item{file}{A connection or a character string giving the name of the file to
-load.  For \code{read.ctd.sbe()} and \code{read.ctd.woce()}, this may be a
+\item{file}{either a connection or a character value naming a file.
+For \code{\link[=read.ctd.sbe]{read.ctd.sbe()}} and \code{\link[=read.ctd.woce]{read.ctd.woce()}}, this may be a
 wildcard (e.g. \code{"*.cnv"} or \code{"*.csv"}) in which case the return
 value is a vector containing CTD objects created by reading the files from
-\code{\link{list.files}} with \code{pattern} set to the specified wildcard
+\code{\link[=list.files]{list.files()}} with \code{pattern} set to the specified wildcard
 pattern.}
 
 \item{type}{If \code{NULL}, then the first line is studied, in order to
-determine the file type.  If \code{type="SBE19"}, then a \emph{Seabird 19}, or
-similar, CTD format is assumed. If \code{type="WOCE"} then a WOCE-exchange file
-is assumed.  If \code{type="ITP"} then an ice-tethered profiler file is
-assumed.  If \code{type="ODF"} an ODF file is assumed.  If \code{type="ODV"} an
-ascii-ODV file is assumed.}
+determine the file type, and control is dispatched to a specialized
+function to handle that type.  Otherwise, \code{type} must be a string.
+If \code{type="SBE19"} then a Seabird file format is assumed,
+and control is dispatched to \code{\link[=read.ctd.sbe]{read.ctd.sbe()}}.
+If \code{type="WOCE"} then a WOCE-exchange file is assumed,
+and control is dispatched to \code{\link[=read.ctd.woce]{read.ctd.woce()}}.
+If \code{type="ITP"} then an ice-tethered profiler file is assumed,
+and control is dispatched to \code{\link[=read.ctd.itp]{read.ctd.itp()}}.
+If \code{type="ODF"} then an ODF file (used by the Canadian Department of
+Fisheries and Ocean) is assumed,
+and control is dispatched to \code{\link[=read.ctd.odf]{read.ctd.odf()}}.
+Finally, if \code{type="ODV"} then an ODV file (used by Ocean Data View software) is assumed,
+and control is dispatched to \code{\link[=read.ctd.odv]{read.ctd.odv()}}.}
 
-\item{columns}{An optional \code{\link{list}} that can be used to convert unrecognized
+\item{columns}{an optional \link{list} that can be used to convert unrecognized
 data names to resultant variable names.  This is used only by
-\code{\link{read.ctd.sbe}} and \code{\link{read.ctd.odf}}. For example,
-if a data file named salinity as \code{"SAL"}, then using
-\preformatted{
-d <- read.ctd(f, columns=list(
+\code{\link[=read.ctd.sbe]{read.ctd.sbe()}} and \code{\link[=read.ctd.odf]{read.ctd.odf()}}. For example,
+if a data file named salinity as \code{"SAL"}, then using\preformatted{d <- read.ctd(f, columns=list(
     salinity=list(name="SAL",
                   unit=list(unit=expression(),
                   scale="PSS-78"))))
 }
-would assign the \code{"SAL"} column to the \code{salinity} entry in the data
-slot of the CTD object returned by the \code{read.*} function.}
 
-\item{station}{Optional character string containing an identifying name or
+would assign the \code{"SAL"} column to the \code{salinity} entry in the data
+slot of the CTD object returned by the \verb{read.*} function.}
+
+\item{station}{optional character string containing an identifying name or
 number for the station. This can be useful if the routine cannot determine the
 name automatically, or if another name is preferred.}
 
-\item{missingValue}{Optional missing-value flag; data matching this value will
+\item{missingValue}{optional missing-value flag; data matching this value will
 be set to \code{NA} upon reading. If this is provided, then it overrules any
 missing-value flag found in the data. For Seabird (\code{.cnv}) files, there is
 usually no need to set \code{missingValue}, because it can be inferred from the
@@ -62,62 +78,80 @@ the device is installed on a fixed mooring, \code{"thermosalinograph"} (or
 near-surface properties, or \code{"towyo"} if the device is repeatedly
 lowered and raised.}
 
-\item{monitor}{Boolean, set to \code{TRUE} to provide an indication of
+\item{monitor}{boolean, set to \code{TRUE} to provide an indication of
 progress.  This is useful if \code{filename} is a wildcard.}
 
-\item{debug}{An integer specifying whether debugging information is
+\item{debug}{an integer specifying whether debugging information is
 to be printed during the processing. This is a general parameter that
 is used by many \code{oce} functions. Generally, setting \code{debug=0}
 turns off the printing, while higher values suggest that more information
 be printed.}
 
-\item{processingLog}{If provided, the action item to be stored in the log.
+\item{processingLog}{if provided, the action item to be stored in the log.
 This is typically only provided for internal calls; the default that it provides is
 better for normal calls by a user.}
 
 \item{...}{additional arguments, passed to called routines.}
 }
 \value{
-An object of \code{\link{ctd-class}}. The details of the contents
-depend on the source file. The \code{metadata} slot is particularly 
-variable across data formats, because the meta-information provided
-in those formats varies widely.
+This function returns a \linkS4class{ctd} object.
 }
 \description{
 Read a General CTD File
 }
-\details{
-\code{read.ctd()} is a base function that in turn calls specialized functions, e.g.
-\code{\link{read.ctd.odf}} for the ODF data used in Fisheries and Oceans (Canada),
-\code{\link{read.ctd.woce}} for data in World Ocean Circulation Experiment format,
-\code{\link{read.ctd.woce.other}} for a variant of WOCE data,
-\code{\link{read.ctd.itp}} for ice-tethered-profiler data, or
-\code{\link{read.ctd.sbe}} for Seabird data.
-}
 \seealso{
-Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
-  \code{\link{[[<-,ctd-method}}, \code{\link{as.ctd}},
-  \code{\link{cnvName2oceName}}, \code{\link{ctd-class}},
-  \code{\link{ctdDecimate}}, \code{\link{ctdFindProfiles}},
-  \code{\link{ctdRaw}}, \code{\link{ctdTrim}},
-  \code{\link{ctd}}, \code{\link{handleFlags,ctd-method}},
-  \code{\link{initialize,ctd-method}},
-  \code{\link{initializeFlagScheme,ctd-method}},
-  \code{\link{oceNames2whpNames}},
-  \code{\link{oceUnits2whpUnits}},
-  \code{\link{plot,ctd-method}}, \code{\link{plotProfile}},
-  \code{\link{plotScan}}, \code{\link{plotTS}},
-  \code{\link{read.ctd.itp}}, \code{\link{read.ctd.odf}},
-  \code{\link{read.ctd.sbe}},
-  \code{\link{read.ctd.woce.other}},
-  \code{\link{read.ctd.woce}},
-  \code{\link{setFlags,ctd-method}},
-  \code{\link{subset,ctd-method}},
-  \code{\link{summary,ctd-method}},
-  \code{\link{woceNames2oceNames}},
-  \code{\link{woceUnit2oceUnit}}, \code{\link{write.ctd}}
+Other things related to ctd data: 
+\code{\link{CTD_BCD2014666_008_1_DN.ODF.gz}},
+\code{\link{[[,ctd-method}},
+\code{\link{[[<-,ctd-method}},
+\code{\link{as.ctd}()},
+\code{\link{cnvName2oceName}()},
+\code{\link{ctd-class}},
+\code{\link{ctd.cnv}},
+\code{\link{ctdDecimate}()},
+\code{\link{ctdFindProfiles}()},
+\code{\link{ctdRaw}},
+\code{\link{ctdRepair}()},
+\code{\link{ctdTrim}()},
+\code{\link{ctd_aml.csv}},
+\code{\link{ctd}},
+\code{\link{d200321-001.ctd}},
+\code{\link{d201211_0011.cnv}},
+\code{\link{handleFlags,ctd-method}},
+\code{\link{initialize,ctd-method}},
+\code{\link{initializeFlagScheme,ctd-method}},
+\code{\link{oceNames2whpNames}()},
+\code{\link{oceUnits2whpUnits}()},
+\code{\link{plot,ctd-method}},
+\code{\link{plotProfile}()},
+\code{\link{plotScan}()},
+\code{\link{plotTS}()},
+\code{\link{read.ctd.aml}()},
+\code{\link{read.ctd.itp}()},
+\code{\link{read.ctd.odf}()},
+\code{\link{read.ctd.odv}()},
+\code{\link{read.ctd.sbe}()},
+\code{\link{read.ctd.ssda}()},
+\code{\link{read.ctd.woce.other}()},
+\code{\link{read.ctd.woce}()},
+\code{\link{setFlags,ctd-method}},
+\code{\link{subset,ctd-method}},
+\code{\link{summary,ctd-method}},
+\code{\link{woceNames2oceNames}()},
+\code{\link{woceUnit2oceUnit}()},
+\code{\link{write.ctd}()}
+
+Other functions that read ctd data: 
+\code{\link{read.ctd.aml}()},
+\code{\link{read.ctd.itp}()},
+\code{\link{read.ctd.odf}()},
+\code{\link{read.ctd.sbe}()},
+\code{\link{read.ctd.ssda}()},
+\code{\link{read.ctd.woce.other}()},
+\code{\link{read.ctd.woce}()}
 }
 \author{
 Dan Kelley
 }
-\concept{things related to \code{ctd} data}
+\concept{functions that read ctd data}
+\concept{things related to ctd data}

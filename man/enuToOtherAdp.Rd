@@ -7,7 +7,7 @@
 enuToOtherAdp(x, heading = 0, pitch = 0, roll = 0)
 }
 \arguments{
-\item{x}{An \code{adp} object, i.e. one inheriting from \code{\link{adp-class}}.}
+\item{x}{an \linkS4class{adp} object.}
 
 \item{heading}{number or vector of numbers, giving the angle, in degrees, to
 be added to the heading.  See \dQuote{Details}.}
@@ -32,7 +32,7 @@ point southeast if \code{heading=45} is used.
 The returned value has heading, pitch, and roll matching those of \code{x},
 so these angles retain their meaning as the instrument orientation.
 
-NOTE: this function works similarly to \code{\link{xyzToEnuAdp}}, except
+NOTE: this function works similarly to \code{\link[=xyzToEnuAdp]{xyzToEnuAdp()}}, except
 that in the present function, it makes no difference whether the instrument
 points up or down, etc.
 }
@@ -45,40 +45,59 @@ plot(o, which=1:3)
 
 }
 \references{
-1. Teledyne RD Instruments. “ADCP Coordinate Transformation: Formulas and
-Calculations,” January 2010. P/N 951-6079-00.
+\enumerate{
+\item Teledyne RD Instruments. \dQuote{ADCP Coordinate Transformation: Formulas and
+Calculations,} January 2010. P/N 951-6079-00.
+}
 }
 \seealso{
-See \code{\link{read.adp}} for other functions that relate to
+See \code{\link[=read.adp]{read.adp()}} for other functions that relate to
 objects of class \code{"adp"}.
 
-Other things related to \code{adp} data: \code{\link{[[,adp-method}},
-  \code{\link{[[<-,adp-method}},
-  \code{\link{ad2cpHeaderValue}}, \code{\link{adp-class}},
-  \code{\link{adpEnsembleAverage}}, \code{\link{adp}},
-  \code{\link{as.adp}}, \code{\link{beamName}},
-  \code{\link{beamToXyzAdpAD2CP}},
-  \code{\link{beamToXyzAdp}}, \code{\link{beamToXyzAdv}},
-  \code{\link{beamToXyz}}, \code{\link{beamUnspreadAdp}},
-  \code{\link{binmapAdp}}, \code{\link{enuToOther}},
-  \code{\link{handleFlags,adp-method}},
-  \code{\link{is.ad2cp}}, \code{\link{plot,adp-method}},
-  \code{\link{read.adp.ad2cp}},
-  \code{\link{read.adp.nortek}},
-  \code{\link{read.adp.rdi}},
-  \code{\link{read.adp.sontek.serial}},
-  \code{\link{read.adp.sontek}}, \code{\link{read.adp}},
-  \code{\link{read.aquadoppHR}},
-  \code{\link{read.aquadoppProfiler}},
-  \code{\link{read.aquadopp}}, \code{\link{rotateAboutZ}},
-  \code{\link{setFlags,adp-method}},
-  \code{\link{subset,adp-method}},
-  \code{\link{summary,adp-method}}, \code{\link{toEnuAdp}},
-  \code{\link{toEnu}}, \code{\link{velocityStatistics}},
-  \code{\link{xyzToEnuAdpAD2CP}},
-  \code{\link{xyzToEnuAdp}}, \code{\link{xyzToEnu}}
+Other things related to adp data: 
+\code{\link{[[,adp-method}},
+\code{\link{[[<-,adp-method}},
+\code{\link{ad2cpHeaderValue}()},
+\code{\link{adp-class}},
+\code{\link{adpConvertRawToNumeric}()},
+\code{\link{adpEnsembleAverage}()},
+\code{\link{adpFlagPastBoundary}()},
+\code{\link{adp_rdi.000}},
+\code{\link{adp}},
+\code{\link{as.adp}()},
+\code{\link{beamName}()},
+\code{\link{beamToXyzAdpAD2CP}()},
+\code{\link{beamToXyzAdp}()},
+\code{\link{beamToXyzAdv}()},
+\code{\link{beamToXyz}()},
+\code{\link{beamUnspreadAdp}()},
+\code{\link{binmapAdp}()},
+\code{\link{enuToOther}()},
+\code{\link{handleFlags,adp-method}},
+\code{\link{is.ad2cp}()},
+\code{\link{plot,adp-method}},
+\code{\link{read.adp.ad2cp}()},
+\code{\link{read.adp.nortek}()},
+\code{\link{read.adp.rdi}()},
+\code{\link{read.adp.sontek.serial}()},
+\code{\link{read.adp.sontek}()},
+\code{\link{read.adp}()},
+\code{\link{read.aquadoppHR}()},
+\code{\link{read.aquadoppProfiler}()},
+\code{\link{read.aquadopp}()},
+\code{\link{rotateAboutZ}()},
+\code{\link{setFlags,adp-method}},
+\code{\link{subset,adp-method}},
+\code{\link{subtractBottomVelocity}()},
+\code{\link{summary,adp-method}},
+\code{\link{toEnuAdp}()},
+\code{\link{toEnu}()},
+\code{\link{velocityStatistics}()},
+\code{\link{xyzToEnuAdpAD2CP}()},
+\code{\link{xyzToEnuAdp}()},
+\code{\link{xyzToEnu}()}
 }
 \author{
 Dan Kelley
 }
-\concept{things related to \code{adp} data}
+\concept{things related to adp data}

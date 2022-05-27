@@ -1,8 +1,6 @@
-adp.R
-adp.html
-flags.R
-flags.html
-oce.R
-oce.html
+*.html
+*.R
 rsconnect
 flags_files
+*.md
+figure

@@ -2,27 +2,52 @@
 % Please edit documentation in R/accessors.R
 \name{oceSetMetadata}
 \alias{oceSetMetadata}
-\title{Set Something in the metadata Slot of an oce Object}
+\title{Set Something in an oce metadata Slot}
 \usage{
 oceSetMetadata(object, name, value, note = "")
 }
 \arguments{
-\item{object}{an \code{oce} object}
+\item{object}{an \linkS4class{oce} object.}
 
-\item{name}{String indicating the name of the item to be set.}
+\item{name}{String indicating the name of the \code{metadata} item to be set.}
 
 \item{value}{Value for the item.}
 
 \item{note}{Either empty (the default), a character string, or \code{NULL},
 to control additions made to the processing log of the return value. If
-\code{note=""} then the an entry is created based on deparsing the function call.
+\code{note=""} then an entry is created based on deparsing the function call.
 If \code{note} is a non-empty string, then that string gets added added
 to the processing log. Finally, if \code{note=NULL}, then nothing is
 added to the processing log.  This last form is useful in cases where
 \code{oceSetData} is to be called many times in succession, resulting
-in an overly verbose processing log; in such cases, it might help
-to add a note by e.g. \code{processingLog(a) <- "QC (memo dek-2018-01/31)"}}
+in an overly verbose processing log; in which case, it might helpful
+to use \link{processingLog<-} to add a summary entry to the object's
+processing log.}
+}
+\value{
+An \linkS4class{oce} object, the \code{metadata} slot of which has
+been altered either by adding a new item or modifying an existing
+item.
 }
 \description{
-Set Something in the metadata Slot of an oce Object
+Create a copy of an object in which some element of its
+\code{metadata} slot has been altered, or added.
 }
+\examples{
+# Add an estimate of MLD (mixed layer depth) to a ctd object
+library(oce)
+data(ctd)
+ctdWithMLD <- oceSetMetadata(ctd, "MLD", 3)
+ctdWithMLD[["MLD"]] # 3
+
+}
+\seealso{
+Other things related to the metadata slot: 
+\code{\link{oceDeleteMetadata}()},
+\code{\link{oceGetMetadata}()},
+\code{\link{oceRenameMetadata}()}
+}
+\author{
+Dan Kelley
+}
+\concept{things related to the metadata slot}

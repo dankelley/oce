@@ -4,8 +4,7 @@
 \alias{lowpass}
 \title{Perform lowpass digital filtering}
 \usage{
-lowpass(x, filter = "hamming", n, replace = TRUE,
-  coefficients = FALSE)
+lowpass(x, filter = "hamming", n, replace = TRUE, coefficients = FALSE)
 }
 \arguments{
 \item{x}{a vector to be smoothed}
@@ -17,7 +16,7 @@ lowpass(x, filter = "hamming", n, replace = TRUE,
 \item{replace}{a logical value indicating whether points near the
 ends of \code{x} should be copied into the end regions, replacing
 the \code{NA} values that would otherwise be placed there by
-\link[stats]{filter}.}
+\code{\link[stats:filter]{stats::filter()}}.}
 
 \item{coefficients}{logical value indicating whether to return
 the filter coefficients, instead of the filtered values. In accordance
@@ -32,7 +31,7 @@ returns the filter coefficients.
 }
 \description{
 The filter coefficients are constructed using standard definitions,
-and then \link[stats]{filter} in the \pkg{stats} package is
+and then \code{\link[stats:filter]{stats::filter()}} is
 used to filter the data. This leaves \code{NA}
 values within half the filter length of the ends of the time series, but
 these may be replaced with the original \code{x} values, if the argument
@@ -47,7 +46,6 @@ arguments.
 }
 
 \examples{
-
 library(oce)
 par(mfrow=c(1, 2), mar=c(4, 4, 1, 1))
 coef <- lowpass(n=5, coefficients=TRUE)

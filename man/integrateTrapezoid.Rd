@@ -11,15 +11,13 @@ integrateTrapezoid(x, y, type = c("A", "dA", "cA"), xmin, xmax)
 vectors are both supplied, and of equal length. There are also two
 special cases. First, if \code{y} is missing, then
 \code{x} is taken to be \code{y}, and a new \code{x} is constructed
-as \code{\link{seq_along}(y)}. Second, if \code{length(x)} is 1
-and \code{length(y)} exceeds 1, then \code{x} is replaced by
-\code{x*seq_along(y)}.}
+as \code{\link{seq_along}}\verb{(y)1. Second, if }length(x)\verb{is 1 and}length(y)\verb{exceeds 1, then}x\verb{is replaced by}x*\code{[}seq_along\verb{]}(y)`.}
 
 \item{type}{Flag indicating the desired return value (see \dQuote{Value}).}
 
 \item{xmin, xmax}{Optional numbers indicating the range of the integration.
 These values may be used to restrict the range of integration, or to
-extend it; in either case, \code{\link{approx}} with \code{rule=2}
+extend it; in either case, \code{\link[=approx]{approx()}} with \code{rule=2}
 is used to create new x and y vectors.}
 }
 \value{
@@ -28,7 +26,7 @@ containing the estimate of the integral of \code{y=y(x)}.  If
 \code{type="dA"}, a numeric vector of the same length as \code{x}, of which
 the first element is zero, the second element is the integral between
 \code{x[1]} and \code{x[2]}, etc.  If \code{type="cA"}, the result is the
-cumulative sum (as in \code{\link{cumsum}}) of the values that would be
+cumulative sum (as in \code{\link[=cumsum]{cumsum()}}) of the values that would be
 returned for \code{type="dA"}.  See \dQuote{Examples}.
 }
 \description{

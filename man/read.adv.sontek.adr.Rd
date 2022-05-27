@@ -4,10 +4,19 @@
 \alias{read.adv.sontek.adr}
 \title{Read an ADV data file}
 \usage{
-read.adv.sontek.adr(file, from = 1, to, by = 1,
-  tz = getOption("oceTz"), header = TRUE, longitude = NA,
-  latitude = NA, debug = getOption("oceDebug"), monitor = FALSE,
-  processingLog = NULL)
+read.adv.sontek.adr(
+  file,
+  from = 1,
+  to,
+  by = 1,
+  tz = getOption("oceTz"),
+  header = TRUE,
+  longitude = NA,
+  latitude = NA,
+  debug = getOption("oceDebug"),
+  monitor = FALSE,
+  processingLog = NULL
+)
 }
 \arguments{
 \item{file}{a connection or a character string giving the name of the file
@@ -17,7 +26,7 @@ multi-file case, \code{header} must be \code{FALSE}, \code{start} must be a
 vector of times, and \code{deltat} must be provided.}
 
 \item{from}{index number of the first profile to be read, or the time of
-that profile, as created with \code{\link{as.POSIXct}} (hint: use
+that profile, as created with \code{\link[=as.POSIXct]{as.POSIXct()}} (hint: use
 \code{tz="UTC"}).  This argument is ignored if \code{header==FALSE}. See
 \dQuote{Examples}.}
 
@@ -31,7 +40,7 @@ profiles that is read. This may not make much sense, if the data are not
 equi-spaced in time.  If \code{by} is a string representing a time interval,
 in colon-separated format, then this interval is divided by the sampling
 interval, to get the stride length. \emph{BUG:} \code{by} only partially
-works; see the \dQuote{Bugs} section below.}
+works; see \dQuote{Bugs}.}
 
 \item{tz}{character string indicating time zone to be assumed in the data.}
 
@@ -51,35 +60,47 @@ within the call stack to which debugging applies.  For example,
 \code{read.adv.nortek(...,debug=2)} provides information about not just the
 main body of the data file, but also the details of the header.}
 
-\item{monitor}{boolean, set to \code{TRUE} to provide an indication of every
-data burst read.}
+\item{monitor}{boolean value indicating whether to indicate the progress
+of reading the file, by using \code{\link[=txtProgressBar]{txtProgressBar()}} or otherwise.  The value
+of \code{monitor} is changed to \code{FALSE} automatically, for non-interactive
+sessions.}
 
 \item{processingLog}{if provided, the action item to be stored in the log.
 This parameter is typically only provided for internal calls; the default
 that it provides is better for normal calls by a user.}
 }
 \value{
-An object of \code{\link{adv-class}} that contains
-measurements made with an ADV device.
+An \linkS4class{adv} object that contains measurements made with an ADV device.
 
 The \code{metadata} contains information as given in the following table.
-The ``Nortek name'' is the name used in the Nortek System Integrator Guide
-[reference 1] and the ``Sontek name'' is the name used in the relevant
+The \verb{Nortek name'' is the name used in the Nortek System Integrator Guide (reference 1) and the }Sontek name'' is the name used in the relevant
 Sontek documentation.  References are given in square brackets.
 
-\tabular{llll}{ \strong{\code{metadata} name}\tab \strong{Nortek name} \tab
-\strong{Sontek name}\tab\strong{Meaning}\cr \code{manufacturer}\tab - \tab -
-\tab Either \code{"nortek"} or \code{"sontek"}\cr \code{instrumentType}\tab
-- \tab - \tab Either \code{"vector"} or \code{"adv"}\cr \code{filename}\tab
-- \tab - \tab Name of data file(s)\cr \code{latitude}\tab - \tab - \tab
-Latitude of mooring (if applicable)\cr \code{longitude}\tab - \tab - \tab
-Longitude of mooring (if applicable)\cr \code{numberOfSamples}\tab - \tab -
-\tab Number of data samples in file\cr \code{numberOfBeams}\tab NBeams [1
-p18] \tab - \tab Number of beams (always 3)\cr
-\code{numberOfBeamSequencesPerBurst}\tab NPings \tab - \tab number of beam
-sequences per burst\cr \code{measurementInterval}\tab MeasInterval [1 p31]
-\tab - \tab \cr \code{samplingRate}\tab 512/(AvgInterval) [1 p30; 4] \tab -
-\tab \cr }
+\tabular{llll}{
+
+\strong{\code{metadata} name}\tab \strong{Nortek name} \tab \strong{Sontek name} \tab \strong{Meaning}\cr
+
+\code{manufacturer}\tab - \tab - \tab Either \code{"nortek"} or \code{"sontek"}\cr
+
+\code{instrumentType}\tab  - \tab - \tab Either \code{"vector"} or \code{"adv"}\cr
+
+\code{filename}\tab  - \tab - \tab Name of data file(s)\cr
+
+\code{latitude}\tab - \tab - \tab  Latitude of mooring (if applicable)\cr
+
+\code{longitude}\tab - \tab - \tab Longitude of mooring (if applicable)\cr
+
+\code{numberOfSamples}\tab - \tab - \tab Number of data samples in file\cr
+
+\code{numberOfBeams}\tab NBeams (reference 1, p18) \tab - \tab Number of beams (always 3)\cr
+
+\code{numberOfBeamSequencesPerBurst}\tab NPings \tab - \tab number of beam sequences per burst\cr
+
+\code{measurementInterval}\tab MeasInterval (reference 1 p31) \tab - \tab \cr
+
+\code{samplingRate}\tab 512/(AvgInterval) (reference 1 p30; reference 4) \tab - #' \tab \cr
+
+}
 
 The \code{data} list contains items with names corresponding to \code{adp}
 objects, with an exception for Nortek data.  Nortek instruments report some
@@ -94,7 +115,7 @@ The \code{processingLog} is in the standard format.
 \description{
 Read an ADV data file, producing an object of type \code{adv}. This
 function works by transferring control to a more specialized function,
-e.g. \code{\link{read.adp.nortek}} and \code{\link{read.adp.sontek}},
+e.g. \code{\link[=read.adp.nortek]{read.adp.nortek()}} and \code{\link[=read.adp.sontek]{read.adp.sontek()}},
 and in many cases users will find it preferable to either use these or
 the several even more specialized functions, if the file type is
 known.
@@ -106,21 +127,17 @@ lack of header information places a burden on the user, who must supply such
 basic information as the times of observations, the instrument orientation,
 the instrument coordinate system, etc.  Example 3 below shows how to deal
 with such files.  Three things should be noted.
-
 \enumerate{
-
 \item The user must choose the appropriate \code{read.adv} variant
 corresponding to the instrument in question.  (This is necessary because
-\code{\link{oceMagic}}, which is used by the generic \code{\link{read.oce}}
+\code{\link[=oceMagic]{oceMagic()}}, which is used by the generic \code{\link[=read.oce]{read.oce()}}
 routine, cannot determine the type of instrument by examining a file that
 lacks a header.)
-
 \item The call to the \code{read} function must include a start time
 (\code{start}) and the number of seconds between data (\code{deltat}),
 again, because the instrument data stream may lack those things when the
 device is set to a serial mode.  Also, of course, it is necessary to set
 \code{header=FALSE} in the function call.
-
 \item Once the file has been read in, the user will be obliged to specify
 other information, for the object to be well-formed.  For example, the
 \code{read} function will have no way of knowing the instrument orientation,
@@ -128,7 +145,6 @@ the coordinate system being used, the transformation matrix to go from
 \code{"beam"} to \code{"xyz"} coordinates, or the instrument heading, pitch,
 and roll, to go from \code{"xyz"} coordinates to \code{"enu"} coordinates.
 Such things are illustrated in example 3 below.
-
 }
 
 In ADV data files, velocities are coded to signed 2-byte integers, with a
@@ -142,41 +158,35 @@ with \code{d[["velocityMaximum"]]} and \code{d[["velocityResolution"]]}.
 
 \strong{Sampling-rate and similar issues}
 
-The data format is inferred from the System Integrator Guide [1A] and System
-Integrator Manual [1B].  These document lacks clarity in spots, and so
+The data format is inferred from the System Integrator Guide (reference 1A) and System
+Integrator Manual (reference 1B).  These document lacks clarity in spots, and so
 \code{read.adv.nortek} contains some assumptions that are noted here, so
 that users will be aware of possible problems.
 
 A prominent example is the specification of the sampling rate, stored in
 \code{metadata$sampingRate} in the return value.  Repeated examination of
-the System Integrator Guide [1] failed to indicate where this value is
+the System Integrator Guide (reference 1) failed to indicate where this value is
 stored in the various headers contained in Vector datasets.  After some
 experimentation with a few data files, \code{read.adv.nortek} was set up to
 calculate \code{metadata$samplingRate} as \code{512/AvgInterval} where
-\code{AvgInterval} is a part of the ``User Configuration'' header [1 p30],
-where the explanation is ``average interval in seconds'').  This formula was
+\code{AvgInterval} is a part of the \verb{User Configuration'' header (reference 1 p30), where the explanation is }average interval in seconds'').  This formula was
 developed through trial and error, but it was confirmed later on the Nortek
-discussion group, and it should appear in upcoming versions of [1].
+discussion group, and it should appear in upcoming versions of (reference 1).
 
 Another basic issue is the determination of whether an instrument had
 recorded in continuous mode or burst mode.  One might infer that
-\code{TimCtrlReg} in the ``User Configuration'' header [1 p30] determines
-this, in bits 1 and 2.  However, this was the case in test files available
-to the author.  For this reason, \code{read.adv.nortek} infers the mode by
-reverse engineering of data files of known configuration.  The present
-version of \code{read.adv.nortek} determines the sampling mode from the
-``\code{NRecords}'' item of the ``Vector Velocity Data'' header, which seems
+\code{TimCtrlReg} in the \verb{User Configuration'' header (reference 1 p30) determines this, in bits 1 and 2.  However, this was the case in test files available to the author.  For this reason, `read.adv.nortek` infers the mode by reverse engineering of data files of known configuration.  The present version of `read.adv.nortek` determines the sampling mode from the ```NRecords`'' item of the }Vector Velocity Data'' header, which seems
 to be 0 for data collected continuously, and non-zero for data collected in
 bursts.
 
 Taking these things together, we come upon the issue of how to infer
 sampling times for Nortek instruments.  There do not seem to be definitive
 documents on this, and so \code{read.adv.nortek} is based partly on
-information (of unknown quality) found on Nortek discusson boards.  The
+information (of unknown quality) found on Nortek discussion boards.  The
 present version of \code{read.adv.nortek} infers the times of velocity
 observations differently, depending on whether the instrument was set to
 record in burst mode or continuous mode.  For burst mode, times stated in
-the burst headers are used, but for continous mode, times stated in the
+the burst headers are used, but for continuous mode, times stated in the
 ``vector system data'' are used.  On the advice found on a Nortek discussion
 board, the burst-mode times are offset by 2 seconds to allow for the
 instrument warm-up period.
@@ -186,16 +196,15 @@ instrument warm-up period.
 Starting in March
 2016, \code{read.adv.nortek} has offered some support for handling IMU
 (inertial measurement unit) data incorporated into Nortek binary files. This
-is not described in the Nortek document named ``System Integrator Guide''
-(2008 [1A]) but it appeared in ``System Integrator Manual'' (2014 [1B]; 2016
-[1C]). Confusingly, 1B described 3 varieties of data, whereas 1C does not
+is not described in the Nortek document named \verb{System Integrator Guide'' (reference 1A) but it appeared in }System Integrator Manual'' (reference 1B;
+reference 1C). Confusingly, 1B described 3 varieties of data, whereas 1C does not
 describe any of these, but describes instead a fourth variety. As of March
 2016, \code{read.adv.nortek} handles all 4 varieties, because files in the
 various schemes appear to exist. In \code{oce}, the varieties are named
 after the byte code that flags them.  (Variety \code{c3} is the one
-described in [1C]; the others were described in [1B].) The variety is stored
-in the \code{metadata} slot of the returned object as a string named
-\code{IMUtype}.
+described in (reference 1C); the others were described in (reference 1B).)
+The variety is stored in the \code{metadata} slot of the returned object as
+a string named \code{IMUtype}.
 
 For each variety, the reader is cautioned that strong tests have not been
 performed on the code.  One way to test the code is to compare with textual
@@ -211,10 +220,8 @@ pressure (\code{p}), the three components of IMU delta angle
 with \code{IMUdeltaVelocityX} disagreeing in the second decimal place,
 \code{IMUdeltaVelocityY} component disagreeing in the first, and
 \code{IMUdeltaVelocityZ} being out by a factor of about 10. This is github
-issue 893 (\url{https://github.com/dankelley/oce/issues/893}).
-
+issue 893 (\verb{https://github.com/dankelley/oce/issues/893}).
 \itemize{
-
 \item Variety \code{c3} (signalled by byte 5 of a sequence being
 \code{0xc3}) provides information on what Nortek calls DeltaAngle,
 DeltaVelocity and Orientation Matrix. (Apart from the orientation matrix,
@@ -225,13 +232,12 @@ object returned by \code{read.adv.nortek}, these are stored in the
 \code{IMUdeltaVelocityZ}, and \code{IMUrotation}, all vectors except the
 last, which is a 3D array. In addition to these, \code{IMUtimestamp} is a
 time-stamp, which is not defined in the Nortek documents but seems, from IMU
-documents [5], to be defined based on a clock that ticks once per 16
+documents (reference 5), to be defined based on a clock that ticks once per 16
 microseconds. Caution may be required in dealing with this timestamp, since
 it seemed sensible in one test case (variety \code{d3}) but kept reseting to
 zero in another (variety \code{c3}). The lack of Nortek documentation on
 most of these quantities is a roadblock to implementing \code{oce} functions
 dealing with IMU-enabled datasets
-
 \item Variety \code{cc} (signalled by byte 5 of a sequence being
 \code{0xcc}) provides information on acceleration, angular rotation rate,
 magnetic vector and orientation matrix.  Each is a timeseries. Acceleration
@@ -241,16 +247,14 @@ is stored in the \code{data} slot as \code{IMUaccelX}, \code{IMUaccelY},
 \code{IMUmagrtx}, \code{IMUmagrty} and \code{IMUmagrtz}. Finally,
 \code{IMUmatrix} is a rotation matrix made up from elements named
 \code{M11}, \code{M12}, etc in the Nortek documentation.  In addition to all
-of these, \code{IMUtime} stores time in seconds (with an origin whose
-definition is not stated in [1B]).
-
+of these, \code{IMUtime} stores time in seconds, with an origin whose
+definition is not stated in reference 1B.
 \item Variety \code{d2} (signalled by byte 5 being \code{0xd2}) provides
 information on gyro-stabilized acceleration, angular rate and magnetometer
 vectors.  The data stored \code{MUaccelX}, \code{IMUangrtX},
 \code{IMUmagrtX}, with similar for \code{Y} and \code{Z}.  Again, time is in
 \code{IMUtime}. This data type has not been tested as of mid-March 2016,
 because the developers do not have a test file with which to test.
-
 \item Variety \code{d3} (signalled by byte 5 being \code{0xd3}) provides
 information on DeltaAngle, DeltaVelocity and magnetometer vectors, stored in
 \code{IMUdeltaAngleX}, \code{IMUdeltaVelocityX}, and
@@ -281,36 +285,42 @@ examine newer versions of the guide.)
 
 1C. Nortek AS.  System Integrator Manual. March 2016.
 (\code{system-integrator-manual_Mar2016.pdf})
-
-2. SonTek/YSI ADVField/Hydra Acoustic Doppler Velocimeter (Field) Technical
+\enumerate{
+\item SonTek/YSI ADVField/Hydra Acoustic Doppler Velocimeter (Field) Technical
 Documentation (Sept 1, 2001).
-
-3. Appendix 2.2.3 of the Sontek ADV operation Manual, Firmware Version 4.0
+\item Appendix 2.2.3 of the Sontek ADV operation Manual, Firmware Version 4.0
 (Oct 1997).
-
-4. Nortek Knowledge Center
-\url{http://www.nortekusa.com/en/knowledge-center}
-
-5. A document describing an IMU unit that seems to be close to the one named
-in [1B,C] as being an adjunct to Nortek Vector systems is at
-\code{http://files.microstrain.com/3DM-GX3-35-Data-Communications-Protocol.pdf}
+\item Nortek Knowledge Center (http://www.nortekusa.com/en/knowledge-center)
+\item A document describing an IMU unit that seems to be close to the one named
+in (references 1B and C) as being an adjunct to Nortek Vector systems is at
+\verb{http://files.microstrain.com/3DM-GX3-35-Data-Communications-Protocol.pdf}
+}
 }
 \seealso{
-Other things related to \code{adv} data: \code{\link{[[,adv-method}},
-  \code{\link{[[<-,adv-method}}, \code{\link{adv-class}},
-  \code{\link{adv}}, \code{\link{beamName}},
-  \code{\link{beamToXyz}}, \code{\link{enuToOtherAdv}},
-  \code{\link{enuToOther}}, \code{\link{plot,adv-method}},
-  \code{\link{read.adv.nortek}},
-  \code{\link{read.adv.sontek.serial}},
-  \code{\link{read.adv.sontek.text}},
-  \code{\link{read.adv}}, \code{\link{rotateAboutZ}},
-  \code{\link{subset,adv-method}},
-  \code{\link{summary,adv-method}}, \code{\link{toEnuAdv}},
-  \code{\link{toEnu}}, \code{\link{velocityStatistics}},
-  \code{\link{xyzToEnuAdv}}, \code{\link{xyzToEnu}}
+Other things related to adv data: 
+\code{\link{[[,adv-method}},
+\code{\link{[[<-,adv-method}},
+\code{\link{adv-class}},
+\code{\link{adv}},
+\code{\link{beamName}()},
+\code{\link{beamToXyz}()},
+\code{\link{enuToOtherAdv}()},
+\code{\link{enuToOther}()},
+\code{\link{plot,adv-method}},
+\code{\link{read.adv.nortek}()},
+\code{\link{read.adv.sontek.serial}()},
+\code{\link{read.adv.sontek.text}()},
+\code{\link{read.adv}()},
+\code{\link{rotateAboutZ}()},
+\code{\link{subset,adv-method}},
+\code{\link{summary,adv-method}},
+\code{\link{toEnuAdv}()},
+\code{\link{toEnu}()},
+\code{\link{velocityStatistics}()},
+\code{\link{xyzToEnuAdv}()},
+\code{\link{xyzToEnu}()}
 }
 \author{
 Dan Kelley
 }
-\concept{things related to \code{adv} data}
+\concept{things related to adv data}

@@ -4,41 +4,35 @@
 \alias{as.cm}
 \title{Coerce data into a CM object}
 \usage{
-as.cm(time, u = NULL, v = NULL, pressure = NULL,
-  conductivity = NULL, temperature = NULL, salinity = NULL,
-  longitude = NA, latitude = NA, filename = "",
-  debug = getOption("oceDebug"))
+as.cm(
+  time,
+  u = NULL,
+  v = NULL,
+  pressure = NULL,
+  conductivity = NULL,
+  temperature = NULL,
+  salinity = NULL,
+  longitude = NA,
+  latitude = NA,
+  filename = "",
+  debug = getOption("oceDebug")
+)
 }
 \arguments{
-\item{time}{A vector of times of observation, or an \code{oce} object that holds \code{time},
-in addition to either both \code{u} and \code{v}, or both \code{directionTrue}
-and \code{speedHorizontal}.}
+\item{time}{A vector of times of observation, or an \code{oce} object from which time
+and two velocity components can be inferred, e.g. an \linkS4class{adv} object, or
+an \linkS4class{adp} object that has only one distance bin.  If \code{time} is an \code{oce} object,
+then all of the following arguments are ignored.}
 
-\item{u}{either a numerical vector containing the eastward component of velocity, in m/s,
-or an \code{oce} object that can can be coerced into a \code{cm} object. In the second
-case, the other arguments to the present function are ignored.}
+\item{u, v}{optional numerical vectors containing the x and y components of velocity (m/s).}
 
-\item{v}{vector containing the northward component of velocity in m/s.}
+\item{pressure, conductivity, salinity, temperature}{optional numerical vectors
+containing pressure (dbar), electrical conductivity, practical salinity,
+and in-situ temperature (degree C).}
 
-\item{pressure}{vector containing pressure in dbar. Ignored if the first argument
-contains an \code{oce} object holding pressure.}
+\item{longitude, latitude}{optional position specified in degrees East and North.}
 
-\item{conductivity}{Optional vector of conductivity.
-Ignored if the first argument contains an \code{oce} object holding pressure.}
-
-\item{temperature}{Optional vector of temperature.
-Ignored if the first argument contains an \code{oce} object holding temperature}
-
-\item{salinity}{Optional vector of salinity, assumed to be Practical Salinity.
-Ignored if the first argument contains an \code{oce} object holding salinity}
-
-\item{longitude}{Optional longitude in degrees East.
-Ignored if the first argument contains an \code{oce} object holding longitude.}
-
-\item{latitude}{Latitude in degrees North.
-Ignored if the first argument contains an \code{oce} object holding latitude.}
-
-\item{filename}{Optional source file name}
+\item{filename}{optional source file name.}
 
 \item{debug}{an integer specifying whether debugging information is
 to be printed during the processing. This is a general parameter that
@@ -51,12 +45,30 @@ by specifying higher \code{debug} values.}
 \description{
 Coerce data into a CM object
 }
-\seealso{
-Other things related to \code{cm} data: \code{\link{[[,cm-method}},
-  \code{\link{[[<-,cm-method}}, \code{\link{cm-class}},
-  \code{\link{cm}}, \code{\link{plot,cm-method}},
-  \code{\link{read.cm}}, \code{\link{rotateAboutZ}},
-  \code{\link{subset,cm-method}},
-  \code{\link{summary,cm-method}}
+\examples{
+library(oce)
+# Example 1: creation from scratch
+t <- Sys.time() + 0:50
+u <- sin(2*pi*0:50/5) + rnorm(51)
+v <- cos(2*pi*0:50/5) + rnorm(51)
+p <- 100 + rnorm(51)
+summary(as.cm(t, u, v, p))
+
+# Example 2: creation from an adv object
+data(adv)
+summary(as.cm(adv))
+
 }
-\concept{things related to \code{cm} data}
+\seealso{
+Other things related to cm data: 
+\code{\link{[[,cm-method}},
+\code{\link{[[<-,cm-method}},
+\code{\link{cm-class}},
+\code{\link{cm}},
+\code{\link{plot,cm-method}},
+\code{\link{read.cm}()},
+\code{\link{rotateAboutZ}()},
+\code{\link{subset,cm-method}},
+\code{\link{summary,cm-method}}
+}
+\concept{things related to cm data}

@@ -4,10 +4,22 @@
 \alias{read.adp.rdi}
 \title{Read a Teledyne/RDI ADP File}
 \usage{
-read.adp.rdi(file, from, to, by, tz = getOption("oceTz"),
-  longitude = NA, latitude = NA, type = c("workhorse"),
-  monitor = FALSE, despike = FALSE, processingLog, testing = FALSE,
-  debug = getOption("oceDebug"), ...)
+read.adp.rdi(
+  file,
+  from,
+  to,
+  by,
+  tz = getOption("oceTz"),
+  longitude = NA,
+  latitude = NA,
+  type = c("workhorse"),
+  monitor = FALSE,
+  despike = FALSE,
+  processingLog,
+  testing = FALSE,
+  debug = getOption("oceDebug"),
+  ...
+)
 }
 \arguments{
 \item{file}{a connection or a character string giving the name of the file
@@ -42,11 +54,12 @@ North.}
 
 \item{type}{character string indicating the type of instrument.}
 
-\item{monitor}{boolean, set to \code{TRUE} to provide an indication of progress
-in reading the file, either by printing a dot for each profile or by writing
-a textual progress bar with \code{\link{txtProgressBar}}.}
+\item{monitor}{boolean value indicating whether to indicate the progress
+of reading the file, by using \code{\link[=txtProgressBar]{txtProgressBar()}} or otherwise.  The value
+of \code{monitor} is changed to \code{FALSE} automatically, for non-interactive
+sessions.}
 
-\item{despike}{if \code{TRUE}, \code{\link{despike}} will be used to clean
+\item{despike}{if \code{TRUE}, \code{\link[=despike]{despike()}} will be used to clean
 anomalous spikes in heading, etc.}
 
 \item{processingLog}{if provided, the action item to be stored in the log.
@@ -58,14 +71,15 @@ better for normal calls by a user.)}
 \item{debug}{a flag that turns on debugging.  Set to 1 to get a moderate
 amount of debugging information, or to 2 to get more.}
 
-\item{\dots}{additional arguments, passed to called routines.}
+\item{\dots}{optional additional arguments that some (but not all)
+\verb{read.adp.*()} functions pass to lower-level functions.}
 }
 \value{
-An \code{adp} object, i.e. one inheriting from \code{\link{adp-class}}.
-The form of this object varies with instrument type. In some cases
-navigational data may be included, e.g. \code{read.adp.rdi} can
-read NMEA strings (which get stored in an item called \code{nmea}
-in the \code{data} slot).
+An \linkS4class{adp} object.
+The contents of that object make sense for the particular instrument
+type under study, e.g. if the data file contains
+NMEA strings, then navigational data will be stored in an item
+called \code{nmea} in the \code{data} slot).
 }
 \description{
 Read a Teledyne/RDI ADCP file (called 'adp' in oce).
@@ -92,6 +106,92 @@ two facts control the maximum recordable velocity and the velocity
 resolution, values that may be retrieved for an ADP object name \code{d}
 with \code{d[["velocityMaximum"]]} and \code{d[["velocityResolution"]]}.
 }
+\section{Handling of old file formats}{
+
+\enumerate{
+\item Early PD0 file formats stored the year of sampling with a different
+base year than that used in modern files.  To accommodate this,
+\code{read.adp.rdi} examines the inferred year, and if it is greater than
+2050, then 100 years are subtracted from the time. This offset was
+inferred by tests with sample files, but \emph{not} from RDI documentation,
+so it is somewhat risky.  If the authors can find RDI documentation that
+indicates the condition in which this century offset is required, then
+a change will be made to the code.  Even if not, the method should
+not cause problems for a long time.
+}
+}
+
+\section{Names of items in data slot}{
+
+
+The names of items in the \code{data} slot are below. Not all items are present
+for ll file varieties; use e.g. \code{names(d[["data"]])} to determine the
+names used in an object named \code{d}. In this list, items are either
+a vector (with one sample per time of measurement), a
+\link{matrix} with first index for time and second for bin number,
+or an \link{array} with first index for time, second for bin number,
+and third for beam number. Items are of vector type, unless
+otherwise indicated.
+
+\tabular{rr}{
+\strong{Item} \tab \strong{Meaning} \cr
+\code{a}                                    \tab signal amplitude array (units?)\cr
+\code{ambientTemp}                          \tab ambient temperature (degC)\cr
+\code{attitude}                             \tab attitude (deg)\cr
+\code{attitudeTemp}                         \tab (FIXME add a description here)\cr
+\code{avgMagnitudeVelocityEast}             \tab (FIXME add a description here)\cr
+\code{avgMagnitudeVelocityNorth}            \tab (FIXME add a description here)\cr
+\code{avgSpeed}                             \tab (FIXME add a description here)\cr
+\code{avgTrackMagnetic}                     \tab (FIXME add a description here)\cr
+\code{avgTrackTrue}                         \tab (FIXME add a description here)\cr
+\code{avgTrueVelocityEast}                  \tab (FIXME add a description here)\cr
+\code{avgTrueVelocityNorth}                 \tab (FIXME add a description here)\cr
+\code{br}                                   \tab bottom range matrix (m)\cr
+\code{bv}                                   \tab bottom velocity matrix (m/s)\cr
+\code{contaminationSensor}                  \tab (FIXME add a description here)\cr
+\code{depth}                                \tab depth (m)\cr
+\code{directionMadeGood}                    \tab (FIXME add a description here)\cr
+\code{distance}                             \tab (FIXME add a description here)\cr
+\code{firstLatitude}                        \tab latitude at start of profile (deg)\cr
+\code{firstLongitude}                       \tab longitude at start of profile (deg)\cr
+\code{firstTime}                            \tab (FIXME add a description here)\cr
+\code{g}                                    \tab data goodness matrix (units?)\cr
+\code{heading}                              \tab instrument heading (degrees)\cr
+\code{headingStd}                           \tab instrument heading std-dev (deg)\cr
+\code{lastLatitude}                         \tab latitude at end of profile (deg)\cr
+\code{lastLongitude}                        \tab longitude at end of profile (deg)\cr
+\code{lastTime}                             \tab (FIXME add a description here)\cr
+\code{numberOfHeadingSamplesAveraged}       \tab (FIXME add a description here)\cr
+\code{numberOfMagneticTrackSamplesAveraged} \tab (FIXME add a description here)\cr
+\code{numberOfPitchRollSamplesAveraged}     \tab (FIXME add a description here)\cr
+\code{numberOfSpeedSamplesAveraged}         \tab (FIXME add a description here)\cr
+\code{numberOfTrueTrackSamplesAveraged}     \tab (FIXME add a description here)\cr
+\code{pitch}                                \tab instrument pitch (deg)\cr
+\code{pitchStd}                             \tab instrument pitch std-dev (deg)\cr
+\code{pressure}                             \tab pressure (dbar)\cr
+\code{pressureMinus}                        \tab (FIXME add a description here)\cr
+\code{pressurePlus}                         \tab (FIXME add a description here)\cr
+\code{pressureStd}                          \tab pressure std-dev (dbar)\cr
+\code{primaryFlags}                         \tab (FIXME add a description here)\cr
+\code{q}                                    \tab data quality array\cr
+\code{roll}                                 \tab instrument roll (deg)\cr
+\code{rollStd}                              \tab instrument roll std-dev (deg)\cr
+\code{salinity}                             \tab salinity\cr
+\code{shipHeading}                          \tab ship heading (deg)\cr
+\code{shipPitch}                            \tab ship pitch (deg)\cr
+\code{shipRoll}                             \tab ship roll (deg)\cr
+\code{soundSpeed}                           \tab sound speed (m/s)\cr
+\code{speedMadeGood}                        \tab speed over ground (?) (m/s)\cr
+\code{speedMadeGoodEast}                    \tab (FIXME add a description here)\cr
+\code{speedMadeGoodNorth}                   \tab (FIXME add a description here)\cr
+\code{temperature}                          \tab temperature (degC)\cr
+\code{time}                                 \tab profile time (POSIXct)\cr
+\code{v}                                    \tab velocity array (m/s)\cr
+\code{xmitCurrent}                          \tab transmit current (unit?)\cr
+\code{xmitVoltage}                          \tab transmit voltage\cr
+}
+}
+
 \section{Memory considerations}{
 
 
@@ -126,16 +226,14 @@ and are decimated unless the user supplies a value for the \code{by} argument.
 
 The decimation procedure has two cases.
 \enumerate{
-\item \emph{Case 1.} If \code{from=1} and
-\code{to=0} (or if neither \code{from} or \code{to} is given), then the
+\item If \code{from=1} and \code{to=0} (or if neither \code{from} or \code{to} is given), then the
 intention is to process the full span of the data.  If the input file is
 under 200 MB, then \code{by} defaults to 1, so that all profiles are read.
-For larger files, \code{by} is set to the \code{\link{ceiling}} of the
+For larger files, \code{by} is set to the \code{\link[=ceiling]{ceiling()}} of the
 ratio of input file size to 200 MB.
-
-\item \emph{Case 2.} If \code{from} exceeds 1, and/or \code{to} is nonzero, then
+\item If \code{from} exceeds 1, and/or \code{to} is nonzero, then
 the intention is to process only an interior subset of the file. In this
-case, \code{by} is calculated as the \code{\link{ceiling}} of
+case, \code{by} is calculated as the \code{\link[=ceiling]{ceiling()}} of
 the ratio of \code{bbp*(1+to-from)} to 200 MB, where \code{bbp} is the number
 of file bytes per profile. Of course, \code{by} is set to 1, if this
 ratio is less than 1.
@@ -144,7 +242,7 @@ ratio is less than 1.
 If the result of these calculations is that \code{by} exceeds 1, then
 messages are printed to alert the user that the file will be decimated,
 and also \code{monitor} is set to \code{TRUE}, so that a textual progress bar
-is shown.
+is shown (if the session is interactive).
 }
 
 \section{Development Notes}{
@@ -158,76 +256,75 @@ to introduce new ID codes with new instruments, that means that
 
 The following two-byte ID codes are recognized by \code{read.adp.rdi}
 at this time (with bytes listed in natural order, LSB byte before
-MSB). Items preceeded by an asterisk are recognized, but not handled,
+MSB). Items preceded by an asterisk are recognized, but not handled,
 and so produce a warning.
-\preformatted{
-  0x00 0x01 velocity
-  0x00 0x02 correlation
-  0x00 0x03 echo intensity
-  0x00 0x04 percent good
-  0x00 0x06 bottom track
-  0x00 0x0a Sentinel vertical beam velocity
-  0x00 0x0b Sentinel vertical beam correlation
-  0x00 0x0c Sentinel vertical beam amplitude
-  0x00 0x0d Sentinel vertical beam percent good
-  0x00 0x20 VMDASS
-* 0x00 0x30 binary fixed attitude (developer: see p169 of [3] for format)
-  0x00 0x32 Sentinel transformation matrix
-  0x00 0x0a Sentinel data
-  0x00 0x0b Sentinel correlation
-  0x00 0x0c Sentinel amplitude
-  0x00 0x0d Sentinel percent good
-  0x01 0x0f ?? something to do with V series and 4-beam
+\tabular{rrrr}{
+\tab \strong{Byte 1} \tab \strong{Byte 2} \tab \strong{Meaning}\cr
+\tab 0x00 \tab 0x01 \tab velocity\cr
+\tab 0x00 \tab 0x01 \tab velocity\cr
+\tab 0x00 \tab 0x02 \tab correlation\cr
+\tab 0x00 \tab 0x03 \tab echo intensity\cr
+\tab 0x00 \tab 0x04 \tab percent good\cr
+\tab 0x00 \tab 0x06 \tab bottom track\cr
+\tab 0x00 \tab 0x0a \tab Sentinel vertical beam velocity\cr
+\tab 0x00 \tab 0x0b \tab Sentinel vertical beam correlation\cr
+\tab 0x00 \tab 0x0c \tab Sentinel vertical beam amplitude\cr
+\tab 0x00 \tab 0x0d \tab Sentinel vertical beam percent good\cr
+\tab 0x00 \tab 0x20 \tab VMDASS\cr
+\tab 0x00 \tab 0x30 \tab Binary Fixed Attitude header\cr
+\tab 0x00 \tab 0x32 \tab Sentinel transformation matrix\cr
+\tab 0x00 \tab 0x0a \tab Sentinel data\cr
+\tab 0x00 \tab 0x0b \tab Sentinel correlation\cr
+\tab 0x00 \tab 0x0c \tab Sentinel amplitude\cr
+\tab 0x00 \tab 0x0d \tab Sentinel percent good\cr
+\tab 0x01 \tab 0x0f \tab ?? something to do with V series and 4-beam\cr
 }
 
 Lacking a comprehensive Teledyne-RDI listing of ID codes,
 the authors have cobbled together a listing from documents to which they
-have access, viz.
+have access, as follows.
 \itemize{
-
-\item
-Table 33 of [3] lists codes as follows:
-\preformatted{
-Standard ID    Standard plus 1D    DESCRIPTION
-===========    ================    ===========================
- MSB    LSB          MSB    LSB
- ---    ---          ---    ---
-  7F     7F           7F     7F    Header
-  00     00           00     01    Fixed Leader
-  00     80           00     81    Variable Leader
-  01     00           01     01    Velocity Profile Data
-  02     00           02     01    Correlation Profile Data
-  03     00           03     01    Echo Intensity Profile Data
-  04     00           04     01    Percent Good Profile Data
-  05     00           05     01    Status Profile Data
-  06     00           06     01    Bottom Track Data
-  20     00           20     00    Navigation
-  30     00           30     00    Binary Fixed Attitude
-  30  40-F0           30  40–F0    Binary Variable Attitude
+\item Table 33 of reference 3 lists codes as follows:
+\tabular{rrr}{
+\strong{Standard ID}  \tab  \strong{Standard plus 1D} \tab \strong{DESCRIPTION}\cr
+MSB    LSB  \tab        MSB    LSB\tab\cr
+---    ---  \tab        ---    ---\tab\cr
+7F     7F  \tab         7F     7F \tab   Header\cr
+00     00  \tab         00     01 \tab   Fixed Leader\cr
+00     80  \tab         00     81 \tab   Variable Leader\cr
+01     00  \tab         01     01 \tab   Velocity Profile Data\cr
+02     00  \tab         02     01 \tab   Correlation Profile Data\cr
+03     00  \tab         03     01 \tab   Echo Intensity Profile Data\cr
+04     00  \tab         04     01 \tab   Percent Good Profile Data\cr
+05     00  \tab         05     01 \tab   Status Profile Data\cr
+06     00  \tab         06     01 \tab   Bottom Track Data\cr
+20     00  \tab         20     00 \tab   Navigation\cr
+30     00  \tab         30     00 \tab   Binary Fixed Attitude\cr
+30  40-F0  \tab         30  40-F0 \tab   Binary Variable Attitude\cr
 }
-\item
-Table 6 on p90 of [4] lists "Fixed Leader Navigation" ID
+\item Table 6 on p90 of reference 4 lists "Fixed Leader Navigation" ID
 codes (none of which are handled by \code{read.adp.rdi} yet)
 as follows (the format is reproduced literally; note that
 e.g. 0x2100 is 0x00,0x21 in the oce notation):
-\preformatted{
-ID       Description
-======   ===========
-0x2100   $xxDBT
-0x2101   $xxGGA
-0x2102   $xxVTG
-0x2103   $xxGSA
-0x2104   $xxHDT, $xxHGD or $PRDID
+\tabular{rr}{
+\strong{ID} \tab \strong{Description}\cr
+0x2100 \tab  $xxDBT\cr
+0x2101 \tab  $xxGGA\cr
+0x2102 \tab  $xxVTG\cr
+0x2103 \tab  $xxGSA\cr
+0x2104 \tab  $xxHDT, $xxHGD or $PRDID\cr
 }
-and following pages in that manual reveal that
-DBT refers to depth below transducer;
-GGA refers to global positioning system;
-VTA refers to track made good and ground speed;
-GSA refers to GPS DOP and active satellites;
-HDT refers to heading, true;
-HDG refers to heading, deviation, and variation;
-and
-PRDID refers to heading, pitch and roll.
+and following pages in that manual reveal the following meanings
+\tabular{rr}{
+\strong{Symbol} \tab \strong{Meaning}\cr
+\code{DBT}   \tab depth below transducer\cr
+\code{GGA}   \tab global positioning system\cr
+\code{VTA}   \tab track made good and ground speed\cr
+\code{GSA}   \tab GPS DOP and active satellites\cr
+\code{HDT}   \tab heading, true\cr
+\code{HDG}   \tab heading, deviation, and variation\cr
+\code{PRDID} \tab heading, pitch and roll\cr
+}
 }
 }
 
@@ -237,7 +334,6 @@ PRDID refers to heading, pitch and roll.
 Files can sometimes be corrupted, and \code{read.adp.rdi} has ways to handle two types
 of error that have been noticed in files supplied by users.
 \enumerate{
-
 \item There are two bytes within each ensemble that indicate the number of bytes to check within
 that ensemble, to get the checksum. Sometimes, those two bytes can be erroneous, so that
 the wrong number of bytes are checked, leading to a failed checksum. As a preventative
@@ -246,11 +342,10 @@ failed checksum. If that length agrees with the length of the most recent ensemb
 had a good checksum, then the ensemble is declared as faulty and is ignored. However,
 if the length differs from that of the most recent accepted ensemble, then \code{read.adp.rdi}
 goes back to just after the start of the ensemble, and searches forward for the next two-byte
-pair, namely \code{0x7f 0x7f}, that designates the start of an ensemble.  Distinct notifications
+pair, namely \verb{0x7f 0x7f}, that designates the start of an ensemble.  Distinct notifications
 are given about these two cases, and they give the byte numbers in the original file, as a way
 to help analysts who want to look at the data stream with other tools.
-
-\item At the end of an ensemble, the next two characters ought to be \code{0x7f 0x7f}, and if they
+\item At the end of an ensemble, the next two characters ought to be \verb{0x7f 0x7f}, and if they
 are not, then the next ensemble is faulty. If this error occurs, \code{read.adp.rdi} attempts
 to recover by searching forward to the next instance of this two-byte pair, discarding any
 information that is present in the mangled ensemble.
@@ -261,59 +356,79 @@ Advanced users who want to diagnose the problem further might find it helpful to
 examine the original data file using other tools. To this end, \code{read.adp.rdi}
 inserts an element named \code{ensembleInFile} into the \code{metadata} slot.
 This gives the starting byte number of each inferred ensemble within the original data
-file.  For example, if \code{d} is an object read with \code{read.adp.rdi}, then using
-\preformatted{
-plot(d[["time"]][-1], diff(d[["ensembleInFile"]]))
+file.  For example, if \code{d} is an object read with \code{read.adp.rdi}, then using\preformatted{plot(d[["time"]][-1], diff(d[["ensembleInFile"]]))
 }
+
 can be a good way to narrow in on problems.
 }
 
+\examples{
+adp <- read.adp.rdi(system.file("extdata", "adp_rdi.000", package="oce"))
+summary(adp)
+
+}
 \references{
-1. Teledyne-RDI, 2007. \emph{WorkHorse commands and output data
+\enumerate{
+\item Teledyne-RDI, 2007. \emph{WorkHorse commands and output data
 format.} P/N 957-6156-00 (November 2007).  (Section 5.3 h details the binary
 format, e.g. the file should start with the byte \code{0x7f} repeated twice,
 and each profile starts with the bytes \code{0x80}, followed by \code{0x00},
 followed by the sequence number of the profile, represented as a
 little-endian two-byte short integer.  \code{read.adp.rdi} uses these
 sequences to interpret data files.)
-
-2. Teledyne RD Instruments, 2015. \emph{V Series monitor, sentinel Output Data Format.}
+\item Teledyne RD Instruments, 2015. \emph{V Series monitor, sentinel Output Data Format.}
 P/N 95D-6022-00 (May 2015). \code{SV_ODF_May15.pdf}
-
-3. Teledyne RD Instruments, 2014. \emph{Ocean Surveyor / Ocean Observer Technical Manual.}
+\item Teledyne RD Instruments, 2014. \emph{Ocean Surveyor / Ocean Observer Technical Manual.}
 P/N 95A-6012-00 (April 2014). \code{OS_TM_Apr14.pdf}
-
-4. Teledyne RD Instruments, 201?. \emph{WinRiver User's Guide International Version}
-P/N 957-6171-00 (June 2001) \code{WinRiver User Guide International Version.pdf.pdf}
+\item Teledyne RD Instruments, 2001. \emph{WinRiver User's Guide International Version.}
+P/N 957-6171-00 (June 2001) \verb{WinRiver User Guide International Version.pdf.pdf}
+}
 }
 \seealso{
-Other things related to \code{adp} data: \code{\link{[[,adp-method}},
-  \code{\link{[[<-,adp-method}},
-  \code{\link{ad2cpHeaderValue}}, \code{\link{adp-class}},
-  \code{\link{adpEnsembleAverage}}, \code{\link{adp}},
-  \code{\link{as.adp}}, \code{\link{beamName}},
-  \code{\link{beamToXyzAdpAD2CP}},
-  \code{\link{beamToXyzAdp}}, \code{\link{beamToXyzAdv}},
-  \code{\link{beamToXyz}}, \code{\link{beamUnspreadAdp}},
-  \code{\link{binmapAdp}}, \code{\link{enuToOtherAdp}},
-  \code{\link{enuToOther}},
-  \code{\link{handleFlags,adp-method}},
-  \code{\link{is.ad2cp}}, \code{\link{plot,adp-method}},
-  \code{\link{read.adp.ad2cp}},
-  \code{\link{read.adp.nortek}},
-  \code{\link{read.adp.sontek.serial}},
-  \code{\link{read.adp.sontek}}, \code{\link{read.adp}},
-  \code{\link{read.aquadoppHR}},
-  \code{\link{read.aquadoppProfiler}},
-  \code{\link{read.aquadopp}}, \code{\link{rotateAboutZ}},
-  \code{\link{setFlags,adp-method}},
-  \code{\link{subset,adp-method}},
-  \code{\link{summary,adp-method}}, \code{\link{toEnuAdp}},
-  \code{\link{toEnu}}, \code{\link{velocityStatistics}},
-  \code{\link{xyzToEnuAdpAD2CP}},
-  \code{\link{xyzToEnuAdp}}, \code{\link{xyzToEnu}}
+Other things related to adp data: 
+\code{\link{[[,adp-method}},
+\code{\link{[[<-,adp-method}},
+\code{\link{ad2cpHeaderValue}()},
+\code{\link{adp-class}},
+\code{\link{adpConvertRawToNumeric}()},
+\code{\link{adpEnsembleAverage}()},
+\code{\link{adpFlagPastBoundary}()},
+\code{\link{adp_rdi.000}},
+\code{\link{adp}},
+\code{\link{as.adp}()},
+\code{\link{beamName}()},
+\code{\link{beamToXyzAdpAD2CP}()},
+\code{\link{beamToXyzAdp}()},
+\code{\link{beamToXyzAdv}()},
+\code{\link{beamToXyz}()},
+\code{\link{beamUnspreadAdp}()},
+\code{\link{binmapAdp}()},
+\code{\link{enuToOtherAdp}()},
+\code{\link{enuToOther}()},
+\code{\link{handleFlags,adp-method}},
+\code{\link{is.ad2cp}()},
+\code{\link{plot,adp-method}},
+\code{\link{read.adp.ad2cp}()},
+\code{\link{read.adp.nortek}()},
+\code{\link{read.adp.sontek.serial}()},
+\code{\link{read.adp.sontek}()},
+\code{\link{read.adp}()},
+\code{\link{read.aquadoppHR}()},
+\code{\link{read.aquadoppProfiler}()},
+\code{\link{read.aquadopp}()},
+\code{\link{rotateAboutZ}()},
+\code{\link{setFlags,adp-method}},
+\code{\link{subset,adp-method}},
+\code{\link{subtractBottomVelocity}()},
+\code{\link{summary,adp-method}},
+\code{\link{toEnuAdp}()},
+\code{\link{toEnu}()},
+\code{\link{velocityStatistics}()},
+\code{\link{xyzToEnuAdpAD2CP}()},
+\code{\link{xyzToEnuAdp}()},
+\code{\link{xyzToEnu}()}
 }
 \author{
 Dan Kelley and Clark Richards
 }
-\concept{things related to \code{adp} data}
+\concept{things related to adp data}

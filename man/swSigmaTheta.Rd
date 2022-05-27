@@ -4,25 +4,32 @@
 \alias{swSigmaTheta}
 \title{Seawater potential density anomaly}
 \usage{
-swSigmaTheta(salinity, temperature = NULL, pressure = NULL,
-  referencePressure = 0, longitude = NULL, latitude = NULL,
-  eos = getOption("oceEOS", default = "gsw"))
+swSigmaTheta(
+  salinity,
+  temperature = NULL,
+  pressure = NULL,
+  referencePressure = 0,
+  longitude = NULL,
+  latitude = NULL,
+  eos = getOption("oceEOS", default = "gsw")
+)
 }
 \arguments{
 \item{salinity}{either practical salinity (in which case \code{temperature}
-and \code{pressure} must be provided) \strong{or} an \code{oce} object, in
+and \code{pressure} must be provided) \emph{or} an \code{oce} object, in
 which case \code{salinity}, \code{temperature} (in the ITS-90 scale; see
-next item), etc. are inferred from the object.}
+next item), etc. are inferred from the object, ignoring the
+other parameters, if they are supplied.}
 
-\item{temperature}{\emph{in-situ} temperature [\eqn{^\circ}{deg}C], defined
+\item{temperature}{\emph{in-situ} temperature (\eqn{^\circ}{deg}C), defined
 on the ITS-90 scale.  This scale is used by GSW-style calculation (as
 requested by setting \code{eos="gsw"}), and is the value contained within
 \code{ctd} objects (and probably most other objects created with data
 acquired in the past decade or two). Since the UNESCO-style calculation is
 based on IPTS-68, the temperature is converted within the present function,
-using \code{\link{T68fromT90}}.}
+using \code{\link[=T68fromT90]{T68fromT90()}}.}
 
-\item{pressure}{pressure [dbar]}
+\item{pressure}{pressure (dbar)}
 
 \item{referencePressure}{The reference pressure, in dbar.}
 
@@ -32,19 +39,24 @@ see \sQuote{Details}).}
 \item{latitude}{latitude of observation (only used if \code{eos="gsw"}; see
 \sQuote{Details}).}
 
-\item{eos}{equation of state, either \code{"unesco"} [1,2] or \code{"gsw"}
-[3,4].}
+\item{eos}{equation of state, either \code{"unesco"} (references 1 and 2)
+or \code{"gsw"} (references 3 and 4).}
 }
 \value{
-Potential density anomaly [kg/m\eqn{^3}{^3}], defined as
+Potential density anomaly (kg/m\eqn{^3}{^3}), defined as
 \eqn{\sigma_\theta=\rho(S,\theta(S,t,p),0}{sigma_theta=rho(S,theta(S,t,p),0)}
-- 1000 kg/m\eqn{^3}{^3}.
+\itemize{
+\item 1000 kg/m\eqn{^3}{^3}.
+}
 }
 \description{
 Compute the potential density (minus 1000 kg/m^3) that seawater would have if raised
 adiabatically to the surface.  In the UNESCO system, this quantity is
 is denoted \eqn{\sigma_\theta}{sigma-theta} (hence the function name), but in
-the GSW system, it is denoted \code{sigma0}.
+the GSW system, a somewhat related quantity is denoted \code{sigma0}. (In a
+deep-water CTD cast, the RMS deviation between sigma-theta and sigma0 is
+typically of order 0.0003 kg/m^3, corresponding to a temperature shift of
+about 0.002C, so the distinction between the quantities is not large.)
 }
 \details{
 If the first argument is an \code{oce} object, then salinity, etc., are
@@ -52,34 +64,53 @@ extracted from it, and used for the calculation instead of any values
 provided in the other arguments.
 }
 \examples{
-expect_equal(26.4212790994, swSigmaTheta(35, 13, 1000, eos="unesco"))
+stopifnot(abs(26.4212790994 - swSigmaTheta(35, 13, 1000, eos="unesco")) < 1e-7)
 
 }
 \references{
-See citations provided in the \code{\link{swRho}} documentation.
+See citations provided in the \code{\link[=swRho]{swRho()}} documentation.
 }
 \seealso{
-Other functions that calculate seawater properties: \code{\link{T68fromT90}},
-  \code{\link{T90fromT48}}, \code{\link{T90fromT68}},
-  \code{\link{swAbsoluteSalinity}},
-  \code{\link{swAlphaOverBeta}}, \code{\link{swAlpha}},
-  \code{\link{swBeta}}, \code{\link{swCSTp}},
-  \code{\link{swConservativeTemperature}},
-  \code{\link{swDepth}}, \code{\link{swDynamicHeight}},
-  \code{\link{swLapseRate}}, \code{\link{swN2}},
-  \code{\link{swPressure}}, \code{\link{swRho}},
-  \code{\link{swRrho}}, \code{\link{swSCTp}},
-  \code{\link{swSTrho}}, \code{\link{swSigma0}},
-  \code{\link{swSigma1}}, \code{\link{swSigma2}},
-  \code{\link{swSigma3}}, \code{\link{swSigma4}},
-  \code{\link{swSigmaT}}, \code{\link{swSigma}},
-  \code{\link{swSoundAbsorption}},
-  \code{\link{swSoundSpeed}}, \code{\link{swSpecificHeat}},
-  \code{\link{swSpice}}, \code{\link{swTFreeze}},
-  \code{\link{swTSrho}},
-  \code{\link{swThermalConductivity}},
-  \code{\link{swTheta}}, \code{\link{swViscosity}},
-  \code{\link{swZ}}
+Other functions that calculate seawater properties: 
+\code{\link{T68fromT90}()},
+\code{\link{T90fromT48}()},
+\code{\link{T90fromT68}()},
+\code{\link{computableWaterProperties}()},
+\code{\link{locationForGsw}()},
+\code{\link{swAbsoluteSalinity}()},
+\code{\link{swAlphaOverBeta}()},
+\code{\link{swAlpha}()},
+\code{\link{swBeta}()},
+\code{\link{swCSTp}()},
+\code{\link{swConservativeTemperature}()},
+\code{\link{swDepth}()},
+\code{\link{swDynamicHeight}()},
+\code{\link{swLapseRate}()},
+\code{\link{swN2}()},
+\code{\link{swPressure}()},
+\code{\link{swRho}()},
+\code{\link{swRrho}()},
+\code{\link{swSCTp}()},
+\code{\link{swSR}()},
+\code{\link{swSTrho}()},
+\code{\link{swSigma0}()},
+\code{\link{swSigma1}()},
+\code{\link{swSigma2}()},
+\code{\link{swSigma3}()},
+\code{\link{swSigma4}()},
+\code{\link{swSigmaT}()},
+\code{\link{swSigma}()},
+\code{\link{swSoundAbsorption}()},
+\code{\link{swSoundSpeed}()},
+\code{\link{swSpecificHeat}()},
+\code{\link{swSpice}()},
+\code{\link{swSstar}()},
+\code{\link{swTFreeze}()},
+\code{\link{swTSrho}()},
+\code{\link{swThermalConductivity}()},
+\code{\link{swTheta}()},
+\code{\link{swViscosity}()},
+\code{\link{swZ}()}
 }
 \author{
 Dan Kelley

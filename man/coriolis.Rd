@@ -13,28 +13,30 @@ coriolis(latitude, degrees = TRUE)
 to \code{FALSE}, radians are used.}
 }
 \value{
-Coriolis parameter [radian/s].
+Coriolis parameter, in radian/s.
 }
 \description{
-Compute \eqn{f}{f}, the Coriolis parameter as a function of latitude [1],
+Compute \eqn{f}{f}, the Coriolis parameter as a function of latitude
+(see reference 1),
 assuming earth siderial angular rotation rate
-\eqn{omega}{omega}=7292115e-11 rad/s. See [1] for general notes, and
-see [2] for comments on temporal variations
+\eqn{omega}{omega}=7292115e-11 rad/s. See reference 1 for general notes, and
+see reference 2 for comments on temporal variations
 of \eqn{omega}{omega}.
 }
 \examples{
 C <- coriolis(45) # 1e-4
 }
 \references{
-1. Gill, A.E., 1982. \emph{Atmosphere-ocean Dynamics}, Academic
+\enumerate{
+\item Gill, A.E., 1982. \emph{Atmosphere-ocean Dynamics}, Academic
 Press, New York, 662 pp.
-
-2. Groten, E., 2004: Fundamental Parameters and Current, 2004. Best
- Estimates of the Parameters of Common Relevance to Astronomy, Geodesy,
- and Geodynamics. Journal of Geodesy, 77:724-797.
- (downloaded from
-\code{http://www.iag-aig.org/attach/e354a3264d1e420ea0a9920fe762f2a0/51-groten.pdf}
+\item Groten, E., 2004: Fundamental Parameters and Current, 2004. Best
+Estimates of the Parameters of Common Relevance to Astronomy, Geodesy,
+and Geodynamics. Journal of Geodesy, 77:724-797.
+(downloaded from
+\verb{http://www.iag-aig.org/attach/e354a3264d1e420ea0a9920fe762f2a0/51-groten.pdf}
 March 11, 2017).
+}
 }
 \author{
 Dan Kelley

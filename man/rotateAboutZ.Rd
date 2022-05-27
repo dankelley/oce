@@ -7,7 +7,7 @@
 rotateAboutZ(x, angle)
 }
 \arguments{
-\item{x}{An oce object of class \code{adp}, \code{adv} or \code{cm}.}
+\item{x}{an \linkS4class{adp}, \linkS4class{adv}, or \linkS4class{cm} object.}
 
 \item{angle}{The rotation angle about the z axis, in degrees counterclockwise.}
 }
@@ -43,57 +43,86 @@ mtext("cm rotated 30 deg", side=3, line=0, adj=1, cex=0.7)
 
 }
 \seealso{
-Other things related to \code{adp} data: \code{\link{[[,adp-method}},
-  \code{\link{[[<-,adp-method}},
-  \code{\link{ad2cpHeaderValue}}, \code{\link{adp-class}},
-  \code{\link{adpEnsembleAverage}}, \code{\link{adp}},
-  \code{\link{as.adp}}, \code{\link{beamName}},
-  \code{\link{beamToXyzAdpAD2CP}},
-  \code{\link{beamToXyzAdp}}, \code{\link{beamToXyzAdv}},
-  \code{\link{beamToXyz}}, \code{\link{beamUnspreadAdp}},
-  \code{\link{binmapAdp}}, \code{\link{enuToOtherAdp}},
-  \code{\link{enuToOther}},
-  \code{\link{handleFlags,adp-method}},
-  \code{\link{is.ad2cp}}, \code{\link{plot,adp-method}},
-  \code{\link{read.adp.ad2cp}},
-  \code{\link{read.adp.nortek}},
-  \code{\link{read.adp.rdi}},
-  \code{\link{read.adp.sontek.serial}},
-  \code{\link{read.adp.sontek}}, \code{\link{read.adp}},
-  \code{\link{read.aquadoppHR}},
-  \code{\link{read.aquadoppProfiler}},
-  \code{\link{read.aquadopp}},
-  \code{\link{setFlags,adp-method}},
-  \code{\link{subset,adp-method}},
-  \code{\link{summary,adp-method}}, \code{\link{toEnuAdp}},
-  \code{\link{toEnu}}, \code{\link{velocityStatistics}},
-  \code{\link{xyzToEnuAdpAD2CP}},
-  \code{\link{xyzToEnuAdp}}, \code{\link{xyzToEnu}}
+Other things related to adp data: 
+\code{\link{[[,adp-method}},
+\code{\link{[[<-,adp-method}},
+\code{\link{ad2cpHeaderValue}()},
+\code{\link{adp-class}},
+\code{\link{adpConvertRawToNumeric}()},
+\code{\link{adpEnsembleAverage}()},
+\code{\link{adpFlagPastBoundary}()},
+\code{\link{adp_rdi.000}},
+\code{\link{adp}},
+\code{\link{as.adp}()},
+\code{\link{beamName}()},
+\code{\link{beamToXyzAdpAD2CP}()},
+\code{\link{beamToXyzAdp}()},
+\code{\link{beamToXyzAdv}()},
+\code{\link{beamToXyz}()},
+\code{\link{beamUnspreadAdp}()},
+\code{\link{binmapAdp}()},
+\code{\link{enuToOtherAdp}()},
+\code{\link{enuToOther}()},
+\code{\link{handleFlags,adp-method}},
+\code{\link{is.ad2cp}()},
+\code{\link{plot,adp-method}},
+\code{\link{read.adp.ad2cp}()},
+\code{\link{read.adp.nortek}()},
+\code{\link{read.adp.rdi}()},
+\code{\link{read.adp.sontek.serial}()},
+\code{\link{read.adp.sontek}()},
+\code{\link{read.adp}()},
+\code{\link{read.aquadoppHR}()},
+\code{\link{read.aquadoppProfiler}()},
+\code{\link{read.aquadopp}()},
+\code{\link{setFlags,adp-method}},
+\code{\link{subset,adp-method}},
+\code{\link{subtractBottomVelocity}()},
+\code{\link{summary,adp-method}},
+\code{\link{toEnuAdp}()},
+\code{\link{toEnu}()},
+\code{\link{velocityStatistics}()},
+\code{\link{xyzToEnuAdpAD2CP}()},
+\code{\link{xyzToEnuAdp}()},
+\code{\link{xyzToEnu}()}
 
-Other things related to \code{adv} data: \code{\link{[[,adv-method}},
-  \code{\link{[[<-,adv-method}}, \code{\link{adv-class}},
-  \code{\link{adv}}, \code{\link{beamName}},
-  \code{\link{beamToXyz}}, \code{\link{enuToOtherAdv}},
-  \code{\link{enuToOther}}, \code{\link{plot,adv-method}},
-  \code{\link{read.adv.nortek}},
-  \code{\link{read.adv.sontek.adr}},
-  \code{\link{read.adv.sontek.serial}},
-  \code{\link{read.adv.sontek.text}},
-  \code{\link{read.adv}}, \code{\link{subset,adv-method}},
-  \code{\link{summary,adv-method}}, \code{\link{toEnuAdv}},
-  \code{\link{toEnu}}, \code{\link{velocityStatistics}},
-  \code{\link{xyzToEnuAdv}}, \code{\link{xyzToEnu}}
+Other things related to adv data: 
+\code{\link{[[,adv-method}},
+\code{\link{[[<-,adv-method}},
+\code{\link{adv-class}},
+\code{\link{adv}},
+\code{\link{beamName}()},
+\code{\link{beamToXyz}()},
+\code{\link{enuToOtherAdv}()},
+\code{\link{enuToOther}()},
+\code{\link{plot,adv-method}},
+\code{\link{read.adv.nortek}()},
+\code{\link{read.adv.sontek.adr}()},
+\code{\link{read.adv.sontek.serial}()},
+\code{\link{read.adv.sontek.text}()},
+\code{\link{read.adv}()},
+\code{\link{subset,adv-method}},
+\code{\link{summary,adv-method}},
+\code{\link{toEnuAdv}()},
+\code{\link{toEnu}()},
+\code{\link{velocityStatistics}()},
+\code{\link{xyzToEnuAdv}()},
+\code{\link{xyzToEnu}()}
 
-Other things related to \code{cm} data: \code{\link{[[,cm-method}},
-  \code{\link{[[<-,cm-method}}, \code{\link{as.cm}},
-  \code{\link{cm-class}}, \code{\link{cm}},
-  \code{\link{plot,cm-method}}, \code{\link{read.cm}},
-  \code{\link{subset,cm-method}},
-  \code{\link{summary,cm-method}}
+Other things related to cm data: 
+\code{\link{[[,cm-method}},
+\code{\link{[[<-,cm-method}},
+\code{\link{as.cm}()},
+\code{\link{cm-class}},
+\code{\link{cm}},
+\code{\link{plot,cm-method}},
+\code{\link{read.cm}()},
+\code{\link{subset,cm-method}},
+\code{\link{summary,cm-method}}
 }
 \author{
 Dan Kelley
 }
-\concept{things related to \code{adp} data}
-\concept{things related to \code{adv} data}
-\concept{things related to \code{cm} data}
+\concept{things related to adp data}
+\concept{things related to adv data}
+\concept{things related to cm data}

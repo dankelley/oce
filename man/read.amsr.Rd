@@ -13,39 +13,40 @@ read.amsr(file, debug = getOption("oceDebug"))
 \item{debug}{A debugging flag, integer.}
 }
 \description{
-Read a compressed amsr file, generating an object that inherits from
-\code{\link{amsr-class}}.  Note that only compressed files are read in
-this version.
+Read a compressed amsr file, generating an \linkS4class{amsr} object.
+Note that only compressed files are read in this version.
 }
-\section{File sources}{
-
-AMSR files are provided at the FTP site
-\code{ftp://ftp.ssmi.com/amsr2/bmaps_v07.2/} and login as "guest",
-enter a year-based directory (e.g. \code{y2016} for the year 2016),
+\details{
+AMSR files are provided at the FTP site, at
+\code{ftp.ssmi.com/amsr2/bmaps_v07.2} as of April 2021.
+To acquire such files,
+log in as "guest",
+then enter a year-based directory (e.g. \code{y2016} for the year 2016),
 then enter a month-based directory (e.g. \code{m08} for August, the 8th
 month), and then download a file for the present date, e.g.
 \code{f34_20160803v7.2.gz} for August 3rd, 2016. Do not uncompress
-this file, since \code{read.amsr} can only read uncompressed files.
+this file, since \code{read.amsr} can only read the raw files from the server.
 If \code{read.amsr} reports an error on the number of chunks, try
 downloading a similarly-named file (e.g. in the present example,
 \code{read.amsr("f34_20160803v7.2_d3d.gz")} will report an error
 about inability to read a 6-chunk file, but
 \code{read.amsr("f34_20160803v7.2.gz")} will work properly.
 }
-
 \seealso{
-\code{\link{plot,amsr-method}} for an example.
+\code{\link[=plot,amsr-method]{plot,amsr-method()}} for an example.
 
-Other things related to \code{amsr} data: \code{\link{[[<-,amsr-method}},
-  \code{\link{amsr-class}},
-  \code{\link{composite,amsr-method}},
-  \code{\link{download.amsr}},
-  \code{\link{plot,amsr-method}},
-  \code{\link{subset,amsr-method}},
-  \code{\link{summary,amsr-method}}
+Other things related to amsr data: 
+\code{\link{[[,amsr-method}},
+\code{\link{[[<-,amsr-method}},
+\code{\link{amsr-class}},
+\code{\link{amsr}},
+\code{\link{composite,amsr-method}},
+\code{\link{download.amsr}()},
+\code{\link{plot,amsr-method}},
+\code{\link{subset,amsr-method}},
+\code{\link{summary,amsr-method}}
 }
 \author{
 Dan Kelley and Chantelle Layton
 }
-\concept{satellite}
-\concept{things related to \code{amsr} data}
+\concept{things related to amsr data}

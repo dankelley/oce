@@ -4,55 +4,80 @@
 \alias{mapPolygon}
 \title{Add a Polygon to a Map}
 \usage{
-mapPolygon(longitude, latitude, density = NULL, angle = 45,
-  border = NULL, col = NA, lty = par("lty"), ...,
-  fillOddEven = FALSE)
+mapPolygon(
+  longitude,
+  latitude,
+  density = NULL,
+  angle = 45,
+  border = NULL,
+  col = NA,
+  lty = par("lty"),
+  ...,
+  fillOddEven = FALSE
+)
 }
 \arguments{
-\item{longitude}{longitudes of points to be plotted, or an object from
-which longitude and latitude can be inferred (e.g. a coastline file, or
-the return value from \code{\link{mapLocator}}), in which case the
-following two arguments are ignored.}
+\item{longitude}{numeric vector of longitudes of points defining the polygon,
+to be plotted, or an object from
+which both longitude and latitude can be inferred (e.g. a coastline file, or
+the return value from \code{\link[=mapLocator]{mapLocator()}}), in which case the \code{latitude}
+argument are ignored.}
 
-\item{latitude}{latitudes of points to be plotted.}
+\item{latitude}{numeric vector of latitudes of points to be plotted (ignored
+if both longitude and latitude can be determined from the first argument).}
 
-\item{density}{as for \code{\link{polygon}}.}
-
-\item{angle}{as for \code{\link{polygon}}.}
-
-\item{border}{as for \code{\link{polygon}}.}
-
-\item{col}{as for \code{\link{polygon}}.}
-
-\item{lty}{as for \code{\link{polygon}}.}
-
-\item{...}{as for \code{\link{polygon}}.}
-
-\item{fillOddEven}{as for \code{\link{polygon}}.}
+\item{density, angle, border, col, lty, ..., fillOddEven}{handled as
+\code{\link[=polygon]{polygon()}} handles the same arguments.}
 }
 \description{
-Plot a polygon on an existing map.
+\code{mapPolygon} adds a polygon to an existing map.
 }
-\details{
-Adds a polygon to an existing map, by analogy to
-\code{\link{polygon}}.  Used by \code{\link{mapImage}}.
+\examples{
+\donttest{
+library(oce)
+data(coastlineWorld)
+data(topoWorld)
+
+## Bathymetry near southeastern Canada
+par(mfrow=c(1,1), mar=c(2,2,1,1))
+cm <- colormap(zlim=c(-5000, 0), col=oceColorsGebco)
+drawPalette(colormap=cm)
+lonlim<- c(-60,-50)
+latlim<- c(40,60)
+mapPlot(coastlineWorld, longitudelim=lonlim,
+latitudelim=latlim, projection="+proj=merc", grid=FALSE)
+mapImage(topoWorld, colormap=cm)
+mapPolygon(coastlineWorld[['longitude']], coastlineWorld[['latitude']], col="lightgray")
+}
+
 }
 \seealso{
-A map must first have been created with \code{\link{mapPlot}}.
+A map must first have been created with \code{\link[=mapPlot]{mapPlot()}}.
 
-Other functions related to maps: \code{\link{lonlat2map}},
-  \code{\link{lonlat2utm}}, \code{\link{map2lonlat}},
-  \code{\link{mapArrows}}, \code{\link{mapAxis}},
-  \code{\link{mapContour}},
-  \code{\link{mapDirectionField}}, \code{\link{mapGrid}},
-  \code{\link{mapImage}}, \code{\link{mapLines}},
-  \code{\link{mapLocator}},
-  \code{\link{mapLongitudeLatitudeXY}},
-  \code{\link{mapPlot}}, \code{\link{mapPoints}},
-  \code{\link{mapScalebar}}, \code{\link{mapText}},
-  \code{\link{mapTissot}}, \code{\link{oceCRS}},
-  \code{\link{shiftLongitude}}, \code{\link{usrLonLat}},
-  \code{\link{utm2lonlat}}
+Other functions related to maps: 
+\code{\link{formatPosition}()},
+\code{\link{lonlat2map}()},
+\code{\link{lonlat2utm}()},
+\code{\link{map2lonlat}()},
+\code{\link{mapArrows}()},
+\code{\link{mapAxis}()},
+\code{\link{mapContour}()},
+\code{\link{mapCoordinateSystem}()},
+\code{\link{mapDirectionField}()},
+\code{\link{mapGrid}()},
+\code{\link{mapImage}()},
+\code{\link{mapLines}()},
+\code{\link{mapLocator}()},
+\code{\link{mapLongitudeLatitudeXY}()},
+\code{\link{mapPlot}()},
+\code{\link{mapPoints}()},
+\code{\link{mapScalebar}()},
+\code{\link{mapText}()},
+\code{\link{mapTissot}()},
+\code{\link{oceCRS}()},
+\code{\link{shiftLongitude}()},
+\code{\link{usrLonLat}()},
+\code{\link{utm2lonlat}()}
 }
 \author{
 Dan Kelley

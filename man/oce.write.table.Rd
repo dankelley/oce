@@ -7,31 +7,31 @@
 oce.write.table(x, file = "", ...)
 }
 \arguments{
-\item{x}{an \code{oce} object that contains a \code{data} table.}
+\item{x}{an \linkS4class{oce} object.}
 
-\item{file}{file name, as passed to \code{\link[utils]{write.table}}.  Use
+\item{file}{file name, as passed to \code{\link[utils:write.table]{utils::write.table()}}.  Use
 \code{""} to get a listing in the terminal window.}
 
-\item{...}{optional arguments passed to \code{\link[utils]{write.table}}.}
+\item{...}{optional arguments passed to \code{\link[utils:write.table]{utils::write.table()}}.}
 }
 \value{
-The value of \code{\link[utils]{write.table}} is returned.
+The value returned by \code{\link[utils:write.table]{utils::write.table()}}.
 }
 \description{
 The output has a line containing the names of the columns in \code{x$data},
 each enclosed in double quotes.  After that line are lines for the data
 themselves.  The default is to separate data items by a single space
 character, but this can be altered by using a \code{sep} argument in the
-\code{...} list (see \code{\link[utils]{write.table}}).
+\code{...} list; see \code{\link[utils:write.table]{utils::write.table()}}.
 }
 \details{
 This function is little more than a thin wrapper around
-\code{\link[utils]{write.table}}, the only difference being that row names
+\code{\link[utils:write.table]{utils::write.table()}}, the only difference being that row names
 are omitted here, making for a file format that is more conventional in
 Oceanography.
 }
 \seealso{
-\code{\link[utils]{write.table}}, which does the actual work.
+`\code{\link[utils:write.table]{utils::write.table()}}, which does the actual work.
 }
 \author{
 Dan Kelley

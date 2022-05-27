@@ -4,8 +4,7 @@
 \alias{numberAsPOSIXct}
 \title{Convert a Numeric Time to a POSIXct Time}
 \usage{
-numberAsPOSIXct(t, type = c("unix", "matlab", "gps", "argo", "ncep1",
-  "ncep2", "sas", "spss", "yearday", "epic"), tz = "UTC")
+numberAsPOSIXct(t, type, tz = "UTC")
 }
 \arguments{
 \item{t}{an integer corresponding to a time, in a way that depends on
@@ -17,7 +16,7 @@ numberAsPOSIXct(t, type = c("unix", "matlab", "gps", "argo", "ncep1",
 times, since GPS times are always referenced to the UTC timezone.}
 }
 \value{
-A \code{\link{POSIXct}} time vector.
+A \code{\link[=POSIXct]{POSIXct()}} time vector.
 }
 \description{
 There are many varieties, according to the value of \code{type} as defined
@@ -25,83 +24,84 @@ in \sQuote{Details}.
 }
 \details{
 \itemize{
-
-\item \code{"unix"} employs Unix times, measured in seconds since the start
+\item \code{"unix"} handles Unix times, measured in seconds since the start
 of the year 1970.
-
-\item \code{"matlab"} employs Matlab times, measured in days since what
-MathWorks [1] calls ``January 0, 0000'' (i.e.  \code{ISOdatetime(0, 1, 1, 0,
+\item \code{"matlab"} handles Matlab times, measured in days since what
+MathWorks (reference 1) calls ``January 0, 0000'' (i.e.  \code{ISOdatetime(0, 1, 1, 0,
 0, 0)} in R notation).
-
-\item \code{"gps"} employs the GPS convention. For this, \code{t} is a
+\item \code{"gps"} handles the GPS convention. For this, \code{t} is a
 two-column matrix, with the first column being the the GPS "week"
 (referenced to 1999-08-22) and the second being the GPS "second" (i.e. the
 second within the week). Since the GPS satellites do not handle leap
 seconds, the R-defined \code{.leap.seconds} is used for corrections.
-
-\item \code{"argo"} employs Argo times, measured in days since the start of
+\item \code{"argo"} handles Argo times, measured in days since the start of
 the year 1900.
-
-\item \code{"ncep1"} employs NCEP times, measured in hours since the start
+\item \code{"excel"} handles Excel times, measured in days since the start of
+the year 1900. (Note that excel incorrectly regards 1900 as a leap year,
+so 1 day is subtracted from \code{t} unless the time is less than or equal
+to 1900 Feb 28.  Note that NA is returned for the day 60, which is
+what excel codes for "Feb 29, 1900", the non-existing day that excel
+accepts.
+\item \code{"ncep1"} handles NCEP times, measured in hours since the start
 of the year 1800.
-
-\item \code{"ncep2"} employs NCEP times, measured in days since the start of
+\item \code{"ncep2"} handles NCEP times, measured in days since the start of
 the year 1. (Note that, for reasons that are unknown at this time, a simple
 R expression of this definition is out by two days compared with the UDUNITS
 library, which is used by NCEP. Therefore, a two-day offset is applied. See
-[2, 3].)
-
-\item \code{"sas"} employs SAS times, indicated by \code{type="sas"}, have
+references 2 and 3.)
+\item \code{"sas"} handles SAS times, indicated by \code{type="sas"}, have
 origin at the start of 1960.
-
-\item \code{"spss"} employs SPSS times, in seconds after 1582-10-14.
-
-\item \code{"yearday"} employs a convention in which \code{t} is a
+\item \code{"spss"} handles SPSS times, in seconds after 1582-10-14.
+\item \code{"yearday"} handles a convention in which \code{t} is a
 two-column matrix, with the first column being the year, and the second the
 yearday (starting at 1 for the first second of January 1, to match the
 convention used by Sea-Bird CTD software).
-
-\item \code{"epic"} employs a convention used in the EPIC software library,
+\item \code{"epic"} handles a convention used in the EPIC software library,
 from the Pacific Marine Environmental Laboratory, in which \code{t} is a
 two-column matrix, with the first column being the julian Day (as defined in
-\code{\link{julianDay}}, for example), and with the second column being the
-millisecond within that day. See [4].
-
+\code{\link[=julianDay]{julianDay()}}, for example), and with the second column being the
+millisecond within that day. See reference 4.
 }
+
+\code{"vms"} handles a convention used in the VMS operating system and
+for Modified Julian Day, in which \code{t} is the number of seconds
+past 1859-11-17T00:00:00 UTC. See reference 5.
 }
 \examples{
-
 numberAsPOSIXct(0)                     # unix time 0
 numberAsPOSIXct(1, type="matlab")      # matlab time 1
 numberAsPOSIXct(cbind(566, 345615), type="gps") # Canada Day, zero hour UTC
-numberAsPOSIXct(cbind(2013, 0), type="yearday") # start of 2013
+numberAsPOSIXct(cbind(2013, 1), type="yearday") # start of 2013
 
-## Epic time, one hour into Canada Day of year 2018. In computing the
-## Julian day, note that this starts at noon.
+# Epic time, one hour into Canada Day of year 2018. In computing the
+# Julian day, note that this starts at noon.
 jd <- julianDay(as.POSIXct("2018-07-01 12:00:00", tz="UTC"))
 numberAsPOSIXct(cbind(jd, 1e3 * 1 * 3600), type="epic", tz="UTC")
 
 }
 \references{
-[1] Matlab times:
-\url{http://www.mathworks.com/help/matlab/ref/datenum.html}
-
-[2] NCEP times: \url{https://www.esrl.noaa.gov/psd/data/gridded/faq.html#3}
-
-[3] problem with NCEP times:
-\url{https://github.com/dankelley/oce/issues/738}
-
-[4] EPIC times: software and manuals at \url{https://www.pmel.noaa.gov/epic/download/index.html#epslib};
-see also Denbo, Donald W., and Nancy N. Soreide. “EPIC.” Oceanography 9 (1996). https://doi.org/10.5670/oceanog.1996.10.
+\enumerate{
+\item Matlab times:
+\verb{https://www.mathworks.com/help/matlab/ref/datenum.html}
+\item NCEP times: \verb{https://psl.noaa.gov/data/gridded/faq.html}
+\item problem with NCEP times:
+\verb{https://github.com/dankelley/oce/issues/738}
+\item EPIC times: software and manuals at \verb{https://www.pmel.noaa.gov/epic/download/index.html#epslib};
+see also Denbo, Donald W., and Nancy N. Soreide. \dQuote{EPIC.} Oceanography 9 (1996).
+\doi{10.5670/oceanog.1996.10}
+\item VMS times: https://en.wikipedia.org/wiki/Epoch_(computing)
+}
 }
 \seealso{
-\code{\link{numberAsHMS}}
+\code{\link[=numberAsHMS]{numberAsHMS()}}
 
-Other things related to time: \code{\link{ctimeToSeconds}},
-  \code{\link{julianCenturyAnomaly}},
-  \code{\link{julianDay}}, \code{\link{numberAsHMS}},
-  \code{\link{secondsToCtime}},
-  \code{\link{unabbreviateYear}}
+Other things related to time: 
+\code{\link{ctimeToSeconds}()},
+\code{\link{julianCenturyAnomaly}()},
+\code{\link{julianDay}()},
+\code{\link{numberAsHMS}()},
+\code{\link{secondsToCtime}()},
+\code{\link{unabbreviateYear}()}
 }
 \author{
 Dan Kelley

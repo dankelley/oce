@@ -4,11 +4,17 @@
 \alias{subtractBottomVelocity}
 \title{Subtract Bottom Velocity from ADP}
 \usage{
-subtractBottomVelocity(x, debug = getOption("oceDebug"))
+subtractBottomVelocity(x, despike = FALSE, debug = getOption("oceDebug"))
 }
 \arguments{
-\item{x}{an object of class \code{"adp"}, which contains bottom tracking
-velocities.}
+\item{x}{an \linkS4class{adp} object that contains bottom-tracking velocities.}
+
+\item{despike}{either a logical value or a univariate function. This
+controls whether the bottom velocity (\code{bv}) values should be altered before they are
+subtracted from the beam velocities. If it is \code{TRUE} then the \code{bv} values are despiked
+first by calling \code{\link[=despike]{despike()}}. If it is a function, then that function is used instead of
+\code{\link[=despike]{despike()}}, e.g. \code{function(x) despike(x, reference="smooth")} would change the reference
+function for despiking from its default of \code{"median"}.}
 
 \item{debug}{an integer specifying whether debugging information is
 to be printed during the processing. This is a general parameter that
@@ -23,10 +29,54 @@ Subtracts bottom tracking velocities from an \code{"adp"} object. Works for
 all coordinate systems (\code{beam}, \code{xyz}, and \code{enu}).
 }
 \seealso{
-See \code{\link{read.adp}} for notes on functions relating to
-\code{"adp"} objects, and \code{\link{adp-class}} for notes on the ADP
+See \code{\link[=read.adp]{read.adp()}} for notes on functions relating to
+\code{"adp"} objects, and \linkS4class{adp} for notes on the ADP
 object class.
+
+Other things related to adp data: 
+\code{\link{[[,adp-method}},
+\code{\link{[[<-,adp-method}},
+\code{\link{ad2cpHeaderValue}()},
+\code{\link{adp-class}},
+\code{\link{adpConvertRawToNumeric}()},
+\code{\link{adpEnsembleAverage}()},
+\code{\link{adpFlagPastBoundary}()},
+\code{\link{adp_rdi.000}},
+\code{\link{adp}},
+\code{\link{as.adp}()},
+\code{\link{beamName}()},
+\code{\link{beamToXyzAdpAD2CP}()},
+\code{\link{beamToXyzAdp}()},
+\code{\link{beamToXyzAdv}()},
+\code{\link{beamToXyz}()},
+\code{\link{beamUnspreadAdp}()},
+\code{\link{binmapAdp}()},
+\code{\link{enuToOtherAdp}()},
+\code{\link{enuToOther}()},
+\code{\link{handleFlags,adp-method}},
+\code{\link{is.ad2cp}()},
+\code{\link{plot,adp-method}},
+\code{\link{read.adp.ad2cp}()},
+\code{\link{read.adp.nortek}()},
+\code{\link{read.adp.rdi}()},
+\code{\link{read.adp.sontek.serial}()},
+\code{\link{read.adp.sontek}()},
+\code{\link{read.adp}()},
+\code{\link{read.aquadoppHR}()},
+\code{\link{read.aquadoppProfiler}()},
+\code{\link{read.aquadopp}()},
+\code{\link{rotateAboutZ}()},
+\code{\link{setFlags,adp-method}},
+\code{\link{subset,adp-method}},
+\code{\link{summary,adp-method}},
+\code{\link{toEnuAdp}()},
+\code{\link{toEnu}()},
+\code{\link{velocityStatistics}()},
+\code{\link{xyzToEnuAdpAD2CP}()},
+\code{\link{xyzToEnuAdp}()},
+\code{\link{xyzToEnu}()}
 }
 \author{
 Dan Kelley and Clark Richards
 }
+\concept{things related to adp data}

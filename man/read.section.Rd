@@ -4,13 +4,22 @@
 \alias{read.section}
 \title{Read a Section File}
 \usage{
-read.section(file, directory, sectionId = "", flags, ship = "",
-  scientist = "", institute = "", missingValue = -999,
-  debug = getOption("oceDebug"), processingLog)
+read.section(
+  file,
+  directory,
+  sectionId = "",
+  flags,
+  ship = "",
+  scientist = "",
+  institute = "",
+  missingValue = -999,
+  debug = getOption("oceDebug"),
+  processingLog
+)
 }
 \arguments{
 \item{file}{A file containing a set of CTD observations.  At present, only the
-\emph{exchange BOT} format is accepted (see Details).}
+\emph{exchange BOT} format is accepted (see \sQuote{Details}).}
 
 \item{directory}{A character string indicating the name of a  directory that
 contains a set of CTD files that hold individual stations in the section.}
@@ -28,15 +37,20 @@ provided, the section ID is determined by examination of the file header.}
 
 \item{missingValue}{Numerical value used to indicate missing data.}
 
-\item{debug}{Logical. If \code{TRUE}, print some information that might be
-helpful during debugging.}
+\item{debug}{an integer specifying whether debugging information is
+to be printed during the processing. This is a general parameter that
+is used by many \code{oce} functions. Generally, setting \code{debug=0}
+turns off the printing, while higher values suggest that more information
+be printed. If one function calls another, it usually reduces the value of
+\code{debug} first, so that a user can often obtain deeper debugging
+by specifying higher \code{debug} values.}
 
 \item{processingLog}{If provided, the action item to be stored in the log.  This
 is typically only provided for internal calls; the default that it provides is
 better for normal calls by a user.}
 }
 \value{
-An object of class \code{\link{section-class}}.
+A \linkS4class{section} object.
 }
 \description{
 Read a file that contains a series of \code{ctd} profiles that make up an
@@ -59,28 +73,31 @@ is stored as \code{salinityBottle}.
 }
 
 \references{
-Several repository sites provide section data. An example that is perhaps likely
-to exist for years is \url{https://cchdo.ucsd.edu}, but a search on \code{"WOCE
-  bottle data"} should turn up other sites, if this one ceases to exist. Only
-the so-called \emph{exchange BOT} data format can be processed by read.section()
+Several repository sites provide section data. A reasonably stable example is
+\verb{https://cchdo.ucsd.edu}, but a search on \code{"WOCE bottle data"} should
+turn up other sites, if this ceases to exist. Only
+the so-called \emph{exchange BOT} data format can be processed by \code{\link[=read.section]{read.section()}}
 at this time. Data names are inferred from column headings using
-\code{\link{woceNames2oceNames}}.
+\code{\link[=woceNames2oceNames]{woceNames2oceNames()}}.
 }
 \seealso{
-Other things related to \code{section} data: \code{\link{[[,section-method}},
-  \code{\link{[[<-,section-method}},
-  \code{\link{as.section}},
-  \code{\link{handleFlags,section-method}},
-  \code{\link{initializeFlagScheme,section-method}},
-  \code{\link{plot,section-method}},
-  \code{\link{section-class}},
-  \code{\link{sectionAddStation}},
-  \code{\link{sectionGrid}}, \code{\link{sectionSmooth}},
-  \code{\link{sectionSort}}, \code{\link{section}},
-  \code{\link{subset,section-method}},
-  \code{\link{summary,section-method}}
+Other things related to section data: 
+\code{\link{[[,section-method}},
+\code{\link{[[<-,section-method}},
+\code{\link{as.section}()},
+\code{\link{handleFlags,section-method}},
+\code{\link{initializeFlagScheme,section-method}},
+\code{\link{plot,section-method}},
+\code{\link{section-class}},
+\code{\link{sectionAddStation}()},
+\code{\link{sectionGrid}()},
+\code{\link{sectionSmooth}()},
+\code{\link{sectionSort}()},
+\code{\link{section}},
+\code{\link{subset,section-method}},
+\code{\link{summary,section-method}}
 }
 \author{
 Dan Kelley
 }
-\concept{things related to \code{section} data}
+\concept{things related to section data}
