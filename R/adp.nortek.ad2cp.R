@@ -303,8 +303,6 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, tz=getOption("oceTz"),
     if (nav$twelve_byte_header == 1L)
         warning("file has 12-byte headers (an undocumented format), so expect spurious results")
     d <- list(buf=buf, index=nav$index, length=nav$length, id=nav$id)
-    # 
-    DAN<<-d
     if (0x10 != d$buf[d$index[1]+1]) # must be 0x10 for an AD2CP (p38 integrators guide)
         stop("expecting byte value 0x10 index ", d$index[1]+1, ", but got 0x", d$buf[d$index[1]+1])
     oceDebug(debug, "focussing on ", length(d$index), " data records\n", sep="")
@@ -696,8 +694,6 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, tz=getOption("oceTz"),
     }
 
     if (length(p$bottomTrack) > 0) {   # key=0x17
-        #message("DEVELOPER NOTE: exporting 'DAN' for ad2cp debugging")
-        #DAN<<-list(p=p,version=version)
         #if (any(version[p$bottomTrack] != 3))
         #    warning("some 'bottomTrack' data records have version !=3. Does this matter? Below is table of values\n", str(table(version[p$bottomTrack])))
         nbeamsBottomTrack <- nbeams[p$bottomTrack[1]]
@@ -1319,7 +1315,6 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, tz=getOption("oceTz"),
             }
             if (altimeterIncluded[ch]) { # configuration[,9]=bit8 [1 pages 60 and 62]
                 oceDebug(debug, "about to store bottomTrack$altimeterDistance[", bottomTrack$i, ",]\n")
-                #DAN<<-list(bottomTrack=bottomTrack,i=i)
                 bottomTrack$altimeterDistance[bottomTrack$i, ] <-
                     readBin(buf[i + i0 + seq(0,4*ncol-1)], "numeric", size=4, n=ncol, endian="little")
                 i0 <- i0 + 4*ncol
