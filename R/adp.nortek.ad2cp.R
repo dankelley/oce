@@ -300,6 +300,8 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, tz=getOption("oceTz"),
     oceDebug(debug, "dataSize:", dataSize, "\n")
     oceDebug(debug, "buf[1+headerSize+dataSize=", 1+headerSize+dataSize, "]=0x", buf[1+headerSize+dataSize], " (expect 0xa5)\n", sep="")
     nav <- do_ldc_ad2cp_in_file(filename, from, to, by, debug-1)
+    if (nav$twelve_byte_header == 1L)
+        warning("file has 12-byte headers (an undocumented format), so expect spurious results")
     d <- list(buf=buf, index=nav$index, length=nav$length, id=nav$id)
     if (0x10 != d$buf[d$index[1]+1]) # 0x10 = AD2CP (p38 integrators guide)
         stop("expecting byte value 0x10 at index ", d$index[1]+1, ", but got 0x", d$buf[d$index[1]+1])
@@ -692,9 +694,10 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, tz=getOption("oceTz"),
     }
 
     if (length(p$bottomTrack) > 0) {   # key=0x17
-        message("DEVELOPER NOTE: exporting 'DAN' for ad2cp debugging");DAN<<-list(p=p,version=version)
-        if (any(version[p$bottomTrack] != 3))
-            stop("can only decode 'bottomTrack' data records that are in 'version 3' format")
+        #message("DEVELOPER NOTE: exporting 'DAN' for ad2cp debugging")
+        #DAN<<-list(p=p,version=version)
+        #if (any(version[p$bottomTrack] != 3))
+        #    warning("some 'bottomTrack' data records have version !=3. Does this matter? Below is table of values\n", str(table(version[p$bottomTrack])))
         nbeamsBottomTrack <- nbeams[p$bottomTrack[1]]
         ncellsBottomTrack <- ncells[p$bottomTrack[1]]
         oceDebug(debug, "bottomTrack data records: nbeams:", nbeamsBottomTrack, ", ncells:", ncellsBottomTrack, "\n")
@@ -812,7 +815,6 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, tz=getOption("oceTz"),
     } else {
         interleavedBurst <- NULL
     }
-
     if (length(p$burstAltimeter) > 0) { # key=0x1a
         if (any(version[p$burstAltimeter] != 3))
             stop("can only decode 'burstAltimeter' data records that are in 'version 3' format")
@@ -1301,27 +1303,36 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, tz=getOption("oceTz"),
             average$i <- average$i + 1
 
         } else if (key == 0x17) { # bottomTrack
-
+            oceDebug(debug, "handling bottomTrack record\n")
             ncol <- bottomTrack$numberOfBeams
             nrow <- bottomTrack$numberOfCells
-            message("i=", i, ", ch=", ch, ", bottomTrack$i=", bottomTrack$i, " ...")
             # distance: uses variable name that makes sense for average/burst data
-            i0 <- 77
+            i0 <- 77 # FIXME: where is this documented?
             if (velocityIncluded[ch]) { # configuration[,9]=bit8 [1 pages 60 and 62]
-                bottomTrack$v[i$bottomTrack, ] <- 0.001*readBin(buf[i + i0 + seq(0,4*ncol-1)], "numeric", size=4, n=ncol, endian="little")
+                oceDebug(debug, "about to store bottomTrack$v[", bottomTrack$i, ",]\n")
+                bottomTrack$v[bottomTrack$i, ] <-
+                    0.001*readBin(buf[i + i0 + seq(0,4*ncol-1)], "numeric", size=4, n=ncol, endian="little")
                 i0 <- i0 + 4*ncol
-                message(" ... stored bottomTrack$altimeterDistance")
+                #message(" ... done")
             }
-             if (altimeterIncluded[ch]) { # configuration[,9]=bit8 [1 pages 60 and 62]
-                bottomTrack$altimeterDistance[i$bottomTrack, ] <- readBin(buf[i + i0 + seq(0,4*ncol-1)], "numeric", size=4, n=ncol, endian="little")
+            if (altimeterIncluded[ch]) { # configuration[,9]=bit8 [1 pages 60 and 62]
+                oceDebug(debug, "about to store bottomTrack$altimeterDistance[", bottomTrack$i, ",]\n")
+                #DAN<<-list(bottomTrack=bottomTrack,i=i)
+                bottomTrack$altimeterDistance[bottomTrack$i, ] <-
+                    readBin(buf[i + i0 + seq(0,4*ncol-1)], "numeric", size=4, n=ncol, endian="little")
                 i0 <- i0 + 4*ncol
-                message(" ... stored bottomTrack$altimeterDistance")
+                #message(" ... done")
             }
             # figureOfMerit: uses variable name that makes sense for average/burst data
             if (altimeterRawIncluded[ch]) { # configuration[,10]=bit9 [1 pages 60 and 62]
-                bottomTrack$altimeterFigureOfMerit[i$bottomTrack, ] <- readBin(buf[i + i0 + seq(0,2*ncol-1)], "numeric", size=2, n=ncol, endian="little")
-                i0 <- i0 + 4*ncol
-                message(" ... stored bottomTrack$altimeterFigureOfMerit")
+                oceDebug(debug, "about to store bottomTrack$altimeterFigureOfMerit[", bottomTrack$i, ",]\n")
+                # FIXME: is this integer or numeric?  R won't let me read 2-byte
+                # numerics, so -- for now -- I'm assuming integer. If it is
+                # actually numeric, I'll need to construct it byte by byte.
+                bottomTrack$altimeterFigureOfMerit[bottomTrack$i, ] <-
+                    readBin(buf[i + i0 + seq(0,2*ncol-1)], "integer", size=2, n=ncol, endian="little")
+                i0 <- i0 + 2*ncol
+                #message(" ... done")
             }
             bottomTrack$i <- bottomTrack$i + 1
 
@@ -1739,9 +1750,9 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, tz=getOption("oceTz"),
 
     # Prepare data
     data <- list(powerLevel=powerLevel, # FIXME: put in individual items?
-                 status=status,
-                 activeConfiguration=activeConfiguration,
-                 orientation=orientation)
+        status=status,
+        activeConfiguration=activeConfiguration,
+        orientation=orientation)
     if (!is.null(burst)) {             # 0x15
         burst$i <- NULL
         data$burst <- burst

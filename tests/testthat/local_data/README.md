@@ -6,7 +6,7 @@ because the original files are too large to be stored on github.
 
 1. Place entries in alphabetical order. Change the numbering of the headers, as
    required. Try to use file names that will have some meaning to a reader
-doing a file listing. 
+   doing a file listing. 
 
 2. Put an entry in a `.R` file in the parent directory to read the file and
    test the resultant data in some useful way. The file name should be start
@@ -133,12 +133,19 @@ cp ../../../create_data/lobo/lobo.dat  .
 and theta, but no salinity or conductivity. It is worth testing because it's
 odd, basically.
 
-# 13. Nortek Signature adp file in ad2cp format
+# 13. Nortek Signature adp files in AD2CP format
 
-`ad2cp_01.ad2cp` is the first 20,000 bytes of a source file generously provided
-by github user @krillthor, who started issue 1676 and provided tests that
-helped greatly during the code improvements motivated by that issue.  It was
-created with
+`local_data/ad2cp` contains several sample AD2CP files.
+
+* `S102791A002_Barrow_v2.ad2cp` is an in-air file created by Clark Richards.
+
+* `S102791A002_Barrow_v2_avgd.ad2cp` is an in-air file created by Clark
+  Richards.
+
+* `ad2cp_01.ad2cp` is the first 20,000 bytes of a source file generously
+  provided by github user @krillthor, who started issue 1676 and provided
+  tests that helped greatly during the code improvements motivated by that
+  issue.  It was created with
 
 ```
 head -c 50000 X.ad2cp > ad2cp_01.ad2cp

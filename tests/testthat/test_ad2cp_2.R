@@ -13,18 +13,20 @@
 library(oce)
 
 #file <- list.files(path="local_data", pattern="ad2cp_01.ad2cp", full.names=TRUE)
-file <- "local_data/ad2cp_01.ad2cp"
+file <- "local_data/ad2cp/ad2cp_01.ad2cp"
 
 if (file.exists(file)) {
-    test_that("local_data/ad2cp_01.ad2cp is okay", {
+    test_that("local_data/ad2cp/ad2cp_01.ad2cp is okay", {
         expect_warning(
             expect_warning(
                 expect_warning(
-                    expect_output(d <- read.oce(file),
-                        "got to end of file"),
-                    "using to=12"),
-                "since 'plan' was not given"),
-            "data records with 'id' that is not yet handled")
+                    expect_warning(
+                        expect_output(d <- read.oce(file),
+                            "got to end of file"),
+                        "using to=12"),
+                    "since 'plan' was not given"),
+                "data records with 'id' that is not yet handled"),
+            "file has 12-byte headers")
         # Identifiers
         expect_equal(d[["type"]], "Signature100")
         expect_equal(d[["fileType"]], "AD2CP")
