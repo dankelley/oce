@@ -661,6 +661,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, tz=getOption("oceTz"),
     oceDebug(debug, "buf[1+headerSize+dataSize=", 1+headerSize+dataSize, "]=0x", buf[1+headerSize+dataSize], " (expect 0xa5)\n", sep="")
     nav <- do_ldc_ad2cp_in_file(filename, from, to, by, debug-1)
     d <- list(buf=buf, index=nav$index, length=nav$length, id=nav$id)
+    DAN<<-d
     if (0x10 != d$buf[d$index[1]+1]) # 0x10 = AD2CP (p38 integrators guide)
         stop("expecting byte value 0x10 at index ", d$index[1]+1, ", but got 0x", d$buf[d$index[1]+1])
     oceDebug(debug, "focussing on ", length(d$index), " data records\n", sep="")
