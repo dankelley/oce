@@ -303,8 +303,10 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, tz=getOption("oceTz"),
     if (nav$twelve_byte_header == 1L)
         warning("file has 12-byte headers (an undocumented format), so expect spurious results")
     d <- list(buf=buf, index=nav$index, length=nav$length, id=nav$id)
-    if (0x10 != d$buf[d$index[1]+1]) # 0x10 = AD2CP (p38 integrators guide)
-        stop("expecting byte value 0x10 at index ", d$index[1]+1, ", but got 0x", d$buf[d$index[1]+1])
+    # 
+    DAN<<-d
+    if (0x10 != d$buf[d$index[1]+1]) # must be 0x10 for an AD2CP (p38 integrators guide)
+        stop("expecting byte value 0x10 index ", d$index[1]+1, ", but got 0x", d$buf[d$index[1]+1])
     oceDebug(debug, "focussing on ", length(d$index), " data records\n", sep="")
     Nmax <- length(d$index)
     if (to > Nmax) {
