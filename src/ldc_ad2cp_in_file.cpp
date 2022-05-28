@@ -201,8 +201,6 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, IntegerVector from, IntegerV
   // 10 bytes long, so once we get an 0xA5, we'll read 9 more
   // bytes to assemble the header in bytes10.  (We grab all the
   // bytes at once, so we can do a checksum.)
-  unsigned char bytes2[2]; // used for reading 2-byte entries
-  unsigned char bytes4[4]; // used for reading 4-byte entries
   unsigned char header_bytes[12]; // to store either 10 or 12-byte headers
   struct header {
     unsigned char sync;
@@ -246,7 +244,6 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, IntegerVector from, IntegerV
     header.id = header_bytes[2];
     header.family = header_bytes[3];
     unsigned char family = header.family; // used in recovery attempt, if a checksum error occurs
-    int offset;
     if (header.header_size == 10) {
       header.data_size = header_bytes[4] + 256 * header_bytes[5];
       header.data_checksum = header_bytes[6] + 256 * header_bytes[7];
