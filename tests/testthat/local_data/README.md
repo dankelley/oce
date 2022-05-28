@@ -137,15 +137,19 @@ odd, basically.
 
 `local_data/ad2cp` contains several sample AD2CP files.
 
-* `S102791A002_Barrow_v2.ad2cp` is an in-air file created by Clark Richards.
+* `S102791A002_Barrow_v2.ad2cp`, provided by Clark Richards, is an in-air file
+  created by a Signature 250 with 5 beams, including a centre beam running at
+  500kHz.  Its license enable "wave" and "ice" modes, which are used in this
+  file.
 
-* `S102791A002_Barrow_v2_avgd.ad2cp` is an in-air file created by Clark
-  Richards.
+* `S102791A002_Barrow_v2_avgd.ad2cp` is from the same instrument as the
+  previously-described file, but here with altimeter values and echosounder
+  profiles.
 
 * `ad2cp_01.ad2cp` is the first 20,000 bytes of a source file generously
-  provided by github user @krillthor, who started issue 1676 and provided
-  tests that helped greatly during the code improvements motivated by that
-  issue.  It was created with
+  provided by github user @krillthor, who started issue 1676 and provided tests
+  that helped greatly during the code improvements motivated by that issue.  It
+  was created with
 
 ```
 head -c 50000 X.ad2cp > ad2cp_01.ad2cp
