@@ -263,8 +263,8 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, IntegerVector from, IntegerV
           header.header_size, cindex, 100.0*(cindex)/fileSize);
     }
     if (debug && debug > 1) {
-      Rprintf("Chunk %d at cindex=%ld, %.5f%% through file: ",
-          chunk, cindex, 100.0*cindex/fileSize);
+      Rprintf("Chunk %d at cindex=%ld, %.5f%% through file: id=0x%02x=",
+          chunk, cindex, 100.0*cindex/fileSize, header.id);
       if (header.id == 0xa0) Rprintf("String\n");
       else if (header.id == 0x15) Rprintf("Burst data record\n");
       else if (header.id == 0x16) Rprintf("Average data record\n");
@@ -279,7 +279,7 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, IntegerVector from, IntegerV
       else if (header.id == 0x23) Rprintf("Echo Sounder raw sample data record\n");
       else if (header.id == 0x24) Rprintf("Echo Sounder raw synthetic transmit pulse data record\n");
       else Rprintf("Unrecognized ID\n");
-      Rprintf("  header: header_size=0x%x ", header.header_size);
+      Rprintf("  header: header_size=0x%02x=%d ", header.header_size, header.header_size);
       Rprintf("id=0x%x ", header.id);
       Rprintf("family=0x%x ", header.family);
       Rprintf("data_size=%d ", header.data_size);
@@ -332,7 +332,7 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, IntegerVector from, IntegerV
       reset_cindex = 0;
     } else {
       checksum_failures++;
-      Rprintf("Data checksum error (expected 0x%02x but got 0x%02x) at cindex=%ld (%7.4f%% through file)\n",
+      Rprintf("    Data checksum error (expected 0x%02x but got 0x%02x) at cindex=%ld (%7.4f%% through file)\n",
           header.data_checksum, dbufcs, cindex, 100.0*cindex/fileSize);
       if (cindex != ftell(fp))
         Rprintf("  *BUG*: cindex=%ld is out of synch with ftell(fp)=%ld\n", cindex, ftell(fp));

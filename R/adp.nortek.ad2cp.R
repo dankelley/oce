@@ -558,8 +558,8 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, tz=getOption("oceTz"),
 
     # 2. get some things in slow index-based form.
     if (length(p$burst) > 0) {         # key=0x15
-        if (any(version[p$burst] != 3))
-            stop("can only decode 'burst' data records that are in 'version 3' format")
+        #if (any(version[p$burst] != 3))
+        #    stop("can only decode 'burst' data records that are in 'version 3' format")
         nbeamsBurst <- nbeams[p$burst[1]]
         ncellsBurst <- ncells[p$burst[1]]
         oceDebug(debug, "burst data records: nbeams:", nbeamsBurst, ", ncells:", ncellsBurst, "\n", sep="")
@@ -627,8 +627,8 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, tz=getOption("oceTz"),
     }
 
     if (length(p$average) > 0) {       # key=0x16
-        if (any(version[p$average] != 3))
-            stop("can only decode 'average' data records that are in 'version 3' format")
+        #if (any(version[p$average] != 3))
+        #    stop("can only decode 'average' data records that are in 'version 3' format")
         nbeamsAverage <- nbeams[p$average[1]]
         ncellsAverage <- ncells[p$average[1]]
         oceDebug(debug, "average data records: nbeams:", nbeamsAverage, ", ncells:", ncellsAverage, "\n")
@@ -750,8 +750,8 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, tz=getOption("oceTz"),
     }
 
     if (length(p$interleavedBurst) > 0) { # key=0x18
-        if (any(version[p$interleavedBurst] != 3))
-            stop("can only decode 'interleavedBurst' data records that are in 'version 3' format")
+        #if (any(version[p$interleavedBurst] != 3))
+        #    stop("can only decode 'interleavedBurst' data records that are in 'version 3' format")
         nbeamsInterleavedBurst <- nbeams[p$interleavedBurst[1]]
         ncellsInterleavedBurst <- ncells[p$interleavedBurst[1]]
         oceDebug(debug, "interleavedBurst data records: nbeams:", nbeamsInterleavedBurst, ", ncells:", ncellsInterleavedBurst, "\n")
@@ -818,8 +818,8 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, tz=getOption("oceTz"),
         interleavedBurst <- NULL
     }
     if (length(p$burstAltimeter) > 0) { # key=0x1a
-        if (any(version[p$burstAltimeter] != 3))
-            stop("can only decode 'burstAltimeter' data records that are in 'version 3' format")
+        #if (any(version[p$burstAltimeter] != 3))
+        #    stop("can only decode 'burstAltimeter' data records that are in 'version 3' format")
         nbeamsBurstAltimeter <- nbeams[p$burstAltimeter[1]]
         ncellsBurstAltimeter <- ncells[p$burstAltimeter[1]]
         oceDebug(debug, "burstAltimeter data records: nbeams:", nbeamsBurstAltimeter, ", ncells:", ncellsBurstAltimeter, "\n")
@@ -887,8 +887,8 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, tz=getOption("oceTz"),
     }
 
     if (length(p$DVLBottomTrack) > 0) { # key=0x1b
-        if (any(version[p$DVLBottomTrack] != 3))
-            stop("can only decode 'DVLBottomTrack' data records that are in 'version 3' format")
+        #if (any(version[p$DVLBottomTrack] != 3))
+        #    stop("can only decode 'DVLBottomTrack' data records that are in 'version 3' format")
         nbeamsDVLBottomTrack <- nbeams[p$DVLBottomTrack[1]]
         ncellsDVLBottomTrack <- ncells[p$DVLBottomTrack[1]]
         oceDebug(debug, "DVLBottomTrack data records: nbeams:", nbeamsDVLBottomTrack, ", ncells:", ncellsDVLBottomTrack, "\n")
@@ -956,8 +956,8 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, tz=getOption("oceTz"),
     }
 
     if (length(p$echosounder) > 0) {   # key=0x1c
-        if (any(version[p$echosounder] != 3))
-            stop("can only decode 'echosounder' data records that are in 'version 3' format")
+        #if (any(version[p$echosounder] != 3))
+        #    stop("can only decode 'echosounder' data records that are in 'version 3' format")
         #? oceDebug(debug, "echosounder data records: nbeams:", nbeamsEchosounder, ", ncells:", ncellsEchosounder, "\n")
         #? if (any(ncellsEchosounder[p$echosounder] != ncellsEchosounder[p$echosounder[1]]))
         #?     stop("the 'echosounder' data records do not all have the same number of cells")
@@ -1029,8 +1029,8 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, tz=getOption("oceTz"),
     }
 
     if (length(p$DVLWaterTrack) > 0) {    # key=0x1d
-        if (any(version[p$DVLWaterTrack] != 3))
-            stop("can only decode 'DVLWaterTrack' data records that are in 'version 3' format")
+        #if (any(version[p$DVLWaterTrack] != 3))
+        #    stop("can only decode 'DVLWaterTrack' data records that are in 'version 3' format")
         nbeamsDVLWaterTrack <- nbeams[p$DVLWaterTrack[1]]
         ncellsDVLWaterTrack <- ncells[p$DVLWaterTrack[1]]
         oceDebug(debug, "DVLWaterTrack data records: nbeams:", nbeamsDVLWaterTrack, ", ncells:", ncellsDVLWaterTrack, "\n")
@@ -1081,8 +1081,8 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, tz=getOption("oceTz"),
     }
 
     if (length(p$altimeter) > 0) {     # key=0x1e
-        if (any(version[p$altimeter] != 3))
-            stop("can only decode 'altimeter' data records that are in 'version 3' format")
+        #if (any(version[p$altimeter] != 3))
+        #    stop("can only decode 'altimeter' data records that are in 'version 3' format")
         nbeamsAltimeter <- nbeams[p$altimeter[1]]
         ncellsAltimeter <- ncells[p$altimeter[1]]
         oceDebug(debug, "altimeter data records: nbeams:", nbeamsAltimeter, ", ncells:", ncellsAltimeter, "\n")
@@ -1133,8 +1133,8 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, tz=getOption("oceTz"),
     }
 
     if (length(p$averageAltimeter) > 0) {   # key=0x1f
-        if (any(version[p$averageAltimeter] != 3))
-            stop("can only decode 'averageAltimeter' data records that are in 'version 3' format")
+        #if (any(version[p$averageAltimeter] != 3))
+        #    stop("can only decode 'averageAltimeter' data records that are in 'version 3' format")
         nbeamsAverageAltimeter <- nbeams[p$averageAltimeter[1]]
         ncellsAverageAltimeter <- ncells[p$averageAltimeter[1]]
         oceDebug(debug, "averageAltimeter data records: nbeams:", nbeamsAverageAltimeter, ", ncells:", ncellsAverageAltimeter, "\n")
