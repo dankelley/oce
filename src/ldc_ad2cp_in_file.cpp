@@ -127,19 +127,39 @@ Dan Kelley
 //
 // The code for this differs from that suggested by Nortek,
 // because we don't use a specific (msoft) compiler, so we
-// do not have access to misaligned_load16(). Also, I don't
-// think this will work properly if the number of bytes
-// is odd.
+// do not have access to misaligned_load16(), which I've seen
+// in some Nortek code. Besides, R does not have a 'short' (i.e.
+// two-byte) type, so we need work work byte by byte (for the R 'raw'
+// type).
 //
-// FIXME: handle odd-numbered byte case.
-unsigned short cs(unsigned char *data, unsigned short size)
+// At the end of the loop, we check here for an odd number of
+// bytes, and zero-pad on the right of the last, if so. This
+// is the scheme suggested (in quite different code) at
+// https://www.manualslib.com/manual/1595998/Nortek-Signature-Series.html?page=49#manual.
+//
+// Another site worth checking is
+// https://github.com/aodn/imos-toolbox/blob/master/Parser/readAD2CPBinary.m,
+// although that does not come from Nortek, and it seems to have no
+// provision for a data sequence with an odd number of members.
+unsigned short cs(unsigned char *data, unsigned short size, int debug)
 {
-  // It might be worth checking the matlab code at
-  //     https://github.com/aodn/imos-toolbox/blob/master/Parser/readAD2CPBinary.m
-  // for context, if problems ever arise.
   unsigned short checksum = 0xB58C;
   for (int i = 0; i < size; i += 2) {
     checksum += (unsigned short)data[i] + 256*(unsigned short)data[i+1];
+  }
+  if (debug > 1) {
+    Rprintf(" cs() on %d data: 0x%02x 0x%02x 0x%02x 0x%02x ... 0x%02x 0x%02x 0x%02x 0x%02x\n",
+        size, data[0], data[1], data[2], data[3],
+        data[size-4], data[size-3], data[size-2], data[size-1]);
+  }
+  if (1 == size%2) {
+    if (debug > 1) {
+      Rprintf("   odd # data, so cs changed from 0x%x ", checksum);
+    }
+    checksum += 256*(unsigned short)data[size-1];
+    if (debug > 1) {
+      Rprintf("to 0x%x\n", checksum);
+    }
   }
   return(checksum);
 }
@@ -259,7 +279,7 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, IntegerVector from, IntegerV
       ::Rf_error("impossible header.header_size %d (should be 10 or 12) at cindex=%ld (%7.4f%% through file)\n",
           header.header_size, cindex, 100.0*(cindex)/fileSize);
     }
-    if (debug && debug > 1) {
+    if (debug > 1) {
       Rprintf("Chunk %d at cindex=%ld, %.5f%% through file: id=0x%02x=",
           chunk, cindex, 100.0*cindex/fileSize, header.id);
       if (header.id == 0xa0) Rprintf("String\n");
@@ -323,13 +343,13 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, IntegerVector from, IntegerV
     cindex += header.data_size;
     // Compare data checksum to the value stated in the header
     unsigned short dbufcs;
-    dbufcs = cs(dbuf, header.data_size);
+    dbufcs = cs(dbuf, header.data_size, debug);
     if (dbufcs == header.data_checksum) {
       //cindex_last_good = cindex - header.header_size - header.data_size;
       reset_cindex = 0;
     } else {
       checksum_failures++;
-      Rprintf("    Data checksum error (expected 0x%02x but got 0x%02x) at cindex=%ld (%7.4f%% through file)\n",
+      Rprintf("    ERROR (data checksum: expected 0x%02x but got 0x%02x) at cindex=%ld (%7.4f%% through file)\n",
           header.data_checksum, dbufcs, cindex, 100.0*cindex/fileSize);
       if (cindex != ftell(fp))
         Rprintf("  *BUG*: cindex=%ld is out of synch with ftell(fp)=%ld\n", cindex, ftell(fp));
