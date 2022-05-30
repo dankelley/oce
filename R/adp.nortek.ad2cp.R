@@ -507,6 +507,11 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, tz=getOption("oceTz"),
     velocityFactor <- 10^readBin(d$buf[pointer1 + 59], "integer", size=1, n=N, signed=TRUE, endian="little")
     powerLevel <- readBin(d$buf[pointer1 + 60], "integer", size=1, n=N, signed=TRUE, endian="little")
     temperatureMagnetometer <- 0.001 * readBin(d$buf[pointer2 + 61], "integer", size=2, n=N, signed=TRUE, endian="little")
+    # See https://github.com/dankelley/oce/issues/1957 for a discussion of the
+    # unit of temperatureRTC.  The manual as of 2022 says it is in degC, but a
+    # previous manual says it is in 0.01C; the latter produces values that make
+    # sense (e.g. approx 20C for an in-air test) so that is the factor we will
+    # use here.
     temperatureRTC <- 0.01 * readBin(d$buf[pointer2 + 63], "integer", size=2, n=N, signed=TRUE, endian="little")
     #UNUSED error <- readBin(d$buf[pointer2 + 65], "integer", size=4, n=N, endian="little") # FIXME: UNUSED
 
