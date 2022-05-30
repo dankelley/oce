@@ -486,7 +486,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, tz=getOption("oceTz"),
     pitch <- 0.01 * readBin(d$buf[pointer2 + 27], "integer", size=2, n=N, endian="little")
     roll <- 0.01 * readBin(d$buf[pointer2 + 29], "integer", size=2, n=N, endian="little")
     # BCC (beam, coordinate system, and cell) uses packed bits to hold info on
-    # the nubmer of beams, coordinate-system, and the number cells. There are
+    # the number of beams, coordinate-system, and the number cells. There are
     # two cases [1 page 49]:
     # case 1: Standard bit 9-0 ncell; bit 11-10 coord (00=enu, 01=xyz, 10=beam, 11=NA); bit 15-12 nbeams
     # case 2: bit 15-0 number of echo sounder cells
@@ -567,7 +567,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, tz=getOption("oceTz"),
         average=which(d$id==0x16),     # coded and checked against matlab and .cfg file
         bottomTrack=which(d$id==0x17), # coded, but no sample-data test and no plot()
         interleavedBurst=which(d$id==0x18), # coded, with no errors reading sample files
-        burstAltimeter=which(d$id==0x1a), # coded, but no sample-data test and no plot()
+        burstAltimeterRaw=which(d$id==0x1a), # broken (https://github.com/dankelley/oce/issues/1959)
         DVLBottomTrack=which(d$id==0x1b), # coded, but no sample-data test and no plot()
         echosounder=which(d$id==0x1c), # coded, but no sample-data test and no plot()
         DVLWaterTrack=which(d$id==0x1d), # coded, but no sample-data test and no plot()
@@ -850,77 +850,52 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, tz=getOption("oceTz"),
     } else {
         interleavedBurst <- NULL
     }
-    if (length(p$burstAltimeter) > 0) { # key=0x1a
+    if (length(p$burstAltimeterRaw) > 0) { # key=0x1a (burst Altimeter raw record)
+        oceDebug(debug, "length(p$burstAltimeterRaw)=", length(p$burstAltimeterRaw), "\n", sep="")
         #if (any(version[p$burstAltimeter] != 3))
         #    stop("can only decode 'burstAltimeter' data records that are in 'version 3' format")
-        nbeamsBurstAltimeter <- nbeams[p$burstAltimeter[1]]
-        ncellsBurstAltimeter <- ncells[p$burstAltimeter[1]]
-        oceDebug(debug, "burstAltimeter data records: nbeams:", nbeamsBurstAltimeter, ", ncells:", ncellsBurstAltimeter, "\n")
-        if (any(ncells[p$burstAltimeter] != ncellsBurstAltimeter))
-            stop("the 'burstAltimeter' data records do not all have the same number of cells")
-        if (any(nbeams[p$burstAltimeter] != nbeamsBurstAltimeter))
-            stop("the 'burstAltimeter' data records do not all have the same number of beams")
+        nbeamsBurstAltimeterRaw <- nbeams[p$burstAltimeterRaw[1]]
+        ncellsBurstAltimeterRaw <- ncells[p$burstAltimeterRaw[1]]
+        oceDebug(debug, "burstAltimeterRaw data records: nbeams:", nbeamsBurstAltimeterRaw, ", ncells:", ncellsBurstAltimeter, "\n")
+        if (nbeamsBurstAltimeterRaw <= 0L)
+            warning("CRITICAL: burstAltimeterRaw data records cannot have ", nbeamsBurstAltimeterRaw, " beams (must be >0)\n")
+        if (ncellsBurstAltimeterRaw <= 0L)
+            warning("CRITICAL: burst Altimeter data records cannot have ", ncellsBurstAltimeterRaw, " beams (must be >0)\n")
+        if (any(ncells[p$burstAltimeterRaw] != ncellsBurstAltimeterRaw))
+            stop("the 'burstAltimeterRaw' data records do not all have the same number of cells")
+        if (any(nbeams[p$burstAltimeterRaw] != nbeamsBurstAltimeterRaw))
+            stop("the 'burstAltimeterRaw' data records do not all have the same number of beams")
         # FIXME: read other fields to the following list.
-        burstAltimeter <- list(i=1,
-            numberOfCells=ncellsBurstAltimeter,
-            numberOfBeams=nbeamsBurstAltimeter,
-            originalCoordinate=coordinateSystem[p$burstAltimeter[1]],
-            oceCoordinate=coordinateSystem[p$burstAltimeter[1]],
-            cellSize=cellSize[p$burstAltimeter[1]],
-            blankingDistance=blankingDistance[p$burstAltimeter[1]],
-            ensemble=ensemble[p$burstAltimeter],
-            time=time[p$burstAltimeter],
-            orientation=orientation[p$burstAltimeter],
-            heading=heading[p$burstAltimeter],
-            pitch=pitch[p$burstAltimeter],
-            roll=roll[p$burstAltimeter],
-            pressure=pressure[p$burstAltimeter],
-            temperature=temperature[p$burstAltimeter],
-            temperatureMagnetometer=temperatureMagnetometer[p$burstAltimeter],
-            temperatureRTC=temperatureRTC[p$burstAltimeter],
-            soundSpeed=soundSpeed[p$burstAltimeter],
-            magnetometerx=magnetometerx[p$burstAltimeter],
-            magnetometery=magnetometery[p$burstAltimeter],
-            magnetometerz=magnetometerz[p$burstAltimeter],
-            accelerometerx=accelerometerx[p$burstAltimeter],
-            accelerometery=accelerometery[p$burstAltimeter],
-            accelerometerz=accelerometerz[p$burstAltimeter],
-            nominalCorrelation=nominalCorrelation[p$burstAltimeter],
-            datasetDescription=datasetDescription[p$burstAltimeter],
-            transmitEnergy=transmitEnergy[p$burstAltimeter],
-            powerLevel=powerLevel[p$burstAltimeter])
-        if (any(velocityIncluded[p$burstAltimeter])) {
-            if (1 < length(unique(velocityIncluded[p$burstAltimeter])))
-                stop("velocityIncluded values non-unique across 'burstAltimeter' data records")
-            burstAltimeter$v <- array(double(), dim=c(length(p$burstAltimeter), ncellsBurstAltimeter, nbeamsBurstAltimeter))
-        }
-        if (any(amplitudeIncluded[p$burstAltimeter])) {
-            if (1 < length(unique(amplitudeIncluded[p$burstAltimeter])))
-                stop("amplitudeIncluded values non-unique across 'burstAltimeter' data records")
-            burstAltimeter$a <- array(raw(), dim=c(length(p$burstAltimeter), ncellsBurstAltimeter, nbeamsBurstAltimeter))
-        }
-        if (any(correlationIncluded[p$burstAltimeter])) {
-            if (1 < length(unique(correlationIncluded[p$burstAltimeter])))
-                stop("correlationIncluded values non-unique across 'burstAltimeter' data records")
-            burstAltimeter$q <- array(raw(), dim=c(length(p$burstAltimeter), ncellsBurstAltimeter, nbeamsBurstAltimeter))
-        }
-        if (any(altimeterIncluded[p$burstAltimeter])) {
-            if (1 < length(unique(altimeterIncluded[p$burstAltimeter])))
-                stop("altimeterIncluded values non-unique across 'burstAltimeter' data records")
-            burstAltimeter$altimeterDistance <- vector("numeric", length(p$burstAltimeter))
-        }
-        if (any(ASTIncluded[p$burstAltimeter])) {
-            burstAltimeter$ASTDistance <- vector("numeric", length(p$burstAltimeter))
-            burstAltimeter$ASTPressure <- vector("numeric", length(p$burstAltimeter))
-        }
-        if (any(echosounderIncluded[p$burstAltimeter])) {
-            burstAltimeter$echosounder <- matrix(double(), ncol=length(p$burstAltimeter), nrow=ncellsBurstAltimeter)
-        }
-        if (any(AHRSIncluded[p$burstAltimeter])) {
-            burstAltimeter$AHRS <- matrix(numeric(), nrow=length(p$burstAltimeter), ncol=9)
-        }
+        burstAltimeterRaw <- list(i=1,
+            numberOfCells=ncellsBurstAltimeterRaw,
+            numberOfBeams=nbeamsBurstAltimeterRaw,
+            originalCoordinate=coordinateSystem[p$burstAltimeterRaw[1]],
+            oceCoordinate=coordinateSystem[p$burstAltimeterRaw[1]],
+            cellSize=cellSize[p$burstAltimeterRaw[1]],
+            blankingDistance=blankingDistance[p$burstAltimeterRaw[1]],
+            ensemble=ensemble[p$burstAltimeterRaw],
+            time=time[p$burstAltimeterRaw],
+            orientation=orientation[p$burstAltimeterRaw],
+            heading=heading[p$burstAltimeterRaw],
+            pitch=pitch[p$burstAltimeterRaw],
+            roll=roll[p$burstAltimeterRaw],
+            pressure=pressure[p$burstAltimeterRaw],
+            temperature=temperature[p$burstAltimeterRaw],
+            temperatureMagnetometer=temperatureMagnetometer[p$burstAltimeterRaw],
+            temperatureRTC=temperatureRTC[p$burstAltimeterRaw],
+            soundSpeed=soundSpeed[p$burstAltimeterRaw],
+            magnetometerx=magnetometerx[p$burstAltimeterRaw],
+            magnetometery=magnetometery[p$burstAltimeterRaw],
+            magnetometerz=magnetometerz[p$burstAltimeterRaw],
+            accelerometerx=accelerometerx[p$burstAltimeterRaw],
+            accelerometery=accelerometery[p$burstAltimeterRaw],
+            accelerometerz=accelerometerz[p$burstAltimeterRaw],
+            nominalCorrelation=nominalCorrelation[p$burstAltimeterRaw],
+            datasetDescription=datasetDescription[p$burstAltimeterRaw],
+            transmitEnergy=transmitEnergy[p$burstAltimeterRaw],
+            powerLevel=powerLevel[p$burstAltimeterRaw])
     } else {
-        burstAltimeter <- NULL
+        burstAltimeterRaw <- NULL
     }
 
     if (length(p$DVLBottomTrack) > 0) { # key=0x1b
@@ -1446,57 +1421,57 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, tz=getOption("oceTz"),
             }
             interleavedBurst$i <- interleavedBurst$i + 1
 
-        } else if (key == 0x1a) { # burstAltimeter
+        } else if (key == 0x1a) { # burstAltimeterRaw
 
-            ncol <- burstAltimeter$numberOfBeams
-            nrow <- burstAltimeter$numberOfCells
+            ncol <- burstAltimeterRaw$numberOfBeams
+            nrow <- burstAltimeterRaw$numberOfCells
             n <- ncol * nrow
             n2 <- 2 * n
             i0 <- 77
             if (velocityIncluded[ch]) {
                 v <- velocityFactor[ch]*readBin(d$buf[i+i0+seq(0,n2-1)],"integer",size=2,n=n,endian="little")
-                burstAltimeter$v[burstAltimeter$i, , ] <- matrix(v, ncol=ncol, nrow=nrow, byrow=FALSE)
+                burstAltimeterRaw$v[burstAltimeterRaw$i, , ] <- matrix(v, ncol=ncol, nrow=nrow, byrow=FALSE)
                 i0 <- i0 + n2
             }
             if (amplitudeIncluded[ch]) {
                 a <- d$buf[i + i0 + seq(0,n-1)]
-                burstAltimeter$a[burstAltimeter$i, ,] <- matrix(a, ncol=ncol, nrow=nrow, byrow=FALSE)
+                burstAltimeterRaw$a[burstAltimeterRaw$i, ,] <- matrix(a, ncol=ncol, nrow=nrow, byrow=FALSE)
                 i0 <- i0 + n
             }
             if (correlationIncluded[ch]) {
                 q <- d$buf[i + i0 + seq(0,n-1)]
-                burstAltimeter$q[burstAltimeter$i, ,] <- matrix(q, ncol=ncol, nrow=nrow, byrow=FALSE)
+                burstAltimeterRaw$q[burstAltimeterRaw$i, ,] <- matrix(q, ncol=ncol, nrow=nrow, byrow=FALSE)
                 i0 <- i0 + n
             }
             if (altimeterIncluded[ch]) {
-                burstAltimeter$altimeterDistance[burstAltimeter$i] <- readBin(d$buf[i + i0 + 0:3],"numeric", size=4,n=1,endian="little")
+                burstAltimeterRaw$altimeterDistance[burstAltimeterRaw$i] <- readBin(d$buf[i + i0 + 0:3],"numeric", size=4,n=1,endian="little")
                 # FIXME: perhaps save altimeterQuality from next 2 bytes
                 # FIXME: perhaps save altimeterStatus from next 2 bytes
                 i0 <- i0 + 8
             }
             if (ASTIncluded[ch]) {
                 # bytes: 4(distance)+2(quality)+2(offset)+4(pressure)+8(spare)
-                burstAltimeter$ASTDistance <- readBin(d$buf[i + i0 + 0:3], "numeric", size=4, n=1, endian="little")
+                burstAltimeterRaw$ASTDistance <- readBin(d$buf[i + i0 + 0:3], "numeric", size=4, n=1, endian="little")
                 i0 <- i0 + 8 # advance past distance (4 bytes), then skip skip quality (2 bytes) and offset (2 bytes)
-                burstAltimeter$ASTPressure <- readBin(d$buf[i + i0 + 0:3], "numeric", size=4, n=1, endian="little")
+                burstAltimeterRaw$ASTPressure <- readBin(d$buf[i + i0 + 0:3], "numeric", size=4, n=1, endian="little")
                 i0 <- i0 + 12 # skip spare (8 bytes)
             }
             if (altimeterRawIncluded[ch]) {
-                burstAltimeter$altimeterRawNumberOfSamples <- readBin(d$buf[i+i0+0:3],"integer",size=4,n=1,endian="little")
+                burstAltimeterRaw$altimeterRawNumberOfSamples <- readBin(d$buf[i+i0+0:3],"integer",size=4,n=1,endian="little")
                 i0 <- i0 + 4
-                burstAltimeter$altimeterRawSampleDistance <- readBin(d$buf[i+i0+0:1],"integer",size=2,n=1,endian="little",signed=FALSE)
+                burstAltimeterRaw$altimeterRawSampleDistance <- readBin(d$buf[i+i0+0:1],"integer",size=2,n=1,endian="little",signed=FALSE)
                 i0 <- i0 + 2
-                burstAltimeter$altimeterRawSamples <- readBin(d$buf[i+i0+0:1],"integer",size=2,n=1,endian="little") # 'singed frac' in docs
+                burstAltimeterRaw$altimeterRawSamples <- readBin(d$buf[i+i0+0:1],"integer",size=2,n=1,endian="little") # 'singed frac' in docs
                 i0 <- i0 + 2
             }
             if (echosounderIncluded[ch]) {
-                burstAltimeter$echosounder[burstAltimeter$i, ] <- readBin(d$buf[i + i0 + seq(0,nrow-1)], size=2, n=nrow, endian="little")
+                burstAltimeterRaw$echosounder[burstAltimeterRaw$i, ] <- readBin(d$buf[i + i0 + seq(0,nrow-1)], size=2, n=nrow, endian="little")
                 i0 <- i0 + 2 * nrow
             }
             if (AHRSIncluded[ch]) {
-                burstAltimeter$AHRS[burstAltimeter$i,] <- readBin(d$buf[i + i0 + 0:35], "numeric", size=4, n=9, endian="little")
+                burstAltimeterRaw$AHRS[burstAltimeterRaw$i,] <- readBin(d$buf[i + i0 + 0:35], "numeric", size=4, n=9, endian="little")
             }
-            burstAltimeter$i <- burstAltimeter$i + 1
+            burstAltimeterRaw$i <- burstAltimeterRaw$i + 1
 
         } else if (key == 0x1b) { # DVLBottomTrack
 
@@ -1551,6 +1526,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, tz=getOption("oceTz"),
             DVLBottomTrack$i <- DVLBottomTrack$i + 1
 
         } else if (key == 0x1c) { # echosounder
+            oceDebug(debug, "*** WE GOT AN 0x1c record ***\n")
 
             # FIXME: determine echosounder records have other types of data intermixed.
             # The docs are not clear on whether echosounder data ever have v, etc., so they are commented-out
@@ -1827,9 +1803,9 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, tz=getOption("oceTz"),
         interleavedBurst$i <- NULL
         data$interleavedBurst <- interleavedBurst
     }
-    if (!is.null(burstAltimeter)) {    # 0x1a
-        burstAltimeter$i <- NULL
-        data$AltimeterRawburst <- burstAltimeter
+    if (!is.null(burstAltimeterRaw)) {    # 0x1a
+        burstAltimeterRaw$i <- NULL
+        data$burstAltimeterRaw <- burstAltimeterRaw
     }
     if (!is.null(DVLBottomTrack)) {    # 0x1b
         DVLBottomTrack$i <- NULL
