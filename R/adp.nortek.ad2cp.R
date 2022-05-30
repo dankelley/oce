@@ -503,6 +503,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, tz=getOption("oceTz"),
     accelerometerx <- 1.0/16384.0 * readBin(d$buf[pointer2 + 47], "integer", size=2, n=N, signed=TRUE, endian="little")
     accelerometery <- 1.0/16384.0 * readBin(d$buf[pointer2 + 49], "integer", size=2, n=N, signed=TRUE, endian="little")
     accelerometerz <- 1.0/16384.0 * readBin(d$buf[pointer2 + 51], "integer", size=2, n=N, signed=TRUE, endian="little")
+    datasetDescription <- readBin(d$buf[pointer2 + 55], "integer", size=2, n=N, signed=FALSE, endian="little")
     transmitEnergy <- readBin(d$buf[pointer2 + 57], "integer", size=2, n=N, signed=FALSE, endian="little")
     velocityFactor <- 10^readBin(d$buf[pointer1 + 59], "integer", size=1, n=N, signed=TRUE, endian="little")
     powerLevel <- readBin(d$buf[pointer1 + 60], "integer", size=1, n=N, signed=TRUE, endian="little")
@@ -593,6 +594,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, tz=getOption("oceTz"),
             accelerometery=accelerometery[p$burst],
             accelerometerz=accelerometerz[p$burst],
             nominalCorrelation=nominalCorrelation[p$burst],
+            datasetDescription=datasetDescription[p$burst],
             transmitEnergy=transmitEnergy[p$burst],
             powerLevel=powerLevel[p$burst])
         if (any(velocityIncluded[p$burst])) {
@@ -662,6 +664,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, tz=getOption("oceTz"),
             accelerometery=accelerometery[p$average],
             accelerometerz=accelerometerz[p$average],
             nominalCorrelation=nominalCorrelation[p$average],
+            datasetDescription=datasetDescription[p$average],
             transmitEnergy=transmitEnergy[p$average],
             powerLevel=powerLevel[p$average])
         if (any(velocityIncluded[p$average])) {
@@ -731,6 +734,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, tz=getOption("oceTz"),
             accelerometery=accelerometery[p$bottomTrack],
             accelerometerz=accelerometerz[p$bottomTrack],
             nominalCorrelation=nominalCorrelation[p$bottomTrack],
+            datasetDescription=datasetDescription[p$bottomTrack],
             transmitEnergy=transmitEnergy[p$bottomTrack],
             powerLevel=powerLevel[p$bottomTrack])
         if (any(velocityIncluded[p$bottomTrack])) {
@@ -783,6 +787,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, tz=getOption("oceTz"),
             accelerometery=accelerometery[p$interleavedBurst],
             accelerometerz=accelerometerz[p$interleavedBurst],
             nominalCorrelation=nominalCorrelation[p$interleavedBurst],
+            datasetDescription=datasetDescription[p$interleavedBurst],
             transmitEnergy=transmitEnergy[p$interleavedBurst],
             powerLevel=powerLevel[p$interleavedBurst])
         if (any(velocityIncluded[p$interleavedBurst])) {
@@ -851,6 +856,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, tz=getOption("oceTz"),
             accelerometery=accelerometery[p$burstAltimeter],
             accelerometerz=accelerometerz[p$burstAltimeter],
             nominalCorrelation=nominalCorrelation[p$burstAltimeter],
+            datasetDescription=datasetDescription[p$burstAltimeter],
             transmitEnergy=transmitEnergy[p$burstAltimeter],
             powerLevel=powerLevel[p$burstAltimeter])
         if (any(velocityIncluded[p$burstAltimeter])) {
@@ -920,6 +926,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, tz=getOption("oceTz"),
             accelerometery=accelerometery[p$DVLBottomTrack],
             accelerometerz=accelerometerz[p$DVLBottomTrack],
             nominalCorrelation=nominalCorrelation[p$DVLBottomTrack],
+            datasetDescription=datasetDescription[p$DVLBottomTrack],
             transmitEnergy=transmitEnergy[p$DVLBottomTrack],
             powerLevel=powerLevel[p$DVLBottomTrack])
         if (any(velocityIncluded[p$DVLBottomTrack])) {
@@ -987,6 +994,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, tz=getOption("oceTz"),
         accelerometery=accelerometery[p$echosounder],
         accelerometerz=accelerometerz[p$echosounder],
         nominalCorrelation=nominalCorrelation[p$echosounder],
+        datasetDescription=datasetDescription[p$echosounder],
         transmitEnergy=transmitEnergy[p$echosounder],
         powerLevel=powerLevel[p$echosounder])
         # FIXME: Find out whether echosounder records ever have v, a, q, etc. My guess is
@@ -1062,6 +1070,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, tz=getOption("oceTz"),
             accelerometery=accelerometery[p$DVLWaterTrack],
             accelerometerz=accelerometerz[p$DVLWaterTrack],
             nominalCorrelation=nominalCorrelation[p$DVLWaterTrack],
+            datasetDescription=datasetDescription[p$DVLWaterTrack],
             transmitEnergy=transmitEnergy[p$DVLWaterTrack],
             powerLevel=powerLevel[p$DVLWaterTrack])
         if (any(velocityIncluded[p$DVLWaterTrack])) {
@@ -1114,6 +1123,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, tz=getOption("oceTz"),
             accelerometery=accelerometery[p$altimeter],
             accelerometerz=accelerometerz[p$altimeter],
             nominalCorrelation=nominalCorrelation[p$altimeter],
+            datasetDescription=datasetDescription[p$altimeter],
             transmitEnergy=transmitEnergy[p$altimeter],
             powerLevel=powerLevel[p$altimeter])
         if (any(velocityIncluded[p$altimeter])) {
@@ -1166,6 +1176,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, tz=getOption("oceTz"),
             accelerometery=accelerometery[p$averageAltimeter],
             accelerometerz=accelerometerz[p$averageAltimeter],
             nominalCorrelation=nominalCorrelation[p$averageAltimeter],
+            datasetDescription=datasetDescription[p$averageAltimeter],
             transmitEnergy=transmitEnergy[p$averageAltimeter],
             powerLevel=powerLevel[p$averageAltimeter])
         if (any(velocityIncluded[p$averageAltimeter])) {

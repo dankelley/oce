@@ -37,7 +37,7 @@ if (file.exists(file)) {
                 "powerLevel", "status"))
         expect_equal(sort(names(d[["average"]])), c("a", "accelerometerx",
                 "accelerometery", "accelerometerz",
-                "blankingDistance", "cellSize",
+                "blankingDistance", "cellSize", "datasetDescription",
                 "ensemble", "heading",
                 "nominalCorrelation",
                 "numberOfBeams", "numberOfCells",
