@@ -856,7 +856,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, tz=getOption("oceTz"),
         #    stop("can only decode 'burstAltimeter' data records that are in 'version 3' format")
         nbeamsBurstAltimeterRaw <- nbeams[p$burstAltimeterRaw[1]]
         ncellsBurstAltimeterRaw <- ncells[p$burstAltimeterRaw[1]]
-        oceDebug(debug, "burstAltimeterRaw data records: nbeams:", nbeamsBurstAltimeterRaw, ", ncells:", ncellsBurstAltimeter, "\n")
+        oceDebug(debug, "burstAltimeterRaw data records: nbeams:", nbeamsBurstAltimeterRaw, ", ncells:", ncellsBurstAltimeterRaw, "\n")
         if (nbeamsBurstAltimeterRaw <= 0L)
             warning("CRITICAL: burstAltimeterRaw data records cannot have ", nbeamsBurstAltimeterRaw, " beams (must be >0)\n")
         if (ncellsBurstAltimeterRaw <= 0L)
