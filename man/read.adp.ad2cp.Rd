@@ -87,20 +87,26 @@ debugging at both levels.}
 \item{\dots}{Ignored by this function.}
 }
 \description{
-This function may be incomplete in some important ways,
-because AD2CP data formats are not described clearly enough
-in references 1, 2 and 3 to be certain of how to handle
-the range of file configurations that may be possible. The code
-has been tested with a small number of files that are available
-to the author, but these do not cover some cases that users might
-require, e.g. involving echosounder and altimeter data streams.
-Please be on the lookout for problems and contact
-the author if you need help. Also, note that some of the standard
-\verb{read.adp.*} arguments are handled differently with
-this function, e.g. \code{by} must equal 1, because skipping
-records makes little sense with blended multiple streams;
-see the \dQuote{Arguments} section for other limitations
-that stem from the specifics of this file format.
+This function may be incomplete in some important ways, because AD2CP data
+formats are not described clearly enough in references 1, 1b, 2 and 3 to be
+certain of how to handle the range of file configurations that may be
+possible. The code has been tested with a small number of files that are
+available to the author, but these do not cover some cases that users might
+require.
+}
+\details{
+Users ought to be on the lookout for problems and contact the author if you
+need help. Also, note that some of the standard \verb{read.adp.*} arguments are
+handled differently with this function, e.g. \code{by} must equal 1, because
+skipping records makes sense with blended multiple streams; see the
+\dQuote{Arguments} section for other limitations that stem from the specifics
+of this file format.
+
+In spring of 2022, support was added for 12-byte headers.  These are not
+described in any Nortek document in the possession of the author of this
+function, although some personal communications made via
+https://github.com/dankelley/oce/issues have suggested some clues.  Those
+clues have led to provisional code in \code{read.adp.ad2cp()}.
 }
 \examples{
 \dontrun{
@@ -111,6 +117,13 @@ d <- read.adp.ad2cp("~/test.ad2cp", to=100) # or read.oce()
 \references{
 \enumerate{
 \item Nortek AS. \dQuote{Signature Integration 55|250|500|1000kHz.} Nortek AS, 2017.
+}
+
+1b. Nortek AS. “Signature Integration 55|250|500|1000kHz (Version Version 2022.2).” Nortek AS, March 31, 2022.
+(This update to 1 presumably holds more up-to-date information, but it is
+also quite a lot less detailed, e.g. not including sample code to explain how
+checksums are to be computed.)
+\enumerate{
 \item Nortek AS. \dQuote{Operations Manual - Signature250, 500 and 1000.} Nortek AS, September 21, 2018.
 \item Nortek AS. \dQuote{Signature Integration 55|250|500|1000kHz.} Nortek AS, 2018. (This revision of
 reference 1 is useful in including new information about instrument orientation. Note that

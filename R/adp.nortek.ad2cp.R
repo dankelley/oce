@@ -114,20 +114,25 @@ is.ad2cp <- function(x)
 
 #' Read an AD2CP File
 #'
-#' This function may be incomplete in some important ways,
-#' because AD2CP data formats are not described clearly enough
-#' in references 1, 2 and 3 to be certain of how to handle
-#' the range of file configurations that may be possible. The code
-#' has been tested with a small number of files that are available
-#' to the author, but these do not cover some cases that users might
-#' require, e.g. involving echosounder and altimeter data streams.
-#' Please be on the lookout for problems and contact
-#' the author if you need help. Also, note that some of the standard
-#' `read.adp.*` arguments are handled differently with
-#' this function, e.g. `by` must equal 1, because skipping
-#' records makes little sense with blended multiple streams;
-#' see the \dQuote{Arguments} section for other limitations
-#' that stem from the specifics of this file format.
+#' This function may be incomplete in some important ways, because AD2CP data
+#' formats are not described clearly enough in references 1, 1b, 2 and 3 to be
+#' certain of how to handle the range of file configurations that may be
+#' possible. The code has been tested with a small number of files that are
+#' available to the author, but these do not cover some cases that users might
+#' require.
+#'
+#' Users ought to be on the lookout for problems and contact the author if you
+#' need help. Also, note that some of the standard `read.adp.*` arguments are
+#' handled differently with this function, e.g. `by` must equal 1, because
+#' skipping records makes sense with blended multiple streams; see the
+#' \dQuote{Arguments} section for other limitations that stem from the specifics
+#' of this file format.
+#'
+#' In spring of 2022, support was added for 12-byte headers.  These are not
+#' described in any Nortek document in the possession of the author of this
+#' function, although some personal communications made via
+#' https://github.com/dankelley/oce/issues have suggested some clues.  Those
+#' clues have led to provisional code in `read.adp.ad2cp()`.
 #'
 #' @param file A connection or a character string giving the name of the file to load.
 #'
@@ -200,6 +205,11 @@ is.ad2cp <- function(x)
 #'
 #' @references
 #' 1. Nortek AS. \dQuote{Signature Integration 55|250|500|1000kHz.} Nortek AS, 2017.
+#'
+#' 1b. Nortek AS. “Signature Integration 55|250|500|1000kHz (Version Version 2022.2).” Nortek AS, March 31, 2022.
+#' (This update to 1 presumably holds more up-to-date information, but it is
+#' also quite a lot less detailed, e.g. not including sample code to explain how
+#' checksums are to be computed.)
 #'
 #' 2. Nortek AS. \dQuote{Operations Manual - Signature250, 500 and 1000.} Nortek AS, September 21, 2018.
 #'
@@ -301,7 +311,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, tz=getOption("oceTz"),
     oceDebug(debug, "buf[1+headerSize+dataSize=", 1+headerSize+dataSize, "]=0x", buf[1+headerSize+dataSize], " (expect 0xa5)\n", sep="")
     nav <- do_ldc_ad2cp_in_file(filename, from, to, by, debug-1)
     if (nav$twelve_byte_header == 1L)
-        warning("file has 12-byte headers (an undocumented format), so expect spurious results")
+        warning("file has 12-byte headers (an undocumented format), so be on the lookout for spurious results")
     d <- list(buf=buf, index=nav$index, length=nav$length, id=nav$id)
     if (0x10 != d$buf[d$index[1]+1]) # must be 0x10 for an AD2CP (p38 integrators guide)
         stop("expecting byte value 0x10 index ", d$index[1]+1, ", but got 0x", d$buf[d$index[1]+1])
@@ -500,6 +510,11 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, tz=getOption("oceTz"),
     # NB. blanking may be altered later, if status[2]==0x01
     blankingDistance <- 0.01 * readBin(d$buf[pointer2 + 35], "integer", size=2, n=N, signed=FALSE, endian="little")
     nominalCorrelation <- readBin(d$buf[pointer1 + 37], "integer", size=1, n=N, signed=FALSE, endian="little")
+    # Magnetometer (Table 6.2, page 82, ref 1b)
+    magnetometerx <- readBin(d$buf[pointer2 + 41], "integer", size=2, n=N, signed=TRUE, endian="little")
+    magnetometery <- readBin(d$buf[pointer2 + 43], "integer", size=2, n=N, signed=TRUE, endian="little")
+    magnetometerz <- readBin(d$buf[pointer2 + 45], "integer", size=2, n=N, signed=TRUE, endian="little")
+    # Accelerometer (Table 6.2, page 82, ref 1b)
     accelerometerx <- 1.0/16384.0 * readBin(d$buf[pointer2 + 47], "integer", size=2, n=N, signed=TRUE, endian="little")
     accelerometery <- 1.0/16384.0 * readBin(d$buf[pointer2 + 49], "integer", size=2, n=N, signed=TRUE, endian="little")
     accelerometerz <- 1.0/16384.0 * readBin(d$buf[pointer2 + 51], "integer", size=2, n=N, signed=TRUE, endian="little")
@@ -590,6 +605,9 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, tz=getOption("oceTz"),
             temperatureMagnetometer=temperatureMagnetometer[p$burst],
             temperatureRTC=temperatureRTC[p$burst],
             soundSpeed=soundSpeed[p$burst],
+            magnetometerx=magnetometerx[p$burst],
+            magnetometery=magnetometery[p$burst],
+            magnetometerz=magnetometerz[p$burst],
             accelerometerx=accelerometerx[p$burst],
             accelerometery=accelerometery[p$burst],
             accelerometerz=accelerometerz[p$burst],
@@ -660,6 +678,9 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, tz=getOption("oceTz"),
             temperatureMagnetometer=temperatureMagnetometer[p$average],
             temperatureRTC=temperatureRTC[p$average],
             soundSpeed=soundSpeed[p$average],
+            magnetometerx=magnetometerx[p$average],
+            magnetometery=magnetometery[p$average],
+            magnetometerz=magnetometerz[p$average],
             accelerometerx=accelerometerx[p$average],
             accelerometery=accelerometery[p$average],
             accelerometerz=accelerometerz[p$average],
@@ -730,6 +751,9 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, tz=getOption("oceTz"),
             temperatureMagnetometer=temperatureMagnetometer[p$bottomTrack],
             temperatureRTC=temperatureRTC[p$bottomTrack],
             soundSpeed=soundSpeed[p$bottomTrack],
+            magnetometerx=magnetometerx[p$bottomTrack],
+            magnetometery=magnetometery[p$bottomTrack],
+            magnetometerz=magnetometerz[p$bottomTrack],
             accelerometerx=accelerometerx[p$bottomTrack],
             accelerometery=accelerometery[p$bottomTrack],
             accelerometerz=accelerometerz[p$bottomTrack],
@@ -783,6 +807,9 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, tz=getOption("oceTz"),
             temperatureMagnetometer=temperatureMagnetometer[p$interleavedBurst],
             temperatureRTC=temperatureRTC[p$interleavedBurst],
             soundSpeed=soundSpeed[p$interleavedBurst],
+            magnetometerx=magnetometerx[p$interleavedBurst],
+            magnetometery=magnetometery[p$interleavedBurst],
+            magnetometerz=magnetometerz[p$interleavedBurst],
             accelerometerx=accelerometerx[p$interleavedBurst],
             accelerometery=accelerometery[p$interleavedBurst],
             accelerometerz=accelerometerz[p$interleavedBurst],
@@ -852,6 +879,9 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, tz=getOption("oceTz"),
             temperatureMagnetometer=temperatureMagnetometer[p$burstAltimeter],
             temperatureRTC=temperatureRTC[p$burstAltimeter],
             soundSpeed=soundSpeed[p$burstAltimeter],
+            magnetometerx=magnetometerx[p$burstAltimeter],
+            magnetometery=magnetometery[p$burstAltimeter],
+            magnetometerz=magnetometerz[p$burstAltimeter],
             accelerometerx=accelerometerx[p$burstAltimeter],
             accelerometery=accelerometery[p$burstAltimeter],
             accelerometerz=accelerometerz[p$burstAltimeter],
@@ -922,6 +952,9 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, tz=getOption("oceTz"),
             temperatureMagnetometer=temperatureMagnetometer[p$DVLBottomTrack],
             temperatureRTC=temperatureRTC[p$DVLBottomTrack],
             soundSpeed=soundSpeed[p$DVLBottomTrack],
+            magnetometerx=magnetometerx[p$DVLBottomTrack],
+            magnetometery=magnetometery[p$DVLBottomTrack],
+            magnetometerz=magnetometerz[p$DVLBottomTrack],
             accelerometerx=accelerometerx[p$DVLBottomTrack],
             accelerometery=accelerometery[p$DVLBottomTrack],
             accelerometerz=accelerometerz[p$DVLBottomTrack],
@@ -990,6 +1023,9 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, tz=getOption("oceTz"),
         temperatureMagnetometer=temperatureMagnetometer[p$echosounder],
         temperatureRTC=temperatureRTC[p$echosounder],
         soundSpeed=soundSpeed[p$echosounder],
+        magnetometerx=magnetometerx[p$echosounder],
+        magnetometery=magnetometery[p$echosounder],
+        magnetometerz=magnetometerz[p$echosounder],
         accelerometerx=accelerometerx[p$echosounder],
         accelerometery=accelerometery[p$echosounder],
         accelerometerz=accelerometerz[p$echosounder],
@@ -1066,6 +1102,9 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, tz=getOption("oceTz"),
             temperatureMagnetometer=temperatureMagnetometer[p$DVLWaterTrack],
             temperatureRTC=temperatureRTC[p$DVLWaterTrack],
             soundSpeed=soundSpeed[p$DVLWaterTrack],
+            magnetometerx=magnetometerx[p$DVLWaterTrack],
+            magnetometery=magnetometery[p$DVLWaterTrack],
+            magnetometerz=magnetometerz[p$DVLWaterTrack],
             accelerometerx=accelerometerx[p$DVLWaterTrack],
             accelerometery=accelerometery[p$DVLWaterTrack],
             accelerometerz=accelerometerz[p$DVLWaterTrack],
@@ -1119,6 +1158,9 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, tz=getOption("oceTz"),
             temperatureMagnetometer=temperatureMagnetometer[p$altimeter],
             temperatureRTC=temperatureRTC[p$altimeter],
             soundSpeed=soundSpeed[p$altimeter],
+            magnetometerx=magnetometerx[p$altimeter],
+            magnetometery=magnetometery[p$altimeter],
+            magnetometerz=magnetometerz[p$altimeter],
             accelerometerx=accelerometerx[p$altimeter],
             accelerometery=accelerometery[p$altimeter],
             accelerometerz=accelerometerz[p$altimeter],
@@ -1172,6 +1214,9 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, tz=getOption("oceTz"),
             temperatureMagnetometer=temperatureMagnetometer[p$averageAltimeter],
             temperatureRTC=temperatureRTC[p$averageAltimeter],
             soundSpeed=soundSpeed[p$averageAltimeter],
+            magnetometerx=magnetometerx[p$averageAltimeter],
+            magnetometery=magnetometery[p$averageAltimeter],
+            magnetometerz=magnetometerz[p$averageAltimeter],
             accelerometerx=accelerometerx[p$averageAltimeter],
             accelerometery=accelerometery[p$averageAltimeter],
             accelerometerz=accelerometerz[p$averageAltimeter],

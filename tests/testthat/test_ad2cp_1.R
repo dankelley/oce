@@ -46,11 +46,13 @@ if (file.exists(f1)) {
             sort(c("a", "accelerometerx", "accelerometery", "accelerometerz",
                     "AHRS", "blankingDistance", "cellSize",
                     "datasetDescription", "ensemble", "heading",
+                    "magnetometerx", "magnetometery", "magnetometerz",
                     "nominalCorrelation", "numberOfBeams", "numberOfCells",
                     "oceCoordinate", "orientation", "originalCoordinate",
                     "pitch", "powerLevel", "pressure", "q", "roll",
                     "soundSpeed", "temperature", "temperatureMagnetometer",
                     "temperatureRTC", "time", "transmitEnergy", "v")))
+
         expect_equal(d1[["type"]], "Signature1000")
         expect_equal(d1[["type"]], ad2cpHeaderValue(d1, "ID", "STR", FALSE))
         expect_equal(d1[["fileType"]], "AD2CP")
@@ -311,13 +313,15 @@ if (file.exists(f2)) {
         expect_equal(c(FALSE, TRUE, FALSE), nnn %in% names(d2@data))
         expect_equal("beam", d2[["oceCoordinate"]])
         expect_equal(sort(names(d2[["burst"]])),
-            c("a", "accelerometerx", "accelerometery", "accelerometerz",
-                "blankingDistance", "cellSize", "datasetDescription",
-                "ensemble", "heading", "nominalCorrelation", "numberOfBeams",
-                "numberOfCells", "oceCoordinate", "orientation",
-                "originalCoordinate", "pitch", "powerLevel", "pressure", "q",
-                "roll", "soundSpeed", "temperature", "temperatureMagnetometer",
-                "temperatureRTC", "time", "transmitEnergy", "v"))
+            sort(c("a", "accelerometerx", "accelerometery", "accelerometerz",
+                    "blankingDistance", "cellSize", "datasetDescription",
+                    "ensemble", "heading", "magnetometerx", "magnetometery",
+                    "magnetometerz", "nominalCorrelation", "numberOfBeams",
+                    "numberOfCells", "oceCoordinate", "orientation",
+                    "originalCoordinate", "pitch", "powerLevel", "pressure",
+                    "q", "roll", "soundSpeed", "temperature",
+                    "temperatureMagnetometer", "temperatureRTC", "time",
+                    "transmitEnergy", "v")))
         expect_equal(d2[["fileType"]], "AD2CP")
         expect_equal(d2[["serialNumber"]], ad2cpHeaderValue(d2, "ID", "SN"))
         expect_equal(d2[["type"]], "Aquadopp2")
