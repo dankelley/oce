@@ -10,6 +10,7 @@ read.adp.ad2cp(
   to = 0,
   by = 1,
   tz = getOption("oceTz"),
+  ignoreChecksums = FALSE,
   longitude = NA,
   latitude = NA,
   orientation,
@@ -39,6 +40,11 @@ must equal 1, for this version of \code{read.adp.ad2cp}.
 
 \item{tz}{Character value indicating time zone. This is used in interpreting
 times stored in the file.}
+
+\item{ignoreChecksums}{logical value indicating whether to ignore
+checksums.  This is FALSE by default, meaning that any data chunk
+with an improper checksum is ignored. It may be necessary to
+set this to TRUE to parse some problematic files.}
 
 \item{longitude}{Numerical value indicating the longitude of observation.}
 

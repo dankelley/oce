@@ -150,6 +150,11 @@ is.ad2cp <- function(x)
 #' @param tz Character value indicating time zone. This is used in interpreting
 #' times stored in the file.
 #'
+#' @param ignoreChecksums logical value indicating whether to ignore
+#' checksums.  This is FALSE by default, meaning that any data chunk
+#' with an improper checksum is ignored. It may be necessary to
+#' set this to TRUE to parse some problematic files.
+#'
 #' @param longitude Numerical value indicating the longitude of observation.
 #'
 #' @param latitude Numerical value indicating the latitude of observation.
@@ -219,7 +224,9 @@ is.ad2cp <- function(x)
 #' page numbers than reference 3.)
 #'
 #' @family things related to adp data
-read.adp.ad2cp <- function(file, from=1, to=0, by=1, tz=getOption("oceTz"),
+read.adp.ad2cp <- function(file, from=1, to=0, by=1,
+    tz=getOption("oceTz"),
+    ignoreChecksums=FALSE,
     longitude=NA, latitude=NA,
     orientation, distance, plan, type,
     monitor=FALSE, despike=FALSE, processingLog,
@@ -255,6 +262,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, tz=getOption("oceTz"),
         ", by=", if (byGiven) by else "(missing)",
         ", plan=", if (planGiven) plan else "(missing)",
         ", type=\"", if (typeGiven) type else "(missing)",
+        ", ignoreChecksums=", ignoreChecksums,
         "\",...)\n", sep="", unindent=1)
     if (typeGiven) {
         typeAllowed <- c("Signature1000", "Signature500", "Signature250")
@@ -309,7 +317,9 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, tz=getOption("oceTz"),
     dataSize <- readBin(buf[5:6], what="integer", n=1, size=2, endian="little", signed=FALSE)
     oceDebug(debug, "dataSize:", dataSize, "\n")
     oceDebug(debug, "buf[1+headerSize+dataSize=", 1+headerSize+dataSize, "]=0x", buf[1+headerSize+dataSize], " (expect 0xa5)\n", sep="")
-    nav <- do_ldc_ad2cp_in_file(filename, from, to, by, debug-1)
+    nav <- do_ldc_ad2cp_in_file(filename, from, to, by,
+        if (ignoreChecksums) 1L else 0L,
+        debug-1L)
     if (nav$twelve_byte_header == 1L)
         warning("file has 12-byte headers (an undocumented format), so be on the lookout for spurious results")
     d <- list(buf=buf, index=nav$index, length=nav$length, id=nav$id)

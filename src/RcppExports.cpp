@@ -282,8 +282,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // do_ldc_ad2cp_in_file
-List do_ldc_ad2cp_in_file(CharacterVector filename, IntegerVector from, IntegerVector to, IntegerVector by, IntegerVector DEBUG);
-RcppExport SEXP _oce_do_ldc_ad2cp_in_file(SEXP filenameSEXP, SEXP fromSEXP, SEXP toSEXP, SEXP bySEXP, SEXP DEBUGSEXP) {
+List do_ldc_ad2cp_in_file(CharacterVector filename, IntegerVector from, IntegerVector to, IntegerVector by, IntegerVector ignoreChecksums, IntegerVector DEBUG);
+RcppExport SEXP _oce_do_ldc_ad2cp_in_file(SEXP filenameSEXP, SEXP fromSEXP, SEXP toSEXP, SEXP bySEXP, SEXP ignoreChecksumsSEXP, SEXP DEBUGSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -291,8 +291,9 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< IntegerVector >::type from(fromSEXP);
     Rcpp::traits::input_parameter< IntegerVector >::type to(toSEXP);
     Rcpp::traits::input_parameter< IntegerVector >::type by(bySEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type ignoreChecksums(ignoreChecksumsSEXP);
     Rcpp::traits::input_parameter< IntegerVector >::type DEBUG(DEBUGSEXP);
-    rcpp_result_gen = Rcpp::wrap(do_ldc_ad2cp_in_file(filename, from, to, by, DEBUG));
+    rcpp_result_gen = Rcpp::wrap(do_ldc_ad2cp_in_file(filename, from, to, by, ignoreChecksums, DEBUG));
     return rcpp_result_gen;
 END_RCPP
 }

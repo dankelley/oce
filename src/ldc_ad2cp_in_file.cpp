@@ -166,7 +166,7 @@ unsigned short cs(unsigned char *data, unsigned short size, int debug)
 
 
 // [[Rcpp::export]]
-List do_ldc_ad2cp_in_file(CharacterVector filename, IntegerVector from, IntegerVector to, IntegerVector by, IntegerVector DEBUG)
+List do_ldc_ad2cp_in_file(CharacterVector filename, IntegerVector from, IntegerVector to, IntegerVector by, IntegerVector ignoreChecksums, IntegerVector DEBUG)
 {
   int debug = DEBUG[0] < 0 ? 0 : DEBUG[0];
   std::string fn = Rcpp::as<std::string>(filename(0));
@@ -308,18 +308,15 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, IntegerVector from, IntegerV
     }
     // See if header checksum is correct
     unsigned short computed_header_checksum;
-    if (debug > 1) {
-      Rprintf("  cs() about to be called for header\n");
-    }
     computed_header_checksum = cs(header_bytes, header.header_size-2, debug);
-    if (computed_header_checksum != header.header_checksum) {
+    if (ignoreChecksums[0] > 0 || computed_header_checksum == header.header_checksum) {
+      if (debug > 1) {
+        Rprintf("    header checksum equals expectation (or ignoringChecksums is TRUE)\n");
+      }
+    } else {
       checksum_failures++;
       Rprintf("ERROR: header checksum, 0x%02x, disagrees with expectation, 0x%02x, at cindex=%ld.  (Error ignored in this version of oce.)\n",
           computed_header_checksum, header.header_checksum, cindex);
-    } else {
-      if (debug > 1) {
-        Rprintf("    computed checksum equals expected value\n");
-      }
     }
     cindex = cindex + header.header_size;
     index_buf[chunk] = cindex;
@@ -358,15 +355,12 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, IntegerVector from, IntegerV
     cindex += header.data_size;
     // Compare data checksum to the value stated in the header
     unsigned short dbufcs;
-    if (debug > 1) {
-      Rprintf("  cs() about to be called for data\n");
-    }
     dbufcs = cs(dbuf, header.data_size, debug);
-    if (dbufcs == header.data_checksum) {
+    if (ignoreChecksums[0] > 0 || dbufcs == header.data_checksum) {
       //cindex_last_good = cindex - header.header_size - header.data_size;
       reset_cindex = 0;
       if (debug > 1) {
-        Rprintf("    computed checksum equals expected value\n");
+        Rprintf("    data checksum equals expectation (or ignoringChecksums is TRUE)\n");
       }
     } else {
       checksum_failures++;
