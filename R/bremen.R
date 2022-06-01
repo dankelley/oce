@@ -1,4 +1,4 @@
-## vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
+# vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
 
 #' Class to Store Bremen-formatted Data
 #'
@@ -200,8 +200,14 @@ findInHeaderBremen <- function(key, lines)
 #' @family things related to bremen data
 read.bremen <- function(file)
 {
-    if (!missing(file) && is.character(file) && 0 == file.info(file)$size)
-        stop("empty file")
+    if (missing(file))
+        stop("must supply 'file'")
+    if (is.character(file)) {
+        if (!file.exists(file))
+            stop("cannot find file '", file, "'")
+        if (0L == file.info(file)$size)
+            stop("empty file '", file, "'")
+    }
     if (is.character(file)) {
         filename <- fullFilename(file)
         file <- file(file, "r")

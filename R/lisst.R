@@ -1,3 +1,5 @@
+# vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
+
 #' Class to Store LISST Data
 #'
 #' This class stores LISST (Laser in-situ scattering and transmissometry) data.
@@ -341,10 +343,20 @@ as.lisst <- function(data, filename="", year=0, tz="UTC", longitude=NA, latitude
 #' @author Dan Kelley
 #'
 #' @family things related to lisst data
-read.lisst <- function(file, year=0, tz="UTC", longitude=NA, latitude=NA)
+read.lisst <- function(file,
+    year=0,
+    tz="UTC",
+    longitude=NA,
+    latitude=NA)
 {
-    if (!missing(file) && is.character(file) && 0 == file.info(file)$size)
-        stop("empty file")
+    if (missing(file))
+        stop("must supply 'file'")
+    if (is.character(file)) {
+        if (!file.exists(file))
+            stop("cannot find file '", file, "'")
+        if (0L == file.info(file)$size)
+            stop("empty file '", file, "'")
+    }
     filename <- NULL
     if (is.character(file)) {
         filename <- fullFilename(file)

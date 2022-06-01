@@ -1,3 +1,5 @@
+# vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
+
 #' Read CTD format in SSDA format
 #'
 #' [read.ctd.ssda()] reads CTD files in Sea & Sun Technology´s Standard Data
@@ -21,15 +23,24 @@
 #' f <- system.file("extdata", "ctd_ssda.csv", package="oce")
 #' d <- read.ctd(f)
 #'
+#' @family things related to ctd data
 #' @family functions that read ctd data
 #'
 #' @author Dan Kelley, with help from Liam MacNeil
-read.ctd.ssda <- function(file, debug=getOption("oceDebug"), processingLog)
+read.ctd.ssda <- function(file,
+    debug=getOption("oceDebug"),
+    processingLog)
 {
+    if (missing(file))
+        stop("must supply 'file'")
+    if (is.character(file)) {
+        if (!file.exists(file))
+            stop("cannot find file '", file, "'")
+        if (0L == file.info(file)$size)
+            stop("empty file '", file, "'")
+    }
     debug <- max(0L, as.integer(debug))
     oceDebug(debug, "read.ctd.ssda(file=\"", file, "\") {\n", sep="", style="bold", unindent=1)
-    if (missing(file))
-        stop("must provide 'file'")
     if (is.character(file)) {
         filesize <- file.info(file)$size
         if (is.na(filesize) || 0L == filesize)

@@ -1,3 +1,5 @@
+# vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
+
 ## abbreviations:
 ##   SIG     = System Integrator Guide
 ##   SIG2014 = system-integrator-manual_Dec2014_jan.pdf
@@ -16,14 +18,20 @@
 #' (This will not be the case for files that are created by data loggers that
 #' chop the raw data up into a series of sub-files, e.g. once per hour.)
 read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
-                            header=TRUE,
-                            longitude=NA, latitude=NA,
-                            type=c("vector", "aquadopp"),
-                            haveAnalog1=FALSE, haveAnalog2=FALSE,
-                            debug=getOption("oceDebug"), monitor=FALSE, processingLog=NULL)
+    header=TRUE,
+    longitude=NA, latitude=NA,
+    type=c("vector", "aquadopp"),
+    haveAnalog1=FALSE, haveAnalog2=FALSE,
+    debug=getOption("oceDebug"), monitor=FALSE, processingLog=NULL)
 {
-    if (!missing(file) && is.character(file) && 0 == file.info(file)$size)
-        stop("empty file")
+    if (missing(file))
+        stop("must supply 'file'")
+    if (is.character(file)) {
+        if (!file.exists(file))
+            stop("cannot find file '", file, "'")
+        if (0L == file.info(file)$size)
+            stop("empty file '", file, "'")
+    }
     if (!interactive())
         monitor <- FALSE
     ##   vvd=vector velocity data [p35 SIG], containing the data: pressure, vel, amp, corr (plus sensemble counter etc)

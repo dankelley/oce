@@ -626,11 +626,21 @@ metNames2oceNames <- function(names, scheme)
 #' `https://climate.weather.gc.ca/index_e.html`
 #'
 #' @family things related to met data
-read.met <- function(file, type=NULL, skip=NULL, encoding="latin1", tz=getOption("oceTz"),
+read.met <- function(file,
+    type=NULL,
+    skip=NULL,
+    encoding="latin1",
+    tz=getOption("oceTz"),
     debug=getOption("oceDebug"))
 {
     if (missing(file))
         stop("must supply 'file'")
+    if (is.character(file)) {
+        if (!file.exists(file))
+            stop("cannot find file '", file, "'")
+        if (0L == file.info(file)$size)
+            stop("empty file '", file, "'")
+    }
     oceDebug(debug, "read.met(file=\"", file, "\", ...) {\n", sep="", unindent=1, style="bold")
     if (!is.character(file))
         stop("'file' must be a string")

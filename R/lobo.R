@@ -1,3 +1,5 @@
+# vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
+
 #' Class to Store LOBO Data
 #'
 #' This class stores LOBO data.
@@ -397,10 +399,18 @@ setMethod(f="plot",
 #' lobo <- read.lobo(uri)
 #'}
 #' @family things related to lobo data
-read.lobo <- function(file, cols=7, processingLog)
+read.lobo <- function(file,
+    cols=7,
+    processingLog)
 {
-    if (!missing(file) && is.character(file) && 0 == file.info(file)$size)
-        stop("empty file")
+    if (missing(file))
+        stop("must supply 'file'")
+    if (is.character(file)) {
+        if (!file.exists(file))
+            stop("cannot find file '", file, "'")
+        if (0L == file.info(file)$size)
+            stop("empty file '", file, "'")
+    }
     ## header <- scan(file, what=character(), sep="\t", nlines=1, quiet=TRUE)
     ## d <- scan(file, what=character(), sep="\t", skip=1,  quiet=TRUE)
     filename <- ""

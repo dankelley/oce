@@ -21,13 +21,25 @@
 #' the `ODV` format.
 #' 2. `https://vocab.nerc.ac.uk/collection/P07/current/` may be
 #' worth consulting for variable names.
-read.ctd.odv <- function(file, columns=NULL, station=NULL, missingValue,
-			 deploymentType, monitor=FALSE,
-                         debug=getOption("oceDebug"), processingLog, ...)
+read.ctd.odv <- function(file,
+    columns=NULL,
+    station=NULL,
+    missingValue,
+    deploymentType,
+    monitor=FALSE,
+    debug=getOption("oceDebug"),
+    processingLog,
+    ...)
 {
+    if (missing(file))
+        stop("must supply 'file'")
+    if (is.character(file)) {
+        if (!file.exists(file))
+            stop("cannot find file '", file, "'")
+        if (0L == file.info(file)$size)
+            stop("empty file '", file, "'")
+    }
     oceDebug(debug, "read.ctd.odv() {\n", unindent=1)
-    if (!missing(file) && is.character(file) && 0 == file.info(file)$size)
-        stop("empty file")
     filename <- ""
     if (is.character(file)) {
         filename <- fullFilename(file)

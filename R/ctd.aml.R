@@ -82,13 +82,22 @@
 #' Mahy 2016.
 #' `https://www.subseatechnologies.com/media/files/page/032e50ac/seacast-4-2-user-manual-sti.pdf`.
 #'
+#' @family things related to ctd data
 #' @family functions that read ctd data
-read.ctd.aml <- function(file, format,
-    debug=getOption("oceDebug"), processingLog, ...)
+read.ctd.aml <- function(file,
+    format,
+    debug=getOption("oceDebug"),
+    processingLog, ...)
 {
-    debug <- max(0L, as.integer(debug))
     if (missing(file))
         stop("must supply 'file'")
+    if (is.character(file)) {
+        if (!file.exists(file))
+            stop("cannot find file '", file, "'")
+        if (0L == file.info(file)$size)
+            stop("empty file '", file, "'")
+    }
+    debug <- max(0L, as.integer(debug))
     oceDebug(debug, "read.ctd.aml(file=\"", file, "\", ...) {\n", unindent=1, style="bold")
     if (is.character(file) && 0 == file.info(file)$size)
         stop("empty file")

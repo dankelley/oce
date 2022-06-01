@@ -1,4 +1,4 @@
-# vim:textwidth=100:expandtab:shiftwidth=4:softtabstop=4:foldmethod=marker
+# vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
 
 #' Class to Store Coastline Data
 #'
@@ -981,11 +981,19 @@ download.coastline <- function(resolution, item="coastline",
 #'
 #' @author Dan Kelley
 read.coastline <- function(file,
-                           type=c("R", "S", "mapgen", "shapefile", "openstreetmap"),
-                           debug=getOption("oceDebug"), monitor=FALSE, processingLog)
+    type=c("R", "S", "mapgen", "shapefile", "openstreetmap"),
+    debug=getOption("oceDebug"),
+    monitor=FALSE,
+    processingLog)
 {
-    if (!missing(file) && is.character(file) && 0 == file.info(file)$size)
-        stop("empty file")
+    if (missing(file))
+        stop("must supply 'file'")
+    if (is.character(file)) {
+        if (!file.exists(file))
+            stop("cannot find file '", file, "'")
+        if (0L == file.info(file)$size)
+            stop("empty file '", file, "'")
+    }
     type <- match.arg(type)
     oceDebug(debug, "read.coastline(file=\"", file, "\", type=\"", type, "\", ...) {\n", sep="", unindent=1, style="bold")
     file <- fullFilename(file)
@@ -1100,11 +1108,21 @@ read.coastline <- function(file,
 #' @family things related to coastline data
 #'
 #' @author Dan Kelley
-read.coastline.shapefile <- function(file, lonlim=c(-180, 180), latlim=c(-90, 90),
-                                     debug=getOption("oceDebug"), monitor=FALSE, processingLog)
+read.coastline.shapefile <- function(file,
+    lonlim=c(-180, 180),
+    latlim=c(-90, 90),
+    debug=getOption("oceDebug"),
+    monitor=FALSE,
+    processingLog)
 {
-    if (!missing(file) && is.character(file) && 0 == file.info(file)$size)
-        stop("empty file")
+    if (missing(file))
+        stop("must supply 'file'")
+    if (is.character(file)) {
+        if (!file.exists(file))
+            stop("cannot find file '", file, "'")
+        if (0L == file.info(file)$size)
+            stop("empty file '", file, "'")
+    }
     oceDebug(debug, "read.shapefile(file=\"", file, "\", ...) {\n", sep="", unindent=1, style="bold")
     shapeTypeList <- c("nullshape",    # 0
                        "point",        # 1
@@ -1309,11 +1327,21 @@ read.coastline.shapefile <- function(file, lonlim=c(-180, 180), latlim=c(-90, 90
 #' @family things related to coastline data
 #'
 #' @author Dan Kelley
-read.coastline.openstreetmap <- function(file, lonlim=c(-180, 180), latlim=c(-90, 90),
-                                     debug=getOption("oceDebug"), monitor=FALSE, processingLog)
+read.coastline.openstreetmap <- function(file,
+    lonlim=c(-180, 180),
+    latlim=c(-90, 90),
+    debug=getOption("oceDebug"),
+    monitor=FALSE,
+    processingLog)
 {
-    if (!missing(file) && is.character(file) && 0 == file.info(file)$size)
-        stop("empty file")
+    if (missing(file))
+        stop("must supply 'file'")
+    if (is.character(file)) {
+        if (!file.exists(file))
+            stop("cannot find file '", file, "'")
+        if (0L == file.info(file)$size)
+            stop("empty file '", file, "'")
+    }
     oceDebug(debug, "read.coastline.openstreetmap(file=\"", file, "\", ...) {\n", sep="", unindent=1, style="bold")
     ## FIXME: ignoring lonlim and latlim
     if (is.character(file)) {

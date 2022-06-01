@@ -808,7 +808,7 @@ setMethod(f="plot",
 #' Read a file that contains topographic data in the ETOPO dataset, as was once provided by
 #' the NOAA website (see [download.topo()] for a good server for such
 #' files. (As of May, 2020, there does not seem to be a way to download these
-#' fles from the NOAA website.)
+#' files from the NOAA website.)
 #'
 #' The three permitted file types are as follows.
 #' 1. An ascii type
@@ -837,10 +837,17 @@ setMethod(f="plot",
 #'
 #' @author Dan Kelley
 #' @family things related to topo data
-read.topo <- function(file, debug=getOption("oceDebug"))
+read.topo <- function(file,
+    debug=getOption("oceDebug"))
 {
-    if (!missing(file) && is.character(file) && 0 == file.info(file)$size)
-        stop("empty file")
+    if (missing(file))
+        stop("must supply 'file'")
+    if (is.character(file)) {
+        if (!file.exists(file))
+            stop("cannot find file '", file, "'")
+        if (0L == file.info(file)$size)
+            stop("empty file '", file, "'")
+    }
     oceDebug(debug, "read.topo(file=\"", file, "\") {\n", sep="", style="bold", unindent=1)
     ## handle GEBCO netcdf files or an ascii format
     dataNamesOriginal <- list()

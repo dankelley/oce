@@ -9,7 +9,7 @@ cnvName2oceName(h, columns = NULL, debug = getOption("oceDebug"))
 \arguments{
 \item{h}{The header line.}
 
-\item{columns}{Optional list containing name correspondances, as described for
+\item{columns}{Optional list containing name correspondences, as described for
 \code{\link[=read.ctd.sbe]{read.ctd.sbe()}}.}
 
 \item{debug}{an integer specifying whether debugging information is
@@ -19,9 +19,6 @@ turns off the printing, while higher values suggest that more information
 be printed. If one function calls another, it usually reduces the value of
 \code{debug} first, so that a user can often obtain deeper debugging
 by specifying higher \code{debug} values.}
-}
-\value{
-\code{\link[=read.ctd.sbe]{read.ctd.sbe()}} returns a list containing \code{name} (the oce name), \code{nameOriginal} (the SBE name) and \code{unit}.
 }
 \description{
 This function is used by \code{\link[=read.ctd.sbe]{read.ctd.sbe()}} to infer data names
@@ -136,16 +133,16 @@ variants.)
 \code{pumps}       \tab \code{pumpStatus}                   \tab                      \tab   \cr
 \verb{rhodflTC~}   \tab \code{Rhodamine}                    \tab ppb; Turner Cyclops  \tab   \cr
 \verb{sal~~}       \tab \code{salinity}                     \tab -, PSS-78            \tab 4 \cr
+\code{sbox~dV/dT}  \tab \code{oxygen}                       \tab dov/dt; SBE43        \tab   \cr
 \code{sbeox~ML/L}  \tab \code{oxygen}                       \tab ml/l; SBE43          \tab   \cr
-\code{sbox~ML/L}   \tab \code{oxygen}                       \tab ml/l; SBE43 (?)      \tab   \cr
 \code{sbeox~Mm/Kg} \tab \code{oxygen}                       \tab umol/kg; SBE43       \tab   \cr
-\code{sbox~Mm/Kg}  \tab \code{oxygen}                       \tab umol/kg; SBE43 (?)   \tab   \cr
+\code{sbox~Mm/Kg}  \tab \code{oxygen}                       \tab umol/kg; SBE43       \tab   \cr
 \code{sbeox~Mm/L}  \tab \code{oxygen}                       \tab umol/l; SBE43        \tab   \cr
-\code{sbox~Mm/L}   \tab \code{oxygen}                       \tab umol/l; SBE43 (?)    \tab   \cr
+\code{sbox~Mm/L}   \tab \code{oxygen}                       \tab umol/l; SBE43        \tab   \cr
 \code{sbeox~PS}    \tab \code{oxygen}                       \tab percent; SBE43       \tab   \cr
-\code{sbox~PS}     \tab \code{oxygen}                       \tab percent; SBE43 (?)   \tab   \cr
+\code{sbox~PS}     \tab \code{oxygen}                       \tab percent; SBE43       \tab   \cr
 \code{sbeox~V}     \tab \code{oxygenRaw}                    \tab V; SBE43             \tab   \cr
-\code{sbox~V}      \tab \code{oxygenRaw}                    \tab V; SBE43 (?)         \tab   \cr
+\code{sbox~V}      \tab \code{oxygenRaw}                    \tab V; SBE43             \tab   \cr
 \code{scan}        \tab \code{scan}                         \tab -                    \tab   \cr
 \verb{seaTurbMtr~} \tab \code{turbidity}                    \tab FTU; Seapoint        \tab   \cr
 \code{secS-priS}   \tab \code{salinityDifference}           \tab -, PSS-78            \tab   \cr
@@ -255,10 +252,12 @@ Other things related to ctd data:
 \code{\link{plotProfile}()},
 \code{\link{plotScan}()},
 \code{\link{plotTS}()},
+\code{\link{read.ctd.aml}()},
 \code{\link{read.ctd.itp}()},
 \code{\link{read.ctd.odf}()},
 \code{\link{read.ctd.odv}()},
 \code{\link{read.ctd.sbe}()},
+\code{\link{read.ctd.ssda}()},
 \code{\link{read.ctd.woce.other}()},
 \code{\link{read.ctd.woce}()},
 \code{\link{read.ctd}()},

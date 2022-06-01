@@ -1,4 +1,4 @@
-## vim:textwidth=150:expandtab:shiftwidth=4:softtabstop=4
+# vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
 
 #' Class to Store XBT Data
 #'
@@ -327,11 +327,23 @@ as.xbt <- function(z, temperature, longitude=NA, latitude=NA, filename="", seque
 #' https://pages.uoregon.edu/drt/MGL0910_Science_Report/attachments/MK21_ISA_Manual_Rev_A.pdf.
 #'
 #' @author Dan Kelley
-read.xbt <- function(file, type="sippican", longitude=NA, latitude=NA, debug=getOption("oceDebug"), processingLog)
+read.xbt <- function(file,
+    type="sippican",
+    longitude=NA,
+    latitude=NA,
+    debug=getOption("oceDebug"),
+    processingLog)
 {
-    oceDebug(debug, "read.xbt(file=\"", file, "\", type=\"", type, "\", longitude=", longitude, ", latitude=", latitude, "...) {\n", sep="", unindent=1)
     if (missing(file))
         stop("must supply 'file'")
+    if (is.character(file)) {
+        if (!file.exists(file))
+            stop("cannot find file '", file, "'")
+        if (0L == file.info(file)$size)
+            stop("empty file '", file, "'")
+    }
+
+    oceDebug(debug, "read.xbt(file=\"", file, "\", type=\"", type, "\", longitude=", longitude, ", latitude=", latitude, "...) {\n", sep="", unindent=1)
     if (is.character(file) && "http://" != substr(file, 1, 7) && 0 == file.info(file)$size)
         stop("empty file (read.xbt)")
     type <- match.arg(type)
@@ -392,7 +404,11 @@ read.xbt <- function(file, type="sippican", longitude=NA, latitude=NA, debug=get
 #' plot(xbt)
 #'
 #' @author Dan Kelley
-read.xbt.edf <- function(file, longitude=NA, latitude=NA, debug=getOption("oceDebug"), processingLog)
+read.xbt.edf <- function(file,
+    longitude=NA,
+    latitude=NA,
+    debug=getOption("oceDebug"),
+    processingLog)
 {
     getHeaderItem <- function(l, name) {
         res <- l[grep(name, l)]
@@ -400,6 +416,12 @@ read.xbt.edf <- function(file, longitude=NA, latitude=NA, debug=getOption("oceDe
     }
     if (missing(file))
         stop("must supply 'file'")
+    if (is.character(file)) {
+        if (!file.exists(file))
+            stop("cannot find file '", file, "'")
+        if (0L == file.info(file)$size)
+            stop("empty file '", file, "'")
+    }
     if (is.character(file) && "http://" != substr(file, 1, 7) && 0 == file.info(file)$size)
         stop("empty file (read.xbt.edf)")
     oceDebug(debug, "read.xbt(file=\"", file, "\", longitude=", longitude, ", latitude=", latitude, "...) {\n",
@@ -493,8 +515,19 @@ read.xbt.edf <- function(file, longitude=NA, latitude=NA, debug=getOption("oceDe
 #' @family things related to xbt data
 #'
 #' @author Dan Kelley
-read.xbt.noaa1 <- function(file, debug=getOption("oceDebug"), missingValue=-9.99, processingLog)
+read.xbt.noaa1 <- function(file,
+    debug=getOption("oceDebug"),
+    missingValue=-9.99,
+    processingLog)
 {
+    if (missing(file))
+        stop("must supply 'file'")
+    if (is.character(file)) {
+        if (!file.exists(file))
+            stop("cannot find file '", file, "'")
+        if (0L == file.info(file)$size)
+            stop("empty file '", file, "'")
+    }
     oceDebug(debug, "read.xbt(file=\"", file, "\", type=\"", "...) {\n", sep="", unindent=1)
     filename <- "?"
     if (is.character(file)) {

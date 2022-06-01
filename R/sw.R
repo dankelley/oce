@@ -2023,7 +2023,7 @@ swSigma0 <- function(salinity, temperature=NULL, pressure=NULL,
 
 #' Seawater potential density anomaly referenced to 1000db pressure
 #'
-#' This is analagous to [swSigma0()], but referenced to 1000db pressure.
+#' This is analogous to [swSigma0()], but referenced to 1000db pressure.
 #'
 #' @inheritParams swRho
 #' @return Potential density anomaly (kg/m\eqn{^3}{^3}).
@@ -2064,7 +2064,7 @@ swSigma1 <- function(salinity, temperature=NULL, pressure=NULL,
 
 #' Seawater potential density anomaly referenced to 2000db pressure
 #'
-#' This is analagous to [swSigma0()], but referenced to 2000db pressure.
+#' This is analogous to [swSigma0()], but referenced to 2000db pressure.
 #'
 #' @inheritParams swRho
 #' @return Potential density anomaly (kg/m\eqn{^3}{^3}).
@@ -2105,7 +2105,7 @@ swSigma2 <- function(salinity, temperature=NULL, pressure=NULL,
 
 #' Seawater potential density anomaly referenced to 3000db pressure
 #'
-#' This is analagous to [swSigma0()], but referenced to 3000db pressure.
+#' This is analogous to [swSigma0()], but referenced to 3000db pressure.
 #'
 #' @inheritParams swRho
 #' @return Potential density anomaly (kg/m\eqn{^3}{^3}).
@@ -2146,7 +2146,7 @@ swSigma3 <- function(salinity, temperature=NULL, pressure=NULL,
 
 #' Seawater potential density anomaly referenced to 4000db pressure
 #'
-#' This is analagous to [swSigma0()], but referenced to 4000db pressure.
+#' This is analogous to [swSigma0()], but referenced to 4000db pressure.
 #'
 #' @inheritParams swRho
 #' @return Potential density anomaly (kg/m\eqn{^3}{^3}).

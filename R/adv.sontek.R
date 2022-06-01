@@ -1,3 +1,5 @@
+# vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
+
 #' @template readAdvTemplate
 #'
 #' @param start the time of the first sample, typically created with
@@ -5,13 +7,27 @@
 #' if `filename` is a vector of file names.
 #'
 #' @param deltat the time between samples.
-read.adv.sontek.serial <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
-                                   longitude=NA, latitude=NA,
-                                   start=NULL, deltat=NULL,
-                                   debug=getOption("oceDebug"), monitor=FALSE, processingLog=NULL)
+read.adv.sontek.serial <- function(file,
+    from=1,
+    to,
+    by=1,
+    tz=getOption("oceTz"),
+    longitude=NA,
+    latitude=NA,
+    start=NULL,
+    deltat=NULL,
+    debug=getOption("oceDebug"),
+    monitor=FALSE,
+    processingLog=NULL)
 {
-    if (!missing(file) && is.character(file) && 0 == file.info(file)$size)
-        stop("empty file")
+    if (missing(file))
+        stop("must supply 'file'")
+    if (is.character(file)) {
+        if (!file.exists(file))
+            stop("cannot find file '", file, "'")
+        if (0L == file.info(file)$size)
+            stop("empty file '", file, "'")
+    }
     if (!interactive())
         monitor <- FALSE
     oceDebug(debug, paste("read.adv.sontek.serial(file[1]=\"", file[1],
@@ -156,13 +172,26 @@ read.adv.sontek.serial <- function(file, from=1, to, by=1, tz=getOption("oceTz")
 #' @param header A logical value indicating whether the file starts with a header.
 #' (This will not be the case for files that are created by data loggers that
 #' chop the raw data up into a series of sub-files, e.g. once per hour.)
-read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
-                                header=TRUE,
-                                longitude=NA, latitude=NA,
-                                debug=getOption("oceDebug"), monitor=FALSE, processingLog=NULL)
+read.adv.sontek.adr <- function(file,
+    from=1,
+    to,
+    by=1,
+    tz=getOption("oceTz"),
+    header=TRUE,
+    longitude=NA,
+    latitude=NA,
+    debug=getOption("oceDebug"),
+    monitor=FALSE,
+    processingLog=NULL)
 {
-    if (!missing(file) && is.character(file) && 0 == file.info(file)$size)
-        stop("empty file")
+    if (missing(file))
+        stop("must supply 'file'")
+    if (is.character(file)) {
+        if (!file.exists(file))
+            stop("cannot find file '", file, "'")
+        if (0L == file.info(file)$size)
+            stop("empty file '", file, "'")
+    }
     if (!interactive())
         monitor <- FALSE
     bisectAdvSontekAdr <- function(burstTime, tFind, add=0, debug=0) {
@@ -647,14 +676,27 @@ read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
 #' The `file` argument does not actually name a file. It names a basename
 #' for a file. The actual file names are created by appending suffix
 #' `.hd1` for one file and `.ts1` for another.
-read.adv.sontek.text <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
-                                 originalCoordinate="xyz", transformationMatrix,
-                                 longitude=NA, latitude=NA,
-                                 debug=getOption("oceDebug"), monitor=FALSE,
-                                 processingLog=NULL)
+read.adv.sontek.text <- function(file,
+    from=1,
+    to,
+    by=1,
+    tz=getOption("oceTz"),
+    originalCoordinate="xyz",
+    transformationMatrix,
+    longitude=NA,
+    latitude=NA,
+    debug=getOption("oceDebug"),
+    monitor=FALSE,
+    processingLog=NULL)
 {
-    if (!missing(file) && is.character(file) && 0 == file.info(file)$size)
-        stop("empty file")
+    if (missing(file))
+        stop("must supply 'file'")
+    if (is.character(file)) {
+        if (!file.exists(file))
+            stop("cannot find file '", file, "'")
+        if (0L == file.info(file)$size)
+            stop("empty file '", file, "'")
+    }
     if (!interactive())
         monitor <- FALSE
     ## FIXME: It would be better to deal with the binary file, but the format is unclear to me;

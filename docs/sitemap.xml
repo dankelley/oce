@@ -1027,6 +1027,9 @@
     <loc>/reference/read.aquadoppProfiler.html</loc>
   </url>
   <url>
+    <loc>/reference/read.argo.copernicus.html</loc>
+  </url>
+  <url>
     <loc>/reference/read.argo.html</loc>
   </url>
   <url>
@@ -1061,6 +1064,9 @@
   </url>
   <url>
     <loc>/reference/read.ctd.sbe.html</loc>
+  </url>
+  <url>
+    <loc>/reference/read.ctd.ssda.html</loc>
   </url>
   <url>
     <loc>/reference/read.ctd.woce.html</loc>

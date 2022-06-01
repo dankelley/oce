@@ -1173,11 +1173,20 @@ argoDecodeFlags <- function(f) # local function
 #'
 #' @author Dan Kelley
 #' @family things related to argo data
-read.argo <- function(file, debug=getOption("oceDebug"), processingLog, ...)
+read.argo <- function(file,
+    debug=getOption("oceDebug"),
+    processingLog,
+    ...)
 {
+    if (missing(file))
+        stop("must supply 'file'")
+    if (is.character(file)) {
+        if (!file.exists(file))
+            stop("cannot find file '", file, "'")
+        if (0L == file.info(file)$size)
+            stop("empty file '", file, "'")
+    }
     debug <- max(0, min(2, floor(as.numeric(debug))))
-    if (!missing(file) && is.character(file) && 0 == file.info(file)$size)
-        stop("empty file")
     if (!requireNamespace("ncdf4", quietly=TRUE))
         stop('must install.packages("ncdf4") to read argo data')
     if (missing(processingLog)) processingLog <- paste(deparse(match.call()), sep="", collapse="")

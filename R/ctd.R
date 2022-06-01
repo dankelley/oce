@@ -3953,12 +3953,26 @@ plotScan <- function(x, which=1, xtype="scan", flipy=FALSE,
 #' and control is dispatched to [read.ctd.odv()].
 #'
 #' @family functions that read ctd data
-read.ctd <- function(file, type=NULL, columns=NULL, station=NULL, missingValue,
-    deploymentType="unknown", monitor=FALSE,
-    debug=getOption("oceDebug"), processingLog, ...)
+read.ctd <- function(file,
+    type=NULL,
+    columns=NULL,
+    station=NULL,
+    missingValue,
+    deploymentType="unknown",
+    monitor=FALSE,
+    debug=getOption("oceDebug"),
+    processingLog, ...)
 {
-    if (!missing(file) && is.character(file) && 0 == file.info(file)$size)
-        stop("empty file")
+    if (missing(file))
+        stop("must supply 'file'")
+    if (is.character(file)) {
+        if (!file.exists(file))
+            stop("cannot find file '", file, "'")
+        if (0L == file.info(file)$size)
+            stop("empty file '", file, "'")
+    }
+    if (is.na(file))
+        stop("cannot read a NA file")
     oceDebug(debug, "read.ctd(..., type=", if (is.null(type)) "NULL" else "\"", type, "\") {\n", sep="")
     ## Special case: ruskin files are handled by read.rsk()
     if (is.character(file) && length(grep(".rsk$", file))) {

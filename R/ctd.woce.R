@@ -1,4 +1,4 @@
-## vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
+# vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
 
 #' Translate Oce Data Names to WHP Data Names
 #'
@@ -246,12 +246,25 @@ woceUnit2oceUnit <- function(woceUnit)
 #' @family functions that read ctd data
 #'
 #' @author Dan Kelley
-read.ctd.woce <- function(file, columns=NULL, station=NULL, missingValue, deploymentType="unknown",
-                          monitor=FALSE, debug=getOption("oceDebug"), processingLog, ...)
+read.ctd.woce <- function(file,
+    columns=NULL,
+    station=NULL,
+    missingValue,
+    deploymentType="unknown",
+    monitor=FALSE,
+    debug=getOption("oceDebug"),
+    processingLog,
+    ...)
 {
-    if (!missing(file) && is.character(file) && 0 == file.info(file)$size)
-        stop("empty file")
-    if (length(grep("\\*", file))) {
+    if (missing(file))
+        stop("must supply 'file'")
+    if (is.character(file)) {
+        if (!file.exists(file))
+            stop("cannot find file '", file, "'")
+        if (0L == file.info(file)$size)
+            stop("empty file '", file, "'")
+    }
+    if (is.character(file) && length(grep("\\*", file))) {
         oceDebug(debug, "read.ctd.woce(file=\"", file, "\") { # will read a series of files\n", unindent=1)
         files <- list.files(pattern=file)
         nfiles <- length(files)
@@ -661,11 +674,24 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missingValue, deploy
 #' @family functions that read ctd data
 #'
 #' @author Dan Kelley
-read.ctd.woce.other <- function(file, columns=NULL, station=NULL, missingValue, deploymentType="unknown",
-                                monitor=FALSE, debug=getOption("oceDebug"), processingLog, ...)
+read.ctd.woce.other <- function(file,
+    columns=NULL,
+    station=NULL,
+    missingValue,
+    deploymentType="unknown",
+    monitor=FALSE,
+    debug=getOption("oceDebug"),
+    processingLog,
+    ...)
 {
-    if (!missing(file) && is.character(file) && 0 == file.info(file)$size)
-        stop("empty file")
+    if (missing(file))
+        stop("must supply 'file'")
+    if (is.character(file)) {
+        if (!file.exists(file))
+            stop("cannot find file '", file, "'")
+        if (0L == file.info(file)$size)
+            stop("empty file '", file, "'")
+    }
     ##EXPOCODE 06MT18/1      WHP-ID A1E    DATE 090591
     ##STNNBR    558 CASTNO   1 NO.RECORDS=   83
     ##INSTRUMENT NO. NB3 SAMPLING RATE  31.25 HZ

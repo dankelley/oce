@@ -1357,12 +1357,21 @@ beamName <- function(x, which)
 #'
 #' @family things related to adp data
 read.adp <- function(file, from, to, by, tz=getOption("oceTz"),
-                     longitude=NA, latitude=NA,
-                     manufacturer,
-                     monitor=FALSE, despike=FALSE, processingLog,
-                     debug=getOption("oceDebug"),
-                     ...)
+    longitude=NA, latitude=NA,
+    manufacturer,
+    monitor=FALSE, despike=FALSE, processingLog,
+    debug=getOption("oceDebug"),
+    ...)
 {
+    if (missing(file))
+        stop("must supply 'file'")
+    if (is.character(file)) {
+        if (!file.exists(file))
+            stop("cannot find file '", file, "'")
+        if (0L == file.info(file)$size)
+            stop("empty file '", file, "'")
+    }
+
     if (!interactive())
         monitor <- FALSE
     fromGiven <- !missing(from) # FIXME document THIS
@@ -1380,8 +1389,6 @@ read.adp <- function(file, from, to, by, tz=getOption("oceTz"),
         by <- 1
     if (!toGiven)
         to <- 0
-    if (is.character(file) && 0 == file.info(file)$size)
-        stop("empty file")
 
     if (missing(manufacturer)) {
         oceDebug(debug, "using read.oce() since 'manufacturer' argument is missing\n")
