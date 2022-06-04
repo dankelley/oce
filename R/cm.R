@@ -1,4 +1,4 @@
-# vim:textwidth=100:expandtab:shiftwidth=4:softtabstop=4
+# vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
 
 
 #' Class to Store Current Meter Data
@@ -486,31 +486,57 @@ as.cm <- function(time, u=NULL, v=NULL,
 #' @family things related to cm data
 #'
 #' @author Dan Kelley
-read.cm <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
-                    type=c("s4"),
-                    longitude=NA, latitude=NA,
-                    debug=getOption("oceDebug"), monitor=FALSE, processingLog)
+read.cm <- function(file,
+    from=1,
+    to,
+    by=1,
+    tz=getOption("oceTz"),
+    type=c("s4"),
+    longitude=NA,
+    latitude=NA,
+    debug=getOption("oceDebug"),
+    monitor=FALSE,
+    processingLog)
 {
-    if (!missing(file) && is.character(file) && 0 == file.info(file)$size)
-        stop("empty file")
+    if (missing(file))
+        stop("must supply 'file'")
+    if (is.character(file)) {
+        if (!file.exists(file))
+            stop("cannot find file '", file, "'")
+        if (0L == file.info(file)$size)
+            stop("empty file '", file, "'")
+    }
     oceDebug(debug, "read.cm(file=\"", file,
               "\", from=", format(from),
               ", to=", if (missing(to)) "(missing)" else format(to), ", by=", by, "type=", type, ", ...) {\n", sep="", unindent=1)
     type <- match.arg(type)
     if (type == "s4")
         read.cm.s4(file=file, from=from, to=to, by=by, tz=tz,
-                   longitude=longitude, latitude=latitude,
-                   debug=debug-1, monitor=monitor, processingLog=processingLog)
+            longitude=longitude, latitude=latitude,
+            debug=debug-1, monitor=monitor, processingLog=processingLog)
     else
         stop("unknown type of current meter")
 }
 
-read.cm.s4 <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
-                       longitude=NA, latitude=NA,
-                       debug=getOption("oceDebug"), monitor=FALSE, processingLog)
+read.cm.s4 <- function(file,
+    from=1,
+    to,
+    by=1,
+    tz=getOption("oceTz"),
+    longitude=NA,
+    latitude=NA,
+    debug=getOption("oceDebug"),
+    monitor=FALSE,
+    processingLog)
 {
-    if (!missing(file) && is.character(file) && 0 == file.info(file)$size)
-        stop("empty file")
+    if (missing(file))
+        stop("must supply 'file'")
+    if (is.character(file)) {
+        if (!file.exists(file))
+            stop("cannot find file '", file, "'")
+        if (0L == file.info(file)$size)
+            stop("empty file '", file, "'")
+    }
     if (debug > 1)
         debug <- 1
     oceDebug(debug, "read.cm.s4(file=\"", file,

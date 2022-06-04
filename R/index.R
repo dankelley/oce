@@ -1,3 +1,5 @@
+# vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
+
 #' Read a NOAA ocean index file
 #'
 #' Read an ocean index file, in the format used by NOAA.
@@ -61,10 +63,20 @@
 #' soirecent <- subset(soi, t > as.POSIXct("2000-01-01"))
 #' oce.plot.ts(soirecent$t, soirecent$index)
 #'}
-read.index <- function(file, format, missingValue, tz=getOption("oceTz"), debug=getOption("oceDebug"))
+read.index <- function(file,
+    format,
+    missingValue,
+    tz=getOption("oceTz"),
+    debug=getOption("oceDebug"))
 {
-    if (!missing(file) && is.character(file) && 0 == file.info(file)$size)
-        stop("empty file")
+    if (missing(file))
+        stop("must supply 'file'")
+    if (is.character(file)) {
+        if (!file.exists(file))
+            stop("cannot find file '", file, "'")
+        if (0L == file.info(file)$size)
+            stop("empty file '", file, "'")
+    }
     if (is.character(file)) {
         ##filename <- fullFilename(file)
         file <- file(file, "r")

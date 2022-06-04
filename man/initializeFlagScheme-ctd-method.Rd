@@ -67,50 +67,62 @@ documentation):
 \itemize{
 \item \code{name="argo"} defaults \code{mapping} to
 OLD (prior to June 10, 2020)
-}\preformatted{list(not_assessed=0, passed_all_tests=1, probably_good=2,
-     probably_bad=3, bad=4, averaged=7,
-     interpolated=8, missing=9)
 }
 
-NEW (after June 10, 2020)\preformatted{list(not_assessed=0, passed_all_tests=1, probably_good=2,
+\if{html}{\out{<div class="sourceCode">}}\preformatted{list(not_assessed=0, passed_all_tests=1, probably_good=2,
+     probably_bad=3, bad=4, averaged=7,
+     interpolated=8, missing=9)
+}\if{html}{\out{</div>}}
+
+NEW (after June 10, 2020)
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{list(not_assessed=0, passed_all_tests=1, probably_good=2,
      probably_bad=3, bad=4, changed=5, not_used_6=6, not_used_7=7,
      estimated=8, missing=9)
-}
+}\if{html}{\out{</div>}}
 
 See reference 1 for a deeper explanation of the meanings of these codes.
 \itemize{
 \item \code{name="BODC"} defaults \code{mapping} to
-}\preformatted{list(no_quality_control=0, good=1, probably_good=2,
+}
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{list(no_quality_control=0, good=1, probably_good=2,
      probably_bad=3, bad=4, changed=5,
      below_detection=6, in_excess=7, interpolated=8,
      missing=9)
-}
+}\if{html}{\out{</div>}}
 
 See reference 2 for a deeper explanation of the meanings of these codes,
 and note that codes \code{A} and \code{Q} are not provided in
 oce.
 \itemize{
 \item \code{name="DFO"} defaults \code{mapping} to
-}\preformatted{list(no_quality_control=0, appears_correct=1, appears_inconsistent=2,
+}
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{list(no_quality_control=0, appears_correct=1, appears_inconsistent=2,
      doubtful=3, erroneous=4, changed=5,
      qc_by_originator=8, missing=9)
-}
+}\if{html}{\out{</div>}}
 
 See reference 3 for a deeper explanation of the meanings of these codes.
 \itemize{
 \item \code{name="WHP bottle"} defaults \code{mapping} to
-}\preformatted{list(no_information=1, no_problems_noted=2, leaking=3,
+}
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{list(no_information=1, no_problems_noted=2, leaking=3,
      did_not_trip=4, not_reported=5, discrepency=6,
      unknown_problem=7, did_not_trip=8, no_sample=9)
-}
+}\if{html}{\out{</div>}}
 
 See reference 4 for a deeper explanation of the meanings of these codes.
 \itemize{
 \item \code{name="WHP CTD"} defaults \code{mapping} to
-}\preformatted{list(not_calibrated=1, acceptable=2, questionable=3,
+}
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{list(not_calibrated=1, acceptable=2, questionable=3,
     bad=4, not_reported=5, interpolated=6,
     despiked=7, missing=9)
-}
+}\if{html}{\out{</div>}}
 
 See reference 4 for a deeper explanation of the meanings of these codes.
 }

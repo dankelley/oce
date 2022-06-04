@@ -2176,13 +2176,25 @@ setMethod(f="plot",
 #' @author Dan Kelley
 #'
 #' @family things related to section data
-read.section <- function(file, directory, sectionId="", flags,
-    ship="", scientist="", institute="",
+read.section <- function(file,
+    directory,
+    sectionId="",
+    flags,
+    ship="",
+    scientist="",
+    institute="",
     missingValue=-999,
-    debug=getOption("oceDebug"), processingLog)
+    debug=getOption("oceDebug"),
+    processingLog)
 {
-    if (!missing(file) && is.character(file) && 0 == file.info(file)$size)
-        stop("empty file")
+    if (missing(file))
+        stop("must supply 'file'")
+    if (is.character(file)) {
+        if (!file.exists(file))
+            stop("cannot find file '", file, "'")
+        if (0L == file.info(file)$size)
+            stop("empty file '", file, "'")
+    }
     oceDebug(debug, "read.section(file=\"", file, "\", ...) {\n", unindent=1)
     if (!missing(directory)) {
         if (!missing(file))

@@ -9,7 +9,7 @@ cnvName2oceName(h, columns = NULL, debug = getOption("oceDebug"))
 \arguments{
 \item{h}{The header line.}
 
-\item{columns}{Optional list containing name correspondances, as described for
+\item{columns}{Optional list containing name correspondences, as described for
 \code{\link[=read.ctd.sbe]{read.ctd.sbe()}}.}
 
 \item{debug}{an integer specifying whether debugging information is
@@ -20,9 +20,6 @@ be printed. If one function calls another, it usually reduces the value of
 \code{debug} first, so that a user can often obtain deeper debugging
 by specifying higher \code{debug} values.}
 }
-\value{
-\code{\link[=read.ctd.sbe]{read.ctd.sbe()}} returns a list containing \code{name} (the oce name), \code{nameOriginal} (the SBE name) and \code{unit}.
-}
 \description{
 This function is used by \code{\link[=read.ctd.sbe]{read.ctd.sbe()}} to infer data names
 and units from the coding used by Teledyne/Seabird (SBE) \code{.cnv}
@@ -31,10 +28,12 @@ the present function is based on inspection of a suite of CNV files
 available to the \code{oce} developers.
 }
 \details{
-A few sample header lines that have been encountered are:\preformatted{# name 4 = t068: temperature, IPTS-68 [deg C]
+A few sample header lines that have been encountered are:
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{# name 4 = t068: temperature, IPTS-68 [deg C]
 # name 3 = t090C: Temperature [ITS-90, deg C]
 # name 4 = t190C: Temperature, 2 [ITS-90, deg C]
-}
+}\if{html}{\out{</div>}}
 
 Examination of several CNV files suggests that it is best to
 try to infer the name from the characters between the "\code{=}"
@@ -136,16 +135,16 @@ variants.)
 \code{pumps}       \tab \code{pumpStatus}                   \tab                      \tab   \cr
 \verb{rhodflTC~}   \tab \code{Rhodamine}                    \tab ppb; Turner Cyclops  \tab   \cr
 \verb{sal~~}       \tab \code{salinity}                     \tab -, PSS-78            \tab 4 \cr
+\code{sbox~dV/dT}  \tab \code{oxygen}                       \tab dov/dt; SBE43        \tab   \cr
 \code{sbeox~ML/L}  \tab \code{oxygen}                       \tab ml/l; SBE43          \tab   \cr
-\code{sbox~ML/L}   \tab \code{oxygen}                       \tab ml/l; SBE43 (?)      \tab   \cr
 \code{sbeox~Mm/Kg} \tab \code{oxygen}                       \tab umol/kg; SBE43       \tab   \cr
-\code{sbox~Mm/Kg}  \tab \code{oxygen}                       \tab umol/kg; SBE43 (?)   \tab   \cr
+\code{sbox~Mm/Kg}  \tab \code{oxygen}                       \tab umol/kg; SBE43       \tab   \cr
 \code{sbeox~Mm/L}  \tab \code{oxygen}                       \tab umol/l; SBE43        \tab   \cr
-\code{sbox~Mm/L}   \tab \code{oxygen}                       \tab umol/l; SBE43 (?)    \tab   \cr
+\code{sbox~Mm/L}   \tab \code{oxygen}                       \tab umol/l; SBE43        \tab   \cr
 \code{sbeox~PS}    \tab \code{oxygen}                       \tab percent; SBE43       \tab   \cr
-\code{sbox~PS}     \tab \code{oxygen}                       \tab percent; SBE43 (?)   \tab   \cr
+\code{sbox~PS}     \tab \code{oxygen}                       \tab percent; SBE43       \tab   \cr
 \code{sbeox~V}     \tab \code{oxygenRaw}                    \tab V; SBE43             \tab   \cr
-\code{sbox~V}      \tab \code{oxygenRaw}                    \tab V; SBE43 (?)         \tab   \cr
+\code{sbox~V}      \tab \code{oxygenRaw}                    \tab V; SBE43             \tab   \cr
 \code{scan}        \tab \code{scan}                         \tab -                    \tab   \cr
 \verb{seaTurbMtr~} \tab \code{turbidity}                    \tab FTU; Seapoint        \tab   \cr
 \code{secS-priS}   \tab \code{salinityDifference}           \tab -, PSS-78            \tab   \cr

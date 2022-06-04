@@ -1,4 +1,4 @@
-## vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
+# vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
 
 
 #' Class to Store landsat Data
@@ -875,7 +875,8 @@ setMethod(f="plot",
           })
 
 
-read.landsatmeta <- function(file, debug=getOption("oceDebug"))
+read.landsatmeta <- function(file,
+    debug=getOption("oceDebug"))
 {
     getItem <- function(info, name, numeric=TRUE)
     {
@@ -1076,10 +1077,20 @@ read.landsatmeta <- function(file, debug=getOption("oceDebug"))
 #' @author Dan Kelley
 #'
 #' @family things related to landsat data
-read.landsat <- function(file, band="all", emissivity=0.984, decimate, debug=getOption("oceDebug"))
+read.landsat <- function(file,
+    band="all",
+    emissivity=0.984,
+    decimate,
+    debug=getOption("oceDebug"))
 {
-    if (!missing(file) && is.character(file) && 0 == file.info(file)$size)
-        stop("empty file")
+    if (missing(file))
+        stop("must supply 'file'")
+    if (is.character(file)) {
+        if (!file.exists(file))
+            stop("cannot find file '", file, "'")
+        if (0L == file.info(file)$size)
+            stop("empty file '", file, "'")
+    }
     oceDebug(debug, "read.landsat(file=\"", file, "\",",
              if (length(band) > 1) paste("band=c(\"", paste(band, collapse="\",\""), "\")", sep="") else
                  paste("band=\"", band, "\"", sep=""),

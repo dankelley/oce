@@ -1,6 +1,5 @@
-## merely test whether we can read files
+# merely test whether we can read files
 library(oce)
-
 for (file in list.files(path="developer_only", pattern=".*")) {
     if (file != "README.md") {
         message("file: ", file)

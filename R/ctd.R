@@ -1303,6 +1303,7 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
             if (!is.numeric(profile) || length(profile) != 1 || profile < 1) {
                 stop("profile must be a positive integer")
             }
+            # Convert data items from array to vector
             for (field in names(d)) {
                 dataInField <- d[[field]]
                 oceDebug(debug, "handling argo data$", field, "\n", sep="")
@@ -1335,6 +1336,14 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
                     res@data[[field]] <- d[[field]]
                 } else {
                     warning("not storing \"", field, "\" because it is in an unknown format")
+                }
+            }
+            # Convert flags from array to vector
+            if ("flags" %in% names(res@metadata)) {
+                for (iflag in seq_along(res@metadata$flags)) {
+                    if (is.matrix(res@metadata$flags[[iflag]])) {
+                        res@metadata$flags[[iflag]] <- res@metadata$flags[[iflag]][, profile]
+                    }
                 }
             }
             # argo
@@ -3953,12 +3962,26 @@ plotScan <- function(x, which=1, xtype="scan", flipy=FALSE,
 #' and control is dispatched to [read.ctd.odv()].
 #'
 #' @family functions that read ctd data
-read.ctd <- function(file, type=NULL, columns=NULL, station=NULL, missingValue,
-    deploymentType="unknown", monitor=FALSE,
-    debug=getOption("oceDebug"), processingLog, ...)
+read.ctd <- function(file,
+    type=NULL,
+    columns=NULL,
+    station=NULL,
+    missingValue,
+    deploymentType="unknown",
+    monitor=FALSE,
+    debug=getOption("oceDebug"),
+    processingLog, ...)
 {
-    if (!missing(file) && is.character(file) && 0 == file.info(file)$size)
-        stop("empty file")
+    if (missing(file))
+        stop("must supply 'file'")
+    if (is.character(file)) {
+        if (!file.exists(file))
+            stop("cannot find file '", file, "'")
+        if (0L == file.info(file)$size)
+            stop("empty file '", file, "'")
+    }
+    if (is.na(file))
+        stop("cannot read a NA file")
     oceDebug(debug, "read.ctd(..., type=", if (is.null(type)) "NULL" else "\"", type, "\") {\n", sep="")
     ## Special case: ruskin files are handled by read.rsk()
     if (is.character(file) && length(grep(".rsk$", file))) {

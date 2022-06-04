@@ -1,4 +1,4 @@
-# vim:textwidth=100:expandtab:shiftwidth=4:softtabstop=4
+# vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
 
 
 #' Class to Store Sealevel Data
@@ -704,11 +704,21 @@ setMethod(f="plot",
 #' @author Dan Kelley
 #'
 #' @family things related to sealevel data
-read.sealevel <- function(file, tz=getOption("oceTz"), processingLog, debug=getOption("oceDebug"))
+read.sealevel <- function(file,
+    tz=getOption("oceTz"),
+    processingLog,
+    debug=getOption("oceDebug"))
 {
+    if (missing(file))
+        stop("must supply 'file'")
+    if (is.character(file)) {
+        if (!file.exists(file))
+            stop("cannot find file '", file, "'")
+        if (0L == file.info(file)$size)
+            stop("empty file '", file, "'")
+    }
+
     oceDebug(debug, "read.sealevel(file=\"", file, "\", ...) {\n", sep="", unindent=1)
-    if (!missing(file) && is.character(file) && 0 == file.info(file)$size)
-        stop("empty file")
     filename <- "?"
     if (is.character(file)) {
         filename <- fullFilename(file)

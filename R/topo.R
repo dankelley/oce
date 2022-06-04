@@ -837,10 +837,17 @@ setMethod(f="plot",
 #'
 #' @author Dan Kelley
 #' @family things related to topo data
-read.topo <- function(file, debug=getOption("oceDebug"))
+read.topo <- function(file,
+    debug=getOption("oceDebug"))
 {
-    if (!missing(file) && is.character(file) && 0 == file.info(file)$size)
-        stop("empty file")
+    if (missing(file))
+        stop("must supply 'file'")
+    if (is.character(file)) {
+        if (!file.exists(file))
+            stop("cannot find file '", file, "'")
+        if (0L == file.info(file)$size)
+            stop("empty file '", file, "'")
+    }
     oceDebug(debug, "read.topo(file=\"", file, "\") {\n", sep="", style="bold", unindent=1)
     ## handle GEBCO netcdf files or an ascii format
     dataNamesOriginal <- list()

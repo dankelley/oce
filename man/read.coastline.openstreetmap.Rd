@@ -19,13 +19,7 @@ or a zipfile that contains such a file, with a corresponding name.
 The second scheme is useful for files downloaded from the NaturalEarth
 website (see reference 2).}
 
-\item{lonlim}{numerical vectors specifying the
-west and east edges (and south and north edges) of a focus window.
-Coastline polygons that do not intersect the defined box are
-skipped, which can be useful in narrowing high-resolution world-scale
-data to a local application.}
-
-\item{latlim}{numerical vectors specifying the
+\item{lonlim, latlim}{numerical vectors specifying the
 west and east edges (and south and north edges) of a focus window.
 Coastline polygons that do not intersect the defined box are
 skipped, which can be useful in narrowing high-resolution world-scale

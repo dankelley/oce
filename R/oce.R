@@ -1994,6 +1994,14 @@ oceMagic <- function(file, debug=getOption("oceDebug"))
 #' plotTS(x) # just the TS
 read.oce <- function(file, ...)
 {
+    if (missing(file))
+        stop("must supply 'file'")
+    if (is.character(file)) {
+        if (!file.exists(file))
+            stop("cannot find file '", file, "'")
+        if (0L == file.info(file)$size)
+            stop("empty file '", file, "'")
+    }
     dots <- list(...)
     debug <- if ("debug" %in% names(dots)) as.integer(dots$debug) else 0L
     debug <- max(0L, debug)
@@ -2160,8 +2168,17 @@ read.oce <- function(file, ...)
 #'
 #' @return
 #' An [oce-class] object.
-read.netcdf <- function(file, ...)
+read.netcdf <- function(file,
+    ...)
 {
+    if (missing(file))
+        stop("must supply 'file'")
+    if (is.character(file)) {
+        if (!file.exists(file))
+            stop("cannot find file '", file, "'")
+        if (0L == file.info(file)$size)
+            stop("empty file '", file, "'")
+    }
     if (!requireNamespace("ncdf4", quietly=TRUE))
         stop('must install.packages("ncdf4") to read netcdf data')
     f <- ncdf4::nc_open(file)

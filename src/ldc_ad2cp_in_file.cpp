@@ -213,7 +213,7 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, IntegerVector from, IntegerV
   unsigned int *id_buf = (unsigned int*)R_Calloc((size_t)nchunk, unsigned int);
   int early_EOF = 0;
   int reset_cindex = 0; // set to 1 if we skipped to find a new header start, after a bad checksum
-  while (chunk < to_value) { // FIXME: use whole file here
+  while (chunk < to_value && cindex < fileSize) { // FIXME: use whole file here
     if (checksum_failures > 100)
       ::Rf_error("more than 100 checksum errors");
     if (chunk > nchunk - 1) {

@@ -38,12 +38,16 @@ If so, then the named item is replaced with \code{value}.
 
 Otherwise, if the string value of \code{i} ends in \code{Unit}, then the
 characters preceding that are taken as the name of a variable, and
-the \code{metadata} slot of \code{x} is updated to store that unit, e.g.\preformatted{x[["temperatureUnits"]] <- list(unit=expression(degree*F),scale="")
-}
+the \code{metadata} slot of \code{x} is updated to store that unit, e.g.
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{x[["temperatureUnits"]] <- list(unit=expression(degree*F),scale="")
+}\if{html}{\out{</div>}}
 
 Similarly, if \code{i} ends in \code{Flag}, then quality-control
-flags are set up as defined by \code{result}, e.g.\preformatted{o[["temperatureFlags"]] <- c(2,4,2,2)
-}
+flags are set up as defined by \code{result}, e.g.
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{o[["temperatureFlags"]] <- c(2,4,2,2)
+}\if{html}{\out{</div>}}
 
 Otherwise, \code{\link[=pmatch]{pmatch()}} is used for a partial-string match with
 the names of the items that are in the \code{data} slot of \code{x}.

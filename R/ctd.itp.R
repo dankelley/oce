@@ -1,3 +1,5 @@
+# vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
+
 #' Read an ITP-type CTD File
 #'
 #' @template readCtdTemplate
@@ -20,8 +22,14 @@
 read.ctd.itp <- function(file, columns=NULL, station=NULL, missingValue, deploymentType="unknown",
                          monitor=FALSE, debug=getOption("oceDebug"), processingLog, ...)
 {
-    if (!missing(file) && is.character(file) && 0 == file.info(file)$size)
-        stop("empty file")
+    if (missing(file))
+        stop("must supply 'file'")
+    if (is.character(file)) {
+        if (!file.exists(file))
+            stop("cannot find file '", file, "'")
+        if (0L == file.info(file)$size)
+            stop("empty file '", file, "'")
+    }
     oceDebug(debug, "read.ctd.itp() {\n", unindent=1)
     if (is.character(file)) {
         filename <- fullFilename(file)

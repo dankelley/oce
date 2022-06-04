@@ -1,4 +1,4 @@
-## vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
+# vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
 
 setClass("satellite", contains="oce")
 
@@ -145,8 +145,14 @@ setMethod(f="[[<-",
 #' @family things related to g1sst data
 read.g1sst <- function(file)
 {
-    if (!missing(file) && is.character(file) && 0 == file.info(file)$size)
-        stop("empty file")
+    if (missing(file))
+        stop("must supply 'file'")
+    if (is.character(file)) {
+        if (!file.exists(file))
+            stop("cannot find file '", file, "'")
+        if (0L == file.info(file)$size)
+            stop("empty file '", file, "'")
+    }
     if (!requireNamespace("ncdf4", quietly=TRUE))
         stop('must install.packages("ncdf4") to read g1sst data')
     if (!is.character(file))

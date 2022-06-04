@@ -1,10 +1,7 @@
-#' @return a [ctd-class] object. The details of the contents
-#' depend on the source file. The `metadata` slot is particularly
-#' variable across data formats, because the meta-information provided
-#' in those formats varies so widely.
+#' @return This function returns a [ctd-class] object.
 #'
-#' @param file a connection or a character string giving the name of the file to
-#' load.  For [read.ctd.sbe()] and [read.ctd.woce()], this may be a
+#' @param file either a connection or a character value naming a file.
+#' For [read.ctd.sbe()] and [read.ctd.woce()], this may be a
 #' wildcard (e.g. `"*.cnv"` or `"*.csv"`) in which case the return
 #' value is a vector containing CTD objects created by reading the files from
 #' [list.files()] with `pattern` set to the specified wildcard

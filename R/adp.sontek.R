@@ -1,4 +1,4 @@
-## vim: tw=120 shiftwidth=4 softtabstop=4 expandtab:
+# vim: tw=80 shiftwidth=4 softtabstop=4 expandtab:
 
 #' Read a Sontek ADP File
 #'
@@ -18,14 +18,20 @@
 #'
 #' @family things related to adp data
 read.adp.sontek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
-                            longitude=NA, latitude=NA,
-                            type=c("adp", "pcadp"),
-                            monitor=FALSE, despike=FALSE, processingLog,
-                            debug=getOption("oceDebug"),
-                            ...)
+    longitude=NA, latitude=NA,
+    type=c("adp", "pcadp"),
+    monitor=FALSE, despike=FALSE, processingLog,
+    debug=getOption("oceDebug"),
+    ...)
 {
-    if (!missing(file) && is.character(file) && 0 == file.info(file)$size)
-        stop("empty file")
+    if (missing(file))
+        stop("must supply 'file'")
+    if (is.character(file)) {
+        if (!file.exists(file))
+            stop("cannot find file '", file, "'")
+        if (0L == file.info(file)$size)
+            stop("empty file '", file, "'")
+    }
     if (!interactive())
         monitor <- FALSE
     missing.to <- missing(to)
@@ -437,16 +443,26 @@ sontek.time <- function(t, tz=getOption("oceTz"))
 #' @author Dan Kelley and Clark Richards
 #'
 #' @family things related to adp data
-read.adp.sontek.serial <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
-                                   longitude=NA, latitude=NA,
-                                   type=c("adp", "pcadp"),
-                                   beamAngle=25, orientation,
-                                   monitor=FALSE, processingLog,
-                                   debug=getOption("oceDebug"),
-                                   ...)
+read.adp.sontek.serial <- function(file,
+    from=1,
+    to,
+    by=1,
+    tz=getOption("oceTz"),
+    longitude=NA, latitude=NA,
+    type=c("adp", "pcadp"),
+    beamAngle=25, orientation,
+    monitor=FALSE, processingLog,
+    debug=getOption("oceDebug"),
+    ...)
 {
-    if (!missing(file) && is.character(file) && 0 == file.info(file)$size)
-        stop("empty file")
+    if (missing(file))
+        stop("must supply 'file'")
+    if (is.character(file)) {
+        if (!file.exists(file))
+            stop("cannot find file '", file, "'")
+        if (0L == file.info(file)$size)
+            stop("empty file '", file, "'")
+    }
     ## Data format is described in
     ##   SonTek/YSI
     ##   ADPManual_v710.pdf

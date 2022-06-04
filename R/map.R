@@ -1,4 +1,4 @@
-## vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4:foldmethod=marker
+# vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4:foldmethod=marker
 
 .axis <- local({
     val <- list(longitude=NULL, latitude=NULL)
@@ -3179,7 +3179,7 @@ mapPolygon <- function(longitude, latitude, density=NULL, angle=45,
 #' regular lon-lat grid to an irregular x-y grid using
 #' [lonlat2map()].  This irregular grid is then interpolated onto a
 #' regular x-y grid  with [binMean2D()] or with
-#' [akima::interp()] from the `akima` package, as determined by
+#' [interp::interp()] from the `interp` package, as determined by
 #' the `gridder` argument.   If `filledContour` is `TRUE`, the
 #' dimensions of the regular x-y grid is the same as that of the original
 #' lon-lat grid; otherwise, the number of rows and columns are multiplied by
@@ -3241,13 +3241,12 @@ mapPolygon <- function(longitude, latitude, density=NULL, angle=45,
 #' x-y coordinates.  See \dQuote{Details} for how this interacts with
 #' `gridder`.
 #'
-#' @param gridder Name of gridding function used if `filledContour` is
-#' `TRUE`.  This can be either `"binMean2D"` to select
-#' [binMean2D()] or `"interp"` for
-#' [akima::interp()]. If not provided, then a selection is made
-#' automatically, with [binMean2D()] being used if there are
-#' more than 10,000 data points in the present graphical view. This
-#' `"binMean2D"` method is much faster than `"interp"`.
+#' @param gridder Name of gridding function used if `filledContour` is `TRUE`.
+#' This can be either `"binMean2D"` to select [binMean2D()] or either `"interp"`
+#' (or, for compatibility with prior versions, `"akima"`) for
+#' [interp::interp()]. If not provided, then a selection is made automatically,
+#' with [binMean2D()] being used if there are more than 10,000 data points in
+#' the present graphical view.
 #'
 #' @param debug A flag that turns on debugging.  Set to 1 to get a
 #' moderate amount of debugging information, or to 2 to get more.
@@ -3278,10 +3277,10 @@ mapPolygon <- function(longitude, latitude, density=NULL, angle=45,
 #'
 #' @family functions related to maps
 mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
-                     breaks, col, colormap, border=NA,
-                     lwd=par("lwd"), lty=par("lty"), missingColor=NA,
-                     filledContour=FALSE, gridder="binMean2D",
-                     debug=getOption("oceDebug"))
+    breaks, col, colormap, border=NA,
+    lwd=par("lwd"), lty=par("lty"), missingColor=NA,
+    filledContour=FALSE, gridder="binMean2D",
+    debug=getOption("oceDebug"))
 {
     if ("none" == .Projection()$type)
         stop("must create a map first, with mapPlot()\n")
@@ -3509,12 +3508,12 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
         zz <- zz[inFrame]
         oceDebug(debug, "after trimming, length(xx): ", length(xx), "\n")
         ## chop to points within plot area
-        if (gridder== "akima") {
-            oceDebug(debug, "using akima::interp()\n")
-            if (requireNamespace("akima", quietly=TRUE)) {
-                i <- akima::interp(x=xx, y=yy, z=zz, xo=xg, yo=yg)
+        if (gridder %in% c("interp", "akima")) {
+            oceDebug(debug, "using interp::interp()\n")
+            if (requireNamespace("interp", quietly=TRUE)) {
+                i <- interp::interp(x=xx, y=yy, z=zz, xo=xg, yo=yg)
             } else {
-                stop("must install.packages(\"akima\") for mapImage() with filledContour and gridder='akima'")
+                stop("must install.packages(\"interp\") for gridder='interp' or 'akima'")
             }
         } else {
             oceDebug(debug, "using binMean2D()\n")
