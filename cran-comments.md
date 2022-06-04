@@ -19,12 +19,8 @@ and help 3.8Mb.
 
 ## Github R-CMD-check Action Tests
 
-R-CMD-check github action reports no problems on
-* windows-latest (release)
-* macOS-latest (release)
-* ubuntu-20.04 (release)
-* ubuntu-20.04 (devel)
-
+R-CMD-check github action reports no problems except on macOS-latest, for which
+MASS is not available (thus, the problem is not related to the oce source).
 
 ## Remote Windows Checks
 
