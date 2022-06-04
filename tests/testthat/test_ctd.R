@@ -1,6 +1,20 @@
 # vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
 library(oce)
 
+# https://github.com/dankelley/oce/issues/1962
+test_that("as.ctd(argo,profile=1L) flattens flags", {
+    data(argo)
+    for (profile in 1:2) {
+        ctd <- as.ctd(argo, profile=profile)
+        for (name in names(argo@metadata$flags)) {
+            flagname <- paste0(name, "Flag")
+            expect_true(is.array(argo[[flagname]]))
+            expect_true(is.vector(ctd[[flagname]]))
+            expect_equal(argo[[flagname]][,profile], ctd[[flagname]])
+        }
+    }
+})
+
 # https://github.com/dankelley/oce/issues/1891
 test_that("ctd[[\"?\"]] works (issue 1891)", {
     data(section)
@@ -142,14 +156,6 @@ test_that("as.ctd() with a list", {
     expect_equal(ctd[["salinity"]], ctd_l[["salinity"]])
     expect_equal(ctd[["temperature"]], ctd_l[["temperature"]])
     expect_equal(ctd[["pressure"]], ctd_l[["pressure"]])
-})
-
-test_that("as.ctd() with an argo object, by profile", {
-    data(argo)
-    ctdProfile1 <- as.ctd(argo, profile=1)
-    ctdProfile2 <- as.ctd(argo, profile=2)
-    expect_equal(ctdProfile1[["salinity"]], argo[["salinity"]][,1])
-    expect_equal(ctdProfile2[["salinity"]], argo[["salinity"]][,2])
 })
 
 test_that("ctdTrim indices argument", {

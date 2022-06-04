@@ -70,13 +70,12 @@ resampling rate to be used in interpolating from lon-lat coordinates to
 x-y coordinates.  See \dQuote{Details} for how this interacts with
 \code{gridder}.}
 
-\item{gridder}{Name of gridding function used if \code{filledContour} is
-\code{TRUE}.  This can be either \code{"binMean2D"} to select
-\code{\link[=binMean2D]{binMean2D()}} or \code{"interp"} for
-\code{\link[akima:interp]{akima::interp()}}. If not provided, then a selection is made
-automatically, with \code{\link[=binMean2D]{binMean2D()}} being used if there are
-more than 10,000 data points in the present graphical view. This
-\code{"binMean2D"} method is much faster than \code{"interp"}.}
+\item{gridder}{Name of gridding function used if \code{filledContour} is \code{TRUE}.
+This can be either \code{"binMean2D"} to select \code{\link[=binMean2D]{binMean2D()}} or either \code{"interp"}
+(or, for compatibility with prior versions, \code{"akima"}) for
+\code{\link[interp:interp]{interp::interp()}}. If not provided, then a selection is made automatically,
+with \code{\link[=binMean2D]{binMean2D()}} being used if there are more than 10,000 data points in
+the present graphical view.}
 
 \item{debug}{A flag that turns on debugging.  Set to 1 to get a
 moderate amount of debugging information, or to 2 to get more.}
@@ -95,7 +94,7 @@ If \code{filledContour} is \code{FALSE}, the image \verb{pixels'' are with [poly
 regular lon-lat grid to an irregular x-y grid using
 \code{\link[=lonlat2map]{lonlat2map()}}.  This irregular grid is then interpolated onto a
 regular x-y grid  with \code{\link[=binMean2D]{binMean2D()}} or with
-\code{\link[akima:interp]{akima::interp()}} from the \code{akima} package, as determined by
+\code{\link[interp:interp]{interp::interp()}} from the \code{interp} package, as determined by
 the \code{gridder} argument.   If \code{filledContour} is \code{TRUE}, the
 dimensions of the regular x-y grid is the same as that of the original
 lon-lat grid; otherwise, the number of rows and columns are multiplied by
