@@ -29,10 +29,12 @@ An \linkS4class{xbt} object.
 \description{
 This file format, described at \code{https://www.aoml.noaa.gov/phod/dhos/axbt.php}, contains a header
 line, followed by data lines.  For example, a particular file at this site has first
-three lines as follows.\preformatted{181.589 20100709 140820  -85.336  25.290 N42RF GL10 14    2010-190-15:49:18
+three lines as follows.
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{181.589 20100709 140820  -85.336  25.290 N42RF GL10 14    2010-190-15:49:18
   -0.0 27.52 -9.99
   -1.5 27.52 -9.99
-}
+}\if{html}{\out{</div>}}
 
 where the items on the header line are (1) a year-day (ignored here), (2)
 YYYYMMDD, (3) HHMMSS, (4) longitude, (5) latitude, (6) aircraft wing

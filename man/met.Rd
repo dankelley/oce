@@ -13,13 +13,17 @@ during September of 2003 (the period during which Hurricane Juan struck the
 city).
 }
 \details{
-The data file was downloaded\if{html}{\out{<div class="sourceCode R">}}\preformatted{metFile <- download.met(id=6358, year=2003, month=9, destdir=".", type="xml")
+The data file was downloaded
+
+\if{html}{\out{<div class="sourceCode R">}}\preformatted{metFile <- download.met(id=6358, year=2003, month=9, destdir=".", type="xml")
 }\if{html}{\out{</div>}}
 
 Note that using \code{\link[=download.met]{download.met()}} avoids having to navigate the
 the awkward Environment Canada website, but it imposes the burden
 of having to know the station ID number.  With the data in-hand,
-the object was then created (and its timezone adjusted) with\if{html}{\out{<div class="sourceCode R">}}\preformatted{met <- read.met(metFile)
+the object was then created (and its timezone adjusted) with
+
+\if{html}{\out{<div class="sourceCode R">}}\preformatted{met <- read.met(metFile)
 met <- oceSetData(met, "time", met[["time"]]+4*3600,
                  note="add 4h to local time to get UTC time")
 }\if{html}{\out{</div>}}

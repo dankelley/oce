@@ -23,7 +23,9 @@ cm/s, and are converted to m/s to follow the oce convention. Shears
 to represent) are assumed to be in (cm/s)/m, although they could be in 1/s
 or something else; the lack of documentation is a problem here. Also,
 note that the assumed shears are not just first-difference estimates
-of velocity, given the results of a sample dataset:\preformatted{> head(data.frame(b[["data"]]))
+of velocity, given the results of a sample dataset:
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{> head(data.frame(b[["data"]]))
   pressure      u      v       uz       vz
 1        0  0.092 -0.191  0.00000  0.00000
 2       10  0.092 -0.191  0.02183 -0.35412
@@ -31,7 +33,7 @@ of velocity, given the results of a sample dataset:\preformatted{> head(data.fra
 4       30  0.026 -0.246 -0.03948  0.02169
 5       40 -0.003 -0.212 -0.02614  0.03111
 6       50 -0.023 -0.169 -0.03791  0.01706
-}
+}\if{html}{\out{</div>}}
 }
 \section{Issues}{
  This function may be renamed (or removed) without notice.

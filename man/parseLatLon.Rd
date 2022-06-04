@@ -18,9 +18,11 @@ A numerical value of latitude or longitude.
 }
 \description{
 Parse a latitude or longitude string, e.g. as in the header of a CTD file
-The following formats are understood (for, e.g. latitude):\preformatted{** NMEA Latitude = 47 54.760 N
+The following formats are understood (for, e.g. latitude):
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{** NMEA Latitude = 47 54.760 N
 ** Latitude: 47 53.27 N
-}
+}\if{html}{\out{</div>}}
 
 Note that \code{\link[=iconv]{iconv()}} is called to convert the string to ASCII before
 decoding, to change any degree (or other non-ASCII) symbols to blanks.

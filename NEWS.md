@@ -1,5 +1,6 @@
 # oce 1.7.4
 
+* Switch suggestion of `akima` with `interp`, a FOSS alternative.
 * Improve `read.ctd.sbe()` re handling of Date header.
 
 # oce 1.7.3
