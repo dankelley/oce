@@ -905,6 +905,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1,
             transmitEnergy=transmitEnergy[p$burstAltimeterRaw],
             powerLevel=powerLevel[p$burstAltimeterRaw])
     } else {
+        ## FIXME DAN DAN DAN DAN
         burstAltimeterRaw <- NULL
     }
 
