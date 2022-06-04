@@ -2,6 +2,7 @@
 
 * Switch suggestion of `akima` with `interp`, a FOSS alternative.
 * Improve `read.ctd.sbe()` re handling of Date header.
+* Improve `as.ctd()` for Argo data.
 
 # oce 1.7.3
 
