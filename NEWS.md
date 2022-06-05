@@ -1,7 +1,7 @@
 # oce 1.7.4
 
-* Switch suggestion of `akima` with `interp`, a FOSS alternative.
-* Improve `read.ctd.sbe()` re handling of Date header.
+* Change `mapImage()` to use `interp` instead of `akima`, as required by CRAN.
+* Improve `read.ctd.sbe()` for interpreting Date in headers.
 * Improve `as.ctd()` for Argo data.
 
 # oce 1.7.3
