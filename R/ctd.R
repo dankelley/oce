@@ -4971,13 +4971,13 @@ plotProfile <- function(x,
         } else if (type == 's') {
             lines(x, y, col=col, lwd=lwd, lty=lty, type='s')
         } else if (type == 'p') {
-            points(x, y, col=col, cex=cex, pch=pch, bg=pt.bg)
+            points(x, y, col=col, cex=cex, lwd=lwd, pch=pch, bg=pt.bg)
         } else if (type == 'o') {
             lines(x, y, col=col, lwd=lwd, lty=lty, ...)
-            points(x, y, col=col, cex=cex, pch=pch, bg=pt.bg)
+            points(x, y, col=col, cex=cex, lwd=lwd, pch=pch, bg=pt.bg)
         } else if (type == 'b') {
             lines(x, y, col=col, lwd=lwd, lty=lty, ...)
-            points(x, y, col=col, cex=cex, pch=pch, bg=pt.bg)
+            points(x, y, col=col, cex=cex, lwd=lwd, pch=pch, bg=pt.bg)
         } else if (type == 'n') {
             ; # skip it
         } else {
