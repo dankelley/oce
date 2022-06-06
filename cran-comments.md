@@ -1,7 +1,9 @@
 # Submission of oce 1.7-4
 
-This version changes an "akima" function call with an "interp" equivalent,
-satisfying a CRAN request communicated by B. Ripley on 2022-06-04.
+This version (a) changes an "akima" function call with an "interp" equivalent,
+satisfying a CRAN request communicated by B. Ripley on 2022-06-04 and (b)
+incorporates code and documentation improvements made since the previous
+release.
 
 We request an exemption to the "10 minute rule". Oce is a large package that is
 slow to build and test. Even removing the tests and examples might not let us
