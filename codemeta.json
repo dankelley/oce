@@ -7,7 +7,7 @@
   "codeRepository": "https://github.com/dankelley/oce",
   "issueTracker": "https://github.com/dankelley/oce/issues",
   "license": "https://spdx.org/licenses/GPL-2.0",
-  "version": "1.7.3",
+  "version": "1.7.4",
   "programmingLanguage": {
     "@type": "ComputerLanguage",
     "name": "R",
@@ -67,18 +67,6 @@
   "softwareSuggestions": [
     {
       "@type": "SoftwareApplication",
-      "identifier": "akima",
-      "name": "akima",
-      "provider": {
-        "@id": "https://cran.r-project.org",
-        "@type": "Organization",
-        "name": "Comprehensive R Archive Network (CRAN)",
-        "url": "https://cran.r-project.org"
-      },
-      "sameAs": "https://CRAN.R-project.org/package=akima"
-    },
-    {
-      "@type": "SoftwareApplication",
       "identifier": "automap",
       "name": "automap",
       "provider": {
@@ -112,6 +100,18 @@
         "url": "https://cran.r-project.org"
       },
       "sameAs": "https://CRAN.R-project.org/package=foreign"
+    },
+    {
+      "@type": "SoftwareApplication",
+      "identifier": "interp",
+      "name": "interp",
+      "provider": {
+        "@id": "https://cran.r-project.org",
+        "@type": "Organization",
+        "name": "Comprehensive R Archive Network (CRAN)",
+        "url": "https://cran.r-project.org"
+      },
+      "sameAs": "https://CRAN.R-project.org/package=interp"
     },
     {
       "@type": "SoftwareApplication",
@@ -339,10 +339,11 @@
     },
     "SystemRequirements": null
   },
-  "fileSize": "22050.834KB",
+  "fileSize": "23295.553KB",
   "relatedLink": ["https://dankelley.github.io/oce/", "https://CRAN.R-project.org/package=oce"],
   "releaseNotes": "https://github.com/dankelley/oce/blob/master/NEWS.md",
   "readme": "https://github.com/dankelley/oce/blob/develop/README.md",
   "contIntegration": ["https://github.com/dankelley/oce/actions", "https://app.codecov.io/gh/dankelley/oce?branch=develop"],
+  "developmentStatus": "https://www.repostatus.org/",
   "keywords": ["oceanography", "r"]
 }
