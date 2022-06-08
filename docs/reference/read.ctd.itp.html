@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-4</span>
       </span>
     </div>
 
@@ -94,8 +94,8 @@
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>file</dt>
-<dd><p>a connection or a character string giving the name of the file to
-load.  For <code><a href="read.ctd.sbe.html">read.ctd.sbe()</a></code> and <code><a href="read.ctd.woce.html">read.ctd.woce()</a></code>, this may be a
+<dd><p>either a connection or a character value naming a file.
+For <code><a href="read.ctd.sbe.html">read.ctd.sbe()</a></code> and <code><a href="read.ctd.woce.html">read.ctd.woce()</a></code>, this may be a
 wildcard (e.g. <code>"*.cnv"</code> or <code>"*.csv"</code>) in which case the return
 value is a vector containing CTD objects created by reading the files from
 <code><a href="https://rdrr.io/r/base/list.files.html" class="external-link">list.files()</a></code> with <code>pattern</code> set to the specified wildcard
@@ -104,11 +104,8 @@ pattern.</p></dd>
 <dd><p>an optional <a href="https://rdrr.io/r/base/list.html" class="external-link">list</a> that can be used to convert unrecognized
 data names to resultant variable names.  This is used only by
 <code><a href="read.ctd.sbe.html">read.ctd.sbe()</a></code> and <code><a href="read.ctd.odf.html">read.ctd.odf()</a></code>. For example,
-if a data file named salinity as <code>"SAL"</code>, then using</p><div class="sourceCode"><pre><code><span class="va">d</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/read.ctd.html">read.ctd</a></span><span class="op">(</span><span class="va">f</span>, columns<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>
-    salinity<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>name<span class="op">=</span><span class="st">"SAL"</span>,
-                  unit<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>unit<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/expression.html" class="external-link">expression</a></span><span class="op">(</span><span class="op">)</span>,
-                  scale<span class="op">=</span><span class="st">"PSS-78"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></code></pre></div>
-
+if a data file named salinity as <code>"SAL"</code>, then using</p>
+<p></p><div class="sourceCode"><pre><code></code></pre><p></p></div>
 <p>would assign the <code>"SAL"</code> column to the <code>salinity</code> entry in the data
 slot of the CTD object returned by the <code>read.*</code> function.</p></dd>
 <dt>station</dt>
@@ -155,10 +152,7 @@ better for normal calls by a user.</p></dd>
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>a <a href="ctd-class.html">ctd</a> object. The details of the contents
-depend on the source file. The <code>metadata</code> slot is particularly
-variable across data formats, because the meta-information provided
-in those formats varies so widely.</p>
+    <p>This function returns a <a href="ctd-class.html">ctd</a> object.</p>
     </div>
     <div id="references">
     <h2>References</h2>

@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-4</span>
       </span>
     </div>
 
@@ -302,8 +302,8 @@ Advanced users who want to diagnose the problem further might find it helpful to
 examine the original data file using other tools. To this end, <code>read.adp.rdi</code>
 inserts an element named <code>ensembleInFile</code> into the <code>metadata</code> slot.
 This gives the starting byte number of each inferred ensemble within the original data
-file.  For example, if <code>d</code> is an object read with <code>read.adp.rdi</code>, then using</p><div class="sourceCode"><pre><code><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">d</span><span class="op">[[</span><span class="st">"time"</span><span class="op">]</span><span class="op">]</span><span class="op">[</span><span class="op">-</span><span class="fl">1</span><span class="op">]</span>, <span class="fu"><a href="https://rdrr.io/r/base/diff.html" class="external-link">diff</a></span><span class="op">(</span><span class="va">d</span><span class="op">[[</span><span class="st">"ensembleInFile"</span><span class="op">]</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></code></pre></div>
-
+file.  For example, if <code>d</code> is an object read with <code>read.adp.rdi</code>, then using</p>
+<p></p><div class="sourceCode"><pre><code></code></pre><p></p></div>
 <p>can be a good way to narrow in on problems.</p>
     </div>
     <div id="references">
@@ -383,7 +383,7 @@ P/N 957-6171-00 (June 2001) <code>WinRiver User Guide International Version.pdf.
 <span class="r-out co"><span class="r-pr">#&gt;</span> * Instrument:         adcp</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> * Serial number:      unknown</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> * Firmware version:   16.28</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> * Source filename:    ``/private/var/folders/8b/l4h64m1j22v5pb7vj049ff140000gn/T/RtmpcSR0t7/temp_libpath7e056f7e4643/oce/extdata/adp_rdi.000``</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> * Source filename:    ``/private/var/folders/8b/l4h64m1j22v5pb7vj049ff140000gn/T/RtmpnvvQGr/temp_libpath954c304ca12e/oce/extdata/adp_rdi.000``</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> * Location:           unknown latitude, unknown longitude</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> * Number of beams:    4</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> * Number of profiles: 9</span>
@@ -439,7 +439,7 @@ P/N 957-6171-00 (June 2001) <code>WinRiver User Guide International Version.pdf.
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> * Processing Log</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2022-05-11 16:50:32 UTC: `read.adp.rdi(file = system.file("extdata", "adp_rdi.000", package = "oce"))`</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2022-06-08 11:17:44 UTC: `read.adp.rdi(file = system.file("extdata", "adp_rdi.000", package = "oce"))`</span>
 <span class="r-in"></span>
 </code></pre></div>
     </div>

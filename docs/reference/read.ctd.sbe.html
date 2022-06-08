@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-4</span>
       </span>
     </div>
 
@@ -95,8 +95,8 @@
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>file</dt>
-<dd><p>a connection or a character string giving the name of the file to
-load.  For <code>read.ctd.sbe()</code> and <code><a href="read.ctd.woce.html">read.ctd.woce()</a></code>, this may be a
+<dd><p>either a connection or a character value naming a file.
+For <code>read.ctd.sbe()</code> and <code><a href="read.ctd.woce.html">read.ctd.woce()</a></code>, this may be a
 wildcard (e.g. <code>"*.cnv"</code> or <code>"*.csv"</code>) in which case the return
 value is a vector containing CTD objects created by reading the files from
 <code><a href="https://rdrr.io/r/base/list.files.html" class="external-link">list.files()</a></code> with <code>pattern</code> set to the specified wildcard
@@ -105,11 +105,8 @@ pattern.</p></dd>
 <dd><p>an optional <a href="https://rdrr.io/r/base/list.html" class="external-link">list</a> that can be used to convert unrecognized
 data names to resultant variable names.  This is used only by
 <code>read.ctd.sbe()</code> and <code><a href="read.ctd.odf.html">read.ctd.odf()</a></code>. For example,
-if a data file named salinity as <code>"SAL"</code>, then using</p><div class="sourceCode"><pre><code><span class="va">d</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/read.ctd.html">read.ctd</a></span><span class="op">(</span><span class="va">f</span>, columns<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>
-    salinity<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>name<span class="op">=</span><span class="st">"SAL"</span>,
-                  unit<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>unit<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/expression.html" class="external-link">expression</a></span><span class="op">(</span><span class="op">)</span>,
-                  scale<span class="op">=</span><span class="st">"PSS-78"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></code></pre></div>
-
+if a data file named salinity as <code>"SAL"</code>, then using</p>
+<p></p><div class="sourceCode"><pre><code></code></pre><p></p></div>
 <p>would assign the <code>"SAL"</code> column to the <code>salinity</code> entry in the data
 slot of the CTD object returned by the <code>read.*</code> function.</p></dd>
 <dt>station</dt>
@@ -162,10 +159,7 @@ better for normal calls by a user.</p></dd>
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>a <a href="ctd-class.html">ctd</a> object. The details of the contents
-depend on the source file. The <code>metadata</code> slot is particularly
-variable across data formats, because the meta-information provided
-in those formats varies so widely.</p>
+    <p>This function returns a <a href="ctd-class.html">ctd</a> object.</p>
     </div>
     <div id="details">
     <h2>Details</h2>
@@ -189,28 +183,74 @@ names (in the "Short Name" column of the table spanning pages 161 through 172).
 However, for the case of <code>.btl</code> files, the column names are as described
 in the documentation entry for the <code>btl</code> argument.</p>
     </div>
+    <div id="a-note-on-hand-entered-headers">
+    <h2>A note on hand-entered headers</h2>
+    
+
+
+<p>CNV files may have a section that contains human-entered information. This is
+detected by <code>read.ctd.sbe()</code> as lines that begin with two asterisks. Decoding
+this information can be tricky, because humans have many ways of writing
+things.</p>
+<p>For example, consider the <code>date</code> item in the <code>metadata</code> slot of the returned
+value.  <code>read.ctd.sbe()</code> infers this value in one of two ways.  First, if
+there is a header line staring with</p>
+<p></p><div class="sourceCode"><pre><code></code></pre><p></p></div>
+<p>then that value is decoded and used for <code>date</code>.  This header line, preceded
+by a single asterisk, is not human-entered, and so there is reason to hope
+for a uniform format that can be handled by <code>read.ctd.sbe()</code>.  However, if
+there is no NMEA header line, then <code>read.ctd.sbe()</code> will look for a line
+starting with</p>
+<p></p><div class="sourceCode"><pre><code></code></pre><p></p></div>
+<p>which was human-entered. This is the second choice, because humans write
+dates in a bewildering variety of ways, and <code><a href="https://rdrr.io/r/base/as.POSIXlt.html" class="external-link">as.POSIXct()</a></code>, which
+<code>read.ctd.sbe</code> uses to parse the date, cannot handle them all. If there is a
+problem, <code>read.ctd.sbe()</code> issues a warning and stores NA in <code>date</code>.</p>
+<p>A similar error-detection procedure is used for human-entered location data,
+which appear in lines starting with either</p>
+<p></p><div class="sourceCode"><pre><code></code></pre><p></p></div>
+<p>or</p>
+<p></p><div class="sourceCode"><pre><code></code></pre><p></p></div>
+<p>which often take forms that <code>read.ctd.sbe()</code> cannot parse.</p>
+<p>It is important to note that, even if no warnings are issued, there is a
+reasonably high chance that human-entered data will be scanned incorrectly.
+(Did the operator remember to indicate the hemisphere? Does 123.456 indicate
+decimal degrees, or 123 degrees plus 45.6 minutes? Is hemisphere indicated by
+sign or by letter, and, if the latter, where does it appear?)</p>
+<p>In deep-sea work, a ship might steam for 6 hours between CTD stations, so the
+ship-time cost of each CTD file can be several thousand dollars.  Surely it
+is not unreasonable for an analyst to take a minute to glance at the CNV
+file, to ascertain whether <code>read.ctd.sbe()</code> inferred correct values.</p>
+<p><code><a href="oceSetMetadata.html">oceSetMetadata()</a></code> is helpful for correcting problems with individual files,
+but if many files are systematically problematic, say for a whole cruise or
+perhaps even for a whole institution, then it might sense to set up a wrapper
+function to correct deficiencies in the CNV files. As an example, the
+following handles dates specified in a particular nonstandard way.</p>
+<p></p><div class="sourceCode"><pre><code></code></pre><p></p></div>
+    </div>
     <div id="a-note-on-sampling-times">
     <h2>A note on sampling times</h2>
     
 
-<p>Until November of 2018,
-there was a possibility for great confusion in the storage
-of the time entries within the <code>data</code> slot, because <code>read.ctd.sbe</code>
-renamed each of the ten variants of time (see reference 2 for a list)
-as <code>"time"</code> in the <code>data</code> slot of the returned value.
-For CTD profiles, this was perhaps not a great problem, but it could
-lead to great confusion for moored data. Therefore, a change to <code>read.ctd.sbe</code> was
-made, so that it would Seabird times, using the <code>start_time</code> entry in
-the CNV file header (which is stored as <code>startTime</code> in the object
-<code>metadata</code> slot), along with specific time columns as follows
-(and as documented, with uneven clarity, in the
-SBE Seasoft data processing manual, revision 7.26.8, Appendix VI):</p><table class="table table"><tr><td><strong>Item</strong></td><td><strong>Meaning</strong></td></tr><tr><td><code>timeS</code></td><td>seconds elapsed since <code>start_time</code></td></tr><tr><td><code>timeM</code></td><td>minutes elapsed since <code>start_time</code></td></tr><tr><td><code>timeH</code></td><td>hours elapsed since <code>start_time</code></td></tr><tr><td><code>timeJ</code></td><td>Julian days since the start of the year of the first observation</td></tr><tr><td><code>timeN</code></td><td>NMEA-based time, in seconds past Jan 1, 1970</td></tr><tr><td><code>timeQ</code></td><td>NMEA-based time, in seconds past Jan 1, 2000</td></tr><tr><td><code>timeK</code></td><td>NMEA-based time, in seconds past Jan 1, 2000</td></tr><tr><td><code>timeJV2</code></td><td>as <code>timeJ</code></td></tr><tr><td><code>timeSCP</code></td><td>as <code>timeJ</code></td></tr><tr><td><code>timeY</code></td><td>computer time, in seconds past Jan 1, 1970</td></tr></table><p>NOTE: not all of these times have been tested properly, and so users
+
+<p>Until November of 2018, there was a possibility for great confusion in the
+storage of the time entries within the <code>data</code> slot, because <code>read.ctd.sbe</code>
+renamed each of the ten variants of time (see reference 2 for a list) as
+<code>"time"</code> in the <code>data</code> slot of the returned value.  For CTD profiles, this
+was perhaps not a great problem, but it could lead to significant confusion
+for moored data. Therefore, a change to <code>read.ctd.sbe</code> was made, so that it
+would Seabird times, using the <code>start_time</code> entry in the CNV file header
+(which is stored as <code>startTime</code> in the object <code>metadata</code> slot), along with
+specific time columns as follows (and as documented, with uneven clarity, in
+the SBE Seasoft data processing manual, revision 7.26.8, Appendix VI):</p>
+<table class="table table"><tr><td><strong>Item</strong></td><td><strong>Meaning</strong></td></tr><tr><td><code>timeS</code></td><td>seconds elapsed since <code>start_time</code></td></tr><tr><td><code>timeM</code></td><td>minutes elapsed since <code>start_time</code></td></tr><tr><td><code>timeH</code></td><td>hours elapsed since <code>start_time</code></td></tr><tr><td><code>timeJ</code></td><td>Julian days since the start of the year of the first observation</td></tr><tr><td><code>timeN</code></td><td>NMEA-based time, in seconds past Jan 1, 1970</td></tr><tr><td><code>timeQ</code></td><td>NMEA-based time, in seconds past Jan 1, 2000</td></tr><tr><td><code>timeK</code></td><td>NMEA-based time, in seconds past Jan 1, 2000</td></tr><tr><td><code>timeJV2</code></td><td>as <code>timeJ</code></td></tr><tr><td><code>timeSCP</code></td><td>as <code>timeJ</code></td></tr><tr><td><code>timeY</code></td><td>computer time, in seconds past Jan 1, 1970</td></tr></table><p>NOTE: not all of these times have been tested properly, and so users
 are asked to report incorrect times, so that <code>read.ctd.sbe</code> can
 be improved.</p>
     </div>
     <div id="a-note-on-scales">
     <h2>A note on scales</h2>
     
+
 
 <p>The user might encounter data files with a variety of scales for temperature and
 salinity. Oce keeps track of these scales in the units it sets up for the stored
@@ -306,7 +346,7 @@ and this was the reference version used in coding <code>oce</code>.</p></li>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="va">f</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"ctd.cnv"</span>, package<span class="op">=</span><span class="st">"oce"</span><span class="op">)</span></span>
 <span class="r-in"><span class="va">d</span> <span class="op">&lt;-</span> <span class="fu"><a href="read.ctd.html">read.ctd</a></span><span class="op">(</span><span class="va">f</span><span class="op">)</span></span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>startTime &lt; 1950, suggesting y2k problem in this cnv file</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>this CNV file has temperature in the IPTS-68 scale, and this is stored in the object; note that [["temperature"]] and the sw* functions will convert to the modern ITS-90 value</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>this CNV file has temperature in the IPTS-68 scale and this is stored in the object, but note that [["temperature"]] and the sw* functions convert the numbers to ITS-90 values</span>
 <span class="r-in"></span>
 </code></pre></div>
     </div>
