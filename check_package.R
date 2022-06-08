@@ -1,4 +1,5 @@
-requireNamespace(c("devtools", "urlchecker", "rhub", "revdepcheck"))
+requireNamespace(c("codemetar", "devtools", "urlchecker", "rhub", "revdepcheck"))
+codemetar::write_codemeta()
 t <- devtools::spell_check()
 stopifnot(t == "No spelling errors found.")
 urlchecker::url_check()
