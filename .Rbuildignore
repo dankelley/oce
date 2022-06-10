@@ -1,4 +1,3 @@
-*.out$
 ^nohup.out$
 ^TAGS$
 ^R/TAGS$
