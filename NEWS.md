@@ -1,3 +1,7 @@
+# oce 1.7.6
+
+* Permit acoustic-Doppler files in excess of 4Gb.
+
 # oce 1.7.5
 
 * Remove a stray file.
