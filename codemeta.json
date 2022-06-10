@@ -7,7 +7,7 @@
   "codeRepository": "https://github.com/dankelley/oce",
   "issueTracker": "https://github.com/dankelley/oce/issues",
   "license": "https://spdx.org/licenses/GPL-2.0",
-  "version": "1.7.4",
+  "version": "1.7.5",
   "programmingLanguage": {
     "@type": "ComputerLanguage",
     "name": "R",
@@ -339,7 +339,7 @@
     },
     "SystemRequirements": null
   },
-  "fileSize": "23295.553KB",
+  "fileSize": "23293.37KB",
   "relatedLink": ["https://dankelley.github.io/oce/", "https://CRAN.R-project.org/package=oce"],
   "releaseNotes": "https://github.com/dankelley/oce/blob/master/NEWS.md",
   "readme": "https://github.com/dankelley/oce/blob/develop/README.md",
