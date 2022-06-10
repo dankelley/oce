@@ -1,3 +1,7 @@
+# oce 1.7.5
+
+Remove a stray file.
+
 # oce 1.7.4
 
 * Change `mapImage()` to use `interp` instead of `akima`, as required by CRAN.
