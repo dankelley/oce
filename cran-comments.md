@@ -19,11 +19,6 @@ WARNINGs, and 2 NOTEs, one naming the author the other reporting that
 sub-directories were of size of 1MB or more: R 3.0Mb, data 1.0Mb, doc 2.0Mb,
 and help 3.8Mb.
 
-## Github R-CMD-check Action Tests
-
-R-CMD-check github action reports no problems except on macOS-latest, for which
-MASS is not available (thus, the problem is not related to the oce source).
-
 ## Remote Windows Checks
 
 Using
@@ -33,6 +28,16 @@ devtools:::build_win_oldrelease()
 devtools:::build_win_devel()
 ```
 identified no errors.
+
+## Remote rhub Checks
+
+Using
+```R
+rhub::check_for_cran()
+```
+identified no errors with oce, although there are notes about stray files
+('lastMiKTeXException') in some instances.
+
 
 # Reverse Dependency Checks
 
