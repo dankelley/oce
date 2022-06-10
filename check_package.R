@@ -1,5 +1,9 @@
 requireNamespace(c("codemetar", "devtools", "urlchecker", "rhub", "revdepcheck"))
-codemetar::write_codemeta()
+if (FALSE) {
+    codemetar::write_codemeta()
+} else {
+    message("run 'codemetar::write_codemeta()' and then git push")
+}
 t <- devtools::spell_check()
 stopifnot(t == "No spelling errors found.")
 urlchecker::url_check()
