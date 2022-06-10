@@ -1,14 +1,21 @@
 # Submission of oce 1.7-5
 
-This version (a) changes an "akima" function call with an "interp" equivalent,
-satisfying a CRAN request communicated by B. Ripley on 2022-06-04, (b)
-incorporates code and documentation improvements made since the previous
-release and (c) removes a stray file.
+* Remove a stray file that was included in our failed submission of oce 1.7-4,
+  made 2 days ago. We hope for an exception to the 10-minute rule for this old
+  and large package, offering more than 300 functions spanning over 60k lines
+  of R, 6k lines of C/C++ and 1k line of Fortran.
 
-We request an exemption to the "10 minute rule". Oce is a large package that is
-slow to build and test. Even removing the tests and examples might not let us
-satisfy this limit, and doing so would significantly reduce the usefulness of
-the package to the oceanographic community.
+# Submission of oce 1.7-4
+
+* This version (a) changes an "akima" function call with an "interp"
+  equivalent, satisfying a CRAN request communicated by B. Ripley on
+  2022-06-04, (b) incorporates code and documentation improvements made since
+  the previous release and (c) removes a stray file.
+
+* We request an exemption to the "10 minute rule". Oce is a large package that
+  is slow to build and test. Even removing the tests and examples might not let
+  us satisfy this limit, and doing so would significantly reduce the usefulness
+  of the package to the oceanographic community.
 
 # Tests
 
