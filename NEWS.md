@@ -1,6 +1,6 @@
 # oce 1.7.5
 
-Remove a stray file.
+* Remove a stray file.
 
 # oce 1.7.4
 
