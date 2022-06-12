@@ -4,15 +4,6 @@ title: How to compute checksums in Nortek files?
 date: 2022-06-12
 ---
 
-## Test case
-
-![Ref 1 page 47: checksum computation](ref1_p47.png)
-
-![Ref 2 page 79: checksum computation](ref3_p79.png)
-
-![Ref 2 page 8: a checksum example.](ref3_p8.png)
-
-
 Figures 1 and 3 show differing schemes for computing checksums, from References
 1 and 2, respectively.  (Unhelpfully, the modern equivalent to Ref 1, that is,
 Ref 3, has no sample code.)
@@ -22,6 +13,46 @@ is used here as a test. Specifically, page 8 of ref 2 states that the checksum
 of the sequence a5 21 4f 00 45 17 14 15 20 05 00 00 00 00 92 00 is b4e0.  The
 endianness is unstated, but I tried both possibilities, and it is the second,
 i.e. b2 below, not the b1 that is written in Ref 3.
+
+## A test
+
+The local file `checksum.c` holds a version of the Nortek code written to
+modern C standards (with specified-length types).  It is given in the
+Appendix.  Running it on the `b1` file produced with R code as above does
+not retrieve the same checksum as Nortek states, but using `b2` yields
+agreement.  In other words, Nortek is (confusingly!) writing bytes in
+little-endian order.
+
+
+## References
+
+1. Nortek AS. “Signature Integration 55|250|500|1000kHz.” Nortek AS, 2017.
+  https://www.nortekgroup.com/assets/software/N3015-007-Integrators-Guide-AD2CP_1018.pdf.
+
+2. Nortek AS. “Classic Integrators Guide: Aquadopp | Aquadopp DW | Aquadopp
+   Profiler | HQ Aquadopp Profiler | Vector | AWAC.” Nortek AS, 2022.
+   https://support.nortekgroup.com/hc/en-us/articles/360029514052-Integrators-Guide-Classic.
+
+3. Nortek AS. “Signature Integration 55|250|500|1000kHz.” Nortek AS, March 31, 2022.
+
+## Appendix 1: Nortek code
+
+Ref 1 page 47
+
+\includegraphics[width=\hsize]{ref1_p47.png}
+
+Ref 2 page 79
+
+\includegraphics[width=\hsize]{ref2_p79.png}
+
+Ref 2 page 8
+
+\includegraphics[width=\hsize]{ref2_p8.png}
+
+
+
+## Appendix 2: R code to create a binary file
+
 
 ```{r}
 b1 <- as.raw(c(
@@ -39,28 +70,7 @@ B2 <- readBin("b2", "raw", length(b2))
 stopifnot(identical(b2, B2))
 ```
 
-## Code based on Reference 3
-
-The local file `checksum.c` holds a version of the Nortek code written to
-modern C standards (with specified-length types).  It is given in the
-Appendix.  Running it on the `b1` file produced with R code as above does
-not retrieve the same checksum as Nortek states, but using `b2` yields
-agreement.  In other words, Nortek is (confusingly!) writing bytes in
-little-endian order.
-
-## References
-
-1. Nortek AS. “Signature Integration 55|250|500|1000kHz.” Nortek AS, 2017.
-  https://www.nortekgroup.com/assets/software/N3015-007-Integrators-Guide-AD2CP_1018.pdf.
-
-2. Nortek AS. “Classic Integrators Guide: Aquadopp | Aquadopp DW | Aquadopp
-   Profiler | HQ Aquadopp Profiler | Vector | AWAC.” Nortek AS, 2022.
-   https://support.nortekgroup.com/hc/en-us/articles/360029514052-Integrators-Guide-Classic.
-
-3. Nortek AS. “Signature Integration 55|250|500|1000kHz.” Nortek AS, March 31, 2022.
-
-
-## Appendix
+## Appendix 3: C code to test checksums
 
 `checksum.c` follows
 ```C
