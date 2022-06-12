@@ -1,6 +1,6 @@
 Package: oce
 Title: Analysis of Oceanographic Data
-Version: 1.7-4
+Version: 1.7-7
 Authors@R: c(
     person(given="Dan", family="Kelley", email="Dan.Kelley@Dal.Ca", role=c("aut", "cre"), comment=c(ORCID="https://orcid.org/0000-0001-7808-5911")),
     person(given="Clark", family="Richards", email="clark.richards@gmail.com", role=c("aut"), comment=c(ORCID="https://orcid.org/0000-0002-7833-206X")),
@@ -9,10 +9,10 @@ Authors@R: c(
 Maintainer: Dan Kelley <Dan.Kelley@Dal.Ca>
 Depends: R (>= 2.15), gsw, methods, utils
 Suggests:
-    akima,
     automap,
     DBI,
     foreign,
+    interp,
     knitr,
     lubridate,
     marmap,

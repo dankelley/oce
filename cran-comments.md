@@ -1,44 +1,39 @@
-# Submission of 1.7-3
+# Submission of oce 1.7-6
 
-* Version 1.7-3 adds new features, and addresses an issue pointed out by Kurt
-  Hornik on 2022-05-09 relating to the encoding of a meteorological test file.
+* Address compiler warning about comparing a signed int with an unsigned int.
 
-# Submission of 1.7-2
+* We hope for an exception to the 10-minute rule for this old and large
+  package, offering more than 300 functions spanning over 60k lines of R, 6k
+  lines of C/C++ and 1k line of Fortran.
 
-Version 1.7-2 fixes a broken link (found upon submitting 1.7-1 to CRAN).
+# Submission of oce 1.7-5
 
-Version 1.7-1 fixes a problem of comparing a `class()` result with a string
-(found upon submitting 1.7-0 to CRAN).
+* Remove a stray file that was included in our failed submission of oce 1.7-4,
+  made 2 days ago.
 
-Version 1.7-0 adds `read.ctd.aml()` and addresses three problems seen in CRAN
-checks of 1.6-0:
+* We hope for an exception to the 10-minute rule for this old and large
+  package, offering more than 300 functions spanning over 60k lines of R, 6k
+  lines of C/C++ and 1k line of Fortran.
 
-1. Fix CRAN check warning about 2 uninitialized variables on
-  r-devel-linux-x86_64-debian-gcc.  (We thank K. Hornik, for an email dated
-  2022-03-16 notifying us about the problem.)
-2. Fix CRAN check error on r-devel-linux-x86_6-debian-clang, -fedora-clang and
-  -fedora-gcc, relating to a byte-order-mark in a test file, which is evidently
-  treated differently on different systems.
-3. Remove a kriging example because it causes problems on some CRAN check
-   machines.
+# Submission of oce 1.7-4
+
+* This version (a) changes an "akima" function call with an "interp"
+  equivalent, satisfying a CRAN request communicated by B. Ripley on
+  2022-06-04, (b) incorporates code and documentation improvements made since
+  the previous release and (c) removes a stray file.
+
+* We hope for an exception to the 10-minute rule for this old and large
+  package, offering more than 300 functions spanning over 60k lines of R, 6k
+  lines of C/C++ and 1k line of Fortran.
 
 # Tests
 
 ## Local Tests
 
-Local MacOS-12.2(beta) R-4.1.3 CMD (BUILD, INSTALL, CHECK): no ERRORs, no
+Local MacOS-12.5(beta) R-4.2.0 CMD (BUILD, INSTALL, CHECK): no ERRORs, no
 WARNINGs, and 2 NOTEs, one naming the author the other reporting that
 sub-directories were of size of 1MB or more: R 3.0Mb, data 1.0Mb, doc 2.0Mb,
-and help 3.6Mb.
-
-## Github R-CMD-check Action Tests
-
-R-CMD-check github action reports no problems on
-* windows-latest (release)
-* macOS-latest (release)
-* ubuntu-20.04 (release)
-* ubuntu-20.04 (devel)
-
+and help 3.8Mb.
 
 ## Remote Windows Checks
 
@@ -49,6 +44,16 @@ devtools:::build_win_oldrelease()
 devtools:::build_win_devel()
 ```
 identified no errors.
+
+## Remote rhub Checks
+
+Using
+```R
+rhub::check_for_cran()
+```
+identified no errors with oce, although there are notes about stray files
+('lastMiKTeXException') in some instances.
+
 
 # Reverse Dependency Checks
 

@@ -19,7 +19,7 @@ city)."><!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/math
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-6</span>
       </span>
     </div>
 
@@ -88,11 +88,13 @@ city).</p>
     </div>
     <div id="details">
     <h2>Details</h2>
-    <p>The data file was downloaded</p><div class="sourceCode R"><pre><code><span class="va">metFile</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/download.met.html">download.met</a></span><span class="op">(</span>id<span class="op">=</span><span class="fl">6358</span>, year<span class="op">=</span><span class="fl">2003</span>, month<span class="op">=</span><span class="fl">9</span>, destdir<span class="op">=</span><span class="st">"."</span>, type<span class="op">=</span><span class="st">"xml"</span><span class="op">)</span></code></pre><p></p></div>
+    <p>The data file was downloaded</p>
+<p></p><div class="sourceCode R"><pre><code><span class="va">metFile</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/download.met.html">download.met</a></span><span class="op">(</span>id<span class="op">=</span><span class="fl">6358</span>, year<span class="op">=</span><span class="fl">2003</span>, month<span class="op">=</span><span class="fl">9</span>, destdir<span class="op">=</span><span class="st">"."</span>, type<span class="op">=</span><span class="st">"xml"</span><span class="op">)</span></code></pre><p></p></div>
 <p>Note that using <code><a href="download.met.html">download.met()</a></code> avoids having to navigate the
 the awkward Environment Canada website, but it imposes the burden
 of having to know the station ID number.  With the data in-hand,
-the object was then created (and its timezone adjusted) with</p><div class="sourceCode R"><pre><code><span class="va">met</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/read.met.html">read.met</a></span><span class="op">(</span><span class="va">metFile</span><span class="op">)</span>
+the object was then created (and its timezone adjusted) with</p>
+<p></p><div class="sourceCode R"><pre><code><span class="va">met</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/read.met.html">read.met</a></span><span class="op">(</span><span class="va">metFile</span><span class="op">)</span>
 <span class="va">met</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/oceSetData.html">oceSetData</a></span><span class="op">(</span><span class="va">met</span>, <span class="st">"time"</span>, <span class="va">met</span><span class="op">[[</span><span class="st">"time"</span><span class="op">]</span><span class="op">]</span><span class="op">+</span><span class="fl">4</span><span class="op">*</span><span class="fl">3600</span>,
                  note<span class="op">=</span><span class="st">"add 4h to local time to get UTC time"</span><span class="op">)</span></code></pre><p></p></div>
 <p><em>Historical note.</em> The <code>data(met)</code> object was changed on October 19,

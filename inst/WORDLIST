@@ -1,10 +1,4 @@
-Liam
-MacNeil
-Renner
-SSDA
 ADCP
-Tac
-TAC
 ADCPs
 ADPs
 ADVField
@@ -105,6 +99,7 @@ ExpoCode
 FFFF
 FIXME
 FLtab
+FOSS
 FTU
 Fahey
 Feistel
@@ -121,6 +116,7 @@ GEBCO
 GGA
 GPX
 GSW
+Gb
 Gebco
 Geodynamics
 Geophys
@@ -206,6 +202,7 @@ Lamontagne
 Leffler
 Lentz
 Levitus
+Liam
 Licor
 Lijing
 Lobo
@@ -216,6 +213,7 @@ MEDS
 MGL
 MLI
 MSB
+MacNeil
 Macnab
 Mahy
 MapGen
@@ -296,6 +294,7 @@ Rajeshwari
 Rdoc
 Rebecca
 Reiniger
+Renner
 Rescale
 Rhodamine
 Roussilhe
@@ -309,6 +308,7 @@ SEANOE
 SIO
 SLEIWEX
 SOI
+SSDA
 Sachiko
 Salinities
 Sanson
@@ -340,9 +340,11 @@ Subclassing
 SunAngles
 Sv
 Sverdrup
+TAC
 TEOS
 TIRS
 TRDI
+Tac
 Takashi
 Takatsuki
 Teledyne
@@ -571,6 +573,7 @@ documentation
 doi
 donnees
 doppler
+dov
 downcasts
 dp
 dpdt

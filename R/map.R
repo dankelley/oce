@@ -1,4 +1,4 @@
-## vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4:foldmethod=marker
+# vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4:foldmethod=marker
 
 .axis <- local({
     val <- list(longitude=NULL, latitude=NULL)
@@ -550,11 +550,11 @@ badFillFix2 <- function(x, y, xorig, yorig)
 #'
 #' @family functions related to maps
 mapAxis <- function(side=1:2, longitude=TRUE, latitude=TRUE,
-                    axisStyle=1, tick=TRUE, line=NA, pos=NA, outer=FALSE, font=NA,
-                    lty="solid", lwd=1, lwd.ticks=lwd, col=NULL, col.ticks=NULL,
-                    hadj=NA, padj=NA, tcl=-0.3, cex.axis=1,
-                    mgp=c(0, 0.5, 0),
-                    debug=getOption("oceDebug"))
+    axisStyle=1, tick=TRUE, line=NA, pos=NA, outer=FALSE, font=NA,
+    lty="solid", lwd=1, lwd.ticks=lwd, col=NULL, col.ticks=NULL,
+    hadj=NA, padj=NA, tcl=-0.3, cex.axis=1,
+    mgp=c(0, 0.5, 0),
+    debug=getOption("oceDebug"))
 {
     if ("none" == .Projection()$type)
         stop("must create a map first, with mapPlot()\n")
@@ -739,17 +739,17 @@ mapAxis <- function(side=1:2, longitude=TRUE, latitude=TRUE,
 #' @seealso A map must first have been created with [mapPlot()].
 #' @family functions related to maps
 mapContour <- function(longitude, latitude, z,
-                       nlevels=10, levels=pretty(range(z, na.rm=TRUE), nlevels),
-                       ##labels=null,
-                       ##xlim=range(longitude, finite=TRUE),
-                       #ylim=range(latitude, finite=TRUE),
-                       labcex=0.6,
-                       drawlabels=TRUE,
-                       underlay="erase",
-                       ##vfont,
-                       ## axes=TRUE, frame.plot=axes,
-                       col=par("fg"), lty=par("lty"), lwd=par("lwd"),
-                       debug=getOption("oceDebug"))
+    nlevels=10, levels=pretty(range(z, na.rm=TRUE), nlevels),
+    ##labels=null,
+    ##xlim=range(longitude, finite=TRUE),
+    #ylim=range(latitude, finite=TRUE),
+    labcex=0.6,
+    drawlabels=TRUE,
+    underlay="erase",
+    ##vfont,
+    ## axes=TRUE, frame.plot=axes,
+    col=par("fg"), lty=par("lty"), lwd=par("lwd"),
+    debug=getOption("oceDebug"))
 {
     oceDebug(debug, "mapContour() {\n", sep="", unindent=1, style="bold")
     if ("none" == .Projection()$type)
@@ -1013,7 +1013,7 @@ mapCoordinateSystem <- function(longitude, latitude, L=100, phi=0, ...)
 #'
 #' @family functions related to maps
 mapDirectionField <- function(longitude, latitude, u, v,
-                              scale=1, length=0.05, code=2, col=par("fg"), ...)
+    scale=1, length=0.05, code=2, col=par("fg"), ...)
 {
     if ("none" == .Projection()$type)
         stop("must create a map first, with mapPlot()\n")
@@ -1600,17 +1600,17 @@ mapLongitudeLatitudeXY <- function(longitude, latitude)
 #'
 #' @family functions related to maps
 mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
-                    geographical=0,
-                    bg, fill,
-                    border=NULL, col=NULL,
-                    clip=TRUE,
-                    type='polygon',
-                    axes=TRUE, axisStyle=1,
-                    cex, cex.axis=1, mgp=c(0, 0.5, 0), drawBox=TRUE, showHemi=TRUE,
-                    polarCircle=0, lonlabels=TRUE, latlabels=TRUE,
-                    projection="+proj=moll", tissot=FALSE, trim=TRUE,
-                    debug=getOption("oceDebug"),
-                    ...)
+    geographical=0,
+    bg, fill,
+    border=NULL, col=NULL,
+    clip=TRUE,
+    type='polygon',
+    axes=TRUE, axisStyle=1,
+    cex, cex.axis=1, mgp=c(0, 0.5, 0), drawBox=TRUE, showHemi=TRUE,
+    polarCircle=0, lonlabels=TRUE, latlabels=TRUE,
+    projection="+proj=moll", tissot=FALSE, trim=TRUE,
+    debug=getOption("oceDebug"),
+    ...)
 {
     debug <- max(0, min(debug, 3))
     oceDebug(debug, "mapPlot(longitude, latitude,",
@@ -2173,9 +2173,9 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
 #'
 #' @family functions related to maps
 mapGrid <- function(dlongitude=15, dlatitude=15, longitude, latitude,
-                    col="darkgray", lty="solid", lwd=0.5*par("lwd"), polarCircle=0,
-                    longitudelim, latitudelim,
-                    debug=getOption("oceDebug"))
+    col="darkgray", lty="solid", lwd=0.5*par("lwd"), polarCircle=0,
+    longitudelim, latitudelim,
+    debug=getOption("oceDebug"))
 {
     oceDebug(debug, "mapGrid(",
              argShow(dlongitude), #dlongitude=", dlongitude,
@@ -2457,8 +2457,8 @@ mapGrid <- function(dlongitude=15, dlatitude=15, longitude, latitude,
 #'
 #' @family functions related to maps
 mapScalebar <- function(x, y=NULL, length,
-                        lwd=1.5*par("lwd"), cex=par("cex"),
-                        col="black")
+    lwd=1.5*par("lwd"), cex=par("cex"),
+    col="black")
 {
     if (!is.null(y))
         stop("y must be NULL in this (early) version of mapScalebar()\n")
@@ -2831,10 +2831,10 @@ mapPoints <- function(longitude, latitude, debug=getOption("oceDebug"), ...)
 #'
 #' @family functions related to maps
 mapArrows <- function(longitude0, latitude0,
-                      longitude1=longitude0, latitude1=latitude0,
-                      length=0.25, angle=30,
-                      code=2, col=par("fg"), lty=par("lty"),
-                      lwd=par("lwd"), ...)
+    longitude1=longitude0, latitude1=latitude0,
+    length=0.25, angle=30,
+    code=2, col=par("fg"), lty=par("lty"),
+    lwd=par("lwd"), ...)
 {
     if ("none" == .Projection()$type)
         stop("must create a map first, with mapPlot()\n")
@@ -3132,7 +3132,7 @@ map2lonlat <- function(x, y, init=NULL, debug=getOption("oceDebug"))
 #'
 #' @family functions related to maps
 mapPolygon <- function(longitude, latitude, density=NULL, angle=45,
-                       border=NULL, col=NA, lty=par('lty'), ..., fillOddEven=FALSE)
+    border=NULL, col=NA, lty=par('lty'), ..., fillOddEven=FALSE)
 {
     if ("none" == .Projection()$type)
         stop("must create a map first, with mapPlot()\n")
@@ -3165,26 +3165,23 @@ mapPolygon <- function(longitude, latitude, density=NULL, angle=45,
 #' Add an Image to a Map
 #'
 #' Plot an image on an existing map that was created with [mapPlot()].
-#' (See example 4 for a way to start  with a blank map.)
 #'
-#' The data are on a regular grid in lon-lat space, but not in the projected
+#' Image data are on a regular grid in lon-lat space, but not in the projected
 #' x-y space.  This means that [image()] cannot be used.  Instead,
 #' there are two approaches, depending on the value of `filledContour`.
 #'
-#' If `filledContour` is `FALSE`, the image ``pixels'' are with
-#' [polygon()], which can be prohibitively slow for fine grids.
-#' However, if `filledContour` is `TRUE` or a numerical value, then the
-#' ``pixels'' are remapped into a regular grid and then displayed with
-#' [.filled.contour()].  The remapping starts by converting the
-#' regular lon-lat grid to an irregular x-y grid using
-#' [lonlat2map()].  This irregular grid is then interpolated onto a
-#' regular x-y grid  with [binMean2D()] or with
-#' [akima::interp()] from the `akima` package, as determined by
-#' the `gridder` argument.   If `filledContour` is `TRUE`, the
+#' If `filledContour` is `FALSE`, the image "pixels" are drawn with [polygon()].
+#' This can be prohibitively slow for fine grids.  However, if `filledContour`
+#' is `TRUE` or a numerical value, then the "pixels" are remapped into a regular
+#' grid and then displayed with [.filled.contour()].  The remapping starts by
+#' converting the regular lon-lat grid to an irregular x-y grid using
+#' [lonlat2map()].  This irregular grid is then interpolated onto a regular x-y
+#' grid  with either [binMean2D()] or [interp::interp()], as determined by the
+#' value of the `gridder` parameter. If `filledContour` is `TRUE`, the
 #' dimensions of the regular x-y grid is the same as that of the original
-#' lon-lat grid; otherwise, the number of rows and columns are multiplied by
-#' the numerical value of `filledContour`, e.g. the value 2 means to make
-#' the grid twice as fine.
+#' lon-lat grid; otherwise, the number of rows and columns are multiplied by the
+#' numerical value of `filledContour`, e.g. the value 2 means to make the grid
+#' twice as fine.
 #'
 #' Filling contours can produce aesthetically-pleasing results, but the method
 #' involves interpolation, so the data are not represented exactly and
@@ -3192,7 +3189,14 @@ mapPolygon <- function(longitude, latitude, density=NULL, angle=45,
 #' perhaps various grid refinement values) to guard against misinterpretation.
 #'
 #' If a [png()] device is to be used, it is advised to supply
-#' arguments `type="cairo"` and `antialias="none"`; see reference 1.
+#' arguments `type="cairo"` and `antialias="none"` (see reference 1).
+#'
+#' @section Historical Note:
+#'
+#' Until oce 1.7.4, the `gridder` argument could be set to `"akima"`, which used
+#' the `akima` package.  However, that package is not released with a FOSS license,
+#' so CRAN requested a change to \CRANpkg{interp}. Note that `drawImage()`
+#' intercepts the errors that sometimes get reported by [interp::interp()].
 #'
 #' @param longitude numeric vector of longitudes corresponding to `z` matrix.
 #'
@@ -3241,13 +3245,11 @@ mapPolygon <- function(longitude, latitude, density=NULL, angle=45,
 #' x-y coordinates.  See \dQuote{Details} for how this interacts with
 #' `gridder`.
 #'
-#' @param gridder Name of gridding function used if `filledContour` is
-#' `TRUE`.  This can be either `"binMean2D"` to select
-#' [binMean2D()] or `"interp"` for
-#' [akima::interp()]. If not provided, then a selection is made
-#' automatically, with [binMean2D()] being used if there are
-#' more than 10,000 data points in the present graphical view. This
-#' `"binMean2D"` method is much faster than `"interp"`.
+#' @param gridder Name of gridding function used if `filledContour` is `TRUE`.
+#' This can be either `"binMean2D"` to select [binMean2D()] or `"interp"` to
+#' select [interp::interp()].  The former produces cruder results, but the
+#' latter can be slow for large datasets.  Note that `"akima"` is taken as a
+#' synonym for `"interp"` (see \dQuote{Historical Note}).
 #'
 #' @param debug A flag that turns on debugging.  Set to 1 to get a
 #' moderate amount of debugging information, or to 2 to get more.
@@ -3256,12 +3258,12 @@ mapPolygon <- function(longitude, latitude, density=NULL, angle=45,
 #' 1. `https://codedocean.wordpress.com/2014/02/03/anti-aliasing-and-image-plots/`
 #'
 #' @examples
-#' \dontrun{
+#'\dontrun{
 #' library(oce)
 #' data(coastlineWorld)
 #' data(topoWorld)
 #'
-#' ## Northern polar region, with color-coded bathymetry
+#' # Northern polar region, with color-coded bathymetry
 #' par(mfrow=c(1,1), mar=c(2,2,1,1))
 #' cm <- colormap(zlim=c(-5000, 0), col=oceColorsGebco)
 #' drawPalette(colormap=cm)
@@ -3278,10 +3280,10 @@ mapPolygon <- function(longitude, latitude, density=NULL, angle=45,
 #'
 #' @family functions related to maps
 mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
-                     breaks, col, colormap, border=NA,
-                     lwd=par("lwd"), lty=par("lty"), missingColor=NA,
-                     filledContour=FALSE, gridder="binMean2D",
-                     debug=getOption("oceDebug"))
+    breaks, col, colormap, border=NA,
+    lwd=par("lwd"), lty=par("lty"), missingColor=NA,
+    filledContour=FALSE, gridder="binMean2D",
+    debug=getOption("oceDebug"))
 {
     if ("none" == .Projection()$type)
         stop("must create a map first, with mapPlot()\n")
@@ -3289,13 +3291,14 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
     zlimGiven <- !missing(zlim)
     colGiven <- !missing(col)
     oceDebug(debug, "mapImage(..., ",
-             " missingColor='", missingColor, "', ",
-             " filledContour=", filledContour, ", ",
-             ", ...) {\n", sep="", unindent=1)
+        " missingColor=", missingColor, ", ",
+        " filledContour=", filledContour, ", ",
+        " gridder=", gridder, ", ",
+        ", ...) {\n", sep="", unindent=1)
 
     if ("data" %in% slotNames(longitude)) {
         if (3 == sum(c("longitude", "latitude", "z") %in% names(longitude@data))) {
-            ## e.g. a topo object
+            # e.g. a topo object
             z <- longitude@data$z
             latitude <- longitude@data$latitude
             longitude <- longitude@data$longitude # destroys container
@@ -3312,7 +3315,7 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
         stop("z must be a matrix")
     breaksGiven <- !missing(breaks)
     if (!missing(colormap)) {
-        ## takes precedence over breaks and col
+        # takes precedence over breaks and col
         breaks <- colormap$breaks
         breaksGiven <- TRUE
         col <- colormap$col
@@ -3320,25 +3323,13 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
         zclip <- colormap$zclip
         colGiven <- TRUE
     }
-    ## 20140816 (issues 517 and 522) START
-    ## 20140816 The next few blocks (down to the 'ni <-' line) used to be the 'else'
-    ## 20140816 of the above if block, but that just seemed to invite case-specific
-    ## 20140816 errors. The new approach is to unroll the code to reduce the
-    ## 20140816 number of cases.
     if (!breaksGiven) {
         small <- .Machine$double.eps
         zrange <- range(z, na.rm=TRUE)
         if (missing(zlim)) {
-            ## calculate 'breaks'
+            # calculate 'breaks'
             if (missing(col)) {
                 breaks <- pretty(zrange, n=10)
-                ## FIXME: the extension of the breaks is to try to avoid missing endpoints
-                ##.if (breaks[1] < zrange[1])
-                ##.    breaks[1] <- zrange[1] * (1 - small)
-                ##.if (breaks[length(breaks)] > zrange[2])
-                ##.    breaks[length(breaks)] <- zrange[2] * (1 + small)
-                ##. oceDebug(debug, "'breaks', 'zlim' and 'col' all missing; zlim=",
-                ##.          paste(zrange, collapse=" "), "\n")
             } else {
                 if (is.vector(col)) {
                     breaks <- pretty(zrange, n=1+length(col))
@@ -3347,33 +3338,6 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
                 } else {
                     stop("'col' must be a vector or a function")
                 }
-                ##. ## FIXME: cleaner if divide into two cases depending on whether
-                ##. ## FIXME: col is a function
-                ##. breaks <- seq(zrange[1]-small, zrange[2]+small,
-                ##.               length.out=if (is.function(col)) 10 else 1+length(col))
-                ##.               ##length.out=if (is.function(col)) 128/4 else 1+length(col))
-                ##. breaksSEQ <<- breaks
-                ##. if (TRUE) {
-### >>>???<<<
-                ##.     breaks <- pretty(zrange+small*c(-1, 1), n=10)
-                ##.     ## FIXME: the extension of the breaks is to try to avoid missing endpoints
-                ##.     ##.if (breaks[1] < zrange[1])
-                ##.     ##.    breaks[1] <- zrange[1] * (1 - small)
-                ##.     ##.if (breaks[length(breaks)] > zrange[2])
-                ##.     ##.    breaks[length(breaks)] <- zrange[2] * (1 + small)
-                ##.     breaksPRETTY <<- breaks
-                ##.     message("FOR DEBUGGING ISSUE 1340, set options(\"dan\"=1) or =2")
-                ##.     danny <- if (!is.null(options("dan"))) options("dan") else 1
-                ##.     if (danny==1) {
-                ##.         message("BAD using 'seq' breaks (NOTE: small=", small, "); see breaksSEQ global variable, now defined")
-                ##.         breaks <- breaksSEQ
-                ##.     } else {
-                ##.         message("OK  using 'pretty' breaks (NOTE: small=", small, "); see breaksPRETTY global variable, now defined")
-                ##.         breaks <- breaksPRETTY
-                ##.     }
-                ##. }
-                ##. oceDebug(debug, "'breaks' and 'zlim' missing but 'col' given; zlim=",
-                ##.          paste(zrange, collapse=" "), "\n")
             }
             breaksOrig <- breaks       # nolint (variable not used)
         } else {
@@ -3406,20 +3370,12 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
     oceDebug(debug, "zclip:", zclip, "\n")
     oceDebug(debug, vectorShow(breaks))
     oceDebug(debug, vectorShow(col))
-    ## 20140816 END
+    # 20140816 END
     ni <- dim(z)[1]
     nj <- dim(z)[2]
-    ##dlongitude <- longitude[2] - longitude[1] # FIXME: incorrect for irregular grids
-    ##dlatitude <- latitude[2] - latitude[1]
     zmin <- min(z, na.rm=TRUE)
     zmax <- max(z, na.rm=TRUE)
     zrange <- zmax - zmin
-    ##usr <- par('usr')
-    ##xmin <- usr[1]
-    ##xmax <- usr[2]
-    ##ymin <- usr[3]
-    ##ymax <- usr[4]
-    ##allowedSpan <- (xmax - xmin) / 5   # KLUDGE: avoid lines crossing whole domain
     small <- .Machine$double.eps
     ## 20140802/issue516: next if block (clipping) rewritten
     if (zclip) {
@@ -3430,29 +3386,33 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
         }
     } else {
         if (zlimGiven) {
-            oceDebug(debug, "'zlim' given, so using those zlim colors for out-of-range values\n")
-            zlimMin <- min(zlim, na.rm=TRUE)
-            zlimMax <- max(zlim, na.rm=TRUE)
-            z[z <= zlimMin] <- zlimMin * (1 + sign(zlimMin) * small)
-            z[z >= zlimMax] <- zlimMax * (1 - sign(zlimMax) * small)
+            oceDebug(debug, "using 'zlim' to pin image colours\n")
+            pinMIN <- min(zlim, na.rm=TRUE)
+            pinMAX <- max(zlim, na.rm=TRUE)
+            pinlow <- z <= pinMIN
+            z[pinlow] <- pinMIN * (1.0 + sign(pinMIN) * small)
+            pinhigh <- z >= pinMAX
+            z[pinhigh] <- pinMAX * (1.0 - sign(pinMAX) * small)
+            oceDebug(debug, "pinned ", sum(pinlow), " low values and ", sum(pinhigh), " high z values, out of a total of ", length(z), " values\n")
         } else if (breaksGiven) {
-            oceDebug(debug, "'break' given, but not 'zlim', so possibly extending breaks\n")
-            breaksMin <- min(breaks, na.rm=TRUE)
-            breaksMax <- max(breaks, na.rm=TRUE)
-            oceDebug(debug, "pinning", sum(z<=breaksMin,na.rm=TRUE), "z at left\n")
-            oceDebug(debug, "pinning", sum(z>=breaksMax,na.rm=TRUE), "z at right\n")
-            z[z <= breaksMin] <- breaksMin * (1 + sign(breaksMin) * small)
-            z[z >= breaksMax] <- breaksMax * (1 - sign(breaksMax) * small)
+            oceDebug(debug, "using 'breaks' to pin image colours\n")
+            pinMIN <- min(breaks, na.rm=TRUE)
+            pinMAX <- max(breaks, na.rm=TRUE)
+            pinlow <- z <= pinMIN
+            z[pinlow] <- pinMIN * (1.0 + sign(pinMIN) * small)
+            pinhigh <- z >= pinMAX
+            z[pinhigh] <- pinMAX * (1.0 - sign(pinMAX) * small)
+            oceDebug(debug, "pinned ", sum(pinlow), " low values and ", sum(pinhigh), " high z values, out of a total of ", length(z), " values\n")
         } else {
             oceDebug(debug, "not clipping AND NEITHER zlim nor breaks suppled\n")
         }
     }
-    ## Construct polygons centred on the specified longitudes and latitudes.  Each
-    ## polygon has 5 points, four to trace the boundary and a fifth that is (NA,NA),
-    ## to signal the end of the polygon.  The z values (and hence the colors)
-    ## map one per polygon.
+    # Construct polygons centred on the specified longitudes and latitudes.
+    # Each polygon has 5 points, four to trace the boundary and a fifth that is
+    # (NA,NA), to signal the end of the polygon.  The z values (and hence the
+    # colors) map one per polygon.
     poly <- .Call("map_assemble_polygons", longitude, latitude, z,
-                  NAOK=TRUE, PACKAGE="oce")
+        NAOK=TRUE, PACKAGE="oce")
 
     xy <- lonlat2map(poly$longitude, poly$latitude)
     xy$x[!is.finite(xy$x)] <- NA
@@ -3463,14 +3423,13 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
     if (xrange[1] > usr12[2])
         xy$x <- xy$x - 360
 
-    ## map_check_polygons tries to fix up longitude cut-point problem, which
-    ## otherwise leads to lines crossing the graph horizontally because the
-    ## x value can sometimes alternate from one end of the domain to the other.
-    ## Z <- matrix(z)
+    # map_check_polygons tries to fix up longitude cut-point problem, which
+    # otherwise leads to lines crossing the graph horizontally because the x
+    # value can sometimes alternate from one end of the domain to the other.
     Z <- as.vector(z)
     r <- .Call("map_check_polygons", xy$x, xy$y, poly$z,
-               diff(par('usr'))[1:2]/5, par('usr'),
-               NAOK=TRUE, PACKAGE="oce")
+        diff(par('usr'))[1:2]/5, par('usr'),
+        NAOK=TRUE, PACKAGE="oce")
     breaksMin <- min(breaks, na.rm=TRUE)
     breaksMax <- max(breaks, na.rm=TRUE)
     if (filledContour) {
@@ -3479,12 +3438,9 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
         g <- expand.grid(longitude, latitude)
         longitudeGrid <- g[, 1]
         latitudeGrid <- g[, 2]
-        ##rx <- range(xy$x[is.finite(xy$x)], na.rm=TRUE)
-        ##ry <- range(xy$y[is.finite(xy$y)], na.rm=TRUE)
-        ##f <- if (is.logical(filledContour)) 1 else as.integer(round(filledContour))
-        ## FIXME: I'm not sure this will work well generally; I'm setting NN to
-        ## FIXME: get about 5 points per grid cell.
-        ## N is number of points in view
+        # FIXME: I'm not sure this will work well generally; I'm setting NN to
+        # FIXME: get about 5 points per grid cell.
+        # N is number of points in view
         N <- sum(par('usr')[1]<=xy$x & xy$x<=par('usr')[2] &
                  par('usr')[3]<=xy$y & xy$y<=par('usr')[4], na.rm=TRUE)
         NN <- sqrt(N / 10)
@@ -3493,7 +3449,7 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
         xy <- lonlat2map(longitudeGrid, latitudeGrid)
         good <- is.finite(zz) & is.finite(xy$x) & is.finite(xy$y)
         if (!zclip) {
-            ##message("# good: ", sum(good), " orig")
+            # message("# good: ", sum(good), " orig")
             zz[zz < breaksMin] <- breaksMin
             zz[zz > breaksMax] <- breaksMax
         }
@@ -3508,21 +3464,25 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
         yy <- yy[inFrame]
         zz <- zz[inFrame]
         oceDebug(debug, "after trimming, length(xx): ", length(xx), "\n")
-        ## chop to points within plot area
-        if (gridder== "akima") {
-            oceDebug(debug, "using akima::interp()\n")
-            if (requireNamespace("akima", quietly=TRUE)) {
-                i <- akima::interp(x=xx, y=yy, z=zz, xo=xg, yo=yg)
+        # chop to points within plot area
+        if (gridder %in% c("interp", "akima")) {
+            oceDebug(debug, "using interp::interp()\n")
+            if (requireNamespace("interp", quietly=TRUE)) {
+                i <- try(interp::interp(x=xx, y=yy, z=zz, xo=xg, yo=yg))
+                if (inherits(i, "try-error"))
+                    stop("gridder=\"", gridder, "\" failed. Try gridder=\"binMean2D\" instead")
             } else {
-                stop("must install.packages(\"akima\") for mapImage() with filledContour and gridder='akima'")
+                stop("must install.packages(\"interp\") for gridder=\"", gridder, "\"")
             }
-        } else {
+        } else if (gridder == "binMean2D") {
             oceDebug(debug, "using binMean2D()\n")
             binned <- binMean2D(xx, yy, zz, xg, yg, fill=TRUE)
             i <- list(x=binned$xmids, y=binned$ymids, z=binned$result)
+        } else {
+            stop("gridder=\"", gridder, "\" not allowed. Try \"binMean2D\" or \"interp\"")
         }
         if (any(is.finite(i$z))) {
-            ## issue726: add a tiny bit to breaks, to mimic filledContour=FALSE
+            # issue726: add a tiny bit to breaks, to mimic filledContour=FALSE
             small <- .Machine$double.eps
             .filled.contour(i$x, i$y, i$z, levels=breaks+small, col=col)
         } else {
@@ -3532,12 +3492,6 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
         oceDebug(debug, "using polygons, as opposed to filled contours\n")
         colFirst <- col[1]
         colLast <- tail(col, 1)
-        ## if (debug > 10) { ## FIXME (issue 522): retain this test code until 2014-oct
-        ##     message("breaksMin: ", breaksMin)
-        ##     message("breaksMax: ", breaksMax)
-        ##     message("Z:")
-        ##     print(Z)
-        ## }
         colorLookup <- function (ij) {
             zval <- Z[ij]
             if (!is.finite(zval))
@@ -3546,29 +3500,29 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
                 return(if (zclip) missingColor else colFirst)
             if (zval > breaksMax)
                 return(if (zclip) missingColor else colLast)
-            ## IMPORTANT: whether to write 'breaks' or 'breaks+small' below
-            ## IMPORTANT: is at the heart of several issues, including
-            ## IMPORTANT: issues 522, 655 and possibly 726.
-            ## issue522: this was w <- which(zval <= breaks)[1]
-            ## issue655: this was w <- which(zval <= breaks)[1]
-            ## sometime later: w <- which(zval < breaks + 1*small)[1]
+            # IMPORTANT: whether to write 'breaks' or 'breaks+small' below
+            # IMPORTANT: is at the heart of several issues, including
+            # IMPORTANT: issues 522, 655 and possibly 726.
+            # issue522: this was w <- which(zval <= breaks)[1]
+            # issue655: this was w <- which(zval <= breaks)[1]
+            # sometime later: w <- which(zval < breaks + 1*small)[1]
             w <- which(zval <= breaks)[1]
             if (!is.na(w) && w > 1)
                 return(col[-1 + w])
             else
                 return(missingColor)
         }
-        ## mapImage(topoWorld) profiling
-        ## Note that 1/3 of the time is spent here, the rest in polygon().
-        ## Profile times in seconds, as below. (is 0.1 to 0.2s meaningful?)
-        ## Caution: profile times depend on Rstudio window size etc, so
-        ## be careful in testing! The values below were from a particular
-        ## window and panel size but results were 1s different when I
-        ## resized.
-        ##   with sapply: 3.480 3.640 3.520
-        ##   with loop:   3.260 3.440 3.430
-        ## NOTE: mapPolygonMethod is NOT documented, so we can assume
-        ## NOTE: that it will be NULL, so method=3 will be used.
+        # mapImage(topoWorld) profiling
+        # Note that 1/3 of the time is spent here, the rest in polygon().
+        # Profile times in seconds, as below. (is 0.1 to 0.2s meaningful?)
+        # Caution: profile times depend on Rstudio window size etc, so
+        # be careful in testing! The values below were from a particular
+        # window and panel size but results were 1s different when I
+        # resized.
+        #   with sapply: 3.480 3.640 3.520
+        #   with loop:   3.260 3.440 3.430
+        # NOTE: mapPolygonMethod is NOT documented, so we can assume
+        # NOTE: that it will be NULL, so method=3 will be used.
         method <- options()$mapPolygonMethod
         if (0 == length(method))
             method <- 3 # method tested in issue 1284
@@ -3592,12 +3546,9 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
             }
         } else if (method == 3) {
             colPolygon <- rep(missingColor, ni*nj)
-            ## findInterval() requires the second arg to be in order
-            ## FIXME: do we need to reorder after the findInterval()?
-            ## next is bad because it lengthens col
-            ##bad o <- order(breaks)
-            ##bad breaks <- breaks[o]
-            ##bad col <- col[o]
+            # findInterval() requires the second arg to be in order
+            # FIXME: do we need to reorder after the findInterval()?
+            # next is bad because it lengthens col
             ii <- findInterval(Z, breaks, left.open=TRUE, all.inside=TRUE)
             colPolygon <- col[ii]
             colPolygon[!is.finite(Z)] <- missingColor
@@ -3608,35 +3559,10 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
         } else {
             stop("unknown options(mapPolygonMethod)")
         }
-        ##. L <- 10000:20000
-        ##. polygon(xy$x[r$okPoint & !r$clippedPoint][L], xy$y[r$okPoint & !r$clippedPoint][L],
-        ##.         col=colPolygon[r$okPolygon & !r$clippedPolygon][L],
-        ##.         border=colPolygon[r$okPolygon & !r$clippedPolygon][L],
-        ##.         lwd=lwd, lty=lty, fillOddEven=FALSE)
-
         polygon(xy$x[r$okPoint & !r$clippedPoint], xy$y[r$okPoint & !r$clippedPoint],
-                col=colPolygon[r$okPolygon & !r$clippedPolygon],
-                border=colPolygon[r$okPolygon & !r$clippedPolygon],
-                lwd=lwd, lty=lty, fillOddEven=FALSE)
-
-
-        ## FIXME: 1340 dan1, dan2 comparison:
-        ##> all.equal(dan1$xy, dan2$xy)
-        ##[1] TRUE
-        ##> all.equal(dan1$r, dan2$r)
-        ##[1] TRUE
-        ##> all.equal(dan1$colPolygon, dan2$colPolygon)
-        ##[1] "'is.NA' value mismatch: 1444 in current 11469 in target"
-        ##. dan <<- list(xy=xy,
-        ##.              r=r,
-        ##.              colPolygon=colPolygon,
-        ##.              longitude=longitude,
-        ##.              latitude=latitude,
-        ##.              z=z,
-        ##.              breaks=breaks,
-        ##.              col=col,
-        ##.              ii=ii)
-        ##. message("DEBUGGING: defined global var 'dan'")
+            col=colPolygon[r$okPolygon & !r$clippedPolygon],
+            border=colPolygon[r$okPolygon & !r$clippedPolygon],
+            lwd=lwd, lty=lty, fillOddEven=FALSE)
     }
     oceDebug(debug, "} # mapImage()\n", unindent=1)
     invisible(NULL)

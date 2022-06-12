@@ -70,37 +70,35 @@ resampling rate to be used in interpolating from lon-lat coordinates to
 x-y coordinates.  See \dQuote{Details} for how this interacts with
 \code{gridder}.}
 
-\item{gridder}{Name of gridding function used if \code{filledContour} is
-\code{TRUE}.  This can be either \code{"binMean2D"} to select
-\code{\link[=binMean2D]{binMean2D()}} or \code{"interp"} for
-\code{\link[akima:interp]{akima::interp()}}. If not provided, then a selection is made
-automatically, with \code{\link[=binMean2D]{binMean2D()}} being used if there are
-more than 10,000 data points in the present graphical view. This
-\code{"binMean2D"} method is much faster than \code{"interp"}.}
+\item{gridder}{Name of gridding function used if \code{filledContour} is \code{TRUE}.
+This can be either \code{"binMean2D"} to select \code{\link[=binMean2D]{binMean2D()}} or \code{"interp"} to
+select \code{\link[interp:interp]{interp::interp()}}.  The former produces cruder results, but the
+latter can be slow for large datasets.  Note that \code{"akima"} is taken as a
+synonym for \code{"interp"} (see \dQuote{Historical Note}).}
 
 \item{debug}{A flag that turns on debugging.  Set to 1 to get a
 moderate amount of debugging information, or to 2 to get more.}
 }
 \description{
 Plot an image on an existing map that was created with \code{\link[=mapPlot]{mapPlot()}}.
-(See example 4 for a way to start  with a blank map.)
 }
 \details{
-The data are on a regular grid in lon-lat space, but not in the projected
+Image data are on a regular grid in lon-lat space, but not in the projected
 x-y space.  This means that \code{\link[=image]{image()}} cannot be used.  Instead,
 there are two approaches, depending on the value of \code{filledContour}.
 
-If \code{filledContour} is \code{FALSE}, the image \verb{pixels'' are with [polygon()], which can be prohibitively slow for fine grids. However, if `filledContour` is `TRUE` or a numerical value, then the }pixels'' are remapped into a regular grid and then displayed with
-\code{\link[=.filled.contour]{.filled.contour()}}.  The remapping starts by converting the
-regular lon-lat grid to an irregular x-y grid using
-\code{\link[=lonlat2map]{lonlat2map()}}.  This irregular grid is then interpolated onto a
-regular x-y grid  with \code{\link[=binMean2D]{binMean2D()}} or with
-\code{\link[akima:interp]{akima::interp()}} from the \code{akima} package, as determined by
-the \code{gridder} argument.   If \code{filledContour} is \code{TRUE}, the
+If \code{filledContour} is \code{FALSE}, the image "pixels" are drawn with \code{\link[=polygon]{polygon()}}.
+This can be prohibitively slow for fine grids.  However, if \code{filledContour}
+is \code{TRUE} or a numerical value, then the "pixels" are remapped into a regular
+grid and then displayed with \code{\link[=.filled.contour]{.filled.contour()}}.  The remapping starts by
+converting the regular lon-lat grid to an irregular x-y grid using
+\code{\link[=lonlat2map]{lonlat2map()}}.  This irregular grid is then interpolated onto a regular x-y
+grid  with either \code{\link[=binMean2D]{binMean2D()}} or \code{\link[interp:interp]{interp::interp()}}, as determined by the
+value of the \code{gridder} parameter. If \code{filledContour} is \code{TRUE}, the
 dimensions of the regular x-y grid is the same as that of the original
-lon-lat grid; otherwise, the number of rows and columns are multiplied by
-the numerical value of \code{filledContour}, e.g. the value 2 means to make
-the grid twice as fine.
+lon-lat grid; otherwise, the number of rows and columns are multiplied by the
+numerical value of \code{filledContour}, e.g. the value 2 means to make the grid
+twice as fine.
 
 Filling contours can produce aesthetically-pleasing results, but the method
 involves interpolation, so the data are not represented exactly and
@@ -108,15 +106,24 @@ analysts are advised to compare the results from the two methods (and
 perhaps various grid refinement values) to guard against misinterpretation.
 
 If a \code{\link[=png]{png()}} device is to be used, it is advised to supply
-arguments \code{type="cairo"} and \code{antialias="none"}; see reference 1.
+arguments \code{type="cairo"} and \code{antialias="none"} (see reference 1).
 }
+\section{Historical Note}{
+
+
+Until oce 1.7.4, the \code{gridder} argument could be set to \code{"akima"}, which used
+the \code{akima} package.  However, that package is not released with a FOSS license,
+so CRAN requested a change to \CRANpkg{interp}. Note that \code{drawImage()}
+intercepts the errors that sometimes get reported by \code{\link[interp:interp]{interp::interp()}}.
+}
+
 \examples{
 \dontrun{
 library(oce)
 data(coastlineWorld)
 data(topoWorld)
 
-## Northern polar region, with color-coded bathymetry
+# Northern polar region, with color-coded bathymetry
 par(mfrow=c(1,1), mar=c(2,2,1,1))
 cm <- colormap(zlim=c(-5000, 0), col=oceColorsGebco)
 drawPalette(colormap=cm)

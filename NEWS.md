@@ -1,6 +1,20 @@
+# oce 1.7.7
+
+* In development.
+
+# oce 1.7.6
+
+* Permit acoustic-Doppler files in excess of 4Gb.
+
+# oce 1.7.5
+
+* Remove a stray file.
+
 # oce 1.7.4
 
-* Improve `read.ctd.sbe()` re handling of Date header.
+* Change `mapImage()` to use `interp` instead of `akima`, as required by CRAN.
+* Improve `read.ctd.sbe()` for interpreting Date in headers.
+* Improve `as.ctd()` for Argo data.
 
 # oce 1.7.3
 

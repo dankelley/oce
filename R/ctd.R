@@ -1303,6 +1303,7 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
             if (!is.numeric(profile) || length(profile) != 1 || profile < 1) {
                 stop("profile must be a positive integer")
             }
+            # Convert data items from array to vector
             for (field in names(d)) {
                 dataInField <- d[[field]]
                 oceDebug(debug, "handling argo data$", field, "\n", sep="")
@@ -1335,6 +1336,14 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
                     res@data[[field]] <- d[[field]]
                 } else {
                     warning("not storing \"", field, "\" because it is in an unknown format")
+                }
+            }
+            # Convert flags from array to vector
+            if ("flags" %in% names(res@metadata)) {
+                for (iflag in seq_along(res@metadata$flags)) {
+                    if (is.matrix(res@metadata$flags[[iflag]])) {
+                        res@metadata$flags[[iflag]] <- res@metadata$flags[[iflag]][, profile]
+                    }
                 }
             }
             # argo
@@ -4962,13 +4971,13 @@ plotProfile <- function(x,
         } else if (type == 's') {
             lines(x, y, col=col, lwd=lwd, lty=lty, type='s')
         } else if (type == 'p') {
-            points(x, y, col=col, cex=cex, pch=pch, bg=pt.bg)
+            points(x, y, col=col, cex=cex, lwd=lwd, pch=pch, bg=pt.bg)
         } else if (type == 'o') {
             lines(x, y, col=col, lwd=lwd, lty=lty, ...)
-            points(x, y, col=col, cex=cex, pch=pch, bg=pt.bg)
+            points(x, y, col=col, cex=cex, lwd=lwd, pch=pch, bg=pt.bg)
         } else if (type == 'b') {
             lines(x, y, col=col, lwd=lwd, lty=lty, ...)
-            points(x, y, col=col, cex=cex, pch=pch, bg=pt.bg)
+            points(x, y, col=col, cex=cex, lwd=lwd, pch=pch, bg=pt.bg)
         } else if (type == 'n') {
             ; # skip it
         } else {
