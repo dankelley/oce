@@ -6,6 +6,8 @@ date: 2022-06-12
 
 ## Test case
 
+![Ref 1 page 47: checksum computation](ref1_p47.png)
+
 ![Ref 3 page 8: a checksum example.](ref3_p8.png)
 
 ![Ref 3 page 79: checksum computation](ref3_p79.png)
@@ -52,6 +54,10 @@ little-endian order.
 3. Nortek AS. “Classic Integrators Guide: Aquadopp | Aquadopp DW | Aquadopp
    Profiler | HQ Aquadopp Profiler | Vector | AWAC.” Nortek AS, 2022.
    https://support.nortekgroup.com/hc/en-us/articles/360029514052-Integrators-Guide-Classic.
+
+4. Nortek AS. “Signature Integration 55|250|500|1000kHz.” Nortek AS, 2017.
+   https://www.nortekgroup.com/assets/software/N3015-007-Integrators-Guide-AD2CP_1018.pdf.
+
 
 ## Appendix
 
