@@ -11,8 +11,7 @@ swDepth(pressure, latitude = 45, eos = getOption("oceEOS", default = "gsw"))
 be given, or a \code{ctd} object, in which case \code{lat} will be inferred
 from the object.}
 
-\item{latitude}{Latitude in \eqn{^\circ}{deg}N or radians north of the
-equator.}
+\item{latitude}{Latitude in \eqn{^\circ}{deg}N.}
 
 \item{eos}{indication of formulation to be used, either \code{"unesco"} or
 \code{"gsw"}.}
