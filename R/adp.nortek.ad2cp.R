@@ -1260,7 +1260,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1,
         key <- d$id[ch]
         i <- d$index[ch]
         oceDebug(debug > 1, sprintf("chunk ch=%d of %d, starting at buf[%d] has key=0x%02x (%s)\n",
-                ch, i, N, key, ad2cpCodeToName(key)), unindent=1)
+                ch, N, i, key, ad2cpCodeToName(key)), unindent=1)
 
         if (key == 0x15) { # burst
 
