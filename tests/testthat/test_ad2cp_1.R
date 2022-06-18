@@ -39,7 +39,7 @@ if (file.exists(f1)) {
         expect_error(read.adp.ad2cp(f1, 1, 100, 1, plan=10),
             "there are no data for plan=10; try one of the following values instead: 1 0")
         expect_warning(d1 <- read.adp.ad2cp(f1, 1, 100, 1),
-            "since 'plan' was not given, using the most common value, namely 0")
+            "'plan' defaulting to 0,")
         nnn <- c("average", "burst", "interleavedBurst")
         expect_equal(c(TRUE, TRUE, FALSE), nnn %in% names(d1@data))
         expect_equal(sort(names(d1[["burst"]])),
@@ -307,7 +307,7 @@ if (file.exists(f2)) {
         # Note: using read.adp() to ensure that it also works
         expect_warning(
             expect_warning(d2 <- read.adp(f2, from=1, to=N, by=1),
-                "since 'plan' was not given, using the most common value, namely 0"),
+                "'plan' defaulting to 0"),
             "ignoring 'despike'")
         nnn <- c("average", "burst", "interleavedBurst")
         expect_equal(c(FALSE, TRUE, FALSE), nnn %in% names(d2@data))
@@ -361,7 +361,7 @@ if (file.exists(f3)) {
         N <- 100
         ## Note: using read.oce() to ensure that it also works
         expect_warning(d3 <- read.oce(f3, from=1, to=N, by=1),
-            "since 'plan' was not given, using the most common value, namely 1")
+            "'plan' defaulting to 1")
         ## subsetting
         nnn <- c("average", "burst", "interleavedBurst")
         expect_equal(c(FALSE, TRUE, TRUE), nnn %in% names(d3@data))

@@ -395,14 +395,14 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1,
         nu <- length(u)
         if (nu == 1) {
             plan <- activeConfiguration[1]
-            warning("'plan', not given, is defaulting to ", plan, " since that value is in the file")
+            warning("'plan' defaulting to ", plan, ", the only value in the file")
         } else {
             # tabulate() might be handy here, but the following may be simpler to read.
             plan <- u[which.max(unlist(lapply(u,function(x)sum(activeConfiguration==x))))]
             acTable <- table(activeConfiguration)
-            warning("'plan', not given, is defaulting to ", plan,
-                " which is the most common value in the file (",
-                paste(names(acTable)," occurs ",unname(acTable)," time[s]", sep="",collapse="; "), ")")  
+            warning("'plan' defaulting to ", plan,
+                ", the most common value in the file (",
+                paste(names(acTable)," occurs ",unname(acTable)," time[s]", sep="",collapse="; "), ")")
         }
     }
     # Try to find a header, as the first record-type that has id=0xa0.
@@ -881,10 +881,10 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1,
         nbeamsBurstAltimeterRaw <- nbeams[p$burstAltimeterRaw[1]]
         ncellsBurstAltimeterRaw <- ncells[p$burstAltimeterRaw[1]]
         oceDebug(debug, "burstAltimeterRaw data records: nbeams:", nbeamsBurstAltimeterRaw, ", ncells:", ncellsBurstAltimeterRaw, "\n")
-        if (nbeamsBurstAltimeterRaw <= 0L)
-            warning("CRITICAL: burstAltimeterRaw data records cannot have ", nbeamsBurstAltimeterRaw, " beams (must be >0)\n")
-        if (ncellsBurstAltimeterRaw <= 0L)
-            warning("CRITICAL: burst Altimeter data records cannot have ", ncellsBurstAltimeterRaw, " beams (must be >0)\n")
+        #if (nbeamsBurstAltimeterRaw <= 0L)
+        #    warning("CRITICAL: burstAltimeterRaw data records cannot have ", nbeamsBurstAltimeterRaw, " beams (must be >0)\n")
+        #if (ncellsBurstAltimeterRaw <= 0L)
+        #    warning("CRITICAL: burst Altimeter data records cannot have ", ncellsBurstAltimeterRaw, " beams (must be >0)\n")
         if (any(ncells[p$burstAltimeterRaw] != ncellsBurstAltimeterRaw))
             stop("the 'burstAltimeterRaw' data records do not all have the same number of cells")
         if (any(nbeams[p$burstAltimeterRaw] != nbeamsBurstAltimeterRaw))
@@ -1253,8 +1253,8 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1,
         progressBar <- txtProgressBar(max=N, style=3, title="Reading profiles")
     unknownKeys <- list()
     oceDebug(debug, "processing N=", N, " data chunks (check: is this ", length(d$id), "?)\n")
-    print(table(d$id))
-    DAN<<-d$id
+    #print(table(d$id))
+    #DAN<<-d$id
     for (ch in 1:N) {
         # oceDebug(debug>3, "d$id[", ch, "]=", d$id[[ch]], "\n", sep="")
         key <- d$id[ch]
@@ -1526,8 +1526,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1,
                 # Get space (or ensure that existing space is configured right)
                 if ("altimeterRawSamples" %in% names(burstAltimeterRaw)) {
                     if (burstAltimeterRaw$altimeterRawNumberOfSamples != dim2)
-                        stop("burstAltimeterRaw was set up to hold ", dim2, " samples, but data chunk ", ch, " has ", 
-                            burstAltimeterRaw$altimeterRawNumberOfSamples, " samples")
+                        stop("burstAltimeterRaw was set up to hold ", dim2, " samples, but data chunk ", ch, " has ", burstAltimeterRaw$altimeterRawNumberOfSamples, " samples")
                 } else {
                     oceDebug(debug>1, "    creating burstAltimeterRaw$altimeterRawSamples (",
                         sum(d$id==0x1a), "X", dim2, ")\n")
@@ -1542,7 +1541,6 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1,
                 # https://github.com/dankelley/oce/issues/1959#issuecomment-1141409542
                 # which is p89 of Nortek AS. “Signature Integration
                 # 55|250|500|1000kHz.” Nortek AS, March 31, 2022)
-                burstAltimeterRaw$i <- 1L + burstAltimeterRaw$i
             }
             # 2022-06-17 I'm commenting these out because they were copy-pasted
             # from another spot, and are likely wrong.  I think we need to
@@ -1556,7 +1554,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1,
             #>>>     burstAltimeterRaw$AHRS[burstAltimeterRaw$i,] <- readBin(d$buf[i + i0 + 0:35], "numeric", size=4, n=9, endian="little")
             #>>>     oceDebug(debug>1, "    extracted burstAltimeterRaw$AHRS[", burstAltimeterRaw$i, ",] at i0=", i0, "\n")
             #>>> }
-            #>>> burstAltimeterRaw$i <- burstAltimeterRaw$i + 1
+            burstAltimeterRaw$i <- 1L + burstAltimeterRaw$i
 
         } else if (key == 0x1b) { # DVLBottomTrack
 

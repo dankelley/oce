@@ -24,7 +24,7 @@ if (file.exists(file)) {
                         expect_output(d <- read.oce(file),
                             "got to end of file"),
                         "using to=12"),
-                    "since 'plan' was not given"),
+                    "'plan' defaulting to 0"),
                 "data records with 'id' that is not yet handled"),
             "file has 12-byte headers")
         # Identifiers
