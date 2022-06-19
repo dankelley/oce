@@ -330,6 +330,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1,
     nav <- do_ldc_ad2cp_in_file(filename, from, to, by,
         if (ignoreChecksums) 1L else 0L,
         debug-1L)
+    #DAN<<-nav;save(DAN,file="DAN.rda")
     if (nav$twelve_byte_header == 1L)
         warning("file has 12-byte headers (an undocumented format), so be on the lookout for spurious results")
     d <- list(buf=buf, index=nav$index, length=nav$length, id=nav$id)
@@ -785,7 +786,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1,
             datasetDescription=datasetDescription[p$bottomTrack],
             transmitEnergy=transmitEnergy[p$bottomTrack],
             powerLevel=powerLevel[p$bottomTrack])
-        if (any(velocityIncluded[p$bottomTrack])) {
+        if (any(velocityIncluded[p$bottomTrack])) { # FIXME: do allocation later (MARK A)
             if (1 < length(unique(velocityIncluded[p$bottomTrack])))
                 stop("velocityIncluded values non-unique across 'bottomTrack' data records")
             bottomTrack$v <- array(double(), dim=c(length(p$bottomTrack), nbeamsBottomTrack))
