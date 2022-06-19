@@ -18,7 +18,7 @@ gappyIndex <- function(starts, from, to)
     if (missing(starts)) stop("must provide 'starts', an integer vector")
     if (missing(from)) stop("must provide 'from', an integer value")
     if (missing(to)) stop("must provide 'to', an integer value")
-    oce:::do_gappy_index(starts, from, to)
+    do_gappy_index(starts, from, to)
 }
 
 abbreviateVector <- function(x)
