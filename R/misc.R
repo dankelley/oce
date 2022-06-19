@@ -1,5 +1,25 @@
 # vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
 
+#' Create an indexing array
+#'
+#' This is used internally to construct indexing arrays, mainly
+#' for adv and adp functions, in which [readBin()] is used to
+#' read chunks from a buffer of [raw] values.  The example
+#' shows how to create the sequence `c(3,4, 103,104)`.
+#'
+#' @param starts Integer vector of one or more values.
+#' @param from,to Integer value specifying the region to be created.
+#'
+#' @examples
+#' library(oce)
+#' gappyIndex(c(1, 101), 2, 3)
+gappyIndex <- function(starts, from, to)
+{
+    if (missing(starts)) stop("must provide 'starts', an integer vector")
+    if (missing(from)) stop("must provide 'from', an integer value")
+    if (missing(to)) stop("must provide 'to', an integer value")
+    oce:::do_gappy_index(starts, from, to)
+}
 
 abbreviateVector <- function(x)
 {

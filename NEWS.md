@@ -1,6 +1,6 @@
 # oce 1.7.7
 
-* In development.
+* Add `gappyIndex()`.
 
 # oce 1.7.6
 
