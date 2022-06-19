@@ -238,6 +238,19 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// do_index_subset
+IntegerVector do_index_subset(IntegerVector starts, IntegerVector from, IntegerVector to);
+RcppExport SEXP _oce_do_index_subset(SEXP startsSEXP, SEXP fromSEXP, SEXP toSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< IntegerVector >::type starts(startsSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type from(fromSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type to(toSEXP);
+    rcpp_result_gen = Rcpp::wrap(do_index_subset(starts, from, to));
+    return rcpp_result_gen;
+END_RCPP
+}
 // do_interp_barnes
 List do_interp_barnes(NumericVector x, NumericVector y, NumericVector z, NumericVector w, NumericVector xg, NumericVector yg, NumericVector xr, NumericVector yr, NumericVector gamma, NumericVector iterations);
 RcppExport SEXP _oce_do_interp_barnes(SEXP xSEXP, SEXP ySEXP, SEXP zSEXP, SEXP wSEXP, SEXP xgSEXP, SEXP ygSEXP, SEXP xrSEXP, SEXP yrSEXP, SEXP gammaSEXP, SEXP iterationsSEXP) {
