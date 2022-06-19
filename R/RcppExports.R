@@ -52,6 +52,10 @@ do_fill_gap_1d <- function(x, rule) {
     .Call(`_oce_do_fill_gap_1d`, x, rule)
 }
 
+do_gappy_index <- function(starts, from, to) {
+    .Call(`_oce_do_gappy_index`, starts, from, to)
+}
+
 do_geoddist_alongpath <- function(lon, lat, a, f) {
     .Call(`_oce_do_geoddist_alongpath`, lon, lat, a, f)
 }
@@ -74,10 +78,6 @@ do_get_bit <- function(buf, bit) {
 
 do_gradient <- function(m, x, y) {
     .Call(`_oce_do_gradient`, m, x, y)
-}
-
-do_index_subset <- function(starts, from, to) {
-    .Call(`_oce_do_index_subset`, starts, from, to)
 }
 
 do_interp_barnes <- function(x, y, z, w, xg, yg, xr, yr, gamma, iterations) {
