@@ -14,13 +14,14 @@ on \code{\link[=ctdRaw]{ctdRaw()}}, but trimmed to just the downcast with
 results from \code{\link[=plotScan]{plotScan()}}.
 }
 \details{
-This station was sampled by students enrolled in the Dan Kelley's
-Physical Oceanography class at Dalhousie University.
-The data were acquired near the centre of the Bedford Basin of the
-Halifax Harbour, during an October 2003 field trip of Dalhousie University's
-Oceanography 4120/5120 class. The original \code{.cnv} data file had
-temperature in the IPTS-68 scale, but this was converted to the more modern
-scale using \code{\link[=T90fromT68]{T90fromT68()}}.
+This station was sampled by students enrolled in the Dan Kelley's Physical
+Oceanography class at Dalhousie University.  The data were acquired near the
+centre of the Bedford Basin of the Halifax Harbour, during an October 2003
+field trip of Dalhousie University's Oceanography 4120/5120 class.  (Note
+that the \code{startTime} in the \code{metadata} slot was altered from 1903 to 2003,
+using \code{\link[=oceEdit]{oceEdit()}}. The change was done because the original time was clearly
+incorrect, perhaps owing to the use of software that was designed to work in
+the twentieth only.)
 }
 \examples{
 \dontrun{
