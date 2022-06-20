@@ -1,4 +1,4 @@
-# vim:textwidth=120:expandtab:shiftwidth=4:softtabstop=4
+# vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
 
 # This file deals only with Nortek ad2cp files.  Please see comments in
 # adp.nortek.R for comments on general data formats
@@ -113,6 +113,13 @@ is.ad2cp <- function(x)
 
 ad2cpCodeToName <- function(code)
 {
+    #             burst          average bottomTrack  interleavedBurst
+    #                21               22          23                24
+    # burstAltimeterRaw   DVLBottomTrack echosounder     DVLWaterTrack
+    #                26               27          28                29
+    #         altimeter averageAltimeter        text
+    #                30               31         160
+    code <- as.integer(code)
     table <- c(burst=0x15, average=0x16, bottomTrack=0x17,
         interleavedBurst=0x18, burstAltimeterRaw=0x1a, DVLBottomTrack=0x1b,
         echosounder=0x1c, DVLWaterTrack=0x1d, altimeter=0x1e,
@@ -353,10 +360,26 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1,
     serialNumber <- readBin(d$buf[d$index[firstData]+5:8], "integer", size=4, endian="little")
 
     # Create pointers for accessing 1-byte, 2-byte, and 4-byte chunks
+    oceDebug(debug, "focussing on ", length(d$index), " data records\n")
     pointer1 <- d$index
     pointer2 <- as.vector(t(cbind(pointer1, 1 + pointer1))) # rbind() would be fine, too.
     pointer4 <- as.vector(t(cbind(pointer1, 1 + pointer1, 2 + pointer1, 3 + pointer1)))
-    oceDebug(debug, "focussing on ", length(pointer1), " data records\n")
+    # Below indicates that gappyIndex() is about 6 times faster on a small file
+    # (1477 chunks) This won't matter for such a small file, but it will for
+    # larger files.  My tests with 1e6 points suggests factor >100 speedup; for
+    # more, see https://github.com/dankelley/oce/wiki/fast-indexing
+    #> browser()
+    #> microbenchmark(
+    #>     as.vector(t(cbind(pointer1, 1 + pointer1, 2 + pointer1, 3 + pointer1))),
+    #>     pointer4NEW <- gappyIndex(pointer1, 0, 3)
+    #>     )
+    pointer2NEW <- gappyIndex(pointer1, 0, 1)
+    pointer4NEW <- gappyIndex(pointer1, 0, 3)
+    if (!all.equal(pointer2, pointer2NEW))
+        warning("DEVELOPER NOTE: pointer2NEW != pointer2 at spot 1")
+    if (!all.equal(pointer4, pointer4NEW))
+        warning("DEVELOPER NOTE: pointer4NEW != pointer4 at spot 1")
+
 
     # {{{
     # Handle multiple plans (FIXME: this is limited to a single plan, at present)
@@ -422,7 +445,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1,
     if (sum(keep) == 0) {
         stop("there are no data for plan=", plan, "; try one of the following values instead: ", paste(unique(activeConfiguration), collapse=" "))
     }
-     if (sum(keep) < length(keep)) {
+    if (sum(keep) < length(keep)) {
         oceDebug(debug, "this plan has ", sum(keep), " data records, out of a total of ", length(keep), " in the file subset\n")
         d$index <- d$index[keep]
         d$length <- d$length[keep]
@@ -434,6 +457,12 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1,
         pointer1 <- d$index
         pointer2 <- as.vector(t(cbind(pointer1, 1 + pointer1))) # rbind() would be fine, too.
         pointer4 <- as.vector(t(cbind(pointer1, 1 + pointer1, 2 + pointer1, 3 + pointer1)))
+        pointer2NEW <- gappyIndex(pointer1, 0, 1)
+        pointer4NEW <- gappyIndex(pointer1, 0, 3)
+        if (!all.equal(pointer2, pointer2NEW))
+            warning("DEVELOPER NOTE: pointer2NEW != pointer2 at spot 2")
+        if (!all.equal(pointer4, pointer4NEW))
+            warning("DEVELOPER NOTE: pointer4NEW != pointer4 at spot 2")
         oceDebug(debug, "focussing on ", length(pointer1), " data records (after subsetting for plan=", plan, ")\n", sep="")
     }
     if (debug > 0) {
@@ -455,6 +484,25 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1,
     configuration <- rawToBits(d$buf[pointer2 + 3]) == 0x01
     dim(configuration) <- c(16, N)
     configuration <- t(configuration)
+    # Developer's test of whether comfiguration for a given ID type is constant
+    # through the whole file.  I'm trying type 0x17, the burst-altimeter-raw
+    if (debug > 0L) {
+        # save(d, configuration, file="~/configuration.rda")
+        local({
+            for (id in as.raw(unique(d$id))) {
+                config <- configuration[d$id==id,]
+                ok <- sapply(1:dim(config)[1],function(i) all(config[1,]==config[i,]))
+                if (all(ok)) {
+                    oceDebug(debug, "configure is identical for all ", length(ok),
+                        " chunks with key 0x", as.raw(id), " (", ad2cpCodeToName(id), ")\n")
+                } else {
+                    oceDebug(debug, "configure DIFFERS from the first value, in ", sum(!ok), " instances for chunk key 0x", as.raw(id), " (", ad2cpCodeToName(id), ")\n")
+                }
+            }
+        })
+    }
+
+
     # Extract columns as simply-named flags, for convenience. The variable
     # names to which the assignments are made apply to average/burst data,
     # while comments are used to indicate values for other data, e.g.
