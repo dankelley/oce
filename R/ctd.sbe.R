@@ -1209,7 +1209,7 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
     res@metadata$deploymentType <- deploymentType
     res@metadata$date <- date
     if (!is.na(startTime) && startTime < as.POSIXct("1950-01-01"))
-        warning("startTime < 1950, suggesting y2k problem in this cnv file\n")
+        warning("startTime (", startTime, ") is < 1950, suggesting y2k problem in this cnv file\n")
     res@metadata$startTime <- startTime
     if (!is.na(recoveryTime) && recoveryTime < as.POSIXct("1950-01-01"))
         warning("recoveryTime < 1950, suggesting y2k problem in this cnv file\n")
