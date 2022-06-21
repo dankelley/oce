@@ -9,6 +9,7 @@ read.adp.ad2cp(
   from = 1,
   to = 0,
   by = 1,
+  which = "all",
   tz = getOption("oceTz"),
   ignoreChecksums = FALSE,
   longitude = NA,
@@ -37,6 +38,28 @@ read. This must equal 1, for this version of \code{read.adp.ad2cp}.
 \item{by}{An integer indicating the step from record to record. This
 must equal 1, for this version of \code{read.adp.ad2cp}.
 (If not provided, \code{by} defaults to 1.)}
+
+\item{which}{(\strong{Not implemented yet}) A character value indicating the data
+type(s) to be read, and stored in
+the \code{data} slot of the returned value.  The default, \code{which="all"}, means to
+read all the types.  In many cases, though, the user does not want
+to read everything at once, either as a way to speed processing or to
+avoid running out of memory.  For this reason, a common first step is
+instead to use \code{which="?"}, which gives a table of data types in the file,
+after which an individual type of interest is extracted.  The choices
+for that individual type are:
+\code{"burst"} for ID code 0x15'
+\code{"average"} for ID code 0x16,
+\code{"bottomTrack"} for ID code 0x17,
+\code{"interleavedBurst"} for ID code 0x18,
+\code{"burstAltimeterRaw"} for ID code 0x1a,
+\code{"DVLBottomTrack"} for ID code 0x1b,
+\code{"echosounder"} for ID code 0x1c,
+\code{"DVLWaterTrack"} for ID code 0x1d,
+\code{"altimeter"} for ID code 0x1e,
+\code{"averageAltimeter"} for ID code 0x1f, and
+\code{"text"} for ID code 0xa0. See \dQuote{Details} for more on how
+to access the data in the returned object.}
 
 \item{tz}{Character value indicating time zone. This is used in interpreting
 times stored in the file.}
@@ -98,7 +121,8 @@ formats are not described clearly enough in references 1, 1b, 2 and 3 to be
 certain of how to handle the range of file configurations that may be
 possible. The code has been tested with a small number of files that are
 available to the author, but these do not cover some cases that users might
-require.
+require. This is a preliminary function, subject to change, and in need
+of both correction and refinement.
 }
 \details{
 Users ought to be on the lookout for problems and contact the author if you
@@ -112,7 +136,19 @@ In spring of 2022, support was added for 12-byte headers.  These are not
 described in any Nortek document in the possession of the author of this
 function, although some personal communications made via
 https://github.com/dankelley/oce/issues have suggested some clues.  Those
-clues have led to provisional code in \code{read.adp.ad2cp()}.
+clues have led to provisional code in \code{read.adp.ad2cp()}, but this
+code has not been tested adequately.
+
+Retrieval of elements of the returned value is crude, because so many
+things can be in so many places. The user is assumed to know the
+layout, having designed the experiment or having some familiarity
+with the instrument type.  This function stores data elements
+in lists within the \code{data} slot.  So, for example, the following
+might be a way to read and then access burst altimeter raw data.
+
+\if{html}{\out{<div class="sourceCode Access is crude, because so manyThe scheme, at present, is for users">}}\preformatted{d <- read.adp.ad2cp("file.ad2cp", which="burstAltimeterRaw")
+bar <- d[["burstAltimeterRaw"]]
+}\if{html}{\out{</div>}}
 }
 \examples{
 \dontrun{

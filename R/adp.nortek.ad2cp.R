@@ -135,7 +135,8 @@ ad2cpCodeToName <- function(code)
 #' certain of how to handle the range of file configurations that may be
 #' possible. The code has been tested with a small number of files that are
 #' available to the author, but these do not cover some cases that users might
-#' require.
+#' require. This is a preliminary function, subject to change, and in need
+#' of both correction and refinement.
 #'
 #' Users ought to be on the lookout for problems and contact the author if you
 #' need help. Also, note that some of the standard `read.adp.*` arguments are
@@ -148,7 +149,19 @@ ad2cpCodeToName <- function(code)
 #' described in any Nortek document in the possession of the author of this
 #' function, although some personal communications made via
 #' https://github.com/dankelley/oce/issues have suggested some clues.  Those
-#' clues have led to provisional code in `read.adp.ad2cp()`.
+#' clues have led to provisional code in `read.adp.ad2cp()`, but this
+#' code has not been tested adequately.
+#'
+#' Retrieval of elements of the returned value is crude, because so many
+#' things can be in so many places. The user is assumed to know the
+#' layout, having designed the experiment or having some familiarity
+#' with the instrument type.  This function stores data elements
+#' in lists within the `data` slot.  So, for example, the following
+#' might be a way to read and then access burst altimeter raw data.
+#'``` Access is crude, because so manyThe scheme, at present, is for users
+#' d <- read.adp.ad2cp("file.ad2cp", which="burstAltimeterRaw")
+#' bar <- d[["burstAltimeterRaw"]]
+#'```
 #'
 #' @param file A connection or a character string giving the name of the file to load.
 #'
@@ -159,6 +172,28 @@ ad2cpCodeToName <- function(code)
 #' @param by An integer indicating the step from record to record. This
 #' must equal 1, for this version of `read.adp.ad2cp`.
 #' (If not provided, `by` defaults to 1.)
+#'
+#' @param which (**Not implemented yet**) A character value indicating the data
+#' type(s) to be read, and stored in
+#' the `data` slot of the returned value.  The default, `which="all"`, means to
+#' read all the types.  In many cases, though, the user does not want
+#' to read everything at once, either as a way to speed processing or to
+#' avoid running out of memory.  For this reason, a common first step is
+#' instead to use `which="?"`, which gives a table of data types in the file,
+#' after which an individual type of interest is extracted.  The choices 
+#' for that individual type are:
+#' `"burst"` for ID code 0x15'
+#' `"average"` for ID code 0x16,
+#' `"bottomTrack"` for ID code 0x17,
+#' `"interleavedBurst"` for ID code 0x18,
+#' `"burstAltimeterRaw"` for ID code 0x1a,
+#' `"DVLBottomTrack"` for ID code 0x1b,
+#' `"echosounder"` for ID code 0x1c,
+#' `"DVLWaterTrack"` for ID code 0x1d,
+#' `"altimeter"` for ID code 0x1e,
+#' `"averageAltimeter"` for ID code 0x1f, and
+#' `"text"` for ID code 0xa0. See \dQuote{Details} for more on how
+#' to access the data in the returned object.
 #'
 #' @param to An integer indicating the final record to read.
 #' (If not provided, `by` defaults to 1e9.)
@@ -240,7 +275,7 @@ ad2cpCodeToName <- function(code)
 #' page numbers than reference 3.)
 #'
 #' @family things related to adp data
-read.adp.ad2cp <- function(file, from=1, to=0, by=1,
+read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
     tz=getOption("oceTz"),
     ignoreChecksums=FALSE,
     longitude=NA, latitude=NA,
@@ -967,6 +1002,8 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1,
             datasetDescription=datasetDescription[p$burstAltimeterRaw],
             transmitEnergy=transmitEnergy[p$burstAltimeterRaw],
             powerLevel=powerLevel[p$burstAltimeterRaw])
+        save(burstAltimeterRaw, file="~/01.rda")
+        message("DAN: just made burstAltimeterRaw (and saved to ~/01.rda)")
     } else {
         ## FIXME DAN DAN DAN DAN
         burstAltimeterRaw <- NULL
