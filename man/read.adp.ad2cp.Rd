@@ -39,7 +39,7 @@ read. This must equal 1, for this version of \code{read.adp.ad2cp}.
 must equal 1, for this version of \code{read.adp.ad2cp}.
 (If not provided, \code{by} defaults to 1.)}
 
-\item{which}{(\strong{Not implemented yet}) A character value indicating the data
+\item{which}{character value indicating the data
 type(s) to be read, and stored in
 the \code{data} slot of the returned value.  The default, \code{which="all"}, means to
 read all the types.  In many cases, though, the user does not want
@@ -59,7 +59,8 @@ for that individual type are:
 \code{"altimeter"} for ID code 0x1e,
 \code{"averageAltimeter"} for ID code 0x1f, and
 \code{"text"} for ID code 0xa0. See \dQuote{Details} for more on how
-to access the data in the returned object.}
+to access the data in the returned object.
+\strong{NOTE:} only \code{"all"} and \code{"*"} work, so far.}
 
 \item{tz}{Character value indicating time zone. This is used in interpreting
 times stored in the file.}

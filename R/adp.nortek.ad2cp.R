@@ -124,8 +124,12 @@ ad2cpCodeToName <- function(code)
         interleavedBurst=0x18, burstAltimeterRaw=0x1a, DVLBottomTrack=0x1b,
         echosounder=0x1c, DVLWaterTrack=0x1d, altimeter=0x1e,
         averageAltimeter=0x1f, text=0xa0)
-    m <- match(code, table)
-    if (is.na(m)) "?" else names(table)[m]
+    rval <- rep("", length(code))
+    for (i in seq_along(code)) {
+        m <- match(code[i], table)
+        rval[i] <- if (is.na(m)) "?" else names(table)[m]
+    }
+    rval
 }
 
 #' Read an AD2CP File
@@ -173,7 +177,7 @@ ad2cpCodeToName <- function(code)
 #' must equal 1, for this version of `read.adp.ad2cp`.
 #' (If not provided, `by` defaults to 1.)
 #'
-#' @param which (**Not implemented yet**) A character value indicating the data
+#' @param which  character value indicating the data
 #' type(s) to be read, and stored in
 #' the `data` slot of the returned value.  The default, `which="all"`, means to
 #' read all the types.  In many cases, though, the user does not want
@@ -194,6 +198,7 @@ ad2cpCodeToName <- function(code)
 #' `"averageAltimeter"` for ID code 0x1f, and
 #' `"text"` for ID code 0xa0. See \dQuote{Details} for more on how
 #' to access the data in the returned object.
+#' **NOTE:** only `"all"` and `"*"` work, so far.
 #'
 #' @param to An integer indicating the final record to read.
 #' (If not provided, `by` defaults to 1e9.)
@@ -372,6 +377,13 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
     nav <- do_ldc_ad2cp_in_file(filename, from, to, by,
         if (ignoreChecksums) 1L else 0L,
         debug-1L)
+    # Return table of names, in alphabetical order
+    if (which == "?") {
+        t <- table(nav$id)
+        names(t) <- ad2cpCodeToName(names(t))
+        o <- order(names(t))
+        return(t[o])
+    }
     #DAN<<-nav;save(DAN,file="DAN.rda")
     if (nav$twelve_byte_header == 1L)
         warning("file has 12-byte headers (an undocumented format), so be on the lookout for spurious results")
