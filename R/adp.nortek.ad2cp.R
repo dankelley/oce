@@ -139,11 +139,9 @@ ad2cpCodeToName <- function(code)
 #' certain of how to handle the range of file configurations that may be
 #' possible. The code has been tested with a small number of files that are
 #' available to the author, but these do not cover some cases that users might
-#' require. This is a preliminary function, subject to change, and in need
-#' of both correction and refinement.
+#' require. Given all of this, it makes sense to use this function with caution.
 #'
-#' Users ought to be on the lookout for problems and contact the author if you
-#' need help. Also, note that some of the standard `read.adp.*` arguments are
+#' Some of the standard `read.adp.*` arguments are
 #' handled differently with this function, e.g. `by` must equal 1, because
 #' skipping records makes sense with blended multiple streams; see the
 #' \dQuote{Arguments} section for other limitations that stem from the specifics
@@ -156,13 +154,10 @@ ad2cpCodeToName <- function(code)
 #' clues have led to provisional code in `read.adp.ad2cp()`, but this
 #' code has not been tested adequately.
 #'
-#' Retrieval of elements of the returned value is crude, because so many
-#' things can be in so many places. The user is assumed to know the
-#' layout, having designed the experiment or having some familiarity
-#' with the instrument type.  This function stores data elements
-#' in lists within the `data` slot.  So, for example, the following
-#' might be a way to read and then access burst altimeter raw data.
-#'``` Access is crude, because so manyThe scheme, at present, is for users
+#' This function stores data elements in lists within the `data` slot.  So, for
+#' example, the following might be a way to read and then access burst altimeter
+#' raw data.
+#'```
 #' d <- read.adp.ad2cp("file.ad2cp", which="burstAltimeterRaw")
 #' bar <- d[["burstAltimeterRaw"]]
 #'```
@@ -256,10 +251,13 @@ ad2cpCodeToName <- function(code)
 #'
 #' @param \dots Ignored by this function.
 #'
-#' @examples
-#'\dontrun{
-#' d <- read.adp.ad2cp("~/test.ad2cp", to=100) # or read.oce()
-#'}
+## @examples
+##\dontrun{
+## d <- read.adp.ad2cp("~/test.ad2cp", to=100) # or read.oce()
+##}
+#'
+#' @return An [adp-class] object with `metadata$fileType` equal to `"AD2CP"`, a
+#' table (if `which="?"`), or a list of character vectors (if `which="text"`).
 #'
 #' @author Dan Kelley
 #'
