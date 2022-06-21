@@ -39,28 +39,27 @@ read. This must equal 1, for this version of \code{read.adp.ad2cp}.
 must equal 1, for this version of \code{read.adp.ad2cp}.
 (If not provided, \code{by} defaults to 1.)}
 
-\item{which}{character value indicating the data
-type(s) to be read, and stored in
-the \code{data} slot of the returned value.  The default, \code{which="all"}, means to
-read all the types.  In many cases, though, the user does not want
-to read everything at once, either as a way to speed processing or to
-avoid running out of memory.  For this reason, a common first step is
-instead to use \code{which="?"}, which gives a table of data types in the file,
-after which an individual type of interest is extracted.  The choices
-for that individual type are:
-\code{"burst"} for ID code 0x15'
-\code{"average"} for ID code 0x16,
-\code{"bottomTrack"} for ID code 0x17,
-\code{"interleavedBurst"} for ID code 0x18,
-\code{"burstAltimeterRaw"} for ID code 0x1a,
-\code{"DVLBottomTrack"} for ID code 0x1b,
-\code{"echosounder"} for ID code 0x1c,
-\code{"DVLWaterTrack"} for ID code 0x1d,
-\code{"altimeter"} for ID code 0x1e,
-\code{"averageAltimeter"} for ID code 0x1f, and
-\code{"text"} for ID code 0xa0. See \dQuote{Details} for more on how
-to access the data in the returned object.
-\strong{NOTE:} only \code{"all"} and \code{"*"} work, so far.}
+\item{which}{character value indicating the data type(s) to be read, and
+stored in the \code{data} slot of the returned value.  The default, \code{which="all"},
+means to read all the types.  In many cases, though, the user does not want
+to read everything at once, either as a way to speed processing or to avoid
+running out of memory.  For this reason, a common first step is instead to
+use \code{which="?"}, which gives a table of data types in the file, after which
+an individual type of interest is extracted.  The choices for that individual
+type are as follows:
+\code{"burst"} (\emph{not coded yet}) for ID code 0x15,
+\code{"average"} (\emph{not coded yet}) for ID code 0x16,
+\code{"bottomTrack"} (\emph{not coded yet}) for ID code 0x17,
+\code{"interleavedBurst"} (\emph{not coded yet}) for ID code 0x18,
+\code{"burstAltimeterRaw"} (\emph{not coded yet}) for ID code 0x1a,
+\code{"DVLBottomTrack"} (\emph{not coded yet}) for ID code 0x1b,
+\code{"echosounder"} (\emph{not coded yet}) for ID code 0x1c,
+\code{"DVLWaterTrack"} (\emph{not coded yet}) for ID code 0x1d,
+\code{"altimeter"} (\emph{not coded yet}) for ID code 0x1e,
+\code{"averageAltimeter"} (\emph{not coded yet}) for ID code 0x1f, and
+\code{"text"} for ID code 0xa0 (returned as a list of character vectors,
+with each of those vectors holding lines inferred by splitting the string
+at occurances of carriage-return/line-feed pairs).}
 
 \item{tz}{Character value indicating time zone. This is used in interpreting
 times stored in the file.}

@@ -177,28 +177,27 @@ ad2cpCodeToName <- function(code)
 #' must equal 1, for this version of `read.adp.ad2cp`.
 #' (If not provided, `by` defaults to 1.)
 #'
-#' @param which  character value indicating the data
-#' type(s) to be read, and stored in
-#' the `data` slot of the returned value.  The default, `which="all"`, means to
-#' read all the types.  In many cases, though, the user does not want
-#' to read everything at once, either as a way to speed processing or to
-#' avoid running out of memory.  For this reason, a common first step is
-#' instead to use `which="?"`, which gives a table of data types in the file,
-#' after which an individual type of interest is extracted.  The choices 
-#' for that individual type are:
-#' `"burst"` for ID code 0x15'
-#' `"average"` for ID code 0x16,
-#' `"bottomTrack"` for ID code 0x17,
-#' `"interleavedBurst"` for ID code 0x18,
-#' `"burstAltimeterRaw"` for ID code 0x1a,
-#' `"DVLBottomTrack"` for ID code 0x1b,
-#' `"echosounder"` for ID code 0x1c,
-#' `"DVLWaterTrack"` for ID code 0x1d,
-#' `"altimeter"` for ID code 0x1e,
-#' `"averageAltimeter"` for ID code 0x1f, and
-#' `"text"` for ID code 0xa0. See \dQuote{Details} for more on how
-#' to access the data in the returned object.
-#' **NOTE:** only `"all"` and `"*"` work, so far.
+#' @param which  character value indicating the data type(s) to be read, and
+#' stored in the `data` slot of the returned value.  The default, `which="all"`,
+#' means to read all the types.  In many cases, though, the user does not want
+#' to read everything at once, either as a way to speed processing or to avoid
+#' running out of memory.  For this reason, a common first step is instead to
+#' use `which="?"`, which gives a table of data types in the file, after which
+#' an individual type of interest is extracted.  The choices for that individual
+#' type are as follows:
+#' `"burst"` (*not coded yet*) for ID code 0x15,
+#' `"average"` (*not coded yet*) for ID code 0x16,
+#' `"bottomTrack"` (*not coded yet*) for ID code 0x17,
+#' `"interleavedBurst"` (*not coded yet*) for ID code 0x18,
+#' `"burstAltimeterRaw"` (*not coded yet*) for ID code 0x1a,
+#' `"DVLBottomTrack"` (*not coded yet*) for ID code 0x1b,
+#' `"echosounder"` (*not coded yet*) for ID code 0x1c,
+#' `"DVLWaterTrack"` (*not coded yet*) for ID code 0x1d,
+#' `"altimeter"` (*not coded yet*) for ID code 0x1e,
+#' `"averageAltimeter"` (*not coded yet*) for ID code 0x1f, and
+#' `"text"` for ID code 0xa0 (returned as a list of character vectors,
+#' with each of those vectors holding lines inferred by splitting the string
+#' at occurances of carriage-return/line-feed pairs).
 #'
 #' @param to An integer indicating the final record to read.
 #' (If not provided, `by` defaults to 1e9.)
@@ -481,12 +480,21 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
     idHeader <- which(d$id == 0xa0)[1]
     if (length(idHeader)) {
         oceDebug(debug, "this file has a header at id=", idHeader, "\n", sep="")
-        chars <- rawToChar(d$buf[seq.int(2+d$index[idHeader], by=1, length.out=-1+d$length[idHeader])])
+        chars <- rawToChar(d$buf[seq.int(2L+d$index[idHeader], by=1L, length.out=-1L+d$length[idHeader])])
         header <- strsplit(chars, "\r\n")[[1]]
         if (!typeGiven) {
             type <- gsub('.*STR="([^"]*)".*$', '\\1', header[grep("^ID,", header)])
             typeGiven <- TRUE
         }
+    }
+    if (which == "text") {
+        w <- which(d$id == 0xa0)
+        rval <- vector("list", length(w))
+        for (i in seq_along(w)) {
+            chars <- rawToChar(d$buf[seq.int(2L+d$index[w[i]], by=1, length.out=-1+d$length[w[i]])])
+            rval[i] <- strsplit(chars, "\r\n")[1]
+        }
+        return(rval)
     }
     keep <- activeConfiguration == plan
     if (sum(keep) == 0) {
