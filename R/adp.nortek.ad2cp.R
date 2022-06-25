@@ -113,12 +113,12 @@ is.ad2cp <- function(x)
 
 ad2cpCodeToName <- function(code)
 {
-    #             burst          average bottomTrack  interleavedBurst
-    #                21               22          23                24
-    # burstAltimeterRaw   DVLBottomTrack echosounder     DVLWaterTrack
-    #                26               27          28                29
+    #             burst          average bottomTrack interleavedBurst
+    #           0x15=21          0x16=22     0x17=23          0x18=24
+    # burstAltimeterRaw   DVLBottomTrack echosounder    DVLWaterTrack
+    #           0x1a=26          0x1b=27     0x1c=28          0x1d=29
     #         altimeter averageAltimeter        text
-    #                30               31         160
+    #           0x1e=30          0x1f=31    0xa0=160
     code <- as.integer(code)
     table <- c(burst=0x15, average=0x16, bottomTrack=0x17,
         interleavedBurst=0x18, burstAltimeterRaw=0x1a, DVLBottomTrack=0x1b,
@@ -546,7 +546,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
                 config <- configuration[d$id==id,]
                 ok <- sapply(1:dim(config)[1],function(i) all(config[1,]==config[i,]))
                 if (all(ok)) {
-                    oceDebug(debug, "configure is identical for all ", length(ok),
+                    oceDebug(debug, "configure is uniform in all ", length(ok),
                         " chunks with key 0x", as.raw(id), " (", ad2cpCodeToName(id), ")\n")
                 } else {
                     oceDebug(debug, "configure DIFFERS from the first value, in ", sum(!ok), " instances for chunk key 0x", as.raw(id), " (", ad2cpCodeToName(id), ")\n")
@@ -1020,8 +1020,50 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
             datasetDescription=datasetDescription[p$burstAltimeterRaw],
             transmitEnergy=transmitEnergy[p$burstAltimeterRaw],
             powerLevel=powerLevel[p$burstAltimeterRaw])
-        save(burstAltimeterRaw, file="~/01.rda")
-        message("DAN: just made burstAltimeterRaw (and saved to ~/01.rda)")
+        if (TRUE) {
+            save(burstAltimeterRaw, file="~/01.rda")
+            message("DAN: burstAltimeterRaw is saved in ~/01.rda)")
+            cat(file=stderr(), vectorShow(velocityIncluded[p$burstAltimeterRaw[1]]))
+            cat(file=stderr(), vectorShow(amplitudeIncluded[p$burstAltimeterRaw[1]]))
+            cat(file=stderr(), vectorShow(echosounderIncluded[p$burstAltimeterRaw[1]]))
+            cat(file=stderr(), vectorShow(amplitudeIncluded[p$burstAltimeterRaw[1]]))
+            cat(file=stderr(), vectorShow(correlationIncluded[p$burstAltimeterRaw[1]]))
+            cat(file=stderr(), vectorShow(altimeterIncluded[p$burstAltimeterRaw[1]]))
+            cat(file=stderr(), vectorShow(ASTIncluded[p$burstAltimeterRaw[1]]))
+            cat(file=stderr(), vectorShow(altimeterRawIncluded[p$burstAltimeterRaw[1]]))
+            ch <- p$burstAltimeterRaw[1]
+            cat(file=stderr(), vectorShow(p$burstAltimeterRaw))
+            cat(file=stderr(), vectorShow(ch))
+            if (velocityIncluded[ch]) {
+                message("velocity is included in burstAltimeterRaw")
+            }
+            if (amplitudeIncluded[ch]) {
+                message("amplitude is included in burstAltimeterRaw")
+            }
+            if (correlationIncluded[ch]) {
+                message("correlation is included in burstAltimeterRaw")
+            }
+            if (altimeterIncluded[ch]) {
+                message("altimeter is included in burstAltimeterRaw")
+            }
+            if (ASTIncluded[ch]) {
+                message("AST is included in burstAltimeterRaw")
+            }
+            if (altimeterRawIncluded[ch]) {
+                message("altimeterRaw is included in burstAltimeterRaw")
+                cat(file=stderr(), "next is start of p$burstAltimeterRaw\n")
+                print(file=stderr(), head(p$burstAltimeterRaw, 20))
+                cat(file=stderr(), "next is start of d$index[p$burstAltimeterRaw] (to be 1st arg...)\n")
+                print(file=stderr(), head(d$index[p$burstAltimeterRaw], 20))
+            }
+            if (echosounderIncluded[ch]) {
+                message("echosounder is included in burstAltimeterRaw")
+            }
+            if (AHRSIncluded[ch]) {
+                message("AHRS is included in burstAltimeterRaw")
+            }
+
+        }
     } else {
         ## FIXME DAN DAN DAN DAN
         burstAltimeterRaw <- NULL
@@ -1363,8 +1405,9 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
         # oceDebug(debug>3, "d$id[", ch, "]=", d$id[[ch]], "\n", sep="")
         key <- d$id[ch]
         i <- d$index[ch]
-        oceDebug(debug > 1, sprintf("chunk ch=%d of %d, starting at buf[%d] has key=0x%02x (%s)\n",
+        oceDebug(debug > 0, sprintf("chunk ch=%d of %d, starting at buf[%d] has key=0x%02x (%s)\n",
                 ch, N, i, key, ad2cpCodeToName(key)), unindent=1)
+        if (ch > 100) stop('danny')
 
         if (key == 0x15) { # burst
 
