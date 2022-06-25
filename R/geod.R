@@ -141,7 +141,7 @@ geodXyInverse <- function(x, y, longitudeRef, latitudeRef, debug=getOption("oceD
 #'
 #' This calculates geodesic distance between points on the earth, i.e.
 #' distance measured along the (presumed ellipsoidal) surface. The method
-#' involves the solution of the geodetic inverse problem, using T. Vincenty's
+#' involves the solution of the geodetic inverse problem, using Vincenty's
 #' (1975) modification of Rainsford's method with Helmert's elliptical terms.
 #'
 #' The function may be used in several different ways.
