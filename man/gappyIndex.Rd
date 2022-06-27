@@ -4,31 +4,39 @@
 \alias{gappyIndex}
 \title{Create a Possibly Gappy Indexing Vector}
 \usage{
-gappyIndex(starts, from, to)
+gappyIndex(starts, offset = 0L, length = 4L)
 }
 \arguments{
 \item{starts}{integer vector of one or more values.}
 
-\item{from, to}{integer values controlling the generated sequence, as if
-\link{seq(from,to)} had been used. See \dQuote{Details}.}
+\item{offset}{integer value indicating the value to be added
+to each of the \code{starts} value, as the beginning of the sequence.}
+
+\item{length}{integer value indicating the number of
+elements of that sequence.}
 }
 \description{
 This is used internally to construct indexing arrays, mainly for adv and adp
 functions, in which \code{\link[=readBin]{readBin()}} is used to access isolated regions within a
-\link{raw} vector. The work is done in C++, for speed.
+\link{raw} vector. The work is done in C++, for speed. Since this function is
+designed for use within oce, it does not offer many safeguards on the
+parameters, beyond detecting an overlapping situation that would occur if
+\code{length} exceeded the space between \code{starts} elements.  Also, users ought
+to be aware that the behaviour of \code{gappyIndex()} might change at any time;
+simply stated, it is not intended for direct use except by the package
+developers.
 }
 \details{
 For example, suppose data elements in a buffer named \code{buf} start at bytes
-1000 and 2000, and that the goal is to read the first 4 bytes of each of
-these sequences as an unsigned, 4-byte integer.  This could be accomplished
-as follows.  Note that the last argument to \code{gappyIndex()} is 3 in this
-example, because the \code{0:3} has 4 elements.
+1000 and 2000, and that the goal is to skip the first 4 bytes of each of
+these sequences, and then to read the next 2 bytes as an unsigned 16-bit
+integer. This could be accomplished as follows.
 
 \if{html}{\out{<div class="sourceCode">}}\preformatted{library(oce)
 buf <- readBin("filename", "raw", n=5000, size=1)
-i <- gappyIndex(c(1000, 2000), 0, 3) # Note the length(0:3) is 4.
-# i is 1000,1001,1002,1003,2000,2001,2002,2003
-readBin(buf[i], "integer", size=4, n=1, endian="little")
+i <- gappyIndex(c(1000, 2000, 3000), 4, 2)
+# i is 1004,1005, 2004,2005, 3004,3005
+values <- readBin(buf[i], "integer", size=2, n=3, endian="little")
 }\if{html}{\out{</div>}}
 }
 \author{

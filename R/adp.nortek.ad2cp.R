@@ -417,8 +417,8 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
     #>     as.vector(t(cbind(pointer1, 1 + pointer1, 2 + pointer1, 3 + pointer1))),
     #>     pointer4NEW <- gappyIndex(pointer1, 0, 3)
     #>     )
-    pointer2NEW <- gappyIndex(pointer1, 0, 1)
-    pointer4NEW <- gappyIndex(pointer1, 0, 3)
+    pointer2NEW <- gappyIndex(pointer1, 0, 2)
+    pointer4NEW <- gappyIndex(pointer1, 0, 4)
     if (!all.equal(pointer2, pointer2NEW))
         warning("DEVELOPER NOTE: pointer2NEW != pointer2 at spot 1")
     if (!all.equal(pointer4, pointer4NEW))
@@ -510,8 +510,8 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
         pointer1 <- d$index
         pointer2 <- as.vector(t(cbind(pointer1, 1 + pointer1))) # rbind() would be fine, too.
         pointer4 <- as.vector(t(cbind(pointer1, 1 + pointer1, 2 + pointer1, 3 + pointer1)))
-        pointer2NEW <- gappyIndex(pointer1, 0, 1)
-        pointer4NEW <- gappyIndex(pointer1, 0, 3)
+        pointer2NEW <- gappyIndex(pointer1, 0, 2)
+        pointer4NEW <- gappyIndex(pointer1, 0, 4)
         if (!all.equal(pointer2, pointer2NEW))
             warning("DEVELOPER NOTE: pointer2NEW != pointer2 at spot 2")
         if (!all.equal(pointer4, pointer4NEW))
@@ -1073,7 +1073,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
             if (altimeterRawIncluded[p$burstAltimeterRaw[1]]) {
                 oceDebug(debug, "?vector-read burstAltimeterRaw$altimeterRaw(i0v=", i0v, ")\n")
                 # read 4b=altimeterRawNumberOfSamples
-                iv <- gappyIndex(i, i0v, i0v+3)
+                iv <- gappyIndex(i, i0v, 4)
                 oceDebug(debug, "before reading altimeterRawNumberOfSamples: ", vectorShow(i0v))
                 oceDebug(debug, "before reading altimeterRawNumberOfSamples: ", vectorShow(iv))
                 NS <- readBin(buf[iv], "integer", size=4L, n=NP, endian="little") # number of samples (tmp var)
@@ -1087,7 +1087,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
                 # FIXME: read 2b=altimeterRawSampleDistance here
                 i0v <- i0v + 2L # skip the 2 bytes we just read (FIXME)
                 # read 2*nbeam*ncell=altimeterRawSamples
-                iv <- gappyIndex(i, i0v, -1L+i0v+2L*burstAltimeterRaw$altimeterRawNumberOfSamples)
+                iv <- gappyIndex(i, i0v, 2L*burstAltimeterRaw$altimeterRawNumberOfSamples)
                 #browser()
                 message("before reading altimeterSamples: ", vectorShow(i0v, n=6))
                 message("before reading altimeterSamples: ", vectorShow(iv, n=6))
