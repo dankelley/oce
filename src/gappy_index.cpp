@@ -10,15 +10,20 @@ using namespace Rcpp;
 // [[Rcpp::export]]
 IntegerVector do_gappy_index(IntegerVector starts, IntegerVector from, IntegerVector to)
 {
-    int nstarts = starts.size();
-    int n = nstarts * (to[0] - from[0] + 1);
-    int j = 0;
+    long unsigned int nstarts = starts.size();
+    long unsigned int n = nstarts * (to[0] - from[0] + 1);
+    long unsigned int j = 0;
     IntegerVector res(n);
-    for (int i = 0; i < nstarts; i++) {
+    for (long unsigned int i = 0; i < nstarts; i++) {
         for (int fromto = from[0]; fromto <= to[0]; fromto++) {
-            res[j++] = starts[i] + fromto;
+            res[j] = starts[i] + fromto;
+            if (i < (nstarts - 1) && res[j] > starts[i+1])
+              ::Rf_error("overlap at i=%d, j=%d (n=%d)", i, j, n);
+            j++;
         }
     }
+    if (j != n)
+      ::Rf_error("j=%d does not equal n=%d", j, n);
     return res;
 }
 
