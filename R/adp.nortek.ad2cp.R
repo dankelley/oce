@@ -1089,14 +1089,12 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
                 # read 2*nbeam*ncell=altimeterRawSamples
                 iv <- gappyIndex(i, i0v, 2L*burstAltimeterRaw$altimeterRawNumberOfSamples)
                 #browser()
-                message("before reading altimeterSamples: ", vectorShow(i0v, n=6))
-                message("before reading altimeterSamples: ", vectorShow(iv, n=6))
+                #message("before reading altimeterSamples: ", vectorShow(i0v, n=6))
+                #message("before reading altimeterSamples: ", vectorShow(iv, n=6))
                 # FIXME: the factor should be velocityFactor[...]
                 tmp <- readBin(buf[iv], "integer", size=2L, endian="little",
                     n=NP*burstAltimeterRaw$altimeterRawNumberOfSamples)
-                DAN<<-list(d=d,buf=buf,i=i,i0v=i0v,iv=iv)
                 burstAltimeterRaw$altimeterRawSamplesNEW <- matrix(tmp, nrow=NP, ncol=NS, byrow=TRUE)
-                imagep(burstAltimeterRaw$altimeterRawSamplesNEW)
                 i0v <- i0v + 2L*burstAltimeterRaw$altimeterRawNumberOfSamples
                 oceDebug(debug, "  new i0v=", i0v, "\n")
             }
@@ -1129,9 +1127,9 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
         ## FIXME DAN DAN DAN DAN
         burstAltimeterRaw <- NULL
     }
-    save(burstAltimeterRaw, file="dan.rda")
-    message("see burstAltimeterRaw in dan.rda")
-    return(burstAltimeterRaw)
+    #save(burstAltimeterRaw, file="dan.rda")
+    #message("see burstAltimeterRaw in dan.rda")
+    #return(burstAltimeterRaw)
 
 
     if (length(p$DVLBottomTrack) > 0) { # key=0x1b
