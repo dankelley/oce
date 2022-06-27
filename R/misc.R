@@ -1,23 +1,39 @@
 # vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
 
-#' Create an indexing array
+#' Create a Possibly Gappy Indexing Vector
 #'
-#' This is used internally to construct indexing arrays, mainly
-#' for adv and adp functions, in which [readBin()] is used to
-#' read chunks from a buffer of [raw] values.  The example
-#' shows how to create the sequence `c(3,4, 103,104)`.
+#' This is used internally to construct indexing arrays, mainly for adv and adp
+#' functions, in which [readBin()] is used to access isolated regions within a
+#' [raw] vector. The work is done in C++, for speed.
 #'
-#' @param starts Integer vector of one or more values.
-#' @param from,to Integer value specifying the region to be created.
+#' For example, suppose data elements in a buffer named `buf` start at bytes
+#' 1000 and 2000, and that the goal is to read the first 4 bytes of each of
+#' these sequences as an unsigned, 4-byte integer.  This could be accomplished
+#' as follows.  Note that the last argument to `gappyIndex()` is 3 in this
+#' example, because the `0:3` has 4 elements.
 #'
-#' @examples
+#'```
 #' library(oce)
-#' gappyIndex(c(1, 101), 2, 3)
+#' buf <- readBin("filename", "raw", n=5000, size=1)
+#' i <- gappyIndex(c(1000, 2000), 0, 3) # Note the length(0:3) is 4.
+#' # i is 1000,1001,1002,1003,2000,2001,2002,2003
+#' readBin(buf[i], "integer", size=4, n=1, endian="little")
+#'```
+#'
+#' @param starts integer vector of one or more values.
+#'
+#' @param from,to integer values controlling the generated sequence, as if
+#' [seq(from,to)] had been used. See \dQuote{Details}.
+#'
+#' @author Dan Kelley
 gappyIndex <- function(starts, from, to)
 {
     if (missing(starts)) stop("must provide 'starts', an integer vector")
+    if (any(starts < 1L)) stop("'starts' must consist of positive values")
     if (missing(from)) stop("must provide 'from', an integer value")
     if (missing(to)) stop("must provide 'to', an integer value")
+    if (to <= from) stop("'from' must exceed 'to'")
+    if (from < 0) stop("'from' must be positive")
     do_gappy_index(starts, from, to)
 }
 
