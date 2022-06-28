@@ -1,25 +1,86 @@
 # vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
 
-#' Create an indexing array
+#' Create a Possibly Gappy Indexing Vector
 #'
-#' This is used internally to construct indexing arrays, mainly
-#' for adv and adp functions, in which [readBin()] is used to
-#' read chunks from a buffer of [raw] values.  The example
-#' shows how to create the sequence `c(3,4, 103,104)`.
+#' This is used internally to construct indexing arrays, mainly for adv and adp
+#' functions, in which [readBin()] is used to access isolated regions within a
+#' [raw] vector. The work is done in C++, for speed. Since this function is
+#' designed for use within oce, it does not offer many safeguards on the
+#' parameters, beyond detecting an overlapping situation that would occur if
+#' `length` exceeded the space between `starts` elements.  Also, users ought
+#' to be aware that the behaviour of `gappyIndex()` might change at any time;
+#' simply stated, it is not intended for direct use except by the package
+#' developers.
 #'
-#' @param starts Integer vector of one or more values.
-#' @param from,to Integer value specifying the region to be created.
+#' For example, suppose data elements in a buffer named `buf` start at bytes
+#' 1000 and 2000, and that the goal is to skip the first 4 bytes of each of
+#' these sequences, and then to read the next 2 bytes as an unsigned 16-bit
+#' integer. This could be accomplished as follows.
 #'
-#' @examples
+#'```
 #' library(oce)
-#' gappyIndex(c(1, 101), 2, 3)
-gappyIndex <- function(starts, from, to)
+#' buf <- readBin("filename", "raw", n=5000, size=1)
+#' i <- gappyIndex(c(1000, 2000, 3000), 4, 2)
+#' # i is 1004,1005, 2004,2005, 3004,3005
+#' values <- readBin(buf[i], "integer", size=2, n=3, endian="little")
+#'```
+#'
+#' @param starts integer vector of one or more values.
+#'
+#' @param offset integer value indicating the value to be added
+#' to each of the `starts` value, as the beginning of the sequence.
+#'
+#' @param length integer value indicating the number of
+#' elements of that sequence.
+#'
+#' @author Dan Kelley
+gappyIndex <- function(starts, offset=0L, length=4L)
 {
     if (missing(starts)) stop("must provide 'starts', an integer vector")
-    if (missing(from)) stop("must provide 'from', an integer value")
-    if (missing(to)) stop("must provide 'to', an integer value")
-    do_gappy_index(starts, from, to)
+    if (any(starts < 1L)) stop("'starts' must consist of positive values")
+    if (length(offset) != 1L) stop("'offset' must be a single number")
+    if (length(length) != 1L) stop("'length' must be a single number")
+    if (offset < 0L) stop("'offset' must be non-negative")
+    if (length < 1L) stop("'length' must be positive")
+    do_gappy_index(starts, offset, length)
 }
+
+#OLD #' Create a Possibly Gappy Indexing Vector
+#OLD #'
+#OLD #' This is used internally to construct indexing arrays, mainly for adv and adp
+#OLD #' functions, in which [readBin()] is used to access isolated regions within a
+#OLD #' [raw] vector. The work is done in C++, for speed.
+#OLD #'
+#OLD #' For example, suppose data elements in a buffer named `buf` start at bytes
+#OLD #' 1000 and 2000, and that the goal is to read the first 4 bytes of each of
+#OLD #' these sequences as an unsigned, 4-byte integer.  This could be accomplished
+#OLD #' as follows.  Note that the last argument to `gappyIndex()` is 3 in this
+#OLD #' example, because the `0:3` has 4 elements.
+#OLD #'
+#OLD #'```
+#OLD #' library(oce)
+#OLD #' buf <- readBin("filename", "raw", n=5000, size=1)
+#OLD #' i <- gappyIndex(c(1000, 2000), 0, 3) # Note the length(0:3) is 4.
+#OLD #' # i is 1000,1001,1002,1003,2000,2001,2002,2003
+#OLD #' readBin(buf[i], "integer", size=4, n=1, endian="little")
+#OLD #'```
+#OLD #'
+#OLD #' @param starts integer vector of one or more values.
+#OLD #'
+#OLD #' @param from,to integer values controlling the generated sequence, as if
+#OLD #' [seq(from,to)] had been used. See \dQuote{Details}.
+#OLD #'
+#OLD #' @author Dan Kelley
+#OLD gappyIndex <- function(starts, from, to)
+#OLD {
+#OLD     if (missing(starts)) stop("must provide 'starts', an integer vector")
+#OLD     if (any(starts < 1L)) stop("'starts' must consist of positive values")
+#OLD     if (missing(from)) stop("must provide 'from', an integer value")
+#OLD     if (missing(to)) stop("must provide 'to', an integer value")
+#OLD     if (to <= from) stop("'from' must exceed 'to'")
+#OLD     if (from < 0) stop("'from' must be positive")
+#OLD     do_gappy_index(starts, from, to)
+#OLD }
 
 abbreviateVector <- function(x)
 {
