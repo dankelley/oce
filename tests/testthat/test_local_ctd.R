@@ -109,7 +109,7 @@ if (file.exists("local_data/ctd/CTD_98911_1P_1_DN.txt")) {
 })}
 
 if (1 == length(list.files(path=".", pattern="local_data"))) {
-    test_that("autoconverts pressure in PSI to in dbar", {
+    test_that("autoconverts pressure in PSI to dbar", {
         # test creation of pressure [dbar] from pressure [PSI], using
         # the constructed file ctd_with_psi.cnv (in which the
         # pressure column was calculated and inserted into the file,
@@ -119,14 +119,14 @@ if (1 == length(list.files(path=".", pattern="local_data"))) {
             expect_warning(
                 d1 <- read.oce("local_data/ctd/ctd.cnv"),
                 "this CNV file has temperature in the IPTS-68 scale"),
-            "startTime < 1950, suggesting y2k problem in this cnv file")
+            "1950, suggesting")
         expect_warning(
             expect_warning(
                 expect_warning(
                     d2 <- read.oce("local_data/ctd/ctd_with_psi.cnv"),
                     "created 'pressure' from 'pressurePSI'"),
                 "this CNV file has temperature in the IPTS-68 scale"),
-            "startTime < 1950, suggesting y2k problem in this cnv file")
+            "1950, suggesting")
         # use 1e-5 to reflect the number of digits I was using in
         # creating and then cut/pasting the fake data
         expect_equal(d1[["pressure"]], d2[["pressure"]], tolerance=1e-5)

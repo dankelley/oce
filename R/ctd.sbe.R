@@ -505,7 +505,8 @@ cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
             name <- "sigma3"
         } else if (1 == length(grep("^sigma-4[0-9]{2}$", name, useBytes=TRUE))) {
             name <- "sigma4"
-        } else if (1 == length(grep("^sigma-\xe9[0-9]{2}$", name, useBytes=TRUE))) {
+        # 2022-06-28 } else if (1 == length(grep("^sigma-\x09[0-9]{2}$", name, useBytes=TRUE))) {
+        } else if (1 == length(grep("^sigma-\u00e9[0-9]{2}$", name, useBytes=TRUE))) {
             name <- "sigmaTheta"
             ## 2016-12-22 DK
             ## The above regexp matches for what we see in the supplied file
@@ -856,7 +857,7 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
     filename <- ""
     if (is.character(file)) {
         filename <- fullFilename(file)
-        file <- file(file, "r")
+        file <- file(file, "r", encoding="latin1")
         on.exit(close(file))
     }
     if (!inherits(file, "connection"))

@@ -1,4 +1,4 @@
-# vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
+# vim:textwidth=100:expandtab:shiftwidth=4:softtabstop=4
 
 #' Class to Store Rsk Data
 #'
@@ -252,17 +252,27 @@ unitFromStringRsk <- function(s)
     ## Browse[1]> Encoding(s)<-"bytes"
     ## Browse[2]> print(s)
     ## [1] "\\xc2\\xb5Mol/m\\xc2\\xb2/s"
+    # 
+    # 2022-06-28 upcoming version of R will require elimination of \x sequences; see
+    # https://developer.r-project.org/Blog/public/2022/06/27/why-to-avoid-%5Cx-in-regular-expressions/index.html
+    # Below is a table of code, unicode, unicode-in-R, and old-method-in-R.
+    #    µ=U+03BC, new=\u03bc, old=\xc2\xb5
+    #    °=U+00B0, new=\u00b0, old=\xB0
+    #    ²=U+00B2, new=\u00b2, old=\xc2\xb2
     if (1 == length(grep("mg/[lL]", s, useBytes=TRUE)))
         list(unit=expression(mg/l), scale="")
     else if (1 == length(grep("m[lL]/[lL]", s, useBytes=TRUE)))
         list(unit=expression(ml/l), scale="")
-    else if (1 == length(grep("((u)|(\xc2\xb5))[mM]ol/[lL]", s, useBytes=TRUE)))
+    # 2022-06-28 else if (1 == length(grep("((u)|(\xc2\xb5))[mM]ol/[lL]", s, useBytes=TRUE)))
+    else if (1 == length(grep("((u)|(\u03bc))[mM]ol/[lL]", s, useBytes=TRUE)))
         list(unit=expression(mu*mol/l), scale="")
-    else if (1 == length(grep("((u)|(\xc2\xb5))g/[lL]", s, useBytes=TRUE)))
+    # 2022-06-28 else if (1 == length(grep("((u)|(\xc2\xb5))g/[lL]", s, useBytes=TRUE)))
+    else if (1 == length(grep("((u)|(\u03bc))g/[lL]", s, useBytes=TRUE)))
         list(unit=expression(mu*g/l), scale="")
     else if (1 == length(grep("mS/cm", s, useBytes=TRUE)))
         list(unit=expression(mS/cm), scale="")
-    else if (1 == length(grep("((u)|(\xc2\xb5))S/cm", s, useBytes=TRUE)))
+    # 2022-06-28 else if (1 == length(grep("((u)|(\xc2\xb5))S/cm", s, useBytes=TRUE)))
+    else if (1 == length(grep("((u)|(\u03bc))S/cm", s, useBytes=TRUE)))
         list(unit=expression(mu*S/cm), scale="")
     else if (1 == length(grep("d[bB]ar", s, useBytes=TRUE)))
         list(unit=expression(dbar), scale="")
@@ -272,9 +282,11 @@ unitFromStringRsk <- function(s)
         list(unit=expression(), scale="")
     else if (1 == length(grep("NTU", s, useBytes=TRUE)))
         list(unit=expression(NTU), scale="")
-    else if (1 == length(grep("\xB0", s, useBytes=TRUE)))
+    # 2022-06-28 else if (1 == length(grep("\xB0", s, useBytes=TRUE)))
+    else if (1 == length(grep("\u00b0", s, useBytes=TRUE)))
         list(unit=expression(degree*C), scale="ITS-90") # guessing on scale
-    else if (1 == length(grep("\\xc2\\xb5Mol/m\\xc2\\xb2/s", s, useBytes=TRUE))) # µMol/m²/s
+    # 2022-06-28 else if (1 == length(grep("\\xc2\\xb5Mol/m\\xc2\\xb2/s", s, useBytes=TRUE))) # µMol/m²/s
+    else if (1 == length(grep("\u03bcMol/m\u00b2/s", s, useBytes=TRUE))) # µMol/m²/s
         list(unit=expression(mu*mol/m^2/s), scale="")
     else if (is.na(s))
         list(unit=expression(), scale="?")

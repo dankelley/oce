@@ -12,11 +12,7 @@ test_that("multi-panel plots leave usr as it was originally", {
     expect_silent(plot(cm))
     expect_equal(par('usr'), orig)
     data(ctd)
-    if (requireNamespace("ocedata", quietly=TRUE)) {
-        expect_silent(plot(ctd))
-    } else {
-        expect_warning(plot(ctd), "CTD plots will have better coastlines after")
-    }
+    expect_silent(plot(ctd))
     expect_equal(par('usr'), orig)
     data(lisst)
     expect_silent(plot(lisst))

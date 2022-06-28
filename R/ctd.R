@@ -3541,7 +3541,11 @@ setMethod(f="plot",
                                 stop("there is no built-in coastline file of name \"", coastline, "\"")
                             }
                         } else {
-                            warning("CTD plots will have better coastlines after doing install.packages(\"ocedata\")", call.=FALSE)
+                            # remove the warning because if a test platform does
+                            # not have ocedata installed, this warning appears,
+                            # and in tests/testthat/test_ctd.R we check that the
+                            # plot works silently.
+                            #warning("CTD plots will have better coastlines after doing install.packages(\"ocedata\")", call.=FALSE)
                             data("coastlineWorld", package="oce", envir=environment())
                             coastline <- get("coastlineWorld")
                         }
@@ -3998,7 +4002,7 @@ read.ctd <- function(file,
             if (length(grep(".rsk$", file))) {
                 return(read.rsk(file=file, debug=debug))
             }
-            file <- file(file, "r")
+            file <- file(file, "r", encoding="latin1")
             on.exit(close(file))
         }
         if (!inherits(file, "connection"))
@@ -4009,14 +4013,15 @@ read.ctd <- function(file,
         }
         line <- scan(file, what='char', sep="\n", n=1, quiet=TRUE) # slow, but just one line
         pushBack(line, file)
+        #.line <- readLines(file, n=1, encoding="latin1")
         ## FIXME: detect ODV type in first or second line; see oce.magic().
         if ("CTD" == substr(line, 1, 3)) {
             type <- "WOCE"
         } else if ("* Sea-Bird" == substr(line, 1, 10)) {
             type <- "SBE19"
-        } else if (grepl("^[ ]*ODF_HEADER,[ ]*$", line)) {
+        } else if (grepl("^[ ]*ODF_HEADER,[ ]*$", line, useBytes=TRUE)) {
             type <- "ODF"
-        } else if (grepl("^SSDA Sea & Sun Technology", line)) {
+        } else if (grepl("^SSDA Sea & Sun Technology", line, useBytes=TRUE)) {
             type <- "SSDA"
         } else {
             stop("Cannot discover type in line '", line, "' bird\n")
