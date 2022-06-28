@@ -307,7 +307,7 @@ test_that("column renaming with a cnv file", {
         expect_warning(
             d1 <- read.oce(system.file("extdata", "ctd.cnv", package="oce")),
             "this CNV file has temperature in the IPTS\\-68 scale"),
-        "startTime < 1950, suggesting y2k problem in this cnv file")
+        "1950, suggesting")
     expect_equal(names(d1[["data"]]),
         c("scan","timeS","pressure","depth","temperature","salinity","flag"))
     expect_warning(
@@ -318,7 +318,7 @@ test_that("column renaming with a cnv file", {
                             unit=list(unit=expression(), scale="PSS-78")))),
                 "this CNV file has temperature in the IPTS\\-68 scale"),
             "cannot find salinity or conductivity in .cnv file"),
-        "startTime < 1950, suggesting y2k problem in this cnv file")
+        "1950, suggesting")
     expect_equal(names(d2[["data"]]),
         c("scan","timeS","pressure","depth","temperature","FAKE","flag"))
 })
@@ -336,7 +336,7 @@ test_that("Dalhousie-produced cnv file", {
         expect_warning(
             d1 <- read.oce(system.file("extdata", "ctd.cnv", package="oce")),
             "this CNV file has temperature in the IPTS\\-68 scale"),
-        "startTime < 1950, suggesting y2k problem in this cnv file")
+        "1950, suggesting")
     expect_equal(d1[["temperatureUnit"]]$unit, expression(degree*C))
     # NB. the file holds IPTS-68 but we # store ITS-90 internally
     expect_equal(d1[["temperatureUnit"]]$scale, "IPTS-68")
@@ -547,7 +547,7 @@ test_that("original names pair with final names", {
     expect_equal(dno$salinity2, "sal11")
     expect_equal(dno$theta, "potemp090C")
     # nexttest is commented out because it may not work on windows
-    expect_equal(dno$sigmaTheta, "sigma-\xe900")
+    expect_equal(dno$sigmaTheta, "sigma-\u00e900")
     expect_equal(dno$soundSpeed, "svCM")
     expect_equal(dno$nbin, "nbin")
     expect_equal(dno$flag, "flag")

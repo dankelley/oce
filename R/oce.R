@@ -185,7 +185,7 @@ NULL
 #' `latitude`, then [as.coastline()] is called (with
 #' the specified \dots value) to create a coastline object.
 #'
-#' If `x` is a list created by `read_odf` from the (as
+#' If `x` is a list created by `read_odf()` from the (as
 #' yet unreleased) ODF package developed by the Bedford Institute of
 #' Oceanography, then [ODF2oce()] is called (with
 #' no arguments other than the first) to calculate a return value.
@@ -193,7 +193,7 @@ NULL
 #' incorrect, users should call that function directly, specifying
 #' a value for its `coerce` argument.
 #'
-#' If `x` has not been created by `read_odf`, then the names
+#' If `x` has not been created by `read_odf()`, then the names
 #' of the items it contains are examined, and used to try to infer
 #' the proper return value.  There
 #' are only a few cases (although more may be added if there is
@@ -1708,7 +1708,8 @@ oceMagic <- function(file, debug=getOption("oceDebug"))
         }
         if (grepl(".ODF$", filename, ignore.case=TRUE)) {
             # in BIO files, the data type seems to be on line 14.  Read more, for safety.
-            lines <- readLines(file, encoding="UTF-8")
+            # 2022-06-28 lines <- readLines(file, encoding="UTF-8")
+            lines <- readLines(file, encoding="latin1")
             dt <- grep("DATA_TYPE[ \t]*=", lines)
             if (length(dt) < 1)
                 stop("cannot infer type of ODF file")
