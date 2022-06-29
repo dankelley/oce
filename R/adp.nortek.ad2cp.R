@@ -564,7 +564,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
     #UNUSED tiltValid <- configuration[, 4]
     # configuration[, 5] -
 
-    # BOOKMARK 1
+    # BOOKMARK 1 define *Included, used later in reading
     velocityIncluded <- configuration[, 6]
     amplitudeIncluded <- configuration[, 7]
     correlationIncluded <- configuration[, 8]
@@ -693,7 +693,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
         average=which(d$id==0x16),     # coded and checked against matlab and .cfg file
         bottomTrack=which(d$id==0x17), # coded, but no sample-data test and no plot()
         interleavedBurst=which(d$id==0x18), # coded, with no errors reading sample files
-        burstAltimeterRaw=which(d$id==0x1a), # broken (https://github.com/dankelley/oce/issues/1959)
+        burstAltimeterRaw=which(d$id==0x1a), # https://github.com/dankelley/oce/issues/1959
         DVLBottomTrack=which(d$id==0x1b), # coded, but no sample-data test and no plot()
         echosounder=which(d$id==0x1c), # coded, but no sample-data test and no plot()
         DVLWaterTrack=which(d$id==0x1d), # coded, but no sample-data test and no plot()
@@ -984,10 +984,6 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
         nbeamsBurstAltimeterRaw <- nbeams[p$burstAltimeterRaw[1]]
         ncellsBurstAltimeterRaw <- ncells[p$burstAltimeterRaw[1]]
         oceDebug(debug, "burstAltimeterRaw data records: nbeams:", nbeamsBurstAltimeterRaw, ", ncells:", ncellsBurstAltimeterRaw, "\n")
-        #if (nbeamsBurstAltimeterRaw <= 0L)
-        #    warning("CRITICAL: burstAltimeterRaw data records cannot have ", nbeamsBurstAltimeterRaw, " beams (must be >0)\n")
-        #if (ncellsBurstAltimeterRaw <= 0L)
-        #    warning("CRITICAL: burst Altimeter data records cannot have ", ncellsBurstAltimeterRaw, " beams (must be >0)\n")
         if (any(ncells[p$burstAltimeterRaw] != ncellsBurstAltimeterRaw))
             stop("the 'burstAltimeterRaw' data records do not all have the same number of cells")
         if (any(nbeams[p$burstAltimeterRaw] != nbeamsBurstAltimeterRaw))
@@ -1021,8 +1017,8 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
             datasetDescription=datasetDescription[p$burstAltimeterRaw],
             transmitEnergy=transmitEnergy[p$burstAltimeterRaw],
             powerLevel=powerLevel[p$burstAltimeterRaw])
-        if (TRUE) {
-            # Vectorized reading, for speed.
+        if (TRUE) {                    # Vectorized reading, for speed.
+            # BOOKMARK 3 read burstAltimeterRaw (vectorized)
             #
             # See CR's snapshot at
             # https://github.com/dankelley/oce/issues/1959#issuecomment-1141409542
@@ -1078,10 +1074,10 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
             if (altimeterRawIncluded[p$burstAltimeterRaw[1]]) {
                 oceDebug(debug, "?vector-read burstAltimeterRaw$altimeterRaw(i0v=", i0v, ")\n")
                 # read 4b=altimeterRawNumberOfSamples
-                iv <- gappyIndex(i, i0v, 4)
-                oceDebug(debug, "before reading altimeterRawNumberOfSamples: ", vectorShow(i0v))
-                oceDebug(debug, "before reading altimeterRawNumberOfSamples: ", vectorShow(iv))
-                NS <- readBin(buf[iv], "integer", size=4L, n=NP, endian="little") # number of samples (tmp var)
+                iv <- gappyIndex(i, i0v, 4L)
+                #oceDebug(debug, "before reading altimeterRawNumberOfSamples: ", vectorShow(i0v))
+                #oceDebug(debug, "before reading altimeterRawNumberOfSamples: ", vectorShow(iv))
+                NS <- readBin(buf[iv], "integer", size=4L, n=NP, endian="little") # no. samples (tmp var)
                 dNS <- diff(range(NS))
                 if (0 != dNS)
                     stop("altimeterRawNumberOfSamples not all equal.  Range is ", dNS[1], " to ", dNS[2])
@@ -1093,10 +1089,6 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
                 i0v <- i0v + 2L # skip the 2 bytes we just read (FIXME)
                 # read 2*nbeam*ncell=altimeterRawSamples
                 iv <- gappyIndex(i, i0v, 2L*burstAltimeterRaw$altimeterRawNumberOfSamples)
-                #browser()
-                #message("before reading altimeterSamples: ", vectorShow(i0v, n=6))
-                #message("before reading altimeterSamples: ", vectorShow(iv, n=6))
-                # FIXME: the factor should be velocityFactor[...]
                 tmp <- readBin(buf[iv], "integer", size=2L, endian="little",
                     n=NP*burstAltimeterRaw$altimeterRawNumberOfSamples)
                 burstAltimeterRaw$altimeterRawSamples <- matrix(tmp, nrow=NP, ncol=NS, byrow=TRUE)
@@ -1677,7 +1669,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
             interleavedBurst$i <- interleavedBurst$i + 1
 
         } else if (key == 0x1a) { # burstAltimeterRaw
-            # BOOKMARK 3
+            # BOOKMARK 4 read burstAltimeterRaw (non-vectorized, to be removed later)
             ncol <- burstAltimeterRaw$numberOfBeams # for v only
             nrow <- burstAltimeterRaw$numberOfCells # for v only
             n <- ncol * nrow           # for v only
@@ -1778,10 +1770,10 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
                 if ("echosounder" %in% names(burstAltimeterRaw)) {
                     nrow2Old <- nrow(burstAltimeterRaw$echosounder)[2]
                     if (nrow != nrow2Old)
-                        stop("burstAltimeterRaw$echosounder was set up to hold ", dim2Old, " samples, but data chunk ", ch, " has ", nrow, " samples")
+                        stop("burstAltimeterRaw$echosounder was set up to hold ", nrow2Old, " samples, but data chunk ", ch, " has ", nrow, " samples")
                 } else {
                     oceDebug(debug>1, "creating burstAltimeterRaw$echosounder (",
-                        sum(d$id==0x1a), "X", dim2, ")\n")
+                        sum(d$id==0x1a), "X", nrow, ")\n")
                     burstAltimeterRaw$echosounder <- array(double(), dim=c(sum(d$id==0x1a), nrow))
                 }
                 burstAltimeterRaw$echosounder[burstAltimeterRaw$i, ] <- readBin(d$buf[i + i0 + seq(0,nrow-1)], size=2, n=nrow, endian="little")
