@@ -1771,40 +1771,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
                 i0 <- i0 + 12 # skip spare (8 bytes)
             }
             if (altimeterRawIncluded[ch]) {
-                #| burstAltimeterRaw$altimeterRawNumberOfSamples <- readBin(d$buf[i+i0+0:3],"integer",size=4,n=1,endian="little")
-                #| oceDebug(debug>1, "saving altimeterRawNumberOfSamples=",
-                    #| burstAltimeterRaw$altimeterRawNumberOfSamples, " at i0=", i0, "\n")
-                i0 <- i0 + 4
-                #| # Create space
-                #| if (!"altimeterRawSampleDistance" %in% names(burstAltimeterRaw)) {
-                #|     oceDebug(debug>1, "creating burstAltimeterRaw$altimeterRawSampleDistance (", sum(d$id==0x1a), ") at location 1\n")
-                #|     burstAltimeterRaw$altimeterRawSampleDistance <- rep(NA_real_, sum(d$id==0x1a))
-                #| }
-                #| # Docs say 0.1mm in one line, and then m in another, but the
-                #| # former seems to fit the data better.
-                #| burstAltimeterRaw$altimeterRawSampleDistance[burstAltimeterRaw$i] <- 1.0e-4*readBin(d$buf[i+i0+0:1],"integer",size=2,n=1,endian="little",signed=FALSE)
-                #| oceDebug(debug>1, "saving altimeterRawSampleDistance[", burstAltimeterRaw$i,  "]=",
-                #|     burstAltimeterRaw$altimeterRawSampleDistance[burstAltimeterRaw$i], " at i0=", i0, "\n")
-                i0 <- i0 + 2
-                # Create space for data, or check that dimensionality agrees with existing space.
-                dim2 <- burstAltimeterRaw$altimeterRawNumberOfSamples
-                #| if ("altimeterRawSamplesOLD" %in% names(burstAltimeterRaw)) {
-                #|     dim2Old <- dim(burstAltimeterRaw$altimeterRawSamplesOLD)[2]
-                #|     if (dim2 != dim2Old)
-                #|         stop("burstAltimeterRaw$altimeterRawSamplesOLD was set up to hold ", dim2Old, " samples, but data chunk ", ch, " has ", dim2, " samples")
-                #| } else {
-                #|     oceDebug(debug>1, "creating burstAltimeterRaw$altimeterRawSamplesOLD (", sum(d$id==0x1a), "X", dim2, ") at location 2\n")
-                #|     burstAltimeterRaw$altimeterRawSamplesOLD <- array(double(), dim=c(sum(d$id==0x1a), dim2))
-                #| }
-                #| burstAltimeterRaw$altimeterRawSamplesOLD[burstAltimeterRaw$i,] <- readBin(d$buf[i+i0+seq(0, 2*dim2-1)],
-                #|     "integer", size=2L, n=dim2, endian="little")
-                #| oceDebug(debug>1, "saving burstAltimeterRaw$altimeterRawSamplesOLD[",
-                #|     burstAltimeterRaw$i, ",] at i0=", i0, " (note: dim2=", dim2, ")\n")
-                i0 <- i0 + 2*dim2
-                # See CR's snapshot at
-                # https://github.com/dankelley/oce/issues/1959#issuecomment-1141409542
-                # which is p89 of Nortek AS. “Signature Integration
-                # 55|250|500|1000kHz.” Nortek AS, March 31, 2022)
+                i0 <- i0 + 6 + 2*burstAltimeterRaw$altimeterRawNumberOfSamples
             }
             if (echosounderIncluded[ch]) {
                 # Create space for data, or check that dimensionality agrees with existing space.
