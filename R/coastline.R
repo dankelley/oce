@@ -968,10 +968,12 @@ download.coastline <- function(resolution, item="coastline",
 #' @param type type of file, one of `"R"`, `"S"`, `"mapgen"`,
 #' `"shapefile"` or `"openstreetmap"`.
 #'
-#' @param debug set to TRUE to print information about the header, etc.
+#' @template encodingTemplate
 #'
 #' @param monitor print a dot for every coastline segment read (ignored except
 #' for reading "shapefile" type)
+#'
+#' @param debug set to TRUE to print information about the header, etc.
 #'
 #' @param processingLog if provided, the action item to be stored in the log.
 #' (Typically only provided for internal calls; the default that it provides is
@@ -982,8 +984,9 @@ download.coastline <- function(resolution, item="coastline",
 #' @author Dan Kelley
 read.coastline <- function(file,
     type=c("R", "S", "mapgen", "shapefile", "openstreetmap"),
-    debug=getOption("oceDebug"),
+    encoding="latin1",
     monitor=FALSE,
+    debug=getOption("oceDebug"),
     processingLog)
 {
     if (missing(file))
@@ -1079,10 +1082,12 @@ read.coastline <- function(file,
 #' skipped, which can be useful in narrowing high-resolution world-scale
 #' data to a local application.
 #'
-#' @param debug set to TRUE to print information about the header, etc.
+#' @template encodingTemplate
 #'
 #' @param monitor Logical indicating whether to print an indication of progress through
 #' the file.
+#'
+#' @param debug set to TRUE to print information about the header, etc.
 #'
 #' @param processingLog if provided, the action item to be stored in the log.
 #' (Typically only provided for internal calls; the default that it provides is
@@ -1111,8 +1116,9 @@ read.coastline <- function(file,
 read.coastline.shapefile <- function(file,
     lonlim=c(-180, 180),
     latlim=c(-90, 90),
-    debug=getOption("oceDebug"),
+    encoding="latin1",
     monitor=FALSE,
+    debug=getOption("oceDebug"),
     processingLog)
 {
     if (missing(file))
@@ -1191,7 +1197,7 @@ read.coastline.shapefile <- function(file,
             })
         } else {
             filename <- fullFilename(file)
-            file <- file(file, "rb")
+            file <- file(file, "rb", encoding=encoding)
             on.exit(close(file))
         }
     }
@@ -1277,17 +1283,17 @@ read.coastline.shapefile <- function(file,
             numberParts <- readBin(buf[o + 45:48], "integer", n=1, size=4, endian="little")
             numberPoints <- readBin(buf[o + 49:52], "integer", n=1, size=4, endian="little")
             oceDebug(debug, " recordNUmber:", recordNumber,
-                     ", shapeType:", shapeType,
-                     " (", shapeTypeList[1+shapeType], ")",
-                     ", numberPoints:", numberPoints,
-                     ", numberParts:", numberParts,
-                     ", intersectsBox:", intersectsBox,
-                     "\n", sep="")
+                ", shapeType:", shapeType,
+                " (", shapeTypeList[1+shapeType], ")",
+                ", numberPoints:", numberPoints,
+                ", numberParts:", numberParts,
+                ", intersectsBox:", intersectsBox,
+                "\n", sep="")
             if (intersectsBox) {
                 partOffset <- readBin(buf[o + 53+0:(-1+4*numberParts)],
-                                      "integer", n=numberParts, size=4, endian="little")
+                    "integer", n=numberParts, size=4, endian="little")
                 xy <- matrix(readBin(buf[o + 53 + 4 * numberParts + 0:(-1 + 2 * numberPoints * 8)],
-                                     "double", n=numberPoints*2, size=8), ncol=2, byrow=TRUE)
+                        "double", n=numberPoints*2, size=8), ncol=2, byrow=TRUE)
                 look <- c(1 + partOffset, numberPoints)
                 for (part in 1:numberParts) {
                     segment <- segment + 1
@@ -1330,8 +1336,9 @@ read.coastline.shapefile <- function(file,
 read.coastline.openstreetmap <- function(file,
     lonlim=c(-180, 180),
     latlim=c(-90, 90),
-    debug=getOption("oceDebug"),
     monitor=FALSE,
+    encoding="latin1",
+    debug=getOption("oceDebug"),
     processingLog)
 {
     if (missing(file))

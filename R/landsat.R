@@ -875,8 +875,7 @@ setMethod(f="plot",
           })
 
 
-read.landsatmeta <- function(file,
-    debug=getOption("oceDebug"))
+read.landsatmeta <- function(file, encoding="latin1", debug=getOption("oceDebug"))
 {
     getItem <- function(info, name, numeric=TRUE)
     {
@@ -1034,6 +1033,8 @@ read.landsatmeta <- function(file,
 #' `decimate=10`, to plot the image to determine a subregion
 #' of interest, and then to use [landsatTrim()] to trim the image.
 #'
+#' @template encodingIgnoredTemplate
+#'
 #' @param debug a flag that turns on debugging.  Set to 1 to get a moderate
 #' amount of debugging information, or to 2 to get more.
 #'
@@ -1081,6 +1082,7 @@ read.landsat <- function(file,
     band="all",
     emissivity=0.984,
     decimate,
+    encoding="latin1",
     debug=getOption("oceDebug"))
 {
     if (missing(file))

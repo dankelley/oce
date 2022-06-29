@@ -13,6 +13,7 @@ read.adv.sontek.adr(
   header = TRUE,
   longitude = NA,
   latitude = NA,
+  encoding = encoding,
   debug = getOption("oceDebug"),
   monitor = FALSE,
   processingLog = NULL
@@ -53,6 +54,8 @@ East.}
 
 \item{latitude}{optional signed number indicating the latitude in degrees
 North.}
+
+\item{encoding}{ignored.}
 
 \item{debug}{a flag that turns on debugging.  The value indicates the depth
 within the call stack to which debugging applies.  For example,

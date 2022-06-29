@@ -9,6 +9,7 @@ read.odf(
   columns = NULL,
   header = "list",
   exclude = NULL,
+  encoding = "latin1",
   debug = getOption("oceDebug")
 )
 }
@@ -51,6 +52,10 @@ thousands of lines that indicate details that are may be of
 little value in processing.  For example, some files have thousands
 of lines that would be excluded by using
 \code{exclude="PROCESS='Nulled the .* value"} in the function call.}
+
+\item{encoding}{character value indicating the encoding to be used for this
+data file.  This only makes sense for text-based files.  The default,
+\code{"latin1"}, should handle most text written in English, French, etc.}
 
 \item{debug}{an integer specifying whether debugging information is
 to be printed during the processing. This is a general parameter that

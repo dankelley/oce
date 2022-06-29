@@ -4,11 +4,13 @@
 \alias{read.amsr}
 \title{Read an amsr File}
 \usage{
-read.amsr(file, debug = getOption("oceDebug"))
+read.amsr(file, encoding = NA, debug = getOption("oceDebug"))
 }
 \arguments{
 \item{file}{String indicating the name of a compressed file. See
 \dQuote{File sources}.}
+
+\item{encoding}{ignored.}
 
 \item{debug}{A debugging flag, integer.}
 }

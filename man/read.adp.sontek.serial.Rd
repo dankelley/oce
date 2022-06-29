@@ -15,6 +15,7 @@ read.adp.sontek.serial(
   type = c("adp", "pcadp"),
   beamAngle = 25,
   orientation,
+  encoding = NA,
   monitor = FALSE,
   processingLog,
   debug = getOption("oceDebug"),
@@ -60,6 +61,8 @@ North.}
 sensor, provided for those cases in which it cannot be inferred from the
 data file.  The valid choices are \code{"upward"}, \code{"downward"}, and
 \code{"sideward"}.}
+
+\item{encoding}{ignored.}
 
 \item{monitor}{boolean value indicating whether to indicate the progress
 of reading the file, by using \code{\link[=txtProgressBar]{txtProgressBar()}} or otherwise.  The value

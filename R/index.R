@@ -35,6 +35,8 @@
 #'
 #' @param tz character string indicating time zone to be assumed in the data.
 #'
+#' @template encodingTemplate
+#'
 #' @param debug a flag that turns on debugging, ignored in the present version
 #' of the function.
 #'
@@ -67,6 +69,7 @@ read.index <- function(file,
     format,
     missingValue,
     tz=getOption("oceTz"),
+    encoding="latin1",
     debug=getOption("oceDebug"))
 {
     if (missing(file))
@@ -79,7 +82,7 @@ read.index <- function(file,
     }
     if (is.character(file)) {
         ##filename <- fullFilename(file)
-        file <- file(file, "r")
+        file <- file(file, "r", encoding=encoding)
         on.exit(close(file))
     }
     if (!inherits(file, "connection"))

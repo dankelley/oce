@@ -4,11 +4,13 @@
 \alias{read.bremen}
 \title{Read a Bremen File}
 \usage{
-read.bremen(file)
+read.bremen(file, encoding = encoding)
 }
 \arguments{
 \item{file}{a connection or a character string giving the name of the file
 to load.}
+
+\item{encoding}{ignored.}
 }
 \value{
 A \linkS4class{bremen} object.

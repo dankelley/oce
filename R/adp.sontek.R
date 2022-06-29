@@ -11,6 +11,8 @@
 #'
 #' @template adpTemplate
 #'
+#' @template encodingIgnoredTemplate
+#'
 #' @references
 #' 1. Information about Sontek profilers is available at https://www.sontek.com.
 #'
@@ -20,6 +22,7 @@
 read.adp.sontek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     longitude=NA, latitude=NA,
     type=c("adp", "pcadp"),
+    encoding=NA,
     monitor=FALSE, despike=FALSE, processingLog,
     debug=getOption("oceDebug"),
     ...)
@@ -440,6 +443,8 @@ sontek.time <- function(t, tz=getOption("oceTz"))
 #'
 #' @template adpTemplate
 #'
+#' @template encodingIgnoredTemplate
+#'
 #' @author Dan Kelley and Clark Richards
 #'
 #' @family things related to adp data
@@ -451,6 +456,7 @@ read.adp.sontek.serial <- function(file,
     longitude=NA, latitude=NA,
     type=c("adp", "pcadp"),
     beamAngle=25, orientation,
+    encoding=NA,
     monitor=FALSE, processingLog,
     debug=getOption("oceDebug"),
     ...)

@@ -8,6 +8,7 @@ read.xbt.edf(
   file,
   longitude = NA,
   latitude = NA,
+  encoding = encoding,
   debug = getOption("oceDebug"),
   processingLog
 )
@@ -20,6 +21,10 @@ load.}
 East.}
 
 \item{latitude}{optional signed number indicating the latitude in degrees North.}
+
+\item{encoding}{character value indicating the encoding to be used for this
+data file.  This only makes sense for text-based files.  The default,
+\code{"latin1"}, should handle most text written in English, French, etc.}
 
 \item{debug}{a flag that turns on debugging.  The value indicates the depth
 within the call stack to which debugging applies.}

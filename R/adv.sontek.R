@@ -2,6 +2,8 @@
 
 #' @template readAdvTemplate
 #'
+#' @template encodingIgnoredTemplate
+#'
 #' @param start the time of the first sample, typically created with
 #' [as.POSIXct()].  This may be a vector of times,
 #' if `filename` is a vector of file names.
@@ -16,8 +18,9 @@ read.adv.sontek.serial <- function(file,
     latitude=NA,
     start=NULL,
     deltat=NULL,
-    debug=getOption("oceDebug"),
+    encoding=NA,
     monitor=FALSE,
+    debug=getOption("oceDebug"),
     processingLog=NULL)
 {
     if (missing(file))
@@ -31,14 +34,14 @@ read.adv.sontek.serial <- function(file,
     if (!interactive())
         monitor <- FALSE
     oceDebug(debug, paste("read.adv.sontek.serial(file[1]=\"", file[1],
-                           "\", from=", format(from),
-                           if (!missing(to)) sprintf(", to=%s, ", format(to)),
-                           ", by=", by,
-                           ", start[1]=", format(start[1]),
-                           ", deltat=", deltat,
-                           ", debug=", debug,
-                           ", monitor=", monitor,
-                           ", processingLog=(not shown)) {\n", sep=""), unindent=1)
+            "\", from=", format(from),
+            if (!missing(to)) sprintf(", to=%s, ", format(to)),
+            ", by=", by,
+            ", start[1]=", format(start[1]),
+            ", deltat=", deltat,
+            ", debug=", debug,
+            ", monitor=", monitor,
+            ", processingLog=(not shown)) {\n", sep=""), unindent=1)
     if (is.null(start) || is.numeric(start))
         stop("'start' must be a string, or a POSIXt time")
     if (is.character(start))
@@ -169,6 +172,8 @@ read.adv.sontek.serial <- function(file,
 
 #' @template readAdvTemplate
 #'
+#' @template encodingIgnoredTemplate
+#'
 #' @param header A logical value indicating whether the file starts with a header.
 #' (This will not be the case for files that are created by data loggers that
 #' chop the raw data up into a series of sub-files, e.g. once per hour.)
@@ -180,6 +185,7 @@ read.adv.sontek.adr <- function(file,
     header=TRUE,
     longitude=NA,
     latitude=NA,
+    encoding=encoding,
     debug=getOption("oceDebug"),
     monitor=FALSE,
     processingLog=NULL)
@@ -662,6 +668,8 @@ read.adv.sontek.adr <- function(file,
 
 #' @template readAdvTemplate
 #'
+#' @template encodingTemplate
+#'
 #' @param originalCoordinate character string indicating coordinate system, one
 #' of `"beam"`, `"xyz"`, `"enu"` or `"other"`.  (This is
 #' needed for the case of multiple files that were created by a data logger,
@@ -685,8 +693,9 @@ read.adv.sontek.text <- function(file,
     transformationMatrix,
     longitude=NA,
     latitude=NA,
-    debug=getOption("oceDebug"),
+    encoding="latin1",
     monitor=FALSE,
+    debug=getOption("oceDebug"),
     processingLog=NULL)
 {
     if (missing(file))

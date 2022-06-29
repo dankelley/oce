@@ -4,7 +4,14 @@
 \alias{read.ctd.aml}
 \title{Read an AML CTD File}
 \usage{
-read.ctd.aml(file, format, debug = getOption("oceDebug"), processingLog, ...)
+read.ctd.aml(
+  file,
+  format,
+  encoding = "latin1",
+  debug = getOption("oceDebug"),
+  processingLog,
+  ...
+)
 }
 \arguments{
 \item{file}{a connection or a character string giving the name of
@@ -13,6 +20,10 @@ the file to load.}
 \item{format}{an integer indicating the format type.  If not supplied, the
 first line is examined to determine whether the file matches the \code{format=1} or
 \code{format=2} style (see \sQuote{Details}).}
+
+\item{encoding}{character value indicating the encoding to be used for this
+data file.  This only makes sense for text-based files.  The default,
+\code{"latin1"}, should handle most text written in English, French, etc.}
 
 \item{debug}{an integer specifying whether debugging information is
 to be printed during the processing. This is a general parameter that

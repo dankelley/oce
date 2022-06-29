@@ -12,6 +12,8 @@
 #'
 #' @param file A character string giving the name of the file to load.
 #'
+#' @template encodingIgnoredTemplate
+#'
 #' @param debug A flag that turns on debugging.  Set to 1 to get a moderate
 #' amount of debugging information, or 0 (the default) for silent operation.
 #'
@@ -33,6 +35,7 @@
 #'
 #' @author Dan Kelley
 read.argo.copernicus <- function(file,
+    encoding="latin1",
     debug=getOption("oceDebug"),
     processingLog,
     ...)

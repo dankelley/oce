@@ -795,6 +795,8 @@ setMethod(f="plot",
 #'
 #' @param tz character string indicating time zone to be assumed in the data.
 #'
+#' @template encodingIgnoredTemplate
+#'
 #' @param debug a flag that turns on debugging.  Set to 1 to get a moderate
 #' amount of debugging information, or to 2 to get more.
 #'
@@ -831,6 +833,7 @@ read.echosounder <- function(file,
     channel=1,
     soundSpeed,
     tz=getOption("oceTz"),
+    encoding=encoding,
     debug=getOption("oceDebug"),
     processingLog)
 {

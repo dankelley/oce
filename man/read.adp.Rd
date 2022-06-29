@@ -13,6 +13,7 @@ read.adp(
   longitude = NA,
   latitude = NA,
   manufacturer,
+  encoding = "latin1",
   monitor = FALSE,
   despike = FALSE,
   processingLog,
@@ -57,6 +58,8 @@ is not given, then \code{\link[=oceMagic]{oceMagic()}} is used to try to infer t
 is provided, then the value \code{"rdi"} will cause \code{\link[=read.adp.rdi]{read.adp.rdi()}}
 to be used, \code{"nortek"} will cause \code{\link[=read.adp.nortek]{read.adp.nortek()}} to be used,
 and \code{"sontek"} will cause \code{\link[=read.adp.sontek]{read.adp.sontek()}} to be used.}
+
+\item{encoding}{ignored.}
 
 \item{monitor}{boolean value indicating whether to indicate the progress
 of reading the file, by using \code{\link[=txtProgressBar]{txtProgressBar()}} or otherwise.  The value

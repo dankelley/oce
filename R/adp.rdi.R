@@ -418,6 +418,8 @@ decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceT
 #' @param despike if `TRUE`, [despike()] will be used to clean
 #' anomalous spikes in heading, etc.
 #'
+#' @template encodingIgnoredTemplate
+#'
 #' @section Names of items in data slot:
 #'
 #' The names of items in the `data` slot are below. Not all items are present
@@ -679,6 +681,7 @@ decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceT
 read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
     longitude=NA, latitude=NA,
     type=c("workhorse"),
+    encoding="latin1",
     monitor=FALSE, despike=FALSE, processingLog,
     testing=FALSE,
     debug=getOption("oceDebug"),

@@ -7,6 +7,7 @@
 read.sealevel(
   file,
   tz = getOption("oceTz"),
+  encoding = "latin1",
   processingLog,
   debug = getOption("oceDebug")
 )
@@ -18,6 +19,10 @@ to load.  See Details for the types of files that are recognized.}
 \item{tz}{time zone.  The default value, \code{oceTz}, is set to \code{UTC}
 at setup.  (If a time zone is present in the file header, this will
 supercede the value given here.)}
+
+\item{encoding}{character value indicating the encoding to be used for this
+data file.  This only makes sense for text-based files.  The default,
+\code{"latin1"}, should handle most text written in English, French, etc.}
 
 \item{processingLog}{if provided, the action item to be stored in the log.
 (Typically only provided for internal calls; the default that it provides is

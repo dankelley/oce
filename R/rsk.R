@@ -624,6 +624,8 @@ setMethod(f="plot",
 #' text export of an RBR rsk or hex file). If this argument is not provided, an
 #' attempt will be made to infer the type from the file name and contents.
 #'
+#' @template encodingIgnoredTemplate
+#'
 #' @param tz time zone.  The value `oceTz` is set at package setup.
 #'
 #' @param patm controls the handling of atmospheric pressure, an important issue
@@ -659,6 +661,7 @@ read.rsk <- function(file,
     to,
     by=1,
     type,
+    encoding=NA,
     tz=getOption("oceTz", default="UTC"),
     patm=FALSE,
     processingLog,

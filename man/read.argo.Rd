@@ -4,10 +4,18 @@
 \alias{read.argo}
 \title{Read an Argo Data File}
 \usage{
-read.argo(file, debug = getOption("oceDebug"), processingLog, ...)
+read.argo(
+  file,
+  encoding = "latin1",
+  debug = getOption("oceDebug"),
+  processingLog,
+  ...
+)
 }
 \arguments{
 \item{file}{A character string giving the name of the file to load.}
+
+\item{encoding}{ignored.}
 
 \item{debug}{A flag that turns on debugging.  Set to 1 to get a moderate amount
 of debugging information, or to 2 to get more.}

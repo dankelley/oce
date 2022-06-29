@@ -8,6 +8,7 @@ read.xbt.noaa1(
   file,
   debug = getOption("oceDebug"),
   missingValue = -9.99,
+  encoding = encoding,
   processingLog
 )
 }
@@ -18,6 +19,10 @@ read.xbt.noaa1(
 within the call stack to which debugging applies.}
 
 \item{missingValue}{numerical value that is to be interpreted as \code{NA}}
+
+\item{encoding}{character value indicating the encoding to be used for this
+data file.  This only makes sense for text-based files.  The default,
+\code{"latin1"}, should handle most text written in English, French, etc.}
 
 \item{processingLog}{if provided, the action item to be stored in the log.  This
 parameter is typically only provided for internal calls; the default that it

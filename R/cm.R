@@ -443,6 +443,8 @@ as.cm <- function(time, u=NULL, v=NULL,
 #'
 #' @param tz character string indicating time zone to be assumed in the data.
 #'
+#' @template encodingTemplate
+#'
 #' @param debug a flag that turns on debugging.  The value indicates the depth
 #' within the call stack to which debugging applies.
 #'
@@ -495,6 +497,7 @@ read.cm <- function(file,
     longitude=NA,
     latitude=NA,
     debug=getOption("oceDebug"),
+    encoding="latin1",
     monitor=FALSE,
     processingLog)
 {
@@ -513,7 +516,8 @@ read.cm <- function(file,
     if (type == "s4")
         read.cm.s4(file=file, from=from, to=to, by=by, tz=tz,
             longitude=longitude, latitude=latitude,
-            debug=debug-1, monitor=monitor, processingLog=processingLog)
+            encoding=encoding, monitor=monitor, debug=debug-1,
+            processingLog=processingLog)
     else
         stop("unknown type of current meter")
 }
@@ -525,8 +529,9 @@ read.cm.s4 <- function(file,
     tz=getOption("oceTz"),
     longitude=NA,
     latitude=NA,
-    debug=getOption("oceDebug"),
     monitor=FALSE,
+    encoding="latin1",
+    debug=getOption("oceDebug"),
     processingLog)
 {
     if (missing(file))

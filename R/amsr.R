@@ -682,6 +682,8 @@ download.amsr <- function(year, month, day, destdir=".", server="http://data.rem
 #' @param file String indicating the name of a compressed file. See
 #' \dQuote{File sources}.
 #'
+#' @template encodingIgnoredTemplate
+#'
 #' @param debug A debugging flag, integer.
 #'
 #' @seealso [plot,amsr-method()] for an example.
@@ -690,6 +692,7 @@ download.amsr <- function(year, month, day, destdir=".", server="http://data.rem
 #'
 #' @family things related to amsr data
 read.amsr <- function(file,
+    encoding=NA,
     debug=getOption("oceDebug"))
 {
     if (missing(file))
