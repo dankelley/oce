@@ -1,12 +1,12 @@
 # vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
-
-# This Nortek Signature100 dataset in AD2CP format was kindly provided by
+#
+# Test a Nortek Signature100 dataset in AD2CP format that was kindly provided by
 # @richardsc.  It contains burstAltimeterRaw data (unlike the dataset used by
 # test_ad2cp_1.R and test_ad2cp_2.R).
-
-# Much of what is done here is to check for consistency with values found on
-# 2022-06-29, as a guard against any changes to oce that might alter how it
-# reads Nortk ad2cp data.
+#
+# The tests measure consistency over time, as a guard against code changes (e.g.
+# the conversion in June and July of 2022 to vectorized reading) and UI changes
+# (e.g. renaming of variables).
 
 library(oce)
 
@@ -70,6 +70,44 @@ if (file.exists(file)) {
                 2.475, 1.655, -2.077, -2.062, -1.222, -0.958, 1.279, -1.897,
                 -0.208, 1.232, 1.185, -1.423, -2.429, 0.218, 2.204, 1.773,
                 -1.272, -0.794, -1.35, 1.464, -1.952))
+
+        # burstAltimeterRaw
+        bar <- d[["burstAltimeterRaw"]]
+        expect_equal("beam", bar$originalCoordinate)
+        expect_equal("beam", bar$oceCoordinate)
+        # FIXME: ensemble not checked (and it's always 1, which *must* be wrong)
+        expect_equal(head(bar[["magnetometerx"]]),
+            c(356L, 354L, 355L, 355L, 354L, 355L))
+        expect_equal(head(bar[["magnetometery"]]),
+            c(-310L, -310L, -310L, -311L, -309L, -310L))
+        expect_equal(head(bar[["magnetometerz"]]),
+            c(171L, 171L, 170L, 170L, 169L, 170L))
+        expect_equal(head(bar[["accelerometerx"]]),
+            c(-0.71142578125, -0.71142578125, -0.7119140625, -0.711669921875,
+                -0.71142578125, -0.711669921875))
+        expect_equal(head(bar[["accelerometery"]]),
+            c(0.70111083984375, 0.70086669921875, 0.70086669921875,
+                0.70086669921875, 0.70111083984375, 0.70062255859375))
+        expect_equal(head(bar[["accelerometerz"]]),
+            c(0.01654052734375, 0.01654052734375, 0.01654052734375,
+                0.01654052734375, 0.01654052734375, 0.01678466796875))
+        expect_equal(1833L, bar$altimeterRawNumberOfSamples)
+        expect_equal(bar$altimeterRawSamples[1:3,1:3],
+            structure(c(2313L, 1542L, 2560L, 2560L, 2442L, 3150L, 2313L, 4570L,
+                    3579L), dim = c(3L, 3L)))
+        expect_equal(head(bar$altimeterDistance),
+            c(42.0308685302734, 42.1037330627441, 42.1036491394043, 40.7197113037109,
+                42.1040687561035, 40.7203636169434))
+        expect_equal(head(bar$pressure),
+            c(0.807, 0.801, 0.8, 0.792, 0.808, 0.796))
+        expect_true(all("zup" == bar[["orientation"]]))
+        expect_equal(head(bar$ASTDistance),
+            c(42.1686553955078, 42.2458877563477, 42.2420387268066,
+                40.852237701416, 42.2431640625, 40.8575706481934))
+        expect_equal(head(bar$ASTPressure),
+            c(0.806999981403351, 0.800999999046326, 0.800000011920929,
+                0.791999995708466, 0.808000028133392, 0.796000003814697))
+
         # Time
         expect_equal(head(d[["time"]]),
             structure(c(1653479685.6677, 1653479687.6677, 1653479689.6677,
