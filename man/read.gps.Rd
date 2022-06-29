@@ -4,7 +4,13 @@
 \alias{read.gps}
 \title{Read a GPS File}
 \usage{
-read.gps(file, type = NULL, debug = getOption("oceDebug"), processingLog)
+read.gps(
+  file,
+  type = NULL,
+  encoding = "latin1",
+  debug = getOption("oceDebug"),
+  processingLog
+)
 }
 \arguments{
 \item{file}{name of file containing gps data.}
@@ -12,6 +18,10 @@ read.gps(file, type = NULL, debug = getOption("oceDebug"), processingLog)
 \item{type}{type of file, which will be inferred from examination of the
 data if not supplied.  In the present version, the only choice for
 \code{type} is \code{"gpx"}.}
+
+\item{encoding}{character value indicating the encoding to be used for this
+data file.  This only makes sense for text-based files.  The default,
+\code{"latin1"}, should handle most text written in English, French, etc.}
 
 \item{debug}{set to TRUE to print information about the header, etc.}
 

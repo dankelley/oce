@@ -823,6 +823,8 @@ setMethod(f="plot",
 #' @param file Name of a file containing an ETOPO-format dataset. Three
 #' types are permitted; see \dQuote{Details}.
 #'
+#' @template encodingIgnoredTemplate
+#'
 #' @template debugTemplate
 #'
 #' @return
@@ -837,8 +839,7 @@ setMethod(f="plot",
 #'
 #' @author Dan Kelley
 #' @family things related to topo data
-read.topo <- function(file,
-    debug=getOption("oceDebug"))
+read.topo <- function(file, encoding="latin1", debug=getOption("oceDebug"))
 {
     if (missing(file))
         stop("must supply 'file'")

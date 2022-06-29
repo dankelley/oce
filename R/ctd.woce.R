@@ -238,6 +238,8 @@ woceUnit2oceUnit <- function(woceUnit)
 #'
 #' @template readCtdTemplate
 #'
+#' @template encodingTemplate
+#'
 #' @references
 #' The WOCE-exchange format was once described at
 #' `http://woce.nodc.noaa.gov/woce_v3/wocedata_1/whp/exchange/exchange_format_desc.htm`
@@ -252,6 +254,7 @@ read.ctd.woce <- function(file,
     missingValue,
     deploymentType="unknown",
     monitor=FALSE,
+    encoding="latin1",
     debug=getOption("oceDebug"),
     processingLog,
     ...)
@@ -283,7 +286,7 @@ read.ctd.woce <- function(file,
     oceDebug(debug, "read.ctd.woce(file=\"", file, "\", ..., debug=", debug, ", ...) {\n", sep="", unindent=1)
     if (is.character(file)) {
         filename <- fullFilename(file)
-        file <- file(file, "r")
+        file <- file(file, "r", encoding=encoding)
         on.exit(close(file))
     } else {
         filename <- ""
@@ -328,7 +331,7 @@ read.ctd.woce <- function(file,
         ##Pressure,Temperature,Salinity,Oxygen,Fluorescence,Transmission
         ##   DB   ,ITS-90 DEGC,   PSU  , ML/L ,     UG/L   ,      %
         ##         1,   -1.1999,   28.4279,      8.77,     0.026,    87.679
-        lines <- readLines(file)
+        lines <- readLines(file, encoding=encoding)
         oceDebug(debug, "file has", length(lines), "lines\n")
         headerEnd <- grep("[ ]*DB[ ]*,", lines)
         if (is.na(headerEnd))
@@ -671,6 +674,8 @@ read.ctd.woce <- function(file,
 #'
 #' @template readCtdTemplate
 #'
+#' @template encodingTemplate
+#'
 #' @family functions that read ctd data
 #'
 #' @author Dan Kelley
@@ -680,6 +685,7 @@ read.ctd.woce.other <- function(file,
     missingValue,
     deploymentType="unknown",
     monitor=FALSE,
+    encoding="latin1",
     debug=getOption("oceDebug"),
     processingLog,
     ...)
@@ -703,7 +709,7 @@ read.ctd.woce.other <- function(file,
     ##     8.0  6.6928 34.7041   328.8      -9    2222
     res <- new("ctd")
     examineHeaderLines <- 10
-    header <- readLines(file, n=examineHeaderLines)
+    header <- readLines(file, n=examineHeaderLines, encoding=encoding)
     station <- ""
     for (i in 1: examineHeaderLines) {
         if (1 == length(grep("STNNBR.*", header[i]))) {

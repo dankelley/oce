@@ -4,6 +4,8 @@
 #'
 #' @template readCtdTemplate
 #'
+#' @template encodingTemplate
+#'
 #' @author Dan Kelley
 #'
 #' `read.ctd.itp` reads ice-tethered-profiler data that are stored
@@ -19,8 +21,10 @@
 #' profiler-mode, not fixed-depth mode.
 #'
 #' @family functions that read ctd data
-read.ctd.itp <- function(file, columns=NULL, station=NULL, missingValue, deploymentType="unknown",
-                         monitor=FALSE, debug=getOption("oceDebug"), processingLog, ...)
+read.ctd.itp <- function(file, columns=NULL,
+    station=NULL, missingValue, deploymentType="unknown",
+    encoding="latin1",
+    monitor=FALSE, debug=getOption("oceDebug"), processingLog, ...)
 {
     if (missing(file))
         stop("must supply 'file'")
@@ -33,7 +37,7 @@ read.ctd.itp <- function(file, columns=NULL, station=NULL, missingValue, deploym
     oceDebug(debug, "read.ctd.itp() {\n", unindent=1)
     if (is.character(file)) {
         filename <- fullFilename(file)
-        file <- file(file, "r")
+        file <- file(file, "r", encoding=encoding)
         on.exit(close(file))
     } else {
         filename <- ""
@@ -44,7 +48,7 @@ read.ctd.itp <- function(file, columns=NULL, station=NULL, missingValue, deploym
         open(file, "r")
         on.exit(close(file))
     }
-    lines <- readLines(file, encoding="UTF-8")
+    lines <- readLines(file, encoding=encoding)
     nlines <- length(lines)
     oceDebug(debug, "read ", nlines, " lines\n")
     if ("%endofdat" == substr(lines[nlines], 1, 9)) {

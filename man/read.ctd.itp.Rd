@@ -10,6 +10,7 @@ read.ctd.itp(
   station = NULL,
   missingValue,
   deploymentType = "unknown",
+  encoding = "latin1",
   monitor = FALSE,
   debug = getOption("oceDebug"),
   processingLog,
@@ -63,6 +64,10 @@ the device is installed on a fixed mooring, \code{"thermosalinograph"} (or
 \code{"tsg"}) if the device is mounted on a moving vessel, to record
 near-surface properties, or \code{"towyo"} if the device is repeatedly
 lowered and raised.}
+
+\item{encoding}{character value indicating the encoding to be used for this
+data file.  This only makes sense for text-based files.  The default,
+\code{"latin1"}, should handle most text written in English, French, etc.}
 
 \item{monitor}{boolean, set to \code{TRUE} to provide an indication of
 progress.  This is useful if \code{filename} is a wildcard.}

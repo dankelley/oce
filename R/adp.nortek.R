@@ -543,6 +543,8 @@ is.ad2cp <- function(x)
 #' @param processingLog Character value that, if provided, is saved
 #' within the `processingLog` slot of th returned value.
 #'
+#' @template encodingTemplate
+#'
 #' @param debug Integer value indicating the level of debugging.
 #' Set to 1 to get a moderate amount of debugging information, from
 #' the R code only, to 2 to get some debugging information from the C++
@@ -572,6 +574,7 @@ is.ad2cp <- function(x)
 read.adp.ad2cp <- function(file, from=1, to=0, by=1, tz=getOption("oceTz"),
     longitude=NA, latitude=NA,
     orientation, distance, plan, type,
+    encoding=NA,
     monitor=FALSE, despike=FALSE, processingLog,
     debug=getOption("oceDebug"), ...)
 {
@@ -2216,6 +2219,8 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, tz=getOption("oceTz"),
 #'
 #' @template adpTemplate
 #'
+#' @template encodingIgnoredTemplate
+#'
 #' @author Dan Kelley and Clark Richards
 #'
 #' @family things related to adp data
@@ -2231,6 +2236,7 @@ read.aquadopp <- function(file,
     distance,
     monitor=FALSE,
     despike=FALSE,
+    encoding=NA,
     processingLog,
     debug=getOption("oceDebug"),
     ...)
@@ -2291,6 +2297,8 @@ read.aquadopp <- function(file,
 #'
 #' @template adpTemplate
 #'
+#' @template encodingIgnoredTemplate
+#'
 #' @author Dan Kelley
 #'
 #' @family things related to adp data
@@ -2305,6 +2313,7 @@ read.aquadoppHR <- function(file,
     distance,
     monitor=FALSE,
     despike=FALSE,
+    encoding=NA,
     processingLog,
     debug=getOption("oceDebug"),
     ...)
@@ -2366,6 +2375,8 @@ read.aquadoppHR <- function(file,
 #'
 #' @template adpTemplate
 #'
+#' @template encodingIgnoredTemplate
+#'
 #' @author Dan Kelley
 #'
 #' @family things related to adp data
@@ -2380,6 +2391,7 @@ read.aquadoppProfiler <- function(file,
     distance,
     monitor=FALSE,
     despike=FALSE,
+    encoding=NA,
     processingLog,
     debug=getOption("oceDebug"),
     ...)
@@ -2393,11 +2405,12 @@ read.aquadoppProfiler <- function(file,
             stop("empty file '", file, "'")
     }
     return(read.adp.nortek(file, from=from, to=to, by=by, tz=tz,
-                           longitude=longitude, latitude=latitude,
-                           type="aquadoppProfiler",
-                           orientation=orientation, distance=distance,
-                           monitor=monitor, despike=despike, processingLog=processingLog,
-                           debug=getOption("oceDebug"), ...))
+            longitude=longitude, latitude=latitude,
+            type="aquadoppProfiler",
+            orientation=orientation, distance=distance,
+            encoding=encoding,
+            monitor=monitor, despike=despike, processingLog=processingLog,
+            debug=getOption("oceDebug"), ...))
 }
 
 #' Read a Nortek ADP File
@@ -2431,6 +2444,8 @@ read.aquadoppProfiler <- function(file,
 #'
 #' @template adpTemplate
 #'
+#' @template encodingIgnoredTemplate
+#'
 #' @author Dan Kelley
 #'
 #' @family things related to adp data
@@ -2441,6 +2456,7 @@ read.adp.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         "aquadopp",
         "aquadoppPlusMagnetometer"),
     orientation, distance,
+    encoding=NA,
     monitor=FALSE, despike=FALSE, processingLog,
     debug=getOption("oceDebug"),
     ...)

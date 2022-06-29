@@ -694,6 +694,8 @@ setMethod(f="plot",
 #' at setup.  (If a time zone is present in the file header, this will
 #' supercede the value given here.)
 #'
+#' @template encodingTemplate
+#'
 #' @param processingLog if provided, the action item to be stored in the log.
 #' (Typically only provided for internal calls; the default that it provides is
 #' better for normal calls by a user.)
@@ -706,6 +708,7 @@ setMethod(f="plot",
 #' @family things related to sealevel data
 read.sealevel <- function(file,
     tz=getOption("oceTz"),
+    encoding="latin1",
     processingLog,
     debug=getOption("oceDebug"))
 {
@@ -722,7 +725,7 @@ read.sealevel <- function(file,
     filename <- "?"
     if (is.character(file)) {
         filename <- fullFilename(file)
-        file <- file(file, "r")
+        file <- file(file, "r", encoding=encoding)
         on.exit(close(file))
     }
     if (!inherits(file, "connection"))
@@ -733,7 +736,7 @@ read.sealevel <- function(file,
         on.exit(close(file))
     }
     fileOrig <- file
-    firstLine <- readLines(file, n=1, encoding="UTF-8")
+    firstLine <- readLines(file, n=1, encoding=encoding)
     header <- firstLine
     oceDebug(debug, "header (first line in file): '", header, "'\n", sep="")
     pushBack(firstLine, file)

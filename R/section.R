@@ -2157,6 +2157,8 @@ setMethod(f="plot",
 #'
 #' @param missingValue Numerical value used to indicate missing data.
 #'
+#' @template encodingTemplate
+#'
 #' @template debugTemplate
 #'
 #' @param processingLog If provided, the action item to be stored in the log.  This
@@ -2184,6 +2186,7 @@ read.section <- function(file,
     scientist="",
     institute="",
     missingValue=-999,
+    encoding="latin1",
     debug=getOption("oceDebug"),
     processingLog)
 {
@@ -2210,7 +2213,7 @@ read.section <- function(file,
     }
     if (is.character(file)) {
         filename <- file
-        file <- file(file, "r")
+        file <- file(file, "r", encoding=encoding)
         on.exit(close(file))
     }
     if (!inherits(file, "connection")) {

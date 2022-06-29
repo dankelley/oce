@@ -9,6 +9,7 @@ read.echosounder(
   channel = 1,
   soundSpeed,
   tz = getOption("oceTz"),
+  encoding = encoding,
   debug = getOption("oceDebug"),
   processingLog
 )
@@ -26,6 +27,8 @@ it could be calculated using the temperature and salinity that are stored
 in the data file, but these will just be nominal values, anyway.}
 
 \item{tz}{character string indicating time zone to be assumed in the data.}
+
+\item{encoding}{ignored.}
 
 \item{debug}{a flag that turns on debugging.  Set to 1 to get a moderate
 amount of debugging information, or to 2 to get more.}

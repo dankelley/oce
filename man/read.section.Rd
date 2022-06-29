@@ -13,6 +13,7 @@ read.section(
   scientist = "",
   institute = "",
   missingValue = -999,
+  encoding = "latin1",
   debug = getOption("oceDebug"),
   processingLog
 )
@@ -36,6 +37,10 @@ provided, the section ID is determined by examination of the file header.}
 \item{institute}{Name of chief scientist's institute.}
 
 \item{missingValue}{Numerical value used to indicate missing data.}
+
+\item{encoding}{character value indicating the encoding to be used for this
+data file.  This only makes sense for text-based files.  The default,
+\code{"latin1"}, should handle most text written in English, French, etc.}
 
 \item{debug}{an integer specifying whether debugging information is
 to be printed during the processing. This is a general parameter that

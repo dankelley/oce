@@ -189,6 +189,8 @@ findInHeaderBremen <- function(key, lines)
 #' @param file a connection or a character string giving the name of the file
 #' to load.
 #'
+#' @template encodingIgnoredTemplate
+#'
 #' @return A [bremen-class] object.
 #'
 #' @section Issues: This function may be renamed (or removed) without notice.
@@ -198,7 +200,7 @@ findInHeaderBremen <- function(key, lines)
 #' @author Dan Kelley
 #'
 #' @family things related to bremen data
-read.bremen <- function(file)
+read.bremen <- function(file, encoding=encoding)
 {
     if (missing(file))
         stop("must supply 'file'")

@@ -2,6 +2,8 @@
 #'
 #' @template readCtdTemplate
 #'
+#' @template encodingTemplate
+#'
 #' @author Dan Kelley
 #'
 #' @details
@@ -26,6 +28,7 @@ read.ctd.odv <- function(file,
     station=NULL,
     missingValue,
     deploymentType,
+    encoding="latin1",
     monitor=FALSE,
     debug=getOption("oceDebug"),
     processingLog,
@@ -43,7 +46,7 @@ read.ctd.odv <- function(file,
     filename <- ""
     if (is.character(file)) {
         filename <- fullFilename(file)
-        file <- file(file, "r")
+        file <- file(file, "r", encoding=encoding)
         on.exit(close(file))
     }
     if (!inherits(file, "connection"))

@@ -61,6 +61,8 @@
 #' first line is examined to determine whether the file matches the `format=1` or
 #' `format=2` style (see \sQuote{Details}).
 #'
+#' @template encodingTemplate
+#'
 #' @template debugTemplate
 #'
 #' @param processingLog ignored.
@@ -86,6 +88,7 @@
 #' @family functions that read ctd data
 read.ctd.aml <- function(file,
     format,
+    encoding="latin1",
     debug=getOption("oceDebug"),
     processingLog, ...)
 {
@@ -104,7 +107,7 @@ read.ctd.aml <- function(file,
     filename <- ""
     if (is.character(file)) {
         filename <- fullFilename(file)
-        file <- file(file, "r")
+        file <- file(file, "r", encoding=encoding)
         on.exit(close(file))
     }
     if (!inherits(file, "connection"))

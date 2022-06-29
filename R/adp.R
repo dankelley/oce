@@ -1348,6 +1348,8 @@ beamName <- function(x, which)
 #' to be used, `"nortek"` will cause [read.adp.nortek()] to be used,
 #' and `"sontek"` will cause [read.adp.sontek()] to be used.
 #'
+#' @template encodingIgnoredTemplate
+#'
 #' @param despike if `TRUE`, [despike()] will be used to clean
 #' anomalous spikes in heading, etc.
 #'
@@ -1359,6 +1361,7 @@ beamName <- function(x, which)
 read.adp <- function(file, from, to, by, tz=getOption("oceTz"),
     longitude=NA, latitude=NA,
     manufacturer,
+    encoding="latin1",
     monitor=FALSE, despike=FALSE, processingLog,
     debug=getOption("oceDebug"),
     ...)
@@ -1393,27 +1396,31 @@ read.adp <- function(file, from, to, by, tz=getOption("oceTz"),
     if (missing(manufacturer)) {
         oceDebug(debug, "using read.oce() since 'manufacturer' argument is missing\n")
         res <- read.oce(file=file, from=from, to=to, by=by, tz=tz,
-                        longitude=longitude, latitude=latitude,
-                        debug=debug-1, monitor=monitor, despike=despike,
-                        ...)
+            longitude=longitude, latitude=latitude,
+            encoding=encoding,
+            debug=debug-1, monitor=monitor, despike=despike,
+            ...)
     } else {
         manufacturer <- pmatch(manufacturer, c("rdi", "nortek", "sontek"))
         oceDebug(debug, "inferred manufacturer to be \"", manufacturer, "\"\n")
         res <- if (manufacturer == "rdi") {
             read.adp.rdi(file=file, from=from, to=to, by=by, tz=tz,
-                         longitude=longitude, latitude=latitude,
-                         debug=debug-1, monitor=monitor, despike=despike,
-                         processingLog=processingLog, ...)
+                longitude=longitude, latitude=latitude,
+                encoding=encoding,
+                debug=debug-1, monitor=monitor, despike=despike,
+                processingLog=processingLog, ...)
         } else if (manufacturer == "nortek") {
             read.adp.nortek(file=file, from=from, to=to, by=by, tz=tz,
-                            longitude=longitude, latitude=latitude,
-                            debug=debug-1, monitor=monitor, despike=despike,
-                            processingLog=processingLog, ...)
+                longitude=longitude, latitude=latitude,
+                encoding=encoding,
+                debug=debug-1, monitor=monitor, despike=despike,
+                processingLog=processingLog, ...)
         } else if (manufacturer == "sontek") {
             read.adp.sontek(file=file, from=from, to=to, by=by, tz=tz,
-                            longitude=longitude, latitude=latitude,
-                            debug=debug-1, monitor=monitor, despike=despike,
-                            processingLog=processingLog, ...)
+                longitude=longitude, latitude=latitude,
+                encoding=encoding,
+                debug=debug-1, monitor=monitor, despike=despike,
+                processingLog=processingLog, ...)
         }
     }
     oceDebug(debug, "} # read.adp()\n", unindent=1)

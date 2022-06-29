@@ -380,6 +380,8 @@ setMethod(f="plot",
 #'
 #' @param cols number of columns in dataset.
 #'
+#' @template encodingTemplate
+#'
 #' @param processingLog if provided, the action item to be stored in the log.
 #' (Typically only provided for internal calls; the default that it provides is
 #' better for normal calls by a user.)
@@ -401,6 +403,7 @@ setMethod(f="plot",
 #' @family things related to lobo data
 read.lobo <- function(file,
     cols=7,
+    encoding="latin1",
     processingLog)
 {
     if (missing(file))
@@ -416,7 +419,7 @@ read.lobo <- function(file,
     filename <- ""
     if (is.character(file)) {
         filename <- fullFilename(file)
-        file <- file(file, "r")
+        file <- file(file, "r", encoding=encoding)
         on.exit(close(file))
     } else {
         if (!inherits(file, "connection"))

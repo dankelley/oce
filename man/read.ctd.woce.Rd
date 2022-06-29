@@ -11,6 +11,7 @@ read.ctd.woce(
   missingValue,
   deploymentType = "unknown",
   monitor = FALSE,
+  encoding = "latin1",
   debug = getOption("oceDebug"),
   processingLog,
   ...
@@ -66,6 +67,10 @@ lowered and raised.}
 
 \item{monitor}{boolean, set to \code{TRUE} to provide an indication of
 progress.  This is useful if \code{filename} is a wildcard.}
+
+\item{encoding}{character value indicating the encoding to be used for this
+data file.  This only makes sense for text-based files.  The default,
+\code{"latin1"}, should handle most text written in English, French, etc.}
 
 \item{debug}{an integer specifying whether debugging information is
 to be printed during the processing. This is a general parameter that

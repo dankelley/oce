@@ -654,6 +654,8 @@ cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
 #'
 #' @template readCtdTemplate
 #'
+#' @template encodingTemplate
+#'
 #' @param btl a logical value, with `TRUE` indicating that this is a `.BTL` file and `FALSE`
 #' (the default) indicating a `.CNV` file.  Note that if `btl` is `TRUE`, the data column
 #' names are taken directly from the file (without e.g. translating to `"Sal00"`
@@ -825,6 +827,7 @@ cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
 read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
     deploymentType="unknown", btl=FALSE, monitor=FALSE,
     #humanDateFormat=NULL,
+    encoding="latin1",
     debug=getOption("oceDebug"), processingLog, ...)
 {
     if (missing(file))
@@ -857,7 +860,7 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
     filename <- ""
     if (is.character(file)) {
         filename <- fullFilename(file)
-        file <- file(file, "r", encoding="latin1")
+        file <- file(file, "r", encoding=encoding)
         on.exit(close(file))
     }
     if (!inherits(file, "connection"))
@@ -887,9 +890,7 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
     ## Silence warnings because binary files have 'NUL' characters that spew many warnings
     warn <- options("warn")$warn
     options(warn=-1)
-    ##>>> NOTE: use latin1 to avoid a problem with an accented e, used for sigma-theta.
-    ##>>> lines <- readLines(file, encoding="UTF-8")
-    lines <- readLines(file, encoding="latin1")
+    lines <- readLines(file, encoding=encoding)
     options(warn=warn)
 
     ## Get names and units of columns in the SBE data file

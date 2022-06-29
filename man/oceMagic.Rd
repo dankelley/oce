@@ -4,11 +4,15 @@
 \alias{oceMagic}
 \title{Find the Type of an Oceanographic Data File}
 \usage{
-oceMagic(file, debug = getOption("oceDebug"))
+oceMagic(file, encoding = "latin1", debug = getOption("oceDebug"))
 }
 \arguments{
 \item{file}{a connection or a character string giving the name of the file
 to be checked.}
+
+\item{encoding}{character value indicating the encoding to be used for this
+data file.  This only makes sense for text-based files.  The default,
+\code{"latin1"}, should handle most text written in English, French, etc.}
 
 \item{debug}{an integer, set non-zero to turn on debugging.  Higher values
 indicate more debugging.}
