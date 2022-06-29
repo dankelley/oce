@@ -565,8 +565,7 @@ metNames2oceNames <- function(names, scheme)
 #' the columnar data. Specifying `skip` is usually only needed if [read.met()]
 #' cannot find a line starting with `"Date/Time"` (or a similar string).
 #'
-#' @param encoding a character value indicating the character
-#' encoding for the file (see \dQuote{Description}).
+#' @template encodingTemplate
 #'
 #' @param tz timezone assumed for time data.  This defaults to
 #' `getOption("oceTz")`, which is very likely to be wrong.  In
@@ -644,7 +643,7 @@ read.met <- function(file,
     oceDebug(debug, "read.met(file=\"", file, "\", ...) {\n", sep="", unindent=1, style="bold")
     if (!is.character(file))
         stop("'file' must be a string")
-    someLines <- readLines(file, 30L, warn=FALSE)
+    someLines <- readLines(file, 30L, warn=FALSE, encoding=encoding)
     if (length(someLines) == 0L)
         stop("no data in file")
     if (!is.null(type) && !(type %in% c("csv", "csv1", "csv2", "xml2")))

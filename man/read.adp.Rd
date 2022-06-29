@@ -13,7 +13,7 @@ read.adp(
   longitude = NA,
   latitude = NA,
   manufacturer,
-  encoding = "latin1",
+  encoding = NA,
   monitor = FALSE,
   despike = FALSE,
   processingLog,

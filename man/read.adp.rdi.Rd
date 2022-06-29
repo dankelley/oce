@@ -13,7 +13,7 @@ read.adp.rdi(
   longitude = NA,
   latitude = NA,
   type = c("workhorse"),
-  encoding = "latin1",
+  encoding = NA,
   monitor = FALSE,
   despike = FALSE,
   processingLog,

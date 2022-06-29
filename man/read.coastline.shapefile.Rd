@@ -8,7 +8,7 @@ read.coastline.shapefile(
   file,
   lonlim = c(-180, 180),
   latlim = c(-90, 90),
-  encoding = "latin1",
+  encoding = NA,
   monitor = FALSE,
   debug = getOption("oceDebug"),
   processingLog
@@ -26,9 +26,7 @@ Coastline polygons that do not intersect the defined box are
 skipped, which can be useful in narrowing high-resolution world-scale
 data to a local application.}
 
-\item{encoding}{character value indicating the encoding to be used for this
-data file.  This only makes sense for text-based files.  The default,
-\code{"latin1"}, should handle most text written in English, French, etc.}
+\item{encoding}{ignored.}
 
 \item{monitor}{Logical indicating whether to print an indication of progress through
 the file.}

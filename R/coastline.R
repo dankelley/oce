@@ -1018,19 +1018,19 @@ read.coastline <- function(file,
         ## e.g. "~/data/Coastline/wcl_1_5000000.dat")
         if (is.character(file)) {
             file <- fullFilename(file)
-            file <- file(file, "r")
+            file <- file(file, "r", encoding=encoding)
             on.exit(close(file))
         }
         if (!inherits(file, "connection"))
             stop("'file' must be a character string or connection")
         if (!isOpen(file)) {
-            open(file, "r")
+            open(file, "r", encoding=encoding)
             on.exit(close(file))
         }
-        data <- read.table(file, col.names=c("longitude", "latitude"), stringsAsFactors=FALSE)
+        data <- read.table(file, col.names=c("longitude", "latitude"), stringsAsFactors=FALSE, encoding=encoding)
         res <- new("coastline", longitude=data$longitude, latitude=data$latitude, fillable=FALSE, filename=filename)
     } else if (type == "mapgen") {
-        header <- scan(file, what=character(0), nlines=1, quiet=TRUE) # slow, but just one line
+        header <- scan(file, what=character(0), nlines=1, quiet=TRUE, encoding=encoding) # slow, but just one line
         oceDebug(debug, "method is mapgen\nheader:", header, "\n")
         ##separator <- NULL
                                         # mapgen    # -b
@@ -1082,7 +1082,7 @@ read.coastline <- function(file,
 #' skipped, which can be useful in narrowing high-resolution world-scale
 #' data to a local application.
 #'
-#' @template encodingTemplate
+#' @template encodingIgnoredTemplate
 #'
 #' @param monitor Logical indicating whether to print an indication of progress through
 #' the file.
@@ -1116,7 +1116,7 @@ read.coastline <- function(file,
 read.coastline.shapefile <- function(file,
     lonlim=c(-180, 180),
     latlim=c(-90, 90),
-    encoding="latin1",
+    encoding=NA,
     monitor=FALSE,
     debug=getOption("oceDebug"),
     processingLog)
@@ -1197,7 +1197,7 @@ read.coastline.shapefile <- function(file,
             })
         } else {
             filename <- fullFilename(file)
-            file <- file(file, "rb", encoding=encoding)
+            file <- file(file, "rb")
             on.exit(close(file))
         }
     }
@@ -1337,7 +1337,7 @@ read.coastline.openstreetmap <- function(file,
     lonlim=c(-180, 180),
     latlim=c(-90, 90),
     monitor=FALSE,
-    encoding="latin1",
+    encoding=NA,
     debug=getOption("oceDebug"),
     processingLog)
 {

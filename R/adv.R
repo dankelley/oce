@@ -386,7 +386,7 @@ setMethod(f="subset",
 read.adv <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     type=c("nortek", "sontek", "sontek.adr", "sontek.text"),
     header=TRUE,
-    encoding="latin1",
+    encoding=NA,
     longitude=NA, latitude=NA,
     start=NULL, deltat=NA,
     debug=getOption("oceDebug"), monitor=FALSE, processingLog=NULL)

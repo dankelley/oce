@@ -908,7 +908,7 @@ read.topo <- function(file, encoding="latin1", debug=getOption("oceDebug"))
         ## the code below has a trick to (perhaps) auto-detect whether the header
         ## length is 5 or 6.
         nh <- 6
-        header <- readLines(file, n=nh)
+        header <- readLines(file, n=nh, encoding=encoding)
         if (nchar(header[length(header)]) > 50) {
             ## the header is only 5 long, if the last header line is long.
             nh <- nh - 1

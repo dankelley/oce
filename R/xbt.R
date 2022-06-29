@@ -333,7 +333,7 @@ read.xbt <- function(file,
     type="sippican",
     longitude=NA,
     latitude=NA,
-    encoding=encoding,
+    encoding="latin1",
     debug=getOption("oceDebug"),
     processingLog)
 {
@@ -412,7 +412,7 @@ read.xbt <- function(file,
 read.xbt.edf <- function(file,
     longitude=NA,
     latitude=NA,
-    encoding=encoding,
+    encoding="latin1",
     debug=getOption("oceDebug"),
     processingLog)
 {
@@ -526,7 +526,7 @@ read.xbt.edf <- function(file,
 read.xbt.noaa1 <- function(file,
     debug=getOption("oceDebug"),
     missingValue=-9.99,
-    encoding=encoding,
+    encoding="latin1",
     processingLog)
 {
     if (missing(file))
@@ -547,7 +547,7 @@ read.xbt.noaa1 <- function(file,
     if (!inherits(file, "connection"))
         stop("argument `file' must be a character string or connection")
     if (!isOpen(file)) {
-        open(file, "r")
+        open(file, "r", encoding=encoding)
         on.exit(close(file))
     }
     res <- new("xbt")

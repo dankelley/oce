@@ -833,7 +833,7 @@ read.echosounder <- function(file,
     channel=1,
     soundSpeed,
     tz=getOption("oceTz"),
-    encoding=encoding,
+    encoding=NA,
     debug=getOption("oceDebug"),
     processingLog)
 {

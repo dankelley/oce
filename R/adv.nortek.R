@@ -22,7 +22,7 @@
 read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     header=TRUE,
     longitude=NA, latitude=NA,
-    encoding="latin1",
+    encoding=NA,
     type=c("vector", "aquadopp"),
     haveAnalog1=FALSE, haveAnalog2=FALSE,
     debug=getOption("oceDebug"), monitor=FALSE, processingLog=NULL)

@@ -45,7 +45,7 @@ read.ctd.itp <- function(file, columns=NULL,
     if (!inherits(file, "connection"))
         stop("argument `file' must be a character string or connection")
     if (!isOpen(file)) {
-        open(file, "r")
+        open(file, "r", encoding=encoding)
         on.exit(close(file))
     }
     lines <- readLines(file, encoding=encoding)

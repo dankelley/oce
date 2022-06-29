@@ -52,11 +52,11 @@ read.ctd.odv <- function(file,
     if (!inherits(file, "connection"))
         stop("argument `file' must be a character string or connection")
     if (!isOpen(file)) {
-        open(file, "r")
+        open(file, "r", encoding=encoding)
         on.exit(close(file))
     }
     res <- new("ctd")
-    lines <- readLines(file)
+    lines <- readLines(file, encoding=encoding)
     nlines <- length(lines)
     dataStart <- grep("^//.*$", lines, invert=TRUE)[1]
     if (!dataStart)

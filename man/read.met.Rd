@@ -34,8 +34,9 @@ a non-\code{NULL} value of \code{skip} is taken as the number of lines preceding
 the columnar data. Specifying \code{skip} is usually only needed if \code{\link[=read.met]{read.met()}}
 cannot find a line starting with \code{"Date/Time"} (or a similar string).}
 
-\item{encoding}{a character value indicating the character
-encoding for the file (see \dQuote{Description}).}
+\item{encoding}{a character value that indicates the encoding to be used for
+this data file, if it is textual.  The default value of \code{"latin1"} is
+suitable for files containing text written in English and French.}
 
 \item{tz}{timezone assumed for time data.  This defaults to
 \code{getOption("oceTz")}, which is very likely to be wrong.  In

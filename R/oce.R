@@ -1796,13 +1796,13 @@ oceMagic <- function(file, encoding="latin1", debug=getOption("oceDebug"))
             oceDebug(debug, "} # oceMagic returning xbt/edf\n", unindent=1, style="bold")
             return("xbt/edf")
         }
-        file <- file(file, "r")
+        file <- file(file, "r", encoding=encoding)
     }
     if (!inherits(file, "connection"))
         stop("argument `file' must be a character string or connection")
     oceDebug(debug, "'file' is a connection\n")
     if (!isOpen(file))
-        open(file, "r")
+        open(file, "r", encoding=encoding)
     # Grab text at start of file.
     lines <- readLines(file, n=2, skipNul=TRUE, encoding=encoding)
     line <- lines[1]
@@ -2164,7 +2164,7 @@ read.oce <- function(file, ..., encoding="latin1")
 #'
 #' @return
 #' An [oce-class] object.
-read.netcdf <- function(file, encoding, ...)
+read.netcdf <- function(file, ..., encoding=NA)
 {
     if (missing(file))
         stop("must supply 'file'")

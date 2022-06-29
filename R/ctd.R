@@ -4010,7 +4010,7 @@ read.ctd <- function(file,
         if (!inherits(file, "connection"))
             stop("argument `file' must be a character string or connection")
         if (!isOpen(file)) {
-            open(file, "r")
+            open(file, "r", encoding=encoding)
             on.exit(close(file))
         }
         line <- scan(file, what='char', sep="\n", n=1, quiet=TRUE) # slow, but just one line

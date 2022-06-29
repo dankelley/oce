@@ -189,7 +189,7 @@ findInHeaderBremen <- function(key, lines)
 #' @param file a connection or a character string giving the name of the file
 #' to load.
 #'
-#' @template encodingIgnoredTemplate
+#' @template encodingTemplate
 #'
 #' @return A [bremen-class] object.
 #'
@@ -200,7 +200,7 @@ findInHeaderBremen <- function(key, lines)
 #' @author Dan Kelley
 #'
 #' @family things related to bremen data
-read.bremen <- function(file, encoding=encoding)
+read.bremen <- function(file, encoding="latin1")
 {
     if (missing(file))
         stop("must supply 'file'")
@@ -212,13 +212,13 @@ read.bremen <- function(file, encoding=encoding)
     }
     if (is.character(file)) {
         filename <- fullFilename(file)
-        file <- file(file, "r")
+        file <- file(file, "r", encoding=encoding)
         on.exit(close(file))
     }
     if (!inherits(file, "connection"))
         stop("argument `file' must be a character string or connection")
     if (!isOpen(file)) {
-        open(file, "r")
+        open(file, "r", encoding=encoding)
         on.exit(close(file))
     }
     res <- new("bremen")

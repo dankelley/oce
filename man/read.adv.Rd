@@ -12,7 +12,7 @@ read.adv(
   tz = getOption("oceTz"),
   type = c("nortek", "sontek", "sontek.adr", "sontek.text"),
   header = TRUE,
-  encoding = "latin1",
+  encoding = NA,
   longitude = NA,
   latitude = NA,
   start = NULL,

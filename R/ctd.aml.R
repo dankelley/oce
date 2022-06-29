@@ -113,7 +113,7 @@ read.ctd.aml <- function(file,
     if (!inherits(file, "connection"))
         stop("argument `file' must be a character string or connection")
     if (!isOpen(file)) {
-        open(file, "r")
+        open(file, "r", encoding=encoding)
         on.exit(close(file))
     }
     getMetadataItem <- function(lines, name, numeric=TRUE, ignore.case=FALSE, debug=0)

@@ -13,7 +13,7 @@ read.adv.sontek.adr(
   header = TRUE,
   longitude = NA,
   latitude = NA,
-  encoding = encoding,
+  encoding = NA,
   debug = getOption("oceDebug"),
   monitor = FALSE,
   processingLog = NULL

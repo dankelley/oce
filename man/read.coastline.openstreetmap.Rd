@@ -9,7 +9,7 @@ read.coastline.openstreetmap(
   lonlim = c(-180, 180),
   latlim = c(-90, 90),
   monitor = FALSE,
-  encoding = "latin1",
+  encoding = NA,
   debug = getOption("oceDebug"),
   processingLog
 )
@@ -29,9 +29,7 @@ data to a local application.}
 \item{monitor}{Logical indicating whether to print an indication of progress through
 the file.}
 
-\item{encoding}{character value indicating the encoding to be used for this
-data file.  This only makes sense for text-based files.  The default,
-\code{"latin1"}, should handle most text written in English, French, etc.}
+\item{encoding}{ignored.}
 
 \item{debug}{set to TRUE to print information about the header, etc.}
 

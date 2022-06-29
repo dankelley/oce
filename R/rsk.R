@@ -336,9 +336,9 @@ unitFromStringRsk <- function(s)
 #'
 #' @family things related to rsk data
 as.rsk <- function(time, columns,
-                   filename="", instrumentType="rbr", serialNumber="", model="",
-                   sampleInterval=NA,
-                   debug=getOption("oceDebug"))
+    filename="", instrumentType="rbr", serialNumber="", model="",
+    sampleInterval=NA,
+    debug=getOption("oceDebug"))
 {
     debug <- min(debug, 1)
     oceDebug(debug, "as.rsk(..., filename=\"", filename, "\", serialNumber=\"", serialNumber, "\")\n", sep="", unindent=1)
@@ -687,13 +687,13 @@ read.rsk <- function(file,
             type <- "rsk"
         else if (length(grep(".txt$", file, ignore.case=TRUE)))
             type <- "txt"
-        file <- file(file, "r")
+        file <- file(file, "r", encoding=encoding) # ignored if rsk
         on.exit(close(file))
     }
     if (!inherits(file, "connection"))
         stop("'file' must be a character string or connection")
     if (!isOpen(file)) {
-        open(file, "r")
+        open(file, "r", encoding=encoding) # ignored if rsk
         on.exit(close(file))
     }
     from.keep <- from

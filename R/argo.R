@@ -1176,7 +1176,7 @@ argoDecodeFlags <- function(f) # local function
 #' @author Dan Kelley
 #' @family things related to argo data
 read.argo <- function(file,
-    encoding="latin1",
+    encoding=NA,
     debug=getOption("oceDebug"),
     processingLog,
     ...)

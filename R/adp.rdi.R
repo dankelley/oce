@@ -681,7 +681,7 @@ decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceT
 read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
     longitude=NA, latitude=NA,
     type=c("workhorse"),
-    encoding="latin1",
+    encoding=NA,
     monitor=FALSE, despike=FALSE, processingLog,
     testing=FALSE,
     debug=getOption("oceDebug"),

@@ -19,9 +19,9 @@ read.coastline(
 \item{type}{type of file, one of \code{"R"}, \code{"S"}, \code{"mapgen"},
 \code{"shapefile"} or \code{"openstreetmap"}.}
 
-\item{encoding}{character value indicating the encoding to be used for this
-data file.  This only makes sense for text-based files.  The default,
-\code{"latin1"}, should handle most text written in English, French, etc.}
+\item{encoding}{a character value that indicates the encoding to be used for
+this data file, if it is textual.  The default value of \code{"latin1"} is
+suitable for files containing text written in English and French.}
 
 \item{monitor}{print a dot for every coastline segment read (ignored except
 for reading "shapefile" type)}

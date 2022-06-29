@@ -19,9 +19,9 @@ read.gps(
 data if not supplied.  In the present version, the only choice for
 \code{type} is \code{"gpx"}.}
 
-\item{encoding}{character value indicating the encoding to be used for this
-data file.  This only makes sense for text-based files.  The default,
-\code{"latin1"}, should handle most text written in English, French, etc.}
+\item{encoding}{a character value that indicates the encoding to be used for
+this data file, if it is textual.  The default value of \code{"latin1"} is
+suitable for files containing text written in English and French.}
 
 \item{debug}{set to TRUE to print information about the header, etc.}
 

@@ -1,4 +1,4 @@
-#' @param encoding character value indicating the encoding to be used for this
-#' data file.  This only makes sense for text-based files.  The default,
-#' `"latin1"`, should handle most text written in English, French, etc.
+#' @param encoding a character value that indicates the encoding to be used for
+#' this data file, if it is textual.  The default value of `"latin1"` is
+#' suitable for files containing text written in English and French.
 

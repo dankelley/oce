@@ -543,7 +543,7 @@ is.ad2cp <- function(x)
 #' @param processingLog Character value that, if provided, is saved
 #' within the `processingLog` slot of th returned value.
 #'
-#' @template encodingTemplate
+#' @template encodingIgnoredTemplate
 #'
 #' @param debug Integer value indicating the level of debugging.
 #' Set to 1 to get a moderate amount of debugging information, from

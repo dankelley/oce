@@ -6,7 +6,7 @@
 \usage{
 read.argo.copernicus(
   file,
-  encoding = "latin1",
+  encoding = NA,
   debug = getOption("oceDebug"),
   processingLog,
   ...

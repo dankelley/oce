@@ -35,7 +35,7 @@
 #'
 #' @author Dan Kelley
 read.argo.copernicus <- function(file,
-    encoding="latin1",
+    encoding=NA,
     debug=getOption("oceDebug"),
     processingLog,
     ...)

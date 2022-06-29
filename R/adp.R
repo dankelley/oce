@@ -1361,7 +1361,7 @@ beamName <- function(x, which)
 read.adp <- function(file, from, to, by, tz=getOption("oceTz"),
     longitude=NA, latitude=NA,
     manufacturer,
-    encoding="latin1",
+    encoding=NA,
     monitor=FALSE, despike=FALSE, processingLog,
     debug=getOption("oceDebug"),
     ...)

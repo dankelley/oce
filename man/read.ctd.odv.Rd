@@ -65,9 +65,9 @@ the device is installed on a fixed mooring, \code{"thermosalinograph"} (or
 near-surface properties, or \code{"towyo"} if the device is repeatedly
 lowered and raised.}
 
-\item{encoding}{character value indicating the encoding to be used for this
-data file.  This only makes sense for text-based files.  The default,
-\code{"latin1"}, should handle most text written in English, French, etc.}
+\item{encoding}{a character value that indicates the encoding to be used for
+this data file, if it is textual.  The default value of \code{"latin1"} is
+suitable for files containing text written in English and French.}
 
 \item{monitor}{boolean, set to \code{TRUE} to provide an indication of
 progress.  This is useful if \code{filename} is a wildcard.}

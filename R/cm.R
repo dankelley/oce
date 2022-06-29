@@ -549,7 +549,7 @@ read.cm.s4 <- function(file,
               ", to=", if (missing(to)) "(missing)" else format(to), ", by=", by, ", ...) {\n", sep="", unindent=1)
     if (is.character(file)) {
         filename <- fullFilename(file)
-        file <- file(file, "r")
+        file <- file(file, "r", encoding=encoding)
         on.exit(close(file))
     }
     if (!inherits(file, "connection"))

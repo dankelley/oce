@@ -15,9 +15,9 @@ read.ctd.ssda(
 \item{file}{a connection or a character string giving the name of the file to
 load.}
 
-\item{encoding}{character value indicating the encoding to be used for this
-data file.  This only makes sense for text-based files.  The default,
-\code{"latin1"}, should handle most text written in English, French, etc.}
+\item{encoding}{a character value that indicates the encoding to be used for
+this data file, if it is textual.  The default value of \code{"latin1"} is
+suitable for files containing text written in English and French.}
 
 \item{debug}{an integer specifying whether debugging information is
 to be printed during the processing. If nonzero, some information

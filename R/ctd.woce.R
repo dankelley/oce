@@ -294,7 +294,7 @@ read.ctd.woce <- function(file,
     if (!inherits(file, "connection"))
         stop("argument `file' must be a character string or connection")
     if (!isOpen(file)) {
-        open(file, "r")
+        open(file, "r", encoding=encoding)
         on.exit(close(file))
     }
     res <- new("ctd", pressureType="sea")

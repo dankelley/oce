@@ -12,9 +12,9 @@ to load.}
 
 \item{cols}{number of columns in dataset.}
 
-\item{encoding}{character value indicating the encoding to be used for this
-data file.  This only makes sense for text-based files.  The default,
-\code{"latin1"}, should handle most text written in English, French, etc.}
+\item{encoding}{a character value that indicates the encoding to be used for
+this data file, if it is textual.  The default value of \code{"latin1"} is
+suitable for files containing text written in English and French.}
 
 \item{processingLog}{if provided, the action item to be stored in the log.
 (Typically only provided for internal calls; the default that it provides is

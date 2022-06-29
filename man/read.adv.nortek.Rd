@@ -13,7 +13,7 @@ read.adv.nortek(
   header = TRUE,
   longitude = NA,
   latitude = NA,
-  encoding = "latin1",
+  encoding = NA,
   type = c("vector", "aquadopp"),
   haveAnalog1 = FALSE,
   haveAnalog2 = FALSE,

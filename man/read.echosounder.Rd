@@ -9,7 +9,7 @@ read.echosounder(
   channel = 1,
   soundSpeed,
   tz = getOption("oceTz"),
-  encoding = encoding,
+  encoding = NA,
   debug = getOption("oceDebug"),
   processingLog
 )

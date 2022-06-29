@@ -4,13 +4,15 @@
 \alias{read.bremen}
 \title{Read a Bremen File}
 \usage{
-read.bremen(file, encoding = encoding)
+read.bremen(file, encoding = "latin1")
 }
 \arguments{
 \item{file}{a connection or a character string giving the name of the file
 to load.}
 
-\item{encoding}{ignored.}
+\item{encoding}{a character value that indicates the encoding to be used for
+this data file, if it is textual.  The default value of \code{"latin1"} is
+suitable for files containing text written in English and French.}
 }
 \value{
 A \linkS4class{bremen} object.

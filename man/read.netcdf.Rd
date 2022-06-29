@@ -4,14 +4,14 @@
 \alias{read.netcdf}
 \title{Read a NetCDF File}
 \usage{
-read.netcdf(file, encoding, ...)
+read.netcdf(file, ..., encoding = NA)
 }
 \arguments{
 \item{file}{the name of a file}
 
-\item{encoding}{ignored.}
-
 \item{...}{ignored}
+
+\item{encoding}{ignored.}
 }
 \value{
 An \linkS4class{oce} object.

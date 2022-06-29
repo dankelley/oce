@@ -68,9 +68,7 @@ section 2 on page 6). Note that \code{\link[=oceSetMetadata]{oceSetMetadata()}}
 can be used to alter the slantwise beam angle of an existing object,
 and this will alter any later conversion from beam to xyz coordinates.}
 
-\item{encoding}{character value indicating the encoding to be used for this
-data file.  This only makes sense for text-based files.  The default,
-\code{"latin1"}, should handle most text written in English, French, etc.}
+\item{encoding}{ignored.}
 
 \item{monitor}{boolean value indicating whether to indicate the progress
 of reading the file, by using \code{\link[=txtProgressBar]{txtProgressBar()}} or otherwise.  The value
