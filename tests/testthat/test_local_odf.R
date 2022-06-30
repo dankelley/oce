@@ -25,7 +25,7 @@ if (1 == length(list.files(path=".", pattern="local_data"))) {
 if (1 == length(list.files(path=".", pattern="local_data"))) {
     skip_on_cran()
     test_that("Flemish Cap microcat file (with malformed CODE tokens that lack ' characters)", {
-        expect_warning(d <- read.oce("local_data/flemish_cap/MCM_HUD2013021_1840_2305_300.ODF"), CRATwarning)
+        expect_silent(d <- read.oce("local_data/flemish_cap/MCM_HUD2013021_1840_2305_300.ODF"))
         # oce names
         expect_equal(names(d[["data"]]), c("temperature", "pressure", "time", "conductivity", "salinity", "theta", "sigmaTheta"))
         # original names
@@ -45,7 +45,7 @@ if (1 == length(list.files(path=".", pattern="local_data"))) {
 if (1 == length(list.files(path=".", pattern="local_data"))) {
     skip_on_cran()
     test_that("Bedford Basin CTD profile 1 (with proper CODE tokens)", {
-        expect_warning(d <- read.oce("local_data/bedford_basin/CTD_BCD2010667_001_01_DN.ODF"), CRATwarning)
+        expect_silent(d <- read.oce("local_data/bedford_basin/CTD_BCD2010667_001_01_DN.ODF"))
         expect_equal(d[['startTime']], as.POSIXct("2010-01-05 13:23:29", tz="UTC"))
         # oce names
         expect_equal(names(d[["data"]]),
@@ -72,7 +72,7 @@ if (1 == length(list.files(path=".", pattern="local_data"))) {
 if (1 == length(list.files(path=".", pattern="local_data"))) {
     skip_on_cran()
     test_that("Bedford Basin CTD profile 2 (with proper CODE tokens)", {
-        expect_warning(d <- read.oce("local_data/bedford_basin/CTD_BCD2011667_001_01_DN.ODF"), CRATwarning)
+        expect_silent(d <- read.oce("local_data/bedford_basin/CTD_BCD2011667_001_01_DN.ODF"))
         expect_equal(d[['startTime']], as.POSIXct("2011-01-05 09:10:36", tz="UTC"))
         # oce names
         expect_equal(names(d[["data"]]),
@@ -99,7 +99,7 @@ if (1 == length(list.files(path=".", pattern="local_data"))) {
 if (1 == length(list.files(path=".", pattern="local_data"))) {
     skip_on_cran()
     test_that("Bedford Basin CTD profile 3 (with proper CODE tokens)", {
-        expect_warning(d <- read.oce("local_data/bedford_basin/CTD_BCD2012667_01_01_DN.ODF"), CRATwarning)
+        expect_silent(d <- read.oce("local_data/bedford_basin/CTD_BCD2012667_01_01_DN.ODF"))
         expect_equal(d[['startTime']], as.POSIXct("2012-01-04 12:53:38", tz="UTC"))
         # oce names
         expect_equal(names(d[["data"]]),

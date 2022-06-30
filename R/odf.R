@@ -1538,7 +1538,10 @@ read.odf <- function(file,
     if (length(wCRAT)) {
         for (w in wCRAT) {
             ustring <- tolower(parameterTable$units[w])
-            if (length(ustring) && ustring != "" && ustring != "ratio" && ustring != "none")
+            if (length(ustring) &&
+                ustring != "" &&
+                ustring != "ratio" && ustring != "(ratio)" &&
+                ustring != "none" && ustring != "(none)")
                 warning("\"", parameterTable$oceName[w], "\" (code name \"", parameterTable$code[w], "\") is a conductivity ratio, which has no units, but the file lists \"", ustring, "\" as a unit. Consult ?read.odf to see how to rectify this error.")
         }
     }
