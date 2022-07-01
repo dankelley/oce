@@ -559,13 +559,13 @@ metNames2oceNames <- function(names, scheme)
 #' and (d) `"xml2"` for an XML format that was noticed
 #' on the Environment Canada website in October 2019.
 #'
+#' @template encodingTemplate
+#'
 #' @param skip integer giving the number of header lines that precede the
 #' data.  This is ignored unless `type` is `"csv"` or `"csv1"`, in which case
 #' a non-`NULL` value of `skip` is taken as the number of lines preceding
 #' the columnar data. Specifying `skip` is usually only needed if [read.met()]
 #' cannot find a line starting with `"Date/Time"` (or a similar string).
-#'
-#' @template encodingTemplate
 #'
 #' @param tz timezone assumed for time data.  This defaults to
 #' `getOption("oceTz")`, which is very likely to be wrong.  In
@@ -918,12 +918,15 @@ read.met.csv1 <- function(file, skip=NULL, encoding="latin1", tz=getOption("oceT
 }
 
 # This handles both csv2 and csv3 types
-read.met.csv2 <- function(file, skip=NULL, tz=getOption("oceTz"),
-    encoding="latin1", debug=getOption("oceDebug"))
+read.met.csv2 <- function(file,
+    skip=NULL,
+    encoding="latin1",
+    tz=getOption("oceTz"),
+    debug=getOption("oceDebug"))
 {
     if (missing(file))
         stop("must supply 'file'")
-    oceDebug(debug, "read.met.csv2(\"", file, "\") { # for either type 2 or 3 \n", sep="", unindent=1, style="bold")
+    oceDebug(debug, "read.met.csv2(\"", file, "\", skip=", skip, ", encoding=\"", encoding, "\") { # for either type 2 or 3 \n", sep="", unindent=1, style="bold")
     # I thank Ivan Krylov for telling me that the 'encoding' arg belongs in the
     # file() call, not the readLines() call.
     if (is.character(file)) {
@@ -943,9 +946,10 @@ read.met.csv2 <- function(file, skip=NULL, tz=getOption("oceTz"),
     res <- new("met", time=1)
     owarn <- options()$warn
     options(warn=-1)
-    firstLine <- readLines(file, 1L, warn=FALSE)
+    firstLine <- readLines(file, n=1L, encoding=encoding, warn=FALSE)
+    oceDebug(debug, "First line: \"", firstLine, "\"\n", sep="")
     dataNames <- strsplit(gsub('"', '', firstLine[1]), ",")[[1]]
-    data <- read.csv(file, header=FALSE)
+    data <- read.csv(file, header=FALSE, encoding=encoding)
     options(warn=owarn)
     index <- grep("^Dew Point Temp.*C.*$", dataNames)
     if (length(index) == 1L) {

@@ -2125,6 +2125,8 @@ read.oce <- function(file, ..., encoding="latin1")
         res <- read.met(file, type="csv1", encoding=encoding, ...)
     } else if (type == "met/csv2") {
         res <- read.met(file, type="csv2", encoding=encoding, ...)
+    } else if (type == "met/csv3") {
+        res <- read.met(file, type="csv2", encoding=encoding, ...) # FIXME: ok?
     } else if (type == "met/xml2") {
         res <- read.met(file, type="xml2", encoding=encoding, ...)
     } else if (type == "odf") {
