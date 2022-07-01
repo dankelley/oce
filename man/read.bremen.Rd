@@ -11,8 +11,9 @@ read.bremen(file, encoding = "latin1")
 to load.}
 
 \item{encoding}{a character value that indicates the encoding to be used for
-this data file, if it is textual.  The default value of \code{"latin1"} is
-suitable for files containing text written in English and French.}
+this data file, if it is textual.  The default value for most functions is
+\code{"latin1"}, which seems to be suitable for files containing text written in
+English and French.}
 }
 \value{
 A \linkS4class{bremen} object.

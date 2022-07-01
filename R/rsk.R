@@ -683,11 +683,15 @@ read.rsk <- function(file,
              ", tz=\"", tz, "\", ...) {\n", sep="", unindent=1)
     filename <- file
     if (is.character(file)) {
-        if (length(grep(".rsk$", file, ignore.case=TRUE, useBytes=TRUE)))
+        if (length(grep(".rsk$", file, ignore.case=TRUE, useBytes=TRUE))) {
             type <- "rsk"
-        else if (length(grep(".txt$", file, ignore.case=TRUE)))
+            file <- file(file, "r")
+        } else if (length(grep(".txt$", file, ignore.case=TRUE))) {
             type <- "txt"
-        file <- file(file, "r", encoding=encoding) # ignored if rsk
+            file <- file(file, "r", encoding=encoding)
+        } else {
+            file <- file(file, "r") # FIXME: can this happen?
+        }
         on.exit(close(file))
     }
     if (!inherits(file, "connection"))
@@ -1033,11 +1037,8 @@ read.rsk <- function(file,
     } else if (!(missing(type)) && type=='txt') {
         oceDebug('RBR txt format\n')
         oceDebug(debug, "Format is Rtext Ruskin txt export", "\n")
-        l <- readLines(file, n=50000)         # FIXME: need to read a
-                                              # lot if there are lots
-                                              # of "Events". Is there
-                                              # a better way to do
-                                              # this?
+        # FIXME: reading a  lot if there are lots of "Events". Is there a better way to do this?
+        l <- readLines(file, n=50000, encoding=encoding)
         pushBack(l, file)
         model <- unlist(strsplit(l[grep('Model', l, useBytes=TRUE)], '='))[2]
         serialNumber <- as.numeric(unlist(strsplit(l[grep('Serial', l, useBytes=TRUE)], '='))[2])
@@ -1055,7 +1056,7 @@ read.rsk <- function(file,
         oceDebug(debug, "Channel names are:", channelNames, "\n")
         skip <- grep('Date & Time', l, useBytes=TRUE)      # Where should I start reading the data?
         oceDebug(debug, "Data starts on line", skip, "\n")
-        d <- read.table(file, skip=skip, stringsAsFactors = FALSE)
+        d <- read.table(file, skip=skip, stringsAsFactors=FALSE, encoding=encoding)
         oceDebug(debug, "First time=", d$V1[1], d$V2[1], "\n")
         ## Assume date and time are first two columns
         time <- as.POSIXct(paste(d$V1, d$V2), format='%d-%b-%Y %H:%M:%OS', tz=tz)

@@ -722,7 +722,7 @@ read.adv.sontek.text <- function(file,
     ts <- paste(basefile, suffices[2], sep=".")
 
     ## The hd1 file holds per-burst information
-    hdt <-  read.table(hd)
+    hdt <-  read.table(hd, encoding=encoding)
     numberOfBursts <- dim(hdt)[1]
     oceDebug(debug, "numberOfBursts: ", numberOfBursts, "\n")
     t <- ISOdatetime(year=hdt[, 2], month=hdt[, 3], day=hdt[, 4], hour=hdt[, 5], min=hdt[, 6], sec=hdt[, 7], tz=tz)

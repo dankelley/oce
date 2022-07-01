@@ -88,7 +88,7 @@
 #' @family functions that read ctd data
 read.ctd.aml <- function(file,
     format,
-    encoding="latin1",
+    encoding="UTF-8-BOM",
     debug=getOption("oceDebug"),
     processingLog, ...)
 {
@@ -135,7 +135,7 @@ read.ctd.aml <- function(file,
         oceDebug(debug, "#} getMetadataItem()\n", style="bold", unindent=1)
         res
     }
-    lines <- readLines(file, encoding="UTF-8-BOM", warn=FALSE)
+    lines <- readLines(file, encoding=encoding, warn=FALSE)
     oceDebug(debug, "read ", length(lines), " lines in this file\n")
     if (missing(format)) {
         format <- if (grepl("^\\[cast header\\]", lines[1])) {
@@ -188,14 +188,14 @@ read.ctd.aml <- function(file,
     col.names[col.names == "Battery (V)"] <- "battery" # optional
     oceDebug(debug, "step 2 col.names: c(\"", paste(col.names, collapse="\", \""), "\")\n")
     if (format == 1L) {
-        data <- read.csv(text=lines, skip=endOfHeader+1L, col.names=col.names)
+        data <- read.csv(text=lines, skip=endOfHeader+1L, col.names=col.names, encoding=encoding)
     } else if (format == 2L) {
         nfields <- length(col.names)
         nfield <- unlist(lapply(lines, function(l) length(strsplit(l, ",")[[1]])))
         look <- nfield == nfield[1]
         header <- lines[seq(1L, which(look)[2]-1L)]
         look[1] <- FALSE
-        data <- read.csv(text=lines[look], header=FALSE, col.names=col.names)
+        data <- read.csv(text=lines[look], header=FALSE, col.names=col.names, encoding=encoding)
     } else {
         stop("unrecognized format value")
     }

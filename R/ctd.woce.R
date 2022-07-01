@@ -371,7 +371,7 @@ read.ctd.woce <- function(file,
             }
         }
         dataLines <- lines[seq.int(headerEnd+1, length(lines)-1)]
-        data <- as.list(read.table(textConnection(dataLines), header=FALSE, sep=",", col.names=names))
+        data <- as.list(read.table(textConnection(dataLines), header=FALSE, sep=",", col.names=names, encoding=encoding))
         res@metadata$header <- header
         res@metadata$filename <- filename # provided to this routine
         res@metadata$filename.orig <- filename.orig # from instrument
@@ -561,12 +561,12 @@ read.ctd.woce <- function(file,
         ## a trailer line at the end, and read.table() cannot handle that.
         #> owarn <- options('warn')$warn
         #> options(warn=-1)
-        lines <- readLines(file)# , warn=FALSE)
+        lines <- readLines(file, encoding=encoding)
         #> options(warn=owarn)
         nlines <- length(lines)
         if (length(grep("^END", lines[nlines])))
             lines <- lines[-nlines]
-        dataAndFlags <- read.csv(text=lines, header=FALSE, col.names=names, sep=",")
+        dataAndFlags <- read.csv(text=lines, header=FALSE, col.names=names, sep=",", encoding=encoding)
 
         ## nlines <- length(lines)
         ## pressure <- vector("numeric", nlines)
@@ -583,7 +583,7 @@ read.ctd.woce <- function(file,
         ##print(data.frame(varNames, varNamesOce))
         nonflags <- grep("Flag$", names, invert=TRUE)
         flags <- grep("Flag$", names)
-        dataAndFlags <- read.csv(text=lines, header=FALSE, col.names=woceNames2oceNames(names))
+        dataAndFlags <- read.csv(text=lines, header=FALSE, col.names=woceNames2oceNames(names), encoding=encoding)
         data <- as.list(dataAndFlags[, nonflags])
         flags <- as.list(dataAndFlags[, flags])
         names(flags) <- gsub("Flag", "", names(flags))
@@ -737,7 +737,7 @@ read.ctd.woce.other <- function(file,
         units <- gsub("[ ]+", " ", units) # remove multiple spaces
         units <- strsplit(units, " ")[[1]]
         skip <- max(grep("^ *[*a-zA-Z]", header))
-        data <- read.table(file, skip=skip, header=FALSE, col.names=names)
+        data <- read.table(file, skip=skip, header=FALSE, col.names=names, encoding=encoding)
     } else {
         stop("cannot decode data header, since no line therein contains the string \"CTDPRS\"\n")
     }

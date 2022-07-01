@@ -576,7 +576,7 @@ read.cm.s4 <- function(file,
     ## Skip through the rest of the header, and start paying attention when
     ## row number is 1, 2, and then 3.  These first rows give us the time
     ## sequence.
-    lines <- readLines(file, n=20)
+    lines <- readLines(file, n=20, encoding=encoding)
     for (i in 2:20) {
         items <- strsplit(lines[i], "\t")[[1]]
         oceDebug(debug, "line", i, "contains: ", paste(items, collapse=" "), "\n")

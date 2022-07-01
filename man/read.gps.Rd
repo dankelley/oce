@@ -20,8 +20,9 @@ data if not supplied.  In the present version, the only choice for
 \code{type} is \code{"gpx"}.}
 
 \item{encoding}{a character value that indicates the encoding to be used for
-this data file, if it is textual.  The default value of \code{"latin1"} is
-suitable for files containing text written in English and French.}
+this data file, if it is textual.  The default value for most functions is
+\code{"latin1"}, which seems to be suitable for files containing text written in
+English and French.}
 
 \item{debug}{set to TRUE to print information about the header, etc.}
 

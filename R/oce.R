@@ -1674,7 +1674,7 @@ oceMagic <- function(file, encoding="latin1", debug=getOption("oceDebug"))
     if (is.character(file)) {
         oceDebug(debug, "'file' is a character value\n")
         if (grepl(".asc$", filename)) {
-            someLines <- readLines(file, encoding=encoding, n=1)
+            someLines <- readLines(file, n=1L, encoding=encoding)
             if (42 == length(strsplit(someLines[1], ' ')[[1]])) {
                 oceDebug(debug, "} # oceMagic returning lisst\n", unindent=1, style="bold")
                 return("lisst")
@@ -2074,7 +2074,7 @@ read.oce <- function(file, ..., encoding="latin1")
             stop("found zero or multiple '-- DATA --' (end of header) lines in a mtg/odf file")
         #header <- lines[1:headerEnd]
         data <- lines[seq.int(headerEnd+1, nlines)]
-        res <- read.table(text=data, header=FALSE, col.names=c("time", "temperature", "ptotal", "psea", "depth"))
+        res <- read.table(text=data, header=FALSE, col.names=c("time", "temperature", "ptotal", "psea", "depth"), encoding=encoding)
         res$time <- strptime(res$time, "%d-%B-%Y %H:%M:%S", tz="UTC") # guess on timezone
         missing_value <- -99.0 # FIXME: it's different for each column
         res[res==missing_value] <- NA

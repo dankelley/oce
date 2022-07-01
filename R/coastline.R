@@ -1364,7 +1364,7 @@ read.coastline.openstreetmap <- function(file,
         on.exit(close(file))
     }
     res <- new("coastline", fillable=FALSE, filename=filename)
-    d <- readLines(file)
+    d <- readLines(file, encoding=encoding)
     ## get all <nd> (even if only using some)
     nodeLines <- d[grep("^ *<node", d)]
     nodeIds <- as.numeric(sub('".*$', '', sub('^.* id="', '', nodeLines)))

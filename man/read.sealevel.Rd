@@ -21,8 +21,9 @@ at setup.  (If a time zone is present in the file header, this will
 supercede the value given here.)}
 
 \item{encoding}{a character value that indicates the encoding to be used for
-this data file, if it is textual.  The default value of \code{"latin1"} is
-suitable for files containing text written in English and French.}
+this data file, if it is textual.  The default value for most functions is
+\code{"latin1"}, which seems to be suitable for files containing text written in
+English and French.}
 
 \item{processingLog}{if provided, the action item to be stored in the log.
 (Typically only provided for internal calls; the default that it provides is

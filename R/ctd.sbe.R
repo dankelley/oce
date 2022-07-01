@@ -1282,7 +1282,7 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
         pushBack(lines, file) # push back header so we can read from a file, not a text vector (for speed)
         oceDebug(debug, "About to read .cnv data with these names: c(\"", paste(colNamesInferred, collapse='","'), "\")\n", sep="")
         #message("skipping ", iline-1, " lines at top of file")
-        data <- as.list(read.table(file, skip=iline-1, header=FALSE))
+        data <- as.list(read.table(file, skip=iline-1L, header=FALSE, encoding=encoding))
 
         if (length(data) != length(colNamesInferred))
             stop("Number of columns in .cnv data file (", length(data), ") must match number of variables named in the header (", length(colNamesInferred), ")")

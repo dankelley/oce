@@ -35,8 +35,9 @@ the columnar data. Specifying \code{skip} is usually only needed if \code{\link[
 cannot find a line starting with \code{"Date/Time"} (or a similar string).}
 
 \item{encoding}{a character value that indicates the encoding to be used for
-this data file, if it is textual.  The default value of \code{"latin1"} is
-suitable for files containing text written in English and French.}
+this data file, if it is textual.  The default value for most functions is
+\code{"latin1"}, which seems to be suitable for files containing text written in
+English and French.}
 
 \item{tz}{timezone assumed for time data.  This defaults to
 \code{getOption("oceTz")}, which is very likely to be wrong.  In

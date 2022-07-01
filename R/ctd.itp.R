@@ -101,7 +101,7 @@ read.ctd.itp <- function(file, columns=NULL,
                     units[[names[i]]] <- list(unit=as.expression(unit), scale="")
                 }
             }
-            d <- read.table(text=lines[-seq.int(1, namesLine)], col.names=names)
+            d <- read.table(text=lines[-seq.int(1, namesLine)], col.names=names, encoding=encoding)
             ## print(head(d), 2)
             ## print(str(units))
             pressure <- d$pressure
@@ -110,7 +110,7 @@ read.ctd.itp <- function(file, columns=NULL,
             oxygen <- d$oxygen
         } else {
             oceDebug(debug, "length(namesLine)!=1\n")
-            d <- read.table(text=lines[4:nlines])
+            d <- read.table(text=lines[4:nlines], encoding=encoding)
             items <- scan(text=lines[3], what="character", quiet=TRUE)
             pcol <- grep("pressure", items)[1]
             Scol <- grep("salinity", items)[1]

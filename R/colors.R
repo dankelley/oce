@@ -459,7 +459,7 @@ colormapGMT <- function(name, debug=getOption("oceDebug"))
     } else {
         oceDebug(debug, "case 2: file or URL\n")
         # Look for local file or URL
-        text <- try(readLines(name), silent=TRUE)
+        text <- try(readLines(name, encoding=encoding), silent=TRUE)
         if (inherits(text, "try-error"))
             stop("unknown colormap name: \"", name, "\" (not built-in, not local file, not working URL)")
     }

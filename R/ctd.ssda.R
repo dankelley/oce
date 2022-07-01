@@ -84,7 +84,7 @@ read.ctd.ssda <- function(file,
     names <- gsub("SIGMA", "sigma", names)
     names <- gsub("Temp.", "temperature", names)
     #message(vectorShow(dataStart))
-    d <- read.table(text=lines, skip=dataStart + 4, col.names=names, header=FALSE)
+    d <- read.table(text=lines, skip=dataStart + 4, col.names=names, header=FALSE, encoding=encoding)
     # Lon and lat are in an odd system, with e.g. 12.34 meaning 12deg+34minutes.
     lon <- as.numeric(d$longitude[1])
     londeg <- floor(lon / 100)

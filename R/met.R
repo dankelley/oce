@@ -677,7 +677,10 @@ read.met <- function(file,
     res
 }
 
-read.met.csv1 <- function(file, skip=NULL, encoding="latin1", tz=getOption("oceTz"),
+read.met.csv1 <- function(file,
+    skip=NULL,
+    encoding="latin1",
+    tz=getOption("oceTz"),
     debug=getOption("oceDebug"))
 {
     if (missing(file))
@@ -694,7 +697,7 @@ read.met.csv1 <- function(file, skip=NULL, encoding="latin1", tz=getOption("oceT
         filename <- "(a connection)"
     }
     res <- new("met", time=1)
-    text <- readLines(file, warn=FALSE)
+    text <- readLines(file, warn=FALSE, encoding=encoding)
     oceDebug(debug, "file has ", length(text), " lines\n")
     ##print(header[1:19])
     textItem <- function(text, name, numeric=TRUE) {
@@ -733,7 +736,7 @@ read.met.csv1 <- function(file, skip=NULL, encoding="latin1", tz=getOption("oceT
     #>owarn <- options()$warn
     #>options(warn=-1)
     capture.output({
-        rawData <- try(read.csv(text=text, skip=skip, header=TRUE, stringsAsFactors=TRUE), silent=TRUE)
+        rawData <- try(read.csv(text=text, skip=skip, header=TRUE, stringsAsFactors=TRUE, encoding=encoding), silent=TRUE)
     })
     #>options(warn=owarn)
     names <- names(rawData)
@@ -946,7 +949,7 @@ read.met.csv2 <- function(file,
     res <- new("met", time=1)
     owarn <- options()$warn
     options(warn=-1)
-    firstLine <- readLines(file, n=1L, encoding=encoding, warn=FALSE)
+    firstLine <- readLines(file, n=1L, warn=FALSE, encoding=encoding)
     oceDebug(debug, "First line: \"", firstLine, "\"\n", sep="")
     dataNames <- strsplit(gsub('"', '', firstLine[1]), ",")[[1]]
     data <- read.csv(file, header=FALSE, encoding=encoding)

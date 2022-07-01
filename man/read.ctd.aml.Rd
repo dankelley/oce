@@ -7,7 +7,7 @@
 read.ctd.aml(
   file,
   format,
-  encoding = "latin1",
+  encoding = "UTF-8-BOM",
   debug = getOption("oceDebug"),
   processingLog,
   ...
@@ -22,8 +22,9 @@ first line is examined to determine whether the file matches the \code{format=1}
 \code{format=2} style (see \sQuote{Details}).}
 
 \item{encoding}{a character value that indicates the encoding to be used for
-this data file, if it is textual.  The default value of \code{"latin1"} is
-suitable for files containing text written in English and French.}
+this data file, if it is textual.  The default value for most functions is
+\code{"latin1"}, which seems to be suitable for files containing text written in
+English and French.}
 
 \item{debug}{an integer specifying whether debugging information is
 to be printed during the processing. This is a general parameter that

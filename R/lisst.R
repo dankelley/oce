@@ -372,7 +372,7 @@ read.lisst <- function(file,
         open(file, "r", encoding=encoding)
         on.exit(close(file))
     }
-    data <- read.table(file, header=FALSE)
+    data <- read.table(file, header=FALSE, encoding=encoding)
     res <- as.lisst(data, filename=filename, year=year, tz=tz, longitude=longitude, latitude=latitude)
     res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     names <- names(data)

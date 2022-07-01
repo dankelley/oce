@@ -764,7 +764,7 @@ read.sealevel <- function(file,
         ## Obs_date,SLEV
         ## 01/01/2001 12:00 AM,1.82,
         headerLength <- 8
-        header <- readLines(file, n = headerLength)
+        header <- readLines(file, n=headerLength, encoding=encoding)
         if (debug > 0) {
             print(header)
         }
@@ -775,7 +775,7 @@ read.sealevel <- function(file,
         tz            <- strsplit(header[6], ",")[[1]][2] # needed for get GMT offset
         GMTOffset     <- GMTOffsetFromTz(tz)
         oceDebug(debug, "about to read data\n")
-        x <- read.csv(file, header=FALSE, stringsAsFactors=FALSE)#, skip=headerLength)
+        x <- read.csv(file, header=FALSE, stringsAsFactors=FALSE, encoding=encoding)
         oceDebug(debug, "... finished reading data\n")
         if (length(grep("[0-9]{4}/", x$V1[1])) > 0) {
             oceDebug(debug, "Date format is year/month/day hour:min with hour in range 1:24\n")
@@ -791,7 +791,7 @@ read.sealevel <- function(file,
         year <- as.POSIXlt(time[1])$year + 1900
     } else {
         oceDebug(debug, "File is of type 2 or 3\n")
-        d <- readLines(file)
+        d <- readLines(file, encoding=encoding)
         n <- length(d)
         header <- d[1]
         if (grepl("LAT=", header) && grepl("LONG=", header) && grepl("TIMEZONE",header)) {

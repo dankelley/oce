@@ -923,7 +923,7 @@ read.topo <- function(file, encoding="latin1", debug=getOption("oceDebug"))
         i <- grep("nodata", header)
         if (length(i))
             missingValue <- as.numeric(strsplit(header[i], "[ ]+", perl=TRUE)[[1]][2])
-        zz <- as.matrix(read.table(file, header=FALSE, skip=nh), byrow=TRUE)
+        zz <- as.matrix(read.table(file, encoding=encoding, header=FALSE, skip=nh), byrow=TRUE)
         rownames(zz) <- NULL
         colnames(zz) <- NULL
         longitude <- longitudeLowerLeft + cellSize * seq(0, ncol-1)

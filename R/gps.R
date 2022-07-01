@@ -530,11 +530,11 @@ read.gps <- function(file,
     }
     type <- match.arg(type, c("gpx"))
     oceDebug(debug, "file type:", type, "\n")
-    lines <- readLines(file)
+    lines <- readLines(file, encoding=encoding)
     look <- grep("^<.* lat=", lines)
     latlon <- lines[look]
     latlonCleaned <- gsub("[a-zA-Z<>=\"/]*", "", latlon)
-    latlon <- read.table(text=latlonCleaned)
+    latlon <- read.table(text=latlonCleaned, encoding=encoding)
     res <- new("gps", longitude=latlon[, 2], latitude=latlon[, 1], file=filename)
     oceDebug(debug, "} # read.gps()\n", sep="", style="bold", unindent=1)
     res

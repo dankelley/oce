@@ -222,7 +222,7 @@ read.bremen <- function(file, encoding="latin1")
         on.exit(close(file))
     }
     res <- new("bremen")
-    lines <- readLines(file)
+    lines <- readLines(file, encoding=encoding)
     ## Discover header as lines starting with a letter
     headerLength <- max(grep("^[a-zA-Z]", lines))
     h <- lines[1:headerLength]
@@ -262,7 +262,7 @@ read.bremen <- function(file, encoding="latin1")
     names[nicknames=="o"] <- "oxygen"
     names[nicknames=="z"] <- "pressure" # NOTE: bremen files have positive z values
     ## infer column names from last line of header (guessing a bit)
-    data <- read.table(text=lines[-seq.int(1, headerLength)], header=FALSE, col.names=names)
+    data <- read.table(text=lines[-seq.int(1, headerLength)], header=FALSE, col.names=names, encoding=encoding)
     for (name in names(data)) {
         ## FIXME: I have no idea what "uz" is, so I cannot guess the unit
         if (name == "u" || name == "v" || name == "uz" || name == "vz") {

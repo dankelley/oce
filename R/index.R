@@ -91,7 +91,7 @@ read.index <- function(file,
         open(file, "r", encoding=encoding)
         on.exit(close(file))
     }
-    lines <- readLines(file, warn=FALSE)
+    lines <- readLines(file, warn=FALSE, encoding=encoding)
     if (missing(format)) {
         ntokens <- length(scan(text=lines[1], quiet=TRUE))
         if (2 == ntokens) format <- "noaa"
@@ -114,13 +114,13 @@ read.index <- function(file,
             stop("cannot find missing-value token")
         missingValue <- as.numeric(lines[onetoken])
         lines <- lines[seq.int(1L, onetoken-1)]
-        d <- as.matrix(read.table(text=lines, header=FALSE))
+        d <- as.matrix(read.table(text=lines, header=FALSE, encoding=encoding))
         year <- d[, 1]
         t <- seq(ISOdatetime(year[1], 1, 15, 0, 0, 0, tz="UTC"), by="month", length.out=12*length(year))
         data <- as.vector(t(d[, -1]))
         data[data == missingValue] <- NA
     } else if (format == "ucar") {
-        m <- read.table(text=lines, header=FALSE)
+        m <- read.table(text=lines, header=FALSE, encoding=encoding)
         year <- m[, 1]
         data <- as.vector(t(m[, -1]))
         t <- seq(ISOdatetime(year[1], 1, 15, 0, 0, 0, tz="UTC"), by="month", length.out=12*length(year))

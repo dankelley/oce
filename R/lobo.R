@@ -429,7 +429,7 @@ read.lobo <- function(file,
             on.exit(close(file))
         }
     }
-    d <- read.table(file, sep='\t', header=TRUE, stringsAsFactors=FALSE)
+    d <- read.table(file, sep='\t', header=TRUE, stringsAsFactors=FALSE, encoding=encoding)
     names <- names(d)
     tCol <- grep("date", names)
     uCol <- grep("current across", names)
