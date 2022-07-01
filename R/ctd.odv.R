@@ -2,6 +2,8 @@
 #'
 #' @template readCtdTemplate
 #'
+#' @template encodingTemplate
+#'
 #' @author Dan Kelley
 #'
 #' @details
@@ -26,6 +28,7 @@ read.ctd.odv <- function(file,
     station=NULL,
     missingValue,
     deploymentType,
+    encoding="latin1",
     monitor=FALSE,
     debug=getOption("oceDebug"),
     processingLog,
@@ -43,17 +46,17 @@ read.ctd.odv <- function(file,
     filename <- ""
     if (is.character(file)) {
         filename <- fullFilename(file)
-        file <- file(file, "r")
+        file <- file(file, "r", encoding=encoding)
         on.exit(close(file))
     }
     if (!inherits(file, "connection"))
         stop("argument `file' must be a character string or connection")
     if (!isOpen(file)) {
-        open(file, "r")
+        open(file, "r", encoding=encoding)
         on.exit(close(file))
     }
     res <- new("ctd")
-    lines <- readLines(file)
+    lines <- readLines(file, encoding=encoding)
     nlines <- length(lines)
     dataStart <- grep("^//.*$", lines, invert=TRUE)[1]
     if (!dataStart)

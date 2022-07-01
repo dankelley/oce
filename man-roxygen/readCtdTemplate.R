@@ -7,6 +7,8 @@
 #' [list.files()] with `pattern` set to the specified wildcard
 #' pattern.
 #'
+#' @template encodingTemplate
+#'
 #' @param debug an integer specifying whether debugging information is
 #' to be printed during the processing. This is a general parameter that
 #' is used by many `oce` functions. Generally, setting `debug=0`

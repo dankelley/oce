@@ -4,7 +4,7 @@
 \alias{read.oce}
 \title{Read an Oceanographic Data File}
 \usage{
-read.oce(file, ...)
+read.oce(file, ..., encoding = "latin1")
 }
 \arguments{
 \item{file}{a connection or a character string giving the name of the file
@@ -12,6 +12,13 @@ to load.}
 
 \item{...}{arguments to be handed to whichever instrument-specific reading
 function is selected, based on the header.}
+
+\item{encoding}{a character string giving the file encoding.  This defaults
+to \verb{"latin1}", which seems to work for files available to the authors, but
+be aware that a different setting may be required for files that contain
+unusual accents or characters.  (Try \code{"UTF-8"} if the default produces
+errors.) Note that \code{encoding} is ignored in binary files, and also
+in some text-based files, as well.}
 }
 \value{
 An \linkS4class{oce} object of that is

@@ -875,8 +875,7 @@ setMethod(f="plot",
           })
 
 
-read.landsatmeta <- function(file,
-    debug=getOption("oceDebug"))
+read.landsatmeta <- function(file, encoding="latin1", debug=getOption("oceDebug"))
 {
     getItem <- function(info, name, numeric=TRUE)
     {
@@ -891,7 +890,7 @@ read.landsatmeta <- function(file,
         ##oceDebug(debug, "read item", name, "\n")
         res
     }
-    info <- readLines(file, warn=FALSE)
+    info <- readLines(file, warn=FALSE, encoding=encoding)
     date <- getItem(info, "DATE_ACQUIRED", numeric=FALSE)
     centerTime <- getItem(info, "SCENE_CENTER_TIME", numeric=FALSE)
     time <- as.POSIXct(paste(date, centerTime), tz="UTC")
@@ -908,11 +907,11 @@ read.landsatmeta <- function(file,
     lrlon <- getItem(info, "CORNER_LR_LON_PRODUCT")
     zoneUTM <- getItem(info, "UTM_ZONE")
     llUTM <- list(easting=getItem(info, "CORNER_LL_PROJECTION_X_PRODUCT"),
-                  northing=getItem(info, "CORNER_LL_PROJECTION_Y_PRODUCT"),
-                  zone=zoneUTM)
+        northing=getItem(info, "CORNER_LL_PROJECTION_Y_PRODUCT"),
+        zone=zoneUTM)
     urUTM <- list(easting=getItem(info, "CORNER_UR_PROJECTION_X_PRODUCT"),
-                  northing=getItem(info, "CORNER_UR_PROJECTION_Y_PRODUCT"),
-                  zone=zoneUTM)
+        northing=getItem(info, "CORNER_UR_PROJECTION_Y_PRODUCT"),
+        zone=zoneUTM)
     ## Cell sizes
     gridCellSizePanchromatic <- getItem(info, "GRID_CELL_SIZE_PANCHROMATIC")
     gridCellSizeReflective <- getItem(info, "GRID_CELL_SIZE_REFLECTIVE")
@@ -1034,6 +1033,8 @@ read.landsatmeta <- function(file,
 #' `decimate=10`, to plot the image to determine a subregion
 #' of interest, and then to use [landsatTrim()] to trim the image.
 #'
+#' @template encodingTemplate
+#'
 #' @param debug a flag that turns on debugging.  Set to 1 to get a moderate
 #' amount of debugging information, or to 2 to get more.
 #'
@@ -1081,6 +1082,7 @@ read.landsat <- function(file,
     band="all",
     emissivity=0.984,
     decimate,
+    encoding="latin1",
     debug=getOption("oceDebug"))
 {
     if (missing(file))
@@ -1107,7 +1109,7 @@ read.landsat <- function(file,
     actualfilename <- gsub("/$", "", file) # permit e.g. "LE71910202005194ASN00/"
     actualfilename <- gsub(".*/", "", actualfilename)
     headerfilename <- paste(file, "/", actualfilename, "_MTL.txt", sep="")
-    header <- read.landsatmeta(headerfilename, debug=debug-1)
+    header <- read.landsatmeta(headerfilename, encoding=encoding, debug=debug-1)
     oceDebug(debug, "file type: ", header$spacecraft, "\n")
     ## convert to numerical bands (checks also that named bands are OK)
     ##bandOrig <- band

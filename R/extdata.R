@@ -49,8 +49,6 @@ NULL
 #'
 #' @docType data
 #'
-#' @encoding UTF-8
-#'
 #' @examples
 #'\dontrun{
 #' read.oce(system.file("extdata", "adp_rdi.000", package="oce"))

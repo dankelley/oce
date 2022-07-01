@@ -4,11 +4,13 @@
 \alias{read.topo}
 \title{Read a Topo File}
 \usage{
-read.topo(file, debug = getOption("oceDebug"))
+read.topo(file, encoding = "latin1", debug = getOption("oceDebug"))
 }
 \arguments{
 \item{file}{Name of a file containing an ETOPO-format dataset. Three
 types are permitted; see \dQuote{Details}.}
+
+\item{encoding}{ignored.}
 
 \item{debug}{an integer specifying whether debugging information is
 to be printed during the processing. This is a general parameter that

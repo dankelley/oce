@@ -443,6 +443,8 @@ as.cm <- function(time, u=NULL, v=NULL,
 #'
 #' @param tz character string indicating time zone to be assumed in the data.
 #'
+#' @template encodingTemplate
+#'
 #' @param debug a flag that turns on debugging.  The value indicates the depth
 #' within the call stack to which debugging applies.
 #'
@@ -495,6 +497,7 @@ read.cm <- function(file,
     longitude=NA,
     latitude=NA,
     debug=getOption("oceDebug"),
+    encoding="latin1",
     monitor=FALSE,
     processingLog)
 {
@@ -513,7 +516,8 @@ read.cm <- function(file,
     if (type == "s4")
         read.cm.s4(file=file, from=from, to=to, by=by, tz=tz,
             longitude=longitude, latitude=latitude,
-            debug=debug-1, monitor=monitor, processingLog=processingLog)
+            encoding=encoding, monitor=monitor, debug=debug-1,
+            processingLog=processingLog)
     else
         stop("unknown type of current meter")
 }
@@ -525,8 +529,9 @@ read.cm.s4 <- function(file,
     tz=getOption("oceTz"),
     longitude=NA,
     latitude=NA,
-    debug=getOption("oceDebug"),
     monitor=FALSE,
+    encoding="latin1",
+    debug=getOption("oceDebug"),
     processingLog)
 {
     if (missing(file))
@@ -544,7 +549,7 @@ read.cm.s4 <- function(file,
               ", to=", if (missing(to)) "(missing)" else format(to), ", by=", by, ", ...) {\n", sep="", unindent=1)
     if (is.character(file)) {
         filename <- fullFilename(file)
-        file <- file(file, "r")
+        file <- file(file, "r", encoding=encoding)
         on.exit(close(file))
     }
     if (!inherits(file, "connection"))
@@ -571,7 +576,7 @@ read.cm.s4 <- function(file,
     ## Skip through the rest of the header, and start paying attention when
     ## row number is 1, 2, and then 3.  These first rows give us the time
     ## sequence.
-    lines <- readLines(file, n=20)
+    lines <- readLines(file, n=20, encoding=encoding)
     for (i in 2:20) {
         items <- strsplit(lines[i], "\t")[[1]]
         oceDebug(debug, "line", i, "contains: ", paste(items, collapse=" "), "\n")

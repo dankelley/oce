@@ -13,6 +13,7 @@ read.adv.nortek(
   header = TRUE,
   longitude = NA,
   latitude = NA,
+  encoding = NA,
   type = c("vector", "aquadopp"),
   haveAnalog1 = FALSE,
   haveAnalog2 = FALSE,
@@ -56,6 +57,8 @@ East.}
 
 \item{latitude}{optional signed number indicating the latitude in degrees
 North.}
+
+\item{encoding}{ignored.}
 
 \item{type}{A string indicating which type of Nortek device produced the data file, \code{vector}
 or \code{aquadopp}.}

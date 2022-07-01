@@ -14,6 +14,7 @@ read.cm(
   longitude = NA,
   latitude = NA,
   debug = getOption("oceDebug"),
+  encoding = "latin1",
   monitor = FALSE,
   processingLog
 )
@@ -48,6 +49,11 @@ East.}
 
 \item{debug}{a flag that turns on debugging.  The value indicates the depth
 within the call stack to which debugging applies.}
+
+\item{encoding}{a character value that indicates the encoding to be used for
+this data file, if it is textual.  The default value for most functions is
+\code{"latin1"}, which seems to be suitable for files containing text written in
+English and French.}
 
 \item{monitor}{ignored.}
 

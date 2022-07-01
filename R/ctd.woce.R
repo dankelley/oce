@@ -238,6 +238,8 @@ woceUnit2oceUnit <- function(woceUnit)
 #'
 #' @template readCtdTemplate
 #'
+#' @template encodingTemplate
+#'
 #' @references
 #' The WOCE-exchange format was once described at
 #' `http://woce.nodc.noaa.gov/woce_v3/wocedata_1/whp/exchange/exchange_format_desc.htm`
@@ -252,6 +254,7 @@ read.ctd.woce <- function(file,
     missingValue,
     deploymentType="unknown",
     monitor=FALSE,
+    encoding="latin1",
     debug=getOption("oceDebug"),
     processingLog,
     ...)
@@ -283,7 +286,7 @@ read.ctd.woce <- function(file,
     oceDebug(debug, "read.ctd.woce(file=\"", file, "\", ..., debug=", debug, ", ...) {\n", sep="", unindent=1)
     if (is.character(file)) {
         filename <- fullFilename(file)
-        file <- file(file, "r")
+        file <- file(file, "r", encoding=encoding)
         on.exit(close(file))
     } else {
         filename <- ""
@@ -291,7 +294,7 @@ read.ctd.woce <- function(file,
     if (!inherits(file, "connection"))
         stop("argument `file' must be a character string or connection")
     if (!isOpen(file)) {
-        open(file, "r")
+        open(file, "r", encoding=encoding)
         on.exit(close(file))
     }
     res <- new("ctd", pressureType="sea")
@@ -328,7 +331,7 @@ read.ctd.woce <- function(file,
         ##Pressure,Temperature,Salinity,Oxygen,Fluorescence,Transmission
         ##   DB   ,ITS-90 DEGC,   PSU  , ML/L ,     UG/L   ,      %
         ##         1,   -1.1999,   28.4279,      8.77,     0.026,    87.679
-        lines <- readLines(file)
+        lines <- readLines(file, encoding=encoding)
         oceDebug(debug, "file has", length(lines), "lines\n")
         headerEnd <- grep("[ ]*DB[ ]*,", lines)
         if (is.na(headerEnd))
@@ -368,7 +371,7 @@ read.ctd.woce <- function(file,
             }
         }
         dataLines <- lines[seq.int(headerEnd+1, length(lines)-1)]
-        data <- as.list(read.table(textConnection(dataLines), header=FALSE, sep=",", col.names=names))
+        data <- as.list(read.table(textConnection(dataLines), header=FALSE, sep=",", col.names=names, encoding=encoding))
         res@metadata$header <- header
         res@metadata$filename <- filename # provided to this routine
         res@metadata$filename.orig <- filename.orig # from instrument
@@ -558,12 +561,12 @@ read.ctd.woce <- function(file,
         ## a trailer line at the end, and read.table() cannot handle that.
         #> owarn <- options('warn')$warn
         #> options(warn=-1)
-        lines <- readLines(file)# , warn=FALSE)
+        lines <- readLines(file, encoding=encoding)
         #> options(warn=owarn)
         nlines <- length(lines)
         if (length(grep("^END", lines[nlines])))
             lines <- lines[-nlines]
-        dataAndFlags <- read.csv(text=lines, header=FALSE, col.names=names, sep=",")
+        dataAndFlags <- read.csv(text=lines, header=FALSE, col.names=names, sep=",", encoding=encoding)
 
         ## nlines <- length(lines)
         ## pressure <- vector("numeric", nlines)
@@ -580,7 +583,7 @@ read.ctd.woce <- function(file,
         ##print(data.frame(varNames, varNamesOce))
         nonflags <- grep("Flag$", names, invert=TRUE)
         flags <- grep("Flag$", names)
-        dataAndFlags <- read.csv(text=lines, header=FALSE, col.names=woceNames2oceNames(names))
+        dataAndFlags <- read.csv(text=lines, header=FALSE, col.names=woceNames2oceNames(names), encoding=encoding)
         data <- as.list(dataAndFlags[, nonflags])
         flags <- as.list(dataAndFlags[, flags])
         names(flags) <- gsub("Flag", "", names(flags))
@@ -671,6 +674,8 @@ read.ctd.woce <- function(file,
 #'
 #' @template readCtdTemplate
 #'
+#' @template encodingTemplate
+#'
 #' @family functions that read ctd data
 #'
 #' @author Dan Kelley
@@ -680,6 +685,7 @@ read.ctd.woce.other <- function(file,
     missingValue,
     deploymentType="unknown",
     monitor=FALSE,
+    encoding="latin1",
     debug=getOption("oceDebug"),
     processingLog,
     ...)
@@ -703,7 +709,7 @@ read.ctd.woce.other <- function(file,
     ##     8.0  6.6928 34.7041   328.8      -9    2222
     res <- new("ctd")
     examineHeaderLines <- 10
-    header <- readLines(file, n=examineHeaderLines)
+    header <- readLines(file, n=examineHeaderLines, encoding=encoding)
     station <- ""
     for (i in 1: examineHeaderLines) {
         if (1 == length(grep("STNNBR.*", header[i]))) {
@@ -731,7 +737,7 @@ read.ctd.woce.other <- function(file,
         units <- gsub("[ ]+", " ", units) # remove multiple spaces
         units <- strsplit(units, " ")[[1]]
         skip <- max(grep("^ *[*a-zA-Z]", header))
-        data <- read.table(file, skip=skip, header=FALSE, col.names=names)
+        data <- read.table(file, skip=skip, header=FALSE, col.names=names, encoding=encoding)
     } else {
         stop("cannot decode data header, since no line therein contains the string \"CTDPRS\"\n")
     }

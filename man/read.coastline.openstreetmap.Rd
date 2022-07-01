@@ -8,8 +8,9 @@ read.coastline.openstreetmap(
   file,
   lonlim = c(-180, 180),
   latlim = c(-90, 90),
-  debug = getOption("oceDebug"),
   monitor = FALSE,
+  encoding = NA,
+  debug = getOption("oceDebug"),
   processingLog
 )
 }
@@ -25,10 +26,12 @@ Coastline polygons that do not intersect the defined box are
 skipped, which can be useful in narrowing high-resolution world-scale
 data to a local application.}
 
-\item{debug}{set to TRUE to print information about the header, etc.}
-
 \item{monitor}{Logical indicating whether to print an indication of progress through
 the file.}
+
+\item{encoding}{ignored.}
+
+\item{debug}{set to TRUE to print information about the header, etc.}
 
 \item{processingLog}{if provided, the action item to be stored in the log.
 (Typically only provided for internal calls; the default that it provides is

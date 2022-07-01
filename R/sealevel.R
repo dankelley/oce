@@ -694,6 +694,8 @@ setMethod(f="plot",
 #' at setup.  (If a time zone is present in the file header, this will
 #' supercede the value given here.)
 #'
+#' @template encodingTemplate
+#'
 #' @param processingLog if provided, the action item to be stored in the log.
 #' (Typically only provided for internal calls; the default that it provides is
 #' better for normal calls by a user.)
@@ -706,6 +708,7 @@ setMethod(f="plot",
 #' @family things related to sealevel data
 read.sealevel <- function(file,
     tz=getOption("oceTz"),
+    encoding="latin1",
     processingLog,
     debug=getOption("oceDebug"))
 {
@@ -722,18 +725,18 @@ read.sealevel <- function(file,
     filename <- "?"
     if (is.character(file)) {
         filename <- fullFilename(file)
-        file <- file(file, "r")
+        file <- file(file, "r", encoding=encoding)
         on.exit(close(file))
     }
     if (!inherits(file, "connection"))
         stop("argument `file' must be a character string or connection")
     if (!isOpen(file)) {
         filename <- "(connection)"
-        open(file, "r")
+        open(file, "r", encoding=encoding)
         on.exit(close(file))
     }
     fileOrig <- file
-    firstLine <- readLines(file, n=1, encoding="UTF-8")
+    firstLine <- readLines(file, n=1, encoding=encoding)
     header <- firstLine
     oceDebug(debug, "header (first line in file): '", header, "'\n", sep="")
     pushBack(firstLine, file)
@@ -761,7 +764,7 @@ read.sealevel <- function(file,
         ## Obs_date,SLEV
         ## 01/01/2001 12:00 AM,1.82,
         headerLength <- 8
-        header <- readLines(file, n = headerLength)
+        header <- readLines(file, n=headerLength, encoding=encoding)
         if (debug > 0) {
             print(header)
         }
@@ -772,7 +775,7 @@ read.sealevel <- function(file,
         tz            <- strsplit(header[6], ",")[[1]][2] # needed for get GMT offset
         GMTOffset     <- GMTOffsetFromTz(tz)
         oceDebug(debug, "about to read data\n")
-        x <- read.csv(file, header=FALSE, stringsAsFactors=FALSE)#, skip=headerLength)
+        x <- read.csv(file, header=FALSE, stringsAsFactors=FALSE, encoding=encoding)
         oceDebug(debug, "... finished reading data\n")
         if (length(grep("[0-9]{4}/", x$V1[1])) > 0) {
             oceDebug(debug, "Date format is year/month/day hour:min with hour in range 1:24\n")
@@ -788,7 +791,7 @@ read.sealevel <- function(file,
         year <- as.POSIXlt(time[1])$year + 1900
     } else {
         oceDebug(debug, "File is of type 2 or 3\n")
-        d <- readLines(file)
+        d <- readLines(file, encoding=encoding)
         n <- length(d)
         header <- d[1]
         if (grepl("LAT=", header) && grepl("LONG=", header) && grepl("TIMEZONE",header)) {

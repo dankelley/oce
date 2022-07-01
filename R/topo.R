@@ -823,6 +823,8 @@ setMethod(f="plot",
 #' @param file Name of a file containing an ETOPO-format dataset. Three
 #' types are permitted; see \dQuote{Details}.
 #'
+#' @template encodingIgnoredTemplate
+#'
 #' @template debugTemplate
 #'
 #' @return
@@ -837,8 +839,7 @@ setMethod(f="plot",
 #'
 #' @author Dan Kelley
 #' @family things related to topo data
-read.topo <- function(file,
-    debug=getOption("oceDebug"))
+read.topo <- function(file, encoding="latin1", debug=getOption("oceDebug"))
 {
     if (missing(file))
         stop("must supply 'file'")
@@ -907,7 +908,7 @@ read.topo <- function(file,
         ## the code below has a trick to (perhaps) auto-detect whether the header
         ## length is 5 or 6.
         nh <- 6
-        header <- readLines(file, n=nh)
+        header <- readLines(file, n=nh, encoding=encoding)
         if (nchar(header[length(header)]) > 50) {
             ## the header is only 5 long, if the last header line is long.
             nh <- nh - 1
@@ -922,7 +923,7 @@ read.topo <- function(file,
         i <- grep("nodata", header)
         if (length(i))
             missingValue <- as.numeric(strsplit(header[i], "[ ]+", perl=TRUE)[[1]][2])
-        zz <- as.matrix(read.table(file, header=FALSE, skip=nh), byrow=TRUE)
+        zz <- as.matrix(read.table(file, encoding=encoding, header=FALSE, skip=nh), byrow=TRUE)
         rownames(zz) <- NULL
         colnames(zz) <- NULL
         longitude <- longitudeLowerLeft + cellSize * seq(0, ncol-1)

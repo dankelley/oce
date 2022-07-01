@@ -7,6 +7,8 @@
 
 #' @template readAdvTemplate
 #'
+#' @template encodingIgnoredTemplate
+#'
 #' @param haveAnalog1 A logical value indicating whether the data file has 'analog1' data.
 #'
 #' @param haveAnalog2 A logical value indicating whether the data file has 'analog2' data.
@@ -20,6 +22,7 @@
 read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     header=TRUE,
     longitude=NA, latitude=NA,
+    encoding=NA,
     type=c("vector", "aquadopp"),
     haveAnalog1=FALSE, haveAnalog2=FALSE,
     debug=getOption("oceDebug"), monitor=FALSE, processingLog=NULL)

@@ -1,24 +1,22 @@
 # Submission of oce 1.7-7
 
-* Address the need to eliminate \x assemblages in strings used in grep() and
-  gsub() calls. Also, set the encoding for input of files that may contain
-  problematic characters.  These changes are necessitated by recent changes in
-  R-devel, as was pointed out kindly in am email that Tomas Kalibera sent on
-  2022-06-27 to me and the maintainers of several other packages.
+* Prepare for the upcoming R release by eliminating \x assemblages in grep()
+  and gsub() calls, and adding an 'encoding' parameter to the 'read' functions.
+  We thank Tomas Kalibera and Kurt Hornik, who told us of the upcoming encoding
+  issue in emails dated 2022-06-27 and 2022-06-29, respectively.
 
-* As in previous versions of oce, we request an exception to the 10-minute
-  rule, since oce is large package (with over 300 functions spanning over 60k
-  lines of R, 6k lines of C/C++ and 1k line of Fortran) with a long history on
-  CRAN and many users in the oceanographic community.
+* As in previous versions, we request an exception to the 10-minute rule, on
+  account of the package size (300+ functions, covering 60k lines of R, 6k
+  lines of C/C++ and 1k line of Fortran).
 
 # Tests
 
 ## Local Tests
 
-Local MacOS-12.5(beta) with R Under development (unstable) (2022-06-27 r82528):
-no ERRORs, no WARNINGs, and 2 NOTEs, one naming the author the other reporting
-that sub-directories were of size of 1MB or more: R 3.0Mb, data 1.0Mb, doc
-2.0Mb, and help 3.8Mb.
+Local MacOS-12.5(beta) with R 4.2.1 and also R Under development (unstable)
+(2022-06-27 r82528): no ERRORs, no WARNINGs, and 2 NOTEs, one naming the author
+the other reporting that sub-directories were of size of 1MB or more: R 3.0Mb,
+data 1.0Mb, doc 2.0Mb, and help 3.8Mb.
 
 ## Remote Windows Checks
 
@@ -36,8 +34,8 @@ Using
 ```R
 rhub::check_for_cran()
 ```
-identified no errors with oce, although there are notes about stray files
-('lastMiKTeXException') in some instances.
+produced no results, because there is a problem with the rhub test machines
+(see my bug report at https://github.com/r-hub/rhub/issues/530).
 
 
 # Reverse Dependency Checks

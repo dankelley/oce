@@ -401,6 +401,8 @@ decodeHeaderNortek <- function(buf,
 #'
 #' @template adpTemplate
 #'
+#' @template encodingIgnoredTemplate
+#'
 #' @author Dan Kelley and Clark Richards
 #'
 #' @family things related to adp data
@@ -416,6 +418,7 @@ read.aquadopp <- function(file,
     distance,
     monitor=FALSE,
     despike=FALSE,
+    encoding=NA,
     processingLog,
     debug=getOption("oceDebug"),
     ...)
@@ -476,6 +479,8 @@ read.aquadopp <- function(file,
 #'
 #' @template adpTemplate
 #'
+#' @template encodingIgnoredTemplate
+#'
 #' @author Dan Kelley
 #'
 #' @family things related to adp data
@@ -490,6 +495,7 @@ read.aquadoppHR <- function(file,
     distance,
     monitor=FALSE,
     despike=FALSE,
+    encoding=NA,
     processingLog,
     debug=getOption("oceDebug"),
     ...)
@@ -551,6 +557,8 @@ read.aquadoppHR <- function(file,
 #'
 #' @template adpTemplate
 #'
+#' @template encodingIgnoredTemplate
+#'
 #' @author Dan Kelley
 #'
 #' @family things related to adp data
@@ -565,6 +573,7 @@ read.aquadoppProfiler <- function(file,
     distance,
     monitor=FALSE,
     despike=FALSE,
+    encoding=NA,
     processingLog,
     debug=getOption("oceDebug"),
     ...)
@@ -581,6 +590,7 @@ read.aquadoppProfiler <- function(file,
             longitude=longitude, latitude=latitude,
             type="aquadoppProfiler",
             orientation=orientation, distance=distance,
+            encoding=encoding,
             monitor=monitor, despike=despike, processingLog=processingLog,
             debug=getOption("oceDebug"), ...))
 }
@@ -616,6 +626,8 @@ read.aquadoppProfiler <- function(file,
 #'
 #' @template adpTemplate
 #'
+#' @template encodingIgnoredTemplate
+#'
 #' @author Dan Kelley
 #'
 #' @family things related to adp data
@@ -626,6 +638,7 @@ read.adp.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         "aquadopp",
         "aquadoppPlusMagnetometer"),
     orientation, distance,
+    encoding=NA,
     monitor=FALSE, despike=FALSE, processingLog,
     debug=getOption("oceDebug"),
     ...)

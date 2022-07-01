@@ -4,6 +4,8 @@
 #'
 #' @template readCtdTemplate
 #'
+#' @template encodingTemplate
+#'
 #' @author Dan Kelley
 #'
 #' `read.ctd.itp` reads ice-tethered-profiler data that are stored
@@ -19,8 +21,10 @@
 #' profiler-mode, not fixed-depth mode.
 #'
 #' @family functions that read ctd data
-read.ctd.itp <- function(file, columns=NULL, station=NULL, missingValue, deploymentType="unknown",
-                         monitor=FALSE, debug=getOption("oceDebug"), processingLog, ...)
+read.ctd.itp <- function(file, columns=NULL,
+    station=NULL, missingValue, deploymentType="unknown",
+    encoding="latin1",
+    monitor=FALSE, debug=getOption("oceDebug"), processingLog, ...)
 {
     if (missing(file))
         stop("must supply 'file'")
@@ -33,7 +37,7 @@ read.ctd.itp <- function(file, columns=NULL, station=NULL, missingValue, deploym
     oceDebug(debug, "read.ctd.itp() {\n", unindent=1)
     if (is.character(file)) {
         filename <- fullFilename(file)
-        file <- file(file, "r")
+        file <- file(file, "r", encoding=encoding)
         on.exit(close(file))
     } else {
         filename <- ""
@@ -41,10 +45,10 @@ read.ctd.itp <- function(file, columns=NULL, station=NULL, missingValue, deploym
     if (!inherits(file, "connection"))
         stop("argument `file' must be a character string or connection")
     if (!isOpen(file)) {
-        open(file, "r")
+        open(file, "r", encoding=encoding)
         on.exit(close(file))
     }
-    lines <- readLines(file, encoding="UTF-8")
+    lines <- readLines(file, encoding=encoding)
     nlines <- length(lines)
     oceDebug(debug, "read ", nlines, " lines\n")
     if ("%endofdat" == substr(lines[nlines], 1, 9)) {
@@ -97,7 +101,7 @@ read.ctd.itp <- function(file, columns=NULL, station=NULL, missingValue, deploym
                     units[[names[i]]] <- list(unit=as.expression(unit), scale="")
                 }
             }
-            d <- read.table(text=lines[-seq.int(1, namesLine)], col.names=names)
+            d <- read.table(text=lines[-seq.int(1, namesLine)], col.names=names, encoding=encoding)
             ## print(head(d), 2)
             ## print(str(units))
             pressure <- d$pressure
@@ -106,7 +110,7 @@ read.ctd.itp <- function(file, columns=NULL, station=NULL, missingValue, deploym
             oxygen <- d$oxygen
         } else {
             oceDebug(debug, "length(namesLine)!=1\n")
-            d <- read.table(text=lines[4:nlines])
+            d <- read.table(text=lines[4:nlines], encoding=encoding)
             items <- scan(text=lines[3], what="character", quiet=TRUE)
             pcol <- grep("pressure", items)[1]
             Scol <- grep("salinity", items)[1]

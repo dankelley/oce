@@ -1641,6 +1641,8 @@ standardDepths <- function(n=0)
 #' @param file a connection or a character string giving the name of the file
 #' to be checked.
 #'
+#' @template encodingTemplate
+#'
 #' @param debug an integer, set non-zero to turn on debugging.  Higher values
 #' indicate more debugging.
 #'
@@ -1655,7 +1657,7 @@ standardDepths <- function(n=0)
 #' @author Dan Kelley
 #'
 #' @seealso This is used mainly by [read.oce()].
-oceMagic <- function(file, debug=getOption("oceDebug"))
+oceMagic <- function(file, encoding="latin1", debug=getOption("oceDebug"))
 {
     filename <- file
     oceDebug(debug, paste("oceMagic(file=\"", filename, "\") {\n", sep=""), unindent=1, style="bold", sep="")
@@ -1671,21 +1673,8 @@ oceMagic <- function(file, debug=getOption("oceDebug"))
     }
     if (is.character(file)) {
         oceDebug(debug, "'file' is a character value\n")
-        #>>> # Check for an AML txt file (warning: this might be removed)
-        #>>> if (grepl(".txt$", filename)) {
-        #>>>     someLines <- readLines(file, encoding="UTF-8", n=10L)
-        #>>>     typeLine <- grep("Type=", someLines)
-        #>>>     if (length(typeLine) > 0L) {
-        #>>>         if (grepl("Base.X2", someLines[typeLine[1]])) {
-        #>>>             oceDebug(debug, "} # oceMagic returning aml/txt\n", unindent=1, style="bold")
-        #>>>             return("aml/txt")
-        #>>>         }
-        #>>>     }
-        #>>> }
-        # Check for a lisst file
-
         if (grepl(".asc$", filename)) {
-            someLines <- readLines(file, encoding="UTF-8", n=1)
+            someLines <- readLines(file, n=1L, encoding=encoding)
             if (42 == length(strsplit(someLines[1], ' ')[[1]])) {
                 oceDebug(debug, "} # oceMagic returning lisst\n", unindent=1, style="bold")
                 return("lisst")
@@ -1708,8 +1697,7 @@ oceMagic <- function(file, debug=getOption("oceDebug"))
         }
         if (grepl(".ODF$", filename, ignore.case=TRUE)) {
             # in BIO files, the data type seems to be on line 14.  Read more, for safety.
-            # 2022-06-28 lines <- readLines(file, encoding="UTF-8")
-            lines <- readLines(file, encoding="latin1")
+            lines <- readLines(file, encoding=encoding)
             dt <- grep("DATA_TYPE[ \t]*=", lines)
             if (length(dt) < 1)
                 stop("cannot infer type of ODF file")
@@ -1756,7 +1744,7 @@ oceMagic <- function(file, debug=getOption("oceDebug"))
             }
         }
         if (grepl(".xml$", filename, ignore.case=TRUE)) {
-            firstLine <- readLines(filename, 1, encoding="UTF-8")
+            firstLine <- readLines(filename, 1, encoding=encoding)
             if (grepl(".weather.gc.ca", firstLine)) {
                 oceDebug(debug, "} # oceMagic returning met/xml2\n", unindent=1)
                 return("met/xml2")
@@ -1808,15 +1796,15 @@ oceMagic <- function(file, debug=getOption("oceDebug"))
             oceDebug(debug, "} # oceMagic returning xbt/edf\n", unindent=1, style="bold")
             return("xbt/edf")
         }
-        file <- file(file, "r")
+        file <- file(file, "r", encoding=encoding)
     }
     if (!inherits(file, "connection"))
         stop("argument `file' must be a character string or connection")
     oceDebug(debug, "'file' is a connection\n")
     if (!isOpen(file))
-        open(file, "r")
+        open(file, "r", encoding=encoding)
     # Grab text at start of file.
-    lines <- readLines(file, n=2, skipNul=TRUE, encoding="UTF-8")
+    lines <- readLines(file, n=2, skipNul=TRUE, encoding=encoding)
     line <- lines[1]
     line2 <- lines[2]
     oceDebug(debug, "first line of file: ", line, "\n", sep="")
@@ -1976,6 +1964,13 @@ oceMagic <- function(file, debug=getOption("oceDebug"))
 #' @param ... arguments to be handed to whichever instrument-specific reading
 #' function is selected, based on the header.
 #'
+#' @param encoding a character string giving the file encoding.  This defaults
+#' to `"latin1`", which seems to work for files available to the authors, but
+#' be aware that a different setting may be required for files that contain
+#' unusual accents or characters.  (Try `"UTF-8"` if the default produces
+#' errors.) Note that `encoding` is ignored in binary files, and also
+#' in some text-based files, as well.
+#'
 #' @return An [oce-class] object of that is
 #' specialized to the data type, e.g. [ctd-class],
 #' if the data file contains `ctd` data.
@@ -1993,7 +1988,7 @@ oceMagic <- function(file, debug=getOption("oceDebug"))
 #' x <- read.oce(system.file("extdata", "ctd.cnv", package="oce"))
 #' plot(x) # summary with TS and profiles
 #' plotTS(x) # just the TS
-read.oce <- function(file, ...)
+read.oce <- function(file, ..., encoding="latin1")
 {
     if (missing(file))
         stop("must supply 'file'")
@@ -2023,44 +2018,44 @@ read.oce <- function(file, ...)
     # read.index if (type == "index")
     # read.index     return(read.index(file))
     if (type == "shapefile") {
-        res <- read.coastline.shapefile(file, processingLog=processingLog, ...)
+        res <- read.coastline.shapefile(file, encoding=encoding, processingLog=processingLog, ...)
     } else if (type == "openstreetmap") {
-        res <- read.coastline.openstreetmap(file, processingLog=processingLog, ...)
+        res <- read.coastline.openstreetmap(file, encoding=encoding, processingLog=processingLog, ...)
     } else if (type == "echosounder") {
-        res <- read.echosounder(file, processingLog=processingLog, ...)
+        res <- read.echosounder(file, encoding=encoding, processingLog=processingLog, ...)
     } else if (type == "adp/rdi") {
-        res <- read.adp.rdi(file, processingLog=processingLog, ...)
+        res <- read.adp.rdi(file, encoding=encoding, processingLog=processingLog, ...)
     } else if (type == "adp/sontek") {
-        res <- read.adp.sontek(file, processingLog=processingLog, ...) # FIXME is pcadcp different?
+        res <- read.adp.sontek(file, encoding=encoding, processingLog=processingLog, ...) # FIXME is pcadcp different?
     } else if (type == "adp/nortek/aquadopp") {
-        res <- read.aquadopp(file, processingLog=processingLog, ...)
+        res <- read.aquadopp(file, encoding=encoding, processingLog=processingLog, ...)
     } else if (type == "adp/nortek/aquadoppPlusMagnetometer") {
-        res <- read.aquadopp(file, type="aquadoppPlusMagnetometer", processingLog=processingLog, ...)
+        res <- read.aquadopp(file, type="aquadoppPlusMagnetometer", encoding=encoding, processingLog=processingLog, ...)
     } else if (type == "adp/nortek/aquadoppProfiler") {
-        res <- read.aquadoppProfiler(file, processingLog=processingLog, ...)
+        res <- read.aquadoppProfiler(file, encoding=encoding, processingLog=processingLog, ...)
     } else if (type == "adp/nortek/aquadoppHR") {
-        res <- read.aquadoppHR(file, processingLog=processingLog, ...)
+        res <- read.aquadoppHR(file, encoding=encoding, processingLog=processingLog, ...)
     } else if (type == "adp/nortek/ad2cp") {
-        res <- read.adp.ad2cp(file, processingLog=processingLog, ...)
+        res <- read.adp.ad2cp(file, encoding=encoding, processingLog=processingLog, ...)
     } else if (type == "adv/nortek/vector") {
-        res <- read.adv.nortek(file, processingLog=processingLog, ...)
+        res <- read.adv.nortek(file, encoding=encoding, processingLog=processingLog, ...)
     } else if (type == "adv/sontek/adr") {
-        res <- read.adv.sontek.adr(file, processingLog=processingLog, ...)
+        res <- read.adv.sontek.adr(file, encoding=encoding, processingLog=processingLog, ...)
     } else if (type == "aml/txt") {
-        res <- read.ctd.aml(file, processingLog=processingLog, ...)
+        res <- read.ctd.aml(file, encoding=encoding, processingLog=processingLog, ...)
     # FIXME need adv/sontek (non adr)
     } else if (type == "interocean/s4") {
-        res <- read.cm.s4(file, processingLog=processingLog, ...)
+        res <- read.cm.s4(file, encoding=encoding, processingLog=processingLog, ...)
     } else if (type == "ctd/sbe") {
-        res <- read.ctd.sbe(file, processingLog=processingLog, ...)
+        res <- read.ctd.sbe(file, encoding=encoding, processingLog=processingLog, ...)
     } else if (type == "ctd/woce/exchange") {
-        res <- read.ctd.woce(file, processingLog=processingLog, ...)
+        res <- read.ctd.woce(file, encoding=encoding, processingLog=processingLog, ...)
     } else if (type == "ctd/woce/other") {
-        res <- read.ctd.woce.other(file, processingLog=processingLog, ...)
+        res <- read.ctd.woce.other(file, encoding=encoding, processingLog=processingLog, ...)
     } else if (type == "ctd/odf" || type == "mctd/odf" || type == "mvctd/odf") {
-        res <- read.ctd.odf(file, processingLog=processingLog, ...)
+        res <- read.ctd.odf(file, encoding=encoding, processingLog=processingLog, ...)
     } else if (length(grep(".odf$", type))) {
-        res <- read.odf(file, ...)
+        res <- read.odf(file, encoding=encoding, ...)
     } else if (type == "mtg/odf") {
         # FIXME: document this data type
         # Moored tide gauge: returns a data frame.
@@ -2072,14 +2067,14 @@ read.oce <- function(file, ...)
             else
                 gsub("\\s*$", "", gsub("^\\s*", "", gsub("'", "", gsub(",", "", strsplit(lines[i[1]], "=")[[1]][2]))))
         }
-        lines <- readLines(file, encoding="UTF-8")
+        lines <- readLines(file, encoding=encoding)
         nlines <- length(lines)
         headerEnd <- grep("-- DATA --", lines)
         if (1 != length(headerEnd))
             stop("found zero or multiple '-- DATA --' (end of header) lines in a mtg/odf file")
         #header <- lines[1:headerEnd]
         data <- lines[seq.int(headerEnd+1, nlines)]
-        res <- read.table(text=data, header=FALSE, col.names=c("time", "temperature", "ptotal", "psea", "depth"))
+        res <- read.table(text=data, header=FALSE, col.names=c("time", "temperature", "ptotal", "psea", "depth"), encoding=encoding)
         res$time <- strptime(res$time, "%d-%B-%Y %H:%M:%S", tz="UTC") # guess on timezone
         missing_value <- -99.0 # FIXME: it's different for each column
         res[res==missing_value] <- NA
@@ -2097,45 +2092,47 @@ read.oce <- function(file, ...)
     # if (type == "ctd/odv")
     #     return(read.ctd.odv(file, processingLog=processingLog, ...))
     } else if (type == "ctd/itp") {
-        res <- read.ctd.itp(file, processingLog=processingLog, ...)
+        res <- read.ctd.itp(file, encoding=encoding, processingLog=processingLog, ...)
     } else if (type == "ctd/ssda") {
-        res <- read.ctd.ssda(file, processingLog=processingLog, ...)
+        res <- read.ctd.ssda(file, encoding=encoding, processingLog=processingLog, ...)
     } else if (type == "gpx") {
-        res <- read.gps(file, type="gpx", processingLog=processingLog, ...)
+        res <- read.gps(file, type="gpx", encoding=encoding, processingLog=processingLog, ...)
     } else if (type == "coastline") {
-        res <- read.coastline(file, type="mapgen", processingLog=processingLog, ...)
+        res <- read.coastline(file, type="mapgen", encoding=encoding, processingLog=processingLog, ...)
     } else if (type == "argo") {
-        res <- read.argo(file, ...)
+        res <- read.argo(file, encoding=encoding, ...)
     } else if (type == "lisst") {
-        res <- read.lisst(file)
+        res <- read.lisst(file, encoding=encoding)
     } else if (type == "sealevel") {
-        res <- read.sealevel(file, processingLog=processingLog, ...)
+        res <- read.sealevel(file, encoding=encoding, processingLog=processingLog, ...)
     } else if (type == "topo") {
         res <- read.topo(file)
     } else if (type == "RBR/dat") { # FIXME: obsolete; to be removed by Fall 2015
-        res <- read.rsk(file, processingLog=processingLog, ...)
+        res <- read.rsk(file, encoding=encoding, processingLog=processingLog, ...)
     } else if (type == "RBR/rsk") {
-        res <- read.rsk(file, processingLog=processingLog, ...)
+        res <- read.rsk(file, encoding=encoding, processingLog=processingLog, ...)
     } else if (type == "RBR/txt") {
-        res <- read.rsk(file, processingLog=processingLog, type='txt', ...)
+        res <- read.rsk(file, encoding=encoding, processingLog=processingLog, type='txt', ...)
     } else if (type == "section") {
-        res <- read.section(file, processingLog=processingLog, ...)
+        res <- read.section(file, encoding=encoding, processingLog=processingLog, ...)
     } else if (type == "ctd/woce/other") {
-        res <- read.ctd.woce.other(file, processingLog=processingLog, ...)
+        res <- read.ctd.woce.other(file, encoding=encoding, processingLog=processingLog, ...)
     } else if (type == "landsat") {
-        res <- read.landsat(file, ...)
+        res <- read.landsat(file, encoding=encoding, ...)
     } else if (type == "netcdf") {
-        res <- read.netcdf(file, ...)
+        res <- read.netcdf(file, encoding=encoding, ...)
     } else if (type == "met/csv1") {
-        res <- read.met(file, type="csv1", ...)
+        res <- read.met(file, type="csv1", encoding=encoding, ...)
     } else if (type == "met/csv2") {
-        res <- read.met(file, type="csv2", ...)
+        res <- read.met(file, type="csv2", encoding=encoding, ...)
+    } else if (type == "met/csv3") {
+        res <- read.met(file, type="csv2", encoding=encoding, ...) # FIXME: ok?
     } else if (type == "met/xml2") {
-        res <- read.met(file, type="xml2", ...)
+        res <- read.met(file, type="xml2", encoding=encoding, ...)
     } else if (type == "odf") {
-        res <- read.odf(file, ...)
+        res <- read.odf(file, encoding=encoding, ...)
     } else if (type == "xbt/edf") {
-        res <- read.xbt.edf(file, ...)
+        res <- read.xbt.edf(file, encoding=encoding, ...)
     } else {
         stop("unknown file type \"", type, "\"")
     }
@@ -2164,13 +2161,12 @@ read.oce <- function(file, ...)
 #' lower case, since that is the oce convention.
 #'
 #' @param file the name of a file
-#'
-#' @param ... unused
+#' @template encodingIgnoredTemplate
+#' @param ... ignored
 #'
 #' @return
 #' An [oce-class] object.
-read.netcdf <- function(file,
-    ...)
+read.netcdf <- function(file, ..., encoding=NA)
 {
     if (missing(file))
         stop("must supply 'file'")

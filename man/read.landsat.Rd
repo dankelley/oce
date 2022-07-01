@@ -9,6 +9,7 @@ read.landsat(
   band = "all",
   emissivity = 0.984,
   decimate,
+  encoding = "latin1",
   debug = getOption("oceDebug")
 )
 }
@@ -38,6 +39,11 @@ this to 10 can speed up reading by a factor of 3 or more, but higher values
 have diminishing effect.  In exploratory work, it is useful to set
 \code{decimate=10}, to plot the image to determine a subregion
 of interest, and then to use \code{\link[=landsatTrim]{landsatTrim()}} to trim the image.}
+
+\item{encoding}{a character value that indicates the encoding to be used for
+this data file, if it is textual.  The default value for most functions is
+\code{"latin1"}, which seems to be suitable for files containing text written in
+English and French.}
 
 \item{debug}{a flag that turns on debugging.  Set to 1 to get a moderate
 amount of debugging information, or to 2 to get more.}

@@ -481,6 +481,8 @@ as.gps <- function(longitude, latitude, filename="")
 #' data if not supplied.  In the present version, the only choice for
 #' `type` is `"gpx"`.
 #'
+#' @template encodingTemplate
+#'
 #' @param debug set to TRUE to print information about the header, etc.
 #'
 #' @param processingLog ignored.
@@ -492,6 +494,7 @@ as.gps <- function(longitude, latitude, filename="")
 #' @family things related to gps data
 read.gps <- function(file,
     type=NULL,
+    encoding="latin1",
     debug=getOption("oceDebug"),
     processingLog)
 {
@@ -507,13 +510,13 @@ read.gps <- function(file,
     filename <- NULL
     if (is.character(file)) {
         filename <- fullFilename(file)
-        file <- file(file, "r")
+        file <- file(file, "r", encoding=encoding)
         on.exit(close(file))
     }
     if (!inherits(file, "connection"))
         stop("argument `file' must be a character string or connection")
     if (!isOpen(file)) {
-        open(file, "r")
+        open(file, "r", encoding=encoding)
         on.exit(close(file))
     }
     if (is.null(type)) {
@@ -527,11 +530,11 @@ read.gps <- function(file,
     }
     type <- match.arg(type, c("gpx"))
     oceDebug(debug, "file type:", type, "\n")
-    lines <- readLines(file)
+    lines <- readLines(file, encoding=encoding)
     look <- grep("^<.* lat=", lines)
     latlon <- lines[look]
     latlonCleaned <- gsub("[a-zA-Z<>=\"/]*", "", latlon)
-    latlon <- read.table(text=latlonCleaned)
+    latlon <- read.table(text=latlonCleaned, encoding=encoding)
     res <- new("gps", longitude=latlon[, 2], latitude=latlon[, 1], file=filename)
     oceDebug(debug, "} # read.gps()\n", sep="", style="bold", unindent=1)
     res

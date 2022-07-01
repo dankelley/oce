@@ -18,6 +18,7 @@ read.adp.ad2cp(
   distance,
   plan,
   type,
+  encoding = NA,
   monitor = FALSE,
   despike = FALSE,
   processingLog,
@@ -95,6 +96,8 @@ slant-beam angle, while the others each have 20 degrees (see reference 2,
 section 2 on page 6). Note that \code{\link[=oceSetMetadata]{oceSetMetadata()}}
 can be used to alter the slantwise beam angle of an existing object,
 and this will alter any later conversion from beam to xyz coordinates.}
+
+\item{encoding}{ignored.}
 
 \item{monitor}{boolean value indicating whether to indicate the progress
 of reading the file, by using \code{\link[=txtProgressBar]{txtProgressBar()}} or otherwise.  The value

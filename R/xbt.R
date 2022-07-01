@@ -304,6 +304,8 @@ as.xbt <- function(z, temperature, longitude=NA, latitude=NA, filename="", seque
 #' East and latitude in degrees North. These values are used if `type="sippican"`,
 #' but ignored if `type="noaa1"`, because those files contain location information.
 #'
+#' @template encodingTemplate
+#'
 #' @param debug a flag that turns on debugging.  The value indicates the depth
 #' within the call stack to which debugging applies.
 #'
@@ -331,6 +333,7 @@ read.xbt <- function(file,
     type="sippican",
     longitude=NA,
     latitude=NA,
+    encoding="latin1",
     debug=getOption("oceDebug"),
     processingLog)
 {
@@ -349,13 +352,13 @@ read.xbt <- function(file,
     type <- match.arg(type)
     res <- if (type == "sippican") {
         read.xbt.edf(file=file, longitude=longitude, latitude=latitude,
-            debug=debug-1, processingLog=processingLog)
+            encoding=encoding, debug=debug-1, processingLog=processingLog)
     } else if (type == "noaa1") {
         if (!is.null(longitude))
             warning("longitude argument is ignored for type=\"noaa1\"\n")
         if (!is.null(latitude))
             warning("latitude argument is ignored for type=\"noaa1\"\n")
-        read.xbt.noaa1(file=file, debug=debug-1, processingLog=processingLog)
+        read.xbt.noaa1(file=file, encoding=encoding, debug=debug-1, processingLog=processingLog)
     } else {
         stop("unknown type of current meter")
     }
@@ -388,6 +391,8 @@ read.xbt <- function(file,
 #'
 #' @param latitude optional signed number indicating the latitude in degrees North.
 #'
+#' @template encodingTemplate
+#'
 #' @param debug a flag that turns on debugging.  The value indicates the depth
 #' within the call stack to which debugging applies.
 #'
@@ -407,6 +412,7 @@ read.xbt <- function(file,
 read.xbt.edf <- function(file,
     longitude=NA,
     latitude=NA,
+    encoding="latin1",
     debug=getOption("oceDebug"),
     processingLog)
 {
@@ -429,17 +435,16 @@ read.xbt.edf <- function(file,
     filename <- ""
     if (is.character(file)) {
         filename <- fullFilename(file)
-        file <- file(file, "r")
+        file <- file(file, "r", encoding=encoding)
         on.exit(close(file))
     }
     if (!inherits(file, "connection"))
         stop("argument `file' must be a character string or connection")
     if (!isOpen(file)) {
-        open(file, "r")
+        open(file, "r", encoding=encoding)
         on.exit(close(file))
     }
-    # 2022-06-28 l <- readLines(file, 200, encoding="UTF-8") # don't read whole file
-    l <- readLines(file, 200, encoding="latin1") # don't read whole file
+    l <- readLines(file, 200, encoding=encoding) # don't read whole file
     pushBack(l, file)
     ## FIXME: is this detection of the end of the header robust?
     headerEnd <- grep("^Depth \\(", l)
@@ -448,7 +453,7 @@ read.xbt.edf <- function(file,
     res <- new("xbt")
     ## Convert from latin1 to UTF-8, so a degree sign does not cause problems
     ## res@metadata$header <- l[1:headerEnd]
-    res@metadata$header <- iconv(l[1:headerEnd], from="UTF-8", to="ASCII", sub="?")
+    res@metadata$header <- iconv(l[1:headerEnd], from=encoding, to="ASCII", sub="?")
 
     date <- getHeaderItem(l, "Date of Launch")
     hms <- getHeaderItem(l, "Time of Launch")
@@ -470,9 +475,7 @@ read.xbt.edf <- function(file,
     res@metadata$longitude <- (londeg + lonmin/60) * ifelse(length(grep("W", lons[2])), -1, 1)
     res@metadata$probeType <- getHeaderItem(l, "Probe Type")
     res@metadata$terminalDepth <- as.numeric(gsub("[ ]*m$", "", getHeaderItem(l, "Terminal Depth"))) # FIXME: assumes metric
-    res@data <- as.list(read.table(file, skip=headerEnd+1,
-            col.names=c("depth", "temperature", "soundSpeed"),
-            encoding="UTF-8"))
+    res@data <- as.list(read.table(file, skip=headerEnd+1, col.names=c("depth", "temperature", "soundSpeed"), encoding=encoding))
     res@metadata$filename <- filename
     res@metadata$units$depth <- list(unit=expression(m), scale="")
     res@metadata$units$temperature <- list(unit=expression(degree*C), scale="ITS-90")
@@ -507,6 +510,8 @@ read.xbt.edf <- function(file,
 #'
 #' @param missingValue numerical value that is to be interpreted as `NA`
 #'
+#' @template encodingTemplate
+#'
 #' @param processingLog if provided, the action item to be stored in the log.  This
 #' parameter is typically only provided for internal calls; the default that it
 #' provides is better for normal calls by a user.
@@ -519,6 +524,7 @@ read.xbt.edf <- function(file,
 read.xbt.noaa1 <- function(file,
     debug=getOption("oceDebug"),
     missingValue=-9.99,
+    encoding="latin1",
     processingLog)
 {
     if (missing(file))
@@ -533,18 +539,17 @@ read.xbt.noaa1 <- function(file,
     filename <- "?"
     if (is.character(file)) {
         filename <- fullFilename(file)
-        file <- file(file, "r")
+        file <- file(file, "r", encoding=encoding)
         on.exit(close(file))
     }
     if (!inherits(file, "connection"))
         stop("argument `file' must be a character string or connection")
     if (!isOpen(file)) {
-        open(file, "r")
+        open(file, "r", encoding=encoding)
         on.exit(close(file))
     }
     res <- new("xbt")
-    # 2022-06-28 header <- readLines(file, 1, encoding="UTF-8") # first line is a header
-    header <- readLines(file, 1, encoding="latin1") # first line is a header
+    header <- readLines(file, 1, encoding=encoding) # first line is a header
     res@metadata$header <- header
     res@metadata$filename <- filename
     headerTokens <- strsplit(header, "[ \t]+")[[1]]
@@ -561,7 +566,7 @@ read.xbt.noaa1 <- function(file,
     res@metadata$project <- headerTokens[7]
     res@metadata$axbtChannel <- headerTokens[8]
     res@metadata$axbtId <- headerTokens[9]
-    data <- read.table(file, skip=1, header=FALSE, col.names=c("z", "temperature", "temperatureError"), encoding="UTF-8")
+    data <- read.table(file, skip=1, header=FALSE, col.names=c("z", "temperature", "temperatureError"), encoding=encoding)
     res@metadata$header <- header
     res@metadata$units$z <- list(unit=expression(m), scale="")
     res@data <- as.list(data)

@@ -4,13 +4,18 @@
 \alias{read.lobo}
 \title{Read a LOBO File}
 \usage{
-read.lobo(file, cols = 7, processingLog)
+read.lobo(file, cols = 7, encoding = "latin1", processingLog)
 }
 \arguments{
 \item{file}{a connection or a character string giving the name of the file
 to load.}
 
 \item{cols}{number of columns in dataset.}
+
+\item{encoding}{a character value that indicates the encoding to be used for
+this data file, if it is textual.  The default value for most functions is
+\code{"latin1"}, which seems to be suitable for files containing text written in
+English and French.}
 
 \item{processingLog}{if provided, the action item to be stored in the log.
 (Typically only provided for internal calls; the default that it provides is

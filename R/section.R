@@ -2157,6 +2157,8 @@ setMethod(f="plot",
 #'
 #' @param missingValue Numerical value used to indicate missing data.
 #'
+#' @template encodingTemplate
+#'
 #' @template debugTemplate
 #'
 #' @param processingLog If provided, the action item to be stored in the log.  This
@@ -2184,6 +2186,7 @@ read.section <- function(file,
     scientist="",
     institute="",
     missingValue=-999,
+    encoding="latin1",
     debug=getOption("oceDebug"),
     processingLog)
 {
@@ -2210,7 +2213,7 @@ read.section <- function(file,
     }
     if (is.character(file)) {
         filename <- file
-        file <- file(file, "r")
+        file <- file(file, "r", encoding=encoding)
         on.exit(close(file))
     }
     if (!inherits(file, "connection")) {
@@ -2219,7 +2222,7 @@ read.section <- function(file,
     res <- new("section")
     if (!isOpen(file)) {
         filename <- "(connection)"
-        open(file, "r")
+        open(file, "r", encoding=encoding)
         on.exit(close(file))
     }
     if (!missing(flags))
@@ -2228,7 +2231,7 @@ read.section <- function(file,
     ##>     if (missing(flags))
     ##>         flags <- c(2)
     # Skip header
-    lines <- readLines(file)
+    lines <- readLines(file, encoding=encoding)
     if ("BOTTLE" != substr(lines[1], 1, 6))
         stop("only type \"BOTTLE\" understood, but got header line\n", lines[1], "\n")
     if (nchar(sectionId) < 1)

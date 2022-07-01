@@ -3949,6 +3949,7 @@ plotScan <- function(x, which=1, xtype="scan", flipy=FALSE,
 #' Read a General CTD File
 #'
 #' @template readCtdTemplate
+#' @template encodingTemplate
 #'
 #' @author Dan Kelley
 #'
@@ -3975,6 +3976,7 @@ read.ctd <- function(file,
     missingValue,
     deploymentType="unknown",
     monitor=FALSE,
+    encoding="latin1",
     debug=getOption("oceDebug"),
     processingLog, ...)
 {
@@ -4002,13 +4004,13 @@ read.ctd <- function(file,
             if (length(grep(".rsk$", file))) {
                 return(read.rsk(file=file, debug=debug))
             }
-            file <- file(file, "r", encoding="latin1")
+            file <- file(file, "r", encoding=encoding)
             on.exit(close(file))
         }
         if (!inherits(file, "connection"))
             stop("argument `file' must be a character string or connection")
         if (!isOpen(file)) {
-            open(file, "r")
+            open(file, "r", encoding=encoding)
             on.exit(close(file))
         }
         line <- scan(file, what='char', sep="\n", n=1, quiet=TRUE) # slow, but just one line
@@ -4036,20 +4038,20 @@ read.ctd <- function(file,
         }
     }                                   # FIXME: should just use oce.magic() here
     res <- switch(type,
-        SSDA=read.ctd.ssda(file, debug=debug),
-        SBE19=read.ctd.sbe(file, columns=columns, station=station,
+        SSDA=read.ctd.ssda(file, encoding=encoding, debug=debug),
+        SBE19=read.ctd.sbe(file, encoding=encoding, columns=columns, station=station,
             missingValue=missingValue, deploymentType=deploymentType,
             monitor=monitor, debug=debug, processingLog=processingLog, ...),
-        WOCE=read.ctd.woce(file, columns=columns, station=station,
+        WOCE=read.ctd.woce(file, encoding=encoding, columns=columns, station=station,
             missingValue=missingValue, deploymentType=deploymentType,
             monitor=monitor, debug=debug, processingLog=processingLog, ...),
-        ODF=read.ctd.odf(file, columns=columns, station=station,
+        ODF=read.ctd.odf(file, encoding=encoding, columns=columns, station=station,
             missingValue=missingValue, deploymentType=deploymentType,
             monitor=monitor, debug=debug, processingLog=processingLog, ...),
-        ITP=read.ctd.itp(file, columns=columns, station=station,
+        ITP=read.ctd.itp(file, encoding=encoding, columns=columns, station=station,
             missingValue=missingValue, deploymentType=deploymentType,
             monitor=monitor, debug=debug, processingLog=processingLog, ...),
-        ODV=read.ctd.odv(file, columns=columns, station=station,
+        ODV=read.ctd.odv(file, encoding=encoding, columns=columns, station=station,
             missingValue=missingValue, deploymentType=deploymentType,
             monitor=monitor, debug=debug, processingLog=processingLog, ...))
     res

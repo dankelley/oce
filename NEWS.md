@@ -1,6 +1,7 @@
 # oce 1.7.7
 
 * Add `gappyIndex()`.
+* Fix encoding problems that will occur in the upcoming version of R.
 
 # oce 1.7.6
 

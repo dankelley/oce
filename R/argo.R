@@ -1080,6 +1080,8 @@ argoDecodeFlags <- function(f) # local function
 #'
 #' @param file A character string giving the name of the file to load.
 #'
+#' @template encodingIgnoredTemplate
+#'
 #' @param debug A flag that turns on debugging.  Set to 1 to get a moderate amount
 #' of debugging information, or to 2 to get more.
 #'
@@ -1174,6 +1176,7 @@ argoDecodeFlags <- function(f) # local function
 #' @author Dan Kelley
 #' @family things related to argo data
 read.argo <- function(file,
+    encoding=NA,
     debug=getOption("oceDebug"),
     processingLog,
     ...)
