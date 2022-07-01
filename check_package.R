@@ -13,7 +13,10 @@ urlchecker::url_check()
 devtools::check_win_release(email="Dan.Kelley@Dal.Ca")
 devtools::check_win_devel(email="Dan.Kelley@Dal.Ca")
 devtools::check_win_oldrelease(email="Dan.Kelley@Dal.Ca")
-rhub::check_for_cran(email="Dan.Kelley@Dal.Ca")
+# rhub is broken as of June/July 2022
+if (FALSE) {
+    rhub::check_for_cran(email="Dan.Kelley@Dal.Ca")
+}
 # remotes::install_github("r-lib/revdepcheck")
 revdepcheck::revdep_reset()
 revdepcheck::revdep_check(num_workers=4)

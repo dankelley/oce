@@ -13,10 +13,10 @@
 
 ## Local Tests
 
-Local MacOS-12.5(beta) with R Under development (unstable) (2022-06-27 r82528):
-no ERRORs, no WARNINGs, and 2 NOTEs, one naming the author the other reporting
-that sub-directories were of size of 1MB or more: R 3.0Mb, data 1.0Mb, doc
-2.0Mb, and help 3.8Mb.
+Local MacOS-12.5(beta) with R 4.2.1 and also R Under development (unstable)
+(2022-06-27 r82528): no ERRORs, no WARNINGs, and 2 NOTEs, one naming the author
+the other reporting that sub-directories were of size of 1MB or more: R 3.0Mb,
+data 1.0Mb, doc 2.0Mb, and help 3.8Mb.
 
 ## Remote Windows Checks
 
@@ -34,8 +34,8 @@ Using
 ```R
 rhub::check_for_cran()
 ```
-identified no errors with oce, although there are notes about stray files
-('lastMiKTeXException') in some instances.
+produced no results, because there is a problem with the rhub test machines
+(see my bug report at https://github.com/r-hub/rhub/issues/530).
 
 
 # Reverse Dependency Checks
