@@ -229,6 +229,7 @@ cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
         stop("header line does not contain a variable name")
     ## message("h: '", h, "'")
     name <- gsub("^# name [0-9][0-9]* = (.*):.*$", "\\1", h, ignore.case=TRUE, useBytes=TRUE)
+    nameAfterColon <- gsub("^# name [0-9][0-9]* = .*:(.*)$", "\\1", h, ignore.case=TRUE, useBytes=TRUE)
     nameOriginal <- name
 
     ## If 'name' is mentioned in columns, then use columns and ignore the lookup table.
@@ -506,7 +507,9 @@ cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
         } else if (1 == length(grep("^sigma-4[0-9]{2}$", name, useBytes=TRUE))) {
             name <- "sigma4"
         # 2022-06-28 } else if (1 == length(grep("^sigma-\x09[0-9]{2}$", name, useBytes=TRUE))) {
-        } else if (1 == length(grep("^sigma-\u00e9[0-9]{2}$", name, useBytes=TRUE))) {
+        #} else if (1 == length(grep("^sigma-\u00e9[0-9]{2}$", name, useBytes=TRUE))) {
+        } else if (grepl("^sigma-.*[0-9]{2}$", name, useBytes=TRUE)
+            && grepl("sigma-theta", nameAfterColon, useBytes=TRUE)) {
             name <- "sigmaTheta"
             ## 2016-12-22 DK
             ## The above regexp matches for what we see in the supplied file
