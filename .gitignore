@@ -18,6 +18,7 @@ TAGS
 Rplots.pdf
 src-*
 *.swp
+*.swo
 issue*R
 issue*dat
 issue*png

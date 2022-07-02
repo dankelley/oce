@@ -318,6 +318,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
         ", ignoreChecksums=", ignoreChecksums,
         "\",...)\n", sep="", unindent=1)
     oceDebug(debug, "HINT: set debug=2 or 3 to track more (or even more) processing steps\n")
+
     if (typeGiven) {
         typeAllowed <- c("Signature1000", "Signature500", "Signature250")
         typei <- pmatch(type, typeAllowed)
@@ -706,6 +707,66 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
         averageAltimeter=which(d$id==0x1f), # coded, but no sample-data test and no plot()
         text=which(d$id==0xa0))        # coded and checked against .cfg file
 
+    #x Try to retrieved a named item from the data buffer.
+    #x
+    #x This checks external variable `haveItem` to see whether the data item
+    #x indicated by `name` is available in external raw vector `buf`.  If so, the
+    #x item is retrieved from the starting at position indicated by external
+    #x variable `i0`, and `i0` is then increased to prepare for the next call to
+    #x this function.
+    #x
+    #x @param object a list containing what is known so far. A possibly-modified
+    #x value of this is returned.
+    #x
+    #x @param name character value naming the item.
+    #x
+    #x @return a list defined by adding the named item to `object`, if it
+    #x is present in the dataset.
+    #x
+    #x @author Dan Kelley
+    getItemFromBuf <- function(object, name, i, NP, debug=getOption("oceDebug"))
+    {
+        if (name == "v") {
+            message("FIXME: write code to read 'v'")
+        } else if (name == "a") {
+            message("FIXME: write code to read 'v'")
+        } else if (name == "q") {
+            message("FIXME: write code to read 'v'")
+        } else if (name == "altimeterRaw") {
+            # altimeterRawNumberOfSamples: number of samples
+            iv <- gappyIndex(i, i0v, 4L)
+            #message(vectorShow(iv))
+            NS <- readBin(buf[iv], "integer", size=4L, n=NP, endian="little") # no. samples (tmp var)
+            #message(vectorShow(NS))
+            dNS <- diff(range(NS))
+            if (0 != dNS)
+                stop("altimeterRawNumberOfSamples not all equal.  Range is ", dNS[1], " to ", dNS[2])
+            NS <- NS[1]
+            object$altimeterRawNumberOfSamples <- NS
+            #cat("after adding altimeterRawNumberOfSamples:\n");print(str(object))
+            i0v <<- i0v + 4L # skip the 4 bytes we just read
+            oceDebug(debug, "    increased i0v to ", i0v, "\n")
+            # altimeterRawSampleDistance: sample distance
+            # FIXME: OK to assume all altimeterRawSampleDistance values are equal?
+            iv <- gappyIndex(i, i0v, 2L)
+            object$altimeterRawSampleDistance <-
+                1e-4 * readBin(buf[iv], "integer", size=2L, n=1, endian="little", signed=FALSE)
+            #cat("after adding altimeterRawSampleDistance:\n");print(str(object))
+            i0v <<- i0v + 2L # skip the 2 bytes we just read
+            oceDebug(debug, "    increased i0v to ", i0v, "\n")
+            # altimeterRawSamples: the data of NP rows, NS columns
+            iv <- gappyIndex(i, i0v, 2L*NS)
+            tmp <- readBin(buf[iv], "integer", size=2L, endian="little", n=NP*NS)
+            object$altimeterRawSamples <- matrix(tmp, nrow=NP, ncol=NS, byrow=TRUE)
+            i0v <- i0v + 2L*NS
+        } else {
+            stop("unknown item, name=\"", name, "\"")
+        }
+        oceDebug(debug, "after handling \"", name, "\", i0v=", i0v, "\n")
+        object
+    }
+
+
     # 2. get some things in slow index-based form.
     if (length(p$burst) > 0) {         # key=0x15
         #if (any(version[p$burst] != 3))
@@ -1077,30 +1138,34 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
                 oceDebug(debug, "  new i0v=", i0v, "\n")
             }
             if (altimeterRawIncluded[p$burstAltimeterRaw[1]]) {
-                oceDebug(debug, "?vector-read burstAltimeterRaw$altimeterRaw(i0v=", i0v, ")\n")
+                oceDebug(debug, "2nd-gen vectorization for burstAltimeterRaw\n")
                 # read 4b=altimeterRawNumberOfSamples
-                iv <- gappyIndex(i, i0v, 4L)
+                #>> iv <- gappyIndex(i, i0v, 4L)
                 #oceDebug(debug, "before reading altimeterRawNumberOfSamples: ", vectorShow(i0v))
                 #oceDebug(debug, "before reading altimeterRawNumberOfSamples: ", vectorShow(iv))
-                NS <- readBin(buf[iv], "integer", size=4L, n=NP, endian="little") # no. samples (tmp var)
-                dNS <- diff(range(NS))
-                if (0 != dNS)
-                    stop("altimeterRawNumberOfSamples not all equal.  Range is ", dNS[1], " to ", dNS[2])
-                NS <- NS[1]
-                burstAltimeterRaw$altimeterRawNumberOfSamples <- NS
+                burstAltimeterRaw <- getItemFromBuf(burstAltimeterRaw, "altimeterRaw", i=i, NP=NP, debug=debug)
+                #print(str(DAN))
+                #>> save(DAN,burstAltimeterRaw,file='dan.rda')
+                #>> stop()
+                #>> NS <- readBin(buf[iv], "integer", size=4L, n=NP, endian="little") # no. samples (tmp var)
+                #>> dNS <- diff(range(NS))
+                #>> if (0 != dNS)
+                #>>     stop("altimeterRawNumberOfSamples not all equal.  Range is ", dNS[1], " to ", dNS[2])
+                #>> NS <- NS[1]
+                #>> burstAltimeterRaw$altimeterRawNumberOfSamples <- NS
                 #message(vectorShow(burstAltimeterRaw$altimeterRawNumberOfSamples))
-                i0v <- i0v + 4L # skip the 4 bytes we just read
+                #>> i0v <- i0v + 4L # skip the 4 bytes we just read
                 # distance between altimeter-raw samples (we only save first value)
-                iv <- gappyIndex(i, i0v, 2L)
-                burstAltimeterRaw$altimeterRawSampleDistance <-
-                    1e-4 * readBin(buf[iv], "integer", size=2L, n=1, endian="little", signed=FALSE)
-                i0v <- i0v + 2L # skip the 2 bytes we just read
+                #>> iv <- gappyIndex(i, i0v, 2L)
+                #>> burstAltimeterRaw$altimeterRawSampleDistance <-
+                #>>     1e-4 * readBin(buf[iv], "integer", size=2L, n=1, endian="little", signed=FALSE)
+                #>> i0v <- i0v + 2L # skip the 2 bytes we just read
                 # read 2*nbeam*ncell=altimeterRawSamples
-                iv <- gappyIndex(i, i0v, 2L*burstAltimeterRaw$altimeterRawNumberOfSamples)
-                tmp <- readBin(buf[iv], "integer", size=2L, endian="little",
-                    n=NP*burstAltimeterRaw$altimeterRawNumberOfSamples)
-                burstAltimeterRaw$altimeterRawSamples <- matrix(tmp, nrow=NP, ncol=NS, byrow=TRUE)
-                i0v <- i0v + 2L*burstAltimeterRaw$altimeterRawNumberOfSamples
+                #>> iv <- gappyIndex(i, i0v, 2L*burstAltimeterRaw$altimeterRawNumberOfSamples)
+                #>> tmp <- readBin(buf[iv], "integer", size=2L, endian="little",
+                #>>     n=NP*burstAltimeterRaw$altimeterRawNumberOfSamples)
+                #>> burstAltimeterRaw$altimeterRawSamples <- matrix(tmp, nrow=NP, ncol=NS, byrow=TRUE)
+                #>> i0v <- i0v + 2L*burstAltimeterRaw$altimeterRawNumberOfSamples
                 oceDebug(debug, "  new i0v=", i0v, "\n")
             }
             if (echosounderIncluded[p$burstAltimeterRaw[1]]) {
