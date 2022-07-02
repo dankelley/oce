@@ -507,6 +507,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
         activeConfiguration <- activeConfiguration[keep]
         orientation <- orientation[keep]
         N <- sum(keep)
+        oceDebug(debug, "N=", N, "\n")
         pointer1 <- d$index
         pointer2 <- as.vector(t(cbind(pointer1, 1 + pointer1))) # rbind() would be fine, too.
         pointer4 <- as.vector(t(cbind(pointer1, 1 + pointer1, 2 + pointer1, 3 + pointer1)))
@@ -537,23 +538,27 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
     configuration <- rawToBits(d$buf[pointer2 + 3]) == 0x01
     dim(configuration) <- c(16, N)
     configuration <- t(configuration)
-    # Developer's test of whether comfiguration for a given ID type is constant
-    # through the whole file.  I'm trying type 0x17, the burst-altimeter-raw
-    if (debug > 0L) {
-        # save(d, configuration, file="~/configuration.rda")
-        local({
-            for (id in as.raw(unique(d$id))) {
-                config <- configuration[d$id==id,]
-                ok <- sapply(1:dim(config)[1],function(i) all(config[1,]==config[i,]))
-                if (all(ok)) {
-                    oceDebug(debug, "configure is uniform in all ", length(ok),
-                        " chunks with key 0x", as.raw(id), " (", ad2cpCodeToName(id), ")\n")
-                } else {
+    # The vectorization scheme used in this function assumes that configurations match within a
+    # given ID type.  This seems like a reasonable assumption, but we still check, and issue
+    # a warning (and request to contact the developers) if this assumption fails.
+    local({
+        #cat("next is d$id:\n");print(d$id)
+        #cat("next is configuration:\n");print(configuration)
+        for (id in as.raw(unique(d$id))) {
+            #cat("next is config for id=0x", as.raw(id), ":\n", sep="");print(config)
+            #cat(vectorShow(is.matrix(config)))
+            config <- configuration[d$id==id,]
+            if (is.matrix(config)) {
+                ok <- TRUE
+                for (col in seq(2L, ncol(config)))
+                    ok <- ok && all(config[,col] == config[1,col])
+                if (!ok) {
                     oceDebug(debug, "configure DIFFERS from the first value, in ", sum(!ok), " instances for chunk key 0x", as.raw(id), " (", ad2cpCodeToName(id), ")\n")
+                    warning("Variable \"", ad2cpCodeToName(id), "\" configuration detected, so expect erroneous results. Please submit a bug report.\n")
                 }
             }
-        })
-    }
+        }
+    })
 
 
     # Extract columns as simply-named flags, for convenience. The variable
@@ -1085,8 +1090,11 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
                 burstAltimeterRaw$altimeterRawNumberOfSamples <- NS
                 #message(vectorShow(burstAltimeterRaw$altimeterRawNumberOfSamples))
                 i0v <- i0v + 4L # skip the 4 bytes we just read
-                # FIXME: read 2b=altimeterRawSampleDistance here
-                i0v <- i0v + 2L # skip the 2 bytes we just read (FIXME)
+                # distance between altimeter-raw samples (we only save first value)
+                iv <- gappyIndex(i, i0v, 2L)
+                burstAltimeterRaw$altimeterRawSampleDistance <-
+                    1e-4 * readBin(buf[iv], "integer", size=2L, n=1, endian="little", signed=FALSE)
+                i0v <- i0v + 2L # skip the 2 bytes we just read
                 # read 2*nbeam*ncell=altimeterRawSamples
                 iv <- gappyIndex(i, i0v, 2L*burstAltimeterRaw$altimeterRawNumberOfSamples)
                 tmp <- readBin(buf[iv], "integer", size=2L, endian="little",
