@@ -743,48 +743,44 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
     #x @author Dan Kelley
     getItemFromBuf <- function(object, name, i, debug=getOption("oceDebug"))
     {
+        NB <- object$numberOfBeams
+        NC <- object$numberOfCells
+        NP <- length(object$time)      # already defined
+        NBC <- NB * NC
+        oceDebug(debug+1L, "NB=", NB, ", NC=", NC, ", NBC=", NBC, ", NP=", NP, "\n")
         if (name == "v") {
-            message("provisional code to read 'v'")
-            n <- object$numberOfCells * object$numberOfBeams
-            if (n > 0) {
-                iv <- gappyIndex(i, i0v, 2L*n)
+            oceDebug(debug+1L, "vector-read 'v' starting at i0v=", i0v, "\n")
+            if (NBC > 0) {
+                iv <- gappyIndex(i, i0v, 2L*NBC)
                 # FIXME: use proper velocity factor
-                v <- 1.0*readBin(d$buf[iv], "integer", size=2L, n=n*object$numberOfProfiles, endian="little")
-                object$v <- array(v,
-                    dim(object$numberOfProfiles, object$numberOfBeams, object$numberOfCells))
-                i0v <<- i0v + 2L * n
-                message("advanced iv0 from ", iv0-2L*n, " to ", iv0)
+                v <- 1.0*readBin(d$buf[iv], "integer", size=2L, n=NP*NBC, endian="little")
+                object$v <- array(v, dim=c(NP, NB, NC))
+                i0v <<- i0v + 2L * NBC
+                oceDebug(debug+1L, "  advanced i0v to ", i0v, "\n")
             }
-            message("FIXME: v is probably wrong!")
         } else if (name == "a") {
-            message("provisional code to read 'a'")
-            n <- object$numberOfCells * object$numberOfBeams
-            if (n > 0) {
-                iv <- gappyIndex(i, i0v, n)
-                v <- 1.0*readBin(d$buf[iv], "raw", size=1L, n=n*object$numberOfProfiles, endian="little")
-                object$a <- array(a,
-                    dim(object$numberOfProfiles, object$numberOfBeams, object$numberOfCells))
-                i0v <<- i0v + n
-                message("advanced iv0 from ", iv0-n, " to ", iv0)
+            oceDebug(debug+1L, "vector-read 'a' starting at i0v=", i0v, "\n")
+            if (NBC > 0) {
+                iv <- gappyIndex(i, i0v, NBC)
+                v <- 1.0*readBin(d$buf[iv], "raw", size=1L, n=NP*NBC, endian="little")
+                object$a <- array(a, dim=c(NP, NB, NC))
+                i0v <<- i0v + NBC 
+                oceDebug(debug+1L, "  advanced i0v to ", i0v, "\n")
             }
-            message("FIXME: a is probably wrong!")
         } else if (name == "q") {
-            message("provisional code to read 'q'")
-            n <- object$numberOfCells * object$numberOfBeams
-            if (n > 0) {
-                iv <- gappyIndex(i, i0v, n)
-                q <- readBin(d$buf[iv], "raw", size=1L, n=n*object$numberOfProfiles, endian="little")
-                object$q <- array(q,
-                    dim(object$numberOfProfiles, object$numberOfBeams, object$numberOfCells))
-                i0v <<- i0v + n
-                message("advanced iv0 from ", iv0-n, " to ", iv0)
+            oceDebug(debug+1L, "vector-read 'q' starting at i0v=", i0v, "\n")
+            if (NBC) {
+                iv <- gappyIndex(i, i0v, NBC)
+                q <- readBin(d$buf[iv], "raw", size=1L, n=NP*NBC, endian="little")
+                object$q <- array(q, dim=c(NP, NB, NC))
+                i0v <<- i0v + NBC
+                oceDebug(debug+1L, "    advanced i0v to ", i0v, "\n")
             }
-            message("FIXME: q is probably wrong!")
         } else if (name == "altimeter") {
             # Nortek 2022 p89 (top) states altimeterDistance is int32, but the
             # values obtained with that setting ar crazy (e.g. 1109925788 m),
             # and Nortek 2017 p51 bottom states that it is a float value.
-            message("NEW NEW NEW -- altimeter -- NEW NEW NEW. i0v=", i0v)
+            oceDebug(debug+1L, "vector-read 'altimeter' starting at i0v=", i0v, "\n")
             iv <- gappyIndex(i, i0v, 4L)
             object$altimeterDistance <- readBin(buf[iv], "numeric", size=4L, n=NP, endian="little", signed=TRUE)
             message(vectorShow(object$altimeterDistance))
@@ -795,33 +791,49 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
             iv <- gappyIndex(i, i0v, 2L)
             object$altimeterStatus <- readBin(buf[iv], "integer", size=2L, n=NP, endian="little", signed=FALSE)
             i0v <<- i0v + 2L
-        } else if (name == "altimeterRaw") {
-            # altimeterRawNumberOfSamples: number of samples
+            oceDebug(debug+1L, "    advanced i0v to ", i0v, "\n")
+        } else if (name == "AST") {
+            oceDebug(debug+1L, "vector-read 'AST' starting at i0v=", i0v, "\n")
             iv <- gappyIndex(i, i0v, 4L)
-            #message(vectorShow(iv))
+            object$ASTDistance <- readBin(buf[iv], "numeric", size=4L, n=NP, endian="little")
+            message(vectorShow(object$ASTDistance))
+            i0v <<- i0v + 4L
+            iv <- gappyIndex(i, i0v, 2L)
+            object$ASTQuality <- readBin(buf[iv], "integer", size=2L, n=NP, endian="little", signed=FALSE)
+            i0v <<- i0v + 2L
+            iv <- gappyIndex(i, i0v, 2L)
+            object$ASTOffset <- readBin(buf[iv], "integer", size=2L, n=NP, endian="little", signed=TRUE)
+            i0v <<- i0v + 2L
+            iv <- gappyIndex(i, i0v, 4L)
+            object$ASTPressure <- readBin(buf[iv], "numeric", size=4L, n=NP, endian="little")
+            message(vectorShow(object$ASTPressure))
+            i0v <<- i0v + 4L
+            # The 2017 manual states there are 8 more bytes, named 'spare', and
+            # the 2022 manual agrees that there is an 8-byte spacer, by stating
+            # that the next occurs at ALTIRAW+8).
+            i0v <<- i0v + 8L
+            oceDebug(debug+1L, "  advanced i0v to ", i0v, "\n")
+        } else if (name == "altimeterRaw") {
+            oceDebug(debug+1L, "vector-read 'altimeterRaw' starting at i0v=", i0v, "\n")
+            iv <- gappyIndex(i, i0v, 4L)
             NS <- readBin(buf[iv], "integer", size=4L, n=NP, endian="little") # no. samples (tmp var)
-            #message(vectorShow(NS))
             dNS <- diff(range(NS))
             if (0 != dNS)
                 stop("altimeterRawNumberOfSamples not all equal.  Range is ", dNS[1], " to ", dNS[2])
             NS <- NS[1]
             object$altimeterRawNumberOfSamples <- NS
-            #cat("after adding altimeterRawNumberOfSamples:\n");print(str(object))
             i0v <<- i0v + 4L # skip the 4 bytes we just read
-            oceDebug(debug, "    increased i0v to ", i0v, "\n")
-            # altimeterRawSampleDistance: sample distance
+            oceDebug(debug, "    increased i0v to ", i0v, "\n", "\n")
             # FIXME: OK to assume all altimeterRawSampleDistance values are equal?
             iv <- gappyIndex(i, i0v, 2L)
             object$altimeterRawSampleDistance <-
                 1e-4 * readBin(buf[iv], "integer", size=2L, n=1, endian="little", signed=FALSE)
-            #cat("after adding altimeterRawSampleDistance:\n");print(str(object))
-            i0v <<- i0v + 2L # skip the 2 bytes we just read
-            oceDebug(debug, "    increased i0v to ", i0v, "\n")
-            # altimeterRawSamples: the data of NP rows, NS columns
+            i0v <<- i0v + 2L
             iv <- gappyIndex(i, i0v, 2L*NS)
             tmp <- readBin(buf[iv], "integer", size=2L, endian="little", n=NP*NS)
             object$altimeterRawSamples <- matrix(tmp, nrow=NP, ncol=NS, byrow=TRUE)
-            i0v <- i0v + 2L*NS
+            i0v <<- i0v + 2L*NS
+            oceDebug(debug+1L, "  advanced i0v to ", i0v, "\n")
         } else {
             stop("unknown item, name=\"", name, "\"")
         }
@@ -943,35 +955,48 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
             datasetDescription=datasetDescription[p$average],
             transmitEnergy=transmitEnergy[p$average],
             powerLevel=powerLevel[p$average])
-        if (any(velocityIncluded[p$average])) {
-            if (1 < length(unique(velocityIncluded[p$average])))
-                stop("velocityIncluded values non-unique across 'average' data records")
-            average$v <- array(double(), dim=c(length(p$average), ncellsAverage, nbeamsAverage))
+        if (TRUE) { # average: nonvectorized initialization
+            oceDebug(debug, "VECTORIZED average ... nbeam=", nbeamsBurstAltimeterRaw, ", ncell=", ncellsBurstAltimeterRaw, "\n")
+            if (any(velocityIncluded[p$average])) {
+                if (1 < length(unique(velocityIncluded[p$average])))
+                    stop("velocityIncluded values non-unique across 'average' data records")
+                average$v <- array(double(), dim=c(length(p$average), ncellsAverage, nbeamsAverage))
+            }
+            if (any(amplitudeIncluded[p$average])) {
+                if (1 < length(unique(amplitudeIncluded[p$average])))
+                    stop("amplitudeIncluded values non-unique across 'average' data records")
+                average$a <- array(raw(), dim=c(length(p$average), ncellsAverage, nbeamsAverage))
+            }
+            if (any(correlationIncluded[p$average])) {
+                if (1 < length(unique(correlationIncluded[p$average])))
+                    stop("correlationIncluded values non-unique across 'average' data records")
+                average$q <- array(raw(), dim=c(length(p$average), ncellsAverage, nbeamsAverage))
+            }
+            if (any(altimeterIncluded[p$average])) {
+                if (1 < length(unique(altimeterIncluded[p$average])))
+                    stop("altimeterIncluded values non-unique across 'average' data records")
+                average$altimeterDistance <- vector("numeric", length(p$average))
+            }
+            if (any(ASTIncluded[p$average])) {
+                average$ASTDistance <- vector("numeric", length(p$average))
+                average$ASTPressure <- vector("numeric", length(p$average))
+            }
+            if (any(echosounderIncluded[p$average])) {
+                average$echosounder <- matrix(double(), ncol=length(p$average), nrow=ncellsAverage)
+            }
+            if (any(AHRSIncluded[p$average])) {
+                average$AHRS <- matrix(numeric(), nrow=length(p$average), ncol=9)
+            }
         }
-        if (any(amplitudeIncluded[p$average])) {
-            if (1 < length(unique(amplitudeIncluded[p$average])))
-                stop("amplitudeIncluded values non-unique across 'average' data records")
-            average$a <- array(raw(), dim=c(length(p$average), ncellsAverage, nbeamsAverage))
-        }
-        if (any(correlationIncluded[p$average])) {
-            if (1 < length(unique(correlationIncluded[p$average])))
-                stop("correlationIncluded values non-unique across 'average' data records")
-            average$q <- array(raw(), dim=c(length(p$average), ncellsAverage, nbeamsAverage))
-        }
-        if (any(altimeterIncluded[p$average])) {
-            if (1 < length(unique(altimeterIncluded[p$average])))
-                stop("altimeterIncluded values non-unique across 'average' data records")
-            average$altimeterDistance <- vector("numeric", length(p$average))
-        }
-        if (any(ASTIncluded[p$average])) {
-            average$ASTDistance <- vector("numeric", length(p$average))
-            average$ASTPressure <- vector("numeric", length(p$average))
-        }
-        if (any(echosounderIncluded[p$average])) {
-            average$echosounder <- matrix(double(), ncol=length(p$average), nrow=ncellsAverage)
-        }
-        if (any(AHRSIncluded[p$average])) {
-            average$AHRS <- matrix(numeric(), nrow=length(p$average), ncol=9)
+        if (!TRUE) {                   # average: vectorized all-in-one
+            oceDebug(debug, "VECTORIZED average ... nbeam=", nbeamsBurstAltimeterRaw, ", ncell=", ncellsBurstAltimeterRaw, "\n")
+            i <- d$index[which(d$id==0x16)] # pointer to chunk starting points in buf
+            i0v <- 77
+            NP <- length(i)            # number of profiles of this type
+            oceDebug(debug, vectorShow(i, n=4))
+            NC <- burstAltimeterRaw$numberOfCells # number of cells for v,a,q
+            NB <- burstAltimeterRaw$numberOfBeams # number of beams for v,a,q
+
         }
     } else {
         average <- NULL
@@ -1148,7 +1173,8 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
             datasetDescription=datasetDescription[p$burstAltimeterRaw],
             transmitEnergy=transmitEnergy[p$burstAltimeterRaw],
             powerLevel=powerLevel[p$burstAltimeterRaw])
-        if (TRUE) {                    # Vectorized reading, for speed.
+        if (TRUE) {                    # burstAltimeterRaw: vectorized
+            oceDebug(debug, "VECTORIZED burstAltimeterRaw (nbeam=", nbeamsBurstAltimeterRaw, ", ncell=", ncellsBurstAltimeterRaw, ")\n")
             # BOOKMARK 3 read burstAltimeterRaw (vectorized)
             #
             # See CR's snapshot at
@@ -1158,7 +1184,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
             #
             #save(burstAltimeterRaw, file="~/01.rda")
             #message("DAN: burstAltimeterRaw is saved in ~/01.rda)")
-            oceDebug(debug, "nbeam=", nbeamsBurstAltimeterRaw, ", ncell=", ncellsBurstAltimeterRaw, "\n")
+            oceDebug(debug, "burstAltimeterRaw: nbeam=", nbeamsBurstAltimeterRaw, ", ncell=", ncellsBurstAltimeterRaw, "\n")
             i <- d$index[which(d$id==0x1a)] # pointer to chunk starting points in buf
             i0v <- 77
             NP <- length(i)            # number of profiles of this type
@@ -1169,42 +1195,22 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
             if (velocityIncluded[p$burstAltimeterRaw[1]]) {
                 oceDebug(debug, "NEW burstAltimeterRaw$v (i0v=", i0v, ")\n")
                 burstAltimeterRaw <- getItemFromBuf(burstAltimeterRaw, "v", i=i, debug=debug)
-                # nrow and ncol may be mixed up next
-                #OLDoceDebug(debug, "? create double array dim(", NP, ",", NB, ",", NC, ")\n")
-                #OLDburstAltimeterRaw$v <- array(double(), dim=c(NP, NB, NC)) # FIXME: read the data
-                #OLDi0v <- i0v + 2L*NB*NC  # 2 bytes each (int, size=2, signed=TRUE)
-                #OLDoceDebug(debug, "  new i0v=", i0v, "\n")
             }
             if (amplitudeIncluded[p$burstAltimeterRaw[1]]) {
                 oceDebug(debug, "NEW vector-read burstAltimeterRaw$a (i0v=", i0v, ")\n")
                 burstAltimeterRaw <- getItemFromBuf(burstAltimeterRaw, "v", i=i, debug=debug)
-                #oceDebug(debug, "? create raw array dim(", sum(d$id==0x1a), ",", nrow, ",", ncol, ")\n")
-                #burstAltimeterRaw$a <- array(raw(), dim=c(NP, NB, NC)) # FIXME: read the data
-                #i0v <- i0v + NB*NC     # 1 byte each (raw)
-                #oceDebug(debug, "  new i0v=", i0v, "\n")
             }
             if (correlationIncluded[p$burstAltimeterRaw[1]]) {
-                oceDebug(debug, "NEW vector-read burstAltimeterRaw$correlation (i0v=", i0v, ")\n")
+                oceDebug(debug, "vector-read burstAltimeterRaw$correlation (i0v=", i0v, ")\n")
                 burstAltimeterRaw <- getItemFromBuf(burstAltimeterRaw, "v", i=i, debug=debug)
-                #burstAltimeterRaw$q <- array(raw(), dim=c(NP, NB, NC)) # FIXME: read the data
-                #i0v <- i0v + NB*NC     # 1 byte each (raw)
-                oceDebug(debug, "  new i0v=", i0v, "\n")
             }
             if (altimeterIncluded[p$burstAltimeterRaw[1]]) {
-                oceDebug(debug+1, "NEW vector-read burstAltimeterRaw$altimeter (i0v=", i0v, ")\n")
+                oceDebug(debug+1, "vector-read burstAltimeterRaw$altimeter (i0v=", i0v, ")\n")
                 burstAltimeterRaw <- getItemFromBuf(burstAltimeterRaw, "altimeter", i=i, debug=debug)
-                #<>oceDebug(debug, "? create double vector of length ", sum(d$id==0x1a), "\n")
-                #<>oceDebug(debug, "skipping 2 bytes for altimeterQuality and 2 bytes for altimeterStatus\n")
-                #<>i0v <- i0v + 8L
-                oceDebug(debug+1, "new i0v=", i0v, "\n")
             }
             if (ASTIncluded[p$burstAltimeterRaw[1]]) {
-                oceDebug(debug, "?vector-read burstAltimeterRaw$AST (i0v=", i0v, ")\n")
-                oceDebug(debug, "  should read 4b=distance, 2b=quality, 2b=offset, 4b=pressure\n")
-                # read 4b=Distance, skip 2b=quality, skip 2b=offset, read 4b=pressure, skip 8b spare
-                i0v <- i0v + 8L
-                i0v <- i0v + 12L
-                oceDebug(debug, "  new i0v=", i0v, "\n")
+                oceDebug(debug+1, "vector-read burstAltimeterRaw$altimeter (i0v=", i0v, ")\n")
+                burstAltimeterRaw <- getItemFromBuf(burstAltimeterRaw, "AST", i=i, debug=debug)
             }
             if (altimeterRawIncluded[p$burstAltimeterRaw[1]]) {
                 oceDebug(debug, "2nd-gen vectorization for burstAltimeterRaw\n")
@@ -1638,7 +1644,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
                 # FIXME: perhaps save altimeterStatus from next 2 bytes
                 i0 <- i0 + 8
             }
-            if (ASTIncluded[ch]) {
+            if (ASTIncluded[ch]) { # burst
                 # bytes: 4(distance)+2(quality)+2(offset)+4(pressure)+8(spare)
                 burst$ASTDistance <- readBin(d$buf[i + i0 + 0:3], "numeric", size=4, n=1, endian="little")
                 i0 <- i0 + 8 # advance past distance (4 bytes), then skip skip quality (2 bytes) and offset (2 bytes)
@@ -1702,7 +1708,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
                 # FIXME: perhaps save altimeterStatus from next 2 bytes
                 i0 <- i0 + 8
             }
-            if (ASTIncluded[ch]) {
+            if (ASTIncluded[ch]) { # average
                 # bytes: 4(distance)+2(quality)+2(offset)+4(pressure)+8(spare)
                 average$ASTDistance <- readBin(d$buf[i + i0 + 0:3], "numeric", size=4, n=1, endian="little")
                 i0 <- i0 + 8 # advance past distance (4 bytes), then skip skip quality (2 bytes) and offset (2 bytes)
@@ -1788,7 +1794,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
                 # FIXME: perhaps save altimeterStatus from next 2 bytes
                 i0 <- i0 + 8
             }
-            if (ASTIncluded[ch]) {
+            if (ASTIncluded[ch]) { # interleavedBurst
                 # bytes: 4(distance)+2(quality)+2(offset)+4(pressure)+8(spare)
                 interleavedBurst$ASTDistance <- readBin(d$buf[i + i0 + 0:3], "numeric", size=4, n=1, endian="little")
                 i0 <- i0 + 8 # advance past distance (4 bytes), then skip skip quality (2 bytes) and offset (2 bytes)
@@ -1889,26 +1895,26 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
             #<>     # FIXME: perhaps save altimeterStatus from next 2 bytes
                 i0 <- i0 + 8 # FIXME: change this, if read altimeterQuality and/or altimeterStatus
             }
-            if (ASTIncluded[ch]) {
-                # Create space
-                if (!"ASTDistance" %in% names(burstAltimeterRaw)) {
-                    oceDebug(debug>1, "creating burstAltimeterRaw$ASTDistance (", sum(d$id==0x1a), ")\n")
-                    burstAltimeterRaw$ASTDistance <- rep(NA_real_, sum(d$id==0x1a))
-                }
-                if (!"ASTPressure" %in% names(burstAltimeterRaw)) {
-                    oceDebug(debug>1, "creating burstAltimeterRaw$ASTpressure (", sum(d$id==0x1a), ")\n")
-                    burstAltimeterRaw$ASTPressure <- rep(NA_real_, sum(d$id==0x1a))
-                }
-                # bytes: 4(distance)+2(quality)+2(offset)+4(pressure)+8(spare)
-                burstAltimeterRaw$ASTDistance[burstAltimeterRaw$i] <- readBin(d$buf[i + i0 + 0:3], "numeric", size=4, n=1, endian="little")
-                oceDebug(debug>1, "saving ASTDistance[", burstAltimeterRaw$i,  "]=",
-                    burstAltimeterRaw$ASTDistance[burstAltimeterRaw$i], " at i0=", i0, "\n")
-                i0 <- i0 + 8 # advance past distance (4 bytes), then skip quality (2 bytes) and offset (2 bytes)
-                burstAltimeterRaw$ASTPressure[burstAltimeterRaw$i] <- readBin(d$buf[i + i0 + 0:3], "numeric", size=4, n=1, endian="little")
-                oceDebug(debug>1, "saving ASTPressure[", burstAltimeterRaw$i,  "]=",
-                    burstAltimeterRaw$ASTPressure[burstAltimeterRaw$i], " at i0=", i0, "\n")
-                i0 <- i0 + 12 # skip spare (8 bytes)
-            }
+            #<> if (ASTIncluded[ch]) { # AST
+            #<>     # Create space
+            #<>     if (!"ASTDistance" %in% names(burstAltimeterRaw)) {
+            #<>         oceDebug(debug>1, "creating burstAltimeterRaw$ASTDistance (", sum(d$id==0x1a), ")\n")
+            #<>         burstAltimeterRaw$ASTDistance <- rep(NA_real_, sum(d$id==0x1a))
+            #<>     }
+            #<>     if (!"ASTPressure" %in% names(burstAltimeterRaw)) {
+            #<>         oceDebug(debug>1, "creating burstAltimeterRaw$ASTpressure (", sum(d$id==0x1a), ")\n")
+            #<>         burstAltimeterRaw$ASTPressure <- rep(NA_real_, sum(d$id==0x1a))
+            #<>     }
+            #<>     # bytes: 4(distance)+2(quality)+2(offset)+4(pressure)+8(spare)
+            #<>     burstAltimeterRaw$ASTDistance[burstAltimeterRaw$i] <- readBin(d$buf[i + i0 + 0:3], "numeric", size=4, n=1, endian="little")
+            #<>     oceDebug(debug>1, "saving ASTDistance[", burstAltimeterRaw$i,  "]=",
+            #<>         burstAltimeterRaw$ASTDistance[burstAltimeterRaw$i], " at i0=", i0, "\n")
+            #<>     i0 <- i0 + 8 # advance past distance (4 bytes), then skip quality (2 bytes) and offset (2 bytes)
+            #<>     burstAltimeterRaw$ASTPressure[burstAltimeterRaw$i] <- readBin(d$buf[i + i0 + 0:3], "numeric", size=4, n=1, endian="little")
+            #<>     oceDebug(debug>1, "saving ASTPressure[", burstAltimeterRaw$i,  "]=",
+            #<>         burstAltimeterRaw$ASTPressure[burstAltimeterRaw$i], " at i0=", i0, "\n")
+            #<>     i0 <- i0 + 12 # skip spare (8 bytes)
+            #<> }
             #<> if (altimeterRawIncluded[ch]) { # burstAltimeterRaw
             #<>     message("BREADCRUMB 2: blanking out altimeterDistance (should remove this)")
             #<>     i0 <- i0 + 6 + 2*burstAltimeterRaw$altimeterRawNumberOfSamples
