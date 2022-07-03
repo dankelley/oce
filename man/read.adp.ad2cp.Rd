@@ -118,19 +118,48 @@ An \linkS4class{adp} object with \code{metadata$fileType} equal to \code{"AD2CP"
 table (if \code{which="?"}), or a list of character vectors (if \code{which="text"}).
 }
 \description{
-This function may be incomplete in some important ways, because AD2CP data
-formats are not described clearly enough in references 1, 1b, 2 and 3 to be
+This function reads Nortek AD2CP files, storing data elements in lists within
+the \code{data} slot.  So, for example, the following might be a way to read and
+then access burst altimeter raw data.
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{d <- read.adp.ad2cp("file.ad2cp", which="burstAltimeterRaw")
+bar <- d[["burstAltimeterRaw"]]
+}\if{html}{\out{</div>}}
+}
+\details{
+\code{read.adp.ad2cp()} is incomplete in some important ways, because AD2CP data
+formats are not described clearly enough in references 1, 2, and 3 to be
 certain of how to handle the range of file configurations that may be
 possible. The code has been tested with a small number of files that are
 available to the author, but these do not cover some cases that users might
-require. Given all of this, it makes sense to use this function with caution.
-}
-\details{
+require. Given all of this, it makes sense to use this function with caution;
+see \dQuote{Cautionary Notes}.
+
 Some of the standard \verb{read.adp.*} arguments are handled differently with this
 function, e.g. \code{by} must equal 1, because skipping records makes little sense
 with blended multiple streams. Plus, this function has an extra argument, not
 provided by other \verb{read.adp.*} functions: \code{which} may be used to focus on
 just a particular data stream.
+}
+\section{Cautionary Notes}{
+
+
+This function is in active development, and it may produce incorrect results,
+because of the need to guess about certain things that are not well-documented
+in Nortek documents. Three main documents were used as a guide to coding, and
+they differ in significant ways.  For example, the checksum computation scheme
+is described in two contradictory ways, although one makes very sense, so it is
+ignored here.
+
+It would seem to make sense to use the 2022 document, i.e.  reference 1b, but
+it is less clear than earlier documents, e.g. reference 1, with a fair bit of
+missing material. Nortek has indicated that they will release a revision to
+that document, and it will be consulted when it becomes available.  Also, the
+2022 document has significant errors, e.g.  as stating that the variable
+called \code{altimeterDistance} here is a 32-bit integer, whereas the 2017
+document stated it to be a 32-bit float.  The latter is used here, because
+the older document has proved to be more trustworthy, and also because
+assuming the former yields wildly unrealistic results.
 
 In spring of 2022, support was added for 12-byte headers.  These are not
 described in any Nortek document in the possession of the author of this
@@ -138,31 +167,17 @@ function, although some personal communications made via
 https://github.com/dankelley/oce/issues have suggested some clues.  Those
 clues have led to provisional code here, but it has not been tested
 adequately.
-
-This function stores data elements in lists within the \code{data} slot.  So, for
-example, the following might be a way to read and then access burst altimeter
-raw data.
-
-\if{html}{\out{<div class="sourceCode">}}\preformatted{d <- read.adp.ad2cp("file.ad2cp", which="burstAltimeterRaw")
-bar <- d[["burstAltimeterRaw"]]
-}\if{html}{\out{</div>}}
 }
+
 \references{
-\enumerate{
-\item Nortek AS. \dQuote{Signature Integration 55|250|500|1000kHz.} Nortek AS, 2017.
-}
+Nortek AS. \dQuote{Signature Integration 55|250|500|1000kHz.} Nortek AS,
+2017.
 
-1b. Nortek AS. “Signature Integration 55|250|500|1000kHz (Version Version 2022.2).” Nortek AS, March 31, 2022.
-(This update to 1 presumably holds more up-to-date information, but it is
-also quite a lot less detailed, e.g. not including sample code to explain how
-checksums are to be computed.)
-\enumerate{
-\item Nortek AS. \dQuote{Operations Manual - Signature250, 500 and 1000.} Nortek AS, September 21, 2018.
-\item Nortek AS. \dQuote{Signature Integration 55|250|500|1000kHz.} Nortek AS, 2018. (This revision of
-reference 1 is useful in including new information about instrument orientation. Note that
-most of the comments within the \code{read.adp.ad2cp} code refer to reference 1, which has different
-page numbers than reference 3.)
-}
+Nortek AS. \dQuote{Signature Integration 55|250|500|1000kHz.} Nortek AS,
+2018. (This revision includes new information about instrument orientation.)
+
+Nortek AS. \dQuote{Signature Integration 55|250|500|1000kHz.} Nortek AS,
+March 31, 2022.  (This confusing revision may be updated sometime in 2022.)
 }
 \seealso{
 Other things related to adp data: 

@@ -134,18 +134,46 @@ ad2cpCodeToName <- function(code)
 
 #' Read an AD2CP File
 #'
-#' This function may be incomplete in some important ways, because AD2CP data
-#' formats are not described clearly enough in references 1, 1b, 2 and 3 to be
+#' This function reads Nortek AD2CP files, storing data elements in lists within
+#' the `data` slot.  So, for example, the following might be a way to read and
+#' then access burst altimeter raw data.
+#'```
+#' d <- read.adp.ad2cp("file.ad2cp", which="burstAltimeterRaw")
+#' bar <- d[["burstAltimeterRaw"]]
+#'```
+#'
+#' `read.adp.ad2cp()` is incomplete in some important ways, because AD2CP data
+#' formats are not described clearly enough in references 1, 2, and 3 to be
 #' certain of how to handle the range of file configurations that may be
 #' possible. The code has been tested with a small number of files that are
 #' available to the author, but these do not cover some cases that users might
-#' require. Given all of this, it makes sense to use this function with caution.
+#' require. Given all of this, it makes sense to use this function with caution;
+#' see \dQuote{Cautionary Notes}.
 #'
 #' Some of the standard `read.adp.*` arguments are handled differently with this
 #' function, e.g. `by` must equal 1, because skipping records makes little sense
 #' with blended multiple streams. Plus, this function has an extra argument, not
 #' provided by other `read.adp.*` functions: `which` may be used to focus on
 #' just a particular data stream.
+#'
+#' @section Cautionary Notes:
+#'
+#' This function is in active development, and it may produce incorrect results,
+#' because of the need to guess about certain things that are not well-documented
+#' in Nortek documents. Three main documents were used as a guide to coding, and
+#' they differ in significant ways.  For example, the checksum computation scheme
+#' is described in two contradictory ways, although one makes very sense, so it is
+#' ignored here.
+#'
+#' It would seem to make sense to use the 2022 document, i.e.  reference 1b, but
+#' it is less clear than earlier documents, e.g. reference 1, with a fair bit of
+#' missing material. Nortek has indicated that they will release a revision to
+#' that document, and it will be consulted when it becomes available.  Also, the
+#' 2022 document has significant errors, e.g.  as stating that the variable
+#' called `altimeterDistance` here is a 32-bit integer, whereas the 2017
+#' document stated it to be a 32-bit float.  The latter is used here, because
+#' the older document has proved to be more trustworthy, and also because
+#' assuming the former yields wildly unrealistic results.
 #'
 #' In spring of 2022, support was added for 12-byte headers.  These are not
 #' described in any Nortek document in the possession of the author of this
@@ -154,13 +182,6 @@ ad2cpCodeToName <- function(code)
 #' clues have led to provisional code here, but it has not been tested
 #' adequately.
 #'
-#' This function stores data elements in lists within the `data` slot.  So, for
-#' example, the following might be a way to read and then access burst altimeter
-#' raw data.
-#'```
-#' d <- read.adp.ad2cp("file.ad2cp", which="burstAltimeterRaw")
-#' bar <- d[["burstAltimeterRaw"]]
-#'```
 #'
 #' @param file A connection or a character string giving the name of the file to load.
 #'
@@ -260,19 +281,18 @@ ad2cpCodeToName <- function(code)
 #' @author Dan Kelley
 #'
 #' @references
-#' 1. Nortek AS. \dQuote{Signature Integration 55|250|500|1000kHz.} Nortek AS, 2017.
 #'
-#' 1b. Nortek AS. “Signature Integration 55|250|500|1000kHz (Version Version 2022.2).” Nortek AS, March 31, 2022.
-#' (This update to 1 presumably holds more up-to-date information, but it is
-#' also quite a lot less detailed, e.g. not including sample code to explain how
-#' checksums are to be computed.)
+#' Nortek AS. \dQuote{Signature Integration 55|250|500|1000kHz.} Nortek AS,
+#' 2017.
 #'
-#' 2. Nortek AS. \dQuote{Operations Manual - Signature250, 500 and 1000.} Nortek AS, September 21, 2018.
+#' Nortek AS. \dQuote{Signature Integration 55|250|500|1000kHz.} Nortek AS,
+#' 2018. (This revision includes new information about instrument orientation.)
 #'
-#' 3. Nortek AS. \dQuote{Signature Integration 55|250|500|1000kHz.} Nortek AS, 2018. (This revision of
-#' reference 1 is useful in including new information about instrument orientation. Note that
-#' most of the comments within the `read.adp.ad2cp` code refer to reference 1, which has different
-#' page numbers than reference 3.)
+#' Nortek AS. \dQuote{Signature Integration 55|250|500|1000kHz.} Nortek AS,
+#' March 31, 2022.  (This confusing revision may be updated sometime in 2022.)
+#'
+## Nortek AS. \dQuote{Operations Manual - Signature 250, 500 and 1000.} Nortek AS,
+## September 21, 2018.
 #'
 #' @family things related to adp data
 read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
@@ -1612,7 +1632,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
                 burst$q[burst$i, ,] <- matrix(q, ncol=ncol, nrow=nrow, byrow=FALSE)
                 i0 <- i0 + n
             }
-            if (altimeterIncluded[ch]) {
+            if (altimeterIncluded[ch]) { # burst
                 burst$altimeterDistance[burst$i] <- readBin(d$buf[i + i0 + 0:3], "numeric", size=4, n=1, endian="little")
                 # FIXME: perhaps save altimeterQuality from next 2 bytes
                 # FIXME: perhaps save altimeterStatus from next 2 bytes
@@ -1676,7 +1696,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
                 average$q[average$i, ,] <- matrix(q, ncol=ncol, nrow=nrow, byrow=FALSE)
                 i0 <- i0 + n
             }
-            if (altimeterIncluded[ch]) {
+            if (altimeterIncluded[ch]) { # average
                 average$altimeterDistance[average$i] <- readBin(d$buf[i + i0 + 0:3],"numeric", size=4,n=1,endian="little")
                 # FIXME: perhaps save altimeterQuality from next 2 bytes
                 # FIXME: perhaps save altimeterStatus from next 2 bytes
@@ -1718,7 +1738,8 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
                 i0 <- i0 + 4*ncol
                 #message(" ... done")
             }
-            if (altimeterIncluded[ch]) { # configuration[,9]=bit8 [1 pages 60 and 62]
+            if (altimeterIncluded[ch]) { # bottomTrack
+                # configuration[,9]=bit8 [1 pages 60 and 62]
                 oceDebug(debug>1, "saving bottomTrack$altimeterDistance[", bottomTrack$i, ",]\n")
                 bottomTrack$altimeterDistance[bottomTrack$i, ] <-
                     readBin(buf[i + i0 + seq(0,4*ncol-1)], "numeric", size=4, n=ncol, endian="little")
@@ -1761,7 +1782,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
                 interleavedBurst$q[interleavedBurst$i, ,] <- matrix(q, ncol=ncol, nrow=nrow, byrow=FALSE)
                 i0 <- i0 + n
             }
-            if (altimeterIncluded[ch]) {
+            if (altimeterIncluded[ch]) { # interleavedBurst
                 interleavedBurst$altimeterDistance[interleavedBurst$i] <- readBin(d$buf[i + i0 + 0:3],"numeric", size=4,n=1,endian="little")
                 # FIXME: perhaps save altimeterQuality from next 2 bytes
                 # FIXME: perhaps save altimeterStatus from next 2 bytes
@@ -1852,7 +1873,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
                 oceDebug(debug>1, "saving burstAltimeterRaw$q[", burstAltimeterRaw$i, ",,] at i0=", i0, "\n")
                 i0 <- i0 + n
             }
-            if (altimeterIncluded[ch]) {
+            if (altimeterIncluded[ch]) { # burstAltimeterRaw (DELETED)
             #<>     message("BREADCRUMB 1a")
             #<>     # Create space
             #<>     if (!("altimeterDistance" %in% names(burstAltimeterRaw))) {
@@ -1942,7 +1963,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
                 DVLBottomTrack$q[DVLBottomTrack$i, ,] <- matrix(q, ncol=ncol, nrow=nrow, byrow=FALSE)
                 i0 <- i0 + n
             }
-            if (altimeterIncluded[ch]) {
+            if (altimeterIncluded[ch]) { # DVLBottomTrack
                 DVLBottomTrack$altimeterDistance[DVLBottomTrack$i] <- readBin(d$buf[i + i0 + 0:3],"numeric", size=4,n=1,endian="little")
                 # FIXME: perhaps save altimeterQuality from next 2 bytes
                 # FIXME: perhaps save altimeterStatus from next 2 bytes
@@ -2060,7 +2081,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
                 DVLWaterTrack$q[DVLWaterTrack$i, ,] <- matrix(q, ncol=ncol, nrow=nrow, byrow=FALSE)
                 i0 <- i0 + n
             }
-            if (altimeterIncluded[ch]) {
+            if (altimeterIncluded[ch]) { # DVLWaterTrack
                 DVLWaterTrack$altimeterDistance[DVLWaterTrack$i] <- readBin(d$buf[i + i0 + 0:3], "numeric", size=4, n=1, endian="little")
                 # FIXME: perhaps save altimeterQuality from next 2 bytes
                 # FIXME: perhaps save altimeterStatus from next 2 bytes
@@ -2113,7 +2134,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
                 altimeter$q[altimeter$i, ,] <- matrix(q, ncol=ncol, nrow=nrow, byrow=FALSE)
                 i0 <- i0 + n
             }
-            if (altimeterIncluded[ch]) {
+            if (altimeterIncluded[ch]) { # altimeter
                 altimeter$altimeterDistance[altimeter$i] <- readBin(d$buf[i + i0 + 0:3], "numeric", size=4, n=1, endian="little")
                 # FIXME: perhaps save altimeterQuality from next 2 bytes
                 # FIXME: perhaps save altimeterStatus from next 2 bytes
@@ -2165,7 +2186,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
                 averageAltimeter$q[averageAltimeter$i, ,] <- matrix(q, ncol=ncol, nrow=nrow, byrow=FALSE)
                 i0 <- i0 + n
             }
-            if (altimeterIncluded[ch]) {
+            if (altimeterIncluded[ch]) { # averageAltimeter
                 averageAltimeter$altimeterDistance[averageAltimeter$i] <- readBin(d$buf[i + i0 + 0:3], "numeric", size=4, n=1, endian="little")
                 # FIXME: perhaps save altimeterQuality from next 2 bytes
                 # FIXME: perhaps save altimeterStatus from next 2 bytes
