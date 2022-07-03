@@ -32,12 +32,10 @@ read.adp.ad2cp(
 read. This must equal 1, for this version of \code{read.adp.ad2cp}.
 (If not provided, \code{from} defaults to 1.)}
 
-\item{to}{An integer indicating the final record to read.
+\item{to}{an integer indicating the final record to read.
 (If not provided, \code{by} defaults to 1e9.)}
 
-\item{by}{An integer indicating the step from record to record. This
-must equal 1, for this version of \code{read.adp.ad2cp}.
-(If not provided, \code{by} defaults to 1.)}
+\item{by}{ignored by this function.}
 
 \item{which}{character value indicating the data type(s) to be read, and
 stored in the \code{data} slot of the returned value.  The default, \code{which="all"},
@@ -128,18 +126,18 @@ available to the author, but these do not cover some cases that users might
 require. Given all of this, it makes sense to use this function with caution.
 }
 \details{
-Some of the standard \verb{read.adp.*} arguments are
-handled differently with this function, e.g. \code{by} must equal 1, because
-skipping records makes sense with blended multiple streams; see the
-\dQuote{Arguments} section for other limitations that stem from the specifics
-of this file format.
+Some of the standard \verb{read.adp.*} arguments are handled differently with this
+function, e.g. \code{by} must equal 1, because skipping records makes little sense
+with blended multiple streams. Plus, this function has an extra argument, not
+provided by other \verb{read.adp.*} functions: \code{which} may be used to focus on
+just a particular data stream.
 
 In spring of 2022, support was added for 12-byte headers.  These are not
 described in any Nortek document in the possession of the author of this
 function, although some personal communications made via
 https://github.com/dankelley/oce/issues have suggested some clues.  Those
-clues have led to provisional code in \code{read.adp.ad2cp()}, but this
-code has not been tested adequately.
+clues have led to provisional code here, but it has not been tested
+adequately.
 
 This function stores data elements in lists within the \code{data} slot.  So, for
 example, the following might be a way to read and then access burst altimeter

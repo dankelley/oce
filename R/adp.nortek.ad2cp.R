@@ -1,4 +1,4 @@
-# vim:textwidth=100:expandtab:shiftwidth=4:softtabstop=4
+# vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
 
 # This file deals only with Nortek ad2cp files.  Please see comments in
 # adp.nortek.R for comments on general data formats
@@ -141,18 +141,18 @@ ad2cpCodeToName <- function(code)
 #' available to the author, but these do not cover some cases that users might
 #' require. Given all of this, it makes sense to use this function with caution.
 #'
-#' Some of the standard `read.adp.*` arguments are
-#' handled differently with this function, e.g. `by` must equal 1, because
-#' skipping records makes sense with blended multiple streams; see the
-#' \dQuote{Arguments} section for other limitations that stem from the specifics
-#' of this file format.
+#' Some of the standard `read.adp.*` arguments are handled differently with this
+#' function, e.g. `by` must equal 1, because skipping records makes little sense
+#' with blended multiple streams. Plus, this function has an extra argument, not
+#' provided by other `read.adp.*` functions: `which` may be used to focus on
+#' just a particular data stream.
 #'
 #' In spring of 2022, support was added for 12-byte headers.  These are not
 #' described in any Nortek document in the possession of the author of this
 #' function, although some personal communications made via
 #' https://github.com/dankelley/oce/issues have suggested some clues.  Those
-#' clues have led to provisional code in `read.adp.ad2cp()`, but this
-#' code has not been tested adequately.
+#' clues have led to provisional code here, but it has not been tested
+#' adequately.
 #'
 #' This function stores data elements in lists within the `data` slot.  So, for
 #' example, the following might be a way to read and then access burst altimeter
@@ -168,9 +168,10 @@ ad2cpCodeToName <- function(code)
 #' read. This must equal 1, for this version of `read.adp.ad2cp`.
 #' (If not provided, `from` defaults to 1.)
 #'
-#' @param by An integer indicating the step from record to record. This
-#' must equal 1, for this version of `read.adp.ad2cp`.
-#' (If not provided, `by` defaults to 1.)
+#' @param by ignored by this function.
+#'
+#' @param to an integer indicating the final record to read.
+#' (If not provided, `by` defaults to 1e9.)
 #'
 #' @param which  character value indicating the data type(s) to be read, and
 #' stored in the `data` slot of the returned value.  The default, `which="all"`,
@@ -193,9 +194,6 @@ ad2cpCodeToName <- function(code)
 #' `"text"` for ID code 0xa0 (returned as a list of character vectors,
 #' with each of those vectors holding lines inferred by splitting the string
 #' at occurances of carriage-return/line-feed pairs).
-#'
-#' @param to An integer indicating the final record to read.
-#' (If not provided, `by` defaults to 1e9.)
 #'
 #' @param tz Character value indicating time zone. This is used in interpreting
 #' times stored in the file.
@@ -328,18 +326,16 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
     }
     if (!fromGiven)
         from <- 1
-    if (!byGiven)
-        by <- 1
+    #. if (!byGiven)
+    #.     by <- 1
     if (!toGiven)
         to <- 0
-    if (by != 1)
-        stop("must have by=1, since skipping makes no sense in complex ad2cp files")
+    #. if (by != 1)
+    #.     stop("must have by=1, since skipping makes no sense in complex ad2cp files")
     if (to < 0)
         stop("cannot have to<0")
     if (from != 1)
         stop("must have from=1")
-    #. if (by < 1)
-    #.     stop("cannot have by < 1")
     if (to == 0)
         to <- 1e9                      # this should be enough to read any file
     if (is.character(file)) {
@@ -350,21 +346,21 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
         filename <- "(connection)"
     }
     if (!inherits(file, "connection"))
-        stop("argument `file' must be a character string or connection")
+        stop("`file` must be a character string or connection")
     if (!isOpen(file)) {
         filename <- "(connection)"
         open(file, "rb")
         on.exit(close(file))
     }
+    # Determine file size
     seek(file, 0, "start")
-    seek(file, 0, "start")
-    # go to the end, so the next seek (to get to the data) reveals file length
     seek(file, where=0, origin="end")
     fileSize <- seek(file, where=0)
+    seek(file, 0, "start")
     oceDebug(debug, "fileSize:", fileSize, "\n")
     buf <- readBin(file, what="raw", n=fileSize, size=1)
     oceDebug(debug, 'first 10 bytes in file: ',
-             paste(paste("0x", buf[1+0:9], sep=""), collapse=" "), "\n", sep="")
+        paste(paste("0x", buf[1+0:9], sep=""), collapse=" "), "\n", sep="")
     headerSize <- as.integer(buf[2])
     oceDebug(debug, "headerSize:", headerSize, "\n")
     ID <- buf[3]
@@ -406,9 +402,8 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
 
     # Create pointers for accessing 1-byte, 2-byte, and 4-byte chunks
     oceDebug(debug, "focussing on ", length(d$index), " data records\n")
-    pointer1 <- d$index
-    pointer2 <- as.vector(t(cbind(pointer1, 1 + pointer1))) # rbind() would be fine, too.
-    pointer4 <- as.vector(t(cbind(pointer1, 1 + pointer1, 2 + pointer1, 3 + pointer1)))
+    #.pointer2 <- as.vector(t(cbind(pointer1, 1 + pointer1))) # rbind() would be fine, too.
+    #.pointer4 <- as.vector(t(cbind(pointer1, 1 + pointer1, 2 + pointer1, 3 + pointer1)))
     # Below indicates that gappyIndex() is about 6 times faster on a small file
     # (1477 chunks) This won't matter for such a small file, but it will for
     # larger files.  My tests with 1e6 points suggests factor >100 speedup; for
@@ -418,13 +413,15 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
     #>     as.vector(t(cbind(pointer1, 1 + pointer1, 2 + pointer1, 3 + pointer1))),
     #>     pointer4NEW <- gappyIndex(pointer1, 0, 3)
     #>     )
-    pointer2NEW <- gappyIndex(pointer1, 0, 2)
-    pointer4NEW <- gappyIndex(pointer1, 0, 4)
-    if (!all.equal(pointer2, pointer2NEW))
-        warning("DEVELOPER NOTE: pointer2NEW != pointer2 at spot 1")
-    if (!all.equal(pointer4, pointer4NEW))
-        warning("DEVELOPER NOTE: pointer4NEW != pointer4 at spot 1")
-
+    #.pointer2NEW <- gappyIndex(pointer1, 0, 2)
+    #.pointer4NEW <- gappyIndex(pointer1, 0, 4)
+    #.if (!all.equal(pointer2, pointer2NEW))
+    #.    warning("DEVELOPER NOTE: pointer2NEW != pointer2 at spot 1")
+    #.if (!all.equal(pointer4, pointer4NEW))
+    #.    warning("DEVELOPER NOTE: pointer4NEW != pointer4 at spot 1")
+    pointer1 <- d$index
+    pointer2 <- gappyIndex(d$index, 0, 2)
+    pointer4 <- gappyIndex(d$index, 0, 4)
 
     # {{{
     # Handle multiple plans (FIXME: this is limited to a single plan, at present)
@@ -724,14 +721,60 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
     #x is present in the dataset.
     #x
     #x @author Dan Kelley
-    getItemFromBuf <- function(object, name, i, NP, debug=getOption("oceDebug"))
+    getItemFromBuf <- function(object, name, i, debug=getOption("oceDebug"))
     {
         if (name == "v") {
-            message("FIXME: write code to read 'v'")
+            message("provisional code to read 'v'")
+            n <- object$numberOfCells * object$numberOfBeams
+            if (n > 0) {
+                iv <- gappyIndex(i, i0v, 2L*n)
+                # FIXME: use proper velocity factor
+                v <- 1.0*readBin(d$buf[iv], "integer", size=2L, n=n*object$numberOfProfiles, endian="little")
+                object$v <- array(v,
+                    dim(object$numberOfProfiles, object$numberOfBeams, object$numberOfCells))
+                i0v <<- i0v + 2L * n
+                message("advanced iv0 from ", iv0-2L*n, " to ", iv0)
+            }
+            message("FIXME: v is probably wrong!")
         } else if (name == "a") {
-            message("FIXME: write code to read 'v'")
+            message("provisional code to read 'a'")
+            n <- object$numberOfCells * object$numberOfBeams
+            if (n > 0) {
+                iv <- gappyIndex(i, i0v, n)
+                v <- 1.0*readBin(d$buf[iv], "raw", size=1L, n=n*object$numberOfProfiles, endian="little")
+                object$a <- array(a,
+                    dim(object$numberOfProfiles, object$numberOfBeams, object$numberOfCells))
+                i0v <<- i0v + n
+                message("advanced iv0 from ", iv0-n, " to ", iv0)
+            }
+            message("FIXME: a is probably wrong!")
         } else if (name == "q") {
-            message("FIXME: write code to read 'v'")
+            message("provisional code to read 'q'")
+            n <- object$numberOfCells * object$numberOfBeams
+            if (n > 0) {
+                iv <- gappyIndex(i, i0v, n)
+                q <- readBin(d$buf[iv], "raw", size=1L, n=n*object$numberOfProfiles, endian="little")
+                object$q <- array(q,
+                    dim(object$numberOfProfiles, object$numberOfBeams, object$numberOfCells))
+                i0v <<- i0v + n
+                message("advanced iv0 from ", iv0-n, " to ", iv0)
+            }
+            message("FIXME: q is probably wrong!")
+        } else if (name == "altimeter") {
+            # Nortek 2022 p89 (top) states altimeterDistance is int32, but the
+            # values obtained with that setting ar crazy (e.g. 1109925788 m),
+            # and Nortek 2017 p51 bottom states that it is a float value.
+            message("NEW NEW NEW -- altimeter -- NEW NEW NEW. i0v=", i0v)
+            iv <- gappyIndex(i, i0v, 4L)
+            object$altimeterDistance <- readBin(buf[iv], "numeric", size=4L, n=NP, endian="little", signed=TRUE)
+            message(vectorShow(object$altimeterDistance))
+            i0v <<- i0v + 4L
+            iv <- gappyIndex(i, i0v, 2L)
+            object$altimeterQuality <- readBin(buf[iv], "integer", size=2L, n=NP, endian="little", signed=FALSE)
+            i0v <<- i0v + 2L
+            iv <- gappyIndex(i, i0v, 2L)
+            object$altimeterStatus <- readBin(buf[iv], "integer", size=2L, n=NP, endian="little", signed=FALSE)
+            i0v <<- i0v + 2L
         } else if (name == "altimeterRaw") {
             # altimeterRawNumberOfSamples: number of samples
             iv <- gappyIndex(i, i0v, 4L)
@@ -1047,17 +1090,19 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
         oceDebug(debug, "length(p$burstAltimeterRaw)=", length(p$burstAltimeterRaw), "\n", sep="")
         #if (any(version[p$burstAltimeter] != 3))
         #    stop("can only decode 'burstAltimeter' data records that are in 'version 3' format")
+        message("FIXME L1093")
         nbeamsBurstAltimeterRaw <- nbeams[p$burstAltimeterRaw[1]]
         ncellsBurstAltimeterRaw <- ncells[p$burstAltimeterRaw[1]]
-        oceDebug(debug, "burstAltimeterRaw data records: nbeams:", nbeamsBurstAltimeterRaw, ", ncells:", ncellsBurstAltimeterRaw, "\n")
+        oceDebug(debug+1, "burstAltimeterRaw data records: nbeams:", nbeamsBurstAltimeterRaw, ", ncells:", ncellsBurstAltimeterRaw, "\n")
         if (any(ncells[p$burstAltimeterRaw] != ncellsBurstAltimeterRaw))
             stop("the 'burstAltimeterRaw' data records do not all have the same number of cells")
         if (any(nbeams[p$burstAltimeterRaw] != nbeamsBurstAltimeterRaw))
             stop("the 'burstAltimeterRaw' data records do not all have the same number of beams")
         # FIXME: read other fields to the following list.
         burstAltimeterRaw <- list(i=1,
-            numberOfCells=ncellsBurstAltimeterRaw, # FIXME: perhaps remove this
-            numberOfBeams=nbeamsBurstAltimeterRaw, # FIXME: perhaps remove this
+            numberOfCells=ncellsBurstAltimeterRaw,
+            numberOfBeams=nbeamsBurstAltimeterRaw,
+            numberOfProfiles=length(p$burstAltimeterRaw),
             originalCoordinate=coordinateSystem[p$burstAltimeterRaw[1]],
             oceCoordinate=coordinateSystem[p$burstAltimeterRaw[1]],
             cellSize=cellSize[p$burstAltimeterRaw[1]],
@@ -1100,34 +1145,38 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
             oceDebug(debug, vectorShow(i, n=4))
             NC <- burstAltimeterRaw$numberOfCells # number of cells for v,a,q
             NB <- burstAltimeterRaw$numberOfBeams # number of beams for v,a,q
+
             if (velocityIncluded[p$burstAltimeterRaw[1]]) {
-                oceDebug(debug, "?vector-read burstAltimeterRaw$velocity (i0v=", i0v, ")\n")
+                oceDebug(debug, "NEW burstAltimeterRaw$v (i0v=", i0v, ")\n")
+                burstAltimeterRaw <- getItemFromBuf(burstAltimeterRaw, "v", i=i, debug=debug)
                 # nrow and ncol may be mixed up next
-                oceDebug(debug, "? create double array dim(", NP, ",", NB, ",", NC, ")\n")
-                burstAltimeterRaw$v <- array(double(), dim=c(NP, NB, NC)) # FIXME: read the data
-                i0v <- i0v + 2L*NB*NC  # 2 bytes each (int, size=2, signed=TRUE)
-                oceDebug(debug, "  new i0v=", i0v, "\n")
+                #OLDoceDebug(debug, "? create double array dim(", NP, ",", NB, ",", NC, ")\n")
+                #OLDburstAltimeterRaw$v <- array(double(), dim=c(NP, NB, NC)) # FIXME: read the data
+                #OLDi0v <- i0v + 2L*NB*NC  # 2 bytes each (int, size=2, signed=TRUE)
+                #OLDoceDebug(debug, "  new i0v=", i0v, "\n")
             }
             if (amplitudeIncluded[p$burstAltimeterRaw[1]]) {
-                oceDebug(debug, "?vector-read burstAltimeterRaw$amplitude (i0v=", i0v, ")\n")
-                oceDebug(debug, "? create raw array dim(", sum(d$id==0x1a), ",", nrow, ",", ncol, ")\n")
-                burstAltimeterRaw$a <- array(raw(), dim=c(NP, NB, NC)) # FIXME: read the data
-                i0v <- i0v + NB*NC     # 1 byte each (raw)
-                oceDebug(debug, "  new i0v=", i0v, "\n")
+                oceDebug(debug, "NEW vector-read burstAltimeterRaw$a (i0v=", i0v, ")\n")
+                burstAltimeterRaw <- getItemFromBuf(burstAltimeterRaw, "v", i=i, debug=debug)
+                #oceDebug(debug, "? create raw array dim(", sum(d$id==0x1a), ",", nrow, ",", ncol, ")\n")
+                #burstAltimeterRaw$a <- array(raw(), dim=c(NP, NB, NC)) # FIXME: read the data
+                #i0v <- i0v + NB*NC     # 1 byte each (raw)
+                #oceDebug(debug, "  new i0v=", i0v, "\n")
             }
             if (correlationIncluded[p$burstAltimeterRaw[1]]) {
-                oceDebug(debug, "?vector-read burstAltimeterRaw$correlation (i0v=", i0v, ")\n")
-                oceDebug(debug, "? create raw array dim(", sum(d$id==0x1a), ",", nrow, ",", ncol, ")\n")
-                burstAltimeterRaw$q <- array(raw(), dim=c(NP, NB, NC)) # FIXME: read the data
-                i0v <- i0v + NB*NC     # 1 byte each (raw)
+                oceDebug(debug, "NEW vector-read burstAltimeterRaw$correlation (i0v=", i0v, ")\n")
+                burstAltimeterRaw <- getItemFromBuf(burstAltimeterRaw, "v", i=i, debug=debug)
+                #burstAltimeterRaw$q <- array(raw(), dim=c(NP, NB, NC)) # FIXME: read the data
+                #i0v <- i0v + NB*NC     # 1 byte each (raw)
                 oceDebug(debug, "  new i0v=", i0v, "\n")
             }
             if (altimeterIncluded[p$burstAltimeterRaw[1]]) {
-                oceDebug(debug, "?vector-read burstAltimeterRaw$altimeter (i0v=", i0v, ")\n")
-                oceDebug(debug, "? create double vector of length ", sum(d$id==0x1a), "\n")
-                oceDebug(debug, "skipping 2 bytes for altimeterQuality and 2 bytes for altimeterStatus\n")
-                i0v <- i0v + 8L 
-                oceDebug(debug, "  new i0v=", i0v, "\n")
+                oceDebug(debug+1, "NEW vector-read burstAltimeterRaw$altimeter (i0v=", i0v, ")\n")
+                burstAltimeterRaw <- getItemFromBuf(burstAltimeterRaw, "altimeter", i=i, debug=debug)
+                #<>oceDebug(debug, "? create double vector of length ", sum(d$id==0x1a), "\n")
+                #<>oceDebug(debug, "skipping 2 bytes for altimeterQuality and 2 bytes for altimeterStatus\n")
+                #<>i0v <- i0v + 8L
+                oceDebug(debug+1, "new i0v=", i0v, "\n")
             }
             if (ASTIncluded[p$burstAltimeterRaw[1]]) {
                 oceDebug(debug, "?vector-read burstAltimeterRaw$AST (i0v=", i0v, ")\n")
@@ -1143,7 +1192,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
                 #>> iv <- gappyIndex(i, i0v, 4L)
                 #oceDebug(debug, "before reading altimeterRawNumberOfSamples: ", vectorShow(i0v))
                 #oceDebug(debug, "before reading altimeterRawNumberOfSamples: ", vectorShow(iv))
-                burstAltimeterRaw <- getItemFromBuf(burstAltimeterRaw, "altimeterRaw", i=i, NP=NP, debug=debug)
+                burstAltimeterRaw <- getItemFromBuf(burstAltimeterRaw, "altimeterRaw", i=i, debug=debug)
                 #print(str(DAN))
                 #>> save(DAN,burstAltimeterRaw,file='dan.rda')
                 #>> stop()
@@ -1576,7 +1625,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
                 burst$ASTPressure <- readBin(d$buf[i + i0 + 0:3], "numeric", size=4, n=1, endian="little")
                 i0 <- i0 + 12 # skip spare (8 bytes)
             }
-            if (altimeterRawIncluded[ch]) {
+            if (altimeterRawIncluded[ch]) { # burst
                 burst$altimeterRawNumberOfSamples <- readBin(d$buf[i+i0+0:3],"integer",size=4,n=1,endian="little")
                 message(vectorShow(burst$altimeterRawNumberOfSamples))
                 i0 <- i0 + 4
@@ -1586,7 +1635,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
                 # ERROR: not increasing i0 properly. Never caught this because sample
                 # dataset did not have following data (echosounder etc).
                 burst$altimeterRawSamplesOLD <- readBin(d$buf[i+i0+0:1],"integer",size=2,n=1,endian="little") # 'signed frac' in docs FIXME(DEK) what does that mean??
-                message(vectorShow(burst$altimeterRawSamples))
+                message(vectorShow(burst$altimeterRawSamplesOLD))
                 i0 <- i0 + 2
                 # See the Nortek manual snippet below, for more on format.
                 # https://github.com/dankelley/oce/issues/1959#issuecomment-1141411327
@@ -1640,7 +1689,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
                 average$ASTPressure <- readBin(d$buf[i + i0 + 0:3], "numeric", size=4, n=1, endian="little")
                 i0 <- i0 + 12 # skip spare (8 bytes)
             }
-            if (altimeterRawIncluded[ch]) {
+            if (altimeterRawIncluded[ch]) { # average
                 average$altimeterRawNumberOfSamples <- readBin(d$buf[i+i0+0:3],"integer",size=4,n=1,endian="little")
                 i0 <- i0 + 4
                 average$altimeterRawSampleDistance <- readBin(d$buf[i+i0+0:1],"integer",size=2,n=1,endian="little",signed=FALSE)
@@ -1677,7 +1726,8 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
                 #message(" ... done")
             }
             # figureOfMerit: uses variable name that makes sense for average/burst data
-            if (altimeterRawIncluded[ch]) { # configuration[,10]=bit9 [1 pages 60 and 62]
+            if (altimeterRawIncluded[ch]) { # bottomTrack
+                # configuration[,10]=bit9 [1 pages 60 and 62]
                 oceDebug(debug>1, "saving bottomTrack$altimeterFigureOfMerit[", bottomTrack$i, ",]\n")
                 # FIXME: is this integer or numeric?  R won't let me read 2-byte
                 # numerics, so -- for now -- I'm assuming integer. If it is
@@ -1724,7 +1774,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
                 interleavedBurst$ASTPressure <- readBin(d$buf[i + i0 + 0:3], "numeric", size=4, n=1, endian="little")
                 i0 <- i0 + 12 # skip spare (8 bytes)
             }
-            if (altimeterRawIncluded[ch]) {
+            if (altimeterRawIncluded[ch]) { # interleavedBurst
                 interleavedBurst$altimeterRawNumberOfSamples <- readBin(d$buf[i+i0+0:3],"integer",size=4,n=1,endian="little")
                 i0 <- i0 + 4
                 interleavedBurst$altimeterRawSampleDistance <- readBin(d$buf[i+i0+0:1],"integer",size=2,n=1,endian="little",signed=FALSE)
@@ -1787,6 +1837,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
                 oceDebug(debug>1, "saving burstAltimeterRaw$a[", burstAltimeterRaw$i, ",] at i0=", i0, "\n")
             }
             if (correlationIncluded[ch]) {
+                message("FIXME: comment this out!!")
                 # Create space for 'q', or check that dimensionality agrees with existing space.
                 if ("q" %in% names(burstAltimeterRaw)) {
                     nOld <- dim(burstAltimeterRaw$q)[2]
@@ -1802,17 +1853,19 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
                 i0 <- i0 + n
             }
             if (altimeterIncluded[ch]) {
-                # Create space
-                if (!("altimeterDistance" %in% names(burstAltimeterRaw))) {
-                    oceDebug(debug>1, "creating burstAltimeterRaw$altimeterDistance (", sum(d$id==0x1a), ")\n")
-                    burstAltimeterRaw$altimeterDistance <- rep(NA_real_, sum(d$id==0x1a))
-                }
-                burstAltimeterRaw$altimeterDistance[burstAltimeterRaw$i] <- readBin(d$buf[i + i0 + 0:3],"numeric", size=4,n=1,endian="little")
-                oceDebug(debug>1, "saving altimeterDistance[", burstAltimeterRaw$i,  "]=",
-                    burstAltimeterRaw$altimeterDistance[burstAltimeterRaw$i], " at i0=", i0, "\n")
+            #<>     message("BREADCRUMB 1a")
+            #<>     # Create space
+            #<>     if (!("altimeterDistance" %in% names(burstAltimeterRaw))) {
+            #<>         message("BREADCRUMB 1b: blanking out altimeterDistance (should remove this)")
+            #<>         oceDebug(debug>1, "creating burstAltimeterRaw$altimeterDistance (", sum(d$id==0x1a), ")\n")
+            #<>         burstAltimeterRaw$altimeterDistance <- rep(NA_real_, sum(d$id==0x1a))
+            #<>     }
+            #<>     burstAltimeterRaw$altimeterDistance[burstAltimeterRaw$i] <- readBin(d$buf[i + i0 + 0:3],"numeric", size=4,n=1,endian="little")
+            #<>     oceDebug(debug>1, "saving altimeterDistance[", burstAltimeterRaw$i,  "]=",
+            #<>         burstAltimeterRaw$altimeterDistance[burstAltimeterRaw$i], " at i0=", i0, "\n")
 
-                # FIXME: perhaps save altimeterQuality from next 2 bytes
-                # FIXME: perhaps save altimeterStatus from next 2 bytes
+            #<>     # FIXME: perhaps save altimeterQuality from next 2 bytes
+            #<>     # FIXME: perhaps save altimeterStatus from next 2 bytes
                 i0 <- i0 + 8 # FIXME: change this, if read altimeterQuality and/or altimeterStatus
             }
             if (ASTIncluded[ch]) {
@@ -1835,9 +1888,10 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
                     burstAltimeterRaw$ASTPressure[burstAltimeterRaw$i], " at i0=", i0, "\n")
                 i0 <- i0 + 12 # skip spare (8 bytes)
             }
-            if (altimeterRawIncluded[ch]) {
-                i0 <- i0 + 6 + 2*burstAltimeterRaw$altimeterRawNumberOfSamples
-            }
+            #<> if (altimeterRawIncluded[ch]) { # burstAltimeterRaw
+            #<>     message("BREADCRUMB 2: blanking out altimeterDistance (should remove this)")
+            #<>     i0 <- i0 + 6 + 2*burstAltimeterRaw$altimeterRawNumberOfSamples
+            #<> }
             if (echosounderIncluded[ch]) {
                 # Create space for data, or check that dimensionality agrees with existing space.
                 if ("echosounder" %in% names(burstAltimeterRaw)) {
@@ -1901,7 +1955,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
                 DVLBottomTrack$ASTPressure <- readBin(d$buf[i + i0 + 0:3], "numeric", size=4, n=1, endian="little")
                 i0 <- i0 + 12 # skip spare (8 bytes)
             }
-            if (altimeterRawIncluded[ch]) {
+            if (altimeterRawIncluded[ch]) { # DVLBottomTrack
                 DVLBottomTrack$altimeterRawNumberOfSamples <- readBin(d$buf[i+i0+0:3],"integer",size=4,n=1,endian="little")
                 i0 <- i0 + 4
                 DVLBottomTrack$altimeterRawSampleDistance <- readBin(d$buf[i+i0+0:1],"integer",size=2,n=1,endian="little",signed=FALSE)
@@ -1960,7 +2014,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
             #?     echosounder$ASTPressure <- readBin(d$buf[i + i0 + 0:3], "numeric", size=4, n=1, endian="little")
             #?     i0 <- i0 + 12 # skip spare (8 bytes)
             #? }
-            #? if (altimeterRawIncluded[ch]) {
+            #? if (altimeterRawIncluded[ch]) { # echosounder
             #?     echosounder$altimeterRawNumberOfSamples <- readBin(d$buf[i+i0+0:3],"integer",size=4,n=1,endian="little")
             #?     i0 <- i0 + 4
             #?     echosounder$altimeterRawSampleDistance <- readBin(d$buf[i+i0+0:1],"integer",size=2,n=1,endian="little",signed=FALSE)
@@ -2019,7 +2073,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
                 DVLWaterTrack$ASTPressure <- readBin(d$buf[i + i0 + 0:3], "numeric", size=4, n=1, endian="little")
                 i0 <- i0 + 12 # skip spare (8 bytes)
             }
-            if (altimeterRawIncluded[ch]) {
+            if (altimeterRawIncluded[ch]) { # DVLWaterTrack
                 DVLWaterTrack$altimeterRawNumberOfSamples <- readBin(d$buf[i + i0 + 0:3], "integer", size=4, n=1, endian="little")
                 i0 <- i0 + 4
                 DVLWaterTrack$altimeterRawSampleDistance <- readBin(d$buf[i + i0 + 0:1], "integer", size=2, n=1, endian="little", signed=FALSE)
@@ -2072,7 +2126,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
                 altimeter$ASTPressure <- readBin(d$buf[i + i0 + 0:3], "numeric", size=4, n=1, endian="little")
                 i0 <- i0 + 12 # skip spare (8 bytes)
             }
-            if (altimeterRawIncluded[ch]) {
+            if (altimeterRawIncluded[ch]) { # altimeter
                 altimeter$altimeterRawNumberOfSamples <- readBin(d$buf[i + i0 + 0:3], "integer", size=4, n=1, endian="little")
                 i0 <- i0 + 4
                 altimeter$altimeterRawSampleDistance <- readBin(d$buf[i + i0 + 0:1], "integer", size=2, n=1, endian="little", signed=FALSE)
@@ -2124,7 +2178,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
                 averageAltimeter$ASTPressure <- readBin(d$buf[i + i0 + 0:3], "numeric", size=4, n=1, endian="little")
                 i0 <- i0 + 12 # skip spare (8 bytes)
             }
-            if (altimeterRawIncluded[ch]) {
+            if (altimeterRawIncluded[ch]) { # averageAltimeter
                 averageAltimeter$altimeterRawNumberOfSamples <- readBin(d$buf[i + i0 + 0:3], "integer", size=4, n=1, endian="little")
                 i0 <- i0 + 4
                 averageAltimeter$altimeterRawSampleDistance <- readBin(d$buf[i + i0 + 0:1], "integer", size=2, n=1, endian="little", signed=FALSE)
@@ -2197,6 +2251,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
         data$interleavedBurst <- interleavedBurst
     }
     if (!is.null(burstAltimeterRaw)) {    # 0x1a
+        oceDebug(debug, "storing data$burstAltimeterRaw, for later inclusion into returned value\n")
         burstAltimeterRaw$i <- NULL
         data$burstAltimeterRaw <- burstAltimeterRaw
     }
