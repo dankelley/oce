@@ -18,7 +18,7 @@ type:"><!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathj
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-7</span>
       </span>
     </div>
 
@@ -109,16 +109,22 @@ type:"><!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathj
 <dd><p>coordinates at which velocities are specified. The
 length of <code>x</code> and <code>y</code> depends on the form of <code>u</code>
 and <code>v</code> (vectors or matrices).</p></dd>
+
+
 <dt>u, v</dt>
 <dd><p>velocity components in the x and y directions. Can be
 either vectors with the same length as <code>x, y</code>, or
 matrices, of dimension <code>length(x)</code> by <code>length(y)</code>.</p></dd>
+
+
 <dt>scalex, scaley</dt>
 <dd><p>scale to be used for the velocity arrows.
 Exactly one of these must be specified.  Arrows that have
 <code>u^2+v^2=1</code> will have length <code>scalex</code> along the x
 axis, or <code>scaley</code> along the y axis, according to which
 argument is given.</p></dd>
+
+
 <dt>skip</dt>
 <dd><p>either an integer, or a two-element vector indicating
 the number of points to skip when plotting arrows (for the
@@ -126,12 +132,16 @@ matrix <code>u, v</code> case). If a single value, the same
 <code>skip</code> is applied to both the <code>x</code> and <code>y</code>
 directions. If a two-element vector, specifies different values
 for the <code>x</code> and <code>y</code> directions.</p></dd>
+
+
 <dt>length</dt>
 <dd><p>indication of <em>width</em> of arrowheads. The
 somewhat confusing name of this argument is a consequence of
 the fact that it is passed to <code><a href="https://rdrr.io/r/graphics/arrows.html" class="external-link">arrows()</a></code> for drawing
 arrows.  Note that the present default is smaller than the
 default used by <code><a href="https://rdrr.io/r/graphics/arrows.html" class="external-link">arrows()</a></code>.</p></dd>
+
+
 <dt>add</dt>
 <dd><p>if <code>TRUE</code>, the arrows are added to an existing
 plot; otherwise, a new plot is started by calling
@@ -139,28 +149,45 @@ plot; otherwise, a new plot is started by calling
 In other words, the plot will be very basic. In most cases, the
 user will probably want to draw a diagram first, and <code>add</code>
 the direction field later.</p></dd>
+
+
 <dt>type</dt>
 <dd><p>indication of the style of arrow-like indication of the
 direction.</p></dd>
+
+
 <dt>col</dt>
 <dd><p>color of line segments or arrows; see <code><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par()</a></code> for meaning</p></dd>
+
+
 <dt>pch, cex</dt>
 <dd><p>plot character and expansion factor, used for
 <code>type=1</code>; see <code><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par()</a></code> for meanings</p></dd>
+
+
 <dt>lwd, lty</dt>
 <dd><p>line width and type, used for <code>type=2</code>; see <code><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par()</a></code> for meaning</p></dd>
+
+
 <dt>xlab, ylab</dt>
 <dd><p><code>x</code> and <code>y</code> axis labels</p></dd>
+
+
 <dt>debug</dt>
 <dd><p>debugging value; set to a positive integer to get
 debugging information.</p></dd>
+
+
 <dt>...</dt>
 <dd><p>other arguments to be passed to plotting functions
 (e.g. axis labels, etc).</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>None.</p>
+    
+
+<p>None.</p>
     </div>
     <div id="details">
     <h2>Details</h2>
@@ -215,7 +242,7 @@ the line.</p></li>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
       </footer></div>

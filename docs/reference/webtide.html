@@ -20,7 +20,7 @@ of installation are not within the oce purview."><!-- mathjax --><script src="ht
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-7</span>
       </span>
     </div>
 
@@ -112,33 +112,49 @@ Department of Fisheries and Oceans (Canada) website at
 <dd><p>An indication of the action, either <code>action="map"</code> to
 draw a map or <code>action="predict"</code> to get a prediction; see
 ‘Details’.</p></dd>
+
+
 <dt>longitude, latitude</dt>
 <dd><p>optional location at which prediction is required (ignored if
 <code>node</code> is given).</p></dd>
+
+
 <dt>node</dt>
 <dd><p>optional integer relating to a node in the database. If <code>node</code>
 is given, then neither <code>latitude</code> nor <code>longitude</code> may be given.
 If <code>node</code> is positive, then specifies indicates the node. If it is negative,
 <code><a href="https://rdrr.io/r/graphics/locator.html" class="external-link">locator()</a></code> is called so that the user can click (once) on the map, after
 which the node is displayed on the map.</p></dd>
+
+
 <dt>time</dt>
 <dd><p>a vector of times (in the UTC timezone)
 at which prediction is to be made.
 If not supplied, this will be the week starting at the present time,
 computed with <code><a href="presentTime.html">presentTime()</a></code>, with a 15 minute increment.</p></dd>
+
+
 <dt>basedir</dt>
 <dd><p>directory containing the <code>WebTide</code> application.</p></dd>
+
+
 <dt>region</dt>
 <dd><p>database region, given as a directory name in the WebTide
 directory.  For example, <code>h3o</code> is for Halifax Harbour, <code>nwatl</code> is
 for the northwest Atlantic, and <code>sshelf</code> is for the Scotian Shelf and
 Gulf of Maine.</p></dd>
+
+
 <dt>plot</dt>
 <dd><p>boolean indicating whether to plot.</p></dd>
+
+
 <dt>tformat</dt>
 <dd><p>optional argument passed to <code><a href="oce.plot.ts.html">oce.plot.ts()</a></code>, for
 plot types that call that function.  (See <code><a href="https://rdrr.io/r/base/strptime.html" class="external-link">strptime()</a></code> for the
 format used.)</p></dd>
+
+
 <dt>debug</dt>
 <dd><p>an integer specifying whether debugging information is
 to be printed during the processing. This is a general parameter that
@@ -147,13 +163,18 @@ turns off the printing, while higher values suggest that more information
 be printed. If one function calls another, it usually reduces the value of
 <code>debug</code> first, so that a user can often obtain deeper debugging
 by specifying higher <code>debug</code> values.</p></dd>
+
+
 <dt>...</dt>
 <dd><p>optional arguments passed to plotting functions. A common
 example is to set <code>xlim</code> and <code>ylim</code>, to focus a map region.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>The value depends on <code>action</code>:</p><ul><li><p>If <code>action="map"</code> the return value is a
+    
+
+<p>The value depends on <code>action</code>:</p><ul><li><p>If <code>action="map"</code> the return value is a
 list containing the index of the nearest node, along with the
 <code>latitude</code> and <code>longitude</code> of that node.  If
 <code>plot</code> is <code>FALSE</code>, this value is returned invisibly.</p></li>
@@ -246,7 +267,7 @@ Users should be on the lookout for odd results.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
       </footer></div>

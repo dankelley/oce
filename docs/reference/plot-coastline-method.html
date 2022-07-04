@@ -20,7 +20,7 @@ as appropriate."><!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-7</span>
       </span>
     </div>
 
@@ -121,13 +121,21 @@ as appropriate.</p>
     <h2>Arguments</h2>
     <dl><dt>x</dt>
 <dd><p>a <a href="coastline-class.html">coastline</a> object.</p></dd>
+
+
 <dt>xlab</dt>
 <dd><p>label for x axis</p></dd>
+
+
 <dt>ylab</dt>
 <dd><p>label for y axis</p></dd>
+
+
 <dt>showHemi</dt>
 <dd><p>logical indicating whether to show the hemisphere in axis
 tick labels.</p></dd>
+
+
 <dt>asp</dt>
 <dd><p>Aspect ratio for plot.  The default is for <code>plot,coastline-method</code>
 to set the aspect ratio to give natural latitude-longitude scaling somewhere
@@ -138,6 +146,8 @@ the equator, so to get good world views you should set <code>asp=1</code> or set
 <code>ylim</code> to be symmetric about zero. Any given value of <code>asp</code> is
 ignored, if <code>clongitude</code> and <code>clatitude</code> are given (or
 if the latter two are inferred from <code>projection</code>.</p></dd>
+
+
 <dt>clongitude, clatitude</dt>
 <dd><p>optional center latitude of map, in decimal
 degrees.  If both <code>clongitude</code> and <code>clatitude</code> are provided,
@@ -148,6 +158,8 @@ ratio is computed based on the center latitude.  If <code>clongitude</code> and
 <code>clatitude</code> are known, then <code>span</code> must also be provided, and
 in this case, it is not permitted to also specify <code>longitudelim</code> and
 <code>latitudelim</code>.</p></dd>
+
+
 <dt>span</dt>
 <dd><p>optional suggested diagonal span of the plot, in kilometers.
 The plotted span is usually close to the suggestion, although the details
@@ -155,11 +167,15 @@ depend on the plot aspect ratio and other factors, so some adjustment may be
 required to fine-tune a plot.  A value for <code>span</code> must be supplied, if
 <code>clongitude</code> and <code>clatitude</code> are supplied
 (or inferred from <code>projection</code>).</p></dd>
+
+
 <dt>lonlabels, latlabels</dt>
 <dd><p>optional vectors of longitude and latitude to
 label on the sides of plot, passed to <code><a href="mapPlot.html">mapPlot()</a></code> to control
 axis labelling, for plots done with map projections (i.e. for
 cases in which <code>projection</code> is not <code>NULL</code>).</p></dd>
+
+
 <dt>projection</dt>
 <dd><p>optional map projection to use (see
 the <code><a href="mapPlot.html">mapPlot()</a></code> argument of the same name).
@@ -173,50 +189,76 @@ degrees, as if <code>projection="+proj=merc"</code> had been supplied, or a
 Stereopolar one is used as if <code>projection="+proj=stere"</code>.  Otherwise,
 <code>projection</code> must be a character string identifying a projection
 accepted by <code><a href="mapPlot.html">mapPlot()</a></code>.</p></dd>
+
+
 <dt>expand</dt>
 <dd><p>numerical factor for the expansion of plot limits, showing
 area outside the plot, e.g. if showing a ship track as a coastline, and then
 an actual coastline to show the ocean boundary.  The value of <code>expand</code>
 is ignored if either <code>xlim</code> or <code>ylim</code> is given.</p></dd>
+
+
 <dt>mgp</dt>
 <dd><p>3-element numerical vector to use for <code><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></code><code>("mgp")</code>, and also
 for <code>par(mar)</code>, computed from this.  The default is tighter than the R
 default, in order to use more space for the data and less for the axes.</p></dd>
+
+
 <dt>mar</dt>
 <dd><p>value to be used with <code><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></code><code>("mar")</code>.</p></dd>
+
+
 <dt>bg</dt>
 <dd><p>optional color to be used for the background of the map.  This
 comes in handy for drawing insets (see “details”).</p></dd>
+
+
 <dt>fill</dt>
 <dd><p>a legacy parameter that will be permitted only temporarily; see
 “History”.</p></dd>
+
+
 <dt>type</dt>
 <dd><p>indication of type; may be <code>"polygon"</code>, for a filled polygon,
 <code>"p"</code> for points, <code>"l"</code> for line segments, or <code>"o"</code> for points
 overlain with line segments. See <code>color</code> for a note on how
 the the value of <code>type</code> alters the meaning of the <code>color</code>
 argument.</p></dd>
+
+
 <dt>border</dt>
 <dd><p>color used to indicate land (if <code>type="polygon"</code>) or
 the coastline and international borders (if <code>type="l"</code>).</p></dd>
+
+
 <dt>col</dt>
 <dd><p>either the color for filling polygons (if <code>type="polygon"</code>)
 or the color of the points and line segments (if <code>type="p"</code>,
 <code>type="l"</code>, or <code>type="o"</code>).</p></dd>
+
+
 <dt>axes</dt>
 <dd><p>boolean, set to <code>TRUE</code> to plot axes.</p></dd>
+
+
 <dt>cex.axis</dt>
 <dd><p>value for axis font size factor.</p></dd>
+
+
 <dt>add</dt>
 <dd><p>boolean, set to <code>TRUE</code> to draw the coastline on an existing
 plot.  Note that this retains the aspect ratio of that existing plot, so it
 is important to set that correctly, e.g. with <code>asp=1/cos(lat * pi /
 180)</code>, where <code>clat</code> is the central latitude of the plot.</p></dd>
+
+
 <dt>inset</dt>
 <dd><p>set to <code>TRUE</code> for use within <code><a href="plotInset.html">plotInset()</a></code>.  The
 effect is to prevent the present function from adjusting margins, which is
 necessary because margin adjustment is the basis for the method used by
 <code><a href="plotInset.html">plotInset()</a></code>.</p></dd>
+
+
 <dt>geographical</dt>
 <dd><p>flag indicating the style of axes.  With
 <code>geographical=0</code>, the axes are conventional, with decimal degrees as
@@ -230,22 +272,33 @@ are the same as for <code>geographical=2</code>, but the hemisphere indication
 is omitted. Finally, with <code>geographical=4</code>, unsigned numbers are used,
 followed by letters <code>N</code> in the northern hemisphere, <code>S</code> in the southern,
 <code>E</code> in the eastern, and <code>W</code> in the western.</p></dd>
+
+
 <dt>longitudelim</dt>
 <dd><p>this and <code>latitudelim</code> provide a second way to
 suggest plot ranges. Note that these may not be supplied if
 <code>clongitude</code>, <code>clatitude</code> and <code>span</code> are given.</p></dd>
+
+
 <dt>latitudelim</dt>
 <dd><p>see <code>longitudelim</code>.</p></dd>
+
+
 <dt>debug</dt>
 <dd><p>set to <code>TRUE</code> to get debugging information during
 processing.</p></dd>
+
+
 <dt>...</dt>
 <dd><p>optional arguments passed to plotting functions.  For example,
 set <code>yaxp=c(-90,90,4)</code> for a plot extending from pole to pole.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>None.</p>
+    
+
+<p>None.</p>
     </div>
     <div id="details">
     <h2>Details</h2>
@@ -356,7 +409,7 @@ dealing with them.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
       </footer></div>

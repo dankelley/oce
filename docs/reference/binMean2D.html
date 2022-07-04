@@ -19,7 +19,7 @@ spatial data into location bins."><!-- mathjax --><script src="https://cdnjs.clo
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-7</span>
       </span>
     </div>
 
@@ -98,35 +98,52 @@ spatial data into location bins.</p>
     <h2>Arguments</h2>
     <dl><dt>x</dt>
 <dd><p>vector of numerical values.</p></dd>
+
+
 <dt>y</dt>
 <dd><p>vector of numerical values.</p></dd>
+
+
 <dt>f</dt>
 <dd><p>Matrix of numerical values, a matrix f=f(x,y).</p></dd>
+
+
 <dt>xbreaks</dt>
 <dd><p>Vector of values of <code>x</code> at the boundaries between bins, calculated using
 <code><a href="https://rdrr.io/r/base/pretty.html" class="external-link">pretty</a></code><code>(x)</code> if not supplied.</p></dd>
+
+
 <dt>ybreaks</dt>
 <dd><p>Vector of values of <code>y</code> at the boundaries between bins, calculated using
 <code><a href="https://rdrr.io/r/base/pretty.html" class="external-link">pretty</a></code><code>(y)</code> if not supplied.</p></dd>
+
+
 <dt>flatten</dt>
 <dd><p>A logical value indicating whether
 the return value also contains equilength
 vectors <code>x</code>, <code>y</code>, <code>z</code> and <code>n</code>, a flattened
 representation of <code>xmids</code>, <code>ymids</code>, <code>result</code> and
 <code>number</code>.</p></dd>
+
+
 <dt>fill</dt>
 <dd><p>Logical value indicating whether to fill <code>NA</code>-value gaps in
 the matrix. Gaps will be filled as the average of linear interpolations
 across rows and columns. See <code>fillgap</code>, which works together with this.</p></dd>
+
+
 <dt>fillgap</dt>
 <dd><p>Integer controlling the size of gap that can be filled
 across. If this is negative (as in the default), gaps will be filled
 regardless of their size. If it is positive, then gaps exceeding this
 number of indices will not be filled.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>A list with the following elements: the midpoints (renamed as
+    
+
+<p>A list with the following elements: the midpoints (renamed as
 <code>x</code> and <code>y</code>), the count (<code>number</code>) of <code>f(x,y)</code> values
 for <code>x</code> and <code>y</code> values that lie between corresponding breaks,
 and the resultant average (<code>f</code>) of <code>f(x,y)</code>, classified by the
@@ -174,7 +191,7 @@ and the resultant average (<code>f</code>) of <code>f(x,y)</code>, classified by
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
       </footer></div>

@@ -19,7 +19,7 @@ with the filter() function of the stats package."><!-- mathjax --><script src="h
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-7</span>
       </span>
     </div>
 
@@ -89,27 +89,38 @@ with the <code><a href="https://rdrr.io/r/stats/filter.html" class="external-lin
     <h2>Arguments</h2>
     <dl><dt>x</dt>
 <dd><p>an <a href="oce-class.html">oce</a> object.</p></dd>
+
+
 <dt>by</dt>
 <dd><p>an indication of the subsampling.  If this is a single number,
 then it indicates the spacing between elements of <code>x</code> that are
 selected.  If it is two numbers (a condition only applicable if <code>x</code> is
 an <code>echosounder</code> object, at present), then the first number indicates
 the time spacing and the second indicates the depth spacing.</p></dd>
+
+
 <dt>to</dt>
 <dd><p>Indices at which to subsample.  If given, this over-rides
 <code>by</code>.</p></dd>
+
+
 <dt>filter</dt>
 <dd><p>optional list of numbers representing a digital filter to be
 applied to each variable in the <code>data</code> slot of <code>x</code>, before
 decimation is done. If not supplied, then the decimation is done strictly by
 sub-sampling.</p></dd>
+
+
 <dt>debug</dt>
 <dd><p>a flag that turns on debugging.  Set to 1 to get a moderate
 amount of debugging information, or to 2 to get more.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>An <a href="oce-class.html">oce</a> object that has been subsampled appropriately.</p>
+    
+
+<p>An <a href="oce-class.html">oce</a> object that has been subsampled appropriately.</p>
     </div>
     <div id="bugs">
     <h2>Bugs</h2>
@@ -153,7 +164,7 @@ retired when the present function gains equivalent functionality.)</p></div>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
       </footer></div>

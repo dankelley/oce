@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-7</span>
       </span>
     </div>
 
@@ -87,21 +87,30 @@
 <dd><p>numeric vector of decimal longitude.  May also be a list containing items
 named <code>longitude</code> and <code>latitude</code>, in which case the indicated
 values are used, and next argument is ignored.</p></dd>
+
+
 <dt>latitude</dt>
 <dd><p>numeric vector of decimal latitude (ignored if <code>longitude</code> is a list
 containing both coordinates)</p></dd>
+
+
 <dt>zone</dt>
 <dd><p>optional indication of UTM zone.  Normally this is inferred from
 the longitude, but specifying it can be helpful in dealing with Landsat
 images, which may cross zones and which therefore are described by a single
 zone.</p></dd>
+
+
 <dt>km</dt>
 <dd><p>logical value indicating whether <code>easting</code> and
 <code>northing</code> are in kilometers or meters.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>A list containing <code>easting</code>, <code>northing</code>, <code>zone</code> and
+    
+
+<p>A list containing <code>easting</code>, <code>northing</code>, <code>zone</code> and
 <code>hemisphere</code>.</p>
     </div>
     <div id="references">
@@ -176,7 +185,7 @@ projections and their inverses, use <code><a href="lonlat2map.html">lonlat2map()
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
       </footer></div>

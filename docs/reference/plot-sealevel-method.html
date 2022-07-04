@@ -22,7 +22,7 @@ before the call."><!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-7</span>
       </span>
     </div>
 
@@ -105,6 +105,8 @@ before the call.</p>
     <h2>Arguments</h2>
     <dl><dt>x</dt>
 <dd><p>a <a href="sealevel-class.html">sealevel</a> object.</p></dd>
+
+
 <dt>which</dt>
 <dd><p>a numerical or string vector indicating desired plot types,
 with possibilities 1 or <code>"all"</code> for a time-series of all the elevations, 2 or
@@ -112,28 +114,43 @@ with possibilities 1 or <code>"all"</code> for a time-series of all the elevatio
 <code>"spectrum"</code> for a power spectrum (truncated to frequencies below 0.1
 cycles per hour, or 4 or <code>"cumulativespectrum"</code> for a cumulative
 integral of the power spectrum.</p></dd>
+
+
 <dt>drawTimeRange</dt>
 <dd><p>boolean that applies to panels with time as the
 horizontal axis, indicating whether to draw the time range in the top-left
 margin of the plot.</p></dd>
+
+
 <dt>mgp</dt>
 <dd><p>3-element numerical vector to use for <code><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></code><code>("mgp")</code>, and also
 for <code><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></code><code>("mar")</code>, computed from this.  The default is tighter than the R
 default, in order to use more space for the data and less for the axes.</p></dd>
+
+
 <dt>mar</dt>
 <dd><p>value to be used with <code><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></code><code>("mar")</code>.</p></dd>
+
+
 <dt>marginsAsImage</dt>
 <dd><p>boolean, <code>TRUE</code> to put a wide margin to the right
 of time-series plots, matching the space used up by a palette in an
 <code><a href="imagep.html">imagep()</a></code> plot.</p></dd>
+
+
 <dt>debug</dt>
 <dd><p>a flag that turns on debugging, if it exceeds 0.</p></dd>
+
+
 <dt>...</dt>
 <dd><p>optional arguments passed to plotting functions.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>None.</p>
+    
+
+<p>None.</p>
     </div>
     <div id="historical-note">
     <h2>Historical Note</h2>
@@ -228,7 +245,7 @@ with them.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
       </footer></div>

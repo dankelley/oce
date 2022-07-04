@@ -18,7 +18,7 @@ log of the returned object."><!-- mathjax --><script src="https://cdnjs.cloudfla
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-7</span>
       </span>
     </div>
 
@@ -96,28 +96,43 @@ log of the returned object.</p>
     <dl><dt>x</dt>
 <dd><p>an <a href="oce-class.html">oce</a> object.  The exact action of <code>oceEdit()</code> depends
 on the sub-class of <code>x</code>.</p></dd>
+
+
 <dt>item</dt>
 <dd><p>if supplied, a character string naming an item in the object's
 <code>metadata</code> or <code>data</code> slot, the former being checked first.
 An exception is if <code>item</code> starts with <code>"data@"</code> or
 <code>"metadata@"</code>, in which case the named slot is updated with a changed
 value of the contents of <code>item</code> after the <code>@</code> character.</p></dd>
+
+
 <dt>value</dt>
 <dd><p>new value for <code>item</code>, if both supplied.</p></dd>
+
+
 <dt>action</dt>
 <dd><p>optional character string containing R code to carry out some
 action on the object.</p></dd>
+
+
 <dt>reason</dt>
 <dd><p>character string giving the reason for the change.</p></dd>
+
+
 <dt>person</dt>
 <dd><p>character string giving the name of person making the change.</p></dd>
+
+
 <dt>debug</dt>
 <dd><p>an integer that specifies a level of debugging, with 0 or less
 indicating no debugging, and 1 or more indicating debugging.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>A <a href="oce-class.html">oce</a> object, altered
+    
+
+<p>A <a href="oce-class.html">oce</a> object, altered
 appropriately, and with a log item indicating the nature of the alteration.</p>
     </div>
     <div id="details">
@@ -174,7 +189,7 @@ brief note on the <code>reason</code> for the change, and the name of the
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
       </footer></div>

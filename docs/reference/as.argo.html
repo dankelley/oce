@@ -19,7 +19,7 @@ be read with read.argo()."><!-- mathjax --><script src="https://cdnjs.cloudflare
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-7</span>
       </span>
     </div>
 
@@ -100,16 +100,28 @@ be read with <code><a href="read.argo.html">read.argo()</a></code>.</p>
     <h2>Arguments</h2>
     <dl><dt>time</dt>
 <dd><p>a vector of POSIXct times.</p></dd>
+
+
 <dt>longitude</dt>
 <dd><p>a vector of longitudes.</p></dd>
+
+
 <dt>latitude</dt>
 <dd><p>a vector of latitudes.</p></dd>
+
+
 <dt>salinity</dt>
 <dd><p>a vector of salinities.</p></dd>
+
+
 <dt>temperature</dt>
 <dd><p>a vector of temperatures.</p></dd>
+
+
 <dt>pressure</dt>
 <dd><p>a vector of pressures.</p></dd>
+
+
 <dt>units</dt>
 <dd><p>an optional list containing units. If <code>NULL</code>, the default,
 then <code>"degree east"</code> is used for <code>longitude</code>,
@@ -117,19 +129,28 @@ then <code>"degree east"</code> is used for <code>longitude</code>,
 <code>""</code> for <code>salinity</code>,
 <code>"ITS-90"</code> for <code>temperature</code>, and
 <code>"dbar"</code> for <code>pressure</code>.</p></dd>
+
+
 <dt>id</dt>
 <dd><p>an identifier for the argo float, typically a number, but stored within
 the object in a character form. (For example, the dataset retrieved with <code>data(argo)</code>
 has an <code>id</code> of <code>"6900388"</code>.)</p></dd>
+
+
 <dt>filename</dt>
 <dd><p>a source filename, which defaults to an empty string.</p></dd>
+
+
 <dt>missingValue</dt>
 <dd><p>an optional missing value, indicating data values that should be
 taken as <code>NA</code>.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>An <a href="argo-class.html">argo</a> object.</p>
+    
+
+<p>An <a href="argo-class.html">argo</a> object.</p>
     </div>
     <div id="see-also">
     <h2>See also</h2>
@@ -166,7 +187,7 @@ objects, and also outlines the other functions dealing with them.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
       </footer></div>

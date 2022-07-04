@@ -18,7 +18,7 @@ object of class rsk."><!-- mathjax --><script src="https://cdnjs.cloudflare.com/
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-7</span>
       </span>
     </div>
 
@@ -86,6 +86,7 @@ object of class <code>rsk</code>.</p>
   <span class="va">to</span>,
   by <span class="op">=</span> <span class="fl">1</span>,
   <span class="va">type</span>,
+  encoding <span class="op">=</span> <span class="cn">NA</span>,
   tz <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"oceTz"</span>, default <span class="op">=</span> <span class="st">"UTC"</span><span class="op">)</span>,
   patm <span class="op">=</span> <span class="cn">FALSE</span>,
   <span class="va">processingLog</span>,
@@ -99,39 +100,62 @@ object of class <code>rsk</code>.</p>
 <dd><p>a connection or a character string giving the name of the file to
 load. Note that <code>file</code> must be a character string, because connections are
 not used in that case, which is instead handled with database calls.</p></dd>
+
+
 <dt>from</dt>
 <dd><p>indication of the first datum to read.  This can a positive integer
 to indicate sequence number, the POSIX time of the first datum, or a character
 string that can be converted to a POSIX time.  (For POSIX times, be careful
 about the <code>tz</code> argument.)</p></dd>
+
+
 <dt>to</dt>
 <dd><p>an indication of the last datum to be read, in the same format as
 <code>from</code>.  If <code>to</code> is missing, data will be read to the end of the file.</p></dd>
+
+
 <dt>by</dt>
 <dd><p>an indication of the stride length to use while walking through the
 file.  If this is an integer, then <code>by-1</code> samples are skipped between each
 pair of samples that is read.  If this is a string representing a time interval,
 in colon-separated format (HH:MM:SS or MM:SS), then this interval is divided by
 the sampling interval, to get the stride length.</p></dd>
+
+
 <dt>type</dt>
 <dd><p>optional file type, presently can be <code>rsk</code> or <code>txt</code> (for a
 text export of an RBR rsk or hex file). If this argument is not provided, an
 attempt will be made to infer the type from the file name and contents.</p></dd>
+
+
+<dt>encoding</dt>
+<dd><p>ignored.</p></dd>
+
+
 <dt>tz</dt>
 <dd><p>time zone.  The value <code>oceTz</code> is set at package setup.</p></dd>
+
+
 <dt>patm</dt>
 <dd><p>controls the handling of atmospheric pressure, an important issue
 for RBR instruments that record absolute pressure; see “Details”.</p></dd>
+
+
 <dt>processingLog</dt>
 <dd><p>if provided, the action item to be stored in the log.
 This is typically only provided for internal calls; the default that it provides
 is better for normal calls by a user.</p></dd>
+
+
 <dt>debug</dt>
 <dd><p>a flag that can be set to <code>TRUE</code> to turn on debugging.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>An <a href="rsk-class.html">rsk</a> object.</p>
+    
+
+<p>An <a href="rsk-class.html">rsk</a> object.</p>
     </div>
     <div id="details">
     <h2>Details</h2>
@@ -217,7 +241,7 @@ generic plot obeys the CTD format.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
       </footer></div>

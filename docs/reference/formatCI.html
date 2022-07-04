@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-7</span>
       </span>
     </div>
 
@@ -85,18 +85,27 @@
     <h2>Arguments</h2>
     <dl><dt>ci</dt>
 <dd><p>optional vector of length 2 or 3.</p></dd>
+
+
 <dt>style</dt>
 <dd><p>string indicating notation to be used.</p></dd>
+
+
 <dt>model</dt>
 <dd><p>optional regression model, e.g. returned by <code><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm()</a></code> or
 <code><a href="https://rdrr.io/r/stats/nls.html" class="external-link">nls()</a></code>.</p></dd>
+
+
 <dt>digits</dt>
 <dd><p>optional number of digits to use; if not supplied,
 [<code>getOption</code>[<code>("digits")</code> is used.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>If <code>ci</code> is given, the result is a character string with the
+    
+
+<p>If <code>ci</code> is given, the result is a character string with the
 estimate and its uncertainty, in plus/minus or parenthetic notation.  If
 <code>model</code> is given, the result is a 1-column matrix holding character
 strings, with row names corresponding to the parameters of the model.</p>
@@ -162,9 +171,9 @@ value to the right of a <code>+-</code> sign is to be halved if put in</p>
 <span class="r-in"><span class="va">y</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span>n<span class="op">=</span><span class="fl">300</span>, mean<span class="op">=</span><span class="fl">10</span>, sd<span class="op">=</span><span class="fl">1</span><span class="op">)</span> <span class="op">*</span> <span class="va">x</span></span>
 <span class="r-in"><span class="va">m</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm</a></span><span class="op">(</span><span class="va">y</span><span class="op">~</span><span class="va">x</span><span class="op">)</span></span>
 <span class="r-in"><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="fu">formatCI</span><span class="op">(</span>model<span class="op">=</span><span class="va">m</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>             value                   </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> (Intercept) "-0.01293056+/-0.069288"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> x           "9.986358+/-0.1199101"  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>             value                  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> (Intercept) "0.04095343+/-0.069328"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> x           "9.77415+/-0.1199793"  </span>
 </code></pre></div>
     </div>
   </div>
@@ -179,7 +188,7 @@ value to the right of a <code>+-</code> sign is to be halved if put in</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
       </footer></div>

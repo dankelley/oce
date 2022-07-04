@@ -21,7 +21,7 @@ land.z."><!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mat
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-7</span>
       </span>
     </div>
 
@@ -117,8 +117,12 @@ the length must match the length of the corresponding properties, e.g.
     <h2>Arguments</h2>
     <dl><dt>x</dt>
 <dd><p>a <a href="topo-class.html">topo</a> object.</p></dd>
+
+
 <dt>xlab, ylab</dt>
 <dd><p>Character strings giving a label for the x and y axes.</p></dd>
+
+
 <dt>asp</dt>
 <dd><p>Aspect ratio for plot.  The default is for <code>plot.coastline</code> to
 set the aspect ratio to give natural latitude-longitude scaling somewhere near
@@ -128,63 +132,100 @@ Note that the land mass is not symmetric about the equator, so to get good
 world views you should set <code>asp=1</code> or set <code>ylim</code> to be symmetric
 about zero.  Any given value of <code>asp</code> is ignored, if <code>clongitude</code> and
 <code>clatitude</code> are given.</p></dd>
+
+
 <dt>clongitude</dt>
 <dd><p>Optional center longitude of map, in degrees east; see
 <code>clatitude</code>.</p></dd>
+
+
 <dt>clatitude</dt>
 <dd><p>Optional center latitude of map, in degrees north.  If this
 and <code>clongitude</code> are provided, then any provided value of <code>asp</code> is
 ignored, and instead the plot aspect ratio is computed based on the center
 latitude.  Also, if <code>clongitude</code> and <code>clatitude</code> are provided, then
 <code>span</code> must be, also.</p></dd>
+
+
 <dt>span</dt>
 <dd><p>Optional suggested span of plot, in kilometers (must be supplied,
 if <code>clongitude</code> and <code>clatitude</code> are supplied).</p></dd>
+
+
 <dt>expand</dt>
 <dd><p>Numerical factor for the expansion of plot limits, showing area
 outside the plot, e.g. if showing a ship track as a coastline, and then an
 actual coastline to show the ocean boundary.  The value of <code>expand</code> is
 ignored if either <code>xlim</code> or <code>ylim</code> is given.</p></dd>
+
+
 <dt>water.z</dt>
 <dd><p>Depths at which to plot water contours.  If not provided, these
 are inferred from the data.</p></dd>
+
+
 <dt>col.water</dt>
 <dd><p>Colors corresponding to <code>water.z</code> values.  If not
 provided, these will be <code>"fill"</code> colors from
 <code><a href="oceColorsGebco.html">oce.colorsGebco()</a></code>.</p></dd>
+
+
 <dt>lty.water</dt>
 <dd><p>Line type(s) for water contours.</p></dd>
+
+
 <dt>lwd.water</dt>
 <dd><p>Line width(s) for water contours.</p></dd>
+
+
 <dt>land.z</dt>
 <dd><p>Depths at which to plot land contours.  If not provided, these
 are inferred from the data.  If set to <code>NULL</code>, no land contours will be
 plotted.</p></dd>
+
+
 <dt>col.land</dt>
 <dd><p>Colors corresponding to <code>land.z</code> values.  If not
 provided, these will be <code>"fill"</code> colors from
 <code><a href="oceColorsGebco.html">oce.colorsGebco()</a></code>.</p></dd>
+
+
 <dt>lty.land</dt>
 <dd><p>Line type(s) for land contours.</p></dd>
+
+
 <dt>lwd.land</dt>
 <dd><p>Line width(s) for land contours.</p></dd>
+
+
 <dt>geographical</dt>
 <dd><p>Logical, indicating whether to plot latitudes and
 longitudes without minus signs.</p></dd>
+
+
 <dt>location</dt>
 <dd><p>Location for a legend (or <code>"none"</code>, for no legend).</p></dd>
+
+
 <dt>mgp</dt>
 <dd><p>3-element numerical vector to use for <code>par(mgp)</code>, and also for
 <code>par(mar)</code>, computed from this.  The default is tighter than the R
 default, in order to use more space for the data and less for the axes.</p></dd>
+
+
 <dt>mar</dt>
 <dd><p>Four-element numerical vector to be used with
 <code><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></code><code>("mar")</code>.</p></dd>
+
+
 <dt>debug</dt>
 <dd><p>Numerical value, with positive values indicating higher levels of
 debugging.</p></dd>
+
+
 <dt>...</dt>
 <dd><p>Additional arguments passed on to plotting functions.</p></dd>
+
 </dl></div>
     <div id="see-also">
     <h2>See also</h2>
@@ -254,7 +295,7 @@ debugging.</p></dd>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
       </footer></div>

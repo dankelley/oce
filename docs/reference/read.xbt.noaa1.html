@@ -29,7 +29,7 @@ is provided with the data.)"><!-- mathjax --><script src="https://cdnjs.cloudfla
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-7</span>
       </span>
     </div>
 
@@ -89,7 +89,9 @@ is provided with the data.)"><!-- mathjax --><script src="https://cdnjs.cloudfla
     <p>This file format, described at <code>https://www.aoml.noaa.gov/phod/dhos/axbt.php</code>, contains a header
 line, followed by data lines.  For example, a particular file at this site has first
 three lines as follows.</p>
-<p></p><div class="sourceCode"><pre><code></code></pre><p></p></div>
+<p></p><div class="sourceCode"><pre><code><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fl">181.589</span> <span class="dv">20100709</span> <span class="dv">140820</span>  <span class="sc">-</span><span class="fl">85.336</span>  <span class="fl">25.290</span> N42RF GL10 <span class="dv">14</span>    <span class="dv">2010-190-15</span><span class="sc">:</span><span class="dv">49</span><span class="sc">:</span><span class="dv">18</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="sc">-</span><span class="fl">0.0</span> <span class="fl">27.52</span> <span class="sc">-</span><span class="fl">9.99</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="sc">-</span><span class="fl">1.5</span> <span class="fl">27.52</span> <span class="sc">-</span><span class="fl">9.99</span></span></code></pre><p></p></div>
 <p>where the items on the header line are (1) a year-day (ignored here), (2)
 YYYYMMDD, (3) HHMMSS, (4) longitude, (5) latitude, (6) aircraft wing
 number, (7) project name, (8) AXBT channel and (9) AXBT ID.  The other lines hold vertical
@@ -103,6 +105,7 @@ is provided with the data.)</p>
   <span class="va">file</span>,
   debug <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"oceDebug"</span><span class="op">)</span>,
   missingValue <span class="op">=</span> <span class="op">-</span><span class="fl">9.99</span>,
+  encoding <span class="op">=</span> <span class="st">"latin1"</span>,
   <span class="va">processingLog</span>
 <span class="op">)</span></code></pre></div>
     </div>
@@ -111,19 +114,35 @@ is provided with the data.)</p>
     <h2>Arguments</h2>
     <dl><dt>file</dt>
 <dd><p>character value naming a file, or a file connection, containing the data.</p></dd>
+
+
 <dt>debug</dt>
 <dd><p>a flag that turns on debugging.  The value indicates the depth
 within the call stack to which debugging applies.</p></dd>
+
+
 <dt>missingValue</dt>
 <dd><p>numerical value that is to be interpreted as <code>NA</code></p></dd>
+
+
+<dt>encoding</dt>
+<dd><p>a character value that indicates the encoding to be used for
+this data file, if it is textual.  The default value for most functions is
+<code>"latin1"</code>, which seems to be suitable for files containing text written in
+English and French.</p></dd>
+
+
 <dt>processingLog</dt>
 <dd><p>if provided, the action item to be stored in the log.  This
 parameter is typically only provided for internal calls; the default that it
 provides is better for normal calls by a user.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>An <a href="xbt-class.html">xbt</a> object.</p>
+    
+
+<p>An <a href="xbt-class.html">xbt</a> object.</p>
     </div>
     <div id="see-also">
     <h2>See also</h2>
@@ -156,7 +175,7 @@ provides is better for normal calls by a user.</p></dd>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
       </footer></div>

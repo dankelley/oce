@@ -27,7 +27,7 @@ these must be installed, or an error is reported.'><!-- mathjax --><script src="
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-7</span>
       </span>
     </div>
 
@@ -120,30 +120,44 @@ These are converted to the -180 to 180 degree notation, if needed.
 Then, <code>west</code> is rounded down to the nearest 1/100th degree, and <code>east</code>
 is rounded up to the the nearest 1/100th degree. The results of these
 operations are used in constructing the query for the NOAA data server.</p></dd>
+
+
 <dt>south, north</dt>
 <dd><p>latitude limits, treated in a way that
 corresponds to the longitude limits.</p></dd>
+
+
 <dt>resolution</dt>
 <dd><p>numeric value of grid spacing, in geographical minutes.
 The default value is 4 minutes, corresponding to 4 nautical miles (approx. 7.4km)
 in the north-south direction, and less in the east-west direction.</p></dd>
+
+
 <dt>destdir</dt>
 <dd><p>Optional string indicating the directory in which to store
 downloaded files. If not supplied, <code>"."</code> is used, i.e. the data file
 is stored in the present working directory.</p></dd>
+
+
 <dt>destfile</dt>
 <dd><p>Optional string indicating the name of the file.
 If not supplied, the file name is constructed from the other
 parameters of the function call, so subsequent calls with the same
 parameters will yield the same result, thus providing the key
 to the caching scheme.</p></dd>
+
+
 <dt>format</dt>
 <dd><p>Deprecated, and ignored, as of June 2020.</p></dd>
+
+
 <dt>server</dt>
 <dd><p>character value specifying the base from which a
 download URL will be constructed.  It is unlikely that any value
 other than the default will work, unless it is a similarly-constructed
 mirrored site.</p></dd>
+
+
 <dt>debug</dt>
 <dd><p>an integer specifying whether debugging information is
 to be printed during the processing. This is a general parameter that
@@ -152,10 +166,13 @@ turns off the printing, while higher values suggest that more information
 be printed. If one function calls another, it usually reduces the value of
 <code>debug</code> first, so that a user can often obtain deeper debugging
 by specifying higher <code>debug</code> values.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>String indicating the full pathname to the downloaded file.</p>
+    
+
+<p>String indicating the full pathname to the downloaded file.</p>
     </div>
     <div id="details">
     <h2>Details</h2>
@@ -235,7 +252,7 @@ NESDIS NGDC-24. National Geophysical Data Center, NOAA. doi:10.7289/V5C8276M</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
       </footer></div>

@@ -20,7 +20,7 @@ file formerly available at reference 1."><!-- mathjax --><script src="https://cd
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-7</span>
       </span>
     </div>
 
@@ -108,50 +108,81 @@ file formerly available at reference 1.</p>
     <dl><dt>elevation</dt>
 <dd><p>a list of sea-level heights in metres, in an hourly
 sequence.</p></dd>
+
+
 <dt>time</dt>
 <dd><p>optional list of times, in POSIXct format.  If missing, the list
 will be constructed assuming hourly samples, starting at 0000-01-01
 00:00:00.</p></dd>
+
+
 <dt>header</dt>
 <dd><p>a character string as read from first line of a standard data
 file.</p></dd>
+
+
 <dt>stationNumber</dt>
 <dd><p>three-character string giving station number.</p></dd>
+
+
 <dt>stationVersion</dt>
 <dd><p>single character for version of station.</p></dd>
+
+
 <dt>stationName</dt>
 <dd><p>the name of station (at most 18 characters).</p></dd>
+
+
 <dt>region</dt>
 <dd><p>the name of the region or country of station (at most 19
 characters).</p></dd>
+
+
 <dt>year</dt>
 <dd><p>the year of observation.</p></dd>
+
+
 <dt>longitude</dt>
 <dd><p>the longitude in decimal degrees, positive east of
 Greenwich.</p></dd>
+
+
 <dt>latitude</dt>
 <dd><p>the latitude in decimal degrees, positive north of the
 equator.</p></dd>
+
+
 <dt>GMTOffset</dt>
 <dd><p>offset from GMT, in hours.</p></dd>
+
+
 <dt>decimationMethod</dt>
 <dd><p>a coded value, with 1 meaning filtered, 2 meaning a
 simple average of all samples, 3 meaning spot readings, and 4 meaning some
 other method.</p></dd>
+
+
 <dt>referenceOffset</dt>
 <dd><p>?</p></dd>
+
+
 <dt>referenceCode</dt>
 <dd><p>?</p></dd>
+
+
 <dt>deltat</dt>
 <dd><p>optional interval between samples, in hours (as for the
 <code><a href="https://rdrr.io/r/stats/ts.html" class="external-link">ts()</a></code> timeseries function). If this is not provided, and <code>t</code>
 can be understood as a time, then the difference between the first two times
 is used.  If this is not provided, and <code>t</code> cannot be understood as a
 time, then 1 hour is assumed.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>A <a href="sealevel-class.html">sealevel</a> object (for details, see <code><a href="read.sealevel.html">read.sealevel()</a></code>).</p>
+    
+
+<p>A <a href="sealevel-class.html">sealevel</a> object (for details, see <code><a href="read.sealevel.html">read.sealevel()</a></code>).</p>
     </div>
     <div id="references">
     <h2>References</h2>
@@ -204,8 +235,8 @@ with them.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> * Processing Log</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2022-06-10 20:06:28 UTC: `create 'sealevel' object`</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2022-06-10 20:06:28 UTC: `as.sealevel(elevation = elevation)`</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2022-07-04 09:21:23 UTC: `create 'sealevel' object`</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2022-07-04 09:21:23 UTC: `as.sealevel(elevation = elevation)`</span>
 <span class="r-in"></span>
 <span class="r-in"><span class="co"># As above, but start at the Y2K time.</span></span>
 <span class="r-in"><span class="va">time</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/as.POSIXlt.html" class="external-link">as.POSIXct</a></span><span class="op">(</span><span class="st">"2000-01-01"</span><span class="op">)</span> <span class="op">+</span> <span class="va">h</span> <span class="op">*</span> <span class="fl">3600</span></span>
@@ -226,8 +257,8 @@ with them.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> * Processing Log</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2022-06-10 20:06:28 UTC: `create 'sealevel' object`</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2022-06-10 20:06:28 UTC: `as.sealevel(elevation = elevation, time = time)`</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2022-07-04 09:21:23 UTC: `create 'sealevel' object`</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2022-07-04 09:21:23 UTC: `as.sealevel(elevation = elevation, time = time)`</span>
 </code></pre></div>
     </div>
   </div>
@@ -242,7 +273,7 @@ with them.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
       </footer></div>

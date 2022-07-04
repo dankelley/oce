@@ -24,7 +24,7 @@ a map at bottom right."><!-- mathjax --><script src="https://cdnjs.cloudflare.co
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-7</span>
       </span>
     </div>
 
@@ -145,6 +145,8 @@ a map at bottom right.</p>
     <h2>Arguments</h2>
     <dl><dt>x</dt>
 <dd><p>a <a href="ctd-class.html">ctd</a> object.</p></dd>
+
+
 <dt>which</dt>
 <dd><p>a numeric or character vector specifying desired plot types. If
 <code>which</code> is not supplied, a default will be used. This default depends on
@@ -218,30 +220,48 @@ against the <code>data</code> and <code>dataDerived</code> fields returned by <c
 is found then a profile of the corresponding quantity is plotted.  If there
 is no match, an error is reported.</p></li>
 </ul></dd>
+
+
 <dt>col</dt>
 <dd><p>color of lines or symbols.</p></dd>
+
+
 <dt>fill</dt>
 <dd><p>a legacy parameter that will be permitted only temporarily; see
 “History”.</p></dd>
+
+
 <dt>borderCoastline</dt>
 <dd><p>color of coastlines and international borders, passed
 to <code><a href="plot-coastline-method.html">plot,coastline-method()</a></code> if a map is included in <code>which</code>.</p></dd>
+
+
 <dt>colCoastline</dt>
 <dd><p>fill color of coastlines and international borders, passed
 to <code><a href="plot-coastline-method.html">plot,coastline-method()</a></code> if a map is included in <code>which</code>. Set to
 <code>NULL</code> to avoid filling.</p></dd>
+
+
 <dt>eos</dt>
 <dd><p>character value indicating the equation of state to be used, either
 <code>"unesco"</code> or <code>"gsw"</code>.  The default is to use a value stored with
 <code><a href="https://rdrr.io/r/base/options.html" class="external-link">options()</a></code> as e.g. <code>options(oceEOS="unesco")</code>.</p></dd>
+
+
 <dt>ref.lat</dt>
 <dd><p>latitude of reference point for distance calculation.
 The permitted range is -90 to 90.</p></dd>
+
+
 <dt>ref.lon</dt>
 <dd><p>longitude of reference point for distance calculation.
 The permitted range is -180 to 180.</p></dd>
+
+
 <dt>grid</dt>
 <dd><p>logical value indicating whether to draw a grid on the plot.</p></dd>
+
+
 <dt>coastline</dt>
 <dd><p>a specification of the coastline to be used for
 <code>which="map"</code>.  This may be a coastline object, whether built-in or
@@ -256,11 +276,15 @@ the drawing of a coastline.  There is a speed penalty for providing
 <code><a href="plot-coastline-method.html">plot,coastline-method()</a></code> is to be called several times for a given
 coastline, it makes sense to load it in before the first call, and to
 supply the object as an argument, as opposed to the name of the object.</p></dd>
+
+
 <dt>Slim, Clim, Tlim, plim, densitylim, N2lim, Rrholim, dpdtlim, timelim</dt>
 <dd><p>optional
 numeric vectors of length 2, that give axis limits for salinity,
 conductivity, temperature, pressure, the square of buoyancy frequency,
 density ratio, dp/dt, and time, respectively.</p></dd>
+
+
 <dt>drawIsobaths</dt>
 <dd><p>logical value indicating whether to draw depth contours on
 maps, in addition to the coastline. The argument has no effect except
@@ -276,6 +300,8 @@ set to <code>NULL</code>, the contours are added with <code><a href="https://rdr
 and otherwise <code><a href="mapContour.html">mapContour()</a></code> is used. To customize
 the resultant contours, e.g. setting particular line types or colors,
 users should call these functions directly (see e.g. Example 2).</p></dd>
+
+
 <dt>clongitude, clatitude, span</dt>
 <dd><p>controls for the map area view,
 used only if <code>which="map"</code>.
@@ -284,16 +310,22 @@ used only if <code>which="map"</code>.
 kilometres.  (If <code>span</code> is not given, it is be determined as a small
 multiple of the distance to the nearest point of land, in an attempt to show
 the station in familiar geographical context.)</p></dd>
+
+
 <dt>showHemi, lonlabels, latlabels</dt>
 <dd><p>controls for axis labelling, used only if <code>which="map"</code>.
 <code>showHemi</code> is logical value indicating whether to show hemisphere in axis tick
 labels. <code>lonlabels</code> and <code>latlabels</code> are numeric and character values that control the
 axis labelling.</p></dd>
+
+
 <dt>latlon.pch, latlon.cex, latlon.col</dt>
 <dd><p>controls for station location,
 used only if <code>which="map"</code>.  <code>latlon.pch</code> sets the symbol code,
 <code>latlon.cex</code> sets the character expansion
 factor, and <code>latlon.col</code> sets the colour.</p></dd>
+
+
 <dt>projection</dt>
 <dd><p>controls the map projection (if any), and ignored unless
 <code>which="map"</code>. The possibilities are as follows.  (1) If <code>projection=NULL</code>
@@ -301,18 +333,30 @@ factor, and <code>latlon.col</code> sets the colour.</p></dd>
 longitude and latitude in a Cartesian frame, scaled to retain shapes at the
 centre.  (2) If <code>projection=</code>"automatic"<code>then either a Mercator or Stereographic projection will be used, depending on whether the CTD station is within 70 degrees of the equator or at higher latitudes. (3) If</code>projection` is a string in the format used by <code><a href="mapPlot.html">mapPlot()</a></code>, then it is is
 passed to that function.</p></dd>
+
+
 <dt>cex</dt>
 <dd><p>size to be used for plot symbols (see <code><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par()</a></code>).</p></dd>
+
+
 <dt>cex.axis</dt>
 <dd><p>size factor for axis labels (see <code><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par()</a></code>).</p></dd>
+
+
 <dt>pch</dt>
 <dd><p>code for plotting symbol (see <code><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par()</a></code>).</p></dd>
+
+
 <dt>useSmoothScatter</dt>
 <dd><p>logical value indicating whether to
 use <code><a href="https://rdrr.io/r/graphics/smoothScatter.html" class="external-link">smoothScatter()</a></code> instead of <code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code> to draw the plot.</p></dd>
+
+
 <dt>df</dt>
 <dd><p>optional numeric argument that is ignored except for plotting buoyancy
 frequency; in that case, it is passed to <code><a href="swN2.html">swN2()</a></code>.</p></dd>
+
+
 <dt>keepNA</dt>
 <dd><p>logical value indicating whether <code>NA</code> values
 will yield breaks in lines drawn if <code>type</code> is <code>b</code>, <code>l</code>, or <code>o</code>.
@@ -321,6 +365,8 @@ can be helpful when working with multiple profiles
 strung together into one <a href="ctd-class.html">ctd</a> object, which otherwise
 would have extraneous lines joining the deepest point in one
 profile to the shallowest in the next profile.</p></dd>
+
+
 <dt>type</dt>
 <dd><p>the type of plot to draw, using the same scheme as
 <code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code>. If supplied, this is increased to be the
@@ -329,10 +375,14 @@ each of the individual plot calls. If it is not supplied,
 then those plot calls use defaults (e.g. using a line for
 <code><a href="plotProfile.html">plotProfile()</a></code>, using dots for <code><a href="plotTS.html">plotTS()</a></code>,
 etc).</p></dd>
+
+
 <dt>mgp</dt>
 <dd><p>three-element numerical vector specifying axis-label geometry,
 passed to <code><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par()</a></code>.
 The default establishes tighter margins than in the usual R setup.</p></dd>
+
+
 <dt>mar</dt>
 <dd><p>four-element numerical vector specifying margin geometry,
 passed to <code><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par()</a></code>.
@@ -342,16 +392,22 @@ of multi-panel maps; instead, the present value of
 <a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a><code>("mar")</code> is used, which in the default call will
 make the map plot region equal that of the previously-drawn
 profiles and TS plot.</p></dd>
+
+
 <dt>inset</dt>
 <dd><p>logical value indicating whether this
 function is being used as an inset.  The
 effect is to prevent the present function from adjusting margins, which is
 necessary because margin adjustment is the basis for the method used by
 <code><a href="plotInset.html">plotInset()</a></code>.</p></dd>
+
+
 <dt>add</dt>
 <dd><p>logical value indicating whether to add to an existing plot.  This
 only works if <code>length(which)=1</code>, and it will yield odd results if the
 value of <code>which</code> does not match that in the previous plots.</p></dd>
+
+
 <dt>debug</dt>
 <dd><p>an integer specifying whether debugging information is
 to be printed during the processing. This is a general parameter that
@@ -360,8 +416,11 @@ turns off the printing, while higher values suggest that more information
 be printed. If one function calls another, it usually reduces the value of
 <code>debug</code> first, so that a user can often obtain deeper debugging
 by specifying higher <code>debug</code> values.</p></dd>
+
+
 <dt>...</dt>
 <dd><p>optional arguments passed to plotting functions.</p></dd>
+
 </dl></div>
     <div id="details">
     <h2>Details</h2>
@@ -513,7 +572,7 @@ objects, and also outlines the other functions dealing with them.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
       </footer></div>

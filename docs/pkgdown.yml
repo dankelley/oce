@@ -1,5 +1,5 @@
 pandoc: '2.18'
-pkgdown: 2.0.3
+pkgdown: 2.0.4
 pkgdown_sha: ~
 articles:
   A_oce: A_oce.html
@@ -8,5 +8,5 @@ articles:
   D_map_projections: D_map_projections.html
   E_flags: E_flags.html
   F_subclassing: F_subclassing.html
-last_built: 2022-06-10T20:06Z
+last_built: 2022-07-04T09:20Z
 

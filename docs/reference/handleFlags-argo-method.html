@@ -35,7 +35,7 @@ entry in object."><!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-7</span>
       </span>
     </div>
 
@@ -128,6 +128,8 @@ entry in <code>object</code>.</p>
     <h2>Arguments</h2>
     <dl><dt>object</dt>
 <dd><p>an <a href="argo-class.html">argo</a> object.</p></dd>
+
+
 <dt>flags</dt>
 <dd><p>A <a href="https://rdrr.io/r/base/list.html" class="external-link">list</a> specifying flag values upon which
 actions will be taken. This can take two forms.</p><ul><li><p>In the first form, the
@@ -142,6 +144,8 @@ this means to apply the actions to <em>all</em> the data entries.  For example,
 but to everything within the <code>data</code> slot.</p></li>
 </ul><p>If <code>flags</code> is not provided, then <code><a href="defaultFlags.html">defaultFlags()</a></code> is called, to try to
 determine a reasonable default.</p></dd>
+
+
 <dt>actions</dt>
 <dd><p>an optional <a href="https://rdrr.io/r/base/list.html" class="external-link">list</a> that contains items with
 names that match those in the <code>flags</code> argument.  If <code>actions</code>
@@ -152,6 +156,8 @@ functions that calculate replacement values. These are provided
 with <code>object</code> as the single argument, and must return a
 replacement for the data item in question.
 See “Details” for the default that is used if <code>actions</code> is not supplied.</p></dd>
+
+
 <dt>where</dt>
 <dd><p>an optional character value that permits the function to work with
 objects that store flags in e.g. <code>object@metadata$flags$where</code>
@@ -161,6 +167,8 @@ default value of <code>NULL</code> means to look withing <code>object@metadata</
 itself, and this is the default within <code>oce</code>.  (The purpose of <code>where</code>
 is to make <code>oce</code> extensible by other packages, which may choose to store
 data two levels deep in the <code>data</code> slot.)</p></dd>
+
+
 <dt>debug</dt>
 <dd><p>An optional integer specifying the degree of debugging, with
 value 0 meaning to skip debugging and 1 or higher meaning to print some
@@ -168,6 +176,7 @@ information about the arguments and the data. It is usually a good idea to set
 this to 1 for initial work with a dataset, to see which flags are being
 handled for each data item. If not supplied, this defaults to the value of
 <code><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></code><code>("oceDebug")</code>.</p></dd>
+
 </dl></div>
     <div id="references">
     <h2>References</h2>
@@ -247,7 +256,7 @@ handled for each data item. If not supplied, this defaults to the value of
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
       </footer></div>
