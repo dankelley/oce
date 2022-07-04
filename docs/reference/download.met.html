@@ -20,7 +20,7 @@ that web server.  For that reason, it is brittle."><!-- mathjax --><script src="
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-7</span>
       </span>
     </div>
 
@@ -104,36 +104,54 @@ that web server.  For that reason, it is brittle.</p>
 <dd><p>A number giving the "Station ID" of the station of interest. If not
 provided, <code>id</code> defaults to 6358, for Halifax International Airport. See
 “Details”.</p></dd>
+
+
 <dt>year</dt>
 <dd><p>A number giving the year of interest. Ignored unless <code>deltat</code>
 is <code>"hour"</code>. If <code>year</code> is not given, it defaults to the present year.</p></dd>
+
+
 <dt>month</dt>
 <dd><p>A number giving the month of interest. Ignored unless <code>deltat</code>
 is <code>"hour"</code>. If <code>month</code> is not given, it defaults to the present
 month.</p></dd>
+
+
 <dt>deltat</dt>
 <dd><p>Optional character string indicating the time step of the
 desired dataset. This may be <code>"hour"</code> or <code>"month"</code>.
 If <code>deltat</code> is not given, it defaults to <code>"hour"</code>.</p></dd>
+
+
 <dt>type</dt>
 <dd><p>String indicating which type of file to download, either
 <code>"xml"</code> (the default) for an XML file or <code>"csv"</code> for a CSV file.</p></dd>
+
+
 <dt>destdir</dt>
 <dd><p>Optional string indicating the directory in which to store
 downloaded files. If not supplied, <code>"."</code> is used, i.e. the data file
 is stored in the present working directory.</p></dd>
+
+
 <dt>destfile</dt>
 <dd><p>Optional string indicating the name of the file.
 If not supplied, the file name is constructed from the other
 parameters of the function call, so subsequent calls with the same
 parameters will yield the same result, thus providing the key
 to the caching scheme.</p></dd>
+
+
 <dt>force</dt>
 <dd><p>Logical value indicating whether to force a download, even
 if the file already exists locally.</p></dd>
+
+
 <dt>quiet</dt>
 <dd><p>Logical value passed to <code><a href="https://rdrr.io/r/utils/download.file.html" class="external-link">download.file()</a></code>; a <code>TRUE</code> value
 silences output.</p></dd>
+
+
 <dt>debug</dt>
 <dd><p>an integer specifying whether debugging information is
 to be printed during the processing. This is a general parameter that
@@ -142,10 +160,13 @@ turns off the printing, while higher values suggest that more information
 be printed. If one function calls another, it usually reduces the value of
 <code>debug</code> first, so that a user can often obtain deeper debugging
 by specifying higher <code>debug</code> values.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>String indicating the full pathname to the downloaded file.</p>
+    
+
+<p>String indicating the full pathname to the downloaded file.</p>
     </div>
     <div id="details">
     <h2>Details</h2>
@@ -214,7 +235,7 @@ important metadata blank.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
       </footer></div>

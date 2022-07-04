@@ -229,6 +229,7 @@ cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
         stop("header line does not contain a variable name")
     ## message("h: '", h, "'")
     name <- gsub("^# name [0-9][0-9]* = (.*):.*$", "\\1", h, ignore.case=TRUE, useBytes=TRUE)
+    nameAfterColon <- gsub("^# name [0-9][0-9]* = .*:(.*)$", "\\1", h, ignore.case=TRUE, useBytes=TRUE)
     nameOriginal <- name
 
     ## If 'name' is mentioned in columns, then use columns and ignore the lookup table.
@@ -505,7 +506,10 @@ cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
             name <- "sigma3"
         } else if (1 == length(grep("^sigma-4[0-9]{2}$", name, useBytes=TRUE))) {
             name <- "sigma4"
-        } else if (1 == length(grep("^sigma-\xe9[0-9]{2}$", name, useBytes=TRUE))) {
+        # 2022-06-28 } else if (1 == length(grep("^sigma-\x09[0-9]{2}$", name, useBytes=TRUE))) {
+        #} else if (1 == length(grep("^sigma-\u00e9[0-9]{2}$", name, useBytes=TRUE))) {
+        } else if (grepl("^sigma-.*[0-9]{2}$", name, useBytes=TRUE)
+            && grepl("sigma-theta", nameAfterColon, useBytes=TRUE)) {
             name <- "sigmaTheta"
             ## 2016-12-22 DK
             ## The above regexp matches for what we see in the supplied file
@@ -652,6 +656,8 @@ cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
 #' Read a Seabird CTD File
 #'
 #' @template readCtdTemplate
+#'
+#' @template encodingTemplate
 #'
 #' @param btl a logical value, with `TRUE` indicating that this is a `.BTL` file and `FALSE`
 #' (the default) indicating a `.CNV` file.  Note that if `btl` is `TRUE`, the data column
@@ -824,6 +830,7 @@ cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
 read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
     deploymentType="unknown", btl=FALSE, monitor=FALSE,
     #humanDateFormat=NULL,
+    encoding="latin1",
     debug=getOption("oceDebug"), processingLog, ...)
 {
     if (missing(file))
@@ -856,13 +863,13 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
     filename <- ""
     if (is.character(file)) {
         filename <- fullFilename(file)
-        file <- file(file, "r")
+        file <- file(file, "r", encoding=encoding)
         on.exit(close(file))
     }
     if (!inherits(file, "connection"))
         stop("argument `file' must be a character string or connection")
     if (!isOpen(file)) {
-        open(file, "r")
+        open(file, "r", encoding=encoding)
         on.exit(close(file))
     }
     res <- new("ctd")
@@ -886,9 +893,7 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
     ## Silence warnings because binary files have 'NUL' characters that spew many warnings
     warn <- options("warn")$warn
     options(warn=-1)
-    ##>>> NOTE: use latin1 to avoid a problem with an accented e, used for sigma-theta.
-    ##>>> lines <- readLines(file, encoding="UTF-8")
-    lines <- readLines(file, encoding="latin1")
+    lines <- readLines(file, encoding=encoding)
     options(warn=warn)
 
     ## Get names and units of columns in the SBE data file
@@ -1209,10 +1214,10 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
     res@metadata$deploymentType <- deploymentType
     res@metadata$date <- date
     if (!is.na(startTime) && startTime < as.POSIXct("1950-01-01"))
-        warning("startTime < 1950, suggesting y2k problem in this cnv file\n")
+        warning("startTime (", startTime, ") is < 1950, suggesting a turn-of-the-century problem in this cnv file")
     res@metadata$startTime <- startTime
     if (!is.na(recoveryTime) && recoveryTime < as.POSIXct("1950-01-01"))
-        warning("recoveryTime < 1950, suggesting y2k problem in this cnv file\n")
+        warning("recoveryTime < 1950, suggesting y2k problem in this cnv file")
     res@metadata$recoveryTime <- recoveryTime
     #res@metadata$time <- date          # standardized name
     res@metadata$latitude <- latitude
@@ -1280,7 +1285,7 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
         pushBack(lines, file) # push back header so we can read from a file, not a text vector (for speed)
         oceDebug(debug, "About to read .cnv data with these names: c(\"", paste(colNamesInferred, collapse='","'), "\")\n", sep="")
         #message("skipping ", iline-1, " lines at top of file")
-        data <- as.list(read.table(file, skip=iline-1, header=FALSE))
+        data <- as.list(read.table(file, skip=iline-1L, header=FALSE, encoding=encoding))
 
         if (length(data) != length(colNamesInferred))
             stop("Number of columns in .cnv data file (", length(data), ") must match number of variables named in the header (", length(colNamesInferred), ")")

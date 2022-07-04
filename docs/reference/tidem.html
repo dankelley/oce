@@ -19,7 +19,7 @@ resultant coefficients on the sine and cosine terms."><!-- mathjax --><script sr
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-7</span>
       </span>
     </div>
 
@@ -102,14 +102,20 @@ resultant coefficients on the sine and cosine terms.</p>
 times. In the former case, time is part of the object, so <code>t</code> may not
 be given here.  In the latter case, <code>tidem</code> needs a way to determine
 time, so <code>t</code> must be given.</p></dd>
+
+
 <dt>x</dt>
 <dd><p>an optional numerical vector holding something that varies with
 time.  This is ignored if <code>t</code> is a <a href="sealevel-class.html">sealevel</a> object,
 in which case it is inferred as <code>t[["elevation"]]</code>.</p></dd>
+
+
 <dt>constituents</dt>
 <dd><p>an optional character vector holding the names
 of tidal constituents to which the fit is done (see “Details”
 and “Constituent Naming Convention”.)</p></dd>
+
+
 <dt>infer</dt>
 <dd><p>a list of constituents to be inferred from
 fitted constituents according to the method outlined
@@ -147,15 +153,23 @@ the <code>tidem</code> results have root-mean-square amplitude difference
 to Foreman's (1978) Appendix 7.3 of 0.06mm; by comparison,
 the results in Table 1 of Pawlowicz et al. (2002) agree with Foreman's
 results to RMS difference 0.04mm.)</p></dd>
+
+
 <dt>latitude</dt>
 <dd><p>if provided, the latitude of the observations.  If not
 provided, <code>tidem</code> will try to infer this from <code>sl</code>.</p></dd>
+
+
 <dt>rc</dt>
 <dd><p>the value of the coefficient in the Rayleigh criterion.</p></dd>
+
+
 <dt>regress</dt>
 <dd><p>function to be used for regression, by default
 <code><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm()</a></code>, but could be for example <code>rlm</code> from the
 <code>MASS</code> package.</p></dd>
+
+
 <dt>debug</dt>
 <dd><p>an integer specifying whether debugging information is
 to be printed during the processing. This is a general parameter that
@@ -164,34 +178,38 @@ turns off the printing, while higher values suggest that more information
 be printed. If one function calls another, it usually reduces the value of
 <code>debug</code> first, so that a user can often obtain deeper debugging
 by specifying higher <code>debug</code> values.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>An object of <a href="tidem-class.html">tidem</a>, consisting of</p>
+    
+
+<p>An object of <a href="tidem-class.html">tidem</a>, consisting of</p>
 <dl><dt>const</dt>
 <dd><p>constituent number, e.g. 1 for <code>Z0</code>, 1 for <code>SA</code>,
 etc.</p></dd>
-<dt>model</dt>
+ <dt>model</dt>
 <dd><p>the regression model</p></dd>
-<dt>name</dt>
+ <dt>name</dt>
 <dd><p>a vector of constituent
 names, in non-subscript format, e.g. "<code>M2</code>".</p></dd>
-<dt>frequency</dt>
+ <dt>frequency</dt>
 <dd><p>a vector
 of constituent frequencies, in inverse hours.</p></dd>
-<dt>amplitude</dt>
+ <dt>amplitude</dt>
 <dd><p>a vector of
 fitted constituent amplitudes, in metres.</p></dd>
-<dt>phase</dt>
+ <dt>phase</dt>
 <dd><p>a vector of fitted
 constituent phase.  NOTE: The definition of phase is likely to change as
 this function evolves.  For now, it is phase with respect to the first data
 sample.</p></dd>
-<dt>p</dt>
+ <dt>p</dt>
 <dd><p>a vector containing a sort of p value for each
 constituent.  This is calculated as the average of the p values for the
 sine() and cosine() portions used in fitting; whether it makes any sense is
 an open question.</p></dd>
+
 </dl></div>
     <div id="details">
     <h2>Details</h2>
@@ -387,8 +405,8 @@ Computers and Geosciences, 28, 929-937.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> * Processing Log</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2022-06-10 20:10:26 UTC: `create 'tidem' object`</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2022-06-10 20:10:26 UTC: `tidem(t = sealevelTuktoyaktuk)`</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2022-07-04 09:25:48 UTC: `create 'tidem' object`</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2022-07-04 09:25:48 UTC: `tidem(t = sealevelTuktoyaktuk)`</span>
 <span class="r-in"></span>
 <span class="r-in"><span class="co"># AIC analysis</span></span>
 <span class="r-in"><span class="fu"><a href="https://rdrr.io/r/stats/extractAIC.html" class="external-link">extractAIC</a></span><span class="op">(</span><span class="va">tide</span><span class="op">[[</span><span class="st">"model"</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span>
@@ -427,8 +445,8 @@ Computers and Geosciences, 28, 929-937.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> * Processing Log</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2022-06-10 20:10:26 UTC: `create 'tidem' object`</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2022-06-10 20:10:26 UTC: `tidem(t = sl)`</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2022-07-04 09:25:48 UTC: `create 'tidem' object`</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2022-07-04 09:25:48 UTC: `tidem(t = sl)`</span>
 <span class="r-in"></span>
 </code></pre></div>
     </div>
@@ -444,7 +462,7 @@ Computers and Geosciences, 28, 929-937.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
       </footer></div>

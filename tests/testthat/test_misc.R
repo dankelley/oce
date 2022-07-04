@@ -1,6 +1,10 @@
 # vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
 library(oce)
 
+test_that("gappyIndex", {
+    expect_equal(c(3:6, 103:106), gappyIndex(c(1, 101), 2, 4))
+})
+
 test_that("approx3d", {
     ## Test values from the .c code, before converting to .cpp
     n <- 5

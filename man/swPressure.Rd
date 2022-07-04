@@ -9,8 +9,7 @@ swPressure(depth, latitude = 45, eos = getOption("oceEOS", default = "gsw"))
 \arguments{
 \item{depth}{distance below the surface in metres.}
 
-\item{latitude}{Latitude in \eqn{^\circ}{deg}N or radians north of the
-equator.}
+\item{latitude}{Latitude in \eqn{^\circ}{deg}N.}
 
 \item{eos}{indication of formulation to be used, either \code{"unesco"} or
 \code{"gsw"}.}

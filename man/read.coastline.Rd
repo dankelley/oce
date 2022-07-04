@@ -7,8 +7,9 @@
 read.coastline(
   file,
   type = c("R", "S", "mapgen", "shapefile", "openstreetmap"),
-  debug = getOption("oceDebug"),
+  encoding = "latin1",
   monitor = FALSE,
+  debug = getOption("oceDebug"),
   processingLog
 )
 }
@@ -18,10 +19,15 @@ read.coastline(
 \item{type}{type of file, one of \code{"R"}, \code{"S"}, \code{"mapgen"},
 \code{"shapefile"} or \code{"openstreetmap"}.}
 
-\item{debug}{set to TRUE to print information about the header, etc.}
+\item{encoding}{a character value that indicates the encoding to be used for
+this data file, if it is textual.  The default value for most functions is
+\code{"latin1"}, which seems to be suitable for files containing text written in
+English and French.}
 
 \item{monitor}{print a dot for every coastline segment read (ignored except
 for reading "shapefile" type)}
+
+\item{debug}{set to TRUE to print information about the header, etc.}
 
 \item{processingLog}{if provided, the action item to be stored in the log.
 (Typically only provided for internal calls; the default that it provides is

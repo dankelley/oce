@@ -18,7 +18,7 @@ extraneous data from a CTD cast."><!-- mathjax --><script src="https://cdnjs.clo
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-7</span>
       </span>
     </div>
 
@@ -99,40 +99,60 @@ extraneous data from a CTD cast.</p>
     <h2>Arguments</h2>
     <dl><dt>x</dt>
 <dd><p>a <a href="ctd-class.html">ctd</a> object.</p></dd>
+
+
 <dt>which</dt>
 <dd><p>Numerical vector numerical codes specifying the panels to draw: 1
 for pressure vs scan, 2 for <code>diff(pressure)</code> vs scan, 3 for temperature vs
 scan, and 4 for salinity vs scan.</p></dd>
+
+
 <dt>xtype</dt>
 <dd><p>Character string indicating variable for the x axis. May be
 <code>"scan"</code> (the default) or <code>"time"</code>. In the former case, a
 <code>scan</code> variable will be created using <code><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_along()</a></code>,
 if necessary. In the latter case, an error results if the <code>data</code>
 slot of <code>x</code> lacks a variable called <code>time</code>.</p></dd>
+
+
 <dt>flipy</dt>
 <dd><p>Logical value, ignored unless <code>which</code> is 1. If <code>flipy</code>
 is <code>TRUE</code>, then a pressure plot will have high pressures at the bottom
 of the axis.</p></dd>
+
+
 <dt>type</dt>
 <dd><p>Character indicating the line type, as for <code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot.default()</a></code>. The default
 is <code>"l"</code>, meaning to connect data with line segments. Another good choice is
 <code>"o"</code>, to add points at the data.</p></dd>
+
+
 <dt>mgp</dt>
 <dd><p>Three-element numerical vector to use for <a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a><code>(mgp)</code>, and also
 for <a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a><code>(mar)</code>, computed from this.  The default is tighter than the R
 default, in order to use more space for the data and less for the axes.</p></dd>
+
+
 <dt>xlim</dt>
 <dd><p>Limits on the x value. The default, <code>NULL</code>, is to select this
 from the data.</p></dd>
+
+
 <dt>ylim</dt>
 <dd><p>Limits on the y value. The default, <code>NULL</code>, is to select this
 from the data.</p></dd>
+
+
 <dt>mar</dt>
 <dd><p>Four-element vector be used with <a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a><code>("mar")</code>.  If set
 to <code>NULL</code>, then <a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a><code>("mar")</code> is used.  A good choice for a TS diagram
 with a palette to the right is <code>mar=par("mar")+c(0, 0, 0, 1))</code>.</p></dd>
+
+
 <dt>...</dt>
 <dd><p>Optional arguments passed to plotting functions.</p></dd>
+
+
 <dt>debug</dt>
 <dd><p>an integer specifying whether debugging information is
 to be printed during the processing. This is a general parameter that
@@ -141,6 +161,7 @@ turns off the printing, while higher values suggest that more information
 be printed. If one function calls another, it usually reduces the value of
 <code>debug</code> first, so that a user can often obtain deeper debugging
 by specifying higher <code>debug</code> values.</p></dd>
+
 </dl></div>
     <div id="see-also">
     <h2>See also</h2>
@@ -240,7 +261,7 @@ by specifying higher <code>debug</code> values.</p></dd>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
       </footer></div>

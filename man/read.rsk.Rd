@@ -10,6 +10,7 @@ read.rsk(
   to,
   by = 1,
   type,
+  encoding = NA,
   tz = getOption("oceTz", default = "UTC"),
   patm = FALSE,
   processingLog,
@@ -38,6 +39,8 @@ the sampling interval, to get the stride length.}
 \item{type}{optional file type, presently can be \code{rsk} or \code{txt} (for a
 text export of an RBR rsk or hex file). If this argument is not provided, an
 attempt will be made to infer the type from the file name and contents.}
+
+\item{encoding}{ignored.}
 
 \item{tz}{time zone.  The value \code{oceTz} is set at package setup.}
 

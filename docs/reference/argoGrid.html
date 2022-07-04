@@ -20,7 +20,7 @@ sectionGrid()."><!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/l
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-7</span>
       </span>
     </div>
 
@@ -91,6 +91,8 @@ sufficient user demand, other methods may be added, by analogy to
     <h2>Arguments</h2>
     <dl><dt>argo</dt>
 <dd><p>A <code>argo</code> object to be gridded.</p></dd>
+
+
 <dt>p</dt>
 <dd><p>Optional indication of the pressure levels to which interpolation
 should be done.  If this is not supplied, the pressure levels will be
@@ -101,16 +103,23 @@ If <code>p</code> is a single numerical value, it is taken as the number of
 subdivisions to use in a call to <code><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq()</a></code> that has range from 0 to the
 maximum pressure in <code>argo</code>.  Finally, if a vector numerical values is
 provided, then it is used as is.</p></dd>
+
+
 <dt>debug</dt>
 <dd><p>A flag that turns on debugging.  Higher values provide deeper
 debugging.</p></dd>
+
+
 <dt>...</dt>
 <dd><p>Optional arguments to <code><a href="https://rdrr.io/r/stats/approxfun.html" class="external-link">approx()</a></code>, which is used to do the
 gridding.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>x an <a href="argo-class.html">argo</a> object.</p>
+    
+
+<p>x an <a href="argo-class.html">argo</a> object.</p>
     </div>
     <div id="a-note-about-flags">
     <h2>A note about flags</h2>
@@ -172,7 +181,7 @@ deal with flags before calling the present function.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
       </footer></div>

@@ -1,3 +1,7 @@
+# oce 1.7.7
+
+* Fix encoding problems that will occur in the upcoming version of R.
+
 # oce 1.7.6
 
 * Permit acoustic-Doppler files in excess of 4Gb.

@@ -22,7 +22,7 @@ then the Gibbs SeaWater formulation for &quot;spiciness0&quot; is used
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-7</span>
       </span>
     </div>
 
@@ -105,28 +105,44 @@ then the Gibbs SeaWater formulation for "spiciness0" is used
 <code>pressure</code> must be provided) <em>or</em> a <code>ctd</code> object (in which
 case <code>salinity</code>, <code>temperature</code> and <code>pressure</code> are determined
 from the object, and must not be provided in the argument list).</p></dd>
+
+
 <dt>temperature</dt>
 <dd><p><em>in-situ</em> temperature (\(^\circ\)C) on the
 ITS-90 scale; see “Temperature units” in the documentation for
 <code><a href="swRho.html">swRho()</a></code>.</p></dd>
+
+
 <dt>pressure</dt>
 <dd><p>Seawater pressure (dbar) (only used if <code>eos</code> is
 <code>"gsw"</code>); see ‘Details’..</p></dd>
+
+
 <dt>longitude</dt>
 <dd><p>longitude of observation (only used if <code>eos</code> is
 <code>"gsw"</code>; see ‘Details’).</p></dd>
+
+
 <dt>latitude</dt>
 <dd><p>latitude of observation (only used if <code>eos</code> is
 <code>"gsw"</code>; see ‘Details’).</p></dd>
+
+
 <dt>eos</dt>
 <dd><p>Character value specifying the equation of state,
 either <code>"unesco"</code> (for the Flament formulation, although this
 is not actually part of UNESCO)
 or <code>"gsw"</code> for the Gibbs SeaWater formulation.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>Flament-formulated spice \(kg/m^3\) if <code>eos</code> is <code>"unesco"</code>or surface-referenced GSW spiciness0 \(kg/m^3\) if <code>eos</code> is <code>"gsw"</code>,
+    
+
+<p>Flament-formulated spice \(kg/m^3\) if <code>eos</code> is <code>"unesco"</code></p>
+
+
+<p>or surface-referenced GSW spiciness0 \(kg/m^3\) if <code>eos</code> is <code>"gsw"</code>,
 the latter provided by <code><a href="http://teos-10.github.io/GSW-R/reference/gsw_spiciness0.html" class="external-link">gsw::gsw_spiciness0()</a></code>, and hence aimed
 at application within the top half-kilometre of the ocean.</p>
     </div>
@@ -231,7 +247,7 @@ by references 1 and 2.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
       </footer></div>

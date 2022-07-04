@@ -189,6 +189,8 @@ findInHeaderBremen <- function(key, lines)
 #' @param file a connection or a character string giving the name of the file
 #' to load.
 #'
+#' @template encodingTemplate
+#'
 #' @return A [bremen-class] object.
 #'
 #' @section Issues: This function may be renamed (or removed) without notice.
@@ -198,7 +200,7 @@ findInHeaderBremen <- function(key, lines)
 #' @author Dan Kelley
 #'
 #' @family things related to bremen data
-read.bremen <- function(file)
+read.bremen <- function(file, encoding="latin1")
 {
     if (missing(file))
         stop("must supply 'file'")
@@ -210,17 +212,17 @@ read.bremen <- function(file)
     }
     if (is.character(file)) {
         filename <- fullFilename(file)
-        file <- file(file, "r")
+        file <- file(file, "r", encoding=encoding)
         on.exit(close(file))
     }
     if (!inherits(file, "connection"))
         stop("argument `file' must be a character string or connection")
     if (!isOpen(file)) {
-        open(file, "r")
+        open(file, "r", encoding=encoding)
         on.exit(close(file))
     }
     res <- new("bremen")
-    lines <- readLines(file)
+    lines <- readLines(file, encoding=encoding)
     ## Discover header as lines starting with a letter
     headerLength <- max(grep("^[a-zA-Z]", lines))
     h <- lines[1:headerLength]
@@ -260,7 +262,7 @@ read.bremen <- function(file)
     names[nicknames=="o"] <- "oxygen"
     names[nicknames=="z"] <- "pressure" # NOTE: bremen files have positive z values
     ## infer column names from last line of header (guessing a bit)
-    data <- read.table(text=lines[-seq.int(1, headerLength)], header=FALSE, col.names=names)
+    data <- read.table(text=lines[-seq.int(1, headerLength)], header=FALSE, col.names=names, encoding=encoding)
     for (name in names(data)) {
         ## FIXME: I have no idea what "uz" is, so I cannot guess the unit
         if (name == "u" || name == "v" || name == "uz" || name == "vz") {

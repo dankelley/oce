@@ -18,7 +18,7 @@ data slot has been altered, or added."><!-- mathjax --><script src="https://cdnj
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-7</span>
       </span>
     </div>
 
@@ -87,16 +87,26 @@ data slot has been altered, or added."><!-- mathjax --><script src="https://cdnj
     <h2>Arguments</h2>
     <dl><dt>object</dt>
 <dd><p>an <a href="oce-class.html">oce</a> object.</p></dd>
+
+
 <dt>name</dt>
 <dd><p>String indicating the name of the <code>data</code> item to be set.</p></dd>
+
+
 <dt>value</dt>
 <dd><p>Value for the item.</p></dd>
+
+
 <dt>unit</dt>
 <dd><p>An optional indication of the units for the item. This has
 three possible forms (see “Details”).</p></dd>
+
+
 <dt>originalName</dt>
 <dd><p>Optional character string giving an 'original' name (e.g.
 as stored in the header of a data file).</p></dd>
+
+
 <dt>note</dt>
 <dd><p>Either empty (the default), a character string, or <code>NULL</code>,
 to control additions made to the processing log of the return value. If
@@ -107,10 +117,13 @@ added to the processing log. This last form is useful in cases where
 <code>oceSetData</code> is to be called many times in succession, resulting
 in an overly verbose processing log; in such cases, it might help
 to add a note by e.g. <code>processingLog(a) &lt;- "QC (memo dek-2018-01/31)"</code></p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>An <a href="oce-class.html">oce</a> object, the <code>data</code> slot of which has
+    
+
+<p>An <a href="oce-class.html">oce</a> object, the <code>data</code> slot of which has
 been altered either by adding a new item or modifying an existing
 item.</p>
     </div>
@@ -166,7 +179,7 @@ and the scale set to <code>""</code>.</p></li>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
       </footer></div>

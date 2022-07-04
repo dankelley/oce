@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-7</span>
       </span>
     </div>
 
@@ -86,10 +86,14 @@
     <dl><dt>side</dt>
 <dd><p>an integer specifying which axis to draw, with 1 for bottom axis, 2 for left axis,
 3 for top axis, and 4 for right axis (as with <code><a href="https://rdrr.io/r/graphics/axis.html" class="external-link">axis()</a></code>).</p></dd>
+
+
 <dt>labels</dt>
 <dd><p>either a vector of character values used for labels or a logical value indicating
 whether to draw such labels.  The first form only works if the coordinate is not logarithmic,
 and if <code>logStyle</code> is <code>"r"</code>.</p></dd>
+
+
 <dt>logStyle</dt>
 <dd><p>a character value that indicates how to draw the y axis, if
 <code>log="y"</code>.  If it is <code>"r"</code> (the default) then the conventional R style is used,
@@ -100,12 +104,20 @@ the style will be that used in the scientific literature, in which large
 tick marks are used for integral powers of 10, with smaller tick marks
 at integral multiples of those powers, and with labels that use exponential
 format for values above 100 or below 0.01.</p></dd>
+
+
 <dt>...</dt>
 <dd><p>other graphical parameters, passed to <code><a href="https://rdrr.io/r/graphics/axis.html" class="external-link">axis()</a></code>.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>Numerical values at which tick marks were drawn (or would have been drawn, if <code>labels</code>specified to draw them).</p>
+    
+
+<p>Numerical values at which tick marks were drawn (or would have been drawn, if <code>labels</code></p>
+
+
+<p>specified to draw them).</p>
     </div>
     <div id="author">
     <h2>Author</h2>
@@ -137,7 +149,7 @@ format for values above 100 or below 0.01.</p></dd>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
       </footer></div>

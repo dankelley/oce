@@ -20,7 +20,7 @@ processing.'><!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-7</span>
       </span>
     </div>
 
@@ -98,6 +98,8 @@ processing.</p>
     <h2>Arguments</h2>
     <dl><dt>section</dt>
 <dd><p>A <code>section</code> object containing the section to be gridded.</p></dd>
+
+
 <dt>p</dt>
 <dd><p>Optional indication of the pressure levels to which interpolation
 should be done.  If this is not supplied, the pressure levels will be
@@ -111,12 +113,18 @@ vector numerical values is provided, perhaps. constructed with <code><a href="ht
 or <code><a href="standardDepths.html">standardDepths</a></code><code>(5)</code> (as in the examples),
 then it is used as is, after trimming any values that exceed the maximum
 pressure in the station data stored within <code>section</code>.</p></dd>
+
+
 <dt>method</dt>
 <dd><p>The method to use to decimate data within the stations; see
 <code><a href="ctdDecimate.html">ctdDecimate()</a></code>, which is used for the decimation.</p></dd>
+
+
 <dt>trim</dt>
 <dd><p>Logical value indicating whether to trim gridded pressures
 to the range of the data in <code>section</code>.</p></dd>
+
+
 <dt>debug</dt>
 <dd><p>an integer specifying whether debugging information is
 to be printed during the processing. This is a general parameter that
@@ -125,14 +133,19 @@ turns off the printing, while higher values suggest that more information
 be printed. If one function calls another, it usually reduces the value of
 <code>debug</code> first, so that a user can often obtain deeper debugging
 by specifying higher <code>debug</code> values.</p></dd>
+
+
 <dt>...</dt>
 <dd><p>Optional arguments to be supplied to <code><a href="ctdDecimate.html">ctdDecimate()</a></code>,
 e.g. <code>rule</code> controls extrapolation beyond the observed pressure range,
 in the case where <code>method</code> equals <code>"approx"</code>.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>A <a href="section-class.html">section</a> object that contains stations in which
+    
+
+<p>A <a href="section-class.html">section</a> object that contains stations in which
 the pressure values match identically, and that has all
 flags set to <code>NA</code>.</p>
     </div>
@@ -195,7 +208,7 @@ a flag system, for possible use in later processing steps.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
       </footer></div>

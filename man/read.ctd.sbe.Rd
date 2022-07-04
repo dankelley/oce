@@ -12,6 +12,7 @@ read.ctd.sbe(
   deploymentType = "unknown",
   btl = FALSE,
   monitor = FALSE,
+  encoding = "latin1",
   debug = getOption("oceDebug"),
   processingLog,
   ...
@@ -73,6 +74,11 @@ all the latter named as in the file, but with \code{"_sdev"} appended.}
 
 \item{monitor}{boolean, set to \code{TRUE} to provide an indication of
 progress.  This is useful if \code{filename} is a wildcard.}
+
+\item{encoding}{a character value that indicates the encoding to be used for
+this data file, if it is textual.  The default value for most functions is
+\code{"latin1"}, which seems to be suitable for files containing text written in
+English and French.}
 
 \item{debug}{an integer specifying whether debugging information is
 to be printed during the processing. This is a general parameter that

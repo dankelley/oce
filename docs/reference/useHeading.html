@@ -18,7 +18,7 @@ possibly with a constant adjustment."><!-- mathjax --><script src="https://cdnjs
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-7</span>
       </span>
     </div>
 
@@ -88,15 +88,22 @@ possibly with a constant adjustment.</p>
     <dl><dt>b</dt>
 <dd><p>object holding data from an instrument whose heading is bad, but
 whose other data are good.</p></dd>
+
+
 <dt>g</dt>
 <dd><p>object holding data from an instrument whose heading is good, and
 should be interpolated to the time base of <code>b</code>.</p></dd>
+
+
 <dt>add</dt>
 <dd><p>an angle, in degrees, to be added to the heading.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>A copy of <code>b</code>, but with <code>b$data$heading</code> replaced with
+    
+
+<p>A copy of <code>b</code>, but with <code>b$data$heading</code> replaced with
 heading angles that result from linear interpolation of the headings in
 <code>g</code>, and then adding the angle <code>add</code>.</p>
     </div>
@@ -117,7 +124,7 @@ heading angles that result from linear interpolation of the headings in
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
       </footer></div>

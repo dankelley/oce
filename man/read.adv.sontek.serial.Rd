@@ -14,8 +14,9 @@ read.adv.sontek.serial(
   latitude = NA,
   start = NULL,
   deltat = NULL,
-  debug = getOption("oceDebug"),
+  encoding = NA,
   monitor = FALSE,
+  debug = getOption("oceDebug"),
   processingLog = NULL
 )
 }
@@ -57,16 +58,18 @@ if \code{filename} is a vector of file names.}
 
 \item{deltat}{the time between samples.}
 
-\item{debug}{a flag that turns on debugging.  The value indicates the depth
-within the call stack to which debugging applies.  For example,
-\code{read.adv.nortek()} calls \code{read.header.nortek()}, so that
-\code{read.adv.nortek(...,debug=2)} provides information about not just the
-main body of the data file, but also the details of the header.}
+\item{encoding}{ignored.}
 
 \item{monitor}{boolean value indicating whether to indicate the progress
 of reading the file, by using \code{\link[=txtProgressBar]{txtProgressBar()}} or otherwise.  The value
 of \code{monitor} is changed to \code{FALSE} automatically, for non-interactive
 sessions.}
+
+\item{debug}{a flag that turns on debugging.  The value indicates the depth
+within the call stack to which debugging applies.  For example,
+\code{read.adv.nortek()} calls \code{read.header.nortek()}, so that
+\code{read.adv.nortek(...,debug=2)} provides information about not just the
+main body of the data file, but also the details of the header.}
 
 \item{processingLog}{if provided, the action item to be stored in the log.
 This parameter is typically only provided for internal calls; the default

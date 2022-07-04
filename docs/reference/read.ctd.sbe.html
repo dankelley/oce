@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-7</span>
       </span>
     </div>
 
@@ -86,6 +86,7 @@
   deploymentType <span class="op">=</span> <span class="st">"unknown"</span>,
   btl <span class="op">=</span> <span class="cn">FALSE</span>,
   monitor <span class="op">=</span> <span class="cn">FALSE</span>,
+  encoding <span class="op">=</span> <span class="st">"latin1"</span>,
   debug <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"oceDebug"</span><span class="op">)</span>,
   <span class="va">processingLog</span>,
   <span class="va">...</span>
@@ -101,18 +102,27 @@ wildcard (e.g. <code>"*.cnv"</code> or <code>"*.csv"</code>) in which case the r
 value is a vector containing CTD objects created by reading the files from
 <code><a href="https://rdrr.io/r/base/list.files.html" class="external-link">list.files()</a></code> with <code>pattern</code> set to the specified wildcard
 pattern.</p></dd>
+
+
 <dt>columns</dt>
 <dd><p>an optional <a href="https://rdrr.io/r/base/list.html" class="external-link">list</a> that can be used to convert unrecognized
 data names to resultant variable names.  This is used only by
 <code>read.ctd.sbe()</code> and <code><a href="read.ctd.odf.html">read.ctd.odf()</a></code>. For example,
 if a data file named salinity as <code>"SAL"</code>, then using</p>
-<p></p><div class="sourceCode"><pre><code></code></pre><p></p></div>
+<p></p><div class="sourceCode"><pre><code><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>d <span class="ot">&lt;-</span> <span class="fu">read.ctd</span>(f, <span class="at">columns=</span><span class="fu">list</span>(</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    <span class="at">salinity=</span><span class="fu">list</span>(<span class="at">name=</span><span class="st">"SAL"</span>,</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>                  <span class="at">unit=</span><span class="fu">list</span>(<span class="at">unit=</span><span class="fu">expression</span>(),</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>                  <span class="at">scale=</span><span class="st">"PSS-78"</span>))))</span></code></pre><p></p></div>
 <p>would assign the <code>"SAL"</code> column to the <code>salinity</code> entry in the data
 slot of the CTD object returned by the <code>read.*</code> function.</p></dd>
+
+
 <dt>station</dt>
 <dd><p>optional character string containing an identifying name or
 number for the station. This can be useful if the routine cannot determine the
 name automatically, or if another name is preferred.</p></dd>
+
+
 <dt>missingValue</dt>
 <dd><p>optional missing-value flag; data matching this value will
 be set to <code>NA</code> upon reading. If this is provided, then it overrules any
@@ -126,6 +136,8 @@ whether salinity and/or temperature has a minimum that is under -8 in value;
 this should catch common values in files, without false positives. A warning
 will be issued in this case, and a note inserted in the processing log of
 the return value.</p></dd>
+
+
 <dt>deploymentType</dt>
 <dd><p>character string indicating the type of deployment. Use
 <code>"unknown"</code> if this is not known, <code>"profile"</code> for a profile (in
@@ -135,31 +147,51 @@ the device is installed on a fixed mooring, <code>"thermosalinograph"</code> (or
 <code>"tsg"</code>) if the device is mounted on a moving vessel, to record
 near-surface properties, or <code>"towyo"</code> if the device is repeatedly
 lowered and raised.</p></dd>
+
+
 <dt>btl</dt>
 <dd><p>a logical value, with <code>TRUE</code> indicating that this is a <code>.BTL</code> file and <code>FALSE</code>
 (the default) indicating a <code>.CNV</code> file.  Note that if <code>btl</code> is <code>TRUE</code>, the data column
 names are taken directly from the file (without e.g. translating to <code>"Sal00"</code>
 to <code>"salinity"</code>.  Also, the "avg" and "sdev" columns are blended together, with
 all the latter named as in the file, but with <code>"_sdev"</code> appended.</p></dd>
+
+
 <dt>monitor</dt>
 <dd><p>boolean, set to <code>TRUE</code> to provide an indication of
 progress.  This is useful if <code>filename</code> is a wildcard.</p></dd>
+
+
+<dt>encoding</dt>
+<dd><p>a character value that indicates the encoding to be used for
+this data file, if it is textual.  The default value for most functions is
+<code>"latin1"</code>, which seems to be suitable for files containing text written in
+English and French.</p></dd>
+
+
 <dt>debug</dt>
 <dd><p>an integer specifying whether debugging information is
 to be printed during the processing. This is a general parameter that
 is used by many <code>oce</code> functions. Generally, setting <code>debug=0</code>
 turns off the printing, while higher values suggest that more information
 be printed.</p></dd>
+
+
 <dt>processingLog</dt>
 <dd><p>if provided, the action item to be stored in the log.
 This is typically only provided for internal calls; the default that it provides is
 better for normal calls by a user.</p></dd>
+
+
 <dt>...</dt>
 <dd><p>additional arguments, passed to called routines.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>This function returns a <a href="ctd-class.html">ctd</a> object.</p>
+    
+
+<p>This function returns a <a href="ctd-class.html">ctd</a> object.</p>
     </div>
     <div id="details">
     <h2>Details</h2>
@@ -195,22 +227,22 @@ things.</p>
 <p>For example, consider the <code>date</code> item in the <code>metadata</code> slot of the returned
 value.  <code>read.ctd.sbe()</code> infers this value in one of two ways.  First, if
 there is a header line staring with</p>
-<p></p><div class="sourceCode"><pre><code></code></pre><p></p></div>
+<p></p><div class="sourceCode"><pre><code><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="sc">*</span> NMEA <span class="fu">UTC</span> (Time) <span class="ot">=</span></span></code></pre><p></p></div>
 <p>then that value is decoded and used for <code>date</code>.  This header line, preceded
 by a single asterisk, is not human-entered, and so there is reason to hope
 for a uniform format that can be handled by <code>read.ctd.sbe()</code>.  However, if
 there is no NMEA header line, then <code>read.ctd.sbe()</code> will look for a line
 starting with</p>
-<p></p><div class="sourceCode"><pre><code></code></pre><p></p></div>
+<p></p><div class="sourceCode"><pre><code><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="sc">**</span> Date<span class="sc">:</span></span></code></pre><p></p></div>
 <p>which was human-entered. This is the second choice, because humans write
 dates in a bewildering variety of ways, and <code><a href="https://rdrr.io/r/base/as.POSIXlt.html" class="external-link">as.POSIXct()</a></code>, which
 <code>read.ctd.sbe</code> uses to parse the date, cannot handle them all. If there is a
 problem, <code>read.ctd.sbe()</code> issues a warning and stores NA in <code>date</code>.</p>
 <p>A similar error-detection procedure is used for human-entered location data,
 which appear in lines starting with either</p>
-<p></p><div class="sourceCode"><pre><code></code></pre><p></p></div>
+<p></p><div class="sourceCode"><pre><code><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="sc">**</span> Longitude<span class="sc">:</span></span></code></pre><p></p></div>
 <p>or</p>
-<p></p><div class="sourceCode"><pre><code></code></pre><p></p></div>
+<p></p><div class="sourceCode"><pre><code><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="sc">**</span> Latitude<span class="sc">:</span></span></code></pre><p></p></div>
 <p>which often take forms that <code>read.ctd.sbe()</code> cannot parse.</p>
 <p>It is important to note that, even if no warnings are issued, there is a
 reasonably high chance that human-entered data will be scanned incorrectly.
@@ -226,7 +258,13 @@ but if many files are systematically problematic, say for a whole cruise or
 perhaps even for a whole institution, then it might sense to set up a wrapper
 function to correct deficiencies in the CNV files. As an example, the
 following handles dates specified in a particular nonstandard way.</p>
-<p></p><div class="sourceCode"><pre><code></code></pre><p></p></div>
+<p></p><div class="sourceCode"><pre><code><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>read.ctd.sbe.wrapper <span class="ot">&lt;-</span> <span class="cf">function</span>(cnv)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>{</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    lines <span class="ot">&lt;-</span> <span class="fu">readLines</span>(cnv)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Change month-day-year to year-month-day, so as.POSIXct() can parse it.</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    lines <span class="ot">&lt;-</span> <span class="fu">gsub</span>(<span class="st">"^</span><span class="sc">\\</span><span class="st">*</span><span class="sc">\\</span><span class="st">* Date: (.*)-(.*)-(.*)"</span>, <span class="st">"** Date: </span><span class="sc">\\</span><span class="st">3-</span><span class="sc">\\</span><span class="st">1-</span><span class="sc">\\</span><span class="st">2"</span>, lines)</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">read.ctd.sbe</span>(<span class="fu">textConnection</span>(lines))</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>}</span></code></pre><p></p></div>
     </div>
     <div id="a-note-on-sampling-times">
     <h2>A note on sampling times</h2>
@@ -345,7 +383,7 @@ and this was the reference version used in coding <code>oce</code>.</p></li>
     <h2>Examples</h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="va">f</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"ctd.cnv"</span>, package<span class="op">=</span><span class="st">"oce"</span><span class="op">)</span></span>
 <span class="r-in"><span class="va">d</span> <span class="op">&lt;-</span> <span class="fu"><a href="read.ctd.html">read.ctd</a></span><span class="op">(</span><span class="va">f</span><span class="op">)</span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>startTime &lt; 1950, suggesting y2k problem in this cnv file</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>startTime (1903-10-15 11:38:38) is &lt; 1950, suggesting a turn-of-the-century problem in this cnv file</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>this CNV file has temperature in the IPTS-68 scale and this is stored in the object, but note that [["temperature"]] and the sw* functions convert the numbers to ITS-90 values</span>
 <span class="r-in"></span>
 </code></pre></div>
@@ -362,7 +400,7 @@ and this was the reference version used in coding <code>oce</code>.</p></li>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
       </footer></div>

@@ -52,6 +52,10 @@ do_fill_gap_1d <- function(x, rule) {
     .Call(`_oce_do_fill_gap_1d`, x, rule)
 }
 
+do_gappy_index <- function(starts, offset, length) {
+    .Call(`_oce_do_gappy_index`, starts, offset, length)
+}
+
 do_geoddist_alongpath <- function(lon, lat, a, f) {
     .Call(`_oce_do_geoddist_alongpath`, lon, lat, a, f)
 }

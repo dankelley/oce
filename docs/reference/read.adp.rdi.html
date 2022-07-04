@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-7</span>
       </span>
     </div>
 
@@ -87,6 +87,7 @@
   longitude <span class="op">=</span> <span class="cn">NA</span>,
   latitude <span class="op">=</span> <span class="cn">NA</span>,
   type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"workhorse"</span><span class="op">)</span>,
+  encoding <span class="op">=</span> <span class="cn">NA</span>,
   monitor <span class="op">=</span> <span class="cn">FALSE</span>,
   despike <span class="op">=</span> <span class="cn">FALSE</span>,
   <span class="va">processingLog</span>,
@@ -102,6 +103,8 @@
 <dd><p>a connection or a character string giving the name of the file
 to load.  (For <code>read.adp.sontek.serial</code>, this is generally a list of
 files, which will be concatenated.)</p></dd>
+
+
 <dt>from</dt>
 <dd><p>indication of the first profile to read.  This can be an
 integer, the sequence number of the first profile to read, or a POSIXt time
@@ -109,51 +112,82 @@ before which profiles should be skipped, or a character string that converts
 to a POSIXt time (assuming UTC timezone).  See “Examples”, and make
 careful note of the use of the <code>tz</code> argument. If <code>from</code> is not
 supplied, it defaults to 1.</p></dd>
+
+
 <dt>to</dt>
 <dd><p>an optional indication of the last profile to read, in a
 format as described for <code>from</code>.  As a special case, <code>to=0</code> means
 to read the file to the end.  If <code>to</code> is not supplied, then it defaults
 to 0.</p></dd>
+
+
 <dt>by</dt>
 <dd><p>an optional indication of the stride length to use while walking through
 the file.  If this is an integer, then <code>by-1</code> profiles are skipped
 between each pair of profiles that is read, e.g. the default <code>by=1</code>
 means to read all the data.  (For RDI files <em>only</em>, there are some
 extra features to avoid running out of memory; see “Memory considerations”.)</p></dd>
+
+
 <dt>tz</dt>
 <dd><p>character string indicating time zone to be assumed in the data.</p></dd>
+
+
 <dt>longitude</dt>
 <dd><p>optional signed number indicating the longitude in degrees
 East.</p></dd>
+
+
 <dt>latitude</dt>
 <dd><p>optional signed number indicating the latitude in degrees
 North.</p></dd>
+
+
 <dt>type</dt>
 <dd><p>character string indicating the type of instrument.</p></dd>
+
+
+<dt>encoding</dt>
+<dd><p>ignored.</p></dd>
+
+
 <dt>monitor</dt>
 <dd><p>boolean value indicating whether to indicate the progress
 of reading the file, by using <code><a href="https://rdrr.io/r/utils/txtProgressBar.html" class="external-link">txtProgressBar()</a></code> or otherwise.  The value
 of <code>monitor</code> is changed to <code>FALSE</code> automatically, for non-interactive
 sessions.</p></dd>
+
+
 <dt>despike</dt>
 <dd><p>if <code>TRUE</code>, <code><a href="despike.html">despike()</a></code> will be used to clean
 anomalous spikes in heading, etc.</p></dd>
+
+
 <dt>processingLog</dt>
 <dd><p>if provided, the action item to be stored in the log.
 (Typically only provided for internal calls; the default that it provides is
 better for normal calls by a user.)</p></dd>
+
+
 <dt>testing</dt>
 <dd><p>logical value (IGNORED).</p></dd>
+
+
 <dt>debug</dt>
 <dd><p>a flag that turns on debugging.  Set to 1 to get a moderate
 amount of debugging information, or to 2 to get more.</p></dd>
+
+
 <dt>...</dt>
 <dd><p>optional additional arguments that some (but not all)
 <code>read.adp.*()</code> functions pass to lower-level functions.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>An <a href="adp-class.html">adp</a> object.
+    
+
+<p>An <a href="adp-class.html">adp</a> object.
 The contents of that object make sense for the particular instrument
 type under study, e.g. if the data file contains
 NMEA strings, then navigational data will be stored in an item
@@ -303,7 +337,7 @@ examine the original data file using other tools. To this end, <code>read.adp.rd
 inserts an element named <code>ensembleInFile</code> into the <code>metadata</code> slot.
 This gives the starting byte number of each inferred ensemble within the original data
 file.  For example, if <code>d</code> is an object read with <code>read.adp.rdi</code>, then using</p>
-<p></p><div class="sourceCode"><pre><code></code></pre><p></p></div>
+<p></p><div class="sourceCode"><pre><code><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(d[[<span class="st">"time"</span>]][<span class="sc">-</span><span class="dv">1</span>], <span class="fu">diff</span>(d[[<span class="st">"ensembleInFile"</span>]]))</span></code></pre><p></p></div>
 <p>can be a good way to narrow in on problems.</p>
     </div>
     <div id="references">
@@ -383,7 +417,7 @@ P/N 957-6171-00 (June 2001) <code>WinRiver User Guide International Version.pdf.
 <span class="r-out co"><span class="r-pr">#&gt;</span> * Instrument:         adcp</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> * Serial number:      unknown</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> * Firmware version:   16.28</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> * Source filename:    ``/private/var/folders/8b/l4h64m1j22v5pb7vj049ff140000gn/T/Rtmp81Vrmz/temp_libpath857746f6bf71/oce/extdata/adp_rdi.000``</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> * Source filename:    ``/private/var/folders/8b/l4h64m1j22v5pb7vj049ff140000gn/T/RtmpD6IdDJ/temp_libpath105e928b73136/oce/extdata/adp_rdi.000``</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> * Location:           unknown latitude, unknown longitude</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> * Number of beams:    4</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> * Number of profiles: 9</span>
@@ -439,7 +473,7 @@ P/N 957-6171-00 (June 2001) <code>WinRiver User Guide International Version.pdf.
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> * Processing Log</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2022-06-10 20:08:44 UTC: `read.adp.rdi(file = system.file("extdata", "adp_rdi.000", package = "oce"))`</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2022-07-04 09:23:56 UTC: `read.adp.rdi(file = system.file("extdata", "adp_rdi.000", package = "oce"))`</span>
 <span class="r-in"></span>
 </code></pre></div>
     </div>
@@ -455,7 +489,7 @@ P/N 957-6171-00 (June 2001) <code>WinRiver User Guide International Version.pdf.
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
       </footer></div>

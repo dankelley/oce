@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-7</span>
       </span>
     </div>
 
@@ -98,23 +98,33 @@
     <h2>Arguments</h2>
     <dl><dt>x</dt>
 <dd><p>an <a href="amsr-class.html">amsr</a> object.</p></dd>
+
+
 <dt>y</dt>
 <dd><p>character value indicating the name of the band to plot; if not provided,
 <code>SST</code> is used; see the documentation for the <a href="amsr-class.html">amsr</a> class for a list of bands.</p></dd>
+
+
 <dt>asp</dt>
 <dd><p>optional numerical value giving the aspect ratio for plot.  The
 default value, <code>NULL</code>, means to use an aspect ratio of 1 for world views,
 and a value computed from <code>ylim</code>, if the latter is specified in the
 <code>...</code> argument.</p></dd>
+
+
 <dt>breaks</dt>
 <dd><p>optional numeric vector of the z values for breaks in the color scheme.
 If <code>colormap</code> is provided, it takes precedence over <code>breaks</code> and <code>col</code>.</p></dd>
+
+
 <dt>col</dt>
 <dd><p>optional argument, either a vector of colors corresponding to the breaks, of length
 1 less than the number of breaks, or a function specifying colors.
 If neither <code>col</code> or <code>colormap</code> is provided, then <code>col</code> defaults to
 <code><a href="oceColorsTemperature.html">oceColorsTemperature()</a></code>.
 If <code>colormap</code> is provided, it takes precedence over <code>breaks</code> and <code>col</code>.</p></dd>
+
+
 <dt>colormap</dt>
 <dd><p>a specification of the colormap to use, as created
 with <code><a href="colormap.html">colormap()</a></code>.  If <code>colormap</code> is NULL, which is the default, then
@@ -122,10 +132,14 @@ a colormap is created to cover the range of data values, using
 <a href="oceColorsTemperature.html">oceColorsTemperature</a> colour scheme.
 If <code>colormap</code> is provided, it takes precedence over <code>breaks</code> and <code>col</code>.
 See “Examples” for an example of using the "turbo" colour scheme.</p></dd>
+
+
 <dt>zlim</dt>
 <dd><p>optional numeric vector of length 2, giving the limits
 of the plotted quantity.  A reasonable default is computed, if this
 is not given.</p></dd>
+
+
 <dt>missingColor</dt>
 <dd><p>List of colors for problem cases. The names of the
 elements in this list must be as in the default, but the colors may
@@ -133,11 +147,16 @@ be changed to any desired values. These default values work reasonably
 well for SST images, which are the default image, and which employ a
 blue-white-red blend of colors, no mixture of which matches the
 default values in <code>missingColor</code>.</p></dd>
+
+
 <dt>debug</dt>
 <dd><p>A debugging flag, integer.</p></dd>
+
+
 <dt>...</dt>
 <dd><p>extra arguments passed to <code><a href="imagep.html">imagep()</a></code>, e.g. to control
 the view with <code>xlim</code> (for longitude) and <code>ylim</code> (for latitude).</p></dd>
+
 </dl></div>
     <div id="details">
     <h2>Details</h2>
@@ -221,7 +240,7 @@ which combines the day and night fields.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
       </footer></div>

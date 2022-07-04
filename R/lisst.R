@@ -338,6 +338,8 @@ as.lisst <- function(data, filename="", year=0, tz="UTC", longitude=NA, latitude
 #'
 #' @param latitude latitude of observation (stored in metadata)
 #'
+#' @template encodingTemplate
+#'
 #' @return x A [lisst-class] object.
 #'
 #' @author Dan Kelley
@@ -347,7 +349,8 @@ read.lisst <- function(file,
     year=0,
     tz="UTC",
     longitude=NA,
-    latitude=NA)
+    latitude=NA,
+    encoding="latin1")
 {
     if (missing(file))
         stop("must supply 'file'")
@@ -360,16 +363,16 @@ read.lisst <- function(file,
     filename <- NULL
     if (is.character(file)) {
         filename <- fullFilename(file)
-        file <- file(file, "r")
+        file <- file(file, "r", encoding=encoding)
         on.exit(close(file))
     }
     if (!inherits(file, "connection"))
         stop("argument `file' must be a character string or connection")
     if (!isOpen(file)) {
-        open(file, "r")
+        open(file, "r", encoding=encoding)
         on.exit(close(file))
     }
-    data <- read.table(file, header=FALSE)
+    data <- read.table(file, header=FALSE, encoding=encoding)
     res <- as.lisst(data, filename=filename, year=year, tz=tz, longitude=longitude, latitude=latitude)
     res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     names <- names(data)

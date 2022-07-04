@@ -19,7 +19,7 @@ along geodesic curves.  See &amp;#8220;Caution&amp;#8221;."><!-- mathjax --><scr
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-7</span>
       </span>
     </div>
 
@@ -95,11 +95,15 @@ along geodesic curves.  See “Caution”.</p>
     <h2>Arguments</h2>
     <dl><dt>longitude, latitude</dt>
 <dd><p>vector of longitude and latitude</p></dd>
+
+
 <dt>longitudeRef, latitudeRef</dt>
 <dd><p>numeric reference location. Poor results
 will be returned if these values are not close to the locations described
 by <code>longitude</code> and <code>latitude</code>. A sensible approach might be
 to set <code>longitudeRef</code> to <code>longitude[1]</code>, etc.</p></dd>
+
+
 <dt>debug</dt>
 <dd><p>an integer specifying whether debugging information is
 to be printed during the processing. This is a general parameter that
@@ -108,10 +112,13 @@ turns off the printing, while higher values suggest that more information
 be printed. If one function calls another, it usually reduces the value of
 <code>debug</code> first, so that a user can often obtain deeper debugging
 by specifying higher <code>debug</code> values.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p><code>geodXy</code> returns a data frame of <code>x</code> and <code>y</code>,
+    
+
+<p><code>geodXy</code> returns a data frame of <code>x</code> and <code>y</code>,
 geodesic distance components, measured in metres.</p>
     </div>
     <div id="details">
@@ -197,7 +204,7 @@ sense if the mean resultant x and y were zero.</p></li>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
       </footer></div>

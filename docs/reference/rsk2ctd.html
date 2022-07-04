@@ -20,7 +20,7 @@ instruments measure total pressure, not sea pressure; see &amp;#8220;Details&amp
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-7</span>
       </span>
     </div>
 
@@ -101,22 +101,38 @@ instruments measure total pressure, not sea pressure; see “Details”.</p>
     <h2>Arguments</h2>
     <dl><dt>x</dt>
 <dd><p>an <a href="rsk-class.html">rsk</a> object.</p></dd>
+
+
 <dt>pressureAtmospheric</dt>
 <dd><p>A numerical value (a constant or a vector),
 that is subtracted from the pressure in <code>object</code> before storing it in the return value.</p></dd>
+
+
 <dt>longitude</dt>
 <dd><p>numerical value of longitude, in degrees East.</p></dd>
+
+
 <dt>latitude</dt>
 <dd><p>numerical value of latitude, in degrees North.</p></dd>
+
+
 <dt>ship</dt>
 <dd><p>optional string containing the ship from which the observations were made.</p></dd>
+
+
 <dt>cruise</dt>
 <dd><p>optional string containing a cruise identifier.</p></dd>
+
+
 <dt>station</dt>
 <dd><p>optional string containing a station identifier.</p></dd>
+
+
 <dt>deploymentType</dt>
 <dd><p>character string indicating the type of deployment (see
 <code><a href="as.ctd.html">as.ctd()</a></code>).</p></dd>
+
+
 <dt>debug</dt>
 <dd><p>an integer specifying whether debugging information is
 to be printed during the processing. This is a general parameter that
@@ -125,6 +141,7 @@ turns off the printing, while higher values suggest that more information
 be printed. If one function calls another, it usually reduces the value of
 <code>debug</code> first, so that a user can often obtain deeper debugging
 by specifying higher <code>debug</code> values.</p></dd>
+
 </dl></div>
     <div id="details">
     <h2>Details</h2>
@@ -153,7 +170,7 @@ a non-zero value to be subtracted from pressure.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
       </footer></div>

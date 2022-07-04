@@ -17,6 +17,7 @@ read.aquadopp(
   distance,
   monitor = FALSE,
   despike = FALSE,
+  encoding = NA,
   processingLog,
   debug = getOption("oceDebug"),
   ...
@@ -76,6 +77,8 @@ sessions.}
 
 \item{despike}{if \code{TRUE}, \code{\link[=despike]{despike()}} will be used to clean
 anomalous spikes in heading, etc.}
+
+\item{encoding}{ignored.}
 
 \item{processingLog}{if provided, the action item to be stored in the log.
 (Typically only provided for internal calls; the default that it provides is

@@ -20,7 +20,7 @@ then gsw::gsw_t_freezing() to get the freezing temperature)."><!-- mathjax --><s
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-7</span>
       </span>
     </div>
 
@@ -100,24 +100,37 @@ then <code><a href="http://teos-10.github.io/GSW-R/reference/gsw_t_freezing.html
 <dd><p>Either practical salinity (PSU) or a <code>ctd</code> object from which
 practical salinity and pressure (plus in the <code>eos="gsw"</code> case,
 longitude and latitude) are inferred, using <code><a href="lookWithin.html">lookWithin()</a></code>.</p></dd>
+
+
 <dt>pressure</dt>
 <dd><p>Seawater pressure (dbar).</p></dd>
+
+
 <dt>longitude</dt>
 <dd><p>Longitude of observation (only used if <code>eos="gsw"</code>;
 see ‘Details’).</p></dd>
+
+
 <dt>latitude</dt>
 <dd><p>Latitude of observation (only used if <code>eos="gsw"</code>; see
 ‘Details’).</p></dd>
+
+
 <dt>saturation_fraction</dt>
 <dd><p>The saturation fraction of dissolved air in seawater,
 ignored if <code>eos="unesco"</code>).</p></dd>
+
+
 <dt>eos</dt>
 <dd><p>The equation of state, either <code>"unesco"</code> (references 1 and 2) or <code>"gsw"</code>.
 (references 3 and 4).</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>Temperature (\(^\circ\)C), defined on the ITS-90 scale.</p>
+    
+
+<p>Temperature (\(^\circ\)C), defined on the ITS-90 scale.</p>
     </div>
     <div id="details">
     <h2>Details</h2>
@@ -223,7 +236,7 @@ the Gibbs Seawater (GSW) Oceanographic Toolbox. SCOR/IAPSO WG127, 2011.</p></li>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
       </footer></div>

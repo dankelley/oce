@@ -20,7 +20,7 @@ drawPalette() and then draw the main diagram.'><!-- mathjax --><script src="http
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-7</span>
       </span>
     </div>
 
@@ -155,13 +155,19 @@ here.)  <em>Mode 4.</em> There are also some special cases, e.g. if <code>x</cod
 topographic object such as can be created with <code><a href="read.topo.html">read.topo()</a></code>
 or <code><a href="as.topo.html">as.topo()</a></code>, then longitude and latitude are used for
 axes, and topographic height is drawn.</p></dd>
+
+
 <dt>z</dt>
 <dd><p>A matrix containing the values to be plotted (NAs are allowed). Note
 that x can be used instead of z for convenience. (NOTE: these arguments
 are meant to mimic those of <code><a href="https://rdrr.io/r/graphics/image.html" class="external-link">image()</a></code>, which explains the same
 description here.)</p></dd>
+
+
 <dt>xlim, ylim</dt>
 <dd><p>Limits on x and y axes.</p></dd>
+
+
 <dt>zlim</dt>
 <dd><p>If missing, the z scale is determined by the range of the data.
 If provided, <code>zlim</code> may take several forms. First, it may be a pair
@@ -172,6 +178,8 @@ string <code>"symmetric"</code>, to yield limits that are symmetric
 about zero, which can be helpful in drawing velocity fields,
 for which a zero value has a particular meaning (in which case,
 a good color scheme might be <code>col=oceColorsTwo</code>).</p></dd>
+
+
 <dt>zclip</dt>
 <dd><p>Logical, indicating whether to clip the colors to those
 corresponding to <code>zlim</code>. This only works if <code>zlim</code> is
@@ -179,6 +187,8 @@ provided. Clipped regions will be colored with <code>missingColor</code>.
 Thus, clipping an image is somewhat analogous to clipping in an xy
 plot, with clipped data being ignored, which in an image means to be be
 colored with <code>missingColor</code>.</p></dd>
+
+
 <dt>flipy</dt>
 <dd><p>Logical, with <code>TRUE</code> indicating that the graph
 should have the y axis reversed, i.e. with smaller values at
@@ -187,16 +197,24 @@ the meaning of <code>flipy</code> was different; it meant to reverse the
 range of the y axis, so that if <code>ylim</code> were given as a reversed
 range, then setting <code>flipy=TRUE</code> would reverse the flip, yielding
 a conventional axis with smaller values at the bottom.)</p></dd>
+
+
 <dt>xlab, ylab, zlab</dt>
 <dd><p>Names for x axis, y axis, and the image values.</p></dd>
+
+
 <dt>zlabPosition</dt>
 <dd><p>String indicating where to put the label for the z axis,
 either at the top-right of the main image, or on the side, in the axis
 for the palette.</p></dd>
+
+
 <dt>las.palette</dt>
 <dd><p>Parameter controlling the orientation of labels on the
 image palette, passed as the <code>las</code> argument to <code><a href="drawPalette.html">drawPalette()</a></code>.  See the
 documentation for <code><a href="drawPalette.html">drawPalette()</a></code> for details.</p></dd>
+
+
 <dt>decimate</dt>
 <dd><p>Controls whether the image will be decimated before plotting,
 in three possible cases.</p><ol><li><p>If <code>decimate=FALSE</code> then every grid cell in the matrix will
@@ -216,32 +234,46 @@ the same is done for the <code>y</code> direction.</p></li>
 the first index of <code>z</code>, and the second is used for the second
 index.</p></li>
 </ol></dd>
+
+
 <dt>breaks</dt>
 <dd><p>The z values for breaks in the color scheme.  If this is of
 length 1, the value indicates the desired number of breaks, which is
 supplied to <code><a href="https://rdrr.io/r/base/pretty.html" class="external-link">pretty()</a></code>, in determining clean break points.
 If <code>colormap</code> is provided, it takes precedence over <code>breaks</code> and <code>col</code>.</p></dd>
+
+
 <dt>col</dt>
 <dd><p>Either a vector of colors corresponding to the breaks, of length
 1 plus the number of breaks, or a function specifying colors.
 If <code>col</code> is not provided, and if <code>colormap</code> is also not provided, then <code>col</code>
 defaults to <code><a href="oceColorsViridis.html">oceColorsViridis()</a></code>.
 If <code>colormap</code> is provided, it takes precedence over <code>breaks</code> and <code>col</code>.</p></dd>
+
+
 <dt>colormap</dt>
 <dd><p>A color map as created by <code><a href="colormap.html">colormap()</a></code>.  If
 provided, then <code>colormap$breaks</code> and <code>colormap$col</code> take
 precedence over the present arguments <code>breaks</code> and <code>col</code>.
 (All of the other contents of <code>colormap</code> are ignored, though.)
 If <code>colormap</code> is provided, it takes precedence over <code>breaks</code> and <code>col</code>.</p></dd>
+
+
 <dt>labels</dt>
 <dd><p>Optional vector of labels for ticks on palette axis (must
 correspond with <code>at</code>).</p></dd>
+
+
 <dt>at</dt>
 <dd><p>Optional vector of positions for the <code>label</code>s.</p></dd>
+
+
 <dt>drawContours</dt>
 <dd><p>Logical value indicating whether to draw contours on the
 image, and palette, at the color breaks.  Images with a great deal of
 high-wavenumber variation look poor with contours.</p></dd>
+
+
 <dt>drawPalette</dt>
 <dd><p>Indication of the type of palette to draw, if any.  If
 <code>drawPalette=TRUE</code>, a palette is drawn at the right-hand side of the
@@ -252,69 +284,105 @@ the right-hand margin to occupy the region in which the palette would
 have been drawn.  This last form is useful for producing stacked plots
 with uniform left and right margins, but with palettes on only some of
 the images.</p></dd>
+
+
 <dt>drawTriangles</dt>
 <dd><p>Logical value indicating whether to draw
 triangles on the top and bottom of the palette.  This is passed to
 <code><a href="drawPalette.html">drawPalette()</a></code>.</p></dd>
+
+
 <dt>tformat</dt>
 <dd><p>Optional argument passed to <code><a href="oce.plot.ts.html">oce.plot.ts()</a></code>, for
 plot types that call that function.  (See <code><a href="https://rdrr.io/r/base/strptime.html" class="external-link">strptime()</a></code> for the
 format used.)</p></dd>
+
+
 <dt>drawTimeRange</dt>
 <dd><p>Logical, only used if the <code>x</code> axis is a
 time.  If <code>TRUE</code>, then an indication of the time range of the
 data (not the axis) is indicated at the top-left margin of the
 graph.  This is useful because the labels on time axes only indicate
 hours if the range is less than a day, etc.</p></dd>
+
+
 <dt>filledContour</dt>
 <dd><p>Boolean value indicating whether to use filled
 contours to plot the image.</p></dd>
+
+
 <dt>missingColor</dt>
 <dd><p>A color to be used to indicate missing data, or
 <code>NULL</code> for transparent (to see this, try setting
 <code>par("bg")&lt;-"red"</code>).</p></dd>
+
+
 <dt>useRaster</dt>
 <dd><p>A logical value passed to <code><a href="https://rdrr.io/r/graphics/image.html" class="external-link">image()</a></code>, in cases
 where <code>filledContour</code> is <code>FALSE</code>. Setting <code>useRaster=TRUE</code>
 can alleviate some anti-aliasing effects on some plot devices;
 see the documentation for <code><a href="https://rdrr.io/r/graphics/image.html" class="external-link">image()</a></code>.</p></dd>
+
+
 <dt>mgp</dt>
 <dd><p>A 3-element numerical vector to use for <code>par(mgp)</code>, and
 also for <code>par(mar)</code>, computed from this.  The default is
 tighter than the R default, in order to use more space for the
 data and less for the axes.</p></dd>
+
+
 <dt>mar</dt>
 <dd><p>A 4-element Value to be used with <code><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></code><code>("mar")</code>.  If not
 given, a reasonable value is calculated based on whether <code>xlab</code> and
 <code>ylab</code> are empty strings.</p></dd>
+
+
 <dt>mai.palette</dt>
 <dd><p>Palette margin corrections (in inches), added to the
 <code>mai</code> value used for the palette.  Use with care.</p></dd>
+
+
 <dt>xaxs</dt>
 <dd><p>Character indicating whether image should extend to edge
 of x axis (with value <code>"i"</code>) or not; see
 <code><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></code><code>("xaxs")</code>.</p></dd>
+
+
 <dt>yaxs</dt>
 <dd><p>As <code>xaxs</code> but for y axis.</p></dd>
+
+
 <dt>asp</dt>
 <dd><p>Aspect ratio of the plot, as for <code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot.default()</a></code>. If
 <code>x</code> inherits from <a href="topo-class.html">topo</a> and <code>asp=NA</code> (the
 default) then <code>asp</code> is redefined to be the reciprocal of the
 mean latitude in <code>x</code>, as a way to reduce geographical distortion.
 Otherwise, if <code>asp</code> is not <code>NA</code>, then it is used directly.</p></dd>
+
+
 <dt>cex</dt>
 <dd><p>numeric character expansion factor, used for <code>cex.axis</code>, <code>cex.lab</code> and <code>cex.main</code>,
 if those values are not supplied.</p></dd>
+
+
 <dt>cex.axis, cex.lab, cex.main</dt>
 <dd><p>numeric character expansion factors for axis numbers,
 axis names and plot titles; see <code><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par()</a></code>.</p></dd>
+
+
 <dt>axes</dt>
 <dd><p>Logical, set <code>TRUE</code> to get axes on the main image.</p></dd>
+
+
 <dt>main</dt>
 <dd><p>Title for plot.</p></dd>
+
+
 <dt>axisPalette</dt>
 <dd><p>Optional replacement function for <code><a href="https://rdrr.io/r/graphics/axis.html" class="external-link">axis()</a></code>, passed to
 <code><a href="drawPalette.html">drawPalette()</a></code>.</p></dd>
+
+
 <dt>add</dt>
 <dd><p>Logical value indicating whether to add to an existing plot.
 The default value, <code>FALSE</code> indicates that a new plot is to be created.
@@ -325,15 +393,22 @@ arguments examined are <code>x</code> (which must be a vector; the mode of provi
 a matrix or <code>oce</code> object does not work), <code>y</code>, <code>z</code>,
 <code>decimate</code>, plus either <code>colormap</code> or
 both <code>breaks</code> and <code>col</code>.</p></dd>
+
+
 <dt>debug</dt>
 <dd><p>A flag that turns on debugging.  Set to 1 to get a
 moderate amount of debugging information, or to 2 to get more.</p></dd>
+
+
 <dt>...</dt>
 <dd><p>Optional arguments passed to plotting functions.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>A list is silently returned, containing <code>xat</code> and <code>yat</code>,
+    
+
+<p>A list is silently returned, containing <code>xat</code> and <code>yat</code>,
 values that can be used by <code><a href="oce.grid.html">oce.grid()</a></code> to add a grid to the
 plot.</p>
     </div>
@@ -427,7 +502,7 @@ here only the first is permitted.)</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
       </footer></div>

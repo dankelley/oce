@@ -1154,6 +1154,8 @@ ODFListFromHeader <- function(header)
 #' of lines that would be excluded by using
 #' `exclude="PROCESS='Nulled the .* value"` in the function call.
 #'
+#' @template encodingTemplate
+#'
 #' @template debugTemplate
 #'
 #' @return An [oce-class] object.
@@ -1184,6 +1186,7 @@ read.odf <- function(file,
     columns=NULL,
     header="list",
     exclude=NULL,
+    encoding="latin1",
     debug=getOption("oceDebug"))
 {
     if (missing(file))
@@ -1207,7 +1210,7 @@ read.odf <- function(file,
         if (nchar(file) == 0)
             stop("'file' cannot be an empty string")
         filename <- fullFilename(file)
-        file <- file(file, "r")
+        file <- file(file, "r", encoding=encoding)
         on.exit(close(file))
     } else {
         filename <- ""
@@ -1215,12 +1218,12 @@ read.odf <- function(file,
     if (!inherits(file, "connection"))
         stop("argument `file' must be a character string or connection")
     if (!isOpen(file)) {
-        open(file, "r")
+        open(file, "r", encoding=encoding)
         on.exit(close(file))
     }
     # Read the full file.   (In a previous version, we only read the first 1000 lines
     # at the start, and later read the whole thing if we didn't find the DATA line.)
-    lines <- readLines(file, encoding="latin1") # issue 1430 re encoding
+    lines <- readLines(file, encoding=encoding) # issue 1430 and 1970 re encoding
     # Trim excluded lines.
     if (!is.null(exclude)) {
         oldLength <- length(lines)
@@ -1535,7 +1538,10 @@ read.odf <- function(file,
     if (length(wCRAT)) {
         for (w in wCRAT) {
             ustring <- tolower(parameterTable$units[w])
-            if (length(ustring) && ustring != "" && ustring != "ratio" && ustring != "none")
+            if (length(ustring) &&
+                ustring != "" &&
+                ustring != "ratio" && ustring != "(ratio)" &&
+                ustring != "none" && ustring != "(none)")
                 warning("\"", parameterTable$oceName[w], "\" (code name \"", parameterTable$code[w], "\") is a conductivity ratio, which has no units, but the file lists \"", ustring, "\" as a unit. Consult ?read.odf to see how to rectify this error.")
         }
     }
@@ -1645,6 +1651,8 @@ read.odf <- function(file,
 #'
 #' @template readCtdTemplate
 #'
+#' @template encodingTemplate
+#'
 #' @param exclude either a character value holding a regular
 #' expression that is used with [grep()] to remove lines from the
 #' header before processing, or `NULL` (the default), meaning
@@ -1678,6 +1686,7 @@ read.ctd.odf <- function(file,
     deploymentType="unknown",
     monitor=FALSE,
     exclude=NULL,
+    encoding="latin1",
     debug=getOption("oceDebug"),
     processingLog,
     ...)

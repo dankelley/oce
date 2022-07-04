@@ -12,6 +12,8 @@
 #' @param file a connection or a character string giving the name of the file to
 #' load.
 #'
+#' @template encodingTemplate
+#'
 #' @param debug an integer specifying whether debugging information is
 #' to be printed during the processing. If nonzero, some information
 #' is printed.
@@ -28,6 +30,7 @@
 #'
 #' @author Dan Kelley, with help from Liam MacNeil
 read.ctd.ssda <- function(file,
+    encoding="latin1",
     debug=getOption("oceDebug"),
     processingLog)
 {
@@ -49,17 +52,20 @@ read.ctd.ssda <- function(file,
     filename <- ""
     if (is.character(file)) {
         filename <- fullFilename(file)
-        file <- file(file, "r")
+        file <- file(file, "r", encoding=encoding)
         on.exit(close(file))
     }
-    lines <- readLines(file)
-    seek(file, 0L) # rewind so we can read from the source (faster than reading from text)
+    lines <- readLines(file, encoding=encoding)
+    #?seek(file, 0L, "start") # rewind so we can read from the source (faster than reading from text)
     dataStart <- grep("^Lines[ ]*:[ ]*[0-9]*$", lines)
+    #message(vectorShow(dataStart))
+    #message(vectorShow(lines[dataStart]))
     header <- lines[1L:dataStart]
     if (1 != length(dataStart))
         stop("cannot find 'Lines :' in the data file.")
     # how many lines might there be in between?
     names <- strsplit(gsub("^;[ ]*", "", lines[dataStart+2L]), "[ ]+")[[1]]
+    #message("next are names:");print(names)
     namesOriginal <- names
     # Use standard oce names for some things.
     # (Thanks to Liam MacNeil for pointing these out.)
@@ -77,7 +83,8 @@ read.ctd.ssda <- function(file,
     names <- gsub("SALIN", "salinity", names)
     names <- gsub("SIGMA", "sigma", names)
     names <- gsub("Temp.", "temperature", names)
-    d <- read.table(file, skip=dataStart + 4, col.names=names, header=FALSE)
+    #message(vectorShow(dataStart))
+    d <- read.table(text=lines, skip=dataStart + 4, col.names=names, header=FALSE, encoding=encoding)
     # Lon and lat are in an odd system, with e.g. 12.34 meaning 12deg+34minutes.
     lon <- as.numeric(d$longitude[1])
     londeg <- floor(lon / 100)

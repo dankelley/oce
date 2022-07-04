@@ -23,7 +23,7 @@ available projections."><!-- mathjax --><script src="https://cdnjs.cloudflare.co
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-7</span>
       </span>
     </div>
 
@@ -129,9 +129,13 @@ something (an <code>oce</code> object, a list, or a data frame) from which both
 longitude and latitude may be inferred (in which case the <code>latitude</code>
 argument is ignored).  If <code>longitude</code> is missing, both it and
 <code>latitude</code> are taken from the built-in <a href="coastlineWorld.html">coastlineWorld</a> dataset.</p></dd>
+
+
 <dt>latitude</dt>
 <dd><p>numeric vector of latitudes of points to be plotted (ignored
 if the first argument contains both latitude and longitude).</p></dd>
+
+
 <dt>longitudelim</dt>
 <dd><p>optional numeric vector of length two, indicating the
 longitude limits of the plot. This value is used in the selection of
@@ -141,11 +145,15 @@ this can lead to odd results, with some expected longitude lines
 being left out of the plot.  Altering <code>longitudelim</code> can
 often help in such cases, e.g. <code>longitudelim=c(-180, 180)</code> will
 force the drawing of lines all around the globe.</p></dd>
+
+
 <dt>latitudelim</dt>
 <dd><p>optional vector of length two, indicating
 the latitude limits of the plot. This, together with <code>longitudelim</code>
 (and, importantly, the geometry of the plot device) is used in the
 selection of map scale.</p></dd>
+
+
 <dt>grid</dt>
 <dd><p>either a number (or pair of numbers) indicating the spacing of
 longitude and latitude lines, in degrees, or a logical value (or pair of
@@ -155,6 +163,8 @@ turn off the grid in longitude or latitude.  Grids are set up based on
 examination of the scale used in middle 10 percent of the plot area, and for
 most projections this works quite well.  If not, one may set
 <code>grid=FALSE</code> and add a grid later with <code><a href="mapGrid.html">mapGrid()</a></code>.</p></dd>
+
+
 <dt>geographical</dt>
 <dd><p>flag indicating the style of axes.  With
 <code>geographical=0</code>, the axes are conventional, with decimal degrees as
@@ -168,13 +178,21 @@ are the same as for <code>geographical=2</code>, but the hemisphere indication
 is omitted. Finally, with <code>geographical=4</code>, unsigned numbers are used,
 followed by letters <code>N</code> in the northern hemisphere, <code>S</code> in the southern,
 <code>E</code> in the eastern, and <code>W</code> in the western.</p></dd>
+
+
 <dt>bg</dt>
 <dd><p>color of the background (ignored).</p></dd>
+
+
 <dt>fill</dt>
 <dd><p>is a deprecated argument; see <a href="oce-deprecated.html">oce-deprecated</a>.</p></dd>
+
+
 <dt>border</dt>
 <dd><p>color of coastlines and international borders (ignored unless
 <code>type="polygon"</code>.</p></dd>
+
+
 <dt>col</dt>
 <dd><p>either the color for filling polygons (if <code>type="polygon"</code>)
 or the color of the points and line segments (if <code>type="p"</code>,
@@ -182,6 +200,8 @@ or the color of the points and line segments (if <code>type="p"</code>,
 will be set: no coastline filling for the <code>type="polygon"</code> case,
 or black coastlines, for <code>type="p"</code>, <code>type="l"</code>, or
 <code>type="o"</code>.</p></dd>
+
+
 <dt>clip</dt>
 <dd><p>logical value indicating whether to trim any coastline elements that lie wholly
 outside the plot region. This can prevent e.g. a problem of filling the whole plot area of
@@ -190,15 +210,21 @@ other regions so the whole of the world ends up being "land".  Setting <code>cli
 disables this action, which may be of benefit in rare instances in the line connecting
 two points on a coastline may cross the plot domain, even if those points are outside
 that domain.</p></dd>
+
+
 <dt>type</dt>
 <dd><p>indication of type; may be <code>"polygon"</code>, for a filled polygon,
 <code>"p"</code> for points, <code>"l"</code> for line segments, or <code>"o"</code> for points
 overlain with line segments.</p></dd>
+
+
 <dt>axes</dt>
 <dd><p>a logical value indicating whether to draw longitude and latitude
 values in the lower and left margin, respectively.  This may not work well
 for some projections or scales.  See also <code>axisStyle</code>, <code>lonlabels</code>
 and <code>latlabels</code>, which offer more granular control of labelling.</p></dd>
+
+
 <dt>axisStyle</dt>
 <dd><p>an integer specifying the style of labels for the numbers
 on axes.  The choices are:
@@ -207,23 +233,37 @@ on axes.  The choices are:
 3 for signed numbers followed by a degree sign;
 4 for unsigned numbers followed by a degree sign; and
 5 for signed numbers followed by a degree sign and letters indicating the hemisphere.</p></dd>
+
+
 <dt>cex</dt>
 <dd><p>character expansion factor for plot symbols,
 used if <code>type='p'</code> or any other value that yields symbols.</p></dd>
+
+
 <dt>cex.axis</dt>
 <dd><p>axis-label expansion factor (see <code><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par()</a></code>).</p></dd>
+
+
 <dt>mgp</dt>
 <dd><p>three-element numerical vector describing axis-label
 placement, passed to <code><a href="mapAxis.html">mapAxis()</a></code>.</p></dd>
+
+
 <dt>drawBox</dt>
 <dd><p>logical value indicating whether to draw a box around the plot.
 This is helpful for many projections at sub-global scale.</p></dd>
+
+
 <dt>showHemi</dt>
 <dd><p>logical value indicating whether to show the hemisphere in
 axis tick labels.</p></dd>
+
+
 <dt>polarCircle</dt>
 <dd><p>a number indicating the number of degrees of latitude
 extending from the poles, within which zones are not drawn.</p></dd>
+
+
 <dt>lonlabels</dt>
 <dd><p>An optional logical value or numeric vector that controls
 the labelling along the horizontal axis. There are four possibilities:
@@ -238,9 +278,13 @@ in case 4 might not be obeyed exactly.
 See also <code>latlabels</code>, and note that setting <code>axes=FALSE</code>
 ensures that no longitude or latitude axes will be drawn regardless
 of the values of <code>lonlabels</code> and <code>latlabels</code>.</p></dd>
+
+
 <dt>latlabels</dt>
 <dd><p>As <code>lonlabels</code>, but for latitude, on the left
 plot axis.</p></dd>
+
+
 <dt>projection</dt>
 <dd><p>optional indication of projection, in one of two
 forms. First, it may be a character string in the "CRS" format that is
@@ -250,10 +294,14 @@ Mercator projection. The second format is the output from
 <code><a href="https://rdrr.io/pkg/sp/man/CRS-class.html" class="external-link">sp::CRS()</a></code> in the <a href="https://CRAN.R-project.org/package=sp" class="external-link"><span class="pkg">sp</span></a> package, which is an object
 with a slot named <code>projarg</code> that gets used as a projection string.
 See “Details”.</p></dd>
+
+
 <dt>tissot</dt>
 <dd><p>logical value indicating whether to use <code><a href="mapTissot.html">mapTissot()</a></code>
 to plot Tissot indicatrices, i.e. ellipses at grid intersection points, which
 indicate map distortion.</p></dd>
+
+
 <dt>trim</dt>
 <dd><p>logical value indicating whether to trim islands or lakes
 containing only points that are off-scale of the current plot box.  This
@@ -261,13 +309,18 @@ solves the problem of Antarctica overfilling the entire domain, for an
 Arctic-centred stereographic projection.  It is not a perfect solution,
 though, because the line segment joining two off-scale points might
 intersect the plotting box.</p></dd>
+
+
 <dt>debug</dt>
 <dd><p>a flag that turns on debugging.  Set to 1 to get a moderate
 amount of debugging information, or to 2 to get more.</p></dd>
+
+
 <dt>...</dt>
 <dd><p>optional arguments passed to some plotting functions.  This can
 be useful in many ways, e.g.  Example 5 shows how to use <code>xlim</code> etc to
 reproduce a scale exactly between two plots.</p></dd>
+
 </dl></div>
     <div id="details">
     <h2>Details</h2>
@@ -546,7 +599,7 @@ projections (with graphs).</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
       </footer></div>

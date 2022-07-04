@@ -15,6 +15,7 @@ read.adp.nortek(
   type = c("aquadoppHR", "aquadoppProfiler", "aquadopp", "aquadoppPlusMagnetometer"),
   orientation,
   distance,
+  encoding = NA,
   monitor = FALSE,
   despike = FALSE,
   processingLog,
@@ -66,6 +67,8 @@ not be given if the function determines the distances correctly from the
 data.  The problem is that the distance is poorly documented in the Nortek
 System Integrator Guide (2008 edition, page 31), so the function must rely
 on word-of-mouth formulae that do not work in all cases.}
+
+\item{encoding}{ignored.}
 
 \item{monitor}{boolean value indicating whether to indicate the progress
 of reading the file, by using \code{\link[=txtProgressBar]{txtProgressBar()}} or otherwise.  The value

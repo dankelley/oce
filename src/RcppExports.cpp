@@ -151,6 +151,19 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// do_gappy_index
+IntegerVector do_gappy_index(IntegerVector starts, IntegerVector offset, IntegerVector length);
+RcppExport SEXP _oce_do_gappy_index(SEXP startsSEXP, SEXP offsetSEXP, SEXP lengthSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< IntegerVector >::type starts(startsSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type offset(offsetSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type length(lengthSEXP);
+    rcpp_result_gen = Rcpp::wrap(do_gappy_index(starts, offset, length));
+    return rcpp_result_gen;
+END_RCPP
+}
 // do_geoddist_alongpath
 NumericVector do_geoddist_alongpath(NumericVector lon, NumericVector lat, NumericVector a, NumericVector f);
 RcppExport SEXP _oce_do_geoddist_alongpath(SEXP lonSEXP, SEXP latSEXP, SEXP aSEXP, SEXP fSEXP) {

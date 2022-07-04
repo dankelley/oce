@@ -30,7 +30,7 @@ that stem from the specifics of this file format."><!-- mathjax --><script src="
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-7</span>
       </span>
     </div>
 
@@ -116,6 +116,7 @@ that stem from the specifics of this file format.</p>
   <span class="va">distance</span>,
   <span class="va">plan</span>,
   <span class="va">type</span>,
+  encoding <span class="op">=</span> <span class="cn">NA</span>,
   monitor <span class="op">=</span> <span class="cn">FALSE</span>,
   despike <span class="op">=</span> <span class="cn">FALSE</span>,
   <span class="va">processingLog</span>,
@@ -128,34 +129,54 @@ that stem from the specifics of this file format.</p>
     <h2>Arguments</h2>
     <dl><dt>file</dt>
 <dd><p>A connection or a character string giving the name of the file to load.</p></dd>
+
+
 <dt>from</dt>
 <dd><p>An integer indicating the index number of the first record to
 read. This must equal 1, for this version of <code>read.adp.ad2cp</code>.
 (If not provided, <code>from</code> defaults to 1.)</p></dd>
+
+
 <dt>to</dt>
 <dd><p>An integer indicating the final record to read.
 (If not provided, <code>by</code> defaults to 1e9.)</p></dd>
+
+
 <dt>by</dt>
 <dd><p>An integer indicating the step from record to record. This
 must equal 1, for this version of <code>read.adp.ad2cp</code>.
 (If not provided, <code>by</code> defaults to 1.)</p></dd>
+
+
 <dt>tz</dt>
 <dd><p>Character value indicating time zone. This is used in interpreting
 times stored in the file.</p></dd>
+
+
 <dt>longitude</dt>
 <dd><p>Numerical value indicating the longitude of observation.</p></dd>
+
+
 <dt>latitude</dt>
 <dd><p>Numerical value indicating the latitude of observation.</p></dd>
+
+
 <dt>orientation</dt>
 <dd><p>Ignored by <code>read.adp.ad2cp</code>, and provided only for similarity
 to other adp-reading functions.</p></dd>
+
+
 <dt>distance</dt>
 <dd><p>Ignored by <code>read.adp.ad2cp</code>, and provided only for similarity
 to other adp-reading functions.</p></dd>
+
+
 <dt>plan</dt>
 <dd><p>Optional integer specifying which 'plan' to focus on (see reference 1
 for the meaning of 'plan').  If this is not given, it defaults to the most
 common plan in the requested subset of the data.</p></dd>
+
+
 <dt>type</dt>
 <dd><p>Optional character value indicating the type of Nortek instrument.
 If this is not provided, an attempt is made to infer it
@@ -169,25 +190,40 @@ slant-beam angle, while the others each have 20 degrees (see reference 2,
 section 2 on page 6). Note that <code><a href="oceSetMetadata.html">oceSetMetadata()</a></code>
 can be used to alter the slantwise beam angle of an existing object,
 and this will alter any later conversion from beam to xyz coordinates.</p></dd>
+
+
+<dt>encoding</dt>
+<dd><p>ignored.</p></dd>
+
+
 <dt>monitor</dt>
 <dd><p>boolean value indicating whether to indicate the progress
 of reading the file, by using <code><a href="https://rdrr.io/r/utils/txtProgressBar.html" class="external-link">txtProgressBar()</a></code> or otherwise.  The value
 of <code>monitor</code> is changed to <code>FALSE</code> automatically, for non-interactive
 sessions.</p></dd>
+
+
 <dt>despike</dt>
 <dd><p>Ignored by this function, and provided only for similarity
 to other adp-reading functions.</p></dd>
+
+
 <dt>processingLog</dt>
 <dd><p>Character value that, if provided, is saved
 within the <code>processingLog</code> slot of th returned value.</p></dd>
+
+
 <dt>debug</dt>
 <dd><p>Integer value indicating the level of debugging.
 Set to 1 to get a moderate amount of debugging information, from
 the R code only, to 2 to get some debugging information from the C++
 code that is used to parse the data chunks, or to 3 for intensive
 debugging at both levels.</p></dd>
+
+
 <dt>...</dt>
 <dd><p>Ignored by this function.</p></dd>
+
 </dl></div>
     <div id="references">
     <h2>References</h2>
@@ -269,7 +305,7 @@ page numbers than reference 3.)</p></li>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
       </footer></div>

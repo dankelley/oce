@@ -12,6 +12,7 @@ read.adv(
   tz = getOption("oceTz"),
   type = c("nortek", "sontek", "sontek.adr", "sontek.text"),
   header = TRUE,
+  encoding = NA,
   longitude = NA,
   latitude = NA,
   start = NULL,
@@ -53,6 +54,8 @@ works; see \dQuote{Bugs}.}
 \item{header}{A logical value indicating whether the file starts with a header.
 (This will not be the case for files that are created by data loggers that
 chop the raw data up into a series of sub-files, e.g. once per hour.)}
+
+\item{encoding}{ignored.}
 
 \item{longitude}{optional signed number indicating the longitude in degrees
 East.}

@@ -32,7 +32,7 @@ If \code{x} is a list containing items named \code{longitude} and
 \code{latitude}, then \code{\link[=as.coastline]{as.coastline()}} is called (with
 the specified \dots value) to create a coastline object.
 
-If \code{x} is a list created by \code{read_odf} from the (as
+If \code{x} is a list created by \code{read_odf()} from the (as
 yet unreleased) ODF package developed by the Bedford Institute of
 Oceanography, then \code{\link[=ODF2oce]{ODF2oce()}} is called (with
 no arguments other than the first) to calculate a return value.
@@ -40,7 +40,7 @@ If the sub-class inference made by \code{\link[=ODF2oce]{ODF2oce()}} is
 incorrect, users should call that function directly, specifying
 a value for its \code{coerce} argument.
 
-If \code{x} has not been created by \code{read_odf}, then the names
+If \code{x} has not been created by \code{read_odf()}, then the names
 of the items it contains are examined, and used to try to infer
 the proper return value.  There
 are only a few cases (although more may be added if there is

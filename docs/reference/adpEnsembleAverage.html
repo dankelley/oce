@@ -25,7 +25,7 @@ velocity estimates (by averaging out Doppler noise)."><!-- mathjax --><script sr
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-7</span>
       </span>
     </div>
 
@@ -101,23 +101,34 @@ velocity estimates (by averaging out Doppler noise).</p>
     <h2>Arguments</h2>
     <dl><dt>x</dt>
 <dd><p>an <a href="adp-class.html">adp</a> object.</p></dd>
+
+
 <dt>n</dt>
 <dd><p>number of pings to average together.</p></dd>
+
+
 <dt>leftover</dt>
 <dd><p>a logical value indicating how to proceed in cases
 where <code>n</code> does not divide evenly into the number of ensembles
 in <code>x</code>. If <code>leftover</code> is <code>FALSE</code> (the default) then any extra
 ensembles at the end of <code>x</code> are ignored. Otherwise, they are used
 to create a final ensemble in the returned value.</p></dd>
+
+
 <dt>na.rm</dt>
 <dd><p>a logical value indicating whether NA values should be stripped
 before the computation proceeds</p></dd>
+
+
 <dt>...</dt>
 <dd><p>extra arguments to be passed to the <code><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean()</a></code> function.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>A new <a href="adp-class.html">adp</a> object with ensembles averaged as specified. E.g. for an <code>adp</code> object with 100 pings and <code>n=5</code> the number of rows of the data arrays will be reduced by a factor of 5.</p>
+    
+
+<p>A new <a href="adp-class.html">adp</a> object with ensembles averaged as specified. E.g. for an <code>adp</code> object with 100 pings and <code>n=5</code> the number of rows of the data arrays will be reduced by a factor of 5.</p>
     </div>
     <div id="see-also">
     <h2>See also</h2>
@@ -191,7 +202,7 @@ before the computation proceeds</p></dd>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
       </footer></div>

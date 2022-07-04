@@ -21,7 +21,7 @@ with the defaults used by mapPlot()."><!-- mathjax --><script src="https://cdnjs
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-7</span>
       </span>
     </div>
 
@@ -115,6 +115,8 @@ with the defaults used by <code><a href="mapPlot.html">mapPlot()</a></code>.</p>
     <dl><dt>side</dt>
 <dd><p>the side at which labels are to be drawn.  If not provided,
 sides 1 and 2 will be used (i.e. bottom and left-hand sides).</p></dd>
+
+
 <dt>longitude</dt>
 <dd><p>either a logical value or a numeric vector of longitudes. There
 are three possible cases:
@@ -127,8 +129,12 @@ are placed at those values, and numbers are written beside them.
 Note that in cases 1 and 3, efforts are made to avoid overdrawing text,
 so some longitude values might get ticks but not numbers. To get ticks
 but not numbers, set <code>cex.axis=0</code>.</p></dd>
+
+
 <dt>latitude</dt>
 <dd><p>similar to <code>longitude</code> but for latitude.</p></dd>
+
+
 <dt>axisStyle</dt>
 <dd><p>an integer specifying the style of labels for the numbers
 on axes.  The choices are:
@@ -137,42 +143,75 @@ on axes.  The choices are:
 3 for signed numbers followed by a degree sign;
 4 for unsigned numbers followed by a degree sign; and
 5 for signed numbers followed by a degree sign and letters indicating the hemisphere.</p></dd>
+
+
 <dt>tick</dt>
 <dd><p>parameter passed to <code><a href="https://rdrr.io/r/graphics/axis.html" class="external-link">axis()</a></code>.</p></dd>
+
+
 <dt>line</dt>
 <dd><p>parameter passed to <code><a href="https://rdrr.io/r/graphics/axis.html" class="external-link">axis()</a></code>.</p></dd>
+
+
 <dt>pos</dt>
 <dd><p>parameter passed to <code><a href="https://rdrr.io/r/graphics/axis.html" class="external-link">axis()</a></code>.</p></dd>
+
+
 <dt>outer</dt>
 <dd><p>parameter passed to <code><a href="https://rdrr.io/r/graphics/axis.html" class="external-link">axis()</a></code>.</p></dd>
+
+
 <dt>font</dt>
 <dd><p>axis font, passed to <code><a href="https://rdrr.io/r/graphics/axis.html" class="external-link">axis()</a></code>.</p></dd>
+
+
 <dt>lty</dt>
 <dd><p>axis line type, passed to <code><a href="https://rdrr.io/r/graphics/axis.html" class="external-link">axis()</a></code>.</p></dd>
+
+
 <dt>lwd</dt>
 <dd><p>axis line width, passed to <code><a href="https://rdrr.io/r/graphics/axis.html" class="external-link">axis()</a></code>).</p></dd>
+
+
 <dt>lwd.ticks</dt>
 <dd><p>tick line width, passed to <code><a href="https://rdrr.io/r/graphics/axis.html" class="external-link">axis()</a></code>.</p></dd>
+
+
 <dt>col</dt>
 <dd><p>axis color, passed to <code><a href="https://rdrr.io/r/graphics/axis.html" class="external-link">axis()</a></code>.</p></dd>
+
+
 <dt>col.ticks</dt>
 <dd><p>axis tick color, passed to <code><a href="https://rdrr.io/r/graphics/axis.html" class="external-link">axis()</a></code>.</p></dd>
+
+
 <dt>hadj</dt>
 <dd><p>an argument that is transmitted to <code><a href="https://rdrr.io/r/graphics/axis.html" class="external-link">axis()</a></code>.</p></dd>
+
+
 <dt>padj</dt>
 <dd><p>an argument that is transmitted to <code><a href="https://rdrr.io/r/graphics/axis.html" class="external-link">axis()</a></code>.</p></dd>
+
+
 <dt>tcl</dt>
 <dd><p>axis-tick size (see <code><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par()</a></code>).</p></dd>
+
+
 <dt>cex.axis</dt>
 <dd><p>axis-label expansion factor (see <code><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par()</a></code>); set to 0
 to prevent numbers from being placed in axes.</p></dd>
+
+
 <dt>mgp</dt>
 <dd><p>three-element numerical vector describing axis-label
 placement (see <code><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par()</a></code>). It usually makes sense to set
 the first and third elements to zero.</p></dd>
+
+
 <dt>debug</dt>
 <dd><p>a flag that turns on debugging.  Set to 1 to get a moderate
 amount of debugging information, or to 2 to get more.</p></dd>
+
 </dl></div>
     <div id="see-also">
     <h2>See also</h2>
@@ -243,7 +282,7 @@ amount of debugging information, or to 2 to get more.</p></dd>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
       </footer></div>

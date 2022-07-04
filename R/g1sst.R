@@ -109,6 +109,8 @@ setMethod(f="[[<-",
 #'
 #' @param file character value containing the name of a netcdf file containing G1SST data.
 #'
+#' @template encodingIgnoredTemplate
+#'
 #' @return A [g1sst-class] object.
 #'
 #' @examples
@@ -143,7 +145,7 @@ setMethod(f="[[<-",
 #' (link worked in 2016 but was seen to fail 2017 Feb 2).
 #'
 #' @family things related to g1sst data
-read.g1sst <- function(file)
+read.g1sst <- function(file, encoding=NA)
 {
     if (missing(file))
         stop("must supply 'file'")

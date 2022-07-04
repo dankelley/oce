@@ -2,9 +2,16 @@
 % Please edit documentation in R/ctd.aml.R
 \name{read.ctd.aml}
 \alias{read.ctd.aml}
-\title{Read an AML CTD file}
+\title{Read an AML CTD File}
 \usage{
-read.ctd.aml(file, format, debug = getOption("oceDebug"), processingLog, ...)
+read.ctd.aml(
+  file,
+  format,
+  encoding = "UTF-8-BOM",
+  debug = getOption("oceDebug"),
+  processingLog,
+  ...
+)
 }
 \arguments{
 \item{file}{a connection or a character string giving the name of
@@ -13,6 +20,11 @@ the file to load.}
 \item{format}{an integer indicating the format type.  If not supplied, the
 first line is examined to determine whether the file matches the \code{format=1} or
 \code{format=2} style (see \sQuote{Details}).}
+
+\item{encoding}{a character value that indicates the encoding to be used for
+this data file, if it is textual.  The default value for most functions is
+\code{"latin1"}, which seems to be suitable for files containing text written in
+English and French.}
 
 \item{debug}{an integer specifying whether debugging information is
 to be printed during the processing. This is a general parameter that

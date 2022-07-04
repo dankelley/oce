@@ -20,7 +20,7 @@ view.'><!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathj
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-7</span>
       </span>
     </div>
 
@@ -110,6 +110,8 @@ view.</p>
     <h2>Arguments</h2>
     <dl><dt>x</dt>
 <dd><p>a <a href="landsat-class.html">landsat</a> object.</p></dd>
+
+
 <dt>band</dt>
 <dd><p>If given, the name of the band.  For Landsat-8 data, this may be
 one of: <code>"aerosol"</code>, <code>"blue"</code>, <code>"green"</code>, <code>"red"</code>,
@@ -130,22 +132,32 @@ the <code>red</code>, <code>green</code>, <code>blue</code> and <code>nir</code>
 according to the formula provided at
 <code>https://lta.cr.usgs.gov/terralook/what_is_terralook</code> (a
 website that worked once, but failed as of Feb 2, 2017).</p></dd>
+
+
 <dt>which</dt>
 <dd><p>Desired plot type; 1=image, 2=histogram.</p></dd>
+
+
 <dt>decimate</dt>
 <dd><p>An indication of the desired decimation,
 passed to <code><a href="imagep.html">imagep()</a></code> for image plots.
 The default yields faster plotting.  Some decimation is sensible for
 full-size images, since no graphical displays can show 16 thousand pixels
 on a side.</p></dd>
+
+
 <dt>zlim</dt>
 <dd><p>Either a pair of numbers giving the limits for the colorscale,
 or <code>"histogram"</code> to have a flattened histogram (i.e. to maximally
 increase contrast throughout the domain.)  If not given, the 1 and 99
 percent quantiles are calculated and used as limits.</p></dd>
+
+
 <dt>utm</dt>
 <dd><p>A logical value indicating whether to use UTS (easting and northing) instead
 of longitude and latitude on plot.</p></dd>
+
+
 <dt>col</dt>
 <dd><p>Either a function yielding colors, taking a single integer
 argument with the desired number of colors, or the string
@@ -153,38 +165,59 @@ argument with the desired number of colors, or the string
 <code>green</code> and <code>blue</code> bands and produces a natural-hue image.  In
 the latter case, the band designation is ignored, and the object must
 contain the three color bands.</p></dd>
+
+
 <dt>drawPalette</dt>
 <dd><p>Indication of the type of palette to draw, if
 any. See <code><a href="imagep.html">imagep()</a></code> for details.</p></dd>
+
+
 <dt>showBandName</dt>
 <dd><p>A logical indicating whether the band name is to
 plotted in the top margin, near the right-hand side.</p></dd>
+
+
 <dt>alpha.f</dt>
 <dd><p>Argument used if <code>col="natural"</code>, to adjust colors
 with <code><a href="https://rdrr.io/r/grDevices/adjustcolor.html" class="external-link">adjustcolor()</a></code>.</p></dd>
+
+
 <dt>red.f</dt>
 <dd><p>Argument used if <code>col="natural"</code>, to adjust colors with
 <code><a href="https://rdrr.io/r/grDevices/adjustcolor.html" class="external-link">adjustcolor()</a></code>.  Higher values of <code>red.f</code> cause red hues
 to be emphasized (e.g. dry land).</p></dd>
+
+
 <dt>green.f</dt>
 <dd><p>Argument used if <code>col="natural"</code>, to adjust colors with
 <code><a href="https://rdrr.io/r/grDevices/adjustcolor.html" class="external-link">adjustcolor()</a></code>.  Higher values of <code>green.f</code> emphasize
 green hues (e.g. forests).</p></dd>
+
+
 <dt>blue.f</dt>
 <dd><p>Argument used if <code>band="terralook"</code>, to adjust colors with
 <code><a href="https://rdrr.io/r/grDevices/adjustcolor.html" class="external-link">adjustcolor()</a></code>.  Higher values of <code>blue.f</code> emphasize blue
 hues (e.g. ocean).</p></dd>
+
+
 <dt>offset</dt>
 <dd><p>Argument used if <code>band="terralook"</code>, to adjust colors with
 <code><a href="https://rdrr.io/r/grDevices/adjustcolor.html" class="external-link">adjustcolor()</a></code>.</p></dd>
+
+
 <dt>transform</dt>
 <dd><p>Argument used if <code>band="terralook"</code>, to adjust colors
 with <code><a href="https://rdrr.io/r/grDevices/adjustcolor.html" class="external-link">adjustcolor()</a></code>.</p></dd>
+
+
 <dt>debug</dt>
 <dd><p>Set to a positive value to get debugging information during
 processing.</p></dd>
+
+
 <dt>...</dt>
 <dd><p>optional arguments passed to plotting functions.</p></dd>
+
 </dl></div>
     <div id="details">
     <h2>Details</h2>
@@ -276,7 +309,7 @@ data minus 1/3 of the <code>nir</code>-band data. (This is not a typo: the
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
       </footer></div>

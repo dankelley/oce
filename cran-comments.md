@@ -1,39 +1,22 @@
-# Submission of oce 1.7-6
+# Submission of oce 1.7-7
 
-* Address compiler warning about comparing a signed int with an unsigned int.
+* Prepare for the upcoming R release by eliminating \x assemblages in grep()
+  and gsub() calls, and adding an 'encoding' parameter to the 'read' functions.
+  We thank Tomas Kalibera and Kurt Hornik, who told us of the upcoming encoding
+  issue in emails dated 2022-06-27 and 2022-06-29, respectively.
 
-* We hope for an exception to the 10-minute rule for this old and large
-  package, offering more than 300 functions spanning over 60k lines of R, 6k
-  lines of C/C++ and 1k line of Fortran.
-
-# Submission of oce 1.7-5
-
-* Remove a stray file that was included in our failed submission of oce 1.7-4,
-  made 2 days ago.
-
-* We hope for an exception to the 10-minute rule for this old and large
-  package, offering more than 300 functions spanning over 60k lines of R, 6k
-  lines of C/C++ and 1k line of Fortran.
-
-# Submission of oce 1.7-4
-
-* This version (a) changes an "akima" function call with an "interp"
-  equivalent, satisfying a CRAN request communicated by B. Ripley on
-  2022-06-04, (b) incorporates code and documentation improvements made since
-  the previous release and (c) removes a stray file.
-
-* We hope for an exception to the 10-minute rule for this old and large
-  package, offering more than 300 functions spanning over 60k lines of R, 6k
-  lines of C/C++ and 1k line of Fortran.
+* As in previous versions, we request an exception to the 10-minute rule, on
+  account of the package size (300+ functions, covering 60k lines of R, 6k
+  lines of C/C++ and 1k line of Fortran).
 
 # Tests
 
 ## Local Tests
 
-Local MacOS-12.5(beta) R-4.2.0 CMD (BUILD, INSTALL, CHECK): no ERRORs, no
-WARNINGs, and 2 NOTEs, one naming the author the other reporting that
-sub-directories were of size of 1MB or more: R 3.0Mb, data 1.0Mb, doc 2.0Mb,
-and help 3.8Mb.
+Local MacOS-12.5(beta) with R 4.2.1 and also R Under development (unstable)
+(2022-06-27 r82528): no ERRORs, no WARNINGs, and 2 NOTEs, one naming the author
+the other reporting that sub-directories were of size of 1MB or more: R 3.0Mb,
+data 1.0Mb, doc 2.0Mb, and help 3.8Mb.
 
 ## Remote Windows Checks
 
@@ -51,8 +34,8 @@ Using
 ```R
 rhub::check_for_cran()
 ```
-identified no errors with oce, although there are notes about stray files
-('lastMiKTeXException') in some instances.
+produced no results, because there is a problem with the rhub test machines
+(see my bug report at https://github.com/r-hub/rhub/issues/530).
 
 
 # Reverse Dependency Checks

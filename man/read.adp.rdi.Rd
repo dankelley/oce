@@ -13,6 +13,7 @@ read.adp.rdi(
   longitude = NA,
   latitude = NA,
   type = c("workhorse"),
+  encoding = NA,
   monitor = FALSE,
   despike = FALSE,
   processingLog,
@@ -53,6 +54,8 @@ East.}
 North.}
 
 \item{type}{character string indicating the type of instrument.}
+
+\item{encoding}{ignored.}
 
 \item{monitor}{boolean value indicating whether to indicate the progress
 of reading the file, by using \code{\link[=txtProgressBar]{txtProgressBar()}} or otherwise.  The value

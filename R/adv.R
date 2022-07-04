@@ -368,6 +368,8 @@ setMethod(f="subset",
 
 #' @template readAdvTemplate
 #'
+#' @template encodingIgnoredTemplate
+#'
 #' @param type character string indicating type of file, and used by
 #' `read.adv` to dispatch to one of the speciality functions.
 #'
@@ -384,6 +386,7 @@ setMethod(f="subset",
 read.adv <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     type=c("nortek", "sontek", "sontek.adr", "sontek.text"),
     header=TRUE,
+    encoding=NA,
     longitude=NA, latitude=NA,
     start=NULL, deltat=NA,
     debug=getOption("oceDebug"), monitor=FALSE, processingLog=NULL)

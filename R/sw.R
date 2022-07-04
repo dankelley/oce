@@ -487,8 +487,7 @@ swN2 <- function(pressure, sigmaTheta=NULL, derivs, df,
 #'
 #' @param depth distance below the surface in metres.
 #'
-#' @param latitude Latitude in \eqn{^\circ}{deg}N or radians north of the
-#' equator.
+#' @param latitude Latitude in \eqn{^\circ}{deg}N.
 #'
 #' @param eos indication of formulation to be used, either `"unesco"` or
 #' `"gsw"`.
@@ -1351,8 +1350,7 @@ swThermalConductivity <- function (salinity, temperature=NULL, pressure=NULL)
 #' be given, or a `ctd` object, in which case `lat` will be inferred
 #' from the object.
 #'
-#' @param latitude Latitude in \eqn{^\circ}{deg}N or radians north of the
-#' equator.
+#' @param latitude Latitude in \eqn{^\circ}{deg}N.
 #'
 #' @param eos indication of formulation to be used, either `"unesco"` or
 #' `"gsw"`.

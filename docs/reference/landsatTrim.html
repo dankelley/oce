@@ -19,7 +19,7 @@ longitude-latitude coordinates."><!-- mathjax --><script src="https://cdnjs.clou
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-7</span>
       </span>
     </div>
 
@@ -89,28 +89,39 @@ longitude-latitude coordinates.</p>
     <h2>Arguments</h2>
     <dl><dt>x</dt>
 <dd><p>a <a href="landsat-class.html">landsat</a> object.</p></dd>
+
+
 <dt>ll</dt>
 <dd><p>A list containing <code>longitude</code> and <code>latitude</code>, for the
 lower-left corner of the portion of the image to retain, or a vector
 with first element longitude and second element latitude. If provided,
 then <code>ur</code> must also be provided, but <code>box</code> cannot.</p></dd>
+
+
 <dt>ur</dt>
 <dd><p>A list containing <code>longitude</code> and <code>latitude</code>, for the
 upper-right corner of the portion of the image to retain, or a vector
 with first element longitude and second element latitude. If provided,
 then <code>ll</code> must also be provided, but <code>box</code> cannot.</p></dd>
+
+
 <dt>box</dt>
 <dd><p>A list containing <code>x</code> and <code>y</code> (each of length 2),
 corresponding to the values for <code>ll</code> and <code>ur</code>, such as would
 be produced by a call to <code>locator(2)</code>. If provided, neither
 <code>ll</code> nor <code>ur</code> may be provided.</p></dd>
+
+
 <dt>debug</dt>
 <dd><p>A flag that turns on debugging.  Set to 1 to get a moderate
 amount of debugging information, or a higher value for more debugging.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>A <a href="landsat-class.html">landsat</a> object, with data having
+    
+
+<p>A <a href="landsat-class.html">landsat</a> object, with data having
 been trimmed as specified.</p>
     </div>
     <div id="details">
@@ -154,7 +165,7 @@ with them.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
       </footer></div>

@@ -4,10 +4,12 @@
 \alias{read.g1sst}
 \title{Read a G1SST file}
 \usage{
-read.g1sst(file)
+read.g1sst(file, encoding = NA)
 }
 \arguments{
 \item{file}{character value containing the name of a netcdf file containing G1SST data.}
+
+\item{encoding}{ignored.}
 }
 \value{
 A \linkS4class{g1sst} object.

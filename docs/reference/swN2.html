@@ -18,7 +18,7 @@ profile."><!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/ma
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-7</span>
       </span>
     </div>
 
@@ -96,16 +96,24 @@ profile.</p>
 <dd><p>either pressure (dbar) (in which case <code>sigmaTheta</code> must
 be provided) <em>or</em> an object of class <code>ctd</code> object (in which case
 <code>sigmaTheta</code> is inferred from the object.</p></dd>
+
+
 <dt>sigmaTheta</dt>
 <dd><p>Surface-referenced potential density minus 1000
 (kg/m\(^3\)).</p></dd>
+
+
 <dt>derivs</dt>
 <dd><p>optional argument to control how the derivative
 \(d\sigma_\theta/dp\) is calculated.  This may
 be a character string or a function of two arguments.  See “Details”.</p></dd>
+
+
 <dt>df</dt>
 <dd><p>argument passed to <code><a href="https://rdrr.io/r/stats/smooth.spline.html" class="external-link">smooth.spline()</a></code> if this function is
 used for smoothing; set to <code>NA</code> to prevent smoothing.</p></dd>
+
+
 <dt>debug</dt>
 <dd><p>an integer specifying whether debugging information is
 to be printed during the processing. This is a general parameter that
@@ -114,13 +122,18 @@ turns off the printing, while higher values suggest that more information
 be printed. If one function calls another, it usually reduces the value of
 <code>debug</code> first, so that a user can often obtain deeper debugging
 by specifying higher <code>debug</code> values.</p></dd>
+
+
 <dt>...</dt>
 <dd><p>additional argument, passed to <code><a href="https://rdrr.io/r/stats/smooth.spline.html" class="external-link">smooth.spline()</a></code>, in
 the case that <code>derivs="smoothing"</code>.  See “Details”.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>Square of buoyancy frequency (\(radian^2/s^2\)).</p>
+    
+
+<p>Square of buoyancy frequency (\(radian^2/s^2\)).</p>
     </div>
     <div id="details">
     <h2>Details</h2>
@@ -249,7 +262,7 @@ smoothing, depending on the dataset and purpose of the analysis.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
       </footer></div>

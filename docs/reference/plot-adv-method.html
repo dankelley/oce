@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-7</span>
       </span>
     </div>
 
@@ -111,79 +111,122 @@
     <h2>Arguments</h2>
     <dl><dt>x</dt>
 <dd><p>an <a href="adv-class.html">adv</a> object.</p></dd>
+
+
 <dt>which</dt>
 <dd><p>List of desired plot types.  These are graphed in panels running
 down from the top of the page.  See “Details” for the meanings of
 various values of <code>which</code>.</p></dd>
+
+
 <dt>col</dt>
 <dd><p>Optional indication of color(s) to use.  If not provided, the
 default for images is <code>oce.colorsPalette(128,1)</code>, and for lines and points
 is black.</p></dd>
+
+
 <dt>titles</dt>
 <dd><p>Optional vector of character strings to be used as labels for the
 plot panels.  For images, these strings will be placed in the right hand side
 of the top margin.  For timeseries, these strings are ignored.  If this is
 provided, its length must equal that of <code>which</code>.</p></dd>
+
+
 <dt>type</dt>
 <dd><p>Type of plot, as for <code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code>.</p></dd>
+
+
 <dt>lwd</dt>
 <dd><p>If the plot is of a time-series or scattergraph format with lines,
 this is used in the usual way; otherwise, e.g. for image formats, this is
 ignored.</p></dd>
+
+
 <dt>drawTimeRange</dt>
 <dd><p>Logical value that applies to panels with time as the horizontal
 axis, indicating whether to draw the time range in the top-left margin of the
 plot.</p></dd>
+
+
 <dt>drawZeroLine</dt>
 <dd><p>Logical value indicating whether to draw zero lines on
 velocities.</p></dd>
+
+
 <dt>useSmoothScatter</dt>
 <dd><p>Logical value indicating whether to use
 <code><a href="https://rdrr.io/r/graphics/smoothScatter.html" class="external-link">smoothScatter()</a></code> in various plots, such as <code>which="uv"</code>.  If
 not provided a default is used, with <code><a href="https://rdrr.io/r/graphics/smoothScatter.html" class="external-link">smoothScatter()</a></code> being used if
 there are more than 2000 points to plot.</p></dd>
+
+
 <dt>mgp</dt>
 <dd><p>3-element numerical
 vector to use for <code>par(mgp)</code>, and also for <code>par(mar)</code>, computed from
 this.  The default is tighter than the R default, in order to use more space
 for the data and less for the axes.</p></dd>
+
+
 <dt>mar</dt>
 <dd><p>Value to be used with <code><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></code><code>("mar")</code>.</p></dd>
+
+
 <dt>tformat</dt>
 <dd><p>Optional argument passed to <code><a href="oce.plot.ts.html">oce.plot.ts()</a></code>, for plot
 types that call that function.  (See <code><a href="https://rdrr.io/r/base/strptime.html" class="external-link">strptime()</a></code> for the format
 used.)</p></dd>
+
+
 <dt>marginsAsImage</dt>
 <dd><p>Logical value indicating whether to put a wide margin to
 the right of time-series plots, matching the space used up by a palette in an
 <code><a href="imagep.html">imagep()</a></code> plot.</p></dd>
+
+
 <dt>cex</dt>
 <dd><p>numeric character expansion factor for plot symbols; see <code><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par()</a></code>.</p></dd>
+
+
 <dt>cex.axis, cex.lab, cex.main</dt>
 <dd><p>character expansion factors for axis numbers, axis names and plot titles; see <code><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par()</a></code>.</p></dd>
+
+
 <dt>xlim</dt>
 <dd><p>Optional 2-element list for <code>xlim</code>, or 2-column matrix, in
 which case the rows are used, in order, for the panels of the graph.</p></dd>
+
+
 <dt>ylim</dt>
 <dd><p>Optional 2-element list for <code>ylim</code>, or 2-column matrix, in
 which case the rows are used, in order, for the panels of the graph.</p></dd>
+
+
 <dt>brushCorrelation</dt>
 <dd><p>Optional number between 0 and 100, indicating a
 per-beam correlation threshold below which data are to be considered suspect.
 If the plot type is <code>p</code>, the suspect points (velocity, backscatter
 amplitude, or correlation) will be colored red; otherwise, this argument is
 ignored.</p></dd>
+
+
 <dt>colBrush</dt>
 <dd><p>Color to use for brushed (bad) data, if
 <code>brushCorrelation</code> is active.</p></dd>
+
+
 <dt>main</dt>
 <dd><p>Main title for plot, used just on the top panel, if there are
 several panels.</p></dd>
+
+
 <dt>debug</dt>
 <dd><p>A flag that turns on debugging.  Set to 1 to get a moderate amount
 of debugging information, or to 2 to get more.</p></dd>
+
+
 <dt>...</dt>
 <dd><p>Optional arguments passed to plotting functions.</p></dd>
+
 </dl></div>
     <div id="details">
     <h2>Details</h2>
@@ -319,7 +362,7 @@ of ADV objects, and also outlines the other functions dealing with them.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
       </footer></div>

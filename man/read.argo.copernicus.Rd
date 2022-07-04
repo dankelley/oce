@@ -4,10 +4,18 @@
 \alias{read.argo.copernicus}
 \title{Read argo file in Copernicus format}
 \usage{
-read.argo.copernicus(file, debug = getOption("oceDebug"), processingLog, ...)
+read.argo.copernicus(
+  file,
+  encoding = NA,
+  debug = getOption("oceDebug"),
+  processingLog,
+  ...
+)
 }
 \arguments{
 \item{file}{A character string giving the name of the file to load.}
+
+\item{encoding}{ignored.}
 
 \item{debug}{A flag that turns on debugging.  Set to 1 to get a moderate
 amount of debugging information, or 0 (the default) for silent operation.}

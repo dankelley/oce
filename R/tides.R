@@ -1821,14 +1821,14 @@ predict.tidem <- function(object, newdata, ...)
 #'
 #' @family things related to tides
 webtide <- function(action=c("map", "predict"),
-                    longitude, latitude, node, time,
-                    basedir=getOption("webtide"),
-                    region="nwatl",
-                    plot=TRUE, tformat, debug=getOption("oceDebug"), ...)
+    longitude, latitude, node, time,
+    basedir=getOption("webtide"),
+    region="nwatl",
+    plot=TRUE, tformat, debug=getOption("oceDebug"), ...)
 {
     debug <- max(0, min(floor(debug), 2))
     oceDebug(debug, "webtide(action=\"", action, "\", ...)\n",
-             sep="", unindent=1, style="bold")
+        sep="", unindent=1, style="bold")
     rpd <- atan2(1, 1) / 45  # radians per degree
     action <- match.arg(action)
     nodeGiven <- !missing(node)
@@ -1842,7 +1842,7 @@ webtide <- function(action=c("map", "predict"),
     triangles <- NULL
     for (nodFile in nodFiles) {
         if (1 == length(list.files(path=path, pattern=nodFile))) {
-            triangles <- read.table(paste(path, nodFile, sep="/"), col.names=c("triangle", "longitude", "latitude"))
+            triangles <- read.table(paste(path, nodFile, sep="/"), col.names=c("triangle", "longitude", "latitude"), encoding="latin1")
             oceDebug(debug, "found webtide information in '", nodFile, "'\n", sep="")
             break
         } else {
@@ -1938,11 +1938,11 @@ webtide <- function(action=c("map", "predict"),
             ##1 0.191244 223.820954
             ##2 0.188446 223.141200
             coneFile <- paste(path, constituentse[i], sep="/")
-            cone <- read.table(coneFile, skip=3)[node, ]
+            cone <- read.table(coneFile, skip=3, encoding="latin1")[node, ]
             ampe[i] <- cone[[2]]
             phasee[i] <- cone[[3]]
             conuvFile <- paste(path, constituentsuv[i], sep="/")
-            conuv <- read.table(conuvFile, skip=3)[node, ]
+            conuv <- read.table(conuvFile, skip=3, encoding="latin1")[node, ]
             ampu[i] <- conuv[[2]]
             phaseu[i] <- conuv[[3]]
             ampv[i] <- conuv[[4]]

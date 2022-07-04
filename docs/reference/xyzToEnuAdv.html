@@ -18,7 +18,7 @@ an enu-based coordinate system."><!-- mathjax --><script src="https://cdnjs.clou
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-7</span>
       </span>
     </div>
 
@@ -94,17 +94,25 @@ an enu-based coordinate system.</p>
     <h2>Arguments</h2>
     <dl><dt>x</dt>
 <dd><p>an <a href="adv-class.html">adv</a> object.</p></dd>
+
+
 <dt>declination</dt>
 <dd><p>magnetic declination to be added to the heading, to get
 ENU with N as "true" north.</p></dd>
+
+
 <dt>cabled</dt>
 <dd><p>boolean value indicating whether the sensor head is connected
 to the pressure case with a cable.  If <code>cabled=FALSE</code>, then
 <code>horizontalCase</code> is ignored.  See “Details”.</p></dd>
+
+
 <dt>horizontalCase</dt>
 <dd><p>optional boolean value indicating whether the sensor
 case is oriented horizontally.  Ignored unless <code>cabled</code> is <code>TRUE</code>.
 See “Details”.</p></dd>
+
+
 <dt>sensorOrientation</dt>
 <dd><p>optional string indicating the direction in which
 the sensor points.  The value, which must be <code>"upward"</code> or
@@ -112,9 +120,12 @@ the sensor points.  The value, which must be <code>"upward"</code> or
 in the <code>metadata</code> slot,
 which will have been set by <code><a href="read.adv.html">read.adv()</a></code>, <em>provided</em> that the
 data file contained the full header.  See “Details”.</p></dd>
+
+
 <dt>debug</dt>
 <dd><p>a flag that, if non-zero, turns on debugging.  Higher values
 yield more extensive debugging.</p></dd>
+
 </dl></div>
     <div id="details">
     <h2>Details</h2>
@@ -208,7 +219,7 @@ Oceanography.</p></li>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
       </footer></div>

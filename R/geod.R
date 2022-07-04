@@ -1,4 +1,4 @@
-## vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
+# vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
 
 #' Convert From Geographical to Geodesic Coordinates
 #'
@@ -141,8 +141,8 @@ geodXyInverse <- function(x, y, longitudeRef, latitudeRef, debug=getOption("oceD
 #'
 #' This calculates geodesic distance between points on the earth, i.e.
 #' distance measured along the (presumed ellipsoidal) surface. The method
-#' involves the solution of the geodetic inverse problem, using T. Vincenty's
-#' modification of Rainsford's method with Helmert's elliptical terms.
+#' involves the solution of the geodetic inverse problem, using Vincenty's
+#' (1975) modification of Rainsford's method with Helmert's elliptical terms.
 #'
 #' The function may be used in several different ways.
 #'
@@ -194,9 +194,9 @@ geodXyInverse <- function(x, y, longitudeRef, latitudeRef, debug=getOption("oceD
 #'
 #' @seealso [geodXy()]
 #'
-#' @references T. Vincenty, "Direct and Inverse Solutions of Ellipsoid on the
-#' Ellipsoid with Application of Nested Equations", *Survey Review*, April
-#' 1975.
+#' @references Vincenty, T. "Direct and Inverse Solutions of Geodesics on the
+#' Ellipsoid with Application of Nested Equations." Survey Review 23, no. 176
+#' (April 1, 1975): 88–93. https://doi.org/10.1179/sre.1975.23.176.88.
 #'
 #' @examples
 #' library(oce)

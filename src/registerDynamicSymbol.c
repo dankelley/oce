@@ -13,6 +13,7 @@ extern SEXP _oce_do_curl1(SEXP, SEXP, SEXP, SEXP, SEXP);
 extern SEXP _oce_do_curl2(SEXP, SEXP, SEXP, SEXP, SEXP);
 extern SEXP _oce_do_epic_time_to_ymdhms(SEXP, SEXP);
 extern SEXP _oce_do_fill_gap_1d(SEXP, SEXP);
+extern SEXP _oce_do_gappy_index(SEXP, SEXP, SEXP);
 extern SEXP _oce_do_geoddist(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
 extern SEXP _oce_do_geoddist_alongpath(SEXP, SEXP, SEXP, SEXP);
 extern SEXP _oce_do_geod_xy(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
@@ -46,13 +47,14 @@ static const R_CallMethodDef CallEntries[] = {
     {"_oce_do_curl2", (DL_FUNC) &_oce_do_curl2, 5},
     {"_oce_do_epic_time_to_ymdhms", (DL_FUNC) &_oce_do_epic_time_to_ymdhms, 2},
     {"_oce_do_fill_gap_1d", (DL_FUNC) &_oce_do_fill_gap_1d, 2},
+    {"_oce_do_gappy_index", (DL_FUNC) &_oce_do_gappy_index, 3},
     {"_oce_do_geoddist", (DL_FUNC) &_oce_do_geoddist, 6},
-    {"_oce_do_interp_barnes", (DL_FUNC) &_oce_do_interp_barnes, 10},
     {"_oce_do_geod_xy", (DL_FUNC) &_oce_do_geod_xy, 6},
     {"_oce_do_geod_xy_inverse", (DL_FUNC) &_oce_do_geod_xy_inverse, 6},
     {"_oce_do_geoddist_alongpath", (DL_FUNC) &_oce_do_geoddist_alongpath, 4},
     {"_oce_do_get_bit", (DL_FUNC) &_oce_do_get_bit, 2},
     {"_oce_do_gradient", (DL_FUNC) &_oce_do_gradient, 3},
+    {"_oce_do_interp_barnes", (DL_FUNC) &_oce_do_interp_barnes, 10},
     {"_oce_do_landsat_transpose_flip", (DL_FUNC) &_oce_do_landsat_transpose_flip, 1},
     {"_oce_do_landsat_numeric_to_bytes", (DL_FUNC) &_oce_do_landsat_numeric_to_bytes, 2},
     {"_oce_do_ldc_ad2cp_in_file", (DL_FUNC) &_oce_do_ldc_ad2cp_in_file, 5},

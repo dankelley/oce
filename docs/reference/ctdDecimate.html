@@ -19,7 +19,7 @@ CTD/bottle profiles."><!-- mathjax --><script src="https://cdnjs.cloudflare.com/
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-7</span>
       </span>
     </div>
 
@@ -96,11 +96,15 @@ CTD/bottle profiles.</p>
     <h2>Arguments</h2>
     <dl><dt>x</dt>
 <dd><p>a <a href="ctd-class.html">ctd</a> object.</p></dd>
+
+
 <dt>p</dt>
 <dd><p>pressure increment, or vector of pressures.  In the first case,
 pressures from 0dbar to the rounded maximum pressure are used, incrementing by
 <code>p</code> dbars.  If a vector of pressures is given, interpolation is done to
 these pressures.</p></dd>
+
+
 <dt>method</dt>
 <dd><p>the method to be used for calculating decimated values.  This may
 be a function or a string naming a built-in method.  The built-in methods are
@@ -121,12 +125,16 @@ three arguments, the first being pressure, the second being an arbitrary
 variable in another column of the data, and the third being a vector of target
 pressures at which the calculation is carried out, and the return value must be
 a vector.  See “Examples”.</p></dd>
+
+
 <dt>rule</dt>
 <dd><p>an integer that is passed to <code><a href="https://rdrr.io/r/stats/approxfun.html" class="external-link">approx()</a></code>, in the
 case where <code>method</code> is <code>"approx"</code>. Note that the default value
 for <code>rule</code> is 1, which will inhibit extrapolation beyond the observed
 pressure range. This is a change from the behaviour previous to May 8, 2017,
 when a <code>rule</code> of 2 was used (without stating so as an argument).</p></dd>
+
+
 <dt>e</dt>
 <dd><p>is an expansion coefficient used to calculate the local neighbourhoods
 for the <code>"boxcar"</code> and <code>"lm"</code> methods.  If <code>e=1</code>, then the
@@ -136,6 +144,8 @@ bin is of the same pressure range as the first inside bin.  For other values of
 <code>e</code>, the neighbourhood is expanded linearly in each direction.  If the
 <code>"lm"</code> method produces warnings about "prediction from a rank-deficient
 fit", a larger value of <code>"e"</code> should be used.</p></dd>
+
+
 <dt>debug</dt>
 <dd><p>an integer specifying whether debugging information is
 to be printed during the processing. This is a general parameter that
@@ -144,10 +154,13 @@ turns off the printing, while higher values suggest that more information
 be printed. If one function calls another, it usually reduces the value of
 <code>debug</code> first, so that a user can often obtain deeper debugging
 by specifying higher <code>debug</code> values.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>A <a href="ctd-class.html">ctd</a> object, with pressures that are as set by
+    
+
+<p>A <a href="ctd-class.html">ctd</a> object, with pressures that are as set by
 the <code>"p"</code> parameter and all other properties modified appropriately.</p>
     </div>
     <div id="details">
@@ -266,7 +279,7 @@ CTD objects, and also outlines the other functions dealing with them.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
       </footer></div>

@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-7</span>
       </span>
     </div>
 
@@ -89,6 +89,7 @@
   type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"aquadoppHR"</span>, <span class="st">"aquadoppProfiler"</span>, <span class="st">"aquadopp"</span>, <span class="st">"aquadoppPlusMagnetometer"</span><span class="op">)</span>,
   <span class="va">orientation</span>,
   <span class="va">distance</span>,
+  encoding <span class="op">=</span> <span class="cn">NA</span>,
   monitor <span class="op">=</span> <span class="cn">FALSE</span>,
   despike <span class="op">=</span> <span class="cn">FALSE</span>,
   <span class="va">processingLog</span>,
@@ -103,6 +104,8 @@
 <dd><p>a connection or a character string giving the name of the file
 to load.  (For <code>read.adp.sontek.serial</code>, this is generally a list of
 files, which will be concatenated.)</p></dd>
+
+
 <dt>from</dt>
 <dd><p>indication of the first profile to read.  This can be an
 integer, the sequence number of the first profile to read, or a POSIXt time
@@ -110,32 +113,48 @@ before which profiles should be skipped, or a character string that converts
 to a POSIXt time (assuming UTC timezone).  See “Examples”, and make
 careful note of the use of the <code>tz</code> argument. If <code>from</code> is not
 supplied, it defaults to 1.</p></dd>
+
+
 <dt>to</dt>
 <dd><p>an optional indication of the last profile to read, in a
 format as described for <code>from</code>.  As a special case, <code>to=0</code> means
 to read the file to the end.  If <code>to</code> is not supplied, then it defaults
 to 0.</p></dd>
+
+
 <dt>by</dt>
 <dd><p>an optional indication of the stride length to use while walking through
 the file.  If this is an integer, then <code>by-1</code> profiles are skipped
 between each pair of profiles that is read, e.g. the default <code>by=1</code>
 means to read all the data.  (For RDI files <em>only</em>, there are some
 extra features to avoid running out of memory; see “Memory considerations”.)</p></dd>
+
+
 <dt>tz</dt>
 <dd><p>character string indicating time zone to be assumed in the data.</p></dd>
+
+
 <dt>longitude</dt>
 <dd><p>optional signed number indicating the longitude in degrees
 East.</p></dd>
+
+
 <dt>latitude</dt>
 <dd><p>optional signed number indicating the latitude in degrees
 North.</p></dd>
+
+
 <dt>type</dt>
 <dd><p>a character string indicating the type of instrument.</p></dd>
+
+
 <dt>orientation</dt>
 <dd><p>an optional character string specifying the orientation of
 the sensor, provided for those cases in which it cannot be inferred from the
 data file.  The valid choices are <code>"upward"</code>, <code>"downward"</code>, and
 <code>"sideward"</code>.</p></dd>
+
+
 <dt>distance</dt>
 <dd><p>an optional vector holding the distances of bin centres from
 the sensor.  This argument is ignored except for Nortek profilers, and need
@@ -143,28 +162,45 @@ not be given if the function determines the distances correctly from the
 data.  The problem is that the distance is poorly documented in the Nortek
 System Integrator Guide (2008 edition, page 31), so the function must rely
 on word-of-mouth formulae that do not work in all cases.</p></dd>
+
+
+<dt>encoding</dt>
+<dd><p>ignored.</p></dd>
+
+
 <dt>monitor</dt>
 <dd><p>boolean value indicating whether to indicate the progress
 of reading the file, by using <code><a href="https://rdrr.io/r/utils/txtProgressBar.html" class="external-link">txtProgressBar()</a></code> or otherwise.  The value
 of <code>monitor</code> is changed to <code>FALSE</code> automatically, for non-interactive
 sessions.</p></dd>
+
+
 <dt>despike</dt>
 <dd><p>a logical value indicating whether to use <code><a href="despike.html">despike()</a></code> to remove
 anomalous spikes in heading, etc.</p></dd>
+
+
 <dt>processingLog</dt>
 <dd><p>if provided, the action item to be stored in the log.
 (Typically only provided for internal calls; the default that it provides is
 better for normal calls by a user.)</p></dd>
+
+
 <dt>debug</dt>
 <dd><p>a flag that turns on debugging.  Set to 1 to get a moderate
 amount of debugging information, or to 2 to get more.</p></dd>
+
+
 <dt>...</dt>
 <dd><p>optional additional arguments that some (but not all)
 <code>read.adp.*()</code> functions pass to lower-level functions.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>An <a href="adp-class.html">adp</a> object.
+    
+
+<p>An <a href="adp-class.html">adp</a> object.
 The contents of that object make sense for the particular instrument
 type under study, e.g. if the data file contains
 NMEA strings, then navigational data will be stored in an item
@@ -243,7 +279,7 @@ problems arise in dealing with data from Nortek instruments.</p></li>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
       </footer></div>

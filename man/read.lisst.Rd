@@ -4,7 +4,14 @@
 \alias{read.lisst}
 \title{Read a LISST File}
 \usage{
-read.lisst(file, year = 0, tz = "UTC", longitude = NA, latitude = NA)
+read.lisst(
+  file,
+  year = 0,
+  tz = "UTC",
+  longitude = NA,
+  latitude = NA,
+  encoding = "latin1"
+)
 }
 \arguments{
 \item{file}{a connection or a character string giving the name of the file
@@ -17,6 +24,11 @@ to load.}
 \item{longitude}{longitude of observation (stored in metadata)}
 
 \item{latitude}{latitude of observation (stored in metadata)}
+
+\item{encoding}{a character value that indicates the encoding to be used for
+this data file, if it is textual.  The default value for most functions is
+\code{"latin1"}, which seems to be suitable for files containing text written in
+English and French.}
 }
 \value{
 x A \linkS4class{lisst} object.

@@ -24,7 +24,7 @@ these filters, use circular=TRUE."><!-- mathjax --><script src="https://cdnjs.cl
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-7</span>
       </span>
     </div>
 
@@ -120,16 +120,23 @@ a spectral peak, so that a value of 2 indicates a cutoff frequency of
 to zero at the ends)</p></li>
 <li><p><code>"hann"</code> (a raised cosine that tapers to zero at the ends).</p></li>
 </ul></dd>
+
+
 <dt>m</dt>
 <dd><p>length of filter.  This should be an odd number, for any
 non-rectangular filter.</p></dd>
+
+
 <dt>asKernel</dt>
 <dd><p>boolean, set to <code>TRUE</code> to get a smoothing kernel for
 the return value.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>If <code>asKernel</code> is <code>FALSE</code>, this returns a list of filter
+    
+
+<p>If <code>asKernel</code> is <code>FALSE</code>, this returns a list of filter
 coefficients, symmetric about the midpoint and summing to 1.  These may be
 used with <code><a href="https://rdrr.io/r/stats/filter.html" class="external-link">filter()</a></code>, which should be provided with argument
 <code>circular=TRUE</code> to avoid phase offsets.  If <code>asKernel</code> is
@@ -211,7 +218,7 @@ with the discrete Fourier Transform.  <em>Proceedings of the IEEE</em>, 66(1),
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
       </footer></div>

@@ -19,7 +19,7 @@ but it is not intended as a drop-in replacement."><!-- mathjax --><script src="h
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-7</span>
       </span>
     </div>
 
@@ -103,6 +103,8 @@ but it is <em>not</em> intended as a drop-in replacement.</p>
 <dd><p>a vector or timeseries to be analyzed.  If <code>x</code> is a timeseries, then
 it there is no need to <code>fs</code>, and doing so will result in an error if it does
 not match the value inferred from <code>x</code>.</p></dd>
+
+
 <dt>window</dt>
 <dd><p>optional numeric vector specifying a window to be applied
 to the timeseries subsamples.  This is ignored if <code>spec</code> is provided.
@@ -117,16 +119,24 @@ specified and <code>nfft</code> is given, then the window is constructed as
 a hamming window with length <code>nfft</code>.  And, if neither <code>window</code>
 nor <code>nfft</code> are specified, then <code>x</code> will be broken up
 into 8 portions.</p></dd>
+
+
 <dt>noverlap</dt>
 <dd><p>number of points to overlap between windows.  If not
 specified, this will be set to half the window length.</p></dd>
+
+
 <dt>nfft</dt>
 <dd><p>length of FFT. See <code>window</code> for how <code>nfft</code> interacts with
 that argument.</p></dd>
+
+
 <dt>fs</dt>
 <dd><p>frequency of time-series.  If <code>x</code> is a time-series, and if
 <code>fs</code> is supplied, then time-series is altered to have frequency
 <code>fs</code>.</p></dd>
+
+
 <dt>spec</dt>
 <dd><p>optional function to be used for the computation of the spectrum,
 to allow finer-grained control of the processing.
@@ -138,22 +148,33 @@ and an error will be reported if <code>window</code> and <code>spec</code> are b
 An error will be reported if <code>spec</code> is given but <code>nfft</code> is not given.
 Note that the values of <code>demean</code>, <code>detrend</code> and <code>plot</code> are ignored if <code>spec</code>
 is given. However, the ... argument <em>is</em> passed to <code>spec</code>.</p></dd>
+
+
 <dt>demean, detrend</dt>
 <dd><p>logical values that can control the spectrum calculation,
 in the default case of <code>spec</code>.  These are passed to <code><a href="https://rdrr.io/r/stats/spectrum.html" class="external-link">spectrum()</a></code> and thence
 <code><a href="https://rdrr.io/r/stats/spec.pgram.html" class="external-link">spec.pgram()</a></code>; see the help pages for the latter for an explanation.</p></dd>
+
+
 <dt>plot</dt>
 <dd><p>logical, set to <code>TRUE</code> to plot the spectrum.</p></dd>
+
+
 <dt>debug</dt>
 <dd><p>a flag that turns on debugging.  Set to 1 to get a moderate
 amount of debugging information, or to 2 to get more.</p></dd>
+
+
 <dt>...</dt>
 <dd><p>optional extra arguments to be passed to
 <code><a href="https://rdrr.io/r/stats/spectrum.html" class="external-link">spectrum()</a></code>, or to <code>spec</code>, if the latter is given.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p><code>pwelch</code> returns a list mimicking the return value from <code><a href="https://rdrr.io/r/stats/spectrum.html" class="external-link">spectrum()</a></code>,
+    
+
+<p><code>pwelch</code> returns a list mimicking the return value from <code><a href="https://rdrr.io/r/stats/spectrum.html" class="external-link">spectrum()</a></code>,
 containing frequency <code>freq</code>, spectral power <code>spec</code>, degrees of
 freedom <code>df</code>, bandwidth <code>bandwidth</code>, etc.</p>
     </div>
@@ -226,13 +247,13 @@ AU-15, 70--73.</p>
 <span class="r-in"><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"Checking spectral levels with Parseval's theorem:\n"</span><span class="op">)</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Checking spectral levels with Parseval's theorem:</span>
 <span class="r-in"><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"var(x)                              = "</span>, <span class="fu"><a href="https://rdrr.io/r/stats/cor.html" class="external-link">var</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span>, <span class="st">"\n"</span><span class="op">)</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> var(x)                              =  1.547883 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> var(x)                              =  1.391018 </span>
 <span class="r-in"><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"2 * sum(s$spec) * diff(s$freq[1:2]) = "</span>, <span class="fl">2</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">s</span><span class="op">$</span><span class="va">spec</span><span class="op">)</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/diff.html" class="external-link">diff</a></span><span class="op">(</span><span class="va">s</span><span class="op">$</span><span class="va">freq</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">2</span><span class="op">]</span><span class="op">)</span>, <span class="st">"\n"</span><span class="op">)</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2 * sum(s$spec) * diff(s$freq[1:2]) =  1.593143 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2 * sum(s$spec) * diff(s$freq[1:2]) =  1.376295 </span>
 <span class="r-in"><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"sum(w$spec) * diff(s$freq[1:2])     = "</span>, <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">w</span><span class="op">$</span><span class="va">spec</span><span class="op">)</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/diff.html" class="external-link">diff</a></span><span class="op">(</span><span class="va">w</span><span class="op">$</span><span class="va">freq</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">2</span><span class="op">]</span><span class="op">)</span>, <span class="st">"\n"</span><span class="op">)</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> sum(w$spec) * diff(s$freq[1:2])     =  0.7673283 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> sum(w$spec) * diff(s$freq[1:2])     =  0.692781 </span>
 <span class="r-in"><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"sum(w2$spec) * diff(s$freq[1:2])    = "</span>, <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">w2</span><span class="op">$</span><span class="va">spec</span><span class="op">)</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/diff.html" class="external-link">diff</a></span><span class="op">(</span><span class="va">w2</span><span class="op">$</span><span class="va">freq</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">2</span><span class="op">]</span><span class="op">)</span>, <span class="st">"\n"</span><span class="op">)</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> sum(w2$spec) * diff(s$freq[1:2])    =  0.7724058 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> sum(w2$spec) * diff(s$freq[1:2])    =  0.6904843 </span>
 <span class="r-in"><span class="co">## co2</span></span>
 <span class="r-in"><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mar<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3</span>,<span class="fl">3</span>,<span class="fl">2</span>,<span class="fl">1</span><span class="op">)</span>, mgp<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>,<span class="fl">0.7</span>,<span class="fl">0</span><span class="op">)</span><span class="op">)</span></span>
 <span class="r-in"><span class="va">s</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/spectrum.html" class="external-link">spectrum</a></span><span class="op">(</span><span class="va">co2</span>, plot<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span></span>
@@ -256,7 +277,7 @@ AU-15, 70--73.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
       </footer></div>
