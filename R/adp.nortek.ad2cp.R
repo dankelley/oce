@@ -165,15 +165,14 @@ ad2cpCodeToName <- function(code)
 #' is described in two contradictory ways, although one makes very sense, so it is
 #' ignored here.
 #'
-#' It would seem to make sense to use the 2022 document, i.e.  reference 1b, but
+#' It would seem to make sense to use the 2022 document, i.e. reference 2, but
 #' it is less clear than earlier documents, e.g. reference 1, with a fair bit of
 #' missing material. Nortek has indicated that they will release a revision to
 #' that document, and it will be consulted when it becomes available.  Also, the
-#' 2022 document has significant errors, e.g.  as stating that the variable
-#' called `altimeterDistance` here is a 32-bit integer, whereas the 2017
-#' document stated it to be a 32-bit float.  The latter is used here, because
-#' the older document has proved to be more trustworthy, and also because
-#' assuming the former yields wildly unrealistic results.
+#' 2022 document has significant errors, e.g. as stating that the variables
+#' called `altimeterDistance` and `ASTDistance` in this function are 32-bit
+#' integers, which yields wild values, whereas the 32-bit float format stated in
+#' the 2017 document yields sensible values.
 #'
 #' In spring of 2022, support was added for 12-byte headers.  These are not
 #' described in any Nortek document in the possession of the author of this
@@ -834,6 +833,22 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
             object$altimeterRawSamples <- matrix(tmp, nrow=NP, ncol=NS, byrow=TRUE)
             i0v <<- i0v + 2L*NS
             oceDebug(debug+1L, "  advanced i0v to ", i0v, "\n")
+        } else if (name == "echosounder") {
+            message("FIXME: decode echosounder")
+            i0v <<- i0v + 2L*NC
+        } else if (name == "AHRS") {
+            oceDebug(debug+1L, "vector-read 'AHRS' starting at i0v=", i0v, "\n")
+            iv <- gappyIndex(i, i0v, 9L*4L)
+            tmp <- readBin(buf[iv], "numeric", size=4L, endian="little", n=NP*9L)
+            object$AHRSRotationMatrix <- array(tmp, dim=c(NP, 3L, 3L))
+            i0v <<- i0v + 4L*9L        # rotation matrix, 9 floats
+            i0v <<- i0v + 16L          # dummy
+            iv <- gappyIndex(i, i0v, 3L*4L)
+            tmp <- readBin(buf[iv], "numeric", size=4L, endian="little", n=NP*3L)
+            object$AHRSGyro <- array(tmp, dim=c(NP, 3L))
+            i0v <<- i0v + 12L          # gyro x, y, z
+            oceDebug(debug+1L, "  advanced i0v to ", i0v, "\n")
+            # FIXME: add percent good and a couple of other things (Nortek 2018 p53)
         } else {
             stop("unknown item, name=\"", name, "\"")
         }
@@ -1213,7 +1228,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
                 burstAltimeterRaw <- getItemFromBuf(burstAltimeterRaw, "AST", i=i, debug=debug)
             }
             if (altimeterRawIncluded[p$burstAltimeterRaw[1]]) {
-                oceDebug(debug, "2nd-gen vectorization for burstAltimeterRaw\n")
+                oceDebug(debug+1, "vector-read burstAltimeterRaw$altimeterRaw (i0v=", i0v, ")\n")
                 # read 4b=altimeterRawNumberOfSamples
                 #>> iv <- gappyIndex(i, i0v, 4L)
                 #oceDebug(debug, "before reading altimeterRawNumberOfSamples: ", vectorShow(i0v))
@@ -1245,16 +1260,16 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
             }
             if (echosounderIncluded[p$burstAltimeterRaw[1]]) {
                 # FIXME DAN DAN DAN
-                oceDebug(debug, "?vector-read burstAltimeterRaw$echosounder (i0v=", i0v, ")\n")
+                oceDebug(debug+1, "FIXME: DAN DAN L1247 vector-read burstAltimeterRaw$echosounder (i0v=", i0v, ")\n")
                 oceDebug(debug, "?  create raw array dim(", sum(d$id==0x1a), ",", nrow, ",", ncol, ")\n")
                 burstAltimeterRaw$echosounder <- array(raw(), dim=c(NP, NB, NC)) # FIXME: read the data
                 i0v <- i0v + NB*NC
                 oceDebug(debug, "  new i0v=", i0v, "\n")
             }
             if (AHRSIncluded[p$burstAltimeterRaw[1]]) {
-                oceDebug(debug, "?vector-read burstAltimeterRaw$AHRS (i0v=", i0v, ")\n")
-                i0v <- i0v + 9L        # 9 is very odd
-                oceDebug(debug, "  new i0v=", i0v, "\n")
+                oceDebug(debug+1, "FIXME: DAN DAN L1254 vector-read burstAltimeterRaw$AHRS (i0v=", i0v, ")\n")
+                # 16 bytes (I need to double check that)
+                burstAltimeterRaw <- getItemFromBuf(burstAltimeterRaw, "AHRS", i=i, debug=debug)
             }
             if (percentGoodIncluded[p$burstAltimeterRaw[1]]) {
                 oceDebug(debug, "?vector-read burstAltimeterRaw$percentGood (i0v=", i0v, ")\n")

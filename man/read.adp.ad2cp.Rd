@@ -151,15 +151,14 @@ they differ in significant ways.  For example, the checksum computation scheme
 is described in two contradictory ways, although one makes very sense, so it is
 ignored here.
 
-It would seem to make sense to use the 2022 document, i.e.  reference 1b, but
+It would seem to make sense to use the 2022 document, i.e. reference 2, but
 it is less clear than earlier documents, e.g. reference 1, with a fair bit of
 missing material. Nortek has indicated that they will release a revision to
 that document, and it will be consulted when it becomes available.  Also, the
-2022 document has significant errors, e.g.  as stating that the variable
-called \code{altimeterDistance} here is a 32-bit integer, whereas the 2017
-document stated it to be a 32-bit float.  The latter is used here, because
-the older document has proved to be more trustworthy, and also because
-assuming the former yields wildly unrealistic results.
+2022 document has significant errors, e.g. as stating that the variables
+called \code{altimeterDistance} and \code{ASTDistance} in this function are 32-bit
+integers, which yields wild values, whereas the 32-bit float format stated in
+the 2017 document yields sensible values.
 
 In spring of 2022, support was added for 12-byte headers.  These are not
 described in any Nortek document in the possession of the author of this
