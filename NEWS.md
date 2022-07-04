@@ -1,3 +1,7 @@
+# oce 1.7.8
+
+* Fix compiler warning of comparing signed and unsigned quantities.
+
 # oce 1.7.7
 
 * Fix encoding problems that will occur in the upcoming version of R.

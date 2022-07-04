@@ -17,15 +17,15 @@ IntegerVector do_gappy_index(IntegerVector starts, IntegerVector offset, Integer
     if (nstarts > 0) {
       long unsigned int minspan = 100 * nstarts * length[0]; // start large
       for (long unsigned int i = 1; i < nstarts; i++) {
-        long unsigned span = starts[i] - starts[i-1];
+        long unsigned int span = starts[i] - starts[i-1];
         if (span < minspan)
           minspan = span;
       }
-      if (length[0] > minspan)
+      if ((long unsigned int)length[0] > minspan)
         ::Rf_error("'length' %d exceeds minimum span between 'starts' elements (%d)", length[0], minspan);
     }
     for (long unsigned int i = 0; i < nstarts; i++) {
-      long unsigned off = offset[0];
+      long unsigned int off = offset[0];
       for (long unsigned int j = 0; j < length[0]; j++) {
         res[k++] = starts[i] + off;
         off++;
