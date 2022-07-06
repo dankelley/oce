@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-8</span>
       </span>
     </div>
 
@@ -123,110 +123,183 @@
     <dl><dt>x</dt>
 <dd><p>a <a href="ctd-class.html">ctd</a>, <a href="argo-class.html">argo</a> or <a href="section-class.html">section</a> object, or a list
 containing solely <a href="ctd-class.html">ctd</a> objects or <a href="argo-class.html">argo</a> objects.</p></dd>
+
+
 <dt>inSitu</dt>
 <dd><p>A boolean indicating whether to use in-situ temperature or
 (the default) potential temperature, calculated with reference pressure
 given by <code>referencePressure</code>.  This is ignored if <code>eos="gsw"</code>,
 because those cases the y axis is necessarily the conservative formulation
 of temperature.</p></dd>
+
+
 <dt>type</dt>
 <dd><p>representation of data, <code>"p"</code> for points, <code>"l"</code> for
 connecting lines, or <code>"n"</code> for no indication.</p></dd>
+
+
 <dt>referencePressure</dt>
 <dd><p>reference pressure, to be used in calculating
 potential temperature, if <code>inSitu</code> is <code>FALSE</code>.</p></dd>
+
+
 <dt>nlevels</dt>
 <dd><p>Number of automatically-selected isopycnal levels (ignored if
 <code>levels</code> is supplied).</p></dd>
+
+
 <dt>levels</dt>
 <dd><p>Optional vector of desired isopycnal levels.</p></dd>
+
+
 <dt>grid</dt>
 <dd><p>a flag that can be set to <code>TRUE</code> to get a grid.</p></dd>
+
+
 <dt>col.grid</dt>
 <dd><p>color for grid.</p></dd>
+
+
 <dt>lty.grid</dt>
 <dd><p>line type for grid.</p></dd>
+
+
 <dt>rho1000</dt>
 <dd><p>if TRUE, label isopycnals as e.g. 1024; if FALSE, label as
 e.g. 24</p></dd>
+
+
 <dt>eos</dt>
 <dd><p>equation of state to be used, either <code>"unesco"</code> or
 <code>"gsw"</code>.</p></dd>
+
+
 <dt>cex</dt>
 <dd><p>character-expansion factor for symbols, as in <a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a><code>("cex")</code>.</p></dd>
+
+
 <dt>col</dt>
 <dd><p>color for symbols.</p></dd>
+
+
 <dt>pch</dt>
 <dd><p>symbol type, as in <a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a><code>("pch")</code>.</p></dd>
+
+
 <dt>bg</dt>
 <dd><p>optional color to be painted under plotting area, before
 plotting.  (This is useful for cases in which <code>inset=TRUE</code>.)</p></dd>
+
+
 <dt>pt.bg</dt>
 <dd><p>inside color for symbols with <code>pch</code> in 21:25</p></dd>
+
+
 <dt>col.rho</dt>
 <dd><p>color for isopycnal lines and their labels.</p></dd>
+
+
 <dt>cex.rho</dt>
 <dd><p>size of the isopycnal labels.</p></dd>
+
+
 <dt>rotate</dt>
 <dd><p>if TRUE, labels in right-hand margin are written vertically</p></dd>
+
+
 <dt>useSmoothScatter</dt>
 <dd><p>if TRUE, use <code><a href="https://rdrr.io/r/graphics/smoothScatter.html" class="external-link">smoothScatter()</a></code> to plot the
 points.</p></dd>
+
+
 <dt>xlab</dt>
 <dd><p>optional label for the x axis, with default "Salinity [PSU]".</p></dd>
+
+
 <dt>ylab</dt>
 <dd><p>optional label for the y axis, with default "Temperature [C]".</p></dd>
+
+
 <dt>Slim</dt>
 <dd><p>optional limits for salinity axis, otherwise inferred from visible data
 (i.e. the data that have finite values for both salinity and temperature).</p></dd>
+
+
 <dt>Tlim</dt>
 <dd><p>as <code>Slim</code>, but for temperature.</p></dd>
+
+
 <dt>drawFreezing</dt>
 <dd><p>logical indication of whether to draw a freezing-point
 line. This is based on zero pressure. If <code>eos="unesco"</code> then
 <code><a href="swTFreeze.html">swTFreeze()</a></code> is used to compute the curve, whereas if
 <code>eos="gsw"</code> then <code><a href="http://teos-10.github.io/GSW-R/reference/gsw_CT_freezing.html" class="external-link">gsw::gsw_CT_freezing()</a></code> is used;
 in each case, zero pressure is used.</p></dd>
+
+
 <dt>trimIsopycnals</dt>
 <dd><p>logical value (<code>TRUE</code> by default) that
 indicates whether to trim isopycnal curves
 to the region of temperature-salinity space for which density
 computations are considered to be valid in the context of the
 chosen <code>eos</code>; see “Details”.</p></dd>
+
+
 <dt>mgp</dt>
 <dd><p>3-element numerical vector to use for <code>[par](mgp)</code>, and also
 for <a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a><code>(mar)</code>, computed from this.  The default is tighter than the R
 default, in order to use more space for the data and less for the axes.</p></dd>
+
+
 <dt>mar</dt>
 <dd><p>value to be used with <a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a><code>("mar")</code>.  If set to
 <code>NULL</code>, then <a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a><code>("mar")</code> is used.  A good choice for a TS diagram
 with a palette to the right is <code>mar=par("mar")+c(0, 0, 0, 1))</code>.</p></dd>
+
+
 <dt>lwd</dt>
 <dd><p>line width of lines or symbols.</p></dd>
+
+
 <dt>lty</dt>
 <dd><p>line type of lines or symbols.</p></dd>
+
+
 <dt>lwd.rho</dt>
 <dd><p>line width for density curves.</p></dd>
+
+
 <dt>lty.rho</dt>
 <dd><p>line type for density curves.</p></dd>
+
+
 <dt>add</dt>
 <dd><p>a flag that controls whether to add to an existing plot.  (It
 makes sense to use <code>add=TRUE</code> in the <code>panel</code> argument of a
 <code><a href="https://rdrr.io/r/graphics/coplot.html" class="external-link">coplot()</a></code>, for example.)</p></dd>
+
+
 <dt>inset</dt>
 <dd><p>set to <code>TRUE</code> for use within <code><a href="plotInset.html">plotInset()</a></code>.  The
 effect is to prevent the present function from adjusting margins, which is
 necessary because margin adjustment is the basis for the method used by
 <code><a href="plotInset.html">plotInset()</a></code>.</p></dd>
+
+
 <dt>debug</dt>
 <dd><p>a flag that turns on debugging.  Set to 1 to get a moderate
 amount of debugging information, or to 2 to get more.</p></dd>
+
+
 <dt>...</dt>
 <dd><p>optional arguments passed to plotting functions.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>A list is silently returned, containing <code>xat</code> and <code>yat</code>,
+    
+
+<p>A list is silently returned, containing <code>xat</code> and <code>yat</code>,
 values that can be used by <code><a href="oce.grid.html">oce.grid()</a></code> to add a grid to the plot.</p>
     </div>
     <div id="details">
@@ -411,7 +484,7 @@ Journal of Atmospheric and Oceanic Technology 20, no. 5 (May 1, 2003): 730-41.
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
       </footer></div>

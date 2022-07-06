@@ -21,7 +21,7 @@ etc."><!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathja
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-8</span>
       </span>
     </div>
 
@@ -93,13 +93,19 @@ etc.</p>
     <h2>Arguments</h2>
     <dl><dt>object</dt>
 <dd><p>an <a href="oce-class.html">oce</a> object.</p></dd>
+
+
 <dt>flags</dt>
 <dd><p>a named <a href="https://rdrr.io/r/base/list.html" class="external-link">list</a> of numeric values.</p></dd>
+
+
 <dt>actions</dt>
 <dd><p>A character vector indicating actions to be carried out for the corresponding
 <code>flags</code> values. This will be lengthened with <code><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep()</a></code> if necessary, to be
 of the same length as <code>flags</code>. A common value for <code>actions</code> is <code>"NA"</code>, which
 means that data values that are flagged are replaced by <code>NA</code> in the returned result.</p></dd>
+
+
 <dt>where</dt>
 <dd><p>An optional string that permits the function to work with
 objects that store flags in e.g. <code>object@metadata$flags$where</code>
@@ -108,14 +114,19 @@ instead of in <code>object@metadata$flags</code>, and data within
 appropriate value for <code>where</code> within the oce package is
 the default, <code>NULL</code>, which means that this extra subdirectory
 is not being used.</p></dd>
+
+
 <dt>debug</dt>
 <dd><p>An integer indicating the degree of debugging requested, with value <code>0</code>
 meaning to act silently, and value <code>1</code> meaning to print some information about the
 steps in processing.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>A copy of <code>object</code>, possibly with modifications to its
+    
+
+<p>A copy of <code>object</code>, possibly with modifications to its
 <code>data</code> slot, if <code>object</code> contains flag values that have
 actions that alter the data.</p>
     </div>
@@ -132,7 +143,7 @@ actions that alter the data.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
       </footer></div>

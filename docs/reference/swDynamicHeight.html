@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-8</span>
       </span>
     </div>
 
@@ -91,26 +91,37 @@
     <h2>Arguments</h2>
     <dl><dt>x</dt>
 <dd><p>a <a href="section-class.html">section</a> object.</p></dd>
+
+
 <dt>referencePressure</dt>
 <dd><p>reference pressure (dbar). If this exceeds the
 highest pressure supplied to <code>swDynamicHeight()</code>, then that highest
 pressure is used, instead of the supplied value of
 <code>referencePressure</code>.</p></dd>
+
+
 <dt>subdivisions</dt>
 <dd><p>number of subdivisions for call to
 <code><a href="https://rdrr.io/r/stats/integrate.html" class="external-link">integrate()</a></code>.  (The default value is considerably larger than the
 default for <code><a href="https://rdrr.io/r/stats/integrate.html" class="external-link">integrate()</a></code>, because otherwise some test profiles
 failed to integrate.</p></dd>
+
+
 <dt>rel.tol</dt>
 <dd><p>absolute tolerance for call to <code><a href="https://rdrr.io/r/stats/integrate.html" class="external-link">integrate()</a></code>.  Note
 that this call is made in scaled coordinates, i.e. pressure is divided by
 its maximum value, and dz/dp is also divided by its maximum.</p></dd>
+
+
 <dt>eos</dt>
 <dd><p>equation of state, either <code>"unesco"</code> or <code>"gsw"</code>.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>In the first form, a list containing <code>distance</code>, the distance
+    
+
+<p>In the first form, a list containing <code>distance</code>, the distance
 (km( from the first station in the section and <code>height</code>, the dynamic
 height (m). In the second form, a single value, containing the
 dynamic height (m).</p>
@@ -241,7 +252,7 @@ Press, New York, 662 pp.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
       </footer></div>

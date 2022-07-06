@@ -21,7 +21,7 @@ then be used to remove such data."><!-- mathjax --><script src="https://cdnjs.cl
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-8</span>
       </span>
     </div>
 
@@ -101,16 +101,28 @@ then be used to remove such data.</p>
     <h2>Arguments</h2>
     <dl><dt>x</dt>
 <dd><p>an <a href="adp-class.html">adp</a> object containing bottom ranges.</p></dd>
+
+
 <dt>fields</dt>
 <dd><p>a variable contained within <code>x</code> indicating which field to flag.</p></dd>
+
+
 <dt>df</dt>
 <dd><p>the degrees of freedom to use during the smoothing spline operation.</p></dd>
+
+
 <dt>trim</dt>
 <dd><p>a scale factor for boundary trimming (see “Details”).</p></dd>
+
+
 <dt>good</dt>
 <dd><p>number stored in flags to indicate good data.</p></dd>
+
+
 <dt>bad</dt>
 <dd><p>number stored in flags to indicate bad data.</p></dd>
+
+
 <dt>debug</dt>
 <dd><p>an integer specifying whether debugging information is
 to be printed during the processing. This is a general parameter that
@@ -119,10 +131,13 @@ turns off the printing, while higher values suggest that more information
 be printed. If one function calls another, it usually reduces the value of
 <code>debug</code> first, so that a user can often obtain deeper debugging
 by specifying higher <code>debug</code> values.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p><code>adpFlagPastBoundary</code> returns an <a href="adp-class.html">adp</a> object with flags
+    
+
+<p><code>adpFlagPastBoundary</code> returns an <a href="adp-class.html">adp</a> object with flags
 adjusted in the specified fields if data are beyond the water column boundary.</p>
     </div>
     <div id="details">
@@ -194,7 +209,7 @@ multiplied by \(1-trim\).</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
       </footer></div>

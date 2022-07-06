@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-8</span>
       </span>
     </div>
 
@@ -100,19 +100,31 @@
 <dd><p>numeric vector of longitudes of points to be plotted, or an object of
 class <code>topo</code> (see <a href="topo-class.html">topo</a>), in which case
 <code>longitude</code>, <code>latitude</code> and <code>z</code> are inferred from that object.</p></dd>
+
+
 <dt>latitude</dt>
 <dd><p>numeric vector of latitudes of points to be plotted.</p></dd>
+
+
 <dt>z</dt>
 <dd><p>matrix to be contoured. The number of rows and columns in <code>z</code>
 must equal the lengths of <code>longitude</code> and <code>latitude</code>, respectively.</p></dd>
+
+
 <dt>nlevels</dt>
 <dd><p>number of contour levels, if and only if <code>levels</code> is not supplied.</p></dd>
+
+
 <dt>levels</dt>
 <dd><p>vector of contour levels.</p></dd>
+
+
 <dt>labcex</dt>
 <dd><p><code>cex</code> value used for contour labelling. As with
 <code><a href="https://rdrr.io/r/graphics/contour.html" class="external-link">contour()</a></code>, this is an absolute size, not a multiple of
 <code><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></code><code>("cex")</code>.</p></dd>
+
+
 <dt>drawlabels</dt>
 <dd><p>logical value or vector indicating whether to draw contour
 labels.  If the length of <code>drawlabels</code> is less than the number of
@@ -123,6 +135,8 @@ closest to horizontal on the page. First, though, the region underneath
 the label is filled with the colour given by <code><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></code><code>("bg")</code>.
 See “Limitations” for notes on the status of contour
 labelling, and its limitations.</p></dd>
+
+
 <dt>underlay</dt>
 <dd><p>character value relating to handling labels. If
 this equals <code>"erase"</code> (which is the default), then the contour line
@@ -133,16 +147,24 @@ unlabelled contours. On the other hand, if <code>underlay</code> equals
 <code>"interrupt"</code>, then the contour line is interrupted in the
 region of the label, which is closer to the scheme used by the
 base <code><a href="https://rdrr.io/r/graphics/contour.html" class="external-link">contour()</a></code> function.</p></dd>
+
+
 <dt>col</dt>
 <dd><p>colour of the contour line, as for <code><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></code><code>("col")</code>,
 except here <code>col</code> gets lengthened by calling <code><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep()</a></code>,
 so that individual contours can be coloured distinctly.</p></dd>
+
+
 <dt>lty</dt>
 <dd><p>type of the contour line, as for <code><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></code><code>("lty")</code>,
 except for lengthening, as described for <code>col</code>.</p></dd>
+
+
 <dt>lwd</dt>
 <dd><p>width of the contour line, as for <code><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></code><code>("lwd")</code>,
 except for lengthening, as described for <code>col</code> and <code>lty</code>.</p></dd>
+
+
 <dt>debug</dt>
 <dd><p>an integer specifying whether debugging information is
 to be printed during the processing. This is a general parameter that
@@ -151,6 +173,7 @@ turns off the printing, while higher values suggest that more information
 be printed. If one function calls another, it usually reduces the value of
 <code>debug</code> first, so that a user can often obtain deeper debugging
 by specifying higher <code>debug</code> values.</p></dd>
+
 </dl></div>
     <div id="details">
     <h2>Details</h2>
@@ -220,7 +243,7 @@ than in <code><a href="https://rdrr.io/r/graphics/contour.html" class="external-
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
       </footer></div>

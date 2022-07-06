@@ -23,7 +23,7 @@ entering then all)."><!-- mathjax --><script src="https://cdnjs.cloudflare.com/a
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-8</span>
       </span>
     </div>
 
@@ -90,20 +90,37 @@ entering then all).</p>
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">read.argo.copernicus</span><span class="op">(</span><span class="va">file</span>, debug <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"oceDebug"</span><span class="op">)</span>, <span class="va">processingLog</span>, <span class="va">...</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">read.argo.copernicus</span><span class="op">(</span>
+  <span class="va">file</span>,
+  encoding <span class="op">=</span> <span class="cn">NA</span>,
+  debug <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"oceDebug"</span><span class="op">)</span>,
+  <span class="va">processingLog</span>,
+  <span class="va">...</span>
+<span class="op">)</span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>file</dt>
 <dd><p>A character string giving the name of the file to load.</p></dd>
+
+
+<dt>encoding</dt>
+<dd><p>ignored.</p></dd>
+
+
 <dt>debug</dt>
 <dd><p>A flag that turns on debugging.  Set to 1 to get a moderate
 amount of debugging information, or 0 (the default) for silent operation.</p></dd>
+
+
 <dt>processingLog</dt>
 <dd><p>ignored.</p></dd>
+
+
 <dt>...</dt>
 <dd><p>ignored.</p></dd>
+
 </dl></div>
     <div id="references">
     <h2>References</h2>
@@ -148,7 +165,7 @@ Situ NetCDF Format Manual (version V1.43). Pdf. Copernicus in situ TAC, 2021.
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
       </footer></div>

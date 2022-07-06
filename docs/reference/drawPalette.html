@@ -23,7 +23,7 @@ which will have palettes and others not."><!-- mathjax --><script src="https://c
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-8</span>
       </span>
     </div>
 
@@ -120,30 +120,46 @@ which will have palettes and others not.</p>
 <dd><p>two-element vector containing the lower and upper limits of z.
 This may also be a vector of any length exceeding 1, in which case its range
 is used.</p></dd>
+
+
 <dt>zlab</dt>
 <dd><p>label for the palette scale.</p></dd>
+
+
 <dt>breaks</dt>
 <dd><p>optional numeric vector of the z values for breaks in the color scheme.
 If <code>colormap</code> is provided, it takes precedence over <code>breaks</code> and <code>col</code>.</p></dd>
+
+
 <dt>col</dt>
 <dd><p>optional argument, either a vector of colors corresponding to the breaks, of length
 1 less than the number of breaks, or a function specifying colors.
 If <code>col</code> is not provided, and if <code>colormap</code> is also not provided, then <code>col</code>
 defaults to <code><a href="oceColorsViridis.html">oceColorsViridis()</a></code>.
 If <code>colormap</code> is provided, it takes precedence over <code>breaks</code> and <code>col</code>.</p></dd>
+
+
 <dt>colormap</dt>
 <dd><p>an optional color map as created by <code><a href="colormap.html">colormap()</a></code>.
 If <code>colormap</code> is provided, it takes precedence over <code>breaks</code> and <code>col</code>.</p></dd>
+
+
 <dt>mai</dt>
 <dd><p>margins for palette, as defined in the usual way; see
 <code><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par()</a></code>.  If not given, reasonable values are inferred from the
 existence of a non-blank <code>zlab</code>.</p></dd>
+
+
 <dt>cex</dt>
 <dd><p>numeric character expansion value for text labels</p></dd>
+
+
 <dt>pos</dt>
 <dd><p>an integer indicating the location of the palette within the
 plotting area, 1 for near the bottom, 2 for near the left-hand side, 3 for
 near the top side, and 4 (the default) for near the right-hand side.</p></dd>
+
+
 <dt>las</dt>
 <dd><p>optional argument, passed to <code><a href="https://rdrr.io/r/graphics/axis.html" class="external-link">axis()</a></code>, to control the orientation
 of numbers along the axis. As explained in the help for <code><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par()</a></code>, the
@@ -154,47 +170,72 @@ and <code>las=3</code> means to vertical (regardless of axis orientation).  Note
 the automatic computation of margin spacing parameter <code>mai</code>
 assumes that <code>las=0</code>, and so for other cases, the user may need to
 specify the <code>mai</code> argument directly.</p></dd>
+
+
 <dt>labels</dt>
 <dd><p>optional vector of labels for ticks on palette axis (must
 correspond with <code>at</code>)</p></dd>
+
+
 <dt>at</dt>
 <dd><p>optional vector of positions for the <code>label</code>s</p></dd>
+
+
 <dt>levels</dt>
 <dd><p>optional contour levels, in preference to <code>breaks</code>
 values, to be added to the image if <code>drawContours</code> is <code>TRUE</code>.</p></dd>
+
+
 <dt>drawContours</dt>
 <dd><p>logical value indicating whether to draw contours on the
 palette, at the color breaks.</p></dd>
+
+
 <dt>plot</dt>
 <dd><p>logical value indicating whether to plot the palette, the
 default, or whether to just alter the margins to make space for where the
 palette would have gone.  The latter case may be useful in lining up plots,
 as in example 1 of “Examples”.</p></dd>
+
+
 <dt>fullpage</dt>
 <dd><p>logical value indicating whether to draw the palette filling
 the whole plot width (apart from <code>mai</code>, of course).  This can be
 helpful if the palette panel is to be created with <code><a href="https://rdrr.io/r/graphics/layout.html" class="external-link">layout()</a></code>, as
 illustrated in the “Examples”.</p></dd>
+
+
 <dt>drawTriangles</dt>
 <dd><p>logical value indicating whether to draw triangles on
 the top and bottom of the palette.  If a single value is provided, it applies
 to both ends of the palette.  If a pair is provided, the first refers to the
 lower range of the palette, and the second to the upper range.</p></dd>
+
+
 <dt>axisPalette</dt>
 <dd><p>optional replacement function for <code><a href="https://rdrr.io/r/graphics/axis.html" class="external-link">axis()</a></code>, e.g.
 for exponential notation on large or small values.</p></dd>
+
+
 <dt>tformat</dt>
 <dd><p>optional format for axis labels, if the variable is a time
 type (ignored otherwise).</p></dd>
+
+
 <dt>debug</dt>
 <dd><p>a flag that turns on debugging.  Set to 1 to get a moderate
 amount of debugging information, or to 2 to get more.</p></dd>
+
+
 <dt>...</dt>
 <dd><p>optional arguments passed to plotting functions.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>None.</p>
+    
+
+<p>None.</p>
     </div>
     <div id="details">
     <h2>Details</h2>
@@ -270,7 +311,7 @@ palette-plot pair.  This method is illustrated in “Examples”.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
       </footer></div>

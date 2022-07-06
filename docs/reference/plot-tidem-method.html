@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-8</span>
       </span>
     </div>
 
@@ -96,12 +96,18 @@
     <h2>Arguments</h2>
     <dl><dt>x</dt>
 <dd><p>a <a href="tidem-class.html">tidem</a> object.</p></dd>
+
+
 <dt>which</dt>
 <dd><p>integer flag indicating plot type, 1 for stair-case spectral, 2
 for spike spectral.</p></dd>
+
+
 <dt>constituents</dt>
 <dd><p>character vector holding the names of constituents that are
 to be drawn and labelled. If <code>NULL</code>, then no constituents will be shown.</p></dd>
+
+
 <dt>sides</dt>
 <dd><p>an integer vector of length equal to that of <code>constituents</code>,
 designating the side on which the constituent labels are to be drawn. As in
@@ -109,20 +115,31 @@ all R graphics, the value <code>1</code> indicates the bottom of the plot, and
 <code>3</code> indicates the top. If <code>sides=NULL</code>, the default, then all labels
 are drawn at the top. Any value of <code>sides</code> that is not either 1 or 3
 is converted to 3.</p></dd>
+
+
 <dt>col</dt>
 <dd><p>a character vector naming colors to be used for <code>constituents</code>.
 Ignored if <code>sides=3</code>. Repeated to be of the same length as
 <code>constituents</code>, otherwise.</p></dd>
+
+
 <dt>log</dt>
 <dd><p>if set to "<code>x</code>", the frequency axis will be logarithmic.</p></dd>
+
+
 <dt>mgp</dt>
 <dd><p>3-element numerical vector to use for <code>par(mgp)</code>, and also
 for <code>par(mar)</code>, computed from this.  The default is tighter than the R
 default, in order to use more space for the data and less for the axes.</p></dd>
+
+
 <dt>mar</dt>
 <dd><p>value to be used with <code>[</code>par<code>]("mar")</code>.</p></dd>
+
+
 <dt>...</dt>
 <dd><p>optional arguments passed to plotting functions.</p></dd>
+
 </dl></div>
     <div id="historical-note">
     <h2>Historical note</h2>
@@ -204,7 +221,7 @@ because the more useful argument <code>constituents</code> had been added.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
       </footer></div>

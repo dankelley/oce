@@ -23,7 +23,7 @@ is used by read.ctd.odf for CTD data, etc."><!-- mathjax --><script src="https:/
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-8</span>
       </span>
     </div>
 
@@ -95,6 +95,7 @@ is used by <code>read.ctd.odf</code> for CTD data, etc.</p>
   columns <span class="op">=</span> <span class="cn">NULL</span>,
   header <span class="op">=</span> <span class="st">"list"</span>,
   exclude <span class="op">=</span> <span class="cn">NULL</span>,
+  encoding <span class="op">=</span> <span class="st">"latin1"</span>,
   debug <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"oceDebug"</span><span class="op">)</span>
 <span class="op">)</span></code></pre></div>
     </div>
@@ -103,6 +104,8 @@ is used by <code>read.ctd.odf</code> for CTD data, etc.</p>
     <h2>Arguments</h2>
     <dl><dt>file</dt>
 <dd><p>the file containing the data.</p></dd>
+
+
 <dt>columns</dt>
 <dd><p>An optional <a href="https://rdrr.io/r/base/list.html" class="external-link">list</a> that can be used to convert unrecognized
 data names to resultant variable names.  For example,
@@ -110,6 +113,8 @@ data names to resultant variable names.  For example,
 states that a short-name of <code>"salt"</code> represents salinity, and that the unit is
 as indicated. This is passed to <code><a href="cnvName2oceName.html">cnvName2oceName()</a></code> or <code><a href="ODFNames2oceNames.html">ODFNames2oceNames()</a></code>,
 as appropriate, and takes precedence over the lookup table in that function.</p></dd>
+
+
 <dt>header</dt>
 <dd><p>An indication of whether, or how, to store the entire
 ODF file header in the <code>metadata</code> slot of the returned object.
@@ -130,6 +135,8 @@ changed from <code>NULL</code> to <code>"list"</code>; in addition, the resultan
 list was made to contain every single item in the ODF header, with
 <code><a href="unduplicateNames.html">unduplicateNames()</a></code> being used to append integers to
 distinguish between repeated names in the ODF format.</p></dd>
+
+
 <dt>exclude</dt>
 <dd><p>either a character value holding a regular
 expression that is used with <code><a href="https://rdrr.io/r/base/grep.html" class="external-link">grep()</a></code> to remove lines from the
@@ -140,6 +147,15 @@ thousands of lines that indicate details that are may be of
 little value in processing.  For example, some files have thousands
 of lines that would be excluded by using
 <code>exclude="PROCESS='Nulled the .* value"</code> in the function call.</p></dd>
+
+
+<dt>encoding</dt>
+<dd><p>a character value that indicates the encoding to be used for
+this data file, if it is textual.  The default value for most functions is
+<code>"latin1"</code>, which seems to be suitable for files containing text written in
+English and French.</p></dd>
+
+
 <dt>debug</dt>
 <dd><p>an integer specifying whether debugging information is
 to be printed during the processing. This is a general parameter that
@@ -148,10 +164,13 @@ turns off the printing, while higher values suggest that more information
 be printed. If one function calls another, it usually reduces the value of
 <code>debug</code> first, so that a user can often obtain deeper debugging
 by specifying higher <code>debug</code> values.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>An <a href="oce-class.html">oce</a> object.</p>
+    
+
+<p>An <a href="oce-class.html">oce</a> object.</p>
     </div>
     <div id="details">
     <h2>Details</h2>
@@ -293,7 +312,7 @@ package is released by the Canadian Department of Fisheries and Oceans.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
       </footer></div>

@@ -18,7 +18,7 @@ results with less ambiguity in axis labels."><!-- mathjax --><script src="https:
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-8</span>
       </span>
     </div>
 
@@ -104,16 +104,26 @@ results with less ambiguity in axis labels.</p>
     <h2>Arguments</h2>
     <dl><dt>side</dt>
 <dd><p>as for <code><a href="https://rdrr.io/r/graphics/axis.POSIXct.html" class="external-link">axis.POSIXct()</a></code>.</p></dd>
+
+
 <dt>x</dt>
 <dd><p>as for <code><a href="https://rdrr.io/r/graphics/axis.POSIXct.html" class="external-link">axis.POSIXct()</a></code>.</p></dd>
+
+
 <dt>at</dt>
 <dd><p>as for <code><a href="https://rdrr.io/r/graphics/axis.POSIXct.html" class="external-link">axis.POSIXct()</a></code>.</p></dd>
+
+
 <dt>tformat</dt>
 <dd><p>as <code>format</code> for <code><a href="https://rdrr.io/r/graphics/axis.POSIXct.html" class="external-link">axis.POSIXct()</a></code> for now, but
 may eventually have new features for multiline labels, e.g. day on one line
 and month on another.</p></dd>
+
+
 <dt>labels</dt>
 <dd><p>as for <code><a href="https://rdrr.io/r/graphics/axis.POSIXct.html" class="external-link">axis.POSIXct()</a></code>.</p></dd>
+
+
 <dt>drawTimeRange</dt>
 <dd><p>Optional indication of whether/how to draw the time range
 in the margin on the side of the the plot opposite the time axis. If this is
@@ -127,30 +137,49 @@ of an empty string, if this option has not been set). The timezone will
 be indicated if the time range is under a week.  For preliminary work, it makes
 sense to use <code>drawTimeRange=TRUE</code>, but for published work it can be better
 to drop this label and indicate something about the time in the figure caption.</p></dd>
+
+
 <dt>abbreviateTimeRange</dt>
 <dd><p>boolean, <code>TRUE</code> to abbreviate the second
 number in the time range, e.g. dropping the year if it is the same in the
 first number.</p></dd>
+
+
 <dt>drawFrequency</dt>
 <dd><p>boolean, <code>TRUE</code> to show the frequency of sampling
 in the data</p></dd>
+
+
 <dt>cex.axis, cex.lab, cex.main</dt>
 <dd><p>character expansion factors for axis numbers, axis names and plot titles; see <code><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par()</a></code>.</p></dd>
+
+
 <dt>mar</dt>
 <dd><p>value for <code>par(mar)</code> for axis</p></dd>
+
+
 <dt>mgp</dt>
 <dd><p>value for <code>par(mgp)</code> for axis</p></dd>
+
+
 <dt>main</dt>
 <dd><p>title of plot</p></dd>
+
+
 <dt>debug</dt>
 <dd><p>a flag that turns on debugging.  Set to 1 to get a moderate
 amount of debugging information, or to 2 to get more.</p></dd>
+
+
 <dt>...</dt>
 <dd><p>as for <code><a href="https://rdrr.io/r/graphics/axis.POSIXct.html" class="external-link">axis.POSIXct()</a></code>.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>A vector of times corresponding to axis ticks is returned silently.</p>
+    
+
+<p>A vector of times corresponding to axis ticks is returned silently.</p>
     </div>
     <div id="details">
     <h2>Details</h2>
@@ -200,7 +229,7 @@ that the tick mark scheme cannot (presently) be controlled.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
       </footer></div>

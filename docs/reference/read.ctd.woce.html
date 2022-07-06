@@ -21,7 +21,7 @@ the line.'><!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/m
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-8</span>
       </span>
     </div>
 
@@ -93,6 +93,7 @@ the line.</p>
   <span class="va">missingValue</span>,
   deploymentType <span class="op">=</span> <span class="st">"unknown"</span>,
   monitor <span class="op">=</span> <span class="cn">FALSE</span>,
+  encoding <span class="op">=</span> <span class="st">"latin1"</span>,
   debug <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"oceDebug"</span><span class="op">)</span>,
   <span class="va">processingLog</span>,
   <span class="va">...</span>
@@ -108,18 +109,27 @@ wildcard (e.g. <code>"*.cnv"</code> or <code>"*.csv"</code>) in which case the r
 value is a vector containing CTD objects created by reading the files from
 <code><a href="https://rdrr.io/r/base/list.files.html" class="external-link">list.files()</a></code> with <code>pattern</code> set to the specified wildcard
 pattern.</p></dd>
+
+
 <dt>columns</dt>
 <dd><p>an optional <a href="https://rdrr.io/r/base/list.html" class="external-link">list</a> that can be used to convert unrecognized
 data names to resultant variable names.  This is used only by
 <code><a href="read.ctd.sbe.html">read.ctd.sbe()</a></code> and <code><a href="read.ctd.odf.html">read.ctd.odf()</a></code>. For example,
 if a data file named salinity as <code>"SAL"</code>, then using</p>
-<p></p><div class="sourceCode"><pre><code></code></pre><p></p></div>
+<p></p><div class="sourceCode"><pre><code><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>d <span class="ot">&lt;-</span> <span class="fu">read.ctd</span>(f, <span class="at">columns=</span><span class="fu">list</span>(</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    <span class="at">salinity=</span><span class="fu">list</span>(<span class="at">name=</span><span class="st">"SAL"</span>,</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>                  <span class="at">unit=</span><span class="fu">list</span>(<span class="at">unit=</span><span class="fu">expression</span>(),</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>                  <span class="at">scale=</span><span class="st">"PSS-78"</span>))))</span></code></pre><p></p></div>
 <p>would assign the <code>"SAL"</code> column to the <code>salinity</code> entry in the data
 slot of the CTD object returned by the <code>read.*</code> function.</p></dd>
+
+
 <dt>station</dt>
 <dd><p>optional character string containing an identifying name or
 number for the station. This can be useful if the routine cannot determine the
 name automatically, or if another name is preferred.</p></dd>
+
+
 <dt>missingValue</dt>
 <dd><p>optional missing-value flag; data matching this value will
 be set to <code>NA</code> upon reading. If this is provided, then it overrules any
@@ -133,6 +143,8 @@ whether salinity and/or temperature has a minimum that is under -8 in value;
 this should catch common values in files, without false positives. A warning
 will be issued in this case, and a note inserted in the processing log of
 the return value.</p></dd>
+
+
 <dt>deploymentType</dt>
 <dd><p>character string indicating the type of deployment. Use
 <code>"unknown"</code> if this is not known, <code>"profile"</code> for a profile (in
@@ -142,25 +154,43 @@ the device is installed on a fixed mooring, <code>"thermosalinograph"</code> (or
 <code>"tsg"</code>) if the device is mounted on a moving vessel, to record
 near-surface properties, or <code>"towyo"</code> if the device is repeatedly
 lowered and raised.</p></dd>
+
+
 <dt>monitor</dt>
 <dd><p>boolean, set to <code>TRUE</code> to provide an indication of
 progress.  This is useful if <code>filename</code> is a wildcard.</p></dd>
+
+
+<dt>encoding</dt>
+<dd><p>a character value that indicates the encoding to be used for
+this data file, if it is textual.  The default value for most functions is
+<code>"latin1"</code>, which seems to be suitable for files containing text written in
+English and French.</p></dd>
+
+
 <dt>debug</dt>
 <dd><p>an integer specifying whether debugging information is
 to be printed during the processing. This is a general parameter that
 is used by many <code>oce</code> functions. Generally, setting <code>debug=0</code>
 turns off the printing, while higher values suggest that more information
 be printed.</p></dd>
+
+
 <dt>processingLog</dt>
 <dd><p>if provided, the action item to be stored in the log.
 This is typically only provided for internal calls; the default that it provides is
 better for normal calls by a user.</p></dd>
+
+
 <dt>...</dt>
 <dd><p>additional arguments, passed to called routines.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>This function returns a <a href="ctd-class.html">ctd</a> object.</p>
+    
+
+<p>This function returns a <a href="ctd-class.html">ctd</a> object.</p>
     </div>
     <div id="references">
     <h2>References</h2>
@@ -236,7 +266,7 @@ although that link is no longer working as of December 2020.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
       </footer></div>

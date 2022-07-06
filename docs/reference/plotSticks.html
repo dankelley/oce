@@ -24,7 +24,7 @@ a good idea to smooth u and v before using this function."><!-- mathjax --><scri
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-8</span>
       </span>
     </div>
 
@@ -113,39 +113,62 @@ a good idea to smooth <code>u</code> and <code>v</code> before using this functi
     <h2>Arguments</h2>
     <dl><dt>x</dt>
 <dd><p>x coordinates of stick origins.</p></dd>
+
+
 <dt>y</dt>
 <dd><p>y coordinates of stick origins.  If not supplied, 0 will be used;
 if length is less than that of x, the first number is repeated and the rest
 are ignored.</p></dd>
+
+
 <dt>u</dt>
 <dd><p>x component of stick length.</p></dd>
+
+
 <dt>v</dt>
 <dd><p>y component of stick length.</p></dd>
+
+
 <dt>yscale</dt>
 <dd><p>scale from u and v to y (see “Description”).</p></dd>
+
+
 <dt>add</dt>
 <dd><p>boolean, set <code>TRUE</code> to add to an existing plot.</p></dd>
+
+
 <dt>length</dt>
 <dd><p>value to be provided to <code><a href="https://rdrr.io/r/graphics/arrows.html" class="external-link">arrows()</a></code>; here, we set a
 default that is smaller than normally used, because these plots tend to be
 crowded in oceanographic applications.</p></dd>
+
+
 <dt>mgp</dt>
 <dd><p>3-element numerical vector to use for <code><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></code><code>("mgp")</code>. Note
 that the default <code>mar</code> is computed from the <code>mgp</code> value.
 The default is tighter than the R
 default, in order to use more space for the data and less for the axes.</p></dd>
+
+
 <dt>mar</dt>
 <dd><p>value to be used with <code><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></code><code>("mar")</code>.</p></dd>
+
+
 <dt>xlab, ylab</dt>
 <dd><p>labels for the plot axes. The default is not to label them.</p></dd>
+
+
 <dt>col</dt>
 <dd><p>color of sticks, in either numerical or character format. This is
 made to have length matching that of <code>x</code> by a call to <code><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep()</a></code>,
 which can be handy in e.g. colorizing a velocity field by day.</p></dd>
+
+
 <dt>...</dt>
 <dd><p>graphical parameters passed down to <code><a href="https://rdrr.io/r/graphics/arrows.html" class="external-link">arrows()</a></code>.  It
 is common, for example, to use smaller arrow heads than <code><a href="https://rdrr.io/r/graphics/arrows.html" class="external-link">arrows()</a></code>
 uses; see “Examples”.</p></dd>
+
 </dl></div>
     <div id="author">
     <h2>Author</h2>
@@ -190,7 +213,7 @@ uses; see “Examples”.</p></dd>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
       </footer></div>

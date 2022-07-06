@@ -18,7 +18,7 @@ the top-left margin."><!-- mathjax --><script src="https://cdnjs.cloudflare.com/
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-8</span>
       </span>
     </div>
 
@@ -124,22 +124,34 @@ the top-left margin.</p>
     <dl><dt>x</dt>
 <dd><p>the times of observations.  If this is not a <a href="https://rdrr.io/r/base/DateTimeClasses.html" class="external-link">POSIXt</a> object, then an
 attempt is made to convert it to one using <code><a href="https://rdrr.io/r/base/as.POSIXlt.html" class="external-link">as.POSIXct()</a></code>.</p></dd>
+
+
 <dt>y</dt>
 <dd><p>the observations.</p></dd>
+
+
 <dt>type</dt>
 <dd><p>plot type, <code>"l"</code> for lines, <code>"p"</code> for points.</p></dd>
+
+
 <dt>xlim</dt>
 <dd><p>optional limit for x axis.  This has an additional effect,
 beyond that for conventional R functions: it effectively windows the data,
 so that autoscaling will yield limits for y that make sense within the
 window.</p></dd>
+
+
 <dt>ylim</dt>
 <dd><p>optional limit for y axis.</p></dd>
+
+
 <dt>log</dt>
 <dd><p>a character value that must be either empty (the default) for linear
 <code>y</code> axis, or <code>"y"</code> for logarithmic <code>y</code> axis.  (Unlike
 <code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot.default()</a></code> etc., <code>oce.plot.ts</code> does not permit
 logarithmic time, or <code>x</code> axis.)</p></dd>
+
+
 <dt>logStyle</dt>
 <dd><p>a character value that indicates how to draw the y axis, if
 <code>log="y"</code>.  If it is <code>"r"</code> (the default) then the conventional R style is used,
@@ -151,17 +163,27 @@ tick marks are used for integral powers of 10, with smaller tick marks
 at integral multiples of those powers, and with labels that use exponential
 format for values above 100 or below 0.01.  The value of <code>logStyle</code> is passed
 to <code><a href="oceAxis.html">oceAxis()</a></code>, which draws the axis.</p></dd>
+
+
 <dt>flipy</dt>
 <dd><p>Logical, with <code>TRUE</code> indicating that the graph
 should have the y axis reversed, i.e. with smaller values at
 the bottom of the page.</p></dd>
+
+
 <dt>xlab</dt>
 <dd><p>name for x axis; defaults to <code>""</code>.</p></dd>
+
+
 <dt>ylab</dt>
 <dd><p>name for y axis; defaults to the plotted item.</p></dd>
+
+
 <dt>drawTimeRange</dt>
 <dd><p>an optional indication of whether/how to draw a time range,
 in the top-left margin of the plot; see <code><a href="oce.axis.POSIXct.html">oce.axis.POSIXct()</a></code> for details.</p></dd>
+
+
 <dt>simplify</dt>
 <dd><p>an integer value that indicates
 whether to speed up <code>type="l"</code> plots by replacing the data
@@ -179,37 +201,55 @@ has exactly 2 data points.
 A warning is printed if this replacement is done.
 The default value of <code>simplify</code> means that cases with
 under 2560 visible points are plotted conventionally.</p></dd>
+
+
 <dt>fill</dt>
 <dd><p>boolean, set <code>TRUE</code> to fill the curve to zero (which it
 does incorrectly if there are missing values in <code>y</code>).</p></dd>
+
+
 <dt>col</dt>
 <dd><p>The colours for points (if <code>type=="p"</code>) or lines (if <code>type=="l"</code>).
 For the <code>type="p"</code> case,
 if there are fewer <code>col</code> values than there are <code>x</code> values, then the <code>col</code> values
 are recycled in the standard fashion.
 For the <code>type="l"</code> case, the line is plotted in the first colour specified.</p></dd>
+
+
 <dt>pch</dt>
 <dd><p>character code, used if <code>type=="p"</code>.
 If there are fewer <code>pch</code> values than there are <code>x</code> values, then the <code>pch</code> values
 are recycled in the standard fashion.
 See <code><a href="https://rdrr.io/r/graphics/points.html" class="external-link">points()</a></code> for the possible values for <code>pch</code>.</p></dd>
+
+
 <dt>cex</dt>
 <dd><p>numeric character expansion factor for points on plots, ignored unless
 <code>type</code> is <code>"p"</code>.  This may be a single number, applied to all points, or
 a vector of numbers to be applied to the points in sequence.  If there are
 fewer <code>pch</code> values than there are <code>x</code> values, then the <code>pch</code> values are recycled
 in the standard fashion. See <code><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par()</a></code> for more on <code>cex</code>.</p></dd>
+
+
 <dt>cex.axis, cex.lab, cex.main</dt>
 <dd><p>numeric character expansion factors for axis numbers,
 axis names and plot titles; see <code><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par()</a></code>.</p></dd>
+
+
 <dt>xaxs</dt>
 <dd><p>control x axis ending; see <code><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></code><code>("xaxs")</code>.</p></dd>
+
+
 <dt>yaxs</dt>
 <dd><p>control y axis ending; see <code><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></code><code>("yaxs")</code>.</p></dd>
+
+
 <dt>mgp</dt>
 <dd><p>3-element numerical vector to use for <code>par(mgp)</code>, and also
 for <code>par(mar)</code>, computed from this.  The default is tighter than the R
 default, in order to use more space for the data and less for the axes.</p></dd>
+
+
 <dt>mar</dt>
 <dd><p>value to be used with <code><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></code><code>("mar")</code> to set margins.
 The default value uses significantly tighter margins than is the norm in R,
@@ -218,39 +258,64 @@ which gives more space for the data.  However, in doing this, the existing
 been set by a previous call to <code><a href="drawPalette.html">drawPalette()</a></code>.  To get plot with
 a palette, first call <code><a href="drawPalette.html">drawPalette()</a></code>, then call
 <code>oce.plot.ts</code> with <code>mar=par("mar")</code>.</p></dd>
+
+
 <dt>main</dt>
 <dd><p>title of plot.</p></dd>
+
+
 <dt>despike</dt>
 <dd><p>boolean flag that can turn on despiking with
 <code><a href="despike.html">despike()</a></code>.</p></dd>
+
+
 <dt>axes</dt>
 <dd><p>boolean, set to <code>TRUE</code> to get axes plotted</p></dd>
+
+
 <dt>tformat</dt>
 <dd><p>optional format for labels on the time axis</p></dd>
+
+
 <dt>marginsAsImage</dt>
 <dd><p>boolean indicating whether to set the right-hand
 margin to the width normally taken by an image drawn with
 <code><a href="imagep.html">imagep()</a></code>.</p></dd>
+
+
 <dt>grid</dt>
 <dd><p>if <code>TRUE</code>, a grid will be drawn for each panel.  (This
 argument is needed, because calling <code><a href="https://rdrr.io/r/graphics/grid.html" class="external-link">grid()</a></code> after doing a
 sequence of plots will not result in useful results for the individual
 panels.</p></dd>
+
+
 <dt>grid.col</dt>
 <dd><p>color of grid</p></dd>
+
+
 <dt>grid.lty</dt>
 <dd><p>line type of grid</p></dd>
+
+
 <dt>grid.lwd</dt>
 <dd><p>line width of grid</p></dd>
+
+
 <dt>debug</dt>
 <dd><p>a flag that turns on debugging.  Set to 1 to get a moderate
 amount of debugging information, or to 2 to get more.</p></dd>
+
+
 <dt>...</dt>
 <dd><p>graphical parameters passed down to <code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code>.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>A list is silently returned, containing <code>xat</code> and <code>yat</code>,
+    
+
+<p>A list is silently returned, containing <code>xat</code> and <code>yat</code>,
 values that can be used by <code><a href="oce.grid.html">oce.grid()</a></code> to add a grid to the plot.</p>
     </div>
     <div id="details">
@@ -299,7 +364,7 @@ The time axis is drawn with <code><a href="oce.axis.POSIXct.html">oce.axis.POSIX
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
       </footer></div>

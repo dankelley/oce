@@ -18,7 +18,7 @@ direction or in both the vertical and lateral directions."><!-- mathjax --><scri
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-8</span>
       </span>
     </div>
 
@@ -106,12 +106,18 @@ direction or in both the vertical and lateral directions.</p>
 <dd><p>A <code>section</code> object containing the section to be smoothed.
 For <code>method="spline"</code>, the pressure levels must match for each station in
 the section.</p></dd>
+
+
 <dt>method</dt>
 <dd><p>A string or a function that specifies the method to use; see ‘Details’.</p></dd>
+
+
 <dt>x</dt>
 <dd><p>Optional numerical vector, of the same length as the number of stations in <code>section</code>,
 which will be used in gridding in the lateral direction. If not provided, this
 defaults to <code><a href="geodDist.html">geodDist</a></code><code>(section)</code>.</p></dd>
+
+
 <dt>xg, xgl</dt>
 <dd><p>ignored in the <code>method="spline"</code> case, but passed to
 <code><a href="interpBarnes.html">interpBarnes()</a></code> if <code>method="barnes"</code>, to kriging
@@ -126,6 +132,8 @@ returned <code>section</code> object.)
 Alternatively, if <code>xgl</code> is supplied, the x grid is established using <code><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq()</a></code>,
 to span the data with <code>xgl</code> elements. If neither of these is supplied, the output
 x grid will equal the input x grid.</p></dd>
+
+
 <dt>yg, ygl</dt>
 <dd><p>similar to <code>xg</code> and <code>xgl</code>, but for pressure. (Note that
 trimming to the input <code>y</code> is not done, as it is for <code>xg</code> and <code>x</code>.)
@@ -134,6 +142,8 @@ If <code>ygl</code> was not given, then a grid is constructed to span the pressu
 of that deepest station with <code>ygl</code> elements. On the other hand,
 if <code>ygl</code> was not given, then the y grid will constructed from the
 pressure levels in the deepest station.</p></dd>
+
+
 <dt>xr, yr</dt>
 <dd><p>influence ranges in x (along-section distance) and y (pressure),
 passed to <code><a href="interpBarnes.html">interpBarnes()</a></code> if <code>method="barnes"</code> or to
@@ -143,12 +153,16 @@ the pressure range. Since these defaults have changed over the evolution
 of <code>sectionSmooth</code>, analysts ought to supply <code>xr</code> and <code>yr</code>
 in the function call, tailoring them to particular applications, and
 making the code more resistant to changes in <code>sectionSmooth</code>.</p></dd>
+
+
 <dt>df</dt>
 <dd><p>Degree-of-freedom parameter, passed to <code><a href="https://rdrr.io/r/stats/smooth.spline.html" class="external-link">smooth.spline()</a></code>
 if <code>method="spline"</code>, and ignored otherwise. If <code>df</code> is not provided,
 it defaults to 1/5-th of the number of stations containing non-<code>NA</code>
 data at the particular pressure level being processed, as <code>sectionSmooth</code>
 works its way through the water column.</p></dd>
+
+
 <dt>gamma, iterations, trim, pregrid</dt>
 <dd><p>Values passed to
 <code><a href="interpBarnes.html">interpBarnes()</a></code>, if <code>method="barnes"</code>, and
@@ -160,16 +174,23 @@ ignored otherwise. <code>gamma</code> is the factor by which
 coverage. <code>pregrid</code> controls whether data are to be
 pre-gridded with <code><a href="binMean2D.html">binMean2D()</a></code> before being passed to
 <code><a href="interpBarnes.html">interpBarnes()</a></code>.</p></dd>
+
+
 <dt>debug</dt>
 <dd><p>A flag that turns on debugging.  Set to 1 to get a moderate amount
 of debugging information, or to 2 to get more.</p></dd>
+
+
 <dt>...</dt>
 <dd><p>Optional extra arguments, passed to either
 <code><a href="https://rdrr.io/r/stats/smooth.spline.html" class="external-link">smooth.spline()</a></code>, if <code>method="spline"</code>, and ignored otherwise.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>A <a href="section-class.html">section</a> object of that has been smoothed in some way.
+    
+
+<p>A <a href="section-class.html">section</a> object of that has been smoothed in some way.
 Every data field that is in even a single station of the input object
 is inserted into every station in the returned value, and therefore
 the units represent all the units in any of the stations, as do the
@@ -275,7 +296,7 @@ method known as Kriging.</p></li>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
       </footer></div>

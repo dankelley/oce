@@ -19,7 +19,7 @@ Used by e.g. plot,ctd-method()."><!-- mathjax --><script src="https://cdnjs.clou
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-8</span>
       </span>
     </div>
 
@@ -108,24 +108,35 @@ Used by e.g. <code><a href="plot-ctd-method.html">plot,ctd-method()</a></code>.<
 <code>"spice"</code>, <code>"T"</code>, <code>"theta"</code>, <code>"tritium"</code>, <code>"u"</code>, <code>"v"</code>, <code>"w"</code>, or <code>"z"</code>.
 Other values may also be recognized, and if an unrecognized item is
 given, then it is returned, unaltered.</p></dd>
+
+
 <dt>axis</dt>
 <dd><p>a string indicating which axis to use; must be <code>x</code> or
 <code>y</code>.</p></dd>
+
+
 <dt>sep</dt>
 <dd><p>optional character string inserted between the unit and the
 parentheses or brackets that enclose it. If not provided, then
 <code><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></code><code>("oceUnitSep")</code> is checked. If that exists, then it is
 used as the separator; if not, no separator is used.</p></dd>
+
+
 <dt>unit</dt>
 <dd><p>optional unit to use, if the default is not satisfactory. This
 might be the case if for example temperature was not measured in Celcius.</p></dd>
+
+
 <dt>debug</dt>
 <dd><p>optional debugging flag. Setting to 0 turns off debugging,
 while setting to 1 causes some debugging information to be printed.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>A character string or expression, in either a long or a shorter
+    
+
+<p>A character string or expression, in either a long or a shorter
 format, for use in the indicated axis at the present plot size.  Whether the
 unit is enclosed in parentheses or square brackets is determined by the
 value of <code>getOption("oceUnitBracket")</code>, which may be <code>"["</code> or
@@ -154,7 +165,7 @@ is set by <code>psep</code> or <code><a href="https://rdrr.io/r/base/options.htm
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
       </footer></div>

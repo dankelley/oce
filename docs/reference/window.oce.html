@@ -23,7 +23,7 @@ Note that subset() may be more useful than this function.'><!-- mathjax --><scri
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-8</span>
       </span>
     </div>
 
@@ -109,37 +109,58 @@ Note that <code><a href="https://rdrr.io/r/base/subset.html" class="external-lin
     <h2>Arguments</h2>
     <dl><dt>x</dt>
 <dd><p>an <a href="oce-class.html">oce</a> object.</p></dd>
+
+
 <dt>start</dt>
 <dd><p>the start time (or distance) of the time (or space) region of
 interest.  This may be a single value or a vector.</p></dd>
+
+
 <dt>end</dt>
 <dd><p>the end time (or distance) of the time (or space) region of
 interest.  This may be a single value or a vector.</p></dd>
+
+
 <dt>frequency</dt>
 <dd><p>not permitted yet.</p></dd>
+
+
 <dt>deltat</dt>
 <dd><p>not permitted yet</p></dd>
+
+
 <dt>extend</dt>
 <dd><p>not permitted yet</p></dd>
+
+
 <dt>which</dt>
 <dd><p>string containing the name of the quantity on which sampling is
 done.  Possibilities are <code>"time"</code>, which applies the windowing on the
 <code>time</code> entry of the <code>data</code> slot, and <code>"distance"</code>, for the
 <code>distance</code> entry (for those objects, such as <code>adp</code>, that have this
 entry).</p></dd>
+
+
 <dt>indexReturn</dt>
 <dd><p>boolean flag indicating whether to return a list of the
 "kept" indices for the <code>time</code> entry of the <code>data</code> slot, as well as
 the <code>timeSlow</code> entry, if there is one..  Either of these lists will be
 <code>NULL</code>, if the object lacks the relevant items.</p></dd>
+
+
 <dt>debug</dt>
 <dd><p>a flag that turns on debugging.</p></dd>
+
+
 <dt>...</dt>
 <dd><p>ignored</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>Normally, this is new <code>oce</code> object.  However, if
+    
+
+<p>Normally, this is new <code>oce</code> object.  However, if
 <code>indexReturn=TRUE</code>, the return value is two-element list containing
 items named <code>index</code> and <code>indexSlow</code>, which are the indices for the
 <code>time</code> entry of the <code>data</code> slot (and the <code>timeSlow</code>, if it
@@ -180,7 +201,7 @@ exists).</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
       </footer></div>

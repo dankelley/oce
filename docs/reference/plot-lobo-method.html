@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-8</span>
       </span>
     </div>
 
@@ -93,6 +93,8 @@
     <h2>Arguments</h2>
     <dl><dt>x</dt>
 <dd><p>a <a href="lobo-class.html">lobo</a> object.</p></dd>
+
+
 <dt>which</dt>
 <dd><p>A vector of numbers or character strings, indicating the
 quantities to plot.  These are stacked in a single column.  The possible
@@ -104,12 +106,18 @@ timeseries of the u component of velocity; <code>5</code> or <code>"v"</code> fo
 timeseries of the v component of velocity; <code>6</code> or <code>"nitrate"</code> for
 a timeseries of nitrate concentration; <code>7</code> or <code>"fluorescence"</code> for
 a timeseries of fluorescence value.</p></dd>
+
+
 <dt>mgp</dt>
 <dd><p>3-element numerical vector to use for <code>par(mgp)</code>, and also
 for <code>par(mar)</code>, computed from this.  The default is tighter than the R
 default, in order to use more space for the data and less for the axes.</p></dd>
+
+
 <dt>mar</dt>
 <dd><p>value to be used with <code><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></code><code>("mar")</code>.</p></dd>
+
+
 <dt>debug</dt>
 <dd><p>an integer specifying whether debugging information is
 to be printed during the processing. This is a general parameter that
@@ -118,8 +126,11 @@ turns off the printing, while higher values suggest that more information
 be printed. If one function calls another, it usually reduces the value of
 <code>debug</code> first, so that a user can often obtain deeper debugging
 by specifying higher <code>debug</code> values.</p></dd>
+
+
 <dt>...</dt>
 <dd><p>optional arguments passed to plotting functions.</p></dd>
+
 </dl></div>
     <div id="see-also">
     <h2>See also</h2>
@@ -178,7 +189,7 @@ by specifying higher <code>debug</code> values.</p></dd>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
       </footer></div>

@@ -1,4 +1,4 @@
-# Submission of oce 1.7-7
+# Submission of oce 1.7-8
 
 * Prepare for the upcoming R release by eliminating \x assemblages in grep()
   and gsub() calls, and adding an 'encoding' parameter to the 'read' functions.

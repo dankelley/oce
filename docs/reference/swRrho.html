@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-8</span>
       </span>
     </div>
 
@@ -93,21 +93,32 @@
 <dd><p>an <a href="oce-class.html">oce</a> object that holds <code>salinity</code>, <code>temperature</code>, and
 <code>pressure</code>.  If <code>eos</code> is <code>"gsw"</code>, then it must also hold <code>longitude</code> and
 <code>latitude</code>.</p></dd>
+
+
 <dt>sense</dt>
 <dd><p>an indication of the sense of double diffusion under study and
 therefore of the definition of Rrho; see ‘Details’</p></dd>
+
+
 <dt>smoothingLength</dt>
 <dd><p>ignored if <code>df</code> supplied, but otherwise the
 latter is calculated as the number of data points, divided by the number
 within a depth interval of <code>smoothingLength</code> metres.</p></dd>
+
+
 <dt>df</dt>
 <dd><p>if given, this is provided to <code><a href="https://rdrr.io/r/stats/smooth.spline.html" class="external-link">smooth.spline()</a></code>.</p></dd>
+
+
 <dt>eos</dt>
 <dd><p>equation of state, either <code>"unesco"</code> or <code>"gsw"</code>.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>Density ratio defined in either the <code>"diffusive"</code> or
+    
+
+<p>Density ratio defined in either the <code>"diffusive"</code> or
 <code>"finger"</code> sense.</p>
     </div>
     <div id="details">
@@ -202,7 +213,7 @@ instead of <code>swRrho(ctd)</code>.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
       </footer></div>

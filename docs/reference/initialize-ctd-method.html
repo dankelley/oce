@@ -21,7 +21,7 @@ following the usual rules for transitioning to deprecated and defunct status
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-8</span>
       </span>
     </div>
 
@@ -104,14 +104,24 @@ following the usual rules for transitioning to deprecated and defunct status
     <h2>Arguments</h2>
     <dl><dt>.Object</dt>
 <dd><p>the string <code>"ctd"</code></p></dd>
+
+
 <dt>pressure</dt>
 <dd><p>optional numerical vector of pressures.</p></dd>
+
+
 <dt>salinity</dt>
 <dd><p>optional numerical vector of salinities.</p></dd>
+
+
 <dt>temperature</dt>
 <dd><p>optional numerical vector of temperatures.</p></dd>
+
+
 <dt>conductivity</dt>
 <dd><p>optional numerical vector of conductivities.</p></dd>
+
+
 <dt>units</dt>
 <dd><p>optional list indicating units for the quantities specified
 in the previous arguments. If this
@@ -129,16 +139,23 @@ arguments. Note that if <code>units</code> is specified, then it is just
 copied into the <code>metadata</code> slot of the returned object, so the user
 must be careful to set up values that will make sense to other <code>oce</code>
 functions.</p></dd>
+
+
 <dt>pressureType</dt>
 <dd><p>optional character string indicating the type of pressure;
 if not supplied, this defaults to <code>"sea"</code>, which indicates the excess of
 pressure over the atmospheric value, in dbar.</p></dd>
+
+
 <dt>deploymentType</dt>
 <dd><p>optional character string indicating the type of deployment, which may
 be <code>"unknown"</code>, <code>"profile"</code>, <code>"towyo"</code>, or <code>"thermosalinograph"</code>.
 If this is not set, the value defaults to <code>"unknown"</code>.</p></dd>
+
+
 <dt>...</dt>
 <dd><p>Ignored.</p></dd>
+
 </dl></div>
     <div id="details">
     <h2>Details</h2>
@@ -221,7 +238,7 @@ on elements stored in <code>ctd</code> objects.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> * Processing Log</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2022-06-10 20:07:09 UTC: `create 'ctd' object`</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2022-07-04 16:53:52 UTC: `create 'ctd' object`</span>
 <span class="r-in"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">ctd</span>, eos<span class="op">=</span><span class="st">"unesco"</span><span class="op">)</span></span>
 <span class="r-plt img"><img src="initialize-ctd-method-1.png" alt="" width="700" height="433"></span>
 <span class="r-in"></span>
@@ -245,7 +262,7 @@ on elements stored in <code>ctd</code> objects.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
       </footer></div>

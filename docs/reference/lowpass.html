@@ -22,7 +22,7 @@ replace is set to TRUE."><!-- mathjax --><script src="https://cdnjs.cloudflare.c
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-8</span>
       </span>
     </div>
 
@@ -95,25 +95,36 @@ these may be replaced with the original <code>x</code> values, if the argument
     <h2>Arguments</h2>
     <dl><dt>x</dt>
 <dd><p>a vector to be smoothed</p></dd>
+
+
 <dt>filter</dt>
 <dd><p>name of filter; at present, <code>"hamming"</code>, <code>"hanning"</code>, and <code>"boxcar"</code> are permitted.</p></dd>
+
+
 <dt>n</dt>
 <dd><p>length of filter (must be an odd integer exceeding 1)</p></dd>
+
+
 <dt>replace</dt>
 <dd><p>a logical value indicating whether points near the
 ends of <code>x</code> should be copied into the end regions, replacing
 the <code>NA</code> values that would otherwise be placed there by
 <code><a href="https://rdrr.io/r/stats/filter.html" class="external-link">stats::filter()</a></code>.</p></dd>
+
+
 <dt>coefficients</dt>
 <dd><p>logical value indicating whether to return
 the filter coefficients, instead of the filtered values. In accordance
 with conventions in the literature, the returned values are not
 normalized to sum to 1, although of course that normalization
 is done in the actual filtering.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>By default, <code>lowpass</code> returns a filtered version
+    
+
+<p>By default, <code>lowpass</code> returns a filtered version
 of <code>x</code>, but if <code>coefficients</code> is <code>TRUE</code> then it
 returns the filter coefficients.</p>
     </div>
@@ -156,7 +167,7 @@ arguments.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
       </footer></div>

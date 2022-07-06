@@ -18,7 +18,7 @@ all coordinate systems (beam, xyz, and enu).'><!-- mathjax --><script src="https
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-8</span>
       </span>
     </div>
 
@@ -87,6 +87,8 @@ all coordinate systems (<code>beam</code>, <code>xyz</code>, and <code>enu</code
     <h2>Arguments</h2>
     <dl><dt>x</dt>
 <dd><p>an <a href="adp-class.html">adp</a> object that contains bottom-tracking velocities.</p></dd>
+
+
 <dt>despike</dt>
 <dd><p>either a logical value or a univariate function. This
 controls whether the bottom velocity (<code>bv</code>) values should be altered before they are
@@ -94,6 +96,8 @@ subtracted from the beam velocities. If it is <code>TRUE</code> then the <code>b
 first by calling <code><a href="despike.html">despike()</a></code>. If it is a function, then that function is used instead of
 <code><a href="despike.html">despike()</a></code>, e.g. <code>function(x) despike(x, reference="smooth")</code> would change the reference
 function for despiking from its default of <code>"median"</code>.</p></dd>
+
+
 <dt>debug</dt>
 <dd><p>an integer specifying whether debugging information is
 to be printed during the processing. This is a general parameter that
@@ -102,6 +106,7 @@ turns off the printing, while higher values suggest that more information
 be printed. If one function calls another, it usually reduces the value of
 <code>debug</code> first, so that a user can often obtain deeper debugging
 by specifying higher <code>debug</code> values.</p></dd>
+
 </dl></div>
     <div id="see-also">
     <h2>See also</h2>
@@ -168,7 +173,7 @@ object class.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
       </footer></div>

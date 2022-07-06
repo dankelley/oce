@@ -28,7 +28,7 @@ that may be specialized to the class of object
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-8</span>
       </span>
     </div>
 
@@ -115,15 +115,21 @@ that may be specialized to the class of <code>object</code>
     <h2>Arguments</h2>
     <dl><dt>object</dt>
 <dd><p>An oce object.</p></dd>
+
+
 <dt>name</dt>
 <dd><p>a character value naming the scheme. If this refers
 to a pre-defined scheme, then <code>mapping</code> must not be provided,
 because doing so would contradict the pre-defined scheme, defeating
 its purpose of providing concreteness and clarity.</p></dd>
+
+
 <dt>mapping</dt>
 <dd><p>a list of named items describing the mapping from
 flag meaning to flag numerical value, e.g <code>list(good=1, bad=2)</code>
 might be used for a hypothetical class.</p></dd>
+
+
 <dt>default</dt>
 <dd><p>an integer vector of flag values that are not considered
 to be good. If this is not provided, but if <code>name</code> is <code>"argo"</code>,
@@ -135,17 +141,24 @@ equal to the list of flag values that designate bad or questionable data.
 For example, for <code>name="WHP CTD"</code>, the setting will be
 <code>c(1,3,4,5,6,7,9)</code>, leaving only value <code>2</code>, which corresponds
 with "acceptable" in the notation used for that flag scheme.</p></dd>
+
+
 <dt>update</dt>
 <dd><p>a logical value indicating whether the scheme provided is
 to update an existing scheme.  The default value, <code>FALSE</code>, prevents such
 an attempt to alter an existing flag scheme, if one is already embedded
 in <code>object</code>.</p></dd>
+
+
 <dt>debug</dt>
 <dd><p>an integer set to 0 for quiet action or to 1 for some debugging.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>An object with the <code>metadata</code> slot containing <code>flagScheme</code>.</p>
+    
+
+<p>An object with the <code>metadata</code> slot containing <code>flagScheme</code>.</p>
     </div>
     <div id="details">
     <h2>Details</h2>
@@ -153,19 +166,32 @@ in <code>object</code>.</p></dd>
 names are simplified from the phrases used in defining
 documentation):</p><ul><li><p><code>name="argo"</code> defaults <code>mapping</code> to
 OLD (prior to June 10, 2020)</p></li>
-</ul><p></p><div class="sourceCode"><pre><code></code></pre><p></p></div>
+</ul><p></p><div class="sourceCode"><pre><code><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">list</span>(<span class="at">not_assessed=</span><span class="dv">0</span>, <span class="at">passed_all_tests=</span><span class="dv">1</span>, <span class="at">probably_good=</span><span class="dv">2</span>,</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>     <span class="at">probably_bad=</span><span class="dv">3</span>, <span class="at">bad=</span><span class="dv">4</span>, <span class="at">averaged=</span><span class="dv">7</span>,</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>     <span class="at">interpolated=</span><span class="dv">8</span>, <span class="at">missing=</span><span class="dv">9</span>)</span></code></pre><p></p></div>
 <p>NEW (after June 10, 2020)</p>
-<p></p><div class="sourceCode"><pre><code></code></pre><p></p></div>
+<p></p><div class="sourceCode"><pre><code><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">list</span>(<span class="at">not_assessed=</span><span class="dv">0</span>, <span class="at">passed_all_tests=</span><span class="dv">1</span>, <span class="at">probably_good=</span><span class="dv">2</span>,</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>     <span class="at">probably_bad=</span><span class="dv">3</span>, <span class="at">bad=</span><span class="dv">4</span>, <span class="at">changed=</span><span class="dv">5</span>, <span class="at">not_used_6=</span><span class="dv">6</span>, <span class="at">not_used_7=</span><span class="dv">7</span>,</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>     <span class="at">estimated=</span><span class="dv">8</span>, <span class="at">missing=</span><span class="dv">9</span>)</span></code></pre><p></p></div>
 <p>See reference 1 for a deeper explanation of the meanings of these codes.</p><ul><li><p><code>name="BODC"</code> defaults <code>mapping</code> to</p></li>
-</ul><p></p><div class="sourceCode"><pre><code></code></pre><p></p></div>
+</ul><p></p><div class="sourceCode"><pre><code><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">list</span>(<span class="at">no_quality_control=</span><span class="dv">0</span>, <span class="at">good=</span><span class="dv">1</span>, <span class="at">probably_good=</span><span class="dv">2</span>,</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>     <span class="at">probably_bad=</span><span class="dv">3</span>, <span class="at">bad=</span><span class="dv">4</span>, <span class="at">changed=</span><span class="dv">5</span>,</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>     <span class="at">below_detection=</span><span class="dv">6</span>, <span class="at">in_excess=</span><span class="dv">7</span>, <span class="at">interpolated=</span><span class="dv">8</span>,</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>     <span class="at">missing=</span><span class="dv">9</span>)</span></code></pre><p></p></div>
 <p>See reference 2 for a deeper explanation of the meanings of these codes,
 and note that codes <code>A</code> and <code>Q</code> are not provided in
 oce.</p><ul><li><p><code>name="DFO"</code> defaults <code>mapping</code> to</p></li>
-</ul><p></p><div class="sourceCode"><pre><code></code></pre><p></p></div>
+</ul><p></p><div class="sourceCode"><pre><code><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">list</span>(<span class="at">no_quality_control=</span><span class="dv">0</span>, <span class="at">appears_correct=</span><span class="dv">1</span>, <span class="at">appears_inconsistent=</span><span class="dv">2</span>,</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>     <span class="at">doubtful=</span><span class="dv">3</span>, <span class="at">erroneous=</span><span class="dv">4</span>, <span class="at">changed=</span><span class="dv">5</span>,</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>     <span class="at">qc_by_originator=</span><span class="dv">8</span>, <span class="at">missing=</span><span class="dv">9</span>)</span></code></pre><p></p></div>
 <p>See reference 3 for a deeper explanation of the meanings of these codes.</p><ul><li><p><code>name="WHP bottle"</code> defaults <code>mapping</code> to</p></li>
-</ul><p></p><div class="sourceCode"><pre><code></code></pre><p></p></div>
+</ul><p></p><div class="sourceCode"><pre><code><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">list</span>(<span class="at">no_information=</span><span class="dv">1</span>, <span class="at">no_problems_noted=</span><span class="dv">2</span>, <span class="at">leaking=</span><span class="dv">3</span>,</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>     <span class="at">did_not_trip=</span><span class="dv">4</span>, <span class="at">not_reported=</span><span class="dv">5</span>, <span class="at">discrepency=</span><span class="dv">6</span>,</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>     <span class="at">unknown_problem=</span><span class="dv">7</span>, <span class="at">did_not_trip=</span><span class="dv">8</span>, <span class="at">no_sample=</span><span class="dv">9</span>)</span></code></pre><p></p></div>
 <p>See reference 4 for a deeper explanation of the meanings of these codes.</p><ul><li><p><code>name="WHP CTD"</code> defaults <code>mapping</code> to</p></li>
-</ul><p></p><div class="sourceCode"><pre><code></code></pre><p></p></div>
+</ul><p></p><div class="sourceCode"><pre><code><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">list</span>(<span class="at">not_calibrated=</span><span class="dv">1</span>, <span class="at">acceptable=</span><span class="dv">2</span>, <span class="at">questionable=</span><span class="dv">3</span>,</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    <span class="at">bad=</span><span class="dv">4</span>, <span class="at">not_reported=</span><span class="dv">5</span>, <span class="at">interpolated=</span><span class="dv">6</span>,</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">despiked=</span><span class="dv">7</span>, <span class="at">missing=</span><span class="dv">9</span>)</span></code></pre><p></p></div>
 <p>See reference 4 for a deeper explanation of the meanings of these codes.</p>
     </div>
     <div id="references">
@@ -222,7 +248,7 @@ https://www.nodc.noaa.gov/woce/woce_v3/wocedata_1/whp/exchange/exchange_format_d
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
       </footer></div>

@@ -19,7 +19,7 @@ on published tables of harmonic fits."><!-- mathjax --><script src="https://cdnj
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-8</span>
       </span>
     </div>
 
@@ -91,17 +91,27 @@ on published tables of harmonic fits.</p>
 <dd><p>a POSIXt value indicating the mean time of the
 observations used to develop the harmonic model. This is rounded
 to the nearest hour in <code>as.tidem()</code>, to match <code><a href="tidem.html">tidem()</a></code>.</p></dd>
+
+
 <dt>latitude</dt>
 <dd><p>Numerical value indicating the latitude of the
 observations that were used to create the harmonic model. This
 is needed for nodal-correction procedures carried out
 by <code><a href="tidemVuf.html">tidemVuf()</a></code>.</p></dd>
+
+
 <dt>name</dt>
 <dd><p>character vector holding names of constituents.</p></dd>
+
+
 <dt>amplitude</dt>
 <dd><p>Numeric vector of constituent amplitudes.</p></dd>
+
+
 <dt>phase</dt>
 <dd><p>Numeric vector of constituent Greenwich phases.</p></dd>
+
+
 <dt>debug</dt>
 <dd><p>an integer specifying whether debugging information is
 to be printed during the processing. This is a general parameter that
@@ -110,10 +120,13 @@ turns off the printing, while higher values suggest that more information
 be printed. If one function calls another, it usually reduces the value of
 <code>debug</code> first, so that a user can often obtain deeper debugging
 by specifying higher <code>debug</code> values.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>An object of <a href="tidem-class.html">tidem</a>, with only minimal
+    
+
+<p>An object of <a href="tidem-class.html">tidem</a>, with only minimal
 contents.</p>
     </div>
     <div id="details">
@@ -221,7 +234,7 @@ https://github.com/dankelley/oce/issues/1654</p></li>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
       </footer></div>

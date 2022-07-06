@@ -19,7 +19,7 @@ V3, and may not work properly with other file formats."><!-- mathjax --><script 
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-8</span>
       </span>
     </div>
 
@@ -87,6 +87,7 @@ V3, and may not work properly with other file formats.</p>
   channel <span class="op">=</span> <span class="fl">1</span>,
   <span class="va">soundSpeed</span>,
   tz <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"oceTz"</span><span class="op">)</span>,
+  encoding <span class="op">=</span> <span class="cn">NA</span>,
   debug <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"oceDebug"</span><span class="op">)</span>,
   <span class="va">processingLog</span>
 <span class="op">)</span></code></pre></div>
@@ -97,26 +98,43 @@ V3, and may not work properly with other file formats.</p>
     <dl><dt>file</dt>
 <dd><p>a connection or a character string giving the name of the file
 to load.</p></dd>
+
+
 <dt>channel</dt>
 <dd><p>sequence number of channel to extract, for multi-channel
 files.</p></dd>
+
+
 <dt>soundSpeed</dt>
 <dd><p>sound speed, in m/s. If not provided, this is calculated
 using <code><a href="swSoundSpeed.html">swSoundSpeed</a></code><code>(35,15,30,eos="unesco")</code>.  (In theory,
 it could be calculated using the temperature and salinity that are stored
 in the data file, but these will just be nominal values, anyway.</p></dd>
+
+
 <dt>tz</dt>
 <dd><p>character string indicating time zone to be assumed in the data.</p></dd>
+
+
+<dt>encoding</dt>
+<dd><p>ignored.</p></dd>
+
+
 <dt>debug</dt>
 <dd><p>a flag that turns on debugging.  Set to 1 to get a moderate
 amount of debugging information, or to 2 to get more.</p></dd>
+
+
 <dt>processingLog</dt>
 <dd><p>if provided, the action item to be stored in the log,
 typically only provided for internal calls.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>An <a href="echosounder-class.html">echosounder</a> object.</p>
+    
+
+<p>An <a href="echosounder-class.html">echosounder</a> object.</p>
     </div>
     <div id="bugs">
     <h2>Bugs</h2>
@@ -171,7 +189,7 @@ dealing with them.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
       </footer></div>

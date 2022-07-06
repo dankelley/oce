@@ -22,7 +22,7 @@ ctdTrim()."><!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-8</span>
       </span>
     </div>
 
@@ -93,13 +93,14 @@ this dataset provides a good example of data that need trimming with
 
     <div id="details">
     <h2>Details</h2>
-    <p>This station was sampled by students enrolled in the Dan Kelley's
-Physical Oceanography class at Dalhousie University.
-The data were acquired near the centre of the Bedford Basin of the
-Halifax Harbour, during an October 2003 field trip of Dalhousie University's
-Oceanography 4120/5120 class. The original <code>.cnv</code> data file had
-temperature in the IPTS-68 scale, but this was converted to the more modern
-scale using <code><a href="T90fromT68.html">T90fromT68()</a></code>.</p>
+    <p>This station was sampled by students enrolled in the Dan Kelley's Physical
+Oceanography class at Dalhousie University.  The data were acquired near the
+centre of the Bedford Basin of the Halifax Harbour, during an October 2003
+field trip of Dalhousie University's Oceanography 4120/5120 class. (Note that
+the <code>startTime</code> in the <code>metadata</code> slot was altered from 1903 to 2003, using
+<code><a href="oceEdit.html">oceEdit()</a></code>. The change was done because the original time was clearly
+incorrect, perhaps owing to the use of software that was designed to work in
+the twentieth only.)</p>
     </div>
     <div id="see-also">
     <h2>See also</h2>
@@ -180,7 +181,7 @@ scale using <code><a href="T90fromT68.html">T90fromT68()</a></code>.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
       </footer></div>

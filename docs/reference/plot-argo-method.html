@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-8</span>
       </span>
     </div>
 
@@ -103,6 +103,8 @@
     <h2>Arguments</h2>
     <dl><dt>x</dt>
 <dd><p>an <a href="argo-class.html">argo</a> object.</p></dd>
+
+
 <dt>which</dt>
 <dd><p>list of desired plot types, one of the following. Note
 that <code><a href="ocePmatch.html">oce.pmatch()</a></code> is used to try to complete partial
@@ -123,26 +125,42 @@ percentiles)</p></li>
 temperature profile (with T and p trimmed to the 1 and 99
 percentiles)</p></li>
 </ul></dd>
+
+
 <dt>level</dt>
 <dd><p>depth pseudo-level to plot, for <code>which=2</code> and higher.  May be an
 integer, in which case it refers to an index of depth (1 being the top)
 or it may be the string "all" which means to plot all data.</p></dd>
+
+
 <dt>coastline</dt>
 <dd><p>character string giving the coastline to be used in an Argo-location
 map, or <code>"best"</code> to pick the one with highest resolution, or
 <code>"none"</code> to avoid drawing the coastline.</p></dd>
+
+
 <dt>cex</dt>
 <dd><p>size of plotting symbols to be used if <code>type='p'</code>.</p></dd>
+
+
 <dt>pch</dt>
 <dd><p>type of plotting symbols to be used if <code>type='p'</code>.</p></dd>
+
+
 <dt>type</dt>
 <dd><p>plot type, either <code>"l"</code> or <code>"p"</code>.</p></dd>
+
+
 <dt>col</dt>
 <dd><p>optional list of colors for plotting.</p></dd>
+
+
 <dt>fill</dt>
 <dd><p>Either a logical, indicating whether to fill the land with
 light-gray, or a color name.  Owing to problems with some projections, the
 default is not to fill.</p></dd>
+
+
 <dt>projection</dt>
 <dd><p>indication of the projection to be used
 in trajectory maps. If this is <code>NULL</code>, no projection is used, although
@@ -152,24 +170,37 @@ of two projections is used: stereopolar (i.e. <code>"+proj=stere +lon_0=X"</code
 where <code>X</code> is the mean longitude), or Mercator (i.e. <code>"+proj=merc"</code>)
 otherwise.  Otherwise, <code>projection</code> must be a character string specifying
 a projection in the notation used by <code><a href="oceProject.html">oceProject()</a></code> and <code><a href="mapPlot.html">mapPlot()</a></code>.</p></dd>
+
+
 <dt>mgp</dt>
 <dd><p>3-element numerical vector to use for <code>par(mgp)</code>, and also for
 <code>par(mar)</code>, computed from this.  The default is tighter than the R
 default, in order to use more space for the data and less for the axes.</p></dd>
+
+
 <dt>mar</dt>
 <dd><p>value to be used with <code>par('mar')</code>.</p></dd>
+
+
 <dt>tformat</dt>
 <dd><p>optional argument passed to <code><a href="oce.plot.ts.html">oce.plot.ts()</a></code>, for plot
 types that call that function.  (See <code><a href="https://rdrr.io/r/base/strptime.html" class="external-link">strptime()</a></code> for the format
 used.)</p></dd>
+
+
 <dt>debug</dt>
 <dd><p>debugging flag.</p></dd>
+
+
 <dt>...</dt>
 <dd><p>optional arguments passed to plotting functions.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>None.</p>
+    
+
+<p>None.</p>
     </div>
     <div id="see-also">
     <h2>See also</h2>
@@ -253,7 +284,7 @@ used.)</p></dd>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
       </footer></div>

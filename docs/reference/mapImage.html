@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-8</span>
       </span>
     </div>
 
@@ -101,12 +101,20 @@
     <h2>Arguments</h2>
     <dl><dt>longitude</dt>
 <dd><p>numeric vector of longitudes corresponding to <code>z</code> matrix.</p></dd>
+
+
 <dt>latitude</dt>
 <dd><p>numeric vector of latitudes corresponding to <code>z</code> matrix.</p></dd>
+
+
 <dt>z</dt>
 <dd><p>numeric matrix to be represented as an image.</p></dd>
+
+
 <dt>zlim</dt>
 <dd><p>limit for z (color).</p></dd>
+
+
 <dt>zclip</dt>
 <dd><p>A logical value, <code>TRUE</code> indicating that out-of-range
 <code>z</code> values should be painted with <code>missingColor</code> and <code>FALSE</code>
@@ -116,45 +124,66 @@ range.  If <code>zlim</code> is not given but <code>breaks</code> is given, then
 the min and max of <code>breaks</code> sets the range used for z.  If neither
 <code>zlim</code> nor <code>breaks</code> is given, clipping is not done, i.e. the
 action is as if <code>zclip</code> were <code>FALSE</code>.</p></dd>
+
+
 <dt>breaks</dt>
 <dd><p>The z values for breaks in the color scheme.  If this is of
 length 1, the value indicates the desired number of breaks, which is
 supplied to <code><a href="https://rdrr.io/r/base/pretty.html" class="external-link">pretty()</a></code>, in determining clean break points.</p></dd>
+
+
 <dt>col</dt>
 <dd><p>Either a vector of colors corresponding to the breaks, of length
 1 plus the number of breaks, or a function specifying colors,
 e.g. <code><a href="oceColorsViridis.html">oce.colorsViridis()</a></code> for the Viridis scheme.</p></dd>
+
+
 <dt>colormap</dt>
 <dd><p>optional colormap, as created by <code><a href="colormap.html">colormap()</a></code>.
 If a <code>colormap</code> is provided, then its properties takes precedence
 over <code>breaks</code>, <code>col</code>, <code>missingColor</code>, and <code>zclip</code>
 specified to <code>mapImage</code>.</p></dd>
+
+
 <dt>border</dt>
 <dd><p>Color used for borders of patches (passed to
 <code><a href="https://rdrr.io/r/graphics/polygon.html" class="external-link">polygon()</a></code>); the default <code>NA</code> means no border.</p></dd>
+
+
 <dt>lwd</dt>
 <dd><p>line width, used if borders are drawn.</p></dd>
+
+
 <dt>lty</dt>
 <dd><p>line type, used if borders are drawn.</p></dd>
+
+
 <dt>missingColor</dt>
 <dd><p>a color to be used to indicate missing data, or
 <code>NA</code> to skip the drawing of such regions (which will retain
 whatever material has already been drawn at the regions).</p></dd>
+
+
 <dt>filledContour</dt>
 <dd><p>either a logical value indicating whether to use
 filled contours to plot the image, or a numerical value indicating the
 resampling rate to be used in interpolating from lon-lat coordinates to
 x-y coordinates.  See “Details” for how this interacts with
 <code>gridder</code>.</p></dd>
+
+
 <dt>gridder</dt>
 <dd><p>Name of gridding function used if <code>filledContour</code> is <code>TRUE</code>.
 This can be either <code>"binMean2D"</code> to select <code><a href="binMean2D.html">binMean2D()</a></code> or <code>"interp"</code> to
 select <code><a href="https://rdrr.io/pkg/interp/man/interp.html" class="external-link">interp::interp()</a></code>.  The former produces cruder results, but the
 latter can be slow for large datasets.  Note that <code>"akima"</code> is taken as a
 synonym for <code>"interp"</code> (see “Historical Note”).</p></dd>
+
+
 <dt>debug</dt>
 <dd><p>A flag that turns on debugging.  Set to 1 to get a
 moderate amount of debugging information, or to 2 to get more.</p></dd>
+
 </dl></div>
     <div id="details">
     <h2>Details</h2>
@@ -260,7 +289,7 @@ intercepts the errors that sometimes get reported by <code><a href="https://rdrr
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
       </footer></div>

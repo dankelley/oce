@@ -18,7 +18,7 @@ either indices to these events or a vector of CTD records containing the events.
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-8</span>
       </span>
     </div>
 
@@ -99,12 +99,20 @@ either indices to these events or a vector of CTD records containing the events.
     <h2>Arguments</h2>
     <dl><dt>x</dt>
 <dd><p>a <a href="ctd-class.html">ctd</a> object.</p></dd>
+
+
 <dt>cutoff</dt>
 <dd><p>criterion on pressure difference; see “Details”.</p></dd>
+
+
 <dt>minLength</dt>
 <dd><p>lower limit on number of points in candidate profiles.</p></dd>
+
+
 <dt>minHeight</dt>
 <dd><p>lower limit on height of candidate profiles.</p></dd>
+
+
 <dt>smoother</dt>
 <dd><p>The smoothing function to use for identifying down/up
 casts. The default is <code>smooth.spline</code>, which performs well for
@@ -114,8 +122,12 @@ be either a list containing an element named <code>y</code> or something
 that can be coerced to a vector with <code><a href="https://rdrr.io/r/base/vector.html" class="external-link">as.vector()</a></code>. To
 turn smoothing off, so that cycles in pressure are determined by
 simple first difference, set <code>smoother</code> to <code>NULL</code>.</p></dd>
+
+
 <dt>direction</dt>
 <dd><p>String indicating the travel direction to be selected.</p></dd>
+
+
 <dt>breaks</dt>
 <dd><p>optional integer vector indicating the indices of last
 datum in each profile stored within <code>x</code>. Thus, the first profile
@@ -125,9 +137,13 @@ other arguments except <code>x</code> are ignored. Using <code>breaks</code>
 is handy in cases where other schemes fail, or when the author
 has independent knowledge of how the profiles are strung together
 in <code>x</code>.</p></dd>
+
+
 <dt>arr.ind</dt>
 <dd><p>Logical indicating whether the array indices should be returned;
 the alternative is to return a vector of ctd objects.</p></dd>
+
+
 <dt>distinct</dt>
 <dd><p>An optional string indicating how to identify profiles
 by unique values. Use <code>"location"</code>
@@ -135,6 +151,8 @@ to find profiles by a change in longitude and latitude, or use the name of any
 of item in the <code>data</code> slot in <code>x</code>. In these cases, all the
 other arguments except <code>x</code> are ignored. However, if <code>distinct</code>
 is not supplied, the other arguments are handled as described above.</p></dd>
+
+
 <dt>debug</dt>
 <dd><p>an integer specifying whether debugging information is
 to be printed during the processing. This is a general parameter that
@@ -143,12 +161,17 @@ turns off the printing, while higher values suggest that more information
 be printed. If one function calls another, it usually reduces the value of
 <code>debug</code> first, so that a user can often obtain deeper debugging
 by specifying higher <code>debug</code> values.</p></dd>
+
+
 <dt>...</dt>
 <dd><p>Optional extra arguments that are passed to the smoothing function, <code>smoother</code>.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>If <code>arr.ind=TRUE</code>, a data frame with columns <code>start</code> and <code>end</code>, the indices
+    
+
+<p>If <code>arr.ind=TRUE</code>, a data frame with columns <code>start</code> and <code>end</code>, the indices
 of the downcasts.  Otherwise, a vector of <code>ctd</code> objects. In this second case,
 the station names are set to a form like <code>"10/3"</code>, for the third profile within an
 original ctd object with station name <code>"10"</code>, or to <code>"3"</code>, if the original
@@ -267,7 +290,7 @@ of CTD objects, and also outlines the other functions dealing with them.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
       </footer></div>

@@ -18,7 +18,7 @@ set.  cast. The panels are controlled by the which argument."><!-- mathjax --><s
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-8</span>
       </span>
     </div>
 
@@ -88,6 +88,8 @@ set.  cast. The panels are controlled by the <code>which</code> argument.</p>
     <h2>Arguments</h2>
     <dl><dt>x</dt>
 <dd><p>a <a href="met-class.html">met</a> object.</p></dd>
+
+
 <dt>which</dt>
 <dd><p>list of desired plot types.</p><ul><li><p><code>which=1</code> gives a time-series plot of temperature</p></li>
 <li><p><code>which=2</code> gives a time-series plot of pressure</p></li>
@@ -98,16 +100,24 @@ set.  cast. The panels are controlled by the <code>which</code> argument.</p>
 note that the values returned by <code>met[["direction"]]</code> must be multiplied by 10
 to get the direction plotted)</p></li>
 </ul></dd>
+
+
 <dt>mgp</dt>
 <dd><p>A 3-element numerical vector used with <code><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></code><code>("mgp")</code>
 to control the spacing of axis elements.  The default is tighter than the R default.</p></dd>
+
+
 <dt>mar</dt>
 <dd><p>A 4-element numerical vector used with <code><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></code><code>("mar")</code>
 to control the plot margins. The default is tighter than the R default.</p></dd>
+
+
 <dt>tformat</dt>
 <dd><p>optional argument passed to <code><a href="oce.plot.ts.html">oce.plot.ts()</a></code>, for
 plot types that call that function.  (See <code><a href="https://rdrr.io/r/base/strptime.html" class="external-link">strptime()</a></code> for the
 format used.)</p></dd>
+
+
 <dt>debug</dt>
 <dd><p>an integer specifying whether debugging information is
 to be printed during the processing. This is a general parameter that
@@ -116,6 +126,7 @@ turns off the printing, while higher values suggest that more information
 be printed. If one function calls another, it usually reduces the value of
 <code>debug</code> first, so that a user can often obtain deeper debugging
 by specifying higher <code>debug</code> values.</p></dd>
+
 </dl></div>
     <div id="details">
     <h2>Details</h2>
@@ -208,7 +219,7 @@ be made to the plot.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
       </footer></div>

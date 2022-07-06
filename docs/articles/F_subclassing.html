@@ -33,7 +33,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-8</span>
       </span>
     </div>
 
@@ -96,7 +96,7 @@
       <h1 data-toc-skip>6. Subclassing oce objects</h1>
                         <h4 data-toc-skip class="author">Dan Kelley (<a href="https://orcid.org/0000-0001-7808-5911" class="external-link uri">https://orcid.org/0000-0001-7808-5911</a>)</h4>
             
-            <h4 data-toc-skip class="date">2022-06-10</h4>
+            <h4 data-toc-skip class="date">2022-07-04</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/dankelley/oce/blob/HEAD/vignettes/F_subclassing.Rmd" class="external-link"><code>vignettes/F_subclassing.Rmd</code></a></small>
       <div class="hidden name"><code>F_subclassing.Rmd</code></div>
@@ -166,7 +166,7 @@ much:</p>
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">o</span><span class="op">)</span>
 <span class="co">#&gt; * Processing Log</span>
 <span class="co">#&gt; </span>
-<span class="co">#&gt;     - 2022-06-10 20:11:19 UTC: `Create oce object`</span></code></pre></div>
+<span class="co">#&gt;     - 2022-07-04 16:57:57 UTC: `Create oce object`</span></code></pre></div>
 <p>but if we populate the object with some data and metadata</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">o</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/oceSetData.html">oceSetData</a></span><span class="op">(</span><span class="va">o</span>, <span class="st">"time"</span>, <span class="va">db</span><span class="op">$</span><span class="va">t</span><span class="op">)</span>
@@ -185,11 +185,11 @@ much:</p>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; * Processing Log</span>
 <span class="co">#&gt; </span>
-<span class="co">#&gt;     - 2022-06-10 20:11:19 UTC: `Create oce object`</span>
-<span class="co">#&gt;     - 2022-06-10 20:11:19 UTC: `oceSetData(object = o, name = "time", value = db$t)`</span>
-<span class="co">#&gt;     - 2022-06-10 20:11:19 UTC: `oceSetData(object = o, name = "longitude", value = db$lon)`</span>
-<span class="co">#&gt;     - 2022-06-10 20:11:19 UTC: `oceSetData(object = o, name = "latitude", value = db$lat)`</span>
-<span class="co">#&gt;     - 2022-06-10 20:11:19 UTC: `oceSetMetadata(object = o, name = "ID", value = 4201703)`</span></code></pre></div>
+<span class="co">#&gt;     - 2022-07-04 16:57:57 UTC: `Create oce object`</span>
+<span class="co">#&gt;     - 2022-07-04 16:57:57 UTC: `oceSetData(object = o, name = "time", value = db$t)`</span>
+<span class="co">#&gt;     - 2022-07-04 16:57:57 UTC: `oceSetData(object = o, name = "longitude", value = db$lon)`</span>
+<span class="co">#&gt;     - 2022-07-04 16:57:57 UTC: `oceSetData(object = o, name = "latitude", value = db$lat)`</span>
+<span class="co">#&gt;     - 2022-07-04 16:57:57 UTC: `oceSetMetadata(object = o, name = "ID", value = 4201703)`</span></code></pre></div>
 <p>Note, however, that the <code>ID</code> is not listed by
 <code><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary()</a></code>. This is because the general form of that
 function is set up to focus on the contents of the <code>data</code>
@@ -339,7 +339,7 @@ drifter. The rest of the information provided by the base-level
 <span class="co">#&gt; </span>
 <span class="co">#&gt; * Processing Log</span>
 <span class="co">#&gt; </span>
-<span class="co">#&gt;     - 2022-06-10 20:11:20 UTC: `create 'drifter' object`</span></code></pre></div>
+<span class="co">#&gt;     - 2022-07-04 16:57:57 UTC: `create 'drifter' object`</span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="specializing-the-accessor">Specializing the <code>[[</code> accessor<a class="anchor" aria-label="anchor" href="#specializing-the-accessor"></a>
@@ -450,7 +450,7 @@ frequency.</p></li>
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
       </footer>

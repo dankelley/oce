@@ -21,7 +21,7 @@ handled well; see &amp;#8216;Bugs&amp;#8217;."><!-- mathjax --><script src="http
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-8</span>
       </span>
     </div>
 
@@ -95,12 +95,18 @@ handled well; see ‘Bugs’.</p>
 <dd><p>vector containing the x component of points in the projected space, or
 a list containing items named <code>x</code> and <code>y</code>, in which case the next
 argument is ignored.</p></dd>
+
+
 <dt>y</dt>
 <dd><p>vector containing the y coordinate of points in the projected space
 (ignored if <code>x</code> is a list, as described above).</p></dd>
+
+
 <dt>init</dt>
 <dd><p>vector containing the initial guesses for longitude and latitude,
 presently ignored.</p></dd>
+
+
 <dt>debug</dt>
 <dd><p>an integer specifying whether debugging information is
 to be printed during the processing. This is a general parameter that
@@ -109,10 +115,16 @@ turns off the printing, while higher values suggest that more information
 be printed. If one function calls another, it usually reduces the value of
 <code>debug</code> first, so that a user can often obtain deeper debugging
 by specifying higher <code>debug</code> values.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>A list containing <code>longitude</code> and <code>latitude</code>, with <code>NA</code>values indicating points that are off the globe as displayed.</p>
+    
+
+<p>A list containing <code>longitude</code> and <code>latitude</code>, with <code>NA</code></p>
+
+
+<p>values indicating points that are off the globe as displayed.</p>
     </div>
     <div id="bugs">
     <h2>Bugs</h2>
@@ -185,7 +197,7 @@ because the <code>oce</code> developers have experienced problems with them.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
       </footer></div>

@@ -18,7 +18,7 @@ xyz-based coordinate system."><!-- mathjax --><script src="https://cdnjs.cloudfl
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-8</span>
       </span>
     </div>
 
@@ -87,9 +87,12 @@ xyz-based coordinate system.</p>
     <h2>Arguments</h2>
     <dl><dt>x</dt>
 <dd><p>an <a href="adv-class.html">adv</a> object.</p></dd>
+
+
 <dt>debug</dt>
 <dd><p>a flag that, if non-zero, turns on debugging.  Higher values
 yield more extensive debugging.</p></dd>
+
 </dl></div>
     <div id="details">
     <h2>Details</h2>
@@ -100,7 +103,9 @@ inferred from the header in the binary file.  If there is no such matrix
 (e.g. if the data were streamed through a data logger that did not capture
 the header), <code>beamToXyzAdv</code> the user will need to store one in
 <code>x</code>, e.g. by doing something like the following:</p>
-<p></p><div class="sourceCode"><pre><code></code></pre><p></p></div>
+<p></p><div class="sourceCode"><pre><code><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>x[[<span class="st">"transformation.matrix"</span>]] <span class="ot">&lt;-</span> <span class="fu">rbind</span>(<span class="fu">c</span>(<span class="dv">11100</span>, <span class="sc">-</span><span class="dv">5771</span>, <span class="sc">-</span><span class="dv">5321</span>),</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>                                      <span class="fu">c</span>( <span class="co">#' 291, 9716, -10002),</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>                                      <span class="fu">c</span>( <span class="dv">1409</span>, <span class="dv">1409</span>, <span class="dv">1409</span>)) <span class="sc">/</span> <span class="dv">4096</span></span></code></pre><p></p></div>
     </div>
     <div id="references">
     <h2>References</h2>
@@ -171,7 +176,7 @@ the header), <code>beamToXyzAdv</code> the user will need to store one in
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
       </footer></div>

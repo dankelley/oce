@@ -19,7 +19,7 @@ consider using binMean2D() instead, since it should be faster.)"><!-- mathjax --
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-8</span>
       </span>
     </div>
 
@@ -89,20 +89,31 @@ consider using <code><a href="binMean2D.html">binMean2D()</a></code> instead, si
     <h2>Arguments</h2>
     <dl><dt>x</dt>
 <dd><p>a vector of numerical values.</p></dd>
+
+
 <dt>f</dt>
 <dd><p>a vector of data to which the elements of <code>FUN</code> may be
 supplied</p></dd>
+
+
 <dt>xbreaks</dt>
 <dd><p>values of x at the boundaries between bins; calculated using
 <code><a href="https://rdrr.io/r/base/pretty.html" class="external-link">pretty()</a></code> if not supplied.</p></dd>
+
+
 <dt>FUN</dt>
 <dd><p>function to apply to the data</p></dd>
+
+
 <dt>...</dt>
 <dd><p>arguments to pass to the function <code>FUN</code></p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>A list with the following elements: the breaks in x and y
+    
+
+<p>A list with the following elements: the breaks in x and y
 (<code>xbreaks</code> and <code>ybreaks</code>), the break mid-points (<code>xmids</code> and
 <code>ymids</code>), and a matrix containing the result of applying function
 <code>FUN</code> to <code>f</code> subsetted by these breaks.</p>
@@ -151,7 +162,7 @@ supplied</p></dd>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
       </footer></div>

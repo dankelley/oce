@@ -30,7 +30,7 @@ formulae provided by Hill et al. (1986; reference 2), modified to match the
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-8</span>
       </span>
     </div>
 
@@ -119,24 +119,35 @@ formulae provided by Hill et al. (1986; reference 2), modified to match the
 <dd><p>a measure of conductivity (see also <code>conductivityUnit</code>)
 or an <code>oce</code> object holding hydrographic information. In the second case,
 all the other arguments to <code>swSCTp</code> are ignored.</p></dd>
+
+
 <dt>temperature</dt>
 <dd><p><em>in-situ</em> temperature (\(^\circ\)C), defined
 on the ITS-90 scale; see “Temperature units” in the documentation for
 <code><a href="swRho.html">swRho()</a></code>.</p></dd>
+
+
 <dt>pressure</dt>
 <dd><p>pressure (dbar).</p></dd>
+
+
 <dt>conductivityUnit</dt>
 <dd><p>string indicating the unit used for conductivity.
 This may be <code>"ratio"</code> or <code>""</code> (meaning conductivity ratio),
 <code>"mS/cm"</code> or <code>"S/m"</code>.  Note that the ratio mode assumes that
 measured conductivity has been divided by the standard conductivity
 of 4.2914 S/m.</p></dd>
+
+
 <dt>eos</dt>
 <dd><p>equation of state, either <code>"unesco"</code> or <code>"gsw"</code>.#'</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>Practical Salinity.</p>
+    
+
+<p>Practical Salinity.</p>
     </div>
     <div id="references">
     <h2>References</h2>
@@ -230,7 +241,7 @@ conductivity from salinity, see <code><a href="swCSTp.html">swCSTp()</a></code>.
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
       </footer></div>

@@ -19,7 +19,7 @@ an image plot is used to show TS data density."><!-- mathjax --><script src="htt
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-8</span>
       </span>
     </div>
 
@@ -103,21 +103,33 @@ an image plot is used to show TS data density.</p>
 <dd><p>suggested number of density levels (i.e. isopycnal curves);
 ignored if <code>levels</code> is supplied.  If this is set to 0, no isopycnal
 are drawn (see also <code>levels</code>, next).</p></dd>
+
+
 <dt>levels</dt>
 <dd><p>optional density levels to draw.  If this is <code>NULL</code>, then
 no isopycnals are drawn.</p></dd>
+
+
 <dt>rotate</dt>
 <dd><p>boolean, set to <code>TRUE</code> to write all density labels
 horizontally.</p></dd>
+
+
 <dt>rho1000</dt>
 <dd><p>boolean, set to <code>TRUE</code> to write isopycnal labels as e.g.
 1024 instead of 24.</p></dd>
+
+
 <dt>digits</dt>
 <dd><p>number of decimal digits to use in label (supplied to
 <code><a href="https://rdrr.io/r/base/Round.html" class="external-link">round()</a></code>).</p></dd>
+
+
 <dt>eos</dt>
 <dd><p>equation of state to be used, either <code>"unesco"</code> or
 <code>"gsw"</code>.</p></dd>
+
+
 <dt>trimIsopycnals</dt>
 <dd><p>logical value (<code>TRUE</code> by default) that
 indicates whether to trim isopycnal curves (if drawn)
@@ -125,18 +137,29 @@ to the region of temperature-salinity space for which density
 computations are considered to be valid in the context of the
 chosen <code>eos</code>; see the “Details” of the documentation
 for <code><a href="plotTS.html">plotTS()</a></code>.</p></dd>
+
+
 <dt>cex</dt>
 <dd><p>size for labels.</p></dd>
+
+
 <dt>col</dt>
 <dd><p>color for lines and labels.</p></dd>
+
+
 <dt>lwd</dt>
 <dd><p>line width for isopycnal curves</p></dd>
+
+
 <dt>lty</dt>
 <dd><p>line type for isopycnal curves</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>None.</p>
+    
+
+<p>None.</p>
     </div>
     <div id="references">
     <h2>References</h2>
@@ -172,7 +195,7 @@ Journal of Atmospheric and Oceanic Technology 20, no. 5 (May 1, 2003): 730-41.
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
       </footer></div>

@@ -20,7 +20,7 @@ NOAA website (see reference 1)."><!-- mathjax --><script src="https://cdnjs.clou
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-8</span>
       </span>
     </div>
 
@@ -92,22 +92,31 @@ NOAA website (see reference 1).</p>
     <dl><dt>longitude</dt>
 <dd><p>longitude in degrees east (negative for degrees west).  The
 dimensions must conform to lat.</p></dd>
+
+
 <dt>latitude</dt>
 <dd><p>latitude in degrees north, a number, vector, or matrix.</p></dd>
+
+
 <dt>time</dt>
 <dd><p>The time at which the field is desired. This may be a
 single value or a vector or matrix that is structured to match
 <code>longitude</code> and <code>latitude</code>. The value may a decimal year,
 a POSIXt time, or a Date time.</p></dd>
+
+
 <dt>version</dt>
 <dd><p>an integer that must be either 12 or 13, to specify
 the version number of the formulae. Note that 13 became the default
 on 2020 March 3, so to old code will need to specify <code>version=12</code>
 to work as it did before that date.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>A list containing <code>declination</code>, <code>inclination</code>, and
+    
+
+<p>A list containing <code>declination</code>, <code>inclination</code>, and
 <code>intensity</code>.</p>
     </div>
     <div id="details">
@@ -159,13 +168,13 @@ SM to DK dated June 5, 2015).</p>
 <span class="r-in"><span class="co"># 1. Today's value at Halifax NS</span></span>
 <span class="r-in"><span class="fu">magneticField</span><span class="op">(</span><span class="op">-</span><span class="op">(</span><span class="fl">63</span><span class="op">+</span><span class="fl">36</span><span class="op">/</span><span class="fl">60</span><span class="op">)</span>, <span class="fl">44</span><span class="op">+</span><span class="fl">39</span><span class="op">/</span><span class="fl">60</span>, <span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.Date</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $declination</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] -16.65089</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] -16.64187</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $inclination</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 66.64503</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 66.6384</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $intensity</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 51359.89</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 51355.48</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"></span>
 <span class="r-in"><span class="co"># 2. World map of declination in year 2000.</span></span>
@@ -245,7 +254,7 @@ SM to DK dated June 5, 2015).</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
       </footer></div>

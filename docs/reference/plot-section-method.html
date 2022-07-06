@@ -18,7 +18,7 @@ which."><!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/math
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-8</span>
       </span>
     </div>
 
@@ -132,35 +132,53 @@ which."><!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/math
     <h2>Arguments</h2>
     <dl><dt>x</dt>
 <dd><p>a <a href="section-class.html">section</a> object.</p></dd>
+
+
 <dt>which</dt>
 <dd><p>a list of desired plot types, as explained in “Details”.
 There may be up to four panels in total, and the desired plots are placed in
 these panels, in reading order.  If only one panel is plotted, <code>par</code> is
 not adjusted, which makes it easy to add to the plot with subsequent plotting
 commands.</p></dd>
+
+
 <dt>eos</dt>
 <dd><p>Character indication of the seawater equation of state
 to use. The permitted choices are <code>"gsw"</code> and <code>"unesco"</code>. If <code>eos</code> is
 not supplied, it defaults to <code><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></code><code>("oceEOS",default="gsw")</code>.</p></dd>
+
+
 <dt>at</dt>
 <dd><p>If <code>NULL</code> (the default), the x axis will indicate the distance
 of the stations from the first in the section.  (This may give errors in the
 contouring routine, if the stations are not present in a geographical order.)
 If a list, then it indicates the values at which stations will be plotted.</p></dd>
+
+
 <dt>labels</dt>
 <dd><p>Either a logical, indicating whether to put labels on the x axis,
 or a vector that is a list of labels to be placed at the x positions indicated
 by <code>at</code>.</p></dd>
+
+
 <dt>grid</dt>
 <dd><p>If <code>TRUE</code>, points are drawn at data locations.</p></dd>
+
+
 <dt>contourLevels</dt>
 <dd><p>Optional contour levels.</p></dd>
+
+
 <dt>contourLabels</dt>
 <dd><p>Optional contour labels.</p></dd>
+
+
 <dt>stationIndices</dt>
 <dd><p>Optional list of the indices of stations to use.  Note
 that an index is <em>not</em> a station number, e.g. to show the first 4
 stations, use <code>station.indices=1:4</code>.</p></dd>
+
+
 <dt>coastline</dt>
 <dd><p>Either a <a href="coastline-class.html">coastline</a> object to be used,
 or a string.  In the second case, the permitted
@@ -170,10 +188,16 @@ version that is provided by <a href="https://CRAN.R-project.org/package=oce" cla
 <code>"coastlineWorldMedium"</code> or <code>"coastlineWorldFine"</code> for two
 coastlines provided by the <a href="https://CRAN.R-project.org/package=ocedata" class="external-link"><span class="pkg">ocedata</span></a> package, or <code>"none"</code>, to avoid
 drawing a coastline.</p></dd>
+
+
 <dt>xlim</dt>
 <dd><p>Optional limit for x axis (only in sections, not map).</p></dd>
+
+
 <dt>ylim</dt>
 <dd><p>Optional limit for y axis (only in sections, not map)</p></dd>
+
+
 <dt>zlim, zbreaks, zcol</dt>
 <dd><p>Elements that control colours for <code>image</code> and <code>points</code>
 plot types, i.e. if <code>ztype</code> is either <code>"points"</code> or <code>"image"</code>.
@@ -189,16 +213,24 @@ integer as its sole argument and returns that number of colours.
 If not provided, <code>zcol</code> defaults to <code><a href="oceColorsViridis.html">oceColorsViridis()</a></code>.
 These three parameters are used in Example 6, an illustration of
 Atlantic salinity along 36N.</p></dd>
+
+
 <dt>map.xlim, map.ylim</dt>
 <dd><p>Optional limits for station map; <code>map.ylim</code> is
 ignored if <code>map.xlim</code> is provided.</p></dd>
+
+
 <dt>clongitude, clatitude, span</dt>
 <dd><p>Optional map centre position and span (km).</p></dd>
+
+
 <dt>projection</dt>
 <dd><p>Parameter specifying map
 projection; see <code><a href="mapPlot.html">mapPlot()</a></code>.  If <code>projection="automatic"</code>,
 however, a projection is devised from the data, with <code>stereographic</code> if
 the mean latitude exceeds 70N and <code>mollweide</code> otherwise.</p></dd>
+
+
 <dt>xtype</dt>
 <dd><p>Type of x axis, for contour plots, either <code>"distance"</code> for
 distance (in km) to the first point in the section, <code>"track"</code> for distance
@@ -206,10 +238,14 @@ along the cruise track, <code>"longitude"</code>, <code>"latitude"</code>,
 <code>"time"</code> or <code>"spine"</code> (distance along a spine that was added
 with <code><a href="addSpine.html">addSpine()</a></code>).  Note that if the x values are not in order, they will be put in
 order, and since that might not make physical sense, a warning will be issued.</p></dd>
+
+
 <dt>ytype</dt>
 <dd><p>Type of y axis for contour plots, either <code>"pressure"</code> for
 pressure (in dbar, with zero at the surface) or <code>"depth"</code> for depth (in m
 below the surface, calculated from pressure with <code><a href="swDepth.html">swDepth()</a></code>).</p></dd>
+
+
 <dt>ztype</dt>
 <dd><p>String indicating whether to how to indicate the "z"
 data (in the R sense, i.e. this could be salinity, temperature, etc; it does
@@ -218,25 +254,39 @@ contours, <code>"image"</code> for an image (drawn with <code><a href="imagep.ht
 <code>filledContours=TRUE</code>), or <code>"points"</code> to draw points.
 In the first two cases, the data must be gridded, with identical pressures at
 each station.</p></dd>
+
+
 <dt>longitude0, latitude0</dt>
 <dd><p>Location of the point from which distance is measured.
 These values are ignored unless <code>xtype</code> is <code>"distance"</code>.</p></dd>
+
+
 <dt>legend.loc</dt>
 <dd><p>Location of legend, as supplied to <code><a href="https://rdrr.io/r/graphics/legend.html" class="external-link">legend()</a></code>, or
 set to the empty string to avoid plotting a legend.</p></dd>
+
+
 <dt>legend.text</dt>
 <dd><p>character value indicating the text for the legend.
 If this is NULL (the default) then the legend is automatically
 constructed by <code><a href="labelWithUnit.html">labelWithUnit()</a></code>, based on the value of <code>which</code>.</p></dd>
+
+
 <dt>showStations</dt>
 <dd><p>Logical indicating whether to draw station numbers on maps.</p></dd>
+
+
 <dt>showStart</dt>
 <dd><p>Logical indicating whether to indicate the first station with</p></dd>
+
+
 <dt>stationTicks</dt>
 <dd><p>A logical value indicating whether to indicate station
 locations with ticks at the top margin of cross-section plots. Setting this
 parameter to <code>FALSE</code> frees the user up to do their own labelling
 at this spot.</p></dd>
+
+
 <dt>showBottom</dt>
 <dd><p>a value indicating whether (and how) to indicate the
 ocean bottom on cross-section views.  There are three possibilities.
@@ -247,32 +297,52 @@ and similarly lines are drawn for <code>"lines"</code>, and points for <code>"po
 (c) If <code>showBottom</code> is a <a href="topo-class.html">topo</a> object, then the station locations are
 interpolated to that topography and the results are shown with a polygon.
 See “Examples”.</p></dd>
+
+
 <dt>showSpine</dt>
 <dd><p>logical value used if <code>which="map"</code>.  If <code>showSpine</code> is
 <code>TRUE</code> and <code>section</code> has had a spine added with <code><a href="addSpine.html">addSpine()</a></code>, then
 the spine is drawn in blue.</p></dd>
+
+
 <dt>drawPalette</dt>
 <dd><p>Logical value indicating whether to draw a palette when <code>ztype="image"</code>
 ignored otherwise.</p></dd>
+
+
 <dt>axes</dt>
 <dd><p>Logical value indicating whether to draw axes.</p></dd>
+
+
 <dt>mgp</dt>
 <dd><p>A 3-element numerical vector to use for <code>par(mgp)</code>, and also for
 <code>par(mar)</code>, computed from this. If not provided, this defaults to
 <code><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></code><code>("oceMgp")</code>.</p></dd>
+
+
 <dt>mar</dt>
 <dd><p>Value to be used with <code><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></code><code>("mar")</code>. If not provided,
 a default is set up.</p></dd>
+
+
 <dt>col</dt>
 <dd><p>Color for line types.  If not provided, this defaults to
 <code><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></code><code>("col")</code>.  See <code>zcol</code>, for <code>ztype="image"</code> and <code>ztype="points"</code>.</p></dd>
+
+
 <dt>cex</dt>
 <dd><p>Numerical character-expansion factor, which defaults to <code><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></code><code>("cex")</code>.</p></dd>
+
+
 <dt>pch</dt>
 <dd><p>Indication of symbol type; defaults to <code><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></code><code>("pch")</code>.</p></dd>
+
+
 <dt>labcex</dt>
 <dd><p>Size of characters in contour labels (passed to
 <code><a href="https://rdrr.io/r/graphics/contour.html" class="external-link">contour()</a></code>).</p></dd>
+
+
 <dt>debug</dt>
 <dd><p>an integer specifying whether debugging information is
 to be printed during the processing. This is a general parameter that
@@ -280,12 +350,17 @@ is used by many <code>oce</code> functions. Generally, setting <code>debug=0</co
 turns off the printing, while higher values suggest that more information
 be printed. If <code>debug</code> is not supplied, it defaults to
 <code><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></code><code>("oceDebug")</code>.</p></dd>
+
+
 <dt>...</dt>
 <dd><p>Optional arguments passed to the contouring function.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>If the original section was gridded, the return value is that section.
+    
+
+<p>If the original section was gridded, the return value is that section.
 Otherwise, the gridded section that was constructed for the plot is returned.
 In both cases, the value is returned silently. The
 purpose of returning the section is to enable subsequent processing
@@ -327,7 +402,61 @@ to be the location, in arbitrary units, along the x-axis of labels specified by
 <p>The following examples were once part of the “Examples”
 section, but were moved here in May 2022, to reduce the build-check
 time for CRAN submission.</p>
-<p></p><div class="sourceCode"><pre><code></code></pre><p></p></div>
+<p></p><div class="sourceCode"><pre><code><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(oce)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(section)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>GS <span class="ot">&lt;-</span> <span class="fu">subset</span>(section, <span class="dv">113</span><span class="sc">&lt;=</span>stationId<span class="sc">&amp;</span>stationId<span class="sc">&lt;=</span><span class="dv">129</span>)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>GSg <span class="ot">&lt;-</span> <span class="fu">sectionGrid</span>(GS, <span class="at">p=</span><span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">2000</span>, <span class="dv">100</span>))</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Gulf Stream, salinity data and contoured</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">1</span>))</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(GS, <span class="at">which=</span><span class="dv">1</span>, <span class="at">ylim=</span><span class="fu">c</span>(<span class="dv">2000</span>, <span class="dv">0</span>), <span class="at">ztype=</span><span class="st">"points"</span>,</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>     <span class="at">zbreaks=</span><span class="fu">seq</span>(<span class="dv">0</span>,<span class="dv">30</span>,<span class="dv">2</span>), <span class="at">pch=</span><span class="dv">20</span>, <span class="at">cex=</span><span class="dv">3</span>)</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(GSg, <span class="at">which=</span><span class="dv">1</span>, <span class="at">ztype=</span><span class="st">"image"</span>, <span class="at">zbreaks=</span><span class="fu">seq</span>(<span class="dv">0</span>,<span class="dv">30</span>,<span class="dv">2</span>))</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Gulf Stream, temperature grid (image) and data (dots)</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">1</span>))</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(GSg, <span class="at">which=</span><span class="dv">1</span>, <span class="at">ztype=</span><span class="st">"image"</span>)</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>T <span class="ot">&lt;-</span> GS[[<span class="st">"temperature"</span>]]</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>col <span class="ot">&lt;-</span> <span class="fu">oceColorsViridis</span>(<span class="dv">100</span>)[<span class="fu">rescale</span>(T, <span class="at">rlow=</span><span class="dv">1</span>, <span class="at">rhigh=</span><span class="dv">100</span>)]</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="fu">points</span>(GS[[<span class="st">"distance"</span>]],GS[[<span class="st">"depth"</span>]],<span class="at">pch=</span><span class="dv">20</span>,<span class="at">cex=</span><span class="dv">3</span>,<span class="at">col=</span><span class="st">"white"</span>)</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a><span class="fu">points</span>(GS[[<span class="st">"distance"</span>]],GS[[<span class="st">"depth"</span>]],<span class="at">pch=</span><span class="dv">20</span>,<span class="at">cex=</span><span class="fl">2.5</span>,<span class="at">col=</span>col)</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a><span class="co"># 4. Image of temperature, with a high-salinity contour on top;</span></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a><span class="co">#    note the Mediterranean water.</span></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>sec <span class="ot">&lt;-</span> <span class="fu">plot</span>(section, <span class="at">which=</span><span class="st">"temperature"</span>, <span class="at">ztype=</span><span class="st">"image"</span>)</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>S <span class="ot">&lt;-</span> sec[[<span class="st">"salinity"</span>, <span class="st">"grid:distance-pressure"</span>]]</span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a><span class="fu">contour</span>(S<span class="sc">$</span>distance, S<span class="sc">$</span>pressure, S<span class="sc">$</span>field, <span class="at">level=</span><span class="fl">35.8</span>, <span class="at">lwd=</span><span class="dv">3</span>, <span class="at">add=</span><span class="cn">TRUE</span>)</span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a><span class="co"># 5. Contours of salinity, with dots for high pressure and spice</span></span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(section, <span class="at">which=</span><span class="st">"salinity"</span>)</span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>distance <span class="ot">&lt;-</span> section[[<span class="st">"distance"</span>]]</span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>depth <span class="ot">&lt;-</span> section[[<span class="st">"depth"</span>]]</span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>spice <span class="ot">&lt;-</span> section[[<span class="st">"spice"</span>]]</span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>look <span class="ot">&lt;-</span> spice <span class="sc">&gt;</span> <span class="fl">1.8</span> <span class="sc">&amp;</span> depth <span class="sc">&gt;</span> <span class="dv">500</span></span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a><span class="fu">points</span>(distance[look], depth[look], <span class="at">col=</span><span class="st">"red"</span>)</span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a><span class="co"># Image of Absolute Salinity, with 4-minute bathymetry</span></span>
+<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a><span class="co"># It's easy to calculate the desired area for the bathymetry,</span></span>
+<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a><span class="co"># but for brevity we'll hard-code it. Note that download.topo()</span></span>
+<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a><span class="co"># requires the "raster" and "ncdf4" packages to be installed.</span></span>
+<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="fu">requireNamespace</span>(<span class="st">"raster"</span>) <span class="sc">&amp;&amp;</span> <span class="fu">requireNamespace</span>(<span class="st">"ncdf4"</span>)) {</span>
+<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a>    f <span class="ot">&lt;-</span> <span class="fu">download.topo</span>(<span class="at">west=</span><span class="sc">-</span><span class="dv">80</span>, <span class="at">east=</span><span class="dv">0</span>, <span class="at">south=</span><span class="dv">35</span>, <span class="at">north=</span><span class="dv">40</span>, <span class="at">resolution=</span><span class="dv">4</span>)</span>
+<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a>    t <span class="ot">&lt;-</span> <span class="fu">read.topo</span>(f)</span>
+<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a>    <span class="fu">plot</span>(section, <span class="at">which=</span><span class="st">"SA"</span>, <span class="at">xtype=</span><span class="st">"longitude"</span>, <span class="at">ztype=</span><span class="st">"image"</span>, <span class="at">showBottom=</span>t)</span>
+<span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb1-43"><a href="#cb1-43" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-44"><a href="#cb1-44" aria-hidden="true" tabindex="-1"></a><span class="co"># Temperature with salinity added in red</span></span>
+<span id="cb1-45"><a href="#cb1-45" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(GSg, <span class="at">which=</span><span class="st">"temperature"</span>)</span>
+<span id="cb1-46"><a href="#cb1-46" aria-hidden="true" tabindex="-1"></a>distance <span class="ot">&lt;-</span> GSg[[<span class="st">"distance"</span>, <span class="st">"byStation"</span>]]</span>
+<span id="cb1-47"><a href="#cb1-47" aria-hidden="true" tabindex="-1"></a>depth <span class="ot">&lt;-</span> GSg[[<span class="st">"station"</span>, <span class="dv">1</span>]][[<span class="st">"depth"</span>]]</span>
+<span id="cb1-48"><a href="#cb1-48" aria-hidden="true" tabindex="-1"></a>S <span class="ot">&lt;-</span> <span class="fu">matrix</span>(GSg[[<span class="st">"salinity"</span>]], <span class="at">byrow=</span><span class="cn">TRUE</span>, <span class="at">nrow=</span><span class="fu">length</span>(GSg[[<span class="st">"station"</span>]]))</span>
+<span id="cb1-49"><a href="#cb1-49" aria-hidden="true" tabindex="-1"></a><span class="fu">contour</span>(distance, depth, S, <span class="at">col=</span><span class="dv">2</span>, <span class="at">add=</span><span class="cn">TRUE</span>)</span>
+<span id="cb1-50"><a href="#cb1-50" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-51"><a href="#cb1-51" aria-hidden="true" tabindex="-1"></a><span class="co"># Image with controlled colours</span></span>
+<span id="cb1-52"><a href="#cb1-52" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(GSg, <span class="at">which=</span><span class="st">"salinity"</span>, <span class="at">ztype=</span><span class="st">"image"</span>,</span>
+<span id="cb1-53"><a href="#cb1-53" aria-hidden="true" tabindex="-1"></a>    <span class="at">zlim=</span><span class="fu">c</span>(<span class="dv">35</span>, <span class="fl">37.5</span>),</span>
+<span id="cb1-54"><a href="#cb1-54" aria-hidden="true" tabindex="-1"></a>    <span class="at">zbreaks=</span><span class="fu">seq</span>(<span class="dv">35</span>, <span class="fl">37.5</span>, <span class="fl">0.25</span>),</span>
+<span id="cb1-55"><a href="#cb1-55" aria-hidden="true" tabindex="-1"></a>    <span class="at">zcol=</span>oceColorsTurbo)</span></code></pre><p></p></div>
     </div>
     <div id="see-also">
     <h2>See also</h2>
@@ -413,7 +542,7 @@ with them.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
       </footer></div>

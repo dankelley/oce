@@ -21,7 +21,7 @@ pre-grid, with the pregrid argument."><!-- mathjax --><script src="https://cdnjs
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-8</span>
       </span>
     </div>
 
@@ -109,37 +109,55 @@ pre-grid, with the <code>pregrid</code> argument.</p>
     <h2>Arguments</h2>
     <dl><dt>x, y</dt>
 <dd><p>a vector of x and y locations.</p></dd>
+
+
 <dt>z</dt>
 <dd><p>a vector of z values, one at each (x,y) location.</p></dd>
+
+
 <dt>w</dt>
 <dd><p>a optional vector of weights at the (x,y) location.  If not
 supplied, then a weight of 1 is used for each point, which means equal
 weighting.  Higher weights give data points more influence. If <code>pregrid</code>
 is <code>TRUE</code>, then any supplied value of <code>w</code> is ignored, and instead
 each of the pregriddd points is given equal weight.</p></dd>
+
+
 <dt>xg, yg</dt>
 <dd><p>optional vectors defining the x and y grids.  If not supplied,
 these values are inferred from the data, using e.g. <code>pretty(x, n=50)</code>.</p></dd>
+
+
 <dt>xgl, ygl</dt>
 <dd><p>optional lengths of the x and y grids, to be constructed with
 <code><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq()</a></code> spanning the data range.  These values <code>xgl</code> are only
 examined if <code>xg</code> and <code>yg</code> are not supplied.</p></dd>
+
+
 <dt>xr, yr</dt>
 <dd><p>optional values defining the x and y radii of the weighting ellipse.
 If not supplied, these are calculated as the span of x
 and y over the square root of the number of data.</p></dd>
+
+
 <dt>gamma</dt>
 <dd><p>grid-focussing parameter.  At each successive iteration, <code>xr</code> and
 <code>yr</code> are reduced by a factor of <code>sqrt(gamma)</code>.</p></dd>
+
+
 <dt>iterations</dt>
 <dd><p>number of iterations.  Set this to 1 to perform just
 one iteration, using the radii as described at <code>xr,yr</code> above.</p></dd>
+
+
 <dt>trim</dt>
 <dd><p>a number between 0 and 1, indicating the quantile of data weight
 to be used as a criterion for blanking out the gridded value (using
 <code>NA</code>).  If 0, the whole <code>zg</code> grid is returned.  If &gt;0, any spots
 on the grid where the data weight is less than the <code>trim</code>-th
 <code><a href="https://rdrr.io/r/stats/quantile.html" class="external-link">quantile()</a></code> are set to <code>NA</code>.  See examples.</p></dd>
+
+
 <dt>pregrid</dt>
 <dd><p>an indication of whether to pre-grid the data. If
 <code>FALSE</code>, this is not done, i.e. conventional Barnes interpolation is
@@ -154,14 +172,19 @@ integers, for the grid refinement in x and y. The purpose of using
 spatial bias (e.g. with a single station that is repeated frequently in an
 otherwise seldom-sampled region).  A form of pregridding is done in the
 World Ocean Atlas, for example.</p></dd>
+
+
 <dt>debug</dt>
 <dd><p>a flag that turns on debugging.  Set to 0 for no debugging
 information, to 1 for more, etc; the value is reduced by 1 for each
 descendent function call.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>A list containing: <code>xg</code>, a vector holding the x-grid);
+    
+
+<p>A list containing: <code>xg</code>, a vector holding the x-grid);
 <code>yg</code>, a vector holding the y-grid; <code>zg</code>, a matrix holding the
 gridded values; <code>wg</code>, a matrix holding the weights used in the
 interpolation at its final iteration; and <code>zd</code>, a vector of the same
@@ -237,7 +260,7 @@ conventional data,'' <em>J.  Climate Appl.  Met.</em>, vol 22, p. 1487-1503.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
       </footer></div>

@@ -21,7 +21,7 @@ with the defaults used by mapPlot()."><!-- mathjax --><script src="https://cdnjs
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-8</span>
       </span>
     </div>
 
@@ -106,24 +106,40 @@ with the defaults used by <code><a href="mapPlot.html">mapPlot()</a></code>.</p>
     <dl><dt>dlongitude</dt>
 <dd><p>increment in longitude, ignored if <code>longitude</code>
 is supplied, but otherwise determines the longitude sequence.</p></dd>
+
+
 <dt>dlatitude</dt>
 <dd><p>increment in latitude, ignored if <code>latitude</code>
 is supplied, but otherwise determines the latitude sequence.</p></dd>
+
+
 <dt>longitude</dt>
 <dd><p>numeric vector of longitudes, or <code>NULL</code> to prevent drawing
 longitude lines.</p></dd>
+
+
 <dt>latitude</dt>
 <dd><p>numeric vector of latitudes, or <code>NULL</code> to prevent drawing
 latitude lines.</p></dd>
+
+
 <dt>col</dt>
 <dd><p>color of lines</p></dd>
+
+
 <dt>lty</dt>
 <dd><p>line type</p></dd>
+
+
 <dt>lwd</dt>
 <dd><p>line width</p></dd>
+
+
 <dt>polarCircle</dt>
 <dd><p>a number indicating the number of degrees of latitude
 extending from the poles, within which zones are not drawn.</p></dd>
+
+
 <dt>longitudelim</dt>
 <dd><p>optional argument specifying suggested longitude limits
 for the grid. If this is not supplied, grid lines are drawn for the
@@ -131,17 +147,24 @@ whole globe, which can yield excessively slow drawing speeds for
 small-region plots. This, and <code>latitudelim</code>, are both set by
 <code><a href="mapPlot.html">mapPlot()</a></code> if the arguments of the same name are passed to
 that function.</p></dd>
+
+
 <dt>latitudelim</dt>
 <dd><p>similar to <code>longitudelim</code>.</p></dd>
+
+
 <dt>debug</dt>
 <dd><p>a flag that turns on debugging.  Set to 1 to get a moderate
 amount of debugging information, 2 to go two function levels deep, or
 3 to go all the way to the core functions. Any value above 3 will be
 truncated to 3.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>A <a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a>, returned silently, containing
+    
+
+<p>A <a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a>, returned silently, containing
 <code>"side"</code>, <code>"value"</code>, <code>"type"</code>, and <code>"at"</code>.
 A default call to <code><a href="mapPlot.html">mapPlot()</a></code> ensures agreement of grid and axes by using
 this return value in a call to <code><a href="mapAxis.html">mapAxis()</a></code>.</p>
@@ -216,7 +239,7 @@ whereas the present function has increments for the first two arguments.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
       </footer></div>

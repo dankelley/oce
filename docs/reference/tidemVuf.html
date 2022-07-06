@@ -19,7 +19,7 @@ which inherits from the Fortran code described by Foreman (1978)."><!-- mathjax 
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-8</span>
       </span>
     </div>
 
@@ -89,16 +89,23 @@ which inherits from the Fortran code described by Foreman (1978).</p>
     <h2>Arguments</h2>
     <dl><dt>t</dt>
 <dd><p>a single time in <code><a href="https://rdrr.io/r/base/DateTimeClasses.html" class="external-link">POSIXct()</a></code> format, with timezone <code>"UTC"</code>.</p></dd>
+
+
 <dt>j</dt>
 <dd><p>integer vector, giving indices of tidal constituents to use.</p></dd>
+
+
 <dt>latitude</dt>
 <dd><p>optional numerical value containing the latitude in degrees North.
 If not provided, <code>u</code> in the return value will be a vector consisting of
 repeated 0 value, and <code>f</code> will be a vector of repeated 1 value.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>A <code>list</code> containing
+    
+
+<p>A <code>list</code> containing
 items named <code>v</code>, <code>u</code> and <code>f</code> as described in the <code>T_TIDE</code> documentation,
 as well in Pawlowicz et al. (2002) and Foreman (1978).</p>
     </div>
@@ -165,7 +172,7 @@ of the <code>T_TIDE</code> Matlab package (see Pawlowicz et al. 2002).</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
       </footer></div>

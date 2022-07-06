@@ -22,7 +22,7 @@ on a plot."><!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-8</span>
       </span>
     </div>
 
@@ -140,6 +140,8 @@ on a plot.</p>
     <h2>Arguments</h2>
     <dl><dt>x</dt>
 <dd><p>a <a href="ctd-class.html">ctd</a> object.</p></dd>
+
+
 <dt>xtype</dt>
 <dd><p>Item(s) plotted on the x axis, either a vector of length equal
 to that of <code>pressure</code> in the <code>data</code> slot,
@@ -171,125 +173,212 @@ to 0dbar (i.e. the surface), 1000dbar, 2000dbar, 3000dbar, and 4000dbar.</p></li
 <li><p><code>"Rrho"</code> Profile of Rrho, defined in the diffusive sense.</p></li>
 <li><p><code>"RrhoSF"</code> Profile of Rrho, defined in the salt-finger sense.</p></li>
 </ul></dd>
+
+
 <dt>ytype</dt>
 <dd><p>variable to use on y axis. The valid choices are:
 <code>"pressure"</code> (the default), <code>"z"</code>,
 <code>"depth"</code>, <code>"sigmaTheta"</code> and <code>"sigma0"</code>.</p></dd>
+
+
 <dt>eos</dt>
 <dd><p>equation of state to be used, either <code>"unesco"</code> or
 <code>"gsw"</code>.</p></dd>
+
+
 <dt>lty</dt>
 <dd><p>line type for the profile.</p></dd>
+
+
 <dt>xlab</dt>
 <dd><p>optional label for x axis (at top of plot). If not
 provided, the value of <code>xtype</code> is used (along with the units
 of the variable) to construct a label. For user-supplied <code>xlab</code>,
 the unit (if any) must be specified as in e.g.
 <code>xlab=expression("Speed ["*m/s*"]")</code>.</p></dd>
+
+
 <dt>ylab</dt>
 <dd><p>optional label for y axis.  See <code>xlab</code> for a note on
 units.  Setting <code>ylab=""</code> prevents labelling the axis.</p></dd>
+
+
 <dt>col</dt>
 <dd><p>color for a general profile.</p></dd>
+
+
 <dt>col.salinity</dt>
 <dd><p>color for salinity profile (see “Details”).</p></dd>
+
+
 <dt>col.temperature</dt>
 <dd><p>color for temperature (see “Details”).</p></dd>
+
+
 <dt>col.rho</dt>
 <dd><p>color for density (see “Details”).</p></dd>
+
+
 <dt>col.N2</dt>
 <dd><p>color for square of buoyancy frequency (see
 “Details”).</p></dd>
+
+
 <dt>col.dpdt</dt>
 <dd><p>color for dP/dt.</p></dd>
+
+
 <dt>col.time</dt>
 <dd><p>color for delta-time.</p></dd>
+
+
 <dt>pt.bg</dt>
 <dd><p>inside color for symbols with <code>pch</code> in 21:25</p></dd>
+
+
 <dt>grid</dt>
 <dd><p>logical, set to <code>TRUE</code> to get a grid.</p></dd>
+
+
 <dt>col.grid</dt>
 <dd><p>color for grid.</p></dd>
+
+
 <dt>lty.grid</dt>
 <dd><p>line type for grid.</p></dd>
+
+
 <dt>Slim</dt>
 <dd><p>Optional limit for S axis</p></dd>
+
+
 <dt>Clim</dt>
 <dd><p>Optional limit for conductivity axis</p></dd>
+
+
 <dt>Tlim</dt>
 <dd><p>Optional limit for T axis</p></dd>
+
+
 <dt>densitylim</dt>
 <dd><p>Optional limit for density axis</p></dd>
+
+
 <dt>N2lim</dt>
 <dd><p>Optional limit for N2 axis</p></dd>
+
+
 <dt>Rrholim</dt>
 <dd><p>Optional limit for Rrho axis</p></dd>
+
+
 <dt>dpdtlim</dt>
 <dd><p>Optional limit for dp/dt axis</p></dd>
+
+
 <dt>timelim</dt>
 <dd><p>Optional limit for delta-time axis</p></dd>
+
+
 <dt>plim</dt>
 <dd><p>Optional limit for pressure axis, ignored unless
 <code>ytype=="pressure"</code>, in which case it takes precedence over
 <code>ylim</code>.</p></dd>
+
+
 <dt>xlim</dt>
 <dd><p>Optional limit for x axis, which can apply to any plot type.
 This is ignored if the plotted x variable is something for which a limit
 may be specified with an argument, e.g. <code>xlim</code> is ignored for a
 salinity profile, because <code>Slim</code> ought to be given in such a case.</p></dd>
+
+
 <dt>ylim</dt>
 <dd><p>Optional limit for y axis, which can apply to any plot type,
 although is overridden by <code>plim</code> if <code>ytype</code> is <code>"pressure"</code>
 or by <code>densitylim</code> if <code>ytype</code> is <code>"sigmaTheta"</code>.</p></dd>
+
+
 <dt>lwd</dt>
 <dd><p>lwd value for data line</p></dd>
+
+
 <dt>xaxs</dt>
 <dd><p>value of <code><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par()</a></code> <code>xaxs</code> to use</p></dd>
+
+
 <dt>yaxs</dt>
 <dd><p>value of <code><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par()</a></code> <code>yaxs</code> to use</p></dd>
+
+
 <dt>cex</dt>
 <dd><p>size to be used for plot symbols (see <code><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par()</a></code>)</p></dd>
+
+
 <dt>pch</dt>
 <dd><p>code for plotting symbol (see <code><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par()</a></code>).</p></dd>
+
+
 <dt>useSmoothScatter</dt>
 <dd><p>boolean, set to <code>TRUE</code> to use
 <code><a href="https://rdrr.io/r/graphics/smoothScatter.html" class="external-link">smoothScatter()</a></code> instead of <code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code> to draw the plot.</p></dd>
+
+
 <dt>df</dt>
 <dd><p>optional argument, passed to <code><a href="swN2.html">swN2()</a></code> if provided, and
 if a plot using \(N^2\) is requested.</p></dd>
+
+
 <dt>keepNA</dt>
 <dd><p>FALSE</p></dd>
+
+
 <dt>type</dt>
 <dd><p>type of plot to draw, using the same scheme as
 <code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code>.</p></dd>
+
+
 <dt>mgp</dt>
 <dd><p>3-element numerical vector to use for <a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a><code>(mgp)</code>, and also
 for <a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a><code>(mar)</code>, computed from this.  The default is tighter than the R
 default, in order to use more space for the data and less for the axes.</p></dd>
+
+
 <dt>mar</dt>
 <dd><p>Four-element numerical value to be used to set the plot
 margins, with a call to <a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a><code>(mar)</code> prior to the plot.
 If this is not supplied, a reasonable default will be set up.</p></dd>
+
+
 <dt>add</dt>
 <dd><p>A logical value that controls whether to add to an existing plot.  (It
 makes sense to use <code>add=TRUE</code> in the <code>panel</code> argument of a
 <code><a href="https://rdrr.io/r/graphics/coplot.html" class="external-link">coplot()</a></code>, for example.)</p></dd>
+
+
 <dt>inset</dt>
 <dd><p>A logical value indicating whether to draw an inset plot.
 Setting this to <code>TRUE</code> will prevent the present function from adjusting
 the margins, which is
 necessary because margin adjustment is the basis for the method used by
 <code><a href="plotInset.html">plotInset()</a></code>.</p></dd>
+
+
 <dt>debug</dt>
 <dd><p>a flag that turns on debugging.  Set to 1 to get a moderate
 amount of debugging information, or to 2 to get more.</p></dd>
+
+
 <dt>...</dt>
 <dd><p>optional arguments passed to other functions.  A common example
 is to set <code>df</code>, for use in <code><a href="swN2.html">swN2()</a></code> calculations.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>None.</p>
+    
+
+<p>None.</p>
     </div>
     <div id="see-also">
     <h2>See also</h2>
@@ -391,7 +480,7 @@ objects, and <code><a href="plotTS.html">plotTS()</a></code> plots a temperature
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
       </footer></div>

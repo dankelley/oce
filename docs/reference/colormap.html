@@ -20,7 +20,7 @@ drawing palettes with drawPalette(), etc."><!-- mathjax --><script src="https://
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-8</span>
       </span>
     </div>
 
@@ -109,6 +109,8 @@ If <code>z</code> is given, the return value will contain an item named
 <code>zcol</code> that will be a vector of the same length as <code>z</code>, containing
 a color for each point.  If <code>z</code> is not given, <code>zcol</code> will contain
 just one item, the color <code>"black"</code>.</p></dd>
+
+
 <dt>zlim</dt>
 <dd><p>optional vector containing two numbers that specify the <code>z</code>
 limits for the color scale. This can only be provided in cases A
@@ -121,11 +123,15 @@ subdivisions to use within the range set by <code>zlim</code>.
 In case B, <code>zlim</code> is inferred from using <code><a href="rangeExtended.html">rangeExtended()</a></code> on <code>c(x0,x1)</code>.
 In case C, providing <code>zlim</code> yields an error message, because it makes no
 sense in the context of a named, predefined color scheme.</p></dd>
+
+
 <dt>zclip</dt>
 <dd><p>logical, with <code>TRUE</code> indicating that z values outside the
 range of <code>zlim</code> or <code>breaks</code> should be painted with
 <code>missingColor</code> and <code>FALSE</code> indicating that these values should be
 painted with the nearest in-range color.</p></dd>
+
+
 <dt>breaks</dt>
 <dd><p>an optional indication of break points between color levels
 (see <code><a href="https://rdrr.io/r/graphics/image.html" class="external-link">image()</a></code>).  If this is provided, the arguments <code>name</code>
@@ -135,6 +141,8 @@ indicating the desired number of break points to be computed with
 <code><a href="https://rdrr.io/r/base/pretty.html" class="external-link">pretty</a></code><code>(z,breaks)</code>.  In either case of non-missing
 <code>breaks</code>, the resultant break points must number 1 plus the number of
 colors (see <code>col</code>).</p></dd>
+
+
 <dt>col</dt>
 <dd><p>either a vector of colors or a function taking a numerical value
 as its single argument and returning a vector of colors.  Prior to 2021-02-08,
@@ -142,6 +150,8 @@ the default for <code>col</code> was <code>oceColorsJet</code>, but it was switc
 <code>oceColorsViridis</code> on that date.  The value of
 <code>col</code> is ignored if <code>name</code> is provided, or if <code>x0</code> through
 <code>col1</code> are provided.</p></dd>
+
+
 <dt>name</dt>
 <dd><p>an optional string naming a built-in colormap (one of
 <code>"gmt_relief"</code>, <code>"gmt_ocean"</code>, <code>"gmt_globe"</code> or
@@ -153,11 +163,15 @@ relationship between value and color, and <code>zlim</code>,
 only other argument that is examined is <code>z</code> (which may be used
 so that <code>zcol</code> will be defined in the return value), and warnings
 are issued if some irrelevant arguments are provided.</p></dd>
+
+
 <dt>x0, x1, col0, col1</dt>
 <dd><p>Vectors that specify a color map.  They must all be
 the same length, with <code>x0</code> and <code>x1</code> being numerical values, and
 <code>col0</code> and <code>col1</code> being colors.  The colors may be strings (e.g.
 <code>"red"</code>) or colors as defined by <code><a href="https://rdrr.io/r/grDevices/rgb.html" class="external-link">rgb()</a></code> or <code><a href="https://rdrr.io/r/grDevices/hsv.html" class="external-link">hsv()</a></code>.</p></dd>
+
+
 <dt>blend</dt>
 <dd><p>a number indicating how to blend colors within each band.
 This is ignored except when <code>x0</code> through <code>col1</code> are supplied.  A
@@ -167,18 +181,25 @@ value between 0 and 1 means to blend between the two colors according to
 the stated fraction.  Values exceeding 1 are an error at present, but there
 is a plan to use this to indicate sub-intervals, so a smooth palette can be
 created from a few colors.</p></dd>
+
+
 <dt>missingColor</dt>
 <dd><p>color to use for missing values. This cannot be provided
 if <code>name</code> is also provided (case C), because named schemes have pre-defined
 colors.  For other cases, <code>missingColor</code> defaults to <code>"gray"</code>, if it
 is not provided as an argument.</p></dd>
+
+
 <dt>debug</dt>
 <dd><p>a flag that turns on debugging.  Set to 1 to get a moderate
 amount of debugging information, or to 2 to get more.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>a list containing the following (not necessarily in this order)</p><ul><li><p><code>zcol</code>, a vector of colors for <code>z</code>, if <code>z</code> was
+    
+
+<p>a list containing the following (not necessarily in this order)</p><ul><li><p><code>zcol</code>, a vector of colors for <code>z</code>, if <code>z</code> was
 provided, otherwise <code>"black"</code></p></li>
 <li><p><code>zlim</code>, a two-element vector suitable as the argument of the same
 name supplied to <code><a href="https://rdrr.io/r/graphics/image.html" class="external-link">image()</a></code> or <code><a href="imagep.html">imagep()</a></code></p></li>
@@ -370,7 +391,7 @@ DOI: 10.1029/2005EO200006</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
       </footer></div>

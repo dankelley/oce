@@ -21,7 +21,7 @@ available to the oce developers."><!-- mathjax --><script src="https://cdnjs.clo
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-8</span>
       </span>
     </div>
 
@@ -93,9 +93,13 @@ available to the <code>oce</code> developers.</p>
     <h2>Arguments</h2>
     <dl><dt>h</dt>
 <dd><p>The header line.</p></dd>
+
+
 <dt>columns</dt>
 <dd><p>Optional list containing name correspondences, as described for
 <code><a href="read.ctd.sbe.html">read.ctd.sbe()</a></code>.</p></dd>
+
+
 <dt>debug</dt>
 <dd><p>an integer specifying whether debugging information is
 to be printed during the processing. This is a general parameter that
@@ -104,11 +108,14 @@ turns off the printing, while higher values suggest that more information
 be printed. If one function calls another, it usually reduces the value of
 <code>debug</code> first, so that a user can often obtain deeper debugging
 by specifying higher <code>debug</code> values.</p></dd>
+
 </dl></div>
     <div id="details">
     <h2>Details</h2>
     <p>A few sample header lines that have been encountered are:</p>
-<p></p><div class="sourceCode"><pre><code></code></pre><p></p></div>
+<p></p><div class="sourceCode"><pre><code><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># name 4 = t068: temperature, IPTS-68 [deg C]</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co"># name 3 = t090C: Temperature [ITS-90, deg C]</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co"># name 4 = t190C: Temperature, 2 [ITS-90, deg C]</span></span></code></pre><p></p></div>
 <p>Examination of several CNV files suggests that it is best to
 try to infer the name from the characters between the "<code>=</code>"
 and "<code>:</code>" characters, because the material after the colon
@@ -224,7 +231,7 @@ and this was the reference version used in coding <code>oce</code>.</p></li>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
       </footer></div>

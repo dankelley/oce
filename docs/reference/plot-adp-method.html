@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-8</span>
       </span>
     </div>
 
@@ -121,11 +121,15 @@
     <h2>Arguments</h2>
     <dl><dt>x</dt>
 <dd><p>an <a href="adp-class.html">adp</a> object.</p></dd>
+
+
 <dt>which</dt>
 <dd><p>list of desired plot types.  These are graphed in panels
 running down from the top of the page.  If <code>which</code> is not given,
 the plot will show images of the distance-time dependence of velocity
 for each beam. See “Details” for the meanings of various values of <code>which</code>.</p></dd>
+
+
 <dt>j</dt>
 <dd><p>optional string specifying a sub-class of <code>which</code>. For
 Nortek Aquadopp profilers, this may either be <code>"default"</code> (or missing)
@@ -135,12 +139,18 @@ signal. For Nortek AD2CP profiles, this may be any one of
 for burst data, or <code>"interleaved burst"</code> for interleaved burst data;
 more data types are provided by that instrument, and may be added here
 at some future time.</p></dd>
+
+
 <dt>col</dt>
 <dd><p>optional indication of color(s) to use.  If not provided, the
 default for images is <code>oce.colorsPalette(128,1)</code>, and for lines and
 points is black.</p></dd>
+
+
 <dt>breaks</dt>
 <dd><p>optional breaks for color scheme</p></dd>
+
+
 <dt>zlim</dt>
 <dd><p>a range to be used as the <code>zlim</code> parameter to the
 <code><a href="imagep.html">imagep()</a></code> call that is used to create the image.  If omitted,
@@ -151,19 +161,27 @@ each panel of the graph uses the corresponding row of the matrix; for
 example, setting <code>zlim=rbind(c(-1,1),c(-1,1),c(-.1,.1))</code> might make
 sense for <code>which=1:3</code>, so that the two horizontal velocities have one
 scale, and the smaller vertical velocity has another.</p></dd>
+
+
 <dt>titles</dt>
 <dd><p>optional vector of character strings to be used as labels for
 the plot panels.  For images, these strings will be placed in the right hand
 side of the top margin.  For timeseries, these strings are ignored.  If this
 is provided, its length must equal that of <code>which</code>.</p></dd>
+
+
 <dt>lwd</dt>
 <dd><p>if the plot is of a time-series or scattergraph format with
 lines, this is used in the usual way; otherwise, e.g. for image formats,
 this is ignored.</p></dd>
+
+
 <dt>type</dt>
 <dd><p>if the plot is of a time-series or scattergraph format, this is
 used in the usual way, e.g. <code>"l"</code> for lines, etc.; otherwise, as for
 image formats, this is ignored.</p></dd>
+
+
 <dt>ytype</dt>
 <dd><p>character string controlling the type of the y axis for images
 (ignored for time series).  If <code>"distance"</code>, then the y axis will be
@@ -172,74 +190,118 @@ the graph.  If <code>"profile"</code>, then this will still be true for
 upward-looking instruments, but the y axis will be flipped for
 downward-looking instruments, so that in either case, the top of the graph
 will represent the sample nearest the sea surface.</p></dd>
+
+
 <dt>drawTimeRange</dt>
 <dd><p>boolean that applies to panels with time as the
 horizontal axis, indicating whether to draw the time range in the top-left
 margin of the plot.</p></dd>
+
+
 <dt>useSmoothScatter</dt>
 <dd><p>boolean that indicates whether to use
 <code><a href="https://rdrr.io/r/graphics/smoothScatter.html" class="external-link">smoothScatter()</a></code> in various plots, such as <code>which="uv"</code>.  If
 not provided a default is used, with <code><a href="https://rdrr.io/r/graphics/smoothScatter.html" class="external-link">smoothScatter()</a></code> being used
 if there are more than 2000 points to plot.</p></dd>
+
+
 <dt>missingColor</dt>
 <dd><p>color used to indicate <code>NA</code> values in images (see
 <code><a href="imagep.html">imagep()</a></code>); set to <code>NULL</code> to avoid this indication.</p></dd>
+
+
 <dt>mgp</dt>
 <dd><p>A 3-element numerical vector used with <code><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></code><code>("mgp")</code>
 to control the spacing of axis elements.  The default is tighter than the R default.</p></dd>
+
+
 <dt>mar</dt>
 <dd><p>A 4-element numerical vector used with <code><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></code><code>("mar")</code>
 to control the plot margins. The default is tighter than the R default.</p></dd>
+
+
 <dt>mai.palette</dt>
 <dd><p>margins, in inches, to be added to those calculated for
 the palette; alter from the default only with caution</p></dd>
+
+
 <dt>tformat</dt>
 <dd><p>optional argument passed to <code><a href="oce.plot.ts.html">oce.plot.ts()</a></code>, for
 plot types that call that function.  (See <code><a href="https://rdrr.io/r/base/strptime.html" class="external-link">strptime()</a></code> for the
 format used.)</p></dd>
+
+
 <dt>marginsAsImage</dt>
 <dd><p>boolean, <code>TRUE</code> to put a wide margin to the right
 of time-series plots, even if there are no images in the <code>which</code> list.
 (The margin is made wide if there are some images in the sequence.)</p></dd>
+
+
 <dt>cex</dt>
 <dd><p>numeric character expansion factor for plot symbols; see <code><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par()</a></code>.</p></dd>
+
+
 <dt>cex.axis, cex.lab</dt>
 <dd><p>character expansion factors for axis numbers and axis names; see <code><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par()</a></code>.</p></dd>
+
+
 <dt>xlim</dt>
 <dd><p>optional 2-element list for <code>xlim</code>, or 2-column matrix, in
 which case the rows are used, in order, for the panels of the graph.</p></dd>
+
+
 <dt>ylim</dt>
 <dd><p>optional 2-element list for <code>ylim</code>, or 2-column matrix, in
 which case the rows are used, in order, for the panels of the graph.</p></dd>
+
+
 <dt>control</dt>
 <dd><p>optional list of parameters that may be used for different
 plot types.  Possibilities are <code>drawBottom</code> (a boolean that indicates
 whether to draw the bottom) and <code>bin</code> (a numeric giving the index of
 the bin on which to act, as explained in “Details”).</p></dd>
+
+
 <dt>useLayout</dt>
 <dd><p>set to <code>FALSE</code> to prevent using <code><a href="https://rdrr.io/r/graphics/layout.html" class="external-link">layout()</a></code>
 to set up the plot.  This is needed if the call is to be part of a sequence
 set up by e.g. <code>par(mfrow)</code>.</p></dd>
+
+
 <dt>coastline</dt>
 <dd><p>a <code>coastline</code> object, or a character string naming
 one.  This is used only for <code>which="map"</code>.  See notes at
 <code><a href="plot-ctd-method.html">plot,ctd-method()</a></code> for more information on built-in coastlines.</p></dd>
+
+
 <dt>span</dt>
 <dd><p>approximate span of map in km</p></dd>
+
+
 <dt>main</dt>
 <dd><p>main title for plot, used just on the top panel, if there are
 several panels.</p></dd>
+
+
 <dt>grid</dt>
 <dd><p>if <code>TRUE</code>, a grid will be drawn for each panel.  (This
 argument is needed, because calling <code><a href="https://rdrr.io/r/graphics/grid.html" class="external-link">grid()</a></code> after doing a
 sequence of plots will not result in useful results for the individual
 panels.</p></dd>
+
+
 <dt>grid.col</dt>
 <dd><p>color of grid</p></dd>
+
+
 <dt>grid.lty</dt>
 <dd><p>line type of grid</p></dd>
+
+
 <dt>grid.lwd</dt>
 <dd><p>line width of grid</p></dd>
+
+
 <dt>debug</dt>
 <dd><p>an integer specifying whether debugging information is
 to be printed during the processing. This is a general parameter that
@@ -248,6 +310,8 @@ turns off the printing, while higher values suggest that more information
 be printed. If one function calls another, it usually reduces the value of
 <code>debug</code> first, so that a user can often obtain deeper debugging
 by specifying higher <code>debug</code> values.</p></dd>
+
+
 <dt>...</dt>
 <dd><p>optional arguments passed to plotting functions.  For example,
 supplying <code>despike=TRUE</code> will cause time-series panels to be de-spiked
@@ -256,10 +320,13 @@ missing values on image plots, with the argument <code>missingColor</code> (see
 <code><a href="imagep.html">imagep()</a></code>).  Note that it is an error to give <code>breaks</code> in
 ..., if the formal argument <code>zlim</code> was also given, because they
 could contradict each other.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>A list is silently returned, containing <code>xat</code> and <code>yat</code>,
+    
+
+<p>A list is silently returned, containing <code>xat</code> and <code>yat</code>,
 values that can be used by <code><a href="oce.grid.html">oce.grid()</a></code> to add a grid to the plot.</p>
     </div>
     <div id="details">
@@ -486,7 +553,7 @@ site.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
       </footer></div>

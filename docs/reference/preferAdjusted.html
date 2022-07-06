@@ -26,7 +26,7 @@ discussed in &amp;#8220;Details&amp;#8221;.'><!-- mathjax --><script src="https:
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-8</span>
       </span>
     </div>
 
@@ -103,6 +103,8 @@ discussed in “Details”.</p>
     <h2>Arguments</h2>
     <dl><dt>argo</dt>
 <dd><p>An <a href="argo-class.html">argo</a> object.</p></dd>
+
+
 <dt>which</dt>
 <dd><p>A character vector naming the items for which
 (depending also on the value of <code>fallback</code>) adjusted values
@@ -112,6 +114,8 @@ adjusted oxygen is to be returned in future calls
 such as <code>argo[["oxygen"]]</code>.  The default,
 <code>"all"</code>, means to  use adjusted values for any item in <code>argo</code>
 that has adjusted values.</p></dd>
+
+
 <dt>fallback</dt>
 <dd><p>A logical value indicating whether to fall back
 to unadjusted values for any data field in which the
@@ -119,10 +123,13 @@ adjusted values are all <code>NA</code>.  The default value, <code>TRUE</code>,
 avoids a problem with biogeochemical fields, where adjustment
 of any one field may lead to insertion of "adjusted" values for
 other fields that consist of nothing more than <code>NA</code>s.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>An <a href="argo-class.html">argo</a> object its <code>metadata</code> slot altered
+    
+
+<p>An <a href="argo-class.html">argo</a> object its <code>metadata</code> slot altered
 (in its <code>adjustedWhich</code> and <code>adjustedFallback</code> elements)
 as a signal for how <code><a href="sub-sub-argo-method.html">[[,argo-method</a></code> should
 function on the object.</p>
@@ -218,7 +225,7 @@ respect to the <code><a href="sub-sub-argo-method.html">[[,argo-method</a></code
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
       </footer></div>

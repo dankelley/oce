@@ -18,7 +18,7 @@ plot,windrose-method()."><!-- mathjax --><script src="https://cdnjs.cloudflare.c
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-8</span>
       </span>
     </div>
 
@@ -90,17 +90,29 @@ plot,windrose-method()."><!-- mathjax --><script src="https://cdnjs.cloudflare.c
 <code>met</code> (see <a href="met-class.html">met</a>), in which case the <code>u</code> and
 <code>v</code> components of that object are used for the components of wind speed,
 and <code>y</code> here is ignored.</p></dd>
+
+
 <dt>y</dt>
 <dd><p>The y component of wind speed (or stress).</p></dd>
+
+
 <dt>dtheta</dt>
 <dd><p>The angle increment (in degrees) within which to classify the data.</p></dd>
+
+
 <dt>debug</dt>
 <dd><p>A flag that turns on debugging.  Set to 1 to get a moderate amount
 of debugging information, or to 2 to get more.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>A <a href="windrose-class.html">windrose</a> object, with <code>data</code> slot containing</p><table class="table table"><tr><td><strong>Item</strong></td><td><strong>Meaning</strong></td></tr><tr><td><code>n</code></td><td>the number of <code>x</code> values</td></tr><tr><td><code>x.mean</code></td><td>the mean of the <code>x</code> values</td></tr><tr><td><code>y.mean</code></td><td>the mean of the <code>y</code> values</td></tr><tr><td><code>theta</code></td><td>the central angle (in degrees) for the class</td></tr><tr><td><code>count</code></td><td>the number of observations in this class</td></tr><tr><td><code>mean</code></td><td>the mean of the observations in this class</td></tr><tr><td><code>fivenum</code></td><td>the <code><a href="https://rdrr.io/r/stats/fivenum.html" class="external-link">fivenum()</a></code> vector for
+    
+
+<p>A <a href="windrose-class.html">windrose</a> object, with <code>data</code> slot containing</p>
+
+
+<table class="table table"><tr><td><strong>Item</strong></td><td><strong>Meaning</strong></td></tr><tr><td><code>n</code></td><td>the number of <code>x</code> values</td></tr><tr><td><code>x.mean</code></td><td>the mean of the <code>x</code> values</td></tr><tr><td><code>y.mean</code></td><td>the mean of the <code>y</code> values</td></tr><tr><td><code>theta</code></td><td>the central angle (in degrees) for the class</td></tr><tr><td><code>count</code></td><td>the number of observations in this class</td></tr><tr><td><code>mean</code></td><td>the mean of the observations in this class</td></tr><tr><td><code>fivenum</code></td><td>the <code><a href="https://rdrr.io/r/stats/fivenum.html" class="external-link">fivenum()</a></code> vector for
 observations in this class (the min, the lower hinge, the
 median, the upper hinge, and the max)</td></tr></table></div>
     <div id="see-also">
@@ -133,17 +145,17 @@ median, the upper hinge, and the max)</td></tr></table></div>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                Min.       Mean     Max. Dim. NAs OriginalName</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     n           360        360      360    1   0            -</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     x.mean  0.98054    0.98054  0.98054    1   0            -</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     y.mean 0.072647   0.072647 0.072647    1   0            -</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     x.mean    1.038      1.038    1.038    1   0            -</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     y.mean -0.03407   -0.03407 -0.03407    1   0            -</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     theta    -172.5 1.5618e-14    172.5   24   0            -</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     count         2         15       42   24   0            -</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     mean    0.47339     1.2518   1.9298   24   0            -</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     fives  0.070406     1.2759   4.0716 24x5   0            -</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     count         2         15       41   24   0            -</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     mean    0.61624     1.3116   2.1613   24   0            -</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     fives  0.051959     1.3368   3.8492 24x5   0            -</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> * Processing Log</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2022-06-10 20:06:30 UTC: `create 'windrose' object`</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2022-06-10 20:06:30 UTC: `as.windrose(x = xcomp, y = ycomp)`</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2022-07-04 16:53:12 UTC: `create 'windrose' object`</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2022-07-04 16:53:12 UTC: `as.windrose(x = xcomp, y = ycomp)`</span>
 <span class="r-in"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">wr</span><span class="op">)</span></span>
 <span class="r-plt img"><img src="as.windrose-1.png" alt="" width="700" height="433"></span>
 <span class="r-in"></span>
@@ -161,7 +173,7 @@ median, the upper hinge, and the max)</td></tr></table></div>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
       </footer></div>

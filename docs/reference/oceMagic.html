@@ -18,7 +18,7 @@ within the file, the file name, or a combination of the two."><!-- mathjax --><s
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-8</span>
       </span>
     </div>
 
@@ -80,7 +80,7 @@ within the file, the file name, or a combination of the two.</p>
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">oceMagic</span><span class="op">(</span><span class="va">file</span>, debug <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"oceDebug"</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">oceMagic</span><span class="op">(</span><span class="va">file</span>, encoding <span class="op">=</span> <span class="st">"latin1"</span>, debug <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"oceDebug"</span><span class="op">)</span><span class="op">)</span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -88,13 +88,25 @@ within the file, the file name, or a combination of the two.</p>
     <dl><dt>file</dt>
 <dd><p>a connection or a character string giving the name of the file
 to be checked.</p></dd>
+
+
+<dt>encoding</dt>
+<dd><p>a character value that indicates the encoding to be used for
+this data file, if it is textual.  The default value for most functions is
+<code>"latin1"</code>, which seems to be suitable for files containing text written in
+English and French.</p></dd>
+
+
 <dt>debug</dt>
 <dd><p>an integer, set non-zero to turn on debugging.  Higher values
 indicate more debugging.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>A character string indicating the file type, or <code>"unknown"</code>, if
+    
+
+<p>A character string indicating the file type, or <code>"unknown"</code>, if
 the type cannot be determined. If the result contains <code>"/"</code> characters,
 these separate a list describing the file type, with the first element being
 the general type, the second element being the manufacturer, and the third
@@ -128,7 +140,7 @@ alias was removed in version 0.9.24; see <a href="oce-deprecated.html">oce-defun
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
       </footer></div>

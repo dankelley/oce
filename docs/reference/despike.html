@@ -19,7 +19,7 @@ to the value of action; see &amp;#8220;Details&amp;#8221;.'><!-- mathjax --><scr
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-8</span>
       </span>
     </div>
 
@@ -99,26 +99,40 @@ to the value of <code>action</code>; see “Details”.</p>
     <dl><dt>x</dt>
 <dd><p>a vector of (time-series) values, a list of vectors, a data frame,
 or an <a href="oce-class.html">oce</a> object.</p></dd>
+
+
 <dt>reference</dt>
 <dd><p>indication of the type of reference time series to be used
 in the detection of spikes; see ‘Details’.</p></dd>
+
+
 <dt>n</dt>
 <dd><p>an indication of the limit to differences between <code>x</code> and the
 reference time series, used for <code>reference="median"</code> or
 <code>reference="smooth"</code>; see ‘Details.’</p></dd>
+
+
 <dt>k</dt>
 <dd><p>length of running median used with <code>reference="median"</code>, and
 ignored for other values of <code>reference</code>.</p></dd>
+
+
 <dt>min</dt>
 <dd><p>minimum non-spike value of <code>x</code>, used with
 <code>reference="trim"</code>.</p></dd>
+
+
 <dt>max</dt>
 <dd><p>maximum non-spike value of <code>x</code>, used with
 <code>reference="trim"</code>.</p></dd>
+
+
 <dt>replace</dt>
 <dd><p>an indication of what to do with spike values, with
 <code>"reference"</code> indicating to replace them with the reference time
 series, and <code>"NA"</code> indicating to replace them with <code>NA</code>.</p></dd>
+
+
 <dt>skip</dt>
 <dd><p>optional vector naming columns to be skipped. This is ignored if
 <code>x</code> is a simple vector. Any items named in <code>skip</code> will be passed
@@ -126,10 +140,13 @@ through to the return value without modification.  In some cases,
 <code>despike</code> will set up reasonable defaults for <code>skip</code>, e.g. for a
 <code>ctd</code> object, <code>skip</code> will be set to <code>c("time", "scan",
 "pressure")</code> if it is not supplied as an argument.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>A new vector in which spikes are replaced as described above.</p>
+    
+
+<p>A new vector in which spikes are replaced as described above.</p>
     </div>
     <div id="details">
     <h2>Details</h2>
@@ -200,7 +217,7 @@ with the reference series (if <code>replace="reference"</code> or with
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
       </footer></div>

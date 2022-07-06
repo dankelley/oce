@@ -18,7 +18,7 @@ seawater, minus 1000 kg/m\(^3\)."><!-- mathjax --><script src="https://cdnjs.clo
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-8</span>
       </span>
     </div>
 
@@ -98,6 +98,8 @@ and <code>pressure</code> must be provided) <em>or</em> an <code>oce</code> obje
 which case <code>salinity</code>, <code>temperature</code> (in the ITS-90 scale; see
 next item), etc. are inferred from the object, ignoring the
 other parameters, if they are supplied.</p></dd>
+
+
 <dt>temperature</dt>
 <dd><p><em>in-situ</em> temperature (\(^\circ\)C), defined
 on the ITS-90 scale.  This scale is used by GSW-style calculation (as
@@ -106,21 +108,32 @@ requested by setting <code>eos="gsw"</code>), and is the value contained within
 acquired in the past decade or two). Since the UNESCO-style calculation is
 based on IPTS-68, the temperature is converted within the present function,
 using <code><a href="T68fromT90.html">T68fromT90()</a></code>.</p></dd>
+
+
 <dt>pressure</dt>
 <dd><p>pressure (dbar)</p></dd>
+
+
 <dt>longitude</dt>
 <dd><p>longitude of observation (only used if <code>eos="gsw"</code>;
 see ‘Details’).</p></dd>
+
+
 <dt>latitude</dt>
 <dd><p>latitude of observation (only used if <code>eos="gsw"</code>; see
 ‘Details’).</p></dd>
+
+
 <dt>eos</dt>
 <dd><p>equation of state, either <code>"unesco"</code> (references 1 and 2)
 or <code>"gsw"</code> (references 3 and 4).</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>Quasi-potential density anomaly (kg/m\(^3\)), defined as the
+    
+
+<p>Quasi-potential density anomaly (kg/m\(^3\)), defined as the
 density calculated with pressure set to zero.</p>
     </div>
     <div id="details">
@@ -201,7 +214,7 @@ extracted from it, and used for the calculation.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
       </footer></div>

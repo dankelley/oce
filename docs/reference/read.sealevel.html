@@ -18,7 +18,7 @@ regardless of the GMT.offset value."><!-- mathjax --><script src="https://cdnjs.
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-8</span>
       </span>
     </div>
 
@@ -83,6 +83,7 @@ regardless of the GMT.offset value.</p>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">read.sealevel</span><span class="op">(</span>
   <span class="va">file</span>,
   tz <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"oceTz"</span><span class="op">)</span>,
+  encoding <span class="op">=</span> <span class="st">"latin1"</span>,
   <span class="va">processingLog</span>,
   debug <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"oceDebug"</span><span class="op">)</span>
 <span class="op">)</span></code></pre></div>
@@ -93,14 +94,27 @@ regardless of the GMT.offset value.</p>
     <dl><dt>file</dt>
 <dd><p>a connection or a character string giving the name of the file
 to load.  See Details for the types of files that are recognized.</p></dd>
+
+
 <dt>tz</dt>
 <dd><p>time zone.  The default value, <code>oceTz</code>, is set to <code>UTC</code>
 at setup.  (If a time zone is present in the file header, this will
 supercede the value given here.)</p></dd>
+
+
+<dt>encoding</dt>
+<dd><p>a character value that indicates the encoding to be used for
+this data file, if it is textual.  The default value for most functions is
+<code>"latin1"</code>, which seems to be suitable for files containing text written in
+English and French.</p></dd>
+
+
 <dt>processingLog</dt>
 <dd><p>if provided, the action item to be stored in the log.
 (Typically only provided for internal calls; the default that it provides is
 better for normal calls by a user.)</p></dd>
+
+
 <dt>debug</dt>
 <dd><p>an integer specifying whether debugging information is
 to be printed during the processing. This is a general parameter that
@@ -109,10 +123,13 @@ turns off the printing, while higher values suggest that more information
 be printed. If one function calls another, it usually reduces the value of
 <code>debug</code> first, so that a user can often obtain deeper debugging
 by specifying higher <code>debug</code> values.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>A <a href="sealevel-class.html">sealevel</a> object.</p>
+    
+
+<p>A <a href="sealevel-class.html">sealevel</a> object.</p>
     </div>
     <div id="details">
     <h2>Details</h2>
@@ -169,7 +186,7 @@ provides Type 2 data.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
       </footer></div>

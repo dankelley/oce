@@ -18,7 +18,7 @@ Note that only compressed files are read in this version."><!-- mathjax --><scri
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-8</span>
       </span>
     </div>
 
@@ -80,7 +80,7 @@ Note that only compressed files are read in this version.</p>
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">read.amsr</span><span class="op">(</span><span class="va">file</span>, debug <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"oceDebug"</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">read.amsr</span><span class="op">(</span><span class="va">file</span>, encoding <span class="op">=</span> <span class="cn">NA</span>, debug <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"oceDebug"</span><span class="op">)</span><span class="op">)</span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -88,8 +88,15 @@ Note that only compressed files are read in this version.</p>
     <dl><dt>file</dt>
 <dd><p>String indicating the name of a compressed file. See
 “File sources”.</p></dd>
+
+
+<dt>encoding</dt>
+<dd><p>ignored.</p></dd>
+
+
 <dt>debug</dt>
 <dd><p>A debugging flag, integer.</p></dd>
+
 </dl></div>
     <div id="details">
     <h2>Details</h2>
@@ -139,7 +146,7 @@ about inability to read a 6-chunk file, but
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
       </footer></div>

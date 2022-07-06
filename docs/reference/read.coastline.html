@@ -23,7 +23,7 @@ understood."><!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-8</span>
       </span>
     </div>
 
@@ -93,8 +93,9 @@ understood.</p>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">read.coastline</span><span class="op">(</span>
   <span class="va">file</span>,
   type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"R"</span>, <span class="st">"S"</span>, <span class="st">"mapgen"</span>, <span class="st">"shapefile"</span>, <span class="st">"openstreetmap"</span><span class="op">)</span>,
-  debug <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"oceDebug"</span><span class="op">)</span>,
+  encoding <span class="op">=</span> <span class="st">"latin1"</span>,
   monitor <span class="op">=</span> <span class="cn">FALSE</span>,
+  debug <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"oceDebug"</span><span class="op">)</span>,
   <span class="va">processingLog</span>
 <span class="op">)</span></code></pre></div>
     </div>
@@ -103,22 +104,40 @@ understood.</p>
     <h2>Arguments</h2>
     <dl><dt>file</dt>
 <dd><p>name of file containing coastline data.</p></dd>
+
+
 <dt>type</dt>
 <dd><p>type of file, one of <code>"R"</code>, <code>"S"</code>, <code>"mapgen"</code>,
 <code>"shapefile"</code> or <code>"openstreetmap"</code>.</p></dd>
-<dt>debug</dt>
-<dd><p>set to TRUE to print information about the header, etc.</p></dd>
+
+
+<dt>encoding</dt>
+<dd><p>a character value that indicates the encoding to be used for
+this data file, if it is textual.  The default value for most functions is
+<code>"latin1"</code>, which seems to be suitable for files containing text written in
+English and French.</p></dd>
+
+
 <dt>monitor</dt>
 <dd><p>print a dot for every coastline segment read (ignored except
 for reading "shapefile" type)</p></dd>
+
+
+<dt>debug</dt>
+<dd><p>set to TRUE to print information about the header, etc.</p></dd>
+
+
 <dt>processingLog</dt>
 <dd><p>if provided, the action item to be stored in the log.
 (Typically only provided for internal calls; the default that it provides is
 better for normal calls by a user.)</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>a <a href="coastline-class.html">coastline</a> object.</p>
+    
+
+<p>a <a href="coastline-class.html">coastline</a> object.</p>
     </div>
     <div id="author">
     <h2>Author</h2>
@@ -137,7 +156,7 @@ better for normal calls by a user.)</p></dd>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
       </footer></div>

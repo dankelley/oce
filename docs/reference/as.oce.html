@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-8</span>
       </span>
     </div>
 
@@ -85,13 +85,18 @@
     <h2>Arguments</h2>
     <dl><dt>x</dt>
 <dd><p>an item containing data. This may be data frame, list, or an oce object.</p></dd>
+
+
 <dt>...</dt>
 <dd><p>optional extra arguments, passed to conversion functions
 <code><a href="as.coastline.html">as.coastline()</a></code> or <code><a href="ODF2oce.html">ODF2oce()</a></code>, if these are used.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>An <a href="oce-class.html">oce</a> object.</p>
+    
+
+<p>An <a href="oce-class.html">oce</a> object.</p>
     </div>
     <div id="details">
     <h2>Details</h2>
@@ -105,14 +110,14 @@ simply returned, without modification.)</p>
 <p>If <code>x</code> is a list containing items named <code>longitude</code> and
 <code>latitude</code>, then <code><a href="as.coastline.html">as.coastline()</a></code> is called (with
 the specified ... value) to create a coastline object.</p>
-<p>If <code>x</code> is a list created by <code>read_odf</code> from the (as
+<p>If <code>x</code> is a list created by <code>read_odf()</code> from the (as
 yet unreleased) ODF package developed by the Bedford Institute of
 Oceanography, then <code><a href="ODF2oce.html">ODF2oce()</a></code> is called (with
 no arguments other than the first) to calculate a return value.
 If the sub-class inference made by <code><a href="ODF2oce.html">ODF2oce()</a></code> is
 incorrect, users should call that function directly, specifying
 a value for its <code>coerce</code> argument.</p>
-<p>If <code>x</code> has not been created by <code>read_odf</code>, then the names
+<p>If <code>x</code> has not been created by <code>read_odf()</code>, then the names
 of the items it contains are examined, and used to try to infer
 the proper return value.  There
 are only a few cases (although more may be added if there is
@@ -136,7 +141,7 @@ is returned.</p></li>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
       </footer></div>

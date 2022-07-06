@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-8</span>
       </span>
     </div>
 
@@ -83,6 +83,7 @@
   <span class="va">format</span>,
   <span class="va">missingValue</span>,
   tz <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"oceTz"</span><span class="op">)</span>,
+  encoding <span class="op">=</span> <span class="st">"latin1"</span>,
   debug <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"oceDebug"</span><span class="op">)</span>
 <span class="op">)</span></code></pre></div>
     </div>
@@ -92,26 +93,44 @@
     <dl><dt>file</dt>
 <dd><p>a connection or a character string giving the name of the file
 to load.  May be a URL.</p></dd>
+
+
 <dt>format</dt>
 <dd><p>optional character string indicating the format type. If not
 supplied, a guess will be made, based on examination of the first few lines
 of the file. If supplied, the possibilities are <code>"noaa"</code> and
 <code>"ucar"</code>. See “Details”.</p></dd>
+
+
 <dt>missingValue</dt>
 <dd><p>If supplied, this is a numerical value that indicates
 invalid data. In some datasets, this is -99.9, but other values may be used.
 If <code>missingValue</code> is not supplied, any data that have value equal
 to or less than -99 are considered invalid. Set <code>missingValue</code>
 to <code>TRUE</code> to turn of the processing of missing values.</p></dd>
+
+
 <dt>tz</dt>
 <dd><p>character string indicating time zone to be assumed in the data.</p></dd>
+
+
+<dt>encoding</dt>
+<dd><p>a character value that indicates the encoding to be used for
+this data file, if it is textual.  The default value for most functions is
+<code>"latin1"</code>, which seems to be suitable for files containing text written in
+English and French.</p></dd>
+
+
 <dt>debug</dt>
 <dd><p>a flag that turns on debugging, ignored in the present version
 of the function.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>A data frame containing <code>t</code>, a POSIX time, and <code>index</code>,
+    
+
+<p>A data frame containing <code>t</code>, a POSIX time, and <code>index</code>,
 the numerical index.  The times are set to the 15th day of each month, which
 is a guess that may need to be changed if so indicated by documentation (yet
 to be located).</p>
@@ -171,7 +190,7 @@ for a list of indices.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
       </footer></div>

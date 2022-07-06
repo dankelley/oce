@@ -22,7 +22,7 @@ known."><!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/math
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-8</span>
       </span>
     </div>
 
@@ -98,8 +98,9 @@ known.</p>
   <span class="va">transformationMatrix</span>,
   longitude <span class="op">=</span> <span class="cn">NA</span>,
   latitude <span class="op">=</span> <span class="cn">NA</span>,
-  debug <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"oceDebug"</span><span class="op">)</span>,
+  encoding <span class="op">=</span> <span class="st">"latin1"</span>,
   monitor <span class="op">=</span> <span class="cn">FALSE</span>,
+  debug <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"oceDebug"</span><span class="op">)</span>,
   processingLog <span class="op">=</span> <span class="cn">NULL</span>
 <span class="op">)</span></code></pre></div>
     </div>
@@ -112,14 +113,20 @@ to load.  It is also possible to give <code>file</code> as a vector of filenames
 to handle the case of data split into files by a data logger.  In the
 multi-file case, <code>header</code> must be <code>FALSE</code>, <code>start</code> must be a
 vector of times, and <code>deltat</code> must be provided.</p></dd>
+
+
 <dt>from</dt>
 <dd><p>index number of the first profile to be read, or the time of
 that profile, as created with <code><a href="https://rdrr.io/r/base/as.POSIXlt.html" class="external-link">as.POSIXct()</a></code> (hint: use
 <code>tz="UTC"</code>).  This argument is ignored if <code>header==FALSE</code>. See
 “Examples”.</p></dd>
+
+
 <dt>to</dt>
 <dd><p>indication of the last profile to read, in a format matching that
 of <code>from</code>.  This is ignored if <code>header==FALSE</code>.</p></dd>
+
+
 <dt>by</dt>
 <dd><p>an indication of the stride length to use while walking through
 the file.  This is ignored if <code>header==FALSE</code>.  Otherwise, if this is
@@ -129,52 +136,88 @@ equi-spaced in time.  If <code>by</code> is a string representing a time interva
 in colon-separated format, then this interval is divided by the sampling
 interval, to get the stride length. <em>BUG:</em> <code>by</code> only partially
 works; see “Bugs”.</p></dd>
+
+
 <dt>tz</dt>
 <dd><p>character string indicating time zone to be assumed in the data.</p></dd>
+
+
 <dt>originalCoordinate</dt>
 <dd><p>character string indicating coordinate system, one
 of <code>"beam"</code>, <code>"xyz"</code>, <code>"enu"</code> or <code>"other"</code>.  (This is
 needed for the case of multiple files that were created by a data logger,
 because the header information is normally lost in such instances.)</p></dd>
+
+
 <dt>transformationMatrix</dt>
 <dd><p>transformation matrix to use in converting beam
 coordinates to xyz coordinates.  This will over-ride the matrix in the file
 header, if there is one.  An example is <code>rbind(c(2.710, -1.409,
 -1.299), c(0.071, 2.372, -2.442), c(0.344, 0.344, 0.344))</code>.</p></dd>
+
+
 <dt>longitude</dt>
 <dd><p>optional signed number indicating the longitude in degrees
 East.</p></dd>
+
+
 <dt>latitude</dt>
 <dd><p>optional signed number indicating the latitude in degrees
 North.</p></dd>
+
+
+<dt>encoding</dt>
+<dd><p>a character value that indicates the encoding to be used for
+this data file, if it is textual.  The default value for most functions is
+<code>"latin1"</code>, which seems to be suitable for files containing text written in
+English and French.</p></dd>
+
+
+<dt>monitor</dt>
+<dd><p>boolean value indicating whether to indicate the progress
+of reading the file, by using <code><a href="https://rdrr.io/r/utils/txtProgressBar.html" class="external-link">txtProgressBar()</a></code> or otherwise.  The value
+of <code>monitor</code> is changed to <code>FALSE</code> automatically, for non-interactive
+sessions.</p></dd>
+
+
 <dt>debug</dt>
 <dd><p>a flag that turns on debugging.  The value indicates the depth
 within the call stack to which debugging applies.  For example,
 <code><a href="read.adv.nortek.html">read.adv.nortek()</a></code> calls <code>read.header.nortek()</code>, so that
 <code>read.adv.nortek(...,debug=2)</code> provides information about not just the
 main body of the data file, but also the details of the header.</p></dd>
-<dt>monitor</dt>
-<dd><p>boolean value indicating whether to indicate the progress
-of reading the file, by using <code><a href="https://rdrr.io/r/utils/txtProgressBar.html" class="external-link">txtProgressBar()</a></code> or otherwise.  The value
-of <code>monitor</code> is changed to <code>FALSE</code> automatically, for non-interactive
-sessions.</p></dd>
+
+
 <dt>processingLog</dt>
 <dd><p>if provided, the action item to be stored in the log.
 This parameter is typically only provided for internal calls; the default
 that it provides is better for normal calls by a user.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>An <a href="adv-class.html">adv</a> object that contains measurements made with an ADV device.
-The <code>metadata</code> contains information as given in the following table.
+    
+
+<p>An <a href="adv-class.html">adv</a> object that contains measurements made with an ADV device.</p>
+
+
+<p>The <code>metadata</code> contains information as given in the following table.
 The <code>Nortek name'' is the name used in the Nortek System Integrator Guide (reference 1) and the </code>Sontek name'' is the name used in the relevant
-Sontek documentation.  References are given in square brackets.</p><table class="table table"><tr><td><strong><code>metadata</code> name</strong></td><td><strong>Nortek name</strong></td><td><strong>Sontek name</strong></td><td><strong>Meaning</strong></td></tr><tr><td><code>manufacturer</code></td><td>-</td><td>-</td><td>Either <code>"nortek"</code> or <code>"sontek"</code></td></tr><tr><td><code>instrumentType</code></td><td>-</td><td>-</td><td>Either <code>"vector"</code> or <code>"adv"</code></td></tr><tr><td><code>filename</code></td><td>-</td><td>-</td><td>Name of data file(s)</td></tr><tr><td><code>latitude</code></td><td>-</td><td>-</td><td>Latitude of mooring (if applicable)</td></tr><tr><td><code>longitude</code></td><td>-</td><td>-</td><td>Longitude of mooring (if applicable)</td></tr><tr><td><code>numberOfSamples</code></td><td>-</td><td>-</td><td>Number of data samples in file</td></tr><tr><td><code>numberOfBeams</code></td><td>NBeams (reference 1, p18)</td><td>-</td><td>Number of beams (always 3)</td></tr><tr><td><code>numberOfBeamSequencesPerBurst</code></td><td>NPings</td><td>-</td><td>number of beam sequences per burst</td></tr><tr><td><code>measurementInterval</code></td><td>MeasInterval (reference 1 p31)</td><td>-</td><td></td></tr><tr><td><code>samplingRate</code></td><td>512/(AvgInterval) (reference 1 p30; reference 4)</td><td>- #'</td><td></td></tr></table><p>The <code>data</code> list contains items with names corresponding to <code>adp</code>objects, with an exception for Nortek data.  Nortek instruments report some
+Sontek documentation.  References are given in square brackets.</p>
+
+
+<table class="table table"><tr><td><strong><code>metadata</code> name</strong></td><td><strong>Nortek name</strong></td><td><strong>Sontek name</strong></td><td><strong>Meaning</strong></td></tr><tr><td><code>manufacturer</code></td><td>-</td><td>-</td><td>Either <code>"nortek"</code> or <code>"sontek"</code></td></tr><tr><td><code>instrumentType</code></td><td>-</td><td>-</td><td>Either <code>"vector"</code> or <code>"adv"</code></td></tr><tr><td><code>filename</code></td><td>-</td><td>-</td><td>Name of data file(s)</td></tr><tr><td><code>latitude</code></td><td>-</td><td>-</td><td>Latitude of mooring (if applicable)</td></tr><tr><td><code>longitude</code></td><td>-</td><td>-</td><td>Longitude of mooring (if applicable)</td></tr><tr><td><code>numberOfSamples</code></td><td>-</td><td>-</td><td>Number of data samples in file</td></tr><tr><td><code>numberOfBeams</code></td><td>NBeams (reference 1, p18)</td><td>-</td><td>Number of beams (always 3)</td></tr><tr><td><code>numberOfBeamSequencesPerBurst</code></td><td>NPings</td><td>-</td><td>number of beam sequences per burst</td></tr><tr><td><code>measurementInterval</code></td><td>MeasInterval (reference 1 p31)</td><td>-</td><td></td></tr><tr><td><code>samplingRate</code></td><td>512/(AvgInterval) (reference 1 p30; reference 4)</td><td>- #'</td><td></td></tr></table><p>The <code>data</code> list contains items with names corresponding to <code>adp</code></p>
+
+
+<p>objects, with an exception for Nortek data.  Nortek instruments report some
 things at a time interval that is longer than the velocity sampling, and
 these are stored in <code>data</code> as <code>timeSlow</code>, <code>headingSlow</code>,
 <code>pitchSlow</code>, <code>rollSlow</code>, and <code>temperatureSlow</code>; if burst
 sampling was used, there will also be items <code>recordsBurst</code> and
-<code>timeBurst</code>.
-The <code>processingLog</code> is in the standard format.</p>
+<code>timeBurst</code>.</p>
+
+
+<p>The <code>processingLog</code> is in the standard format.</p>
     </div>
     <div id="details">
     <h2>Details</h2>
@@ -388,7 +431,7 @@ in (references 1B and C) as being an adjunct to Nortek Vector systems is at
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
       </footer></div>
