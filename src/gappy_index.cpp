@@ -10,23 +10,23 @@ using namespace Rcpp;
 // [[Rcpp::export]]
 IntegerVector do_gappy_index(IntegerVector starts, IntegerVector offset, IntegerVector length)
 {
-    long unsigned int nstarts = starts.size();
-    long unsigned int n = nstarts * length[0];
-    long unsigned int k = 0;
+    long int nstarts = starts.size();
+    long int n = nstarts * length[0];
+    long int k = 0;
     IntegerVector res(n);
     if (nstarts > 0) {
-      long unsigned int minspan = 100 * nstarts * length[0]; // start large
-      for (long unsigned int i = 1; i < nstarts; i++) {
-        long unsigned span = starts[i] - starts[i-1];
+      long int minspan = 100 * nstarts * length[0]; // start large
+      for (long int i = 1; i < nstarts; i++) {
+        long int span = starts[i] - starts[i-1];
         if (span < minspan)
           minspan = span;
       }
       if (length[0] > minspan)
         ::Rf_error("'length' %d exceeds minimum span between 'starts' elements (%d)", length[0], minspan);
     }
-    for (long unsigned int i = 0; i < nstarts; i++) {
-      long unsigned off = offset[0];
-      for (long unsigned int j = 0; j < length[0]; j++) {
+    for (long int i = 0; i < nstarts; i++) {
+      long int off = offset[0];
+      for (long int j = 0; j < length[0]; j++) {
         res[k++] = starts[i] + off;
         off++;
         if (k > n) {

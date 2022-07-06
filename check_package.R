@@ -16,6 +16,7 @@ devtools::check_win_oldrelease(email="Dan.Kelley@Dal.Ca")
 # rhub is broken as of June/July 2022
 if (FALSE) {
     rhub::check_for_cran(email="Dan.Kelley@Dal.Ca")
+    rhub::check_rhub()
 }
 # remotes::install_github("r-lib/revdepcheck")
 revdepcheck::revdep_reset()
