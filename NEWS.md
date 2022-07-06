@@ -1,4 +1,8 @@
-# oce 1.7.8
+# oce 1.7.9
+
+* In development, with a focus on improving `read.adp.ad2cp()`.
+
+# oce 1.7.8 on CRAN
 
 * Fix compiler warning of comparing signed and unsigned quantities.
 
