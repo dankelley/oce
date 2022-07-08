@@ -859,6 +859,7 @@ read.adp.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         o <- profileStart[i] + oShift
         ##oceDebug(debug, 'getting data chunk',i,' at file position',o,'\n')
         v[i, , ] <- velocityScale * matrix(readBin(buf[o + seq(0,2*items-1)], "integer", n=items, size=2, endian="little", signed=TRUE), ncol=numberOfBeams, byrow=FALSE)
+        # BUG BUG BUG why difference in byrow for v vs a and q?
         o <- o + items * 2
         a[i, , ] <- matrix(buf[o + seq(0,items-1)], ncol=items, byrow=TRUE)
         o <- o + items
