@@ -71,7 +71,7 @@ if (file.exists(f1)) {
         expect_equal(d1@data$burst$AHRS$rotationMatrix[1,,],
             matrix(c(0.060653746, -0.37823972, -0.92368418, 0.31505784,
                     -0.87079191, 0.37727141, -0.94709891, -0.31389475,
-                    0.066413939), byrow=TRUE, nrow=3))
+                    0.066413939), byrow=TRUE, nrow=3)) # byrow because numbers are from matlab output
         if (FALSE) {
             # FIXME: re-enable this, after coding vectorized 'average' etc
             expect_equal(d1[["AHRS", "average"]][1, ], c(0.060653746,-0.37824112, -0.92372596,

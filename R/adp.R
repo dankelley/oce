@@ -3734,9 +3734,13 @@ xyzToEnuAdpAD2CP <- function(x, declination=0, debug=getOption("oceDebug"))
                     ## 0.400   0.139   0.540
                     ##
                     ##> message("R method")
-                    e <- V[,,1]*rep(AHRS[,1], times=nc) + V[,,2]*rep(AHRS[,2], times=nc) + V[,,3]*rep(AHRS[,3], times=nc)
-                    n <- V[,,1]*rep(AHRS[,4], times=nc) + V[,,2]*rep(AHRS[,5], times=nc) + V[,,3]*rep(AHRS[,6], times=nc)
-                    u <- V[,,1]*rep(AHRS[,7], times=nc) + V[,,2]*rep(AHRS[,8], times=nc) + V[,,3]*rep(AHRS[,9], times=nc)
+                    # Prior to 2022-07-08 (when read.adp.nortek() was
+                    # vectorized), AHRS was a rotation matrix.  After that, it
+                    # became a list that holds that matrix, and other things.
+                    M <- if (is.matrix(AHRS)) AHRS else AHRS$rotationMatrix
+                    e <- V[,,1]*rep(M[,1], times=nc) + V[,,2]*rep(M[,2], times=nc) + V[,,3]*rep(M[,3], times=nc)
+                    n <- V[,,1]*rep(M[,4], times=nc) + V[,,2]*rep(M[,5], times=nc) + V[,,3]*rep(M[,6], times=nc)
+                    u <- V[,,1]*rep(M[,7], times=nc) + V[,,2]*rep(M[,8], times=nc) + V[,,3]*rep(M[,9], times=nc)
                     ## FIXME: perhaps use the declination now, rotating e and n.  But first, we will need to know
                     ## what declination was used by the instrument, in its creation of AHRS.
                     res@data[[item]]$v[,,1] <- e
@@ -3750,9 +3754,9 @@ xyzToEnuAdpAD2CP <- function(x, declination=0, debug=getOption("oceDebug"))
         }
     }
     res@processingLog <- processingLogAppend(res@processingLog,
-                                             paste("xyzToEnuAdpAD2CP(x",
-                                                   ", declination=", declination,
-                                                   ", debug=", debug, ")", sep=""))
+        paste("xyzToEnuAdpAD2CP(x",
+            ", declination=", declination,
+            ", debug=", debug, ")", sep=""))
     oceDebug(debug, "} # xyzToEnuAdpAD2CP()\n", unindent=1)
     res
 }

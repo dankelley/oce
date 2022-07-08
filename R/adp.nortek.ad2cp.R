@@ -865,6 +865,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
             tmp <- readBin(buf[iv], "numeric", size=4L, endian="little", n=NP*9L)
             for (ip in 1:NP) {
                 look <- seq(1L+(ip-1L)*9L, length.out=9L)
+                # read by row, given docs say M11, then M12, then M13, etc.
                 object$AHRS$rotationMatrix[ip,,] <- matrix(tmp[look], ncol=3, byrow=TRUE)
             }
             i0v <<- i0v + 9L*4L
