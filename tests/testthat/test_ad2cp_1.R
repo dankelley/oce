@@ -36,12 +36,11 @@ if (file.exists(f1)) {
     skip_on_cran()
     test_that("read.adp.ad2cp() on a private AD2CP file that has 'average' and 'burst' data", {
         # FIXME: handle 0x15
-        expect_warning(read.adp.ad2cp(f1, 1, 100, 1, plan=0), "that is not yet handled")
+        expect_silent(read.adp.ad2cp(f1, 1, 100, 1, plan=0))
         expect_error(read.adp.ad2cp(f1, 1, 100, 1, plan=10),
             "there are no data for plan=10; try one of the following values instead: 1 0")
-        expect_warning(expect_warning(d1 <- read.adp.ad2cp(f1, 1, 100, 1),
-                "'plan' defaulting to 0,"),
-            "that is not yet handled")
+        expect_warning(d1 <- read.adp.ad2cp(f1, 1, 100, 1),
+            "'plan' defaulting to 0,")
         nnn <- c("average", "burst", "interleavedBurst")
         expect_equal(c(TRUE, TRUE, FALSE), nnn %in% names(d1@data))
         expect_equal(sort(names(d1[["burst"]])),
@@ -197,15 +196,16 @@ if (file.exists(f1)) {
         # >> Data.Average_AccelerometerX(1:10)
         accxAverageMatlab <- c(-0.9497070, -0.9492188, -0.9477539, -0.9472656, -0.9458008,
             -0.9497070, -0.9501953, -0.9516602, -0.9511719, -0.9516602)
-        expect_equal(d1[["accelerometerx", "average"]][1:10], accxAverageMatlab, tolerance=1e-5)
+        accel <- d1[["average"]]$accelerometer
+        expect_equal(accel$x[1:10], accxAverageMatlab, tolerance=1e-5)
         # >> Data.Average_AccelerometerY(1:10)
         accyAverageMatlab <- c(-0.3134766, -0.3139648, -0.3168945, -0.3125000, -0.3178711,
             -0.3164062, -0.3168945, -0.3129883, -0.3154297, -0.3154297)
-        expect_equal(d1[["accelerometery", "average"]][1:10], accyAverageMatlab, tolerance=1e-5)
+        expect_equal(accel$y[1:10], accyAverageMatlab, tolerance=1e-5)
         # >> Data.Average_AccelerometerZ(1:10)
         acczAverageMatlab <- c(0.0668945, 0.0649414, 0.0659180, 0.0649414, 0.0678711,
             0.0668945, 0.0693359, 0.0693359, 0.0649414, 0.0649414)
-        expect_equal(d1[["accelerometerz", "average"]][1:10], acczAverageMatlab, tolerance=1e-5)
+        expect_equal(accel$z[1:10], acczAverageMatlab, tolerance=1e-5)
         #>> Data.BurstHR_AccelerometerX(1:10)
         accxBurstMatlab <- c(-0.9472656, -0.9497070, -0.9492188, -0.9467773, -0.9511719,
             -0.9506836, -0.9472656, -0.9492188, -0.9482422, -0.9506836)
@@ -304,11 +304,9 @@ if (file.exists(f2)) {
         N <- 500
         # Note: using read.adp() to ensure that it also works
         expect_warning(
-            expect_warning(
-                expect_warning(d2 <- read.adp(f2, from=1, to=N, by=1),
-                    "'plan' defaulting to 0"),
-                "ignoring 'despike'"),
-            "is not yet handled") # FIXME: handle 0x15
+            expect_warning(d2 <- read.adp(f2, from=1, to=N, by=1),
+                "'plan' defaulting to 0"),
+            "ignoring 'despike'")
         nnn <- c("average", "burst", "interleavedBurst")
         expect_equal(c(FALSE, TRUE, FALSE), nnn %in% names(d2@data))
         expect_equal("beam", d2[["oceCoordinate"]])

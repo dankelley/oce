@@ -20,12 +20,10 @@ if (file.exists(file)) {
         expect_warning(
             expect_warning(
                 expect_warning(
-                    expect_warning(
-                        expect_output(d <- read.oce(file),
-                            "got to end of file"),
-                        "using to=12"),
-                    "'plan' defaulting to 0"),
-                "data records with 'id' that is not yet handled"),
+                    expect_output(d <- read.oce(file),
+                        "got to end of file"),
+                    "using to=12"),
+                "'plan' defaulting to 0"),
             "file has 12-byte headers")
         # Identifiers
         expect_equal(d[["type"]], "Signature100")
@@ -36,15 +34,14 @@ if (file.exists(file)) {
                 "echosounder", "orientation",
                 "powerLevel", "status"))
         expect_equal(sort(names(d[["average"]])),
-            sort(c("a", "accelerometerx", "accelerometery", "accelerometerz",
-                    "blankingDistance", "cellSize", "datasetDescription",
-                    "ensemble", "heading", "magnetometerx", "magnetometery",
-                    "magnetometerz", "nominalCorrelation", "numberOfBeams",
-                    "numberOfCells", "oceCoordinate", "orientation",
-                    "originalCoordinate", "pitch", "powerLevel", "pressure",
-                    "q", "roll", "soundSpeed", "temperature",
-                    "temperatureMagnetometer", "temperatureRTC", "time",
-                    "transmitEnergy", "v")))
+            sort(c("a", "accelerometer", "blankingDistance", "cellSize",
+                    "datasetDescription", "ensemble", "heading",
+                    "magnetometerx", "magnetometery", "magnetometerz",
+                    "nominalCorrelation", "numberOfBeams", "numberOfCells",
+                    "oceCoordinate", "orientation", "originalCoordinate",
+                    "pitch", "powerLevel", "pressure", "q", "roll",
+                    "soundSpeed", "temperature", "temperatureMagnetometer",
+                    "temperatureRTC", "time", "transmitEnergy", "v")))
         # Beams and cells
         expect_equal(d[["oceCoordinate"]], "enu")
         expect_equal(d[["cellSize", "average"]], 10)

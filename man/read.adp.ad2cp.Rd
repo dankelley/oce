@@ -2,7 +2,7 @@
 % Please edit documentation in R/adp.nortek.ad2cp.R
 \name{read.adp.ad2cp}
 \alias{read.adp.ad2cp}
-\title{Read an AD2CP File}
+\title{Read a Nortek AD2CP adp File}
 \usage{
 read.adp.ad2cp(
   file,
@@ -26,18 +26,20 @@ read.adp.ad2cp(
 )
 }
 \arguments{
-\item{file}{A connection or a character string giving the name of the file to load.}
+\item{file}{a connection or a character string giving the name of the file to
+load.}
 
-\item{from}{An integer indicating the index number of the first record to
-read. This must equal 1, for this version of \code{read.adp.ad2cp}.
-(If not provided, \code{from} defaults to 1.)}
+\item{from}{an integer indicating the index number of the first record to
+read. This must equal 1, for this version of \code{read.adp.ad2cp}.  (If not
+provided, \code{from} defaults to 1.)}
 
 \item{to}{an integer indicating the final record to read.
-(If not provided, \code{by} defaults to 1e9.)}
+(If not provided, \code{to} defaults to 1e9, and reading stops at the
+end of the file.)}
 
-\item{by}{ignored by this function.}
+\item{by}{ignored.}
 
-\item{which}{character value indicating the data type(s) to be read, and
+\item{which}{a character value indicating the data type(s) to be read, and
 stored in the \code{data} slot of the returned value.  The default, \code{which="all"},
 means to read all the types.  In many cases, though, the user does not want
 to read everything at once, either as a way to speed processing or to avoid
@@ -59,63 +61,59 @@ type are as follows:
 with each of those vectors holding lines inferred by splitting the string
 at occurances of carriage-return/line-feed pairs).}
 
-\item{tz}{Character value indicating time zone. This is used in interpreting
-times stored in the file.}
+\item{tz}{a character value indicating time zone. This is used in
+interpreting times stored in the file.}
 
-\item{ignoreChecksums}{logical value indicating whether to ignore
-checksums.  This is FALSE by default, meaning that any data chunk
-with an improper checksum is ignored. It may be necessary to
-set this to TRUE to parse some problematic files.}
+\item{ignoreChecksums}{a logical value indicating whether to ignore
+checksums.  This is FALSE by default, meaning that any data chunk with an
+improper checksum is ignored. It may be necessary to set this to TRUE to
+parse some problematic files.}
 
-\item{longitude}{Numerical value indicating the longitude of observation.}
+\item{longitude, latitude}{numerical values indicating the observation
+location.}
 
-\item{latitude}{Numerical value indicating the latitude of observation.}
+\item{orientation}{ignored by \code{read.adp.ad2cp}, and provided only for
+similarity to other \verb{read.adp.*} functions.}
 
-\item{orientation}{Ignored by \code{read.adp.ad2cp}, and provided only for similarity
-to other adp-reading functions.}
+\item{distance}{ignored by \code{read.adp.ad2cp}, and provided only for similarity
+to other \verb{read.adp.*} functions.}
 
-\item{distance}{Ignored by \code{read.adp.ad2cp}, and provided only for similarity
-to other adp-reading functions.}
+\item{plan}{optional integer specifying which 'plan' to focus on (see
+reference 1 for the meaning of 'plan').  If this is not given, it defaults to
+the most common plan in the requested subset of the data.}
 
-\item{plan}{Optional integer specifying which 'plan' to focus on (see reference 1
-for the meaning of 'plan').  If this is not given, it defaults to the most
-common plan in the requested subset of the data.}
+\item{type}{optional character value indicating the type of Nortek
+instrument.  If this is not provided, an attempt is made to infer it from the
+file header (if there is one), and \code{"Signature1000"} is used, otherwise. The
+importance of knowing the type is for inferring the slantwise beam angle,
+which is usd in the conversion from beam coordinates to xyz coordinates. If
+\code{type} is provided, it must be one of \code{"Signature250"}, \code{"Signature500"}, or
+\code{"Signature1000"}; the first of these has a 20 degree slant-beam angle, while
+the others each have 20 degrees (see reference 2, section 2 on page 6). Note
+that \code{\link[=oceSetMetadata]{oceSetMetadata()}} can be used to alter the slantwise beam angle of an
+existing object, and this will alter any later conversion from beam to xyz
+coordinates.}
 
-\item{type}{Optional character value indicating the type of Nortek instrument.
-If this is not provided, an attempt is made to infer it
-from the file header (if there is one), and \code{"Signature1000"}
-is used, otherwise. The importance
-of knowing the type is for inferring the slantwise beam angle, which is usd in the
-conversion from beam coordinates to xyz coordinates. If \code{type} is
-provided, it must be one of \code{"Signature250"}, \code{"Signature500"},
-or \code{"Signature1000"}; the first of these has a 20 degree
-slant-beam angle, while the others each have 20 degrees (see reference 2,
-section 2 on page 6). Note that \code{\link[=oceSetMetadata]{oceSetMetadata()}}
-can be used to alter the slantwise beam angle of an existing object,
-and this will alter any later conversion from beam to xyz coordinates.}
+\item{monitor}{a boolean value indicating whether to indicate the progress of
+reading the file, by using \code{\link[=txtProgressBar]{txtProgressBar()}} or otherwise.  The value of
+\code{monitor} is changed to \code{FALSE} automatically, for non-interactive sessions.}
 
-\item{monitor}{boolean value indicating whether to indicate the progress
-of reading the file, by using \code{\link[=txtProgressBar]{txtProgressBar()}} or otherwise.  The value
-of \code{monitor} is changed to \code{FALSE} automatically, for non-interactive
-sessions.}
+\item{despike}{ignored by \code{read.adp.ad2cp}, and provided only for similarity
+to other \verb{read.adp.*} functions.}
 
-\item{despike}{Ignored by this function, and provided only for similarity
-to other adp-reading functions.}
+\item{processingLog}{a character value that, if provided, is saved within the
+\code{processingLog} slot of the returned value.}
 
-\item{processingLog}{Character value that, if provided, is saved
-within the \code{processingLog} slot of th returned value.}
+\item{debug}{an integer value indicating the level of debugging.  Set to 1 to
+get a moderate amount of debugging information, from the R code only, to 2 to
+get some debugging information from the C++ code that is used to parse the
+data chunks, or to 3 for intensive debugging at both levels.}
 
-\item{debug}{Integer value indicating the level of debugging.
-Set to 1 to get a moderate amount of debugging information, from
-the R code only, to 2 to get some debugging information from the C++
-code that is used to parse the data chunks, or to 3 for intensive
-debugging at both levels.}
-
-\item{\dots}{Ignored by this function.}
+\item{\dots}{ignored.}
 }
 \value{
 An \linkS4class{adp} object with \code{metadata$fileType} equal to \code{"AD2CP"}, a
-table (if \code{which="?"}), or a list of character vectors (if \code{which="text"}).
+table (if \code{which="?"}), or a vector of character (if \code{which="text"}).
 }
 \description{
 This function reads Nortek AD2CP files, storing data elements in lists within
@@ -127,13 +125,12 @@ bar <- d[["burstAltimeterRaw"]]
 }\if{html}{\out{</div>}}
 }
 \details{
-\code{read.adp.ad2cp()} is incomplete in some important ways, because AD2CP data
-formats are not described clearly enough in references 1, 2, and 3 to be
-certain of how to handle the range of file configurations that may be
-possible. The code has been tested with a small number of files that are
-available to the author, but these do not cover some cases that users might
-require. Given all of this, it makes sense to use this function with caution;
-see \dQuote{Cautionary Notes}.
+\code{read.adp.ad2cp} is incomplete in some important ways, partly because the
+Nortek manuals are somewhat incomplete and contradictory, and partly because
+no other software is available for checking results.  The code has been
+tested with a small number of files that are available to the author, but
+these do not cover some cases that users might require. Given all of this, it
+makes sense to use this function with caution; see \dQuote{Cautionary Notes}.
 
 Some of the standard \verb{read.adp.*} arguments are handled differently with this
 function, e.g. \code{by} must equal 1, because skipping records makes little sense
@@ -145,27 +142,59 @@ just a particular data stream.
 
 
 This function is in active development, and it may produce incorrect results,
-because of the need to guess about certain things that are not well-documented
-in Nortek documents. Three main documents were used as a guide to coding, and
-they differ in significant ways.  For example, the checksum computation scheme
-is described in two contradictory ways, although one makes very sense, so it is
-ignored here.
-
-It would seem to make sense to use the 2022 document, i.e. reference 2, but
-it is less clear than earlier documents, e.g. reference 1, with a fair bit of
-missing material. Nortek has indicated that they will release a revision to
-that document, and it will be consulted when it becomes available.  Also, the
-2022 document has significant errors, e.g. as stating that the variables
-called \code{altimeterDistance} and \code{ASTDistance} in this function are 32-bit
-integers, which yields wild values, whereas the 32-bit float format stated in
-the 2017 document yields sensible values.
+partly owing to the need to make guesses about the data format, given lack of
+clarity in various Nortek documents describing the file format, and also
+contradictions between these documents (see below).
 
 In spring of 2022, support was added for 12-byte headers.  These are not
-described in any Nortek document in the possession of the author of this
-function, although some personal communications made via
-https://github.com/dankelley/oce/issues have suggested some clues.  Those
-clues have led to provisional code here, but it has not been tested
-adequately.
+described in any Nortek document in the possession of the author of
+`read.adp.ad2cp(), although some personal communications made via
+https://github.com/dankelley/oce/issues have exposed some clues that have led
+to provisional, but largely untested, code here.
+
+The \dQuote{References} section lists some manuals that were consulted during
+the coding of \code{read.adp.ad2cp}.  Since instruments evolve over time, one
+might think that Nortek (2022) would be the best place to start, in coding to
+read AD2CP files. That would be a mistake, and a big one, at that. There
+are two reasons for this.
+
+First, Nortek (2022) is less clear about the data format than Nortek (2017)
+and Nortek (2018), as exemplified by a few examples.
+\enumerate{
+\item Nortek (2022) does not explain how to compute checksums.  Without this,
+it's impossible to write code to read the files, because the chance of random
+byte sequences would match chunk-start codes is too high, relative to file
+size.  After all, the Nortek engineers have used checksums in their products
+for a long time, and for a very good reason.
+\item Nortek (2022) does not lay out the data formats in sufficient detail to be
+of much guidance. The new leading-underscore format (Nortek 2022, page 79) it
+results in information being split into chunks that are spread throughout the
+document.  Given a particular field (say "burst") just where is one to look in
+the document?  And what do "Extends" and "Used By" (e.g. Nortek 2022, p85)
+mean? The older document laid things out more clearly, e.g. the average/burst
+format is laid out in detail, \emph{in one place} on pages 57 to 64 of Nortek, with
+the optional fields being clearly labelled in the rightmost column of Table
+6.1.3.
+\item Nortek (2022) often lists units incorrectly.  For example, on page 82,
+Pressure is said to have "Unit \link{dBar}" in green text, but the black text
+above states "Raw data given as 0.001 dBar". If the stated storage class
+(uint32) is to be believed, then it seems clear that the unit must be
+0.001 dBar, so the green text should be ignored.  The same can be said
+of items throughout the data-format tables. In coding \code{read.adp.ad2cp},
+the green "Unit" text was ignored in basically every case.
+}
+
+Second, Nortek (2022) contains some very significant errors,
+e.g. the following.
+\enumerate{
+\item Nortek (2022 page 89) states the storage class for "Altimeter
+data.Altimeter distance" (called \code{AltimeterDistance} by the present function)
+to be \code{int32}, but Nortek (2017, 2018) both state it to be \code{float32}. Tests
+with actual datasets make it clear that the format is \code{float32}, since wild
+result are inferred by following the Nortek (2022) guidance.
+\item As above, but for "AST data.AST distance" (called \code{ASTDistance} by the
+present function).
+}
 }
 
 \references{

@@ -1,8 +1,5 @@
 # vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
 
-# This file deals only with Nortek ad2cp files.  Please see comments in
-# adp.nortek.R for comments on general data formats
-
 # private function
 ad2cpDefaultDataItem <- function(x, j=NULL,
     order=c("average", "burst", "interleavedBurst",
@@ -132,7 +129,7 @@ ad2cpCodeToName <- function(code)
     rval
 }
 
-#' Read an AD2CP File
+#' Read a Nortek AD2CP adp File
 #'
 #' This function reads Nortek AD2CP files, storing data elements in lists within
 #' the `data` slot.  So, for example, the following might be a way to read and
@@ -142,13 +139,12 @@ ad2cpCodeToName <- function(code)
 #' bar <- d[["burstAltimeterRaw"]]
 #'```
 #'
-#' `read.adp.ad2cp()` is incomplete in some important ways, because AD2CP data
-#' formats are not described clearly enough in references 1, 2, and 3 to be
-#' certain of how to handle the range of file configurations that may be
-#' possible. The code has been tested with a small number of files that are
-#' available to the author, but these do not cover some cases that users might
-#' require. Given all of this, it makes sense to use this function with caution;
-#' see \dQuote{Cautionary Notes}.
+#' `read.adp.ad2cp` is incomplete in some important ways, partly because the
+#' Nortek manuals are somewhat incomplete and contradictory, and partly because
+#' no other software is available for checking results.  The code has been
+#' tested with a small number of files that are available to the author, but
+#' these do not cover some cases that users might require. Given all of this, it
+#' makes sense to use this function with caution; see \dQuote{Cautionary Notes}.
 #'
 #' Some of the standard `read.adp.*` arguments are handled differently with this
 #' function, e.g. `by` must equal 1, because skipping records makes little sense
@@ -159,41 +155,75 @@ ad2cpCodeToName <- function(code)
 #' @section Cautionary Notes:
 #'
 #' This function is in active development, and it may produce incorrect results,
-#' because of the need to guess about certain things that are not well-documented
-#' in Nortek documents. Three main documents were used as a guide to coding, and
-#' they differ in significant ways.  For example, the checksum computation scheme
-#' is described in two contradictory ways, although one makes very sense, so it is
-#' ignored here.
-#'
-#' It would seem to make sense to use the 2022 document, i.e. reference 2, but
-#' it is less clear than earlier documents, e.g. reference 1, with a fair bit of
-#' missing material. Nortek has indicated that they will release a revision to
-#' that document, and it will be consulted when it becomes available.  Also, the
-#' 2022 document has significant errors, e.g. as stating that the variables
-#' called `altimeterDistance` and `ASTDistance` in this function are 32-bit
-#' integers, which yields wild values, whereas the 32-bit float format stated in
-#' the 2017 document yields sensible values.
+#' partly owing to the need to make guesses about the data format, given lack of
+#' clarity in various Nortek documents describing the file format, and also
+#' contradictions between these documents (see below).
 #'
 #' In spring of 2022, support was added for 12-byte headers.  These are not
-#' described in any Nortek document in the possession of the author of this
-#' function, although some personal communications made via
-#' https://github.com/dankelley/oce/issues have suggested some clues.  Those
-#' clues have led to provisional code here, but it has not been tested
-#' adequately.
+#' described in any Nortek document in the possession of the author of
+#' `read.adp.ad2cp(), although some personal communications made via
+#' https://github.com/dankelley/oce/issues have exposed some clues that have led
+#' to provisional, but largely untested, code here.
 #'
+#' The \dQuote{References} section lists some manuals that were consulted during
+#' the coding of `read.adp.ad2cp`.  Since instruments evolve over time, one
+#' might think that Nortek (2022) would be the best place to start, in coding to
+#' read AD2CP files. That would be a mistake, and a big one, at that. There
+#' are two reasons for this.
 #'
-#' @param file A connection or a character string giving the name of the file to load.
+#' First, Nortek (2022) is less clear about the data format than Nortek (2017)
+#' and Nortek (2018), as exemplified by a few examples.
 #'
-#' @param from An integer indicating the index number of the first record to
-#' read. This must equal 1, for this version of `read.adp.ad2cp`.
-#' (If not provided, `from` defaults to 1.)
+#' 1. Nortek (2022) does not explain how to compute checksums.  Without this,
+#' it's impossible to write code to read the files, because the chance of random
+#' byte sequences would match chunk-start codes is too high, relative to file
+#' size.  After all, the Nortek engineers have used checksums in their products
+#' for a long time, and for a very good reason.
 #'
-#' @param by ignored by this function.
+#' 2. Nortek (2022) does not lay out the data formats in sufficient detail to be
+#' of much guidance. The new leading-underscore format (Nortek 2022, page 79) it
+#' results in information being split into chunks that are spread throughout the
+#' document.  Given a particular field (say "burst") just where is one to look in
+#' the document?  And what do "Extends" and "Used By" (e.g. Nortek 2022, p85)
+#' mean? The older document laid things out more clearly, e.g. the average/burst
+#' format is laid out in detail, *in one place* on pages 57 to 64 of Nortek, with
+#' the optional fields being clearly labelled in the rightmost column of Table
+#' 6.1.3.
+#'
+#' 3. Nortek (2022) often lists units incorrectly.  For example, on page 82,
+#' Pressure is said to have "Unit [dBar]" in green text, but the black text
+#' above states "Raw data given as 0.001 dBar". If the stated storage class
+#' (uint32) is to be believed, then it seems clear that the unit must be
+#' 0.001 dBar, so the green text should be ignored.  The same can be said
+#' of items throughout the data-format tables. In coding `read.adp.ad2cp`,
+#' the green "Unit" text was ignored in basically every case.
+#'
+#' Second, Nortek (2022) contains some very significant errors,
+#' e.g. the following.
+#'
+#' 1. Nortek (2022 page 89) states the storage class for "Altimeter
+#' data.Altimeter distance" (called `AltimeterDistance` by the present function)
+#' to be `int32`, but Nortek (2017, 2018) both state it to be `float32`. Tests
+#' with actual datasets make it clear that the format is `float32`, since wild
+#' result are inferred by following the Nortek (2022) guidance.
+#'
+#' 2. As above, but for "AST data.AST distance" (called `ASTDistance` by the
+#' present function).
+#'
+#' @param file a connection or a character string giving the name of the file to
+#' load.
+#'
+#' @param from an integer indicating the index number of the first record to
+#' read. This must equal 1, for this version of `read.adp.ad2cp`.  (If not
+#' provided, `from` defaults to 1.)
+#'
+#' @param by ignored.
 #'
 #' @param to an integer indicating the final record to read.
-#' (If not provided, `by` defaults to 1e9.)
+#' (If not provided, `to` defaults to 1e9, and reading stops at the
+#' end of the file.)
 #'
-#' @param which  character value indicating the data type(s) to be read, and
+#' @param which a character value indicating the data type(s) to be read, and
 #' stored in the `data` slot of the returned value.  The default, `which="all"`,
 #' means to read all the types.  In many cases, though, the user does not want
 #' to read everything at once, either as a way to speed processing or to avoid
@@ -215,59 +245,55 @@ ad2cpCodeToName <- function(code)
 #' with each of those vectors holding lines inferred by splitting the string
 #' at occurances of carriage-return/line-feed pairs).
 #'
-#' @param tz Character value indicating time zone. This is used in interpreting
-#' times stored in the file.
+#' @param tz a character value indicating time zone. This is used in
+#' interpreting times stored in the file.
 #'
-#' @param ignoreChecksums logical value indicating whether to ignore
-#' checksums.  This is FALSE by default, meaning that any data chunk
-#' with an improper checksum is ignored. It may be necessary to
-#' set this to TRUE to parse some problematic files.
+#' @param ignoreChecksums a logical value indicating whether to ignore
+#' checksums.  This is FALSE by default, meaning that any data chunk with an
+#' improper checksum is ignored. It may be necessary to set this to TRUE to
+#' parse some problematic files.
 #'
-#' @param longitude Numerical value indicating the longitude of observation.
+#' @param longitude,latitude numerical values indicating the observation
+#' location.
 #'
-#' @param latitude Numerical value indicating the latitude of observation.
+#' @param orientation ignored by `read.adp.ad2cp`, and provided only for
+#' similarity to other `read.adp.*` functions.
 #'
-#' @param orientation Ignored by `read.adp.ad2cp`, and provided only for similarity
-#' to other adp-reading functions.
+#' @param distance ignored by `read.adp.ad2cp`, and provided only for similarity
+#' to other `read.adp.*` functions.
 #'
-#' @param distance Ignored by `read.adp.ad2cp`, and provided only for similarity
-#' to other adp-reading functions.
+#' @param plan optional integer specifying which 'plan' to focus on (see
+#' reference 1 for the meaning of 'plan').  If this is not given, it defaults to
+#' the most common plan in the requested subset of the data.
 #'
-#' @param plan Optional integer specifying which 'plan' to focus on (see reference 1
-#' for the meaning of 'plan').  If this is not given, it defaults to the most
-#' common plan in the requested subset of the data.
+#' @param type optional character value indicating the type of Nortek
+#' instrument.  If this is not provided, an attempt is made to infer it from the
+#' file header (if there is one), and `"Signature1000"` is used, otherwise. The
+#' importance of knowing the type is for inferring the slantwise beam angle,
+#' which is usd in the conversion from beam coordinates to xyz coordinates. If
+#' `type` is provided, it must be one of `"Signature250"`, `"Signature500"`, or
+#' `"Signature1000"`; the first of these has a 20 degree slant-beam angle, while
+#' the others each have 20 degrees (see reference 2, section 2 on page 6). Note
+#' that [oceSetMetadata()] can be used to alter the slantwise beam angle of an
+#' existing object, and this will alter any later conversion from beam to xyz
+#' coordinates.
 #'
-#' @param type Optional character value indicating the type of Nortek instrument.
-#' If this is not provided, an attempt is made to infer it
-#' from the file header (if there is one), and `"Signature1000"`
-#' is used, otherwise. The importance
-#' of knowing the type is for inferring the slantwise beam angle, which is usd in the
-#' conversion from beam coordinates to xyz coordinates. If `type` is
-#' provided, it must be one of `"Signature250"`, `"Signature500"`,
-#' or `"Signature1000"`; the first of these has a 20 degree
-#' slant-beam angle, while the others each have 20 degrees (see reference 2,
-#' section 2 on page 6). Note that [oceSetMetadata()]
-#' can be used to alter the slantwise beam angle of an existing object,
-#' and this will alter any later conversion from beam to xyz coordinates.
+#' @param monitor a boolean value indicating whether to indicate the progress of
+#' reading the file, by using [txtProgressBar()] or otherwise.  The value of
+#' `monitor` is changed to `FALSE` automatically, for non-interactive sessions.
 #'
-#' @param monitor boolean value indicating whether to indicate the progress
-#' of reading the file, by using [txtProgressBar()] or otherwise.  The value
-#' of `monitor` is changed to `FALSE` automatically, for non-interactive
-#' sessions.
+#' @param despike ignored by `read.adp.ad2cp`, and provided only for similarity
+#' to other `read.adp.*` functions.
 #'
-#' @param despike Ignored by this function, and provided only for similarity
-#' to other adp-reading functions.
+#' @param processingLog a character value that, if provided, is saved within the
+#' `processingLog` slot of the returned value.
 #'
-#' @param processingLog Character value that, if provided, is saved
-#' within the `processingLog` slot of th returned value.
+#' @param debug an integer value indicating the level of debugging.  Set to 1 to
+#' get a moderate amount of debugging information, from the R code only, to 2 to
+#' get some debugging information from the C++ code that is used to parse the
+#' data chunks, or to 3 for intensive debugging at both levels.
 #'
-#' @param debug Integer value indicating the level of debugging.
-#' Set to 1 to get a moderate amount of debugging information, from
-#' the R code only, to 2 to get some debugging information from the C++
-#' code that is used to parse the data chunks, or to 3 for intensive
-#' debugging at both levels.
-#'
-#' @param \dots Ignored by this function.
+#' @param \dots ignored.
 #'
 ## @examples
 ##\dontrun{
@@ -275,7 +301,7 @@ ad2cpCodeToName <- function(code)
 ##}
 #'
 #' @return An [adp-class] object with `metadata$fileType` equal to `"AD2CP"`, a
-#' table (if `which="?"`), or a list of character vectors (if `which="text"`).
+#' table (if `which="?"`), or a vector of character (if `which="text"`).
 #'
 #' @author Dan Kelley
 #'
@@ -749,14 +775,14 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
     #x @author Dan Kelley
     getItemFromBuf <- function(object, name, i, debug=getOption("oceDebug"))
     {
-        debug <- debug + 1L            # FIXME: remove when finished coding
         NB <- object$numberOfBeams
         NC <- object$numberOfCells
         NP <- length(object$time)      # already defined
+        #oceDebug(debug, "  ... NP=",NP,", NB=", NB, ", NC=", NC, "\n")
         NBC <- NB * NC
-        oceDebug(debug, "NB=", NB, ", NC=", NC, ", NBC=", NBC, ", NP=", NP, "\n")
+        #oceDebug(debug, "NB=", NB, ", NC=", NC, ", NBC=", NBC, ", NP=", NP, "\n")
         if (name == "v") {
-            oceDebug(debug, "vector-read 'v' starting at i0v=", i0v, "\n")
+            oceDebug(debug, "  'v' starts at i0v=", i0v, "\n")
             if (NBC > 0L) {
                 iv <- gappyIndex(i, i0v, 2L*NBC)
                 # FIXME: use proper velocity factor
@@ -771,7 +797,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
                 i0v <<- i0v + 2L * NBC
             }
         } else if (name == "a") {
-            oceDebug(debug, "vector-read 'a' starting at i0v=", i0v, "\n")
+            oceDebug(debug, "  'a' starts at i0v=", i0v, "\n")
             if (NBC > 0L) {
                 iv <- gappyIndex(i, i0v, NBC)
                 a <- readBin(d$buf[iv], "raw", size=1L, n=NP*NBC, endian="little")
@@ -783,7 +809,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
                 i0v <<- i0v + NBC 
             }
         } else if (name == "q") {
-            oceDebug(debug, "vector-read 'q' starting at i0v=", i0v, "\n")
+            oceDebug(debug, "  'q' starts at i0v=", i0v, "\n")
             if (NBC > 0L) {
                 iv <- gappyIndex(i, i0v, NBC)
                 q <- readBin(d$buf[iv], "raw", size=1L, n=NP*NBC, endian="little")
@@ -800,7 +826,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
             # Nortek 2022 p89 (top) states altimeterDistance is int32, but the
             # values obtained with that setting ar crazy (e.g. 1109925788 m),
             # and Nortek 2017 p51 bottom states that it is a float value.
-            oceDebug(debug, "vector-read 'altimeter' starting at i0v=", i0v, "\n")
+            oceDebug(debug, "  'altimeter' starts at i0v=", i0v, "\n")
             iv <- gappyIndex(i, i0v, 4L)
             object$altimeterDistance <- readBin(buf[iv], "numeric", size=4L, n=NP, endian="little", signed=TRUE)
             message(vectorShow(object$altimeterDistance))
@@ -812,7 +838,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
             object$altimeterStatus <- readBin(buf[iv], "integer", size=2L, n=NP, endian="little", signed=FALSE)
             i0v <<- i0v + 2L
         } else if (name == "AST") {
-            oceDebug(debug, "vector-read 'AST' starting at i0v=", i0v, "\n")
+            oceDebug(debug, "  'AST' starts at i0v=", i0v, "\n")
             iv <- gappyIndex(i, i0v, 4L)
             object$ASTDistance <- readBin(buf[iv], "numeric", size=4L, n=NP, endian="little")
             message(vectorShow(object$ASTDistance))
@@ -832,7 +858,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
             # that the next occurs at ALTIRAW+8).
             i0v <<- i0v + 8L
         } else if (name == "altimeterRaw") {
-            oceDebug(debug, "vector-read 'altimeterRaw' starting at i0v=", i0v, "\n")
+            oceDebug(debug, "  'altimeterRaw' starts at i0v=", i0v, "\n")
             iv <- gappyIndex(i, i0v, 4L)
             NS <- readBin(buf[iv], "integer", size=4L, n=NP, endian="little") # no. samples (tmp var)
             dNS <- diff(range(NS))
@@ -841,7 +867,6 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
             NS <- NS[1]
             object$altimeterRawNumberOfSamples <- NS
             i0v <<- i0v + 4L # skip the 4 bytes we just read
-            oceDebug(debug, "    increased i0v to ", i0v, "\n", "\n")
             # FIXME: OK to assume all altimeterRawSampleDistance values are equal?
             iv <- gappyIndex(i, i0v, 2L)
             object$altimeterRawSampleDistance <-
@@ -855,7 +880,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
             message("FIXME: decode echosounder")
             i0v <<- i0v + 2L*NC
         } else if (name == "AHRS") {
-            oceDebug(debug, "vector-read 'AHRS' starting at i0v=", i0v, "\n")
+            oceDebug(debug, "  'AHRS' starts at i0v=", i0v, "\n")
             # AHRSRotationMatrix
             object$AHRS <- list(rotationMatrix=NULL,
                 quaternions=list(W=NULL, X=NULL, Y=NULL, Z=NULL),
@@ -894,13 +919,13 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
             i0v <<- i0v + 4L
         } else if (name == "percentgood") {
             # Nortek (2017) page 53: 8 bits, unsigned, appears after AHRS gyro z
-            oceDebug(debug, "vector-read 'percentgood' starting at i0v=", i0v, "; see Nortek (2017) p53\n")
+            oceDebug(debug, "  'percentgood' starts at i0v=", i0v, "; see Nortek (2017) p53\n")
             iv <- gappyIndex(i, i0v, 4L)
             object$percentgood <- as.integer(buf[iv])
             i0v <<- i0v + 4L
         } else if (name == "stdDev") {
             # Nortek (2017) page 53-54: appears after percentgood
-            oceDebug(debug, "vector-read 'stdDev' starting at i0v=", i0v, "; see Nortek (2017) p53-54\n")
+            oceDebug(debug, "  'stdDev' starts at i0v=", i0v, "; see Nortek (2017) p53-54\n")
             iv <- gappyIndex(i, i0v, 2L)
             object$stdDevPitch <- 0.01*readBin(buf[iv], "numeric", size=2L, endian="little", n=NP)
             i0v <<- i0v + 2L           # advance for next subitem
@@ -920,27 +945,21 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
         } else {
             stop("unknown item, name=\"", name, "\"")
         }
-        oceDebug(debug, "after handling \"", name, "\", i0v=", i0v, "\n")
-        debug <- debug - 1L            # FIXME: remove when finished coding
+        #oceDebug(debug, "    after handling \"", name, "\", i0v=", i0v, "\n")
         object
     }
 
-
-    # 2. get some things in slow index-based form.
-    if (length(p$burst) > 0) {         # key=0x15
-        #if (any(version[p$burst] != 3))
-        #    stop("can only decode 'burst' data records that are in 'version 3' format")
+    if (length(p$burst) > 0L) {        # vector-read 'burst'=0x15 BOOKMARK=B
         nbeamsBurst <- nbeams[p$burst[1]]
         ncellsBurst <- ncells[p$burst[1]]
         oceDebug(debug, "burst data records: nbeams:", nbeamsBurst, ", ncells:", ncellsBurst, "\n", sep="")
-        if (any(ncells[p$burst] != ncellsBurst))
-            stop("the 'burst' data records do not all have the same number of cells")
         if (any(nbeams[p$burst] != nbeamsBurst))
             stop("the 'burst' data records do not all have the same number of beams")
-        # FIXME: read other fields to the following list.
+        if (any(ncells[p$burst] != ncellsBurst))
+            stop("the 'burst' data records do not all have the same number of cells")
         burst <- list(i=1,
-            numberOfCells=ncellsBurst,
             numberOfBeams=nbeamsBurst,
+            numberOfCells=ncellsBurst,
             originalCoordinate=coordinateSystem[p$burst[1]],
             oceCoordinate=coordinateSystem[p$burst[1]],
             cellSize=cellSize[p$burst[1]],
@@ -966,107 +985,50 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
             datasetDescription=datasetDescription[p$burst],
             transmitEnergy=transmitEnergy[p$burst],
             powerLevel=powerLevel[p$burst])
-        if (any(velocityIncluded[p$burst])) {
-            if (1 < length(unique(velocityIncluded[p$burst])))
-                stop("velocityIncluded values non-unique across 'burst' data records")
-            if (debug > 1L)
-                burst$vOLD <- array(double(), dim=c(length(p$burst), ncellsBurst, nbeamsBurst))
-        }
-        if (any(amplitudeIncluded[p$burst])) {
-            if (1 < length(unique(amplitudeIncluded[p$burst])))
-                stop("amplitudeIncluded values non-unique across 'burst' data records")
-            if (debug > 1L)
-                burst$aOLD <- array(raw(), dim=c(length(p$burst), ncellsBurst, nbeamsBurst))
-        }
-        if (any(correlationIncluded[p$burst])) {
-            if (1 < length(unique(correlationIncluded[p$burst])))
-                stop("correlationIncluded values non-unique across 'burst' data records")
-            if (debug > 1L)
-                burst$qOLD <- array(raw(), dim=c(length(p$burst), ncellsBurst, nbeamsBurst))
-        }
-        if (any(altimeterIncluded[p$burst])) {
-            if (1 < length(unique(altimeterIncluded[p$burst])))
-                stop("altimeterIncluded values non-unique across 'burst' data records")
-            burst$altimeterDistanceOLD <- vector("numeric", length(p$burst))
-        }
-        if (any(ASTIncluded[p$burst])) {
-            burst$ASTDistanceOLD <- vector("numeric", length(p$burst))
-            burst$ASTPressureOLD <- vector("numeric", length(p$burst))
-        }
-        if (any(echosounderIncluded[p$burst])) {
-            burst$echosounderOLD <- matrix(double(), ncol=length(p$burst), nrow=ncellsBurst)
-        }
-        if (any(AHRSIncluded[p$burst])) {
-            if (debug > 1L)
-                burst$AHRSOLD <- matrix(numeric(), nrow=length(p$burst), ncol=9)
-        }
-        if (TRUE) {                    # burst: vectorized
-            # BOOKMARK a: burst vectorized
-            debug <- debug+1L
-            oceDebug(debug, "VECTORIZED burst fragment begins...\n")
-            i <- d$index[which(d$id==0x15)] # pointer to "burst" chunks in buf
-            i0v <- 77
-            NP <- length(i)            # number of profiles of this type
-            oceDebug(debug, vectorShow(i, n=4))
-            NC <- burst$numberOfCells  # number of cells for v,a,q
-            NB <- burst$numberOfBeams  # number of beams for v,a,q
-            oceDebug(debug, "NP=",NP,", NC=", NC, ", NB=", NB, "\n")
-            message("FIXME: handle vectorized 'burst' here")
-            if (velocityIncluded[p$burst[1]]) {
-                burst <- getItemFromBuf(burst, "v", i=i, debug=debug)
-            }
-            if (amplitudeIncluded[p$burst[1]]) {
-                burst <- getItemFromBuf(burst, "a", i=i, debug=debug)
-            }
-            if (correlationIncluded[p$burst[1]]) {
-                burst <- getItemFromBuf(burst, "q", i=i, debug=debug)
-            }
-            if (altimeterIncluded[p$burst[1]]) {
-                burst <- getItemFromBuf(burst, "altimeter", i=i, debug=debug)
-            }
-            if (ASTIncluded[p$burst[1]]) {
-                burst <- getItemFromBuf(burst, "AST", i=i, debug=debug)
-            }
-            if (altimeterRawIncluded[p$burst[1]]) {
-                burst <- getItemFromBuf(burst, "altimeterRaw", i=i, debug=debug)
-            }
-            if (echosounderIncluded[p$burst[1]]) {
-                burst <- getItemFromBuf(burst, "echosounder", i=i, debug=debug)
-            }
-            if (AHRSIncluded[p$burst[1]]) {
-                burst <- getItemFromBuf(burst, "AHRS", i=i, debug=debug)
-            }
-            if (percentGoodIncluded[p$burst[1]]) {
-                burst <- getItemFromBuf(burst, "percentgood", i=i, debug=debug)
-            }
-            if (stdDevIncluded[p$burst[1]]) {
-                burst <- getItemFromBuf(burst, "stdDev", i=i, debug=debug)
-            }
-            ch <- p$burst[1] # FiXME: what is this for?
-            #cat(file=stderr(), vectorShow(p$burstAltimeterRaw))
-            oceDebug(debug, "} # VECTORIZED burst\n")
-            debug <- debug-1L
-        }
+        oceDebug(debug, "vector-read 'burst' records (0x15) {\n")
+        i <- d$index[which(d$id==0x15)] # pointers to "burst" chunks in buf
+        i0v <- 77                      # pointer to data (incremented by getItemFromBuf() later).
+        NP <- length(i)                # number of profiles of this type
+        oceDebug(debug, "  ", vectorShow(i, n=3))
+        NC <- burst$numberOfCells      # number of cells for v,a,q
+        NB <- burst$numberOfBeams      # number of beams for v,a,q
+        oceDebug(debug, "  NP=", NP, ", NB=", NB, ", NC=", NC, "\n", sep="")
+        if (velocityIncluded[p$burst[1]]) 
+            burst <- getItemFromBuf(burst, "v", i=i, debug=debug)
+        if (amplitudeIncluded[p$burst[1]]) 
+            burst <- getItemFromBuf(burst, "a", i=i, debug=debug)
+        if (correlationIncluded[p$burst[1]]) 
+            burst <- getItemFromBuf(burst, "q", i=i, debug=debug)
+        if (altimeterIncluded[p$burst[1]]) 
+            burst <- getItemFromBuf(burst, "altimeter", i=i, debug=debug)
+        if (ASTIncluded[p$burst[1]]) 
+            burst <- getItemFromBuf(burst, "AST", i=i, debug=debug)
+        if (altimeterRawIncluded[p$burst[1]]) 
+            burst <- getItemFromBuf(burst, "altimeterRaw", i=i, debug=debug)
+        if (echosounderIncluded[p$burst[1]]) 
+            burst <- getItemFromBuf(burst, "echosounder", i=i, debug=debug)
+        if (AHRSIncluded[p$burst[1]]) 
+            burst <- getItemFromBuf(burst, "AHRS", i=i, debug=debug)
+        if (percentGoodIncluded[p$burst[1]])
+            burst <- getItemFromBuf(burst, "percentgood", i=i, debug=debug)
+        if (stdDevIncluded[p$burst[1]])
+            burst <- getItemFromBuf(burst, "stdDev", i=i, debug=debug)
+        ch <- p$burst[1] # FiXME: what is this for?
+        oceDebug(debug, "} # vector-read 'burst'\n")
     } else {
         burst <- NULL
     }
-
-
-
-    if (length(p$average) > 0) {       # key=0x16
-        #if (any(version[p$average] != 3))
-        #    stop("can only decode 'average' data records that are in 'version 3' format")
+    if (length(p$average) > 0L) {      # vector-read 'average'=0x16 BOOKMARK=A
         nbeamsAverage <- nbeams[p$average[1]]
         ncellsAverage <- ncells[p$average[1]]
         oceDebug(debug, "average data records: nbeams:", nbeamsAverage, ", ncells:", ncellsAverage, "\n")
-        if (any(ncells[p$average] != ncellsAverage))
-            stop("the 'average' data records do not all have the same number of cells")
         if (any(nbeams[p$average] != nbeamsAverage))
             stop("the 'average' data records do not all have the same number of beams")
-        # FIXME: read other fields to the following list.
+        if (any(ncells[p$average] != ncellsAverage))
+            stop("the 'average' data records do not all have the same number of cells")
         average <- list(i=1,
-            numberOfCells=ncellsAverage,
             numberOfBeams=nbeamsAverage,
+            numberOfCells=ncellsAverage,
             originalCoordinate=coordinateSystem[p$average[1]],
             oceCoordinate=coordinateSystem[p$average[1]],
             cellSize=cellSize[p$average[1]],
@@ -1082,59 +1044,46 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
             temperatureMagnetometer=temperatureMagnetometer[p$average],
             temperatureRTC=temperatureRTC[p$average],
             soundSpeed=soundSpeed[p$average],
-            magnetometerx=magnetometerx[p$average],
-            magnetometery=magnetometery[p$average],
-            magnetometerz=magnetometerz[p$average],
-            accelerometerx=accelerometerx[p$average],
-            accelerometery=accelerometery[p$average],
-            accelerometerz=accelerometerz[p$average],
+            magnetometer=list(x=magnetometerx[p$average],
+                y=magnetometery[p$average],
+                z=magnetometerz[p$average]),
+            accelerometer=list(x=accelerometerx[p$average],
+                y=accelerometery[p$average],
+                z=accelerometerz[p$average]),
             nominalCorrelation=nominalCorrelation[p$average],
             datasetDescription=datasetDescription[p$average],
             transmitEnergy=transmitEnergy[p$average],
             powerLevel=powerLevel[p$average])
-        if (TRUE) { # average: nonvectorized initialization
-            oceDebug(debug, "NONVECTORIZED average ...\n")
-            if (any(velocityIncluded[p$average])) {
-                if (1 < length(unique(velocityIncluded[p$average])))
-                    stop("velocityIncluded values non-unique across 'average' data records")
-                average$v <- array(double(), dim=c(length(p$average), ncellsAverage, nbeamsAverage))
-            }
-            if (any(amplitudeIncluded[p$average])) {
-                if (1 < length(unique(amplitudeIncluded[p$average])))
-                    stop("amplitudeIncluded values non-unique across 'average' data records")
-                average$a <- array(raw(), dim=c(length(p$average), ncellsAverage, nbeamsAverage))
-            }
-            if (any(correlationIncluded[p$average])) {
-                if (1 < length(unique(correlationIncluded[p$average])))
-                    stop("correlationIncluded values non-unique across 'average' data records")
-                average$q <- array(raw(), dim=c(length(p$average), ncellsAverage, nbeamsAverage))
-            }
-            if (any(altimeterIncluded[p$average])) {
-                if (1 < length(unique(altimeterIncluded[p$average])))
-                    stop("altimeterIncluded values non-unique across 'average' data records")
-                average$altimeterDistance <- vector("numeric", length(p$average))
-            }
-            if (any(ASTIncluded[p$average])) {
-                average$ASTDistance <- vector("numeric", length(p$average))
-                average$ASTPressure <- vector("numeric", length(p$average))
-            }
-            if (any(echosounderIncluded[p$average])) {
-                average$echosounder <- matrix(double(), ncol=length(p$average), nrow=ncellsAverage)
-            }
-            if (any(AHRSIncluded[p$average])) {
-                average$AHRS <- matrix(numeric(), nrow=length(p$average), ncol=9)
-            }
-        }
-        if (!TRUE) {                   # average: vectorized all-in-one
-            oceDebug(debug, "VECTORIZED average ... nbeam=", nbeamsBurstAltimeterRaw, ", ncell=", ncellsBurstAltimeterRaw, "\n")
-            i <- d$index[which(d$id==0x16)] # pointer to chunk starting points in buf
-            i0v <- 77
-            NP <- length(i)            # number of profiles of this type
-            oceDebug(debug, vectorShow(i, n=4))
-            NC <- burstAltimeterRaw$numberOfCells # number of cells for v,a,q
-            NB <- burstAltimeterRaw$numberOfBeams # number of beams for v,a,q
-
-        }
+        oceDebug(debug, "vector-read 'average' records (0x16) {\n")
+        i <- d$index[which(d$id==0x16)] # pointers to "average" chunks in buf
+        i0v <- 77                      # pointer to data (incremented by getItemFromBuf() later).
+        NP <- length(i)                # number of profiles of this type
+        oceDebug(debug, "  ", vectorShow(i, n=3))
+        NC <- average$numberOfCells    # number of cells for v,a,q
+        NB <- average$numberOfBeams    # number of beams for v,a,q
+        oceDebug(debug, "  NP=", NP, ", NB=", NB, ", NC=", NC, "\n", sep="")
+        if (velocityIncluded[p$average[1]])
+            average <- getItemFromBuf(average, "v", i=i, debug=debug)
+        if (amplitudeIncluded[p$average[1]])
+            average <- getItemFromBuf(average, "a", i=i, debug=debug)
+        if (correlationIncluded[p$average[1]])
+            average <- getItemFromBuf(average, "q", i=i, debug=debug)
+        if (altimeterIncluded[p$average[1]])
+            average <- getItemFromBuf(average, "altimeter", i=i, debug=debug)
+        if (ASTIncluded[p$average[1]])
+            average <- getItemFromBuf(average, "AST", i=i, debug=debug)
+        if (altimeterRawIncluded[p$average[1]])
+            average <- getItemFromBuf(average, "altimeterRaw", i=i, debug=debug)
+        if (echosounderIncluded[p$average[1]])
+            average <- getItemFromBuf(average, "echosounder", i=i, debug=debug)
+        if (AHRSIncluded[p$average[1]])
+            average <- getItemFromBuf(average, "AHRS", i=i, debug=debug)
+        if (percentGoodIncluded[p$average[1]])
+            average <- getItemFromBuf(average, "percentgood", i=i, debug=debug)
+        if (stdDevIncluded[p$average[1]])
+            average <- getItemFromBuf(average, "stdDev", i=i, debug=debug)
+        ch <- p$average[1] # FiXME: what is this for?
+        oceDebug(debug, "} # vector-read 'average'\n")
     } else {
         average <- NULL
     }
@@ -1268,7 +1217,6 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
         interleavedBurst <- NULL
     }
     if (length(p$burstAltimeterRaw) > 0L) { # key=0x1a (burst Altimeter raw record)
-        # BOOKMARK 2: create burstAltimeterRaw
         oceDebug(debug, "length(p$burstAltimeterRaw)=", length(p$burstAltimeterRaw), "\n", sep="")
         #if (any(version[p$burstAltimeter] != 3))
         #    stop("can only decode 'burstAltimeter' data records that are in 'version 3' format")
@@ -1311,15 +1259,13 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
             transmitEnergy=transmitEnergy[p$burstAltimeterRaw],
             powerLevel=powerLevel[p$burstAltimeterRaw])
         if (TRUE) {                    # burstAltimeterRaw: vectorized
-            oceDebug(debug, "VECTORIZED burstAltimeterRaw {\n")
-            # BOOKMARK 3: burstAltimeterRaw (vectorized)
-            #
+            oceDebug(debug, "vector-read 'burstAltimeterRaw' records (0x1a) {\n")
             # See CR's snapshot at
             # https://github.com/dankelley/oce/issues/1959#issuecomment-1141409542
             # which is p89 of Nortek AS. “Signature Integration
             # 55|250|500|1000kHz.” Nortek AS, March 31, 2022)
-            i <- d$index[which(d$id==0x1a)] # pointer to chunk starting points in buf
-            i0v <- 77
+            i <- d$index[which(d$id==0x1a)] # pointers to "burstAltimeterRaw" chunks in buf
+            i0v <- 77                      # pointer to data (incremented by getItemFromBuf() later).
             NP <- length(i)            # number of profiles of this type
             oceDebug(debug, vectorShow(i, n=4))
             NC <- burstAltimeterRaw$numberOfCells # number of cells for v,a,q
@@ -1441,79 +1387,73 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
         DVLBottomTrack <- NULL
     }
 
-    if (length(p$echosounder) > 0) {   # key=0x1c
-        #if (any(version[p$echosounder] != 3))
-        #    stop("can only decode 'echosounder' data records that are in 'version 3' format")
-        #? oceDebug(debug, "echosounder data records: nbeams:", nbeamsEchosounder, ", ncells:", ncellsEchosounder, "\n")
-        #? if (any(ncellsEchosounder[p$echosounder] != ncellsEchosounder[p$echosounder[1]]))
-        #?     stop("the 'echosounder' data records do not all have the same number of cells")
-        #? if (any(nbeams[p$echosounder] != nbeamsEchosounder))
-        #?     stop("the 'echosounder' data records do not all have the same number of beams")
-        # FIXME: read other fields to the following list.
-    echosounder <- list(i=1,
-        numberOfCells=ncellsEchosounder2[p$echosounder][1],
-        numberOfBeams=1, # FIXME: is this right?
-        originalCoordinate=coordinateSystem[p$echosounder[1]],
-        oceCoordinate=coordinateSystem[p$echosounder[1]],
-        cellSize=cellSize[p$echosounder[1]],
-        blankingDistance=blankingDistance[p$echosounder[1]],
-        ensemble=ensemble[p$echosounder],
-        time=time[p$echosounder],
-        orientation=orientation[p$echosounder],
-        heading=heading[p$echosounder],
-        pitch=pitch[p$echosounder],
-        roll=roll[p$echosounder],
-        pressure=pressure[p$echosounder],
-        temperature=temperature[p$echosounder],
-        temperatureMagnetometer=temperatureMagnetometer[p$echosounder],
-        temperatureRTC=temperatureRTC[p$echosounder],
-        soundSpeed=soundSpeed[p$echosounder],
-        magnetometerx=magnetometerx[p$echosounder],
-        magnetometery=magnetometery[p$echosounder],
-        magnetometerz=magnetometerz[p$echosounder],
-        accelerometerx=accelerometerx[p$echosounder],
-        accelerometery=accelerometery[p$echosounder],
-        accelerometerz=accelerometerz[p$echosounder],
-        nominalCorrelation=nominalCorrelation[p$echosounder],
-        datasetDescription=datasetDescription[p$echosounder],
-        transmitEnergy=transmitEnergy[p$echosounder],
-        powerLevel=powerLevel[p$echosounder])
-        # FIXME: Find out whether echosounder records ever have v, a, q, etc. My guess is
-        # FIXME: that the answer is "no", but the docs [1] are really not clear on this. (They
-        # FIXME: say little about anything but average/burst/bottomTrack/text.)
-        # FIXME: If I discover that echosounder data lack these things, I will trim
-        # FIXME: the code immediately following this comment, and also the data-insertion
-        # FIXME: code that comes up in the 'ch' loop.
-        #? if (any(velocityIncluded[p$echosounder])) {
-        #?     if (1 < length(unique(velocityIncluded[p$echosounder])))
-        #?         stop("velocityIncluded values non-unique across 'echosounder' data records")
-        #?     echosounder$v <- array(double(), dim=c(length(p$echosounder), ncellsEchosounder, nbeamsEchosounder))
-        #? }
-        #? if (any(amplitudeIncluded[p$echosounder])) {
-        #?     if (1 < length(unique(amplitudeIncluded[p$echosounder])))
-        #?         stop("amplitudeIncluded values non-unique across 'echosounder' data records")
-        #?     echosounder$a <- array(raw(), dim=c(length(p$echosounder), ncellsEchosounder, nbeamsEchosounder))
-        #? }
-        #? if (any(correlationIncluded[p$echosounder])) {
-        #?     if (1 < length(unique(correlationIncluded[p$echosounder])))
-        #?         stop("correlationIncluded values non-unique across 'echosounder' data records")
-        #?     echosounder$q <- array(raw(), dim=c(length(p$echosounder), ncellsEchosounder, nbeamsEchosounder))
-        #? }
-        #? if (any(altimeterIncluded[p$echosounder])) {
-        #?     if (1 < length(unique(altimeterIncluded[p$echosounder])))
-        #?         stop("altimeterIncluded values non-unique across 'echosounder' data records")
-        #?     echosounder$altimeterDistance <- vector("numeric", length(p$echosounder))
-        #? }
-        #? if (any(ASTIncluded[p$echosounder])) {
-        #?     echosounder$ASTDistance <- vector("numeric", length(p$echosounder))
-        #?     echosounder$ASTPressure <- vector("numeric", length(p$echosounder))
-        #? }
-        if (any(echosounderIncluded[p$echosounder])) {
-            echosounder$echosounder <- matrix(double(), ncol=length(p$echosounder), nrow=ncellsEchosounder2[p$echosounder][1])
-        }
-        #? if (any(AHRSIncluded[p$average])) {
-        #?     echosounder$AHRS <- matrix(numeric(), nrow=length(p$echosounder), ncol=9)
-        #? }
+    if (length(p$echosounder) > 0) {   # vector-read 'echosounder'=0x1c BOOKMARK=E (see also J)
+        # FIXME: code this, then remove code at J
+        nbeamsEchosounder <- nbeams[p$echosounder[1]]
+        ncellsEchosounder <- ncells[p$echosounder[1]]
+        oceDebug(debug, "echosounder data records: nbeams:", nbeamsEchosounder, ", ncells:", ncellsEchosounder, "\n")
+        if (any(nbeams[p$echosounder] != nbeamsEchosounder))
+            stop("the 'echosounder' data records do not all have the same number of beams")
+        if (any(ncells[p$echosounder] != ncellsEchosounder))
+            stop("the 'echosounder' data records do not all have the same number of cells")
+        echosounder <- list(i=1,
+            numberOfCells=ncellsEchosounder2[p$echosounder][1],
+            numberOfBeams=1, # FIXME: is this right?
+            originalCoordinate=coordinateSystem[p$echosounder[1]],
+            oceCoordinate=coordinateSystem[p$echosounder[1]],
+            cellSize=cellSize[p$echosounder[1]],
+            blankingDistance=blankingDistance[p$echosounder[1]],
+            ensemble=ensemble[p$echosounder],
+            time=time[p$echosounder],
+            orientation=orientation[p$echosounder],
+            heading=heading[p$echosounder],
+            pitch=pitch[p$echosounder],
+            roll=roll[p$echosounder],
+            pressure=pressure[p$echosounder],
+            temperature=temperature[p$echosounder],
+            temperatureMagnetometer=temperatureMagnetometer[p$echosounder],
+            temperatureRTC=temperatureRTC[p$echosounder],
+            soundSpeed=soundSpeed[p$echosounder],
+            magnetometer=list(x=magnetometerx[p$echosounder],
+                y=magnetometery[p$echosounder],
+                z=magnetometerz[p$echosounder]),
+            accelerometer=list(x=accelerometerx[p$echosounder],
+                y=accelerometery[p$echosounder],
+                z=accelerometerz[p$echosounder]),
+            nominalCorrelation=nominalCorrelation[p$echosounder],
+            datasetDescription=datasetDescription[p$echosounder],
+            transmitEnergy=transmitEnergy[p$echosounder],
+            powerLevel=powerLevel[p$echosounder])
+        oceDebug(debug, "vector-read 'echosounder' records (0x1c) {\n")
+        i <- d$index[which(d$id==0x1c)] # pointers to "echosounder" chunks in buf
+        i0v <- 77                      # pointer to data (incremented by getItemFromBuf() later).
+        NP <- length(i)                # number of profiles of this type
+        oceDebug(debug, "  ", vectorShow(i, n=3))
+        NC <- echosounder$numberOfCells    # number of cells for v,a,q
+        NB <- echosounder$numberOfBeams    # number of beams for v,a,q
+        oceDebug(debug, "  NP=", NP, ", NB=", NB, ", NC=", NC, "\n", sep="")
+        if (velocityIncluded[p$echosounder[1]])
+            echosounder <- getItemFromBuf(echosounder, "v", i=i, debug=debug)
+        if (amplitudeIncluded[p$echosounder[1]])
+            echosounder <- getItemFromBuf(echosounder, "a", i=i, debug=debug)
+        if (correlationIncluded[p$echosounder[1]])
+            echosounder <- getItemFromBuf(echosounder, "q", i=i, debug=debug)
+        if (altimeterIncluded[p$echosounder[1]])
+            echosounder <- getItemFromBuf(echosounder, "altimeter", i=i, debug=debug)
+        if (ASTIncluded[p$echosounder[1]])
+            echosounder <- getItemFromBuf(echosounder, "AST", i=i, debug=debug)
+        if (altimeterRawIncluded[p$echosounder[1]])
+            echosounder <- getItemFromBuf(echosounder, "altimeterRaw", i=i, debug=debug)
+        if (echosounderIncluded[p$echosounder[1]])
+            echosounder <- getItemFromBuf(echosounder, "echosounder", i=i, debug=debug)
+        if (AHRSIncluded[p$echosounder[1]])
+            echosounder <- getItemFromBuf(echosounder, "AHRS", i=i, debug=debug)
+        if (percentGoodIncluded[p$echosounder[1]])
+            echosounder <- getItemFromBuf(echosounder, "percentgood", i=i, debug=debug)
+        if (stdDevIncluded[p$echosounder[1]])
+            echosounder <- getItemFromBuf(echosounder, "stdDev", i=i, debug=debug)
+        ch <- p$echosounder[1] # FiXME: what is this for?
+        oceDebug(debug, "} # vector-read 'echosounder'\n")
     } else {
         echosounder <- NULL
     }
@@ -1704,125 +1644,121 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
         # oceDebug(debug>3, "d$id[", ch, "]=", d$id[[ch]], "\n", sep="")
         key <- d$id[ch]
         i <- d$index[ch]
-        oceDebug(debug > 0, sprintf("chunk ch=%d of %d, starting at buf[%d] has key=0x%02x (%s)\n",
-                ch, N, i, key, ad2cpCodeToName(key)), unindent=1)
+        #oceDebug(debug > 0, sprintf("chunk ch=%d of %d, starting at buf[%d] has key=0x%02x (%s)\n",
+        #        ch, N, i, key, ad2cpCodeToName(key)), unindent=1)
 
-        if (debug > 1L && key == 0x15) { # burst
+        if (FALSE && key == 0x15) { # burst (DISABLED unvectorized)
+            #ncol <- burst$numberOfBeams
+            #nrow <- burst$numberOfCells
+            #n <- ncol * nrow
+            #n2 <- 2 * n
+            #i0 <- 77
+            #if (velocityIncluded[ch]) {
+            #    v <- velocityFactor[ch]*readBin(d$buf[i+i0+seq(0,n2-1)], "integer",size=2,n=n,endian="little")
+            #    burst$vOLD[burst$i, , ] <- matrix(v, ncol=ncol, nrow=nrow, byrow=FALSE)
+            #    i0 <- i0 + n2
+            #}
+            #if (amplitudeIncluded[ch]) {
+            #    a <- d$buf[i + i0 + seq(0,n-1)]
+            #    burst$aOLD[burst$i, ,] <- matrix(a, ncol=ncol, nrow=nrow, byrow=FALSE)
+            #    i0 <- i0 + n
+            #}
+            #if (correlationIncluded[ch]) {
+            #    q <- d$buf[i + i0 + seq(0,n-1)]
+            #    burst$qOLD[burst$i, ,] <- matrix(q, ncol=ncol, nrow=nrow, byrow=FALSE)
+            #    i0 <- i0 + n
+            #}
+            #if (altimeterIncluded[ch]) { # burst
+            #    burst$altimeterDistanceOLD[burst$i] <- readBin(d$buf[i + i0 + 0:3], "numeric", size=4, n=1, endian="little")
+            #    # FIXME: perhaps save altimeterQuality from next 2 bytes
+            #    # FIXME: perhaps save altimeterStatus from next 2 bytes
+            #    i0 <- i0 + 8
+            #}
+            #if (ASTIncluded[ch]) { # burst
+            #    # bytes: 4(distance)+2(quality)+2(offset)+4(pressure)+8(spare)
+            #    burst$ASTDistanceOLD <- readBin(d$buf[i + i0 + 0:3], "numeric", size=4, n=1, endian="little")
+            #    i0 <- i0 + 8 # advance past distance (4 bytes), then skip skip quality (2 bytes) and offset (2 bytes)
+            #    burst$ASTPressureOLD <- readBin(d$buf[i + i0 + 0:3], "numeric", size=4, n=1, endian="little")
+            #    i0 <- i0 + 12 # skip spare (8 bytes)
+            #}
+            #if (altimeterRawIncluded[ch]) { # burst
+            #    burst$altimeterRawNumberOfSamplesOLD <- readBin(d$buf[i+i0+0:3],"integer",size=4,n=1,endian="little")
+            #    message(vectorShow(burst$altimeterRawNumberOfSamples))
+            #    i0 <- i0 + 4
+            #    burst$altimeterRawSampleDistanceOLD <- 0.1e-3*readBin(d$buf[i+i0+0:1],"integer",size=2,n=1,endian="little",signed=FALSE)
+            #    message(vectorShow(burst$altimeterRawSampleDistance))
+            #    i0 <- i0 + 2
+            #    # ERROR: not increasing i0 properly. Never caught this because sample
+            #    # dataset did not have following data (echosounder etc).
+            #    burst$altimeterRawSamplesOLD <- readBin(d$buf[i+i0+0:1],"integer",size=2,n=1,endian="little") # 'signed frac' in docs FIXME(DEK) what does that mean??
+            #    message(vectorShow(burst$altimeterRawSamplesOLD))
+            #    i0 <- i0 + 2
+            #    # See the Nortek manual snippet below, for more on format.
+            #    # https://github.com/dankelley/oce/issues/1959#issuecomment-1141411327
+            #    #DAN1<<-list(echosounderIncluded=echosounderIncluded,ch=ch)
+            #    #stop("test stop at DAN1 with ch=", ch)
+            #}
+            #if (echosounderIncluded[ch]) {
+            #    message("echosounderIncluded[", ch, "] about to read ", nrow, "two-byte values (stored as DAN)\n")
+            #    burst$echosounderOLD[burst$i, ] <- readBin(d$buf[i + i0 + seq(0,nrow-1)], size=2, n=nrow, endian="little")
+            #    #DAN2<<-burst
+            #    i0 <- i0 + 2 * nrow
 
-            ncol <- burst$numberOfBeams
-            nrow <- burst$numberOfCells
-            n <- ncol * nrow
-            n2 <- 2 * n
-            i0 <- 77
-            if (velocityIncluded[ch]) {
-                v <- velocityFactor[ch]*readBin(d$buf[i+i0+seq(0,n2-1)], "integer",size=2,n=n,endian="little")
-                burst$vOLD[burst$i, , ] <- matrix(v, ncol=ncol, nrow=nrow, byrow=FALSE)
-                i0 <- i0 + n2
-            }
-            if (amplitudeIncluded[ch]) {
-                a <- d$buf[i + i0 + seq(0,n-1)]
-                burst$aOLD[burst$i, ,] <- matrix(a, ncol=ncol, nrow=nrow, byrow=FALSE)
-                i0 <- i0 + n
-            }
-            if (correlationIncluded[ch]) {
-                q <- d$buf[i + i0 + seq(0,n-1)]
-                burst$qOLD[burst$i, ,] <- matrix(q, ncol=ncol, nrow=nrow, byrow=FALSE)
-                i0 <- i0 + n
-            }
-            if (altimeterIncluded[ch]) { # burst
-                burst$altimeterDistanceOLD[burst$i] <- readBin(d$buf[i + i0 + 0:3], "numeric", size=4, n=1, endian="little")
-                # FIXME: perhaps save altimeterQuality from next 2 bytes
-                # FIXME: perhaps save altimeterStatus from next 2 bytes
-                i0 <- i0 + 8
-            }
-            if (ASTIncluded[ch]) { # burst
-                # bytes: 4(distance)+2(quality)+2(offset)+4(pressure)+8(spare)
-                burst$ASTDistanceOLD <- readBin(d$buf[i + i0 + 0:3], "numeric", size=4, n=1, endian="little")
-                i0 <- i0 + 8 # advance past distance (4 bytes), then skip skip quality (2 bytes) and offset (2 bytes)
-                burst$ASTPressureOLD <- readBin(d$buf[i + i0 + 0:3], "numeric", size=4, n=1, endian="little")
-                i0 <- i0 + 12 # skip spare (8 bytes)
-            }
-            if (altimeterRawIncluded[ch]) { # burst
-                burst$altimeterRawNumberOfSamplesOLD <- readBin(d$buf[i+i0+0:3],"integer",size=4,n=1,endian="little")
-                message(vectorShow(burst$altimeterRawNumberOfSamples))
-                i0 <- i0 + 4
-                burst$altimeterRawSampleDistanceOLD <- 0.1e-3*readBin(d$buf[i+i0+0:1],"integer",size=2,n=1,endian="little",signed=FALSE)
-                message(vectorShow(burst$altimeterRawSampleDistance))
-                i0 <- i0 + 2
-                # ERROR: not increasing i0 properly. Never caught this because sample
-                # dataset did not have following data (echosounder etc).
-                burst$altimeterRawSamplesOLD <- readBin(d$buf[i+i0+0:1],"integer",size=2,n=1,endian="little") # 'signed frac' in docs FIXME(DEK) what does that mean??
-                message(vectorShow(burst$altimeterRawSamplesOLD))
-                i0 <- i0 + 2
-                # See the Nortek manual snippet below, for more on format.
-                # https://github.com/dankelley/oce/issues/1959#issuecomment-1141411327
-                #DAN1<<-list(echosounderIncluded=echosounderIncluded,ch=ch)
-                #stop("test stop at DAN1 with ch=", ch)
-            }
-            if (echosounderIncluded[ch]) {
-                message("echosounderIncluded[", ch, "] about to read ", nrow, "two-byte values (stored as DAN)\n")
-                burst$echosounderOLD[burst$i, ] <- readBin(d$buf[i + i0 + seq(0,nrow-1)], size=2, n=nrow, endian="little")
-                #DAN2<<-burst
-                i0 <- i0 + 2 * nrow
-
-            }
-            if (AHRSIncluded[ch]) {
-                burst$AHRSOLD[burst$i,] <- readBin(d$buf[i + i0 + 0:35], "numeric", size=4, n=9, endian="little")
-            }
-            burst$i <- burst$i + 1
-            # BOOKMARK b: burst unvectorized
-
-        } else if (key == 0x16) { # average
-
-            ncol <- average$numberOfBeams
-            nrow <- average$numberOfCells
-            n <- ncol * nrow
-            n2 <- 2 * n
-            i0 <- 77
-            if (velocityIncluded[ch]) {
-                v <- velocityFactor[ch]*readBin(d$buf[i+i0+seq(0,n2-1)],"integer",size=2,n=n,endian="little")
-                average$v[average$i, , ] <- matrix(v, ncol=ncol, nrow=nrow, byrow=FALSE)
-                i0 <- i0 + n2
-            }
-            if (amplitudeIncluded[ch]) {
-                a <- d$buf[i + i0 + seq(0,n-1)]
-                average$a[average$i, ,] <- matrix(a, ncol=ncol, nrow=nrow, byrow=FALSE)
-                i0 <- i0 + n
-            }
-            if (correlationIncluded[ch]) {
-                q <- d$buf[i + i0 + seq(0,n-1)]
-                average$q[average$i, ,] <- matrix(q, ncol=ncol, nrow=nrow, byrow=FALSE)
-                i0 <- i0 + n
-            }
-            if (altimeterIncluded[ch]) { # average
-                average$altimeterDistance[average$i] <- readBin(d$buf[i + i0 + 0:3],"numeric", size=4,n=1,endian="little")
-                # FIXME: perhaps save altimeterQuality from next 2 bytes
-                # FIXME: perhaps save altimeterStatus from next 2 bytes
-                i0 <- i0 + 8
-            }
-            if (ASTIncluded[ch]) { # average
-                # bytes: 4(distance)+2(quality)+2(offset)+4(pressure)+8(spare)
-                average$ASTDistance <- readBin(d$buf[i + i0 + 0:3], "numeric", size=4, n=1, endian="little")
-                i0 <- i0 + 8 # advance past distance (4 bytes), then skip skip quality (2 bytes) and offset (2 bytes)
-                average$ASTPressure <- readBin(d$buf[i + i0 + 0:3], "numeric", size=4, n=1, endian="little")
-                i0 <- i0 + 12 # skip spare (8 bytes)
-            }
-            if (altimeterRawIncluded[ch]) { # average
-                average$altimeterRawNumberOfSamples <- readBin(d$buf[i+i0+0:3],"integer",size=4,n=1,endian="little")
-                i0 <- i0 + 4
-                average$altimeterRawSampleDistance <- readBin(d$buf[i+i0+0:1],"integer",size=2,n=1,endian="little",signed=FALSE)
-                i0 <- i0 + 2
-                average$altimeterRawSamples <- readBin(d$buf[i+i0+0:1],"integer",size=2,n=1,endian="little") # 'singed frac' in docs
-                i0 <- i0 + 2
-            }
-            if (echosounderIncluded[ch]) {
-                average$echosounder[average$i, ] <- readBin(d$buf[i + i0 + seq(0,nrow-1)], size=2, n=nrow, endian="little")
-                i0 <- i0 + 2 * nrow
-            }
-            if (AHRSIncluded[ch]) {
-                average$AHRS[average$i,] <- readBin(d$buf[i + i0 + 0:35],"numeric", size=4, n=9, endian="little")
-            }
-            average$i <- average$i + 1
+            #}
+            #if (AHRSIncluded[ch]) {
+            #    burst$AHRSOLD[burst$i,] <- readBin(d$buf[i + i0 + 0:35], "numeric", size=4, n=9, endian="little")
+            #}
+            #burst$i <- burst$i + 1
+        } else if (FALSE && key == 0x16) { # average (DISABLED unvectorized)
+            #ncol <- average$numberOfBeams
+            #nrow <- average$numberOfCells
+            #n <- ncol * nrow
+            #n2 <- 2 * n
+            #i0 <- 77
+            #if (velocityIncluded[ch]) {
+            #    v <- velocityFactor[ch]*readBin(d$buf[i+i0+seq(0,n2-1)],"integer",size=2,n=n,endian="little")
+            #    average$v[average$i, , ] <- matrix(v, ncol=ncol, nrow=nrow, byrow=FALSE)
+            #    i0 <- i0 + n2
+            #}
+            #if (amplitudeIncluded[ch]) {
+            #    a <- d$buf[i + i0 + seq(0,n-1)]
+            #    average$a[average$i, ,] <- matrix(a, ncol=ncol, nrow=nrow, byrow=FALSE)
+            #    i0 <- i0 + n
+            #}
+            #if (correlationIncluded[ch]) {
+            #    q <- d$buf[i + i0 + seq(0,n-1)]
+            #    average$q[average$i, ,] <- matrix(q, ncol=ncol, nrow=nrow, byrow=FALSE)
+            #    i0 <- i0 + n
+            #}
+            #if (altimeterIncluded[ch]) { # average
+            #    average$altimeterDistance[average$i] <- readBin(d$buf[i + i0 + 0:3],"numeric", size=4,n=1,endian="little")
+            #    # FIXME: perhaps save altimeterQuality from next 2 bytes
+            #    # FIXME: perhaps save altimeterStatus from next 2 bytes
+            #    i0 <- i0 + 8
+            #}
+            #if (ASTIncluded[ch]) { # average
+            #    # bytes: 4(distance)+2(quality)+2(offset)+4(pressure)+8(spare)
+            #    average$ASTDistance <- readBin(d$buf[i + i0 + 0:3], "numeric", size=4, n=1, endian="little")
+            #    i0 <- i0 + 8 # advance past distance (4 bytes), then skip skip quality (2 bytes) and offset (2 bytes)
+            #    average$ASTPressure <- readBin(d$buf[i + i0 + 0:3], "numeric", size=4, n=1, endian="little")
+            #    i0 <- i0 + 12 # skip spare (8 bytes)
+            #}
+            #if (altimeterRawIncluded[ch]) { # average
+            #    average$altimeterRawNumberOfSamples <- readBin(d$buf[i+i0+0:3],"integer",size=4,n=1,endian="little")
+            #    i0 <- i0 + 4
+            #    average$altimeterRawSampleDistance <- readBin(d$buf[i+i0+0:1],"integer",size=2,n=1,endian="little",signed=FALSE)
+            #    i0 <- i0 + 2
+            #    average$altimeterRawSamples <- readBin(d$buf[i+i0+0:1],"integer",size=2,n=1,endian="little") # 'singed frac' in docs
+            #    i0 <- i0 + 2
+            #}
+            #if (echosounderIncluded[ch]) {
+            #    average$echosounder[average$i, ] <- readBin(d$buf[i + i0 + seq(0,nrow-1)], size=2, n=nrow, endian="little")
+            #    i0 <- i0 + 2 * nrow
+            #}
+            #if (AHRSIncluded[ch]) {
+            #    average$AHRS[average$i,] <- readBin(d$buf[i + i0 + 0:35],"numeric", size=4, n=9, endian="little")
+            #}
+            #average$i <- average$i + 1
 
         } else if (key == 0x17) { # bottomTrack
             ncol <- bottomTrack$numberOfBeams
@@ -1911,7 +1847,6 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
             interleavedBurst$i <- interleavedBurst$i + 1
 
         } else if (key == 0x1a) { # burstAltimeterRaw
-            # BOOKMARK 4 read burstAltimeterRaw (non-vectorized, to be removed later)
             ncol <- burstAltimeterRaw$numberOfBeams # for v only
             nrow <- burstAltimeterRaw$numberOfCells # for v only
             n <- ncol * nrow           # for v only
@@ -2091,8 +2026,8 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
             }
             DVLBottomTrack$i <- DVLBottomTrack$i + 1
 
-        } else if (key == 0x1c) { # echosounder
-            oceDebug(debug, "*** WE GOT AN 0x1c record ***\n")
+        } else if (FALSE && key == 0x1c) { # echosounder: FIXME: comment this all out BOOKMARK=J (see also E)
+            #oceDebug(debug, "*** WE GOT AN 0x1c record ***\n")
 
             # FIXME: determine echosounder records have other types of data intermixed.
             # The docs are not clear on whether echosounder data ever have v, etc., so they are commented-out
@@ -2141,21 +2076,21 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
             #?     echosounder$altimeterRawSamples <- readBin(d$buf[i+i0+0:1],"integer",size=2,n=1,endian="little") # 'singed frac' in docs
             #?     i0 <- i0 + 2
             #? }
-            if (echosounderIncluded[ch]) {
-                nToRead <- dim(echosounder$echosounder)[1]
-                # cat("before trying to store to echosounder at",
-                #     ", echosounder$i=", echosounder$i,
-                #     ", i=", i,
-                #     ", i0=", i0,
-                #     ", nToRead=", nToRead,
-                #     ", dim()=", paste(dim(echosounder$echosounder),collapse="x"), "\n", sep="")
-                echosounder$echosounder[, echosounder$i] <- readBin(d$buf[i + i0 + seq(0,2*nToRead)], "integer", size=2, n=nToRead, endian="little")
-                i0 <- i0 + 2 * nToRead
-            }
+            #? if (echosounderIncluded[ch]) {
+            #?     nToRead <- dim(echosounder$echosounder)[1]
+            #?     # cat("before trying to store to echosounder at",
+            #?     #     ", echosounder$i=", echosounder$i,
+            #?     #     ", i=", i,
+            #?     #     ", i0=", i0,
+            #?     #     ", nToRead=", nToRead,
+            #?     #     ", dim()=", paste(dim(echosounder$echosounder),collapse="x"), "\n", sep="")
+            #?     echosounder$echosounder[, echosounder$i] <- readBin(d$buf[i + i0 + seq(0,2*nToRead)], "integer", size=2, n=nToRead, endian="little")
+            #?     i0 <- i0 + 2 * nToRead
+            #? }
             #? if (AHRSIncluded[ch]) {
             #?     echosounder$AHRS[echosounder$i,] <- readBin(d$buf[i + i0 + 0:35], "numeric", size=4, n=9, endian="little")
             #? }
-            echosounder$i <- echosounder$i + 1
+            #?echosounder$i <- echosounder$i + 1
 
         } else if (key == 0x1d) { # DVLWaterTrack
 
@@ -2345,7 +2280,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
         msg <- ""
         for (kn in names(unknownKeys))
             msg <- paste0(msg, "   key=", kn, " found ", unknownKeys[[kn]], " times\n")
-        warning("data records with 'id' that is not yet handled:\n", msg)
+        #warning("data records with 'id' that is not yet handled:\n", msg)
     }
 
     # Prepare data

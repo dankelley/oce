@@ -2991,7 +2991,7 @@ setMethod(f="plot",
 #' @family things related to adp data
 toEnuAdp <- function(x, declination=0, debug=getOption("oceDebug"))
 {
-    debug <- if (debug > 0) 1 else 0
+    debug <- max(0L, as.integer(min(debug, 3)))
     oceDebug(debug, "toEnuAdp() {\n", unindent=1)
     coord <- x[["oceCoordinate"]]
     if (coord == "beam") {
@@ -3355,8 +3355,8 @@ beamToXyzAdpAD2CP <- function(x, debug=getOption("oceDebug"))
         }
     }
     res@processingLog <- processingLogAppend(res@processingLog,
-                                             paste("beamToXyzAdpAD2CP(x",
-                                                   ", debug=", debug, ")", sep=""))
+        paste("beamToXyzAdpAD2CP(x",
+            ", debug=", debug, ")", sep=""))
     oceDebug(debug, "} # beamToXyzAdpAD2CP()\n", unindent=1)
     res
 }
@@ -3641,10 +3641,10 @@ xyzToEnuAdp <- function(x, declination=0, debug=getOption("oceDebug"))
     }
     res@metadata$oceCoordinate <- "enu"
     res@processingLog <- processingLogAppend(res@processingLog,
-                                       paste("xyzToEnuAdp(x", ", declination=", declination, ", debug=", debug, ")", sep=""))
+        paste("xyzToEnuAdp(x", ", declination=", declination, ", debug=", debug, ")", sep=""))
     oceDebug(debug, "} # xyzToEnuAdp()\n", unindent=1)
     res
-}
+}                                      # xyzToEnuAdp
 
 #' Convert ADP2CP adp object From XYZ to ENU Coordinates
 #'
@@ -3689,6 +3689,7 @@ xyzToEnuAdpAD2CP <- function(x, declination=0, debug=getOption("oceDebug"))
     ## similar to the non-ad2cp, for non-AHRS cases?
     ## FIXME: do a loop like this for beamToXyzAdpAD2CP() also.
     for (item in names(x@data)) {
+        oceDebug(debug, "handling @data$", item, "\n", sep="")
         ## Do not try to rotate non-rotatable items, e.g. the vertical beam, the altimeter, etc.
         if (is.list(x@data[[item]])) {
             numberOfBeams <- x@data[[item]]$numberOfBeams
@@ -3701,6 +3702,7 @@ xyzToEnuAdpAD2CP <- function(x, declination=0, debug=getOption("oceDebug"))
                 if (orientation[1] != "AHRS")
                     stop("only the 'AHRS' orientation is handled, but '", item, "' has orientation '", orientation[1], "'")
                 AHRS <- x@data[[item]]$AHRS
+                cat(str(AHRS))
                 if (is.null(AHRS))
                     stop("'", item, "' within the object data slot does not contain coordinate-change matrix 'AHRS'")
                 oceCoordinate <- x@data[[item]]$oceCoordinate
@@ -3713,6 +3715,7 @@ xyzToEnuAdpAD2CP <- function(x, declination=0, debug=getOption("oceDebug"))
                     if (is.null(V))
                         stop("'", item, "' within the object data slot does not contain velocity 'v'")
                     nc <- dim(V)[2]
+                    cat("nc=",nc,"\n")
                     ## DEVELOPER NOTE
                     ##
                     ## I thought it might be faster to use C++ for the calculations, since the memory pressure ought to
@@ -3738,9 +3741,15 @@ xyzToEnuAdpAD2CP <- function(x, declination=0, debug=getOption("oceDebug"))
                     # vectorized), AHRS was a rotation matrix.  After that, it
                     # became a list that holds that matrix, and other things.
                     M <- if (is.matrix(AHRS)) AHRS else AHRS$rotationMatrix
-                    e <- V[,,1]*rep(M[,1], times=nc) + V[,,2]*rep(M[,2], times=nc) + V[,,3]*rep(M[,3], times=nc)
-                    n <- V[,,1]*rep(M[,4], times=nc) + V[,,2]*rep(M[,5], times=nc) + V[,,3]*rep(M[,6], times=nc)
-                    u <- V[,,1]*rep(M[,7], times=nc) + V[,,2]*rep(M[,8], times=nc) + V[,,3]*rep(M[,9], times=nc)
+                    cat("next is str(M)\n", str(M))
+                    cat("next is str(V)\n", str(V))
+                    cat("dim(M): ", paste(dim(M), collapse="x"),"\n")
+                    cat("dim(V): ", paste(dim(V), collapse="x"),"\n")
+                    if (length(dim(M)) != 3L)
+                        stop("dim(M) should be of length 3, but it is ", length(dim(M)))
+                    e <- V[,,1]*rep(M[,1,1],times=nc) + V[,,2]*rep(M[,1,2],times=nc) + V[,,3]*rep(M[,1,3],times=nc)
+                    n <- V[,,1]*rep(M[,2,1],times=nc) + V[,,2]*rep(M[,2,2],times=nc) + V[,,3]*rep(M[,2,3],times=nc)
+                    u <- V[,,1]*rep(M[,3,1],times=nc) + V[,,2]*rep(M[,2,3],times=nc) + V[,,3]*rep(M[,3,3],times=nc)
                     ## FIXME: perhaps use the declination now, rotating e and n.  But first, we will need to know
                     ## what declination was used by the instrument, in its creation of AHRS.
                     res@data[[item]]$v[,,1] <- e
@@ -4170,7 +4179,7 @@ adpConvertRawToNumeric <- function(object=NULL, variables=NULL, debug=getOption(
             stop("\"", variable, "\" does not have three dimensions")
         if (all(dim(object[[variable]]) != dimNeeded))
             stop("\"", variable, "\" must have dimension ", paste(dimNeeded, collapse="x"))
-        # Convert this relevant variable from raw to numeric 
+        # Convert this relevant variable from raw to numeric
         object[[variable]] <- object[[variable, "numeric"]]
     }
     object@processingLog <- processingLogAppend(object@processingLog, paste(deparse(match.call()), sep="", collapse=""))
