@@ -5,7 +5,7 @@ date: "2022-07-11"
 output: pdf_document
 ---
 
-Here are some questions for Nortek, regarding AD2CP format.
+# Questions regarding the AD2CP format
 
 1. **Question:** Within a given AD2CP file, if the first instance of type "X"
    (say, "burst" type, "average" type, etc.) has a particular configuration,
@@ -29,5 +29,24 @@ Here are some questions for Nortek, regarding AD2CP format.
 
 3. **Question:** What is data-chunk-type `0x23`?
 
-   **Background:** Oce detects this in test file `ad2cp_01.ad2cp`$^1$.
+   **Background:** Oce detects this in test file `ad2cp_01.ad2cp`$^1$,
+   but the string `0x23` is not present in either of the first two documents
+   cited below, and is not identified as what oce calls a "chunk type" in
+   the third document.
+
+4. **Question:** is there documentation on files with 12-byte headers?
+
+   **Background:** Test file `ad2cp_01.ad2cp`$^1$ has this format.
+
+# References
+
+Nortek AS. “Signature Integration 55|250|500|1000kHz (2017).” Nortek AS, 2017.
+
+Nortek AS. “Signature Integration 55|250|500|1000kHz (2018).” Nortek AS, 2018.
+
+Nortek AS. “Signature Integration 55|250|500|1000kHz (2022).” Nortek AS, March
+31, 2022.
+
+
+
 
