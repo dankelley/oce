@@ -1,0 +1,33 @@
+---
+title: "Questions for Nortek re AD2CP Format"
+author: "Dan Kelley"
+date: "2022-07-11"
+output: pdf_document
+---
+
+Here are some questions for Nortek, regarding AD2CP format.
+
+1. **Question:** Within a given AD2CP file, if the first instance of type "X"
+   (say, "burst" type, "average" type, etc.) has a particular configuration,
+   then can we assume that all the other instances of that type in that file
+   will have identical configuration? For example, if echosounder data are
+   present in the first instance of "burst", will they be present in all the
+   others?
+
+   **Background:** If so, then oce can use vectorized code, which is important
+   for speed and code simplicity.
+
+2. **Question:** How are checksums to be calculated, in modern C, i.e. phrased
+   in terms of e.g. `uint16`, rather than `unsigned short`?
+
+   **Background:** I have seen manuals with two different expressions of the
+   checksum calculation. The scheme used in oce, which has been in-place for
+   many years and used often for several types of Nortek files, fails for test
+   file `S102791A002_Barrow_v2_avgd.ad2cp`^[The test files are in the
+   `tests/testthat/local_data` directory of the "develop" branch of the
+   repository at http://www.github.com/dankelley/oce.].
+
+3. **Question:** What is data-chunk-type `0x23`?
+
+   **Background:** Oce detects this in test file `ad2cp_01.ad2cp`$^1$.
+

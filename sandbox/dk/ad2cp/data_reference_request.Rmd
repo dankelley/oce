@@ -1,0 +1,55 @@
+To @krillthor and @richardsc: I'm hoping you can help me to update `oce::read.adp.ad2cp` by reading more data types, and vectorizing the code for speed (and, likely, decreased chance of coding errors).
+
+**Background**
+
+I am recoding `oce::read.adp.ad2cp()` to (a) handle more data types and (b) speed up processing, by vectorizing reading.  Although this work is in early stages, I think this is a good time to reach out for some help with check values.
+
+In the repo for `oce`, file `tests/testthat/test_ad2cp_2.R`, we read the file `tests/testthat/local_data/ad2cp/ad2cp_01.ad2cp` and then do some checks. Many of those checks are just for consistency with values inferred by earlier versions of `oce`.  I often do this in oce, if I lack ground-truth data.  It's useful because the code is complex, spanning 2369 lines of R, and 450 lines of C++, with a lot of ways to introduce errors.
+
+Three tests I have in `test_ad2cp_2.R` are as below.
+```R
+v <- d[["v"]]
+expect_equal(v[1,,1], c(-0.832, -0.048, 0.001, 0.003, 0.027, 0.148, 0.066,
+        -0.067, -0.056, -0.103, -0.07, -0.051, 0.071, 0.062,
+        0.1, 0.067, 0.023, 0.026, -0.119, -0.013, 0.004,
+        -0.094, -0.041, 0.151, 0.145, 0.465, 0.462, 0.456,
+        1.029, 0.342, 0.29, 0.3))
+expect_equal(v[1,1,], c(-0.832, 0.901, -0.013, 0.961))
+expect_equal(v[1,,2], c(0.901, -0.022, 0.014, -0.103, -0.114, -0.039, -0.005,
+        -0.065, -0.074, -0.125, -0.301, -0.271, -0.28, -0.046,
+        -0.092, -0.128, -0.229, -0.245, -0.175, -0.171, -0.129,
+        -0.031, -0.166, -0.011, -0.058, -0.451, -0.671, -0.747,
+        -0.812, -0.421, -0.336, -0.489))
+```
+These test some velocity values in the `average` data stream of this file.
+
+With the present code ("ad2cp" branch, 24008c8022a621953f4c7ff055c3fc4496569f4f commit) I do not get these values. Instead, I get as below.  (Aside: here I am doing more direct indexing, because I plan to remove the `[["v"]]` method, since velocity can occur in multiple data streams, and defaulting to one of them will just confuse users.)
+
+```R
+> d[["average"]]$v[1,,1]
+ [1] -0.0832  0.0027 -0.0056  0.0071  0.0023  0.0004  0.0145  0.1029  0.0901 -0.0114
+[11] -0.0074 -0.0280 -0.0229 -0.0129 -0.0058 -0.0812 -0.0013 -0.0006  0.0026  0.0000
+[21]  0.0000 -0.0028  0.0053 -0.0270  0.0961 -0.0021  0.0058 -0.0020 -0.0007 -0.0043
+[31] -0.0069 -0.0182
+> d[["average"]]$v[1,1,]
+[1] -0.0832 -0.0048  0.0001  0.0003
+> d[["average"]]$v[1,,2]
+ [1] -0.0048  0.0148 -0.0103  0.0062  0.0026 -0.0094  0.0465  0.0342 -0.0022 -0.0039
+[11] -0.0125 -0.0046 -0.0245 -0.0031 -0.0451 -0.0421 -0.0007 -0.0015  0.0039  0.0011
+[21] -0.0021 -0.0050  0.0058 -0.0091 -0.0005 -0.0032 -0.0011  0.0029 -0.0015  0.0020
+[31]  0.0014  0.0020
+```
+
+So, as you can see, my present version of the code produces results that differ from the previously-obtained results, so oce fails its test suite.  At first glance, this suggests I've made in error in this complex coding effort, and of course I am looking into that. (One possibility is that I'm storing things in the wrong order. This is actually a bit tricky, because the internal storage order in R does not line up with the order of bytes in these files.)
+
+However, it also strikes me that these new values look more reasonable than the old ones.  Note that the old ones have some very large values mixed in with small ones. For example, the first test is showing the first observation of beam 1.  In the new values, we get something of order 1cm/s or so.  But in the old values, we have -0.832 cm/s, then -0.048 m/s, etc., which is a pretty large jump from cell to cell, and later on we have a set of small values and then, 4 cells from the furthest, we get 1.029 m/s.
+
+Just looking at the numbers, without knowing much more about the data, a person might view the new values as more sensible.  If the test values were derived from tests with other software products, I'd be more certain that the check values are right, i.e. that the code is wrong.  However, my notes are not clear enough to know where, exactly, I got those check values.
+
+**Finally, my request.**
+
+I'm hoping that @krillthor and @richardsc might have some other software that can read AD2CP files, and can find the time to read the indicated file.  If the software reads to a matlab file, then please email that to me and I can likely figure things out.  Otherwise -- and only if it's not too much bother -- provide some test values that I can use for the tests you see above. I suspect different software products will produce arrays that are arranged differently.  For reference, in oce, the notation `v[i,j,k]` has `i` increasing over time, `j` increasing over the cells, and `k` increasing over beams.  Thus, for this test dataset, i ranges from 1 to 7, j from 1 to 32, and k from 1 to 4.
+
+Many thanks, in advance, for any help you can give!
+
+Dan.
