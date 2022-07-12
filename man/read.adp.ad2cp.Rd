@@ -2,7 +2,7 @@
 % Please edit documentation in R/adp.nortek.ad2cp.R
 \name{read.adp.ad2cp}
 \alias{read.adp.ad2cp}
-\title{Read a Nortek AD2CP adp File}
+\title{Read a Nortek AD2CP File}
 \usage{
 read.adp.ad2cp(
   file,

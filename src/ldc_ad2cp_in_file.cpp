@@ -330,7 +330,7 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, IntegerVector from, IntegerV
       }
     }
     if (found == 0)
-      Rprintf("header.id (0x%02x) not recognized, but proceeding anyway.\n", header.id);
+      Rprintf("warning : ldc_ad2cp_in_file() skipping undocumented header.id=0x%02x at cindex=%ld\n", header.id, cindex);
     id_buf[chunk] = header.id;
     // Check the header checksum.
     // Increase size of data buffer, if required.
@@ -348,8 +348,8 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, IntegerVector from, IntegerV
     bytes_read = fread(dbuf, 1, header.data_size, fp);
     // Check that we got all the data
     if (bytes_read != header.data_size) {
-      Rprintf("warning: ldc_ad2cp_in_file() got to end of file after cindex=%ld (%7.4f%% through file); wanted %d bytes but got only %d\n",
-          cindex-header.header_size, 100.0*cindex/filesize, header.data_size, bytes_read);
+      Rprintf("warning : ldc_ad2cp_in_file() EOF before end of chunk %ld at cindex=%ld\n",
+          chunk+1, cindex-header.header_size);
       break; // give up
     }
     cindex += header.data_size;

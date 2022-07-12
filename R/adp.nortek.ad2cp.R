@@ -124,12 +124,12 @@ ad2cpCodeToName <- function(code)
     rval <- rep("", length(code))
     for (i in seq_along(code)) {
         m <- match(code[i], table)
-        rval[i] <- if (is.na(m)) "?" else names(table)[m]
+        rval[i] <- paste0("0x", as.raw(code[i]), "=", if (is.na(m)) "?" else names(table)[m])
     }
     rval
 }
 
-#' Read a Nortek AD2CP adp File
+#' Read a Nortek AD2CP File
 #'
 #' This function reads Nortek AD2CP files, storing data elements in lists within
 #' the `data` slot.  So, for example, the following might be a way to read and
@@ -442,7 +442,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
 
     # Set up object, with key metadata to allow other functions to work.
     res <- new("adp")
-    firstData <- which(d$id != 160)[1]
+    firstData <- which(d$id != 0xa0)[1] # first non-text chunk
     serialNumber <- readBin(d$buf[d$index[firstData]+5:8], "integer", size=4, endian="little")
 
     # Create pointers for accessing 1-byte, 2-byte, and 4-byte chunks
@@ -470,22 +470,22 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
 
     # {{{
     # Handle multiple plans (FIXME: this is limited to a single plan, at present)
-    status <- intToBits(readBin(d$buf[pointer4 + 69], "integer", size=4, n=N, endian="little"))
+    status <- intToBits(readBin(d$buf[pointer4 + 69L], "integer", size=4L, n=N, endian="little"))
     # Construct an array to store the bits within th 'status' vector. The nortek
     # docs refer to the first bit as 0, which becomes [1,] in this array.
-    dim(status) <- c(32, N)
+    dim(status) <- c(32L, N)
     # Nortek docs say bit 16 indicates the active configuration, but they
     # count from 0, so it is bit 17 here.
-    activeConfiguration <- as.integer(status[17, ])
+    activeConfiguration <- as.integer(status[17L, ])
     # Decode the orientation from bits 25-27 in 0-offset notation, i.e. 26-28 here.
     # Note that reference [1 table 1 page 55] only has some of the
     # permitted codes, but the updated manual [3 table 1 page 64], has more,
     # including the value 7 that is used in the three sample files available
     # to the author as of late December, 2018.
-    orientation1 <- as.integer(status[26, ])
-    orientation2 <- as.integer(status[27, ])
-    orientation3 <- as.integer(status[28, ])
-    O <- orientation1 + 2*orientation2 + 4*orientation3
+    orientation1 <- as.integer(status[26L, ])
+    orientation2 <- as.integer(status[27L, ])
+    orientation3 <- as.integer(status[28L, ])
+    O <- orientation1 + 2L*orientation2 + 4L*orientation3
     orientation <- c("xup", "xdown", "yup", "ydown", "zup", "zdown", "-", "AHRS")[O+1]
     # TEST below is a test of whether I have the bits wrong. Comparison
     # TEST with the header in 4 files suggests I am doing this right.
@@ -508,19 +508,18 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
             plan <- activeConfiguration[1]
             warning("'plan' defaulting to ", plan, ", the only value in the file")
         } else {
-            # tabulate() might be handy here, but the following may be simpler to read.
             plan <- u[which.max(unlist(lapply(u,function(x)sum(activeConfiguration==x))))]
             acTable <- table(activeConfiguration)
             warning("'plan' defaulting to ", plan,
-                ", the most common value in the file (",
+                ", most common value in file (",
                 paste(names(acTable)," occurs ",unname(acTable)," time[s]", sep="",collapse="; "), ")")
         }
     }
     # Try to find a header, as the first record-type that has id=0xa0.
     header <- NULL
-    idHeader <- which(d$id == 0xa0)[1]
+    idHeader <- which(d$id == 0xa0)[1] # first text chunk
     if (length(idHeader)) {
-        oceDebug(debug, "this file has a header at id=", idHeader, "\n", sep="")
+        oceDebug(1+debug, "this file has a header at id=", idHeader, "\n", sep="")
         chars <- rawToChar(d$buf[seq.int(2L+d$index[idHeader], by=1L, length.out=-1L+d$length[idHeader])])
         header <- strsplit(chars, "\r\n")[[1]]
         if (!typeGiven) {
@@ -538,9 +537,12 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
         return(rval)
     }
     keep <- activeConfiguration == plan
-    if (sum(keep) == 0) {
+    if (sum(keep) == 0L) {
         stop("there are no data for plan=", plan, "; try one of the following values instead: ", paste(unique(activeConfiguration), collapse=" "))
     }
+    #message("exported nav as DANnav");DANnav<<-nav
+    #message("exported d as DANd");DANd<<-d
+    #message("exported keep as DANkeep");DANkeep<<-keep
     if (sum(keep) < length(keep)) {
         oceDebug(debug, "this plan has ", sum(keep), " data records, out of a total of ", length(keep), " in the file subset\n")
         d$index <- d$index[keep]
@@ -748,8 +750,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
         echosounder=which(d$id==0x1c), # coded, but no sample-data test and no plot()
         DVLWaterTrack=which(d$id==0x1d), # coded, but no sample-data test and no plot()
         altimeter=which(d$id==0x1e),   # coded, but no sample-data test and no plot()
-        averageAltimeter=which(d$id==0x1f), # coded, but no sample-data test and no plot()
-        text=which(d$id==0xa0))        # coded and checked against .cfg file
+        averageAltimeter=which(d$id==0x1f)) # coded, but no sample-data test and no plot()
 
     #x Try to retrieved a named item from the data buffer.
     #x
@@ -877,7 +878,11 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
             object$altimeterRawSamples <- matrix(tmp, nrow=NP, ncol=NS, byrow=TRUE)
             i0v <<- i0v + 2L*NS
         } else if (name == "echosounder") {
-            message("FIXME: decode echosounder")
+            message("FIXME: decode echosounder (NC=", NC, ")\n")
+            #iv <- gappyIndex(i, i0v, 2L*NC)
+
+            #object$echosounder <- ??? [average$i, ] <- readBin(d$buf[i + i0 + seq(0,nrow-1)], size=2, n=nrow, endian="little")
+
             i0v <<- i0v + 2L*NC
         } else if (name == "AHRS") {
             oceDebug(debug, "  'AHRS' starts at i0v=", i0v, "\n")
@@ -1216,6 +1221,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
     } else {
         interleavedBurst <- NULL
     }
+
     if (length(p$burstAltimeterRaw) > 0L) { # key=0x1a (burst Altimeter raw record)
         oceDebug(debug, "length(p$burstAltimeterRaw)=", length(p$burstAltimeterRaw), "\n", sep="")
         #if (any(version[p$burstAltimeter] != 3))
@@ -1627,13 +1633,14 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
     }
 
     if (length(p$text) > 0) {          # key=0xa0
-        text <- list(i=1, text=list()) # vector("character", length(p$text)))
+        message("L1636: yes, we have p$text")
     } else {
-        text <- list()
+        p$text <- NULL                 # erase the empty list
     }
-    # Fill up th arrays in a loop. This could also be vectorized, if it proves slow.
-    id <- d$id
+    #?print(str(p,1))
 
+    # Fill up the arrays in a loop (FIXME: remove when all is vectorized)
+    id <- d$id
     if (monitor)
         progressBar <- txtProgressBar(max=N, style=3, title="Reading profiles")
     unknownKeys <- list()
@@ -1846,133 +1853,133 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
             }
             interleavedBurst$i <- interleavedBurst$i + 1
 
-        } else if (key == 0x1a) { # burstAltimeterRaw
-            ncol <- burstAltimeterRaw$numberOfBeams # for v only
-            nrow <- burstAltimeterRaw$numberOfCells # for v only
-            n <- ncol * nrow           # for v only
-            n2 <- 2 * n
-            i0 <- 77
-            oceDebug(debug>1, "velocityIncluded[", ch, "]=", velocityIncluded[ch],
-                ", amplitudeIncluded[", ch, "]=", amplitudeIncluded[ch],
-                ", correlationIncluded[", ch, "]=", correlationIncluded[ch],
-                ", altimeterIncluded[", ch, "]=", altimeterIncluded[ch],
-                ", ASTIncluded[", ch, "]=", ASTIncluded[ch],
-                ", altimeterRawIncluded[", ch, "]=", altimeterRawIncluded[ch],
-                ", echosounderIncluded[", ch, "]=", echosounderIncluded[ch],
-                ", AHRSIncluded[", ch, "]=", AHRSIncluded[ch], "\n")
-            if (velocityIncluded[ch]) {
-                # Create space, or check that dimensionality agrees with existing space.
-                if ("v" %in% names(burstAltimeterRaw)) {
-                    nOld <- dim(burstAltimeterRaw$v)[2]
-                    if (n != nOld)
-                        stop("burstAltimeterRaw$v holds ", nOld, " samples, but chunk ", ch, " has ", n, " samples")
-                } else {
-                    oceDebug(debug>1, "creating burstAltimeterRaw$v (", sum(d$id==0x1a), "X", n, ")\n")
-                    burstAltimeterRaw$v <- array(double(), dim=c(sum(d$id==0x1a), n))
-                }
-                v <- velocityFactor[ch]*readBin(d$buf[i+i0+seq(0L,2L*n-1L)], "integer", size=2L, n=n, endian="little")
-                burstAltimeterRaw$v[burstAltimeterRaw$i, , ] <- matrix(v, ncol=ncol, nrow=nrow, byrow=FALSE)
-                oceDebug(debug>1, "saving burstAltimeterRaw$v[", burstAltimeterRaw$i, ",,] at i0=", i0, "\n")
-                i0 <- i0 + n2
-            }
-            if (amplitudeIncluded[ch]) {
-                # Create space for 'a', or check that dimensionality agrees with existing space.
-                if ("a" %in% names(burstAltimeterRaw)) {
-                    nOld <- dim(burstAltimeterRaw$a)[2]
-                    if (n != nOld)
-                        stop("burstAltimeterRaw$a holds ", nOld, " samples, but chunk ", ch, " has ", n, " samples")
-                } else {
-                    oceDebug(debug>1, "creating burstAltimeterRaw$a (", sum(d$id==0x1a), "X", n, ")\n")
-                    burstAltimeterRaw$a <- array(raw(), dim=c(sum(d$id==0x1a), n))
-                }
-                a <- d$buf[i + i0 + seq(0L, n-1L)]
-                burstAltimeterRaw$a[burstAltimeterRaw$i, ,] <- matrix(a, ncol=ncol, nrow=nrow, byrow=FALSE)
-                i0 <- i0 + n
-                oceDebug(debug>1, "saving burstAltimeterRaw$a[", burstAltimeterRaw$i, ",] at i0=", i0, "\n")
-            }
-            if (correlationIncluded[ch]) {
-                message("FIXME: comment this out!!")
-                # Create space for 'q', or check that dimensionality agrees with existing space.
-                if ("q" %in% names(burstAltimeterRaw)) {
-                    nOld <- dim(burstAltimeterRaw$q)[2]
-                    if (n != nOld)
-                        stop("burstAltimeterRaw$q holds ", nOld, " samples, but chunk ", ch, " has ", n, " samples")
-                } else {
-                    oceDebug(debug>1, "creating burstAltimeterRaw$q (", sum(d$id==0x1a), "X", n, ")\n")
-                    burstAltimeterRaw$q <- array(raw(), dim=c(sum(d$id==0x1a), n))
-                }
-                q <- d$buf[i + i0 + seq(0L, n-1L)]
-                burstAltimeterRaw$q[burstAltimeterRaw$i, ,] <- matrix(q, ncol=ncol, nrow=nrow, byrow=FALSE)
-                oceDebug(debug>1, "saving burstAltimeterRaw$q[", burstAltimeterRaw$i, ",,] at i0=", i0, "\n")
-                i0 <- i0 + n
-            }
-            if (altimeterIncluded[ch]) { # burstAltimeterRaw (DELETED)
-            #<>     message("BREADCRUMB 1a")
-            #<>     # Create space
-            #<>     if (!("altimeterDistance" %in% names(burstAltimeterRaw))) {
-            #<>         message("BREADCRUMB 1b: blanking out altimeterDistance (should remove this)")
-            #<>         oceDebug(debug>1, "creating burstAltimeterRaw$altimeterDistance (", sum(d$id==0x1a), ")\n")
-            #<>         burstAltimeterRaw$altimeterDistance <- rep(NA_real_, sum(d$id==0x1a))
-            #<>     }
-            #<>     burstAltimeterRaw$altimeterDistance[burstAltimeterRaw$i] <- readBin(d$buf[i + i0 + 0:3],"numeric", size=4,n=1,endian="little")
-            #<>     oceDebug(debug>1, "saving altimeterDistance[", burstAltimeterRaw$i,  "]=",
-            #<>         burstAltimeterRaw$altimeterDistance[burstAltimeterRaw$i], " at i0=", i0, "\n")
+        } else if (FALSE && key == 0x1a) { # burstAltimeterRaw (DISABLED unvectorized)
+            #ncol <- burstAltimeterRaw$numberOfBeams # for v only
+            #nrow <- burstAltimeterRaw$numberOfCells # for v only
+            #n <- ncol * nrow           # for v only
+            #n2 <- 2 * n
+            #i0 <- 77
+            #oceDebug(debug>1, "velocityIncluded[", ch, "]=", velocityIncluded[ch],
+            #    ", amplitudeIncluded[", ch, "]=", amplitudeIncluded[ch],
+            #    ", correlationIncluded[", ch, "]=", correlationIncluded[ch],
+            #    ", altimeterIncluded[", ch, "]=", altimeterIncluded[ch],
+            #    ", ASTIncluded[", ch, "]=", ASTIncluded[ch],
+            #    ", altimeterRawIncluded[", ch, "]=", altimeterRawIncluded[ch],
+            #    ", echosounderIncluded[", ch, "]=", echosounderIncluded[ch],
+            #    ", AHRSIncluded[", ch, "]=", AHRSIncluded[ch], "\n")
+            #if (velocityIncluded[ch]) {
+            #    # Create space, or check that dimensionality agrees with existing space.
+            #    if ("v" %in% names(burstAltimeterRaw)) {
+            #        nOld <- dim(burstAltimeterRaw$v)[2]
+            #        if (n != nOld)
+            #            stop("burstAltimeterRaw$v holds ", nOld, " samples, but chunk ", ch, " has ", n, " samples")
+            #    } else {
+            #        oceDebug(debug>1, "creating burstAltimeterRaw$v (", sum(d$id==0x1a), "X", n, ")\n")
+            #        burstAltimeterRaw$v <- array(double(), dim=c(sum(d$id==0x1a), n))
+            #    }
+            #    v <- velocityFactor[ch]*readBin(d$buf[i+i0+seq(0L,2L*n-1L)], "integer", size=2L, n=n, endian="little")
+            #    burstAltimeterRaw$v[burstAltimeterRaw$i, , ] <- matrix(v, ncol=ncol, nrow=nrow, byrow=FALSE)
+            #    oceDebug(debug>1, "saving burstAltimeterRaw$v[", burstAltimeterRaw$i, ",,] at i0=", i0, "\n")
+            #    i0 <- i0 + n2
+            #}
+            #if (amplitudeIncluded[ch]) {
+            #    # Create space for 'a', or check that dimensionality agrees with existing space.
+            #    if ("a" %in% names(burstAltimeterRaw)) {
+            #        nOld <- dim(burstAltimeterRaw$a)[2]
+            #        if (n != nOld)
+            #            stop("burstAltimeterRaw$a holds ", nOld, " samples, but chunk ", ch, " has ", n, " samples")
+            #    } else {
+            #        oceDebug(debug>1, "creating burstAltimeterRaw$a (", sum(d$id==0x1a), "X", n, ")\n")
+            #        burstAltimeterRaw$a <- array(raw(), dim=c(sum(d$id==0x1a), n))
+            #    }
+            #    a <- d$buf[i + i0 + seq(0L, n-1L)]
+            #    burstAltimeterRaw$a[burstAltimeterRaw$i, ,] <- matrix(a, ncol=ncol, nrow=nrow, byrow=FALSE)
+            #    i0 <- i0 + n
+            #    oceDebug(debug>1, "saving burstAltimeterRaw$a[", burstAltimeterRaw$i, ",] at i0=", i0, "\n")
+            #}
+            #if (correlationIncluded[ch]) {
+            #    message("FIXME: comment this out!!")
+            #    # Create space for 'q', or check that dimensionality agrees with existing space.
+            #    if ("q" %in% names(burstAltimeterRaw)) {
+            #        nOld <- dim(burstAltimeterRaw$q)[2]
+            #        if (n != nOld)
+            #            stop("burstAltimeterRaw$q holds ", nOld, " samples, but chunk ", ch, " has ", n, " samples")
+            #    } else {
+            #        oceDebug(debug>1, "creating burstAltimeterRaw$q (", sum(d$id==0x1a), "X", n, ")\n")
+            #        burstAltimeterRaw$q <- array(raw(), dim=c(sum(d$id==0x1a), n))
+            #    }
+            #    q <- d$buf[i + i0 + seq(0L, n-1L)]
+            #    burstAltimeterRaw$q[burstAltimeterRaw$i, ,] <- matrix(q, ncol=ncol, nrow=nrow, byrow=FALSE)
+            #    oceDebug(debug>1, "saving burstAltimeterRaw$q[", burstAltimeterRaw$i, ",,] at i0=", i0, "\n")
+            #    i0 <- i0 + n
+            #}
+            #if (altimeterIncluded[ch]) { # burstAltimeterRaw (DELETED)
+            ##<>     message("BREADCRUMB 1a")
+            ##<>     # Create space
+            ##<>     if (!("altimeterDistance" %in% names(burstAltimeterRaw))) {
+            ##<>         message("BREADCRUMB 1b: blanking out altimeterDistance (should remove this)")
+            ##<>         oceDebug(debug>1, "creating burstAltimeterRaw$altimeterDistance (", sum(d$id==0x1a), ")\n")
+            ##<>         burstAltimeterRaw$altimeterDistance <- rep(NA_real_, sum(d$id==0x1a))
+            ##<>     }
+            ##<>     burstAltimeterRaw$altimeterDistance[burstAltimeterRaw$i] <- readBin(d$buf[i + i0 + 0:3],"numeric", size=4,n=1,endian="little")
+            ##<>     oceDebug(debug>1, "saving altimeterDistance[", burstAltimeterRaw$i,  "]=",
+            ##<>         burstAltimeterRaw$altimeterDistance[burstAltimeterRaw$i], " at i0=", i0, "\n")
 
-            #<>     # FIXME: perhaps save altimeterQuality from next 2 bytes
-            #<>     # FIXME: perhaps save altimeterStatus from next 2 bytes
-                i0 <- i0 + 8 # FIXME: change this, if read altimeterQuality and/or altimeterStatus
-            }
-            #<> if (ASTIncluded[ch]) { # AST
-            #<>     # Create space
-            #<>     if (!"ASTDistance" %in% names(burstAltimeterRaw)) {
-            #<>         oceDebug(debug>1, "creating burstAltimeterRaw$ASTDistance (", sum(d$id==0x1a), ")\n")
-            #<>         burstAltimeterRaw$ASTDistance <- rep(NA_real_, sum(d$id==0x1a))
-            #<>     }
-            #<>     if (!"ASTPressure" %in% names(burstAltimeterRaw)) {
-            #<>         oceDebug(debug>1, "creating burstAltimeterRaw$ASTpressure (", sum(d$id==0x1a), ")\n")
-            #<>         burstAltimeterRaw$ASTPressure <- rep(NA_real_, sum(d$id==0x1a))
-            #<>     }
-            #<>     # bytes: 4(distance)+2(quality)+2(offset)+4(pressure)+8(spare)
-            #<>     burstAltimeterRaw$ASTDistance[burstAltimeterRaw$i] <- readBin(d$buf[i + i0 + 0:3], "numeric", size=4, n=1, endian="little")
-            #<>     oceDebug(debug>1, "saving ASTDistance[", burstAltimeterRaw$i,  "]=",
-            #<>         burstAltimeterRaw$ASTDistance[burstAltimeterRaw$i], " at i0=", i0, "\n")
-            #<>     i0 <- i0 + 8 # advance past distance (4 bytes), then skip quality (2 bytes) and offset (2 bytes)
-            #<>     burstAltimeterRaw$ASTPressure[burstAltimeterRaw$i] <- readBin(d$buf[i + i0 + 0:3], "numeric", size=4, n=1, endian="little")
-            #<>     oceDebug(debug>1, "saving ASTPressure[", burstAltimeterRaw$i,  "]=",
-            #<>         burstAltimeterRaw$ASTPressure[burstAltimeterRaw$i], " at i0=", i0, "\n")
-            #<>     i0 <- i0 + 12 # skip spare (8 bytes)
-            #<> }
-            #<> if (altimeterRawIncluded[ch]) { # burstAltimeterRaw
-            #<>     message("BREADCRUMB 2: blanking out altimeterDistance (should remove this)")
-            #<>     i0 <- i0 + 6 + 2*burstAltimeterRaw$altimeterRawNumberOfSamples
-            #<> }
-            if (echosounderIncluded[ch]) {
-                # Create space for data, or check that dimensionality agrees with existing space.
-                if ("echosounder" %in% names(burstAltimeterRaw)) {
-                    nrow2Old <- nrow(burstAltimeterRaw$echosounder)[2]
-                    if (nrow != nrow2Old)
-                        stop("burstAltimeterRaw$echosounder was set up to hold ", nrow2Old, " samples, but data chunk ", ch, " has ", nrow, " samples")
-                } else {
-                    oceDebug(debug>1, "creating burstAltimeterRaw$echosounder (",
-                        sum(d$id==0x1a), "X", nrow, ")\n")
-                    burstAltimeterRaw$echosounder <- array(double(), dim=c(sum(d$id==0x1a), nrow))
-                }
-                burstAltimeterRaw$echosounder[burstAltimeterRaw$i, ] <- readBin(d$buf[i + i0 + seq(0,nrow-1)], size=2, n=nrow, endian="little")
-                oceDebug(debug>1, "saving burstAltimeterRaw$echosounder[", burstAltimeterRaw$i, ",] at i0=", i0, "\n")
-                i0 <- i0 + 2 * nrow
-            }
-            if (AHRSIncluded[ch]) {
-                # Create space for data
-                if (!("AHRS" %in% names(burstAltimeterRaw))) {
-                    oceDebug(debug>1, "creating burstAltimeterRaw$AHRS (",
-                        sum(d$id==0x1a), "X", 9L, ")\n")
-                    burstAltimeterRaw$AHRS <- array(double(), dim=c(sum(d$id==0x1a), 9L))
-                }
-                burstAltimeterRaw$AHRS[burstAltimeterRaw$i,] <- readBin(d$buf[i + i0 + 0:35], "numeric", size=4, n=9, endian="little")
-                oceDebug(debug>1, "saving burstAltimeterRaw$AHRS[", burstAltimeterRaw$i, ",] at i0=", i0, "\n")
-            }
-            # increment burstAltimeterRaw counter.
-            burstAltimeterRaw$i <- 1L + burstAltimeterRaw$i
+            ##<>     # FIXME: perhaps save altimeterQuality from next 2 bytes
+            ##<>     # FIXME: perhaps save altimeterStatus from next 2 bytes
+            #    i0 <- i0 + 8 # FIXME: change this, if read altimeterQuality and/or altimeterStatus
+            #}
+            ##<> if (ASTIncluded[ch]) { # AST
+            ##<>     # Create space
+            ##<>     if (!"ASTDistance" %in% names(burstAltimeterRaw)) {
+            ##<>         oceDebug(debug>1, "creating burstAltimeterRaw$ASTDistance (", sum(d$id==0x1a), ")\n")
+            ##<>         burstAltimeterRaw$ASTDistance <- rep(NA_real_, sum(d$id==0x1a))
+            ##<>     }
+            ##<>     if (!"ASTPressure" %in% names(burstAltimeterRaw)) {
+            ##<>         oceDebug(debug>1, "creating burstAltimeterRaw$ASTpressure (", sum(d$id==0x1a), ")\n")
+            ##<>         burstAltimeterRaw$ASTPressure <- rep(NA_real_, sum(d$id==0x1a))
+            ##<>     }
+            ##<>     # bytes: 4(distance)+2(quality)+2(offset)+4(pressure)+8(spare)
+            ##<>     burstAltimeterRaw$ASTDistance[burstAltimeterRaw$i] <- readBin(d$buf[i + i0 + 0:3], "numeric", size=4, n=1, endian="little")
+            ##<>     oceDebug(debug>1, "saving ASTDistance[", burstAltimeterRaw$i,  "]=",
+            ##<>         burstAltimeterRaw$ASTDistance[burstAltimeterRaw$i], " at i0=", i0, "\n")
+            ##<>     i0 <- i0 + 8 # advance past distance (4 bytes), then skip quality (2 bytes) and offset (2 bytes)
+            ##<>     burstAltimeterRaw$ASTPressure[burstAltimeterRaw$i] <- readBin(d$buf[i + i0 + 0:3], "numeric", size=4, n=1, endian="little")
+            ##<>     oceDebug(debug>1, "saving ASTPressure[", burstAltimeterRaw$i,  "]=",
+            ##<>         burstAltimeterRaw$ASTPressure[burstAltimeterRaw$i], " at i0=", i0, "\n")
+            ##<>     i0 <- i0 + 12 # skip spare (8 bytes)
+            ##<> }
+            ##<> if (altimeterRawIncluded[ch]) { # burstAltimeterRaw
+            ##<>     message("BREADCRUMB 2: blanking out altimeterDistance (should remove this)")
+            ##<>     i0 <- i0 + 6 + 2*burstAltimeterRaw$altimeterRawNumberOfSamples
+            ##<> }
+            #if (echosounderIncluded[ch]) {
+            #    # Create space for data, or check that dimensionality agrees with existing space.
+            #    if ("echosounder" %in% names(burstAltimeterRaw)) {
+            #        nrow2Old <- nrow(burstAltimeterRaw$echosounder)[2]
+            #        if (nrow != nrow2Old)
+            #            stop("burstAltimeterRaw$echosounder was set up to hold ", nrow2Old, " samples, but data chunk ", ch, " has ", nrow, " samples")
+            #    } else {
+            #        oceDebug(debug>1, "creating burstAltimeterRaw$echosounder (",
+            #            sum(d$id==0x1a), "X", nrow, ")\n")
+            #        burstAltimeterRaw$echosounder <- array(double(), dim=c(sum(d$id==0x1a), nrow))
+            #    }
+            #    burstAltimeterRaw$echosounder[burstAltimeterRaw$i, ] <- readBin(d$buf[i + i0 + seq(0,nrow-1)], size=2, n=nrow, endian="little")
+            #    oceDebug(debug>1, "saving burstAltimeterRaw$echosounder[", burstAltimeterRaw$i, ",] at i0=", i0, "\n")
+            #    i0 <- i0 + 2 * nrow
+            #}
+            #if (AHRSIncluded[ch]) {
+            #    # Create space for data
+            #    if (!("AHRS" %in% names(burstAltimeterRaw))) {
+            #        oceDebug(debug>1, "creating burstAltimeterRaw$AHRS (",
+            #            sum(d$id==0x1a), "X", 9L, ")\n")
+            #        burstAltimeterRaw$AHRS <- array(double(), dim=c(sum(d$id==0x1a), 9L))
+            #    }
+            #    burstAltimeterRaw$AHRS[burstAltimeterRaw$i,] <- readBin(d$buf[i + i0 + 0:35], "numeric", size=4, n=9, endian="little")
+            #    oceDebug(debug>1, "saving burstAltimeterRaw$AHRS[", burstAltimeterRaw$i, ",] at i0=", i0, "\n")
+            #}
+            ## increment burstAltimeterRaw counter.
+            #burstAltimeterRaw$i <- 1L + burstAltimeterRaw$i
 
         } else if (key == 0x1b) { # DVLBottomTrack
 
@@ -2249,8 +2256,8 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
             }
             averageAltimeter$i <- averageAltimeter$i + 1
 
-        } else if (key == 0xa0) { # text
-
+        } else if (key == 0xa0) { # text FIXME: remove once vectorized
+            message("HERE DAN HERE DAN")
             chars <- rawToChar(d$buf[seq.int(2+d$index[ch], by=1, length.out=-1+d$length[ch])])
             t <- strsplit(chars, "\r\n")[[1]]
             if (!typeGiven) {
@@ -2329,9 +2336,9 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
         averageAltimeter$i <- NULL
         data$averageAltimeter <- averageAltimeter
     }
-    if (length(text)) {                # 0xa0
-        text$i <- NULL
-        data$text <- text
+    if (!is.null(header)) {            # 0xa0 (first instance only, also in metadata$header)
+        data$text <- list()
+        data$text[[1]] <- header
     }
 
     # Insert metadata
