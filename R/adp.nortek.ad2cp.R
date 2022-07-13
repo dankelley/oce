@@ -192,7 +192,7 @@ ad2cpCodeToName <- function(code)
 #' 6.1.3.
 #'
 #' 3. Nortek (2022) often lists units incorrectly.  For example, on page 82,
-#' Pressure is said to have "Unit [dBar]" in green text, but the black text
+#' Pressure is said to have "Unit \[dBar\]" in green text, but the black text
 #' above states "Raw data given as 0.001 dBar". If the stated storage class
 #' (uint32) is to be believed, then it seems clear that the unit must be
 #' 0.001 dBar, so the green text should be ignored.  The same can be said

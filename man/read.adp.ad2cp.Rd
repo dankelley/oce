@@ -176,7 +176,7 @@ format is laid out in detail, \emph{in one place} on pages 57 to 64 of Nortek, w
 the optional fields being clearly labelled in the rightmost column of Table
 6.1.3.
 \item Nortek (2022) often lists units incorrectly.  For example, on page 82,
-Pressure is said to have "Unit \link{dBar}" in green text, but the black text
+Pressure is said to have "Unit [dBar]" in green text, but the black text
 above states "Raw data given as 0.001 dBar". If the stated storage class
 (uint32) is to be believed, then it seems clear that the unit must be
 0.001 dBar, so the green text should be ignored.  The same can be said
