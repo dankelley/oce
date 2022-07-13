@@ -3702,7 +3702,7 @@ xyzToEnuAdpAD2CP <- function(x, declination=0, debug=getOption("oceDebug"))
                 if (orientation[1] != "AHRS")
                     stop("only the 'AHRS' orientation is handled, but '", item, "' has orientation '", orientation[1], "'")
                 AHRS <- x@data[[item]]$AHRS
-                cat(str(AHRS))
+                #cat(str(AHRS))
                 if (is.null(AHRS))
                     stop("'", item, "' within the object data slot does not contain coordinate-change matrix 'AHRS'")
                 oceCoordinate <- x@data[[item]]$oceCoordinate
@@ -3715,7 +3715,7 @@ xyzToEnuAdpAD2CP <- function(x, declination=0, debug=getOption("oceDebug"))
                     if (is.null(V))
                         stop("'", item, "' within the object data slot does not contain velocity 'v'")
                     nc <- dim(V)[2]
-                    cat("nc=",nc,"\n")
+                    #cat("nc=",nc,"\n")
                     ## DEVELOPER NOTE
                     ##
                     ## I thought it might be faster to use C++ for the calculations, since the memory pressure ought to
@@ -3741,10 +3741,10 @@ xyzToEnuAdpAD2CP <- function(x, declination=0, debug=getOption("oceDebug"))
                     # vectorized), AHRS was a rotation matrix.  After that, it
                     # became a list that holds that matrix, and other things.
                     M <- if (is.matrix(AHRS)) AHRS else AHRS$rotationMatrix
-                    cat("next is str(M)\n", str(M))
-                    cat("next is str(V)\n", str(V))
-                    cat("dim(M): ", paste(dim(M), collapse="x"),"\n")
-                    cat("dim(V): ", paste(dim(V), collapse="x"),"\n")
+                    #cat("next is str(M)\n", str(M))
+                    #cat("next is str(V)\n", str(V))
+                    #cat("dim(M): ", paste(dim(M), collapse="x"),"\n")
+                    #cat("dim(V): ", paste(dim(V), collapse="x"),"\n")
                     if (length(dim(M)) != 3L)
                         stop("dim(M) should be of length 3, but it is ", length(dim(M)))
                     e <- V[,,1]*rep(M[,1,1],times=nc) + V[,,2]*rep(M[,1,2],times=nc) + V[,,3]*rep(M[,1,3],times=nc)

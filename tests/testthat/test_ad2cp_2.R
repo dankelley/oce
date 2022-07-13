@@ -20,11 +20,12 @@ if (file.exists(file)) {
         expect_warning(
             expect_warning(
                 expect_warning(
-                    expect_output(d <- read.oce(file),
-                        "got to end of file"),
-                    "using to=12"),
-                "'plan' defaulting to 0"),
-            "file has 12-byte headers")
+                    expect_output(
+                        d <- read.oce(file),
+                        "skipping undocumented header.id=0x23"),
+                    "has 12-byte headers"),
+                "using to=12"),
+            "'plan' defaulting to 0")
         # Identifiers
         expect_equal(d[["type"]], "Signature100")
         expect_equal(d[["fileType"]], "AD2CP")
@@ -35,8 +36,7 @@ if (file.exists(file)) {
                 "powerLevel", "status"))
         expect_equal(sort(names(d[["average"]])),
             sort(c("a", "accelerometer", "blankingDistance", "cellSize",
-                    "datasetDescription", "ensemble", "heading",
-                    "magnetometerx", "magnetometery", "magnetometerz",
+                    "datasetDescription", "ensemble", "heading", "magnetometer",
                     "nominalCorrelation", "numberOfBeams", "numberOfCells",
                     "oceCoordinate", "orientation", "originalCoordinate",
                     "pitch", "powerLevel", "pressure", "q", "roll",
@@ -53,7 +53,8 @@ if (file.exists(file)) {
         expect_equal(d[["numberOfBeams", "echosounder"]], 1)
         expect_equal(d[["numberOfCells", "echosounder"]], 438)
 
-        # Velocity
+        # v[1,,1] values from the IMOS toolbox; see
+        # https://github.com/dankelley/oce/issues/1975#issuecomment-1180403719)
         v <- d[["v"]]
         expect_equal(v[1,,1], c(-0.832, -0.048, 0.001, 0.003, 0.027, 0.148, 0.066,
                 -0.067, -0.056, -0.103, -0.07, -0.051, 0.071, 0.062,
@@ -61,6 +62,8 @@ if (file.exists(file)) {
                 -0.094, -0.041, 0.151, 0.145, 0.465, 0.462, 0.456,
                 1.029, 0.342, 0.29, 0.3))
         expect_equal(v[1,1,], c(-0.832, 0.901, -0.013, 0.961))
+        # v[1,,2] values from the IMOS toolbox; see
+        # https://github.com/dankelley/oce/issues/1975#issuecomment-1180403719)
         expect_equal(v[1,,2], c(0.901, -0.022, 0.014, -0.103, -0.114, -0.039, -0.005,
                 -0.065, -0.074, -0.125, -0.301, -0.271, -0.28, -0.046,
                 -0.092, -0.128, -0.229, -0.245, -0.175, -0.171, -0.129,

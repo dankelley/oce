@@ -17,11 +17,12 @@ ad2cpDefaultDataItem <- function(x, j=NULL,
 }
 
 
-#' Decode an item from a Nortek AD2CP file header
+#' Decode an item from a Nortek AD2CP file header (an internal function)
 #'
 #' @param x an [adp-class] object that holds AD2CP data.
 #'
-#' @param key Character value that identifies a particular line in `x[["text"]]`.
+#' @param key Character value that identifies a particular line in the file
+#' header.
 #'
 #' @param item Character value indicating the name of the item sought.
 #'
@@ -240,8 +241,8 @@ ad2cpCodeToName <- function(code)
 #' `"echosounder"` (*not coded yet*) for ID code 0x1c,
 #' `"DVLWaterTrack"` (*not coded yet*) for ID code 0x1d,
 #' `"altimeter"` (*not coded yet*) for ID code 0x1e,
-#' `"averageAltimeter"` (*not coded yet*) for ID code 0x1f, and
-#' `"text"` for ID code 0xa0 (returned as a list of character vectors,
+#' and
+#' `"averageAltimeter"` (*not coded yet*) for ID code 0x1f.
 #' with each of those vectors holding lines inferred by splitting the string
 #' at occurances of carriage-return/line-feed pairs).
 #'
@@ -519,7 +520,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
     header <- NULL
     idHeader <- which(d$id == 0xa0)[1] # first text chunk
     if (length(idHeader)) {
-        oceDebug(1+debug, "this file has a header at id=", idHeader, "\n", sep="")
+        oceDebug(debug, "this file has a header at id=", idHeader, "\n", sep="")
         chars <- rawToChar(d$buf[seq.int(2L+d$index[idHeader], by=1L, length.out=-1L+d$length[idHeader])])
         header <- strsplit(chars, "\r\n")[[1]]
         if (!typeGiven) {
@@ -627,7 +628,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
     stdDevIncluded <- configuration[,15]
     # We skip bit 16, which  is called 'unused' in Nortek AS. \dQuote{Signature
     # Integration 55|250|500|1000kHz.} Nortek AS, 2017.
-    # configuration[, 16] "Unused" in 2017 Signature 
+    # configuration[, 16] "Unused" in 2017 Signature
     oceDebug(debug, vectorShow(velocityIncluded))
     oceDebug(debug, vectorShow(amplitudeIncluded))
     oceDebug(debug, vectorShow(correlationIncluded))
@@ -699,6 +700,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
     datasetDescription <- readBin(d$buf[pointer2 + 55], "integer", size=2, n=N, signed=FALSE, endian="little")
     transmitEnergy <- readBin(d$buf[pointer2 + 57], "integer", size=2, n=N, signed=FALSE, endian="little")
     velocityFactor <- 10^readBin(d$buf[pointer1 + 59], "integer", size=1, n=N, signed=TRUE, endian="little")
+    # 0.001 for 'average' in private file ~/Dropbox/oce_secret_data/ad2cp_secret_1.ad2cp
     powerLevel <- readBin(d$buf[pointer1 + 60], "integer", size=1, n=N, signed=TRUE, endian="little")
     temperatureMagnetometer <- 0.001 * readBin(d$buf[pointer2 + 61], "integer", size=2, n=N, signed=TRUE, endian="little")
     # See https://github.com/dankelley/oce/issues/1957 for a discussion of the
@@ -765,6 +767,11 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
     #x
     #x @param name character value naming the item.
     #x
+    #x @param i integer vector that points to starting spots of relevant chunks.
+    #x
+    #x @param type character value naming the type of chunk. This is used to
+    #x look scaling factors for velocity.
+    #x
     #x @return a list defined by adding the named item to `object`, if it
     #x is present in the dataset.
     #x
@@ -774,7 +781,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
     #x 2017.
     #x
     #x @author Dan Kelley
-    getItemFromBuf <- function(object, name, i, debug=getOption("oceDebug"))
+    getItemFromBuf <- function(object, name, i, type, debug=getOption("oceDebug"))
     {
         NB <- object$numberOfBeams
         NC <- object$numberOfCells
@@ -784,16 +791,18 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
         #oceDebug(debug, "NB=", NB, ", NC=", NC, ", NBC=", NBC, ", NP=", NP, "\n")
         if (name == "v") {
             oceDebug(debug, "  'v' starts at i0v=", i0v, "\n")
+            velocityFactor <- velocityFactor[p[[type]][1]]
+            oceDebug(debug, "velocityFactor=", velocityFactor, " for type=", type, "\n")
             if (NBC > 0L) {
                 iv <- gappyIndex(i, i0v, 2L*NBC)
                 # FIXME: use proper velocity factor
-                v <- 1e-4*readBin(d$buf[iv], "integer", size=2L, n=NP*NBC, endian="little")
+                v <- velocityFactor*readBin(d$buf[iv], "integer", size=2L, n=NP*NBC, endian="little")
                 object$v <- array(double(), dim=c(NP, NC, NB))
                 for (ip in 1:NP) {
                     look <- seq(1L+(ip-1L)*NBC, length.out=NBC)
                     #if (ip < 5L) # FIXME: remove this
                     #    cat("ip=",ip,": ",vectorShow(look))
-                    object$v[ip,,] <- matrix(v[look], ncol=NB, byrow=TRUE)
+                    object$v[ip,,] <- matrix(v[look], ncol=NB, byrow=FALSE)
                 }
                 i0v <<- i0v + 2L * NBC
             }
@@ -805,9 +814,9 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
                 object$a <- array(raw(), dim=c(NP, NC, NB))
                 for (ip in 1:NP) {
                     look <- seq(1L+(ip-1L)*NBC, length.out=NBC)
-                    object$a[ip,,] <- matrix(a[look], ncol=NB, byrow=TRUE)
+                    object$a[ip,,] <- matrix(a[look], ncol=NB, byrow=FALSE)
                 }
-                i0v <<- i0v + NBC 
+                i0v <<- i0v + NBC
             }
         } else if (name == "q") {
             oceDebug(debug, "  'q' starts at i0v=", i0v, "\n")
@@ -819,7 +828,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
                 object$q <- array(raw(), dim=c(NP, NC, NB))
                 for (ip in 1:NP) {
                     look <- seq(1L+(ip-1L)*NBC, length.out=NBC)
-                    object$q[ip,,] <- matrix(q[look], ncol=NB, byrow=TRUE)
+                    object$q[ip,,] <- matrix(q[look], ncol=NB, byrow=FALSE)
                 }
                 i0v <<- i0v + NBC
             }
@@ -875,7 +884,8 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
             i0v <<- i0v + 2L
             iv <- gappyIndex(i, i0v, 2L*NS)
             tmp <- readBin(buf[iv], "integer", size=2L, endian="little", n=NP*NS)
-            object$altimeterRawSamples <- matrix(tmp, nrow=NP, ncol=NS, byrow=TRUE)
+            #object$altimeterRawSamples <- matrix(tmp, nrow=NP, ncol=NS, byrow=TRUE) # FIXME: is byrow ok???
+            object$altimeterRawSamples <- t(matrix(tmp, nrow=NP, ncol=NS, byrow=FALSE))
             i0v <<- i0v + 2L*NS
         } else if (name == "echosounder") {
             message("FIXME: decode echosounder (NC=", NC, ")\n")
@@ -896,7 +906,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
             for (ip in 1:NP) {
                 look <- seq(1L+(ip-1L)*9L, length.out=9L)
                 # read by row, given docs say M11, then M12, then M13, etc.
-                object$AHRS$rotationMatrix[ip,,] <- matrix(tmp[look], ncol=3, byrow=TRUE)
+                object$AHRS$rotationMatrix[ip,,] <- matrix(tmp[look], ncol=3, byrow=TRUE) # note byrow
             }
             i0v <<- i0v + 9L*4L
             # AHSR$quaternions$W, $X, $Y and $Z
@@ -998,28 +1008,29 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
         NC <- burst$numberOfCells      # number of cells for v,a,q
         NB <- burst$numberOfBeams      # number of beams for v,a,q
         oceDebug(debug, "  NP=", NP, ", NB=", NB, ", NC=", NC, "\n", sep="")
-        if (velocityIncluded[p$burst[1]]) 
-            burst <- getItemFromBuf(burst, "v", i=i, debug=debug)
-        if (amplitudeIncluded[p$burst[1]]) 
-            burst <- getItemFromBuf(burst, "a", i=i, debug=debug)
-        if (correlationIncluded[p$burst[1]]) 
-            burst <- getItemFromBuf(burst, "q", i=i, debug=debug)
-        if (altimeterIncluded[p$burst[1]]) 
-            burst <- getItemFromBuf(burst, "altimeter", i=i, debug=debug)
-        if (ASTIncluded[p$burst[1]]) 
-            burst <- getItemFromBuf(burst, "AST", i=i, debug=debug)
-        if (altimeterRawIncluded[p$burst[1]]) 
-            burst <- getItemFromBuf(burst, "altimeterRaw", i=i, debug=debug)
-        if (echosounderIncluded[p$burst[1]]) 
-            burst <- getItemFromBuf(burst, "echosounder", i=i, debug=debug)
-        if (AHRSIncluded[p$burst[1]]) 
-            burst <- getItemFromBuf(burst, "AHRS", i=i, debug=debug)
-        if (percentGoodIncluded[p$burst[1]])
-            burst <- getItemFromBuf(burst, "percentgood", i=i, debug=debug)
-        if (stdDevIncluded[p$burst[1]])
-            burst <- getItemFromBuf(burst, "stdDev", i=i, debug=debug)
+        p1 <- p$burst[1]
+        if (velocityIncluded[p1])
+            burst <- getItemFromBuf(burst, "v", i=i, type="burst", debug=debug)
+        if (amplitudeIncluded[p1])
+            burst <- getItemFromBuf(burst, "a", i=i, type="burst", debug=debug)
+        if (correlationIncluded[p1])
+            burst <- getItemFromBuf(burst, "q", i=i, type="burst", debug=debug)
+        if (altimeterIncluded[p1])
+            burst <- getItemFromBuf(burst, "altimeter", i=i, type="burst", debug=debug)
+        if (ASTIncluded[p1])
+            burst <- getItemFromBuf(burst, "AST", i=i, type="burst", debug=debug)
+        if (altimeterRawIncluded[p1])
+            burst <- getItemFromBuf(burst, "altimeterRaw", i=i, type="burst", debug=debug)
+        if (echosounderIncluded[p1])
+            burst <- getItemFromBuf(burst, "echosounder", i=i, type="burst", debug=debug)
+        if (AHRSIncluded[p1])
+            burst <- getItemFromBuf(burst, "AHRS", i=i, type="burst", debug=debug)
+        if (percentGoodIncluded[p1])
+            burst <- getItemFromBuf(burst, "percentgood", i=i, type="burst", debug=debug)
+        if (stdDevIncluded[p1])
+            burst <- getItemFromBuf(burst, "stdDev", i=i, type="burst", debug=debug)
         ch <- p$burst[1] # FiXME: what is this for?
-        oceDebug(debug, "} # vector-read 'burst'\n")
+        oceDebug(debug, "} # vector-read 'burst'\n") # 0x15
     } else {
         burst <- NULL
     }
@@ -1067,26 +1078,27 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
         NC <- average$numberOfCells    # number of cells for v,a,q
         NB <- average$numberOfBeams    # number of beams for v,a,q
         oceDebug(debug, "  NP=", NP, ", NB=", NB, ", NC=", NC, "\n", sep="")
-        if (velocityIncluded[p$average[1]])
-            average <- getItemFromBuf(average, "v", i=i, debug=debug)
-        if (amplitudeIncluded[p$average[1]])
-            average <- getItemFromBuf(average, "a", i=i, debug=debug)
-        if (correlationIncluded[p$average[1]])
-            average <- getItemFromBuf(average, "q", i=i, debug=debug)
-        if (altimeterIncluded[p$average[1]])
-            average <- getItemFromBuf(average, "altimeter", i=i, debug=debug)
-        if (ASTIncluded[p$average[1]])
-            average <- getItemFromBuf(average, "AST", i=i, debug=debug)
-        if (altimeterRawIncluded[p$average[1]])
-            average <- getItemFromBuf(average, "altimeterRaw", i=i, debug=debug)
-        if (echosounderIncluded[p$average[1]])
-            average <- getItemFromBuf(average, "echosounder", i=i, debug=debug)
-        if (AHRSIncluded[p$average[1]])
-            average <- getItemFromBuf(average, "AHRS", i=i, debug=debug)
-        if (percentGoodIncluded[p$average[1]])
-            average <- getItemFromBuf(average, "percentgood", i=i, debug=debug)
-        if (stdDevIncluded[p$average[1]])
-            average <- getItemFromBuf(average, "stdDev", i=i, debug=debug)
+        p1 <- p$average[1]
+        if (velocityIncluded[p1])
+            average <- getItemFromBuf(average, "v", i=i, type="average", debug=debug)
+        if (amplitudeIncluded[p1])
+            average <- getItemFromBuf(average, "a", i=i, type="average", debug=debug)
+        if (correlationIncluded[p1])
+            average <- getItemFromBuf(average, "q", i=i, type="average", debug=debug)
+        if (altimeterIncluded[p1])
+            average <- getItemFromBuf(average, "altimeter", i=i, type="average", debug=debug)
+        if (ASTIncluded[p1])
+            average <- getItemFromBuf(average, "AST", i=i, type="average", debug=debug)
+        if (altimeterRawIncluded[p1])
+            average <- getItemFromBuf(average, "altimeterRaw", i=i, type="average", debug=debug)
+        if (echosounderIncluded[p1])
+            average <- getItemFromBuf(average, "echosounder", i=i, type="average", debug=debug)
+        if (AHRSIncluded[p1])
+            average <- getItemFromBuf(average, "AHRS", i=i, type="average", debug=debug)
+        if (percentGoodIncluded[p1])
+            average <- getItemFromBuf(average, "percentgood", i=i, type="average", debug=debug)
+        if (stdDevIncluded[p1])
+            average <- getItemFromBuf(average, "stdDev", i=i, type="average", debug=debug)
         ch <- p$average[1] # FiXME: what is this for?
         oceDebug(debug, "} # vector-read 'average'\n")
     } else {
@@ -1264,8 +1276,8 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
             datasetDescription=datasetDescription[p$burstAltimeterRaw],
             transmitEnergy=transmitEnergy[p$burstAltimeterRaw],
             powerLevel=powerLevel[p$burstAltimeterRaw])
-        if (TRUE) {                    # burstAltimeterRaw: vectorized
-            oceDebug(debug, "vector-read 'burstAltimeterRaw' records (0x1a) {\n")
+        # burstAltimeterRaw: vectorized
+        oceDebug(1+debug, "vector-read 'burstAltimeterRaw' records (0x1a) {\n")
             # See CR's snapshot at
             # https://github.com/dankelley/oce/issues/1959#issuecomment-1141409542
             # which is p89 of Nortek AS. “Signature Integration
@@ -1276,41 +1288,30 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
             oceDebug(debug, vectorShow(i, n=4))
             NC <- burstAltimeterRaw$numberOfCells # number of cells for v,a,q
             NB <- burstAltimeterRaw$numberOfBeams # number of beams for v,a,q
-
-            if (velocityIncluded[p$burstAltimeterRaw[1]]) {
-                burstAltimeterRaw <- getItemFromBuf(burstAltimeterRaw, "v", i=i, debug=debug)
-            }
-            if (amplitudeIncluded[p$burstAltimeterRaw[1]]) {
-                burstAltimeterRaw <- getItemFromBuf(burstAltimeterRaw, "a", i=i, debug=debug)
-            }
-            if (correlationIncluded[p$burstAltimeterRaw[1]]) {
-                burstAltimeterRaw <- getItemFromBuf(burstAltimeterRaw, "q", i=i, debug=debug)
-            }
-            if (altimeterIncluded[p$burstAltimeterRaw[1]]) {
-                burstAltimeterRaw <- getItemFromBuf(burstAltimeterRaw, "altimeter", i=i, debug=debug)
-            }
-            if (ASTIncluded[p$burstAltimeterRaw[1]]) {
-                burstAltimeterRaw <- getItemFromBuf(burstAltimeterRaw, "AST", i=i, debug=debug)
-            }
-            if (altimeterRawIncluded[p$burstAltimeterRaw[1]]) {
-                burstAltimeterRaw <- getItemFromBuf(burstAltimeterRaw, "altimeterRaw", i=i, debug=debug)
-            }
-            if (echosounderIncluded[p$burstAltimeterRaw[1]]) {
-                echosounder <- getItemFromBuf(burstAltimeterRaw, "echosounder", i=i, debug=debug)
-            }
-            if (AHRSIncluded[p$burstAltimeterRaw[1]]) {
-                burstAltimeterRaw <- getItemFromBuf(burstAltimeterRaw, "AHRS", i=i, debug=debug)
-            }
-            if (percentGoodIncluded[p$burstAltimeterRaw[1]]) {
-                burstAltimeterRaw <- getItemFromBuf(burstAltimeterRaw, "percentgood", i=i, debug=debug)
-            }
-            if (stdDevIncluded[p$burstAltimeterRaw[1]]) {
-                burstAltimeterRaw <- getItemFromBuf(burstAltimeterRaw, "stdDev", i=i, debug=debug)
-            }
+            p1 <- p$burstAltimeterRaw[1]
+            if (velocityIncluded[p1])
+                burstAltimeterRaw <- getItemFromBuf(burstAltimeterRaw, "v", i=i, type="burstAltimeterRaw", debug=debug)
+            if (amplitudeIncluded[p1])
+                burstAltimeterRaw <- getItemFromBuf(burstAltimeterRaw, "a", i=i, type="burstAltimeterRaw", debug=debug)
+            if (correlationIncluded[p1])
+                burstAltimeterRaw <- getItemFromBuf(burstAltimeterRaw, "q", i=i, type="burstAltimeterRaw", debug=debug)
+            if (altimeterIncluded[p1])
+                burstAltimeterRaw <- getItemFromBuf(burstAltimeterRaw, "altimeter", i=i, type="burstAltimeterRaw", debug=debug)
+            if (ASTIncluded[p1])
+                burstAltimeterRaw <- getItemFromBuf(burstAltimeterRaw, "AST", i=i, type="burstAltimeterRaw", debug=debug)
+            if (altimeterRawIncluded[p1])
+                burstAltimeterRaw <- getItemFromBuf(burstAltimeterRaw, "altimeterRaw", i=i, type="burstAltimeterRaw", debug=debug)
+            if (echosounderIncluded[p1])
+                burstAltimeterRaw <- getItemFromBuf(burstAltimeterRaw, "echosounder", i=i, type="burstAltimeterRaw", debug=debug)
+            if (AHRSIncluded[p1])
+                burstAltimeterRaw <- getItemFromBuf(burstAltimeterRaw, "AHRS", i=i, type="burstAltimeterRaw", debug=debug)
+            if (percentGoodIncluded[p1])
+                burstAltimeterRaw <- getItemFromBuf(burstAltimeterRaw, "percentgood", i=i, type="burstAltimeterRaw", debug=debug)
+            if (stdDevIncluded[p1])
+                burstAltimeterRaw <- getItemFromBuf(burstAltimeterRaw, "stdDev", i=i, type="burstAltimeterRaw", debug=debug)
             ch <- p$burstAltimeterRaw[1] # FiXME: what is this for?
             #cat(file=stderr(), vectorShow(p$burstAltimeterRaw))
-            oceDebug(debug, "} # VECTORIZED burstAltimeterRaw\n")
-        }
+            oceDebug(1+debug, "} # VECTORIZED burstAltimeterRaw\n")
     } else {
         ## FIXME DAN DAN DAN DAN
         burstAltimeterRaw <- NULL
@@ -1438,26 +1439,28 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
         NC <- echosounder$numberOfCells    # number of cells for v,a,q
         NB <- echosounder$numberOfBeams    # number of beams for v,a,q
         oceDebug(debug, "  NP=", NP, ", NB=", NB, ", NC=", NC, "\n", sep="")
-        if (velocityIncluded[p$echosounder[1]])
-            echosounder <- getItemFromBuf(echosounder, "v", i=i, debug=debug)
-        if (amplitudeIncluded[p$echosounder[1]])
-            echosounder <- getItemFromBuf(echosounder, "a", i=i, debug=debug)
-        if (correlationIncluded[p$echosounder[1]])
-            echosounder <- getItemFromBuf(echosounder, "q", i=i, debug=debug)
-        if (altimeterIncluded[p$echosounder[1]])
-            echosounder <- getItemFromBuf(echosounder, "altimeter", i=i, debug=debug)
-        if (ASTIncluded[p$echosounder[1]])
-            echosounder <- getItemFromBuf(echosounder, "AST", i=i, debug=debug)
-        if (altimeterRawIncluded[p$echosounder[1]])
-            echosounder <- getItemFromBuf(echosounder, "altimeterRaw", i=i, debug=debug)
-        if (echosounderIncluded[p$echosounder[1]])
-            echosounder <- getItemFromBuf(echosounder, "echosounder", i=i, debug=debug)
-        if (AHRSIncluded[p$echosounder[1]])
-            echosounder <- getItemFromBuf(echosounder, "AHRS", i=i, debug=debug)
-        if (percentGoodIncluded[p$echosounder[1]])
-            echosounder <- getItemFromBuf(echosounder, "percentgood", i=i, debug=debug)
-        if (stdDevIncluded[p$echosounder[1]])
-            echosounder <- getItemFromBuf(echosounder, "stdDev", i=i, debug=debug)
+
+        p1 <- p$echosounder[1]
+        if (velocityIncluded[p1])
+            echosounder <- getItemFromBuf(echosounder, "v", i=i, type="echosounder", debug=debug)
+        if (amplitudeIncluded[p1])
+            echosounder <- getItemFromBuf(echosounder, "a", i=i, type="echosounder", debug=debug)
+        if (correlationIncluded[p1])
+            echosounder <- getItemFromBuf(echosounder, "q", i=i, type="echosounder", debug=debug)
+        if (altimeterIncluded[p1])
+            echosounder <- getItemFromBuf(echosounder, "altimeter", i=i, type="echosounder", debug=debug)
+        if (ASTIncluded[p1])
+            echosounder <- getItemFromBuf(echosounder, "AST", i=i, type="echosounder", debug=debug)
+        if (altimeterRawIncluded[p1])
+            echosounder <- getItemFromBuf(echosounder, "altimeterRaw", i=i, type="echosounder", debug=debug)
+        if (echosounderIncluded[p1])
+            echosounder <- getItemFromBuf(echosounder, "echosounder", i=i, type="echosounder", debug=debug)
+        if (AHRSIncluded[p1])
+            echosounder <- getItemFromBuf(echosounder, "AHRS", i=i, type="echosounder", debug=debug)
+        if (percentGoodIncluded[p1])
+            echosounder <- getItemFromBuf(echosounder, "percentgood", i=i, type="echosounder", debug=debug)
+        if (stdDevIncluded[p1])
+            echosounder <- getItemFromBuf(echosounder, "stdDev", i=i, type="echosounder", debug=debug)
         ch <- p$echosounder[1] # FiXME: what is this for?
         oceDebug(debug, "} # vector-read 'echosounder'\n")
     } else {
@@ -1632,12 +1635,13 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
         averageAltimeter <- NULL
     }
 
-    if (length(p$text) > 0) {          # key=0xa0
-        message("L1636: yes, we have p$text")
-    } else {
-        p$text <- NULL                 # erase the empty list
-    }
+    #if (length(p$text) > 0) {          # key=0xa0
+    #    message("L1636: yes, we have p$text")
+    #} else {
+    #    p$text <- NULL                 # erase the empty list
+    #}
     #?print(str(p,1))
+    p$text <- NULL
 
     # Fill up the arrays in a loop (FIXME: remove when all is vectorized)
     id <- d$id
@@ -2257,16 +2261,16 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
             averageAltimeter$i <- averageAltimeter$i + 1
 
         } else if (key == 0xa0) { # text FIXME: remove once vectorized
-            message("HERE DAN HERE DAN")
-            chars <- rawToChar(d$buf[seq.int(2+d$index[ch], by=1, length.out=-1+d$length[ch])])
-            t <- strsplit(chars, "\r\n")[[1]]
-            if (!typeGiven) {
-                type <- gsub('.*STR="([^"]*)".*$', '\\1', t[grep("^ID,",t)])
-                message("inferred type as '", type, "' from a text record")
-                typeGiven <- TRUE
-            }
-            text$text[[text$i]] <- t
-            text$i <- text$i + 1
+            #v message("HERE DAN HERE DAN")
+            #v chars <- rawToChar(d$buf[seq.int(2+d$index[ch], by=1, length.out=-1+d$length[ch])])
+            #v t <- strsplit(chars, "\r\n")[[1]]
+            #v if (!typeGiven) {
+            #v     type <- gsub('.*STR="([^"]*)".*$', '\\1', t[grep("^ID,",t)])
+            #v     message("inferred type as '", type, "' from a text record")
+            #v     typeGiven <- TRUE
+            #v }
+            #v text$text[[text$i]] <- t
+            #v text$i <- text$i + 1
             #oceDebug(debug, "added to text; now, text$i=", text$i, "\n")
         } else {
             # stop("unknown key 0x", as.raw(key), "; only 0x15 through 0x1f, plus 0xa0, are permitted", sep="")
@@ -2336,10 +2340,10 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
         averageAltimeter$i <- NULL
         data$averageAltimeter <- averageAltimeter
     }
-    if (!is.null(header)) {            # 0xa0 (first instance only, also in metadata$header)
-        data$text <- list()
-        data$text[[1]] <- header
-    }
+    #if (!is.null(header)) {            # 0xa0 (first instance only, also in metadata$header)
+    #    data$text <- list()
+    #    data$text[[1]] <- header
+    #}
 
     # Insert metadata
     res@metadata$id <- id

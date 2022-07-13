@@ -71,12 +71,6 @@ if (file.exists(f1)) {
             matrix(c(0.060653746, -0.37823972, -0.92368418, 0.31505784,
                     -0.87079191, 0.37727141, -0.94709891, -0.31389475,
                     0.066413939), byrow=TRUE, nrow=3)) # byrow because numbers are from matlab output
-        if (FALSE) {
-            # FIXME: re-enable this, after coding vectorized 'average' etc
-            expect_equal(d1[["AHRS", "average"]][1, ], c(0.060653746,-0.37824112, -0.92372596,
-                    0.31505644, -0.87087524, 0.37728685,
-                    -0.94714069, -0.31391019, 0.066330612))
-        }
         # >> load labtestsig3.ad2cp.00000_1.mat
         expect_equal(d1[["numberOfBeams", "burst"]], 1)
         expect_equal(d1[["numberOfBeams", "burst"]], ad2cpHeaderValue(d1, "GETBURST", "NB"))
@@ -223,7 +217,7 @@ if (file.exists(f1)) {
         expect_equal(dim(d1[["v", "average"]]), c(11, 150, 4))
         expect_equal(dim(d1[["v", "burst"]]), c(88, 256, 1))
         # >> Data.BurstHR_VelBeam5(1,1:10)
-        # Note that bursts store in beam 5.
+        # Note that bursts store in beam 5. FIXME: next broken 2022-07-13
         expect_equal(d1[["v", "burst"]][1, 1:4, 1], c(0.36240, 0.35830, 0.36430, 0.20590))
         # >> Data.Average_VelBeam1(1,1:4)
         expect_equal(d1[["v"]][1, 1:4, 1], c(-0.8170, -0.8890, -1.9170, -2.1110))
@@ -275,14 +269,11 @@ if (file.exists(f1)) {
         d1enu <- toEnu(d1)
         expect_equal(d1enu[["v"]][1:2,1:2,1:4],
             structure(c(-0.0423407864127893, -0.0412083140396359,
-                    -1.18658233863229, -0.655501998134796,
-                    -2.04226357900539, -2.20814086810278,
-                    -0.684468639431669, -1.64208610236321,
-                    0.134903747336107, -0.555275548908209,
-                    2.92161411078296, 4.13594858163354,
-                    0.551305292490936, 0.155603618214437,
-                    -1.78358555931817, -2.23533799929557),
-                .Dim = c(2L, 2L, 4L)))
+                    -1.18658233863229, -0.655501998134796, -2.04226357900539,
+                    -2.20814086810278, -0.684468639431669, -1.64208610236321,
+                    1.34600003150129, 0.905301482665873, 3.00993173312586,
+                    4.39764211472632, 0.551305292490936, 0.155603618214437,
+                    -1.78358555931817, -2.23533799929557), dim = c(2L, 2L, 4L)))
         expect_silent(plot(d1))
         expect_silent(plot(d1, which="velocity"))
         expect_silent(plot(d1, which="amplitude"))
@@ -457,7 +448,7 @@ if (file.exists(f3)) {
         expect_silent(plot(d3, which='a1', zlim=c(0, 255), drawTimeRange=FALSE))
         expect_silent(plot(d3, which='a2', zlim=c(0, 255), drawTimeRange=FALSE))
         expect_silent(plot(d3, which='a3', zlim=c(0, 255), drawTimeRange=FALSE))
-        d3xyz <- beamToXyz(d3)
+        expect_silent(d3xyz <- beamToXyz(d3))
         expect_silent(plot(d3xyz, which=1, zlim=zlim, drawTimeRange=FALSE))
         expect_silent(plot(d3xyz, which=2, zlim=zlim, drawTimeRange=FALSE))
         expect_silent(plot(d3xyz, which=3, zlim=zlim/4, drawTimeRange=FALSE))

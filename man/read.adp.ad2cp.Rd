@@ -56,8 +56,8 @@ type are as follows:
 \code{"echosounder"} (\emph{not coded yet}) for ID code 0x1c,
 \code{"DVLWaterTrack"} (\emph{not coded yet}) for ID code 0x1d,
 \code{"altimeter"} (\emph{not coded yet}) for ID code 0x1e,
-\code{"averageAltimeter"} (\emph{not coded yet}) for ID code 0x1f, and
-\code{"text"} for ID code 0xa0 (returned as a list of character vectors,
+and
+\code{"averageAltimeter"} (\emph{not coded yet}) for ID code 0x1f.
 with each of those vectors holding lines inferred by splitting the string
 at occurances of carriage-return/line-feed pairs).}
 

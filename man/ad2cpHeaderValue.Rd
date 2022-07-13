@@ -2,14 +2,15 @@
 % Please edit documentation in R/adp.nortek.ad2cp.R
 \name{ad2cpHeaderValue}
 \alias{ad2cpHeaderValue}
-\title{Decode an item from a Nortek AD2CP file header}
+\title{Decode an item from a Nortek AD2CP file header (an internal function)}
 \usage{
 ad2cpHeaderValue(x, key, item, numeric = TRUE, default)
 }
 \arguments{
 \item{x}{an \linkS4class{adp} object that holds AD2CP data.}
 
-\item{key}{Character value that identifies a particular line in \code{x[["text"]]}.}
+\item{key}{Character value that identifies a particular line in the file
+header.}
 
 \item{item}{Character value indicating the name of the item sought.}
 
@@ -26,7 +27,7 @@ if the desired item is not found there, or if \code{x} is not of the required
 class and variety.
 }
 \description{
-Decode an item from a Nortek AD2CP file header
+Decode an item from a Nortek AD2CP file header (an internal function)
 }
 \examples{
 \dontrun{
