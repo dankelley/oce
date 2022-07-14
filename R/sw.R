@@ -86,9 +86,11 @@ computableWaterProperties <- function(x)
                     "depth", "spice", "Rrho", "RrhoSF", "sigmaTheta", "SP",
                     "density", "N2", paste("sound", "speed")))
             if (haveLocation) {
-                res <- c(res, "SR", "Sstar", paste0("sigma", 0:4),
+                res <- c(res, "SR", "Sstar",
+                    paste0("sigma", 0:4),
                     "SA", paste("Absolute", "Salinity"),
-                    "CT",  paste("Conservative", "Temperature"))
+                    "CT",  paste("Conservative", "Temperature"),
+                    paste0("spiciness", 0:2))
             }
         }
         # It is possible to compute nitrate from NO2+NO3 and nitrite, if

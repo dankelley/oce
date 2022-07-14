@@ -156,9 +156,13 @@ setMethod(f="[[",
               oceDebug(debug, "[[,argo-method(\"", i, "\") {\n", sep="", style="bold", unindent=1)
               metadataDerived <- c("ID", "cycle", "*Flag", "*Unit")
               dataDerived <- c("profile", "CT", "N2", "SA", "sigmaTheta",
-                  "theta", "sigma0", "sigma1", "sigma2", "sigma3", "sigma4",
-                  "z", "depth", paste("Absolute", "Salinity"),
-                  paste("Conservative", "Temperature"))
+                  "theta",
+                  "z", "depth",
+                  paste("Absolute", "Salinity"),
+                  paste("Conservative", "Temperature"),
+                  paste("sigma", 0:4, sep=""),
+                  "spice",
+                  paste("spiciness", 0:2, sep=""))
               if (i == "?")
                   return(list(metadata=sort(names(x@metadata)),
                           metadataDerived=sort(metadataDerived),
@@ -179,9 +183,13 @@ setMethod(f="[[",
               namesData <- names(x@data)
               ## handle some computed items
               if (i %in% c("CT", paste("conservative", "temperature"), "N2",
-                      "SA", paste("Absolute", "Salinity"), "sigmaTheta",
-                      "theta", "sigma0", "sigma1", "sigma2", "sigma3",
-                      "sigma4")) {
+                      "SA", paste("Absolute", "Salinity"),
+                      "sigmaTheta",
+                      "theta",
+                      #paste("sigma", 0:4, sep=""),
+                      "spice")
+                      #paste("spiciness", 0:2, sep="")
+                      ) {
                   salinity <- x[["salinity", debug=debug-1]]
                   pressure <- x[["pressure", debug=debug-1]]
                   temperature <- x[["temperature", debug=debug-1]]
@@ -199,10 +207,10 @@ setMethod(f="[[",
                           ##if (i == 14) browser()
                           if (sum(!is.na(pressure[,i])) > 2) {
                               ctd <- as.ctd(salinity=salinity[,i],
-                                            temperature=temperature[,i],
-                                            pressure=pressure[,i],
-                                            longitude=x@data$longitude[i],
-                                            latitude=x@data$latitude[i])
+                                  temperature=temperature[,i],
+                                  pressure=pressure[,i],
+                                  longitude=x@data$longitude[i],
+                                  latitude=x@data$latitude[i])
                               res[,i] <- swN2(ctd)
                           } else {
                               res[,i] <- rep(NA, length(salinity[,i]))
@@ -210,24 +218,32 @@ setMethod(f="[[",
                       }
                   } else if (i %in% c("SA", "Absolute Salinity")) {
                       res <- gsw_SA_from_SP(salinity, pressure, longitude=longitude, latitude=latitude)
-                  } else if (i %in% c("sigma0", "sigma1", "sigma2", "sigma3", "sigma4")) {
+                  } else if (i %in% paste("sigma", 0:4, sep="")) {
                       SA <- gsw_SA_from_SP(salinity, pressure, longitude=longitude, latitude=latitude)
                       CT <- gsw_CT_from_t(SA, temperature, pressure)
                       res <- switch(i, "sigma0"=gsw_sigma0(SA, CT),
-                                    "sigma1"=gsw_sigma1(SA, CT),
-                                    "sigma2"=gsw_sigma2(SA, CT),
-                                    "sigma3"=gsw_sigma3(SA, CT),
-                                    "sigma4"=gsw_sigma4(SA, CT))
+                          "sigma1"=gsw_sigma1(SA, CT),
+                          "sigma2"=gsw_sigma2(SA, CT),
+                          "sigma3"=gsw_sigma3(SA, CT),
+                          "sigma4"=gsw_sigma4(SA, CT))
+                  } else if (i %in% "spice") {
+                      if (missing(j)) {
+                          res <- swSpice(x)
+                      } else {
+                          if (!j %in% c("gsw", "unesco"))
+                              stop("\"", j, "\" not allowed; use either \"gsw\" or \"unesco\"")
+                          res <- swSpice(x, eos=j)
+                      }
                   } else if (i == "sigmaTheta") {
                       res <- swSigmaTheta(salinity, temperature=temperature, pressure=pressure,
-                                          referencePressure=0, longitude=longitude, latitude=latitude,
-                                          eos=getOption("oceEOS", default="gsw"))
+                          referencePressure=0, longitude=longitude, latitude=latitude,
+                          eos=getOption("oceEOS", default="gsw"))
                   } else if (i == "theta") {
                       res <- swTheta(salinity, temperature=temperature, pressure=pressure,
-                                     referencePressure=0, longitude=longitude, latitude=latitude,
-                                     eos=getOption("oceEOS", default="gsw"))
+                          referencePressure=0, longitude=longitude, latitude=latitude,
+                          eos=getOption("oceEOS", default="gsw"))
                   } else {
-                      stop("coding error: unknown item '", i, "'")
+                      stop("argo[[ coding error: unknown item '", i, "'")
                   }
                   dim(res) <- dim
               } else if (i == "z") {
@@ -251,7 +267,7 @@ setMethod(f="[[",
                   if (is.matrix(x@data$pressure)) {
                       n <- dim(x@data$pressure)[1]
                       latitude <- matrix(rep(x@data$latitude, each=n),
-                                         nrow=n, byrow=TRUE)
+                          nrow=n, byrow=TRUE)
                       res <- swDepth(x@data$pressure, latitude)
                       ##. print("matrix ... lat and then pres... and the depth...")
                       ##. print(latitude[1:3, 1:3])
@@ -326,7 +342,7 @@ setMethod(f="[[",
                       res <- unadjusted
                   }
               } else {
-                  ##message("FIXME: [[,argo-method calling next method")
+                  #message("[[,argo-method calling next method")
                   res <- callNextMethod()         # [[ defined in R/AllClass.R
               }
               oceDebug(debug, "} # [[,argo-method\n", sep="", style="bold", unindent=1)
