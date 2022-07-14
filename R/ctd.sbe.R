@@ -228,8 +228,8 @@ cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
     if (1 != length(grep("^# name [0-9][0-9]* = .*:.*$", h, ignore.case=TRUE)))
         stop("header line does not contain a variable name")
     ## message("h: '", h, "'")
-    name <- gsub("^# name [0-9][0-9]* = (.*):.*$", "\\1", h, ignore.case=TRUE, useBytes=TRUE)
-    nameAfterColon <- gsub("^# name [0-9][0-9]* = .*:(.*)$", "\\1", h, ignore.case=TRUE, useBytes=TRUE)
+    name <- gsub("^# name [0-9][0-9]* = (.*):.*$", "\\1", h, ignore.case=TRUE)#, useBytes=TRUE)
+    nameAfterColon <- gsub("^# name [0-9][0-9]* = .*:(.*)$", "\\1", h, ignore.case=TRUE)#, useBytes=TRUE)
     nameOriginal <- name
 
     ## If 'name' is mentioned in columns, then use columns and ignore the lookup table.
@@ -863,12 +863,14 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
     filename <- ""
     if (is.character(file)) {
         filename <- fullFilename(file)
+        #<> message("1 FIXME: opening '", file, "' with encoding='", encoding, "'")
         file <- file(file, "r", encoding=encoding)
         on.exit(close(file))
     }
     if (!inherits(file, "connection"))
         stop("argument `file' must be a character string or connection")
     if (!isOpen(file)) {
+        #<> message("2 FIXME: opening '", file, "' with encoding='", encoding, "'")
         open(file, "r", encoding=encoding)
         on.exit(close(file))
     }
@@ -893,7 +895,7 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
     ## Silence warnings because binary files have 'NUL' characters that spew many warnings
     warn <- options("warn")$warn
     options(warn=-1)
-    lines <- readLines(file, encoding=encoding)
+    lines <- readLines(file)
     options(warn=warn)
 
     ## Get names and units of columns in the SBE data file
@@ -902,8 +904,13 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
     colNamesInferred <- NULL
     dataNamesOriginal <- list()
     namesUsed <- NULL
+    #<> message("encoding=",encoding,"; see DAN")
+    #<> DAN<<-list(lines=lines,nameLines=nameLines)
+    #<> message("try\na<-with(DAN, lines[nameLines[23]])\nEncoding(a)")
     for (iline in seq_along(nameLines)) {
         nu <- cnvName2oceName(lines[nameLines[iline]], columns, debug=debug-1)
+        #<> if (iline==23)
+        #<> message("iline=", iline, ", nu$name='", nu$name, "', nu$nameOriginal='", nu$nameOriginal, "'")
         if (nu$name %in% namesUsed) {
             trial <- 2
             while (paste(nu$name, trial, sep="") %in% namesUsed) {
