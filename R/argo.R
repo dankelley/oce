@@ -198,7 +198,7 @@ setMethod(f="[[",
                   longitude <- rep(x@data$longitude, each=dim[1])
                   latitude <- rep(x@data$latitude, each=dim[1])
                   if (i %in% c("CT", "Conservative Temperature")) {
-                      res <- gsw_CT_from_t(x[["SA"]], temperature, pressure)
+                      res <- gsw::gsw_CT_from_t(x[["SA"]], temperature, pressure)
                   } else if (i == "N2") {
                       ##nprofile <- dim[2]
                       res <- array(NA_real_,  dim=dim)
@@ -217,15 +217,16 @@ setMethod(f="[[",
                           }
                       }
                   } else if (i %in% c("SA", "Absolute Salinity")) {
-                      res <- gsw_SA_from_SP(salinity, pressure, longitude=longitude, latitude=latitude)
+                      res <- gsw::gsw_SA_from_SP(salinity, pressure, longitude=longitude, latitude=latitude)
                   } else if (i %in% paste("sigma", 0:4, sep="")) {
-                      SA <- gsw_SA_from_SP(salinity, pressure, longitude=longitude, latitude=latitude)
-                      CT <- gsw_CT_from_t(SA, temperature, pressure)
-                      res <- switch(i, "sigma0"=gsw_sigma0(SA, CT),
-                          "sigma1"=gsw_sigma1(SA, CT),
-                          "sigma2"=gsw_sigma2(SA, CT),
-                          "sigma3"=gsw_sigma3(SA, CT),
-                          "sigma4"=gsw_sigma4(SA, CT))
+                      SA <- gsw::gsw_SA_from_SP(salinity, pressure, longitude=longitude, latitude=latitude)
+                      CT <- gsw::gsw_CT_from_t(SA, temperature, pressure)
+                      res <- switch(i,
+                          "sigma0"=gsw::gsw_sigma0(SA, CT),
+                          "sigma1"=gsw::gsw_sigma1(SA, CT),
+                          "sigma2"=gsw::gsw_sigma2(SA, CT),
+                          "sigma3"=gsw::gsw_sigma3(SA, CT),
+                          "sigma4"=gsw::gsw_sigma4(SA, CT))
                   } else if (i %in% "spice") {
                       if (missing(j)) {
                           res <- swSpice(x)

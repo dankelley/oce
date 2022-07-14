@@ -557,15 +557,15 @@ setMethod(f="[[",
                   pressure <- x[["pressure"]]
                   longitude <- x[["longitude"]]
                   latitude <- x[["latitude"]]
-                  SA <- gsw_SA_from_SP(SP=salinity,
+                  SA <- gsw::gsw_SA_from_SP(SP=salinity,
                       p=pressure,
                       longitude=longitude,
                       latitude=latitude)
-                  CT <- gsw_CT_from_t(SA, temperature, pressure)
+                  CT <- gsw::gsw_CT_from_t(SA, temperature, pressure)
                   return(switch(i,
-                          "spiciness0"=gsw_spiciness0(SA, CT),
-                          "spiciness1"=gsw_spiciness1(SA, CT),
-                          "spiciness2"=gsw_spiciness2(SA, CT)))
+                          "spiciness0"=gsw::gsw_spiciness0(SA, CT),
+                          "spiciness1"=gsw::gsw_spiciness1(SA, CT),
+                          "spiciness2"=gsw::gsw_spiciness2(SA, CT)))
               } else if (i == "silicate") {
                   return(x@data$silicate)
               } else if (i == paste("sound", "speed")) {
