@@ -51,11 +51,15 @@ test_that("base-level [[\"?\"]] works on some hydrographic things (UNESCO)", {
 
 
 test_that("base-level [[\"?\"]] gives expected names (GSW)", {
-    expect_equal(sort(ng[["?"]]$dataDerived), sort(c(paste("Absolute",
-                    "Salinity"), paste("Conservative", "Temperature"), "CT",
+    expect_equal(sort(ng[["?"]]$dataDerived),
+        sort(c(paste("Absolute", "Salinity"),
+                paste("Conservative", "Temperature"),
+                "CT",
                 "density", "depth", "N2", paste("potential", "temperature"),
-                "Rrho", "RrhoSF", "SA", "sigma0", "sigma1", "sigma2", "sigma3",
-                "sigma4", "sigmaTheta", paste("sound", "speed"), "SP", "spice",
+                "Rrho", "RrhoSF", "SA",
+                paste0("sigma", 0:4),
+                paste0("spiciness", 0:2),
+                "sigmaTheta", paste("sound", "speed"), "SP", "spice",
                 "SR", "Sstar", "theta", "z")))
 })
 

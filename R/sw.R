@@ -86,9 +86,11 @@ computableWaterProperties <- function(x)
                     "depth", "spice", "Rrho", "RrhoSF", "sigmaTheta", "SP",
                     "density", "N2", paste("sound", "speed")))
             if (haveLocation) {
-                res <- c(res, "SR", "Sstar", paste0("sigma", 0:4),
+                res <- c(res, "SR", "Sstar",
+                    paste0("sigma", 0:4),
                     "SA", paste("Absolute", "Salinity"),
-                    "CT",  paste("Conservative", "Temperature"))
+                    "CT",  paste("Conservative", "Temperature"),
+                    paste0("spiciness", 0:2))
             }
         }
         # It is possible to compute nitrate from NO2+NO3 and nitrite, if
@@ -2008,9 +2010,9 @@ swSigma0 <- function(salinity, temperature=NULL, pressure=NULL,
             stop("must supply latitude")
         l <- lookWithin(list(salinity=salinity, temperature=temperature, pressure=pressure,
                              longitude=longitude, latitude=latitude))
-        SA <- gsw_SA_from_SP(l$salinity, l$pressure, l$longitude, l$latitude)
-        CT <- gsw_CT_from_t(SA, l$temperature, l$pressure)
-        gsw_sigma0(SA=SA, CT=CT)
+        SA <- gsw::gsw_SA_from_SP(l$salinity, l$pressure, l$longitude, l$latitude)
+        CT <- gsw::gsw_CT_from_t(SA, l$temperature, l$pressure)
+        gsw::gsw_sigma0(SA=SA, CT=CT)
     } else if (eos == "unesco") {
         swSigmaTheta(salinity=salinity, temperature=temperature, pressure=pressure, referencePressure=0,
             longitude=longitude, latitude=latitude, eos=eos)
@@ -2049,9 +2051,9 @@ swSigma1 <- function(salinity, temperature=NULL, pressure=NULL,
             stop("must supply latitude")
         l <- lookWithin(list(salinity=salinity, temperature=temperature, pressure=pressure,
                              longitude=longitude, latitude=latitude))
-        SA <- gsw_SA_from_SP(l$salinity, l$pressure, l$longitude, l$latitude)
-        CT <- gsw_CT_from_t(SA, l$temperature, l$pressure)
-        gsw_sigma1(SA=SA, CT=CT)
+        SA <- gsw::gsw_SA_from_SP(l$salinity, l$pressure, l$longitude, l$latitude)
+        CT <- gsw::gsw_CT_from_t(SA, l$temperature, l$pressure)
+        gsw::gsw_sigma1(SA=SA, CT=CT)
     } else if (eos == "unesco") {
         swSigmaTheta(salinity=salinity, temperature=temperature, pressure=pressure, referencePressure=1000,
             longitude=longitude, latitude=latitude, eos=eos)
@@ -2090,9 +2092,9 @@ swSigma2 <- function(salinity, temperature=NULL, pressure=NULL,
             stop("must supply latitude")
         l <- lookWithin(list(salinity=salinity, temperature=temperature, pressure=pressure,
                              longitude=longitude, latitude=latitude))
-        SA <- gsw_SA_from_SP(l$salinity, l$pressure, l$longitude, l$latitude)
-        CT <- gsw_CT_from_t(SA, l$temperature, l$pressure)
-        gsw_sigma2(SA=SA, CT=CT)
+        SA <- gsw::gsw_SA_from_SP(l$salinity, l$pressure, l$longitude, l$latitude)
+        CT <- gsw::gsw_CT_from_t(SA, l$temperature, l$pressure)
+        gsw::gsw_sigma2(SA=SA, CT=CT)
     } else if (eos == "unesco") {
         swSigmaTheta(salinity=salinity, temperature=temperature, pressure=pressure, referencePressure=2000,
             longitude=longitude, latitude=latitude, eos=eos)
@@ -2131,9 +2133,9 @@ swSigma3 <- function(salinity, temperature=NULL, pressure=NULL,
             stop("must supply latitude")
         l <- lookWithin(list(salinity=salinity, temperature=temperature, pressure=pressure,
                              longitude=longitude, latitude=latitude))
-        SA <- gsw_SA_from_SP(l$salinity, l$pressure, l$longitude, l$latitude)
-        CT <- gsw_CT_from_t(SA, l$temperature, l$pressure)
-        gsw_sigma3(SA=SA, CT=CT)
+        SA <- gsw::gsw_SA_from_SP(l$salinity, l$pressure, l$longitude, l$latitude)
+        CT <- gsw::gsw_CT_from_t(SA, l$temperature, l$pressure)
+        gsw::gsw_sigma3(SA=SA, CT=CT)
     } else if (eos == "unesco") {
         swSigmaTheta(salinity=salinity, temperature=temperature, pressure=pressure, referencePressure=3000,
             longitude=longitude, latitude=latitude, eos=eos)
@@ -2172,9 +2174,9 @@ swSigma4 <- function(salinity, temperature=NULL, pressure=NULL,
             stop("must supply latitude")
         l <- lookWithin(list(salinity=salinity, temperature=temperature, pressure=pressure,
                              longitude=longitude, latitude=latitude))
-        SA <- gsw_SA_from_SP(l$salinity, l$pressure, l$longitude, l$latitude)
-        CT <- gsw_CT_from_t(SA, l$temperature, l$pressure)
-        gsw_sigma4(SA=SA, CT=CT)
+        SA <- gsw::gsw_SA_from_SP(l$salinity, l$pressure, l$longitude, l$latitude)
+        CT <- gsw::gsw_CT_from_t(SA, l$temperature, l$pressure)
+        gsw::gsw_sigma4(SA=SA, CT=CT)
     } else if (eos == "unesco") {
         swSigmaTheta(salinity=salinity, temperature=temperature, pressure=pressure, referencePressure=4000,
             longitude=longitude, latitude=latitude, eos=eos)
