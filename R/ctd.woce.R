@@ -331,7 +331,7 @@ read.ctd.woce <- function(file,
         ##Pressure,Temperature,Salinity,Oxygen,Fluorescence,Transmission
         ##   DB   ,ITS-90 DEGC,   PSU  , ML/L ,     UG/L   ,      %
         ##         1,   -1.1999,   28.4279,      8.77,     0.026,    87.679
-        lines <- readLines(file, encoding=encoding)
+        lines <- readLines(file)
         oceDebug(debug, "file has", length(lines), "lines\n")
         headerEnd <- grep("[ ]*DB[ ]*,", lines)
         if (is.na(headerEnd))
@@ -561,7 +561,7 @@ read.ctd.woce <- function(file,
         ## a trailer line at the end, and read.table() cannot handle that.
         #> owarn <- options('warn')$warn
         #> options(warn=-1)
-        lines <- readLines(file, encoding=encoding)
+        lines <- readLines(file)
         #> options(warn=owarn)
         nlines <- length(lines)
         if (length(grep("^END", lines[nlines])))
@@ -709,7 +709,7 @@ read.ctd.woce.other <- function(file,
     ##     8.0  6.6928 34.7041   328.8      -9    2222
     res <- new("ctd")
     examineHeaderLines <- 10
-    header <- readLines(file, n=examineHeaderLines, encoding=encoding)
+    header <- readLines(file, n=examineHeaderLines)
     station <- ""
     for (i in 1: examineHeaderLines) {
         if (1 == length(grep("STNNBR.*", header[i]))) {

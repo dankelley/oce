@@ -4015,15 +4015,15 @@ read.ctd <- function(file,
         }
         line <- scan(file, what='char', sep="\n", n=1, quiet=TRUE) # slow, but just one line
         pushBack(line, file)
-        #.line <- readLines(file, n=1, encoding="latin1")
+        #.line <- readLines(file, n=1)
         ## FIXME: detect ODV type in first or second line; see oce.magic().
         if ("CTD" == substr(line, 1, 3)) {
             type <- "WOCE"
         } else if ("* Sea-Bird" == substr(line, 1, 10)) {
             type <- "SBE19"
-        } else if (grepl("^[ ]*ODF_HEADER,[ ]*$", line, useBytes=TRUE)) {
+        } else if (grepl("^[ ]*ODF_HEADER,[ ]*$", line)) {
             type <- "ODF"
-        } else if (grepl("^SSDA Sea & Sun Technology", line, useBytes=TRUE)) {
+        } else if (grepl("^SSDA Sea & Sun Technology", line)) {
             type <- "SSDA"
         } else {
             stop("Cannot discover type in line '", line, "' bird\n")

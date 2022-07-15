@@ -523,7 +523,7 @@ metNames2oceNames <- function(names, scheme)
         }
     } else {
         ## temperature
-        col <- grep("temp", names, ignore.case=TRUE, useBytes=TRUE)
+        col <- grep("temp", names, ignore.case=TRUE)
         if (1 == length(col))
             res[col] <- "temperature"
     }
@@ -643,7 +643,7 @@ read.met <- function(file,
     oceDebug(debug, "read.met(file=\"", file, "\", ...) {\n", sep="", unindent=1, style="bold")
     if (!is.character(file))
         stop("'file' must be a string")
-    someLines <- readLines(file, 30L, warn=FALSE, encoding=encoding)
+    someLines <- readLines(file, 30L, warn=FALSE)
     if (length(someLines) == 0L)
         stop("no data in file")
     if (!is.null(type) && !(type %in% c("csv", "csv1", "csv2", "xml2")))
@@ -657,8 +657,8 @@ read.met <- function(file,
             ## must be a csv
             if (1 == length(grep('"WMO Identifier",', someLines))) {
                 type <- "csv1"
-            } else if (grepl('Longitude.*Latitude.*Station Name.*Climate ID', someLines[1], useBytes=TRUE)) {
-                type <- if (grepl("Time \\(LST\\)", someLines[1], useBytes=TRUE)) "csv3" else "csv2"
+            } else if (grepl('Longitude.*Latitude.*Station Name.*Climate ID', someLines[1])) {
+                type <- if (grepl("Time \\(LST\\)", someLines[1])) "csv3" else "csv2"
             } else {
                 stop("cannot determine type from file contents; the first line is '", someLines[1], "'")
             }
@@ -697,7 +697,7 @@ read.met.csv1 <- function(file,
         filename <- "(a connection)"
     }
     res <- new("met", time=1)
-    text <- readLines(file, warn=FALSE, encoding=encoding)
+    text <- readLines(file, warn=FALSE)
     oceDebug(debug, "file has ", length(text), " lines\n")
     ##print(header[1:19])
     textItem <- function(text, name, numeric=TRUE) {
@@ -949,7 +949,7 @@ read.met.csv2 <- function(file,
     res <- new("met", time=1)
     owarn <- options()$warn
     options(warn=-1)
-    firstLine <- readLines(file, n=1L, warn=FALSE, encoding=encoding)
+    firstLine <- readLines(file, n=1L, warn=FALSE)
     oceDebug(debug, "First line: \"", firstLine, "\"\n", sep="")
     dataNames <- strsplit(gsub('"', '', firstLine[1]), ",")[[1]]
     data <- read.csv(file, header=FALSE, encoding=encoding)

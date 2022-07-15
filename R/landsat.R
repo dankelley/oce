@@ -890,7 +890,7 @@ read.landsatmeta <- function(file, encoding="latin1", debug=getOption("oceDebug"
         ##oceDebug(debug, "read item", name, "\n")
         res
     }
-    info <- readLines(file, warn=FALSE, encoding=encoding)
+    info <- readLines(file, warn=FALSE)
     date <- getItem(info, "DATE_ACQUIRED", numeric=FALSE)
     centerTime <- getItem(info, "SCENE_CENTER_TIME", numeric=FALSE)
     time <- as.POSIXct(paste(date, centerTime), tz="UTC")
