@@ -59,7 +59,7 @@ type are as follows:
 and
 \code{"averageAltimeter"} (\emph{not coded yet}) for ID code 0x1f.
 with each of those vectors holding lines inferred by splitting the string
-at occurances of carriage-return/line-feed pairs).}
+at occurrences of carriage-return/line-feed pairs).}
 
 \item{tz}{a character value indicating time zone. This is used in
 interpreting times stored in the file.}
