@@ -28,7 +28,7 @@ setClass("coastline", contains="oce")
 #' This is a coarse resolution coastline at scale 1:110M, with 10,696 points,
 #' suitable for world-scale plots plotted at a small size, e.g. inset diagrams.
 #' Finer resolution coastline files are provided in the
-#' `ocedata` package.
+#' \CRANpkg{ocedata} package.
 #'
 #' @name coastlineWorld
 #'
@@ -1353,18 +1353,18 @@ read.coastline.openstreetmap <- function(file,
     ## FIXME: ignoring lonlim and latlim
     if (is.character(file)) {
         filename <- fullFilename(file)
-        file <- file(file, "rb")
+        file <- file(file, "rb") # FIXME why 'b'?
         on.exit(close(file))
     }
     if (!inherits(file, "connection"))
         stop("argument `file' must be a character string or connection")
     if (!isOpen(file)) {
         filename <- "(connection)"
-        open(file, "rb")
+        open(file, "rb") # FIXME why 'b'?
         on.exit(close(file))
     }
     res <- new("coastline", fillable=FALSE, filename=filename)
-    d <- readLines(file, encoding=encoding)
+    d <- readLines(file)
     ## get all <nd> (even if only using some)
     nodeLines <- d[grep("^ *<node", d)]
     nodeIds <- as.numeric(sub('".*$', '', sub('^.* id="', '', nodeLines)))

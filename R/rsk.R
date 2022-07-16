@@ -259,34 +259,34 @@ unitFromStringRsk <- function(s)
     #    µ=U+03BC, new=\u03bc, old=\xc2\xb5
     #    °=U+00B0, new=\u00b0, old=\xB0
     #    ²=U+00B2, new=\u00b2, old=\xc2\xb2
-    if (1 == length(grep("mg/[lL]", s, useBytes=TRUE)))
+    if (1 == length(grep("mg/[lL]", s)))
         list(unit=expression(mg/l), scale="")
-    else if (1 == length(grep("m[lL]/[lL]", s, useBytes=TRUE)))
+    else if (1 == length(grep("m[lL]/[lL]", s)))
         list(unit=expression(ml/l), scale="")
-    # 2022-06-28 else if (1 == length(grep("((u)|(\xc2\xb5))[mM]ol/[lL]", s, useBytes=TRUE)))
-    else if (1 == length(grep("((u)|(\u03bc))[mM]ol/[lL]", s, useBytes=TRUE)))
+    # 2022-06-28 else if (1 == length(grep("((u)|(\xc2\xb5))[mM]ol/[lL]", s)))
+    else if (1 == length(grep("((u)|(\u03bc))[mM]ol/[lL]", s)))
         list(unit=expression(mu*mol/l), scale="")
-    # 2022-06-28 else if (1 == length(grep("((u)|(\xc2\xb5))g/[lL]", s, useBytes=TRUE)))
-    else if (1 == length(grep("((u)|(\u03bc))g/[lL]", s, useBytes=TRUE)))
+    # 2022-06-28 else if (1 == length(grep("((u)|(\xc2\xb5))g/[lL]", s)))
+    else if (1 == length(grep("((u)|(\u03bc))g/[lL]", s)))
         list(unit=expression(mu*g/l), scale="")
-    else if (1 == length(grep("mS/cm", s, useBytes=TRUE)))
+    else if (1 == length(grep("mS/cm", s)))
         list(unit=expression(mS/cm), scale="")
-    # 2022-06-28 else if (1 == length(grep("((u)|(\xc2\xb5))S/cm", s, useBytes=TRUE)))
-    else if (1 == length(grep("((u)|(\u03bc))S/cm", s, useBytes=TRUE)))
+    # 2022-06-28 else if (1 == length(grep("((u)|(\xc2\xb5))S/cm", s)))
+    else if (1 == length(grep("((u)|(\u03bc))S/cm", s)))
         list(unit=expression(mu*S/cm), scale="")
-    else if (1 == length(grep("d[bB]ar", s, useBytes=TRUE)))
+    else if (1 == length(grep("d[bB]ar", s)))
         list(unit=expression(dbar), scale="")
-    else if (1 == length(grep("%", s, useBytes=TRUE)))
+    else if (1 == length(grep("%", s)))
         list(unit=expression(percent), scale="")
-    else if (1 == length(grep("pH_units", s, useBytes=TRUE)))
+    else if (1 == length(grep("pH_units", s)))
         list(unit=expression(), scale="")
-    else if (1 == length(grep("NTU", s, useBytes=TRUE)))
+    else if (1 == length(grep("NTU", s)))
         list(unit=expression(NTU), scale="")
-    # 2022-06-28 else if (1 == length(grep("\xB0", s, useBytes=TRUE)))
-    else if (1 == length(grep("\u00b0", s, useBytes=TRUE)))
+    # 2022-06-28 else if (1 == length(grep("\xB0", s)))
+    else if (1 == length(grep("\u00b0", s)))
         list(unit=expression(degree*C), scale="ITS-90") # guessing on scale
-    # 2022-06-28 else if (1 == length(grep("\\xc2\\xb5Mol/m\\xc2\\xb2/s", s, useBytes=TRUE))) # µMol/m²/s
-    else if (1 == length(grep("\u03bcMol/m\u00b2/s", s, useBytes=TRUE))) # µMol/m²/s
+    # 2022-06-28 else if (1 == length(grep("\\xc2\\xb5Mol/m\\xc2\\xb2/s", s))) # µMol/m²/s
+    else if (1 == length(grep("\u03bcMol/m\u00b2/s", s))) # µMol/m²/s
         list(unit=expression(mu*mol/m^2/s), scale="")
     else if (is.na(s))
         list(unit=expression(), scale="?")
@@ -683,7 +683,7 @@ read.rsk <- function(file,
              ", tz=\"", tz, "\", ...) {\n", sep="", unindent=1)
     filename <- file
     if (is.character(file)) {
-        if (length(grep(".rsk$", file, ignore.case=TRUE, useBytes=TRUE))) {
+        if (length(grep(".rsk$", file, ignore.case=TRUE))) {
             type <- "rsk"
             file <- file(file, "r")
         } else if (length(grep(".txt$", file, ignore.case=TRUE))) {
@@ -1038,12 +1038,12 @@ read.rsk <- function(file,
         oceDebug('RBR txt format\n')
         oceDebug(debug, "Format is Rtext Ruskin txt export", "\n")
         # FIXME: reading a  lot if there are lots of "Events". Is there a better way to do this?
-        l <- readLines(file, n=50000, encoding=encoding)
+        l <- readLines(file, n=50000)
         pushBack(l, file)
-        model <- unlist(strsplit(l[grep('Model', l, useBytes=TRUE)], '='))[2]
-        serialNumber <- as.numeric(unlist(strsplit(l[grep('Serial', l, useBytes=TRUE)], '='))[2])
-        sampleInterval <- 1/as.numeric(gsub('Hz', '', unlist(strsplit(l[grep('SamplingPeriod', l, useBytes=TRUE)], '='))[2]))
-        numberOfChannels <- as.numeric(unlist(strsplit(l[grep('NumberOfChannels', l, useBytes=TRUE)], '='))[2])
+        model <- unlist(strsplit(l[grep('Model', l)], '='))[2]
+        serialNumber <- as.numeric(unlist(strsplit(l[grep('Serial', l)], '='))[2])
+        sampleInterval <- 1/as.numeric(gsub('Hz', '', unlist(strsplit(l[grep('SamplingPeriod', l)], '='))[2]))
+        numberOfChannels <- as.numeric(unlist(strsplit(l[grep('NumberOfChannels', l)], '='))[2])
         oceDebug(debug, "Model: ", model, "\n")
         oceDebug(debug, "serialNumber: ", serialNumber, "\n")
         oceDebug(debug, "sampleInterval: ", sampleInterval, "\n")
@@ -1051,10 +1051,10 @@ read.rsk <- function(file,
         channelNames <- NULL
         for (iChannel in 1:numberOfChannels) {
             channelNames <- c(channelNames,
-                              tolower(unlist(strsplit(l[grep(paste0('Channel\\[', iChannel, '\\]'), l, useBytes=TRUE)], '=', useBytes=TRUE))[2]))
+                              tolower(unlist(strsplit(l[grep(paste0('Channel\\[', iChannel, '\\]'), l)], '='))[2]))
         }
         oceDebug(debug, "Channel names are:", channelNames, "\n")
-        skip <- grep('Date & Time', l, useBytes=TRUE)      # Where should I start reading the data?
+        skip <- grep('Date & Time', l)      # Where should I start reading the data?
         oceDebug(debug, "Data starts on line", skip, "\n")
         d <- read.table(file, skip=skip, stringsAsFactors=FALSE, encoding=encoding)
         oceDebug(debug, "First time=", d$V1[1], d$V2[1], "\n")

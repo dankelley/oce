@@ -222,7 +222,7 @@ read.bremen <- function(file, encoding="latin1")
         on.exit(close(file))
     }
     res <- new("bremen")
-    lines <- readLines(file, encoding=encoding)
+    lines <- readLines(file)
     ## Discover header as lines starting with a letter
     headerLength <- max(grep("^[a-zA-Z]", lines))
     h <- lines[1:headerLength]

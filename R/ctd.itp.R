@@ -48,7 +48,7 @@ read.ctd.itp <- function(file, columns=NULL,
         open(file, "r", encoding=encoding)
         on.exit(close(file))
     }
-    lines <- readLines(file, encoding=encoding)
+    lines <- readLines(file)
     nlines <- length(lines)
     oceDebug(debug, "read ", nlines, " lines\n")
     if ("%endofdat" == substr(lines[nlines], 1, 9)) {

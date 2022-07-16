@@ -1,6 +1,7 @@
 # oce 1.7.9
 
-* In development, with a focus on improving `read.adp.ad2cp()`.
+* Improve the handling of file encodings.
+* Make the argo `[[` method handle spiciness.
 
 # oce 1.7.8 on CRAN
 

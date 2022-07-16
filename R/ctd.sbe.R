@@ -228,8 +228,10 @@ cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
     if (1 != length(grep("^# name [0-9][0-9]* = .*:.*$", h, ignore.case=TRUE)))
         stop("header line does not contain a variable name")
     ## message("h: '", h, "'")
-    name <- gsub("^# name [0-9][0-9]* = (.*):.*$", "\\1", h, ignore.case=TRUE, useBytes=TRUE)
-    nameAfterColon <- gsub("^# name [0-9][0-9]* = .*:(.*)$", "\\1", h, ignore.case=TRUE, useBytes=TRUE)
+
+    # 2022-07-15: drop useBytes=TRUE, which is a problem for upcoming R.
+    name <- gsub("^# name [0-9][0-9]* = (.*):.*$", "\\1", h, ignore.case=TRUE)
+    nameAfterColon <- gsub("^# name [0-9][0-9]* = .*:(.*)$", "\\1", h, ignore.case=TRUE)
     nameOriginal <- name
 
     ## If 'name' is mentioned in columns, then use columns and ignore the lookup table.
@@ -246,316 +248,313 @@ cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
 
     ## Since 'name' is not mentioned in 'columns', try looking it up. Some of these
     ## tests are a bit subtle, and could be wrong.
-    if (1 == length(grep("^alt[M]?$", name, useBytes=TRUE))) {
+    if (1 == length(grep("^alt[M]?$", name))) {
         name <- "altimeter"
         unit <- list(unit=expression(m), scale="")
-    } else if (1 == length(grep("^acc[M]?$", name, useBytes=TRUE))) {
+    } else if (1 == length(grep("^acc[M]?$", name))) {
         name <- "acceleration"
         unit <- list(unit=expression(m/s^2), scale="")
-    } else if (1 == length(grep("^bat[0-9]?$", name, useBytes=TRUE))) {
+    } else if (1 == length(grep("^bat[0-9]?$", name))) {
         name <- "beamAttenuation"
         unit <- list(unit=expression(1/m), scale="Chelsea/Seatech")
-    } else if (1 == length(grep("^C2-C1S/m$", name, useBytes=TRUE))) {
+    } else if (1 == length(grep("^C2-C1S/m$", name))) {
         name <- "conductivityDifference"
         unit <- list(unit=expression(S/m), scale="")
-    } else if (1 == length(grep("^C2-C1mS/cm$", name, useBytes=TRUE))) {
+    } else if (1 == length(grep("^C2-C1mS/cm$", name))) {
         name <- "conductivityDifference"
         unit <- list(unit=expression(mS/cm), scale="")
-    } else if (1 == length(grep("^C2-C1uS/cm$", name, useBytes=TRUE))) {
+    } else if (1 == length(grep("^C2-C1uS/cm$", name))) {
         name <- "conductivityDifference"
         unit <- list(unit=expression(mu*S/cm), scale="")
-    } else if (1 == length(grep("^c(ond)?((_)|([0-2]))mS/cm$", name, useBytes=TRUE))) {
+    } else if (1 == length(grep("^c(ond)?((_)|([0-2]))mS/cm$", name))) {
         name <- "conductivity"
         unit <- list(unit=expression(mS/cm), scale="")
-    } else if (1 == length(grep("^c(ond)?((_)|([0-2]))S/m$", name, useBytes=TRUE))) {
+    } else if (1 == length(grep("^c(ond)?((_)|([0-2]))S/m$", name))) {
         name <- "conductivity"
         unit <- list(unit=expression(S/m), scale="")
-    } else if (1 == length(grep("^c(ond)?((_)|([0-2]))uS/cm$", name, useBytes=TRUE))) {
+    } else if (1 == length(grep("^c(ond)?((_)|([0-2]))uS/cm$", name))) {
         name <- "conductivity"
         unit <- list(unit=expression(mu*S/cm), scale="")
-    } else if (1 == length(grep("^CStarTr[0-9]$", name, useBytes=TRUE))) {
+    } else if (1 == length(grep("^CStarTr[0-9]$", name))) {
         name <- "beamTransmission"
         unit <- list(unit=expression(percent), scale="WET Labs C-Star")
-    } else if (1 == length(grep("^CStarAt[0-9]$", name, useBytes=TRUE))) {
+    } else if (1 == length(grep("^CStarAt[0-9]$", name))) {
         name <- "beamAttenuation"
         unit <- list(unit=expression(1/m), scale="")
-    } else if (1 == length(grep("^density[0-9]{2}$", name, useBytes=TRUE))) {
+    } else if (1 == length(grep("^density[0-9]{2}$", name))) {
         name <- "density"
         unit <- list(unit=expression(kg/m^3), scale="")
-    } else if (1 == length(grep("^dep[FS][M]?$", name, useBytes=TRUE))) {
+    } else if (1 == length(grep("^dep[FS][M]?$", name))) {
         name <- "depth"
         unit <- list(unit=expression(m), scale="")
-    } else if (1 == length(grep("^dz/dt[M]?$", name, useBytes=TRUE))) {
+    } else if (1 == length(grep("^dz/dt[M]?$", name))) {
         name <- "descentRate"
         unit <- list(unit=expression(m/s), scale="")
-    } else if (1 == length(grep("^f[0-9][0-9]?$", name, useBytes=TRUE))) {
+    } else if (1 == length(grep("^f[0-9][0-9]?$", name))) {
         name <- "frequency"
         unit <- list(unit=expression(Hz), scale="")
-    } else if (1 == length(grep("^flag$", name, useBytes=TRUE))) {
+    } else if (1 == length(grep("^flag$", name))) {
         name <- "flag"
         unit <- list(unit=expression(), scale="")
-    } else if (1 == length(grep("^flC[1]?$", name, useBytes=TRUE))) {
+    } else if (1 == length(grep("^flC[1]?$", name))) {
         name <- "fluorescence"
         unit <- list(unit=expression(mu*g/l), scale="Chelsea")
-    } else if (1 == length(grep("^flCM[1]?$", name, useBytes=TRUE))) {
+    } else if (1 == length(grep("^flCM[1]?$", name))) {
         name <- "fluorescence"
         unit <- list(unit=expression(mu*g/l), scale="Chelsea Mini Chl Con")
-    } else if (1 == length(grep("^flCUVA[12]?$", name, useBytes=TRUE))) {
+    } else if (1 == length(grep("^flCUVA[12]?$", name))) {
         name <- "fluorescence"
         unit <- list(unit=expression(mu*g/l), scale="Chelsea UV Aquatracka")
-    } else if (1 == length(grep("^flECO-AFL[0-9]?$", name, useBytes=TRUE))) {
+    } else if (1 == length(grep("^flECO-AFL[0-9]?$", name))) {
         name <- "fluorescence"
         unit <- list(unit=expression(mg/m^3), scale="WET Labs")
-    } else if (1 == length(grep("^flflTC[0-1]{1}$", name, useBytes=TRUE))) {
+    } else if (1 == length(grep("^flflTC[0-1]{1}$", name))) {
         name <- "fluorescein"
         unit <- list(unit=expression(ppb), scale="Turner Cyclops")
-    } else if (1 == length(grep("^flflTCdiff$", name, useBytes=TRUE))) {
+    } else if (1 == length(grep("^flflTCdiff$", name))) {
         name <- "fluoresceinDifference"
         unit <- list(unit=expression(ppb), scale="Turner Cyclops")
-    } else if (1 == length(grep("^flScufa[0-9]?$", name, useBytes=TRUE))) {
+    } else if (1 == length(grep("^flScufa[0-9]?$", name))) {
         name <- "fluorescence"
         unit <- list(unit=expression(), scale="Turner SCUFA")
-    } else if (1 == length(grep("^flSP[0-9]?$", name, useBytes=TRUE))) {
+    } else if (1 == length(grep("^flSP[0-9]?$", name))) {
         name <- "fluorescence"
         unit <- list(unit=expression(), scale="Seapoint")
-    } else if (1 == length(grep("^flSPR$", name, useBytes=TRUE))) {
+    } else if (1 == length(grep("^flSPR$", name))) {
         name <- "fluorescence"
         unit <- list(unit=expression(), scale="Seapoint, Rhodamine")
-    } else if (1 == length(grep("^flSPuv[0-9]?$", name, useBytes=TRUE))) {
+    } else if (1 == length(grep("^flSPuv[0-9]?$", name))) {
         name <- "fluorescence"
         unit <- list(unit=expression(), scale="Seapoint, UV")
-    } else if (1 == length(grep("^flS$", name, useBytes=TRUE))) {
+    } else if (1 == length(grep("^flS$", name))) {
         name <- "fluorescence"
         unit <- list(unit=expression(), scale="Seatech")
-    } else if (1 == length(grep("^flT$", name, useBytes=TRUE))) {
+    } else if (1 == length(grep("^flT$", name))) {
         name <- "fluorescence"
         unit <- list(unit=expression(), scale="Turner")
-    } else if (1 == length(grep("^gpa$", name, useBytes=TRUE))) {
+    } else if (1 == length(grep("^gpa$", name))) {
         name <- "geopotentialAnomaly"
         unit <- list(unit=expression(J/kg), scale="")
-    } else if (1 == length(grep("^latitude$", name, useBytes=TRUE))) {
+    } else if (1 == length(grep("^latitude$", name))) {
         name <- "latitude"
         unit <- list(unit=expression(degree*N), scale="")
-    } else if (1 == length(grep("^longitude$", name, useBytes=TRUE))) {
+    } else if (1 == length(grep("^longitude$", name))) {
         name <- "longitude"
         unit <- list(unit=expression(degree*E), scale="")
-    } else if (1 == length(grep("^n2satML/L$", name, useBytes=TRUE))) {
+    } else if (1 == length(grep("^n2satML/L$", name))) {
         name <- "nitrogenSaturation"
         unit <- list(unit=expression(ml/l), scale="")
-    } else if (1 == length(grep("^n2satMg/L$", name, useBytes=TRUE))) {
+    } else if (1 == length(grep("^n2satMg/L$", name))) {
         name <- "nitrogenSaturation"
         unit <- list(unit=expression(mg/l), scale="")
-    } else if (1 == length(grep("^n2satumol/L$", name, useBytes=TRUE))) {
+    } else if (1 == length(grep("^n2satumol/L$", name))) {
         name <- "nitrogenSaturation"
         unit <- list(unit=expression(mu*mol/l), scale="")
-    } else if (1 == length(grep("^n2satumol/kg$", name, useBytes=TRUE))) {
+    } else if (1 == length(grep("^n2satumol/kg$", name))) {
         name <- "nitrogenSaturation"
         unit <- list(unit=expression(mu*mol/kg), scale="")
-    } else if (1 == length(grep("^nbin$", name, useBytes=TRUE))) {
+    } else if (1 == length(grep("^nbin$", name))) {
         name <- "nbin"
         unit <- list(unit=expression(), scale="")
-    } else if (1 == length(grep("^nbf$", name, useBytes=TRUE))) {
+    } else if (1 == length(grep("^nbf$", name))) {
         name <- "bottlesFired"
         unit <- list(unit=expression(), scale="")
-    } else if (1 == length(grep("^obsscufa[1-9]{0,1}$", name, useBytes=TRUE))) {
+    } else if (1 == length(grep("^obsscufa[1-9]{0,1}$", name))) {
         name <- "backscatter"
         unit <- list(unit=expression(NTU), scale="Turner SCUFA")
-    } else if (1 == length(grep("^opoxMg/L$", name, useBytes=TRUE))) {
+    } else if (1 == length(grep("^opoxMg/L$", name))) {
         name <- "oxygen"
         unit <- list(unit=expression(mg/l), scale="Optode, Aanderaa")
-    } else if (1 == length(grep("^opoxML/L$", name, useBytes=TRUE))) {
+    } else if (1 == length(grep("^opoxML/L$", name))) {
         name <- "oxygen"
         unit <- list(unit=expression(ml/l), scale="Optode, Aanderaa")
-    } else if (1 == length(grep("^opoxMm/L$", name, useBytes=TRUE))) {
+    } else if (1 == length(grep("^opoxMm/L$", name))) {
         name <- "oxygen"
         unit <- list(unit=expression(mu*mol/l), scale="Optode, Aanderaa")
-    } else if (1 == length(grep("^opoxPS$", name, useBytes=TRUE))) {
+    } else if (1 == length(grep("^opoxPS$", name))) {
         name <- "oxygenSaturation"
         unit <- list(unit=expression(percent), scale="Optode, Aanderaa")
-    } else if (1 == length(grep("oxC", name, useBytes=TRUE))) {
+    } else if (1 == length(grep("oxC", name))) {
         name <- "oxygenCurrent"
         unit <- list(unit=expression(mu*amp), scale="Beckman/YSI")
-    } else if (1 == length(grep("oxTC", name, useBytes=TRUE))) {
+    } else if (1 == length(grep("oxTC", name))) {
         name <- "oxygenTemperature"
         unit <- list(unit=expression(degree*C), scale="Beckman/YSI")
-    } else if (1 == length(grep("oxMg/L", name, useBytes=TRUE))) {
+    } else if (1 == length(grep("oxMg/L", name))) {
         name <- "oxygen"
         unit <- list(unit=expression(mg/l), scale="Beckman/YSI")
-    } else if (1 == length(grep("oxPS", name, useBytes=TRUE))) {
+    } else if (1 == length(grep("oxPS", name))) {
         name <- "oxygenSaturation"
         unit <- list(unit=expression(percent), scale="Beckman/YSI")
-    } else if (1 == length(grep("^oxsatML/L$", name, useBytes=TRUE))) {
+    } else if (1 == length(grep("^oxsatML/L$", name))) {
         name <- "oxygen"
         unit <- list(unit=expression(ml/l), scale="Weiss")
-    } else if (1 == length(grep("^oxsatMg/L$", name, useBytes=TRUE))) {
+    } else if (1 == length(grep("^oxsatMg/L$", name))) {
         name <- "oxygen"
         unit <- list(unit=expression(mg/l), scale="Weiss")
-    } else if (1 == length(grep("^oxsatMm/Kg$", name, useBytes=TRUE))) {
+    } else if (1 == length(grep("^oxsatMm/Kg$", name))) {
         name <- "oxygen"
         unit <- list(unit=expression(mu*mol/kg), scale="Weiss")
-    } else if (1 == length(grep("^oxsolML/L$", name, useBytes=TRUE))) {
+    } else if (1 == length(grep("^oxsolML/L$", name))) {
         name <- "oxygen"
         unit <- list(unit=expression(ml/l), scale="Garcia-Gordon")
-    } else if (1 == length(grep("^oxsolMg/L$", name, useBytes=TRUE))) {
+    } else if (1 == length(grep("^oxsolMg/L$", name))) {
         name <- "oxygen"
         unit <- list(unit=expression(mg/l), scale="Garcia-Gordon")
-    } else if (1 == length(grep("^oxsolMm/Kg$", name, useBytes=TRUE))) {
+    } else if (1 == length(grep("^oxsolMm/Kg$", name))) {
         name <- "oxygen"
         unit <- list(unit=expression(umol/kg), scale="Garcia-Gordon")
-    } else if (1 == length(grep("^cpar$", name, useBytes=TRUE))) {
+    } else if (1 == length(grep("^cpar$", name))) {
         name <- "CPAR/Corrected Irradience"
         unit <- list(unit=expression(percent), scale="")
-    } else if (1 == length(grep("^par[0-9]?$", name, useBytes=TRUE))) {
+    } else if (1 == length(grep("^par[0-9]?$", name))) {
         name <- "par"
         unit <- list(unit=expression(), scale="Biospherical/Licor")
-    } else if (1 == length(grep("^par/log$", name, useBytes=TRUE))) {
+    } else if (1 == length(grep("^par/log$", name))) {
         name <- "par"
         unit <- list(unit=expression(log), scale="Satlantic")
-    } else if (1 == length(grep("^ph$", name, useBytes=TRUE))) {
+    } else if (1 == length(grep("^ph$", name))) {
         name <- "pH"
         unit <- list(unit=expression(), scale="")
-    } else if (1 == length(grep("^pr$", name, useBytes=TRUE))) {
+    } else if (1 == length(grep("^pr$", name))) {
         name <- "pressure"
         unit <- list(unit=expression(dbar), scale="")
-    } else if (1 == length(grep("^prdE$", name, useBytes=TRUE))) {
+    } else if (1 == length(grep("^prdE$", name))) {
         ## Caution: English unit
         name <- "pressurePSI"
         unit <- list(unit=expression(psi), scale="")
-    } else if (1 == length(grep("^prDE$", name, useBytes=TRUE))) {
+    } else if (1 == length(grep("^prDE$", name))) {
         ## Caution: English unit
         name <- "pressurePSI"
         unit <- list(unit=expression(psi), scale="")
-    } else if (1 == length(grep("^prM$", name, useBytes=TRUE))) {
+    } else if (1 == length(grep("^prM$", name))) {
         name <- "pressure"
         unit <- list(unit=expression(dbar), scale="")
-    } else if (1 == length(grep("^pr50M[0-9]?$", name, useBytes=TRUE))) {
+    } else if (1 == length(grep("^pr50M[0-9]?$", name))) {
         name <- "pressure"
         unit <- list(unit=expression(dbar), scale="SBE50")
-    } else if (1 == length(grep("^prDM$", name, useBytes=TRUE))) {
+    } else if (1 == length(grep("^prDM$", name))) {
         name <- "pressure"
         unit <- list(unit=expression(dbar), scale="Digiquartz")
-    } else if (1 == length(grep("^pr[dS]M$", name, useBytes=TRUE))) {
+    } else if (1 == length(grep("^pr[dS]M$", name))) {
         name <- "pressure"
         unit <- list(unit=expression(dbar), scale="Strain Gauge")
-    } else if (1 == length(grep("^ptempC$", name, useBytes=TRUE))) {
+    } else if (1 == length(grep("^ptempC$", name))) {
         name <- "pressureTemperature"
         unit <- list(unit=expression(degree*C), scale="ITS-90") # FIXME: guess on scale
-    } else if (1 == length(grep("^potemp[0-9]*68C$", name, useBytes=TRUE))) {
+    } else if (1 == length(grep("^potemp[0-9]*68C$", name))) {
         name <- "theta"
         unit <- list(unit=expression(degree*C), scale="ITS-68")
-    } else if (1 == length(grep("^potemp[0-9]*90C$", name, useBytes=TRUE))) {
+    } else if (1 == length(grep("^potemp[0-9]*90C$", name))) {
         name <- "theta"
         unit <- list(unit=expression(degree*C), scale="ITS-90")
-    } else if (1 == length(grep("^pumps$", name, useBytes=TRUE))) {
+    } else if (1 == length(grep("^pumps$", name))) {
         name <- "pumpStatus"
         unit <- list(unit=expression(), scale="")
-    } else if (1 == length(grep("^rhodflTC[0-1]{1}$", name, useBytes=TRUE))) {
+    } else if (1 == length(grep("^rhodflTC[0-1]{1}$", name))) {
         name <- "Rhodamine"
         unit <- list(unit=expression(ppb), scale="Turner Cyclops")
-    } else if (1 == length(grep("^rhodflTCdiff$", name, useBytes=TRUE))) {
+    } else if (1 == length(grep("^rhodflTCdiff$", name))) {
         name <- "RhodamineDifference"
         unit <- list(unit=expression(ppb), scale="Turner Cyclops")
-    } else if (1 == length(grep("^sal[0-9]{2}$", name, useBytes=TRUE))) {
+    } else if (1 == length(grep("^sal[0-9]{2}$", name))) {
         name <- "salinity"
         unit <- list(unit=expression(), scale="PSS-78") # FIXME: guess on scale
-    } else if (1 == length(grep("^sbe?ox[0-9]ML/L$", name, useBytes=TRUE))) {
+    } else if (1 == length(grep("^sbe?ox[0-9]ML/L$", name))) {
         name <- "oxygen"
         unit <- list(unit=expression(ml/l), scale="SBE43")
-    } else if (1 == length(grep("^sbe?ox[0-9]Mg/L$", name, useBytes=TRUE))) {
+    } else if (1 == length(grep("^sbe?ox[0-9]Mg/L$", name))) {
         name <- "oxygen"
         unit <- list(unit=expression(mg/l), scale="SBE43")
-    } else if (1 == length(grep("^sbe?ox[0-9]Mm/Kg$", name, useBytes=TRUE))) {
+    } else if (1 == length(grep("^sbe?ox[0-9]Mm/Kg$", name))) {
         name <- "oxygen"
         unit <- list(unit=expression(mu*mol/kg), scale="SBE43")
-    } else if (1 == length(grep("^sbe?ox[0-9]Mm/L$", name, useBytes=TRUE))) {
+    } else if (1 == length(grep("^sbe?ox[0-9]Mm/L$", name))) {
         name <- "oxygen"
         unit <- list(unit=expression(mu*mol/l), scale="SBE43")
-    } else if (1 == length(grep("^sbe?ox[0-9]PS$", name, useBytes=TRUE))) {
+    } else if (1 == length(grep("^sbe?ox[0-9]PS$", name))) {
         name <- "oxygen"
         unit <- list(unit=expression(percent), scale="SBE43")
-    } else if (1 == length(grep("^sbe?ox[0-9]V$", name, useBytes=TRUE))) {
+    } else if (1 == length(grep("^sbe?ox[0-9]V$", name))) {
         name <- "oxygenRaw"
         unit <- list(unit=expression(V), scale="SBE43")
-    } else if (1 == length(grep("^sbe?ox[0-9]dV/dT$", name, useBytes=TRUE))) {
+    } else if (1 == length(grep("^sbe?ox[0-9]dV/dT$", name))) {
         name <- "oxygen"
         unit <- list(unit=expression(dov/dt), scale="SBE43")
-    } else if (1 == length(grep("^scan$", name, useBytes=TRUE))) {
+    } else if (1 == length(grep("^scan$", name))) {
         name <- "scan"
         unit <- list(unit=expression(), scale="")
-    } else if (1 == length(grep("^secS-priS$", name, useBytes=TRUE))) {
+    } else if (1 == length(grep("^secS-priS$", name))) {
         name <- "salinityDifference"
         unit <- list(unit=expression(), scale="PSS-78")
-    } else if (1 == length(grep("^seaTurbMtr[1]?$", name, useBytes=TRUE))) {
+    } else if (1 == length(grep("^seaTurbMtr[1]?$", name))) {
         name <- "turbidity"
         unit <- list(unit=expression(FTU), scale="Seapoint")
-    } else if (1 == length(grep("sigma-t[0-9]{2}", name, useBytes=TRUE))) {
+    } else if (1 == length(grep("sigma-t[0-9]{2}", name))) {
         name <- "sigmaT"
         unit <- list(unit=expression(kg/m^3), scale="")
     ##} else if (1 == length(grep("sigma-.*[0-9]*", name, ignore.case=TRUE))) {
-    } else if (1 == length(grep("^sigma", name, useBytes=TRUE))) {
+    } else if (1 == length(grep("^sigma", name))) {
         ## there are several cases, and we match the sigma-theta case
         ## by exclusion, because of limited understanding of how
         ## to match non-ascii characters on Windows machines.
-        if (1 == length(grep("^sigma-t[0-9]{2}$", name, useBytes=TRUE))) {
+        if (1 == length(grep("^sigma-t[0-9]{2}$", name))) {
             name <- "sigmaT"
-        } else if (1 == length(grep("^sigma-1[0-9]{2}$", name, useBytes=TRUE))) {
+        } else if (1 == length(grep("^sigma-1[0-9]{2}$", name))) {
             name <- "sigma1"
-        } else if (1 == length(grep("^sigma-2[0-9]{2}$", name, useBytes=TRUE))) {
+        } else if (1 == length(grep("^sigma-2[0-9]{2}$", name))) {
             name <- "sigma2"
-        } else if (1 == length(grep("^sigma-3[0-9]{2}$", name, useBytes=TRUE))) {
+        } else if (1 == length(grep("^sigma-3[0-9]{2}$", name))) {
             name <- "sigma3"
-        } else if (1 == length(grep("^sigma-4[0-9]{2}$", name, useBytes=TRUE))) {
+        } else if (1 == length(grep("^sigma-4[0-9]{2}$", name))) {
             name <- "sigma4"
-        # 2022-06-28 } else if (1 == length(grep("^sigma-\x09[0-9]{2}$", name, useBytes=TRUE))) {
-        #} else if (1 == length(grep("^sigma-\u00e9[0-9]{2}$", name, useBytes=TRUE))) {
-        } else if (grepl("^sigma-.*[0-9]{2}$", name, useBytes=TRUE)
-            && grepl("sigma-theta", nameAfterColon, useBytes=TRUE)) {
+        # 2022-06-28 } else if (1 == length(grep("^sigma-\x09[0-9]{2}$", name))) {
+        #} else if (1 == length(grep("^sigma-\u00e9[0-9]{2}$", name))) {
+        } else if (grepl("^sigma-.*[0-9]{2}$", name)
+            && grepl("sigma-theta", nameAfterColon)) {
             name <- "sigmaTheta"
-            ## 2016-12-22 DK
-            ## The above regexp matches for what we see in the supplied file
-            ##    system.file("extdata", "d201211_0011.cnv", package="oce")
-            ## at line 54, an acute-accented "e" (which maybe looked like
-            ## a theta to someone at SBE, when the format was invented. Clark
-            ## found the SBE docs and did some tests, which made it clear that
-            ## this accented "e" is always used, i.e. it is not just in some
-            ## sample files. Therefore, the above should not need changes.
-            ## However, it is worth explaining more, since the above regexp
-            ## replaces one that we had before today. That older one failed
-            ## on mswindows. On the assumption that this was an encoding issue,
-            ## the readLines() that reads in the data (line 686 of the present file)
-            ## was provided with an encoding of UTF-8, which is almost certainly
-            ## what osx and linux are using by default, but it's a *bad idea*
-            ## to rely on defaults, so we now set the encoding when we read
-            ## the data. Note that this switch also required to use the
-            ## useBytes=TRUE setting in all the grep() calls in the present
-            ## block.
+            # 2016-12-22 DK
+            #
+            # The above regexp matches for what we see in the supplied file
+            #    system.file("extdata", "d201211_0011.cnv", package="oce")
+            # at line 54, an acute-accented "e" (which maybe looked like a theta
+            # to someone at SBE, when the format was invented. Clark found the
+            # SBE docs and did some tests, which made it clear that this
+            # accented "e" is always used, i.e. it is not just in some sample
+            # files.
+            #
+            # 2022-07-15 DK
+            #
+            # Changes to R-devel with respect to encoding required changing code
+            # for this, and throughout.  See
+            # https://github.com/dankelley/oce/issues/1977 for details.
         } else {
             name <- "sigma" ## give up; this is a default
         }
         ## In all these cases, the unit is the same
         unit <- list(unit=expression(kg/m^3), scale="")
-    } else if (1 == length(grep("^spar$", name, useBytes=TRUE))) {
+    } else if (1 == length(grep("^spar$", name))) {
         name <- "spar"
         unit <- list(unit=expression(), scale="")
-    } else if (1 == length(grep("^specc$", name, useBytes=TRUE))) {
+    } else if (1 == length(grep("^specc$", name))) {
         name <- "conductivity"
         unit <- list(unit=expression(uS/cm), scale="")
-    } else if (1 == length(grep("^sva$", name, useBytes=TRUE))) {
+    } else if (1 == length(grep("^sva$", name))) {
         name <- "specificVolumeAnomaly"
         unit <- list(unit=expression(10^-8*m^3/kg), scale="")
-    } else if (1 == length(grep("^svCM[0-9]?$", name, useBytes=TRUE))) {
+    } else if (1 == length(grep("^svCM[0-9]?$", name))) {
         name <- "soundSpeed"
         unit <- list(unit=expression(m/s), scale="Chen-Millero")
-    } else if (1 == length(grep("^T2-T[01]68C$", name, useBytes=TRUE))) {
+    } else if (1 == length(grep("^T2-T[01]68C$", name))) {
         name <- "temperatureDifference"
         unit <- list(unit=expression(degree*C), scale="IPTS-68")
-    } else if (1 == length(grep("^T2-T[01]90C$", name, useBytes=TRUE))) {
+    } else if (1 == length(grep("^T2-T[01]90C$", name))) {
         name <- "temperatureDifference"
         unit <- list(unit=expression(degree*C), scale="ITS-90")
-    } else if (1 == length(grep("^t[0-9]68((C)|(Cm))?$", name, useBytes=TRUE))) {
+    } else if (1 == length(grep("^t[0-9]68((C)|(Cm))?$", name))) {
         name <- "temperature"
         unit <- list(unit=expression(degree*C), scale="IPTS-68")
-    } else if (1 == length(grep("^t[0-9]90((C)|(Cm))?$", name, useBytes=TRUE))) {
+    } else if (1 == length(grep("^t[0-9]90((C)|(Cm))?$", name))) {
         name <- "temperature"
         unit <- list(unit=expression(degree*C), scale="ITS-90")
     } else if (name %in% c("t4968C", "tnc68C", "tv268C", "tnc268C", "t3868C", "t3836C1", "t38_68C")) {
@@ -566,81 +565,81 @@ cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
         ## [1] p169-170
         name <- "temperature"
         unit <- list(unit=expression(degree*C), scale="ITS-90")
-    } else if (1 == length(grep("^timeH$", name, useBytes=TRUE))) {
+    } else if (1 == length(grep("^timeH$", name))) {
         name <- "timeH"
         unit <- list(unit=expression(hour), scale="")
-    } else if (1 == length(grep("^timeJ$", name, useBytes=TRUE))) {
+    } else if (1 == length(grep("^timeJ$", name))) {
         name <- "timeJ"
         unit <- list(unit=expression(day), scale="")
-    } else if (1 == length(grep("^timeJV2$", name, useBytes=TRUE))) {
+    } else if (1 == length(grep("^timeJV2$", name))) {
         name <- "timeJV2"
         unit <- list(unit=expression(day), scale="")
-    } else if (1 == length(grep("^timeK$", name, useBytes=TRUE))) {
+    } else if (1 == length(grep("^timeK$", name))) {
         name <- "timeK"
         unit <- list(unit=expression(s), scale="since Jan 1, 2000")
-    } else if (1 == length(grep("^timeM$", name, useBytes=TRUE))) {
+    } else if (1 == length(grep("^timeM$", name))) {
         name <- "timeM"
         unit <- list(unit=expression(minute), scale="")
-    } else if (1 == length(grep("^timeN$", name, useBytes=TRUE))) {
+    } else if (1 == length(grep("^timeN$", name))) {
         name <- "timeN"
         unit <- list(unit=expression(s), scale="NMEA since Jan 1, 1970")
-    } else if (1 == length(grep("^timeQ$", name, useBytes=TRUE))) {
+    } else if (1 == length(grep("^timeQ$", name))) {
         name <- "timeQ"
         unit <- list(unit=expression(s), scale="NMEA since Jan 1, 2000")
-    } else if (1 == length(grep("^timeS$", name, useBytes=TRUE))) {
+    } else if (1 == length(grep("^timeS$", name))) {
         name <- "timeS"
         unit <- list(unit=expression(s), scale="")
-    } else if (1 == length(grep("^tsa$", name, useBytes=TRUE))) {
+    } else if (1 == length(grep("^tsa$", name))) {
         name <- "thermostericAnomaly"
         unit <- list(unit=expression(10^-8*m^3/kg), scale="")
-    } else if (1 == length(grep("^turbflTC[0-1]$", name, useBytes=TRUE))) {
+    } else if (1 == length(grep("^turbflTC[0-1]$", name))) {
         name <- "turbidity"
         unit <- list(unit=expression(NTU), scale="Turner Cyclops")
-    } else if (1 == length(grep("^turbflTCdiff$", name, useBytes=TRUE))) {
+    } else if (1 == length(grep("^turbflTCdiff$", name))) {
         name <- "turbidityDifference"
         unit <- list(unit=expression(NTU), scale="Turner Cyclops")
-    } else if (1 == length(grep("^turbWETbb[0-4]$", name, useBytes=TRUE))) {
+    } else if (1 == length(grep("^turbWETbb[0-4]$", name))) {
         name <- "turbidity"
         unit <- list(unit=expression(1/m*sr), scale="WET Labs ECO")
-    } else if (1 == length(grep("^turbWETbbdiff$", name, useBytes=TRUE))) {
+    } else if (1 == length(grep("^turbWETbbdiff$", name))) {
         name <- "turbidityDifference"
         unit <- list(unit=expression(1/m*sr), scale="WET Labs ECO")
-    } else if (1 == length(grep("^turbWETntu[0-5]$", name, useBytes=TRUE))) {
+    } else if (1 == length(grep("^turbWETntu[0-5]$", name))) {
         name <- "turbidity"
         unit <- list(unit=expression(NTU), scale="WET Labs ECO")
-    } else if (1 == length(grep("^turbWETntudiff$", name, useBytes=TRUE))) {
+    } else if (1 == length(grep("^turbWETntudiff$", name))) {
         name <- "turbidityDifference"
         unit <- list(unit=expression(NTU), scale="WET Labs ECO")
-    } else if (1 == length(grep("^upoly[0-2]$", name, useBytes=TRUE))) {
+    } else if (1 == length(grep("^upoly[0-2]$", name))) {
         name <- "upoly"
         unit <- list(unit=expression(), scale="")
-    } else if (1 == length(grep("^user[1-5]$", name, useBytes=TRUE))) {
+    } else if (1 == length(grep("^user[1-5]$", name))) {
         name <- "user"
         unit <- list(unit=expression(), scale="")
-    } else if (1 == length(grep("^v[0-9][0-9]?$", name, useBytes=TRUE))) {
+    } else if (1 == length(grep("^v[0-9][0-9]?$", name))) {
         unit <- list(unit=expression(V), scale="")
-    } else if (1 == length(grep("^wetBAttn$", name, useBytes=TRUE))) {
+    } else if (1 == length(grep("^wetBAttn$", name))) {
         name <- "beamAttenuation"
         unit <- list(unit=expression(1/m), scale="WET Labs AC3")
-    } else if (1 == length(grep("^wetBTrans$", name, useBytes=TRUE))) {
+    } else if (1 == length(grep("^wetBTrans$", name))) {
         name <- "beamTransmission"
         unit <- list(unit=expression(percent), scale="WET Labs AC3")
-    } else if (1 == length(grep("^wetCDOM[0-5]{0,1}$", name, useBytes=TRUE))) {
+    } else if (1 == length(grep("^wetCDOM[0-5]{0,1}$", name))) {
         name <- "fluorescence"
         unit <- list(unit=expression(mg/m^3), scale="WET Labs CDOM")
-    } else if (1 == length(grep("^wetCDOMdiff$", name, useBytes=TRUE))) {
+    } else if (1 == length(grep("^wetCDOMdiff$", name))) {
         name <- "fluorescenceDifference"
         unit <- list(unit=expression(mg/m^3), scale="WET Labs CDOM")
-    } else if (1 == length(grep("^wetChAbs$", name, useBytes=TRUE))) {
+    } else if (1 == length(grep("^wetChAbs$", name))) {
         name <- "fluorescence"
         unit <- list(unit=expression(1/m), scale="WET Labs AC3 absorption")
-    } else if (1 == length(grep("^wetStar[0-9]?$", name, useBytes=TRUE))) {
+    } else if (1 == length(grep("^wetStar[0-9]?$", name))) {
         name <- "fluorescence"
         unit <- list(unit=expression(mg/m^3), scale="WET Labs WETstar")
-    } else if (1 == length(grep("^wetStardiff$", name, useBytes=TRUE))) {
+    } else if (1 == length(grep("^wetStardiff$", name))) {
         name <- "fluorescenceDifference"
         unit <- list(unit=expression(mg/m^3), scale="WET Labs WETstar")
-    } else if (1 == length(grep("^xmiss[0-9]?$", name, useBytes=TRUE))) {
+    } else if (1 == length(grep("^xmiss[0-9]?$", name))) {
         name <- "beamTransmission"
         unit <- list(unit=expression(percent), scale="Chelsea/Seatech")
     } else {
@@ -863,12 +862,14 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
     filename <- ""
     if (is.character(file)) {
         filename <- fullFilename(file)
+        #<> message("1 FIXME: opening '", file, "' with encoding='", encoding, "'")
         file <- file(file, "r", encoding=encoding)
         on.exit(close(file))
     }
     if (!inherits(file, "connection"))
         stop("argument `file' must be a character string or connection")
     if (!isOpen(file)) {
+        #<> message("2 FIXME: opening '", file, "' with encoding='", encoding, "'")
         open(file, "r", encoding=encoding)
         on.exit(close(file))
     }
@@ -893,7 +894,8 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
     ## Silence warnings because binary files have 'NUL' characters that spew many warnings
     warn <- options("warn")$warn
     options(warn=-1)
-    lines <- readLines(file, encoding=encoding)
+    # 2022-07-15: drop encoding=, which is a problem for upcoming R.
+    lines <- readLines(file)
     options(warn=warn)
 
     ## Get names and units of columns in the SBE data file
@@ -902,8 +904,13 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
     colNamesInferred <- NULL
     dataNamesOriginal <- list()
     namesUsed <- NULL
+    #<> message("encoding=",encoding,"; see DAN")
+    #<> DAN<<-list(lines=lines,nameLines=nameLines)
+    #<> message("try\na<-with(DAN, lines[nameLines[23]])\nEncoding(a)")
     for (iline in seq_along(nameLines)) {
         nu <- cnvName2oceName(lines[nameLines[iline]], columns, debug=debug-1)
+        #<> if (iline==23)
+        #<> message("iline=", iline, ", nu$name='", nu$name, "', nu$nameOriginal='", nu$nameOriginal, "'")
         if (nu$name %in% namesUsed) {
             trial <- 2
             while (paste(nu$name, trial, sep="") %in% namesUsed) {
@@ -944,7 +951,7 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
         header <- c(header, line)
         ##if (length(grep("\*END\*", line))) #BUG# why is this regexp no good (new with R-2.1.0)
         aline <- iconv(line, from="UTF-8", to="ASCII", sub="?")
-        if (length(grep("^\\s*\\*END\\*\\s*$", aline, perl=TRUE, useBytes=TRUE))) {
+        if (length(grep("^\\s*\\*END\\*\\s*$", aline, perl=TRUE))) {
             ##message("got *END* at line ", iline)
             ## Sometimes SBE files have a header line after the *END* line.
             iline <- iline + 1

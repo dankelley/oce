@@ -249,3 +249,34 @@ if (file.exists(file)) {
         })
 }
 
+file <- "local_data/argo/D4903224_012.nc"
+if (file.exists(file)) {
+    test_that("can get spiciness from 2-column argo file",
+        {
+            expect_silent(d <- read.argo(file))
+            spiciness0 <- d[["spiciness0"]]
+            expect_equal(c(1011,2), dim(spiciness0))
+            expect_equal(head(spiciness0),
+                structure(c(6.17969497378797, 6.18055246198217,
+                        6.17894144748325, 6.17736722741175, 6.17343624448158,
+                        6.15970734970877, 6.18065183201523, 6.18109006131989,
+                        6.18108469023132, 6.18059622062317, 6.17726061670029,
+                        6.18102988626372), dim=c(6L, 2L)))
+        })
+}
+
+file <- "local_data/argo/D1901584_124.nc"
+if (file.exists(file)) {
+    test_that("can get spiciness from 1-column argo file",
+        {
+            expect_silent(d <- read.argo(file))
+            spiciness0 <- d[["spiciness0"]]
+            expect_equal(c(67,1), dim(spiciness0))
+            # consistency check
+            expect_equal(head(spiciness0),
+                structure(c(7.05052334875785, 7.04906137175043,
+                        7.04942780641913, 7.04903685921474, 7.04831733400729,
+                        7.02504314496063), dim=c(6L, 1L)))
+        })
+}
+
