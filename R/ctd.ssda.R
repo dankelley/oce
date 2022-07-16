@@ -55,7 +55,7 @@ read.ctd.ssda <- function(file,
         file <- file(file, "r", encoding=encoding)
         on.exit(close(file))
     }
-    lines <- readLines(file, encoding=encoding)
+    lines <- readLines(file)
     #?seek(file, 0L, "start") # rewind so we can read from the source (faster than reading from text)
     dataStart <- grep("^Lines[ ]*:[ ]*[0-9]*$", lines)
     #message(vectorShow(dataStart))

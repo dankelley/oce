@@ -444,7 +444,7 @@ read.xbt.edf <- function(file,
         open(file, "r", encoding=encoding)
         on.exit(close(file))
     }
-    l <- readLines(file, 200, encoding=encoding) # don't read whole file
+    l <- readLines(file, 200) # don't read whole file
     pushBack(l, file)
     ## FIXME: is this detection of the end of the header robust?
     headerEnd <- grep("^Depth \\(", l)
@@ -549,7 +549,7 @@ read.xbt.noaa1 <- function(file,
         on.exit(close(file))
     }
     res <- new("xbt")
-    header <- readLines(file, 1, encoding=encoding) # first line is a header
+    header <- readLines(file, 1) # first line is a header
     res@metadata$header <- header
     res@metadata$filename <- filename
     headerTokens <- strsplit(header, "[ \t]+")[[1]]

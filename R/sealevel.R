@@ -736,7 +736,7 @@ read.sealevel <- function(file,
         on.exit(close(file))
     }
     fileOrig <- file
-    firstLine <- readLines(file, n=1, encoding=encoding)
+    firstLine <- readLines(file, n=1)
     header <- firstLine
     oceDebug(debug, "header (first line in file): '", header, "'\n", sep="")
     pushBack(firstLine, file)
@@ -764,7 +764,7 @@ read.sealevel <- function(file,
         ## Obs_date,SLEV
         ## 01/01/2001 12:00 AM,1.82,
         headerLength <- 8
-        header <- readLines(file, n=headerLength, encoding=encoding)
+        header <- readLines(file, n=headerLength)
         if (debug > 0) {
             print(header)
         }
@@ -791,7 +791,7 @@ read.sealevel <- function(file,
         year <- as.POSIXlt(time[1])$year + 1900
     } else {
         oceDebug(debug, "File is of type 2 or 3\n")
-        d <- readLines(file, encoding=encoding)
+        d <- readLines(file)
         n <- length(d)
         header <- d[1]
         if (grepl("LAT=", header) && grepl("LONG=", header) && grepl("TIMEZONE",header)) {

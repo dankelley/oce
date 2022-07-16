@@ -1674,7 +1674,7 @@ oceMagic <- function(file, encoding="latin1", debug=getOption("oceDebug"))
     if (is.character(file)) {
         oceDebug(debug, "'file' is a character value\n")
         if (grepl(".asc$", filename)) {
-            someLines <- readLines(file, n=1L, encoding=encoding)
+            someLines <- readLines(file, n=1L)
             if (42 == length(strsplit(someLines[1], ' ')[[1]])) {
                 oceDebug(debug, "} # oceMagic returning lisst\n", unindent=1, style="bold")
                 return("lisst")
@@ -1697,7 +1697,7 @@ oceMagic <- function(file, encoding="latin1", debug=getOption("oceDebug"))
         }
         if (grepl(".ODF$", filename, ignore.case=TRUE)) {
             # in BIO files, the data type seems to be on line 14.  Read more, for safety.
-            lines <- readLines(file, encoding=encoding)
+            lines <- readLines(file)
             dt <- grep("DATA_TYPE[ \t]*=", lines)
             if (length(dt) < 1)
                 stop("cannot infer type of ODF file")
@@ -1744,7 +1744,7 @@ oceMagic <- function(file, encoding="latin1", debug=getOption("oceDebug"))
             }
         }
         if (grepl(".xml$", filename, ignore.case=TRUE)) {
-            firstLine <- readLines(filename, 1, encoding=encoding)
+            firstLine <- readLines(filename, 1L)
             if (grepl(".weather.gc.ca", firstLine)) {
                 oceDebug(debug, "} # oceMagic returning met/xml2\n", unindent=1)
                 return("met/xml2")
@@ -1763,29 +1763,31 @@ oceMagic <- function(file, encoding="latin1", debug=getOption("oceDebug"))
             return("gpx")
         }
         if (grepl(".csv$", filename, ignore.case=TRUE)) {
-            someLines <- readLines(filename, 30, encoding="UTF-8-BOM")
+            con <- file(filename, "r", encoding=encoding)
+            someLines <- readLines(con, 30L)# , encoding="UTF-8-BOM")
+            close(con)
             #print(someLines[1])
-            if (grepl("^SSDA Sea & Sun Technology", someLines[1], useBytes=TRUE)) {
+            if (grepl("^SSDA Sea & Sun Technology", someLines[1])) {
                 return("ctd/ssda")
             } else if (1L == length(grep('^.*"WMO Identifier",', someLines))) {
                 oceDebug(debug, "} # oceMagic returning met/csv1\n", unindent=1, style="bold")
                 return("met/csv1") # FIXME: may be other things too ...
             } else if (grepl('^.*Longitude.*Latitude.*Station Name.*Climate ID.*Dew Point', someLines[1])) {
                 oceDebug(debug, "} # oceMagic returning met/csv2 or met/csv3\n", unindent=1, style="bold")
-                if (grepl("Time \\(LST\\)", someLines[1], useBytes=TRUE)) {
+                if (grepl("Time \\(LST\\)", someLines[1])) {
                     oceDebug(debug, "} # oceMagic returning met/csv2\n", unindent=1, style="bold")
                     return("met/csv3" )
                 } else {
                     oceDebug(debug, "} # oceMagic returning met/csv3\n", unindent=1, style="bold")
                     return("met/csv2")
                 }
-            } else if (length(grep("^Station_Name,", someLines, useBytes=TRUE))) {
+            } else if (length(grep("^Station_Name,", someLines))) {
                 oceDebug(debug, "} # oceMagic returning sealevel\n", unindent=1, style="bold")
                 return("sealevel")
-            } else if (1L == length(grep("^CTD,", someLines, useBytes=TRUE))) {
+            } else if (1L == length(grep("^CTD,", someLines))) {
                 oceDebug(debug, "} # oceMagic returning ctd/woce/exchange\n", unindent=1, style="bold")
                 return("ctd/woce/exchange")
-            } else if (1L == length(grep("^BOTTLE,", someLines, useBytes=TRUE))) {
+            } else if (1L == length(grep("^BOTTLE,", someLines))) {
                 oceDebug(debug, "} # oceMagic returning section\n", unindent=1, style="bold")
                 return("section")
             } else {
@@ -1804,7 +1806,7 @@ oceMagic <- function(file, encoding="latin1", debug=getOption("oceDebug"))
     if (!isOpen(file))
         open(file, "r", encoding=encoding)
     # Grab text at start of file.
-    lines <- readLines(file, n=2, skipNul=TRUE, encoding=encoding)
+    lines <- readLines(file, n=2L, skipNul=TRUE)
     line <- lines[1]
     line2 <- lines[2]
     oceDebug(debug, "first line of file: ", line, "\n", sep="")
@@ -1888,58 +1890,58 @@ oceMagic <- function(file, encoding="latin1", debug=getOption("oceDebug"))
                       " from RDI, please send them to dan.kelley@dal.ca so the format can be added."))
         return("possibly RDI CTD")
     }
-    if (1 == length(grep("^CTD", line, useBytes=TRUE))) {
+    if (1 == length(grep("^CTD", line))) {
         oceDebug(debug, "} # oceMagic returning ctd/woce/exchange\n", unindent=1, style="bold")
         return("ctd/woce/exchange")
     }
-    if (1 == length(grep("^EXPOCODE", line, useBytes=TRUE))) {
+    if (1 == length(grep("^EXPOCODE", line))) {
         oceDebug(debug, "} # oceMagic returning ctd/woce/other\n", unindent=1, style="bold")
         return("ctd/woce/other")
     }
-    if (1 == length(grep("^\\s*ODF_HEADER", line, useBytes=TRUE))){
+    if (1 == length(grep("^\\s*ODF_HEADER", line))){
         oceDebug(debug, "} # oceMagic returning odf\n", unindent=1, style="bold")
         return("odf")
     }
-    if (grepl("^\\* Sea-Bird SBE", line, useBytes=TRUE) ||
-        grepl("^\\* Viking Buoy CTD file", line, useBytes=TRUE)) {
+    if (grepl("^\\* Sea-Bird SBE", line) ||
+        grepl("^\\* Viking Buoy CTD file", line)) {
         oceDebug(debug, "} # oceMagic returning ctd/sbe\n", unindent=1, style="bold")
         return("ctd/sbe")
     }
 
-    if (1 == length(grep("^%ITP", line, useBytes=TRUE))) {
+    if (1 == length(grep("^%ITP", line))) {
         oceDebug(debug, "} # oceMagic returning ctd/itp\n", unindent=1, style="bold")
         return("ctd/itp")
     }
-    if (1 == length(grep("^# -b", line, useBytes=TRUE))) {
+    if (1 == length(grep("^# -b", line))) {
         oceDebug(debug, "} # oceMagic returning coastline\n", unindent=1, style="bold")
         return("coastline")
     }
-    if (1 == length(grep("^# Station_Name,", line, useBytes=TRUE))) {
+    if (1 == length(grep("^# Station_Name,", line))) {
         oceDebug(debug, "} # oceMagic returning sealevel\n", unindent=1, style="bold")
         return("sealevel")
     }
-    if (1 == length(grep("^Station_Name,", line, useBytes=TRUE))) {
+    if (1 == length(grep("^Station_Name,", line))) {
         oceDebug(debug, "} # oceMagic returning sealevel\n", unindent=1, style="bold")
         return("sealevel")
     }
-    if (1 == length(grep("^[0-9][0-9][0-9][A-Z] ", line, useBytes=TRUE))) {
+    if (1 == length(grep("^[0-9][0-9][0-9][A-Z] ", line))) {
         oceDebug(debug, "} # oceMagic returning sealevel\n", unindent=1, style="bold")
         return("sealevel")
     }
-    if (1 == length(grep("^NCOLS[ ]*[0-9]*[ ]*$", line, useBytes=TRUE, ignore.case=TRUE))) {
+    if (1 == length(grep("^NCOLS[ ]*[0-9]*[ ]*$", line))) {
         oceDebug(debug, "} # oceMagic returning topo\n", unindent=1, style="bold")
         return("topo")
     }
-    if (1 == length(grep("^RBR TDR", line, useBytes=TRUE))) {
+    if (1 == length(grep("^RBR TDR", line))) {
         # FIXME: obsolete; to be removed Fall 2015
         oceDebug(debug, "} # oceMagic returning RBR/dat\n", unindent=1, style="bold")
         return("RBR/dat")
     }
-    if (1 == length(grep("^Model=", line, useBytes=TRUE))) {
+    if (1 == length(grep("^Model=", line))) {
         oceDebug(debug, "} # oceMagic returning RBR/txt\n", unindent=1, style="bold")
         return("RBR/txt")
     }
-    if (1 == length(grep("^BOTTLE", line, useBytes=TRUE)))  {
+    if (1 == length(grep("^BOTTLE", line)))  {
         oceDebug(debug, "} # oceMagic returning section\n", unindent=1, style="bold")
         return("section")
     }
@@ -2067,7 +2069,7 @@ read.oce <- function(file, ..., encoding="latin1")
             else
                 gsub("\\s*$", "", gsub("^\\s*", "", gsub("'", "", gsub(",", "", strsplit(lines[i[1]], "=")[[1]][2]))))
         }
-        lines <- readLines(file, encoding=encoding)
+        lines <- readLines(file)
         nlines <- length(lines)
         headerEnd <- grep("-- DATA --", lines)
         if (1 != length(headerEnd))

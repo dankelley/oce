@@ -91,7 +91,7 @@ read.index <- function(file,
         open(file, "r", encoding=encoding)
         on.exit(close(file))
     }
-    lines <- readLines(file, warn=FALSE, encoding=encoding)
+    lines <- readLines(file, warn=FALSE)
     if (missing(format)) {
         ntokens <- length(scan(text=lines[1], quiet=TRUE))
         if (2 == ntokens) format <- "noaa"
