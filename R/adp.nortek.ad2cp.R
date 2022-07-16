@@ -966,7 +966,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
         object
     }
 
-    if (length(p$burst) > 0L) {        # vector-read 'burst'=0x15 BOOKMARK=B
+    if (length(p$burst) > 0L) {        # vector-read 'burst'=0x15 BOOKMARK=A
         nbeamsBurst <- nbeams[p$burst[1]]
         ncellsBurst <- ncells[p$burst[1]]
         oceDebug(debug, "burst data records: nbeams:", nbeamsBurst, ", ncells:", ncellsBurst, "\n", sep="")
@@ -1036,7 +1036,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
     } else {
         burst <- NULL
     }
-    if (length(p$average) > 0L) {      # vector-read 'average'=0x16 BOOKMARK=A
+    if (length(p$average) > 0L) {      # vector-read 'average'=0x16
         nbeamsAverage <- nbeams[p$average[1]]
         ncellsAverage <- ncells[p$average[1]]
         oceDebug(debug, "average data records: nbeams:", nbeamsAverage, ", ncells:", ncellsAverage, "\n")
@@ -1107,7 +1107,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
         average <- NULL
     }
 
-    if (length(p$bottomTrack) > 0) {   # key=0x17
+    if (length(p$bottomTrack) > 0) {   # key=0x17 -- FIXME: vectorize this
         #if (any(version[p$bottomTrack] != 3))
         #    warning("some 'bottomTrack' data records have version !=3. Does this matter? Below is table of values\n", str(table(version[p$bottomTrack])))
         nbeamsBottomTrack <- nbeams[p$bottomTrack[1]]
@@ -1146,6 +1146,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
             datasetDescription=datasetDescription[p$bottomTrack],
             transmitEnergy=transmitEnergy[p$bottomTrack],
             powerLevel=powerLevel[p$bottomTrack])
+        # FIXME:vectorize this
         if (any(velocityIncluded[p$bottomTrack])) { # FIXME: do allocation later (MARK A)
             if (1 < length(unique(velocityIncluded[p$bottomTrack])))
                 stop("velocityIncluded values non-unique across 'bottomTrack' data records")
@@ -1653,7 +1654,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
     oceDebug(debug, "processing N=", N, " data chunks (check: is this ", length(d$id), "?)\n")
     #print(table(d$id))
     #DAN<<-d$id
-    for (ch in 1:N) {
+    for (ch in 1:N) {                  # BOOKMARK J
         # oceDebug(debug>3, "d$id[", ch, "]=", d$id[[ch]], "\n", sep="")
         key <- d$id[ch]
         i <- d$index[ch]
@@ -2039,7 +2040,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
             }
             DVLBottomTrack$i <- DVLBottomTrack$i + 1
 
-        } else if (FALSE && key == 0x1c) { # echosounder: FIXME: comment this all out BOOKMARK=J (see also E)
+        } else if (FALSE && key == 0x1c) { # echosounder: BOOKMARK=J (see also E)
             #oceDebug(debug, "*** WE GOT AN 0x1c record ***\n")
 
             # FIXME: determine echosounder records have other types of data intermixed.
