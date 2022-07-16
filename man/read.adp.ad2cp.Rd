@@ -47,15 +47,15 @@ running out of memory.  For this reason, a common first step is instead to
 use \code{which="?"}, which gives a table of data types in the file, after which
 an individual type of interest is extracted.  The choices for that individual
 type are as follows:
-\code{"burst"} (\emph{not coded yet}) for ID code 0x15,
-\code{"average"} (\emph{not coded yet}) for ID code 0x16,
-\code{"bottomTrack"} (\emph{not coded yet}) for ID code 0x17,
-\code{"interleavedBurst"} (\emph{not coded yet}) for ID code 0x18,
-\code{"burstAltimeterRaw"} (\emph{not coded yet}) for ID code 0x1a,
-\code{"DVLBottomTrack"} (\emph{not coded yet}) for ID code 0x1b,
-\code{"echosounder"} (\emph{not coded yet}) for ID code 0x1c,
-\code{"DVLWaterTrack"} (\emph{not coded yet}) for ID code 0x1d,
-\code{"altimeter"} (\emph{not coded yet}) for ID code 0x1e,
+\code{"burst"} for ID code 0x15,
+\code{"average"} for ID code 0x16,
+\code{"bottomTrack"} for ID code 0x17,
+\code{"interleavedBurst"} for ID code 0x18,
+\code{"burstAltimeterRaw"} for ID code 0x1a,
+\code{"DVLBottomTrack"} for ID code 0x1b,
+\code{"echosounder"} for ID code 0x1c,
+\code{"DVLWaterTrack"} for ID code 0x1d,
+\code{"altimeter"} for ID code 0x1e,
 and
 \code{"averageAltimeter"} (\emph{not coded yet}) for ID code 0x1f.
 with each of those vectors holding lines inferred by splitting the string

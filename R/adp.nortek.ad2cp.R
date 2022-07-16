@@ -232,15 +232,15 @@ ad2cpCodeToName <- function(code)
 #' use `which="?"`, which gives a table of data types in the file, after which
 #' an individual type of interest is extracted.  The choices for that individual
 #' type are as follows:
-#' `"burst"` (*not coded yet*) for ID code 0x15,
-#' `"average"` (*not coded yet*) for ID code 0x16,
-#' `"bottomTrack"` (*not coded yet*) for ID code 0x17,
-#' `"interleavedBurst"` (*not coded yet*) for ID code 0x18,
-#' `"burstAltimeterRaw"` (*not coded yet*) for ID code 0x1a,
-#' `"DVLBottomTrack"` (*not coded yet*) for ID code 0x1b,
-#' `"echosounder"` (*not coded yet*) for ID code 0x1c,
-#' `"DVLWaterTrack"` (*not coded yet*) for ID code 0x1d,
-#' `"altimeter"` (*not coded yet*) for ID code 0x1e,
+#' `"burst"` for ID code 0x15,
+#' `"average"` for ID code 0x16,
+#' `"bottomTrack"` for ID code 0x17,
+#' `"interleavedBurst"` for ID code 0x18,
+#' `"burstAltimeterRaw"` for ID code 0x1a,
+#' `"DVLBottomTrack"` for ID code 0x1b,
+#' `"echosounder"` for ID code 0x1c,
+#' `"DVLWaterTrack"` for ID code 0x1d,
+#' `"altimeter"` for ID code 0x1e,
 #' and
 #' `"averageAltimeter"` (*not coded yet*) for ID code 0x1f.
 #' with each of those vectors holding lines inferred by splitting the string
@@ -417,6 +417,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
     nav <- do_ldc_ad2cp_in_file(filename, from, to, by,
         if (ignoreChecksums) 1L else 0L,
         debug-1L)
+    #DANnav<<-nav;message("FIXME: exported nav as DANnav")
     # Return table of names, in alphabetical order
     if (which == "?") {
         t <- table(nav$id)
@@ -681,7 +682,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
     # b00=enu, b01=xyz, b10=beam, b11=- [1 page 49]
     coordinateSystem <- c("enu", "xyz", "beam", "?")[1 + BCC[,11] + 2*BCC[,12]]
     # BCC case 2
-    ncellsEchosounder2 <- readBin(d$buf[pointer2 + 31], "integer", size=2, n=N, signed=FALSE, endian="little")
+    ncellsEchosounderWholeFile <- readBin(d$buf[pointer2 + 31], "integer", size=2, n=N, signed=FALSE, endian="little")
 
     # cell size is recorded in mm [1, table 6.1.2, page 49]
     cellSize <- 0.001 * readBin(d$buf[pointer2 + 33], "integer", size=2, n=N, signed=FALSE, endian="little")
@@ -888,11 +889,12 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
             object$altimeterRawSamples <- t(matrix(tmp, nrow=NP, ncol=NS, byrow=FALSE))
             i0v <<- i0v + 2L*NS
         } else if (name == "echosounder") {
-            message("FIXME: decode echosounder (NC=", NC, ")\n")
+            # Nortek (2017 p52): each profile has NC*16 bits
+            oceDebug(debug, "  'echosounder' starts at i0v=", i0v, " (NC=", NC, ", NP=", NP, ")\n")
+            iv <- gappyIndex(i, i0v, 2L*NC)
             #iv <- gappyIndex(i, i0v, 2L*NC)
-
-            #object$echosounder <- ??? [average$i, ] <- readBin(d$buf[i + i0 + seq(0,nrow-1)], size=2, n=nrow, endian="little")
-
+            tmp <- readBin(buf[iv], "integer", size=2L, endian="little", n=NP*NC)
+            object$echosounder <- matrix(tmp, nrow=NP, byrow=FALSE)
             i0v <<- i0v + 2L*NC
         } else if (name == "AHRS") {
             oceDebug(debug, "  'AHRS' starts at i0v=", i0v, "\n")
@@ -1277,7 +1279,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
             transmitEnergy=transmitEnergy[p$burstAltimeterRaw],
             powerLevel=powerLevel[p$burstAltimeterRaw])
         # burstAltimeterRaw: vectorized
-        oceDebug(1+debug, "vector-read 'burstAltimeterRaw' records (0x1a) {\n")
+        oceDebug(debug, "vector-read 'burstAltimeterRaw' records (0x1a) {\n")
             # See CR's snapshot at
             # https://github.com/dankelley/oce/issues/1959#issuecomment-1141409542
             # which is p89 of Nortek AS. “Signature Integration
@@ -1311,7 +1313,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
                 burstAltimeterRaw <- getItemFromBuf(burstAltimeterRaw, "stdDev", i=i, type="burstAltimeterRaw", debug=debug)
             ch <- p$burstAltimeterRaw[1] # FiXME: what is this for?
             #cat(file=stderr(), vectorShow(p$burstAltimeterRaw))
-            oceDebug(1+debug, "} # VECTORIZED burstAltimeterRaw\n")
+            oceDebug(debug, "} # vector-read burstAltimeterRaw\n")
     } else {
         ## FIXME DAN DAN DAN DAN
         burstAltimeterRaw <- NULL
@@ -1319,7 +1321,6 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
     #save(burstAltimeterRaw, file="dan.rda")
     #message("see burstAltimeterRaw in dan.rda")
     #return(burstAltimeterRaw)
-
 
     if (length(p$DVLBottomTrack) > 0) { # key=0x1b
         #if (any(version[p$DVLBottomTrack] != 3))
@@ -1395,16 +1396,17 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
     }
 
     if (length(p$echosounder) > 0) {   # vector-read 'echosounder'=0x1c BOOKMARK=E (see also J)
-        # FIXME: code this, then remove code at J
-        nbeamsEchosounder <- nbeams[p$echosounder[1]]
-        ncellsEchosounder <- ncells[p$echosounder[1]]
-        oceDebug(debug, "echosounder data records: nbeams:", nbeamsEchosounder, ", ncells:", ncellsEchosounder, "\n")
-        if (any(nbeams[p$echosounder] != nbeamsEchosounder))
-            stop("the 'echosounder' data records do not all have the same number of beams")
-        if (any(ncells[p$echosounder] != ncellsEchosounder))
-            stop("the 'echosounder' data records do not all have the same number of cells")
+        # FIXME: once this is coded, comment-out near bookmark J
+        #nbeamsEchosounder <- nbeams[p$echosounder[1]]
+        #ncellsEchosounder <- ncellsEchosounderWholeFile[p$echosounder][1]
+        #message(vectorShow(nbeamsEchosounder))
+        #message("next is ncellsEchosounder:")
+        #print(ncellsEchosounder)
+        #message("next is ncellsEchosounder[p$echosounder]:")
+        #print(ncellsEchosounder[p$echosounder])
+        oceDebug(1+debug, "preparing to vector-read echosounder data\n")
         echosounder <- list(i=1,
-            numberOfCells=ncellsEchosounder2[p$echosounder][1],
+            numberOfCells=ncellsEchosounderWholeFile[p$echosounder[1]],
             numberOfBeams=1, # FIXME: is this right?
             originalCoordinate=coordinateSystem[p$echosounder[1]],
             oceCoordinate=coordinateSystem[p$echosounder[1]],
