@@ -972,6 +972,12 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
     # marked-up, and so most citations are in that context (referring to certain
     # page numbers).
     #
+    # Note that the second index of configuration, tested below, does not match
+    # the order of the data.  In particular notice that the data have order:
+    # altimeter/AST/altimeterRaw but these are columns 9/11/10 in the
+    # configuration matrix. Careful reading of Nortek (2017) Table 6.1.2 should
+    # come before changing the code!
+    #
     # Nortek (2017 p 48) "6.1.2 Burst/Average Data Record Definition (DF3)"
     if (length(p$burst) > 0L) {        # vector-read 'burst'=0x15 BOOKMARK=A
         nbeamsBurst <- nbeams[p$burst[1]]
@@ -1017,11 +1023,6 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
         NC <- burst$numberOfCells      # number of cells for v,a,q
         NB <- burst$numberOfBeams      # number of beams for v,a,q
         oceDebug(debug, "  NP=", NP, ", NB=", NB, ", NC=", NC, "\n", sep="")
-        # NB. the second index of configuration, tested below, does not match
-        # the order of the data.  In particular notice that the data have order:
-        # altimeter/AST/altimeterRaw but these are columns 9/11/10 in the
-        # configuration matrix. Careful reading of Nortek (2017) Table 6.1.2
-        # should come before changing the code!
         p1 <- p$burst[1]
         if (configuration[p1, 6])      # read velocity, if included
             burst <- getItemFromBuf(burst, "v", i=i, type="burst", debug=debug)
@@ -1094,28 +1095,29 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
         NB <- average$numberOfBeams    # number of beams for v,a,q
         oceDebug(debug, "  NP=", NP, ", NB=", NB, ", NC=", NC, "\n", sep="")
         p1 <- p$average[1]
-        if (velocityIncluded[p1])
+        if (configuration[p1, 6])      # read velocity, if included
             average <- getItemFromBuf(average, "v", i=i, type="average", debug=debug)
-        if (amplitudeIncluded[p1])
+        if (configuration[p1, 7])      # read amplitude, if included
             average <- getItemFromBuf(average, "a", i=i, type="average", debug=debug)
-        if (correlationIncluded[p1])
+        if (configuration[p1, 8])      # read correlation, if included
             average <- getItemFromBuf(average, "q", i=i, type="average", debug=debug)
-        if (altimeterIncluded[p1])
+        if (configuration[p1, 9])      # read altimeter, if included
             average <- getItemFromBuf(average, "altimeter", i=i, type="average", debug=debug)
-        if (ASTIncluded[p1])
+        if (configuration[p1, 11])      # read AST, if included
             average <- getItemFromBuf(average, "AST", i=i, type="average", debug=debug)
-        if (altimeterRawIncluded[p1])
+        if (configuration[p1, 10])      # read altimeterRaw, if included
             average <- getItemFromBuf(average, "altimeterRaw", i=i, type="average", debug=debug)
-        if (echosounderIncluded[p1])
+        if (configuration[p1, 12])      # read echosounder, if included
             average <- getItemFromBuf(average, "echosounder", i=i, type="average", debug=debug)
-        if (AHRSIncluded[p1])
+        if (configuration[p1, 13])      # read AHRS, if included
             average <- getItemFromBuf(average, "AHRS", i=i, type="average", debug=debug)
-        if (percentGoodIncluded[p1])
+        if (configuration[p1, 14])      # read percentGood, if included
             average <- getItemFromBuf(average, "percentgood", i=i, type="average", debug=debug)
-        if (stdDevIncluded[p1])
+        if (configuration[p1, 15])      # read stdDev, if included
             average <- getItemFromBuf(average, "stdDev", i=i, type="average", debug=debug)
         ch <- p$average[1] # FiXME: what is this for?
-        oceDebug(debug, "} # vector-read 'average'\n")
+        oceDebug(debug, "} # vector-read 'average'\n") # 0x15
+        ch <- p$average[1] # FiXME: what is this for?
     } else {
         average <- NULL
     }
@@ -1789,7 +1791,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
             #average$i <- average$i + 1
 
         } else if (key == 0x17) { # bottomTrack BOOKMARK B
-            warning("FIXME: vectorize bottomTrack")
+            #warning("FIXME: vectorize bottomTrack")
             ncol <- bottomTrack$numberOfBeams
             nrow <- bottomTrack$numberOfCells
             # distance: uses variable name that makes sense for average/burst data
