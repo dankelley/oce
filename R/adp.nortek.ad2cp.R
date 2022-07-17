@@ -966,6 +966,13 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
         object
     }
 
+    # The following conditional blocks handle the vectorized reading of various
+    # data ID classes.  Although the data format is described in many manuals,
+    # this code started with Nortek (2017), DK's copy of which is highly
+    # marked-up, and so most citations are in that context (referring to certain
+    # page numbers).
+    #
+    # Nortek (2017 p 48) "6.1.2 Burst/Average Data Record Definition (DF3)"
     if (length(p$burst) > 0L) {        # vector-read 'burst'=0x15 BOOKMARK=A
         nbeamsBurst <- nbeams[p$burst[1]]
         ncellsBurst <- ncells[p$burst[1]]
@@ -1010,32 +1017,38 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
         NC <- burst$numberOfCells      # number of cells for v,a,q
         NB <- burst$numberOfBeams      # number of beams for v,a,q
         oceDebug(debug, "  NP=", NP, ", NB=", NB, ", NC=", NC, "\n", sep="")
+        # NB. the second index of configuration, tested below, does not match
+        # the order of the data.  In particular notice that the data have order:
+        # altimeter/AST/altimeterRaw but these are columns 9/11/10 in the
+        # configuration matrix. Careful reading of Nortek (2017) Table 6.1.2
+        # should come before changing the code!
         p1 <- p$burst[1]
-        if (velocityIncluded[p1])
+        if (configuration[p1, 6])      # read velocity, if included
             burst <- getItemFromBuf(burst, "v", i=i, type="burst", debug=debug)
-        if (amplitudeIncluded[p1])
+        if (configuration[p1, 7])      # read amplitude, if included
             burst <- getItemFromBuf(burst, "a", i=i, type="burst", debug=debug)
-        if (correlationIncluded[p1])
+        if (configuration[p1, 8])      # read correlation, if included
             burst <- getItemFromBuf(burst, "q", i=i, type="burst", debug=debug)
-        if (altimeterIncluded[p1])
+        if (configuration[p1, 9])      # read altimeter, if included
             burst <- getItemFromBuf(burst, "altimeter", i=i, type="burst", debug=debug)
-        if (ASTIncluded[p1])
+        if (configuration[p1, 11])      # read AST, if included
             burst <- getItemFromBuf(burst, "AST", i=i, type="burst", debug=debug)
-        if (altimeterRawIncluded[p1])
+        if (configuration[p1, 10])      # read altimeterRaw, if included
             burst <- getItemFromBuf(burst, "altimeterRaw", i=i, type="burst", debug=debug)
-        if (echosounderIncluded[p1])
+        if (configuration[p1, 12])      # read echosounder, if included
             burst <- getItemFromBuf(burst, "echosounder", i=i, type="burst", debug=debug)
-        if (AHRSIncluded[p1])
+        if (configuration[p1, 13])      # read AHRS, if included
             burst <- getItemFromBuf(burst, "AHRS", i=i, type="burst", debug=debug)
-        if (percentGoodIncluded[p1])
+        if (configuration[p1, 14])      # read percentGood, if included
             burst <- getItemFromBuf(burst, "percentgood", i=i, type="burst", debug=debug)
-        if (stdDevIncluded[p1])
+        if (configuration[p1, 15])      # read stdDev, if included
             burst <- getItemFromBuf(burst, "stdDev", i=i, type="burst", debug=debug)
         ch <- p$burst[1] # FiXME: what is this for?
         oceDebug(debug, "} # vector-read 'burst'\n") # 0x15
     } else {
         burst <- NULL
     }
+    # Nortek (2017 p 48) "6.1.2 Burst/Average Data Record Definition (DF3)"
     if (length(p$average) > 0L) {      # vector-read 'average'=0x16
         nbeamsAverage <- nbeams[p$average[1]]
         ncellsAverage <- ncells[p$average[1]]
@@ -1107,12 +1120,13 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
         average <- NULL
     }
 
+    # Nortek (2017 p60) "6.1.3 Bottom Track Data Record Definition (DF20)"
+    # BOOKMARK B
+    #message(vectorShow(p$bottomTrack))
     if (length(p$bottomTrack) > 0) {   # key=0x17 -- FIXME: vectorize this
-        #if (any(version[p$bottomTrack] != 3))
-        #    warning("some 'bottomTrack' data records have version !=3. Does this matter? Below is table of values\n", str(table(version[p$bottomTrack])))
         nbeamsBottomTrack <- nbeams[p$bottomTrack[1]]
         ncellsBottomTrack <- ncells[p$bottomTrack[1]]
-        oceDebug(debug, "bottomTrack data records: nbeams:", nbeamsBottomTrack, ", ncells:", ncellsBottomTrack, "\n")
+        oceDebug(debug, "1+bottomTrack data records: nbeams:", nbeamsBottomTrack, ", ncells:", ncellsBottomTrack, "\n")
         if (any(ncells[p$bottomTrack] != ncellsBottomTrack))
             stop("the 'bottomTrack' data records do not all have the same number of cells")
         if (any(nbeams[p$bottomTrack] != nbeamsBottomTrack))
@@ -1405,7 +1419,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
         #print(ncellsEchosounder)
         #message("next is ncellsEchosounder[p$echosounder]:")
         #print(ncellsEchosounder[p$echosounder])
-        oceDebug(1+debug, "preparing to vector-read echosounder data\n")
+        oceDebug(debug, "preparing to vector-read echosounder data\n")
         echosounder <- list(i=1,
             numberOfCells=ncellsEchosounderWholeFile[p$echosounder[1]],
             numberOfBeams=1, # FIXME: is this right?
@@ -1774,7 +1788,8 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
             #}
             #average$i <- average$i + 1
 
-        } else if (key == 0x17) { # bottomTrack
+        } else if (key == 0x17) { # bottomTrack BOOKMARK B
+            warning("FIXME: vectorize bottomTrack")
             ncol <- bottomTrack$numberOfBeams
             nrow <- bottomTrack$numberOfCells
             # distance: uses variable name that makes sense for average/burst data
@@ -2040,7 +2055,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
             }
             DVLBottomTrack$i <- DVLBottomTrack$i + 1
 
-        } else if (FALSE && key == 0x1c) { # echosounder: BOOKMARK=J (see also E)
+        } else if (FALSE && key == 0x1c) { # echosounder
             #oceDebug(debug, "*** WE GOT AN 0x1c record ***\n")
 
             # FIXME: determine echosounder records have other types of data intermixed.
