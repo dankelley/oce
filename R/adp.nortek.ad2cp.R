@@ -572,41 +572,41 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
     }
     # }}}
 
+    # commonData (Nortek 2022 Table 6.2 Page 81)
+    commonData <- list()
 
-    # "Version" in nortek docs [1 page 48]. FIXME: is this present in other data types?
-    version <- as.integer(d$buf[pointer1 + 1])
-
-    # 1. get some things in fast vector-based form.
-
-    # 'Configuration' in nortek docs [1 page 48, table 6.1.2]. Put bits in a
-    # logical matrix with rows corresponding to data records. In the docs,
-    # bits are counted from 0, so e.g. 'bit 0' indicates whether pressure is
-    # valid, in the docs.
-    configuration <- rawToBits(d$buf[pointer2 + 3]) == 0x01
-    dim(configuration) <- c(16, N)
-    configuration <- t(configuration)
-    # The vectorization scheme used in this function assumes that configurations match within a
-    # given ID type.  This seems like a reasonable assumption, but we still check, and issue
-    # a warning (and request to contact the developers) if this assumption fails.
+    # "Version" in Nortek (2022 table 6.2 page 81)
+    # NB. this can vary across IDs, e.g. in private test file f2, the text chunk
+    # (i.e. the header) has version 16, while the other records had version 3.
+    commonData$version <- as.integer(d$buf[pointer1+1L])
+    commonData$offsetOfData <- as.integer(d$buf[pointer1+2L])
+    commonData$configuration <- local({
+        tmp <- rawToBits(d$buf[pointer2+3L]) == 0x01
+        dim(tmp) <- c(16, N)
+        t(tmp)
+    })
+    commonData$serialNumber <- readBin(d$buf[pointer4+5L], "integer", n=N, size=4L)
+    # The vectorization scheme used in this function assumes that configurations
+    # match within a given ID type.  This seems like a reasonable assumption,
+    # and one backed up by the impression of a Nortek representative, but I do
+    # not see definititive statement of the requirement in any documentation
+    # I've studied. Since we *need* this to be true in order to read the data in
+    # vectorized way, we *insist* on it here, rather than trying to catch
+    # problems later. Use local() to avoid polluting namespace.
     local({
-        #cat("next is d$id:\n");print(d$id)
-        #cat("next is configuration:\n");print(configuration)
         for (id in as.raw(unique(d$id))) {
-            #cat("next is config for id=0x", as.raw(id), ":\n", sep="");print(config)
-            #cat(vectorShow(is.matrix(config)))
-            config <- configuration[d$id==id,]
+            config <- commonData$configuration[d$id==id,]
             if (is.matrix(config)) {
                 ok <- TRUE
                 for (col in seq(2L, ncol(config)))
                     ok <- ok && all(config[,col] == config[1,col])
                 if (!ok) {
-                    oceDebug(debug, "configure DIFFERS from the first value, in ", sum(!ok), " instances for chunk key 0x", as.raw(id), " (", ad2cpCodeToName(id), ")\n")
-                    warning("Variable \"", ad2cpCodeToName(id), "\" configuration detected, so expect erroneous results. Please submit a bug report.\n")
+                    oceDebug(debug, "commonData$configuration DIFFERS from the first value, in ", sum(!ok), " instances for chunk key 0x", as.raw(id), " (", ad2cpCodeToName(id), ")\n")
+                    stop("Variable \"", ad2cpCodeToName(id), "\" configuration detected, so expect erroneous results. Please submit a bug report.")
                 }
             }
         }
     })
-
 
     # Extract columns as simply-named flags, for convenience. The variable
     # names to which the assignments are made apply to average/burst data.
@@ -617,6 +617,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
     # configuration[, 5] -
 
     # BOOKMARK 1 define *Included, used later in reading
+    configuration <- commonData$configuration # FIXME: remove this later
     velocityIncluded <- configuration[, 6]
     amplitudeIncluded <- configuration[, 7]
     correlationIncluded <- configuration[, 8]
@@ -661,10 +662,10 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
     temperature <- 0.01 * readBin(d$buf[pointer2 + 19], "integer", size=2, n=N, signed=FALSE, endian="little")
     # FIXME: docs say pressure is uint32, but R does not handle unsigned 32-bit chunks
     #TEST<-list(buf=d$buf, pointer4=pointer4);save(TEST,file="TEST.rda")
-    pressure <- 0.001 * readBin(d$buf[pointer4 + 21], "integer", size=4, n=N, endian="little")
-    heading <- 0.01 * readBin(d$buf[pointer2 + 25], "integer", size=2, n=N, signed=FALSE, endian="little")
-    pitch <- 0.01 * readBin(d$buf[pointer2 + 27], "integer", size=2, n=N, endian="little")
-    roll <- 0.01 * readBin(d$buf[pointer2 + 29], "integer", size=2, n=N, endian="little")
+    pressure <- 0.001 * readBin(d$buf[pointer4 + 21L], "integer", size=4L, n=N, endian="little")
+    heading <- 0.01 * readBin(d$buf[pointer2 + 25L], "integer", size=2L, n=N, signed=FALSE, endian="little")
+    pitch <- 0.01 * readBin(d$buf[pointer2 + 27L], "integer", size=2L, n=N, endian="little")
+    roll <- 0.01 * readBin(d$buf[pointer2 + 29L], "integer", size=2L, n=N, endian="little")
     # BCC (beam, coordinate system, and cell) uses packed bits to hold info on
     # the number of beams, coordinate-system, and the number cells. There are
     # two cases [1 page 49]:
@@ -789,13 +790,18 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
         NP <- length(object$time)      # already defined
         #oceDebug(debug, "  ... NP=",NP,", NB=", NB, ", NC=", NC, "\n")
         NBC <- NB * NC
-        #oceDebug(debug, "NB=", NB, ", NC=", NC, ", NBC=", NBC, ", NP=", NP, "\n")
+        oceDebug(debug, "getItemFromBuf: NB=", NB, ", NC=", NC, ", NBC=", NBC, ", NP=", NP, "\n")
+        oceDebug(debug, "    ", vectorShow(i))
+        oceDebug(debug, "    ", vectorShow(i0v))
         if (name == "v") {
             oceDebug(debug, "  'v' starts at i0v=", i0v, "\n")
             velocityFactor <- velocityFactor[p[[type]][1]]
             oceDebug(debug, "velocityFactor=", velocityFactor, " for type=", type, "\n")
+            oceDebug(debug, "NBC=", NBC, "\n")
             if (NBC > 0L) {
                 iv <- gappyIndex(i, i0v, 2L*NBC)
+                oceDebug(debug, vectorShow(i))
+                oceDebug(debug, vectorShow(i0v))
                 # FIXME: use proper velocity factor
                 v <- velocityFactor*readBin(d$buf[iv], "integer", size=2L, n=NP*NBC, endian="little")
                 object$v <- array(double(), dim=c(NP, NC, NB))
@@ -966,6 +972,99 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
         object
     }
 
+    readBurstOrAverage <- function(id, debug=getOption("oceDebug")) # uses global 'd' and 'configuration'
+    {
+        message("in readBurstOrAverage with id=0x", id)
+        # str(d)
+        #    List of 4
+        #    $ buf   : raw [1:305988694] a5 0a a0 10 ...
+        #    $ index : int [1:99] 5530 6704 9254 10428 11602 12776 13950 15124 16298 17472 ...
+        #    $ length: int [1:99] 1164 2540 1164 1164 1164 1164 1164 1164 1164 1164 ...
+        #    $ id    : int [1:99] 21 22 21 21 21 21 21 21 21 21 ...
+        look <- which(d$id == id)
+        configuration0 <- configuration[look[1],]
+        velocityIncluded <- configuration0[6]
+        amplitudeIncluded <- configuration0[7]
+        correlationIncluded <- configuration0[8]
+        altimeterIncluded <- configuration0[9]
+        altimeterRawIncluded <- configuration0[10]
+        ASTIncluded <- configuration0[11]
+        echosounderIncluded <- configuration0[12]
+        AHRSIncluded <- configuration0[13]
+        percentGoodIncluded<- configuration0[14]
+        stdDevIncluded <- configuration0[15]
+        oceDebug(debug, vectorShow(velocityIncluded))
+        oceDebug(debug, vectorShow(amplitudeIncluded))
+        oceDebug(debug, vectorShow(correlationIncluded))
+        oceDebug(debug, vectorShow(altimeterIncluded))
+        oceDebug(debug, vectorShow(ASTIncluded))
+        oceDebug(debug, vectorShow(echosounderIncluded))
+        oceDebug(debug, vectorShow(AHRSIncluded))
+        oceDebug(debug, vectorShow(percentGoodIncluded))
+        oceDebug(debug, vectorShow(stdDevIncluded))
+
+        rval <- list(
+            configuration=configuration0,
+            numberOfBeams=nbeams[look[1]],
+            numberOfCells=ncells[look[1]],
+            originalCoordinate=coordinateSystem[look[1]],
+            oceCoordinate=coordinateSystem[look[1]],
+            cellSize=cellSize[look[1]],
+            blankingDistance=blankingDistance[look[1]],
+            ensemble=ensemble[look],
+            time=time[look],
+            orientation=orientation[look],
+            soundSpeed=soundSpeed[look],
+            temperature=temperature[look], # "temperature pressure sensor"
+            pressure=pressure[look],
+            heading=heading[look], pitch=pitch[look], roll=roll[look],
+            magnetometer=list(
+                x=magnetometerx[look],
+                y=magnetometery[look],
+                z=magnetometerz[look]),
+            accelerometer=list(
+                x=accelerometerx[look],
+                y=accelerometery[look],
+                z=accelerometerz[look]),
+            datasetDescription=datasetDescription[look],
+            temperatureMagnetometer=temperatureMagnetometer[look],
+            temperatureRTC=temperatureRTC[look],
+            transmitEnergy=transmitEnergy[look],
+            powerLevel=powerLevel[look])
+        oceDebug(debug, "vector-read 'average' records (0x16) {\n")
+        i <<- d$index[look]            # pointers to "average" chunks in buf
+        oceDebug(debug+1L, "local: ", vectorShow(i))
+        i0v <<- 77                     # pointer to data (incremented by getItemFromBuf() later).
+        NP <- length(i)                # number of profiles of this type
+        oceDebug(debug, "  ", vectorShow(i, n=3))
+        NC <- rval$numberOfCells       # number of cells for v,a,q
+        NB <- rval$numberOfBeams       # number of beams for v,a,q
+        oceDebug(debug+1L, "  NP=", NP, ", NB=", NB, ", NC=", NC, "\n", sep="")
+        oceDebug(debug, "configuration0=", paste(configuration0, collapse=", "), "\n")
+        if (configuration0[6])          # read velocity, if included
+            rval <- getItemFromBuf(rval, "v", i=i, type="average", debug=debug+1L)
+        if (configuration0[7])          # read amplitude, if included
+            rval <- getItemFromBuf(rval, "a", i=i, type="average", debug=debug)
+        if (configuration0[8])          # read correlation, if included
+            rval <- getItemFromBuf(rval, "q", i=i, type="average", debug=debug)
+        if (configuration0[9])          # read altimeter, if included
+            rval <- getItemFromBuf(rval, "altimeter", i=i, type="average", debug=debug)
+        if (configuration0[11])         # read AST, if included
+            rval <- getItemFromBuf(rval, "AST", i=i, type="average", debug=debug)
+        if (configuration0[10])         # read altimeterRaw, if included
+            rval <- getItemFromBuf(rval, "altimeterRaw", i=i, type="average", debug=debug)
+        if (configuration0[12])         # read echosounder, if included
+            rval <- getItemFromBuf(rval, "echosounder", i=i, type="average", debug=debug)
+        if (configuration0[13])         # read AHRS, if included
+            rval <- getItemFromBuf(rval, "AHRS", i=i, type="average", debug=debug)
+        if (configuration0[14])         # read percentGood, if included
+            rval <- getItemFromBuf(rval, "percentgood", i=i, type="average", debug=debug)
+        if (configuration0[15])         # read stdDev, if included
+            rval <- getItemFromBuf(rval, "stdDev", i=i, type="average", debug=debug)
+        oceDebug(debug, "} # vector-read 'average'\n") # 0x15
+        rval
+    }
+
     # The following conditional blocks handle the vectorized reading of various
     # data ID classes.  Although the data format is described in many manuals,
     # this code started with Nortek (2017), DK's copy of which is highly
@@ -987,8 +1086,9 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
             stop("the 'burst' data records do not all have the same number of beams")
         if (any(ncells[p$burst] != ncellsBurst))
             stop("the 'burst' data records do not all have the same number of cells")
+        message("about to browse...")
         burst <- list(i=1,
-            configuration=configuration[p$burst[1]],
+            configuration=configuration[p$burst[1],],
             numberOfBeams=nbeamsBurst,
             numberOfCells=ncellsBurst,
             originalCoordinate=coordinateSystem[p$burst[1]],
@@ -1049,18 +1149,15 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
         burst <- NULL
     }
     # Nortek (2017 p 48) "6.1.2 Burst/Average Data Record Definition (DF3)"
+    # Nortek (2020 p )
     if (length(p$average) > 0L) {      # vector-read 'average'=0x16
-        nbeamsAverage <- nbeams[p$average[1]]
-        ncellsAverage <- ncells[p$average[1]]
-        oceDebug(debug, "average data records: nbeams:", nbeamsAverage, ", ncells:", ncellsAverage, "\n")
-        if (any(nbeams[p$average] != nbeamsAverage))
-            stop("the 'average' data records do not all have the same number of beams")
-        if (any(ncells[p$average] != ncellsAverage))
-            stop("the 'average' data records do not all have the same number of cells")
+        NEWaverage <- readBurstOrAverage(id=as.raw(0x16), debug=1)
+        message("FIXME: DAN, is average$NEWaverage ok?")
         average <- list(i=1,
-            configuration=configuration[p$average[1]],
-            numberOfBeams=nbeamsAverage,
-            numberOfCells=ncellsAverage,
+            NEWaverage=NEWaverage,
+            configuration=configuration[p$average[1],],
+            numberOfBeams=nbeams[p$average[1]],
+            numberOfCells=ncells[p$average[1]],
             originalCoordinate=coordinateSystem[p$average[1]],
             oceCoordinate=coordinateSystem[p$average[1]],
             cellSize=cellSize[p$average[1]],
@@ -1085,15 +1182,16 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
             powerLevel=powerLevel[p$average])
         oceDebug(debug, "vector-read 'average' records (0x16) {\n")
         i <- d$index[which(d$id==0x16)] # pointers to "average" chunks in buf
+        oceDebug(debug+1L, "global: ", vectorShow(i))
         i0v <- 77                      # pointer to data (incremented by getItemFromBuf() later).
         NP <- length(i)                # number of profiles of this type
         oceDebug(debug, "  ", vectorShow(i, n=3))
         NC <- average$numberOfCells    # number of cells for v,a,q
         NB <- average$numberOfBeams    # number of beams for v,a,q
-        oceDebug(debug, "  NP=", NP, ", NB=", NB, ", NC=", NC, "\n", sep="")
+        oceDebug(debug+1L, "  NP=", NP, ", NB=", NB, ", NC=", NC, "\n", sep="")
         p1 <- p$average[1]
         if (configuration[p1, 6])      # read velocity, if included
-            average <- getItemFromBuf(average, "v", i=i, type="average", debug=debug)
+            average <- getItemFromBuf(average, "v", i=i, type="average", debug=debug+1L)
         if (configuration[p1, 7])      # read amplitude, if included
             average <- getItemFromBuf(average, "a", i=i, type="average", debug=debug)
         if (configuration[p1, 8])      # read correlation, if included
