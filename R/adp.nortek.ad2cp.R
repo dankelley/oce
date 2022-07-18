@@ -988,6 +988,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
         if (any(ncells[p$burst] != ncellsBurst))
             stop("the 'burst' data records do not all have the same number of cells")
         burst <- list(i=1,
+            configuration=configuration[p$burst[1]],
             numberOfBeams=nbeamsBurst,
             numberOfCells=ncellsBurst,
             originalCoordinate=coordinateSystem[p$burst[1]],
@@ -997,24 +998,22 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
             ensemble=ensemble[p$burst],
             time=time[p$burst],
             orientation=orientation[p$burst],
-            heading=heading[p$burst],
-            pitch=pitch[p$burst],
-            roll=roll[p$burst],
-            pressure=pressure[p$burst],
-            temperature=temperature[p$burst],
-            temperatureMagnetometer=temperatureMagnetometer[p$burst],
-            temperatureRTC=temperatureRTC[p$burst],
             soundSpeed=soundSpeed[p$burst],
+            nominalCorrelation=nominalCorrelation[p$burst],
+            temperature=temperature[p$burst], # "temperature pressure sensor"
+            pressure=pressure[p$burst],
+            heading=heading[p$burst], pitch=pitch[p$burst], roll=roll[p$burst],
             magnetometer=list(x=magnetometerx[p$burst],
                 y=magnetometery[p$burst],
                 z=magnetometerz[p$burst]),
             accelerometer=list(x=accelerometerx[p$burst],
                 y=accelerometery[p$burst],
                 z=accelerometerz[p$burst]),
-            nominalCorrelation=nominalCorrelation[p$burst],
             datasetDescription=datasetDescription[p$burst],
             transmitEnergy=transmitEnergy[p$burst],
-            powerLevel=powerLevel[p$burst])
+            powerLevel=powerLevel[p$burst],
+            temperatureMagnetometer=temperatureMagnetometer[p$burst],
+            temperatureRTC=temperatureRTC[p$burst])
         oceDebug(debug, "vector-read 'burst' records (0x15) {\n")
         i <- d$index[which(d$id==0x15)] # pointers to "burst" chunks in buf
         i0v <- 77                      # pointer to data (incremented by getItemFromBuf() later).
@@ -1059,6 +1058,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
         if (any(ncells[p$average] != ncellsAverage))
             stop("the 'average' data records do not all have the same number of cells")
         average <- list(i=1,
+            configuration=configuration[p$average[1]],
             numberOfBeams=nbeamsAverage,
             numberOfCells=ncellsAverage,
             originalCoordinate=coordinateSystem[p$average[1]],
@@ -1068,22 +1068,19 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
             ensemble=ensemble[p$average],
             time=time[p$average],
             orientation=orientation[p$average],
-            heading=heading[p$average],
-            pitch=pitch[p$average],
-            roll=roll[p$average],
-            pressure=pressure[p$average],
-            temperature=temperature[p$average],
-            temperatureMagnetometer=temperatureMagnetometer[p$average],
-            temperatureRTC=temperatureRTC[p$average],
             soundSpeed=soundSpeed[p$average],
+            temperature=temperature[p$average], # "temperature pressure sensor"
+            pressure=pressure[p$average],
+            heading=heading[p$average], pitch=pitch[p$average], roll=roll[p$average],
             magnetometer=list(x=magnetometerx[p$average],
                 y=magnetometery[p$average],
                 z=magnetometerz[p$average]),
             accelerometer=list(x=accelerometerx[p$average],
                 y=accelerometery[p$average],
                 z=accelerometerz[p$average]),
-            nominalCorrelation=nominalCorrelation[p$average],
             datasetDescription=datasetDescription[p$average],
+            temperatureMagnetometer=temperatureMagnetometer[p$average],
+            temperatureRTC=temperatureRTC[p$average],
             transmitEnergy=transmitEnergy[p$average],
             powerLevel=powerLevel[p$average])
         oceDebug(debug, "vector-read 'average' records (0x16) {\n")
@@ -1135,6 +1132,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
             stop("the 'bottomTrack' data records do not all have the same number of beams")
         # FIXME: read other fields to the following list.
         bottomTrack <- list(i=1,
+            configuration=configuration[p$bottomTrack[1]],
             numberOfCells=ncellsBottomTrack,
             numberOfBeams=nbeamsBottomTrack,
             originalCoordinate=coordinateSystem[p$bottomTrack[1]],
@@ -1144,25 +1142,27 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
             ensemble=ensemble[p$bottomTrack],
             time=time[p$bottomTrack],
             orientation=orientation[p$bottomTrack],
-            heading=heading[p$bottomTrack],
-            pitch=pitch[p$bottomTrack],
-            roll=roll[p$bottomTrack],
-            pressure=pressure[p$bottomTrack],
-            temperature=temperature[p$bottomTrack],
-            temperatureMagnetometer=temperatureMagnetometer[p$bottomTrack],
-            temperatureRTC=temperatureRTC[p$bottomTrack],
             soundSpeed=soundSpeed[p$bottomTrack],
-            magnetometerx=magnetometerx[p$bottomTrack],
-            magnetometery=magnetometery[p$bottomTrack],
-            magnetometerz=magnetometerz[p$bottomTrack],
-            accelerometerx=accelerometerx[p$bottomTrack],
-            accelerometery=accelerometery[p$bottomTrack],
-            accelerometerz=accelerometerz[p$bottomTrack],
-            nominalCorrelation=nominalCorrelation[p$bottomTrack],
-            datasetDescription=datasetDescription[p$bottomTrack],
-            transmitEnergy=transmitEnergy[p$bottomTrack],
-            powerLevel=powerLevel[p$bottomTrack])
+            #??? datasetDescription=datasetDescription[p$bottomTrack],
+            temperature=temperature[p$bottomTrack],
+            pressure=pressure[p$bottomTrack],
+            heading=heading[p$bottomTrack], pitch=pitch[p$bottomTrack], roll=roll[p$bottomTrack],
+            # nominalCorrelation is not present for bottomTrack
+            magnetometer=list(
+                x=magnetometerx[p$bottomTrack],
+                y=magnetometery[p$bottomTrack], # FIXME: some of these are wrong,
+                z=magnetometerz[p$bottomTrack]), # owing to differences from burst/average
+            accelerometerlist(
+                x=accelerometerx[p$bottomTrack],
+                y=accelerometery[p$bottomTrack],
+                z=accelerometerz[p$bottomTrack])
+            #? temperatureMagnetometer=temperatureMagnetometer[p$bottomTrack],
+            #? temperatureRTC=temperatureRTC[p$bottomTrack],
+            #? transmitEnergy=transmitEnergy[p$bottomTrack],
+            #? powerLevel=powerLevel[p$bottomTrack])
+            )
         # FIXME:vectorize this
+        message("FIXME: working here (need to vectorize bottomTrack reading)")
         if (any(velocityIncluded[p$bottomTrack])) { # FIXME: do allocation later (MARK A)
             if (1 < length(unique(velocityIncluded[p$bottomTrack])))
                 stop("velocityIncluded values non-unique across 'bottomTrack' data records")
