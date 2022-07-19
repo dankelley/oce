@@ -847,7 +847,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
             oceDebug(debug, "   altimeter starts at i0v=", i0v, "\n")
             iv <- gappyIndex(i, i0v, 4L)
             object$altimeterDistance <- readBin(buf[iv], "numeric", size=4L, n=NP, endian="little", signed=TRUE)
-            message(vectorShow(object$altimeterDistance))
+            #message(vectorShow(object$altimeterDistance))
             i0v <<- i0v + 4L
             iv <- gappyIndex(i, i0v, 2L)
             object$altimeterQuality <- readBin(buf[iv], "integer", size=2L, n=NP, endian="little", signed=FALSE)
@@ -859,7 +859,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
             oceDebug(debug, "   AST starts at i0v=", i0v, "\n")
             iv <- gappyIndex(i, i0v, 4L)
             object$ASTDistance <- readBin(buf[iv], "numeric", size=4L, n=NP, endian="little")
-            message(vectorShow(object$ASTDistance))
+            #message(vectorShow(object$ASTDistance))
             i0v <<- i0v + 4L
             iv <- gappyIndex(i, i0v, 2L)
             object$ASTQuality <- readBin(buf[iv], "integer", size=2L, n=NP, endian="little", signed=FALSE)
@@ -869,7 +869,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
             i0v <<- i0v + 2L
             iv <- gappyIndex(i, i0v, 4L)
             object$ASTPressure <- readBin(buf[iv], "numeric", size=4L, n=NP, endian="little")
-            message(vectorShow(object$ASTPressure))
+            #message(vectorShow(object$ASTPressure))
             i0v <<- i0v + 4L
             # The 2017 manual states there are 8 more bytes, named 'spare', and
             # the 2022 manual agrees that there is an 8-byte spacer, by stating
@@ -1254,7 +1254,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
                 x=magnetometerx[p$bottomTrack],
                 y=magnetometery[p$bottomTrack], # FIXME: some of these are wrong,
                 z=magnetometerz[p$bottomTrack]), # owing to differences from burst/average
-            accelerometerlist(
+            accelerometer=list(
                 x=accelerometerx[p$bottomTrack],
                 y=accelerometery[p$bottomTrack],
                 z=accelerometerz[p$bottomTrack])
@@ -1264,7 +1264,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
             #? powerLevel=powerLevel[p$bottomTrack])
             )
         # FIXME:vectorize this
-        message("FIXME: working here (need to vectorize bottomTrack reading)")
+        #message("FIXME: working here (need to vectorize bottomTrack reading)")
         if (any(velocityIncluded[p$bottomTrack])) { # FIXME: do allocation later (MARK A)
             if (1 < length(unique(velocityIncluded[p$bottomTrack])))
                 stop("velocityIncluded values non-unique across 'bottomTrack' data records")

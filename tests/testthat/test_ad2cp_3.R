@@ -29,13 +29,13 @@ if (file.exists(file)) {
                 "orientation", "powerLevel", "status"))
 
         expect_equal(sort(names(d[["average"]])), c("a", "accelerometer",
-                "blankingDistance", "cellSize", "datasetDescription",
-                "ensemble", "heading", "magnetometer", "nominalCorrelation",
-                "numberOfBeams", "numberOfCells", "oceCoordinate",
-                "orientation", "originalCoordinate", "pitch", "powerLevel",
-                "pressure", "q", "roll", "soundSpeed", "temperature",
-                "temperatureMagnetometer", "temperatureRTC", "time",
-                "transmitEnergy", "v"))
+                "blankingDistance", "cellSize", "configuration",
+                "datasetDescription", "ensemble", "heading", "magnetometer",
+                "nominalCorrelation", "numberOfBeams", "numberOfCells",
+                "oceCoordinate", "orientation", "originalCoordinate", "pitch",
+                "powerLevel", "pressure", "q", "roll", "soundSpeed",
+                "temperature", "temperatureMagnetometer", "temperatureRTC",
+                "time", "transmitEnergy", "v"))
 
         # Beams and cells
         expect_equal(d[["oceCoordinate"]], "beam")
