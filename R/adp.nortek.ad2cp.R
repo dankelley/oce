@@ -796,8 +796,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
         if (name == "v") {
             oceDebug(debug, "  'v' starts at i0v=", i0v, "\n")
             velocityFactor <- velocityFactor[p[[type]][1]]
-            oceDebug(debug, "velocityFactor=", velocityFactor, " for type=", type, "\n")
-            oceDebug(debug, "NBC=", NBC, "\n")
+            oceDebug(debug, "  velocityFactor=", velocityFactor, " for type=", type, "\n")
             if (NBC > 0L) {
                 iv <- gappyIndex(i, i0v, 2L*NBC)
                 oceDebug(debug, vectorShow(i))
@@ -974,7 +973,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
 
     readBurstOrAverage <- function(id, debug=getOption("oceDebug")) # uses global 'd' and 'configuration'
     {
-        message("in readBurstOrAverage with id=0x", id)
+        oceDebug(debug, "in readBurstOrAverage with id=0x", id, "\n")
         # str(d)
         #    List of 4
         #    $ buf   : raw [1:305988694] a5 0a a0 10 ...
@@ -1086,7 +1085,6 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
             stop("the 'burst' data records do not all have the same number of beams")
         if (any(ncells[p$burst] != ncellsBurst))
             stop("the 'burst' data records do not all have the same number of cells")
-        message("about to browse...")
         burst <- list(i=1,
             configuration=configuration[p$burst[1],],
             numberOfBeams=nbeamsBurst,
@@ -1151,68 +1149,68 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
     # Nortek (2017 p 48) "6.1.2 Burst/Average Data Record Definition (DF3)"
     # Nortek (2020 p )
     if (length(p$average) > 0L) {      # vector-read 'average'=0x16
-        NEWaverage <- readBurstOrAverage(id=as.raw(0x16), debug=1)
-        message("FIXME: DAN, is average$NEWaverage ok?")
-        average <- list(i=1,
-            NEWaverage=NEWaverage,
-            configuration=configuration[p$average[1],],
-            numberOfBeams=nbeams[p$average[1]],
-            numberOfCells=ncells[p$average[1]],
-            originalCoordinate=coordinateSystem[p$average[1]],
-            oceCoordinate=coordinateSystem[p$average[1]],
-            cellSize=cellSize[p$average[1]],
-            blankingDistance=blankingDistance[p$average[1]],
-            ensemble=ensemble[p$average],
-            time=time[p$average],
-            orientation=orientation[p$average],
-            soundSpeed=soundSpeed[p$average],
-            temperature=temperature[p$average], # "temperature pressure sensor"
-            pressure=pressure[p$average],
-            heading=heading[p$average], pitch=pitch[p$average], roll=roll[p$average],
-            magnetometer=list(x=magnetometerx[p$average],
-                y=magnetometery[p$average],
-                z=magnetometerz[p$average]),
-            accelerometer=list(x=accelerometerx[p$average],
-                y=accelerometery[p$average],
-                z=accelerometerz[p$average]),
-            datasetDescription=datasetDescription[p$average],
-            temperatureMagnetometer=temperatureMagnetometer[p$average],
-            temperatureRTC=temperatureRTC[p$average],
-            transmitEnergy=transmitEnergy[p$average],
-            powerLevel=powerLevel[p$average])
-        oceDebug(debug, "vector-read 'average' records (0x16) {\n")
-        i <- d$index[which(d$id==0x16)] # pointers to "average" chunks in buf
-        oceDebug(debug+1L, "global: ", vectorShow(i))
-        i0v <- 77                      # pointer to data (incremented by getItemFromBuf() later).
-        NP <- length(i)                # number of profiles of this type
-        oceDebug(debug, "  ", vectorShow(i, n=3))
-        NC <- average$numberOfCells    # number of cells for v,a,q
-        NB <- average$numberOfBeams    # number of beams for v,a,q
-        oceDebug(debug+1L, "  NP=", NP, ", NB=", NB, ", NC=", NC, "\n", sep="")
-        p1 <- p$average[1]
-        if (configuration[p1, 6])      # read velocity, if included
-            average <- getItemFromBuf(average, "v", i=i, type="average", debug=debug+1L)
-        if (configuration[p1, 7])      # read amplitude, if included
-            average <- getItemFromBuf(average, "a", i=i, type="average", debug=debug)
-        if (configuration[p1, 8])      # read correlation, if included
-            average <- getItemFromBuf(average, "q", i=i, type="average", debug=debug)
-        if (configuration[p1, 9])      # read altimeter, if included
-            average <- getItemFromBuf(average, "altimeter", i=i, type="average", debug=debug)
-        if (configuration[p1, 11])      # read AST, if included
-            average <- getItemFromBuf(average, "AST", i=i, type="average", debug=debug)
-        if (configuration[p1, 10])      # read altimeterRaw, if included
-            average <- getItemFromBuf(average, "altimeterRaw", i=i, type="average", debug=debug)
-        if (configuration[p1, 12])      # read echosounder, if included
-            average <- getItemFromBuf(average, "echosounder", i=i, type="average", debug=debug)
-        if (configuration[p1, 13])      # read AHRS, if included
-            average <- getItemFromBuf(average, "AHRS", i=i, type="average", debug=debug)
-        if (configuration[p1, 14])      # read percentGood, if included
-            average <- getItemFromBuf(average, "percentgood", i=i, type="average", debug=debug)
-        if (configuration[p1, 15])      # read stdDev, if included
-            average <- getItemFromBuf(average, "stdDev", i=i, type="average", debug=debug)
-        ch <- p$average[1] # FiXME: what is this for?
-        oceDebug(debug, "} # vector-read 'average'\n") # 0x15
-        ch <- p$average[1] # FiXME: what is this for?
+        average <- readBurstOrAverage(id=as.raw(0x16), debug=debug-1L)
+        #<> message("FIXME: DAN, is average$NEWaverage ok?")
+        #<> average <- list(i=1,
+        #<>     NEWaverage=NEWaverage,
+        #<>     configuration=configuration[p$average[1],],
+        #<>     numberOfBeams=nbeams[p$average[1]],
+        #<>     numberOfCells=ncells[p$average[1]],
+        #<>     originalCoordinate=coordinateSystem[p$average[1]],
+        #<>     oceCoordinate=coordinateSystem[p$average[1]],
+        #<>     cellSize=cellSize[p$average[1]],
+        #<>     blankingDistance=blankingDistance[p$average[1]],
+        #<>     ensemble=ensemble[p$average],
+        #<>     time=time[p$average],
+        #<>     orientation=orientation[p$average],
+        #<>     soundSpeed=soundSpeed[p$average],
+        #<>     temperature=temperature[p$average], # "temperature pressure sensor"
+        #<>     pressure=pressure[p$average],
+        #<>     heading=heading[p$average], pitch=pitch[p$average], roll=roll[p$average],
+        #<>     magnetometer=list(x=magnetometerx[p$average],
+        #<>         y=magnetometery[p$average],
+        #<>         z=magnetometerz[p$average]),
+        #<>     accelerometer=list(x=accelerometerx[p$average],
+        #<>         y=accelerometery[p$average],
+        #<>         z=accelerometerz[p$average]),
+        #<>     datasetDescription=datasetDescription[p$average],
+        #<>     temperatureMagnetometer=temperatureMagnetometer[p$average],
+        #<>     temperatureRTC=temperatureRTC[p$average],
+        #<>     transmitEnergy=transmitEnergy[p$average],
+        #<>     powerLevel=powerLevel[p$average])
+        #<> oceDebug(debug, "vector-read 'average' records (0x16) {\n")
+        #<> i <- d$index[which(d$id==0x16)] # pointers to "average" chunks in buf
+        #<> oceDebug(debug+1L, "global: ", vectorShow(i))
+        #<> i0v <- 77                      # pointer to data (incremented by getItemFromBuf() later).
+        #<> NP <- length(i)                # number of profiles of this type
+        #<> oceDebug(debug, "  ", vectorShow(i, n=3))
+        #<> NC <- average$numberOfCells    # number of cells for v,a,q
+        #<> NB <- average$numberOfBeams    # number of beams for v,a,q
+        #<> oceDebug(debug+1L, "  NP=", NP, ", NB=", NB, ", NC=", NC, "\n", sep="")
+        #<> p1 <- p$average[1]
+        #<> if (configuration[p1, 6])      # read velocity, if included
+        #<>     average <- getItemFromBuf(average, "v", i=i, type="average", debug=debug+1L)
+        #<> if (configuration[p1, 7])      # read amplitude, if included
+        #<>     average <- getItemFromBuf(average, "a", i=i, type="average", debug=debug)
+        #<> if (configuration[p1, 8])      # read correlation, if included
+        #<>     average <- getItemFromBuf(average, "q", i=i, type="average", debug=debug)
+        #<> if (configuration[p1, 9])      # read altimeter, if included
+        #<>     average <- getItemFromBuf(average, "altimeter", i=i, type="average", debug=debug)
+        #<> if (configuration[p1, 11])      # read AST, if included
+        #<>     average <- getItemFromBuf(average, "AST", i=i, type="average", debug=debug)
+        #<> if (configuration[p1, 10])      # read altimeterRaw, if included
+        #<>     average <- getItemFromBuf(average, "altimeterRaw", i=i, type="average", debug=debug)
+        #<> if (configuration[p1, 12])      # read echosounder, if included
+        #<>     average <- getItemFromBuf(average, "echosounder", i=i, type="average", debug=debug)
+        #<> if (configuration[p1, 13])      # read AHRS, if included
+        #<>     average <- getItemFromBuf(average, "AHRS", i=i, type="average", debug=debug)
+        #<> if (configuration[p1, 14])      # read percentGood, if included
+        #<>     average <- getItemFromBuf(average, "percentgood", i=i, type="average", debug=debug)
+        #<> if (configuration[p1, 15])      # read stdDev, if included
+        #<>     average <- getItemFromBuf(average, "stdDev", i=i, type="average", debug=debug)
+        #<> ch <- p$average[1] # FiXME: what is this for?
+        #<> oceDebug(debug, "} # vector-read 'average'\n") # 0x15
+        #<> ch <- p$average[1] # FiXME: what is this for?
     } else {
         average <- NULL
     }
