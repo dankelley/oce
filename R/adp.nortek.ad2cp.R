@@ -382,8 +382,10 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
         stop("cannot have to<0")
     if (from != 1)
         stop("must have from=1")
-    if (to == 0)
+    if (to == 0) {
         to <- 1e9                      # this should be enough to read any file
+        oceDebug(debug, "'to' not given; defaulting to ", to, " so we will likely get to the end of the file\n")
+    }
     if (is.character(file)) {
         filename <- fullFilename(file)
         file <- file(file, "rb")
@@ -791,12 +793,12 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
         #oceDebug(debug, "  ... NP=",NP,", NB=", NB, ", NC=", NC, "\n")
         NBC <- NB * NC
         oceDebug(debug, "getItemFromBuf: NB=", NB, ", NC=", NC, ", NBC=", NBC, ", NP=", NP, "\n")
-        oceDebug(debug, "    ", vectorShow(i))
-        oceDebug(debug, "    ", vectorShow(i0v))
+        oceDebug(debug, "   ", vectorShow(i))
+        #oceDebug(debug, "    ", vectorShow(i0v))
         if (name == "v") {
-            oceDebug(debug, "  'v' starts at i0v=", i0v, "\n")
+            oceDebug(debug, "   v starts at i0v=", i0v, "\n")
             velocityFactor <- velocityFactor[p[[type]][1]]
-            oceDebug(debug, "  velocityFactor=", velocityFactor, " for type=", type, "\n")
+            oceDebug(debug, "   velocityFactor=", velocityFactor, " for type=", type, "\n")
             if (NBC > 0L) {
                 iv <- gappyIndex(i, i0v, 2L*NBC)
                 oceDebug(debug, vectorShow(i))
@@ -813,7 +815,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
                 i0v <<- i0v + 2L * NBC
             }
         } else if (name == "a") {
-            oceDebug(debug, "  'a' starts at i0v=", i0v, "\n")
+            oceDebug(debug, "   a starts at i0v=", i0v, "\n")
             if (NBC > 0L) {
                 iv <- gappyIndex(i, i0v, NBC)
                 a <- readBin(d$buf[iv], "raw", size=1L, n=NP*NBC, endian="little")
@@ -825,7 +827,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
                 i0v <<- i0v + NBC
             }
         } else if (name == "q") {
-            oceDebug(debug, "  'q' starts at i0v=", i0v, "\n")
+            oceDebug(debug, "   q starts at i0v=", i0v, "\n")
             if (NBC > 0L) {
                 iv <- gappyIndex(i, i0v, NBC)
                 q <- readBin(d$buf[iv], "raw", size=1L, n=NP*NBC, endian="little")
@@ -842,7 +844,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
             # Nortek 2022 p89 (top) states altimeterDistance is int32, but the
             # values obtained with that setting ar crazy (e.g. 1109925788 m),
             # and Nortek 2017 p51 bottom states that it is a float value.
-            oceDebug(debug, "  'altimeter' starts at i0v=", i0v, "\n")
+            oceDebug(debug, "   altimeter starts at i0v=", i0v, "\n")
             iv <- gappyIndex(i, i0v, 4L)
             object$altimeterDistance <- readBin(buf[iv], "numeric", size=4L, n=NP, endian="little", signed=TRUE)
             message(vectorShow(object$altimeterDistance))
@@ -854,7 +856,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
             object$altimeterStatus <- readBin(buf[iv], "integer", size=2L, n=NP, endian="little", signed=FALSE)
             i0v <<- i0v + 2L
         } else if (name == "AST") {
-            oceDebug(debug, "  'AST' starts at i0v=", i0v, "\n")
+            oceDebug(debug, "   AST starts at i0v=", i0v, "\n")
             iv <- gappyIndex(i, i0v, 4L)
             object$ASTDistance <- readBin(buf[iv], "numeric", size=4L, n=NP, endian="little")
             message(vectorShow(object$ASTDistance))
@@ -874,7 +876,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
             # that the next occurs at ALTIRAW+8).
             i0v <<- i0v + 8L
         } else if (name == "altimeterRaw") {
-            oceDebug(debug, "  'altimeterRaw' starts at i0v=", i0v, "\n")
+            oceDebug(debug, "   altimeterRaw starts at i0v=", i0v, "\n")
             iv <- gappyIndex(i, i0v, 4L)
             NS <- readBin(buf[iv], "integer", size=4L, n=NP, endian="little") # no. samples (tmp var)
             dNS <- diff(range(NS))
@@ -895,14 +897,14 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
             i0v <<- i0v + 2L*NS
         } else if (name == "echosounder") {
             # Nortek (2017 p52): each profile has NC*16 bits
-            oceDebug(debug, "  'echosounder' starts at i0v=", i0v, " (NC=", NC, ", NP=", NP, ")\n")
+            oceDebug(debug, "   echosounder starts at i0v=", i0v, " (NC=", NC, ", NP=", NP, ")\n")
             iv <- gappyIndex(i, i0v, 2L*NC)
             #iv <- gappyIndex(i, i0v, 2L*NC)
             tmp <- readBin(buf[iv], "integer", size=2L, endian="little", n=NP*NC)
             object$echosounder <- matrix(tmp, nrow=NP, byrow=FALSE)
             i0v <<- i0v + 2L*NC
         } else if (name == "AHRS") {
-            oceDebug(debug, "  'AHRS' starts at i0v=", i0v, "\n")
+            oceDebug(debug, "   AHRS starts at i0v=", i0v, "\n")
             # AHRSRotationMatrix
             object$AHRS <- list(rotationMatrix=NULL,
                 quaternions=list(W=NULL, X=NULL, Y=NULL, Z=NULL),
@@ -941,13 +943,13 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
             i0v <<- i0v + 4L
         } else if (name == "percentgood") {
             # Nortek (2017) page 53: 8 bits, unsigned, appears after AHRS gyro z
-            oceDebug(debug, "  'percentgood' starts at i0v=", i0v, "; see Nortek (2017) p53\n")
+            oceDebug(debug, "   percentgood starts at i0v=", i0v, "; see Nortek (2017) p53\n")
             iv <- gappyIndex(i, i0v, 4L)
             object$percentgood <- as.integer(buf[iv])
             i0v <<- i0v + 4L
         } else if (name == "stdDev") {
             # Nortek (2017) page 53-54: appears after percentgood
-            oceDebug(debug, "  'stdDev' starts at i0v=", i0v, "; see Nortek (2017) p53-54\n")
+            oceDebug(debug, "    tdDev starts at i0v=", i0v, "; see Nortek (2017) p53-54\n")
             iv <- gappyIndex(i, i0v, 2L)
             object$stdDevPitch <- 0.01*readBin(buf[iv], "numeric", size=2L, endian="little", n=NP)
             i0v <<- i0v + 2L           # advance for next subitem
@@ -973,7 +975,8 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
 
     readBurstOrAverage <- function(id, debug=getOption("oceDebug")) # uses global 'd' and 'configuration'
     {
-        oceDebug(debug, "in readBurstOrAverage with id=0x", id, "\n")
+        type <- gsub(".*=","", ad2cpCodeToName(id))
+        oceDebug(debug+1L, "in readBurstOrAverage with id=0x", id, " (i.e. type ", type, ")\n")
         # str(d)
         #    List of 4
         #    $ buf   : raw [1:305988694] a5 0a a0 10 ...
@@ -1009,6 +1012,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
             originalCoordinate=coordinateSystem[look[1]],
             oceCoordinate=coordinateSystem[look[1]],
             cellSize=cellSize[look[1]],
+            nominalCorrelation=nominalCorrelation[look],
             blankingDistance=blankingDistance[look[1]],
             ensemble=ensemble[look],
             time=time[look],
@@ -1032,35 +1036,35 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
             powerLevel=powerLevel[look])
         oceDebug(debug, "vector-read 'average' records (0x16) {\n")
         i <<- d$index[look]            # pointers to "average" chunks in buf
-        oceDebug(debug+1L, "local: ", vectorShow(i))
+        oceDebug(debug+1L, "in readBurstOrAverage: ", vectorShow(i))
         i0v <<- 77                     # pointer to data (incremented by getItemFromBuf() later).
         NP <- length(i)                # number of profiles of this type
-        oceDebug(debug, "  ", vectorShow(i, n=3))
         NC <- rval$numberOfCells       # number of cells for v,a,q
         NB <- rval$numberOfBeams       # number of beams for v,a,q
         oceDebug(debug+1L, "  NP=", NP, ", NB=", NB, ", NC=", NC, "\n", sep="")
-        oceDebug(debug, "configuration0=", paste(configuration0, collapse=", "), "\n")
+        oceDebug(debug, "configuration0=", paste(ifelse(configuration0,"T","F"), collapse=", "), "\n")
+        oceDebug(debug+1, "DAN: type=", type, "\n")
         if (configuration0[6])          # read velocity, if included
-            rval <- getItemFromBuf(rval, "v", i=i, type="average", debug=debug+1L)
+            rval <- getItemFromBuf(rval, "v", i=i, type=type, debug=debug+1L)
         if (configuration0[7])          # read amplitude, if included
-            rval <- getItemFromBuf(rval, "a", i=i, type="average", debug=debug)
+            rval <- getItemFromBuf(rval, "a", i=i, type=type, debug=debug)
         if (configuration0[8])          # read correlation, if included
-            rval <- getItemFromBuf(rval, "q", i=i, type="average", debug=debug)
+            rval <- getItemFromBuf(rval, "q", i=i, type=type, debug=debug)
         if (configuration0[9])          # read altimeter, if included
-            rval <- getItemFromBuf(rval, "altimeter", i=i, type="average", debug=debug)
+            rval <- getItemFromBuf(rval, "altimeter", i=i, type=type, debug=debug)
         if (configuration0[11])         # read AST, if included
-            rval <- getItemFromBuf(rval, "AST", i=i, type="average", debug=debug)
+            rval <- getItemFromBuf(rval, "AST", i=i, type=type, debug=debug)
         if (configuration0[10])         # read altimeterRaw, if included
-            rval <- getItemFromBuf(rval, "altimeterRaw", i=i, type="average", debug=debug)
+            rval <- getItemFromBuf(rval, "altimeterRaw", i=i, type=type, debug=debug)
         if (configuration0[12])         # read echosounder, if included
-            rval <- getItemFromBuf(rval, "echosounder", i=i, type="average", debug=debug)
+            rval <- getItemFromBuf(rval, "echosounder", i=i, type=type, debug=debug)
         if (configuration0[13])         # read AHRS, if included
-            rval <- getItemFromBuf(rval, "AHRS", i=i, type="average", debug=debug)
+            rval <- getItemFromBuf(rval, "AHRS", i=i, type=type, debug=debug)
         if (configuration0[14])         # read percentGood, if included
-            rval <- getItemFromBuf(rval, "percentgood", i=i, type="average", debug=debug)
+            rval <- getItemFromBuf(rval, "percentgood", i=i, type=type, debug=debug)
         if (configuration0[15])         # read stdDev, if included
-            rval <- getItemFromBuf(rval, "stdDev", i=i, type="average", debug=debug)
-        oceDebug(debug, "} # vector-read 'average'\n") # 0x15
+            rval <- getItemFromBuf(rval, "stdDev", i=i, type=type, debug=debug)
+        oceDebug(debug+1, "} # vector-read for type=", type, "\n")
         rval
     }
 
@@ -1078,70 +1082,72 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
     #
     # Nortek (2017 p 48) "6.1.2 Burst/Average Data Record Definition (DF3)"
     if (length(p$burst) > 0L) {        # vector-read 'burst'=0x15 BOOKMARK=A
-        nbeamsBurst <- nbeams[p$burst[1]]
-        ncellsBurst <- ncells[p$burst[1]]
-        oceDebug(debug, "burst data records: nbeams:", nbeamsBurst, ", ncells:", ncellsBurst, "\n", sep="")
-        if (any(nbeams[p$burst] != nbeamsBurst))
-            stop("the 'burst' data records do not all have the same number of beams")
-        if (any(ncells[p$burst] != ncellsBurst))
-            stop("the 'burst' data records do not all have the same number of cells")
-        burst <- list(i=1,
-            configuration=configuration[p$burst[1],],
-            numberOfBeams=nbeamsBurst,
-            numberOfCells=ncellsBurst,
-            originalCoordinate=coordinateSystem[p$burst[1]],
-            oceCoordinate=coordinateSystem[p$burst[1]],
-            cellSize=cellSize[p$burst[1]],
-            blankingDistance=blankingDistance[p$burst[1]],
-            ensemble=ensemble[p$burst],
-            time=time[p$burst],
-            orientation=orientation[p$burst],
-            soundSpeed=soundSpeed[p$burst],
-            nominalCorrelation=nominalCorrelation[p$burst],
-            temperature=temperature[p$burst], # "temperature pressure sensor"
-            pressure=pressure[p$burst],
-            heading=heading[p$burst], pitch=pitch[p$burst], roll=roll[p$burst],
-            magnetometer=list(x=magnetometerx[p$burst],
-                y=magnetometery[p$burst],
-                z=magnetometerz[p$burst]),
-            accelerometer=list(x=accelerometerx[p$burst],
-                y=accelerometery[p$burst],
-                z=accelerometerz[p$burst]),
-            datasetDescription=datasetDescription[p$burst],
-            transmitEnergy=transmitEnergy[p$burst],
-            powerLevel=powerLevel[p$burst],
-            temperatureMagnetometer=temperatureMagnetometer[p$burst],
-            temperatureRTC=temperatureRTC[p$burst])
-        oceDebug(debug, "vector-read 'burst' records (0x15) {\n")
-        i <- d$index[which(d$id==0x15)] # pointers to "burst" chunks in buf
-        i0v <- 77                      # pointer to data (incremented by getItemFromBuf() later).
-        NP <- length(i)                # number of profiles of this type
-        oceDebug(debug, "  ", vectorShow(i, n=3))
-        NC <- burst$numberOfCells      # number of cells for v,a,q
-        NB <- burst$numberOfBeams      # number of beams for v,a,q
-        oceDebug(debug, "  NP=", NP, ", NB=", NB, ", NC=", NC, "\n", sep="")
-        p1 <- p$burst[1]
-        if (configuration[p1, 6])      # read velocity, if included
-            burst <- getItemFromBuf(burst, "v", i=i, type="burst", debug=debug)
-        if (configuration[p1, 7])      # read amplitude, if included
-            burst <- getItemFromBuf(burst, "a", i=i, type="burst", debug=debug)
-        if (configuration[p1, 8])      # read correlation, if included
-            burst <- getItemFromBuf(burst, "q", i=i, type="burst", debug=debug)
-        if (configuration[p1, 9])      # read altimeter, if included
-            burst <- getItemFromBuf(burst, "altimeter", i=i, type="burst", debug=debug)
-        if (configuration[p1, 11])      # read AST, if included
-            burst <- getItemFromBuf(burst, "AST", i=i, type="burst", debug=debug)
-        if (configuration[p1, 10])      # read altimeterRaw, if included
-            burst <- getItemFromBuf(burst, "altimeterRaw", i=i, type="burst", debug=debug)
-        if (configuration[p1, 12])      # read echosounder, if included
-            burst <- getItemFromBuf(burst, "echosounder", i=i, type="burst", debug=debug)
-        if (configuration[p1, 13])      # read AHRS, if included
-            burst <- getItemFromBuf(burst, "AHRS", i=i, type="burst", debug=debug)
-        if (configuration[p1, 14])      # read percentGood, if included
-            burst <- getItemFromBuf(burst, "percentgood", i=i, type="burst", debug=debug)
-        if (configuration[p1, 15])      # read stdDev, if included
-            burst <- getItemFromBuf(burst, "stdDev", i=i, type="burst", debug=debug)
-        ch <- p$burst[1] # FiXME: what is this for?
+        burst <- readBurstOrAverage(id=as.raw(0x15), debug=debug-1L)
+        #<> nbeamsBurst <- nbeams[p$burst[1]]
+        #<> ncellsBurst <- ncells[p$burst[1]]
+        #<> oceDebug(debug, "burst data records: nbeams:", nbeamsBurst, ", ncells:", ncellsBurst, "\n", sep="")
+        #<> if (any(nbeams[p$burst] != nbeamsBurst))
+        #<>     stop("the 'burst' data records do not all have the same number of beams")
+        #<> if (any(ncells[p$burst] != ncellsBurst))
+        #<>     stop("the 'burst' data records do not all have the same number of cells")
+        #<> burst <- list(i=1,
+        #<>     NEWburst=NEWburst,
+        #<>     configuration=configuration[p$burst[1],],
+        #<>     numberOfBeams=nbeamsBurst,
+        #<>     numberOfCells=ncellsBurst,
+        #<>     originalCoordinate=coordinateSystem[p$burst[1]],
+        #<>     oceCoordinate=coordinateSystem[p$burst[1]],
+        #<>     cellSize=cellSize[p$burst[1]],
+        #<>     blankingDistance=blankingDistance[p$burst[1]],
+        #<>     ensemble=ensemble[p$burst],
+        #<>     time=time[p$burst],
+        #<>     orientation=orientation[p$burst],
+        #<>     soundSpeed=soundSpeed[p$burst],
+        #<>     nominalCorrelation=nominalCorrelation[p$burst],
+        #<>     temperature=temperature[p$burst], # "temperature pressure sensor"
+        #<>     pressure=pressure[p$burst],
+        #<>     heading=heading[p$burst], pitch=pitch[p$burst], roll=roll[p$burst],
+        #<>     magnetometer=list(x=magnetometerx[p$burst],
+        #<>         y=magnetometery[p$burst],
+        #<>         z=magnetometerz[p$burst]),
+        #<>     accelerometer=list(x=accelerometerx[p$burst],
+        #<>         y=accelerometery[p$burst],
+        #<>         z=accelerometerz[p$burst]),
+        #<>     datasetDescription=datasetDescription[p$burst],
+        #<>     transmitEnergy=transmitEnergy[p$burst],
+        #<>     powerLevel=powerLevel[p$burst],
+        #<>     temperatureMagnetometer=temperatureMagnetometer[p$burst],
+        #<>     temperatureRTC=temperatureRTC[p$burst])
+        #<> oceDebug(debug, "vector-read 'burst' records (0x15) {\n")
+        #<> i <- d$index[which(d$id==0x15)] # pointers to "burst" chunks in buf
+        #<> i0v <- 77                      # pointer to data (incremented by getItemFromBuf() later).
+        #<> NP <- length(i)                # number of profiles of this type
+        #<> oceDebug(debug, "  ", vectorShow(i, n=3))
+        #<> NC <- burst$numberOfCells      # number of cells for v,a,q
+        #<> NB <- burst$numberOfBeams      # number of beams for v,a,q
+        #<> oceDebug(debug, "  NP=", NP, ", NB=", NB, ", NC=", NC, "\n", sep="")
+        #<> p1 <- p$burst[1]
+        #<> if (configuration[p1, 6])      # read velocity, if included
+        #<>     burst <- getItemFromBuf(burst, "v", i=i, type="burst", debug=debug)
+        #<> if (configuration[p1, 7])      # read amplitude, if included
+        #<>     burst <- getItemFromBuf(burst, "a", i=i, type="burst", debug=debug)
+        #<> if (configuration[p1, 8])      # read correlation, if included
+        #<>     burst <- getItemFromBuf(burst, "q", i=i, type="burst", debug=debug)
+        #<> if (configuration[p1, 9])      # read altimeter, if included
+        #<>     burst <- getItemFromBuf(burst, "altimeter", i=i, type="burst", debug=debug)
+        #<> if (configuration[p1, 11])      # read AST, if included
+        #<>     burst <- getItemFromBuf(burst, "AST", i=i, type="burst", debug=debug)
+        #<> if (configuration[p1, 10])      # read altimeterRaw, if included
+        #<>     burst <- getItemFromBuf(burst, "altimeterRaw", i=i, type="burst", debug=debug)
+        #<> if (configuration[p1, 12])      # read echosounder, if included
+        #<>     burst <- getItemFromBuf(burst, "echosounder", i=i, type="burst", debug=debug)
+        #<> if (configuration[p1, 13])      # read AHRS, if included
+        #<>     burst <- getItemFromBuf(burst, "AHRS", i=i, type="burst", debug=debug)
+        #<> if (configuration[p1, 14])      # read percentGood, if included
+        #<>     burst <- getItemFromBuf(burst, "percentgood", i=i, type="burst", debug=debug)
+        #<> if (configuration[p1, 15])      # read stdDev, if included
+        #<>     burst <- getItemFromBuf(burst, "stdDev", i=i, type="burst", debug=debug)
+        #<> ch <- p$burst[1] # FiXME: what is this for?
         oceDebug(debug, "} # vector-read 'burst'\n") # 0x15
     } else {
         burst <- NULL
