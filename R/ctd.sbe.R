@@ -840,6 +840,9 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
         if (0L == file.info(file)$size)
             stop("empty file '", file, "'")
     }
+    # If 'file' is a wildcard, call this function on each indicated file.  Only
+    # that filename, 'encoding' and 'debug' are passed along, so if you need
+    # detailed customizaation, call the function on those files directly.
     if (is.character(file) && grepl("\\*", file, ignore.case=TRUE)) {
         oceDebug(debug, "read.ctd.sbe(file=\"", file, "\") { # will read a series of files\n", unindent=1)
         files <- list.files(pattern=file)
@@ -848,11 +851,13 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
             pb <- txtProgressBar(1, nfiles, style=3)
         res <- vector("list", nfiles)
         for (i in 1:nfiles) {
-            res[[i]] <- read.ctd.sbe(files[i], debug=debug-1)
+            res[[i]] <- read.ctd.sbe(files[i], encoding=encoding, debug=debug-1)
             if (monitor)
                 setTxtProgressBar(pb, i)
         }
         oceDebug(debug, "} # read.ctd.sbe() {\n")
+        if (monitor)
+            close(pb)
         return(res)
     }
     oceDebug(debug, "read.ctd.sbe(file=\"", file, "\") {\n", unindent=1)
