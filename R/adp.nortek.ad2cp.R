@@ -713,8 +713,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
     # FIXME: next, using offset 59, is true only for currents ('average' or 'burst').
     # Nortek (2022) page 82.
     velocityFactor <- 10^readBin(d$buf[pointer1 + 59], "integer", size=1, n=N, signed=TRUE, endian="little")
-    message(vectorShow(pointer1))
-    message("velocityFactor=", velocityFactor[1], " (for current-profiler data ONLY)")
+    oceDebug(debug, "velocityFactor=", velocityFactor[1], " (for current-profiler data ONLY)")
     # 0.001 for 'average' in private file ~/Dropbox/oce_secret_data/ad2cp_secret_1.ad2cp
     powerLevel <- readBin(d$buf[pointer1 + 60], "integer", size=1, n=N, signed=TRUE, endian="little")
     temperatureMagnetometer <- 0.001 * readBin(d$buf[pointer2 + 61], "integer", size=2, n=N, signed=TRUE, endian="little")
@@ -1366,61 +1365,62 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
     # Nortek (2017 p60) "6.1.3 Bottom Track Data Record Definition (DF20)"
     #message(vectorShow(p$bottomTrack))
     if (length(p$bottomTrack) > 0) {   # vector-read bottomTrack==0x17 BOOKMARK=B
-        NEWbottomTrack <- readBottomTrack(id=as.raw(0x17), debug=debug-1L)
-        nbeamsBottomTrack <- nbeams[p$bottomTrack[1]]
-        ncellsBottomTrack <- ncells[p$bottomTrack[1]]
-        oceDebug(debug, "1+bottomTrack data records: nbeams:", nbeamsBottomTrack, ", ncells:", ncellsBottomTrack, "\n")
-        if (any(ncells[p$bottomTrack] != ncellsBottomTrack))
-            stop("the 'bottomTrack' data records do not all have the same number of cells")
-        if (any(nbeams[p$bottomTrack] != nbeamsBottomTrack))
-            stop("the 'bottomTrack' data records do not all have the same number of beams")
-        # FIXME: read other fields to the following list.
-        bottomTrack <- list(i=1,
-            NEWbottomTrack=NEWbottomTrack,
-            configuration=configuration[p$bottomTrack[1]],
-            numberOfCells=ncellsBottomTrack,
-            numberOfBeams=nbeamsBottomTrack,
-            originalCoordinate=coordinateSystem[p$bottomTrack[1]],
-            oceCoordinate=coordinateSystem[p$bottomTrack[1]],
-            cellSize=cellSize[p$bottomTrack[1]],
-            blankingDistance=blankingDistance[p$bottomTrack[1]],
-            ensemble=ensemble[p$bottomTrack],
-            time=time[p$bottomTrack],
-            orientation=orientation[p$bottomTrack],
-            soundSpeed=soundSpeed[p$bottomTrack],
-            #??? datasetDescription=datasetDescription[p$bottomTrack],
-            temperature=temperature[p$bottomTrack],
-            pressure=pressure[p$bottomTrack],
-            heading=heading[p$bottomTrack], pitch=pitch[p$bottomTrack], roll=roll[p$bottomTrack],
-            # nominalCorrelation is not present for bottomTrack
-            magnetometer=list(
-                x=magnetometerx[p$bottomTrack],
-                y=magnetometery[p$bottomTrack], # FIXME: some of these are wrong,
-                z=magnetometerz[p$bottomTrack]), # owing to differences from burst/average
-            accelerometer=list(
-                x=accelerometerx[p$bottomTrack],
-                y=accelerometery[p$bottomTrack],
-                z=accelerometerz[p$bottomTrack])
-            #? temperatureMagnetometer=temperatureMagnetometer[p$bottomTrack],
-            #? temperatureRTC=temperatureRTC[p$bottomTrack],
-            #? transmitEnergy=transmitEnergy[p$bottomTrack],
-            #? powerLevel=powerLevel[p$bottomTrack])
-            )
-        # FIXME:vectorize this
-        #message("FIXME: working here (need to vectorize bottomTrack reading)")
-        if (any(velocityIncluded[p$bottomTrack])) { # FIXME: do allocation later (MARK A)
-            if (1 < length(unique(velocityIncluded[p$bottomTrack])))
-                stop("velocityIncluded values non-unique across 'bottomTrack' data records")
-            bottomTrack$v <- array(double(), dim=c(length(p$bottomTrack), nbeamsBottomTrack))
-        }
-        if (any(altimeterIncluded[p$bottomTrack])) { # note name-shift from average/burst data
-            if (1 < length(unique(altimeterIncluded[p$bottomTrack])))
-                stop("altimeterIncluded values non-unique across 'bottomTrack' data records")
-            bottomTrack$altimeterDistance <- array(double(), dim=c(length(p$bottomTrack), nbeamsBottomTrack))
-        }
-        if (any(altimeterRawIncluded[p$bottomTrack])) { # note name-shift from average/burst data
-            bottomTrack$altimeterFigureOfMerit <- array(double(), dim=c(length(p$bottomTrack), nbeamsBottomTrack))
-        }
+        bottomTrack <- readBottomTrack(id=as.raw(0x17), debug=debug-1L)
+        #<> NEWbottomTrack <- readBottomTrack(id=as.raw(0x17), debug=debug-1L)
+        #<> nbeamsBottomTrack <- nbeams[p$bottomTrack[1]]
+        #<> ncellsBottomTrack <- ncells[p$bottomTrack[1]]
+        #<> oceDebug(debug, "1+bottomTrack data records: nbeams:", nbeamsBottomTrack, ", ncells:", ncellsBottomTrack, "\n")
+        #<> if (any(ncells[p$bottomTrack] != ncellsBottomTrack))
+        #<>     stop("the 'bottomTrack' data records do not all have the same number of cells")
+        #<> if (any(nbeams[p$bottomTrack] != nbeamsBottomTrack))
+        #<>     stop("the 'bottomTrack' data records do not all have the same number of beams")
+        #<> # FIXME: read other fields to the following list.
+        #<> bottomTrack <- list(i=1,
+        #<>     NEWbottomTrack=NEWbottomTrack,
+        #<>     configuration=configuration[p$bottomTrack[1]],
+        #<>     numberOfCells=ncellsBottomTrack,
+        #<>     numberOfBeams=nbeamsBottomTrack,
+        #<>     originalCoordinate=coordinateSystem[p$bottomTrack[1]],
+        #<>     oceCoordinate=coordinateSystem[p$bottomTrack[1]],
+        #<>     cellSize=cellSize[p$bottomTrack[1]],
+        #<>     blankingDistance=blankingDistance[p$bottomTrack[1]],
+        #<>     ensemble=ensemble[p$bottomTrack],
+        #<>     time=time[p$bottomTrack],
+        #<>     orientation=orientation[p$bottomTrack],
+        #<>     soundSpeed=soundSpeed[p$bottomTrack],
+        #<>     #??? datasetDescription=datasetDescription[p$bottomTrack],
+        #<>     temperature=temperature[p$bottomTrack],
+        #<>     pressure=pressure[p$bottomTrack],
+        #<>     heading=heading[p$bottomTrack], pitch=pitch[p$bottomTrack], roll=roll[p$bottomTrack],
+        #<>     # nominalCorrelation is not present for bottomTrack
+        #<>     magnetometer=list(
+        #<>         x=magnetometerx[p$bottomTrack],
+        #<>         y=magnetometery[p$bottomTrack], # FIXME: some of these are wrong,
+        #<>         z=magnetometerz[p$bottomTrack]), # owing to differences from burst/average
+        #<>     accelerometer=list(
+        #<>         x=accelerometerx[p$bottomTrack],
+        #<>         y=accelerometery[p$bottomTrack],
+        #<>         z=accelerometerz[p$bottomTrack])
+        #<>     #? temperatureMagnetometer=temperatureMagnetometer[p$bottomTrack],
+        #<>     #? temperatureRTC=temperatureRTC[p$bottomTrack],
+        #<>     #? transmitEnergy=transmitEnergy[p$bottomTrack],
+        #<>     #? powerLevel=powerLevel[p$bottomTrack])
+        #<>     )
+        #<> # FIXME:vectorize this
+        #<> #message("FIXME: working here (need to vectorize bottomTrack reading)")
+        #<> if (any(velocityIncluded[p$bottomTrack])) { # FIXME: do allocation later (MARK A)
+        #<>     if (1 < length(unique(velocityIncluded[p$bottomTrack])))
+        #<>         stop("velocityIncluded values non-unique across 'bottomTrack' data records")
+        #<>     bottomTrack$v <- array(double(), dim=c(length(p$bottomTrack), nbeamsBottomTrack))
+        #<> }
+        #<> if (any(altimeterIncluded[p$bottomTrack])) { # note name-shift from average/burst data
+        #<>     if (1 < length(unique(altimeterIncluded[p$bottomTrack])))
+        #<>         stop("altimeterIncluded values non-unique across 'bottomTrack' data records")
+        #<>     bottomTrack$altimeterDistance <- array(double(), dim=c(length(p$bottomTrack), nbeamsBottomTrack))
+        #<> }
+        #<> if (any(altimeterRawIncluded[p$bottomTrack])) { # note name-shift from average/burst data
+        #<>     bottomTrack$altimeterFigureOfMerit <- array(double(), dim=c(length(p$bottomTrack), nbeamsBottomTrack))
+        #<> }
     } else {
         bottomTrack <- NULL
     }
@@ -2035,40 +2035,41 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
             #}
             #average$i <- average$i + 1
 
-        } else if (key == 0x17) { # bottomTrack BOOKMARK B
-            #warning("FIXME: vectorize bottomTrack")
-            ncol <- bottomTrack$numberOfBeams
-            nrow <- bottomTrack$numberOfCells
-            # distance: uses variable name that makes sense for average/burst data
-            i0 <- 77 # FIXME: where is this documented?
-            if (velocityIncluded[ch]) { # configuration[,9]=bit8 [1 pages 60 and 62]
-                oceDebug(debug>1, "saving bottomTrack$v[", bottomTrack$i, ",]\n")
-                bottomTrack$v[bottomTrack$i, ] <-
-                    0.001*readBin(buf[i + i0 + seq(0,4*ncol-1)], "numeric", size=4, n=ncol, endian="little")
-                i0 <- i0 + 4*ncol
-                #message(" ... done")
-            }
-            if (altimeterIncluded[ch]) { # bottomTrack
-                # configuration[,9]=bit8 [1 pages 60 and 62]
-                oceDebug(debug>1, "saving bottomTrack$altimeterDistance[", bottomTrack$i, ",]\n")
-                bottomTrack$altimeterDistance[bottomTrack$i, ] <-
-                    readBin(buf[i + i0 + seq(0,4*ncol-1)], "numeric", size=4, n=ncol, endian="little")
-                i0 <- i0 + 4*ncol
-                #message(" ... done")
-            }
-            # figureOfMerit: uses variable name that makes sense for average/burst data
-            if (altimeterRawIncluded[ch]) { # bottomTrack
-                # configuration[,10]=bit9 [1 pages 60 and 62]
-                oceDebug(debug>1, "saving bottomTrack$altimeterFigureOfMerit[", bottomTrack$i, ",]\n")
-                # FIXME: is this integer or numeric?  R won't let me read 2-byte
-                # numerics, so -- for now -- I'm assuming integer. If it is
-                # actually numeric, I'll need to construct it byte by byte.
-                bottomTrack$altimeterFigureOfMerit[bottomTrack$i, ] <-
-                    readBin(buf[i + i0 + seq(0,2*ncol-1)], "integer", size=2, n=ncol, endian="little")
-                i0 <- i0 + 2*ncol
-                #message(" ... done")
-            }
-            bottomTrack$i <- bottomTrack$i + 1
+        } else if (FALSE && key == 0x17) { # bottomTrack BOOKMARK B
+
+            #<> #warning("FIXME: vectorize bottomTrack")
+            #<> ncol <- bottomTrack$numberOfBeams
+            #<> nrow <- bottomTrack$numberOfCells
+            #<> # distance: uses variable name that makes sense for average/burst data
+            #<> i0 <- 77 # FIXME: where is this documented?
+            #<> if (velocityIncluded[ch]) { # configuration[,9]=bit8 [1 pages 60 and 62]
+            #<>     oceDebug(debug>1, "saving bottomTrack$v[", bottomTrack$i, ",]\n")
+            #<>     bottomTrack$v[bottomTrack$i, ] <-
+            #<>         0.001*readBin(buf[i + i0 + seq(0,4*ncol-1)], "numeric", size=4, n=ncol, endian="little")
+            #<>     i0 <- i0 + 4*ncol
+            #<>     #message(" ... done")
+            #<> }
+            #<> if (altimeterIncluded[ch]) { # bottomTrack
+            #<>     # configuration[,9]=bit8 [1 pages 60 and 62]
+            #<>     oceDebug(debug>1, "saving bottomTrack$altimeterDistance[", bottomTrack$i, ",]\n")
+            #<>     bottomTrack$altimeterDistance[bottomTrack$i, ] <-
+            #<>         readBin(buf[i + i0 + seq(0,4*ncol-1)], "numeric", size=4, n=ncol, endian="little")
+            #<>     i0 <- i0 + 4*ncol
+            #<>     #message(" ... done")
+            #<> }
+            #<> # figureOfMerit: uses variable name that makes sense for average/burst data
+            #<> if (altimeterRawIncluded[ch]) { # bottomTrack
+            #<>     # configuration[,10]=bit9 [1 pages 60 and 62]
+            #<>     oceDebug(debug>1, "saving bottomTrack$altimeterFigureOfMerit[", bottomTrack$i, ",]\n")
+            #<>     # FIXME: is this integer or numeric?  R won't let me read 2-byte
+            #<>     # numerics, so -- for now -- I'm assuming integer. If it is
+            #<>     # actually numeric, I'll need to construct it byte by byte.
+            #<>     bottomTrack$altimeterFigureOfMerit[bottomTrack$i, ] <-
+            #<>         readBin(buf[i + i0 + seq(0,2*ncol-1)], "integer", size=2, n=ncol, endian="little")
+            #<>     i0 <- i0 + 2*ncol
+            #<>     #message(" ... done")
+            #<> }
+            #<> bottomTrack$i <- bottomTrack$i + 1
 
         } else if (key == 0x18) { # interleavedBurst
             oceDebug(debug>1, "handling ", ad2cpCodeToName(key), "\n", unindent=2)

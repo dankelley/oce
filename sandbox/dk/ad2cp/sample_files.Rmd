@@ -9,6 +9,9 @@ library(oce)
 files <- c(
     "~/Downloads/byg.ad2cp",
     "~/Downloads/med.ad2cp",
+    "~/Dropbox/oce_secret_data/ad2cp_secret_1.ad2cp",
+    "~/Dropbox/oce_secret_data/ad2cp_secret_2.ad2cp",
+    "~/Dropbox/oce_secret_data/ad2cp_secret_3.ad2cp",
     "~/git/oce/tests/testthat/local_data/ad2cp/S102791A002_Barrow_v2.ad2cp",
     "~/git/oce/tests/testthat/local_data/ad2cp/S102791A002_Barrow_v2_avgd.ad2cp",
     "~/git/oce/tests/testthat/local_data/ad2cp/ad2cp_01.ad2cp")
@@ -16,5 +19,6 @@ for (file in files)
 {
     cat(file, "\n")
     print(read.adp.ad2cp(file, which="?"))
+    cat("\n\n")
 }
 
