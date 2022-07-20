@@ -1,0 +1,20 @@
+---
+title: Sample AD2CP Files
+author: Dan Kelley
+date: "`Sys.date()`"
+---
+
+```{r}
+library(oce)
+files <- c(
+    "~/Downloads/byg.ad2cp",
+    "~/Downloads/med.ad2cp",
+    "~/git/oce/tests/testthat/local_data/ad2cp/S102791A002_Barrow_v2.ad2cp",
+    "~/git/oce/tests/testthat/local_data/ad2cp/S102791A002_Barrow_v2_avgd.ad2cp",
+    "~/git/oce/tests/testthat/local_data/ad2cp/ad2cp_01.ad2cp")
+for (file in files)
+{
+    cat(file, "\n")
+    print(read.adp.ad2cp(file, which="?"))
+}
+
