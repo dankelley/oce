@@ -698,12 +698,22 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
     magnetometery <- readBin(d$buf[pointer2 + 43], "integer", size=2, n=N, signed=TRUE, endian="little")
     magnetometerz <- readBin(d$buf[pointer2 + 45], "integer", size=2, n=N, signed=TRUE, endian="little")
     # Accelerometer (Table 6.2, page 82, ref 1b)
+    # IMOS https://github.com/aodn/imos-toolbox/blob/e19c8c604cd062a7212cdedafe11436209336ba5/Parser/readAD2CPBinary.m#L555
+    #  AccRawX starts at idx+46
+    #  IMOS_pointer = oce_pointer - 1
     accelerometerx <- 1.0/16384.0 * readBin(d$buf[pointer2 + 47], "integer", size=2, n=N, signed=TRUE, endian="little")
     accelerometery <- 1.0/16384.0 * readBin(d$buf[pointer2 + 49], "integer", size=2, n=N, signed=TRUE, endian="little")
     accelerometerz <- 1.0/16384.0 * readBin(d$buf[pointer2 + 51], "integer", size=2, n=N, signed=TRUE, endian="little")
+    # NOTE: all things below this are true only for current-profiler data; see
+    # page 82 of Nortek (2022) for the vexing issue of ambiguityVelocity being
+    # 2 bytes for current-profiler data but 4 bytes for bottom-track data.
     datasetDescription <- readBin(d$buf[pointer2 + 55], "integer", size=2, n=N, signed=FALSE, endian="little")
     transmitEnergy <- readBin(d$buf[pointer2 + 57], "integer", size=2, n=N, signed=FALSE, endian="little")
+    # FIXME: next, using offset 59, is true only for currents ('average' or 'burst').
+    # Nortek (2022) page 82.
     velocityFactor <- 10^readBin(d$buf[pointer1 + 59], "integer", size=1, n=N, signed=TRUE, endian="little")
+    message(vectorShow(pointer1))
+    message("velocityFactor=", velocityFactor[1], " (for current-profiler data ONLY)")
     # 0.001 for 'average' in private file ~/Dropbox/oce_secret_data/ad2cp_secret_1.ad2cp
     powerLevel <- readBin(d$buf[pointer1 + 60], "integer", size=1, n=N, signed=TRUE, endian="little")
     temperatureMagnetometer <- 0.001 * readBin(d$buf[pointer2 + 61], "integer", size=2, n=N, signed=TRUE, endian="little")
@@ -976,7 +986,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
     readBurstOrAverage <- function(id, debug=getOption("oceDebug")) # uses global 'd' and 'configuration'
     {
         type <- gsub(".*=","", ad2cpCodeToName(id))
-        oceDebug(debug+1L, "in readBurstOrAverage with id=0x", id, " (i.e. type ", type, ")\n")
+        oceDebug(debug+1L, "readBurstOrAverage(id=0x", id, ") # i.e. type=", type, "\n")
         # str(d)
         #    List of 4
         #    $ buf   : raw [1:305988694] a5 0a a0 10 ...
@@ -984,6 +994,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
         #    $ length: int [1:99] 1164 2540 1164 1164 1164 1164 1164 1164 1164 1164 ...
         #    $ id    : int [1:99] 21 22 21 21 21 21 21 21 21 21 ...
         look <- which(d$id == id)
+        oceDebug(debug+1L, vectorShow(look))
         configuration0 <- configuration[look[1],]
         velocityIncluded <- configuration0[6]
         amplitudeIncluded <- configuration0[7]
@@ -1034,16 +1045,14 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
             temperatureRTC=temperatureRTC[look],
             transmitEnergy=transmitEnergy[look],
             powerLevel=powerLevel[look])
-        oceDebug(debug, "vector-read 'average' records (0x16) {\n")
         i <<- d$index[look]            # pointers to "average" chunks in buf
-        oceDebug(debug+1L, "in readBurstOrAverage: ", vectorShow(i))
+        oceDebug(debug+1L, "in readBottomTrack: ", vectorShow(i))
         i0v <<- 77                     # pointer to data (incremented by getItemFromBuf() later).
         NP <- length(i)                # number of profiles of this type
         NC <- rval$numberOfCells       # number of cells for v,a,q
         NB <- rval$numberOfBeams       # number of beams for v,a,q
         oceDebug(debug+1L, "  NP=", NP, ", NB=", NB, ", NC=", NC, "\n", sep="")
         oceDebug(debug, "configuration0=", paste(ifelse(configuration0,"T","F"), collapse=", "), "\n")
-        oceDebug(debug+1, "DAN: type=", type, "\n")
         if (configuration0[6])          # read velocity, if included
             rval <- getItemFromBuf(rval, "v", i=i, type=type, debug=debug+1L)
         if (configuration0[7])          # read amplitude, if included
@@ -1067,6 +1076,110 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
         oceDebug(debug+1, "} # vector-read for type=", type, "\n")
         rval
     }
+
+    readBottomTrack <- function(id, debug=getOption("oceDebug")) # uses global 'd' and 'configuration'
+    {
+        type <- gsub(".*=","", ad2cpCodeToName(id))
+        oceDebug(debug+1L, "readBottomTrack(id=0x", id, ") # i.e. type=", type, "\n")
+        look <- which(d$id == id)
+        lookIndex <- d$index[look]
+        oceDebug(debug+1L, vectorShow(lookIndex))
+        # blanking
+        configuration0 <- configuration[look[1],]
+        velocityIncluded <- configuration0[6]
+        amplitudeIncluded <- configuration0[7]
+        correlationIncluded <- configuration0[8]
+        altimeterIncluded <- configuration0[9]
+        altimeterRawIncluded <- configuration0[10]
+        ASTIncluded <- configuration0[11]
+        echosounderIncluded <- configuration0[12]
+        AHRSIncluded <- configuration0[13]
+        percentGoodIncluded<- configuration0[14]
+        stdDevIncluded <- configuration0[15]
+        oceDebug(debug, vectorShow(velocityIncluded))
+        oceDebug(debug, vectorShow(amplitudeIncluded))
+        oceDebug(debug, vectorShow(correlationIncluded))
+        oceDebug(debug, vectorShow(altimeterIncluded))
+        oceDebug(debug, vectorShow(ASTIncluded))
+        oceDebug(debug, vectorShow(echosounderIncluded))
+        oceDebug(debug, vectorShow(AHRSIncluded))
+        oceDebug(debug, vectorShow(percentGoodIncluded))
+        oceDebug(debug, vectorShow(stdDevIncluded))
+        rval <- list(
+            configuration=configuration0,
+            numberOfBeams=nbeams[look[1]],
+            numberOfCells=ncells[look[1]],
+            originalCoordinate=coordinateSystem[look[1]],
+            oceCoordinate=coordinateSystem[look[1]],
+            cellSize=cellSize[look[1]],
+            nominalCorrelation=nominalCorrelation[look],
+            blankingDistance=blankingDistance[look[1]],
+            ensemble=ensemble[look],
+            time=time[look],
+            orientation=orientation[look],
+            soundSpeed=soundSpeed[look],
+            temperature=temperature[look], # "temperature pressure sensor"
+            pressure=pressure[look],
+            heading=heading[look], pitch=pitch[look], roll=roll[look],
+            magnetometer=list(
+                x=magnetometerx[look],
+                y=magnetometery[look],
+                z=magnetometerz[look]),
+            accelerometer=list(
+                x=accelerometerx[look],
+                y=accelerometery[look],
+                z=accelerometerz[look]),
+            datasetDescription=datasetDescription[look],
+            temperatureMagnetometer=temperatureMagnetometer[look],
+            temperatureRTC=temperatureRTC[look],
+            transmitEnergy=transmitEnergy[look],
+            powerLevel=powerLevel[look])
+        i <- d$index[look]             # pointers to "average" chunks in buf
+        oceDebug(debug+1L, "in readBottomTrack: ", vectorShow(i))
+        # IMOS https://github.com/aodn/imos-toolbox/blob/e19c8c604cd062a7212cdedafe11436209336ba5/Parser/readAD2CPBinary.m#L561
+        #  IMOS_pointer = oce_pointer - 3
+        #  Q: is IMOS taking ambiguity-velocity to
+        #  be 2 bytes, as for currents?  My reading
+        #  of Nortek (2022 page 80) is that for
+        #  _DF20BottomTrack, ambiguity-velocity is 4 bytes, whereas it is 2
+        #  bytes for _currentProfileData.  See
+        # https://github.com/dankelley/oce/issues/1980#issuecomment-1188992788
+        # for more context on this.
+        rval$velocityFactor <- 10^readBin(d$buf[lookIndex[1] + 61L], "integer", size=1, n=N, signed=TRUE, endian="little")
+        message(vectorShow(rval$velocityFactor))
+        # Nortek (2022 page 94, 52 in zero-indexed notation)
+        # IMOS uses idx+52 for ambiguityVelocity
+        #   https://github.com/aodn/imos-toolbox/blob/e19c8c604cd062a7212cdedafe11436209336ba5/Parser/readAD2CPBinary.m#L558
+        #   IMOS_pointer = oce_pointer - 1
+        rval$ambiguityVelocity <- rval$velocityFactor*readBin(d$buf[lookIndex[1] + 53:56], "integer", size=4L, n=1)
+        message(vectorShow(rval$ambiguityVelocity))
+        i0v <- 77                      # pointer to data (incremented by getItemFromBuf() later).
+        NP <- length(i)                # number of profiles of this type
+        NB <- rval$numberOfBeams       # number of beams for v,a,q
+        oceDebug(debug+1L, "  NP=", NP, ", NB=", NB, "\n", sep="")
+        oceDebug(debug, "configuration0=", paste(ifelse(configuration0,"T","F"), collapse=", "), "\n")
+        # NOTE: imos uses idx+72 for ensembleCounter
+        # https://github.com/aodn/imos-toolbox/blob/e19c8c604cd062a7212cdedafe11436209336ba5/Parser/readAD2CPBinary.m#L567
+        # oce_pointer = imos_pointer - 3
+        i0v <- 75L
+        # ensemble counter Nortek (2017) p62
+        iv <- gappyIndex(i, i0v, 4L)
+        rval$ensembleCounter <- readBin(d$buf[iv], "integer", size=4L, n=NP, endian="little")
+        message(vectorShow(rval$ensembleCounter))
+        i0v <- i0v + 4L
+        message("FIXME: only read velo if flag is set")
+        message("FIXME: scale the velo")
+        iv <- gappyIndex(i, i0v, 4L*NB)
+        tmp <- readBin(d$buf[iv], "integer", size=4L, n=NB*NP, endian="little")
+        rval$v <- rval$velocityFactor * matrix(tmp, ncol=NB, byrow=FALSE)
+
+        message(vectorShow(rval$v))
+        # FIXME: vel, then distance, then fig-merit, all optional
+        rval
+    }
+
+
+
 
     # The following conditional blocks handle the vectorized reading of various
     # data ID classes.  Although the data format is described in many manuals,
@@ -1222,9 +1335,9 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
     }
 
     # Nortek (2017 p60) "6.1.3 Bottom Track Data Record Definition (DF20)"
-    # BOOKMARK B
     #message(vectorShow(p$bottomTrack))
-    if (length(p$bottomTrack) > 0) {   # key=0x17 -- FIXME: vectorize this
+    if (length(p$bottomTrack) > 0) {   # vector-read bottomTrack==0x17 BOOKMARK=B
+        NEWbottomTrack <- readBottomTrack(id=as.raw(0x17), debug=debug-1L)
         nbeamsBottomTrack <- nbeams[p$bottomTrack[1]]
         ncellsBottomTrack <- ncells[p$bottomTrack[1]]
         oceDebug(debug, "1+bottomTrack data records: nbeams:", nbeamsBottomTrack, ", ncells:", ncellsBottomTrack, "\n")
@@ -1234,6 +1347,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
             stop("the 'bottomTrack' data records do not all have the same number of beams")
         # FIXME: read other fields to the following list.
         bottomTrack <- list(i=1,
+            NEWbottomTrack=NEWbottomTrack,
             configuration=configuration[p$bottomTrack[1]],
             numberOfCells=ncellsBottomTrack,
             numberOfBeams=nbeamsBottomTrack,
