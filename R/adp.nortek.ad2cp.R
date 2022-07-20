@@ -582,6 +582,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
     # (i.e. the header) has version 16, while the other records had version 3.
     commonData$version <- as.integer(d$buf[pointer1+1L])
     commonData$offsetOfData <- as.integer(d$buf[pointer1+2L])
+    #message("DAN holds commonData");DAN<<-commonData
     commonData$configuration <- local({
         tmp <- rawToBits(d$buf[pointer2+3L]) == 0x01
         dim(tmp) <- c(16, N)
@@ -1136,6 +1137,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
             powerLevel=powerLevel[look])
         i <- d$index[look]             # pointers to "average" chunks in buf
         oceDebug(debug+1L, "in readBottomTrack: ", vectorShow(i))
+        message(vectorShow(commonData$offsetOfData))
         # IMOS https://github.com/aodn/imos-toolbox/blob/e19c8c604cd062a7212cdedafe11436209336ba5/Parser/readAD2CPBinary.m#L561
         #  IMOS_pointer = oce_pointer - 3
         #  Q: is IMOS taking ambiguity-velocity to
@@ -1164,17 +1166,44 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
         i0v <- 75L
         # ensemble counter Nortek (2017) p62
         iv <- gappyIndex(i, i0v, 4L)
-        rval$ensembleCounter <- readBin(d$buf[iv], "integer", size=4L, n=NP, endian="little")
-        message(vectorShow(rval$ensembleCounter))
-        i0v <- i0v + 4L
-        message("FIXME: only read velo if flag is set")
-        message("FIXME: scale the velo")
-        iv <- gappyIndex(i, i0v, 4L*NB)
-        tmp <- readBin(d$buf[iv], "integer", size=4L, n=NB*NP, endian="little")
-        rval$v <- rval$velocityFactor * matrix(tmp, ncol=NB, byrow=FALSE)
-
-        message(vectorShow(rval$v))
-        # FIXME: vel, then distance, then fig-merit, all optional
+        rval$ensemble <- readBin(d$buf[iv], "integer", size=4L, n=NP, endian="little")
+        message(vectorShow(rval$ensemble))
+        message(vectorShow(commonData$offsetOfData[look]))
+        offsetOfData <- commonData$offsetOfData[look]
+        message(vectorShow(offsetOfData))
+        if (any(offsetOfData != offsetOfData[1])) {
+            print(offsetOfData)
+            stop("offsetOfData for bottom-track (printed above) are non-uniform")
+        }
+        i0v <- 1L + offsetOfData[1]
+        # velocity [Nortek 2017 p60 table 6.1.3]
+        if (configuration0[6]) {
+            message("FIXME: only read velo if flag is set")
+            message("about to read velo with i[1]=", i[1], ", i0v=",i0v,", NB=", NB)
+            message("configuration0: ", paste(configuration0, collapse=" "))
+            iv <- gappyIndex(i, i0v, 4L*NB)
+            tmp <- readBin(d$buf[iv], "integer", size=4L, n=NB*NP, endian="little")
+            rval$v <- rval$velocityFactor * matrix(tmp, ncol=NB, byrow=FALSE)
+            i0v <- i0v + 4L*NB
+        } else {
+            message("no velo data")
+        }
+        # distance [Nortek 2017, Table 6.1.3, pages 60 and 62]
+        if (configuration0[8]) {
+            message("read distance with i0v=", i0v)
+            iv <- gappyIndex(i, i0v, 4L*NB)
+            tmp <- readBin(d$buf[iv], "integer", size=4L, n=NB*NP, endian="little")
+            rval$distance <- 1e-3 * matrix(tmp, ncol=NB, byrow=FALSE)
+            i0v <- i0v + 4L*NB
+        }
+        # figure-of-merit [Nortek 2017, Table 6.1.3, pages 60 and 62]
+        if (configuration0[9]) {
+            message("read figure-of-merit with i0v=", i0v)
+            iv <- gappyIndex(i, i0v, 2L*NB)
+            tmp <- readBin(d$buf[iv], "integer", size=2L, n=NB*NP, endian="little", signed=FALSE)
+            rval$figureOfMerit <- matrix(tmp, ncol=NB, byrow=FALSE)
+            i0v <- i0v + 2L*NB
+        }
         rval
     }
 
