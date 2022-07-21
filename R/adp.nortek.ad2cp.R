@@ -1284,14 +1284,14 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
             temperatureRTC=temperatureRTC[look],
             transmitEnergy=transmitEnergy[look],
             powerLevel=powerLevel[look])
-        i <<- d$index[look]            # pointers to "average" chunks in buf
+        i <- d$index[look]            # pointers to "average" chunks in buf
         oceDebug(debug+1L, "in readEchosounder: ", vectorShow(i))
 
-        i0v <<- 77                     # pointer to data (incremented by getItemFromBuf() later).
+        i0v <- 77                      # pointer to data (incremented by getItemFromBuf() later).
         NP <- length(i)                # number of profiles of this type
-        NC <- rval$numberOfCells       # number of cells for v,a,q
-        NB <- rval$numberOfBeams       # number of beams for v,a,q
-        oceDebug(debug+1L, "  NP=", NP, ", NB=", NB, ", NC=", NC, "\n", sep="")
+                                       #NC <- rval$numberOfCells       # number of cells for v,a,q
+                                       #NB <- rval$numberOfBeams       # number of beams for v,a,q
+        #oceDebug(debug+1L, "  NP=", NP, ", NB=", NB, ", NC=", NC, "\n", sep="")
         oceDebug(debug, "configuration0=", paste(ifelse(configuration0,"T","F"), collapse=", "), "\n")
         if (configuration0[12])         # read echosounder, if included
             rval <- getItemFromBuf(rval, "echosounder", i=i, type=type, debug=debug)
@@ -1300,7 +1300,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
 
         i <- d$index[which(d$id==id)]
         i0v <- commonData$offsetOfData[1]
-        oceDebug(debug+1L, "set gappyIndex(c(", paste(head(i),collapse=","), "...), ", i0v, ", ", rval$numberOfCells, ") to read n=", NP*numberOfCells0, "=NP*numberOfCells uint16 values for echosounder\n")
+        oceDebug(debug+1L, "set gappyIndex(c(", paste(head(i),collapse=","), "...), ", i0v, ", ", rval$numberOfCells, ") to read n=", NP*rval$numberOfCells, "=NP*numberOfCells uint16 values for echosounder\n")
         iv <- gappyIndex(i, i0v, 2L*rval$numberOfCells)
         E <- readBin(d$buf[iv], "integer", size=2L, n=NP*rval$numberOfCells, endian="little", signed=FALSE)
         # m<-t(matrix(E,nrow=e$numberOfCells,byrow=FALSE));imagep(log10(m))
