@@ -44,9 +44,12 @@ stored in the \code{data} slot of the returned value.  The default, \code{which=
 means to read all the types.  In many cases, though, the user does not want
 to read everything at once, either as a way to speed processing or to avoid
 running out of memory.  For this reason, a common first step is instead to
-use \code{which="?"}, which gives a table of data types in the file, after which
-an individual type of interest is extracted.  The choices for that individual
-type are as follows:
+use \code{which="?"}, which gives a table of data types in the file or
+\code{which="??"}, which gives a data frame overviewing the data 'chunks'; after
+doing those things, the next step is usually to extract all the data, or an
+individual type of interest is extracted.  The choices of individual type are
+as follows:
+
 \code{"burst"} for ID code 0x15,
 \code{"average"} for ID code 0x16,
 \code{"bottomTrack"} for ID code 0x17,
@@ -113,7 +116,8 @@ data chunks, or to 3 for intensive debugging at both levels.}
 }
 \value{
 An \linkS4class{adp} object with \code{metadata$fileType} equal to \code{"AD2CP"}, a
-table (if \code{which="?"}), or a vector of character (if \code{which="text"}).
+table (if \code{which="?"}), a data frame (if \code{which="??"}), or a vector of
+character (if \code{which="text"}).
 }
 \description{
 This function reads Nortek AD2CP files, storing data elements in lists within

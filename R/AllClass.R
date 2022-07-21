@@ -727,6 +727,16 @@ setMethod(f="show",
                   } else {
                       if (inherits(d, "POSIXt")) {
                           cat(vectorShow(d, paste("  ", dataNames[i])))
+                      } else if (is.list(d)) {
+                          cat("  ", dataNames[i], ", a list with contents:\n", sep="")
+                          for (n in names(d)) {
+                              cat("    ", vectorShow(d[[n]], n), sep="")
+                          }
+                      } else if (is.data.frame(d)) {
+                          cat("  ", dataNames[i], ", a data frame with contents:\n", sep="")
+                          for (n in names(d)) {
+                              cat("    ", vectorShow(d[[n]], n), sep="")
+                          }
                       } else if (is.vector(d)) {
                           cat(vectorShow(d, paste("  ", dataNames[i])))
                       } else if (is.array(d)) {
@@ -740,12 +750,6 @@ setMethod(f="show",
                                   " at [1,1,1] position\n", sep="")
                           } else {
                               cat("   ", dataNames[i], ", an array of more than 3 dimensions\n")
-                          }
-                      } else if (is.data.frame(d)) {
-                          cat("  ", dataNames[i], ", a data frame with contents:\n", sep="")
-                          for (n in names(d)) {
-                              #cat("    ", n, " (with ", length(d[[n]]), " elements)\n", sep="")
-                              cat("    ", vectorShow(d[[n]], n), sep="")
                           }
                       }
                   }

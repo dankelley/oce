@@ -229,9 +229,12 @@ ad2cpCodeToName <- function(code)
 #' means to read all the types.  In many cases, though, the user does not want
 #' to read everything at once, either as a way to speed processing or to avoid
 #' running out of memory.  For this reason, a common first step is instead to
-#' use `which="?"`, which gives a table of data types in the file, after which
-#' an individual type of interest is extracted.  The choices for that individual
-#' type are as follows:
+#' use `which="?"`, which gives a table of data types in the file or
+#' `which="??"`, which gives a data frame overviewing the data 'chunks'; after
+#' doing those things, the next step is usually to extract all the data, or an
+#' individual type of interest is extracted.  The choices of individual type are
+#' as follows:
+#'
 #' `"burst"` for ID code 0x15,
 #' `"average"` for ID code 0x16,
 #' `"bottomTrack"` for ID code 0x17,
@@ -302,7 +305,8 @@ ad2cpCodeToName <- function(code)
 ##}
 #'
 #' @return An [adp-class] object with `metadata$fileType` equal to `"AD2CP"`, a
-#' table (if `which="?"`), or a vector of character (if `which="text"`).
+#' table (if `which="?"`), a data frame (if `which="??"`), or a vector of
+#' character (if `which="text"`).
 #'
 #' @author Dan Kelley
 #'
@@ -337,6 +341,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
         if (0L == file.info(file)$size)
             stop("empty file '", file, "'")
     }
+    debug <- min(3L, max(0L, as.integer(debug)))
     if (!interactive())
         monitor <- FALSE
     if (!missing(orientation))
@@ -360,8 +365,11 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
         ", plan=", if (planGiven) plan else "(missing)",
         ", type=\"", if (typeGiven) type else "(missing)",
         ", ignoreChecksums=", ignoreChecksums,
-        "\",...)\n", sep="", unindent=1)
-    oceDebug(debug, "HINT: set debug=2 or 3 to track more (or even more) processing steps\n")
+        "\",...)\n", sep="", unindent=1, style="bold")
+    if (debug == 1L)
+        oceDebug(debug, "HINT: set debug=2 for more output, or 3 for the maximum output\n")
+    else if (debug == 2L)
+        oceDebug(debug, "HINT: set debug=3 for even more output\n")
 
     if (typeGiven) {
         typeAllowed <- c("Signature1000", "Signature500", "Signature250")
@@ -419,14 +427,24 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
     nav <- do_ldc_ad2cp_in_file(filename, from, to, by,
         if (ignoreChecksums) 1L else 0L,
         debug-1L)
-    #DANnav<<-nav;message("FIXME: exported nav as DANnav")
-    # Return table of names, in alphabetical order
+    # Return overviews (whole file)
     if (which == "?") {
         t <- table(nav$id)
         names(t) <- ad2cpCodeToName(names(t))
         o <- order(names(t))
         return(t[o])
+    } else if (which == "??") {
+        bytesInHeader <- ifelse(nav$twelve_byte_header, 12L, 10L)
+        gi <- gappyIndex(nav$index-bytesInHeader+1L, 4L, 2L)
+        return(data.frame(
+                ID=ad2cpCodeToName(nav$id),
+                #index=nav$index,
+                start=nav$index-bytesInHeader+1))
+                #headerSize=as.integer(buf[nav$index-bytesInHeader+2L]),
+                #offsetOfData=as.integer(buf[nav$index+2L]),
+                #dataSize=readBin(buf[gi], "integer", size=2, endian="little", signed=FALSE)))
     }
+    #DANnav<<-nav;message("FIXME: exported nav as DANnav")
     #DAN<<-nav;save(DAN,file="DAN.rda")
     if (nav$twelve_byte_header == 1L)
         warning("file has 12-byte headers (an undocumented format), so be on the lookout for spurious results")
@@ -443,6 +461,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
     N <- length(focusIndex)
     if (N <= 0)
         stop("must have to > from")
+
 
     # Set up object, with key metadata to allow other functions to work.
     res <- new("adp")
@@ -1264,7 +1283,6 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
             powerLevel=powerLevel[look])
         i <<- d$index[look]            # pointers to "average" chunks in buf
         oceDebug(debug+1L, "in readEchosounder: ", vectorShow(i))
-        
 
         i0v <<- 77                     # pointer to data (incremented by getItemFromBuf() later).
         NP <- length(i)                # number of profiles of this type
@@ -1280,13 +1298,12 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
 
         i <- d$index[which(d$id==id)]
         i0v <- commonData$offsetOfData[1]
-        oceDebug(debug+1L, "set gappyIndex(", head(i,collapse=","), "..., ", i0v, ", ", numberOfCells0, ") to read n=", NP*numberOfCells0, "=NP*numberOfCells uint16 values for echosounder\n")
-        iv <- gappyIndex(i, i0v, numberOfCells0)
+        oceDebug(debug+1L, "set gappyIndex(c(", paste(head(i),collapse=","), "...), ", i0v, ", ", numberOfCells0, ") to read n=", NP*numberOfCells0, "=NP*numberOfCells uint16 values for echosounder\n")
+        iv <- gappyIndex(i, i0v, 2L*numberOfCells0)
         EEE <- readBin(d$buf[iv], "integer", size=2L, n=NP*numberOfCells0, endian="little", signed=FALSE)
         rval$EEE <- EEE
-        message("check d@data$echosounder$NEWechosounder$EE, noting numberOfCells=", numberOfCells0)
-
-        message("CHECK: is this 4? ", nbeams[look[1]])
+        oceDebug(debug, "check d@data$echosounder$NEWechosounder$EE, noting numberOfCells=", numberOfCells0, "\n")
+        oceDebug(debug, "CHECK: nbeams[look[1]]=", nbeams[look[1]], "\n")
 
         oceDebug(debug+1, "} # vector-read for type=", type, "\n")
         rval
@@ -2728,7 +2745,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
     if (missing(processingLog))
         processingLog <- paste("read.adp.ad2cp(file=\"", filename, "\", from=", from, ", to=", to, ", by=", by, ")", sep="")
     res@processingLog <- processingLogItem(processingLog)
-    oceDebug(debug, "} # read.adp.ad2cp()\n", unindent=1)
+    oceDebug(debug, "} # read.adp.ad2cp()\n", unindent=1, style="bold")
     res
 }
 
