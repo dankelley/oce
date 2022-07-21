@@ -1206,6 +1206,92 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
         rval
     }
 
+    readEchosounder  <- function(id, debug=getOption("oceDebug")) # uses global 'd' and 'configuration'
+    {
+        # Nortek (2022 page 87) "Section 6.4 EchosounderDataV3"
+        type <- gsub(".*=","", ad2cpCodeToName(id))
+        oceDebug(debug+1L, "readEchosounder(id=0x", id, ") # i.e. type=", type, "\n")
+        # str(d)
+        #    List of 4
+        #    $ buf   : raw [1:305988694] a5 0a a0 10 ...
+        #    $ index : int [1:99] 5530 6704 9254 10428 11602 12776 13950 15124 16298 17472 ...
+        #    $ length: int [1:99] 1164 2540 1164 1164 1164 1164 1164 1164 1164 1164 ...
+        #    $ id    : int [1:99] 21 22 21 21 21 21 21 21 21 21 ...
+        look <- which(d$id == id)
+        oceDebug(debug+1L, vectorShow(look))
+        lookIndex <- d$index[look]
+        oceDebug(debug+1L, vectorShow(lookIndex))
+        # According to Nortek (2022, Section 6.4, page 88), the only
+        # configuration flag is whether we have echosounder data, which seems a
+        # bit odd because the whole point of an echosounder ID must be that we
+        # have echosounder data.  Anyway, we will use that.
+        configuration0 <- configuration[look[1],]
+        echosounderIncluded0 <- configuration0[12]
+        oceDebug(debug, vectorShow(echosounderIncluded0))
+        numberOfCells0 <- readBin(d$buf[lookIndex[1] + 31:32], "integer", size=2L, n=1, endian="little", signed=FALSE)
+        oceDebug(debug, vectorShow(numberOfCells0))
+        frequency0 <- readBin(d$buf[lookIndex[1] + 53:54], "integer", size=2L, n=1, endian="little", signed=FALSE)
+        oceDebug(debug, vectorShow(frequency0))
+
+        rval <- list(
+            configuration=configuration0,
+            #numberOfBeams=nbeams[look[1]],
+            numberOfCells=ncells[look[1]],
+            #originalCoordinate=coordinateSystem[look[1]],
+            #oceCoordinate=coordinateSystem[look[1]],
+            cellSize=cellSize[look[1]],
+            nominalCorrelation=nominalCorrelation[look],
+            blankingDistance=blankingDistance[look[1]],
+            ensemble=ensemble[look],
+            time=time[look],
+            orientation=orientation[look],
+            soundSpeed=soundSpeed[look],
+            temperature=temperature[look], # "temperature pressure sensor"
+            pressure=pressure[look],
+            heading=heading[look], pitch=pitch[look], roll=roll[look],
+            magnetometer=list(
+                x=magnetometerx[look],
+                y=magnetometery[look],
+                z=magnetometerz[look]),
+            accelerometer=list(
+                x=accelerometerx[look],
+                y=accelerometery[look],
+                z=accelerometerz[look]),
+            datasetDescription=datasetDescription[look],
+            temperatureMagnetometer=temperatureMagnetometer[look],
+            temperatureRTC=temperatureRTC[look],
+            transmitEnergy=transmitEnergy[look],
+            powerLevel=powerLevel[look])
+        i <<- d$index[look]            # pointers to "average" chunks in buf
+        oceDebug(debug+1L, "in readEchosounder: ", vectorShow(i))
+        
+
+        i0v <<- 77                     # pointer to data (incremented by getItemFromBuf() later).
+        NP <- length(i)                # number of profiles of this type
+        NC <- rval$numberOfCells       # number of cells for v,a,q
+        NB <- rval$numberOfBeams       # number of beams for v,a,q
+        oceDebug(debug+1L, "  NP=", NP, ", NB=", NB, ", NC=", NC, "\n", sep="")
+        oceDebug(debug, "configuration0=", paste(ifelse(configuration0,"T","F"), collapse=", "), "\n")
+        if (configuration0[12])         # read echosounder, if included
+            rval <- getItemFromBuf(rval, "echosounder", i=i, type=type, debug=debug)
+        message(vectorShow(numberOfCells0))
+        message(vectorShow(d$index))
+        message(vectorShow(commonData$offsetOfData))
+
+        i <- d$index[which(d$id==id)]
+        i0v <- commonData$offsetOfData[1]
+        oceDebug(debug+1L, "set gappyIndex(", head(i,collapse=","), "..., ", i0v, ", ", numberOfCells0, ") to read n=", NP*numberOfCells0, "=NP*numberOfCells uint16 values for echosounder\n")
+        iv <- gappyIndex(i, i0v, numberOfCells0)
+        EEE <- readBin(d$buf[iv], "integer", size=2L, n=NP*numberOfCells0, endian="little", signed=FALSE)
+        rval$EEE <- EEE
+        message("check d@data$echosounder$NEWechosounder$EE, noting numberOfCells=", numberOfCells0)
+
+        message("CHECK: is this 4? ", nbeams[look[1]])
+
+        oceDebug(debug+1, "} # vector-read for type=", type, "\n")
+        rval
+    }
+
 
 
 
@@ -1667,7 +1753,9 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
         #message("next is ncellsEchosounder[p$echosounder]:")
         #print(ncellsEchosounder[p$echosounder])
         oceDebug(debug, "preparing to vector-read echosounder data\n")
+        NEWechosounder <- readEchosounder(id=as.raw(0x1c), debug=debug-1L)
         echosounder <- list(i=1,
+            NEWechosounder=NEWechosounder,
             numberOfCells=ncellsEchosounderWholeFile[p$echosounder[1]],
             numberOfBeams=1, # FIXME: is this right?
             originalCoordinate=coordinateSystem[p$echosounder[1]],
