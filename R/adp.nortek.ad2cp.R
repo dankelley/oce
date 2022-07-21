@@ -1247,17 +1247,20 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
         configuration0 <- configuration[look[1],]
         echosounderIncluded0 <- configuration0[12]
         oceDebug(debug, vectorShow(echosounderIncluded0))
-        numberOfCells0 <- readBin(d$buf[lookIndex[1] + 31:32], "integer", size=2L, n=1, endian="little", signed=FALSE)
-        oceDebug(debug, vectorShow(numberOfCells0))
-        frequency0 <- readBin(d$buf[lookIndex[1] + 53:54], "integer", size=2L, n=1, endian="little", signed=FALSE)
-        oceDebug(debug, vectorShow(frequency0))
 
         rval <- list(
-            configuration=configuration0,
+            configuration=configuration,
             #numberOfBeams=nbeams[look[1]],
-            numberOfCells=ncells[look[1]],
+            numberOfCells=readBin(d$buf[lookIndex[1] + 31:32],
+                "integer", size=2L, n=1, endian="little", signed=FALSE),
             #originalCoordinate=coordinateSystem[look[1]],
             #oceCoordinate=coordinateSystem[look[1]],
+            # Nortek (2022 Table 6.4 page 87) does not state a factor on
+            # frequency, but a sample file states 500 in the header lines, and
+            # the number I read with the next line is 5000, so I assume this a
+            # guess worth making.
+            frequency=0.1*readBin(d$buf[lookIndex[1]+53:54],
+                "integer", size=2L, n=1L, endian="little", signed=FALSE),
             cellSize=cellSize[look[1]],
             nominalCorrelation=nominalCorrelation[look],
             blankingDistance=blankingDistance[look[1]],
@@ -1292,23 +1295,19 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
         oceDebug(debug, "configuration0=", paste(ifelse(configuration0,"T","F"), collapse=", "), "\n")
         if (configuration0[12])         # read echosounder, if included
             rval <- getItemFromBuf(rval, "echosounder", i=i, type=type, debug=debug)
-        message(vectorShow(numberOfCells0))
         message(vectorShow(d$index))
         message(vectorShow(commonData$offsetOfData))
 
         i <- d$index[which(d$id==id)]
         i0v <- commonData$offsetOfData[1]
-        oceDebug(debug+1L, "set gappyIndex(c(", paste(head(i),collapse=","), "...), ", i0v, ", ", numberOfCells0, ") to read n=", NP*numberOfCells0, "=NP*numberOfCells uint16 values for echosounder\n")
-        iv <- gappyIndex(i, i0v, 2L*numberOfCells0)
-        EEE <- readBin(d$buf[iv], "integer", size=2L, n=NP*numberOfCells0, endian="little", signed=FALSE)
-        rval$EEE <- EEE
-        oceDebug(debug, "check d@data$echosounder$NEWechosounder$EE, noting numberOfCells=", numberOfCells0, "\n")
-        oceDebug(debug, "CHECK: nbeams[look[1]]=", nbeams[look[1]], "\n")
-
+        oceDebug(debug+1L, "set gappyIndex(c(", paste(head(i),collapse=","), "...), ", i0v, ", ", rval$numberOfCells, ") to read n=", NP*numberOfCells0, "=NP*numberOfCells uint16 values for echosounder\n")
+        iv <- gappyIndex(i, i0v, 2L*rval$numberOfCells)
+        E <- readBin(d$buf[iv], "integer", size=2L, n=NP*rval$numberOfCells, endian="little", signed=FALSE)
+        # m<-t(matrix(E,nrow=e$numberOfCells,byrow=FALSE));imagep(log10(m))
+        rval$echosounder <- t(matrix(E, nrow=rval$numberOfCells, byrow=FALSE))
         oceDebug(debug+1, "} # vector-read for type=", type, "\n")
         rval
     }
-
 
 
 
@@ -1770,67 +1769,67 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
         #message("next is ncellsEchosounder[p$echosounder]:")
         #print(ncellsEchosounder[p$echosounder])
         oceDebug(debug, "preparing to vector-read echosounder data\n")
-        NEWechosounder <- readEchosounder(id=as.raw(0x1c), debug=debug-1L)
-        echosounder <- list(i=1,
-            NEWechosounder=NEWechosounder,
-            numberOfCells=ncellsEchosounderWholeFile[p$echosounder[1]],
-            numberOfBeams=1, # FIXME: is this right?
-            originalCoordinate=coordinateSystem[p$echosounder[1]],
-            oceCoordinate=coordinateSystem[p$echosounder[1]],
-            cellSize=cellSize[p$echosounder[1]],
-            blankingDistance=blankingDistance[p$echosounder[1]],
-            ensemble=ensemble[p$echosounder],
-            time=time[p$echosounder],
-            orientation=orientation[p$echosounder],
-            heading=heading[p$echosounder],
-            pitch=pitch[p$echosounder],
-            roll=roll[p$echosounder],
-            pressure=pressure[p$echosounder],
-            temperature=temperature[p$echosounder],
-            temperatureMagnetometer=temperatureMagnetometer[p$echosounder],
-            temperatureRTC=temperatureRTC[p$echosounder],
-            soundSpeed=soundSpeed[p$echosounder],
-            magnetometer=list(x=magnetometerx[p$echosounder],
-                y=magnetometery[p$echosounder],
-                z=magnetometerz[p$echosounder]),
-            accelerometer=list(x=accelerometerx[p$echosounder],
-                y=accelerometery[p$echosounder],
-                z=accelerometerz[p$echosounder]),
-            nominalCorrelation=nominalCorrelation[p$echosounder],
-            datasetDescription=datasetDescription[p$echosounder],
-            transmitEnergy=transmitEnergy[p$echosounder],
-            powerLevel=powerLevel[p$echosounder])
-        oceDebug(debug, "vector-read 'echosounder' records (0x1c) {\n")
-        i <- d$index[which(d$id==0x1c)] # pointers to "echosounder" chunks in buf
-        i0v <- 77                      # pointer to data (incremented by getItemFromBuf() later).
-        NP <- length(i)                # number of profiles of this type
-        oceDebug(debug, "  ", vectorShow(i, n=3))
-        NC <- echosounder$numberOfCells    # number of cells for v,a,q
-        NB <- echosounder$numberOfBeams    # number of beams for v,a,q
-        oceDebug(debug, "  NP=", NP, ", NB=", NB, ", NC=", NC, "\n", sep="")
+        echosounder <- readEchosounder(id=as.raw(0x1c), debug=debug-1L)
+        #echosounder <- list(i=1,
+        #    NEWechosounder=NEWechosounder,
+        #    numberOfCells=ncellsEchosounderWholeFile[p$echosounder[1]],
+        #    numberOfBeams=1, # FIXME: is this right?
+        #    originalCoordinate=coordinateSystem[p$echosounder[1]],
+        #    oceCoordinate=coordinateSystem[p$echosounder[1]],
+        #    cellSize=cellSize[p$echosounder[1]],
+        #    blankingDistance=blankingDistance[p$echosounder[1]],
+        #    ensemble=ensemble[p$echosounder],
+        #    time=time[p$echosounder],
+        #    orientation=orientation[p$echosounder],
+        #    heading=heading[p$echosounder],
+        #    pitch=pitch[p$echosounder],
+        #    roll=roll[p$echosounder],
+        #    pressure=pressure[p$echosounder],
+        #    temperature=temperature[p$echosounder],
+        #    temperatureMagnetometer=temperatureMagnetometer[p$echosounder],
+        #    temperatureRTC=temperatureRTC[p$echosounder],
+        #    soundSpeed=soundSpeed[p$echosounder],
+        #    magnetometer=list(x=magnetometerx[p$echosounder],
+        #        y=magnetometery[p$echosounder],
+        #        z=magnetometerz[p$echosounder]),
+        #    accelerometer=list(x=accelerometerx[p$echosounder],
+        #        y=accelerometery[p$echosounder],
+        #        z=accelerometerz[p$echosounder]),
+        #    nominalCorrelation=nominalCorrelation[p$echosounder],
+        #    datasetDescription=datasetDescription[p$echosounder],
+        #    transmitEnergy=transmitEnergy[p$echosounder],
+        #    powerLevel=powerLevel[p$echosounder])
+        #oceDebug(debug, "vector-read 'echosounder' records (0x1c) {\n")
+        #i <- d$index[which(d$id==0x1c)] # pointers to "echosounder" chunks in buf
+        #i0v <- 77                      # pointer to data (incremented by getItemFromBuf() later).
+        #NP <- length(i)                # number of profiles of this type
+        #oceDebug(debug, "  ", vectorShow(i, n=3))
+        #NC <- echosounder$numberOfCells    # number of cells for v,a,q
+        #NB <- echosounder$numberOfBeams    # number of beams for v,a,q
+        #oceDebug(debug, "  NP=", NP, ", NB=", NB, ", NC=", NC, "\n", sep="")
 
-        p1 <- p$echosounder[1]
-        if (velocityIncluded[p1])
-            echosounder <- getItemFromBuf(echosounder, "v", i=i, type="echosounder", debug=debug)
-        if (amplitudeIncluded[p1])
-            echosounder <- getItemFromBuf(echosounder, "a", i=i, type="echosounder", debug=debug)
-        if (correlationIncluded[p1])
-            echosounder <- getItemFromBuf(echosounder, "q", i=i, type="echosounder", debug=debug)
-        if (altimeterIncluded[p1])
-            echosounder <- getItemFromBuf(echosounder, "altimeter", i=i, type="echosounder", debug=debug)
-        if (ASTIncluded[p1])
-            echosounder <- getItemFromBuf(echosounder, "AST", i=i, type="echosounder", debug=debug)
-        if (altimeterRawIncluded[p1])
-            echosounder <- getItemFromBuf(echosounder, "altimeterRaw", i=i, type="echosounder", debug=debug)
-        if (echosounderIncluded[p1])
-            echosounder <- getItemFromBuf(echosounder, "echosounder", i=i, type="echosounder", debug=debug)
-        if (AHRSIncluded[p1])
-            echosounder <- getItemFromBuf(echosounder, "AHRS", i=i, type="echosounder", debug=debug)
-        if (percentGoodIncluded[p1])
-            echosounder <- getItemFromBuf(echosounder, "percentgood", i=i, type="echosounder", debug=debug)
-        if (stdDevIncluded[p1])
-            echosounder <- getItemFromBuf(echosounder, "stdDev", i=i, type="echosounder", debug=debug)
-        ch <- p$echosounder[1] # FiXME: what is this for?
+        #p1 <- p$echosounder[1]
+        #if (velocityIncluded[p1])
+        #    echosounder <- getItemFromBuf(echosounder, "v", i=i, type="echosounder", debug=debug)
+        #if (amplitudeIncluded[p1])
+        #    echosounder <- getItemFromBuf(echosounder, "a", i=i, type="echosounder", debug=debug)
+        #if (correlationIncluded[p1])
+        #    echosounder <- getItemFromBuf(echosounder, "q", i=i, type="echosounder", debug=debug)
+        #if (altimeterIncluded[p1])
+        #    echosounder <- getItemFromBuf(echosounder, "altimeter", i=i, type="echosounder", debug=debug)
+        #if (ASTIncluded[p1])
+        #    echosounder <- getItemFromBuf(echosounder, "AST", i=i, type="echosounder", debug=debug)
+        #if (altimeterRawIncluded[p1])
+        #    echosounder <- getItemFromBuf(echosounder, "altimeterRaw", i=i, type="echosounder", debug=debug)
+        #if (echosounderIncluded[p1])
+        #    echosounder <- getItemFromBuf(echosounder, "echosounder", i=i, type="echosounder", debug=debug)
+        #if (AHRSIncluded[p1])
+        #    echosounder <- getItemFromBuf(echosounder, "AHRS", i=i, type="echosounder", debug=debug)
+        #if (percentGoodIncluded[p1])
+        #    echosounder <- getItemFromBuf(echosounder, "percentgood", i=i, type="echosounder", debug=debug)
+        #if (stdDevIncluded[p1])
+        #    echosounder <- getItemFromBuf(echosounder, "stdDev", i=i, type="echosounder", debug=debug)
+        #ch <- p$echosounder[1] # FiXME: what is this for?
         oceDebug(debug, "} # vector-read 'echosounder'\n")
     } else {
         echosounder <- NULL
