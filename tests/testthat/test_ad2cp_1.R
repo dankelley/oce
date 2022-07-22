@@ -18,12 +18,17 @@ library(oce)
 # 2. Note that the files cover the two cases of blankingDistance, which
 # can be in cm units in the file, or in mm units. The mm unit had to be
 # inferred by inspection of the file headers, since the Nortek
-# documentation is not clear; reference 1 table ## 6.1.2 on page 49
-# suggests blankingDistance is in cm if statusBits[2] (that is, bit 1 in
+# documentation is not clear; reference 1 table 6.1.2 on page 49
+# suggests blankingDistance is in cm if status[2,] (that is, bit 1 in
 # the Nortek count-from-0 notation) is 0x01, but there is no indicaiton of the
-# unit used, if statusBits[2] is 0x00, and the assumption of mm in that
-# case is based on examination of headr information. To see the bits
-# in statusBits[2], use read.adp.ad2cp(..., debug=1).
+# unit used, if status[2,] is 0x00, and the assumption of mm in that
+# case is based on examination of header information. To see the bits
+# in status[2,], use read.adp.ad2cp(..., debug=1). UPDATE: 2022-07-22
+# I am trying to use this status bit but something is just plain wrong.
+# The file has 2000 stored, so assuming cm gives 20m, which seems wrong
+# and also the header says 2.000 for BD. Since Nortek (2022) has multiple
+# errors, I am going to go with what BD says, and I will assume that
+# they 1 means in mm, not in cm.
 #
 # REFERENCES
 # 1. Nortek AS. \dQuote{Signature Integration 55|250|500|1000kHz.} Nortek AS, 2017.
