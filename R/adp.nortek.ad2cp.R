@@ -136,19 +136,22 @@ ad2cpCodeToName <- function(code)
 #'
 #' This function reads Nortek AD2CP files, storing data elements in lists within
 #' the `data` slot.  So, for example, the following might be a way to read and
-#' then access burst altimeter raw data.
+#' then access "burst" data.
 #'```
-#' d <- read.adp.ad2cp("file.ad2cp", which="burstAltimeterRaw")
-#' bar <- d[["burstAltimeterRaw"]]
+#' d <- read.adp.ad2cp("file.ad2cp")
+#' bar <- d[["burst"]]
 #'```
+#' although, if only `burst` data are required, using
+#'```
+#' d <- read.adp.ad2cp("file.ad2cp", which="burst")
+#' bar <- d[["burst"]]
+#'```
+#' will be faster, and will consume less memory.
 #'
-#' `read.adp.ad2cp` is incomplete in some important ways, partly because the
-#' Nortek manuals are somewhat incomplete and contradictory, and partly of a
-#' lack of other software that might be used for checking results.  The code has
-#' been tested with a small number of files that are available to the author,
-#' but these do not cover some cases that users might require. Given all of
-#' this, it makes sense to use this function with caution; see
-#' \dQuote{Cautionary Notes}.
+#' It is important to realize that `read.adp.ad2cp` is incomplete, and has not
+#' been well tested.  The data format is not documented thoroughly in the
+#' available Nortek manuals, and contradictions between the manuals require an
+#' uncomfortable degree of guesswork; see \dQuote{Cautionary Notes}.
 #'
 #' Some of the standard `read.adp.*` arguments are handled differently with this
 #' function, e.g. `by` must equal 1, because skipping records makes little sense
@@ -157,7 +160,7 @@ ad2cpCodeToName <- function(code)
 #'
 #' @section Cautionary Notes:
 #'
-#' In spring of 2022, support was added for 12-byte headers.  These are not
+#' Early in the year 2022, support was added for 12-byte headers.  These are not
 #' described in any Nortek document in the possession of the author of
 #' `read.adp.ad2cp(), although some personal communications made via
 #' https://github.com/dankelley/oce/issues have exposed some clues that have led
@@ -1707,6 +1710,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
         }
     }
 
+    # BOOKMARK B
     if (length(p$altimeter) > 0) {     # key=0x1e
         #if (any(version[p$altimeter] != 3))
         #    stop("can only decode 'altimeter' data records that are in 'version 3' format")
