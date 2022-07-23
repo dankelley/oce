@@ -60,9 +60,7 @@ as follows:
 \code{"DVLWaterTrack"} for ID code 0x1d,
 \code{"altimeter"} for ID code 0x1e,
 and
-\code{"averageAltimeter"} (\emph{not coded yet}) for ID code 0x1f.
-with each of those vectors holding lines inferred by splitting the string
-at occurrences of carriage-return/line-feed pairs).}
+\code{"averageAltimeter"} for ID code 0x1f.}
 
 \item{tz}{a character value indicating time zone. This is used in
 interpreting times stored in the file.}
@@ -130,25 +128,20 @@ bar <- d[["burstAltimeterRaw"]]
 }
 \details{
 \code{read.adp.ad2cp} is incomplete in some important ways, partly because the
-Nortek manuals are somewhat incomplete and contradictory, and partly because
-no other software is available for checking results.  The code has been
-tested with a small number of files that are available to the author, but
-these do not cover some cases that users might require. Given all of this, it
-makes sense to use this function with caution; see \dQuote{Cautionary Notes}.
+Nortek manuals are somewhat incomplete and contradictory, and partly of a
+lack of other software that might be used for checking results.  The code has
+been tested with a small number of files that are available to the author,
+but these do not cover some cases that users might require. Given all of
+this, it makes sense to use this function with caution; see
+\dQuote{Cautionary Notes}.
 
 Some of the standard \verb{read.adp.*} arguments are handled differently with this
 function, e.g. \code{by} must equal 1, because skipping records makes little sense
-with blended multiple streams. Plus, this function has an extra argument, not
-provided by other \verb{read.adp.*} functions: \code{which} may be used to focus on
-just a particular data stream.
+with blended multiple streams. Plus, this function has an argument, \code{which},
+that is not handled by other \verb{read.adp.*} functions.
 }
 \section{Cautionary Notes}{
 
-
-This function is in active development, and it may produce incorrect results,
-partly owing to the need to make guesses about the data format, given lack of
-clarity in various Nortek documents describing the file format, and also
-contradictions between these documents (see below).
 
 In spring of 2022, support was added for 12-byte headers.  These are not
 described in any Nortek document in the possession of the author of
@@ -162,8 +155,8 @@ might think that Nortek (2022) would be the best place to start, in coding to
 read AD2CP files. That would be a mistake, and a big one, at that. There
 are two reasons for this.
 
-First, Nortek (2022) is less clear about the data format than Nortek (2017)
-and Nortek (2018), as exemplified by a few examples.
+First, Nortek (2022) is not as clear in its descriptoin of the data format as
+Nortek (2017) and Nortek (2018), as exemplified by a few examples.
 \enumerate{
 \item Nortek (2022) does not explain how to compute checksums.  Without this,
 it's impossible to write code to read the files, because the chance of random
@@ -188,8 +181,7 @@ of items throughout the data-format tables. In coding \code{read.adp.ad2cp},
 the green "Unit" text was ignored in basically every case.
 }
 
-Second, Nortek (2022) contains some very significant errors,
-e.g. the following.
+Second, Nortek (2022) contains significant errors, e.g. the following.
 \enumerate{
 \item Nortek (2022 page 89) states the storage class for "Altimeter
 data.Altimeter distance" (called \code{AltimeterDistance} by the present function)

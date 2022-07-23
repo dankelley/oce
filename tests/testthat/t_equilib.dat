@@ -1,0 +1,51 @@
+% Equilibrium Tidal Potential
+%
+% Values taken from Appendix 1 of Godin, "The Analysis
+% of Tides", Univ. Toronto Press, 1972.
+%
+% Constants multiplied by 1e5.
+% Names as in tide3.dat
+%
+%Name Species A     B
+SA     0   1160     0
+SSA    0   7299     0
+MM     0   8254     0
+MSF    0   1376     0
+MF     0  15642     0
+ALP1   1      0   278
+2Q1    1      0   955
+SIG1   1      0  1153
+Q1     1      0  7216
+RHO1   1      0  1371
+O1     1      0 37689
+TAU1   1      0  -491
+BET1   1      0  -278
+NO1    1      0 -2964
+CHI1   1      0  -566
+PI1    1      0  1029
+P1     1      0 17584
+S1     1      0  -423
+K1     1      0-53050
+PSI1   1      0  -423
+THE1   1      0  -756
+J1     1      0 -2964
+OO1    1      0 -1623
+UPS1   1      0  -311
+OQ2    2    259     0
+EPS2   2    671     0
+2N2    2   2301     0
+MU2    2   2777     0
+N2     2  17387     0
+NU2    2   3303     0
+GAM2   2   -273     0
+H1     2   -314     0
+M2     2  90812     0
+H2     2    276     0
+LDA2   2   -670     0
+L2     2  -2567     0
+T2     2   2479     0
+S2     2  42358     0
+R2     2   -354     0
+K2     2  11506     0
+ETA2   2    643     0
+M3     3  -1188     0

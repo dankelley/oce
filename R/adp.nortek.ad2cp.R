@@ -130,6 +130,8 @@ ad2cpCodeToName <- function(code)
     rval
 }
 
+
+
 #' Read a Nortek AD2CP File
 #'
 #' This function reads Nortek AD2CP files, storing data elements in lists within
@@ -141,24 +143,19 @@ ad2cpCodeToName <- function(code)
 #'```
 #'
 #' `read.adp.ad2cp` is incomplete in some important ways, partly because the
-#' Nortek manuals are somewhat incomplete and contradictory, and partly because
-#' no other software is available for checking results.  The code has been
-#' tested with a small number of files that are available to the author, but
-#' these do not cover some cases that users might require. Given all of this, it
-#' makes sense to use this function with caution; see \dQuote{Cautionary Notes}.
+#' Nortek manuals are somewhat incomplete and contradictory, and partly of a
+#' lack of other software that might be used for checking results.  The code has
+#' been tested with a small number of files that are available to the author,
+#' but these do not cover some cases that users might require. Given all of
+#' this, it makes sense to use this function with caution; see
+#' \dQuote{Cautionary Notes}.
 #'
 #' Some of the standard `read.adp.*` arguments are handled differently with this
 #' function, e.g. `by` must equal 1, because skipping records makes little sense
-#' with blended multiple streams. Plus, this function has an extra argument, not
-#' provided by other `read.adp.*` functions: `which` may be used to focus on
-#' just a particular data stream.
+#' with blended multiple streams. Plus, this function has an argument, `which`,
+#' that is not handled by other `read.adp.*` functions.
 #'
 #' @section Cautionary Notes:
-#'
-#' This function is in active development, and it may produce incorrect results,
-#' partly owing to the need to make guesses about the data format, given lack of
-#' clarity in various Nortek documents describing the file format, and also
-#' contradictions between these documents (see below).
 #'
 #' In spring of 2022, support was added for 12-byte headers.  These are not
 #' described in any Nortek document in the possession of the author of
@@ -172,8 +169,8 @@ ad2cpCodeToName <- function(code)
 #' read AD2CP files. That would be a mistake, and a big one, at that. There
 #' are two reasons for this.
 #'
-#' First, Nortek (2022) is less clear about the data format than Nortek (2017)
-#' and Nortek (2018), as exemplified by a few examples.
+#' First, Nortek (2022) is not as clear in its descriptoin of the data format as
+#' Nortek (2017) and Nortek (2018), as exemplified by a few examples.
 #'
 #' 1. Nortek (2022) does not explain how to compute checksums.  Without this,
 #' it's impossible to write code to read the files, because the chance of random
@@ -199,8 +196,7 @@ ad2cpCodeToName <- function(code)
 #' of items throughout the data-format tables. In coding `read.adp.ad2cp`,
 #' the green "Unit" text was ignored in basically every case.
 #'
-#' Second, Nortek (2022) contains some very significant errors,
-#' e.g. the following.
+#' Second, Nortek (2022) contains significant errors, e.g. the following.
 #'
 #' 1. Nortek (2022 page 89) states the storage class for "Altimeter
 #' data.Altimeter distance" (called `AltimeterDistance` by the present function)
@@ -245,9 +241,7 @@ ad2cpCodeToName <- function(code)
 #' `"DVLWaterTrack"` for ID code 0x1d,
 #' `"altimeter"` for ID code 0x1e,
 #' and
-#' `"averageAltimeter"` (*not coded yet*) for ID code 0x1f.
-#' with each of those vectors holding lines inferred by splitting the string
-#' at occurrences of carriage-return/line-feed pairs).
+#' `"averageAltimeter"` for ID code 0x1f.
 #'
 #' @param tz a character value indicating time zone. This is used in
 #' interpreting times stored in the file.
@@ -702,6 +696,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
     heading <- 0.01 * readBin(d$buf[pointer2 + 25L], "integer", size=2L, n=N, signed=FALSE, endian="little")
     pitch <- 0.01 * readBin(d$buf[pointer2 + 27L], "integer", size=2L, n=N, endian="little")
     roll <- 0.01 * readBin(d$buf[pointer2 + 29L], "integer", size=2L, n=N, endian="little")
+    # See Nortek (2022) section 6.5, page 88 for bit-packing scheme used for BCC.
     # BCC (beam, coordinate system, and cell) uses packed bits to hold info on
     # the number of beams, coordinate-system, and the number cells. There are
     # two cases [1 page 49]:
@@ -1130,7 +1125,6 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
         look <- which(d$id == id)
         lookIndex <- d$index[look]
         oceDebug(debug+1L, vectorShow(lookIndex))
-        # blanking
         configuration0 <- configuration[look[1],]
         velocityIncluded <- configuration0[6]
         amplitudeIncluded <- configuration0[7]
@@ -1252,6 +1246,135 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
         rval
     }
 
+    readInterleavedBurst <- function(id, debug=getOption("oceDebug")) # uses global 'd' and 'configuration'
+    {
+        type <- gsub(".*=","", ad2cpCodeToName(id))
+        oceDebug(debug+1L, "readInterleavedBurst(id=0x", id, ") # i.e. type=", type, "\n")
+        look <- which(d$id == id)
+        lookIndex <- d$index[look]
+        oceDebug(debug+1L, vectorShow(lookIndex))
+        configuration0 <- configuration[look[1],]
+        velocityIncluded <- configuration0[6]
+        amplitudeIncluded <- configuration0[7]
+        correlationIncluded <- configuration0[8]
+        altimeterIncluded <- configuration0[9]
+        altimeterRawIncluded <- configuration0[10]
+        ASTIncluded <- configuration0[11]
+        echosounderIncluded <- configuration0[12]
+        AHRSIncluded <- configuration0[13]
+        percentGoodIncluded<- configuration0[14]
+        stdDevIncluded <- configuration0[15]
+        oceDebug(debug, vectorShow(velocityIncluded))
+        oceDebug(debug, vectorShow(amplitudeIncluded))
+        oceDebug(debug, vectorShow(correlationIncluded))
+        oceDebug(debug, vectorShow(altimeterIncluded))
+        oceDebug(debug, vectorShow(ASTIncluded))
+        oceDebug(debug, vectorShow(echosounderIncluded))
+        oceDebug(debug, vectorShow(AHRSIncluded))
+        oceDebug(debug, vectorShow(percentGoodIncluded))
+        oceDebug(debug, vectorShow(stdDevIncluded))
+        rval <- list(
+            configuration=configuration0,
+            numberOfBeams=nbeams[look[1]],
+            numberOfCells=ncells[look[1]],
+            originalCoordinate=coordinateSystem[look[1]],
+            oceCoordinate=coordinateSystem[look[1]],
+            cellSize=cellSize[look[1]],
+            nominalCorrelation=nominalCorrelation[look],
+            blankingDistance=blankingDistance[look[1]],
+            ensemble=ensemble[look],
+            time=time[look],
+            orientation=orientation[look],
+            soundSpeed=soundSpeed[look],
+            temperature=temperature[look], # "temperature pressure sensor"
+            pressure=pressure[look],
+            heading=heading[look], pitch=pitch[look], roll=roll[look],
+            magnetometer=list(
+                x=magnetometerx[look],
+                y=magnetometery[look],
+                z=magnetometerz[look]),
+            accelerometer=list(
+                x=accelerometerx[look],
+                y=accelerometery[look],
+                z=accelerometerz[look]),
+            datasetDescription=datasetDescription[look],
+            temperatureMagnetometer=temperatureMagnetometer[look],
+            temperatureRTC=temperatureRTC[look],
+            transmitEnergy=transmitEnergy[look],
+            powerLevel=powerLevel[look])
+        i <- d$index[look]             # pointers to "average" chunks in buf
+        oceDebug(debug+1L, "in readInterleavedBurst: ", vectorShow(i))
+        #message(vectorShow(commonData$offsetOfData))
+        # IMOS https://github.com/aodn/imos-toolbox/blob/e19c8c604cd062a7212cdedafe11436209336ba5/Parser/readAD2CPBinary.m#L561
+        #  IMOS_pointer = oce_pointer - 3
+        #  Q: is IMOS taking ambiguity-velocity to
+        #  be 2 bytes, as for currents?  My reading
+        #  of Nortek (2022 page 80) is that for
+        #  _DF20BottomTrack, ambiguity-velocity is 4 bytes, whereas it is 2
+        #  bytes for _currentProfileData.  See
+        # https://github.com/dankelley/oce/issues/1980#issuecomment-1188992788
+        # for more context on this.
+        rval$velocityFactor <- 10^readBin(d$buf[lookIndex[1] + 61L], "integer", size=1, n=N, signed=TRUE, endian="little")
+        #message(vectorShow(rval$velocityFactor))
+        # Nortek (2022 page 94, 52 in zero-indexed notation)
+        # IMOS uses idx+52 for ambiguityVelocity
+        #   https://github.com/aodn/imos-toolbox/blob/e19c8c604cd062a7212cdedafe11436209336ba5/Parser/readAD2CPBinary.m#L558
+        #   IMOS_pointer = oce_pointer - 1
+        rval$ambiguityVelocity <- rval$velocityFactor*readBin(d$buf[lookIndex[1] + 53:56], "integer", size=4L, n=1)
+        #message(vectorShow(rval$ambiguityVelocity))
+        i0v <- 77                      # pointer to data (incremented by getItemFromBuf() later).
+        NP <- length(i)                # number of profiles of this type
+        NB <- rval$numberOfBeams       # number of beams for v,a,q
+        oceDebug(debug+1L, "  NP=", NP, ", NB=", NB, "\n", sep="")
+        oceDebug(debug, "configuration0=", paste(ifelse(configuration0,"T","F"), collapse=", "), "\n")
+        # NOTE: imos uses idx+72 for ensembleCounter
+        # https://github.com/aodn/imos-toolbox/blob/e19c8c604cd062a7212cdedafe11436209336ba5/Parser/readAD2CPBinary.m#L567
+        # oce_pointer = imos_pointer - 3
+        i0v <- 75L
+        # ensemble counter Nortek (2017) p62
+        iv <- gappyIndex(i, i0v, 4L)
+        rval$ensemble <- readBin(d$buf[iv], "integer", size=4L, n=NP, endian="little")
+        #message(vectorShow(rval$ensemble))
+        #message(vectorShow(commonData$offsetOfData[look]))
+        offsetOfData <- commonData$offsetOfData[look]
+        #message(vectorShow(offsetOfData))
+        if (any(offsetOfData != offsetOfData[1])) {
+            print(offsetOfData)
+            stop("offsetOfData for bottom-track (printed above) are non-uniform")
+        }
+        i0v <- 1L + offsetOfData[1]
+        # velocity [Nortek 2017 p60 table 6.1.3]
+        if (configuration0[6]) {
+            #message("FIXME: only read velo if flag is set")
+            #message("about to read velo with i[1]=", i[1], ", i0v=",i0v,", NB=", NB)
+            #message("configuration0: ", paste(configuration0, collapse=" "))
+            iv <- gappyIndex(i, i0v, 4L*NB)
+            tmp <- readBin(d$buf[iv], "integer", size=4L, n=NB*NP, endian="little")
+            rval$v <- rval$velocityFactor * matrix(tmp, ncol=NB, byrow=FALSE)
+            i0v <- i0v + 4L*NB
+        } else {
+            #message("no velo data")
+        }
+        # distance [Nortek 2017, Table 6.1.3, pages 60 and 62]
+        if (configuration0[8]) {
+            #message("read distance with i0v=", i0v)
+            iv <- gappyIndex(i, i0v, 4L*NB)
+            tmp <- readBin(d$buf[iv], "integer", size=4L, n=NB*NP, endian="little")
+            rval$distance <- 1e-3 * matrix(tmp, ncol=NB, byrow=FALSE)
+            i0v <- i0v + 4L*NB
+        }
+        # figure-of-merit [Nortek 2017, Table 6.1.3, pages 60 and 62]
+        if (configuration0[9]) {
+            #message("read figure-of-merit with i0v=", i0v)
+            iv <- gappyIndex(i, i0v, 2L*NB)
+            tmp <- readBin(d$buf[iv], "integer", size=2L, n=NB*NP, endian="little", signed=FALSE)
+            rval$figureOfMerit <- matrix(tmp, ncol=NB, byrow=FALSE)
+            i0v <- i0v + 2L*NB
+        }
+        rval
+    }
+
+
     readEchosounder  <- function(id, debug=getOption("oceDebug")) # uses global 'd' and 'configuration'
     {
         # Nortek (2022 page 87) "Section 6.4 EchosounderDataV3"
@@ -1355,7 +1478,6 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
         data$burst <- readBurstOrAverage(id=as.raw(0x15), debug=debug-1L)
     }
     # Nortek (2017 p 48) "6.1.2 Burst/Average Data Record Definition (DF3)"
-    # Nortek (2020 p )
     if (length(p$average) > 0L) {      # vector-read 'average'=0x16
         data$average <- readBurstOrAverage(id=as.raw(0x16), debug=debug-1L)
     }
@@ -1367,6 +1489,8 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
     }
 
     if (length(p$interleavedBurst) > 0) { # key=0x18
+        data$interleavedBurstNEW <- readBurstOrAverage(id=as.raw(0x18), debug=debug-1L)
+
         #if (any(version[p$interleavedBurst] != 3))
         #    stop("can only decode 'interleavedBurst' data records that are in 'version 3' format")
         nbeamsInterleavedBurst <- nbeams[p$interleavedBurst[1]]
@@ -1788,12 +1912,15 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
         #oceDebug(debug > 0, sprintf("chunk ch=%d of %d, starting at buf[%d] has key=0x%02x (%s)\n",
         #        ch, N, i, key, ad2cpCodeToName(key)), unindent=1)
 
-        #<> if (FALSE && key == 0x15) { # burst (DISABLED unvectorized)
-        #<> } else if (FALSE && key == 0x16) { # average (DISABLED unvectorized)
-        #<> } else if (FALSE && key == 0x17) { # bottomTrack BOOKMARK B
-        #<> } else if (key == 0x18) { # interleavedBurst
+        #<> vectorized: key 0x15 burst
+        #<> vectorized: key 0x16 average
+        #<> vectorized: key 0x17 bottomTrack
+        #<> vectorized: key 0x1a burstAltimeterRaw
+        #<> vectorized: key 0x1c echosounder
+        #<> vectorized: key 0xa0 text
 
         if (key == 0x18) { # interleavedBurst
+            # BOOKMARK I
             #oceDebug(debug>1, "handling ", ad2cpCodeToName(key), "\n", unindent=2)
             ncol <- data$interleavedBurst$numberOfBeams
             nrow <- data$interleavedBurst$numberOfCells
@@ -1801,27 +1928,32 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
             n2 <- 2 * n
             i0 <- 77
             if (velocityIncluded[ch]) {
+                message("interleavedBurst$v at ch=",ch, " (nrow=", nrow, ", ncol=", ncol, ")")
                 v <- velocityFactor[ch]*readBin(d$buf[i+i0+seq(0,n2-1)],"integer",size=2,n=n,endian="little")
                 data$interleavedBurst$v[data$interleavedBurst$i, , ] <- matrix(v, ncol=ncol, nrow=nrow, byrow=FALSE)
                 i0 <- i0 + n2
             }
             if (amplitudeIncluded[ch]) {
+                message("interleavedBurst$a at ch=",ch)
                 a <- d$buf[i + i0 + seq(0,n-1)]
                 data$interleavedBurst$a[data$interleavedBurst$i, ,] <- matrix(a, ncol=ncol, nrow=nrow, byrow=FALSE)
                 i0 <- i0 + n
             }
             if (correlationIncluded[ch]) {
+                message("interleavedBurst$q at ch=",ch)
                 q <- d$buf[i + i0 + seq(0,n-1)]
                 data$interleavedBurst$q[data$interleavedBurst$i, ,] <- matrix(q, ncol=ncol, nrow=nrow, byrow=FALSE)
                 i0 <- i0 + n
             }
             if (altimeterIncluded[ch]) { # interleavedBurst
+                message("interleavedBurst$altimeterDistance at ch=",ch)
                 data$interleavedBurst$altimeterDistance[data$interleavedBurst$i] <- readBin(d$buf[i + i0 + 0:3],"numeric", size=4,n=1,endian="little")
                 # FIXME: perhaps save altimeterQuality from next 2 bytes
                 # FIXME: perhaps save altimeterStatus from next 2 bytes
                 i0 <- i0 + 8
             }
             if (ASTIncluded[ch]) { # interleavedBurst
+                message("interleavedBurst$ASTDistance,ASTPressure at ch=",ch)
                 # bytes: 4(distance)+2(quality)+2(offset)+4(pressure)+8(spare)
                 data$interleavedBurst$ASTDistance <- readBin(d$buf[i + i0 + 0:3], "numeric", size=4, n=1, endian="little")
                 i0 <- i0 + 8 # advance past distance (4 bytes), then skip skip quality (2 bytes) and offset (2 bytes)
@@ -1829,6 +1961,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
                 i0 <- i0 + 12 # skip spare (8 bytes)
             }
             if (altimeterRawIncluded[ch]) { # interleavedBurst
+                message("interleavedBurst$altimeterRaw at ch=",ch)
                 data$interleavedBurst$altimeterRawNumberOfSamples <- readBin(d$buf[i+i0+0:3],"integer",size=4,n=1,endian="little")
                 i0 <- i0 + 4
                 data$interleavedBurst$altimeterRawSampleDistance <- readBin(d$buf[i+i0+0:1],"integer",size=2,n=1,endian="little",signed=FALSE)
@@ -1837,15 +1970,15 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
                 i0 <- i0 + 2
             }
             if (echosounderIncluded[ch]) {
+                message("interleavedBurst$echosounder at ch=",ch)
                 data$interleavedBurst$echosounder[data$interleavedBurst$i, ] <- readBin(d$buf[i + i0 + seq(0,nrow-1)], size=2, n=nrow, endian="little")
                 i0 <- i0 + 2 * nrow
             }
             if (AHRSIncluded[ch]) {
+                message("interleavedBurst$AHRS at ch=",ch)
                 data$interleavedBurst$AHRS[data$interleavedBurst$i,] <- readBin(d$buf[i + i0 + 0:35], "numeric", size=4, n=9, endian="little")
             }
             data$interleavedBurst$i <- data$interleavedBurst$i + 1
-
-        #<> } else if (FALSE && key == 0x1a) { # burstAltimeterRaw (DISABLED unvectorized)
 
         } else if (key == 0x1b) { # DVLBottomTrack
 
@@ -1898,8 +2031,6 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
                 data$DVLBottomTrack$AHRS[data$DVLBottomTrack$i,] <- readBin(d$buf[i + i0 + 0:35], "numeric", size=4, n=9, endian="little")
             }
             data$DVLBottomTrack$i <- data$DVLBottomTrack$i + 1
-
-        #<> } else if (FALSE && key == 0x1c) { # echosounder
 
         } else if (key == 0x1d) { # DVLWaterTrack
 
@@ -2057,7 +2188,6 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
             }
             data$averageAltimeter$i <- data$averageAltimeter$i + 1
 
-        #<> } else if (key == 0xa0) { # text FIXME: remove once vectorized
         } else {
             # stop("unknown key 0x", as.raw(key), "; only 0x15 through 0x1f, plus 0xa0, are permitted", sep="")
             #cat("unknown key=", key, "\n", sep="")
@@ -2085,43 +2215,6 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
     data$status <- status
     data$activeConfiguration <- activeConfiguration
     data$orientation <- orientation
-
-    #<>if (!is.null(burst)) {             # 0x15
-    #<>    data$burst <- burst
-    #<>}
-    #<>if (!is.null(average)) {           # 0x16
-    #<>    data$average <- average
-    #<>}
-    #<>if (!is.null(bottomTrack)) {       # 0x17
-    #<>    data$bottomTrack <- bottomTrack
-    #<>}
-    #<>if (!is.null(interleavedBurst)) {  # 0x18
-    #<>    data$interleavedBurst <- interleavedBurst
-    #<>}
-    #<>if (!is.null(burstAltimeterRaw)) {    # 0x1a
-    #<>    oceDebug(debug, "storing data$burstAltimeterRaw, for later inclusion into returned value\n")
-    #<>    burstAltimeterRaw$i <- NULL
-    #<>    data$burstAltimeterRaw <- burstAltimeterRaw
-    #<>}
-    #<>if (!is.null(DVLBottomTrack)) {    # 0x1b
-    #<>    data$DVLBottomTrack <- DVLBottomTrack
-    #<>}
-    #<>if (!is.null(echosounder)) {       # 0x1c
-    #<>    data$echosounder <- echosounder
-    #<>}
-    #<>if (!is.null(DVLWaterTrack)) {     # 0x1d
-    #<>    data$DVLWaterTrack <- DVLWaterTrack
-    #<>}
-    #<>if (!is.null(altimeter)) {         # 0x1e
-    #<>    data$altimeter <- altimeter
-    #<>}
-    #<>if (!is.null(averageAltimeter)) {  # 0x1f
-    #<>    data$averageAltimeter <- averageAltimeter
-    #<>}
-    #if (!is.null(header)) {            # 0xa0 (first instance only, also in metadata$header)
-    #    data$text <- list()
-    #    data$text[[1]] <- header
-    #}
 
     # Insert metadata
     res@metadata$id <- id
