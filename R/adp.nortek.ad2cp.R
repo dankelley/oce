@@ -1197,7 +1197,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
         #   IMOS_pointer = oce_pointer - 1
         rval$ambiguityVelocity <- rval$velocityFactor*readBin(d$buf[lookIndex[1] + 53:56], "integer", size=4L, n=1)
         #message(vectorShow(rval$ambiguityVelocity))
-        i0v <- 77                      # pointer to data (incremented by getItemFromBuf() later).
+        i0v <<- 77                      # pointer to data (incremented by getItemFromBuf() later).
         NP <- length(i)                # number of profiles of this type
         NB <- rval$numberOfBeams       # number of beams for v,a,q
         oceDebug(debug+1L, "  NP=", NP, ", NB=", NB, "\n", sep="")
@@ -1205,7 +1205,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
         # NOTE: imos uses idx+72 for ensembleCounter
         # https://github.com/aodn/imos-toolbox/blob/e19c8c604cd062a7212cdedafe11436209336ba5/Parser/readAD2CPBinary.m#L567
         # oce_pointer = imos_pointer - 3
-        i0v <- 75L
+        i0v <<- 75L
         # ensemble counter Nortek (2017) p62
         iv <- gappyIndex(i, i0v, 4L)
         rval$ensemble <- readBin(d$buf[iv], "integer", size=4L, n=NP, endian="little")
@@ -1217,7 +1217,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
             print(offsetOfData)
             stop("offsetOfData for bottom-track (printed above) are non-uniform")
         }
-        i0v <- 1L + offsetOfData[1]
+        i0v <<- 1L + offsetOfData[1]
         # velocity [Nortek 2017 p60 table 6.1.3]
         if (configuration0[6]) {
             #message("FIXME: only read velo if flag is set")
@@ -1226,7 +1226,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
             iv <- gappyIndex(i, i0v, 4L*NB)
             tmp <- readBin(d$buf[iv], "integer", size=4L, n=NB*NP, endian="little")
             rval$v <- rval$velocityFactor * matrix(tmp, ncol=NB, byrow=FALSE)
-            i0v <- i0v + 4L*NB
+            i0v <<- i0v + 4L*NB
         } else {
             #message("no velo data")
         }
@@ -1236,7 +1236,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
             iv <- gappyIndex(i, i0v, 4L*NB)
             tmp <- readBin(d$buf[iv], "integer", size=4L, n=NB*NP, endian="little")
             rval$distance <- 1e-3 * matrix(tmp, ncol=NB, byrow=FALSE)
-            i0v <- i0v + 4L*NB
+            i0v <<- i0v + 4L*NB
         }
         # figure-of-merit [Nortek 2017, Table 6.1.3, pages 60 and 62]
         if (configuration0[9]) {
@@ -1244,7 +1244,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
             iv <- gappyIndex(i, i0v, 2L*NB)
             tmp <- readBin(d$buf[iv], "integer", size=2L, n=NB*NP, endian="little", signed=FALSE)
             rval$figureOfMerit <- matrix(tmp, ncol=NB, byrow=FALSE)
-            i0v <- i0v + 2L*NB
+            i0v <<- i0v + 2L*NB
         }
         rval
     }
@@ -1325,7 +1325,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
         #   IMOS_pointer = oce_pointer - 1
         rval$ambiguityVelocity <- rval$velocityFactor*readBin(d$buf[lookIndex[1] + 53:56], "integer", size=4L, n=1)
         #message(vectorShow(rval$ambiguityVelocity))
-        i0v <- 77                      # pointer to data (incremented by getItemFromBuf() later).
+        i0v <<- 77                      # pointer to data (incremented by getItemFromBuf() later).
         NP <- length(i)                # number of profiles of this type
         NB <- rval$numberOfBeams       # number of beams for v,a,q
         oceDebug(debug+1L, "  NP=", NP, ", NB=", NB, "\n", sep="")
@@ -1333,7 +1333,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
         # NOTE: imos uses idx+72 for ensembleCounter
         # https://github.com/aodn/imos-toolbox/blob/e19c8c604cd062a7212cdedafe11436209336ba5/Parser/readAD2CPBinary.m#L567
         # oce_pointer = imos_pointer - 3
-        i0v <- 75L
+        i0v <<- 75L                    # FIXME: don't these start at 77???
         # ensemble counter Nortek (2017) p62
         iv <- gappyIndex(i, i0v, 4L)
         rval$ensemble <- readBin(d$buf[iv], "integer", size=4L, n=NP, endian="little")
@@ -1345,7 +1345,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
             print(offsetOfData)
             stop("offsetOfData for bottom-track (printed above) are non-uniform")
         }
-        i0v <- 1L + offsetOfData[1]
+        i0v <<- 1L + offsetOfData[1]
         # velocity [Nortek 2017 p60 table 6.1.3]
         if (configuration0[6]) {
             #message("FIXME: only read velo if flag is set")
@@ -1354,7 +1354,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
             iv <- gappyIndex(i, i0v, 4L*NB)
             tmp <- readBin(d$buf[iv], "integer", size=4L, n=NB*NP, endian="little")
             rval$v <- rval$velocityFactor * matrix(tmp, ncol=NB, byrow=FALSE)
-            i0v <- i0v + 4L*NB
+            i0v <<- i0v + 4L*NB
         } else {
             #message("no velo data")
         }
@@ -1364,7 +1364,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
             iv <- gappyIndex(i, i0v, 4L*NB)
             tmp <- readBin(d$buf[iv], "integer", size=4L, n=NB*NP, endian="little")
             rval$distance <- 1e-3 * matrix(tmp, ncol=NB, byrow=FALSE)
-            i0v <- i0v + 4L*NB
+            i0v <<- i0v + 4L*NB
         }
         # figure-of-merit [Nortek 2017, Table 6.1.3, pages 60 and 62]
         if (configuration0[9]) {
@@ -1372,7 +1372,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
             iv <- gappyIndex(i, i0v, 2L*NB)
             tmp <- readBin(d$buf[iv], "integer", size=2L, n=NB*NP, endian="little", signed=FALSE)
             rval$figureOfMerit <- matrix(tmp, ncol=NB, byrow=FALSE)
-            i0v <- i0v + 2L*NB
+            i0v <<- i0v + 2L*NB
         }
         rval
     }
@@ -1440,7 +1440,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
         i <- d$index[look]            # pointers to "average" chunks in buf
         oceDebug(debug+1L, "in readEchosounder: ", vectorShow(i))
 
-        i0v <- 77                      # pointer to data (incremented by getItemFromBuf() later).
+        i0v <<- 77                     # pointer to data (incremented by getItemFromBuf() later).
         NP <- length(i)                # number of profiles of this type
                                        #NC <- rval$numberOfCells       # number of cells for v,a,q
                                        #NB <- rval$numberOfBeams       # number of beams for v,a,q
@@ -1452,7 +1452,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
         #message(vectorShow(commonData$offsetOfData))
 
         i <- d$index[which(d$id==id)]
-        i0v <- commonData$offsetOfData[1]
+        i0v <<- commonData$offsetOfData[1]
         oceDebug(debug+1L, "set gappyIndex(c(", paste(head(i),collapse=","), "...), ", i0v, ", ", rval$numberOfCells, ") to read n=", NP*rval$numberOfCells, "=NP*numberOfCells uint16 values for echosounder\n")
         iv <- gappyIndex(i, i0v, 2L*rval$numberOfCells)
         E <- readBin(d$buf[iv], "integer", size=2L, n=NP*rval$numberOfCells, endian="little", signed=FALSE)
@@ -1538,7 +1538,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
         # which is p89 of Nortek AS. “Signature Integration
         # 55|250|500|1000kHz.” Nortek AS, March 31, 2022)
         i <- d$index[which(d$id==0x1a)] # pointers to "burstAltimeterRaw" chunks in buf
-        i0v <- 77                      # pointer to data (incremented by getItemFromBuf() later).
+        i0v <<- 77                      # pointer to data (incremented by getItemFromBuf() later).
         NP <- length(i)            # number of profiles of this type
         oceDebug(debug, vectorShow(i, n=4))
         NC <- data$burstAltimeterRaw$numberOfCells # number of cells for v,a,q
