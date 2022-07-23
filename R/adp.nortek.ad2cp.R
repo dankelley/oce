@@ -1473,94 +1473,19 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
     # configuration matrix. Careful reading of Nortek (2017) Table 6.1.2 should
     # come before changing the code!
     #
+    # BOOKMARK A
+    #
     # Nortek (2017 p 48) "6.1.2 Burst/Average Data Record Definition (DF3)"
-    if (length(p$burst) > 0L) {        # vector-read 'burst'=0x15 BOOKMARK=A
+    if (length(p$burst) > 0L)         # burst (0x15)
         data$burst <- readBurstOrAverage(id=as.raw(0x15), debug=debug-1L)
-    }
     # Nortek (2017 p 48) "6.1.2 Burst/Average Data Record Definition (DF3)"
-    if (length(p$average) > 0L) {      # vector-read 'average'=0x16
+    if (length(p$average) > 0L)        # average (0x16)
         data$average <- readBurstOrAverage(id=as.raw(0x16), debug=debug-1L)
-    }
-
     # Nortek (2017 p60) "6.1.3 Bottom Track Data Record Definition (DF20)"
-    #message(vectorShow(p$bottomTrack))
-    if (length(p$bottomTrack) > 0) {   # vector-read bottomTrack==0x17 BOOKMARK=B
+    if (length(p$bottomTrack) > 0)     # bottomTrack (0x17)
         data$bottomTrack <- readBottomTrack(id=as.raw(0x17), debug=debug-1L)
-    }
-
-    if (length(p$interleavedBurst) > 0) { # key=0x18
-        data$interleavedBurstNEW <- readBurstOrAverage(id=as.raw(0x18), debug=debug-1L)
-
-        #if (any(version[p$interleavedBurst] != 3))
-        #    stop("can only decode 'interleavedBurst' data records that are in 'version 3' format")
-        nbeamsInterleavedBurst <- nbeams[p$interleavedBurst[1]]
-        ncellsInterleavedBurst <- ncells[p$interleavedBurst[1]]
-        oceDebug(debug, "interleavedBurst data records: nbeams:", nbeamsInterleavedBurst, ", ncells:", ncellsInterleavedBurst, "\n")
-        if (any(ncells[p$interleavedBurst] != ncellsInterleavedBurst))
-            stop("the 'interleavedBurst' data records do not all have the same number of cells")
-        if (any(nbeams[p$interleavedBurst] != nbeamsInterleavedBurst))
-            stop("the 'interleavedBurst' data records do not all have the same number of beams")
-        # FIXME: read other fields to the following list.
-        data$interleavedBurst <- list(i=1,
-            numberOfCells=ncellsInterleavedBurst,
-            numberOfBeams=nbeamsInterleavedBurst,
-            originalCoordinate=coordinateSystem[p$interleavedBurst[1]],
-            oceCoordinate=coordinateSystem[p$interleavedBurst[1]],
-            cellSize=cellSize[p$interleavedBurst[1]],
-            blankingDistance=blankingDistance[p$interleavedBurst[1]],
-            ensemble=ensemble[p$interleavedBurst],
-            time=time[p$interleavedBurst],
-            orientation=orientation[p$interleavedBurst],
-            heading=heading[p$interleavedBurst],
-            pitch=pitch[p$interleavedBurst],
-            roll=roll[p$interleavedBurst],
-            pressure=pressure[p$interleavedBurst],
-            temperature=temperature[p$interleavedBurst],
-            temperatureMagnetometer=temperatureMagnetometer[p$interleavedBurst],
-            temperatureRTC=temperatureRTC[p$interleavedBurst],
-            soundSpeed=soundSpeed[p$interleavedBurst],
-            magnetometerx=magnetometerx[p$interleavedBurst],
-            magnetometery=magnetometery[p$interleavedBurst],
-            magnetometerz=magnetometerz[p$interleavedBurst],
-            accelerometerx=accelerometerx[p$interleavedBurst],
-            accelerometery=accelerometery[p$interleavedBurst],
-            accelerometerz=accelerometerz[p$interleavedBurst],
-            nominalCorrelation=nominalCorrelation[p$interleavedBurst],
-            datasetDescription=datasetDescription[p$interleavedBurst],
-            transmitEnergy=transmitEnergy[p$interleavedBurst],
-            powerLevel=powerLevel[p$interleavedBurst])
-        if (any(velocityIncluded[p$interleavedBurst])) {
-            if (1 < length(unique(velocityIncluded[p$interleavedBurst])))
-                stop("velocityIncluded values non-unique across 'interleavedBurst' data records")
-            data$interleavedBurst$v <- array(double(), dim=c(length(p$interleavedBurst), ncellsInterleavedBurst, nbeamsInterleavedBurst))
-        }
-        if (any(amplitudeIncluded[p$interleavedBurst])) {
-            if (1 < length(unique(amplitudeIncluded[p$interleavedBurst])))
-                stop("amplitudeIncluded values non-unique across 'interleavedBurst' data records")
-            data$interleavedBurst$a <- array(raw(), dim=c(length(p$interleavedBurst), ncellsInterleavedBurst, nbeamsInterleavedBurst))
-        }
-        if (any(correlationIncluded[p$interleavedBurst])) {
-            if (1 < length(unique(correlationIncluded[p$interleavedBurst])))
-                stop("correlationIncluded values non-unique across 'interleavedBurst' data records")
-            data$interleavedBurst$q <- array(raw(), dim=c(length(p$interleavedBurst), ncellsInterleavedBurst, nbeamsInterleavedBurst))
-        }
-        if (any(altimeterIncluded[p$interleavedBurst])) {
-            if (1 < length(unique(altimeterIncluded[p$burst])))
-                stop("altimeterIncluded values non-unique across 'interleavedBurst' data records")
-            data$interleavedBurst$altimeterDistance <- vector("numeric", length(p$interleavedBurst))
-        }
-        if (any(ASTIncluded[p$interleavedBurst])) {
-            data$interleavedBurst$ASTDistance <- vector("numeric", length(p$interleavedBurst))
-            data$interleavedBurst$ASTPressure <- vector("numeric", length(p$interleavedBurst))
-        }
-        if (any(echosounderIncluded[p$interleavedBurst])) {
-            data$interleavedBurst$echosounder <- matrix(double(), ncol=length(p$interleavedBurst), nrow=ncellsInterleavedBurst)
-        }
-        if (any(AHRSIncluded[p$interleavedBurst])) {
-            data$interleavedBurst$AHRS <- matrix(numeric(), nrow=length(p$interleavedBurst), ncol=9)
-        }
-    }
-
+    if (length(p$interleavedBurst) > 0) # key=0x18
+        data$interleavedBurst <- readBurstOrAverage(id=as.raw(0x18), debug=debug-1L)
     if (length(p$burstAltimeterRaw) > 0L) { # key=0x1a (burst Altimeter raw record)
         oceDebug(debug, "length(p$burstAltimeterRaw)=", length(p$burstAltimeterRaw), "\n", sep="")
         #if (any(version[p$burstAltimeter] != 3))
@@ -1915,72 +1840,12 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
         #<> vectorized: key 0x15 burst
         #<> vectorized: key 0x16 average
         #<> vectorized: key 0x17 bottomTrack
+        #<> vectorized: key 0x18 interleavedBurst
         #<> vectorized: key 0x1a burstAltimeterRaw
         #<> vectorized: key 0x1c echosounder
         #<> vectorized: key 0xa0 text
 
-        if (key == 0x18) { # interleavedBurst
-            # BOOKMARK I
-            #oceDebug(debug>1, "handling ", ad2cpCodeToName(key), "\n", unindent=2)
-            ncol <- data$interleavedBurst$numberOfBeams
-            nrow <- data$interleavedBurst$numberOfCells
-            n <- ncol * nrow
-            n2 <- 2 * n
-            i0 <- 77
-            if (velocityIncluded[ch]) {
-                message("interleavedBurst$v at ch=",ch, " (nrow=", nrow, ", ncol=", ncol, ")")
-                v <- velocityFactor[ch]*readBin(d$buf[i+i0+seq(0,n2-1)],"integer",size=2,n=n,endian="little")
-                data$interleavedBurst$v[data$interleavedBurst$i, , ] <- matrix(v, ncol=ncol, nrow=nrow, byrow=FALSE)
-                i0 <- i0 + n2
-            }
-            if (amplitudeIncluded[ch]) {
-                message("interleavedBurst$a at ch=",ch)
-                a <- d$buf[i + i0 + seq(0,n-1)]
-                data$interleavedBurst$a[data$interleavedBurst$i, ,] <- matrix(a, ncol=ncol, nrow=nrow, byrow=FALSE)
-                i0 <- i0 + n
-            }
-            if (correlationIncluded[ch]) {
-                message("interleavedBurst$q at ch=",ch)
-                q <- d$buf[i + i0 + seq(0,n-1)]
-                data$interleavedBurst$q[data$interleavedBurst$i, ,] <- matrix(q, ncol=ncol, nrow=nrow, byrow=FALSE)
-                i0 <- i0 + n
-            }
-            if (altimeterIncluded[ch]) { # interleavedBurst
-                message("interleavedBurst$altimeterDistance at ch=",ch)
-                data$interleavedBurst$altimeterDistance[data$interleavedBurst$i] <- readBin(d$buf[i + i0 + 0:3],"numeric", size=4,n=1,endian="little")
-                # FIXME: perhaps save altimeterQuality from next 2 bytes
-                # FIXME: perhaps save altimeterStatus from next 2 bytes
-                i0 <- i0 + 8
-            }
-            if (ASTIncluded[ch]) { # interleavedBurst
-                message("interleavedBurst$ASTDistance,ASTPressure at ch=",ch)
-                # bytes: 4(distance)+2(quality)+2(offset)+4(pressure)+8(spare)
-                data$interleavedBurst$ASTDistance <- readBin(d$buf[i + i0 + 0:3], "numeric", size=4, n=1, endian="little")
-                i0 <- i0 + 8 # advance past distance (4 bytes), then skip skip quality (2 bytes) and offset (2 bytes)
-                data$interleavedBurst$ASTPressure <- readBin(d$buf[i + i0 + 0:3], "numeric", size=4, n=1, endian="little")
-                i0 <- i0 + 12 # skip spare (8 bytes)
-            }
-            if (altimeterRawIncluded[ch]) { # interleavedBurst
-                message("interleavedBurst$altimeterRaw at ch=",ch)
-                data$interleavedBurst$altimeterRawNumberOfSamples <- readBin(d$buf[i+i0+0:3],"integer",size=4,n=1,endian="little")
-                i0 <- i0 + 4
-                data$interleavedBurst$altimeterRawSampleDistance <- readBin(d$buf[i+i0+0:1],"integer",size=2,n=1,endian="little",signed=FALSE)
-                i0 <- i0 + 2
-                data$interleavedBurst$altimeterRawSamples <- readBin(d$buf[i+i0+0:1],"integer",size=2,n=1,endian="little") # 'singed frac' in docs
-                i0 <- i0 + 2
-            }
-            if (echosounderIncluded[ch]) {
-                message("interleavedBurst$echosounder at ch=",ch)
-                data$interleavedBurst$echosounder[data$interleavedBurst$i, ] <- readBin(d$buf[i + i0 + seq(0,nrow-1)], size=2, n=nrow, endian="little")
-                i0 <- i0 + 2 * nrow
-            }
-            if (AHRSIncluded[ch]) {
-                message("interleavedBurst$AHRS at ch=",ch)
-                data$interleavedBurst$AHRS[data$interleavedBurst$i,] <- readBin(d$buf[i + i0 + 0:35], "numeric", size=4, n=9, endian="little")
-            }
-            data$interleavedBurst$i <- data$interleavedBurst$i + 1
-
-        } else if (key == 0x1b) { # DVLBottomTrack
+        if (key == 0x1b) { # DVLBottomTrack
 
             ncol <- data$DVLBottomTrack$numberOfBeams
             nrow <- data$DVLBottomTrack$numberOfCells
