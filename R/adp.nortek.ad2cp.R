@@ -791,7 +791,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
     # Record-type keys and phrases in documentation [1, sec 6.1, page 47]
     # 0x15 - Burst Data Record.
     # 0x16 - Average Data Record.
-    # 0x17 - Bottom Track Data Record.
+    # 0x17 - Bottom Track Data Record (nb. IMOS does this wrong)
     # 0x18 - Interleaved Burst Data Record (beam 5).
     # 0x1A - Burst Altimeter Raw Record.
     # 0x1B - DVL Bottom Track Record.
@@ -801,16 +801,16 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
     # 0x1F - Avg Altimeter Raw Record.
     # 0xA0 - String Data Record, eg. GPS NMEA data, comment from the FWRITE command.
     # Set up pointers to records matching these keys.
-    p <- list(burst=which(d$id==0x15), # coded and checked against matlab and .cfg file
-        average=which(d$id==0x16),     # coded and checked against matlab and .cfg file
-        bottomTrack=which(d$id==0x17), # coded, but no sample-data test and no plot()
-        interleavedBurst=which(d$id==0x18), # coded, with no errors reading sample files
-        burstAltimeterRaw=which(d$id==0x1a), # https://github.com/dankelley/oce/issues/1959
-        DVLBottomTrack=which(d$id==0x1b), # coded, but no sample-data test and no plot()
-        echosounder=which(d$id==0x1c), # coded, but no sample-data test and no plot()
-        DVLWaterTrack=which(d$id==0x1d), # coded, but no sample-data test and no plot()
-        altimeter=which(d$id==0x1e),   # coded, but no sample-data test and no plot()
-        averageAltimeter=which(d$id==0x1f)) # coded, but no sample-data test and no plot()
+    p <- list(burst=which(d$id==0x15),
+        average=which(d$id==0x16),
+        bottomTrack=which(d$id==0x17),
+        interleavedBurst=which(d$id==0x18),
+        burstAltimeterRaw=which(d$id==0x1a),
+        DVLBottomTrack=which(d$id==0x1b),
+        echosounder=which(d$id==0x1c),
+        DVLWaterTrack=which(d$id==0x1d),
+        altimeter=which(d$id==0x1e),
+        averageAltimeter=which(d$id==0x1f))
 
     #x Try to retrieved a named item from the data buffer.
     #x
@@ -1090,7 +1090,6 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
             transmitEnergy=transmitEnergy[look],
             powerLevel=powerLevel[look])
         i <<- d$index[look]            # pointers to "average" chunks in buf
-        oceDebug(debug+1L, "in readBottomTrack: ", vectorShow(i))
         i0v <<- 77                     # pointer to data (incremented by getItemFromBuf() later).
         NP <- length(i)                # number of profiles of this type
         NC <- rval$numberOfCells       # number of cells for v,a,q
