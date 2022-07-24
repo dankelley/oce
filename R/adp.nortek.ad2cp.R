@@ -1027,6 +1027,77 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
         object
     }
 
+    readBurstAltimeterRaw <- function(id, debug=getOption("oceDebug")) # uses global 'd' and 'configuration'
+    {
+        look <- which(d$id == id)
+        oceDebug(debug+1L, vectorShow(look))
+        configuration0 <- configuration[look[1],]
+        rval <- list(
+            configuration=configuration0,
+            numberOfBeams=nbeams[look[1]],
+            numberOfCells=ncells[look[1]],
+            originalCoordinate=coordinateSystem[look[1]],
+            oceCoordinate=coordinateSystem[look[1]],
+            cellSize=cellSize[look[1]],
+            nominalCorrelation=nominalCorrelation[look],
+            blankingDistance=blankingDistance[look[1]],
+            ensemble=ensemble[look],
+            time=time[look],
+            orientation=orientation[look],
+            soundSpeed=soundSpeed[look],
+            temperature=temperature[look], # "temperature pressure sensor"
+            pressure=pressure[look],
+            heading=heading[look], pitch=pitch[look], roll=roll[look],
+            magnetometer=list(
+                x=magnetometerx[look],
+                y=magnetometery[look],
+                z=magnetometerz[look]),
+            accelerometer=list(
+                x=accelerometerx[look],
+                y=accelerometery[look],
+                z=accelerometerz[look]),
+            datasetDescription=datasetDescription[look],
+            temperatureMagnetometer=temperatureMagnetometer[look],
+            temperatureRTC=temperatureRTC[look],
+            transmitEnergy=transmitEnergy[look],
+            powerLevel=powerLevel[look])
+        oceDebug(debug, "configuration0=", paste(ifelse(configuration0,"T","F"), collapse=", "), "\n")
+        oceDebug(debug, "vector-read 'burstAltimeterRaw' records (0x1a) {\n")
+        # See CR's snapshot at
+        # https://github.com/dankelley/oce/issues/1959#issuecomment-1141409542
+        # which is p89 of Nortek AS. “Signature Integration
+        # 55|250|500|1000kHz.” Nortek AS, March 31, 2022)
+        i <<- d$index[look]            # pointers to "burstAltimeterRaw" chunks in buf
+        oceDebug(debug, vectorShow(i, n=4))
+        i0v <<- 77                      # pointer to data (incremented by getItemFromBuf() later).
+        NP <- length(i)            # number of profiles of this type
+        NC <- rval$numberOfCells       # number of cells for v,a,q
+        NB <- rval$numberOfBeams       # number of beams for v,a,q
+        p1 <- p$burstAltimeterRaw[1]
+        if (configuration0[6])          # read velocity, if included
+            rval <- getItemFromBuf(rval, "v", i=i, type=type, debug=debug+1L)
+        if (configuration0[7])          # read amplitude, if included
+            rval <- getItemFromBuf(rval, "a", i=i, type=type, debug=debug)
+        if (configuration0[8])          # read correlation, if included
+            rval <- getItemFromBuf(rval, "q", i=i, type=type, debug=debug)
+        if (configuration0[9])          # read altimeter, if included
+            rval <- getItemFromBuf(rval, "altimeter", i=i, type=type, debug=debug)
+        if (configuration0[11])         # read AST, if included
+            rval <- getItemFromBuf(rval, "AST", i=i, type=type, debug=debug)
+        if (configuration0[10])         # read altimeterRaw, if included
+            rval <- getItemFromBuf(rval, "altimeterRaw", i=i, type=type, debug=debug)
+        if (configuration0[12])         # read echosounder, if included
+            rval <- getItemFromBuf(rval, "echosounder", i=i, type=type, debug=debug)
+        if (configuration0[13])         # read AHRS, if included
+            rval <- getItemFromBuf(rval, "AHRS", i=i, type=type, debug=debug)
+        if (configuration0[14])         # read percentGood, if included
+            rval <- getItemFromBuf(rval, "percentgood", i=i, type=type, debug=debug)
+        if (configuration0[15])         # read stdDev, if included
+            rval <- getItemFromBuf(rval, "stdDev", i=i, type=type, debug=debug)
+        oceDebug(debug+1, "} # vector-read for type=", type, "\n")
+        rval
+    }                                  # readBurstAltimeterRaw
+
     readBurstOrAverage <- function(id, debug=getOption("oceDebug")) # uses global 'd' and 'configuration'
     {
         type <- gsub(".*=","", ad2cpCodeToName(id))
@@ -1489,83 +1560,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
     if (length(p$interleavedBurst) > 0) # key=0x18
         data$interleavedBurst <- readBurstOrAverage(id=as.raw(0x18), debug=debug-1L)
     if (length(p$burstAltimeterRaw) > 0L) { # key=0x1a (burst Altimeter raw record)
-        oceDebug(debug, "length(p$burstAltimeterRaw)=", length(p$burstAltimeterRaw), "\n", sep="")
-        #if (any(version[p$burstAltimeter] != 3))
-        #    stop("can only decode 'burstAltimeter' data records that are in 'version 3' format")
-        message("FIXME L1093")
-        nbeamsBurstAltimeterRaw <- nbeams[p$burstAltimeterRaw[1]]
-        ncellsBurstAltimeterRaw <- ncells[p$burstAltimeterRaw[1]]
-        oceDebug(debug+1, "burstAltimeterRaw data records: nbeams:", nbeamsBurstAltimeterRaw, ", ncells:", ncellsBurstAltimeterRaw, "\n")
-        if (any(ncells[p$burstAltimeterRaw] != ncellsBurstAltimeterRaw))
-            stop("the 'burstAltimeterRaw' data records do not all have the same number of cells")
-        if (any(nbeams[p$burstAltimeterRaw] != nbeamsBurstAltimeterRaw))
-            stop("the 'burstAltimeterRaw' data records do not all have the same number of beams")
-        # FIXME: read other fields to the following list.
-        data$burstAltimeterRaw <- list(i=1,
-            numberOfCells=ncellsBurstAltimeterRaw,
-            numberOfBeams=nbeamsBurstAltimeterRaw,
-            numberOfProfiles=length(p$burstAltimeterRaw),
-            originalCoordinate=coordinateSystem[p$burstAltimeterRaw[1]],
-            oceCoordinate=coordinateSystem[p$burstAltimeterRaw[1]],
-            cellSize=cellSize[p$burstAltimeterRaw[1]],
-            blankingDistance=blankingDistance[p$burstAltimeterRaw[1]],
-            ensemble=ensemble[p$burstAltimeterRaw],
-            time=time[p$burstAltimeterRaw],
-            orientation=orientation[p$burstAltimeterRaw],
-            heading=heading[p$burstAltimeterRaw],
-            pitch=pitch[p$burstAltimeterRaw],
-            roll=roll[p$burstAltimeterRaw],
-            pressure=pressure[p$burstAltimeterRaw],
-            temperature=temperature[p$burstAltimeterRaw],
-            temperatureMagnetometer=temperatureMagnetometer[p$burstAltimeterRaw],
-            temperatureRTC=temperatureRTC[p$burstAltimeterRaw],
-            soundSpeed=soundSpeed[p$burstAltimeterRaw],
-            magnetometerx=magnetometerx[p$burstAltimeterRaw],
-            magnetometery=magnetometery[p$burstAltimeterRaw],
-            magnetometerz=magnetometerz[p$burstAltimeterRaw],
-            accelerometerx=accelerometerx[p$burstAltimeterRaw],
-            accelerometery=accelerometery[p$burstAltimeterRaw],
-            accelerometerz=accelerometerz[p$burstAltimeterRaw],
-            nominalCorrelation=nominalCorrelation[p$burstAltimeterRaw],
-            datasetDescription=datasetDescription[p$burstAltimeterRaw],
-            transmitEnergy=transmitEnergy[p$burstAltimeterRaw],
-            powerLevel=powerLevel[p$burstAltimeterRaw])
-        # burstAltimeterRaw: vectorized
-        oceDebug(debug, "vector-read 'burstAltimeterRaw' records (0x1a) {\n")
-        # See CR's snapshot at
-        # https://github.com/dankelley/oce/issues/1959#issuecomment-1141409542
-        # which is p89 of Nortek AS. “Signature Integration
-        # 55|250|500|1000kHz.” Nortek AS, March 31, 2022)
-        i <- d$index[which(d$id==0x1a)] # pointers to "burstAltimeterRaw" chunks in buf
-        i0v <<- 77                      # pointer to data (incremented by getItemFromBuf() later).
-        NP <- length(i)            # number of profiles of this type
-        oceDebug(debug, vectorShow(i, n=4))
-        NC <- data$burstAltimeterRaw$numberOfCells # number of cells for v,a,q
-        NB <- data$burstAltimeterRaw$numberOfBeams # number of beams for v,a,q
-        p1 <- p$burstAltimeterRaw[1]
-        if (velocityIncluded[p1])
-            data$burstAltimeterRaw <- getItemFromBuf(data$burstAltimeterRaw, "v", i=i, type="burstAltimeterRaw", debug=debug)
-        if (amplitudeIncluded[p1])
-            data$burstAltimeterRaw <- getItemFromBuf(data$burstAltimeterRaw, "a", i=i, type="burstAltimeterRaw", debug=debug)
-        if (correlationIncluded[p1])
-            data$burstAltimeterRaw <- getItemFromBuf(data$burstAltimeterRaw, "q", i=i, type="burstAltimeterRaw", debug=debug)
-        if (altimeterIncluded[p1])
-            data$burstAltimeterRaw <- getItemFromBuf(data$burstAltimeterRaw, "altimeter", i=i, type="burstAltimeterRaw", debug=debug)
-        if (ASTIncluded[p1])
-            data$burstAltimeterRaw <- getItemFromBuf(data$burstAltimeterRaw, "AST", i=i, type="burstAltimeterRaw", debug=debug)
-        if (altimeterRawIncluded[p1])
-            data$burstAltimeterRaw <- getItemFromBuf(data$burstAltimeterRaw, "altimeterRaw", i=i, type="burstAltimeterRaw", debug=debug)
-        if (echosounderIncluded[p1])
-            data$burstAltimeterRaw <- getItemFromBuf(data$burstAltimeterRaw, "echosounder", i=i, type="burstAltimeterRaw", debug=debug)
-        if (AHRSIncluded[p1])
-            data$burstAltimeterRaw <- getItemFromBuf(data$burstAltimeterRaw, "AHRS", i=i, type="burstAltimeterRaw", debug=debug)
-        if (percentGoodIncluded[p1])
-            data$burstAltimeterRaw <- getItemFromBuf(data$burstAltimeterRaw, "percentgood", i=i, type="burstAltimeterRaw", debug=debug)
-        if (stdDevIncluded[p1])
-            data$burstAltimeterRaw <- getItemFromBuf(data$burstAltimeterRaw, "stdDev", i=i, type="burstAltimeterRaw", debug=debug)
-        ch <- p$burstAltimeterRaw[1] # FiXME: what is this for?
-        #cat(file=stderr(), vectorShow(p$burstAltimeterRaw))
-        oceDebug(debug, "} # vector-read burstAltimeterRaw\n")
+        data$burstAltimeterRaw <- readBurstAltimeterRaw(id=as.raw(0x1a), debug=debug-1L)
     }
     #save(burstAltimeterRaw, file="dan.rda")
     #message("see burstAltimeterRaw in dan.rda")
