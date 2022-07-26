@@ -33,9 +33,11 @@ library(oce)
 # REFERENCES
 # 1. Nortek AS. \dQuote{Signature Integration 55|250|500|1000kHz.} Nortek AS, 2017.
 
-f1 <- "~/Dropbox/oce_secret_data/ad2cp_secret_1.ad2cp"
-f2 <- "~/Dropbox/oce_secret_data/ad2cp_secret_2.ad2cp"
-f3 <- "~/Dropbox/oce_secret_data/ad2cp_secret_3.ad2cp"
+f1 <- "~/Dropbox/oce_secret_data/ad2cp/secret1_trimmed.ad2cp"
+f2 <- "~/Dropbox/oce_secret_data/ad2cp/secret2.trimmed.ad2cp"
+f3 <- "~/Dropbox/oce_secret_data/ad2cp/secret3.trimmed.ad2cp"
+f4 <- "~/Dropbox/oce_secret_data/ad2cp/byg_trimmed.ad2cp"
+f5 <- "~/Dropbox/oce_secret_data/ad2cp/med_trimmed.ad2cp"
 
 if (file.exists(f1)) {
     skip_on_cran()
@@ -292,7 +294,6 @@ if (file.exists(f1)) {
         expect_silent(plot(d1, which="progressiveVector"))
 })
 }
-
 
 if (file.exists(f2)) {
     skip_on_cran()

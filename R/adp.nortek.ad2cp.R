@@ -330,6 +330,8 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
     monitor=FALSE, despike=FALSE, processingLog,
     debug=getOption("oceDebug"), ...)
 {
+    i0v <- 0L                          # global variable, which some functions alter using <<-
+    i <- 0L                            # global variable, which some functions alter using <<-
     if (missing(file))
         stop("must supply 'file'")
     if (is.character(file)) {
@@ -432,14 +434,16 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
         return(t[o])
     } else if (which == "??") {
         bytesInHeader <- ifelse(nav$twelve_byte_header, 12L, 10L)
-        gi <- gappyIndex(nav$index-bytesInHeader+1L, 4L, 2L)
         return(data.frame(
                 ID=ad2cpCodeToName(nav$id),
-                #index=nav$index,
                 start=nav$index-bytesInHeader+1))
-                #headerSize=as.integer(buf[nav$index-bytesInHeader+2L]),
-                #offsetOfData=as.integer(buf[nav$index+2L]),
-                #dataSize=readBin(buf[gi], "integer", size=2, endian="little", signed=FALSE)))
+    } else if (which == "???") {
+        bytesInHeader <- ifelse(nav$twelve_byte_header, 12L, 10L)
+        #gi <- gappyIndex(nav$index-bytesInHeader, 4L, 2L)
+        return(data.frame(
+                ID=ad2cpCodeToName(nav$id),
+                start=nav$index-bytesInHeader+1,
+                offsetOfData=as.integer(buf[nav$index+2L])))
     }
     #DANnav<<-nav;message("FIXME: exported nav as DANnav")
     #DAN<<-nav;save(DAN,file="DAN.rda")
@@ -708,12 +712,13 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
     # As for 'configuration' above, we set this up as a matrix of 0s and 1s,
     # with rows corresponding to times, for easy transformation into integers.
     # BCC case 1
-    BCC <- ifelse(0x01 == rawToBits(d$buf[pointer2 + 31]), 1, 0)
+    BCC <- ifelse(0x01 == rawToBits(d$buf[pointer2 + 31]), 1L, 0L)
     dim(BCC) <- c(16, N)
     BCC <- t(BCC)
     # Use Horner's rule for clarity (for lispers, anyway!)
     ncells <- BCC[,1]+2*(BCC[,2]+2*(BCC[,3]+2*(BCC[,4]+2*(BCC[,5]+2*(BCC[,6]+2*(BCC[,7]+2*(BCC[,8]+2*(BCC[,9]+2*BCC[,10]))))))))
-    nbeams <- BCC[,13]+2*(BCC[,14]+2*(BCC[,15]+2*BCC[,16]))
+    nbeams <- BCC[,13]+2L*(BCC[,14L]+2L*(BCC[,15L]+2L*BCC[,16L]))
+    #DAN<<-nbeams
     # b00=enu, b01=xyz, b10=beam, b11=- [1 page 49]
     coordinateSystem <- c("enu", "xyz", "beam", "?")[1 + BCC[,11] + 2*BCC[,12]]
     # BCC case 2
@@ -817,7 +822,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
     #x This checks external variable `haveItem` to see whether the data item
     #x indicated by `name` is available in external raw vector `buf`.  If so, the
     #x item is retrieved from the starting at position indicated by external
-    #x variable `i0`, and `i0` is then increased to prepare for the next call to
+    #x variable `i0v`, and `i0v` is then increased to prepare for the next call to
     #x this function.
     #x
     #x @param object a list containing what is known so far. A possibly-modified
@@ -848,7 +853,6 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
         NBC <- NB * NC
         oceDebug(debug, "getItemFromBuf: NB=", NB, ", NC=", NC, ", NBC=", NBC, ", NP=", NP, "\n")
         oceDebug(debug, "   ", vectorShow(i))
-        #oceDebug(debug, "    ", vectorShow(i0v))
         if (name == "v") {
             oceDebug(debug, "   v starts at i0v=", i0v, "\n")
             velocityFactor <- velocityFactor[p[[type]][1]]
@@ -1030,7 +1034,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
     readBurstAltimeterRaw <- function(id, debug=getOption("oceDebug")) # uses global 'd' and 'configuration'
     {
         look <- which(d$id == id)
-        oceDebug(debug+1L, vectorShow(look))
+        oceDebug(debug, vectorShow(look))
         configuration0 <- configuration[look[1],]
         rval <- list(
             configuration=configuration0,
@@ -1075,7 +1079,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
         NB <- rval$numberOfBeams       # number of beams for v,a,q
         p1 <- p$burstAltimeterRaw[1]
         if (configuration0[6])          # read velocity, if included
-            rval <- getItemFromBuf(rval, "v", i=i, type=type, debug=debug+1L)
+            rval <- getItemFromBuf(rval, "v", i=i, type=type, debug=debug)
         if (configuration0[7])          # read amplitude, if included
             rval <- getItemFromBuf(rval, "a", i=i, type=type, debug=debug)
         if (configuration0[8])          # read correlation, if included
@@ -1094,14 +1098,14 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
             rval <- getItemFromBuf(rval, "percentgood", i=i, type=type, debug=debug)
         if (configuration0[15])         # read stdDev, if included
             rval <- getItemFromBuf(rval, "stdDev", i=i, type=type, debug=debug)
-        oceDebug(debug+1, "} # vector-read for type=", type, "\n")
+        oceDebug(debug, "} # vector-read for type=", type, "\n")
         rval
     }                                  # readBurstAltimeterRaw
 
     readBurstOrAverage <- function(id, debug=getOption("oceDebug")) # uses global 'd' and 'configuration'
     {
         type <- gsub(".*=","", ad2cpCodeToName(id))
-        oceDebug(debug+1L, "readBurstOrAverage(id=0x", id, ") # i.e. type=", type, "\n")
+        oceDebug(debug, "readBurstOrAverage(id=0x", id, ") # i.e. type=", type, "\n")
         # str(d)
         #    List of 4
         #    $ buf   : raw [1:305988694] a5 0a a0 10 ...
@@ -1109,7 +1113,10 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
         #    $ length: int [1:99] 1164 2540 1164 1164 1164 1164 1164 1164 1164 1164 ...
         #    $ id    : int [1:99] 21 22 21 21 21 21 21 21 21 21 ...
         look <- which(d$id == id)
-        oceDebug(debug+1L, vectorShow(look))
+        lookIndex <- d$index[look]
+        #message("burstOrAverage: offsetOfData=", vectorShow(as.integer(d$buf[d$index[look[1]] + 2L])))
+
+        oceDebug(debug, vectorShow(look))
         configuration0 <- configuration[look[1],]
         velocityIncluded <- configuration0[6]
         amplitudeIncluded <- configuration0[7]
@@ -1165,10 +1172,10 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
         NP <- length(i)                # number of profiles of this type
         NC <- rval$numberOfCells       # number of cells for v,a,q
         NB <- rval$numberOfBeams       # number of beams for v,a,q
-        oceDebug(debug+1L, "  NP=", NP, ", NB=", NB, ", NC=", NC, "\n", sep="")
+        oceDebug(debug, "  NP=", NP, ", NB=", NB, ", NC=", NC, "\n", sep="")
         oceDebug(debug, "configuration0=", paste(ifelse(configuration0,"T","F"), collapse=", "), "\n")
         if (configuration0[6])          # read velocity, if included
-            rval <- getItemFromBuf(rval, "v", i=i, type=type, debug=debug+1L)
+            rval <- getItemFromBuf(rval, "v", i=i, type=type, debug=debug)
         if (configuration0[7])          # read amplitude, if included
             rval <- getItemFromBuf(rval, "a", i=i, type=type, debug=debug)
         if (configuration0[8])          # read correlation, if included
@@ -1187,17 +1194,21 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
             rval <- getItemFromBuf(rval, "percentgood", i=i, type=type, debug=debug)
         if (configuration0[15])         # read stdDev, if included
             rval <- getItemFromBuf(rval, "stdDev", i=i, type=type, debug=debug)
-        oceDebug(debug+1, "} # vector-read for type=", type, "\n")
+        oceDebug(debug, "} # vector-read for type=", type, "\n")
         rval
-    }
+    }                                  # readBurstOrAverage
 
+    # Nortek (2022 page 93 ) "6.7 _DF20BottomTrack"
     readBottomTrack <- function(id, debug=getOption("oceDebug")) # uses global 'd' and 'configuration'
     {
+        # id will be 0x17 for bottomTrack
         type <- gsub(".*=","", ad2cpCodeToName(id))
-        oceDebug(debug+1L, "readBottomTrack(id=0x", id, ") # i.e. type=", type, "\n")
+        oceDebug(debug, "readBottomTrack(id=0x", id, ") # i.e. type=", type, "\n")
         look <- which(d$id == id)
         lookIndex <- d$index[look]
-        oceDebug(debug+1L, vectorShow(lookIndex))
+        offsetOfData <- as.integer(d$buf[d$index[look[1]] + 2L])
+        #message(vectorShow(offsetOfData, showNewline=FALSE))
+        oceDebug(debug, vectorShow(lookIndex))
         configuration0 <- configuration[look[1],]
         velocityIncluded <- configuration0[6]
         amplitudeIncluded <- configuration0[7]
@@ -1248,7 +1259,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
             transmitEnergy=transmitEnergy[look],
             powerLevel=powerLevel[look])
         i <- d$index[look]             # pointers to "average" chunks in buf
-        oceDebug(debug+1L, "in readBottomTrack: ", vectorShow(i))
+        oceDebug(debug, "in readBottomTrack: ", vectorShow(i))
         #message(vectorShow(commonData$offsetOfData))
         # IMOS https://github.com/aodn/imos-toolbox/blob/e19c8c604cd062a7212cdedafe11436209336ba5/Parser/readAD2CPBinary.m#L561
         #  IMOS_pointer = oce_pointer - 3
@@ -1260,17 +1271,19 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
         # https://github.com/dankelley/oce/issues/1980#issuecomment-1188992788
         # for more context on this.
         rval$velocityFactor <- 10^readBin(d$buf[lookIndex[1] + 61L], "integer", size=1, n=N, signed=TRUE, endian="little")
+        oceDebug(debug, vectorShow(rval$velocityFactor))
         #message(vectorShow(rval$velocityFactor))
         # Nortek (2022 page 94, 52 in zero-indexed notation)
         # IMOS uses idx+52 for ambiguityVelocity
         #   https://github.com/aodn/imos-toolbox/blob/e19c8c604cd062a7212cdedafe11436209336ba5/Parser/readAD2CPBinary.m#L558
         #   IMOS_pointer = oce_pointer - 1
         rval$ambiguityVelocity <- rval$velocityFactor*readBin(d$buf[lookIndex[1] + 53:56], "integer", size=4L, n=1)
+        oceDebug(debug, vectorShow(rval$ambiguityVelocity))
         #message(vectorShow(rval$ambiguityVelocity))
-        i0v <<- 77                      # pointer to data (incremented by getItemFromBuf() later).
+        # NOTE: pointer is 2 bytes past pointer for e.g. burst/average
         NP <- length(i)                # number of profiles of this type
         NB <- rval$numberOfBeams       # number of beams for v,a,q
-        oceDebug(debug+1L, "  NP=", NP, ", NB=", NB, "\n", sep="")
+        oceDebug(debug, "  NP=", NP, ", NB=", NB, "\n", sep="")
         oceDebug(debug, "configuration0=", paste(ifelse(configuration0,"T","F"), collapse=", "), "\n")
         # NOTE: imos uses idx+72 for ensembleCounter
         # https://github.com/aodn/imos-toolbox/blob/e19c8c604cd062a7212cdedafe11436209336ba5/Parser/readAD2CPBinary.m#L567
@@ -1280,16 +1293,17 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
         iv <- gappyIndex(i, i0v, 4L)
         rval$ensemble <- readBin(d$buf[iv], "integer", size=4L, n=NP, endian="little")
         #message(vectorShow(rval$ensemble))
-        #message(vectorShow(commonData$offsetOfData[look]))
-        offsetOfData <- commonData$offsetOfData[look]
-        #message(vectorShow(offsetOfData))
-        if (any(offsetOfData != offsetOfData[1])) {
-            print(offsetOfData)
-            stop("offsetOfData for bottom-track (printed above) are non-uniform")
-        }
-        i0v <<- 1L + offsetOfData[1]
+        #<> #message(vectorShow(commonData$offsetOfData[look]))
+        #<> offsetOfData <- commonData$offsetOfData[look]
+        #<> #message(vectorShow(offsetOfData))
+        #<> if (any(offsetOfData != offsetOfData[1])) {
+        #<>     print(offsetOfData)
+        #<>     stop("offsetOfData for bottom-track (printed above) are non-uniform")
+        #<> }
+        i0v <<- i0v + 4L
         # velocity [Nortek 2017 p60 table 6.1.3]
         if (configuration0[6]) {
+            #message("reading v with i0v=", i0v, " (NB=", NB, ")")
             #message("FIXME: only read velo if flag is set")
             #message("about to read velo with i[1]=", i[1], ", i0v=",i0v,", NB=", NB)
             #message("configuration0: ", paste(configuration0, collapse=" "))
@@ -1297,8 +1311,6 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
             tmp <- readBin(d$buf[iv], "integer", size=4L, n=NB*NP, endian="little")
             rval$v <- rval$velocityFactor * matrix(tmp, ncol=NB, byrow=FALSE)
             i0v <<- i0v + 4L*NB
-        } else {
-            #message("no velo data")
         }
         # distance [Nortek 2017, Table 6.1.3, pages 60 and 62]
         if (configuration0[8]) {
@@ -1317,15 +1329,15 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
             i0v <<- i0v + 2L*NB
         }
         rval
-    }
+    }                                  # readBottomTrack
 
     readInterleavedBurst <- function(id, debug=getOption("oceDebug")) # uses global 'd' and 'configuration'
     {
         type <- gsub(".*=","", ad2cpCodeToName(id))
-        oceDebug(debug+1L, "readInterleavedBurst(id=0x", id, ") # i.e. type=", type, "\n")
+        oceDebug(debug, "readInterleavedBurst(id=0x", id, ") # i.e. type=", type, "\n")
         look <- which(d$id == id)
         lookIndex <- d$index[look]
-        oceDebug(debug+1L, vectorShow(lookIndex))
+        oceDebug(debug, vectorShow(lookIndex))
         configuration0 <- configuration[look[1],]
         velocityIncluded <- configuration0[6]
         amplitudeIncluded <- configuration0[7]
@@ -1376,7 +1388,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
             transmitEnergy=transmitEnergy[look],
             powerLevel=powerLevel[look])
         i <- d$index[look]             # pointers to "average" chunks in buf
-        oceDebug(debug+1L, "in readInterleavedBurst: ", vectorShow(i))
+        oceDebug(debug, "in readInterleavedBurst: ", vectorShow(i))
         #message(vectorShow(commonData$offsetOfData))
         # IMOS https://github.com/aodn/imos-toolbox/blob/e19c8c604cd062a7212cdedafe11436209336ba5/Parser/readAD2CPBinary.m#L561
         #  IMOS_pointer = oce_pointer - 3
@@ -1398,7 +1410,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
         i0v <<- 77                      # pointer to data (incremented by getItemFromBuf() later).
         NP <- length(i)                # number of profiles of this type
         NB <- rval$numberOfBeams       # number of beams for v,a,q
-        oceDebug(debug+1L, "  NP=", NP, ", NB=", NB, "\n", sep="")
+        oceDebug(debug, "  NP=", NP, ", NB=", NB, "\n", sep="")
         oceDebug(debug, "configuration0=", paste(ifelse(configuration0,"T","F"), collapse=", "), "\n")
         # NOTE: imos uses idx+72 for ensembleCounter
         # https://github.com/aodn/imos-toolbox/blob/e19c8c604cd062a7212cdedafe11436209336ba5/Parser/readAD2CPBinary.m#L567
@@ -1445,14 +1457,13 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
             i0v <<- i0v + 2L*NB
         }
         rval
-    }
-
+    }                                  # readInterleavedBurst
 
     readEchosounder  <- function(id, debug=getOption("oceDebug")) # uses global 'd' and 'configuration'
     {
         # Nortek (2022 page 87) "Section 6.4 EchosounderDataV3"
         type <- gsub(".*=","", ad2cpCodeToName(id))
-        oceDebug(debug+1L, "readEchosounder(id=0x", id, ") # i.e. type=", type, "\n")
+        oceDebug(debug, "readEchosounder(id=0x", id, ") # i.e. type=", type, "\n")
         # str(d)
         #    List of 4
         #    $ buf   : raw [1:305988694] a5 0a a0 10 ...
@@ -1460,9 +1471,9 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
         #    $ length: int [1:99] 1164 2540 1164 1164 1164 1164 1164 1164 1164 1164 ...
         #    $ id    : int [1:99] 21 22 21 21 21 21 21 21 21 21 ...
         look <- which(d$id == id)
-        oceDebug(debug+1L, vectorShow(look))
+        oceDebug(debug, vectorShow(look))
         lookIndex <- d$index[look]
-        oceDebug(debug+1L, vectorShow(lookIndex))
+        oceDebug(debug, vectorShow(lookIndex))
         # According to Nortek (2022, Section 6.4, page 88), the only
         # configuration flag is whether we have echosounder data, which seems a
         # bit odd because the whole point of an echosounder ID must be that we
@@ -1508,13 +1519,13 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
             transmitEnergy=transmitEnergy[look],
             powerLevel=powerLevel[look])
         i <- d$index[look]            # pointers to "average" chunks in buf
-        oceDebug(debug+1L, "in readEchosounder: ", vectorShow(i))
+        oceDebug(debug, "in readEchosounder: ", vectorShow(i))
 
         i0v <<- 77                     # pointer to data (incremented by getItemFromBuf() later).
         NP <- length(i)                # number of profiles of this type
                                        #NC <- rval$numberOfCells       # number of cells for v,a,q
                                        #NB <- rval$numberOfBeams       # number of beams for v,a,q
-        #oceDebug(debug+1L, "  NP=", NP, ", NB=", NB, ", NC=", NC, "\n", sep="")
+        #oceDebug(debug, "  NP=", NP, ", NB=", NB, ", NC=", NC, "\n", sep="")
         oceDebug(debug, "configuration0=", paste(ifelse(configuration0,"T","F"), collapse=", "), "\n")
         if (configuration0[12])         # read echosounder, if included
             rval <- getItemFromBuf(rval, "echosounder", i=i, type=type, debug=debug)
@@ -1523,14 +1534,14 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
 
         i <- d$index[which(d$id==id)]
         i0v <<- commonData$offsetOfData[1]
-        oceDebug(debug+1L, "set gappyIndex(c(", paste(head(i),collapse=","), "...), ", i0v, ", ", rval$numberOfCells, ") to read n=", NP*rval$numberOfCells, "=NP*numberOfCells uint16 values for echosounder\n")
+        oceDebug(debug, "set gappyIndex(c(", paste(head(i),collapse=","), "...), ", i0v, ", ", rval$numberOfCells, ") to read n=", NP*rval$numberOfCells, "=NP*numberOfCells uint16 values for echosounder\n")
         iv <- gappyIndex(i, i0v, 2L*rval$numberOfCells)
         E <- readBin(d$buf[iv], "integer", size=2L, n=NP*rval$numberOfCells, endian="little", signed=FALSE)
         # m<-t(matrix(E,nrow=e$numberOfCells,byrow=FALSE));imagep(log10(m))
         rval$echosounder <- t(matrix(E, nrow=rval$numberOfCells, byrow=FALSE))
-        oceDebug(debug+1, "} # vector-read for type=", type, "\n")
+        oceDebug(debug, "} # vector-read for type=", type, "\n")
         rval
-    }
+    }                                  # readEchosounder
 
     data  <- list()
 
@@ -1549,106 +1560,90 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
     # BOOKMARK A
     #
     # Nortek (2017 p 48) "6.1.2 Burst/Average Data Record Definition (DF3)"
-    if (length(p$burst) > 0L)         # burst (0x15)
-        data$burst <- readBurstOrAverage(id=as.raw(0x15), debug=debug-1L)
+    if (length(p$burst) > 0L)          # vector-read 0x15
+        data$burst <- readBurstOrAverage(id=as.raw(0x15), debug=debug)
     # Nortek (2017 p 48) "6.1.2 Burst/Average Data Record Definition (DF3)"
-    if (length(p$average) > 0L)        # average (0x16)
-        data$average <- readBurstOrAverage(id=as.raw(0x16), debug=debug-1L)
+    if (length(p$average) > 0L)        # vector-read 0x16
+        data$average <- readBurstOrAverage(id=as.raw(0x16), debug=debug)
     # Nortek (2017 p60) "6.1.3 Bottom Track Data Record Definition (DF20)"
-    if (length(p$bottomTrack) > 0)     # bottomTrack (0x17)
-        data$bottomTrack <- readBottomTrack(id=as.raw(0x17), debug=debug-1L)
-    if (length(p$interleavedBurst) > 0) # key=0x18
-        data$interleavedBurst <- readBurstOrAverage(id=as.raw(0x18), debug=debug-1L)
-    if (length(p$burstAltimeterRaw) > 0L) { # key=0x1a (burst Altimeter raw record)
+    if (length(p$bottomTrack) > 0)     # vector-read 0x17
+        data$bottomTrack <- readBottomTrack(id=as.raw(0x17), debug=debug)
+    if (length(p$interleavedBurst) > 0) # vector-read 0x18
+        data$interleavedBurst <- readBurstOrAverage(id=as.raw(0x18), debug=debug)
+    if (length(p$burstAltimeterRaw) > 0L) # vector-read 0x1a
         data$burstAltimeterRaw <- readBurstAltimeterRaw(id=as.raw(0x1a), debug=debug-1L)
-    }
-    #save(burstAltimeterRaw, file="dan.rda")
-    #message("see burstAltimeterRaw in dan.rda")
-    #return(burstAltimeterRaw)
-
-    if (length(p$DVLBottomTrack) > 0) { # key=0x1b
-        #if (any(version[p$DVLBottomTrack] != 3))
-        #    stop("can only decode 'DVLBottomTrack' data records that are in 'version 3' format")
-        nbeamsDVLBottomTrack <- nbeams[p$DVLBottomTrack[1]]
-        ncellsDVLBottomTrack <- ncells[p$DVLBottomTrack[1]]
-        oceDebug(debug, "DVLBottomTrack data records: nbeams:", nbeamsDVLBottomTrack, ", ncells:", ncellsDVLBottomTrack, "\n")
-        if (any(ncells[p$DVLBottomTrack] != ncellsDVLBottomTrack))
-            stop("the 'DVLBottomTrack' data records do not all have the same number of cells")
-        if (any(nbeams[p$DVLBottomTrack] != nbeamsDVLBottomTrack))
-            stop("the 'DVLBottomTrack' data records do not all have the same number of beams")
-        # FIXME: read other fields to the following list.
-        data$DVLBottomTrack <- list(i=1,
-            numberOfCells=ncellsDVLBottomTrack,
-            numberOfBeams=nbeamsDVLBottomTrack,
-            originalCoordinate=coordinateSystem[p$DVLBottomTrack[1]],
-            oceCoordinate=coordinateSystem[p$DVLBottomTrack[1]],
-            cellSize=cellSize[p$DVLBottomTrack[1]],
-            blankingDistance=blankingDistance[p$DVLBottomTrack[1]],
-            ensemble=ensemble[p$DVLBottomTrack],
-            time=time[p$DVLBottomTrack],
-            orientation=orientation[p$DVLBottomTrack],
-            heading=heading[p$DVLBottomTrack],
-            pitch=pitch[p$DVLBottomTrack],
-            roll=roll[p$DVLBottomTrack],
-            pressure=pressure[p$DVLBottomTrack],
-            temperature=temperature[p$DVLBottomTrack],
-            temperatureMagnetometer=temperatureMagnetometer[p$DVLBottomTrack],
-            temperatureRTC=temperatureRTC[p$DVLBottomTrack],
-            soundSpeed=soundSpeed[p$DVLBottomTrack],
-            magnetometerx=magnetometerx[p$DVLBottomTrack],
-            magnetometery=magnetometery[p$DVLBottomTrack],
-            magnetometerz=magnetometerz[p$DVLBottomTrack],
-            accelerometerx=accelerometerx[p$DVLBottomTrack],
-            accelerometery=accelerometery[p$DVLBottomTrack],
-            accelerometerz=accelerometerz[p$DVLBottomTrack],
-            nominalCorrelation=nominalCorrelation[p$DVLBottomTrack],
-            datasetDescription=datasetDescription[p$DVLBottomTrack],
-            transmitEnergy=transmitEnergy[p$DVLBottomTrack],
-            powerLevel=powerLevel[p$DVLBottomTrack])
-        if (any(velocityIncluded[p$DVLBottomTrack])) {
-            if (1 < length(unique(velocityIncluded[p$DVLBottomTrack])))
-                stop("velocityIncluded values non-unique across 'DVLBottomTrack' data records")
-            DVLBottomTrack$v <- array(double(), dim=c(length(p$DVLBottomTrack), ncellsDVLBottomTrack, nbeamsDVLBottomTrack))
-        }
-        if (any(amplitudeIncluded[p$DVLBottomTrack])) {
-            if (1 < length(unique(amplitudeIncluded[p$DVLBottomTrack])))
-                stop("amplitudeIncluded values non-unique across 'DVLBottomTrack' data records")
-            data$DVLBottomTrack$a <- array(raw(), dim=c(length(p$DVLBottomTrack), ncellsDVLBottomTrack, nbeamsDVLBottomTrack))
-        }
-        if (any(correlationIncluded[p$DVLBottomTrack])) {
-            if (1 < length(unique(correlationIncluded[p$DVLBottomTrack])))
-                stop("correlationIncluded values non-unique across 'DVLBottomTrack' data records")
-            data$DVLBottomTrack$q <- array(raw(), dim=c(length(p$DVLBottomTrack), ncellsDVLBottomTrack, nbeamsDVLBottomTrack))
-        }
-        if (any(altimeterIncluded[p$DVLBottomTrack])) {
-            if (1 < length(unique(altimeterIncluded[p$DVLBottomTrack])))
-                stop("altimeterIncluded values non-unique across 'DVLBottomTrack' data records")
-            data$DVLBottomTrack$altimeterDistance <- vector("numeric", length(p$DVLBottomTrack))
-        }
-        if (any(ASTIncluded[p$DVLBottomTrack])) {
-            data$DVLBottomTrack$ASTDistance <- vector("numeric", length(p$DVLBottomTrack))
-            data$DVLBottomTrack$ASTPressure <- vector("numeric", length(p$DVLBottomTrack))
-        }
-        if (any(echosounderIncluded[p$DVLBottomTrack])) {
-            data$DVLBottomTrack$echosounder <- matrix(double(), ncol=length(p$DVLBottomTrack), nrow=ncellsDVLBottomTrack)
-        }
-        if (any(AHRSIncluded[p$DVLBottomTrack])) {
-            data$DVLBottomTrack$AHRS <- matrix(numeric(), nrow=length(p$DVLBottomTrack), ncol=9)
-        }
+    if (length(p$DVLBottomTrack) > 0) { # vector-read 0x1b
+        data$DVLBottomTrack <- readBottomTrack(id=as.raw(0x1b), debug=debug-1L)
+        #<> nbeamsDVLBottomTrack <- nbeams[p$DVLBottomTrack[1]]
+        #<> ncellsDVLBottomTrack <- ncells[p$DVLBottomTrack[1]]
+        #<> oceDebug(debug, "DVLBottomTrack data records: nbeams:", nbeamsDVLBottomTrack, ", ncells:", ncellsDVLBottomTrack, "\n")
+        #<> if (any(ncells[p$DVLBottomTrack] != ncellsDVLBottomTrack))
+        #<>     stop("the 'DVLBottomTrack' data records do not all have the same number of cells")
+        #<> if (any(nbeams[p$DVLBottomTrack] != nbeamsDVLBottomTrack))
+        #<>     stop("the 'DVLBottomTrack' data records do not all have the same number of beams")
+        #<> # FIXME: read other fields to the following list.
+        #<> data$DVLBottomTrack <- list(i=1,
+        #<>     numberOfCells=ncellsDVLBottomTrack,
+        #<>     numberOfBeams=nbeamsDVLBottomTrack,
+        #<>     originalCoordinate=coordinateSystem[p$DVLBottomTrack[1]],
+        #<>     oceCoordinate=coordinateSystem[p$DVLBottomTrack[1]],
+        #<>     cellSize=cellSize[p$DVLBottomTrack[1]],
+        #<>     blankingDistance=blankingDistance[p$DVLBottomTrack[1]],
+        #<>     ensemble=ensemble[p$DVLBottomTrack],
+        #<>     time=time[p$DVLBottomTrack],
+        #<>     orientation=orientation[p$DVLBottomTrack],
+        #<>     heading=heading[p$DVLBottomTrack],
+        #<>     pitch=pitch[p$DVLBottomTrack],
+        #<>     roll=roll[p$DVLBottomTrack],
+        #<>     pressure=pressure[p$DVLBottomTrack],
+        #<>     temperature=temperature[p$DVLBottomTrack],
+        #<>     temperatureMagnetometer=temperatureMagnetometer[p$DVLBottomTrack],
+        #<>     temperatureRTC=temperatureRTC[p$DVLBottomTrack],
+        #<>     soundSpeed=soundSpeed[p$DVLBottomTrack],
+        #<>     magnetometerx=magnetometerx[p$DVLBottomTrack],
+        #<>     magnetometery=magnetometery[p$DVLBottomTrack],
+        #<>     magnetometerz=magnetometerz[p$DVLBottomTrack],
+        #<>     accelerometerx=accelerometerx[p$DVLBottomTrack],
+        #<>     accelerometery=accelerometery[p$DVLBottomTrack],
+        #<>     accelerometerz=accelerometerz[p$DVLBottomTrack],
+        #<>     nominalCorrelation=nominalCorrelation[p$DVLBottomTrack],
+        #<>     datasetDescription=datasetDescription[p$DVLBottomTrack],
+        #<>     transmitEnergy=transmitEnergy[p$DVLBottomTrack],
+        #<>     powerLevel=powerLevel[p$DVLBottomTrack])
+        #<> if (any(velocityIncluded[p$DVLBottomTrack])) {
+        #<>     if (1 < length(unique(velocityIncluded[p$DVLBottomTrack])))
+        #<>         stop("velocityIncluded values non-unique across 'DVLBottomTrack' data records")
+        #<>     DVLBottomTrack$v <- array(double(), dim=c(length(p$DVLBottomTrack), ncellsDVLBottomTrack, nbeamsDVLBottomTrack))
+        #<> }
+        #<> if (any(amplitudeIncluded[p$DVLBottomTrack])) {
+        #<>     if (1 < length(unique(amplitudeIncluded[p$DVLBottomTrack])))
+        #<>         stop("amplitudeIncluded values non-unique across 'DVLBottomTrack' data records")
+        #<>     data$DVLBottomTrack$a <- array(raw(), dim=c(length(p$DVLBottomTrack), ncellsDVLBottomTrack, nbeamsDVLBottomTrack))
+        #<> }
+        #<> if (any(correlationIncluded[p$DVLBottomTrack])) {
+        #<>     if (1 < length(unique(correlationIncluded[p$DVLBottomTrack])))
+        #<>         stop("correlationIncluded values non-unique across 'DVLBottomTrack' data records")
+        #<>     data$DVLBottomTrack$q <- array(raw(), dim=c(length(p$DVLBottomTrack), ncellsDVLBottomTrack, nbeamsDVLBottomTrack))
+        #<> }
+        #<> if (any(altimeterIncluded[p$DVLBottomTrack])) {
+        #<>     if (1 < length(unique(altimeterIncluded[p$DVLBottomTrack])))
+        #<>         stop("altimeterIncluded values non-unique across 'DVLBottomTrack' data records")
+        #<>     data$DVLBottomTrack$altimeterDistance <- vector("numeric", length(p$DVLBottomTrack))
+        #<> }
+        #<> if (any(ASTIncluded[p$DVLBottomTrack])) {
+        #<>     data$DVLBottomTrack$ASTDistance <- vector("numeric", length(p$DVLBottomTrack))
+        #<>     data$DVLBottomTrack$ASTPressure <- vector("numeric", length(p$DVLBottomTrack))
+        #<> }
+        #<> if (any(echosounderIncluded[p$DVLBottomTrack])) {
+        #<>     data$DVLBottomTrack$echosounder <- matrix(double(), ncol=length(p$DVLBottomTrack), nrow=ncellsDVLBottomTrack)
+        #<> }
+        #<> if (any(AHRSIncluded[p$DVLBottomTrack])) {
+        #<>     data$DVLBottomTrack$AHRS <- matrix(numeric(), nrow=length(p$DVLBottomTrack), ncol=9)
+        #<> }
     }
 
-    if (length(p$echosounder) > 0) {   # vector-read 'echosounder'=0x1c BOOKMARK=E (see also J)
-        # FIXME: once this is coded, comment-out near bookmark J
-        #nbeamsEchosounder <- nbeams[p$echosounder[1]]
-        #ncellsEchosounder <- ncellsEchosounderWholeFile[p$echosounder][1]
-        #message(vectorShow(nbeamsEchosounder))
-        #message("next is ncellsEchosounder:")
-        #print(ncellsEchosounder)
-        #message("next is ncellsEchosounder[p$echosounder]:")
-        #print(ncellsEchosounder[p$echosounder])
-        oceDebug(debug, "preparing to vector-read echosounder data\n")
+    if (length(p$echosounder) > 0)     # vector-read 'echosounder'=0x1c
         data$echosounder <- readEchosounder(id=as.raw(0x1c), debug=debug-1L)
-    }
 
     if (length(p$DVLWaterTrack) > 0) {    # key=0x1d
         #if (any(version[p$DVLWaterTrack] != 3))
@@ -1829,73 +1824,64 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
     oceDebug(debug, "processing N=", N, " data chunks (check: is this ", length(d$id), "?)\n")
     #print(table(d$id))
     for (ch in 1:N) {                  # BOOKMARK J
-        # oceDebug(debug>3, "d$id[", ch, "]=", d$id[[ch]], "\n", sep="")
         key <- d$id[ch]
         i <- d$index[ch]
-        #oceDebug(debug > 0, sprintf("chunk ch=%d of %d, starting at buf[%d] has key=0x%02x (%s)\n",
+        # oceDebug(debug, sprintf("chunk ch=%d of %d, starting at buf[%d] has key=0x%02x (%s)\n",
         #        ch, N, i, key, ad2cpCodeToName(key)), unindent=1)
 
-        #<> vectorized: key 0x15 burst
-        #<> vectorized: key 0x16 average
-        #<> vectorized: key 0x17 bottomTrack
-        #<> vectorized: key 0x18 interleavedBurst
-        #<> vectorized: key 0x1a burstAltimeterRaw
-        #<> vectorized: key 0x1c echosounder
-        #<> vectorized: key 0xa0 text
+        #<> if (key == 0x1b) { # DVLBottomTrack
 
-        if (key == 0x1b) { # DVLBottomTrack
+        #<>     ncol <- data$DVLBottomTrack$numberOfBeams
+        #<>     nrow <- data$DVLBottomTrack$numberOfCells
+        #<>     n <- ncol * nrow
+        #<>     n2 <- 2 * n
+        #<>     i0 <- 77
+        #<>     if (velocityIncluded[ch]) {
+        #<>         v <- velocityFactor[ch]*readBin(d$buf[i+i0+seq(0,n2-1)],"integer",size=2,n=n,endian="little")
+        #<>         data$DVLBottomTrack$v[data$DVLBottomTrack$i, , ] <- matrix(v, ncol=ncol, nrow=nrow, byrow=FALSE)
+        #<>         i0 <- i0 + n2
+        #<>     }
+        #<>     if (amplitudeIncluded[ch]) {
+        #<>         a <- d$buf[i + i0 + seq(0,n-1)]
+        #<>         data$DVLBottomTrack$a[data$DVLBottomTrack$i, ,] <- matrix(a, ncol=ncol, nrow=nrow, byrow=FALSE)
+        #<>         i0 <- i0 + n
+        #<>     }
+        #<>     if (correlationIncluded[ch]) {
+        #<>         q <- d$buf[i + i0 + seq(0,n-1)]
+        #<>         data$DVLBottomTrack$q[data$DVLBottomTrack$i, ,] <- matrix(q, ncol=ncol, nrow=nrow, byrow=FALSE)
+        #<>         i0 <- i0 + n
+        #<>     }
+        #<>     if (altimeterIncluded[ch]) { # DVLBottomTrack
+        #<>         data$DVLBottomTrack$altimeterDistance[data$DVLBottomTrack$i] <- readBin(d$buf[i + i0 + 0:3],"numeric", size=4,n=1,endian="little")
+        #<>         # FIXME: perhaps save altimeterQuality from next 2 bytes
+        #<>         # FIXME: perhaps save altimeterStatus from next 2 bytes
+        #<>         i0 <- i0 + 8
+        #<>     }
+        #<>     if (ASTIncluded[ch]) {
+        #<>         # bytes: 4(distance)+2(quality)+2(offset)+4(pressure)+8(spare)
+        #<>         data$DVLBottomTrack$ASTDistance <- readBin(d$buf[i + i0 + 0:3], "numeric", size=4, n=1, endian="little")
+        #<>         i0 <- i0 + 8 # advance past distance (4 bytes), then skip skip quality (2 bytes) and offset (2 bytes)
+        #<>         data$DVLBottomTrack$ASTPressure <- readBin(d$buf[i + i0 + 0:3], "numeric", size=4, n=1, endian="little")
+        #<>         i0 <- i0 + 12 # skip spare (8 bytes)
+        #<>     }
+        #<>     if (altimeterRawIncluded[ch]) { # DVLBottomTrack
+        #<>         data$DVLBottomTrack$altimeterRawNumberOfSamples <- readBin(d$buf[i+i0+0:3],"integer",size=4,n=1,endian="little")
+        #<>         i0 <- i0 + 4
+        #<>         data$DVLBottomTrack$altimeterRawSampleDistance <- readBin(d$buf[i+i0+0:1],"integer",size=2,n=1,endian="little",signed=FALSE)
+        #<>         i0 <- i0 + 2
+        #<>         data$DVLBottomTrack$altimeterRawSamples <- readBin(d$buf[i+i0+0:1],"integer",size=2,n=1,endian="little") # 'singed frac' in docs
+        #<>         i0 <- i0 + 2
+        #<>     }
+        #<>     if (echosounderIncluded[ch]) {
+        #<>         data$DVLBottomTrack$echosounder[data$DVLBottomTrack$i, ] <- readBin(d$buf[i + i0 + seq(0,nrow-1)], size=2, n=nrow, endian="little")
+        #<>         i0 <- i0 + 2 * nrow
+        #<>     }
+        #<>     if (AHRSIncluded[ch]) {
+        #<>         data$DVLBottomTrack$AHRS[data$DVLBottomTrack$i,] <- readBin(d$buf[i + i0 + 0:35], "numeric", size=4, n=9, endian="little")
+        #<>     }
+        #<>     data$DVLBottomTrack$i <- data$DVLBottomTrack$i + 1
 
-            ncol <- data$DVLBottomTrack$numberOfBeams
-            nrow <- data$DVLBottomTrack$numberOfCells
-            n <- ncol * nrow
-            n2 <- 2 * n
-            i0 <- 77
-            if (velocityIncluded[ch]) {
-                v <- velocityFactor[ch]*readBin(d$buf[i+i0+seq(0,n2-1)],"integer",size=2,n=n,endian="little")
-                data$DVLBottomTrack$v[data$DVLBottomTrack$i, , ] <- matrix(v, ncol=ncol, nrow=nrow, byrow=FALSE)
-                i0 <- i0 + n2
-            }
-            if (amplitudeIncluded[ch]) {
-                a <- d$buf[i + i0 + seq(0,n-1)]
-                data$DVLBottomTrack$a[data$DVLBottomTrack$i, ,] <- matrix(a, ncol=ncol, nrow=nrow, byrow=FALSE)
-                i0 <- i0 + n
-            }
-            if (correlationIncluded[ch]) {
-                q <- d$buf[i + i0 + seq(0,n-1)]
-                data$DVLBottomTrack$q[data$DVLBottomTrack$i, ,] <- matrix(q, ncol=ncol, nrow=nrow, byrow=FALSE)
-                i0 <- i0 + n
-            }
-            if (altimeterIncluded[ch]) { # DVLBottomTrack
-                data$DVLBottomTrack$altimeterDistance[data$DVLBottomTrack$i] <- readBin(d$buf[i + i0 + 0:3],"numeric", size=4,n=1,endian="little")
-                # FIXME: perhaps save altimeterQuality from next 2 bytes
-                # FIXME: perhaps save altimeterStatus from next 2 bytes
-                i0 <- i0 + 8
-            }
-            if (ASTIncluded[ch]) {
-                # bytes: 4(distance)+2(quality)+2(offset)+4(pressure)+8(spare)
-                data$DVLBottomTrack$ASTDistance <- readBin(d$buf[i + i0 + 0:3], "numeric", size=4, n=1, endian="little")
-                i0 <- i0 + 8 # advance past distance (4 bytes), then skip skip quality (2 bytes) and offset (2 bytes)
-                data$DVLBottomTrack$ASTPressure <- readBin(d$buf[i + i0 + 0:3], "numeric", size=4, n=1, endian="little")
-                i0 <- i0 + 12 # skip spare (8 bytes)
-            }
-            if (altimeterRawIncluded[ch]) { # DVLBottomTrack
-                data$DVLBottomTrack$altimeterRawNumberOfSamples <- readBin(d$buf[i+i0+0:3],"integer",size=4,n=1,endian="little")
-                i0 <- i0 + 4
-                data$DVLBottomTrack$altimeterRawSampleDistance <- readBin(d$buf[i+i0+0:1],"integer",size=2,n=1,endian="little",signed=FALSE)
-                i0 <- i0 + 2
-                data$DVLBottomTrack$altimeterRawSamples <- readBin(d$buf[i+i0+0:1],"integer",size=2,n=1,endian="little") # 'singed frac' in docs
-                i0 <- i0 + 2
-            }
-            if (echosounderIncluded[ch]) {
-                data$DVLBottomTrack$echosounder[data$DVLBottomTrack$i, ] <- readBin(d$buf[i + i0 + seq(0,nrow-1)], size=2, n=nrow, endian="little")
-                i0 <- i0 + 2 * nrow
-            }
-            if (AHRSIncluded[ch]) {
-                data$DVLBottomTrack$AHRS[data$DVLBottomTrack$i,] <- readBin(d$buf[i + i0 + 0:35], "numeric", size=4, n=9, endian="little")
-            }
-            data$DVLBottomTrack$i <- data$DVLBottomTrack$i + 1
-
-        } else if (key == 0x1d) { # DVLWaterTrack
+        if (key == 0x1d) {             # DVLWaterTrack
 
             ncol <- data$DVLWaterTrack$numberOfBeams
             nrow <- data$DVLWaterTrack$numberOfCells
