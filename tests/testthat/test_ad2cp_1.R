@@ -34,10 +34,10 @@ library(oce)
 # 1. Nortek AS. \dQuote{Signature Integration 55|250|500|1000kHz.} Nortek AS, 2017.
 
 f1 <- "~/Dropbox/oce_secret_data/ad2cp/secret1_trimmed.ad2cp"
-f2 <- "~/Dropbox/oce_secret_data/ad2cp/secret2.trimmed.ad2cp"
-f3 <- "~/Dropbox/oce_secret_data/ad2cp/secret3.trimmed.ad2cp"
-f4 <- "~/Dropbox/oce_secret_data/ad2cp/byg_trimmed.ad2cp"
-f5 <- "~/Dropbox/oce_secret_data/ad2cp/med_trimmed.ad2cp"
+f2 <- "~/Dropbox/oce_secret_data/ad2cp/secret2_trimmed.ad2cp"
+f3 <- "~/Dropbox/oce_secret_data/ad2cp/secret3_trimmed.ad2cp"
+#f4 <- "~/Dropbox/oce_secret_data/ad2cp/byg_trimmed.ad2cp"
+#f5 <- "~/Dropbox/oce_secret_data/ad2cp/med_trimmed.ad2cp"
 
 if (file.exists(f1)) {
     skip_on_cran()
@@ -298,7 +298,8 @@ if (file.exists(f1)) {
 if (file.exists(f2)) {
     skip_on_cran()
     test_that("read.adp() on a private AD2CP file that has only 'burst' data", {
-        N <- 500
+        N <- 99L                       # known value for subset of a larger file
+        expect_equal(N, read.oce(f2, which="?")[[1]])
         # Note: using read.adp() to ensure that it also works
         expect_warning(
             expect_warning(d2 <- read.adp(f2, from=1, to=N, by=1),
@@ -323,7 +324,6 @@ if (file.exists(f2)) {
         expect_equal(d2[["cellSize"]], 0.2)
         expect_equal(d2[["cellSize"]], ad2cpHeaderValue(d2, "GETBURST", "CS"))
         expect_equal(d2[["cellSize", "burst"]], ad2cpHeaderValue(d2, "GETBURST", "CS"))
-        ## Why is this wrong? Is it a unit problem (cm and m)?
         expect_equal(d2[["blankingDistance"]], ad2cpHeaderValue(d2, "GETBURST", "BD"))
         expect_equal(d2[["blankingDistance", "burst"]], ad2cpHeaderValue(d2, "GETBURST", "BD"))
         expect_equal(d2[["oceCoordinate"]], tolower(ad2cpHeaderValue(d2, "GETBURST", "CY", FALSE)))
