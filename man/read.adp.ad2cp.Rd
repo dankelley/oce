@@ -200,7 +200,8 @@ Nortek AS. \dQuote{Signature Integration 55|250|500|1000kHz.} Nortek AS,
 2018. (This revision includes new information about instrument orientation.)
 
 Nortek AS. \dQuote{Signature Integration 55|250|500|1000kHz.} Nortek AS,
-March 31, 2022.  (This confusing revision may be updated sometime in 2022.)
+March 31, 2022.  (This version is incomplete and quite confusing,
+so the 2017 and 2018 versions are preferable, albeit perhaps out-of-date.)
 }
 \seealso{
 Other things related to adp data: 

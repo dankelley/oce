@@ -16,13 +16,14 @@ frame.  Otherwise, it is a character vector with the relevant mappings,
 with the raw form of the code linked with the name, as in the example.
 }
 \description{
-AD2CP files use a hexadecimal (in R, "raw") code to indicate the nature of
-each data chunk, and \code{\link[=read.adp.ad2cp]{read.adp.ad2cp()}} uses the present function as it
-analyses an AD2CP file.
+As explained in Nortek (2022, section 6.1, page 80), AD2CP files use a
+hexadecimal (in R, "raw") code to indicate the nature of each data chunk, and
+\code{\link[=read.adp.ad2cp]{read.adp.ad2cp()}} uses the present function as it analyses AD2CP files.
 }
 \details{
 The mapping from code (hex or decimal) to oce name is as follows.\tabular{rrr}{
    code (raw) \tab code (integer) \tab oce name \cr
+   ---------- \tab -------------- \tab ----------------- \cr
    0x15 \tab 21 \tab burst \cr
    0x16 \tab 22 \tab average \cr
    0x17 \tab 23 \tab bottomTrack \cr
@@ -39,6 +40,10 @@ The mapping from code (hex or decimal) to oce name is as follows.\tabular{rrr}{
 \examples{
 stopifnot(ad2cpCodeToName(0x15) == "0x15=burst")
 
+}
+\references{
+Nortek AS. \dQuote{Signature Integration 55|250|500|1000kHz.} Nortek AS,
+March 31, 2022.
 }
 \author{
 Dan Kelley
