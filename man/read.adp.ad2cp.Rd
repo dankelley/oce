@@ -119,22 +119,16 @@ character (if \code{which="text"}).
 }
 \description{
 This function reads Nortek AD2CP files, storing data elements in lists within
-the \code{data} slot.  So, for example, the following might be a way to read and
-then access "burst" data.
-
-\if{html}{\out{<div class="sourceCode">}}\preformatted{d <- read.adp.ad2cp("file.ad2cp")
-bar <- d[["burst"]]
-}\if{html}{\out{</div>}}
-
-although, if only \code{burst} data are required, using
-
-\if{html}{\out{<div class="sourceCode">}}\preformatted{d <- read.adp.ad2cp("file.ad2cp", which="burst")
-bar <- d[["burst"]]
-}\if{html}{\out{</div>}}
-
-will be faster, and will consume less memory.
+the \code{data} slot.  Those elements are named for the ID type in question.  For
+example, data with ID code \code{0x16} are stored in \code{data$average}; see
+\code{\link[=ad2cpCodeToName]{ad2cpCodeToName()}} for the code mapping.
 }
 \details{
+By default, \code{\link[=read.adp.ad2cp]{read.adp.ad2cp()}} reads all ID codes that are in the file.
+However, this can yield very large objects in some cases, and sometimes the
+analysist wishes to study one ID type at a time; the \code{which} parameter
+permits such a focus.
+
 It is important to realize that \code{read.adp.ad2cp} is incomplete, and has not
 been well tested.  The data format is not documented thoroughly in the
 available Nortek manuals, and contradictions between the manuals require an

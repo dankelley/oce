@@ -109,23 +109,63 @@ is.ad2cp <- function(x)
     }
 }
 
-ad2cpCodeToName <- function(code)
+#' Map AD2CP ID Code to oce Name
+#'
+#' AD2CP files use a hexadecimal (in R, "raw") code to indicate the nature of
+#' each data chunk, and [read.adp.ad2cp()] uses the present function as it
+#' analyses an AD2CP file.
+#'
+#' The mapping from code (hex or decimal) to oce name is as follows.
+#'
+#' | code (raw) | code (integer) |          oce name |
+#' |      ----: |          ----: |             ----: |
+#' |      0x15  |             21 |             burst |
+#' |      0x16  |             22 |           average |
+#' |      0x17  |             23 |       bottomTrack |
+#' |      0x18  |             24 |  interleavedBurst |
+#' |      0x1a  |             26 | burstAltimeterRaw |
+#' |      0x1b  |             27 |    DVLBottomTrack |
+#' |      0x1c  |             28 |       echosounder |
+#' |      0x1d  |             29 |     DVLWaterTrack |
+#' |      0x1e  |             30 |         altimeter |
+#' |      0x1f  |             31 |  averageAltimeter |
+#' |      0xa0  |            160 |              text |
+#'
+#' @param code a [raw] (or corresponding integer) vector indicating the IDs of
+#' interest, or NULL to get a summary of possible values.
+#'
+#' @return An indication of the mapping.  If `code` is NULL, this is a data
+#' frame.  Otherwise, it is a character vector with the relevant mappings,
+#' with the raw form of the code linked with the name, as in the example.
+#'
+#' @examples
+#' stopifnot(ad2cpCodeToName(0x15) == "0x15=burst")
+#'
+#' @author Dan Kelley
+ad2cpCodeToName <- function(code=NULL)
 {
-    #             burst          average bottomTrack interleavedBurst
-    #           0x15=21          0x16=22     0x17=23          0x18=24
-    # burstAltimeterRaw   DVLBottomTrack echosounder    DVLWaterTrack
-    #           0x1a=26          0x1b=27     0x1c=28          0x1d=29
-    #         altimeter averageAltimeter        text
-    #           0x1e=30          0x1f=31    0xa0=160
-    code <- as.integer(code)
-    table <- c(burst=0x15, average=0x16, bottomTrack=0x17,
-        interleavedBurst=0x18, burstAltimeterRaw=0x1a, DVLBottomTrack=0x1b,
-        echosounder=0x1c, DVLWaterTrack=0x1d, altimeter=0x1e,
-        averageAltimeter=0x1f, text=0xa0)
-    rval <- rep("", length(code))
-    for (i in seq_along(code)) {
-        m <- match(code[i], table)
-        rval[i] <- paste0("0x", as.raw(code[i]), "=", if (is.na(m)) "?" else names(table)[m])
+    table <- c(burst=as.raw(0x15),
+        average=as.raw(0x16),
+        bottomTrack=as.raw(0x17),
+        interleavedBurst=as.raw(0x18),
+        burstAltimeterRaw=as.raw(0x1a),
+        DVLBottomTrack=as.raw(0x1b),
+        echosounder=as.raw(0x1c),
+        DVLWaterTrack=as.raw(0x1d),
+        altimeter=as.raw(0x1e),
+        averageAltimeter=as.raw(0x1f),
+        text=as.raw(0xa0))
+    if (is.null(code)) {
+        rval <- data.frame(
+            "code"=paste0("0x", as.raw(table), " (=", as.integer(table), ")"),
+            "name"=names(table))
+    } else {
+        code <- as.raw(code)
+        rval <- rep("", length(code))
+        for (i in seq_along(code)) {
+            m <- match(code[i], table)
+            rval[i] <- paste0("0x", as.raw(code[i]), "=", if (is.na(m)) "?" else names(table)[m])
+        }
     }
     rval
 }
@@ -135,18 +175,14 @@ ad2cpCodeToName <- function(code)
 #' Read a Nortek AD2CP File
 #'
 #' This function reads Nortek AD2CP files, storing data elements in lists within
-#' the `data` slot.  So, for example, the following might be a way to read and
-#' then access "burst" data.
-#'```
-#' d <- read.adp.ad2cp("file.ad2cp")
-#' bar <- d[["burst"]]
-#'```
-#' although, if only `burst` data are required, using
-#'```
-#' d <- read.adp.ad2cp("file.ad2cp", which="burst")
-#' bar <- d[["burst"]]
-#'```
-#' will be faster, and will consume less memory.
+#' the `data` slot.  Those elements are named for the ID type in question.  For
+#' example, data with ID code `0x16` are stored in `data$average`; see
+#' [ad2cpCodeToName()] for the code mapping.
+#'
+#' By default, [read.adp.ad2cp()] reads all ID codes that are in the file.
+#' However, this can yield very large objects in some cases, and sometimes the
+#' analysist wishes to study one ID type at a time; the `which` parameter
+#' permits such a focus.
 #'
 #' It is important to realize that `read.adp.ad2cp` is incomplete, and has not
 #' been well tested.  The data format is not documented thoroughly in the
@@ -1102,10 +1138,12 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
         rval
     }                                  # readBurstAltimeterRaw
 
-    readBurstOrAverage <- function(id, debug=getOption("oceDebug")) # uses global 'd' and 'configuration'
+    # This is intended to handle burst, average, altimeter, ... records:
+    # anything but bottom-track.
+    readProfile <- function(id, debug=getOption("oceDebug")) # uses global 'd' and 'configuration'
     {
         type <- gsub(".*=","", ad2cpCodeToName(id))
-        oceDebug(debug, "readBurstOrAverage(id=0x", id, ") # i.e. type=", type, "\n")
+        oceDebug(debug, "readProfile(id=0x", id, ") # i.e. type=", type, "\n")
         # str(d)
         #    List of 4
         #    $ buf   : raw [1:305988694] a5 0a a0 10 ...
@@ -1196,7 +1234,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
             rval <- getItemFromBuf(rval, "stdDev", i=i, type=type, debug=debug)
         oceDebug(debug, "} # vector-read for type=", type, "\n")
         rval
-    }                                  # readBurstOrAverage
+    }                                  # readProfile
 
     # Nortek (2022 page 93 ) "6.7 _DF20BottomTrack"
     readBottomTrack <- function(id, debug=getOption("oceDebug")) # uses global 'd' and 'configuration'
@@ -1561,15 +1599,15 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
     #
     # Nortek (2017 p 48) "6.1.2 Burst/Average Data Record Definition (DF3)"
     if (length(p$burst) > 0L)          # vector-read 0x15
-        data$burst <- readBurstOrAverage(id=as.raw(0x15), debug=debug)
+        data$burst <- readProfile(id=as.raw(0x15), debug=debug)
     # Nortek (2017 p 48) "6.1.2 Burst/Average Data Record Definition (DF3)"
     if (length(p$average) > 0L)        # vector-read 0x16
-        data$average <- readBurstOrAverage(id=as.raw(0x16), debug=debug)
+        data$average <- readProfile(id=as.raw(0x16), debug=debug)
     # Nortek (2017 p60) "6.1.3 Bottom Track Data Record Definition (DF20)"
     if (length(p$bottomTrack) > 0)     # vector-read 0x17
         data$bottomTrack <- readBottomTrack(id=as.raw(0x17), debug=debug)
     if (length(p$interleavedBurst) > 0) # vector-read 0x18
-        data$interleavedBurst <- readBurstOrAverage(id=as.raw(0x18), debug=debug)
+        data$interleavedBurst <- readProfile(id=as.raw(0x18), debug=debug)
     if (length(p$burstAltimeterRaw) > 0L) # vector-read 0x1a
         data$burstAltimeterRaw <- readBurstAltimeterRaw(id=as.raw(0x1a), debug=debug-1L)
     if (length(p$DVLBottomTrack) > 0) { # vector-read 0x1b
