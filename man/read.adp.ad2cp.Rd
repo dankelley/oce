@@ -125,19 +125,13 @@ example, data with ID code \code{0x16} are stored in \code{data$average}; see
 }
 \details{
 By default, \code{\link[=read.adp.ad2cp]{read.adp.ad2cp()}} reads all ID codes that are in the file.
-However, this can yield very large objects in some cases, and sometimes the
-analysist wishes to study one ID type at a time; the \code{which} parameter
-permits such a focus.
+This can yield very large objects, so if only certain IDs are of interest,
+try setting the \code{which} document accordingly.
 
 It is important to realize that \code{read.adp.ad2cp} is incomplete, and has not
 been well tested.  The data format is not documented thoroughly in the
 available Nortek manuals, and contradictions between the manuals require an
 uncomfortable degree of guesswork; see \dQuote{Cautionary Notes}.
-
-Some of the standard \verb{read.adp.*} arguments are handled differently with this
-function, e.g. \code{by} must equal 1, because skipping records makes little sense
-with blended multiple streams. Plus, this function has an argument, \code{which},
-that is not handled by other \verb{read.adp.*} functions.
 }
 \section{Cautionary Notes}{
 
@@ -154,7 +148,7 @@ might think that Nortek (2022) would be the best place to start, in coding to
 read AD2CP files. That would be a mistake, and a big one, at that. There
 are two reasons for this.
 
-First, Nortek (2022) is not as clear in its descriptoin of the data format as
+First, Nortek (2022) is not as clear in its description of the data format as
 Nortek (2017) and Nortek (2018), as exemplified by a few examples.
 \enumerate{
 \item Nortek (2022) does not explain how to compute checksums.  Without this,
@@ -183,7 +177,7 @@ the green "Unit" text was ignored in basically every case.
 Second, Nortek (2022) contains significant errors, e.g. the following.
 \enumerate{
 \item Nortek (2022 page 89) states the storage class for "Altimeter
-data.Altimeter distance" (called \code{AltimeterDistance} by the present function)
+data. Altimeter distance" (called \code{AltimeterDistance} by the present function)
 to be \code{int32}, but Nortek (2017, 2018) both state it to be \code{float32}. Tests
 with actual datasets make it clear that the format is \code{float32}, since wild
 result are inferred by following the Nortek (2022) guidance.

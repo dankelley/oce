@@ -235,19 +235,13 @@ ad2cpCodeToName <- function(code=NULL)
 #' [ad2cpCodeToName()] for the code mapping.
 #'
 #' By default, [read.adp.ad2cp()] reads all ID codes that are in the file.
-#' However, this can yield very large objects in some cases, and sometimes the
-#' analysist wishes to study one ID type at a time; the `which` parameter
-#' permits such a focus.
+#' This can yield very large objects, so if only certain IDs are of interest,
+#' try setting the `which` document accordingly.
 #'
 #' It is important to realize that `read.adp.ad2cp` is incomplete, and has not
 #' been well tested.  The data format is not documented thoroughly in the
 #' available Nortek manuals, and contradictions between the manuals require an
 #' uncomfortable degree of guesswork; see \dQuote{Cautionary Notes}.
-#'
-#' Some of the standard `read.adp.*` arguments are handled differently with this
-#' function, e.g. `by` must equal 1, because skipping records makes little sense
-#' with blended multiple streams. Plus, this function has an argument, `which`,
-#' that is not handled by other `read.adp.*` functions.
 #'
 #' @section Cautionary Notes:
 #'
@@ -263,7 +257,7 @@ ad2cpCodeToName <- function(code=NULL)
 #' read AD2CP files. That would be a mistake, and a big one, at that. There
 #' are two reasons for this.
 #'
-#' First, Nortek (2022) is not as clear in its descriptoin of the data format as
+#' First, Nortek (2022) is not as clear in its description of the data format as
 #' Nortek (2017) and Nortek (2018), as exemplified by a few examples.
 #'
 #' 1. Nortek (2022) does not explain how to compute checksums.  Without this,
@@ -293,7 +287,7 @@ ad2cpCodeToName <- function(code=NULL)
 #' Second, Nortek (2022) contains significant errors, e.g. the following.
 #'
 #' 1. Nortek (2022 page 89) states the storage class for "Altimeter
-#' data.Altimeter distance" (called `AltimeterDistance` by the present function)
+#' data. Altimeter distance" (called `AltimeterDistance` by the present function)
 #' to be `int32`, but Nortek (2017, 2018) both state it to be `float32`. Tests
 #' with actual datasets make it clear that the format is `float32`, since wild
 #' result are inferred by following the Nortek (2022) guidance.
@@ -425,8 +419,28 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
     monitor=FALSE, despike=FALSE, processingLog,
     debug=getOption("oceDebug"), ...)
 {
+    # setup
     i0v <- 0L                          # global variable, which some functions alter using <<-
     i <- 0L                            # global variable, which some functions alter using <<-
+    # Interpret 'which'
+    if (any(grepl("\\?", which))) {
+        if (length(which) != 1L)
+            stop("If which is \"?\" or \"??\", no other values are permitted")
+        if (which != "?" && which != "??")
+            stop("did you mean which=\"?\" or \"??\" for your value of which?")
+    } else {
+        whichChoices <- c("burst", "average", "bottomTrack", "interleavedBurst",
+            "burstAltimeterRaw", "DVLBottomTrack", "echosounder", "DVLWaterTrack",
+            "altimeter", "averageAltimeter")
+        if (1L == length(which) && which == "all")
+            which <- whichChoices
+        unknownWhich <- !(which %in% whichChoices)
+        if (any(unknownWhich))
+            stop("unknown 'which' value(s): \"",
+                paste(which[unknownWhich], collapse="\", \""), "\"")
+        which <- unique(which)
+    }
+    # Interpret other parameters
     if (missing(file))
         stop("must supply 'file'")
     if (is.character(file)) {
@@ -452,14 +466,15 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
     planGiven <- !missing(plan)
     typeGiven <- !missing(type)
 
-    oceDebug(debug, "read.adp.ad2cp(...",
-        ", from=", if (fromGiven) format(from) else "(missing)",
+    oceDebug(debug, "read.adp.ad2cp(...,\n    ",
+        "which=c(\"", paste0(which, sep="", collapse="\", \""), "\"),\n",
+        "    from=", if (fromGiven) format(from) else "(missing)",
         ", to=", if (toGiven) to else "(missing)",
-        ", by=", if (byGiven) by else "(missing)",
-        ", plan=", if (planGiven) plan else "(missing)",
+        ", by=", if (byGiven) by else "(missing)\n",
+        "    plan=", if (planGiven) plan else "(missing)",
         ", type=\"", if (typeGiven) type else "(missing)",
         ", ignoreChecksums=", ignoreChecksums,
-        "\",...)\n", sep="", unindent=1, style="bold")
+        ", ...)\n", sep="", unindent=1, style="bold")
     if (debug == 1L)
         oceDebug(debug, "HINT: set debug=2 for more output, or 3 for the maximum output\n")
     else if (debug == 2L)
@@ -522,17 +537,17 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
         if (ignoreChecksums) 1L else 0L,
         debug-1L)
     # Return overviews (whole file)
-    if (which == "?") {
+    if (which[1] == "?") {
         t <- table(nav$id)
         names(t) <- ad2cpCodeToName(names(t))
         o <- order(names(t))
         return(t[o])
-    } else if (which == "??") {
+    } else if (which[1] == "??") {
         bytesInHeader <- ifelse(nav$twelve_byte_header, 12L, 10L)
         return(data.frame(
                 ID=ad2cpCodeToName(nav$id),
                 start=nav$index-bytesInHeader+1))
-    } else if (which == "???") {
+    } else if (which[1] == "???") {
         bytesInHeader <- ifelse(nav$twelve_byte_header, 12L, 10L)
         #gi <- gappyIndex(nav$index-bytesInHeader, 4L, 2L)
         return(data.frame(
@@ -650,25 +665,19 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
             typeGiven <- TRUE
         }
     }
-    if (which == "text") {
-        w <- which(d$id == 0xa0)
-        rval <- vector("list", length(w))
-        for (i in seq_along(w)) {
-            chars <- rawToChar(d$buf[seq.int(2L+d$index[w[i]], by=1, length.out=-1+d$length[w[i]])])
-            rval[i] <- strsplit(chars, "\r\n")[1]
-        }
-        return(rval)
-    }
+    #if (which == "text") {
+    #    w <- which(d$id == 0xa0)
+    #    rval <- vector("list", length(w))
+    #    for (i in seq_along(w)) {
+    #        chars <- rawToChar(d$buf[seq.int(2L+d$index[w[i]], by=1, length.out=-1+d$length[w[i]])])
+    #        rval[i] <- strsplit(chars, "\r\n")[1]
+    #    }
+    #    return(rval)
+    #}
     keep <- activeConfiguration == plan
     if (sum(keep) == 0L) {
         stop("there are no data for plan=", plan, "; try one of the following values instead: ", paste(unique(activeConfiguration), collapse=" "))
     }
-    #message("exported nav as DANnav");DANnav<<-nav
-    #message("exported d as DANd");DANd<<-d
-    #message("exported keep as DANkeep");DANkeep<<-keep
-    # Subset global items by 'keep'
-    #message(vectorShow(sum(keep)))
-    #message(vectorShow(length(keep)))
     if (sum(keep) < length(keep)) {
         oceDebug(debug, "this plan has ", sum(keep), " data records, out of a total of ", length(keep), " in the file subset\n")
         N <- sum(keep)                 # need to update this or all else will fail!
@@ -1645,30 +1654,30 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
     # configuration matrix. Careful reading of Nortek (2017) Table 6.1.2 should
     # come before changing the code!
     #
-    # BOOKMARK A
+    # BOOKMARK A: vectorized reading
     #
     # Nortek (2017 p 48) "6.1.2 Burst/Average Data Record Definition (DF3)"
-    if (length(p$burst) > 0L)          # vector-read 0x15
+    if ("burst" %in% which && length(p$burst) > 0L) # 0x15
         data$burst <- readProfile(id=as.raw(0x15), debug=debug)
     # Nortek (2017 p 48) "6.1.2 Burst/Average Data Record Definition (DF3)"
-    if (length(p$average) > 0L)        # vector-read 0x16
+    if ("average" %in% which && length(p$average) > 0L) # 0x16
         data$average <- readProfile(id=as.raw(0x16), debug=debug)
     # Nortek (2017 p60) "6.1.3 Bottom Track Data Record Definition (DF20)"
-    if (length(p$bottomTrack) > 0)     # vector-read 0x17
+    if ("bottomTrack" %in% which && length(p$bottomTrack) > 0) # 0x17
         data$bottomTrack <- readTrack(id=as.raw(0x17), debug=debug)
-    if (length(p$interleavedBurst) > 0) # vector-read 0x18
+    if ("interleavedBurst" %in% which && length(p$interleavedBurst) > 0) # 0x18
         data$interleavedBurst <- readProfile(id=as.raw(0x18), debug=debug)
-    if (length(p$burstAltimeterRaw) > 0L) # vector-read 0x1a
+    if ("burstAltimeterRaw" %in% which && length(p$burstAltimeterRaw) > 0L) # 0x1a
         data$burstAltimeterRaw <- readBurstAltimeterRaw(id=as.raw(0x1a), debug=debug-1L)
-    if (length(p$DVLBottomTrack) > 0)  # vector-read 0x1b
+    if ("DVLBottomTrack" %in% which && length(p$DVLBottomTrack) > 0) # 0x1b
         data$DVLBottomTrack <- readTrack(id=as.raw(0x1b), debug=debug-1L)
-    if (length(p$echosounder) > 0)     # vector-read 'echosounder'=0x1c
+    if ("echosounder" %in% which && length(p$echosounder) > 0) # 0x1c
         data$echosounder <- readEchosounder(id=as.raw(0x1c), debug=debug)
-    if (length(p$altimeter) > 0)       # vector-read 0x1e
+    if ("altimeter" %in% which && length(p$altimeter) > 0) # 0x1e
         data$altimeter <- readProfile(id=as.raw(0x1e), debug=debug)
-    if (length(p$DVLWaterTrack) > 0)   # vector-read 0x1d
+    if ("DVLWaterTrack" %in% which && length(p$DVLWaterTrack) > 0) # 0x1d
         data$DVLWaterTrack <- readTrack(id=as.raw(0x1d), debug=debug)
-    if (length(p$averageAltimeter) > 0) # vector-read 0x1f
+    if ("averageAltimeter" %in% which && length(p$averageAltimeter) > 0) # 0x1f
         data$averageAltimeter <- readProfile(id=as.raw(0x1f), debug=debug)
 
     # Add some global things (FIXME: do we want these?)
