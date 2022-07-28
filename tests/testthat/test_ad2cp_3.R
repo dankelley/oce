@@ -13,7 +13,24 @@ library(oce)
 file <- "local_data/ad2cp/S102791A002_Barrow_v2.ad2cp"
 
 if (file.exists(file)) {
-    test_that("local_data/ad2cp/S102791A002_Barrow_v2.ad2cp (signature 250)",
+    test_that("S102791A002_Barrow_v2.ad2cp 'distance' works",
+        {
+            expect_warning(
+                expect_warning(
+                    d <- read.oce(file),
+                    "using to=1477 based on file contents"),
+                "'plan' defaulting to 0")
+            expect_equal(
+                head(d@data$burstAltimeterRaw$altimeterRawDistance),
+                c(40.024, 40.048, 40.072, 40.096, 40.12, 40.144))
+            expect_equal(
+                tail(d@data$burstAltimeterRaw$altimeterRawDistance),
+                c(83.872, 83.896, 83.92, 83.944, 83.968, 83.992))
+            expect_equal(
+                length(d@data$burstAltimeterRaw$altimeterRawDistance),
+                1833L)
+        })
+    test_that("various tests for S102791A002_Barrow_v2.ad2cp (signature 250)",
         {
             expect_warning(
                 expect_warning(

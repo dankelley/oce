@@ -1048,6 +1048,9 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
             #object$altimeterRawSamples <- matrix(tmp, nrow=NP, ncol=NS, byrow=TRUE) # FIXME: is byrow ok???
             object$altimeterRawSamples <- t(matrix(tmp, nrow=NP, ncol=NS, byrow=FALSE))
             i0v <<- i0v + 2L*NS
+            # Constructed vector of altimeterRaw sample distances.
+            object$altimeterRawDistance <- with(object,
+                blankingDistance + altimeterRawSampleDistance * seq_len(altimeterRawNumberOfSamples))
         } else if (name == "echosounder") {
             # Nortek (2017 p52): each profile has NC*16 bits
             oceDebug(debug, "   echosounder starts at i0v=", i0v, " (NC=", NC, ", NP=", NP, ")\n")
@@ -1168,11 +1171,13 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
         # 55|250|500|1000kHz.” Nortek AS, March 31, 2022)
         i <<- d$index[look]            # pointers to "burstAltimeterRaw" chunks in buf
         oceDebug(debug, vectorShow(i, n=4))
-        i0v <<- 77                      # pointer to data (incremented by getItemFromBuf() later).
-        NP <- length(i)            # number of profiles of this type
+        i0v <<- 77                     # pointer to data (incremented by getItemFromBuf() later).
+        NP <- length(i)                # number of profiles of this type
         NC <- rval$numberOfCells       # number of cells for v,a,q
         NB <- rval$numberOfBeams       # number of beams for v,a,q
         p1 <- p$burstAltimeterRaw[1]
+        # Nortek (2022 page 89) "Altimeter raw data.NumRawSamples at ALLTIRAWSTART + 8
+        #print(configuration0)
         if (configuration0[6])          # read velocity, if included
             rval <- getItemFromBuf(rval, "v", i=i, type=type, debug=debug)
         if (configuration0[7])          # read amplitude, if included
