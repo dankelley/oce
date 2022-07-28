@@ -45,6 +45,7 @@ exportMethods(summary)
 export(
     abbreviateTimeLabels,
     ad2cpCodeToName,
+    ad2cpTrim,
     approx3d,
     argShow,
     beamName,

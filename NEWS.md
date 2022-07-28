@@ -2,6 +2,8 @@
 
 * Improve the handling of file encodings.
 * Make the argo `[[` method handle spiciness.
+* Improve `read.adp.ad2cp()`.
+* Add `ad2cpTrim()`.
 
 # oce 1.7.8 on CRAN
 

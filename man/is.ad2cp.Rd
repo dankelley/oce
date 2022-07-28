@@ -20,7 +20,9 @@ Test whether object is an AD2CP type
 Other things related to adp data: 
 \code{\link{[[,adp-method}},
 \code{\link{[[<-,adp-method}},
+\code{\link{ad2cpCodeToName}()},
 \code{\link{ad2cpHeaderValue}()},
+\code{\link{ad2cpTrim}()},
 \code{\link{adp-class}},
 \code{\link{adpConvertRawToNumeric}()},
 \code{\link{adpEnsembleAverage}()},
@@ -59,5 +61,15 @@ Other things related to adp data:
 \code{\link{xyzToEnuAdpAD2CP}()},
 \code{\link{xyzToEnuAdp}()},
 \code{\link{xyzToEnu}()}
+
+Other things related to ad2cp data: 
+\code{\link{ad2cpCodeToName}()},
+\code{\link{ad2cpHeaderValue}()},
+\code{\link{ad2cpTrim}()},
+\code{\link{read.adp.ad2cp}()}
 }
+\author{
+Dan Kelley
+}
+\concept{things related to ad2cp data}
 \concept{things related to adp data}

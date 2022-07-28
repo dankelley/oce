@@ -45,6 +45,60 @@ stopifnot(ad2cpCodeToName(0x15) == "0x15=burst")
 Nortek AS. \dQuote{Signature Integration 55|250|500|1000kHz.} Nortek AS,
 March 31, 2022.
 }
+\seealso{
+Other things related to adp data: 
+\code{\link{[[,adp-method}},
+\code{\link{[[<-,adp-method}},
+\code{\link{ad2cpHeaderValue}()},
+\code{\link{ad2cpTrim}()},
+\code{\link{adp-class}},
+\code{\link{adpConvertRawToNumeric}()},
+\code{\link{adpEnsembleAverage}()},
+\code{\link{adpFlagPastBoundary}()},
+\code{\link{adp_rdi.000}},
+\code{\link{adp}},
+\code{\link{as.adp}()},
+\code{\link{beamName}()},
+\code{\link{beamToXyzAdpAD2CP}()},
+\code{\link{beamToXyzAdp}()},
+\code{\link{beamToXyzAdv}()},
+\code{\link{beamToXyz}()},
+\code{\link{beamUnspreadAdp}()},
+\code{\link{binmapAdp}()},
+\code{\link{enuToOtherAdp}()},
+\code{\link{enuToOther}()},
+\code{\link{handleFlags,adp-method}},
+\code{\link{is.ad2cp}()},
+\code{\link{plot,adp-method}},
+\code{\link{read.adp.ad2cp}()},
+\code{\link{read.adp.nortek}()},
+\code{\link{read.adp.rdi}()},
+\code{\link{read.adp.sontek.serial}()},
+\code{\link{read.adp.sontek}()},
+\code{\link{read.adp}()},
+\code{\link{read.aquadoppHR}()},
+\code{\link{read.aquadoppProfiler}()},
+\code{\link{read.aquadopp}()},
+\code{\link{rotateAboutZ}()},
+\code{\link{setFlags,adp-method}},
+\code{\link{subset,adp-method}},
+\code{\link{subtractBottomVelocity}()},
+\code{\link{summary,adp-method}},
+\code{\link{toEnuAdp}()},
+\code{\link{toEnu}()},
+\code{\link{velocityStatistics}()},
+\code{\link{xyzToEnuAdpAD2CP}()},
+\code{\link{xyzToEnuAdp}()},
+\code{\link{xyzToEnu}()}
+
+Other things related to ad2cp data: 
+\code{\link{ad2cpHeaderValue}()},
+\code{\link{ad2cpTrim}()},
+\code{\link{is.ad2cp}()},
+\code{\link{read.adp.ad2cp}()}
+}
 \author{
 Dan Kelley
 }
+\concept{things related to ad2cp data}
+\concept{things related to adp data}

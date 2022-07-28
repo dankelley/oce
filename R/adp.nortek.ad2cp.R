@@ -1,5 +1,46 @@
 # vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
 
+#' Trim an AD2CP File
+#'
+#' Create an AD2CP file by copying the first `n` data chunks (regions starting
+#' with 0xa5, etc) of another such file. This can be useful in supplying
+#' small sample files for bug reports.
+#'
+#' @param infile name of an AD2CP source file.
+#'
+#' @param n integer indicating the number of data chunks to keep. The default is
+#' to keep 100 chunks, a common good choice for sample files.
+#'
+#' @param outfile optional name of the new AD2CP to be created. If this is not
+#' supplied, a default is used, by adding `_trimmed` to the base filename, e.g.
+#' if `infile` is `"a.ad2cp"` then `outfile` will be `a_trimmed.ad2cp`.
+#'
+#' @return the name of the output file, `outfile`, as provided or constructed.
+#'
+#' @family things related to adp data
+#' @family things related to ad2cp data
+#'
+#' @author Dan Kelley
+ad2cpTrim <- function(infile, n=100L, outfile)
+{
+    if (missing(infile))
+        stop("must provide 'infile'")
+    if (n < 1L)
+        stop("'n' must be a positive number")
+    n <- as.integer(n)
+    if (missing(outfile))
+        outfile <- gsub("(.*).ad2cp", "\\1_trimmed.ad2cp", infile)
+    r <- read.oce(infile, which="??")
+    nmax <- length(r$start)
+    if (n >= nmax)
+        stop("maximum allowed 'n' for this file is ", nmax)
+    # add 1 to profile count; go back 1 char before that
+    last <- r$start[n+1L] - 1L
+    buf <- readBin(file, "raw", n=last)
+    writeBin(buf, outfile, useBytes=TRUE)
+    outfile
+}
+
 # private function
 ad2cpDefaultDataItem <- function(x, j=NULL,
     order=c("average", "burst", "interleavedBurst",
@@ -54,6 +95,9 @@ ad2cpDefaultDataItem <- function(x, j=NULL,
 #'}
 #'
 #' @family things related to adp data
+#' @family things related to ad2cp data
+#'
+#' @author Dan Kelley
 ad2cpHeaderValue <- function(x, key, item, numeric=TRUE, default)
 {
     if (missing(x))
@@ -99,6 +143,9 @@ ad2cpHeaderValue <- function(x, key, item, numeric=TRUE, default)
 #' with `fileType` in its `metadata` slot equal to `"AD2CP"`.
 #'
 #' @family things related to adp data
+#' @family things related to ad2cp data
+#'
+#' @author Dan Kelley
 is.ad2cp <- function(x)
 {
     if (!inherits(x, "adp")) {
@@ -145,6 +192,9 @@ is.ad2cp <- function(x)
 #' @references
 #' Nortek AS. \dQuote{Signature Integration 55|250|500|1000kHz.} Nortek AS,
 #' March 31, 2022.
+#'
+#' @family things related to adp data
+#' @family things related to ad2cp data
 #'
 #' @author Dan Kelley
 ad2cpCodeToName <- function(code=NULL)
@@ -364,6 +414,9 @@ ad2cpCodeToName <- function(code=NULL)
 ## September 21, 2018.
 #'
 #' @family things related to adp data
+#' @family things related to ad2cp data
+#'
+#' @author Dan Kelley
 read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
     tz=getOption("oceTz"),
     ignoreChecksums=FALSE,
