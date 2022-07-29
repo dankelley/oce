@@ -186,6 +186,17 @@ present function).
 }
 }
 
+\examples{
+# You can run this within the oce directory, if you clone from github.
+file <- "tests/testthat/local_data/ad2cp/S102791A002_Barrow_v2.ad2cp"
+if (file.exists(file)) {
+    library(oce)
+    d <- read.oce(file)
+    with(d[["burstAltimeterRaw"]]$altimeterRaw,
+        imagep(time, distance, samples, ylab="Distance [m]"))
+}
+
+}
 \references{
 Nortek AS. \dQuote{Signature Integration 55|250|500|1000kHz.} Nortek AS,
 2017.

@@ -21,13 +21,13 @@ if (file.exists(file)) {
                     "using to=1477 based on file contents"),
                 "'plan' defaulting to 0")
             expect_equal(
-                head(d@data$burstAltimeterRaw$altimeterRawDistance),
+                head(d@data$burstAltimeterRaw$altimeterRaw$distance),
                 c(40.024, 40.048, 40.072, 40.096, 40.12, 40.144))
             expect_equal(
-                tail(d@data$burstAltimeterRaw$altimeterRawDistance),
+                tail(d@data$burstAltimeterRaw$altimeterRaw$distance),
                 c(83.872, 83.896, 83.92, 83.944, 83.968, 83.992))
             expect_equal(
-                length(d@data$burstAltimeterRaw$altimeterRawDistance),
+                length(d@data$burstAltimeterRaw$altimeterRaw$distance),
                 1833L)
         })
     test_that("various tests for S102791A002_Barrow_v2.ad2cp (signature 250)",

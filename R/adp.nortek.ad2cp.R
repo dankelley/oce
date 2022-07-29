@@ -410,6 +410,16 @@ ad2cpCodeToName <- function(code=NULL)
 #' @family things related to adp data
 #' @family things related to ad2cp data
 #'
+#' @examples
+#' # You can run this within the oce directory, if you clone from github.
+#' file <- "tests/testthat/local_data/ad2cp/S102791A002_Barrow_v2.ad2cp"
+#' if (file.exists(file)) {
+#'     library(oce)
+#'     d <- read.oce(file)
+#'     with(d[["burstAltimeterRaw"]]$altimeterRaw,
+#'         imagep(time, distance, samples, ylab="Distance [m]"))
+#' }
+#'
 #' @author Dan Kelley
 read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
     tz=getOption("oceTz"),
@@ -999,29 +1009,31 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
             # and Nortek 2017 p51 bottom states that it is a float value.
             oceDebug(debug, "   altimeter starts at i0v=", i0v, "\n")
             iv <- gappyIndex(i, i0v, 4L)
-            object$altimeterDistance <- readBin(buf[iv], "numeric", size=4L, n=NP, endian="little", signed=TRUE)
+            object$altimeter <- list()
+            object$altimeter$distance <- readBin(buf[iv], "numeric", size=4L, n=NP, endian="little", signed=TRUE)
             #message(vectorShow(object$altimeterDistance))
             i0v <<- i0v + 4L
             iv <- gappyIndex(i, i0v, 2L)
-            object$altimeterQuality <- readBin(buf[iv], "integer", size=2L, n=NP, endian="little", signed=FALSE)
+            object$altimeter$quality <- readBin(buf[iv], "integer", size=2L, n=NP, endian="little", signed=FALSE)
             i0v <<- i0v + 2L
             iv <- gappyIndex(i, i0v, 2L)
-            object$altimeterStatus <- readBin(buf[iv], "integer", size=2L, n=NP, endian="little", signed=FALSE)
+            object$altimeter$status <- readBin(buf[iv], "integer", size=2L, n=NP, endian="little", signed=FALSE)
             i0v <<- i0v + 2L
         } else if (name == "AST") {
             oceDebug(debug, "   AST starts at i0v=", i0v, "\n")
             iv <- gappyIndex(i, i0v, 4L)
-            object$ASTDistance <- readBin(buf[iv], "numeric", size=4L, n=NP, endian="little")
+            object$AST <- list()
+            object$AST$distance <- readBin(buf[iv], "numeric", size=4L, n=NP, endian="little")
             #message(vectorShow(object$ASTDistance))
             i0v <<- i0v + 4L
             iv <- gappyIndex(i, i0v, 2L)
-            object$ASTQuality <- readBin(buf[iv], "integer", size=2L, n=NP, endian="little", signed=FALSE)
+            object$AST$quality <- readBin(buf[iv], "integer", size=2L, n=NP, endian="little", signed=FALSE)
             i0v <<- i0v + 2L
             iv <- gappyIndex(i, i0v, 2L)
-            object$ASTOffset <- readBin(buf[iv], "integer", size=2L, n=NP, endian="little", signed=TRUE)
+            object$AST$offset <- readBin(buf[iv], "integer", size=2L, n=NP, endian="little", signed=TRUE)
             i0v <<- i0v + 2L
             iv <- gappyIndex(i, i0v, 4L)
-            object$ASTPressure <- readBin(buf[iv], "numeric", size=4L, n=NP, endian="little")
+            object$AST$pressure <- readBin(buf[iv], "numeric", size=4L, n=NP, endian="little")
             #message(vectorShow(object$ASTPressure))
             i0v <<- i0v + 4L
             # The 2017 manual states there are 8 more bytes, named 'spare', and
@@ -1030,27 +1042,30 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
             i0v <<- i0v + 8L
         } else if (name == "altimeterRaw") {
             oceDebug(debug, "   altimeterRaw starts at i0v=", i0v, "\n")
+            # sampling characteristics
+            object$altimeterRaw <- list()
             iv <- gappyIndex(i, i0v, 4L)
             NS <- readBin(buf[iv], "integer", size=4L, n=NP, endian="little") # no. samples (tmp var)
             dNS <- diff(range(NS))
             if (0 != dNS)
                 stop("altimeterRawNumberOfSamples not all equal.  Range is ", dNS[1], " to ", dNS[2])
             NS <- NS[1]
-            object$altimeterRawNumberOfSamples <- NS
+            object$altimeterRaw$numberOfSamples <- NS
+            object$altimeterRaw$blankingDistance <- object$blankingDistance
             i0v <<- i0v + 4L # skip the 4 bytes we just read
-            # FIXME: OK to assume all altimeterRawSampleDistance values are equal?
             iv <- gappyIndex(i, i0v, 2L)
-            object$altimeterRawSampleDistance <-
+            object$altimeterRaw$sampleDistance <-
                 1e-4 * readBin(buf[iv], "integer", size=2L, n=1, endian="little", signed=FALSE)
+            # data
+            object$altimeterRaw$time <- object$time
             i0v <<- i0v + 2L
             iv <- gappyIndex(i, i0v, 2L*NS)
             tmp <- readBin(buf[iv], "integer", size=2L, endian="little", n=NP*NS)
-            #object$altimeterRawSamples <- matrix(tmp, nrow=NP, ncol=NS, byrow=TRUE) # FIXME: is byrow ok???
-            object$altimeterRawSamples <- t(matrix(tmp, nrow=NP, ncol=NS, byrow=FALSE))
+            object$altimeterRaw$samples <- matrix(tmp, nrow=NP, ncol=NS, byrow=FALSE)
             i0v <<- i0v + 2L*NS
             # Constructed vector of altimeterRaw sample distances.
-            object$altimeterRawDistance <- with(object,
-                blankingDistance + altimeterRawSampleDistance * seq_len(altimeterRawNumberOfSamples))
+            object$altimeterRaw$distance <-
+                object$blankingDistance + object$altimeterRaw$sampleDistance * seq_len(object$altimeterRaw$numberOfSamples)
         } else if (name == "echosounder") {
             # Nortek (2017 p52): each profile has NC*16 bits
             oceDebug(debug, "   echosounder starts at i0v=", i0v, " (NC=", NC, ", NP=", NP, ")\n")
