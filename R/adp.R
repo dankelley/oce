@@ -634,6 +634,18 @@ setMethod(f="concatenate",
 #' instrument to instrument, and so are only sketched here, and in the output
 #' from `[["?"]]`.
 #'
+#' If `x` is an AD2CP object, as read by [read.adp.ad2cp()], then the general `[[`
+#' method is used, meaning that the only items that can be looked up are those
+#' produced by `names(x@metadata)` or `names(x@data)`.  This is because AD2CP
+#' objects store their contents several levels deep, and so using `i` and `j` is
+#' insufficient.  Another advantage is that this enables R completion.  For
+#' example, the user might type `x[["burst"]]$` in an interactive session, and
+#' then type TAB to see what further choices are possible, and so on, to arrive
+#' at `x[["burst"]]$AHRS$quaternions$W`, which is a fairly complicated
+#' expression to type by memory.
+#'
+#' For non-AD2CP objects, the rules are as shown next.
+#'
 #' * If `i` is `"?"`, then the return value is a list
 #' containing four items, each of which is a character vector
 #' holding the names of things that can be accessed with `[[`.
@@ -678,6 +690,11 @@ setMethod(f="[[",
               if (length(i) != 1L)
                   stop("In [[,adp-method() : may only extract 1 item at a time.\n", call.=FALSE)
               ISAD2CP <- is.ad2cp(x)
+              # 2022-07-29 only permit level-one lookup.  It's too confusing for
+              # user, otherwise.
+              if (ISAD2CP)
+                  return(callNextMethod())
+
               ##>message("ISAD2CP=", ISAD2CP)
               metadataDerived <- c("coordinate")
               numberOfBeams <- if (ISAD2CP) 4 else x@metadata$numberOfBeams
@@ -704,16 +721,16 @@ setMethod(f="[[",
                   }
                   res
               } else if (i %in% c("originalCoordinate", "oceCoordinate",
-                                  "cellSize", "blankingDistance", "orientation",
-                                  "beamUnspreaded", # Note: beamAngle is handled later since it is in metadata
-                                  "accelerometerx", "accelerometery", "accelerometerz",
-                                  "orientation", "heading", "pitch", "roll",
-                                  "ensemble", "time", "pressure", "soundSpeed",
-                                  "temperature", "temperatureMagnetometer", "temperatureRTC",
-                                  "nominalCorrelation",
-                                  "powerLevel", "transmitEnergy",
-                                  "v", "a", "q", "g",
-                                  "echosounder", "AHRS", "altimeterDistance", "altimeterFigureOfMerit")) {
+                      "cellSize", "blankingDistance", "orientation",
+                      "beamUnspreaded", # Note: beamAngle is handled later since it is in metadata
+                      "accelerometerx", "accelerometery", "accelerometerz",
+                      "orientation", "heading", "pitch", "roll",
+                      "ensemble", "time", "pressure", "soundSpeed",
+                      "temperature", "temperatureMagnetometer", "temperatureRTC",
+                      "nominalCorrelation",
+                      "powerLevel", "transmitEnergy",
+                      "v", "a", "q", "g",
+                      "echosounder", "AHRS", "altimeterDistance", "altimeterFigureOfMerit")) {
                   ##>message("asking for i='", i, "' which is in that long list")
                   ##message("i='", i, "'")
                   metadataNames <- names(x@metadata)
@@ -1742,30 +1759,30 @@ read.adp <- function(file, from, to, by, tz=getOption("oceTz"),
 #' @aliases plot.adp
 ## DEVELOPER NOTE: update first test in tests/testthat/test_adp.R if a new 'which' is handled
 setMethod(f="plot",
-          signature=signature("adp"),
-          definition=function(x, which, j,
-                              col, breaks, zlim,
-                              titles,
-                              lwd=par('lwd'),
-                              type='l',
-                              ytype=c("profile", "distance"),
-                              drawTimeRange=getOption("oceDrawTimeRange"),
-                              useSmoothScatter,
-                              missingColor="gray",
-                              mgp=getOption("oceMgp"),
-                              mar=c(mgp[1]+1.5, mgp[1]+1.5, 1.5, 1.5),
-                              mai.palette=rep(0, 4),
-                              tformat,
-                              marginsAsImage=FALSE,
-                              cex=par("cex"), cex.axis=par("cex.axis"), cex.lab=par("cex.lab"),
-                              xlim, ylim,
-                              control,
-                              useLayout=FALSE,
-                              coastline="coastlineWorld", span=300,
-                              main="",
-                              grid=FALSE, grid.col="darkgray", grid.lty="dotted", grid.lwd=1,
-                              debug=getOption("oceDebug"),
-                              ...)
+    signature=signature("adp"),
+    definition=function(x, which, j,
+        col, breaks, zlim,
+        titles,
+        lwd=par('lwd'),
+        type='l',
+        ytype=c("profile", "distance"),
+        drawTimeRange=getOption("oceDrawTimeRange"),
+        useSmoothScatter,
+        missingColor="gray",
+        mgp=getOption("oceMgp"),
+        mar=c(mgp[1]+1.5, mgp[1]+1.5, 1.5, 1.5),
+        mai.palette=rep(0, 4),
+        tformat,
+        marginsAsImage=FALSE,
+        cex=par("cex"), cex.axis=par("cex.axis"), cex.lab=par("cex.lab"),
+        xlim, ylim,
+        control,
+        useLayout=FALSE,
+        coastline="coastlineWorld", span=300,
+        main="",
+        grid=FALSE, grid.col="darkgray", grid.lty="dotted", grid.lwd=1,
+        debug=getOption("oceDebug"),
+        ...)
           {
               debug <- max(0, min(debug, 4))
               theCall <- gsub(" = [^,)]*", "", deparse(expr=match.call()))
@@ -1791,13 +1808,14 @@ setMethod(f="plot",
               #>          argShow(breaks),
               #>          argShow(j),
               #>          "...) {\n", sep="", unindent=1, style="bold")
+              if (is.ad2cp(x)) {
+                  return(plotAD2CP(x, which, cex=cex, col=col))
+              }
               dots <- list(...)
               dotsNames <- names(dots)
               # Catch some errors users might make
               if ("colormap" %in% dotsNames)
                   warning("In plot,adp-method() : \"colormap\" is handled by this function\n", call.=FALSE)
-
-
               ## oceDebug(debug, "par(mar)=", paste(par('mar'), collapse=" "), "\n")
               ## oceDebug(debug, "par(mai)=", paste(par('mai'), collapse=" "), "\n")
               ## oceDebug(debug, "par(mfg)=", paste(par('mfg'), collapse=" "), "\n")
@@ -1806,6 +1824,9 @@ setMethod(f="plot",
               if (is.null(instrumentType))
                   instrumentType <- "" # simplifies later checks
               oceDebug(debug, "instrumentType=\"", instrumentType, "\"\n", sep="")
+              fileType <- x[["fileType"]]
+              if (is.null(fileType))
+                  fileType <- ""       # simplifies later checks
               ## interpret mode, j
               if (missing(j))
                   j <- ""
@@ -1820,13 +1841,18 @@ setMethod(f="plot",
                           j <- "normal"
                       }
                   }
-              } else if (instrumentType == "AD2CP") {
-                  jOrig <- j
-                  j <- ad2cpDefaultDataItem(x, j)
-                  if (j != jOrig)
-                      oceDebug(debug, "given the object contents, 'j' was changed from \"", jOrig, "\" to \"", j, "\", for this Nortek AD2CP instrument\n", sep="")
+                  # FIXME: I might have messed this up, in adding AD2CP support
+                  #} else {
+                  #    if (!which %in% names(x@data)) {
+                  #        stop("In plot,adp-method() : cannot plot which=\"", which, "\"; try one of: \"", paste(names(x@data), collapse="\", \""), "\"", call.=FALSE)
+                  #    }
+                  #}
+                  #message("FIXME(DAN): make plotting work for ad2cp")
+                  #   jOrig <- j
+                  #   j <- ad2cpDefaultDataItem(x, j)
+                  #   if (j != jOrig)
+                  #       oceDebug(debug, "given the object contents, 'j' was changed from \"", jOrig, "\" to \"", j, "\", for this Nortek AD2CP instrument\n", sep="")
               }
-
               if (missing(which)) {
                   ## Note that j is ignored for e.g. RDI adp.
                   which <- 1:dim(x[["v", j]])[3]
@@ -2991,6 +3017,8 @@ setMethod(f="plot",
 #' @family things related to adp data
 toEnuAdp <- function(x, declination=0, debug=getOption("oceDebug"))
 {
+    if (is.ad2cp(x))
+        stop("does not work with ad2cp files, which might have several velocity streams")
     debug <- max(0L, as.integer(min(debug, 3)))
     oceDebug(debug, "toEnuAdp() {\n", unindent=1)
     coord <- x[["oceCoordinate"]]
@@ -3159,6 +3187,8 @@ beamUnspreadAdp <- function(x, count2db=c(0.45, 0.45, 0.45, 0.45), asMatrix=FALS
 #' @family things related to adp data
 beamToXyzAdp <- function(x, debug=getOption("oceDebug"))
 {
+    if (is.ad2cp(x))
+        stop("does not work with ad2cp files, which might have several velocity streams")
     if (!inherits(x, "adp"))
         stop("method is only for objects of class \"adp\"")
     if (x[["oceCoordinate"]] != "beam")
@@ -3452,6 +3482,8 @@ beamToXyzAdpAD2CP <- function(x, debug=getOption("oceDebug"))
 #' @family things related to adp data
 xyzToEnuAdp <- function(x, declination=0, debug=getOption("oceDebug"))
 {
+    if (is.ad2cp(x))
+        stop("does not work with ad2cp files, which might have several velocity streams")
     debug <- if (debug > 0) 1 else 0
     if (!inherits(x, "adp"))
         stop("method is only for objects of class '", "adp", "'")
@@ -3676,6 +3708,8 @@ xyzToEnuAdp <- function(x, declination=0, debug=getOption("oceDebug"))
 #' @family things related to adp data
 xyzToEnuAdpAD2CP <- function(x, declination=0, debug=getOption("oceDebug"))
 {
+    if (is.ad2cp(x))
+        stop("does not work with ad2cp files, which might have several velocity streams")
     debug <- if (debug > 0) 1 else 0
     oceDebug(debug, "xyzToEnuAdpAD2CP(x, declination=", declination, ", debug=", debug, ") {\n", sep="", unindent=1)
     if (!inherits(x, "adp"))

@@ -249,6 +249,7 @@ export(
     oce.write.table,
     parseLatLon,
     presentTime,
+    plotAD2CP,
     plotPolar,
     plotTaylor,
     predict.tidem,

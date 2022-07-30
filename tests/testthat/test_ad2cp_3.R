@@ -11,7 +11,6 @@
 library(oce)
 
 file <- "local_data/ad2cp/S102791A002_Barrow_v2.ad2cp"
-
 if (file.exists(file)) {
     test_that("S102791A002_Barrow_v2.ad2cp 'distance' works",
         {
@@ -42,27 +41,27 @@ if (file.exists(file)) {
             expect_equal(d[["fileType"]], "AD2CP")
             expect_equal(d[["serialNumber"]], 102791)
             # Entry names
-            expect_equal(sort(names(d[["data"]])), c("activeConfiguration",
-                    "average", "bottomTrack", "burst", "burstAltimeterRaw",
-                    "orientation", "powerLevel", "status"))
+            expect_equal(sort(names(d[["data"]])),
+                c("average", "bottomTrack", "burst", "burstAltimeterRaw"))
 
-            expect_equal(sort(names(d[["average"]])), c("a", "accelerometer",
-                    "blankingDistance", "cellSize", "configuration",
-                    "datasetDescription", "ensemble", "heading", "magnetometer",
-                    "nominalCorrelation", "numberOfBeams", "numberOfCells",
-                    "oceCoordinate", "orientation", "originalCoordinate", "pitch",
-                    "powerLevel", "pressure", "q", "roll", "soundSpeed",
-                    "temperature", "temperatureMagnetometer", "temperatureRTC",
-                    "time", "transmitEnergy", "v"))
+            expect_equal(sort(names(d[["average"]])),
+                c("a", "accelerometer", "blankingDistance", "cellSize",
+                    "configuration", "datasetDescription", "distance",
+                    "ensemble", "heading", "magnetometer", "nominalCorrelation",
+                    "numberOfBeams", "numberOfCells", "oceCoordinate",
+                    "orientation", "originalCoordinate", "pitch", "powerLevel",
+                    "pressure", "q", "roll", "soundSpeed", "temperature",
+                    "temperatureMagnetometer", "temperatureRTC", "time",
+                    "transmitEnergy", "v"))
 
             # Beams and cells
-            expect_equal(d[["oceCoordinate"]], "beam")
+            expect_equal(d[["average"]]$oceCoordinate, "beam")
             # data$average
             a <- d[["average"]]
-            expect_equal(d[["cellSize", "average"]], 1)
-            expect_equal(d[["blankingDistance", "average"]], 0.5)
-            expect_equal(d[["numberOfBeams", "average"]], 4)
-            expect_equal(d[["numberOfCells", "average"]], 87)
+            expect_equal(a$cellSize, 1)
+            expect_equal(a$blankingDistance, 0.5)
+            expect_equal(a$numberOfBeams, 4)
+            expect_equal(a$numberOfCells, 87)
             expect_equal(a$blankingDistance, 0.5)
             expect_equal(dim(a$v), c(360, 87, 4))
             expect_equal(dim(a$a), c(360, 87, 4))

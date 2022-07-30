@@ -1,5 +1,22 @@
 # vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
 
+# A helpful function.  I seem to do this kind of thing quite a lot, and so I may
+# document this function later, and add it to the NAMESPACE.
+makeNumeric <- function(x)
+{
+    if (is.numeric(x))
+        return(x)
+    if (is.vector(x))
+        return(as.numeric(x))
+    if (is.array(x)) {
+        dim <- dim(x)
+        rval <- as.numeric(x)
+        dim(rval) <- dim
+        return(rval)
+    }
+    stop("'x' must be a vector or an array")
+}
+
 #' Trim an AD2CP File
 #'
 #' Create an AD2CP file by copying the first `n` data chunks (regions starting
@@ -42,9 +59,10 @@ ad2cpTrim <- function(infile, n=100L, outfile)
 }
 
 # private function
-ad2cpDefaultDataItem <- function(x, j=NULL,
-    order=c("average", "burst", "interleavedBurst",
-        "bottomTrack", "burstAltimeter", "DVLBottomTrack"))
+ad2cpDefaultDataItem <- function(x, j=NULL, order=c("burst", "average",
+        "bottomTrack", "interleavedBurst", "burstAltimeterRaw",
+        "DVLBottomTrack", "echosounder", "DVLWaterTrack", "altimeter",
+        "averageAltimeter"))
 {
     if (!is.ad2cp(x))
         stop("x is not an AD2CP object")
@@ -137,7 +155,7 @@ ad2cpHeaderValue <- function(x, key, item, numeric=TRUE, default)
 
 #' Test whether object is an AD2CP type
 #'
-#' @param x character value naming an item.
+#' @param x an [oce] object.
 #'
 #' @return Logical value indicating whether `x` is an [adp-class] object,
 #' with `fileType` in its `metadata` slot equal to `"AD2CP"`.
@@ -1289,6 +1307,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
         NP <- length(i)                # number of profiles of this type
         NC <- rval$numberOfCells       # number of cells for v,a,q
         NB <- rval$numberOfBeams       # number of beams for v,a,q
+        rval$distance <- rval$blankingDistance + rval$cellSize * seq_len(rval$numberOfCells)
         oceDebug(debug, "  NP=", NP, ", NB=", NB, ", NC=", NC, "\n", sep="")
         oceDebug(debug, "configuration0=", paste(ifelse(configuration0,"T","F"), collapse=", "), "\n")
         if (configuration0[6])          # read velocity, if included
@@ -1700,14 +1719,13 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
     if ("averageAltimeter" %in% which && length(p$averageAltimeter) > 0) # 0x1f
         data$averageAltimeter <- readProfile(id=as.raw(0x1f), debug=debug)
 
-    # Add some global things (FIXME: do we want these?)
-    data$powerLevel <- powerLevel
-    data$status <- status
-    data$activeConfiguration <- activeConfiguration
-    data$orientation <- orientation
-
     # Insert metadata
     #res@metadata$id <- id
+    res@metadata$filename <- filename
+    res@metadata$powerLevel <- powerLevel
+    res@metadata$status <- status
+    res@metadata$activeConfiguration <- activeConfiguration
+    res@metadata$orientation <- orientation
     res@metadata$manufacturer <- "nortek"
     res@metadata$fileType <- "AD2CP"
     res@metadata$serialNumber <- serialNumber
@@ -1737,5 +1755,108 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
     res@processingLog <- processingLogItem(processingLog)
     oceDebug(debug, "} # read.adp.ad2cp()\n", unindent=1, style="bold")
     res
+}
+
+#' Plot an AD2CP Object
+#'
+#' Used by \code{\link{plot,adp-method}} or called directly, this function
+#' provides a rough overview of some aspects of AD2CP data.  Given the
+#' complexity of these data objects, and no attempt is made by the present
+#' function to offer nuanced plot control, or even to offer the ability to plot
+#' the full suite of data. Users are encouraged to use standard plotting tools,
+#' if they need anything more than the default.  Two methods are permitted,
+#' as explained in the \sQuote{Details}.
+#'
+#' *Method 1*: `which` is the name of one of the elements in `x[["data"]]`.
+#' This must be one of the following: "burst", "average", "bottomTrack",
+#' "interleavedBurst", "burstAltimeterRaw", "DVLBottomTrack", "echosounder",
+#' "DVLWaterTrack", "altimeter", or "averageAltimeter".  Based on the contents
+#' of that element, a choice is made as to what to plot.  See Example 1.
+#'
+#' *Method 2*: `which` is a string containing the character "/", with
+#' the name of an element of `x[["data"]]` to the left, and the name
+#' of a subelement to the right.  See Example 2.
+#'
+#' @param x an AD2CP object, as created with [read.adp.ad2cp()] or by
+#' [read.oce()] on a file of the AD2CP type.
+#'
+#' @param which a character value indicating what to plot.  See
+#' \dQuote{Details} and \dQuote{Examples}.
+#'
+#' @param col passed to either [imagep()] if the graph is an image, 
+#' or to [oce.plot.ts()] if the plot shows variation over time, or
+#' otherwise to [plot()].
+#'
+#' @param ... optional other arguments, passed to the lower-level plotting
+#' commands.
+#'
+#' @examples
+#' library(oce)
+#' # This example will only work for the author, because it uses a
+#' # private file.  The file contains 'burst' and 'average' data.
+#' f <- "~/Dropbox/oce_secret_data/ad2cp/secret1_trimmed.ad2cp"
+#' if (file.exists(f)) {
+#'     d <- read.oce(f)
+#'     # Example 1 (plots a 4-panel velocity plot)
+#'     plot(d, which="average", col=oceColorsVelocity)
+#'     # Example 2 (plots amplitude for beam 1)
+#'     plot(d, which="average/a/1")
+#' }
+#'
+#' @author Dan Kelley
+plotAD2CP <- function(x, which, col, ...)
+{
+    if (!is.ad2cp(x))
+        stop("'x' must be an AD2CP object, e.g. as created with read.adp.ad2cp()")
+    whichAllowed <- names(x@data)
+    if (missing(which))
+        stop("must supply 'which', as one of: \"", which, "\"; try one of: \"", paste(whichAllowed, collapse="\", \""), "\"")
+    if (!is.character(which[1]))
+        stop("'which' must be a character value")
+    if (length(which) != 1L)
+        stop("'which' must be of length 1")
+    whichSplit <- strsplit(which, "/")[[1]]
+    nwhich <- length(whichSplit)
+    if (nwhich > 3L)
+        stop("'which' must contain zero or one \"/\" character, but it has ", nwhich)
+    if (!whichSplit[1] %in% whichAllowed)
+        stop("must supply 'which', as one of: \"", paste(whichAllowed, collapse="\", \""), "\"")
+    d <- x@data[[whichSplit[1]]]
+    opar <- par(no.readonly=TRUE)
+    if (whichSplit[1] == "average" || "burst") {
+        time <- d[["time"]]
+        distance <- d[["distance"]]
+        if (nwhich < 2) {
+            whichSplit[2] <- "v"
+            nwhich <- 2L
+        }
+        if (!whichSplit[2] %in% c("a", "q", "v"))
+            stop("second element of which must be \"a\", \"q\" or \"v\", but it is \"", whichSplit[2], "\"")
+        if (whichSplit[2] %in% c("a", "q", "v")) {
+            D <- makeNumeric(d[[whichSplit[2]]])
+            nbeam <- dim(D)[3]
+            #message(vectorShow(nbeam))
+            dots <- list(...)
+            dotsNames <- names(dots)
+            #cat(str(dots))
+            beams <- if (nwhich < 3L) seq_len(nbeam) else whichSplit[3]
+            par(mfrow=c(length(beams), 1))
+            for (ibeam in as.integer(beams)) {
+                #message(vectorShow(ibeam))
+                if (whichSplit[2] == "v" && !"zlim" %in% dotsNames) {
+                    zlim <- c(-1,1)*max(abs(D[,,ibeam]), na.rm=TRUE)
+                    imagep(time, distance, D[,,ibeam], zlim=zlim, ylab="Distance [m]", col=col, ...)
+                } else {
+                    imagep(time, distance, D[,,ibeam], ylab="Distance [m]", col=col, ...)
+                }
+                mtext(paste0(whichSplit[2], "[,,",ibeam,"]"), side=3, line=0, adj=1)
+            }
+            par(opar)
+        } else {
+            stop("only 'default' is handled so far")
+        }
+    } else {
+        stop("only 'average' and 'burst' are handled so far")
+    }
 }
 

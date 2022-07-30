@@ -7,7 +7,7 @@
 is.ad2cp(x)
 }
 \arguments{
-\item{x}{character value naming an item.}
+\item{x}{an \link{oce} object.}
 }
 \value{
 Logical value indicating whether \code{x} is an \linkS4class{adp} object,

@@ -39,6 +39,18 @@ first use \code{x[["?"]]} to get a listing of the retrievable items. See
 Note that the entries within \linkS4class{adp} objects vary greatly, from
 instrument to instrument, and so are only sketched here, and in the output
 from \verb{[["?"]]}.
+
+If \code{x} is an AD2CP object, as read by \code{\link[=read.adp.ad2cp]{read.adp.ad2cp()}}, then the general \code{[[}
+method is used, meaning that the only items that can be looked up are those
+produced by \code{names(x@metadata)} or \code{names(x@data)}.  This is because AD2CP
+objects store their contents several levels deep, and so using \code{i} and \code{j} is
+insufficient.  Another advantage is that this enables R completion.  For
+example, the user might type \verb{x[["burst"]]$} in an interactive session, and
+then type TAB to see what further choices are possible, and so on, to arrive
+at \code{x[["burst"]]$AHRS$quaternions$W}, which is a fairly complicated
+expression to type by memory.
+
+For non-AD2CP objects, the rules are as shown next.
 \itemize{
 \item If \code{i} is \code{"?"}, then the return value is a list
 containing four items, each of which is a character vector
