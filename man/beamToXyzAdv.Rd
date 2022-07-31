@@ -32,7 +32,7 @@ the header), \code{beamToXyzAdv} the user will need to store one in
 }
 \references{
 \enumerate{
-\item @template nortekCoordTemplate
+\item \verb{https://nortek.zendesk.com/hc/en-us/articles/360029820971-How-is-a-Coordinate-transformation-done-}
 }
 }
 \seealso{
