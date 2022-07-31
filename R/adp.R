@@ -1447,7 +1447,10 @@ read.adp <- function(file, from, to, by, tz=getOption("oceTz"),
 
 #' Plot an adp Object
 #'
-#' Create a summary plot of data measured by an acoustic doppler profiler.
+#' Create a summary plot of data measured by an acoustic doppler profiler. Note
+#' that if the object is of the AD2CP variety, the present function works
+#' by calling [plotAD2CP()], and that means that `which` is handled very
+#' differently than is the case here.
 #'
 #' The plot may have one or more panels, with the content being controlled by
 #' the `which` argument.
@@ -1809,7 +1812,7 @@ setMethod(f="plot",
               #>          argShow(j),
               #>          "...) {\n", sep="", unindent=1, style="bold")
               if (is.ad2cp(x)) {
-                  return(plotAD2CP(x, which, cex=cex, col=col))
+                  return(plotAD2CP(x, if (!missing(which)) which else NULL, cex=cex, col=col))
               }
               dots <- list(...)
               dotsNames <- names(dots)

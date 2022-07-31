@@ -4,14 +4,18 @@
 \alias{plotAD2CP}
 \title{Plot an AD2CP Object}
 \usage{
-plotAD2CP(x, which, col, ...)
+plotAD2CP(x, which = NULL, col, ...)
 }
 \arguments{
 \item{x}{an AD2CP object, as created with \code{\link[=read.adp.ad2cp]{read.adp.ad2cp()}} or by
 \code{\link[=read.oce]{read.oce()}} on a file of the AD2CP type.}
 
-\item{which}{a character value indicating what to plot.  See
-\dQuote{Details} and \dQuote{Examples}.}
+\item{which}{a character value indicating what to plot.  Use NULL to see a
+listing of the possibilities for this particular object.  See
+\dQuote{Details} and \dQuote{Examples}, and note that some understanding
+of the object layout is required to devise \code{which} properly.  If \code{which}
+is inappropriate for this particular \code{x}, then hints are printed to help
+guide the user to something that will work.}
 
 \item{col}{passed to either \code{\link[=imagep]{imagep()}} if the graph is an image,
 or to \code{\link[=oce.plot.ts]{oce.plot.ts()}} if the plot shows variation over time, or
@@ -22,23 +26,18 @@ commands.}
 }
 \description{
 Used by \code{\link{plot,adp-method}} or called directly, this function
-provides a rough overview of some aspects of AD2CP data.  Given the
-complexity of these data objects, and no attempt is made by the present
-function to offer nuanced plot control, or even to offer the ability to plot
-the full suite of data. Users are encouraged to use standard plotting tools,
-if they need anything more than the default.  Two methods are permitted,
-as explained in the \sQuote{Details}.
-}
-\details{
-\emph{Method 1}: \code{which} is the name of one of the elements in \code{x[["data"]]}.
-This must be one of the following: "burst", "average", "bottomTrack",
-"interleavedBurst", "burstAltimeterRaw", "DVLBottomTrack", "echosounder",
-"DVLWaterTrack", "altimeter", or "averageAltimeter".  Based on the contents
-of that element, a choice is made as to what to plot.  See Example 1.
-
-\emph{Method 2}: \code{which} is a string containing the character "/", with
-the name of an element of \code{x[["data"]]} to the left, and the name
-of a subelement to the right.  See Example 2.
+plots some aspects of AD2CP data. The \code{which} parameter
+has an entirely different meaning to that of
+\code{\link{plot,adp-method}}, because AD2CP objects
+are laid out differently from other \link{adp} objects.  As an aide,
+\code{which} can be supply prompts that will work with the particular
+object at hand, e.g. using \code{plotAD2CP(x,which="?")} will print a message
+indicating the names of items in the \code{data} slot that can be plotted.
+If, say, one of these is \code{"average"}, then using \code{which="average/?"} will
+display a message indicating the items within the \code{"average"} records that
+can be plotted.  Some of those items (e.g. \code{"magnetometer"}) can be
+explored further, using \code{which="average/magnetometer/?"}; see
+Example 3.
 }
 \examples{
 library(oce)
@@ -47,10 +46,12 @@ library(oce)
 f <- "~/Dropbox/oce_secret_data/ad2cp/secret1_trimmed.ad2cp"
 if (file.exists(f)) {
     d <- read.oce(f)
-    # Example 1 (plots a 4-panel velocity plot)
+    # Example 1: time-distance variation of "average" velocity (beams 1 through 4)
     plot(d, which="average", col=oceColorsVelocity)
-    # Example 2 (plots amplitude for beam 1)
+    # Example 2: time variation of "average" amplitude (beam 1)
     plot(d, which="average/a/1")
+    # Example 3: time variation of "burst" magnetometer (x component)
+    plot(d, which="burst/magnetometer/x")
 }
 
 }

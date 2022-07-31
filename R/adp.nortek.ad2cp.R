@@ -1760,30 +1760,30 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
 #' Plot an AD2CP Object
 #'
 #' Used by \code{\link{plot,adp-method}} or called directly, this function
-#' provides a rough overview of some aspects of AD2CP data.  Given the
-#' complexity of these data objects, and no attempt is made by the present
-#' function to offer nuanced plot control, or even to offer the ability to plot
-#' the full suite of data. Users are encouraged to use standard plotting tools,
-#' if they need anything more than the default.  Two methods are permitted,
-#' as explained in the \sQuote{Details}.
-#'
-#' *Method 1*: `which` is the name of one of the elements in `x[["data"]]`.
-#' This must be one of the following: "burst", "average", "bottomTrack",
-#' "interleavedBurst", "burstAltimeterRaw", "DVLBottomTrack", "echosounder",
-#' "DVLWaterTrack", "altimeter", or "averageAltimeter".  Based on the contents
-#' of that element, a choice is made as to what to plot.  See Example 1.
-#'
-#' *Method 2*: `which` is a string containing the character "/", with
-#' the name of an element of `x[["data"]]` to the left, and the name
-#' of a subelement to the right.  See Example 2.
+#' plots some aspects of AD2CP data. The `which` parameter
+#' has an entirely different meaning to that of
+#' \code{\link{plot,adp-method}}, because AD2CP objects
+#' are laid out differently from other [adp] objects.  As an aide,
+#' `which` can be supply prompts that will work with the particular
+#' object at hand, e.g. using `plotAD2CP(x,which="?")` will print a message
+#' indicating the names of items in the `data` slot that can be plotted.
+#' If, say, one of these is `"average"`, then using `which="average/?"` will
+#' display a message indicating the items within the `"average"` records that
+#' can be plotted.  Some of those items (e.g. `"magnetometer"`) can be
+#' explored further, using `which="average/magnetometer/?"`; see
+#' Example 3.
 #'
 #' @param x an AD2CP object, as created with [read.adp.ad2cp()] or by
 #' [read.oce()] on a file of the AD2CP type.
 #'
-#' @param which a character value indicating what to plot.  See
-#' \dQuote{Details} and \dQuote{Examples}.
+#' @param which a character value indicating what to plot.  Use NULL to see a
+#' listing of the possibilities for this particular object.  See
+#' \dQuote{Details} and \dQuote{Examples}, and note that some understanding
+#' of the object layout is required to devise `which` properly.  If `which`
+#' is inappropriate for this particular `x`, then hints are printed to help
+#' guide the user to something that will work.
 #'
-#' @param col passed to either [imagep()] if the graph is an image, 
+#' @param col passed to either [imagep()] if the graph is an image,
 #' or to [oce.plot.ts()] if the plot shows variation over time, or
 #' otherwise to [plot()].
 #'
@@ -1797,66 +1797,128 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
 #' f <- "~/Dropbox/oce_secret_data/ad2cp/secret1_trimmed.ad2cp"
 #' if (file.exists(f)) {
 #'     d <- read.oce(f)
-#'     # Example 1 (plots a 4-panel velocity plot)
+#'     # Example 1: time-distance variation of "average" velocity (beams 1 through 4)
 #'     plot(d, which="average", col=oceColorsVelocity)
-#'     # Example 2 (plots amplitude for beam 1)
+#'     # Example 2: time variation of "average" amplitude (beam 1)
 #'     plot(d, which="average/a/1")
+#'     # Example 3: time variation of "burst" magnetometer (x component)
+#'     plot(d, which="burst/magnetometer/x")
 #' }
 #'
 #' @author Dan Kelley
-plotAD2CP <- function(x, which, col, ...)
+plotAD2CP <- function(x, which=NULL, col, ...)
 {
     if (!is.ad2cp(x))
         stop("'x' must be an AD2CP object, e.g. as created with read.adp.ad2cp()")
-    whichAllowed <- names(x@data)
-    if (missing(which))
-        stop("must supply 'which', as one of: \"", which, "\"; try one of: \"", paste(whichAllowed, collapse="\", \""), "\"")
+    names1 <- names(x@data)
+    if (is.null(which))
+        stop("which must be supplied; try one of: \"", paste(names1, collapse="\", \""), "\"")
     if (!is.character(which[1]))
         stop("'which' must be a character value")
     if (length(which) != 1L)
         stop("'which' must be of length 1")
-    whichSplit <- strsplit(which, "/")[[1]]
-    nwhich <- length(whichSplit)
-    if (nwhich > 3L)
-        stop("'which' must contain zero or one \"/\" character, but it has ", nwhich)
-    if (!whichSplit[1] %in% whichAllowed)
-        stop("must supply 'which', as one of: \"", paste(whichAllowed, collapse="\", \""), "\"")
-    d <- x@data[[whichSplit[1]]]
-    opar <- par(no.readonly=TRUE)
-    if (whichSplit[1] == "average" || "burst") {
-        time <- d[["time"]]
-        distance <- d[["distance"]]
-        if (nwhich < 2) {
-            whichSplit[2] <- "v"
-            nwhich <- 2L
+    if (which == "?") {
+        message("try setting 'which' to one of: \"", paste(names1, collapse="\", \""), "\"")
+        return(invisible(NULL))
+    }
+    w <- strsplit(which, "/")[[1]]
+    nw <- length(w)
+    if (nw > 3L)
+        stop("'which' must contain zero to three \"/\" characters, but it has ", nw)
+    if (!w[1] %in% names1)
+        stop("unknown which, \"", w[1], "\"; try one of: \"", paste(names1, collapse="\", \""), "\"")
+    d <- x@data[[w[1]]]
+    time <- d[["time"]]
+    ntime <- length(time)
+    distance <- d[["distance"]]
+    ndistance <- length(distance)
+    # Find relevant subitem names, which are for things that can be shown in a
+    # time-distance image, or in a variable-time linegraph.
+    names2 <- names(d)
+    names2keep <- sapply(names2,
+        function(x)
+        {
+            I <- d[[x]]
+            if (x == "configuration" || x == "datasetDescription") FALSE
+            else if (is.list(I)) TRUE
+            else if (is.vector(I) && length(I) == ntime) TRUE
+            else if (is.array(I) && dim(I)[1] == ntime && dim(I)[2] == ndistance) TRUE
+            else FALSE
+        })
+    names2 <- names2[names2keep]
+
+    if (nw > 1L && w[2] == "?") {
+        message("try setting 'which' to one of: \"", paste(paste0(w[1],"/",names2), collapse="\", \""), "\"")
+        return(invisible(NULL))
+    }
+    if (nw > 2L && w[3] == "?") {
+        if (w[2] %in% c("accelerometer", "magnetometer")) {
+            message("try setting 'which' to one of: \"", paste0(paste0(w[1],"/",w[2]), "/", c("x","y","z"), collapse="\", \""), "\"")
+        } else {
+            message("sorry, there no hints are available for which=\"", w[1], "/", w[2], "/?")
         }
-        if (!whichSplit[2] %in% c("a", "q", "v"))
-            stop("second element of which must be \"a\", \"q\" or \"v\", but it is \"", whichSplit[2], "\"")
-        if (whichSplit[2] %in% c("a", "q", "v")) {
-            D <- makeNumeric(d[[whichSplit[2]]])
-            nbeam <- dim(D)[3]
-            #message(vectorShow(nbeam))
-            dots <- list(...)
-            dotsNames <- names(dots)
-            #cat(str(dots))
-            beams <- if (nwhich < 3L) seq_len(nbeam) else whichSplit[3]
+        return(invisible(NULL))
+    }
+
+    #message("next is names(d):");print(names(d),file=stderr())
+    opar <- par(no.readonly=TRUE)      # retain so we can reset afterwards, as CRAN requires
+    # Note that we are not conditioning on w[1] ... but we might, if that helps
+    if (nw == 1L) {
+        w[2] <- "v"
+        nw <- 2L
+    }
+    # Ensure that user is asking for a plottable item.
+    if (!w[2] %in% names2)
+        stop("item \"", w[2], "\" is not available; try one of \"",
+            paste(names2, collapse="\", \""), "\"")
+    # Handle by case
+    if (w[2] %in% c("a", "q", "v")) {
+        D <- makeNumeric(d[[w[2]]])
+        nbeam <- dim(D)[3]
+        #message(vectorShow(nbeam))
+        dots <- list(...)
+        dotsNames <- names(dots)
+        #cat(str(dots))
+        beams <- if (nw < 3L) seq_len(nbeam) else w[3]
+        if (length(beams) > 1L)
             par(mfrow=c(length(beams), 1))
-            for (ibeam in as.integer(beams)) {
-                #message(vectorShow(ibeam))
-                if (whichSplit[2] == "v" && !"zlim" %in% dotsNames) {
-                    zlim <- c(-1,1)*max(abs(D[,,ibeam]), na.rm=TRUE)
-                    imagep(time, distance, D[,,ibeam], zlim=zlim, ylab="Distance [m]", col=col, ...)
-                } else {
-                    imagep(time, distance, D[,,ibeam], ylab="Distance [m]", col=col, ...)
-                }
-                mtext(paste0(whichSplit[2], "[,,",ibeam,"]"), side=3, line=0, adj=1)
+        for (ibeam in as.integer(beams)) {
+            #message(vectorShow(ibeam))
+            if (w[2] == "v" && !"zlim" %in% dotsNames) {
+                zlim <- c(-1,1)*max(abs(D[,,ibeam]), na.rm=TRUE)
+                imagep(time, distance, D[,,ibeam], zlim=zlim, ylab="Distance [m]", col=col, ...)
+            } else {
+                imagep(time, distance, D[,,ibeam], ylab="Distance [m]", col=col, ...)
             }
+            mtext(paste0(w[2], "[,,",ibeam,"]"), side=3, line=0, adj=1)
+        }
+        if (length(beams) > 1L)
+            par(opar)
+    } else if (w[2] == c("echosounder")) {
+        imagep(time, distance, D[[w[2]]], col=col, ...)
+    } else if (w[2] == "altimeter") {
+        stop("FIXME: add altimeter plot here")
+    } else if (w[2] == "altimeterRaw") {
+        stop("FIXME: add altimeterRaw plot here")
+    } else if (w[2] == "AHRS") {
+        stop("FIXME: add AHRS plot here")
+    } else if (w[2] %in% c("accelerometer", "magnetometer")) {
+        D <- d[[w[2]]]                 # has components $x, $y and $z
+        if (nw == 2) { # plot 3 panels
+            par(mfrow=c(3, 1))
+            oce.plot.ts(time, D[["x"]], ylab=paste(w[2], "x"))
+            oce.plot.ts(time, D[["y"]], ylab=paste(w[2], "y"))
+            oce.plot.ts(time, D[["y"]], ylab=paste(w[2], "z"))
             par(opar)
         } else {
-            stop("only 'default' is handled so far")
+            if (!w[3] %in% names(D))
+                stop(w[1], "$", w[2], " does not contain \"", w[3], "\"; try one of \"", paste(names(D), collapse="\" \""), "\"")
+            oce.plot.ts(time, D[[w[3]]], ylab=paste(w[2], w[3]))
         }
+    } else if (length(d[[w[2]]]) == ntime) {
+        oce.plot.ts(time, d[[w[2]]], ylab=w[2])
     } else {
-        stop("only 'average' and 'burst' are handled so far")
+        stop("although subitem \"", w[2], "\" is present in \"", w[1], "\", it is not handled yet")
     }
 }
 
