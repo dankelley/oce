@@ -192,8 +192,6 @@ file <- "tests/testthat/local_data/ad2cp/S102791A002_Barrow_v2.ad2cp"
 if (file.exists(file)) {
     library(oce)
     d <- read.oce(file)
-    with(d[["burstAltimeterRaw"]]$altimeterRaw,
-        imagep(time, distance, samples, ylab="Distance [m]"))
 }
 
 }
@@ -259,9 +257,20 @@ Other things related to ad2cp data:
 \code{\link{ad2cpHeaderValue}()},
 \code{\link{ad2cpTrim}()},
 \code{\link{is.ad2cp}()}
+
+Other functions that read adp data: 
+\code{\link{read.adp.nortek}()},
+\code{\link{read.adp.rdi}()},
+\code{\link{read.adp.sontek.serial}()},
+\code{\link{read.adp.sontek}()},
+\code{\link{read.adp}()},
+\code{\link{read.aquadoppHR}()},
+\code{\link{read.aquadoppProfiler}()},
+\code{\link{read.aquadopp}()}
 }
 \author{
 Dan Kelley
 }
+\concept{functions that read adp data}
 \concept{things related to ad2cp data}
 \concept{things related to adp data}

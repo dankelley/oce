@@ -1375,6 +1375,7 @@ beamName <- function(x, which)
 #' @author Dan Kelley and Clark Richards
 #'
 #' @family things related to adp data
+#' @family functions that read adp data
 read.adp <- function(file, from, to, by, tz=getOption("oceTz"),
     longitude=NA, latitude=NA,
     manufacturer,
@@ -1766,8 +1767,8 @@ setMethod(f="plot",
     definition=function(x, which, j,
         col, breaks, zlim,
         titles,
-        lwd=par('lwd'),
-        type='l',
+        lwd=par("lwd"),
+        type="l",
         ytype=c("profile", "distance"),
         drawTimeRange=getOption("oceDrawTimeRange"),
         useSmoothScatter,
@@ -1812,7 +1813,7 @@ setMethod(f="plot",
               #>          argShow(j),
               #>          "...) {\n", sep="", unindent=1, style="bold")
               if (is.ad2cp(x)) {
-                  return(plotAD2CP(x, if (!missing(which)) which else NULL, cex=cex, col=col))
+                  return(plotAD2CP(x, if (!missing(which)) which else NULL, col=col, cex=cex, lwd=lwd, type=type, ...))
               }
               dots <- list(...)
               dotsNames <- names(dots)

@@ -434,9 +434,9 @@ ad2cpCodeToName <- function(code=NULL)
 #' if (file.exists(file)) {
 #'     library(oce)
 #'     d <- read.oce(file)
-#'     with(d[["burstAltimeterRaw"]]$altimeterRaw,
-#'         imagep(time, distance, samples, ylab="Distance [m]"))
 #' }
+#'
+#' @family functions that read adp data
 #'
 #' @author Dan Kelley
 read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
@@ -1096,8 +1096,8 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
             oceDebug(debug, "   AHRS starts at i0v=", i0v, "\n")
             # AHRSRotationMatrix
             object$AHRS <- list(rotationMatrix=NULL,
-                quaternions=list(W=NULL, X=NULL, Y=NULL, Z=NULL),
-                gyro=list(X=NULL, Y=NULL, Z=NULL))
+                quaternions=list(w=NULL, x=NULL, y=NULL, z=NULL),
+                gyro=list(x=NULL, y=NULL, z=NULL))
             object$AHRS$rotationMatrix <- array(double(), dim=c(NP, 3L, 3L))
             iv <- gappyIndex(i, i0v, 9L*4L)
             tmp <- readBin(buf[iv], "numeric", size=4L, endian="little", n=NP*9L)
@@ -1107,28 +1107,28 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
                 object$AHRS$rotationMatrix[ip,,] <- matrix(tmp[look], ncol=3, byrow=TRUE) # note byrow
             }
             i0v <<- i0v + 9L*4L
-            # AHSR$quaternions$W, $X, $Y and $Z
+            # AHSR$quaternions$w, $x, $y and $z
             iv <- gappyIndex(i, i0v, 4L)
-            object$AHRS$quaternions$W <- readBin(buf[iv], "numeric", size=4L, endian="little", n=NP)
+            object$AHRS$quaternions$w <- readBin(buf[iv], "numeric", size=4L, endian="little", n=NP)
             i0v <<- i0v + 4L
             iv <- gappyIndex(i, i0v, 4L)
-            object$AHRS$quaternions$X <- readBin(buf[iv], "numeric", size=4L, endian="little", n=NP)
+            object$AHRS$quaternions$x <- readBin(buf[iv], "numeric", size=4L, endian="little", n=NP)
             i0v <<- i0v + 4L
             iv <- gappyIndex(i, i0v, 4L)
-            object$AHRS$quaternions$Y <- readBin(buf[iv], "numeric", size=4L, endian="little", n=NP)
+            object$AHRS$quaternions$y <- readBin(buf[iv], "numeric", size=4L, endian="little", n=NP)
             i0v <<- i0v + 4L
             iv <- gappyIndex(i, i0v, 4L)
-            object$AHRS$quaternions$Z <- readBin(buf[iv], "numeric", size=4L, endian="little", n=NP)
+            object$AHRS$quaternions$z <- readBin(buf[iv], "numeric", size=4L, endian="little", n=NP)
             i0v <<- i0v + 4L
-            # AHSR$gyro$X, $Y, $Z
+            # AHSR$gyro$x, $y, $z
             iv <- gappyIndex(i, i0v, 4L)
-            object$AHRS$gyro$X <- readBin(buf[iv], "numeric", size=4L, endian="little", n=NP)
-            i0v <<- i0v + 4L
-            iv <- gappyIndex(i, i0v, 4L)
-            object$AHRS$gyro$Y <- readBin(buf[iv], "numeric", size=4L, endian="little", n=NP)
+            object$AHRS$gyro$x <- readBin(buf[iv], "numeric", size=4L, endian="little", n=NP)
             i0v <<- i0v + 4L
             iv <- gappyIndex(i, i0v, 4L)
-            object$AHRS$gyro$Z <- readBin(buf[iv], "numeric", size=4L, endian="little", n=NP)
+            object$AHRS$gyro$y <- readBin(buf[iv], "numeric", size=4L, endian="little", n=NP)
+            i0v <<- i0v + 4L
+            iv <- gappyIndex(i, i0v, 4L)
+            object$AHRS$gyro$z <- readBin(buf[iv], "numeric", size=4L, endian="little", n=NP)
             i0v <<- i0v + 4L
         } else if (name == "percentgood") {
             # Nortek (2017) page 53: 8 bits, unsigned, appears after AHRS gyro z
@@ -1783,9 +1783,19 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
 #' is inappropriate for this particular `x`, then hints are printed to help
 #' guide the user to something that will work.
 #'
-#' @param col passed to either [imagep()] if the graph is an image,
-#' or to [oce.plot.ts()] if the plot shows variation over time, or
-#' otherwise to [plot()].
+#' @param col indication of colour, passed to [imagep()] or to [oce.plot.ts()],
+#' depending on whether the plot is an image or a time-series graph. This
+#' defaults to [oceColorsVelocity] for velocity images, [oceColorsViridis]
+#' for amplitude and quality images, and to black for time-series plots.
+#'
+#' @param type plot type, used only for time-series
+#' graphs.
+#'
+#' @param lwd linewidth, used only for time-series graphs.
+#'
+#' @param cex character expansion factor
+#'
+#' @param pch character code
 #'
 #' @param ... optional other arguments, passed to the lower-level plotting
 #' commands.
@@ -1796,21 +1806,24 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
 #' # private file.  The file contains 'burst' and 'average' data.
 #' f <- "~/Dropbox/oce_secret_data/ad2cp/secret1_trimmed.ad2cp"
 #' if (file.exists(f)) {
+#'     library(oce)
 #'     d <- read.oce(f)
 #'     # Example 1: time-distance variation of "average" velocity (beams 1 through 4)
-#'     plot(d, which="average", col=oceColorsVelocity)
+#'     plot(d, which="average/v", col=oceColorsVelocity)
 #'     # Example 2: time variation of "average" amplitude (beam 1)
 #'     plot(d, which="average/a/1")
 #'     # Example 3: time variation of "burst" magnetometer (x component)
 #'     plot(d, which="burst/magnetometer/x")
+#'     # Example 4: time variation of "burst" AHRS/gyro
+#'     plot(d, which="burst/AHRS/gyro")
 #' }
 #'
 #' @author Dan Kelley
-plotAD2CP <- function(x, which=NULL, col, ...)
+plotAD2CP <- function(x, which=NULL, cex, col, pch, lwd, type, ...)
 {
     if (!is.ad2cp(x))
         stop("'x' must be an AD2CP object, e.g. as created with read.adp.ad2cp()")
-    names1 <- names(x@data)
+    names1 <- sort(names(x@data))
     if (is.null(which))
         stop("which must be supplied; try one of: \"", paste(names1, collapse="\", \""), "\"")
     if (!is.character(which[1]))
@@ -1823,10 +1836,13 @@ plotAD2CP <- function(x, which=NULL, col, ...)
     }
     w <- strsplit(which, "/")[[1]]
     nw <- length(w)
-    if (nw > 3L)
-        stop("'which' must contain zero to three \"/\" characters, but it has ", nw)
+    #message(vectorShow(w))
+    if (nw > 4L)
+        stop("'which' must contain zero to four \"/\" characters, but it has ", nw)
     if (!w[1] %in% names1)
         stop("unknown which, \"", w[1], "\"; try one of: \"", paste(names1, collapse="\", \""), "\"")
+    if (nw < 2)
+        stop("insufficient detail in 'which'; try e.g. which=\"", names1[1], "/?\" to see possibilities for \"", names1[1], "\" data")
     d <- x@data[[w[1]]]
     time <- d[["time"]]
     ntime <- length(time)
@@ -1834,7 +1850,7 @@ plotAD2CP <- function(x, which=NULL, col, ...)
     ndistance <- length(distance)
     # Find relevant subitem names, which are for things that can be shown in a
     # time-distance image, or in a variable-time linegraph.
-    names2 <- names(d)
+    names2 <- sort(names(d))
     names2keep <- sapply(names2,
         function(x)
         {
@@ -1854,8 +1870,20 @@ plotAD2CP <- function(x, which=NULL, col, ...)
     if (nw > 2L && w[3] == "?") {
         if (w[2] %in% c("accelerometer", "magnetometer")) {
             message("try setting 'which' to one of: \"", paste0(paste0(w[1],"/",w[2]), "/", c("x","y","z"), collapse="\", \""), "\"")
+        } else if (w[2] == "AHRS") {
+            message("try setting 'which' to one of: \"", paste0(paste0(w[1],"/",w[2]), "/", c("quaternions","gyro"), collapse="\", \""), "\"")
         } else {
-            message("sorry, there no hints are available for which=\"", w[1], "/", w[2], "/?")
+            message("sorry, no hints are available for which=\"", w[1], "/", w[2], "/?")
+        }
+        return(invisible(NULL))
+    }
+    if (nw > 3L && w[4] == "?" && w[2] == "AHRS") {
+        if (w[3] == "quaternions") {
+            message("try setting 'which' to one of: \"", paste0(paste0(w[1],"/",w[2]), "/", w[3], "/", c("x","y","z"), collapse="\", \""), "\"")
+        } else if (w[3] == "gyro") {
+            message("try setting 'which' to one of: \"", paste0(paste0(w[1],"/",w[2]), "/", w[3], "/", c("x","y","z"), collapse="\", \""), "\"")
+        } else {
+            stop("the 3th element of 'which' must be \"quaternions\" or \"gyro\", not \"", w[3], "\"")
         }
         return(invisible(NULL))
     }
@@ -1869,8 +1897,7 @@ plotAD2CP <- function(x, which=NULL, col, ...)
     }
     # Ensure that user is asking for a plottable item.
     if (!w[2] %in% names2)
-        stop("item \"", w[2], "\" is not available; try one of \"",
-            paste(names2, collapse="\", \""), "\"")
+        stop("item \"", w[2], "\" is not available; try one of \"", paste(names2, collapse="\", \""), "\"")
     # Handle by case
     if (w[2] %in% c("a", "q", "v")) {
         D <- makeNumeric(d[[w[2]]])
@@ -1882,6 +1909,8 @@ plotAD2CP <- function(x, which=NULL, col, ...)
         beams <- if (nw < 3L) seq_len(nbeam) else w[3]
         if (length(beams) > 1L)
             par(mfrow=c(length(beams), 1))
+        if (missing(col))
+            col <- if (w[2] == "v") oceColorsVelocity else oceColorsViridis
         for (ibeam in as.integer(beams)) {
             #message(vectorShow(ibeam))
             if (w[2] == "v" && !"zlim" %in% dotsNames) {
@@ -1901,22 +1930,105 @@ plotAD2CP <- function(x, which=NULL, col, ...)
     } else if (w[2] == "altimeterRaw") {
         stop("FIXME: add altimeterRaw plot here")
     } else if (w[2] == "AHRS") {
-        stop("FIXME: add AHRS plot here")
+        if (nw == 2) {
+            message("'which' needs more detail; use which=\"", w[1], "/", w[2], "/?\" for hints")
+            return(invisible(NULL))
+        } else if (nw == 3) {
+            if (missing(col))
+                col <- 1
+            if (w[3] == "gyro") {
+                par(mfrow=c(3, 1))
+                oce.plot.ts(time, x@data[[w[1]]][[w[2]]][[w[3]]][["x"]], ylab=paste(w[3], "x"),
+                    cex=if (missing(cex)) 1 else cex, col=if (missing(col)) 1 else col,
+                    pch=if (missing(pch)) 1 else pch, lwd=if (missing(lwd)) 1 else lwd,
+                    type=if (missing(type)) 1 else type)
+                oce.plot.ts(time, x@data[[w[1]]][[w[2]]][[w[3]]][["y"]], ylab=paste(w[3], "y"),
+                    cex=if (missing(cex)) 1 else cex, col=if (missing(col)) 1 else col,
+                    pch=if (missing(pch)) 1 else pch, lwd=if (missing(lwd)) 1 else lwd,
+                    type=if (missing(type)) 1 else type)
+                oce.plot.ts(time, x@data[[w[1]]][[w[2]]][[w[3]]][["z"]], ylab=paste(w[3], "z"),
+                    cex=if (missing(cex)) 1 else cex, col=if (missing(col)) 1 else col,
+                    pch=if (missing(pch)) 1 else pch, lwd=if (missing(lwd)) 1 else lwd,
+                    type=if (missing(type)) 1 else type)
+                par(opar)
+            } else if (w[3] == "quaternions") {
+                par(mfrow=c(4, 1))
+                oce.plot.ts(time, x@data[[w[1]]][[w[2]]][[w[3]]][["x"]], ylab=paste(w[3], "x"),
+                    cex=if (missing(cex)) 1 else cex, col=if (missing(col)) 1 else col,
+                    pch=if (missing(pch)) 1 else pch, lwd=if (missing(lwd)) 1 else lwd,
+                    type=if (missing(type)) 1 else type)
+                oce.plot.ts(time, x@data[[w[1]]][[w[2]]][[w[3]]][["y"]], ylab=paste(w[3], "y"),
+                    cex=if (missing(cex)) 1 else cex, col=if (missing(col)) 1 else col,
+                    pch=if (missing(pch)) 1 else pch, lwd=if (missing(lwd)) 1 else lwd,
+                    type=if (missing(type)) 1 else type)
+                oce.plot.ts(time, x@data[[w[1]]][[w[2]]][[w[3]]][["z"]], ylab=paste(w[3], "z"),
+                    cex=if (missing(cex)) 1 else cex, col=if (missing(col)) 1 else col,
+                    pch=if (missing(pch)) 1 else pch, lwd=if (missing(lwd)) 1 else lwd,
+                    type=if (missing(type)) 1 else type)
+                oce.plot.ts(time, x@data[[w[1]]][[w[2]]][[w[3]]][["w"]], ylab=paste(w[3], "w"),
+                    cex=if (missing(cex)) 1 else cex, col=if (missing(col)) 1 else col,
+                    pch=if (missing(pch)) 1 else pch, lwd=if (missing(lwd)) 1 else lwd,
+                    type=if (missing(type)) 1 else type)
+                par(opar)
+            } else {
+                stop("third 'which' entry must be \"gyro\" or \"quaternions\", not \"", w[3], "\"")
+            }
+        } else if (nw == 4) {
+            if (w[3] == "gyro") {
+                if (w[4] %in% c("x", "y", "z")) {
+                    oce.plot.ts(time, x@data[[w[1]]][[w[2]]][[w[3]]][[w[4]]], ylab=paste(w[3], "x"),
+                        cex=if (missing(cex)) 1 else cex, col=if (missing(col)) 1 else col,
+                        pch=if (missing(pch)) 1 else pch, lwd=if (missing(lwd)) 1 else lwd,
+                        type=if (missing(type)) 1 else type)
+                } else {
+                    stop("fourth word in which must be \"x\", \"y\" or \"z\", not \"", w[4], "\"")
+                }
+            } else if (w[3] == "quaternions") {
+                if (w[4] %in% c("x", "y", "z", "w")) {
+                    oce.plot.ts(time, x@data[[w[1]]][[w[2]]][[w[3]]][[w[4]]], ylab=paste(w[3], "x"),
+                        cex=if (missing(cex)) 1 else cex, col=if (missing(col)) 1 else col,
+                        pch=if (missing(pch)) 1 else pch, lwd=if (missing(lwd)) 1 else lwd,
+                        type=if (missing(type)) 1 else type)
+                } else {
+                    stop("fourth word in which must be \"x\", \"y\", \"z\" or \"w\", not \"", w[4], "\"")
+                }
+            } else {
+                stop("third 'which' entry must be \"gyro\" or \"quaternions\", not \"", w[3], "\"")
+            }
+            return(invisible(NULL))
+        }
+        return(invisible(NULL))
     } else if (w[2] %in% c("accelerometer", "magnetometer")) {
         D <- d[[w[2]]]                 # has components $x, $y and $z
         if (nw == 2) { # plot 3 panels
             par(mfrow=c(3, 1))
-            oce.plot.ts(time, D[["x"]], ylab=paste(w[2], "x"))
-            oce.plot.ts(time, D[["y"]], ylab=paste(w[2], "y"))
-            oce.plot.ts(time, D[["y"]], ylab=paste(w[2], "z"))
+            oce.plot.ts(time, D[["x"]], ylab=paste(w[2], "x"),
+                cex=if (missing(cex)) 1 else cex, col=if (missing(col)) 1 else col,
+                pch=if (missing(pch)) 1 else pch, lwd=if (missing(lwd)) 1 else lwd,
+                type=if (missing(type)) 1 else type)
+            oce.plot.ts(time, D[["y"]], ylab=paste(w[2], "y"),
+                cex=if (missing(cex)) 1 else cex, col=if (missing(col)) 1 else col,
+                pch=if (missing(pch)) 1 else pch, lwd=if (missing(lwd)) 1 else lwd,
+                type=if (missing(type)) 1 else type)
+            oce.plot.ts(time, D[["y"]], ylab=paste(w[2], "z"),
+                cex=if (missing(cex)) 1 else cex, col=if (missing(col)) 1 else col,
+                pch=if (missing(pch)) 1 else pch, lwd=if (missing(lwd)) 1 else lwd,
+                type=if (missing(type)) 1 else type)
             par(opar)
         } else {
             if (!w[3] %in% names(D))
-                stop(w[1], "$", w[2], " does not contain \"", w[3], "\"; try one of \"", paste(names(D), collapse="\" \""), "\"")
-            oce.plot.ts(time, D[[w[3]]], ylab=paste(w[2], w[3]))
+                stop(w[1], "$", w[2], " does not contain \"", w[3], "\"; try one of \"", paste(sort(names(D)), collapse="\" \""), "\"")
+            oce.plot.ts(time, D[[w[3]]], ylab=paste(w[2], w[3]),
+                cex=if (missing(cex)) 1 else cex, col=if (missing(col)) 1 else col,
+                pch=if (missing(pch)) 1 else pch, lwd=if (missing(lwd)) 1 else lwd,
+                type=if (missing(type)) 1 else type)
         }
     } else if (length(d[[w[2]]]) == ntime) {
-        oce.plot.ts(time, d[[w[2]]], ylab=w[2])
+        # time-series graph of some vector element
+        oce.plot.ts(time, d[[w[2]]], ylab=paste(w[1], w[2]),
+            cex=if (missing(cex)) 1 else cex, col=if (missing(col)) 1 else col,
+            pch=if (missing(pch)) 1 else pch, lwd=if (missing(lwd)) 1 else lwd,
+            type=if (missing(type)) 1 else type)
     } else {
         stop("although subitem \"", w[2], "\" is present in \"", w[1], "\", it is not handled yet")
     }

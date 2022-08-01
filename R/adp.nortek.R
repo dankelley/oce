@@ -406,6 +406,7 @@ decodeHeaderNortek <- function(buf,
 #' @author Dan Kelley and Clark Richards
 #'
 #' @family things related to adp data
+#' @family functions that read adp data
 read.aquadopp <- function(file,
     from=1,
     to,
@@ -484,6 +485,7 @@ read.aquadopp <- function(file,
 #' @author Dan Kelley
 #'
 #' @family things related to adp data
+#' @family functions that read adp data
 read.aquadoppHR <- function(file,
     from=1,
     to,
@@ -562,6 +564,7 @@ read.aquadoppHR <- function(file,
 #' @author Dan Kelley
 #'
 #' @family things related to adp data
+#' @family functions that read adp data
 read.aquadoppProfiler <- function(file,
     from=1,
     to,
@@ -631,6 +634,7 @@ read.aquadoppProfiler <- function(file,
 #' @author Dan Kelley
 #'
 #' @family things related to adp data
+#' @family functions that read adp data
 read.adp.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     longitude=NA, latitude=NA,
     type=c("aquadoppHR",

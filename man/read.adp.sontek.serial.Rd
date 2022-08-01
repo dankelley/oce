@@ -135,8 +135,19 @@ Other things related to adp data:
 \code{\link{xyzToEnuAdpAD2CP}()},
 \code{\link{xyzToEnuAdp}()},
 \code{\link{xyzToEnu}()}
+
+Other functions that read adp data: 
+\code{\link{read.adp.ad2cp}()},
+\code{\link{read.adp.nortek}()},
+\code{\link{read.adp.rdi}()},
+\code{\link{read.adp.sontek}()},
+\code{\link{read.adp}()},
+\code{\link{read.aquadoppHR}()},
+\code{\link{read.aquadoppProfiler}()},
+\code{\link{read.aquadopp}()}
 }
 \author{
 Dan Kelley and Clark Richards
 }
+\concept{functions that read adp data}
 \concept{things related to adp data}

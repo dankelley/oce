@@ -4,7 +4,7 @@
 \alias{plotAD2CP}
 \title{Plot an AD2CP Object}
 \usage{
-plotAD2CP(x, which = NULL, col, ...)
+plotAD2CP(x, which = NULL, cex, col, pch, lwd, type, ...)
 }
 \arguments{
 \item{x}{an AD2CP object, as created with \code{\link[=read.adp.ad2cp]{read.adp.ad2cp()}} or by
@@ -17,9 +17,19 @@ of the object layout is required to devise \code{which} properly.  If \code{whic
 is inappropriate for this particular \code{x}, then hints are printed to help
 guide the user to something that will work.}
 
-\item{col}{passed to either \code{\link[=imagep]{imagep()}} if the graph is an image,
-or to \code{\link[=oce.plot.ts]{oce.plot.ts()}} if the plot shows variation over time, or
-otherwise to \code{\link[=plot]{plot()}}.}
+\item{cex}{character expansion factor}
+
+\item{col}{indication of colour, passed to \code{\link[=imagep]{imagep()}} or to \code{\link[=oce.plot.ts]{oce.plot.ts()}},
+depending on whether the plot is an image or a time-series graph. This
+defaults to \link{oceColorsVelocity} for velocity images, \link{oceColorsViridis}
+for amplitude and quality images, and to black for time-series plots.}
+
+\item{pch}{character code}
+
+\item{lwd}{linewidth, used only for time-series graphs.}
+
+\item{type}{plot type, used only for time-series
+graphs.}
 
 \item{...}{optional other arguments, passed to the lower-level plotting
 commands.}
@@ -45,13 +55,16 @@ library(oce)
 # private file.  The file contains 'burst' and 'average' data.
 f <- "~/Dropbox/oce_secret_data/ad2cp/secret1_trimmed.ad2cp"
 if (file.exists(f)) {
+    library(oce)
     d <- read.oce(f)
     # Example 1: time-distance variation of "average" velocity (beams 1 through 4)
-    plot(d, which="average", col=oceColorsVelocity)
+    plot(d, which="average/v", col=oceColorsVelocity)
     # Example 2: time variation of "average" amplitude (beam 1)
     plot(d, which="average/a/1")
     # Example 3: time variation of "burst" magnetometer (x component)
     plot(d, which="burst/magnetometer/x")
+    # Example 4: time variation of "burst" AHRS/gyro
+    plot(d, which="burst/AHRS/gyro")
 }
 
 }
