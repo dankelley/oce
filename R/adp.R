@@ -431,179 +431,188 @@ setMethod("setFlags",
 #'
 #' @family things related to adp data
 setMethod(f="summary",
-          signature="adp",
-          definition=function(object, ...) {
-              mnames <- names(object@metadata)
-              cat("ADP Summary\n-----------\n\n", ...)
-              if ("instrumentType" %in% mnames)
-                  cat(paste("* Instrument:         ", object@metadata$instrumentType, "\n", sep=""), ...)
-              if ("manufacturere" %in% mnames)
-                  cat("* Manufacturer:      ", object@metadata$manufacturer, "\n")
-              if ("serialNumber" %in% mnames)
-                  cat(paste("* Serial number:      ", object@metadata$serialNumber, "\n", sep=""), ...)
-              if ("firmwareVersion" %in% mnames)
-                  cat(paste("* Firmware version:   ", object@metadata$firmwareVersion, "\n", sep=""), ...)
-              if ("filename" %in% mnames)
-                  cat(paste("* Source filename:    ``", object@metadata$filename, "``\n", sep=""), ...)
-              if ("latitude" %in% names(object@metadata)) {
-                  cat(paste("* Location:           ",
-                            if (is.na(object@metadata$latitude)) "unknown latitude" else sprintf("%.5f N", object@metadata$latitude), ", ",
-                            if (is.na(object@metadata$longitude)) "unknown longitude" else sprintf("%.5f E",
-                                                                                                   object@metadata$longitude),
-                            "\n", sep=''))
-              }
-              v.dim <- dim(object[["v"]])
-              isAD2CP <- is.ad2cp(object)
-              if (!isAD2CP) {
-                  cat("* Number of beams:    ", v.dim[3], "\n", sep="")
-                  cat("* Number of profiles: ", v.dim[1], "\n", sep="")
-                  cat("* Number of cells:    ", v.dim[2], "\n", sep="")
-                  cat("* Number of beams:    ", v.dim[3], "\n", sep="")
-                  cat("* Cell size:          ", object[["cellSize"]], "m\n", sep="")
-              }
-              if ("time" %in% names(object@data)) {
-                  cat("* Summary of times between profiles:\n")
-                  print(summary(diff(as.numeric(object@data$time))))
-              }
-              if (1 == length(agrep("nortek", object@metadata$manufacturer, ignore.case=TRUE))) {
-                  resSpecific <- list(internalCodeVersion=object@metadata$internalCodeVersion,
-                                      hardwareRevision=object@metadata$hardwareRevision,
-                                      recSize=object@metadata$recSize*65536/1024/1024,
-                                      velocityRange=object@metadata$velocityRange,
-                                      firmwareVersion=object@metadata$firmwareVersion,
-                                      config=object@metadata$config,
-                                      configPressureSensor=object@metadata$configPressureSensor,
-                                      configMagnetometerSensor=object@metadata$configMagnetometerSensor,
-                                      configPressureSensor=object@metadata$configPressureSensor,
-                                      configTiltSensor=object@metadata$configTiltSensor,
-                                      configTiltSensorOrientation=object@metadata$configTiltSensorOrientation,
-                                      serialNumberHead=object@metadata$serialNumberHead,
-                                      blankingDistance=object@metadata$blankingDistance,
-                                      measurementInterval=object@metadata$measurementInterval,
-                                      deploymentName=object@metadata$deploymentName,
-                                      velocityScale=object@metadata$velocityScale)
-              } else if (1 == length(agrep("rdi", object@metadata$manufacturer, ignore.case=TRUE))) {
-                  resSpecific <- list(instrumentSubtype=object@metadata[["instrumentSubtype"]],
-                                      manufacturer=object@metadata$manufacturer,
-                                      numberOfDataTypes=object@metadata$numberOfDataTypes,
-                                      ensembleInFile=object@metadata$ensembleInFile,
-                                      headingAlignment=object@metadata$headingAlignment,
-                                      headingBias=object@metadata$headingBias,
-                                      pingsPerEnsemble=object@metadata$pingsPerEnsemble,
-                                      bin1Distance=object@metadata$bin1Distance,
-                                      xmitPulseLength=object@metadata$xmitPulseLength,
-                                      oceBeamSpreaded=object@metadata$oceBeamSpreaded,
-                                      beamConfig=object@metadata$beamConfig)
-              } else if (1 == length(agrep("sontek", object@metadata$manufacturer, ignore.case=TRUE))) {
-                  resSpecific <- list(cpuSoftwareVerNum=object@metadata$cpuSoftwareVerNum,
-                                      dspSoftwareVerNum=object@metadata$dspSoftwareVerNum,
-                                      boardRev=object@metadata$boardRev,
-                                      adpType=object@metadata$adpType,
-                                      slantAngle=object@metadata$slantAngle,
-                                      orientation=object@metadata$orientation)
-              } else {
-                  resSpecific <- list(orientation=object@metadata$orientation)
-                  #stop("can only summarize ADP objects of sub-type \"rdi\", \"sontek\", or \"nortek\", not class ", paste(class(object),collapse=","))
-              }
-              ## 20170107: drop the printing of these. In the new scheme, we can subsample
-              ## 20170107: files, and therefore do not read to the end, and it seems silly
-              ## 20170107: to use time going through the whole file to find this out. If we
-              ## 20170107: decide that this is needed, we could do a seek() to the end of the
-              ## 20170107: and then go back to find the final time.
+    signature="adp",
+    definition=function(object, ...) {
+        mnames <- names(object@metadata)
+        cat("ADP Summary\n-----------\n\n", ...)
+        if ("instrumentType" %in% mnames)
+            cat(paste("* Instrument:    ", object@metadata$instrumentType, "\n", sep=""), ...)
+        if ("manufacturere" %in% mnames)
+            cat("* Manufacturer:        ", object@metadata$manufacturer, "\n")
+        if ("serialNumber" %in% mnames)
+            cat(paste("* Serial number: ", object@metadata$serialNumber, "\n", sep=""), ...)
+        if ("filename" %in% mnames)
+            cat(paste("* File name:     \"", object@metadata$filename, "\"\n", sep=""), ...)
+        if ("fileType" %in% mnames)
+            cat(paste("* File type:     ", object@metadata$fileType, "\n", sep=""), ...)
+        if ("firmwareVersion" %in% mnames)
+            cat(paste("* Firmware:      ", object@metadata$firmwareVersion, "\n", sep=""), ...)
+        if ("latitude" %in% names(object@metadata)) {
+            cat(paste("* Location:      ",
+                    if (is.na(object@metadata$latitude)) "unknown latitude" else sprintf("%.5f N", object@metadata$latitude), ", ",
+                    if (is.na(object@metadata$longitude)) "unknown longitude" else sprintf("%.5f E",
+                        object@metadata$longitude),
+                    "\n", sep=''))
+        }
+        v.dim <- dim(object[["v"]])
+        isAD2CP <- is.ad2cp(object)
+        if (!isAD2CP) {
+            cat("* # of beams:    ", v.dim[3], "\n", sep="")
+            cat("* # profiles:    ", v.dim[1], "\n", sep="")
+            cat("* # cells:       ", v.dim[2], "\n", sep="")
+            cat("* # beams:       ", v.dim[3], "\n", sep="")
+            cat("* Cell size:     ", object[["cellSize"]], "m\n", sep="")
+        }
+        if ("time" %in% names(object@data)) {
+            cat("* Summary of times between profiles:\n")
+            print(summary(diff(as.numeric(object@data$time))))
+        }
+        if (1 == length(agrep("nortek", object@metadata$manufacturer, ignore.case=TRUE))) {
+            resSpecific <- list(internalCodeVersion=object@metadata$internalCodeVersion,
+                hardwareRevision=object@metadata$hardwareRevision,
+                recSize=object@metadata$recSize*65536/1024/1024,
+                velocityRange=object@metadata$velocityRange,
+                firmwareVersion=object@metadata$firmwareVersion,
+                config=object@metadata$config,
+                configPressureSensor=object@metadata$configPressureSensor,
+                configMagnetometerSensor=object@metadata$configMagnetometerSensor,
+                configPressureSensor=object@metadata$configPressureSensor,
+                configTiltSensor=object@metadata$configTiltSensor,
+                configTiltSensorOrientation=object@metadata$configTiltSensorOrientation,
+                serialNumberHead=object@metadata$serialNumberHead,
+                blankingDistance=object@metadata$blankingDistance,
+                measurementInterval=object@metadata$measurementInterval,
+                deploymentName=object@metadata$deploymentName,
+                velocityScale=object@metadata$velocityScale)
+        } else if (1 == length(agrep("rdi", object@metadata$manufacturer, ignore.case=TRUE))) {
+            resSpecific <- list(instrumentSubtype=object@metadata[["instrumentSubtype"]],
+                manufacturer=object@metadata$manufacturer,
+                numberOfDataTypes=object@metadata$numberOfDataTypes,
+                ensembleInFile=object@metadata$ensembleInFile,
+                headingAlignment=object@metadata$headingAlignment,
+                headingBias=object@metadata$headingBias,
+                pingsPerEnsemble=object@metadata$pingsPerEnsemble,
+                bin1Distance=object@metadata$bin1Distance,
+                xmitPulseLength=object@metadata$xmitPulseLength,
+                oceBeamSpreaded=object@metadata$oceBeamSpreaded,
+                beamConfig=object@metadata$beamConfig)
+        } else if (1 == length(agrep("sontek", object@metadata$manufacturer, ignore.case=TRUE))) {
+            resSpecific <- list(cpuSoftwareVerNum=object@metadata$cpuSoftwareVerNum,
+                dspSoftwareVerNum=object@metadata$dspSoftwareVerNum,
+                boardRev=object@metadata$boardRev,
+                adpType=object@metadata$adpType,
+                slantAngle=object@metadata$slantAngle,
+                orientation=object@metadata$orientation)
+        } else {
+            resSpecific <- list(orientation=object@metadata$orientation)
+            #stop("can only summarize ADP objects of sub-type \"rdi\", \"sontek\", or \"nortek\", not class ", paste(class(object),collapse=","))
+        }
+        ## 20170107: drop the printing of these. In the new scheme, we can subsample
+        ## 20170107: files, and therefore do not read to the end, and it seems silly
+        ## 20170107: to use time going through the whole file to find this out. If we
+        ## 20170107: decide that this is needed, we could do a seek() to the end of the
+        ## 20170107: and then go back to find the final time.
 
-              ## cat(sprintf("* Measurements:       %s %s to %s %s sampled at %.4g Hz\n",
-              ##             format(object@metadata$measurementStart), attr(object@metadata$measurementStart, "tzone"),
-              ##             format(object@metadata$measurementEnd), attr(object@metadata$measurementEnd, "tzone"),
-              ##             1 / object@metadata$measurementDeltat))
-              ## subsampleStart <- object@data$time[1]
-              ## subsampleDeltat <- as.numeric(object@data$time[2]) - as.numeric(object@data$time[1])
-              ## subsampleEnd <- object@data$time[length(object@data$time)]
-              ## cat(sprintf("* Subsample:          %s %s to %s %s sampled at %.4g Hz\n",
-              ##             format(subsampleStart), attr(subsampleStart, "tzone"),
-              ##             format(subsampleEnd),  attr(subsampleEnd, "tzone"),
-              ##             1 / subsampleDeltat))
-              metadataNames <- names(object@metadata)
-              cat("* Frequency:         ", object[["frequency"]], "kHz\n", ...)
-              if ("ensembleNumber" %in% names(object@metadata)) {
-                  en <- object@metadata$ensembleNumber
-                  nen <- length(en)
-                  if (nen > 4)
-                      cat("* Ensemble Numbers:   ", en[1], ", ", en[2], ", ..., ", en[nen-1L], ", ", en[nen], "\n", sep="")
-                  else
-                      cat("* Ensemble Numbers:   ", paste(en, collapse=", "), "\n", sep="")
-              }
-              if (!isAD2CP) {
-                  if ("numberOfCells" %in% metadataNames) {
-                      dist <- object[["distance"]]
-                      if (object[["numberOfCells"]] > 1) {
-                          cat(sprintf("* Cells:              %d, centered at %.3f m to %.3f m, spaced by %.3f m\n",
-                                      object[["numberOfCells"]], dist[1], tail(dist, 1), diff(dist[1:2])), ...)
-                      } else {
-                          cat(sprintf("* Cells:              one cell, centered at %.3f m\n", dist[1]), ...)
-                      }
-                  }
-                  originalCoordinate <- object[["originalCoordinate"]]
-                  oceCoordinate <- object[["oceCoordinate"]]
-                  cat("* Coordinate system: ",
-                      if (is.null(originalCoordinate)) "?" else originalCoordinate, "[originally],",
-                      if (is.null(oceCoordinate)) "?" else oceCoordinate, "[presently]\n", ...)
-                  numberOfBeams <- object[["numberOfBeams"]]
-                  beamAngle <- object[["beamAngle"]]
-                  ## As of Aug 10, 2019, orientation may be a vector, so we summarize
-                  ## a table of values, if so.
-                  orientation <- object[["orientation"]]
-                  if (length(orientation) > 1) {
-                      torientation <- table(orientation)
-                      orientation <- paste(unlist(lapply(names(torientation),
-                                                         function(x)
-                                                           paste(x, torientation[[x]], sep=":"))),
-                                           collapse=", ")
-                  }
-                  beamUnspreaded <- object[["oceBeamUnspreaded"]]
-                  cat("* Beams::\n")
-                  if ("vv" %in% names(object@data))
-                      cat("    Number:          ", if (is.null(numberOfBeams)) "?" else numberOfBeams, "slanted, plus 1 central\n")
-                  else
-                      cat("    Number:          ", if (is.null(numberOfBeams)) "?" else numberOfBeams, "slanted\n")
+        ## cat(sprintf("* Measurements:       %s %s to %s %s sampled at %.4g Hz\n",
+        ##             format(object@metadata$measurementStart), attr(object@metadata$measurementStart, "tzone"),
+        ##             format(object@metadata$measurementEnd), attr(object@metadata$measurementEnd, "tzone"),
+        ##             1 / object@metadata$measurementDeltat))
+        ## subsampleStart <- object@data$time[1]
+        ## subsampleDeltat <- as.numeric(object@data$time[2]) - as.numeric(object@data$time[1])
+        ## subsampleEnd <- object@data$time[length(object@data$time)]
+        ## cat(sprintf("* Subsample:          %s %s to %s %s sampled at %.4g Hz\n",
+        ##             format(subsampleStart), attr(subsampleStart, "tzone"),
+        ##             format(subsampleEnd),  attr(subsampleEnd, "tzone"),
+        ##             1 / subsampleDeltat))
+        metadataNames <- names(object@metadata)
+        cat("* Frequency:    ", object[["frequency"]], "kHz\n", ...)
+        if ("ensembleNumber" %in% names(object@metadata)) {
+            en <- object@metadata$ensembleNumber
+            nen <- length(en)
+            if (nen > 4)
+                cat("* Ensemble Numbers:   ", en[1], ", ", en[2], ", ..., ", en[nen-1L], ", ", en[nen], "\n", sep="")
+            else
+                cat("* Ensemble Numbers:   ", paste(en, collapse=", "), "\n", sep="")
+        }
+        if (!isAD2CP) {
+            if ("numberOfCells" %in% metadataNames) {
+                dist <- object[["distance"]]
+                if (object[["numberOfCells"]] > 1) {
+                    cat(sprintf("* Cells:              %d, centered at %.3f m to %.3f m, spaced by %.3f m\n",
+                            object[["numberOfCells"]], dist[1], tail(dist, 1), diff(dist[1:2])), ...)
+                } else {
+                    cat(sprintf("* Cells:              one cell, centered at %.3f m\n", dist[1]), ...)
+                }
+            }
+            originalCoordinate <- object[["originalCoordinate"]]
+            oceCoordinate <- object[["oceCoordinate"]]
+            cat("* Coordinate system: ",
+                if (is.null(originalCoordinate)) "?" else originalCoordinate, "[originally],",
+                if (is.null(oceCoordinate)) "?" else oceCoordinate, "[presently]\n", ...)
+            numberOfBeams <- object[["numberOfBeams"]]
+            beamAngle <- object[["beamAngle"]]
+            ## As of Aug 10, 2019, orientation may be a vector, so we summarize
+            ## a table of values, if so.
+            orientation <- object[["orientation"]]
+            if (length(orientation) > 1) {
+                torientation <- table(orientation)
+                orientation <- paste(unlist(lapply(names(torientation),
+                            function(x)
+                                paste(x, torientation[[x]], sep=":"))),
+                        collapse=", ")
+            }
+            beamUnspreaded <- object[["oceBeamUnspreaded"]]
+            cat("* Beams::\n")
+            if ("vv" %in% names(object@data))
+                cat("    Number:          ", if (is.null(numberOfBeams)) "?" else numberOfBeams, "slanted, plus 1 central\n")
+            else
+                cat("    Number:          ", if (is.null(numberOfBeams)) "?" else numberOfBeams, "slanted\n")
 
-                  cat("    Slantwise Angle: ", if (is.null(beamAngle)) "?" else beamAngle , "\n")
-                  if (numberOfBeams > 0)
-                      cat("    Orientation:     ", if (is.null(orientation)) "?" else orientation, "\n")
-                  cat("    Unspreaded:      ", if (is.null(beamUnspreaded)) "?" else beamUnspreaded, "\n")
-              }
-              transformationMatrix <- object[["transformationMatrix"]]
-              if (!is.null(transformationMatrix) && dim(transformationMatrix)[2] >= 3) {
-                  digits <- 4
-                  cat("* Transformation matrix::\n")
-                  cat("  ", format(transformationMatrix[1, ], width=digits+4, digits=digits, justify="right"), "\n")
-                  cat("  ", format(transformationMatrix[2, ], width=digits+4, digits=digits, justify="right"), "\n")
-                  cat("  ", format(transformationMatrix[3, ], width=digits+4, digits=digits, justify="right"), "\n")
-                  if (object[["numberOfBeams"]] > 3)
-                      cat("  ", format(transformationMatrix[4, ], width=digits+4, digits=digits, justify="right"), "\n")
-              }
-              if (isAD2CP) {
-                  default <- ad2cpDefaultDataItem(object)
-                  for (rt in object[["recordTypes"]]) {
-                      if (rt != "text") {
-                          isTheDefault <- rt == default
-                          cat("* Record type '", rt, "'", if (isTheDefault) " (the default item)::\n" else "::\n", sep="")
-                          cat("    Number of profiles: ", length(object[["time", rt]]), "\n")
-                          cat("    Number of cells:    ", object[["numberOfCells", rt]], "\n")
-                          cat("    Blanking distance:  ", object[["blankingDistance", rt]], "\n")
-                          cat("    Cell size:          ", object[["cellSize", rt]], "\n")
-                          numberOfBeams <- object[["numberOfBeams", rt]]
-                          cat("    Number of beams:    ", numberOfBeams, "\n")
-                          cat("    Beam angle:         ", if (numberOfBeams == 1) 0 else object[["beamAngle"]], "\n")
-                          if (numberOfBeams > 1)
-                              cat("    Coordinate system:  ", object[["oceCoordinate", rt]], "\n")
-                      }
-                  }
-                  processingLogShow(object)
-                  invisible(NULL)
-              } else {
-                  invisible(callNextMethod()) # summary
-              }
-          })
+            cat("    Slantwise Angle: ", if (is.null(beamAngle)) "?" else beamAngle , "\n")
+            if (numberOfBeams > 0)
+                cat("    Orientation:     ", if (is.null(orientation)) "?" else orientation, "\n")
+            cat("    Unspreaded:      ", if (is.null(beamUnspreaded)) "?" else beamUnspreaded, "\n")
+        }
+        transformationMatrix <- object[["transformationMatrix"]]
+        if (!is.null(transformationMatrix) && dim(transformationMatrix)[2] >= 3) {
+            digits <- 4
+            cat("* Transformation matrix::\n")
+            cat("  ", format(transformationMatrix[1, ], width=digits+4, digits=digits, justify="right"), "\n")
+            cat("  ", format(transformationMatrix[2, ], width=digits+4, digits=digits, justify="right"), "\n")
+            cat("  ", format(transformationMatrix[3, ], width=digits+4, digits=digits, justify="right"), "\n")
+            if (object[["numberOfBeams"]] > 3)
+                cat("  ", format(transformationMatrix[4, ], width=digits+4, digits=digits, justify="right"), "\n")
+        }
+        if (isAD2CP) {
+            cat("* Data Overview\n\n")
+            dataNames <- names(object@data)
+            for (i in seq_along(dataNames)) {
+                d <- object@data[[dataNames[i]]]
+                cat("  * ", length(d[["time"]]), " ", dataNames[i], " samples\n", sep="")
+            }
+            cat("\n")
+            #default <- ad2cpDefaultDataItem(object)
+            #for (rt in object[["recordTypes"]]) {
+            #    if (rt != "text") {
+            #        isTheDefault <- rt == default
+            #        cat("* Record type '", rt, "'", if (isTheDefault) " (the default item)::\n" else "::\n", sep="")
+            #        cat("    Number of profiles: ", length(object[["time", rt]]), "\n")
+            #        cat("    Number of cells:    ", object[["numberOfCells", rt]], "\n")
+            #        cat("    Blanking distance:  ", object[["blankingDistance", rt]], "\n")
+            #        cat("    Cell size:          ", object[["cellSize", rt]], "\n")
+            #        numberOfBeams <- object[["numberOfBeams", rt]]
+            #        cat("    Number of beams:    ", numberOfBeams, "\n")
+            #        cat("    Beam angle:         ", if (numberOfBeams == 1) 0 else object[["beamAngle"]], "\n")
+            #        if (numberOfBeams > 1)
+            #            cat("    Coordinate system:  ", object[["oceCoordinate", rt]], "\n")
+            #    }
+            #}
+            processingLogShow(object)
+            invisible(NULL)
+        } else {
+            invisible(callNextMethod()) # summary
+        }
+    })
 
 #' Concatenate adp objects
 #'
@@ -684,225 +693,225 @@ setMethod(f="concatenate",
 #'
 #' @family things related to adp data
 setMethod(f="[[",
-          signature(x="adp", i="ANY", j="ANY"),
-          definition=function(x, i, j, ...) {
-              ##>message("top: i='", i, "'")
-              if (length(i) != 1L)
-                  stop("In [[,adp-method() : may only extract 1 item at a time.\n", call.=FALSE)
-              ISAD2CP <- is.ad2cp(x)
-              # 2022-07-29 only permit level-one lookup.  It's too confusing for
-              # user, otherwise.
-              if (ISAD2CP)
-                  return(callNextMethod())
+    signature(x="adp", i="ANY", j="ANY"),
+    definition=function(x, i, j, ...) {
+        ##>message("top: i='", i, "'")
+        if (length(i) != 1L)
+            stop("In [[,adp-method() : may only extract 1 item at a time.\n", call.=FALSE)
+        ISAD2CP <- is.ad2cp(x)
+        # 2022-07-29 only permit level-one lookup.  It's too confusing for
+        # user, otherwise.
+        if (ISAD2CP)
+            return(callNextMethod())
 
-              ##>message("ISAD2CP=", ISAD2CP)
-              metadataDerived <- c("coordinate")
-              numberOfBeams <- if (ISAD2CP) 4 else x@metadata$numberOfBeams
-              if (is.null(numberOfBeams)) {
-                  dataDerived <- c("a", "u", "q")
-              } else {
-                  dataDerived <- c(paste0("u", seq_len(numberOfBeams)),
-                      paste0("a", seq_len(numberOfBeams)),
-                      paste0("q", seq_len(numberOfBeams)))
-              }
-              if (i == "?")
-                  return(list(metadata=sort(names(x@metadata)),
-                          metadataDerived=sort(metadataDerived),
-                          data=sort(names(x@data)),
-                          dataDerived=sort(dataDerived)))
-              if (i == "distance") {
-                  ##>message("asking for 'distance'")
-                  if (ISAD2CP) {
-                      ## AD2CP is stored in a tricky way.
-                      j <- if (missing(j)) ad2cpDefaultDataItem(x) else ad2cpDefaultDataItem(x, j)
-                      res <- x@data[[j]]$blankingDistance + x@data[[j]]$cellSize*seq(1, x@data[[j]]$numberOfCells)
-                  } else {
-                      res <- x@data$distance
-                  }
-                  res
-              } else if (i %in% c("originalCoordinate", "oceCoordinate",
-                      "cellSize", "blankingDistance", "orientation",
-                      "beamUnspreaded", # Note: beamAngle is handled later since it is in metadata
-                      "accelerometerx", "accelerometery", "accelerometerz",
-                      "orientation", "heading", "pitch", "roll",
-                      "ensemble", "time", "pressure", "soundSpeed",
-                      "temperature", "temperatureMagnetometer", "temperatureRTC",
-                      "nominalCorrelation",
-                      "powerLevel", "transmitEnergy",
-                      "v", "a", "q", "g",
-                      "echosounder", "AHRS", "altimeterDistance", "altimeterFigureOfMerit")) {
-                  ##>message("asking for i='", i, "' which is in that long list")
-                  ##message("i='", i, "'")
-                  metadataNames <- names(x@metadata)
-                  ##. dataNames <- names(x@data)
-                  if (ISAD2CP) {
-                      ## AD2CP has 'burst' data records in one list, with 'average' records in another one.
-                      ## Permit e.g. "burst:numeric" and "burst numeric" ## FIXME: document this
-                      returnNumeric <- FALSE # defult: leave 'raw' data as 'raw'.
-                      if (missing(j)) {
-                          ##>message("0 a")
-                          j <- ad2cpDefaultDataItem(x)
-                          returnNumeric <- FALSE
-                          jorig <- "(missing)"
-                          ##>message("'[[' is defaulting to '", j, "' type of data-record, since 'j' not specified", sep="")
-                      } else {
-                          jorig <- j
-                          ##>message("0 a. j='", j, "'")
-                          ## find out if numeric or raw, and clean 'j' of that flag once it is known
-                          if (length(grep("numeric", j))) {
-                              returnNumeric <- TRUE
-                              j <- gsub("numeric", "", j)
-                              ##>message("0 b. j='", j, "'")
-                          } else if (length(grep("raw", j))) {
-                              returnNumeric <- FALSE
-                              j <- gsub("raw", "", j)
-                              ##>message("0 c. j='", j, "'")
-                          }
-                          j <- gsub("[ :]+", "", j) # clean spaces or colons, if any
-                          ## Look up this name
-                          ##>message("0 d. j='", j, "'")
-                          j <- ad2cpDefaultDataItem(x, j)
-                          ##>message("0 e. j='", j, "'")
-                      }
-                      ##message("1. j = '", j, "'; jorig='", jorig, "'", sep="")
-                      ##numericMode <- 1 == length(grep("numeric", j))
-                      ##message("2. numericMode=", numericMode)
-                      ##j <- gsub("[: ]?numeric", "", j)
-                      ##message("3. j = '", j, "'", sep="")
-                      #if (missing(j)) { # default to 'average', if it exists, or to 'burst' if that exists, or fail.
-                      #    j <- if (length(x@data$average)) "average" else if (length(x@data$burst))
-                      #        "burst" else stop("object's data slot does not contain either 'average' or 'burst'")
-                      #}
-                      ##message("4. j = '", j, "'", sep="")
-                      ## Default to "average" if no j specified
-                      if (1 == length(grep("^[ ]*$", j)))
-                          j <- "average"
-                      ##>message("5. j = '", j, "'", sep="")
-                      j <- ad2cpDefaultDataItem(x, j)
-                      ##>message("6. i='", i, "', j='", j, "', returnNumeric=", returnNumeric)
-                      res <- x@data[[j]][[i]]
-                      if (returnNumeric) {
-                          ##>message("6-a.")
-                          dimres <- dim(res)
-                          res <- as.numeric(res)
-                          dim(res) <- dimres
-                      }
-                      ##>message("7 res=", res)
-                      res
-                 } else {
-                      if (!missing(j) && 1 == length(grep("numeric", j))) {
-                          res <- x@data[[i]]
-                          dim <- dim(res)
-                          res <- as.numeric(res)
-                          dim(res) <- dim
-                          res
-                      } else {
-                          if (i %in% metadataNames) x@metadata[[i]] else x@data[[i]]
-                      }
-                  }
-              } else if (i %in% c("numberOfBeams", "numberOfCells")) {
-                  ##>message("asking for 'numberOfBeams' or 'numberOfCells'")
-                  ##message("AA i=", i)
-                  if (ISAD2CP) {
-                      j <- if (missing(j)) ad2cpDefaultDataItem(x) else ad2cpDefaultDataItem(x, j)
-                      x@data[[j]][[i]]
-                  } else {
-                      x@metadata[[i]]
-                  }
-              } else if (i == "transformationMatrix") {
-                  ##>message("0000")
-                  if (ISAD2CP) {
-                      ##>message("AD2CP  tm...")
-                      theta <- x@metadata$beamAngle * atan2(1, 1) / 45
-                      ## The creation of a transformation matrix is covered in Section 5.3 of
-                      ## RD Instruments. ADCP Coordinate Transformation. RD Instruments, July 1998.
-                      TMc <- 1 # for convex (diverging) beam setup; use -1 for concave
-                      TMa <- 1 / (2 * sin(theta))
-                      TMb <- 1 / (4 * cos(theta))
-                      TMd <- TMa / sqrt(2)
-                      rbind(c(TMc*TMa, -TMc*TMa,        0,       0),
-                            c(      0,        0, -TMc*TMa, TMc*TMa),
-                            c(    TMb,      TMb,      TMb,     TMb),
-                            c(    TMd,      TMd,     -TMd,    -TMd))
-                  } else {
-                      ## message("normal tm...")
-                      x@metadata$transformationMatrix
-                  }
-              } else if (i == "recordTypes") {
-                  ##>message("asking for 'recordTypes'")
-                  ## FIXME: _AD2CPrecordtype_ update if new record types added to read.adp.ad2cp()
-                  if (ISAD2CP) {
-                      allowed <- c("burst", "average", "bottomTrack", "interleavedBurst", "burstAltimeter",
-                                   "DVLBottomTrack", "echosounder", "waterTrack", "altimeter", "averageAltimeter", "text")
-                      res <- allowed[allowed %in% names(x@data)]
-                  } else {
-                      res <- "depends on the data setup"
-                  }
-                  res
-              } else if (i == "va") {
-                  ##>message("asking for 'va'")
-                  if (!"va" %in% names(x@data)) {
-                      res <- NULL
-                  } else {
-                      if (!missing(j) && 1 == length(grep("numeric", j))) {
-                          res <- x@data$va
-                          dim <- dim(res)
-                          res <- as.numeric(res)
-                          dim(res) <- dim
-                      } else {
-                          res <- x@data$va
-                      }
-                  }
-                  res
-              } else if (i == "vq") {
-                  ##>message("asking for 'vq'")
-                  if (!"vq" %in% names(x@data)) {
-                      res <- NULL
-                  } else {
-                      if (!missing(j) && 1 == length(grep("numeric", j))) {
-                          res <- x@data$vq
-                          dim <- dim(res)
-                          res <- as.numeric(res)
-                          dim(res) <- dim
-                      } else {
-                          res <- x@data$vq
-                      }
-                  }
-                  res
-              } else if (i == "vg") {
-                  ##>message("asking for 'vg'")
-                  if (!"vg" %in% names(x@data)) {
-                      res <- NULL
-                  } else {
-                      if (!missing(j) && 1 == length(grep("numeric", j))) {
-                          res <- x@data$vg
-                          dim <- dim(res)
-                          res <- as.numeric(res)
-                          dim(res) <- dim
-                      } else {
-                          res <- x@data$vg
-                      }
-                  }
-                  res
-              } else if (i == "vv") {
-                  ##>message("asking for 'vv'")
-                  if (!"vv" %in% names(x@data)) {
-                      res <- NULL
-                  } else {
-                      if (!missing(j) && 1 == length(grep("numeric", j))) {
-                          res <- x@data$vv
-                          dim <- dim(res)
-                          res <- as.numeric(res)
-                          dim(res) <- dim
-                      } else {
-                          res <- x@data$vv
-                      }
-                  }
-                  res
-               } else {
-                  callNextMethod()     # [[
-              }
-          })
+        ##>message("ISAD2CP=", ISAD2CP)
+        metadataDerived <- c("coordinate")
+        numberOfBeams <- if (ISAD2CP) 4 else x@metadata$numberOfBeams
+        if (is.null(numberOfBeams)) {
+            dataDerived <- c("a", "u", "q")
+        } else {
+            dataDerived <- c(paste0("u", seq_len(numberOfBeams)),
+                paste0("a", seq_len(numberOfBeams)),
+                paste0("q", seq_len(numberOfBeams)))
+        }
+        if (i == "?")
+            return(list(metadata=sort(names(x@metadata)),
+                    metadataDerived=sort(metadataDerived),
+                    data=sort(names(x@data)),
+                    dataDerived=sort(dataDerived)))
+        if (i == "distance") {
+            ##>message("asking for 'distance'")
+            if (ISAD2CP) {
+                ## AD2CP is stored in a tricky way.
+                j <- if (missing(j)) ad2cpDefaultDataItem(x) else ad2cpDefaultDataItem(x, j)
+                res <- x@data[[j]]$blankingDistance + x@data[[j]]$cellSize*seq(1, x@data[[j]]$numberOfCells)
+            } else {
+                res <- x@data$distance
+            }
+            res
+        } else if (i %in% c("originalCoordinate", "oceCoordinate",
+                "cellSize", "blankingDistance", "orientation",
+                "beamUnspreaded", # Note: beamAngle is handled later since it is in metadata
+                "accelerometerx", "accelerometery", "accelerometerz",
+                "orientation", "heading", "pitch", "roll",
+                "ensemble", "time", "pressure", "soundSpeed",
+                "temperature", "temperatureMagnetometer", "temperatureRTC",
+                "nominalCorrelation",
+                "powerLevel", "transmitEnergy",
+                "v", "a", "q", "g",
+                "echosounder", "AHRS", "altimeterDistance", "altimeterFigureOfMerit")) {
+            ##>message("asking for i='", i, "' which is in that long list")
+            ##message("i='", i, "'")
+            metadataNames <- names(x@metadata)
+            ##. dataNames <- names(x@data)
+            if (ISAD2CP) {
+                ## AD2CP has 'burst' data records in one list, with 'average' records in another one.
+                ## Permit e.g. "burst:numeric" and "burst numeric" ## FIXME: document this
+                returnNumeric <- FALSE # defult: leave 'raw' data as 'raw'.
+                if (missing(j)) {
+                    ##>message("0 a")
+                    j <- ad2cpDefaultDataItem(x)
+                    returnNumeric <- FALSE
+                    jorig <- "(missing)"
+                    ##>message("'[[' is defaulting to '", j, "' type of data-record, since 'j' not specified", sep="")
+                } else {
+                    jorig <- j
+                    ##>message("0 a. j='", j, "'")
+                    ## find out if numeric or raw, and clean 'j' of that flag once it is known
+                    if (length(grep("numeric", j))) {
+                        returnNumeric <- TRUE
+                        j <- gsub("numeric", "", j)
+                        ##>message("0 b. j='", j, "'")
+                    } else if (length(grep("raw", j))) {
+                        returnNumeric <- FALSE
+                        j <- gsub("raw", "", j)
+                        ##>message("0 c. j='", j, "'")
+                    }
+                    j <- gsub("[ :]+", "", j) # clean spaces or colons, if any
+                    ## Look up this name
+                    ##>message("0 d. j='", j, "'")
+                    j <- ad2cpDefaultDataItem(x, j)
+                    ##>message("0 e. j='", j, "'")
+                }
+                ##message("1. j = '", j, "'; jorig='", jorig, "'", sep="")
+                ##numericMode <- 1 == length(grep("numeric", j))
+                ##message("2. numericMode=", numericMode)
+                ##j <- gsub("[: ]?numeric", "", j)
+                ##message("3. j = '", j, "'", sep="")
+                #if (missing(j)) { # default to 'average', if it exists, or to 'burst' if that exists, or fail.
+                #    j <- if (length(x@data$average)) "average" else if (length(x@data$burst))
+                #        "burst" else stop("object's data slot does not contain either 'average' or 'burst'")
+                #}
+                ##message("4. j = '", j, "'", sep="")
+                ## Default to "average" if no j specified
+                if (1 == length(grep("^[ ]*$", j)))
+                    j <- "average"
+                ##>message("5. j = '", j, "'", sep="")
+                j <- ad2cpDefaultDataItem(x, j)
+                ##>message("6. i='", i, "', j='", j, "', returnNumeric=", returnNumeric)
+                res <- x@data[[j]][[i]]
+                if (returnNumeric) {
+                    ##>message("6-a.")
+                    dimres <- dim(res)
+                    res <- as.numeric(res)
+                    dim(res) <- dimres
+                }
+                ##>message("7 res=", res)
+                res
+            } else {
+                if (!missing(j) && 1 == length(grep("numeric", j))) {
+                    res <- x@data[[i]]
+                    dim <- dim(res)
+                    res <- as.numeric(res)
+                    dim(res) <- dim
+                    res
+                } else {
+                    if (i %in% metadataNames) x@metadata[[i]] else x@data[[i]]
+                }
+            }
+        } else if (i %in% c("numberOfBeams", "numberOfCells")) {
+            ##>message("asking for 'numberOfBeams' or 'numberOfCells'")
+            ##message("AA i=", i)
+            if (ISAD2CP) {
+                j <- if (missing(j)) ad2cpDefaultDataItem(x) else ad2cpDefaultDataItem(x, j)
+                x@data[[j]][[i]]
+            } else {
+                x@metadata[[i]]
+            }
+        } else if (i == "transformationMatrix") {
+            ##>message("0000")
+            if (ISAD2CP) {
+                ##>message("AD2CP  tm...")
+                theta <- x@metadata$beamAngle * atan2(1, 1) / 45
+                ## The creation of a transformation matrix is covered in Section 5.3 of
+                ## RD Instruments. ADCP Coordinate Transformation. RD Instruments, July 1998.
+                TMc <- 1 # for convex (diverging) beam setup; use -1 for concave
+                TMa <- 1 / (2 * sin(theta))
+                TMb <- 1 / (4 * cos(theta))
+                TMd <- TMa / sqrt(2)
+                rbind(c(TMc*TMa, -TMc*TMa,        0,       0),
+                    c(      0,        0, -TMc*TMa, TMc*TMa),
+                    c(    TMb,      TMb,      TMb,     TMb),
+                    c(    TMd,      TMd,     -TMd,    -TMd))
+            } else {
+                ## message("normal tm...")
+                x@metadata$transformationMatrix
+            }
+        } else if (i == "recordTypes") {
+            ##>message("asking for 'recordTypes'")
+            ## FIXME: _AD2CPrecordtype_ update if new record types added to read.adp.ad2cp()
+            if (ISAD2CP) {
+                allowed <- c("burst", "average", "bottomTrack", "interleavedBurst", "burstAltimeter",
+                    "DVLBottomTrack", "echosounder", "waterTrack", "altimeter", "averageAltimeter", "text")
+                res <- allowed[allowed %in% names(x@data)]
+            } else {
+                res <- "depends on the data setup"
+            }
+            res
+        } else if (i == "va") {
+            ##>message("asking for 'va'")
+            if (!"va" %in% names(x@data)) {
+                res <- NULL
+            } else {
+                if (!missing(j) && 1 == length(grep("numeric", j))) {
+                    res <- x@data$va
+                    dim <- dim(res)
+                    res <- as.numeric(res)
+                    dim(res) <- dim
+                } else {
+                    res <- x@data$va
+                }
+            }
+            res
+        } else if (i == "vq") {
+            ##>message("asking for 'vq'")
+            if (!"vq" %in% names(x@data)) {
+                res <- NULL
+            } else {
+                if (!missing(j) && 1 == length(grep("numeric", j))) {
+                    res <- x@data$vq
+                    dim <- dim(res)
+                    res <- as.numeric(res)
+                    dim(res) <- dim
+                } else {
+                    res <- x@data$vq
+                }
+            }
+            res
+        } else if (i == "vg") {
+            ##>message("asking for 'vg'")
+            if (!"vg" %in% names(x@data)) {
+                res <- NULL
+            } else {
+                if (!missing(j) && 1 == length(grep("numeric", j))) {
+                    res <- x@data$vg
+                    dim <- dim(res)
+                    res <- as.numeric(res)
+                    dim(res) <- dim
+                } else {
+                    res <- x@data$vg
+                }
+            }
+            res
+        } else if (i == "vv") {
+            ##>message("asking for 'vv'")
+            if (!"vv" %in% names(x@data)) {
+                res <- NULL
+            } else {
+                if (!missing(j) && 1 == length(grep("numeric", j))) {
+                    res <- x@data$vv
+                    dim <- dim(res)
+                    res <- as.numeric(res)
+                    dim(res) <- dim
+                } else {
+                    res <- x@data$vv
+                }
+            }
+            res
+        } else {
+            callNextMethod()     # [[
+        }
+    })
 
 #' Replace Parts of an ADP Object
 #'
