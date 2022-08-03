@@ -1343,7 +1343,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
         look <- which(d$id == id)
         lookIndex <- d$index[look]
         offsetOfData <- as.integer(d$buf[d$index[look[1]] + 2L])
-        #message(vectorShow(offsetOfData, showNewline=FALSE))
+        oceDebug(debug, "bottom-track (is this 79+1?)", vectorShow(offsetOfData))
         oceDebug(debug, vectorShow(lookIndex))
         configuration0 <- configuration[look[1],]
         velocityIncluded <- configuration0[6]
@@ -1443,15 +1443,18 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
             #message("FIXME: only read velo if flag is set")
             #message("about to read velo with i[1]=", i[1], ", i0v=",i0v,", NB=", NB)
             #message("configuration0: ", paste(configuration0, collapse=" "))
+            oceDebug(debug, "reading bottom-track v: ", vectorShow(i0v))
             iv <- gappyIndex(i, i0v, 4L*NB)
             tmp <- readBin(d$buf[iv], "integer", size=4L, n=NB*NP, endian="little")
             rval$v <- rval$velocityFactor * matrix(tmp, ncol=NB, byrow=FALSE)
             i0v <<- i0v + 4L*NB
         }
-        # distance [Nortek 2017, Table 6.1.3, pages 60 and 62]
+        # distance.  See configuration information at Nortek (2017, Table 6.1.3,
+        # p60-62) and Nortek (2022, Table 6.7, p93-94).
         if (configuration0[8]) {
             #message("read distance with i0v=", i0v)
             iv <- gappyIndex(i, i0v, 4L*NB)
+            oceDebug(debug, "reading bottom-track distance: ", vectorShow(i0v))
             tmp <- readBin(d$buf[iv], "integer", size=4L, n=NB*NP, endian="little")
             rval$distance <- 1e-3 * matrix(tmp, ncol=NB, byrow=FALSE)
             i0v <<- i0v + 4L*NB
@@ -1460,6 +1463,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
         if (configuration0[9]) {
             #message("read figure-of-merit with i0v=", i0v)
             iv <- gappyIndex(i, i0v, 2L*NB)
+            oceDebug(debug, "reading bottom-track figureOfMerit: ", vectorShow(i0v))
             tmp <- readBin(d$buf[iv], "integer", size=2L, n=NB*NP, endian="little", signed=FALSE)
             rval$figureOfMerit <- matrix(tmp, ncol=NB, byrow=FALSE)
             i0v <<- i0v + 2L*NB
