@@ -312,7 +312,7 @@ export(abbreviateTimeLabels,
        read.xbt,
        read.xbt.edf,
        read.xbt.noaa1,
-       renameData,
+       #renameData, removed 20220805 after being defunct for a long time
        rescale,
        resizableLabel,
        retime,

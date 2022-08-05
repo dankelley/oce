@@ -2,6 +2,8 @@
 
 * Improve the handling of file encodings.
 * Make the argo `[[` method handle spiciness.
+* Remove defunct function `renameData`.
+* Deprecate function `trimString`.
 
 # oce 1.7.8 on CRAN
 

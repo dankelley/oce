@@ -92,18 +92,16 @@ NULL
 #' \tabular{lllll}{
 #' **Deprecated**             \tab **Replacement**   \tab **Deprecated**  \tab **Defunct** \tab **Removed** \cr
 ## `byteToBinary(x,"endian")` \tab [rawToBits()]     \tab 1.1-1           \tab 1.1-3       \tab 1.1-4       \cr
-#' `renameData()`             \tab [oceRenameData()] \tab 1.1-2           \tab 1.1-3       \tab 1.1-4       \cr
 #' }
 #'
 #' The following are marked "defunct", so calling them in the
 #' the present version produces an error message that hints at a replacement
 #' function. Once a function is marked "defunct" on one CRAN release, it will
-#' be slated for outright deletion in a subsequent release.
+#' be slated for outright deletion in some subsequent release.
 #'
 #'\tabular{lll}{
 #' **Defunct**         \tab **Replacement**                \tab **Version**\cr
-#' `renameData()`      \tab [oceRenameData()]              \tab 1.5        \cr
-#' `byteToBinary()`    \tab [rawToBits()]                  \tab 1.5        \cr
+#' `trimString()`      \tab [trimws()]                     \tab 1.7-9      \cr
 #'}
 #'
 #' The following functions were removed after having been marked as "deprecated"
@@ -121,6 +119,7 @@ NULL
 #' `mapMeridians()`    \tab [mapGrid()]                    \tab 1.1-2      \cr
 #' `mapZones()`        \tab [mapGrid()]                    \tab 1.1-2      \cr
 #' `oce.as.POSIXlt()`  \tab [lubridate::parse_date_time()] \tab 1.1-2      \cr
+#' `renameData()`      \tab [oceRenameData()]              \tab 1.7-9      \cr
 #'}
 #'
 #' Several \CRANpkg{oce} function arguments are considered "deprecated", which

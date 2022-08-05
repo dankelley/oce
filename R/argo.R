@@ -897,9 +897,9 @@ setMethod(f="summary",
               nid <- length(unique(object@metadata$id))
               if (1 == nid)
                    cat("* id:                  \"", object@metadata$id[1], "\"\n", sep="")
-              else cat("* id list:             \"", object@metadata$id[1], "\", \"", object@metadata$id[2], "\", ...\n", sep="")
+              else cat("* ID list:             \"", object@metadata$id[1], "\", \"", object@metadata$id[2], "\", ...\n", sep="")
               if ("featureType" %in% names(object@metadata))
-                  cat("* feature type:        \"", object@metadata$featureType, "\"\n", sep="")
+                  cat("* Feature type:        \"", object@metadata$featureType, "\"\n", sep="")
               nD <- sum(object@metadata$dataMode == "D")
               nA <- sum(object@metadata$dataMode == "A")
               nR <- sum(object@metadata$dataMode == "R")
@@ -1262,7 +1262,7 @@ read.argo <- function(file,
 
     oceDebug(debug-1, "At processing step  1, the ", length(varNames), " varnames are: c(\"", paste(sort(varNames), collapse="\",\""), "\")\n", sep="")
     res@metadata$id <- if (maybeLC("PLATFORM_NUMBER", lc) %in% varNames)
-        as.vector(trimString(ncdf4::ncvar_get(file, maybeLC("PLATFORM_NUMBER", lc)))) else NULL
+        as.vector(trimws(ncdf4::ncvar_get(file, maybeLC("PLATFORM_NUMBER", lc)))) else NULL
     varNames <- varNamesOmit(varNames, "PLATFORM_NUMBER")
 
     ### if (FALSE) {
@@ -1275,18 +1275,18 @@ read.argo <- function(file,
     ###     ## (camelCase namd) metadata item, but rather just let it gt stored
     ###     ## as a plain-copy (SNAKE_CASE named) metadata item.
     ###     res@metadata$floatSerialNumber <- if (maybeLC("FLOAT_SERIAL_NO", lc) %in% varNames)
-    ###         as.vector(trimString(ncdf4::ncvar_get(file, maybeLC("FLOAT_SERIAL_NO", lc)))) else NULL
+    ###         as.vector(trimws(ncdf4::ncvar_get(file, maybeLC("FLOAT_SERIAL_NO", lc)))) else NULL
     ###     varNames <- varNamesOmit(varNames, "FLOAT_SERIAL_NO")
     ###     oceDebug(debug, "varNames=", paste(varNames, collapse=","), "\n")
     ### }
 
     res@metadata$projectName <- if (maybeLC("PROJECT_NAME", lc) %in% varNames)
-        as.vector(trimString(ncdf4::ncvar_get(file, maybeLC("PROJECT_NAME", lc)))) else NULL
+        as.vector(trimws(ncdf4::ncvar_get(file, maybeLC("PROJECT_NAME", lc)))) else NULL
     varNames <- varNamesOmit(varNames, "PROJECT_NAME")
     oceDebug(debug-1, "Extracting PROJECT_NAME\n")
     oceDebug(debug-1, "At processing step  2, the ", length(varNames), " varnames are: c(\"", paste(sort(varNames), collapse="\",\""), "\")\n", sep="")
     res@metadata$PIName <- if (maybeLC("PI_NAME", lc) %in% varNames)
-        as.vector(trimString(ncdf4::ncvar_get(file, maybeLC("PI_NAME", lc)))) else NULL
+        as.vector(trimws(ncdf4::ncvar_get(file, maybeLC("PI_NAME", lc)))) else NULL
     varNames <- varNamesOmit(varNames, "PI_NAME")
     oceDebug(debug-1, "Extracting PI_NAME\n")
     oceDebug(debug-1, "At processing step  3, the ", length(varNames), " varnames are: c(\"", paste(sort(varNames), collapse="\",\""), "\")\n", sep="")
@@ -1294,7 +1294,7 @@ read.argo <- function(file,
     res@metadata$nParameters <- file$dim$N_PARAM$len
     res@metadata$nProfiles <- file$dim$N_PROF$len
     if (maybeLC("STATION_PARAMETERS", lc) %in% varNames) {
-        res@metadata$stationParameters <- trimString(ncdf4::ncvar_get(file, maybeLC("STATION_PARAMETERS", lc)))
+        res@metadata$stationParameters <- trimws(ncdf4::ncvar_get(file, maybeLC("STATION_PARAMETERS", lc)))
         if (is.null(res@metadata$stationParameters))
             warning("This file has nothing listed in its STATION_PARAMETERS item, so pressure, salinity, temperature, etc. are being stored in the metadata slot instead of the data slot. This will cause problems in further processing.")
     } else {
@@ -1344,7 +1344,7 @@ read.argo <- function(file,
     oceDebug(debug-1, "Extracting DATA_CENTRE\n")
     oceDebug(debug-1, "At processing step  7, the ", length(varNames), " varnames are: c(\"", paste(sort(varNames), collapse="\",\""), "\")\n", sep="")
     res@metadata$DCReference <- if (maybeLC("DC_REFERENCE", lc) %in% varNames)
-        as.vector(trimString(ncdf4::ncvar_get(file, maybeLC("DC_REFERENCE", lc)))) else NULL
+        as.vector(trimws(ncdf4::ncvar_get(file, maybeLC("DC_REFERENCE", lc)))) else NULL
     varNames <- varNamesOmit(varNames, "DC_REFERENCE")
     oceDebug(debug-1, "Extracting DC_REFERENCE\n")
     oceDebug(debug-1, "At processing step  8, the ", length(varNames), " varnames are: c(\"", paste(sort(varNames), collapse="\",\""), "\")\n", sep="")
@@ -1359,17 +1359,17 @@ read.argo <- function(file,
     oceDebug(debug-1, "Extracting DATA_MODE\n")
     oceDebug(debug-1, "At processing step 10, the ", length(varNames), " varnames are: c(\"", paste(sort(varNames), collapse="\",\""), "\")\n", sep="")
     res@metadata$instReference <- if (maybeLC("INST_REFERENCE", lc) %in% varNames)
-        as.vector(trimString(ncdf4::ncvar_get(file, maybeLC("INST_REFERENCE", lc)))) else NULL
+        as.vector(trimws(ncdf4::ncvar_get(file, maybeLC("INST_REFERENCE", lc)))) else NULL
     varNames <- varNamesOmit(varNames, "INST_REFERENCE")
     oceDebug(debug-1, "Extracting INST_REFERENCE\n")
     oceDebug(debug-1, "At processing step 11, the ", length(varNames), " varnames are: c(\"", paste(sort(varNames), collapse="\",\""), "\")\n", sep="")
     res@metadata$firmwareVersion <- if (maybeLC("FIRMWARE_VERSION", lc) %in% varNames)
-        as.vector(trimString(ncdf4::ncvar_get(file, maybeLC("FIRMWARE_VERSION", lc)))) else NULL
+        as.vector(trimws(ncdf4::ncvar_get(file, maybeLC("FIRMWARE_VERSION", lc)))) else NULL
     varNames <- varNamesOmit(varNames, "FIRMWARE_VERSION")
     oceDebug(debug-1, "Extracting FIRMWARE_REFERENCE\n")
     oceDebug(debug-1, "At processing step 12, the ", length(varNames), " varnames are: c(\"", paste(sort(varNames), collapse="\",\""), "\")\n", sep="")
     res@metadata$WMOInstType <- if (maybeLC("WMO_INST_TYPE", lc) %in% varNames)
-        as.vector(trimString(ncdf4::ncvar_get(file, maybeLC("WMO_INST_TYPE", lc)))) else NULL
+        as.vector(trimws(ncdf4::ncvar_get(file, maybeLC("WMO_INST_TYPE", lc)))) else NULL
     varNames <- varNamesOmit(varNames, "WMO_INST_TYPE")
     oceDebug(debug-1, "Extracting WMO_INST_TYPE\n")
     oceDebug(debug-1, "At processing step 13, the ", length(varNames), " varnames are: c(\"", paste(sort(varNames), collapse="\",\""), "\")\n", sep="")
@@ -1431,7 +1431,7 @@ read.argo <- function(file,
     oceDebug(debug-1, "POSITION_QC\n")
     oceDebug(debug-1, "varNames=", paste(varNames, collapse=","), "\n")
     res@metadata$positioningSystem <- if (maybeLC("POSITIONING_SYSTEM", lc) %in% varNames)
-        as.vector(trimString(ncdf4::ncvar_get(file, maybeLC("POSITIONING_SYSTEM", lc)))) else NULL
+        as.vector(trimws(ncdf4::ncvar_get(file, maybeLC("POSITIONING_SYSTEM", lc)))) else NULL
     varNames <- varNamesOmit(varNames, "POSITIONING_SYSTEM")
     oceDebug(debug-1, "POSITIONING_SYSTEM\n")
     oceDebug(debug-1, "varNames=", paste(varNames, collapse=","), "\n")
@@ -1649,8 +1649,14 @@ read.argo <- function(file,
             if (1 == length(dim(value)))
                 value <- as.vector(value)
             ## Trim leading/trailing whitespace, if it is a string
-            if (is.character(value))
-                value <- trimString(value)
+            if (is.character(value)) {
+                origValue <- value
+                value <- try({trimws(value)}, silent=TRUE)
+                if (inherits(value, "try-error")) {
+                    warning("cannot trim leading/trailing whitespace in metadata$", ocename, "")
+                    value <- origValue
+                }
+            }
             res@metadata[[ocename]] <- value
         }
     }
