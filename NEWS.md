@@ -4,6 +4,8 @@
 * Make the argo `[[` method handle spiciness.
 * Improve `read.adp.ad2cp()` extensively, breaking some old behaviours.
 * Add `ad2cpTrim()`.
+* Remove defunct function `renameData`.
+* Deprecate function `trimString`.
 
 # oce 1.7.8 on CRAN
 

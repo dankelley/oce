@@ -846,58 +846,58 @@ unduplicateNames <- function(strings, style=1)
 }
 
 
-#' Rename items in the data slot of an oce object (defunct)
-#'
-#' **WARNING:** This function will be removed in oce 1.6.0; see [oce-defunct].
-##
-## This was deprecated in December 2019, because [oceRenameData()] does
-## a better job and is more consistent with other functions that work
-## with items in the `data` and `metadata` slots.
-## This function may be used to rename elements within the
-## `data` slot of `oce` objects. It also updates
-## the processing log of the returned object, indicating
-## the changes.
-#'
-#' @param x Ignored, since this function is defunct.
-#'
-#' @param old Ignored, since this function is defunct.
-#'
-#' @param new Ignored, since this function is defunct.
-#'
-## @examples
-## data(ctd)
-## new <- renameData(ctd, "temperature", "temperature68")
-## new <- oceSetData(new, name="temperature",
-##                   value=T90fromT68(new[["temperature68"]]),
-##                   unit=list(unit=expression(degree*C),scale="ITS=90"))
-#'
-#' @author Dan Kelley
-#'
-#' @family deprecated functions
-renameData <- function(x, old=NULL, new=NULL)
-{
-    #1.6.0 .Defunct("renameData",
-    #1.6.0     msg="renameData() is disallowed and will be removed in oce 1.6.0.  Use oceRenameData() instead. See ?'oce-defunct'."
-    .Deprecated("oceRenameData", msg="Superceded by oceRenameData(), as of December 2019")
-    if (is.null(old)) stop("need to supply old")
-    if (is.null(new)) stop("need to supply new")
-    n <- length(old)
-    if (n != length(new)) stop("lengths of old and new must match")
-    Old <- names(x@data)
-    New <- Old
-    for (i in 1:n) {
-        w <- which(Old == old[i])
-        if (length(w) == 0) stop("'", old[i], "' is not in the data slot of x")
-        if (length(w) > 1) stop("multiple matches are not permitted")
-        ## message("i: ", i, ", old[i]: ", old[i], ", w:", w)
-        New[w] <- new[i]
-    }
-    # ensure unique ... this is a common user error
-    if (length(New) != length(unique(New))) stop("cannot have two columns of same name")
-    names(x@data) <- New
-    x@processingLog <- processingLogAppend(x@processingLog, paste(deparse(match.call()), sep="", collapse=""))
-    x
-}
+#removed #' Rename items in the data slot of an oce object (defunct)
+#removed #'
+#removed #' **WARNING:** This function will be removed in oce 1.6.0; see [oce-defunct].
+#removed ##
+#removed ## This was deprecated in December 2019, because [oceRenameData()] does
+#removed ## a better job and is more consistent with other functions that work
+#removed ## with items in the `data` and `metadata` slots.
+#removed ## This function may be used to rename elements within the
+#removed ## `data` slot of `oce` objects. It also updates
+#removed ## the processing log of the returned object, indicating
+#removed ## the changes.
+#removed #'
+#removed #' @param x Ignored, since this function is defunct.
+#removed #'
+#removed #' @param old Ignored, since this function is defunct.
+#removed #'
+#removed #' @param new Ignored, since this function is defunct.
+#removed #'
+#removed ## @examples
+#removed ## data(ctd)
+#removed ## new <- renameData(ctd, "temperature", "temperature68")
+#removed ## new <- oceSetData(new, name="temperature",
+#removed ##                   value=T90fromT68(new[["temperature68"]]),
+#removed ##                   unit=list(unit=expression(degree*C),scale="ITS=90"))
+#removed #'
+#removed #' @author Dan Kelley
+#removed #'
+#removed #' @family deprecated functions
+#removed renameData <- function(x, old=NULL, new=NULL)
+#removed {
+#removed     #1.6.0 .Defunct("renameData",
+#removed     #1.6.0     msg="renameData() is disallowed and will be removed in oce 1.6.0.  Use oceRenameData() instead. See ?'oce-defunct'."
+#removed     .Deprecated("oceRenameData", msg="Superceded by oceRenameData(), as of December 2019")
+#removed     if (is.null(old)) stop("need to supply old")
+#removed     if (is.null(new)) stop("need to supply new")
+#removed     n <- length(old)
+#removed     if (n != length(new)) stop("lengths of old and new must match")
+#removed     Old <- names(x@data)
+#removed     New <- Old
+#removed     for (i in 1:n) {
+#removed         w <- which(Old == old[i])
+#removed         if (length(w) == 0) stop("'", old[i], "' is not in the data slot of x")
+#removed         if (length(w) > 1) stop("multiple matches are not permitted")
+#removed         ## message("i: ", i, ", old[i]: ", old[i], ", w:", w)
+#removed         New[w] <- new[i]
+#removed     }
+#removed     # ensure unique ... this is a common user error
+#removed     if (length(New) != length(unique(New))) stop("cannot have two columns of same name")
+#removed     names(x@data) <- New
+#removed     x@processingLog <- processingLogAppend(x@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+#removed     x
+#removed }
 
 #' Calculate a rounded bound, rounded up to mantissa 1, 2, or 5
 #'
@@ -5468,15 +5468,22 @@ oceConvolve <- function(x, f, end=2)
 oce.convolve <- oceConvolve
 
 
-#' Remove leading and trailing whitespace from strings
+#' Remove leading and trailing whitespace from strings (deprecated)
+#'
+#' This function will be removed from an upcoming version of oce, because
+#' the base function [trimws()] does the same and more, without having
+#' problems with encoding (see `https://github.com/dankelley/oce/issues/1993`).
 #'
 #' @param s vector of character strings
 #'
 #' @return a new vector formed by trimming leading and trailing whitespace
 #' from the elements of `s`.
+#'
+#' @family deprecated functions
 trimString <- function(s)
 {
-    gsub("^ *", "", gsub(" *$", "", s))
+    .Deprecated("trimString", msg="Use trimws() instead, as of August 2022")
+    gsub("^ *", "", gsub(" *$", "", s, perl=TRUE), perl=TRUE)
 }
 
 #' Perform lowpass digital filtering

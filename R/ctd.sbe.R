@@ -36,7 +36,7 @@
 #' the SBE names in question. Then consult the SBE documentation to find
 #' an appropriate name for the data, and either manipulate the names in the object
 #' data slot directly or use
-#' [renameData()] to rename the elements. Finally, please publish
+#' [oceRenameData()] to rename the elements. Finally, please publish
 #' an 'issue' on the oce Github site `https://github.com/dankelley/oce/issues`
 #' so that the developers can add the data type in question. (To save
 #' development time, there is no plan to add all possible data types without
