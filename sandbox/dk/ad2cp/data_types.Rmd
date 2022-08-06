@@ -1,0 +1,16 @@
+---
+title: Data types in some oce ad2cp files (what is 0x23?)
+author: Dan Kelley
+date: "`r Sys.time()`"
+---
+
+```{r}
+suppressPackageStartupMessages(library(oce))
+filenames <- list.files("../../../tests/testthat/local_data/ad2cp", "*ad2cp", full.names=TRUE)
+for (filename in filenames) {
+    cat("FILE:", filename, "\n")
+    print(read.oce(filename, which="?"))
+    cat("\n")
+}
+```
+

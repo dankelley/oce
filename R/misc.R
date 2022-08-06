@@ -37,7 +37,10 @@
 gappyIndex <- function(starts, offset=0L, length=4L)
 {
     if (missing(starts)) stop("must provide 'starts', an integer vector")
-    if (any(starts < 1L)) stop("'starts' must consist of positive values")
+    if (any(starts < 1L)) {
+        w <- which(starts < 1L)[1]
+        stop("'starts' must consist of positive values, but e.g. starts[", w, "] is ", starts[w])
+    }
     if (length(offset) != 1L) stop("'offset' must be a single number")
     if (length(length) != 1L) stop("'length' must be a single number")
     if (offset < 0L) stop("'offset' must be non-negative")
@@ -2662,9 +2665,16 @@ oce.spectrum <- oceSpectrum
 #' vectorShow("January", msg="The first month is")
 #'
 #' @author Dan Kelley
-vectorShow <- function(v, msg="", postscript="", digits=5, n=2L, showNA=FALSE, showNewline=TRUE)
+vectorShow <- function(v, msg="", postscript="", digits=5L, n=2L, showNA=FALSE, showNewline=TRUE)
 {
-    DIM <- dim(v)
+    startEnd <- function(v, n)
+    {
+        if (length(v) < 2L*n)
+            paste(v, collapse=", ")
+        else
+            paste0(paste(head(v,n), collapse=","), ",...,", paste(paste(tail(v,n)), collapse=","))
+    }
+    dimv <- dim(v)
     nv <- length(v)
     if (!nchar(msg))
         msg <- deparse(substitute(expr=v, env=environment()))
@@ -2674,7 +2684,7 @@ vectorShow <- function(v, msg="", postscript="", digits=5, n=2L, showNA=FALSE, s
         msg <- paste(msg, ": ", sep="")
         nv <- length(v)
         for (iv in seq_len(nv)) {
-            msg <- paste(msg, names[iv], "=", paste(values[[iv]], collapse=" "), sep="")
+            msg <- paste(msg, names[iv], "=", startEnd(values[[iv]], n), sep="")
             if (iv < nv)
                 msg <- paste(msg, ", ", sep="")
         }
@@ -2682,10 +2692,10 @@ vectorShow <- function(v, msg="", postscript="", digits=5, n=2L, showNA=FALSE, s
             msg <- paste(msg, "\n", sep="")
         return(msg)
     } else {
-        if (!is.null(DIM)) {
+        if (!is.null(dimv)) {
             msg <- paste(msg,
                 paste("[",
-                    paste(unlist(lapply(DIM, function(x) paste("1:",x,sep=""))),collapse=", "),
+                    paste(unlist(lapply(dimv, function(x) paste("1:",x,sep=""))),collapse=", "),
                     "]",
                     sep=""))
         } else if (nv > 1) {

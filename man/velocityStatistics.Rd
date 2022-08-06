@@ -45,7 +45,9 @@ arrows(0, 0, a$uMean, a$vMean, lwd=5, length=1/10, col='blue', lty="dashed")
 Other things related to adp data: 
 \code{\link{[[,adp-method}},
 \code{\link{[[<-,adp-method}},
+\code{\link{ad2cpCodeToName}()},
 \code{\link{ad2cpHeaderValue}()},
+\code{\link{ad2cpTrim}()},
 \code{\link{adp-class}},
 \code{\link{adpConvertRawToNumeric}()},
 \code{\link{adpEnsembleAverage}()},

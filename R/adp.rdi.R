@@ -678,6 +678,7 @@ decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceT
 #' can be a good way to narrow in on problems.
 #'
 #' @family things related to adp data
+#' @family functions that read adp data
 read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
     longitude=NA, latitude=NA,
     type=c("workhorse"),

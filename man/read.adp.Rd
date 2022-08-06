@@ -101,7 +101,9 @@ been documented under the heading \code{\link[=read.adv]{read.adv()}}.
 Other things related to adp data: 
 \code{\link{[[,adp-method}},
 \code{\link{[[<-,adp-method}},
+\code{\link{ad2cpCodeToName}()},
 \code{\link{ad2cpHeaderValue}()},
+\code{\link{ad2cpTrim}()},
 \code{\link{adp-class}},
 \code{\link{adpConvertRawToNumeric}()},
 \code{\link{adpEnsembleAverage}()},
@@ -140,8 +142,19 @@ Other things related to adp data:
 \code{\link{xyzToEnuAdpAD2CP}()},
 \code{\link{xyzToEnuAdp}()},
 \code{\link{xyzToEnu}()}
+
+Other functions that read adp data: 
+\code{\link{read.adp.ad2cp}()},
+\code{\link{read.adp.nortek}()},
+\code{\link{read.adp.rdi}()},
+\code{\link{read.adp.sontek.serial}()},
+\code{\link{read.adp.sontek}()},
+\code{\link{read.aquadoppHR}()},
+\code{\link{read.aquadoppProfiler}()},
+\code{\link{read.aquadopp}()}
 }
 \author{
 Dan Kelley and Clark Richards
 }
+\concept{functions that read adp data}
 \concept{things related to adp data}

@@ -46,7 +46,9 @@ mtext("cm rotated 30 deg", side=3, line=0, adj=1, cex=0.7)
 Other things related to adp data: 
 \code{\link{[[,adp-method}},
 \code{\link{[[<-,adp-method}},
+\code{\link{ad2cpCodeToName}()},
 \code{\link{ad2cpHeaderValue}()},
+\code{\link{ad2cpTrim}()},
 \code{\link{adp-class}},
 \code{\link{adpConvertRawToNumeric}()},
 \code{\link{adpEnsembleAverage}()},

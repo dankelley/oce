@@ -185,7 +185,10 @@ A list is silently returned, containing \code{xat} and \code{yat},
 values that can be used by \code{\link[=oce.grid]{oce.grid()}} to add a grid to the plot.
 }
 \description{
-Create a summary plot of data measured by an acoustic doppler profiler.
+Create a summary plot of data measured by an acoustic doppler profiler. Note
+that if the object is of the AD2CP variety, the present function works
+by calling \code{\link[=plotAD2CP]{plotAD2CP()}}, and that means that \code{which} is handled very
+differently than is the case here.
 }
 \details{
 The plot may have one or more panels, with the content being controlled by
@@ -360,7 +363,9 @@ Other functions that plot oce data:
 Other things related to adp data: 
 \code{\link{[[,adp-method}},
 \code{\link{[[<-,adp-method}},
+\code{\link{ad2cpCodeToName}()},
 \code{\link{ad2cpHeaderValue}()},
+\code{\link{ad2cpTrim}()},
 \code{\link{adp-class}},
 \code{\link{adpConvertRawToNumeric}()},
 \code{\link{adpEnsembleAverage}()},
