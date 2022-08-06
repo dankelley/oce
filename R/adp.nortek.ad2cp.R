@@ -1660,6 +1660,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
             temperatureRTC=temperatureRTC[look],
             transmitEnergy=transmitEnergy[look],
             powerLevel=powerLevel[look])
+        rval$distance <- rval$blankingDistance + seq(1, by=rval$cellSize, length.out=rval$numberOfCells)
         i <- d$index[look]            # pointers to "average" chunks in buf
         oceDebug(debug, "in readEchosounder: ", vectorShow(i))
 
@@ -1847,6 +1848,14 @@ plotAD2CP <- function(x, which=NULL, cex, col, pch, lwd, type, ...)
         stop("'which' must contain zero to four \"/\" characters, but it has ", nw)
     if (!w[1] %in% names1)
         stop("unknown which, \"", w[1], "\"; try one of: \"", paste(names1, collapse="\", \""), "\"")
+    # Handle some top-level defaults
+    #?if (identical(w, "echosounder") && "echosounder" %in% names1) {
+    #?    with(x@data$echosounder,
+    #?        {
+    #?            imagep(time, distance, echosounder, xlab="", ylab=resizableLabel("distance"))
+    #?        })
+    #?    return(invisible(NULL))
+    #?}
     if (nw < 2)
         stop("insufficient detail in 'which'; try e.g. which=\"", names1[1], "/?\" to see possibilities for \"", names1[1], "\" data")
     d <- x@data[[w[1]]]
@@ -1868,7 +1877,6 @@ plotAD2CP <- function(x, which=NULL, cex, col, pch, lwd, type, ...)
             else FALSE
         })
     names2 <- names2[names2keep]
-
     if (nw > 1L && w[2] == "?") {
         message("try setting 'which' to one of: \"", paste(paste0(w[1],"/",names2), collapse="\", \""), "\"")
         return(invisible(NULL))
@@ -1930,7 +1938,11 @@ plotAD2CP <- function(x, which=NULL, cex, col, pch, lwd, type, ...)
         if (length(beams) > 1L)
             par(opar)
     } else if (w[2] == c("echosounder")) {
-        imagep(time, distance, D[[w[2]]], col=col, ...)
+        D <- x@data$echosounder
+        if (missing(col))
+            imagep(D$time, D$distance, D$echosounder, ylab=resizableLabel("distance"), ...)
+        else
+            imagep(D$time, D$distance, D$echosounder, col=col, ylab=resizableLabel("distance"), ...)
     } else if (w[2] == "altimeter") {
         stop("FIXME: add altimeter plot here")
     } else if (w[2] == "altimeterRaw") {
