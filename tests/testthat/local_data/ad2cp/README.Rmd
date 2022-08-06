@@ -1,5 +1,5 @@
 ---
-title: names of items in test files
+title: AD2CP test file contents
 author: Dan Kelley
 date: "`r Sys.time()`"
 ---
@@ -7,21 +7,12 @@ date: "`r Sys.time()`"
 The purpose of this listing is to help as I (slowly) move code from
 unvectorized form to vectorized form.
 
-
-# `S102791A002_Barrow_v2.ad2cp`
-
 ```{r}
 library(oce)
-d1 <- read.oce("S102791A002_Barrow_v2.ad2cp")
-str(d1@data,2)
-```
-
-
-# `ad2cp_01.ad2cp`
-
-```{r}
-library(oce)
-d1 <- read.oce("ad2cp_01.ad2cp")
-str(d1@data,2)
+files <- list.files(".", ".ad2cp")
+for (file in files) {
+    cat(file, "\n")
+    print(read.oce(file, which="?"))
+}
 ```
 
