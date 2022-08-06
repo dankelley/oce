@@ -319,7 +319,6 @@ export(
     read.xbt,
     read.xbt.edf,
     read.xbt.noaa1,
-    renameData,
     rescale,
     resizableLabel,
     retime,
