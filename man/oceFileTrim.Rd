@@ -23,8 +23,8 @@ is > 1L, then information is given about each data chunk, which can yield
 very extensive output.}
 }
 \value{
-\code{oceFileTrim()} returns the name of the output file, \code{outfile}, as
-provided or constructed.
+\code{oceFileTrim()} returns the name of the output file, either provided
+in the \code{outfile} parameter or constructed by this function.
 }
 \description{
 Create an oce file by copying the first \code{n} data chunks of another such file.
@@ -42,7 +42,8 @@ if (file.exists(f)) {
 }
 \seealso{
 Other functions that trim data files: 
-\code{\link{ad2cpFileTrim}()}
+\code{\link{adpAd2cpFileTrim}()},
+\code{\link{adpRdiFileTrim}()}
 }
 \author{
 Dan Kelley

@@ -1372,10 +1372,11 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, log="", logStyle="r", flipy=
 #' is > 1L, then information is given about each data chunk, which can yield
 #' very extensive output.
 #'
-#' @return `oceFileTrim()` returns the name of the output file, `outfile`, as
-#' provided or constructed.
+#' @return `oceFileTrim()` returns the name of the output file, either provided
+#' in the `outfile` parameter or constructed by this function.
 #'
 #' @family functions that trim data files
+#'
 #' @examples
 #'\dontrun{
 #' # Can only be run by the developer, since it uses a private file.
@@ -1388,16 +1389,13 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, log="", logStyle="r", flipy=
 oceFileTrim <- function(infile, n=100L, outfile, debug=getOption("oceDebug"))
 {
     magic <- oceMagic(infile)
-    allowed <- c("adp/nortek/ad2cp")
+    allowed <- c("adp/nortek/ad2cp", "adp/rdi")
     if (!magic %in% allowed)
         stop("this file, of type ", magic, ", is not understood; only files of the following types are allowed: ", paste(allowed, collapse=", "))
-    if (magic == "adp/nortek/ad2cp")
-        ad2cpFileTrim(infile, n, outfile, debug)
-    else
-        stop("this file, of type ", magic, ", is not understood; only files of the following types are allowed: ", paste(allowed, collapse=", "))
+    switch(magic,
+        "adp/nortek/ad2cp"=adpAd2cpFileTrim(infile, n, outfile, debug),
+        "adp/rdi"=adpRdiFileTrim(infile, n, outfile, debug))
 }
-
-
 
 #' Edit an Oce Object
 #'

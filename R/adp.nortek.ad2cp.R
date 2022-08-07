@@ -23,12 +23,12 @@ makeNumeric <- function(x)
 #' with 0xa5, etc) of another such file. This can be useful in supplying
 #' small sample files for bug reports.
 #'
-#' @param infile name of an AD2CP source file.
+#' @param infile name of an AD2CP file.
 #'
 #' @param n integer indicating the number of data chunks to keep. The default is
-#' to keep 100 chunks, a common good choice for sample files.
+#' to keep 100 chunks, a common choice for sample files.
 #'
-#' @param outfile optional name of the new AD2CP to be created. If this is not
+#' @param outfile optional name of the new AD2CP file to be created. If this is not
 #' supplied, a default is used, by adding `_trimmed` to the base filename, e.g.
 #' if `infile` is `"a.ad2cp"` then `outfile` will be `a_trimmed.ad2cp`.
 #'
@@ -37,7 +37,7 @@ makeNumeric <- function(x)
 #' is > 1L, then information is given about each data chunk, which can yield
 #' very extensive output.
 #'
-#' @return `ad2cpFileTrim()` returns the name of the output file, `outfile`, as
+#' @return `adpAd2cpFileTrim()` returns the name of the output file, `outfile`, as
 #' provided or constructed.
 #'
 #' @family things related to adp data
@@ -48,13 +48,13 @@ makeNumeric <- function(x)
 #' # Can only be run by the developer, since it uses a private file.
 #' f  <- "/Users/kelley/Dropbox/oce_secret_data/ad2cp/byg_trimmed.ad2cp"
 #' if (file.exists(f)) {
-#'     ad2cpFileTrim(f, 100L) # this file is already trimmed to 200 chunks
+#'     adpAd2cpFileTrim(f, 100L) # this file is already trimmed to 200 chunks
 #' }
 #'}
 #' @author Dan Kelley
-ad2cpFileTrim <- function(infile, n=100L, outfile, debug=getOption("oceDebug"))
+adpAd2cpFileTrim <- function(infile, n=100L, outfile, debug=getOption("oceDebug"))
 {
-    oceDebug(debug, "ad2cpFileTrim(infile=\"", infile, "\", n=", n, ", debug=", debug, ") { #\n", unindent=1)
+    oceDebug(debug, "adpAd2cpFileTrim(infile=\"", infile, "\", n=", n, ", debug=", debug, ") { #\n", unindent=1)
     debug <- ifelse(debug < 1, 0L, ifelse(debug < 2, 1, 2))
     if (missing(infile))
         stop("must provide 'infile'")
@@ -62,7 +62,8 @@ ad2cpFileTrim <- function(infile, n=100L, outfile, debug=getOption("oceDebug"))
     if (n < 1L)
         stop("'n' must be a positive number, but it is ", n)
     if (missing(outfile)) {
-        outfile <- gsub("(.*).ad2cp", "\\1_trimmed.ad2cp", infile)
+        #outfile <- gsub("(.*).ad2cp", "\\1_trimmed.ad2cp", infile)
+        outfile <- gsub("^(.*)\\.([^.]*)$", "\\1_trimmed.\\2", infile)
         oceDebug(debug, "created outfile value \"", outfile, "\"")
     }
     r <- read.oce(infile, which="??")
@@ -73,7 +74,7 @@ ad2cpFileTrim <- function(infile, n=100L, outfile, debug=getOption("oceDebug"))
     last <- r$start[n+1L] - 1L
     buf <- readBin(infile, "raw", n=last)
     writeBin(buf, outfile, useBytes=TRUE)
-    oceDebug(debug, "} # ad2cpFileTrim\n", unindent=1)
+    oceDebug(debug, "} # adpAd2cpFileTrim\n", unindent=1)
     outfile
 }
 

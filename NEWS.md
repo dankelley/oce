@@ -3,9 +3,9 @@
 * Improve the handling of file encodings.
 * Make the argo `[[` method handle spiciness.
 * Improve `read.adp.ad2cp()` extensively, breaking some old behaviours.
-* Add `oceFileTrim()` and `ad2cpFileTrim()`.
-* Remove defunct function `renameData`.
-* Deprecate function `trimString`.
+* Add `oceFileTrim()`, `adpAd2cpFileTrim` and `adpRdiFileTrim()`.
+* Remove `renameData()`, which had been flagged as defunct in multiple CRAN releases.
+* Deprecate `trimString()`.
 
 # oce 1.7.8 on CRAN
 
