@@ -3,7 +3,7 @@
 * Improve the handling of file encodings.
 * Make the argo `[[` method handle spiciness.
 * Improve `read.adp.ad2cp()` extensively, breaking some old behaviours.
-* Add `ad2cpTrim()`.
+* Add `oceFileTrim()` and `ad2cpFileTrim()`.
 * Remove defunct function `renameData`.
 * Deprecate function `trimString`.
 

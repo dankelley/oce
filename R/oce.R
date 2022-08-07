@@ -1351,6 +1351,53 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, log="", logStyle="r", flipy=
 }                                      # oce.plot.ts()
 
 
+#' Trim an oce File
+#'
+#' Create an oce file by copying the first `n` data chunks of another such file.
+#' This can be useful in supplying small sample files for bug reports. Only
+#' a few file types (as inferred with [oceMagic()]) are permitted.
+#'
+#' @param infile name of an AD2CP source file.
+#'
+#' @param n integer indicating the number of data chunks to keep. The default is
+#' to keep 100 chunks, a common good choice for sample files.
+#'
+#' @param outfile optional name of the new file to be created. If this is not
+#' supplied, a default is used, by adding `_trimmed` to the base filename, e.g.
+#' for an AD2CP file named `"a.ad2cp"`, the constructed value of `outfile` will
+#' be `a_trimmed.ad2cp`.
+#'
+#' @param debugTerminal an integer value indicating the level of debugging. If
+#' this is 1L, then a brief indication is given of the processing steps. If it
+#' is > 1L, then information is given about each data chunk, which can yield
+#' very extensive output.
+#'
+#' @return `oceFileTrim()` returns the name of the output file, `outfile`, as
+#' provided or constructed.
+#'
+#' @family functions that trim data files
+#' @examples
+#'\dontrun{
+#' # Can only be run by the developer, since it uses a private file.
+#' f  <- "/Users/kelley/Dropbox/oce_secret_data/ad2cp/byg_trimmed.ad2cp"
+#' if (file.exists(f)) {
+#'     oceFileTrim(f, 10L) # this file holds 100 data segments
+#' }
+#'}
+#' @author Dan Kelley
+oceFileTrim <- function(infile, n=100L, outfile, debug=getOption("oceDebug"))
+{
+    magic <- oceMagic(infile)
+    allowed <- c("adp/nortek/ad2cp")
+    if (!magic %in% allowed)
+        stop("this file, of type ", magic, ", is not understood; only files of the following types are allowed: ", paste(allowed, collapse=", "))
+    if (magic == "adp/nortek/ad2cp")
+        ad2cpFileTrim(infile, n, outfile, debug)
+    else
+        stop("this file, of type ", magic, ", is not understood; only files of the following types are allowed: ", paste(allowed, collapse=", "))
+}
+
+
 
 #' Edit an Oce Object
 #'

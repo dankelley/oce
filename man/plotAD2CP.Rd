@@ -53,7 +53,7 @@ Example 3.
 library(oce)
 # This example will only work for the author, because it uses a
 # private file.  The file contains 'burst' and 'average' data.
-f <- "~/Dropbox/oce_secret_data/ad2cp/secret1_trimmed.ad2cp"
+f <- "/Users/kelley/Dropbox/oce_secret_data/ad2cp/secret1_trimmed.ad2cp"
 if (file.exists(f)) {
     library(oce)
     d <- read.oce(f)

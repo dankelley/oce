@@ -32,29 +32,48 @@ makeNumeric <- function(x)
 #' supplied, a default is used, by adding `_trimmed` to the base filename, e.g.
 #' if `infile` is `"a.ad2cp"` then `outfile` will be `a_trimmed.ad2cp`.
 #'
-#' @return the name of the output file, `outfile`, as provided or constructed.
+#' @param debugTerminal an integer value indicating the level of debugging. If
+#' this is 1L, then a brief indication is given of the processing steps. If it
+#' is > 1L, then information is given about each data chunk, which can yield
+#' very extensive output.
+#'
+#' @return `ad2cpFileTrim()` returns the name of the output file, `outfile`, as
+#' provided or constructed.
 #'
 #' @family things related to adp data
 #' @family things related to ad2cp data
-#'
+#' @family functions that trim data files
+#' @examples
+#'\dontrun{
+#' # Can only be run by the developer, since it uses a private file.
+#' f  <- "/Users/kelley/Dropbox/oce_secret_data/ad2cp/byg_trimmed.ad2cp"
+#' if (file.exists(f)) {
+#'     ad2cpFileTrim(f, 100L) # this file is already trimmed to 200 chunks
+#' }
+#'}
 #' @author Dan Kelley
-ad2cpTrim <- function(infile, n=100L, outfile)
+ad2cpFileTrim <- function(infile, n=100L, outfile, debug=getOption("oceDebug"))
 {
+    oceDebug(debug, "ad2cpFileTrim(infile=\"", infile, "\", n=", n, ", debug=", debug, ") { #\n", unindent=1)
+    debug <- ifelse(debug < 1, 0L, ifelse(debug < 2, 1, 2))
     if (missing(infile))
         stop("must provide 'infile'")
-    if (n < 1L)
-        stop("'n' must be a positive number")
     n <- as.integer(n)
-    if (missing(outfile))
+    if (n < 1L)
+        stop("'n' must be a positive number, but it is ", n)
+    if (missing(outfile)) {
         outfile <- gsub("(.*).ad2cp", "\\1_trimmed.ad2cp", infile)
+        oceDebug(debug, "created outfile value \"", outfile, "\"")
+    }
     r <- read.oce(infile, which="??")
     nmax <- length(r$start)
     if (n >= nmax)
         stop("maximum allowed 'n' for this file is ", nmax)
     # add 1 to profile count; go back 1 char before that
     last <- r$start[n+1L] - 1L
-    buf <- readBin(file, "raw", n=last)
+    buf <- readBin(infile, "raw", n=last)
     writeBin(buf, outfile, useBytes=TRUE)
+    oceDebug(debug, "} # ad2cpFileTrim\n", unindent=1)
     outfile
 }
 
@@ -98,18 +117,20 @@ ad2cpDefaultDataItem <- function(x, j=NULL, order=c("burst", "average",
 #'
 #' @examples
 #'\dontrun{
-#' d <- read.oce("a.ad2cp")
-#' # The examples start with the line in x[["text"]][[1]]; note that in the second
-#' # example, it would be insuficient to use a key of "BEAMCFGLIST", because that will
-#' # yield 4 lines, and the function is not designed to handle that.
+#' if (file.exists("a.ad2cp")) {
+#'     d <- read.oce("a.ad2cp")
+#'     # The examples start with the line in x[["text"]][[1]]; note that in the second
+#'     # example, it would be insuficient to use a key of "BEAMCFGLIST", because that will
+#'     # yield 4 lines, and the function is not designed to handle that.
 #'
-#' # ID,STR=\"Signature1000\",SN=123456
-#' type <- ad2cpHeaderValue(d, "ID", "STR", numeric=FALSE)
-#' serialNumber <- ad2cpHeaderValue(d, "ID", "SN")
+#'     # ID,STR=\"Signature1000\",SN=123456
+#'     type <- ad2cpHeaderValue(d, "ID", "STR", numeric=FALSE)
+#'     serialNumber <- ad2cpHeaderValue(d, "ID", "SN")
 #'
-#' # BEAMCFGLIST,BEAM=1,THETA=25.00,PHI=0.00,FREQ=1000,BW=25,BRD=1,HWBEAM=1,ZNOM=60.00
-#' beam1Angle <- ad2cpHeaderValue(d, "BEAMCFGLIST,BEAM=1", "THETA")
-#' frequency <- ad2cpHeaderValue(d, "BEAMCFGLIST,BEAM=1", "FREQ", default=NA)
+#'     # BEAMCFGLIST,BEAM=1,THETA=25.00,PHI=0.00,FREQ=1000,BW=25,BRD=1,HWBEAM=1,ZNOM=60.00
+#'     beam1Angle <- ad2cpHeaderValue(d, "BEAMCFGLIST,BEAM=1", "THETA")
+#'     frequency <- ad2cpHeaderValue(d, "BEAMCFGLIST,BEAM=1", "FREQ", default=NA)
+#' }
 #'}
 #'
 #' @family things related to adp data
@@ -256,7 +277,7 @@ ad2cpCodeToName <- function(code=NULL)
 #' This can yield very large objects, so if only certain IDs are of interest,
 #' try setting the `which` document accordingly.
 #'
-#' It is important to realize that `read.adp.ad2cp` is incomplete, and has not
+#' It is important to realize that [read.adp.ad2cp()] is incomplete, and has not
 #' been well tested.  The data format is not documented thoroughly in the
 #' available Nortek manuals, and contradictions between the manuals require an
 #' uncomfortable degree of guesswork; see \dQuote{Cautionary Notes}.
@@ -265,12 +286,12 @@ ad2cpCodeToName <- function(code=NULL)
 #'
 #' Early in the year 2022, support was added for 12-byte headers.  These are not
 #' described in any Nortek document in the possession of the author of
-#' `read.adp.ad2cp(), although some personal communications made via
+#' [read.adp.ad2cp()], although some personal communications made via
 #' https://github.com/dankelley/oce/issues have exposed some clues that have led
 #' to provisional, but largely untested, code here.
 #'
 #' The \dQuote{References} section lists some manuals that were consulted during
-#' the coding of `read.adp.ad2cp`.  Since instruments evolve over time, one
+#' the coding of `read.adp.ad2cp()].  Since instruments evolve over time, one
 #' might think that Nortek (2022) would be the best place to start, in coding to
 #' read AD2CP files. That would be a mistake, and a big one, at that. There
 #' are two reasons for this.
@@ -299,7 +320,7 @@ ad2cpCodeToName <- function(code=NULL)
 #' above states "Raw data given as 0.001 dBar". If the stated storage class
 #' (uint32) is to be believed, then it seems clear that the unit must be
 #' 0.001 dBar, so the green text should be ignored.  The same can be said
-#' of items throughout the data-format tables. In coding `read.adp.ad2cp`,
+#' of items throughout the data-format tables. In coding `read.adp.ad2cp()],
 #' the green "Unit" text was ignored in basically every case.
 #'
 #' Second, Nortek (2022) contains significant errors, e.g. the following.
@@ -322,9 +343,9 @@ ad2cpCodeToName <- function(code=NULL)
 #'
 #' @param by ignored.
 #'
-#' @param to an integer indicating the final record to read.
-#' (If not provided, `to` defaults to 1e9, and reading stops at the
-#' end of the file.)
+#' @param to an integer indicating the final record to read. If `to` is 0L,
+#' which is the default, then the value is changed internally to 1e9, and
+#' reading stops at the end of the file.
 #'
 #' @param which a character value indicating the data type(s) to be read, and
 #' stored in the `data` slot of the returned value.  The default, `which="all"`,
@@ -360,10 +381,10 @@ ad2cpCodeToName <- function(code=NULL)
 #' @param longitude,latitude numerical values indicating the observation
 #' location.
 #'
-#' @param orientation ignored by `read.adp.ad2cp`, and provided only for
+#' @param orientation ignored by [read.adp.ad2cp()], and provided only for
 #' similarity to other `read.adp.*` functions.
 #'
-#' @param distance ignored by `read.adp.ad2cp`, and provided only for similarity
+#' @param distance ignored by [read.adp.ad2cp()], and provided only for similarity
 #' to other `read.adp.*` functions.
 #'
 #' @param plan optional integer specifying which 'plan' to focus on (see
@@ -386,7 +407,7 @@ ad2cpCodeToName <- function(code=NULL)
 #' reading the file, by using [txtProgressBar()] or otherwise.  The value of
 #' `monitor` is changed to `FALSE` automatically, for non-interactive sessions.
 #'
-#' @param despike ignored by `read.adp.ad2cp`, and provided only for similarity
+#' @param despike ignored by [read.adp.ad2cp()], and provided only for similarity
 #' to other `read.adp.*` functions.
 #'
 #' @param processingLog a character value that, if provided, is saved within the
@@ -1811,7 +1832,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
 #' library(oce)
 #' # This example will only work for the author, because it uses a
 #' # private file.  The file contains 'burst' and 'average' data.
-#' f <- "~/Dropbox/oce_secret_data/ad2cp/secret1_trimmed.ad2cp"
+#' f <- "/Users/kelley/Dropbox/oce_secret_data/ad2cp/secret1_trimmed.ad2cp"
 #' if (file.exists(f)) {
 #'     library(oce)
 #'     d <- read.oce(f)
