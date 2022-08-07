@@ -17,7 +17,7 @@ supplied, a default is used, by adding \verb{_trimmed} to the base filename, e.g
 for an AD2CP file named \code{"a.ad2cp"}, the constructed value of \code{outfile} will
 be \code{a_trimmed.ad2cp}.}
 
-\item{debugTerminal}{an integer value indicating the level of debugging. If
+\item{debug}{an integer value indicating the level of debugging. If
 this is 1L, then a brief indication is given of the processing steps. If it
 is > 1L, then information is given about each data chunk, which can yield
 very extensive output.}

@@ -32,7 +32,7 @@ makeNumeric <- function(x)
 #' supplied, a default is used, by adding `_trimmed` to the base filename, e.g.
 #' if `infile` is `"a.ad2cp"` then `outfile` will be `a_trimmed.ad2cp`.
 #'
-#' @param debugTerminal an integer value indicating the level of debugging. If
+#' @param debug an integer value indicating the level of debugging. If
 #' this is 1L, then a brief indication is given of the processing steps. If it
 #' is > 1L, then information is given about each data chunk, which can yield
 #' very extensive output.

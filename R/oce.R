@@ -1367,7 +1367,7 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, log="", logStyle="r", flipy=
 #' for an AD2CP file named `"a.ad2cp"`, the constructed value of `outfile` will
 #' be `a_trimmed.ad2cp`.
 #'
-#' @param debugTerminal an integer value indicating the level of debugging. If
+#' @param debug an integer value indicating the level of debugging. If
 #' this is 1L, then a brief indication is given of the processing steps. If it
 #' is > 1L, then information is given about each data chunk, which can yield
 #' very extensive output.
