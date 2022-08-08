@@ -31,18 +31,20 @@ Decode an item from a Nortek AD2CP file header (an internal function)
 }
 \examples{
 \dontrun{
-d <- read.oce("a.ad2cp")
-# The examples start with the line in x[["text"]][[1]]; note that in the second
-# example, it would be insuficient to use a key of "BEAMCFGLIST", because that will
-# yield 4 lines, and the function is not designed to handle that.
+if (file.exists("a.ad2cp")) {
+    d <- read.oce("a.ad2cp")
+    # The examples start with the line in x[["text"]][[1]]; note that in the second
+    # example, it would be insuficient to use a key of "BEAMCFGLIST", because that will
+    # yield 4 lines, and the function is not designed to handle that.
 
-# ID,STR=\"Signature1000\",SN=123456
-type <- ad2cpHeaderValue(d, "ID", "STR", numeric=FALSE)
-serialNumber <- ad2cpHeaderValue(d, "ID", "SN")
+    # ID,STR=\"Signature1000\",SN=123456
+    type <- ad2cpHeaderValue(d, "ID", "STR", numeric=FALSE)
+    serialNumber <- ad2cpHeaderValue(d, "ID", "SN")
 
-# BEAMCFGLIST,BEAM=1,THETA=25.00,PHI=0.00,FREQ=1000,BW=25,BRD=1,HWBEAM=1,ZNOM=60.00
-beam1Angle <- ad2cpHeaderValue(d, "BEAMCFGLIST,BEAM=1", "THETA")
-frequency <- ad2cpHeaderValue(d, "BEAMCFGLIST,BEAM=1", "FREQ", default=NA)
+    # BEAMCFGLIST,BEAM=1,THETA=25.00,PHI=0.00,FREQ=1000,BW=25,BRD=1,HWBEAM=1,ZNOM=60.00
+    beam1Angle <- ad2cpHeaderValue(d, "BEAMCFGLIST,BEAM=1", "THETA")
+    frequency <- ad2cpHeaderValue(d, "BEAMCFGLIST,BEAM=1", "FREQ", default=NA)
+}
 }
 
 }
@@ -51,11 +53,12 @@ Other things related to adp data:
 \code{\link{[[,adp-method}},
 \code{\link{[[<-,adp-method}},
 \code{\link{ad2cpCodeToName}()},
-\code{\link{ad2cpTrim}()},
 \code{\link{adp-class}},
+\code{\link{adpAd2cpFileTrim}()},
 \code{\link{adpConvertRawToNumeric}()},
 \code{\link{adpEnsembleAverage}()},
 \code{\link{adpFlagPastBoundary}()},
+\code{\link{adpRdiFileTrim}()},
 \code{\link{adp_rdi.000}},
 \code{\link{adp}},
 \code{\link{as.adp}()},
@@ -94,7 +97,7 @@ Other things related to adp data:
 
 Other things related to ad2cp data: 
 \code{\link{ad2cpCodeToName}()},
-\code{\link{ad2cpTrim}()},
+\code{\link{adpAd2cpFileTrim}()},
 \code{\link{is.ad2cp}()},
 \code{\link{read.adp.ad2cp}()}
 }

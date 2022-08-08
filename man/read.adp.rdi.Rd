@@ -13,6 +13,7 @@ read.adp.rdi(
   longitude = NA,
   latitude = NA,
   type = c("workhorse"),
+  which,
   encoding = NA,
   monitor = FALSE,
   despike = FALSE,
@@ -54,6 +55,11 @@ East.}
 North.}
 
 \item{type}{character string indicating the type of instrument.}
+
+\item{which}{optional character value.  If this is \code{"??"} then the
+\code{\link[=read.adp.rdi]{read.adp.rdi()}} works by locating the indices in \code{file} at which data
+segments begin, and storing them as \code{index} in a list that is returned.
+The other entry of the list is \code{time}, the time of the observation.}
 
 \item{encoding}{ignored.}
 
@@ -395,11 +401,12 @@ Other things related to adp data:
 \code{\link{[[<-,adp-method}},
 \code{\link{ad2cpCodeToName}()},
 \code{\link{ad2cpHeaderValue}()},
-\code{\link{ad2cpTrim}()},
 \code{\link{adp-class}},
+\code{\link{adpAd2cpFileTrim}()},
 \code{\link{adpConvertRawToNumeric}()},
 \code{\link{adpEnsembleAverage}()},
 \code{\link{adpFlagPastBoundary}()},
+\code{\link{adpRdiFileTrim}()},
 \code{\link{adp_rdi.000}},
 \code{\link{adp}},
 \code{\link{as.adp}()},

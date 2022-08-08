@@ -33,9 +33,9 @@ load.}
 read. This must equal 1, for this version of \code{read.adp.ad2cp}.  (If not
 provided, \code{from} defaults to 1.)}
 
-\item{to}{an integer indicating the final record to read.
-(If not provided, \code{to} defaults to 1e9, and reading stops at the
-end of the file.)}
+\item{to}{an integer indicating the final record to read. If \code{to} is 0L,
+which is the default, then the value is changed internally to 1e9, and
+reading stops at the end of the file.}
 
 \item{by}{ignored.}
 
@@ -73,10 +73,10 @@ parse some problematic files.}
 \item{longitude, latitude}{numerical values indicating the observation
 location.}
 
-\item{orientation}{ignored by \code{read.adp.ad2cp}, and provided only for
+\item{orientation}{ignored by \code{\link[=read.adp.ad2cp]{read.adp.ad2cp()}}, and provided only for
 similarity to other \verb{read.adp.*} functions.}
 
-\item{distance}{ignored by \code{read.adp.ad2cp}, and provided only for similarity
+\item{distance}{ignored by \code{\link[=read.adp.ad2cp]{read.adp.ad2cp()}}, and provided only for similarity
 to other \verb{read.adp.*} functions.}
 
 \item{plan}{optional integer specifying which 'plan' to focus on (see
@@ -99,7 +99,7 @@ coordinates.}
 reading the file, by using \code{\link[=txtProgressBar]{txtProgressBar()}} or otherwise.  The value of
 \code{monitor} is changed to \code{FALSE} automatically, for non-interactive sessions.}
 
-\item{despike}{ignored by \code{read.adp.ad2cp}, and provided only for similarity
+\item{despike}{ignored by \code{\link[=read.adp.ad2cp]{read.adp.ad2cp()}}, and provided only for similarity
 to other \verb{read.adp.*} functions.}
 
 \item{processingLog}{a character value that, if provided, is saved within the
@@ -128,7 +128,7 @@ By default, \code{\link[=read.adp.ad2cp]{read.adp.ad2cp()}} reads all ID codes t
 This can yield very large objects, so if only certain IDs are of interest,
 try setting the \code{which} document accordingly.
 
-It is important to realize that \code{read.adp.ad2cp} is incomplete, and has not
+It is important to realize that \code{\link[=read.adp.ad2cp]{read.adp.ad2cp()}} is incomplete, and has not
 been well tested.  The data format is not documented thoroughly in the
 available Nortek manuals, and contradictions between the manuals require an
 uncomfortable degree of guesswork; see \dQuote{Cautionary Notes}.
@@ -138,12 +138,12 @@ uncomfortable degree of guesswork; see \dQuote{Cautionary Notes}.
 
 Early in the year 2022, support was added for 12-byte headers.  These are not
 described in any Nortek document in the possession of the author of
-`read.adp.ad2cp(), although some personal communications made via
+\code{\link[=read.adp.ad2cp]{read.adp.ad2cp()}}, although some personal communications made via
 https://github.com/dankelley/oce/issues have exposed some clues that have led
 to provisional, but largely untested, code here.
 
 The \dQuote{References} section lists some manuals that were consulted during
-the coding of \code{read.adp.ad2cp}.  Since instruments evolve over time, one
+the coding of `read.adp.ad2cp()].  Since instruments evolve over time, one
 might think that Nortek (2022) would be the best place to start, in coding to
 read AD2CP files. That would be a mistake, and a big one, at that. There
 are two reasons for this.
@@ -170,7 +170,7 @@ Pressure is said to have "Unit [dBar]" in green text, but the black text
 above states "Raw data given as 0.001 dBar". If the stated storage class
 (uint32) is to be believed, then it seems clear that the unit must be
 0.001 dBar, so the green text should be ignored.  The same can be said
-of items throughout the data-format tables. In coding \code{read.adp.ad2cp},
+of items throughout the data-format tables. In coding `read.adp.ad2cp()],
 the green "Unit" text was ignored in basically every case.
 }
 
@@ -212,11 +212,12 @@ Other things related to adp data:
 \code{\link{[[<-,adp-method}},
 \code{\link{ad2cpCodeToName}()},
 \code{\link{ad2cpHeaderValue}()},
-\code{\link{ad2cpTrim}()},
 \code{\link{adp-class}},
+\code{\link{adpAd2cpFileTrim}()},
 \code{\link{adpConvertRawToNumeric}()},
 \code{\link{adpEnsembleAverage}()},
 \code{\link{adpFlagPastBoundary}()},
+\code{\link{adpRdiFileTrim}()},
 \code{\link{adp_rdi.000}},
 \code{\link{adp}},
 \code{\link{as.adp}()},
@@ -255,7 +256,7 @@ Other things related to adp data:
 Other things related to ad2cp data: 
 \code{\link{ad2cpCodeToName}()},
 \code{\link{ad2cpHeaderValue}()},
-\code{\link{ad2cpTrim}()},
+\code{\link{adpAd2cpFileTrim}()},
 \code{\link{is.ad2cp}()}
 
 Other functions that read adp data: 

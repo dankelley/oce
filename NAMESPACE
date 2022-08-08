@@ -48,7 +48,8 @@ exportMethods(summary)
 export(
     abbreviateTimeLabels,
     ad2cpCodeToName,
-    ad2cpTrim,
+    adpAd2cpFileTrim,
+    adpRdiFileTrim,
     approx3d,
     argShow,
     beamName,
@@ -232,7 +233,7 @@ export(
     oce.colorsVorticity, oceColorsVorticity,
 
     oceCRS,
-
+    oceFileTrim,
     oceGetData, oceDeleteData, oceRenameData, oceSetData,
     oceGetMetadata, oceDeleteMetadata, oceRenameMetadata, oceSetMetadata,
     oce.debug, oceDebug,

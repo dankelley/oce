@@ -25,6 +25,65 @@
 ## Teledyne RD Instruments, 2015.
 ## ("SV_ODF_May15.pdf")
 
+#' Trim an RDI adp File
+#'
+#' Create an RDI adp file by copying the first `n` data chunks (starting with
+#' byte 0x7f 0x7f) of another such file. This can be useful in supplying small
+#' sample files for bug reports.
+#'
+#' @param infile name of an RDI file.
+#'
+#' @param n integer indicating the number of data chunks to keep. The default is
+#' to keep 100 chunks, a common choice for sample files.
+#'
+#' @param outfile optional name of the new RDI file to be created. If this is not
+#' supplied, a default is used, by adding `_trimmed` to the base filename, e.g.
+#' if `infile` is `"a.000"` then `outfile` will be `a_trimmed.000`.
+#'
+#' @param debug an integer value indicating the level of debugging. If
+#' this is 1L, then a brief indication is given of the processing steps. If it
+#' is > 1L, then information is given about each data chunk, which can yield
+#' very extensive output.
+#'
+#' @return `adpRdiFileTrim()` returns the name of the output file, `outfile`, as
+#' provided or constructed.
+#'
+#' @family things related to adp data
+#' @family functions that trim data files
+## @examples
+##\dontrun{
+## # Can only be run by the developer, since it uses a private file.
+## f  <- "/Users/kelley/Dropbox/data/archive/sleiwex/2008/moorings/m09/adp/rdi_2615/raw/adp_rdi_2615.000"
+## if (file.exists(f)) {
+##     adpRdiFileTrim(f, 9L, "test.000")
+## }
+##}
+#' @author Dan Kelley
+adpRdiFileTrim <- function(infile, n=100L, outfile, debug=getOption("oceDebug"))
+{
+    oceDebug(debug, "adpRdiFileTrim(infile=\"", infile, "\", n=", n, ", debug=", debug, ") { #\n", unindent=1)
+    debug <- ifelse(debug < 1, 0L, ifelse(debug < 2, 1, 2))
+    if (missing(infile))
+        stop("must provide 'infile'")
+    n <- as.integer(n)
+    if (n < 1L)
+        stop("'n' must be a positive number, but it is ", n)
+    if (missing(outfile)) {
+        outfile <- gsub("^(.*)\\.([^.]*)$", "\\1_trimmed.\\2", infile)
+        oceDebug(debug, "created outfile value \"", outfile, "\"")
+    }
+    r <- read.oce(infile, which="??")
+    nmax <- length(r$start)
+    if (n >= nmax)
+        stop("maximum allowed 'n' for this file is ", nmax)
+    # add 1 to profile count; go back 1 char before that
+    last <- r$start[n+1L] - 1L
+    buf <- readBin(infile, "raw", n=last)
+    writeBin(buf, outfile, useBytes=TRUE)
+    oceDebug(debug, "} # adpRdiFileTrim\n", unindent=1)
+    outfile
+}
+
 
 
 decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceTz"), ...)
@@ -411,14 +470,20 @@ decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceT
 #'
 #' @template adpTemplate
 #'
-#' @param testing logical value (IGNORED).
-#'
 #' @param type character string indicating the type of instrument.
+#'
+#' @param which optional character value.  If this is `"??"` then the
+#" only other parameters that are examined are `file` and `debug`, and
+#' [read.adp.rdi()] works by locating the indices in `file` at which data
+#' segments begin, and storing them as `index` in a list that is returned.
+#' The other entry of the list is `time`, the time of the observation.
+#'
+#' @template encodingIgnoredTemplate
 #'
 #' @param despike if `TRUE`, [despike()] will be used to clean
 #' anomalous spikes in heading, etc.
 #'
-#' @template encodingIgnoredTemplate
+#' @param testing logical value (IGNORED).
 #'
 #' @section Names of items in data slot:
 #'
@@ -682,6 +747,7 @@ decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceT
 read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
     longitude=NA, latitude=NA,
     type=c("workhorse"),
+    which,                             # new
     encoding=NA,
     monitor=FALSE, despike=FALSE, processingLog,
     testing=FALSE,
@@ -802,6 +868,14 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
             ##    ldcDEBUG <<- ldc
             ##}
             oceDebug(debug, "done with do_ldc_rdi_in_file() with non-numeric from and to, near adp.rdi.R line 693")
+        }
+        if (!missing(which)) {
+            if (which[1] == "??") {
+                oceDebug(debug, "handling ??\n")
+                return(list(index=ldc$ensembleStart, time=numberAsPOSIXct(ldc$time)))
+            } else {
+                stop("read.adp.rdi() cannot handle which=\"?\"")
+           }
         }
         ##old if (debug > 99) {
         ##old     ldc <<- ldc
@@ -930,7 +1004,7 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
             # Read Binary Fixed Attitude Header (signalled by code 0x00 0x30) from first ensemble
             # (skipping others, because I think this is unchangeable, based on the names and the
             # docs), and store in the metadata.
-            ii <- which(codes[, 1]==0x00 & codes[, 2]==0x30)
+            ii <- base::which(codes[, 1]==0x00 & codes[, 2]==0x30)
             if (length(ii)) {
                 oceDebug(debug, "As a test, displaying 'Binary Fixed Attitude Header' in first 10 ensembles...\n")
                 for (ensemble in seq_len(10)) {
@@ -942,7 +1016,7 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
                 header$binaryFixedAttitudeHeaderRaw <- buf[J+1:34]
                 warning("provisionally, metadata$binaryFixedAttitudeHeaderRaw holds the 34 raw bytes of the Binary Fixed Attitude header\n")
             }
-            ii <- which(codes[, 1]==0x01 & codes[, 2]==0x0f)
+            ii <- base::which(codes[, 1]==0x01 & codes[, 2]==0x0f)
             if (isSentinel & length(ii) < 1) {
                 warning("Didn't find V series leader data ID, treating as a 4 beam ADCP\n")
                 isSentinel <- FALSE
@@ -971,7 +1045,7 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
                 ##
                 ## transformation matrix
                 if (tmFound) {
-                    ii <- which(codes[, 1]==0x00 & codes[, 2]==0x32)
+                    ii <- base::which(codes[, 1]==0x00 & codes[, 2]==0x32)
                     oceDebug(debug, 'Reading transformation matrix\n')
                     tmx <- 0.0001 * readBin(buf[ensembleStart[1]+header$dataOffset[ii]+0:7+2], "integer", n=4, size=2, signed=TRUE, endian="little")
                     tmy <- 0.0001 * readBin(buf[ensembleStart[1]+header$dataOffset[ii]+0:7+10], "integer", n=4, size=2, signed=TRUE, endian="little")
@@ -988,7 +1062,7 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
                     }
                 }
                 ## Read the V beam data leader
-                ii <- which(codes[, 1]==0x01 & codes[, 2]==0x0f)
+                ii <- base::which(codes[, 1]==0x01 & codes[, 2]==0x0f)
                 oceDebug(debug, 'Reading V series data leader\n')
                 numberOfVCells <- readBin(buf[ensembleStart[1] + header$dataOffset[ii]+2:3], "integer", size=2, endian="little")
                 verticalPings <- readBin(buf[ensembleStart[1] + header$dataOffset[ii]+4:5], "integer", size=2, endian="little")
@@ -1032,7 +1106,7 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
                 vItems <- numberOfVCells
 
                 ## V series config
-                ii <- which(codes[, 1]==0x00 & codes[, 2]==0x70)
+                ii <- base::which(codes[, 1]==0x00 & codes[, 2]==0x70)
                 if (length(ii) < 1) stop("Didn't find V series Configuration data ID")
                 oceDebug(debug, 'Reading V series configuration\n')
                 firmwareVersionPrimary <- as.numeric(buf[ensembleStart[1]+header$dataOffset[ii]+2])
@@ -1055,7 +1129,7 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
                                                   schemaMinor=schemaMinor,
                                                   schemaRev=schemaRev)
                 ## Read V series ping setup
-                ii <- which(codes[, 1]==0x01 & codes[, 2]==0x70)
+                ii <- base::which(codes[, 1]==0x01 & codes[, 2]==0x70)
                 if (length(ii) < 1) stop("Didn't find V series ping setup data ID")
                 oceDebug(debug, 'Reading V series ping setup\n')
                 ensembleInterval <- readBin(buf[ensembleStart[1] + header$dataOffset[ii] + 4:7], 'integer', endian='little')
@@ -1451,7 +1525,7 @@ in case conversion to ENU is to be done later.")
             oceDebug(debug, "length(time)=", length(time), " after possible shortening to match length(profileStart)\n")
 
             ## Identify "junk" profiles by NA times
-            junkProfiles <- which(is.na(time))
+            junkProfiles <- base::which(is.na(time))
             if (isVMDAS) {
                 #navTime <- as.POSIXct(navTime, origin='1970-01-01', tz=tz)
                 firstTime <- firstTime + as.POSIXct("1970-01-01 00:00:00", tz=tz)

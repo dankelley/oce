@@ -50,11 +50,12 @@ Other things related to adp data:
 \code{\link{[[,adp-method}},
 \code{\link{[[<-,adp-method}},
 \code{\link{ad2cpHeaderValue}()},
-\code{\link{ad2cpTrim}()},
 \code{\link{adp-class}},
+\code{\link{adpAd2cpFileTrim}()},
 \code{\link{adpConvertRawToNumeric}()},
 \code{\link{adpEnsembleAverage}()},
 \code{\link{adpFlagPastBoundary}()},
+\code{\link{adpRdiFileTrim}()},
 \code{\link{adp_rdi.000}},
 \code{\link{adp}},
 \code{\link{as.adp}()},
@@ -93,7 +94,7 @@ Other things related to adp data:
 
 Other things related to ad2cp data: 
 \code{\link{ad2cpHeaderValue}()},
-\code{\link{ad2cpTrim}()},
+\code{\link{adpAd2cpFileTrim}()},
 \code{\link{is.ad2cp}()},
 \code{\link{read.adp.ad2cp}()}
 }
