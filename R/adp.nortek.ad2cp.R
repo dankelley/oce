@@ -1923,14 +1923,8 @@ plotAD2CP <- function(x, which=NULL, cex, col, pch, lwd, type, ...)
         }
         return(invisible(NULL))
     }
-
     #message("next is names(d):");print(names(d),file=stderr())
     opar <- par(no.readonly=TRUE)      # retain so we can reset afterwards, as CRAN requires
-    # Note that we are not conditioning on w[1] ... but we might, if that helps
-    if (nw == 1L) {
-        w[2] <- "v"
-        nw <- 2L
-    }
     # Ensure that user is asking for a plottable item.
     if (!w[2] %in% names2)
         stop("item \"", w[2], "\" is not available; try one of \"", paste(names2, collapse="\", \""), "\"")
@@ -1960,15 +1954,27 @@ plotAD2CP <- function(x, which=NULL, cex, col, pch, lwd, type, ...)
         if (length(beams) > 1L)
             par(opar)
     } else if (w[2] == c("echosounder")) {
-        D <- x@data$echosounder
+        D <- x@data[[w[1]]]
         if (missing(col))
             imagep(D$time, D$distance, D$echosounder, ylab=resizableLabel("distance"), ...)
         else
             imagep(D$time, D$distance, D$echosounder, col=col, ylab=resizableLabel("distance"), ...)
     } else if (w[2] == "altimeter") {
-        stop("FIXME: add altimeter plot here")
+        message("FIXME: untested plot of ", w[1], "/", w[2], ": please report error")
+        D <- x@data[[w[1]]][[w[2]]]
+        if (nw < 3)
+            stop("")
+        if (w[3] %in% c("distance", "quality", "status")) {
+            oce.plot.ts(D$time, D[w[3]], ylab=w[3])
+        } else {
+            stop("insufficient detail in 'which'; try e.g. which=\"", w[1], "/", w[2], "/?\" to see possibilities")
+        }
+        message("FIXME: ... was the plot okay?")
     } else if (w[2] == "altimeterRaw") {
-        stop("FIXME: add altimeterRaw plot here")
+        message("FIXME: plot of ", w[1], "/", w[2], " is not tested, and may produce errors")
+        D <- x@data[[w[1]]][[w[2]]]
+        imagep(D$time, D$distance, D$samples, ylab=resizableLabel("distance"))
+        message("FIXME: ... was the plot okay?")
     } else if (w[2] == "AHRS") {
         if (nw == 2) {
             message("'which' needs more detail; use which=\"", w[1], "/", w[2], "/?\" for hints")
