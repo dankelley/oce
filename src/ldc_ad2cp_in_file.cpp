@@ -95,8 +95,9 @@ Table 6.1 (header definition).  In <> I have the byte number wrt start
 +-----------------|-------------------|--------------------------------------------------------|
 | Family          | <3> 1 byte        | Defines the Instrument Family. 0x10 – AD2CP Family     |
 +-----------------|-------------------|--------------------------------------------------------+
-| Data Size       | <4> 2 or 4 bytes  | Size (number of bytes) of the following Data Record.   |
-|                 |                   | 2 bytes if 10-byte header or 4 bytes if 12-byte header |
+| Data Size       | <4> 2 or 4 bytes  | If 2 bytes, the size (number of bytes) of the          |
+|                 |                   | following Data Record. The format of the 4-byte case   |
+|                 |                   | is not documented.                                     |
 +-----------------|-------------------|--------------------------------------------------------+
 | Data Checksum   | <6 or 8> 2 bytes  | Checksum of the following Data Record.                 |
 +-----------------|-------------------|--------------------------------------------------------+
@@ -189,9 +190,10 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, IntegerVector from, IntegerV
   fseek(fp, 0L, SEEK_END);
   long long int filesize = ftell(fp);
   fseek(fp, 0L, SEEK_SET);
-  if (debug) {
-    Rprintf("do_ldc_ad2cp_in_file(filename, from=%d, to=%d, by=%d) {\n", from[0], to[0], by[0]);
+  if (1+debug) {
+    Rprintf("do_ldc_ad2cp_in_file(filename, from=%d, to=%d, by=%d, ...) {\n", from[0], to[0], by[0]);
     Rprintf("  filename=\"%s\"\n", fn.c_str());
+    Rprintf("  ignoreChecksums[0]=%d\n", ignoreChecksums[0]);
     Rprintf("  filesize=%d bytes\n", filesize);
   }
   long long int chunk = 0;
@@ -217,19 +219,21 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, IntegerVector from, IntegerV
     }
     cindex++;
   }
+  if (debug)
+    Rprintf("First SYNC byte (0x%02x) at cindex=%d\n", SYNC, cindex);
   // The table in [ref 1 sec 6.1, page 80-81] says header pieces are
   // 10 bytes long, so once we get an 0xA5, we'll read 9 more
   // bytes to assemble the header in bytes10.  (We grab all the
   // bytes at once, so we can do a checksum.)
-  unsigned char header_bytes[12]; // to store either 10 or 12-byte headers
+  unsigned char header_bytes[12];   // to store either 10 or 12-byte headers
   struct header {
-    unsigned char sync;
-    unsigned char header_size;
-    unsigned char id;
-    unsigned char family;
-    unsigned long data_size; // may be 2 bytes or 4 bytes in header
-    unsigned short data_checksum;
-    unsigned short header_checksum;
+    unsigned char sync;             // 1 byte
+    unsigned char header_size;      // 1 byte
+    unsigned char id;               // 1 byte
+    unsigned char family;           // 1 byte; must be 0x10 for ad2cp
+    unsigned long data_size;        // 2 bytes if header_size=10 or 4 bytes if it is 12.
+    unsigned short data_checksum;   // 2 bytes
+    unsigned short header_checksum; // 2 bytes
   } header;
   unsigned int dbuflen = 10000; // may be increased later
   unsigned char *dbuf = (unsigned char *)R_Calloc((size_t)dbuflen, unsigned char);
@@ -244,15 +248,16 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, IntegerVector from, IntegerV
       ::Rf_error("more than 100 checksum errors");
     if (chunk > nchunk - 1) {
       if (debug)
-        Rprintf("  increasing 'index_buf' size from %d", nchunk);
+        Rprintf("  increasing 'index_buf' size from %d ... ", nchunk);
       nchunk = (unsigned int) floor(chunk * 1.4); // increase buffer size by sqrt(2)
       index_buf = (unsigned int*)R_Realloc(index_buf, nchunk, unsigned int);
       length_buf = (unsigned int*)R_Realloc(length_buf, nchunk, unsigned int);
       id_buf = (unsigned int*)R_Realloc(id_buf, nchunk, unsigned int);
       if (debug)
-        Rprintf("  to %d\n", nchunk);
+        Rprintf(" to %d ... done\n", nchunk);
     }
     size_t bytes_read;
+    // Return 2 of these bytes later, if the header length is 10.
     if (12 != fread(&header_bytes, 1, 12, fp))
       ::Rf_error("cannot read header_bytes at cindex=%ld of %ld byte file\n", cindex, filesize);
     // if (1 != fread(&header.sync, 1, 1, fp))
@@ -279,6 +284,8 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, IntegerVector from, IntegerV
       ::Rf_error("impossible header.header_size %d (should be 10 or 12) at cindex=%ld (%7.4f%% through file)\n",
           header.header_size, cindex, 100.0*(cindex)/filesize);
     }
+    Rprintf("  cindex=%d: header.(family=0x%02x, header_size=%d, id=0x%02x, data_size=%d)\n",
+        cindex, header.family, header.header_size, header.id, header.data_size);
     if (debug > 1) {
       Rprintf("Chunk %d at cindex=%ld, %.5f%% through file: id=0x%02x=",
           chunk, cindex, 100.0*cindex/filesize, header.id);
@@ -295,17 +302,14 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, IntegerVector from, IntegerV
       else if (header.id == 0x1F) Rprintf("Avg altimeter raw record\n");
       else if (header.id == 0x23) Rprintf("Echo Sounder raw sample data record\n");
       else if (header.id == 0x24) Rprintf("Echo Sounder raw synthetic transmit pulse data record\n");
-      else Rprintf("Unrecognized ID\n");
-      Rprintf("  header: header_size=0x%02x=%d ", header.header_size, header.header_size);
-      Rprintf("id=0x%x ", header.id);
-      Rprintf("family=0x%x ", header.family);
-      Rprintf("data_size=%d ", header.data_size);
-      Rprintf("data_checksum=%d ", header.data_checksum);
-      Rprintf("header_checksum=%d\n", header.header_checksum);
+      else Rprintf("Unrecognized ID (0x%02x)\n", header.id);
+      Rprintf("  header_size=0x%02x=%d id=0x%02x family=0x%02x data_size=%d data_checksum=%d header_checksum=%d\n",
+          header.header_size, header.header_size, header.id, header.family,
+          header.data_size, header.data_checksum, header.header_checksum);
       if (cindex != ftell(fp) - header.header_size)
         Rprintf("Bug: cindex (%ld) is not equal to ftell()-header_size (%d)\n",
             cindex, ftell(fp)-header.header_size);
-    }
+    } // debug
     // See if header checksum is correct
     unsigned short computed_header_checksum;
     computed_header_checksum = cs(header_bytes, header.header_size-2, debug);
@@ -330,7 +334,10 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, IntegerVector from, IntegerV
       }
     }
     if (found == 0)
-      Rprintf("warning : ldc_ad2cp_in_file() skipping undocumented header.id=0x%02x at cindex=%ld\n", header.id, cindex);
+      Rprintf("warning : ldc_ad2cp_in_file() skipping undocumented header.id=0x%02x=%d at cindex=%ld header_size=0x%02x=%d family=0x%02x data_size=%d\n",
+          header.id, header.id, cindex,
+          header.header_size, header.header_size, header.family,
+          header.data_size);
     id_buf[chunk] = header.id;
     // Check the header checksum.
     // Increase size of data buffer, if required.
@@ -372,6 +379,7 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, IntegerVector from, IntegerV
       while (1) {
         c = getc(fp);
         cindex++;
+        Rprintf("cindex=%5d c=0x%02x\n", cindex, c);
         if (c == EOF) {
           Rprintf("... got to end of file while searching for a sync character (0x%02x)\n", SYNC);
           early_EOF = 1;
@@ -379,8 +387,8 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, IntegerVector from, IntegerV
         }
         if (c == SYNC) {
           //unsigned int trial_cindex = cindex; // so we can reset to here if this trial works
-          //.Rprintf("... got a sync character (0x%02x) at cindex=%d (%7.4f%% through file)\n",
-          //.    SYNC, cindex, 100.0*cindex/filesize);
+          Rprintf("... got a sync character (0x%02x) at cindex=%d (%7.4f%% through file)\n",
+              SYNC, cindex, 100.0*cindex/filesize);
           // header size (should be 10 or 12)
           int trial_header_size = getc(fp);
           cindex++;
@@ -390,9 +398,10 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, IntegerVector from, IntegerV
             break;
           }
           if (trial_header_size != 10 && trial_header_size != 12) {
-            //.Rprintf("    header-size is %d, not 10 or 12 as expected\n", trial_header_size);
+            Rprintf("    header-size is %d, not 10 or 12 as expected\n", trial_header_size);
             continue;
           }
+          Rprintf("  DAN DAN DAN trial_header_size=%d\n", trial_header_size);
           //. Rprintf("        proper header-size character (either 10 or 20 decimal)\n");
           // Skip over the id byte, which has many possibilities we know of (and perhaps more),
           // so it is a bit hard to check for correctness.
@@ -419,6 +428,9 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, IntegerVector from, IntegerV
             if (cindex != ftell(fp))
               Rprintf("  *BUG*: cindex=%ld is out of synch with ftell(fp)=%ld\n", cindex, ftell(fp));
             break;
+          } else {
+            Rprintf(" expecting family (0x%02x) but got 0x%02x at cindex=%d\n",
+                family, c, cindex);
           }
         }
       }
