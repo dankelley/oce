@@ -1,0 +1,107 @@
+---
+author: Dan Kelley
+title: Confusion over an AD2CP file
+date: 2022-08-12
+---
+
+This is mainly a message to R.E., but I will CC it to others in this discussion
+of decoding Nortek AD2CP files in the R package called "oce". I am looking
+again at the ad2cp file that I sent before (attached again, for completeness).
+
+I am confused as to why you (R.E.) say
+
+> I could not find any sequences of a5 0c 23 in the attached .ad2cp file.
+
+because I see that sequence when examining the file in two different ways. I'll
+show the two methods in the next sections.
+
+# Examining the file in R
+
+The R code
+```
+    buf <- readBin("ad2cp_01.ad2cp", "raw", n=1e6)
+```
+
+reads the file (it's 50,000 bytes, but I ask for a million to be sure to get to the end).  Then I look at two spots in the file: (a) the start and (b) at byte 6997.
+
+## Start of file
+
+The R code
+```
+	buf[1:10]
+```
+gives output
+```
+	a5 0a a0 10 f2 11 f6 8f b9 72
+```
+which we may read directly (i.e. the R function readBin() reads the bytes as they are, without alternating for the endianness of the machine)
+
+* 0xa5: sync char
+* 0x0a = decimal 10: number of bytes in the header
+* 0xa0 = decimal 160: ID code, meaning that this is a text sequence
+
+and this makes sense, as this first data chunk holds the instrument-setup commands.
+
+## Partway through file
+
+The R code
+```
+	buf[6996 + 1:12]
+```
+gives output
+```
+	a5 0c 23 10 a0 3e 00 00 92 24 86 35
+```
+which I read as
+
+* 0xa5: sync char
+* 0x0c=decimal 12: number of bytes in the header
+* 0x23: ID code that is undocumented in the 2022 manual, but which I am told is a code that will be used in future systems.  (This data file may be from a test instrument.)
+
+# Using "od" command to see file contents
+
+I am on an intel-based mac, and so "od" emits bytes in flipped order.  Again, we look at two spots
+
+## Start of file
+
+Using the unix command
+```
+	od -j 0 -N 10 -A d -vx ad2cp_01.ad2cp
+```
+yields
+```
+	0000000      0aa5    10a0    11f2    8ff6    72b9
+```
+
+Here, the first value is a decimal counter, and after that are the bytes (in reversed order within each 4-character unit).  I read this as
+
+* 0xa5 = sync char
+* 0x0a = decimal 10 = number of bytes in header
+* 0xa0 = ID for a string record (which holds the instrument-setup header)
+
+In other words, I get the same interpretation with "od" as I get R.
+
+## Partway through file
+
+Using
+```
+	od -j 6996  -N 10 -A d -vx ad2cp_01.ad2cp
+```
+reveals
+```
+	0006996      0ca5    1023    3ea0    0000    2492
+```
+which, as above, yields
+
+* 0xa5: sync char
+* 0x0c=decimal 12: number of bytes in header
+* 0x23: unknown ID, as above
+
+## Commentary
+
+Using two different methods, I get the byte sequence a5-0c-23 in this file. I
+think this file may be from a test instrument, and that would make me think I
+can ignore the format until it is documented, but I am confused as to why you
+don't see the sequence.  I do not have a Windows machine so I don't know how to
+suggest similar work there.
+
