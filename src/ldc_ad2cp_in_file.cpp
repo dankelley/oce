@@ -373,7 +373,8 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, IntegerVector from, IntegerV
       while (1) {
         c = getc(fp);
         cindex++;
-        Rprintf("cindex=%5d c=0x%02x\n", cindex, c);
+        if (debug)
+          Rprintf("cindex=%5d c=0x%02x\n", cindex, c);
         if (c == EOF) {
           Rprintf("... got to end of file while searching for a sync character (0x%02x)\n", SYNC);
           early_EOF = 1;
@@ -395,7 +396,7 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, IntegerVector from, IntegerV
             Rprintf("    header-size is %d, not 10 or 12 as expected\n", trial_header_size);
             continue;
           }
-          Rprintf("  DAN DAN DAN trial_header_size=%d\n", trial_header_size);
+          //Rprintf("  DAN DAN DAN trial_header_size=%d\n", trial_header_size);
           //. Rprintf("        proper header-size character (either 10 or 20 decimal)\n");
           // Skip over the id byte, which has many possibilities we know of (and perhaps more),
           // so it is a bit hard to check for correctness.
