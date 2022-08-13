@@ -29,7 +29,7 @@ if (file.exists(file)) {
             expect_equal(d[["fileType"]], "AD2CP")
             expect_equal(d[["serialNumber"]], 101135)
             # Entry names
-            expect_equal(sort(names(d[["data"]])), c("average", "echosounder"))
+            expect_equal(sort(names(d[["data"]])), c("average", "echosounder", "echosounderRaw"))
             expect_equal(sort(names(d[["average"]])),
                 sort(c("a", "accelerometer", "blankingDistance", "cellSize",
                         "configuration", "datasetDescription", "distance",

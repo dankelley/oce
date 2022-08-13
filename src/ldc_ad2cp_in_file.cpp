@@ -25,21 +25,6 @@ using namespace Rcpp;
 #define NID_ALLOWED 12
 int ID_ALLOWED[NID_ALLOWED]={21, 22, 23, 24, 26, 27, 28, 29, 30, 31, 35, 160};
 
-// #define numberKnownIds 5
-// const int ids[numberKnownIds] = {0xa0, 0x15, 0x16, 0x17, 0x18};
-// const char *meanings[numberKnownIds] = {"String", "Burst Data", "Average Data", "Bottom-Track", "Interleaved Burst"};
-// const char *unknownString = "unknown";
-//
-// const char *id_meaning(int code)
-// {
-//   for (int i=0; i < numberKnownIds; i++) {
-//     if (code == ids[i]) {
-//       return(meanings[i]);
-//     }
-//   }
-//   return(unknownString);
-// }
-
 /*
 
    Locate (header+data) for Nortek ad2cp
@@ -116,13 +101,12 @@ that is not stated in the table. I think the same can be said of [2].
 
 @references
 
-1. "Integrators Guide AD2CP_A.pdf", provided to me privately by
-(person 1) in early April of 2017.
+1. "Integrators Guide AD2CP_A.pdf", provided to me privately by (person 1) in early April of 2017.
 
 2. https://github.com/aodn/imos-toolbox/blob/master/Parser/readAD2CPBinary.m
 
-3. Nortek AS. “Signature Integration 55|250|500|1000kHz (Version
-    Version 2022.2).” Nortek AS, March 31, 2022.
+3. Nortek AS. “Signature Integration 55|250|500|1000kHz (Version Version 2022.2).” Nortek AS, March
+31, 2022.
 
 @author
 
@@ -245,6 +229,7 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, IntegerVector from, IntegerV
   unsigned int dbuflen = 10000; // may be increased later
   unsigned char *dbuf = (unsigned char *)R_Calloc((size_t)dbuflen, unsigned char);
   unsigned int nchunk = 100000;
+  unsigned int *start_buf = (unsigned int*)R_Calloc((size_t)nchunk, unsigned int);
   unsigned int *index_buf = (unsigned int*)R_Calloc((size_t)nchunk, unsigned int);
   unsigned int *length_buf = (unsigned int*)R_Calloc((size_t)nchunk, unsigned int);
   unsigned int *id_buf = (unsigned int*)R_Calloc((size_t)nchunk, unsigned int);
@@ -257,6 +242,7 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, IntegerVector from, IntegerV
       if (debug)
         Rprintf("  increasing 'index_buf' size from %d ... ", nchunk);
       nchunk = (unsigned int) floor(chunk * 1.4); // increase buffer size by sqrt(2)
+      start_buf = (unsigned int*)R_Realloc(start_buf, nchunk, unsigned int);
       index_buf = (unsigned int*)R_Realloc(index_buf, nchunk, unsigned int);
       length_buf = (unsigned int*)R_Realloc(length_buf, nchunk, unsigned int);
       id_buf = (unsigned int*)R_Realloc(id_buf, nchunk, unsigned int);
@@ -329,6 +315,7 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, IntegerVector from, IntegerV
       Rprintf("ERROR: header checksum, 0x%02x, disagrees with expectation, 0x%02x, at cindex=%ld.  (Error ignored in this version of oce.)\n",
           computed_header_checksum, header.header_checksum, cindex);
     }
+    start_buf[chunk] = cindex;
     cindex = cindex + header.header_size;
     index_buf[chunk] = cindex;
     length_buf[chunk] = header.data_size;
@@ -448,18 +435,22 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, IntegerVector from, IntegerV
       chunk++;
     }
   }
-  IntegerVector index(chunk), length(chunk), id(chunk);
+  IntegerVector start(chunk), index(chunk), length(chunk), id(chunk);
   for (unsigned int i = 0; i < chunk; i++) {
+    start[i] = start_buf[i];
     index[i] = index_buf[i];
     length[i] = length_buf[i];
     id[i] = id_buf[i];
   }
+  R_Free(start_buf);
   R_Free(index_buf);
   R_Free(length_buf);
   R_Free(id_buf);
   if (debug)
     Rprintf("} # do_ldc_ad2cp_in_file()\n");
-  return(List::create(Named("index")=index,
+  return(List::create(
+        Named("start")=start,
+        Named("index")=index,
         Named("length")=length,
         Named("id")=id,
         Named("checksumFailures")=checksum_failures,
