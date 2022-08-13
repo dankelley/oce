@@ -15,15 +15,15 @@ file <- "local_data/ad2cp/ad2cp_01.ad2cp"
 if (file.exists(file)) {
     test_that("local_data/ad2cp/ad2cp_01.ad2cp is okay",
         {
-            expect_warning(
+            expect_output(
                 expect_warning(
                     expect_warning(
-                        expect_output(
+                        expect_warning(
                             d <- read.oce(file),
-                            "skipping undocumented header.id=0x23"),
-                        "has 12-byte headers"),
-                    "using to=12"),
-                "'plan' defaulting to 0")
+                            "has 12-byte headers"),
+                        "using to=12"),
+                    "'plan' defaulting to 0"),
+                "EOF before end of chunk")
             # Identifiers
             expect_equal(d[["type"]], "Signature100")
             expect_equal(d[["fileType"]], "AD2CP")

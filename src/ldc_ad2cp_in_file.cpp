@@ -1,4 +1,4 @@
-/* vim: set expandtab shiftwidth=2 softtabstop=2 tw=70: */
+/* vim: set expandtab shiftwidth=2 softtabstop=2 tw=100: */
 
 #include <Rcpp.h>
 using namespace Rcpp;
@@ -20,10 +20,10 @@ using namespace Rcpp;
 //#define HEADER_SIZE 10 // but can't this be 12 sometimes? (See below.)
 #define FAMILY 0x10
 
-// allowed: 0x15-0x18, ox1a-0x1f, 0xa0
-// allowed: 21-24, 26-31, 160
-#define NID_ALLOWED 11
-int ID_ALLOWED[NID_ALLOWED]={21, 22, 23, 24, 26, 27, 28, 29, 30, 31, 160};
+// allowed: 0x15-0x18, ox1a-0x1f, 0x23, 0xa0
+// allowed: 21-24, 26-31, 35, 160
+#define NID_ALLOWED 12
+int ID_ALLOWED[NID_ALLOWED]={21, 22, 23, 24, 26, 27, 28, 29, 30, 31, 35, 160};
 
 // #define numberKnownIds 5
 // const int ids[numberKnownIds] = {0xa0, 0x15, 0x16, 0x17, 0x18};
@@ -70,14 +70,16 @@ int ID_ALLOWED[NID_ALLOWED]={21, 22, 23, 24, 26, 27, 28, 29, 30, 31, 160};
 
 @section: notes
 
-Table 6.1 (header definition).  In <> I have the byte number wrt start
+Table 6.1 (header definition).  The number in <> is the byte number
+with respect to the start, for a 10-byte header, and in {} for a
+12-byte header.
 
-+-----------------+-------------------+----------------------------------------------------------+
-| Sync            | <0> 1 byte        | Always 0xA5                                              |
++-----------------+-------------------+--------------------------------------------------------+
+| Sync            | <0>{0} 1 byte     | Always 0xA5                                            |
 +-----------------|-------------------|--------------------------------------------------------+
-| Header Size     | <1> 1 byte        | Size (number of bytes) of the Header (10 or 12)        |
+| Header Size     | <1>{1} 1 byte     | Nnumber of bytes in the Header (either 10 or 12)       |
 +-----------------|-------------------|--------------------------------------------------------+
-| ID              | <2> 1 byte        | Defines type of the following Data Record              |
+| ID              | <2>{1} 1 byte     | Defines type of the following Data Record              |
 |                 |                   | 0x15 - Burst Data Record.                              |
 |                 |                   | 0x16 - Average Data Record.                            |
 |                 |                   | 0x17 - Bottom Track Data Record.                       |
@@ -93,16 +95,20 @@ Table 6.1 (header definition).  In <> I have the byte number wrt start
 |                 |                   | 0x23 - EchoSounder raw sample data record              |
 |                 |                   | 0x24 - " " synthetic transmit pulse data record        |
 +-----------------|-------------------|--------------------------------------------------------|
-| Family          | <3> 1 byte        | Defines the Instrument Family. 0x10 – AD2CP Family     |
+| Family          | <3>{3} 1 byte     | Defines the Instrument Family. 0x10 – AD2CP Family     |
 +-----------------|-------------------|--------------------------------------------------------+
-| Data Size       | <4> 2 or 4 bytes  | If 2 bytes, the size (number of bytes) of the          |
-|                 |                   | following Data Record. The format of the 4-byte case   |
-|                 |                   | is not documented.                                     |
+| Data Size       | <4>{4} 2 bytes    | Unsigned 2-byte integer holding the # of bytes of the  |
+|                 |                   | following Data Record.                                 |
 +-----------------|-------------------|--------------------------------------------------------+
-| Data Checksum   | <6 or 8> 2 bytes  | Checksum of the following Data Record.                 |
+| Packet Counter  | <>{6} 2 bytes     | Unsigned 2-byte integer giving the packet counter.     |
+|                 |                   | Present only in 12-byte headers.  This is not yet      |
+|                 |                   | documented, but I learned of it in an email from       |
+|                 |                   | Nortek, dated 2022-08-13.                              |
 +-----------------|-------------------|--------------------------------------------------------+
-| Header Checksum | <8 or 10> 2 bytes | Checksum of all fields of the Header                   |
-|                 |                   | (excepts the Header Checksum itself).                  |
+| Data Checksum   | <6>{8} 2 bytes    | Checksum of the following Data Record.                 |
++-----------------|-------------------|--------------------------------------------------------+
+| Header Checksum | <8>{10} 2 bytes   | Checksum of all fields of the Header                   |
+|                 |                   | (except the Header Checksum itself).                   |
 +-----------------+-------------------+--------------------------------------------------------+
 
 Note that the code examples in [1] suggest that the checksums are also unsigned, although
@@ -190,7 +196,7 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, IntegerVector from, IntegerV
   fseek(fp, 0L, SEEK_END);
   long long int filesize = ftell(fp);
   fseek(fp, 0L, SEEK_SET);
-  if (1+debug) {
+  if (debug) {
     Rprintf("do_ldc_ad2cp_in_file(filename, from=%d, to=%d, by=%d, ...) {\n", from[0], to[0], by[0]);
     Rprintf("  filename=\"%s\"\n", fn.c_str());
     Rprintf("  ignoreChecksums[0]=%d\n", ignoreChecksums[0]);
@@ -231,7 +237,8 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, IntegerVector from, IntegerV
     unsigned char header_size;      // 1 byte
     unsigned char id;               // 1 byte
     unsigned char family;           // 1 byte; must be 0x10 for ad2cp
-    unsigned long data_size;        // 2 bytes if header_size=10 or 4 bytes if it is 12.
+    unsigned long data_size;        // 2 bytes
+    unsigned short packet_counter;  // 2 bytes if header_size==12, missing otherwise
     unsigned short data_checksum;   // 2 bytes
     unsigned short header_checksum; // 2 bytes
   } header;
@@ -268,27 +275,27 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, IntegerVector from, IntegerV
     header.header_size = header_bytes[1];
     header.id = header_bytes[2];
     header.family = header_bytes[3];
+    header.data_size = header_bytes[4] + 256 * header_bytes[5];
     unsigned char family = header.family; // used in recovery attempt, if a checksum error occurs
     if (header.header_size == 10) {
-      header.data_size = header_bytes[4] + 256 * header_bytes[5];
       header.data_checksum = header_bytes[6] + 256 * header_bytes[7];
+      header.packet_counter = 0;
       header.header_checksum = header_bytes[8] + 256 * header_bytes[9];
       // Give 2 bytes back, since we read 12 and only need 10
       fseek(fp, -2, SEEK_CUR);
     } else if (header.header_size == 12) {
       twelve_byte_header = 1;
-      header.data_size = header_bytes[4] + 256 * (header_bytes[5] + 256 * (header_bytes[6] + 256 * header_bytes[7]));
+      header.packet_counter = header_bytes[6] + 256 * header_bytes[7];
       header.data_checksum = header_bytes[8] + 256 * header_bytes[9];
       header.header_checksum = header_bytes[10] + 256 * header_bytes[11];
     } else {
-      ::Rf_error("impossible header.header_size %d (should be 10 or 12) at cindex=%ld (%7.4f%% through file)\n",
+      ::Rf_error("invalid header.header_size %d (must be 10 or 12) at cindex=%ld (%7.4f%% through file)\n",
           header.header_size, cindex, 100.0*(cindex)/filesize);
     }
-    Rprintf("  cindex=%d: header.(family=0x%02x, header_size=%d, id=0x%02x, data_size=%d)\n",
-        cindex, header.family, header.header_size, header.id, header.data_size);
     if (debug > 1) {
-      Rprintf("Chunk %d at cindex=%ld, %.5f%% through file: id=0x%02x=",
-          chunk, cindex, 100.0*cindex/filesize, header.id);
+      Rprintf("Chunk %d at cindex=%ld, %.5f%% through file: header_size=%d, data_size=%d, packet_counter=%d, id=0x%02x=",
+          chunk, cindex, 100.0*cindex/filesize, header.header_size, header.data_size, header.packet_counter,
+          header.id);
       if (header.id == 0xa0) Rprintf("String\n");
       else if (header.id == 0x15) Rprintf("Burst data record\n");
       else if (header.id == 0x16) Rprintf("Average data record\n");
