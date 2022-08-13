@@ -151,27 +151,23 @@ are two reasons for this.
 First, Nortek (2022) is not as clear in its description of the data format as
 Nortek (2017) and Nortek (2018), as exemplified by a few examples.
 \enumerate{
-\item Nortek (2022) does not explain how to compute checksums.  Without this,
-it's impossible to write code to read the files, because the chance of random
-byte sequences would match chunk-start codes is too high, relative to file
-size.  After all, the Nortek engineers have used checksums in their products
-for a long time, and for a very good reason.
-\item Nortek (2022) does not lay out the data formats in sufficient detail to be
-of much guidance. The new leading-underscore format (Nortek 2022, page 79) it
-results in information being split into chunks that are spread throughout the
-document.  Given a particular field (say "burst") just where is one to look in
-the document?  And what do "Extends" and "Used By" (e.g. Nortek 2022, p85)
-mean? The older document laid things out more clearly, e.g. the average/burst
-format is laid out in detail, \emph{in one place} on pages 57 to 64 of Nortek, with
-the optional fields being clearly labelled in the rightmost column of Table
-6.1.3.
-\item Nortek (2022) often lists units incorrectly.  For example, on page 82,
-Pressure is said to have "Unit [dBar]" in green text, but the black text
-above states "Raw data given as 0.001 dBar". If the stated storage class
-(uint32) is to be believed, then it seems clear that the unit must be
-0.001 dBar, so the green text should be ignored.  The same can be said
-of items throughout the data-format tables. In coding `read.adp.ad2cp()],
-the green "Unit" text was ignored in basically every case.
+\item Nortek (2022) has dropped the explanation of how to compute checksums,
+which was present in the earlier documents.
+\item The Nortek (2022) explanation of the data format differs from the older
+explanations and is arguably more difficult to understand.  With the new
+leading-underscore format (see Nortek 2022, page 79), information is spread
+throughout the document, making it challenging to understand data fields in
+isolation.  The older documents laid things out more clearly, e.g. the
+average/burst format is laid out in detail, \emph{in one place} on pages 57 to 64
+of Nortek, with the optional fields being clearly labelled in the rightmost
+column of Table 6.1.3.
+\item Nortek (2022) does not always specify units correctly.  For example, on
+page 82, Pressure is said to have "Unit [dBar]" in green text, but the
+black text above states "Raw data given as 0.001 dBar". If the stated storage
+class (uint32) is to be believed, then it seems clear that the unit must be
+0.001 dBar, so the green text should be ignored.  The same can be said of
+items throughout the data-format tables. In coding `read.adp.ad2cp()], the
+green "Unit" text was ignored in basically every case.
 }
 
 Second, Nortek (2022) contains significant errors, e.g. the following.
