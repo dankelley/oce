@@ -116,22 +116,20 @@ Dan Kelley
 
 // Check the header checksum.
 //
-// The code for this differs from that suggested by Nortek,
-// because we don't use a specific (msoft) compiler, so we
-// do not have access to misaligned_load16(), which I've seen
-// in some Nortek code. Besides, R does not have a 'short' (i.e.
-// two-byte) type, so we need work work byte by byte (for the R 'raw'
-// type).
+// The code for this differs from that suggested by Nortek, because we don't use
+// a specific (msoft) compiler, so we do not have access to misaligned_load16(),
+// which I've seen in some Nortek code. Besides, R does not have a 'short' (i.e.
+// two-byte) type, so we need work work byte by byte (for the R 'raw' type).
 //
-// At the end of the loop, we check here for an odd number of
-// bytes, and zero-pad on the right of the last, if so. This
-// is the scheme suggested (in quite different code) at
-// https://www.manualslib.com/manual/1595998/Nortek-Signature-Series.html?page=49#manual.
-//
-// Another site worth checking is
-// https://github.com/aodn/imos-toolbox/blob/master/Parser/readAD2CPBinary.m,
-// although that does not come from Nortek, and it seems to have no
-// provision for a data sequence with an odd number of members.
+// At the end of the loop, we check for an odd number of bytes, and zero-pad on
+// the right of the last, if so. This is the scheme suggested at
+// https://www.manualslib.com/manual/1595998/Nortek-Signature-Series.html?page=49#manual
+// and in Nortek code that I received in August 2022, but am not providing here,
+// based on my assumption that this would not fall within the oce license.  I
+// have seen various contradictory schemes in online sources, and a lot contain
+// comments along the lines of "will this ever happen?".  See also
+// https://github.com/aodn/imos-toolbox/blob/master/Parser/readAD2CPBinary.m for
+// some Matlab code.
 unsigned short cs(unsigned char *data, unsigned short size, int debug)
 {
   unsigned short checksum = 0xB58C;
@@ -140,14 +138,18 @@ unsigned short cs(unsigned char *data, unsigned short size, int debug)
         size, data[0], data[1], data[2], data[3],
         data[size-4], data[size-3], data[size-2], data[size-1]);
   }
-  for (int i = 0; i < size; i += 2) {
-    checksum += (unsigned short)data[i] + 256*(unsigned short)data[i+1];
+  for (int i = 0; i < size-1; i += 2) {
+    unsigned short upper = data[i+1] << 8;
+    unsigned short lower = data[i];
+    unsigned short sum = (upper + lower ) & 0xffff;
+    checksum = (checksum + sum) & 0xffff;
   }
+  // Handle the case of size being an odd number
   if (1 == size%2) {
     if (debug > 1) {
       Rprintf("    odd # data, so cs changed from 0x%x ", checksum);
     }
-    checksum += 256*(unsigned short)data[size-1];
+    checksum += ((unsigned short)(data[size-1] << 8)) & 0xffff;
     if (debug > 1) {
       Rprintf("to 0x%x\n", checksum);
     }
