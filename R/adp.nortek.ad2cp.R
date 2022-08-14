@@ -249,6 +249,7 @@ ad2cpCodeToName <- function(code=NULL)
         DVLWaterTrack=as.raw(0x1d),
         altimeter=as.raw(0x1e),
         averageAltimeter=as.raw(0x1f),
+        echosounderRaw=as.raw(0x23),
         text=as.raw(0xa0))
     if (is.null(code)) {
         rval <- data.frame(
@@ -300,29 +301,25 @@ ad2cpCodeToName <- function(code=NULL)
 #' First, Nortek (2022) is not as clear in its description of the data format as
 #' Nortek (2017) and Nortek (2018), as exemplified by a few examples.
 #'
-#' 1. Nortek (2022) does not explain how to compute checksums.  Without this,
-#' it's impossible to write code to read the files, because the chance of random
-#' byte sequences would match chunk-start codes is too high, relative to file
-#' size.  After all, the Nortek engineers have used checksums in their products
-#' for a long time, and for a very good reason.
+#' 1. Nortek (2022) has dropped the explanation of how to compute checksums,
+#' which was present in the earlier documents.
 #'
-#' 2. Nortek (2022) does not lay out the data formats in sufficient detail to be
-#' of much guidance. The new leading-underscore format (Nortek 2022, page 79) it
-#' results in information being split into chunks that are spread throughout the
-#' document.  Given a particular field (say "burst") just where is one to look in
-#' the document?  And what do "Extends" and "Used By" (e.g. Nortek 2022, p85)
-#' mean? The older document laid things out more clearly, e.g. the average/burst
-#' format is laid out in detail, *in one place* on pages 57 to 64 of Nortek, with
-#' the optional fields being clearly labelled in the rightmost column of Table
-#' 6.1.3.
+#' 2. The Nortek (2022) explanation of the data format differs from the older
+#' explanations and is arguably more difficult to understand.  With the new
+#' leading-underscore format (see Nortek 2022, page 79), information is spread
+#' throughout the document, making it challenging to understand data fields in
+#' isolation.  The older documents laid things out more clearly, e.g. the
+#' average/burst format is laid out in detail, *in one place* on pages 57 to 64
+#' of Nortek, with the optional fields being clearly labelled in the rightmost
+#' column of Table 6.1.3.
 #'
-#' 3. Nortek (2022) often lists units incorrectly.  For example, on page 82,
-#' Pressure is said to have "Unit \[dBar\]" in green text, but the black text
-#' above states "Raw data given as 0.001 dBar". If the stated storage class
-#' (uint32) is to be believed, then it seems clear that the unit must be
-#' 0.001 dBar, so the green text should be ignored.  The same can be said
-#' of items throughout the data-format tables. In coding `read.adp.ad2cp()],
-#' the green "Unit" text was ignored in basically every case.
+#' 3. Nortek (2022) does not always specify units correctly.  For example, on
+#' page 82, Pressure is said to have "Unit \[dBar\]" in green text, but the
+#' black text above states "Raw data given as 0.001 dBar". If the stated storage
+#' class (uint32) is to be believed, then it seems clear that the unit must be
+#' 0.001 dBar, so the green text should be ignored.  The same can be said of
+#' items throughout the data-format tables. In coding `read.adp.ad2cp()], the
+#' green "Unit" text was ignored in basically every case.
 #'
 #' Second, Nortek (2022) contains significant errors, e.g. the following.
 #'
@@ -481,7 +478,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
     } else {
         whichChoices <- c("burst", "average", "bottomTrack", "interleavedBurst",
             "burstAltimeterRaw", "DVLBottomTrack", "echosounder", "DVLWaterTrack",
-            "altimeter", "averageAltimeter")
+            "altimeter", "averageAltimeter", "echosounderRaw")
         if (1L == length(which) && which == "all")
             which <- whichChoices
         unknownWhich <- !(which %in% whichChoices)
@@ -593,20 +590,16 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
         o <- order(names(t))
         return(t[o])
     } else if (which[1] == "??") {
-        bytesInHeader <- ifelse(nav$twelve_byte_header, 12L, 10L)
         return(data.frame(
                 ID=ad2cpCodeToName(nav$id),
-                start=nav$index-bytesInHeader+1))
-    } else if (which[1] == "???") {
-        bytesInHeader <- ifelse(nav$twelve_byte_header, 12L, 10L)
-        #gi <- gappyIndex(nav$index-bytesInHeader, 4L, 2L)
-        return(data.frame(
-                ID=ad2cpCodeToName(nav$id),
-                start=nav$index-bytesInHeader+1,
-                offsetOfData=as.integer(buf[nav$index+2L])))
+                start=nav$start+1L))   # nav$start is in zero-indexed C notation
+    #} else if (which[1] == "???") {
+    #    bytesInHeader <- ifelse(nav$twelve_byte_header, 12L, 10L)
+    #    return(data.frame(
+    #            ID=ad2cpCodeToName(nav$id),
+    #            start=nav$start+1,     # nav$start is in zero-indexed C notation
+    #            offsetOfData=as.integer(buf[nav$index+2L])))
     }
-    #DANnav<<-nav;message("FIXME: exported nav as DANnav")
-    #DAN<<-nav;save(DAN,file="DAN.rda")
     if (nav$twelve_byte_header == 1L)
         warning("file has 12-byte headers (an undocumented format), so be on the lookout for spurious results")
     d <- list(buf=buf, index=nav$index, length=nav$length, id=nav$id)
@@ -949,6 +942,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
     # 0x1D - DVL Water Track Record. (cf. IMOS does not handle)
     # 0x1E - Altimeter Record.
     # 0x1F - Avg Altimeter Raw Record.
+    # 0x23 - echosounder-raw (undocumented)
     # 0xA0 - String Data Record, eg. GPS NMEA data, comment from the FWRITE command.
     # Set up pointers to records matching these keys.
     p <- list(burst=which(d$id==0x15),
@@ -960,6 +954,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
         echosounder=which(d$id==0x1c),
         DVLWaterTrack=which(d$id==0x1d),
         altimeter=which(d$id==0x1e),
+        echosounderRaw=which(d$id==0x23),
         averageAltimeter=which(d$id==0x1f))
 
     #x Try to retrieved a named item from the data buffer.
@@ -1747,6 +1742,8 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
         data$DVLWaterTrack <- readTrack(id=as.raw(0x1d), debug=debug)
     if ("averageAltimeter" %in% which && length(p$averageAltimeter) > 0) # 0x1f
         data$averageAltimeter <- readProfile(id=as.raw(0x1f), debug=debug)
+    if ("echosounderRaw" %in% which && length(p$echosounderRaw) > 0) # 0x23
+        data$echosounderRaw <- readProfile(id=as.raw(0x23), debug=debug)
 
     # Insert metadata
     #res@metadata$id <- id

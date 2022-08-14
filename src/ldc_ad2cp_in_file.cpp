@@ -1,4 +1,4 @@
-/* vim: set expandtab shiftwidth=2 softtabstop=2 tw=70: */
+/* vim: set expandtab shiftwidth=2 softtabstop=2 tw=100: */
 
 #include <Rcpp.h>
 using namespace Rcpp;
@@ -20,25 +20,10 @@ using namespace Rcpp;
 //#define HEADER_SIZE 10 // but can't this be 12 sometimes? (See below.)
 #define FAMILY 0x10
 
-// allowed: 0x15-0x18, ox1a-0x1f, 0xa0
-// allowed: 21-24, 26-31, 160
-#define NID_ALLOWED 11
-int ID_ALLOWED[NID_ALLOWED]={21, 22, 23, 24, 26, 27, 28, 29, 30, 31, 160};
-
-// #define numberKnownIds 5
-// const int ids[numberKnownIds] = {0xa0, 0x15, 0x16, 0x17, 0x18};
-// const char *meanings[numberKnownIds] = {"String", "Burst Data", "Average Data", "Bottom-Track", "Interleaved Burst"};
-// const char *unknownString = "unknown";
-//
-// const char *id_meaning(int code)
-// {
-//   for (int i=0; i < numberKnownIds; i++) {
-//     if (code == ids[i]) {
-//       return(meanings[i]);
-//     }
-//   }
-//   return(unknownString);
-// }
+// allowed: 0x15-0x18, ox1a-0x1f, 0x23, 0xa0
+// allowed: 21-24, 26-31, 35, 160
+#define NID_ALLOWED 12
+int ID_ALLOWED[NID_ALLOWED]={21, 22, 23, 24, 26, 27, 28, 29, 30, 31, 35, 160};
 
 /*
 
@@ -70,14 +55,16 @@ int ID_ALLOWED[NID_ALLOWED]={21, 22, 23, 24, 26, 27, 28, 29, 30, 31, 160};
 
 @section: notes
 
-Table 6.1 (header definition).  In <> I have the byte number wrt start
+Table 6.1 (header definition).  The number in <> is the byte number
+with respect to the start, for a 10-byte header, and in {} for a
+12-byte header.
 
-+-----------------+-------------------+----------------------------------------------------------+
-| Sync            | <0> 1 byte        | Always 0xA5                                              |
++-----------------+-------------------+--------------------------------------------------------+
+| Sync            | <0>{0} 1 byte     | Always 0xA5                                            |
 +-----------------|-------------------|--------------------------------------------------------+
-| Header Size     | <1> 1 byte        | Size (number of bytes) of the Header (10 or 12)        |
+| Header Size     | <1>{1} 1 byte     | Nnumber of bytes in the Header (either 10 or 12)       |
 +-----------------|-------------------|--------------------------------------------------------+
-| ID              | <2> 1 byte        | Defines type of the following Data Record              |
+| ID              | <2>{1} 1 byte     | Defines type of the following Data Record              |
 |                 |                   | 0x15 - Burst Data Record.                              |
 |                 |                   | 0x16 - Average Data Record.                            |
 |                 |                   | 0x17 - Bottom Track Data Record.                       |
@@ -93,15 +80,20 @@ Table 6.1 (header definition).  In <> I have the byte number wrt start
 |                 |                   | 0x23 - EchoSounder raw sample data record              |
 |                 |                   | 0x24 - " " synthetic transmit pulse data record        |
 +-----------------|-------------------|--------------------------------------------------------|
-| Family          | <3> 1 byte        | Defines the Instrument Family. 0x10 – AD2CP Family     |
+| Family          | <3>{3} 1 byte     | Defines the Instrument Family. 0x10 – AD2CP Family     |
 +-----------------|-------------------|--------------------------------------------------------+
-| Data Size       | <4> 2 or 4 bytes  | Size (number of bytes) of the following Data Record.   |
-|                 |                   | 2 bytes if 10-byte header or 4 bytes if 12-byte header |
+| Data Size       | <4>{4} 2 bytes    | Unsigned 2-byte integer holding the # of bytes of the  |
+|                 |                   | following Data Record.                                 |
 +-----------------|-------------------|--------------------------------------------------------+
-| Data Checksum   | <6 or 8> 2 bytes  | Checksum of the following Data Record.                 |
+| Packet Counter  | <>{6} 2 bytes     | Unsigned 2-byte integer giving the packet counter.     |
+|                 |                   | Present only in 12-byte headers.  This is not yet      |
+|                 |                   | documented, but I learned of it in an email from       |
+|                 |                   | Nortek, dated 2022-08-13.                              |
 +-----------------|-------------------|--------------------------------------------------------+
-| Header Checksum | <8 or 10> 2 bytes | Checksum of all fields of the Header                   |
-|                 |                   | (excepts the Header Checksum itself).                  |
+| Data Checksum   | <6>{8} 2 bytes    | Checksum of the following Data Record.                 |
++-----------------|-------------------|--------------------------------------------------------+
+| Header Checksum | <8>{10} 2 bytes   | Checksum of all fields of the Header                   |
+|                 |                   | (except the Header Checksum itself).                   |
 +-----------------+-------------------+--------------------------------------------------------+
 
 Note that the code examples in [1] suggest that the checksums are also unsigned, although
@@ -109,13 +101,12 @@ that is not stated in the table. I think the same can be said of [2].
 
 @references
 
-1. "Integrators Guide AD2CP_A.pdf", provided to me privately by
-(person 1) in early April of 2017.
+1. "Integrators Guide AD2CP_A.pdf", provided to me privately by (person 1) in early April of 2017.
 
 2. https://github.com/aodn/imos-toolbox/blob/master/Parser/readAD2CPBinary.m
 
-3. Nortek AS. “Signature Integration 55|250|500|1000kHz (Version
-    Version 2022.2).” Nortek AS, March 31, 2022.
+3. Nortek AS. “Signature Integration 55|250|500|1000kHz (Version Version 2022.2).” Nortek AS, March
+31, 2022.
 
 @author
 
@@ -125,22 +116,20 @@ Dan Kelley
 
 // Check the header checksum.
 //
-// The code for this differs from that suggested by Nortek,
-// because we don't use a specific (msoft) compiler, so we
-// do not have access to misaligned_load16(), which I've seen
-// in some Nortek code. Besides, R does not have a 'short' (i.e.
-// two-byte) type, so we need work work byte by byte (for the R 'raw'
-// type).
+// The code for this differs from that suggested by Nortek, because we don't use
+// a specific (msoft) compiler, so we do not have access to misaligned_load16(),
+// which I've seen in some Nortek code. Besides, R does not have a 'short' (i.e.
+// two-byte) type, so we need work work byte by byte (for the R 'raw' type).
 //
-// At the end of the loop, we check here for an odd number of
-// bytes, and zero-pad on the right of the last, if so. This
-// is the scheme suggested (in quite different code) at
-// https://www.manualslib.com/manual/1595998/Nortek-Signature-Series.html?page=49#manual.
-//
-// Another site worth checking is
-// https://github.com/aodn/imos-toolbox/blob/master/Parser/readAD2CPBinary.m,
-// although that does not come from Nortek, and it seems to have no
-// provision for a data sequence with an odd number of members.
+// At the end of the loop, we check for an odd number of bytes, and zero-pad on
+// the right of the last, if so. This is the scheme suggested at
+// https://www.manualslib.com/manual/1595998/Nortek-Signature-Series.html?page=49#manual
+// and in Nortek code that I received in August 2022, but am not providing here,
+// based on my assumption that this would not fall within the oce license.  I
+// have seen various contradictory schemes in online sources, and a lot contain
+// comments along the lines of "will this ever happen?".  See also
+// https://github.com/aodn/imos-toolbox/blob/master/Parser/readAD2CPBinary.m for
+// some Matlab code.
 unsigned short cs(unsigned char *data, unsigned short size, int debug)
 {
   unsigned short checksum = 0xB58C;
@@ -149,14 +138,18 @@ unsigned short cs(unsigned char *data, unsigned short size, int debug)
         size, data[0], data[1], data[2], data[3],
         data[size-4], data[size-3], data[size-2], data[size-1]);
   }
-  for (int i = 0; i < size; i += 2) {
-    checksum += (unsigned short)data[i] + 256*(unsigned short)data[i+1];
+  for (int i = 0; i < size-1; i += 2) {
+    unsigned short upper = data[i+1] << 8;
+    unsigned short lower = data[i];
+    unsigned short sum = (upper + lower ) & 0xffff;
+    checksum = (checksum + sum) & 0xffff;
   }
+  // Handle the case of size being an odd number
   if (1 == size%2) {
     if (debug > 1) {
       Rprintf("    odd # data, so cs changed from 0x%x ", checksum);
     }
-    checksum += 256*(unsigned short)data[size-1];
+    checksum += ((unsigned short)(data[size-1] << 8)) & 0xffff;
     if (debug > 1) {
       Rprintf("to 0x%x\n", checksum);
     }
@@ -190,8 +183,9 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, IntegerVector from, IntegerV
   long long int filesize = ftell(fp);
   fseek(fp, 0L, SEEK_SET);
   if (debug) {
-    Rprintf("do_ldc_ad2cp_in_file(filename, from=%d, to=%d, by=%d) {\n", from[0], to[0], by[0]);
+    Rprintf("do_ldc_ad2cp_in_file(filename, from=%d, to=%d, by=%d, ...) {\n", from[0], to[0], by[0]);
     Rprintf("  filename=\"%s\"\n", fn.c_str());
+    Rprintf("  ignoreChecksums[0]=%d\n", ignoreChecksums[0]);
     Rprintf("  filesize=%d bytes\n", filesize);
   }
   long long int chunk = 0;
@@ -217,23 +211,27 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, IntegerVector from, IntegerV
     }
     cindex++;
   }
+  if (debug)
+    Rprintf("First SYNC byte (0x%02x) at cindex=%d\n", SYNC, cindex);
   // The table in [ref 1 sec 6.1, page 80-81] says header pieces are
   // 10 bytes long, so once we get an 0xA5, we'll read 9 more
   // bytes to assemble the header in bytes10.  (We grab all the
   // bytes at once, so we can do a checksum.)
-  unsigned char header_bytes[12]; // to store either 10 or 12-byte headers
+  unsigned char header_bytes[12];   // to store either 10 or 12-byte headers
   struct header {
-    unsigned char sync;
-    unsigned char header_size;
-    unsigned char id;
-    unsigned char family;
-    unsigned long data_size; // may be 2 bytes or 4 bytes in header
-    unsigned short data_checksum;
-    unsigned short header_checksum;
+    unsigned char sync;             // 1 byte
+    unsigned char header_size;      // 1 byte
+    unsigned char id;               // 1 byte
+    unsigned char family;           // 1 byte; must be 0x10 for ad2cp
+    unsigned long data_size;        // 2 bytes
+    unsigned short packet_counter;  // 2 bytes if header_size==12, missing otherwise
+    unsigned short data_checksum;   // 2 bytes
+    unsigned short header_checksum; // 2 bytes
   } header;
   unsigned int dbuflen = 10000; // may be increased later
   unsigned char *dbuf = (unsigned char *)R_Calloc((size_t)dbuflen, unsigned char);
   unsigned int nchunk = 100000;
+  unsigned int *start_buf = (unsigned int*)R_Calloc((size_t)nchunk, unsigned int);
   unsigned int *index_buf = (unsigned int*)R_Calloc((size_t)nchunk, unsigned int);
   unsigned int *length_buf = (unsigned int*)R_Calloc((size_t)nchunk, unsigned int);
   unsigned int *id_buf = (unsigned int*)R_Calloc((size_t)nchunk, unsigned int);
@@ -244,15 +242,17 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, IntegerVector from, IntegerV
       ::Rf_error("more than 100 checksum errors");
     if (chunk > nchunk - 1) {
       if (debug)
-        Rprintf("  increasing 'index_buf' size from %d", nchunk);
+        Rprintf("  increasing 'index_buf' size from %d ... ", nchunk);
       nchunk = (unsigned int) floor(chunk * 1.4); // increase buffer size by sqrt(2)
+      start_buf = (unsigned int*)R_Realloc(start_buf, nchunk, unsigned int);
       index_buf = (unsigned int*)R_Realloc(index_buf, nchunk, unsigned int);
       length_buf = (unsigned int*)R_Realloc(length_buf, nchunk, unsigned int);
       id_buf = (unsigned int*)R_Realloc(id_buf, nchunk, unsigned int);
       if (debug)
-        Rprintf("  to %d\n", nchunk);
+        Rprintf(" to %d ... done\n", nchunk);
     }
     size_t bytes_read;
+    // Return 2 of these bytes later, if the header length is 10.
     if (12 != fread(&header_bytes, 1, 12, fp))
       ::Rf_error("cannot read header_bytes at cindex=%ld of %ld byte file\n", cindex, filesize);
     // if (1 != fread(&header.sync, 1, 1, fp))
@@ -263,25 +263,27 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, IntegerVector from, IntegerV
     header.header_size = header_bytes[1];
     header.id = header_bytes[2];
     header.family = header_bytes[3];
+    header.data_size = header_bytes[4] + 256 * header_bytes[5];
     unsigned char family = header.family; // used in recovery attempt, if a checksum error occurs
     if (header.header_size == 10) {
-      header.data_size = header_bytes[4] + 256 * header_bytes[5];
       header.data_checksum = header_bytes[6] + 256 * header_bytes[7];
+      header.packet_counter = 0;
       header.header_checksum = header_bytes[8] + 256 * header_bytes[9];
       // Give 2 bytes back, since we read 12 and only need 10
       fseek(fp, -2, SEEK_CUR);
     } else if (header.header_size == 12) {
       twelve_byte_header = 1;
-      header.data_size = header_bytes[4] + 256 * (header_bytes[5] + 256 * (header_bytes[6] + 256 * header_bytes[7]));
+      header.packet_counter = header_bytes[6] + 256 * header_bytes[7];
       header.data_checksum = header_bytes[8] + 256 * header_bytes[9];
       header.header_checksum = header_bytes[10] + 256 * header_bytes[11];
     } else {
-      ::Rf_error("impossible header.header_size %d (should be 10 or 12) at cindex=%ld (%7.4f%% through file)\n",
+      ::Rf_error("invalid header.header_size %d (must be 10 or 12) at cindex=%ld (%7.4f%% through file)\n",
           header.header_size, cindex, 100.0*(cindex)/filesize);
     }
     if (debug > 1) {
-      Rprintf("Chunk %d at cindex=%ld, %.5f%% through file: id=0x%02x=",
-          chunk, cindex, 100.0*cindex/filesize, header.id);
+      Rprintf("Chunk %d at cindex=%ld, %.5f%% through file: header_size=%d, data_size=%d, packet_counter=%d, id=0x%02x=",
+          chunk, cindex, 100.0*cindex/filesize, header.header_size, header.data_size, header.packet_counter,
+          header.id);
       if (header.id == 0xa0) Rprintf("String\n");
       else if (header.id == 0x15) Rprintf("Burst data record\n");
       else if (header.id == 0x16) Rprintf("Average data record\n");
@@ -295,17 +297,14 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, IntegerVector from, IntegerV
       else if (header.id == 0x1F) Rprintf("Avg altimeter raw record\n");
       else if (header.id == 0x23) Rprintf("Echo Sounder raw sample data record\n");
       else if (header.id == 0x24) Rprintf("Echo Sounder raw synthetic transmit pulse data record\n");
-      else Rprintf("Unrecognized ID\n");
-      Rprintf("  header: header_size=0x%02x=%d ", header.header_size, header.header_size);
-      Rprintf("id=0x%x ", header.id);
-      Rprintf("family=0x%x ", header.family);
-      Rprintf("data_size=%d ", header.data_size);
-      Rprintf("data_checksum=%d ", header.data_checksum);
-      Rprintf("header_checksum=%d\n", header.header_checksum);
+      else Rprintf("Unrecognized ID (0x%02x)\n", header.id);
+      Rprintf("  header_size=0x%02x=%d id=0x%02x family=0x%02x data_size=%d data_checksum=%d header_checksum=%d\n",
+          header.header_size, header.header_size, header.id, header.family,
+          header.data_size, header.data_checksum, header.header_checksum);
       if (cindex != ftell(fp) - header.header_size)
         Rprintf("Bug: cindex (%ld) is not equal to ftell()-header_size (%d)\n",
             cindex, ftell(fp)-header.header_size);
-    }
+    } // debug
     // See if header checksum is correct
     unsigned short computed_header_checksum;
     computed_header_checksum = cs(header_bytes, header.header_size-2, debug);
@@ -318,6 +317,7 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, IntegerVector from, IntegerV
       Rprintf("ERROR: header checksum, 0x%02x, disagrees with expectation, 0x%02x, at cindex=%ld.  (Error ignored in this version of oce.)\n",
           computed_header_checksum, header.header_checksum, cindex);
     }
+    start_buf[chunk] = cindex;
     cindex = cindex + header.header_size;
     index_buf[chunk] = cindex;
     length_buf[chunk] = header.data_size;
@@ -330,7 +330,10 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, IntegerVector from, IntegerV
       }
     }
     if (found == 0)
-      Rprintf("warning : ldc_ad2cp_in_file() skipping undocumented header.id=0x%02x at cindex=%ld\n", header.id, cindex);
+      Rprintf("warning : ldc_ad2cp_in_file() skipping undocumented header.id=0x%02x=%d at cindex=%ld header_size=0x%02x=%d family=0x%02x data_size=%d\n",
+          header.id, header.id, cindex,
+          header.header_size, header.header_size, header.family,
+          header.data_size);
     id_buf[chunk] = header.id;
     // Check the header checksum.
     // Increase size of data buffer, if required.
@@ -372,6 +375,8 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, IntegerVector from, IntegerV
       while (1) {
         c = getc(fp);
         cindex++;
+        if (debug)
+          Rprintf("cindex=%5d c=0x%02x\n", cindex, c);
         if (c == EOF) {
           Rprintf("... got to end of file while searching for a sync character (0x%02x)\n", SYNC);
           early_EOF = 1;
@@ -379,8 +384,8 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, IntegerVector from, IntegerV
         }
         if (c == SYNC) {
           //unsigned int trial_cindex = cindex; // so we can reset to here if this trial works
-          //.Rprintf("... got a sync character (0x%02x) at cindex=%d (%7.4f%% through file)\n",
-          //.    SYNC, cindex, 100.0*cindex/filesize);
+          Rprintf("... got a sync character (0x%02x) at cindex=%d (%7.4f%% through file)\n",
+              SYNC, cindex, 100.0*cindex/filesize);
           // header size (should be 10 or 12)
           int trial_header_size = getc(fp);
           cindex++;
@@ -390,9 +395,10 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, IntegerVector from, IntegerV
             break;
           }
           if (trial_header_size != 10 && trial_header_size != 12) {
-            //.Rprintf("    header-size is %d, not 10 or 12 as expected\n", trial_header_size);
+            Rprintf("    header-size is %d, not 10 or 12 as expected\n", trial_header_size);
             continue;
           }
+          //Rprintf("  DAN DAN DAN trial_header_size=%d\n", trial_header_size);
           //. Rprintf("        proper header-size character (either 10 or 20 decimal)\n");
           // Skip over the id byte, which has many possibilities we know of (and perhaps more),
           // so it is a bit hard to check for correctness.
@@ -419,6 +425,9 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, IntegerVector from, IntegerV
             if (cindex != ftell(fp))
               Rprintf("  *BUG*: cindex=%ld is out of synch with ftell(fp)=%ld\n", cindex, ftell(fp));
             break;
+          } else {
+            Rprintf(" expecting family (0x%02x) but got 0x%02x at cindex=%d\n",
+                family, c, cindex);
           }
         }
       }
@@ -429,18 +438,22 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, IntegerVector from, IntegerV
       chunk++;
     }
   }
-  IntegerVector index(chunk), length(chunk), id(chunk);
+  IntegerVector start(chunk), index(chunk), length(chunk), id(chunk);
   for (unsigned int i = 0; i < chunk; i++) {
+    start[i] = start_buf[i];
     index[i] = index_buf[i];
     length[i] = length_buf[i];
     id[i] = id_buf[i];
   }
+  R_Free(start_buf);
   R_Free(index_buf);
   R_Free(length_buf);
   R_Free(id_buf);
   if (debug)
     Rprintf("} # do_ldc_ad2cp_in_file()\n");
-  return(List::create(Named("index")=index,
+  return(List::create(
+        Named("start")=start,
+        Named("index")=index,
         Named("length")=length,
         Named("id")=id,
         Named("checksumFailures")=checksum_failures,
