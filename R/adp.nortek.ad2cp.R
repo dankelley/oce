@@ -1111,8 +1111,11 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
             object$echosounder <- matrix(tmp, nrow=NP, byrow=FALSE)
             i0v <<- i0v + 2L*NC
         } else if (name == "echosounderRaw") {
-            message("should read echosounderRaw now. i0v=", i0v)
-
+            if (debug) {
+                message("should read echosounderRaw now")
+                message("  ", vectorShow(i))
+                message("  ", vectorShow(i0v))
+            }
         } else if (name == "AHRS") {
             oceDebug(debug, "   AHRS starts at i0v=", i0v, "\n")
             # AHRSRotationMatrix
@@ -1262,10 +1265,15 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
         oceDebug(1+debug, "readEchosounderRaw(id=0x", id, ") # i.e. type=", type, "\n")
         rval <- list(DAN=1)
         look <- which(d$id == id)
+        #?lookIndex <- d$index[look]
+        offsetOfData <- as.integer(d$buf[d$index[look[1]] + 2L])
+        oceDebug(debug, "  ", vectorShow(offsetOfData))
         i <<- d$index[look]            # pointers to "echosounderRaw" chunks in buf
         oceDebug(debug, vectorShow(look))
         configuration0 <- configuration[look[1],]
-        rval <- list(DANNY=1)
+        oceDebug(debug, vectorShow(configuration0))
+        rval <- list()
+        # FIXME: need to find proper i0v
         i0v <<- 77                     # pointer to data (incremented by getItemFromBuf() later).
         rval <- getItemFromBuf(rval, "echosounderRaw", i=i, type=type, debug=debug)
         rval
@@ -1762,10 +1770,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
     if ("averageAltimeter" %in% which && length(p$averageAltimeter) > 0) # 0x1f
         data$averageAltimeter <- readProfile(id=as.raw(0x1f), debug=debug)
     if ("echosounderRaw" %in% which && length(p$echosounderRaw) > 0) # 0x23
-    {
-        message("DAN about to call readEchosounderRaw()")
         data$echosounderRaw <- readEchosounderRaw(id=as.raw(0x23), debug=debug)
-    }
 
     # Insert metadata
     #res@metadata$id <- id
