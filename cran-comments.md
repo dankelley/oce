@@ -1,4 +1,12 @@
-# Submission of oce 1.7-8
+# Submission of oce 1.7-9
+
+* Try to address issues reported on the CRAN machine named
+  `r-devel-linux-x86_64-debian-clang`.  I tested this using
+  `rhub::check(platform="debian-clang-devel")`, and `rhub::platforms()` tells
+  me that this is `Debian Linux, R-devel, clang, ISO-8859-15 locale`.
+
+* Try to address two NOTEs in the Rd files (for `swTFreeze.html` and
+  `swSpecificHeat.Rd`, reported for some of the CRAN test systems.
 
 * Prepare for the upcoming R release by eliminating \x assemblages in grep()
   and gsub() calls, and adding an 'encoding' parameter to the 'read' functions.
@@ -13,10 +21,10 @@
 
 ## Local Tests
 
-Local MacOS-12.5(beta) with R 4.2.1 and also R Under development (unstable)
-(2022-06-27 r82528): no ERRORs, no WARNINGs, and 2 NOTEs, one naming the author
-the other reporting that sub-directories were of size of 1MB or more: R 3.0Mb,
-data 1.0Mb, doc 2.0Mb, and help 3.8Mb.
+Local MacOS-13(Ventura beta) with R 4.2.1 and also R Under development
+(unstable) (2022-06-27 r82528): no ERRORs, no WARNINGs, and 2 NOTEs, one naming
+the author the other reporting that sub-directories were of size of 1MB or
+more: R 3.0Mb, data 1.0Mb, doc 2.0Mb, and help 3.8Mb.
 
 ## Remote Windows Checks
 

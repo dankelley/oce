@@ -26,7 +26,7 @@ for amplitude and quality images, and to black for time-series plots.}
 
 \item{pch}{character code}
 
-\item{lwd}{linewidth, used only for time-series graphs.}
+\item{lwd}{line width, used only for time-series graphs.}
 
 \item{type}{plot type, used only for time-series
 graphs.}

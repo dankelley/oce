@@ -27,7 +27,7 @@ provided or constructed.
 }
 \description{
 Create an AD2CP file by copying the first \code{n} data chunks (regions starting
-with 0xa5, etc) of another such file. This can be useful in supplying
+with \code{0xa5}, etc) of another such file. This can be useful in supplying
 small sample files for bug reports.
 }
 \examples{

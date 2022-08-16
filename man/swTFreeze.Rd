@@ -16,7 +16,7 @@ swTFreeze(
 \arguments{
 \item{salinity}{Either practical salinity (PSU) or a \code{ctd} object from which
 practical salinity and pressure (plus in the \code{eos="gsw"} case,
-longitude and latitude) are inferred, using \code{\link[=lookWithin]{lookWithin()}}.}
+longitude and latitude) are inferred.}
 
 \item{pressure}{Seawater pressure (dbar).}
 
@@ -33,19 +33,19 @@ ignored if \code{eos="unesco"}).}
 (references 3 and 4).}
 }
 \value{
-Temperature (\eqn{^\circ}{deg}C), defined on the ITS-90 scale.
+Temperature (degC), defined on the ITS-90 scale.
 }
 \description{
-Compute in-situ freezing temperature of seawater, using either the UNESCO formulation
-(computed as in Section 5 of reference 1) or the GSW formulation (computed
-by using \code{\link[gsw:gsw_SA_from_SP]{gsw::gsw_SA_from_SP()}} to get Absolute Salinity, and
-then \code{\link[gsw:gsw_t_freezing]{gsw::gsw_t_freezing()}} to get the freezing temperature).
+Compute in-situ freezing temperature of seawater, using either the UNESCO
+formulation (computed as in Section 5 of reference 1) or the GSW formulation
+(computed by using \code{\link[gsw:gsw_SA_from_SP]{gsw::gsw_SA_from_SP()}} to get Absolute Salinity, and then
+\code{\link[gsw:gsw_t_freezing]{gsw::gsw_t_freezing()}} to get the freezing temperature).
 }
 \details{
-If the first argument is an \code{oce} object, and if the \code{pressure}
-argument is \code{NULL}, then the pressure is sought within the first
-argument. In the case of \code{eos="gsw"}, then a similar procedure
-also applies to the \code{longitude} and \code{latitude} arguments.
+If the first argument is an \code{oce} object, and if the \code{pressure} argument is
+\code{NULL}, then the pressure is sought within the first argument. In the case of
+\code{eos="gsw"}, then a similar procedure also applies to the \code{longitude} and
+\code{latitude} arguments.
 }
 \examples{
 # 1. Test for a check-value given in reference 1. This value, -2.588567 degC,
@@ -67,11 +67,11 @@ plot(swTFreeze(ctd, eos="unesco") - swTFreeze(ctd, eos="gsw"),
 }
 \references{
 \enumerate{
-\item Fofonoff, N. P., and R. C. Millard. \dQuote{Algorithms for Computation of
-Fundamental Properties of Seawater.} UNESCO Technical Papers in Marine
+\item Fofonoff, N. P., and R. C. Millard. Algorithms for Computation of
+Fundamental Properties of Seawater. UNESCO Technical Papers in Marine
 Research. SCOR working group on Evaluation of CTD data; UNESCO/ICES/SCOR/IAPSO
 Joint Panel on Oceanographic Tables and Standards, 1983.
-https://unesdoc.unesco.org/ark:/48223/pf0000059832.
+\verb{https://unesdoc.unesco.org/ark:/48223/pf0000059832}.
 \item Gill, A E. Atmosphere-Ocean Dynamics. New York, NY, USA: Academic Press,
 \item 
 \item IOC, SCOR, and IAPSO (2010). The international thermodynamic equation of

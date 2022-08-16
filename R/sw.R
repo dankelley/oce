@@ -928,19 +928,19 @@ swTSrho <- function(salinity, density, pressure=NULL, eos=getOption("oceEOS", de
 
 #' Seawater freezing temperature
 #'
-#' Compute in-situ freezing temperature of seawater, using either the UNESCO formulation
-#' (computed as in Section 5 of reference 1) or the GSW formulation (computed
-#' by using [gsw::gsw_SA_from_SP()] to get Absolute Salinity, and
-#' then [gsw::gsw_t_freezing()] to get the freezing temperature).
+#' Compute in-situ freezing temperature of seawater, using either the UNESCO
+#' formulation (computed as in Section 5 of reference 1) or the GSW formulation
+#' (computed by using [gsw::gsw_SA_from_SP()] to get Absolute Salinity, and then
+#' [gsw::gsw_t_freezing()] to get the freezing temperature).
 #'
-#' If the first argument is an `oce` object, and if the `pressure`
-#' argument is `NULL`, then the pressure is sought within the first
-#' argument. In the case of `eos="gsw"`, then a similar procedure
-#' also applies to the `longitude` and `latitude` arguments.
+#' If the first argument is an `oce` object, and if the `pressure` argument is
+#' `NULL`, then the pressure is sought within the first argument. In the case of
+#' `eos="gsw"`, then a similar procedure also applies to the `longitude` and
+#' `latitude` arguments.
 #'
 #' @param salinity Either practical salinity (PSU) or a `ctd` object from which
 #' practical salinity and pressure (plus in the `eos="gsw"` case,
-#' longitude and latitude) are inferred, using [lookWithin()].
+#' longitude and latitude) are inferred.
 #'
 #' @param pressure Seawater pressure (dbar).
 #'
@@ -956,16 +956,17 @@ swTSrho <- function(salinity, density, pressure=NULL, eos=getOption("oceEOS", de
 #' @param eos The equation of state, either `"unesco"` (references 1 and 2) or `"gsw"`.
 #' (references 3 and 4).
 #'
-#' @return Temperature (\eqn{^\circ}{deg}C), defined on the ITS-90 scale.
+#' @return Temperature (degC), defined on the ITS-90 scale.
 #'
 #' @author Dan Kelley
 #'
 #' @references
-#' 1. Fofonoff, N. P., and R. C. Millard. \dQuote{Algorithms for Computation of
-#' Fundamental Properties of Seawater.} UNESCO Technical Papers in Marine
+#'
+#' 1. Fofonoff, N. P., and R. C. Millard. Algorithms for Computation of
+#' Fundamental Properties of Seawater. UNESCO Technical Papers in Marine
 #' Research. SCOR working group on Evaluation of CTD data; UNESCO/ICES/SCOR/IAPSO
 #' Joint Panel on Oceanographic Tables and Standards, 1983.
-#' https://unesdoc.unesco.org/ark:/48223/pf0000059832.
+#' `https://unesdoc.unesco.org/ark:/48223/pf0000059832`.
 #'
 #' 2. Gill, A E. Atmosphere-Ocean Dynamics. New York, NY, USA: Academic Press,
 #' 1982.
@@ -995,9 +996,8 @@ swTSrho <- function(salinity, density, pressure=NULL, eos=getOption("oceEOS", de
 #'      p, xlab="unesco-gsw", ylim=rev(range(p)))
 #'
 #' @family functions that calculate seawater properties
-swTFreeze <- function(salinity, pressure=NULL,
-                      longitude=NULL, latitude=NULL, saturation_fraction=1,
-                      eos=getOption("oceEOS", default="gsw"))
+swTFreeze <- function(salinity, pressure=NULL, longitude=NULL, latitude=NULL,
+    saturation_fraction=1, eos=getOption("oceEOS", default="gsw"))
 {
     if (missing(salinity))
         stop("must supply salinity (which may be S or a CTD object)")
@@ -2370,7 +2370,7 @@ swSoundSpeed <- function(salinity, temperature=NULL, pressure=NULL,
 #' @param latitude latitude of observation (only used if `eos="gsw"`; see
 #' \sQuote{Details}).
 #' @param eos equation of state, either `"unesco"` or `"gsw"`.
-#' @return Specific heat \eqn{J kg^{-1}\,^\circ C^{-1}}{J/(kg degC)}
+#' @return Specific heat (J/kg/degC).
 #' @author Dan Kelley
 #' @references Millero et. al., J. Geophys. Res. 78 (1973), 4499-4507
 #'

@@ -20,7 +20,7 @@ makeNumeric <- function(x)
 #' Trim an AD2CP File
 #'
 #' Create an AD2CP file by copying the first `n` data chunks (regions starting
-#' with 0xa5, etc) of another such file. This can be useful in supplying
+#' with `0xa5`, etc) of another such file. This can be useful in supplying
 #' small sample files for bug reports.
 #'
 #' @param infile name of an AD2CP file.
@@ -204,20 +204,20 @@ is.ad2cp <- function(x)
 #'
 #' The mapping from code (hex or decimal) to oce name is as follows.
 #'
-#' | code (raw) | code (integer) |          oce name |
-#' |      ----: |          ----: |             ----: |
-#' | ---------- | -------------- | ----------------- |
-#' |      0x15  |             21 |             burst |
-#' |      0x16  |             22 |           average |
-#' |      0x17  |             23 |       bottomTrack |
-#' |      0x18  |             24 |  interleavedBurst |
-#' |      0x1a  |             26 | burstAltimeterRaw |
-#' |      0x1b  |             27 |    DVLBottomTrack |
-#' |      0x1c  |             28 |       echosounder |
-#' |      0x1d  |             29 |     DVLWaterTrack |
-#' |      0x1e  |             30 |         altimeter |
-#' |      0x1f  |             31 |  averageAltimeter |
-#' |      0xa0  |            160 |              text |
+#' | code (raw) | code (integer) |            oce name |
+#' |      ----: |          ----: |               ----: |
+#' | ---------- | -------------- |   ----------------- |
+#' |     `0x15` |             21 |             `burst` |
+#' |     `0x16` |             22 |           `average` |
+#' |     `0x17` |             23 |       `bottomTrack` |
+#' |     `0x18` |             24 |  `interleavedBurst` |
+#' |     `0x1a` |             26 | `burstAltimeterRaw` |
+#' |     `0x1b` |             27 |    `DVLBottomTrack` |
+#' |     `0x1c` |             28 |       `echosounder` |
+#' |     `0x1d` |             29 |     `DVLWaterTrack` |
+#' |     `0x1e` |             30 |         `altimeter` |
+#' |     `0x1f` |             31 |  `averageAltimeter` |
+#' |     `0xa0` |            160 |              `text` |
 #'
 #' @param code a [raw] (or corresponding integer) vector indicating the IDs of
 #' interest, or NULL to get a summary of possible values.
@@ -351,7 +351,7 @@ ad2cpCodeToName <- function(code=NULL)
 #' to read everything at once, either as a way to speed processing or to avoid
 #' running out of memory.  For this reason, a common first step is instead to
 #' use `which="?"`, which gives a table of data types in the file or
-#' `which="??"`, which gives a data frame overviewing the data 'chunks'; after
+#' `which="??"`, which gives a data frame summarizing the data 'chunks'; after
 #' doing those things, the next step is usually to extract all the data, or an
 #' individual type of interest is extracted.  The choices of individual type are
 #' as follows:
@@ -1844,7 +1844,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
 #' @param type plot type, used only for time-series
 #' graphs.
 #'
-#' @param lwd linewidth, used only for time-series graphs.
+#' @param lwd line width, used only for time-series graphs.
 #'
 #' @param cex character expansion factor
 #'
