@@ -60,11 +60,12 @@ with respect to the start, for a 10-byte header, and in {} for a
 12-byte header.
 
 +-----------------+-------------------+--------------------------------------------------------+
-| Sync            | <0>{0} 1 byte     | Always 0xA5                                            |
+| Sync            | <0> 1 byte        | Always 0xA5                                            |
 +-----------------|-------------------|--------------------------------------------------------+
-| Header Size     | <1>{1} 1 byte     | Nnumber of bytes in the Header (either 10 or 12)       |
+| Header Size     | <1> 1 byte        | Number of bytes in the Header, either 10 or 12; see    |
+|                 |                   | Data Size below for first instance of consequence.     |
 +-----------------|-------------------|--------------------------------------------------------+
-| ID              | <2>{1} 1 byte     | Defines type of the following Data Record              |
+| ID              | <2> 1 byte        | Defines type of the following Data Record              |
 |                 |                   | 0x15 - Burst Data Record.                              |
 |                 |                   | 0x16 - Average Data Record.                            |
 |                 |                   | 0x17 - Bottom Track Data Record.                       |
@@ -80,15 +81,11 @@ with respect to the start, for a 10-byte header, and in {} for a
 |                 |                   | 0x23 - EchoSounder raw sample data record              |
 |                 |                   | 0x24 - " " synthetic transmit pulse data record        |
 +-----------------|-------------------|--------------------------------------------------------|
-| Family          | <3>{3} 1 byte     | Defines the Instrument Family. 0x10 – AD2CP Family     |
+| Family          | <3> 1 byte        | Defines the Instrument Family. 0x10 – AD2CP Family     |
 +-----------------|-------------------|--------------------------------------------------------+
-| Data Size       | <4>{4} 2 bytes    | Unsigned 2-byte integer holding the # of bytes of the  |
-|                 |                   | following Data Record.                                 |
-+-----------------|-------------------|--------------------------------------------------------+
-| Packet Counter  | <>{6} 2 bytes     | Unsigned 2-byte integer giving the packet counter.     |
-|                 |                   | Present only in 12-byte headers.  This is not yet      |
-|                 |                   | documented, but I learned of it in an email from       |
-|                 |                   | Nortek, dated 2022-08-13.                              |
+| Data Size       | <4> 2 or 4 bytes  | Unsigned 2-byte or 4-byte int (depending on whether    |
+|                 |                   | header_length is 10 or 12) holding the number of bytes |
+|                 |                   | in the following Data Record.                          |
 +-----------------|-------------------|--------------------------------------------------------+
 | Data Checksum   | <6>{8} 2 bytes    | Checksum of the following Data Record.                 |
 +-----------------|-------------------|--------------------------------------------------------+
@@ -224,7 +221,6 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, IntegerVector from, IntegerV
     unsigned char id;               // 1 byte
     unsigned char family;           // 1 byte; must be 0x10 for ad2cp
     unsigned long data_size;        // 2 bytes
-    unsigned short packet_counter;  // 2 bytes if header_size==12, missing otherwise
     unsigned short data_checksum;   // 2 bytes
     unsigned short header_checksum; // 2 bytes
   } header;
@@ -263,17 +259,16 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, IntegerVector from, IntegerV
     header.header_size = header_bytes[1];
     header.id = header_bytes[2];
     header.family = header_bytes[3];
-    header.data_size = header_bytes[4] + 256 * header_bytes[5];
     unsigned char family = header.family; // used in recovery attempt, if a checksum error occurs
     if (header.header_size == 10) {
+      header.data_size = header_bytes[4] + 256 * header_bytes[5];
       header.data_checksum = header_bytes[6] + 256 * header_bytes[7];
-      header.packet_counter = 0;
       header.header_checksum = header_bytes[8] + 256 * header_bytes[9];
       // Give 2 bytes back, since we read 12 and only need 10
       fseek(fp, -2, SEEK_CUR);
     } else if (header.header_size == 12) {
       twelve_byte_header = 1;
-      header.packet_counter = header_bytes[6] + 256 * header_bytes[7];
+      header.data_size = header_bytes[4] + 256 * (header_bytes[5] + 256 * (header_bytes[6] + 256 * header_bytes[7]));
       header.data_checksum = header_bytes[8] + 256 * header_bytes[9];
       header.header_checksum = header_bytes[10] + 256 * header_bytes[11];
     } else {
@@ -281,9 +276,8 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, IntegerVector from, IntegerV
           header.header_size, cindex, 100.0*(cindex)/filesize);
     }
     if (debug > 1) {
-      Rprintf("Chunk %d at cindex=%ld, %.5f%% through file: header_size=%d, data_size=%d, packet_counter=%d, id=0x%02x=",
-          chunk, cindex, 100.0*cindex/filesize, header.header_size, header.data_size, header.packet_counter,
-          header.id);
+      Rprintf("Chunk %d at cindex=%ld, %.5f%% through file: header_size=%d, data_size=%d, id=0x%02x=",
+          chunk, cindex, 100.0*cindex/filesize, header.header_size, header.data_size, header.id);
       if (header.id == 0xa0) Rprintf("String\n");
       else if (header.id == 0x15) Rprintf("Burst data record\n");
       else if (header.id == 0x16) Rprintf("Average data record\n");
@@ -298,9 +292,9 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, IntegerVector from, IntegerV
       else if (header.id == 0x23) Rprintf("Echo Sounder raw sample data record\n");
       else if (header.id == 0x24) Rprintf("Echo Sounder raw synthetic transmit pulse data record\n");
       else Rprintf("Unrecognized ID (0x%02x)\n", header.id);
-      Rprintf("  header_size=0x%02x=%d id=0x%02x family=0x%02x data_size=%d data_checksum=%d header_checksum=%d\n",
+      Rprintf("  header_size=0x%02x=%d id=0x%02x family=0x%02x data_size=%d\n",
           header.header_size, header.header_size, header.id, header.family,
-          header.data_size, header.data_checksum, header.header_checksum);
+          header.data_size);
       if (cindex != ftell(fp) - header.header_size)
         Rprintf("Bug: cindex (%ld) is not equal to ftell()-header_size (%d)\n",
             cindex, ftell(fp)-header.header_size);
@@ -310,11 +304,15 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, IntegerVector from, IntegerV
     computed_header_checksum = cs(header_bytes, header.header_size-2, debug);
     if (ignoreChecksums[0] > 0 || computed_header_checksum == header.header_checksum) {
       if (debug > 1) {
-        Rprintf("    header checksum equals expectation (or ignoringChecksums is TRUE)\n");
+        if (computed_header_checksum == header.header_checksum) {
+          Rprintf("    cindex=%ld: header checksum 0x%02x is correct\n", cindex, header.header_checksum);
+        } else {
+          Rprintf("    cindex=%ld: header checksum 0x%02x disagrees with expection 0x%02x but ignoreChecksums is TRUE\n", cindex, computed_header_checksum, header.header_checksum);
+        }
       }
     } else {
       checksum_failures++;
-      Rprintf("ERROR: header checksum, 0x%02x, disagrees with expectation, 0x%02x, at cindex=%ld.  (Error ignored in this version of oce.)\n",
+      Rprintf("ERROR: header checksum (0x%02x) disagrees with expectation (0x%02x) at cindex=%ld\n",
           computed_header_checksum, header.header_checksum, cindex);
     }
     start_buf[chunk] = cindex;
@@ -363,7 +361,11 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, IntegerVector from, IntegerV
       //cindex_last_good = cindex - header.header_size - header.data_size;
       reset_cindex = 0;
       if (debug > 1) {
-        Rprintf("    data checksum equals expectation (or ignoringChecksums is TRUE)\n");
+        if (dbufcs == header.data_checksum) {
+          Rprintf("    cindex=%d: data checksum 0x%02x equals expectation\n", cindex, dbufcs);
+        } else {
+          Rprintf("    cincex=%d: data checksum 0x%02x disagrees with expectation 0x%02x but ignoreChecksums is TRUE\n", cindex, dbufcs, header.data_checksum);
+        }
       }
     } else {
       checksum_failures++;
@@ -405,7 +407,7 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, IntegerVector from, IntegerV
           c = getc(fp);
           cindex++;
           if (c == EOF) {
-            Rprintf("got to end of file while searching for a the 'id' byte\n");
+            Rprintf("got to end of file while searching for an 'id' byte\n");
             early_EOF = 1;
             break;
           }
@@ -458,6 +460,6 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, IntegerVector from, IntegerV
         Named("id")=id,
         Named("checksumFailures")=checksum_failures,
         Named("earlyEOF")=early_EOF,
-        Named("twelve_byte_headered")=twelve_byte_header));
+        Named("twelve_byte_header")=twelve_byte_header));
 }
 

@@ -603,8 +603,9 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
     if (nav$twelve_byte_header == 1L)
         warning("file has 12-byte headers (an undocumented format), so be on the lookout for spurious results")
     d <- list(buf=buf, index=nav$index, length=nav$length, id=nav$id)
-    if (0x10 != d$buf[d$index[1]+1]) # must be 0x10 for an AD2CP (p38 integrators guide)
-        stop("expecting byte value 0x10 index ", d$index[1]+1, ", but got 0x", d$buf[d$index[1]+1])
+    #WHY browser()
+    #WHY if (0x10 != d$buf[d$index[1]+1]) # must be 0x10 for an AD2CP (p38 integrators guide)
+    #WHY     stop("expecting byte value 0x10 index ", d$index[1]+1, ", but got 0x", d$buf[d$index[1]+1])
     oceDebug(debug, "length(d$index)=", length(d$index), "\n", sep="")
     Nmax <- length(d$index)
     if (to > Nmax) {
@@ -1109,6 +1110,9 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
             tmp <- readBin(buf[iv], "integer", size=2L, endian="little", n=NP*NC)
             object$echosounder <- matrix(tmp, nrow=NP, byrow=FALSE)
             i0v <<- i0v + 2L*NC
+        } else if (name == "echosounderRaw") {
+            message("should read echosounderRaw now. i0v=", i0v)
+
         } else if (name == "AHRS") {
             oceDebug(debug, "   AHRS starts at i0v=", i0v, "\n")
             # AHRSRotationMatrix
@@ -1155,21 +1159,21 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
             i0v <<- i0v + 4L
         } else if (name == "stdDev") {
             # Nortek (2017) page 53-54: appears after percentgood
-            oceDebug(debug, "    tdDev starts at i0v=", i0v, "; see Nortek (2017) p53-54\n")
+            oceDebug(debug, "    stdDev starts at i0v=", i0v, "; see Nortek (2017) p53-54\n")
             iv <- gappyIndex(i, i0v, 2L)
-            object$stdDevPitch <- 0.01*readBin(buf[iv], "numeric", size=2L, endian="little", n=NP)
+            object$stdDevPitch <- 0.01*readBin(buf[iv], "integer", size=2L, endian="little", n=NP)
             i0v <<- i0v + 2L           # advance for next subitem
             iv <- gappyIndex(i, i0v, 2L)
-            object$stdDevRoll <- 0.01*readBin(buf[iv], "numeric", size=2L, endian="little", n=NP)
+            object$stdDevRoll <- 0.01*readBin(buf[iv], "integer", size=2L, endian="little", n=NP)
             i0v <<- i0v + 2L           # advance for next subitem
             iv <- gappyIndex(i, i0v, 2L)
-            object$stdDevHeading <- 0.01*readBin(buf[iv], "numeric", size=2L, endian="little", n=NP)
+            object$stdDevHeading <- 0.01*readBin(buf[iv], "integer", size=2L, endian="little", n=NP)
             i0v <<- i0v + 2L           # advance for next subitem
             iv <- gappyIndex(i, i0v, 2L)
-            object$stdDevPressure <- 0.001*readBin(buf[iv], "numeric", size=2L, endian="little", n=NP)
+            object$stdDevPressure <- 0.001*readBin(buf[iv], "integer", size=2L, endian="little", n=NP)
             i0v <<- i0v + 2L           # advance for next subitem
             iv <- gappyIndex(i, i0v, 2L)
-            object$stdDev <- 0.01*readBin(buf[iv], "numeric", size=2L, endian="little", n=NP)
+            object$stdDev <- 0.01*readBin(buf[iv], "integer", size=2L, endian="little", n=NP)
             i0v <<- i0v + 2L           # advance for next subitem
             i0v <<- i0v + 24           # skip over "dummy" (last item listed in N2017 p54)
         } else {
@@ -1251,6 +1255,21 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
         oceDebug(debug, "} # vector-read for type=", type, "\n")
         rval
     }                                  # readBurstAltimeterRaw
+
+    readEchosounderRaw <- function(id, debug=getOption("oceDebug")) # uses global 'd' and 'configuration'
+    {
+        type <- gsub(".*=","", ad2cpCodeToName(id))
+        oceDebug(1+debug, "readEchosounderRaw(id=0x", id, ") # i.e. type=", type, "\n")
+        rval <- list(DAN=1)
+        look <- which(d$id == id)
+        i <<- d$index[look]            # pointers to "echosounderRaw" chunks in buf
+        oceDebug(debug, vectorShow(look))
+        configuration0 <- configuration[look[1],]
+        rval <- list(DANNY=1)
+        i0v <<- 77                     # pointer to data (incremented by getItemFromBuf() later).
+        rval <- getItemFromBuf(rval, "echosounderRaw", i=i, type=type, debug=debug)
+        rval
+    }                                  # readEchosounderRaw
 
     # This is intended to handle burst, average, altimeter, ... records:
     # anything but bottom-track.
@@ -1743,7 +1762,10 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
     if ("averageAltimeter" %in% which && length(p$averageAltimeter) > 0) # 0x1f
         data$averageAltimeter <- readProfile(id=as.raw(0x1f), debug=debug)
     if ("echosounderRaw" %in% which && length(p$echosounderRaw) > 0) # 0x23
-        data$echosounderRaw <- readProfile(id=as.raw(0x23), debug=debug)
+    {
+        message("DAN about to call readEchosounderRaw()")
+        data$echosounderRaw <- readEchosounderRaw(id=as.raw(0x23), debug=debug)
+    }
 
     # Insert metadata
     #res@metadata$id <- id
