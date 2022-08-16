@@ -1741,9 +1741,11 @@ oceMagic <- function(file, encoding="latin1", debug=getOption("oceDebug"))
         }
         if (grepl(".ODF$", filename, ignore.case=TRUE)) {
             # in BIO files, the data type seems to be on line 14.  Read more, for safety.
-            lines <- readLines(file)
-            dt <- grep("DATA_TYPE[ \t]*=", lines)
-            if (length(dt) < 1)
+            lines <- readLines(file, encoding="latin1")
+            dt <- try({
+                grep("DATA_TYPE[ \t]*=", lines, perl=TRUE)
+            }, silent=TRUE)
+            if (inherits(dt, "try-error") || length(t) < 1)
                 stop("cannot infer type of ODF file")
             subtype <- gsub("[',]", "", tolower(strsplit(lines[dt[1]], "=")[[1]][2]))
             subtype <- gsub("^\\s*", "", subtype)
