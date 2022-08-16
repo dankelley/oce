@@ -1,21 +1,23 @@
 # Submission of oce 1.7-9
 
+As in previous versions, we request an exception to the 10-minute rule, on
+account of the package size (300+ functions, covering 60k lines of R, 6k lines
+of C/C++ and 1k line of Fortran). The changes from the previous version are as
+follows.
+
+* Prepare for the upcoming R release by eliminating `\x` assemblages in
+  `grep()` and `gsub()` calls, and adding an `encoding` parameter to the oce
+  `read` functions. We thank Tomas Kalibera and Kurt Hornik for helping with
+  this, and doing so with remarkable patience.
+
 * Try to address issues reported on the CRAN machine named
-  `r-devel-linux-x86_64-debian-clang`.  I tested this using
-  `rhub::check(platform="debian-clang-devel")`, and `rhub::platforms()` tells
-  me that this is `Debian Linux, R-devel, clang, ISO-8859-15 locale`.
+  `r-devel-linux-x86_64-debian-clang`. This was tested using
+  `rhub::check(platform="debian-clang-devel")`, which `rhub::platforms()`
+  summarizes with `Debian Linux, R-devel, clang, ISO-8859-15 locale`.
 
-* Try to address two NOTEs in the Rd files (for `swTFreeze.html` and
-  `swSpecificHeat.Rd`, reported for some of the CRAN test systems.
+* Address formatting problems in two generated Rd files (`swTFreeze.html` and
+  `swSpecificHeat.Rd`) reported on some CRAN test systems.
 
-* Prepare for the upcoming R release by eliminating \x assemblages in grep()
-  and gsub() calls, and adding an 'encoding' parameter to the 'read' functions.
-  We thank Tomas Kalibera and Kurt Hornik, who told us of the upcoming encoding
-  issue in emails dated 2022-06-27 and 2022-06-29, respectively.
-
-* As in previous versions, we request an exception to the 10-minute rule, on
-  account of the package size (300+ functions, covering 60k lines of R, 6k
-  lines of C/C++ and 1k line of Fortran).
 
 # Tests
 
@@ -42,8 +44,7 @@ Using
 ```R
 rhub::check_for_cran()
 ```
-produced no results, because there is a problem with the rhub test machines
-(see my bug report at https://github.com/r-hub/rhub/issues/530).
+produced no errors relating to oce.
 
 
 # Reverse Dependency Checks
