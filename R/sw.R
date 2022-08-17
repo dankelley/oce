@@ -967,7 +967,6 @@ swTSrho <- function(salinity, density, pressure=NULL, eos=getOption("oceEOS", de
 #' Fundamental Properties of Seawater. UNESCO Technical Papers in Marine
 #' Research. SCOR working group on Evaluation of CTD data; UNESCO/ICES/SCOR/IAPSO
 #' Joint Panel on Oceanographic Tables and Standards, 1983.
-#' `https://unesdoc.unesco.org/ark:/48223/pf0000059832`.
 #'
 #' Gill, A E. Atmosphere-Ocean Dynamics. New York, NY, USA: Academic Press,
 #' 1982.
@@ -1724,7 +1723,7 @@ swLapseRate <- function(salinity, temperature=NULL, pressure=NULL,
 #' 1. Fofonoff, P. and R. C. Millard Jr, 1983. Algorithms for computation of
 #' fundamental properties of seawater.
 #' *Unesco Technical Papers in Marine Science*,
-#' *44*, 53 pp
+#' *44*, 53 pp.
 #'
 #' 2. Gill, A.E., 1982. *Atmosphere-ocean Dynamics*, Academic Press, New
 #' York, 662 pp.
