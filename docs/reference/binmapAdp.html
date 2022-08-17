@@ -20,7 +20,7 @@ coordinates."><!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/lib
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-8</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-9</span>
       </span>
     </div>
 
@@ -84,7 +84,7 @@ coordinates.</p>
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">binmapAdp</span><span class="op">(</span><span class="va">x</span>, debug <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"oceDebug"</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">binmapAdp</span><span class="op">(</span><span class="va">x</span>, debug <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"oceDebug"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -125,11 +125,14 @@ and notes on the many functions dealing with them.</p>
 <p>Other things related to adp data: 
 <code><a href="sub-sub-adp-method.html">[[,adp-method</a></code>,
 <code>[[&lt;-,adp-method</code>,
+<code><a href="ad2cpCodeToName.html">ad2cpCodeToName</a>()</code>,
 <code><a href="ad2cpHeaderValue.html">ad2cpHeaderValue</a>()</code>,
 <code><a href="adp-class.html">adp-class</a></code>,
+<code><a href="adpAd2cpFileTrim.html">adpAd2cpFileTrim</a>()</code>,
 <code><a href="adpConvertRawToNumeric.html">adpConvertRawToNumeric</a>()</code>,
 <code><a href="adpEnsembleAverage.html">adpEnsembleAverage</a>()</code>,
 <code><a href="adpFlagPastBoundary.html">adpFlagPastBoundary</a>()</code>,
+<code><a href="adpRdiFileTrim.html">adpRdiFileTrim</a>()</code>,
 <code><a href="adp_rdi.000.html">adp_rdi.000</a></code>,
 <code><a href="adp.html">adp</a></code>,
 <code><a href="as.adp.html">as.adp</a>()</code>,
@@ -172,19 +175,19 @@ and notes on the many functions dealing with them.</p>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span>
-<span class="r-in"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dankelley.github.io/oce/" class="external-link">oce</a></span><span class="op">)</span></span>
-<span class="r-in"><span class="va">beam</span> <span class="op">&lt;-</span> <span class="fu"><a href="read.oce.html">read.oce</a></span><span class="op">(</span><span class="st">"/data/archive/sleiwex/2008/moorings/m09/adp/rdi_2615/raw/adp_rdi_2615.000"</span>,</span>
-<span class="r-in">                 from<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/as.POSIXlt.html" class="external-link">as.POSIXct</a></span><span class="op">(</span><span class="st">"2008-06-26"</span>, tz<span class="op">=</span><span class="st">"UTC"</span><span class="op">)</span>,</span>
-<span class="r-in">                 to<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/as.POSIXlt.html" class="external-link">as.POSIXct</a></span><span class="op">(</span><span class="st">"2008-06-26 00:10:00"</span>, tz<span class="op">=</span><span class="st">"UTC"</span><span class="op">)</span>,</span>
-<span class="r-in">                 longitude<span class="op">=</span><span class="op">-</span><span class="fl">69.73433</span>, latitude<span class="op">=</span><span class="fl">47.88126</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">beam2</span> <span class="op">&lt;-</span> <span class="fu">binmapAdp</span><span class="op">(</span><span class="va">beam</span><span class="op">)</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu"><a href="enuToOther.html">enuToOther</a></span><span class="op">(</span><span class="fu"><a href="toEnu.html">toEnu</a></span><span class="op">(</span><span class="va">beam</span><span class="op">)</span>, heading<span class="op">=</span><span class="op">-</span><span class="fl">31.5</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu"><a href="enuToOther.html">enuToOther</a></span><span class="op">(</span><span class="fu"><a href="toEnu.html">toEnu</a></span><span class="op">(</span><span class="va">beam2</span><span class="op">)</span>, heading<span class="op">=</span><span class="op">-</span><span class="fl">31.5</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">beam</span>, which<span class="op">=</span><span class="fl">5</span><span class="op">:</span><span class="fl">8</span><span class="op">)</span> <span class="co"># backscatter amplitude</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">beam2</span>, which<span class="op">=</span><span class="fl">5</span><span class="op">:</span><span class="fl">8</span><span class="op">)</span></span>
-<span class="r-in"><span class="op">}</span></span>
-<span class="r-in"></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dankelley.github.io/oce/" class="external-link">oce</a></span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">beam</span> <span class="op">&lt;-</span> <span class="fu"><a href="read.oce.html">read.oce</a></span><span class="op">(</span><span class="st">"/data/archive/sleiwex/2008/moorings/m09/adp/rdi_2615/raw/adp_rdi_2615.000"</span>,</span></span>
+<span class="r-in"><span>                 from<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/as.POSIXlt.html" class="external-link">as.POSIXct</a></span><span class="op">(</span><span class="st">"2008-06-26"</span>, tz<span class="op">=</span><span class="st">"UTC"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>                 to<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/as.POSIXlt.html" class="external-link">as.POSIXct</a></span><span class="op">(</span><span class="st">"2008-06-26 00:10:00"</span>, tz<span class="op">=</span><span class="st">"UTC"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>                 longitude<span class="op">=</span><span class="op">-</span><span class="fl">69.73433</span>, latitude<span class="op">=</span><span class="fl">47.88126</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">beam2</span> <span class="op">&lt;-</span> <span class="fu">binmapAdp</span><span class="op">(</span><span class="va">beam</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu"><a href="enuToOther.html">enuToOther</a></span><span class="op">(</span><span class="fu"><a href="toEnu.html">toEnu</a></span><span class="op">(</span><span class="va">beam</span><span class="op">)</span>, heading<span class="op">=</span><span class="op">-</span><span class="fl">31.5</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu"><a href="enuToOther.html">enuToOther</a></span><span class="op">(</span><span class="fu"><a href="toEnu.html">toEnu</a></span><span class="op">(</span><span class="va">beam2</span><span class="op">)</span>, heading<span class="op">=</span><span class="op">-</span><span class="fl">31.5</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">beam</span>, which<span class="op">=</span><span class="fl">5</span><span class="op">:</span><span class="fl">8</span><span class="op">)</span> <span class="co"># backscatter amplitude</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">beam2</span>, which<span class="op">=</span><span class="fl">5</span><span class="op">:</span><span class="fl">8</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
+<span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
   </div>
@@ -199,7 +202,7 @@ and notes on the many functions dealing with them.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>

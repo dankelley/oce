@@ -22,7 +22,7 @@ known."><!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/math
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-8</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-9</span>
       </span>
     </div>
 
@@ -88,23 +88,23 @@ known.</p>
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">read.adv</span><span class="op">(</span>
-  <span class="va">file</span>,
-  from <span class="op">=</span> <span class="fl">1</span>,
-  <span class="va">to</span>,
-  by <span class="op">=</span> <span class="fl">1</span>,
-  tz <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"oceTz"</span><span class="op">)</span>,
-  type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"nortek"</span>, <span class="st">"sontek"</span>, <span class="st">"sontek.adr"</span>, <span class="st">"sontek.text"</span><span class="op">)</span>,
-  header <span class="op">=</span> <span class="cn">TRUE</span>,
-  encoding <span class="op">=</span> <span class="cn">NA</span>,
-  longitude <span class="op">=</span> <span class="cn">NA</span>,
-  latitude <span class="op">=</span> <span class="cn">NA</span>,
-  start <span class="op">=</span> <span class="cn">NULL</span>,
-  deltat <span class="op">=</span> <span class="cn">NA</span>,
-  debug <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"oceDebug"</span><span class="op">)</span>,
-  monitor <span class="op">=</span> <span class="cn">FALSE</span>,
-  processingLog <span class="op">=</span> <span class="cn">NULL</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">read.adv</span><span class="op">(</span></span>
+<span>  <span class="va">file</span>,</span>
+<span>  from <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>  <span class="va">to</span>,</span>
+<span>  by <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>  tz <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"oceTz"</span><span class="op">)</span>,</span>
+<span>  type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"nortek"</span>, <span class="st">"sontek"</span>, <span class="st">"sontek.adr"</span>, <span class="st">"sontek.text"</span><span class="op">)</span>,</span>
+<span>  header <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  encoding <span class="op">=</span> <span class="cn">NA</span>,</span>
+<span>  longitude <span class="op">=</span> <span class="cn">NA</span>,</span>
+<span>  latitude <span class="op">=</span> <span class="cn">NA</span>,</span>
+<span>  start <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  deltat <span class="op">=</span> <span class="cn">NA</span>,</span>
+<span>  debug <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"oceDebug"</span><span class="op">)</span>,</span>
+<span>  monitor <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  processingLog <span class="op">=</span> <span class="cn">NULL</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -408,14 +408,14 @@ in (references 1B and C) as being an adjunct to Nortek Vector systems is at
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span>
-<span class="r-in"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dankelley.github.io/oce/" class="external-link">oce</a></span><span class="op">)</span></span>
-<span class="r-in"><span class="co"># A nortek Vector file</span></span>
-<span class="r-in"><span class="va">d</span> <span class="op">&lt;-</span> <span class="fu"><a href="read.oce.html">read.oce</a></span><span class="op">(</span><span class="st">"/data/archive/sleiwex/2008/moorings/m05/adv/nortek_1943/raw/adv_nortek_1943.vec"</span>,</span>
-<span class="r-in">              from<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/as.POSIXlt.html" class="external-link">as.POSIXct</a></span><span class="op">(</span><span class="st">"2008-06-26 00:00:00"</span>, tz<span class="op">=</span><span class="st">"UTC"</span><span class="op">)</span>,</span>
-<span class="r-in">              to<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/as.POSIXlt.html" class="external-link">as.POSIXct</a></span><span class="op">(</span><span class="st">"2008-06-26 00:00:10"</span>, tz<span class="op">=</span><span class="st">"UTC"</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">d</span>, which<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span>,<span class="fl">15</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in"><span class="op">}</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dankelley.github.io/oce/" class="external-link">oce</a></span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="co"># A nortek Vector file</span></span></span>
+<span class="r-in"><span><span class="va">d</span> <span class="op">&lt;-</span> <span class="fu"><a href="read.oce.html">read.oce</a></span><span class="op">(</span><span class="st">"/data/archive/sleiwex/2008/moorings/m05/adv/nortek_1943/raw/adv_nortek_1943.vec"</span>,</span></span>
+<span class="r-in"><span>              from<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/as.POSIXlt.html" class="external-link">as.POSIXct</a></span><span class="op">(</span><span class="st">"2008-06-26 00:00:00"</span>, tz<span class="op">=</span><span class="st">"UTC"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>              to<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/as.POSIXlt.html" class="external-link">as.POSIXct</a></span><span class="op">(</span><span class="st">"2008-06-26 00:00:10"</span>, tz<span class="op">=</span><span class="st">"UTC"</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">d</span>, which<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span>,<span class="fl">15</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
 </code></pre></div>
     </div>
   </div>
@@ -430,7 +430,7 @@ in (references 1B and C) as being an adjunct to Nortek Vector systems is at
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>

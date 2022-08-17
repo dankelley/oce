@@ -18,7 +18,7 @@ either indices to these events or a vector of CTD records containing the events.
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-8</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-9</span>
       </span>
     </div>
 
@@ -80,19 +80,19 @@ either indices to these events or a vector of CTD records containing the events.
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">ctdFindProfiles</span><span class="op">(</span>
-  <span class="va">x</span>,
-  cutoff <span class="op">=</span> <span class="fl">0.5</span>,
-  minLength <span class="op">=</span> <span class="fl">10</span>,
-  minHeight <span class="op">=</span> <span class="fl">0.1</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/diff.html" class="external-link">diff</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/range.html" class="external-link">range</a></span><span class="op">(</span><span class="va">x</span><span class="op">[[</span><span class="st">"pressure"</span><span class="op">]</span><span class="op">]</span><span class="op">)</span><span class="op">)</span>,
-  smoother <span class="op">=</span> <span class="va">smooth.spline</span>,
-  direction <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"descending"</span>, <span class="st">"ascending"</span><span class="op">)</span>,
-  <span class="va">breaks</span>,
-  arr.ind <span class="op">=</span> <span class="cn">FALSE</span>,
-  <span class="va">distinct</span>,
-  debug <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"oceDebug"</span><span class="op">)</span>,
-  <span class="va">...</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">ctdFindProfiles</span><span class="op">(</span></span>
+<span>  <span class="va">x</span>,</span>
+<span>  cutoff <span class="op">=</span> <span class="fl">0.5</span>,</span>
+<span>  minLength <span class="op">=</span> <span class="fl">10</span>,</span>
+<span>  minHeight <span class="op">=</span> <span class="fl">0.1</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/diff.html" class="external-link">diff</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/range.html" class="external-link">range</a></span><span class="op">(</span><span class="va">x</span><span class="op">[[</span><span class="st">"pressure"</span><span class="op">]</span><span class="op">]</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  smoother <span class="op">=</span> <span class="va">smooth.spline</span>,</span>
+<span>  direction <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"descending"</span>, <span class="st">"ascending"</span><span class="op">)</span>,</span>
+<span>  <span class="va">breaks</span>,</span>
+<span>  arr.ind <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  <span class="va">distinct</span>,</span>
+<span>  debug <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"oceDebug"</span><span class="op">)</span>,</span>
+<span>  <span class="va">...</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -247,35 +247,35 @@ of CTD objects, and also outlines the other functions dealing with them.</p>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dankelley.github.io/oce/" class="external-link">oce</a></span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span>
-<span class="r-in"><span class="co"># Example 1. Find profiles within a towyo file, as can result</span></span>
-<span class="r-in"><span class="co"># if the CTD is cycled within the water column as the ship</span></span>
-<span class="r-in"><span class="co"># moves.</span></span>
-<span class="r-in"><span class="va">profiles</span> <span class="op">&lt;-</span> <span class="fu">ctdFindProfiles</span><span class="op">(</span><span class="va">towyo</span><span class="op">)</span></span>
-<span class="r-in"><span class="op">}</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span>
-<span class="r-in"><span class="co"># Example 2. Use a moving average to smooth pressure, instead of the</span></span>
-<span class="r-in"><span class="co"># default smooth.spline() method. This might avoid a tendency of</span></span>
-<span class="r-in"><span class="co"># the default scheme to miss some profiles in a long towyo.</span></span>
-<span class="r-in"><span class="va">movingAverage</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span>, <span class="va">n</span> <span class="op">=</span> <span class="fl">11</span>, <span class="va">...</span><span class="op">)</span></span>
-<span class="r-in"><span class="op">{</span></span>
-<span class="r-in">    <span class="va">f</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span><span class="op">/</span><span class="va">n</span>, <span class="va">n</span><span class="op">)</span></span>
-<span class="r-in">    <span class="fu">stats</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/stats/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">f</span>, <span class="va">...</span><span class="op">)</span></span>
-<span class="r-in"><span class="op">}</span></span>
-<span class="r-in"><span class="va">casts</span> <span class="op">&lt;-</span> <span class="fu">ctdFindProfiles</span><span class="op">(</span><span class="va">towyo</span>, smoother<span class="op">=</span><span class="va">movingAverage</span><span class="op">)</span></span>
-<span class="r-in"><span class="op">}</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span>
-<span class="r-in"><span class="co"># Example 3: glider data read into a ctd object. Chop</span></span>
-<span class="r-in"><span class="co"># into profiles by looking for pressure jumps exceeding</span></span>
-<span class="r-in"><span class="co"># 10 dbar.</span></span>
-<span class="r-in"><span class="va">breaks</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/which.html" class="external-link">which</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/diff.html" class="external-link">diff</a></span><span class="op">(</span><span class="va">gliderAsCtd</span><span class="op">[[</span><span class="st">"pressure"</span><span class="op">]</span><span class="op">]</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">10</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">profiles</span> <span class="op">&lt;-</span> <span class="fu">ctdFindProfiles</span><span class="op">(</span><span class="va">gliderAsCtd</span>, breaks<span class="op">=</span><span class="va">breaks</span><span class="op">)</span></span>
-<span class="r-in"><span class="op">}</span></span>
-<span class="r-in"></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dankelley.github.io/oce/" class="external-link">oce</a></span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span><span class="co"># Example 1. Find profiles within a towyo file, as can result</span></span></span>
+<span class="r-in"><span><span class="co"># if the CTD is cycled within the water column as the ship</span></span></span>
+<span class="r-in"><span><span class="co"># moves.</span></span></span>
+<span class="r-in"><span><span class="va">profiles</span> <span class="op">&lt;-</span> <span class="fu">ctdFindProfiles</span><span class="op">(</span><span class="va">towyo</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span><span class="co"># Example 2. Use a moving average to smooth pressure, instead of the</span></span></span>
+<span class="r-in"><span><span class="co"># default smooth.spline() method. This might avoid a tendency of</span></span></span>
+<span class="r-in"><span><span class="co"># the default scheme to miss some profiles in a long towyo.</span></span></span>
+<span class="r-in"><span><span class="va">movingAverage</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span>, <span class="va">n</span> <span class="op">=</span> <span class="fl">11</span>, <span class="va">...</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">{</span></span></span>
+<span class="r-in"><span>    <span class="va">f</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span><span class="op">/</span><span class="va">n</span>, <span class="va">n</span><span class="op">)</span></span></span>
+<span class="r-in"><span>    <span class="fu">stats</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/stats/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">f</span>, <span class="va">...</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
+<span class="r-in"><span><span class="va">casts</span> <span class="op">&lt;-</span> <span class="fu">ctdFindProfiles</span><span class="op">(</span><span class="va">towyo</span>, smoother<span class="op">=</span><span class="va">movingAverage</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span><span class="co"># Example 3: glider data read into a ctd object. Chop</span></span></span>
+<span class="r-in"><span><span class="co"># into profiles by looking for pressure jumps exceeding</span></span></span>
+<span class="r-in"><span><span class="co"># 10 dbar.</span></span></span>
+<span class="r-in"><span><span class="va">breaks</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/which.html" class="external-link">which</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/diff.html" class="external-link">diff</a></span><span class="op">(</span><span class="va">gliderAsCtd</span><span class="op">[[</span><span class="st">"pressure"</span><span class="op">]</span><span class="op">]</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">10</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">profiles</span> <span class="op">&lt;-</span> <span class="fu">ctdFindProfiles</span><span class="op">(</span><span class="va">gliderAsCtd</span>, breaks<span class="op">=</span><span class="va">breaks</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
+<span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
   </div>
@@ -290,7 +290,7 @@ of CTD objects, and also outlines the other functions dealing with them.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>

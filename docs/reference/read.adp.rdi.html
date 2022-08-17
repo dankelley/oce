@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-8</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-9</span>
       </span>
     </div>
 
@@ -78,23 +78,24 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">read.adp.rdi</span><span class="op">(</span>
-  <span class="va">file</span>,
-  <span class="va">from</span>,
-  <span class="va">to</span>,
-  <span class="va">by</span>,
-  tz <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"oceTz"</span><span class="op">)</span>,
-  longitude <span class="op">=</span> <span class="cn">NA</span>,
-  latitude <span class="op">=</span> <span class="cn">NA</span>,
-  type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"workhorse"</span><span class="op">)</span>,
-  encoding <span class="op">=</span> <span class="cn">NA</span>,
-  monitor <span class="op">=</span> <span class="cn">FALSE</span>,
-  despike <span class="op">=</span> <span class="cn">FALSE</span>,
-  <span class="va">processingLog</span>,
-  testing <span class="op">=</span> <span class="cn">FALSE</span>,
-  debug <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"oceDebug"</span><span class="op">)</span>,
-  <span class="va">...</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">read.adp.rdi</span><span class="op">(</span></span>
+<span>  <span class="va">file</span>,</span>
+<span>  <span class="va">from</span>,</span>
+<span>  <span class="va">to</span>,</span>
+<span>  <span class="va">by</span>,</span>
+<span>  tz <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"oceTz"</span><span class="op">)</span>,</span>
+<span>  longitude <span class="op">=</span> <span class="cn">NA</span>,</span>
+<span>  latitude <span class="op">=</span> <span class="cn">NA</span>,</span>
+<span>  type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"workhorse"</span><span class="op">)</span>,</span>
+<span>  <span class="va">which</span>,</span>
+<span>  encoding <span class="op">=</span> <span class="cn">NA</span>,</span>
+<span>  monitor <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  despike <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  <span class="va">processingLog</span>,</span>
+<span>  testing <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  debug <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"oceDebug"</span><span class="op">)</span>,</span>
+<span>  <span class="va">...</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -145,6 +146,13 @@ North.</p></dd>
 
 <dt>type</dt>
 <dd><p>character string indicating the type of instrument.</p></dd>
+
+
+<dt>which</dt>
+<dd><p>optional character value.  If this is <code>"??"</code> then the
+<code>read.adp.rdi()</code> works by locating the indices in <code>file</code> at which data
+segments begin, and storing them as <code>index</code> in a list that is returned.
+The other entry of the list is <code>time</code>, the time of the observation.</p></dd>
 
 
 <dt>encoding</dt>
@@ -362,11 +370,14 @@ P/N 957-6171-00 (June 2001) <code>WinRiver User Guide International Version.pdf.
     <div class="dont-index"><p>Other things related to adp data: 
 <code><a href="sub-sub-adp-method.html">[[,adp-method</a></code>,
 <code>[[&lt;-,adp-method</code>,
+<code><a href="ad2cpCodeToName.html">ad2cpCodeToName</a>()</code>,
 <code><a href="ad2cpHeaderValue.html">ad2cpHeaderValue</a>()</code>,
 <code><a href="adp-class.html">adp-class</a></code>,
+<code><a href="adpAd2cpFileTrim.html">adpAd2cpFileTrim</a>()</code>,
 <code><a href="adpConvertRawToNumeric.html">adpConvertRawToNumeric</a>()</code>,
 <code><a href="adpEnsembleAverage.html">adpEnsembleAverage</a>()</code>,
 <code><a href="adpFlagPastBoundary.html">adpFlagPastBoundary</a>()</code>,
+<code><a href="adpRdiFileTrim.html">adpRdiFileTrim</a>()</code>,
 <code><a href="adp_rdi.000.html">adp_rdi.000</a></code>,
 <code><a href="adp.html">adp</a></code>,
 <code><a href="as.adp.html">as.adp</a>()</code>,
@@ -400,7 +411,16 @@ P/N 957-6171-00 (June 2001) <code>WinRiver User Guide International Version.pdf.
 <code><a href="velocityStatistics.html">velocityStatistics</a>()</code>,
 <code><a href="xyzToEnuAdpAD2CP.html">xyzToEnuAdpAD2CP</a>()</code>,
 <code><a href="xyzToEnuAdp.html">xyzToEnuAdp</a>()</code>,
-<code><a href="xyzToEnu.html">xyzToEnu</a>()</code></p></div>
+<code><a href="xyzToEnu.html">xyzToEnu</a>()</code></p>
+<p>Other functions that read adp data: 
+<code><a href="read.adp.ad2cp.html">read.adp.ad2cp</a>()</code>,
+<code><a href="read.adp.nortek.html">read.adp.nortek</a>()</code>,
+<code><a href="read.adp.sontek.serial.html">read.adp.sontek.serial</a>()</code>,
+<code><a href="read.adp.sontek.html">read.adp.sontek</a>()</code>,
+<code><a href="read.adp.html">read.adp</a>()</code>,
+<code><a href="read.aquadoppHR.html">read.aquadoppHR</a>()</code>,
+<code><a href="read.aquadoppProfiler.html">read.aquadoppProfiler</a>()</code>,
+<code><a href="read.aquadopp.html">read.aquadopp</a>()</code></p></div>
     </div>
     <div id="author">
     <h2>Author</h2>
@@ -409,25 +429,25 @@ P/N 957-6171-00 (June 2001) <code>WinRiver User Guide International Version.pdf.
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="va">adp</span> <span class="op">&lt;-</span> <span class="fu">read.adp.rdi</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"adp_rdi.000"</span>, package<span class="op">=</span><span class="st">"oce"</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">adp</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">adp</span> <span class="op">&lt;-</span> <span class="fu">read.adp.rdi</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"adp_rdi.000"</span>, package<span class="op">=</span><span class="st">"oce"</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">adp</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ADP Summary</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> -----------</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> * Instrument:         adcp</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> * Serial number:      unknown</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> * Firmware version:   16.28</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> * Source filename:    ``/private/var/folders/8b/l4h64m1j22v5pb7vj049ff140000gn/T/RtmpjkH9KS/temp_libpath70b21b4b2ad5/oce/extdata/adp_rdi.000``</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> * Location:           unknown latitude, unknown longitude</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> * Number of beams:    4</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> * Number of profiles: 9</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> * Number of cells:    84</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> * Number of beams:    4</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> * Cell size:          0.5m</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> * Instrument:    adcp</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> * Serial number: unknown</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> * File name:     "/private/var/folders/8b/l4h64m1j22v5pb7vj049ff140000gn/T/Rtmp8FwnY4/temp_libpath38c34c38bdd/oce/extdata/adp_rdi.000"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> * Firmware:      16.28</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> * Location:      unknown latitude, unknown longitude</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> * # of beams:    4</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> * # profiles:    9</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> * # cells:       84</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> * # beams:       4</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> * Cell size:     0.5m</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> * Summary of times between profiles:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>      10      10      10      10      10      10 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> * Frequency:          600 kHz</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> * Frequency:     600 kHz</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> * Ensemble Numbers:   1, 2, ..., 8, 9</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> * Cells:              84, centered at 2.230 m to 43.730 m, spaced by 0.500 m</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> * Coordinate system:  beam [originally], beam [presently]</span>
@@ -473,8 +493,8 @@ P/N 957-6171-00 (June 2001) <code>WinRiver User Guide International Version.pdf.
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> * Processing Log</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2022-07-04 16:55:22 UTC: `read.adp.rdi(file = system.file("extdata", "adp_rdi.000", package = "oce"))`</span>
-<span class="r-in"></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2022-08-17 11:50:25 UTC: `read.adp.rdi(file = system.file("extdata", "adp_rdi.000", package = "oce"))`</span>
+<span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
   </div>
@@ -489,7 +509,7 @@ P/N 957-6171-00 (June 2001) <code>WinRiver User Guide International Version.pdf.
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>

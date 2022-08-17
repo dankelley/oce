@@ -18,7 +18,7 @@ provided as a convenience function for users."><!-- mathjax --><script src="http
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-8</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-9</span>
       </span>
     </div>
 
@@ -80,7 +80,7 @@ provided as a convenience function for users.</p>
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">as.unit</span><span class="op">(</span><span class="va">u</span>, default <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>unit <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/expression.html" class="external-link">expression</a></span><span class="op">(</span><span class="op">)</span>, scale <span class="op">=</span> <span class="st">""</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">as.unit</span><span class="op">(</span><span class="va">u</span>, default <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>unit <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/expression.html" class="external-link">expression</a></span><span class="op">(</span><span class="op">)</span>, scale <span class="op">=</span> <span class="st">""</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -108,35 +108,35 @@ and <code>scale</code>, a string.</p>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="fu">as.unit</span><span class="op">(</span><span class="st">"DBAR"</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu">as.unit</span><span class="op">(</span><span class="st">"DBAR"</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $unit</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> expression(dbar)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $scale</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] ""</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-in"><span class="fu">as.unit</span><span class="op">(</span><span class="st">"IPTS-68"</span><span class="op">)</span></span>
+<span class="r-in"><span><span class="fu">as.unit</span><span class="op">(</span><span class="st">"IPTS-68"</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $unit</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> expression(degree * C)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $scale</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "IPTS-68"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-in"><span class="fu">as.unit</span><span class="op">(</span><span class="st">"ITS-90"</span><span class="op">)</span></span>
+<span class="r-in"><span><span class="fu">as.unit</span><span class="op">(</span><span class="st">"ITS-90"</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $unit</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> expression(degree * C)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $scale</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "ITS-90"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-in"><span class="fu">as.unit</span><span class="op">(</span><span class="st">"PSS-78"</span><span class="op">)</span></span>
+<span class="r-in"><span><span class="fu">as.unit</span><span class="op">(</span><span class="st">"PSS-78"</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $unit</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> expression()</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $scale</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "PSS-78"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-in"><span class="fu">as.unit</span><span class="op">(</span><span class="st">"UMOL/KG"</span><span class="op">)</span></span>
+<span class="r-in"><span><span class="fu">as.unit</span><span class="op">(</span><span class="st">"UMOL/KG"</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $unit</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> expression(mu * mol/kg)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
@@ -157,7 +157,7 @@ and <code>scale</code>, a string.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>

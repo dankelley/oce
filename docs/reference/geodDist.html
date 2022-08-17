@@ -20,7 +20,7 @@ involves the solution of the geodetic inverse problem, using Vincenty's
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-8</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-9</span>
       </span>
     </div>
 
@@ -84,13 +84,13 @@ involves the solution of the geodetic inverse problem, using Vincenty's
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">geodDist</span><span class="op">(</span>
-  <span class="va">longitude1</span>,
-  latitude1 <span class="op">=</span> <span class="cn">NULL</span>,
-  longitude2 <span class="op">=</span> <span class="cn">NULL</span>,
-  latitude2 <span class="op">=</span> <span class="cn">NULL</span>,
-  alongPath <span class="op">=</span> <span class="cn">FALSE</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">geodDist</span><span class="op">(</span></span>
+<span>  <span class="va">longitude1</span>,</span>
+<span>  latitude1 <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  longitude2 <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  latitude2 <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  alongPath <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -176,10 +176,10 @@ had been written in 1974 by L. Pfeifer and J. G. Gergen.</p>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dankelley.github.io/oce/" class="external-link">oce</a></span><span class="op">)</span></span>
-<span class="r-in"><span class="va">km</span> <span class="op">&lt;-</span> <span class="fu">geodDist</span><span class="op">(</span><span class="fl">100</span>, <span class="fl">45</span>, <span class="fl">100</span>, <span class="fl">46</span><span class="op">)</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">section</span><span class="op">)</span></span>
-<span class="r-in"><span class="fu">geodDist</span><span class="op">(</span><span class="va">section</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dankelley.github.io/oce/" class="external-link">oce</a></span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">km</span> <span class="op">&lt;-</span> <span class="fu">geodDist</span><span class="op">(</span><span class="fl">100</span>, <span class="fl">45</span>, <span class="fl">100</span>, <span class="fl">46</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">section</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">geodDist</span><span class="op">(</span><span class="va">section</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   [1]    0.00000   19.32429   41.97088   55.38400   77.12095   97.43228</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   [7]  140.86337  236.68579  288.31159  341.09128  391.72386  445.05214</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  [13]  497.71719  549.70283  601.72487  655.01069  708.59668  760.25064</span>
@@ -201,7 +201,7 @@ had been written in 1974 by L. Pfeifer and J. G. Gergen.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [109] 5470.12311 5479.22626 5488.57772 5504.57747 5518.33874 5530.83750</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [115] 5542.29346 5553.12372 5565.24674 5576.51940 5587.84941 5599.75751</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [121] 5610.04172 5621.55739 5629.16006 5633.49267</span>
-<span class="r-in"><span class="fu">geodDist</span><span class="op">(</span><span class="va">section</span>, alongPath<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span>
+<span class="r-in"><span><span class="fu">geodDist</span><span class="op">(</span><span class="va">section</span>, alongPath<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   [1]    0.00000   19.32429   41.98025   55.45124   77.19517  110.46626</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   [7]  165.53704  270.97198  324.62785  379.07516  430.79723  485.08130</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  [13]  538.55673  591.26800  643.88027  697.78690  752.07840  804.06096</span>
@@ -223,7 +223,7 @@ had been written in 1974 by L. Pfeifer and J. G. Gergen.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [109] 5707.28098 5723.54327 5740.23088 5760.01226 5778.91461 5797.41508</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [115] 5814.27408 5831.22599 5849.15121 5866.66683 5883.59620 5901.68615</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [121] 5918.58447 5935.68413 5946.96298 5953.85721</span>
-<span class="r-in"></span>
+<span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
   </div>
@@ -238,7 +238,7 @@ had been written in 1974 by L. Pfeifer and J. G. Gergen.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>

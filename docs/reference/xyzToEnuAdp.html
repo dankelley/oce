@@ -25,7 +25,7 @@ should be consulted, rather than the material given blow."><!-- mathjax --><scri
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-8</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-9</span>
       </span>
     </div>
 
@@ -94,7 +94,7 @@ should be consulted, rather than the material given blow.</p>
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">xyzToEnuAdp</span><span class="op">(</span><span class="va">x</span>, declination <span class="op">=</span> <span class="fl">0</span>, debug <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"oceDebug"</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">xyzToEnuAdp</span><span class="op">(</span><span class="va">x</span>, declination <span class="op">=</span> <span class="fl">0</span>, debug <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"oceDebug"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -151,8 +151,8 @@ and cosines of heading, pitch, and roll If <code>CH</code> and <code>SH</code> d
 cosine and sine of heading (after adjusting for declination), with similar
 terms for pitch and roll using second letters <code>P</code> and <code>R</code>, the
 rotation matrix is</p>
-<div class="sourceCode"><pre><code><span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span> <span class="va">CH</span><span class="op">*</span><span class="va">CR</span> <span class="op">+</span> <span class="va">SH</span><span class="op">*</span><span class="va">SP</span><span class="op">*</span><span class="va">SR</span>, <span class="va">SH</span><span class="op">*</span><span class="va">CP</span>, <span class="va">CH</span><span class="op">*</span><span class="va">SR</span> <span class="op">-</span> <span class="va">SH</span><span class="op">*</span><span class="va">SP</span><span class="op">*</span><span class="va">CR</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="va">SH</span><span class="op">*</span><span class="va">CR</span>
-<span class="op">+</span> <span class="va">CH</span><span class="op">*</span><span class="va">SP</span><span class="op">*</span><span class="va">SR</span>, <span class="va">CH</span><span class="op">*</span><span class="va">CP</span>, <span class="op">-</span><span class="va">SH</span><span class="op">*</span><span class="va">SR</span> <span class="op">-</span> <span class="va">CH</span><span class="op">*</span><span class="va">SP</span><span class="op">*</span><span class="va">CR</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span> <span class="op">-</span><span class="va">CP</span><span class="op">*</span><span class="va">SR</span>, <span class="va">SP</span>, <span class="va">CP</span><span class="op">*</span><span class="va">CR</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<div class="sourceCode"><pre><code><span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span> <span class="va">CH</span><span class="op">*</span><span class="va">CR</span> <span class="op">+</span> <span class="va">SH</span><span class="op">*</span><span class="va">SP</span><span class="op">*</span><span class="va">SR</span>, <span class="va">SH</span><span class="op">*</span><span class="va">CP</span>, <span class="va">CH</span><span class="op">*</span><span class="va">SR</span> <span class="op">-</span> <span class="va">SH</span><span class="op">*</span><span class="va">SP</span><span class="op">*</span><span class="va">CR</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="va">SH</span><span class="op">*</span><span class="va">CR</span></span>
+<span><span class="op">+</span> <span class="va">CH</span><span class="op">*</span><span class="va">SP</span><span class="op">*</span><span class="va">SR</span>, <span class="va">CH</span><span class="op">*</span><span class="va">CP</span>, <span class="op">-</span><span class="va">SH</span><span class="op">*</span><span class="va">SR</span> <span class="op">-</span> <span class="va">CH</span><span class="op">*</span><span class="va">SP</span><span class="op">*</span><span class="va">CR</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span> <span class="op">-</span><span class="va">CP</span><span class="op">*</span><span class="va">SR</span>, <span class="va">SP</span>, <span class="va">CP</span><span class="op">*</span><span class="va">CR</span><span class="op">)</span><span class="op">)</span> </span></code></pre></div>
 
 <p>This matrix is left-multiplied by a matrix with three rows, the top a vector
 of "starboard" values, the middle a vector of "forward" values, and the
@@ -173,11 +173,14 @@ Oceanography.</p></li>
     <div class="dont-index"><p>Other things related to adp data: 
 <code><a href="sub-sub-adp-method.html">[[,adp-method</a></code>,
 <code>[[&lt;-,adp-method</code>,
+<code><a href="ad2cpCodeToName.html">ad2cpCodeToName</a>()</code>,
 <code><a href="ad2cpHeaderValue.html">ad2cpHeaderValue</a>()</code>,
 <code><a href="adp-class.html">adp-class</a></code>,
+<code><a href="adpAd2cpFileTrim.html">adpAd2cpFileTrim</a>()</code>,
 <code><a href="adpConvertRawToNumeric.html">adpConvertRawToNumeric</a>()</code>,
 <code><a href="adpEnsembleAverage.html">adpEnsembleAverage</a>()</code>,
 <code><a href="adpFlagPastBoundary.html">adpFlagPastBoundary</a>()</code>,
+<code><a href="adpRdiFileTrim.html">adpRdiFileTrim</a>()</code>,
 <code><a href="adp_rdi.000.html">adp_rdi.000</a></code>,
 <code><a href="adp.html">adp</a></code>,
 <code><a href="as.adp.html">as.adp</a>()</code>,
@@ -230,7 +233,7 @@ Oceanography.</p></li>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>

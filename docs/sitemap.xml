@@ -76,6 +76,9 @@
     <loc>/reference/abbreviateTimeLabels.html</loc>
   </url>
   <url>
+    <loc>/reference/ad2cpCodeToName.html</loc>
+  </url>
+  <url>
     <loc>/reference/ad2cpHeaderValue.html</loc>
   </url>
   <url>
@@ -88,6 +91,9 @@
     <loc>/reference/adp.html</loc>
   </url>
   <url>
+    <loc>/reference/adpAd2cpFileTrim.html</loc>
+  </url>
+  <url>
     <loc>/reference/adpConvertRawToNumeric.html</loc>
   </url>
   <url>
@@ -95,6 +101,9 @@
   </url>
   <url>
     <loc>/reference/adpFlagPastBoundary.html</loc>
+  </url>
+  <url>
+    <loc>/reference/adpRdiFileTrim.html</loc>
   </url>
   <url>
     <loc>/reference/adp_rdi.000.html</loc>
@@ -805,6 +814,9 @@
     <loc>/reference/oceEdit.html</loc>
   </url>
   <url>
+    <loc>/reference/oceFileTrim.html</loc>
+  </url>
+  <url>
     <loc>/reference/oceFilter.html</loc>
   </url>
   <url>
@@ -929,6 +941,9 @@
   </url>
   <url>
     <loc>/reference/plot-xbt-method.html</loc>
+  </url>
+  <url>
+    <loc>/reference/plotAD2CP.html</loc>
   </url>
   <url>
     <loc>/reference/plotInset.html</loc>

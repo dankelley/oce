@@ -929,9 +929,9 @@ swTSrho <- function(salinity, density, pressure=NULL, eos=getOption("oceEOS", de
 #' Seawater freezing temperature
 #'
 #' Compute in-situ freezing temperature of seawater, using either the UNESCO
-#' formulation (computed as in Section 5 of reference 1) or the GSW formulation
-#' (computed by using [gsw::gsw_SA_from_SP()] to get Absolute Salinity, and then
-#' [gsw::gsw_t_freezing()] to get the freezing temperature).
+#' formulation (computed as in Section 5 of Fofonoff and Millard, 1983) or the
+#' GSW formulation (computed by using [gsw::gsw_SA_from_SP()] to get Absolute
+#' Salinity, and then [gsw::gsw_t_freezing()] to get the freezing temperature).
 #'
 #' If the first argument is an `oce` object, and if the `pressure` argument is
 #' `NULL`, then the pressure is sought within the first argument. In the case of
@@ -953,8 +953,9 @@ swTSrho <- function(salinity, density, pressure=NULL, eos=getOption("oceEOS", de
 #' @param saturation_fraction The saturation fraction of dissolved air in seawater,
 #' ignored if `eos="unesco"`).
 #'
-#' @param eos The equation of state, either `"unesco"` (references 1 and 2) or `"gsw"`.
-#' (references 3 and 4).
+#' @param eos The equation of state, either `"unesco"` (Fofonoff and Millard,
+#' 1983; Gill 1982) or `"gsw"` (IOC, SCOR and IAPSO 2010; McDougall and Barker
+#' 2011).
 #'
 #' @return Temperature (degC), defined on the ITS-90 scale.
 #'
@@ -962,20 +963,20 @@ swTSrho <- function(salinity, density, pressure=NULL, eos=getOption("oceEOS", de
 #'
 #' @references
 #'
-#' 1. Fofonoff, N. P., and R. C. Millard. Algorithms for Computation of
+#' Fofonoff, N. P., and R. C. Millard. Algorithms for Computation of
 #' Fundamental Properties of Seawater. UNESCO Technical Papers in Marine
 #' Research. SCOR working group on Evaluation of CTD data; UNESCO/ICES/SCOR/IAPSO
 #' Joint Panel on Oceanographic Tables and Standards, 1983.
 #' `https://unesdoc.unesco.org/ark:/48223/pf0000059832`.
 #'
-#' 2. Gill, A E. Atmosphere-Ocean Dynamics. New York, NY, USA: Academic Press,
+#' Gill, A E. Atmosphere-Ocean Dynamics. New York, NY, USA: Academic Press,
 #' 1982.
 #'
-#' 3. IOC, SCOR, and IAPSO (2010). The international thermodynamic equation of
+#' IOC, SCOR, and IAPSO (2010). The international thermodynamic equation of
 #' seawater-2010: Calculation and use of thermodynamic properties.  Technical
 #' Report 56, Intergovernmental Oceanographic Commission, Manuals and Guide, 2010.
 #'
-#' 4. McDougall, Trevor J., and Paul M. Barker. Getting Started with TEOS-10 and
+#' McDougall, Trevor J., and Paul M. Barker. Getting Started with TEOS-10 and
 #' the Gibbs Seawater (GSW) Oceanographic Toolbox. SCOR/IAPSO WG127, 2011.
 #'
 #' @examples

@@ -20,7 +20,7 @@ discussion here focusses on Landsat 8 and Landsat 7."><!-- mathjax --><script sr
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-8</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-9</span>
       </span>
     </div>
 
@@ -159,7 +159,8 @@ retrieve derived items.</p>
 breaks these 16 bits up into most-significant and least-significant bytes.
 For example, the aerosol band of a Landsat object named <code>x</code> are
 contained within <code>x@data$aerosol$msb</code> and <code>x@data$aerosol$lsb</code>,
-each of which is a matrix of raw values.  The results may be combined as e.g.</p><div class="sourceCode"><pre><code><span class="fl">256L</span><span class="op">*</span><span class="fu"><a href="https://rdrr.io/r/base/integer.html" class="external-link">as.integer</a></span><span class="op">(</span><span class="va">x</span><span class="op">@</span><span class="va">data</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">msb</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/integer.html" class="external-link">as.integer</a></span><span class="op">(</span><span class="va">x</span><span class="op">@</span><span class="va">data</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">lsb</span><span class="op">)</span></code></pre></div><p>and this is what is returned by executing <code>x[["aerosol"]]</code>.</p>
+each of which is a matrix of raw values.  The results may be combined as e.g.</p><div class="sourceCode"><pre><code><span></span>
+<span><span class="fl">256L</span><span class="op">*</span><span class="fu"><a href="https://rdrr.io/r/base/integer.html" class="external-link">as.integer</a></span><span class="op">(</span><span class="va">x</span><span class="op">@</span><span class="va">data</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">msb</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/integer.html" class="external-link">as.integer</a></span><span class="op">(</span><span class="va">x</span><span class="op">@</span><span class="va">data</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">lsb</span><span class="op">)</span></span></code></pre></div><p>and this is what is returned by executing <code>x[["aerosol"]]</code>.</p>
 <p>Landsat data files typically occupy approximately a
 gigabyte of storage.  That means that corresponding Oce objects are about
 the same size, and this can pose significant problems on computers with
@@ -306,7 +307,7 @@ function <code><a href="decimate.html">decimate()</a></code>.  Images may be sub
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>

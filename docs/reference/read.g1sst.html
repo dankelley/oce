@@ -18,7 +18,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-8</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-9</span>
       </span>
     </div>
 
@@ -80,7 +80,7 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">read.g1sst</span><span class="op">(</span><span class="va">file</span>, encoding <span class="op">=</span> <span class="cn">NA</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">read.g1sst</span><span class="op">(</span><span class="va">file</span>, encoding <span class="op">=</span> <span class="cn">NA</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -130,29 +130,29 @@ show just the data) that the field mostly derives from simulation.</p>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span>
-<span class="r-in"><span class="co"># Construct query, making it easier to understand and modify.</span></span>
-<span class="r-in"><span class="va">day</span> <span class="op">&lt;-</span> <span class="st">"2016-01-02"</span></span>
-<span class="r-in"><span class="va">lon0</span> <span class="op">&lt;-</span> <span class="op">-</span><span class="fl">66.5</span></span>
-<span class="r-in"><span class="va">lon1</span> <span class="op">&lt;-</span> <span class="op">-</span><span class="fl">64.0</span></span>
-<span class="r-in"><span class="va">lat0</span> <span class="op">&lt;-</span> <span class="fl">44</span></span>
-<span class="r-in"><span class="va">lat1</span> <span class="op">&lt;-</span> <span class="fl">46</span></span>
-<span class="r-in"><span class="va">source</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="st">"https://coastwatch.pfeg.noaa.gov/erddap/griddap/"</span>,</span>
-<span class="r-in">                <span class="st">"jplG1SST.nc?"</span>,</span>
-<span class="r-in">                <span class="st">"SST%5B("</span>, <span class="va">day</span>, <span class="st">"T12:00:00Z)"</span>,</span>
-<span class="r-in">                <span class="st">"%5D%5B("</span>, <span class="va">lat0</span>, <span class="st">"):("</span>, <span class="va">lat1</span>, <span class="st">")"</span>,</span>
-<span class="r-in">                <span class="st">"%5D%5B("</span>, <span class="va">lon0</span>, <span class="st">"):("</span>, <span class="va">lon1</span>, <span class="st">")"</span>,</span>
-<span class="r-in">                <span class="st">"%5D"</span>, sep<span class="op">=</span><span class="st">""</span><span class="op">)</span></span>
-<span class="r-in"><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.files.html" class="external-link">list.files</a></span><span class="op">(</span>pattern<span class="op">=</span><span class="st">"^a.nc$"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in">    <span class="fu"><a href="https://rdrr.io/r/utils/download.file.html" class="external-link">download.file</a></span><span class="op">(</span><span class="va">source</span>, <span class="st">"a.nc"</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">d</span> <span class="op">&lt;-</span> <span class="fu">read.g1sst</span><span class="op">(</span><span class="st">"a.nc"</span><span class="op">)</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">d</span>, <span class="st">"SST"</span>, col<span class="op">=</span><span class="va">oceColorsTemperature</span><span class="op">)</span></span>
-<span class="r-in"><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"ocedata"</span>, quietly<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
-<span class="r-in">    <span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">coastlineWorldFine</span>, package<span class="op">=</span><span class="st">"ocedata"</span><span class="op">)</span></span>
-<span class="r-in">    <span class="fu"><a href="https://rdrr.io/r/graphics/lines.html" class="external-link">lines</a></span><span class="op">(</span><span class="va">coastlineWorldFine</span><span class="op">[[</span><span class="st">'longitude'</span><span class="op">]</span><span class="op">]</span>,<span class="va">coastlineWorldFine</span><span class="op">[[</span><span class="st">'latitude'</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span>
-<span class="r-in"><span class="op">}</span></span>
-<span class="r-in"><span class="op">}</span></span>
-<span class="r-in"></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span><span class="co"># Construct query, making it easier to understand and modify.</span></span></span>
+<span class="r-in"><span><span class="va">day</span> <span class="op">&lt;-</span> <span class="st">"2016-01-02"</span></span></span>
+<span class="r-in"><span><span class="va">lon0</span> <span class="op">&lt;-</span> <span class="op">-</span><span class="fl">66.5</span></span></span>
+<span class="r-in"><span><span class="va">lon1</span> <span class="op">&lt;-</span> <span class="op">-</span><span class="fl">64.0</span></span></span>
+<span class="r-in"><span><span class="va">lat0</span> <span class="op">&lt;-</span> <span class="fl">44</span></span></span>
+<span class="r-in"><span><span class="va">lat1</span> <span class="op">&lt;-</span> <span class="fl">46</span></span></span>
+<span class="r-in"><span><span class="va">source</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="st">"https://coastwatch.pfeg.noaa.gov/erddap/griddap/"</span>,</span></span>
+<span class="r-in"><span>                <span class="st">"jplG1SST.nc?"</span>,</span></span>
+<span class="r-in"><span>                <span class="st">"SST%5B("</span>, <span class="va">day</span>, <span class="st">"T12:00:00Z)"</span>,</span></span>
+<span class="r-in"><span>                <span class="st">"%5D%5B("</span>, <span class="va">lat0</span>, <span class="st">"):("</span>, <span class="va">lat1</span>, <span class="st">")"</span>,</span></span>
+<span class="r-in"><span>                <span class="st">"%5D%5B("</span>, <span class="va">lon0</span>, <span class="st">"):("</span>, <span class="va">lon1</span>, <span class="st">")"</span>,</span></span>
+<span class="r-in"><span>                <span class="st">"%5D"</span>, sep<span class="op">=</span><span class="st">""</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.files.html" class="external-link">list.files</a></span><span class="op">(</span>pattern<span class="op">=</span><span class="st">"^a.nc$"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span>    <span class="fu"><a href="https://rdrr.io/r/utils/download.file.html" class="external-link">download.file</a></span><span class="op">(</span><span class="va">source</span>, <span class="st">"a.nc"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">d</span> <span class="op">&lt;-</span> <span class="fu">read.g1sst</span><span class="op">(</span><span class="st">"a.nc"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">d</span>, <span class="st">"SST"</span>, col<span class="op">=</span><span class="va">oceColorsTemperature</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"ocedata"</span>, quietly<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span>    <span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">coastlineWorldFine</span>, package<span class="op">=</span><span class="st">"ocedata"</span><span class="op">)</span></span></span>
+<span class="r-in"><span>    <span class="fu"><a href="https://rdrr.io/r/graphics/lines.html" class="external-link">lines</a></span><span class="op">(</span><span class="va">coastlineWorldFine</span><span class="op">[[</span><span class="st">'longitude'</span><span class="op">]</span><span class="op">]</span>,<span class="va">coastlineWorldFine</span><span class="op">[[</span><span class="st">'latitude'</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
+<span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
   </div>
@@ -167,7 +167,7 @@ show just the data) that the field mostly derives from simulation.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>

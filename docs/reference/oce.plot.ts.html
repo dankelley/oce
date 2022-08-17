@@ -18,7 +18,7 @@ the top-left margin."><!-- mathjax --><script src="https://cdnjs.cloudflare.com/
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-8</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-9</span>
       </span>
     </div>
 
@@ -80,43 +80,43 @@ the top-left margin.</p>
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">oce.plot.ts</span><span class="op">(</span>
-  <span class="va">x</span>,
-  <span class="va">y</span>,
-  type <span class="op">=</span> <span class="st">"l"</span>,
-  <span class="va">xlim</span>,
-  <span class="va">ylim</span>,
-  log <span class="op">=</span> <span class="st">""</span>,
-  logStyle <span class="op">=</span> <span class="st">"r"</span>,
-  flipy <span class="op">=</span> <span class="cn">FALSE</span>,
-  <span class="va">xlab</span>,
-  <span class="va">ylab</span>,
-  <span class="va">drawTimeRange</span>,
-  simplify <span class="op">=</span> <span class="fl">2560</span>,
-  fill <span class="op">=</span> <span class="cn">FALSE</span>,
-  col <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span><span class="st">"col"</span><span class="op">)</span>,
-  pch <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span><span class="st">"pch"</span><span class="op">)</span>,
-  cex <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span><span class="st">"cex"</span><span class="op">)</span>,
-  cex.axis <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span><span class="st">"cex.axis"</span><span class="op">)</span>,
-  cex.lab <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span><span class="st">"cex.lab"</span><span class="op">)</span>,
-  cex.main <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span><span class="st">"cex.main"</span><span class="op">)</span>,
-  xaxs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span><span class="st">"xaxs"</span><span class="op">)</span>,
-  yaxs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span><span class="st">"yaxs"</span><span class="op">)</span>,
-  mgp <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"oceMgp"</span><span class="op">)</span>,
-  mar <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">mgp</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span> <span class="op">+</span> <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nchar.html" class="external-link">nchar</a></span><span class="op">(</span><span class="va">xlab</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">0</span><span class="op">)</span> <span class="fl">1.5</span> <span class="kw">else</span> <span class="fl">1</span>, <span class="va">mgp</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span> <span class="op">+</span> <span class="fl">1.5</span>, <span class="va">mgp</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span> <span class="op">+</span> <span class="fl">1</span>, <span class="va">mgp</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span> <span class="op">+</span>
-    <span class="fl">3</span><span class="op">/</span><span class="fl">4</span><span class="op">)</span>,
-  main <span class="op">=</span> <span class="st">""</span>,
-  despike <span class="op">=</span> <span class="cn">FALSE</span>,
-  axes <span class="op">=</span> <span class="cn">TRUE</span>,
-  <span class="va">tformat</span>,
-  marginsAsImage <span class="op">=</span> <span class="cn">FALSE</span>,
-  grid <span class="op">=</span> <span class="cn">FALSE</span>,
-  grid.col <span class="op">=</span> <span class="st">"lightgray"</span>,
-  grid.lty <span class="op">=</span> <span class="st">"dotted"</span>,
-  grid.lwd <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span><span class="st">"lwd"</span><span class="op">)</span>,
-  debug <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"oceDebug"</span><span class="op">)</span>,
-  <span class="va">...</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">oce.plot.ts</span><span class="op">(</span></span>
+<span>  <span class="va">x</span>,</span>
+<span>  <span class="va">y</span>,</span>
+<span>  type <span class="op">=</span> <span class="st">"l"</span>,</span>
+<span>  <span class="va">xlim</span>,</span>
+<span>  <span class="va">ylim</span>,</span>
+<span>  log <span class="op">=</span> <span class="st">""</span>,</span>
+<span>  logStyle <span class="op">=</span> <span class="st">"r"</span>,</span>
+<span>  flipy <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  <span class="va">xlab</span>,</span>
+<span>  <span class="va">ylab</span>,</span>
+<span>  <span class="va">drawTimeRange</span>,</span>
+<span>  simplify <span class="op">=</span> <span class="fl">2560</span>,</span>
+<span>  fill <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  col <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span><span class="st">"col"</span><span class="op">)</span>,</span>
+<span>  pch <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span><span class="st">"pch"</span><span class="op">)</span>,</span>
+<span>  cex <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span><span class="st">"cex"</span><span class="op">)</span>,</span>
+<span>  cex.axis <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span><span class="st">"cex.axis"</span><span class="op">)</span>,</span>
+<span>  cex.lab <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span><span class="st">"cex.lab"</span><span class="op">)</span>,</span>
+<span>  cex.main <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span><span class="st">"cex.main"</span><span class="op">)</span>,</span>
+<span>  xaxs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span><span class="st">"xaxs"</span><span class="op">)</span>,</span>
+<span>  yaxs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span><span class="st">"yaxs"</span><span class="op">)</span>,</span>
+<span>  mgp <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"oceMgp"</span><span class="op">)</span>,</span>
+<span>  mar <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">mgp</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span> <span class="op">+</span> <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nchar.html" class="external-link">nchar</a></span><span class="op">(</span><span class="va">xlab</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">0</span><span class="op">)</span> <span class="fl">1.5</span> <span class="kw">else</span> <span class="fl">1</span>, <span class="va">mgp</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span> <span class="op">+</span> <span class="fl">1.5</span>, <span class="va">mgp</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span> <span class="op">+</span> <span class="fl">1</span>, <span class="va">mgp</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span> <span class="op">+</span></span>
+<span>    <span class="fl">3</span><span class="op">/</span><span class="fl">4</span><span class="op">)</span>,</span>
+<span>  main <span class="op">=</span> <span class="st">""</span>,</span>
+<span>  despike <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  axes <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  <span class="va">tformat</span>,</span>
+<span>  marginsAsImage <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  grid <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  grid.col <span class="op">=</span> <span class="st">"lightgray"</span>,</span>
+<span>  grid.lty <span class="op">=</span> <span class="st">"dotted"</span>,</span>
+<span>  grid.lwd <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span><span class="st">"lwd"</span><span class="op">)</span>,</span>
+<span>  debug <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"oceDebug"</span><span class="op">)</span>,</span>
+<span>  <span class="va">...</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -334,21 +334,21 @@ The time axis is drawn with <code><a href="oce.axis.POSIXct.html">oce.axis.POSIX
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dankelley.github.io/oce/" class="external-link">oce</a></span><span class="op">)</span></span>
-<span class="r-in"><span class="va">t0</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/as.POSIXlt.html" class="external-link">as.POSIXct</a></span><span class="op">(</span><span class="st">"2008-01-01"</span>, tz<span class="op">=</span><span class="st">"UTC"</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">t</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="va">t0</span>, length.out<span class="op">=</span><span class="fl">48</span>, by<span class="op">=</span><span class="st">"30 min"</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">y</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Trig.html" class="external-link">sin</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="va">t</span> <span class="op">-</span> <span class="va">t0</span><span class="op">)</span> <span class="op">*</span> <span class="fl">2</span> <span class="op">*</span> <span class="va">pi</span> <span class="op">/</span> <span class="op">(</span><span class="fl">12</span> <span class="op">*</span> <span class="fl">3600</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in"><span class="fu">oce.plot.ts</span><span class="op">(</span><span class="va">t</span>, <span class="va">y</span>, type<span class="op">=</span><span class="st">'l'</span>, xaxs<span class="op">=</span><span class="st">'i'</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dankelley.github.io/oce/" class="external-link">oce</a></span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">t0</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/as.POSIXlt.html" class="external-link">as.POSIXct</a></span><span class="op">(</span><span class="st">"2008-01-01"</span>, tz<span class="op">=</span><span class="st">"UTC"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">t</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="va">t0</span>, length.out<span class="op">=</span><span class="fl">48</span>, by<span class="op">=</span><span class="st">"30 min"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">y</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Trig.html" class="external-link">sin</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="va">t</span> <span class="op">-</span> <span class="va">t0</span><span class="op">)</span> <span class="op">*</span> <span class="fl">2</span> <span class="op">*</span> <span class="va">pi</span> <span class="op">/</span> <span class="op">(</span><span class="fl">12</span> <span class="op">*</span> <span class="fl">3600</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">oce.plot.ts</span><span class="op">(</span><span class="va">t</span>, <span class="va">y</span>, type<span class="op">=</span><span class="st">'l'</span>, xaxs<span class="op">=</span><span class="st">'i'</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="oce.plot.ts-1.png" alt="" width="700" height="433"></span>
-<span class="r-in"><span class="co"># Show how col, pch and cex get recycled</span></span>
-<span class="r-in"><span class="fu">oce.plot.ts</span><span class="op">(</span><span class="va">t</span>, <span class="va">y</span>, type<span class="op">=</span><span class="st">'p'</span>, xaxs<span class="op">=</span><span class="st">'i'</span>,</span>
-<span class="r-in">            col<span class="op">=</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span>, pch<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">6</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">20</span>, <span class="fl">6</span><span class="op">)</span><span class="op">)</span>, cex<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">sqrt</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">6</span><span class="op">)</span><span class="op">)</span></span>
+<span class="r-in"><span><span class="co"># Show how col, pch and cex get recycled</span></span></span>
+<span class="r-in"><span><span class="fu">oce.plot.ts</span><span class="op">(</span><span class="va">t</span>, <span class="va">y</span>, type<span class="op">=</span><span class="st">'p'</span>, xaxs<span class="op">=</span><span class="st">'i'</span>,</span></span>
+<span class="r-in"><span>            col<span class="op">=</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span>, pch<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">6</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">20</span>, <span class="fl">6</span><span class="op">)</span><span class="op">)</span>, cex<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">sqrt</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">6</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="oce.plot.ts-2.png" alt="" width="700" height="433"></span>
-<span class="r-in"><span class="co"># Trimming x; note the narrowing of the y view</span></span>
-<span class="r-in"><span class="fu">oce.plot.ts</span><span class="op">(</span><span class="va">t</span>, <span class="va">y</span>, type<span class="op">=</span><span class="st">'p'</span>, xlim<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">t</span><span class="op">[</span><span class="fl">6</span><span class="op">]</span>, <span class="va">t</span><span class="op">[</span><span class="fl">12</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></span>
+<span class="r-in"><span><span class="co"># Trimming x; note the narrowing of the y view</span></span></span>
+<span class="r-in"><span><span class="fu">oce.plot.ts</span><span class="op">(</span><span class="va">t</span>, <span class="va">y</span>, type<span class="op">=</span><span class="st">'p'</span>, xlim<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">t</span><span class="op">[</span><span class="fl">6</span><span class="op">]</span>, <span class="va">t</span><span class="op">[</span><span class="fl">12</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="oce.plot.ts-3.png" alt="" width="700" height="433"></span>
-<span class="r-in"><span class="co"># Flip the y axis</span></span>
-<span class="r-in"><span class="fu">oce.plot.ts</span><span class="op">(</span><span class="va">t</span>, <span class="va">y</span>, flipy<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span>
+<span class="r-in"><span><span class="co"># Flip the y axis</span></span></span>
+<span class="r-in"><span><span class="fu">oce.plot.ts</span><span class="op">(</span><span class="va">t</span>, <span class="va">y</span>, flipy<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="oce.plot.ts-4.png" alt="" width="700" height="433"></span>
 </code></pre></div>
     </div>
@@ -364,7 +364,7 @@ The time axis is drawn with <code><a href="oce.axis.POSIXct.html">oce.axis.POSIX
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>

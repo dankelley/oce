@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-8</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-9</span>
       </span>
     </div>
 
@@ -78,7 +78,7 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">processingLog</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="va">value</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">processingLog</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="va">value</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -101,22 +101,22 @@
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">ctd</span><span class="op">)</span></span>
-<span class="r-in"><span class="fu"><a href="processingLogShow.html">processingLogShow</a></span><span class="op">(</span><span class="va">ctd</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">ctd</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="processingLogShow.html">processingLogShow</a></span><span class="op">(</span><span class="va">ctd</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> * Processing Log</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     - 2018-11-14 20:03:47 UTC: `create 'ctd' object`</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     - 2018-11-14 20:03:47 UTC: `read.ctd.sbe(file = file, debug = 10, processingLog = processingLog)`</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     - 2018-11-14 20:03:47 UTC: `oce.edit(x = ctd, item = "startTime", value = as.POSIXct(gsub("1903",     "2003", format(ctd[["startTime"]])), tz = "UTC") + 4 * 3600,     reason = "file had year=1903, instead of 2003", person = "Dan Kelley")`</span>
-<span class="r-in"><span class="fu">processingLog</span><span class="op">(</span><span class="va">ctd</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="st">"test"</span></span>
-<span class="r-in"><span class="fu"><a href="processingLogShow.html">processingLogShow</a></span><span class="op">(</span><span class="va">ctd</span><span class="op">)</span></span>
+<span class="r-in"><span><span class="fu">processingLog</span><span class="op">(</span><span class="va">ctd</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="st">"test"</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="processingLogShow.html">processingLogShow</a></span><span class="op">(</span><span class="va">ctd</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> * Processing Log</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     - 2018-11-14 20:03:47 UTC: `create 'ctd' object`</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     - 2018-11-14 20:03:47 UTC: `read.ctd.sbe(file = file, debug = 10, processingLog = processingLog)`</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     - 2018-11-14 20:03:47 UTC: `oce.edit(x = ctd, item = "startTime", value = as.POSIXct(gsub("1903",     "2003", format(ctd[["startTime"]])), tz = "UTC") + 4 * 3600,     reason = "file had year=1903, instead of 2003", person = "Dan Kelley")`</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2022-07-04 16:55:19 UTC: `test`</span>
-<span class="r-in"></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2022-08-17 11:50:21 UTC: `test`</span>
+<span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
   </div>
@@ -131,7 +131,7 @@
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>

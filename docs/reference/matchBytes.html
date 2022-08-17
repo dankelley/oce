@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-8</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-9</span>
       </span>
     </div>
 
@@ -78,7 +78,7 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">matchBytes</span><span class="op">(</span><span class="va">input</span>, <span class="va">b1</span>, <span class="va">...</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">matchBytes</span><span class="op">(</span><span class="va">input</span>, <span class="va">b1</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -110,11 +110,11 @@ for 1-byte, use <code><a href="https://rdrr.io/r/base/which.html" class="externa
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="va">buf</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/raw.html" class="external-link">as.raw</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0xa5</span>, <span class="fl">0x11</span>, <span class="fl">0xaa</span>, <span class="fl">0xa5</span>, <span class="fl">0x11</span>, <span class="fl">0x00</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">match</span> <span class="op">&lt;-</span> <span class="fu">matchBytes</span><span class="op">(</span><span class="va">buf</span>, <span class="fl">0xa5</span>, <span class="fl">0x11</span><span class="op">)</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">buf</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">buf</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/raw.html" class="external-link">as.raw</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0xa5</span>, <span class="fl">0x11</span>, <span class="fl">0xaa</span>, <span class="fl">0xa5</span>, <span class="fl">0x11</span>, <span class="fl">0x00</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">match</span> <span class="op">&lt;-</span> <span class="fu">matchBytes</span><span class="op">(</span><span class="va">buf</span>, <span class="fl">0xa5</span>, <span class="fl">0x11</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">buf</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] a5 11 aa a5 11 00</span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">match</span><span class="op">)</span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">match</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 1 4</span>
 </code></pre></div>
     </div>
@@ -130,7 +130,7 @@ for 1-byte, use <code><a href="https://rdrr.io/r/base/which.html" class="externa
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>

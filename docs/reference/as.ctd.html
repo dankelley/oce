@@ -23,7 +23,7 @@ relatively straightforward."><!-- mathjax --><script src="https://cdnjs.cloudfla
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-8</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-9</span>
       </span>
     </div>
 
@@ -90,30 +90,30 @@ relatively straightforward.</p>
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">as.ctd</span><span class="op">(</span>
-  <span class="va">salinity</span>,
-  temperature <span class="op">=</span> <span class="cn">NULL</span>,
-  pressure <span class="op">=</span> <span class="cn">NULL</span>,
-  conductivity <span class="op">=</span> <span class="cn">NULL</span>,
-  scan <span class="op">=</span> <span class="cn">NULL</span>,
-  time <span class="op">=</span> <span class="cn">NULL</span>,
-  units <span class="op">=</span> <span class="cn">NULL</span>,
-  flags <span class="op">=</span> <span class="cn">NULL</span>,
-  missingValue <span class="op">=</span> <span class="cn">NULL</span>,
-  type <span class="op">=</span> <span class="st">""</span>,
-  serialNumber <span class="op">=</span> <span class="cn">NULL</span>,
-  ship <span class="op">=</span> <span class="cn">NULL</span>,
-  cruise <span class="op">=</span> <span class="cn">NULL</span>,
-  station <span class="op">=</span> <span class="cn">NULL</span>,
-  startTime <span class="op">=</span> <span class="cn">NULL</span>,
-  longitude <span class="op">=</span> <span class="cn">NULL</span>,
-  latitude <span class="op">=</span> <span class="cn">NULL</span>,
-  deploymentType <span class="op">=</span> <span class="st">"unknown"</span>,
-  pressureAtmospheric <span class="op">=</span> <span class="fl">0</span>,
-  sampleInterval <span class="op">=</span> <span class="cn">NULL</span>,
-  profile <span class="op">=</span> <span class="cn">NULL</span>,
-  debug <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"oceDebug"</span><span class="op">)</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">as.ctd</span><span class="op">(</span></span>
+<span>  <span class="va">salinity</span>,</span>
+<span>  temperature <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  pressure <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  conductivity <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  scan <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  time <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  units <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  flags <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  missingValue <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  type <span class="op">=</span> <span class="st">""</span>,</span>
+<span>  serialNumber <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  ship <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  cruise <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  station <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  startTime <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  longitude <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  latitude <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  deploymentType <span class="op">=</span> <span class="st">"unknown"</span>,</span>
+<span>  pressureAtmospheric <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>  sampleInterval <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  profile <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  debug <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"oceDebug"</span><span class="op">)</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -362,17 +362,17 @@ Engineering</em>, volume <strong>5</strong>, pages 22-23.</p>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dankelley.github.io/oce/" class="external-link">oce</a></span><span class="op">)</span></span>
-<span class="r-in"><span class="co">## 1. fake data, with default units</span></span>
-<span class="r-in"><span class="va">pressure</span> <span class="op">&lt;-</span> <span class="fl">1</span><span class="op">:</span><span class="fl">50</span></span>
-<span class="r-in"><span class="va">temperature</span> <span class="op">&lt;-</span> <span class="fl">10</span> <span class="op">-</span> <span class="fu"><a href="https://rdrr.io/r/base/Hyperbolic.html" class="external-link">tanh</a></span><span class="op">(</span><span class="op">(</span><span class="va">pressure</span> <span class="op">-</span> <span class="fl">20</span><span class="op">)</span> <span class="op">/</span> <span class="fl">5</span><span class="op">)</span> <span class="op">+</span> <span class="fl">0.02</span><span class="op">*</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">50</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">salinity</span> <span class="op">&lt;-</span> <span class="fl">34</span> <span class="op">+</span> <span class="fl">0.5</span><span class="op">*</span><span class="fu"><a href="https://rdrr.io/r/base/Hyperbolic.html" class="external-link">tanh</a></span><span class="op">(</span><span class="op">(</span><span class="va">pressure</span> <span class="op">-</span> <span class="fl">20</span><span class="op">)</span> <span class="op">/</span> <span class="fl">5</span><span class="op">)</span> <span class="op">+</span> <span class="fl">0.01</span><span class="op">*</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">50</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">ctd</span> <span class="op">&lt;-</span> <span class="fu">as.ctd</span><span class="op">(</span><span class="va">salinity</span>, <span class="va">temperature</span>, <span class="va">pressure</span><span class="op">)</span></span>
-<span class="r-in"><span class="co"># Add a new column</span></span>
-<span class="r-in"><span class="va">fluo</span> <span class="op">&lt;-</span> <span class="fl">5</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="op">-</span><span class="va">pressure</span> <span class="op">/</span> <span class="fl">20</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">ctd</span> <span class="op">&lt;-</span> <span class="fu"><a href="oceSetData.html">oceSetData</a></span><span class="op">(</span><span class="va">ctd</span>, name<span class="op">=</span><span class="st">"fluorescence"</span>, value<span class="op">=</span><span class="va">fluo</span>,</span>
-<span class="r-in">                  unit<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>unit<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/expression.html" class="external-link">expression</a></span><span class="op">(</span><span class="va">mg</span><span class="op">/</span><span class="va">m</span><span class="op">^</span><span class="fl">3</span><span class="op">)</span>, scale<span class="op">=</span><span class="st">""</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">ctd</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dankelley.github.io/oce/" class="external-link">oce</a></span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="co">## 1. fake data, with default units</span></span></span>
+<span class="r-in"><span><span class="va">pressure</span> <span class="op">&lt;-</span> <span class="fl">1</span><span class="op">:</span><span class="fl">50</span></span></span>
+<span class="r-in"><span><span class="va">temperature</span> <span class="op">&lt;-</span> <span class="fl">10</span> <span class="op">-</span> <span class="fu"><a href="https://rdrr.io/r/base/Hyperbolic.html" class="external-link">tanh</a></span><span class="op">(</span><span class="op">(</span><span class="va">pressure</span> <span class="op">-</span> <span class="fl">20</span><span class="op">)</span> <span class="op">/</span> <span class="fl">5</span><span class="op">)</span> <span class="op">+</span> <span class="fl">0.02</span><span class="op">*</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">50</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">salinity</span> <span class="op">&lt;-</span> <span class="fl">34</span> <span class="op">+</span> <span class="fl">0.5</span><span class="op">*</span><span class="fu"><a href="https://rdrr.io/r/base/Hyperbolic.html" class="external-link">tanh</a></span><span class="op">(</span><span class="op">(</span><span class="va">pressure</span> <span class="op">-</span> <span class="fl">20</span><span class="op">)</span> <span class="op">/</span> <span class="fl">5</span><span class="op">)</span> <span class="op">+</span> <span class="fl">0.01</span><span class="op">*</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">50</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">ctd</span> <span class="op">&lt;-</span> <span class="fu">as.ctd</span><span class="op">(</span><span class="va">salinity</span>, <span class="va">temperature</span>, <span class="va">pressure</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="co"># Add a new column</span></span></span>
+<span class="r-in"><span><span class="va">fluo</span> <span class="op">&lt;-</span> <span class="fl">5</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="op">-</span><span class="va">pressure</span> <span class="op">/</span> <span class="fl">20</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">ctd</span> <span class="op">&lt;-</span> <span class="fu"><a href="oceSetData.html">oceSetData</a></span><span class="op">(</span><span class="va">ctd</span>, name<span class="op">=</span><span class="st">"fluorescence"</span>, value<span class="op">=</span><span class="va">fluo</span>,</span></span>
+<span class="r-in"><span>                  unit<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>unit<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/expression.html" class="external-link">expression</a></span><span class="op">(</span><span class="va">mg</span><span class="op">/</span><span class="va">m</span><span class="op">^</span><span class="fl">3</span><span class="op">)</span>, scale<span class="op">=</span><span class="st">""</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">ctd</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> CTD Summary</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> -----------</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
@@ -380,23 +380,23 @@ Engineering</em>, volume <strong>5</strong>, pages 22-23.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                                 Min.   Mean   Max. Dim. NAs OriginalName</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     scan                           1   25.5     50   50   0            -</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     salinity [PSS-78]           33.5  34.11 34.514   50   0            -</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     temperature [°C, ITS-90]  8.9541 9.7781  11.01   50   0            -</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     salinity [PSS-78]         33.496 34.112  34.52   50   0            -</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     temperature [°C, ITS-90]  8.9613 9.7795 11.036   50   0            -</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     pressure [dbar]                1   25.5     50   50   0            -</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     fluorescence [mg/m³]     0.41042 1.7903 4.7561   50   0            -</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> * Processing Log</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2022-07-04 16:53:07 UTC: `create 'ctd' object`</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2022-07-04 16:53:07 UTC: `as.ctd(salinity = salinity, temperature = temperature, pressure = pressure)`</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2022-07-04 16:53:07 UTC: `oceSetData(object = ctd, name = "fluorescence", value = fluo,     unit = list(unit = expression(mg/m^3), scale = ""))`</span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co">## 2. fake data, with supplied units (which are the defaults, actually)</span></span>
-<span class="r-in"><span class="va">ctd</span> <span class="op">&lt;-</span> <span class="fu">as.ctd</span><span class="op">(</span><span class="va">salinity</span>, <span class="va">temperature</span>, <span class="va">pressure</span>,</span>
-<span class="r-in">    units<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>salinity<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>unit<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/expression.html" class="external-link">expression</a></span><span class="op">(</span><span class="op">)</span>, scale<span class="op">=</span><span class="st">"PSS-78"</span><span class="op">)</span>,</span>
-<span class="r-in">    temperature<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>unit<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/expression.html" class="external-link">expression</a></span><span class="op">(</span><span class="va">degree</span><span class="op">*</span><span class="va">C</span><span class="op">)</span>, scale<span class="op">=</span><span class="st">"ITS-90"</span><span class="op">)</span>,</span>
-<span class="r-in">    pressure<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>unit<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/expression.html" class="external-link">expression</a></span><span class="op">(</span><span class="va">dbar</span><span class="op">)</span>, scale<span class="op">=</span><span class="st">""</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in"></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2022-08-17 11:48:09 UTC: `create 'ctd' object`</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2022-08-17 11:48:09 UTC: `as.ctd(salinity = salinity, temperature = temperature, pressure = pressure)`</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2022-08-17 11:48:09 UTC: `oceSetData(object = ctd, name = "fluorescence", value = fluo,     unit = list(unit = expression(mg/m^3), scale = ""))`</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co">## 2. fake data, with supplied units (which are the defaults, actually)</span></span></span>
+<span class="r-in"><span><span class="va">ctd</span> <span class="op">&lt;-</span> <span class="fu">as.ctd</span><span class="op">(</span><span class="va">salinity</span>, <span class="va">temperature</span>, <span class="va">pressure</span>,</span></span>
+<span class="r-in"><span>    units<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>salinity<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>unit<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/expression.html" class="external-link">expression</a></span><span class="op">(</span><span class="op">)</span>, scale<span class="op">=</span><span class="st">"PSS-78"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>    temperature<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>unit<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/expression.html" class="external-link">expression</a></span><span class="op">(</span><span class="va">degree</span><span class="op">*</span><span class="va">C</span><span class="op">)</span>, scale<span class="op">=</span><span class="st">"ITS-90"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>    pressure<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>unit<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/expression.html" class="external-link">expression</a></span><span class="op">(</span><span class="va">dbar</span><span class="op">)</span>, scale<span class="op">=</span><span class="st">""</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
   </div>
@@ -411,7 +411,7 @@ Engineering</em>, volume <strong>5</strong>, pages 22-23.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>

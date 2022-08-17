@@ -22,7 +22,7 @@ on a plot."><!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-8</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-9</span>
       </span>
     </div>
 
@@ -88,52 +88,52 @@ on a plot.</p>
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">plotProfile</span><span class="op">(</span>
-  <span class="va">x</span>,
-  xtype <span class="op">=</span> <span class="st">"salinity+temperature"</span>,
-  ytype <span class="op">=</span> <span class="st">"pressure"</span>,
-  eos <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"oceEOS"</span>, default <span class="op">=</span> <span class="st">"gsw"</span><span class="op">)</span>,
-  lty <span class="op">=</span> <span class="fl">1</span>,
-  xlab <span class="op">=</span> <span class="cn">NULL</span>,
-  ylab <span class="op">=</span> <span class="cn">NULL</span>,
-  col <span class="op">=</span> <span class="st">"black"</span>,
-  col.salinity <span class="op">=</span> <span class="st">"darkgreen"</span>,
-  col.temperature <span class="op">=</span> <span class="st">"red"</span>,
-  col.rho <span class="op">=</span> <span class="st">"blue"</span>,
-  col.N2 <span class="op">=</span> <span class="st">"brown"</span>,
-  col.dpdt <span class="op">=</span> <span class="st">"darkgreen"</span>,
-  col.time <span class="op">=</span> <span class="st">"darkgreen"</span>,
-  pt.bg <span class="op">=</span> <span class="st">"transparent"</span>,
-  grid <span class="op">=</span> <span class="cn">TRUE</span>,
-  col.grid <span class="op">=</span> <span class="st">"lightgray"</span>,
-  lty.grid <span class="op">=</span> <span class="st">"dotted"</span>,
-  <span class="va">Slim</span>,
-  <span class="va">Clim</span>,
-  <span class="va">Tlim</span>,
-  <span class="va">densitylim</span>,
-  <span class="va">N2lim</span>,
-  <span class="va">Rrholim</span>,
-  <span class="va">dpdtlim</span>,
-  <span class="va">timelim</span>,
-  <span class="va">plim</span>,
-  <span class="va">xlim</span>,
-  <span class="va">ylim</span>,
-  lwd <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span><span class="st">"lwd"</span><span class="op">)</span>,
-  xaxs <span class="op">=</span> <span class="st">"r"</span>,
-  yaxs <span class="op">=</span> <span class="st">"r"</span>,
-  cex <span class="op">=</span> <span class="fl">1</span>,
-  pch <span class="op">=</span> <span class="fl">1</span>,
-  useSmoothScatter <span class="op">=</span> <span class="cn">FALSE</span>,
-  <span class="va">df</span>,
-  keepNA <span class="op">=</span> <span class="cn">FALSE</span>,
-  type <span class="op">=</span> <span class="st">"l"</span>,
-  mgp <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"oceMgp"</span><span class="op">)</span>,
-  <span class="va">mar</span>,
-  add <span class="op">=</span> <span class="cn">FALSE</span>,
-  inset <span class="op">=</span> <span class="cn">FALSE</span>,
-  debug <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"oceDebug"</span>, <span class="fl">0</span><span class="op">)</span>,
-  <span class="va">...</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">plotProfile</span><span class="op">(</span></span>
+<span>  <span class="va">x</span>,</span>
+<span>  xtype <span class="op">=</span> <span class="st">"salinity+temperature"</span>,</span>
+<span>  ytype <span class="op">=</span> <span class="st">"pressure"</span>,</span>
+<span>  eos <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"oceEOS"</span>, default <span class="op">=</span> <span class="st">"gsw"</span><span class="op">)</span>,</span>
+<span>  lty <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>  xlab <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  ylab <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  col <span class="op">=</span> <span class="st">"black"</span>,</span>
+<span>  col.salinity <span class="op">=</span> <span class="st">"darkgreen"</span>,</span>
+<span>  col.temperature <span class="op">=</span> <span class="st">"red"</span>,</span>
+<span>  col.rho <span class="op">=</span> <span class="st">"blue"</span>,</span>
+<span>  col.N2 <span class="op">=</span> <span class="st">"brown"</span>,</span>
+<span>  col.dpdt <span class="op">=</span> <span class="st">"darkgreen"</span>,</span>
+<span>  col.time <span class="op">=</span> <span class="st">"darkgreen"</span>,</span>
+<span>  pt.bg <span class="op">=</span> <span class="st">"transparent"</span>,</span>
+<span>  grid <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  col.grid <span class="op">=</span> <span class="st">"lightgray"</span>,</span>
+<span>  lty.grid <span class="op">=</span> <span class="st">"dotted"</span>,</span>
+<span>  <span class="va">Slim</span>,</span>
+<span>  <span class="va">Clim</span>,</span>
+<span>  <span class="va">Tlim</span>,</span>
+<span>  <span class="va">densitylim</span>,</span>
+<span>  <span class="va">N2lim</span>,</span>
+<span>  <span class="va">Rrholim</span>,</span>
+<span>  <span class="va">dpdtlim</span>,</span>
+<span>  <span class="va">timelim</span>,</span>
+<span>  <span class="va">plim</span>,</span>
+<span>  <span class="va">xlim</span>,</span>
+<span>  <span class="va">ylim</span>,</span>
+<span>  lwd <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span><span class="st">"lwd"</span><span class="op">)</span>,</span>
+<span>  xaxs <span class="op">=</span> <span class="st">"r"</span>,</span>
+<span>  yaxs <span class="op">=</span> <span class="st">"r"</span>,</span>
+<span>  cex <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>  pch <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>  useSmoothScatter <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  <span class="va">df</span>,</span>
+<span>  keepNA <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  type <span class="op">=</span> <span class="st">"l"</span>,</span>
+<span>  mgp <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"oceMgp"</span><span class="op">)</span>,</span>
+<span>  <span class="va">mar</span>,</span>
+<span>  add <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  inset <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  debug <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"oceDebug"</span>, <span class="fl">0</span><span class="op">)</span>,</span>
+<span>  <span class="va">...</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -461,11 +461,11 @@ objects, and <code><a href="plotTS.html">plotTS()</a></code> plots a temperature
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dankelley.github.io/oce/" class="external-link">oce</a></span><span class="op">)</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">ctd</span><span class="op">)</span></span>
-<span class="r-in"><span class="fu">plotProfile</span><span class="op">(</span><span class="va">ctd</span>, xtype<span class="op">=</span><span class="st">"temperature"</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dankelley.github.io/oce/" class="external-link">oce</a></span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">ctd</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">plotProfile</span><span class="op">(</span><span class="va">ctd</span>, xtype<span class="op">=</span><span class="st">"temperature"</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="plotProfile-1.png" alt="" width="700" height="433"></span>
-<span class="r-in"></span>
+<span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
   </div>
@@ -480,7 +480,7 @@ objects, and <code><a href="plotTS.html">plotTS()</a></code> plots a temperature
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>
