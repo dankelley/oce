@@ -21,7 +21,7 @@ following the usual rules for transitioning to deprecated and defunct status
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-8</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-9</span>
       </span>
     </div>
 
@@ -86,18 +86,18 @@ following the usual rules for transitioning to deprecated and defunct status
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="co"># S4 method for ctd</span>
-<span class="fu"><a href="https://rdrr.io/r/methods/new.html" class="external-link">initialize</a></span><span class="op">(</span>
-  <span class="va">.Object</span>,
-  <span class="va">pressure</span>,
-  <span class="va">salinity</span>,
-  <span class="va">temperature</span>,
-  <span class="va">conductivity</span>,
-  <span class="va">units</span>,
-  <span class="va">pressureType</span>,
-  <span class="va">deploymentType</span>,
-  <span class="va">...</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="co"># S4 method for ctd</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/methods/new.html" class="external-link">initialize</a></span><span class="op">(</span></span>
+<span>  <span class="va">.Object</span>,</span>
+<span>  <span class="va">pressure</span>,</span>
+<span>  <span class="va">salinity</span>,</span>
+<span>  <span class="va">temperature</span>,</span>
+<span>  <span class="va">conductivity</span>,</span>
+<span>  <span class="va">units</span>,</span>
+<span>  <span class="va">pressureType</span>,</span>
+<span>  <span class="va">deploymentType</span>,</span>
+<span>  <span class="va">...</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -216,16 +216,16 @@ on elements stored in <code>ctd</code> objects.</p>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"></span>
-<span class="r-in"><span class="co"># 1. empty</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/methods/new.html" class="external-link">new</a></span><span class="op">(</span><span class="st">"ctd"</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># 1. empty</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/methods/new.html" class="external-link">new</a></span><span class="op">(</span><span class="st">"ctd"</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ctd object has nothing in its data slot.</span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># 2. fake data with no location information, so can only</span></span>
-<span class="r-in"><span class="co">#    plot with the UNESCO equation of state.</span></span>
-<span class="r-in"><span class="co">#    NOTE: always name arguments, in case the default order gets changed</span></span>
-<span class="r-in"><span class="va">ctd</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/methods/new.html" class="external-link">new</a></span><span class="op">(</span><span class="st">"ctd"</span>, salinity<span class="op">=</span><span class="fl">35</span><span class="op">+</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">/</span><span class="fl">10</span>, temperature<span class="op">=</span><span class="fl">10</span><span class="op">-</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">/</span><span class="fl">10</span>, pressure<span class="op">=</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">)</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">ctd</span><span class="op">)</span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># 2. fake data with no location information, so can only</span></span></span>
+<span class="r-in"><span><span class="co">#    plot with the UNESCO equation of state.</span></span></span>
+<span class="r-in"><span><span class="co">#    NOTE: always name arguments, in case the default order gets changed</span></span></span>
+<span class="r-in"><span><span class="va">ctd</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/methods/new.html" class="external-link">new</a></span><span class="op">(</span><span class="st">"ctd"</span>, salinity<span class="op">=</span><span class="fl">35</span><span class="op">+</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">/</span><span class="fl">10</span>, temperature<span class="op">=</span><span class="fl">10</span><span class="op">-</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">/</span><span class="fl">10</span>, pressure<span class="op">=</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">ctd</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> CTD Summary</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> -----------</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
@@ -238,16 +238,16 @@ on elements stored in <code>ctd</code> objects.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> * Processing Log</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2022-07-04 16:53:52 UTC: `create 'ctd' object`</span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">ctd</span>, eos<span class="op">=</span><span class="st">"unesco"</span><span class="op">)</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2022-08-17 12:38:54 UTC: `create 'ctd' object`</span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">ctd</span>, eos<span class="op">=</span><span class="st">"unesco"</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="initialize-ctd-method-1.png" alt="" width="700" height="433"></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># 3. as 2, but insert location and plot with GSW equation of state.</span></span>
-<span class="r-in"><span class="va">ctd</span> <span class="op">&lt;-</span> <span class="fu"><a href="oceSetMetadata.html">oceSetMetadata</a></span><span class="op">(</span><span class="va">ctd</span>, <span class="st">"latitude"</span>, <span class="fl">44</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">ctd</span> <span class="op">&lt;-</span> <span class="fu"><a href="oceSetMetadata.html">oceSetMetadata</a></span><span class="op">(</span><span class="va">ctd</span>, <span class="st">"longitude"</span>, <span class="op">-</span><span class="fl">63</span><span class="op">)</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">ctd</span>, eos<span class="op">=</span><span class="st">"gsw"</span><span class="op">)</span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># 3. as 2, but insert location and plot with GSW equation of state.</span></span></span>
+<span class="r-in"><span><span class="va">ctd</span> <span class="op">&lt;-</span> <span class="fu"><a href="oceSetMetadata.html">oceSetMetadata</a></span><span class="op">(</span><span class="va">ctd</span>, <span class="st">"latitude"</span>, <span class="fl">44</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">ctd</span> <span class="op">&lt;-</span> <span class="fu"><a href="oceSetMetadata.html">oceSetMetadata</a></span><span class="op">(</span><span class="va">ctd</span>, <span class="st">"longitude"</span>, <span class="op">-</span><span class="fl">63</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">ctd</span>, eos<span class="op">=</span><span class="st">"gsw"</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="initialize-ctd-method-2.png" alt="" width="700" height="433"></span>
-<span class="r-in"></span>
+<span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
   </div>
@@ -262,7 +262,7 @@ on elements stored in <code>ctd</code> objects.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>

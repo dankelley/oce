@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-8</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-9</span>
       </span>
     </div>
 
@@ -78,19 +78,19 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">read.ctd.sbe</span><span class="op">(</span>
-  <span class="va">file</span>,
-  columns <span class="op">=</span> <span class="cn">NULL</span>,
-  station <span class="op">=</span> <span class="cn">NULL</span>,
-  <span class="va">missingValue</span>,
-  deploymentType <span class="op">=</span> <span class="st">"unknown"</span>,
-  btl <span class="op">=</span> <span class="cn">FALSE</span>,
-  monitor <span class="op">=</span> <span class="cn">FALSE</span>,
-  encoding <span class="op">=</span> <span class="st">"latin1"</span>,
-  debug <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"oceDebug"</span><span class="op">)</span>,
-  <span class="va">processingLog</span>,
-  <span class="va">...</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">read.ctd.sbe</span><span class="op">(</span></span>
+<span>  <span class="va">file</span>,</span>
+<span>  columns <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  station <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  <span class="va">missingValue</span>,</span>
+<span>  deploymentType <span class="op">=</span> <span class="st">"unknown"</span>,</span>
+<span>  btl <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  monitor <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  encoding <span class="op">=</span> <span class="st">"latin1"</span>,</span>
+<span>  debug <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"oceDebug"</span><span class="op">)</span>,</span>
+<span>  <span class="va">processingLog</span>,</span>
+<span>  <span class="va">...</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -381,11 +381,11 @@ and this was the reference version used in coding <code>oce</code>.</p></li>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="va">f</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"ctd.cnv"</span>, package<span class="op">=</span><span class="st">"oce"</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">d</span> <span class="op">&lt;-</span> <span class="fu"><a href="read.ctd.html">read.ctd</a></span><span class="op">(</span><span class="va">f</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">f</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"ctd.cnv"</span>, package<span class="op">=</span><span class="st">"oce"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">d</span> <span class="op">&lt;-</span> <span class="fu"><a href="read.ctd.html">read.ctd</a></span><span class="op">(</span><span class="va">f</span><span class="op">)</span></span></span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>startTime (1903-10-15 11:38:38) is &lt; 1950, suggesting a turn-of-the-century problem in this cnv file</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>this CNV file has temperature in the IPTS-68 scale and this is stored in the object, but note that [["temperature"]] and the sw* functions convert the numbers to ITS-90 values</span>
-<span class="r-in"></span>
+<span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
   </div>
@@ -400,7 +400,7 @@ and this was the reference version used in coding <code>oce</code>.</p></li>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>

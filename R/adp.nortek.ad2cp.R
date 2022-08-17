@@ -20,7 +20,7 @@ makeNumeric <- function(x)
 #' Trim an AD2CP File
 #'
 #' Create an AD2CP file by copying the first `n` data chunks (regions starting
-#' with 0xa5, etc) of another such file. This can be useful in supplying
+#' with `0xa5`, etc) of another such file. This can be useful in supplying
 #' small sample files for bug reports.
 #'
 #' @param infile name of an AD2CP file.
@@ -204,20 +204,20 @@ is.ad2cp <- function(x)
 #'
 #' The mapping from code (hex or decimal) to oce name is as follows.
 #'
-#' | code (raw) | code (integer) |          oce name |
-#' |      ----: |          ----: |             ----: |
-#' | ---------- | -------------- | ----------------- |
-#' |      0x15  |             21 |             burst |
-#' |      0x16  |             22 |           average |
-#' |      0x17  |             23 |       bottomTrack |
-#' |      0x18  |             24 |  interleavedBurst |
-#' |      0x1a  |             26 | burstAltimeterRaw |
-#' |      0x1b  |             27 |    DVLBottomTrack |
-#' |      0x1c  |             28 |       echosounder |
-#' |      0x1d  |             29 |     DVLWaterTrack |
-#' |      0x1e  |             30 |         altimeter |
-#' |      0x1f  |             31 |  averageAltimeter |
-#' |      0xa0  |            160 |              text |
+#' | code (raw) | code (integer) |            oce name |
+#' |      ----: |          ----: |               ----: |
+#' | ---------- | -------------- |   ----------------- |
+#' |     `0x15` |             21 |             `burst` |
+#' |     `0x16` |             22 |           `average` |
+#' |     `0x17` |             23 |       `bottomTrack` |
+#' |     `0x18` |             24 |  `interleavedBurst` |
+#' |     `0x1a` |             26 | `burstAltimeterRaw` |
+#' |     `0x1b` |             27 |    `DVLBottomTrack` |
+#' |     `0x1c` |             28 |       `echosounder` |
+#' |     `0x1d` |             29 |     `DVLWaterTrack` |
+#' |     `0x1e` |             30 |         `altimeter` |
+#' |     `0x1f` |             31 |  `averageAltimeter` |
+#' |     `0xa0` |            160 |              `text` |
 #'
 #' @param code a [raw] (or corresponding integer) vector indicating the IDs of
 #' interest, or NULL to get a summary of possible values.
@@ -351,7 +351,7 @@ ad2cpCodeToName <- function(code=NULL)
 #' to read everything at once, either as a way to speed processing or to avoid
 #' running out of memory.  For this reason, a common first step is instead to
 #' use `which="?"`, which gives a table of data types in the file or
-#' `which="??"`, which gives a data frame overviewing the data 'chunks'; after
+#' `which="??"`, which gives a data frame summarizing the data 'chunks'; after
 #' doing those things, the next step is usually to extract all the data, or an
 #' individual type of interest is extracted.  The choices of individual type are
 #' as follows:
@@ -603,8 +603,9 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
     if (nav$twelve_byte_header == 1L)
         warning("file has 12-byte headers (an undocumented format), so be on the lookout for spurious results")
     d <- list(buf=buf, index=nav$index, length=nav$length, id=nav$id)
-    if (0x10 != d$buf[d$index[1]+1]) # must be 0x10 for an AD2CP (p38 integrators guide)
-        stop("expecting byte value 0x10 index ", d$index[1]+1, ", but got 0x", d$buf[d$index[1]+1])
+    #WHY browser()
+    #WHY if (0x10 != d$buf[d$index[1]+1]) # must be 0x10 for an AD2CP (p38 integrators guide)
+    #WHY     stop("expecting byte value 0x10 index ", d$index[1]+1, ", but got 0x", d$buf[d$index[1]+1])
     oceDebug(debug, "length(d$index)=", length(d$index), "\n", sep="")
     Nmax <- length(d$index)
     if (to > Nmax) {
@@ -1109,6 +1110,12 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
             tmp <- readBin(buf[iv], "integer", size=2L, endian="little", n=NP*NC)
             object$echosounder <- matrix(tmp, nrow=NP, byrow=FALSE)
             i0v <<- i0v + 2L*NC
+        } else if (name == "echosounderRaw") {
+            if (debug) {
+                message("should read echosounderRaw now")
+                message("  ", vectorShow(i))
+                message("  ", vectorShow(i0v))
+            }
         } else if (name == "AHRS") {
             oceDebug(debug, "   AHRS starts at i0v=", i0v, "\n")
             # AHRSRotationMatrix
@@ -1155,21 +1162,21 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
             i0v <<- i0v + 4L
         } else if (name == "stdDev") {
             # Nortek (2017) page 53-54: appears after percentgood
-            oceDebug(debug, "    tdDev starts at i0v=", i0v, "; see Nortek (2017) p53-54\n")
+            oceDebug(debug, "    stdDev starts at i0v=", i0v, "; see Nortek (2017) p53-54\n")
             iv <- gappyIndex(i, i0v, 2L)
-            object$stdDevPitch <- 0.01*readBin(buf[iv], "numeric", size=2L, endian="little", n=NP)
+            object$stdDevPitch <- 0.01*readBin(buf[iv], "integer", size=2L, endian="little", n=NP)
             i0v <<- i0v + 2L           # advance for next subitem
             iv <- gappyIndex(i, i0v, 2L)
-            object$stdDevRoll <- 0.01*readBin(buf[iv], "numeric", size=2L, endian="little", n=NP)
+            object$stdDevRoll <- 0.01*readBin(buf[iv], "integer", size=2L, endian="little", n=NP)
             i0v <<- i0v + 2L           # advance for next subitem
             iv <- gappyIndex(i, i0v, 2L)
-            object$stdDevHeading <- 0.01*readBin(buf[iv], "numeric", size=2L, endian="little", n=NP)
+            object$stdDevHeading <- 0.01*readBin(buf[iv], "integer", size=2L, endian="little", n=NP)
             i0v <<- i0v + 2L           # advance for next subitem
             iv <- gappyIndex(i, i0v, 2L)
-            object$stdDevPressure <- 0.001*readBin(buf[iv], "numeric", size=2L, endian="little", n=NP)
+            object$stdDevPressure <- 0.001*readBin(buf[iv], "integer", size=2L, endian="little", n=NP)
             i0v <<- i0v + 2L           # advance for next subitem
             iv <- gappyIndex(i, i0v, 2L)
-            object$stdDev <- 0.01*readBin(buf[iv], "numeric", size=2L, endian="little", n=NP)
+            object$stdDev <- 0.01*readBin(buf[iv], "integer", size=2L, endian="little", n=NP)
             i0v <<- i0v + 2L           # advance for next subitem
             i0v <<- i0v + 24           # skip over "dummy" (last item listed in N2017 p54)
         } else {
@@ -1251,6 +1258,26 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
         oceDebug(debug, "} # vector-read for type=", type, "\n")
         rval
     }                                  # readBurstAltimeterRaw
+
+    readEchosounderRaw <- function(id, debug=getOption("oceDebug")) # uses global 'd' and 'configuration'
+    {
+        type <- gsub(".*=","", ad2cpCodeToName(id))
+        oceDebug(1+debug, "readEchosounderRaw(id=0x", id, ") # i.e. type=", type, "\n")
+        rval <- list(DAN=1)
+        look <- which(d$id == id)
+        #?lookIndex <- d$index[look]
+        offsetOfData <- as.integer(d$buf[d$index[look[1]] + 2L])
+        oceDebug(debug, "  ", vectorShow(offsetOfData))
+        i <<- d$index[look]            # pointers to "echosounderRaw" chunks in buf
+        oceDebug(debug, vectorShow(look))
+        configuration0 <- configuration[look[1],]
+        oceDebug(debug, vectorShow(configuration0))
+        rval <- list()
+        # FIXME: need to find proper i0v
+        i0v <<- 77                     # pointer to data (incremented by getItemFromBuf() later).
+        rval <- getItemFromBuf(rval, "echosounderRaw", i=i, type=type, debug=debug)
+        rval
+    }                                  # readEchosounderRaw
 
     # This is intended to handle burst, average, altimeter, ... records:
     # anything but bottom-track.
@@ -1743,7 +1770,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
     if ("averageAltimeter" %in% which && length(p$averageAltimeter) > 0) # 0x1f
         data$averageAltimeter <- readProfile(id=as.raw(0x1f), debug=debug)
     if ("echosounderRaw" %in% which && length(p$echosounderRaw) > 0) # 0x23
-        data$echosounderRaw <- readProfile(id=as.raw(0x23), debug=debug)
+        data$echosounderRaw <- readEchosounderRaw(id=as.raw(0x23), debug=debug)
 
     # Insert metadata
     #res@metadata$id <- id
@@ -1817,7 +1844,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
 #' @param type plot type, used only for time-series
 #' graphs.
 #'
-#' @param lwd linewidth, used only for time-series graphs.
+#' @param lwd line width, used only for time-series graphs.
 #'
 #' @param cex character expansion factor
 #'

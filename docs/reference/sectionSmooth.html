@@ -18,7 +18,7 @@ direction or in both the vertical and lateral directions."><!-- mathjax --><scri
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-8</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-9</span>
       </span>
     </div>
 
@@ -80,24 +80,24 @@ direction or in both the vertical and lateral directions.</p>
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">sectionSmooth</span><span class="op">(</span>
-  <span class="va">section</span>,
-  method <span class="op">=</span> <span class="st">"spline"</span>,
-  <span class="va">x</span>,
-  <span class="va">xg</span>,
-  <span class="va">yg</span>,
-  <span class="va">xgl</span>,
-  <span class="va">ygl</span>,
-  <span class="va">xr</span>,
-  <span class="va">yr</span>,
-  <span class="va">df</span>,
-  gamma <span class="op">=</span> <span class="fl">0.5</span>,
-  iterations <span class="op">=</span> <span class="fl">2</span>,
-  trim <span class="op">=</span> <span class="fl">0</span>,
-  pregrid <span class="op">=</span> <span class="cn">FALSE</span>,
-  debug <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"oceDebug"</span><span class="op">)</span>,
-  <span class="va">...</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">sectionSmooth</span><span class="op">(</span></span>
+<span>  <span class="va">section</span>,</span>
+<span>  method <span class="op">=</span> <span class="st">"spline"</span>,</span>
+<span>  <span class="va">x</span>,</span>
+<span>  <span class="va">xg</span>,</span>
+<span>  <span class="va">yg</span>,</span>
+<span>  <span class="va">xgl</span>,</span>
+<span>  <span class="va">ygl</span>,</span>
+<span>  <span class="va">xr</span>,</span>
+<span>  <span class="va">yr</span>,</span>
+<span>  <span class="va">df</span>,</span>
+<span>  gamma <span class="op">=</span> <span class="fl">0.5</span>,</span>
+<span>  iterations <span class="op">=</span> <span class="fl">2</span>,</span>
+<span>  trim <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>  pregrid <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  debug <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"oceDebug"</span><span class="op">)</span>,</span>
+<span>  <span class="va">...</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -260,27 +260,27 @@ method known as Kriging.</p></li>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="co"># Unsmoothed (Gulf Stream)</span></span>
-<span class="r-in"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dankelley.github.io/oce/" class="external-link">oce</a></span><span class="op">)</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">section</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">gs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset</a></span><span class="op">(</span><span class="va">section</span>, <span class="fl">115</span><span class="op">&lt;=</span><span class="va">stationId</span><span class="op">&amp;</span><span class="va">stationId</span><span class="op">&lt;=</span><span class="fl">125</span><span class="op">)</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mfrow<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">2</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">gs</span>, which<span class="op">=</span><span class="st">"temperature"</span><span class="op">)</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/graphics/mtext.html" class="external-link">mtext</a></span><span class="op">(</span><span class="st">"unsmoothed"</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># Spline</span></span>
-<span class="r-in"><span class="va">gsg</span> <span class="op">&lt;-</span> <span class="fu"><a href="sectionGrid.html">sectionGrid</a></span><span class="op">(</span><span class="va">gs</span>, p<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">5000</span>, <span class="fl">100</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">gsSpline</span> <span class="op">&lt;-</span> <span class="fu">sectionSmooth</span><span class="op">(</span><span class="va">gsg</span>, <span class="st">"spline"</span><span class="op">)</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">gsSpline</span>, which<span class="op">=</span><span class="st">"temperature"</span><span class="op">)</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/graphics/mtext.html" class="external-link">mtext</a></span><span class="op">(</span><span class="st">"spline-smoothed"</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># Barnes</span></span>
-<span class="r-in"><span class="va">gsBarnes</span> <span class="op">&lt;-</span> <span class="fu">sectionSmooth</span><span class="op">(</span><span class="va">gs</span>, <span class="st">"barnes"</span>, xr<span class="op">=</span><span class="fl">50</span>, yr<span class="op">=</span><span class="fl">200</span><span class="op">)</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">gsBarnes</span>, which<span class="op">=</span><span class="st">"temperature"</span><span class="op">)</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/graphics/mtext.html" class="external-link">mtext</a></span><span class="op">(</span><span class="st">"Barnes-smoothed"</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Unsmoothed (Gulf Stream)</span></span></span>
+<span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dankelley.github.io/oce/" class="external-link">oce</a></span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">section</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">gs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset</a></span><span class="op">(</span><span class="va">section</span>, <span class="fl">115</span><span class="op">&lt;=</span><span class="va">stationId</span><span class="op">&amp;</span><span class="va">stationId</span><span class="op">&lt;=</span><span class="fl">125</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mfrow<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">2</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">gs</span>, which<span class="op">=</span><span class="st">"temperature"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/mtext.html" class="external-link">mtext</a></span><span class="op">(</span><span class="st">"unsmoothed"</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Spline</span></span></span>
+<span class="r-in"><span><span class="va">gsg</span> <span class="op">&lt;-</span> <span class="fu"><a href="sectionGrid.html">sectionGrid</a></span><span class="op">(</span><span class="va">gs</span>, p<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">5000</span>, <span class="fl">100</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">gsSpline</span> <span class="op">&lt;-</span> <span class="fu">sectionSmooth</span><span class="op">(</span><span class="va">gsg</span>, <span class="st">"spline"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">gsSpline</span>, which<span class="op">=</span><span class="st">"temperature"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/mtext.html" class="external-link">mtext</a></span><span class="op">(</span><span class="st">"spline-smoothed"</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Barnes</span></span></span>
+<span class="r-in"><span><span class="va">gsBarnes</span> <span class="op">&lt;-</span> <span class="fu">sectionSmooth</span><span class="op">(</span><span class="va">gs</span>, <span class="st">"barnes"</span>, xr<span class="op">=</span><span class="fl">50</span>, yr<span class="op">=</span><span class="fl">200</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">gsBarnes</span>, which<span class="op">=</span><span class="st">"temperature"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/mtext.html" class="external-link">mtext</a></span><span class="op">(</span><span class="st">"Barnes-smoothed"</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span></span></span>
 <span class="r-plt img"><img src="sectionSmooth-1.png" alt="" width="700" height="433"></span>
 </code></pre></div>
     </div>
@@ -296,7 +296,7 @@ method known as Kriging.</p></li>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>

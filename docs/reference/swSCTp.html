@@ -30,7 +30,7 @@ formulae provided by Hill et al. (1986; reference 2), modified to match the
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-8</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-9</span>
       </span>
     </div>
 
@@ -104,13 +104,13 @@ formulae provided by Hill et al. (1986; reference 2), modified to match the
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">swSCTp</span><span class="op">(</span>
-  <span class="va">conductivity</span>,
-  temperature <span class="op">=</span> <span class="cn">NULL</span>,
-  pressure <span class="op">=</span> <span class="cn">NULL</span>,
-  <span class="va">conductivityUnit</span>,
-  eos <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"oceEOS"</span>, default <span class="op">=</span> <span class="st">"gsw"</span><span class="op">)</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">swSCTp</span><span class="op">(</span></span>
+<span>  <span class="va">conductivity</span>,</span>
+<span>  temperature <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  pressure <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  <span class="va">conductivityUnit</span>,</span>
+<span>  eos <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"oceEOS"</span>, default <span class="op">=</span> <span class="st">"gsw"</span><span class="op">)</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -215,18 +215,18 @@ conductivity from salinity, see <code><a href="swCSTp.html">swCSTp()</a></code>.
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="co"># 1. Demonstrate agreement with test value in UNESCO documents</span></span>
-<span class="r-in"><span class="fu">swSCTp</span><span class="op">(</span><span class="fl">1</span>, <span class="fu"><a href="T90fromT68.html">T90fromT68</a></span><span class="op">(</span><span class="fl">15</span><span class="op">)</span>, <span class="fl">0</span>, eos<span class="op">=</span><span class="st">"unesco"</span><span class="op">)</span> <span class="co"># expect 35</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># 1. Demonstrate agreement with test value in UNESCO documents</span></span></span>
+<span class="r-in"><span><span class="fu">swSCTp</span><span class="op">(</span><span class="fl">1</span>, <span class="fu"><a href="T90fromT68.html">T90fromT68</a></span><span class="op">(</span><span class="fl">15</span><span class="op">)</span>, <span class="fl">0</span>, eos<span class="op">=</span><span class="st">"unesco"</span><span class="op">)</span> <span class="co"># expect 35</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 35</span>
-<span class="r-in"><span class="co"># 2. Demonstrate agreement of gsw and unesco, S&gt;2 case</span></span>
-<span class="r-in"><span class="fu">swSCTp</span><span class="op">(</span><span class="fl">1</span>, <span class="fu"><a href="T90fromT68.html">T90fromT68</a></span><span class="op">(</span><span class="fl">15</span><span class="op">)</span>, <span class="fl">0</span>, eos<span class="op">=</span><span class="st">"gsw"</span><span class="op">)</span> <span class="co"># again, expect 35</span></span>
+<span class="r-in"><span><span class="co"># 2. Demonstrate agreement of gsw and unesco, S&gt;2 case</span></span></span>
+<span class="r-in"><span><span class="fu">swSCTp</span><span class="op">(</span><span class="fl">1</span>, <span class="fu"><a href="T90fromT68.html">T90fromT68</a></span><span class="op">(</span><span class="fl">15</span><span class="op">)</span>, <span class="fl">0</span>, eos<span class="op">=</span><span class="st">"gsw"</span><span class="op">)</span> <span class="co"># again, expect 35</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 35</span>
-<span class="r-in"><span class="co"># 3. Demonstrate close values even in very brackish water</span></span>
-<span class="r-in"><span class="fu">swSCTp</span><span class="op">(</span><span class="fl">0.02</span>, <span class="fl">10</span>, <span class="fl">100</span>, eos<span class="op">=</span><span class="st">"gsw"</span><span class="op">)</span>    <span class="co"># 0.6013981</span></span>
+<span class="r-in"><span><span class="co"># 3. Demonstrate close values even in very brackish water</span></span></span>
+<span class="r-in"><span><span class="fu">swSCTp</span><span class="op">(</span><span class="fl">0.02</span>, <span class="fl">10</span>, <span class="fl">100</span>, eos<span class="op">=</span><span class="st">"gsw"</span><span class="op">)</span>    <span class="co"># 0.6013981</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.6013981</span>
-<span class="r-in"><span class="fu">swSCTp</span><span class="op">(</span><span class="fl">0.02</span>, <span class="fl">10</span>, <span class="fl">100</span>, eos<span class="op">=</span><span class="st">"unesco"</span><span class="op">)</span> <span class="co"># 0.6011721</span></span>
+<span class="r-in"><span><span class="fu">swSCTp</span><span class="op">(</span><span class="fl">0.02</span>, <span class="fl">10</span>, <span class="fl">100</span>, eos<span class="op">=</span><span class="st">"unesco"</span><span class="op">)</span> <span class="co"># 0.6011721</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.6011721</span>
-<span class="r-in"></span>
+<span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
   </div>
@@ -241,7 +241,7 @@ conductivity from salinity, see <code><a href="swCSTp.html">swCSTp()</a></code>.
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>

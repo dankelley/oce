@@ -21,7 +21,7 @@ with the defaults used by mapPlot()."><!-- mathjax --><script src="https://cdnjs
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-8</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-9</span>
       </span>
     </div>
 
@@ -86,28 +86,28 @@ with the defaults used by <code><a href="mapPlot.html">mapPlot()</a></code>.</p>
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">mapAxis</span><span class="op">(</span>
-  side <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">2</span>,
-  longitude <span class="op">=</span> <span class="cn">TRUE</span>,
-  latitude <span class="op">=</span> <span class="cn">TRUE</span>,
-  axisStyle <span class="op">=</span> <span class="fl">1</span>,
-  tick <span class="op">=</span> <span class="cn">TRUE</span>,
-  line <span class="op">=</span> <span class="cn">NA</span>,
-  pos <span class="op">=</span> <span class="cn">NA</span>,
-  outer <span class="op">=</span> <span class="cn">FALSE</span>,
-  font <span class="op">=</span> <span class="cn">NA</span>,
-  lty <span class="op">=</span> <span class="st">"solid"</span>,
-  lwd <span class="op">=</span> <span class="fl">1</span>,
-  lwd.ticks <span class="op">=</span> <span class="va">lwd</span>,
-  col <span class="op">=</span> <span class="cn">NULL</span>,
-  col.ticks <span class="op">=</span> <span class="cn">NULL</span>,
-  hadj <span class="op">=</span> <span class="cn">NA</span>,
-  padj <span class="op">=</span> <span class="cn">NA</span>,
-  tcl <span class="op">=</span> <span class="op">-</span><span class="fl">0.3</span>,
-  cex.axis <span class="op">=</span> <span class="fl">1</span>,
-  mgp <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0.5</span>, <span class="fl">0</span><span class="op">)</span>,
-  debug <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"oceDebug"</span><span class="op">)</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">mapAxis</span><span class="op">(</span></span>
+<span>  side <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">2</span>,</span>
+<span>  longitude <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  latitude <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  axisStyle <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>  tick <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  line <span class="op">=</span> <span class="cn">NA</span>,</span>
+<span>  pos <span class="op">=</span> <span class="cn">NA</span>,</span>
+<span>  outer <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  font <span class="op">=</span> <span class="cn">NA</span>,</span>
+<span>  lty <span class="op">=</span> <span class="st">"solid"</span>,</span>
+<span>  lwd <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>  lwd.ticks <span class="op">=</span> <span class="va">lwd</span>,</span>
+<span>  col <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  col.ticks <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  hadj <span class="op">=</span> <span class="cn">NA</span>,</span>
+<span>  padj <span class="op">=</span> <span class="cn">NA</span>,</span>
+<span>  tcl <span class="op">=</span> <span class="op">-</span><span class="fl">0.3</span>,</span>
+<span>  cex.axis <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>  mgp <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0.5</span>, <span class="fl">0</span><span class="op">)</span>,</span>
+<span>  debug <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"oceDebug"</span><span class="op">)</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -248,26 +248,26 @@ amount of debugging information, or to 2 to get more.</p></dd>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="co"># \donttest{</span></span>
-<span class="r-in"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dankelley.github.io/oce/" class="external-link">oce</a></span><span class="op">)</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">coastlineWorld</span><span class="op">)</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mar<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">2</span>, <span class="fl">1</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">lonlim</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">180</span>, <span class="fl">180</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">latlim</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">70</span>, <span class="fl">110</span><span class="op">)</span></span>
-<span class="r-in"><span class="co"># In mapPlot() call, note axes and grid args, to</span></span>
-<span class="r-in"><span class="co"># prevent over-plotting of defaults.  Some adjustments</span></span>
-<span class="r-in"><span class="co"># might be required to the mapGrid() arguments, to</span></span>
-<span class="r-in"><span class="co"># get agreement with the axis. This is why both</span></span>
-<span class="r-in"><span class="co"># mapGrid() and mapAxis() are best avoided; it is</span></span>
-<span class="r-in"><span class="co"># simpler to let mapPlot() handle these things.</span></span>
-<span class="r-in"><span class="fu"><a href="mapPlot.html">mapPlot</a></span><span class="op">(</span><span class="va">coastlineWorld</span>, projection<span class="op">=</span><span class="st">"+proj=stere +lat_0=90"</span>,</span>
-<span class="r-in">        longitudelim<span class="op">=</span><span class="va">lonlim</span>, latitudelim<span class="op">=</span><span class="va">latlim</span>,</span>
-<span class="r-in">        col<span class="op">=</span><span class="st">"tan"</span>, axes<span class="op">=</span><span class="cn">FALSE</span>, grid<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span></span>
-<span class="r-in"><span class="fu"><a href="mapGrid.html">mapGrid</a></span><span class="op">(</span><span class="fl">15</span>, <span class="fl">15</span><span class="op">)</span></span>
-<span class="r-in"><span class="fu">mapAxis</span><span class="op">(</span>axisStyle<span class="op">=</span><span class="fl">5</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># \donttest{</span></span></span>
+<span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dankelley.github.io/oce/" class="external-link">oce</a></span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">coastlineWorld</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mar<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">2</span>, <span class="fl">1</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">lonlim</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">180</span>, <span class="fl">180</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">latlim</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">70</span>, <span class="fl">110</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="co"># In mapPlot() call, note axes and grid args, to</span></span></span>
+<span class="r-in"><span><span class="co"># prevent over-plotting of defaults.  Some adjustments</span></span></span>
+<span class="r-in"><span><span class="co"># might be required to the mapGrid() arguments, to</span></span></span>
+<span class="r-in"><span><span class="co"># get agreement with the axis. This is why both</span></span></span>
+<span class="r-in"><span><span class="co"># mapGrid() and mapAxis() are best avoided; it is</span></span></span>
+<span class="r-in"><span><span class="co"># simpler to let mapPlot() handle these things.</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="mapPlot.html">mapPlot</a></span><span class="op">(</span><span class="va">coastlineWorld</span>, projection<span class="op">=</span><span class="st">"+proj=stere +lat_0=90"</span>,</span></span>
+<span class="r-in"><span>        longitudelim<span class="op">=</span><span class="va">lonlim</span>, latitudelim<span class="op">=</span><span class="va">latlim</span>,</span></span>
+<span class="r-in"><span>        col<span class="op">=</span><span class="st">"tan"</span>, axes<span class="op">=</span><span class="cn">FALSE</span>, grid<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="mapGrid.html">mapGrid</a></span><span class="op">(</span><span class="fl">15</span>, <span class="fl">15</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">mapAxis</span><span class="op">(</span>axisStyle<span class="op">=</span><span class="fl">5</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="mapAxis-1.png" alt="" width="700" height="433"></span>
-<span class="r-in"><span class="co"># }</span></span>
-<span class="r-in"></span>
+<span class="r-in"><span><span class="co"># }</span></span></span>
+<span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
   </div>
@@ -282,7 +282,7 @@ amount of debugging information, or to 2 to get more.</p></dd>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>

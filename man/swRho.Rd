@@ -79,7 +79,7 @@ swRho(35, T90fromT68(25), 10000, eos="unesco") # 1062.53817
 \item Fofonoff, P. and R. C. Millard Jr, 1983. Algorithms for computation of
 fundamental properties of seawater.
 \emph{Unesco Technical Papers in Marine Science},
-\emph{44}, 53 pp
+\emph{44}, 53 pp.
 \item Gill, A.E., 1982. \emph{Atmosphere-ocean Dynamics}, Academic Press, New
 York, 662 pp.
 \item IOC, SCOR, and IAPSO (2010). The international thermodynamic equation of

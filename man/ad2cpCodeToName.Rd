@@ -24,17 +24,17 @@ hexadecimal (in R, "raw") code to indicate the nature of each data chunk, and
 The mapping from code (hex or decimal) to oce name is as follows.\tabular{rrr}{
    code (raw) \tab code (integer) \tab oce name \cr
    ---------- \tab -------------- \tab ----------------- \cr
-   0x15 \tab 21 \tab burst \cr
-   0x16 \tab 22 \tab average \cr
-   0x17 \tab 23 \tab bottomTrack \cr
-   0x18 \tab 24 \tab interleavedBurst \cr
-   0x1a \tab 26 \tab burstAltimeterRaw \cr
-   0x1b \tab 27 \tab DVLBottomTrack \cr
-   0x1c \tab 28 \tab echosounder \cr
-   0x1d \tab 29 \tab DVLWaterTrack \cr
-   0x1e \tab 30 \tab altimeter \cr
-   0x1f \tab 31 \tab averageAltimeter \cr
-   0xa0 \tab 160 \tab text \cr
+   \code{0x15} \tab 21 \tab \code{burst} \cr
+   \code{0x16} \tab 22 \tab \code{average} \cr
+   \code{0x17} \tab 23 \tab \code{bottomTrack} \cr
+   \code{0x18} \tab 24 \tab \code{interleavedBurst} \cr
+   \code{0x1a} \tab 26 \tab \code{burstAltimeterRaw} \cr
+   \code{0x1b} \tab 27 \tab \code{DVLBottomTrack} \cr
+   \code{0x1c} \tab 28 \tab \code{echosounder} \cr
+   \code{0x1d} \tab 29 \tab \code{DVLWaterTrack} \cr
+   \code{0x1e} \tab 30 \tab \code{altimeter} \cr
+   \code{0x1f} \tab 31 \tab \code{averageAltimeter} \cr
+   \code{0xa0} \tab 160 \tab \code{text} \cr
 }
 }
 \examples{

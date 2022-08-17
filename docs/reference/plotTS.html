@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-8</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-9</span>
       </span>
     </div>
 
@@ -78,44 +78,44 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">plotTS</span><span class="op">(</span>
-  <span class="va">x</span>,
-  inSitu <span class="op">=</span> <span class="cn">FALSE</span>,
-  type <span class="op">=</span> <span class="st">"p"</span>,
-  referencePressure <span class="op">=</span> <span class="fl">0</span>,
-  nlevels <span class="op">=</span> <span class="fl">6</span>,
-  <span class="va">levels</span>,
-  grid <span class="op">=</span> <span class="cn">TRUE</span>,
-  col.grid <span class="op">=</span> <span class="st">"lightgray"</span>,
-  lty.grid <span class="op">=</span> <span class="st">"dotted"</span>,
-  rho1000 <span class="op">=</span> <span class="cn">FALSE</span>,
-  eos <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"oceEOS"</span>, default <span class="op">=</span> <span class="st">"gsw"</span><span class="op">)</span>,
-  cex <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span><span class="st">"cex"</span><span class="op">)</span>,
-  col <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span><span class="st">"col"</span><span class="op">)</span>,
-  pch <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span><span class="st">"pch"</span><span class="op">)</span>,
-  bg <span class="op">=</span> <span class="st">"white"</span>,
-  pt.bg <span class="op">=</span> <span class="st">"transparent"</span>,
-  col.rho <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/grDevices/gray.html" class="external-link">gray</a></span><span class="op">(</span><span class="fl">0.5</span><span class="op">)</span>,
-  cex.rho <span class="op">=</span> <span class="fl">3</span><span class="op">/</span><span class="fl">4</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span><span class="st">"cex"</span><span class="op">)</span>,
-  rotate <span class="op">=</span> <span class="cn">TRUE</span>,
-  useSmoothScatter <span class="op">=</span> <span class="cn">FALSE</span>,
-  <span class="va">xlab</span>,
-  <span class="va">ylab</span>,
-  <span class="va">Slim</span>,
-  <span class="va">Tlim</span>,
-  drawFreezing <span class="op">=</span> <span class="cn">TRUE</span>,
-  trimIsopycnals <span class="op">=</span> <span class="cn">TRUE</span>,
-  mgp <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"oceMgp"</span><span class="op">)</span>,
-  mar <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">mgp</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span> <span class="op">+</span> <span class="fl">1.5</span>, <span class="va">mgp</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span> <span class="op">+</span> <span class="fl">1.5</span>, <span class="va">mgp</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>, <span class="va">mgp</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span>,
-  lwd <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span><span class="st">"lwd"</span><span class="op">)</span>,
-  lty <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span><span class="st">"lty"</span><span class="op">)</span>,
-  lwd.rho <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span><span class="st">"lwd"</span><span class="op">)</span>,
-  lty.rho <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span><span class="st">"lty"</span><span class="op">)</span>,
-  add <span class="op">=</span> <span class="cn">FALSE</span>,
-  inset <span class="op">=</span> <span class="cn">FALSE</span>,
-  debug <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"oceDebug"</span><span class="op">)</span>,
-  <span class="va">...</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">plotTS</span><span class="op">(</span></span>
+<span>  <span class="va">x</span>,</span>
+<span>  inSitu <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  type <span class="op">=</span> <span class="st">"p"</span>,</span>
+<span>  referencePressure <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>  nlevels <span class="op">=</span> <span class="fl">6</span>,</span>
+<span>  <span class="va">levels</span>,</span>
+<span>  grid <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  col.grid <span class="op">=</span> <span class="st">"lightgray"</span>,</span>
+<span>  lty.grid <span class="op">=</span> <span class="st">"dotted"</span>,</span>
+<span>  rho1000 <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  eos <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"oceEOS"</span>, default <span class="op">=</span> <span class="st">"gsw"</span><span class="op">)</span>,</span>
+<span>  cex <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span><span class="st">"cex"</span><span class="op">)</span>,</span>
+<span>  col <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span><span class="st">"col"</span><span class="op">)</span>,</span>
+<span>  pch <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span><span class="st">"pch"</span><span class="op">)</span>,</span>
+<span>  bg <span class="op">=</span> <span class="st">"white"</span>,</span>
+<span>  pt.bg <span class="op">=</span> <span class="st">"transparent"</span>,</span>
+<span>  col.rho <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/grDevices/gray.html" class="external-link">gray</a></span><span class="op">(</span><span class="fl">0.5</span><span class="op">)</span>,</span>
+<span>  cex.rho <span class="op">=</span> <span class="fl">3</span><span class="op">/</span><span class="fl">4</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span><span class="st">"cex"</span><span class="op">)</span>,</span>
+<span>  rotate <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  useSmoothScatter <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  <span class="va">xlab</span>,</span>
+<span>  <span class="va">ylab</span>,</span>
+<span>  <span class="va">Slim</span>,</span>
+<span>  <span class="va">Tlim</span>,</span>
+<span>  drawFreezing <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  trimIsopycnals <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  mgp <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"oceMgp"</span><span class="op">)</span>,</span>
+<span>  mar <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">mgp</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span> <span class="op">+</span> <span class="fl">1.5</span>, <span class="va">mgp</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span> <span class="op">+</span> <span class="fl">1.5</span>, <span class="va">mgp</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>, <span class="va">mgp</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span>,</span>
+<span>  lwd <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span><span class="st">"lwd"</span><span class="op">)</span>,</span>
+<span>  lty <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span><span class="st">"lty"</span><span class="op">)</span>,</span>
+<span>  lwd.rho <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span><span class="st">"lwd"</span><span class="op">)</span>,</span>
+<span>  lty.rho <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span><span class="st">"lty"</span><span class="op">)</span>,</span>
+<span>  add <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  inset <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  debug <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"oceDebug"</span><span class="op">)</span>,</span>
+<span>  <span class="va">...</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -421,55 +421,55 @@ Journal of Atmospheric and Oceanic Technology 20, no. 5 (May 1, 2003): 730-41.
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="co"># For a simple ctd object</span></span>
-<span class="r-in"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dankelley.github.io/oce/" class="external-link">oce</a></span><span class="op">)</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">ctd</span><span class="op">)</span></span>
-<span class="r-in"><span class="fu">plotTS</span><span class="op">(</span><span class="va">ctd</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># For a simple ctd object</span></span></span>
+<span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dankelley.github.io/oce/" class="external-link">oce</a></span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">ctd</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">plotTS</span><span class="op">(</span><span class="va">ctd</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="plotTS-1.png" alt="" width="700" height="433"></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># For a section object (note the outlier!)</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">section</span><span class="op">)</span></span>
-<span class="r-in"><span class="fu">plotTS</span><span class="op">(</span><span class="va">section</span><span class="op">)</span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># For a section object (note the outlier!)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">section</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">plotTS</span><span class="op">(</span><span class="va">section</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="plotTS-2.png" alt="" width="700" height="433"></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># For an argo object</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">argo</span><span class="op">)</span></span>
-<span class="r-in"><span class="fu">plotTS</span><span class="op">(</span><span class="fu"><a href="handleFlags.html">handleFlags</a></span><span class="op">(</span><span class="va">argo</span><span class="op">)</span><span class="op">)</span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># For an argo object</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">argo</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">plotTS</span><span class="op">(</span><span class="fu"><a href="handleFlags.html">handleFlags</a></span><span class="op">(</span><span class="va">argo</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="plotTS-3.png" alt="" width="700" height="433"></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># Oxygen-based colormap</span></span>
-<span class="r-in"><span class="va">marOrig</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span><span class="st">"mar"</span><span class="op">)</span> <span class="co"># so later plots with palettes have same margins</span></span>
-<span class="r-in"><span class="va">cm</span> <span class="op">&lt;-</span> <span class="fu"><a href="colormap.html">colormap</a></span><span class="op">(</span><span class="va">section</span><span class="op">[[</span><span class="st">'oxygen'</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span>
-<span class="r-in"><span class="fu"><a href="drawPalette.html">drawPalette</a></span><span class="op">(</span>colormap<span class="op">=</span><span class="va">cm</span>, zlab<span class="op">=</span><span class="st">'Oxygen'</span><span class="op">)</span></span>
-<span class="r-in"><span class="fu">plotTS</span><span class="op">(</span><span class="va">section</span>, pch<span class="op">=</span><span class="fl">19</span>, col<span class="op">=</span><span class="va">cm</span><span class="op">$</span><span class="va">zcol</span>, mar<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span><span class="st">'mar'</span><span class="op">)</span><span class="op">)</span> <span class="co"># the mar adjusts for the palette</span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Oxygen-based colormap</span></span></span>
+<span class="r-in"><span><span class="va">marOrig</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span><span class="st">"mar"</span><span class="op">)</span> <span class="co"># so later plots with palettes have same margins</span></span></span>
+<span class="r-in"><span><span class="va">cm</span> <span class="op">&lt;-</span> <span class="fu"><a href="colormap.html">colormap</a></span><span class="op">(</span><span class="va">section</span><span class="op">[[</span><span class="st">'oxygen'</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="drawPalette.html">drawPalette</a></span><span class="op">(</span>colormap<span class="op">=</span><span class="va">cm</span>, zlab<span class="op">=</span><span class="st">'Oxygen'</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">plotTS</span><span class="op">(</span><span class="va">section</span>, pch<span class="op">=</span><span class="fl">19</span>, col<span class="op">=</span><span class="va">cm</span><span class="op">$</span><span class="va">zcol</span>, mar<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span><span class="st">'mar'</span><span class="op">)</span><span class="op">)</span> <span class="co"># the mar adjusts for the palette</span></span></span>
 <span class="r-plt img"><img src="plotTS-4.png" alt="" width="700" height="433"></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># Station-based colormap</span></span>
-<span class="r-in"><span class="va">Tlim</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/range.html" class="external-link">range</a></span><span class="op">(</span><span class="va">section</span><span class="op">[[</span><span class="st">'temperature'</span><span class="op">]</span><span class="op">]</span>, na.rm<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">Slim</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/range.html" class="external-link">range</a></span><span class="op">(</span><span class="va">section</span><span class="op">[[</span><span class="st">'salinity'</span><span class="op">]</span><span class="op">]</span>, na.rm<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">cm</span> <span class="op">&lt;-</span> <span class="fu"><a href="colormap.html">colormap</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_along</a></span><span class="op">(</span><span class="va">section</span><span class="op">[[</span><span class="st">'latitude'</span>, <span class="st">'byStation'</span><span class="op">]</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mar<span class="op">=</span><span class="va">marOrig</span><span class="op">)</span> <span class="co"># same as previous plot</span></span>
-<span class="r-in"><span class="fu"><a href="drawPalette.html">drawPalette</a></span><span class="op">(</span>colormap<span class="op">=</span><span class="va">cm</span>, zlab<span class="op">=</span><span class="st">'Latitude'</span><span class="op">)</span></span>
-<span class="r-in"><span class="fu">plotTS</span><span class="op">(</span><span class="va">section</span>, Tlim<span class="op">=</span><span class="va">Tlim</span>, Slim<span class="op">=</span><span class="va">Slim</span>, pch<span class="op">=</span><span class="cn">NA</span>, mar<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span><span class="st">'mar'</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">jnk</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/mapply.html" class="external-link">mapply</a></span><span class="op">(</span></span>
-<span class="r-in">    <span class="kw">function</span><span class="op">(</span><span class="va">s</span>, <span class="va">col</span><span class="op">)</span> <span class="op">{</span></span>
-<span class="r-in">        <span class="fu">plotTS</span><span class="op">(</span><span class="va">s</span>, col<span class="op">=</span><span class="va">col</span>, add<span class="op">=</span><span class="cn">TRUE</span>, type<span class="op">=</span><span class="st">'l'</span><span class="op">)</span></span>
-<span class="r-in">    <span class="op">}</span>,</span>
-<span class="r-in">    <span class="va">section</span><span class="op">[[</span><span class="st">'station'</span><span class="op">]</span><span class="op">]</span>, col<span class="op">=</span><span class="va">cm</span><span class="op">$</span><span class="va">zcol</span><span class="op">)</span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Station-based colormap</span></span></span>
+<span class="r-in"><span><span class="va">Tlim</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/range.html" class="external-link">range</a></span><span class="op">(</span><span class="va">section</span><span class="op">[[</span><span class="st">'temperature'</span><span class="op">]</span><span class="op">]</span>, na.rm<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">Slim</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/range.html" class="external-link">range</a></span><span class="op">(</span><span class="va">section</span><span class="op">[[</span><span class="st">'salinity'</span><span class="op">]</span><span class="op">]</span>, na.rm<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">cm</span> <span class="op">&lt;-</span> <span class="fu"><a href="colormap.html">colormap</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_along</a></span><span class="op">(</span><span class="va">section</span><span class="op">[[</span><span class="st">'latitude'</span>, <span class="st">'byStation'</span><span class="op">]</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mar<span class="op">=</span><span class="va">marOrig</span><span class="op">)</span> <span class="co"># same as previous plot</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="drawPalette.html">drawPalette</a></span><span class="op">(</span>colormap<span class="op">=</span><span class="va">cm</span>, zlab<span class="op">=</span><span class="st">'Latitude'</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">plotTS</span><span class="op">(</span><span class="va">section</span>, Tlim<span class="op">=</span><span class="va">Tlim</span>, Slim<span class="op">=</span><span class="va">Slim</span>, pch<span class="op">=</span><span class="cn">NA</span>, mar<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span><span class="st">'mar'</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">jnk</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/mapply.html" class="external-link">mapply</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>    <span class="kw">function</span><span class="op">(</span><span class="va">s</span>, <span class="va">col</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span>        <span class="fu">plotTS</span><span class="op">(</span><span class="va">s</span>, col<span class="op">=</span><span class="va">col</span>, add<span class="op">=</span><span class="cn">TRUE</span>, type<span class="op">=</span><span class="st">'l'</span><span class="op">)</span></span></span>
+<span class="r-in"><span>    <span class="op">}</span>,</span></span>
+<span class="r-in"><span>    <span class="va">section</span><span class="op">[[</span><span class="st">'station'</span><span class="op">]</span><span class="op">]</span>, col<span class="op">=</span><span class="va">cm</span><span class="op">$</span><span class="va">zcol</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="plotTS-5.png" alt="" width="700" height="433"></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># Add spiciness contours</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">ctd</span><span class="op">)</span></span>
-<span class="r-in"><span class="fu">plotTS</span><span class="op">(</span><span class="va">ctd</span>, eos<span class="op">=</span><span class="st">"gsw"</span><span class="op">)</span> <span class="co"># MANDATORY so x=SA and y=CT</span></span>
-<span class="r-in"><span class="va">usr</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span><span class="st">"usr"</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">n</span> <span class="op">&lt;-</span> <span class="fl">100</span></span>
-<span class="r-in"><span class="va">SAgrid</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="va">usr</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>, <span class="va">usr</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span>, length.out<span class="op">=</span><span class="va">n</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">CTgrid</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="va">usr</span><span class="op">[</span><span class="fl">3</span><span class="op">]</span>, <span class="va">usr</span><span class="op">[</span><span class="fl">4</span><span class="op">]</span>, length.out<span class="op">=</span><span class="va">n</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">g</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/expand.grid.html" class="external-link">expand.grid</a></span><span class="op">(</span>SA<span class="op">=</span><span class="va">SAgrid</span>, CT<span class="op">=</span><span class="va">CTgrid</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">spiciness</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu">gsw</span><span class="fu">::</span><span class="fu"><a href="http://teos-10.github.io/GSW-R/reference/gsw_spiciness0.html" class="external-link">gsw_spiciness0</a></span><span class="op">(</span><span class="va">g</span><span class="op">$</span><span class="va">SA</span>, <span class="va">g</span><span class="op">$</span><span class="va">CT</span><span class="op">)</span>, nrow<span class="op">=</span><span class="va">n</span><span class="op">)</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/graphics/contour.html" class="external-link">contour</a></span><span class="op">(</span><span class="va">SAgrid</span>, <span class="va">CTgrid</span>, <span class="va">spiciness</span>, col<span class="op">=</span><span class="fl">2</span>, labcex<span class="op">=</span><span class="fl">1</span>, add<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Add spiciness contours</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">ctd</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">plotTS</span><span class="op">(</span><span class="va">ctd</span>, eos<span class="op">=</span><span class="st">"gsw"</span><span class="op">)</span> <span class="co"># MANDATORY so x=SA and y=CT</span></span></span>
+<span class="r-in"><span><span class="va">usr</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span><span class="st">"usr"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">n</span> <span class="op">&lt;-</span> <span class="fl">100</span></span></span>
+<span class="r-in"><span><span class="va">SAgrid</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="va">usr</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>, <span class="va">usr</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span>, length.out<span class="op">=</span><span class="va">n</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">CTgrid</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="va">usr</span><span class="op">[</span><span class="fl">3</span><span class="op">]</span>, <span class="va">usr</span><span class="op">[</span><span class="fl">4</span><span class="op">]</span>, length.out<span class="op">=</span><span class="va">n</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">g</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/expand.grid.html" class="external-link">expand.grid</a></span><span class="op">(</span>SA<span class="op">=</span><span class="va">SAgrid</span>, CT<span class="op">=</span><span class="va">CTgrid</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">spiciness</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu">gsw</span><span class="fu">::</span><span class="fu"><a href="http://teos-10.github.io/GSW-R/reference/gsw_spiciness0.html" class="external-link">gsw_spiciness0</a></span><span class="op">(</span><span class="va">g</span><span class="op">$</span><span class="va">SA</span>, <span class="va">g</span><span class="op">$</span><span class="va">CT</span><span class="op">)</span>, nrow<span class="op">=</span><span class="va">n</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/contour.html" class="external-link">contour</a></span><span class="op">(</span><span class="va">SAgrid</span>, <span class="va">CTgrid</span>, <span class="va">spiciness</span>, col<span class="op">=</span><span class="fl">2</span>, labcex<span class="op">=</span><span class="fl">1</span>, add<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="plotTS-6.png" alt="" width="700" height="433"></span>
-<span class="r-in"></span>
+<span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
   </div>
@@ -484,7 +484,7 @@ Journal of Atmospheric and Oceanic Technology 20, no. 5 (May 1, 2003): 730-41.
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>

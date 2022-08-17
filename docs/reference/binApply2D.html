@@ -19,7 +19,7 @@ consider using binMean2D() instead, since it should be faster.)"><!-- mathjax --
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-8</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-9</span>
       </span>
     </div>
 
@@ -82,7 +82,7 @@ consider using <code><a href="binMean2D.html">binMean2D()</a></code> instead, si
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">binApply2D</span><span class="op">(</span><span class="va">x</span>, <span class="va">y</span>, <span class="va">f</span>, <span class="va">xbreaks</span>, <span class="va">ybreaks</span>, <span class="va">FUN</span>, <span class="va">...</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">binApply2D</span><span class="op">(</span><span class="va">x</span>, <span class="va">y</span>, <span class="va">f</span>, <span class="va">xbreaks</span>, <span class="va">ybreaks</span>, <span class="va">FUN</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -145,29 +145,29 @@ subsetted by these breaks.</p>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dankelley.github.io/oce/" class="external-link">oce</a></span><span class="op">)</span></span>
-<span class="r-in"><span class="co"># \donttest{</span></span>
-<span class="r-in"><span class="co">## secchi depths in lat and lon bins</span></span>
-<span class="r-in"><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"ocedata"</span>, quietly<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
-<span class="r-in">    <span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">secchi</span>, package<span class="op">=</span><span class="st">"ocedata"</span><span class="op">)</span></span>
-<span class="r-in">    <span class="co">## Note that zlim is provided to the colormap(), to prevent a few</span></span>
-<span class="r-in">    <span class="co">## points from setting a very wide scale.</span></span>
-<span class="r-in">    <span class="va">cm</span> <span class="op">&lt;-</span> <span class="fu"><a href="colormap.html">colormap</a></span><span class="op">(</span>z<span class="op">=</span><span class="va">secchi</span><span class="op">$</span><span class="va">depth</span>, col<span class="op">=</span><span class="va">oceColorsViridis</span>, zlim<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">15</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in">    <span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mar<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">2</span>, <span class="fl">2</span>, <span class="fl">2</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in">    <span class="fu"><a href="drawPalette.html">drawPalette</a></span><span class="op">(</span>colormap<span class="op">=</span><span class="va">cm</span>, zlab<span class="op">=</span><span class="st">"Secchi Depth"</span><span class="op">)</span></span>
-<span class="r-in">    <span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">coastlineWorld</span><span class="op">)</span></span>
-<span class="r-in">    <span class="fu"><a href="mapPlot.html">mapPlot</a></span><span class="op">(</span><span class="va">coastlineWorld</span>, longitudelim<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">5</span>, <span class="fl">20</span><span class="op">)</span>, latitudelim<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">50</span>, <span class="fl">66</span><span class="op">)</span>,</span>
-<span class="r-in">      grid<span class="op">=</span><span class="fl">5</span>, col<span class="op">=</span><span class="st">'gray'</span>, projection<span class="op">=</span><span class="st">"+proj=lcc +lat_1=50 +lat_2=65"</span><span class="op">)</span></span>
-<span class="r-in">    <span class="va">bc</span> <span class="op">&lt;-</span> <span class="fu">binApply2D</span><span class="op">(</span><span class="va">secchi</span><span class="op">$</span><span class="va">longitude</span>, <span class="va">secchi</span><span class="op">$</span><span class="va">latitude</span>,</span>
-<span class="r-in">                     <span class="fu"><a href="https://rdrr.io/r/base/pretty.html" class="external-link">pretty</a></span><span class="op">(</span><span class="va">secchi</span><span class="op">$</span><span class="va">longitude</span>, <span class="fl">80</span><span class="op">)</span>,</span>
-<span class="r-in">                     <span class="fu"><a href="https://rdrr.io/r/base/pretty.html" class="external-link">pretty</a></span><span class="op">(</span><span class="va">secchi</span><span class="op">$</span><span class="va">latitude</span>, <span class="fl">40</span><span class="op">)</span>,</span>
-<span class="r-in">                     f<span class="op">=</span><span class="va">secchi</span><span class="op">$</span><span class="va">depth</span>, FUN<span class="op">=</span><span class="va">mean</span><span class="op">)</span></span>
-<span class="r-in">    <span class="fu"><a href="mapImage.html">mapImage</a></span><span class="op">(</span><span class="va">bc</span><span class="op">$</span><span class="va">xmids</span>, <span class="va">bc</span><span class="op">$</span><span class="va">ymids</span>, <span class="va">bc</span><span class="op">$</span><span class="va">result</span>, zlim<span class="op">=</span><span class="va">cm</span><span class="op">$</span><span class="va">zlim</span>, col<span class="op">=</span><span class="va">cm</span><span class="op">$</span><span class="va">zcol</span><span class="op">)</span></span>
-<span class="r-in">    <span class="fu"><a href="mapPolygon.html">mapPolygon</a></span><span class="op">(</span><span class="va">coastlineWorld</span>, col<span class="op">=</span><span class="st">"gray"</span><span class="op">)</span></span>
-<span class="r-in"><span class="op">}</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dankelley.github.io/oce/" class="external-link">oce</a></span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="co"># \donttest{</span></span></span>
+<span class="r-in"><span><span class="co">## secchi depths in lat and lon bins</span></span></span>
+<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"ocedata"</span>, quietly<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span>    <span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">secchi</span>, package<span class="op">=</span><span class="st">"ocedata"</span><span class="op">)</span></span></span>
+<span class="r-in"><span>    <span class="co">## Note that zlim is provided to the colormap(), to prevent a few</span></span></span>
+<span class="r-in"><span>    <span class="co">## points from setting a very wide scale.</span></span></span>
+<span class="r-in"><span>    <span class="va">cm</span> <span class="op">&lt;-</span> <span class="fu"><a href="colormap.html">colormap</a></span><span class="op">(</span>z<span class="op">=</span><span class="va">secchi</span><span class="op">$</span><span class="va">depth</span>, col<span class="op">=</span><span class="va">oceColorsViridis</span>, zlim<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">15</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span>    <span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mar<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">2</span>, <span class="fl">2</span>, <span class="fl">2</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span>    <span class="fu"><a href="drawPalette.html">drawPalette</a></span><span class="op">(</span>colormap<span class="op">=</span><span class="va">cm</span>, zlab<span class="op">=</span><span class="st">"Secchi Depth"</span><span class="op">)</span></span></span>
+<span class="r-in"><span>    <span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">coastlineWorld</span><span class="op">)</span></span></span>
+<span class="r-in"><span>    <span class="fu"><a href="mapPlot.html">mapPlot</a></span><span class="op">(</span><span class="va">coastlineWorld</span>, longitudelim<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">5</span>, <span class="fl">20</span><span class="op">)</span>, latitudelim<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">50</span>, <span class="fl">66</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>      grid<span class="op">=</span><span class="fl">5</span>, col<span class="op">=</span><span class="st">'gray'</span>, projection<span class="op">=</span><span class="st">"+proj=lcc +lat_1=50 +lat_2=65"</span><span class="op">)</span></span></span>
+<span class="r-in"><span>    <span class="va">bc</span> <span class="op">&lt;-</span> <span class="fu">binApply2D</span><span class="op">(</span><span class="va">secchi</span><span class="op">$</span><span class="va">longitude</span>, <span class="va">secchi</span><span class="op">$</span><span class="va">latitude</span>,</span></span>
+<span class="r-in"><span>                     <span class="fu"><a href="https://rdrr.io/r/base/pretty.html" class="external-link">pretty</a></span><span class="op">(</span><span class="va">secchi</span><span class="op">$</span><span class="va">longitude</span>, <span class="fl">80</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>                     <span class="fu"><a href="https://rdrr.io/r/base/pretty.html" class="external-link">pretty</a></span><span class="op">(</span><span class="va">secchi</span><span class="op">$</span><span class="va">latitude</span>, <span class="fl">40</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>                     f<span class="op">=</span><span class="va">secchi</span><span class="op">$</span><span class="va">depth</span>, FUN<span class="op">=</span><span class="va">mean</span><span class="op">)</span></span></span>
+<span class="r-in"><span>    <span class="fu"><a href="mapImage.html">mapImage</a></span><span class="op">(</span><span class="va">bc</span><span class="op">$</span><span class="va">xmids</span>, <span class="va">bc</span><span class="op">$</span><span class="va">ymids</span>, <span class="va">bc</span><span class="op">$</span><span class="va">result</span>, zlim<span class="op">=</span><span class="va">cm</span><span class="op">$</span><span class="va">zlim</span>, col<span class="op">=</span><span class="va">cm</span><span class="op">$</span><span class="va">zcol</span><span class="op">)</span></span></span>
+<span class="r-in"><span>    <span class="fu"><a href="mapPolygon.html">mapPolygon</a></span><span class="op">(</span><span class="va">coastlineWorld</span>, col<span class="op">=</span><span class="st">"gray"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
 <span class="r-plt img"><img src="binApply2D-1.png" alt="" width="700" height="433"></span>
-<span class="r-in"><span class="co"># }</span></span>
-<span class="r-in"></span>
+<span class="r-in"><span><span class="co"># }</span></span></span>
+<span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
   </div>
@@ -182,7 +182,7 @@ subsetted by these breaks.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>

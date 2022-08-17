@@ -45,7 +45,7 @@ means to read all the types.  In many cases, though, the user does not want
 to read everything at once, either as a way to speed processing or to avoid
 running out of memory.  For this reason, a common first step is instead to
 use \code{which="?"}, which gives a table of data types in the file or
-\code{which="??"}, which gives a data frame overviewing the data 'chunks'; after
+\code{which="??"}, which gives a data frame summarizing the data 'chunks'; after
 doing those things, the next step is usually to extract all the data, or an
 individual type of interest is extracted.  The choices of individual type are
 as follows:

@@ -18,7 +18,7 @@ plot,windrose-method()."><!-- mathjax --><script src="https://cdnjs.cloudflare.c
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-8</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-9</span>
       </span>
     </div>
 
@@ -80,7 +80,7 @@ plot,windrose-method()."><!-- mathjax --><script src="https://cdnjs.cloudflare.c
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">as.windrose</span><span class="op">(</span><span class="va">x</span>, <span class="va">y</span>, dtheta <span class="op">=</span> <span class="fl">15</span>, debug <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"oceDebug"</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">as.windrose</span><span class="op">(</span><span class="va">x</span>, <span class="va">y</span>, dtheta <span class="op">=</span> <span class="fl">15</span>, debug <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"oceDebug"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -131,11 +131,11 @@ median, the upper hinge, and the max)</td></tr></table></div>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dankelley.github.io/oce/" class="external-link">oce</a></span><span class="op">)</span></span>
-<span class="r-in"><span class="va">xcomp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">360</span><span class="op">)</span> <span class="op">+</span> <span class="fl">1</span></span>
-<span class="r-in"><span class="va">ycomp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">360</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">wr</span> <span class="op">&lt;-</span> <span class="fu">as.windrose</span><span class="op">(</span><span class="va">xcomp</span>, <span class="va">ycomp</span><span class="op">)</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">wr</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dankelley.github.io/oce/" class="external-link">oce</a></span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">xcomp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">360</span><span class="op">)</span> <span class="op">+</span> <span class="fl">1</span></span></span>
+<span class="r-in"><span><span class="va">ycomp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">360</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">wr</span> <span class="op">&lt;-</span> <span class="fu">as.windrose</span><span class="op">(</span><span class="va">xcomp</span>, <span class="va">ycomp</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">wr</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Windrose data</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> -------------</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
@@ -143,22 +143,22 @@ median, the upper hinge, and the max)</td></tr></table></div>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> * Data Overview</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                Min.       Mean     Max. Dim. NAs OriginalName</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     n           360        360      360    1   0            -</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     x.mean    1.038      1.038    1.038    1   0            -</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     y.mean -0.03407   -0.03407 -0.03407    1   0            -</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     theta    -172.5 1.5618e-14    172.5   24   0            -</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     count         2         15       41   24   0            -</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     mean    0.61624     1.3116   2.1613   24   0            -</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     fives  0.051959     1.3368   3.8492 24x5   0            -</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                 Min.       Mean      Max. Dim. NAs OriginalName</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     n            360        360       360    1   0            -</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     x.mean    1.0461     1.0461    1.0461    1   0            -</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     y.mean -0.017023  -0.017023 -0.017023    1   0            -</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     theta     -172.5 1.5618e-14     172.5   24   0            -</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     count          1         15        47   24   0            -</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     mean     0.36711     1.3721    2.0632   24   0            -</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     fives    0.11487     1.4014     4.336 24x5   0            -</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> * Processing Log</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2022-07-04 16:53:12 UTC: `create 'windrose' object`</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2022-07-04 16:53:12 UTC: `as.windrose(x = xcomp, y = ycomp)`</span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">wr</span><span class="op">)</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2022-08-17 12:38:09 UTC: `create 'windrose' object`</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2022-08-17 12:38:09 UTC: `as.windrose(x = xcomp, y = ycomp)`</span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">wr</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="as.windrose-1.png" alt="" width="700" height="433"></span>
-<span class="r-in"></span>
+<span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
   </div>
@@ -173,7 +173,7 @@ median, the upper hinge, and the max)</td></tr></table></div>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>
