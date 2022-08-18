@@ -13,6 +13,7 @@ read.adp.rdi(
   longitude = NA,
   latitude = NA,
   type = c("workhorse"),
+  which,
   encoding = NA,
   monitor = FALSE,
   despike = FALSE,
@@ -54,6 +55,11 @@ East.}
 North.}
 
 \item{type}{character string indicating the type of instrument.}
+
+\item{which}{optional character value.  If this is \code{"??"} then the
+\code{\link[=read.adp.rdi]{read.adp.rdi()}} works by locating the indices in \code{file} at which data
+segments begin, and storing them as \code{index} in a list that is returned.
+The other entry of the list is \code{time}, the time of the observation.}
 
 \item{encoding}{ignored.}
 
@@ -393,11 +399,14 @@ P/N 957-6171-00 (June 2001) \verb{WinRiver User Guide International Version.pdf.
 Other things related to adp data: 
 \code{\link{[[,adp-method}},
 \code{\link{[[<-,adp-method}},
+\code{\link{ad2cpCodeToName}()},
 \code{\link{ad2cpHeaderValue}()},
 \code{\link{adp-class}},
+\code{\link{adpAd2cpFileTrim}()},
 \code{\link{adpConvertRawToNumeric}()},
 \code{\link{adpEnsembleAverage}()},
 \code{\link{adpFlagPastBoundary}()},
+\code{\link{adpRdiFileTrim}()},
 \code{\link{adp_rdi.000}},
 \code{\link{adp}},
 \code{\link{as.adp}()},
@@ -432,8 +441,19 @@ Other things related to adp data:
 \code{\link{xyzToEnuAdpAD2CP}()},
 \code{\link{xyzToEnuAdp}()},
 \code{\link{xyzToEnu}()}
+
+Other functions that read adp data: 
+\code{\link{read.adp.ad2cp}()},
+\code{\link{read.adp.nortek}()},
+\code{\link{read.adp.sontek.serial}()},
+\code{\link{read.adp.sontek}()},
+\code{\link{read.adp}()},
+\code{\link{read.aquadoppHR}()},
+\code{\link{read.aquadoppProfiler}()},
+\code{\link{read.aquadopp}()}
 }
 \author{
 Dan Kelley and Clark Richards
 }
+\concept{functions that read adp data}
 \concept{things related to adp data}

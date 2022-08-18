@@ -23,7 +23,7 @@ up-to-date.'><!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-8</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-10</span>
       </span>
     </div>
 
@@ -96,15 +96,15 @@ up-to-date.</p>
 Please use the replacement functions as listed below. The upcoming CRAN
 release of <a href="https://CRAN.R-project.org/package=oce" class="external-link"><span class="pkg">oce</span></a> will mark these as "defunct", which is the
 last step before outright removal.</p>
-<table class="table table"><tr><td><strong>Deprecated</strong></td><td><strong>Replacement</strong></td><td><strong>Deprecated</strong></td><td><strong>Defunct</strong></td><td><strong>Removed</strong></td></tr><tr><td><code><a href="renameData.html">renameData()</a></code></td><td><code><a href="oceRenameData.html">oceRenameData()</a></code></td><td>1.1-2</td><td>1.1-3</td><td>1.1-4</td></tr></table><p>The following are marked "defunct", so calling them in the
+<table class="table table"><tr><td><strong>Deprecated</strong></td><td><strong>Replacement</strong></td><td><strong>Deprecated</strong></td><td><strong>Defunct</strong></td><td><strong>Removed</strong></td></tr></table><p>The following are marked "defunct", so calling them in the
 the present version produces an error message that hints at a replacement
 function. Once a function is marked "defunct" on one CRAN release, it will
-be slated for outright deletion in a subsequent release.</p>
-<table class="table table"><tr><td><strong>Defunct</strong></td><td><strong>Replacement</strong></td><td><strong>Version</strong></td></tr><tr><td><code><a href="renameData.html">renameData()</a></code></td><td><code><a href="oceRenameData.html">oceRenameData()</a></code></td><td>1.5</td></tr><tr><td><code><a href="byteToBinary.html">byteToBinary()</a></code></td><td><code><a href="https://rdrr.io/r/base/rawConversion.html" class="external-link">rawToBits()</a></code></td><td>1.5</td></tr></table><p>The following functions were removed after having been marked as "deprecated"
+be slated for outright deletion in some subsequent release.</p>
+<table class="table table"><tr><td><strong>Defunct</strong></td><td><strong>Replacement</strong></td><td><strong>Version</strong></td></tr><tr><td><code><a href="trimString.html">trimString()</a></code></td><td><code><a href="https://rdrr.io/r/base/trimws.html" class="external-link">trimws()</a></code></td><td>1.7-9</td></tr></table><p>The following functions were removed after having been marked as "deprecated"
 in at least one CRAN release, and possibly as "defunct" in at least
 one CRAN release.  (The version number in the table is the first
 version to lack the named function.)</p>
-<table class="table table"><tr><td><strong>Function</strong></td><td><strong>Replacement</strong></td><td><strong>Version</strong></td></tr><tr><td><code>addColumn()</code></td><td><code><a href="oceSetData.html">oceSetData()</a></code></td><td>1.1-2</td></tr><tr><td><code>ctdAddColumn()</code></td><td><code><a href="oceSetData.html">oceSetData()</a></code></td><td>1.1-2</td></tr><tr><td><code>ctdUpdateHeader()</code></td><td><code><a href="oceSetMetadata.html">oceSetMetadata()</a></code></td><td>1.1-2</td></tr><tr><td><code>findInOrdered()</code></td><td><code><a href="https://rdrr.io/r/base/findInterval.html" class="external-link">findInterval()</a></code></td><td>1.1-2</td></tr><tr><td><code>makeSection()</code></td><td><code><a href="as.section.html">as.section()</a></code></td><td>0.9.24</td></tr><tr><td><code>mapMeridians()</code></td><td><code><a href="mapGrid.html">mapGrid()</a></code></td><td>1.1-2</td></tr><tr><td><code>mapZones()</code></td><td><code><a href="mapGrid.html">mapGrid()</a></code></td><td>1.1-2</td></tr><tr><td><code>oce.as.POSIXlt()</code></td><td><code><a href="https://lubridate.tidyverse.org/reference/parse_date_time.html" class="external-link">lubridate::parse_date_time()</a></code></td><td>1.1-2</td></tr></table><p>Several <a href="https://CRAN.R-project.org/package=oce" class="external-link"><span class="pkg">oce</span></a> function arguments are considered "deprecated", which
+<table class="table table"><tr><td><strong>Function</strong></td><td><strong>Replacement</strong></td><td><strong>Version</strong></td></tr><tr><td><code>addColumn()</code></td><td><code><a href="oceSetData.html">oceSetData()</a></code></td><td>1.1-2</td></tr><tr><td><code>ctdAddColumn()</code></td><td><code><a href="oceSetData.html">oceSetData()</a></code></td><td>1.1-2</td></tr><tr><td><code>ctdUpdateHeader()</code></td><td><code><a href="oceSetMetadata.html">oceSetMetadata()</a></code></td><td>1.1-2</td></tr><tr><td><code>findInOrdered()</code></td><td><code><a href="https://rdrr.io/r/base/findInterval.html" class="external-link">findInterval()</a></code></td><td>1.1-2</td></tr><tr><td><code>makeSection()</code></td><td><code><a href="as.section.html">as.section()</a></code></td><td>0.9.24</td></tr><tr><td><code>mapMeridians()</code></td><td><code><a href="mapGrid.html">mapGrid()</a></code></td><td>1.1-2</td></tr><tr><td><code>mapZones()</code></td><td><code><a href="mapGrid.html">mapGrid()</a></code></td><td>1.1-2</td></tr><tr><td><code>oce.as.POSIXlt()</code></td><td><code><a href="https://lubridate.tidyverse.org/reference/parse_date_time.html" class="external-link">lubridate::parse_date_time()</a></code></td><td>1.1-2</td></tr><tr><td><code>renameData()</code></td><td><code><a href="oceRenameData.html">oceRenameData()</a></code></td><td>1.7-9</td></tr></table><p>Several <a href="https://CRAN.R-project.org/package=oce" class="external-link"><span class="pkg">oce</span></a> function arguments are considered "deprecated", which
 means they will be marked "defunct" in the next CRAN release. These are normally
 listed in the help page for the function in question. A few that may be
 of general interest are also listed below.</p><ul><li><p>The <code>adorn</code> argument was still being checked for (in the dots argument)
@@ -151,7 +151,7 @@ extended here to function arguments.</p></div>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>

@@ -57,7 +57,7 @@ step in doing this is to pass the object to \code{summary()}, to discover
 the SBE names in question. Then consult the SBE documentation to find
 an appropriate name for the data, and either manipulate the names in the object
 data slot directly or use
-\code{\link[=renameData]{renameData()}} to rename the elements. Finally, please publish
+\code{\link[=oceRenameData]{oceRenameData()}} to rename the elements. Finally, please publish
 an 'issue' on the oce Github site \verb{https://github.com/dankelley/oce/issues}
 so that the developers can add the data type in question. (To save
 development time, there is no plan to add all possible data types without

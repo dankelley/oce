@@ -8,7 +8,7 @@ vectorShow(
   v,
   msg = "",
   postscript = "",
-  digits = 5,
+  digits = 5L,
   n = 2L,
   showNA = FALSE,
   showNewline = TRUE

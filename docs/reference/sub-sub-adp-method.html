@@ -20,7 +20,7 @@ from the object's contents."><!-- mathjax --><script src="https://cdnjs.cloudfla
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-8</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-10</span>
       </span>
     </div>
 
@@ -125,7 +125,17 @@ first use <code>x[["?"]]</code> to get a listing of the retrievable items. See
 
 <p>Note that the entries within <a href="adp-class.html">adp</a> objects vary greatly, from
 instrument to instrument, and so are only sketched here, and in the output
-from <code>[["?"]]</code>.</p><ul><li><p>If <code>i</code> is <code>"?"</code>, then the return value is a list
+from <code>[["?"]]</code>.</p>
+<p>If <code>x</code> is an AD2CP object, as read by <code><a href="read.adp.ad2cp.html">read.adp.ad2cp()</a></code>, then the general <code>[[</code>
+method is used, meaning that the only items that can be looked up are those
+produced by <code>names(x@metadata)</code> or <code>names(x@data)</code>.  This is because AD2CP
+objects store their contents several levels deep, and so using <code>i</code> and <code>j</code> is
+insufficient.  Another advantage is that this enables R completion.  For
+example, the user might type <code>x[["burst"]]$</code> in an interactive session, and
+then type TAB to see what further choices are possible, and so on, to arrive
+at <code>x[["burst"]]$AHRS$quaternions$W</code>, which is a fairly complicated
+expression to type by memory.</p>
+<p>For non-AD2CP objects, the rules are as shown next.</p><ul><li><p>If <code>i</code> is <code>"?"</code>, then the return value is a list
 containing four items, each of which is a character vector
 holding the names of things that can be accessed with <code>[[</code>.
 The <code>data</code> and <code>metadata</code> items hold the names of
@@ -216,11 +226,14 @@ directs where to look.</p></li>
 <code>[[&lt;-,adv-method</code></p>
 <p>Other things related to adp data: 
 <code>[[&lt;-,adp-method</code>,
+<code><a href="ad2cpCodeToName.html">ad2cpCodeToName</a>()</code>,
 <code><a href="ad2cpHeaderValue.html">ad2cpHeaderValue</a>()</code>,
 <code><a href="adp-class.html">adp-class</a></code>,
+<code><a href="adpAd2cpFileTrim.html">adpAd2cpFileTrim</a>()</code>,
 <code><a href="adpConvertRawToNumeric.html">adpConvertRawToNumeric</a>()</code>,
 <code><a href="adpEnsembleAverage.html">adpEnsembleAverage</a>()</code>,
 <code><a href="adpFlagPastBoundary.html">adpFlagPastBoundary</a>()</code>,
+<code><a href="adpRdiFileTrim.html">adpRdiFileTrim</a>()</code>,
 <code><a href="adp_rdi.000.html">adp_rdi.000</a></code>,
 <code><a href="adp.html">adp</a></code>,
 <code><a href="as.adp.html">as.adp</a>()</code>,
@@ -264,17 +277,17 @@ directs where to look.</p></li>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">adp</span><span class="op">)</span></span>
-<span class="r-in"><span class="co"># Tests for beam 1, distance bin 1, first 5 observation times</span></span>
-<span class="r-in"><span class="va">adp</span><span class="op">[[</span><span class="st">"v"</span><span class="op">]</span><span class="op">]</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span>,<span class="fl">1</span>,<span class="fl">1</span><span class="op">]</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">adp</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="co"># Tests for beam 1, distance bin 1, first 5 observation times</span></span></span>
+<span class="r-in"><span><span class="va">adp</span><span class="op">[[</span><span class="st">"v"</span><span class="op">]</span><span class="op">]</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span>,<span class="fl">1</span>,<span class="fl">1</span><span class="op">]</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] -0.11955771 -0.09925398  0.10203802  0.09613003  0.24394126</span>
-<span class="r-in"><span class="va">adp</span><span class="op">[[</span><span class="st">"a"</span><span class="op">]</span><span class="op">]</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span>,<span class="fl">1</span>,<span class="fl">1</span><span class="op">]</span></span>
+<span class="r-in"><span><span class="va">adp</span><span class="op">[[</span><span class="st">"a"</span><span class="op">]</span><span class="op">]</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span>,<span class="fl">1</span>,<span class="fl">1</span><span class="op">]</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 99 9d 9f 87 8a</span>
-<span class="r-in"><span class="va">adp</span><span class="op">[[</span><span class="st">"a"</span>, <span class="st">"numeric"</span><span class="op">]</span><span class="op">]</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span>,<span class="fl">1</span>,<span class="fl">1</span><span class="op">]</span></span>
+<span class="r-in"><span><span class="va">adp</span><span class="op">[[</span><span class="st">"a"</span>, <span class="st">"numeric"</span><span class="op">]</span><span class="op">]</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span>,<span class="fl">1</span>,<span class="fl">1</span><span class="op">]</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 153 157 159 135 138</span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="va">adp</span><span class="op">[[</span><span class="st">"a"</span><span class="op">]</span><span class="op">]</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span>,<span class="fl">1</span>,<span class="fl">1</span><span class="op">]</span><span class="op">)</span> <span class="co"># same as above</span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="va">adp</span><span class="op">[[</span><span class="st">"a"</span><span class="op">]</span><span class="op">]</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span>,<span class="fl">1</span>,<span class="fl">1</span><span class="op">]</span><span class="op">)</span> <span class="co"># same as above</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 153 157 159 135 138</span>
-<span class="r-in"></span>
+<span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
   </div>
@@ -289,7 +302,7 @@ directs where to look.</p></li>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>

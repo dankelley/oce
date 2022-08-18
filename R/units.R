@@ -25,15 +25,15 @@ as.unit <- function(u, default=list(unit=expression(), scale=""))
 {
     if (missing(u) || !is.character(u))
         return(default)
-    if (length(grep("DBAR", u, ignore.case=TRUE, useBytes=TRUE))) {
+    if (length(grep("DBAR", u, ignore.case=TRUE))) {
         res <- list(unit=expression(dbar), scale="")
-    } else if (length(grep("IPTS-68", u, ignore.case=TRUE, useBytes=TRUE))) {
+    } else if (length(grep("IPTS-68", u, ignore.case=TRUE))) {
         res <- list(unit=expression(degree*C), scale="IPTS-68")
-    } else if (length(grep("ITS-90", u, ignore.case=TRUE, useBytes=TRUE))) {
+    } else if (length(grep("ITS-90", u, ignore.case=TRUE))) {
         res <- list(unit=expression(degree*C), scale="ITS-90")
-    } else if (length(grep("PSS-78", u, ignore.case=TRUE, useBytes=TRUE))) {
+    } else if (length(grep("PSS-78", u, ignore.case=TRUE))) {
         res <- list(unit=expression(), scale="PSS-78")
-    } else if (length(grep("UMOL/KG", u, ignore.case=TRUE, useBytes=TRUE))) {
+    } else if (length(grep("UMOL/KG", u, ignore.case=TRUE))) {
         res <- list(unit=expression(mu*mol/kg), scale="")
     } else {
         res <- default

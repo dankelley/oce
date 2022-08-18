@@ -56,7 +56,7 @@ read.ctd.odv <- function(file,
         on.exit(close(file))
     }
     res <- new("ctd")
-    lines <- readLines(file, encoding=encoding)
+    lines <- readLines(file)
     nlines <- length(lines)
     dataStart <- grep("^//.*$", lines, invert=TRUE)[1]
     if (!dataStart)

@@ -20,7 +20,7 @@ from the object's contents."><!-- mathjax --><script src="https://cdnjs.cloudfla
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-8</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-10</span>
       </span>
     </div>
 
@@ -130,17 +130,19 @@ entries in the object's data and metadata
 slots, respectively. The <code>metadataDerived</code> item
 is NULL, while the <code>dataDerived</code> item holds
 <code>"Sv"</code> and <code>"TS"</code> (see next).</p></li>
-<li><p>If <code>i</code> is <code>"Sv"</code>, then the following is returned.</p><div class="sourceCode"><pre><code><span class="fl">20</span><span class="op">*</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log10</a></span><span class="op">(</span><span class="va">a</span><span class="op">)</span> <span class="op">-</span>
-  <span class="op">(</span><span class="va">x</span><span class="op">@</span><span class="va">metadata</span><span class="op">$</span><span class="va">sourceLevel</span><span class="op">+</span><span class="va">x</span><span class="op">@</span><span class="va">metadata</span><span class="op">$</span><span class="va">receiverSensitivity</span><span class="op">+</span><span class="va">x</span><span class="op">@</span><span class="va">metadata</span><span class="op">$</span><span class="va">transmitPower</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fl">20</span><span class="op">*</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log10</a></span><span class="op">(</span><span class="va">r</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fl">2</span><span class="op">*</span><span class="va">absorption</span><span class="op">*</span><span class="va">r</span> <span class="op">-</span>
-  <span class="va">x</span><span class="op">@</span><span class="va">metadata</span><span class="op">$</span><span class="va">correction</span> <span class="op">+</span>
-  <span class="fl">10</span><span class="op">*</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log10</a></span><span class="op">(</span><span class="va">soundSpeed</span><span class="op">*</span><span class="va">x</span><span class="op">@</span><span class="va">metadata</span><span class="op">$</span><span class="va">pulseDuration</span><span class="op">/</span><span class="fl">1e6</span><span class="op">*</span><span class="va">psi</span><span class="op">/</span><span class="fl">2</span><span class="op">)</span></code></pre></div></li>
-<li><p>If <code>i</code> is <code>"TS"</code>, then the following is returned.</p><div class="sourceCode"><pre><code><span class="fl">20</span><span class="op">*</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log10</a></span><span class="op">(</span><span class="va">a</span><span class="op">)</span> <span class="op">-</span>
-  <span class="op">(</span><span class="va">x</span><span class="op">@</span><span class="va">metadata</span><span class="op">$</span><span class="va">sourceLevel</span><span class="op">+</span><span class="va">x</span><span class="op">@</span><span class="va">metadata</span><span class="op">$</span><span class="va">receiverSensitivity</span><span class="op">+</span><span class="va">x</span><span class="op">@</span><span class="va">metadata</span><span class="op">$</span><span class="va">transmitPower</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fl">40</span><span class="op">*</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log10</a></span><span class="op">(</span><span class="va">r</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fl">2</span><span class="op">*</span><span class="va">absorption</span><span class="op">*</span><span class="va">r</span> <span class="op">+</span>
-  <span class="va">x</span><span class="op">@</span><span class="va">metadata</span><span class="op">$</span><span class="va">correction</span></code></pre></div></li>
+<li><p>If <code>i</code> is <code>"Sv"</code>, then the following is returned.</p><div class="sourceCode"><pre><code><span></span>
+<span><span class="fl">20</span><span class="op">*</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log10</a></span><span class="op">(</span><span class="va">a</span><span class="op">)</span> <span class="op">-</span></span>
+<span>  <span class="op">(</span><span class="va">x</span><span class="op">@</span><span class="va">metadata</span><span class="op">$</span><span class="va">sourceLevel</span><span class="op">+</span><span class="va">x</span><span class="op">@</span><span class="va">metadata</span><span class="op">$</span><span class="va">receiverSensitivity</span><span class="op">+</span><span class="va">x</span><span class="op">@</span><span class="va">metadata</span><span class="op">$</span><span class="va">transmitPower</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fl">20</span><span class="op">*</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log10</a></span><span class="op">(</span><span class="va">r</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fl">2</span><span class="op">*</span><span class="va">absorption</span><span class="op">*</span><span class="va">r</span> <span class="op">-</span></span>
+<span>  <span class="va">x</span><span class="op">@</span><span class="va">metadata</span><span class="op">$</span><span class="va">correction</span> <span class="op">+</span></span>
+<span>  <span class="fl">10</span><span class="op">*</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log10</a></span><span class="op">(</span><span class="va">soundSpeed</span><span class="op">*</span><span class="va">x</span><span class="op">@</span><span class="va">metadata</span><span class="op">$</span><span class="va">pulseDuration</span><span class="op">/</span><span class="fl">1e6</span><span class="op">*</span><span class="va">psi</span><span class="op">/</span><span class="fl">2</span><span class="op">)</span></span></code></pre></div></li>
+<li><p>If <code>i</code> is <code>"TS"</code>, then the following is returned.</p><div class="sourceCode"><pre><code><span></span>
+<span><span class="fl">20</span><span class="op">*</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log10</a></span><span class="op">(</span><span class="va">a</span><span class="op">)</span> <span class="op">-</span></span>
+<span>  <span class="op">(</span><span class="va">x</span><span class="op">@</span><span class="va">metadata</span><span class="op">$</span><span class="va">sourceLevel</span><span class="op">+</span><span class="va">x</span><span class="op">@</span><span class="va">metadata</span><span class="op">$</span><span class="va">receiverSensitivity</span><span class="op">+</span><span class="va">x</span><span class="op">@</span><span class="va">metadata</span><span class="op">$</span><span class="va">transmitPower</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fl">40</span><span class="op">*</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log10</a></span><span class="op">(</span><span class="va">r</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fl">2</span><span class="op">*</span><span class="va">absorption</span><span class="op">*</span><span class="va">r</span> <span class="op">+</span></span>
+<span>  <span class="va">x</span><span class="op">@</span><span class="va">metadata</span><span class="op">$</span><span class="va">correction</span></span></code></pre></div></li>
 </ul></div>
     <div id="details-of-the-general-method">
     <h2>Details of the General Method</h2>
@@ -239,7 +241,7 @@ directs where to look.</p></li>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>

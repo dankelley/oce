@@ -86,9 +86,11 @@ computableWaterProperties <- function(x)
                     "depth", "spice", "Rrho", "RrhoSF", "sigmaTheta", "SP",
                     "density", "N2", paste("sound", "speed")))
             if (haveLocation) {
-                res <- c(res, "SR", "Sstar", paste0("sigma", 0:4),
+                res <- c(res, "SR", "Sstar",
+                    paste0("sigma", 0:4),
                     "SA", paste("Absolute", "Salinity"),
-                    "CT",  paste("Conservative", "Temperature"))
+                    "CT",  paste("Conservative", "Temperature"),
+                    paste0("spiciness", 0:2))
             }
         }
         # It is possible to compute nitrate from NO2+NO3 and nitrite, if
@@ -926,19 +928,19 @@ swTSrho <- function(salinity, density, pressure=NULL, eos=getOption("oceEOS", de
 
 #' Seawater freezing temperature
 #'
-#' Compute in-situ freezing temperature of seawater, using either the UNESCO formulation
-#' (computed as in Section 5 of reference 1) or the GSW formulation (computed
-#' by using [gsw::gsw_SA_from_SP()] to get Absolute Salinity, and
-#' then [gsw::gsw_t_freezing()] to get the freezing temperature).
+#' Compute in-situ freezing temperature of seawater, using either the UNESCO
+#' formulation (computed as in Section 5 of Fofonoff and Millard, 1983) or the
+#' GSW formulation (computed by using [gsw::gsw_SA_from_SP()] to get Absolute
+#' Salinity, and then [gsw::gsw_t_freezing()] to get the freezing temperature).
 #'
-#' If the first argument is an `oce` object, and if the `pressure`
-#' argument is `NULL`, then the pressure is sought within the first
-#' argument. In the case of `eos="gsw"`, then a similar procedure
-#' also applies to the `longitude` and `latitude` arguments.
+#' If the first argument is an `oce` object, and if the `pressure` argument is
+#' `NULL`, then the pressure is sought within the first argument. In the case of
+#' `eos="gsw"`, then a similar procedure also applies to the `longitude` and
+#' `latitude` arguments.
 #'
 #' @param salinity Either practical salinity (PSU) or a `ctd` object from which
 #' practical salinity and pressure (plus in the `eos="gsw"` case,
-#' longitude and latitude) are inferred, using [lookWithin()].
+#' longitude and latitude) are inferred.
 #'
 #' @param pressure Seawater pressure (dbar).
 #'
@@ -951,28 +953,29 @@ swTSrho <- function(salinity, density, pressure=NULL, eos=getOption("oceEOS", de
 #' @param saturation_fraction The saturation fraction of dissolved air in seawater,
 #' ignored if `eos="unesco"`).
 #'
-#' @param eos The equation of state, either `"unesco"` (references 1 and 2) or `"gsw"`.
-#' (references 3 and 4).
+#' @param eos The equation of state, either `"unesco"` (Fofonoff and Millard,
+#' 1983; Gill 1982) or `"gsw"` (IOC, SCOR and IAPSO 2010; McDougall and Barker
+#' 2011).
 #'
-#' @return Temperature (\eqn{^\circ}{deg}C), defined on the ITS-90 scale.
+#' @return Temperature (degC), defined on the ITS-90 scale.
 #'
 #' @author Dan Kelley
 #'
 #' @references
-#' 1. Fofonoff, N. P., and R. C. Millard. \dQuote{Algorithms for Computation of
-#' Fundamental Properties of Seawater.} UNESCO Technical Papers in Marine
+#'
+#' Fofonoff, N. P., and R. C. Millard. Algorithms for Computation of
+#' Fundamental Properties of Seawater. UNESCO Technical Papers in Marine
 #' Research. SCOR working group on Evaluation of CTD data; UNESCO/ICES/SCOR/IAPSO
 #' Joint Panel on Oceanographic Tables and Standards, 1983.
-#' https://unesdoc.unesco.org/ark:/48223/pf0000059832.
 #'
-#' 2. Gill, A E. Atmosphere-Ocean Dynamics. New York, NY, USA: Academic Press,
+#' Gill, A E. Atmosphere-Ocean Dynamics. New York, NY, USA: Academic Press,
 #' 1982.
 #'
-#' 3. IOC, SCOR, and IAPSO (2010). The international thermodynamic equation of
+#' IOC, SCOR, and IAPSO (2010). The international thermodynamic equation of
 #' seawater-2010: Calculation and use of thermodynamic properties.  Technical
 #' Report 56, Intergovernmental Oceanographic Commission, Manuals and Guide, 2010.
 #'
-#' 4. McDougall, Trevor J., and Paul M. Barker. Getting Started with TEOS-10 and
+#' McDougall, Trevor J., and Paul M. Barker. Getting Started with TEOS-10 and
 #' the Gibbs Seawater (GSW) Oceanographic Toolbox. SCOR/IAPSO WG127, 2011.
 #'
 #' @examples
@@ -993,9 +996,8 @@ swTSrho <- function(salinity, density, pressure=NULL, eos=getOption("oceEOS", de
 #'      p, xlab="unesco-gsw", ylim=rev(range(p)))
 #'
 #' @family functions that calculate seawater properties
-swTFreeze <- function(salinity, pressure=NULL,
-                      longitude=NULL, latitude=NULL, saturation_fraction=1,
-                      eos=getOption("oceEOS", default="gsw"))
+swTFreeze <- function(salinity, pressure=NULL, longitude=NULL, latitude=NULL,
+    saturation_fraction=1, eos=getOption("oceEOS", default="gsw"))
 {
     if (missing(salinity))
         stop("must supply salinity (which may be S or a CTD object)")
@@ -1293,8 +1295,8 @@ swBeta <- function(salinity, temperature=NULL, pressure=0,
 #'
 #' @param pressure pressure (dbar)
 #'
-#' @return Conductivity of seawater in \eqn{W m^{-1\,\circ}C^{-1}}{W/(m*degC)}.
-#' To calculate thermal diffusivity in \eqn{m^2/s}{m^2/s}, divide by the
+#' @return Conductivity of seawater in \eqn{W m^{-1} {^\circ} C^{-1}}{W/(m*degC)}.
+#' To calculate thermal diffusivity in \eqn{m^2/s^2}, divide by the
 #' product of density and specific heat, as in the example.
 #'
 #' @author Dan Kelley
@@ -1721,7 +1723,7 @@ swLapseRate <- function(salinity, temperature=NULL, pressure=NULL,
 #' 1. Fofonoff, P. and R. C. Millard Jr, 1983. Algorithms for computation of
 #' fundamental properties of seawater.
 #' *Unesco Technical Papers in Marine Science*,
-#' *44*, 53 pp
+#' *44*, 53 pp.
 #'
 #' 2. Gill, A.E., 1982. *Atmosphere-ocean Dynamics*, Academic Press, New
 #' York, 662 pp.
@@ -2008,9 +2010,9 @@ swSigma0 <- function(salinity, temperature=NULL, pressure=NULL,
             stop("must supply latitude")
         l <- lookWithin(list(salinity=salinity, temperature=temperature, pressure=pressure,
                              longitude=longitude, latitude=latitude))
-        SA <- gsw_SA_from_SP(l$salinity, l$pressure, l$longitude, l$latitude)
-        CT <- gsw_CT_from_t(SA, l$temperature, l$pressure)
-        gsw_sigma0(SA=SA, CT=CT)
+        SA <- gsw::gsw_SA_from_SP(l$salinity, l$pressure, l$longitude, l$latitude)
+        CT <- gsw::gsw_CT_from_t(SA, l$temperature, l$pressure)
+        gsw::gsw_sigma0(SA=SA, CT=CT)
     } else if (eos == "unesco") {
         swSigmaTheta(salinity=salinity, temperature=temperature, pressure=pressure, referencePressure=0,
             longitude=longitude, latitude=latitude, eos=eos)
@@ -2049,9 +2051,9 @@ swSigma1 <- function(salinity, temperature=NULL, pressure=NULL,
             stop("must supply latitude")
         l <- lookWithin(list(salinity=salinity, temperature=temperature, pressure=pressure,
                              longitude=longitude, latitude=latitude))
-        SA <- gsw_SA_from_SP(l$salinity, l$pressure, l$longitude, l$latitude)
-        CT <- gsw_CT_from_t(SA, l$temperature, l$pressure)
-        gsw_sigma1(SA=SA, CT=CT)
+        SA <- gsw::gsw_SA_from_SP(l$salinity, l$pressure, l$longitude, l$latitude)
+        CT <- gsw::gsw_CT_from_t(SA, l$temperature, l$pressure)
+        gsw::gsw_sigma1(SA=SA, CT=CT)
     } else if (eos == "unesco") {
         swSigmaTheta(salinity=salinity, temperature=temperature, pressure=pressure, referencePressure=1000,
             longitude=longitude, latitude=latitude, eos=eos)
@@ -2090,9 +2092,9 @@ swSigma2 <- function(salinity, temperature=NULL, pressure=NULL,
             stop("must supply latitude")
         l <- lookWithin(list(salinity=salinity, temperature=temperature, pressure=pressure,
                              longitude=longitude, latitude=latitude))
-        SA <- gsw_SA_from_SP(l$salinity, l$pressure, l$longitude, l$latitude)
-        CT <- gsw_CT_from_t(SA, l$temperature, l$pressure)
-        gsw_sigma2(SA=SA, CT=CT)
+        SA <- gsw::gsw_SA_from_SP(l$salinity, l$pressure, l$longitude, l$latitude)
+        CT <- gsw::gsw_CT_from_t(SA, l$temperature, l$pressure)
+        gsw::gsw_sigma2(SA=SA, CT=CT)
     } else if (eos == "unesco") {
         swSigmaTheta(salinity=salinity, temperature=temperature, pressure=pressure, referencePressure=2000,
             longitude=longitude, latitude=latitude, eos=eos)
@@ -2131,9 +2133,9 @@ swSigma3 <- function(salinity, temperature=NULL, pressure=NULL,
             stop("must supply latitude")
         l <- lookWithin(list(salinity=salinity, temperature=temperature, pressure=pressure,
                              longitude=longitude, latitude=latitude))
-        SA <- gsw_SA_from_SP(l$salinity, l$pressure, l$longitude, l$latitude)
-        CT <- gsw_CT_from_t(SA, l$temperature, l$pressure)
-        gsw_sigma3(SA=SA, CT=CT)
+        SA <- gsw::gsw_SA_from_SP(l$salinity, l$pressure, l$longitude, l$latitude)
+        CT <- gsw::gsw_CT_from_t(SA, l$temperature, l$pressure)
+        gsw::gsw_sigma3(SA=SA, CT=CT)
     } else if (eos == "unesco") {
         swSigmaTheta(salinity=salinity, temperature=temperature, pressure=pressure, referencePressure=3000,
             longitude=longitude, latitude=latitude, eos=eos)
@@ -2172,9 +2174,9 @@ swSigma4 <- function(salinity, temperature=NULL, pressure=NULL,
             stop("must supply latitude")
         l <- lookWithin(list(salinity=salinity, temperature=temperature, pressure=pressure,
                              longitude=longitude, latitude=latitude))
-        SA <- gsw_SA_from_SP(l$salinity, l$pressure, l$longitude, l$latitude)
-        CT <- gsw_CT_from_t(SA, l$temperature, l$pressure)
-        gsw_sigma4(SA=SA, CT=CT)
+        SA <- gsw::gsw_SA_from_SP(l$salinity, l$pressure, l$longitude, l$latitude)
+        CT <- gsw::gsw_CT_from_t(SA, l$temperature, l$pressure)
+        gsw::gsw_sigma4(SA=SA, CT=CT)
     } else if (eos == "unesco") {
         swSigmaTheta(salinity=salinity, temperature=temperature, pressure=pressure, referencePressure=4000,
             longitude=longitude, latitude=latitude, eos=eos)
@@ -2368,7 +2370,7 @@ swSoundSpeed <- function(salinity, temperature=NULL, pressure=NULL,
 #' @param latitude latitude of observation (only used if `eos="gsw"`; see
 #' \sQuote{Details}).
 #' @param eos equation of state, either `"unesco"` or `"gsw"`.
-#' @return Specific heat \eqn{J kg^{-1}\,^\circ C^{-1}}{J/(kg degC)}
+#' @return Specific heat (J/kg/degC).
 #' @author Dan Kelley
 #' @references Millero et. al., J. Geophys. Res. 78 (1973), 4499-4507
 #'

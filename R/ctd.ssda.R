@@ -20,10 +20,10 @@
 #'
 #' @param processingLog ignored.
 #'
-#' @examples
-#' library(oce)
-#' f <- system.file("extdata", "ctd_ssda.csv", package="oce")
-#' d <- read.ctd(f)
+## @examples
+## library(oce)
+## f <- system.file("extdata", "ctd_ssda.csv", package="oce")
+## d <- read.ctd(f)
 #'
 #' @family things related to ctd data
 #' @family functions that read ctd data
@@ -55,7 +55,7 @@ read.ctd.ssda <- function(file,
         file <- file(file, "r", encoding=encoding)
         on.exit(close(file))
     }
-    lines <- readLines(file, encoding=encoding)
+    lines <- readLines(file)
     #?seek(file, 0L, "start") # rewind so we can read from the source (faster than reading from text)
     dataStart <- grep("^Lines[ ]*:[ ]*[0-9]*$", lines)
     #message(vectorShow(dataStart))

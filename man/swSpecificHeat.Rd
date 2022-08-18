@@ -32,7 +32,7 @@ see \sQuote{Details}).}
 \item{eos}{equation of state, either \code{"unesco"} or \code{"gsw"}.}
 }
 \value{
-Specific heat \eqn{J kg^{-1}\,^\circ C^{-1}}{J/(kg degC)}
+Specific heat (J/kg/degC).
 }
 \description{
 Compute specific heat of seawater.

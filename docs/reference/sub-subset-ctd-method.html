@@ -23,7 +23,7 @@ flags."><!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/math
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-8</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-10</span>
       </span>
     </div>
 
@@ -204,8 +204,8 @@ The first item found (if any) is then updated to hold the value <code>result</co
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">ctd</span><span class="op">)</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">ctd</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">ctd</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">ctd</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> CTD Summary</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> -----------</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
@@ -236,11 +236,11 @@ The first item found (if any) is then updated to hold the value <code>result</co
 <span class="r-out co"><span class="r-pr">#&gt;</span>     - 2018-11-14 20:03:47 UTC: `create 'ctd' object`</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     - 2018-11-14 20:03:47 UTC: `read.ctd.sbe(file = file, debug = 10, processingLog = processingLog)`</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     - 2018-11-14 20:03:47 UTC: `oce.edit(x = ctd, item = "startTime", value = as.POSIXct(gsub("1903",     "2003", format(ctd[["startTime"]])), tz = "UTC") + 4 * 3600,     reason = "file had year=1903, instead of 2003", person = "Dan Kelley")`</span>
-<span class="r-in"><span class="co"># Move the CTD profile a nautical mile north.</span></span>
-<span class="r-in"><span class="va">ctd</span><span class="op">[[</span><span class="st">"latitude"</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fl">1</span><span class="op">/</span><span class="fl">60</span> <span class="op">+</span> <span class="va">ctd</span><span class="op">[[</span><span class="st">"latitude"</span><span class="op">]</span><span class="op">]</span> <span class="co"># acts in metadata</span></span>
-<span class="r-in"><span class="co"># Increase the salinity by 0.01.</span></span>
-<span class="r-in"><span class="va">ctd</span><span class="op">[[</span><span class="st">"salinity"</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fl">0.01</span> <span class="op">+</span> <span class="va">ctd</span><span class="op">[[</span><span class="st">"salinity"</span><span class="op">]</span><span class="op">]</span> <span class="co"># acts in data</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">ctd</span><span class="op">)</span></span>
+<span class="r-in"><span><span class="co"># Move the CTD profile a nautical mile north.</span></span></span>
+<span class="r-in"><span><span class="va">ctd</span><span class="op">[[</span><span class="st">"latitude"</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fl">1</span><span class="op">/</span><span class="fl">60</span> <span class="op">+</span> <span class="va">ctd</span><span class="op">[[</span><span class="st">"latitude"</span><span class="op">]</span><span class="op">]</span> <span class="co"># acts in metadata</span></span></span>
+<span class="r-in"><span><span class="co"># Increase the salinity by 0.01.</span></span></span>
+<span class="r-in"><span><span class="va">ctd</span><span class="op">[[</span><span class="st">"salinity"</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fl">0.01</span> <span class="op">+</span> <span class="va">ctd</span><span class="op">[[</span><span class="st">"salinity"</span><span class="op">]</span><span class="op">]</span> <span class="co"># acts in data</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">ctd</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> CTD Summary</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> -----------</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
@@ -271,7 +271,7 @@ The first item found (if any) is then updated to hold the value <code>result</co
 <span class="r-out co"><span class="r-pr">#&gt;</span>     - 2018-11-14 20:03:47 UTC: `create 'ctd' object`</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     - 2018-11-14 20:03:47 UTC: `read.ctd.sbe(file = file, debug = 10, processingLog = processingLog)`</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     - 2018-11-14 20:03:47 UTC: `oce.edit(x = ctd, item = "startTime", value = as.POSIXct(gsub("1903",     "2003", format(ctd[["startTime"]])), tz = "UTC") + 4 * 3600,     reason = "file had year=1903, instead of 2003", person = "Dan Kelley")`</span>
-<span class="r-in"></span>
+<span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
   </div>
@@ -286,7 +286,7 @@ The first item found (if any) is then updated to hold the value <code>result</co
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>

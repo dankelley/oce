@@ -1223,7 +1223,7 @@ read.odf <- function(file,
     }
     # Read the full file.   (In a previous version, we only read the first 1000 lines
     # at the start, and later read the whole thing if we didn't find the DATA line.)
-    lines <- readLines(file, encoding=encoding) # issue 1430 and 1970 re encoding
+    lines <- readLines(file) # issue 1430 and 1970 re encoding
     # Trim excluded lines.
     if (!is.null(exclude)) {
         oldLength <- length(lines)

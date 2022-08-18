@@ -35,12 +35,6 @@ Acquisition (SSDA) format. This function is somewhat preliminary, in the
 sense that header information is not scanned fully, and some guesses have
 been made about the meanings of variables and units.
 }
-\examples{
-library(oce)
-f <- system.file("extdata", "ctd_ssda.csv", package="oce")
-d <- read.ctd(f)
-
-}
 \seealso{
 Other things related to ctd data: 
 \code{\link{CTD_BCD2014666_008_1_DN.ODF.gz}},

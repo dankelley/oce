@@ -32,7 +32,7 @@ the header), \code{beamToXyzAdv} the user will need to store one in
 }
 \references{
 \enumerate{
-\item @template nortekCoordTemplate
+\item \verb{https://nortek.zendesk.com/hc/en-us/articles/360029820971-How-is-a-Coordinate-transformation-done-}
 }
 }
 \seealso{
@@ -42,11 +42,14 @@ See \code{\link[=read.adv]{read.adv()}} for notes on functions relating to
 Other things related to adp data: 
 \code{\link{[[,adp-method}},
 \code{\link{[[<-,adp-method}},
+\code{\link{ad2cpCodeToName}()},
 \code{\link{ad2cpHeaderValue}()},
 \code{\link{adp-class}},
+\code{\link{adpAd2cpFileTrim}()},
 \code{\link{adpConvertRawToNumeric}()},
 \code{\link{adpEnsembleAverage}()},
 \code{\link{adpFlagPastBoundary}()},
+\code{\link{adpRdiFileTrim}()},
 \code{\link{adp_rdi.000}},
 \code{\link{adp}},
 \code{\link{as.adp}()},

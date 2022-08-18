@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-8</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-10</span>
       </span>
     </div>
 
@@ -78,11 +78,11 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">adpConvertRawToNumeric</span><span class="op">(</span>
-  object <span class="op">=</span> <span class="cn">NULL</span>,
-  variables <span class="op">=</span> <span class="cn">NULL</span>,
-  debug <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"oceDebug"</span><span class="op">)</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">adpConvertRawToNumeric</span><span class="op">(</span></span>
+<span>  object <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  variables <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  debug <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"oceDebug"</span><span class="op">)</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -118,10 +118,13 @@ variables have been converted from raw to numerical format.</p>
     <div class="dont-index"><p>Other things related to adp data: 
 <code><a href="sub-sub-adp-method.html">[[,adp-method</a></code>,
 <code>[[&lt;-,adp-method</code>,
+<code><a href="ad2cpCodeToName.html">ad2cpCodeToName</a>()</code>,
 <code><a href="ad2cpHeaderValue.html">ad2cpHeaderValue</a>()</code>,
 <code><a href="adp-class.html">adp-class</a></code>,
+<code><a href="adpAd2cpFileTrim.html">adpAd2cpFileTrim</a>()</code>,
 <code><a href="adpEnsembleAverage.html">adpEnsembleAverage</a>()</code>,
 <code><a href="adpFlagPastBoundary.html">adpFlagPastBoundary</a>()</code>,
+<code><a href="adpRdiFileTrim.html">adpRdiFileTrim</a>()</code>,
 <code><a href="adp_rdi.000.html">adp_rdi.000</a></code>,
 <code><a href="adp.html">adp</a></code>,
 <code><a href="as.adp.html">as.adp</a>()</code>,
@@ -165,12 +168,12 @@ variables have been converted from raw to numerical format.</p>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dankelley.github.io/oce/" class="external-link">oce</a></span><span class="op">)</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">adp</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">adp</span><span class="op">[[</span><span class="st">"a"</span><span class="op">]</span><span class="op">]</span><span class="op">[</span>,,<span class="fl">1</span><span class="op">]</span><span class="op">[</span>,<span class="fl">1</span><span class="op">]</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dankelley.github.io/oce/" class="external-link">oce</a></span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">adp</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">adp</span><span class="op">[[</span><span class="st">"a"</span><span class="op">]</span><span class="op">]</span><span class="op">[</span>,,<span class="fl">1</span><span class="op">]</span><span class="op">[</span>,<span class="fl">1</span><span class="op">]</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  [1] 99 9d 9f 87 8a 99 9c 96 91 91 92 99 94 94 96 9c 98 a7 a2 94 92 8d 90 8f 90</span>
-<span class="r-in"><span class="va">ADP</span> <span class="op">&lt;-</span> <span class="fu">adpConvertRawToNumeric</span><span class="op">(</span><span class="va">adp</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">ADP</span><span class="op">[[</span><span class="st">"a"</span><span class="op">]</span><span class="op">]</span><span class="op">[</span>,,<span class="fl">1</span><span class="op">]</span><span class="op">[</span>,<span class="fl">1</span><span class="op">]</span></span>
+<span class="r-in"><span><span class="va">ADP</span> <span class="op">&lt;-</span> <span class="fu">adpConvertRawToNumeric</span><span class="op">(</span><span class="va">adp</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">ADP</span><span class="op">[[</span><span class="st">"a"</span><span class="op">]</span><span class="op">]</span><span class="op">[</span>,,<span class="fl">1</span><span class="op">]</span><span class="op">[</span>,<span class="fl">1</span><span class="op">]</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  [1] 153 157 159 135 138 153 156 150 145 145 146 153 148 148 150 156 152 167 162</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [20] 148 146 141 144 143 144</span>
 </code></pre></div>
@@ -187,7 +190,7 @@ variables have been converted from raw to numerical format.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>

@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-8</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-10</span>
       </span>
     </div>
 
@@ -78,14 +78,14 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">swSpecificHeat</span><span class="op">(</span>
-  <span class="va">salinity</span>,
-  temperature <span class="op">=</span> <span class="cn">NULL</span>,
-  pressure <span class="op">=</span> <span class="fl">0</span>,
-  longitude <span class="op">=</span> <span class="cn">NULL</span>,
-  latitude <span class="op">=</span> <span class="cn">NULL</span>,
-  eos <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"oceEOS"</span>, default <span class="op">=</span> <span class="st">"gsw"</span><span class="op">)</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">swSpecificHeat</span><span class="op">(</span></span>
+<span>  <span class="va">salinity</span>,</span>
+<span>  temperature <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  pressure <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>  longitude <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  latitude <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  eos <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"oceEOS"</span>, default <span class="op">=</span> <span class="st">"gsw"</span><span class="op">)</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -123,9 +123,7 @@ see ‘Details’).</p></dd>
     <h2>Value</h2>
     
 
-<p>Specific heat \(J kg^{-1}\,^\circ C^{-1}\)</p>
-
-
+<p>Specific heat (J/kg/degC).</p>
     </div>
     <div id="details">
     <h2>Details</h2>
@@ -187,9 +185,9 @@ extracted from it, and used for the calculation.</p>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="fu">swSpecificHeat</span><span class="op">(</span><span class="fl">40</span>, <span class="fu"><a href="T90fromT68.html">T90fromT68</a></span><span class="op">(</span><span class="fl">40</span><span class="op">)</span>, <span class="fl">10000</span>, eos<span class="op">=</span><span class="st">"unesco"</span><span class="op">)</span> <span class="co"># 3949.499</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu">swSpecificHeat</span><span class="op">(</span><span class="fl">40</span>, <span class="fu"><a href="T90fromT68.html">T90fromT68</a></span><span class="op">(</span><span class="fl">40</span><span class="op">)</span>, <span class="fl">10000</span>, eos<span class="op">=</span><span class="st">"unesco"</span><span class="op">)</span> <span class="co"># 3949.499</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 3849.499</span>
-<span class="r-in"></span>
+<span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
   </div>
@@ -204,7 +202,7 @@ extracted from it, and used for the calculation.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>

@@ -21,7 +21,7 @@ incorrectly, perhaps by inappropriate user insertions."><!-- mathjax --><script 
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-8</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-10</span>
       </span>
     </div>
 
@@ -86,7 +86,7 @@ incorrectly, perhaps by inappropriate user insertions.</p>
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">ctdRepair</span><span class="op">(</span><span class="va">x</span>, debug <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"oceDebug"</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">ctdRepair</span><span class="op">(</span><span class="va">x</span>, debug <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"oceDebug"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -178,16 +178,16 @@ is retained, unaltered.</p></li>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dankelley.github.io/oce/" class="external-link">oce</a></span><span class="op">)</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">ctd</span><span class="op">)</span></span>
-<span class="r-in"><span class="co"># Insert location information into 'data', although it belongs in 'metadata'.</span></span>
-<span class="r-in"><span class="va">ctd</span><span class="op">@</span><span class="va">data</span><span class="op">$</span><span class="va">latitude</span> <span class="op">&lt;-</span> <span class="va">ctd</span><span class="op">@</span><span class="va">metadata</span><span class="op">$</span><span class="va">latitude</span>   <span class="co"># do NOT do this!</span></span>
-<span class="r-in"><span class="va">ctd</span><span class="op">@</span><span class="va">data</span><span class="op">$</span><span class="va">longitude</span> <span class="op">&lt;-</span> <span class="va">ctd</span><span class="op">@</span><span class="va">metadata</span><span class="op">$</span><span class="va">longitude</span> <span class="co"># do NOT do this!</span></span>
-<span class="r-in"><span class="va">repaired</span> <span class="op">&lt;-</span> <span class="fu">ctdRepair</span><span class="op">(</span><span class="va">ctd</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dankelley.github.io/oce/" class="external-link">oce</a></span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">ctd</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="co"># Insert location information into 'data', although it belongs in 'metadata'.</span></span></span>
+<span class="r-in"><span><span class="va">ctd</span><span class="op">@</span><span class="va">data</span><span class="op">$</span><span class="va">latitude</span> <span class="op">&lt;-</span> <span class="va">ctd</span><span class="op">@</span><span class="va">metadata</span><span class="op">$</span><span class="va">latitude</span>   <span class="co"># do NOT do this!</span></span></span>
+<span class="r-in"><span><span class="va">ctd</span><span class="op">@</span><span class="va">data</span><span class="op">$</span><span class="va">longitude</span> <span class="op">&lt;-</span> <span class="va">ctd</span><span class="op">@</span><span class="va">metadata</span><span class="op">$</span><span class="va">longitude</span> <span class="co"># do NOT do this!</span></span></span>
+<span class="r-in"><span><span class="va">repaired</span> <span class="op">&lt;-</span> <span class="fu">ctdRepair</span><span class="op">(</span><span class="va">ctd</span><span class="op">)</span></span></span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>moving unit-length data$longitude to metadata$longitude</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>moving unit-length data$latitude to metadata$latitude</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>changed metadata$recoveryTime to a POSIXct value</span>
-<span class="r-in"></span>
+<span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
   </div>
@@ -202,7 +202,7 @@ is retained, unaltered.</p></li>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>

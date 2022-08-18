@@ -2,7 +2,85 @@
 author: Dan Kelley
 title: How to compute checksums in Nortek files?
 date: 2022-06-12
+output:
+    pdf_document:
+        toc: true
+        number_sections: true
 ---
+
+# Competing Nortek checksum schemes
+
+Figures 1 and 2 show differing schemes for computing checksums, from References
+1 and 2, respectively. Let's call these Method 1 and Method 2. (Unhelpfully,
+the modern equivalent to Ref 1, that is, Ref 3, has no sample code.)
+
+As shown in Figure 3, ref 2 provides sample data that can be used as a test. It
+is used here as a test. Specifically, page 8 of ref 2 states that the checksum
+of the sequence a5 21 4f 00 45 17 14 15 20 05 00 00 00 00 92 00 is b4e0.  The
+endianness is unstated, but I tried both possibilities, and it is the second,
+i.e. b2 below, not the b1 that is written in Ref 3.
+
+# A test of Method 2
+
+The file `checksum.c` (see Appendix 3) holds a version of the Nortek code
+written to modern C standards (with specified-length types).    Running it on
+the `b1` file (created with R code shown in Appendix 3) produced with R code as
+above does not retrieve the same checksum as Nortek states, but using `b2`
+yields agreement.  In other words, Nortek is (confusingly!) writing bytes in
+little-endian order.
+
+The output of `checksum b2` is as follows. The final value matches expectations
+for the `b2` file, but not for `b1`. In other words, the Nortek manual is not
+listing bytes in actual order, but rather in the order that would occur if you
+read by little-endian 2-byte chunks.
+
+```
+./checksum b2
+buf[0:15]: 0x21 0xa5 0x0 0x4f 0x17 0x45 0x15 0x14 0x5 0x20 0x0 0x0 0x0 0x0 0x0 0x92 
+checksum(buffer, n=8)
+ start with 0xb58c
+ add 0xa521 to get 0x00015aad
+ add 0x4f00 to get 0x0001a9ad
+ add 0x4517 to get 0x0001eec4
+ add 0x1415 to get 0x000202d9
+ add 0x2005 to get 0x000222de
+ add 0x0000 to get 0x000222de
+ add 0x0000 to get 0x000222de
+ add 0x9200 to get 0x0002b4de
+computed checksum: 0xb4e0 (expect 0xb4e0)
+```
+
+
+
+
+# References
+
+1. Nortek AS. “Signature Integration 55|250|500|1000kHz.” Nortek AS, 2017.
+  https://www.nortekgroup.com/assets/software/N3015-007-Integrators-Guide-AD2CP_1018.pdf.
+
+2. Nortek AS. “Classic Integrators Guide: Aquadopp | Aquadopp DW | Aquadopp
+   Profiler | HQ Aquadopp Profiler | Vector | AWAC.” Nortek AS, 2022.
+   https://support.nortekgroup.com/hc/en-us/articles/360029514052-Integrators-Guide-Classic.
+
+3. Nortek AS. “Signature Integration 55|250|500|1000kHz.” Nortek AS, March 31, 2022.
+
+# Appendix 1: Nortek code
+
+## Ref 1 page 47
+
+\includegraphics[width=.8\hsize]{ref1_p47.png}
+
+## Ref 2 page 79
+
+\includegraphics[width=.45\hsize]{ref2_p79.png}
+
+## Ref 2 page 8
+
+\includegraphics[width=.7\hsize]{ref2_p8.png}
+
+
+
+# Appendix 2: R code to create a binary file
 
 ## Test case
 
@@ -32,6 +110,7 @@ B2 <- readBin("b2", "raw", length(b2))
 stopifnot(identical(b2, B2))
 ```
 
+
 ## Code based on Reference 3
 
 The local file `checksum.c` holds a version of the Nortek code written to
@@ -56,6 +135,7 @@ little-endian order.
 ## Appendix
 
 `checksum.c` follows
+
 ```C
 #include <stdio.h>
 #include <stdlib.h>

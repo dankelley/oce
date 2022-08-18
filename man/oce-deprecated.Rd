@@ -21,18 +21,16 @@ last step before outright removal.
 
 \tabular{lllll}{
 \strong{Deprecated}             \tab \strong{Replacement}   \tab \strong{Deprecated}  \tab \strong{Defunct} \tab \strong{Removed} \cr
-\code{renameData()}             \tab \code{\link[=oceRenameData]{oceRenameData()}} \tab 1.1-2           \tab 1.1-3       \tab 1.1-4       \cr
 }
 
 The following are marked "defunct", so calling them in the
 the present version produces an error message that hints at a replacement
 function. Once a function is marked "defunct" on one CRAN release, it will
-be slated for outright deletion in a subsequent release.
+be slated for outright deletion in some subsequent release.
 
 \tabular{lll}{
 \strong{Defunct}         \tab \strong{Replacement}                \tab \strong{Version}\cr
-\code{renameData()}      \tab \code{\link[=oceRenameData]{oceRenameData()}}              \tab 1.5        \cr
-\code{byteToBinary()}    \tab \code{\link[=rawToBits]{rawToBits()}}                  \tab 1.5        \cr
+\code{trimString()}      \tab \code{\link[=trimws]{trimws()}}                     \tab 1.7-9      \cr
 }
 
 The following functions were removed after having been marked as "deprecated"
@@ -50,6 +48,7 @@ version to lack the named function.)
 \code{mapMeridians()}    \tab \code{\link[=mapGrid]{mapGrid()}}                    \tab 1.1-2      \cr
 \code{mapZones()}        \tab \code{\link[=mapGrid]{mapGrid()}}                    \tab 1.1-2      \cr
 \code{oce.as.POSIXlt()}  \tab \code{\link[lubridate:parse_date_time]{lubridate::parse_date_time()}} \tab 1.1-2      \cr
+\code{renameData()}      \tab \code{\link[=oceRenameData]{oceRenameData()}}              \tab 1.7-9      \cr
 }
 
 Several \CRANpkg{oce} function arguments are considered "deprecated", which

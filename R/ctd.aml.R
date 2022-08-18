@@ -135,7 +135,7 @@ read.ctd.aml <- function(file,
         oceDebug(debug, "#} getMetadataItem()\n", style="bold", unindent=1)
         res
     }
-    lines <- readLines(file, encoding=encoding, warn=FALSE)
+    lines <- readLines(file, warn=FALSE)
     oceDebug(debug, "read ", length(lines), " lines in this file\n")
     if (missing(format)) {
         format <- if (grepl("^\\[cast header\\]", lines[1])) {

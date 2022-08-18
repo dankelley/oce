@@ -19,7 +19,7 @@ longitude and latitude must match that in topo."><!-- mathjax --><script src="ht
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-8</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-10</span>
       </span>
     </div>
 
@@ -82,7 +82,7 @@ longitude-latitude grid cell. Note that the sign convention for
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">topoInterpolate</span><span class="op">(</span><span class="va">longitude</span>, <span class="va">latitude</span>, <span class="va">topo</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">topoInterpolate</span><span class="op">(</span><span class="va">longitude</span>, <span class="va">latitude</span>, <span class="va">topo</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -129,12 +129,12 @@ level at the indicated location on the earth.</p>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dankelley.github.io/oce/" class="external-link">oce</a></span><span class="op">)</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">topoWorld</span><span class="op">)</span></span>
-<span class="r-in"><span class="co"># "The Gully", approx. 400m deep, connects Gulf of St Lawrence with North Atlantic</span></span>
-<span class="r-in"><span class="fu">topoInterpolate</span><span class="op">(</span><span class="fl">45</span>, <span class="op">-</span><span class="fl">57</span>, <span class="va">topoWorld</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dankelley.github.io/oce/" class="external-link">oce</a></span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">topoWorld</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="co"># "The Gully", approx. 400m deep, connects Gulf of St Lawrence with North Atlantic</span></span></span>
+<span class="r-in"><span><span class="fu">topoInterpolate</span><span class="op">(</span><span class="fl">45</span>, <span class="op">-</span><span class="fl">57</span>, <span class="va">topoWorld</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] -5208.5</span>
-<span class="r-in"></span>
+<span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
   </div>
@@ -149,7 +149,7 @@ level at the indicated location on the earth.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>

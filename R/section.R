@@ -2231,7 +2231,7 @@ read.section <- function(file,
     ##>     if (missing(flags))
     ##>         flags <- c(2)
     # Skip header
-    lines <- readLines(file, encoding=encoding)
+    lines <- readLines(file)
     if ("BOTTLE" != substr(lines[1], 1, 6))
         stop("only type \"BOTTLE\" understood, but got header line\n", lines[1], "\n")
     if (nchar(sectionId) < 1)

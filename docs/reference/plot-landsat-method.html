@@ -20,7 +20,7 @@ view.'><!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathj
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-8</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-10</span>
       </span>
     </div>
 
@@ -84,26 +84,26 @@ view.</p>
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="co"># S4 method for landsat</span>
-<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span>
-  <span class="va">x</span>,
-  <span class="va">band</span>,
-  which <span class="op">=</span> <span class="fl">1</span>,
-  decimate <span class="op">=</span> <span class="cn">TRUE</span>,
-  <span class="va">zlim</span>,
-  utm <span class="op">=</span> <span class="cn">FALSE</span>,
-  col <span class="op">=</span> <span class="va">oce.colorsPalette</span>,
-  drawPalette <span class="op">=</span> <span class="cn">TRUE</span>,
-  showBandName <span class="op">=</span> <span class="cn">TRUE</span>,
-  alpha.f <span class="op">=</span> <span class="fl">1</span>,
-  red.f <span class="op">=</span> <span class="fl">1.7</span>,
-  green.f <span class="op">=</span> <span class="fl">1.5</span>,
-  blue.f <span class="op">=</span> <span class="fl">6</span>,
-  offset <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="op">-</span><span class="fl">0.05</span>, <span class="op">-</span><span class="fl">0.2</span>, <span class="fl">0</span><span class="op">)</span>,
-  transform <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/diag.html" class="external-link">diag</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">red.f</span>, <span class="va">green.f</span>, <span class="va">blue.f</span>, <span class="va">alpha.f</span><span class="op">)</span><span class="op">)</span>,
-  debug <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"oceDebug"</span><span class="op">)</span>,
-  <span class="va">...</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="co"># S4 method for landsat</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span></span>
+<span>  <span class="va">x</span>,</span>
+<span>  <span class="va">band</span>,</span>
+<span>  which <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>  decimate <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  <span class="va">zlim</span>,</span>
+<span>  utm <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  col <span class="op">=</span> <span class="va">oce.colorsPalette</span>,</span>
+<span>  drawPalette <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  showBandName <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  alpha.f <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>  red.f <span class="op">=</span> <span class="fl">1.7</span>,</span>
+<span>  green.f <span class="op">=</span> <span class="fl">1.5</span>,</span>
+<span>  blue.f <span class="op">=</span> <span class="fl">6</span>,</span>
+<span>  offset <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="op">-</span><span class="fl">0.05</span>, <span class="op">-</span><span class="fl">0.2</span>, <span class="fl">0</span><span class="op">)</span>,</span>
+<span>  transform <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/diag.html" class="external-link">diag</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">red.f</span>, <span class="va">green.f</span>, <span class="va">blue.f</span>, <span class="va">alpha.f</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  debug <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"oceDebug"</span><span class="op">)</span>,</span>
+<span>  <span class="va">...</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -309,7 +309,7 @@ data minus 1/3 of the <code>nir</code>-band data. (This is not a typo: the
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>

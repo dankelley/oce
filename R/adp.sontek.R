@@ -19,6 +19,7 @@
 #' @author Dan Kelley and Clark Richards
 #'
 #' @family things related to adp data
+#' @family functions that read adp data
 read.adp.sontek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     longitude=NA, latitude=NA,
     type=c("adp", "pcadp"),
@@ -448,6 +449,7 @@ sontek.time <- function(t, tz=getOption("oceTz"))
 #' @author Dan Kelley and Clark Richards
 #'
 #' @family things related to adp data
+#' @family functions that read adp data
 read.adp.sontek.serial <- function(file,
     from=1,
     to,

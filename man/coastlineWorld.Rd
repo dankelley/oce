@@ -13,7 +13,7 @@ update on December 16, 2017.
 This is a coarse resolution coastline at scale 1:110M, with 10,696 points,
 suitable for world-scale plots plotted at a small size, e.g. inset diagrams.
 Finer resolution coastline files are provided in the
-\code{ocedata} package.
+\CRANpkg{ocedata} package.
 }
 \section{Installing your own datasets}{
  Follow the procedure along the lines

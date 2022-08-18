@@ -2,7 +2,7 @@
 % Please edit documentation in R/misc.R
 \name{trimString}
 \alias{trimString}
-\title{Remove leading and trailing whitespace from strings}
+\title{Remove leading and trailing whitespace from strings (deprecated)}
 \usage{
 trimString(s)
 }
@@ -14,5 +14,8 @@ a new vector formed by trimming leading and trailing whitespace
 from the elements of \code{s}.
 }
 \description{
-Remove leading and trailing whitespace from strings
+This function will be removed from an upcoming version of oce, because
+the base function \code{\link[=trimws]{trimws()}} does the same and more, without having
+problems with encoding (see \verb{https://github.com/dankelley/oce/issues/1993}).
 }
+\concept{deprecated functions}

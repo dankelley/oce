@@ -19,7 +19,7 @@ resultant coefficients on the sine and cosine terms."><!-- mathjax --><script sr
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-8</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-10</span>
       </span>
     </div>
 
@@ -82,16 +82,16 @@ resultant coefficients on the sine and cosine terms.</p>
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">tidem</span><span class="op">(</span>
-  <span class="va">t</span>,
-  <span class="va">x</span>,
-  <span class="va">constituents</span>,
-  infer <span class="op">=</span> <span class="cn">NULL</span>,
-  latitude <span class="op">=</span> <span class="cn">NULL</span>,
-  rc <span class="op">=</span> <span class="fl">1</span>,
-  regress <span class="op">=</span> <span class="va">lm</span>,
-  debug <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"oceDebug"</span><span class="op">)</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">tidem</span><span class="op">(</span></span>
+<span>  <span class="va">t</span>,</span>
+<span>  <span class="va">x</span>,</span>
+<span>  <span class="va">constituents</span>,</span>
+<span>  infer <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  latitude <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  rc <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>  regress <span class="op">=</span> <span class="va">lm</span>,</span>
+<span>  debug <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"oceDebug"</span><span class="op">)</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -267,8 +267,9 @@ Table 3 of Foreman (1978) dictates the removal of
 suggests that <code>GAM2</code> be subsumed into <code>H1</code>,
 then if <code>H1</code> is already being deleted, then
 <code>GAM2</code> will also be deleted.</p>
-<p>A summary of constituents may be found with:</p><div class="sourceCode"><pre><code><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">tidedata</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">tidedata</span><span class="op">$</span><span class="va">const</span><span class="op">)</span></code></pre></div>
+<p>A summary of constituents may be found with:</p><div class="sourceCode"><pre><code><span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">tidedata</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">tidedata</span><span class="op">$</span><span class="va">const</span><span class="op">)</span></span></code></pre></div>
 
     </div>
     <div id="bugs">
@@ -349,13 +350,13 @@ Computers and Geosciences, 28, 929-937.</p>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dankelley.github.io/oce/" class="external-link">oce</a></span><span class="op">)</span></span>
-<span class="r-in"><span class="co"># The demonstration time series from Foreman (1978),</span></span>
-<span class="r-in"><span class="co"># also used in T_TIDE (Pawlowicz, 2002).</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">sealevelTuktoyaktuk</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">tide</span> <span class="op">&lt;-</span> <span class="fu">tidem</span><span class="op">(</span><span class="va">sealevelTuktoyaktuk</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dankelley.github.io/oce/" class="external-link">oce</a></span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="co"># The demonstration time series from Foreman (1978),</span></span></span>
+<span class="r-in"><span><span class="co"># also used in T_TIDE (Pawlowicz, 2002).</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">sealevelTuktoyaktuk</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">tide</span> <span class="op">&lt;-</span> <span class="fu">tidem</span><span class="op">(</span><span class="va">sealevelTuktoyaktuk</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Note: the tidal record is too short to fit for constituents:  SA SSA MSM MF SIG1 RHO1 TAU1 BET1 CHI1 PI1 P1 S1 PSI1 PHI1 THE1 SO1 OQ2 2N2 NU2 GAM2 H1 H2 MKS2 LDA2 T2 R2 K2 MSN2 SO3 MK4 SK4 2MK6 MSK6 </span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">tide</span><span class="op">)</span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">tide</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> tidem summary</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> -------------</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
@@ -405,23 +406,23 @@ Computers and Geosciences, 28, 929-937.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> * Processing Log</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2022-07-04 16:56:59 UTC: `create 'tidem' object`</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2022-07-04 16:56:59 UTC: `tidem(t = sealevelTuktoyaktuk)`</span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># AIC analysis</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/stats/extractAIC.html" class="external-link">extractAIC</a></span><span class="op">(</span><span class="va">tide</span><span class="op">[[</span><span class="st">"model"</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2022-08-18 15:48:52 UTC: `create 'tidem' object`</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2022-08-18 15:48:52 UTC: `tidem(t = sealevelTuktoyaktuk)`</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># AIC analysis</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/stats/extractAIC.html" class="external-link">extractAIC</a></span><span class="op">(</span><span class="va">tide</span><span class="op">[[</span><span class="st">"model"</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1]   71.0000 -606.0823</span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># Fake data at M2</span></span>
-<span class="r-in"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dankelley.github.io/oce/" class="external-link">oce</a></span><span class="op">)</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"tidedata"</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">M2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/with.html" class="external-link">with</a></span><span class="op">(</span><span class="va">tidedata</span><span class="op">$</span><span class="va">const</span>, <span class="va">freq</span><span class="op">[</span><span class="va">name</span><span class="op">==</span><span class="st">"M2"</span><span class="op">]</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">t</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">10</span><span class="op">*</span><span class="fl">86400</span>, <span class="fl">3600</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">eta</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Trig.html" class="external-link">sin</a></span><span class="op">(</span><span class="va">M2</span> <span class="op">*</span> <span class="va">t</span> <span class="op">*</span> <span class="fl">2</span> <span class="op">*</span> <span class="va">pi</span> <span class="op">/</span> <span class="fl">3600</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">sl</span> <span class="op">&lt;-</span> <span class="fu"><a href="as.sealevel.html">as.sealevel</a></span><span class="op">(</span><span class="va">eta</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">m</span> <span class="op">&lt;-</span> <span class="fu">tidem</span><span class="op">(</span><span class="va">sl</span><span class="op">)</span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Fake data at M2</span></span></span>
+<span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dankelley.github.io/oce/" class="external-link">oce</a></span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"tidedata"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">M2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/with.html" class="external-link">with</a></span><span class="op">(</span><span class="va">tidedata</span><span class="op">$</span><span class="va">const</span>, <span class="va">freq</span><span class="op">[</span><span class="va">name</span><span class="op">==</span><span class="st">"M2"</span><span class="op">]</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">t</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">10</span><span class="op">*</span><span class="fl">86400</span>, <span class="fl">3600</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">eta</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Trig.html" class="external-link">sin</a></span><span class="op">(</span><span class="va">M2</span> <span class="op">*</span> <span class="va">t</span> <span class="op">*</span> <span class="fl">2</span> <span class="op">*</span> <span class="va">pi</span> <span class="op">/</span> <span class="fl">3600</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">sl</span> <span class="op">&lt;-</span> <span class="fu"><a href="as.sealevel.html">as.sealevel</a></span><span class="op">(</span><span class="va">eta</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">m</span> <span class="op">&lt;-</span> <span class="fu">tidem</span><span class="op">(</span><span class="va">sl</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Note: the tidal record is too short to fit for constituents:  SA SSA MSM MM MSF MF ALP1 2Q1 SIG1 Q1 RHO1 O1 TAU1 BET1 NO1 CHI1 PI1 P1 S1 PSI1 PHI1 THE1 J1 SO1 OO1 UPS1 OQ2 EPS2 2N2 MU2 N2 NU2 GAM2 H1 H2 MKS2 LDA2 L2 T2 S2 R2 K2 MSN2 ETA2 MO3 SO3 MK3 SK3 MN4 SN4 MS4 MK4 S4 SK4 2MN6 2MS6 2MK6 2SM6 MSK6 </span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">m</span><span class="op">)</span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">m</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> tidem summary</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> -------------</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
@@ -445,9 +446,9 @@ Computers and Geosciences, 28, 929-937.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> * Processing Log</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2022-07-04 16:56:59 UTC: `create 'tidem' object`</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2022-07-04 16:56:59 UTC: `tidem(t = sl)`</span>
-<span class="r-in"></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2022-08-18 15:48:52 UTC: `create 'tidem' object`</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2022-08-18 15:48:52 UTC: `tidem(t = sl)`</span>
+<span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
   </div>
@@ -462,7 +463,7 @@ Computers and Geosciences, 28, 929-937.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>

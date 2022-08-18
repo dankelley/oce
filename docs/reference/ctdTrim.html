@@ -22,7 +22,7 @@ visual inspection of the data.'><!-- mathjax --><script src="https://cdnjs.cloud
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-8</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-10</span>
       </span>
     </div>
 
@@ -88,14 +88,14 @@ visual inspection of the data.</p>
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">ctdTrim</span><span class="op">(</span>
-  <span class="va">x</span>,
-  <span class="va">method</span>,
-  removeDepthInversions <span class="op">=</span> <span class="cn">FALSE</span>,
-  parameters <span class="op">=</span> <span class="cn">NULL</span>,
-  indices <span class="op">=</span> <span class="cn">FALSE</span>,
-  debug <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"oceDebug"</span><span class="op">)</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">ctdTrim</span><span class="op">(</span></span>
+<span>  <span class="va">x</span>,</span>
+<span>  <span class="va">method</span>,</span>
+<span>  removeDepthInversions <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  parameters <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  indices <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  debug <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"oceDebug"</span><span class="op">)</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -277,21 +277,21 @@ values, computed based on two arguments: <code>data</code> (a
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span>
-<span class="r-in"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dankelley.github.io/oce/" class="external-link">oce</a></span><span class="op">)</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">ctdRaw</span><span class="op">)</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">ctdRaw</span><span class="op">)</span> <span class="co"># barely recognizable, due to pre- and post-cast junk</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu">ctdTrim</span><span class="op">(</span><span class="va">ctdRaw</span><span class="op">)</span><span class="op">)</span> <span class="co"># looks like a real profile ...</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu"><a href="ctdDecimate.html">ctdDecimate</a></span><span class="op">(</span><span class="fu">ctdTrim</span><span class="op">(</span><span class="va">ctdRaw</span><span class="op">)</span>,method<span class="op">=</span><span class="st">"boxcar"</span><span class="op">)</span><span class="op">)</span> <span class="co"># ... smoothed</span></span>
-<span class="r-in"><span class="co"># Demonstrate use of a function. The scan limits were chosen</span></span>
-<span class="r-in"><span class="co"># by using locator(2) on a graph made by plotScan(ctdRaw).</span></span>
-<span class="r-in"><span class="va">trimByIndex</span><span class="op">&lt;-</span><span class="kw">function</span><span class="op">(</span><span class="va">data</span>, <span class="va">parameters</span><span class="op">)</span> <span class="op">{</span></span>
-<span class="r-in">  <span class="va">parameters</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span> <span class="op">&lt;</span> <span class="va">data</span><span class="op">$</span><span class="va">scan</span> <span class="op">&amp;</span> <span class="va">data</span><span class="op">$</span><span class="va">scan</span> <span class="op">&lt;</span> <span class="va">parameters</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span></span>
-<span class="r-in"><span class="op">}</span></span>
-<span class="r-in"><span class="va">trimmed</span> <span class="op">&lt;-</span> <span class="fu">ctdTrim</span><span class="op">(</span><span class="va">ctdRaw</span>, <span class="va">trimByIndex</span>, parameters<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">130</span>, <span class="fl">380</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">trimmed</span><span class="op">)</span></span>
-<span class="r-in"><span class="op">}</span></span>
-<span class="r-in"></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dankelley.github.io/oce/" class="external-link">oce</a></span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">ctdRaw</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">ctdRaw</span><span class="op">)</span> <span class="co"># barely recognizable, due to pre- and post-cast junk</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu">ctdTrim</span><span class="op">(</span><span class="va">ctdRaw</span><span class="op">)</span><span class="op">)</span> <span class="co"># looks like a real profile ...</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu"><a href="ctdDecimate.html">ctdDecimate</a></span><span class="op">(</span><span class="fu">ctdTrim</span><span class="op">(</span><span class="va">ctdRaw</span><span class="op">)</span>,method<span class="op">=</span><span class="st">"boxcar"</span><span class="op">)</span><span class="op">)</span> <span class="co"># ... smoothed</span></span></span>
+<span class="r-in"><span><span class="co"># Demonstrate use of a function. The scan limits were chosen</span></span></span>
+<span class="r-in"><span><span class="co"># by using locator(2) on a graph made by plotScan(ctdRaw).</span></span></span>
+<span class="r-in"><span><span class="va">trimByIndex</span><span class="op">&lt;-</span><span class="kw">function</span><span class="op">(</span><span class="va">data</span>, <span class="va">parameters</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span>  <span class="va">parameters</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span> <span class="op">&lt;</span> <span class="va">data</span><span class="op">$</span><span class="va">scan</span> <span class="op">&amp;</span> <span class="va">data</span><span class="op">$</span><span class="va">scan</span> <span class="op">&lt;</span> <span class="va">parameters</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
+<span class="r-in"><span><span class="va">trimmed</span> <span class="op">&lt;-</span> <span class="fu">ctdTrim</span><span class="op">(</span><span class="va">ctdRaw</span>, <span class="va">trimByIndex</span>, parameters<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">130</span>, <span class="fl">380</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">trimmed</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
+<span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
   </div>
@@ -306,7 +306,7 @@ values, computed based on two arguments: <code>data</code> (a
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>

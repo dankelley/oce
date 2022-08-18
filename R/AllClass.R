@@ -550,6 +550,22 @@ setMethod(f="[[",
                   return(if (missing(j)) swSigma3(x) else swSigma3(x, eos=j))
               } else if (i == "sigma4") {
                   return(if (missing(j)) swSigma4(x) else swSigma4(x, eos=j))
+              } else if (i %in% paste0("spiciness", 0:2)) {
+                  #message("in AllClass")
+                  salinity <- x[["salinity"]]
+                  temperature <- x[["temperature"]]
+                  pressure <- x[["pressure"]]
+                  longitude <- x[["longitude"]]
+                  latitude <- x[["latitude"]]
+                  SA <- gsw::gsw_SA_from_SP(SP=salinity,
+                      p=pressure,
+                      longitude=longitude,
+                      latitude=latitude)
+                  CT <- gsw::gsw_CT_from_t(SA, temperature, pressure)
+                  return(switch(i,
+                          "spiciness0"=gsw::gsw_spiciness0(SA, CT),
+                          "spiciness1"=gsw::gsw_spiciness1(SA, CT),
+                          "spiciness2"=gsw::gsw_spiciness2(SA, CT)))
               } else if (i == "silicate") {
                   return(x@data$silicate)
               } else if (i == paste("sound", "speed")) {
@@ -681,61 +697,70 @@ setValidity("oce",
             })
 
 setMethod(f="show",
-          signature="oce",
-          definition=function(object) {
-              if ("filename" %in% names(object@metadata))
-                  filename <- object[["filename"]]
-              else
-                  filename <- "(filename unknown)"
-              dataNames <- names(object@data)
-              ncol <- length(dataNames)
-              if (is.null(filename) || filename == "" || is.na(filename) || filename=="(filename unknown)") {
-                  if (ncol > 0) {
-                      cat(class(object)[1], " object has data as follows.\n", sep="")
-                  } else {
-                      cat(class(object)[1], " object has nothing in its data slot.\n", sep="")
-                  }
-              } else {
-                  if (ncol > 0) {
-                      cat(class(object)[1], " object, from file '", filename, "', has data as follows.\n", sep="")
-                  } else {
-                      cat(class(object)[1], " object, from file '", filename, "', has nothing in its data slot.\n", sep="")
-                  }
-              }
-              odigits <- options("digits")$digits
-              options(digits=9) # helps with e.g. CTD adjusted vs unadjusted values
-              for (i in seq_along(dataNames)) {
-                  d <- object@data[[i]]
-                  if (0 == length(d)) {
-                      cat("  ", dataNames[i], ": empty\n")
-                  } else {
-                      if (inherits(d, "POSIXt")) {
-                          cat(vectorShow(d, paste("  ", dataNames[i])))
-                      } else if (is.vector(d)) {
-                          cat(vectorShow(d, paste("  ", dataNames[i])))
-                      } else if (is.array(d)) {
-                          dim <- dim(object@data[[i]])
-                          if (length(dim) == 1) {
-                              cat(vectorShow(d, paste("  ", dataNames[i])))
-                          } else if (length(dim) == 2) {
-                              cat("   ", dataNames[i], ", a ", dim[1], "x", dim[2], " array with value ", d[1, 1], " at [1,1] position\n", sep="")
-                          } else if (length(dim) == 3) {
-                              cat("   ", dataNames[i], ", a ", dim[1], "x", dim[2], "x", dim[3], " array with value ", d[1, 1, 1],
-                                  " at [1,1,1] position\n", sep="")
-                          } else {
-                              cat("   ", dataNames[i], ", an array of more than 3 dimensions\n")
-                          }
-                      } else if (is.data.frame(d)) {
-                          cat("  ", dataNames[i], ", a data frame with contents:\n", sep="")
-                          for (n in names(d)) {
-                              #cat("    ", n, " (with ", length(d[[n]]), " elements)\n", sep="")
-                              cat("    ", vectorShow(d[[n]], n), sep="")
-                          }
-                      }
-                  }
-              }
-              options(digits=odigits) # return to original digits value
-          })
+    signature="oce",
+    definition=function(object) {
+        if ("filename" %in% names(object@metadata))
+            filename <- object[["filename"]]
+        else
+            filename <- "(filename unknown)"
+        dataNames <- names(object@data)
+        ncol <- length(dataNames)
+        if (is.null(filename) || filename == "" || is.na(filename) || filename=="(filename unknown)") {
+            if (ncol > 0) {
+                cat(class(object)[1], " object has data as follows.\n", sep="")
+            } else {
+                cat(class(object)[1], " object has nothing in its data slot.\n", sep="")
+            }
+        } else {
+            if (ncol > 0) {
+                cat(class(object)[1], " object, from file '", filename, "', has data as follows.\n", sep="")
+            } else {
+                cat(class(object)[1], " object, from file '", filename, "', has nothing in its data slot.\n", sep="")
+            }
+        }
+        odigits <- options("digits")$digits
+        options(digits=9) # helps with e.g. CTD adjusted vs unadjusted values
+        isAD2CP <- is.ad2cp(object)
+        for (i in seq_along(dataNames)) {
+            d <- object@data[[i]]
+            if (isAD2CP) {
+                cat("  ", dataNames[i], " with ", length(d[["time"]]), " sampling times\n", sep="")
+            } else {
+                if (0 == length(d)) {
+                    cat("  ", dataNames[i], ": empty\n")
+                } else {
+                    if (inherits(d, "POSIXt")) {
+                        cat(vectorShow(d, paste("  ", dataNames[i])))
+                    } else if (is.list(d)) {
+                        cat("  ", dataNames[i], ", a list with contents:\n", sep="")
+                        for (n in names(d)) {
+                            cat("    ", vectorShow(d[[n]], n), sep="")
+                        }
+                    } else if (is.data.frame(d)) {
+                        cat("  ", dataNames[i], ", a data frame with contents:\n", sep="")
+                        for (n in names(d)) {
+                            cat("    ", vectorShow(d[[n]], n), sep="")
+                        }
+                    } else if (is.vector(d)) {
+                        cat(vectorShow(d, paste("  ", dataNames[i])))
+                    } else if (is.array(d)) {
+                        dim <- dim(object@data[[i]])
+                        if (length(dim) == 1) {
+                            cat(vectorShow(d, paste("  ", dataNames[i])))
+                        } else if (length(dim) == 2) {
+                            cat("   ", dataNames[i], ", a ", dim[1], "x", dim[2], " array with value ", d[1, 1], " at [1,1] position\n", sep="")
+                        } else if (length(dim) == 3) {
+                            cat("   ", dataNames[i], ", a ", dim[1], "x", dim[2], "x", dim[3], " array with value ", d[1, 1, 1],
+                                " at [1,1,1] position\n", sep="")
+                        } else {
+                            cat("   ", dataNames[i], ", an array of more than 3 dimensions\n")
+                        }
+                    }
+                }
+            }
+        }
+        options(digits=odigits) # return to original digits value
+    })
 
 
 #' @title Create a composite object by averaging across good data

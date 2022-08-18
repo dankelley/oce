@@ -8,6 +8,7 @@ AGU
 AML
 AML's
 AMSR
+AST
 AXBT
 AXBTs
 Aanderaa
@@ -539,6 +540,7 @@ ctdRaw
 ctdTrim
 ctdUpdateHeader
 ctdWrite
+dBar
 dP
 dQuote
 dac
@@ -999,6 +1001,7 @@ ucp
 ucsd
 ug
 uhslc
+uint
 umol
 un
 unabbreviate

@@ -18,7 +18,7 @@ data slot has been altered, or added."><!-- mathjax --><script src="https://cdnj
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-8</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-10</span>
       </span>
     </div>
 
@@ -80,7 +80,7 @@ data slot has been altered, or added."><!-- mathjax --><script src="https://cdnj
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">oceSetData</span><span class="op">(</span><span class="va">object</span>, <span class="va">name</span>, <span class="va">value</span>, <span class="va">unit</span>, <span class="va">originalName</span>, note <span class="op">=</span> <span class="st">""</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">oceSetData</span><span class="op">(</span><span class="va">object</span>, <span class="va">name</span>, <span class="va">value</span>, <span class="va">unit</span>, <span class="va">originalName</span>, note <span class="op">=</span> <span class="st">""</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -158,13 +158,13 @@ and the scale set to <code>""</code>.</p></li>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">ctd</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">Tf</span> <span class="op">&lt;-</span> <span class="fu"><a href="swTFreeze.html">swTFreeze</a></span><span class="op">(</span><span class="va">ctd</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">ctd</span> <span class="op">&lt;-</span> <span class="fu">oceSetData</span><span class="op">(</span><span class="va">ctd</span>, <span class="st">"freezing"</span>, <span class="va">Tf</span>,</span>
-<span class="r-in">    unit<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>unit<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/expression.html" class="external-link">expression</a></span><span class="op">(</span><span class="va">degree</span><span class="op">*</span><span class="va">C</span><span class="op">)</span>, scale<span class="op">=</span><span class="st">"ITS-90"</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in"><span class="fu"><a href="plotProfile.html">plotProfile</a></span><span class="op">(</span><span class="va">ctd</span>, <span class="st">"freezing"</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">ctd</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">Tf</span> <span class="op">&lt;-</span> <span class="fu"><a href="swTFreeze.html">swTFreeze</a></span><span class="op">(</span><span class="va">ctd</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">ctd</span> <span class="op">&lt;-</span> <span class="fu">oceSetData</span><span class="op">(</span><span class="va">ctd</span>, <span class="st">"freezing"</span>, <span class="va">Tf</span>,</span></span>
+<span class="r-in"><span>    unit<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>unit<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/expression.html" class="external-link">expression</a></span><span class="op">(</span><span class="va">degree</span><span class="op">*</span><span class="va">C</span><span class="op">)</span>, scale<span class="op">=</span><span class="st">"ITS-90"</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="plotProfile.html">plotProfile</a></span><span class="op">(</span><span class="va">ctd</span>, <span class="st">"freezing"</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="oceSetData-1.png" alt="" width="700" height="433"></span>
-<span class="r-in"></span>
+<span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
   </div>
@@ -179,7 +179,7 @@ and the scale set to <code>""</code>.</p></li>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>

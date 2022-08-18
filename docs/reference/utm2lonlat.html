@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-8</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-10</span>
       </span>
     </div>
 
@@ -78,7 +78,7 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">utm2lonlat</span><span class="op">(</span><span class="va">easting</span>, <span class="va">northing</span>, zone <span class="op">=</span> <span class="fl">1</span>, hemisphere <span class="op">=</span> <span class="st">"N"</span>, km <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">utm2lonlat</span><span class="op">(</span><span class="va">easting</span>, <span class="va">northing</span>, zone <span class="op">=</span> <span class="fl">1</span>, hemisphere <span class="op">=</span> <span class="st">"N"</span>, km <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -157,16 +157,16 @@ projections and their inverses, use <code><a href="lonlat2map.html">lonlat2map()
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dankelley.github.io/oce/" class="external-link">oce</a></span><span class="op">)</span></span>
-<span class="r-in"><span class="co">## Cape Split, in the Minas Basin of the Bay of Fundy</span></span>
-<span class="r-in"><span class="fu">utm2lonlat</span><span class="op">(</span><span class="fl">852863</span>, <span class="fl">5029997</span>, <span class="fl">19</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dankelley.github.io/oce/" class="external-link">oce</a></span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="co">## Cape Split, in the Minas Basin of the Bay of Fundy</span></span></span>
+<span class="r-in"><span><span class="fu">utm2lonlat</span><span class="op">(</span><span class="fl">852863</span>, <span class="fl">5029997</span>, <span class="fl">19</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $longitude</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] -64.49657</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $latitude</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 45.33462</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-in"></span>
+<span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
   </div>
@@ -181,7 +181,7 @@ projections and their inverses, use <code><a href="lonlat2map.html">lonlat2map()
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>

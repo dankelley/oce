@@ -20,7 +20,7 @@ file formerly available at reference 1."><!-- mathjax --><script src="https://cd
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-8</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-10</span>
       </span>
     </div>
 
@@ -84,23 +84,23 @@ file formerly available at reference 1.</p>
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">as.sealevel</span><span class="op">(</span>
-  <span class="va">elevation</span>,
-  <span class="va">time</span>,
-  header <span class="op">=</span> <span class="cn">NULL</span>,
-  stationNumber <span class="op">=</span> <span class="cn">NA</span>,
-  stationVersion <span class="op">=</span> <span class="cn">NA</span>,
-  stationName <span class="op">=</span> <span class="cn">NULL</span>,
-  region <span class="op">=</span> <span class="cn">NULL</span>,
-  year <span class="op">=</span> <span class="cn">NA</span>,
-  longitude <span class="op">=</span> <span class="cn">NA</span>,
-  latitude <span class="op">=</span> <span class="cn">NA</span>,
-  GMTOffset <span class="op">=</span> <span class="cn">NA</span>,
-  decimationMethod <span class="op">=</span> <span class="cn">NA</span>,
-  referenceOffset <span class="op">=</span> <span class="cn">NA</span>,
-  referenceCode <span class="op">=</span> <span class="cn">NA</span>,
-  <span class="va">deltat</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">as.sealevel</span><span class="op">(</span></span>
+<span>  <span class="va">elevation</span>,</span>
+<span>  <span class="va">time</span>,</span>
+<span>  header <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  stationNumber <span class="op">=</span> <span class="cn">NA</span>,</span>
+<span>  stationVersion <span class="op">=</span> <span class="cn">NA</span>,</span>
+<span>  stationName <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  region <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  year <span class="op">=</span> <span class="cn">NA</span>,</span>
+<span>  longitude <span class="op">=</span> <span class="cn">NA</span>,</span>
+<span>  latitude <span class="op">=</span> <span class="cn">NA</span>,</span>
+<span>  GMTOffset <span class="op">=</span> <span class="cn">NA</span>,</span>
+<span>  decimationMethod <span class="op">=</span> <span class="cn">NA</span>,</span>
+<span>  referenceOffset <span class="op">=</span> <span class="cn">NA</span>,</span>
+<span>  referenceCode <span class="op">=</span> <span class="cn">NA</span>,</span>
+<span>  <span class="va">deltat</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -212,14 +212,14 @@ with them.</p>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dankelley.github.io/oce/" class="external-link">oce</a></span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># Construct a year of M2 tide, starting at the default time</span></span>
-<span class="r-in"><span class="co"># 0000-01-01T00:00:00.</span></span>
-<span class="r-in"><span class="va">h</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">24</span><span class="op">*</span><span class="fl">365</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">elevation</span> <span class="op">&lt;-</span> <span class="fl">2.0</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/Trig.html" class="external-link">sin</a></span><span class="op">(</span><span class="fl">2</span><span class="op">*</span><span class="va">pi</span><span class="op">*</span><span class="va">h</span><span class="op">/</span><span class="fl">12.4172</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">sl</span> <span class="op">&lt;-</span> <span class="fu">as.sealevel</span><span class="op">(</span><span class="va">elevation</span><span class="op">)</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">sl</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dankelley.github.io/oce/" class="external-link">oce</a></span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Construct a year of M2 tide, starting at the default time</span></span></span>
+<span class="r-in"><span><span class="co"># 0000-01-01T00:00:00.</span></span></span>
+<span class="r-in"><span><span class="va">h</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">24</span><span class="op">*</span><span class="fl">365</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">elevation</span> <span class="op">&lt;-</span> <span class="fl">2.0</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/Trig.html" class="external-link">sin</a></span><span class="op">(</span><span class="fl">2</span><span class="op">*</span><span class="va">pi</span><span class="op">*</span><span class="va">h</span><span class="op">/</span><span class="fl">12.4172</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">sl</span> <span class="op">&lt;-</span> <span class="fu">as.sealevel</span><span class="op">(</span><span class="va">elevation</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">sl</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Sealevel Summary</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ----------------</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
@@ -235,13 +235,13 @@ with them.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> * Processing Log</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2022-07-04 16:53:10 UTC: `create 'sealevel' object`</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2022-07-04 16:53:10 UTC: `as.sealevel(elevation = elevation)`</span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># As above, but start at the Y2K time.</span></span>
-<span class="r-in"><span class="va">time</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/as.POSIXlt.html" class="external-link">as.POSIXct</a></span><span class="op">(</span><span class="st">"2000-01-01"</span><span class="op">)</span> <span class="op">+</span> <span class="va">h</span> <span class="op">*</span> <span class="fl">3600</span></span>
-<span class="r-in"><span class="va">sl</span> <span class="op">&lt;-</span> <span class="fu">as.sealevel</span><span class="op">(</span><span class="va">elevation</span>, <span class="va">time</span><span class="op">)</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">sl</span><span class="op">)</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2022-08-18 15:44:11 UTC: `create 'sealevel' object`</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2022-08-18 15:44:11 UTC: `as.sealevel(elevation = elevation)`</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># As above, but start at the Y2K time.</span></span></span>
+<span class="r-in"><span><span class="va">time</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/as.POSIXlt.html" class="external-link">as.POSIXct</a></span><span class="op">(</span><span class="st">"2000-01-01"</span><span class="op">)</span> <span class="op">+</span> <span class="va">h</span> <span class="op">*</span> <span class="fl">3600</span></span></span>
+<span class="r-in"><span><span class="va">sl</span> <span class="op">&lt;-</span> <span class="fu">as.sealevel</span><span class="op">(</span><span class="va">elevation</span>, <span class="va">time</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">sl</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Sealevel Summary</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ----------------</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
@@ -257,8 +257,8 @@ with them.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> * Processing Log</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2022-07-04 16:53:10 UTC: `create 'sealevel' object`</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2022-07-04 16:53:10 UTC: `as.sealevel(elevation = elevation, time = time)`</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2022-08-18 15:44:11 UTC: `create 'sealevel' object`</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2022-08-18 15:44:11 UTC: `as.sealevel(elevation = elevation, time = time)`</span>
 </code></pre></div>
     </div>
   </div>
@@ -273,7 +273,7 @@ with them.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>

@@ -21,7 +21,7 @@ with the defaults used by mapPlot()."><!-- mathjax --><script src="https://cdnjs
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-8</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-10</span>
       </span>
     </div>
 
@@ -86,19 +86,19 @@ with the defaults used by <code><a href="mapPlot.html">mapPlot()</a></code>.</p>
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">mapGrid</span><span class="op">(</span>
-  dlongitude <span class="op">=</span> <span class="fl">15</span>,
-  dlatitude <span class="op">=</span> <span class="fl">15</span>,
-  <span class="va">longitude</span>,
-  <span class="va">latitude</span>,
-  col <span class="op">=</span> <span class="st">"darkgray"</span>,
-  lty <span class="op">=</span> <span class="st">"solid"</span>,
-  lwd <span class="op">=</span> <span class="fl">0.5</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span><span class="st">"lwd"</span><span class="op">)</span>,
-  polarCircle <span class="op">=</span> <span class="fl">0</span>,
-  <span class="va">longitudelim</span>,
-  <span class="va">latitudelim</span>,
-  debug <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"oceDebug"</span><span class="op">)</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">mapGrid</span><span class="op">(</span></span>
+<span>  dlongitude <span class="op">=</span> <span class="fl">15</span>,</span>
+<span>  dlatitude <span class="op">=</span> <span class="fl">15</span>,</span>
+<span>  <span class="va">longitude</span>,</span>
+<span>  <span class="va">latitude</span>,</span>
+<span>  col <span class="op">=</span> <span class="st">"darkgray"</span>,</span>
+<span>  lty <span class="op">=</span> <span class="st">"solid"</span>,</span>
+<span>  lwd <span class="op">=</span> <span class="fl">0.5</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span><span class="st">"lwd"</span><span class="op">)</span>,</span>
+<span>  polarCircle <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>  <span class="va">longitudelim</span>,</span>
+<span>  <span class="va">latitudelim</span>,</span>
+<span>  debug <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"oceDebug"</span><span class="op">)</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -210,21 +210,21 @@ whereas the present function has increments for the first two arguments.</p>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="co"># \donttest{</span></span>
-<span class="r-in"><span class="kw">if</span> <span class="op">(</span><span class="fu">utils</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/utils/packageDescription.html" class="external-link">packageVersion</a></span><span class="op">(</span><span class="st">"sf"</span><span class="op">)</span> <span class="op">!=</span> <span class="st">"0.9.8"</span><span class="op">)</span> <span class="op">{</span></span>
-<span class="r-in">    <span class="co"># sf version 0.9-8 has a problem with this projection</span></span>
-<span class="r-in">    <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dankelley.github.io/oce/" class="external-link">oce</a></span><span class="op">)</span></span>
-<span class="r-in">    <span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">coastlineWorld</span><span class="op">)</span></span>
-<span class="r-in">    <span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mar<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">2</span>, <span class="fl">1</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in">    <span class="co"># In mapPlot() call, note axes and grid args, to</span></span>
-<span class="r-in">    <span class="co"># prevent over-plotting of defaults.</span></span>
-<span class="r-in">    <span class="fu"><a href="mapPlot.html">mapPlot</a></span><span class="op">(</span><span class="va">coastlineWorld</span>, type<span class="op">=</span><span class="st">"l"</span>, projection<span class="op">=</span><span class="st">"+proj=ortho"</span>,</span>
-<span class="r-in">            axes<span class="op">=</span><span class="cn">FALSE</span>, grid<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span></span>
-<span class="r-in">    <span class="fu">mapGrid</span><span class="op">(</span><span class="fl">15</span>, <span class="fl">15</span><span class="op">)</span></span>
-<span class="r-in"><span class="op">}</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># \donttest{</span></span></span>
+<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="fu">utils</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/utils/packageDescription.html" class="external-link">packageVersion</a></span><span class="op">(</span><span class="st">"sf"</span><span class="op">)</span> <span class="op">!=</span> <span class="st">"0.9.8"</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span>    <span class="co"># sf version 0.9-8 has a problem with this projection</span></span></span>
+<span class="r-in"><span>    <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dankelley.github.io/oce/" class="external-link">oce</a></span><span class="op">)</span></span></span>
+<span class="r-in"><span>    <span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">coastlineWorld</span><span class="op">)</span></span></span>
+<span class="r-in"><span>    <span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mar<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">2</span>, <span class="fl">1</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span>    <span class="co"># In mapPlot() call, note axes and grid args, to</span></span></span>
+<span class="r-in"><span>    <span class="co"># prevent over-plotting of defaults.</span></span></span>
+<span class="r-in"><span>    <span class="fu"><a href="mapPlot.html">mapPlot</a></span><span class="op">(</span><span class="va">coastlineWorld</span>, type<span class="op">=</span><span class="st">"l"</span>, projection<span class="op">=</span><span class="st">"+proj=ortho"</span>,</span></span>
+<span class="r-in"><span>            axes<span class="op">=</span><span class="cn">FALSE</span>, grid<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span></span></span>
+<span class="r-in"><span>    <span class="fu">mapGrid</span><span class="op">(</span><span class="fl">15</span>, <span class="fl">15</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
 <span class="r-plt img"><img src="mapGrid-1.png" alt="" width="700" height="433"></span>
-<span class="r-in"><span class="co"># }</span></span>
-<span class="r-in"></span>
+<span class="r-in"><span><span class="co"># }</span></span></span>
+<span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
   </div>
@@ -239,7 +239,7 @@ whereas the present function has increments for the first two arguments.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>

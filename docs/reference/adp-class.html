@@ -19,7 +19,7 @@ used by analogy to ADVs."><!-- mathjax --><script src="https://cdnjs.cloudflare.
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-8</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-10</span>
       </span>
     </div>
 
@@ -193,12 +193,13 @@ number, and the third beam number. The meaning of beams number depends on
 whether the object is in beam coordinates, frame coordinates, or earth
 coordinates.  For example, if in earth coordinates, then beam 1 is
 the eastward component of velocity.
-Thus, for example,</p><div class="sourceCode"><pre><code><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dankelley.github.io/oce/" class="external-link">oce</a></span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">adp</span><span class="op">)</span>
-<span class="va">t</span> <span class="op">&lt;-</span> <span class="va">adp</span><span class="op">[[</span><span class="st">'time'</span><span class="op">]</span><span class="op">]</span>
-<span class="va">d</span> <span class="op">&lt;-</span> <span class="va">adp</span><span class="op">[[</span><span class="st">'distance'</span><span class="op">]</span><span class="op">]</span>
-<span class="va">eastward</span> <span class="op">&lt;-</span> <span class="va">adp</span><span class="op">[[</span><span class="st">'v'</span><span class="op">]</span><span class="op">]</span><span class="op">[</span>,,<span class="fl">1</span><span class="op">]</span>
-<span class="fu"><a href="../reference/imagep.html">imagep</a></span><span class="op">(</span><span class="va">t</span>, <span class="va">d</span>, <span class="va">eastward</span>, missingColor<span class="op">=</span><span class="st">"gray"</span><span class="op">)</span></code></pre></div><p>plots an image of the eastward component of velocity as a function of time (the x axis)
+Thus, for example,</p><div class="sourceCode"><pre><code><span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dankelley.github.io/oce/" class="external-link">oce</a></span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">adp</span><span class="op">)</span></span>
+<span><span class="va">t</span> <span class="op">&lt;-</span> <span class="va">adp</span><span class="op">[[</span><span class="st">'time'</span><span class="op">]</span><span class="op">]</span></span>
+<span><span class="va">d</span> <span class="op">&lt;-</span> <span class="va">adp</span><span class="op">[[</span><span class="st">'distance'</span><span class="op">]</span><span class="op">]</span></span>
+<span><span class="va">eastward</span> <span class="op">&lt;-</span> <span class="va">adp</span><span class="op">[[</span><span class="st">'v'</span><span class="op">]</span><span class="op">]</span><span class="op">[</span>,,<span class="fl">1</span><span class="op">]</span></span>
+<span><span class="fu"><a href="../reference/imagep.html">imagep</a></span><span class="op">(</span><span class="va">t</span>, <span class="va">d</span>, <span class="va">eastward</span>, missingColor<span class="op">=</span><span class="st">"gray"</span><span class="op">)</span></span></code></pre></div><p>plots an image of the eastward component of velocity as a function of time (the x axis)
 and distance from sensor (y axis), since the <code>adp</code> dataset is
 in earth coordinates. Note the semidurnal tidal signal, and the pattern of missing
 data at the ocean surface (gray blotches at the top).</p>
@@ -334,10 +335,13 @@ transfer either beam or xyz to enu.  Enu may be converted to other coordinates
 <p>Other things related to adp data: 
 <code><a href="sub-sub-adp-method.html">[[,adp-method</a></code>,
 <code>[[&lt;-,adp-method</code>,
+<code><a href="ad2cpCodeToName.html">ad2cpCodeToName</a>()</code>,
 <code><a href="ad2cpHeaderValue.html">ad2cpHeaderValue</a>()</code>,
+<code><a href="adpAd2cpFileTrim.html">adpAd2cpFileTrim</a>()</code>,
 <code><a href="adpConvertRawToNumeric.html">adpConvertRawToNumeric</a>()</code>,
 <code><a href="adpEnsembleAverage.html">adpEnsembleAverage</a>()</code>,
 <code><a href="adpFlagPastBoundary.html">adpFlagPastBoundary</a>()</code>,
+<code><a href="adpRdiFileTrim.html">adpRdiFileTrim</a>()</code>,
 <code><a href="adp_rdi.000.html">adp_rdi.000</a></code>,
 <code><a href="adp.html">adp</a></code>,
 <code><a href="as.adp.html">as.adp</a>()</code>,
@@ -387,7 +391,7 @@ transfer either beam or xyz to enu.  Enu may be converted to other coordinates
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>

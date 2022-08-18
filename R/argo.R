@@ -156,9 +156,13 @@ setMethod(f="[[",
               oceDebug(debug, "[[,argo-method(\"", i, "\") {\n", sep="", style="bold", unindent=1)
               metadataDerived <- c("ID", "cycle", "*Flag", "*Unit")
               dataDerived <- c("profile", "CT", "N2", "SA", "sigmaTheta",
-                  "theta", "sigma0", "sigma1", "sigma2", "sigma3", "sigma4",
-                  "z", "depth", paste("Absolute", "Salinity"),
-                  paste("Conservative", "Temperature"))
+                  "theta",
+                  "z", "depth",
+                  paste("Absolute", "Salinity"),
+                  paste("Conservative", "Temperature"),
+                  paste("sigma", 0:4, sep=""),
+                  "spice",
+                  paste("spiciness", 0:2, sep=""))
               if (i == "?")
                   return(list(metadata=sort(names(x@metadata)),
                           metadataDerived=sort(metadataDerived),
@@ -179,9 +183,13 @@ setMethod(f="[[",
               namesData <- names(x@data)
               ## handle some computed items
               if (i %in% c("CT", paste("conservative", "temperature"), "N2",
-                      "SA", paste("Absolute", "Salinity"), "sigmaTheta",
-                      "theta", "sigma0", "sigma1", "sigma2", "sigma3",
-                      "sigma4")) {
+                      "SA", paste("Absolute", "Salinity"),
+                      "sigmaTheta",
+                      "theta",
+                      #paste("sigma", 0:4, sep=""),
+                      "spice")
+                      #paste("spiciness", 0:2, sep="")
+                      ) {
                   salinity <- x[["salinity", debug=debug-1]]
                   pressure <- x[["pressure", debug=debug-1]]
                   temperature <- x[["temperature", debug=debug-1]]
@@ -190,7 +198,7 @@ setMethod(f="[[",
                   longitude <- rep(x@data$longitude, each=dim[1])
                   latitude <- rep(x@data$latitude, each=dim[1])
                   if (i %in% c("CT", "Conservative Temperature")) {
-                      res <- gsw_CT_from_t(x[["SA"]], temperature, pressure)
+                      res <- gsw::gsw_CT_from_t(x[["SA"]], temperature, pressure)
                   } else if (i == "N2") {
                       ##nprofile <- dim[2]
                       res <- array(NA_real_,  dim=dim)
@@ -199,35 +207,44 @@ setMethod(f="[[",
                           ##if (i == 14) browser()
                           if (sum(!is.na(pressure[,i])) > 2) {
                               ctd <- as.ctd(salinity=salinity[,i],
-                                            temperature=temperature[,i],
-                                            pressure=pressure[,i],
-                                            longitude=x@data$longitude[i],
-                                            latitude=x@data$latitude[i])
+                                  temperature=temperature[,i],
+                                  pressure=pressure[,i],
+                                  longitude=x@data$longitude[i],
+                                  latitude=x@data$latitude[i])
                               res[,i] <- swN2(ctd)
                           } else {
                               res[,i] <- rep(NA, length(salinity[,i]))
                           }
                       }
                   } else if (i %in% c("SA", "Absolute Salinity")) {
-                      res <- gsw_SA_from_SP(salinity, pressure, longitude=longitude, latitude=latitude)
-                  } else if (i %in% c("sigma0", "sigma1", "sigma2", "sigma3", "sigma4")) {
-                      SA <- gsw_SA_from_SP(salinity, pressure, longitude=longitude, latitude=latitude)
-                      CT <- gsw_CT_from_t(SA, temperature, pressure)
-                      res <- switch(i, "sigma0"=gsw_sigma0(SA, CT),
-                                    "sigma1"=gsw_sigma1(SA, CT),
-                                    "sigma2"=gsw_sigma2(SA, CT),
-                                    "sigma3"=gsw_sigma3(SA, CT),
-                                    "sigma4"=gsw_sigma4(SA, CT))
+                      res <- gsw::gsw_SA_from_SP(salinity, pressure, longitude=longitude, latitude=latitude)
+                  } else if (i %in% paste("sigma", 0:4, sep="")) {
+                      SA <- gsw::gsw_SA_from_SP(salinity, pressure, longitude=longitude, latitude=latitude)
+                      CT <- gsw::gsw_CT_from_t(SA, temperature, pressure)
+                      res <- switch(i,
+                          "sigma0"=gsw::gsw_sigma0(SA, CT),
+                          "sigma1"=gsw::gsw_sigma1(SA, CT),
+                          "sigma2"=gsw::gsw_sigma2(SA, CT),
+                          "sigma3"=gsw::gsw_sigma3(SA, CT),
+                          "sigma4"=gsw::gsw_sigma4(SA, CT))
+                  } else if (i %in% "spice") {
+                      if (missing(j)) {
+                          res <- swSpice(x)
+                      } else {
+                          if (!j %in% c("gsw", "unesco"))
+                              stop("\"", j, "\" not allowed; use either \"gsw\" or \"unesco\"")
+                          res <- swSpice(x, eos=j)
+                      }
                   } else if (i == "sigmaTheta") {
                       res <- swSigmaTheta(salinity, temperature=temperature, pressure=pressure,
-                                          referencePressure=0, longitude=longitude, latitude=latitude,
-                                          eos=getOption("oceEOS", default="gsw"))
+                          referencePressure=0, longitude=longitude, latitude=latitude,
+                          eos=getOption("oceEOS", default="gsw"))
                   } else if (i == "theta") {
                       res <- swTheta(salinity, temperature=temperature, pressure=pressure,
-                                     referencePressure=0, longitude=longitude, latitude=latitude,
-                                     eos=getOption("oceEOS", default="gsw"))
+                          referencePressure=0, longitude=longitude, latitude=latitude,
+                          eos=getOption("oceEOS", default="gsw"))
                   } else {
-                      stop("coding error: unknown item '", i, "'")
+                      stop("argo[[ coding error: unknown item '", i, "'")
                   }
                   dim(res) <- dim
               } else if (i == "z") {
@@ -251,7 +268,7 @@ setMethod(f="[[",
                   if (is.matrix(x@data$pressure)) {
                       n <- dim(x@data$pressure)[1]
                       latitude <- matrix(rep(x@data$latitude, each=n),
-                                         nrow=n, byrow=TRUE)
+                          nrow=n, byrow=TRUE)
                       res <- swDepth(x@data$pressure, latitude)
                       ##. print("matrix ... lat and then pres... and the depth...")
                       ##. print(latitude[1:3, 1:3])
@@ -326,7 +343,7 @@ setMethod(f="[[",
                       res <- unadjusted
                   }
               } else {
-                  ##message("FIXME: [[,argo-method calling next method")
+                  #message("[[,argo-method calling next method")
                   res <- callNextMethod()         # [[ defined in R/AllClass.R
               }
               oceDebug(debug, "} # [[,argo-method\n", sep="", style="bold", unindent=1)
@@ -880,9 +897,9 @@ setMethod(f="summary",
               nid <- length(unique(object@metadata$id))
               if (1 == nid)
                    cat("* id:                  \"", object@metadata$id[1], "\"\n", sep="")
-              else cat("* id list:             \"", object@metadata$id[1], "\", \"", object@metadata$id[2], "\", ...\n", sep="")
+              else cat("* ID list:             \"", object@metadata$id[1], "\", \"", object@metadata$id[2], "\", ...\n", sep="")
               if ("featureType" %in% names(object@metadata))
-                  cat("* feature type:        \"", object@metadata$featureType, "\"\n", sep="")
+                  cat("* Feature type:        \"", object@metadata$featureType, "\"\n", sep="")
               nD <- sum(object@metadata$dataMode == "D")
               nA <- sum(object@metadata$dataMode == "A")
               nR <- sum(object@metadata$dataMode == "R")
@@ -1245,7 +1262,7 @@ read.argo <- function(file,
 
     oceDebug(debug-1, "At processing step  1, the ", length(varNames), " varnames are: c(\"", paste(sort(varNames), collapse="\",\""), "\")\n", sep="")
     res@metadata$id <- if (maybeLC("PLATFORM_NUMBER", lc) %in% varNames)
-        as.vector(trimString(ncdf4::ncvar_get(file, maybeLC("PLATFORM_NUMBER", lc)))) else NULL
+        as.vector(trimws(ncdf4::ncvar_get(file, maybeLC("PLATFORM_NUMBER", lc)))) else NULL
     varNames <- varNamesOmit(varNames, "PLATFORM_NUMBER")
 
     ### if (FALSE) {
@@ -1258,18 +1275,18 @@ read.argo <- function(file,
     ###     ## (camelCase namd) metadata item, but rather just let it gt stored
     ###     ## as a plain-copy (SNAKE_CASE named) metadata item.
     ###     res@metadata$floatSerialNumber <- if (maybeLC("FLOAT_SERIAL_NO", lc) %in% varNames)
-    ###         as.vector(trimString(ncdf4::ncvar_get(file, maybeLC("FLOAT_SERIAL_NO", lc)))) else NULL
+    ###         as.vector(trimws(ncdf4::ncvar_get(file, maybeLC("FLOAT_SERIAL_NO", lc)))) else NULL
     ###     varNames <- varNamesOmit(varNames, "FLOAT_SERIAL_NO")
     ###     oceDebug(debug, "varNames=", paste(varNames, collapse=","), "\n")
     ### }
 
     res@metadata$projectName <- if (maybeLC("PROJECT_NAME", lc) %in% varNames)
-        as.vector(trimString(ncdf4::ncvar_get(file, maybeLC("PROJECT_NAME", lc)))) else NULL
+        as.vector(trimws(ncdf4::ncvar_get(file, maybeLC("PROJECT_NAME", lc)))) else NULL
     varNames <- varNamesOmit(varNames, "PROJECT_NAME")
     oceDebug(debug-1, "Extracting PROJECT_NAME\n")
     oceDebug(debug-1, "At processing step  2, the ", length(varNames), " varnames are: c(\"", paste(sort(varNames), collapse="\",\""), "\")\n", sep="")
     res@metadata$PIName <- if (maybeLC("PI_NAME", lc) %in% varNames)
-        as.vector(trimString(ncdf4::ncvar_get(file, maybeLC("PI_NAME", lc)))) else NULL
+        as.vector(trimws(ncdf4::ncvar_get(file, maybeLC("PI_NAME", lc)))) else NULL
     varNames <- varNamesOmit(varNames, "PI_NAME")
     oceDebug(debug-1, "Extracting PI_NAME\n")
     oceDebug(debug-1, "At processing step  3, the ", length(varNames), " varnames are: c(\"", paste(sort(varNames), collapse="\",\""), "\")\n", sep="")
@@ -1277,7 +1294,7 @@ read.argo <- function(file,
     res@metadata$nParameters <- file$dim$N_PARAM$len
     res@metadata$nProfiles <- file$dim$N_PROF$len
     if (maybeLC("STATION_PARAMETERS", lc) %in% varNames) {
-        res@metadata$stationParameters <- trimString(ncdf4::ncvar_get(file, maybeLC("STATION_PARAMETERS", lc)))
+        res@metadata$stationParameters <- trimws(ncdf4::ncvar_get(file, maybeLC("STATION_PARAMETERS", lc)))
         if (is.null(res@metadata$stationParameters))
             warning("This file has nothing listed in its STATION_PARAMETERS item, so pressure, salinity, temperature, etc. are being stored in the metadata slot instead of the data slot. This will cause problems in further processing.")
     } else {
@@ -1327,7 +1344,7 @@ read.argo <- function(file,
     oceDebug(debug-1, "Extracting DATA_CENTRE\n")
     oceDebug(debug-1, "At processing step  7, the ", length(varNames), " varnames are: c(\"", paste(sort(varNames), collapse="\",\""), "\")\n", sep="")
     res@metadata$DCReference <- if (maybeLC("DC_REFERENCE", lc) %in% varNames)
-        as.vector(trimString(ncdf4::ncvar_get(file, maybeLC("DC_REFERENCE", lc)))) else NULL
+        as.vector(trimws(ncdf4::ncvar_get(file, maybeLC("DC_REFERENCE", lc)))) else NULL
     varNames <- varNamesOmit(varNames, "DC_REFERENCE")
     oceDebug(debug-1, "Extracting DC_REFERENCE\n")
     oceDebug(debug-1, "At processing step  8, the ", length(varNames), " varnames are: c(\"", paste(sort(varNames), collapse="\",\""), "\")\n", sep="")
@@ -1342,17 +1359,17 @@ read.argo <- function(file,
     oceDebug(debug-1, "Extracting DATA_MODE\n")
     oceDebug(debug-1, "At processing step 10, the ", length(varNames), " varnames are: c(\"", paste(sort(varNames), collapse="\",\""), "\")\n", sep="")
     res@metadata$instReference <- if (maybeLC("INST_REFERENCE", lc) %in% varNames)
-        as.vector(trimString(ncdf4::ncvar_get(file, maybeLC("INST_REFERENCE", lc)))) else NULL
+        as.vector(trimws(ncdf4::ncvar_get(file, maybeLC("INST_REFERENCE", lc)))) else NULL
     varNames <- varNamesOmit(varNames, "INST_REFERENCE")
     oceDebug(debug-1, "Extracting INST_REFERENCE\n")
     oceDebug(debug-1, "At processing step 11, the ", length(varNames), " varnames are: c(\"", paste(sort(varNames), collapse="\",\""), "\")\n", sep="")
     res@metadata$firmwareVersion <- if (maybeLC("FIRMWARE_VERSION", lc) %in% varNames)
-        as.vector(trimString(ncdf4::ncvar_get(file, maybeLC("FIRMWARE_VERSION", lc)))) else NULL
+        as.vector(trimws(ncdf4::ncvar_get(file, maybeLC("FIRMWARE_VERSION", lc)))) else NULL
     varNames <- varNamesOmit(varNames, "FIRMWARE_VERSION")
     oceDebug(debug-1, "Extracting FIRMWARE_REFERENCE\n")
     oceDebug(debug-1, "At processing step 12, the ", length(varNames), " varnames are: c(\"", paste(sort(varNames), collapse="\",\""), "\")\n", sep="")
     res@metadata$WMOInstType <- if (maybeLC("WMO_INST_TYPE", lc) %in% varNames)
-        as.vector(trimString(ncdf4::ncvar_get(file, maybeLC("WMO_INST_TYPE", lc)))) else NULL
+        as.vector(trimws(ncdf4::ncvar_get(file, maybeLC("WMO_INST_TYPE", lc)))) else NULL
     varNames <- varNamesOmit(varNames, "WMO_INST_TYPE")
     oceDebug(debug-1, "Extracting WMO_INST_TYPE\n")
     oceDebug(debug-1, "At processing step 13, the ", length(varNames), " varnames are: c(\"", paste(sort(varNames), collapse="\",\""), "\")\n", sep="")
@@ -1414,7 +1431,7 @@ read.argo <- function(file,
     oceDebug(debug-1, "POSITION_QC\n")
     oceDebug(debug-1, "varNames=", paste(varNames, collapse=","), "\n")
     res@metadata$positioningSystem <- if (maybeLC("POSITIONING_SYSTEM", lc) %in% varNames)
-        as.vector(trimString(ncdf4::ncvar_get(file, maybeLC("POSITIONING_SYSTEM", lc)))) else NULL
+        as.vector(trimws(ncdf4::ncvar_get(file, maybeLC("POSITIONING_SYSTEM", lc)))) else NULL
     varNames <- varNamesOmit(varNames, "POSITIONING_SYSTEM")
     oceDebug(debug-1, "POSITIONING_SYSTEM\n")
     oceDebug(debug-1, "varNames=", paste(varNames, collapse=","), "\n")
@@ -1632,8 +1649,14 @@ read.argo <- function(file,
             if (1 == length(dim(value)))
                 value <- as.vector(value)
             ## Trim leading/trailing whitespace, if it is a string
-            if (is.character(value))
-                value <- trimString(value)
+            if (is.character(value)) {
+                origValue <- value
+                value <- try({trimws(value)}, silent=TRUE)
+                if (inherits(value, "try-error")) {
+                    warning("cannot trim leading/trailing whitespace in metadata$", ocename, "")
+                    value <- origValue
+                }
+            }
             res@metadata[[ocename]] <- value
         }
     }

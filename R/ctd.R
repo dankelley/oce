@@ -4015,15 +4015,15 @@ read.ctd <- function(file,
         }
         line <- scan(file, what='char', sep="\n", n=1, quiet=TRUE) # slow, but just one line
         pushBack(line, file)
-        #.line <- readLines(file, n=1, encoding="latin1")
+        #.line <- readLines(file, n=1)
         ## FIXME: detect ODV type in first or second line; see oce.magic().
         if ("CTD" == substr(line, 1, 3)) {
             type <- "WOCE"
         } else if ("* Sea-Bird" == substr(line, 1, 10)) {
             type <- "SBE19"
-        } else if (grepl("^[ ]*ODF_HEADER,[ ]*$", line, useBytes=TRUE)) {
+        } else if (grepl("^[ ]*ODF_HEADER,[ ]*$", line)) {
             type <- "ODF"
-        } else if (grepl("^SSDA Sea & Sun Technology", line, useBytes=TRUE)) {
+        } else if (grepl("^SSDA Sea & Sun Technology", line)) {
             type <- "SSDA"
         } else {
             stop("Cannot discover type in line '", line, "' bird\n")
@@ -4566,7 +4566,7 @@ plotTS <- function (x,
         if (eos == "unesco") {
             lines(Sr, swTFreeze(salinity=Sr, pressure=0, eos=eos)) # old: darkblue that looked black
         } else if (eos == "gsw") {
-            lines(Sr, gsw_CT_freezing(SA=Sr, p=0, saturation_fraction=1)) # Sr==SA since eos=="gsw"
+            lines(Sr, gsw::gsw_CT_freezing(SA=Sr, p=0, saturation_fraction=1)) # Sr==SA since eos=="gsw"
         } else stop("unknown eos; must be \"unesco\" or \"gsw\"")
     }
     box()                              # redraw box (otherwise overdrawn with isopycnals)
