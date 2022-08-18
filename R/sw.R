@@ -1295,8 +1295,8 @@ swBeta <- function(salinity, temperature=NULL, pressure=0,
 #'
 #' @param pressure pressure (dbar)
 #'
-#' @return Conductivity of seawater in \eqn{W m^{-1\,\circ}C^{-1}}{W/(m*degC)}.
-#' To calculate thermal diffusivity in \eqn{m^2/s}{m^2/s}, divide by the
+#' @return Conductivity of seawater in \eqn{W m^{-1} {^\circ} C^{-1}}{W/(m*degC)}.
+#' To calculate thermal diffusivity in \eqn{m^2/s^2}, divide by the
 #' product of density and specific heat, as in the example.
 #'
 #' @author Dan Kelley

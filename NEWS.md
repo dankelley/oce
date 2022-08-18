@@ -1,3 +1,11 @@
+# oce 1.7.11
+
+* No significant changes yet.
+
+# oce 1.7.10 (on CRAN)
+
+* Fix a typo in `swThermalConductivity()` doc.
+
 # oce 1.7.9
 
 * Improve the handling of file encodings.

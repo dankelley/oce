@@ -1,3 +1,15 @@
+# Submission of oce 1.7-10
+
+As in previous versions, we request an exception to the 10-minute rule, on
+account of the package size (300+ functions, covering 60k lines of R, 6k lines
+of C/C++ and 1k line of Fortran).
+
+The major changes from the previous version are as follows.
+
+* Change a latex fragment within a manpage.
+
+
+
 # Submission of oce 1.7-9
 
 As in previous versions, we request an exception to the 10-minute rule, on
