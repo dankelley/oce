@@ -173,7 +173,6 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, IntegerVector from, IntegerV
   if (by[0] < 0)
     ::Rf_error("'by' must be positive but it is %d", by[0]);
   //unsigned int by_value = by[0];
-  int twelve_byte_header = 0;
 
   // Find file size, and return to start
   fseek(fp, 0L, SEEK_END);
@@ -229,7 +228,8 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, IntegerVector from, IntegerV
   unsigned int nchunk = 100000;
   unsigned int *start_buf = (unsigned int*)R_Calloc((size_t)nchunk, unsigned int);
   unsigned int *index_buf = (unsigned int*)R_Calloc((size_t)nchunk, unsigned int);
-  unsigned int *length_buf = (unsigned int*)R_Calloc((size_t)nchunk, unsigned int);
+  unsigned int *header_length_buf = (unsigned int*)R_Calloc((size_t)nchunk, unsigned int);
+  unsigned int *data_length_buf = (unsigned int*)R_Calloc((size_t)nchunk, unsigned int);
   unsigned int *id_buf = (unsigned int*)R_Calloc((size_t)nchunk, unsigned int);
   int early_EOF = 0;
   int reset_cindex = 0; // set to 1 if we skipped to find a new header start, after a bad checksum
@@ -242,7 +242,8 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, IntegerVector from, IntegerV
       nchunk = (unsigned int) floor(chunk * 1.4); // increase buffer size by sqrt(2)
       start_buf = (unsigned int*)R_Realloc(start_buf, nchunk, unsigned int);
       index_buf = (unsigned int*)R_Realloc(index_buf, nchunk, unsigned int);
-      length_buf = (unsigned int*)R_Realloc(length_buf, nchunk, unsigned int);
+      header_length_buf = (unsigned int*)R_Realloc(header_length_buf, nchunk, unsigned int);
+      data_length_buf = (unsigned int*)R_Realloc(data_length_buf, nchunk, unsigned int);
       id_buf = (unsigned int*)R_Realloc(id_buf, nchunk, unsigned int);
       if (debug)
         Rprintf(" to %d ... done\n", nchunk);
@@ -267,7 +268,6 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, IntegerVector from, IntegerV
       // Give 2 bytes back, since we read 12 and only need 10
       fseek(fp, -2, SEEK_CUR);
     } else if (header.header_size == 12) {
-      twelve_byte_header = 1;
       header.data_size = header_bytes[4] + 256 * (header_bytes[5] + 256 * (header_bytes[6] + 256 * header_bytes[7]));
       header.data_checksum = header_bytes[8] + 256 * header_bytes[9];
       header.header_checksum = header_bytes[10] + 256 * header_bytes[11];
@@ -318,7 +318,8 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, IntegerVector from, IntegerV
     start_buf[chunk] = cindex;
     cindex = cindex + header.header_size;
     index_buf[chunk] = cindex;
-    length_buf[chunk] = header.data_size;
+    header_length_buf[chunk] = header.header_size;
+    data_length_buf[chunk] = header.data_size;
 
     int found = 0;
     for (int idi = 0; idi < NID_ALLOWED; idi++) {
@@ -341,7 +342,6 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, IntegerVector from, IntegerV
             dbuflen, header.data_size, cindex, 100.0*cindex/filesize);
       if (cindex != ftell(fp))
         Rprintf("  *BUG*: cindex=%ld is out of synch with ftell(fp)=%ld\n", cindex, ftell(fp));
-
       dbuflen = header.data_size;
       dbuf = (unsigned char *)R_Realloc(dbuf, dbuflen, unsigned char);
     }
@@ -440,26 +440,28 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, IntegerVector from, IntegerV
       chunk++;
     }
   }
-  IntegerVector start(chunk), index(chunk), length(chunk), id(chunk);
+  IntegerVector start(chunk), index(chunk), header_length(chunk), data_length(chunk), id(chunk);
   for (unsigned int i = 0; i < chunk; i++) {
     start[i] = start_buf[i];
     index[i] = index_buf[i];
-    length[i] = length_buf[i];
+    header_length[i] = header_length_buf[i];
+    data_length[i] = data_length_buf[i];
     id[i] = id_buf[i];
   }
   R_Free(start_buf);
   R_Free(index_buf);
-  R_Free(length_buf);
+  R_Free(header_length_buf);
+  R_Free(data_length_buf);
   R_Free(id_buf);
   if (debug)
     Rprintf("} # do_ldc_ad2cp_in_file()\n");
   return(List::create(
         Named("start")=start,
         Named("index")=index,
-        Named("length")=length,
+        Named("headerLength")=header_length,
+        Named("dataLength")=data_length,
         Named("id")=id,
         Named("checksumFailures")=checksum_failures,
-        Named("earlyEOF")=early_EOF,
-        Named("twelve_byte_header")=twelve_byte_header));
+        Named("earlyEOF")=early_EOF));
 }
 

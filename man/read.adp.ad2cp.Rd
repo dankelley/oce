@@ -47,20 +47,8 @@ running out of memory.  For this reason, a common first step is instead to
 use \code{which="?"}, which gives a table of data types in the file or
 \code{which="??"}, which gives a data frame summarizing the data 'chunks'; after
 doing those things, the next step is usually to extract all the data, or an
-individual type of interest is extracted.  The choices of individual type are
-as follows:
-
-\code{"burst"} for ID code 0x15,
-\code{"average"} for ID code 0x16,
-\code{"bottomTrack"} for ID code 0x17,
-\code{"interleavedBurst"} for ID code 0x18,
-\code{"burstAltimeterRaw"} for ID code 0x1a,
-\code{"DVLBottomTrack"} for ID code 0x1b,
-\code{"echosounder"} for ID code 0x1c,
-\code{"DVLWaterTrack"} for ID code 0x1d,
-\code{"altimeter"} for ID code 0x1e,
-and
-\code{"averageAltimeter"} for ID code 0x1f.}
+individual type of interest is extracted; see \code{\link[=ad2cpCodeToName]{ad2cpCodeToName()}} for
+the code/name mappings.}
 
 \item{tz}{a character value indicating time zone. This is used in
 interpreting times stored in the file.}

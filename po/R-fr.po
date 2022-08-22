@@ -18,7 +18,7 @@ msgstr ""
 
 #, fuzzy
 msgid "object[[\""
-msgstr "objet"
+msgstr ""
 
 msgid "\", \""
 msgstr ""
@@ -4433,9 +4433,8 @@ msgstr ""
 msgid "cannot create a section from this list because element number"
 msgstr ""
 
-#, fuzzy
 msgid "lacks pressure"
-msgstr "Pression"
+msgstr ""
 
 msgid "estimated waterDepth as max(pressure) for CTDs numbered"
 msgstr ""

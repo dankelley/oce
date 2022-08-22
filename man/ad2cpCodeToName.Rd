@@ -4,11 +4,15 @@
 \alias{ad2cpCodeToName}
 \title{Map AD2CP ID Code to oce Name}
 \usage{
-ad2cpCodeToName(code = NULL)
+ad2cpCodeToName(code = NULL, removePrefix = FALSE)
 }
 \arguments{
 \item{code}{a \link{raw} (or corresponding integer) vector indicating the IDs of
 interest, or NULL to get a summary of possible values.}
+
+\item{removePrefix}{logical value indicating whether to remove the prefix.
+If this is FALSE, results are e.g. \code{"0x1c=echosounder"} but if TRUE, results
+are e.g. \code{"echosounder"}.}
 }
 \value{
 An indication of the mapping.  If \code{code} is NULL, this is a data
