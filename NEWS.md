@@ -1,6 +1,10 @@
-# oce 1.7.10
+# oce 1.7.11
 
-* Fix a typo in swThermalConductivity doc.
+* No significant changes yet.
+
+# oce 1.7.10 (on CRAN)
+
+* Fix a typo in `swThermalConductivity()` doc.
 
 # oce 1.7.9
 
