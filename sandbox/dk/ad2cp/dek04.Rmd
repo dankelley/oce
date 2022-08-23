@@ -205,7 +205,7 @@ par(mfrow=c(1,1))
 file <- "~/Dropbox/oce_secret_data/ad2cp/s100_truncated.ad2cp"
 if (file.exists(file)) {
     d <- read.oce(file)
-    imagep(log10(Mod(d@data$echosounderRaw$samples)))
+    imagep(log10(Mod(d@data$echosounderRaw$samples)), quiet=TRUE)
 }
 ```
 
