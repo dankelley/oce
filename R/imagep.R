@@ -734,6 +734,9 @@ drawPalette <- function(zlim, zlab="",
 #'    the first index of `z`, and the second is used for the second
 #'    index.
 #'
+#' @param quiet logical value indicating whether to silence warnings that
+#' might occur if the image is being decimated.
+#'
 #' @param breaks The z values for breaks in the color scheme.  If this is of
 #' length 1, the value indicates the desired number of breaks, which is
 #' supplied to [pretty()], in determining clean break points.
@@ -923,46 +926,47 @@ drawPalette <- function(zlim, zlab="",
 #'
 #' @author Dan Kelley and Clark Richards
 imagep <- function(x, y, z,
-                   xlim, ylim, zlim,
-                   zclip=FALSE, flipy=FALSE,
-                   xlab="", ylab="", zlab="", zlabPosition=c("top", "side"),
-                   las.palette=0,
-                   decimate=TRUE,
-                   breaks, col, colormap, labels=NULL, at=NULL,
-                   drawContours=FALSE,
-                   drawPalette=TRUE,
-                   drawTriangles=FALSE,
-                   tformat,
-                   drawTimeRange=getOption("oceDrawTimeRange"),
-                   filledContour=FALSE,
-                   missingColor=NULL,
-                   useRaster,
-                   mgp=getOption("oceMgp"),
-                   mar, mai.palette,
-                   xaxs="i", yaxs="i",
-                   asp=NA,
-                   cex=par("cex"),
-                   cex.axis=cex, cex.lab=cex, cex.main=cex,
-                   axes=TRUE,
-                   main="",
-                   axisPalette,
-                   add=FALSE,
-                   debug=getOption("oceDebug"),
-                   ...)
+    xlim, ylim, zlim,
+    zclip=FALSE, flipy=FALSE,
+    xlab="", ylab="", zlab="", zlabPosition=c("top", "side"),
+    las.palette=0,
+    decimate=TRUE,
+    quiet=FALSE,
+    breaks, col, colormap, labels=NULL, at=NULL,
+    drawContours=FALSE,
+    drawPalette=TRUE,
+    drawTriangles=FALSE,
+    tformat,
+    drawTimeRange=getOption("oceDrawTimeRange"),
+    filledContour=FALSE,
+    missingColor=NULL,
+    useRaster,
+    mgp=getOption("oceMgp"),
+    mar, mai.palette,
+    xaxs="i", yaxs="i",
+    asp=NA,
+    cex=par("cex"),
+    cex.axis=cex, cex.lab=cex, cex.main=cex,
+    axes=TRUE,
+    main="",
+    axisPalette,
+    add=FALSE,
+    debug=getOption("oceDebug"),
+    ...)
 {
     debug <- max(0, min(debug, 3))
     oceDebug(debug, "imagep(x,y,z,xlab,ylab,",
-             argShow(zlim),
-             argShow(flipy),
-             argShow(cex),
-             argShow(cex.axis),
-             argShow(cex.lab),
-             argShow(cex.main),
-             argShow(mgp),
-             argShow(mar),
-             argShow(mai.palette),
-             argShow(breaks),
-             ")\n", sep="", style="bold", unindent=1)
+        argShow(zlim),
+        argShow(flipy),
+        argShow(cex),
+        argShow(cex.axis),
+        argShow(cex.lab),
+        argShow(cex.main),
+        argShow(mgp),
+        argShow(mar),
+        argShow(mai.palette),
+        argShow(breaks),
+        ")\n", sep="", style="bold", unindent=1)
     zlabPosition <- match.arg(zlabPosition)
     if (!is.logical(flipy))
         stop("flipy must be TRUE or FALSE")
@@ -1131,7 +1135,7 @@ imagep <- function(x, y, z,
         x <- x[ilook]
         z <- z[ilook, , drop=FALSE]
         oceDebug(debug, "ilook:", paste(ilook[1:4], collapse=" "), "...\n")
-        if (decimateLogical)
+        if (decimateLogical && !quiet)
             warning("auto-decimating first index of large image by ", decimate[1], "; use decimate=FALSE to prevent this")
     }
     if (decimate[2] > 1) {
@@ -1139,7 +1143,7 @@ imagep <- function(x, y, z,
         y <- y[jlook]
         z <- z[, jlook, drop=FALSE]
         oceDebug(debug, "jlook:", paste(jlook[1:4], collapse=" "), "...\n")
-        if (decimateLogical)
+        if (decimateLogical && !quiet)
             warning("auto-decimating second index of large image by ", decimate[2], "; use decimate=FALSE to prevent this")
     }
     ##> message("dim(z): ", paste(dim(z), collapse=" "))
