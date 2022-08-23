@@ -1316,8 +1316,8 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
         even <- seq(2L, ntmp, by=2)
         real <- tmp[odd]
         imaginary <- tmp[even]
-        samples <- matrix(complex(real=real, imaginary=imaginary),
-            byrow=FALSE, nrow=NP)
+        samples <- t(matrix(complex(real=real, imaginary=imaginary),
+            byrow=FALSE, ncol=NP))
         list(numberOfSamples=numberOfSamples,
             samplingRate=samplingRate,
             startSampleIndex=startSampleIndex,
