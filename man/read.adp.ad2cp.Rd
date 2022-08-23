@@ -119,55 +119,33 @@ try setting the \code{which} document accordingly.
 It is important to realize that \code{\link[=read.adp.ad2cp]{read.adp.ad2cp()}} is incomplete, and has not
 been well tested.  The data format is not documented thoroughly in the
 available Nortek manuals, and contradictions between the manuals require an
-uncomfortable degree of guesswork; see \dQuote{Cautionary Notes}.
+uncomfortable degree of guesswork. Personal communications with Nortek
+personnel through August 2022 were essential to the refinement of
+this function, especially as regards 12-byte headers and a new data type
+with code \code{0x23}, as these things were not documented in any Nortek manuals
+available at that time.
 }
-\section{Cautionary Notes}{
+\section{Development Notes}{
 
 
-Early in the year 2022, support was added for 12-byte headers.  These are not
-described in any Nortek document in the possession of the author of
-\code{\link[=read.adp.ad2cp]{read.adp.ad2cp()}}, although some personal communications made via
-https://github.com/dankelley/oce/issues have exposed some clues that have led
-to provisional, but largely untested, code here.
+Early in the year 2022, support was added for 12-byte headers. Until
+August 2022, this support was provisional and the results were unlikely
+to be correct. However, personal contacts with Nortek experts shed
+a great deal of light on the format, and so the present results are
+thought to be correct.  At about the same time, support was added for
+what oce calls \code{echosounderRaw} format, the details of which were
+kindly communicated by Nortek personnel, in lieu of official documentation
+that had not yet been finalized.
 
 The \dQuote{References} section lists some manuals that were consulted during
 the coding of `read.adp.ad2cp()].  Since instruments evolve over time, one
 might think that Nortek (2022) would be the best place to start, in coding to
-read AD2CP files. That would be a mistake, and a big one, at that. There
-are two reasons for this.
-
-First, Nortek (2022) is not as clear in its description of the data format as
-Nortek (2017) and Nortek (2018), as exemplified by a few examples.
-\enumerate{
-\item Nortek (2022) has dropped the explanation of how to compute checksums,
-which was present in the earlier documents.
-\item The Nortek (2022) explanation of the data format differs from the older
-explanations and is arguably more difficult to understand.  With the new
-leading-underscore format (see Nortek 2022, page 79), information is spread
-throughout the document, making it challenging to understand data fields in
-isolation.  The older documents laid things out more clearly, e.g. the
-average/burst format is laid out in detail, \emph{in one place} on pages 57 to 64
-of Nortek, with the optional fields being clearly labelled in the rightmost
-column of Table 6.1.3.
-\item Nortek (2022) does not always specify units correctly.  For example, on
-page 82, Pressure is said to have "Unit [dBar]" in green text, but the
-black text above states "Raw data given as 0.001 dBar". If the stated storage
-class (uint32) is to be believed, then it seems clear that the unit must be
-0.001 dBar, so the green text should be ignored.  The same can be said of
-items throughout the data-format tables. In coding `read.adp.ad2cp()], the
-green "Unit" text was ignored in basically every case.
-}
-
-Second, Nortek (2022) contains significant errors, e.g. the following.
-\enumerate{
-\item Nortek (2022 page 89) states the storage class for "Altimeter
-data. Altimeter distance" (called \code{AltimeterDistance} by the present function)
-to be \code{int32}, but Nortek (2017, 2018) both state it to be \code{float32}. Tests
-with actual datasets make it clear that the format is \code{float32}, since wild
-result are inferred by following the Nortek (2022) guidance.
-\item As above, but for "AST data.AST distance" (called \code{ASTDistance} by the
-present function).
-}
+read AD2CP files. That would be a mistake, because the 2022 manual employs
+a new presentation style that is not as straightforward as in old manuals,
+it has gaps (e.g. no discussion of the checksum computation method) and
+significant errors (e.g. in stating storage classes, whether
+floating-point or integer) along with lesser errors (e.g. contradictions
+about the units of several quantities).
 }
 
 \examples{
