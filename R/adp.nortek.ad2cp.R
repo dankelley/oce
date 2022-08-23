@@ -1296,8 +1296,12 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
         NP <- length(lookIndex)
         message(vectorShow(NP))
         message(vectorShow(iv))
-        tmp <- readBin(d$buf[iv], "numeric", size=4L, endian="little",
+        #tmp <- readBin(d$buf[iv], "numeric", size=4L, endian="little",
+        #    n=2L*NP*numberOfSamples)
+        tmp <- readBin(d$buf[iv], "integer", size=4L, endian="little",
             n=2L*NP*numberOfSamples)
+        message(vectorShow(tmp))
+        tmp <- as.numeric(tmp) / 2^31
         message(vectorShow(tmp))
         #tmp2 <- readBin(d$buf[iv+1], "numeric", size=4L, endian="little",
         #    n=2L*NP*numberOfSamples-1)
@@ -1308,13 +1312,13 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
         ntmp <- length(tmp)
         odd <- seq(1L, ntmp, by=2)
         even <- seq(2L, ntmp, by=2)
-        echo <- matrix(tmp[odd], byrow=FALSE, ncol=NP)
-        quality <- matrix(tmp[even], byrow=FALSE, ncol=NP)
+        real <- matrix(tmp[odd], byrow=FALSE, ncol=NP)
+        imaginary <- matrix(tmp[even], byrow=FALSE, ncol=NP)
         list(numberOfSamples=numberOfSamples,
             samplingRate=samplingRate,
             startSampleIndex=startSampleIndex,
-            echo=echo,
-            quality=quality)
+            real=real,
+            imaginary=imaginary)
     }                                  # readEchosounderRaw
 
     # This is intended to handle burst, average, altimeter, ... records:
