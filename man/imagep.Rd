@@ -19,6 +19,7 @@ imagep(
   zlabPosition = c("top", "side"),
   las.palette = 0,
   decimate = TRUE,
+  quiet = FALSE,
   breaks,
   col,
   colormap,
@@ -135,6 +136,9 @@ the same is done for the \code{y} direction.
 the first index of \code{z}, and the second is used for the second
 index.
 }}
+
+\item{quiet}{logical value indicating whether to silence warnings that
+might occur if the image is being decimated.}
 
 \item{breaks}{The z values for breaks in the color scheme.  If this is of
 length 1, the value indicates the desired number of breaks, which is
