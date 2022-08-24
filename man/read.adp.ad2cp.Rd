@@ -108,46 +108,24 @@ character (if \code{which="text"}).
 \description{
 This function reads Nortek AD2CP files, storing data elements in lists within
 the \code{data} slot.  Those elements are named for the ID type in question.  For
-example, data with ID code \code{0x16} are stored in \code{data$average}; see
-\code{\link[=ad2cpCodeToName]{ad2cpCodeToName()}} for the code mapping.
+example, data with ID code \code{0x16} are stored in \code{x@data$average}, if \code{x} is
+the value returned by this function. See \code{\link[=ad2cpCodeToName]{ad2cpCodeToName()}} for the mapping
+between ID hexadecimal code and storage name.  By default, \code{\link[=read.adp.ad2cp]{read.adp.ad2cp()}}
+reads all ID codes that are in the file, but the \code{which} argument permits a
+refined focus, yielding faster processing times and smaller returned objects.
 }
 \details{
-By default, \code{\link[=read.adp.ad2cp]{read.adp.ad2cp()}} reads all ID codes that are in the file.
-This can yield very large objects, so if only certain IDs are of interest,
-try setting the \code{which} document accordingly.
+This function is still in active development, so be aware that the returned
+data structures might change in future versions.
 
-It is important to realize that \code{\link[=read.adp.ad2cp]{read.adp.ad2cp()}} is incomplete, and has not
-been well tested.  The data format is not documented thoroughly in the
-available Nortek manuals, and contradictions between the manuals require an
-uncomfortable degree of guesswork. Personal communications with Nortek
-personnel through August 2022 were essential to the refinement of
-this function, especially as regards 12-byte headers and a new data type
-with code \code{0x23}, as these things were not documented in any Nortek manuals
-available at that time.
+The coding is based mainly on descriptions in various versions of a Nortek
+manual (see \dQuote{References}). However, there are some gaps and
+contradictions in these manuals, owing partly to evolution of the data
+format. These things posed a challenge in the writing of \code{\link[=read.adp.ad2cp]{read.adp.ad2cp()}}.
+Thankfully, personnel in Nortek technical support team were able to supply
+the help that was needed. Without this support, this function would be
+significantly limited in what it can read.
 }
-\section{Development Notes}{
-
-
-Early in the year 2022, support was added for 12-byte headers. Until
-August 2022, this support was provisional and the results were unlikely
-to be correct. However, personal contacts with Nortek experts shed
-a great deal of light on the format, and so the present results are
-thought to be correct.  At about the same time, support was added for
-what oce calls \code{echosounderRaw} format, the details of which were
-kindly communicated by Nortek personnel, in lieu of official documentation
-that had not yet been finalized.
-
-The \dQuote{References} section lists some manuals that were consulted during
-the coding of `read.adp.ad2cp()].  Since instruments evolve over time, one
-might think that Nortek (2022) would be the best place to start, in coding to
-read AD2CP files. That would be a mistake, because the 2022 manual employs
-a new presentation style that is not as straightforward as in old manuals,
-it has gaps (e.g. no discussion of the checksum computation method) and
-significant errors (e.g. in stating storage classes, whether
-floating-point or integer) along with lesser errors (e.g. contradictions
-about the units of several quantities).
-}
-
 \examples{
 # You can run this within the oce directory, if you clone from github.
 file <- "tests/testthat/local_data/ad2cp/S102791A002_Barrow_v2.ad2cp"
@@ -162,11 +140,10 @@ Nortek AS. \dQuote{Signature Integration 55|250|500|1000kHz.} Nortek AS,
 2017.
 
 Nortek AS. \dQuote{Signature Integration 55|250|500|1000kHz.} Nortek AS,
-2018. (This revision includes new information about instrument orientation.)
+2018.
 
 Nortek AS. \dQuote{Signature Integration 55|250|500|1000kHz.} Nortek AS,
-March 31, 2022.  (This version is incomplete and quite confusing,
-so the 2017 and 2018 versions are preferable, albeit perhaps out-of-date.)
+March 31, 2022.
 }
 \seealso{
 Other things related to adp data: 

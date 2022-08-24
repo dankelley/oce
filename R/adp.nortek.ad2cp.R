@@ -280,43 +280,42 @@ ad2cpCodeToName <- function(code=NULL, removePrefix=FALSE)
 #'
 #' This function reads Nortek AD2CP files, storing data elements in lists within
 #' the `data` slot.  Those elements are named for the ID type in question.  For
-#' example, data with ID code `0x16` are stored in `data$average`; see
-#' [ad2cpCodeToName()] for the code mapping.
+#' example, data with ID code `0x16` are stored in `x@data$average`, if `x` is
+#' the value returned by this function. See [ad2cpCodeToName()] for the mapping
+#' between ID hexadecimal code and storage name.  By default, [read.adp.ad2cp()]
+#' reads all ID codes that are in the file, but the `which` argument permits a
+#' refined focus, yielding faster processing times and smaller returned objects.
 #'
-#' By default, [read.adp.ad2cp()] reads all ID codes that are in the file.
-#' This can yield very large objects, so if only certain IDs are of interest,
-#' try setting the `which` document accordingly.
+#' This function is still in active development, so be aware that the returned
+#' data structures might change in future versions.
 #'
-#' It is important to realize that [read.adp.ad2cp()] is incomplete, and has not
-#' been well tested.  The data format is not documented thoroughly in the
-#' available Nortek manuals, and contradictions between the manuals require an
-#' uncomfortable degree of guesswork. Personal communications with Nortek
-#' personnel through August 2022 were essential to the refinement of
-#' this function, especially as regards 12-byte headers and a new data type
-#' with code `0x23`, as these things were not documented in any Nortek manuals
-#' available at that time.
+#' The coding is based mainly on descriptions in various versions of a Nortek
+#' manual (see \dQuote{References}). However, there are some gaps and
+#' contradictions in these manuals, owing partly to evolution of the data
+#' format. These things posed a challenge in the writing of [read.adp.ad2cp()].
+#' Thankfully, personnel in Nortek technical support team were able to supply
+#' the help that was needed. Without this support, this function would be
+#' significantly limited in what it can read.
 #'
-#' @section Development Notes:
-#'
-#' Early in the year 2022, support was added for 12-byte headers. Until
-#' August 2022, this support was provisional and the results were unlikely
-#' to be correct. However, personal contacts with Nortek experts shed
-#' a great deal of light on the format, and so the present results are
-#' thought to be correct.  At about the same time, support was added for
-#' what oce calls `echosounderRaw` format, the details of which were
-#' kindly communicated by Nortek personnel, in lieu of official documentation
-#' that had not yet been finalized.
-#'
-#' The \dQuote{References} section lists some manuals that were consulted during
-#' the coding of `read.adp.ad2cp()].  Since instruments evolve over time, one
-#' might think that Nortek (2022) would be the best place to start, in coding to
-#' read AD2CP files. That would be a mistake, because the 2022 manual employs
-#' a new presentation style that is not as straightforward as in old manuals,
-#' it has gaps (e.g. no discussion of the checksum computation method) and
-#' significant errors (e.g. in stating storage classes, whether
-#' floating-point or integer) along with lesser errors (e.g. contradictions
-#' about the units of several quantities).
-#'
+## Early in the year 2022, support was added for 12-byte headers. Until
+## August 2022, this support was provisional and the results were unlikely
+## to be correct. However, personal contacts with Nortek experts shed
+## a great deal of light on the format, and so the present results are
+## thought to be correct.  At about the same time, support was added for
+## what oce calls `echosounderRaw` format, the details of which were
+## kindly communicated by Nortek personnel, in lieu of official documentation
+## that had not yet been finalized.
+##
+## The \dQuote{References} section lists some manuals that were consulted during
+## the coding of `read.adp.ad2cp()].  Since instruments evolve over time, one
+## might think that Nortek (2022) would be the best place to start, in coding to
+## read AD2CP files. That would be a mistake, because that manual (as of August
+## 2022) employs a new presentation style that is less straightforward than the
+## older manuals, with some significant gaps (e.g. no discussion of the checksum
+## computation method) and errors (e.g. in stating storage classes, whether
+## floating-point or integer).  A new manual is expected soon, however, and this
+## is expected to lead the way revision of this function and its documentation.
+##
 ## 2. The Nortek (2022) explanation of the data format differs from the older
 ## explanations and is arguably more difficult to understand.  With the new
 ## leading-underscore format (see Nortek 2022, page 79), information is spread
@@ -436,11 +435,10 @@ ad2cpCodeToName <- function(code=NULL, removePrefix=FALSE)
 #' 2017.
 #'
 #' Nortek AS. \dQuote{Signature Integration 55|250|500|1000kHz.} Nortek AS,
-#' 2018. (This revision includes new information about instrument orientation.)
+#' 2018.
 #'
 #' Nortek AS. \dQuote{Signature Integration 55|250|500|1000kHz.} Nortek AS,
-#' March 31, 2022.  (This version is incomplete and quite confusing,
-#' so the 2017 and 2018 versions are preferable, albeit perhaps out-of-date.)
+#' March 31, 2022.
 #'
 ## Nortek AS. \dQuote{Operations Manual - Signature 250, 500 and 1000.} Nortek AS,
 ## September 21, 2018.
