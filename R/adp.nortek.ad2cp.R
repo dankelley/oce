@@ -221,6 +221,7 @@ is.ad2cp <- function(x)
 #' |     `0x1d` |             29 |     `DVLWaterTrack` |
 #' |     `0x1e` |             30 |         `altimeter` |
 #' |     `0x1f` |             31 |  `averageAltimeter` |
+#' |     `0x23` |             35 |    `echosounderRaw` |
 #' |     `0xa0` |            160 |              `text` |
 #'
 #' @param code a [raw] (or corresponding integer) vector indicating the IDs of
@@ -1115,9 +1116,6 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
             tmp <- readBin(buf[iv], "integer", size=2L, endian="little", n=NP*NC)
             object$echosounder <- matrix(tmp, nrow=NP, byrow=FALSE)
             i0v <<- i0v + 2L*NC
-        } else if (FALSE && name == "echosounderRaw") {
-            stop("FIXME -- how die we get here???")
-            #samples <- readBin(buf[i[1] + i0v + 0:99], "numeric", size=4L, endian="little", n=25)
         } else if (name == "AHRS") {
             oceDebug(debug, "   AHRS starts at i0v=", i0v, "\n")
             # AHRSRotationMatrix
@@ -1264,7 +1262,6 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
     # See Nortek 2022 (draft preview mid-Aug 2022) section 2.4
     readEchosounderRaw <- function(id, debug=getOption("oceDebug")) # uses global 'd'
     {
-        debug <- 1 # FIXME: delete this
         type <- gsub(".*=","", ad2cpCodeToName(id))
         oceDebug(debug, "readEchosounderRaw(id=0x", id, ") # i.e. type=", type, "\n")
         look <- which(d$id == id)
@@ -1281,16 +1278,16 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
         #
         rval <- list()
         offsetOfData <- as.integer(d$buf[d$index[look[1]] + 2L])
-        oceDebug(debug, vectorShow(offsetOfData, showNewline=FALSE),
-            " (expect 240 for local_data/ad2cp/ad2cp_01.ad2cp)\n")
+        #oceDebug(debug, vectorShow(offsetOfData, showNewline=FALSE),
+        #    " (expect 240 for local_data/ad2cp/ad2cp_01.ad2cp)\n")
         serialNumber <- readBin(d$buf[17+0:3+lookIndex[1]],
             "integer", size=4L)
-        oceDebug(debug, vectorShow(serialNumber, showNewline=FALSE),
-            " (expect 101135 for local_data/ad2cp/ad2cp_01.ad2cp)\n")
+        #oceDebug(debug, vectorShow(serialNumber, showNewline=FALSE),
+        #    " (expect 101135 for local_data/ad2cp/ad2cp_01.ad2cp)\n")
         numberOfSamples <- readBin(buf[21+0:3+lookIndex[1]],
             "integer", size=4L)
-        oceDebug(debug, vectorShow(numberOfSamples, showNewline=FALSE),
-            " (expect 1974 for local_data/ad2cp/ad2cp_01.ad2cp)\n")
+        #oceDebug(debug, vectorShow(numberOfSamples, showNewline=FALSE),
+        #    " (expect 1974 for local_data/ad2cp/ad2cp_01.ad2cp)\n")
         startSampleIndex <- readBin(buf[25+0:3+lookIndex[1]],
             "integer", size=4L)
         samplingRate <- readBin(buf[29+0:3+lookIndex[1]],
@@ -1316,7 +1313,28 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
         imaginary <- tmp[even]
         samples <- t(matrix(complex(real=real, imaginary=imaginary),
             byrow=FALSE, ncol=NP))
-        list(numberOfSamples=numberOfSamples,
+        # FIXME: add distance,time as for echosounder
+        # The below shows that we *cannot* use the cellSize (it is zero for a
+        # test file).
+        #. Browse[1]> cellSize
+        #.  [1] 10.00 10.00 10.00 10.00  0.00  0.75 10.00 10.00 10.00
+        #. [10]  0.00  0.75
+        #. Browse[1]> filename
+        #. [1] "/Users/kelley/git/oce/tests/testthat/local_data/ad2cp/ad2cp_01.ad2cp"
+        #. message("  ", vectorShow(look[1]))
+        #. message("  ", vectorShow(blankingDistance[look[1]]))
+        #. message("  ", vectorShow(cellSize[look[1]]))
+        iv <- gappyIndex(lookIndex, 3, 1)
+        year <- as.integer(buf[iv]) + 1900
+        month <- as.integer(buf[iv+1]) + 1
+        day <- as.integer(buf[iv+2])
+        hour <- as.integer(buf[iv+3])
+        min <- as.integer(buf[iv+4])
+        sec <- as.integer(buf[iv+5])
+        hsec <- as.integer(buf[iv+6])
+        time <- ISOdatetime(year, month, day, hour, min, sec+0.01*hsec, tz="UTC")
+        list(time=time,
+            numberOfSamples=numberOfSamples,
             samplingRate=samplingRate,
             startSampleIndex=startSampleIndex,
             samples=samples)
@@ -2026,6 +2044,12 @@ plotAD2CP <- function(x, which=NULL, cex, col, pch, lwd, type, ...)
             imagep(D$time, D$distance, D$echosounder, ylab=resizableLabel("distance"), ...)
         else
             imagep(D$time, D$distance, D$echosounder, col=col, ylab=resizableLabel("distance"), ...)
+    } else if (w[2] == c("echosounderRaw")) {
+        D <- x@data[[w[1]]]
+        if (missing(col))
+            imagep(D$time, D$distance, Mod(D$samples), ylab=resizableLabel("distance"), ...)
+        else
+            imagep(D$time, D$distance, Mod(D$samples), col=col, ylab=resizableLabel("distance"), ...)
     } else if (w[2] == "altimeter") {
         message("FIXME: untested plot of ", w[1], "/", w[2], ": please report error")
         D <- x@data[[w[1]]][[w[2]]]

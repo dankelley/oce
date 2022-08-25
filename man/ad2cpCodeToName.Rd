@@ -38,6 +38,7 @@ The mapping from code (hex or decimal) to oce name is as follows.\tabular{rrr}{
    \code{0x1d} \tab 29 \tab \code{DVLWaterTrack} \cr
    \code{0x1e} \tab 30 \tab \code{altimeter} \cr
    \code{0x1f} \tab 31 \tab \code{averageAltimeter} \cr
+   \code{0x23} \tab 35 \tab \code{echosounderRaw} \cr
    \code{0xa0} \tab 160 \tab \code{text} \cr
 }
 }
