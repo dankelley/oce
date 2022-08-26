@@ -660,10 +660,12 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
     dim(status) <- c(32L, N)
     # Interpret status, but note that items will be subsetted later (see 'keep')
     # Bit 1 in the Nortek (2022 table 6.3 page 85) zero-based notation is index 2 in R.
-    message(vectorShow(status[1,],n=10))
-    message(vectorShow(status[2,],n=10))
-    message(vectorShow(status[31,],n=10))
-    message(vectorShow(status[32,],n=10))
+    if (debug > 0) {
+        message(vectorShow(status[1,],n=10))
+        message(vectorShow(status[2,],n=10))
+        message(vectorShow(status[31,],n=10))
+        message(vectorShow(status[32,],n=10))
+    }
     blankingDistanceInCm <- as.integer(status[2L,])
     # Nortek docs say bit 16 indicates the active configuration, but they
     # count from 0, so it is bit 17 here.
@@ -894,15 +896,14 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
     # assuming that Nortek (2022) is correct does not match with the header
     # (header says 2.000 for echosounder but the method below yields 20).
     tmp <- readBin(d$buf[pointer2 + 35L], "integer", size=2, n=N, signed=FALSE, endian="little")
-    message(vectorShow(tmp, n=10))
-    message(vectorShow(blankingDistanceInCm, n=10))
     blankingDistanceFactor <- ifelse(blankingDistanceInCm==1, 1e-2, 1e-3)
-    message(vectorShow(blankingDistanceFactor, n=10))
     blankingDistance <- blankingDistanceFactor * tmp
-    message(vectorShow(blankingDistance, n=10))
-
-
-
+    if (debug > 0) {
+        message(vectorShow(tmp, n=10))
+        message(vectorShow(blankingDistanceInCm, n=10))
+        message(vectorShow(blankingDistanceFactor, n=10))
+        message(vectorShow(blankingDistance, n=10))
+    }
     nominalCorrelation <- readBin(d$buf[pointer1 + 37], "integer", size=1, n=N, signed=FALSE, endian="little")
     # Magnetometer (Table 6.2, page 82, ref 1b)
     magnetometerx <- readBin(d$buf[pointer2 + 41], "integer", size=2, n=N, signed=TRUE, endian="little")

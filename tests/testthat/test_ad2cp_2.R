@@ -19,10 +19,12 @@ if (file.exists(file)) {
                 expect_warning(
                     expect_warning(
                         expect_warning(
-                            d <- read.oce(file),
-                            "has 12-byte headers"),
-                        "using to=12"),
-                    "'plan' defaulting to 0"),
+                            expect_warning(
+                                d <- read.oce(file),
+                                "has 12-byte headers"),
+                            "using to=12"),
+                        "'plan' defaulting to 0"),
+                    "does not match"),
                 "EOF before end of chunk")
             # Identifiers
             expect_equal(d[["type"]], "Signature100")
