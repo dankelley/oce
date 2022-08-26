@@ -659,7 +659,11 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
     status <- intToBits(readBin(d$buf[pointer4 + 69L], "integer", size=4L, n=N, endian="little"))
     dim(status) <- c(32L, N)
     # Interpret status, but note that items will be subsetted later (see 'keep')
-    # Bit 1 in the Nortek (2022 table 6.3 page 87) zero-based notation is index 2 in R.
+    # Bit 1 in the Nortek (2022 table 6.3 page 85) zero-based notation is index 2 in R.
+    message(vectorShow(status[1,],n=10))
+    message(vectorShow(status[2,],n=10))
+    message(vectorShow(status[31,],n=10))
+    message(vectorShow(status[32,],n=10))
     blankingDistanceInCm <- as.integer(status[2L,])
     # Nortek docs say bit 16 indicates the active configuration, but they
     # count from 0, so it is bit 17 here.
@@ -883,15 +887,21 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
     cellSize <- 0.001 * readBin(d$buf[pointer2 + 33], "integer", size=2, n=N, signed=FALSE, endian="little")
     # FIXME: resolve question about unit of blankingDistance.
     # Nortek (2017 table 6.1.2 page 49) indicates that blanking distance is
-    # recorded in cm but Nortek (2022 page 85) says it is in either cm or mm,
-    # depending on an element in status (bit 1 in notation of Nortek 2022 page
-    # 87). Perhaps the ability to store in mm was added later?  However, in
-    # tests/testthat/test_ad2cp_2.R, the value inferred from assuming that
-    # Nortek (2022) is correct does not match with the header (header says 2.000
-    # for echosounder but the method below yields 2).
+    # recorded in cm but Nortek (2022 section 6.4 page 85) says it is in either
+    # cm or mm, depending on an element in status (bit 1 in notation of Nortek
+    # 2022 page 87). Perhaps the ability to store in mm was added later?
+    # However, in tests/testthat/test_ad2cp_2.R, the value inferred from
+    # assuming that Nortek (2022) is correct does not match with the header
+    # (header says 2.000 for echosounder but the method below yields 20).
     tmp <- readBin(d$buf[pointer2 + 35L], "integer", size=2, n=N, signed=FALSE, endian="little")
+    message(vectorShow(tmp, n=10))
+    message(vectorShow(blankingDistanceInCm, n=10))
     blankingDistanceFactor <- ifelse(blankingDistanceInCm==1, 1e-2, 1e-3)
+    message(vectorShow(blankingDistanceFactor, n=10))
     blankingDistance <- blankingDistanceFactor * tmp
+    message(vectorShow(blankingDistance, n=10))
+
+
 
     nominalCorrelation <- readBin(d$buf[pointer1 + 37], "integer", size=1, n=N, signed=FALSE, endian="little")
     # Magnetometer (Table 6.2, page 82, ref 1b)
@@ -1288,6 +1298,8 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
             "integer", size=4L)
         #oceDebug(debug, vectorShow(numberOfSamples, showNewline=FALSE),
         #    " (expect 1974 for local_data/ad2cp/ad2cp_01.ad2cp)\n")
+        # startSampleIndex is the echosounderRaw index at which
+        # distance from sensor equals blanking distance.
         startSampleIndex <- readBin(buf[25+0:3+lookIndex[1]],
             "integer", size=4L)
         samplingRate <- readBin(buf[29+0:3+lookIndex[1]],
@@ -1833,6 +1845,33 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
     if ("echosounderRaw" %in% which && length(p$echosounderRaw) > 0) # 0x23
         data$echosounderRaw <- readEchosounderRaw(id=as.raw(0x23), debug=debug)
 
+    # Use header as the final word, if it contradicts what we inferred above.
+    if (!is.null(header)) {
+        if ("echosounder" %in% names(data)) {
+            BD <- ad2cpHeaderValue(header, "GETECHO", "BD")
+            if (data$echosounder$blankingDistance != BD) {
+                warning("inferred echosounder$blankingDistance (", data$echosounder$blankingDistance,
+                    "m) does not match the header GETECHO value (", BD,
+                    "m); the latter value was used")
+                data$echosounder$blankingDistance <- BD
+                data$echosounder$distance <- BD + seq(1, by=data$echosounder$cellSize, length.out=data$echosounder$numberOfCells)
+            }
+        }
+    }
+    # 2022-08-26: I asked Nortek how to compute distance for echosounderRaw, and
+    # the answer involves the blankingDistance.  But, in my sample file at
+    # tests/testthat/local_data/ad2cp/ad2cp_01.ad2cp, the cellSize for
+    # echosounderRaw is 0, and so I'm guessing (pending more information from
+    # Notek) that the idea is to use the cellSize in the (now possibly updated)
+    if (2L == sum(c("echosounder", "echosounderRaw") %in% names(data))) {
+        if ("blankingDistance" %in% names(data$echosounder) && "startSampleIndex" %in% names(data$echosounderRaw)) {
+            message("computing echosounderRaw$distance using formula from private communication with Nortek dated 2022-08-28")
+            data$echosounderRaw$cellsize <- data$echosounder$blankingDistance / data$echosounderRaw$startSampleIndex
+            data$echosounderRaw$distance <- seq(0, by=
+data$echosounderRaw$cellsize, length.out=data$echosounderRaw$numberOfSamples)
+        }
+    }
+
     # Insert metadata
     #res@metadata$id <- id
     res@metadata$filename <- filename
@@ -1861,6 +1900,8 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
     # types.  Also, we must remove the overall coordinate (created by
     # initializer) since it has no meaning here.
     res@metadata$oceCoordinate <- NULL
+    #>>ad2cpHeaderValue(d@metadata$header,"GETECHO","BD")
+    #>>browser()
     # Insert data
     res@data <- data
     # Insert processingLog

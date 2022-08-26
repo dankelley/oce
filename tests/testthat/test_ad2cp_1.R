@@ -28,7 +28,7 @@ library(oce)
 # The file has 2000 stored, so assuming cm gives 20m, which seems wrong
 # and also the header says 2.000 for BD. Since Nortek (2022) has multiple
 # errors, I am going to go with what BD says, and I will assume that
-# they 1 means in mm, not in cm.
+# the 1 means in mm, not in cm.
 #
 # REFERENCES
 # 1. Nortek AS. \dQuote{Signature Integration 55|250|500|1000kHz.} Nortek AS, 2017.

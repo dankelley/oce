@@ -9,6 +9,11 @@ the 0x23 (raw echosounder) AD2CP data type to the oce R package. To make things
 concrete, I am showing my (R) code; even somebody not familiar with R ought to
 get the gist.
 
+```{r echo=FALSE}
+knitr::opts_chunk$set(dev="png", dev.args=list(type="cairo-png"))
+```
+
+
 ## Prior to 2022-08-22
 
 A document I received from Nortek in August of 2022 led me to believe that the
@@ -201,11 +206,13 @@ still being written for this data type.
 
 ```{r}
 library(oce) # github.com/dankelley/oce "develop" branch
-par(mfrow=c(1,1))
 file <- "~/Dropbox/oce_secret_data/ad2cp/s100_truncated.ad2cp"
 if (file.exists(file)) {
     d <- read.oce(file)
     imagep(log10(Mod(d@data$echosounderRaw$samples)), quiet=TRUE)
+    with(d@data$echosounderRaw,
+        imagep(time, distance, log10(Mod(samples)), quiet=TRUE,
+            ylab=resizableLabel("distance")))
 }
 ```
 
