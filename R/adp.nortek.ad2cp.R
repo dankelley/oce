@@ -887,7 +887,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
 
     # cell size is recorded in mm [1, table 6.1.2, page 49]
     cellSize <- 0.001 * readBin(d$buf[pointer2 + 33], "integer", size=2, n=N, signed=FALSE, endian="little")
-    # FIXME: resolve question about unit of blankingDistance.
+    # BOOKMARK-blankingDistance-1 (see also BOOKMARK-blankingDistance-2, below)
     # Nortek (2017 table 6.1.2 page 49) indicates that blanking distance is
     # recorded in cm but Nortek (2022 section 6.4 page 85) says it is in either
     # cm or mm, depending on an element in status (bit 1 in notation of Nortek
@@ -895,6 +895,9 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
     # However, in tests/testthat/test_ad2cp_2.R, the value inferred from
     # assuming that Nortek (2022) is correct does not match with the header
     # (header says 2.000 for echosounder but the method below yields 20).
+    # Given this confusion, it seems sensible to define blankingDistance
+    # here, *but* to change it later, if the file has a header and if that
+    # header indicates a different value (at BOOKMARK-blankingDistance-2).
     tmp <- readBin(d$buf[pointer2 + 35L], "integer", size=2, n=N, signed=FALSE, endian="little")
     blankingDistanceFactor <- ifelse(blankingDistanceInCm==1, 1e-2, 1e-3)
     blankingDistance <- blankingDistanceFactor * tmp
@@ -1849,6 +1852,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
     # Use header as the final word, if it contradicts what we inferred above.
     if (!is.null(header)) {
         if ("echosounder" %in% names(data)) {
+            # BOOKMARK-blankingDistance-2 (see also BOOKMARK-blankingDistance-1, above)
             BD <- ad2cpHeaderValue(header, "GETECHO", "BD")
             if (data$echosounder$blankingDistance != BD) {
                 warning("inferred echosounder$blankingDistance (", data$echosounder$blankingDistance,
