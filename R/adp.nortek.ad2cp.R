@@ -660,14 +660,8 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
     dim(status) <- c(32L, N)
     # Interpret status, but note that items will be subsetted later (see 'keep')
     # Bit 1 in the Nortek (2022 table 6.3 page 85) zero-based notation is index 2 in R.
-    if (debug > 0) {
-        message(vectorShow(status[1,],n=10))
-        message(vectorShow(status[2,],n=10))
-        message(vectorShow(status[31,],n=10))
-        message(vectorShow(status[32,],n=10))
-    }
     blankingDistanceInCm <- as.integer(status[2L,])
-    # Nortek docs say bit 16 indicates the active configuration, but they
+    # Bit 16 in Nortek (zer-based) notation is bit 17 here.
     # count from 0, so it is bit 17 here.
     activeConfiguration <- as.integer(status[17L, ])
     # Decode the orientation from bits 25-27 in 0-offset notation, i.e. 26-28 here.
