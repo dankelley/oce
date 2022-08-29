@@ -18,7 +18,7 @@ if (file.exists(file)) {
                 expect_warning(
                     d <- read.oce(file),
                     "using to=1477 based on file contents"),
-                "'plan' defaulting to 0")
+                "setting plan=0, the most common value in this file")
             expect_equal(
                 head(d@data$burstAltimeterRaw$altimeterRaw$distance),
                 c(40.024, 40.048, 40.072, 40.096, 40.12, 40.144))
@@ -35,7 +35,7 @@ if (file.exists(file)) {
                 expect_warning(
                     d <- read.oce(file),
                     "using to=1477 based on file contents"),
-                "'plan' defaulting to 0")
+                "setting plan=0, the most common value in this file")
             # Identifiers
             expect_equal(d[["type"]], "Signature250")
             expect_equal(d[["fileType"]], "AD2CP")

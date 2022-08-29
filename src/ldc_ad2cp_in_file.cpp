@@ -329,7 +329,7 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, IntegerVector from, IntegerV
       }
     }
     if (found == 0)
-      Rprintf("warning : ldc_ad2cp_in_file() skipping undocumented header.id=0x%02x=%d at cindex=%ld header_size=0x%02x=%d family=0x%02x data_size=%d\n",
+      Rprintf("Warning: ldc_ad2cp_in_file(), skipping undocumented header.id=0x%02x=%d at cindex=%ld header_size=0x%02x=%d family=0x%02x data_size=%d\n",
           header.id, header.id, cindex,
           header.header_size, header.header_size, header.family,
           header.data_size);
@@ -349,7 +349,7 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, IntegerVector from, IntegerV
     bytes_read = fread(dbuf, 1, header.data_size, fp);
     // Check that we got all the data
     if (bytes_read != header.data_size) {
-      Rprintf("warning : ldc_ad2cp_in_file() EOF before end of chunk %ld at cindex=%ld\n",
+      Rprintf("Warning: in ldc_ad2cp_in_file(), EOF before end of chunk %ld at cindex=%ld\n",
           chunk+1, cindex-header.header_size);
       break; // give up
     }

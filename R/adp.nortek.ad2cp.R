@@ -553,7 +553,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
         stop("must have from=1")
     if (to == 0) {
         to <- 1e9                      # this should be enough to read any file
-        oceDebug(debug, "'to' not given; defaulting to ", to, " so we will likely get to the end of the file\n")
+        oceDebug(debug, "In read.adp.ad2cp() : 'to' not given; defaulting to ", to, " so we will likely get to the end of the file\n", call.=FALSE)
     }
     if (is.character(file)) {
         filename <- fullFilename(file)
@@ -622,7 +622,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
     oceDebug(debug, vectorShow(length(d$index)))
     Nmax <- length(d$index)
     if (to > Nmax) {
-        warning("using to=", Nmax, " based on file contents")
+        warning("In read.adp.ad2cp() : using to=", Nmax, " based on file contents", call.=FALSE)
         to <- Nmax
     }
     focusIndex <- seq(from, to, by=by)
@@ -679,7 +679,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
     echosounderChunks <- which(d$id == 0x1c)
     if (length(echosounderChunks)) {
         if (any(blankingDistanceInCm[echosounderChunks])) {
-            warning("changing blankingDistanceInCm from TRUE to FALSE for echosounder chunks, correcting an error noted by Nortek in correspondence dated 2022-08-29")
+            warning("In read.adp.ad2cp() : setting blankingDistanceInCm to FALSE for echosounder to handle an error noted by Nortek on 2022-08-29", call.=FALSE)
             if (debug > 0) {
                 df <- data.frame(id=paste0("0x", as.raw(d$id)),
                     blankingDistanceInCmOriginal=blankingDistanceInCm)
@@ -723,13 +723,13 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
         nu <- length(u)
         if (nu == 1) {
             plan <- activeConfiguration[1]
-            warning("'plan' defaulting to ", plan, ", the only value in the file")
+            warning("In read.adp.ad2cp() : setting plan=", plan, ", the only value in the file", call.=FALSE)
         } else {
             plan <- u[which.max(unlist(lapply(u,function(x)sum(activeConfiguration==x))))]
             acTable <- table(activeConfiguration)
-            warning("'plan' defaulting to ", plan,
-                ", most common value in file (",
-                paste(names(acTable)," occurs ",unname(acTable)," time[s]", sep="",collapse="; "), ")")
+            warning("In read.adp.ad2cp() : setting plan=", plan,
+                ", the most common value in this file (",
+                paste(names(acTable)," occurs ",unname(acTable)," time[s]", sep="",collapse="; "), ")\n", call.=FALSE)
         }
     }
     # Try to find a header, as the first record-type that has id=0xa0.
@@ -1890,9 +1890,9 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
             # BOOKMARK-blankingDistance-2 (see also BOOKMARK-blankingDistance-1, above)
             BD <- ad2cpHeaderValue(header, "GETECHO", "BD")
             if (data$echosounder$blankingDistance != BD) {
-                warning("inferred echosounder$blankingDistance (", data$echosounder$blankingDistance,
+                warning("In read.adp.ad2cp() : inferred echosounder$blankingDistance (", data$echosounder$blankingDistance,
                     "m) does not match the header GETECHO value (", BD,
-                    "m); the latter value was used")
+                    "m); the latter value was used\n", call.=FALSE)
                 data$echosounder$blankingDistance <- BD
                 data$echosounder$distance <- BD + seq(1, by=data$echosounder$cellSize, length.out=data$echosounder$numberOfCells)
             }
@@ -1905,7 +1905,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
     # Nortek) that the idea is to use the cellSize in the (now possibly updated)
     if (2L == sum(c("echosounder", "echosounderRaw") %in% names(data))) {
         if ("blankingDistance" %in% names(data$echosounder) && "startSampleIndex" %in% names(data$echosounderRaw)) {
-            message("computing echosounderRaw$distance as indicated by Nortek on 2022-08-28")
+            message("read.adp.ad2cp() : computing echosounderRaw$distance as indicated by Nortek on 2022-08-28")
             data$echosounderRaw$cellsize <- data$echosounder$blankingDistance / data$echosounderRaw$startSampleIndex
             data$echosounderRaw$distance <- seq(0, by=
 data$echosounderRaw$cellsize, length.out=data$echosounderRaw$numberOfSamples)

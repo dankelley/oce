@@ -10,12 +10,21 @@ library(oce)
 #
 # 1. The first test file (creating object d1) is checked against results
 # from a Matlab non-public script, as well as against some values inferred
-# from the header.  (There is a fair amount of guessing on tests against
+# from the header.  There is a fair amount of guessing on tests against
 # the header, since the main code of read.adp.ad2cp() focusses on the
 # binary data, and so most of the study, so far, has been of the
 # documentation for those data.
 #
-# 2. Note that the files cover the two cases of blankingDistance, which
+# 2. blankingDistance is tricky, and requires discussion.  In the next numbered
+# paragraph are my notes prior to 2022-08-29.  But on that date, I learned
+# that the Nortek software has a bug for echosounder type (0x1c), in that the
+# value of what I call blankingDistanceInCm is *incorrect*, and is (I think)
+# always FALSE.  I guess the software will change at some point but then
+# old files will still be wrong.  I decided to just take Nortek at its word
+# and assume that echosounder=0x1c will *always* report blankingDistance
+# in mm.  Still, I am retaining the next paragraph because it might be useful.
+#
+#' 3. (read 2 first!) Note that the files cover 2 cases of blankingDistance, which
 # can be in cm units in the file, or in mm units. The mm unit had to be
 # inferred by inspection of the file headers, since the Nortek
 # documentation is not clear; reference 1 table 6.1.2 on page 49
@@ -50,8 +59,8 @@ if (file.exists(f1)) {
             expect_warning(expect_warning(
                     dd <- read.oce(f1, which="average"),
                     "using to=100 based on file contents"),
-                "'plan' defaulting to 0")
-    expect_equal(N, length(dd@data$average$time))
+                "setting plan=0")
+            expect_equal(N, length(dd@data$average$time))
         })
 
     test_that("read.adp.ad2cp() on a private AD2CP file that has 'average' and 'burst' data",
@@ -61,7 +70,7 @@ if (file.exists(f1)) {
             expect_error(read.adp.ad2cp(f1, 1, 100, 1, plan=10),
                 "there are no data for plan=10; try one of the following values instead: 1 0")
             expect_warning(d1 <- read.adp.ad2cp(f1, 1, 100, 1),
-                "'plan' defaulting to 0,")
+                "setting plan=0, the most common value in this file")
             nnn <- c("average", "burst", "interleavedBurst")
             expect_equal(c(TRUE, TRUE, FALSE), nnn %in% names(d1@data))
             expect_equal(sort(names(d1[["burst"]])),
@@ -310,12 +319,12 @@ if (file.exists(f2)) {
     skip_on_cran()
     test_that("read.adp() on a private AD2CP file that has only 'burst' data",
         {
-            N <- 99L                       # known value for subset of a larger file
+            N <- 99                       # known value for subset of a larger file
             expect_equal(N, read.oce(f2, which="?")[[1]])
             # Note: using read.adp() to ensure that it also works
             expect_warning(
                 expect_warning(d2 <- read.adp(f2, from=1, to=N, by=1),
-                    "'plan' defaulting to 0"),
+                    "setting plan=0, the only value in the file"),
                 "ignoring 'despike'")
             nnn <- c("average", "burst", "interleavedBurst")
             expect_equal(c(FALSE, TRUE, FALSE), nnn %in% names(d2@data))
@@ -353,7 +362,7 @@ if (file.exists(f3)) {
             N <- 100
             ## Note: using read.oce() to ensure that it also works
             expect_warning(d3 <- read.oce(f3, from=1, to=N, by=1),
-                "'plan' defaulting to 1")
+                "setting plan=1, the only value in the file")
             ## subsetting
             nnn <- c("average", "burst", "interleavedBurst")
             expect_equal(c(FALSE, TRUE, TRUE), nnn %in% names(d3@data))

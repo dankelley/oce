@@ -22,8 +22,8 @@ if (file.exists(file)) {
                             expect_warning(
                                 d <- read.oce(file),
                                 "using to=12"),
-                            "changing blankingDistanceInCm"),
-                        "'plan' defaulting to 0"),
+                            "setting blankingDistanceInCm"),
+                        "setting plan=0, the most common value in this file"),
                     "computing echosounderRaw"),
                 "EOF before end of chunk")
             # Identifiers
@@ -44,11 +44,13 @@ if (file.exists(file)) {
             # Beams and cells
             expect_equal(d[["average"]]$oceCoordinate, "enu")
             expect_equal(d[["average"]]$cellSize, 10)
-            expect_equal(d[["echosounder"]]$cellSize, 0.75)
             expect_equal(d[["average"]]$blankingDistance, 2)
             expect_equal(d[["average"]]$numberOfBeams, 4)
             expect_equal(d[["average"]]$numberOfCells, 32)
             expect_equal(d[["echosounder"]]$numberOfCells, 438)
+            expect_equal(d[["echosounder"]]$cellSize, 0.75)
+            expect_equal(d[["echosounder"]]$blankingDistance, 2.0)
+            expect_equal(head(d[["echosounder"]]$distance, 3), c(2.0, 2.75, 3.50))
 
             # v[1,,1] values from the IMOS toolbox; see
             # https://github.com/dankelley/oce/issues/1975#issuecomment-1180403719)
