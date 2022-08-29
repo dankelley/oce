@@ -58,6 +58,9 @@ library(oce) # github.com/dankelley/oce "develop" branch
 file <- "~/Dropbox/oce_secret_data/ad2cp/s100_truncated.ad2cp"
 if (file.exists(file)) {
     d <- read.oce(file)
+    with(d@data$echosounder,
+        imagep(time, distance, log10(abs(echosounder)), quiet=TRUE,
+            ylab=resizableLabel("distance")))
     with(d@data$echosounderRaw,
         imagep(time, distance, log10(Mod(samples)), quiet=TRUE,
             ylab=resizableLabel("distance")))
