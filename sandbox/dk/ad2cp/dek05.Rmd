@@ -1,0 +1,228 @@
+---
+title: Notes on reading AD2CP 0x23 (echosounderRaw) data chunks
+author: Dan Kelley
+date: "`r Sys.Date()`"
+---
+
+**Abstract.** This is a diary of Dan Kelley's work, trying to add support for
+the 0x23 (raw echosounder) AD2CP data type to the oce R package. To make things
+concrete, I am showing my (R) code; even somebody not familiar with R ought to
+get the gist.
+
+```{r echo=FALSE}
+knitr::opts_chunk$set(dev="png", dev.args=list(type="cairo-png"))
+```
+
+## Update 2022-08-29
+
+I've learned that what I call `blankingDistanceInCm` is incorrectly stored in
+AD2CP files. In fact, it is always FALSE (i.e. the factor is 1e-3, not 1e-2).
+This is detected in `read.adp.ad2cp()` now, and a warning is issued if the
+value stored in the file does not yield FALSE.  With this scheme, the warning
+will not appear when Nortek updates their systems and folks generate files with
+the newer system.
+
+
+## Prior to 2022-08-22
+
+A document I received from Nortek in August of 2022 led me to believe that the
+data were stored as pairs of `float32` entries^[Actually, the documentation
+just says `float` but the entries are 8 bytes long, so I am assuming
+`float32`.], with the first entry of each pair being echosounder amplitude, and
+the second being echosounder quality.
+
+However, this assumption yields some very odd results (lots of NA values, lots
+of values that make no sense, like exponents in the 20s for quality).  I
+communicated again, and was very please to get a quick and detailed reply
+suggesting another format (see next).
+
+## 2022-08-22
+
+I am basing this on the contents of a Nortek email dated 22 Aug 2022
+21:33:03.7921 (UTC).  I do not know how private that was, so I will not quote
+from it in this document, nor name the sender.
+
+The email told me that the data that oce calls `echosounderRaw` come in pairs
+that represent complex numbers, with a `frac32` value for the real part and
+then a `frac32` value for the imaginary part.
+
+So, my next task was to learn what a `frac32` number is, since I have not come
+across this notation.  I learned that it is used in the audio industry, so that
+makes some sense in this context.
+
+But, since I will need to make R/oce decode this format -- it's not a standard
+C thing -- I will start by exploring the data in a step-by-step fashion.
+
+We start by reading the extract file that Nortek sent me.  (This is the first
+0x23 entry from a file I sent them.)
+
+```{r}
+library("testthat")                    # used for 'expect' functions
+file <- "a5.0c.23.10.EchosounderRaw.101135.hex"
+filesize <- file.info(file)$size
+buf <- readBin(file, "raw", filesize)
+expect_equal(buf[1], as.raw(0xa5))     # check that this starts a record
+headerLength <- as.integer(buf[2])
+expect_equal(headerLength, 12)         # check that header holds 12 bytes
+type <- buf[3]
+expect_equal(type, as.raw(0x23))       # check that it is 0x23
+```
+
+Good. The fact that no error messages are reported indicates that the first 3
+bytes of the header make sense.  We may proceed to s extract the header and the
+data sections, and to check the `offsetOfData` against what I know to be true
+(from inspection of the header that is contained in the longer, original file).
+
+```{r}
+header <- buf[1:12]
+data <- buf[13:filesize]
+expect_equal(data[1], as.raw(0x01))    # Version must be 1
+offsetOfData <- as.integer(data[2])
+expect_equal(offsetOfData, 240)        # for this particular file, anyway
+```
+
+With these preliminaries over, we may proceed to check whether the data,
+starting at `offsetOfData`, look like frac32 entries.
+
+I have not found it easy to locate a definition of `frac32` data types, but at
+https://code.ihub.org.cn/projects/729/repository/revisions/master/entry/modules/core/src/softfloat.cpp
+I found a C macro
+```
+define fracF32UI( a ) ((a) & 0x007FFFFF)
+```
+(I found similar macros at other websites.)
+
+I think this is intended to convert a 32-bit entry into a `frac32`.  Why do I
+think that?  Well, in IEEE-754, the first bit indicates sign, and the next 8
+bits indicate exponent, with the remaining 23 bits being the fraction. Since
+the masking operation given above sets the first 9 bits to zero, it does appear
+to be a way to extract the fractional part from a 32-bit floating-point number
+(if in IEEE-754 format).  If the reader is not familiar with reading hex as
+bits, the following shows the bit structure of 0x00 and then 0x7F
+```{r}
+paste(rev(ifelse(1==rawToBits(as.raw(0x00)),1,0)),collapse="")
+paste(rev(ifelse(1==rawToBits(as.raw(0x7F)),1,0)),collapse="")
+```
+
+Now, I still have things to determine, the most important of which regards
+sign.  I am given to understand that the values can range from (roughly) -1 to
++1, so sign must be stored somewhere. If so, it might be stored as the first
+bit.  Or, I suppose, it might be stored within the fractional part (that is, it
+might be interpreted as an integer with a sign bit).
+
+To make serious progress, I need to learn more from Nortek about this format.
+However, I will explore a bit more, in the mean-time.
+
+First, we extract the measurements.
+```{r}
+echosounder <- data[seq(offsetOfData+1, length(data))]
+```
+From other work (including reading the header from the file from which this
+extract-data was derived) I know that there ought to be 1974 8-byte chunks in
+`echosounder`, so we test on that before proceeding.
+```{r}
+expect_equal(length(echosounder)/8, 1974)
+```
+
+Good.  I have some confidence in having extracted the data, without
+off-by-one-byte errors.
+
+Now, if the data are in `frac32` format, then the first byte in each 4-byte
+chunk ought to be 0x00 (that will be the result of masking, as above).  Well,
+is that the case?  As a first guess, we try
+```{r}
+sum(echosounder==as.raw(0x00)) / length(echosounder)
+```
+and the result is a bit over 1/4, which is at least some confirmation.  But
+a better test will be to look at the actual data.
+
+To make it clearer, I'll make a table in 8 columns, so that column 1 through 4
+will correspond to the real part, and columns 5 through 8 will correspond to
+the imaginary part.
+
+```{r}
+m <- matrix(echosounder, byrow=TRUE, ncol=8)
+head(m, 30)
+```
+
+This is unexpected.  If these were `frac32` data, with zero exponents, then
+there should only be two possibilities for column 1, 0x00 (bits 00000000) and
+0x80 (bits 10000000).  The same should be true of column 5. However, both
+columns 1 and 5 have a multiplicity of values.
+
+Although this is clutching at straws, I *do* see some patterns in the data,
+e.g. columns 3 and 4, and also 7 and 8, fall into repeating patterns. But I did
+not acquire these data myself, so I don't know what to make of these patterns.
+
+**A question for Nortek**
+
+My reading of the data suggests that they are not actually in `frac32` format.
+We knew that from initial tests (reading as `float32` yield many values with very
+large exponents, which is inconsistent with zero exponent, of course).
+
+**Question for Nortek:** Are the data stored in `float32` that ought to be
+converted to `frac32` prior to use?  (In other words, is the idea that those
+nonzero exponents are to be discarded?)
+
+**Comment to Nortek:** The data-format story has been evolving in the past few
+weeks, and I really appreciate your patience in helping me to understand the
+format, so that R users can work with their data within a familiar analysis
+environment.
+
+
+## 2022-08-23
+
+A Nortek email dated 23 Aug 2022 09:00:00.5182 (UTC) tells me that the idea is
+to read as 32-bit signed integer, then convert to signed 32-bit float, then
+divide by 2^31.  Oce now does that (commit
+daaddc05ba8a85cb65b44a39e9d2c70ba0aa696a of the"develop" branch on
+github.com/dankelley/oce), and below is what it yields (please ignore the
+debugging output from `read.oce()`, which is temporary).
+
+The numbers do not tell me much, since I have no independent way to read the
+data, but at least the plot seems to suggest that the data are not fully random.
+
+
+```{r}
+library(oce) # github.com/dankelley/oce "develop" branch
+fn <- "a5.0c.23.10.EchosounderRaw.101135.hex"
+dn <- read.oce(fn)
+mod <- Mod(dn@data$echosounderRaw$samples)
+mod[1, 1:10]
+par(mfrow=c(2,2))
+plot(mod[1,], type="s")
+plot(log10(mod[1,]), type="s")
+# perhaps a plot will be useful to summarize
+hist(log10(mod), breaks=1000, main="")
+imagep(log10(mod))
+```
+
+Although I did not acquire these results myself, the plots have a character
+that is suggestive of echosounder data, so I think we are on the right track.
+
+**Question for Nortek:** Does the above seem reasonable to you? Do you get the
+same values for the first few real and imaginary values?
+
+**Comment to Nortek:** Things are starting to look good to me, and I have to
+thank you for this!
+
+## Addendum (a longer private file)
+
+The results shown below look reasonable, I think.  Note that I have not stored
+time and distance into `@data$echosounderRaw` yet ... my first task was to read
+the data, which has proved tricky, owing to the fact that Nortek documents are
+still being written for this data type.
+
+```{r}
+library(oce) # github.com/dankelley/oce "develop" branch
+file <- "~/Dropbox/oce_secret_data/ad2cp/s100_truncated.ad2cp"
+if (file.exists(file)) {
+    d <- read.oce(file)
+    imagep(log10(Mod(d@data$echosounderRaw$samples)), quiet=TRUE)
+    with(d@data$echosounderRaw,
+        imagep(time, distance, log10(Mod(samples)), quiet=TRUE,
+            ylab=resizableLabel("distance")))
+}
+```
+
+

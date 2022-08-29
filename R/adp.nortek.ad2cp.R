@@ -281,7 +281,7 @@ ad2cpCodeToName <- function(code=NULL, removePrefix=FALSE)
 #'
 #' This function reads Nortek AD2CP files, storing data elements in lists within
 #' the `data` slot.  Those elements are named for the ID type in question.  For
-#' example, data with ID code `0x16` are stored in `x@data$average`, if `x` is
+#' example, data with ID code `0x16` are stored in `d@data$average`, if `d` is
 #' the value returned by this function. See [ad2cpCodeToName()] for the mapping
 #' between ID hexadecimal code and storage name.  By default, [read.adp.ad2cp()]
 #' reads all ID codes that are in the file, but the `which` argument permits a
@@ -295,8 +295,13 @@ ad2cpCodeToName <- function(code=NULL, removePrefix=FALSE)
 #' contradictions in these manuals, owing partly to evolution of the data
 #' format. These things posed a challenge in the writing of [read.adp.ad2cp()].
 #' Thankfully, personnel in Nortek technical support team were able to supply
-#' the help that was needed. Without this support, this function would be
-#' significantly limited in what it can read.
+#' the help that was needed. Lacking this, [read.adp.ad2cp()] would be
+#' significantly limited, both in what it can read and in the accuracy
+#' of the results.
+#'
+#' Comments in the code, along with some warnings and messages that may be
+#' issued during processing, are used to highlight some areas that may need
+#' attention in revisions to this function.
 #'
 ## Early in the year 2022, support was added for 12-byte headers. Until
 ## August 2022, this support was provisional and the results were unlikely
@@ -605,8 +610,10 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
     #            start=nav$start+1,     # nav$start is in zero-indexed C notation
     #            offsetOfData=as.integer(buf[nav$index+2L])))
     }
-    if (any(nav$headerLength == 12L))
-        warning("file has 12-byte headers (an undocumented format), so be on the lookout for spurious results")
+    # 2022-08-29 I don't think we need this anymore.  We're doing lots of things
+    # that are not fully documented, lately :-)
+    #> if (any(nav$headerLength == 12L))
+    #>     warning("file has 12-byte headers (an undocumented format), so be on the lookout for spurious results")
     d <- list(buf=buf, index=nav$index, headerLength=nav$headerLength, dataLength=nav$dataLength, id=nav$id)
     #message("next is str(d) L592");cat(str(d))
     #WHY browser()
@@ -659,9 +666,32 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
     status <- intToBits(readBin(d$buf[pointer4 + 69L], "integer", size=4L, n=N, endian="little"))
     dim(status) <- c(32L, N)
     # Interpret status, but note that items will be subsetted later (see 'keep')
-    # Bit 1 in the Nortek (2022 table 6.3 page 85) zero-based notation is index 2 in R.
+    #
+    # Reader blankingDistanceInCm.  This is bit 1 in the Nortek (2022 table 6.3
+    # page 85) zero-based notation is index 2 in R.
+    #
+    # NOTE: 2022-08-29 Nortek informs me that the blankingDistance is *always*
+    # in mm, for echosounder=0x1c data, so we alter that here. Nortek considers
+    # this a bug, and has plans to alter how this works, but we issue a warning
+    # here to let the user know that their dataset is (in this one set of bits)
+    # faulty.
     blankingDistanceInCm <- as.integer(status[2L,])
-    # Bit 16 in Nortek (zer-based) notation is bit 17 here.
+    echosounderChunks <- which(d$id == 0x1c)
+    if (length(echosounderChunks)) {
+        if (any(blankingDistanceInCm[echosounderChunks])) {
+            warning("changing blankingDistanceInCm from TRUE to FALSE for echosounder chunks, correcting an error noted by Nortek in correspondence dated 2022-08-29")
+            if (debug > 0) {
+                df <- data.frame(id=paste0("0x", as.raw(d$id)),
+                    blankingDistanceInCmOriginal=blankingDistanceInCm)
+            }
+            blankingDistanceInCm[echosounderChunks] <- FALSE
+            if (debug > 0) {
+                df$blankingDistanceInCmUpdated <- blankingDistanceInCm
+                print(df)
+            }
+        }
+    }
+    # Bit 16 in Nortek (zer0-based) notation is bit 17 here.
     # count from 0, so it is bit 17 here.
     activeConfiguration <- as.integer(status[17L, ])
     # Decode the orientation from bits 25-27 in 0-offset notation, i.e. 26-28 here.
@@ -881,7 +911,15 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
 
     # cell size is recorded in mm [1, table 6.1.2, page 49]
     cellSize <- 0.001 * readBin(d$buf[pointer2 + 33], "integer", size=2, n=N, signed=FALSE, endian="little")
-    # BOOKMARK-blankingDistance-1 (see also BOOKMARK-blankingDistance-2, below)
+    # BOOKMARK-blankingDistance-1 (see also BOOKMARK-blankingDistance-2 and -3, below)
+    #
+    # Update 2022-08-29 Nortek informs me that the factor is always 1e-3
+    # for echosounder data, and that the factor stored here ought to be
+    # ignored until they fix the bug. Since the code in this block is not yet
+    # cognizant of the data type, we just read it, and change it to 1e-3 later
+    # on (BOOKMARK-blankingDistance-3 below) later, for echosounderRaw data
+    # only.
+    #
     # Nortek (2017 table 6.1.2 page 49) indicates that blanking distance is
     # recorded in cm but Nortek (2022 section 6.4 page 85) says it is in either
     # cm or mm, depending on an element in status (bit 1 in notation of Nortek
@@ -1775,7 +1813,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
             temperatureRTC=temperatureRTC[look],
             transmitEnergy=transmitEnergy[look],
             powerLevel=powerLevel[look])
-        rval$distance <- rval$blankingDistance + seq(1, by=rval$cellSize, length.out=rval$numberOfCells)
+        rval$distance <- rval$blankingDistance + seq(0, by=rval$cellSize, length.out=rval$numberOfCells)
         i <- d$index[look]            # pointers to "average" chunks in buf
         oceDebug(debug, "in readEchosounder: ", vectorShow(i))
 
@@ -1843,6 +1881,9 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
     if ("echosounderRaw" %in% which && length(p$echosounderRaw) > 0) # 0x23
         data$echosounderRaw <- readEchosounderRaw(id=as.raw(0x23), debug=debug)
 
+
+
+
     # Use header as the final word, if it contradicts what we inferred above.
     if (!is.null(header)) {
         if ("echosounder" %in% names(data)) {
@@ -1861,16 +1902,29 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
     # the answer involves the blankingDistance.  But, in my sample file at
     # tests/testthat/local_data/ad2cp/ad2cp_01.ad2cp, the cellSize for
     # echosounderRaw is 0, and so I'm guessing (pending more information from
-    # Notek) that the idea is to use the cellSize in the (now possibly updated)
+    # Nortek) that the idea is to use the cellSize in the (now possibly updated)
     if (2L == sum(c("echosounder", "echosounderRaw") %in% names(data))) {
         if ("blankingDistance" %in% names(data$echosounder) && "startSampleIndex" %in% names(data$echosounderRaw)) {
-            message("computing echosounderRaw$distance using formula from private communication with Nortek dated 2022-08-28")
+            message("computing echosounderRaw$distance as indicated by Nortek on 2022-08-28")
             data$echosounderRaw$cellsize <- data$echosounder$blankingDistance / data$echosounderRaw$startSampleIndex
             data$echosounderRaw$distance <- seq(0, by=
 data$echosounderRaw$cellsize, length.out=data$echosounderRaw$numberOfSamples)
         }
     }
-
+    # 2022-08-29 BOOKMARK-blankingDistance-03
+    # I am informed by Nortek that the blankingDistance is always 1e-3 for
+    # echosounderRaw data.  So, we set that (and issue a warning so that users
+    # will know about this alteration) and then compute a distance vector for
+    # possible later use.
+    #| if (2L == sum(c("echosounder", "echosounderRaw") %in% names(data))) {
+    #|     if ("blankingDistance" %in% names(data$echosounder) && "startSampleIndex" %in% names(data$echosounderRaw)) {
+    #|         message("computing echosounderRaw$distance using formula from private communication with Nortek dated 2022-08-28")
+    #|         data$echosounderRaw$cellsize <- data$echosounder$blankingDistance / data$echosounderRaw$startSampleIndex
+    #|         data$echosounderRaw$distance <- seq(0, by=
+data#| $echosounderRaw$cellsize, length.out=data$echosounderRaw$numberOfSamples)
+    #|     }
+    #| }
+ 
     # Insert metadata
     #res@metadata$id <- id
     res@metadata$filename <- filename

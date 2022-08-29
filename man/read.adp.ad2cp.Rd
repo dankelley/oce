@@ -108,7 +108,7 @@ character (if \code{which="text"}).
 \description{
 This function reads Nortek AD2CP files, storing data elements in lists within
 the \code{data} slot.  Those elements are named for the ID type in question.  For
-example, data with ID code \code{0x16} are stored in \code{x@data$average}, if \code{x} is
+example, data with ID code \code{0x16} are stored in \code{d@data$average}, if \code{d} is
 the value returned by this function. See \code{\link[=ad2cpCodeToName]{ad2cpCodeToName()}} for the mapping
 between ID hexadecimal code and storage name.  By default, \code{\link[=read.adp.ad2cp]{read.adp.ad2cp()}}
 reads all ID codes that are in the file, but the \code{which} argument permits a
@@ -123,8 +123,13 @@ manual (see \dQuote{References}). However, there are some gaps and
 contradictions in these manuals, owing partly to evolution of the data
 format. These things posed a challenge in the writing of \code{\link[=read.adp.ad2cp]{read.adp.ad2cp()}}.
 Thankfully, personnel in Nortek technical support team were able to supply
-the help that was needed. Without this support, this function would be
-significantly limited in what it can read.
+the help that was needed. Lacking this, \code{\link[=read.adp.ad2cp]{read.adp.ad2cp()}} would be
+significantly limited, both in what it can read and in the accuracy
+of the results.
+
+Comments in the code, along with some warnings and messages that may be
+issued during processing, are used to highlight some areas that may need
+attention in revisions to this function.
 }
 \examples{
 # You can run this within the oce directory, if you clone from github.
