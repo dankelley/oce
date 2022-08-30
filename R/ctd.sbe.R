@@ -22,7 +22,7 @@
 #' The table given below indicates the translation patterns used. These are
 #' taken from reference 1. The `.cnv` convention for multiple sensors is to
 #' include optional extra digits in the name, and these are indicated
-#' with `~` in the table; their decoding is done with [grep()].
+#' with `~` or `~~` in the table; their decoding is done with [grep()].
 #'
 #' It is important to note that this table is by no means complete, since there
 #' are a great many SBE names listed in their document (reference 1), plus names
@@ -44,146 +44,145 @@
 #' variants.)
 #'
 #' \tabular{llll}{
-#'   **Key**       \tab **Result**                     \tab **Unit;scale**      \tab **Notes** \cr
-#'   `alt`         \tab `altimeter`                    \tab m                   \tab    \cr
-#'   `altM`        \tab `altimeter`                    \tab m                   \tab    \cr
-#'   `accM`        \tab `acceleration`                 \tab m/s^2               \tab    \cr
-#'   `bat~`        \tab `beamAttenuation`              \tab 1/m                 \tab    \cr
-#'   `C2-C1S/m`    \tab `conductivityDifference`       \tab S/m                 \tab    \cr
-#'   `C2-C1mS/cm`  \tab `conductivityDifference`       \tab mS/cm               \tab    \cr
-#'   `C2-C1uS/cm`  \tab `conductivityDifference`       \tab uS/cm               \tab    \cr
-#'   `c~mS/cm`     \tab `conductivity`                 \tab mS/cm               \tab    \cr
-#'   `cond~mS/cm`  \tab `conductivity`                 \tab mS/cm               \tab    \cr
-#'   `c~S/m`       \tab `conductivity`                 \tab S/m                 \tab    \cr
-#'   `cond~S/m`    \tab `conductivity`                 \tab S/m                 \tab    \cr
-#'   `c~uS/cm`     \tab `conductivity`                 \tab uS/cm               \tab    \cr
-#'   `cond~uS/cm`  \tab `conductivity`                 \tab uS/cm               \tab    \cr
-#'   `CStarAt~`    \tab `beamAttenuation`              \tab 1/m                 \tab    \cr
-#'   `CStarTr~`    \tab `beamTransmission`             \tab percent             \tab    \cr
-#'   `density~~`   \tab `density`                      \tab kg/m^3              \tab    \cr
-#'   `depS`        \tab `depth`                        \tab m                   \tab    \cr
-#'   `depSM`       \tab `depth`                        \tab m                   \tab    \cr
-#'   `depF`        \tab `depth`                        \tab m                   \tab    \cr
-#'   `depFM`       \tab `depth`                        \tab m                   \tab    \cr
-#'   `dz/dtM`      \tab `descentRate`                  \tab m/s                 \tab    \cr
-#'   `f~`          \tab `frequency`                    \tab Hz                  \tab    \cr
-#'   `f~~`         \tab `frequency`                    \tab Hz                  \tab    \cr
-#'   `flC~`        \tab `fluorescence`                 \tab ug/l; Chelsea Aqua 3\tab    \cr
-#'   `flCM`        \tab `fluorescence`                 \tab ug/l; Chelsea Mini Chl Con\tab\cr
-#'   `flCUVA~`     \tab `fluorescence`                 \tab ug/l; Chelsea UV Aquatracka\tab\cr
-#'   `flEC-AFL~`   \tab `fluorescence`                 \tab mg/m^3; WET Labs ECO-AFL/FLtab\cr
-#'   `flS`         \tab `fluorescence`                 \tab -; Seatech          \tab    \cr
-#'   `flScufa~`    \tab `fluorescence`                 \tab -; Turner SCUFA (RFU)\tab\cr
-#'   `flSP`        \tab `fluorescence`                 \tab -; Seapoint         \tab    \cr
-#'   `flSPR`       \tab `fluorescence`                 \tab -; Seapoint, Rhodamine\tab  \cr
-#'   `flSPuv`      \tab `fluorescence`                 \tab -; Seapoint, UV      \tab   \cr
-#'   `flT`         \tab `fluorescence`                 \tab -; Turner 10-005 flT\tab   \cr
-#'   `gpa`         \tab `geopotentialAnomaly`          \tab -; J/kg              \tab   \cr
-#'   `latitude`    \tab `latitude`                     \tab degN                 \tab   \cr
-#'   `longitude`   \tab `longitude`                    \tab degE                 \tab   \cr
-#'   `n2satML/L`   \tab `nitrogenSaturation`           \tab ml/l                 \tab   \cr
-#'   `n2satMg/L`   \tab `nitrogenSaturation`           \tab mg/l                 \tab   \cr
-#'   `n2satumol/kg`\tab `nitrogenSaturation`           \tab umol/kg              \tab   \cr
-#'   `nbin`        \tab `nbin`                         \tab                      \tab   \cr
-#'   `obsscufa~`   \tab `backscatter`                  \tab NTU; Turner SCUFA    \tab   \cr
-#'   `opoxMg/L`    \tab `oxygen`                       \tab mg/l; Optode, Aanderaa\tab   \cr
-#'   `opoxML/L`    \tab `oxygen`                       \tab ml/l; Optode, Aanderaa\tab   \cr
-#'   `opoxMm/L`    \tab `oxygen`                       \tab umol/l; Optode, Aanderaa\tab \cr
-#'   `opoxPS`      \tab `oxygen`                       \tab percent; Optode, Aanderaa\tab   \cr
-#'   `oxsatML/L`   \tab `oxygen`                       \tab ml/l; Weiss          \tab   \cr
-#'   `oxsatMg/L`   \tab `oxygen`                       \tab mg/l; Weiss          \tab   \cr
-#'   `oxsatMm/Kg`  \tab `oxygen`                       \tab umol/kg; Weiss       \tab   \cr
-#'   `oxsolML/L`   \tab `oxygen`                       \tab ml/l; Garcia-Gordon  \tab   \cr
-#'   `oxsolMg/L`   \tab `oxygen`                       \tab mg/l; Garcia-Gordon  \tab   \cr
-#'   `oxsolMm/Kg`  \tab `oxygen`                       \tab umol/kg; Garcia-Gordon\tab  \cr
-#'   `par~`        \tab `PAR`                          \tab -; Biospherical/Licor\tab   \cr
-#'   `par/log`     \tab `PAR`                          \tab log; Satlantic       \tab   \cr
-#'   `ph`          \tab `pH`                           \tab -                    \tab   \cr
-#'   `potemp~68C`  \tab `thetaM`                       \tab degC; IPTS-68        \tab   \cr
-#'   `potemp~90C`  \tab `thetaM`                       \tab degC; ITS-90         \tab   \cr
-#'   `pr`          \tab `pressure`                     \tab dbar                 \tab 1 \cr
-#'   `prM`         \tab `pressure`                     \tab dbar                 \tab   \cr
-#'   `pr50M`       \tab `pressure`                     \tab dbar; SBE50          \tab   \cr
-#'   `prSM`        \tab `pressure`                     \tab dbar                 \tab   \cr
-#'   `prDM`        \tab `pressure`                     \tab dbar; digiquartz     \tab   \cr
-#'   `prdE`        \tab `pressure`                     \tab psi; strain gauge    \tab 2 \cr
-#'   `prDE`        \tab `pressure`                     \tab psi; digiquartz      \tab 2 \cr
-#'   `prdM`        \tab `pressure`                     \tab dbar; strain gauge   \tab   \cr
-#'   `prSM`        \tab `pressure`                     \tab dbar; strain gauge   \tab   \cr
-#'   `ptempC`      \tab `pressureTemperature`          \tab degC; ITS-90         \tab 3 \cr
-#'   `pumps`       \tab `pumpStatus`                   \tab                      \tab   \cr
-#'   `rhodflTC~`   \tab `Rhodamine`                    \tab ppb; Turner Cyclops  \tab   \cr
-#'   `sal~~`       \tab `salinity`                     \tab -, PSS-78            \tab 4 \cr
-#'   `sbox~dV/dT`  \tab `oxygen`                       \tab dov/dt; SBE43        \tab   \cr
-#'   `sbeox~ML/L`  \tab `oxygen`                       \tab ml/l; SBE43          \tab   \cr
-#    `sbox~ML/L`   \tab `oxygen`                       \tab ml/l; SBE43          \tab   \cr
-#'   `sbeox~Mm/Kg` \tab `oxygen`                       \tab umol/kg; SBE43       \tab   \cr
-#'   `sbox~Mm/Kg`  \tab `oxygen`                       \tab umol/kg; SBE43       \tab   \cr
-#'   `sbeox~Mm/L`  \tab `oxygen`                       \tab umol/l; SBE43        \tab   \cr
-#'   `sbox~Mm/L`   \tab `oxygen`                       \tab umol/l; SBE43        \tab   \cr
-#'   `sbeox~PS`    \tab `oxygen`                       \tab percent; SBE43       \tab   \cr
-#'   `sbox~PS`     \tab `oxygen`                       \tab percent; SBE43       \tab   \cr
-#'   `sbeox~V`     \tab `oxygenRaw`                    \tab V; SBE43             \tab   \cr
-#'   `sbox~V`      \tab `oxygenRaw`                    \tab V; SBE43             \tab   \cr
-#'   `scan`        \tab `scan`                         \tab -                    \tab   \cr
-#'   `seaTurbMtr~` \tab `turbidity`                    \tab FTU; Seapoint        \tab   \cr
-#'   `secS-priS`   \tab `salinityDifference`           \tab -, PSS-78            \tab   \cr
-#'   `sigma-t`     \tab `sigmaT`                       \tab kg/m^3               \tab   \cr
-#'   `sigma-theta` \tab `sigmaTheta`                   \tab kg/m^3               \tab 5 \cr
-##   `sigma-é`     \tab `sigmaTheta`                   \tab kg/m^3               \tab 5 \cr
-#'   \code{sigma-}\enc{é}{e} \tab `sigmaTheta`         \tab kg/m^3               \tab 5 \cr
-#'   `spar`        \tab `spar`                         \tab -                    \tab   \cr
-#'   `specc`       \tab `conductivity`                 \tab uS/cm                \tab   \cr
-#'   `sva`         \tab `specificVolumeAnomaly`        \tab 1e-8 m^3/kg;         \tab   \cr
-#'   `svCM~`       \tab `soundSpeed`                   \tab m/s; Chen-Millero    \tab   \cr
-#'   `T2~68C`      \tab `temperatureDifference`        \tab degC; IPTS-68        \tab   \cr
-#'   `T2~90C`      \tab `temperatureDifference`        \tab degC; ITS-90         \tab   \cr
-#'   `t~68`        \tab `temperature`                  \tab degC; IPTS-68        \tab   \cr
-#'   `t~90`        \tab `temperature`                  \tab degC; ITS-90         \tab   \cr
-#'   `t~68`        \tab `temperature`                  \tab degC; IPTS-68        \tab   \cr
-#'   `t~68C`       \tab `temperature`                  \tab degC; IPTS-68        \tab   \cr
-#'   `t~90C`       \tab `temperature`                  \tab degC; ITS-90         \tab   \cr
-#'   `t090Cm`      \tab `temperature`                  \tab degC; ITS-90         \tab   \cr
-#'   `t4990C`      \tab `temperature`                  \tab degC; ITS-90         \tab   \cr
-#'   `tnc90C`      \tab `temperature`                  \tab degC; ITS-90         \tab   \cr
-#'   `tsa`         \tab `thermostericAnomaly`          \tab 1e-8 m^3/kg          \tab   \cr
-#'   `tv290C`      \tab `temperature`                  \tab degC; ITS-90         \tab   \cr
-#'   `t4968C`      \tab `temperature`                  \tab degC; IPTS-68        \tab   \cr
-#'   `tnc68C`      \tab `temperature`                  \tab degC; IPTS-68        \tab   \cr
-#'   `tv268C`      \tab `temperature`                  \tab degC; IPTS-68        \tab   \cr
-#'   `t190C`       \tab `temperature`                  \tab degC; ITS-90         \tab   \cr
-#'   `tnc290C`     \tab `temperature`                  \tab degC; ITS-90         \tab   \cr
-#'   `tnc268C`     \tab `temperature`                  \tab degC; IPTS-68        \tab   \cr
-#'   `t3890C~`     \tab `temperature`                  \tab degC; ITS-90         \tab   \cr
-#'   `t38~90C`     \tab `temperature`                  \tab degC; ITS-90         \tab   \cr
-#'   `t3868C~`     \tab `temperature`                  \tab degC; IPTS-68        \tab   \cr
-#'   `t38~38C`     \tab `temperature`                  \tab degC; IPTS-68        \tab   \cr
-#'   `timeH`       \tab `timeH`                        \tab hour; elapsed        \tab   \cr
-#'   `timeJ`       \tab `timeJ`                        \tab julian day           \tab   \cr
-#'   `timeJV2`     \tab `timeJV2`                      \tab julian day           \tab   \cr
-#'   `timeK`       \tab `timeK`                        \tab s; since Jan 1, 2000 \tab   \cr
-#'   `timeM`       \tab `timeM`                        \tab minute; elapsed      \tab   \cr
-#'   `timeN`       \tab `timeN`                        \tab s; NMEA since Jan 1, 1970\tab\cr
-#'   `timeQ`       \tab `timeQ`                        \tab s; NMEA since Jan 1, 2000\tab\cr
-#'   `timeS`       \tab `timeS`                        \tab s; elapsed           \tab   \cr
-#'   `turbflTC~`   \tab `turbidity`                    \tab NTU; Turner Cyclops  \tab   \cr
-#'   `turbflTCdiff`\tab `turbidityDifference`          \tab NTU; Turner Cyclops  \tab   \cr
-#'   `turbWETbb~`  \tab `turbidity`                    \tab 1/(m\*sr); WET Labs ECO\tab   \cr
-#'   `turbWETbbdiff`\tab `turbidityDifference`         \tab 1/(m\*sr); WET Labs ECO\tab   \cr
-#'   `turbWETntu~` \tab `turbidity`                    \tab NTU; WET Labs ECO    \tab   \cr
-#'   `turbWETntudiff`\tab `turbidityDifference`        \tab NTU; WET Labs ECO    \tab   \cr
-#'   `upoly~`      \tab `upoly`                        \tab -                    \tab   \cr
-#'   `user~`       \tab `user`                         \tab -                    \tab   \cr
-#'   `v~~`         \tab `voltage`                      \tab V                    \tab   \cr
-#'   `wetBAttn`    \tab `beamAttenuation`              \tab 1/m; WET Labs AC3    \tab   \cr
-#'   `wetBTrans`   \tab `beamTransmission`             \tab percent; WET Labs AC3\tab   \cr
-#'   `wetCDOM~`    \tab `fluorescence`                 \tab mg/m^3; WET Labs CDOM\tab   \cr
-#'   `wetCDOMdiff` \tab `fluorescenceDifference`       \tab mg/m^3; WET Labs CDOM\tab   \cr
-#'   `wetChAbs`    \tab `fluorescence`                 \tab 1/m; WET Labs AC3 absorption\tab   \cr
-#'   `wetStar~`    \tab `fluorescence`                 \tab mg/m^3; WET Labs WETstar\tab   \cr
-#'   `wetStardiff` \tab `fluorescenceDifference`       \tab mg/m^3; WET Labs WETstar\tab   \cr
-#'   `xmiss`       \tab `beamTransmission`             \tab percent; Chelsea/Seatech\tab \cr
-#'   `xmiss~`      \tab `beamTransmission`             \tab percent; Chelsea/Seatech\tab \cr
+#' **Key**       \tab **Result**                 \tab **Unit;scale**      \tab **Notes** \cr
+#' `accM`        \tab `acceleration`             \tab m/s^2               \tab    \cr
+#' `altM`        \tab `altimeter`                \tab m                   \tab    \cr
+#' `alt`         \tab `altimeter`                \tab m                   \tab    \cr
+#' `bat~`        \tab `beamAttenuation`          \tab 1/m                 \tab    \cr
+#' `C2-C1mS/cm`  \tab `conductivityDifference`   \tab mS/cm               \tab    \cr
+#' `C2-C1S/m`    \tab `conductivityDifference`   \tab S/m                 \tab    \cr
+#' `C2-C1uS/cm`  \tab `conductivityDifference`   \tab uS/cm               \tab    \cr
+#' `cond~mS/cm`  \tab `conductivity`             \tab mS/cm               \tab    \cr
+#' `cond~S/m`    \tab `conductivity`             \tab S/m                 \tab    \cr
+#' `cond~uS/cm`  \tab `conductivity`             \tab uS/cm               \tab    \cr
+#' `CStarAt~`    \tab `beamAttenuation`          \tab 1/m                 \tab    \cr
+#' `CStarTr~`    \tab `beamTransmission`         \tab percent             \tab    \cr
+#' `c~mS/cm`     \tab `conductivity`             \tab mS/cm               \tab    \cr
+#' `c~S/m`       \tab `conductivity`             \tab S/m                 \tab    \cr
+#' `c~uS/cm`     \tab `conductivity`             \tab uS/cm               \tab    \cr
+#' `density~~`   \tab `density`                  \tab kg/m^3              \tab    \cr
+#' `depFM`       \tab `depth`                    \tab m                   \tab    \cr
+#' `depF`        \tab `depth`                    \tab m                   \tab    \cr
+#' `depSM`       \tab `depth`                    \tab m                   \tab    \cr
+#' `depS`        \tab `depth`                    \tab m                   \tab    \cr
+#' `dz/dtM`      \tab `descentRate`              \tab m/s                 \tab    \cr
+#' `flCM`        \tab `fluorescence`             \tab ug/l; Chelsea Mini Chl Con\tab\cr
+#' `flCUVA~`     \tab `fluorescence`             \tab ug/l; Chelsea UV Aquatracka\tab\cr
+#' `flC~`        \tab `fluorescence`             \tab ug/l; Chelsea Aqua 3\tab    \cr
+#' `flEC-AFL~`   \tab `fluorescence`             \tab mg/m^3; WET Labs ECO-AFL/FLtab\cr
+#' `flScufa~`    \tab `fluorescence`             \tab -; Turner SCUFA (RFU)\tab\cr
+#' `flSPR`       \tab `fluorescence`             \tab -; Seapoint, Rhodamine\tab  \cr
+#' `flSPuv`      \tab `fluorescence`             \tab -; Seapoint, UV      \tab   \cr
+#' `flSP`        \tab `fluorescence`             \tab -; Seapoint          \tab   \cr
+#' `flS`         \tab `fluorescence`             \tab -; Seatech           \tab   \cr
+#' `flT`         \tab `fluorescence`             \tab -; Turner 10-005 flT \tab   \cr
+#' `f~`          \tab `frequency`                \tab Hz                   \tab   \cr
+#' `f~~`         \tab `frequency`                \tab Hz                   \tab   \cr
+#' `gpa`         \tab `geopotentialAnomaly`      \tab -; J/kg              \tab   \cr
+#' `latitude`    \tab `latitude`                 \tab degN                 \tab   \cr
+#' `longitude`   \tab `longitude`                \tab degE                 \tab   \cr
+#' `n2satMg/L`   \tab `nitrogenSaturation`       \tab mg/l                 \tab   \cr
+#' `n2satML/L`   \tab `nitrogenSaturation`       \tab ml/l                 \tab   \cr
+#' `n2satumol/kg`\tab `nitrogenSaturation`       \tab umol/kg              \tab   \cr
+#' `nbin`        \tab `nbin`                     \tab                      \tab   \cr
+#' `obsscufa~`   \tab `backscatter`              \tab NTU; Turner SCUFA    \tab   \cr
+#' `opoxMg/L`    \tab `oxygen`                   \tab mg/l; Optode, Aanderaa\tab  \cr
+#' `opoxML/L`    \tab `oxygen`                   \tab ml/l; Optode, Aanderaa\tab  \cr
+#' `opoxMm/L`    \tab `oxygen`                   \tab umol/l; Optode, Aanderaa\tab\cr
+#' `opoxPS`      \tab `oxygen`                   \tab percent; Optode, Aanderaa\tab\cr
+#' `oxsatMg/L`   \tab `oxygen`                   \tab mg/l; Weiss          \tab   \cr
+#' `oxsatML/L`   \tab `oxygen`                   \tab ml/l; Weiss          \tab   \cr
+#' `oxsatMm/Kg`  \tab `oxygen`                   \tab umol/kg; Weiss       \tab   \cr
+#' `oxsolMg/L`   \tab `oxygen`                   \tab mg/l; Garcia-Gordon  \tab   \cr
+#' `oxsolML/L`   \tab `oxygen`                   \tab ml/l; Garcia-Gordon  \tab   \cr
+#' `oxsolMm/Kg`  \tab `oxygen`                   \tab umol/kg; Garcia-Gordon\tab  \cr
+#' `par/log`     \tab `PAR`                      \tab log; Satlantic       \tab   \cr
+#' `par~`        \tab `PAR`                      \tab -; Biospherical/Licor\tab   \cr
+#' `ph`          \tab `pH`                       \tab -                    \tab   \cr
+#' `potemp~68C`  \tab `thetaM`                   \tab degC; IPTS-68        \tab   \cr
+#' `potemp~90C`  \tab `thetaM`                   \tab degC; ITS-90         \tab   \cr
+#' `pr50M`       \tab `pressure`                 \tab dbar; SBE50          \tab   \cr
+#' `prDE`        \tab `pressure`                 \tab psi; digiquartz      \tab 2 \cr
+#' `prdE`        \tab `pressure`                 \tab psi; strain gauge    \tab 2 \cr
+#' `prDM`        \tab `pressure`                 \tab dbar; digiquartz     \tab   \cr
+#' `prdM`        \tab `pressure`                 \tab dbar; strain gauge   \tab   \cr
+#' `prM`         \tab `pressure`                 \tab dbar                 \tab   \cr
+#' `prSM`        \tab `pressure`                 \tab dbar                 \tab   \cr
+#' `prSM`        \tab `pressure`                 \tab dbar; strain gauge   \tab   \cr
+#' `pr`          \tab `pressure`                 \tab dbar                 \tab 1 \cr
+#' `ptempC`      \tab `pressureTemperature`      \tab degC; ITS-90         \tab 3 \cr
+#' `pumps`       \tab `pumpStatus`               \tab                      \tab   \cr
+#' `rhodflTC~`   \tab `Rhodamine`                \tab ppb; Turner Cyclops  \tab   \cr
+#' `sal~~`       \tab `salinity`                 \tab -, PSS-78            \tab 4 \cr
+#' `sbeox~ML/L`  \tab `oxygen`                   \tab ml/l; SBE43          \tab   \cr
+#' `sbeox~Mm/Kg` \tab `oxygen`                   \tab umol/kg; SBE43       \tab   \cr
+#' `sbeox~Mm/L`  \tab `oxygen`                   \tab umol/l; SBE43        \tab   \cr
+#' `sbeox~PS`    \tab `oxygen`                   \tab percent; SBE43       \tab   \cr
+#' `sbeox~V`     \tab `oxygenRaw`                \tab V; SBE43             \tab   \cr
+#' `sbox~dV/dT`  \tab `oxygen`                   \tab dov/dt; SBE43        \tab   \cr
+#' `sbox~ML/L`   \tab `oxygen`                   \tab ml/l; SBE43          \tab   \cr
+#' `sbox~Mm/Kg`  \tab `oxygen`                   \tab umol/kg; SBE43       \tab   \cr
+#' `sbox~Mm/L`   \tab `oxygen`                   \tab umol/l; SBE43        \tab   \cr
+#' `sbox~PS`     \tab `oxygen`                   \tab percent; SBE43       \tab   \cr
+#' `sbox~V`      \tab `oxygenRaw`                \tab V; SBE43             \tab   \cr
+#' `scan`        \tab `scan`                     \tab -                    \tab   \cr
+#' `seaTurbMtr~` \tab `turbidity`                \tab FTU; Seapoint        \tab   \cr
+#' `secS-priS`   \tab `salinityDifference`       \tab -, PSS-78            \tab   \cr
+## `sigma-é`     \tab `sigmaTheta`               \tab kg/m^3               \tab 5 \cr
+#' \code{sigma-}\enc{é}{e} \tab `sigmaTheta`     \tab kg/m^3               \tab 5 \cr
+#' `sigma-t`     \tab `sigmaT`                   \tab kg/m^3               \tab   \cr
+#' `sigma-theta` \tab `sigmaTheta`               \tab kg/m^3               \tab 5 \cr
+#' `spar`        \tab `spar`                     \tab -                    \tab   \cr
+#' `specc`       \tab `conductivity`             \tab uS/cm                \tab   \cr
+#' `sva`         \tab `specificVolumeAnomaly`    \tab 1e-8 m^3/kg;         \tab   \cr
+#' `svCM~`       \tab `soundSpeed`               \tab m/s; Chen-Millero    \tab   \cr
+#' `t090Cm`      \tab `temperature`              \tab degC; ITS-90         \tab   \cr
+#' `t190C`       \tab `temperature`              \tab degC; ITS-90         \tab   \cr
+#' `T2~68C`      \tab `temperatureDifference`    \tab degC; IPTS-68        \tab   \cr
+#' `T2~90C`      \tab `temperatureDifference`    \tab degC; ITS-90         \tab   \cr
+#' `t3868C~`     \tab `temperature`              \tab degC; IPTS-68        \tab   \cr
+#' `t3890C~`     \tab `temperature`              \tab degC; ITS-90         \tab   \cr
+#' `t38~38C`     \tab `temperature`              \tab degC; IPTS-68        \tab   \cr
+#' `t38~90C`     \tab `temperature`              \tab degC; ITS-90         \tab   \cr
+#' `t4968C`      \tab `temperature`              \tab degC; IPTS-68        \tab   \cr
+#' `t4990C`      \tab `temperature`              \tab degC; ITS-90         \tab   \cr
+#' `timeH`       \tab `timeH`                    \tab hour; elapsed        \tab   \cr
+#' `timeJV2`     \tab `timeJV2`                  \tab julian day           \tab   \cr
+#' `timeJ`       \tab `timeJ`                    \tab julian day           \tab   \cr
+#' `timeK`       \tab `timeK`                    \tab s; since Jan 1, 2000 \tab   \cr
+#' `timeM`       \tab `timeM`                    \tab minute; elapsed      \tab   \cr
+#' `timeN`       \tab `timeN`                    \tab s; NMEA since Jan 1, 1970\tab\cr
+#' `timeQ`       \tab `timeQ`                    \tab s; NMEA since Jan 1, 2000\tab\cr
+#' `timeS`       \tab `timeS`                    \tab s; elapsed           \tab   \cr
+#' `tnc268C`     \tab `temperature`              \tab degC; IPTS-68        \tab   \cr
+#' `tnc290C`     \tab `temperature`              \tab degC; ITS-90         \tab   \cr
+#' `tnc68C`      \tab `temperature`              \tab degC; IPTS-68        \tab   \cr
+#' `tnc90C`      \tab `temperature`              \tab degC; ITS-90         \tab   \cr
+#' `tsa`         \tab `thermostericAnomaly`      \tab 1e-8 m^3/kg          \tab   \cr
+#' `turbflTCdiff`\tab `turbidityDifference`      \tab NTU; Turner Cyclops  \tab   \cr
+#' `turbflTC~`   \tab `turbidity`                \tab NTU; Turner Cyclops  \tab   \cr
+#' `turbWETbbdiff`\tab `turbidityDifference`     \tab 1/(m\*sr); WET Labs ECO\tab \cr
+#' `turbWETbb~`  \tab `turbidity`                \tab 1/(m\*sr); WET Labs ECO\tab \cr
+#' `turbWETntudiff`\tab `turbidityDifference`    \tab NTU; WET Labs ECO    \tab   \cr
+#' `turbWETntu~` \tab `turbidity`                \tab NTU; WET Labs ECO    \tab   \cr
+#' `tv268C`      \tab `temperature`              \tab degC; IPTS-68        \tab   \cr
+#' `tv290C`      \tab `temperature`              \tab degC; ITS-90         \tab   \cr
+#' `t~68C`       \tab `temperature`              \tab degC; IPTS-68        \tab   \cr
+#' `t~68`        \tab `temperature`              \tab degC; IPTS-68        \tab   \cr
+#' `t~90C`       \tab `temperature`              \tab degC; ITS-90         \tab   \cr
+#' `t~90`        \tab `temperature`              \tab degC; ITS-90         \tab   \cr
+#' `upoly~`      \tab `upoly`                    \tab -                    \tab   \cr
+#' `user~`       \tab `user`                     \tab -                    \tab   \cr
+#' `v~~`         \tab `voltage`                  \tab V                    \tab   \cr
+#' `wetBAttn`    \tab `beamAttenuation`          \tab 1/m; WET Labs AC3    \tab   \cr
+#' `wetBTrans`   \tab `beamTransmission`         \tab percent; WET Labs AC3\tab   \cr
+#' `wetCDOMdiff` \tab `fluorescenceDifference`   \tab mg/m^3; WET Labs CDOM\tab   \cr
+#' `wetCDOM~`    \tab `fluorescence`             \tab mg/m^3; WET Labs CDOM\tab   \cr
+#' `wetChAbs`    \tab `fluorescence`             \tab 1/m; WET Labs AC3 absorption\tab\cr
+#' `wetStardiff` \tab `fluorescenceDifference`   \tab mg/m^3; WET Labs WETstar\tab \cr
+#' `wetStar~`    \tab `fluorescence`             \tab mg/m^3; WET Labs WETstar\tab \cr
+#' `xmiss`       \tab `beamTransmission`         \tab percent; Chelsea/Seatech\tab \cr
+#' `xmiss~`      \tab `beamTransmission`         \tab percent; Chelsea/Seatech\tab \cr
 #' }
 #' Notes:
 #' 1. 'pr' is in a Dalhousie-generated data file but seems not to be in reference 1.
