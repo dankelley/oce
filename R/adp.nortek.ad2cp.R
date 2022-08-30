@@ -1166,11 +1166,12 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
                 object$blankingDistance + object$altimeterRaw$sampleDistance * seq_len(object$altimeterRaw$numberOfSamples)
         } else if (name == "echosounder") {
             # Nortek (2017 p52): each profile has NC*16 bits
-            oceDebug(debug, "   echosounder starts at i0v=", i0v, " (NC=", NC, ", NP=", NP, ")\n")
+            oceDebug(debug, "   echosounder starts at i[1]=", i[1], ", i0v=", i0v, " (NC=", NC, ", NP=", NP, ")\n")
             iv <- gappyIndex(i, i0v, 2L*NC)
             #iv <- gappyIndex(i, i0v, 2L*NC)
-            tmp <- readBin(buf[iv], "integer", size=2L, endian="little", n=NP*NC)
-            object$echosounder <- matrix(tmp, nrow=NP, byrow=FALSE)
+            tmp <- readBin(buf[iv], "integer", size=2L, endian="little", signed=FALSE, n=NP*NC)
+            dim(tmp) <-  c(NC, NP)
+            object$echosounder <- t(tmp)
             i0v <<- i0v + 2L*NC
         } else if (name == "AHRS") {
             oceDebug(debug, "   AHRS starts at i0v=", i0v, "\n")
@@ -1835,16 +1836,6 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
         oceDebug(debug, "configuration0=", paste(ifelse(configuration0,"T","F"), collapse=", "), "\n")
         if (configuration0[12])         # read echosounder, if included
             rval <- getItemFromBuf(rval, "echosounder", i=i, type=type, debug=debug)
-        #message(vectorShow(d$index))
-        #message(vectorShow(commonData$offsetOfData))
-
-        i <- d$index[which(d$id==id)]
-        i0v <<- commonData$offsetOfData[1] # FIXME: is the [1] correct?
-        oceDebug(debug, "set gappyIndex(c(", paste(head(i),collapse=","), "...), ", i0v, ", ", rval$numberOfCells, ") to read n=", NP*rval$numberOfCells, "=NP*numberOfCells uint16 values for echosounder\n")
-        iv <- gappyIndex(i, i0v, 2L*rval$numberOfCells)
-        E <- readBin(d$buf[iv], "integer", size=2L, n=NP*rval$numberOfCells, endian="little", signed=FALSE)
-        # m<-t(matrix(E,nrow=e$numberOfCells,byrow=FALSE));imagep(log10(m))
-        rval$echosounder <- t(matrix(E, nrow=rval$numberOfCells, byrow=FALSE))
         oceDebug(debug, "} # vector-read for type=", type, "\n")
         rval
     }                                  # readEchosounder
