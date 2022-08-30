@@ -595,8 +595,18 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
         o <- order(names(t))
         return(t[o])
     } else if (which[1] == "??") {
+        time <- ISOdatetime(year=1900+ as.integer(buf[nav$index + 9L]),
+            month=1+as.integer(buf[nav$index + 10L]),
+            day=as.integer(buf[nav$index + 11L]),
+            hour=as.integer(buf[nav$index + 12L]),
+            min=as.integer(buf[nav$index + 13L]),
+            sec=as.integer(buf[nav$index + 14L]) +
+            1e-4 * readBin(buf[nav$index + 15L],
+                "integer", size=2, n=length(nav$index), signed=FALSE, endian="little"),
+            tz="UTC")
         offsetOfData <- as.integer(buf[nav$index+2L]) # also computed later, for other cases
         return(data.frame(
+                time=time,
                 ID=paste0("0x", as.raw(nav$id),"=",nav$id),
                 name=ad2cpCodeToName(nav$id, removePrefix=TRUE),
                 start=nav$start+1L, # nav$start is in zero-indexed C notation
@@ -1769,6 +1779,8 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
         oceDebug(debug, vectorShow(look))
         lookIndex <- d$index[look]
         oceDebug(debug, vectorShow(lookIndex))
+        offsetOfData <- commonData$offsetOfData[look]
+        oceDebug(debug, vectorShow(offsetOfData))
         # According to Nortek (2022, Section 6.4, page 88), the only
         # configuration flag is whether we have echosounder data, which seems a
         # bit odd because the whole point of an echosounder ID must be that we
@@ -1814,14 +1826,12 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
             transmitEnergy=transmitEnergy[look],
             powerLevel=powerLevel[look])
         rval$distance <- rval$blankingDistance + seq(0, by=rval$cellSize, length.out=rval$numberOfCells)
-        i <- d$index[look]            # pointers to "average" chunks in buf
+        i <- d$index[look]             # pointers to "echosounder" chunks in buf
         oceDebug(debug, "in readEchosounder: ", vectorShow(i))
-
-        i0v <<- 77                     # pointer to data (incremented by getItemFromBuf() later).
+        i0v <<- 1L + offsetOfData[1]   # pointer to data (incremented by getItemFromBuf() later).
+        oceDebug(debug, "in readEchosounder: ", vectorShow(i0v))
         NP <- length(i)                # number of profiles of this type
-                                       #NC <- rval$numberOfCells       # number of cells for v,a,q
-                                       #NB <- rval$numberOfBeams       # number of beams for v,a,q
-        #oceDebug(debug, "  NP=", NP, ", NB=", NB, ", NC=", NC, "\n", sep="")
+        oceDebug(debug, "in readEchosounder: ", vectorShow(NP))
         oceDebug(debug, "configuration0=", paste(ifelse(configuration0,"T","F"), collapse=", "), "\n")
         if (configuration0[12])         # read echosounder, if included
             rval <- getItemFromBuf(rval, "echosounder", i=i, type=type, debug=debug)
@@ -1829,7 +1839,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
         #message(vectorShow(commonData$offsetOfData))
 
         i <- d$index[which(d$id==id)]
-        i0v <<- commonData$offsetOfData[1]
+        i0v <<- commonData$offsetOfData[1] # FIXME: is the [1] correct?
         oceDebug(debug, "set gappyIndex(c(", paste(head(i),collapse=","), "...), ", i0v, ", ", rval$numberOfCells, ") to read n=", NP*rval$numberOfCells, "=NP*numberOfCells uint16 values for echosounder\n")
         iv <- gappyIndex(i, i0v, 2L*rval$numberOfCells)
         E <- readBin(d$buf[iv], "integer", size=2L, n=NP*rval$numberOfCells, endian="little", signed=FALSE)
