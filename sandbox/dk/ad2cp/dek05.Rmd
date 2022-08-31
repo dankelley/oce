@@ -1,5 +1,5 @@
 ---
-title: Notes on reading AD2CP 0x23 (echosounderRaw) data chunks
+title: dek05 notes on reading AD2CP 0x23 (echosounderRaw) data chunks
 author: Dan Kelley
 date: "`r Sys.Date()`"
 ---

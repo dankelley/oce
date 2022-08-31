@@ -1901,15 +1901,23 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
     }
     # 2022-08-26: I asked Nortek how to compute distance for echosounderRaw, and
     # the answer involves the blankingDistance.  But, in my sample file at
-    # tests/testthat/local_data/ad2cp/ad2cp_01.ad2cp, the cellSize for
+    # tests/testthat/local_data/ad2cp/ad2cp_01.ad2cp, the blankingDistance for
     # echosounderRaw is 0, and so I'm guessing (pending more information from
-    # Nortek) that the idea is to use the cellSize in the (now possibly updated)
+    # Nortek) that the idea is to use the blankingDistance in the (now possibly updated)
     if (2L == sum(c("echosounder", "echosounderRaw") %in% names(data))) {
         if ("blankingDistance" %in% names(data$echosounder) && "startSampleIndex" %in% names(data$echosounderRaw)) {
-            message("read.adp.ad2cp() : computing echosounderRaw$distance as indicated by Nortek on 2022-08-28")
-            data$echosounderRaw$cellsize <- data$echosounder$blankingDistance / data$echosounderRaw$startSampleIndex
+            data$echosounderRaw$cellSize <- data$echosounder$blankingDistance / data$echosounderRaw$startSampleIndex
             data$echosounderRaw$distance <- seq(0, by=
-data$echosounderRaw$cellsize, length.out=data$echosounderRaw$numberOfSamples)
+data$echosounderRaw$cellSize, length.out=data$echosounderRaw$numberOfSamples)
+            if (debug) {
+                message("read.adp.ad2cp() : computing echosounderRaw$distance as indicated by Nortek on 2022-08-28")
+                message(vectorShow(data$echosounder$blankingDistance, showNewline=FALSE))
+                message(vectorShow(data$echosounderRaw$startSampleIndex, showNewline=FALSE))
+                message(vectorShow(data$echosounderRaw$cellSize, showNewline=FALSE))
+                message(vectorShow(data$echosounderRaw$numberOfSamples, showNewline=FALSE))
+                message(vectorShow(max(data$echosounderRaw$distance), showNewline=FALSE))
+                message(vectorShow(max(data$echosounder$distance), showNewline=FALSE))
+            }
         }
     }
     # 2022-08-29 BOOKMARK-blankingDistance-03
