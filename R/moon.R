@@ -77,7 +77,7 @@
 #' y <- 2012
 #' m <- 4
 #' days <- 1:3
-#' ## Halifax sunrise/sunset (see e.g. https://www.timeanddate.com/worldclock)
+#' # Halifax sunrise/sunset (see e.g. https://www.timeanddate.com/worldclock)
 #' rises <- ISOdatetime(y, m, days,c(13,15,16), c(55, 04, 16),0,tz="UTC") + 3 * 3600 # ADT
 #' sets <- ISOdatetime(y, m,days,c(3,4,4), c(42, 15, 45),0,tz="UTC") + 3 * 3600
 #' azrises <- c(69, 75, 82)
@@ -99,7 +99,8 @@
 #' @family things related to astronomy
 moonAngle <- function(t, longitude=0, latitude=0, useRefraction=TRUE)
 {
-    if (missing(t)) stop("must provide 't'")
+    if (missing(t))
+        stop("must provide 't'")
     if (is.character(t))
         t <- as.POSIXct(t, tz="UTC")
     else if (inherits(t, "Date"))
@@ -112,32 +113,32 @@ moonAngle <- function(t, longitude=0, latitude=0, useRefraction=TRUE)
             stop("t must be POSIXt or a number corresponding to POSIXt (in UTC)")
         }
     }
-    ## Ensure that the timezone is UTC. Note that Sys.Date() gives a NULL tzone.
+    # Ensure that the timezone is UTC. Note that Sys.Date() gives a NULL tzone.
     tzone <- attr(as.POSIXct(t[1]), "tzone")
     if (is.null(tzone) || "UTC" != tzone)
         attributes(t)$tzone <- "UTC"
     RPD <- atan2(1, 1) / 45            # radians per degree
-    ## In this code, the symbol names follow Meeus (1982) chapter 30, with e.g. "p"
-    ## used to indicate primes, e.g. Lp stands for L' in Meeus' notation.
-    ## Also, T2 and T3 are powers on T.
+    # In this code, the symbol names follow Meeus (1982) chapter 30, with e.g. "p"
+    # used to indicate primes, e.g. Lp stands for L' in Meeus' notation.
+    # Also, T2 and T3 are powers on T.
     T <- julianCenturyAnomaly(julianDay(t))
     T2 <- T * T
     T3 <- T * T2
-    ## Step 1 (top of Meuus page 148, chapter 30): mean quantaties
-    ## moon mean longitude
+    # Step 1 (top of Meuus page 148, chapter 30): mean quantaties
+    # moon mean longitude
     Lp <-    270.434164 + 481267.8831 * T - 0.001133 * T2 + 0.0000019 * T3
-    ## sun mean amomaly
+    # sun mean amomaly
     M <-     358.475833 +  35999.0498 * T - 0.000150 * T2 - 0.0000033 * T3
-    ## moon mean amomaly
+    # moon mean amomaly
     Mp <-    296.104608 + 477198.8491 * T + 0.009192 * T2 + 0.0000144 * T3
-    ## moon mean elongation
+    # moon mean elongation
     D <-     350.737486 + 445267.1142 * T - 0.001436 * T2 + 0.0000019 * T3
-    ## moon distance from ascending node
+    # moon distance from ascending node
     F <-      11.250889 + 483202.0251 * T - 0.003211 * T2 - 0.0000003 * T3
-    ## longitude of moon ascending node
+    # longitude of moon ascending node
     Omega <- 259.183275 -   1934.1420 * T + 0.002078 * T2 + 0.0000022 * T3
-    ## Step 2 (to bottom of p 148, chapter 30): add periodic variations ("additive terms")
-    ## note that 'tmp' is redefined every few lines
+    # Step 2 (to bottom of p 148, chapter 30): add periodic variations ("additive terms")
+    # note that 'tmp' is redefined every few lines
     tmp <- sin(RPD * (51.2 + 20.2 * T))
     Lp <- Lp + 0.000233 * tmp
     M  <- M  - 0.001778 * tmp
@@ -154,7 +155,7 @@ moonAngle <- function(t, longitude=0, latitude=0, useRefraction=TRUE)
     D  <- D  + 0.001964 * tmp
     F  <- F  - 0.024691 * tmp
     F  <- F  - 0.004328 * sin(RPD * (Omega + 275.05 - 2.30 * T))
-    ## Step 3: Meeus p 149
+    # Step 3: Meeus p 149
     e <- 1 - 0.002495 * T - 0.00000752 * T2
     e2 <- e * e
     lambda <- Lp +
@@ -289,17 +290,17 @@ moonAngle <- function(t, longitude=0, latitude=0, useRefraction=TRUE)
     (e2*  0.000026 * cos(RPD * (2 * D - 2 * M     ))) +
     (    -0.000023 * cos(RPD * (2 * F - 2 * D + Mp))) +
     (e *  0.000019 * cos(RPD * (4 * D - M - Mp    )))
-    ## For coordinate conversions, need epsilon (obliquity of the ecliptic)
-    ## as defined in Meuus eq 18.4, page 81.
+    # For coordinate conversions, need epsilon (obliquity of the ecliptic)
+    # as defined in Meuus eq 18.4, page 81.
     epsilon <- 23.452294 - 0.0130125 * T - 0.00000164 * T2 + 0.000000503 * T3
     ec <- eclipticalToEquatorial(lambda, beta, epsilon)
-    ##lh <- equatorialToLocalHorizontal(ec$rightAscension, ec$declination, t, latitude, longitude)
+    #.lh <- equatorialToLocalHorizontal(ec$rightAscension, ec$declination, t, latitude, longitude)
     lh <- equatorialToLocalHorizontal(rightAscension=ec$rightAscension,
-                                      declination=ec$declination,
-                                      t=t,
-                                      longitude=longitude,
-                                      latitude=latitude)
-    ## Illuminated fraction, reference 1 chapter 31 (second, approximate, formula)
+        declination=ec$declination,
+        t=t,
+        longitude=longitude,
+        latitude=latitude)
+    # Illuminated fraction, reference 1 chapter 31 (second, approximate, formula)
     D <- D %% 360 # need this; could have done it earlier, actually
     illfr <- 180 - D - 6.289 * sin(RPD * Mp) +
     2.100 * sin(RPD * M) -
@@ -310,15 +311,15 @@ moonAngle <- function(t, longitude=0, latitude=0, useRefraction=TRUE)
     illuminatedFraction <- (1 + cos(RPD * illfr)) / 2
     phase <- T * 1236.85               # Meeus (1982) eq 32.3 page 160
 
-    ## The 180 in azimuth converts from astron convention with azimuth=westward
-    ## angle from South, to eastward from North.
+    # The 180 in azimuth converts from astron convention with azimuth=westward
+    # angle from South, to eastward from North.
     res <- list(time=t,
-                 azimuth=lh$azimuth + 180,
-                 altitude=lh$altitude,
-                 rightAscension=ec$rightAscension, declination=ec$declination,
-                 lambda=lambda %% 360, beta=beta,
-                 diameter=pi, distance=6378.14 / sin(RPD * pi),
-                 illuminatedFraction=illuminatedFraction,
-                 phase=phase)
+        azimuth=lh$azimuth + 180,
+        altitude=lh$altitude,
+        rightAscension=ec$rightAscension, declination=ec$declination,
+        lambda=lambda %% 360, beta=beta,
+        diameter=pi, distance=6378.14 / sin(RPD * pi),
+        illuminatedFraction=illuminatedFraction,
+        phase=phase)
     res
 }
