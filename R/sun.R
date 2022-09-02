@@ -6,7 +6,9 @@
 #'
 #' @param t time, a POSIXt object (converted to timezone `"UTC"`,
 #' if it is not already in that timezone), a character or numeric value that
-#' corresponds to such a time.
+#' corresponds to such a time.  This may be a single value or a vector
+#' of values.  In the latter case, `longitude`, `latitude` and `useRefraction`
+#' are all made to be of the same length as `time`, by calling [rep()].
 #'
 #' @param longitude observer longitude in degrees east.
 #'
@@ -64,18 +66,19 @@
 #'     sunAngle(rise, lonlat[1], lonlat[2])$altitude^2 + sunAngle(set, lonlat[1], lonlat[2])$altitude^2
 #' }
 #' result <- optim(c(1,1), mismatch)
-#' lon.hfx <- (-63.55274)
-#' lat.hfx <- 44.65
-#' dist <- geodDist(result$par[1], result$par[2], lon.hfx, lat.hfx)
+#' lonHfx <- (-63.55274)
+#' latHfx <- 44.65
+#' dist <- geodDist(result$par[1], result$par[2], lonHfx, latHfx)
 #' cat(sprintf("Infer Halifax latitude %.2f and longitude %.2f; distance mismatch %.0f km",
 #'             result$par[2], result$par[1], dist))
 #'
 #' @family things related to astronomy
 #'
 #' @author Dan Kelley
-sunAngle <- function(t, longitude=0, latitude=0, useRefraction=FALSE)
+sunAngle <- function(t, longitude=0.0, latitude=0.0, useRefraction=FALSE)
 {
-    if (missing(t)) stop("must provide t")
+    if (missing(t))
+        stop("must provide t")
     if (is.character(t))
         t <- as.POSIXct(t, tz="UTC")
     else if (inherits(t, "Date"))
@@ -89,33 +92,33 @@ sunAngle <- function(t, longitude=0, latitude=0, useRefraction=FALSE)
         }
     }
     t <- as.POSIXct(t) # so we can get length ... FIXME: silly, I know
-    ## Ensure that the timezone is UTC. Note that Sys.Date() gives a NULL tzone.
+    nt <- length(t)
+    nlongitude <- length(longitude)
+    nlatitude <- length(latitude)
+    nuseRefraction <- length(useRefraction)
+    if (nlongitude != nlatitude) stop("lengths of longitude and latitude must match")
+    if (nlongitude != nuseRefraction) stop("lengths of longitude and useRefraction must match")
+    if (nlongitude == 1) {
+        longitude <- rep(longitude, length.out=nt)
+        latitude <- rep(latitude, length.out=nt)
+        useRefraction <- rep(useRefraction, length.out=nt)
+    } else {
+        stop("lengths of longitude, latitude and useRefraction must be 1 or the length of time")
+    }
+    # Ensure that the timezone is UTC. Note that Sys.Date() gives a NULL tzone.
     tzone <- attr(as.POSIXct(t[1]), "tzone")
     if (is.null(tzone) || "UTC" != tzone)
         attributes(t)$tzone <- "UTC"
-    tOrig <- t
-    ok <- !is.na(t)
-    ntOrig <- length(t)
-    nt <- sum(ok)
-    t <- t[ok]
-    t <- as.POSIXlt(t) # so we can get yday etc ... FIXME: silly, I know
-    nlon <- length(longitude)
-    nlat <- length(latitude)
-    if (nlon != nlat) stop("lengths of longitude and latitude must match")
-    if (nlon == 1) {
-        longitude <- rep(longitude, nt) # often, give a time vector but just one location
-        latitude <- rep(latitude, nt)
-    } else {
-        if (ntOrig != nlon) stop("lengths of t, latitude and longitude must match, unless last two are of length 1")
+    ok <- is.finite(t)
+    if (!all(ok)) {
+        warning("removing ", sum(!ok), " data, for which time is not finite")
+        t <- t[ok]
+        latitude <- latitude[ok]
+        longitude <- longitude[ok]
+        useRefraction <- useRefraction[ok]
     }
-    ## need vectors to handle NA
-    azOut <- rep(NA, length.out=ntOrig)
-    elOut <- rep(NA, length.out=ntOrig)
-    soldiaOut <- rep(NA, length.out=ntOrig)
-    soldstOut <- rep(NA, length.out=ntOrig)
-
-    ## the code below is derived from fortran code, downloaded 2009-11-1 from
-    ## ftp://climate1.gsfc.nasa.gov/wiscombe/Solar_Rad/SunAngles/sunae.f
+    # the code below is derived from fortran code, downloaded 2009-11-1 from
+    # ftp://climate1.gsfc.nasa.gov/wiscombe/Solar_Rad/SunAngles/sunae.f
     t <- as.POSIXlt(t)                 # use this so we can work on hours, etc
     if ("UTC" != attr(as.POSIXct(t[1]), "tzone"))
         stop("t must be in UTC")
@@ -144,10 +147,9 @@ sunAngle <- function(t, longitude=0, latitude=0, useRefraction=FALSE)
         warning("longitude(s) trimmed to range -180 to 180")
         longitude[longitude >  180] <-  180
     }
-
     delta <- year - 1949
     leap <- delta %/% 4
-    ## FIXME: using fortran-style int and mod here; must check for leap-year cases
+    ## IXME: using fortran-style int and mod here; must check for leap-year cases
     jd <- 32916.5 + (delta * 365 + leap + day) + hour / 24
     jd <- jd + ifelse(0 == (year %% 100) & 0 != (year %% 400), 1, 0)
     time <- jd - 51545
@@ -184,33 +186,24 @@ sunAngle <- function(t, longitude=0, latitude=0, useRefraction=FALSE)
     ## pin the arg to range -1 to 1 (issue 1004)
     sinAz <- -cos(dec) * sin(ha) / cos(el)
     az <- ifelse(sinAz < (-1), -pi/2,
-                 ifelse(sinAz > 1, pi/2,
-                        asin(sinAz)))
+        ifelse(sinAz > 1, pi/2,
+            asin(sinAz)))
     az <-  ifelse(sin(dec) - sin(el) * sin(latitude * rpd ) > 0,
-                  ifelse (sin(az) < 0, az + 2 * pi, az),
-                  pi - az)
+        ifelse (sin(az) < 0, az + 2 * pi, az),
+        pi - az)
     el <- el / rpd
     az <- az / rpd
-    if (useRefraction) {
-        refrac <- ifelse(el >= 19.225,
-                         0.00452 * 3.51823 / tan(el * rpd),
-                         ifelse (el > (-0.766) & el < 19.225,
-                                 3.51823 * (0.1594 + el * (0.0196 + 0.00002 * el)) / (1 + el * (0.505 + 0.0845 * el)),
-                                 0))
-        el  <- el + refrac
-    }
+    el <- el + ifelse(useRefraction,
+        ifelse(el >= 19.225,
+            0.00452 * 3.51823 / tan(el * rpd),
+            ifelse (el > (-0.766) & el < 19.225,
+                3.51823 * (0.1594 + el * (0.0196 + 0.00002 * el)) / (1 + el * (0.505 + 0.0845 * el)),
+                0)),
+        0)
     soldst <- 1.00014 - 0.01671 * cos(mnanom) - 0.00014 * cos(2 * mnanom)
     soldia <- 0.5332 / soldst
-    if (is.na(el) || any(el < (-90.0)) || any(el > 90))
-        stop("output argument el out of range")
-    if (is.na(az) || any(az < 0) || any(az > 360))
-        stop("output argument az out of range")
-    azOut[ok] <- az
-    elOut[ok] <- el
-    soldiaOut[ok] <- soldia
-    soldstOut[ok] <- soldst
-    sunDRA <- sunDeclinationRightAscension(tOrig, apparent=FALSE)
-    list(time=tOrig, azimuth=azOut, altitude=elOut, diameter=soldiaOut, distance=soldstOut,
+    sunDRA <- sunDeclinationRightAscension(t, apparent=FALSE)
+    list(time=t, azimuth=az, altitude=el, diameter=soldia, distance=soldst,
          declination=sunDRA$declination, rightAscension=sunDRA$rightAscension)
 }
 
