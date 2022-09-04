@@ -738,8 +738,8 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
             plan <- u[which.max(unlist(lapply(u,function(x)sum(activeConfiguration==x))))]
             acTable <- table(activeConfiguration)
             warning("In read.adp.ad2cp() : setting plan=", plan,
-                ", the most common value in this file (",
-                paste(names(acTable)," occurs ",unname(acTable)," time[s]", sep="",collapse="; "), ")\n", call.=FALSE)
+                ", the most common value in this file; ",
+                paste(names(acTable)," occurs ",unname(acTable)," time[s]", sep="",collapse="; "), call.=FALSE)
         }
     }
     # Try to find a header, as the first record-type that has id=0xa0.
@@ -1906,11 +1906,26 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
     # Nortek) that the idea is to use the blankingDistance in the (now possibly updated)
     if (2L == sum(c("echosounder", "echosounderRaw") %in% names(data))) {
         if ("blankingDistance" %in% names(data$echosounder) && "startSampleIndex" %in% names(data$echosounderRaw)) {
-            data$echosounderRaw$cellSize <- data$echosounder$blankingDistance / data$echosounderRaw$startSampleIndex
+            # compute cellSize using a formula I based on my interpretation of
+            # information contained in an email from Ragnar at Nortek (which
+            # offers more detail, and a different answer, than I got earlier
+            # from Ellie at Nortek, who said it was blanking-distance over
+            # startSampleIndex).  Frankly, this is a bit of a guessing-game and
+            # so I do not regard the computed value as being trustworthy.
+            XMIT1 <- 1e-3*ad2cpHeaderValue(header, "GETECHO", "XMIT1")
+            # FIXME: what soundSpeed to use?  Here, I'm using the first value in
+            # the 'observed' but I don't know if that's from measurement or
+            # a default.  I have a sample file, and every value in it has speed
+            # 1455 m/s.  But maybe one should use 1500 m/s (as in an email from
+            # Nortek) in case that is what is used internally.  Anyway, this
+            # makes a difference of only 3% so I don't think it's a major
+            # concern.
+            L <- 0.5 * XMIT1 * soundSpeed[1] + data$echosounder$blankingDistance
+            data$echosounderRaw$cellSize <- L / data$echosounderRaw$startSampleIndex
             data$echosounderRaw$distance <- seq(0, by=
 data$echosounderRaw$cellSize, length.out=data$echosounderRaw$numberOfSamples)
             if (debug) {
-                message("read.adp.ad2cp() : computing echosounderRaw$distance as indicated by Nortek on 2022-08-28")
+                message("read.adp.ad2cp() : computing echosounderRaw$distance based on my interpretation of an email sent by RE/Nortek on 2022-09-01, which contradicts one sent by EB/Nortek on 2022-08-28")
                 message(vectorShow(data$echosounder$blankingDistance, showNewline=FALSE))
                 message(vectorShow(data$echosounderRaw$startSampleIndex, showNewline=FALSE))
                 message(vectorShow(data$echosounderRaw$cellSize, showNewline=FALSE))
@@ -1933,7 +1948,7 @@ data$echosounderRaw$cellSize, length.out=data$echosounderRaw$numberOfSamples)
 data#| $echosounderRaw$cellsize, length.out=data$echosounderRaw$numberOfSamples)
     #|     }
     #| }
- 
+
     # Insert metadata
     #res@metadata$id <- id
     res@metadata$filename <- filename

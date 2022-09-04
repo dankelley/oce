@@ -3,8 +3,8 @@ title: dek06 computing distance for 0x23 (echosounderRaw) data chunks
 author: Dan Kelley
 date: "`r Sys.Date()`"
 ---
-```{r setup, include=FALSE} 
-knitr::opts_chunk$set(warning=FALSE, message=FALSE) 
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(warning=FALSE, message=FALSE)
 ```
 
 **Abstract.** Ellie Best's (2022-08-28) formula for the `cellSize` of

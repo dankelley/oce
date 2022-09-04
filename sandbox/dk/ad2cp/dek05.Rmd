@@ -53,17 +53,38 @@ integer.  The recipe is simple: read as 32-bit signed integer, convert to numeri
 A test file (from which `tests/testthat/local-data/ad2cp/ad2cp-01.ad2cp` is
 extracted) produces results as below.  These seem reasonable.
 
-```{r}
+```{r fig.width=8, fig.height=8, dev.arg=list(pointsize=10)}
 library(oce) # github.com/dankelley/oce "develop" branch
 file <- "~/Dropbox/oce_secret_data/ad2cp/s100_truncated.ad2cp"
+layout(rbind(c(1:2),c(3:4)), width=c(2/3,1/3))
 if (file.exists(file)) {
     d <- read.oce(file)
-    with(d@data$echosounder,
-        imagep(time, distance, log10(abs(echosounder)), quiet=TRUE,
-            ylab=resizableLabel("distance")))
-    with(d@data$echosounderRaw,
-        imagep(time, distance, log10(Mod(samples)), quiet=TRUE,
-            ylab=resizableLabel("distance")))
+    time <- d@data$echosounder$time
+    distance <- d@data$echosounder$distance
+    e <- log10(d@data$echosounder$echosounder)
+    imagep(time, distance, e, quiet=TRUE, ylab=resizableLabel("distance"))
+    ylim <- par("usr")[3:4]
+    emax <- apply(e, 2, max)
+    wemax <- which.max(emax)
+    par(mgp=c(2,0.7,0))
+    plot(log10(emax), distance,
+        xlab="intensity", ylab=resizableLabel("distance"),
+        type="l", ylim=ylim, yaxs="i")
+    mtext(sprintf("e peak @ %.0fm", distance[wemax]))
+
+    rtime <- d@data$echosounderRaw$time
+    rdistance <- d@data$echosounderRaw$distance
+    re <- log10(Mod(d@data$echosounderRaw$samples))
+    imagep(rtime, rdistance, re, quiet=TRUE, ylab=resizableLabel("distance"))
+    ylim <- par("usr")[3:4]
+    remax <- apply(re, 2, max)
+    # the max is in first samples (during XMIT burst, I think)
+    wremax <- 20 + which.max(tail(remax, -20))
+    par(mgp=c(2,0.7,0))
+    plot(remax, rdistance,
+        xlab="intensity", ylab=resizableLabel("distance"),
+        type="l", ylim=ylim, yaxs="i")
+    mtext(sprintf("eraw peak @ %.0fm", rdistance[wremax]))
 }
 ```
 
