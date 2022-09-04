@@ -15,17 +15,15 @@ file <- "local_data/ad2cp/ad2cp_01.ad2cp"
 if (file.exists(file)) {
     test_that("local_data/ad2cp/ad2cp_01.ad2cp is okay",
         {
-            expect_output(
-                expect_message(
+            expect_warning(
+                expect_warning(
                     expect_warning(
                         expect_warning(
-                            expect_warning(
-                                d <- read.oce(file),
-                                "using to=12"),
-                            "setting blankingDistanceInCm"),
-                        "setting plan=0, the most common value in this file"),
-                    "computing echosounderRaw"),
-                "EOF before end of chunk")
+                            d <- read.oce(file),
+                            "early EOF in chunk 13"),
+                        "using to=12 based on file contents"),
+                    "setting blankingDistanceInCm to FALSE"),
+                "setting plan=0, the most common value in this file")
             # Identifiers
             expect_equal(d[["type"]], "Signature100")
             expect_equal(d[["fileType"]], "AD2CP")
