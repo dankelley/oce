@@ -1906,22 +1906,30 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
     # Nortek) that the idea is to use the blankingDistance in the (now possibly updated)
     if (2L == sum(c("echosounder", "echosounderRaw") %in% names(data))) {
         if ("blankingDistance" %in% names(data$echosounder) && "startSampleIndex" %in% names(data$echosounderRaw)) {
-            # compute cellSize using a formula I based on my interpretation of
-            # information contained in an email from Ragnar at Nortek (which
-            # offers more detail, and a different answer, than I got earlier
-            # from Ellie at Nortek, who said it was blanking-distance over
-            # startSampleIndex).  Frankly, this is a bit of a guessing-game and
-            # so I do not regard the computed value as being trustworthy.
+            # Compute cellSize using a formula inferred from an email by
+            # Nortek's Ragnar Ekker on 2022-09-01.
+            #
+            # 1. Should we use the integer `startSampleIndex` that is in the
+            # file, or should we compute it using the formula provided by
+            # Ragnar?  The former is an integer value that is 16 in a sample
+            # file, and if that's typical then rounding might be expected to
+            # give about 3% error in the results for `cellSize` and thus
+            # `distance`.
+
+            # 2. What `soundSpeed` should be used?  It varies from profile to
+            # profile. But, perhaps we should use a constant value, if that's
+            # what was used in some computations that led to the data creation.
+            # The graph above uses the integer value. If the calculated
+            # `startSampleIndex` were used instead, the peak would shift from
+            # 282m to 270m=
+            # `r round(with(d@data$echosounderRaw,cellSize2*282/cellSize))` m.
             XMIT1 <- 1e-3*ad2cpHeaderValue(header, "GETECHO", "XMIT1")
-            # FIXME: what soundSpeed to use?  Here, I'm using the first value in
-            # the 'observed' but I don't know if that's from measurement or
-            # a default.  I have a sample file, and every value in it has speed
-            # 1455 m/s.  But maybe one should use 1500 m/s (as in an email from
-            # Nortek) in case that is what is used internally.  Anyway, this
-            # makes a difference of only 3% so I don't think it's a major
-            # concern.
-            L <- 0.5 * XMIT1 * soundSpeed[1] + data$echosounder$blankingDistance
+            BD <- ad2cpHeaderValue(header, "GETECHO", "BD")
+            L <- 0.5 * XMIT1 * soundSpeed[1] + BD
+            samplingRate <- data$echosounderRaw$samplingRate
+            startSampleIndex <- (XMIT1 + 2*BD/soundSpeed[1]) * samplingRate
             data$echosounderRaw$cellSize <- L / data$echosounderRaw$startSampleIndex
+            data$echosounderRaw$cellSize2 <- L / startSampleIndex
             data$echosounderRaw$distance <- seq(0, by=
 data$echosounderRaw$cellSize, length.out=data$echosounderRaw$numberOfSamples)
             if (debug) {
@@ -1929,6 +1937,7 @@ data$echosounderRaw$cellSize, length.out=data$echosounderRaw$numberOfSamples)
                 message(vectorShow(data$echosounder$blankingDistance, showNewline=FALSE))
                 message(vectorShow(data$echosounderRaw$startSampleIndex, showNewline=FALSE))
                 message(vectorShow(data$echosounderRaw$cellSize, showNewline=FALSE))
+                message(vectorShow(data$echosounderRaw$cellSize2, showNewline=FALSE))
                 message(vectorShow(data$echosounderRaw$numberOfSamples, showNewline=FALSE))
                 message(vectorShow(max(data$echosounderRaw$distance), showNewline=FALSE))
                 message(vectorShow(max(data$echosounder$distance), showNewline=FALSE))

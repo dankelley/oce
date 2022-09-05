@@ -13,6 +13,15 @@ get the gist.
 knitr::opts_chunk$set(dev="png", dev.args=list(type="cairo-png"))
 ```
 
+# Diary of updates
+
+## Update 2022-09-01
+
+Ragnar supplied a formula for `sampleStartIndex`, as well as a very helpful
+diagram explaining `XMIT`.  From these things I was able to infer a formula for
+`echosounderRaw$cellSize`; this formula yields the graphs provided near the end
+of the present document.
+
 ## Update 2022-08-29
 
 I've learned that what I call `blankingDistanceInCm` is incorrectly stored in
@@ -22,19 +31,6 @@ value stored in the file does not yield FALSE.  With this scheme, the warning
 will not appear when Nortek updates their systems and folks generate files with
 the newer system.
 
-
-## Prior to 2022-08-22
-
-A document I received from Nortek in August of 2022 led me to believe that the
-data were stored as pairs of `float32` entries^[Actually, the documentation
-just says `float` but the entries are 8 bytes long, so I am assuming
-`float32`.], with the first entry of each pair being echosounder amplitude, and
-the second being echosounder quality.
-
-However, this assumption yields some very odd results (lots of NA values, lots
-of values that make no sense, like exponents in the 20s for quality).  I
-communicated again, and was very please to get a quick and detailed reply
-suggesting another format (see next).
 
 ## 2022-08-22
 
@@ -50,8 +46,25 @@ https://code.ihub.org.cn/projects/729/repository/revisions/master/entry/modules/
 but after some email exchanges, I found that it referred to a scaled signed
 integer.  The recipe is simple: read as 32-bit signed integer, convert to numeric, then divide by 2^31.
 
+
+## Prior to 2022-08-22
+
+A document I received from Nortek in August of 2022 led me to believe that the
+data were stored as pairs of `float32` entries^[Actually, the documentation
+just says `float` but the entries are 8 bytes long, so I am assuming
+`float32`.], with the first entry of each pair being echosounder amplitude, and
+the second being echosounder quality.
+
+However, this assumption yields some very odd results (lots of NA values, lots
+of values that make no sense, like exponents in the 20s for quality).  I
+communicated again, and was very pleased to get a quick and detailed reply
+suggesting another format (see previous).
+# Latest results
+
 A test file (from which `tests/testthat/local-data/ad2cp/ad2cp-01.ad2cp` is
-extracted) produces results as below.  These seem reasonable.
+extracted) produces the following results.  Note that this uses the
+`startSampleIndex` value that is stored in the file, which is an integer, and
+not a value calculated using Ragnar's formula.
 
 ```{r fig.width=8, fig.height=8, dev.arg=list(pointsize=10)}
 library(oce) # github.com/dankelley/oce "develop" branch
@@ -64,28 +77,40 @@ if (file.exists(file)) {
     e <- log10(d@data$echosounder$echosounder)
     imagep(time, distance, e, quiet=TRUE, ylab=resizableLabel("distance"))
     ylim <- par("usr")[3:4]
-    emax <- apply(e, 2, max)
-    wemax <- which.max(emax)
+    em <- apply(e, 2, mean)
+    wem <- which.max(em)
     par(mgp=c(2,0.7,0))
-    plot(log10(emax), distance,
+    plot(em, distance,
         xlab="intensity", ylab=resizableLabel("distance"),
         type="l", ylim=ylim, yaxs="i")
-    mtext(sprintf("e peak @ %.0fm", distance[wemax]))
+    mtext(sprintf("e peak @ %.0fm", distance[wem]))
 
     rtime <- d@data$echosounderRaw$time
     rdistance <- d@data$echosounderRaw$distance
     re <- log10(Mod(d@data$echosounderRaw$samples))
     imagep(rtime, rdistance, re, quiet=TRUE, ylab=resizableLabel("distance"))
     ylim <- par("usr")[3:4]
-    remax <- apply(re, 2, max)
+    rem <- apply(re, 2, mean)
     # the max is in first samples (during XMIT burst, I think)
-    wremax <- 20 + which.max(tail(remax, -20))
+    wrem <- 20 + which.max(tail(rem, -20))
     par(mgp=c(2,0.7,0))
-    plot(remax, rdistance,
+    plot(rem, rdistance,
         xlab="intensity", ylab=resizableLabel("distance"),
         type="l", ylim=ylim, yaxs="i")
-    mtext(sprintf("eraw peak @ %.0fm", rdistance[wremax]))
+    mtext(sprintf("eraw peak @ %.0fm", rdistance[wrem]))
 }
 ```
 
+Two questions remain:
+
+1. Should we use the integer `startSampleIndex` that is in the file, or should
+   we compute it using the formula provided by Ragnar?  The former is an
+   integer value that is 16 in a sample file, and if that's typical then
+   rounding might be expected to give about 3% error in the results for
+   `cellSize` and thus `distance`. The graph above uses the integer value. If
+   the calculated `startSampleIndex` were used instead, the peak would shift
+   from 282m to `r round(with(d@data$echosounderRaw,cellSize2*282/cellSize))` m.
+
+2. What `soundSpeed` should be used in computations of `cellSize`?  In the
+   graph presented above, a mean of `soundSpeed` values from the file was used.
 

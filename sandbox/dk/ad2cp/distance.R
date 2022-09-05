@@ -17,23 +17,12 @@ expect_equal(XMIT1, 1e-3)
 vsound <- 1500                         # m/s, value in Ragnar's email
 soundSpeed <- mean(d@data$echosounder$soundSpeed)
 
-
-frawsamples <- 4464                    # Hz, value in Ragnar's email
 samplingRate <- d@data$echosounderRaw$samplingRate
-m(samplingRate)
 expect_equal(samplingRate, 4464.285644531)
 isample <- (XMIT1 + 2*BD/vsound) * samplingRate
 m("(with const sound speed)", isample)
 isample <- (XMIT1 + 2*BD/soundSpeed) * samplingRate
 m("(with proper sound speed)", isample)
-m(2*BD/vsound)
-m(2*BD/soundSpeed)
-
-soundSpeed/frawsamples/2
 
 Ner <- length(d[["echosounderRaw"]]$distance)
-r <- max(d[["echosounder"]]$distance/Ner)
-m(r)
-#[1] 0.1670466058764
-r * d[["echosounder"]]$cellSize
 
