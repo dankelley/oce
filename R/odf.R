@@ -281,7 +281,7 @@ findInHeader <- function(key, lines, returnOnlyFirst=TRUE, numeric=FALSE, prefix
         # ----------
         # RISKY CODE: only look at first match
         # ----------
-        # isolate the RHS of the eqquality
+        # isolate the RHS of the equality
         tmp <- gsub("\\s*$", "", gsub("^\\s*", "", gsub("'", "", gsub(",", "", strsplit(lines[i[j]], "=")[[1]][2]))))
         # convert e.g. D+00 to e+00
         if (length(grep("[-A-CF-Za-cf-z ]", tmp))) {
