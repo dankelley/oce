@@ -16,8 +16,8 @@ coverage](https://codecov.io/gh/dankelley/oce/branch/develop/graph/badge.svg)](h
 ![RStudio CRAN mirror
 downloads](https://cranlogs.r-pkg.org/badges/last-month/oce) ![RStudio
 CRAN mirror downloads](https://cranlogs.r-pkg.org/badges/last-week/oce)
-![RStudio CRAN mirror
 downloads](https://cranlogs.r-pkg.org/badges/last-day/oce)
+[![Codecov test coverage](https://codecov.io/gh/dankelley/oce/branch/develop/graph/badge.svg)](https://app.codecov.io/gh/dankelley/oce?branch=develop)
 <!-- badges: end -->
 
 ## Why use R for oceanographic analysis?
