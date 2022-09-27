@@ -12,7 +12,6 @@
 ![RStudio CRAN mirror downloads](https://cranlogs.r-pkg.org/badges/last-week/oce)
 ![RStudio CRAN mirror downloads](https://cranlogs.r-pkg.org/badges/last-day/oce)
 [![CRAN\_Status\_Badge](https://www.r-pkg.org/badges/version/oce)](https://cran.r-project.org/package=oce)
-[![Codecov test coverage](https://codecov.io/gh/dankelley/oce/branch/develop/graph/badge.svg)](https://app.codecov.io/gh/dankelley/oce?branch=develop)
 
 <!-- badges: end -->
 
