@@ -27,8 +27,7 @@ Suggests:
     sp,
     testthat (>= 3.0.0),
     tiff,
-    XML,
-    covr
+    XML
 BugReports: https://github.com/dankelley/oce/issues
 Description: Supports the analysis of Oceanographic data, including 'ADCP'
     measurements, measurements made with 'argo' floats, 'CTD' measurements,
