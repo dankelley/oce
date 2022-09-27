@@ -828,7 +828,7 @@ setMethod(f="plot",
 #' @template debugTemplate
 #'
 #' @return
-#' A [topo-class] object that.
+#' A [topo-class] object.
 #'
 #' @examples
 #'\dontrun{
