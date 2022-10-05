@@ -25,17 +25,18 @@ oceLogo <- function()
                    breaks=seq(31, 37.5, 0.1),
                    col=cmocean("haline"), missingColor="tan")
     mapImage(levitus$longitude, levitus$latitude, levitus$SSS, colormap=cm)
-    mapGrid(30, 30, col=gray(0.4), lwd=0.6)
+    mapGrid(45, 45, col=gray(0.4), lwd=0.6)
     mapLines(coastlineWorld[["longitude"]], coastlineWorld[["latitude"]],
              col="#916a13", lwd=0.3)
     mapPoints(endeavour$longitude, endeavour$latitude, pch=20, cex=0.5, lwd=0.2, col=2)
-    text(58000, 14500000, "oce", cex=2.0, col=colName, font=2)
+    text(58000, 13500000, "oce", cex=7.0, col=colName, font=2)
+    text(58000,-14500000, "R", cex=7.5, col=colName, font=2)
 }
 sticker(~oceLogo(), package="",
-        s_x=0.8,
-        s_y=0.7,
-        s_width=2.2,
-        s_height=2.2,
+        s_x=1.0,
+        s_y=1.0,
+        s_width=1.8,
+        s_height=1.8,
         h_fill=colBackground,
         h_color=colBorder,
         p_color=colBackground,
