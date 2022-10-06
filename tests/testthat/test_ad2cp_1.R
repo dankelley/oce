@@ -51,16 +51,29 @@ f3 <- "~/Dropbox/oce_secret_data/ad2cp/secret3_trimmed.ad2cp"
 if (file.exists(f1)) {
     skip_on_cran()
 
-    test_that("'which' works",
+    test_that("'dataType' catches errors",
         {
-            d <- read.oce(f1, which="?")
-            N <- d[["0x16=average"]]
-            expect_equal(11L, N)
+            expect_error(read.oce(f1, dataType=999), "dataType=999 not allowed")
+            expect_error(read.oce(f1, dataType="unknown"), "dataType=\"unknown\" not allowed")
+        })
+
+    test_that("'dataType' works for 0x16, 24, and \"average\"",
+        {
             expect_warning(expect_warning(
-                    dd <- read.oce(f1, which="average"),
+                    d1 <- read.oce(f1, dataType="average"),
                     "using to=100 based on file contents"),
                 "setting plan=0")
-            expect_equal(N, length(dd@data$average$time))
+            expect_equal(11L, length(d1[["time"]]))
+            expect_warning(expect_warning(
+                    d2 <- read.oce(f1, dataType=22),
+                    "using to=100 based on file contents"),
+                "setting plan=0")
+            expect_warning(expect_warning(
+                    d3 <- read.oce(f1, dataType="average"),
+                    "using to=100 based on file contents"),
+                "setting plan=0")
+            expect_equal(d1@data, d2@data)
+            expect_equal(d1@data, d3@data)
         })
 
     test_that("read.adp.ad2cp() on a private AD2CP file that has 'average' and 'burst' data",

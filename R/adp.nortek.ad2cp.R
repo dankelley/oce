@@ -363,16 +363,21 @@ ad2cpCodeToName <- function(code=NULL, removePrefix=FALSE)
 #' which is the default, then the value is changed internally to 1e9, and
 #' reading stops at the end of the file.
 #'
-#' @param which a character value indicating the data type(s) to be read, and
-#' stored in the `data` slot of the returned value.  The default, `which="all"`,
-#' means to read all the types.  In many cases, though, the user does not want
-#' to read everything at once, either as a way to speed processing or to avoid
-#' running out of memory.  For this reason, a common first step is instead to
-#' use `which="?"`, which gives a table of data types in the file or
-#' `which="??"`, which gives a data frame summarizing the data 'chunks'; after
-#' doing those things, the next step is usually to extract all the data, or an
-#' individual type of interest is extracted; see [ad2cpCodeToName()] for
-#' the code/name mappings.
+#' @param dataType an indication of the data type to be extracted.  If
+#" This is not provided `read.adp.ad2cp()` will produce a table of permitted
+#' values.
+# may be an integer, a raw value, or a character value, with equivalences
+# as shown in the table at the first of the \dQuote{Details} section.
+# character value indicating the data type(s) to be read, and
+# stored in the `data` slot of the returned value.  The default, `which="all"`,
+# means to read all the types.  In many cases, though, the user does not want
+# to read everything at once, either as a way to speed processing or to avoid
+# running out of memory.  For this reason, a common first step is instead to
+# use `which="?"`, which gives a table of data types in the file or
+# `which="??"`, which gives a data frame summarizing the data 'chunks'; after
+# doing those things, the next step is usually to extract all the data, or an
+# individual type of interest is extracted; see [ad2cpCodeToName()] for
+# the code/name mappings.
 #'
 #' @param tz a character value indicating time zone. This is used in
 #' interpreting times stored in the file.
@@ -424,6 +429,7 @@ ad2cpCodeToName <- function(code=NULL, removePrefix=FALSE)
 #'
 #' @param \dots ignored.
 #'
+#'
 ## @examples
 ##\dontrun{
 ## d <- read.adp.ad2cp("~/test.ad2cp", to=100) # or read.oce()
@@ -463,7 +469,7 @@ ad2cpCodeToName <- function(code=NULL, removePrefix=FALSE)
 #' @family functions that read adp data
 #'
 #' @author Dan Kelley
-read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
+read.adp.ad2cp <- function(file, from=1, to=0, by=1, dataType,
     tz=getOption("oceTz"),
     ignoreChecksums=FALSE,
     longitude=NA, latitude=NA,
@@ -475,23 +481,56 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
     i0v <- 0L                          # global variable that some functions alter using <<-
     i <- 0L                            # global variable that some functions alter using <<-
     # Interpret 'which'
-    if (any(grepl("\\?", which))) {
-        if (length(which) != 1L)
-            stop("If which is \"?\" or \"??\", no other values are permitted")
-        if (which != "?" && which != "??")
-            stop("did you mean which=\"?\" or \"??\" for your value of which?")
-    } else {
-        whichChoices <- c("burst", "average", "bottomTrack", "interleavedBurst",
-            "burstAltimeterRaw", "DVLBottomTrack", "echosounder", "DVLWaterTrack",
-            "altimeter", "averageAltimeter", "echosounderRaw")
-        if (1L == length(which) && which == "all")
-            which <- whichChoices
-        unknownWhich <- !(which %in% whichChoices)
-        if (any(unknownWhich))
-            stop("unknown 'which' value(s): \"",
-                paste(which[unknownWhich], collapse="\", \""), "\"")
-        which <- unique(which)
+    if (missing(dataType)) {
+        stop("FIXME: code to show types")
     }
+    if (length(dataType) > 1L)
+        stop("length of dataType (", length(dataType), ") must not exceed 1")
+    dataTypeOrig <- dataType
+    dataTypeChoices <- list("burst"=0x15,
+        "average"=0x16,
+        "bottomTrack"=0x17,
+        "interleavedBurst"=0x18,
+        "burstAltimeterRaw"=0x1a,
+        "DVLBottomTrack"=0x1b,
+        "echosounder"=0x1c,
+        "DVLWaterTrack"=0x1d,
+        "altimeter"=0x1e,
+        "averageAltimeter"=0x1f,
+        "echosounderRaw"=0x23)
+    if (is.character(dataType) && !(dataType %in% c("?", "??"))) {
+        if (dataType %in% names(dataTypeChoices))
+            dataType <- dataTypeChoices[[dataType]]
+        else
+            stop("dataType=\"", dataType, "\" not allowed. Try one of: \"",
+                paste(names(dataTypeChoices), collapse="\", \""), "\"")
+    } else if (is.numeric(dataType)) {
+        dataType <- as.integer(dataType)
+        if (!(dataType %in% as.integer(dataTypeChoices)))
+            stop("dataType=", dataType, " not allowed. Try one of: ",
+                paste(as.integer(dataTypeChoices), collapse=", "))
+    } else {
+        stop("dataType must be character or numeric")
+    }
+    oceDebug(debug, vectorShow(dataType))
+
+    #i2005 if (any(grepl("\\?", which))) {
+    #i2005     if (length(which) != 1L)
+    #i2005         stop("If which is \"?\" or \"??\", no other values are permitted")
+    #i2005     if (which != "?" && which != "??")
+    #i2005         stop("did you mean which=\"?\" or \"??\" for your value of which?")
+    #i2005 } else {
+    #i2005     whichChoices <- c("burst", "average", "bottomTrack", "interleavedBurst",
+    #i2005         "burstAltimeterRaw", "DVLBottomTrack", "echosounder", "DVLWaterTrack",
+    #i2005         "altimeter", "averageAltimeter", "echosounderRaw")
+    #i2005     if (1L == length(which) && which == "all")
+    #i2005         which <- whichChoices
+    #i2005     unknownWhich <- !(which %in% whichChoices)
+    #i2005     if (any(unknownWhich))
+    #i2005         stop("unknown 'which' value(s): \"",
+    #i2005             paste(which[unknownWhich], collapse="\", \""), "\"")
+    #i2005     which <- unique(which)
+    #i2005 }
     # Interpret other parameters
     if (missing(file))
         stop("must supply 'file'")
@@ -518,9 +557,9 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
     planGiven <- !missing(plan)
     typeGiven <- !missing(type)
 
-    oceDebug(debug, "read.adp.ad2cp(...,\n    ",
-        "which=c(\"", paste0(which, sep="", collapse="\", \""), "\"),\n",
-        "    from=", if (fromGiven) format(from) else "(missing)",
+    oceDebug(debug, "read.adp.ad2cp(...,\n",
+        "    dataType=", dataType, " (after possible conversion)",
+        ", from=", if (fromGiven) format(from) else "(missing)",
         ", to=", if (toGiven) to else "(missing)",
         ", by=", if (byGiven) by else "(missing)\n",
         "    plan=", if (planGiven) plan else "(missing)",
@@ -589,12 +628,12 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
         if (ignoreChecksums) 1L else 0L,
         debug-1L)
     # Return overviews (whole file)
-    if (which[1] == "?") {
+    if (dataType == "?") {
         t <- table(nav$id)
         names(t) <- ad2cpCodeToName(names(t))
         o <- order(names(t))
         return(t[o])
-    } else if (which[1] == "??") {
+    } else if (dataType == "??") {
         time <- ISOdatetime(year=1900+ as.integer(buf[nav$index + 9L]),
             month=1+as.integer(buf[nav$index + 10L]),
             day=as.integer(buf[nav$index + 11L]),
@@ -1857,30 +1896,36 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, which="all",
     # BOOKMARK A: vectorized reading
     #
     # Nortek (2017 p 48) "6.1.2 Burst/Average Data Record Definition (DF3)"
-    if ("burst" %in% which && length(p$burst) > 0L) # 0x15
-        data$burst <- readProfile(id=as.raw(0x15), debug=debug)
+    if (0x15 == dataType) { # 0x15
+       if (length(p$burst) < 1L)
+            stop("no dataType=", dataTypeOrig, " in file")
+        data <- readProfile(id=as.raw(0x15), debug=debug)
+    }
     # Nortek (2017 p 48) "6.1.2 Burst/Average Data Record Definition (DF3)"
-    if ("average" %in% which && length(p$average) > 0L) # 0x16
-        data$average <- readProfile(id=as.raw(0x16), debug=debug)
-    # Nortek (2017 p60) "6.1.3 Bottom Track Data Record Definition (DF20)"
-    if ("bottomTrack" %in% which && length(p$bottomTrack) > 0) # 0x17
-        data$bottomTrack <- readTrack(id=as.raw(0x17), debug=debug)
-    if ("interleavedBurst" %in% which && length(p$interleavedBurst) > 0) # 0x18
-        data$interleavedBurst <- readProfile(id=as.raw(0x18), debug=debug)
-    if ("burstAltimeterRaw" %in% which && length(p$burstAltimeterRaw) > 0L) # 0x1a
-        data$burstAltimeterRaw <- readBurstAltimeterRaw(id=as.raw(0x1a), debug=debug-1L)
-    if ("DVLBottomTrack" %in% which && length(p$DVLBottomTrack) > 0) # 0x1b
-        data$DVLBottomTrack <- readTrack(id=as.raw(0x1b), debug=debug-1L)
-    if ("echosounder" %in% which && length(p$echosounder) > 0) # 0x1c
-        data$echosounder <- readEchosounder(id=as.raw(0x1c), debug=debug)
-    if ("altimeter" %in% which && length(p$altimeter) > 0) # 0x1e
-        data$altimeter <- readProfile(id=as.raw(0x1e), debug=debug)
-    if ("DVLWaterTrack" %in% which && length(p$DVLWaterTrack) > 0) # 0x1d
-        data$DVLWaterTrack <- readTrack(id=as.raw(0x1d), debug=debug)
-    if ("averageAltimeter" %in% which && length(p$averageAltimeter) > 0) # 0x1f
-        data$averageAltimeter <- readProfile(id=as.raw(0x1f), debug=debug)
-    if ("echosounderRaw" %in% which && length(p$echosounderRaw) > 0) # 0x23
-        data$echosounderRaw <- readEchosounderRaw(id=as.raw(0x23), debug=debug)
+    if (0x16 == dataType) { # 0x16
+        if (length(p$average) < 1L)
+            stop("no dataType=", dataTypeOrig, " in file")
+        data <- readProfile(id=as.raw(0x16), debug=debug)
+    }
+    #<FIXME> # Nortek (2017 p60) "6.1.3 Bottom Track Data Record Definition (DF20)"
+    #<FIXME> if ("bottomTrack" %in% dataType && length(p$bottomTrack) > 0) # 0x17
+    #<FIXME>     data$bottomTrack <- readTrack(id=as.raw(0x17), debug=debug)
+    #<FIXME> if ("interleavedBurst" %in% which && length(p$interleavedBurst) > 0) # 0x18
+    #<FIXME>     data$interleavedBurst <- readProfile(id=as.raw(0x18), debug=debug)
+    #<FIXME> if ("burstAltimeterRaw" %in% which && length(p$burstAltimeterRaw) > 0L) # 0x1a
+    #<FIXME>     data$burstAltimeterRaw <- readBurstAltimeterRaw(id=as.raw(0x1a), debug=debug-1L)
+    #<FIXME> if ("DVLBottomTrack" %in% which && length(p$DVLBottomTrack) > 0) # 0x1b
+    #<FIXME>     data$DVLBottomTrack <- readTrack(id=as.raw(0x1b), debug=debug-1L)
+    #<FIXME> if ("echosounder" %in% which && length(p$echosounder) > 0) # 0x1c
+    #<FIXME>     data$echosounder <- readEchosounder(id=as.raw(0x1c), debug=debug)
+    #<FIXME> if ("altimeter" %in% which && length(p$altimeter) > 0) # 0x1e
+    #<FIXME>     data$altimeter <- readProfile(id=as.raw(0x1e), debug=debug)
+    #<FIXME> if ("DVLWaterTrack" %in% which && length(p$DVLWaterTrack) > 0) # 0x1d
+    #<FIXME>     data$DVLWaterTrack <- readTrack(id=as.raw(0x1d), debug=debug)
+    #<FIXME> if ("averageAltimeter" %in% which && length(p$averageAltimeter) > 0) # 0x1f
+    #<FIXME>     data$averageAltimeter <- readProfile(id=as.raw(0x1f), debug=debug)
+    #<FIXME> if ("echosounderRaw" %in% which && length(p$echosounderRaw) > 0) # 0x23
+    #<FIXME>     data$echosounderRaw <- readEchosounderRaw(id=as.raw(0x23), debug=debug)
 
 
 

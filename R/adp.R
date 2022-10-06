@@ -588,7 +588,7 @@ setMethod(f="summary",
             dataNames <- names(object@data)
             for (i in seq_along(dataNames)) {
                 d <- object@data[[dataNames[i]]]
-                cat("  * ", length(d[["time"]]), " ", dataNames[i], " samples\n", sep="")
+                cat("  * ", length(d[["time"]]), " samples\n", sep="")
             }
             cat("\n")
             #default <- ad2cpDefaultDataItem(object)

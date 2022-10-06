@@ -9,7 +9,7 @@ read.adp.ad2cp(
   from = 1,
   to = 0,
   by = 1,
-  which = "all",
+  dataType,
   tz = getOption("oceTz"),
   ignoreChecksums = FALSE,
   longitude = NA,
@@ -39,16 +39,8 @@ reading stops at the end of the file.}
 
 \item{by}{ignored.}
 
-\item{which}{a character value indicating the data type(s) to be read, and
-stored in the \code{data} slot of the returned value.  The default, \code{which="all"},
-means to read all the types.  In many cases, though, the user does not want
-to read everything at once, either as a way to speed processing or to avoid
-running out of memory.  For this reason, a common first step is instead to
-use \code{which="?"}, which gives a table of data types in the file or
-\code{which="??"}, which gives a data frame summarizing the data 'chunks'; after
-doing those things, the next step is usually to extract all the data, or an
-individual type of interest is extracted; see \code{\link[=ad2cpCodeToName]{ad2cpCodeToName()}} for
-the code/name mappings.}
+\item{dataType}{an indication of the data type to be extracted.  If
+values.}
 
 \item{tz}{a character value indicating time zone. This is used in
 interpreting times stored in the file.}
