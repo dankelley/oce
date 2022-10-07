@@ -9,7 +9,7 @@ read.adp.ad2cp(
   from = 1,
   to = 0,
   by = 1,
-  dataType,
+  dataType = NULL,
   tz = getOption("oceTz"),
   ignoreChecksums = FALSE,
   longitude = NA,
@@ -39,8 +39,15 @@ reading stops at the end of the file.}
 
 \item{by}{ignored.}
 
-\item{dataType}{an indication of the data type to be extracted.  If
-values.}
+\item{dataType}{an indication of the data type to be extracted.  If This is NULL
+(the default) then \code{read.adp.ad2cp()} will produce a table of permitted values.
+Otherwise, it must be either a numeric or character value.  In the numeric case,
+it is converted to an integer that indicating the data type via ID. Either a
+decimal or a raw value is permitted, and the convention is as set in Nortek
+manuals; see the table at the start of the \dQuote{Details} section.  In the
+character case, it must be a string as indicated in that same table, or
+the string \code{"TOC"} to produce a table of contents listing data types and
+times.}
 
 \item{tz}{a character value indicating time zone. This is used in
 interpreting times stored in the file.}

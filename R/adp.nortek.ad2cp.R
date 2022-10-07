@@ -363,21 +363,15 @@ ad2cpCodeToName <- function(code=NULL, removePrefix=FALSE)
 #' which is the default, then the value is changed internally to 1e9, and
 #' reading stops at the end of the file.
 #'
-#' @param dataType an indication of the data type to be extracted.  If
-#" This is not provided `read.adp.ad2cp()` will produce a table of permitted
-#' values.
-# may be an integer, a raw value, or a character value, with equivalences
-# as shown in the table at the first of the \dQuote{Details} section.
-# character value indicating the data type(s) to be read, and
-# stored in the `data` slot of the returned value.  The default, `which="all"`,
-# means to read all the types.  In many cases, though, the user does not want
-# to read everything at once, either as a way to speed processing or to avoid
-# running out of memory.  For this reason, a common first step is instead to
-# use `which="?"`, which gives a table of data types in the file or
-# `which="??"`, which gives a data frame summarizing the data 'chunks'; after
-# doing those things, the next step is usually to extract all the data, or an
-# individual type of interest is extracted; see [ad2cpCodeToName()] for
-# the code/name mappings.
+#' @param dataType an indication of the data type to be extracted.  If This is NULL
+#' (the default) then `read.adp.ad2cp()` will produce a table of permitted values.
+#' Otherwise, it must be either a numeric or character value.  In the numeric case,
+#' it is converted to an integer that indicating the data type via ID. Either a
+#' decimal or a raw value is permitted, and the convention is as set in Nortek
+#' manuals; see the table at the start of the \dQuote{Details} section.  In the
+#' character case, it must be a string as indicated in that same table, or
+#' the string `"TOC"` to produce a table of contents listing data types and
+#' times.
 #'
 #' @param tz a character value indicating time zone. This is used in
 #' interpreting times stored in the file.
@@ -469,7 +463,7 @@ ad2cpCodeToName <- function(code=NULL, removePrefix=FALSE)
 #' @family functions that read adp data
 #'
 #' @author Dan Kelley
-read.adp.ad2cp <- function(file, from=1, to=0, by=1, dataType,
+read.adp.ad2cp <- function(file, from=1, to=0, by=1, dataType=NULL,
     tz=getOption("oceTz"),
     ignoreChecksums=FALSE,
     longitude=NA, latitude=NA,
@@ -480,13 +474,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, dataType,
     # setup
     i0v <- 0L                          # global variable that some functions alter using <<-
     i <- 0L                            # global variable that some functions alter using <<-
-    # Interpret 'which'
-    if (missing(dataType)) {
-        stop("FIXME: code to show types")
-    }
-    if (length(dataType) > 1L)
-        stop("length of dataType (", length(dataType), ") must not exceed 1")
-    dataTypeOrig <- dataType
+    # Interpret 'dataType'
     dataTypeChoices <- list("burst"=0x15,
         "average"=0x16,
         "bottomTrack"=0x17,
@@ -498,21 +486,29 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, dataType,
         "altimeter"=0x1e,
         "averageAltimeter"=0x1f,
         "echosounderRaw"=0x23)
-    if (is.character(dataType) && !(dataType %in% c("?", "??"))) {
-        if (dataType %in% names(dataTypeChoices))
-            dataType <- dataTypeChoices[[dataType]]
-        else
-            stop("dataType=\"", dataType, "\" not allowed. Try one of: \"",
-                paste(names(dataTypeChoices), collapse="\", \""), "\"")
-    } else if (is.numeric(dataType)) {
-        dataType <- as.integer(dataType)
-        if (!(dataType %in% as.integer(dataTypeChoices)))
-            stop("dataType=", dataType, " not allowed. Try one of: ",
-                paste(as.integer(dataTypeChoices), collapse=", "))
-    } else {
-        stop("dataType must be character or numeric")
+    dataTypeOrig <- dataType
+    if (!is.null(dataType)) {
+        oceDebug(debug, "original dataType=\"", dataType, "\n")
+        if (length(dataType) > 1L)
+            stop("length of dataType (", length(dataType), ") must not exceed 1")
+        if (is.character(dataType)) {
+            if (!identical(dataType, "TOC")) {
+                if (dataType %in% names(dataTypeChoices))
+                    dataType <- dataTypeChoices[[dataType]]
+                else
+                    stop("dataType=\"", dataType, "\" not allowed. Try one of: \"",
+                        paste(names(dataTypeChoices), collapse="\", \""), "\"")
+            }
+        } else if (is.numeric(dataType)) {
+            dataType <- as.integer(dataType)
+            if (!(dataType %in% as.integer(dataTypeChoices)))
+                stop("dataType=", dataType, " not allowed. Try one of: ",
+                    paste(as.integer(dataTypeChoices), collapse=", "))
+        } else {
+            stop("dataType must be character or numeric")
+        }
+        oceDebug(debug, "after processing, dataType=\"", dataType, "\n")
     }
-    oceDebug(debug, vectorShow(dataType))
 
     #i2005 if (any(grepl("\\?", which))) {
     #i2005     if (length(which) != 1L)
@@ -628,12 +624,12 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, dataType,
         if (ignoreChecksums) 1L else 0L,
         debug-1L)
     # Return overviews (whole file)
-    if (dataType == "?") {
+    if (is.null(dataType)) {
         t <- table(nav$id)
         names(t) <- ad2cpCodeToName(names(t))
         o <- order(names(t))
         return(t[o])
-    } else if (dataType == "??") {
+    } else if (dataType == "TOC") { # HIDDEN feature -- may be removed
         time <- ISOdatetime(year=1900+ as.integer(buf[nav$index + 9L]),
             month=1+as.integer(buf[nav$index + 10L]),
             day=as.integer(buf[nav$index + 11L]),
