@@ -39,15 +39,16 @@ reading stops at the end of the file.}
 
 \item{by}{ignored.}
 
-\item{dataType}{an indication of the data type to be extracted.  If This is NULL
-(the default) then \code{read.adp.ad2cp()} will produce a table of permitted values.
-Otherwise, it must be either a numeric or character value.  In the numeric case,
-it is converted to an integer that indicating the data type via ID. Either a
-decimal or a raw value is permitted, and the convention is as set in Nortek
-manuals; see the table at the start of the \dQuote{Details} section.  In the
-character case, it must be a string as indicated in that same table, or
-the string \code{"TOC"} to produce a table of contents listing data types and
-times.}
+\item{dataType}{an indication of the data type to be extracted.  If This is
+NULL (the default) then \code{read.adp.ad2cp()} does not return an \linkS4class{oce}
+object, but rather a data frame indicating the data type occurrence rate in the file.
+Otherwise, \code{dataType} must be either a numeric or character value.  In the numeric
+case, which includes both base-10 numbers and \code{raw} values, \code{dataType} is
+converted to an integer that is taken to indicate the data type via ID. The
+permitted values follow the Nortek convention, a summary of which is shown
+the table at the start of the \dQuote{Details} section.  In the character
+case, it must be a string taken from that same table, or the \code{"TOC"}, which
+returns a time-indexed table of contents.}
 
 \item{tz}{a character value indicating time zone. This is used in
 interpreting times stored in the file.}
