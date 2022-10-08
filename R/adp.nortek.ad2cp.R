@@ -399,7 +399,7 @@ ad2cpCodeToName <- function(code=NULL, removePrefix=FALSE)
 #' instrument.  If this is not provided, an attempt is made to infer it from the
 #' file header (if there is one), and `"Signature1000"` is used, otherwise. The
 #' importance of knowing the type is for inferring the slantwise beam angle,
-#' which is usd in the conversion from beam coordinates to xyz coordinates. If
+#' which is used in the conversion from beam coordinates to xyz coordinates. If
 #' `type` is provided, it must be one of `"Signature250"`, `"Signature500"`, or
 #' `"Signature1000"`; the first of these has a 20 degree slant-beam angle, while
 #' the others each have 20 degrees (see reference 2, section 2 on page 6). Note
@@ -430,9 +430,8 @@ ad2cpCodeToName <- function(code=NULL, removePrefix=FALSE)
 ## d <- read.adp.ad2cp("~/test.ad2cp", to=100) # or read.oce()
 ##}
 #'
-#' @return An [adp-class] object with `metadata$fileType` equal to `"AD2CP"`, a
-#' table (if `which="?"`), a data frame (if `which="??"`), or a vector of
-#' character (if `which="text"`).
+#' @return Either an [adp-class] object with `metadata$fileType` equal to
+#' `"AD2CP"`, a or a data table summarizing the file contents by ID.
 #'
 #' @author Dan Kelley
 #'
@@ -605,15 +604,16 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, dataType=NULL,
         open(file, "rb")
         on.exit(close(file))
     }
-    # Determine file size
+    # Read whole file into a buffer
     seek(file, 0, "start")
     seek(file, where=0, origin="end")
     fileSize <- seek(file, where=0)
     seek(file, 0, "start")
+
     oceDebug(debug, "fileSize:", fileSize, "\n")
     buf <- readBin(file, what="raw", n=fileSize, size=1)
     oceDebug(debug, 'first 10 bytes in file: ',
-        paste(paste("0x", buf[1+0:9], sep=""), collapse=" "), "\n", sep="")
+        paste(paste("0x", head(buf, 10), sep=""), collapse=" "), "\n", sep="")
     headerSize <- as.integer(buf[2])
     oceDebug(debug, "headerSize:", headerSize, "\n")
     ID <- buf[3]
@@ -652,22 +652,8 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, dataType=NULL,
                 headerLength=nav$headerLength,
                 dataLength=nav$dataLength,
                 offsetOfData=offsetOfData))
-    #} else if (which[1] == "???") {
-    #    bytesInHeader <- ifelse(nav$twelve_byte_header, 12L, 10L)
-    #    return(data.frame(
-    #            ID=ad2cpCodeToName(nav$id),
-    #            start=nav$start+1,     # nav$start is in zero-indexed C notation
-    #            offsetOfData=as.integer(buf[nav$index+2L])))
     }
-    # 2022-08-29 I don't think we need this anymore.  We're doing lots of things
-    # that are not fully documented, lately :-)
-    #> if (any(nav$headerLength == 12L))
-    #>     warning("file has 12-byte headers (an undocumented format), so be on the lookout for spurious results")
     d <- list(buf=buf, index=nav$index, headerLength=nav$headerLength, dataLength=nav$dataLength, id=nav$id)
-    #message("next is str(d) L592");cat(str(d))
-    #WHY browser()
-    #WHY if (0x10 != d$buf[d$index[1]+1]) # must be 0x10 for an AD2CP (p38 integrators guide)
-    #WHY     stop("expecting byte value 0x10 index ", d$index[1]+1, ", but got 0x", d$buf[d$index[1]+1])
     oceDebug(debug, vectorShow(length(d$index)))
     Nmax <- length(d$index)
     if (to > Nmax) {
@@ -793,16 +779,6 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, dataType=NULL,
             typeGiven <- TRUE
         }
     }
-    #if (which == "text") {
-    #    w <- which(d$id == 0xa0)
-    #    rval <- vector("list", length(w))
-    #    for (i in seq_along(w)) {
-    #        chars <- rawToChar(d$buf[seq.int(2L+d$index[w[i]], by=1,
-    #        length.out=-1+d$dataLength[w[i]])])
-    #        rval[i] <- strsplit(chars, "\r\n")[1]
-    #    }
-    #    return(rval)
-    #}
     keep <- activeConfiguration == plan
     if (sum(keep) == 0L) {
         stop("there are no data for plan=", plan, "; try one of the following values instead: ", paste(unique(activeConfiguration), collapse=" "))
@@ -1896,51 +1872,242 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, dataType=NULL,
     # BOOKMARK A: vectorized reading
     #
     # Nortek (2017 p 48) "6.1.2 Burst/Average Data Record Definition (DF3)"
-    if (0x15 == dataType) { # 0x15
-       if (length(p$burst) < 1L)
-            stop("no dataType=", dataTypeOrig, " in file")
-        data <- readProfile(id=as.raw(0x15), debug=debug)
+    if (0x15 == dataType) {            # 0x15=burst
+        if (length(p$burst) < 1L) {
+            stop("no dataType=", dataTypeOrig, " (burst) in file")
+        }
+        data <- readProfile(id=as.raw(dataType), debug=debug)
+        oceDebug(1+debug, "dataType=", dataType, "(burst): move some things from data to metadata\n")
+        for (name in c("blankingDistance",
+                "cellSize", "configuration", "datasetDescription", "distance",
+                "frequency", "numberOfBeams", "numberOfCells", "oceCoordinate",
+                "orientation", "originalCoordinate")) {
+            if (name %in% names(data)) {
+                oceDebug(1+debug, "  transferring ", name, " from data to metadata\n")
+                res@metadata[name] <- data[name]
+            } else {
+                oceDebug(1+debug, "  deleting ", name, " from data, without moving to metadata\n")
+            }
+            data[name] <- NULL
+        }
     }
     # Nortek (2017 p 48) "6.1.2 Burst/Average Data Record Definition (DF3)"
-    if (0x16 == dataType) { # 0x16
-        if (length(p$average) < 1L)
-            stop("no dataType=", dataTypeOrig, " in file")
-        data <- readProfile(id=as.raw(0x16), debug=debug)
+    if (0x16 == dataType) {            # 0x16=average
+        if (length(p$average) < 1L) {
+            stop("no dataType=", dataTypeOrig, " (average) in file")
+        }
+        data <- readProfile(id=as.raw(dataType), debug=debug)
+        oceDebug(1+debug, "dataType=", dataType, "(average): move some things from data to metadata\n")
+        for (name in c("blankingDistance",
+                "cellSize", "configuration", "datasetDescription", "distance",
+                "frequency", "numberOfBeams", "numberOfCells", "oceCoordinate",
+                "orientation", "originalCoordinate")) {
+            if (name %in% names(data)) {
+                oceDebug(1+debug, "  transferring ", name, " from data to metadata\n")
+                res@metadata[name] <- data[name]
+            } else {
+                oceDebug(1+debug, "  deleting ", name, " from data, without moving to metadata\n")
+            }
+            data[name] <- NULL
+        }
     }
     #<FIXME> # Nortek (2017 p60) "6.1.3 Bottom Track Data Record Definition (DF20)"
     #<FIXME> if ("bottomTrack" %in% dataType && length(p$bottomTrack) > 0) # 0x17
     #<FIXME>     data$bottomTrack <- readTrack(id=as.raw(0x17), debug=debug)
+    if (0x17 == dataType) {            # 0x17=bottomTrack
+        if (length(p$bottomTrack) < 1L) {
+            stop("no dataType=", as.raw(dataTypeOrig), " (bottomTrack) in file")
+        }
+        data <- readTrack(id=dataType, debug=debug)
+        oceDebug(1+debug, "dataType=", as.raw(dataType), "(bottomTrack): move some things from data to metadata\n")
+        for (name in c("blankingDistance",
+                "cellSize", "configuration", "datasetDescription", "distance",
+                "frequency", "numberOfBeams", "numberOfCells", "oceCoordinate",
+                "orientation", "originalCoordinate")) {
+            if (name %in% names(data)) {
+                oceDebug(1+debug, "  transferring ", name, " from data to metadata\n")
+                res@metadata[name] <- data[name]
+            } else {
+                oceDebug(1+debug, "  deleting ", name, " from data, without moving to metadata\n")
+            }
+            data[name] <- NULL
+        }
+    }
     #<FIXME> if ("interleavedBurst" %in% which && length(p$interleavedBurst) > 0) # 0x18
     #<FIXME>     data$interleavedBurst <- readProfile(id=as.raw(0x18), debug=debug)
+    if (0x18 == dataType) {            # 0x18=interleavedBurst
+        if (length(p$interleavedBurst) < 1L) {
+            stop("no dataType=", dataTypeOrig, " (interleavedBurst) in file")
+        }
+        data <- readProfile(id=as.raw(dataType), debug=debug)
+        oceDebug(1+debug, "dataType=", dataType, "(interleavedBurst): move some things from data to metadata\n")
+        for (name in c("blankingDistance",
+                "cellSize", "configuration", "datasetDescription", "distance",
+                "frequency", "numberOfBeams", "numberOfCells", "oceCoordinate",
+                "orientation", "originalCoordinate")) {
+            if (name %in% names(data)) {
+                oceDebug(1+debug, "  transferring ", name, " from data to metadata\n")
+                res@metadata[name] <- data[name]
+            } else {
+                oceDebug(1+debug, "  deleting ", name, " from data, without moving to metadata\n")
+            }
+            data[name] <- NULL
+        }
+    }
     #<FIXME> if ("burstAltimeterRaw" %in% which && length(p$burstAltimeterRaw) > 0L) # 0x1a
     #<FIXME>     data$burstAltimeterRaw <- readBurstAltimeterRaw(id=as.raw(0x1a), debug=debug-1L)
+    if (0x1a == dataType) {            # 0x1a=burstAltimeterRaw
+        if (length(p$burstAltimeterRaw) < 1L) {
+            stop("no dataType=", as.raw(dataTypeOrig), " (burstAltimeterRaw) in file")
+        }
+        data <- readBurstAltimeterRaw(id=dataType, debug=debug)
+        oceDebug(1+debug, "dataType=", as.raw(dataType), "(burstAltimeterRaw): move some things from data to metadata\n")
+        for (name in c("blankingDistance",
+                "cellSize", "configuration", "datasetDescription", "distance",
+                "frequency", "numberOfBeams", "numberOfCells", "oceCoordinate",
+                "orientation", "originalCoordinate")) {
+            if (name %in% names(data)) {
+                oceDebug(1+debug, "  transferring ", name, " from data to metadata\n")
+                res@metadata[name] <- data[name]
+            } else {
+                oceDebug(1+debug, "  deleting ", name, " from data, without moving to metadata\n")
+            }
+            data[name] <- NULL
+        }
+    }
     #<FIXME> if ("DVLBottomTrack" %in% which && length(p$DVLBottomTrack) > 0) # 0x1b
     #<FIXME>     data$DVLBottomTrack <- readTrack(id=as.raw(0x1b), debug=debug-1L)
+    if (0x1b == dataType) {            # 0x1b=DVLBottomTrack
+        if (length(p$DVLBottomTrack) < 1L) {
+            stop("no dataType=", as.raw(dataTypeOrig), " (DVLBottomTrack) in file")
+        }
+        data <- readTrack(id=dataType, debug=debug)
+        oceDebug(1+debug, "dataType=", as.raw(dataType), "(DVLBottomTrack): move some things from data to metadata\n")
+        for (name in c("blankingDistance",
+                "cellSize", "configuration", "datasetDescription", "distance",
+                "frequency", "numberOfBeams", "numberOfCells", "oceCoordinate",
+                "orientation", "originalCoordinate")) {
+            if (name %in% names(data)) {
+                oceDebug(1+debug, "  transferring ", name, " from data to metadata\n")
+                res@metadata[name] <- data[name]
+            } else {
+                oceDebug(1+debug, "  deleting ", name, " from data, without moving to metadata\n")
+            }
+            data[name] <- NULL
+        }
+    }
     #<FIXME> if ("echosounder" %in% which && length(p$echosounder) > 0) # 0x1c
     #<FIXME>     data$echosounder <- readEchosounder(id=as.raw(0x1c), debug=debug)
-    #<FIXME> if ("altimeter" %in% which && length(p$altimeter) > 0) # 0x1e
-    #<FIXME>     data$altimeter <- readProfile(id=as.raw(0x1e), debug=debug)
+    if (0x1c == dataType) {            # 0x1c=echosounder
+        if (length(p$echosounder) < 1L) {
+            stop("no dataType=", dataTypeOrig, " (echosounder) in file")
+        }
+        data <- readEchosounder(id=dataType, debug=debug)
+        message("FIXME: move some (echosounder) things from data to metadata")
+        for (name in c("blankingDistance", "cellSize", "configuration",
+                "datasetDescription", "distance", "frequency", "numberOfBeams",
+                "numberOfCells", "orientation")) {
+            if (name %in% names(data)) {
+                oceDebug(1+debug, "moving ", name, " from data to metadata\n")
+                res@metadata[name] <- data[name]
+            } else {
+                oceDebug(1+debug, "  deleting ", name, " from data, without moving to metadata\n")
+            }
+            data[name] <- NULL
+        }
+    }
     #<FIXME> if ("DVLWaterTrack" %in% which && length(p$DVLWaterTrack) > 0) # 0x1d
     #<FIXME>     data$DVLWaterTrack <- readTrack(id=as.raw(0x1d), debug=debug)
+    if (0x1d == dataType) {            # 0x1d=DVLWaterTrack
+        if (length(p$echosounder) < 1L) {
+            stop("no dataType=", dataTypeOrig, " (DVLWaterTrack) in file")
+        }
+        data <- readProfile(id=dataType, debug=debug)
+        message("FIXME: move some (DVLWaterTrack) things from data to metadata")
+        for (name in c("blankingDistance", "cellSize", "configuration",
+                "datasetDescription", "distance", "frequency", "numberOfBeams",
+                "numberOfCells", "orientation")) {
+            if (name %in% names(data)) {
+                oceDebug(1+debug, "moving ", name, " from data to metadata\n")
+                res@metadata[name] <- data[name]
+            } else {
+                oceDebug(1+debug, "  deleting ", name, " from data, without moving to metadata\n")
+            }
+            data[name] <- NULL
+        }
+    }
+    #<FIXME> if ("altimeter" %in% which && length(p$altimeter) > 0) # 0x1e
+    #<FIXME>     data$altimeter <- readProfile(id=as.raw(0x1e), debug=debug)
+    if (0x1e == dataType) {            # 0x1e=altimeter
+        if (length(p$echosounder) < 1L) {
+            stop("no dataType=", dataTypeOrig, " (altimeter) in file")
+        }
+        data <- readProfile(id=dataType, debug=debug)
+        message("FIXME: move some (altimeter) things from data to metadata")
+        for (name in c("blankingDistance", "cellSize", "configuration",
+                "datasetDescription", "distance", "frequency", "numberOfBeams",
+                "numberOfCells", "orientation")) {
+            if (name %in% names(data)) {
+                oceDebug(1+debug, "moving ", name, " from data to metadata\n")
+                res@metadata[name] <- data[name]
+            } else {
+                oceDebug(1+debug, "  deleting ", name, " from data, without moving to metadata\n")
+            }
+            data[name] <- NULL
+        }
+    }
     #<FIXME> if ("averageAltimeter" %in% which && length(p$averageAltimeter) > 0) # 0x1f
     #<FIXME>     data$averageAltimeter <- readProfile(id=as.raw(0x1f), debug=debug)
+    if (0x1f == dataType) {            # 0x1f=averageAltimeter
+        if (length(p$echosounder) < 1L) {
+            stop("no dataType=", dataTypeOrig, " (averageAltimeter) in file")
+        }
+        data <- readProfile(id=dataType, debug=debug)
+        message("FIXME: move some (averageAltimeter) things from data to metadata")
+        for (name in c("blankingDistance", "cellSize", "configuration",
+                "datasetDescription", "distance", "frequency", "numberOfBeams",
+                "numberOfCells", "orientation")) {
+            if (name %in% names(data)) {
+                oceDebug(1+debug, "moving ", name, " from data to metadata\n")
+                res@metadata[name] <- data[name]
+            } else {
+                oceDebug(1+debug, "  deleting ", name, " from data, without moving to metadata\n")
+            }
+            data[name] <- NULL
+        }
+    }
     #<FIXME> if ("echosounderRaw" %in% which && length(p$echosounderRaw) > 0) # 0x23
     #<FIXME>     data$echosounderRaw <- readEchosounderRaw(id=as.raw(0x23), debug=debug)
-
-
-
+    if (0x23 == dataType) {            # 0x23=echosounderRaw
+        if (length(p$echosounder) < 1L) {
+            stop("no dataType=", dataTypeOrig, " (echosounderRaw) in file")
+        }
+        data <- readEchosounder(id=dataType, debug=debug)
+        message("FIXME: move some (echosounderRaw) things from data to metadata")
+        for (name in c("blankingDistance", "cellSize", "configuration",
+                "datasetDescription", "distance", "frequency", "numberOfBeams",
+                "numberOfCells", "orientation")) {
+            if (name %in% names(data)) {
+                oceDebug(1+debug, "moving ", name, " from data to metadata\n")
+                res@metadata[name] <- data[name]
+            } else {
+                oceDebug(1+debug, "  deleting ", name, " from data, without moving to metadata\n")
+            }
+            data[name] <- NULL
+        }
+    }
 
     # Use header as the final word, if it contradicts what we inferred above.
     if (!is.null(header)) {
-        if ("echosounder" %in% names(data)) {
+        if (0x1c == dataType) {        # 0x1c=echosounder
             # BOOKMARK-blankingDistance-2 (see also BOOKMARK-blankingDistance-1, above)
             BD <- ad2cpHeaderValue(header, "GETECHO", "BD")
-            if (data$echosounder$blankingDistance != BD) {
-                warning("In read.adp.ad2cp() : inferred echosounder$blankingDistance (", data$echosounder$blankingDistance,
+            if (res@metadata$blankingDistance != BD) {
+                warning("In read.adp.ad2cp() : inferred echosounder$blankingDistance (", res@metadata$blankingDistance,
                     "m) does not match the header GETECHO value (", BD,
                     "m); the latter value was used\n", call.=FALSE)
-                data$echosounder$blankingDistance <- BD
-                data$echosounder$distance <- BD + seq(1, by=data$echosounder$cellSize, length.out=data$echosounder$numberOfCells)
+                res@metadata$blankingDistance <- BD
+                res@metadata$distance <- BD + seq(1, by=res@metadata$cellSize, length.out=res@metadata$numberOfCells)
             }
         }
     }
@@ -1949,43 +2116,55 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, dataType=NULL,
     # tests/testthat/local_data/ad2cp/ad2cp_01.ad2cp, the blankingDistance for
     # echosounderRaw is 0, and so I'm guessing (pending more information from
     # Nortek) that the idea is to use the blankingDistance in the (now possibly updated)
-    if (2L == sum(c("echosounder", "echosounderRaw") %in% names(data))) {
-        if ("blankingDistance" %in% names(data$echosounder) && "startSampleIndex" %in% names(data$echosounderRaw)) {
-            # Compute cellSize using a formula inferred from an email by
-            # Nortek's Ragnar Ekker on 2022-09-01.
-            #
-            # 1. Should we use the integer `startSampleIndex` that is in the
-            # file, or should we compute it using the formula provided by
-            # Ragnar?  The former is an integer value that is 16 in a sample
-            # file, and if that's typical then rounding might be expected to
-            # give about 3% error in the results for `cellSize` and thus
-            # `distance`.
+    # ... honestly, this is a mess and I am not 100% sure what to do, lacking
+    # confidence until Nortek updates their documentation.  One thing, though:
+    # the code below is based on the old model for ad2cp object structure, in
+    # which we stored both 'echosounder' and 'echosounderRaw', but in the new
+    # model we do not do that.  I am simply skipping this for now 2022-10-08
+    # but printing a message
+    if (TRUE) {
+        message("FIXME: compute distance for new ad2cp object model")
+    } else {
+        if (dataType == as.raw(0x23)) { # 0x23=echosounderRaw
+            #2L == sum(c("echosounder", "echosounderRaw") %in% names(data))) {
+            # FIXME: are in res@metadata now?
+            if ("blankingDistance" %in% names(data$echosounder) && "startSampleIndex" %in% names(data$echosounderRaw)) {
+                # Compute cellSize using a formula inferred from an email by
+                # Nortek's Ragnar Ekker on 2022-09-01.
+                #
+                # 1. Should we use the integer `startSampleIndex` that is in the
+                # file, or should we compute it using the formula provided by
+                # Ragnar?  The former is an integer value that is 16 in a sample
+                # file, and if that's typical then rounding might be expected to
+                # give about 3% error in the results for `cellSize` and thus
+                # `distance`.
 
-            # 2. What `soundSpeed` should be used?  It varies from profile to
-            # profile. But, perhaps we should use a constant value, if that's
-            # what was used in some computations that led to the data creation.
-            # The graph above uses the integer value. If the calculated
-            # `startSampleIndex` were used instead, the peak would shift from
-            # 282m to 270m=
-            # `r round(with(d@data$echosounderRaw,cellSize2*282/cellSize))` m.
-            XMIT1 <- 1e-3*ad2cpHeaderValue(header, "GETECHO", "XMIT1")
-            BD <- ad2cpHeaderValue(header, "GETECHO", "BD")
-            L <- 0.5 * XMIT1 * soundSpeed[1] + BD
-            samplingRate <- data$echosounderRaw$samplingRate
-            startSampleIndex <- (XMIT1 + 2*BD/soundSpeed[1]) * samplingRate
-            data$echosounderRaw$cellSize <- L / data$echosounderRaw$startSampleIndex
-            data$echosounderRaw$cellSize2 <- L / startSampleIndex
-            data$echosounderRaw$distance <- seq(0, by=
-data$echosounderRaw$cellSize, length.out=data$echosounderRaw$numberOfSamples)
-            if (debug) {
-                message("read.adp.ad2cp() : computing echosounderRaw$distance based on my interpretation of an email sent by RE/Nortek on 2022-09-01, which contradicts one sent by EB/Nortek on 2022-08-28")
-                message(vectorShow(data$echosounder$blankingDistance, showNewline=FALSE))
-                message(vectorShow(data$echosounderRaw$startSampleIndex, showNewline=FALSE))
-                message(vectorShow(data$echosounderRaw$cellSize, showNewline=FALSE))
-                message(vectorShow(data$echosounderRaw$cellSize2, showNewline=FALSE))
-                message(vectorShow(data$echosounderRaw$numberOfSamples, showNewline=FALSE))
-                message(vectorShow(max(data$echosounderRaw$distance), showNewline=FALSE))
-                message(vectorShow(max(data$echosounder$distance), showNewline=FALSE))
+                # 2. What `soundSpeed` should be used?  It varies from profile to
+                # profile. But, perhaps we should use a constant value, if that's
+                # what was used in some computations that led to the data creation.
+                # The graph above uses the integer value. If the calculated
+                # `startSampleIndex` were used instead, the peak would shift from
+                # 282m to 270m=
+                # `r round(with(d@data$echosounderRaw,cellSize2*282/cellSize))` m.
+                XMIT1 <- 1e-3*ad2cpHeaderValue(header, "GETECHO", "XMIT1")
+                BD <- ad2cpHeaderValue(header, "GETECHO", "BD")
+                L <- 0.5 * XMIT1 * soundSpeed[1] + BD
+                samplingRate <- data$echosounderRaw$samplingRate
+                startSampleIndex <- (XMIT1 + 2*BD/soundSpeed[1]) * samplingRate
+                data$echosounderRaw$cellSize <- L / data$echosounderRaw$startSampleIndex
+                data$echosounderRaw$cellSize2 <- L / startSampleIndex
+                data$echosounderRaw$distance <- seq(0, by=
+                    data$echosounderRaw$cellSize, length.out=data$echosounderRaw$numberOfSamples)
+                if (debug) {
+                    message("read.adp.ad2cp() : computing echosounderRaw$distance based on my interpretation of an email sent by RE/Nortek on 2022-09-01, which contradicts one sent by EB/Nortek on 2022-08-28")
+                    #??message(vectorShow(data$echosounder$blankingDistance, showNewline=FALSE))
+                    #??message(vectorShow(data$echosounderRaw$startSampleIndex, showNewline=FALSE))
+                    #??message(vectorShow(data$echosounderRaw$cellSize, showNewline=FALSE))
+                    #??message(vectorShow(data$echosounderRaw$cellSize2, showNewline=FALSE))
+                    #??message(vectorShow(data$echosounderRaw$numberOfSamples, showNewline=FALSE))
+                    #??message(vectorShow(max(data$echosounderRaw$distance), showNewline=FALSE))
+                    #??message(vectorShow(max(data$echosounder$distance), showNewline=FALSE))
+                }
             }
         }
     }
@@ -2030,7 +2209,20 @@ data#| $echosounderRaw$cellsize, length.out=data$echosounderRaw$numberOfSamples)
     # and want to correct it.  This makes ad2cp different from other adp
     # types.  Also, we must remove the overall coordinate (created by
     # initializer) since it has no meaning here.
-    res@metadata$oceCoordinate <- NULL
+    if (TRUE) {
+        message("FIXME: should we be skipping the excision of metadata$oceCoordinate?")
+    } else {
+        res@metadata$oceCoordinate <- NULL
+    }
+    # Remove some metadata that make don't sense for the dataType
+    if (dataType %in% c(0x1c, 0x1e, 0x23)) {
+        # 0x1c=echosounder 0x1e=altimeter 0x23=echosounderRaw
+        res@metadata$units$v <- NULL
+        res@metadata$oceCoordinate <- NULL
+        res@metadata$orientation <- NULL
+    }
+    res@metadata$dataType <- dataType
+
     #>>ad2cpHeaderValue(d@metadata$header,"GETECHO","BD")
     #>>browser()
     # Insert data

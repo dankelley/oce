@@ -445,6 +445,8 @@ setMethod(f="summary",
             cat(paste("* File name:     \"", object@metadata$filename, "\"\n", sep=""), ...)
         if ("fileType" %in% mnames)
             cat(paste("* File type:     ", object@metadata$fileType, "\n", sep=""), ...)
+        if (isAD2CP)
+            cat(paste("* Data type:     ", object@metadata$dataType, "\n", sep=""), ...)
         if ("firmwareVersion" %in% mnames)
             cat(paste("* Firmware:      ", object@metadata$firmwareVersion, "\n", sep=""), ...)
         if ("latitude" %in% names(object@metadata)) {
@@ -583,35 +585,21 @@ setMethod(f="summary",
             if (object[["numberOfBeams"]] > 3)
                 cat("  ", format(transformationMatrix[4, ], width=digits+4, digits=digits, justify="right"), "\n")
         }
-        if (isAD2CP) {
-            cat("* Data Overview\n\n")
-            dataNames <- names(object@data)
-            for (i in seq_along(dataNames)) {
-                d <- object@data[[dataNames[i]]]
-                cat("  * ", length(d[["time"]]), " samples\n", sep="")
-            }
-            cat("\n")
-            #default <- ad2cpDefaultDataItem(object)
-            #for (rt in object[["recordTypes"]]) {
-            #    if (rt != "text") {
-            #        isTheDefault <- rt == default
-            #        cat("* Record type '", rt, "'", if (isTheDefault) " (the default item)::\n" else "::\n", sep="")
-            #        cat("    Number of profiles: ", length(object[["time", rt]]), "\n")
-            #        cat("    Number of cells:    ", object[["numberOfCells", rt]], "\n")
-            #        cat("    Blanking distance:  ", object[["blankingDistance", rt]], "\n")
-            #        cat("    Cell size:          ", object[["cellSize", rt]], "\n")
-            #        numberOfBeams <- object[["numberOfBeams", rt]]
-            #        cat("    Number of beams:    ", numberOfBeams, "\n")
-            #        cat("    Beam angle:         ", if (numberOfBeams == 1) 0 else object[["beamAngle"]], "\n")
-            #        if (numberOfBeams > 1)
-            #            cat("    Coordinate system:  ", object[["oceCoordinate", rt]], "\n")
-            #    }
-            #}
-            processingLogShow(object)
-            invisible(NULL)
-        } else {
-            invisible(callNextMethod()) # summary
-        }
+        #? if (isAD2CP) {
+        #?     cat("* Data Overview\n\n")
+        #?     cat("  * dataType:", object@metadata$dataType, "\n")
+        #?     #> dataNames <- names(object@data)
+        #?     #> for (i in seq_along(dataNames)) {
+        #?     #>     d <- object@data[[dataNames[i]]]
+        #?     #>     cat("  * ", length(d[["time"]]), " samples\n", sep="")
+        #?     #> }
+        #?     #> cat("\n")
+        #?     processingLogShow(object)
+        #?     invisible(NULL)
+        #? } else {
+        #?     invisible(callNextMethod()) # summary
+        #? }
+        invisible(callNextMethod()) # summary
     })
 
 #' Concatenate adp objects

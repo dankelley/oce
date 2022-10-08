@@ -75,7 +75,7 @@ the most common plan in the requested subset of the data.}
 instrument.  If this is not provided, an attempt is made to infer it from the
 file header (if there is one), and \code{"Signature1000"} is used, otherwise. The
 importance of knowing the type is for inferring the slantwise beam angle,
-which is usd in the conversion from beam coordinates to xyz coordinates. If
+which is used in the conversion from beam coordinates to xyz coordinates. If
 \code{type} is provided, it must be one of \code{"Signature250"}, \code{"Signature500"}, or
 \code{"Signature1000"}; the first of these has a 20 degree slant-beam angle, while
 the others each have 20 degrees (see reference 2, section 2 on page 6). Note
@@ -101,9 +101,8 @@ data chunks, or to 3 for intensive debugging at both levels.}
 \item{\dots}{ignored.}
 }
 \value{
-An \linkS4class{adp} object with \code{metadata$fileType} equal to \code{"AD2CP"}, a
-table (if \code{which="?"}), a data frame (if \code{which="??"}), or a vector of
-character (if \code{which="text"}).
+Either an \linkS4class{adp} object with \code{metadata$fileType} equal to
+\code{"AD2CP"}, a or a data table summarizing the file contents by ID.
 }
 \description{
 This function reads Nortek AD2CP files, storing data elements in lists within
