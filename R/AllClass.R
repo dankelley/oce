@@ -96,13 +96,17 @@ setMethod(f="summary",
                           cat("* Time:                ", format(from), "\n", sep="")
                       } else {
                           if (deltat < 60) {
-                              cat("* Time ranges from", format(from), "to", format(to), "with", nt, "samples and mean increment", deltat, "s\n")
+                              cat("* Time:          ", format(from), " to ", format(to),
+                                  " (", nt, " samples, mean increment ", deltat, "s)\n", sep="")
                           } else if (deltat < 3600) {
-                              cat("* Time ranges from", format(from), "to", format(to), "with", nt, "samples and mean increment", deltat/60, "min\n")
+                              cat("* Time:          ", format(from), " to ", format(to),
+                                  " (", nt, " samples , mean increment ", deltat/60, "min)\n", sep="")
                           } else if (deltat < 24*3600) {
-                              cat("* Time ranges from", format(from), "to", format(to), "with", nt, "samples and mean increment", deltat/3600, "hour\n")
+                              cat("* Time:          ", format(from), " to ", format(to),
+                                  " (", nt, " samples , mean increment ", deltat/3600, "hour)\n", sep="")
                           } else {
-                              cat("* Time ranges from", format(from), "to", format(to), "with", nt, "samples and mean increment", deltat/3600/24, "day\n")
+                              cat("* Time:          ", format(from), " to ", format(to),
+                                  " (", nt, " samples , mean increment ", deltat/3600/24, "day)\n", sep="")
                           }
                       }
                   }
@@ -111,11 +115,22 @@ setMethod(f="summary",
               threes <- NULL
               if (ndata > 0) {
                   if (is.ad2cp(object)) {
+                      # FIXME: this needs rewriting, but is it worth it?
                       threes <- matrix(nrow=3, ncol=3)
                       ## FIXME get burst and average separately
-                      threes[1, ] <- threenum(object[["v"]])
-                      threes[2, ] <- threenum(object[["a"]])
-                      threes[3, ] <- threenum(object[["q"]])
+                      i <- 1
+                      if ("v" %in% names(object@data)) {
+                          threes[i, ] <- threenum(object[["v"]])
+                          i <- i + 1
+                      }
+                      if ("a" %in% names(object@data)) {
+                          threes[i, ] <- threenum(object[["a"]])
+                          i <- i + 1
+                      }
+                      if ("q" %in% names(object@data)) {
+                          threes[i, ] <- threenum(object[["q"]])
+                          i <- i + 1
+                      }
                   } else {
                       threes <- matrix(nrow=ndata, ncol=3)
                       for (i in 1:ndata) {
@@ -127,95 +142,118 @@ setMethod(f="summary",
                   ## paste the scale after the unit
                   unitsNames <- names(object@metadata$units)
                   units <- unlist(lapply(seq_along(object@metadata$units),
-                                         function(i) {
-                                             u <- object@metadata$units[[i]]
-                                             ##> message("AllClass.R:48  u: '", u, "'")
-                                             ##> message("AllClass.R:48  name: '", names(object@metadata$units)[i], "'")
-                                             ##> message("length(u[1][[1]]): ", length(u[1][[1]]))
-                                             if (0 == length(u[1][[1]])) {
-                                                 if (2 == length(u)) return(u[2]) else return("")
-                                             }
-                                             if (length(u) == 1) {
-                                                 res <- if (is.expression(u)) as.character(u) else u
-                                             } else if (length(u) == 2) {
-                                                 res <- if (nchar(u[2])) paste(u[[1]], u[[2]], sep=", ") else u[[1]]
-                                             } else {
-                                                 res <- ""
-                                             }
-                                             res <- as.character(res)[1] # the [1] is in case the unit is mixed up
-                                             ##> message("1. res: '", res, "'")
-                                             ## Clean up notation, by stages. (The order may matter.)
-                                             if (nchar(res)) res <- gsub("degree[ ]+[*][ ]+C", "\u00B0C", res)
-                                             if (nchar(res)) res <- gsub("degree[ ]+[*][ ]+F", "\u00B0F", res)
-                                             if (nchar(res)) res <- gsub("degree[ ]+[*][ ]+E", "\u00B0E", res)
-                                             if (nchar(res)) res <- gsub("degree[ ]+[*][ ]+W", "\u00B0W", res)
-                                             if (nchar(res)) res <- gsub("degree[ ]+[*][ ]+N", "\u00B0N", res)
-                                             if (nchar(res)) res <- gsub("degree[ ]+[*][ ]+S", "\u00B0S", res)
-                                             if (nchar(res)) res <- gsub("percent", "%", res)
-                                             ##> message("res: '", res, "'")
-                                             if (nchar(res)) res <- gsub("degree", "\u00B0", res)
-                                             ##> message("res: '", res, "'")
-                                             ##> message("2. res: '", res, "'")
-                                             if (nchar(res)) res <- gsub("^,[ ]*", "", res)
-                                             ##> message("3. res: '", res, "'")
-                                             if (nchar(res)) res <- gsub("mu . ", "\u03BC", res)
-                                             ##> message("4. res: '", res, "'")
-                                             if (nchar(res)) res <- gsub("per . mil", "\u2030", res)
-                                             if (nchar(res)) res <- gsub("10\\^\\(-8\\)[ ]*\\*", "10\u207B\u2078", res)
-                                             ##> message("5. res: '", res, "'")
-                                             if (nchar(res)) res <- gsub("\\^2", "\u00B2", res)
-                                             ##> message("6. res: '", res, "'")
-                                             if (nchar(res)) res <- gsub("\\^3", "\u00B3", res)
-                                             ##> message("7. res: '", res, "'")
-                                             ##> message("res: '", res, "'")
-                                             res
-                                         }))
+                          function(i) {
+                              u <- object@metadata$units[[i]]
+                              ##> message("AllClass.R:48  u: '", u, "'")
+                              ##> message("AllClass.R:48  name: '", names(object@metadata$units)[i], "'")
+                              ##> message("length(u[1][[1]]): ", length(u[1][[1]]))
+                              if (0 == length(u[1][[1]])) {
+                                  if (2 == length(u)) return(u[2]) else return("")
+                              }
+                              if (length(u) == 1) {
+                                  res <- if (is.expression(u)) as.character(u) else u
+                              } else if (length(u) == 2) {
+                                  res <- if (nchar(u[2])) paste(u[[1]], u[[2]], sep=", ") else u[[1]]
+                              } else {
+                                  res <- ""
+                              }
+                              res <- as.character(res)[1] # the [1] is in case the unit is mixed up
+                              #> message("1. res: '", res, "'")
+                              # Clean up notation, by stages. (The order may matter.)
+                              if (nchar(res)) res <- gsub("degree[ ]+[*][ ]+C", "\u00B0C", res)
+                              if (nchar(res)) res <- gsub("degree[ ]+[*][ ]+F", "\u00B0F", res)
+                              if (nchar(res)) res <- gsub("degree[ ]+[*][ ]+E", "\u00B0E", res)
+                              if (nchar(res)) res <- gsub("degree[ ]+[*][ ]+W", "\u00B0W", res)
+                              if (nchar(res)) res <- gsub("degree[ ]+[*][ ]+N", "\u00B0N", res)
+                              if (nchar(res)) res <- gsub("degree[ ]+[*][ ]+S", "\u00B0S", res)
+                              if (nchar(res)) res <- gsub("percent", "%", res)
+                              #> message("res: '", res, "'")
+                              if (nchar(res)) res <- gsub("degree", "\u00B0", res)
+                              #> message("res: '", res, "'")
+                              #> message("2. res: '", res, "'")
+                              if (nchar(res)) res <- gsub("^,[ ]*", "", res)
+                              #> message("3. res: '", res, "'")
+                              if (nchar(res)) res <- gsub("mu . ", "\u03BC", res)
+                              #> message("4. res: '", res, "'")
+                              if (nchar(res)) res <- gsub("per . mil", "\u2030", res)
+                              if (nchar(res)) res <- gsub("10\\^\\(-8\\)[ ]*\\*", "10\u207B\u2078", res)
+                              #> message("5. res: '", res, "'")
+                              if (nchar(res)) res <- gsub("\\^2", "\u00B2", res)
+                              #> message("6. res: '", res, "'")
+                              if (nchar(res)) res <- gsub("\\^3", "\u00B3", res)
+                              #> message("7. res: '", res, "'")
+                              #> message("res: '", res, "'")
+                              res
+                          }))
                   names(units) <- unitsNames
-                  ##> message("units:");str(units)
+                  #> message("units:");str(units)
                   if (!is.null(threes)) {
+                      #. message("threes step 1:");print(threes)
                       if (is.ad2cp(object)) {
                           rownames(threes) <- c("v", "a", "q")
                       } else {
                           rownames(threes) <- paste("    ", dataLabel(dataNames, units), sep="")
                       }
+                      #. message("threes step 2:");print(threes)
                       threes <- cbind(threes,
-                                      as.vector(lapply(object@data, function(x)
-                                                       if (is.array(x)) paste(dim(x), collapse="x") else length(x))),
-                                      as.vector(lapply(object@data, function(x) sum(is.na(x)))))
+                          as.vector(lapply(row.names(threes),
+                                  function(name) {
+                                      xx <- object@data[[name]]
+                                      if (is.array(xx)) paste(dim(xx), collapse="x")
+                                      else length(xx)
+                                  })),
+                          as.vector(lapply(row.names(threes),
+                                  function(name) {
+                                      sum(is.na(object@data[[name]]))
+                                  })))
                       colnames(threes) <- c("Min.", "Mean", "Max.", "Dim.", "NAs")
+                      #.message("threes step 3:");print(threes)
                       cat("* Data Overview\n\n")
                       if ("dataNamesOriginal" %in% metadataNames) {
                           if (is.list(object@metadata$dataNamesOriginal)) {
-                              OriginalName <- unlist(lapply(dataNames, function(n)
-                                                            if (n %in% names(object@metadata$dataNamesOriginal))
-                                                                object@metadata$dataNamesOriginal[[n]] else "-"))
+                              OriginalName <- unlist(lapply(dataNames,
+                                      function(n) {
+                                          if (n %in% names(object@metadata$dataNamesOriginal)) {
+                                              object@metadata$dataNamesOriginal[[n]]
+                                          } else {
+                                              "-"
+                                          }
+                                      }))
                           } else {
                               OriginalName <- object@metadata$dataNamesOriginal
                           }
                       } else {
                           OriginalName <- NULL
                       }
-                      ##print(OriginalName)
                       ## I'm not sure the following will ever happen, if we always remember
                       ## to use ctdAddColumn(), but I don't want dataNames getting recycled, so
                       ## the next if-block prevents that.
-                      if (length(OriginalName) < length(dataNames))
-                          OriginalName <- c(OriginalName, rep("-", length(dataNames)-length(OriginalName)))
-                      ##print(OriginalName)
-                      OriginalName[0==nchar(OriginalName, "bytes")] <- "-"
-                      if (!is.null(OriginalName)) {
-                          if (is.ad2cp(object)) {
-                              threes <- cbind(threes, "-")
-                          } else {
-                              threes <- cbind(threes, OriginalName)
+                      if (length(OriginalName)) {
+                          if (length(OriginalName) < length(dataNames))
+                              OriginalName <- c(OriginalName, rep("-", length(dataNames)-length(OriginalName)))
+                          ##print(OriginalName)
+                          #.message("threes step 4:");print(threes)
+                          OriginalName[0==nchar(OriginalName, "bytes")] <- "-"
+                          #.message("threes step 5:");print(threes)
+                          if (!is.null(OriginalName)) {
+                              if (is.ad2cp(object)) {
+                                  threes <- cbind(threes, "-")
+                              } else {
+                                  threes <- cbind(threes, OriginalName)
+                              }
                           }
+                          #browser()
+                          #colnames(threes) <- c(colnames(threes), "OriginalName")
                       }
-                      if ("time" %in% dataNames)
+                      #.message("threes step 6:");print(threes)
+                      if ("time" %in% row.names(threes))
                           threes <- threes[-which("time" == dataNames), , drop=FALSE]
                       owidth <- options('width')
                       options(width=150) # make wide to avoid line breaks
                       #browser()
-                      print(as.data.frame(threes), digits=5)
+                      threes <- as.data.frame(threes)
+                      #. message("threes step 5:");print(threes)
+                      print(threes, digits=5)
                       options(width=owidth$width)
                       cat("\n")
                   }
@@ -225,10 +263,11 @@ setMethod(f="summary",
                   cat("* Data-quality Flag Scheme\n\n")
                   cat("    name    \"", object@metadata$flagScheme$name, "\"\n", sep="")
                   cat("    mapping ", gsub(" = ", "=", as.character(deparse(object@metadata$flagScheme$mapping,
-                                                                            width.cutoff=400))), "\n", sep="")
+                                  width.cutoff=400))), "\n", sep="")
                   if ("default" %in% names(object@metadata$flagScheme)) {
-                      cat("    default ", gsub(" = ", "=", as.character(deparse(object@metadata$flagScheme$default,
-                                                                                width.cutoff=400))), "\n", sep="")
+                      cat("    default ", gsub(" = ", "=",
+                              as.character(deparse(object@metadata$flagScheme$default,
+                                      width.cutoff=400))), "\n", sep="")
                   }
                   cat("\n")
               }
@@ -720,7 +759,6 @@ setMethod(f="show",
         }
         odigits <- options("digits")$digits
         options(digits=9) # helps with e.g. CTD adjusted vs unadjusted values
-        isAD2CP <- is.ad2cp(object)
         for (i in seq_along(dataNames)) {
             d <- object@data[[i]]
             if (inherits(d, "POSIXt")) {

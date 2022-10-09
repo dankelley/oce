@@ -2,8 +2,6 @@
 
 library(oce)
 
-sn <- function(x) sort(names(x))
-
 # The files used here are in the possession of Dan Kelley, but cannot
 # be shared with anyone else, since they were provided to him in
 # confidence, to help with testing.
@@ -49,22 +47,42 @@ f2 <- "~/Dropbox/oce_secret_data/ad2cp/secret2_trimmed.ad2cp"
 f3 <- "~/Dropbox/oce_secret_data/ad2cp/secret3_trimmed.ad2cp"
 #f4 <- "~/Dropbox/oce_secret_data/ad2cp/byg_trimmed.ad2cp"
 #f5 <- "~/Dropbox/oce_secret_data/ad2cp/med_trimmed.ad2cp"
+#   > read.oce(f1)
+#     IDhex IDdec    name occurance
+#   1  0x15    21   burst        88
+#   2  0x16    22 average        11
+#   3  0xa0   160    text         1
+#
+#   > read.oce(f2)
+#     IDhex IDdec  name occurance
+#   1  0x15    21 burst        99
+#   2  0xa0   160  text         1
+#
+#   > read.oce(f3)
+#     IDhex IDdec             name occurance
+#   1  0x15    21            burst        50
+#   2  0x18    24 interleavedBurst        49
+#   3  0xa0   160             text         1
+
 
 if (file.exists(f1)) {
     skip_on_cran()
 
     test_that("'dataType' works for 0x16, 24, and \"average\"",
         {
-            expect_warning(expect_warning(
+            expect_message(
+                expect_message(
                     d1 <- read.oce(f1, dataType="average"),
                     "using to=100 based on file contents"),
                 "setting plan=0")
             expect_equal(11L, length(d1[["time"]]))
-            expect_warning(expect_warning(
+            expect_message(
+                expect_message(
                     d2 <- read.oce(f1, dataType=22),
                     "using to=100 based on file contents"),
                 "setting plan=0")
-            expect_warning(expect_warning(
+            expect_message(
+                expect_message(
                     d3 <- read.oce(f1, dataType="average"),
                     "using to=100 based on file contents"),
                 "setting plan=0")
@@ -79,7 +97,7 @@ if (file.exists(f1)) {
             burst <- read.adp.ad2cp(f1, 1, 100, 1, dataType="burst", plan=0)
             expect_error(read.adp.ad2cp(f1, 1, 100, 1, dataType="average", plan=10),
                 "there are no data for plan=10; try one of the following values instead: 1 0")
-            expect_warning(d1 <- read.adp.ad2cp(f1, 1, 100, 1, dataType="average"),
+            expect_message(d1 <- read.adp.ad2cp(f1, 1, 100, 1, dataType="average"),
                 "setting plan=0, the most common value in this file")
             # regression tests
             expect_equal(names(average[["data"]]),
@@ -341,7 +359,7 @@ if (file.exists(f2)) {
             expect_equal(N, read.oce(f2)[1,"occurance"])
             # Note: using read.adp() to ensure that it also works
             expect_warning(
-                expect_warning(burst <- read.adp(f2, dataType="burst"),
+                expect_message(burst <- read.adp(f2, dataType="burst"),
                     "setting plan=0, the only value in the file"),
                 "ignoring 'despike'")
             expect_equal(burst[["oceCoordinate"]], "beam")
@@ -373,11 +391,13 @@ if (file.exists(f3)) {
         {
             N <- 100
             ## Note: using read.oce() to ensure that it also works
-            expect_warning(expect_warning(
+            expect_message(
+                expect_message(
                     b <- read.oce(f3, dataType="burst"),
                     "using to=100 based on file contents"),
                 "setting plan=1, the only value in the file")
-            expect_warning(expect_warning(
+            expect_message(
+                expect_message(
                     ib <- read.oce(f3, dataType="interleavedBurst"),
                     "using to=100 based on file contents"),
                 "setting plan=1, the only value in the file")

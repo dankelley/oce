@@ -38,9 +38,9 @@ if (file.exists(file)) {
 
     test_that("local_data/ad2cp/ad2cp_01.ad2cp 'average' is okay",
         {
-            expect_warning(
+            expect_message(
                 expect_warning(
-                    expect_warning(
+                    expect_message(
                         expect_warning(
                             d <- read.oce(file, dataType="average"),
                             "early EOF in chunk 13"),
@@ -121,9 +121,9 @@ if (file.exists(file)) {
 
     test_that("local_data/ad2cp/ad2cp_01.ad2cp 'echosounder' is okay",
         {
-            expect_warning(
+            expect_message(
                 expect_warning(
-                    expect_warning(
+                    expect_message(
                         expect_warning(
                             d <- read.oce(file, dataType="echosounder"),
                             "early EOF in chunk 13"),

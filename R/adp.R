@@ -434,19 +434,23 @@ setMethod(f="summary",
     signature="adp",
     definition=function(object, ...) {
         mnames <- names(object@metadata)
+        isAD2CP <- is.ad2cp(object)
         cat("ADP Summary\n-----------\n\n", ...)
+        if ("filename" %in% mnames)
+            cat(paste("* Filename:      \"", object@metadata$filename, "\"\n", sep=""), ...)
         if ("instrumentType" %in% mnames)
             cat(paste("* Instrument:    ", object@metadata$instrumentType, "\n", sep=""), ...)
-        if ("manufacturere" %in% mnames)
-            cat("* Manufacturer:        ", object@metadata$manufacturer, "\n")
+        if ("manufacturer" %in% mnames)
+            cat(paste("* Manufacturer:  ", object@metadata$manufacturer, "\n", sep=""), ...)
         if ("serialNumber" %in% mnames)
             cat(paste("* Serial number: ", object@metadata$serialNumber, "\n", sep=""), ...)
-        if ("filename" %in% mnames)
-            cat(paste("* File name:     \"", object@metadata$filename, "\"\n", sep=""), ...)
         if ("fileType" %in% mnames)
             cat(paste("* File type:     ", object@metadata$fileType, "\n", sep=""), ...)
         if (isAD2CP)
-            cat(paste("* Data type:     ", object@metadata$dataType, "\n", sep=""), ...)
+            cat(paste("* Data type:     0x", 
+                    as.raw(object@metadata$dataType), "=",
+                    as.integer(object@metadata$dataType), "=",
+                    ad2cpCodeToName(object@metadata$dataType, prefix=FALSE), "\n", sep=""), ...)
         if ("firmwareVersion" %in% mnames)
             cat(paste("* Firmware:      ", object@metadata$firmwareVersion, "\n", sep=""), ...)
         if ("latitude" %in% names(object@metadata)) {
@@ -457,7 +461,6 @@ setMethod(f="summary",
                     "\n", sep=''))
         }
         v.dim <- dim(object[["v"]])
-        isAD2CP <- is.ad2cp(object)
         if (!isAD2CP) {
             cat("* # of beams:    ", v.dim[3], "\n", sep="")
             cat("* # profiles:    ", v.dim[1], "\n", sep="")
@@ -465,10 +468,10 @@ setMethod(f="summary",
             cat("* # beams:       ", v.dim[3], "\n", sep="")
             cat("* Cell size:     ", object[["cellSize"]], "m\n", sep="")
         }
-        if ("time" %in% names(object@data)) {
-            cat("* Summary of times between profiles:\n")
-            print(summary(diff(as.numeric(object@data$time))))
-        }
+        #?if ("time" %in% names(object@data)) {
+        #?    cat("* Summary of times between profiles:\n")
+        #?    print(summary(diff(as.numeric(object@data$time))))
+        #?}
         if (1 == length(agrep("nortek", object@metadata$manufacturer, ignore.case=TRUE))) {
             resSpecific <- list(internalCodeVersion=object@metadata$internalCodeVersion,
                 hardwareRevision=object@metadata$hardwareRevision,

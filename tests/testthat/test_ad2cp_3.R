@@ -22,10 +22,12 @@ file <- "local_data/ad2cp/S102791A002_Barrow_v2.ad2cp"
 # 5  0xa0   160              text         1
 
 if (file.exists(file)) {
+    skip_on_cran()
+
     test_that("signature 250 burstAltimeterRaw",
         {
-            expect_warning(
-                expect_warning(
+            expect_message(
+                expect_message(
                     bar <- read.oce(file, dataType="burstAltimeterRaw"),
                     "using to=1477 based on file contents"),
                 "setting plan=0, the most common value in this file")
@@ -41,8 +43,8 @@ if (file.exists(file)) {
 
     test_that("signature 250 average",
         {
-            expect_warning(
-                expect_warning(
+            expect_message(
+                expect_message(
                     a <- read.oce(file, dataType="average"),
                     "using to=1477 based on file contents"),
                 "setting plan=0, the most common value in this file")
@@ -87,8 +89,8 @@ if (file.exists(file)) {
                     class=c("POSIXct", "POSIXt"), tzone="UTC"))
 
             # bottomTrack -- FIXME
-            expect_warning(
-                expect_warning(
+            expect_message(
+                expect_message(
                     bt <- read.oce(file, dataType="bottomTrack"),
                     "using to=1477 based on file contents"),
                 "setting plan=0, the most common value in this file")

@@ -1,21 +1,5 @@
 # vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
 
-# A helpful function.  I seem to do this kind of thing quite a lot, and so I may
-# document this function later, and add it to the NAMESPACE.
-makeNumeric <- function(x)
-{
-    if (is.numeric(x))
-        return(x)
-    if (is.vector(x))
-        return(as.numeric(x))
-    if (is.array(x)) {
-        dim <- dim(x)
-        rval <- as.numeric(x)
-        dim(rval) <- dim
-        return(rval)
-    }
-    stop("'x' must be a vector or an array")
-}
 
 #' Trim an AD2CP File
 #'
@@ -227,9 +211,8 @@ is.ad2cp <- function(x)
 #' @param code a [raw] (or corresponding integer) vector indicating the IDs of
 #' interest, or NULL to get a summary of possible values.
 #'
-#' @param removePrefix logical value indicating whether to remove the prefix.
-#' If this is FALSE, results are e.g. `"0x1c=echosounder"` but if TRUE, results
-#' are e.g. `"echosounder"`.
+#' @param prefix logical value indicating whether to show the raw value as a
+#' prefix (e.g. `"0x1c=echosounder"` as opposed to `"echosounder"`).
 #'
 #' @return An indication of the mapping.  If `code` is NULL, this is a data
 #' frame.  Otherwise, it is a character vector with the relevant mappings,
@@ -246,7 +229,7 @@ is.ad2cp <- function(x)
 #' @family things related to ad2cp data
 #'
 #' @author Dan Kelley
-ad2cpCodeToName <- function(code=NULL, removePrefix=FALSE)
+ad2cpCodeToName <- function(code=NULL, prefix=TRUE)
 {
     table <- c(burst=as.raw(0x15),
         average=as.raw(0x16),
@@ -270,8 +253,11 @@ ad2cpCodeToName <- function(code=NULL, removePrefix=FALSE)
         tnames <- names(table)
         for (i in seq_along(code)) {
             m <- match(code[i], table)
-            rval[i] <- if (removePrefix) tnames[m]
-                else paste0("0x", as.raw(code[i]), "=", if (is.na(m)) "?" else tnames[m])
+            rval[i] <- if (prefix) {
+                paste0("0x", as.raw(code[i]), "=", if (is.na(m)) "?" else tnames[m])
+            } else {
+                tnames[m]
+            }
         }
     }
     rval
@@ -647,7 +633,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, dataType=NULL,
         return(data.frame(
                 time=time,
                 ID=paste0("0x", as.raw(nav$id),"=",nav$id),
-                name=ad2cpCodeToName(nav$id, removePrefix=TRUE),
+                name=ad2cpCodeToName(nav$id, prefix=FALSE),
                 start=nav$start+1L, # nav$start is in zero-indexed C notation
                 headerLength=nav$headerLength,
                 dataLength=nav$dataLength,
@@ -657,7 +643,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, dataType=NULL,
     oceDebug(debug, vectorShow(length(d$index)))
     Nmax <- length(d$index)
     if (to > Nmax) {
-        warning("In read.adp.ad2cp() : using to=", Nmax, " based on file contents", call.=FALSE)
+        message("In read.adp.ad2cp() : using to=", Nmax, " based on file contents")
         to <- Nmax
     }
     focusIndex <- seq(from, to, by=by)
@@ -758,13 +744,13 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, dataType=NULL,
         nu <- length(u)
         if (nu == 1) {
             plan <- activeConfiguration[1]
-            warning("In read.adp.ad2cp() : setting plan=", plan, ", the only value in the file", call.=FALSE)
+            message("In read.adp.ad2cp() : setting plan=", plan, ", the only value in the file")
         } else {
             plan <- u[which.max(unlist(lapply(u,function(x)sum(activeConfiguration==x))))]
             acTable <- table(activeConfiguration)
-            warning("In read.adp.ad2cp() : setting plan=", plan,
+            message("In read.adp.ad2cp() : setting plan=", plan,
                 ", the most common value in this file; ",
-                paste(names(acTable)," occurs ",unname(acTable)," time[s]", sep="",collapse="; "), call.=FALSE)
+                paste(names(acTable)," occurs ",unname(acTable)," time[s]", sep="",collapse="; "))
         }
     }
     # Try to find a header, as the first record-type that has id=0xa0.
@@ -1877,16 +1863,16 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, dataType=NULL,
             stop("no dataType=", dataTypeOrig, " (burst) in file")
         }
         data <- readProfile(id=as.raw(dataType), debug=debug)
-        oceDebug(1+debug, "dataType=", dataType, "(burst): move some things from data to metadata\n")
+        oceDebug(debug, "dataType=", dataType, "(burst): move some things from data to metadata\n")
         for (name in c("blankingDistance",
                 "cellSize", "configuration", "datasetDescription", "distance",
                 "frequency", "numberOfBeams", "numberOfCells", "oceCoordinate",
                 "orientation", "originalCoordinate")) {
             if (name %in% names(data)) {
-                oceDebug(1+debug, "  transferring ", name, " from data to metadata\n")
+                oceDebug(debug, "  transferring ", name, " from data to metadata\n")
                 res@metadata[name] <- data[name]
             } else {
-                oceDebug(1+debug, "  deleting ", name, " from data, without moving to metadata\n")
+                oceDebug(debug, "  deleting ", name, " from data, without moving to metadata\n")
             }
             data[name] <- NULL
         }
@@ -1897,16 +1883,16 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, dataType=NULL,
             stop("no dataType=", dataTypeOrig, " (average) in file")
         }
         data <- readProfile(id=as.raw(dataType), debug=debug)
-        oceDebug(1+debug, "dataType=", dataType, "(average): move some things from data to metadata\n")
+        oceDebug(debug, "dataType=", dataType, "(average): move some things from data to metadata\n")
         for (name in c("blankingDistance",
                 "cellSize", "configuration", "datasetDescription", "distance",
                 "frequency", "numberOfBeams", "numberOfCells", "oceCoordinate",
                 "orientation", "originalCoordinate")) {
             if (name %in% names(data)) {
-                oceDebug(1+debug, "  transferring ", name, " from data to metadata\n")
+                oceDebug(debug, "  transferring ", name, " from data to metadata\n")
                 res@metadata[name] <- data[name]
             } else {
-                oceDebug(1+debug, "  deleting ", name, " from data, without moving to metadata\n")
+                oceDebug(debug, "  deleting ", name, " from data, without moving to metadata\n")
             }
             data[name] <- NULL
         }
@@ -1919,16 +1905,16 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, dataType=NULL,
             stop("no dataType=", as.raw(dataTypeOrig), " (bottomTrack) in file")
         }
         data <- readTrack(id=dataType, debug=debug)
-        oceDebug(1+debug, "dataType=", as.raw(dataType), "(bottomTrack): move some things from data to metadata\n")
+        oceDebug(debug, "dataType=", as.raw(dataType), "(bottomTrack): move some things from data to metadata\n")
         for (name in c("blankingDistance",
                 "cellSize", "configuration", "datasetDescription", "distance",
                 "frequency", "numberOfBeams", "numberOfCells", "oceCoordinate",
                 "orientation", "originalCoordinate")) {
             if (name %in% names(data)) {
-                oceDebug(1+debug, "  transferring ", name, " from data to metadata\n")
+                oceDebug(debug, "  transferring ", name, " from data to metadata\n")
                 res@metadata[name] <- data[name]
             } else {
-                oceDebug(1+debug, "  deleting ", name, " from data, without moving to metadata\n")
+                oceDebug(debug, "  deleting ", name, " from data, without moving to metadata\n")
             }
             data[name] <- NULL
         }
@@ -1940,16 +1926,16 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, dataType=NULL,
             stop("no dataType=", dataTypeOrig, " (interleavedBurst) in file")
         }
         data <- readProfile(id=as.raw(dataType), debug=debug)
-        oceDebug(1+debug, "dataType=", dataType, "(interleavedBurst): move some things from data to metadata\n")
+        oceDebug(debug, "dataType=", dataType, "(interleavedBurst): move some things from data to metadata\n")
         for (name in c("blankingDistance",
                 "cellSize", "configuration", "datasetDescription", "distance",
                 "frequency", "numberOfBeams", "numberOfCells", "oceCoordinate",
                 "orientation", "originalCoordinate")) {
             if (name %in% names(data)) {
-                oceDebug(1+debug, "  transferring ", name, " from data to metadata\n")
+                oceDebug(debug, "  transferring ", name, " from data to metadata\n")
                 res@metadata[name] <- data[name]
             } else {
-                oceDebug(1+debug, "  deleting ", name, " from data, without moving to metadata\n")
+                oceDebug(debug, "  deleting ", name, " from data, without moving to metadata\n")
             }
             data[name] <- NULL
         }
@@ -1961,16 +1947,16 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, dataType=NULL,
             stop("no dataType=", as.raw(dataTypeOrig), " (burstAltimeterRaw) in file")
         }
         data <- readBurstAltimeterRaw(id=dataType, debug=debug)
-        oceDebug(1+debug, "dataType=", as.raw(dataType), "(burstAltimeterRaw): move some things from data to metadata\n")
+        oceDebug(debug, "dataType=", as.raw(dataType), "(burstAltimeterRaw): move some things from data to metadata\n")
         for (name in c("blankingDistance",
                 "cellSize", "configuration", "datasetDescription", "distance",
                 "frequency", "numberOfBeams", "numberOfCells", "oceCoordinate",
                 "orientation", "originalCoordinate")) {
             if (name %in% names(data)) {
-                oceDebug(1+debug, "  transferring ", name, " from data to metadata\n")
+                oceDebug(debug, "  transferring ", name, " from data to metadata\n")
                 res@metadata[name] <- data[name]
             } else {
-                oceDebug(1+debug, "  deleting ", name, " from data, without moving to metadata\n")
+                oceDebug(debug, "  deleting ", name, " from data, without moving to metadata\n")
             }
             data[name] <- NULL
         }
@@ -1982,16 +1968,16 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, dataType=NULL,
             stop("no dataType=", as.raw(dataTypeOrig), " (DVLBottomTrack) in file")
         }
         data <- readTrack(id=dataType, debug=debug)
-        oceDebug(1+debug, "dataType=", as.raw(dataType), "(DVLBottomTrack): move some things from data to metadata\n")
+        oceDebug(debug, "dataType=", as.raw(dataType), "(DVLBottomTrack): move some things from data to metadata\n")
         for (name in c("blankingDistance",
                 "cellSize", "configuration", "datasetDescription", "distance",
                 "frequency", "numberOfBeams", "numberOfCells", "oceCoordinate",
                 "orientation", "originalCoordinate")) {
             if (name %in% names(data)) {
-                oceDebug(1+debug, "  transferring ", name, " from data to metadata\n")
+                oceDebug(debug, "  transferring ", name, " from data to metadata\n")
                 res@metadata[name] <- data[name]
             } else {
-                oceDebug(1+debug, "  deleting ", name, " from data, without moving to metadata\n")
+                oceDebug(debug, "  deleting ", name, " from data, without moving to metadata\n")
             }
             data[name] <- NULL
         }
@@ -2008,10 +1994,10 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, dataType=NULL,
                 "datasetDescription", "distance", "frequency", "numberOfBeams",
                 "numberOfCells", "orientation")) {
             if (name %in% names(data)) {
-                oceDebug(1+debug, "moving ", name, " from data to metadata\n")
+                oceDebug(debug, "moving ", name, " from data to metadata\n")
                 res@metadata[name] <- data[name]
             } else {
-                oceDebug(1+debug, "  deleting ", name, " from data, without moving to metadata\n")
+                oceDebug(debug, "  deleting ", name, " from data, without moving to metadata\n")
             }
             data[name] <- NULL
         }
@@ -2028,10 +2014,10 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, dataType=NULL,
                 "datasetDescription", "distance", "frequency", "numberOfBeams",
                 "numberOfCells", "orientation")) {
             if (name %in% names(data)) {
-                oceDebug(1+debug, "moving ", name, " from data to metadata\n")
+                oceDebug(debug, "moving ", name, " from data to metadata\n")
                 res@metadata[name] <- data[name]
             } else {
-                oceDebug(1+debug, "  deleting ", name, " from data, without moving to metadata\n")
+                oceDebug(debug, "  deleting ", name, " from data, without moving to metadata\n")
             }
             data[name] <- NULL
         }
@@ -2048,10 +2034,10 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, dataType=NULL,
                 "datasetDescription", "distance", "frequency", "numberOfBeams",
                 "numberOfCells", "orientation")) {
             if (name %in% names(data)) {
-                oceDebug(1+debug, "moving ", name, " from data to metadata\n")
+                oceDebug(debug, "moving ", name, " from data to metadata\n")
                 res@metadata[name] <- data[name]
             } else {
-                oceDebug(1+debug, "  deleting ", name, " from data, without moving to metadata\n")
+                oceDebug(debug, "  deleting ", name, " from data, without moving to metadata\n")
             }
             data[name] <- NULL
         }
@@ -2068,10 +2054,10 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, dataType=NULL,
                 "datasetDescription", "distance", "frequency", "numberOfBeams",
                 "numberOfCells", "orientation")) {
             if (name %in% names(data)) {
-                oceDebug(1+debug, "moving ", name, " from data to metadata\n")
+                oceDebug(debug, "moving ", name, " from data to metadata\n")
                 res@metadata[name] <- data[name]
             } else {
-                oceDebug(1+debug, "  deleting ", name, " from data, without moving to metadata\n")
+                oceDebug(debug, "  deleting ", name, " from data, without moving to metadata\n")
             }
             data[name] <- NULL
         }
@@ -2088,10 +2074,10 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, dataType=NULL,
                 "datasetDescription", "distance", "frequency", "numberOfBeams",
                 "numberOfCells", "orientation")) {
             if (name %in% names(data)) {
-                oceDebug(1+debug, "moving ", name, " from data to metadata\n")
+                oceDebug(debug, "moving ", name, " from data to metadata\n")
                 res@metadata[name] <- data[name]
             } else {
-                oceDebug(1+debug, "  deleting ", name, " from data, without moving to metadata\n")
+                oceDebug(debug, "  deleting ", name, " from data, without moving to metadata\n")
             }
             data[name] <- NULL
         }
@@ -2235,303 +2221,4 @@ data#| $echosounderRaw$cellsize, length.out=data$echosounderRaw$numberOfSamples)
     res
 }
 
-#' Plot an AD2CP Object
-#'
-#' Used by \code{\link{plot,adp-method}} or called directly, this function
-#' plots some aspects of AD2CP data. The `which` parameter
-#' has an entirely different meaning to that of
-#' \code{\link{plot,adp-method}}, because AD2CP objects
-#' are laid out differently from other [adp] objects.  As an aide,
-#' `which` can be supply prompts that will work with the particular
-#' object at hand, e.g. using `plotAD2CP(x,which="?")` will print a message
-#' indicating the names of items in the `data` slot that can be plotted.
-#' If, say, one of these is `"average"`, then using `which="average/?"` will
-#' display a message indicating the items within the `"average"` records that
-#' can be plotted.  Some of those items (e.g. `"magnetometer"`) can be
-#' explored further, using `which="average/magnetometer/?"`; see
-#' Example 3.
-#'
-#' @param x an AD2CP object, as created with [read.adp.ad2cp()] or by
-#' [read.oce()] on a file of the AD2CP type.
-#'
-#' @param which a character value indicating what to plot.  Use NULL to see a
-#' listing of the possibilities for this particular object.  See
-#' \dQuote{Details} and \dQuote{Examples}, and note that some understanding
-#' of the object layout is required to devise `which` properly.  If `which`
-#' is inappropriate for this particular `x`, then hints are printed to help
-#' guide the user to something that will work.
-#'
-#' @param col indication of colour, passed to [imagep()] or to [oce.plot.ts()],
-#' depending on whether the plot is an image or a time-series graph. This
-#' defaults to [oceColorsVelocity] for velocity images, [oceColorsViridis]
-#' for amplitude and quality images, and to black for time-series plots.
-#'
-#' @param type plot type, used only for time-series
-#' graphs.
-#'
-#' @param lwd line width, used only for time-series graphs.
-#'
-#' @param cex character expansion factor
-#'
-#' @param pch character code
-#'
-#' @param ... optional other arguments, passed to the lower-level plotting
-#' commands.
-#'
-#' @examples
-#' library(oce)
-#' # This example will only work for the author, because it uses a
-#' # private file.  The file contains 'burst' and 'average' data.
-#' f <- "/Users/kelley/Dropbox/oce_secret_data/ad2cp/secret1_trimmed.ad2cp"
-#' if (file.exists(f)) {
-#'     library(oce)
-#'     d <- read.oce(f)
-#'     # Example 1: time-distance variation of "average" velocity (beams 1 through 4)
-#'     plot(d, which="average/v", col=oceColorsVelocity)
-#'     # Example 2: time variation of "average" amplitude (beam 1)
-#'     plot(d, which="average/a/1")
-#'     # Example 3: time variation of "burst" magnetometer (x component)
-#'     plot(d, which="burst/magnetometer/x")
-#'     # Example 4: time variation of "burst" AHRS/gyro
-#'     plot(d, which="burst/AHRS/gyro")
-#' }
-#'
-#' @author Dan Kelley
-plotAD2CP <- function(x, which=NULL, cex, col, pch, lwd, type, ...)
-{
-    if (!is.ad2cp(x))
-        stop("'x' must be an AD2CP object, e.g. as created with read.adp.ad2cp()")
-    names1 <- sort(names(x@data))
-    if (is.null(which))
-        stop("which must be supplied; try one of: \"", paste(names1, collapse="\", \""), "\"")
-    if (!is.character(which[1]))
-        stop("'which' must be a character value")
-    if (length(which) != 1L)
-        stop("'which' must be of length 1")
-    if (which == "?") {
-        message("try setting 'which' to one of: \"", paste(names1, collapse="\", \""), "\"")
-        return(invisible(NULL))
-    }
-    w <- strsplit(which, "/")[[1]]
-    nw <- length(w)
-    #message(vectorShow(w))
-    if (nw > 4L)
-        stop("'which' must contain zero to four \"/\" characters, but it has ", nw)
-    if (!w[1] %in% names1)
-        stop("unknown which, \"", w[1], "\"; try one of: \"", paste(names1, collapse="\", \""), "\"")
-    # Handle some top-level defaults
-    #?if (identical(w, "echosounder") && "echosounder" %in% names1) {
-    #?    with(x@data$echosounder,
-    #?        {
-    #?            imagep(time, distance, echosounder, xlab="", ylab=resizableLabel("distance"))
-    #?        })
-    #?    return(invisible(NULL))
-    #?}
-    if (nw < 2)
-        stop("insufficient detail in 'which'; try e.g. which=\"", names1[1], "/?\" to see possibilities for \"", names1[1], "\" data")
-    d <- x@data[[w[1]]]
-    time <- d[["time"]]
-    ntime <- length(time)
-    distance <- d[["distance"]]
-    ndistance <- length(distance)
-    # Find relevant subitem names, which are for things that can be shown in a
-    # time-distance image, or in a variable-time linegraph.
-    names2 <- sort(names(d))
-    names2keep <- sapply(names2,
-        function(x)
-        {
-            I <- d[[x]]
-            if (x == "configuration" || x == "datasetDescription") FALSE
-            else if (is.list(I)) TRUE
-            else if (is.vector(I) && length(I) == ntime) TRUE
-            else if (is.array(I) && dim(I)[1] == ntime && dim(I)[2] == ndistance) TRUE
-            else FALSE
-        })
-    names2 <- names2[names2keep]
-    if (nw > 1L && w[2] == "?") {
-        message("try setting 'which' to one of: \"", paste(paste0(w[1],"/",names2), collapse="\", \""), "\"")
-        return(invisible(NULL))
-    }
-    if (nw > 2L && w[3] == "?") {
-        if (w[2] %in% c("accelerometer", "magnetometer")) {
-            message("try setting 'which' to one of: \"", paste0(paste0(w[1],"/",w[2]), "/", c("x","y","z"), collapse="\", \""), "\"")
-        } else if (w[2] == "AHRS") {
-            message("try setting 'which' to one of: \"", paste0(paste0(w[1],"/",w[2]), "/", c("quaternions","gyro"), collapse="\", \""), "\"")
-        } else {
-            message("sorry, no hints are available for which=\"", w[1], "/", w[2], "/?")
-        }
-        return(invisible(NULL))
-    }
-    if (nw > 3L && w[4] == "?" && w[2] == "AHRS") {
-        if (w[3] == "quaternions") {
-            message("try setting 'which' to one of: \"", paste0(paste0(w[1],"/",w[2]), "/", w[3], "/", c("x","y","z"), collapse="\", \""), "\"")
-        } else if (w[3] == "gyro") {
-            message("try setting 'which' to one of: \"", paste0(paste0(w[1],"/",w[2]), "/", w[3], "/", c("x","y","z"), collapse="\", \""), "\"")
-        } else {
-            stop("the 3th element of 'which' must be \"quaternions\" or \"gyro\", not \"", w[3], "\"")
-        }
-        return(invisible(NULL))
-    }
-    #message("next is names(d):");print(names(d),file=stderr())
-    opar <- par(no.readonly=TRUE)      # retain so we can reset afterwards, as CRAN requires
-    # Ensure that user is asking for a plottable item.
-    if (!w[2] %in% names2)
-        stop("item \"", w[2], "\" is not available; try one of \"", paste(names2, collapse="\", \""), "\"")
-    # Handle by case
-    if (w[2] %in% c("a", "q", "v")) {
-        D <- makeNumeric(d[[w[2]]])
-        nbeam <- dim(D)[3]
-        #message(vectorShow(nbeam))
-        dots <- list(...)
-        dotsNames <- names(dots)
-        #cat(str(dots))
-        beams <- if (nw < 3L) seq_len(nbeam) else w[3]
-        if (length(beams) > 1L)
-            par(mfrow=c(length(beams), 1))
-        if (missing(col))
-            col <- if (w[2] == "v") oceColorsVelocity else oceColorsViridis
-        for (ibeam in as.integer(beams)) {
-            #message(vectorShow(ibeam))
-            if (w[2] == "v" && !"zlim" %in% dotsNames) {
-                zlim <- c(-1,1)*max(abs(D[,,ibeam]), na.rm=TRUE)
-                imagep(time, distance, D[,,ibeam], zlim=zlim, ylab="Distance [m]", col=col, ...)
-            } else {
-                imagep(time, distance, D[,,ibeam], ylab="Distance [m]", col=col, ...)
-            }
-            mtext(paste0(w[2], "[,,",ibeam,"]"), side=3, line=0, adj=1)
-        }
-        if (length(beams) > 1L)
-            par(opar)
-    } else if (w[2] == c("echosounder")) {
-        D <- x@data[[w[1]]]
-        if (missing(col))
-            imagep(D$time, D$distance, D$echosounder, ylab=resizableLabel("distance"), ...)
-        else
-            imagep(D$time, D$distance, D$echosounder, col=col, ylab=resizableLabel("distance"), ...)
-    } else if (w[2] == c("echosounderRaw")) {
-        D <- x@data[[w[1]]]
-        if (missing(col))
-            imagep(D$time, D$distance, Mod(D$samples), ylab=resizableLabel("distance"), ...)
-        else
-            imagep(D$time, D$distance, Mod(D$samples), col=col, ylab=resizableLabel("distance"), ...)
-    } else if (w[2] == "altimeter") {
-        message("FIXME: untested plot of ", w[1], "/", w[2], ": please report error")
-        D <- x@data[[w[1]]][[w[2]]]
-        if (nw < 3)
-            stop("")
-        if (w[3] %in% c("distance", "quality", "status")) {
-            oce.plot.ts(D$time, D[w[3]], ylab=w[3])
-        } else {
-            stop("insufficient detail in 'which'; try e.g. which=\"", w[1], "/", w[2], "/?\" to see possibilities")
-        }
-        message("FIXME: ... was the plot okay?")
-    } else if (w[2] == "altimeterRaw") {
-        message("FIXME: plot of ", w[1], "/", w[2], " is not tested, and may produce errors")
-        D <- x@data[[w[1]]][[w[2]]]
-        imagep(D$time, D$distance, D$samples, ylab=resizableLabel("distance"))
-        message("FIXME: ... was the plot okay?")
-    } else if (w[2] == "AHRS") {
-        if (nw == 2) {
-            message("'which' needs more detail; use which=\"", w[1], "/", w[2], "/?\" for hints")
-            return(invisible(NULL))
-        } else if (nw == 3) {
-            if (missing(col))
-                col <- 1
-            if (w[3] == "gyro") {
-                par(mfrow=c(3, 1))
-                oce.plot.ts(time, x@data[[w[1]]][[w[2]]][[w[3]]][["x"]], ylab=paste(w[3], "x"),
-                    cex=if (missing(cex)) 1 else cex, col=if (missing(col)) 1 else col,
-                    pch=if (missing(pch)) 1 else pch, lwd=if (missing(lwd)) 1 else lwd,
-                    type=if (missing(type)) 1 else type)
-                oce.plot.ts(time, x@data[[w[1]]][[w[2]]][[w[3]]][["y"]], ylab=paste(w[3], "y"),
-                    cex=if (missing(cex)) 1 else cex, col=if (missing(col)) 1 else col,
-                    pch=if (missing(pch)) 1 else pch, lwd=if (missing(lwd)) 1 else lwd,
-                    type=if (missing(type)) 1 else type)
-                oce.plot.ts(time, x@data[[w[1]]][[w[2]]][[w[3]]][["z"]], ylab=paste(w[3], "z"),
-                    cex=if (missing(cex)) 1 else cex, col=if (missing(col)) 1 else col,
-                    pch=if (missing(pch)) 1 else pch, lwd=if (missing(lwd)) 1 else lwd,
-                    type=if (missing(type)) 1 else type)
-                par(opar)
-            } else if (w[3] == "quaternions") {
-                par(mfrow=c(4, 1))
-                oce.plot.ts(time, x@data[[w[1]]][[w[2]]][[w[3]]][["x"]], ylab=paste(w[3], "x"),
-                    cex=if (missing(cex)) 1 else cex, col=if (missing(col)) 1 else col,
-                    pch=if (missing(pch)) 1 else pch, lwd=if (missing(lwd)) 1 else lwd,
-                    type=if (missing(type)) 1 else type)
-                oce.plot.ts(time, x@data[[w[1]]][[w[2]]][[w[3]]][["y"]], ylab=paste(w[3], "y"),
-                    cex=if (missing(cex)) 1 else cex, col=if (missing(col)) 1 else col,
-                    pch=if (missing(pch)) 1 else pch, lwd=if (missing(lwd)) 1 else lwd,
-                    type=if (missing(type)) 1 else type)
-                oce.plot.ts(time, x@data[[w[1]]][[w[2]]][[w[3]]][["z"]], ylab=paste(w[3], "z"),
-                    cex=if (missing(cex)) 1 else cex, col=if (missing(col)) 1 else col,
-                    pch=if (missing(pch)) 1 else pch, lwd=if (missing(lwd)) 1 else lwd,
-                    type=if (missing(type)) 1 else type)
-                oce.plot.ts(time, x@data[[w[1]]][[w[2]]][[w[3]]][["w"]], ylab=paste(w[3], "w"),
-                    cex=if (missing(cex)) 1 else cex, col=if (missing(col)) 1 else col,
-                    pch=if (missing(pch)) 1 else pch, lwd=if (missing(lwd)) 1 else lwd,
-                    type=if (missing(type)) 1 else type)
-                par(opar)
-            } else {
-                stop("third 'which' entry must be \"gyro\" or \"quaternions\", not \"", w[3], "\"")
-            }
-        } else if (nw == 4) {
-            if (w[3] == "gyro") {
-                if (w[4] %in% c("x", "y", "z")) {
-                    oce.plot.ts(time, x@data[[w[1]]][[w[2]]][[w[3]]][[w[4]]], ylab=paste(w[3], "x"),
-                        cex=if (missing(cex)) 1 else cex, col=if (missing(col)) 1 else col,
-                        pch=if (missing(pch)) 1 else pch, lwd=if (missing(lwd)) 1 else lwd,
-                        type=if (missing(type)) 1 else type)
-                } else {
-                    stop("fourth word in which must be \"x\", \"y\" or \"z\", not \"", w[4], "\"")
-                }
-            } else if (w[3] == "quaternions") {
-                if (w[4] %in% c("x", "y", "z", "w")) {
-                    oce.plot.ts(time, x@data[[w[1]]][[w[2]]][[w[3]]][[w[4]]], ylab=paste(w[3], "x"),
-                        cex=if (missing(cex)) 1 else cex, col=if (missing(col)) 1 else col,
-                        pch=if (missing(pch)) 1 else pch, lwd=if (missing(lwd)) 1 else lwd,
-                        type=if (missing(type)) 1 else type)
-                } else {
-                    stop("fourth word in which must be \"x\", \"y\", \"z\" or \"w\", not \"", w[4], "\"")
-                }
-            } else {
-                stop("third 'which' entry must be \"gyro\" or \"quaternions\", not \"", w[3], "\"")
-            }
-            return(invisible(NULL))
-        }
-        return(invisible(NULL))
-    } else if (w[2] %in% c("accelerometer", "magnetometer")) {
-        D <- d[[w[2]]]                 # has components $x, $y and $z
-        if (nw == 2) { # plot 3 panels
-            par(mfrow=c(3, 1))
-            oce.plot.ts(time, D[["x"]], ylab=paste(w[2], "x"),
-                cex=if (missing(cex)) 1 else cex, col=if (missing(col)) 1 else col,
-                pch=if (missing(pch)) 1 else pch, lwd=if (missing(lwd)) 1 else lwd,
-                type=if (missing(type)) 1 else type)
-            oce.plot.ts(time, D[["y"]], ylab=paste(w[2], "y"),
-                cex=if (missing(cex)) 1 else cex, col=if (missing(col)) 1 else col,
-                pch=if (missing(pch)) 1 else pch, lwd=if (missing(lwd)) 1 else lwd,
-                type=if (missing(type)) 1 else type)
-            oce.plot.ts(time, D[["y"]], ylab=paste(w[2], "z"),
-                cex=if (missing(cex)) 1 else cex, col=if (missing(col)) 1 else col,
-                pch=if (missing(pch)) 1 else pch, lwd=if (missing(lwd)) 1 else lwd,
-                type=if (missing(type)) 1 else type)
-            par(opar)
-        } else {
-            if (!w[3] %in% names(D))
-                stop(w[1], "$", w[2], " does not contain \"", w[3], "\"; try one of \"", paste(sort(names(D)), collapse="\" \""), "\"")
-            oce.plot.ts(time, D[[w[3]]], ylab=paste(w[2], w[3]),
-                cex=if (missing(cex)) 1 else cex, col=if (missing(col)) 1 else col,
-                pch=if (missing(pch)) 1 else pch, lwd=if (missing(lwd)) 1 else lwd,
-                type=if (missing(type)) 1 else type)
-        }
-    } else if (length(d[[w[2]]]) == ntime) {
-        # time-series graph of some vector element
-        oce.plot.ts(time, d[[w[2]]], ylab=paste(w[1], w[2]),
-            cex=if (missing(cex)) 1 else cex, col=if (missing(col)) 1 else col,
-            pch=if (missing(pch)) 1 else pch, lwd=if (missing(lwd)) 1 else lwd,
-            type=if (missing(type)) 1 else type)
-    } else {
-        stop("although subitem \"", w[2], "\" is present in \"", w[1], "\", it is not handled yet")
-    }
-}
 
