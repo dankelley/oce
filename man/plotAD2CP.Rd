@@ -52,7 +52,12 @@ Used by \code{\link{plot,adp-method}} or called directly, this function
 plots some aspects of AD2CP data. The \code{which} parameter
 has an entirely different meaning to that of
 \code{\link{plot,adp-method}}, because AD2CP objects
-are laid out differently from other \link{adp} objects.  As an aide,
+are laid out differently from other \link{adp} objects.
+}
+\details{
+\strong{FIXME: KEEP THIS??}
+
+As an aide,
 \code{which} can be supply prompts that will work with the particular
 object at hand, e.g. using \code{plotAD2CP(x,which="?")} will print a message
 indicating the names of items in the \code{data} slot that can be plotted.
@@ -61,6 +66,20 @@ display a message indicating the items within the \code{"average"} records that
 can be plotted.  Some of those items (e.g. \code{"magnetometer"}) can be
 explored further, using \code{which="average/magnetometer/?"}; see
 Example 3.
+
+\strong{FIXME: NEW TEXT GOES HERE}
+
+The action depends on the value of \code{dataType} that was supplied
+to the \code{\link[=read.adp.ad2cp]{read.adp.ad2cp()}} function), as follows:
+\itemize{
+\item \code{dataType="echosounderRaw"}: The signal, which may be obtained with
+\code{x[["samples"]]}, is a complex number, which can be plotted in either of two
+ways.  If \code{which} is \code{"amplitude"} or is not supplied, then the \code{\link[=log10]{log10()}} of
+signal amplitude is plotted as an image that shows the dependence on time
+and distance.  Alternatively, if \code{which} is \code{"phase"} then the phase is
+plotted. The colour scheme can be set with the \code{col} parameter, which is
+passed to \code{\link[=imagep]{imagep()}}.
+}
 }
 \examples{
 library(oce)
@@ -81,6 +100,46 @@ if (file.exists(f)) {
 }
 
 }
+\seealso{
+Other functions that plot oce data: 
+\code{\link{download.amsr}()},
+\code{\link{plot,adp-method}},
+\code{\link{plot,adv-method}},
+\code{\link{plot,amsr-method}},
+\code{\link{plot,argo-method}},
+\code{\link{plot,bremen-method}},
+\code{\link{plot,cm-method}},
+\code{\link{plot,coastline-method}},
+\code{\link{plot,ctd-method}},
+\code{\link{plot,gps-method}},
+\code{\link{plot,ladp-method}},
+\code{\link{plot,landsat-method}},
+\code{\link{plot,lisst-method}},
+\code{\link{plot,lobo-method}},
+\code{\link{plot,met-method}},
+\code{\link{plot,odf-method}},
+\code{\link{plot,rsk-method}},
+\code{\link{plot,satellite-method}},
+\code{\link{plot,sealevel-method}},
+\code{\link{plot,section-method}},
+\code{\link{plot,tidem-method}},
+\code{\link{plot,topo-method}},
+\code{\link{plot,windrose-method}},
+\code{\link{plot,xbt-method}},
+\code{\link{plotProfile}()},
+\code{\link{plotScan}()},
+\code{\link{plotTS}()},
+\code{\link{tidem-class}}
+
+Other things related to ad2cp data: 
+\code{\link{ad2cpCodeToName}()},
+\code{\link{ad2cpHeaderValue}()},
+\code{\link{adpAd2cpFileTrim}()},
+\code{\link{is.ad2cp}()},
+\code{\link{read.adp.ad2cp}()}
+}
 \author{
 Dan Kelley
 }
+\concept{functions that plot oce data}
+\concept{things related to ad2cp data}

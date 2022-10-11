@@ -22,7 +22,11 @@ makeNumeric <- function(x)
 #' plots some aspects of AD2CP data. The `which` parameter
 #' has an entirely different meaning to that of
 #' \code{\link{plot,adp-method}}, because AD2CP objects
-#' are laid out differently from other [adp] objects.  As an aide,
+#' are laid out differently from other [adp] objects.
+#'
+#' **FIXME: KEEP THIS??**
+#'
+#' As an aide,
 #' `which` can be supply prompts that will work with the particular
 #' object at hand, e.g. using `plotAD2CP(x,which="?")` will print a message
 #' indicating the names of items in the `data` slot that can be plotted.
@@ -31,6 +35,19 @@ makeNumeric <- function(x)
 #' can be plotted.  Some of those items (e.g. `"magnetometer"`) can be
 #' explored further, using `which="average/magnetometer/?"`; see
 #' Example 3.
+#'
+#' **FIXME: NEW TEXT GOES HERE**
+#'
+#' The action depends on the value of `dataType` that was supplied
+#' to the [read.adp.ad2cp()] function), as follows:
+#'
+#' * `dataType="echosounderRaw"`: The signal, which may be obtained with
+#' `x[["samples"]]`, is a complex number, which can be plotted in either of two
+#' ways.  If `which` is `"amplitude"` or is not supplied, then the [log10()] of
+#' signal amplitude is plotted as an image that shows the dependence on time
+#' and distance.  Alternatively, if `which` is `"phase"` then the phase is
+#' plotted. The colour scheme can be set with the `col` parameter, which is
+#' passed to [imagep()].
 #'
 #' @param x an AD2CP object, as created with [read.adp.ad2cp()] or by
 #' [read.oce()] on a file of the AD2CP type.
@@ -79,6 +96,9 @@ makeNumeric <- function(x)
 #'     # Example 4: time variation of "burst" AHRS/gyro
 #'     plot(d, which="burst/AHRS/gyro")
 #' }
+#'
+#' @family functions that plot oce data
+#' @family things related to ad2cp data
 #'
 #' @author Dan Kelley
 plotAD2CP <- function(x, which=NULL, cex, col, pch, lwd, type, debug=getOption("oceDebug"), ...)

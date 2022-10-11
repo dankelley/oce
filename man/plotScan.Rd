@@ -100,6 +100,7 @@ Other functions that plot oce data:
 \code{\link{plot,topo-method}},
 \code{\link{plot,windrose-method}},
 \code{\link{plot,xbt-method}},
+\code{\link{plotAD2CP}()},
 \code{\link{plotProfile}()},
 \code{\link{plotTS}()},
 \code{\link{tidem-class}}

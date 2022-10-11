@@ -215,7 +215,8 @@ Other things related to ad2cp data:
 \code{\link{ad2cpCodeToName}()},
 \code{\link{ad2cpHeaderValue}()},
 \code{\link{adpAd2cpFileTrim}()},
-\code{\link{is.ad2cp}()}
+\code{\link{is.ad2cp}()},
+\code{\link{plotAD2CP}()}
 
 Other functions that read adp data: 
 \code{\link{read.adp.nortek}()},
