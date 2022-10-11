@@ -2096,10 +2096,56 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, dataType=NULL,
             stop("no dataType=", dataTypeOrig, " (echosounderRaw) in file")
         }
         data <- readEchosounderRaw(id=dataType, debug=debug)
-        message("FIXME: move some (echosounderRaw) things from data to metadata")
+        # 2022-08-26: I asked Nortek how to compute distance for echosounderRaw, and
+        # the answer involves the blankingDistance.  But, in my sample file at
+        # tests/testthat/local_data/ad2cp/ad2cp_01.ad2cp, the blankingDistance for
+        # echosounderRaw is 0, and so I'm guessing (pending more information from
+        # Nortek) that the idea is to use the blankingDistance in the (now possibly updated)
+        # ... honestly, this is a mess and I am not 100% sure what to do, lacking
+        # confidence until Nortek updates their documentation.  One thing, though:
+        # the code below is based on the old model for ad2cp object structure, in
+        # which we stored both 'echosounder' and 'echosounderRaw', but in the new
+        # model we do not do that.  I am simply skipping this for now 2022-10-08
+        # but printing a message.
+        #
+        # Compute cellSize using a formula inferred from an email by
+        # Nortek's Ragnar Ekker on 2022-09-01.
+        #
+        # 1. Should we use the integer `startSampleIndex` that is in the
+        # file, or should we compute it using the formula provided by
+        # Ragnar?  The former is an integer value that is 16 in a sample
+        # file, and if that's typical then rounding might be expected to
+        # give about 3% error in the results for `cellSize` and thus
+        # `distance`.
+
+        # 2. What `soundSpeed` should be used?  It varies from profile to
+        # profile. But, perhaps we should use a constant value, if that's
+        # what was used in some computations that led to the data creation.
+        # The graph above uses the integer value. If the calculated
+        # `startSampleIndex` were used instead, the peak would shift from
+        # 282m to 270m=
+        # `r round(with(d@data$echosounderRaw,cellSize2*282/cellSize))` m.
+        XMIT1 <- 1e-3*ad2cpHeaderValue(header, "GETECHO", "XMIT1")
+        BD <- ad2cpHeaderValue(header, "GETECHO", "BD")
+        if (is.null(XMIT1) || is.null(BD)) {
+            warning("cannot infer distance for echosounderRaw record; set to 1, 2, which is almost certainly very wrong")
+            data$distance <- seq_len(data$numberOfSamples)
+        } else {
+            L <- 0.5 * XMIT1 * soundSpeed[1] + BD
+            samplingRate <- data$samplingRate
+            startSampleIndex <- (XMIT1 + 2*BD/soundSpeed[1]) * samplingRate
+            # FIXME: which cellSize to use?  I think Ragnar suggested computing
+            # it, rather than using the rounded value in the dataset.
+            data$cellSize <- L / startSampleIndex
+            # data$cellSize <- L / data$startSampleIndex
+            data$distance <- seq(0, by=data$cellSize, length.out=data$numberOfSamples)
+            oceDebug(debug, "read.adp.ad2cp() : computing echosounderRaw$distance based on my interpretation of an email sent by RE/Nortek on 2022-09-01") # this contradicts one sent by EB/Nortek on 2022-08-28
+        }
+        oceDebug(debug, "move some (echosounderRaw) things from data to metadata\n")
         for (name in c("blankingDistance", "cellSize", "configuration",
                 "datasetDescription", "distance", "frequency", "numberOfBeams",
-                "numberOfCells", "orientation")) {
+                "numberOfCells", "numberOfSamples", "orientation",
+                "samplingRate", "startSampleIndex")) {
             if (name %in% names(data)) {
                 oceDebug(debug, "moving ", name, " from data to metadata\n")
                 res@metadata[name] <- data[name]
@@ -2122,54 +2168,6 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, dataType=NULL,
                 res@metadata$blankingDistance <- BD
                 res@metadata$distance <- BD + seq(1, by=res@metadata$cellSize, length.out=res@metadata$numberOfCells)
             }
-        }
-    }
-    # 2022-08-26: I asked Nortek how to compute distance for echosounderRaw, and
-    # the answer involves the blankingDistance.  But, in my sample file at
-    # tests/testthat/local_data/ad2cp/ad2cp_01.ad2cp, the blankingDistance for
-    # echosounderRaw is 0, and so I'm guessing (pending more information from
-    # Nortek) that the idea is to use the blankingDistance in the (now possibly updated)
-    # ... honestly, this is a mess and I am not 100% sure what to do, lacking
-    # confidence until Nortek updates their documentation.  One thing, though:
-    # the code below is based on the old model for ad2cp object structure, in
-    # which we stored both 'echosounder' and 'echosounderRaw', but in the new
-    # model we do not do that.  I am simply skipping this for now 2022-10-08
-    # but printing a message
-    if (dataType == as.raw(0x23)) {    # 0x23=echosounderRaw
-        # Compute cellSize using a formula inferred from an email by
-        # Nortek's Ragnar Ekker on 2022-09-01.
-        #
-        # 1. Should we use the integer `startSampleIndex` that is in the
-        # file, or should we compute it using the formula provided by
-        # Ragnar?  The former is an integer value that is 16 in a sample
-        # file, and if that's typical then rounding might be expected to
-        # give about 3% error in the results for `cellSize` and thus
-        # `distance`.
-
-        # 2. What `soundSpeed` should be used?  It varies from profile to
-        # profile. But, perhaps we should use a constant value, if that's
-        # what was used in some computations that led to the data creation.
-        # The graph above uses the integer value. If the calculated
-        # `startSampleIndex` were used instead, the peak would shift from
-        # 282m to 270m=
-        # `r round(with(d@data$echosounderRaw,cellSize2*282/cellSize))` m.
-        XMIT1 <- 1e-3*ad2cpHeaderValue(header, "GETECHO", "XMIT1")
-        BD <- ad2cpHeaderValue(header, "GETECHO", "BD")
-        L <- 0.5 * XMIT1 * soundSpeed[1] + BD
-        samplingRate <- data$samplingRate
-        startSampleIndex <- (XMIT1 + 2*BD/soundSpeed[1]) * samplingRate
-        data$cellSize <- L / data$startSampleIndex
-        data$cellSize2 <- L / startSampleIndex
-        data$distance <- seq(0, by= data$cellSize, length.out=data$numberOfSamples)
-        if (debug) {
-            message("read.adp.ad2cp() : computing echosounderRaw$distance based on my interpretation of an email sent by RE/Nortek on 2022-09-01, which contradicts one sent by EB/Nortek on 2022-08-28")
-            #??message(vectorShow(data$echosounder$blankingDistance, showNewline=FALSE))
-            #??message(vectorShow(data$echosounderRaw$startSampleIndex, showNewline=FALSE))
-            #??message(vectorShow(data$echosounderRaw$cellSize, showNewline=FALSE))
-            #??message(vectorShow(data$echosounderRaw$cellSize2, showNewline=FALSE))
-            #??message(vectorShow(data$echosounderRaw$numberOfSamples, showNewline=FALSE))
-            #??message(vectorShow(max(data$echosounderRaw$distance), showNewline=FALSE))
-            #??message(vectorShow(max(data$echosounder$distance), showNewline=FALSE))
         }
     }
     # 2022-08-29 BOOKMARK-blankingDistance-03

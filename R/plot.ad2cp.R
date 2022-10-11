@@ -85,6 +85,32 @@ plotAD2CP <- function(x, which=NULL, cex, col, pch, lwd, type, debug=getOption("
 {
     if (!is.ad2cp(x))
         stop("'x' must be an AD2CP object, e.g. as created with read.adp.ad2cp()")
+    dataType <- x@metadata$dataType
+    if (dataType == 0x23) {            # echosounderRaw
+        if (is.null(which)) {
+            which <- "amplitude"
+        }
+        if (which[1] == "amplitude") {
+            if (missing(col)) {
+                imagep(x[["time"]], x[["distance"]], log10(Mod(x[["samples"]])),
+                    ylab=resizableLabel("distance"), ...)
+            } else {
+                imagep(x[["time"]], x[["distance"]], log10(Mod(x[["samples"]])),
+                    ylab=resizableLabel("distance"), col=col, ...)
+            }
+        } else if (which[1] == "phase") {
+            if (missing(col)) {
+                imagep(x[["time"]], x[["distance"]], 180/pi*Arg(x[["samples"]]),
+                    ylab=resizableLabel("distance"), ...)
+            } else {
+                imagep(x[["time"]], x[["distance"]], 180/pi*Arg(x[["samples"]]),
+                    ylab=resizableLabel("distance"), col=col, ...)
+            }
+        } else {
+            stop("which must be 'amplitude' or 'phase'")
+        }
+        return(invisible(NULL))
+    }
     names1 <- sort(names(x@data))
     if (is.null(which))
         stop("which must be supplied; try one of: \"", paste(names1, collapse="\", \""), "\"")
@@ -216,9 +242,9 @@ plotAD2CP <- function(x, which=NULL, cex, col, pch, lwd, type, debug=getOption("
     } else if (w[1] == "echosounderRaw") {
         D <- x@data[[w[1]]]
         if (missing(col))
-            imagep(D$time, D$distance, Mod(D$samples), ylab=resizableLabel("distance"), ...)
+            imagep(x[["time"]], x[["distance"]], Mod(x[["samples"]]), ylab=resizableLabel("distance"), ...)
         else
-            imagep(D$time, D$distance, Mod(D$samples), col=col, ylab=resizableLabel("distance"), ...)
+            imagep(x[["time"]], x[["distance"]], Mod(x[["samples"]]), ylab=resizableLabel("distance"), col=col, ...)
     } else if (w[1] == "altimeter") {
         message("FIXME: untested plot of ", w[1], "/", w[2], ": please report error")
         D <- x@data[[w[1]]]
