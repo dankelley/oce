@@ -1,6 +1,6 @@
 # oce 1.7.11
 
-* No significant changes yet.
+* Change the structure of AD2CP objects.
 
 # oce 1.7.10 (on CRAN)
 

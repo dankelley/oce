@@ -265,30 +265,62 @@ ad2cpCodeToName <- function(code=NULL, prefix=TRUE)
 
 #' Read a Nortek AD2CP File
 #'
-#' This function reads Nortek AD2CP files, storing data elements in lists within
-#' the `data` slot.  Those elements are named for the ID type in question.  For
-#' example, data with ID code `0x16` are stored in `d@data$average`, if `d` is
-#' the value returned by this function. See [ad2cpCodeToName()] for the mapping
-#' between ID hexadecimal code and storage name.  By default, [read.adp.ad2cp()]
-#' reads all ID codes that are in the file, but the `which` argument permits a
-#' refined focus, yielding faster processing times and smaller returned objects.
+#' This function is under active development and may change without notice.  In
+#' contrast with other `oce` reading functions, [read.adp.ad2cp()] focusses just
+#' on one data type within the source file.  Another difference is that it can
+#' either return an object holding the data or just a data frame holding a
+#' description of the data types in the file; indeed, the latter is the default.
+#' See \dQuote{Details} for more on the reasons for these departures from the
+#' usual `oce` pattern.
 #'
-#' This function is still in active development, so be aware that the returned
-#' data structures might change in future versions.
+#' Why does [read.adp.ad2cp()] focus only on parts of the data file? The answer
+#' lies in the AD2CP format itself, which may combine data subsets of such
+#' differing natures as to break with the `oce` system of pairing a `metadata`
+#' slot with a `data` slot.  For example, in a conventional ADP dataset, the
+#' `metadata` slot has items for the sampling times, the number of beams, the
+#' blanking distance, the cell size, the number of cells, etc.  Such items have
+#' a natural pairing with elements of the `data` slot, and `oce` uses this
+#' pairing in constructing plots and other items. However, an AD2CP file might
+#' combine such data with echosounder measurements, and these will have
+#' different values for number of beams and so forth.  This poses a challenge
+#' in naming conventions within the `oce` object, with ripple effects for
+#' plotting and data access.  Those ripple effects would extend beyond `oce`
+#' itself to user code.  To avoid such problems, [read.adp.ad2cp()]
+#' is designed to focus on one data type at a time, relying on users to
+#' keep track of the resultant object, perhaps to combine it with other objects
+#' from within the AD2CP file or other files, in the normal R manner.
 #'
-#' The coding is based mainly on descriptions in various versions of a Nortek
-#' manual (see \dQuote{References}). However, there are some gaps and
-#' contradictions in these manuals, owing partly to evolution of the data
-#' format. These things posed a challenge in the writing of [read.adp.ad2cp()].
-#' Thankfully, personnel in Nortek technical support team were able to supply
-#' the help that was needed. Lacking this, [read.adp.ad2cp()] would be
-#' significantly limited, both in what it can read and in the accuracy
-#' of the results.
+#' The permitted values for `dataType` are shown in the table below;
+#' the `dataType` argument of [read.adp.ad2cp()] may be chosen from any
+#' of the three columns in this table.
 #'
-#' Comments in the code, along with some warnings and messages that may be
-#' issued during processing, are used to highlight some areas that may need
-#' attention in revisions to this function.
+#' | code (raw) | code (integer) |            oce name |
+#' |      ----: |          ----: |               ----: |
+#' | ---------- | -------------- |   ----------------- |
+#' |     `0x15` |             21 |             `burst` |
+#' |     `0x16` |             22 |           `average` |
+#' |     `0x17` |             23 |       `bottomTrack` |
+#' |     `0x18` |             24 |  `interleavedBurst` |
+#' |     `0x1a` |             26 | `burstAltimeterRaw` |
+#' |     `0x1b` |             27 |    `DVLBottomTrack` |
+#' |     `0x1c` |             28 |       `echosounder` |
+#' |     `0x1d` |             29 |     `DVLWaterTrack` |
+#' |     `0x1e` |             30 |         `altimeter` |
+#' |     `0x1f` |             31 |  `averageAltimeter` |
+#' |     `0x23` |             35 |    `echosounderRaw` |
+#' |     `0xa0` |            160 |              `text` |
 #'
+## The coding is based mainly on descriptions in various versions of a Nortek
+## manual (see \dQuote{References}). However, there are some gaps and
+## contradictions in these manuals, owing partly to evolution of the data
+## format. These things posed a challenge in the writing of [read.adp.ad2cp()].
+## Thankfully, personnel in Nortek technical support team were able to supply
+## the help that was needed.
+##
+## Comments in the code, along with some warnings and messages that may be
+## issued during processing, are used to highlight some areas that may need
+## attention in revisions to this function.
+##
 ## Early in the year 2022, support was added for 12-byte headers. Until
 ## August 2022, this support was provisional and the results were unlikely
 ## to be correct. However, personal contacts with Nortek experts shed
@@ -349,24 +381,25 @@ ad2cpCodeToName <- function(code=NULL, prefix=TRUE)
 #' which is the default, then the value is changed internally to 1e9, and
 #' reading stops at the end of the file.
 #'
-#' @param dataType an indication of the data type to be extracted.  If This is
-#' NULL (the default) then `read.adp.ad2cp()` does not return an [oce-class]
-#' object, but rather a data frame indicating the data type occurrence rate in the file.
-#' Otherwise, `dataType` must be either a numeric or character value.  In the numeric
+#' @param dataType an indication of the data type to be extracted.  If this is
+#' NULL (the default) then `read.adp.ad2cp()` returns a data frame indicating
+#' the data type occurrence rate in the file.  Otherwise, `dataType` must be
+#' either a numeric or character value (see \dQuote{Details}).  In the numeric
 #' case, which includes both base-10 numbers and `raw` values, `dataType` is
 #' converted to an integer that is taken to indicate the data type via ID. The
 #' permitted values follow the Nortek convention, a summary of which is shown
 #' the table at the start of the \dQuote{Details} section.  In the character
-#' case, it must be a string taken from that same table, or the `"TOC"`, which
-#' returns a time-indexed table of contents.
+#' case, it must be a string taken from that same table, or `"TOC"`, which
+#' causes a time-indexed table of contents to be returned.
 #'
 #' @param tz a character value indicating time zone. This is used in
 #' interpreting times stored in the file.
 #'
-#' @param ignoreChecksums a logical value indicating whether to ignore
-#' checksums.  This is FALSE by default, meaning that any data chunk with an
-#' improper checksum is ignored. It may be necessary to set this to TRUE to
-#' parse some problematic files.
+## @param ignoreChecksums a logical value indicating whether to ignore
+## checksums.  This is FALSE by default, meaning that any data chunk with an
+## improper checksum is ignored.  It may be necessary to set this to TRUE to
+## parse some problematic files, but users are asked to report issues in
+## such cases.  (This parameter may be removed without notice.)
 #'
 #' @param longitude,latitude numerical values indicating the observation
 #' location.
@@ -417,7 +450,7 @@ ad2cpCodeToName <- function(code=NULL, prefix=TRUE)
 ##}
 #'
 #' @return Either an [adp-class] object with `metadata$fileType` equal to
-#' `"AD2CP"`, a or a data table summarizing the file contents by ID.
+#' `"AD2CP"`, or a data table summarizing the file contents by ID.
 #'
 #' @author Dan Kelley
 #'
@@ -439,6 +472,7 @@ ad2cpCodeToName <- function(code=NULL, prefix=TRUE)
 #' @family things related to ad2cp data
 #'
 #' @examples
+#' library(oce)
 #' # You can run this within the oce directory, if you clone from github.
 #' file <- "tests/testthat/local_data/ad2cp/S102791A002_Barrow_v2.ad2cp"
 #' if (file.exists(file)) {
@@ -451,7 +485,7 @@ ad2cpCodeToName <- function(code=NULL, prefix=TRUE)
 #' @author Dan Kelley
 read.adp.ad2cp <- function(file, from=1, to=0, by=1, dataType=NULL,
     tz=getOption("oceTz"),
-    ignoreChecksums=FALSE,
+    #ignoreChecksums=FALSE,
     longitude=NA, latitude=NA,
     orientation, distance, plan, type,
     monitor=FALSE, despike=FALSE, processingLog,
@@ -546,13 +580,8 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, dataType=NULL,
         ", by=", if (byGiven) by else "(missing)\n",
         "    plan=", if (planGiven) plan else "(missing)",
         ", type=\"", if (typeGiven) type else "(missing)",
-        ", ignoreChecksums=", ignoreChecksums,
+        #", ignoreChecksums=", ignoreChecksums,
         ", ...)\n", sep="", unindent=1, style="bold")
-    if (debug == 1L)
-        oceDebug(debug, "HINT: set debug=2 for more output, or 3 for the maximum output\n")
-    else if (debug == 2L)
-        oceDebug(debug, "HINT: set debug=3 for even more output\n")
-
     if (typeGiven) {
         typeAllowed <- c("Signature1000", "Signature500", "Signature250")
         typei <- pmatch(type, typeAllowed)
@@ -608,7 +637,8 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, dataType=NULL,
     oceDebug(debug, "dataSize:", dataSize, "\n")
     oceDebug(debug, "buf[1+headerSize+dataSize=", 1+headerSize+dataSize, "]=0x", buf[1+headerSize+dataSize], " (expect 0xa5)\n", sep="")
     nav <- do_ldc_ad2cp_in_file(filename, from, to, by,
-        if (ignoreChecksums) 1L else 0L,
+        #if (ignoreChecksums) 1L else 0L,
+        0L,
         debug-1L)
     # Return overviews (whole file)
     if (is.null(dataType)) {
@@ -688,7 +718,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, dataType=NULL,
     dim(status) <- c(32L, N)
     # Interpret status, but note that items will be subsetted later (see 'keep')
     #
-    # Reader blankingDistanceInCm.  This is bit 1 in the Nortek (2022 table 6.3
+    # Read blankingDistanceInCm.  This is bit 1 in the Nortek (2022 table 6.3
     # page 85) zero-based notation is index 2 in R.
     #
     # NOTE: 2022-08-29 Nortek informs me that the blankingDistance is *always*
@@ -712,7 +742,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, dataType=NULL,
             }
         }
     }
-    # Bit 16 in Nortek (zer0-based) notation is bit 17 here.
+    # Bit 16 in Nortek (zero-based) notation is bit 17 here.
     # count from 0, so it is bit 17 here.
     activeConfiguration <- as.integer(status[17L, ])
     # Decode the orientation from bits 25-27 in 0-offset notation, i.e. 26-28 here.
@@ -2068,7 +2098,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, dataType=NULL,
         if (length(p$echosounder) < 1L) {
             stop("no dataType=", dataTypeOrig, " (echosounderRaw) in file")
         }
-        data <- readEchosounder(id=dataType, debug=debug)
+        data <- readEchosounderRaw(id=dataType, debug=debug)
         message("FIXME: move some (echosounderRaw) things from data to metadata")
         for (name in c("blankingDistance", "cellSize", "configuration",
                 "datasetDescription", "distance", "frequency", "numberOfBeams",

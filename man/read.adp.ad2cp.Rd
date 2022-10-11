@@ -39,24 +39,25 @@ reading stops at the end of the file.}
 
 \item{by}{ignored.}
 
-\item{dataType}{an indication of the data type to be extracted.  If This is
-NULL (the default) then \code{read.adp.ad2cp()} does not return an \linkS4class{oce}
-object, but rather a data frame indicating the data type occurrence rate in the file.
-Otherwise, \code{dataType} must be either a numeric or character value.  In the numeric
+\item{dataType}{an indication of the data type to be extracted.  If this is
+NULL (the default) then \code{read.adp.ad2cp()} returns a data frame indicating
+the data type occurrence rate in the file.  Otherwise, \code{dataType} must be
+either a numeric or character value (see \dQuote{Details}).  In the numeric
 case, which includes both base-10 numbers and \code{raw} values, \code{dataType} is
 converted to an integer that is taken to indicate the data type via ID. The
 permitted values follow the Nortek convention, a summary of which is shown
 the table at the start of the \dQuote{Details} section.  In the character
-case, it must be a string taken from that same table, or the \code{"TOC"}, which
-returns a time-indexed table of contents.}
+case, it must be a string taken from that same table, or \code{"TOC"}, which
+causes a time-indexed table of contents to be returned.}
 
 \item{tz}{a character value indicating time zone. This is used in
 interpreting times stored in the file.}
 
 \item{ignoreChecksums}{a logical value indicating whether to ignore
 checksums.  This is FALSE by default, meaning that any data chunk with an
-improper checksum is ignored. It may be necessary to set this to TRUE to
-parse some problematic files.}
+improper checksum is ignored.  It may be necessary to set this to TRUE to
+parse some problematic files, but users are asked to report issues in
+such cases.  (This parameter may be removed without notice.)}
 
 \item{longitude, latitude}{numerical values indicating the observation
 location.}
@@ -102,35 +103,56 @@ data chunks, or to 3 for intensive debugging at both levels.}
 }
 \value{
 Either an \linkS4class{adp} object with \code{metadata$fileType} equal to
-\code{"AD2CP"}, a or a data table summarizing the file contents by ID.
+\code{"AD2CP"}, or a data table summarizing the file contents by ID.
 }
 \description{
-This function reads Nortek AD2CP files, storing data elements in lists within
-the \code{data} slot.  Those elements are named for the ID type in question.  For
-example, data with ID code \code{0x16} are stored in \code{d@data$average}, if \code{d} is
-the value returned by this function. See \code{\link[=ad2cpCodeToName]{ad2cpCodeToName()}} for the mapping
-between ID hexadecimal code and storage name.  By default, \code{\link[=read.adp.ad2cp]{read.adp.ad2cp()}}
-reads all ID codes that are in the file, but the \code{which} argument permits a
-refined focus, yielding faster processing times and smaller returned objects.
+This function is under active development and may change without notice.  In
+contrast with other \code{oce} reading functions, \code{\link[=read.adp.ad2cp]{read.adp.ad2cp()}} focusses just
+on one data type within the source file.  Another difference is that it can
+either return an object holding the data or just a data frame holding a
+description of the data types in the file; indeed, the latter is the default.
+See \dQuote{Details} for more on the reasons for these departures from the
+usual \code{oce} pattern.
 }
 \details{
-This function is still in active development, so be aware that the returned
-data structures might change in future versions.
+Why does \code{\link[=read.adp.ad2cp]{read.adp.ad2cp()}} focus only on parts of the data file? The answer
+lies in the AD2CP format itself, which may combine data subsets of such
+differing natures as to break with the \code{oce} system of pairing a \code{metadata}
+slot with a \code{data} slot.  For example, in a conventional ADP dataset, the
+\code{metadata} slot has items for the sampling times, the number of beams, the
+blanking distance, the cell size, the number of cells, etc.  Such items have
+a natural pairing with elements of the \code{data} slot, and \code{oce} uses this
+pairing in constructing plots and other items. However, an AD2CP file might
+combine such data with echosounder measurements, and these will have
+different values for number of beams and so forth.  This poses a challenge
+in naming conventions within the \code{oce} object, with ripple effects for
+plotting and data access.  Those ripple effects would extend beyond \code{oce}
+itself to user code.  To avoid such problems, \code{\link[=read.adp.ad2cp]{read.adp.ad2cp()}}
+is designed to focus on one data type at a time, relying on users to
+keep track of the resultant object, perhaps to combine it with other objects
+from within the AD2CP file or other files, in the normal R manner.
 
-The coding is based mainly on descriptions in various versions of a Nortek
-manual (see \dQuote{References}). However, there are some gaps and
-contradictions in these manuals, owing partly to evolution of the data
-format. These things posed a challenge in the writing of \code{\link[=read.adp.ad2cp]{read.adp.ad2cp()}}.
-Thankfully, personnel in Nortek technical support team were able to supply
-the help that was needed. Lacking this, \code{\link[=read.adp.ad2cp]{read.adp.ad2cp()}} would be
-significantly limited, both in what it can read and in the accuracy
-of the results.
-
-Comments in the code, along with some warnings and messages that may be
-issued during processing, are used to highlight some areas that may need
-attention in revisions to this function.
+The permitted values for \code{dataType} are shown in the table below;
+the \code{dataType} argument of \code{\link[=read.adp.ad2cp]{read.adp.ad2cp()}} may be chosen from any
+of the three columns in this table.\tabular{rrr}{
+   code (raw) \tab code (integer) \tab oce name \cr
+   ---------- \tab -------------- \tab ----------------- \cr
+   \code{0x15} \tab 21 \tab \code{burst} \cr
+   \code{0x16} \tab 22 \tab \code{average} \cr
+   \code{0x17} \tab 23 \tab \code{bottomTrack} \cr
+   \code{0x18} \tab 24 \tab \code{interleavedBurst} \cr
+   \code{0x1a} \tab 26 \tab \code{burstAltimeterRaw} \cr
+   \code{0x1b} \tab 27 \tab \code{DVLBottomTrack} \cr
+   \code{0x1c} \tab 28 \tab \code{echosounder} \cr
+   \code{0x1d} \tab 29 \tab \code{DVLWaterTrack} \cr
+   \code{0x1e} \tab 30 \tab \code{altimeter} \cr
+   \code{0x1f} \tab 31 \tab \code{averageAltimeter} \cr
+   \code{0x23} \tab 35 \tab \code{echosounderRaw} \cr
+   \code{0xa0} \tab 160 \tab \code{text} \cr
+}
 }
 \examples{
+library(oce)
 # You can run this within the oce directory, if you clone from github.
 file <- "tests/testthat/local_data/ad2cp/S102791A002_Barrow_v2.ad2cp"
 if (file.exists(file)) {
