@@ -636,10 +636,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, dataType=NULL,
     dataSize <- readBin(buf[5:6], what="integer", n=1, size=2, endian="little", signed=FALSE)
     oceDebug(debug, "dataSize:", dataSize, "\n")
     oceDebug(debug, "buf[1+headerSize+dataSize=", 1+headerSize+dataSize, "]=0x", buf[1+headerSize+dataSize], " (expect 0xa5)\n", sep="")
-    nav <- do_ldc_ad2cp_in_file(filename, from, to, by,
-        #if (ignoreChecksums) 1L else 0L,
-        0L,
-        debug-1L)
+    nav <- do_ldc_ad2cp_in_file(filename, from, to, by, debug-1L)
     # Return overviews (whole file)
     if (is.null(dataType)) {
         t <- table(nav$id)

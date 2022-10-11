@@ -11,7 +11,6 @@ read.adp.ad2cp(
   by = 1,
   dataType = NULL,
   tz = getOption("oceTz"),
-  ignoreChecksums = FALSE,
   longitude = NA,
   latitude = NA,
   orientation,
@@ -52,12 +51,6 @@ causes a time-indexed table of contents to be returned.}
 
 \item{tz}{a character value indicating time zone. This is used in
 interpreting times stored in the file.}
-
-\item{ignoreChecksums}{a logical value indicating whether to ignore
-checksums.  This is FALSE by default, meaning that any data chunk with an
-improper checksum is ignored.  It may be necessary to set this to TRUE to
-parse some problematic files, but users are asked to report issues in
-such cases.  (This parameter may be removed without notice.)}
 
 \item{longitude, latitude}{numerical values indicating the observation
 location.}
