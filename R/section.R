@@ -1357,12 +1357,23 @@ setMethod(f="plot",
             mgp <- getOption("oceMgp")
         if (missing(mar))
             mar <- c(mgp[1]+1, mgp[1]+1.5, mgp[2]+1, mgp[2]+0.5)
-        if (missing(col))
+        if (missing(col)) {
+            #>message("DEFAULTING col")
             col <- par("col")
-        if (missing(cex))
+        }
+        if (missing(cex)) {
+            #>message("DEFAULTING cex")
             cex <- par("cex")
-        if (missing(pch))
-            pch <- par("pch")
+        }
+        #>message(vectorShow(which, showNewline=FALSE))
+        pchMissing <- missing(pch) # next assignment is overridden for maps
+        if (pchMissing) {
+            #>message("DEFAULTING pch")
+            if (length(which) == 1L && (which == "map" || which == 99))
+                pch <- 3
+            else pch <- par("pch")
+            #>message("set pch=",pch)
+        }
         ## L and R are used much later, for constructing labels
         L <- if (getOption("oceUnitBracket") == "[") " [" else " ("
         R <- if (getOption("oceUnitBracket") == "[")  "]" else  ")"
@@ -1440,16 +1451,25 @@ setMethod(f="plot",
             debug=0,
             axes=TRUE,
             col=par("col"),
+            pch=if (as.character(variable) == "map") 3 else par("pch"),
+            cex=par("cex"),
             ...)
         {
             oceDebug(debug, "plotSubsection(variable=\"", variable,
                 "\", eos=\"", eos,
                 "\", which.xtype=\"", which.xtype,
+                "\", col=", if (missing(col)) "(missing)" else col,
+                "\", cex=", if (missing(cex)) "(missing)" else cex,
+                "\", pch=", if (missing(pch)) "(missing)" else pch,
                 "\", ztype=\"", ztype,
                 "\", zcol=", if (missing(zcol)) "(missing)" else "(provided)",
                 "\", span=", if (missing(span)) "(missing)" else span,
                 ", showStations=", showStations,
                 ", axes=", axes, ", ...) {\n", sep="", unindent=1)
+            #>message("in plotSubsection:")
+            #>cat(vectorShow(col))
+            #>cat(vectorShow(pch))
+            #>cat(vectorShow(cex))
             ztype <- match.arg(ztype)
             drawPoints <- "points" == ztype
             omar <- par('mar')
@@ -1589,12 +1609,16 @@ setMethod(f="plot",
                 if (showSpine && !is.null(spine))
                     lines(spine$longitude, spine$latitude, col="blue", lwd=1.4*par("lwd"))
 
-                ## add station data
-                lines(lon, lat, col="lightgray")
-                ## replot with shifted longitude
-                col <- if ("col" %in% names(list(...))) list(...)$col else "black"
-                points(lon, lat, col=col, pch=3, lwd=1/2)
-                points(lon - 360, lat, col=col, pch=3, lwd=1/2)
+                # draw station trace (or skip it, if white was requested)
+                if (col[1] != "white")
+                    lines(lon, lat, col="lightgray")
+                # replot with shifted longitude
+                #>message("L1608: putting points on a map (low level)")
+                #>cat(vectorShow(col))
+                #>cat(vectorShow(pch))
+                #>cat(vectorShow(cex))
+                points(lon, lat, col=col, pch=pch, cex=cex, lwd=1/2)
+                points(lon - 360, lat, col=col, pch=pch, cex=cex, lwd=1/2)
                 if (showStations) {
                     stationId <- x[['station ID']]
                     text(lon, lat, stationId, pos=2, cex=cex)
@@ -2105,13 +2129,22 @@ setMethod(f="plot",
                     xlim=xlim, ylim=ylim, col=col, legend=FALSE,
                     debug=debug-1, ...)
             if (!is.na(which[w]) && (which[w] == 99 || which[w] == "map")) {
+                oceDebug(debug, "plotting a map\n")
+                #>message("L2125: plotting a map")
+                #>cat(vectorShow(col))
+                #>cat(vectorShow(pch))
+                #>cat(vectorShow(cex))
                 plotSubsection(xx, yy, zz,
                     which.xtype=which.xtype, which.ytype=which.ytype,
                     variable="map", vtitle="", unit=NULL,
                     indicate.stations=FALSE,
                     clongitude=clongitude, clatitude=clatitude, span=span,
                     projection=projection,
-                    debug=debug-1, ...)
+                    debug=debug-1,
+                    col=col,
+                    pch=pch,
+                    cex=cex,
+                    ...)
             }
         }
         oceDebug(debug, "} # plot.section()\n", unindent=1)
