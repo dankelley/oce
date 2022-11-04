@@ -2632,28 +2632,22 @@ ctdTrim <- function(x, method, removeDepthInversions=FALSE, parameters=NULL,
                 keep <- keep & (x@data[[item]] <= parameters$to)
         } else if (method == "sbe") {
             oceDebug(debug, "Using method \"sbe\" for removing soak\n")
+            minSoak <- 1
+            maxSoak <- 20
             if (!missing(parameters)) {
-                if ("minSoak" %in% names(parameters)) {
+                if ("minSoak" %in% names(parameters))
                     minSoak <- parameters$minSoak
-                } else {
-                    minSoak <- 1
-                }
-                if ("maxSoak" %in% names(parameters)) {
+                if ("maxSoak" %in% names(parameters))
                     maxSoak <- parameters$maxSoak
-                } else {
-                    maxSoak <- 20
-                }
-            } else {
-                minSoak <- 1
-                maxSoak <- 20
             }
             oceDebug(debug, "Using minSoak of ", minSoak, "\n")
             oceDebug(debug, "Using maxSoak of ", maxSoak, "\n")
-            max.location <- which.max(smooth(pressure, kind="3R"))
-            max.pressure <- smooth(pressure, kind="3R")[max.location]
+            pressureSmoothed <- smooth(pressure, kind="3R")
+            max.location <- which.max(pressureSmoothed)
+            max.pressure <- pressureSmoothed[max.location]
             keep[max.location:n] <- FALSE
-            oceDebug(debug, "removed data at indices from ", max.location,
-                     " (where pressure is ", pressure[max.location], ") to the end of the data\n", sep="")
+            oceDebug(debug, "removed data at indices from index ", max.location,
+                     " (at ", pressure[max.location], " dbar) to end of data, at index", n, "\n", sep="")
             pp <- pressure[keep]
             pp <- despike(pp) # some, e.g. data(ctdRaw), have crazy points in air
             ss <- x[["scan"]][keep]
