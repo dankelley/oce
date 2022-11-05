@@ -2363,12 +2363,13 @@ ctdFindProfiles <- function(x, cutoff=0.5, minLength=10, minHeight=0.1*diff(rang
 #'
 #' @family things related to ctd data
 ctdTrim <- function(x, method, removeDepthInversions=FALSE, parameters=NULL,
-                    indices=FALSE, debug=getOption("oceDebug"))
+    indices=FALSE, debug=getOption("oceDebug"))
 {
     oceDebug(debug, "ctdTrim() {\n", unindent=1)
-    methodIsFunction <- !missing(method) && is.function(method)
     if (!inherits(x, "ctd"))
         stop("method is only for objects of class '", "ctd", "'")
+    methodIsFunction <- !missing(method) && is.function(method)
+    oceDebug(debug, vectorShow(methodIsFunction))
     pressure <- fillGap(x[["pressure"]], rule=2)
     if (1 == length(unique(diff(pressure)))) {
         oceDebug(debug, "diff(p) is constant, so return input unaltered\n", unindent=1)
@@ -2399,7 +2400,12 @@ ctdTrim <- function(x, method, removeDepthInversions=FALSE, parameters=NULL,
                 stop("if provided, 'method' must be of length 1 or 2")
             }
         }
-        method <- match.arg(method, c("downcast", "upcast", "index", "scan", "range", "sbe"))
+        methodAllowed <- c("downcast", "upcast", "index", "scan", "range", "sbe")
+        imethod <- pmatch(method, methodAllowed)
+        if (is.na(imethod))
+            stop("unknown method=\"", method, "\"; try one of \"",
+                paste(methodAllowed, collapse="\" \""), "\"")
+        method <- methodAllowed[imethod]
         oceDebug(debug, paste("ctdTrim() using method \"", method, "\"\n", sep=""))
         keep <- rep(TRUE, n)
         if (method == "index") {
@@ -2663,8 +2669,6 @@ ctdTrim <- function(x, method, removeDepthInversions=FALSE, parameters=NULL,
                 keep <- keep & (seq_along(x[["scan"]]) > istart)
                 oceDebug(debug, "istart =", istart, "\n")
             }
-        } else {
-            stop("'method' not recognized; must be 'index', 'downcast', 'scan', 'range', or 'sbe'")
         }
     } else {
         keep <- method(data=x@data, parameters=parameters)
