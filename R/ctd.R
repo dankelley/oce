@@ -2671,7 +2671,8 @@ ctdTrim <- function(x, method, removeDepthInversions=FALSE, parameters=NULL,
             }
         }
     } else {
-        keep <- method(data=x@data, parameters=parameters)
+        message("about to call method")
+        keep <- method(data=x@data, parameters=parameters, debug=debug)
     }
 
     ## Handle depth inversions (may be a problem with noise)
