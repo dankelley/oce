@@ -1,35 +1,17 @@
+---
+author: Dan Kelley, Jaimie Harbin, ...
+title: Exploration of ways to trim ctd profiles
+---
+
+# sbe2 (DK)
+
+```{r}
 library(oce)
-file <- "SBE19plus_01906009_2019_04_11.cnv"
-
-tpFull <- function(name, type="p", cex=0.5, pch=20)
-{
-    data <- get(name)
-    png(paste0("jh_", name, "_%d.png"))
-    plotScan(data, xtype="time", type=type, cex=cex, pch=pch)
-    plot(data[["time"]], data[["salinity"]],
-        xlab="Time", ylab="S", type=type, cex=cex, pch=pch)
-    plot(data[["time"]], data[["temperature"]],
-        xlab="Time", ylab="T", type=type, cex=cex, pch=pch)
-    plot(data, eos="unesco")
-    dev.off()
-}
-tp <- function(name, type="p", cex=0.5, pch=20)
-{
-    data <- get(name)
-    plotScan(data, xtype="time", type=type, cex=cex, pch=pch)
-}
-
-
 d0 <- read.oce("SBE19plus_01906009_2019_04_11.cnv")
-#tp("d0")
-
-# use plotScan() and then locator(2) to find indices
-#d1 <- ctdTrim(d0, method="index", parameters=c(3127,4785))
-#tp("d1")
 
 sbe2 <- function(data, parameters=NULL)
 {
-    debug <- 1 # causes messages and plotting
+    debug <- 1 # causes message and plotting
     p <- data$pressure
     if (is.null(parameters))
         parameters <- list()
@@ -109,7 +91,7 @@ sbe2 <- function(data, parameters=NULL)
     sinkingFast <- dp > mean(sinking) - parameters$descentFactor * sd(sinking)
     #message(vectorShow(dp))
     #message(vectorShow(sinkingFast))
-    #message(vectorShow(look))
+    #message(vectorShow(keep))
     keep <- keep & sinkingFast
     keep
 }
@@ -117,45 +99,34 @@ plotScan(d0, type="p", pch=20, cex=0.2)
 keep <- sbe2(d0@data)
 points(seq_along(d0[["pressure"]]), d0[["pressure"]],
     pch=20, cex=0.5, col=ifelse(keep, 2, 1))
+```
 
-# compare human-determined start/end
-human <- read.csv("analysis_dk.csv")
-w <- which(df$File==file)
-abline(v=df$Start[w], col="magenta", lwd=2, lty="dotted")
-abline(v=df$End[w], col="magenta", lwd=2, lty="dotted")
 
-stop()
 
-d1 <- ctdTrim(d0, method=sbe2, parameters=list(minSoak=1, maxSoak=20), debug=1)
-plotScan(d1)
-plot(d1, eos="unesco")
-plotTS(d1, eos="unesco", type="o", pch=20, cex=0.5)
+# removeDowncast (JH)
 
-p <- d1[["pressure"]]
-t <- d1[["time"]]
-dpdt <- diff(p) / smooth(diff(as.numeric(t)))
-dpdt <- c(dpdt[1], dpdt)
-plot(t, dpdt, ylab="dp/dt [dbar/s]", type="o", pch=20, cex=0.5)
-abline(h=quantile(dpdt, 0.1), col=2)
-abline(h=median(dpdt), col=4)
-abline(h=mean(dpdt) - sd(dpdt), col=3)
-# hist(dpdt, breaks=length(dpdt)/20)
+```{r}
+library(oce)
+f <- read.oce("SBE19plus_01906009_2019_04_11.cnv")
+par(mfrow=c(1,2))
+plotScan(f)
+max <- which(round(f[['pressure']],0) == max(round(f[['pressure']],0)))[1] # Find first rounded max
+abline(v=max, col="blue")
 
-#library(changepoint)
-#cptm <- cpt.var(dpdt, method="PELT", Q=2)
-#plot(d1[["time"]], cptm)
+trimByIndex<-function(data, parameters, debug) {
+  parameters[1] < data$scan & data$scan < parameters[2]
+}
+removeUpcast <- function(x) {
+  # x is an oce ctd object
+  max <- which(round(x[['pressure']],0) == max(round(x[['pressure']],0)))[1] # Find first rounded max
+  # Removing upcast
+  clean <- ctdTrim(x, trimByIndex, parameters=c(0, max))
+  return(clean)
+}
+f2 <- removeUpcast(f)
+plotScan(f2)
+```
 
-hist(dpdt, breaks=length(dpdt)/20)
-abline(v=median(dpdt), col=2)
-abline(v=median(dpdt)+c(-1,1)*sd(dpdt), col=2)
-abline(v=0.2, lwd=3)
-dpdtSmoothed <- lowpass(dpdt, n=11)
-plot(d1[["time"]], dpdtSmoothed, type="o", cex=0.5)
-abline(h=median(dpdtSmoothed), col=2)
-abline(h=mean(dpdtSmoothed), col=4)
-abline(h=mean(dpdtSmoothed)-sd(dpdtSmoothed), col=4)
 
-plot(p, dpdtSmoothed, type="o", cex=0.5)
-plot(t[-1], diff(dpdtSmoothed)/diff(as.numeric(t)), type="l", cex=0.5)
 
 
