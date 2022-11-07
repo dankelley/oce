@@ -1,3 +1,4 @@
+rm(list=ls())
 library(oce)
 source("~/git/oce/R/ctd.R")
 #install.packages("changepoint")
@@ -39,6 +40,9 @@ sbe2 <- function(data, parameters=NULL, debug=0)
         parameters$maxSoak <- 20
     if (is.null(parameters$toleranceSoak))
         parameters$toleranceSoak <- 1
+    # Need descent speed to exceed mean+descentFactor(std dev)
+    if (is.null(parameters$descentFactor))
+        parameters$descentFactor <- 2
     if (parameters$maxSoak <= parameters$minSoak)
         stop("require minSoak < maxSoak")
     # Find most common pressure that is within the indicated range
@@ -62,7 +66,7 @@ sbe2 <- function(data, parameters=NULL, debug=0)
         abline(h=parameters$minSoak, col=4, lty="dotted")
         abline(h=parameters$maxSoak, col=4, lty="dotted")
     }
-    # Use runlengthst find pre-soak and soak intervals at the start
+    # Use runlength to find pre-soak and soak intervals at the start
     rleSoak <- rle(soaking)
     startSoak <- rleSoak$lengths[1]
     endSoak <- startSoak + rleSoak$lengths[2]
@@ -83,19 +87,38 @@ sbe2 <- function(data, parameters=NULL, debug=0)
         abline(v=deepest, col=2)
     }
     look[deepest:np] <- FALSE
-    # Finally, if it went up to the surface after soaking, trim that also
+    # Trim ascent from soaking depth to the surface
     shallowest <- which.min(p[look]) + which(look)[1]
     oceDebug(debug, vectorShow(shallowest))
     if (debug > 0L) {
         abline(v=shallowest, col=2)
     }
     look[1:shallowest] <- FALSE
+    # Trim slow descents
+    dplook <- smooth(diff(p[look]))
+    sinking <- dplook[dplook > 0]
+    #hist(sinking, breaks=50);abline(v=mean(sinking),col=4)
+    #abline(v=quantile(sinking), col=2)
+    #message(vectorShow(mean(sinking)))
+    #message(vectorShow(sd(sinking)))
+    #message(vectorShow(mean(sinking)-sd(sinking)))
+    #message(vectorShow(mean(sinking)-2*sd(sinking)))
+    #abline(v=mean(sinking)-2*sd(sinking), lwd=3)
+    #plot(sinking > mean(sinking)-2*sd(sinking))
+    dp <- diff(smooth(p))
+    dp <- c(dp[1], dp)
+    sinkingFast <- dp > mean(sinking) - parameters$descentFactor * sd(sinking)
+    #message(vectorShow(dp))
+    #message(vectorShow(sinkingFast))
+    #message(vectorShow(look))
+    look <- look & sinkingFast
     look
 }
 plotScan(d0, type="p", pch=20, cex=0.2)
 keep <- sbe2(d0@data, debug=1)
 points(seq_along(d0[["pressure"]]), d0[["pressure"]],
-    pch=20, cex=0.2, col=ifelse(keep, 2, 1))
+    pch=20, cex=0.5, col=ifelse(keep, 2, 1))
+stop()
 
 d1 <- ctdTrim(d0, method=sbe2, parameters=list(minSoak=1, maxSoak=20), debug=1)
 plotScan(d1)
@@ -104,17 +127,17 @@ plotTS(d1, eos="unesco", type="o", pch=20, cex=0.5)
 
 p <- d1[["pressure"]]
 t <- d1[["time"]]
-dpdt <- diff(p) / diff(as.numeric(t))
+dpdt <- diff(p) / smooth(diff(as.numeric(t)))
 dpdt <- c(dpdt[1], dpdt)
-plot(t, dpdt, ylab="dp/dt [dbar/s]", type="p", pch=20, cex=0.5)
+plot(t, dpdt, ylab="dp/dt [dbar/s]", type="o", pch=20, cex=0.5)
 abline(h=quantile(dpdt, 0.1), col=2)
 abline(h=median(dpdt), col=4)
 abline(h=mean(dpdt) - sd(dpdt), col=3)
 # hist(dpdt, breaks=length(dpdt)/20)
 
-library(changepoint)
-cptm <- cpt.var(dpdt, method="PELT", Q=2)
-plot(d1[["time"]], cptm)
+#library(changepoint)
+#cptm <- cpt.var(dpdt, method="PELT", Q=2)
+#plot(d1[["time"]], cptm)
 
 hist(dpdt, breaks=length(dpdt)/20)
 abline(v=median(dpdt), col=2)
