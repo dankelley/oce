@@ -17,7 +17,7 @@ for (file in list.files(pattern="*.cnv")) {
     cat(sprintf("%s,%d,%d\n", file, start, end))
 }
 df <- data.frame(File=File, Start=Start, End=End)
-write.csv(df, file="analysis_dk.csv")
+write.csv(df, file="analysis_dk.csv", row.names=FALSE)
 
 
 
