@@ -41,6 +41,8 @@ for (ifile in seq_along(files)) {
     d <- read.oce(file)
     plotScan(d, xaxs="i")
     mtext(file, line=0.25)
+    np <- length(d[["pressure"]])
+    buf <- np / 20
     # Get START index
     while (TRUE) {
         message("Please click at the downcast START.")
@@ -57,15 +59,13 @@ for (ifile in seq_along(files)) {
             start <- as.integer(round(xy$x))
             break
         }
-        plotScan(d, xaxs="i")
+        xlim <- c(max(1L, xy$x -buf), np)
+        plotScan(d, xaxs="i", xlim=xlim)
         mtext(file, line=0.25)
     }
     # Get END index
     while (TRUE) {
         message("Please click at the downcast END.")
-        plotScan(d, xaxs="i")
-        mtext(file, line=0.25)
-        abline(v=start, col="forestgreen", lty=2)
         xy <- locator(1)
         abline(v=xy$x, col=2, lty=2)
         ok <- try(askYesNo("Is red END line okay", TRUE, c("yes","no","quit")), silent=TRUE)
@@ -79,6 +79,10 @@ for (ifile in seq_along(files)) {
             end <- as.integer(round(xy$x))
             break
         }
+        xlim <- c(max(1L, start - buf), min(xy$x + buf, np))
+        plotScan(d, xaxs="i", xlim=xlim)
+        mtext(file, line=0.25)
+        abline(v=start, col="forestgreen", lty=2)
     }
     # Display and store results. FIXME: the write.csv might be wrong, overwriting file.
     analysis <- rbind(analysis,
