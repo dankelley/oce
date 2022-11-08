@@ -13,6 +13,8 @@ sbe2 <- function(data, parameters=NULL)
         parameters$maxSoak <- 20
     if (is.null(parameters$toleranceSoak))
         parameters$toleranceSoak <- 1
+    if (is.null(parameters$N))
+        parameters$N <- 200
     # Need descent speed to exceed mean+descentFactor(std dev)
     if (is.null(parameters$descentFactor))
         parameters$descentFactor <- 2
@@ -81,11 +83,11 @@ sbe2 <- function(data, parameters=NULL)
     dp <- diff(smooth(p))
     dp <- c(dp[1], dp)
     sinkingFast <- dp > mean(sinking) - parameters$descentFactor * sd(sinking)
-    message(vectorShow(mean(sinking)))
-    message(vectorShow(sd(sinking)))
-    message(vectorShow(dp))
-    message(vectorShow(sinkingFast))
-    message(vectorShow(keep))
+    cat(vectorShow(mean(sinking)))
+    cat(vectorShow(sd(sinking)))
+    cat(vectorShow(dp))
+    cat(vectorShow(sinkingFast))
+    cat(vectorShow(keep))
     plot(p, col=ifelse(sinkingFast, 2, 1), pch=20, cex=0.5, ylim=c(min(p),
             max(p)+5))
     i <- seq_along(p)
@@ -95,10 +97,15 @@ sbe2 <- function(data, parameters=NULL)
     #m <- lm(p ~ i)
     #s <- segmented(m, npsi=10)
     #abline(v=unname(s$psi[,2]), col=4, lwd=3)
-    pb <- binAverage(i, p, 1, max(i), xinc=(max(i)-1)/100)
-    lines(pb, col=2)
-    lines(pb$x, pb$y+3, col=2) # to see it better
-    browser()
+    cat(vectorShow(parameters))
+    pb <- binAverage(i, p, 1.0, np, (np+1.0)/parameters$N)
+    pb$y <- lowpass(pb$y, n=5)
+    fast <- unname(quantile(diff(pb$y), 0.75))
+    cat(vectorShow(fast))
+    cat(vectorShow(pb))
+    abline(h=fast,col=4)
+    lines(pb$x, pb$y, col=2)           # superimpose...
+    lines(pb$x, pb$y+3, col=2)         # ... and draw offset
     keep <- keep & sinkingFast
     keep
 }
