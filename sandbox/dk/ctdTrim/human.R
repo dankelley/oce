@@ -1,4 +1,6 @@
 library(oce)
+
+# Helper function
 user <- function()
 {
     res <- if (.Platform$OS.type == "windows") Sys.getenv("USERNAME")
@@ -7,80 +9,81 @@ user <- function()
         res <- "username"
     res
 }
-csv <- paste0("analysis_", user(), ".csv")
-#f <- "SBE19plus_01906009_2019_04_11.cnv"
-File <- NULL
-Start <- NULL
-End <- NULL
-files <-  list.files(pattern="*.cnv")
-print(files)
-if (!file.exists(csv)) {
-    cat('file,start,end\n"",NA,NA\n', file=csv)
-    message("created empty file '", csv, "'")
-} else {
-    message("adding to existing file '", csv, "'")
-}
-a <- read.csv(csv)
 
+# Create analysis_USERNAME.csv, if it doesn't already exist
+csv <- paste0("analysis_", user(), ".csv")
+if (!file.exists(csv)) {
+    cat('file,start,end\n', file=csv)
+    message("created a new empty file '", csv, "'")
+} else {
+    message("appending to an existing file '", csv, "'")
+}
+analysis <- read.csv(csv)
+
+# Examine all .cnv files in local directory, but skip those already analysed.
+files <-  list.files(pattern="*.cnv")
 for (ifile in seq_along(files)) {
     file <- files[ifile]
-    if (file %in% a$file) {
-        message(file, " already handled")
+    if (file %in% analysis$file) {
+        message("Skipping '", file, "' since it is already in ", csv)
         next
     }
-    d0 <- read.oce(file)
-    # fx and fy are size of 'clear' box, divided by width and height
-    fx <- 0.2
-    fy <- 0.1
-    plotScan(d0, xaxs="i")
+    # Ask user whether to analyse this (useful? waste of time?)
+    ok <- try(askYesNo(paste0("Analyse ", file), TRUE, c("yes", "no", "quit")), silent=TRUE)
+    if (inherits(ok, "try-error")) {
+        warning("bad value entered; assuming 'no'")
+        ok <- FALSE
+    }
+    if (is.na(ok))
+        stop("User said 'quit'")
+    if (!ok)
+        next
+    d <- read.oce(file)
+    plotScan(d, xaxs="i")
     mtext(file, line=0.25)
-    usr <- par("usr")
-    #<old> # 'clear' box
-    #<old> xleft <- usr[1]
-    #<old> ybottom <- usr[4] - fy * (usr[4] - usr[3])
-    #<old> xright <- usr[1] + fx * (usr[2] - usr[1])
-    #<old> ytop <- usr[4]
-    #<old> rect(xleft, ybottom, xright, ytop, border=2, lwd=2, col="pink")
-    #<old> text(0.5*(xleft+xright), 0.5*(ybottom+ytop), "clear", cex=0.75)
-    # START
+    # Get START index
     while (TRUE) {
+        message("Please click at the downcast START.")
         xy <- locator(1)
         abline(v=xy$x, col="forestgreen", lty=2)
-        ok <- askYesNo("Is green START line okay",
-            TRUE, c("yes","no","quit"))
+        ok <- try(askYesNo("Is green START line okay", TRUE, c("yes","no","quit")), silent=TRUE)
+        if (inherits(ok, "try-error")) {
+            warning("bad value entered; assuming 'no'")
+            ok <- FALSE
+        }
         if (is.na(ok))
-            stop()
+            stop("User said 'quit'")
         if (ok) {
-            start <- xy$x
+            start <- as.integer(round(xy$x))
             break
         }
-        plotScan(d0, xaxs="i")
+        plotScan(d, xaxs="i")
         mtext(file, line=0.25)
     }
-    abline(v=xy$x, col="forestgreen", lty=2)
-    # END
+    # Get END index
     while (TRUE) {
-        start <- xy$x
+        message("Please click at the downcast END.")
+        plotScan(d, xaxs="i")
+        mtext(file, line=0.25)
+        abline(v=start, col="forestgreen", lty=2)
         xy <- locator(1)
         abline(v=xy$x, col=2, lty=2)
-        ok <- askYesNo("Is red ENDline okay",
-            TRUE, c("yes","no","quit"))
+        ok <- try(askYesNo("Is red END line okay", TRUE, c("yes","no","quit")), silent=TRUE)
+        if (inherits(ok, "try-error")) {
+            warning("bad value entered; assuming 'no'")
+            ok <- FALSE
+        }
         if (is.na(ok))
             stop()
         if (ok) {
-            end <- xy$x
+            end <- as.integer(round(xy$x))
             break
         }
-        plotScan(d0, xaxs="i")
-        mtext(file, line=0.25)
-        abline(v=xy$x, col="forestgreen", lty=2)
     }
-    cat(sprintf("%s,%d,%d\n", file, start, end))
-    File <- c(File, file)
-    Start <- c(Start, start)
-    End <- c(End, end)
+    # Display and store results. FIXME: the write.csv might be wrong, overwriting file.
+    analysis <- rbind(analysis,
+        data.frame(file=file, start=start, end=end))
+    write.csv(analysis, file=csv, row.names=FALSE)
+    print(read.csv(csv))
 }
-df <- data.frame(File=File, Start=Start, End=End)
-print(df)
-write.csv(df, file=csv, row.names=FALSE, append=TRUE)
 

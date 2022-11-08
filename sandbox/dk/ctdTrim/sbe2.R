@@ -109,7 +109,7 @@ sbe2 <- function(data, parameters=NULL)
     keep <- keep & sinkingFast
     keep
 }
-human <- read.csv("analysis_dk.csv")
+human <- read.csv("analysis_kelley.csv")
 
 for (file in list.files(pattern="cor.*.cnv")) {
     message(file)
