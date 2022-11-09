@@ -1786,6 +1786,9 @@ ctdDecimate <- function(x, p=1, method="boxcar", rule=1, e=1.5, debug=getOption(
     dataNew <- vector("list", length(dataNames)) # as.data.frame(array(NA, dim=c(npt, length(dataNames))))
     names(dataNew) <- dataNames
     oceDebug(debug, "methodFunction=", methodFunction, "\n")
+    # Find which columns hold time (if any), to address github issue
+    # https://github.com/dankelley/oce/issues/2014
+    isTime <- sapply(names(x@data), function(name) inherits(x@data[[name]], "POSIXt"))
     if (methodFunction) {
         ##message("function must have take three args: x, y and xout; x will be pressure.")
         pressure <- x[["pressure"]]
@@ -1961,7 +1964,12 @@ ctdDecimate <- function(x, p=1, method="boxcar", rule=1, e=1.5, debug=getOption(
     for (i in seq_along(dataNew)) {
         dataNew[[i]][is.nan(dataNew[[i]])] <- NA
     }
-    ##message("ctd.R:733 dataNew[['pressure']]: ", paste(dataNew[['pressure']], collapse=" "))
+    # Convert any time columns back from numbers (which were created by the
+    # above) to POSIXct times.
+    for (name in names(dataNew)) {
+        if (isTime[name])
+            dataNew[[name]] <- numberAsPOSIXct(dataNew[[name]])
+    }
     res@data <- dataNew
     res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     for (w in warningMessages)
@@ -2632,28 +2640,22 @@ ctdTrim <- function(x, method, removeDepthInversions=FALSE, parameters=NULL,
                 keep <- keep & (x@data[[item]] <= parameters$to)
         } else if (method == "sbe") {
             oceDebug(debug, "Using method \"sbe\" for removing soak\n")
+            minSoak <- 1
+            maxSoak <- 20
             if (!missing(parameters)) {
-                if ("minSoak" %in% names(parameters)) {
+                if ("minSoak" %in% names(parameters))
                     minSoak <- parameters$minSoak
-                } else {
-                    minSoak <- 1
-                }
-                if ("maxSoak" %in% names(parameters)) {
+                if ("maxSoak" %in% names(parameters))
                     maxSoak <- parameters$maxSoak
-                } else {
-                    maxSoak <- 20
-                }
-            } else {
-                minSoak <- 1
-                maxSoak <- 20
             }
             oceDebug(debug, "Using minSoak of ", minSoak, "\n")
             oceDebug(debug, "Using maxSoak of ", maxSoak, "\n")
-            max.location <- which.max(smooth(pressure, kind="3R"))
-            max.pressure <- smooth(pressure, kind="3R")[max.location]
+            pressureSmoothed <- smooth(pressure, kind="3R")
+            max.location <- which.max(pressureSmoothed)
+            max.pressure <- pressureSmoothed[max.location]
             keep[max.location:n] <- FALSE
-            oceDebug(debug, "removed data at indices from ", max.location,
-                     " (where pressure is ", pressure[max.location], ") to the end of the data\n", sep="")
+            oceDebug(debug, "removed data at indices from index ", max.location,
+                     " (at ", pressure[max.location], " dbar) to end of data, at index", n, "\n", sep="")
             pp <- pressure[keep]
             pp <- despike(pp) # some, e.g. data(ctdRaw), have crazy points in air
             ss <- x[["scan"]][keep]

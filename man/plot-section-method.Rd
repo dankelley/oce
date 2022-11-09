@@ -16,6 +16,7 @@
   contourLabels = NULL,
   stationIndices,
   coastline = "best",
+  colLand = "gray",
   xlim = NULL,
   ylim = NULL,
   zlim = NULL,
@@ -46,8 +47,9 @@
   col,
   cex,
   pch,
+  lwd,
   labcex = 1,
-  debug,
+  debug = getOption("oceDebug"),
   ...
 )
 }
@@ -91,6 +93,9 @@ version that is provided by \CRANpkg{oce},
 \code{"coastlineWorldMedium"} or \code{"coastlineWorldFine"} for two
 coastlines provided by the \CRANpkg{ocedata} package, or \code{"none"}, to avoid
 drawing a coastline.}
+
+\item{colLand}{colour used to fill in land areas if \code{which} is \code{"map"};
+ignored otherwise.}
 
 \item{xlim}{Optional limit for x axis (only in sections, not map).}
 
@@ -190,7 +195,10 @@ a default is set up.}
 
 \item{cex}{Numerical character-expansion factor, which defaults to \code{\link{par}}\code{("cex")}.}
 
-\item{pch}{Indication of symbol type; defaults to \code{\link{par}}\code{("pch")}.}
+\item{pch}{Indication of symbol type; defaults to \code{\link{par}}\code{("pch")} for
+non-map or to 3 for map.}
+
+\item{lwd}{line width; defaults to \code{\link{par}}\code{("lwd")}.}
 
 \item{labcex}{Size of characters in contour labels (passed to
 \code{\link[=contour]{contour()}}).}
