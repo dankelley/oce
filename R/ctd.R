@@ -1786,6 +1786,9 @@ ctdDecimate <- function(x, p=1, method="boxcar", rule=1, e=1.5, debug=getOption(
     dataNew <- vector("list", length(dataNames)) # as.data.frame(array(NA, dim=c(npt, length(dataNames))))
     names(dataNew) <- dataNames
     oceDebug(debug, "methodFunction=", methodFunction, "\n")
+    # Find which columns hold time (if any), to address github issue
+    # https://github.com/dankelley/oce/issues/2014
+    isTime <- sapply(names(x@data), function(name) inherits(x@data[[name]], "POSIXt"))
     if (methodFunction) {
         ##message("function must have take three args: x, y and xout; x will be pressure.")
         pressure <- x[["pressure"]]
@@ -1961,7 +1964,12 @@ ctdDecimate <- function(x, p=1, method="boxcar", rule=1, e=1.5, debug=getOption(
     for (i in seq_along(dataNew)) {
         dataNew[[i]][is.nan(dataNew[[i]])] <- NA
     }
-    ##message("ctd.R:733 dataNew[['pressure']]: ", paste(dataNew[['pressure']], collapse=" "))
+    # Convert any time columns back from numbers (which were created by the
+    # above) to POSIXct times.
+    for (name in names(dataNew)) {
+        if (isTime[name])
+            dataNew[[name]] <- numberAsPOSIXct(dataNew[[name]])
+    }
     res@data <- dataNew
     res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     for (w in warningMessages)
