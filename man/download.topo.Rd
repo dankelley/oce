@@ -81,13 +81,14 @@ error message and stops.
 }
 \section{Historical note relating to NOAA server changes}{
 
-In May of 2020, \code{download.topo} stopped working, evidently owing
-to changes in the NOAA server API, which had been inferred by reverse
-engineering a NOAA data-request website. However, the
-\code{marmap} function \code{getNOAA.bathy}
-was found to be working at that time, and so \code{download.topo} was revised based on
-that function.  The problem of keeping up with changing data-server APIs should
-be easier in the future, since NOAA has made the API public.
+
+2022 November 13: updated to new NOAA database, with 1/4-minute resolution (a
+marked improvedment over the previous 1-minute resolution).  The revision was
+framed along similar changes to \code{marmap::getNOAAbathy()} made earlier today.
+Thanks to Clark Richards for pointing this out!
+
+2020 May 31: updated for a change in the NOAA query structure, taking
+hints from \code{marmap::getNOAAbathy()}.
 }
 
 \examples{

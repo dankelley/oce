@@ -254,13 +254,14 @@ setMethod(f="subset",
 #' error message and stops.
 #'
 #' @section Historical note relating to NOAA server changes:
-#' In May of 2020, `download.topo` stopped working, evidently owing
-#' to changes in the NOAA server API, which had been inferred by reverse
-#' engineering a NOAA data-request website. However, the
-#' `marmap` function `getNOAA.bathy`
-#' was found to be working at that time, and so `download.topo` was revised based on
-#' that function.  The problem of keeping up with changing data-server APIs should
-#' be easier in the future, since NOAA has made the API public.
+#'
+#' 2022 November 13: updated to new NOAA database, with 1/4-minute resolution (a
+#' marked improvedment over the previous 1-minute resolution).  The revision was
+#' framed along similar changes to `marmap::getNOAAbathy()` made earlier today.
+#' Thanks to Clark Richards for pointing this out!
+#'
+#' 2020 May 31: updated for a change in the NOAA query structure, taking
+#' hints from `marmap::getNOAAbathy()`.
 #'
 #' @param west,east numeric values for the limits of the data-selection box, in degrees.
 #' These are converted to the -180 to 180 degree notation, if needed.
@@ -311,21 +312,33 @@ setMethod(f="subset",
 #' @family functions that download files
 #' @family things related to topo data
 download.topo <- function(west, east, south, north, resolution=4,
-                           destdir=".", destfile, format,
-                           server="https://gis.ngdc.noaa.gov",
-                           debug=getOption("oceDebug"))
+    destdir=".", destfile, format,
+    server="https://gis.ngdc.noaa.gov",
+    debug=getOption("oceDebug"))
 {
     oceDebug(debug, "download.topo(west=", west,
-             ", east=", east,
-             ", south=", south,
-             ", north=", north,
-             ", resolution=", resolution,
-             ", destdir='", destdir,
-             ", server='", server,
-             "')\n",
-             sep="", style="bold", unindent=1)
-    if (resolution < 1)
-        warning("resolution is < 1, which may cause errors or incorrect results\n")
+        ", east=", east,
+        ", south=", south,
+        ", north=", north,
+        ", resolution=", resolution,
+        ", destdir='", destdir, "'",
+        ", server='", server, "')\n",
+        sep="", style="bold", unindent=1)
+    # Code derived from marmap:getNOAAbathy() {
+    if (resolution < 0.5)
+        resolution <- 0.25
+    else if (resolution < 1.0)
+        resolution <- 0.50
+    database <- if (resolution == 0.25)
+        "27ETOPO_2022_v1_15s_bed_elev"
+    else if (resolution == 0.50)
+        "27ETOPO_2022_v1_30s_bed"
+    else
+        "27ETOPO_2022_v1_60s_bed"
+    # } end of marmap-derived code
+    oceDebug(debug, "resolution set to ", resolution, " for web query\n")
+    oceDebug(debug, "database set to '", database, "' for web query\n")
+
     ## The +-0.005 is to get rounding down for west and south, and rounding up for east and north.
     east <- round(east + 0.005, 2)
     west <- round(west - 0.005, 2)
@@ -355,16 +368,46 @@ download.topo <- function(west, east, south, north, resolution=4,
     nlat <- as.integer((north - south) * 60.0 / resolution)
     if (nlat < 1L)
         stop("Cannot download topo file, since north-south(=", north-south, " deg) is less than resolution (=", resolution, " min)")
-    url <- paste0(server, "/arcgis/rest/services/DEM_mosaics/ETOPO1_bedrock/ImageServer/exportImage",
-                  "?bbox=", west, ",", south, ",", east, ",", north,
-                  "&bboxSR=4326",
-                  "&size=", nlon, ",", nlat,
-                  "&imageSR=4326",
-                  "&format=tiff",
-                  "&pixelType=S16",
-                  "&interpolation=+RSP_NearestNeighbor",
-                  "&compression=LZW",
-                  "&f=image")
+    urlOLD <- paste0(server, "/arcgis/rest/services/DEM_mosaics/ETOPO1_bedrock/ImageServer/exportImage",
+        "?bbox=", west, ",", south, ",", east, ",", north,
+        "&bboxSR=4326",
+        "&size=", nlon, ",", nlat,
+        "&imageSR=4326",
+        "&format=tiff",
+        "&pixelType=S16",
+        "&interpolation=+RSP_NearestNeighbor",
+        "&compression=LZW",
+        "&f=image")
+    oceDebug(debug, "OLD url: \"", urlOLD, "\"\n", sep="")
+
+    # Test on 2022-11-13 with NOAA interface (Halifax Harbour region)
+    # https://gis.ngdc.noaa.gov
+    # /arcgis/rest/services/
+    # DEM_mosaics/DEM_all/ImageServer/exportImage
+    # ?bbox=-65.00000,44.00000,-63.00000,45.00000
+    # &bboxSR=4326
+    # &size=480,240
+    # &imageSR=4326
+    # &format=tiff
+    # &pixelType=F32
+    # &interpolation=+RSP_NearestNeighbor
+    # &compression=LZ77
+    # &renderingRule={%22rasterFunction%22:%22none%22}&mosaicRule={%22where%22:%22Name=%27ETOPO_2022_v1_15s_bed_elev%27%22}
+    # &f=image
+    url <- paste0(server, "/arcgis/rest/services/",
+        "DEM_mosaics/DEM_all/ImageServer/exportImage",
+        "?bbox=", west, ",", south, ",", east, ",", north,
+        "&bboxSR=4326",
+        "&size=", nlon, ",", nlat,
+        "&imageSR=4326",
+        "&format=tiff",
+        "&pixelType=S32",
+        "&interpolation=+RSP_NearestNeighbor",
+        "&compression=LZ77",
+        "renderingRule={%22rasterFunction%22:%22none%22}&mosaicRule={%22where%22:%22Name=%",
+        database,
+        "%27%22}",
+        "&f=image")
     oceDebug(debug, "querying \"", url, "\"\n", sep="")
     if (!requireNamespace("raster", quietly=TRUE))
         stop('must install.packages("raster"), which is required to translate downloaded data')
