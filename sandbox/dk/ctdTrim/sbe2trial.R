@@ -1,7 +1,5 @@
 method <- 2
-if (!interactive()) pdf("sbe2trial.pdf")
 PARAM <- list(A=1/5, B=1/2)
-par(mar=c(3,3,1,1), mgp=c(1.5,0.5,0))
 # Ideas
 #
 # 1. Chop the pressure time-series into N segments (default 10) and fit
@@ -26,7 +24,8 @@ par(mar=c(3,3,1,1), mgp=c(1.5,0.5,0))
 # the region and removing points with values that are smaller by a factor of X.
 
 library(oce)
-file <- "SBE19plus_01906009_2019_04_11.cnv"
+#file <- "SBE19plus_01906009_2019_04_11.cnv"
+#cor <- "../../data/cor2017080_preproc.cnv"
 
 tpFull <- function(name, type="p", cex=0.5, pch=20)
 {
@@ -80,7 +79,7 @@ sbe2 <- function(data, parameters=NULL, filename="")
         if (np < NNN) {
             tmp <- approx(i, p, seq(1, np, length.out=NNN))
             I <- tmp$x
-            P <- lowpass(tmp$y, n=5)
+            P <- lowpass(tmp$y, n=11)
             message("short")
         } else {
             AVG <- binAverage(i, p, 1, np, np/NNN)
@@ -94,7 +93,7 @@ sbe2 <- function(data, parameters=NULL, filename="")
         lines(I, P, col=2)
         mtext(filename)
         dP <- diff(P)
-        dP <- c(P[1], dP)
+        dP <- c(dP[1], dP)
         M <- quantile(abs(dP), 0.95) # do not use absolute max because of noise
         par(mfrow=c(2,1))
         plot(I, dP, cex=1/3, type="o")
@@ -105,14 +104,21 @@ sbe2 <- function(data, parameters=NULL, filename="")
         abline(h=PARAM$B*c(-1,1), col=2)
         mtext("blue:hover, red:rise/sink")
         keep <- parameters$minSoak <= P & P <= parameters$maxSoak
-        h <- hist(P[keep], breaks=sum(keep)/10, plot=FALSE) # FIXME: 10 is a guess
-        pSoak <- h$mids[which.max(h$counts)]
-        if (is.null(parameters$toleranceSoak))
-            parameters$toleranceSoak <- 1
-        pSoakMin <- pSoak - parameters$toleranceSoak
-        pSoakMax <- pSoak + parameters$toleranceSoak
-        # Find indices of pressures in soaking range
-        soaking <- pSoakMin <= P & P <= pSoakMax
+        # Identify 'soak' points using a histogram, if we have enough data to do so;
+        # otherwise, all data within the soaking pressure window will be considered
+        # to be in the 'soak' period.
+        if (sum(keep) > 50) {
+            h <- hist(P[keep], breaks=sum(keep)/10, plot=FALSE) # FIXME: 10 is a guess
+            pSoak <- h$mids[which.max(h$counts)]
+            if (is.null(parameters$toleranceSoak))
+                parameters$toleranceSoak <- 1
+            pSoakMin <- pSoak - parameters$toleranceSoak
+            pSoakMax <- pSoak + parameters$toleranceSoak
+            # Find indices of pressures in soaking range
+            soaking <- pSoakMin <= P & P <= pSoakMax
+        } else {
+            soaking <- keep
+        }
         hovering <- abs(dP)/M < PARAM$A
         sinking <- dP/M > PARAM$B
         rising <- dP/M < -PARAM$B
@@ -221,57 +227,68 @@ sbe2 <- function(data, parameters=NULL, filename="")
     DAN<<-list(p=p,dp=dp,x=x,y=y,SINKING=SINKING)
     keep
 }
-#plotScan(d0, type="p", pch=20, cex=0.2)
 
-files <- c("SBE19plus_01906009_2019_04_11.cnv", "cor2017080_preproc.cnv")
-d <- lapply(files, read.oce)
-
-keep <- sbe2(d[[1]]@data, filename=files[1])
-keep <- sbe2(d[[2]]@data, filename=files[2])
-
-#points(seq_along(d0[["pressure"]]), d0[["pressure"]],
-#    pch=20, cex=0.5, col=ifelse(keep, 2, 1))
+cl <- list.files(pattern="*.cnv$", path="../../data_cl", full.names=TRUE,
+    ignore.case=TRUE)
+jh <- list.files(pattern="*.cnv$", path="../../data_jh", full.names=TRUE,
+    ignore.case=TRUE)
+files <- sort(c(cl, jh))
+#files <- "../../data_cl/D004A096.CNV"
+nfiles <- length(files)
+if (!interactive()) pdf("sbe2trial.pdf")
+par(mar=c(3,3,1,1), mgp=c(1.5,0.5,0))
+for (ifile in seq_len(nfiles)) {
+    d <- read.oce(files[ifile])
+    message("processing file ", ifile, " of ", nfiles, " (", files[ifile], ")")
+    keep <- sbe2(d@data, filename=files[ifile])
+}
 if (!interactive()) dev.off()
-stop()
 
-# compare human-determined start/end
-human <- read.csv("analysis_dk.csv")
-w <- which(df$File==file)
-abline(v=df$Start[w], col="magenta", lwd=2, lty="dotted")
-abline(v=df$End[w], col="magenta", lwd=2, lty="dotted")
+if (FALSE) {
+    #keep <- sbe2(d[[1]]@data, filename=files[1])
+    #keep <- sbe2(d[[2]]@data, filename=files[2])
 
-stop()
+    #points(seq_along(d0[["pressure"]]), d0[["pressure"]],
+    #    pch=20, cex=0.5, col=ifelse(keep, 2, 1))
 
-d1 <- ctdTrim(d0, method=sbe2, parameters=list(minSoak=1, maxSoak=20), debug=1)
-plotScan(d1)
-plot(d1, eos="unesco")
-plotTS(d1, eos="unesco", type="o", pch=20, cex=0.5)
+    # compare human-determined start/end
+    human <- read.csv("analysis_dk.csv")
+    w <- which(df$File==file)
+    abline(v=df$Start[w], col="magenta", lwd=2, lty="dotted")
+    abline(v=df$End[w], col="magenta", lwd=2, lty="dotted")
 
-p <- d1[["pressure"]]
-t <- d1[["time"]]
-dpdt <- diff(p) / smooth(diff(as.numeric(t)))
-dpdt <- c(dpdt[1], dpdt)
-plot(t, dpdt, ylab="dp/dt [dbar/s]", type="o", pch=20, cex=0.5)
-abline(h=quantile(dpdt, 0.1), col=2)
-abline(h=median(dpdt), col=4)
-abline(h=mean(dpdt) - sd(dpdt), col=3)
-# hist(dpdt, breaks=length(dpdt)/20)
+    stop()
 
-#library(changepoint)
-#cptm <- cpt.var(dpdt, method="PELT", Q=2)
-#plot(d1[["time"]], cptm)
+    d1 <- ctdTrim(d0, method=sbe2, parameters=list(minSoak=1, maxSoak=20), debug=1)
+    plotScan(d1)
+    plot(d1, eos="unesco")
+    plotTS(d1, eos="unesco", type="o", pch=20, cex=0.5)
 
-hist(dpdt, breaks=length(dpdt)/20)
-abline(v=median(dpdt), col=2)
-abline(v=median(dpdt)+c(-1,1)*sd(dpdt), col=2)
-abline(v=0.2, lwd=3)
-dpdtSmoothed <- lowpass(dpdt, n=11)
-plot(d1[["time"]], dpdtSmoothed, type="o", cex=0.5)
-abline(h=median(dpdtSmoothed), col=2)
-abline(h=mean(dpdtSmoothed), col=4)
-abline(h=mean(dpdtSmoothed)-sd(dpdtSmoothed), col=4)
+    p <- d1[["pressure"]]
+    t <- d1[["time"]]
+    dpdt <- diff(p) / smooth(diff(as.numeric(t)))
+    dpdt <- c(dpdt[1], dpdt)
+    plot(t, dpdt, ylab="dp/dt [dbar/s]", type="o", pch=20, cex=0.5)
+    abline(h=quantile(dpdt, 0.1), col=2)
+    abline(h=median(dpdt), col=4)
+    abline(h=mean(dpdt) - sd(dpdt), col=3)
+    # hist(dpdt, breaks=length(dpdt)/20)
 
-plot(p, dpdtSmoothed, type="o", cex=0.5)
-plot(t[-1], diff(dpdtSmoothed)/diff(as.numeric(t)), type="l", cex=0.5)
+    #library(changepoint)
+    #cptm <- cpt.var(dpdt, method="PELT", Q=2)
+    #plot(d1[["time"]], cptm)
 
+    hist(dpdt, breaks=length(dpdt)/20)
+    abline(v=median(dpdt), col=2)
+    abline(v=median(dpdt)+c(-1,1)*sd(dpdt), col=2)
+    abline(v=0.2, lwd=3)
+    dpdtSmoothed <- lowpass(dpdt, n=11)
+    plot(d1[["time"]], dpdtSmoothed, type="o", cex=0.5)
+    abline(h=median(dpdtSmoothed), col=2)
+    abline(h=mean(dpdtSmoothed), col=4)
+    abline(h=mean(dpdtSmoothed)-sd(dpdtSmoothed), col=4)
 
+    plot(p, dpdtSmoothed, type="o", cex=0.5)
+    plot(t[-1], diff(dpdtSmoothed)/diff(as.numeric(t)), type="l", cex=0.5)
+
+}
