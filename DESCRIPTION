@@ -15,7 +15,6 @@ Suggests:
     interp,
     knitr,
     lubridate,
-    marmap,
     ncdf4,
     ocedata,
     raster (>= 1.4.3),
