@@ -1393,8 +1393,9 @@ setMethod(f="plot",
         }
         #oceDebug(debug, "which=c(", paste(which, collapse=","), ")\n")
         oceDebug(debug, "plot.section(, ..., which=c(",
-            paste(which, collapse=","), "), eos=\"", eos,
-            "\", ztype=\"", ztype, "\", ...) {\n", sep="", unindent=1)
+            paste(which, collapse=","), "), eos=\"", eos, "\"",
+            ", xtype=\"", xtype, "\",",
+            ", ztype=\"", ztype, "\", ...) {\n", sep="", unindent=1)
         # Ensure data on levels, for plots requiring pressure (e.g. sections). Note
         # that we break out of the loop, once we grid the section.
         if (is.na(which[1]) || which[1] != "data" || which[1] != 'map') {
@@ -1418,6 +1419,19 @@ setMethod(f="plot",
         x@metadata$latitude <- x@metadata$latitude[haveData]
         x@metadata$longitude <- x@metadata$longitude[haveData]
         x@metadata$time <- x@metadata$time[haveData]
+        if (xtype != "time") {
+            oceDebug(debug, "xtype=\"", xtype, "\" is not \"time\", so checking whether longitude and latitude vary\n")
+            if (!all(is.finite(x@metadata$longitude)))
+                stop("In plot(): with xtype=\"", xtype, "\", all stations must have finite longitude", call.=FALSE)
+            if (!all(is.finite(x@metadata$latitude)))
+                stop("In plot(): with xtype=\"", xtype, "\", all stations must have finite latitude", call.=FALSE)
+            if (0.0 == diff(range(x@metadata$longitude)) && 0.0 == diff(range(x@metadata$latitude)))
+                stop("In plot(): with xtype=\"", xtype, "\", either longitude or latitude must vary", call.=FALSE)
+            if (0.0 == diff(range(x@metadata$longitude)) && xtype == "longitude")
+                stop("In plot(): with xtype=\"", xtype, "\", longitude must vary", call.=FALSE)
+            if (0.0 == diff(range(x@metadata$latitude)) && xtype == "latitude")
+                stop("In plot(): with xtype=\"", xtype, "\", latitude must vary", call.=FALSE)
+        }
         plotSubsection <- function(xx, yy, zz,
             which.xtype, which.ytype,
             variable="temperature", vtitle="T", unit=NULL,
