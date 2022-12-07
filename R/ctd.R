@@ -3826,15 +3826,18 @@ setMethod(f="subset",
 #'
 #' @param x a [ctd-class] object.
 #'
-#' @param which Numerical vector numerical codes specifying the panels to draw: 1
-#' for pressure vs scan, 2 for `diff(pressure)` vs scan, 3 for temperature vs
-#' scan, and 4 for salinity vs scan.
+#' @param which integer specifying the plotto be draw: 1
+#' for pressure vs 'x', 2 for `diff(pressure)` vs 'x', 3 for temperature vs
+#' 'x', and 4 for salinity vs 'x'  Here, the value of 'x' is determined by
+#' `xtype`.
 #'
-#' @param xtype Character string indicating variable for the x axis. May be
-#' `"scan"` (the default) or `"time"`. In the former case, a
-#' `scan` variable will be created using [seq_along()],
-#' if necessary. In the latter case, an error results if the `data`
-#' slot of `x` lacks a variable called `time`.
+#' @param xtype Character string indicating variable for the x axis. The
+#' permitted values are `"scan"` (the default), `"time"` and `"index"`.
+#' The last of these is created by using [seq_along()] on the pressure
+#' column (which is assumed to be present in any [ctd-class] object).
+#' Only `xtype="index"` is guaranteed to work for all objects, and indeed
+#' that value is used, if either `"scan"` or `"time"` is requested, but
+#' unavailable.
 #'
 #' @param flipy Logical value, ignored unless `which` is 1. If `flipy`
 #' is `TRUE`, then a pressure plot will have high pressures at the bottom
@@ -3859,7 +3862,12 @@ setMethod(f="subset",
 #' with a palette to the right is `mar=par("mar")+c(0, 0, 0, 1))`.
 #'
 #' @param ... Optional arguments passed to plotting functions.
+#'
 #' @template debugTemplate
+#'
+#' @section Historical Note:
+#' On 2022-12-07, `xtype` was expanded to include `"index"`, and
+#' an undocumented multi-panel feature was removed.
 #'
 #' @examples
 #' library(oce)
@@ -3872,79 +3880,74 @@ setMethod(f="subset",
 #' @family functions that plot oce data
 #' @family things related to ctd data
 plotScan <- function(x, which=1, xtype="scan", flipy=FALSE,
-                     type='l', mgp=getOption("oceMgp"),
-                     xlim=NULL, ylim=NULL,
-                     mar=c(mgp[1]+1.5, mgp[1]+1.5, mgp[1], mgp[1]), ..., debug=getOption("oceDebug"))
+    type='l', mgp=getOption("oceMgp"),
+    xlim=NULL, ylim=NULL,
+    mar=c(mgp[1]+1.5, mgp[1]+1.5, mgp[1], mgp[1]), ..., debug=getOption("oceDebug"))
 {
     if (!inherits(x, "ctd"))
         stop("method is only for objects of class '", "ctd", "'")
-    nw <- length(which)
-    if (nw > 1)
-        par(mfrow=c(nw, 1))
-    par(mar=mar)
-    par(mgp=mgp)
-    xtype <- match.arg(xtype, c("scan", "time"))
-    for (w in which) {
-        if (xtype == "scan") {
-            xvar <- if ("scan" %in% names(x@data)) x[["scan"]] else seq_along(x[["pressure"]])
-            if (missing(xlim))
-                xlim <- range(xvar, na.rm=TRUE)
-            if (w == 1) {
-                if (missing(ylim)) {
-                    ylim <- range(x[["pressure"]], na.rm=TRUE)
-                    if (flipy)
-                        ylim <- rev(ylim)
-                }
-                plot(xvar, x[["pressure"]], xlab="Scan", ylab=resizableLabel("p", "y", debug=debug-1),
-                     yaxs='r', type=type, xlim=xlim, ylim=ylim, ...)
-            } else if (w == 2) {
-                if (missing(ylim))
-                    ylim <- range(diff(x[["pressure"]]), na.rm=TRUE)
-                plot(xvar[-1], diff(x[["pressure"]]), xlab="Scan", ylab="diff(pressure)",
-                     yaxs='r', type=type, xlim=xlim, ylim=ylim, ...)
-            } else if (w == 3) {
-                if (missing(ylim))
-                    ylim <- range(diff(x[["temperature"]]), na.rm=TRUE)
-                plot(xvar, x[["temperature"]], xlab="Scan", ylab=resizableLabel("T", "y", debug=debug-1),
-                     yaxs='r', type=type, xlim=xlim, ylim=ylim, ...)
-            } else if (w == 4) {
-                if (missing(ylim))
-                    ylim <- range(diff(x[["salinity"]]), na.rm=TRUE)
-                plot(xvar, x[["salinity"]], xlab="Scan", ylab=resizableLabel("S", "y", debug=debug-1),
-                     yaxs='r', type=type, xlim=xlim, ylim=ylim, ...)
-            } else {
-                stop("unknown 'which'; must be in 1:4")
-            }
-        } else if (xtype == "time") {
-            time <- x[["time"]]
-            if (is.null(time))
-                stop("there is no 'time' in this ctd object")
-            if (missing(xlim))
-                xlim <- range(time)
-            if (w == 1) {
-                if (missing(ylim))
-                    ylim <- range(x[["pressure"]], na.rm=TRUE)
-                oce.plot.ts(time, x[["pressure"]], ylab=resizableLabel("p", "y", debug=debug-1),
-                            yaxs='r', type=type, flipy=flipy, xlim=xlim, ylim=ylim, ...)
-            } else if (w == 2) {
-                if (missing(ylim))
-                    ylim <- range(diff(x[["pressure"]]), na.rm=TRUE)
-                oce.plot.ts(time[-1], diff(x[["pressure"]]), ylab="diff(pressure)",
-                            yaxs='r', type=type, flipy=flipy, xlim=xlim, ylim=ylim, ...)
-            } else if (w == 3) {
-                if (missing(ylim))
-                    ylim <- range(x[["temperature"]], na.rm=TRUE)
-                oce.plot.ts(time, x[["temperature"]], ylab=resizableLabel("T", "y", debug=debug-1),
-                            yaxs='r', type=type, flipy=flipy, xlim=xlim, ylim=ylim, ...)
-            } else if (w == 4) {
-                if (missing(ylim))
-                    ylim <- range(x[["salinity"]], na.rm=TRUE)
-                oce.plot.ts(time, x[["salinity"]], ylab=resizableLabel("S", "y", debug=debug-1),
-                            yaxs='r', type=type, flipy=flipy, xlim=xlim, ylim=ylim, ...)
-            } else {
-                stop("unknown 'which'; must be in 1:4")
-            }
+    if (length(which) > 1)
+        stop("'which' must be of length 1 (as of December 2022)")
+    par(mar=mar, mgp=mgp)
+    pressure <- x[["pressure"]] # should always be present
+    if (is.null(pressure))
+        stop("object has no pressure column")
+    index <- seq_along(pressure)
+    if (xtype == "index") {
+        xvar <- index
+        xlab <- "Index"
+    } else if (xtype == "scan") {
+        if ("scan" %in% names(x@data)) {
+            xvar <- x@data$scan
+            xlab <- "Scan"
+        } else {
+            warning("no 'scan' in data slot; using index instead")
+            xvar <- index
+            xlab <- "Index"
         }
+    } else if (xtype == "time") {
+        if ("time" %in% names(x@data)) {
+            xvar <- x@data$scan
+            xlab <- "Time"
+        } else {
+            warning("no 'time' in data slot; using index instead")
+            xvar <- index
+            xlab <- "Index"
+        }
+    } else {
+        stop("xtype must be \"scan\", \"time\", or \"index\"")
+    }
+    if (missing(xlim))
+        xlim <- range(xvar, na.rm=TRUE)
+    if (which == 1) {
+        y <- x[["pressure"]]
+        if (missing(ylim)) {
+            ylim <- range(y, na.rm=TRUE)
+            if (flipy)
+                ylim <- rev(ylim)
+        }
+        plot(xvar, x[["pressure"]], xlab=xlab, ylab=resizableLabel("p", "y", debug=debug-1),
+            type=type, xlim=xlim, ylim=ylim, ...)
+    } else if (which == 2) {
+        y <- diff(x[["pressure"]])
+        if (is.null(ylim))
+            ylim <- range(y, na.rm=TRUE)
+        plot(xvar[-1], diff(x[["pressure"]]), xlab=xlab, ylab="diff(pressure)",
+            type=type, xlim=xlim, ylim=ylim, ...)
+    } else if (which == 3) {
+        y <- x[["temperature"]]
+        if (missing(ylim))
+            ylim <- range(y, na.rm=TRUE)
+        plot(xvar, x[["temperature"]], xlab=xlab, ylab=resizableLabel("T", "y", debug=debug-1),
+            type=type, xlim=xlim, ylim=ylim, ...)
+    } else if (which == 4) {
+        y <- x[["salinity"]]
+        if (missing(ylim))
+            ylim <- range(y, na.rm=TRUE)
+        plot(xvar, x[["salinity"]], xlab=xlab, ylab=resizableLabel("S", "y", debug=debug-1),
+            type=type, xlim=xlim, ylim=ylim, ...)
+    } else {
+        stop("which=", which, " not permitted; please use 1, 2, 3, or 4")
     }
 }
 
