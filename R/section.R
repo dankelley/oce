@@ -1557,15 +1557,14 @@ setMethod(f="plot",
                     mapPlot(coastline, longitudelim=map.xlim, latitudelim=map.ylim, projection=projection, col=colLand)
                     spine <- x[["spine"]]
                     if (showSpine && !is.null(spine))
-                        mapLines(spine$longitude, spine$latitude, col="blue", lwd=1.4*par("lwd"))
-                    mapPoints(x[['longitude', 'byStation']], x[['latitude', 'byStation']],
-                        col=col, pch=3, lwd=1/2)
-                    if (xtype == "distance" && showStart) {
+                        mapLines(spine$longitude, spine$latitude, col=4, lwd=1.4*par("lwd"))
+                    mapPoints(x[["longitude", "byStation"]], x[["latitude", "byStation"]],
+                        cex=cex, col=col, pch=pch, lwd=lwd)
+                    if (xtype == "distance" && showStart)
                         mapPoints(lon[1], lat[1], col=col, pch=22, cex=3*par("cex"), lwd=1/2)
-                    }
-                    return()           # NOTE early return
+                    return()           # early return
                 } else {
-                    # not using a map projection
+                    # draw without map projection
                     if (!is.null(map.xlim)) {
                         map.xlim <- sort(map.xlim)
                         plot(lonr, latr, xlim=map.xlim, asp=asp, type="n",
@@ -1577,9 +1576,6 @@ setMethod(f="plot",
                             xlab=gettext("Longitude", domain="R-oce"),
                             ylab=gettext("Latitude", domain="R-oce"))
                     } else {
-                        #DEBUG message("CCC lonr=", paste(lonr, collapse=","))
-                        #DEBUG message("CCC latr=", paste(latr, collapse=","))
-                        #DEBUG message("CCC asp=", paste(asp, collapse=","))
                         plot(lonr, latr, asp=asp, type="n",
                             xlab=gettext("Longitude", domain="R-oce"),
                             ylab=gettext("Latitude", domain="R-oce"))
@@ -1601,15 +1597,10 @@ setMethod(f="plot",
                 spine <- x[["spine"]]
                 if (showSpine && !is.null(spine))
                     lines(spine$longitude, spine$latitude, col="blue", lwd=1.4*par("lwd"))
-
                 # draw station trace (or skip it, if white was requested)
                 if (col[1] != "white")
                     lines(lon, lat, col="lightgray")
                 # replot with shifted longitude
-                #>message("L1608: putting points on a map (low level)")
-                #>cat(vectorShow(col))
-                #>cat(vectorShow(pch))
-                #>cat(vectorShow(cex))
                 points(lon, lat, col=col, pch=pch, cex=cex, lwd=lwd)
                 points(lon - 360, lat, col=col, pch=pch, cex=cex, lwd=lwd)
                 if (showStations) {
@@ -1622,27 +1613,22 @@ setMethod(f="plot",
                     points(lon[1] - 360, col=col, lat[1], pch=22, cex=3*par("cex"), lwd=lwd)
                 }
                 if (indicate.stations) {
-                    dy <- 5 * mean(diff(sort(x@metadata$latitude)), na.rm=TRUE)
-                    dx <- 5 * mean(diff(sort(x@metadata$longitude)), na.rm=TRUE)
-                    ylab <- x@metadata$latitude[1]  - dy * sign(x@metadata$latitude[2]  - x@metadata$latitude[1])
-                    xlab <- x@metadata$longitude[1] - dx * sign(x@metadata$longitude[2] - x@metadata$longitude[1])
+                    dy <- 5.0*mean(diff(sort(x@metadata$latitude)), na.rm=TRUE)
+                    dx <- 5.0*mean(diff(sort(x@metadata$longitude)), na.rm=TRUE)
+                    ylab <- x@metadata$latitude[1] - dy*sign(x@metadata$latitude[2] - x@metadata$latitude[1])
+                    xlab <- x@metadata$longitude[1] - dx*sign(x@metadata$longitude[2] - x@metadata$longitude[1])
                     ## text(xlab, ylab, x@metadata$stationId[1])
                     xlab <- x@metadata$longitude[numStations] - dx * sign(x@metadata$longitude[numStations-1] - x@metadata$longitude[numStations])
                     ylab <- x@metadata$latitude[numStations]  - dy * sign(x@metadata$latitude[numStations-1]  - x@metadata$latitude[numStations])
-                    # text(xlab, ylab, x@metadata$stationId[numStations])
                 }
             } else {
                 # not a map
                 z <- x[[variable]]
                 zAllMissing <- all(is.na(z))
-                #> message("zAllMissing=", zAllMissing)
-                #> message("drawPoints=", drawPoints)
-                #> message("ztype='", ztype, "'")
                 if ((drawPoints || ztype == "image") && !zAllMissing) {
-                    ##> message("is.null(zbreaks)=", is.null(zbreaks))
                     if (is.null(zbreaks)) {
                         if (is.null(zlim)) {
-                            ## Use try() to quiet warnings if all data are NA
+                            # Use try() to quiet warnings if all data are NA
                             zRANGE <- try(range(z, na.rm=TRUE), silent=TRUE)
                             if (is.null(zcol) || is.function(zcol)) {
                                 zbreaks <- seq(zRANGE[1], zRANGE[2], length.out=200)
@@ -1656,7 +1642,7 @@ setMethod(f="plot",
                     nbreaks <- length(zbreaks)
                     if (nbreaks > 0) {
                         if (is.null(zcol)) {
-                            ## col <- oceColorsJet(nbreaks - 1)
+                            # col <- oceColorsJet(nbreaks - 1)
                             zcol <- oceColorsViridis(nbreaks - 1)
                         }
                         if (is.function(zcol))
@@ -1669,7 +1655,6 @@ setMethod(f="plot",
                 # FIXME: contours don't get to plot edges
                 xxrange <- range(xx, na.rm=TRUE)
                 yyrange <- range(yy, na.rm=TRUE)
-
                 ylim <- if (!is.null(ylim)) sort(-abs(ylim)) else yyrange
                 par(xaxs="i", yaxs="i")
                 ylab <- if ("ylab" %in% names(list(...))) {
@@ -1693,30 +1678,24 @@ setMethod(f="plot",
                             gettext("Time", domain="R-oce"),
                             resizableLabel("along-spine distance km"))
                     }
-                    plot(xxrange, yyrange,
-                        xaxs="i", yaxs="i",
-                        xlim=xlim,
-                        ylim=ylim,
-                        col="white",
-                        xlab=xlab,
-                        ylab=ylab,
-                        axes=FALSE)
+                    plot(xxrange, yyrange, xaxs="i", yaxs="i", xlim=xlim, ylim=ylim,
+                        xlab=xlab, ylab=ylab, col="white", axes=FALSE)
                     if (axes) {
                         # oceDebug(debug, "drawing axes\n")
-                        axis(4, labels=FALSE)
-                        ytics <- axis(2, labels=FALSE)
-                        axis(2, at=ytics, labels=-ytics)
+                        axis(4L, labels=FALSE)
+                        ytics <- axis(2L, labels=FALSE)
+                        axis(2L, at=ytics, labels=-ytics)
                         # If constructing labels for time, need to check xlim
                         if (xIsTime) {
                             if (!is.null(xlim)) {
                                 # FIXME: might need to check whether/how xx used later
                                 XX <- xx[xlim[1] <= xx & xx <= xlim[2]]
-                                axis(1, at=pretty(XX), labels=pretty(XX))
+                                axis(1L, at=pretty(XX), labels=pretty(XX))
                             } else {
-                                axis(1, at=pretty(xx), labels=pretty(xx))
+                                axis(1L, at=pretty(xx), labels=pretty(xx))
                             }
                         } else {
-                            axis(1)
+                            axis(1L)
                         }
                         # oceDebug(debug, "finished drawing axes\n")
                     }
@@ -1735,13 +1714,13 @@ setMethod(f="plot",
                     }
                     box()
                 }
-                ## Bottom trace
+                # Bottom trace
                 usr <- par("usr")
                 graph.bottom <- usr[3]
                 waterDepth <- NULL
                 # For ztype == "points", plot the points.  Otherwise, collect them in zz
                 # for the contour or image plot.
-                for (i in 1:numStations) {
+                for (i in seq_len(numStations)) {
                     thisStation <- x[["station", i]]
                     p <- thisStation[["pressure"]] # assume that we always have pressure
                     np <- length(p)
@@ -1762,8 +1741,7 @@ setMethod(f="plot",
                             v <- rep(NA, length(p))
                         if (drawPoints) {
                             p <- thisStation[["pressure"]]
-                            points(rep(xx[i], np), -p,
-                                pch=pch, cex=cex,
+                            points(rep(xx[i], np), -p, pch=pch, cex=cex,
                                 col=zcol[rescale(v, xlow=zlim[1], xhigh=zlim[2], rlow=1, rhigh=nbreaks)])
                         } else {
                             # Compute sigma0 and sigmaTheta, whether they are in the dataset or not
@@ -1795,7 +1773,7 @@ setMethod(f="plot",
                 ii <- seq_along(xxOrig) # so we can use it later for drawing bottoms
                 if (any(xx[ox] != xx, na.rm=TRUE)) { # for issue 1583: handle the NA just inserted
                     xx <- xx[ox]
-                    zz <- zz[ox, ] ## FIXME keep this???
+                    zz <- zz[ox, ]     # FIXME keep this???
                     ii <- ii[ox]
                     bottom.x <- c(min(xxOrig), xxOrig[ox], max(xxOrig))
                     bottom.y <- c(graph.bottom, -waterDepth[ox], graph.bottom)
@@ -1814,7 +1792,7 @@ setMethod(f="plot",
                             longitude <- mean(thisStation[["longitude"]], na.rm=TRUE)
                             points(rep(longitude, length(pressure)), -pressure, cex=cex, pch=pch, col=col)
                         } else {
-                            ## FIXME: shouldn't the next line work for all types??
+                            # FIXME: shouldn't the next line work for all types??
                             points(rep(xx[i], length(pressure)), -pressure, cex=cex, pch=pch, col=col)
                         }
                     }
@@ -1836,11 +1814,8 @@ setMethod(f="plot",
                         oceDebug(debug, "user-supplied contourLevels: ", contourLevels, "\n")
                         if (ztype == 'contour') {
                             contour(x=xx[xx.unique], y=yy[yy.unique], z=zz[xx.unique, yy.unique],
-                                axes=FALSE, add=TRUE,
-                                levels=contourLevels, labels=contourLabels,
-                                col=col,
-                                xaxs="i", yaxs="i",
-                                labcex=labcex, ...)
+                                axes=FALSE, add=TRUE, levels=contourLevels, labels=contourLabels,
+                                col=col, xaxs="i", yaxs="i", labcex=labcex, ...)
                         } else if (ztype == "image") {
                             zz[zz < min(zbreaks)] <- min(zbreaks)
                             zz[zz > max(zbreaks)] <- max(zbreaks)
@@ -1863,13 +1838,13 @@ setMethod(f="plot",
                         } else if (ztype == "image") {
                             zz[zz < min(zbreaks)] <- min(zbreaks)
                             zz[zz > max(zbreaks)] <- max(zbreaks)
-                            ## FIXME: testing here
+                            # FIXME: testing here
                             if (is.function(zcol))
                                 zcol <- zcol(1+length(zbreaks))
                             .filled.contour(x=xx[xx.unique], y=yy[yy.unique], z=zz[xx.unique, yy.unique],
                                 levels=zbreaks, col=zcol)
                         } else if (ztype == "points") {
-                            ## nothing to do now
+                            # nothing to do now
                         } else {
                             stop("unknown ztype: \"", ztype, "\" [3]")
                         }
@@ -1904,21 +1879,21 @@ setMethod(f="plot",
                     #cat(vectorShow(sectionSpan))
                     nin <- length(slon)
                     # double up on resolution, although perhaps not needed
-                    nout <- as.integer(1 + 2 * sectionSpan / topoResolution)
+                    nout <- as.integer(1 + 2*sectionSpan / topoResolution)
                     #cat(vectorShow(nout))
-                    blon <- approx(1:nin, slon[ii], n=nout)$y
+                    blon <- approx(seq_len(nin), slon[ii], n=nout)$y
                     #cat(vectorShow(blon))
-                    blat <- approx(1:nin, slat[ii], n=nout)$y
+                    blat <- approx(seq_len(nin), slat[ii], n=nout)$y
                     #cat(vectorShow(blat))
-                    bottom.y <- topoInterpolate(blon, blat, showBottom)
-                    bottom.x <- approx(1:nin, xx, n=nout)$y
-                    bottom.x <- c(bottom.x[1], bottom.x, tail(bottom.x, 1))
+                    by <- topoInterpolate(blon, blat, showBottom)
+                    bx <- approx(seq_len(nin), xx, n=nout)$y
+                    bx <- c(bx[1], bx, tail(bx, 1))
                     usr3 <- par('usr')[3]
                     #cat(vectorShow(usr))
-                    bottom.y <- c(usr3, bottom.y, usr3)
+                    by <- c(usr3, by, usr3)
                     #cat(vectorShow(bottom.x))
                     #cat(vectorShow(bottom.y))
-                    polygon(bottom.x, bottom.y, col="lightgray")
+                    polygon(bx, by, col="lightgray")
                 }
                 #axis(1, pretty(xxOrig))
                 if (axes) {
@@ -1963,8 +1938,7 @@ setMethod(f="plot",
             numStations <- length(stationIndices)
         }
         if (numStations < 2)
-            stop("In plot() :\n  cannot plot a section containing fewer than 2 stations",
-                call.=FALSE)
+            stop("In plot() :\n  cannot plot a section containing fewer than 2 stations", call.=FALSE)
         firstStation <- x@data$station[[stationIndices[1]]]
         num.depths <- length(firstStation@data$pressure)
         zz <- array(NA_real_, dim=c(numStations, num.depths))
@@ -1995,7 +1969,7 @@ setMethod(f="plot",
                 } else if (which.xtype == 4) { # latitude
                     xx[ix] <- mean(x@data$station[[j]][["latitude"]], na.rm=TRUE)
                 } else if (which.xtype == 5) { # time
-                    ## use ix as a desparate last measure, if there are no times.
+                    # use ix as a desparate last measure, if there are no times.
                     if (!is.null(x@data$station[[j]]@metadata$startTime)) {
                         xx[ix] <- as.POSIXct(x@data$station[[j]]@metadata$startTime)
                     } else if (!is.null(x@metadata$time[[j]])) {
@@ -2016,9 +1990,8 @@ setMethod(f="plot",
             xx <- numberAsPOSIXct(xx)
         } else if (which.xtype == 6) {
             # see https://github.com/dankelley/oce-issues/blob/master/16xx/1678
-            if (!("spine" %in% names(x@metadata))) {
+            if (!("spine" %in% names(x@metadata)))
                 stop("In plot,section-metod() :\n  this section has no spine; use addSpine() to add a spine", call.=FALSE)
-            }
             spine <- x@metadata$spine
             # Parametric lon=lon(s), at=lat(s)
             s <- seq(0, 1, length.out=length(spine$longitude))
@@ -2092,31 +2065,23 @@ setMethod(f="plot",
                 #> cat(vectorShow(contourLabels))
                 if (is.null(contourLabels))
                     contourLabels <- format(contourLevels)
-                vtitle <- labelWithUnit(which[w],
-                    unit=station1[[paste0(which[w],"Unit")]])
+                vtitle <- labelWithUnit(which[w], unit=station1[[paste0(which[w],"Unit")]])
                 plotSubsection(xx, yy, zz,
-                    which.xtype=which.xtype,
-                    which.ytype=which.ytype,
-                    variable=which[w], # which[w],
+                    which.xtype=which.xtype, which.ytype=which.ytype, variable=which[w], eos=eos,
                     vtitle=if (is.null(legend.text[w])) vtitle else legend.text[w],
-                    eos=eos,
-                    levels=contourLevels, labels=contourLabels,
-                    xlim=xlim, ylim=ylim, ztype=ztype,
+                    levels=contourLevels, labels=contourLabels, xlim=xlim, ylim=ylim, ztype=ztype,
                     axes=axes, col=col, debug=debug-1, ...)
             } else {
                 # contourLevels not given
                 oceDebug(debug, "contourLevels was not given\n")
                 if (which[w] != "map" && which[w] != 99) {
-                    vtitle <- labelWithUnit(which[w],
-                        unit=station1[[paste0(which[w],"Unit")]])
+                    vtitle <- labelWithUnit(which[w], unit=station1[[paste0(which[w],"Unit")]])
                     plotSubsection(xx, yy, zz,
                         which.xtype=which.xtype,
                         which.ytype=which.ytype,
-                        variable=which[w],
+                        variable=which[w], eos=eos,
                         vtitle=if (is.null(legend.text[w])) vtitle else legend.text[w],
-                        eos=eos,
-                        xlim=xlim, ylim=ylim, ztype=ztype,
-                        zbreaks=zbreaks, zcol=zcol,
+                        xlim=xlim, ylim=ylim, ztype=ztype, zbreaks=zbreaks, zcol=zcol,
                         axes=axes, col=col, debug=debug-1, ...)
                 }
             }
