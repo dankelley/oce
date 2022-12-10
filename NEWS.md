@@ -1,5 +1,7 @@
 # oce 1.7.11
 
+* Make `read.rsk()` incorporate geographic information, if it exists.
+
 * Update `download.topo()` to use new NOAA database.
 
 # oce 1.7.10 (on CRAN)
