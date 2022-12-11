@@ -13,6 +13,7 @@ read.rsk(
   encoding = NA,
   tz = getOption("oceTz", default = "UTC"),
   patm = FALSE,
+  allTables = FALSE,
   processingLog,
   debug = getOption("oceDebug")
 )
@@ -46,6 +47,11 @@ attempt will be made to infer the type from the file name and contents.}
 
 \item{patm}{controls the handling of atmospheric pressure, an important issue
 for RBR instruments that record absolute pressure; see \dQuote{Details}.}
+
+\item{allTables}{logical value (with default FALSE) indicating whether to read all
+the tables stored in the file into elements of the \code{metadata} slot of the
+return value.  This can be helpful for advanced work by users who are
+familiar with the internal structure of RSK files.}
 
 \item{processingLog}{if provided, the action item to be stored in the log.
 This is typically only provided for internal calls; the default that it provides
