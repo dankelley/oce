@@ -40,10 +40,14 @@ be printed. If one function calls another, it usually reduces the value of
 by specifying higher \code{debug} values.}
 }
 \value{
-Either a \linkS4class{ctd} object of or a logical vector of length
-matching the data. The first option is the default. The second option,
-achieved by setting \code{indices=FALSE}, may be useful in constructing
-data flags to be inserted into the object.
+Either a \linkS4class{ctd} object or a logical vector of length matching
+the data. In the first case, which is the default, the elements of the \code{data}
+slot will have been trimmed, along with some elements of the \code{metadata} slot
+(e.g. \code{metadata4flags} and, if present and of length matching
+\code{data$pressure}, both \code{metadata$longitude} and \code{metadata$latitude}).  The
+second case, achieved by setting \code{indices=FALSE}, may be helpful for advanced
+users who wish to do things like construct data flags to be inserted into the
+object.
 }
 \description{
 Often in CTD profiling, the goal is to isolate only the downcast, discarding measurements made in
@@ -132,6 +136,16 @@ values, computed based on two arguments: \code{data} (a
 \dQuote{Examples}.
 }
 }
+\section{Historical Note}{
+
+
+The subsetting of \code{longitude} and \code{latitude} in the \code{metadata} slot was
+introduced on 2022-12-13, for use with \linkS4class{ctd} objects created using
+\code{\link[=as.ctd]{as.ctd()}} on \linkS4class{rsk} objects created by using \code{\link[=read.rsk]{read.rsk()}} on Ruskin
+files that hold data from RBR CTD instruments linked with phone/tablet
+devices equipped with GPS sensors.
+}
+
 \examples{
 \dontrun{
 library(oce)

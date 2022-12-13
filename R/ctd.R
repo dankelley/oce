@@ -2002,11 +2002,15 @@ ctdDecimate <- function(x, p=1, method="boxcar", rule=1, e=1.5, debug=getOption(
 #'
 #' @param x a [ctd-class] object.
 #'
-#' @param cutoff criterion on pressure difference; see \dQuote{Details}.
+#' @param cutoff criterion on pressure difference; see \dQuote{Details}. If not
+#' provided, this defaults to 0.5.
 #'
-#' @param minLength lower limit on number of points in candidate profiles.
+#' @param minLength lower limit on number of points in candidate profiles. If
+#' not
+#' provided, this defaults to 10.
 #'
-#' @param minHeight lower limit on height of candidate profiles.
+#' @param minHeight lower limit on height of candidate profiles. If not
+#' provided, this defaults to 0.1 times the pressure span.
 #'
 #' @param smoother The smoothing function to use for identifying down/up
 #' casts. The default is `smooth.spline`, which performs well for
@@ -2086,22 +2090,27 @@ ctdDecimate <- function(x, p=1, method="boxcar", rule=1, e=1.5, debug=getOption(
 #' @author Dan Kelley and Clark Richards
 #'
 #' @family things related to ctd data
-ctdFindProfiles <- function(x, cutoff=0.5, minLength=10, minHeight=0.1*diff(range(x[["pressure"]])),
-                            smoother=smooth.spline,
-                            direction=c("descending", "ascending"),
-                            breaks,
-                            arr.ind=FALSE,
-                            distinct,
-                            debug=getOption("oceDebug"), ...)
+ctdFindProfiles <- function(x, cutoff=0.5, minLength=10, minHeight,
+    smoother=smooth.spline,
+    direction=c("descending", "ascending"),
+    breaks,
+    arr.ind=FALSE,
+    distinct,
+    debug=getOption("oceDebug"), ...)
 {
-    oceDebug(debug, "ctdFindProfiles(x, cutoff=", cutoff,
-             ", minLength=", minLength,
-             ", minHeight=", minHeight,
-             ", direction=\"", direction, "\"",
-             ", breaks=", if (missing(breaks)) "unspecified" else "specified",
-             ", arr.ind=", arr.ind, ", debug=", debug, ") {\n", sep="", unindent=1)
+    if (!inherits(x, "oce"))
+        stop("x must be an \"oce\" object")
     if (!inherits(x, "ctd"))
-        stop("method is only for objects of class '", "ctd", "'")
+        stop("x must be of class \"ctd\"")
+    if (!"pressure" %in% names(x@data))
+        stop("x must contain pressure in its data slot")
+    minHeight <- 0.1*diff(range(x[["pressure"]], na.rm=TRUE))
+    oceDebug(debug, "ctdFindProfiles(x, cutoff=", cutoff,
+        ", minLength=", minLength,
+        ", minHeight=", minHeight,
+        ", direction=\"", direction, "\"",
+        ", breaks=", if (missing(breaks)) "unspecified" else "specified",
+        ", arr.ind=", arr.ind, ", debug=", debug, ") {\n", sep="", unindent=1)
     if (!missing(distinct)) {
         if (distinct == "location") {
             lon <- x[["longitude"]]
@@ -2135,7 +2144,7 @@ ctdFindProfiles <- function(x, cutoff=0.5, minLength=10, minHeight=0.1*diff(rang
     } # else rest of code
 
     if (missing(breaks)) {
-        ## handle case where 'breaks' was not given
+        # handle case where 'breaks' was not given
         direction <- match.arg(direction)
         pressure <- fillGap(x[["pressure"]], rule=2)
         ps <- if (is.null(smoother)) pressure else smoother(pressure, ...)
@@ -2340,10 +2349,22 @@ ctdFindProfiles <- function(x, cutoff=0.5, minLength=10, minHeight=0.1*diff(rang
 #'
 #' @template debugTemplate
 #'
-#' @return Either a [ctd-class] object of or a logical vector of length
-#' matching the data. The first option is the default. The second option,
-#' achieved by setting `indices=FALSE`, may be useful in constructing
-#' data flags to be inserted into the object.
+#' @return Either a [ctd-class] object or a logical vector of length matching
+#' the data. In the first case, which is the default, the elements of the `data`
+#' slot will have been trimmed, along with some elements of the `metadata` slot
+#' (e.g. `metadata4flags` and, if present and of length matching
+#' `data$pressure`, both `metadata$longitude` and `metadata$latitude`).  The
+#' second case, achieved by setting `indices=FALSE`, may be helpful for advanced
+#' users who wish to do things like construct data flags to be inserted into the
+#' object.
+#'
+#' @section Historical Note:
+#'
+#' The subsetting of `longitude` and `latitude` in the `metadata` slot was
+#' introduced on 2022-12-13, for use with [ctd-class] objects created using
+#' [as.ctd()] on [rsk-class] objects created by using [read.rsk()] on Ruskin
+#' files that hold data from RBR CTD instruments linked with phone/tablet
+#' devices equipped with GPS sensors.
 #'
 #' @examples
 #'\dontrun{
@@ -2371,7 +2392,7 @@ ctdFindProfiles <- function(x, cutoff=0.5, minLength=10, minHeight=0.1*diff(rang
 #'
 #' @family things related to ctd data
 ctdTrim <- function(x, method, removeDepthInversions=FALSE, parameters=NULL,
-                    indices=FALSE, debug=getOption("oceDebug"))
+    indices=FALSE, debug=getOption("oceDebug"))
 {
     oceDebug(debug, "ctdTrim() {\n", unindent=1)
     methodIsFunction <- !missing(method) && is.function(method)
@@ -2383,9 +2404,8 @@ ctdTrim <- function(x, method, removeDepthInversions=FALSE, parameters=NULL,
         oceDebug(debug, "} # ctdTrim()\n", unindent=1)
         return(x)
     }
-    if (!("scan" %in% names(x@data))) {
+    if (!("scan" %in% names(x@data)))
         x@data$scan <- seq_along(pressure)
-    }
     res <- x
     if (!methodIsFunction) {
         n <- length(pressure)
@@ -2696,6 +2716,17 @@ ctdTrim <- function(x, method, removeDepthInversions=FALSE, parameters=NULL,
         ## Metadata
         for (i in seq_len(length(res@metadata$flags))) {
             res@metadata$flags[[i]] <- res@metadata$flags[[i]][keep]
+        }
+        # Trim longitude and latitude, if their lengths match the pressure
+        # length (as for perhaps an rsk object from a CTD interfaced to an phone
+        # or a tablet that had a GPS on it).
+        if (2 == sum(c("longitude", "latitude") %in% names(x@metadata))) {
+            n <- length(x@metadata$longitude)
+            if (length(x@metadata$latitude == n) && n == length(x@data$pressure)) {
+                oceDebug(debug, "trimming longitude and latitude\n")
+                res@metadata$longitude <- res@metadata$longitude[keep]
+                res@metadata$latitude <- res@metadata$latitude[keep]
+            }
         }
         res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     }
