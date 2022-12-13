@@ -12,8 +12,9 @@ read.rsk(
   type,
   encoding = NA,
   tz = getOption("oceTz", default = "UTC"),
+  tzOffsetLocation = 0,
   patm = FALSE,
-  allTables = FALSE,
+  allTables = TRUE,
   processingLog,
   debug = getOption("oceDebug")
 )
@@ -45,13 +46,19 @@ attempt will be made to infer the type from the file name and contents.}
 
 \item{tz}{time zone.  The value \code{oceTz} is set at package setup.}
 
+\item{tzOffsetLocation}{number of hours offset between the CTD timezone and
+the location timezone.  This is only used if the dataset holds geographical
+data, acquired via a connection to a phone or tablet, which is likely
+recording in local time. The value of \code{tzOffsetLocation} is added to the
+geographical time before matching up locations with hydrographic data.}
+
 \item{patm}{controls the handling of atmospheric pressure, an important issue
 for RBR instruments that record absolute pressure; see \dQuote{Details}.}
 
-\item{allTables}{logical value (with default FALSE) indicating whether to read all
+\item{allTables}{logical value, TRUE by default, indicating whether to read all
 the tables stored in the file into elements of the \code{metadata} slot of the
-return value.  This can be helpful for advanced work by users who are
-familiar with the internal structure of RSK files.}
+return value. This information can be useful for a variety
+of detailed calculations.}
 
 \item{processingLog}{if provided, the action item to be stored in the log.
 This is typically only provided for internal calls; the default that it provides
