@@ -8,7 +8,7 @@ ctdFindProfiles(
   x,
   cutoff = 0.5,
   minLength = 10,
-  minHeight = 0.1 * diff(range(x[["pressure"]])),
+  minHeight,
   smoother = smooth.spline,
   direction = c("descending", "ascending"),
   breaks,
@@ -21,11 +21,15 @@ ctdFindProfiles(
 \arguments{
 \item{x}{a \linkS4class{ctd} object.}
 
-\item{cutoff}{criterion on pressure difference; see \dQuote{Details}.}
+\item{cutoff}{criterion on pressure difference; see \dQuote{Details}. If not
+provided, this defaults to 0.5.}
 
-\item{minLength}{lower limit on number of points in candidate profiles.}
+\item{minLength}{lower limit on number of points in candidate profiles. If
+not
+provided, this defaults to 10.}
 
-\item{minHeight}{lower limit on height of candidate profiles.}
+\item{minHeight}{lower limit on height of candidate profiles. If not
+provided, this defaults to 0.1 times the pressure span.}
 
 \item{smoother}{The smoothing function to use for identifying down/up
 casts. The default is \code{smooth.spline}, which performs well for
