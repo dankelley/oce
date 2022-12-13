@@ -1,4 +1,4 @@
-# vim:textwidth=100:expandtab:shiftwidth=4:softtabstop=4
+# vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
 
 #' Class to Store Rsk Data
 #'
@@ -291,7 +291,7 @@ unitFromStringRsk <- function(s)
     else if (is.na(s))
         list(unit=expression(), scale="?")
     else {
-        warning("'", s, "' is not in the list of known .rsk units", sep="")
+        warning("\"", s, "\" is not in the list of known .rsk units", sep="")
         list(unit=as.expression(s), scale="")
     }
 }
@@ -628,13 +628,19 @@ setMethod(f="plot",
 #'
 #' @param tz time zone.  The value `oceTz` is set at package setup.
 #'
+#' @param tzOffsetLocation number of hours offset between the CTD timezone and
+#' the location timezone.  This is only used if the dataset holds geographical
+#' data, acquired via a connection to a phone or tablet, which is likely
+#' recording in local time. The value of `tzOffsetLocation` is added to the
+#' geographical time before matching up locations with hydrographic data.
+#'
 #' @param patm controls the handling of atmospheric pressure, an important issue
 #' for RBR instruments that record absolute pressure; see \dQuote{Details}.
 #'
-#' @param allTables logical value (with default FALSE) indicating whether to read all
+#' @param allTables logical value, TRUE by default, indicating whether to read all
 #' the tables stored in the file into elements of the `metadata` slot of the
-#' return value.  This can be helpful for advanced work by users who are
-#' familiar with the internal structure of RSK files.
+#' return value. This information can be useful for a variety
+#' of detailed calculations.
 #'
 #' @param processingLog if provided, the action item to be stored in the log.
 #' This is typically only provided for internal calls; the default that it provides
@@ -662,8 +668,10 @@ setMethod(f="plot",
 #'
 #' @family things related to rsk data
 read.rsk <- function(file, from=1, to, by=1, type, encoding=NA,
-    tz=getOption("oceTz", default="UTC"), patm=FALSE, 
-    allTables=FALSE, processingLog, debug=getOption("oceDebug"))
+    tz=getOption("oceTz", default="UTC"),
+    tzOffsetLocation=0.0,
+    patm=FALSE,
+    allTables=TRUE, processingLog, debug=getOption("oceDebug"))
 {
     if (missing(file))
         stop("must supply 'file'")
@@ -797,18 +805,16 @@ read.rsk <- function(file, from=1, to, by=1, type, encoding=NA,
         #                 paste(ruskinVersion, collapse="."),
         #                 ") is outside the range for which tests have been done")
         # }
-        # Get geographic data, if they exist
-        haveLocationData <- FALSE
+
+        # Get geographic data to enable location matching of the data.  (This is
+        # optionally stored in the metadata slot, depending on the value of
+        # allTables.)
         geodata <- NULL
         if ("geodata" %in% tableNames) {
-            #message("SHOULD READ LON,LAT NOW")
             geodata <- RSQLite::dbReadTable(con, "geodata")
-            #longitude <- geodata$longitude
-            #latitude <- geodata$latitude
-            #<< DANlongitude<<-longitude
-            #<< DANlatitude<<-latitude
-            #haveLocationData <- TRUE
-            #oceDebug(debug, "this file contains ", length(longitude), " longitude and latitude data\n")
+            oceDebug(debug, "this file contains ", length(longitude), " location data\n")
+        } else {
+            oceDebug(debug, "this file does not contain location data\n")
         }
         # Get atmospheric pressure
         pressureAtmospheric <- 10.1325 # FIXME: what is best default?
@@ -822,12 +828,12 @@ read.rsk <- function(file, from=1, to, by=1, type, encoding=NA,
         }, silent=TRUE)
         if (warn)
             warning("non-standard pressureAtmospheric value: ", pressureAtmospheric)
-        ## some cases can have an empty pressureAtmospheric
+        # some cases can have an empty pressureAtmospheric
         if (length(pressureAtmospheric) == 0) {
             warning("empty pressureAtmospheric value in rsk file. Setting to default value of 10.1325")
             pressureAtmospheric <- 10.1325
         }
-        ##message("NEW: pressureAtmospheric:", pressureAtmospheric)
+        # message("NEW: pressureAtmospheric:", pressureAtmospheric)
         oceDebug(debug, "after studying the RSK file, now have pressureAtmospheric=", pressureAtmospheric, "\n")
 
         # From notes in comments above, it seems necessary to order by
@@ -915,26 +921,12 @@ read.rsk <- function(file, from=1, to, by=1, type, encoding=NA,
         # Now, get only the specified time range
         data <- DBI::dbFetch(qres, n=-1L)
         RSQLite::dbClearResult(qres)
-        #<< DANdata<<-data
         timeOrder <- order(data$tstamp)
         oceDebug(debug, "before trimming data, it has dimension ", paste(dim(data), collapse="x"), "\n")
         data <- data[timeOrder,]
         oceDebug(debug, "after trimming data, it has dimension ", paste(dim(data), collapse="x"), "\n")
-        #> if (haveLocationData) {
-        #>     if (length(timeOrder) == nrow(geodata)) {
-        #>         #longitude <- longitude[timeOrder]
-        #>         #latitude <- latitude[timeOrder]
-        #>         geodata <- geodata[timeOrder,] 
-        #>         message("ordered geodata by time")
-        #>     } else {
-        #>         warning("the number of rows of CTD data (", length(timeOrder),
-        #>            ") does not match the nrow(geodata)=",
-        #>            nrow(geodata), ", so the user will need to find a way to match location to CTD data", sep="")
-        #>     }
-        #> }
         tstamp <- data[,1]
         time <- numberAsPOSIXct(as.numeric(tstamp)/1000, type='unix')
-        #<< DANtime<<-time
 
         # Need to check if there is a datasetID column (for rskVersion >= 1.12.2)
         # If so, for now just extract it from the data matrix
@@ -997,8 +989,17 @@ read.rsk <- function(file, from=1, to, by=1, type, encoding=NA,
                 cat("***\n")
             }
         }
+        # Add timestamp column
         res@data$tstamp <- tstamp
         res@metadata$dataNamesOriginal <- c(res@metadata$dataNamesOriginal, "tstamp")
+        # Possibly add longitude and latitude to data slot. For ideas on how to
+        # do that, see https://github.com/dankelley/oce/issues/2024
+        if (!is.null(geodata)) {
+            geodata$time <- numberAsPOSIXct(geodata$tstamp/1e3,type="unix")+tzOffsetLocation*3600
+            res@metadata$latitude <- approx(geodata$time, geodata$latitude, res@data$time)$y
+            res@metadata$longitude <- approx(geodata$time, geodata$longitude, res@data$time)$y
+            message("The lon-lat inference may be wrong; see https://github.com/dankelley/oce/issues/2024#issuecomment-1345373099")
+        }
         res@metadata$units$pressure$scale <- "absolute"
         #1491> message("res@metadata$dataNamesOriginal L909:");print(res@metadata$dataNamesOriginal)
         #?browser()
@@ -1077,12 +1078,6 @@ read.rsk <- function(file, from=1, to, by=1, type, encoding=NA,
         }
         # 1491> message("str(dataNamesOriginal) L984:");print(res@metadata$dataNamesOriginal)
         res@metadata$pressureAtmospheric <- pressureAtmospheric
-        # Add location data (https://github.com/dankelley/oce/issues/2024)
-        if (!is.null(geodata)) {
-            res@metadata$geodata <- geodata
-            warning("FIXME: provide a way to merge metadata$geodata with data")
-            warning("to convert RSK timestamp to time: numberAsPOSIXct(as.numeric(tstamp)/1e3,type=\"unix\")")
-        }
         res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
         oceDebug(debug, "} # read.rsk()\n", sep="", unindent=1)
         return(res)
