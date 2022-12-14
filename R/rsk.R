@@ -1328,8 +1328,8 @@ read.rsk <- function(file, from=1, to, by=1, type, encoding=NA,
 #'
 #' @template debugTemplate
 rsk2ctd <- function(x, pressureAtmospheric=0, longitude=NULL, latitude=NULL,
-                    ship=NULL, cruise=NULL, station=NULL, deploymentType=NULL,
-                    debug=getOption("oceDebug"))
+    ship=NULL, cruise=NULL, station=NULL, deploymentType=NULL,
+    debug=getOption("oceDebug"))
 {
     oceDebug(debug, "rsk2ctd(...) {\n", sep="", unindent=1)
     res <- new("ctd")
@@ -1364,7 +1364,7 @@ rsk2ctd <- function(x, pressureAtmospheric=0, longitude=NULL, latitude=NULL,
         res@metadata$units$pressure$scale <- "sea"
         res@metadata$dataNamesOriginal[substr(res@metadata$dataNamesOriginal, 1, 4) == "pres"] <- ""
         res@processingLog <- processingLogAppend(res@processingLog,
-                                                 paste("subtracted 10.1325dbar (std atm) from pressure\n"))
+            paste("subtracted 10.1325dbar (std atm) from pressure\n"))
     } else {
         ## subtract atm pressure, if it has not already been subtracted
         oceDebug(debug, "metadata$pressureType is not NULL\n")
@@ -1376,16 +1376,16 @@ rsk2ctd <- function(x, pressureAtmospheric=0, longitude=NULL, latitude=NULL,
                 res@metadata$units$pressure$scale <- "sea"
                 res@metadata$dataNamesOriginal[substr(res@metadata$dataNamesOriginal, 1, 4) == "pres"] <- ""
                 res@processingLog <- processingLogAppend(res@processingLog,
-                                                         paste("subtracted", pressureAtmosphericStandard, "dbar (std atm) from absolute pressure to get sea pressure"))
+                    paste("subtracted", pressureAtmosphericStandard, "dbar (std atm) from absolute pressure to get sea pressure"))
                 oceDebug(debug, "subtracted std atm pressure from pressure\n")
             } else {
                 res@data$pressure <- x@data$pressure - x@metadata$pressureAtmospheric
                 res@metadata$units$pressure$scale <- "sea"
                 res@metadata$dataNamesOriginal[substr(res@metadata$dataNamesOriginal, 1, 4) == "pres"] <- ""
                 res@processingLog <- processingLogAppend(res@processingLog,
-                                                         paste("subtracted",
-                                                               x@metadata$pressureAtmospheric,
-                                                               "dbar from absolute pressure to get sea pressure"))
+                    paste("subtracted",
+                        x@metadata$pressureAtmospheric,
+                        "dbar from absolute pressure to get sea pressure"))
                 oceDebug(debug, "subtracted", x@metadata$pressureAtmospheric, "dbar from pressure\n")
             }
         }
@@ -1397,8 +1397,8 @@ rsk2ctd <- function(x, pressureAtmospheric=0, longitude=NULL, latitude=NULL,
         oceDebug(debug, "subtracted", pressureAtmospheric, "dbar from pressure")
     }
     res@processingLog <- processingLogAppend(res@processingLog,
-                                             paste("subtracted",
-                                                   pressureAtmospheric, "dbar from sea pressure"))
+        paste("subtracted",
+            pressureAtmospheric, "dbar from sea pressure"))
     if (!("salinity" %in% names(x@data))) {
         C <- x[["conductivity"]]
         if (is.null(C))
@@ -1422,13 +1422,13 @@ rsk2ctd <- function(x, pressureAtmospheric=0, longitude=NULL, latitude=NULL,
         ## res <- ctdAddColumn(res, column=S, name="salinity", label="Salinity",
         ##                     unit=list(unit=expression(), scale="PSS-78"))
         res <- oceSetData(res, name="salinity", value=S,
-                          unit=list(unit=expression(), scale="PSS-78"))
+            unit=list(unit=expression(), scale="PSS-78"))
 
     }
     oceDebug(debug, "} # rsk2ctd()\n", sep="", unindent=1)
     res@processingLog <- processingLogAppend(res@processingLog,
-                                             paste("rsk2ctd(..., pressureAtmospheric=", pressureAtmospheric, ", debug)\n",
-                                                   sep="", collapse=""))
+        paste("rsk2ctd(..., pressureAtmospheric=", pressureAtmospheric, ", debug)\n",
+            sep="", collapse=""))
     res
 }
 

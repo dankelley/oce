@@ -51,8 +51,8 @@ is handy in cases where other schemes fail, or when the author
 has independent knowledge of how the profiles are strung together
 in \code{x}.}
 
-\item{arr.ind}{Logical indicating whether the array indices should be returned;
-the alternative is to return a vector of ctd objects.}
+\item{arr.ind}{logical value indicating whether the array indices should be
+returned; the alternative is to return a vector of ctd objects.}
 
 \item{distinct}{An optional string indicating how to identify profiles
 by unique values. Use \code{"location"}
@@ -144,6 +144,7 @@ Other things related to ctd data:
 \code{\link{ctd-class}},
 \code{\link{ctd.cnv}},
 \code{\link{ctdDecimate}()},
+\code{\link{ctdFindProfilesRBR}()},
 \code{\link{ctdRaw}},
 \code{\link{ctdRepair}()},
 \code{\link{ctdTrim}()},
