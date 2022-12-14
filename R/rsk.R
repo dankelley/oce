@@ -812,7 +812,7 @@ read.rsk <- function(file, from=1, to, by=1, type, encoding=NA,
         geodata <- NULL
         if ("geodata" %in% tableNames) {
             geodata <- RSQLite::dbReadTable(con, "geodata")
-            oceDebug(debug, "this file contains ", length(longitude), " location data\n")
+            oceDebug(debug, "this file contains ", length(geodata$longitude), " location data\n")
         } else {
             oceDebug(debug, "this file does not contain location data\n")
         }
