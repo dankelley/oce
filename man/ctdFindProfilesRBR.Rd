@@ -4,11 +4,20 @@
 \alias{ctdFindProfilesRBR}
 \title{Find Profiles within a CTD object read from a RBR file}
 \usage{
-ctdFindProfilesRBR(x, arr.ind = FALSE, debug = getOption("oceDebug"))
+ctdFindProfilesRBR(
+  x,
+  direction = "descending",
+  arr.ind = FALSE,
+  debug = getOption("oceDebug")
+)
 }
 \arguments{
-\item{x}{a \linkS4class{ctd} object created by using \code{\link[=as.ctd]{as.ctd()}} on the results of a
-call to \code{\link[=read.rsk]{read.rsk()}}.}
+\item{x}{either an \linkS4class{rsk} or a \linkS4class{ctd} object; in the former case,
+it is converted to a \linkS4class{ctd} object with \code{\link[=as.ctd]{as.ctd()}}.}
+
+\item{direction}{character value, either \code{"descending"} or \code{"ascending"},
+indicating the sampling direction to be selected.  The default, \code{"descending"},
+is usually a preferred choice.}
 
 \item{arr.ind}{logical value indicating whether the array indices should be
 returned; the alternative is to return a vector of ctd objects.}

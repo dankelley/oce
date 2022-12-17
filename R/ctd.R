@@ -565,13 +565,19 @@ setMethod(f="summary",
               if (!is.null(deploymentType) && deploymentType != "unknown")
                   showMetadataItem(object, "deploymentType",            "Deployment type:     ")
               if ("longitude" %in% names(object@data)) {
-                  cat("* Mean location:       ",       latlonFormat(mean(object@data$latitude, na.rm=TRUE),
-                                                                   mean(object@data$longitude, na.rm=TRUE),
-                                                                   digits=5), "\n", sep="")
-              } else if ("longitude" %in% names(object@metadata) && !is.na(object@metadata$longitude)) {
-                  cat("* Location:            ",       latlonFormat(object@metadata$latitude,
-                                                                    object@metadata$longitude,
-                                                                    digits=5), "\n", sep="")
+                  cat("* Mean Location:       ",
+                      latlonFormat(
+                          mean(object@data$latitude, na.rm=TRUE),
+                          mean(object@data$longitude, na.rm=TRUE),
+                          digits=5),
+                      "\n", sep="")
+              } else if ("longitude" %in% names(object@metadata)) {
+                  cat("* Mean Location:       ",
+                      latlonFormat(
+                          mean(object@metadata$latitude, na.rm=TRUE),
+                          mean(object@metadata$longitude, na.rm=TRUE),
+                          digits=5),
+                      "\n", sep="")
               }
               showMetadataItem(object, "waterDepth", "Water depth:         ")
               showMetadataItem(object, "levels", "Number of levels: ")
@@ -2119,7 +2125,7 @@ ctdFindProfiles <- function(x, cutoff=0.5, minLength=10, minHeight,
             i <- seq_along(x[["salinity"]])
             stnIndices <- split(i, factor(dist))
             nstn <- length(stnIndices)
-            oceDebug(debug, "number of profiles found:", nstn, "\n")
+            oceDebug(debug, "number of profiles found: ", nstn, "\n")
             if (!nstn)
                 return(NULL)
             casts <- vector("list", nstn)
@@ -2216,7 +2222,7 @@ ctdFindProfiles <- function(x, cutoff=0.5, minLength=10, minHeight,
         casts <- vector("list", ncasts)
         npts <- length(x@data$pressure)
         for (i in 1:ncasts) {
-            oceDebug(debug, "profile", i, "of", ncasts, "\n")
+            oceDebug(debug, "profile ", i, " of ", ncasts, "\n")
             ## Extend indices to catch turnaround spots (see ~13 lines above)
             e <- 1
             iStart <- max(1L, indices$start[i] - e)
@@ -2284,6 +2290,8 @@ ctdFindProfilesRBR <- function(x, direction="descending", arr.ind=FALSE, debug=g
     r <- subset(region, regionID %in% rID)
     startTime <- numberAsPOSIXct(r$tstamp1/1e3, type="unix")
     endTime <- numberAsPOSIXct(r$tstamp2/1e3, type="unix")
+    oceDebug(debug, "originally, ", vectorShow(startTime))
+    oceDebug(debug, "originally, ", vectorShow(endTime))
     ntime <- length(time)
     # Ignore any start/end times that are outside data$time window (which might
     # happen if the data were subsetted).
@@ -2291,8 +2299,8 @@ ctdFindProfilesRBR <- function(x, direction="descending", arr.ind=FALSE, debug=g
     oceDebug(debug, "keeping ", sum(keep), " of ", length(keep), " start/end pairs\n")
     startTime <- startTime[keep]
     endTime <- endTime[keep]
-    oceDebug(debug, vectorShow(startTime))
-    oceDebug(debug, vectorShow(endTime))
+    oceDebug(debug, "after trimming, ", vectorShow(startTime))
+    oceDebug(debug, "after trimming, ", vectorShow(endTime))
     # Note adding/subtracting 1, to get "inside" points. This is because a test
     # case for issue 2027 revealed that profiles trimmed *including* the points
     # had anomalous values at both top and bottom.
