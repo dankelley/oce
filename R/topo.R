@@ -244,8 +244,8 @@ setMethod(f="subset",
 #' file naming, subsequent calls to `download.topo` with identical
 #' parameters will simply return the name of the cached file, assuming
 #' the user has not deleted it in the meantime.  Note that
-#' `download.topo` uses the `"raster"` and `"ncdf4"` packages, so
-#' these must be installed, or an error is reported.
+#' `download.topo` uses the `"terra"` and `"ncdf4"` packages,
+#' so an error is reported if they are not available.
 #'
 #' The specified longitude and latitude limits are rounded to 2 digits
 #' (corresponding to a footprint of approximately 1km), and these are
@@ -256,7 +256,7 @@ setMethod(f="subset",
 #' @section Historical note relating to NOAA server changes:
 #'
 #' 2022 November 13: updated to new NOAA database, with 1/4-minute resolution (a
-#' marked improvedment over the previous 1-minute resolution).  The revision was
+#' marked improvement over the previous 1-minute resolution).  The revision was
 #' framed along similar changes to `marmap::getNOAAbathy()` made earlier today.
 #' Thanks to Clark Richards for pointing this out!
 #'
@@ -409,15 +409,15 @@ download.topo <- function(west, east, south, north, resolution=4,
         "%27%22}",
         "&f=image")
     oceDebug(debug, "querying \"", url, "\"\n", sep="")
-    if (!requireNamespace("raster", quietly=TRUE))
-        stop('must install.packages("raster"), which is required to translate downloaded data')
+    if (!requireNamespace("terra", quietly=TRUE))
+        stop("must install.packages(\"terra\") before using download.topo()")
     if (!requireNamespace("ncdf4", quietly=TRUE))
-        stop('must install.packages("ncdf4"), which is required to save topo data')
-    r <- raster::raster(x=url)
+        stop("must install.packages(\"ncdf4\") before using download.topo()")
+    r <- terra::rast(x=url)
     oceDebug(debug, "converting data\n", sep="")
-    longitude <- seq(r@extent@xmin, r@extent@xmax, length.out=r@ncols)
-    latitude <- seq(r@extent@ymin, r@extent@ymax, length.out=r@nrows)
-    z <- t(raster::as.matrix(raster::flip(r, direction="y")))
+    longitude <- seq(terra::xmin(r), terra::xmax(r), length.out=ncol(r))
+    latitude <- seq(terra::ymin(r), terra::ymax(r), length.out=nrow(r))
+    z <- t(terra::as.matrix(terra::flip(r, direction="vertical"), wide=TRUE))
     oceDebug(debug, "saving to \"", destination, "\"\n", sep="")
     ## create netcdf file
     ## dimensions

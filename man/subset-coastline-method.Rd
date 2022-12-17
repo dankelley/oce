@@ -24,9 +24,7 @@ A \code{coastline} object.
 }
 \description{
 Subsets a coastline object according to limiting values for longitude
-and latitude. This uses functions in the \CRANpkg{raster} package
-for some calculations, and so it will fail unless that package is
-installed.
+and latitude.
 }
 \details{
 As illustrated in the \dQuote{Examples}, \code{subset} must be an

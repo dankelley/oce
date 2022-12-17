@@ -119,9 +119,7 @@ setMethod(f="[[<-",
 #' Subset a Coastline Object
 #'
 #' Subsets a coastline object according to limiting values for longitude
-#' and latitude. This uses functions in the \CRANpkg{raster} package
-#' for some calculations, and so it will fail unless that package is
-#' installed.
+#' and latitude.
 #'
 #' As illustrated in the \dQuote{Examples}, `subset` must be an
 #' expression that indicates limits on `latitude` and

@@ -21,7 +21,7 @@ plotScan(
 \arguments{
 \item{x}{a \linkS4class{ctd} object.}
 
-\item{which}{integer specifying the plotto be draw: 1
+\item{which}{integer specifying the plot to be drawn: 1
 for pressure vs 'x', 2 for \code{diff(pressure)} vs 'x', 3 for temperature vs
 'x', and 4 for salinity vs 'x'  Here, the value of 'x' is determined by
 \code{xtype}.}
