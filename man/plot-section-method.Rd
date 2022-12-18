@@ -297,8 +297,8 @@ points(distance[look], depth[look], col="red")
 # Image of Absolute Salinity, with 4-minute bathymetry
 # It's easy to calculate the desired area for the bathymetry,
 # but for brevity we'll hard-code it. Note that download.topo()
-# requires the "raster" and "ncdf4" packages to be installed.
-if (requireNamespace("raster") && requireNamespace("ncdf4")) \{
+# requires the "ncdf4" package to have been installed.
+if (requireNamespace("ncdf4")) \{
     f <- download.topo(west=-80, east=0, south=35, north=40, resolution=4)
     t <- read.topo(f)
     plot(section, which="SA", xtype="longitude", ztype="image", showBottom=t)

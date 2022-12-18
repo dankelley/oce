@@ -69,8 +69,8 @@ as the filename for a call to \code{\link[=read.topo]{read.topo()}}.  Given the 
 file naming, subsequent calls to \code{download.topo} with identical
 parameters will simply return the name of the cached file, assuming
 the user has not deleted it in the meantime.  Note that
-\code{download.topo} uses the \code{"raster"} and \code{"ncdf4"} packages, so
-these must be installed, or an error is reported.
+\code{download.topo} uses the \code{"terra"} and \code{"ncdf4"} packages,
+so an error is reported if they are not available.
 }
 \details{
 The specified longitude and latitude limits are rounded to 2 digits
@@ -83,7 +83,7 @@ error message and stops.
 
 
 2022 November 13: updated to new NOAA database, with 1/4-minute resolution (a
-marked improvedment over the previous 1-minute resolution).  The revision was
+marked improvement over the previous 1-minute resolution).  The revision was
 framed along similar changes to \code{marmap::getNOAAbathy()} made earlier today.
 Thanks to Clark Richards for pointing this out!
 

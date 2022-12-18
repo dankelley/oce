@@ -3953,7 +3953,7 @@ setMethod(f="subset",
 #'
 #' @param x a [ctd-class] object.
 #'
-#' @param which integer specifying the plotto be draw: 1
+#' @param which integer specifying the plot to be drawn: 1
 #' for pressure vs 'x', 2 for `diff(pressure)` vs 'x', 3 for temperature vs
 #' 'x', and 4 for salinity vs 'x'  Here, the value of 'x' is determined by
 #' `xtype`.

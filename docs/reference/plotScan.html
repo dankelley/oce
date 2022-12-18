@@ -18,7 +18,7 @@ extraneous data from a CTD cast."><!-- mathjax --><script src="https://cdnjs.clo
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-10</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-11</span>
       </span>
     </div>
 
@@ -102,17 +102,20 @@ extraneous data from a CTD cast.</p>
 
 
 <dt>which</dt>
-<dd><p>Numerical vector numerical codes specifying the panels to draw: 1
-for pressure vs scan, 2 for <code>diff(pressure)</code> vs scan, 3 for temperature vs
-scan, and 4 for salinity vs scan.</p></dd>
+<dd><p>integer specifying the plot to be drawn: 1
+for pressure vs 'x', 2 for <code>diff(pressure)</code> vs 'x', 3 for temperature vs
+'x', and 4 for salinity vs 'x'  Here, the value of 'x' is determined by
+<code>xtype</code>.</p></dd>
 
 
 <dt>xtype</dt>
-<dd><p>Character string indicating variable for the x axis. May be
-<code>"scan"</code> (the default) or <code>"time"</code>. In the former case, a
-<code>scan</code> variable will be created using <code><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_along()</a></code>,
-if necessary. In the latter case, an error results if the <code>data</code>
-slot of <code>x</code> lacks a variable called <code>time</code>.</p></dd>
+<dd><p>Character string indicating variable for the x axis. The
+permitted values are <code>"scan"</code> (the default), <code>"time"</code> and <code>"index"</code>.
+The last of these is created by using <code><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_along()</a></code> on the pressure
+column (which is assumed to be present in any <a href="ctd-class.html">ctd</a> object).
+Only <code>xtype="index"</code> is guaranteed to work for all objects, and indeed
+that value is used, if either <code>"scan"</code> or <code>"time"</code> is requested, but
+unavailable.</p></dd>
 
 
 <dt>flipy</dt>
@@ -163,6 +166,13 @@ be printed. If one function calls another, it usually reduces the value of
 by specifying higher <code>debug</code> values.</p></dd>
 
 </dl></div>
+    <div id="historical-note">
+    <h2>Historical Note</h2>
+    
+
+<p>On 2022-12-07, <code>xtype</code> was expanded to include <code>"index"</code>, and
+an undocumented multi-panel feature was removed.</p>
+    </div>
     <div id="see-also">
     <h2>See also</h2>
     <div class="dont-index"><p>Other functions that plot oce data: 
