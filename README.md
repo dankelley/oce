@@ -1,6 +1,3 @@
-
-
-
 # oce <img src="https://raw.githubusercontent.com/dankelley/oce/develop/oce-logo-3.png" align="right" height="95" />
 
 <!-- badges: start -->
@@ -12,7 +9,7 @@
 ![RStudio CRAN mirror downloads](https://cranlogs.r-pkg.org/badges/last-month/oce)
 ![RStudio CRAN mirror downloads](https://cranlogs.r-pkg.org/badges/last-week/oce)
 ![RStudio CRAN mirror downloads](https://cranlogs.r-pkg.org/badges/last-day/oce)
-
+[![R-CMD-check](https://github.com/dankelley/oce/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/dankelley/oce/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
 ## Why use R for oceanographic analysis?
