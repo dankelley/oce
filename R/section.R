@@ -1317,10 +1317,8 @@ sectionAddCtd <- sectionAddStation
 #' @family things related to section data
 #'
 #' @aliases plot.section
-setMethod(f="plot",
-    signature=signature("section"),
-    definition=
-    function(x,
+setMethod(f="plot", signature=signature("section"),
+    definition=function(x,
         which=c(1,2,3,99), eos,
         at=NULL, labels=TRUE, grid=FALSE,
         contourLevels=NULL, contourLabels=NULL,
@@ -1969,7 +1967,7 @@ setMethod(f="plot",
                 } else if (which.xtype == 4) { # latitude
                     xx[ix] <- mean(x@data$station[[j]][["latitude"]], na.rm=TRUE)
                 } else if (which.xtype == 5) { # time
-                    # use ix as a desparate last measure, if there are no times.
+                    # use ix if there are no times.
                     if (!is.null(x@data$station[[j]]@metadata$startTime)) {
                         xx[ix] <- as.POSIXct(x@data$station[[j]]@metadata$startTime)
                     } else if (!is.null(x@metadata$time[[j]])) {
