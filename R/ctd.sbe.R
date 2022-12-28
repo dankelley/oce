@@ -223,7 +223,7 @@ cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
     if (length(h) != 1)
         stop("oceNameFromSBE() expects just 1 line of header")
     ## An example, for which the grep is designed, is below.
-    ## '# name 4 = t190C: Temperature, 2 [ITS-90, deg C]'
+    ## '# name 4 = t190C: Temperature, 2 [ITS-90, deg C]' # nolint
     if (1 != length(grep("^# name [0-9][0-9]* = .*:.*$", h, ignore.case=TRUE)))
         stop("header line does not contain a variable name")
     ## message("h: '", h, "'")
@@ -645,7 +645,8 @@ cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
         warning("unrecognized SBE name '", name, "'; consider using 'columns' to define this name")
         unit <- list(unit=expression(), scale="")
     }
-    oceDebug(debug, " SBE name '", nameOriginal, "' converted to oce name '", name, "'; the scale is '", unit$scale, "'\n", sep="")
+    oceDebug(debug, " SBE name '", nameOriginal, "' converted to oce name '", name,
+        "'; the scale is '", unit$scale, "'\n", sep="")
     oceDebug(debug, "} # cnvName2oceName()\n", unindent=1)
     list(name=name, nameOriginal=nameOriginal, unit=unit)
 }
@@ -888,7 +889,6 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
     startTime <- recoveryTime <- NA
     date <- NA
     header <- c()
-    ##conductivity.standard <- 4.2914
     foundHeaderLatitude <- foundHeaderLongitude <- FALSE
     serialNumber <- serialNumberConductivity <- serialNumberTemperature <- ""
     ## units$conductivity <- list(unit=expression(), scale="") # guess; other types are "mS/cm" and "S/m"
@@ -1107,7 +1107,7 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
         if (0 < (r<-regexpr("recovery:", lline)))
             recoveryTime <- sub("(.*)recovery:([ ])*", "", lline)
 
-        if (length(grep("^#[ \t]+bad_flag[ \t]*=", lline))) {
+        if (grepl("^#[ \t]+bad_flag[ \t]*=", lline)) {
             ## bad_flag = -9.990e-29
             bad_flag <- sub("#[ \t]*bad_flag[ \t]*=[ \t]*", "", lline)
             if (missing(missingValue))
