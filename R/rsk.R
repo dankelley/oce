@@ -247,12 +247,12 @@ unitFromStringRsk <- function(s)
     ## because that seems to overly blunt the tool.
     ##
     ## Here's how to figure out special characters:
-    ## print(s)
+    ## print(s) # nolint
     ## [1] "µMol/m²/s"
-    ## Browse[1]> Encoding(s)<-"bytes"
-    ## Browse[2]> print(s)
+    ## Browse[1]> Encoding(s)<-"bytes" # nolint
+    ## Browse[2]> print(s) # nolint
     ## [1] "\\xc2\\xb5Mol/m\\xc2\\xb2/s"
-    # 
+    #
     # 2022-06-28 upcoming version of R will require elimination of \x sequences; see
     # https://developer.r-project.org/Blog/public/2022/06/27/why-to-avoid-%5Cx-in-regular-expressions/index.html
     # Below is a table of code, unicode, unicode-in-R, and old-method-in-R.
@@ -482,9 +482,9 @@ setMethod(f="plot",
     {
         oceDebug(debug, "plot.rsk(..., which=", which, ", ...) {\n", unindent=1)
         dotsNames <- names(list(...))
-        ## FIXME: In the below, we could be more clever for single-panel plots
-        ## but it may be better to get users out of the habit of supplying xlim
-        ## etc (which will yield errors in plot.lm(), for example).
+        # FIXME: In the below, we could be more clever for single-panel plots
+        # but it may be better to get users out of the habit of supplying xlim
+        # etc (which will yield errors in plot.lm(), for example).
         if ("xlim" %in% dotsNames)
             stop("in plot.rsk() : 'xlim' not allowed; use tlim", call.=FALSE)
         if (any(which=="timeseries"))
@@ -508,18 +508,13 @@ setMethod(f="plot",
                 oce.plot.ts(x[["time"]], x[[name]], ylab=label, ...)
             }
         } else {
-            ## individual panels
-            ## Trim out plots that we cannot do.
+            # individual panels
+            # Trim out plots that we cannot do.
             names <- names(x@data)
             names <- names[- (names=="time")]
             nw <- length(which)
-            ## opar <- par(no.readonly = TRUE)
-            ## if (nw > 1) {
-            ##     par(mfrow=c(nw, 1))
-            ##     on.exit(par(opar))
-            ## }
             if (missing(main))
-                main <- rep('', length.out=nw)
+                main <- rep("", length.out=nw)
             else
                 main <- rep(main, length.out=nw)
             oceDebug(debug, "after nickname-substitution, which=c(", paste(which, collapse=","), ")\n")
@@ -782,8 +777,7 @@ read.rsk <- function(file, from=1, to, by=1, type, encoding=NA,
                 oceDebug(debug, ". ok\n", sep="")
             }
         }
-
-        ## rsk database-schema version number
+        # rsk database-schema version number
         dbInfo <- RSQLite::dbReadTable(con, "dbInfo")
         rskv <- dbInfo[1, 1]
         rskVersion <- as.numeric(strsplit(gsub(".[a-z].*$", "", gsub("^.*- *", "", rskv)), "\\.")[[1]])
