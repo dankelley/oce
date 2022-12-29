@@ -20,6 +20,25 @@ plus emails spread out over weeks, with exams in the middle for fun.
 
 Continuing on from (similar)_1.R with some more direct tests of the LOCATION data from the RBR software.  It seems that first LOCATION in the software corresponds to the second entry in the database. Same for second LOCATION ... I didn't bother to check more.
 
+```
+# Ruskin says
+# location                time       lon     lat
+#        1 2022-08-08 15:10:06 -149.7240 59.9377
+#        2 2022-08-08 15:14:06 -149.7237 59.9376
+#
+# This code says
+#                         time       lon      lat
+#          2022-08-08 23:04:58 -149.7285 59.93881
+#          2022-08-08 23:10:06 -149.7240 59.93768
+#          2022-08-08 23:14:06 -149.7237 59.93760
+#          2022-08-08 23:19:26 -149.7305 59.94245
+#          2022-08-08 23:23:31 -149.7296 59.94225
+#          2022-08-09 00:27:29 -149.7062 59.91867
+```
+
+
+
+
 ## rsk_with_location_odd_salinity.R 2022-12-??
 
 An oddness with S, which CR figured out was likely due to ctd running into soft sediment.

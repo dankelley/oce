@@ -2111,7 +2111,7 @@ ctdFindProfiles <- function(x, cutoff=0.5, minLength=10, minHeight,
     if (!"pressure" %in% names(x@data))
         stop("x must contain pressure in its data slot")
     minHeight <- 0.1*diff(range(x[["pressure"]], na.rm=TRUE))
-    oceDebug(debug, "ctdFindProfiles(x, cutoff=", cutoff,
+    oceDebug(debug,"ctdFindProfiles(x,cutoff=", cutoff,
         ", minLength=", minLength,
         ", minHeight=", minHeight,
         ", direction=\"", direction, "\"",
@@ -2270,24 +2270,25 @@ ctdFindProfilesRBR <- function(x, direction="descending", arr.ind=FALSE, debug=g
         stop("x must be of class \"rsk\" or \"ctd\"")
     oceDebug(debug, "ctdFindProfilesRBR(x, direction=", direction, ", arr.ind=", arr.ind, ", debug=", debug, ") {\n",
         sep="", unindent=1)
-    dir <- if (identical(direction, "ascending"))
-        "UP"
-    else if (identical(direction, "descending"))
-        "DOWN"
-    else
+    if (identical(direction, "ascending")) {
+        dir <- "UP"
+    } else if (identical(direction, "descending")) {
+        dir <- "DOWN"
+    } else {
         stop("direction must be \"descending\" or \"ascending\".")
+    }
     # This requires certain contents of both data and metadata
     time <- x@data$time
     if (is.null(time))
         stop("the data slot must contain \"time\"")
-    regionCast <- x@metadata$regionCast
+    regionCast <- x@metadata$regionCast # regionID,regionProfileID,type
     if (is.null(regionCast))
         stop("the metadata slot must contain \"regionCast\"")
-    region <- x@metadata$region
+    region <- x@metadata$region # datasetID,regionID,type,tstamp1,tstamp2,label,description,collapsed
     if (is.null(region))
         stop("the metadata slot must contain \"region\"")
-    rID <- subset(regionCast, type==dir)$regionID
-    r <- subset(region, regionID %in% rID)
+    rID <- subset(regionCast, regionCast$type==dir)$regionID
+    r <- subset(region, region$regionID %in% rID)
     startTime <- numberAsPOSIXct(r$tstamp1/1e3, type="unix")
     endTime <- numberAsPOSIXct(r$tstamp2/1e3, type="unix")
     oceDebug(debug, "originally, ", vectorShow(startTime))
@@ -2301,12 +2302,8 @@ ctdFindProfilesRBR <- function(x, direction="descending", arr.ind=FALSE, debug=g
     endTime <- endTime[keep]
     oceDebug(debug, "after trimming, ", vectorShow(startTime))
     oceDebug(debug, "after trimming, ", vectorShow(endTime))
-    # Note adding/subtracting 1, to get "inside" points. This is because a test
-    # case for issue 2027 revealed that profiles trimmed *including* the points
-    # had anomalous values at both top and bottom.
-    TWEAK <- 0L
-    start <- sapply(startTime, function(t) TWEAK+which(time==t)[1])
-    end <- sapply(endTime, function(t) -TWEAK+which(time==t)[1])
+    start <- sapply(startTime, function(t) which(time==t)[1])
+    end <- sapply(endTime, function(t) which(time==t)[1])
     oceDebug(debug, vectorShow(start))
     oceDebug(debug, vectorShow(end))
     if (identical(arr.ind, TRUE)) {
@@ -2316,7 +2313,7 @@ ctdFindProfilesRBR <- function(x, direction="descending", arr.ind=FALSE, debug=g
         ncasts <- length(start)
         casts <- vector("list", ncasts)
         npts <- length(x@data$pressure)
-        for (i in 1:ncasts) {
+        for (i in seq_len(ncasts)) {
             cast <- ctdTrim(x, "index", parameters=c(start[i], end[i]))
             if (!is.null(x@metadata$station) && "" != x@metadata$station) {
                 cast@metadata$station <- paste(x@metadata$station, i, paste="/")

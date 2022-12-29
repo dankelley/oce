@@ -6,7 +6,7 @@
 
 library(oce)
 data(coastlineWorldFine, package="ocedata")
-f <- "ctd_with_location.rsk"
+f <- "~/ctd_with_location.rsk"
 
 # Read data.  The time offset is particular to this data file.
 source("~/git/oce/R/rsk.R")
@@ -49,21 +49,27 @@ points(glon[manual], glat[manual], col=2, pch=20)
 polygon(coastlineWorldFine[["longitude"]], coastlineWorldFine[["latitude"]], col=rgb(0, 1, 0, alpha=0.1))
 
 gtstamp0 <- gtstamp[auto]
-glat0 <- lat[auto]
-glon0 <- lon[auto]
+glat0 <- glat[auto]
+glon0 <- glon[auto]
 
-# Comparison with "LOCATION 1" in Ruskin software indicates
-# that the *second* of these auto points is LOCATION 1.
-# Oddly, this indicates a 7-hour shift. However, other things (including
-# lon and lat mismatch) suggest 8-hour shift.
-head(gtstamp0) # Ruskin says LOCATION 1 at 2022-08-08 15:10:06
-head(numberAsPOSIXct(gtstamp0/1000)) # Ruskin says LOCATION 1 at 2022-08-08 15:10:06
-head(glon0) # Ruskin says LOCATION 1 at -149.7240
-head(glat0) # Ruskin says LOCATION 1 at 59.9377
+# Comparison with "LOCATION" popup boxes in the Ruskin software indicates that
+# the *second* of these auto points is LOCATION 1.  See table below.
+head(data.frame(t=numberAsPOSIXct(gtstamp0/1000), lon=glon0, lat=glat0))
 # Ruskin says
 # location                time       lon     lat
 #        1 2022-08-08 15:10:06 -149.7240 59.9377
 #        2 2022-08-08 15:14:06 -149.7237 59.9376
+
+# This code says
+#                         time       lon      lat
+#          2022-08-08 23:04:58 -149.7285 59.93881
+#          2022-08-08 23:10:06 -149.7240 59.93768
+#          2022-08-08 23:14:06 -149.7237 59.93760
+#          2022-08-08 23:19:26 -149.7305 59.94245
+#          2022-08-08 23:23:31 -149.7296 59.94225
+#          2022-08-09 00:27:29 -149.7062 59.91867
+
+stop("keep below for other tests")
 
 # Chop into profiles, using information in RBR headers
 ctds0 <- ctdFindProfilesRBR(as.ctd(d))
