@@ -663,10 +663,8 @@ setMethod(f="plot",
 #'
 #' @family things related to rsk data
 read.rsk <- function(file, from=1, to, by=1, type, encoding=NA,
-    tz=getOption("oceTz", default="UTC"),
-    tzOffsetLocation=0.0,
-    patm=FALSE,
-    allTables=TRUE, processingLog, debug=getOption("oceDebug"))
+    tz=getOption("oceTz", default="UTC"), tzOffsetLocation=0.0,
+    patm=FALSE, allTables=TRUE, processingLog, debug=getOption("oceDebug"))
 {
     if (missing(file))
         stop("must supply 'file'")
@@ -990,9 +988,13 @@ read.rsk <- function(file, from=1, to, by=1, type, encoding=NA,
         # do that, see https://github.com/dankelley/oce/issues/2024
         if (!is.null(geodata)) {
             geodata$time <- numberAsPOSIXct(geodata$tstamp/1e3,type="unix")+tzOffsetLocation*3600
+            look <- geodata$origin == "auto"
             res@metadata$latitude <- approx(geodata$time, geodata$latitude, res@data$time)$y
+            res@metadata$latitudeNew <- approx(geodata$time[look], geodata$latitude[look], res@data$time)$y
             res@metadata$longitude <- approx(geodata$time, geodata$longitude, res@data$time)$y
-            message("The lon-lat inference may be wrong; see https://github.com/dankelley/oce/issues/2024#issuecomment-1345373099")
+            res@metadata$longitudeNew <- approx(geodata$time[look], geodata$longitude[look], res@data$time)$y
+            message("lon-lat may be wrong; see https://github.com/dankelley/oce/issues/2024#issuecomment-1345373099")
+            message("TEST: examine both longitude and longitudeNew etc")
         }
         res@metadata$units$pressure$scale <- "absolute"
         #1491> message("res@metadata$dataNamesOriginal L909:");print(res@metadata$dataNamesOriginal)
