@@ -768,24 +768,24 @@ read.rsk <- function(file, from=1, to, by=1, type, encoding=NA,
         # Advanced users might want to see what tables are in this file.
         tableNames <- RSQLite::dbListTables(con)
 
-        oceDebug(debug, "this RSK file has the following tables: ",
+        oceDebug(debug, "This file had the following tables: ",
             paste(sort(tableNames), collapse=", "), "\n")
         if (allTables) {
+            oceDebug(debug, "Reading tables and storing in metadata@ slot\n")
             for (name in tableNames) {
-                oceDebug(debug, "reading table named '", name, "' ..", sep="")
                 res@metadata[[name]] <- RSQLite::dbReadTable(con, name)
-                oceDebug(debug, ". ok\n", sep="")
+                oceDebug(debug, "    Stored @metadata$", name, "\n", sep="")
             }
         }
         # rsk database-schema version number
         dbInfo <- RSQLite::dbReadTable(con, "dbInfo")
+        # Ruskin software version number
         rskv <- dbInfo[1, 1]
         rskVersion <- as.numeric(strsplit(gsub(".[a-z].*$", "", gsub("^.*- *", "", rskv)), "\\.")[[1]])
-        ## Ruskin software version number
+        oceDebug(debug, "RSK software version ", paste(rskVersion, collapse="."), "\n")
         if (RSQLite::dbExistsTable(con, "appSettings")) {
             appSettings <- RSQLite::dbReadTable(con, "appSettings")
             rv <- appSettings[1, 2]
-            ##OLD rv <- read.table(pipe(cmd), sep="|")[1, 2]
             ruskinVersion <- as.numeric(strsplit(gsub(".[a-z].*$", "", gsub("^.*- *", "", rv)), "\\.")[[1]])
         } else {
             ruskinVersion <- "mobile"
