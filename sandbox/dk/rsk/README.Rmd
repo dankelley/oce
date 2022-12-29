@@ -1,3 +1,10 @@
+---
+author: Dan Kelley
+title: notes on adding location data to RSK files
+---
+
+This applies only to datasets that have `geodata` fields, which I think means
+that the instrument was linked with a phone/tablet.
 
 # Files
 
@@ -5,8 +12,9 @@
 
 ## rsk_with_location_new_1.R 2022-12-29
 
-Some tests.  See the tangled threads at 
-https://github.com/dankelley/oce/issues/2027 and other issues around that time, plus emails spread out over weeks, with exams in the middle for fun.
+Some tests.  See the tangled threads at
+https://github.com/dankelley/oce/issues/2027 and other issues around that time,
+plus emails spread out over weeks, with exams in the middle for fun.
 
 ## rsk_with_location_new_2.R 2022-12-29
 
