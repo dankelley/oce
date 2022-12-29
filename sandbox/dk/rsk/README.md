@@ -1,0 +1,21 @@
+
+# Files
+
+## rsk_with_location.R
+
+## rsk_with_location_new_1.R 2022-12-29
+
+Some tests.  See the tangled threads at 
+https://github.com/dankelley/oce/issues/2027 and other issues around that time, plus emails spread out over weeks, with exams in the middle for fun.
+
+## rsk_with_location_new_2.R 2022-12-29
+
+Continuing on from (similar)_1.R with some more direct tests of the LOCATION data from the RBR software.  It seems that first LOCATION in the software corresponds to the second entry in the database. Same for second LOCATION ... I didn't bother to check more.
+
+## rsk_with_location_odd_salinity.R 2022-12-??
+
+An oddness with S, which CR figured out was likely due to ctd running into soft sediment.
+
+## rsk_with_location_station_map.R 2022-12-??
+
+Attempts to determine location.  Superceded later.
