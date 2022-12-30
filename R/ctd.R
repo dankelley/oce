@@ -2245,12 +2245,19 @@ ctdFindProfiles <- function(x, cutoff=0.5, minLength=10, minHeight,
 
 #' Find Profiles within a CTD object read from a RBR file
 #'
+#' This uses information about profiles that is contained within the `metadata`
+#' slot of the first argument, `x`, having been inserted there by [read.rsk()].
+#' If `x` was created by reading an `.rsk` file with [read.rsk()],
+#' and if that file contained geographical information (that is, if it had a
+#' data table named `geodata`) then the *first* longitude and latitude from each
+#' profile is stored in the `metadata` slot of the returned value.
+#'
 #' @param x either an [rsk-class] or a [ctd-class] object; in the former case,
 #' it is converted to a [ctd-class] object with [as.ctd()].
 #'
 #' @param direction character value, either `"descending"` or `"ascending"`,
 #' indicating the sampling direction to be selected.  The default, `"descending"`,
-#' is usually a preferred choice.
+#' is the commonly preferred choice.
 #'
 #' @param arr.ind logical value indicating whether the array indices should be
 #' returned; the alternative is to return a vector of ctd objects.
@@ -2260,6 +2267,7 @@ ctdFindProfiles <- function(x, cutoff=0.5, minLength=10, minHeight,
 #' @author Dan Kelley
 #'
 #' @family things related to ctd data
+#' @family things related to rsk data
 ctdFindProfilesRBR <- function(x, direction="descending", arr.ind=FALSE, debug=getOption("oceDebug"))
 {
     if (!inherits(x, "oce"))
@@ -2319,6 +2327,10 @@ ctdFindProfilesRBR <- function(x, direction="descending", arr.ind=FALSE, debug=g
                 cast@metadata$station <- paste(x@metadata$station, i, paste="/")
             } else {
                 cast@metadata$station <- i
+            }
+            if (all(c("longitude", "latitude") %in% names(cast@metadata))) {
+                cast@metadata$longitude <- cast@metadata$longitude[1]
+                cast@metadata$latitude <- cast@metadata$latitude[1]
             }
             cast@processingLog <- processingLogAppend(cast@processingLog,
                 paste(paste(deparse(match.call()), sep="", collapse=""),

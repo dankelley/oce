@@ -17,7 +17,7 @@ it is converted to a \linkS4class{ctd} object with \code{\link[=as.ctd]{as.ctd()
 
 \item{direction}{character value, either \code{"descending"} or \code{"ascending"},
 indicating the sampling direction to be selected.  The default, \code{"descending"},
-is usually a preferred choice.}
+is the commonly preferred choice.}
 
 \item{arr.ind}{logical value indicating whether the array indices should be
 returned; the alternative is to return a vector of ctd objects.}
@@ -31,7 +31,12 @@ be printed. If one function calls another, it usually reduces the value of
 by specifying higher \code{debug} values.}
 }
 \description{
-Find Profiles within a CTD object read from a RBR file
+This uses information about profiles that is contained within the \code{metadata}
+slot of the first argument, \code{x}, having been inserted there by \code{\link[=read.rsk]{read.rsk()}}.
+If \code{x} was created by reading an \code{.rsk} file with \code{\link[=read.rsk]{read.rsk()}},
+and if that file contained geographical information (that is, if it had a
+data table named \code{geodata}) then the \emph{first} longitude and latitude from each
+profile is stored in the \code{metadata} slot of the returned value.
 }
 \seealso{
 Other things related to ctd data: 
@@ -75,8 +80,22 @@ Other things related to ctd data:
 \code{\link{woceNames2oceNames}()},
 \code{\link{woceUnit2oceUnit}()},
 \code{\link{write.ctd}()}
+
+Other things related to rsk data: 
+\code{\link{[[,rsk-method}},
+\code{\link{[[<-,rsk-method}},
+\code{\link{as.rsk}()},
+\code{\link{plot,rsk-method}},
+\code{\link{read.rsk}()},
+\code{\link{rsk-class}},
+\code{\link{rskPatm}()},
+\code{\link{rskToc}()},
+\code{\link{rsk}},
+\code{\link{subset,rsk-method}},
+\code{\link{summary,rsk-method}}
 }
 \author{
 Dan Kelley
 }
 \concept{things related to ctd data}
+\concept{things related to rsk data}
