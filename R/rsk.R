@@ -1,4 +1,4 @@
-# vim:textwidth=100:expandtab:shiftwidth=4:softtabstop=4
+# vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
 
 #' Class to Store Rsk Data
 #'
@@ -60,27 +60,27 @@ NULL
 
 
 setMethod(f="initialize",
-          signature="rsk",
-          definition=function(.Object, time, pressure, temperature, filename="", ...) {
-              .Object <- callNextMethod(.Object, ...)
-              if (!missing(time)) .Object@data$time <- time
-              if (!missing(pressure)) .Object@data$pressure <- pressure
-              if (!missing(temperature)) .Object@data$temperature <- temperature
-              .Object@metadata$filename <- filename
-              .Object@metadata$model <- NA
-              ## 20160515 ## Define some things that will likely get redefined by read.rsk(), if
-              ## 20160515 ## that is used to create an rsk object.  It does no harm to define
-              ## 20160515 ## them, anyway, since they are only used in summaries, and then only
-              ## 20160515 ## if the object happens to have these quantities.
-              ## 20160515 ## .Object@metadata$units$conductivity <- list(unit=expression(mS/cm), scale="")
-              ## 20160515 ## .Object@metadata$units$temperature <- list(unit=expression(degree*C), scale="ITS-90")
-              ## 20160515 ## .Object@metadata$units$pressure <- list(unit=expression(dbar), scale="")
-              .Object@metadata$pressureType <- "absolute"
-              .Object@metadata$pressureAtmospheric <- 10.1325
-              .Object@processingLog$time <- presentTime()
-              .Object@processingLog$value <- "create 'rsk' object"
-              return(.Object)
-          })
+    signature="rsk",
+    definition=function(.Object, time, pressure, temperature, filename="", ...) {
+        .Object <- callNextMethod(.Object, ...)
+        if (!missing(time)) .Object@data$time <- time
+        if (!missing(pressure)) .Object@data$pressure <- pressure
+        if (!missing(temperature)) .Object@data$temperature <- temperature
+        .Object@metadata$filename <- filename
+        .Object@metadata$model <- NA
+        # 20160515 ## Define some things that will likely get redefined by read.rsk(), if
+        # 20160515 ## that is used to create an rsk object.  It does no harm to define
+        # 20160515 ## them, anyway, since they are only used in summaries, and then only
+        # 20160515 ## if the object happens to have these quantities.
+        # 20160515 ## .Object@metadata$units$conductivity <- list(unit=expression(mS/cm), scale="")
+        # 20160515 ## .Object@metadata$units$temperature <- list(unit=expression(degree*C), scale="ITS-90")
+        # 20160515 ## .Object@metadata$units$pressure <- list(unit=expression(dbar), scale="")
+        .Object@metadata$pressureType <- "absolute"
+        .Object@metadata$pressureAtmospheric <- 10.1325
+        .Object@processingLog$time <- presentTime()
+        .Object@processingLog$value <- "create 'rsk' object"
+        return(.Object)
+    })
 
 #' Summarize a Rsk Object
 #'
@@ -103,20 +103,20 @@ setMethod(f="initialize",
 #'
 #' @family things related to rsk data
 setMethod(f="summary",
-          signature="rsk",
-          definition=function(object, ...) {
-              m <- object@metadata
-              mnames <- names(m)
-              cat("rsk summary\n-----------\n", ...)
-              cat("* Instrument:         model ", m$model,
-                  " serial number ", m$serialNumber, "\n", sep="")
-              if ("pressureAtmospheric" %in% mnames)
-                  cat(paste("* Atmosph. pressure:  ", m$pressureAtmospheric, "\n", sep=""))
-              if ("pressureType" %in% mnames)
-                  cat(paste("* Pressure type:      ", m$pressureType, "\n", sep=""))
-              cat(paste("* Source:             ``", m$filename, "``\n", sep=""))
-              invisible(callNextMethod()) # summary
-          })
+    signature="rsk",
+    definition=function(object, ...) {
+        m <- object@metadata
+        mnames <- names(m)
+        cat("rsk summary\n-----------\n", ...)
+        cat("* Instrument:         model ", m$model,
+            " serial number ", m$serialNumber, "\n", sep="")
+        if ("pressureAtmospheric" %in% mnames)
+            cat(paste("* Atmosph. pressure:  ", m$pressureAtmospheric, "\n", sep=""))
+        if ("pressureType" %in% mnames)
+            cat(paste("* Pressure type:      ", m$pressureType, "\n", sep=""))
+        cat(paste("* Source:             `", m$filename, "`\n", sep=""))
+        invisible(callNextMethod()) # summary
+    })
 
 #' Extract Something From a Rsk Object
 #'
@@ -139,15 +139,15 @@ setMethod(f="summary",
 #'
 #' @family things related to rsk data
 setMethod(f="[[",
-          signature(x="rsk", i="ANY", j="ANY"),
-          definition=function(x, i, j, ...) {
-              if (i == "?")
-                  return(list(metadata=sort(names(x@metadata)),
-                          metadataDerived=NULL,
-                          data=sort(names(x@data)),
-                          dataDerived=NULL))
-              callNextMethod()         # [[
-          })
+    signature(x="rsk", i="ANY", j="ANY"),
+    definition=function(x, i, j, ...) {
+        if (i == "?")
+            return(list(metadata=sort(names(x@metadata)),
+                    metadataDerived=NULL,
+                    data=sort(names(x@data)),
+                    dataDerived=NULL))
+        callNextMethod()         # [[
+    })
 
 #' Replace Parts of a Rsk Object
 #'
@@ -157,10 +157,10 @@ setMethod(f="[[",
 #'
 #' @family things related to rsk data
 setMethod(f="[[<-",
-          signature(x="rsk", i="ANY", j="ANY"),
-          definition=function(x, i, j, ..., value) {
-              callNextMethod(x=x, i=i, j=j, ...=..., value=value) # [[<-
-          })
+    signature(x="rsk", i="ANY", j="ANY"),
+    definition=function(x, i, j, ..., value) {
+        callNextMethod(x=x, i=i, j=j, ...=..., value=value) # [[<-
+    })
 
 
 
@@ -190,39 +190,39 @@ setMethod(f="[[<-",
 #' @family things related to rsk data
 #' @family functions that subset oce objects
 setMethod(f="subset",
-          signature="rsk",
-          definition=function(x, subset, ...) {
-              res <- new("rsk") # start afresh in case x@data is a data.frame
-              res@metadata <- x@metadata
-              res@processingLog <- x@processingLog
-              ## message("NOTE: debugging output coming up!")
-              for (i in seq_along(x@data)) {
-                  ####  message("i: ", i)
-                  ####  str(x@data)
-                  ####  str(x@data$time[1])
-                  ####  print(x@data$time[1])
-                  ####  print(x@data$time[2])
-                  ####  print(is.language(substitute(subset)))
-                  ####  str(substitute(subset))
-                  ####  Prior to 2015-01-15 the next line was
-                  ##    r <- eval(substitute(subset), x@data)#, parent.frame())
-                  ## But that failed when calling subset from within other functions; see
-                  ## github (FIXME: fill in issue link, when issue is submitted).
-                  ##     http://r.789695.n4.nabble.com/getting-environment-from-quot-top-quot-promise-td4685138.html
-                  ## for a question regarding environments. I used to have parent.frame() here, and
-                  ## in other "subset" definitions, but my tests are suggesting parent.frame(2)
-                  ## will work more generally: (a) within flat code and (b) within a function
-                  ## that is passed items to go in the subset.
-                  r <- eval(substitute(expr=subset, env=environment()), envir=x@data, enclos=parent.frame(2))
-                  ####  str(r)
-                  r <- r & !is.na(r)
-                  res@data[[i]] <- x@data[[i]][r]
-              }
-              names(res@data) <- names(x@data)
-              subsetString <- paste(deparse(substitute(expr=subset, env=environment())), collapse=" ")
-              res@processingLog <- processingLogAppend(res@processingLog, paste("subset.rsk(x, subset=", subsetString, ")", sep=""))
-              res
-          })
+    signature="rsk",
+    definition=function(x, subset, ...) {
+        res <- new("rsk") # start afresh in case x@data is a data.frame
+        res@metadata <- x@metadata
+        res@processingLog <- x@processingLog
+        ## message("NOTE: debugging output coming up!")
+        for (i in seq_along(x@data)) {
+            ####  message("i: ", i)
+            ####  str(x@data)
+            ####  str(x@data$time[1])
+            ####  print(x@data$time[1])
+            ####  print(x@data$time[2])
+            ####  print(is.language(substitute(subset)))
+            ####  str(substitute(subset))
+            ####  Prior to 2015-01-15 the next line was
+            ##    r <- eval(substitute(subset), x@data)#, parent.frame())
+            ## But that failed when calling subset from within other functions; see
+            ## github (FIXME: fill in issue link, when issue is submitted).
+            ##     http://r.789695.n4.nabble.com/getting-environment-from-quot-top-quot-promise-td4685138.html
+            ## for a question regarding environments. I used to have parent.frame() here, and
+            ## in other "subset" definitions, but my tests are suggesting parent.frame(2)
+            ## will work more generally: (a) within flat code and (b) within a function
+            ## that is passed items to go in the subset.
+            r <- eval(substitute(expr=subset, env=environment()), envir=x@data, enclos=parent.frame(2))
+            ####  str(r)
+            r <- r & !is.na(r)
+            res@data[[i]] <- x@data[[i]][r]
+        }
+        names(res@data) <- names(x@data)
+        subsetString <- paste(deparse(substitute(expr=subset, env=environment())), collapse=" ")
+        res@processingLog <- processingLogAppend(res@processingLog, paste("subset.rsk(x, subset=", subsetString, ")", sep=""))
+        res
+    })
 
 #' Infer Rsk units from a vector of strings
 #'
@@ -247,12 +247,12 @@ unitFromStringRsk <- function(s)
     ## because that seems to overly blunt the tool.
     ##
     ## Here's how to figure out special characters:
-    ## print(s)
+    ## print(s) # nolint
     ## [1] "µMol/m²/s"
-    ## Browse[1]> Encoding(s)<-"bytes"
-    ## Browse[2]> print(s)
+    ## Browse[1]> Encoding(s)<-"bytes" # nolint
+    ## Browse[2]> print(s) # nolint
     ## [1] "\\xc2\\xb5Mol/m\\xc2\\xb2/s"
-    # 
+    #
     # 2022-06-28 upcoming version of R will require elimination of \x sequences; see
     # https://developer.r-project.org/Blog/public/2022/06/27/why-to-avoid-%5Cx-in-regular-expressions/index.html
     # Below is a table of code, unicode, unicode-in-R, and old-method-in-R.
@@ -291,7 +291,7 @@ unitFromStringRsk <- function(s)
     else if (is.na(s))
         list(unit=expression(), scale="?")
     else {
-        warning("'", s, "' is not in the list of known .rsk units", sep="")
+        warning("\"", s, "\" is not in the list of known .rsk units", sep="")
         list(unit=as.expression(s), scale="")
     }
 }
@@ -466,93 +466,88 @@ as.rsk <- function(time, columns,
 #'
 #' @aliases plot.rsk
 setMethod(f="plot",
-          signature=signature("rsk"),
-          definition=function(x, which="timeseries",
-                              tlim, ylim,
-                              xlab, ylab,
-                              tformat,
-                              drawTimeRange=getOption("oceDrawTimeRange"),
-                              abbreviateTimeRange=getOption("oceAbbreviateTimeRange"),
-                              useSmoothScatter=FALSE,
-                              mgp=getOption("oceMgp"),
-                              mar=c(mgp[1]+1.5, mgp[1]+1.5, 1.5, 1.5),
-                              main="",
-                              debug=getOption("oceDebug"),
-                              ...)
-          {
-              oceDebug(debug, "plot.rsk(..., which=", which, ", ...) {\n", unindent=1)
-              dotsNames <- names(list(...))
-              ## FIXME: In the below, we could be more clever for single-panel plots
-              ## but it may be better to get users out of the habit of supplying xlim
-              ## etc (which will yield errors in plot.lm(), for example).
-              if ("xlim" %in% dotsNames)
-                  stop("in plot.rsk() : 'xlim' not allowed; use tlim", call.=FALSE)
-              if (any(which=="timeseries"))
-                  which <- "timeseries" # "timeseries" overrides any others
-              lw <- length(which)
-              if (lw == 1 && which=="timeseries") {
-                  opar <- par(no.readonly = TRUE)
-                  on.exit(par(opar))
-                  names <- names(x@data)
-                  if (!"time" %in% names) stop("plot.rsk() cannot plot timeseries, since no \"time\" data", call.=FALSE)
-                  names <- names[names != "time"]
-                  par(mfrow=c(length(names), 1))
-                  for (name in names) {
-                      if (!is.null(x[['units']])) {
-                          unit <- x[['units']][[name]]$unit
-                          tmp <- c(name, '~"["*', as.character(unit), '*"]"')
-                          label <- bquote(.(parse(text=paste0(tmp, collapse=''))))
-                      } else {
-                          label <- name
-                      }
-                      oce.plot.ts(x[["time"]], x[[name]], ylab=label, ...)
-                  }
-              } else {
-                  ## individual panels
-                  ## Trim out plots that we cannot do.
-                  names <- names(x@data)
-                  names <- names[- (names=="time")]
-                  nw <- length(which)
-                  ## opar <- par(no.readonly = TRUE)
-                  ## if (nw > 1) {
-                  ##     par(mfrow=c(nw, 1))
-                  ##     on.exit(par(opar))
-                  ## }
-                  if (missing(main))
-                      main <- rep('', length.out=nw)
-                  else
-                      main <- rep(main, length.out=nw)
-                  oceDebug(debug, "after nickname-substitution, which=c(", paste(which, collapse=","), ")\n")
-                  for (w in 1:nw) {
-                      oceDebug(debug, "which[", w, "]=", which[w], "\n")
-                      haveField <- (which[w] %in% names) && any(is.finite(x[[which[w]]]))
-                      if (haveField) {
-                          if (!is.null(x[['units']])) {
-                              unit <- x[['units']][[which[w]]]$unit
-                              tmp <- c(which[w], '~"["*', as.character(unit), '*"]"')
-                              label <- bquote(.(parse(text=paste0(tmp, collapse=''))))
-                          } else {
-                              label <- which[w]
-                          }
-                          oce.plot.ts(x@data$time, x[[which[w]]],
-                                      xlab=if (!missing(xlab)) xlab else "",
-                                      ylab=if (missing(ylab)) label else  ylab,
-                                      type='l',
-                                      xlim=if (missing(tlim)) range(x@data$time, na.rm=TRUE) else tlim,
-                                      ylim=if (missing(ylim)) range(x[[which[w]]], na.rm=TRUE) else ylim,
-                                      tformat=tformat,
-                                      drawTimeRange=drawTimeRange,
-                                      mgp=mgp, mar=mar, main=main[w], ...)
-                          drawTimeRange <- FALSE    # only the first time panel gets the time indication
-                          axis(2)
-                      } else {
-                          stop("Unrecognized value for \"which\". Must be \"timeseries\" or the name of any field from the data slot.")
-                      }
-                  }
-              }
-              oceDebug(debug, "} # plot.rsk()\n", unindent=1)
-              invisible(NULL)
-          })
+    signature=signature("rsk"),
+    definition=function(x, which="timeseries",
+        tlim, ylim,
+        xlab, ylab,
+        tformat,
+        drawTimeRange=getOption("oceDrawTimeRange"),
+        abbreviateTimeRange=getOption("oceAbbreviateTimeRange"),
+        useSmoothScatter=FALSE,
+        mgp=getOption("oceMgp"),
+        mar=c(mgp[1]+1.5, mgp[1]+1.5, 1.5, 1.5),
+        main="",
+        debug=getOption("oceDebug"),
+        ...)
+    {
+        oceDebug(debug, "plot.rsk(..., which=", which, ", ...) {\n", unindent=1)
+        dotsNames <- names(list(...))
+        # FIXME: In the below, we could be more clever for single-panel plots
+        # but it may be better to get users out of the habit of supplying xlim
+        # etc (which will yield errors in plot.lm(), for example).
+        if ("xlim" %in% dotsNames)
+            stop("in plot.rsk() : 'xlim' not allowed; use tlim", call.=FALSE)
+        if (any(which=="timeseries"))
+            which <- "timeseries" # "timeseries" overrides any others
+        lw <- length(which)
+        if (lw == 1 && which=="timeseries") {
+            opar <- par(no.readonly = TRUE)
+            on.exit(par(opar))
+            names <- names(x@data)
+            if (!"time" %in% names) stop("plot.rsk() cannot plot timeseries, since no \"time\" data", call.=FALSE)
+            names <- names[names != "time"]
+            par(mfrow=c(length(names), 1))
+            for (name in names) {
+                if (!is.null(x[['units']])) {
+                    unit <- x[['units']][[name]]$unit
+                    tmp <- c(name, '~"["*', as.character(unit), '*"]"')
+                    label <- bquote(.(parse(text=paste0(tmp, collapse=''))))
+                } else {
+                    label <- name
+                }
+                oce.plot.ts(x[["time"]], x[[name]], ylab=label, ...)
+            }
+        } else {
+            # individual panels
+            # Trim out plots that we cannot do.
+            names <- names(x@data)
+            names <- names[- (names=="time")]
+            nw <- length(which)
+            if (missing(main))
+                main <- rep("", length.out=nw)
+            else
+                main <- rep(main, length.out=nw)
+            oceDebug(debug, "after nickname-substitution, which=c(", paste(which, collapse=","), ")\n")
+            for (w in 1:nw) {
+                oceDebug(debug, "which[", w, "]=", which[w], "\n")
+                haveField <- (which[w] %in% names) && any(is.finite(x[[which[w]]]))
+                if (haveField) {
+                    if (!is.null(x[['units']])) {
+                        unit <- x[['units']][[which[w]]]$unit
+                        tmp <- c(which[w], '~"["*', as.character(unit), '*"]"')
+                        label <- bquote(.(parse(text=paste0(tmp, collapse=''))))
+                    } else {
+                        label <- which[w]
+                    }
+                    oce.plot.ts(x@data$time, x[[which[w]]],
+                        xlab=if (!missing(xlab)) xlab else "",
+                        ylab=if (missing(ylab)) label else  ylab,
+                        type='l',
+                        xlim=if (missing(tlim)) range(x@data$time, na.rm=TRUE) else tlim,
+                        ylim=if (missing(ylim)) range(x[[which[w]]], na.rm=TRUE) else ylim,
+                        tformat=tformat,
+                        drawTimeRange=drawTimeRange,
+                        mgp=mgp, mar=mar, main=main[w], ...)
+                    drawTimeRange <- FALSE    # only the first time panel gets the time indication
+                    axis(2)
+                } else {
+                    stop("Unrecognized value for \"which\". Must be \"timeseries\" or the name of any field from the data slot.")
+                }
+            }
+        }
+        oceDebug(debug, "} # plot.rsk()\n", unindent=1)
+        invisible(NULL)
+    })
 
 
 
@@ -572,35 +567,54 @@ setMethod(f="plot",
 #' reasons, since RBR instruments at the date of writing commonly use the SQLite
 #' format, though the first option is common for all instruments that produce a
 #' `hex` file that can be read using Ruskin.
-#'
 #' Options 2-4 are mostly obsolete, and will be removed from future versions.
 #'
-#' *A note on conductivity.* RBR devices record conductivity in mS/cm, and it
+#' **A note on location information.**
+#' It is possible to couple RBR CTD devices with smart phones or tablets
+#' (see RBR-global, 2020), with the location data from the latter being stored
+#' in the output `.rsk` file. The format does not seem to be documented by RBR,
+#' but `read.rsk()` attempts to infer location nevertheless.
+#' The procedure involves comparing the `tstamp` (time-stamp)
+#' field from the hydrographic part of the dataset (which is in a database
+#' table named `data`) with the `tstamp` field in the geographical part of the
+#' dataset (in a table named `geodata`). (The `geodata` entries are filtered to
+#' those for which the `origin` field equals `"auto"`. This seems to align
+#' with times shown for "LOCATION" data in RBR-provided viewing software.)
+#' The connection between the two fields is done with [approx()], after
+#' adding 3600 times the value of the `tzOffsetLocation` parameter to the
+#' `geodata$tstamp` field, to account for the fact that phones and tablets
+#' may be set to local time. If the procedure succeeds, then `longitude` and
+#' `latitude` are inserted into the `metadata` slot of the return value, in the
+#' form of vectors with the same length as `pressure` in the `data` slot.
+#'
+#' **A note on conductivity.**
+#' RBR devices record conductivity in mS/cm, and it
 #' is this value that is stored in the object returned by `read.rsk`. This can
 #' be converted to conductivity ratio (which is what many other instruments report)
 #' by dividing by 42.914 (see Culkin and Smith, 1980) which will be necessary in
 #' any seawater-related function that takes conductivity ratio as an argument (see
 #' \dQuote{Examples}).
 #'
-#'   *A note on pressure.* RBR devices tend to record absolute pressure (i.e.
-#'   sea pressure plus atmospheric pressure), unlike most oceanographic instruments
-#'   that record sea pressure (or an estimate thereof).  The handling of pressure
-#'   is controlled with the `patm` argument, for which there are three
-#'   possibilities.  (1) If `patm` is `FALSE` (the default), then
-#'   pressure read from the data file is stored in the `data` slot of return
-#'   value, and the `metadata` item `pressureType` is set to the string
-#'   `"absolute"`.  (2) If `patm` is `TRUE`, then an estimate of
-#'   atmospheric pressure is subtracted from the raw data. For data files in the
-#'   SQLite format (i.e.  `*.rsk` files), this estimate will be the value read
-#'   from the file, or the ``standard atmosphere'' value 10.1325 dbar, if the file
-#'   lacks this information.  (3) If `patm` is a numerical value (or list of
-#'   values, one for each sampling time), then `patm` is subtracted from the
-#'   raw data.  In cases 2 and 3, an additional column named
-#'   `pressureOriginal` is added to the `data` slot to store the value
-#'   contained in the data file, and `pressureType` is set to a string
-#'   starting with `"sea"`.  See [as.ctd()] for details of how this
-#'   setup facilitates the conversion of [rsk-class] objects to
-#'   [ctd-class] objects.
+#' **A note on pressure.**
+#' RBR devices tend to record absolute pressure (i.e.
+#' sea pressure plus atmospheric pressure), unlike most oceanographic instruments
+#' that record sea pressure (or an estimate thereof).  The handling of pressure
+#' is controlled with the `patm` argument, for which there are three
+#' possibilities.  (1) If `patm` is `FALSE` (the default), then
+#' pressure read from the data file is stored in the `data` slot of return
+#' value, and the `metadata` item `pressureType` is set to the string
+#' `"absolute"`.  (2) If `patm` is `TRUE`, then an estimate of
+#' atmospheric pressure is subtracted from the raw data. For data files in the
+#' SQLite format (i.e.  `*.rsk` files), this estimate will be the value read
+#' from the file, or the ``standard atmosphere'' value 10.1325 dbar, if the file
+#' lacks this information.  (3) If `patm` is a numerical value (or list of
+#' values, one for each sampling time), then `patm` is subtracted from the
+#' raw data.  In cases 2 and 3, an additional column named
+#' `pressureOriginal` is added to the `data` slot to store the value
+#' contained in the data file, and `pressureType` is set to a string
+#' starting with `"sea"`.  See [as.ctd()] for details of how this
+#' setup facilitates the conversion of [rsk-class] objects to
+#' [ctd-class] objects.
 #'
 #' @param file a connection or a character string giving the name of the file to
 #' load. Note that `file` must be a character string, because connections are
@@ -628,8 +642,19 @@ setMethod(f="plot",
 #'
 #' @param tz time zone.  The value `oceTz` is set at package setup.
 #'
+#' @param tzOffsetLocation number of hours offset between the CTD timezone and
+#' the location timezone.  This is only used if the dataset holds geographical
+#' data, acquired via a connection to a phone or tablet, which may be
+#' recording in local time. See "A note on location information," in
+#' \sQuote{Details}.
+#'
 #' @param patm controls the handling of atmospheric pressure, an important issue
 #' for RBR instruments that record absolute pressure; see \dQuote{Details}.
+#'
+#' @param allTables logical value, TRUE by default, indicating whether to read all
+#' the tables stored in the file into elements of the `metadata` slot of the
+#' return value. This information can be useful for a variety
+#' of detailed calculations.
 #'
 #' @param processingLog if provided, the action item to be stored in the log.
 #' This is typically only provided for internal calls; the default that it provides
@@ -653,19 +678,15 @@ setMethod(f="plot",
 #' infinite frequency, as standard seawater of salinity 35.0000 ppt (Chlorinity
 #' 19.37394 ppt). *IEEE Journal of Oceanic Engineering*, **5**, pp 22-23.
 #'
+#' RBR-global.com, 2020. “Ruskin User Guide.” RBR, August 18, 2020.
+#' Revision RBR#0006105revH.
+#'
 #' @author Dan Kelley and Clark Richards
 #'
 #' @family things related to rsk data
-read.rsk <- function(file,
-    from=1,
-    to,
-    by=1,
-    type,
-    encoding=NA,
-    tz=getOption("oceTz", default="UTC"),
-    patm=FALSE,
-    processingLog,
-    debug=getOption("oceDebug"))
+read.rsk <- function(file, from=1, to, by=1, type, encoding=NA,
+    tz=getOption("oceTz", default="UTC"), tzOffsetLocation=0.0,
+    patm=FALSE, allTables=TRUE, processingLog, debug=getOption("oceDebug"))
 {
     if (missing(file))
         stop("must supply 'file'")
@@ -677,10 +698,10 @@ read.rsk <- function(file,
     }
     debug <- max(0, min(debug, 2))
     oceDebug(debug, "read.rsk(file=\"", file, "\", from=", format(from),
-             ", to=", if (missing(to))"(not given)" else format(to),
-             ", by=", by,
-             ", type=", if (missing(type)) "(missing)" else type,
-             ", tz=\"", tz, "\", ...) {\n", sep="", unindent=1)
+        ", to=", if (missing(to))"(not given)" else format(to),
+        ", by=", by,
+        ", type=", if (missing(type)) "(missing)" else type,
+        ", tz=\"", tz, "\", ...) {\n", sep="", unindent=1)
     filename <- file
     if (is.character(file)) {
         if (length(grep(".rsk$", file, ignore.case=TRUE))) {
@@ -701,7 +722,7 @@ read.rsk <- function(file,
         on.exit(close(file))
     }
     from.keep <- from
-    ##measurement.deltat <- 0
+    # measurement.deltat <- 0
     if (is.numeric(from) && from < 1)
         stop("from cannot be an integer less than 1")
 
@@ -709,117 +730,137 @@ read.rsk <- function(file,
         if (is.numeric(to) && to < 1)
             stop("to cannot be an integer less than 1")
     }
-
-    ##from.keep <- from
+    #>from.keep <- from
     if (!missing(to))
         to.keep <- to
-    ##by.keep <- by
-    ##host.time <- 0
-    ##rsk.time <- 0
-    ##subsampleStart <- 0
-    ##subsampleEnd <- 0
-    ##subsamplePeriod <- 0
-    ##number.channels <- 0
-    ## Q: what ends the header? a blank line?  Line 21?
-    ## calibration 1
-    ## calibration 2
-    ## correction.to.conductivity
-    ## memory type
-    ## Timestamp
-    ## columns time, Temperature, p
+    #>by.keep <- by
+    #>host.time <- 0
+    #>rsk.time <- 0
+    #>subsampleStart <- 0
+    #>subsampleEnd <- 0
+    #>subsamplePeriod <- 0
+    #>number.channels <- 0
+    #> Q: what ends the header? a blank line?  Line 21?
+    #> calibration 1
+    #> calibration 2
+    #> correction.to.conductivity
+    #> memory type
+    #> Timestamp
+    #> columns time, Temperature, p
     ##header <- scan(file, what='char', sep="\n", n=19, quiet=TRUE)
     header <- c()
     measurementStart <-measurementEnd <- measurementDeltat <- NULL
     pressureAtmospheric <- NA
+    res <- new("rsk", filename=filename)
     if (!missing(type) && type == 'rsk') {
         if (!requireNamespace("RSQLite", quietly=TRUE))
             stop('must install.packages("RSQLite") to read rsk data')
         if (!requireNamespace("DBI", quietly=TRUE))
             stop('must install.packages("DBI") to read rsk data')
         con <- DBI::dbConnect(RSQLite::SQLite(), dbname=filename)
+        # Some, but not all, RSK files have "deployments", but we don't use it anyway.
+        #  deployments <- RSQLite::dbReadTable(con, "deployments")
+        #
+        # code based on test files and personal communication with RBR:
+        #   2011-10-11 RBR-DEK send test file and schema documentation [preliminary]
+        #   2011-10-12 DEK-RBR query on ordering of time in 'datasets'
+        # if (!inherits(from, 'POSIXt') & from != 1) {
+        #     warning("cannot (yet) handle numeric argument 'from' for a ruskin file; using from=1 instead (or use POSIXt)")
+        #     from <- 1
+        # }
+        # if (by != 1)
+        #     warning("cannot (yet) handle argument 'by' for a ruskin file; using by=1 instead")
+        # if (!missing(to))
+        #     warning("cannot (yet) handle numeric argument 'to' for a ruskin file; using the whole file (or use POSIXt)")
 
-        ## Some, but not all, RSK files have "deployments", but we don't use it anyway.
-        ##  deployments <- RSQLite::dbReadTable(con, "deployments")
+        # Some, but not all, RSK files have "datasets". However, I've commented this code
+        # out because the result, ndatasets, is not used anywhere else.
+        #
+        #   ndatasets <- 1
+        #   try({
+        #       datasets <- RSQLite::dbReadTable(con, "datasets")
+        #       ndatasets <- dim(datasets)[1]
+        #       if (1 != ndatasets)
+        #           stop("read.rsk() cannot handle multi-dataset files; this file has ", ndatasets)
+        #   }, silent=TRUE)
+        #
 
-        ## code based on test files and personal communication with RBR:
-        ##   2011-10-11 RBR-DEK send test file and schema documentation [preliminary]
-        ##   2011-10-12 DEK-RBR query on ordering of time in 'datasets'
-        ## if (!inherits(from, 'POSIXt') & from != 1) {
-        ##     warning("cannot (yet) handle numeric argument 'from' for a ruskin file; using from=1 instead (or use POSIXt)")
-        ##     from <- 1
-        ## }
-        ## if (by != 1)
-        ##     warning("cannot (yet) handle argument 'by' for a ruskin file; using by=1 instead")
-        ## if (!missing(to))
-        ##     warning("cannot (yet) handle numeric argument 'to' for a ruskin file; using the whole file (or use POSIXt)")
+        # Advanced users might want to see what tables are in this file.
+        tableNames <- RSQLite::dbListTables(con)
 
-        ## Some, but not all, RSK files have "datasets". However, I've commented this code
-        ## out because the result, ndatasets, is not used anywhere else.
-        ##
-        ##   ndatasets <- 1
-        ##   try({
-        ##       datasets <- RSQLite::dbReadTable(con, "datasets")
-        ##       ndatasets <- dim(datasets)[1]
-        ##       if (1 != ndatasets)
-        ##           stop("read.rsk() cannot handle multi-dataset files; this file has ", ndatasets)
-        ##   }, silent=TRUE)
-        ##
-
-        ## rsk database-schema version number
+        oceDebug(debug, "This file had the following tables: ",
+            paste(sort(tableNames), collapse=", "), "\n")
+        if (allTables) {
+            oceDebug(debug, "Reading tables and storing in metadata@ slot\n")
+            for (name in tableNames) {
+                res@metadata[[name]] <- RSQLite::dbReadTable(con, name)
+                oceDebug(debug, "    Stored @metadata$", name, "\n", sep="")
+            }
+        }
+        # rsk database-schema version number
         dbInfo <- RSQLite::dbReadTable(con, "dbInfo")
+        # Ruskin software version number
         rskv <- dbInfo[1, 1]
         rskVersion <- as.numeric(strsplit(gsub(".[a-z].*$", "", gsub("^.*- *", "", rskv)), "\\.")[[1]])
-        ## Ruskin software version number
+        oceDebug(debug, "RSK software version ", paste(rskVersion, collapse="."), "\n")
         if (RSQLite::dbExistsTable(con, "appSettings")) {
             appSettings <- RSQLite::dbReadTable(con, "appSettings")
             rv <- appSettings[1, 2]
-            ##OLD rv <- read.table(pipe(cmd), sep="|")[1, 2]
             ruskinVersion <- as.numeric(strsplit(gsub(".[a-z].*$", "", gsub("^.*- *", "", rv)), "\\.")[[1]])
         } else {
             ruskinVersion <- "mobile"
         }
-        ##message("NEW: ruskinVersion: ", paste(ruskinVersion, collapse="."))
-        ## Next block got triggered with too many files, and it seems more sensible
-        ## to just go ahead and try to get something from the file as best we can.
-        ## if (length(ruskinVersion == 3)) {
-        ##     if (!(ruskinVersion[1] == 1 && ruskinVersion[2] == 5 && ruskinVersion[3] == 24))
-        ##         warning("making some (untested) assumptions, since the ruskin Version (",
-        ##                 paste(ruskinVersion, collapse="."),
-        ##                 ") is outside the range for which tests have been done")
-        ## }
-        ## atmospheric pressure
+        #message("NEW: ruskinVersion: ", paste(ruskinVersion, collapse="."))
+        # Next block got triggered with too many files, and it seems more sensible
+        # to just go ahead and try to get something from the file as best we can.
+        # if (length(ruskinVersion == 3)) {
+        #     if (!(ruskinVersion[1] == 1 && ruskinVersion[2] == 5 && ruskinVersion[3] == 24))
+        #         warning("making some (untested) assumptions, since the ruskin Version (",
+        #                 paste(ruskinVersion, collapse="."),
+        #                 ") is outside the range for which tests have been done")
+        # }
+
+        # Get geographic data to enable location matching of the data.  (This is
+        # optionally stored in the metadata slot, depending on the value of
+        # allTables.)
+        geodata <- NULL
+        if ("geodata" %in% tableNames) {
+            geodata <- RSQLite::dbReadTable(con, "geodata")
+            oceDebug(debug, "this file contains ", length(geodata$longitude), " location data\n")
+        } else {
+            oceDebug(debug, "this file does not contain location data\n")
+        }
+        # Get atmospheric pressure
         pressureAtmospheric <- 10.1325 # FIXME: what is best default?
         oceDebug(debug, "first, guess pressureAtmospheric=", pressureAtmospheric, "\n")
         warn <- FALSE
         try({
-            ## need to wrap in try() because this can fail
+            # need to wrap in try() because this can fail
             deriveDepth <- RSQLite::dbReadTable(con, "deriveDepth")
             pressureAtmospheric <- deriveDepth$atmosphericPressure
             warn <- TRUE
         }, silent=TRUE)
         if (warn)
             warning("non-standard pressureAtmospheric value: ", pressureAtmospheric)
-        ## some cases can have an empty pressureAtmospheric
+        # some cases can have an empty pressureAtmospheric
         if (length(pressureAtmospheric) == 0) {
             warning("empty pressureAtmospheric value in rsk file. Setting to default value of 10.1325")
             pressureAtmospheric <- 10.1325
         }
-        ##message("NEW: pressureAtmospheric:", pressureAtmospheric)
+        # message("NEW: pressureAtmospheric:", pressureAtmospheric)
         oceDebug(debug, "after studying the RSK file, now have pressureAtmospheric=", pressureAtmospheric, "\n")
 
-        ## From notes in comments above, it seems necessary to order by
-        ## timestamp (tstamp). Ordering does not seem to be an option for
-        ## dbReadTable(), so we use dbFetch().
+        # From notes in comments above, it seems necessary to order by
+        # timestamp (tstamp). Ordering does not seem to be an option for
+        # dbReadTable(), so we use dbFetch().
 
-        ## Get time stamp. Note the trick of making it floating-point
-        ## to avoid the problem that R lacks 64 bit integers.
+        # Get time stamp. Note the trick of making it floating-point
+        # to avoid the problem that R lacks 64 bit integers.
         fields <- DBI::dbListFields(con, "data")
         fields <- fields[!grepl('tstamp', fields)]
         sql_fields <- if (packageVersion("RSQLite") < "2.0") "1.0*tstamp AS tstamp" else "tstamp"
-
         sql_fields <- paste(c(sql_fields, fields), collapse=',')
         sql_fields <- paste("SELECT", sql_fields, "FROM data")
-
 
         # When to and from are numeric and not equal to 1 we have to query the table
         # and then sort the times so that the limits are meaningful.  This code
@@ -834,10 +875,10 @@ read.rsk <- function(file,
                 to <- as.character(as.numeric(as.POSIXct(to, tz=tz))*1000)
             } else if (is.numeric(to)) {
                 qres <- DBI::dbSendQuery(con,
-                                         if (packageVersion("RSQLite") < "2.0")
-                                             "select 1.0*tstamp from data order by tstamp;"
-                                         else
-                                             "select tstamp from data order by tstamp;")
+                    if (packageVersion("RSQLite") < "2.0")
+                        "select 1.0*tstamp from data order by tstamp;"
+                    else
+                        "select tstamp from data order by tstamp;")
                 t1000 <- DBI::dbFetch(qres, n=-1)[[1]]
                 RSQLite::dbClearResult(qres)
                 time <- numberAsPOSIXct(as.numeric(t1000) / 1000, type='unix')
@@ -846,16 +887,16 @@ read.rsk <- function(file,
 
         if (is.numeric(from) & from != 1 & all(is.na(time))) {
             qres <- DBI::dbSendQuery(con,
-                                     if (packageVersion("RSQLite") < "2.0")
-                                         "select 1.0*tstamp from data order by tstamp;"
-                                     else
-                                         "select tstamp from data order by tstamp;")
+                if (packageVersion("RSQLite") < "2.0")
+                    "select 1.0*tstamp from data order by tstamp;"
+                else
+                    "select tstamp from data order by tstamp;")
             t1000 <- DBI::dbFetch(qres, n=-1)[[1]]
             RSQLite::dbClearResult(qres)
             time <- numberAsPOSIXct(as.numeric(t1000) / 1000, type='unix')
         }
 
-        ## format to and from that match tstamp from the rsk file
+        # format to and from that match tstamp from the rsk file
         if (inherits(from, 'POSIXt')) {
             from <- as.character(as.numeric(from)*1000)
         } else if (inherits(from, 'character')) {
@@ -872,66 +913,72 @@ read.rsk <- function(file,
                 to <- t1000[to]
             }
         }
-        ## Generate the sql that contains the time filters
+        # Generate the sql that contains the time filters
+        qresSQL <- sql_fields
         if (missing(to)) {
             if (is.numeric(from)) {
-                qres <- DBI::dbSendQuery(con, paste(sql_fields, ";"))
+                qresSQL <- paste(qresSQL, ";")
             } else {
-                qres <- DBI::dbSendQuery(con, paste(sql_fields, "where tstamp >=",  from, ";"))
+                qresSQL <- paste(qresSQL, "where tstamp >=",  from, ";")
             }
         } else {
             if (missing(to)) {
-                qres <- DBI::dbSendQuery(con, paste(sql_fields, "where tstamp >=",  from, ";"))
+                qresSQL <- paste(qresSQL, "where tstamp >=",  from, ";")
             } else if (from==1) {
-                qres <- DBI::dbSendQuery(con, paste(sql_fields, "where tstamp <=",  to, ";"))
+                qresSQL <- paste(qresSQL, "where tstamp <=",  to, ";")
             } else {
-                qres <- DBI::dbSendQuery(con, paste(sql_fields, "where tstamp between",  from, "and", to, ";"))
+                qresSQL <- paste(qresSQL, "where tstamp between",  from, "and", to, ";")
             }
         }
+        oceDebug(debug, "SQL query to fetch data: \"", qresSQL, "\"\n", sep="")
+        qres <- DBI::dbSendQuery(con, qresSQL)
+        # Now, get only the specified time range
+        data <- DBI::dbFetch(qres, n=-1L)
+        RSQLite::dbClearResult(qres)
+        timeOrder <- order(data$tstamp)
+        oceDebug(debug, "before trimming data, it has dimension ", paste(dim(data), collapse="x"), "\n")
+        data <- data[timeOrder,]
+        oceDebug(debug, "after trimming data, it has dimension ", paste(dim(data), collapse="x"), "\n")
+        tstamp <- data[,1]
+        time <- numberAsPOSIXct(as.numeric(tstamp)/1000, type='unix')
 
-        ## Now, get only the specified time range
-        data <- DBI::dbFetch(qres, n=-1)
-        data <- data[order(data$tstamp),]
-        time <- numberAsPOSIXct(as.numeric(data[,1])/1000, type='unix')
-
-        ## Need to check if there is a datasetID column (for rskVersion >= 1.12.2)
-        ## If so, for now just extract it from the data matrix
+        # Need to check if there is a datasetID column (for rskVersion >= 1.12.2)
+        # If so, for now just extract it from the data matrix
         hasDatasetID <- sum(grep('datasetID', names(data))) > 0
         if (hasDatasetID) {
             datasetID <- data[, grep('datasetID', names(data))]
             data <- data[, -grep('datasetID', names(data)), drop=FALSE]
         }
-        data <- data[,c(-1), drop=FALSE] # drop the corrupted time column
-        DBI::dbClearResult(qres)
-        ## Get column names from the 'channels' table.
+        data <- data[, -1L, drop=FALSE] # drop the corrupted time column
+        # Get column names from the 'channels' table.
         names <- tolower(RSQLite::dbReadTable(con, "channels")$longName)
-        ## FIXME: some longnames have UTF-8 characters, and/or
-        ## spaces. Should coerce to ascii with no spaces, or at least
-        ## recognize fields and rename (e.g. `dissolved O2` should
-        ## just be `oxygen`)
+        # FIXME: some longnames have UTF-8 characters, and/or
+        # spaces. Should coerce to ascii with no spaces, or at least
+        # recognize fields and rename (e.g. `dissolved O2` should
+        # just be `oxygen`)
         names <- gsub(" ", "", names, fixed = TRUE) # remove spaces
         Encoding(names) <- 'latin1'
         names <- iconv(names, 'latin1', 'ASCII', sub='')
-        ## if dissolvedo is a name call it oxygen
+        # if dissolvedo is a name call it oxygen
         names[which(match(names, 'dissolvedo') == 1)] <- 'oxygen'
         channelsTable <- RSQLite::dbReadTable(con, "channels")
         if ("isMeasured" %in% names(channelsTable)) {
             isMeasured <- channelsTable$isMeasured == 1
         } else {
             isMeasured <- channelsTable$isDerived == 0
-            ##warning("old Ruskin file detected; if problems arise, update file with Ruskin software")
+            #warning("old Ruskin file detected; if problems arise, update file with Ruskin software")
         }
         dataNamesOriginal <- c("-", channelsTable$shortName[isMeasured])
-        ##1491> message("below is dataNamesOriginal: (at start)");print(dataNamesOriginal)
-        ##[issue 1483] print(cbind(channelsTable,isMeasured))
+        #1491> message("below is dataNamesOriginal: (at start)");print(dataNamesOriginal)
+        #[issue 1483] print(cbind(channelsTable,isMeasured))
         names <- names[isMeasured] # only take names of things that are in the data table
         unitsRsk <- channelsTable$units[isMeasured]
-        ## Check for duplicated names, and append digits to make unique
+        # Check for duplicated names, and append digits to make unique
         if (sum(duplicated(names)) > 0) {
             for (n in names) {
                 dup <- match(names, n, nomatch=0)
                 if (sum(dup) > 1) {
-                    ## more than one
+                    # more than one
                     names[which(dup==1)] <- paste0(n, c('', seq(2, sum(dup))))
                 }
             }
@@ -944,26 +991,41 @@ read.rsk <- function(file,
         schedules <- RSQLite::dbReadTable(con, "schedules")
         sampleInterval <- schedules$samplingPeriod/1000 # stored as milliseconds in rsk
         RSQLite::dbDisconnect(con)
-        res <- new("rsk", time=time, filename=filename)
+        res@data$time <- time
         res@metadata$dataNamesOriginal <- dataNamesOriginal
         for (iname in seq_along(names)) {
             res@data[[names[iname]]] <- data[[names[iname]]]
             res@metadata$units[[names[iname]]] <- unitFromStringRsk(unitsRsk[iname])
             if (debug > 1) {
-                ## FIXME: developer sets this for temporary (and undocumented) debugging
+                # FIXME: developer sets this for temporary (and undocumented) debugging
                 cat("\n***\nUNIT CHECK. The rsk string", unitsRsk[iname], "yielded as follows:\n")
                 print(res@metadata$units[[names[iname]]])
                 cat("***\n")
             }
         }
+        # Add timestamp column
+        res@data$tstamp <- tstamp
+        res@metadata$dataNamesOriginal <- c(res@metadata$dataNamesOriginal, "tstamp")
+        # Possibly add longitude and latitude to data slot. For ideas on how to
+        # do that, see https://github.com/dankelley/oce/issues/2024
+        if (!is.null(geodata)) {
+            geodata$time <- numberAsPOSIXct(geodata$tstamp/1e3,type="unix")+tzOffsetLocation*3600
+            look <- geodata$origin == "auto"
+            #res@metadata$latitudeOld <- approx(geodata$time, geodata$latitude, res@data$time)$y
+            res@metadata$latitude <- approx(geodata$time[look], geodata$latitude[look], res@data$time)$y
+            #res@metadata$longitudeOld <- approx(geodata$time, geodata$longitude, res@data$time)$y
+            res@metadata$longitude <- approx(geodata$time[look], geodata$longitude[look], res@data$time)$y
+            #message("lon-lat may be wrong; see https://github.com/dankelley/oce/issues/2024#issuecomment-1345373099")
+            #message("TEST: examine both longitude and longitudeNew etc")
+        }
         res@metadata$units$pressure$scale <- "absolute"
-        ##1491> message("res@metadata$dataNamesOriginal L909:");print(res@metadata$dataNamesOriginal)
-        ##?browser()
+        #1491> message("res@metadata$dataNamesOriginal L909:");print(res@metadata$dataNamesOriginal)
+        #?browser()
         if ("pressure" %in% names) {
-            ## possibly compute sea pressure
+            # possibly compute sea pressure
             if (is.logical(patm)) {
                 if (patm) {
-                    ## This code is a bit tricky because we modify existing pressure in-place
+                    # This code is a bit tricky because we modify existing pressure in-place
                     dataNames <- names(res@data)
                     dataNames[dataNames=="pressure"] <- "pressureOriginal"
                     names(res@data) <- dataNames
@@ -979,7 +1041,7 @@ read.rsk <- function(file,
                 if (1 < npatm && npatm != length(pressure))
                     stop("if patm is numeric, its length must equal 1, or the length(pressure).")
                 oceDebug(debug, "patm is numeric, so subtracting it from pressure\n")
-                ## This code is a bit tricky because we modify existing pressure in-place
+                # This code is a bit tricky because we modify existing pressure in-place
                 dataNames <- names(res@data)
                 dataNames[dataNames=="pressure"] <- "pressureOriginal"
                 names(res@data) <- dataNames
@@ -992,31 +1054,34 @@ read.rsk <- function(file,
                 stop("patm must be logical or numeric")
             }
         }
-        ##1491> message("res@metadata$dataNamesOriginal L944:");print(res@metadata$dataNamesOriginal)
+        # 1491> message("res@metadata$dataNamesOriginal L944:");print(res@metadata$dataNamesOriginal)
         res@metadata$model <- model
         res@metadata$serialNumber <- serialNumber
         res@metadata$sampleInterval <- sampleInterval
         res@metadata$rskVersion <- rskVersion
         res@metadata$ruskinVersion <- ruskinVersion
-        ##1491> message("res@metadata$dataNamesOriginal L951:");print(res@metadata$dataNamesOriginal)
-        ##1491> message("names(res@data) L952:");print(names(res@data))
-        ## HERE
+        # 1491> message("res@metadata$dataNamesOriginal L951:");print(res@metadata$dataNamesOriginal)
+        # 1491> message("names(res@data) L952:");print(names(res@data))
+        # print('next is res@metadata$dataNamesOriginal')
+        # print(res@metadata$dataNamesOriginal)
+        # print('next is names(res@data)')
+        # print(names(res@data))
         names(res@metadata$dataNamesOriginal) <- names(res@data)
         if (hasDatasetID) res@metadata$datasetID <- datasetID
-        ## There is actually no need to set the conductivity unit since new()
-        ## sets it, but do it anyway, as a placeholder to show where to do
-        ## this, in case some RBR devices use different units.
+        # There is actually no need to set the conductivity unit since new()
+        # sets it, but do it anyway, as a placeholder to show where to do
+        # this, in case some RBR devices use different units.
         if ("cond12" %in% names(res@data)) {
-            ## [issue 1483] Change the name, and possibly unit, of 'cond12'
-            ##
-            ## For a sample file, channelsTable gives the unit for cond12 as
-            ## NA.  Rather than make unitFromStringRsk() give a conductivity
-            ## unit whenever it gets an NA value (which might occur for other
-            ## fields -- who knows?), we will switch NA to uS/cm because
-            ## that seems to be the usual unit for RBR instruments. However,
-            ## if the cond12 unit is not NA, we will leave it as it is, on the
-            ## assumption that unitFromStringRsk() has already interpreted
-            ## it correctly
+            # [issue 1483] Change the name, and possibly unit, of 'cond12'
+            #
+            # For a sample file, channelsTable gives the unit for cond12 as
+            # NA.  Rather than make unitFromStringRsk() give a conductivity
+            # unit whenever it gets an NA value (which might occur for other
+            # fields -- who knows?), we will switch NA to uS/cm because
+            # that seems to be the usual unit for RBR instruments. However,
+            # if the cond12 unit is not NA, we will leave it as it is, on the
+            # assumption that unitFromStringRsk() has already interpreted
+            # it correctly
             w <- which("cond12" == names)[1]
             if (is.na(unitsRsk[w])) {
                 res@metadata$units$cond12 <- NULL # remove existing
@@ -1026,10 +1091,10 @@ read.rsk <- function(file,
             names(res@data) <- newnames
             names(res@metadata$dataNamesOriginal) <- newnames
         } else {
-            ## FIXME: will this work for all RBR rsks that don't contain cond12?
+            # FIXME: will this work for all RBR rsks that don't contain cond12?
             res@metadata$units$conductivity <- list(unit=expression(mS/cm), scale="")
         }
-        ##1491> message("str(dataNamesOriginal) L984:");print(res@metadata$dataNamesOriginal)
+        # 1491> message("str(dataNamesOriginal) L984:");print(res@metadata$dataNamesOriginal)
         res@metadata$pressureAtmospheric <- pressureAtmospheric
         res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
         oceDebug(debug, "} # read.rsk()\n", sep="", unindent=1)
@@ -1058,7 +1123,7 @@ read.rsk <- function(file,
         oceDebug(debug, "Data starts on line", skip, "\n")
         d <- read.table(file, skip=skip, stringsAsFactors=FALSE, encoding=encoding)
         oceDebug(debug, "First time=", d$V1[1], d$V2[1], "\n")
-        ## Assume date and time are first two columns
+        # Assume date and time are first two columns
         time <- as.POSIXct(paste(d$V1, d$V2), format='%d-%b-%Y %H:%M:%OS', tz=tz)
         n <- length(time)
         channels <- list()
@@ -1066,7 +1131,7 @@ read.rsk <- function(file,
             channels[[iChannel]] <- d[, iChannel+2]
         }
         names(channels) <- channelNames
-        ## Now do subsetting
+        # Now do subsetting
         if (inherits(from, "POSIXt") || inherits(from, "character")) {
             if (!inherits(to, "POSIXt") && !inherits(to, "character"))
                 stop("if 'from' is POSIXt or character, then 'to' must be, also")
@@ -1087,7 +1152,7 @@ read.rsk <- function(file,
         oceDebug(debug, "by=", by, "\n")
         if (inherits(by, "character")) by <- ctimeToSeconds(by)/sampleInterval # FIXME: Is this right?
         oceDebug(debug, "inferred by=", by, "samples\n")
-        ## subset times
+        # subset times
         if (inherits(from, "POSIXt") || inherits(from, "character")) {
             keep <- from <= time & time <= to # FIXME: from may be int or time
         } else {
@@ -1104,13 +1169,13 @@ read.rsk <- function(file,
         }
         names(channelsSub) <- channelNames
         res <- as.rsk(time, columns=channelsSub,
-                       instrumentType="rbr",
-                       serialNumber=serialNumber, model=model,
-                       sampleInterval=sampleInterval,
-                       filename=filename,
-                       debug=debug-1)
+            instrumentType="rbr",
+            serialNumber=serialNumber, model=model,
+            sampleInterval=sampleInterval,
+            filename=filename,
+            debug=debug-1)
     } else {
-        ## to read the "old" TDR files
+        # to read the "old" TDR files
         while (TRUE) {
             line <- scan(file, what='char', sep="\n", n=1, quiet=TRUE)
             if (0 < (r<-regexpr("Temp[ \t]*Pres", line))) # nolint (variable not used)
@@ -1121,14 +1186,14 @@ read.rsk <- function(file,
                 l <- sub("[ ]*Logging[ \t]*start[ ]*", "", line)
                 measurementStart <- as.POSIXct(strptime(l, "%y/%m/%d %H:%M:%S", tz=tz))
             }
-            ## "Logging end" would seem to be the sensible thing to examine,
-            ## but "Logger time" seems correct in SLEIWEX 2008 data.  I think
-            ## the issue is that the devices were turned off manually, and
-            ## that time (the relevant one) is in "Logger time".
-            ##OLD if (0 < (r<-regexpr("Logging[ \t]*end", line))) {
-            ##OLD    l <- sub("[ ]*Logging[ \t]*end[ ]*", "", line)
-            ##OLD    measurementEnd <- as.POSIXct(strptime(l,"%y/%m/%d %H:%M:%S", tz=tz))
-            ##OLD }
+            #  "Logging end" would seem to be the sensible thing to examine,
+            #  but "Logger time" seems correct in SLEIWEX 2008 data.  I think
+            #  the issue is that the devices were turned off manually, and
+            #  that time (the relevant one) is in "Logger time".
+            # OLD if (0 < (r<-regexpr("Logging[ \t]*end", line))) {
+            # OLD    l <- sub("[ ]*Logging[ \t]*end[ ]*", "", line)
+            # OLD    measurementEnd <- as.POSIXct(strptime(l,"%y/%m/%d %H:%M:%S", tz=tz))
+            # OLD }
             if (0 < (r<-regexpr("Logger[ \t]*time", line))) {
                 l <- sub("[ ]*Logger[ \t]*time[ ]*", "", line)
                 measurementEnd <- as.POSIXct(strptime(l, "%y/%m/%d %H:%M:%S", tz=tz))
@@ -1144,7 +1209,7 @@ read.rsk <- function(file,
         oceDebug(debug, "measurementDeltat  =", measurementDeltat, "\n")
         serialNumber <- strsplit(header[1], "[\t ]+")[[1]][4]
         oceDebug(debug, "serialNumber=", serialNumber, "\n")
-        ## Now that we know the logging times, we can work with 'from 'and 'to'
+        # Now that we know the logging times, we can work with 'from 'and 'to'
         if (inherits(from, "POSIXt") || inherits(from, "character")) {
             if (!inherits(to, "POSIXt") && !inherits(to, "character"))
                 stop("if 'from' is POSIXt or character, then 'to' must be, also")
@@ -1163,8 +1228,8 @@ read.rsk <- function(file,
         oceDebug(debug, "by=", by, "in argument list\n")
         by <- ctimeToSeconds(by)
         oceDebug(debug, "inferred by=", by, "s\n")
-        ##col.names <- strsplit(gsub("[ ]+"," ", gsub("[ ]*$","",gsub("^[ ]+","",line))), " ")[[1]]
-        ## Read a line to determine if there is a pair of columns for time
+        # col.names <- strsplit(gsub("[ ]+"," ", gsub("[ ]*$","",gsub("^[ ]+","",line))), " ")[[1]]
+        # Read a line to determine if there is a pair of columns for time
         line <- scan(file, what='char', sep="\n", n=1, quiet=TRUE)
         pushBack(line, file)
         line <- gsub("[ ]+$", "", gsub("^[ ]+", "", line))
@@ -1179,10 +1244,10 @@ read.rsk <- function(file,
             Tcol <- 1
             pcol <- 2
         } else if (nvar == 4) {
-            ## This time conversion is the slowest part of this function.  With R 2.13.0a working on
-            ## a 620524-long vector: strptime() took 24s on a particular machine, and
-            ## as.POSIXct() took 104s.  So, use strptime(), if the first time seems
-            ## to be in a stanadard format.
+            # This time conversion is the slowest part of this function.  With R 2.13.0a working on
+            # a 620524-long vector: strptime() took 24s on a particular machine, and
+            # as.POSIXct() took 104s.  So, use strptime(), if the first time seems
+            # to be in a stanadard format.
             if (1 == length(grep("[0-9]{4}/[0-3][0-9]/[0-3][0-9]", d[1, 1])))
                 time <- strptime(paste(d[1, ], d[2, ]), format="%Y/%m/%d %H:%M:%S", tz=tz)
             else
@@ -1190,7 +1255,7 @@ read.rsk <- function(file,
             Tcol <- 3
             pcol <- 4
         } else if (nvar == 5) {
-            ## 2008/06/25 10:00:00   18.5260   10.2225    0.0917
+            # 2008/06/25 10:00:00   18.5260   10.2225    0.0917
             if (1 == length(grep("[0-9]{4}/[0-3][0-9]/[0-3][0-9]", d[1, 1])))
                 time <- strptime(paste(d[1, ], d[2, ]), format="%Y/%m/%d %H:%M:%S", tz=tz)
             else
@@ -1199,8 +1264,7 @@ read.rsk <- function(file,
             pcol <- 4
         } else
             stop("wrong number of variables; need 2, 4, or 5, but got ", nvar)    ## subset
-
-        ## subset times
+        # subset times
         if (inherits(from, "POSIXt") || inherits(from, "character")) {
             keep <- from <= time & time <= to # FIXME: from may be int or time
         } else {
@@ -1216,16 +1280,16 @@ read.rsk <- function(file,
         pressure <- as.numeric(d[pcol, look])
         model <- ""
         res <- as.rsk(time, columns=list(temperature=temperature, pressure=pressure),
-                       instrumentType="rbr",
-                       serialNumber=serialNumber, model=model,
-                       filename=filename,
-                       debug=debug-1)
+            instrumentType="rbr",
+            serialNumber=serialNumber, model=model,
+            filename=filename,
+            debug=debug-1)
     }
     if (is.logical(patm)) {
         if (patm) {
             res@data$pressureOriginal <- res@data$pressure
             res@data$pressure <- res@data$pressure - 10.1325
-            ## No need to check patm=FALSE case because object default is "absolute"
+            # No need to check patm=FALSE case because object default is "absolute"
             res@metadata$pressureType <- "sea"
         }
     } else if (is.numeric(patm)) {
@@ -1282,8 +1346,8 @@ read.rsk <- function(file,
 #'
 #' @template debugTemplate
 rsk2ctd <- function(x, pressureAtmospheric=0, longitude=NULL, latitude=NULL,
-                    ship=NULL, cruise=NULL, station=NULL, deploymentType=NULL,
-                    debug=getOption("oceDebug"))
+    ship=NULL, cruise=NULL, station=NULL, deploymentType=NULL,
+    debug=getOption("oceDebug"))
 {
     oceDebug(debug, "rsk2ctd(...) {\n", sep="", unindent=1)
     res <- new("ctd")
@@ -1318,7 +1382,7 @@ rsk2ctd <- function(x, pressureAtmospheric=0, longitude=NULL, latitude=NULL,
         res@metadata$units$pressure$scale <- "sea"
         res@metadata$dataNamesOriginal[substr(res@metadata$dataNamesOriginal, 1, 4) == "pres"] <- ""
         res@processingLog <- processingLogAppend(res@processingLog,
-                                                 paste("subtracted 10.1325dbar (std atm) from pressure\n"))
+            paste("subtracted 10.1325dbar (std atm) from pressure\n"))
     } else {
         ## subtract atm pressure, if it has not already been subtracted
         oceDebug(debug, "metadata$pressureType is not NULL\n")
@@ -1330,16 +1394,16 @@ rsk2ctd <- function(x, pressureAtmospheric=0, longitude=NULL, latitude=NULL,
                 res@metadata$units$pressure$scale <- "sea"
                 res@metadata$dataNamesOriginal[substr(res@metadata$dataNamesOriginal, 1, 4) == "pres"] <- ""
                 res@processingLog <- processingLogAppend(res@processingLog,
-                                                         paste("subtracted", pressureAtmosphericStandard, "dbar (std atm) from absolute pressure to get sea pressure"))
+                    paste("subtracted", pressureAtmosphericStandard, "dbar (std atm) from absolute pressure to get sea pressure"))
                 oceDebug(debug, "subtracted std atm pressure from pressure\n")
             } else {
                 res@data$pressure <- x@data$pressure - x@metadata$pressureAtmospheric
                 res@metadata$units$pressure$scale <- "sea"
                 res@metadata$dataNamesOriginal[substr(res@metadata$dataNamesOriginal, 1, 4) == "pres"] <- ""
                 res@processingLog <- processingLogAppend(res@processingLog,
-                                                         paste("subtracted",
-                                                               x@metadata$pressureAtmospheric,
-                                                               "dbar from absolute pressure to get sea pressure"))
+                    paste("subtracted",
+                        x@metadata$pressureAtmospheric,
+                        "dbar from absolute pressure to get sea pressure"))
                 oceDebug(debug, "subtracted", x@metadata$pressureAtmospheric, "dbar from pressure\n")
             }
         }
@@ -1351,8 +1415,8 @@ rsk2ctd <- function(x, pressureAtmospheric=0, longitude=NULL, latitude=NULL,
         oceDebug(debug, "subtracted", pressureAtmospheric, "dbar from pressure")
     }
     res@processingLog <- processingLogAppend(res@processingLog,
-                                             paste("subtracted",
-                                                   pressureAtmospheric, "dbar from sea pressure"))
+        paste("subtracted",
+            pressureAtmospheric, "dbar from sea pressure"))
     if (!("salinity" %in% names(x@data))) {
         C <- x[["conductivity"]]
         if (is.null(C))
@@ -1376,13 +1440,13 @@ rsk2ctd <- function(x, pressureAtmospheric=0, longitude=NULL, latitude=NULL,
         ## res <- ctdAddColumn(res, column=S, name="salinity", label="Salinity",
         ##                     unit=list(unit=expression(), scale="PSS-78"))
         res <- oceSetData(res, name="salinity", value=S,
-                          unit=list(unit=expression(), scale="PSS-78"))
+            unit=list(unit=expression(), scale="PSS-78"))
 
     }
     oceDebug(debug, "} # rsk2ctd()\n", sep="", unindent=1)
     res@processingLog <- processingLogAppend(res@processingLog,
-                                             paste("rsk2ctd(..., pressureAtmospheric=", pressureAtmospheric, ", debug)\n",
-                                                   sep="", collapse=""))
+        paste("rsk2ctd(..., pressureAtmospheric=", pressureAtmospheric, ", debug)\n",
+            sep="", collapse=""))
     res
 }
 

@@ -565,13 +565,19 @@ setMethod(f="summary",
               if (!is.null(deploymentType) && deploymentType != "unknown")
                   showMetadataItem(object, "deploymentType",            "Deployment type:     ")
               if ("longitude" %in% names(object@data)) {
-                  cat("* Mean location:       ",       latlonFormat(mean(object@data$latitude, na.rm=TRUE),
-                                                                   mean(object@data$longitude, na.rm=TRUE),
-                                                                   digits=5), "\n", sep="")
-              } else if ("longitude" %in% names(object@metadata) && !is.na(object@metadata$longitude)) {
-                  cat("* Location:            ",       latlonFormat(object@metadata$latitude,
-                                                                    object@metadata$longitude,
-                                                                    digits=5), "\n", sep="")
+                  cat("* Mean Location:       ",
+                      latlonFormat(
+                          mean(object@data$latitude, na.rm=TRUE),
+                          mean(object@data$longitude, na.rm=TRUE),
+                          digits=5),
+                      "\n", sep="")
+              } else if ("longitude" %in% names(object@metadata)) {
+                  cat("* Mean Location:       ",
+                      latlonFormat(
+                          mean(object@metadata$latitude, na.rm=TRUE),
+                          mean(object@metadata$longitude, na.rm=TRUE),
+                          digits=5),
+                      "\n", sep="")
               }
               showMetadataItem(object, "waterDepth", "Water depth:         ")
               showMetadataItem(object, "levels", "Number of levels: ")
@@ -2032,8 +2038,8 @@ ctdDecimate <- function(x, p=1, method="boxcar", rule=1, e=1.5, debug=getOption(
 #' has independent knowledge of how the profiles are strung together
 #' in `x`.
 #'
-#' @param arr.ind Logical indicating whether the array indices should be returned;
-#' the alternative is to return a vector of ctd objects.
+#' @param arr.ind logical value indicating whether the array indices should be
+#' returned; the alternative is to return a vector of ctd objects.
 #'
 #' @param distinct An optional string indicating how to identify profiles
 #' by unique values. Use `"location"`
@@ -2105,7 +2111,7 @@ ctdFindProfiles <- function(x, cutoff=0.5, minLength=10, minHeight,
     if (!"pressure" %in% names(x@data))
         stop("x must contain pressure in its data slot")
     minHeight <- 0.1*diff(range(x[["pressure"]], na.rm=TRUE))
-    oceDebug(debug, "ctdFindProfiles(x, cutoff=", cutoff,
+    oceDebug(debug,"ctdFindProfiles(x,cutoff=", cutoff,
         ", minLength=", minLength,
         ", minHeight=", minHeight,
         ", direction=\"", direction, "\"",
@@ -2119,7 +2125,7 @@ ctdFindProfiles <- function(x, cutoff=0.5, minLength=10, minHeight,
             i <- seq_along(x[["salinity"]])
             stnIndices <- split(i, factor(dist))
             nstn <- length(stnIndices)
-            oceDebug(debug, "number of profiles found:", nstn, "\n")
+            oceDebug(debug, "number of profiles found: ", nstn, "\n")
             if (!nstn)
                 return(NULL)
             casts <- vector("list", nstn)
@@ -2216,7 +2222,7 @@ ctdFindProfiles <- function(x, cutoff=0.5, minLength=10, minHeight,
         casts <- vector("list", ncasts)
         npts <- length(x@data$pressure)
         for (i in 1:ncasts) {
-            oceDebug(debug, "profile", i, "of", ncasts, "\n")
+            oceDebug(debug, "profile ", i, " of ", ncasts, "\n")
             ## Extend indices to catch turnaround spots (see ~13 lines above)
             e <- 1
             iStart <- max(1L, indices$start[i] - e)
@@ -2228,11 +2234,110 @@ ctdFindProfiles <- function(x, cutoff=0.5, minLength=10, minHeight,
                 cast@metadata$station <- i
             }
             cast@processingLog <- processingLogAppend(cast@processingLog,
-                                                      paste(paste(deparse(match.call()), sep="", collapse=""),
-                                                            " # profile ", i, " of ", ncasts))
+                paste(paste(deparse(match.call()), sep="", collapse=""),
+                    " # profile ", i, " of ", ncasts))
             casts[[i]] <- cast
         }
         oceDebug(debug, "} # ctdFindProfiles()\n", sep="", unindent=1)
+        return(casts)
+    }
+}
+
+#' Find Profiles within a CTD object read from a RBR file
+#'
+#' This uses information about profiles that is contained within the `metadata`
+#' slot of the first argument, `x`, having been inserted there by [read.rsk()].
+#' If `x` was created by reading an `.rsk` file with [read.rsk()],
+#' and if that file contained geographical information (that is, if it had a
+#' data table named `geodata`) then the *first* longitude and latitude from each
+#' profile is stored in the `metadata` slot of the returned value.
+#'
+#' @param x either an [rsk-class] or a [ctd-class] object; in the former case,
+#' it is converted to a [ctd-class] object with [as.ctd()].
+#'
+#' @param direction character value, either `"descending"` or `"ascending"`,
+#' indicating the sampling direction to be selected.  The default, `"descending"`,
+#' is the commonly preferred choice.
+#'
+#' @param arr.ind logical value indicating whether the array indices should be
+#' returned; the alternative is to return a vector of ctd objects.
+#'
+#' @template debugTemplate
+#'
+#' @author Dan Kelley
+#'
+#' @family things related to ctd data
+#' @family things related to rsk data
+ctdFindProfilesRBR <- function(x, direction="descending", arr.ind=FALSE, debug=getOption("oceDebug"))
+{
+    if (!inherits(x, "oce"))
+        stop("x must be an \"oce\" object")
+    if (inherits(x, "rsk"))
+        x <- as.ctd(x)
+    else if (!inherits(x, "ctd"))
+        stop("x must be of class \"rsk\" or \"ctd\"")
+    oceDebug(debug, "ctdFindProfilesRBR(x, direction=", direction, ", arr.ind=", arr.ind, ", debug=", debug, ") {\n",
+        sep="", unindent=1)
+    if (identical(direction, "ascending")) {
+        dir <- "UP"
+    } else if (identical(direction, "descending")) {
+        dir <- "DOWN"
+    } else {
+        stop("direction must be \"descending\" or \"ascending\".")
+    }
+    # This requires certain contents of both data and metadata
+    time <- x@data$time
+    if (is.null(time))
+        stop("the data slot must contain \"time\"")
+    regionCast <- x@metadata$regionCast # regionID,regionProfileID,type
+    if (is.null(regionCast))
+        stop("the metadata slot must contain \"regionCast\"")
+    region <- x@metadata$region # datasetID,regionID,type,tstamp1,tstamp2,label,description,collapsed
+    if (is.null(region))
+        stop("the metadata slot must contain \"region\"")
+    rID <- subset(regionCast, regionCast$type==dir)$regionID
+    r <- subset(region, region$regionID %in% rID)
+    startTime <- numberAsPOSIXct(r$tstamp1/1e3, type="unix")
+    endTime <- numberAsPOSIXct(r$tstamp2/1e3, type="unix")
+    oceDebug(debug, "originally, ", vectorShow(startTime))
+    oceDebug(debug, "originally, ", vectorShow(endTime))
+    ntime <- length(time)
+    # Ignore any start/end times that are outside data$time window (which might
+    # happen if the data were subsetted).
+    keep <- endTime <= time[ntime] & time[1] <= startTime
+    oceDebug(debug, "keeping ", sum(keep), " of ", length(keep), " start/end pairs\n")
+    startTime <- startTime[keep]
+    endTime <- endTime[keep]
+    oceDebug(debug, "after trimming, ", vectorShow(startTime))
+    oceDebug(debug, "after trimming, ", vectorShow(endTime))
+    start <- sapply(startTime, function(t) which(time==t)[1])
+    end <- sapply(endTime, function(t) which(time==t)[1])
+    oceDebug(debug, vectorShow(start))
+    oceDebug(debug, vectorShow(end))
+    if (identical(arr.ind, TRUE)) {
+        oceDebug(debug, "} # ctdFindProfilesRBR()\n", sep="", unindent=1)
+        return(data.frame(start=start, end=end))
+    } else {
+        ncasts <- length(start)
+        casts <- vector("list", ncasts)
+        npts <- length(x@data$pressure)
+        for (i in seq_len(ncasts)) {
+            cast <- ctdTrim(x, "index", parameters=c(start[i], end[i]))
+            if (!is.null(x@metadata$station) && "" != x@metadata$station) {
+                cast@metadata$station <- paste(x@metadata$station, i, paste="/")
+            } else {
+                cast@metadata$station <- i
+            }
+            if (all(c("longitude", "latitude") %in% names(cast@metadata))) {
+                cast@metadata$longitude <- cast@metadata$longitude[1]
+                cast@metadata$latitude <- cast@metadata$latitude[1]
+            }
+            cast@processingLog <- processingLogAppend(cast@processingLog,
+                paste(paste(deparse(match.call()), sep="", collapse=""),
+                    " # profile ", i, " of ", ncasts))
+            casts[[i]] <- cast
+        }
+        oceDebug(debug, "} # ctdFindProfilesRBR()\n", sep="", unindent=1)
         return(casts)
     }
 }
@@ -2508,7 +2613,7 @@ ctdTrim <- function(x, method, removeDepthInversions=FALSE, parameters=NULL,
             max.pressure <- smooth(pressure, kind="3R")[max.location]
             keep[max.location:n] <- FALSE
             oceDebug(debug, "removed data at indices from ", max.location,
-                     " (where pressure is ", pressure[max.location], ") to the end of the data\n", sep="")
+                " (where pressure is ", pressure[max.location], ") to the end of the data\n", sep="")
             if (!pminGiven) {
                 ## new method, after Feb 2008
                 submethodChoices <- c("A", "B")
@@ -2594,7 +2699,7 @@ ctdTrim <- function(x, method, removeDepthInversions=FALSE, parameters=NULL,
             max.pressure <- pressureSmoothed[max.location]
             keep[1:max.location] <- FALSE
             oceDebug(debug, "removed data at indices from 1 to ", max.location,
-                     " (where pressure is ", pressure[max.location], "\n", sep="")
+                " (where pressure is ", pressure[max.location], "\n", sep="")
             if (!pminGiven) {
                 ## new method, after Feb 2008
                 submethodChoices <- c("A", "B")
@@ -2675,7 +2780,7 @@ ctdTrim <- function(x, method, removeDepthInversions=FALSE, parameters=NULL,
             max.pressure <- pressureSmoothed[max.location]
             keep[max.location:n] <- FALSE
             oceDebug(debug, "removed data at indices from index ", max.location,
-                     " (at ", pressure[max.location], " dbar) to end of data, at index", n, "\n", sep="")
+                " (at ", pressure[max.location], " dbar) to end of data, at index", n, "\n", sep="")
             pp <- pressure[keep]
             pp <- despike(pp) # some, e.g. data(ctdRaw), have crazy points in air
             ss <- x[["scan"]][keep]
@@ -3845,7 +3950,7 @@ setMethod(f="subset",
               names(res@data) <- names(x@data)
               subsetString <- paste(deparse(substitute(expr=subset, env=environment())), collapse=" ")
               res@processingLog <- processingLogAppend(res@processingLog,
-                                                       paste("subset.ctd(x, subset=", subsetString, ")", sep=""))
+                  paste("subset.ctd(x, subset=", subsetString, ")", sep=""))
               res
           })
 

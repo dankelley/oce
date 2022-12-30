@@ -113,6 +113,7 @@ export(
     coriolis,
     ctdDecimate,
     ctdFindProfiles,
+    ctdFindProfilesRBR,
     ctdRepair,
     ctdTrim,
     ctimeToSeconds,
