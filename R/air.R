@@ -1,3 +1,5 @@
+# vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
+
 #' Wind dataset
 #'
 #' Wind data inferred from Figure 5 of Koch et al. (1983), provided to

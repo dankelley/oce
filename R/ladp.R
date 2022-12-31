@@ -23,33 +23,32 @@
 setClass("ladp", contains="oce")
 
 setMethod(f="initialize",
-          signature="ladp",
-          definition=function(.Object, longitude, latitude, station, waterDepth, time, pressure, u, v, uz, vz, salinity, temperature, ...) {
-              .Object <- callNextMethod(.Object, ...)
-              ## Assign to some columns so they exist if needed later (even if they are NULL)
-              .Object@metadata$longitude <- if (missing(longitude)) "?" else longitude
-              .Object@metadata$latitude <- if (missing(latitude)) "?" else latitude
-              .Object@metadata$station <- if (missing(station)) "?" else station
-              .Object@metadata$waterDepth <- if (missing(waterDepth)) NA else waterDepth
-              .Object@metadata$time <- if (missing(time)) NULL else time
-              .Object@data$pressure <- if (missing(pressure)) NULL else pressure
-              .Object@data$u <- if (missing(u)) NULL else u
-              .Object@data$v <- if (missing(v)) NULL else v
-              .Object@data$uz <- if (missing(uz)) NULL else uz
-              .Object@data$vz <- if (missing(vz)) NULL else vz
-              .Object@data$salinity <- if (missing(salinity)) NULL else salinity
-              .Object@data$temperature <- if (missing(temperature)) NULL else temperature
-              dots <- list(...)
-              dotsNames <- names(dots)
-              for (i in seq_along(dots)) {
-                  ##message("extra column named: ", dotsNames[i])
-                  .Object@data[dotsNames[i]] <- dots[i]
-              }
-              .Object@processingLog$time <- presentTime()
-              .Object@processingLog$value <- "create 'ladp' object"
-              return(.Object)
-          })
-
+    signature="ladp",
+    definition=function(.Object, longitude, latitude, station, waterDepth, time, pressure, u, v, uz, vz, salinity, temperature, ...) {
+        .Object <- callNextMethod(.Object, ...)
+        # Assign to some columns so they exist if needed later (even if they are NULL)
+        .Object@metadata$longitude <- if (missing(longitude)) "?" else longitude
+        .Object@metadata$latitude <- if (missing(latitude)) "?" else latitude
+        .Object@metadata$station <- if (missing(station)) "?" else station
+        .Object@metadata$waterDepth <- if (missing(waterDepth)) NA else waterDepth
+        .Object@metadata$time <- if (missing(time)) NULL else time
+        .Object@data$pressure <- if (missing(pressure)) NULL else pressure
+        .Object@data$u <- if (missing(u)) NULL else u
+        .Object@data$v <- if (missing(v)) NULL else v
+        .Object@data$uz <- if (missing(uz)) NULL else uz
+        .Object@data$vz <- if (missing(vz)) NULL else vz
+        .Object@data$salinity <- if (missing(salinity)) NULL else salinity
+        .Object@data$temperature <- if (missing(temperature)) NULL else temperature
+        dots <- list(...)
+        dotsNames <- names(dots)
+        for (i in seq_along(dots)) {
+            ##message("extra column named: ", dotsNames[i])
+            .Object@data[dotsNames[i]] <- dots[i]
+        }
+        .Object@processingLog$time <- presentTime()
+        .Object@processingLog$value <- "create 'ladp' object"
+        return(.Object)
+    })
 
 #' Summarize an ladp object
 #'
@@ -66,12 +65,12 @@ setMethod(f="initialize",
 #'
 #' @family things related to ladp data
 setMethod(f="summary",
-          signature="ladp",
-          definition=function(object, ...) {
-              cat("LADP Summary\n------------\n\n")
-              showMetadataItem(object, "station", "Station:             ")
-              invisible(callNextMethod()) # summary
-          })
+    signature="ladp",
+    definition=function(object, ...) {
+        cat("LADP Summary\n------------\n\n")
+        showMetadataItem(object, "station", "Station:             ")
+        invisible(callNextMethod()) # summary
+    })
 
 #' Extract Something From an ladp Object
 #'
@@ -92,22 +91,26 @@ setMethod(f="summary",
 #'
 #' @family things related to ladp data
 setMethod(f="[[",
-          signature(x="ladp", i="ANY", j="ANY"),
-          definition=function(x, i, j, ...) {
-              dataDerived <- c("p", "t", "S")
-              if (i == "?")
-                  return(list(metadata=sort(names(x@metadata)),
-                          metadataDerived=NULL,
-                          data=sort(names(x@data)),
-                          dataDerived=sort(dataDerived)))
-              if (i == "p")
-                  return(x@data$pressure)
-              if (i == "t")
-                  return(x@data$temperature)
-              if (i == "S")
-                  return(x@data$salinity)
-              callNextMethod()     # [[
-          })
+    signature(x="ladp", i="ANY", j="ANY"),
+    definition=function(x, i, j, ...) {
+        dataDerived <- c("p", "t", "S")
+        if (i == "?") {
+            return(list(metadata=sort(names(x@metadata)),
+                metadataDerived=NULL,
+                data=sort(names(x@data)),
+                dataDerived=sort(dataDerived)))
+        }
+        if (i == "p") {
+            return(x@data$pressure)
+        }
+        if (i == "t") {
+            return(x@data$temperature)
+        }
+        if (i == "S") {
+            return(x@data$salinity)
+        }
+        callNextMethod()     # [[
+    })
 
 
 #' title Replace Parts of a ladp Object
@@ -118,10 +121,10 @@ setMethod(f="[[",
 #'
 #' @family things related to ladp data
 setMethod(f="[[<-",
-          signature(x="ladp", i="ANY", j="ANY"),
-          definition=function(x, i, j, ..., value) {
-              callNextMethod(x=x, i=i, j=j, ..., value=value) # [[<-
-          })
+    signature(x="ladp", i="ANY", j="ANY"),
+    definition=function(x, i, j, ..., value) {
+        callNextMethod(x=x, i=i, j=j, ..., value=value) # [[<-
+    })
 
 #' Plot an ladp Object
 #'
@@ -139,12 +142,12 @@ setMethod(f="[[<-",
 #'
 #' @aliases plot.ladp
 setMethod(f="plot",
-          signature=signature("ladp"),
-          definition=function(x, which=c("u", "v"), ...) {
-              par(mfrow=c(1, length(which)))
-              for (w in which)
-                  plotProfile(x, xtype=w, ...)
-          })
+    signature=signature("ladp"),
+    definition=function(x, which=c("u", "v"), ...) {
+        par(mfrow=c(1, length(which)))
+        for (w in which)
+        plotProfile(x, xtype=w, ...)
+    })
 
 fixColumn <- function(x) {
     x[!is.finite(x)] <- NA
@@ -249,7 +252,7 @@ as.ladp <- function(longitude, latitude, station, time, pressure, u, v, uz, vz, 
         temperature <- if (missing(temperature)) NULL else fixColumn(temperature)
     }
     res <- new("ladp", longitude=longitude, latitude=latitude, station=station, time=time,
-                pressure=pressure, u=u, v=v, uz=uz, vz=vz, salinity=salinity, temperature=temperature, ...)
+        pressure=pressure, u=u, v=v, uz=uz, vz=vz, salinity=salinity, temperature=temperature, ...)
     res@metadata$waterDepth <- max(pressure, na.rm=TRUE)
     res
 }

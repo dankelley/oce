@@ -137,7 +137,7 @@ cat("var(x)                              = ", var(x), "\n")
 cat("2 * sum(s$spec) * diff(s$freq[1:2]) = ", 2 * sum(s$spec) * diff(s$freq[1:2]), "\n")
 cat("sum(w$spec) * diff(s$freq[1:2])     = ", sum(w$spec) * diff(w$freq[1:2]), "\n")
 cat("sum(w2$spec) * diff(s$freq[1:2])    = ", sum(w2$spec) * diff(w2$freq[1:2]), "\n")
-## co2
+# co2
 par(mar=c(3,3,2,1), mgp=c(2,0.7,0))
 s <- spectrum(co2, plot=FALSE)
 plot(log10(s$freq), s$spec * s$freq,
