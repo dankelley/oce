@@ -1,5 +1,6 @@
 # oce 1.7.11
 
+* Add `ctdFindProfilesRBR()`.
 * Make `read.rsk()` incorporate geographic information, if it exists.
 * Remove dependence on `rgeos` and `raster` packages.
 * Update `download.topo()` to use new NOAA database.
