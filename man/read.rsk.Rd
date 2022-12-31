@@ -55,10 +55,10 @@ recording in local time. See "A note on location information," in
 \item{patm}{controls the handling of atmospheric pressure, an important issue
 for RBR instruments that record absolute pressure; see \dQuote{Details}.}
 
-\item{allTables}{logical value, TRUE by default, indicating whether to read all
-the tables stored in the file into elements of the \code{metadata} slot of the
-return value. This information can be useful for a variety
-of detailed calculations.}
+\item{allTables}{logical value, TRUE by default, indicating whether to read
+all the tables (except one named \code{"blob"}, if it exists) and save them in the
+\code{metadata} slot of the return value. This information can be useful for a
+variety of detailed calculations.}
 
 \item{processingLog}{if provided, the action item to be stored in the log.
 This is typically only provided for internal calls; the default that it provides
