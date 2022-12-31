@@ -29,40 +29,37 @@
 #' @family functions that read ctd data
 #'
 #' @author Dan Kelley, with help from Liam MacNeil
-read.ctd.ssda <- function(file,
-    encoding="latin1",
-    debug=getOption("oceDebug"),
-    processingLog)
+read.ctd.ssda <- function(file, encoding="latin1", debug=getOption("oceDebug"), processingLog)
 {
-    if (missing(file))
+    if (missing(file)) {
         stop("must supply 'file'")
+    }
     if (is.character(file)) {
-        if (!file.exists(file))
+        if (!file.exists(file)) {
             stop("cannot find file '", file, "'")
-        if (0L == file.info(file)$size)
+        }
+        if (0L == file.info(file)$size) {
             stop("empty file '", file, "'")
+        }
     }
     debug <- max(0L, as.integer(debug))
     oceDebug(debug, "read.ctd.ssda(file=\"", file, "\") {\n", sep="", style="bold", unindent=1)
     if (is.character(file)) {
         filesize <- file.info(file)$size
-        if (is.na(filesize) || 0L == filesize)
+        if (is.na(filesize) || 0L == filesize) {
             stop("empty file")
+        }
     }
-    filename <- ""
     if (is.character(file)) {
-        filename <- fullFilename(file)
         file <- file(file, "r", encoding=encoding)
         on.exit(close(file))
     }
     lines <- readLines(file)
-    #?seek(file, 0L, "start") # rewind so we can read from the source (faster than reading from text)
     dataStart <- grep("^Lines[ ]*:[ ]*[0-9]*$", lines)
-    #message(vectorShow(dataStart))
-    #message(vectorShow(lines[dataStart]))
     header <- lines[1L:dataStart]
-    if (1 != length(dataStart))
+    if (1 != length(dataStart)) {
         stop("cannot find 'Lines :' in the data file.")
+    }
     # how many lines might there be in between?
     names <- strsplit(gsub("^;[ ]*", "", lines[dataStart+2L]), "[ ]+")[[1]]
     #message("next are names:");print(names)
@@ -83,7 +80,6 @@ read.ctd.ssda <- function(file,
     names <- gsub("SALIN", "salinity", names)
     names <- gsub("SIGMA", "sigma", names)
     names <- gsub("Temp.", "temperature", names)
-    #message(vectorShow(dataStart))
     d <- read.table(text=lines, skip=dataStart + 4, col.names=names, header=FALSE, encoding=encoding)
     # Lon and lat are in an odd system, with e.g. 12.34 meaning 12deg+34minutes.
     lon <- as.numeric(d$longitude[1])
@@ -91,7 +87,7 @@ read.ctd.ssda <- function(file,
     lonmin <- lon - londeg*100
     longitude <- londeg + lonmin / 60.0
     oceDebug(debug, "lon=", lon, " deg=", londeg, " min=", lonmin, " -> longitude=", longitude, "\n")
-    lat <- as.numeric(gsub("N","",d$latitude[1]))
+    lat <- as.numeric(gsub("N", "", d$latitude[1]))
     latdeg <- floor(lat / 100)
     latmin <- lat - latdeg*100
     latitude <- latdeg + latmin / 60.0
@@ -101,8 +97,9 @@ read.ctd.ssda <- function(file,
     # Save header and original names
     res@metadata$header <- header
     dno <- list()
-    for (i in seq_along(names))
+    for (i in seq_along(names)) {
         dno[[names[i]]] <- namesOriginal[[i]]
+    }
     res@metadata$dataNamesOriginal <- dno
     # Now add in non-standard data
     for (n in names(d)) {
@@ -123,21 +120,26 @@ read.ctd.ssda <- function(file,
         res@data$oxygenVoltage <- 0.001 * res@data$oxygenVoltage
         res@metadata$units$oxygenVoltage <- list(unit=expression(V), scale="")
     }
-    if ("oxygenSaturation" %in% names(res@data))
+    if ("oxygenSaturation" %in% names(res@data)) {
         res@metadata$units$oxygenSaturation<- list(unit=expression(percent), scale="")
-    if ("oxygenMg" %in% names(res@data))
+    }
+    if ("oxygenMg" %in% names(res@data)) {
         res@metadata$units$oxygenMg <- list(unit=expression(mg/L), scale="")
-    if ("oxygenMl" %in% names(res@data))
+    }
+    if ("oxygenMl" %in% names(res@data)) {
         res@metadata$units$oxygenMl <- list(unit=expression(mL/L), scale="")
-    if ("conductivity" %in% names(res@data))
+    }
+    if ("conductivity" %in% names(res@data)) {
         res@metadata$units$conductivity <- list(unit=expression(mS/cm), scale="")
-    if ("sigma" %in% names(res@data))
+    }
+    if ("sigma" %in% names(res@data)) {
         res@metadata$units$sigma <- list(unit=expression(kg/m^3), scale="")
-    if ("PAR" %in% names(res@data))
+    }
+    if ("PAR" %in% names(res@data)) {
         res@metadata$units$PAR <- list(unit=expression(pffr), scale="")
+    }
     res@processingLog <- processingLogAppend(res@processingLog,
         paste(deparse(match.call()), sep="", collapse=""))
     oceDebug(debug, "} # read.ctd.ssda()\n", sep="", style="bold", unindent=1)
     res
 }
-

@@ -62,7 +62,7 @@ here.
 }
 \examples{
 library(oce)
-## example from Meeus
+# example from Meeus
 t <- ISOdatetime(1977, 4, 26, hour=0, min=0, sec=0, tz="UTC")+0.4*86400
 stopifnot(all.equal(julianDay(t), 2443259.9))
 
