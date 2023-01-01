@@ -1,0 +1,17 @@
+---
+author: Dan Kelley
+title: Workig notes on the Nortek AD2CP format
+---
+
+# echosounder and echosounderRaw
+
+## 2022-09-04
+
+I altered the distance formula.  I sort of think it's right but I am not sure I
+understand RA/Nortek's formula (which, btw, contradicts EB/Nortek's formula).
+
+Since I think a new manual is in the works, I will stop bothering Nortek on
+this, and see if things are clearer in the new docs.
+
+All I can say for now is that the echosounderRaw and echosounder results look quite similar now; see dek05.Rmd for a comparison.
+

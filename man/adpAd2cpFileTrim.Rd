@@ -90,6 +90,7 @@ Other things related to ad2cp data:
 \code{\link{ad2cpCodeToName}()},
 \code{\link{ad2cpHeaderValue}()},
 \code{\link{is.ad2cp}()},
+\code{\link{plotAD2CP}()},
 \code{\link{read.adp.ad2cp}()}
 
 Other functions that trim data files: 

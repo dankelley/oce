@@ -139,6 +139,7 @@ Other functions that plot oce data:
 \code{\link{plot,tidem-method}},
 \code{\link{plot,windrose-method}},
 \code{\link{plot,xbt-method}},
+\code{\link{plotAD2CP}()},
 \code{\link{plotProfile}()},
 \code{\link{plotScan}()},
 \code{\link{plotTS}()},

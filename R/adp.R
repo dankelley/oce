@@ -434,17 +434,23 @@ setMethod(f="summary",
     signature="adp",
     definition=function(object, ...) {
         mnames <- names(object@metadata)
+        isAD2CP <- is.ad2cp(object)
         cat("ADP Summary\n-----------\n\n", ...)
+        if ("filename" %in% mnames)
+            cat(paste("* Filename:      \"", object@metadata$filename, "\"\n", sep=""), ...)
         if ("instrumentType" %in% mnames)
             cat(paste("* Instrument:    ", object@metadata$instrumentType, "\n", sep=""), ...)
-        if ("manufacturere" %in% mnames)
-            cat("* Manufacturer:        ", object@metadata$manufacturer, "\n")
+        if ("manufacturer" %in% mnames)
+            cat(paste("* Manufacturer:  ", object@metadata$manufacturer, "\n", sep=""), ...)
         if ("serialNumber" %in% mnames)
             cat(paste("* Serial number: ", object@metadata$serialNumber, "\n", sep=""), ...)
-        if ("filename" %in% mnames)
-            cat(paste("* File name:     \"", object@metadata$filename, "\"\n", sep=""), ...)
         if ("fileType" %in% mnames)
             cat(paste("* File type:     ", object@metadata$fileType, "\n", sep=""), ...)
+        if (isAD2CP)
+            cat(paste("* Data type:     0x", 
+                    as.raw(object@metadata$dataType), "=",
+                    as.integer(object@metadata$dataType), "=",
+                    ad2cpCodeToName(object@metadata$dataType, prefix=FALSE), "\n", sep=""), ...)
         if ("firmwareVersion" %in% mnames)
             cat(paste("* Firmware:      ", object@metadata$firmwareVersion, "\n", sep=""), ...)
         if ("latitude" %in% names(object@metadata)) {
@@ -455,7 +461,6 @@ setMethod(f="summary",
                     "\n", sep=''))
         }
         v.dim <- dim(object[["v"]])
-        isAD2CP <- is.ad2cp(object)
         if (!isAD2CP) {
             cat("* # of beams:    ", v.dim[3], "\n", sep="")
             cat("* # profiles:    ", v.dim[1], "\n", sep="")
@@ -463,10 +468,10 @@ setMethod(f="summary",
             cat("* # beams:       ", v.dim[3], "\n", sep="")
             cat("* Cell size:     ", object[["cellSize"]], "m\n", sep="")
         }
-        if ("time" %in% names(object@data)) {
-            cat("* Summary of times between profiles:\n")
-            print(summary(diff(as.numeric(object@data$time))))
-        }
+        #?if ("time" %in% names(object@data)) {
+        #?    cat("* Summary of times between profiles:\n")
+        #?    print(summary(diff(as.numeric(object@data$time))))
+        #?}
         if (1 == length(agrep("nortek", object@metadata$manufacturer, ignore.case=TRUE))) {
             resSpecific <- list(internalCodeVersion=object@metadata$internalCodeVersion,
                 hardwareRevision=object@metadata$hardwareRevision,
@@ -583,35 +588,21 @@ setMethod(f="summary",
             if (object[["numberOfBeams"]] > 3)
                 cat("  ", format(transformationMatrix[4, ], width=digits+4, digits=digits, justify="right"), "\n")
         }
-        if (isAD2CP) {
-            cat("* Data Overview\n\n")
-            dataNames <- names(object@data)
-            for (i in seq_along(dataNames)) {
-                d <- object@data[[dataNames[i]]]
-                cat("  * ", length(d[["time"]]), " ", dataNames[i], " samples\n", sep="")
-            }
-            cat("\n")
-            #default <- ad2cpDefaultDataItem(object)
-            #for (rt in object[["recordTypes"]]) {
-            #    if (rt != "text") {
-            #        isTheDefault <- rt == default
-            #        cat("* Record type '", rt, "'", if (isTheDefault) " (the default item)::\n" else "::\n", sep="")
-            #        cat("    Number of profiles: ", length(object[["time", rt]]), "\n")
-            #        cat("    Number of cells:    ", object[["numberOfCells", rt]], "\n")
-            #        cat("    Blanking distance:  ", object[["blankingDistance", rt]], "\n")
-            #        cat("    Cell size:          ", object[["cellSize", rt]], "\n")
-            #        numberOfBeams <- object[["numberOfBeams", rt]]
-            #        cat("    Number of beams:    ", numberOfBeams, "\n")
-            #        cat("    Beam angle:         ", if (numberOfBeams == 1) 0 else object[["beamAngle"]], "\n")
-            #        if (numberOfBeams > 1)
-            #            cat("    Coordinate system:  ", object[["oceCoordinate", rt]], "\n")
-            #    }
-            #}
-            processingLogShow(object)
-            invisible(NULL)
-        } else {
-            invisible(callNextMethod()) # summary
-        }
+        #? if (isAD2CP) {
+        #?     cat("* Data Overview\n\n")
+        #?     cat("  * dataType:", object@metadata$dataType, "\n")
+        #?     #> dataNames <- names(object@data)
+        #?     #> for (i in seq_along(dataNames)) {
+        #?     #>     d <- object@data[[dataNames[i]]]
+        #?     #>     cat("  * ", length(d[["time"]]), " samples\n", sep="")
+        #?     #> }
+        #?     #> cat("\n")
+        #?     processingLogShow(object)
+        #?     invisible(NULL)
+        #? } else {
+        #?     invisible(callNextMethod()) # summary
+        #? }
+        invisible(callNextMethod()) # summary
     })
 
 #' Concatenate adp objects

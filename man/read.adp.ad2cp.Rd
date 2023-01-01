@@ -9,9 +9,8 @@ read.adp.ad2cp(
   from = 1,
   to = 0,
   by = 1,
-  which = "all",
+  dataType = NULL,
   tz = getOption("oceTz"),
-  ignoreChecksums = FALSE,
   longitude = NA,
   latitude = NA,
   orientation,
@@ -39,36 +38,19 @@ reading stops at the end of the file.}
 
 \item{by}{ignored.}
 
-\item{which}{a character value indicating the data type(s) to be read, and
-stored in the \code{data} slot of the returned value.  The default, \code{which="all"},
-means to read all the types.  In many cases, though, the user does not want
-to read everything at once, either as a way to speed processing or to avoid
-running out of memory.  For this reason, a common first step is instead to
-use \code{which="?"}, which gives a table of data types in the file or
-\code{which="??"}, which gives a data frame summarizing the data 'chunks'; after
-doing those things, the next step is usually to extract all the data, or an
-individual type of interest is extracted.  The choices of individual type are
-as follows:
-
-\code{"burst"} for ID code 0x15,
-\code{"average"} for ID code 0x16,
-\code{"bottomTrack"} for ID code 0x17,
-\code{"interleavedBurst"} for ID code 0x18,
-\code{"burstAltimeterRaw"} for ID code 0x1a,
-\code{"DVLBottomTrack"} for ID code 0x1b,
-\code{"echosounder"} for ID code 0x1c,
-\code{"DVLWaterTrack"} for ID code 0x1d,
-\code{"altimeter"} for ID code 0x1e,
-and
-\code{"averageAltimeter"} for ID code 0x1f.}
+\item{dataType}{an indication of the data type to be extracted.  If this is
+NULL (the default) then \code{read.adp.ad2cp()} returns a data frame indicating
+the data type occurrence rate in the file.  Otherwise, \code{dataType} must be
+either a numeric or character value (see \dQuote{Details}).  In the numeric
+case, which includes both base-10 numbers and \code{raw} values, \code{dataType} is
+converted to an integer that is taken to indicate the data type via ID. The
+permitted values follow the Nortek convention, a summary of which is shown
+the table at the start of the \dQuote{Details} section.  In the character
+case, it must be a string taken from that same table, or \code{"TOC"}, which
+causes a time-indexed table of contents to be returned.}
 
 \item{tz}{a character value indicating time zone. This is used in
 interpreting times stored in the file.}
-
-\item{ignoreChecksums}{a logical value indicating whether to ignore
-checksums.  This is FALSE by default, meaning that any data chunk with an
-improper checksum is ignored. It may be necessary to set this to TRUE to
-parse some problematic files.}
 
 \item{longitude, latitude}{numerical values indicating the observation
 location.}
@@ -87,7 +69,7 @@ the most common plan in the requested subset of the data.}
 instrument.  If this is not provided, an attempt is made to infer it from the
 file header (if there is one), and \code{"Signature1000"} is used, otherwise. The
 importance of knowing the type is for inferring the slantwise beam angle,
-which is usd in the conversion from beam coordinates to xyz coordinates. If
+which is used in the conversion from beam coordinates to xyz coordinates. If
 \code{type} is provided, it must be one of \code{"Signature250"}, \code{"Signature500"}, or
 \code{"Signature1000"}; the first of these has a 20 degree slant-beam angle, while
 the others each have 20 degrees (see reference 2, section 2 on page 6). Note
@@ -113,76 +95,57 @@ data chunks, or to 3 for intensive debugging at both levels.}
 \item{\dots}{ignored.}
 }
 \value{
-An \linkS4class{adp} object with \code{metadata$fileType} equal to \code{"AD2CP"}, a
-table (if \code{which="?"}), a data frame (if \code{which="??"}), or a vector of
-character (if \code{which="text"}).
+Either an \linkS4class{adp} object with \code{metadata$fileType} equal to
+\code{"AD2CP"}, or a data table summarizing the file contents by ID.
 }
 \description{
-This function reads Nortek AD2CP files, storing data elements in lists within
-the \code{data} slot.  Those elements are named for the ID type in question.  For
-example, data with ID code \code{0x16} are stored in \code{data$average}; see
-\code{\link[=ad2cpCodeToName]{ad2cpCodeToName()}} for the code mapping.
+This function is under active development and may change without notice.  In
+contrast with other \code{oce} reading functions, \code{\link[=read.adp.ad2cp]{read.adp.ad2cp()}} focusses just
+on one data type within the source file.  Another difference is that it can
+either return an object holding the data or just a data frame holding a
+description of the data types in the file; indeed, the latter is the default.
+See \dQuote{Details} for more on the reasons for these departures from the
+usual \code{oce} pattern.
 }
 \details{
-By default, \code{\link[=read.adp.ad2cp]{read.adp.ad2cp()}} reads all ID codes that are in the file.
-This can yield very large objects, so if only certain IDs are of interest,
-try setting the \code{which} document accordingly.
+Why does \code{\link[=read.adp.ad2cp]{read.adp.ad2cp()}} focus only on parts of the data file? The answer
+lies in the AD2CP format itself, which may combine data subsets of such
+differing natures as to break with the \code{oce} system of pairing a \code{metadata}
+slot with a \code{data} slot.  For example, in a conventional ADP dataset, the
+\code{metadata} slot has items for the sampling times, the number of beams, the
+blanking distance, the cell size, the number of cells, etc.  Such items have
+a natural pairing with elements of the \code{data} slot, and \code{oce} uses this
+pairing in constructing plots and other items. However, an AD2CP file might
+combine such data with echosounder measurements, and these will have
+different values for number of beams and so forth.  This poses a challenge
+in naming conventions within the \code{oce} object, with ripple effects for
+plotting and data access.  Those ripple effects would extend beyond \code{oce}
+itself to user code.  To avoid such problems, \code{\link[=read.adp.ad2cp]{read.adp.ad2cp()}}
+is designed to focus on one data type at a time, relying on users to
+keep track of the resultant object, perhaps to combine it with other objects
+from within the AD2CP file or other files, in the normal R manner.
 
-It is important to realize that \code{\link[=read.adp.ad2cp]{read.adp.ad2cp()}} is incomplete, and has not
-been well tested.  The data format is not documented thoroughly in the
-available Nortek manuals, and contradictions between the manuals require an
-uncomfortable degree of guesswork; see \dQuote{Cautionary Notes}.
-}
-\section{Cautionary Notes}{
-
-
-Early in the year 2022, support was added for 12-byte headers.  These are not
-described in any Nortek document in the possession of the author of
-\code{\link[=read.adp.ad2cp]{read.adp.ad2cp()}}, although some personal communications made via
-https://github.com/dankelley/oce/issues have exposed some clues that have led
-to provisional, but largely untested, code here.
-
-The \dQuote{References} section lists some manuals that were consulted during
-the coding of `read.adp.ad2cp()].  Since instruments evolve over time, one
-might think that Nortek (2022) would be the best place to start, in coding to
-read AD2CP files. That would be a mistake, and a big one, at that. There
-are two reasons for this.
-
-First, Nortek (2022) is not as clear in its description of the data format as
-Nortek (2017) and Nortek (2018), as exemplified by a few examples.
-\enumerate{
-\item Nortek (2022) has dropped the explanation of how to compute checksums,
-which was present in the earlier documents.
-\item The Nortek (2022) explanation of the data format differs from the older
-explanations and is arguably more difficult to understand.  With the new
-leading-underscore format (see Nortek 2022, page 79), information is spread
-throughout the document, making it challenging to understand data fields in
-isolation.  The older documents laid things out more clearly, e.g. the
-average/burst format is laid out in detail, \emph{in one place} on pages 57 to 64
-of Nortek, with the optional fields being clearly labelled in the rightmost
-column of Table 6.1.3.
-\item Nortek (2022) does not always specify units correctly.  For example, on
-page 82, Pressure is said to have "Unit [dBar]" in green text, but the
-black text above states "Raw data given as 0.001 dBar". If the stated storage
-class (uint32) is to be believed, then it seems clear that the unit must be
-0.001 dBar, so the green text should be ignored.  The same can be said of
-items throughout the data-format tables. In coding `read.adp.ad2cp()], the
-green "Unit" text was ignored in basically every case.
-}
-
-Second, Nortek (2022) contains significant errors, e.g. the following.
-\enumerate{
-\item Nortek (2022 page 89) states the storage class for "Altimeter
-data. Altimeter distance" (called \code{AltimeterDistance} by the present function)
-to be \code{int32}, but Nortek (2017, 2018) both state it to be \code{float32}. Tests
-with actual datasets make it clear that the format is \code{float32}, since wild
-result are inferred by following the Nortek (2022) guidance.
-\item As above, but for "AST data.AST distance" (called \code{ASTDistance} by the
-present function).
+The permitted values for \code{dataType} are shown in the table below;
+the \code{dataType} argument of \code{\link[=read.adp.ad2cp]{read.adp.ad2cp()}} may be chosen from any
+of the three columns in this table.\tabular{rrr}{
+   code (raw) \tab code (integer) \tab oce name \cr
+   ---------- \tab -------------- \tab ----------------- \cr
+   \code{0x15} \tab 21 \tab \code{burst} \cr
+   \code{0x16} \tab 22 \tab \code{average} \cr
+   \code{0x17} \tab 23 \tab \code{bottomTrack} \cr
+   \code{0x18} \tab 24 \tab \code{interleavedBurst} \cr
+   \code{0x1a} \tab 26 \tab \code{burstAltimeterRaw} \cr
+   \code{0x1b} \tab 27 \tab \code{DVLBottomTrack} \cr
+   \code{0x1c} \tab 28 \tab \code{echosounder} \cr
+   \code{0x1d} \tab 29 \tab \code{DVLWaterTrack} \cr
+   \code{0x1e} \tab 30 \tab \code{altimeter} \cr
+   \code{0x1f} \tab 31 \tab \code{averageAltimeter} \cr
+   \code{0x23} \tab 35 \tab \code{echosounderRaw} \cr
+   \code{0xa0} \tab 160 \tab \code{text} \cr
 }
 }
-
 \examples{
+library(oce)
 # You can run this within the oce directory, if you clone from github.
 file <- "tests/testthat/local_data/ad2cp/S102791A002_Barrow_v2.ad2cp"
 if (file.exists(file)) {
@@ -196,11 +159,10 @@ Nortek AS. \dQuote{Signature Integration 55|250|500|1000kHz.} Nortek AS,
 2017.
 
 Nortek AS. \dQuote{Signature Integration 55|250|500|1000kHz.} Nortek AS,
-2018. (This revision includes new information about instrument orientation.)
+2018.
 
 Nortek AS. \dQuote{Signature Integration 55|250|500|1000kHz.} Nortek AS,
-March 31, 2022.  (This version is incomplete and quite confusing,
-so the 2017 and 2018 versions are preferable, albeit perhaps out-of-date.)
+March 31, 2022.
 }
 \seealso{
 Other things related to adp data: 
@@ -253,7 +215,8 @@ Other things related to ad2cp data:
 \code{\link{ad2cpCodeToName}()},
 \code{\link{ad2cpHeaderValue}()},
 \code{\link{adpAd2cpFileTrim}()},
-\code{\link{is.ad2cp}()}
+\code{\link{is.ad2cp}()},
+\code{\link{plotAD2CP}()}
 
 Other functions that read adp data: 
 \code{\link{read.adp.nortek}()},

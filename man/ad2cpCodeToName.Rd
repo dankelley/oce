@@ -4,11 +4,14 @@
 \alias{ad2cpCodeToName}
 \title{Map AD2CP ID Code to oce Name}
 \usage{
-ad2cpCodeToName(code = NULL)
+ad2cpCodeToName(code = NULL, prefix = TRUE)
 }
 \arguments{
 \item{code}{a \link{raw} (or corresponding integer) vector indicating the IDs of
 interest, or NULL to get a summary of possible values.}
+
+\item{prefix}{logical value indicating whether to show the raw value as a
+prefix (e.g. \code{"0x1c=echosounder"} as opposed to \code{"echosounder"}).}
 }
 \value{
 An indication of the mapping.  If \code{code} is NULL, this is a data
@@ -34,6 +37,7 @@ The mapping from code (hex or decimal) to oce name is as follows.\tabular{rrr}{
    \code{0x1d} \tab 29 \tab \code{DVLWaterTrack} \cr
    \code{0x1e} \tab 30 \tab \code{altimeter} \cr
    \code{0x1f} \tab 31 \tab \code{averageAltimeter} \cr
+   \code{0x23} \tab 35 \tab \code{echosounderRaw} \cr
    \code{0xa0} \tab 160 \tab \code{text} \cr
 }
 }
@@ -96,6 +100,7 @@ Other things related to ad2cp data:
 \code{\link{ad2cpHeaderValue}()},
 \code{\link{adpAd2cpFileTrim}()},
 \code{\link{is.ad2cp}()},
+\code{\link{plotAD2CP}()},
 \code{\link{read.adp.ad2cp}()}
 }
 \author{
