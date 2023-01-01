@@ -4,15 +4,14 @@
 \alias{ad2cpCodeToName}
 \title{Map AD2CP ID Code to oce Name}
 \usage{
-ad2cpCodeToName(code = NULL, removePrefix = FALSE)
+ad2cpCodeToName(code = NULL, prefix = TRUE)
 }
 \arguments{
 \item{code}{a \link{raw} (or corresponding integer) vector indicating the IDs of
 interest, or NULL to get a summary of possible values.}
 
-\item{removePrefix}{logical value indicating whether to remove the prefix.
-If this is FALSE, results are e.g. \code{"0x1c=echosounder"} but if TRUE, results
-are e.g. \code{"echosounder"}.}
+\item{prefix}{logical value indicating whether to show the raw value as a
+prefix (e.g. \code{"0x1c=echosounder"} as opposed to \code{"echosounder"}).}
 }
 \value{
 An indication of the mapping.  If \code{code} is NULL, this is a data
@@ -101,6 +100,7 @@ Other things related to ad2cp data:
 \code{\link{ad2cpHeaderValue}()},
 \code{\link{adpAd2cpFileTrim}()},
 \code{\link{is.ad2cp}()},
+\code{\link{plotAD2CP}()},
 \code{\link{read.adp.ad2cp}()}
 }
 \author{

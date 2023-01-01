@@ -154,9 +154,10 @@ unsigned short cs(unsigned char *data, unsigned short size, int debug)
   return(checksum);
 }
 
+//List do_ldc_ad2cp_in_file(CharacterVector filename, IntegerVector from, IntegerVector to, IntegerVector by, IntegerVector ignoreChecksums, IntegerVector DEBUG)
 
 // [[Rcpp::export]]
-List do_ldc_ad2cp_in_file(CharacterVector filename, IntegerVector from, IntegerVector to, IntegerVector by, IntegerVector ignoreChecksums, IntegerVector DEBUG)
+List do_ldc_ad2cp_in_file(CharacterVector filename, IntegerVector from, IntegerVector to, IntegerVector by, IntegerVector DEBUG)
 {
   int debug = DEBUG[0] < 0 ? 0 : DEBUG[0];
   std::string fn = Rcpp::as<std::string>(filename(0));
@@ -181,7 +182,7 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, IntegerVector from, IntegerV
   if (debug) {
     Rprintf("do_ldc_ad2cp_in_file(filename, from=%d, to=%d, by=%d, ...) {\n", from[0], to[0], by[0]);
     Rprintf("  filename=\"%s\"\n", fn.c_str());
-    Rprintf("  ignoreChecksums[0]=%d\n", ignoreChecksums[0]);
+    //Rprintf("  ignoreChecksums[0]=%d\n", ignoreChecksums[0]);
     Rprintf("  filesize=%d bytes\n", filesize);
   }
   long long int chunk = 0;
@@ -302,12 +303,13 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, IntegerVector from, IntegerV
     // See if header checksum is correct
     unsigned short computed_header_checksum;
     computed_header_checksum = cs(header_bytes, header.header_size-2, debug);
-    if (ignoreChecksums[0] > 0 || computed_header_checksum == header.header_checksum) {
+    //if (ignoreChecksums[0] > 0 || computed_header_checksum == header.header_checksum) {
+    if (computed_header_checksum == header.header_checksum) {
       if (debug > 1) {
         if (computed_header_checksum == header.header_checksum) {
           Rprintf("    cindex=%ld: header checksum 0x%02x is correct\n", cindex, header.header_checksum);
         } else {
-          Rprintf("    cindex=%ld: header checksum 0x%02x disagrees with expection 0x%02x but ignoreChecksums is TRUE\n", cindex, computed_header_checksum, header.header_checksum);
+          Rprintf("    cindex=%ld: header checksum 0x%02x disagrees with expectation 0x%02x\n", cindex, computed_header_checksum, header.header_checksum);
         }
       }
     } else {
@@ -354,14 +356,15 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, IntegerVector from, IntegerV
     // Compare data checksum to the value stated in the header
     unsigned short dbufcs;
     dbufcs = cs(dbuf, header.data_size, debug);
-    if (ignoreChecksums[0] > 0 || dbufcs == header.data_checksum) {
+    //if (ignoreChecksums[0] > 0 || dbufcs == header.data_checksum) {
+    if (dbufcs == header.data_checksum) {
       //cindex_last_good = cindex - header.header_size - header.data_size;
       reset_cindex = 0;
       if (debug > 1) {
         if (dbufcs == header.data_checksum) {
           Rprintf("    cindex=%d: data checksum 0x%02x equals expectation\n", cindex, dbufcs);
         } else {
-          Rprintf("    cincex=%d: data checksum 0x%02x disagrees with expectation 0x%02x but ignoreChecksums is TRUE\n", cindex, dbufcs, header.data_checksum);
+          Rprintf("    cincex=%d: data checksum 0x%02x disagrees with expectation 0x%02x\n", cindex, dbufcs, header.data_checksum);
         }
       }
     } else {

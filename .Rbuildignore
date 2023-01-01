@@ -41,6 +41,7 @@ README.rst
 src/*.o$
 autom4te.cache
 man-roxygen
+tests/testthat/README*
 tests/testthat/*png
 tests/testthat/*pdf
 man/figures/Makefile

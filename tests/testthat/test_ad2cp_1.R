@@ -47,74 +47,108 @@ f2 <- "~/Dropbox/oce_secret_data/ad2cp/secret2_trimmed.ad2cp"
 f3 <- "~/Dropbox/oce_secret_data/ad2cp/secret3_trimmed.ad2cp"
 #f4 <- "~/Dropbox/oce_secret_data/ad2cp/byg_trimmed.ad2cp"
 #f5 <- "~/Dropbox/oce_secret_data/ad2cp/med_trimmed.ad2cp"
+#   > read.oce(f1)
+#     IDhex IDdec    name occurance
+#   1  0x15    21   burst        88
+#   2  0x16    22 average        11
+#   3  0xa0   160    text         1
+#
+#   > read.oce(f2)
+#     IDhex IDdec  name occurance
+#   1  0x15    21 burst        99
+#   2  0xa0   160  text         1
+#
+#   > read.oce(f3)
+#     IDhex IDdec             name occurance
+#   1  0x15    21            burst        50
+#   2  0x18    24 interleavedBurst        49
+#   3  0xa0   160             text         1
+
 
 if (file.exists(f1)) {
     skip_on_cran()
 
-    test_that("'which' works",
+    test_that("'dataType' works for 0x16, 24, and \"average\"",
         {
-            d <- read.oce(f1, which="?")
-            N <- d[["0x16=average"]]
-            expect_equal(11L, N)
-            expect_warning(expect_warning(
-                    dd <- read.oce(f1, which="average"),
+            expect_message(
+                expect_message(
+                    d1 <- read.oce(f1, dataType="average"),
                     "using to=100 based on file contents"),
                 "setting plan=0")
-            expect_equal(N, length(dd@data$average$time))
+            expect_equal(11L, length(d1[["time"]]))
+            expect_message(
+                expect_message(
+                    d2 <- read.oce(f1, dataType=22),
+                    "using to=100 based on file contents"),
+                "setting plan=0")
+            expect_message(
+                expect_message(
+                    d3 <- read.oce(f1, dataType="average"),
+                    "using to=100 based on file contents"),
+                "setting plan=0")
+            expect_equal(d1@data, d2@data)
+            expect_equal(d1@data, d3@data)
         })
 
     test_that("read.adp.ad2cp() on a private AD2CP file that has 'average' and 'burst' data",
         {
             # FIXME: handle 0x15
-            expect_silent(read.adp.ad2cp(f1, 1, 100, 1, plan=0))
-            expect_error(read.adp.ad2cp(f1, 1, 100, 1, plan=10),
+            average <- read.adp.ad2cp(f1, 1, 100, 1, dataType="average", plan=0)
+            burst <- read.adp.ad2cp(f1, 1, 100, 1, dataType="burst", plan=0)
+            expect_error(read.adp.ad2cp(f1, 1, 100, 1, dataType="average", plan=10),
                 "there are no data for plan=10; try one of the following values instead: 1 0")
-            expect_warning(d1 <- read.adp.ad2cp(f1, 1, 100, 1),
+            expect_message(d1 <- read.adp.ad2cp(f1, 1, 100, 1, dataType="average"),
                 "setting plan=0, the most common value in this file")
-            nnn <- c("average", "burst", "interleavedBurst")
-            expect_equal(c(TRUE, TRUE, FALSE), nnn %in% names(d1@data))
-            expect_equal(sort(names(d1[["burst"]])),
-                sort(c("a", "accelerometer", "AHRS", "blankingDistance",
-                        "cellSize", "configuration", "datasetDescription",
-                        "distance", "ensemble", "heading", "magnetometer",
-                        "nominalCorrelation", "numberOfBeams", "numberOfCells",
-                        "oceCoordinate", "orientation", "originalCoordinate",
-                        "pitch", "powerLevel", "pressure", "q", "roll",
-                        "soundSpeed", "temperature", "temperatureMagnetometer",
-                        "temperatureRTC", "time", "transmitEnergy", "v")))
-            expect_equal(d1[["type"]], "Signature1000")
-            expect_equal(d1[["type"]], ad2cpHeaderValue(d1, "ID", "STR", FALSE))
-            expect_equal(d1[["fileType"]], "AD2CP")
-            expect_equal(d1[["serialNumber"]], ad2cpHeaderValue(d1, "ID", "SN"))
-            expect_equal(d1[["burst"]]$oceCoordinate, "beam")
-            expect_equal(d1[["average"]]$cellSize, ad2cpHeaderValue(d1, "GETAVG", "CS"))
-            expect_equal(d1[["average"]]$blankingDistance, ad2cpHeaderValue(d1, "GETAVG", "BD"))
-            expect_equal(d1[["average"]]$oceCoordinate, tolower(ad2cpHeaderValue(d1, "GETAVG", "CY", FALSE)))
-            expect_equal(d1[["burst"]]$cellSize, ad2cpHeaderValue(d1, "GETBURSTHR", "CS"))
-            expect_equal(d1[["burst"]]$blankingDistance, ad2cpHeaderValue(d1, "GETBURSTHR", "BD"))
+            # regression tests
+            expect_equal(names(average[["data"]]),
+                c("nominalCorrelation", "ensemble", "time", "soundSpeed",
+                    "temperature", "pressure", "heading", "pitch", "roll",
+                    "magnetometer", "accelerometer", "temperatureMagnetometer",
+                    "temperatureRTC", "transmitEnergy", "powerLevel", "v", "a",
+                    "q", "AHRS"))
+            expect_equal(names(burst[["data"]]),
+                c("nominalCorrelation", "ensemble", "time", "soundSpeed",
+                    "temperature", "pressure", "heading", "pitch", "roll",
+                    "magnetometer", "accelerometer", "temperatureMagnetometer",
+                    "temperatureRTC", "transmitEnergy", "powerLevel", "v", "a",
+                    "q", "AHRS"))
+            expect_equal(average[["type"]], "Signature1000")
+            expect_equal(average[["type"]], ad2cpHeaderValue(d1, "ID", "STR", FALSE))
+            expect_equal(average[["fileType"]], "AD2CP")
+            expect_equal(average[["serialNumber"]], ad2cpHeaderValue(d1, "ID", "SN"))
+            expect_equal(burst[["type"]], "Signature1000")
+            expect_equal(burst[["type"]], ad2cpHeaderValue(d1, "ID", "STR", FALSE))
+            expect_equal(burst[["fileType"]], "AD2CP")
+            expect_equal(burst[["serialNumber"]], ad2cpHeaderValue(d1, "ID", "SN"))
+            expect_equal(burst[["oceCoordinate"]], "beam")
+            expect_equal(average[["cellSize"]], ad2cpHeaderValue(d1, "GETAVG", "CS"))
+            expect_equal(average[["blankingDistance"]], ad2cpHeaderValue(d1, "GETAVG", "BD"))
+            expect_equal(average[["oceCoordinate"]], tolower(ad2cpHeaderValue(d1, "GETAVG", "CY", FALSE)))
+            expect_equal(burst[["cellSize"]], ad2cpHeaderValue(d1, "GETBURSTHR", "CS"))
+            expect_equal(burst[["blankingDistance"]], ad2cpHeaderValue(d1, "GETBURSTHR", "BD"))
             # FIXME: the next uses GETBURST, not GETBURSTHR. I do not understand the format
-            expect_equal(d1[["burst"]]$oceCoordinate, tolower(ad2cpHeaderValue(d1, "GETBURST", "CY", FALSE)))
+            expect_equal(burst[["oceCoordinate"]], tolower(ad2cpHeaderValue(d1, "GETBURST", "CY", FALSE)))
             # FIXME: the next tests will fail if we store AHRS as 3D array
             # >> Data.BurstHR_AHRSRotationMatrix(1,:)
-            expect_equal(d1@data$burst$AHRS$rotationMatrix[1,,],
+            expect_equal(burst[["AHRS"]]$rotationMatrix[1,,],
                 matrix(c(0.060653746, -0.37823972, -0.92368418, 0.31505784,
                         -0.87079191, 0.37727141, -0.94709891, -0.31389475,
                         0.066413939), byrow=TRUE, nrow=3)) # byrow because numbers are from matlab output
             # >> load labtestsig3.ad2cp.00000_1.mat
-            expect_equal(d1[["burst"]]$numberOfBeams, 1)
-            expect_equal(d1[["burst"]]$numberOfBeams, ad2cpHeaderValue(d1, "GETBURST", "NB"))
-            expect_equal(d1[["burst"]]$numberOfCells, 256)
-            expect_equal(d1[["burst"]]$numberOfCells, ad2cpHeaderValue(d1, "GETBURSTHR", "NC"))
-            expect_equal(d1[["average"]]$numberOfBeams, 4)
-            expect_equal(d1[["average"]]$numberOfBeams, ad2cpHeaderValue(d1, "GETAVG1", "NB"))
-            expect_equal(d1[["average"]]$numberOfCells, 150)
-            expect_equal(d1[["average"]]$numberOfCells, ad2cpHeaderValue(d1, "GETAVG1", "NC"))
+            expect_equal(burst[["numberOfBeams"]], 1)
+            expect_equal(burst[["numberOfBeams"]], ad2cpHeaderValue(d1, "GETBURST", "NB"))
+            expect_equal(burst[["numberOfCells"]], 256)
+            expect_equal(burst[["numberOfCells"]], ad2cpHeaderValue(d1, "GETBURSTHR", "NC"))
+            expect_equal(average[["numberOfBeams"]], 4)
+            expect_equal(average[["numberOfBeams"]], ad2cpHeaderValue(d1, "GETAVG1", "NB"))
+            expect_equal(average[["numberOfCells"]], 150)
+            expect_equal(average[["numberOfCells"]], ad2cpHeaderValue(d1, "GETAVG1", "NC"))
             # > Data.BurstHR_EnsembleCount(1:10)
             ensembleMatlab <- c(969, 970, 971, 972, 973,
                 974, 975, 976, 977, 978)
-            expect_equal(d1[["burst"]]$ensemble[1:10], ensembleMatlab)
+            expect_equal(burst[["ensemble"]][1:10], ensembleMatlab)
             #> Data.Average_EnsembleCount
-            expect_true(all(1==d1[["average"]]$ensemble))
+            expect_true(all(1==average[["ensemble"]]))
             # timestamps
             # >> format long
             # >> Data.Average_TimeStamp(1:10)
@@ -123,7 +157,7 @@ if (file.exists(f1)) {
                 1.490564527063300, 1.490564528063300, 1.490564529063300,
                 1.490564530063300)
             timeAverageMatlab <- numberAsPOSIXct(secAverageMatlab)
-            expect_equal(d1[["average"]]$time[1:10], timeAverageMatlab)
+            expect_equal(average[["time"]][1:10], timeAverageMatlab)
             # >> format long
             # >> Data.BurstHR_TimeStamp(1:10)
             secBurstMatlab <- 1e9*c(1.490564521001000, 1.490564521125800, 1.490564521251000,
@@ -131,67 +165,68 @@ if (file.exists(f1)) {
                 1.490564521751000, 1.490564521876000, 1.490564522001000,
                 1.490564522125800)
             timeBurstMatlab <- numberAsPOSIXct(secBurstMatlab)
-            expect_equal(d1[["burst"]]$time[1:10], timeBurstMatlab)
+            expect_equal(burst[["time"]][1:10], timeBurstMatlab)
             #>> Data.BurstHR_TransmitEnergy(1:10)
-            expect_equal(d1[["burst"]]$transmitEnergy[1:10], c(4, 0, 4, 4, 4, 4, 4, 4, 4, 0))
+            expect_equal(burst[["transmitEnergy"]][1:10], c(4, 0, 4, 4, 4, 4, 4, 4, 4, 0))
             #>> Data.Average_TransmitEnergy(1:10)
-            expect_equal(d1[["average"]]$transmitEnergy[1:10], c(82, 82, 82, 82, 82, 82, 82, 82, 82, 82))
+            expect_equal(average[["transmitEnergy"]][1:10], c(82, 82, 82, 82, 82, 82, 82, 82, 82, 82))
+
             # >> Data.Average_Pressure(1:10)
             pressureAverageMatlab <- c(10.259, 10.260, 10.262, 10.262, 10.258,
                 10.260, 10.261, 10.256, 10.259, 10.261)
-            expect_equal(d1[["average"]]$pressure[1:10], pressureAverageMatlab)
+            expect_equal(average[["pressure"]][1:10], pressureAverageMatlab)
             # >> Data.BurstHR_Pressure(1:10)
             pressureBurstMatlab <- c(10.260, 10.258, 10.264, 10.261, 10.263,
                 10.260, 10.260, 10.261, 10.259, 10.259)
-            expect_equal(d1[["burst"]]$pressure[1:10], pressureBurstMatlab)
+            expect_equal(burst[["pressure"]][1:10], pressureBurstMatlab)
             # >> Data.BurstHR_WaterTemperature(1:10)
             temperatureMatlab <- c(24.010, 24.000, 24.010, 24.010, 24.010,
                 24.010, 24.010, 24.010, 24.010, 24.000)
-            expect_equal(d1[["burst"]]$temperature[1:10], temperatureMatlab)
+            expect_equal(burst[["temperature"]][1:10], temperatureMatlab)
             # > Data.AverageHR_MagnetometerTemperature(1:10)
             temperatureMagnetometerAverageMatlab <- c(25.8920, 25.8920, 25.8920, 25.8450, 25.8920,
                 25.8450, 25.8920, 25.8450, 25.8920, 25.8450)
-            expect_equal(d1[["average"]]$temperatureMagnetometer[1:10], temperatureMagnetometerAverageMatlab)
+            expect_equal(average[["temperatureMagnetometer"]][1:10], temperatureMagnetometerAverageMatlab)
             # > Data.AverageHR_RTCTemperature(1:10)
             temperatureRTCAverageMatlab <- c(28.5000, 28.5000, 28.7500, 28.7500, 28.7500,
                 28.7500, 28.7500, 28.7500, 28.7500, 28.7500)
-            expect_equal(d1[["average"]]$temperatureRTC[1:10], temperatureRTCAverageMatlab)
+            expect_equal(average[["temperatureRTC"]][1:10], temperatureRTCAverageMatlab)
             # > Data.BurstHR_MagnetometerTemperature(1:10)
             temperatureMagnetometerBurstMatlab <- c(25.7980, 25.8450, 25.9390, 25.8920, 25.8450,
                 25.7510, 25.7980, 25.8920, 25.8450, 25.7980)
-            expect_equal(d1[["burst"]]$temperatureMagnetometer[1:10], temperatureMagnetometerBurstMatlab)
+            expect_equal(burst[["temperatureMagnetometer"]][1:10], temperatureMagnetometerBurstMatlab)
             # > Data.BurstHR_RTCTemperature(1:10)
             temperatureRTCBurstMatlab <- c(28.500, 28.500, 28.500, 28.500, 28.500,
                 28.500, 28.500, 28.500, 28.500, 28.500)
-            expect_equal(d1[["burst"]]$temperatureRTC[1:10], temperatureRTCBurstMatlab)
+            expect_equal(burst[["temperatureRTC"]][1:10], temperatureRTCBurstMatlab)
             # >> Data.BurstHR_Heading(1:10)
             headingMatlab <- c(10.890, 10.910, 10.920, 10.980, 10.960,
                 10.910, 10.900, 10.900, 10.900, 10.900)
-            expect_equal(d1[["burst"]]$heading[1:10], headingMatlab)
+            expect_equal(burst[["heading"]][1:10], headingMatlab)
             # >> Data.BurstHR_Pitch(1:10)
             pitchMatlab <- c(-71.280, -71.280, -71.270, -71.280, -71.280,
                 -71.280, -71.270, -71.270, -71.270, -71.270)
-            expect_equal(d1[["burst"]]$pitch[1:10], pitchMatlab)
+            expect_equal(burst[["pitch"]][1:10], pitchMatlab)
             # >> Data.BurstHR_ROll(1:10)
             rollMatlab <- c(-78.050, -78.080, -78.080, -78.090, -78.090,
                 -78.080, -78.080, -78.080, -78.080, -78.080)
-            expect_equal(d1[["burst"]]$roll[1:10], rollMatlab)
+            expect_equal(burst[["roll"]][1:10], rollMatlab)
             # >> Data.Average_CellSize
             # ans = single 0.2000
-            expect_equal(d1[["average"]]$cellSize, 0.2)
+            expect_equal(average[["cellSize"]], 0.2)
             # >> Data.BurstHR_CellSize(1)
             # ans = single 0.0200
-            expect_equal(d1[["burst"]]$cellSize, 0.02)
+            expect_equal(burst[["cellSize"]], 0.02)
             # >> Data.Alt_Average_CellSize(1)
             # ans = single 0.2000
             # >> Data.Alt_BurstHR_CellSize(1)
             # ans = single 0.0500
             # >> Data.Average_Blanking(1)
             # ans = 0.1000
-            expect_equal(d1[["average"]]$blankingDistance, 0.1)
+            expect_equal(average[["blankingDistance"]], 0.1)
             # >> Data.BurstHR_Blanking(1)
             # ans = 2.8000
-            expect_equal(d1[["burst"]]$blankingDistance, 2.8)
+            expect_equal(burst[["blankingDistance"]], 2.8)
             # >> Data.Alt_BurstHR_Blanking(1)
             # ans = 0.1000
             # >> Data.Alt_Average_Blanking(1)
@@ -207,18 +242,18 @@ if (file.exists(f1)) {
             nominalCorrelationBurstMatlab <- rep(100, 10)
             #R > d1[["nomcor", "burst"]][1:10]
             #R [1]  49 100  33 100 100 100 100 100 100 100
-            expect_equal(d1[["burst"]]$nominalCorrelation[1:10], nominalCorrelationBurstMatlab)
+            expect_equal(burst[["nominalCorrelation"]][1:10], nominalCorrelationBurstMatlab)
             #>> Data.Average_NominalCor(1:10)
             nominalCorrelationAverageMatlab <- rep(33, 10)
-            expect_equal(d1[["average"]]$nominalCorrelation[1:10], nominalCorrelationAverageMatlab)
+            expect_equal(average[["nominalCorrelation"]][1:10], nominalCorrelationAverageMatlab)
             # All are zero in matlab.
-            expect_true(all(0 == d1[["average"]]$powerLevel))
-            expect_true(all(0 == d1[["burst"]]$powerLevel))
+            expect_true(all(0 == average[["powerLevel"]]))
+            expect_true(all(0 == burst[["powerLevel"]]))
             # relax tolerance since it's a 16-bit value
             # >> Data.Average_AccelerometerX(1:10)
             accxAverageMatlab <- c(-0.9497070, -0.9492188, -0.9477539, -0.9472656, -0.9458008,
                 -0.9497070, -0.9501953, -0.9516602, -0.9511719, -0.9516602)
-            accel <- d1[["average"]]$accelerometer
+            accel <- average[["accelerometer"]]
             expect_equal(accel$x[1:10], accxAverageMatlab, tolerance=1e-5)
             # >> Data.Average_AccelerometerY(1:10)
             accyAverageMatlab <- c(-0.3134766, -0.3139648, -0.3168945, -0.3125000, -0.3178711,
@@ -231,50 +266,51 @@ if (file.exists(f1)) {
             #>> Data.BurstHR_AccelerometerX(1:10)
             accxBurstMatlab <- c(-0.9472656, -0.9497070, -0.9492188, -0.9467773, -0.9511719,
                 -0.9506836, -0.9472656, -0.9492188, -0.9482422, -0.9506836)
-            expect_equal(d1[["burst"]]$accelerometer$x[1:10], accxBurstMatlab, tolerance=1e-5)
+
+            expect_equal(burst[["accelerometer"]]$x[1:10], accxBurstMatlab, tolerance=1e-5)
             #>> Data.BurstHR_AccelerometerY(1:10)
             accyBurstMatlab <- c(-0.3144531, -0.3178711, -0.3159180, -0.3168945, -0.3149414,
                 -0.3154297, -0.3168945, -0.3139648, -0.3183594, -0.3154297)
-            expect_equal(d1[["burst"]]$accelerometer$y[1:10], accyBurstMatlab, tolerance=1e-5)
+            expect_equal(burst[["accelerometer"]]$y[1:10], accyBurstMatlab, tolerance=1e-5)
             #>> Data.BurstHR_AccelerometerZ(1:10)
             acczBurstMatlab <- c(0.066895, 0.065918, 0.065430, 0.066406, 0.065918,
                 0.068359, 0.070801, 0.068359, 0.069336, 0.069336)
-            expect_equal(d1[["burst"]]$accelerometer$z[1:10], acczBurstMatlab, tolerance=1e-5)
-            expect_true(is.null(d1[["junk"]]))
-            expect_equal(dim(d1[["average"]]$v), c(11, 150, 4))
-            expect_equal(dim(d1[["burst"]]$v), c(88, 256, 1))
+            expect_equal(burst[["accelerometer"]]$z[1:10], acczBurstMatlab, tolerance=1e-5)
+            expect_true(is.null(average[["junk"]]))
+            expect_equal(dim(average[["v"]]), c(11, 150, 4))
+            expect_equal(dim(burst[["v"]]), c(88, 256, 1))
             # >> Data.BurstHR_VelBeam5(1,1:10)
             # Note that bursts store in beam 5. FIXME: next broken 2022-07-13
-            expect_equal(d1[["burst"]]$v[1, 1:4, 1], c(0.36240, 0.35830, 0.36430, 0.20590))
+            expect_equal(burst[["v"]][1, 1:4, 1], c(0.36240, 0.35830, 0.36430, 0.20590))
             # >> Data.Average_VelBeam1(1,1:4)
-            expect_equal(d1[["average"]]$v[1, 1:4, 1], c(-0.8170, -0.8890, -1.9170, -2.1110))
+            expect_equal(average[["v"]][1, 1:4, 1], c(-0.8170, -0.8890, -1.9170, -2.1110))
             #>> Data.Average_VelBeam1(2,1:4)
-            expect_equal(d1[["average"]]$v[2, 1:4, 1], c(-0.7800, -2.3230, -1.0840, -0.8010))
+            expect_equal(average[["v"]][2, 1:4, 1], c(-0.7800, -2.3230, -1.0840, -0.8010))
             # >> Data.Average_VelBeam2(1,1:4)
-            expect_equal(d1[["average"]]$v[1, 1:4, 2], c(-0.1630,  1.6930,  1.8490,  1.1120))
+            expect_equal(average[["v"]][1, 1:4, 2], c(-0.1630,  1.6930,  1.8490,  1.1120))
             #>> Data.Average_VelBeam2(2,1:4)
-            expect_equal(d1[["average"]]$v[2, 1:4, 2], c(-0.6340,  1.4590,  1.9590,  0.9400))
+            expect_equal(average[["v"]][2, 1:4, 2], c(-0.6340,  1.4590,  1.9590,  0.9400))
             #>> Data.Average_VelBeam3(1,1:4)
-            expect_equal(d1[["average"]]$v[1, 1:4, 3], c(-1.5600,  1.4140,  1.5630,   1.5510))
+            expect_equal(average[["v"]][1, 1:4, 3], c(-1.5600,  1.4140,  1.5630,   1.5510))
             #>> Data.BurstHR_AmpBeam5(1:4,1,1)
-            expect_equal(0.5 * as.numeric(d1[["burst"]]$a[1:4, 1, 1]), c(34.0, 34.0, 36.0, 34.0))
+            expect_equal(0.5 * as.numeric(burst[["a"]][1:4, 1, 1]), c(34.0, 34.0, 36.0, 34.0))
             # >> Data.BurstHR_AmpBeam5(1:4,2,1)
-            expect_equal(0.5 * as.numeric(d1[["burst"]]$a[1:4, 2, 1]), c(34.5000, 35.0000, 36.5000, 35.0000))
+            expect_equal(0.5 * as.numeric(burst[["a"]][1:4, 2, 1]), c(34.5000, 35.0000, 36.5000, 35.0000))
             # >> Data.BurstHR_AmpBeam5(1:4,3,1)
-            expect_equal(0.5 * as.numeric(d1[["burst"]]$a[1:4, 3, 1]), c(34.5000, 35.5000, 37.5000, 34.0000))
+            expect_equal(0.5 * as.numeric(burst[["a"]][1:4, 3, 1]), c(34.5000, 35.5000, 37.5000, 34.0000))
             # >> Data.BurstHR_AmpBeam5(1:4,4,1)
-            expect_equal(0.5 * as.numeric(d1[["burst"]]$a[1:4, 4, 1]), c(35.0000, 37.5000, 36.0000, 36.5000))
+            expect_equal(0.5 * as.numeric(burst[["a"]][1:4, 4, 1]), c(35.0000, 37.5000, 36.0000, 36.5000))
             #>> Data.Average_AmpBeam1(1:4,1,1)
-            expect_equal(0.5 * as.numeric(d1[["average"]]$a[1:4, 1, 1]), c(43.5000, 42.5000, 44.0000, 43.0000))
+            expect_equal(0.5 * as.numeric(average[["a"]][1:4, 1, 1]), c(43.5000, 42.5000, 44.0000, 43.0000))
             #expect_equal(0.5 * d1[["a","average numeric"]][1:4, 1, 1], c(43.5000, 42.5000, 44.0000, 43.0000))
             #>> Data.Average_AmpBeam1(1:4,2,1)
             #expect_equal(0.5 * d1[["a","average numeric"]][1:4, 2, 1], c(40.0000, 40.0000, 39.5000, 39.5000))
             #>> Data.Average_AmpBeam1(1:4,3,1)
             #expect_equal(0.5 * d1[["a","average numeric"]][1:4, 3, 1], c(39.5000, 40.0000, 39.5000, 40.0000))
             #>> Data.BurstHR_CorBeam5(1:4,1)
-            expect_equal(as.numeric(d1[["burst"]]$q[1:4, 1, 1]), c(72, 81, 63, 78))
+            expect_equal(as.numeric(burst[["q"]][1:4, 1, 1]), c(72, 81, 63, 78))
             #>> Data.BurstHR_CorBeam5(1:4,2)
-            expect_equal(as.numeric(d1[["burst"]]$q[1:4, 2, 1]), c(76, 49, 89, 79))
+            expect_equal(as.numeric(burst[["q"]][1:4, 2, 1]), c(76, 49, 89, 79))
             #>> Data.BurstHR_CorBeam5(1:4,3)
             #expect_equal(d1[["q", "burst numeric"]][1:4, 3, 1], c(91, 76, 70, 72))
             #>> Data.Average_CorBeam1(1:4,1)
@@ -320,38 +356,32 @@ if (file.exists(f2)) {
     test_that("read.adp() on a private AD2CP file that has only 'burst' data",
         {
             N <- 99                       # known value for subset of a larger file
-            expect_equal(N, read.oce(f2, which="?")[[1]])
+            expect_equal(N, read.oce(f2)[1,"occurance"])
             # Note: using read.adp() to ensure that it also works
             expect_warning(
-                expect_warning(d2 <- read.adp(f2, from=1, to=N, by=1),
+                expect_message(burst <- read.adp(f2, dataType="burst"),
                     "setting plan=0, the only value in the file"),
                 "ignoring 'despike'")
-            nnn <- c("average", "burst", "interleavedBurst")
-            expect_equal(c(FALSE, TRUE, FALSE), nnn %in% names(d2@data))
-            expect_equal(d2[["burst"]]$oceCoordinate, "beam")
-            expect_equal(sort(names(d2[["burst"]])),
-                sort(c("a", "accelerometer", "blankingDistance", "cellSize",
-                        "configuration", "datasetDescription", "distance",
-                        "ensemble", "heading", "magnetometer",
-                        "nominalCorrelation", "numberOfBeams", "numberOfCells",
-                        "oceCoordinate", "orientation", "originalCoordinate",
-                        "pitch", "powerLevel", "pressure", "q", "roll",
-                        "soundSpeed", "temperature", "temperatureMagnetometer",
-                        "temperatureRTC", "time", "transmitEnergy", "v")))
-            expect_equal(d2[["fileType"]], "AD2CP")
-            expect_equal(d2[["serialNumber"]], ad2cpHeaderValue(d2, "ID", "SN"))
-            expect_equal(d2[["type"]], "Aquadopp2")
-            expect_equal(d2[["type"]], ad2cpHeaderValue(d2, "ID", "STR", FALSE))
-            expect_equal(d2[["burst"]]$cellSize, 0.2)
-            expect_equal(d2[["burst"]]$cellSize, ad2cpHeaderValue(d2, "GETBURST", "CS"))
-            expect_equal(d2[["burst"]]$blankingDistance, ad2cpHeaderValue(d2, "GETBURST", "BD"))
-            expect_equal(d2[["burst"]]$blankingDistance, ad2cpHeaderValue(d2, "GETBURST", "BD"))
-            expect_equal(d2[["burst"]]$oceCoordinate, tolower(ad2cpHeaderValue(d2, "GETBURST", "CY", FALSE)))
-
-            expect_true(is.numeric(d2[["burst"]]$v))
+            expect_equal(burst[["oceCoordinate"]], "beam")
+            expect_equal(names(burst@data),
+                    c("nominalCorrelation", "ensemble", "time", "soundSpeed",
+                        "temperature", "pressure", "heading", "pitch", "roll",
+                        "magnetometer", "accelerometer",
+                        "temperatureMagnetometer", "temperatureRTC",
+                        "transmitEnergy", "powerLevel", "v", "a", "q"))
+            expect_equal(burst[["fileType"]], "AD2CP")
+            expect_equal(burst[["serialNumber"]], ad2cpHeaderValue(burst, "ID", "SN"))
+            expect_equal(burst[["type"]], "Aquadopp2")
+            expect_equal(burst[["type"]], ad2cpHeaderValue(burst, "ID", "STR", FALSE))
+            expect_equal(burst[["cellSize"]], 0.2)
+            expect_equal(burst[["cellSize"]], ad2cpHeaderValue(burst, "GETBURST", "CS"))
+            expect_equal(burst[["blankingDistance"]], ad2cpHeaderValue(burst, "GETBURST", "BD"))
+            expect_equal(burst[["blankingDistance"]], ad2cpHeaderValue(burst, "GETBURST", "BD"))
+            expect_equal(burst[["oceCoordinate"]], tolower(ad2cpHeaderValue(burst, "GETBURST", "CY", FALSE)))
+            expect_true(is.numeric(burst[["v"]]))
             #expect_error(d2[["v", "average"]], "ad2cp object does not contain data item 'average'")
-            expect_equal(dim(d2[["burst"]]$v), c(N-1, 1, 4))
-            expect_true(is.raw(d2[["burst"]]$a))
+            expect_equal(dim(burst[["v"]]), c(N, 1, 4))
+            expect_true(is.raw(burst[["a"]]))
         })
 }
 
@@ -361,33 +391,35 @@ if (file.exists(f3)) {
         {
             N <- 100
             ## Note: using read.oce() to ensure that it also works
-            expect_warning(d3 <- read.oce(f3, from=1, to=N, by=1),
+            expect_message(
+                expect_message(
+                    b <- read.oce(f3, dataType="burst"),
+                    "using to=100 based on file contents"),
                 "setting plan=1, the only value in the file")
-            ## subsetting
-            nnn <- c("average", "burst", "interleavedBurst")
-            expect_equal(c(FALSE, TRUE, TRUE), nnn %in% names(d3@data))
-            expect_equal(c(FALSE, FALSE, FALSE), nnn %in% names(subset(d3, "average")@data))
-            expect_equal(c(FALSE, TRUE, FALSE), nnn %in% names(subset(d3, "burst")@data))
-            expect_equal(c(FALSE, FALSE, TRUE), nnn %in% names(subset(d3, "interleavedBurst")@data))
+            expect_message(
+                expect_message(
+                    ib <- read.oce(f3, dataType="interleavedBurst"),
+                    "using to=100 based on file contents"),
+                "setting plan=1, the only value in the file")
             ## Compare with some header values
-            expect_equal(d3[["fileType"]], "AD2CP")
-            expect_equal(d3[["serialNumber"]], ad2cpHeaderValue(d3, "ID", "SN"))
-            expect_equal("Signature1000", ad2cpHeaderValue(d3, "ID", "STR", FALSE))
-            expect_equal(d3[["type"]], ad2cpHeaderValue(d3, "ID", "STR", FALSE))
-            expect_equal(d3[["burst"]]$cellSize, ad2cpHeaderValue(d3, "GETBURST", "CS"))
-            expect_equal(d3[["burst"]]$blankingDistance, ad2cpHeaderValue(d3, "GETBURST", "BD"))
+            expect_equal(b[["fileType"]], "AD2CP")
+            expect_equal(b[["serialNumber"]], ad2cpHeaderValue(b, "ID", "SN"))
+            expect_equal("Signature1000", ad2cpHeaderValue(b, "ID", "STR", FALSE))
+            expect_equal(b[["type"]], ad2cpHeaderValue(b, "ID", "STR", FALSE))
+            expect_equal(b[["cellSize"]], ad2cpHeaderValue(b, "GETBURST", "CS"))
+            expect_equal(b[["blankingDistance"]], ad2cpHeaderValue(b, "GETBURST", "BD"))
             ## NOTE: the next uses GETBURST, not GETBURSTHR. I do not understand the format
-            expect_equal(d3[["burst"]]$oceCoordinate, tolower(ad2cpHeaderValue(d3, "GETBURST", "CY", FALSE)))
+            expect_equal(b[["oceCoordinate"]], tolower(ad2cpHeaderValue(b, "GETBURST", "CY", FALSE)))
             ## NB in the header is 5, which I suppose refers to the whole
             ## instrument, but d3[["numberOfBeams"]] is 4 for the slant-beam
             ## samples and 1 for the vertical-beam samples. But this is an
             ## interleavedBurst mode, so I guess 5 is the right number. In any
             ## case, I have sidestepped the test.
-            if (FALSE)
-                expect_equal(d3[["burst"]]$numberOfBeams, ad2cpHeaderValue(d3, "GETBURST", "NB"))
-            expect_equal(d3[["interleavedBurst"]]$cellSize, ad2cpHeaderValue(d3, "GETBURST1", "CS"))
-            expect_equal(d3[["interleavedBurst"]]$blankingDistance, ad2cpHeaderValue(d3, "GETBURST1", "BD"))
-            expect_equal(d3[["interleavedBurst"]]$oceCoordinate, tolower(ad2cpHeaderValue(d3, "GETBURST1", "CY", FALSE)))
+            #> if (FALSE)
+            #>    expect_equal(d3[["burst"]]$numberOfBeams, ad2cpHeaderValue(d3, "GETBURST", "NB"))
+            expect_equal(ib[["cellSize"]], ad2cpHeaderValue(ib, "GETBURST1", "CS"))
+            expect_equal(ib[["blankingDistance"]], ad2cpHeaderValue(ib, "GETBURST1", "BD"))
+            expect_equal(ib[["oceCoordinate"]], tolower(ad2cpHeaderValue(ib, "GETBURST1", "CY", FALSE)))
 
             ## FIXME: I think the nbeams might be wrong for burst
 
@@ -395,44 +427,39 @@ if (file.exists(f3)) {
             ## what the oce code gives, so that a flag will go off if things
             ## change greatly in the code. This also checks the accessors
             ## against direct lookup.
-            vb <- d3[["burst"]]$v
-            vib <- d3[["interleavedBurst"]]$v
-            expect_equal(dim(d3@data$burst$v), c(50, 88, 4))
+            vb <- b[["v"]]
+            vib <- ib[["v"]]
             expect_equal(dim(vb), c(50, 88, 4))
-            expect_equal(dim(d3@data$interleavedBurst$v), c(49, 88, 1))
             expect_equal(dim(vib), c(49, 88, 1))
-            ab <- d3[["burst"]]$a
-            aib <- d3[["interleavedBurst"]]$a
-            expect_equal(dim(d3@data$burst$a), c(50, 88, 4))
+            ab <- b[["a"]]
+            aib <- ib[["a"]]
             expect_equal(dim(ab), c(50, 88, 4))
-            expect_equal(dim(d3@data$interleavedBurst$a), c(49, 88, 1))
             expect_equal(dim(aib), c(49, 88, 1))
-            qb <- d3[["burst"]]$q
-            qib <- d3[["interleavedBurst"]]$q
-            expect_equal(dim(d3@data$burst$q), c(50, 88, 4))
+            qb <- b[["q"]]
+            qib <- ib[["q"]]
             expect_equal(dim(qb), c(50, 88, 4))
-            expect_equal(dim(d3@data$interleavedBurst$q), c(49, 88, 1))
             expect_equal(dim(qib), c(49, 88, 1))
 
-            ## Note that the interleavedBurst j has just one beam, which
-            ## I'm guessing might be the vertical one, but that's just a guess,
-            ## because the nortek system integrator doc has the string
-            ## 'interleave' on just a single page!
+            # Note that the interleavedBurst j has just one beam, which
+            # I'm guessing might be the vertical one, but that's just a guess,
+            # because the nortek system integrator doc has the string
+            # 'interleave' on just a single page!
             par(mfcol=c(4, 2))
             zlim <- c(-3, 3)
-            tb <- d3[["burst"]]$time
-            tib <- d3[["interleavedBurst"]]$time
-            db <- d3[["burst"]]$distance
-            dib <- d3[["interleavedBurst"]]$distance
-            imagep(tb, db, vb[,,1], zlim=zlim, zlab="d3[[\"burst\"]]$v[,,1]", drawTimeRange=FALSE, ylab="Distance [m]")
-            imagep(tb, db, vb[,,2], zlim=zlim, zlab="d3[[\"burst\"]]$v[,,2]", drawTimeRange=FALSE, ylab="Distance [m]")
-            imagep(tb, db, vb[,,3], zlim=zlim, zlab="d3[[\"burst\"]]$v[,,3]", drawTimeRange=FALSE, ylab="Distance [m]")
-            imagep(tb, db, vb[,,4], zlim=zlim, zlab="d4[[\"burst\"]]$v[,,4]", drawTimeRange=FALSE, ylab="Distance [m]")
-            imagep(tib, dib, vib[,,1], zlim=zlim, zlab="d3[[\"interleavedBurst\"]]$v[,,1]", drawTimeRange=FALSE, ylab="Distance [m]")
+            tb <- b[["time"]]
+            tib <- ib[["time"]]
+            db <- b[["distance"]]
+            dib <- ib[["distance"]]
+            imagep(tb, db, vb[,,1], zlim=zlim, zlab="burst[[\"v\"]][,,1]", drawTimeRange=FALSE, ylab="Distance [m]")
+            imagep(tb, db, vb[,,2], zlim=zlim, zlab="burst[[\"v\"]][,,2]", drawTimeRange=FALSE, ylab="Distance [m]")
+            imagep(tb, db, vb[,,3], zlim=zlim, zlab="burst[[\"v\"]][,,3]", drawTimeRange=FALSE, ylab="Distance [m]")
+            imagep(tb, db, vb[,,4], zlim=zlim, zlab="burst[[\"v\"]][,,4]", drawTimeRange=FALSE, ylab="Distance [m]")
+            imagep(tib, dib, vib[,,1], zlim=zlim, zlab="interleavedBurst[[\"v\"]][,,1]", drawTimeRange=FALSE, ylab="Distance [m]")
             plot(c(0,1), c(0,1), xlab="", ylab="", axes=FALSE, type="n")
             text(0.5, 0.5, "interleavedBurst has only 1 beam")
             plot(c(0,1), c(0,1), xlab="", ylab="", axes=FALSE, type="n")
             text(0.5, 0.5, paste("time range:\n", min(tb), "\n to\n ", max(tb)))
+
             # below is how we know this is 'beam'
             ## FIXME: look in text for other things, e.g. beam cells etc
             ## t <- d3[["text"]]$text[[1]]
@@ -462,11 +489,11 @@ if (file.exists(f3)) {
             #expect_silent(plot(d3, which='a1', zlim=c(0, 255), drawTimeRange=FALSE))
             #expect_silent(plot(d3, which='a2', zlim=c(0, 255), drawTimeRange=FALSE))
             #expect_silent(plot(d3, which='a3', zlim=c(0, 255), drawTimeRange=FALSE))
-            expect_error(d3xyz <- beamToXyz(d3))
+            expect_error(bxyz <- beamToXyz(b))
             #expect_silent(plot(d3xyz, which=1, zlim=zlim, drawTimeRange=FALSE))
             #expect_silent(plot(d3xyz, which=2, zlim=zlim, drawTimeRange=FALSE))
             #expect_silent(plot(d3xyz, which=3, zlim=zlim/4, drawTimeRange=FALSE))
-            expect_error(d3enu <- xyzToEnu(d3xyz))
+            expect_error(benu <- xyzToEnu(b))
             #expect_silent(plot(d3enu, which=1, zlim=zlim, drawTimeRange=FALSE))
             #expect_silent(plot(d3enu, which=2, zlim=zlim, drawTimeRange=FALSE))
             #expect_silent(plot(d3enu, which=3, zlim=zlim/4, drawTimeRange=FALSE))
