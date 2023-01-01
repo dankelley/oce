@@ -57,6 +57,7 @@ processing.
 Other things related to rsk data: 
 \code{\link{[[,rsk-method}},
 \code{\link{[[<-,rsk-method}},
+\code{\link{ctdFindProfilesRBR}()},
 \code{\link{plot,rsk-method}},
 \code{\link{read.rsk}()},
 \code{\link{rsk-class}},

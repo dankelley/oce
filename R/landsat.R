@@ -1459,7 +1459,6 @@ landsatTrim <- function(x, ll, ur, box, debug=getOption("oceDebug"))
     x@metadata$urlon <- t$longitude
     x@metadata$urlat <- t$latitude
 
-
     oceDebug(debug, "NEW:",
             "lllon=", x@metadata$lllon,
             "lrlon=", x@metadata$lrlon,
@@ -1494,7 +1493,7 @@ landsatTrim <- function(x, ll, ur, box, debug=getOption("oceDebug"))
     ##? x@metadata$urlat <- t$latitude
 
     x@processingLog <- processingLogAppend(x@processingLog,
-                                           sprintf("landsatTrim(x, ll=list(longitude=%f, latitude=%f), ur=list(longitude=%f, latitude=%f))",
-                                                   ll$longitude, ll$latitude, ur$longitude, ur$latitude))
+        sprintf("landsatTrim(x, ll=list(longitude=%f, latitude=%f), ur=list(longitude=%f, latitude=%f))",
+            ll$longitude, ll$latitude, ur$longitude, ur$latitude))
     x
 }

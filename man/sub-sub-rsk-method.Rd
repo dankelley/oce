@@ -122,6 +122,7 @@ Other functions that extract parts of oce objects:
 Other things related to rsk data: 
 \code{\link{[[<-,rsk-method}},
 \code{\link{as.rsk}()},
+\code{\link{ctdFindProfilesRBR}()},
 \code{\link{plot,rsk-method}},
 \code{\link{read.rsk}()},
 \code{\link{rsk-class}},

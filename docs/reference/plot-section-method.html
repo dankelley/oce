@@ -18,7 +18,7 @@ which."><!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/math
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-10</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-11</span>
       </span>
     </div>
 
@@ -92,6 +92,7 @@ which."><!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/math
 <span>  contourLabels <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  <span class="va">stationIndices</span>,</span>
 <span>  coastline <span class="op">=</span> <span class="st">"best"</span>,</span>
+<span>  colLand <span class="op">=</span> <span class="st">"gray"</span>,</span>
 <span>  xlim <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  ylim <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  zlim <span class="op">=</span> <span class="cn">NULL</span>,</span>
@@ -122,8 +123,9 @@ which."><!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/math
 <span>  <span class="va">col</span>,</span>
 <span>  <span class="va">cex</span>,</span>
 <span>  <span class="va">pch</span>,</span>
+<span>  <span class="va">lwd</span>,</span>
 <span>  labcex <span class="op">=</span> <span class="fl">1</span>,</span>
-<span>  <span class="va">debug</span>,</span>
+<span>  debug <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"oceDebug"</span><span class="op">)</span>,</span>
 <span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -188,6 +190,11 @@ version that is provided by <a href="https://CRAN.R-project.org/package=oce" cla
 <code>"coastlineWorldMedium"</code> or <code>"coastlineWorldFine"</code> for two
 coastlines provided by the <a href="https://CRAN.R-project.org/package=ocedata" class="external-link"><span class="pkg">ocedata</span></a> package, or <code>"none"</code>, to avoid
 drawing a coastline.</p></dd>
+
+
+<dt>colLand</dt>
+<dd><p>colour used to fill in land areas if <code>which</code> is <code>"map"</code>;
+ignored otherwise.</p></dd>
 
 
 <dt>xlim</dt>
@@ -335,7 +342,12 @@ a default is set up.</p></dd>
 
 
 <dt>pch</dt>
-<dd><p>Indication of symbol type; defaults to <code><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></code><code>("pch")</code>.</p></dd>
+<dd><p>Indication of symbol type; defaults to <code><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></code><code>("pch")</code> for
+non-map or to 3 for map.</p></dd>
+
+
+<dt>lwd</dt>
+<dd><p>line width; defaults to <code><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></code><code>("lwd")</code>.</p></dd>
 
 
 <dt>labcex</dt>
@@ -438,8 +450,8 @@ time for CRAN submission.</p>
 <span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a><span class="co"># Image of Absolute Salinity, with 4-minute bathymetry</span></span>
 <span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a><span class="co"># It's easy to calculate the desired area for the bathymetry,</span></span>
 <span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a><span class="co"># but for brevity we'll hard-code it. Note that download.topo()</span></span>
-<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a><span class="co"># requires the "raster" and "ncdf4" packages to be installed.</span></span>
-<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="fu">requireNamespace</span>(<span class="st">"raster"</span>) <span class="sc">&amp;&amp;</span> <span class="fu">requireNamespace</span>(<span class="st">"ncdf4"</span>)) {</span>
+<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a><span class="co"># requires the "ncdf4" package to have been installed.</span></span>
+<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="fu">requireNamespace</span>(<span class="st">"ncdf4"</span>)) {</span>
 <span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a>    f <span class="ot">&lt;-</span> <span class="fu">download.topo</span>(<span class="at">west=</span><span class="sc">-</span><span class="dv">80</span>, <span class="at">east=</span><span class="dv">0</span>, <span class="at">south=</span><span class="dv">35</span>, <span class="at">north=</span><span class="dv">40</span>, <span class="at">resolution=</span><span class="dv">4</span>)</span>
 <span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a>    t <span class="ot">&lt;-</span> <span class="fu">read.topo</span>(f)</span>
 <span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a>    <span class="fu">plot</span>(section, <span class="at">which=</span><span class="st">"SA"</span>, <span class="at">xtype=</span><span class="st">"longitude"</span>, <span class="at">ztype=</span><span class="st">"image"</span>, <span class="at">showBottom=</span>t)</span>
