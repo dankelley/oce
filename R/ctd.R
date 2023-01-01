@@ -565,13 +565,19 @@ setMethod(f="summary",
               if (!is.null(deploymentType) && deploymentType != "unknown")
                   showMetadataItem(object, "deploymentType",            "Deployment type:     ")
               if ("longitude" %in% names(object@data)) {
-                  cat("* Mean location:       ",       latlonFormat(mean(object@data$latitude, na.rm=TRUE),
-                                                                   mean(object@data$longitude, na.rm=TRUE),
-                                                                   digits=5), "\n", sep="")
-              } else if ("longitude" %in% names(object@metadata) && !is.na(object@metadata$longitude)) {
-                  cat("* Location:            ",       latlonFormat(object@metadata$latitude,
-                                                                    object@metadata$longitude,
-                                                                    digits=5), "\n", sep="")
+                  cat("* Mean Location:       ",
+                      latlonFormat(
+                          mean(object@data$latitude, na.rm=TRUE),
+                          mean(object@data$longitude, na.rm=TRUE),
+                          digits=5),
+                      "\n", sep="")
+              } else if ("longitude" %in% names(object@metadata)) {
+                  cat("* Mean Location:       ",
+                      latlonFormat(
+                          mean(object@metadata$latitude, na.rm=TRUE),
+                          mean(object@metadata$longitude, na.rm=TRUE),
+                          digits=5),
+                      "\n", sep="")
               }
               showMetadataItem(object, "waterDepth", "Water depth:         ")
               showMetadataItem(object, "levels", "Number of levels: ")
@@ -2002,11 +2008,15 @@ ctdDecimate <- function(x, p=1, method="boxcar", rule=1, e=1.5, debug=getOption(
 #'
 #' @param x a [ctd-class] object.
 #'
-#' @param cutoff criterion on pressure difference; see \dQuote{Details}.
+#' @param cutoff criterion on pressure difference; see \dQuote{Details}. If not
+#' provided, this defaults to 0.5.
 #'
-#' @param minLength lower limit on number of points in candidate profiles.
+#' @param minLength lower limit on number of points in candidate profiles. If
+#' not
+#' provided, this defaults to 10.
 #'
-#' @param minHeight lower limit on height of candidate profiles.
+#' @param minHeight lower limit on height of candidate profiles. If not
+#' provided, this defaults to 0.1 times the pressure span.
 #'
 #' @param smoother The smoothing function to use for identifying down/up
 #' casts. The default is `smooth.spline`, which performs well for
@@ -2028,8 +2038,8 @@ ctdDecimate <- function(x, p=1, method="boxcar", rule=1, e=1.5, debug=getOption(
 #' has independent knowledge of how the profiles are strung together
 #' in `x`.
 #'
-#' @param arr.ind Logical indicating whether the array indices should be returned;
-#' the alternative is to return a vector of ctd objects.
+#' @param arr.ind logical value indicating whether the array indices should be
+#' returned; the alternative is to return a vector of ctd objects.
 #'
 #' @param distinct An optional string indicating how to identify profiles
 #' by unique values. Use `"location"`
@@ -2086,22 +2096,27 @@ ctdDecimate <- function(x, p=1, method="boxcar", rule=1, e=1.5, debug=getOption(
 #' @author Dan Kelley and Clark Richards
 #'
 #' @family things related to ctd data
-ctdFindProfiles <- function(x, cutoff=0.5, minLength=10, minHeight=0.1*diff(range(x[["pressure"]])),
-                            smoother=smooth.spline,
-                            direction=c("descending", "ascending"),
-                            breaks,
-                            arr.ind=FALSE,
-                            distinct,
-                            debug=getOption("oceDebug"), ...)
+ctdFindProfiles <- function(x, cutoff=0.5, minLength=10, minHeight,
+    smoother=smooth.spline,
+    direction=c("descending", "ascending"),
+    breaks,
+    arr.ind=FALSE,
+    distinct,
+    debug=getOption("oceDebug"), ...)
 {
-    oceDebug(debug, "ctdFindProfiles(x, cutoff=", cutoff,
-             ", minLength=", minLength,
-             ", minHeight=", minHeight,
-             ", direction=\"", direction, "\"",
-             ", breaks=", if (missing(breaks)) "unspecified" else "specified",
-             ", arr.ind=", arr.ind, ", debug=", debug, ") {\n", sep="", unindent=1)
+    if (!inherits(x, "oce"))
+        stop("x must be an \"oce\" object")
     if (!inherits(x, "ctd"))
-        stop("method is only for objects of class '", "ctd", "'")
+        stop("x must be of class \"ctd\"")
+    if (!"pressure" %in% names(x@data))
+        stop("x must contain pressure in its data slot")
+    minHeight <- 0.1*diff(range(x[["pressure"]], na.rm=TRUE))
+    oceDebug(debug,"ctdFindProfiles(x,cutoff=", cutoff,
+        ", minLength=", minLength,
+        ", minHeight=", minHeight,
+        ", direction=\"", direction, "\"",
+        ", breaks=", if (missing(breaks)) "unspecified" else "specified",
+        ", arr.ind=", arr.ind, ", debug=", debug, ") {\n", sep="", unindent=1)
     if (!missing(distinct)) {
         if (distinct == "location") {
             lon <- x[["longitude"]]
@@ -2110,7 +2125,7 @@ ctdFindProfiles <- function(x, cutoff=0.5, minLength=10, minHeight=0.1*diff(rang
             i <- seq_along(x[["salinity"]])
             stnIndices <- split(i, factor(dist))
             nstn <- length(stnIndices)
-            oceDebug(debug, "number of profiles found:", nstn, "\n")
+            oceDebug(debug, "number of profiles found: ", nstn, "\n")
             if (!nstn)
                 return(NULL)
             casts <- vector("list", nstn)
@@ -2135,7 +2150,7 @@ ctdFindProfiles <- function(x, cutoff=0.5, minLength=10, minHeight=0.1*diff(rang
     } # else rest of code
 
     if (missing(breaks)) {
-        ## handle case where 'breaks' was not given
+        # handle case where 'breaks' was not given
         direction <- match.arg(direction)
         pressure <- fillGap(x[["pressure"]], rule=2)
         ps <- if (is.null(smoother)) pressure else smoother(pressure, ...)
@@ -2207,7 +2222,7 @@ ctdFindProfiles <- function(x, cutoff=0.5, minLength=10, minHeight=0.1*diff(rang
         casts <- vector("list", ncasts)
         npts <- length(x@data$pressure)
         for (i in 1:ncasts) {
-            oceDebug(debug, "profile", i, "of", ncasts, "\n")
+            oceDebug(debug, "profile ", i, " of ", ncasts, "\n")
             ## Extend indices to catch turnaround spots (see ~13 lines above)
             e <- 1
             iStart <- max(1L, indices$start[i] - e)
@@ -2219,11 +2234,110 @@ ctdFindProfiles <- function(x, cutoff=0.5, minLength=10, minHeight=0.1*diff(rang
                 cast@metadata$station <- i
             }
             cast@processingLog <- processingLogAppend(cast@processingLog,
-                                                      paste(paste(deparse(match.call()), sep="", collapse=""),
-                                                            " # profile ", i, " of ", ncasts))
+                paste(paste(deparse(match.call()), sep="", collapse=""),
+                    " # profile ", i, " of ", ncasts))
             casts[[i]] <- cast
         }
         oceDebug(debug, "} # ctdFindProfiles()\n", sep="", unindent=1)
+        return(casts)
+    }
+}
+
+#' Find Profiles within a CTD object read from a RBR file
+#'
+#' This uses information about profiles that is contained within the `metadata`
+#' slot of the first argument, `x`, having been inserted there by [read.rsk()].
+#' If `x` was created by reading an `.rsk` file with [read.rsk()],
+#' and if that file contained geographical information (that is, if it had a
+#' data table named `geodata`) then the *first* longitude and latitude from each
+#' profile is stored in the `metadata` slot of the returned value.
+#'
+#' @param x either an [rsk-class] or a [ctd-class] object; in the former case,
+#' it is converted to a [ctd-class] object with [as.ctd()].
+#'
+#' @param direction character value, either `"descending"` or `"ascending"`,
+#' indicating the sampling direction to be selected.  The default, `"descending"`,
+#' is the commonly preferred choice.
+#'
+#' @param arr.ind logical value indicating whether the array indices should be
+#' returned; the alternative is to return a vector of ctd objects.
+#'
+#' @template debugTemplate
+#'
+#' @author Dan Kelley
+#'
+#' @family things related to ctd data
+#' @family things related to rsk data
+ctdFindProfilesRBR <- function(x, direction="descending", arr.ind=FALSE, debug=getOption("oceDebug"))
+{
+    if (!inherits(x, "oce"))
+        stop("x must be an \"oce\" object")
+    if (inherits(x, "rsk"))
+        x <- as.ctd(x)
+    else if (!inherits(x, "ctd"))
+        stop("x must be of class \"rsk\" or \"ctd\"")
+    oceDebug(debug, "ctdFindProfilesRBR(x, direction=", direction, ", arr.ind=", arr.ind, ", debug=", debug, ") {\n",
+        sep="", unindent=1)
+    if (identical(direction, "ascending")) {
+        dir <- "UP"
+    } else if (identical(direction, "descending")) {
+        dir <- "DOWN"
+    } else {
+        stop("direction must be \"descending\" or \"ascending\".")
+    }
+    # This requires certain contents of both data and metadata
+    time <- x@data$time
+    if (is.null(time))
+        stop("the data slot must contain \"time\"")
+    regionCast <- x@metadata$regionCast # regionID,regionProfileID,type
+    if (is.null(regionCast))
+        stop("the metadata slot must contain \"regionCast\"")
+    region <- x@metadata$region # datasetID,regionID,type,tstamp1,tstamp2,label,description,collapsed
+    if (is.null(region))
+        stop("the metadata slot must contain \"region\"")
+    rID <- subset(regionCast, regionCast$type==dir)$regionID
+    r <- subset(region, region$regionID %in% rID)
+    startTime <- numberAsPOSIXct(r$tstamp1/1e3, type="unix")
+    endTime <- numberAsPOSIXct(r$tstamp2/1e3, type="unix")
+    oceDebug(debug, "originally, ", vectorShow(startTime))
+    oceDebug(debug, "originally, ", vectorShow(endTime))
+    ntime <- length(time)
+    # Ignore any start/end times that are outside data$time window (which might
+    # happen if the data were subsetted).
+    keep <- endTime <= time[ntime] & time[1] <= startTime
+    oceDebug(debug, "keeping ", sum(keep), " of ", length(keep), " start/end pairs\n")
+    startTime <- startTime[keep]
+    endTime <- endTime[keep]
+    oceDebug(debug, "after trimming, ", vectorShow(startTime))
+    oceDebug(debug, "after trimming, ", vectorShow(endTime))
+    start <- sapply(startTime, function(t) which(time==t)[1])
+    end <- sapply(endTime, function(t) which(time==t)[1])
+    oceDebug(debug, vectorShow(start))
+    oceDebug(debug, vectorShow(end))
+    if (identical(arr.ind, TRUE)) {
+        oceDebug(debug, "} # ctdFindProfilesRBR()\n", sep="", unindent=1)
+        return(data.frame(start=start, end=end))
+    } else {
+        ncasts <- length(start)
+        casts <- vector("list", ncasts)
+        npts <- length(x@data$pressure)
+        for (i in seq_len(ncasts)) {
+            cast <- ctdTrim(x, "index", parameters=c(start[i], end[i]))
+            if (!is.null(x@metadata$station) && "" != x@metadata$station) {
+                cast@metadata$station <- paste(x@metadata$station, i, paste="/")
+            } else {
+                cast@metadata$station <- i
+            }
+            if (all(c("longitude", "latitude") %in% names(cast@metadata))) {
+                cast@metadata$longitude <- cast@metadata$longitude[1]
+                cast@metadata$latitude <- cast@metadata$latitude[1]
+            }
+            cast@processingLog <- processingLogAppend(cast@processingLog,
+                paste(paste(deparse(match.call()), sep="", collapse=""),
+                    " # profile ", i, " of ", ncasts))
+            casts[[i]] <- cast
+        }
+        oceDebug(debug, "} # ctdFindProfilesRBR()\n", sep="", unindent=1)
         return(casts)
     }
 }
@@ -2340,10 +2454,22 @@ ctdFindProfiles <- function(x, cutoff=0.5, minLength=10, minHeight=0.1*diff(rang
 #'
 #' @template debugTemplate
 #'
-#' @return Either a [ctd-class] object of or a logical vector of length
-#' matching the data. The first option is the default. The second option,
-#' achieved by setting `indices=FALSE`, may be useful in constructing
-#' data flags to be inserted into the object.
+#' @return Either a [ctd-class] object or a logical vector of length matching
+#' the data. In the first case, which is the default, the elements of the `data`
+#' slot will have been trimmed, along with some elements of the `metadata` slot
+#' (e.g. `metadata4flags` and, if present and of length matching
+#' `data$pressure`, both `metadata$longitude` and `metadata$latitude`).  The
+#' second case, achieved by setting `indices=FALSE`, may be helpful for advanced
+#' users who wish to do things like construct data flags to be inserted into the
+#' object.
+#'
+#' @section Historical Note:
+#'
+#' The subsetting of `longitude` and `latitude` in the `metadata` slot was
+#' introduced on 2022-12-13, for use with [ctd-class] objects created using
+#' [as.ctd()] on [rsk-class] objects created by using [read.rsk()] on Ruskin
+#' files that hold data from RBR CTD instruments linked with phone/tablet
+#' devices equipped with GPS sensors.
 #'
 #' @examples
 #'\dontrun{
@@ -2371,7 +2497,7 @@ ctdFindProfiles <- function(x, cutoff=0.5, minLength=10, minHeight=0.1*diff(rang
 #'
 #' @family things related to ctd data
 ctdTrim <- function(x, method, removeDepthInversions=FALSE, parameters=NULL,
-                    indices=FALSE, debug=getOption("oceDebug"))
+    indices=FALSE, debug=getOption("oceDebug"))
 {
     oceDebug(debug, "ctdTrim() {\n", unindent=1)
     methodIsFunction <- !missing(method) && is.function(method)
@@ -2383,9 +2509,8 @@ ctdTrim <- function(x, method, removeDepthInversions=FALSE, parameters=NULL,
         oceDebug(debug, "} # ctdTrim()\n", unindent=1)
         return(x)
     }
-    if (!("scan" %in% names(x@data))) {
+    if (!("scan" %in% names(x@data)))
         x@data$scan <- seq_along(pressure)
-    }
     res <- x
     if (!methodIsFunction) {
         n <- length(pressure)
@@ -2488,7 +2613,7 @@ ctdTrim <- function(x, method, removeDepthInversions=FALSE, parameters=NULL,
             max.pressure <- smooth(pressure, kind="3R")[max.location]
             keep[max.location:n] <- FALSE
             oceDebug(debug, "removed data at indices from ", max.location,
-                     " (where pressure is ", pressure[max.location], ") to the end of the data\n", sep="")
+                " (where pressure is ", pressure[max.location], ") to the end of the data\n", sep="")
             if (!pminGiven) {
                 ## new method, after Feb 2008
                 submethodChoices <- c("A", "B")
@@ -2574,7 +2699,7 @@ ctdTrim <- function(x, method, removeDepthInversions=FALSE, parameters=NULL,
             max.pressure <- pressureSmoothed[max.location]
             keep[1:max.location] <- FALSE
             oceDebug(debug, "removed data at indices from 1 to ", max.location,
-                     " (where pressure is ", pressure[max.location], "\n", sep="")
+                " (where pressure is ", pressure[max.location], "\n", sep="")
             if (!pminGiven) {
                 ## new method, after Feb 2008
                 submethodChoices <- c("A", "B")
@@ -2655,7 +2780,7 @@ ctdTrim <- function(x, method, removeDepthInversions=FALSE, parameters=NULL,
             max.pressure <- pressureSmoothed[max.location]
             keep[max.location:n] <- FALSE
             oceDebug(debug, "removed data at indices from index ", max.location,
-                     " (at ", pressure[max.location], " dbar) to end of data, at index", n, "\n", sep="")
+                " (at ", pressure[max.location], " dbar) to end of data, at index", n, "\n", sep="")
             pp <- pressure[keep]
             pp <- despike(pp) # some, e.g. data(ctdRaw), have crazy points in air
             ss <- x[["scan"]][keep]
@@ -2696,6 +2821,17 @@ ctdTrim <- function(x, method, removeDepthInversions=FALSE, parameters=NULL,
         ## Metadata
         for (i in seq_len(length(res@metadata$flags))) {
             res@metadata$flags[[i]] <- res@metadata$flags[[i]][keep]
+        }
+        # Trim longitude and latitude, if their lengths match the pressure
+        # length (as for perhaps an rsk object from a CTD interfaced to an phone
+        # or a tablet that had a GPS on it).
+        if (2 == sum(c("longitude", "latitude") %in% names(x@metadata))) {
+            n <- length(x@metadata$longitude)
+            if (length(x@metadata$latitude == n) && n == length(x@data$pressure)) {
+                oceDebug(debug, "trimming longitude and latitude\n")
+                res@metadata$longitude <- res@metadata$longitude[keep]
+                res@metadata$latitude <- res@metadata$latitude[keep]
+            }
         }
         res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     }
@@ -3814,7 +3950,7 @@ setMethod(f="subset",
               names(res@data) <- names(x@data)
               subsetString <- paste(deparse(substitute(expr=subset, env=environment())), collapse=" ")
               res@processingLog <- processingLogAppend(res@processingLog,
-                                                       paste("subset.ctd(x, subset=", subsetString, ")", sep=""))
+                  paste("subset.ctd(x, subset=", subsetString, ")", sep=""))
               res
           })
 
@@ -3826,15 +3962,18 @@ setMethod(f="subset",
 #'
 #' @param x a [ctd-class] object.
 #'
-#' @param which Numerical vector numerical codes specifying the panels to draw: 1
-#' for pressure vs scan, 2 for `diff(pressure)` vs scan, 3 for temperature vs
-#' scan, and 4 for salinity vs scan.
+#' @param which integer specifying the plot to be drawn: 1
+#' for pressure vs 'x', 2 for `diff(pressure)` vs 'x', 3 for temperature vs
+#' 'x', and 4 for salinity vs 'x'  Here, the value of 'x' is determined by
+#' `xtype`.
 #'
-#' @param xtype Character string indicating variable for the x axis. May be
-#' `"scan"` (the default) or `"time"`. In the former case, a
-#' `scan` variable will be created using [seq_along()],
-#' if necessary. In the latter case, an error results if the `data`
-#' slot of `x` lacks a variable called `time`.
+#' @param xtype Character string indicating variable for the x axis. The
+#' permitted values are `"scan"` (the default), `"time"` and `"index"`.
+#' The last of these is created by using [seq_along()] on the pressure
+#' column (which is assumed to be present in any [ctd-class] object).
+#' Only `xtype="index"` is guaranteed to work for all objects, and indeed
+#' that value is used, if either `"scan"` or `"time"` is requested, but
+#' unavailable.
 #'
 #' @param flipy Logical value, ignored unless `which` is 1. If `flipy`
 #' is `TRUE`, then a pressure plot will have high pressures at the bottom
@@ -3859,7 +3998,12 @@ setMethod(f="subset",
 #' with a palette to the right is `mar=par("mar")+c(0, 0, 0, 1))`.
 #'
 #' @param ... Optional arguments passed to plotting functions.
+#'
 #' @template debugTemplate
+#'
+#' @section Historical Note:
+#' On 2022-12-07, `xtype` was expanded to include `"index"`, and
+#' an undocumented multi-panel feature was removed.
 #'
 #' @examples
 #' library(oce)
@@ -3872,79 +4016,74 @@ setMethod(f="subset",
 #' @family functions that plot oce data
 #' @family things related to ctd data
 plotScan <- function(x, which=1, xtype="scan", flipy=FALSE,
-                     type='l', mgp=getOption("oceMgp"),
-                     xlim=NULL, ylim=NULL,
-                     mar=c(mgp[1]+1.5, mgp[1]+1.5, mgp[1], mgp[1]), ..., debug=getOption("oceDebug"))
+    type='l', mgp=getOption("oceMgp"),
+    xlim=NULL, ylim=NULL,
+    mar=c(mgp[1]+1.5, mgp[1]+1.5, mgp[1], mgp[1]), ..., debug=getOption("oceDebug"))
 {
     if (!inherits(x, "ctd"))
         stop("method is only for objects of class '", "ctd", "'")
-    nw <- length(which)
-    if (nw > 1)
-        par(mfrow=c(nw, 1))
-    par(mar=mar)
-    par(mgp=mgp)
-    xtype <- match.arg(xtype, c("scan", "time"))
-    for (w in which) {
-        if (xtype == "scan") {
-            xvar <- if ("scan" %in% names(x@data)) x[["scan"]] else seq_along(x[["pressure"]])
-            if (missing(xlim))
-                xlim <- range(xvar, na.rm=TRUE)
-            if (w == 1) {
-                if (missing(ylim)) {
-                    ylim <- range(x[["pressure"]], na.rm=TRUE)
-                    if (flipy)
-                        ylim <- rev(ylim)
-                }
-                plot(xvar, x[["pressure"]], xlab="Scan", ylab=resizableLabel("p", "y", debug=debug-1),
-                     yaxs='r', type=type, xlim=xlim, ylim=ylim, ...)
-            } else if (w == 2) {
-                if (missing(ylim))
-                    ylim <- range(diff(x[["pressure"]]), na.rm=TRUE)
-                plot(xvar[-1], diff(x[["pressure"]]), xlab="Scan", ylab="diff(pressure)",
-                     yaxs='r', type=type, xlim=xlim, ylim=ylim, ...)
-            } else if (w == 3) {
-                if (missing(ylim))
-                    ylim <- range(diff(x[["temperature"]]), na.rm=TRUE)
-                plot(xvar, x[["temperature"]], xlab="Scan", ylab=resizableLabel("T", "y", debug=debug-1),
-                     yaxs='r', type=type, xlim=xlim, ylim=ylim, ...)
-            } else if (w == 4) {
-                if (missing(ylim))
-                    ylim <- range(diff(x[["salinity"]]), na.rm=TRUE)
-                plot(xvar, x[["salinity"]], xlab="Scan", ylab=resizableLabel("S", "y", debug=debug-1),
-                     yaxs='r', type=type, xlim=xlim, ylim=ylim, ...)
-            } else {
-                stop("unknown 'which'; must be in 1:4")
-            }
-        } else if (xtype == "time") {
-            time <- x[["time"]]
-            if (is.null(time))
-                stop("there is no 'time' in this ctd object")
-            if (missing(xlim))
-                xlim <- range(time)
-            if (w == 1) {
-                if (missing(ylim))
-                    ylim <- range(x[["pressure"]], na.rm=TRUE)
-                oce.plot.ts(time, x[["pressure"]], ylab=resizableLabel("p", "y", debug=debug-1),
-                            yaxs='r', type=type, flipy=flipy, xlim=xlim, ylim=ylim, ...)
-            } else if (w == 2) {
-                if (missing(ylim))
-                    ylim <- range(diff(x[["pressure"]]), na.rm=TRUE)
-                oce.plot.ts(time[-1], diff(x[["pressure"]]), ylab="diff(pressure)",
-                            yaxs='r', type=type, flipy=flipy, xlim=xlim, ylim=ylim, ...)
-            } else if (w == 3) {
-                if (missing(ylim))
-                    ylim <- range(x[["temperature"]], na.rm=TRUE)
-                oce.plot.ts(time, x[["temperature"]], ylab=resizableLabel("T", "y", debug=debug-1),
-                            yaxs='r', type=type, flipy=flipy, xlim=xlim, ylim=ylim, ...)
-            } else if (w == 4) {
-                if (missing(ylim))
-                    ylim <- range(x[["salinity"]], na.rm=TRUE)
-                oce.plot.ts(time, x[["salinity"]], ylab=resizableLabel("S", "y", debug=debug-1),
-                            yaxs='r', type=type, flipy=flipy, xlim=xlim, ylim=ylim, ...)
-            } else {
-                stop("unknown 'which'; must be in 1:4")
-            }
+    if (length(which) > 1)
+        stop("'which' must be of length 1 (as of December 2022)")
+    par(mar=mar, mgp=mgp)
+    pressure <- x[["pressure"]] # should always be present
+    if (is.null(pressure))
+        stop("object has no pressure column")
+    index <- seq_along(pressure)
+    if (xtype == "index") {
+        xvar <- index
+        xlab <- "Index"
+    } else if (xtype == "scan") {
+        if ("scan" %in% names(x@data)) {
+            xvar <- x@data$scan
+            xlab <- "Scan"
+        } else {
+            warning("no 'scan' in data slot; using index instead")
+            xvar <- index
+            xlab <- "Index"
         }
+    } else if (xtype == "time") {
+        if ("time" %in% names(x@data)) {
+            xvar <- x@data$scan
+            xlab <- "Time"
+        } else {
+            warning("no 'time' in data slot; using index instead")
+            xvar <- index
+            xlab <- "Index"
+        }
+    } else {
+        stop("xtype must be \"scan\", \"time\", or \"index\"")
+    }
+    if (missing(xlim))
+        xlim <- range(xvar, na.rm=TRUE)
+    if (which == 1) {
+        y <- x[["pressure"]]
+        if (missing(ylim)) {
+            ylim <- range(y, na.rm=TRUE)
+            if (flipy)
+                ylim <- rev(ylim)
+        }
+        plot(xvar, x[["pressure"]], xlab=xlab, ylab=resizableLabel("p", "y", debug=debug-1),
+            type=type, xlim=xlim, ylim=ylim, ...)
+    } else if (which == 2) {
+        y <- diff(x[["pressure"]])
+        if (is.null(ylim))
+            ylim <- range(y, na.rm=TRUE)
+        plot(xvar[-1], diff(x[["pressure"]]), xlab=xlab, ylab="diff(pressure)",
+            type=type, xlim=xlim, ylim=ylim, ...)
+    } else if (which == 3) {
+        y <- x[["temperature"]]
+        if (missing(ylim))
+            ylim <- range(y, na.rm=TRUE)
+        plot(xvar, x[["temperature"]], xlab=xlab, ylab=resizableLabel("T", "y", debug=debug-1),
+            type=type, xlim=xlim, ylim=ylim, ...)
+    } else if (which == 4) {
+        y <- x[["salinity"]]
+        if (missing(ylim))
+            ylim <- range(y, na.rm=TRUE)
+        plot(xvar, x[["salinity"]], xlab=xlab, ylab=resizableLabel("S", "y", debug=debug-1),
+            type=type, xlim=xlim, ylim=ylim, ...)
+    } else {
+        stop("which=", which, " not permitted; please use 1, 2, 3, or 4")
     }
 }
 

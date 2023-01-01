@@ -15,15 +15,13 @@ rskPatm(x, dp = 0.5)
 A list of four estimates: \code{sap}, the median, the mean, and the weighted mean.
 }
 \description{
-Estimate atmospheric pressure in rsk record.
-}
-\details{
-Pressures must be in decibars for this to work.  First, a subset of pressures is
-created, in which the range is \code{sap-dp} to \code{sap+dp}.  Here,
-\code{sap}=10.1325 dbar is standard sealevel atmospheric pressure.  Within this
-window, three measures of central tendency are calculated: the median, the mean,
-and a weighted mean that has weight given by \eqn{exp(-2*((p
-    - sap) / dp)^2)}{exp(-2*((p - sap) / dp)^2)}.
+Estimate atmospheric pressure in an \linkS4class{rsk} object.  Pressures must be in
+decibars for this to work.  First, a subset of pressures is created, in which
+the range is \code{sap-dp} to \code{sap+dp}.  Here, \code{sap}=10.1325 dbar is standard
+sealevel atmospheric pressure.  Within this window, three measures of central
+tendency are calculated: the median, the mean, and a weighted mean that has
+weight given by
+\eqn{exp(-2*((p-sap)/dp)^2)}{exp(-2*((p-sap)/dp)^2)}.
 }
 \examples{
 library(oce)
@@ -39,6 +37,7 @@ Other things related to rsk data:
 \code{\link{[[,rsk-method}},
 \code{\link{[[<-,rsk-method}},
 \code{\link{as.rsk}()},
+\code{\link{ctdFindProfilesRBR}()},
 \code{\link{plot,rsk-method}},
 \code{\link{read.rsk}()},
 \code{\link{rsk-class}},

@@ -1,3 +1,5 @@
+# vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
+
 #' Welch periodogram
 #'
 #' Compute periodogram using the Welch (1967) method. This is
@@ -116,7 +118,7 @@
 #' cat("2 * sum(s$spec) * diff(s$freq[1:2]) = ", 2 * sum(s$spec) * diff(s$freq[1:2]), "\n")
 #' cat("sum(w$spec) * diff(s$freq[1:2])     = ", sum(w$spec) * diff(w$freq[1:2]), "\n")
 #' cat("sum(w2$spec) * diff(s$freq[1:2])    = ", sum(w2$spec) * diff(w2$freq[1:2]), "\n")
-#' ## co2
+#' # co2
 #' par(mar=c(3,3,2,1), mgp=c(2,0.7,0))
 #' s <- spectrum(co2, plot=FALSE)
 #' plot(log10(s$freq), s$spec * s$freq,
@@ -128,77 +130,83 @@ pwelch <- function(x, window, noverlap, nfft, fs, spec,
                    demean=FALSE, detrend=TRUE,
                    plot=TRUE, debug=getOption("oceDebug"), ...)
 {
-    ##http://octave.svn.sourceforge.net/viewvc/octave/trunk/octave-forge/main/signal/inst/pwelch.m
-
-    hamming.local <- function (n) # avoid having to pull in the signal library
+    #http://octave.svn.sourceforge.net/viewvc/octave/trunk/octave-forge/main/signal/inst/pwelch.m
+    hamming.local <- function(n) # avoid having to pull in the signal library
     {
         n <- round(n)
-        if (n < 0)
+        if (n < 0) {
             stop("n must round to a positive integer")
-        if (n == 1)
+        }
+        if (n == 1) {
             c <- 1
-        else {
+        } else {
             n <- n - 1
-            pi <- 4 * atan2(1, 1) # avoid problems if user redefined this
+            pi <- 4.0 * atan2(1.0, 1.0)
             c <- 0.54 - 0.46 * cos(2 * pi * (0:n)/n)
         }
         c
     }
-    ## hanning.local <- function(n) # avoid having to pull in the signal library
-    ## {
-    ##     if (!(length(n) == 1 && (n == round(n)) && (n > 0)))
-    ##         stop("n must be a positive integer")
-    ##     if (n == 1)
-    ##         c <- 1
-    ##     else {
-    ##         pi <- 4 * atan2(1, 1)       # avoid problems if user redefined this
-    ##         n <- n - 1
-    ##         c <- 0.5 - 0.5 * cos(2 * pi * (0:n)/n)
-    ##     }
-    ##     c
-    ## }
+    # hanning.local <- function(n) # avoid having to pull in the signal library
+    # {
+    #     if (!(length(n) == 1 && (n == round(n)) && (n > 0)))
+    #         stop("n must be a positive integer")
+    #     if (n == 1)
+    #         c <- 1
+    #     else {
+    #         pi <- 4 * atan2(1, 1)       # avoid problems if user redefined this
+    #         n <- n - 1
+    #         c <- 0.5 - 0.5 * cos(2 * pi * (0:n)/n)
+    #     }
+    #     c
+    # }
     gave.window <- !missing(window)
     gave.nfft <- !missing(nfft)
-    gave.fs <- !missing(fs)
     gave.noverlap <- !missing(noverlap)
     gave.spec <- !missing(spec)
     oceDebug(debug, "pwelch(x, ",
-             argShow(window),
-             argShow(nfft),
-             argShow(noverlap),
-             argShow(fs), "...) {\n", sep="", style="bold", unindent=1)
+        argShow(window),
+        argShow(nfft),
+        argShow(noverlap),
+        argShow(fs), "...) {\n", sep="", style="bold", unindent=1)
     if (is.ts(x)) {
-        if (missing(fs))
+        if (missing(fs)) {
             fs <- frequency(x)
-        else if (fs != frequency(x))
+        } else if (fs != frequency(x)) {
             stop("fs, if provided, must equal frequency(x)")
+        }
     }
     nx <- length(x)
-    if (nx < 1)
+    if (nx < 1) {
         stop("need more than one data point")
+    }
     if (gave.spec) {
-        if (!gave.nfft)
+        if (!gave.nfft) {
             stop("must give nfft if spec is given")
-        if (gave.window)
+        }
+        if (gave.window) {
             stop("window must not be given, if spec is given")
+        }
     } else {
         if (gave.window) {
             if (gave.nfft && (length(window) != nfft))
                 stop("if both 'window' and 'nfft' are given, then length(window) must equal nfft")
             if (length(window) == 1) {
                 window <- as.integer(window)
-                if (window < 1L)
+                if (window < 1L) {
                     stop("window must be a positive integer, if length(window)==1")
+                }
                 window <- hamming.local(floor(nx / window))
             } else if (!is.vector(window)) {
                 stop("'window' must be a numeric vector")
             }
         } else {
             if (gave.nfft) {
-                if (nfft < 1)
+                if (nfft < 1) {
                     stop("'nfft' must be a positive integer")
-                if (nfft > 0.5 * nx)
+                }
+                if (nfft > 0.5 * nx) {
                     nfft <- nx
+                }
                 window <- hamming.local(nfft)
             } else {
                 if (gave.noverlap) {
@@ -217,10 +225,11 @@ pwelch <- function(x, window, noverlap, nfft, fs, spec,
     }
     step <- floor(window.len - noverlap + 1)
     oceDebug(debug, "using window.len=", window.len, "  step=", step, "  noverlap=", noverlap, "  nx=", nx, "\n", sep="")
-    if (step < 1)
+    if (step < 1) {
         stop("overlap cannot exceed segment length")
-    ## i0 <- 1
-    ## nwindows <- floor(nx / window.len)
+    }
+    # i0 <- 1
+    # nwindows <- floor(nx / window.len)
     psd <- NULL
     nrow <- 0
     start <- 1
@@ -230,48 +239,52 @@ pwelch <- function(x, window, noverlap, nfft, fs, spec,
             oceDebug(debug, "  calculating subspectrum using user-supplied 'spec', at indices ", start, "to", end, "\n")
             xx <- ts(x[start:end], frequency=fs)
             s <- spec(xx, ...)         # note the ...
-            if (nrow == 0)
+            if (nrow == 0) {
                 freq <- s$freq
+            }
             psd <- c(psd, s$spec)
             start <- start + step
             end <- end + step
             nrow <- nrow + 1
-            if (end > nx)
+            if (end > nx) {
                 break
+            }
         }
     } else {
         end <- window.len
         args <- list(...)
         names.args <- names(args)
-        if (!("taper" %in% names.args))
+        if (!("taper" %in% names.args)) {
             args$taper <- 0
+        }
         args$plot <- plot
         args$demean <- demean
         args$detrend <- detrend
         while (TRUE) {
             oceDebug(debug, "  calculating subspectrum using spectrum(), at indices ", start, "to", end, "\n")
-            #xx <- ts(window * detrend(x[start:end])$Y, frequency=fs)
             xx <- ts(window * x[start:end], frequency=fs)
             args$x <- xx                   # before issue 242, wrapped RHS in as.vector()
             s <- do.call(spectrum, args=args)
-            if (nrow == 0)
+            if (nrow == 0) {
                 freq <- s$freq
+            }
             psd <- c(psd, s$spec)
             start <- start + step
             end <- end + step
             nrow <- nrow + 1
-            if (end > nx)
+            if (end > nx) {
                 break
+            }
         }
     }
     nrow <- max(1, nrow)
     psd <- matrix(psd, nrow=nrow, byrow=TRUE) / normalization
     oceDebug(debug, "resultant spectrum is averaged across a matrix of dimension", paste(dim(psd), collapse="x"), "\n")
     res <- list(freq=freq, spec=apply(psd, 2, mean),
-                method="Welch", series=deparse(substitute(expr=x, env=environment())),
-                df=s$df * (nx / length(window)),
-                bandwidth=s$bandwidth, # FIXME: wrong formulae
-                demean=FALSE, detrend=TRUE)
+        method="Welch", series=deparse(substitute(expr=x, env=environment())),
+        df=s$df * (nx / length(window)),
+        bandwidth=s$bandwidth, # FIXME: wrong formulae
+        demean=FALSE, detrend=TRUE)
     class(res) <- "spec"
     if (plot) {
         plot(res, ...)

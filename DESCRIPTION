@@ -15,16 +15,14 @@ Suggests:
     interp,
     knitr,
     lubridate,
-    marmap,
     ncdf4,
     ocedata,
-    raster (>= 1.4.3),
-    rgeos,
     rmarkdown,
     RSQLite,
     R.utils,
     sf,
     sp,
+    terra,
     testthat (>= 3.0.0),
     tiff,
     XML
@@ -42,7 +40,7 @@ Encoding: UTF-8
 URL: https://dankelley.github.io/oce/
 LazyData: false
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.2.1
+RoxygenNote: 7.2.3
 BuildVignettes: true
 VignetteBuilder: knitr
 NeedsCompilation: yes

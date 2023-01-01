@@ -146,6 +146,7 @@ Other things related to rsk data:
 \code{\link{[[,rsk-method}},
 \code{\link{[[<-,rsk-method}},
 \code{\link{as.rsk}()},
+\code{\link{ctdFindProfilesRBR}()},
 \code{\link{read.rsk}()},
 \code{\link{rsk-class}},
 \code{\link{rskPatm}()},

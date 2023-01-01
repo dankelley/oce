@@ -39,11 +39,13 @@ velocityStatistics <- function(x, control, ...)
 {
     if (inherits(x, "adp")) {
         if (!missing(control) && !is.null(control$bin)) {
-            if (control$bin < 1)
+            if (control$bin < 1) {
                 stop("cannot have control$bin less than 1, but got ", control$bin)
+            }
             max.bin <- dim(x@data$v)[2]
-            if (control$bin > max.bin)
+            if (control$bin > max.bin) {
                 stop("cannot have control$bin larger than ", max.bin, " but got ", control$bin)
+            }
             u <- x@data$v[, control$bin, 1]
             v <- x@data$v[, control$bin, 2]
         } else {
@@ -64,7 +66,7 @@ velocityStatistics <- function(x, control, ...)
     uMean <- mean(u, ...)
     vMean <- mean(v, ...)
     list(ellipseMajor=ellipseMajor, ellipseMinor=ellipseMinor, ellipseAngle=ellipseAngle,
-         uMean=uMean, vMean=vMean)
+        uMean=uMean, vMean=vMean)
 }
 
 
@@ -87,12 +89,13 @@ velocityStatistics <- function(x, control, ...)
 #' @family things related to adv data
 beamToXyz <- function(x, ...)
 {
-    if (inherits(x, "adp"))
+    if (inherits(x, "adp")) {
         beamToXyzAdp(x, ...)
-    else if (inherits(x, "adv"))
+    } else if (inherits(x, "adv")) {
         beamToXyzAdv(x, ...)
-    else
+    } else {
         stop("class of object must inherit from either 'adv' or 'adp'")
+    }
 }
 
 #' Convert Acoustic-Doppler Data From xyz to enu Coordinates
@@ -110,12 +113,13 @@ beamToXyz <- function(x, ...)
 #' @family things related to adv data
 xyzToEnu <- function(x, ...)
 {
-    if (inherits(x, "adp"))
+    if (inherits(x, "adp")) {
         xyzToEnuAdp(x=x, ...)
-    else if (inherits(x, "adv"))
+    } else if (inherits(x, "adv")) {
         xyzToEnuAdv(x=x, ...)
-    else
+    } else {
         stop("class of object must inherit from either 'adv' or 'adp'")
+    }
 }
 
 
@@ -133,12 +137,13 @@ xyzToEnu <- function(x, ...)
 #' @family things related to adv data
 enuToOther <- function(x, ...)
 {
-    if (inherits(x, "adp"))
+    if (inherits(x, "adp")) {
         enuToOtherAdp(x, ...)
-    else if (inherits(x, "adv"))
+    } else if (inherits(x, "adv")) {
         enuToOtherAdv(x, ...)
-    else
+    } else {
         stop("class of object must inherit from either 'adv' or 'adp'")
+    }
 }
 
 #' Rotate acoustic-Doppler data to the enu coordinate system
@@ -155,10 +160,11 @@ enuToOther <- function(x, ...)
 #' @family things related to adv data
 toEnu <- function(x, ...)
 {
-    if (inherits(x, "adp"))
+    if (inherits(x, "adp")) {
         toEnuAdp(x, ...)
-    else if (inherits(x, "adv"))
+    } else if (inherits(x, "adv")) {
         toEnuAdv(x, ...)
-    else
+    } else {
         stop("class of object must inherit from either 'adv' or 'adp'")
+    }
 }

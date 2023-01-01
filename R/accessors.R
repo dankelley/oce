@@ -1,4 +1,4 @@
-## vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
+# vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
 
 #' Get Something from an oce data Slot
 #'
@@ -15,10 +15,12 @@
 #' @family things related to the data slot
 oceGetData <- function(object, name)
 {
-    if (!inherits(object, "oce"))
+    if (!inherits(object, "oce")) {
         stop("oceGetData() only works for oce objects")
-    if (missing(name))
+    }
+    if (missing(name)) {
         stop("'name' must be supplied")
+    }
     object@data[[name]]
 }
 
@@ -37,14 +39,18 @@ oceGetData <- function(object, name)
 #' @family things related to the data slot
 oceDeleteData <- function(object, name)
 {
-    if (!inherits(object, "oce"))
+    if (!inherits(object, "oce")) {
         stop("oceDeleteData() only works for oce objects")
-    if (name %in% names(object@data))
+    }
+    if (name %in% names(object@data)) {
         object@data[[name]] <- NULL
-    if (name %in% names(object@metadata$units))
+    }
+    if (name %in% names(object@metadata$units)) {
         object@metadata$units[[name]] <- NULL
-    if (name %in% names(object@metadata$flags))
+    }
+    if (name %in% names(object@metadata$flags)) {
         object@metadata$flags[[name]] <- NULL
+    }
     object@processingLog <- processingLogAppend(object@processingLog, paste("oceDeleteData() removed data$", name, sep="", collapse=""))
     object
 }
@@ -108,50 +114,48 @@ oceDeleteData <- function(object, name)
 #' @family things related to the data slot
 oceSetData <- function(object, name, value, unit, originalName, note="")
 {
-    if (!inherits(object, "oce"))
+    if (!inherits(object, "oce")) {
         stop("oceSetData() only works for oce objects")
+    }
     object@data[[name]] <- value
     if (!missing(unit) && !is.null(unit)) {
-        if  (!("units" %in% names(object@metadata))) # some objects might not have units yet
+        if  (!("units" %in% names(object@metadata))) {
             object@metadata$units <- list()
+        }
         if (is.list(unit)) {
-            ## message("case 1")
-            if (is.null(names(unit)))
+            if (is.null(names(unit))) {
                 names(unit) <- c("unit", "scale")
-            if (2 != sum(c("unit", "scale") %in% names(unit)))
+            }
+            if (2 != sum(c("unit", "scale") %in% names(unit))) {
                 stop("'unit' must contain 'unit' and 'scale'")
-            if (!is.expression(unit$unit))
+            }
+            if (!is.expression(unit$unit)) {
                 stop("'unit$unit' must be an expression")
-            if (!is.character(unit$scale))
+            }
+            if (!is.character(unit$scale)) {
                 stop("'unit$scale' must be a character string")
+            }
             object@metadata$units[[name]] <- unit
         } else if (is.expression(unit)) {
-            ## message("case 2")
+            # message("case 2")
             object@metadata$units[[name]] <- list(unit=unit, scale="")
         } else if (is.character(unit)) {
-            ## message("case 3")
-            ## browser()
             l <- list(unit=parse(text=unit), scale="")
             attributes(l[[1]]) <- NULL # the parse() adds unwanted attributes
             object@metadata$units[[name]] <- l
         } else {
             stop("'unit' must be a list, an expression, or a character string")
         }
-        ## if (!is.list(unit)||2!=length(unit)) stop("'unit' must be a list of length 2")
-        ## if (2 != sum(c("unit", "scale") %in% names(unit))) stop("'unit' must contain 'unit' and 'scale'")
-        ## if (!is.expression(unit$unit)) stop("'unit$unit' must be an expression")
-        ## if (!is.character(unit$scale)) stop("'unit$scale' must be a character string")
-        ## object@metadata$units[[name]] <- unit
     }
-    ## Handle originalName, if provided. Note that we have some code
-    ## here to cover two types of storage.
+    # Handle originalName, if provided. Note that we have some code {
+    # here to cover two types of storage.
     if (!missing(originalName)) {
         if ("dataNamesOriginal" %in% names(object@metadata)) {
             if (is.list(object@metadata$dataNamesOriginal)) {
-                ## After 2016-07-24 (issue 1017) we use a list.
+                # After 2016-07-24 (issue 1017) we use a list.
                 object@metadata$dataNamesOriginal[[name]] <- originalName
             } else {
-                ## Before 2016-07-24 (issue 1017) we used a character vector.
+                # Before 2016-07-24 (issue 1017) we used a character vector.
                 object@metadata$dataNamesOriginal <- as.list(object@metadata$dataNamesOriginal)
                 object@metadata$dataNamesOriginal[[name]] <- originalName
             }
@@ -161,12 +165,12 @@ oceSetData <- function(object, name, value, unit, originalName, note="")
         }
     }
     if (!is.null(note)) {
-        if (nchar(note) > 0)
+        if (nchar(note) > 0) {
             object@processingLog <- processingLogAppend(object@processingLog, note)
-        else
+        } else {
             object@processingLog <- processingLogAppend(object@processingLog,
-                                                        paste(deparse(match.call()),
-                                                              sep="", collapse=""))
+                paste(deparse(match.call()), sep="", collapse=""))
+        }
     }
     object
 }
@@ -209,26 +213,29 @@ oceRenameData <- function(object, old, new, note="")
     if (!is.character(old)) stop("'old' must be a character value")
     if (missing(new)) stop("must provide 'new'")
     if (!is.character(new)) stop("'new' must be a character value")
-    if (!(old %in% names(object@data)))
+    if (!(old %in% names(object@data))) {
         stop("object's data slot does not contain an item named '", old, "'")
-    if (new %in% names(object@data))
+    }
+    if (new %in% names(object@data)) {
         stop("cannot rename to '", new, "' because the object's data slot already contains something with that name")
+    }
     if (new != old) {
         names <- names(object@data)
         names[names == old] <- new
         names(object@data) <- names
         if (!is.null(note)) {
-            object@processingLog <- if (nchar(note) > 0) processingLogAppend(object@processingLog, note) else
+            object@processingLog <- if (nchar(note) > 0) {
+                processingLogAppend(object@processingLog, note)
+            } else {
                 processingLogAppend(object@processingLog, paste(deparse(match.call())))
+            }
         }
     }
-    ## update original names
+    # update original names
     if ("dataNamesOriginal" %in% names(object@metadata)) {
         dataNamesOriginalNames <- names(object@metadata$dataNamesOriginal)
         if (old %in% dataNamesOriginalNames) {
-            ##message("old: ", vectorShow(dataNamesOriginalNames))
             dataNamesOriginalNames[dataNamesOriginalNames == old] <- new
-            ##message("new: ", vectorShow(dataNamesOriginalNames ))
             names(object@metadata$dataNamesOriginal) <- dataNamesOriginalNames
         }
     }
@@ -263,10 +270,12 @@ oceRenameMetadata <- function(object, old, new, note="")
     if (!is.character(old)) stop("'old' must be a character value")
     if (missing(new)) stop("must provide 'new'")
     if (!is.character(new)) stop("'new' must be a character value")
-    if (!(old %in% names(object@metadata)))
+    if (!(old %in% names(object@metadata))) {
         stop("object's data slot does not contain an item named '", old, "'")
-    if (new %in% names(object@metadata))
+    }
+    if (new %in% names(object@metadata)) {
         stop("cannot rename to '", new, "' because the object's metadata slot already contains something with that name")
+    }
     if (new != old) {
         names <- names(object@metadata)
         names[names == old] <- new
@@ -294,10 +303,12 @@ oceRenameMetadata <- function(object, old, new, note="")
 #' @family things related to the metadata slot
 oceGetMetadata <- function(object, name)
 {
-    if (!inherits(object, "oce"))
+    if (!inherits(object, "oce")) {
         stop("oceGetData() only works for oce objects")
-    if (missing(name))
+    }
+    if (missing(name)) {
         stop("'name' must be supplied")
+    }
     object@metadata[[name]]
 }
 
@@ -316,10 +327,12 @@ oceGetMetadata <- function(object, name)
 #' @family things related to the metadata slot
 oceDeleteMetadata <- function(object, name)
 {
-    if (!inherits(object, "oce"))
+    if (!inherits(object, "oce")) {
         stop("oceDeleteData() only works for oce objects")
-    if (name %in% names(object@metadata))
+    }
+    if (name %in% names(object@metadata)) {
         object@metadata[[name]] <- NULL
+    }
     object@processingLog <- processingLogAppend(object@processingLog, paste("oceDeleteMetadata() removed metadadata$", name, sep="", collapse=""))
     object
 }
@@ -362,16 +375,17 @@ oceDeleteMetadata <- function(object, name)
 #' @family things related to the metadata slot
 oceSetMetadata <- function(object, name, value, note="")
 {
-    if (!inherits(object, "oce"))
+    if (!inherits(object, "oce")) {
         stop("oceSetData() only works for oce objects")
+    }
     object@metadata[[name]] <- value
     if (!is.null(note)) {
-        if (nchar(note) > 0)
+        if (nchar(note) > 0) {
             object@processingLog <- processingLogAppend(object@processingLog, note)
-        else
+        } else {
             object@processingLog <- processingLogAppend(object@processingLog,
-                                                        paste(deparse(match.call()),
-                                                              sep="", collapse=""))
+                paste(deparse(match.call()), sep="", collapse=""))
+        }
     }
     object
 }

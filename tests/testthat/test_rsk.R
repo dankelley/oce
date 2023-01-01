@@ -42,7 +42,7 @@ if (requireNamespace("RSQLite", quietly=TRUE)) {
             expect_equal(rsk[["sampleInterval"]], 0.167)
             expect_equal(rsk[["rskVersion"]], c(1, 9, 0))
             expect_equal(rsk[["ruskinVersion"]], c(1, 10, 0))
-            expect_equal(sort(names(rsk[["data"]])), c("conductivity","pressure","temperature","time"))
+            expect_equal(sort(names(rsk[["data"]])), c("conductivity","pressure","temperature","time", "tstamp"))
         }
 })}
 
