@@ -130,7 +130,7 @@ if (file.exists(f1)) {
             expect_equal(burst[["oceCoordinate"]], tolower(ad2cpHeaderValue(d1, "GETBURST", "CY", FALSE)))
             # FIXME: the next tests will fail if we store AHRS as 3D array
             # >> Data.BurstHR_AHRSRotationMatrix(1,:)
-            expect_equal(burst[["AHRS"]]$rotationMatrix[1,,],
+            expect_equal(burst[["AHRS"]]$rotationMatrix[1, , ],
                 matrix(c(0.060653746, -0.37823972, -0.92368418, 0.31505784,
                         -0.87079191, 0.37727141, -0.94709891, -0.31389475,
                         0.066413939), byrow=TRUE, nrow=3)) # byrow because numbers are from matlab output
@@ -184,17 +184,17 @@ if (file.exists(f1)) {
                 24.010, 24.010, 24.010, 24.010, 24.000)
             expect_equal(burst[["temperature"]][1:10], temperatureMatlab)
             # > Data.AverageHR_MagnetometerTemperature(1:10)
-            temperatureMagnetometerAverageMatlab <- c(25.8920, 25.8920, 25.8920, 25.8450, 25.8920,
+            temperatureMagAvgMatlab <- c(25.8920, 25.8920, 25.8920, 25.8450, 25.8920,
                 25.8450, 25.8920, 25.8450, 25.8920, 25.8450)
-            expect_equal(average[["temperatureMagnetometer"]][1:10], temperatureMagnetometerAverageMatlab)
+            expect_equal(average[["temperatureMagnetometer"]][1:10], temperatureMagAvgMatlab)
             # > Data.AverageHR_RTCTemperature(1:10)
             temperatureRTCAverageMatlab <- c(28.5000, 28.5000, 28.7500, 28.7500, 28.7500,
                 28.7500, 28.7500, 28.7500, 28.7500, 28.7500)
             expect_equal(average[["temperatureRTC"]][1:10], temperatureRTCAverageMatlab)
             # > Data.BurstHR_MagnetometerTemperature(1:10)
-            temperatureMagnetometerBurstMatlab <- c(25.7980, 25.8450, 25.9390, 25.8920, 25.8450,
+            temperatureMagBurstMatlab <- c(25.7980, 25.8450, 25.9390, 25.8920, 25.8450,
                 25.7510, 25.7980, 25.8920, 25.8450, 25.7980)
-            expect_equal(burst[["temperatureMagnetometer"]][1:10], temperatureMagnetometerBurstMatlab)
+            expect_equal(burst[["temperatureMagnetometer"]][1:10], temperatureMagBurstMatlab)
             # > Data.BurstHR_RTCTemperature(1:10)
             temperatureRTCBurstMatlab <- c(28.500, 28.500, 28.500, 28.500, 28.500,
                 28.500, 28.500, 28.500, 28.500, 28.500)
@@ -244,8 +244,8 @@ if (file.exists(f1)) {
             #R [1]  49 100  33 100 100 100 100 100 100 100
             expect_equal(burst[["nominalCorrelation"]][1:10], nominalCorrelationBurstMatlab)
             #>> Data.Average_NominalCor(1:10)
-            nominalCorrelationAverageMatlab <- rep(33, 10)
-            expect_equal(average[["nominalCorrelation"]][1:10], nominalCorrelationAverageMatlab)
+            nominalCorrAvgMatlab <- rep(33, 10)
+            expect_equal(average[["nominalCorrelation"]][1:10], nominalCorrAvgMatlab)
             # All are zero in matlab.
             expect_true(all(0 == average[["powerLevel"]]))
             expect_true(all(0 == burst[["powerLevel"]]))
@@ -356,10 +356,12 @@ if (file.exists(f2)) {
     test_that("read.adp() on a private AD2CP file that has only 'burst' data",
         {
             N <- 99                       # known value for subset of a larger file
-            expect_equal(N, read.oce(f2)[1,"occurance"])
+            expect_equal(N, read.oce(f2)[1, "occurance"])
             # Note: using read.adp() to ensure that it also works
             expect_warning(
-                expect_message(burst <- read.adp(f2, dataType="burst"),
+                expect_message(
+                    expect_message(burst <- read.adp(f2, dataType="burst"),
+                        "using to=100 based on file contents"),
                     "setting plan=0, the only value in the file"),
                 "ignoring 'despike'")
             expect_equal(burst[["oceCoordinate"]], "beam")
@@ -450,14 +452,14 @@ if (file.exists(f3)) {
             tib <- ib[["time"]]
             db <- b[["distance"]]
             dib <- ib[["distance"]]
-            imagep(tb, db, vb[,,1], zlim=zlim, zlab="burst[[\"v\"]][,,1]", drawTimeRange=FALSE, ylab="Distance [m]")
-            imagep(tb, db, vb[,,2], zlim=zlim, zlab="burst[[\"v\"]][,,2]", drawTimeRange=FALSE, ylab="Distance [m]")
-            imagep(tb, db, vb[,,3], zlim=zlim, zlab="burst[[\"v\"]][,,3]", drawTimeRange=FALSE, ylab="Distance [m]")
-            imagep(tb, db, vb[,,4], zlim=zlim, zlab="burst[[\"v\"]][,,4]", drawTimeRange=FALSE, ylab="Distance [m]")
-            imagep(tib, dib, vib[,,1], zlim=zlim, zlab="interleavedBurst[[\"v\"]][,,1]", drawTimeRange=FALSE, ylab="Distance [m]")
-            plot(c(0,1), c(0,1), xlab="", ylab="", axes=FALSE, type="n")
+            imagep(tb, db, vb[, , 1], zlim=zlim, zlab="burst[[\"v\"]][,,1]", drawTimeRange=FALSE, ylab="Distance [m]")
+            imagep(tb, db, vb[, , 2], zlim=zlim, zlab="burst[[\"v\"]][,,2]", drawTimeRange=FALSE, ylab="Distance [m]")
+            imagep(tb, db, vb[, , 3], zlim=zlim, zlab="burst[[\"v\"]][,,3]", drawTimeRange=FALSE, ylab="Distance [m]")
+            imagep(tb, db, vb[, , 4], zlim=zlim, zlab="burst[[\"v\"]][,,4]", drawTimeRange=FALSE, ylab="Distance [m]")
+            imagep(tib, dib, vib[, , 1], zlim=zlim, zlab="interleavedBurst[[\"v\"]][,,1]", drawTimeRange=FALSE, ylab="Distance [m]")
+            plot(c(0, 1), c(0, 1), xlab="", ylab="", axes=FALSE, type="n")
             text(0.5, 0.5, "interleavedBurst has only 1 beam")
-            plot(c(0,1), c(0,1), xlab="", ylab="", axes=FALSE, type="n")
+            plot(c(0, 1), c(0, 1), xlab="", ylab="", axes=FALSE, type="n")
             text(0.5, 0.5, paste("time range:\n", min(tb), "\n to\n ", max(tb)))
 
             # below is how we know this is 'beam'
@@ -499,4 +501,3 @@ if (file.exists(f3)) {
             #expect_silent(plot(d3enu, which=3, zlim=zlim/4, drawTimeRange=FALSE))
         })
 }
-
