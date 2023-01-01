@@ -79,7 +79,9 @@ geodXy <- function(longitude, latitude, longitudeRef, latitudeRef, debug=getOpti
     if (missing(longitudeRef)) stop("must provide longitudeRef")
     if (missing(latitudeRef)) stop("must provide latitudeRef")
     n <- length(longitude)
-    if (length(latitude) != n) stop("longitude and latitude vectors of unequal length")
+    if (length(latitude) != n) {
+        stop("longitude and latitude vectors of unequal length")
+    }
     xy  <- do_geod_xy(longitude, latitude, longitudeRef, latitudeRef, a, f)
     data.frame(x=xy$x, y=xy$y)
 }
@@ -288,8 +290,9 @@ geodDist <- function(longitude1, latitude1=NULL, longitude2=NULL, latitude2=NULL
 geodGc <- function(longitude, latitude, dmax)
 {
     n <- length(latitude)
-    if (n != length(longitude))
+    if (n != length(longitude)) {
         stop("lengths of longitude and latude must match")
+    }
     d2r <- atan2(1, 1) / 45
     rlat <- d2r * latitude
     rlon <- d2r * longitude
@@ -316,7 +319,8 @@ geodGc <- function(longitude, latitude, dmax)
     lon <- c(lon, longitude[n])
     lat <- c(lat, latitude[n])
     # use range 0 to 360 if input longitudes in that way
-    if (any(longitude > 180))
+    if (any(longitude > 180)) {
         lon <- ifelse(lon < 0, lon+360, lon)
+    }
     list(longitude=lon, latitude=lat)
 }

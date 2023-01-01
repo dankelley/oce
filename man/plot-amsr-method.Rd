@@ -3,13 +3,6 @@
 \name{plot,amsr-method}
 \alias{plot,amsr-method}
 \alias{plot.amsr}
-\alias{both}
-\alias{xlim}
-\alias{and}
-\alias{ylim}
-\alias{to}
-\alias{compute}
-\alias{zrange}
 \title{Plot an amsr Object}
 \usage{
 \S4method{plot}{amsr}(

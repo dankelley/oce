@@ -132,11 +132,9 @@ read.argo.copernicus <- function(file, encoding=NA, debug=getOption("oceDebug"),
         "TEMP"="temperature",
         "TEMP_ADJUSTED"="temperatureAdjusted",
         "TEMP_ADJUSTED_ERROR"="temperatureAdjustedError",
-        "VERTICAL_SAMPLING_SCHEME"="verticalSamplingScheme"
-        )
+        "VERTICAL_SAMPLING_SCHEME"="verticalSamplingScheme")
     varNamesKnown <- names(nameMap)
     QCNamesKnown <- paste0(names(nameMap), "_QC")
-    #print(QCNamesKnown)
     res@metadata$units <- list()
     for (name in varNames) {
         if (name %in% varNamesKnown) {
