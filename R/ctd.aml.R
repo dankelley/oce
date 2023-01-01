@@ -86,24 +86,24 @@
 #'
 #' @family things related to ctd data
 #' @family functions that read ctd data
-read.ctd.aml <- function(file,
-    format,
-    encoding="UTF-8-BOM",
-    debug=getOption("oceDebug"),
-    processingLog, ...)
+read.ctd.aml <- function(file, format, encoding="UTF-8-BOM", debug=getOption("oceDebug"), processingLog, ...)
 {
-    if (missing(file))
+    if (missing(file)) {
         stop("must supply 'file'")
+    }
     if (is.character(file)) {
-        if (!file.exists(file))
+        if (!file.exists(file)) {
             stop("cannot find file '", file, "'")
-        if (0L == file.info(file)$size)
+        }
+        if (0L == file.info(file)$size) {
             stop("empty file '", file, "'")
+        }
     }
     debug <- max(0L, as.integer(debug))
     oceDebug(debug, "read.ctd.aml(file=\"", file, "\", ...) {\n", unindent=1, style="bold")
-    if (is.character(file) && 0 == file.info(file)$size)
+    if (is.character(file) && 0 == file.info(file)$size) {
         stop("empty file")
+    }
     filename <- ""
     if (is.character(file)) {
         filename <- fullFilename(file)
@@ -119,11 +119,12 @@ read.ctd.aml <- function(file,
     getMetadataItem <- function(lines, name, numeric=TRUE, ignore.case=FALSE, debug=0)
     {
         oceDebug(debug, "getMetadataItem(lines, \"", name, "\", numeric=", numeric, ")\n", style="bold", unindent=1)
-        l <- grep(paste0("^",name,"="), lines, ignore.case=ignore.case)
+        l <- grep(paste0("^", name, "="), lines, ignore.case=ignore.case)
         res <- NA
         if (length(l) > 0L) {
-            if (length(l) > 1L)
+            if (length(l) > 1L) {
                 oceDebug(debug, "using second of ", length(l), " values\n")
+            }
             # We take second definition, ignoring first (or any others).
             l <- l[2]
             res <- trimws(strsplit(lines[l], "=")[[1]][2])
@@ -148,19 +149,21 @@ read.ctd.aml <- function(file,
         oceDebug(debug, "inferred format=", format, " from file's first line\n")
     }
     format <- as.integer(format)
-    if (format != 1L && format != 2L)
+    if (format != 1L && format != 2L) {
         stop("unrecognized format value, ", format, "; it must be 1 or 2")
-
+    }
     # FIXME: add other relevant metadata here.  This will require some
     # familiarity with the typical contents of the metadata.  For example,
     # I see 'SN' and 'BoardSN', and am inferring that we want to save
     # the first, but maybe it's the second...
     longitude <- getMetadataItem(lines, "longitude", ignore.case=TRUE, debug=debug-1L)
-    if (is.na(longitude))
+    if (is.na(longitude)) {
         longitude <- getMetadataItem(lines, "lon", ignore.case=TRUE, debug=debug-1L)
+    }
     latitude <- getMetadataItem(lines, "latitude", ignore.case=TRUE, debug=debug-1L)
-    if (is.na(latitude))
+    if (is.na(latitude)) {
         latitude <- getMetadataItem(lines, "lat", ignore.case=TRUE, debug=debug-1L)
+    }
     serialNumber <- getMetadataItem(lines, "sn", ignore.case=TRUE, numeric=FALSE, debug=debug-1L)
     oceDebug(debug, "inferred location ", longitude, "E, ", latitude, "N, ", " serialNumber ", serialNumber, "\n", sep="")
     header <- ""
@@ -173,14 +176,18 @@ read.ctd.aml <- function(file,
         col.names <- strsplit(lines[1], ",")[[1]]
     }
     oceDebug(debug, "step 1 col.names: c(\"", paste(col.names, collapse="\", \""), "\")\n")
-    if (length(col.names) < 1L)
+    if (length(col.names) < 1L) {
         stop("cannot determine column names")
-    if (!("Temperature (C)" %in% col.names))
+    }
+    if (!("Temperature (C)" %in% col.names)) {
         stop("no 'Temperature (C)' column found")
-    if (!("Conductivity (mS/cm)" %in% col.names))
+    }
+    if (!("Conductivity (mS/cm)" %in% col.names)) {
         stop("no 'Conductivity (mS/cm)' column found")
-    if (!("Pressure (dBar)" %in% col.names) && !("Depth (m)" %in% col.names))
+    }
+    if (!("Pressure (dBar)" %in% col.names) && !("Depth (m)" %in% col.names)) {
         stop("No 'Pressure (dBar)' or 'Depth (m)' column found")
+    }
     col.names[col.names == "Temperature (C)"] <- "temperature"
     col.names[col.names == "Conductivity (mS/cm)"] <- "conductivity"
     col.names[col.names == "Pressure (dBar)"] <- "pressure"
@@ -190,7 +197,6 @@ read.ctd.aml <- function(file,
     if (format == 1L) {
         data <- read.csv(text=lines, skip=endOfHeader+1L, col.names=col.names, encoding=encoding)
     } else if (format == 2L) {
-        nfields <- length(col.names)
         nfield <- unlist(lapply(lines, function(l) length(strsplit(l, ",")[[1]])))
         look <- nfield == nfield[1]
         header <- lines[seq(1L, which(look)[2]-1L)]
@@ -219,10 +225,12 @@ read.ctd.aml <- function(file,
     }
     dno <- list(salinity="-", temperature="Temperature (C)",
         conductivity="Conductivity (mS/cm)", Date="Date", Time="Time")
-    if ("depth" %in% names(data))
+    if ("depth" %in% names(data)) {
         dno$depth <- "Depth (m)"
-    if ("battery" %in% names(data))
+    }
+    if ("battery" %in% names(data)) {
         dno$battery <- "Battery (V)"
+    }
     res@metadata$dataNamesOriginal <- dno
     for (name in names(data)) {
         if (name != "temperature" && name != "salinity" && name != "pressure") {
@@ -234,10 +242,12 @@ read.ctd.aml <- function(file,
     # has no unit, and we know that it's present, but we check on the other
     # things.
     res@metadata$units$conductivity <- list(unit=expression(mS/cm), scale="")
-    if ("battery" %in% names(res@data))
+    if ("battery" %in% names(res@data)) {
         res@metadata$units$battery <- list(unit=expression(V), scale="")
-    if ("depth" %in% names(res@data))
+    }
+    if ("depth" %in% names(res@data)) {
         res@metadata$units$depth <- list(unit=expression(m), scale="")
+    }
     res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     oceDebug(debug, "} # read.ctd.aml() {\n", unindent=1, style="bold")
     res
