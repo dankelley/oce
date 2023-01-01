@@ -670,7 +670,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, dataType=NULL,
     oceDebug(debug, vectorShow(length(d$index)))
     Nmax <- length(d$index)
     if (to > Nmax) {
-        message("In read.adp.ad2cp() : using to=", Nmax, " based on file contents")
+        message("using to=", Nmax, " based on file contents")
         to <- Nmax
     }
     focusIndex <- seq(from, to, by=by)
@@ -2016,7 +2016,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, dataType=NULL,
             stop("no dataType=", dataTypeOrig, " (echosounder) in file")
         }
         data <- readEchosounder(id=dataType, debug=debug)
-        message("FIXME: move some (echosounder) things from data to metadata")
+        oceDebug(debug, "FIXME: move some (echosounder) things from data to metadata\n")
         for (name in c("blankingDistance", "cellSize", "configuration",
                 "datasetDescription", "distance", "frequency", "numberOfBeams",
                 "numberOfCells", "orientation")) {
@@ -2211,11 +2211,7 @@ data#| $echosounderRaw$cellsize, length.out=data$echosounderRaw$numberOfSamples)
     # and want to correct it.  This makes ad2cp different from other adp
     # types.  Also, we must remove the overall coordinate (created by
     # initializer) since it has no meaning here.
-    if (TRUE) {
-        message("FIXME: should we be skipping the excision of metadata$oceCoordinate?")
-    } else {
-        res@metadata$oceCoordinate <- NULL
-    }
+    # res@metadata$oceCoordinate <- NULL
     # Remove some metadata that make don't sense for the dataType
     if (dataType %in% c(0x1c, 0x1e, 0x23)) {
         # 0x1c=echosounder 0x1e=altimeter 0x23=echosounderRaw
