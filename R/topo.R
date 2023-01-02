@@ -86,18 +86,18 @@ setClass("topo", contains="oce")
 NULL
 
 setMethod(f="initialize",
-          signature="topo",
-          definition=function(.Object, longitude, latitude, z, filename="", units, ...) {
-              .Object <- callNextMethod(.Object, ...)
-              if (!missing(longitude)) .Object@data$longitude <- longitude
-              if (!missing(latitude)) .Object@data$latitude <- latitude
-              if (!missing(z)) .Object@data$z <- z
-              if (!missing(units)) .Object@metadata$units <- units
-              .Object@metadata$filename <- filename
-              .Object@processingLog$time <- presentTime()
-              .Object@processingLog$value <- "create 'topo' object"
-              return(.Object)
-          })
+    signature="topo",
+    definition=function(.Object, longitude, latitude, z, filename="", units, ...) {
+        .Object <- callNextMethod(.Object, ...)
+        if (!missing(longitude)) .Object@data$longitude <- longitude
+        if (!missing(latitude)) .Object@data$latitude <- latitude
+        if (!missing(z)) .Object@data$z <- z
+        if (!missing(units)) .Object@metadata$units <- units
+        .Object@metadata$filename <- filename
+        .Object@processingLog$time <- presentTime()
+        .Object@processingLog$value <- "create 'topo' object"
+        return(.Object)
+    })
 
 
 #' @title Summarize A Topo Object
@@ -121,12 +121,12 @@ setMethod(f="initialize",
 #'
 #' @family things related to topo data
 setMethod(f="summary",
-          signature="topo",
-          definition=function(object, ...) {
-              cat("\nTopo dataset\n------------\n")
-              cat("* Source:          ", object[["filename"]], "\n")
-              invisible(callNextMethod()) # summary
-          })
+    signature="topo",
+    definition=function(object, ...) {
+        cat("\nTopo dataset\n------------\n")
+        cat("* Source:          ", object[["filename"]], "\n")
+        invisible(callNextMethod()) # summary
+    })
 
 #' @title Extract Something From a Topo Object
 #'
@@ -153,15 +153,16 @@ setMethod(f="summary",
 #'
 #' @family things related to topo data
 setMethod(f="[[",
-          signature(x="topo", i="ANY", j="ANY"),
-          definition=function(x, i, j, ...) {
-              if (i == "?")
-                  return(list(metadata=sort(names(x@metadata)),
-                          metadataDerived=NULL,
-                          data=sort(names(x@data)),
-                          dataDerived=NULL))
-              callNextMethod()         # [[
-          })
+    signature(x="topo", i="ANY", j="ANY"),
+    definition=function(x, i, j, ...) {
+        if (i == "?") {
+            return(list(metadata=sort(names(x@metadata)),
+                metadataDerived=NULL,
+                data=sort(names(x@data)),
+                dataDerived=NULL))
+        }
+        callNextMethod()         # [[
+    })
 
 #' @title Replace Parts of a Topo Object
 #'
@@ -203,35 +204,36 @@ setMethod(f="[[<-",
 #' @family things related to topo data
 #' @family functions that subset oce objects
 setMethod(f="subset",
-          signature="topo",
-          definition=function(x, subset, ...) {
-              subsetString <- paste(deparse(substitute(expr=subset, env=environment())), collapse=" ")
-              res <- x
-              dots <- list(...)
-              debug <- getOption("oceDebug")
-              if (length(dots) && ("debug" %in% names(dots)))
-                  debug <- dots$debug
-              if (missing(subset))
-                  stop("must give 'subset'")
-              if (length(grep("longitude", subsetString))) {
-                  oceDebug(debug, "subsetting a topo object by longitude\n")
-                  keep <- eval(expr=substitute(expr=subset, env=environment()), envir=x@data, enclos=parent.frame(2))
-                  oceDebug(debug, "keeping", 100*sum(keep)/length(keep), "% of longitudes\n")
-                  res[["longitude"]] <- x[["longitude"]][keep]
-                  res[["z"]] <- x[["z"]][keep, ]
-              } else if (length(grep("latitude", subsetString))) {
-                  oceDebug(debug, "subsetting a topo object by latitude\n")
-                  keep <- eval(expr=substitute(expr=subset, env=environment()), envir=x@data, enclos=parent.frame(2))
-                  oceDebug(debug, "keeping", 100*sum(keep)/length(keep), "% of latitudes\n")
-                  res[["latitude"]] <- x[["latitude"]][keep]
-                  res[["z"]] <- x[["z"]][, keep]
-              } else {
-                  stop("the subset must be based on longitude or latitude")
-              }
-              res@processingLog <- processingLogAppend(res@processingLog, paste("subset.topo(x, subset=", subsetString, ")", sep=""))
-              res
-          })
-
+    signature="topo",
+    definition=function(x, subset, ...) {
+        subsetString <- paste(deparse(substitute(expr=subset, env=environment())), collapse=" ")
+        res <- x
+        dots <- list(...)
+        debug <- getOption("oceDebug")
+        if (length(dots) && ("debug" %in% names(dots))) {
+            debug <- dots$debug
+        }
+        if (missing(subset)) {
+            stop("must give 'subset'")
+        }
+        if (length(grep("longitude", subsetString))) {
+            oceDebug(debug, "subsetting a topo object by longitude\n")
+            keep <- eval(expr=substitute(expr=subset, env=environment()), envir=x@data, enclos=parent.frame(2))
+            oceDebug(debug, "keeping", 100*sum(keep)/length(keep), "% of longitudes\n")
+            res[["longitude"]] <- x[["longitude"]][keep]
+            res[["z"]] <- x[["z"]][keep, ]
+        } else if (length(grep("latitude", subsetString))) {
+            oceDebug(debug, "subsetting a topo object by latitude\n")
+            keep <- eval(expr=substitute(expr=subset, env=environment()), envir=x@data, enclos=parent.frame(2))
+            oceDebug(debug, "keeping", 100*sum(keep)/length(keep), "% of latitudes\n")
+            res[["latitude"]] <- x[["latitude"]][keep]
+            res[["z"]] <- x[["z"]][, keep]
+        } else {
+            stop("the subset must be based on longitude or latitude")
+        }
+        res@processingLog <- processingLogAppend(res@processingLog, paste("subset.topo(x, subset=", subsetString, ")", sep=""))
+        res
+    })
 
 #' Download and Cache a topo File
 #'
@@ -312,9 +314,8 @@ setMethod(f="subset",
 #' @family functions that download files
 #' @family things related to topo data
 download.topo <- function(west, east, south, north, resolution=4,
-    destdir=".", destfile, format,
-    server="https://gis.ngdc.noaa.gov",
-    debug=getOption("oceDebug"))
+                          destdir=".", destfile, format, server="https://gis.ngdc.noaa.gov",
+                          debug=getOption("oceDebug"))
 {
     oceDebug(debug, "download.topo(west=", west,
         ", east=", east,
@@ -325,36 +326,40 @@ download.topo <- function(west, east, south, north, resolution=4,
         ", server='", server, "')\n",
         sep="", style="bold", unindent=1)
     # Code derived from marmap:getNOAAbathy() {
-    if (resolution < 0.5)
+    if (resolution < 0.5) {
         resolution <- 0.25
-    else if (resolution < 1.0)
+    } else if (resolution < 1.0) {
         resolution <- 0.50
-    database <- if (resolution == 0.25)
+    }
+    database <- if (resolution == 0.25) {
         "27ETOPO_2022_v1_15s_bed_elev"
-    else if (resolution == 0.50)
+    } else if (resolution == 0.50) {
         "27ETOPO_2022_v1_30s_bed"
-    else
+    } else {
         "27ETOPO_2022_v1_60s_bed"
+    }
     # } end of marmap-derived code
     oceDebug(debug, "resolution set to ", resolution, " for web query\n")
     oceDebug(debug, "database set to '", database, "' for web query\n")
-
-    ## The +-0.005 is to get rounding down for west and south, and rounding up for east and north.
+    # The +-0.005 is to get rounding down for west and south, and rounding up for east and north.
     east <- round(east + 0.005, 2)
     west <- round(west - 0.005, 2)
     south <- round(south - 0.005, 2)
     north <- round(north + 0.005, 2)
-    if (west > 180)
+    if (west > 180) {
         west <- west - 360
-    if (east > 180)
+    }
+    if (east > 180) {
         east <- east - 360
+    }
     wName <- paste(abs(west), if (west <= 0) "W" else "E", sep="")
     eName <- paste(abs(east), if (east <= 0) "W" else "E", sep="")
     sName <- paste(abs(south), if (south <= 0) "S" else "N", sep="")
     nName <- paste(abs(north), if (north <= 0) "S" else "N", sep="")
     resolutionName <- paste(resolution, "min", sep="")
-    if (missing(destfile))
+    if (missing(destfile)) {
         destfile <- paste0(paste("topo", wName, eName, sName, nName, resolutionName, sep="_"), ".nc")
+    }
     destination <- paste0(destdir, "/", destfile)
     oceDebug(debug, "destination='", destination, "'\n", sep="")
     if (file.exists(destination)) {
@@ -363,11 +368,13 @@ download.topo <- function(west, east, south, north, resolution=4,
         return(destination)
     }
     nlon <- as.integer((east - west) * 60.0 / resolution)
-    if (nlon < 1L)
+    if (nlon < 1L) {
         stop("Cannot download topo file, since east-west (=", east-west, " deg) is less than resolution (=", resolution, " min)")
+    }
     nlat <- as.integer((north - south) * 60.0 / resolution)
-    if (nlat < 1L)
+    if (nlat < 1L) {
         stop("Cannot download topo file, since north-south(=", north-south, " deg) is less than resolution (=", resolution, " min)")
+    }
     urlOLD <- paste0(server, "/arcgis/rest/services/DEM_mosaics/ETOPO1_bedrock/ImageServer/exportImage",
         "?bbox=", west, ",", south, ",", east, ",", north,
         "&bboxSR=4326",
@@ -379,7 +386,6 @@ download.topo <- function(west, east, south, north, resolution=4,
         "&compression=LZW",
         "&f=image")
     oceDebug(debug, "OLD url: \"", urlOLD, "\"\n", sep="")
-
     # Test on 2022-11-13 with NOAA interface (Halifax Harbour region)
     # https://gis.ngdc.noaa.gov
     # /arcgis/rest/services/
@@ -409,18 +415,20 @@ download.topo <- function(west, east, south, north, resolution=4,
         "%27%22}",
         "&f=image")
     oceDebug(debug, "querying \"", url, "\"\n", sep="")
-    if (!requireNamespace("terra", quietly=TRUE))
+    if (!requireNamespace("terra", quietly=TRUE)) {
         stop("must install.packages(\"terra\") before using download.topo()")
-    if (!requireNamespace("ncdf4", quietly=TRUE))
+    }
+    if (!requireNamespace("ncdf4", quietly=TRUE)) {
         stop("must install.packages(\"ncdf4\") before using download.topo()")
+    }
     r <- terra::rast(x=url)
     oceDebug(debug, "converting data\n", sep="")
     longitude <- seq(terra::xmin(r), terra::xmax(r), length.out=ncol(r))
     latitude <- seq(terra::ymin(r), terra::ymax(r), length.out=nrow(r))
     z <- t(terra::as.matrix(terra::flip(r, direction="vertical"), wide=TRUE))
     oceDebug(debug, "saving to \"", destination, "\"\n", sep="")
-    ## create netcdf file
-    ## dimensions
+    # create netcdf file
+    # dimensions
     #side <- ncdf4::ncdim_def("side", units="", vals=2.0)
     fillvalue <- 1e32
     lonDim <- ncdf4::ncdim_def("lon", "degrees_east", as.double(longitude))
@@ -559,291 +567,275 @@ topoInterpolate <- function(longitude, latitude, topo)
 #' @family things related to topo data
 #' @aliases plot.topo
 setMethod(f="plot",
-          signature=signature("topo"),
-          definition=function(x,
-                              xlab="", ylab="",
-                              asp,
-                              clongitude, clatitude, span,
-                              ##center, span,
-                              expand=1.5,
-                              water.z,
-                              col.water,
-                              lty.water,
-                              lwd.water,
-                              land.z,
-                              col.land,
-                              lty.land,
-                              lwd.land,
-                              geographical=FALSE,
-                              location="topright",
-                              mgp=getOption("oceMgp"),
-                              mar=c(mgp[1]+1, mgp[1]+1, 1, 1),
-                              debug=getOption("oceDebug"),
-                              ...)
-          {
-              if (!inherits(x, "topo"))
-                  stop("method is only for objects of class '", "topo", "'")
-              oceDebug(debug, "plot.topo() {\n", unindent=1)
+    signature=signature("topo"),
+    definition=function(x, xlab="", ylab="", asp,
+                        clongitude, clatitude, span, expand=1.5,
+                        water.z, col.water, lty.water, lwd.water,
+                        land.z, col.land, lty.land, lwd.land,
+                        geographical=FALSE,
+                        location="topright",
+                        mgp=getOption("oceMgp"),
+                        mar=c(mgp[1]+1, mgp[1]+1, 1, 1),
+                        debug=getOption("oceDebug"),
+                        ...)
+    {
+        if (!inherits(x, "topo")) {
+            stop("method is only for objects of class '", "topo", "'")
+        }
+        oceDebug(debug, "plot.topo() {\n", unindent=1)
+        #opar <- par(no.readonly = TRUE)
+        #on.exit(par(opar))
+        par(mgp=mgp, mar=mar)
+        dots <- list(...)
+        dotsNames <- names(dots)
+        if ("center" %in% dotsNames) stop("please use 'clatitude' and 'clongitude' instead of 'center'")
+        gave.center <- !missing(clatitude) && !missing(clongitude)
+        gave.span <- !missing(span)
+        if (gave.center != gave.span) stop("must give all of 'clatitude', 'clongitude' and 'span', or none of them")
+        if (!missing(clongitude) && clongitude > 180) {
+            clongitude <- clongitude - 360
+        }
+        if (!missing(clongitude) && clongitude < -180) {
+            clongitude <- clongitude + 360
+        }
+        if (gave.center) {
+            if (!missing(asp)) {
+                warning("argument 'asp' being ignored, because argument 'center' was given")
+            }
+            asp <- 1 / cos(clatitude * atan2(1, 1) / 45) #  ignore any provided asp, because lat from center over-rides it
+            xr <- clongitude + span * c(-1/2, 1/2) / 111.11 / asp
+            yr <- clatitude  + span * c(-1/2, 1/2) / 111.11
+            oceDebug(debug, "gave center; calculated xr=", xr, " yr=", yr, " asp=", asp, "\n")
+        } else {
+            if (missing(asp)) {
+                if ("ylim" %in% dotsNames) {
+                    asp <- 1 / cos(mean(range(dots$ylim, na.rm=TRUE)) * pi / 180) # dy/dx
+                } else {
+                    asp <- 1 / cos(mean(range(x[["latitude"]], na.rm=TRUE)) * pi / 180) # dy/dx
+                }
+            }
+            # Expand
+            xr0 <- range(x[["longitude"]], na.rm=TRUE)
+            yr0 <- range(x[["latitude"]], na.rm=TRUE)
+            oceDebug(debug, "xr0=", xr0, "\n")
+            oceDebug(debug, "yr0=", yr0, "\n")
+            if (expand >= 0 && max(abs(xr0)) < 100 && max(abs(yr0) < 70)) {
+                # don't expand if full map
+                xr <- mean(xr0) + expand * diff(xr0) * c(-1/2, 1/2)
+                yr <- mean(yr0) + expand * diff(yr0) * c(-1/2, 1/2)
+            } else {
+                xr <- xr0
+                yr <- yr0
+            }
+        }
+        zr <- range(x[["z"]], na.rm=TRUE)
+        if (gave.center && !is.null(dots$xlim)) {
+            stop("cannot give 'xlim' argument if the 'center' argument was given")
+        }
+        if (gave.center && !is.null(dots$ylim)) {
+            stop("cannot give 'ylim' argument if the 'center' argument was given")
+        }
+        # auto-scale based on data in window, if window provided
+        if (!is.null(dots$xlim) && !is.null(dots$ylim)) {
+            xr <- dots$xlim
+            yr <- dots$ylim
+        }
+        # The following is a somewhat provisional hack, to get around a
+        # tendency of plot() to produce latitudes past the poles.
+        # BUG: the use of par("pin") seems to mess up resizing in aqua windows.
+        asp.page <- par("pin")[2] / par("pin")[1] # dy / dx
+        oceDebug(debug, "par('pin')=", par("pin"), "asp=", asp, "asp.page=", asp.page, "\n")
+        if (asp > asp.page) {
+            # FIXME: this seems to have x and y mixed up (asp=dy/dx)
+            oceDebug(debug, "type 1 (will narrow x range)\n")
+            d <- asp / asp.page * diff(xr)
+            xr <- mean(xr) + d * c(-1/2, 1/2)
+            oceDebug(debug, "xr narrowed to:", xr, "\n")
+        } else {
+            oceDebug(debug, "type 2 (will narrow y range)\n")
+            d <- asp / asp.page * diff(yr)
+            yr <- mean(yr) + d * c(-1/2, 1/2)
+            oceDebug(debug, "yr narrowed to:", yr, "\n")
+        }
 
-              ##opar <- par(no.readonly = TRUE)
-              ##on.exit(par(opar))
-              par(mgp=mgp, mar=mar)
-              dots <- list(...)
-              dotsNames <- names(dots)
-              if ("center" %in% dotsNames) stop("please use 'clatitude' and 'clongitude' instead of 'center'")
-              gave.center <- !missing(clatitude) && !missing(clongitude)
-
-              gave.span <- !missing(span)
-              if (gave.center != gave.span) stop("must give all of 'clatitude', 'clongitude' and 'span', or none of them")
-              if (!missing(clongitude) && clongitude > 180)
-                  clongitude <- clongitude - 360
-              if (!missing(clongitude) && clongitude < -180)
-                  clongitude <- clongitude + 360
-              if (gave.center) {
-                  if (!missing(asp))
-                      warning("argument 'asp' being ignored, because argument 'center' was given")
-                  asp <- 1 / cos(clatitude * atan2(1, 1) / 45) #  ignore any provided asp, because lat from center over-rides it
-                  xr <- clongitude + span * c(-1/2, 1/2) / 111.11 / asp
-                  yr <- clatitude  + span * c(-1/2, 1/2) / 111.11
-                  oceDebug(debug, "gave center; calculated xr=", xr, " yr=", yr, " asp=", asp, "\n")
-              } else {
-                  if (missing(asp)) {
-                      if ("ylim" %in% dotsNames)
-                          asp <- 1 / cos(mean(range(dots$ylim, na.rm=TRUE)) * pi / 180) # dy/dx
-                      else
-                          asp <- 1 / cos(mean(range(x[["latitude"]], na.rm=TRUE)) * pi / 180) # dy/dx
-                  }
-                  ## Expand
-                  xr0 <- range(x[["longitude"]], na.rm=TRUE)
-                  yr0 <- range(x[["latitude"]], na.rm=TRUE)
-                  oceDebug(debug, "xr0=", xr0, "\n")
-                  oceDebug(debug, "yr0=", yr0, "\n")
-                  if (expand >= 0 && max(abs(xr0)) < 100 && max(abs(yr0) < 70)) {
-                      ## don't expand if full map
-                      xr <- mean(xr0) + expand * diff(xr0) * c(-1/2, 1/2)
-                      yr <- mean(yr0) + expand * diff(yr0) * c(-1/2, 1/2)
-                  } else {
-                      xr <- xr0
-                      yr <- yr0
-                  }
-              }
-              zr <- range(x[["z"]], na.rm=TRUE)
-              if (gave.center && !is.null(dots$xlim))
-                  stop("cannot give 'xlim' argument if the 'center' argument was given")
-              if (gave.center && !is.null(dots$ylim))
-                  stop("cannot give 'ylim' argument if the 'center' argument was given")
-              ## auto-scale based on data in window, if window provided
-              if (!is.null(dots$xlim) && !is.null(dots$ylim)) {
-                  xr <- dots$xlim
-                  yr <- dots$ylim
-              }
-
-              ## The following is a somewhat provisional hack, to get around a
-              ## tendency of plot() to produce latitudes past the poles.
-              ## BUG: the use of par("pin") seems to mess up resizing in aqua windows.
-              asp.page <- par("pin")[2] / par("pin")[1] # dy / dx
-              oceDebug(debug, "par('pin')=", par('pin'), "asp=", asp, "asp.page=", asp.page, "\n")
-              if (asp > asp.page) {
-                  ## FIXME: this seems to have x and y mixed up (asp=dy/dx)
-                  oceDebug(debug, "type 1 (will narrow x range)\n")
-                  d <- asp / asp.page * diff(xr)
-                  xr <- mean(xr) + d * c(-1/2, 1/2)
-                  oceDebug(debug, "xr narrowed to:", xr, "\n")
-                  ## xr[2] <- xr[1] + (xr[2] - xr[1]) * (asp / asp.page)
-              } else {
-                  oceDebug(debug, "type 2 (will narrow y range)\n")
-                  d <- asp / asp.page * diff(yr)
-                  yr <- mean(yr) + d * c(-1/2, 1/2)
-                  oceDebug(debug, "yr narrowed to:", yr, "\n")
-                  ##yr[2] <- yr[1] + (yr[2] - yr[1]) / (asp / asp.page)
-              }
-
-              oceDebug(debug, "xr:", xr, "(before trimming)\n")
-              oceDebug(debug, "yr:", yr, "(before trimming)\n")
-                                        #    if (xr[1] < -180) xr[1] <- -180
-                                        #    if (xr[2] >  180) xr[2] <- 180
-              if (yr[1] < -90)  yr[1] <- -90
-              if (yr[2] >  90)  yr[2] <-  90
-              oceDebug(debug, "xr:", xr, "(after trimming)\n")
-              oceDebug(debug, "yr:", yr, "(after trimming)\n")
-
-              X <- x[["longitude"]]
-              Y <- x[["latitude"]]
-              Z <- x[["z"]]
-              ## Handle repeats modulo 180
-              if (X[1] == -180 && X[length(X)] == 180) {
-                  ## warning("In plot() : trimming a longitude of 180 since longitude -180 is present",
-                  ##         call.=FALSE)
-                  keep <- seq.int(1L, length(X)-1)
-                  X <- X[keep]
-                  Z <- Z[keep, ]
-              }
-              ## check for prime meridian
-              if (sign(prod(xr)) < 0) {
-                  Z <- rbind(Z, Z)
-                  X <- c(X - 360, X)
-                  ## If X runs from -180 to 180, then subtracting 360 will duplicate the -180 value,
-                  ## so we test for repeats. We don't test for a diff of exactly zero, for numerical
-                  ## reasons, and the test for 0.001 times the mean is quite arbitrary, since we
-                  ## are likely looking for a value of 1e-14 or so, which is FAR below the difference
-                  ## we would get in realistic topographic data.
-                  dX <- diff(X)
-                  if (any(dX < 0.001*mean(dX))) {
-                      delete <- which(dX < 0.001 * mean(dX))[1]
-                      X <- X[-delete]
-                      Z <- Z[-delete, ]
-                  }
-              }
-
-              ## Data may not extend across plot region
-              ##lon.range <- range(x[["longitude"]], na.rm=TRUE)
-              ##lat.range <- range(x[["latitude"]], na.rm=TRUE)
-              lon.range <- range(X, na.rm=TRUE)
-              lat.range <- range(Y, na.rm=TRUE)
-              if (xr[1] < lon.range[1]) xr[1] <- lon.range[1]
-              if (xr[2] > lon.range[2]) xr[2] <- lon.range[2]
-              if (yr[1] < lat.range[1]) yr[1] <- lat.range[1]
-              if (yr[2] > lat.range[2]) yr[2] <- lat.range[2]
-
-              plot(xr, yr, asp=asp, xlab="", ylab="", type="n", xaxs="i", yaxs="i", axes=FALSE, ...)
-              if (debug > 0)
-                  points(xr, yr, col="blue", pch=20, cex=3)
-
-              xr.pretty <- pretty(xr)
-              yr.pretty <- pretty(yr)
-              oceDebug(debug, "xr.pretty=", xr.pretty, "(before trimming)\n")
-              xr.pretty <- subset(xr.pretty, xr.pretty >= xr[1] & xr.pretty <= xr[2])
-              oceDebug(debug, "xr.pretty=", xr.pretty, "(after trimming)\n")
-              oceDebug(debug, "yr.pretty=", yr.pretty, "(before trimming)\n")
-              yr.pretty <- subset(yr.pretty, yr.pretty >= yr[1] & yr.pretty <= yr[2])
-              oceDebug(debug, "yr.pretty=", yr.pretty, "(after trimming)\n")
-
-              lines(c(xr[1], xr[2], xr[2], xr[1], xr[1]), c(yr[1], yr[1], yr[2], yr[2], yr[1])) # axis box
-              xlabels <- format(xr.pretty)
-              ylabels <- format(yr.pretty)
-              if (geographical) {
-                  xlabels <- sub("-", "", xlabels)
-                  ylabels <- sub("-", "", ylabels)
-              }
-              axis(1, at=xr.pretty, pos=yr[1], labels=xlabels)
+        oceDebug(debug, "xr:", xr, "(before trimming)\n")
+        oceDebug(debug, "yr:", yr, "(before trimming)\n")
+        if (yr[1] < -90)  yr[1] <- -90
+        if (yr[2] >  90)  yr[2] <-  90
+        oceDebug(debug, "xr:", xr, "(after trimming)\n")
+        oceDebug(debug, "yr:", yr, "(after trimming)\n")
+        X <- x[["longitude"]]
+        Y <- x[["latitude"]]
+        Z <- x[["z"]]
+        # Handle repeats modulo 180
+        if (X[1] == -180 && X[length(X)] == 180) {
+            keep <- seq.int(1L, length(X)-1)
+            X <- X[keep]
+            Z <- Z[keep, ]
+        }
+        # check for prime meridian
+        if (sign(prod(xr)) < 0) {
+            Z <- rbind(Z, Z)
+            X <- c(X - 360, X)
+            # If X runs from -180 to 180, then subtracting 360 will duplicate the -180 value,
+            # so we test for repeats. We don't test for a diff of exactly zero, for numerical
+            # reasons, and the test for 0.001 times the mean is quite arbitrary, since we
+            # are likely looking for a value of 1e-14 or so, which is FAR below the difference
+            # we would get in realistic topographic data.
+            dX <- diff(X)
+            if (any(dX < 0.001*mean(dX))) {
+                delete <- which(dX < 0.001 * mean(dX))[1]
+                X <- X[-delete]
+                Z <- Z[-delete, ]
+            }
+        }
+        # Data may not extend across plot region
+        lon.range <- range(X, na.rm=TRUE)
+        lat.range <- range(Y, na.rm=TRUE)
+        if (xr[1] < lon.range[1]) xr[1] <- lon.range[1]
+        if (xr[2] > lon.range[2]) xr[2] <- lon.range[2]
+        if (yr[1] < lat.range[1]) yr[1] <- lat.range[1]
+        if (yr[2] > lat.range[2]) yr[2] <- lat.range[2]
+        plot(xr, yr, asp=asp, xlab="", ylab="", type="n", xaxs="i", yaxs="i", axes=FALSE, ...)
+        if (debug > 0) {
+            points(xr, yr, col="blue", pch=20, cex=3)
+        }
+        xr.pretty <- pretty(xr)
+        yr.pretty <- pretty(yr)
+        oceDebug(debug, "xr.pretty=", xr.pretty, "(before trimming)\n")
+        xr.pretty <- subset(xr.pretty, xr.pretty >= xr[1] & xr.pretty <= xr[2])
+        oceDebug(debug, "xr.pretty=", xr.pretty, "(after trimming)\n")
+        oceDebug(debug, "yr.pretty=", yr.pretty, "(before trimming)\n")
+        yr.pretty <- subset(yr.pretty, yr.pretty >= yr[1] & yr.pretty <= yr[2])
+        oceDebug(debug, "yr.pretty=", yr.pretty, "(after trimming)\n")
+        lines(c(xr[1], xr[2], xr[2], xr[1], xr[1]), c(yr[1], yr[1], yr[2], yr[2], yr[1])) # axis box
+        xlabels <- format(xr.pretty)
+        ylabels <- format(yr.pretty)
+        if (geographical) {
+            xlabels <- sub("-", "", xlabels)
+            ylabels <- sub("-", "", ylabels)
+        }
+        axis(1, at=xr.pretty, pos=yr[1], labels=xlabels)
               axis(3, at=xr.pretty, pos=max(yr), labels=FALSE)
               axis(2, at=yr.pretty, pos=xr[1], labels=ylabels)
               axis(4, at=yr.pretty, pos=max(xr), labels=FALSE)
-              ## Use either mtext() or text() to position the label, depending on
-              ## whether the extra margin space has been placed to the sides
-              ## of the graph, or above and below it.
-              if (0 != nchar(xlab)) {
-                  if (asp > asp.page) {
-                      mtext(xlab, side=1, line=mgp[1])
-                  } else {
-                      text(mean(par('usr')[1:2]), yr[1], xlab, pos=1, offset=mgp[1]+mgp[2])
-                  }
-              }
-              if (0 != nchar(ylab)) {
-                  if (asp > asp.page) {
-                      text(xr[1], mean(par('usr')[3:4]), ylab, pos=2, offset=mgp[1]+mgp[2], srt=90)
-                  } else {
-                      mtext(ylab, side=2, line=mgp[1])
-                  }
-              }
-
-              oceDebug(debug, "xr=", xr, "yr=", yr, "\n")
-              ##yaxp <- par("yaxp")
-              oceDebug(debug, "par(yaxp)", par("yaxp"), "\n")
-              oceDebug(debug, "par(pin)", par("pin"), "\n")
-
-              ## need to clip because contour() does not do so
-              xx <- X                            # x[["longitude"]]
-              yy <- Y                            # x[["latitude"]]
-              xclip <- xx < xr[1] | xr[2] < xx
-              yclip <- yy < yr[1] | yr[2] < yy
-              xx <- xx[!xclip]
-              if (length(xx) < 1)
-                  stop("there are no topographic data within the longitudes of the plot region.")
-              yy <- yy[!yclip]
-              if (length(yy) < 1)
-                  stop("there are no topographic data within the latitudes of the plot region.")
-              ##zz <- x[["z"]][!xclip, !yclip]
-              zz <- Z[!xclip, !yclip]
-              zr <- range(zz)
-              contour(xx, yy, zz,
-                      levels=0, drawlabels=FALSE, add=TRUE,
-                      col="black")                # coastline is always black
-
-              legend <- lwd <- lty <- col <- NULL
-              if (zr[1] < 0) {
-                  if (missing(water.z)) {
-                      if (zr[2] > 0) {
-                          water.z <- pretty(c(zr[1], 0))
-                          water.z <- water.z[water.z!=0]
-                                        #cat("water.z=");print(water.z)
-                          ## Do some tricks to get shelf water as well as deep
-                          if (max(water.z) == -1000)
-                              water.z <- c(water.z, -500, -250, -100, -50)
-                          else if (max(water.z) == -500)
-                              water.z <- c(water.z, -400, -300, -200, -150, -100, -50)
-                                        #cat("after tricks, water.z=");print(water.z)
-                      } else {
-                          water.z <- pretty(zr)
-                      }
-                      water.z <- sort(water.z)
-                  }
-                  nz <- length(water.z)
-                  if (missing(col.water))
-                      col.water <- oce.colorsGebco(nz, "water", "line")
-                  if (missing(lty.water))
-                      lty.water <- rep(par("lty"), nz)
-                  else if (length(lty.water) == 1)
-                      lty.water <- rep(lty.water, nz)
-                  if (missing(lwd.water))
-                      lwd.water <- rep(par("lwd"), nz)
-                  else if (length(lwd.water) == 1)
-                      lwd.water <- rep(lwd.water, nz)
-                  legend <- c(legend, water.z)
-                  lwd    <- c(lwd,    lwd.water)
-                  lty    <- c(lty,    lty.water)
-                  col    <- c(col,    col.water)
-                  contour(xx, yy, zz,
-                          levels=water.z, lwd=lwd.water, lty=lty.water, col=col.water,
-                          drawlabels=FALSE, add=TRUE, ...)
-              }
-              if (zr[2] > 0) {
-                  if (missing(land.z)) {
-                      if (zr[1] < 0) {
-                          land.z <- pretty(c(0, zr[2]))
-                          land.z <- land.z[land.z!=0]
-                      } else {
-                          land.z <- pretty(zr)
-                      }
-                  }
-                  nz <- length(land.z)
-                  if (nz > 0) {
-                      if (missing(col.land))
-                          col.land <- oce.colorsGebco(nz, "land", "line")
-                      if (missing(lty.land))
-                          lty.land <- rep(par("lty"), nz)
-                      else if (length(lty.land) == 1)
-                          lty.land <- rep(lty.land, nz)
-                      if (missing(lwd.land))
-                          lwd.land <- rep(par("lwd"), nz)
-                      else if (length(lwd.land) == 1)
-                          lwd.land <- rep(lwd.land, nz)
-                      legend <- c(legend, land.z)
-                      lwd    <- c(lwd,    lwd.land)
-                      lty    <- c(lty,    lty.land)
-                      col    <- c(col,    col.land)
-                      contour(xx, yy, zz,
-                              levels=land.z, lwd=lwd.land, lty=lty.land, col=col.land,
-                              drawlabels=FALSE, add=TRUE, ...)
-                  }
-              }
-              if (!is.null(location) && location != "none") {
-                  o <- rev(order(legend))
-                  legend(location, lwd=lwd[o], lty=lty[o], bg="white", legend=legend[o], col=col[o])
-              }
-              oceDebug(debug, "} # plot.topo()\n", unindent=1)
-              invisible(NULL)
-          })
+        # Use either mtext() or text() to position the label, depending on
+        # whether the extra margin space has been placed to the sides
+        # of the graph, or above and below it.
+        if (0 != nchar(xlab)) {
+            if (asp > asp.page) {
+                mtext(xlab, side=1, line=mgp[1])
+            } else {
+                text(mean(par("usr")[1:2]), yr[1], xlab, pos=1, offset=mgp[1]+mgp[2])
+            }
+        }
+        if (0 != nchar(ylab)) {
+            if (asp > asp.page) {
+                text(xr[1], mean(par("usr")[3:4]), ylab, pos=2, offset=mgp[1]+mgp[2], srt=90)
+            } else {
+                mtext(ylab, side=2, line=mgp[1])
+            }
+        }
+        oceDebug(debug, "xr=", xr, "yr=", yr, "\n")
+        oceDebug(debug, "par(yaxp)", par("yaxp"), "\n")
+        oceDebug(debug, "par(pin)", par("pin"), "\n")
+        # need to clip because contour() does not do so
+        xx <- X                            # x[["longitude"]]
+        yy <- Y                            # x[["latitude"]]
+        xclip <- xx < xr[1] | xr[2] < xx
+        yclip <- yy < yr[1] | yr[2] < yy
+        xx <- xx[!xclip]
+        if (length(xx) < 1) {
+            stop("there are no topographic data within the longitudes of the plot region.")
+        }
+        yy <- yy[!yclip]
+        if (length(yy) < 1) {
+            stop("there are no topographic data within the latitudes of the plot region.")
+        }
+        zz <- Z[!xclip, !yclip]
+        zr <- range(zz)
+        contour(xx, yy, zz,
+            levels=0, drawlabels=FALSE, add=TRUE,
+            col="black")                # coastline is always black
+        legend <- lwd <- lty <- col <- NULL
+        if (zr[1] < 0) {
+            if (missing(water.z)) {
+                if (zr[2] > 0) {
+                    water.z <- pretty(c(zr[1], 0))
+                    water.z <- water.z[water.z!=0]
+                    # Do some tricks to get shelf water as well as deep
+                    if (max(water.z) == -1000) {
+                        water.z <- c(water.z, -500, -250, -100, -50)
+                    } else if (max(water.z) == -500) {
+                        water.z <- c(water.z, -400, -300, -200, -150, -100, -50)
+                    }
+                } else {
+                    water.z <- pretty(zr)
+                }
+                water.z <- sort(water.z)
+            }
+            nz <- length(water.z)
+            if (missing(col.water)) {
+                col.water <- oce.colorsGebco(nz, "water", "line")
+            }
+            if (missing(lty.water)) {
+                lty.water <- rep(par("lty"), nz)
+            } else if (length(lty.water) == 1) {
+                lty.water <- rep(lty.water, nz)
+            }
+            if (missing(lwd.water)) {
+                lwd.water <- rep(par("lwd"), nz)
+            } else if (length(lwd.water) == 1) {
+                lwd.water <- rep(lwd.water, nz)
+            }
+            legend <- c(legend, water.z)
+            lwd    <- c(lwd,    lwd.water)
+            lty    <- c(lty,    lty.water)
+            col    <- c(col,    col.water)
+            contour(xx, yy, zz,
+                levels=water.z, lwd=lwd.water, lty=lty.water, col=col.water,
+                drawlabels=FALSE, add=TRUE, ...)
+        }
+        if (zr[2] > 0) {
+            if (missing(land.z)) {
+                if (zr[1] < 0) {
+                    land.z <- pretty(c(0, zr[2]))
+                    land.z <- land.z[land.z!=0]
+                } else {
+                    land.z <- pretty(zr)
+                }
+            }
+            nz <- length(land.z)
+            if (nz > 0) {
+                if (missing(col.land)) {
+                    col.land <- oce.colorsGebco(nz, "land", "line")
+                }
+                if (missing(lty.land)) {
+                    lty.land <- rep(par("lty"), nz)
+                } else if (length(lty.land) == 1) {
+                    lty.land <- rep(lty.land, nz)
+                }
+                if (missing(lwd.land)) {
+                    lwd.land <- rep(par("lwd"), nz)
+                } else if (length(lwd.land) == 1) {
+                    lwd.land <- rep(lwd.land, nz)
+                }
+                legend <- c(legend, land.z)
+                lwd    <- c(lwd,    lwd.land)
+                lty    <- c(lty,    lty.land)
+                col    <- c(col,    col.land)
+                contour(xx, yy, zz,
+                    levels=land.z, lwd=lwd.land, lty=lty.land, col=col.land,
+                    drawlabels=FALSE, add=TRUE, ...)
+            }
+        }
+        if (!is.null(location) && location != "none") {
+            o <- rev(order(legend))
+            legend(location, lwd=lwd[o], lty=lty[o], bg="white", legend=legend[o], col=col[o])
+        }
+        oceDebug(debug, "} # plot.topo()\n", unindent=1)
+        invisible(NULL)
+    })
 
 
 #' Read a Topo File
@@ -884,25 +876,28 @@ setMethod(f="plot",
 #' @family things related to topo data
 read.topo <- function(file, encoding="latin1", debug=getOption("oceDebug"))
 {
-    if (missing(file))
+    if (missing(file)) {
         stop("must supply 'file'")
+    }
     if (is.character(file)) {
-        if (!file.exists(file))
+        if (!file.exists(file)) {
             stop("cannot find file '", file, "'")
-        if (0L == file.info(file)$size)
+        }
+        if (0L == file.info(file)$size) {
             stop("empty file '", file, "'")
+        }
     }
     oceDebug(debug, "read.topo(file=\"", file, "\") {\n", sep="", style="bold", unindent=1)
-    ## handle GEBCO netcdf files or an ascii format
+    # handle GEBCO netcdf files or an ascii format
     dataNamesOriginal <- list()
     if (is.character(file) && length(grep(".nc$", file))) {
         oceDebug(debug, "this is a netcdf file\n")
         if (!requireNamespace("ncdf4", quietly=TRUE)) {
             stop('must install.packages("ncdf4") to read topo data from a NetCDF file')
         } else {
-            ##message("file: '", file, "'")
-            ## "GEBCO NetCDF" (NOT the same as "NetCDF")
-            ## NOTE: need to name ncdf4 package because otherwise R checks give warnings.
+            #message("file: '", file, "'")
+            # "GEBCO NetCDF" (NOT the same as "NetCDF")
+            # NOTE: need to name ncdf4 package because otherwise R checks give warnings.
             ncdf <- ncdf4::nc_open(file)
             dataNamesOriginal <- list()
             if ("Band1" %in% names(ncdf$var)) {
@@ -913,7 +908,8 @@ read.topo <- function(file, encoding="latin1", debug=getOption("oceDebug"))
                 dataNamesOriginal <- list(longitude="lon", latitude="lat", z="Band1")
                 ##cat(vectorShow(longitude, "longitude in reading Band1"))
             } else {
-                oceDebug(debug, "file has no variable named 'Band1', so computing longitude and latitude from 'x_range' and 'y_range' together with 'spacing', and reading z as 'z'\n")
+                oceDebug(debug, "file has no variable named 'Band1', so computing longitude and",
+                    " latitude from 'x_range' and 'y_range' together with 'spacing', and reading z as 'z'\n")
                 xrange <- ncdf4::ncvar_get(ncdf, "x_range")
                 yrange <- ncdf4::ncvar_get(ncdf, "y_range")
                 ##zrange <- ncdf4::ncvar_get(ncdf, "z_range")
@@ -926,8 +922,8 @@ read.topo <- function(file, encoding="latin1", debug=getOption("oceDebug"))
                 z <- z[, dim[2]:1]
                 dataNamesOriginal <- list(longitude="-", latitude="-", z="-")
             }
-            ## FIXME(DK 2016-08-20): Sometimes length is off by 1. I'm not sure why, and
-            ## FIXME(DK 2016-08-20): this should be figured out by inspection of files.
+            # FIXME(DK 2016-08-20): Sometimes length is off by 1. I'm not sure why, and
+            # FIXME(DK 2016-08-20): this should be figured out by inspection of files.
             if (length(longitude) == dim(z)[1]+1) {
                 oceDebug(debug, "offsetting longitude of a netcdf topo file by half a step\n")
                 warning("offsetting longitude of a netcdf topo file by half a step")
@@ -942,18 +938,18 @@ read.topo <- function(file, encoding="latin1", debug=getOption("oceDebug"))
         }
     } else {
         oceDebug(debug, "this is an ASCII (text) file\n")
-        ## ASCII
-        ## NOTE: on 2014-11-13 it came to light that the old dataset website
-        ##          http://www.ngdc.noaa.gov/mgg/gdas/gd_designagrid.html
-        ## was no longer working, and that the new one
-        ##          http://maps.ngdc.noaa.gov/viewers/wcs-client/
-        ## seemed to have headers 5 lines long.  However,
-        ## the code below has a trick to (perhaps) auto-detect whether the header
-        ## length is 5 or 6.
+        # ASCII
+        # NOTE: on 2014-11-13 it came to light that the old dataset website
+        #          http://www.ngdc.noaa.gov/mgg/gdas/gd_designagrid.html
+        # was no longer working, and that the new one
+        #          http://maps.ngdc.noaa.gov/viewers/wcs-client/
+        # seemed to have headers 5 lines long.  However,
+        # the code below has a trick to (perhaps) auto-detect whether the header
+        # length is 5 or 6.
         nh <- 6
         header <- readLines(file, n=nh)
         if (nchar(header[length(header)]) > 50) {
-            ## the header is only 5 long, if the last header line is long.
+            # the header is only 5 long, if the last header line is long.
             nh <- nh - 1
             header <- header[1:nh]
         }
@@ -964,21 +960,24 @@ read.topo <- function(file, encoding="latin1", debug=getOption("oceDebug"))
         cellSize <- as.numeric(strsplit(header[5], "[ ]+", perl=TRUE)[[1]][2])
         missingValue <- NA
         i <- grep("nodata", header)
-        if (length(i))
+        if (length(i)) {
             missingValue <- as.numeric(strsplit(header[i], "[ ]+", perl=TRUE)[[1]][2])
+        }
         zz <- as.matrix(read.table(file, encoding=encoding, header=FALSE, skip=nh), byrow=TRUE)
         rownames(zz) <- NULL
         colnames(zz) <- NULL
         longitude <- longitudeLowerLeft + cellSize * seq(0, ncol-1)
         latitude <- latitudeLowerLeft + cellSize * seq(0, nrow-1)
-        z <- t(zz[dim(zz)[1]:1, ])
-        if (!is.na(missingValue))
+        #z <- t(zz[dim(zz)[1]:1, ])
+        z <- t(zz[seq(nrow(zz), 1L), ])
+        if (!is.na(missingValue)) {
             z[z == missingValue] <- NA
+        }
         res <- as.topo(longitude, latitude, z, filename=file) # FIXME: add units here
     }
     res@metadata$dataNamesOriginal <- dataNamesOriginal
     res@processingLog <- processingLogAppend(res@processingLog,
-                                              paste(deparse(match.call()), sep="", collapse=""))
+        paste(deparse(match.call()), sep="", collapse=""))
     oceDebug(debug, "} # read.topo\n", sep="", style="bold", unindent=1)
     res
 }
@@ -1011,18 +1010,20 @@ as.topo <- function(longitude, latitude, z, filename="")
     }
     ncols <- length(longitude)
     nrows <- length(latitude)
-    ## longitudeLowerLeft <- min(longitude, na.rm=TRUE)
-    ## latitudeLowerLeft <- min(latitude, na.rm=TRUE)
+    # longitudeLowerLeft <- min(longitude, na.rm=TRUE)
+    # latitudeLowerLeft <- min(latitude, na.rm=TRUE)
     dim <- dim(z)
-    if (dim[1] != ncols)
+    if (dim[1] != ncols) {
         stop("longitude vector has length ", ncols, ", which does not match matrix width ", dim[1])
-    if (dim[2] != nrows)
+    }
+    if (dim[2] != nrows) {
         stop("latitude vector has length ", ncols, ", which does not match matrix height ", dim[2])
+    }
     units <- list(latitude=list(unit=expression(degree*E), scale=""),
-                  longitude=list(unit=expression(degree*N), scale=""),
-                  z=list(unit=expression(m), scale=""))
+        longitude=list(unit=expression(degree*N), scale=""),
+        z=list(unit=expression(m), scale=""))
     res <- new("topo", latitude=latitude, longitude=longitude, z=z, filename=filename, units=units)
     res@processingLog <- processingLogAppend(res@processingLog,
-                                              paste(deparse(match.call()), sep="", collapse=""))
+        paste(deparse(match.call()), sep="", collapse=""))
     res
 }
