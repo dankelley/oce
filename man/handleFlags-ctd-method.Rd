@@ -103,8 +103,8 @@ f <- function(x) {
   sp <- smooth.spline(T, S, df=df)
   0.5 * (S + predict(sp, T)$y)
 }
-par(mfrow=c(1,2))
-STN3 <- handleFlags(stn, flags=list(salinity=c(1,3:9)), action=list(salinity=f))
+par(mfrow=c(1, 2))
+STN3 <- handleFlags(stn, flags=list(salinity=c(1, 3:9)), action=list(salinity=f))
 plotProfile(stn, "salinity", mar=c(3, 3, 3, 1))
 p <- stn[["pressure"]]
 par(mar=c(3, 3, 3, 1))

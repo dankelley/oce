@@ -197,22 +197,22 @@ plotTS(handleFlags(argo))
 
 # Oxygen-based colormap
 marOrig <- par("mar") # so later plots with palettes have same margins
-cm <- colormap(section[['oxygen']])
-drawPalette(colormap=cm, zlab='Oxygen')
-plotTS(section, pch=19, col=cm$zcol, mar=par('mar')) # the mar adjusts for the palette
+cm <- colormap(section[["oxygen"]])
+drawPalette(colormap=cm, zlab="Oxygen")
+plotTS(section, pch=19, col=cm$zcol, mar=par("mar")) # the mar adjusts for the palette
 
 # Station-based colormap
-Tlim <- range(section[['temperature']], na.rm=TRUE)
-Slim <- range(section[['salinity']], na.rm=TRUE)
-cm <- colormap(seq_along(section[['latitude', 'byStation']]))
+Tlim <- range(section[["temperature"]], na.rm=TRUE)
+Slim <- range(section[["salinity"]], na.rm=TRUE)
+cm <- colormap(seq_along(section[["latitude", "byStation"]]))
 par(mar=marOrig) # same as previous plot
-drawPalette(colormap=cm, zlab='Latitude')
-plotTS(section, Tlim=Tlim, Slim=Slim, pch=NA, mar=par('mar'))
+drawPalette(colormap=cm, zlab="Latitude")
+plotTS(section, Tlim=Tlim, Slim=Slim, pch=NA, mar=par("mar"))
 jnk <- mapply(
     function(s, col) {
-        plotTS(s, col=col, add=TRUE, type='l')
+        plotTS(s, col=col, add=TRUE, type="l")
     },
-    section[['station']], col=cm$zcol)
+    section[["station"]], col=cm$zcol)
 
 # Add spiciness contours
 data(ctd)

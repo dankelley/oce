@@ -127,7 +127,7 @@ between \code{parameters$from} (the lower limit) and \code{parameters$to} (the u
 critical value: select if the named column exceeds the value.  For example, \code{ctd2 <-
     ctdTrim(ctd, "range", parameters=list(item="scan", from=5))} starts at scan number 5 and
 continues to the end, while
-\code{ctdTrim(ctd,"range",parameters=list(item="scan",from=5,to=100))} also starts at scan 5,
+\code{ctdTrim(ctd,"range", parameters=list(item="scan", from=5, to=100))} also starts at scan 5,
 but extends only to scan 100.
 \item If \code{method} is a function, then it must return a vector of \code{\link[=logical]{logical()}}
 values, computed based on two arguments: \code{data} (a
@@ -147,14 +147,13 @@ devices equipped with GPS sensors.
 }
 
 \examples{
+
 \dontrun{
 library(oce)
 data(ctdRaw)
-plot(ctdRaw) # barely recognizable, due to pre- and post-cast junk
-plot(ctdTrim(ctdRaw)) # looks like a real profile ...
-plot(ctdDecimate(ctdTrim(ctdRaw),method="boxcar")) # ... smoothed
-# Demonstrate use of a function. The scan limits were chosen
-# by using locator(2) on a graph made by plotScan(ctdRaw).
+# Example 1: focus on downcast
+plot(ctdTrim(ctdRaw))
+# Example 2: user-supplied function.
 trimByIndex<-function(data, parameters) {
   parameters[1] < data$scan & data$scan < parameters[2]
 }
