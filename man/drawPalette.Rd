@@ -135,7 +135,7 @@ par(mgp=getOption("oceMgp"))
 
 ## 1. A three-panel plot
 par(mfrow=c(3, 1), mar=c(3, 3, 1, 1))
-omar <- par('mar')                 # save initial margin
+omar <- par("mar")                 # save initial margin
 
 ## 1a. top panel: simple case with Viridis scheme
 drawPalette(zlim=c(0, 1), col=oce.colorsViridis(10))
