@@ -41,7 +41,7 @@ abline(h=0, col="red")
 # 2. prediction at specified times
 data(sealevel)
 m <- tidem(sealevel)
-## Check fit over 2 days (interpolating to finer timescale)
+# Check fit over 2 days (interpolating to finer timescale)
 look <- 1:48
 time <- sealevel[["time"]]
 elevation <- sealevel[["elevation"]]

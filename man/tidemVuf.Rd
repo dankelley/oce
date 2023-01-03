@@ -26,7 +26,7 @@ on \code{t_vuf} in the \code{T_TIDE} Matlab package (Pawlowicz et al., 2002),
 which inherits from the Fortran code described by Foreman (1978).
 }
 \examples{
-## Look up values for the M2 constituent in Halifax Harbour, Canada.
+# Look up values for the M2 constituent in Halifax Harbour, Canada.
 library(oce)
 data("tidedata")
 j <- with(tidedata$const, which(name=="M2"))
