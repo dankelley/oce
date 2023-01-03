@@ -220,20 +220,19 @@
 cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
 {
     oceDebug(debug, "cnvName2oceName() {\n", unindent=1)
-    if (length(h) != 1)
+    if (length(h) != 1) {
         stop("oceNameFromSBE() expects just 1 line of header")
-    ## An example, for which the grep is designed, is below.
-    ## '# name 4 = t190C: Temperature, 2 [ITS-90, deg C]' # nolint
-    if (1 != length(grep("^# name [0-9][0-9]* = .*:.*$", h, ignore.case=TRUE)))
+    }
+    # An example, for which the grep is designed, is below.
+    # '# name 4 = t190C: Temperature, 2 [ITS-90, deg C]' # nolint
+    if (1 != length(grep("^# name [0-9][0-9]* = .*:.*$", h, ignore.case=TRUE))) {
         stop("header line does not contain a variable name")
-    ## message("h: '", h, "'")
-
+    }
     # 2022-07-15: drop useBytes=TRUE, which is a problem for upcoming R.
     name <- gsub("^# name [0-9][0-9]* = (.*):.*$", "\\1", h, ignore.case=TRUE)
     nameAfterColon <- gsub("^# name [0-9][0-9]* = .*:(.*)$", "\\1", h, ignore.case=TRUE)
     nameOriginal <- name
-
-    ## If 'name' is mentioned in columns, then use columns and ignore the lookup table.
+    # If 'name' is mentioned in columns, then use columns and ignore the lookup table.
     if (!is.null(columns)) {
         oceDebug(debug, "columns given. Look for name='", name, "' in it\n", sep="")
         cnames <- names(columns)
@@ -244,9 +243,8 @@ cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
             }
         }
     }
-
-    ## Since 'name' is not mentioned in 'columns', try looking it up. Some of these
-    ## tests are a bit subtle, and could be wrong.
+    # Since 'name' is not mentioned in 'columns', try looking it up. Some of these
+    # tests are a bit subtle, and could be wrong.
     if (1 == length(grep("^alt[M]?$", name))) {
         name <- "altimeter"
         unit <- list(unit=expression(m), scale="")
@@ -492,11 +490,11 @@ cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
     } else if (1 == length(grep("sigma-t[0-9]{2}", name))) {
         name <- "sigmaT"
         unit <- list(unit=expression(kg/m^3), scale="")
-    ##} else if (1 == length(grep("sigma-.*[0-9]*", name, ignore.case=TRUE))) {
+    #} else if (1 == length(grep("sigma-.*[0-9]*", name, ignore.case=TRUE))) {
     } else if (1 == length(grep("^sigma", name))) {
-        ## there are several cases, and we match the sigma-theta case
-        ## by exclusion, because of limited understanding of how
-        ## to match non-ascii characters on Windows machines.
+        # there are several cases, and we match the sigma-theta case
+        # by exclusion, because of limited understanding of how
+        # to match non-ascii characters on Windows machines.
         if (1 == length(grep("^sigma-t[0-9]{2}$", name))) {
             name <- "sigmaT"
         } else if (1 == length(grep("^sigma-1[0-9]{2}$", name))) {
@@ -509,8 +507,7 @@ cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
             name <- "sigma4"
         # 2022-06-28 } else if (1 == length(grep("^sigma-\x09[0-9]{2}$", name))) {
         #} else if (1 == length(grep("^sigma-\u00e9[0-9]{2}$", name))) {
-        } else if (grepl("^sigma-.*[0-9]{2}$", name)
-            && grepl("sigma-theta", nameAfterColon)) {
+        } else if (grepl("^sigma-.*[0-9]{2}$", name) && grepl("sigma-theta", nameAfterColon)) {
             name <- "sigmaTheta"
             # 2016-12-22 DK
             #
@@ -530,7 +527,7 @@ cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
         } else {
             name <- "sigma" ## give up; this is a default
         }
-        ## In all these cases, the unit is the same
+        # In all these cases, the unit is the same
         unit <- list(unit=expression(kg/m^3), scale="")
     } else if (1 == length(grep("^spar$", name))) {
         name <- "spar"
@@ -827,18 +824,20 @@ cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
 #'
 #' @family functions that read ctd data
 read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
-    deploymentType="unknown", btl=FALSE, monitor=FALSE,
-    #humanDateFormat=NULL,
-    encoding="latin1",
-    debug=getOption("oceDebug"), processingLog, ...)
+                         deploymentType="unknown", btl=FALSE, monitor=FALSE,
+                         encoding="latin1",
+                         debug=getOption("oceDebug"), processingLog, ...)
 {
-    if (missing(file))
+    if (missing(file)) {
         stop("must supply 'file'")
+    }
     if (is.character(file)) {
-        if (!file.exists(file))
+        if (!file.exists(file)) {
             stop("cannot find file '", file, "'")
-        if (0L == file.info(file)$size)
+        }
+        if (0L == file.info(file)$size) {
             stop("empty file '", file, "'")
+        }
     }
     # If 'file' is a wildcard, call this function on each indicated file.  Only
     # that filename, 'encoding' and 'debug' are passed along, so if you need
@@ -847,39 +846,40 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
         oceDebug(debug, "read.ctd.sbe(file=\"", file, "\") { # will read a series of files\n", unindent=1)
         files <- list.files(pattern=file)
         nfiles <- length(files)
-        if (monitor)
+        if (monitor) {
             pb <- txtProgressBar(1, nfiles, style=3)
+        }
         res <- vector("list", nfiles)
         for (i in 1:nfiles) {
             res[[i]] <- read.ctd.sbe(files[i], encoding=encoding, debug=debug-1)
-            if (monitor)
+            if (monitor) {
                 setTxtProgressBar(pb, i)
+            }
         }
         oceDebug(debug, "} # read.ctd.sbe() {\n")
-        if (monitor)
+        if (monitor) {
             close(pb)
+        }
         return(res)
     }
     oceDebug(debug, "read.ctd.sbe(file=\"", file, "\") {\n", unindent=1)
-
-    ## Read Seabird data file.  Note on headers: '*' is machine-generated,
-    ## '**' is a user header, and '#' is a post-processing header.
+    # Read Seabird data file.  Note on headers: '*' is machine-generated,
+    # '**' is a user header, and '#' is a post-processing header.
     filename <- ""
     if (is.character(file)) {
         filename <- fullFilename(file)
-        #<> message("1 FIXME: opening '", file, "' with encoding='", encoding, "'")
         file <- file(file, "r", encoding=encoding)
         on.exit(close(file))
     }
-    if (!inherits(file, "connection"))
+    if (!inherits(file, "connection")) {
         stop("argument `file' must be a character string or connection")
+    }
     if (!isOpen(file)) {
-        #<> message("2 FIXME: opening '", file, "' with encoding='", encoding, "'")
         open(file, "r", encoding=encoding)
         on.exit(close(file))
     }
     res <- new("ctd")
-    ## Header
+    # Header
     scientist <- ship <- institute <- address <- cruise <- hexfilename <- ""
     sampleInterval <- NA
     sampleIntervalUnits <- ""
@@ -894,15 +894,13 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
     ## units$conductivity <- list(unit=expression(), scale="") # guess; other types are "mS/cm" and "S/m"
     ## units$temperature <- list(unit=expression(degree*C), scale="ITS-90") # guess; other option is IPTS-68
     pressureType <- "sea"              # guess; other option is "absolute"
-
     ## Silence warnings because binary files have 'NUL' characters that spew many warnings
     warn <- options("warn")$warn
     options(warn=-1)
     # 2022-07-15: drop encoding=, which is a problem for upcoming R.
     lines <- readLines(file)
     options(warn=warn)
-
-    ## Get names and units of columns in the SBE data file
+    # Get names and units of columns in the SBE data file
     nameLines  <- grep("^# name [0-9][0-9]* = .*:.*$", lines, ignore.case=TRUE)
     colUnits <- vector("list", length(nameLines))
     colNamesInferred <- NULL
@@ -933,37 +931,33 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
     }
     colNamesInferred <- unduplicateNames(colNamesInferred)
     names(colUnits) <- colNamesInferred
-    ##print(colUnits)
-    ## names(dataNamesOriginal) <- colNamesInferred
+    # names(dataNamesOriginal) <- colNamesInferred
     res@metadata$dataNamesOriginal <- dataNamesOriginal
-    ##found.scan <- "scan" %in% colNamesInferred
-    ##found.temperature <- "temperature" %in% colNamesInferred
+    #found.scan <- "scan" %in% colNamesInferred
+    #found.temperature <- "temperature" %in% colNamesInferred
     foundPressure <- "pressure" %in% colNamesInferred
     foundSalinity <- "salinity" %in% colNamesInferred
-    ##found.time <- "time" %in% colNamesInferred
+    #found.time <- "time" %in% colNamesInferred
     foundDepth <- "depth" %in% colNamesInferred
     foundConductivity <- "conductivity" %in% colNamesInferred
     foundConductivityRatio <- "conductivity.ratio" %in% colNamesInferred
-    ## FIXME: should we insist on having salinity, temperature, and pressure?
+    # FIXME: should we insist on having salinity, temperature, and pressure?
     fileType <- "unknown"
-
     for (iline in seq_along(lines)) {
         line <- lines[iline]
-        ##message(line)
         #line <- scan(file, what='char', sep="\n", n=1, quiet=TRUE)
         oceDebug(debug > 1L, paste("Examining header line ", iline, " '", line, "'\n", sep=""))
         header <- c(header, line)
         ##if (length(grep("\*END\*", line))) #BUG# why is this regexp no good (new with R-2.1.0)
         aline <- iconv(line, from="UTF-8", to="ASCII", sub="?")
         if (length(grep("^\\s*\\*END\\*\\s*$", aline, perl=TRUE))) {
-            ##message("got *END* at line ", iline)
             ## Sometimes SBE files have a header line after the *END* line.
             iline <- iline + 1
-            if (length(grep("[a-cf-zA-CF-Z]", lines[iline])))
+            if (length(grep("[a-cf-zA-CF-Z]", lines[iline]))) {
                 iline <- iline + 1
+            }
             break
         }
-        ##if (iline>129) browser()
         lline <- tolower(aline)
         # Use NMEA (if present) in preference to a hand-entered date.
         # See https://github.com/dankelley/oce/issues/1949#issuecomment-1133613831
@@ -971,8 +965,8 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
         if (grepl("^\\* NMEA.*Time.*=", aline)) {  # NMD
             rhs <- trimws(gsub("^\\* NMEA.*Time.*=(.*)", "\\1", aline))
             dateTry <- try(as.POSIXct(rhs,
-                    tryFormats=c("%Y-%m-%d %H:%M:%S", "%b %d %Y %H:%M:%S"),
-                    tz="UTC"), silent=TRUE)
+                tryFormats=c("%Y-%m-%d %H:%M:%S", "%b %d %Y %H:%M:%S"),
+                tz="UTC"), silent=TRUE)
             if (inherits(dateTry, "try-error")) {
                 warning("cannot parse date in `", aline, "`, but will try a '** Date:' line, if there is one", sep="")
             } else {
@@ -983,7 +977,7 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
         # Look at hand-entered date only if an NMEA time was not found, or was unparseable
         if (is.na(date) && grepl("^\\*\\*.*Date:", aline)) {
             #> message(aline)
-            dateString <- gsub(".*date:(.*)","\\1", lline)
+            dateString <- gsub(".*date:(.*)", "\\1", lline)
             #> message(dateString)
             # Remove a timezone, if there is one, because timezones are often
             # contradictory, e.g. AST could be a time in Atlantic Canada, or
@@ -1003,115 +997,84 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
                     date <- dateTry
                 }
             }
-            #>>> if (!is.null(humanDateFormat)) {
-            #>>>     dateTry <- try(as.POSIXct(dateString, format=humanDateFormat, tz="UTC"), silent=TRUE)
-            #>>>     if (inherits(dateTry, "try-error")) {
-            #>>>         warning("cannot decode human-entered date in header line `", aline, "` using humanDateFormat=`", humanDateFormat, "`\n", sep="")
-            #>>>         date <- NA
-            #>>>     } else {
-            #>>>         date <- dateTry
-            #>>>     }
-            #>>>     #> message("date=", date, " with humanDateFormat")
-            #>>> } else {
-            #>>>     dateTry <- try(as.POSIXct(dateString, tz="UTC"), silent=TRUE)
-            #>>>     if (inherits(dateTry, "try-error")) {
-            #>>>         warning("cannot decode human-entered date in header line `", aline, "`. Try supplying humanDateFormat\n", sep="")
-            #>>>         date <- NA
-            #>>>     } else {
-            #>>>         date <- dateTry
-            #>>>     }
-            #>>>     #> message("date=", date, " without humanDateFormat")
-            #>>> }
         }
-        if (0 < regexpr(".*seacat profiler.*", lline))
+        if (0 < regexpr(".*seacat profiler.*", lline)) {
             serialNumber <- gsub("[ ].*$", "", gsub(".*sn[ ]*", "", lline))
-        if (length(grep("^\\* Temperature SN", lline, ignore.case=TRUE)))
-            serialNumberTemperature <- gsub("^.*=\\s", "", lline)
-        if (length(grep("^\\* Conductivity SN", lline, ignore.case=TRUE)))
-            serialNumberConductivity <- gsub("^.*=\\s", "", lline)
-        ##20181014 (issue 1460): if (0 < (r<-regexpr("date:", lline))) {
-        ##20181014 (issue 1460):     oceDebug(debug, "found 'date:' header line\n")
-        ##20181014 (issue 1460):     d <- sub("(.*)date:([ ])*", "", lline)
-        ##20181014 (issue 1460):     date <- decodeTime(d, "%Y%m%d") # e.g. 20130701 Canada Day
-        ##20181014 (issue 1460): }
-        if (length(grep("^#[ \t]*file_type[ \t]*=[ \t]*", lline))) {
-            ## file_type = ascii
-            ## file_type = binary
-            fileType <- gsub("[ \t\n]+$", "", gsub(".*=[ \t]*", "", lline))
-            ##> message("fileType='", fileType, "'")
-            ##> message("lline='", lline, "'")
         }
-        ##* NMEA UTC (Time) = Jul 28 2011  04:17:53
-        ##* system upload time = jan 26 2010 13:02:57
-        #> See https://github.com/dankelley/oce/issues/1949#issuecomment-1133053873
-        #> if (length(grep("^\\* .*time.*=.*$", lline))) {
-        #>     if (is.na(date) && 0 == length(grep("real-time sample interval", lline))) {
-        #>         warning("inferring date from `", aline, "`. This behaviour is slated for removal!!!\n")
-        #>         #oceDebug(debug, "found 'real-time sample interval' header line\n")
-        #>         d <- sub(".*=", "", lline)
-        #>         d <- sub("^ *", "", d)
-        #>         d <- sub(" *$", "", d)
-        #>         date <- decodeTime(d)
-        #>         message("L987: date=", date[1], " DANDANDAN\n")
-        #>     }
-        #> }
+        if (length(grep("^\\* Temperature SN", lline, ignore.case=TRUE))) {
+            serialNumberTemperature <- gsub("^.*=\\s", "", lline)
+        }
+        if (length(grep("^\\* Conductivity SN", lline, ignore.case=TRUE))) {
+            serialNumberConductivity <- gsub("^.*=\\s", "", lline)
+        }
+        if (length(grep("^#[ \t]*file_type[ \t]*=[ \t]*", lline))) {
+            fileType <- gsub("[ \t\n]+$", "", gsub(".*=[ \t]*", "", lline))
+        }
         if (length(grep("^\\* Sea-Bird SBE (.*) Data File:$", lline, ignore.case=TRUE))) {
             model <- gsub("^\\* sea-bird sbe (.*) data file:$", "\\1", lline)
             res@metadata$model <- model
         }
-        if (0 < (r<-regexpr("filename", lline)))
+        if (grepl("filename", lline)) {
             hexfilename <- sub("(.*)FileName =([ ])*", "", ignore.case=TRUE, lline)
-        if (0 < (r<-regexpr("system upload time", lline))) {
+        }
+        if (grepl("system upload time", lline)) {
             d <- sub("([^=]*)[ ]*=[ ]*", "", ignore.case=TRUE, lline)
             systemUploadTime <- decodeTime(d)
             oceDebug(debug, " systemUploadTime ", format(systemUploadTime), " inferred from substring '", d, "'\n", sep="")
         }
-        ## Styles:
-        ## * NMEA Latitude = 47 54.760 N
-        ## ** Latitude:      47 53.27 N
-        if (!foundHeaderLatitude && (0 < (r<-regexpr("latitude*[0-8]*", lline, ignore.case=TRUE)))) {
+        # Styles:
+        # * NMEA Latitude = 47 54.760 N
+        # ** Latitude:      47 53.27 N
+        if (!foundHeaderLatitude && grepl("latitude*[0-8]*", lline, ignore.case=TRUE)) {
             latitude <- parseLatLon(lline, debug=debug-1)
             foundHeaderLatitude <- TRUE
         }
-        if (!foundHeaderLongitude && (0 < (r<-regexpr("longitude*[0-8]*", lline, ignore.case=TRUE)))) {
+        if (!foundHeaderLongitude && grepl("longitude*[0-8]*", lline, ignore.case=TRUE)) {
             longitude <- parseLatLon(lline, debug=debug-1)
             foundHeaderLongitude <- TRUE
         }
-        if (0 < (r<-regexpr("start_time =", lline))) {
+        if (grepl("start_time =", lline)) {
             d <- sub("#[ ]*start_time[ ]*=[ ]*", "", lline)
             startTime <- decodeTime(d)
             oceDebug(debug, " startTime ", format(startTime), "' inferred from substring '", d, "'\n", sep="")
         }
-        if (0 < (r<-regexpr("ship:", lline))) {
+        if (grepl("ship:", lline)) {
             ship <- sub("(.*)ship:([ \t])*", "", ignore.case=TRUE, line) # note: using full string
             ship <- sub("[ \t]*$", "", ship)
         }
-        if (0 < (r<-regexpr("scientist:", lline)))
+        if (grepl("scientist:", lline)) {
             scientist <- sub("(.*)scientist:([ ])*", "", ignore.case=TRUE, line) # full string
-        if (0 < (r<-regexpr("chef", lline)))
+        }
+        if (grepl("chef", lline)) {
             scientist <- sub("(.*):([ ])*", "", ignore.case=TRUE, line) # full string
-        if (0 < (r<-regexpr("institute:", lline)))
+        }
+        if (grepl("institute:", lline)) {
             institute <- sub("(.*)institute:([ ])*", "", ignore.case=TRUE, line) # full string
-        if (0 < (r<-regexpr("address:", lline)))
+        }
+        if (grepl("address:", lline)) {
             address <- sub("(.*)address:([ ])*", "", ignore.case=TRUE, line) # full string
-        if (0 < (r<-regexpr("cruise:", lline))) {
+        }
+        if (grepl("cruise:", lline)) {
             cruise <- sub("(.*)cruise:([ ])*", "", ignore.case=TRUE, line) # full string
             cruise <- sub("[ ]*$", "", ignore.case=TRUE, cruise) # full string
         }
         if (is.null(station)) {
-            if (0 < (r<-regexpr("station:", lline)))
+            if (grepl("station:", lline)) {
                 station <- sub("[ ]*$", "", sub("(.*)station:([ ])*", "", ignore.case=TRUE, line))
-            if (0 < (r<-regexpr("station_name:", lline)))
+            }
+            if (grepl("station_name:", lline)) {
                 station <- sub("[ ]*$", "", sub("(.*)station_name:([ ])*", "", ignore.case=TRUE, line))
+            }
         }
-        if (0 < (r<-regexpr("recovery:", lline)))
+        if (grepl("recovery:", lline)) {
             recoveryTime <- sub("(.*)recovery:([ ])*", "", lline)
-
+        }
         if (grepl("^#[ \t]+bad_flag[ \t]*=", lline)) {
-            ## bad_flag = -9.990e-29
+            # bad_flag = -9.990e-29
             bad_flag <- sub("#[ \t]*bad_flag[ \t]*=[ \t]*", "", lline)
-            if (missing(missingValue))
+            if (missing(missingValue)) {
                 missingValue <- as.numeric(bad_flag)
+            }
         }
         # Water depth
         # See https://github.com/dankelley/oce/issues/1950
@@ -1119,63 +1082,29 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
             || grepl("^\\*\\* Water Depth.*:.*$", aline)
             || grepl("^\\*\\* profondeur.*:.*$", aline, ignore.case=TRUE)) {
             look <- gsub(".*:", "", lline)
-            #> ## "** Depth (m): 3447 "
-            #> look <- sub("[a-z:()]*", "", lline, ignore.case=TRUE)
-            #> look <- gsub("^[*a-zA-Z\\(\\) :]*", "", lline, ignore.case=TRUE)
-            #> look <- gsub("[ ]*", "", look, ignore.case=TRUE)
-            #> oceDebug(debug, "    pruned '", aline, "' to '", look, "'\n", sep="")
             # Remove any non-numeric (e.g. sometimes a unit is here)
             look <- trimws(gsub("[-a-zA-Z]", "", look))
             waterDepth<- as.numeric(look)
             oceDebug(debug, "inferred waterDepth=", waterDepth, "[m] from '", aline, "'\n", sep="")
         }
-        # if (0 < (r<-regexpr("water depth:", lline))
-        #     || 0 < (r<-regexpr(pattern="profondeur", text=lline))) {
-        #     ## Examples from files in use by author:
-        #     ##** Profondeur: 76
-        #     ##** Water Depth:   40 m
-        #     look <- sub("[ ]*$", "", sub(".*:[ ]*", "", lline))
-        #     linesplit <- strsplit(look, " ")[[1]]
-        #     nitems <- length(linesplit)
-        #     if (nitems == 1) {
-        #         waterDepth <- as.numeric(linesplit[1])
-        #     } else if (nitems == 2) {
-        #         unit <- linesplit[2]
-        #         if (unit == "m") {
-        #             waterDepth <- as.numeric(linesplit[1])
-        #         } else if (unit == "km") {
-        #             waterDepth <- 1000 * as.numeric(linesplit[1])
-        #         } else {
-        #             warning("ignoring unit on water depth '", look, "'")
-        #         }
-        #     } else {
-        #         warning("cannot interpret water depth from '", lline, "'")
-        #     }
-        # }
         ## [1] "# interval = seconds: 1
         ## [1] "# interval = decibars: 1
-        if (length(grep("^# interval = .*$", lline))) {
-            ##print(lline)
+        if (grepl("^# interval = .*$", lline)) {
             value <- gsub("^.*:[ ]*([0-9.]*)[ ]*$", "\\1", lline)
-            ##cat("value='", value, "'\n", sep="")
-            ##cat("value='", as.numeric(value), "'\n", sep="")
             units <- gsub("^.*=[ ]*(.*):(.*)$", "\\1", lline)
-            ##cat("units='", units, "'\n", sep="")
             sampleInterval <- as.numeric(value)
-            if (units == "seconds")
+            if (units == "seconds") {
                 units <- "s"
-            else if (units == "decibars")
+            } else if (units == "decibars") {
                 units <- "dbar"
-            ##cat("units='", units, "'\n", sep="")
+            }
             sampleIntervalUnits <- units
-        } else if (0 < (r<-regexpr("^. sample rate =", lline))) {
-            ## * sample rate = 1 scan every 5.0 seconds
+        } else if (grepl("^. sample rate =", lline)) {
+            # * sample rate = 1 scan every 5.0 seconds
             rtmp <- lline
             rtmp <- sub("(.*) sample rate = ", "", rtmp)
             rtmp <- sub("scan every ", "", rtmp)
             rtmp <- strsplit(rtmp, " ")
-            ##      if (length(rtmp[[1]]) != 3)
-            ##        warning("cannot parse sample-rate string in `",line,"'")
             sampleInterval <- as.double(rtmp[[1]][2]) / as.double(rtmp[[1]][1])
             sampleIntervalUnits <- "s"
             if (rtmp[[1]][3] == "minutes") {
@@ -1191,21 +1120,26 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
     }
     oceDebug(debug, "Finished reading header\n")
     if (debug > 0) {
-        if (is.nan(sampleInterval))
+        if (is.nan(sampleInterval)) {
             warning("'* sample rate =' not found in header")
-        if (is.nan(latitude))
+        }
+        if (is.nan(latitude)) {
             warning("'** Latitude:' not found in header")
-        if (is.na(longitude))
+        }
+        if (is.na(longitude)) {
             warning("'** Longitude:' not found in header")
-        if (is.na(date))
+        }
+        if (is.na(date)) {
             warning("'** Date:' not found in header")
-        if (is.na(recoveryTime))
+        }
+        if (is.na(recoveryTime)) {
             warning("'** Recovery:' not found in header")
+        }
     }
-    ## Require p,S,T data at least
-    if (!btl && !("temperature" %in% colNamesInferred))
+    # Require p,S,T data at least
+    if (!btl && !("temperature" %in% colNamesInferred)) {
         warning("cannot find temperature; try using the 'columns' argument")
-
+    }
     res@metadata$header <- header
     res@metadata$type <- "SBE"
     res@metadata$hexfilename <- hexfilename # from instrument
@@ -1224,20 +1158,19 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
     res@metadata$station <- station
     res@metadata$deploymentType <- deploymentType
     res@metadata$date <- date
-    if (!is.na(startTime) && startTime < as.POSIXct("1950-01-01"))
+    if (!is.na(startTime) && startTime < as.POSIXct("1950-01-01")) {
         warning("startTime (", startTime, ") is < 1950, suggesting a turn-of-the-century problem in this cnv file")
+    }
     res@metadata$startTime <- startTime
-    if (!is.na(recoveryTime) && recoveryTime < as.POSIXct("1950-01-01"))
+    if (!is.na(recoveryTime) && recoveryTime < as.POSIXct("1950-01-01")) {
         warning("recoveryTime < 1950, suggesting y2k problem in this cnv file")
+    }
     res@metadata$recoveryTime <- recoveryTime
-    #res@metadata$time <- date          # standardized name
     res@metadata$latitude <- latitude
     res@metadata$longitude <- longitude
     res@metadata$waterDepth <- waterDepth # if NA, will update later
     res@metadata$sampleInterval <- sampleInterval
     res@metadata$sampleIntervalUnits <- sampleIntervalUnits
-    #res@metadata$names <- colNamesInferred
-    #res@metadata$labels <- colNamesInferred
     res@metadata$filename <- filename
     if (fileType == "binary") {
         warning("can only handle non-binary .cnv files")
@@ -1252,41 +1185,47 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
         # of errors in this code.  See https://github.com/dankelley/oce/issues/1681
         oceDebug(debug, "About to read .btl data\n")
         dataHeaderStartLine <- grep("^[^#^*]", lines)[1]
-        if (!length(dataHeaderStartLine))
+        if (!length(dataHeaderStartLine)) {
             stop("cannot find the start of .btl data")
+        }
         colNames <- tail(strsplit(lines[dataHeaderStartLine], "[ ]+")[[1]], -1)
         colNames <- c(colNames, "type") # tack on col for "(avg)" or "(sdev)"
         oceDebug(debug, "colNames=c(\"", paste(colNames, collapse="\", \""), "\")\n", sep="")
         lastLine <- length(lines)
         iodd <- seq(dataHeaderStartLine + 2, lastLine, 2)
         ieven <- seq(dataHeaderStartLine + 3, lastLine, 2)
-        ## Check that we have the rows interpreted correctly by examining the final column.
-        if (any(!grepl("^.*\\(avg\\)$", lines[iodd])))
-            stop("odd-numbered data lines in .btl files must end with `(avg)`, but lines ", paste(grep("(avg)$", lines[iodd], invert=TRUE), collapse=","), " do not")
-        if (any(!grepl("^.*\\(sdev\\)$", lines[ieven])))
-            stop("even-numbered data lines in .btl files must end with `(sdev)`, but lines ", paste(grep("(sdev)$", lines[ieven], invert=TRUE), collapse=","), " do not")
+        # Check that we have the rows interpreted correctly by examining the final column.
+        if (any(!grepl("^.*\\(avg\\)$", lines[iodd]))) {
+            stop("odd-numbered data lines in .btl files must end with `(avg)`, but lines ", paste(grep("(avg)$", lines[iodd], invert=TRUE),
+                collapse=","), " do not")
+        }
+        if (any(!grepl("^.*\\(sdev\\)$", lines[ieven]))) {
+            stop("even-numbered data lines in .btl files must end with `(sdev)`, but lines ", paste(grep("(sdev)$", lines[ieven], invert=TRUE),
+                collapse=","), " do not")
+        }
         # It's a multistep process, working with this odd paired-line format.  We
         # divide it into steps, in hopes of making it easier to modify the code later,
         # in case this fails on some files, or there is a need to change the output
         # scheme.
         dataInterwoven <- utils::read.fwf(file, widths=rep(11, length(colNames)), skip=1+dataHeaderStartLine,
-                                          col.names=colNames)
+            col.names=colNames)
         ndataInterwoven <- dim(dataInterwoven)[1]
         # Break up into two dataframes
         iavgs <- seq(1, ndataInterwoven, by=2)
         isdevs <- seq(2, ndataInterwoven, by=2)
         avg <- dataInterwoven[iavgs, ]
-        sdev <- dataInterwoven[isdevs,]
+        sdev <- dataInterwoven[isdevs, ]
         # Get time-of-day from sdev, then trim out NA columns, and finally rename columns
         hms <- gsub(" ", "", sdev$Date)
-        sdevValid <- !is.na(sdev[1,]) & !grepl("Date", names(sdev))
+        sdevValid <- !is.na(sdev[1, ]) & !grepl("Date", names(sdev))
         sdev <- sdev[, sdevValid]
         names(sdev) <- paste0(names(sdev), "_sdev")
         ## Recombine, then trim the "type" columns, which we kept only for testing, so far
         data <- cbind(avg, sdev)
         trimCols <- grep("^(type)|(typeSdev)$", names(data))
-        if (2 != length(trimCols))
+        if (2 != length(trimCols)) {
             stop("expecting 2 'type' columns to trim, but found ", length(trimCols))
+        }
         data <- data[, -trimCols]
         data$time <- as.POSIXct(paste(data$Date, hms), format="%b %d %Y %H:%M:%S", tz="UTC")
         data <- data[, -which(names(data) == "Date")]
@@ -1294,33 +1233,27 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
         names <- colNames # used later (perhaps incorrectly, since we don't have flags etc for .btl files)
     } else {
         pushBack(lines, file) # push back header so we can read from a file, not a text vector (for speed)
-        oceDebug(debug, "About to read .cnv data with these names: c(\"", paste(colNamesInferred, collapse='","'), "\")\n", sep="")
-        #message("skipping ", iline-1, " lines at top of file")
+        oceDebug(debug, "About to read .cnv data with these names: c(\"",
+            paste(colNamesInferred, collapse='","'), "\")\n", sep="")
         data <- as.list(read.table(file, skip=iline-1L, header=FALSE, encoding=encoding))
-
-        if (length(data) != length(colNamesInferred))
-            stop("Number of columns in .cnv data file (", length(data), ") must match number of variables named in the header (", length(colNamesInferred), ")")
+        if (length(data) != length(colNamesInferred)) {
+            stop("Number of columns in .cnv data file (", length(data), ") must match number of variables named in the header (",
+                length(colNamesInferred), ")")
+        }
         names(data) <- colNamesInferred
         ndata <- length(data[[1]])
         if (0 < ndata) {
             haveData <- TRUE
             names <- names(data)
-            #labels <- names
-            # if (!found.scan) {
-            #     data$scan <- 1:ndata
-            #     names <- names(data)
-            #     colNamesInferred <- c(colNamesInferred, "scan")
-            #     colNamesOriginal <- c(colNamesOriginal, "scan")
-            # }
         } else {
             haveData <- FALSE
             warning("no data in CTD file \"", filename, "\"")
             data <- list(scan=NULL, salinity=NULL, temperature=NULL, pressure=NULL)
         }
     }
-    if (missing(processingLog))
+    if (missing(processingLog)) {
         processingLog <- paste(deparse(match.call()), sep="", collapse="")
-    #hitem <- processingLogItem(processingLog)
+    }
     # replace any missingValue with NA
     if (!missing(missingValue) && !is.null(missingValue)) {
         for (item in names(data)) {
@@ -1335,7 +1268,7 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
                 C <- data$conductivityratio
                 S <- swSCTp(C, data$temperature, data$pressure)
                 res <- oceSetData(res, name="salinity", value=S,
-                                  unit=list(unit=expression(), scale="PSS-78"))
+                    unit=list(unit=expression(), scale="PSS-78"))
                 warning("created 'salinity' from 'temperature', 'conductivity' and 'pressure'", immediate.=TRUE)
             } else if (foundConductivity) {
                 C <- data$conductivity
@@ -1352,54 +1285,59 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
                         } else if ("S/m" == unit) {
                             C <- C / 4.2914
                         } else {
-                            warning("unrecognized conductivity unit '", unit, "'; assuming unitless for salinity calculation -- results should be used with caution", immediate.=TRUE)
+                            warning("unrecognized conductivity unit '", unit,
+                                "'; assuming unitless for salinity calculation -- results should be used with caution", immediate.=TRUE)
                         }
                     } else {
-                        warning("missing conductivity unit, so assuming unitless for salinity calculation -- results should be used with caution", immediate.=TRUE)
+                        warning("missing conductivity unit, so assuming unitless for salinity calculation -- results should be used with caution",
+                            immediate.=TRUE)
                     }
                 } else {
                     warning("missing conductivity unit; guessing a unit based on maximum value", immediate.=TRUE)
                     cmax <- max(C, na.rm=TRUE)
                     if (cmax > 10) {
-                        warning("max(conductivity) > 10, so using using conductivity/42.914 as a conductivity ratio for computation of salinity", immediate.=TRUE)
+                        warning("max(conductivity) > 10, so using using conductivity/42.914 as a conductivity ratio for computation of salinity",
+                            immediate.=TRUE)
                         C <- C / 42.914
                     } else if (cmax > 1) {
-                        warning("max(conductivity) between 1 and 10, so using using conductivity/4.2914 as a conductivity ratio for computation of salinity", immediate.=TRUE)
+                        warning("max(conductivity) between 1 and 10, so using using conductivity/4.2914 as ",
+                            "a conductivity ratio for computation of salinity", immediate.=TRUE)
                         C <- C / 4.2914
                     }
                 }
                 S <- swSCTp(C, data$temperature, data$pressure)
                 res <- oceSetData(res, name="salinity", value=S,
-                                  unit=list(unit=expression(), scale="PSS-78"))
+                    unit=list(unit=expression(), scale="PSS-78"))
                 warning("created 'salinity' from 'temperature', 'conductivity' and 'pressure'", immediate.=TRUE)
             } else {
-                warning("cannot find salinity or conductivity in .cnv file; try using columns argument if the file actually contains these items", immediate.=TRUE)
+                warning("cannot find salinity or conductivity in .cnv file; try using columns argument if the file actually contains these items",
+                    immediate.=TRUE)
             }
         }
         if ("pressurePSI" %in% names && !("pressure" %in% names)) {
-            ## DK 20170114: I cannot find what I consider to be a definitive source, so
-            ## I am taking the wikipedia value.
-            ## 0.6894757293168  https://en.wikipedia.org/wiki/Pounds_per_square_inch
-            ## 0.689475728      http://www.convertunits.com/from/psi/to/decibar
+            # DK 20170114: I cannot find what I consider to be a definitive source, so
+            # I am taking the wikipedia value.
+            # 0.6894757293168  https://en.wikipedia.org/wiki/Pounds_per_square_inch
+            # 0.689475728      http://www.convertunits.com/from/psi/to/decibar
             res <- oceSetData(res, name="pressure", value=res@data$pressurePSI*0.6894757293168,
-                              unit=list(unit=expression("dbar"), scale=""))
+                unit=list(unit=expression("dbar"), scale=""))
             warning("created 'pressure' from 'pressurePSI'")
         } else if (foundDepth && !foundPressure) {
-            ## BUG: this is a poor, nonrobust approximation of pressure
+            # BUG: this is a poor, nonrobust approximation of pressure
             g <- if (foundHeaderLatitude) gravity(latitude) else 9.8
             rho0 <- 1000 + swSigmaTheta(median(res[["salinity"]]), median(res[["temperature"]]), 0)
-            ## res <- ctdAddColumn(res, res@data$depth * g * rho0 / 1e4, name="pressure", label="Pressure",
-            ##                     unit=list(unit=expression("dbar"), scale=""), debug=debug-1)
+            # res <- ctdAddColumn(res, res@data$depth * g * rho0 / 1e4, name="pressure", label="Pressure",
+            #                     unit=list(unit=expression("dbar"), scale=""), debug=debug-1)
             res <- oceSetData(res, name="pressure", value=res@data$depth * g * rho0 / 1e4,
-                              unit=list(unit=expression("dbar"), scale=""))
-            ## colNamesOriginal <- c(colNamesOriginal, "NA")
+                unit=list(unit=expression("dbar"), scale=""))
+            # colNamesOriginal <- c(colNamesOriginal, "NA")
             warning("created 'pressure' from 'depth'")
         }
     }
     res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
-
     if (("temperature" %in% names(res@metadata$units)) && res@metadata$units$temperature$scale == "IPTS-68") {
-        warning("this CNV file has temperature in the IPTS-68 scale and this is stored in the object, but note that [[\"temperature\"]] and the sw* functions convert the numbers to ITS-90 values")
+        warning("this CNV file has temperature in the IPTS-68 scale, and this is stored in object, but note ",
+            " that [[\"temperature\"]] and the sw* functions convert the numbers to ITS-90 values")
     }
     # Note: previously, at this spot, there was code to switch from the IPTS-68 scale
     # to the ITS-90 scale. The old-scale data were saved in a column named
