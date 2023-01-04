@@ -23,9 +23,9 @@ Plot text on an existing map, by analogy to \code{\link[=text]{text()}}.
 \donttest{
 library(oce)
 data(coastlineWorld)
-longitude <- coastlineWorld[['longitude']]
-latitude <- coastlineWorld[['latitude']]
-mapPlot(longitude, latitude, type='l', grid=5,
+longitude <- coastlineWorld[["longitude"]]
+latitude <- coastlineWorld[["latitude"]]
+mapPlot(longitude, latitude, type="l", grid=5,
         longitudelim=c(-70,-50), latitudelim=c(45, 50),
         projection="+proj=merc")
 lon <- -63.5744 # Halifax

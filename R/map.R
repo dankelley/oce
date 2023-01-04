@@ -85,8 +85,9 @@ repairProjection <- function(projection, longlatProj, debug=getOption("oceDebug"
 #' `latitude` or `y`.
 oceProject <- function(xy, proj, inv=FALSE, debug=getOption("oceDebug"))
 {
-    if (!requireNamespace("sf", quietly=TRUE))
+    if (!requireNamespace("sf", quietly=TRUE)) {
         stop('must install.packages("sf") to do map projections')
+    }
     oceDebug(debug, "oceProject(xy, proj=\"", proj, "\", inv=", inv, ", ...) {\n", sep="", unindent=1, style="bold")
     repairedProjection <- repairProjection(proj, longlatProjInitial, debug=debug)
     proj <- repairedProjection$projection
@@ -94,55 +95,25 @@ oceProject <- function(xy, proj, inv=FALSE, debug=getOption("oceDebug"))
 
     owarn <- options()$warn # this, and the capture.output, quieten the processing
     options(warn=-1)
-    ## <1629> ## {{{ OLD 'rgdal' method
-    ## <1629> if (passNA) {
-    ## <1629>     na <- which(is.na(xy[,1]))
-    ## <1629>     xy[na, ] <- 0
-    ## <1629>     capture.output({
-    ## <1629>         XY <- unname(rgdal::project(xy, proj=proj, inv=inv))
-    ## <1629>     })
-    ## <1629>     XY[na, ] <- NA
-    ## <1629> } else {
-    ## <1629>     if (.Platform$OS.type == "windows" && .Platform$r_arch == "i386") {
-    ## <1629>         if (packageVersion("rgdal") < "1.3.9")
-    ## <1629>             stop("rgdal must be at least version 1.3.9, on i386/windows platforms")
-    ## <1629>         capture.output(
-    ## <1629>                        {
-    ## <1629>                            XY <- unname(rgdal::project(xy, proj=proj, inv=inv, legacy=legacy, allowNAs_if_not_legacy=TRUE))
-    ## <1629>                        }
-    ## <1629>         )
-    ## <1629>     } else {
-    ## <1629>         capture.output(
-    ## <1629>                        {
-    ## <1629>                            XY <- unname(rgdal::project(xy=xy, proj=proj, inv=inv, legacy=legacy))
-    ## <1629>                        }
-    ## <1629>         )
-    ## <1629>     }
-    ## <1629> }
-    ## <1629> ## }}}
-    na <- which(!is.finite(xy[,1]))
+    na <- which(!is.finite(xy[, 1]))
     xy[na, ] <- 0
-    ## sf_project() with proj=lcc fails at S. pole. We will never need things
-    ## to be *precisely* at the poles, so let's move near-polar (or extra-polar)
-    ## points to a tiny distance equatorward of the poles.  On my osx machine,
-    ## 1e-6 degrees (or about 10cm) seems to work.
+    # sf_project() with proj=lcc fails at S. pole. We will never need things
+    # to be *precisely* at the poles, so let's move near-polar (or extra-polar)
+    # points to a tiny distance equatorward of the poles.  On my osx machine,
+    # 1e-6 degrees (or about 10cm) seems to work.
     if (!inv) {
         oceDebug(debug, "moving poles to avoid problems with some projections\n")
-        ##oceDebug(debug, "before moving poles:", vectorShow(xy[,1]))
-        ##oceDebug(debug, "before moving poles:", vectorShow(xy[,2]))
-        southPole <- xy[,2] < (-90 + 1e-6)
+        southPole <- xy[, 2] < (-90 + 1e-6)
         xy[southPole, 2] <- -90 + 1e-6
-        northPole <- xy[,2] > (90 - 1e-6)
+        northPole <- xy[, 2] > (90 - 1e-6)
         xy[northPole, 2] <- 90 - 1e-6
-        ##oceDebug(debug, "after moving poles: ", vectorShow(xy[,1]))
-        ##oceDebug(debug, "after moving poles: ", vectorShow(xy[,2]))
     }
-    ## Use capture.output() to discard any stray printing that sf might do.
+    # Use capture.output() to discard any stray printing that sf might do.
     if (debug > 0) {
-        cat("summary(xy[,1]) i.e. input lon follows\n")
-        print(summary(xy[,1]))
-        cat("summary(xy[,2]) i.e. input lat follows\n")
-        print(summary(xy[,2]))
+        cat("summary(xy[, 1]) i.e. input lon follows\n")
+        print(summary(xy[, 1]))
+        cat("summary(xy[, 2]) i.e. input lat follows\n")
+        print(summary(xy[, 2]))
     }
     oceDebug(debug, "proj=        \"", proj, "\"\n", sep="")
     oceDebug(debug, "longlatProj= \"", longlatProj, "\"\n", sep="")
@@ -154,20 +125,12 @@ oceProject <- function(xy, proj, inv=FALSE, debug=getOption("oceDebug"))
     if (inherits(XY, "try-error"))
         stop("oceProject() : sf_project() yielded errors\n")
     if (debug > 0) {
-        cat("summary(XY[,1]) i.e. output x follows\n")
-        print(summary(XY[,1]))
-        cat("summary(XY[,2]) i.e. output y follows\n")
-        print(summary(XY[,2]))
+        cat("summary(XY[, 1]) i.e. output x follows\n")
+        print(summary(XY[, 1]))
+        cat("summary(XY[, 2]) i.e. output y follows\n")
+        print(summary(XY[, 2]))
     }
     XY[na, ] <- NA
-    ## <1629> ## Test rgdal/sf agreement to 1m.
-    ## <1629> canCompare <- is.finite(XY) & is.finite(XYSF)
-    ## <1629> if (!isTRUE(all.equal(XY[canCompare], XYSF[canCompare], tolerance=1))) {
-    ## <1629>     oceDebug(debug, "old 'rgdal' and new 'sf' methods yield different results\n", style="bold")
-    ## <1629>     warning("oceProject() : disagreement between old 'rgdal' method and proposed 'sf' method. Please post an issue on www.github.com/dankelley/oce/issues\n", immediate.=TRUE)
-    ## <1629> } else {
-    ## <1629>     oceDebug(debug, "old 'rgdal' and new 'sf' methods yield the same results\n")
-    ## <1629> }
     options(warn=owarn)
     oceDebug(debug, "} # oceProject\n", sep="", unindent=1, style="bold")
     XY
@@ -203,39 +166,39 @@ usrLonLat <- function(n=25, debug=getOption("oceDebug"))
     oceDebug(debug, "usrLonLat(n=", n, ", debug=", debug, ") {\n", unindent=1, sep="", style="bold")
     usr <- par("usr")
     oceDebug(debug, "usr=", paste(usr, collapse=" "), "\n", sep="")
-    if (length(grep("wintri", .Projection()$projection)))
+    if (length(grep("wintri", .Projection()$projection))) {
         return(list(lonmin=NA, lonmax=NA, latmin=NA, latmax=NA, ok=FALSE))
+    }
     x <- c(seq(usr[1], usr[2], length.out=n),
-           rep(usr[2], n),
-           seq(usr[2], usr[1], length.out=n),
-           rep(usr[1], n))
+        rep(usr[2], n),
+        seq(usr[2], usr[1], length.out=n),
+        rep(usr[1], n))
     y <- c(rep(usr[3], n),
-           seq(usr[3], usr[4], length.out=n),
-           rep(usr[4], n),
-           seq(usr[4], usr[3], length.out=n))
+        seq(usr[3], usr[4], length.out=n),
+        rep(usr[4], n),
+        seq(usr[4], usr[3], length.out=n))
     g <- expand.grid(x=seq(usr[1], usr[2], length.out=n),
-                     y=seq(usr[3], usr[4], length.out=n))
+        y=seq(usr[3], usr[4], length.out=n))
     x <- g$x
     y <- g$y
 
-    ## if (debug > 2)
-    ##     points(x, y, pch=20, cex=3, col=2)
-    ##oceDebug(debug, "about to call map2lonlat\n")
+    #oceDebug(debug, "about to call map2lonlat\n")
     ll <- map2lonlat(x, y, debug=debug-1)
     nok <- sum(is.finite(ll$longitude))
-    ## Convert -Inf and +Inf to NA
-    ##oceDebug(debug, "DONE with call map2lonlat\n")
+    # Convert -Inf and +Inf to NA
+    #oceDebug(debug, "DONE with call map2lonlat\n")
     bad <- !is.finite(ll$longitude) | !is.finite(ll$latitude)
     ll$longitude[bad] <- NA
     ll$latitude[bad] <- NA
     oceDebug(debug, "sum(bad)/length(bad)=", sum(bad)/length(bad), "\n", sep="")
-    if (debug > 2)
+    if (debug > 2) {
         mapPoints(ll$longitude, ll$latitude, pch=20, cex=2, col=3)
+    }
     lonmin <- if (any(is.finite(ll$longitude))) min(ll$longitude, na.rm=TRUE) else NA
     lonmax <- if (any(is.finite(ll$longitude))) max(ll$longitude, na.rm=TRUE) else NA
     latmin <- if (any(is.finite(ll$latitude))) min(ll$latitude, na.rm=TRUE) else NA
     latmax <- if (any(is.finite(ll$latitude))) max(ll$latitude, na.rm=TRUE) else NA
-    ## To simplify later use, put lon in range -180 to 180, and order if needed
+    # To simplify later use, put lon in range -180 to 180, and order if needed
     lonmin <- min(lonmin, 180, na.rm=TRUE)
     lonmin <- max(lonmin, -180, na.rm=TRUE)
     lonmax <- min(lonmax, 180, na.rm=TRUE)
@@ -246,8 +209,8 @@ usrLonLat <- function(n=25, debug=getOption("oceDebug"))
             lonmin <- lonmax
             lonmax <- tmp
         }
-        ## special case: if we are showing more than half the earth, assume
-        ## it's a global view, and extend accordingly
+        # special case: if we are showing more than half the earth, assume
+        # it's a global view, and extend accordingly
         if ((lonmax - lonmin) > 180) {
             lonmin <- -180
             lonmax <- 180
@@ -256,11 +219,11 @@ usrLonLat <- function(n=25, debug=getOption("oceDebug"))
         }
     }
     oceDebug(debug, sprintf("lonmin=%.3f, lonmax=%.3f, latmin=%.3f, latmax=%.3f\n",
-                            lonmin, lonmax, latmin, latmax))
+        lonmin, lonmax, latmin, latmax))
     oceDebug(debug, "nok=", nok, ", n=", n, ", nok/n=", nok/n, "\n")
     oceDebug(debug, "} # usrLonLat()\n", unindent=1, style="bold")
     rval <- list(lonmin=lonmin, lonmax=lonmax, latmin=latmin, latmax=latmax,
-                 ok=nok/n>0.5&&is.finite(lonmin)&&is.finite(lonmax)&&is.finite(latmin)&&is.finite(latmax))
+        ok=nok/n>0.5&&is.finite(lonmin)&&is.finite(lonmax)&&is.finite(latmin)&&is.finite(latmax))
     rval
 }
 
@@ -308,20 +271,21 @@ usrLonLat <- function(n=25, debug=getOption("oceDebug"))
 oceCRS <- function(region)
 {
     regionChoices <- c("North Atlantic", "South Atlantic", "Atlantic", "Arctic", "Antarctic",
-                       "Pacific", "North Pacific", "South Pacific")
+        "Pacific", "North Pacific", "South Pacific")
     id <- pmatch(region, regionChoices)
-    if (is.na(id))
+    if (is.na(id)) {
         stop("region must be in \"", paste(regionChoices, collapse="\" \""), "\" but it is \"", region,  "\"\n")
+    }
     region <- regionChoices[id]
     CRS <- if (region == "Atlantic") "+proj=laea +lon_0=-30 +lat_0=0"
-        else if (region == "North Atlantic") "+proj=laea +lon_0=-40 +lat_0=30"
-        else if (region == "South Atlantic") "+proj=laea +lon_0=-20 +lat_0=-30"
-        else if (region == "Arctic") "+proj=stere +lon_0=0 +lat_0=90"
-        else if (region == "Antarctic") "+proj=stere +lon_0=0 +lat_0=-90"
-        else if (region == "Pacific") "+proj=merc +lon_0=-180 +lat_0=0"
-        else if (region == "North Pacific") "+proj=robin +lon_0=-180 +lat_0=30"
-        else if (region == "South Pacific") "+proj=robin +lon_0=-180 +lat_0=-30"
-        else stop("unknown region")
+    else if (region == "North Atlantic") "+proj=laea +lon_0=-40 +lat_0=30"
+    else if (region == "South Atlantic") "+proj=laea +lon_0=-20 +lat_0=-30"
+    else if (region == "Arctic") "+proj=stere +lon_0=0 +lat_0=90"
+    else if (region == "Antarctic") "+proj=stere +lon_0=0 +lat_0=-90"
+    else if (region == "Pacific") "+proj=merc +lon_0=-180 +lat_0=0"
+    else if (region == "North Pacific") "+proj=robin +lon_0=-180 +lat_0=30"
+    else if (region == "South Pacific") "+proj=robin +lon_0=-180 +lat_0=-30"
+    else stop("unknown region")
     CRS
 }
 
@@ -344,38 +308,40 @@ shiftLongitude <- function(longitudes) {
 
 formatLonLat <- function(v, which="longitude", axisStyle=1, cex=1)
 {
-    if (cex <= 0)
+    if (cex <= 0) {
         return(rep("", length(v)))
+    }
     res <- as.character(v)
-    ## we're done if axisStyle is 1
+    # we're done if axisStyle is 1
     if (axisStyle == 1) {
-        ## signed value, without suffix
+        # signed value, without suffix
         return(res)
     } else if (axisStyle == 2) {
-        ## unsigned value, with E,W,N,S suffix
-        res <- if (which == "longitude")
+        # unsigned value, with E,W,N,S suffix
+        res <- if (which == "longitude") {
             paste0(res, ifelse(v < 0, gettext("W", domain="R-oce"), gettext("E", domain="R-oce")))
-        else
+        } else {
             paste0(res, ifelse(v < 0, gettext("S", domain="R-oce"), gettext("N", domain="R-oce")))
+        }
         res[v==0] <- "0"
     } else if (axisStyle == 3) {
-        ## signed value, with degree suffix
+        # signed value, with degree suffix
         res <- paste0(res, "\u00B0")
     } else if (axisStyle == 4) {
-        ## unsigned value, with degree suffix
+        # unsigned value, with degree suffix
         res <- paste0(abs(v), "\u00B0")
     } else if (axisStyle == 5) {
-        ## unsigned value, with degree and hemisphere suffix
+        # unsigned value, with degree and hemisphere suffix
         res <- if (which == "longitude") {
             paste0(abs(v), "\u00B0", unlist(lapply(v, function(l)
-                                                   if (l < 0) gettext("W", domain="R-oce")
-                                                   else if (l > 0) gettext("E", domain="R-oce")
-                                                   else "")))
+                if (l < 0) gettext("W", domain="R-oce")
+                else if (l > 0) gettext("E", domain="R-oce")
+                else "")))
         } else {
             paste0(abs(v), "\u00B0", unlist(lapply(v, function(l)
-                                                   if (l < 0) gettext("S", domain="R-oce")
-                                                   else if (l > 0) gettext("N", domain="R-oce")
-                                                   else "")))
+                if (l < 0) gettext("S", domain="R-oce")
+                else if (l > 0) gettext("N", domain="R-oce")
+                else "")))
         }
     }
     res
@@ -385,42 +351,42 @@ fixneg <- function(v)
 {
     res <- v
     for (i in seq_along(res)) {
-        ##message("res[i]='", res[i], "' ...")
+        #message("res[i]='", res[i], "' ...")
         if (grepl("^0[A-Z]$", res[i])) {
             res[i] <- "0"
         } else if ("-" == substr(res[i], 1, 1)) {
-            ##cat("res[i]=", res[i], "\n")
+            #cat("res[i]=", res[i], "\n")
             res[i] <- gsub("^-", "", res[i])
             res[i] <- gsub("E", gettext("W", domain="R-oce"), res[i])
             res[i] <- gsub("N", gettext("S", domain="R-oce"), res[i])
-            ##cat(" -> res[i]=", res[i], "\n")
+            #cat(" -> res[i]=", res[i], "\n")
         }
-        ##message('  ... "', res[i], "'")
+        #message('  ... "', res[i], "'")
     }
     res
 }
 
 badFillFix1 <- function(x, y, latitude, projection="")
 {
-    ##xrange <- range(x, na.rm=TRUE)
-    ##yrange <- range(y, na.rm=TRUE)
+    #xrange <- range(x, na.rm=TRUE)
+    #yrange <- range(y, na.rm=TRUE)
     n <- length(x)
-    ## 1181 necessitated this use of n>100 (it was a case of 3 isolated islands)
+    # 1181 necessitated this use of n>100 (it was a case of 3 isolated islands)
     if (n > 100) { # avoid getting confused by e.g. a view with two islands
-        ## FIXME: below is a kludge to avoid weird horiz lines; it
-        ## FIXME: would be better to complete the polygons, so they
-        ## FIXME: can be filled.  It might be smart to do this in C
+        # FIXME: below is a kludge to avoid weird horiz lines; it
+        # FIXME: would be better to complete the polygons, so they
+        # FIXME: can be filled.  It might be smart to do this in C
         d <- c(0, sqrt(diff(x)^2 + diff(y)^2))
         d[!is.finite(d)] <- 0          # FIXME: ok?
-        ##dc <- as.numeric(quantile(d, 1-100*(1/3/length(x)), na.rm=TRUE)) # FIXME: criterion
-        ##bad <- d > dc
-        ##bad <- 0.1 < (d / diff(range(x, na.rm=TRUE)))
+        #dc <- as.numeric(quantile(d, 1-100*(1/3/length(x)), na.rm=TRUE)) # FIXME: criterion
+        #bad <- d > dc
+        #bad <- 0.1 < (d / diff(range(x, na.rm=TRUE)))
         antarctic <- latitude < -60
-        bad <- ( (d / diff(range(x, na.rm=TRUE))) > 0.1 ) & !antarctic
-        ## if (length(options("oce1181")[[1]])) browser()
-        ## FIXME: this should finish off polygons, but that is a bit tricky, e.g.
-        ## FIXME: should we create a series of points to a trace along the edge
-        ## FIXME: the visible earth?
+        bad <- ((d / diff(range(x, na.rm=TRUE))) > 0.1) && !antarctic
+        # if (length(options("oce1181")[[1]])) browser()
+        # FIXME: this should finish off polygons, but that is a bit tricky, e.g.
+        # FIXME: should we create a series of points to a trace along the edge
+        # FIXME: the visible earth?
         x[bad] <- NA
         y[bad] <- NA
     }
@@ -436,15 +402,15 @@ badFillFix2 <- function(x, y, xorig, yorig)
     w <- which(is.na(xorig))
     if (length(w) > 1) {
         for (iw in seq(1, -1+length(w))) {
-            ##message("check chunk", iw)
+            #message("check chunk", iw)
             look <- seq.int(w[iw]+1, w[iw+1]-1)
             xl <- xorig[look]
             yl <- yorig[look]
             offscale <- yl < usr[3] | xl < usr[1] | yl > usr[4] | xl > usr[2]
             offscale <- offscale[is.finite(offscale)]
             if (all(offscale)) {
-                ## probably faster to do this than to make new vectors
-                ##message("  TRIM")
+                # probably faster to do this than to make new vectors
+                #message("  TRIM")
                 x[look] <- NA
                 y[look] <- NA
             }
@@ -452,8 +418,6 @@ badFillFix2 <- function(x, y, xorig, yorig)
     }
     list(x=x, y=y)
 }
-
-
 
 #' Add Axis Labels to an Existing Map
 #'
@@ -538,8 +502,8 @@ badFillFix2 <- function(x, y, xorig, yorig)
 #' # mapGrid() and mapAxis() are best avoided; it is
 #' # simpler to let mapPlot() handle these things.
 #' mapPlot(coastlineWorld, projection="+proj=stere +lat_0=90",
-#'         longitudelim=lonlim, latitudelim=latlim,
-#'         col="tan", axes=FALSE, grid=FALSE)
+#'     longitudelim=lonlim, latitudelim=latlim,
+#'     col="tan", axes=FALSE, grid=FALSE)
 #' mapGrid(15, 15)
 #' mapAxis(axisStyle=5)
 #'}
@@ -549,24 +513,26 @@ badFillFix2 <- function(x, y, xorig, yorig)
 #' @seealso A map must first have been created with [mapPlot()].
 #'
 #' @family functions related to maps
+# DEK: the neovim indenter messes up the next 4 lines.  I don't know why.
 mapAxis <- function(side=1:2, longitude=TRUE, latitude=TRUE,
-    axisStyle=1, tick=TRUE, line=NA, pos=NA, outer=FALSE, font=NA,
-    lty="solid", lwd=1, lwd.ticks=lwd, col=NULL, col.ticks=NULL,
-    hadj=NA, padj=NA, tcl=-0.3, cex.axis=1,
-    mgp=c(0, 0.5, 0),
-    debug=getOption("oceDebug"))
+                    axisStyle=1, tick=TRUE, line=NA, pos=NA, outer=FALSE, font=NA,
+                    lty="solid", lwd=1, lwd.ticks=lwd, col=NULL, col.ticks=NULL,
+                    hadj=NA, padj=NA, tcl=-0.3, cex.axis=1, mgp=c(0, 0.5, 0), debug=getOption("oceDebug"))
 {
-    if ("none" == .Projection()$type)
+    if ("none" == .Projection()$type) {
         stop("must create a map first, with mapPlot()\n")
+    }
     oceDebug(debug, "mapAxis(side=c(", paste(side, collapse=","), ")",
-             ", longitude=", if (length(longitude)) c(longitude[1], "...") else "NULL",
-             ", latitude=", if (length(latitude)) c(latitude[1], "...") else "NULL",
-             ", axisStyle=", axisStyle,
-             ") { \n", unindent=1, sep="")
-    if (length(axisStyle) != 1)
+        ", longitude=", if (length(longitude)) c(longitude[1], "...") else "NULL",
+        ", latitude=", if (length(latitude)) c(latitude[1], "...") else "NULL",
+        ", axisStyle=", axisStyle,
+        ") { \n", unindent=1, sep="")
+    if (length(axisStyle) != 1) {
        stop("axisStyle must be of length 1")
-    if (!(axisStyle %in% 1:5))
+    }
+    if (!(axisStyle %in% 1:5)) {
         stop("invalid axis style ", paste(axisStyle, collapse=","), "; must be 1, 2, 3, 4 or 5")
+    }
     boxLonLat <- usrLonLat()
     axis <- .axis()
     #if (debug > 0) print(axis)
@@ -595,25 +561,28 @@ mapAxis <- function(side=1:2, longitude=TRUE, latitude=TRUE,
     }
     oceDebug(debug, "mapAxis: after box-trimming, ", vectorShow(latitude))
 
-    ## if (is.null(axis$longitude)) oceDebug(debug, "should auto generate longitude grid and then axis\n")
-    ## if (is.null(axis$latitude)) oceDebug(debug, "should auto generate latitude grid and then axis\n")
-    ## if (missing(longitude)) longitude <- axis$longitude
-    ## if (missing(latitude)) latitude <- axis$latitude
-    if (missing(side))
+    # if (is.null(axis$longitude)) oceDebug(debug, "should auto generate longitude grid and then axis\n")
+    # if (is.null(axis$latitude)) oceDebug(debug, "should auto generate latitude grid and then axis\n")
+    # if (missing(longitude)) longitude <- axis$longitude
+    # if (missing(latitude)) latitude <- axis$latitude
+    if (missing(side)) {
         side <- 1:2
-    usr <- par('usr')
-    axisSpan <- max(usr[2]-usr[1], usr[4]-usr[3])
+    }
+    usr <- par("usr")
+    #axisSpan <- max(usr[2]-usr[1], usr[4]-usr[3])
     usr <- par("usr")
     if (1 %in% side) {
-        ## Infer positions of labels on the vertical axis by casting a grid on
-        ## that axis in x-y space, transforming this to lon-lat space, setting
-        ## up a piecewise linear model of x as a function of longitude, and then
-        ## using that function at longitudes of interest, to get the "x"
-        ## locations for axis ticks.
+        # Infer positions of labels on the vertical axis by casting a grid on
+        # that axis in x-y space, transforming this to lon-lat space, setting
+        # up a piecewise linear model of x as a function of longitude, and then
+        # using that function at longitudes of interest, to get the "x"
+        # locations for axis ticks.
         oceDebug(debug, "drawing axis on side 1\n")
         oceDebug(debug, vectorShow(longitude))
         tn <- 100
+        # nolint start object_usage_linter
         ts <- seq(0, 1, length.out=tn)
+        # nolint end object_usage_linter
         tx <- seq(usr[1], usr[2], length.out=tn)
         ty <- rep(usr[3], tn)
         tt <- map2lonlat(tx, ty, debug=debug-1)
@@ -631,7 +600,7 @@ mapAxis <- function(side=1:2, longitude=TRUE, latitude=TRUE,
         }
     }
     if (2 %in% side) {
-        ## See the notes at side=1 for the method.
+        # See the notes at side=1 for the method.
         oceDebug(debug, "drawing axis on side 2\n")
         oceDebug(debug, vectorShow(latitude))
         tn <- 100
@@ -739,37 +708,43 @@ mapAxis <- function(side=1:2, longitude=TRUE, latitude=TRUE,
 #' @seealso A map must first have been created with [mapPlot()].
 #' @family functions related to maps
 mapContour <- function(longitude, latitude, z,
-    nlevels=10, levels=pretty(range(z, na.rm=TRUE), nlevels),
-    ##labels=null,
-    ##xlim=range(longitude, finite=TRUE),
-    #ylim=range(latitude, finite=TRUE),
-    labcex=0.6,
-    drawlabels=TRUE,
-    underlay="erase",
-    ##vfont,
-    ## axes=TRUE, frame.plot=axes,
-    col=par("fg"), lty=par("lty"), lwd=par("lwd"),
-    debug=getOption("oceDebug"))
+                       nlevels=10, levels=pretty(range(z, na.rm=TRUE), nlevels),
+                       ##labels=null,
+                       ##xlim=range(longitude, finite=TRUE),
+                       #ylim=range(latitude, finite=TRUE),
+                       labcex=0.6,
+                       drawlabels=TRUE,
+                       underlay="erase",
+                       ##vfont,
+                       ## axes=TRUE, frame.plot=axes,
+                       col=par("fg"), lty=par("lty"), lwd=par("lwd"),
+                       debug=getOption("oceDebug"))
 {
     oceDebug(debug, "mapContour() {\n", sep="", unindent=1, style="bold")
-    if ("none" == .Projection()$type)
+    if ("none" == .Projection()$type) {
         stop("must create a map first, with mapPlot()\n")
-    if (missing(longitude))
+    }
+    if (missing(longitude)) {
         stop("must supply longitude")
+    }
     if ("data" %in% slotNames(longitude) && # handle e.g. 'topo' class
         3 == sum(c("longitude", "latitude", "z") %in% names(longitude@data))) {
         z <- longitude@data$z
         latitude <- longitude@data$latitude
         longitude <- longitude@data$longitude
     }
-    if (missing(latitude))
+    if (missing(latitude)) {
         stop("must supply latitude")
-    if (missing(z))
+    }
+    if (missing(z)) {
         stop("must supply z")
-    if (!underlay %in% c("erase", "interrupt"))
+    }
+    if (!underlay %in% c("erase", "interrupt")) {
         stop("underlay must be \"erase\" or \"interrupt\"")
-    if (underlay == "interrupt" && !requireNamespace("sp", quietly=TRUE))
+    }
+    if (underlay == "interrupt" && !requireNamespace("sp", quietly=TRUE)) {
         stop("must have \"sp\" package available for underlay=\"interupt\"")
+    }
     if ("data" %in% slotNames(longitude) && # handle e.g. 'topo' class
         3 == sum(c("longitude", "latitude", "z") %in% names(longitude@data))) {
         z <- longitude@data$z
@@ -787,12 +762,12 @@ mapContour <- function(longitude, latitude, z,
     if (length(xx) > 1 && diff(longitude[1:2]) < 0) {
         xx <- rev(xx)
         z <- z[xx, ]
-        ##cat("flipped in x\n")
+        #cat("flipped in x\n")
     }
     if (length(yy) > 1 && diff(latitude[1:2]) < 0) {
         yy <- rev(yy)
         z <- z[, yy]
-        ##cat("flipped in y\n")
+        #cat("flipped in y\n")
     }
     colUnderLabel <- "white" # use a variable in case we want to add as an arg
     for (ilevel in 1:nlevels) {
@@ -802,8 +777,8 @@ mapContour <- function(longitude, latitude, z,
         h <- 1.0*strheight(label, "user", cex=labcex) # ignored unless drawlabels=TRUE
         oceDebug(debug > 1, "w=", w, ", h=", h, "\n")
         cl <- contourLines(x=longitude[xx],
-                           y=latitude[yy],
-                           z=z, levels=levels[ilevel])
+            y=latitude[yy],
+            z=z, levels=levels[ilevel])
         if (length(cl) > 0) {
             for (i in seq_along(cl)) {
                 oceDebug(debug > 1, "segment number=i=", i, "; level=", levels[ilevel], "\n")
@@ -823,7 +798,7 @@ mapContour <- function(longitude, latitude, z,
                             dx <- xc[j2] - xc[j]
                             dist <- sqrt(dx^2 + dy^2)
                             if (dist > 1.4 * w && dx != 0.0) {
-                                oceDebug(debug > 2, "enough space at j=",j,", j2=", j2, "\n")
+                                oceDebug(debug > 2, "enough space at j=", j, ", j2=", j2, "\n")
                                 slope <- dy / dx
                                 if (abs(slope) < slopeMin) {
                                     slopeMin <- abs(slope)
@@ -837,20 +812,21 @@ mapContour <- function(longitude, latitude, z,
                         }
                     }
                     if (canlabel) {
-                        labelj <- floor(0.5 + 0.5*(slopeMinj + slopeMinj2))
+                        labelj <- floor(0.5 + 0.5 * (slopeMinj + slopeMinj2))
                         angle <- atan2(yc[slopeMinj2]-yc[slopeMinj], xc[slopeMinj2]-xc[slopeMinj])
                         oceDebug(debug > 1,
-                                 sprintf("j=%d j2=%d slopeMin=%.3g slopeMinj=%d slopeMinj2=%d\n",
-                                         j, j2, slopeMin, slopeMinj, slopeMinj2))
+                            sprintf("j=%d j2=%d slopeMin=%.3g slopeMinj=%d slopeMinj2=%d\n",
+                                j, j2, slopeMin, slopeMinj, slopeMinj2))
                         if (debug > 2) {
                             points(xc[slopeMinj], yc[slopeMinj], col="darkgreen", pch=20)
                             points(xc[slopeMinj2], yc[slopeMinj2], col="red", pch=20)
                             points(xc[labelj], yc[labelj], col="blue", pch=20) # centre
                         }
-                        if (angle > pi/2 || angle < -pi/2)
+                        if (angle > pi/2 || angle < -pi/2) {
                             angle <- angle + pi
+                        }
                         oceDebug(debug, sprintf("step 2: label='%s' x=%.2g y=%.2g angle=%.9g deg\n",
-                                                label, xc[labelj], yc[labelj], angle*180/pi))
+                            label, xc[labelj], yc[labelj], angle*180/pi))
                         S <- sin(-angle)
                         C <- cos(-angle)
                         rot <- matrix(c(C, -S, S, C), byrow=TRUE, nrow=2)
@@ -860,21 +836,23 @@ mapContour <- function(longitude, latitude, z,
                         XYrot <- XY %*% rot
                         if (underlay == "erase") {
                             lines(xc, yc, lwd=lwd[ilevel], lty=lty[ilevel], col=col[ilevel])
-                            polygon(xc[labelj]+XYrot[,1], yc[labelj]+XYrot[,2],
-                                    col=colUnderLabel, border=colUnderLabel)
+                            polygon(xc[labelj]+XYrot[, 1], yc[labelj]+XYrot[, 2],
+                                col=colUnderLabel, border=colUnderLabel)
                         } else if (underlay == "interrupt") {
                             erase <- 1==sp::point.in.polygon(xc, yc,
-                                                             xc[labelj]+XYrot[,1], yc[labelj]+XYrot[,2])
-                            polyx <- xc[labelj] + XYrot[,1]
-                            polyy <- yc[labelj] + XYrot[,2]
+                                xc[labelj]+XYrot[, 1], yc[labelj]+XYrot[, 2])
+                            polyx <- xc[labelj] + XYrot[, 1]
+                            polyy <- yc[labelj] + XYrot[, 2]
                             polyNew <- sf::st_polygon(list(outer=cbind(c(polyx, polyx[1]), c(polyy, polyy[1]))))
                             pointsNew <- sf::st_multipoint(cbind(xc, yc))
                             insideNew <- sf::st_intersection(pointsNew, polyNew)
                             tmpMatrix <- matrix(pointsNew %in% insideNew, ncol=2)
-                            eraseNew <- tmpMatrix[,1] & tmpMatrix[,2] # could also use an apply op, but this is simple
+                            eraseNew <- tmpMatrix[, 1] & tmpMatrix[, 2] # could also use an apply op, but this is simple
                             ##eraseOld <- erase
                             if (!isTRUE(all.equal(eraseNew, erase))) {
-                                warning("mapContour() : 'erase' disagreement with trial 'sf' method. Please post an issue on www.github.com/dankelley/oce/issues\n", immediate.=TRUE)
+                                warning("mapContour() : 'erase' disagreement with trial 'sf' method. ",
+                                    "Please post an issue on www.github.com/dankelley/oce/issues\n",
+                                    immediate.=TRUE)
                             }
                             oceDebug(debug, "ignoring", sum(erase), "points under", label, "contour\n")
                             XC <- xc
@@ -938,10 +916,12 @@ mapContour <- function(longitude, latitude, z,
 #' @family functions related to maps
 mapCoordinateSystem <- function(longitude, latitude, L=100, phi=0, ...)
 {
-    if (missing(longitude))
-        stop('must supply longitude')
-    if (missing(latitude))
-        stop('must supply latitude')
+    if (missing(longitude)) {
+        stop("must supply longitude")
+    }
+    if (missing(latitude)) {
+        stop("must supply latitude")
+    }
     R <- 6371
     pi <- 4 * atan2(1, 1)
     phirad <- phi*pi/180 + c(0, pi/2)
@@ -1013,11 +993,12 @@ mapCoordinateSystem <- function(longitude, latitude, L=100, phi=0, ...)
 #'
 #' @family functions related to maps
 mapDirectionField <- function(longitude, latitude, u, v,
-    scale=1, length=0.05, code=2, col=par("fg"), ...)
+                              scale=1, length=0.05, code=2, col=par("fg"), ...)
 {
-    if ("none" == .Projection()$type)
+    if ("none" == .Projection()$type) {
         stop("must create a map first, with mapPlot()\n")
-    ## handle case where lon and lat are coords on edges of grid
+    }
+    # handle case where lon and lat are coords on edges of grid
     if (is.matrix(u)) {
         if (is.vector(longitude) && is.vector(latitude)) {
             nlon <- length(longitude)
@@ -1027,8 +1008,8 @@ mapDirectionField <- function(longitude, latitude, u, v,
         }
     }
     xy <- lonlat2map(as.vector(longitude), as.vector(latitude))
-    ## Calculate spatially-dependent scale (fails for off-page points)
-    ## Calculate lon-lat at ends of arrows
+    # Calculate spatially-dependent scale (fails for off-page points)
+    # Calculate lon-lat at ends of arrows
     scalex <- scale / cos(pi * latitude / 180)
     latEnd <- latitude + v * scale
     lonEnd <- longitude + u * scalex
@@ -1077,13 +1058,15 @@ mapDirectionField <- function(longitude, latitude, u, v,
 #' @family functions related to maps
 mapLongitudeLatitudeXY <- function(longitude, latitude)
 {
-    if ("none" == .Projection()$type)
+    if ("none" == .Projection()$type) {
         stop("must create a map first, with mapPlot()\n")
-    if (missing(longitude))
+    }
+    if (missing(longitude)) {
         stop("must give 'longitude' and possibly 'latitude'")
+    }
     if (!missing(longitude) && ("data" %in% slotNames(longitude))) {
         tmp <- longitude@data
-        if ( ("longitude" %in% names(tmp)) && ("latitude" %in% names(tmp)) ) {
+        if (("longitude" %in% names(tmp)) && ("latitude" %in% names(tmp))) {
             latitude <- tmp$latitude
             longitude <- tmp$longitude
         }
@@ -1600,34 +1583,32 @@ mapLongitudeLatitudeXY <- function(longitude, latitude)
 #'
 #' @family functions related to maps
 mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
-    geographical=0,
-    bg, fill,
-    border=NULL, col=NULL,
-    clip=TRUE,
-    type='polygon',
-    axes=TRUE, axisStyle=1,
-    cex, cex.axis=1, mgp=c(0, 0.5, 0), drawBox=TRUE, showHemi=TRUE,
-    polarCircle=0, lonlabels=TRUE, latlabels=TRUE,
-    projection="+proj=moll", tissot=FALSE, trim=TRUE,
-    debug=getOption("oceDebug"),
-    ...)
+                    geographical=0,
+                    bg, fill, border=NULL, col=NULL,
+                    clip=TRUE, type="polygon", axes=TRUE, axisStyle=1,
+                    cex, cex.axis=1, mgp=c(0, 0.5, 0), drawBox=TRUE, showHemi=TRUE,
+                    polarCircle=0, lonlabels=TRUE, latlabels=TRUE,
+                    projection="+proj=moll", tissot=FALSE, trim=TRUE,
+                    debug=getOption("oceDebug"),
+                    ...)
 {
     debug <- max(0, min(debug, 3))
     oceDebug(debug, "mapPlot(longitude, latitude,",
-             argShow(longitudelim),
-             argShow(latitudelim),
-             argShow(type),
-             argShow(projection),
-             argShow(grid),
-             argShow(geographical),
-             ", ...) {\n", sep="", unindent=1, style="bold")
+        argShow(longitudelim),
+        argShow(latitudelim),
+        argShow(type),
+        argShow(projection),
+        argShow(grid),
+        argShow(geographical),
+        ", ...) {\n", sep="", unindent=1, style="bold")
     dots <- list(...)
-    if (1 == length(grid))
+    if (1 == length(grid)) {
         grid <- rep(grid, 2)
+    }
     geographical <- round(geographical)
-    if (geographical < 0 || geographical > 4)
+    if (geographical < 0 || geographical > 4) {
         stop("argument geographical must be an integer between 0 to 4, inclusive")
-
+    }
     if (!missing(projection) && inherits(projection, "CRS")) {
         projection <- projection@projargs
     }
@@ -1644,14 +1625,16 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
     # Work-around for some sf projection problems
     repairedProjection <- repairProjection(projection, longlatProjInitial, debug=debug)
     projection <- repairedProjection$projection
+    # nolint start object_usage_linter
     longlatProj <- repairedProjection$longlatProj
+    # nolint end object_usage_linter
     if (missing(longitude)) {
         data("coastlineWorld", package="oce", envir=environment())
         longitude <- get("coastlineWorld")
     }
     if (!missing(fill)) {
-        ## permit call as documented before 2016-02-03
-        ## Note: the code permitted fill=TRUE but this was never documented
+        # permit call as documented before 2016-02-03
+        # Note: the code permitted fill=TRUE but this was never documented
         if (is.character(fill)) {
             col <- fill
         } else {
@@ -1673,10 +1656,12 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
         latitude <- longitude@data$latitude
         longitude <- longitude@data$longitude
     }
-    if (length(grid) > 2)
+    if (length(grid) > 2) {
         grid <- grid[1:2]
-    if (length(grid) == 1)
+    }
+    if (length(grid) == 1) {
         grid <- rep(grid[1], 2)
+    }
     oceDebug(debug, "after making it length 2, grid is c(", paste(grid, collapse=","), ")\n", sep="")
     drawGrid <- (is.logical(grid[1]) && grid[1]) || (is.numeric(grid[1]) && grid[1] > 0)
     oceDebug(debug, "drawGrid=", drawGrid, "\n")
@@ -1721,22 +1706,23 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
     xrange <- range(xtmp, na.rm=TRUE)
     yrange <- range(ytmp, na.rm=TRUE)
     rm(xtmp, ytmp)
-    if (any(!is.finite(xrange)) || any(!is.finite(yrange)))
+    if (any(!is.finite(xrange)) || any(!is.finite(yrange))) {
         stop("All the data are 'on the other side of the world' for this map projection")
-
+    }
     oceDebug(debug, "xrange=", paste(xrange, collapse=" "), "\n")
     oceDebug(debug, "yrange=", paste(yrange, collapse=" "), "\n")
-
     dotnames <- names(dots)
     if ("xlim" %in% dotnames || "ylim" %in% dotnames || "xaxs" %in% dotnames || "yaxs" %in% dotnames) {
-        ## for issue 539, i.e. repeated scales
+        # for issue 539, i.e. repeated scales
         oceDebug(debug, "xlim, ylim, xaxs, or yaxs was given\n")
         if (type == "polygon") {
             plot(x, y, type="n", xlab="", ylab="", asp=1, axes=FALSE, ...)
-            if (is.null(border))
+            if (is.null(border)) {
                 border <- "black"
-            if (is.null(col))
+            }
+            if (is.null(col)) {
                 col <- "white"
+            }
             polygon(x, y, border=border, col=col)
         } else {
             plot(x, y, type=type, xlab="", ylab="", asp=1, axes=FALSE, col=col, ...)
@@ -1747,21 +1733,20 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
             oceDebug(debug, "latitudelim and longitudelim are known\n")
             oceDebug(debug, "latitudelim: ", paste(latitudelim, collapse=" "), "\n")
             oceDebug(debug, "longitudelim: ", paste(longitudelim, collapse=" "), "\n")
-
-            ## transform so can do e.g. latlim=c(70, 110) to centre on pole
-            ##message("latitudelim: ", paste(latitudelim, collapse=" "))
-            ##message("longitudelim: ", paste(longitudelim, collapse=" "))
+            # transform so can do e.g. latlim=c(70, 110) to centre on pole
+            #message("latitudelim: ", paste(latitudelim, collapse=" "))
+            #message("longitudelim: ", paste(longitudelim, collapse=" "))
             if (latitudelim[2] > 90) {
                 longitudelim[2] <- 360 + longitudelim[2] - 180
                 latitudelim[2] <- 180 - latitudelim[2]
             }
-            ##message("latitudelim: ", paste(latitudelim, collapse=" "))
-            ##message("longitudelim: ", paste(longitudelim, collapse=" "))
+            #message("latitudelim: ", paste(latitudelim, collapse=" "))
+            #message("longitudelim: ", paste(longitudelim, collapse=" "))
             n <- 10
             BOXx <- c(rep(longitudelim[1], n), seq(longitudelim[1], longitudelim[2], length.out=n),
-                      rep(longitudelim[2], n), seq(longitudelim[2], longitudelim[1], length.out=n))
+                rep(longitudelim[2], n), seq(longitudelim[2], longitudelim[1], length.out=n))
             BOXy <- c(seq(latitudelim[1], latitudelim[2], length.out=n), rep(latitudelim[2], n),
-                      seq(latitudelim[2], latitudelim[1], length.out=n), rep(latitudelim[1], n))
+                seq(latitudelim[2], latitudelim[1], length.out=n), rep(latitudelim[1], n))
             #message("111")
             box <- lonlat2map(BOXx, BOXy)
             #message("/111")
@@ -1771,12 +1756,14 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
             #message("FIXME: box is NA")
             if (type == "polygon") {
                 plot(x, y, type="n",
-                     xlim=range(box$x, na.rm=TRUE), ylim=range(box$y, na.rm=TRUE),
-                     xlab="", ylab="", asp=1, axes=FALSE, ...)
-                if (is.null(border))
+                    xlim=range(box$x, na.rm=TRUE), ylim=range(box$y, na.rm=TRUE),
+                    xlab="", ylab="", asp=1, axes=FALSE, ...)
+                if (is.null(border)) {
                     border <- "black"
-                if (is.null(col))
+                }
+                if (is.null(col)) {
                     col <- "white"
+                }
                 if (clip) {
                     oceDebug(debug, "about to draw clipped polygon\n")
                     cl <- .Call("map_clip_xy", x, y, par("usr"))
@@ -1786,71 +1773,75 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
                     polygon(x, y, border=border, col=col)
                 }
             } else {
-                if (is.null(col))
+                if (is.null(col)) {
                     col <- "black"
+                }
                 #> message("ISSUE 1783, at map.R:1722")
                 plot(x, y, type=type,
-                     xlim=range(box$x, na.rm=TRUE), ylim=range(box$y, na.rm=TRUE),
-                     xlab="", ylab="", asp=1, axes=FALSE,
-                     col=if (missing(col)) NULL else col,
-                     bg=if (missing(bg)) NULL else bg,
-                     cex=if (missing(cex)) NULL else cex,
-                     ...)
+                    xlim=range(box$x, na.rm=TRUE), ylim=range(box$y, na.rm=TRUE),
+                    xlab="", ylab="", asp=1, axes=FALSE,
+                    col=if (missing(col)) NULL else col,
+                    bg=if (missing(bg)) NULL else bg,
+                    cex=if (missing(cex)) NULL else cex,
+                    ...)
             }
             ## points(jitter(box$x), jitter(box$y), pch=1, col='red')
         } else {
             oceDebug(debug, "neither latitudelim nor longitudelim was given\n")
             if (type == "polygon") {
                 plot(x, y, type="n",
-                     xlab="", ylab="", asp=1, axes=FALSE, ...)
-                if (is.null(border))
+                    xlab="", ylab="", asp=1, axes=FALSE, ...)
+                if (is.null(border)) {
                     border <- "black"
-                if (is.null(col))
+                }
+                if (is.null(col)) {
                     col <- "white"
+                }
                 polygon(x, y, border=border, col=col)
             } else {
-                if (is.null(col))
+                if (is.null(col)) {
                     col <- "black"
+                }
                 #> message("ISSUE 1783, at map.R:1743")
                 plot(x, y, type=type,
-                     xlab="", ylab="", asp=1, axes=FALSE,
-                     col=if (missing(col)) NULL else col,
-                     bg=if (missing(bg)) NULL else bg,
-                     cex=if (missing(cex)) NULL else cex,
-                     ...)
+                    xlab="", ylab="", asp=1, axes=FALSE,
+                    col=if (missing(col)) NULL else col,
+                    bg=if (missing(bg)) NULL else bg,
+                    cex=if (missing(cex)) NULL else cex,
+                    ...)
             }
         }
     }
-    ## Remove any island/lake that is entirely offscale.  This is not a
-    ## solution to the Antarctica/stereographic problem of issue 545, because the
-    ## line segment between two offscale points might intersect the box.  For
-    ## this reason, it is done only when trim=TRUE.
+    # Remove any island/lake that is entirely offscale.  This is not a
+    # solution to the Antarctica/stereographic problem of issue 545, because the
+    # line segment between two offscale points might intersect the box.  For
+    # this reason, it is done only when trim=TRUE.
     if (trim) {
         xy <- badFillFix2(x=x, y=y, xorig=xorig, yorig=yorig)
         x <- xy$x
         y <- xy$y
     }
-    if (type != 'n') {
-        ## if (!is.null(col)) {
-        ##     polygon(x, y, border=border, col=col, ...)
-        ## }
+    if (type != "n") {
+        # if (!is.null(col)) {
+        #     polygon(x, y, border=border, col=col, ...)
+        # }
         if (isTopo) {
             mapContour(topo[["longitude"]], topo[["latitude"]], topo[["z"]], ...)
         }
     }
-    usr <- par('usr')
-    ## FIXME: meridians and zones should be added later because they can change depending
-    ## FIXME: on the 'pretty' operation below.
+    usr <- par("usr")
+    # FIXME: meridians and zones should be added later because they can change depending
+    # FIXME: on the 'pretty' operation below.
     if (drawBox)
         box()
     drawGrid <- (is.logical(grid[1]) && grid[1]) || grid[1] > 0
-    ## message("xrange:", paste(round(xrange, 2), collapse=" "))
-    ## message("usr[1:2]:", paste(round(usr[1:2], 2), collapse=" "))
-    ## message("yrange:", paste(round(yrange, 2), collapse=" "))
-    ## message("usr[3:4]:", paste(round(usr[3:4], 2), collapse=" "))
+    # message("xrange:", paste(round(xrange, 2), collapse=" "))
+    # message("usr[1:2]:", paste(round(usr[1:2], 2), collapse=" "))
+    # message("yrange:", paste(round(yrange, 2), collapse=" "))
+    # message("usr[3:4]:", paste(round(usr[3:4], 2), collapse=" "))
     fractionOfGlobe <- usr[1] > xrange[1] || xrange[2] > usr[2] || usr[3] > yrange[1] || yrange[2] > usr[4]
     oceDebug(debug, "initially fractionOfGlobe:", fractionOfGlobe, "\n")
-    ## Also turn off axes if it's nearly the whole globe
+    # Also turn off axes if it's nearly the whole globe
     xfrac <- diff(xrange) / (usr[2]-usr[1]) > 0.7
     yfrac  <- diff(yrange) / (usr[4]-usr[3]) > 0.7
     if (!xfrac) fractionOfGlobe <- FALSE
@@ -1860,54 +1851,54 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
     oceDebug(debug, "finally fractionOfGlobe:", fractionOfGlobe, "\n")
     if (axes || drawGrid) {
         oceDebug(debug, "(axes=", axes, "|| drawGrid=", drawGrid, ") is TRUE\n")
-        ## Grid lines and axes.
-        ## Find ll and ur corners of plot, if possible, for use in calculating
-        ## lon and lat spans.  This will not work in all cases; e.g. for a
-        ## world map in mollweide projection, the bounding points will be "in
-        ## space", so we must check for this when we calculate the span.
-        usr <- par('usr')
-        ##xll <- usr[1]
-        ##yll <- usr[3]
-        ##xur <- usr[2]
-        ##yur <- usr[4]
+        # Grid lines and axes.
+        # Find ll and ur corners of plot, if possible, for use in calculating
+        # lon and lat spans.  This will not work in all cases; e.g. for a
+        # world map in mollweide projection, the bounding points will be "in
+        # space", so we must check for this when we calculate the span.
+        usr <- par("usr")
+        #xll <- usr[1]
+        #yll <- usr[3]
+        #xur <- usr[2]
+        #yur <- usr[4]
 
-        options <- options('warn') # turn off warnings temporarily
+        options <- options("warn") # turn off warnings temporarily
         options(warn=-1)
 
         if (is.logical(grid)) {
-            ## Determining a grid automatically has proved to be quite tricky,
-            ## and the code near this spot has been reworked repeatedly.
-            ## At one time, the code near this spot looked at par("usr")
-            ## and tried to invert the corners, to get an idea of scale, and
-            ## this failed because the Winkel Tripel ("wintri") projection
-            ## goes into what seems to be an infinite loop when trying to do the
-            ## inverse of a point that is beyond the edge of the earth
-            ## disk. (I think it fails just on the disk edge, too.) When oce had
-            ## the PROJ.4 code embedded within its src, this was not a problem,
-            ## because I had a workaround.  This workaround has been reported
-            ## to the PROJ.4 community, so I expect that sometime in the year
-            ## 2015 this problem will go away.
-            ##
-            ## Given the above, the present code focusses near the centre of
-            ## the plot region.  A region that might correspond to one tick
-            ## on the axes (assuming 10 ticks per side) is inverse mapped,
-            ## and the corners are used to determine a tick scale. Rather
-            ## than use pretty(), the scale is determined from a list
-            ## of standards (because maps should have 5deg increments, if
-            ## this is good for a view, but not 4deg).
+            # Determining a grid automatically has proved to be quite tricky,
+            # and the code near this spot has been reworked repeatedly.
+            # At one time, the code near this spot looked at par("usr")
+            # and tried to invert the corners, to get an idea of scale, and
+            # this failed because the Winkel Tripel ("wintri") projection
+            # goes into what seems to be an infinite loop when trying to do the
+            # inverse of a point that is beyond the edge of the earth
+            # disk. (I think it fails just on the disk edge, too.) When oce had
+            # the PROJ.4 code embedded within its src, this was not a problem,
+            # because I had a workaround.  This workaround has been reported
+            # to the PROJ.4 community, so I expect that sometime in the year
+            # 2015 this problem will go away.
+            #
+            # Given the above, the present code focusses near the centre of
+            # the plot region.  A region that might correspond to one tick
+            # on the axes (assuming 10 ticks per side) is inverse mapped,
+            # and the corners are used to determine a tick scale. Rather
+            # than use pretty(), the scale is determined from a list
+            # of standards (because maps should have 5deg increments, if
+            # this is good for a view, but not 4deg).
             if (limitsGiven) {
                 grid <- rep(NA, 2)
                 difflongitudelim <- diff(longitudelim)
                 grid[1] <- if (difflongitudelim < 1) 0.1
-                    else if (difflongitudelim < 5) 0.5
-                    else if (difflongitudelim < 10) 1
-                    else if (difflongitudelim < 45) 5
-                    else if (difflongitudelim < 180) 15
-                    else 15
+                else if (difflongitudelim < 5) 0.5
+                else if (difflongitudelim < 10) 1
+                else if (difflongitudelim < 45) 5
+                else if (difflongitudelim < 180) 15
+                else 15
                 grid[2] <- grid[1]
                 oceDebug(debug, "limits given or inferred, yielding grid=c(", grid[1], ",", grid[2], ")\n", sep="")
             } else {
-                usr <- par('usr')
+                usr <- par("usr")
                 x0 <- 0.5 * sum(usr[1:2])
                 y0 <- 0.5 * sum(usr[3:4])
                 ntick <- 8
@@ -1915,27 +1906,17 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
                 dy <- (usr[4] - usr[3]) / ntick
                 ll <- map2lonlat(x0-dx, y0-dy, debug=debug-1)
                 ur <- map2lonlat(x0+dx, y0+dy)
-                ## If ll and ur are finite, the plot covers a fraction of the
-                ## globe, and we can compute a grid based on the scale.
-                ## Otherwise, assume the earth's shape is just a fraction of
-                ## the plot area, meaning we are looking at a globe, and use
-                ## a 45 deg grid.
+                # If ll and ur are finite, the plot covers a fraction of the
+                # globe, and we can compute a grid based on the scale.
+                # Otherwise, assume the earth's shape is just a fraction of
+                # the plot area, meaning we are looking at a globe, and use
+                # a 45 deg grid.
                 if (all(is.finite(c(ll$longitude, ll$latitude, ur$longitude, ur$latitude)))) {
-                    ##> if (debug) {
-                    ##>     cat(vectorShow(ll))
-                    ##>     cat(vectorShow(ur))
-                    ##> }
                     ls <- geodDist(ll$longitude, ll$latitude, ll$longitude, ur$latitude)
                     rs <- geodDist(ur$longitude, ll$latitude, ur$longitude, ur$latitude)
                     ts <- geodDist(ll$longitude, ur$latitude, ur$longitude, ur$latitude)
                     bs <- geodDist(ll$longitude, ll$latitude, ur$longitude, ll$latitude)
                     t <- median(c(ls, rs, ts, bs)) / 111 # tick, in degrees
-                    ##> if (debug)  {
-                    ##>     cat(vectorShow(ls))
-                    ##>     cat(vectorShow(rs))
-                    ##>     cat(vectorShow(ts))
-                    ##>     cat(vectorShow(ts))
-                    ##> }
                     oceDebug(debug, "t: ", t, "(scale between ticks, in deg)\n")
                     if (!is.finite(t)) {
                         grid <- c(5, 5) # may be ok in many instances
@@ -1947,8 +1928,9 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
                 } else {
                     grid <- c(45, 45) # perhaps reasonable default, for world view
                 }
-                if (grid[1] == 0)
+                if (grid[1] == 0) {
                     drawGrid <- FALSE
+                }
                 oceDebug(debug, "limits not given (or inferred) near map.R:1546 -- set grid=", paste(grid, collapse=" "), "\n")
             }
         }
@@ -1956,13 +1938,13 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
         if (drawGrid) {
             oceDebug(debug, "about to call mapGrid(), using grid=c(", paste(grid, collapse=","), ")\n")
             axisLabels <- mapGrid(dlongitude=grid[1], dlatitude=grid[2], polarCircle=polarCircle,
-                                  longitudelim=longitudelim, latitudelim=latitudelim, debug=debug-1)
+                longitudelim=longitudelim, latitudelim=latitudelim, debug=debug-1)
         }
         if (debug) {
             cat("Before accounting for latlabel, lonlabel, and geographical, axisLabels is as follows\n")
             print(axisLabels)
         }
-        ## Filter latitude labels based on latlabels
+        # Filter latitude labels based on latlabels
         if (debug) {
             oceDebug(debug, "axisLabels before looking at latitude:\n")
             print(axisLabels)
@@ -1970,10 +1952,10 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
         if (any(axisLabels$type == "latitude")) {
             if (is.null(latlabels)) {
                 axisLabels$value[axisLabels$type == "latitude"] <- NA
-            ##? } else if (is.logical(latlabels) && !latlabels) {
-            ##?     axisLabels$value[axisLabels$type == "latitude"] <- NA
             } else if (is.numeric(latlabels)) {
+                # nolint start object_usage_linter
                 alats <- axisLabels$value[axisLabels$type == "latitude"]
+                # nolint end object_usage_linter
                 keep <- axisLabels$type == "longitude" | axisLabels$value %in% latlabels
                 axisLabels$value[!keep] <- NA
             }
@@ -1982,20 +1964,17 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
             oceDebug(debug, "axisLabels before looking at longitude:\n")
             print(axisLabels)
         }
-        ## Filter longitude labels based on latlabels
+        # Filter longitude labels based on latlabels
         if (any(axisLabels$type == "longitude")) {
             if (is.null(lonlabels)) {
                 axisLabels$value[axisLabels$type == "longitude"] <- NA
-            ##? } else if (is.logical(lonlabels) && !lonlabels) {
-            ##?     axisLabels$value[axisLabels$type == "longitude"] <- NA
             } else if (is.numeric(lonlabels)) {
                 alats <- axisLabels$value[axisLabels$type == "longitude"]
                 keep <- axisLabels$type == "latitude" | axisLabels$value %in% lonlabels
-                ## axisLabels <- axisLabels[keep,]
                 axisLabels$value[!keep] <- NA
             }
         }
-        ## Handle 'geographical' argument
+        # Handle 'geographical' argument
         if (debug) {
             cat("Before accounting for geographical (=", geographical, "), axisLabels is as follows\n")
             print(axisLabels)
@@ -2007,15 +1986,15 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
         } else if (geographical == 2 || geographical == 3) {
             oceDebug(debug, "geographical=", geographical, ": axisLabels$value=", paste(axisLabels$value, collapse=" "), "\n")
             axisLabels$value <- formatPosition(axisLabels$value,
-                                               isLat=axisLabels$type=="latitude",
-                                               type="expression",
-                                               showHemi=geographical==3)
+                isLat=axisLabels$type=="latitude",
+                type="expression",
+                showHemi=geographical==3)
             oceDebug(debug, "    -> ", paste(axisLabels$value, collapse=" "), "\n")
         } else if (geographical == 4) {
-            ## Add N, S, E or W suffices, but remove for equator and prime meridian
+            # Add N, S, E or W suffices, but remove for equator and prime meridian
             axisLabels$value <- ifelse(axisLabels$type == "latitude",
-                                       paste0(abs(axisLabels$value), ifelse(axisLabels$value < 0, "S", "N")),
-                                       paste0(abs(axisLabels$value), ifelse(axisLabels$value < 0, "W", "E")))
+                paste0(abs(axisLabels$value), ifelse(axisLabels$value < 0, "S", "N")),
+                paste0(abs(axisLabels$value), ifelse(axisLabels$value < 0, "W", "E")))
             axisLabels$value[axisLabels$value == "0E"] <- "0"
             axisLabels$value[axisLabels$value == "0N"] <- "0"
         }
@@ -2023,7 +2002,7 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
             cat("After accounting for geographical (=", geographical, "), axisLabels is as follows\n")
             print(axisLabels)
         }
-        ## Draw axes
+        # Draw axes
         oceDebug(debug, "axes=", axes, "\n", sep="")
         if (axes) {
             oceDebug(debug, vectorShow(latlabels))
@@ -2078,22 +2057,23 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
                 oceDebug(debug, "axisLabels is null\n")
                 if (is.logical(lonlabels)) {
                     mapAxis(side=1, longitude=.axis()$longitude, latitude=FALSE,
-                            cex.axis=if (lonlabels) cex.axis else 0, mgp=mgp, axisStyle=axisStyle, debug=debug-1)
+                        cex.axis=if (lonlabels) cex.axis else 0, mgp=mgp, axisStyle=axisStyle, debug=debug-1)
                 } else if (!is.null(lonlabels)) {
                     mapAxis(side=1, longitude=lonlabels, latitude=FALSE,
-                            cex.axis=cex.axis, mgp=mgp, axisStyle=axisStyle, debug=debug-1)
+                        cex.axis=cex.axis, mgp=mgp, axisStyle=axisStyle, debug=debug-1)
                 }
                 if (is.logical(latlabels)) {
                     mapAxis(side=2, latitude=.axis()$latitude, longitude=FALSE,
-                            cex.axis=if (latlabels) cex.axis else 0, mgp=mgp, axisStyle=axisStyle, debug=debug-1)
+                        cex.axis=if (latlabels) cex.axis else 0, mgp=mgp, axisStyle=axisStyle, debug=debug-1)
                 } else if (!is.null(latlabels)) {
                     mapAxis(side=2, latitude=latlabels, longitude=FALSE,
-                            cex.axis=cex.axis, mgp=mgp, axisStyle=axisStyle, debug=debug-1)
+                        cex.axis=cex.axis, mgp=mgp, axisStyle=axisStyle, debug=debug-1)
                 }
             }
         }
-        if (tissot)
-            mapTissot(grid, col='red', debug=debug-1)
+        if (tissot) {
+            mapTissot(grid, col="red", debug=debug-1)
+        }
         options(warn=options$warn)
     }
     oceDebug(debug, "} # mapPlot()\n", sep="", unindent=1, style="bold")
@@ -2173,29 +2153,32 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
 #'
 #' @family functions related to maps
 mapGrid <- function(dlongitude=15, dlatitude=15, longitude, latitude,
-    col="darkgray", lty="solid", lwd=0.5*par("lwd"), polarCircle=0,
-    longitudelim, latitudelim,
-    debug=getOption("oceDebug"))
+                    col="darkgray", lty="solid", lwd=0.5*par("lwd"), polarCircle=0,
+                    longitudelim, latitudelim,
+                    debug=getOption("oceDebug"))
 {
     oceDebug(debug, "mapGrid(",
-             argShow(dlongitude), #dlongitude=", dlongitude,
-             argShow(dlatitude), # ", dlatitude=", dlatitude,
-             argShow(longitude), # ", longitude=", if (missing(longitude)) "(missing)" else "(given)",
-             argShow(latitude), # ", latitude=", if (missing(latitude)) "(missing)" else "(given)",
-             "...) {\n", unindent=1, sep="", style="bold")
+        argShow(dlongitude), #dlongitude=", dlongitude,
+        argShow(dlatitude), # ", dlatitude=", dlatitude,
+        argShow(longitude), # ", longitude=", if (missing(longitude)) "(missing)" else "(given)",
+        argShow(latitude), # ", latitude=", if (missing(latitude)) "(missing)" else "(given)",
+        "...) {\n", unindent=1, sep="", style="bold")
     debug <- min(3, max(0, debug)) # trim to range 0 to 3
-    if ("none" == .Projection()$type)
+    if ("none" == .Projection()$type) {
         stop("must create a map first, with mapPlot()\n")
+    }
     rval <- list(side=NULL, value=NULL, type=NULL, at=NULL)
     boxLonLat <- usrLonLat(debug=debug-1)
-    if (!missing(longitude) && is.null(longitude) && !missing(latitude) && is.null(latitude))
+    if (!missing(longitude) && is.null(longitude) && !missing(latitude) && is.null(latitude)) {
         return()
-    if (!missing(longitudelim))
+    }
+    if (!missing(longitudelim)) {
         longitudelim <- shiftLongitude(longitudelim)
+    }
     if (!missing(longitudelim) && !missing(longitude) && !is.null(longitude)) {
         longitudelim <- shiftLongitude(longitudelim)
         oceDebug(debug, "shifted longitudelim to c(",
-                 paste(longitudelim, collapse=","), ")\n")
+            paste(longitudelim, collapse=","), ")\n")
     }
     small <- 0
     if (missing(longitude)) {
@@ -2204,11 +2187,11 @@ mapGrid <- function(dlongitude=15, dlatitude=15, longitude, latitude,
     if (missing(latitude)) {
         latitude <- if (dlatitude > 0) seq(-90+small, 90-small, dlatitude) else NULL
     }
-    if (is.null(longitude) && is.null(latitude))
+    if (is.null(longitude) && is.null(latitude)) {
         return()
-
-    ## If a pole is present, we put longitude lines around the world, no matter
-    ## what else is true.
+    }
+    # If a pole is present, we put longitude lines around the world, no matter
+    # what else is true.
     poleInView <- FALSE
     pole <- try(lonlat2map(0, 90), silent=TRUE)
     if (inherits(pole, "try-error")) {
@@ -2226,7 +2209,7 @@ mapGrid <- function(dlongitude=15, dlatitude=15, longitude, latitude,
         oceDebug(debug, "poleInView=", poleInView, ", so drawing longitude from -180 to 180\n")
     } else {
         if (!missing(longitudelim)) {
-            ## limit to 2 times lon/lim limit range (FIXME: enough for curvy cases?)
+            # limit to 2 times lon/lim limit range (FIXME: enough for curvy cases?)
             lonMin <- longitudelim[1] - 2*diff(longitudelim)
             lonMax <- longitudelim[2] + 2*diff(longitudelim)
             oceDebug(debug, "lonMin=", lonMin, ", lonMax=", lonMax, "\n")
@@ -2238,7 +2221,7 @@ mapGrid <- function(dlongitude=15, dlatitude=15, longitude, latitude,
         }
     }
     if (!missing(latitudelim)) {
-        ## limit to 2 times lon/lim limit range (FIXME: enough for curvy cases?)
+        # limit to 2 times lon/lim limit range (FIXME: enough for curvy cases?)
         latMin <- latitudelim[1] - 2*diff(latitudelim)
         latMax <- latitudelim[2] + 2*diff(latitudelim)
         oceDebug(debug, "latMin=", latMin, ", latMax=", latMax, "\n")
@@ -2249,19 +2232,18 @@ mapGrid <- function(dlongitude=15, dlatitude=15, longitude, latitude,
         }
     }
     n <- 360                           # number of points on line
-    ##xspan <- diff(par('usr')[1:2])
-    ## Update the global axis information
+    # xspan <- diff(par("usr")[1:2])
+    # Update the global axis information
     axisOLD <- .axis()
     .axis(list(longitude=if (!missing(longitude) && length(longitude)) longitude else axisOLD$longitude,
-               latitude=if (!missing(latitude) && length(latitude)) latitude else axisOLD$latitude))
+        latitude=if (!missing(latitude) && length(latitude)) latitude else axisOLD$latitude))
     if (!length(latitude))
         oceDebug(debug, "not drawing latitude graticules\n")
     for (l in latitude) {
-        ## FIXME: maybe we should use mapLines here
+        # FIXME: maybe we should use mapLines here
         if (is.finite(l)) {
-            if (boxLonLat$ok && !(boxLonLat$latmin <= l & l <= boxLonLat$latmax)) {
+            if (boxLonLat$ok && !(boxLonLat$latmin <= l && l <= boxLonLat$latmax)) {
                 oceDebug(debug, "skipping ", l, "N graticule\n", sep="")
-                ##if (debug > 1) print(boxLonLat)
                 next
             }
             oceDebug(debug, "drawing ", l, "N graticule\n", sep="")
@@ -2274,88 +2256,73 @@ mapGrid <- function(dlongitude=15, dlatitude=15, longitude, latitude,
             y <- y[ok]
             if (0 == length(y)) next
             if (TRUE) {
-                ## 20171114: problems e.g. lat lines don't complete (see
-                ## 20171114: blog 65-.png) but also problem with a diagonal line
-                ## 20171114: (see blog 64.png).
-                ##
-                ## Remove ugly horizontal lines that can occur for
-                ## projections that show the edge of the earth.
+                # 20171114: problems e.g. lat lines don't complete (see
+                # 20171114: blog 65-.png) but also problem with a diagonal line
+                # 20171114: (see blog 64.png).
+                #
+                # Remove ugly horizontal lines that can occur for
+                # projections that show the edge of the earth.
                 xJump <- abs(diff(x))
                 yJump <- abs(diff(y))
                 if (any(is.finite(xJump))) {
-                    ## FIXME: the number in the next line might need adjustment.
+                    # FIXME: the number in the next line might need adjustment.
                     xJumpMedian <- median(xJump, na.rm=TRUE)
                     yJumpMedian <- median(yJump, na.rm=TRUE)
                     if (!is.na(xJumpMedian) && !is.na(yJumpMedian)) {
                         bad <- c(FALSE, xJump > 3 * xJumpMedian)
                         bad <- bad | is.na(bad)
                         if (any(bad)) {
-                            ##message("lat=", l, ", bad indices:", paste(which(bad), collapse=" "))
+                            #message("lat=", l, ", bad indices:", paste(which(bad), collapse=" "))
                             x[bad] <- NA
                         }
                     }
                 }
             }
             lines(x, y, lty=lty, lwd=lwd, col=col)
-            ## {{{ find side=1 and side=2 latitude label from graticle
+            # find side=1 and side=2 latitude label from graticle
             ok <- is.finite(x) & is.finite(y)
             if (any(ok)) {
                 curve <- sf::st_linestring(cbind(x[ok], y[ok]))
                 usr <- par("usr")
-                axis2 <- sf::st_linestring(cbind(rep(usr[1],2), usr[3:4]))
+                axis2 <- sf::st_linestring(cbind(rep(usr[1], 2), usr[3:4]))
                 I <- sf::st_intersection(curve, axis2)
                 oceDebug(debug, if (length(I) == 0) "no" else "", "intersection with axis(2)\n", sep="")
                 if (length(I) > 0) {
                     Imatrix <- as.matrix(I)
-                    ### if (debug > 0) {
-                    ###     if (debug > 1)
-                    ###         print(Imatrix)
-                    ###     points(Imatrix[,1], Imatrix[,2], col=2, pch=20, cex=2)
-                    ### }
                     for (ii in dim(Imatrix)[1]) {
-                        ##> message(" ... rval side=2 lat=", l, " at=", Imatrix[ii,2])
+                        # message(" ... rval side=2 lat=", l, " at=", Imatrix[ii,2])
                         rval$side <- c(rval$side, 2)
                         rval$value <- c(rval$value, l)
                         rval$type <- c(rval$type, "latitude")
                         rval$at <- c(rval$at, Imatrix[ii, 2])
                     }
                 }
-                ##> ## latitude on side 1
-                ##> axis2 <- sf::st_linestring(cbind(rep(usr[1],2), usr[3:4]))
-                ##> I <- sf::st_intersection(curve, axis2)
-                ##> oceDebug(debug, "length(I)=", length(I), " (intersection to axis(2))\n", style="red")
-                ##> if (length(I) > 0) {
-                ##>     Imatrix <- as.matrix(I)
-                ##>     if (debug > 0) {
-                ##>         print(Imatrix)
-                ##>         points(Imatrix[1,1], Imatrix[1,2], col=2, pch=20, cex=2)
-                ##>     }
-                ##> }
             }
-            ## }}}
         }
     }
-    if (polarCircle < 0 || polarCircle > 90)
+    if (polarCircle < 0 || polarCircle > 90) {
         polarCircle <- 0
+    }
     n <- 180                           # number of points on line
-    ## If it seems that we are drawing longitude lines for more than 3/4
-    ## of the globe, we just draw them all. This can solve odd problems to
-    ## do with axis limits.
+    # If it seems that we are drawing longitude lines for more than 3/4
+    # of the globe, we just draw them all. This can solve odd problems to
+    # do with axis limits.
     if (270 < diff(range(longitude, na.rm=TRUE))) {
         diff <- diff(longitude)[1]
         longitude <- seq(-180, 180, diff)
     }
     for (l in longitude) {
-        ## put l in range -180 to 180 for comparison with boxLonLat
-        while (l < -180)
+        # put l in range -180 to 180 for comparison with boxLonLat
+        while (l < -180) {
             l <- l + 360
-        while (l > 180)
+        }
+        while (l > 180) {
             l <- l - 360
-        ## FIXME: should use mapLines here
+        }
+        # FIXME: should use mapLines here
         if (is.finite(l)) {
-            if (boxLonLat$ok && !(boxLonLat$lonmin <= l & l <= boxLonLat$lonmax)) {
+            if (boxLonLat$ok && !(boxLonLat$lonmin <= l && l <= boxLonLat$lonmax)) {
                 oceDebug(debug, "skipping ", l, "E graticule\n", sep="")
-                ##if (debug > 1) print(boxLonLat)
                 next
             }
             oceDebug(debug, "drawing ", l, "E graticule\n", sep="")
@@ -2370,7 +2337,7 @@ mapGrid <- function(dlongitude=15, dlatitude=15, longitude, latitude,
             } else {
                 oceDebug(debug, "  graticule ", l, "E has ", length(x), " segments\n", sep="")
                 lines(x, y, lty=lty, lwd=lwd, col=col)
-                ## {{{ find side=1 and side=2 longitude label from graticle
+                # ind side=1 and side=2 longitude label from graticle
                 ok <- is.finite(x) & is.finite(y)
                 if (any(ok)) {
                     curve <- sf::st_linestring(cbind(x[ok], y[ok]))
@@ -2380,33 +2347,14 @@ mapGrid <- function(dlongitude=15, dlatitude=15, longitude, latitude,
                     oceDebug(debug, if (length(I) == 0) "  no" else "  ", " intersection with axis(1)\n", sep="")
                     if (length(I) > 0) {
                         Imatrix <- as.matrix(I)
-                        ### if (debug > 0) {
-                        ###     if (debug > 1)
-                        ###         print(Imatrix)
-                        ###     points(Imatrix[1,1], Imatrix[1,2], col=3, pch=20, cex=2)
-                        ### }
                         for (ii in dim(Imatrix)[1]) {
-                            ##> message(" ... rval side=1 lon=", l, " at=", Imatrix[ii,1])
                             rval$side <- c(rval$side, 1)
                             rval$value <- c(rval$value, l)
                             rval$type <- c(rval$type, "longitude")
                             rval$at <- c(rval$at, Imatrix[ii, 1])
                         }
                     }
-                    ##> ## latitude on side 1
-                    ##> axis2 <- sf::st_linestring(cbind(rep(usr[1],2), usr[3:4]))
-                    ##> I <- sf::st_intersection(curve, axis2)
-                    ##> oceDebug(debug, "length(I)=", length(I), " (intersection to axis(2))\n", style="red")
-                    ##> if (length(I) > 0) {
-                    ##>     Imatrix <- as.matrix(I)
-                    ##>     if (debug > 0) {
-                    ##>         if (debug > 1)
-                    ##>             print(Imatrix)
-                    ##>         points(Imatrix[,1], Imatrix[,2], col=3, pch=20, cex=2)
-                    ##>     }
-                    ##> }
                 }
-                ## }}}
             }
         }
     }
@@ -2457,17 +2405,19 @@ mapGrid <- function(dlongitude=15, dlatitude=15, longitude, latitude,
 #'
 #' @family functions related to maps
 mapScalebar <- function(x, y=NULL, length,
-    lwd=1.5*par("lwd"), cex=par("cex"),
-    col="black")
+                        lwd=1.5*par("lwd"), cex=par("cex"),
+                        col="black")
 {
-    if (!is.null(y))
+    if (!is.null(y)) {
         stop("y must be NULL in this (early) version of mapScalebar()\n")
-    if (missing(x))
+    }
+    if (missing(x)) {
         x <- "topleft"
-    else if (is.na(pmatch(x, c("topleft", "topright"))))
+    } else if (is.na(pmatch(x, c("topleft", "topright")))) {
         stop("x must be \"topleft\" or \"topright\", but it is \"", x, "\"\n")
+    }
     projection <- .Projection()$type
-    usr <- par('usr')
+    usr <- par("usr")
     ## determine scale from centre of region
     x0 <- 0.5 * (usr[1] + usr[2])
     y0 <- 0.5 * (usr[3] + usr[4])
@@ -2475,56 +2425,50 @@ mapScalebar <- function(x, y=NULL, length,
     x1 <- x0 + dusr
     y1 <- y0
     if (projection != "none") {
-        ## This means the plot was created by mapPlot
+        # This means the plot was created by mapPlot
         ll0 <- map2lonlat(x0, y0)
         ll1 <- map2lonlat(x1, y1)
         dkm <- geodDist(ll0$longitude, ll0$latitude, ll1$longitude, ll1$latitude)
     } else {
-        ## This means the plot was not created by mapPlot
+        # This means the plot was not created by mapPlot
         dkm <- geodDist(x0, y0, x1, y1)
-        ## message("dkm=" ,dkm)
-        ## message("x0=" ,x0)
-        ## message("y0=" ,y0)
-        ## message("x1=" ,x1)
-        ## message("y1=" ,y1)
     }
     kmPerUsr <- dkm / dusr
-    ## message("kmPerUsr: ", kmPerUsr)
+    # message("kmPerUsr: ", kmPerUsr)
     if (missing(length)) {
         # corner to corner distance
-        ccd <- kmPerUsr * sqrt( (usr[2]-usr[1])^2 + (usr[4]-usr[3])^2 )
+        ccd <- kmPerUsr * sqrt((usr[2]-usr[1])^2 + (usr[4]-usr[3])^2)
         length <- diff(pretty(c(0, ccd), n=12)[1:2])
-        ## message("length=" ,length)
     }
-    ## message("length=" ,length)
     frac <- length / kmPerUsr
-    cin <- par('cin')[1]
+    cin <- par("cin")[1]
     cinx <- xinch(cin)
     ciny <- yinch(cin)
-    ## FIXME: when get more options for x, revisit next few lines
+    # FIXME: when get more options for x, revisit next few lines
     xBar <- usr[1] + cinx / 2
-    if (is.character(x) && x == "topright")
+    if (is.character(x) && x == "topright") {
         xBar <- usr[2] - frac - 3.5 * cinx
+    }
     yBar <- usr[4] - ciny / 2
-    ## Draw white-out underlay box with a border, since otherwise
-    ## it's hard to see a scalebar on a complex map.
+    # Draw white-out underlay box with a border, since otherwise
+    # it's hard to see a scalebar on a complex map.
     llBox <- list(x=xBar, y=yBar - 3 * ciny)
     urBox <- list(x=xBar + frac + 3 * cinx, y=yBar)
     polygon(c(llBox$x, llBox$x, urBox$x, urBox$x),
-            c(llBox$y, urBox$y, urBox$y, llBox$y),
-            border="black", col='white')
-    ## Draw the scalebar and text below.
+        c(llBox$y, urBox$y, urBox$y, llBox$y),
+        border="black", col="white")
+    # Draw the scalebar and text below.
     lines(xBar + 1.5*cinx + c(0, frac), rep(yBar-ciny, 2), lwd=lwd, col=col, lend=2)
     lines(rep(xBar+1.5*cinx, 2), yBar - ciny + c(-ciny, ciny)/3,
-          col=col, lwd=lwd)
+        col=col, lwd=lwd)
     lines(rep(xBar+1.5*cinx+frac, 2), yBar - ciny + c(-ciny, ciny)/3,
-          col=col, lwd=lwd)
+        col=col, lwd=lwd)
     label <- sprintf("%.0f km", length)
-    ##>1753< text(xBar+cinx, yBar-2.2*ciny, pos=4, adj=0, offset=0, label, cex=cex, col=2)#col)
+    # 1753 text(xBar+cinx, yBar-2.2*ciny, pos=4, adj=0, offset=0, label, cex=cex, col=2)#col)
     text(x=xBar+1.5*cinx+frac/2,
-         y=yBar-1.7*ciny,
-         labels=label,
-         pos=1, adj=0, offset=0, cex=cex, col=col)
+        y=yBar-1.7*ciny,
+        labels=label,
+        pos=1, adj=0, offset=0, cex=cex, col=col)
 }
 
 
@@ -2545,9 +2489,9 @@ mapScalebar <- function(x, y=NULL, length,
 #'\donttest{
 #' library(oce)
 #' data(coastlineWorld)
-#' longitude <- coastlineWorld[['longitude']]
-#' latitude <- coastlineWorld[['latitude']]
-#' mapPlot(longitude, latitude, type='l', grid=5,
+#' longitude <- coastlineWorld[["longitude"]]
+#' latitude <- coastlineWorld[["latitude"]]
+#' mapPlot(longitude, latitude, type="l", grid=5,
 #'         longitudelim=c(-70,-50), latitudelim=c(45, 50),
 #'         projection="+proj=merc")
 #' lon <- -63.5744 # Halifax
@@ -2563,8 +2507,9 @@ mapScalebar <- function(x, y=NULL, length,
 #' @family functions related to maps
 mapText <- function(longitude, latitude, labels, ...)
 {
-    if ("none" == .Projection()$type)
+    if ("none" == .Projection()$type) {
         stop("must create a map first, with mapPlot()\n")
+    }
     ok <- !is.na(longitude) & !is.na(latitude)
     longitude <- longitude[ok]
     latitude <- latitude[ok]
@@ -2574,9 +2519,6 @@ mapText <- function(longitude, latitude, labels, ...)
         text(xy$x, xy$y, labels, ...)
     }
 }
-
-
-
 
 #' Add Tissot Indicatrices to a Map
 #'
@@ -2626,10 +2568,12 @@ mapText <- function(longitude, latitude, labels, ...)
 #' @family functions related to maps
 mapTissot <- function(grid=rep(15, 2), scale=0.2, crosshairs=FALSE, ...)
 {
-    if ("none" == .Projection()$type)
+    if ("none" == .Projection()$type) {
         stop("must create a map first, with mapPlot()\n")
-    if (2 != length(grid) || !is.numeric(grid) || any(!is.finite(grid)))
+    }
+    if (2 != length(grid) || !is.numeric(grid) || any(!is.finite(grid))) {
         stop("grid must be of length 2, numeric, and finite")
+    }
     ntheta <- 64
     ncr <- 10
     theta <- seq(0, 2*pi, length.out=ntheta)
@@ -2690,8 +2634,9 @@ mapTissot <- function(grid=rep(15, 2), scale=0.2, crosshairs=FALSE, ...)
 #' @family functions related to maps
 mapLines <- function(longitude, latitude, greatCircle=FALSE, ...)
 {
-    if ("none" == .Projection()$type)
+    if ("none" == .Projection()$type) {
         stop("must create a map first, with mapPlot()\n")
+    }
     if ("data" %in% slotNames(longitude) && # handle e.g. 'coastline' class
         2 == sum(c("longitude", "latitude") %in% names(longitude@data))) {
         latitude <- longitude@data$latitude
@@ -2701,24 +2646,25 @@ mapLines <- function(longitude, latitude, greatCircle=FALSE, ...)
         latitude <- longitude$latitude
         longitude <- longitude$longitude
     }
-    if (greatCircle)
+    if (greatCircle) {
         warning("mapLines() does not yet handle argument 'greatCircle'")
+    }
     xy <- lonlat2map(longitude, latitude)
-    ##n <- length(longitude)
+    #n <- length(longitude)
     ok <- !is.na(xy$x) & !is.na(xy$y)
-    usr <- par('usr')
-    ##DX <- usr[2] - usr[1]
+    usr <- par("usr")
+    #DX <- usr[2] - usr[1]
     if (any(usr[1] <= xy$x[ok] & xy$x[ok] <= usr[2] & usr[3] <= xy$y[ok] & xy$y[ok] <= usr[4])) {
-        ## 20150421 # Remove code that attempted to delete extraneous lines ... the problem
-        ## 20150421 # is that there's no good way to know which are extraneous, and length
-        ## 20150421 # is not the best indicator.
-        ## 20150421 if (n > 10) { # don't mess with short segments
-        ## 20150421     dx <- c(0, abs(diff(xy$x, na.rm=TRUE)))
-        ## 20150421     bad <- dx / DX > 0.1
-        ## 20150421     if (any(bad, na.rm=TRUE)) { # FIXME: a kludge that may be problematic
-        ## 20150421         xy$x[bad] <- NA
-        ## 20150421     }
-        ## 20150421 }
+        # 20150421 # Remove code that attempted to delete extraneous lines ... the problem
+        # 20150421 # is that there's no good way to know which are extraneous, and length
+        # 20150421 # is not the best indicator.
+        # 20150421 if (n > 10) { # don't mess with short segments
+        # 20150421     dx <- c(0, abs(diff(xy$x, na.rm=TRUE)))
+        # 20150421     bad <- dx / DX > 0.1
+        # 20150421     if (any(bad, na.rm=TRUE)) { # FIXME: a kludge that may be problematic
+        # 20150421         xy$x[bad] <- NA
+        # 20150421     }
+        # 20150421 }
         lines(xy$x, xy$y, ...)
     }
 }
@@ -2760,8 +2706,9 @@ mapLines <- function(longitude, latitude, greatCircle=FALSE, ...)
 mapPoints <- function(longitude, latitude, debug=getOption("oceDebug"), ...)
 {
     oceDebug(debug, "mapPoints() {\n", unindent=1, sep="")
-    if ("none" == .Projection()$type)
+    if ("none" == .Projection()$type) {
         stop("must create a map first, with mapPlot()\n")
+    }
     if ("data" %in% slotNames(longitude) && # handle e.g. 'coastline' class
         2 == sum(c("longitude", "latitude") %in% names(longitude@data))) {
         latitude <- longitude@data$latitude
@@ -2836,12 +2783,15 @@ mapArrows <- function(longitude0, latitude0,
     code=2, col=par("fg"), lty=par("lty"),
     lwd=par("lwd"), ...)
 {
-    if ("none" == .Projection()$type)
+    if ("none" == .Projection()$type) {
         stop("must create a map first, with mapPlot()\n")
-    if (length(longitude0) != length(latitude0))
+    }
+    if (length(longitude0) != length(latitude0)) {
         stop("lengths of longitude0 and latitude0 must match but they are ", length(longitude0), " and ", length(longitude1))
-    if (length(longitude1) != length(latitude1))
+    }
+    if (length(longitude1) != length(latitude1)) {
         stop("lengths of longitude1 and latitude1 must match but they are ", length(longitude1), " and ", length(longitude1))
+    }
     ok <- !is.na(longitude0) & !is.na(latitude0) & !is.na(longitude1) & !is.na(latitude1)
     longitude0 <- longitude0[ok]
     latitude0 <- latitude0[ok]
@@ -2851,7 +2801,7 @@ mapArrows <- function(longitude0, latitude0,
         xy0 <- lonlat2map(longitude0, latitude0)
         xy1 <- lonlat2map(longitude1, latitude1)
         arrows(xy0$x, xy0$y, xy1$x, xy1$y,
-               length=length, angle=angle, code=code, col=col, lty=lty, lwd=lwd, ...)
+            length=length, angle=angle, code=code, col=col, lty=lty, lwd=lwd, ...)
     }
 }
 
@@ -2887,41 +2837,39 @@ formatPosition <- function(latlon, isLat=TRUE, type=c("list", "string", "express
     na <- is.na(latlon)
     signs <- sign(latlon[!na])
     x <- abs(latlon[!na])
-    ##> message("formatPosition with signs: ", paste(signs, collapse=" "))
-    ##> message("formatPosition with x: ", paste(x, collapse=" "))
+    # message("formatPosition with signs: ", paste(signs, collapse=" "))
+    # message("formatPosition with x: ", paste(x, collapse=" "))
     degrees <- floor(x)
     minutes <- floor(60 * (x - degrees))
     seconds <- 3600 * (x - degrees - minutes / 60)
     seconds <- round(seconds, 2)
 
-    ## prevent rounding errors from giving e.g. seconds=60
-    ##print(data.frame(degrees,minutes,seconds))
+    # prevent rounding errors from giving e.g. seconds=60
     secondsOverflow <- seconds == 60
     seconds <- ifelse(secondsOverflow, 0, seconds)
     minutes <- ifelse(secondsOverflow, minutes+1, minutes)
     minutesOverflow <- minutes == 60
     degrees <- ifelse(minutesOverflow, degrees+1, degrees)
-    ##print(data.frame(degrees,minutes,seconds))
-
     noSeconds <- all(seconds == 0)
     noMinutes <- noSeconds & all(minutes == 0)
     if (showHemi) {
-        ## hemispheres <- if (isLat) ifelse(signs>0, "N", "S") else ifelse(signs>0, "E", "W")
+        # hemispheres <- if (isLat) ifelse(signs>0, "N", "S") else ifelse(signs>0, "E", "W")
         hemispheres <- ifelse(isLat,
-                              ifelse(signs>0, "N", "S"),
-                              ifelse(signs>0, "E", "W"))
+            ifelse(signs>0, "N", "S"),
+            ifelse(signs>0, "E", "W"))
         hemispheres[signs==0] <- ""
     } else {
         hemispheres <- rep("", length(signs))
     }
     oceDebug(0, "noSeconds=", noSeconds, "noMinutes=", noMinutes, "\n")
     if (type == "list") {
-        if (noMinutes)
+        if (noMinutes) {
             res <- list(degrees, hemispheres)
-        else if (noSeconds)
+        } else if (noSeconds) {
             res <- list(degrees, minutes, hemispheres)
-        else
+        } else {
             res <- list(degrees, minutes, seconds, hemispheres)
+        }
     } else if (type == "string") {
         if (noMinutes) {
             res <- sprintf("%2d%s", degrees, hemispheres) # no space, so more labels
@@ -2937,30 +2885,19 @@ formatPosition <- function(latlon, isLat=TRUE, type=c("list", "string", "express
         for (i in 1:n) {
             if (noMinutes) {
                 res[i] <- as.expression(substitute(d*degree*hemi,
-                                                    list(d=degrees[i],
-                                                         hemi=hemispheres[i])))
+                    list(d=degrees[i], hemi=hemispheres[i])))
             } else if (noSeconds) {
-                ##res[i] <- as.expression(substitute(d*degree*phantom(.)*m*minute*hemi,
+                #res[i] <- as.expression(substitute(d*degree*phantom(.)*m*minute*hemi,
                 res[i] <- as.expression(substitute(d*degree*phantom(.)*m*minute*hemi,
-                                                    list(d=degrees[i],
-                                                         m=sprintf("%02d", minutes[i]),
-                                                         hemi=hemispheres[i])))
+                    list(d=degrees[i], m=sprintf("%02d", minutes[i]), hemi=hemispheres[i])))
             } else {
                 res[i] <- as.expression(substitute(d*degree*phantom(.)*m*minute*phantom(.)*s*second*hemi,
-                                                    list(d=degrees[i],
-                                                         m=sprintf("%02d", minutes[i]),
-                                                         s=sprintf("%02f", seconds[i]),
-                                                         hemi=hemispheres[i])))
+                    list(d=degrees[i], m=sprintf("%02d", minutes[i]), s=sprintf("%02f", seconds[i]), hemi=hemispheres[i])))
             }
         }
     }
-    ## Now, we must re-insert those spots we skipped.
+    # Now, we must re-insert those spots we skipped.
     resAll <- vector("expression", length(latlon))
-    ## message("length(RES): ", length(RES))
-    ## message("length(res): ", length(res))
-    ## message("length(na): ", length(na))
-    ## message("sum(na): ", sum(na))
-    ## message("which(!na): ", paste(which(!na), collapse=" "))
     j <- which(!na)
     k <- 1 # in res
     for (i in seq_along(latlon)) {
@@ -2969,14 +2906,6 @@ formatPosition <- function(latlon, isLat=TRUE, type=c("list", "string", "express
             k <- k + 1
         }
     }
-    ##? j <- 1
-    ##? for (i in which(!na)) {
-    ##?     RES[i] <- res[j]
-    ##?     j <- j + 1
-    ##? }
-    ## RES[which(!na)] <- res
-    ##print(RES)
-    ##DANNY<<-RES
     resAll
 }
 
@@ -3001,16 +2930,18 @@ formatPosition <- function(latlon, isLat=TRUE, type=c("list", "string", "express
 #' @seealso A map must first have been created with [mapPlot()].
 #'
 #' @family functions related to maps
-mapLocator <- function(n=512, type='n', ...)
+mapLocator <- function(n=512, type="n", ...)
 {
-    if ("none" == .Projection()$type)
+    if ("none" == .Projection()$type) {
         stop("must create a map first, with mapPlot()\n")
+    }
     xy <- locator(n, type, ...)
     res <- map2lonlat(xy$x, xy$y)
-    if (type == 'l')
+    if (type == "l") {
         mapLines(res$longitude, res$latitude, ...)
-    else if (type == 'p')
+    } else if (type == "p") {
         mapPoints(res$longitude, res$latitude, ...)
+    }
     res
 }
 
@@ -3062,18 +2993,21 @@ mapLocator <- function(n=512, type='n', ...)
 #' @family functions related to maps
 map2lonlat <- function(x, y, init=NULL, debug=getOption("oceDebug"))
 {
-    if (missing(x))
+    if (missing(x)) {
         stop("must supply x")
-    if ("none" == .Projection()$type)
+    }
+    if ("none" == .Projection()$type) {
         stop("must create a map first, with mapPlot()\n")
+    }
     if (is.list(x)) {
         y <- x$y
         x <- x$x
     }
     n <- length(x)
-    if (n != length(y))
+    if (n != length(y)) {
         stop("lengths of x and y must match, but they are ", n, " and ", length(y))
-    ## Pass same debug level to oceProject(), since this is just a wrapper.
+    }
+    # Pass same debug level to oceProject(), since this is just a wrapper.
     XY <- oceProject(xy=cbind(x, y), proj=.Projection()$projection, inv=TRUE, debug=debug)
     list(longitude=XY[, 1], latitude=XY[, 2])
 }
@@ -3132,10 +3066,11 @@ map2lonlat <- function(x, y, init=NULL, debug=getOption("oceDebug"))
 #'
 #' @family functions related to maps
 mapPolygon <- function(longitude, latitude, density=NULL, angle=45,
-    border=NULL, col=NA, lty=par('lty'), ..., fillOddEven=FALSE)
+                       border=NULL, col=NA, lty=par("lty"), ..., fillOddEven=FALSE)
 {
-    if ("none" == .Projection()$type)
+    if ("none" == .Projection()$type) {
         stop("must create a map first, with mapPlot()\n")
+    }
     if ("data" %in% slotNames(longitude) && # handle e.g. 'coastline' class
         2 == sum(c("longitude", "latitude") %in% names(longitude@data))) {
         latitude <- longitude@data$latitude
@@ -3152,7 +3087,7 @@ mapPolygon <- function(longitude, latitude, density=NULL, angle=45,
         y <- xy$y
         xorig <- xy$x
         yorig <- xy$y
-        ## 1181 necessitated a change in badFillFix1()
+        # 1181 necessitated a change in badFillFix1()
         xy <- badFillFix1(x=x, y=y, latitude=latitude, projection="")
         xy <- badFillFix2(x=xy$x, y=xy$y, xorig=xorig, yorig=yorig)
         x <- xy$x
@@ -3280,13 +3215,14 @@ mapPolygon <- function(longitude, latitude, density=NULL, angle=45,
 #'
 #' @family functions related to maps
 mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
-    breaks, col, colormap, border=NA,
-    lwd=par("lwd"), lty=par("lty"), missingColor=NA,
-    filledContour=FALSE, gridder="binMean2D",
-    debug=getOption("oceDebug"))
+                     breaks, col, colormap, border=NA,
+                     lwd=par("lwd"), lty=par("lty"), missingColor=NA,
+                     filledContour=FALSE, gridder="binMean2D",
+                     debug=getOption("oceDebug"))
 {
-    if ("none" == .Projection()$type)
+    if ("none" == .Projection()$type) {
         stop("must create a map first, with mapPlot()\n")
+    }
     breaksGiven <- !missing(breaks)
     zlimGiven <- !missing(zlim)
     colGiven <- !missing(col)
@@ -3311,8 +3247,9 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
             longitude <- longitude$x   # destroys container
         }
     }
-    if (!is.matrix(z))
+    if (!is.matrix(z)) {
         stop("z must be a matrix")
+    }
     breaksGiven <- !missing(breaks)
     if (!missing(colormap)) {
         # takes precedence over breaks and col
@@ -3420,15 +3357,15 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
     ## issue #638 - kludge to get data into same longitue scheme as axes
     usr12 <- par("usr")[1:2]
     xrange <- range(xy$x, na.rm=TRUE)
-    if (xrange[1] > usr12[2])
+    if (xrange[1] > usr12[2]) {
         xy$x <- xy$x - 360
-
+    }
     # map_check_polygons tries to fix up longitude cut-point problem, which
     # otherwise leads to lines crossing the graph horizontally because the x
     # value can sometimes alternate from one end of the domain to the other.
     Z <- as.vector(z)
     r <- .Call("map_check_polygons", xy$x, xy$y, poly$z,
-        diff(par('usr'))[1:2]/5, par('usr'),
+        diff(par("usr"))[1:2]/5, par("usr"),
         NAOK=TRUE, PACKAGE="oce")
     breaksMin <- min(breaks, na.rm=TRUE)
     breaksMax <- max(breaks, na.rm=TRUE)
@@ -3441,11 +3378,11 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
         # FIXME: I'm not sure this will work well generally; I'm setting NN to
         # FIXME: get about 5 points per grid cell.
         # N is number of points in view
-        N <- sum(par('usr')[1]<=xy$x & xy$x<=par('usr')[2] &
-                 par('usr')[3]<=xy$y & xy$y<=par('usr')[4], na.rm=TRUE)
+        usr <- par("usr")
+        N <- sum(usr[1]<=xy$x & xy$x<=usr[2] & usr[3]<=xy$y & xy$y<=usr[4], na.rm=TRUE)
         NN <- sqrt(N / 10)
-        xg <- seq(par('usr')[1], par('usr')[2], length.out=NN)
-        yg <- seq(par('usr')[3], par('usr')[4], length.out=NN)
+        xg <- seq(usr[1], usr[2], length.out=NN)
+        yg <- seq(usr[3], usr[4], length.out=NN)
         xy <- lonlat2map(longitudeGrid, latitudeGrid)
         good <- is.finite(zz) & is.finite(xy$x) & is.finite(xy$y)
         if (!zclip) {
@@ -3456,8 +3393,8 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
         xx <- xy$x[good]
         yy <- xy$y[good]
         zz <- zz[good]
-        xtrim <- par('usr')[1:2]
-        ytrim <- par('usr')[3:4]
+        xtrim <- par("usr")[1:2]
+        ytrim <- par("usr")[3:4]
         inFrame <- xtrim[1] <= xx & xx <= xtrim[2] & ytrim[1] <= yy & yy <= ytrim[2]
         oceDebug(debug, "before trimming, length(xx): ", length(xx), "\n")
         xx <- xx[inFrame]
@@ -3469,8 +3406,9 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
             oceDebug(debug, "using interp::interp()\n")
             if (requireNamespace("interp", quietly=TRUE)) {
                 i <- try(interp::interp(x=xx, y=yy, z=zz, xo=xg, yo=yg))
-                if (inherits(i, "try-error"))
+                if (inherits(i, "try-error")) {
                     stop("gridder=\"", gridder, "\" failed. Try gridder=\"binMean2D\" instead")
+                }
             } else {
                 stop("must install.packages(\"interp\") for gridder=\"", gridder, "\"")
             }
@@ -3492,14 +3430,17 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
         oceDebug(debug, "using polygons, as opposed to filled contours\n")
         colFirst <- col[1]
         colLast <- tail(col, 1)
-        colorLookup <- function (ij) {
+        colorLookup <- function(ij) {
             zval <- Z[ij]
-            if (!is.finite(zval))
+            if (!is.finite(zval)) {
                 return(missingColor)   # whether clipping or not
-            if (zval < breaksMin)
+            }
+            if (zval < breaksMin) {
                 return(if (zclip) missingColor else colFirst)
-            if (zval > breaksMax)
+            }
+            if (zval > breaksMax) {
                 return(if (zclip) missingColor else colLast)
+            }
             # IMPORTANT: whether to write 'breaks' or 'breaks+small' below
             # IMPORTANT: is at the heart of several issues, including
             # IMPORTANT: issues 522, 655 and possibly 726.
@@ -3507,10 +3448,11 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
             # issue655: this was w <- which(zval <= breaks)[1]
             # sometime later: w <- which(zval < breaks + 1*small)[1]
             w <- which(zval <= breaks)[1]
-            if (!is.na(w) && w > 1)
+            if (!is.na(w) && w > 1) {
                 return(col[-1 + w])
-            else
+            } else {
                 return(missingColor)
+            }
         }
         # mapImage(topoWorld) profiling
         # Note that 1/3 of the time is spent here, the rest in polygon().
@@ -3524,8 +3466,9 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
         # NOTE: mapPolygonMethod is NOT documented, so we can assume
         # NOTE: that it will be NULL, so method=3 will be used.
         method <- options()$mapPolygonMethod
-        if (0 == length(method))
+        if (0 == length(method)) {
             method <- 3 # method tested in issue 1284
+        }
         oceDebug(debug, "method=", method, " (set by options()$mapPolygonMethod or default of 3)\n")
         if (method==1) {
             colPolygon <- unlist(lapply(1:(ni*nj), colorLookup))
@@ -3610,8 +3553,9 @@ lonlat2utm <- function(longitude, latitude, zone, km=FALSE)
 {
     names <- names(longitude)
     if (!is.null(names)) {
-        if ("zone" %in% names)
+        if ("zone" %in% names) {
             zone <- longitude$zone
+        }
         if ("longitude" %in% names && "latitude" %in% names) {
             latitude <- longitude$latitude
             longitude <- longitude$longitude
@@ -3619,7 +3563,7 @@ lonlat2utm <- function(longitude, latitude, zone, km=FALSE)
     }
     if (missing(latitude))
         stop("latitude is missing")
-    ## Code from https://en.wikipedia.org/wiki/Universal_Transverse_Mercator_coordinate_system
+    # Code from https://en.wikipedia.org/wiki/Universal_Transverse_Mercator_coordinate_system
     longitude <- ifelse(longitude < 0, longitude+360, longitude)
     rpd <- atan2(1, 1) / 45
     lambda <- longitude * rpd
@@ -3628,10 +3572,10 @@ lonlat2utm <- function(longitude, latitude, zone, km=FALSE)
     f <- 1 / 298.257223563                 # flatening
     n <- f / (2 - f)
     A <- (a / (1 + n)) * (1 + n^2/4 + n^4/64)
-    t <- sinh(atanh(sin(phi)) - (2*sqrt(n)) / (1+n) * atanh( (2*sqrt(n)) / (1+n) * sin(phi)) )
+    t <- sinh(atanh(sin(phi)) - (2*sqrt(n)) / (1+n) * atanh((2*sqrt(n)) / (1+n) * sin(phi)))
     if (missing(zone)) {
-        zone <- floor( (180 + longitude) / 6 ) # FIXME: this works for zone but not positive its ok
-        zone <- floor( (longitude / 6) + 31 )
+        zone <- floor((180 + longitude) / 6) # FIXME: this works for zone but not positive its ok
+        zone <- floor((longitude / 6) + 31)
         zone <- ifelse(zone > 60, zone-60, zone)
         ## message("zone not given; inferred to be ", zone)
     }
@@ -3641,27 +3585,26 @@ lonlat2utm <- function(longitude, latitude, zone, km=FALSE)
     alpha1 <- (1/2)*n - (2/3)*n^2 + (5/16)*n^3
     alpha2 <- (13/48)*n^2 - (3/5)*n^3
     alpha3 <- (61/240)*n^3
-    ## sigma and tau needed only if calculating k and gamma, which we are not.
-    ## sigma <- 1 + 2*(  alpha1*cos(2*xiprime)*cosh(2*etaprime) +
-    ##                 2*alpha2*cos(4*xiprime)*cosh(4*etaprime) +
-    ##                 3*alpha3*cos(6*xiprime)*cosh(6*etaprime))
-    ## tau <-       2*(  alpha1*sin(2*xiprime)*sinh(2*etaprime) +
-    ##                 2*alpha2*sin(4*xiprime)*sinh(4*etaprime) +
-    ##                 3*alpha3*sin(6*xiprime)*sinh(6*etaprime))
+    # sigma and tau needed only if calculating k and gamma, which we are not.
+    # sigma <- 1 + 2*(  alpha1*cos(2*xiprime)*cosh(2*etaprime) +
+    #                 2*alpha2*cos(4*xiprime)*cosh(4*etaprime) +
+    #                 3*alpha3*cos(6*xiprime)*cosh(6*etaprime))
+    # tau <-       2*(  alpha1*sin(2*xiprime)*sinh(2*etaprime) +
+    #                 2*alpha2*sin(4*xiprime)*sinh(4*etaprime) +
+    #                 3*alpha3*sin(6*xiprime)*sinh(6*etaprime))
     k0 <- 0.9996
     E0 <- 500                              # km
     E <- E0 + k0 * A * (etaprime + (alpha1*cos(2*xiprime)*sinh(2*etaprime)+
-                                    alpha2*cos(4*xiprime)*sinh(4*etaprime)+
-                                    alpha3*cos(6*xiprime)*sinh(6*etaprime)))
+        alpha2*cos(4*xiprime)*sinh(4*etaprime)+
+        alpha3*cos(6*xiprime)*sinh(6*etaprime)))
     N0 <- ifelse(latitude>0, 0, 10000)
     N0 <- 0                            # to obey Landsat-8 convention
     N <- N0 + k0 * A * (xiprime  + (alpha1*sin(2*xiprime)*cosh(2*etaprime)+
-                                    alpha2*sin(4*xiprime)*cosh(4*etaprime)+
-                                    alpha3*sin(6*xiprime)*cosh(6*etaprime)))
+        alpha2*sin(4*xiprime)*cosh(4*etaprime)+
+        alpha3*sin(6*xiprime)*cosh(6*etaprime)))
     easting <- if (km) E else 1000 * E
     northing <- if (km) N else 1000 * N
-    list(easting=easting, northing=northing, zone=zone,
-         hemisphere=ifelse(latitude>0, "N", "S"))
+    list(easting=easting, northing=northing, zone=zone, hemisphere=ifelse(latitude>0, "N", "S"))
 }
 
 #' Convert UTM to Longitude and Latitude
@@ -3710,7 +3653,7 @@ utm2lonlat <- function(easting, northing, zone=1, hemisphere="N", km=FALSE)
             easting <- easting$easting
         }
     }
-    ## Code from https://en.wikipedia.org/wiki/Universal_Transverse_Mercator_coordinate_system
+    # Code from https://en.wikipedia.org/wiki/Universal_Transverse_Mercator_coordinate_system
     a <- 6378.137                          # earth radius in WSG84 (in km for these formulae)
     f <- 1 / 298.257223563                 # flatening
     n <- f / (2 - f)
@@ -3732,9 +3675,9 @@ utm2lonlat <- function(easting, northing, zone=1, hemisphere="N", km=FALSE)
     eta <- (easting - E0) / (k0 * A)
     xiprime <-   xi -   (beta1*sin(2*xi)*cosh(2*eta) +  beta2*sin(4*xi)*cosh(4*eta) +  beta3*sin(6*xi)*cosh(6*eta))
     etaprime <- eta -   (beta1*cos(2*xi)*sinh(2*eta) +  beta2*cos(4*xi)*sinh(4*eta) +  beta3*cos(6*xi)*sinh(6*eta))
-    ## sigmaprime and tauprime not needed in present calculation
-    ##sigmaprime <- 1 - 2*(beta1*cos(2*xi)*cosh(2*eta) +2*beta2*cos(4*xi)*cosh(4*eta) +3*beta3*cos(6*xi)*cosh(6*eta))
-    ##tauprime <-       2*(beta1*sin(2*xi)*sinh(2*eta) +2*beta2*sin(4*xi)*sinh(4*eta) +3*beta3*sin(6*xi)*sinh(6*eta))
+    # sigmaprime and tauprime not needed in present calculation
+    #sigmaprime <- 1 - 2*(beta1*cos(2*xi)*cosh(2*eta) +2*beta2*cos(4*xi)*cosh(4*eta) +3*beta3*cos(6*xi)*cosh(6*eta))
+    #tauprime <-       2*(beta1*sin(2*xi)*sinh(2*eta) +2*beta2*sin(4*xi)*sinh(4*eta) +3*beta3*sin(6*xi)*sinh(6*eta))
     chi <- asin(sin(xiprime)/cosh(etaprime)) # Q: in deg or radian?
     phi <- chi + (delta1*sin(2*chi) + delta2*sin(4*chi) + delta3*sin(6*chi))
     latitude <- 45 * phi / atan2(1, 1)
@@ -3836,21 +3779,26 @@ knownProj4 <- c("aea", "aeqd", "aitoff",         "bipc", "bonne",
 #' @family functions related to maps
 lonlat2map <- function(longitude, latitude, projection="", debug=getOption("oceDebug"))
 {
-    ##oceDebug(debug, "lonlat2map() {\n", unindent=1, sep="", style="bold")
+    #oceDebug(debug, "lonlat2map() {\n", unindent=1, sep="", style="bold")
     oceDebug(debug, "lonlat2map(longitude, latitude, projection=\"", projection, "\") {\n", sep="", unindent=1, style="bold")
-    if (missing(longitude))
+    if (missing(longitude)) {
         stop("must supply longitude")
+    }
     if (is.list(longitude)) {
         latitude <- longitude$latitude
         longitude <- longitude$longitude
     }
-    if (missing(latitude))
+    if (missing(latitude)) {
         stop("must supply latitude")
+    }
     n <- length(longitude)
-    if (n != length(latitude))
+    if (n != length(latitude)) {
         stop("lengths of longitude and latitude must match but they are ", n, " and ", length(latitude))
-    ## Use proj4 if it has been set up (and still exists).
-    if ("" == projection) projection <- .Projection()$projection # FIXME
+    }
+    # Use proj4 if it has been set up (and still exists).
+    if ("" == projection) {
+        projection <- .Projection()$projection # FIXME
+    }
     if (inherits(projection, "CRS")) {
         projection <- projection@projargs
     }
@@ -3858,14 +3806,16 @@ lonlat2map <- function(longitude, latitude, projection="", debug=getOption("oceD
     oceDebug(debug, "in lonlat2map(), projection=\"", projection, "\"\n", sep="")
     oceDebug(debug, "in lonlat2map(), pr=        \"", projection, "\"\n", sep="")
     #gsub(" .*$", "", gsub("^\\+proj=", "", projection))
-    if (!(pr %in% knownProj4))
-        stop("projection '", pr, "' is unknown; try one of: ", paste(knownProj4, collapse=','))
+    if (!(pr %in% knownProj4)) {
+        stop("projection '", pr, "' is unknown; try one of: ", paste(knownProj4, collapse=","))
+    }
     n <- length(longitude)
-    if (n != length(latitude))
+    if (n != length(latitude)) {
         stop("lengths of longitude and latitude must match, but they are ", n, " and ", length(latitude))
+    }
     XY <- oceProject(xy=cbind(longitude, latitude), proj=projection, inv=FALSE, debug=debug-1)
     .Projection(list(type="proj4", projection=projection))
-    ## oceDebug(debug, "} # lonlat2map()\n", unindent=1, sep="", style="bold")
+    # oceDebug(debug, "} # lonlat2map()\n", unindent=1, sep="", style="bold")
     oceDebug(debug, "} # lonlat2map\n", sep="", unindent=1, style="bold")
     list(x=XY[, 1], y=XY[, 2])
 }
