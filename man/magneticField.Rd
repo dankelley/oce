@@ -67,14 +67,14 @@ dec2000 <- function(lon, lat)
 dec <- outer(lon, lat, dec2000) # hint: outer() is very handy!
 # Contour, unlabelled for small increments, labeled for
 # larger increments.
-mapContour(lon, lat, dec, col='blue', levels=seq(-180, -5, 5),
+mapContour(lon, lat, dec, col="blue", levels=seq(-180, -5, 5),
            lty=3, drawlabels=FALSE)
-mapContour(lon, lat, dec, col='blue', levels=seq(-180, -20, 20))
-mapContour(lon, lat, dec, col='red', levels=seq(5, 180, 5),
+mapContour(lon, lat, dec, col="blue", levels=seq(-180, -20, 20))
+mapContour(lon, lat, dec, col="red", levels=seq(5, 180, 5),
            lty=3, drawlabels=FALSE)
-mapContour(lon, lat, dec, col='red', levels=seq(20, 180, 20))
-mapContour(lon, lat, dec, levels=180, col='black', lwd=2, drawlabels=FALSE)
-mapContour(lon, lat, dec, levels=0, col='black', lwd=2)
+mapContour(lon, lat, dec, col="red", levels=seq(20, 180, 20))
+mapContour(lon, lat, dec, levels=180, col="black", lwd=2, drawlabels=FALSE)
+mapContour(lon, lat, dec, levels=0, col="black", lwd=2)
 }
 
 # 3. Declination differences between versions 12 and 13

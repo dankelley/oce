@@ -9,7 +9,8 @@ matrixShiftLongitude(m, longitude)
 \arguments{
 \item{m}{The matrix to be modified.}
 
-\item{longitude}{A vector containing the longitude in the 0-360 convention. If missing, this is constructed to range from 0 to 360, with as many elements as the first index of \code{m}.}
+\item{longitude}{A vector containing the longitude in the 0-360 convention. If missing,
+this is constructed to range from 0 to 360, with as many elements as the first index of \code{m}.}
 }
 \value{
 A list containing \code{m} and \code{longitude}, both rearranged as appropriate.

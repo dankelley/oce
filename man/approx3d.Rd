@@ -53,9 +53,9 @@ yout <- seq(0, 1, length.out=m)
 zout <- seq(0, 1, length.out=m)
 approx <- approx3d(x, y, z, f, xout, yout, zout)
 ## graph the results
-plot(xout, approx, type='l')
+plot(xout, approx, type="l")
 points(xout[1], f[1, 1, 1])
-points(xout[m], f[n,n,n])
+points(xout[m], f[n, n, n])
 }
 \author{
 Dan Kelley and Clark Richards

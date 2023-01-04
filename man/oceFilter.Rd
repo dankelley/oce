@@ -58,7 +58,7 @@ a <- 1
 x <- seq(0, 10)
 y <- ifelse(x == 5, 1, 0)
 f1 <- oceFilter(y, a, b)
-plot(x, y, ylim=c(-0, 1.5), pch="o", type='b')
+plot(x, y, ylim=c(-0, 1.5), pch="o", type="b")
 points(x, f1, pch="x", col="red")
 
 # remove the phase lag
