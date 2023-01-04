@@ -63,7 +63,7 @@ repairProjection <- function(projection, longlatProj, debug=getOption("oceDebug"
 #'
 #' This function is used to isolate other oce functions from
 #' changes to the map-projection functions that are done in the \CRANpkg{sf}
-#' package.  (Until 2020 December, the \CRANpkg{rgdal} package was used,
+#' package.  (Until 2020 December, the `rgdal` package was used,
 #' after a year of tests ensuring that the results of the two packages were
 #' the same.)
 #'
@@ -382,7 +382,7 @@ badFillFix1 <- function(x, y, latitude, projection="")
         #bad <- d > dc
         #bad <- 0.1 < (d / diff(range(x, na.rm=TRUE)))
         antarctic <- latitude < -60
-        bad <- ((d / diff(range(x, na.rm=TRUE))) > 0.1) && !antarctic
+        bad <- ((d / diff(range(x, na.rm=TRUE))) > 0.1) & !antarctic
         # if (length(options("oce1181")[[1]])) browser()
         # FIXME: this should finish off polygons, but that is a bit tricky, e.g.
         # FIXME: should we create a series of points to a trace along the edge
@@ -1272,7 +1272,7 @@ mapLongitudeLatitudeXY <- function(longitude, latitude)
 #'
 #' @section Changes:
 #'
-#' * 2020-12-24: complete switch from \CRANpkg{rgdal} to \CRANpkg{sf},
+#' * 2020-12-24: complete switch from `rgdal` to \CRANpkg{sf},
 #' removing the testing scheme created on 2020-08-03.
 #'
 #' * 2020-08-03: added support for the `eqearth` projection (like `robin` but
@@ -1284,7 +1284,7 @@ mapLongitudeLatitudeXY <- function(longitude, latitude)
 #' interrupted projections were handled badly by `mapPlot()`
 #' in any case.)
 #'
-#' * 2020-08-03: switch from \CRANpkg{rgdal} to \CRANpkg{sf} for
+#' * 2020-08-03: switch from `rgdal` to \CRANpkg{sf} for
 #' calculations related to map projection, owing to some
 #' changes in the former package that broke \CRANpkg{oce}
 #' code.  (To catch problems, \CRANpkg{oce} was set up to use
@@ -1293,7 +1293,7 @@ mapLongitudeLatitudeXY <- function(longitude, latitude)
 #'
 #' * 2019-03-20: the test code provided the \dQuote{Examples} section
 #' is disabled on i386/windows machines, on which the requisite
-#' \CRANpkg{rgdal} package continues to fail on common projections.
+#' `rgdal` package continues to fail on common projections.
 #'
 #' * 2017-11-19: `imw_p` removed, because it has problems doing
 #' inverse calculations.
@@ -1302,7 +1302,7 @@ mapLongitudeLatitudeXY <- function(longitude, latitude)
 #' See `https://github.com/dankelley/oce/issues/1319` for details.
 #'
 #' * 2017-11-17: `lsat` removed, because it does not work in
-#' \CRANpkg{rgdal} or in the latest standalone PROJ.4 application.
+#' `rgdal` or in the latest standalone PROJ.4 application.
 #' This is a also problem in the standalone PROJ.4 application version
 #' 4.9.3, downloaded and built on OSX.
 #' See `https://github.com/dankelley/oce/issues/1337` for details.
@@ -1565,8 +1565,6 @@ mapLongitudeLatitudeXY <- function(longitude, latitude)
 #' `https://proj.org`.
 #'
 #' 5. Bivand, Roger (2020) Why have CRS, projections and transformations changed?
-#' Vignette for rgdal 1.5-13
-#' `https://rgdal.r-forge.r-project.org/articles/CRS_projections_transformations.html`
 #'
 #' 6. A gallery of map plots is provided at
 #' `https://dankelley.github.io/r/2020/08/02/oce-proj.html`

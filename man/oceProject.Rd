@@ -32,7 +32,7 @@ A two-column matrix, with first column holding either
 \description{
 This function is used to isolate other oce functions from
 changes to the map-projection functions that are done in the \CRANpkg{sf}
-package.  (Until 2020 December, the \CRANpkg{rgdal} package was used,
+package.  (Until 2020 December, the \code{rgdal} package was used,
 after a year of tests ensuring that the results of the two packages were
 the same.)
 }
