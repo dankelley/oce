@@ -39,7 +39,7 @@ if this leaves an object with no useful data.
 library(oce)
 data(adp)
 # 1. Look at first part of time series, organized by time
-earlyTime <- subset(adp, time < mean(range(adp[['time']])))
+earlyTime <- subset(adp, time < mean(range(adp[["time"]])))
 plot(earlyTime)
 
 # 2. Look at first ten ensembles (AKA profiles)
