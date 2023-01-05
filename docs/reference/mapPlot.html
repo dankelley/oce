@@ -401,7 +401,7 @@ those used in the examples.</p>
     <h2>Changes</h2>
     
 
-<ul><li><p>2020-12-24: complete switch from <a href="https://CRAN.R-project.org/package=rgdal" class="external-link"><span class="pkg">rgdal</span></a> to <a href="https://CRAN.R-project.org/package=sf" class="external-link"><span class="pkg">sf</span></a>,
+<ul><li><p>2020-12-24: complete switch from <code>rgdal</code> to <a href="https://CRAN.R-project.org/package=sf" class="external-link"><span class="pkg">sf</span></a>,
 removing the testing scheme created on 2020-08-03.</p></li>
 <li><p>2020-08-03: added support for the <code>eqearth</code> projection (like <code>robin</code> but
 an equal-area method).</p></li>
@@ -410,7 +410,7 @@ and <code>rhealpix</code> projections, which caused errors with the
 <a href="https://CRAN.R-project.org/package=sf" class="external-link"><span class="pkg">sf</span></a> package.  (This is not a practical loss, since these
 interrupted projections were handled badly by <code>mapPlot()</code>
 in any case.)</p></li>
-<li><p>2020-08-03: switch from <a href="https://CRAN.R-project.org/package=rgdal" class="external-link"><span class="pkg">rgdal</span></a> to <a href="https://CRAN.R-project.org/package=sf" class="external-link"><span class="pkg">sf</span></a> for
+<li><p>2020-08-03: switch from <code>rgdal</code> to <a href="https://CRAN.R-project.org/package=sf" class="external-link"><span class="pkg">sf</span></a> for
 calculations related to map projection, owing to some
 changes in the former package that broke <a href="https://CRAN.R-project.org/package=oce" class="external-link"><span class="pkg">oce</span></a>
 code.  (To catch problems, <a href="https://CRAN.R-project.org/package=oce" class="external-link"><span class="pkg">oce</span></a> was set up to use
@@ -418,14 +418,14 @@ both packages temporarily, issuing warnings if the results differed
 by more than 1 metre in easting or northing values.)</p></li>
 <li><p>2019-03-20: the test code provided the “Examples” section
 is disabled on i386/windows machines, on which the requisite
-<a href="https://CRAN.R-project.org/package=rgdal" class="external-link"><span class="pkg">rgdal</span></a> package continues to fail on common projections.</p></li>
+<code>rgdal</code> package continues to fail on common projections.</p></li>
 <li><p>2017-11-19: <code>imw_p</code> removed, because it has problems doing
 inverse calculations.
 This is a also problem in the standalone PROJ.4 application version
 4.9.3, downloaded and built on OSX.
 See <code>https://github.com/dankelley/oce/issues/1319</code> for details.</p></li>
 <li><p>2017-11-17: <code>lsat</code> removed, because it does not work in
-<a href="https://CRAN.R-project.org/package=rgdal" class="external-link"><span class="pkg">rgdal</span></a> or in the latest standalone PROJ.4 application.
+<code>rgdal</code> or in the latest standalone PROJ.4 application.
 This is a also problem in the standalone PROJ.4 application version
 4.9.3, downloaded and built on OSX.
 See <code>https://github.com/dankelley/oce/issues/1337</code> for details.</p></li>
@@ -447,9 +447,7 @@ Professional Paper: 1395
 "PROJ Coordinate Transformation Software Library."
 Open Source Geospatial Foundation, n.d.
 <code>https://proj.org</code>.</p></li>
-<li><p>Bivand, Roger (2020) Why have CRS, projections and transformations changed?
-Vignette for rgdal 1.5-13
-<code>https://rgdal.r-forge.r-project.org/articles/CRS_projections_transformations.html</code></p></li>
+<li><p>Bivand, Roger (2020) Why have CRS, projections and transformations changed?</p></li>
 <li><p>A gallery of map plots is provided at
 <code>https://dankelley.github.io/r/2020/08/02/oce-proj.html</code></p></li>
 <li><p>Snyder, John Parr.
@@ -599,7 +597,7 @@ projections (with graphs).</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>

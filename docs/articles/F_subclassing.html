@@ -96,7 +96,7 @@
       <h1 data-toc-skip>6. Subclassing oce objects</h1>
                         <h4 data-toc-skip class="author">Dan Kelley (<a href="https://orcid.org/0000-0001-7808-5911" class="external-link uri">https://orcid.org/0000-0001-7808-5911</a>)</h4>
             
-            <h4 data-toc-skip class="date">2022-12-17</h4>
+            <h4 data-toc-skip class="date">2023-01-05</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/dankelley/oce/blob/HEAD/vignettes/F_subclassing.Rmd" class="external-link"><code>vignettes/F_subclassing.Rmd</code></a></small>
       <div class="hidden name"><code>F_subclassing.Rmd</code></div>
@@ -166,7 +166,7 @@ much:</p>
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">o</span><span class="op">)</span></span>
 <span><span class="co">#&gt; * Processing Log</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;     - 2022-12-17 17:38:00 UTC: `Create oce object`</span></span></code></pre></div>
+<span><span class="co">#&gt;     - 2023-01-05 15:28:32 UTC: `Create oce object`</span></span></code></pre></div>
 <p>but if we populate the object with some data and metadata</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">o</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/oceSetData.html">oceSetData</a></span><span class="op">(</span><span class="va">o</span>, <span class="st">"time"</span>, <span class="va">db</span><span class="op">$</span><span class="va">t</span><span class="op">)</span></span>
@@ -176,20 +176,21 @@ much:</p>
 <p>then the summary is more informative</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">o</span><span class="op">)</span></span>
-<span><span class="co">#&gt; * Time ranges from 2021-11-01 21:04:00 to 2021-11-08 06:00:00 with 146 samples and mean increment 1.054713 hour</span></span>
+<span><span class="co">#&gt; * Time:          2021-11-01 21:04:00 to 2021-11-08 06:00:00 (146 samples , mean increment 1.054713hour)</span></span>
 <span><span class="co">#&gt; * Data Overview</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;                  Min.    Mean    Max. Dim. NAs OriginalName</span></span>
-<span><span class="co">#&gt;     longitude -63.011 -62.775 -62.636  146   0            -</span></span>
-<span><span class="co">#&gt;     latitude   41.932  42.305  42.572  146   0            -</span></span>
+<span><span class="co">#&gt;                     Min.       Mean       Max. Dim. NAs</span></span>
+<span><span class="co">#&gt;     time      1635800640 1636074398 1636351200    0   0</span></span>
+<span><span class="co">#&gt;     longitude    -63.011    -62.775    -62.636    0   0</span></span>
+<span><span class="co">#&gt;     latitude      41.932     42.305     42.572    0   0</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; * Processing Log</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;     - 2022-12-17 17:38:00 UTC: `Create oce object`</span></span>
-<span><span class="co">#&gt;     - 2022-12-17 17:38:00 UTC: `oceSetData(object = o, name = "time", value = db$t)`</span></span>
-<span><span class="co">#&gt;     - 2022-12-17 17:38:00 UTC: `oceSetData(object = o, name = "longitude", value = db$lon)`</span></span>
-<span><span class="co">#&gt;     - 2022-12-17 17:38:00 UTC: `oceSetData(object = o, name = "latitude", value = db$lat)`</span></span>
-<span><span class="co">#&gt;     - 2022-12-17 17:38:00 UTC: `oceSetMetadata(object = o, name = "ID", value = 4201703)`</span></span></code></pre></div>
+<span><span class="co">#&gt;     - 2023-01-05 15:28:32 UTC: `Create oce object`</span></span>
+<span><span class="co">#&gt;     - 2023-01-05 15:28:32 UTC: `oceSetData(object = o, name = "time", value = db$t)`</span></span>
+<span><span class="co">#&gt;     - 2023-01-05 15:28:32 UTC: `oceSetData(object = o, name = "longitude", value = db$lon)`</span></span>
+<span><span class="co">#&gt;     - 2023-01-05 15:28:32 UTC: `oceSetData(object = o, name = "latitude", value = db$lat)`</span></span>
+<span><span class="co">#&gt;     - 2023-01-05 15:28:32 UTC: `oceSetMetadata(object = o, name = "ID", value = 4201703)`</span></span></code></pre></div>
 <p>Note, however, that the <code>ID</code> is not listed by
 <code><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary()</a></code>. This is because the general form of that
 function is set up to focus on the contents of the <code>data</code>
@@ -330,16 +331,17 @@ drifter. The rest of the information provided by the base-level
 <span><span class="co">#&gt; -----------</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; * ID:          4201703</span></span>
-<span><span class="co">#&gt; * Time ranges from 2021-11-01 21:04:00 to 2021-11-08 06:00:00 with 146 samples and mean increment 1.054713 hour</span></span>
+<span><span class="co">#&gt; * Time:          2021-11-01 21:04:00 to 2021-11-08 06:00:00 (146 samples , mean increment 1.054713hour)</span></span>
 <span><span class="co">#&gt; * Data Overview</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;                  Min.    Mean    Max. Dim. NAs OriginalName</span></span>
-<span><span class="co">#&gt;     longitude -63.011 -62.775 -62.636  146   0            -</span></span>
-<span><span class="co">#&gt;     latitude   41.932  42.305  42.572  146   0            -</span></span>
+<span><span class="co">#&gt;                     Min.       Mean       Max. Dim. NAs</span></span>
+<span><span class="co">#&gt;     time      1635800640 1636074398 1636351200    0   0</span></span>
+<span><span class="co">#&gt;     longitude    -63.011    -62.775    -62.636    0   0</span></span>
+<span><span class="co">#&gt;     latitude      41.932     42.305     42.572    0   0</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; * Processing Log</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;     - 2022-12-17 17:38:01 UTC: `create 'drifter' object`</span></span></code></pre></div>
+<span><span class="co">#&gt;     - 2023-01-05 15:28:32 UTC: `create 'drifter' object`</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="specializing-the-accessor">Specializing the <code>[[</code> accessor<a class="anchor" aria-label="anchor" href="#specializing-the-accessor"></a>
@@ -450,7 +452,7 @@ frequency.</p></li>
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer>

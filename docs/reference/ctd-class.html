@@ -237,6 +237,7 @@ and sufficiently skilled users may even manipulate the contents directly.</p>
 <code><a href="cnvName2oceName.html">cnvName2oceName</a>()</code>,
 <code><a href="ctd.cnv.html">ctd.cnv</a></code>,
 <code><a href="ctdDecimate.html">ctdDecimate</a>()</code>,
+<code><a href="ctdFindProfilesRBR.html">ctdFindProfilesRBR</a>()</code>,
 <code><a href="ctdFindProfiles.html">ctdFindProfiles</a>()</code>,
 <code><a href="ctdRaw.html">ctdRaw</a></code>,
 <code><a href="ctdRepair.html">ctdRepair</a>()</code>,
@@ -304,16 +305,16 @@ and sufficiently skilled users may even manipulate the contents directly.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> * Data Overview</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                              Min. Mean Max. Dim. NAs OriginalName</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     scan                        1    2    3    3   0            -</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     salinity [PSS-78]        35.1 35.2 35.3    3   0            -</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     temperature [°C, ITS-90]  9.7  9.8  9.9    3   0            -</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     pressure [dbar]             1    2    3    3   0            -</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                              Min. Mean Max. Dim. NAs</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     scan                        1    2    3    0   0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     salinity [PSS-78]        35.1 35.2 35.3    0   0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     temperature [°C, ITS-90]  9.7  9.8  9.9    0   0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     pressure [dbar]             1    2    3    0   0</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> * Processing Log</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2022-12-17 17:32:32 UTC: `create 'ctd' object`</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2022-12-17 17:32:32 UTC: `as.ctd(salinity = 35 + 1:3/10, temperature = 10 - 1:3/10, pressure = 1:3)`</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2023-01-05 15:24:04 UTC: `create 'ctd' object`</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2023-01-05 15:24:04 UTC: `as.ctd(salinity = 35 + 1:3/10, temperature = 10 - 1:3/10, pressure = 1:3)`</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># 2. Fix a typo in a station latitude (fake! it's actually okay)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">ctd</span><span class="op">)</span></span></span>
@@ -334,7 +335,7 @@ and sufficiently skilled users may even manipulate the contents directly.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>

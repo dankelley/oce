@@ -102,6 +102,7 @@ of CTD objects, and also outlines the other functions dealing with them.</p>
 <code><a href="sub-sub-rsk-method.html">[[,rsk-method</a></code>,
 <code>[[&lt;-,rsk-method</code>,
 <code><a href="as.rsk.html">as.rsk</a>()</code>,
+<code><a href="ctdFindProfilesRBR.html">ctdFindProfilesRBR</a>()</code>,
 <code><a href="plot-rsk-method.html">plot,rsk-method</a></code>,
 <code><a href="read.rsk.html">read.rsk</a>()</code>,
 <code><a href="rsk-class.html">rsk-class</a></code>,
@@ -125,14 +126,15 @@ of CTD objects, and also outlines the other functions dealing with them.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> * Instrument:         model RBRconcerto serial number 60130</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> * Atmosph. pressure:  10.1325</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> * Pressure type:      absolute</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> * Source:             ``060130_20150904_1159.rsk``</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> * Time ranges from 2015-09-04 15:37:21 to 2015-09-04 15:44:43 with 2653 samples and mean increment 0.1666667 s</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> * Source:             `060130_20150904_1159.rsk`</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> * Time:          2015-09-04 15:37:21 to 2015-09-04 15:44:43 (2653 samples, mean increment 0.1666667s)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> * Data Overview</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                                  Min.   Mean   Max. Dim. NAs OriginalName</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     conductivity [mS/cm]       28.856 30.061 30.985 2653   0       cond06</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     temperature [°C, ITS-90]  0.92965 1.9098 4.3835 2653   0       temp03</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     pressure [dbar, absolute]  11.206 257.71 463.85 2653   0       pres07</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                     Min.       Mean       Max. Dim. NAs OriginalName</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     time                      1441381041 1441381262 1441381483    0   0            -</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     conductivity [mS/cm]          28.856     30.061     30.985    0   0       cond06</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     temperature [°C, ITS-90]     0.92965     1.9098     4.3835    0   0       temp03</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     pressure [dbar, absolute]     11.206     257.71     463.85    0   0       pres07</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> * Processing Log</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
@@ -159,7 +161,7 @@ of CTD objects, and also outlines the other functions dealing with them.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>

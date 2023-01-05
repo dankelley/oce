@@ -81,11 +81,13 @@
     <div id="details">
     <h2>Details</h2>
     <p>A rsk object may be read with <code><a href="read.rsk.html">read.rsk()</a></code> or created with
-<code><a href="as.rsk.html">as.rsk()</a></code>.  Plots can be made with <code><a href="plot-rsk-method.html">plot,rsk-method()</a></code>, while
+<code><a href="as.rsk.html">as.rsk()</a></code>, but the former method is much preferred because it
+retains the entirety of the information in the file.
+Plots can be made with <code><a href="plot-rsk-method.html">plot,rsk-method()</a></code>, while
 <code><a href="summary-rsk-method.html">summary,rsk-method()</a></code> produces statistical summaries and <code>show</code>
 produces overviews.   If atmospheric pressure has not been removed from the
-data, the functions <code><a href="rskPatm.html">rskPatm()</a></code> may provide guidance as to its value;
-however, this last function is no equal to decent record-keeping at sea.</p>
+data, <code><a href="rskPatm.html">rskPatm()</a></code> may provide guidance as to its value,
+but this is no equal to record-keeping at sea.</p>
     </div>
     <div id="slots">
     <h2>Slots</h2>
@@ -182,6 +184,7 @@ retrieve derived items.</p>
 <code><a href="sub-sub-rsk-method.html">[[,rsk-method</a></code>,
 <code>[[&lt;-,rsk-method</code>,
 <code><a href="as.rsk.html">as.rsk</a>()</code>,
+<code><a href="ctdFindProfilesRBR.html">ctdFindProfilesRBR</a>()</code>,
 <code><a href="plot-rsk-method.html">plot,rsk-method</a></code>,
 <code><a href="read.rsk.html">read.rsk</a>()</code>,
 <code><a href="rskPatm.html">rskPatm</a>()</code>,
@@ -207,7 +210,7 @@ retrieve derived items.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>
