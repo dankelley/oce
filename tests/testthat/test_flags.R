@@ -14,10 +14,10 @@ test_that("argument existence", {
 test_that("handleFlags() with flags/data in sublist", {
     o <- new("oce")
     o@data[["A"]] <- list(x=1:3, y=11:13)
-    o@metadata$flags[["A"]] <- list(x=c(2,4,2), y=c(2,4,2))
+    o@metadata$flags[["A"]] <- list(x=c(2, 4, 2), y=c(2, 4, 2))
     of <- handleFlags(o, flags=c(4), actions=c("NA"), where="A")
-    expect_equal(of[["data"]]$A$x, c(1,NA,3))
-    expect_equal(of[["data"]]$A$y, c(11,NA,13))
+    expect_equal(of[["data"]]$A$x, c(1, NA, 3))
+    expect_equal(of[["data"]]$A$y, c(11, NA, 13))
 })
 
 test_that("handleFlags() with unnamed list flags", {
@@ -27,8 +27,9 @@ test_that("handleFlags() with unnamed list flags", {
     STN100 <- section[["station", 100]]
     deep <- STN100[["pressure"]] > 1500
     flag <- ifelse(deep, 7, 2) # flag deep data as bad
-    for (flagName in names(STN100@metadata$flags))
+    for (flagName in names(STN100@metadata$flags)) {
         STN100@metadata$flags[[flagName]] <- flag
+    }
     STN100f <- handleFlags(STN100)
     # Test just those data that have flags in original object
     for (field in c("salinity", "salinityBottle", "oxygen", "silicate",
@@ -54,8 +55,9 @@ test_that("handleFlags() with unnamed vector flags", {
     STN100 <- section[["station", 100]]
     deep <- STN100[["pressure"]] > 1500
     flag <- ifelse(deep, 7, 2) # flag deep data as bad
-    for (flagName in names(STN100@metadata$flags))
+    for (flagName in names(STN100@metadata$flags)) {
         STN100@metadata$flags[[flagName]] <- flag
+    }
     STN100f <- handleFlags(STN100)
     # Test just those data that have flags in original object
     for (field in c("salinity", "salinityBottle", "oxygen", "silicate",
@@ -120,8 +122,8 @@ test_that("user-created flag scheme", {
         mapping=list(unknown=1, good=2, bad=3),
         default=c(1, 3, 4, 5, 6, 7, 9))
     expect_equal(a[["flagScheme"]], list(name="myscheme",
-            mapping=list(unknown=1, good=2, bad=3),
-            default=c(1, 3, 4, 5, 6, 7, 9)))
+        mapping=list(unknown=1, good=2, bad=3),
+        default=c(1, 3, 4, 5, 6, 7, 9)))
 })
 
 test_that("cannot alter existing flag scheme (unless using update arg)", {
@@ -133,7 +135,7 @@ test_that("cannot alter existing flag scheme (unless using update arg)", {
         "cannot alter a flagScheme that is already is place")
     expect_warning(defaultFlags(ctd2), "unable to determine default flags")
     expect_silent(ctd3 <- initializeFlagScheme(ctd1, "WHP CTD", update=TRUE))
-    expect_equal(c(1,3,4,5,6,7,9), defaultFlags(ctd3))
+    expect_equal(c(1, 3, 4, 5, 6, 7, 9),  defaultFlags(ctd3))
 })
 
 test_that("ctd flag scheme action", {
@@ -146,10 +148,10 @@ test_that("ctd flag scheme action", {
 test_that("[[ and [[<- with ctd flags", {
     data(section)
     ctd <- section[["station", 100]]
-    expect_equal(c(2,2,2,2,2,3), ctd[["salinityFlag"]][1:6])
+    expect_equal(c(2, 2, 2, 2, 2, 3), ctd[["salinityFlag"]][1:6])
     ctd[["salinity"]][2] <- -999
     ctd[["salinityFlag"]] <- ifelse(ctd[["salinity"]] < 0, 3, ctd[["salinityFlag"]])
-    expect_equal(c(2,3,2,2,2,3), ctd[["salinityFlag"]][1:6])
+    expect_equal(c(2, 3, 2, 2, 2, 3), ctd[["salinityFlag"]][1:6])
     ctd[["salinity"]] <- ifelse(ctd[["salinityFlag"]]!=2, NA, ctd[["salinity"]])
     expect_equal(is.na(ctd[["salinity"]][1:6]), c(FALSE, TRUE, FALSE, FALSE, FALSE, TRUE))
 })
@@ -162,13 +164,13 @@ test_that("handleFLags with ctd data", {
     # cat("ctd salinity: orig had", sum(is.na(ctd[['salinity']])), "NA values; new has",
     #    sum(is.na(ctdNew[['salinity']])), "\n")
     expect_equal(sum(is.na(ctd[["salinity"]])), 0)
-    nbad <- sum(ctd[['salinityFlag']] != 2)
+    nbad <- sum(ctd[["salinityFlag"]] != 2)
     expect_equal(2, nbad)
     # test replacement via function
-    f <- function(object) rep(30, length.out=length(object[['salinity']]))
+    f <- function(object) rep(30, length.out=length(object[["salinity"]]))
     ctdNew2 <- handleFlags(ctd, flags=list(salinity=4:5), actions=list(salinity=f))
-    expect_equal(sum(ctdNew[['salinity']]==30, na.rm=TRUE),
-        sum(ctd[['salinityFlag']] == 4 | ctd[['salinityFlag']] == 5, na.rm=TRUE))
+    expect_equal(sum(ctdNew[["salinity"]]==30, na.rm=TRUE),
+        sum(ctd[["salinityFlag"]] == 4 | ctd[["salinityFlag"]] == 5, na.rm=TRUE))
 })
 
 test_that("handleFLags with the built-in argo dataset", {
@@ -192,10 +194,10 @@ test_that("handleFLags with the built-in argo dataset", {
     expect_equal(sum(is.na(argo[["salinity"]])), 106)
     expect_equal(sum(is.na(argoNew[["salinity"]])), 140)
     # test replacement via function
-    f <- function(object) rep(30, length.out=length(object[['salinity']]))
+    f <- function(object) rep(30, length.out=length(object[["salinity"]]))
     argoNew3 <- handleFlags(argo, flags=list(salinity=4:5), actions=list(salinity=f))
-    expect_equal(sum(argoNew3[['salinity']]==30, na.rm=TRUE),
-        sum(argo[['salinityFlag']] == 4 | argo[['salinityFlag']] == 5, na.rm=TRUE))
+    expect_equal(sum(argoNew3[["salinity"]]==30, na.rm=TRUE),
+        sum(argo[["salinityFlag"]] == 4 | argo[["salinityFlag"]] == 5, na.rm=TRUE))
 })
 
 test_that("handleFLags with the built-in section dataset", {
@@ -248,10 +250,11 @@ test_that("adp flag with subset() (issue 1410)", {
     data(adp)
     v <- adp[["v"]]
     f <- array(FALSE, dim=dim(v))
-    updraft <- adp[["v"]][,,4] > 0
+    updraft <- adp[["v"]][, , 4] > 0
     updraft[is.na(updraft)] <- FALSE # I don't like NA flags
-    for (beam in 1:4)
-        f[,,beam] <- updraft
+    for (beam in 1:4) {
+        f[, , beam] <- updraft
+    }
     adp[["vFlag"]] <- f
     # Subset by distance.
     sub <- subset(adp, distance < 20)
@@ -272,7 +275,7 @@ test_that("initializeFlagScheme with section", {
             mapping=list(no_information=1, no_problems_noted=2, leaking=3,
                 did_not_trip=4, not_reported=5, discrepency=6,
                 unknown_problem=7, did_not_trip=8, no_sample=9),
-            default=c(1,3,4,5,6,7,8,9)))
+            default=c(1, 3, 4, 5, 6, 7, 8, 9)))
 })
 
 test_that("handleFlags default flags (section)", {
@@ -316,8 +319,9 @@ test_that("adp handleFlag gives error for raw data (issue 1914)", {
     # Thresholds on percent "goodness" and error "velocity"
     G <- 25
     V4 <- 0.45
-    for (k in 1:3)
-        i2[,,k] <- ((g[,,k]+g[,,4]) < G) | (v[,,4] > V4)
+    for (k in 1:3) {
+        i2[, , k] <- ((g[, , k]+g[, , 4]) < G) | (v[, , 4] > V4)
+    }
     # Can apply flags to velocity, because it is numeric
     a <- initializeFlags(adp, "v", 2)
     b <- setFlags(a, "v", i2, 3)
@@ -328,4 +332,3 @@ test_that("adp handleFlag gives error for raw data (issue 1914)", {
     expect_error(c <- handleFlags(b, flags=list(3), actions=list("NA")),
         "use adpConvertRawToNumeric")
 })
-

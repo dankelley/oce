@@ -131,4 +131,3 @@ if (1 == length(list.files(path=".", pattern="local_data"))) {
         # creating and then cut/pasting the fake data
         expect_equal(d1[["pressure"]], d2[["pressure"]], tolerance=1e-5)
 })}
-

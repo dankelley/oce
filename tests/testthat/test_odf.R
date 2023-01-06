@@ -16,11 +16,11 @@ test_that("ODF CTD file", {
     # expect_null(d[["waterDepth"]])
     expect_equal(d[["latitude"]], 44.267500)
     expect_equal(d[["longitude"]], -63.317500)
-    expect_equal(d[['temperature']][1:3], c(5.883587939, 5.910981364, 5.917379829))
-    expect_equal(d[['salinity']][1:3], c(30.8514,30.8593,30.8596))
+    expect_equal(d[["temperature"]][1:3], c(5.883587939, 5.910981364, 5.917379829))
+    expect_equal(d[["salinity"]][1:3], c(30.8514, 30.8593, 30.8596))
     # there are some flagged data in this file
     expect_equal(which(d[["salinityFlag"]]!=1), 121)
-    expect_equal(c(110,120,121,142), which(d[["sigmaThetaFlag"]]!=1))
+    expect_equal(c(110, 120, 121, 142), which(d[["sigmaThetaFlag"]]!=1))
 })
 
 test_that("ODF CTD file (not as CTD)", {
@@ -85,4 +85,3 @@ test_that("ODF temperature scale, IPTS68 and ITS90", {
     expect_equal(ctd3B@data$temperature, Tref68)
     expect_equal(ctd3B[["temperature"]], Tref90)
 })
-

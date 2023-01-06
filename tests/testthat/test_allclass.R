@@ -4,8 +4,8 @@ library(oce)
 test_that("general", {
     o <- new("oce")
     expect_equal(c("data", "metadata", "processingLog"), sort(slotNames(o)))
-    expect_equal(2, length(o[['processingLog']]))
-    expect_null(o[['no_such_thing']])
+    expect_equal(2, length(o[["processingLog"]]))
+    expect_null(o[["no_such_thing"]])
     expect_output(show(o), "oce object has nothing in its data slot.")
     expect_warning(plot(o), "no data to plot")
     ## subsets of base oce object
@@ -13,9 +13,9 @@ test_that("general", {
     oo2 <- oceSetData(oo, "a", 1:10)
     subset(oo2, a < 5)
     ## insert data
-    expect_null(o[['noSuchThing']])
-    o[['noSuchThing']] <- 0
-    expect_equal(o[['noSuchThing']], 0)
+    expect_null(o[["noSuchThing"]])
+    o[["noSuchThing"]] <- 0
+    expect_equal(o[["noSuchThing"]], 0)
 })
 
 test_that("oceDeleteData clears flags and units", {
@@ -40,4 +40,3 @@ test_that("oceDeleteData clears flags and units", {
             "nitriteFlag", "NO2+NO3", "NO2+NO3Flag", "phosphate",
             "phosphateFlag"))
 })
-

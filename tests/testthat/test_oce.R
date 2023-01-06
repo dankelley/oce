@@ -5,17 +5,17 @@
 library(oce)
 
 test_that("as.oce", {
-    d <- data.frame(x=seq(0,1,length.out=20), y=seq(0,100,length.out=20))
+    d <- data.frame(x=seq(0, 1, length.out=20), y=seq(0, 100, length.out=20))
     o <- as.oce(d)
-    S <- seq(30,35,length.out=10)
-    T <- seq(20,10,length.out=10)
-    p <- seq(1,100,length.out=10)
-    ctd1 <- as.oce(list(salinity=S, temperature=T, pressure=p))
-    ctd2 <- as.oce(data.frame(salinity=S, temperature=T, pressure=p))
+    sal <- seq(30, 35, length.out=10)
+    tem <- seq(20, 10, length.out=10)
+    pre <- seq(1, 100, length.out=10)
+    ctd1 <- as.oce(list(salinity=sal, temperature=tem, pressure=pre))
+    ctd2 <- as.oce(data.frame(salinity=sal, temperature=tem, pressure=pre))
     expect_equal(ctd1[["data"]], ctd2[["data"]])
-    cl <- as.oce(data.frame(longitude=c(1,2,1), latitude=c(0,1,0)))
-    expect_equal(cl[['longitude']], c(1,2,1))
-    expect_equal(cl[['latitude']], c(0,1,0))
+    cl <- as.oce(data.frame(longitude=c(1, 2, 1), latitude=c(0, 1, 0)))
+    expect_equal(cl[["longitude"]], c(1, 2, 1))
+    expect_equal(cl[["latitude"]], c(0, 1, 0))
 })
 
 test_that("head_adp", {
@@ -24,7 +24,7 @@ test_that("head_adp", {
         h <- head(adp, n)
         look <- head(seq_len(dim(adp[["v"]])[1]), n)
         expect_equal(h[["time"]], adp[["time"]][look])
-        expect_equal(h[["v"]], adp[["v"]][look,,])
+        expect_equal(h[["v"]], adp[["v"]][look, , ])
     }
 })
 
@@ -34,7 +34,7 @@ test_that("head_adv", {
         h <- head(adv, n)
         look <- head(seq_len(dim(adv[["v"]])[1]), n)
         expect_equal(h[["time"]], adv[["time"]][look])
-        expect_equal(h[["v"]], adv[["v"]][look,])
+        expect_equal(h[["v"]], adv[["v"]][look, ])
     }
 })
 
@@ -149,9 +149,9 @@ Columns     = z:u:v:ev
  148.2  0.165  0.098  0.019"
 
  test_that("head_ladcp", {
-     dat <- read.table(text=ladpText, skip=7, header=FALSE, col.names=c("z","u","v","ev"))
+     dat <- read.table(text=ladpText, skip=7, header=FALSE, col.names=c("z", "u", "v", "ev"))
      ladp <- as.ladp(longitude=48+58.4580/60, latitude=-(45+52.3932/60),
-         station=25, time=as.POSIXct("2014/7/6",tz="UTC"),
+         station=25, time=as.POSIXct("2014/7/6", tz="UTC"),
          pressure=dat$z, u=dat$u, v=dat$v)
      for (n in c(3, -3)) {
          t <- head(ladp, n)
@@ -229,7 +229,7 @@ Columns     = z:u:v:ev
          t <- head(adp, n)
          look <- head(seq_len(dim(adp[["v"]])[1]), n)
          expect_equal(t[["time"]], adp[["time"]][look])
-         expect_equal(t[["v"]], adp[["v"]][look,,])
+         expect_equal(t[["v"]], adp[["v"]][look, , ])
      }
 })
 
@@ -239,7 +239,7 @@ Columns     = z:u:v:ev
          h <- head(adv, n)
          look <- head(seq_len(dim(adv[["v"]])[1]), n)
          expect_equal(h[["time"]], adv[["time"]][look])
-         expect_equal(h[["v"]], adv[["v"]][look,])
+         expect_equal(h[["v"]], adv[["v"]][look, ])
      }
 })
 
@@ -331,9 +331,9 @@ Columns     = z:u:v:ev
 })
 
  test_that("tail_ladcp", {
-     dat <- read.table(text=ladpText, skip=7, header=FALSE, col.names=c("z","u","v","ev"))
+     dat <- read.table(text=ladpText, skip=7, header=FALSE, col.names=c("z", "u", "v", "ev"))
      ladp <- as.ladp(longitude=48+58.4580/60, latitude=-(45+52.3932/60),
-         station=25, time=as.POSIXct("2014/ 7/ 6",tz="UTC"),
+         station=25, time=as.POSIXct("2014/ 7/ 6", tz="UTC"),
          pressure=dat$z, u=dat$u, v=dat$v)
      for (n in c(3, -3)) {
          t <- tail(ladp, n)
@@ -429,4 +429,3 @@ Columns     = z:u:v:ev
      t <- numberAsPOSIXct(cbind(jd, 1e3 * 1 * 3600), type="epic", tz="UTC")
      expect_equal(t, as.POSIXct("2018-07-01 01:00:00", tz="UTC"))
 })
-

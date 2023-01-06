@@ -177,11 +177,11 @@ test_that("Foreman (1977 App 7.3) and T-TIDE (Pawlowciz 2002 Table 1) test", {
     expect_equal(0.33093,
         m[["amplitude"]][which(m[["name"]]=="P1")]/m[["amplitude"]][which(m[["name"]]=="K1")])
     expect_equal(m[["phase"]][which(m[["name"]]=="P1")],
-        m[["phase"]][which(m[["name"]]=="K1")]-(-7.07))
+        m[["phase"]][which(m[["name"]]=="K1")] - (-7.07))
     expect_equal(0.27215,
         m[["amplitude"]][which(m[["name"]]=="K2")]/m[["amplitude"]][which(m[["name"]]=="S2")])
     expect_equal(m[["phase"]][which(m[["name"]]=="K2")],
-        m[["phase"]][which(m[["name"]]=="S2")]-(-22.40))
+        m[["phase"]][which(m[["name"]]=="S2")] - (-22.40))
 
     # Compare amplitude and phase with T_TIDE (exact match)
     expect_equal(sum(abs(ttide$amplitude - round(m[["amplitude"]], 4))), 0)
@@ -204,4 +204,3 @@ test_that("Foreman (1977 App 7.3) and T-TIDE (Pawlowciz 2002 Table 1) test", {
     expect_lt(max(abs(foreman$G - ttide$phase)), 0.121)
 }
     )
-

@@ -178,7 +178,7 @@ sunAngle <- function(t, longitude=0.0, latitude=0.0, useRefraction=FALSE)
     mnanom <- mnanom * rpd
     eclong <- mnlong + 1.915*sin(mnanom) + 0.020*sin(2 * mnanom)
     eclong <- eclong %% 360
-    eclong <- eclong + ifelse (eclong < 0, 360, 0)
+    eclong <- eclong + ifelse(eclong < 0, 360, 0)
     oblqec <- 23.439 - 0.0000004 * time
     eclong <- eclong * rpd
     oblqec <- oblqec * rpd
@@ -195,23 +195,23 @@ sunAngle <- function(t, longitude=0.0, latitude=0.0, useRefraction=FALSE)
     lmst <- lmst + ifelse(lmst < 0, 24, 0)
     lmst <- lmst * 15 * rpd
     ha <- lmst - ra
-    ha <- ha + ifelse (ha < (-pi), 2 * pi, 0)
-    ha <- ha - ifelse (ha > pi, 2 * pi, 0)
+    ha <- ha + ifelse(ha < (-pi), 2 * pi, 0)
+    ha <- ha - ifelse(ha > pi, 2 * pi, 0)
     el <- asin(sin(dec) * sin(latitude * rpd) + cos(dec) * cos(latitude*rpd)*cos(ha))
     # pin the arg to range -1 to 1 (issue 1004)
     sinAz <- -cos(dec) * sin(ha) / cos(el)
     az <- ifelse(sinAz < (-1), -pi/2,
         ifelse(sinAz > 1, pi/2,
             asin(sinAz)))
-    az <-  ifelse(sin(dec) - sin(el) * sin(latitude * rpd ) > 0,
-        ifelse (sin(az) < 0, az + 2 * pi, az),
+    az <-  ifelse(sin(dec) - sin(el) * sin(latitude * rpd) > 0,
+        ifelse(sin(az) < 0, az + 2 * pi, az),
         pi - az)
     el <- el / rpd
     az <- az / rpd
     el <- el + ifelse(useRefraction,
         ifelse(el >= 19.225,
             0.00452 * 3.51823 / tan(el * rpd),
-            ifelse (el > (-0.766) & el < 19.225,
+            ifelse(el > (-0.766) & el < 19.225,
                 3.51823 * (0.1594 + el * (0.0196 + 0.00002 * el)) / (1 + el * (0.505 + 0.0845 * el)),
                 0)),
         0)
@@ -256,6 +256,7 @@ sunDeclinationRightAscension <- function(time, apparent=FALSE)
     k <-  2 * pi / 360                     # k*degrees == radians
     # Meeus 1991 pdf page 158, print page 153
     JD <- julianDay(time)
+    # nolint start T_and_F_symbol_lintr
     T <- (JD - 2451545.0) / 36525          # Meeus (1991) eq (24.1)
     # L0 = geometric mean longitude of sun, referred to mean equinox of date
     L0 <- 280.46645 + 36000.76983*T + 0.0003032*T^2 # Meeus (1991) eq (24.2)
@@ -289,6 +290,7 @@ sunDeclinationRightAscension <- function(time, apparent=FALSE)
     # Omega <- 125.04452 - 1934.136261*T + 0.0020708*T^2 + T^3/450000 # Meeus (1991) PDF page 137, print page 132
     # But he then says to drop the T^2 and T^3 terms before giving the DeltaEpsilon eqn, so we do that.
     Omega <- 125.04452 - 1934.136261*T # Meeus (1991) PDF page 137, print page 132
+    # nolint end T_and_F_symbol_lintr
     DeltaEpsilon <- 9.20/60^2*cos(k*Omega) + 0.57/60^2*cos(k*2*L) + 0.10/60^2*cos(k*2*Lprime) - 0.09/60^2*cos(k*2*Omega)
     epsilon <- epsilon0 + DeltaEpsilon
     # alpha Meeus (1991)  eqn (24.6) PDF page 158, print page 153

@@ -171,7 +171,7 @@ the pole in between).
 ```{r fig.cap="Polar view with stereographic projection.", fig.width=5, fig.height=5, dpi=72, dev.args=list(pointsize=10)}
 par(mar=c(1.5, 1.5, 0.5, 0.5))
 mapPlot(coastlineWorld, longitudelim=c(-130, 50), latitudelim=c(60, 120),
-        projection="+proj=stere +lat_0=90", col='gray')
+        projection="+proj=stere +lat_0=90", col="gray")
 ```
 
 Here, the region of interest is defined with `longitudelim` and `latitudelim`,
@@ -191,8 +191,8 @@ longitudinal ranges, e.g. a map of Canada may be produced as follows.
 ```{r}
 par(mar=c(1.5, 1.5, 0.5, 0.5))
 mapPlot(coastlineWorld,
-    longitudelim=c(-130,-55), latitudelim=c(45, 70),
-    projection="+proj=lcc +lat_1=50 +lat_2=65 +lon_0=-100", col='gray')
+    longitudelim=c(-130, -55), latitudelim=c(45, 70),
+    projection="+proj=lcc +lat_1=50 +lat_2=65 +lon_0=-100", col="gray")
 ```
 
 Here, `lat_1` and `lat_2`, the latitudes where the projection cone intersects
@@ -256,7 +256,7 @@ mapImage(lon, lat, z, colormap=cm)
 ```{r}
 par(mar=c(1.5, 1.5, 0.5, 0.5))
 mapPlot(coastlineWorld, longitudelim=c(-180, 180), latitudelim=c(-130, -50),
-       projection="+proj=stere +lat_0=-90", col='gray', grid=15)
+       projection="+proj=stere +lat_0=-90", col="gray", grid=15)
 ```
 
 
@@ -300,7 +300,7 @@ par(mar=rep(0.5, 4))
 mapPlot(coastlineWorld, projection="+proj=goode", col="lightgray")
 if (requireNamespace("ocedata", quietly=TRUE)) {
     data(levitus, package="ocedata")
-    mapContour(levitus[['longitude']], levitus[['latitude']], levitus[['SST']])
+    mapContour(levitus[["longitude"]], levitus[["latitude"]], levitus[["SST"]])
 }
 ```
 

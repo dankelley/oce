@@ -1,9 +1,7 @@
-## vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
-library(oce)
 data(rsk)
 test_that("as.ctd(rsk)", {
     ctd <- as.ctd(rsk)
-    ctd[['pressure']] - rsk[['pressure']]
+    ctd[["pressure"]] - rsk[["pressure"]]
     expect_equal(ctd[["pressure"]]+10.1325, rsk[["pressure"]])
 })
 
@@ -42,7 +40,6 @@ if (requireNamespace("RSQLite", quietly=TRUE)) {
             expect_equal(rsk[["sampleInterval"]], 0.167)
             expect_equal(rsk[["rskVersion"]], c(1, 9, 0))
             expect_equal(rsk[["ruskinVersion"]], c(1, 10, 0))
-            expect_equal(sort(names(rsk[["data"]])), c("conductivity","pressure","temperature","time", "tstamp"))
+            expect_equal(sort(names(rsk[["data"]])), c("conductivity", "pressure", "temperature", "time",  "tstamp"))
         }
 })}
-

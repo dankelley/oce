@@ -248,7 +248,7 @@ setMethod(f="summary",
                       #message("threes step 6:");print(threes)
                       if ("time" %in% row.names(threes))
                           threes <- threes[-which("time" == dataNames), , drop=FALSE]
-                      owidth <- options('width')
+                      owidth <- options("width")
                       options(width=150) # make wide to avoid line breaks
                       #browser()
                       threes <- as.data.frame(threes)

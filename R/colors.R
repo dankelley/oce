@@ -386,6 +386,7 @@ colormapGMT <- function(name, debug=getOption("oceDebug"))
     # which may be useful in debugging different formats, e.g.
     # tabs and spaces etc.
     # "F" unused at present
+    # nolint start T_and_F_symbol_linter
     F <- "#FFFFFF"
     if (length(grep("^\\sF", text))) {
         line <- text[grep("\\s*F", text)]
@@ -400,6 +401,7 @@ colormapGMT <- function(name, debug=getOption("oceDebug"))
             warning("cannot decode \"F\" from \"", line, "\"")
         }
     }
+    # nolint end T_and_F_symbol_linter
     # "B" unused at present
     B <- "#000000"
     if (length(grep("^\\sB", text))) {
@@ -668,7 +670,9 @@ colormap <- function(z=NULL, zlim, zclip=FALSE, breaks, col=oceColorsViridis,
     zKnown <- !is.null(z)
     zlimKnown <- !missing(zlim)
     breaksKnown <- !missing(breaks)
+    # nolint start object_usage_linter
     colKnown <- !missing(col)
+    # nolint end object_usage_linter
     nameKnown <- !missing(name)
     x0Known <- !missing(x0)
     x1Known <- !missing(x1)

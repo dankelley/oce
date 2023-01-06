@@ -76,15 +76,15 @@ if (file.exists(file)) {
             # v[1,,1] values from the IMOS toolbox; see
             # https://github.com/dankelley/oce/issues/1975#issuecomment-1180403719)
             v <- d[["v"]]
-            expect_equal(v[1,,1],
+            expect_equal(v[1, , 1],
                 c(-0.832, -0.048, 0.001, 0.003, 0.027, 0.148, 0.066, -0.067,
                     -0.056, -0.103, -0.07, -0.051, 0.071, 0.062, 0.1, 0.067,
                     0.023, 0.026, -0.119, -0.013, 0.004, -0.094, -0.041, 0.151,
                     0.145, 0.465, 0.462, 0.456, 1.029, 0.342, 0.29, 0.3))
-            expect_equal(v[1,1,], c(-0.832, 0.901, -0.013, 0.961))
+            expect_equal(v[1, 1, ], c(-0.832, 0.901, -0.013, 0.961))
             # v[1,,2] values from the IMOS toolbox; see
             # https://github.com/dankelley/oce/issues/1975#issuecomment-1180403719)
-            expect_equal(v[1,,2],
+            expect_equal(v[1, , 2],
                 c(0.901, -0.022, 0.014, -0.103, -0.114, -0.039, -0.005, -0.065,
                     -0.074, -0.125, -0.301, -0.271, -0.28, -0.046, -0.092,
                     -0.128, -0.229, -0.245, -0.175, -0.171, -0.129, -0.031,
@@ -136,9 +136,8 @@ if (file.exists(file)) {
             expect_equal(d[["time"]],
                 structure(c(1559664081.001, 1559664101.001),
                     class = c("POSIXct", "POSIXt"), tzone = "UTC"))
-            expect_equal(d[["echosounder"]][1:2,1:3],
+            expect_equal(d[["echosounder"]][1:2, 1:3],
                 structure(c(56467L, 56641L, 56797L, 56182L, 56080L, 56759L),
                     dim = 2:3))
         })
 }
-

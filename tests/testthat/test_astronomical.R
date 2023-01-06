@@ -59,7 +59,7 @@ test_that("Moon", {
     expect_equal(m$distance, 368405.6, tolerance=0.1)
     ## moon illuminated fraction [1] ex 31.b page 156
     illfrac <- (1 + cos(RPD * 105.8493)) / 2
-    expect_equal(moonAngle(ISOdatetime(1979,12,25,0,0,0,tz="UTC"),0,0)$illuminatedFraction,illfrac,tolerance=0.001)
+    expect_equal(moonAngle(ISOdatetime(1979, 12, 25, 0, 0, 0, tz="UTC"), 0, 0)$illuminatedFraction, illfrac, tolerance=0.001)
     ## Local time
     tlocal <- t
     attributes(tlocal)$tzone <- ""
@@ -109,4 +109,3 @@ test_that("Sun Declination and Right Ascension", {
     expect_equal(b$declination, -7.785464443, tolerance=0.000000001)
     expect_equal(b$rightAscension, -161.6183305, tolerance=0.0000001)
 })
-

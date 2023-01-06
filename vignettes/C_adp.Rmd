@@ -79,10 +79,10 @@ arguments, which (like `by`) can be integers that count ensembles (or "profiles"
 or a POSIX time (see `?read.adp`). For example, the
 adp dataset provided by oce was read with
 ```{r eval=FALSE}
-read.oce(f, from=as.POSIXct("2008-06-26", tz="UTC")`,
-            to=as.POSIXct("2008-06-27", tz="UTC"),
-            by="60:00"
-            latitude=47.88126, longitude=-69.73433)
+read.oce(f, from=as.POSIXct("2008-06-26", tz="UTC"),
+    to=as.POSIXct("2008-06-27", tz="UTC"),
+    by="60:00",
+    latitude=47.88126, longitude=-69.73433)
 ```
 with `f` as defined above. This also illustrates that it is possibly to specify
 the location of an instrument; the further processing that was done to create
@@ -320,7 +320,7 @@ eastMid <- v[, midIndex, 1] # third index is beam
 distance <- adp[["distance"]][midIndex]
 oce.plot.ts(time, eastMid, ylab="Eastward velocity [m/s]")
 ## Depth mean; note that na.rm, is passed by apply() to mean()
-eastMean <- apply(v[,,1], 1, mean, na.rm=TRUE)
+eastMean <- apply(v[, , 1], 1, mean, na.rm=TRUE)
 lines(time, eastMean, col=2)
 legend("top", lwd=1, col=1:2,
        legend=c(paste("At", distance, "m"), "Depth Avg"))
@@ -334,8 +334,8 @@ it provides a margin note on the detailed time interval.
 
 **Solution.**
 ```{r}
-u <- adp[["v"]][,,1]
-v <- adp[["v"]][,,2]
+u <- adp[["v"]][, , 1]
+v <- adp[["v"]][, , 2]
 ok <- is.finite(u) & is.finite(v) # remove NA values
 u <- u[ok]
 v <- v[ok]
@@ -345,7 +345,7 @@ eigen(cov(data.frame(u, v)))
 Note that this action is equivalent to principal component analysis, and it
 might be wiser to use
 ```{r}
-pr <- prcomp(data.frame(u,v))
+pr <- prcomp(data.frame(u, v))
 ```
 
 to do the analysis, which yields the same principal axes

@@ -179,7 +179,7 @@ plotAD2CP <- function(x, which=NULL, cex, col, pch, lwd, type, debug=getOption("
             else FALSE
         })
     names2 <- names2[names2keep]
-    oceDebug(debug, vectorShow(names2,n=100))
+    oceDebug(debug, vectorShow(names2, n=100))
     #if (nw > 1L && w[2] == "?") {
     #    message("try setting 'which' to one of: \"", paste(paste0(w[1],"/",names2), collapse="\", \""), "\"")
     #    return(invisible(NULL))
@@ -218,14 +218,18 @@ plotAD2CP <- function(x, which=NULL, cex, col, pch, lwd, type, debug=getOption("
         #.message(vectorShow(nbeam,showNewline=FALSE))
         beams <- if (nw == 1) seq_len(nbeam) else as.integer(w[2])
         #.message(vectorShow(beams,showNewline=FALSE))
-        par(mfrow=c(length(beams),1))
+        par(mfrow=c(length(beams), 1))
         for (ibeam in beams) {
             #.message(vectorShow(ibeam,showNewline=FALSE))
-            if (0 < ibeam & ibeam <= nbeam) {
+            if (0 < ibeam && ibeam <= nbeam) {
                 #.message("plotting ibeam=", ibeam)
-                zlim <- if (w[1] == "v") c(-1,1)*max(abs(D[,,ibeam]), na.rm=TRUE) else range(D[,,ibeam])
+                zlim <- if (w[1] == "v") {
+                    c(-1, 1)*max(abs(D[, , ibeam]), na.rm=TRUE)
+                } else {
+                    range(D[, , ibeam])
+                }
                 #message(vectorShow(zlim,showNewline=FALSE))
-                imagep(time, distance, D[,,ibeam], zlim=zlim, ylab="Distance [m]", col=col, ...)
+                imagep(time, distance, D[, , ibeam], zlim=zlim, ylab="Distance [m]", col=col, ...)
                 mtext(paste(w[1], "beam", ibeam), side=3, adj=1, cex=par("cex"))
             }
         }
@@ -385,4 +389,3 @@ plotAD2CP <- function(x, which=NULL, cex, col, pch, lwd, type, debug=getOption("
         stop("although \"", w[1], "\" is present in the data, it is not handled yet by this function")
     }
 }
-

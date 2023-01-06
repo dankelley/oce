@@ -26,4 +26,3 @@ test_that("sumamry,cm-method() works", {
     data(cm)
     expect_output(summary(cm))
 })
-

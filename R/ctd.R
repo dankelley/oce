@@ -2323,7 +2323,7 @@ ctdFindProfilesRBR <- function(x, direction="descending", arr.ind=FALSE, debug=g
     } else {
         ncasts <- length(start)
         casts <- vector("list", ncasts)
-        npts <- length(x@data$pressure)
+        # npts <- length(x@data$pressure)
         for (i in seq_len(ncasts)) {
             cast <- ctdTrim(x, "index", parameters=c(start[i], end[i]))
             if (!is.null(x@metadata$station) && "" != x@metadata$station) {
@@ -2608,7 +2608,9 @@ ctdTrim <- function(x, method, removeDepthInversions=FALSE, parameters=NULL,
                     ss <- ss[1:end]
                 }
                 s0 <- ss[0.25*length(ss)]
+                # nolint start object_usage_linter
                 p0 <- pp[1]
+                # nolint end object_usage_linter
                 if (length(ss) > 2) {
                     dpds0 <-  diff(range(pp, na.rm=TRUE)) / diff(range(ss, na.rm=TRUE))
                 } else {

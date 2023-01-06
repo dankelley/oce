@@ -8,8 +8,9 @@ test_that("array values in data slot of 'adp' dataset are well-formed", {
     for (name in c("a", "g", "q", "v")) {
         expect_true(name %in% dataNames)
         expect_true(identical(dimExpected, dim(adp[[name]])))
-        if (name %in% c("a", "g", "q"))
+        if (name %in% c("a", "g", "q")) {
             expect_true(is.raw(adp[[name]]))
+        }
     }
 })
 
@@ -24,12 +25,12 @@ test_that("test all 'which' values listed in ?'plot,adp-method' on 2019 May 23",
             19:22, 23, 24:28, 29, 30, 40, 41:44, 50, 51:54, 55,
             100)) {
         ## cat(file=stderr(), "plot(adp, which=", which, ")\n", sep="")
-        if (which %in% c(40:44,50:54)) expect_error(plot(adp, which=which), "ADP object lacks bottom-tracking data")
-        else if (which == 80)          expect_error(plot(adp, which=which), "ADP object lacks a 'vv' data item")
-        else if (which == 81)          expect_error(plot(adp, which=which), "ADP object lacks a 'va' data item")
-        else if (which == 82)          expect_error(plot(adp, which=which), "ADP object lacks a 'vq' data item")
-        else if (which == 83)          expect_error(plot(adp, which=which), "ADP object lacks a 'vg' data item")
-        else                           expect_silent( plot(adp, which=which))
+        if (which %in% c(40:44, 50:54)) expect_error(plot(adp, which=which), "ADP object lacks bottom-tracking data")
+        else if (which == 80)           expect_error(plot(adp, which=which), "ADP object lacks a 'vv' data item")
+        else if (which == 81)           expect_error(plot(adp, which=which), "ADP object lacks a 'va' data item")
+        else if (which == 82)           expect_error(plot(adp, which=which), "ADP object lacks a 'vq' data item")
+        else if (which == 83)           expect_error(plot(adp, which=which), "ADP object lacks a 'vg' data item")
+        else                            expect_silent(plot(adp, which=which))
     }
     for (which in c("u1", "u2", "u3", "u4", "a1", "a2", "a3", "a4", "q1",
             "q2", "q3", "q4", "map", "g1", "g2", "g3", "g4", "vv",
@@ -49,7 +50,7 @@ test_that("test all 'which' values listed in ?'plot,adp-method' on 2019 May 23",
         else if (which == "va")            expect_error(plot(adp, which=which), "ADP object lacks a 'va' data item")
         else if (which == "vq")            expect_error(plot(adp, which=which), "ADP object lacks a 'vq' data item")
         else if (which == "vg")            expect_error(plot(adp, which=which), "ADP object lacks a 'vg' data item")
-        else                               expect_silent( plot(adp, which=which))
+        else                               expect_silent(plot(adp, which=which))
     }
 })
 
@@ -80,9 +81,9 @@ test_that("adpEnsembleAverage() produces correctly-dimensioned results", {
             expect_equal(adpAvg[[name]][1], mean(adp[[name]][1:n]))
         }
     }
-    expect_equal(adpAvg[["v"]][1,1,1], mean(adp[["v"]][1:n,1,1]))
-    expect_equal(adpAvg[["v"]][1,2,1], mean(adp[["v"]][1:n,2,1]))
-    expect_equal(adpAvg[["v"]][1,1,2], mean(adp[["v"]][1:n,1,2]))
+    expect_equal(adpAvg[["v"]][1, 1, 1], mean(adp[["v"]][1:n, 1, 1]))
+    expect_equal(adpAvg[["v"]][1, 2, 1], mean(adp[["v"]][1:n, 2, 1]))
+    expect_equal(adpAvg[["v"]][1, 1, 2], mean(adp[["v"]][1:n, 1, 2]))
     ## Test leftover bins: case 1, with a leftover
     adpAvg <- adpEnsembleAverage(adp, n=4, leftover=TRUE)
     nexpected <- 7               # have 6*4 full bins, plus 1 leftover bin
@@ -314,7 +315,7 @@ test_that("subset by ensembleNumber", {
 })
 
 test_that("adpConvertRawToNumeric", {
-    expect_equal(class(adp[["a"]][,,1][,1][1]), "raw")
+    expect_equal(class(adp[["a"]][, , 1][, 1][1]), "raw")
     ADP <- adpConvertRawToNumeric(adp)
-    expect_equal(class(ADP[["a"]][,,1][,1][1]), "numeric")
+    expect_equal(class(ADP[["a"]][, , 1][, 1][1]), "numeric")
 })

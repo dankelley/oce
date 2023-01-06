@@ -68,17 +68,17 @@ if (file.exists(file)) {
             expect_equal(dim(a[["v"]]), c(360, 87, 4))
             expect_equal(dim(a[["a"]]), c(360, 87, 4))
             expect_equal(dim(a[["q"]]), c(360, 87, 4))
-            expect_equal(a[["v"]][1:3,1:3,1:3],
+            expect_equal(a[["v"]][1:3, 1:3, 1:3],
                 structure(c(-0.553, -0.542, -0.545, 2.255, -0.448, 1.695, 2.003,
                         0.612, 2.415, 0.647, 0.641, 0.649, 1.701, 1.449, 1.762,
                         0.861, 0.971, 1.773, 0.099, 0.065, 0.096, -0.239, -0.235,
                         -0.217, -0.37, -0.365, -0.393), dim=c(3L, 3L, 3L)))
-            expect_equal(a[["a"]][1:3,1:3,1:3],
+            expect_equal(a[["a"]][1:3, 1:3, 1:3],
                 structure(as.raw(c(0x6e, 0x6e, 0x6e, 0x34, 0x35, 0x34, 0x24, 0x22,
                             0x24, 0x70, 0x70, 0x70, 0x37, 0x37, 0x36, 0x23, 0x22,
                             0x21, 0x67, 0x67, 0x67, 0x6c, 0x6c, 0x6c, 0x4b, 0x4b,
                             0x4b)), dim=c(3L, 3L, 3L)))
-            expect_equal(a[["q"]][1:3,1:3,1:3],
+            expect_equal(a[["q"]][1:3, 1:3, 1:3],
                 structure(as.raw(c(0x20, 0x21, 0x21, 0x15, 0x0d, 0x19, 0x1d, 0x15,
                             0x18, 0x3a, 0x3a, 0x3a, 0x11, 0x15, 0x08, 0x19, 0x1e,
                             0x16, 0x55, 0x54, 0x55, 0x58, 0x59, 0x59, 0x4b, 0x4c,
@@ -169,4 +169,3 @@ if (file.exists(file)) {
             #??? expect_equal(d[["roll"]], d[["roll", "average"]])
         })
 }
-

@@ -13,7 +13,7 @@ test_that("as.xbt() works", {
 test_that("can read .edf file correctly", {
     XBT <- read.oce(system.file("extdata", "xbt.edf", package="oce"))
     expect_equal(XBT@metadata[c("serialNumber", "sequenceNumber", "dataNamesOriginal", "latitude",
-            "longitude", "probeType","terminalDepth")],
+            "longitude", "probeType", "terminalDepth")],
    list(serialNumber="0",
        sequenceNumber=49L,
        dataNamesOriginal=list(depth="Depth", temperature= "Temperature", soundSpeed="Sound Velocity"),
@@ -27,9 +27,9 @@ test_that("can read .edf file correctly", {
 test_that("data(xbt) and inst/extdata/xbt.edf match", {
     XBT <- read.oce(system.file("extdata", "xbt.edf", package="oce"))
     expect_equal(xbt@metadata[c("serialNumber", "sequenceNumber", "dataNamesOriginal", "latitude",
-            "longitude", "probeType","terminalDepth")],
+            "longitude", "probeType", "terminalDepth")],
    XBT@metadata[c("serialNumber", "sequenceNumber", "dataNamesOriginal", "latitude",
-       "longitude", "probeType","terminalDepth")])
+       "longitude", "probeType", "terminalDepth")])
           expect_equal(XBT[["data"]], xbt[["data"]])
 })
 
@@ -38,4 +38,3 @@ test_that("[[ works for 'z', 'depth', and 'pressure' (given depth)", {
     expect_equal(xbt[["depth"]], c(5.4, 6, 6.7, 7.4, 8, 8.7))
     expect_equal(xbt[["pressure"]], swPressure(-xbt[["z"]], xbt[["latitude"]]))
 })
-
