@@ -364,5 +364,3 @@ Note, in the above, that `initializeFlagScheme`
 has not been used, because the author is unaware of any common notation for
 such data. The values used for `G` and `V4` were provided by colleagues at the
 Bedford Institute of Oceanography.
-
-

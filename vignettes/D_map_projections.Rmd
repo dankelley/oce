@@ -322,5 +322,3 @@ Snyder, John P., and Philip M. Voxland. "An Album of Map Projections."
 U. S.  Geological Survey Professional Paper. Washington, DC, USA: U. S.
 Department of the Interior: U. S. Geological Survey, 1994.
 `https://pubs.er.usgs.gov/publication/pp1453`
-
-

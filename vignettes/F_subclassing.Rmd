@@ -308,4 +308,3 @@ code provided in the previous sections.
 5. As an alternative to the lagged-autocorrelation method, test for periodicity
    of velocity by using `nls()`, supplied with a sinusoidal function that has
    adjustable amplitude, phase, and frequency.
-

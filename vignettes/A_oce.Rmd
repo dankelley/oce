@@ -635,5 +635,3 @@ https://doi.org/10.1007/978-1-4939-8844-0.
 Kelley, Dan E., Clark Richards, and Chantelle Layton. “Oce: An R Package for
 Oceanographic Analysis.” Journal of Open Source Software 7, no. 71 (March 3,
 2022): 3594. https://doi.org/10.21105/joss.03594.
-
-
