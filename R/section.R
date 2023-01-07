@@ -39,8 +39,9 @@
 #' par(mfrow=c(3,3))
 #' Tlim <- range(section[["temperature"]])
 #' ylim <- rev(range(section[["pressure"]]))
-#' for (stn in section[["station", 1:9]])
+#' for (stn in section[["station", 1:9]]) {
 #'     plotProfile(stn, xtype="potential temperature", ylim=ylim, Tlim=Tlim)
+#' }
 #'
 #' @author Dan Kelley
 #'
@@ -445,11 +446,13 @@ setMethod(f="[[",
             }
         }
         # Case 1.4: station IDs.
-        if (i == "station ID")
+        if (i == "station ID") {
             return(unlist(lapply(x@data$station, function(stn) stn[["station"]])))
+        }
         # Case 1.5: dynamic height.
-        if (i == "dynamic height")
+        if (i == "dynamic height") {
             return(swDynamicHeight(x))
+        }
         # Case 1.6: distance along track.
         if (i == "distance") {
             res <- NULL
@@ -954,8 +957,9 @@ sectionSort <- function(section, by, decreasing=FALSE)
     } else {
         byChoices <- c("stationId", "distance", "longitude", "latitude", "time", "spine")
         iby <- match(by, byChoices, nomatch=0)
-        if (0 == iby)
+        if (0 == iby) {
             stop('unknown by value "', by, '"; should be one of: ', paste(byChoices, collapse=" "))
+        }
         by <- byChoices[iby]
     }
     res <- section
@@ -1625,11 +1629,13 @@ setMethod(f="plot", signature=signature("section"),
                     }
                 }
                 spine <- x[["spine"]]
-                if (showSpine && !is.null(spine))
+                if (showSpine && !is.null(spine)) {
                     lines(spine$longitude, spine$latitude, col="blue", lwd=1.4*par("lwd"))
+                }
                 # draw station trace (or skip it, if white was requested)
-                if (col[1] != "white")
+                if (col[1] != "white") {
                     lines(lon, lat, col="lightgray")
+                }
                 # replot with shifted longitude
                 points(lon, lat, col=col, pch=pch, cex=cex, lwd=lwd)
                 points(lon - 360, lat, col=col, pch=pch, cex=cex, lwd=lwd)
@@ -2015,8 +2021,9 @@ setMethod(f="plot", signature=signature("section"),
             xx <- numberAsPOSIXct(xx)
         } else if (which.xtype == 6) {
             # see https://github.com/dankelley/oce-issues/blob/master/16xx/1678
-            if (!("spine" %in% names(x@metadata)))
+            if (!("spine" %in% names(x@metadata))) {
                 stop("In plot,section-metod() :\n  this section has no spine; use addSpine() to add a spine", call.=FALSE)
+            }
             spine <- x@metadata$spine
             # Parametric lon=lon(s), at=lat(s)
             # nolint start object_usage_linter
@@ -2107,12 +2114,13 @@ setMethod(f="plot", signature=signature("section"),
                         axes=axes, col=col, debug=debug-1, ...)
                 }
             }
-            if (!is.na(which[w]) && which[w] == 20)
+            if (!is.na(which[w]) && which[w] == 20) {
                 plotSubsection(xx, yy, zz,
                     which.xtype=which.xtype, which.ytype=which.ytype,
                     variable="data", vtitle="", unit=NULL,
                     xlim=xlim, ylim=ylim, col=col, legend=FALSE,
                     debug=debug-1, ...)
+            }
             if (!is.na(which[w]) && (which[w] == 99 || which[w] == "map")) {
                 oceDebug(debug, "plotting a map\n")
                 plotSubsection(xx, yy, zz,
@@ -2241,8 +2249,9 @@ read.section <- function(file,
         open(file, "r", encoding=encoding)
         on.exit(close(file))
     }
-    if (!missing(flags))
+    if (!missing(flags)) {
         warning("'flags' is ignored, and will be disallowed in an upcoming CRAN release")
+    }
     # Skip header
     lines <- readLines(file)
     if ("BOTTLE" != substr(lines[1], 1, 6)) {
@@ -2721,12 +2730,13 @@ sectionSmooth <- function(section, method="spline",
     if (!inherits(section, "section")) {
         stop("method is only for objects of class '", "section", "'")
     }
-    if (!is.function(method) && !(is.character(method) && (method %in% c("barnes", "kriging", "spline"))))
+    if (!is.function(method) && !(is.character(method) && (method %in% c("barnes", "kriging", "spline")))) {
         stop('method must be "barnes", "kriging", "spline", or an R function')
+    }
     # pin debug, since we only call one function, interpBarnes() that uses debug
     debug <- if (debug > 2) 2 else if (debug < 0) 0 else debug
     oceDebug(debug, "sectionSmooth(section,method=\"",
-             if (is.character(method)) method else "(function)", "\", ...) {\n", sep="", unindent=1)
+        if (is.character(method)) method else "(function)", "\", ...) {\n", sep="", unindent=1)
     stations <- section[["station"]]
     nstn <- length(stations)
     if (nstn < 2) {
@@ -2871,8 +2881,11 @@ sectionSmooth <- function(section, method="spline",
             # collect data
             v <- unlist(lapply(section[["station"]],
                     function(CTD)
-                        if (var %in% names(CTD[["data"]])) CTD[[var]] else
-                            rep(NA, length(CTD[["pressure"]]))))
+                        if (var %in% names(CTD[["data"]])) {
+                            CTD[[var]]
+                        } else {
+                            rep(NA, length(CTD[["pressure"]]))
+                        }))
             # ignore NA values (for e.g. a station that lacks a particular variable)
             ok <- is.finite(X) & is.finite(P) & is.finite(v)
             if (is.character(method)) {
@@ -2888,8 +2901,7 @@ sectionSmooth <- function(section, method="spline",
                         warning("All \"", var, "\" data are NA, so gridded field is a matrix of NA values\n")
                     }
                 } else if (method == "kriging") {
-                    if (requireNamespace("automap", quietly=TRUE) &&
-                        requireNamespace("sp", quietly=TRUE)) {
+                    if (requireNamespace("automap", quietly=TRUE) && requireNamespace("sp", quietly=TRUE)) {
                         krigFunction <- function(x, y, F, xg, xr, yg, yr) {
                             xy <- data.frame(x=x/xr, y=y/yr)
                             # nolint start T_and_F_symbol_linter
@@ -3213,19 +3225,24 @@ as.section <- function(salinity, temperature, pressure, longitude, latitude, sta
 addSpine <- function(section, spine, debug=getOption("oceDebug"))
 {
     oceDebug(debug, "addSpine(..., spine=", argShow(spine), ") {\n", sep="", style="bold", unindent=1)
-    if (missing(section))
+    if (missing(section)) {
         stop("must provide 'section' argument")
-    if (!inherits(section, "section"))
+    }
+    if (!inherits(section, "section")) {
         stop("'section' must be a section object, e.g. created by read.section() or as.section()")
-    if (missing(spine))
+    }
+    if (missing(spine)) {
         stop("must provide 'spine' argument")
+    }
     res <- section
     if (2 == length(spine) && 2 == sum(c("latitude", "longitude") %in% names(spine))) {
-        if (length(spine$longitude) != length(spine$latitude))
+        if (length(spine$longitude) != length(spine$latitude)) {
             stop("unequal lengths of spine longitude (", length(spine$longitude),
                  ") and latitude (", length(spine$latitude), ")")
-        if (length(spine$longitude) < 2)
+        }
+        if (length(spine$longitude) < 2) {
             stop("length of spine longitude must exceed 2, but it is ", length(spine$longitude))
+        }
         res@metadata$spine <- spine
     } else {
         stop("'spine' must be a list or data frame containing two items, named 'longitude' and 'latitude'")
@@ -3256,17 +3273,20 @@ addSpine <- function(section, spine, debug=getOption("oceDebug"))
 #' @author Dan Kelley
 longitudeTighten <- function(section)
 {
-    if (!inherits(section, "section"))
+    if (!inherits(section, "section")) {
         stop("'section' must be an object created with read.section() or as.section()")
+    }
     res <- section
     longitude <- section[["longitude", "byStation"]]
     longitudeShifted <- ifelse(longitude > 180, longitude - 360, longitude)
-    if (diff(range(longitude)) > diff(range(longitudeShifted)))
+    if (diff(range(longitude)) > diff(range(longitudeShifted))) {
         longitude <- longitudeShifted
+    }
     res <- oceSetMetadata(res, "longitude", longitude, "longitudeTighten")
     ctds <- section@data$station
-    for (i in seq_along(ctds))
+    for (i in seq_along(ctds)) {
         ctds[[i]]@metadata$longitude <- longitude[i]
+    }
     res@data$station <- ctds
     res
 }

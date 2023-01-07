@@ -93,8 +93,9 @@ pairs(cbind(z=-section[["pressure"]],T=section[["temperature"]],S=section[["sali
 par(mfrow=c(3,3))
 Tlim <- range(section[["temperature"]])
 ylim <- rev(range(section[["pressure"]]))
-for (stn in section[["station", 1:9]])
+for (stn in section[["station", 1:9]]) {
     plotProfile(stn, xtype="potential temperature", ylim=ylim, Tlim=Tlim)
+}
 
 }
 \seealso{
