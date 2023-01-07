@@ -1,10 +1,10 @@
 # oce 1.7.11
 
-* Change the structure of AD2CP objects.
+* Change `read.adp.ad2cp()`, and structure of AD2CP objects.
 * Add `ctdFindProfilesRBR()`.
 * Make `read.rsk()` incorporate geographic information, if it exists.
 * Remove dependence on `rgeos` and `raster` packages.
-* Update `download.topo()` to use new NOAA database.
+* Update `download.topo()` to use the new NOAA database.
 
 # oce 1.7.10 (on CRAN)
 
