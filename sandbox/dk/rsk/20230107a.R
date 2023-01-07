@@ -23,3 +23,11 @@ if (file.exists(f)) {
     D <- read.rsk(f, tzOffsetLocation=0) |> ctdFindProfilesRBR() |> as.section()
     cat(sprintf("Offset for inferred tz offset vs specified 0 h: %f km\n", dist(A, D)))
 }
+
+summary(A) # Does the next show start times?
+summary(A[["station", 1]]) # does this show time?
+par(mfrow=c(2, 2), mar=c(3, 3, 1, 1), mgp=c(2, 0.7, 0))
+oce.plot.ts(A[["station", 1]][["time"]], A[["station", 1]][["pressure"]], type="l")
+oce.plot.ts(A[["station", 1]][["time"]], A[["station", 1]][["temperature"]], type="l", drawTimeRange=FALSE)
+oce.plot.ts(A[["station", 1]][["time"]], A[["station", 1]][["salinity"]], type="l", drawTimeRange=FALSE)
+plotTS(A[["station", 1]], type="l")
