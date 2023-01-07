@@ -18,7 +18,7 @@ if (file.exists(f)) {
     off <- -28802102 / 3600 / 1000 # 8.000584 h
     B <- read.rsk(f, tzOffsetLocation=off) |> ctdFindProfilesRBR() |> as.section()
     C <- read.rsk(f, tzOffsetLocation=-8) |> ctdFindProfilesRBR() |> as.section()
-    cat(sprintf("Offset for inferred tz offset vs specified 8.0005484 h: %f km\n", dist(A, B)))
+    cat(sprintf("Offset for inferref tz offset vs specified 8.0005484 h: %f km\n", dist(A, B)))
     cat(sprintf("Offset for inferred tz offset vs specified 8 h: %f km\n", dist(A, C)))
     D <- read.rsk(f, tzOffsetLocation=0) |> ctdFindProfilesRBR() |> as.section()
     cat(sprintf("Offset for inferred tz offset vs specified 0 h: %f km\n", dist(A, D)))

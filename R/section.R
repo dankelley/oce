@@ -242,11 +242,16 @@ setMethod(f="summary",
                 } else {
                     NA
                 }
+                time <- if ("startTime" %in% names(thisStn@metadata)) {
+                    thisStn[["startTime"]][1]
+                } else {
+                    thisStn[["time"]][1]
+                }
                 cat(sprintf("%5d %5s %8.4f %8.4f %7.0f %5.0f %16s\n",
                     i, id,
                     thisStn[["longitude"]][1], thisStn[["latitude"]][1],
                     length(thisStn@data$pressure), depth,
-                    format(thisStn[["startTime"]][1], "%Y-%m-%d %H:%M")))
+                    format(time, "%Y-%m-%d %H:%M")))
             }
             names <- names(object@data$station[[1]]@metadata$flags)
             if (!is.null(names)) {
