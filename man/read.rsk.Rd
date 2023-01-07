@@ -12,7 +12,7 @@ read.rsk(
   type,
   encoding = NA,
   tz = getOption("oceTz", default = "UTC"),
-  tzOffsetLocation = 0,
+  tzOffsetLocation,
   patm = FALSE,
   allTables = TRUE,
   processingLog,
@@ -20,7 +20,7 @@ read.rsk(
 )
 }
 \arguments{
-\item{file}{a connection or a character string giving the name of the file to
+\item{file}{a connection or a character string giving the name of the RSK file to
 load. Note that \code{file} must be a character string, because connections are
 not used in that case, which is instead handled with database calls.}
 
@@ -46,11 +46,15 @@ attempt will be made to infer the type from the file name and contents.}
 
 \item{tz}{time zone.  The value \code{oceTz} is set at package setup.}
 
-\item{tzOffsetLocation}{number of hours offset between the CTD timezone and
-the location timezone.  This is only used if the dataset holds geographical
-data, acquired via a connection to a phone or tablet, which may be
-recording in local time. See "A note on location information," in
-\sQuote{Details}.}
+\item{tzOffsetLocation}{offset, in hours, between the CTD clock and
+the clock in the controlling computer/tablet/phone (if one was used during
+the sampling). This offset is required to relate location information from the
+controller to hydrographic information from the CTD, using timestamps as an
+index (see "A note on location information" in \sQuote{Details}).
+If the user supplies a value for \code{tzOffsetLocation}, then that is used.
+If not, an attempt is made to infer it from a table named \code{epochs} in the
+file. If no value can be inferred from either of these two methods, then
+\code{tzOffsetLocation} is set to zero.}
 
 \item{patm}{controls the handling of atmospheric pressure, an important issue
 for RBR instruments that record absolute pressure; see \dQuote{Details}.}
@@ -99,8 +103,8 @@ dataset (in a table named \code{geodata}). (The \code{geodata} entries are filte
 those for which the \code{origin} field equals \code{"auto"}. This seems to align
 with times shown for "LOCATION" data in RBR-provided viewing software.)
 The connection between the two fields is done with \code{\link[=approx]{approx()}}, after
-adding 3600 times the value of the \code{tzOffsetLocation} parameter to the
-\code{geodata$tstamp} field, to account for the fact that phones and tablets
+adding \code{tzOffsetLocation} (with units converted appropriately) to the
+time inferred from \code{geodata$tstamp} field, to account for the fact that phones and tablets
 may be set to local time. If the procedure succeeds, then \code{longitude} and
 \code{latitude} are inserted into the \code{metadata} slot of the return value, in the
 form of vectors with the same length as \code{pressure} in the \code{data} slot.

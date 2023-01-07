@@ -597,8 +597,8 @@ setMethod(f="plot",
 #' those for which the `origin` field equals `"auto"`. This seems to align
 #' with times shown for "LOCATION" data in RBR-provided viewing software.)
 #' The connection between the two fields is done with [approx()], after
-#' adding 3600 times the value of the `tzOffsetLocation` parameter to the
-#' `geodata$tstamp` field, to account for the fact that phones and tablets
+#' adding `tzOffsetLocation` (with units converted appropriately) to the
+#' time inferred from `geodata$tstamp` field, to account for the fact that phones and tablets
 #' may be set to local time. If the procedure succeeds, then `longitude` and
 #' `latitude` are inserted into the `metadata` slot of the return value, in the
 #' form of vectors with the same length as `pressure` in the `data` slot.
@@ -632,7 +632,7 @@ setMethod(f="plot",
 #' setup facilitates the conversion of [rsk-class] objects to
 #' [ctd-class] objects.
 #'
-#' @param file a connection or a character string giving the name of the file to
+#' @param file a connection or a character string giving the name of the RSK file to
 #' load. Note that `file` must be a character string, because connections are
 #' not used in that case, which is instead handled with database calls.
 #'
@@ -658,11 +658,15 @@ setMethod(f="plot",
 #'
 #' @param tz time zone.  The value `oceTz` is set at package setup.
 #'
-#' @param tzOffsetLocation number of hours offset between the CTD timezone and
-#' the location timezone.  This is only used if the dataset holds geographical
-#' data, acquired via a connection to a phone or tablet, which may be
-#' recording in local time. See "A note on location information," in
-#' \sQuote{Details}.
+#' @param tzOffsetLocation offset, in hours, between the CTD clock and
+#' the clock in the controlling computer/tablet/phone (if one was used during
+#' the sampling). This offset is required to relate location information from the
+#' controller to hydrographic information from the CTD, using timestamps as an
+#' index (see "A note on location information" in \sQuote{Details}).
+#' If the user supplies a value for `tzOffsetLocation`, then that is used.
+#' If not, an attempt is made to infer it from a table named `epochs` in the
+#' file. If no value can be inferred from either of these two methods, then
+#' `tzOffsetLocation` is set to zero.
 #'
 #' @param patm controls the handling of atmospheric pressure, an important issue
 #' for RBR instruments that record absolute pressure; see \dQuote{Details}.
@@ -701,8 +705,8 @@ setMethod(f="plot",
 #'
 #' @family things related to rsk data
 read.rsk <- function(file, from=1, to, by=1, type, encoding=NA,
-    tz=getOption("oceTz", default="UTC"), tzOffsetLocation=0.0,
-    patm=FALSE, allTables=TRUE, processingLog, debug=getOption("oceDebug"))
+                     tz=getOption("oceTz", default="UTC"), tzOffsetLocation,
+                     patm=FALSE, allTables=TRUE, processingLog, debug=getOption("oceDebug"))
 {
     if (missing(file)) {
         stop("must supply 'file'")
@@ -771,9 +775,17 @@ read.rsk <- function(file, from=1, to, by=1, type, encoding=NA,
             paste(sort(tableNames), collapse=", "), "\n")
         if (allTables) {
             oceDebug(debug, "Reading tables and storing in metadata@ slot\n")
+            # We skip a possible table named 'blob' (although I am not sure I
+            # understood CR correctly on this; he might have been referring to
+            # data of the 'blob' sqlite3 type).
             for (name in tableNames) {
-                if (!identical(name, "blob")) {
-                    res@metadata[[name]] <- RSQLite::dbReadTable(con, name)
+                if (!identical(name, "blob")) { # FIXME: did CR mean table name or item name?
+                    tmp <- RSQLite::dbReadTable(con, name)
+                    #if ("blob" %in% names(tmp)) {
+                    #    message("Skipping ", name, "$blob")
+                    #    tmp["blob"] <- NULL
+                    #}
+                    res@metadata[[name]] <- tmp
                     oceDebug(debug, "    Stored @metadata$", name, "\n", sep="")
                 }
             }
@@ -783,8 +795,8 @@ read.rsk <- function(file, from=1, to, by=1, type, encoding=NA,
         # Ruskin software version number
         rskv <- dbInfo[1, 1]
         rskVersion <- as.numeric(strsplit(gsub(".[a-z].*$",
-                    "",
-                    gsub("^.*- *", "", rskv)), "\\.")[[1]])
+            "",
+            gsub("^.*- *", "", rskv)), "\\.")[[1]])
         oceDebug(debug, "RSK software version ", paste(rskVersion, collapse="."), "\n")
         if (RSQLite::dbExistsTable(con, "appSettings")) {
             appSettings <- RSQLite::dbReadTable(con, "appSettings")
@@ -793,16 +805,35 @@ read.rsk <- function(file, from=1, to, by=1, type, encoding=NA,
         } else {
             ruskinVersion <- "mobile"
         }
-        # Get geographic data to enable location matching of the data.  (This is
-        # optionally stored in the metadata slot, depending on the value of
-        # allTables.)
+        # Get geographic data to enable location matching of the data.
         geodata <- NULL
         if ("geodata" %in% tableNames) {
             geodata <- RSQLite::dbReadTable(con, "geodata")
             oceDebug(debug, "this file contains ", length(geodata$longitude), " location data\n")
+            # We need to know the offset between the CTD clock and the
+            # controller clock, so that we can later match up lon-lat from the
+            # controller with hydrography from the CTD.  If the user provided
+            # the tzOffsetLocation argument, use it.  Otherwise, try to infer
+            # the value from the 'UTCdelta' field in the 'epochs' table.
+            if (missing(tzOffsetLocation)) {
+                tzOffsetLocation <- 0.0
+                if ("epochs" %in% tableNames) {
+                    epochs <- RSQLite::dbReadTable(con, "epochs")
+                    if ("UTCdelta" %in% names(epochs)) {
+                        tzOffsetLocation <- epochs$UTCdelta / 3600.0 / 1000.0
+                        oceDebug(debug, "inferred tzOffsetLocation=", tzOffsetLocation, "\n")
+                    } else {
+                        oceDebug(debug, "tzOffsetLocation can't computed because 'epochs' table lacks 'UTCdelta'\n")
+                    }
+                } else {
+                    oceDebug(debug, "tzOffsetLocation can't computed because there is no 'epochs' table\n")
+                }
+            }
+            oceDebug(debug, "using specified or computed tzOffsetLocation=", tzOffsetLocation, "\n")
         } else {
             oceDebug(debug, "this file does not contain location data\n")
         }
+
         # Get atmospheric pressure
         pressureAtmospheric <- 10.1325 # FIXME: what is best default?
         oceDebug(debug, "first, guess pressureAtmospheric=", pressureAtmospheric, "\n")
@@ -972,7 +1003,6 @@ read.rsk <- function(file, from=1, to, by=1, type, encoding=NA,
                 cat("***\n")
             }
         }
-        # Add timestamp column
         res@data$tstamp <- tstamp
         res@metadata$dataNamesOriginal <- c(res@metadata$dataNamesOriginal, "tstamp")
         # Possibly add longitude and latitude to data slot. For ideas on how to
@@ -981,9 +1011,10 @@ read.rsk <- function(file, from=1, to, by=1, type, encoding=NA,
             geodata$time <- numberAsPOSIXct(geodata$tstamp/1e3, type="unix")+tzOffsetLocation*3600
             look <- geodata$origin == "auto"
             #res@metadata$latitudeOld <- approx(geodata$time, geodata$latitude, res@data$time)$y
-            res@metadata$latitude <- approx(geodata$time[look], geodata$latitude[look], res@data$time)$y
-            #res@metadata$longitudeOld <- approx(geodata$time, geodata$longitude, res@data$time)$y
-            res@metadata$longitude <- approx(geodata$time[look], geodata$longitude[look], res@data$time)$y
+            res@metadata$latitude <- approx(geodata$time[look], geodata$latitude[look], res@data$time, rule=2)$y
+            #res@metadata$longitudeOld <- approx(geodata$time, geodata$longitude,
+            #res@data$time)$y
+            res@metadata$longitude <- approx(geodata$time[look], geodata$longitude[look], res@data$time, rule=2)$y
             #message("lon-lat may be wrong; see https://github.com/dankelley/oce/issues/2024#issuecomment-1345373099")
             #message("TEST: examine both longitude and longitudeNew etc")
         }
