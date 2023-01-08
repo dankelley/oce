@@ -19,7 +19,7 @@ to \code{\link[=read.section]{read.section()}}, \code{\link[=read.oce]{read.oce(
 }
 \description{
 Pertinent summary information is presented, including station locations,
-distance along track, etc.
+distance along trac, etc.
 }
 \examples{
 library(oce)

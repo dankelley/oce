@@ -171,7 +171,7 @@ setMethod("handleFlags",
 #'\dontrun{
 #' data(section)
 #' section <- read.section("a03_hy1.csv", sectionId="a03", institute="SIO",
-#'                         ship="R/V Professor Multanovskiy", scientist="Vladimir Tereschenkov")
+#'                         ship="R/V Professor Multanovskiy", scientist="Vladimir Tereschenov")
 #' sectionWithFlags <- initializeFlagScheme(section, "WHP bottle")
 #' station1 <- sectionWithFlags[["station", 1]]
 #' str(station1[["flagScheme"]])
@@ -202,7 +202,7 @@ setMethod("initializeFlagScheme",
 #' Summarize a Section Object
 #'
 #' Pertinent summary information is presented, including station locations,
-#' distance along track, etc.
+#' distance along trac, etc.
 #'
 #' @param object An object of class `"section"`, usually, a result of a call
 #' to [read.section()], [read.oce()], or
@@ -230,7 +230,7 @@ setMethod(f="summary",
         cat("* ID:     \"", object@metadata$sectionId, "\"\n", sep="")
         if (numStations > 0) {
             cat("* Overview of stations\n")
-            cat(sprintf("%5s %5s %8s %8s %7s %5s %16s\n", "Index", "ID", "Lon", "Lat", "Levels", "Depth", "StartTime"))
+            cat(sprintf("%5s %5s %9s %9s %7s %5s %16s\n", "Index", "ID", "Lon", "Lat", "Levels", "Depth", "Time"))
             for (i in seq_len(numStations)) {
                 thisStn <- object@data$station[[i]]
                 id <- if (!is.null(thisStn@metadata$station) && "" != thisStn@metadata$station) {
@@ -248,7 +248,7 @@ setMethod(f="summary",
                 } else {
                     thisStn[["time"]][1]
                 }
-                cat(sprintf("%5d %5s %8.4f %8.4f %7.0f %5.0f %16s\n",
+                cat(sprintf("%5d %5s %9.4f %9.4f %7.0f %5.0f %16s\n",
                     i, id,
                     thisStn[["longitude"]][1], thisStn[["latitude"]][1],
                     length(thisStn@data$pressure), depth,
