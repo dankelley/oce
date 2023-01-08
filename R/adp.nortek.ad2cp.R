@@ -802,8 +802,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, dataType=NULL,
             plan <- activeConfiguration[1]
             message("In read.adp.ad2cp() : setting plan=", plan, ", the only value in the file")
         } else {
-            plan <- u[which.max(unlist(lapply(u,
-                function(x) sum(activeConfiguration==x))))]
+            plan <- u[which.max(unlist(lapply(u, function(x) sum(activeConfiguration==x))))]
             acTable <- table(activeConfiguration)
             message("In read.adp.ad2cp() : setting plan=", plan,
                 ", the most common value in this file; ",
@@ -950,8 +949,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, dataType=NULL,
         hour=as.integer(d$buf[pointer1 + 12]),
         min=as.integer(d$buf[pointer1 + 13]),
         sec=as.integer(d$buf[pointer1 + 14]) +
-        1e-4 * readBin(d$buf[pointer2 + 15],
-            "integer", size=2, n=N, signed=FALSE, endian="little"),
+        1e-4 * readBin(d$buf[pointer2 + 15], "integer", size=2, n=N, signed=FALSE, endian="little"),
         tz="UTC")
     soundSpeed <- 0.1 * readBin(d$buf[pointer2 + 17], "integer", size=2, n=N, signed=FALSE, endian="little")
     temperature <- 0.01 * readBin(d$buf[pointer2 + 19], "integer", size=2, n=N, signed=FALSE, endian="little")
@@ -1212,15 +1210,15 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, dataType=NULL,
             iv <- gappyIndex(i, i0v, 4L)
             NS <- readBin(buf[iv], "integer", size=4L, n=NP, endian="little") # no. samples (tmp var)
             dNS <- diff(range(NS))
-            if (0 != dNS)
+            if (0 != dNS) {
                 stop("altimeterRawNumberOfSamples not all equal.  Range is ", dNS[1], " to ", dNS[2])
+            }
             NS <- NS[1]
             object$altimeterRaw$numberOfSamples <- NS
             object$altimeterRaw$blankingDistance <- object$blankingDistance
             i0v <<- i0v + 4L # skip the 4 bytes we just read
             iv <- gappyIndex(i, i0v, 2L)
-            object$altimeterRaw$sampleDistance <-
-                1e-4 * readBin(buf[iv], "integer", size=2L, n=1, endian="little", signed=FALSE)
+            object$altimeterRaw$sampleDistance <- 1e-4 * readBin(buf[iv], "integer", size=2L, n=1, endian="little", signed=FALSE)
             # data
             object$altimeterRaw$time <- object$time
             i0v <<- i0v + 2L
@@ -1331,14 +1329,8 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, dataType=NULL,
             temperature=temperature[look], # "temperature pressure sensor"
             pressure=pressure[look],
             heading=heading[look], pitch=pitch[look], roll=roll[look],
-            magnetometer=list(
-                x=magnetometerx[look],
-                y=magnetometery[look],
-                z=magnetometerz[look]),
-            accelerometer=list(
-                x=accelerometerx[look],
-                y=accelerometery[look],
-                z=accelerometerz[look]),
+            magnetometer=list(x=magnetometerx[look], y=magnetometery[look], z=magnetometerz[look]),
+            accelerometer=list(x=accelerometerx[look], y=accelerometery[look], z=accelerometerz[look]),
             datasetDescription=datasetDescription[look],
             temperatureMagnetometer=temperatureMagnetometer[look],
             temperatureRTC=temperatureRTC[look],
@@ -1779,14 +1771,8 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, dataType=NULL,
             temperature=temperature[look], # "temperature pressure sensor"
             pressure=pressure[look],
             heading=heading[look], pitch=pitch[look], roll=roll[look],
-            magnetometer=list(
-                x=magnetometerx[look],
-                y=magnetometery[look],
-                z=magnetometerz[look]),
-            accelerometer=list(
-                x=accelerometerx[look],
-                y=accelerometery[look],
-                z=accelerometerz[look]),
+            magnetometer=list(x=magnetometerx[look], y=magnetometery[look], z=magnetometerz[look]),
+            accelerometer=list(x=accelerometerx[look], y=accelerometery[look], z=accelerometerz[look]),
             datasetDescription=datasetDescription[look],
             temperatureMagnetometer=temperatureMagnetometer[look],
             temperatureRTC=temperatureRTC[look],
@@ -1892,16 +1878,14 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, dataType=NULL,
         rval <- list(
             configuration=configuration,
             #numberOfBeams=nbeams[look[1]],
-            numberOfCells=readBin(d$buf[lookIndex[1] + 31:32],
-                "integer", size=2L, n=1, endian="little", signed=FALSE),
+            numberOfCells=readBin(d$buf[lookIndex[1] + 31:32], "integer", size=2L, n=1, endian="little", signed=FALSE),
             #originalCoordinate=coordinateSystem[look[1]],
             #oceCoordinate=coordinateSystem[look[1]],
             # Nortek (2022 Table 6.4 page 87) does not state a factor on
             # frequency, but a sample file states 500 in the header lines, and
             # the number I read with the next line is 5000, so I assume this a
             # guess worth making.
-            frequency=0.1*readBin(d$buf[lookIndex[1]+53:54],
-                "integer", size=2L, n=1L, endian="little", signed=FALSE),
+            frequency=0.1*readBin(d$buf[lookIndex[1]+53:54], "integer", size=2L, n=1L, endian="little", signed=FALSE),
             cellSize=cellSize[look[1]],
             nominalCorrelation=nominalCorrelation[look],
             blankingDistance=blankingDistance[look[1]],
@@ -1912,14 +1896,8 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, dataType=NULL,
             temperature=temperature[look], # "temperature pressure sensor"
             pressure=pressure[look],
             heading=heading[look], pitch=pitch[look], roll=roll[look],
-            magnetometer=list(
-                x=magnetometerx[look],
-                y=magnetometery[look],
-                z=magnetometerz[look]),
-            accelerometer=list(
-                x=accelerometerx[look],
-                y=accelerometery[look],
-                z=accelerometerz[look]),
+            magnetometer=list(x=magnetometerx[look], y=magnetometery[look], z=magnetometerz[look]),
+            accelerometer=list(x=accelerometerx[look], y=accelerometery[look], z=accelerometerz[look]),
             datasetDescription=datasetDescription[look],
             temperatureMagnetometer=temperatureMagnetometer[look],
             temperatureRTC=temperatureRTC[look],
