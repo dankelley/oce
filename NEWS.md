@@ -1,5 +1,6 @@
 # oce 1.7.11
 
+* Add `radvSontekAdrFileTrim()`.
 * Change `read.adp.ad2cp()`, and structure of AD2CP objects.
 * Add `ctdFindProfilesRBR()`.
 * Make `read.rsk()` incorporate geographic information, if it exists.

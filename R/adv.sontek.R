@@ -9,9 +9,9 @@
 #' if `filename` is a vector of file names.
 #'
 #' @param deltat the time between samples.
-read.adv.sontek.serial <- function(file, from=1, to, by=1, tz=getOption("oceTz"), longitude=NA,
-    latitude=NA, start=NULL, deltat=NULL, encoding=NA, monitor=FALSE, debug=getOption("oceDebug"),
-    processingLog=NULL)
+read.adv.sontek.serial <- function(file, from=1, to, by=1, tz=getOption("oceTz"), longitude=NA, latitude=NA,
+                                   start=NULL, deltat=NULL, encoding=NA, monitor=FALSE,
+                                   debug=getOption("oceDebug"), processingLog=NULL)
 {
     if (missing(file)) {
         stop("must supply 'file'")
@@ -191,8 +191,9 @@ read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oceTz"), h
             stop("empty file '", file, "'")
         }
     }
-    if (!interactive())
+    if (!interactive()) {
         monitor <- FALSE
+    }
     bisectAdvSontekAdr <- function(burstTime, tFind, add=0, debug=0) {
         oceDebug(debug, "bisectAdvSontekAdr(tFind=", format(tFind), ", add=", add, "\n")
         len <- length(burstTime)
@@ -814,4 +815,64 @@ read.adv.sontek.text <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     }
     hitem <- processingLogItem(processingLog)
     res@processingLog <- hitem
+}
+
+#' Trim a Sontek ADR adv File
+#'
+#' Create a Sontek ADR adv (acoustic Doppler velocimeter) file by copying the
+#' header plus the first `n` data chunks (recognized by the three-byte sequence
+#' `0xA5`, `0x11`, `0x3c') into a new file. This can be useful in supplying
+#' small sample files for bug reports.
+#'
+#' @param infile name of a Sontek ADR adp file.
+#'
+#' @param n integer indicating the number of data chunks to keep. The default is
+#' to keep 100 chunks, a common choice for sample files.
+#'
+#' @param outfile optional name of the new Sontek ADR adp file to be created. If this is not
+#' supplied, a default is used, by adding `_trimmed` to the base filename, e.g.
+#' if `infile` is `"x.adr"` then `outfile` will be `x_trimmed.adr`.
+#'
+#' @param debug an integer value indicating the level of debugging. If
+#' this is 1L, then a brief indication is given of the processing steps. If it
+#' is > 1L, then information is given about each data chunk, which can yield
+#' very extensive output.
+#'
+#' @return `advSontekAdrFileTrim()` returns the name of the output file, `outfile`, as
+#' provided or constructed.
+#'
+## @family things related to adv data
+## @family functions that trim data files
+advSontekAdrFileTrim <- function(infile, n=100, outfile, debug=getOption("oceDebug"))
+{
+    oceDebug(debug, "advSontekAdrFileTrim(\"", infile, "\", n=", n, ", ...) {\n", sep="", unindent=1)
+    if (missing(infile)) {
+        stop("provide infile")
+    }
+    if (!is.character(infile)) {
+        stop("infile must be a character value naming a Sontek ADR adv file")
+    }
+    magic <- oceMagic(infile)
+    if (!identical(magic, "adv/sontek/adr")) {
+        stop("function only works for Sontek ADR adv files, but this is a '", magic, "' file")
+    }
+    oceDebug(debug, "infile=\"", infile, "\"\n", sep="")
+    if (missing(outfile)) {
+        outfile <- gsub(".adr", "_trimmed.adr", infile)
+    }
+    oceDebug(debug, "outfile=\"", outfile, "\"\n", sep="")
+    fileSize <- file.info(infile)$size
+    oceDebug(debug, "filesize=", fileSize, "\n")
+    infile <- file(infile, "rb")
+    on.exit(close(infile))
+    buf <- readBin(infile, what="raw", n=fileSize, endian="little")
+    burstBufindex <- matchBytes(buf, 0xA5, 0x11, 0x3c)
+    oceDebug(debug, vectorShow(burstBufindex))
+    oceDebug(debug, vectorShow(burstBufindex[n+1]))
+    bytesToRead <- burstBufindex[n + 1L]
+    bufOut <- buf[seq_len(bytesToRead)]
+    oceDebug(debug, vectorShow(bufOut))
+    writeBin(bufOut, outfile, useBytes=TRUE)
+    oceDebug(debug, "} # advSontekAdrFileTrim\n", unindent=1)
+    outfile
 }
