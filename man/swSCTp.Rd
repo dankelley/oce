@@ -27,9 +27,11 @@ on the ITS-90 scale; see \dQuote{Temperature units} in the documentation for
 This may be \code{"ratio"} or \code{""} (meaning conductivity ratio),
 \code{"mS/cm"} or \code{"S/m"}.  Note that the ratio mode assumes that
 measured conductivity has been divided by the standard conductivity
-of 4.2914 S/m.}
+of 4.2914 S/m.  In dealing with unfamiliar data for which the measurement
+unit has not been recorded, it can be sensible to try all three possibilities
+for \code{conductivityUnit}, to see which yields the most sensible salinities.}
 
-\item{eos}{equation of state, either \code{"unesco"} or \code{"gsw"}.#'}
+\item{eos}{equation of state, either \code{"unesco"} or \code{"gsw"}.}
 }
 \value{
 Practical Salinity.
@@ -39,7 +41,10 @@ Calculate salinity from what is actually measured by a CTD, \emph{i.e.}
 conductivity, \emph{in-situ} temperature and pressure.  Often this is done
 by the CTD processing software, but sometimes it is helpful to do this
 directly, \emph{e.g.} when there is a concern about mismatches in sensor
-response times.  Two variants are provided. First, if \code{eos} is
+response times.
+}
+\details{
+Two variants are provided. First, if \code{eos} is
 \code{"unesco"}, then salinity is calculated using
 the UNESCO algorithm described by Fofonoff and Millard (1983) as in
 reference 1. Second, if \code{eos} is \code{"gsw"}, then the

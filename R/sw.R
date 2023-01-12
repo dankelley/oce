@@ -425,8 +425,7 @@ swRrho <- function(ctd,
 #' by [gsw::gsw_Nsquared()] in the \CRANpkg{gsw} package.
 #'
 #' @family functions that calculate seawater properties
-swN2 <- function(pressure, sigmaTheta=NULL, derivs, df,
-    debug=getOption("oceDebug"),  ...)
+swN2 <- function(pressure, sigmaTheta=NULL, derivs, df, debug=getOption("oceDebug"),  ...)
 {
     oceDebug(debug, "swN2(...) {\n", sep="", unindent=1)
     ##cat("swN2(..., df=", df, ")\n",sep="")
@@ -604,8 +603,7 @@ swPressure <- function(depth, latitude=45, eos=getOption("oceEOS", default="gsw"
 #' stopifnot(abs(1.0 - swCSTp(34.25045, T90fromT68(15), 2000, eos="gsw")) < 1e-7)
 #'
 #' @family functions that calculate seawater properties
-swCSTp <- function(salinity, temperature=15, pressure=0,
-                   eos=getOption("oceEOS", default="gsw"))
+swCSTp <- function(salinity, temperature=15, pressure=0, eos=getOption("oceEOS", default="gsw"))
 {
     if (missing(salinity)) {
         stop("must provide salinity")
@@ -651,7 +649,9 @@ swCSTp <- function(salinity, temperature=15, pressure=0,
 #' conductivity, *in-situ* temperature and pressure.  Often this is done
 #' by the CTD processing software, but sometimes it is helpful to do this
 #' directly, *e.g.* when there is a concern about mismatches in sensor
-#' response times.  Two variants are provided. First, if `eos` is
+#' response times.
+#'
+#' Two variants are provided. First, if `eos` is
 #' `"unesco"`, then salinity is calculated using
 #' the UNESCO algorithm described by Fofonoff and Millard (1983) as in
 #' reference 1. Second, if `eos` is `"gsw"`, then the
@@ -676,9 +676,12 @@ swCSTp <- function(salinity, temperature=15, pressure=0,
 #' This may be `"ratio"` or `""` (meaning conductivity ratio),
 #' `"mS/cm"` or `"S/m"`.  Note that the ratio mode assumes that
 #' measured conductivity has been divided by the standard conductivity
-#' of 4.2914 S/m.
+#' of 4.2914 S/m.  In dealing with unfamiliar data for which the measurement
+#' unit has not been recorded, it can be sensible to try all three possibilities
+#' for `conductivityUnit`, to see which yields the most sensible salinities.
 #'
-#' @param eos equation of state, either `"unesco"` or `"gsw"`.#'
+#' @param eos equation of state, either `"unesco"` or `"gsw"`.
+#'
 #' @return Practical Salinity.
 #'
 #' @author Dan Kelley
