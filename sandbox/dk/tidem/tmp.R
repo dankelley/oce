@@ -1,4 +1,3 @@
-
 library(oce)
 data(sealevel)
 t1 <- sealevel[["time"]]
@@ -28,16 +27,16 @@ par(mfcol=c(3, 3))
 
 oce.plot.ts(t1, e1, drawTimeRange=FALSE, lwd=0.3, ylim=c(0, 3))
 title("dt=1h")
-plot(m1, xlim=c(0, 0.5), cex=0.6, constituents=c("S2", "S4"), ylim=c(0, 1.3))
+plot(m1, xlim=c(0, 0.5), cex=0.6, constituents=c("S2", "S4"), ylim=c(0, 1.5))
 showSomeFrequencies()
-spectrum(S1, spans=c(7, 5), main="")
+spectrum(S1, spans=c(7, 5), main="", ylim=c(1e-4, 1e2))
 showSomeFrequencies()
 
 oce.plot.ts(t6, e6, drawTimeRange=FALSE, lwd=0.3, ylim=c(0, 3))
 title("dt=6h")
 plot(m6, xlim=c(0, 0.5), cex=0.6, constituents=c("S2", "S4"))
 showSomeFrequencies()
-spectrum(S6, spans=c(7, 5), xlim=c(0, 0.5), main="")
+spectrum(S6, spans=c(7, 5), xlim=c(0, 0.5), main="", ylim=c(1e-4, 1e2))
 showSomeFrequencies()
 # I see a step at 0.2469. Closest constituent is
 data(tidedata)
@@ -45,16 +44,24 @@ tidedata$const$name[which.min(abs(0.2469-tidedata$const$freq))]
 
 oce.plot.ts(t1, e61, drawTimeRange=FALSE, lwd=0.3, ylim=c(0, 3))
 title("dt=1h (from 6h)")
-plot(m61, xlim=c(0, 0.5), cex=0.6, constituents=c("S2", "S4"), ylim=c(0, 1.3))
+plot(m61, xlim=c(0, 0.5), cex=0.6, constituents=c("S2", "S4"), ylim=c(0, 1.5))
 showSomeFrequencies()
-spectrum(S61, spans=c(7, 5), xlim=c(0, 0.5), main="")
+spectrum(S61, spans=c(7, 5), xlim=c(0, 0.5), main="", ylim=c(1e-4, 1e2))
 showSomeFrequencies()
 
 dt <- 6
-keep <- tidedata$const$freq < 0.5
-const <- tidedata$const$name[keep]
-const <- const[order(tidedata$const$freq[keep])]
-mm <- tidem(t6, e6, constituents=const)
+freq <- tidedata$const$freq
+keep <- freq < 0.5/dt
+freq <- freq[keep]
+name <- tidedata$const$name[keep]
+order <- order(freq)
+freq <- freq[order]
+name <- name[order]
+mm <- tidem(t6, e6, constituents=name)
 summary(mm)
-plot(mm, xlim=c(0, 0.5))
+#plot(mm, xlim=c(0, 0.5))
 
+message("in the prev summary, why is freq unordered?")
+message("BUG: summary not in order of freq (because of substitutions, I suppose)")
+message("CHECK: anything funny in tidem()?  Why not order there? BUT could break tests")
+message("CHECK: can also order in summary()")
