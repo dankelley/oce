@@ -1635,15 +1635,16 @@ tidem <- function(t, x, constituents, infer=NULL, latitude=NULL,
     }
     phase <- phase %% 360
     res <- new("tidem")
+    o <- order(freq)
     res@data <- list(model=model,
         call=cl,
         tRef=tRef,
-        const=indices,
-        name=name,
-        freq=freq,
-        amplitude=amplitude,
-        phase=phase,
-        p=p)
+        const=indices[o],
+        name=name[o],
+        freq=freq[o],
+        amplitude=amplitude[o],
+        phase=phase[o],
+        p=p[o])
     res@metadata$rc <- rc
     res@metadata$version <- 2
     res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
