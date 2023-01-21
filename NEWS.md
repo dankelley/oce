@@ -1,11 +1,12 @@
 # oce 1.7.11
 
-* Add `radvSontekAdrFileTrim()`.
-* Change `read.adp.ad2cp()`, and structure of AD2CP objects.
-* Add `ctdFindProfilesRBR()`.
-* Make `read.rsk()` incorporate geographic information, if it exists.
-* Remove dependence on `rgeos` and `raster` packages.
-* Update `download.topo()` to use the new NOAA database.
+* Add `advSontekAdrFileTrim()` (issue 1994).
+* Add `ctdFindProfilesRBR()` (issue 2027).
+* Change `plot,tidem-method()` to obey `...` parameter (issue 2035).
+* Change `read.adp.ad2cp()`, and structure of AD2CP objects (issue 2005).
+* Change `read.rsk()` to read geographic information (issue 2024).
+* Change `download.topo()` to handle new NOAA database (issue 2015).
+* Remove dependence on `rgeos` and `raster` packages (issue 2028).
 
 # oce 1.7.10 (on CRAN)
 
