@@ -4,7 +4,7 @@
 \alias{summary,tidem-method}
 \title{Summarize a Tidem Object}
 \usage{
-\S4method{summary}{tidem}(object, p, constituent, ...)
+\S4method{summary}{tidem}(object, p = 1, constituent, ...)
 }
 \arguments{
 \item{object}{an object of class \link{tidem}, as created by

@@ -175,15 +175,13 @@ NULL
 #' @family things related to tides
 setMethod(f="summary",
     signature="tidem",
-    definition=function(object, p, constituent, ...) {
+    definition=function(object, p=1.0, constituent, ...) {
         debug <- if ("debug" %in% names(list(...))) list(...)$debug else 0
         version <- object@metadata$version
-        if (missing(p)) {
-            p <- 1
-        }
-        ok <- object@data$p <= p | version == 3
+        ok <- object@data$p <= p | version == 3L
         haveP <- any(!is.na(object@data$p))
         if (missing(constituent)) {
+            ####browser()
             fit <- data.frame(Const=object@data$const[ok],
                 Name=object@data$name[ok],
                 Freq=object@data$freq[ok],
@@ -237,6 +235,7 @@ setMethod(f="summary",
                 cat("f:\n")
                 print(f)
             }
+            ####browser()
             rownames(f) <- as.character(fit[, 2])
             if (haveP) {
                 printCoefmat(f, digits=3,
@@ -1095,13 +1094,17 @@ tidemConstituentNameFix <- function(names, debug=1)
 #' summary(m)
 #'
 #' @family things related to tides
-tidem <- function(t, x, constituents, infer=NULL,
-                  latitude=NULL, rc=1, regress=lm,
-                  debug=getOption("oceDebug"))
+tidem <- function(t, x, constituents, infer=NULL, latitude=NULL,
+                  rc=1, regress=lm, debug=getOption("oceDebug"))
 {
     oceDebug(debug, "tidem(t, x,\n", sep="", unindent=1)
-    oceDebug(debug, "      constituents=", if (missing(constituents)) "(missing)" else paste("c('", paste(constituents, collapse="', '"), "')",
-        sep=""), ",\n", sep="", unindent=1)
+    oceDebug(debug, "      constituents=",
+        if (missing(constituents)) {
+            "(missing)"
+        } else {
+            paste("c('", paste(constituents, collapse="', '"), "')", sep="")
+        },
+        ",\n", sep="", unindent=1)
     oceDebug(debug, "      latitude=", if (is.null(latitude)) "NULL" else latitude, ",\n", sep="", unindent=1)
     oceDebug(debug, "      rc=", rc, ",\n", sep="", unindent=1)
     oceDebug(debug, "      debug=", debug, ") {\n", sep="", unindent=1)
@@ -1276,13 +1279,14 @@ tidem <- function(t, x, constituents, infer=NULL,
     }
     oceDebug(debug, "before trimming constituents for Rayleigh condition, name[1:", length(name), "]=", paste(name, collapse=" "), sep="", "\n")
     if (length(dropTerm) > 0) {
+        # Bookmark 1A (see also 1B: link up variables)
         cat("Note: the tidal record is too short to fit for constituents: ", paste(name[dropTerm], collapse=" "), "\n")
         indices <- indices[-dropTerm]
         name <- name[-dropTerm]
         freq <- freq[-dropTerm]
         kmpr <- kmpr[-dropTerm]
     }
-    oceDebug(debug, "after trimming constituents for Rayleight condition, name[1:", length(name), "]=", paste(name, collapse=" "), sep="", "\n")
+    oceDebug(debug, "after trimming constituents for Rayleigh condition, name[1:", length(name), "]=", paste(name, collapse=" "), sep="", "\n")
     # Ensure that any added constituents are in the list, i.e. prevent
     # the Rayleigh criterion from trimming them. (Before work on
     # issue 1350, they would simply be dropped if they failed the Rayleigh
@@ -1308,7 +1312,8 @@ tidem <- function(t, x, constituents, infer=NULL,
             }
         }
     }
-    oceDebug(debug, "after adding new constituents, name[1:", length(name), "]=", paste(name, collapse=" "), sep="", "\n")
+    oceDebug(debug, "after adding new constituents, ", vectorShow(name))
+    oceDebug(debug, "after adding new constituents, ", vectorShow(freq))
     # Ensure that we fit for any infer$from constituents, *regardless* of whether
     # those consitituents are permitted by the Rayleigh criterion.
     if (!is.null(infer)) {
@@ -1323,6 +1328,8 @@ tidem <- function(t, x, constituents, infer=NULL,
             }
         }
     }
+    oceDebug(debug, "after handling 'infer', ", vectorShow(name))
+    oceDebug(debug, "after handling 'infer', ", vectorShow(freq))
     # sort constituents by index (which, among other things, ensures that Z0 is at the start, if it exists)
     oindices <- order(indices)
     indices <- indices[oindices]
@@ -1330,9 +1337,10 @@ tidem <- function(t, x, constituents, infer=NULL,
     freq <- freq[oindices]
     kmpr <- kmpr[oindices]
     nc <- length(name)
-    oceDebug(debug, "name[1:", length(name), "]: ", paste(name, collapse=" "), "\n", sep="")
+    oceDebug(debug, "after reordering indices, ", vectorShow(name))
+    oceDebug(debug, "after reordering indices, ", vectorShow(freq))
     rm(oindices) # clean up namespace
-    if (0 == nc) {
+    if (0L == nc) {
         stop("cannot fit for any constituents")
     }
     elevation <- sl[["elevation"]]
@@ -1349,36 +1357,93 @@ tidem <- function(t, x, constituents, infer=NULL,
     tRef <- numberAsPOSIXct(3600 * round(mean(as.numeric(time, tz="UTC")) / 3600), tz="UTC")
     hour2pi <- 2 * pi * (as.numeric(time) - as.numeric(tRef)) / 3600
     oceDebug(debug, "tRef=", tRef, ", nc=", nc, ", length(name)=", length(name), "\n")
+    uncomputable <- NULL
+
+    # The sameCriterion was added in January 2023, after this portion of tidem()
+    # had been stable for a decade or more.  Also, I am trying to make tidem()
+    # do something that (I think) neither Foreman's code nor t-tide does.
+    # Therefore, I am putting a long comment here!  Please also see
+    # https://github.com/dankelley/oce/issues/2034 to learn where this idea of
+    # using sameCriterion got started.
+    #
+    # In the code below, we keep track of any constituents for which the
+    # constructed C and S vectors will be constant (or nearly so).  This came up
+    # because I was trying to analyse data sampled on a 6-hour interval. That
+    # works out to match the S4 period (approximately, but sampling times are
+    # not given to an infinite number of digits and neither is the S4 period in
+    # this code). Imagine a perfect match.  Then, S and C would both be constant
+    # across the times used in the loop.  And that's bad because the regression
+    # already has a constant column (for Z0).  The lm() computation then gives
+    # NA values for coefficients, p value, etc. for the repeat.  (Luckily, it
+    # doesn't just say the matrix cannot be inverted and die!)  The approximate
+    # criterion is based on a test case in the context of the local machine
+    # epsilon.  I use a criterion of 0.01 because for "good" cases (and my
+    # 6-hour test file for drifter data) have C and S span of very nearly 2, but for "bad" cases, it is 
+    # of order e-7 or so. Any dividing line would do, I think, but maybe for short records
+    # the span might not get to be -1 to +1 and so I am choosing 1e-2 as a criterion. This value
+    # might need to be revisited.
+    sameCriterion <- 1e-2
+    oceDebug(debug, vectorShow(sameCriterion))
+    #danS <- danC <- NULL
     for (i in 1:nc) {
-        oceDebug(debug, "setting ", i, "-th coefficient (name=", name[i], " freq=", freq[i], " cph)", "\n", sep="")
+        #<< oceDebug(debug, "setting ", i, "-th coefficient (name=", name[i], " period=", 1/freq[i], " h)", "\n", sep="")
         ft <- freq[i] * hour2pi
-        x[, 1 + 2 * (i-1)] <- cos(ft)
-        x[, 2 + 2 * (i-1)] <- sin(ft)
+        C <- cos(ft)
+        S <- sin(ft)
+        #danS <- c(danS, sd(S)) # FIXME: remove
+        #danC <- c(danC, sd(C)) # FIXME: remove
+        #<< oceDebug(debug, sprintf("    C span %.5e; S span %.5e\n", diff(range(C)), diff(range(S))))
+        # Find whether anything is uncomputable. We ignore Z0 because that is handled later.
+        if (name[i] != "Z0" && (diff(range(S)) < sameCriterion || diff(range(C)) < sameCriterion)) {
+            oceDebug(debug, "    ** uncomputable at ", name[i], " (period ", 1/freq[i], "h) **\n")
+            uncomputable <- c(uncomputable, 1 + 2 * (i - 1))
+            uncomputable <- c(uncomputable, 2 + 2 * (i - 1))
+        }
+        x[, 1 + 2 * (i-1)] <- C
+        x[, 2 + 2 * (i-1)] <- S
     }
     name2 <- matrix(rbind(paste(name, "_C", sep=""), paste(name, "_S", sep="")), nrow=length(name), ncol=2)
     dim(name2) <- c(2 * length(name), 1)
     colnames(x) <- name2
+    #<< cat("The following should be omitted: ", vectorShow(name2[uncomputable], n=20))
+    #<< cat("Their indices are", vectorShow(uncomputable, n=20))
     oceDebug(debug, "about to do regression\n")
     if ("Z0_S" %in% colnames(x)) {
         x <- x[, -which("Z0_S" == colnames(x))]
         oceDebug(debug, "model has Z0, so trimming the sin(freq*time) column\n")
     }
-    if (debug) {
-        cat("x[, 1]:\n")
-        print(x[, 1])
-        cat("x[, 2]:\n")
-        print(x[, 2])
+    #???? message("FIXME:****");uncomputable<-NULL
+    # Now remove the problematic constutuents, if any.  This doesn't happen for hourly data,
+    # which is likely most datasets.
+    for (bad in name2[uncomputable]) {
+        #<< message(bad)
+        x <- x[, -which(bad == colnames(x))]
+        oceDebug(debug, "removing ", bad, " from model fit (aliasing problem)\n")
     }
+    badFullNames <-  unique(gsub("_.*", "", name2[uncomputable]))
+    for (badFullName in badFullNames) {
+        # Bookmark 1B (see also 1A: link up variables)
+        whichIsBad <- which(name == badFullName)
+        indices <- indices[-whichIsBad]
+        name <- name[-whichIsBad]
+        freq <- freq[-whichIsBad]
+        kmpr <- kmpr[-whichIsBad]
+        nc <- nc - 1L
+        warning("Not fitting for ", badFullName, " because of aliasing problem")
+    }
+    #<< browser()
+    oceDebug(debug, vectorShow(colnames(x)))
     model <- regress(elevation ~ x - 1, na.action=na.exclude)
+    #>> browser()
     if (debug > 0) {
         cat("regression worked OK; the results are as follows:\n")
         print(summary(model))
     }
-    coef  <- model$coefficients
-    p.all <- if (4 == dim(summary(model)$coefficients)[2]) {
-        summary(model)$coefficients[, 4]
+    coef <- model$coefficients
+    p.all <- if (4L == ncol(summary(model)$coefficients)) {
+        summary(model)$coefficients[, 4L]
     } else {
-        rep(NA, length=1+nc)
+        rep(NA, length=1L+nc)
     }
     amplitude <- phase <- p <- vector("numeric", length=nc)
     oceDebug(debug, vectorShow(nc))
@@ -1399,7 +1464,7 @@ tidem <- function(t, x, constituents, infer=NULL,
             oceDebug(debug, "processed coefs at i=", i, ", ic=", ic,
                 ", name=", name[i], ", f=", vuf$f, ", angle adj=", (vuf$u+vuf$v)*360,
                 ", amplitude=", amplitude[i], ", phase=", phase[i], ", p=", p[i], "\n", sep="")
-            ic <- ic + 1
+            ic <- ic + 1 # only skip forward 1 since Z0 takes 1 column (contrast below)
         } else {
             C <- coef[ic]              # coefficient on cos(t)
             S <- coef[ic+1]            # coefficient on sin(t)
@@ -1416,17 +1481,19 @@ tidem <- function(t, x, constituents, infer=NULL,
             vuf <- tidemVuf(tRef, j=j, latitude=latitude)
             amplitude[i] <- amplitude[i] / vuf$f
             p[i] <- 0.5 * (p.all[ic+1] + p.all[ic])
+            #<<cat("i=", i, ", ic=", ic, ", name='", name[i], "', p.all[ic]=", p.all[ic], ", p.all[ic+1]=", p.all[ic+1], ", we set p[i]=", p[i], " (the mean)\n", sep="")
             oceDebug(debug, "processed coefs at i=", i, ", ic=", ic, ", name=", name[i],
                 ", S=", S, ", C=", C, ", f=", vuf$f, ", angle adj=", (vuf$u+vuf$v)*360, ",
                 amplitude=", amplitude[i], ", phase=", phase[i], ", p=", p[i], "\n", sep="")
-            ic <- ic + 2
+            ic <- ic + 2 # skip forward 2 since non-Z0 takes 2 columns (contrast above)
         }
     }
+    ####browser()
     oceDebug(debug, vectorShow(phase))
     phase <- phase * 180 / pi
     phase <- ifelse(phase < -360, 720 + phase, phase)
     phase <- ifelse(phase < 0, 360 + phase, phase)
-    # Do Greenwich phase corerrection, if `infer` is TRUE
+    # Do Greenwich phase correction, if `infer` is TRUE
     C <- unlist(lapply(name, function(n) which(n == tidedata$const$name)))
     vuf <- tidemVuf(tRef, j=C, latitude=latitude)
     oceDebug(debug, vectorShow(freq))
