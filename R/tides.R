@@ -412,6 +412,11 @@ setMethod(f="plot",
         frequency <- x@data$freq[-1] # trim z0
         amplitude <- x@data$amplitude[-1]
         #name      <- x@data$name[-1]
+        order <- order(frequency)
+        frequency <- frequency[order]
+        #name <- name[order]
+        amplitude <- amplitude[order]
+        #print(data.frame(name=name, period=1/frequency, amplitude=amplitude))
         if (!is.null(constituents)) {
             sides <- if (is.null(sides)) {
                 rep(3, length(constituents))
@@ -473,7 +478,7 @@ setMethod(f="plot",
 #' observations used to develop the harmonic model. This is rounded
 #' to the nearest hour in [as.tidem()], to match [tidem()].
 #'
-#' @param latitude Numerical value indicating the latitude of the
+#' @param latitude numerical value indicating the latitude of the
 #' observations that were used to create the harmonic model. This
 #' is needed for nodal-correction procedures carried out
 #' by [tidemVuf()].

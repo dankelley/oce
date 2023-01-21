@@ -1,0 +1,70 @@
+---
+title: How to analyse 6-hourly tidal data?
+author: "Dan Kelley"
+date: "`r Sys.Date()`"
+output: pdf_document
+---
+
+The `sealevel` sample file from `oce` is first subsampled to a 6-hour interval, then linearly interpolated back to a 1-hour interval. Tidal analysis is done with each.  The plot tells the story.
+
+1. The left column shows the full timeseries, the tidem plot, and a spectrum. This is the base case, which we might hope to recover.
+2. The middle column shows the result of subsampling to 6 hours. The middle plot has wildly high amplitudes.  This might be an error, or it might be an overfitting pattern, with a high-amplitude constituent at one frequency being offset by another high-amplitude constituent at a different phase.  At any rate, the interpolated data are not unreasonable, so the wildly high amplitudes do not stand in the way of trying to use `tidem()` to remove tides to study subtidal flow.
+3. The right-hand column shows the results of linearly interpolating the 6-hourly data back down to 1-hourly. Note the large spikes at high frequencies that are not present in the original data.  This suggests that it is imprudent to try to do this.
+4. Comparing spectra in columns 1 and 3 suggests, as expected, that frequencies below 1/12 cph (green line) are retained properly, but that frequencies above that, and certainly above 1/6 cph (red line), bear little to no relation to the true frequencies.
+
+I am still trying other ideas.  For example, it might make sense to specify just a few frequencies (maybe just M1 and M2) to see if reasonable results can be obtained.
+
+
+```{r}
+library(oce)
+data(sealevel)
+t1 <- sealevel[["time"]]
+e1 <- sealevel[["elevation"]]
+S1 <- ts(e1, deltat=1)
+
+t6 <- seq(t1[1], tail(t1, 1), by="6 hour")
+e6 <- approx(t1, e1, t6)$y
+S6 <- ts(e6, deltat=6)
+
+e61 <- approx(t6, e6, t1)$y
+e61[is.na(e61)] <- mean(e61, na.rm=TRUE)
+S61 <- ts(e61, deltat=1)
+
+
+m1 <- tidem(t1, e1)
+m6 <- tidem(t6, e6)
+m61 <- tidem(t1, e61)
+
+showSomeFrequencies <- function()
+{
+    abline(v=1/6, col="red")
+    abline(v=0.5/6, col="green")
+}
+
+par(mfcol=c(3, 3))
+
+oce.plot.ts(t1, e1, drawTimeRange=FALSE, lwd=0.3, ylim=c(0, 3))
+title("dt=1h")
+plot(m1, xlim=c(0, 0.5), cex=0.6, constituents=c("S2", "S4"), ylim=c(0, 1.3))
+showSomeFrequencies()
+spectrum(S1, spans=c(7, 5), main="")
+showSomeFrequencies()
+
+oce.plot.ts(t6, e6, drawTimeRange=FALSE, lwd=0.3, ylim=c(0, 3))
+title("dt=6h")
+plot(m6, xlim=c(0, 0.5), cex=0.6, constituents=c("S2", "S4"))
+showSomeFrequencies()
+spectrum(S6, spans=c(7, 5), xlim=c(0, 0.5), main="")
+showSomeFrequencies()
+# I see a step at 0.2469. Closest constituent is
+data(tidedata)
+tidedata$const$name[which.min(abs(0.2469-tidedata$const$freq))]
+
+oce.plot.ts(t1, e61, drawTimeRange=FALSE, lwd=0.3, ylim=c(0, 3))
+title("dt=1h (from 6h)")
+plot(m61, xlim=c(0, 0.5), cex=0.6, constituents=c("S2", "S4"), ylim=c(0, 1.3))
+showSomeFrequencies()
+spectrum(S61, spans=c(7, 5), xlim=c(0, 0.5), main="")
+showSomeFrequencies()
+```
+

@@ -20,38 +20,34 @@ m1 <- tidem(t1, e1)
 m6 <- tidem(t6, e6)
 m61 <- tidem(t1, e61)
 
+showSomeFrequencies <- function()
+{
+    abline(v=1/6, col="red")
+    abline(v=0.5/6, col="green")
+}
+
 par(mfcol=c(3, 3))
 
 oce.plot.ts(t1, e1, drawTimeRange=FALSE, lwd=0.3, ylim=c(0, 3))
 title("Δt=1h")
-par(mfrow=c(1, 2))
-plot(m1, which=2)
-plot(m1, xlim=c(0, 0.5), which=2)
-abline(v=1/6, col="magenta")
-abline(v=0.5/6, col="magenta", lty=2)
+plot(m1, xlim=c(0, 0.5), cex=0.6, constituents=c("S2", "S4"), ylim=c(0, 1.3))
+showSomeFrequencies()
 spectrum(S1, spans=c(7, 5), main="")
-abline(v=1/6, col="magenta")
-abline(v=0.5/6, col="magenta", lty=2)
-title("Δt=1h")
+showSomeFrequencies()
 
 oce.plot.ts(t6, e6, drawTimeRange=FALSE, lwd=0.3, ylim=c(0, 3))
 title("Δt=6h")
-plot(m6)
-abline(v=1/6, col="magenta")
-abline(v=0.5/6, col="magenta", lty=2)
+plot(m6, xlim=c(0, 0.5), cex=0.6, constituents=c("S2", "S4"))
+showSomeFrequencies()
 spectrum(S6, spans=c(7, 5), xlim=c(0, 0.5), main="")
-abline(v=1/6, col="magenta")
-abline(v=0.5/6, col="magenta", lty=2)
-title("Δt=6h")
+showSomeFrequencies()
+# I see a step at 0.2469. Closest constituent is
+data(tidedata)
+tidedata$const$name[which.min(abs(0.2469-tidedata$const$freq))]
 
 oce.plot.ts(t1, e61, drawTimeRange=FALSE, lwd=0.3, ylim=c(0, 3))
 title("Δt=1h (from 6h)")
-plot(m61)
-abline(v=1/6, col="magenta")
-abline(v=0.5/6, col="magenta", lty=2)
+plot(m61, xlim=c(0, 0.5), cex=0.6, constituents=c("S2", "S4"), ylim=c(0, 1.3))
+showSomeFrequencies()
 spectrum(S61, spans=c(7, 5), xlim=c(0, 0.5), main="")
-abline(v=1/6, col="magenta")
-abline(v=0.5/6, col="magenta", lty=2)
-title("Δt=1h (from 6h)")
-
-
+showSomeFrequencies()
