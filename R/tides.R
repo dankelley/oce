@@ -413,6 +413,13 @@ setMethod(f="plot",
         frequency <- x@data$freq[-1] # trim z0
         amplitude <- x@data$amplitude[-1]
         #name      <- x@data$name[-1]
+        # Place in frequency order (required for cumulative plot), because user
+        # might have given constituents in any order.
+        order <- order(frequency)
+        frequency <- frequency[order]
+        #name <- name[order]
+        amplitude <- amplitude[order]
+        #print(data.frame(name=name, period=1/frequency, amplitude=amplitude))
         if (!is.null(constituents)) {
             sides <- if (is.null(sides)) {
                 rep(3, length(constituents))
