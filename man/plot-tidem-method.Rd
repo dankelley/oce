@@ -45,7 +45,9 @@ default, in order to use more space for the data and less for the axes.}
 
 \item{mar}{value to be used with \code{[}par\verb{]("mar")}.}
 
-\item{\dots}{optional arguments passed to plotting functions.}
+\item{\dots}{optional arguments passed to plotting functions, not all
+of which are obeyed.  For example, if \dots contains \code{type}, that value will be
+ignored because it is set internally, according to the value of \code{which}.}
 }
 \description{
 Plot a summary diagram for a tidal fit.

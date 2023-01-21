@@ -346,7 +346,9 @@ setMethod(f="[[<-",
 #'
 #' @param mar value to be used with `[`par`]("mar")`.
 #'
-#' @param \dots optional arguments passed to plotting functions.
+#' @param \dots optional arguments passed to plotting functions, not all
+#' of which are obeyed.  For example, if \dots contains `type`, that value will be
+#' ignored because it is set internally, according to the value of `which`.
 #'
 #' @examples
 #'\dontrun{
@@ -380,9 +382,11 @@ setMethod(f="plot",
                         mar=c(mgp[1]+1, mgp[1]+1, mgp[2]+0.25, mgp[2]+1),
                         ...)
     {
+        dots <- list(...)
+        dotsNames <- names(dots)
         data("tidedata", package="oce", envir=environment())
         tidedata <- get("tidedata")#, pos=globalenv())
-        drawConstituent <- function(name="M2", side=3, col="blue", adj=NULL)
+        drawConstituent <- function(name="M2", side=3, col="blue", adj=NULL, cex=0.8)
         {
             w <- which(tidedata$const$name == name)
             if (!length(w)) {
@@ -394,9 +398,9 @@ setMethod(f="plot",
             abline(v=frequency, col=col, lty="dotted")
             if (par("usr")[1] < frequency && frequency <= par("usr")[2]) {
                 if (is.null(adj)) {
-                    mtext(name, side=side, at=frequency, col=col, cex=0.8)
+                    mtext(name, side=side, at=frequency, col=col, cex=cex)
                 } else {
-                    mtext(name, side=side, at=frequency, col=col, cex=0.8, adj=adj)
+                    mtext(name, side=side, at=frequency, col=col, cex=cex, adj=adj)
                 }
             }
         }
@@ -418,18 +422,25 @@ setMethod(f="plot",
             col <- rep(col, length.out=length(constituents))
         }
         sides[sides!=1&sides!=3] <- 3 # default to top
+        cex <- if ("cex" %in% names(dots)) dots$cex else 0.8
+        # We specify these things directly but they are not parameters of this
+        # function, so we must remove them from '...' before passing that to plot().
+        if ("cex" %in% dotsNames) dots$cex <- NULL
+        if ("type" %in% dotsNames) dots$type <- NULL
         for (w in 1:lw) {
             #message("w=", w, "; which[w]=", which[w])
             if (which[w] == 2) {
-                plot(frequency, amplitude, col="white", xlab="Frequency [ cph ]", ylab="Amplitude [ m ]", log=log)
+                plot(frequency, amplitude, type="n",
+                    xlab="Frequency [ cph ]", ylab="Amplitude [ m ]", log=log, ...)
                 segments(frequency, 0, frequency, amplitude)
                 for (i in seq_along(constituents)) {
-                    drawConstituent(constituents[i], side=sides[i], col=col[i])
+                    drawConstituent(constituents[i], side=sides[i], col=col[i], cex=cex)
                 }
             } else if (which[w] == 1) {
-                plot(frequency, cumsum(amplitude), xlab="Frequency [ cph ]", ylab="Amplitude [ m ]", log=log, type="s")
+                plot(frequency, cumsum(amplitude),
+                    xlab="Frequency [ cph ]", ylab="Amplitude [ m ]", log=log, type="s", ...)
                 for (i in seq_along(constituents)) {
-                    drawConstituent(constituents[i], side=sides[i], col=col[i])
+                    drawConstituent(constituents[i], side=sides[i], col=col[i], cex=cex)
                 }
             } else {
                 stop("unknown value of which ", which, "; should be 1 or 2")
