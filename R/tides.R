@@ -1298,7 +1298,7 @@ tidem <- function(t, x, constituents, infer=NULL, latitude=NULL,
     oceDebug(debug, "before trimming constituents for Rayleigh condition, name[1:", length(name), "]=", paste(name, collapse=" "), sep="", "\n")
     if (length(dropTerm) > 0) {
         # Bookmark 1A (see also 1B: link up variables)
-        cat("Note: the tidal record is too short to fit for constituents: ", paste(name[dropTerm], collapse=" "), "\n")
+        message("Note: the tidal record is too short to fit for constituents: ", paste(name[dropTerm], collapse=", "))
         indices <- indices[-dropTerm]
         name <- name[-dropTerm]
         freq <- freq[-dropTerm]
@@ -1375,7 +1375,6 @@ tidem <- function(t, x, constituents, infer=NULL, latitude=NULL,
     tRef <- numberAsPOSIXct(3600 * round(mean(as.numeric(time, tz="UTC")) / 3600), tz="UTC")
     hour2pi <- 2 * pi * (as.numeric(time) - as.numeric(tRef)) / 3600
     oceDebug(debug, "tRef=", tRef, ", nc=", nc, ", length(name)=", length(name), "\n")
-    uncomputable <- NULL
 
     # The sameCriterion was added in January 2023, after this portion of tidem()
     # had been stable for a decade or more.  Also, I am trying to make tidem()
@@ -1400,22 +1399,27 @@ tidem <- function(t, x, constituents, infer=NULL, latitude=NULL,
     # of order e-7 or so. Any dividing line would do, I think, but maybe for short records
     # the span might not get to be -1 to +1 and so I am choosing 1e-2 as a criterion. This value
     # might need to be revisited.
-    sameCriterion <- 1e-2
-    oceDebug(debug, vectorShow(sameCriterion))
-    #danS <- danC <- NULL
+    iBad <- NULL
+    icBad <- NULL
+    sdCriterion <- 1e-2
+    oceDebug(debug, vectorShow(sdCriterion))
+    #20230122 danS <- danC <- NULL
     for (i in 1:nc) {
-        #<< oceDebug(debug, "setting ", i, "-th coefficient (name=", name[i], " period=", 1/freq[i], " h)", "\n", sep="")
+        #20230122 oceDebug(debug+1, "setting ", i, "-th coefficient (name=", name[i], " period=", 1/freq[i], " h)", "\n", sep="")
         ft <- freq[i] * hour2pi
         C <- cos(ft)
         S <- sin(ft)
-        #danS <- c(danS, sd(S)) # FIXME: remove
-        #danC <- c(danC, sd(C)) # FIXME: remove
-        #<< oceDebug(debug, sprintf("    C span %.5e; S span %.5e\n", diff(range(C)), diff(range(S))))
+        sdS <- sd(S)
+        sdC <- sd(C)
+        #20230122 danS <- c(danS, sdS) # FIXME: remove
+        #20230122 danC <- c(danC, sdC) # FIXME: remove
+        #20230122 oceDebug(debug+1, sprintf("    sdC %.4g; sdS %.4g\n", sdC, sdS))
         # Find whether anything is uncomputable. We ignore Z0 because that is handled later.
-        if (name[i] != "Z0" && (diff(range(S)) < sameCriterion || diff(range(C)) < sameCriterion)) {
+        if (name[i] != "Z0" && (sdS < sdCriterion || sdC < sdCriterion)) {
             oceDebug(debug, "    ** uncomputable at ", name[i], " (period ", 1/freq[i], "h) **\n")
-            uncomputable <- c(uncomputable, 1 + 2 * (i - 1))
-            uncomputable <- c(uncomputable, 2 + 2 * (i - 1))
+            icBad <- c(icBad, 1 + 2 * (i - 1))
+            icBad <- c(icBad, 2 + 2 * (i - 1))
+            iBad <- c(iBad, i)
         }
         x[, 1 + 2 * (i-1)] <- C
         x[, 2 + 2 * (i-1)] <- S
@@ -1425,31 +1429,33 @@ tidem <- function(t, x, constituents, infer=NULL, latitude=NULL,
     colnames(x) <- name2
     #<< cat("The following should be omitted: ", vectorShow(name2[uncomputable], n=20))
     #<< cat("Their indices are", vectorShow(uncomputable, n=20))
-    oceDebug(debug, "about to do regression\n")
+    oceDebug(debug, "cleaning up 'x' matrix prior to doing regression\n")
+    # Remove problematic constutuents; see https://github.com/dankelley/oce/issues/2034
+    if (length(iBad)) {
+        message("Note: the sampling interval is too coarse to fit for constituents: ", paste(name[iBad], collapse=", "))
+        #20230122 browser()
+        #20230122 A<-colnames(x)
+        #20230122 B<-name2
+        #20230122 C<-name
+        indices <- indices[-iBad]
+        name <- name[-iBad]
+        freq <- freq[-iBad]
+        kmpr <- kmpr[-iBad]
+        nc <- nc - length(iBad)
+        oceDebug(debug, "Removing: ", paste(name2[icBad], collapse=", "))
+        x <- x[, -icBad]
+        name2 <- name2[-icBad]
+        #20230122 # A check with 6-h case (sandbox/dk/tidem/04_restrict_coefficients.R)
+        #20230122 print(A[!A%in%colnames(x)]) # should be S2_C S2_S S4_C S4_S
+        #20230122 print(B[!B%in%name2]) # should be S2_C S2_S S4_C S4_S
+        #20230122 print(C[!C%in%name]) # should be S2 S4
+    }
+    # Remove the sine() part of the Z0 constituent, which makes no sense for a constant.
     if ("Z0_S" %in% colnames(x)) {
         x <- x[, -which("Z0_S" == colnames(x))]
         oceDebug(debug, "model has Z0, so trimming the sin(freq*time) column\n")
     }
-    #???? message("FIXME:****");uncomputable<-NULL
-    # Now remove the problematic constutuents, if any.  This doesn't happen for hourly data,
-    # which is likely most datasets.
-    for (bad in name2[uncomputable]) {
-        #<< message(bad)
-        x <- x[, -which(bad == colnames(x))]
-        oceDebug(debug, "removing ", bad, " from model fit (aliasing problem)\n")
-    }
-    badFullNames <-  unique(gsub("_.*", "", name2[uncomputable]))
-    for (badFullName in badFullNames) {
-        # Bookmark 1B (see also 1A: link up variables)
-        whichIsBad <- which(name == badFullName)
-        indices <- indices[-whichIsBad]
-        name <- name[-whichIsBad]
-        freq <- freq[-whichIsBad]
-        kmpr <- kmpr[-whichIsBad]
-        nc <- nc - 1L
-        warning("Not fitting for ", badFullName, " because of aliasing problem")
-    }
-    #<< browser()
+    oceDebug(debug, "about to do regression\n")
     oceDebug(debug, vectorShow(colnames(x)))
     model <- regress(elevation ~ x - 1, na.action=na.exclude)
     #>> browser()
@@ -1564,13 +1570,13 @@ tidem <- function(t, x, constituents, infer=NULL, latitude=NULL,
                     # Notation: suffices "1" and "2" refer to "from" and "name" here.
                     i1 <- which(tc$name==infer$from[n])[1]
                     i2 <- which(tc$name==infer$name[n])[1]
-                    oceDebug(1+debug, "tRef=", format(tRef, "%Y-%m-%d %H:%M:%S"),
+                    oceDebug(debug, "tRef=", format(tRef, "%Y-%m-%d %H:%M:%S"),
                         ", i1=", i1, ", i2=", i2, ", lat=", latitude, "\n")
                     vuf12 <- tidemVuf(tRef, c(i1, i2), latitude=latitude)
                     #vuf2 <- tidemVuf(tRef, i2, latitude=latitude)
                     f1 <- vuf12$f[1]
                     f2 <- vuf12$f[2]
-                    oceDebug(1+debug, "f1=", f1, ", f2=", f2, "\n")
+                    oceDebug(debug, "f1=", f1, ", f2=", f2, "\n")
                     # FIXME: what is unit of u and v? t_tide.m:482 suggests it is degrees
                     # Foreman's tide12_r2.f:399 suggests U and V are in cycles,
                     # and this is consistent with Pawlowicz's t_tide.m:451
@@ -1589,24 +1595,24 @@ tidem <- function(t, x, constituents, infer=NULL, latitude=NULL,
                     S <- r12 * (f2/f1) * sin(tmp) * sin(rpd * (vu2-vu1+zeta)) / tmp
                     C <- 1 + r12 * (f2/f1) * sin(tmp) * cos(rpd * (vu2-vu1+zeta)) / tmp
                     oceDebug(debug, "tmp=", tmp, ", S=", S, ", C=", C, ", sqrt(S^2+C^2)=", sqrt(S^2+C^2), "\n")
-                    oceDebug(1+debug, infer$from[n], "amplitude, old=", amplitude[ifrom], ", new=", amplitude[ifrom]/sqrt(S^2+C^2), "\n")
+                    oceDebug(debug, infer$from[n], "amplitude, old=", amplitude[ifrom], ", new=", amplitude[ifrom]/sqrt(S^2+C^2), "\n")
                     amplitude[ifrom] <- amplitude[ifrom] / sqrt(S^2+C^2)
-                    oceDebug(1+debug, infer$from[n], "phase, old=", phase[ifrom], ", new=", phase[ifrom]+atan2(S, C) / rpd, "\n")
+                    oceDebug(debug, infer$from[n], "phase, old=", phase[ifrom], ", new=", phase[ifrom]+atan2(S, C) / rpd, "\n")
                     phase[ifrom] <- phase[ifrom] + atan2(S, C) / rpd
                     # End of Foreman 1978 inference calculation. Now we can define 'name' i.t.o. 'from'
                     iname <- which(tc$name == infer$name[n])[1]
-                    oceDebug(1+debug, "Below is inference for ", infer$name[n], " (index=", iname, ")\n")
+                    oceDebug(debug, "Below is inference for ", infer$name[n], " (index=", iname, ")\n")
                     indices <- c(indices, iname)
                     name <- c(name, infer$name[n])
                     freq <- c(freq, tc$freq[iname])
                     amplitudeInferred <- infer$amp[n] * amplitude[ifrom]
                     phaseInferred <- phase[ifrom] - infer$phase[n]
-                    oceDebug(1+debug, "  ", infer$name[n], "inferred amplitude=", amplitudeInferred, "\n")
-                    oceDebug(1+debug, "  ", infer$name[n], "inferred phase=", phaseInferred, "\n")
+                    oceDebug(debug, "  ", infer$name[n], "inferred amplitude=", amplitudeInferred, "\n")
+                    oceDebug(debug, "  ", infer$name[n], "inferred phase=", phaseInferred, "\n")
                     amplitude <- c(amplitude, amplitudeInferred)
                     phase <- c(phase, phaseInferred)
                     p <- c(p, p[ifrom])
-                    oceDebug(1+debug, "  create ", infer$name[n], " (index=", iname, ", ",
+                    oceDebug(debug, "  create ", infer$name[n], " (index=", iname, ", ",
                         tc$freq[iname], " cph) based on ", name[ifrom],
                         " (index ", ifrom, ", ", freq[ifrom], " cph)\n", sep="")
                 }

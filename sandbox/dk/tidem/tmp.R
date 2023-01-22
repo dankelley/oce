@@ -1,3 +1,4 @@
+
 library(oce)
 data(sealevel)
 t1 <- sealevel[["time"]]
@@ -27,16 +28,16 @@ par(mfcol=c(3, 3))
 
 oce.plot.ts(t1, e1, drawTimeRange=FALSE, lwd=0.3, ylim=c(0, 3))
 title("dt=1h")
-plot(m1, xlim=c(0, 0.5), cex=0.6, constituents=c("S2", "S4"), ylim=c(0, 1.5))
+plot(m1, xlim=c(0, 0.35), cex=0.6, constituents=c("S2", "S4"), ylim=c(0, 1.4))
 showSomeFrequencies()
-spectrum(S1, spans=c(7, 5), main="", ylim=c(1e-4, 1e2))
+spectrum(S1, spans=c(7, 5), main="")
 showSomeFrequencies()
 
 oce.plot.ts(t6, e6, drawTimeRange=FALSE, lwd=0.3, ylim=c(0, 3))
 title("dt=6h")
-plot(m6, xlim=c(0, 0.5), cex=0.6, constituents=c("S2", "S4"))
+plot(m6, xlim=c(0, 0.35), cex=0.6, constituents=c("S2", "S4"))
 showSomeFrequencies()
-spectrum(S6, spans=c(7, 5), xlim=c(0, 0.5), main="", ylim=c(1e-4, 1e2))
+spectrum(S6, spans=c(7, 5), xlim=c(0, 0.5), main="")
 showSomeFrequencies()
 # I see a step at 0.2469. Closest constituent is
 data(tidedata)
@@ -44,24 +45,30 @@ tidedata$const$name[which.min(abs(0.2469-tidedata$const$freq))]
 
 oce.plot.ts(t1, e61, drawTimeRange=FALSE, lwd=0.3, ylim=c(0, 3))
 title("dt=1h (from 6h)")
-plot(m61, xlim=c(0, 0.5), cex=0.6, constituents=c("S2", "S4"), ylim=c(0, 1.5))
+plot(m61, xlim=c(0, 0.35), cex=0.6, constituents=c("S2", "S4"), ylim=c(0, 1.4))
 showSomeFrequencies()
-spectrum(S61, spans=c(7, 5), xlim=c(0, 0.5), main="", ylim=c(1e-4, 1e2))
+spectrum(S61, spans=c(7, 5), xlim=c(0, 0.5), main="")
 showSomeFrequencies()
 
-dt <- 6
-freq <- tidedata$const$freq
-keep <- freq < 0.5/dt
-freq <- freq[keep]
-name <- tidedata$const$name[keep]
-order <- order(freq)
-freq <- freq[order]
-name <- name[order]
-mm <- tidem(t6, e6, constituents=name)
+# Method: Given data sampled at interval dt, restrict tidem() to only consider
+# constituents with period exceeding 0.5/dt.
+dt <- 6 # sampling rate
+keep <- tidedata$const$freq < (0.5 - sqrt(.Machine$double.eps)) / dt
+keep <- tidedata$const$freq < (0.5 - sqrt(.Machine$double.eps)) / dt
+const <- tidedata$const$name[keep]
+freq <- tidedata$const$freq[keep]
+mm <- tidem(t6, e6, constituents=const)
 summary(mm)
-#plot(mm, xlim=c(0, 0.5))
+par(mfrow=c(2, 1))
+plot(m1, xlim=c(0, 0.35), cex=0.6, constituents=c("S2", "S4"), ylim=c(0, 2.4))
+plot(mm, xlim=c(0, 0.35), cex=0.6, constituents=c("S2", "S4"), ylim=c(0, 2.4))
+par(mfrow=c(2, 1))
+tlim <- t1[c(1, 14*24)] # two weeks
+oce.plot.ts(t1, e1, xlim=tlim, drawTimeRange=FALSE)
+points(t6, e6, pch=20)
+lines(t1, predict(m1), col=2)
+oce.plot.ts(t6, e6, xlim=tlim), drawTimeRange=FALSE
+lines(t6, predict(mm), col=2)
 
-message("in the prev summary, why is freq unordered?")
-message("BUG: summary not in order of freq (because of substitutions, I suppose)")
-message("CHECK: anything funny in tidem()?  Why not order there? BUT could break tests")
-message("CHECK: can also order in summary()")
+#source("~/git/oce/R/tides.R");plot(mm)#, xlim=c(0, 0.5))
+
