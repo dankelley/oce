@@ -2330,20 +2330,22 @@ mapGrid <- function(dlongitude=15, dlatitude=15, longitude, latitude,
             ok <- !is.na(x) & !is.na(y)
             x <- x[ok]
             y <- y[ok]
-            if (0 == length(x) || 0 == length(y)) {
+            if (0L == length(x) || 0L == length(y)) {
                 oceDebug(debug, "skipping longitude ", l, "E graticule\n", sep="")
             } else {
                 oceDebug(debug, "  graticule ", l, "E has ", length(x), " segments\n", sep="")
                 lines(x, y, lty=lty, lwd=lwd, col=col)
                 # ind side=1 and side=2 longitude label from graticle
                 ok <- is.finite(x) & is.finite(y)
-                if (any(ok)) {
+                if (sum(ok) > 2L) {
                     curve <- sf::st_linestring(cbind(x[ok], y[ok]))
                     usr <- par("usr")
                     axis1 <- sf::st_linestring(cbind(usr[1:2], rep(usr[3], 2)))
+                    #cat("length(curve)=", length(curve), ", length(axis1)=", length(axis1), "\n")
                     I <- sf::st_intersection(curve, axis1)
-                    oceDebug(debug, if (length(I) == 0) "  no" else "  ", " intersection with axis(1)\n", sep="")
-                    if (length(I) > 0) {
+                    #cat(" ... ok?\n")
+                    oceDebug(debug, if (length(I) == 0L) "  no" else "  ", " intersection with axis(1)\n", sep="")
+                    if (length(I) > 0L) {
                         Imatrix <- as.matrix(I)
                         for (ii in dim(Imatrix)[1]) {
                             rval$side <- c(rval$side, 1)
