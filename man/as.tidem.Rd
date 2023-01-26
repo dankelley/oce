@@ -11,7 +11,7 @@ as.tidem(tRef, latitude, name, amplitude, phase, debug = getOption("oceDebug"))
 observations used to develop the harmonic model. This is rounded
 to the nearest hour in \code{\link[=as.tidem]{as.tidem()}}, to match \code{\link[=tidem]{tidem()}}.}
 
-\item{latitude}{Numerical value indicating the latitude of the
+\item{latitude}{numerical value indicating the latitude of the
 observations that were used to create the harmonic model. This
 is needed for nodal-correction procedures carried out
 by \code{\link[=tidemVuf]{tidemVuf()}}.}
