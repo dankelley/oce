@@ -108,15 +108,15 @@ setMethod(f="summary",
         m <- object@metadata
         mnames <- names(m)
         cat("rsk summary\n-----------\n", ...)
-        cat("* Instrument:         model ", m$model,
+        cat("* Instrument:    model ", m$model,
             " serial number ", m$serialNumber, "\n", sep="")
         if ("pressureAtmospheric" %in% mnames)  {
-            cat(paste("* Atmosph. pressure:  ", m$pressureAtmospheric, "\n", sep=""))
+            cat(paste("* Atm. press.:   ", m$pressureAtmospheric, "\n", sep=""))
         }
         if ("pressureType" %in% mnames) {
-            cat(paste("* Pressure type:      ", m$pressureType, "\n", sep=""))
+            cat(paste("* Pressure type: ", m$pressureType, "\n", sep=""))
         }
-        cat(paste("* Source:             `", m$filename, "`\n", sep=""))
+        cat(paste("* Source:        `", m$filename, "`\n", sep=""))
         invisible(callNextMethod()) # summary
     })
 
@@ -511,7 +511,7 @@ setMethod(f="plot",
             if (!"time" %in% names) {
                 stop("plot.rsk() cannot plot timeseries, since no \"time\" data", call.=FALSE)
             }
-            names <- names[names != "time"]
+            names <- names[names != "time" & names != "tstamp"]
             par(mfrow=c(length(names), 1))
             for (name in names) {
                 if (!is.null(x[["units"]])) {
@@ -1009,7 +1009,11 @@ read.rsk <- function(file, from=1, to, by=1, type, encoding=NA,
         # do that, see https://github.com/dankelley/oce/issues/2024
         if (!is.null(geodata)) {
             geodata$time <- numberAsPOSIXct(geodata$tstamp/1e3, type="unix")+tzOffsetLocation*3600
-            look <- geodata$origin == "auto"
+            look <- if ("origin" %in% names(geodata)) {
+                geodata$origin == "auto"
+            } else {
+                rep(TRUE, length(geodata$tstamp))
+            }
             #res@metadata$latitudeOld <- approx(geodata$time, geodata$latitude, res@data$time)$y
             res@metadata$latitude <- approx(geodata$time[look], geodata$latitude[look], res@data$time, rule=2)$y
             #res@metadata$longitudeOld <- approx(geodata$time, geodata$longitude,
