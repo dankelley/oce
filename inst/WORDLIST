@@ -1,6 +1,7 @@
 ADCP
 ADCPs
 ADPs
+ADR
 ADVField
 ADVs
 AFL
@@ -23,6 +24,7 @@ Appl
 Aquadopp
 Aquatracka
 ArcGIS
+ArgonautXR
 AvgInterval
 Azimuthal
 BAMS
@@ -889,6 +891,7 @@ replot
 rescale
 reseting
 retime
+revH
 rgdal
 riley
 rotateAboutZ
@@ -922,6 +925,7 @@ situ
 sle
 smoothScatter
 snakeCase
+snsjho
 soest
 soi
 sontek
@@ -984,6 +988,7 @@ topoInterpolate
 topoMaritimes
 topoWorld
 towyo
+trac
 transmissometry
 travelled
 travelling
@@ -996,6 +1001,7 @@ tz
 uPa
 uS
 uchicago
+ucmerced
 ucp
 ucp
 ucsd

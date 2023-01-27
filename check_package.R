@@ -24,4 +24,3 @@ rhub::check(platform="debian-clang-devel", show_status=FALSE)
 # remotes::install_github("r-lib/revdepcheck")
 revdepcheck::revdep_reset()
 revdepcheck::revdep_check(num_workers=4)
-
