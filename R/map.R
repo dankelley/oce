@@ -12,11 +12,26 @@
 longlatProjInitial <- "+proj=longlat +datum=WGS84 +no_defs"
 
 .Projection <- local({
-    ## Save state, in a way that emulates mapproj.
-    ## The 'type' can be 'none' or 'proj4' (previously, 'mapproj' was also allowed)
+    # Save state, in a way that emulates mapproj.
+    # The 'type' can be 'none' or 'proj4' (previously, 'mapproj' was also allowed)
     val <- list(type="none", projection="")
     function(new) if (!missing(new)) val <<- new else val
 })
+
+# Shift angle so that it lies between -360 and +360.  Do this preserving sign.
+# Presently (2023-01-27), this is done only for mapDirectionField(), to solve
+# an issue with that (see https://github.com/dankelley/oce/issues/2018).
+# At first, I thought I would do this at a lower level, e.g. lonlat2map()
+# or in oceProject(), but these are old functions that are in a lot of
+# use, and I was concerned about unforeseen effects, so for now the
+# following is restricted to mapDirectionField().  To see how this works, try
+#    a <- seq(-1000, 1000, 0)
+#    plot(a, angleShift(a), cex=0.5)
+angleShift <- function(angle)
+{
+    ifelse(angle < 0.0, -360 + (angle %% 360), angle %% 360)
+}
+
 
 # Change some projection names, and fix problem with ortho (which lacks full inverse coverage
 # unless a spherical earth is used).
@@ -1013,6 +1028,11 @@ mapDirectionField <- function(longitude, latitude, u, v,
     scalex <- scale / cos(pi * latitude / 180)
     latEnd <- latitude + v * scale
     lonEnd <- longitude + u * scalex
+    # See notes above, for the (local-only) angleShift() function.
+    longitude <- angleShift(longitude)
+    latitude <- angleShift(latitude)
+    lonEnd <- angleShift(lonEnd)
+    latEnd <- angleShift(latEnd)
     xy <- lonlat2map(as.vector(longitude), as.vector(latitude))
     xyEnd <- lonlat2map(as.vector(lonEnd), as.vector(latEnd))
     arrows(xy$x, xy$y, xyEnd$x, xyEnd$y, length=length, code=code, col=col, ...)
@@ -3815,7 +3835,6 @@ lonlat2map <- function(longitude, latitude, projection="", debug=getOption("oceD
     }
     XY <- oceProject(xy=cbind(longitude, latitude), proj=projection, inv=FALSE, debug=debug-1)
     .Projection(list(type="proj4", projection=projection))
-    # oceDebug(debug, "} # lonlat2map()\n", unindent=1, sep="", style="bold")
     oceDebug(debug, "} # lonlat2map\n", sep="", unindent=1, style="bold")
     list(x=XY[, 1], y=XY[, 2])
 }
