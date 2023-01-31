@@ -7,9 +7,6 @@ output:
     toc: true
     number_sections: true
     fig_caption: yes
-    fig_width: 4
-    fig_height: 4
-    dpi: 72
     dev.args: list(pointsize=11)
 vignette: >
   %\VignetteIndexEntry{6. Subclassing oce objects}
@@ -98,8 +95,8 @@ str(o[["latitude"]])
 
 We can also use the default `plot()` function to show the interdependence of
 entries in the `data` slot.
-```{r fig.cap="**Figure 1.** Demonstration of base-level plot()."}
-plot(o)
+```{r fig.cap="**Figure 1.** Demonstration of base-level plot().", fig.width=4, fig.height=4, dpi=72, dev.args=list(pointsize=10)}
+plot(o, pch=20, cex=0.5)
 ```
 
 Although this plot provides a useful overview of the data, it is not something
@@ -260,18 +257,18 @@ setMethod(f="[[",
 ```
 
 As a test, we can plot the velocity components.
-```{r fig.cap="**Figure 3.** Velocities inferred from drifter motion."}
+```{r fig.cap="**Figure 3.** Velocities inferred from drifter motion.", fig.width=5, fig.height=3, dpi=72, dev.args=list(pointsize=10)}
 uv <- d[["velocity"]]
 par(mfrow=c(2, 1))
-oce.plot.ts(d[["time"]], uv$u, ylab="Eastward velocity [m/s]", grid=TRUE)
-oce.plot.ts(d[["time"]], uv$v, ylab="Northward velocity [m/s]", grid=TRUE)
+oce.plot.ts(d[["time"]], uv$u, ylab="Eastward velo. [m/s]", grid=TRUE)
+oce.plot.ts(d[["time"]], uv$v, ylab="Northward vel. [m/s]", grid=TRUE)
 ```
 
 The `acf()` function, which computes lagged autocorrelation, can shed some
 light on the periodicity of the velocity signals (but see Exercise 3), as
 follows.
 
-```{r fig.cap="**Figure 4.** Autocorrelation analysis of drifter velocities, showing also the M2 period."}
+```{r fig.cap="**Figure 4.** Autocorrelation analysis of drifter velocities, showing also the M2 period.", fig.width=5, fig.height=3, dpi=72, dev.args=list(pointsize=10)}
 data(tidedata)
 M2period <- 1 / with(tidedata$const, freq[[which(name=="M2")]])
 uv <- d[["velocity"]]
