@@ -80,7 +80,8 @@
 #'
 #' Corresponding to the velocity array are two arrays of type raw, and
 #' identical dimension, accessed by `adp[["a"]]` and `adp[["q"]]`,
-#' holding measures of signal strength and data quality quality,
+#' holding measures of signal strength and data quality (referred
+#' to as "correlation" in some documentation),
 #' respectively.  (The exact meanings of these depend on the particular type
 #' of instrument, and it is assumed that users will be familiar enough with
 #' instruments to know both the meanings and their practical consequences in
