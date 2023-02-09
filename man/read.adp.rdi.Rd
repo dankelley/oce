@@ -373,6 +373,14 @@ file.  For example, if \code{d} is an object read with \code{read.adp.rdi}, then
 can be a good way to narrow in on problems.
 }
 
+\section{Changes}{
+
+\itemize{
+\item The \code{bq} (bottom-track quality) field was called \code{bc} until 2023-02-09.
+See https://github.com/dankelley/oce/issues/2039 for discussion.
+}
+}
+
 \examples{
 adp <- read.adp.rdi(system.file("extdata", "adp_rdi.000", package="oce"))
 summary(adp)

@@ -747,6 +747,10 @@ decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceT
 #'```
 #' can be a good way to narrow in on problems.
 #'
+#' @section Changes:
+#' * The `bq` (bottom-track quality) field was called `bc` until 2023-02-09.
+#' See https://github.com/dankelley/oce/issues/2039 for discussion.
+#'
 #' @family things related to adp data
 #' @family functions that read adp data
 read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
@@ -927,7 +931,7 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
             oceDebug(debug, "  0x00 0x02 correlation\n") # qfound
             oceDebug(debug, "  0x00 0x03 echo intensity\n") # aFoiund
             oceDebug(debug, "  0x00 0x04 percent good\n") # gFound
-            oceDebug(debug, "  0x00 0x06 bottom track\n") # bFound; br, bv, bc, ba, bg
+            oceDebug(debug, "  0x00 0x06 bottom track\n") # bFound; br, bv, bq, ba, bg
             oceDebug(debug, "  0x00 0x0a Sentinel vertical beam velocity\n") # vv
             oceDebug(debug, "  0x00 0x0b Sentinel vertical beam correlation\n") # vv
             oceDebug(debug, "  0x00 0x0c Sentinel vertical beam amplitude\n") # vv
@@ -1173,13 +1177,14 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
             if (bFound) {
                 br <- array(double(), dim=c(profilesToRead, numberOfBeams))
                 bv <- array(double(), dim=c(profilesToRead, numberOfBeams))
-                bc <- array(double(), dim=c(profilesToRead, numberOfBeams)) # correlation
+                # bq called bc until 2023-02-09 https://github.com/dankelley/oce/issues/2039
+                bq <- array(double(), dim=c(profilesToRead, numberOfBeams)) # correlation
                 ba <- array(double(), dim=c(profilesToRead, numberOfBeams)) # amplitude
                 bg <- array(double(), dim=c(profilesToRead, numberOfBeams)) # percent good
                 oceDebug(debug, "set up 'br', etc. (bottom data) storage for", profilesToRead, "profiles,",
                     numberOfCells, "cells, and", numberOfBeams, "beams\n")
             } else {
-                br <- bv <- bc <- ba <- bg <- NULL
+                br <- bv <- bq <- ba <- bg <- NULL
             }
             badProfiles <- NULL
             #haveBottomTrack <- FALSE          # FIXME maybe we can determine this from the header
@@ -1246,7 +1251,7 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
                         } else {
                             br[i, ] <- 0.01 * (65536 * rangeMSB + rangeLSB)
                             bv[i, ] <- 0.001 * readBin(buf[o+c(24:31)], "integer", n=4, size=2, signed=TRUE, endian="little")
-                            bc[i, ] <- as.integer(buf[o+32:35])
+                            bq[i, ] <- as.integer(buf[o+32:35])
                             ba[i, ] <- as.integer(buf[o+36:39])
                             bg[i, ] <- as.integer(buf[o+40:43])
                         }
@@ -1628,7 +1633,7 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
                 br[br == 0.0] <- NA    # clean up (not sure if needed)
                 # issue1228
                 res@data <- list(v=v, q=q, a=a, g=g,
-                    br=br, bv=bv, bc=bc, ba=ba, bg=bg,
+                    br=br, bv=bv, bq=bq, ba=ba, bg=bg,
                     distance=seq(bin1Distance, by=cellSize, length.out=numberOfCells),
                     time=time,
                     pressure=pressure,
@@ -1656,7 +1661,7 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
                 oceDebug(debug, "creating data slot for a file with bFound&&isVMDAS\n")
                 br[br == 0.0] <- NA    # clean up (not sure if needed)
                 res@data <- list(v=v, q=q, a=a, g=g,
-                    br=br, bv=bv, bc=bc, ba=ba, bg=bg,
+                    br=br, bv=bv, bq=bq, ba=ba, bg=bg,
                     distance=seq(bin1Distance, by=cellSize, length.out=numberOfCells),
                     time=time,
                     pressure=pressure,
