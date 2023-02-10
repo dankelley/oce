@@ -5,7 +5,7 @@
 \title{Handle Flags in adp Objects}
 \usage{
 \S4method{handleFlags}{adp}(
-  object,
+  object = "oce",
   flags = NULL,
   actions = NULL,
   where = NULL,

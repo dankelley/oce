@@ -102,6 +102,7 @@ setMethod(f="initialize",
         } else {
             .Object@metadata$units <- units # CAUTION: we are being quite trusting here
         }
+        .Object@metadata$north <- "magnetic" # made "geographic" by applyMagneticDeclination()
         .Object@data$time <- time
         .Object@data$u <- u
         .Object@data$v <- v
@@ -134,11 +135,14 @@ setMethod(f="summary",
     signature="cm",
     definition=function(object, ...) {
         cat("Cm summary\n----------\n\n", ...)
-        showMetadataItem(object, "filename",      "File source:        ", quote=TRUE)
-        showMetadataItem(object, "type",          "Instrument type:    ")
-        showMetadataItem(object, "model",         "Instrument model:   ")
-        showMetadataItem(object, "serialNumber",  "Serial Number:      ")
-        showMetadataItem(object, "version",       "Version:            ")
+        showMetadataItem(object, "filename",     "File source:   ", quote=TRUE)
+        showMetadataItem(object, "type",         "Instr. type:   ")
+        showMetadataItem(object, "model",        "Instr. model:  ")
+        showMetadataItem(object, "serialNumber", "Serial Num.:   ")
+        showMetadataItem(object, "version",      "Version:       ")
+        if ("north" %in% names(object@metadata)) {
+            showMetadataItem(object, "north",    "North:         ")
+        }
         invisible(callNextMethod()) # summary
     })
 
@@ -491,6 +495,12 @@ as.cm <- function(time, u=NULL, v=NULL,
 #'   plot(cm)
 #'}
 #'
+#' @section Changes:
+#' * On 2023-02-09 an item named `north` was added to the `metadata` slot.  This
+#' is initialized to `"magnetic"` by [read.cm()], but this is really just a
+#' guess, and users ought to consider using [applyMagneticDeclination()] to take
+#' magnetic declination into account.
+#'
 #' @family things related to cm data
 #'
 #' @author Dan Kelley
@@ -676,6 +686,7 @@ read.cm.s4 <- function(file, from=1, to, by=1, tz=getOption("oceTz"), longitude=
     res@metadata$units$pressure <- list(unit=expression(dbar), scale="")
     if (missing(processingLog)) processingLog <- paste(deparse(match.call()), sep="", collapse="")
     res@processingLog <- processingLogAppend(res@processingLog, processingLog)
+    warning("assuming the compass heading is magnetic; consider using applyMagneticDeclination()")
     oceDebug(debug, "} # read.cm()\n", unindent=1)
     res
 }
@@ -927,3 +938,74 @@ setMethod(f="plot",
         oceDebug(debug, "} # plot.cm()\n", unindent=1)
         invisible(NULL)
     })
+
+#' Alter a cm-class object to account for magnetic declination
+#'
+#' Current-meter (`cm`) instruments determine directions from onboard compasses,
+#' so interpreting velocity components in geographical coordinates requires that
+#' magnetic declination be taken into account.  This is what the present
+#' function does.  It rotates the `u` and `v` velocity components so that `u`
+#' points eastward and `v` points northwards, and it also changes the
+#' `Hdg` (heading) vectors in the same way. To signal that the work has been
+#' done, the `north` item in the `metadata` is set to `"geographic"`. (This is
+#' set to `"magnetic"` by [read,cm-method()].)  A warning is issued if the data
+#' are already in geographic coordinates, but the `declination` is applied
+#' nevertheless, so that a user can correct previous values if necessary.
+#'
+#' @param x a [cm-class] object.
+#'
+#' @param declination magnetic declination in degrees.
+#'
+#' @param debug a debugging flag, set to a positive value to get debugging.
+#'
+#' @return Object, with velocity components (and heading data, if they exist)
+#' adjusted as outlined in \sQuote{Description}.
+#'
+#' @seealso Use [magneticField()] to determine the declination,
+#' inclination and intensity at a given spot on the world, at a given time.
+#'
+#' @author Dan Kelley
+#'
+#' @family things related to magnetism
+applyMagneticDeclinationCm <- function(x, declination=0, debug=getOption("oceDebug"))
+{
+    oceDebug(debug, "applyMagneticDeclinationCm(x, declination=", declination, ") {\n", sep="", unindent=1)
+    if (!inherits(x, "oce")) {
+        stop("method only works for oce-class objects")
+    }
+    if (!inherits(x, "cm")) {
+        stop("method only works for cm-class objects")
+    }
+    if (length(declination) != 1L) {
+        stop("length of 'declination' must equal 1")
+    }
+    oceDebug(debug, "object is of type 'cm'\n")
+    if (identical(cm@metadata$north, "geographic")) {
+        warning("a declination has already been applied, so expect odd results")
+    }
+    res <- x
+    oceDebug(debug, "rotating u and v\n")
+    S <- sin(-declination * pi / 180)
+    C <- cos(-declination * pi / 180)
+    r <- matrix(c(C, S, -S, C), nrow=2)
+    uvr <- r %*% rbind(x@data$u, x@data$v)
+    res@data$u <- uvr[1, ]
+    res@data$v <- uvr[2, ]
+    oceDebug(debug, "originally, first u:", x@data$u[1:3], "\n")
+    oceDebug(debug, "    set first u:", res@data$u[1:3], "\n")
+    oceDebug(debug, "originally, first v:", x@data$v[1:3], "\n")
+    oceDebug(debug, "    set first v:", res@data$v[1:3], "\n")
+    for (headingName in c("Hdg", "Hdg.1")) {
+        oceDebug(debug, "rotating ", headingName, "\n")
+        if (headingName %in% names(x@data)) {
+            oceDebug(debug, "originally, first ", headingName, ":", x@data[headingName][1:3], "\n", sep="")
+            res@data[headingName] <- x@data[headingName] + declination
+            oceDebug(debug, "    set first ", headingName, ":", x@data[headingName][1:3], "\n", sep="")
+        }
+    }
+    res@metadata$north <- "geographic"
+    res@processingLog <- processingLogAppend(res@processingLog,
+        paste0("applyMagneticDeclinationCm(x, declination=", declination, ")"))
+    oceDebug(debug, "} # applyMagneticDeclinationCm\n", unindent=1)
+    res
+}

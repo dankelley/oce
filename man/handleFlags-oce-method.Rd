@@ -5,7 +5,7 @@
 \title{Handle flags in oce objects}
 \usage{
 \S4method{handleFlags}{oce}(
-  object,
+  object = "oce",
   flags = NULL,
   actions = NULL,
   where = NULL,

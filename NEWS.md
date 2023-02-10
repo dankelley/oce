@@ -2,12 +2,13 @@
 
 * Add `advSontekAdrFileTrim()` (issue 1994).
 * Add `ctdFindProfilesRBR()` (issue 2027).
+* Change `applyMagneticDeclination()` to also handle `adp` and `adv` (issue 2038).
 * Change `download.topo()` to handle new NOAA database (issue 2015).
 * Change `plotMap()` to remove a low-level error (issue 2036).
 * Change `plot,tidem-method()` to obey `...` parameter (issue 2035).
 * Change `read.adp.ad2cp()`, and structure of AD2CP objects (issue 2005).
 * Change `read.rsk()` to read geographic information (issue 2024).
-* Change `tidem()` (and its summary method) to avoid errors for 6-hourly data (issue 2034).
+* Change `tidem()` (and summary method) to handle 6-hourly data (issue 2034).
 * Remove dependence on `rgeos` and `raster` packages (issue 2028).
 
 # oce 1.7.10 (on CRAN)

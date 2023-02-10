@@ -97,16 +97,16 @@ setMethod(f="summary",
                 } else {
                     if (deltat < 60) {
                         cat("* Time:          ", format(from), " to ", format(to),
-                            " (", nt, " samples, mean increment ", deltat, "s)\n", sep="")
+                            " (", nt, " samples, mean increment ", deltat, " s)\n", sep="")
                     } else if (deltat < 3600) {
                         cat("* Time:          ", format(from), " to ", format(to),
-                            " (", nt, " samples , mean increment ", deltat/60, "min)\n", sep="")
+                            " (", nt, " samples, mean increment ", deltat/60, " min)\n", sep="")
                     } else if (deltat < 24*3600) {
                         cat("* Time:          ", format(from), " to ", format(to),
-                            " (", nt, " samples , mean increment ", deltat/3600, "hour)\n", sep="")
+                            " (", nt, " samples, mean increment ", deltat/3600, " hour)\n", sep="")
                     } else {
                         cat("* Time:          ", format(from), " to ", format(to),
-                            " (", nt, " samples , mean increment ", deltat/3600/24, "day)\n", sep="")
+                            " (", nt, " samples, mean increment ", deltat/3600/24, " day)\n", sep="")
                     }
                 }
             }
@@ -805,6 +805,47 @@ setMethod(f="show",
         options(digits=odigits) # return to original digits value
     })
 
+setGeneric(name="applyMagneticDeclination",
+    def=function(object="oce", declination="ANY", debug="ANY") {
+        standardGeneric("applyMagneticDeclination")
+    })
+
+#' Apply magnetic declination
+#'
+#' Velocities (and headings, if they also exist) are modified to take into
+#' account the supplied declination.  To signal that this has been done, the
+#' `metadata` slot is altered by setting an item name `north` to `"geographic"`.
+#' (Note that the Most reading functions set this to `"magnetic"` by default.)
+#' If the `north` item is already `"geographic"` then a warning is issued,
+#' but the transformations are still done; this is to permit rectifying errors
+#' without the user having to modify the data directly.
+#'
+#' @family functions that handle magnetic declination
+#'
+#' @param object an object of same type as the input, with velocities
+#' (and headings, if they exist) modified to account for the magnetic
+#' declination, and with `@metadata$north` being set to `"geographic"`.
+#'
+#' @param declination magnetic declination, in degrees.
+setMethod(f="applyMagneticDeclination",
+    signature=c(object="oce", declination="ANY", debug="ANY"),
+    definition=function(object, declination=0.0, debug=getOption("oceDebug")) {
+        if (length(declination) != 1L) {
+            stop("length of declination must equal 1")
+        }
+        message("in applyMagneticDeclination...")
+        message(class(object))
+        if (inherits(object, "cm")) {
+            applyMagneticDeclinationCm(object, declination, debug)
+        } else if (inherits(object, "adp")) {
+            applyMagneticDeclinationAdp(object, declination, debug)
+        } else if (inherits(object, "adv")) {
+            applyMagneticDeclinationAdv(object, declination, debug)
+        } else {
+            stop("method only works for 'adp', 'adv' and 'cm' objects")
+        }
+    })
+
 
 #' Create a composite object by averaging across good data
 #'
@@ -857,8 +898,9 @@ setMethod("composite",
 #' @param object an [oce-class] object.
 #'
 #' @template handleFlagsTemplate
-setGeneric("handleFlags", function(object, flags=NULL, actions=NULL, where=NULL, debug=getOption("oceDebug")) {
-    standardGeneric("handleFlags")
+setGeneric(name="handleFlags",
+    def=function(object="oce", flags=NULL, actions=NULL, where=NULL, debug=getOption("oceDebug")) {
+        standardGeneric("handleFlags")
     })
 
 #' Signal erroneous application to non-oce objects
@@ -867,7 +909,8 @@ setGeneric("handleFlags", function(object, flags=NULL, actions=NULL, where=NULL,
 #' @param actions Ignored.
 #' @param where Ignored.
 #' @param debug Ignored.
-setMethod("handleFlags", signature=c(object="vector", flags="ANY", actions="ANY", where="ANY", debug="ANY"),
+setMethod(f="handleFlags",
+    signature=c(object="vector", flags="ANY", actions="ANY", where="ANY", debug="ANY"),
     definition=function(object, flags=list(), actions=list(), where=list(), debug=getOption("oceDebug")) {
         stop("handleFlags() can only be applied to objects inheriting from \"oce\"")
     })
@@ -881,7 +924,8 @@ setMethod("handleFlags", signature=c(object="vector", flags="ANY", actions="ANY"
 #' @param object an [oce-class] object.
 #
 #' @template handleFlagsTemplate
-setMethod("handleFlags", signature=c(object="oce", flags="ANY", actions="ANY", where="ANY", debug="ANY"),
+setMethod(f="handleFlags",
+    signature=c(object="oce", flags="ANY", actions="ANY", where="ANY", debug="ANY"),
     definition=function(object, flags=NULL, actions=NULL, where=NULL, debug=getOption("oceDebug")) {
         # DEVELOPER 1: alter the next comment to explain your setup
         if (is.null(flags)) {

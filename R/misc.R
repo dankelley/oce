@@ -127,25 +127,34 @@ angleRemap <- function(theta)
 }
 
 
-#' Earth magnetic declination
+#' Alter an object to account for magnetic declination
 #'
-#' Instruments that use magnetic compasses to determine current direction need
-#' to have corrections applied for magnetic declination, to get currents with
-#' the y component oriented to geographic, not magnetic, north.  Sometimes, and
-#' for some instruments, the declination is specified when the instrument is
-#' set up, so that the velocities as recorded are already.  Other times, the
-#' data need to be adjusted.  This function is for the latter case.
+#' Instruments that infer direction using magnetic compasses to determine
+#' current direction need to have a correction applied for magnetic declination,
+#' if the goal is to infer currents with x and y oriented eastward and
+#' northward, respectively.  This function handles this task, by altering
+#' velocity components (and heading values, if they exist) for objects of
+#' [cm-class], [adp-class] and [adv-class] and [cm-class]. It is a generic
+#' function that works by [applyMagneticDeclinationAdp()],
+#' [applyMagneticDeclinationAdv()], or [applyMagneticDeclinationCm()], as
+#' appropriate.  (The user may also call these functions directly.)
 #'
-#' @param x an [oce-class] object.
+#' @param x an [oce-class] object of [cm-class], [adp-class], or [adv-class].
 #'
-#' @param declination magnetic declination (to be added to the heading)
+#' @param declination magnetic declination in degrees.
 #'
 #' @param debug a debugging flag, set to a positive value to get debugging.
 #'
-#' @return Object, with velocity components adjusted to be aligned with
-#' geographic north and east.
+#' @return Object, with velocity components (and heading data, if they exist)
+#' that have been adjusted to be aligned with
+#' geographic north and east.  Also, the item named `north` in the `metadata`
+#' slot will be set to `geographic`.  If `x` already has this setting, then
+#' a warning is issued, so that users can alter the declination setting, but
+#' will have been made aware of a previously-set value.  Use e.g.
+#' `x[["north"]]` to see the existing setting, if it exists.  (Objects
+#' created with previous versions of oce will not have this setting.)
 #'
-#' @author Dan Kelley
+#' @author Dan Kelley, with help from Clark Richards and Jaimie Harbin.
 #'
 #' @seealso Use [magneticField()] to determine the declination,
 #' inclination and intensity at a given spot on the world, at a given time.
@@ -154,11 +163,20 @@ angleRemap <- function(theta)
 #' 1. \samp{https://www.ngdc.noaa.gov/IAGA/vmod/igrf.html}
 #'
 #' @family things related to magnetism
-applyMagneticDeclination <- function(x, declination=0, debug=getOption("oceDebug"))
+applyMagneticDeclinationFIXME <- function(x, declination=0, debug=getOption("oceDebug"))
 {
-    oceDebug(debug, "applyMagneticDeclination(x,declination=", declination, ") {\n", sep="", unindent=1)
+    oceDebug(debug, "applyMagneticDeclination(x, declination=", declination, ") {\n", sep="", unindent=1)
+    if (!inherits(x, "oce")) {
+        stop("method only works for oce-class objects")
+    }
+    if (length(declination) != 1L) {
+        stop("length of 'declination' must equal 1")
+    }
     if (inherits(x, "cm")) {
         oceDebug(debug, "object is of type 'cm'\n")
+        if (identical(cm@metadata$north, "geographic")) {
+            warning("a declination has already been applied, so expect odd results")
+        }
         res <- x
         S <- sin(-declination * pi / 180)
         C <- cos(-declination * pi / 180)
@@ -170,10 +188,52 @@ applyMagneticDeclination <- function(x, declination=0, debug=getOption("oceDebug
         oceDebug(debug, "originally, first v:", x@data$v[1:3], "\n")
         oceDebug(debug, "after application, first u:", res@data$u[1:3], "\n")
         oceDebug(debug, "after application, first v:", res@data$v[1:3], "\n")
+        if ("Hdg" %in% names(x@data)) {
+            res@data$Hdg <- x@data$Hdg + declination
+        }
+        res@metadata$north <- "geographic"
+    } else if (inherits(x, "adp")) {
+        if (is.ad2cp(x)) {
+            stop("this function does not work yet for AD2CP data")
+        }
+        if (!identical(x@metadata$oceCoordinate, "enu")) {
+            stop("x must be in enu coordinates, not ", x@metadata$oceCoordinate, " coordinates")
+        }
+        if (identical(x@metadata$north == "geographic")) {
+            warning("a declination has already been applied; perhaps try enuToOther()")
+            return(x)
+        }
+        res@metadata$north <- "geographic"
+        res <- x
+        np <- dim(x[["v"]])[1]           # number of profiles
+        declination <- rep(declination, length.out=np)
+        pitch <- rep(0.0, length.out=np)
+        roll <- rep(0.0, length.out=np)
+        nc <- dim(x[["v"]])[2]           # numberOfCells
+        for (c in 1:nc) {
+            other <- do_sfm_enu(declination, pitch, roll, x[["v"]][, c, 1], x[["v"]][, c, 2], x[["v"]][, c, 3])
+            res@data$v[, c, 1] <- other$east
+            res@data$v[, c, 2] <- other$north
+            res@data$v[, c, 3] <- other$up
+        }
+        if ("bv" %in% names(x@data)) {
+            other <- do_sfm_enu(declination, pitch, roll, x@data$bv[, 1], x@data$bv[, 2], x@data$bv[, 3])
+            res@data$bv[, 1] <- other$east
+            res@data$bv[, 2] <- other$north
+            res@data$bv[, 3] <- other$up
+        }
+        if ("heading" %in% names(x@data)) {
+            res@data$heading <- x@data$heading + declination
+        }
+        res@metadata$north <- "geographic"
+    } else if (inherits(x, "adv")) {
+        oceDebug(debug, "object is of type 'adv'\n")
+        stop("FIX ME (adv)")
     } else {
         stop("cannot apply declination to object of class ", paste(class(x), collapse=", "), "\n")
     }
-    res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+    res@processingLog <- processingLogAppend(res@processingLog,
+        paste0("applyMagneticDeclination(x, declination=", declination, ")"))
     oceDebug(debug, "} # applyMagneticDeclination\n", unindent=1)
     res
 }

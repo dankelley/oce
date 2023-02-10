@@ -3960,6 +3960,67 @@ enuToOtherAdp <- function(x, heading=0, pitch=0, roll=0)
     res
 }
 
+#<><><> #' Set declination for an adp object of 'enu' coordinates
+#<><><> #'
+#<><><> #' This works only if `x` is in `enu` (east-north-up) coordinates.
+#<><><> #' The supplied `declination` is used to recompute velocity coordinates,
+#<><><> #' bottom-tracking coordinates (if they exist) and stored heading (if
+#<><><> #' that exists).  To signal that this change has been made, the `metadata`
+#<><><> #' item named `north` is set to `"geographic"`.  To prevent problems,
+#<><><> #' objects that already have `north` set to `"geographic"` are returned
+#<><><> #' unaltered, with a warning indicating that the user might want to use
+#<><><> #' [enuToOtherAdp()] or [enuToOtherAdv()], depending on whether
+#<><><> #' `x` is an "adp" or "adv" object.
+#<><><> #'
+#<><><> #' @author Dan Kelley, with help from Clark Richards and Jaimie Harbin.
+#<><><> #'
+#<><><> #' @family things related to adp data
+#<><><> #' @family things related to adv data
+#<><><> applyDeclination <- function(x, declination=0.0, debug=getOption("oceDebug"))
+#<><><> {
+#<><><>     if (!inherits(x, "adp")) {
+#<><><>         stop("method is only for objects of class '", "adp", "' FIXME: handle adv")
+#<><><>     }
+#<><><>     if (is.ad2cp(x)) {
+#<><><>         stop("this function does not work yet for AD2CP data")
+#<><><>     }
+#<><><>     if (!identical(x@metadata$oceCoordinate, "enu")) {
+#<><><>         stop("x must be in enu coordinates, not ", x@metadata$oceCoordinate, " coordinates")
+#<><><>     }
+#<><><>     if (length(declination) != 1L) {
+#<><><>         stop("length of 'declination' must equal 1")
+#<><><>     }
+#<><><>     if (identical(x@metadata$north == "geographic")) {
+#<><><>         warning("a declination has already been applied; perhaps try enuToOther()")
+#<><><>         return(x)
+#<><><>     }
+#<><><>     res@metadata$north <- "geographic"
+#<><><>     res <- x
+#<><><>     np <- dim(x[["v"]])[1]           # number of profiles
+#<><><>     declination <- rep(declination, length.out=np)
+#<><><>     pitch <- rep(0.0, length.out=np)
+#<><><>     roll <- rep(0.0, length.out=np)
+#<><><>     nc <- dim(x[["v"]])[2]           # numberOfCells
+#<><><>     for (c in 1:nc) {
+#<><><>         other <- do_sfm_enu(declination, pitch, roll, x[["v"]][, c, 1], x[["v"]][, c, 2], x[["v"]][, c, 3])
+#<><><>         res@data$v[, c, 1] <- other$east
+#<><><>         res@data$v[, c, 2] <- other$north
+#<><><>         res@data$v[, c, 3] <- other$up
+#<><><>     }
+#<><><>     if ("bv" %in% names(x@data)) {
+#<><><>         other <- do_sfm_enu(declination, pitch, roll, x@data$bv[, 1], x@data$bv[, 2], x@data$bv[, 3])
+#<><><>         res@data$bv[, 1] <- other$east
+#<><><>         res@data$bv[, 2] <- other$north
+#<><><>         res@data$bv[, 3] <- other$up
+#<><><>     }
+#<><><>     if ("heading" %in% names(x@data)) {
+#<><><>         res@data$heading <- x@data$heading + declination
+#<><><>     }
+#<><><>     res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(expr=match.call()), sep="", collapse=""))
+#<><><>     res
+#<><><> }
+
+
 peek.ahead <- function(file, bytes=2, debug=!TRUE)
 {
     pos <- seek(file)
@@ -4381,3 +4442,82 @@ adpFlagPastBoundary <- function(x=NULL, fields=NULL, df=20, trim=0.15, good=1, b
     oceDebug(debug, "} # adpFlagPastBoundary()\n", sep="", unindent=1, style="bold")
     return(x)
 }
+
+#' Alter an adp-class object to account for magnetic declination
+#'
+#' Acoustic-Doppler profiling instruments that infer direction using magnetic
+#' compasses to determine current direction need to have a correction applied
+#' for magnetic declination, if the goal is to infer currents with x and y
+#' oriented eastward and northward, respectively.  This function, which
+#' may be called directly or indirectly via [handleMagneticDeclination()],
+#' handles this task by altering velocity components (and heading values,
+#' if they exist), and also by setting the `north` item of the `metadata`
+#' slot to `"geographic"`.  (If `north` already has this value, the declination
+#' is still applied, but with a warning.)
+#'
+#' @param x an [adp-class] object.
+#'
+#' @param declination magnetic declination in degrees.
+#'
+#' @param debug a debugging flag, set to a positive value to get debugging.
+#'
+#' @return An [adp-class] object, modified as explained in \sQuote{Description}.
+#'
+#' @seealso Use [magneticField()] to determine the declination,
+#' inclination and intensity at a given spot on the world, at a given time.
+#'
+#' @author Dan Kelley, with help from Clark Richards and Jaimie Harbin.
+#'
+#' @family things related to magnetism
+applyMagneticDeclinationAdp <- function(x, declination=0, debug=getOption("oceDebug"))
+{
+    oceDebug(debug, "applyMagneticDeclinationAdp(x, declination=", declination, ") {\n", sep="", unindent=1)
+    if (!inherits(x, "oce")) {
+        stop("method only works for oce-class objects")
+    }
+    if (!inherits(x, "adp")) {
+        stop("method only works for adp-class objects")
+    }
+    if (is.ad2cp(x)) {
+        stop("this function does not work yet for AD2CP data")
+    }
+    if (length(declination) != 1L) {
+        stop("length of 'declination' must equal 1")
+    }
+    if (!identical(x@metadata$oceCoordinate, "enu")) {
+        stop("x must be in enu coordinates, not ", x@metadata$oceCoordinate, " coordinates")
+    }
+    if (identical(x@metadata$north == "geographic")) {
+        warning("a declination has already been applied; perhaps try enuToOther()")
+        return(x)
+    }
+    res@metadata$north <- "geographic"
+    res <- x
+    np <- dim(x[["v"]])[1]           # number of profiles
+    declination <- rep(declination, length.out=np)
+    pitch <- rep(0.0, length.out=np)
+    roll <- rep(0.0, length.out=np)
+    nc <- dim(x[["v"]])[2]           # numberOfCells
+    for (c in 1:nc) {
+        other <- do_sfm_enu(declination, pitch, roll, x[["v"]][, c, 1], x[["v"]][, c, 2], x[["v"]][, c, 3])
+        res@data$v[, c, 1] <- other$east
+        res@data$v[, c, 2] <- other$north
+        res@data$v[, c, 3] <- other$up
+    }
+    if ("bv" %in% names(x@data)) {
+        other <- do_sfm_enu(declination, pitch, roll, x@data$bv[, 1], x@data$bv[, 2], x@data$bv[, 3])
+        res@data$bv[, 1] <- other$east
+        res@data$bv[, 2] <- other$north
+        res@data$bv[, 3] <- other$up
+    }
+    if ("heading" %in% names(x@data)) {
+        res@data$heading <- x@data$heading + declination
+    }
+    res@metadata$north <- "geographic"
+    res@processingLog <- processingLogAppend(res@processingLog,
+        paste0("applyMagneticDeclinationAdp(x, declination=", declination, ")"))
+    oceDebug(debug, "} # applyMagneticDeclinationAdp\n", unindent=1)
+    res
+}
+
+
