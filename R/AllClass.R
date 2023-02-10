@@ -805,42 +805,98 @@ setMethod(f="show",
         options(digits=odigits) # return to original digits value
     })
 
+#' Alter an object to account for magnetic declination
+#'
+#' Current-measuring instruments that infer flow direction using magnetic
+#' compasses require a correction for magnetic declination, in order to infer
+#' currents with x and y oriented eastward and northward, respectively.
+#' [applyMagneticDeclination()] is a generic function that handles this task by
+#' altering velocity components (and heading values, if they exist).  It works
+#' for objects of the [cm-class], [adp-class] and [adv-class] and [cm-class]
+#' classes by calling specialized methods for those
+#' classes.
+#'
+#' @param object an object of [cm-class], [adp-class], or [adv-class] class.
+#'
+#' @param declination numeric value holding magnetic declination in degrees,
+#' positive for clockwise from north.
+#'
+#' @param debug a debugging flag, set to a positive value to get debugging.
+#'
+#' @return an object of the same class as `object`, in which the velocities
+#' (and headings, if they exist) 
+#' have been rotated to the `v` coordinate is aligned to true (geographic)
+#' north.
+#' Also, the item named `north` in the `metadata`
+#' slot will be set to `geographic`.  If `x` already has this setting, then
+#' a warning is issued, so that users can alter the declination setting, but
+#' will have been made aware of a previously-set value.  Use e.g.
+#' `x[["north"]]` to see the existing setting, if it exists.  (Objects
+#' created with previous versions of oce will not have this setting.)
+#'
+#' @author Dan Kelley, aided, for the [adp-class] and [adv-class] variants,
+#' by Clark Richards and Jaimie Harbin.
+#'
+#' @seealso Use [magneticField()] to determine the declination,
+#' inclination and intensity at a given spot on the world, at a given time.
+#'
+#' @family things related to magnetism
 setGeneric(name="applyMagneticDeclination",
     def=function(object="oce", declination="ANY", debug="ANY") {
         standardGeneric("applyMagneticDeclination")
     })
 
-#' Apply magnetic declination
+#' Alter an object to account for magnetic declination
 #'
-#' Velocities (and headings, if they also exist) are modified to take into
-#' account the supplied declination.  To signal that this has been done, the
-#' `metadata` slot is altered by setting an item name `north` to `"geographic"`.
-#' (Note that the Most reading functions set this to `"magnetic"` by default.)
-#' If the `north` item is already `"geographic"` then a warning is issued,
-#' but the transformations are still done; this is to permit rectifying errors
-#' without the user having to modify the data directly.
+#' Current-measuring instruments that infer flow direction using magnetic
+#' compasses require a correction for magnetic declination, in order to infer
+#' currents with x and y oriented eastward and northward, respectively.
+#' [applyMagneticDeclination()] is a generic function that handles this task by
+#' altering velocity components (and heading values, if they exist).  It works
+#' for objects of the [cm-class], [adp-class] and [adv-class] and [cm-class]
+#' classes by calling specialized methods for those
+#' classes.
 #'
-#' @family functions that handle magnetic declination
+#' @param object an object of [cm-class], [adp-class], or [adv-class] class.
 #'
-#' @param object an object of same type as the input, with velocities
-#' (and headings, if they exist) modified to account for the magnetic
-#' declination, and with `@metadata$north` being set to `"geographic"`.
+#' @param declination numeric value holding magnetic declination in degrees,
+#' positive for clockwise from north.
 #'
-#' @param declination magnetic declination, in degrees.
+#' @param debug a debugging flag, set to a positive value to get debugging.
+#'
+#' @return an object of the same class as `object`, in which the velocities
+#' (and headings, if they exist) 
+#' have been rotated to the `v` coordinate is aligned to true (geographic)
+#' north.
+#' Also, the item named `north` in the `metadata`
+#' slot will be set to `geographic`.  If `x` already has this setting, then
+#' a warning is issued, so that users can alter the declination setting, but
+#' will have been made aware of a previously-set value.  Use e.g.
+#' `x[["north"]]` to see the existing setting, if it exists.  (Objects
+#' created with previous versions of oce will not have this setting.)
+#'
+#' @author Dan Kelley, aided, for the [adp-class] and [adv-class] variants,
+#' by Clark Richards and Jaimie Harbin.
+#'
+#' @seealso Use [magneticField()] to determine the declination,
+#' inclination and intensity at a given spot on the world, at a given time.
+#'
+#' @family things related to magnetism
 setMethod(f="applyMagneticDeclination",
     signature=c(object="oce", declination="ANY", debug="ANY"),
     definition=function(object, declination=0.0, debug=getOption("oceDebug")) {
         if (length(declination) != 1L) {
             stop("length of declination must equal 1")
         }
-        message("in applyMagneticDeclination...")
-        message(class(object))
         if (inherits(object, "cm")) {
-            applyMagneticDeclinationCm(object, declination, debug)
+            callNextMethod()
+            #applyMagneticDeclinationCm(object, declination, debug)
         } else if (inherits(object, "adp")) {
-            applyMagneticDeclinationAdp(object, declination, debug)
+            callNextMethod()
+            #applyMagneticDeclinationAdp(object, declination, debug)
         } else if (inherits(object, "adv")) {
-            applyMagneticDeclinationAdv(object, declination, debug)
+            callNextMethod()
+            #applyMagneticDeclinationAdv(object, declination, debug)
         } else {
             stop("method only works for 'adp', 'adv' and 'cm' objects")
         }

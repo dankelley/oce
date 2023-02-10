@@ -28,6 +28,7 @@ of \code{cm} objects, and also outlines the other functions dealing with them.
 Other things related to cm data: 
 \code{\link{[[,cm-method}},
 \code{\link{[[<-,cm-method}},
+\code{\link{applyMagneticDeclination,cm-method}},
 \code{\link{as.cm}()},
 \code{\link{cm-class}},
 \code{\link{cm}},

@@ -948,13 +948,14 @@ setMethod(f="plot",
 #' points eastward and `v` points northwards, and it also changes the
 #' `Hdg` (heading) vectors in the same way. To signal that the work has been
 #' done, the `north` item in the `metadata` is set to `"geographic"`. (This is
-#' set to `"magnetic"` by [read,cm-method()].)  A warning is issued if the data
+#' set to `"magnetic"` by [read.cm()].)  A warning is issued if the data
 #' are already in geographic coordinates, but the `declination` is applied
 #' nevertheless, so that a user can correct previous values if necessary.
 #'
-#' @param x a [cm-class] object.
+#' @param object a [cm-class] object.
 #'
-#' @param declination magnetic declination in degrees.
+#' @param declination numeric value holding magnetic declination in degrees,
+#' positive for clockwise from north.
 #'
 #' @param debug a debugging flag, set to a positive value to get debugging.
 #'
@@ -967,45 +968,41 @@ setMethod(f="plot",
 #' @author Dan Kelley
 #'
 #' @family things related to magnetism
-applyMagneticDeclinationCm <- function(x, declination=0, debug=getOption("oceDebug"))
-{
-    oceDebug(debug, "applyMagneticDeclinationCm(x, declination=", declination, ") {\n", sep="", unindent=1)
-    if (!inherits(x, "oce")) {
-        stop("method only works for oce-class objects")
-    }
-    if (!inherits(x, "cm")) {
-        stop("method only works for cm-class objects")
-    }
-    if (length(declination) != 1L) {
-        stop("length of 'declination' must equal 1")
-    }
-    oceDebug(debug, "object is of type 'cm'\n")
-    if (identical(cm@metadata$north, "geographic")) {
-        warning("a declination has already been applied, so expect odd results")
-    }
-    res <- x
-    oceDebug(debug, "rotating u and v\n")
-    S <- sin(-declination * pi / 180)
-    C <- cos(-declination * pi / 180)
-    r <- matrix(c(C, S, -S, C), nrow=2)
-    uvr <- r %*% rbind(x@data$u, x@data$v)
-    res@data$u <- uvr[1, ]
-    res@data$v <- uvr[2, ]
-    oceDebug(debug, "originally, first u:", x@data$u[1:3], "\n")
-    oceDebug(debug, "    set first u:", res@data$u[1:3], "\n")
-    oceDebug(debug, "originally, first v:", x@data$v[1:3], "\n")
-    oceDebug(debug, "    set first v:", res@data$v[1:3], "\n")
-    for (headingName in c("Hdg", "Hdg.1")) {
-        oceDebug(debug, "rotating ", headingName, "\n")
-        if (headingName %in% names(x@data)) {
-            oceDebug(debug, "originally, first ", headingName, ":", x@data[headingName][1:3], "\n", sep="")
-            res@data[headingName] <- x@data[headingName] + declination
-            oceDebug(debug, "    set first ", headingName, ":", x@data[headingName][1:3], "\n", sep="")
+#' @family things related to cm data
+setMethod(f="applyMagneticDeclination",
+    signature(object="cm", declination="ANY", debug="ANY"),
+    definition=function(object, declination=0.0, debug=getOption("oceDebug")) {
+        oceDebug(debug, "applyMagneticDeclination(object, declination=", declination, ") {\n", sep="", unindent=1)
+        if (length(declination) != 1L) {
+            stop("length of 'declination' must equal 1")
         }
-    }
-    res@metadata$north <- "geographic"
-    res@processingLog <- processingLogAppend(res@processingLog,
-        paste0("applyMagneticDeclinationCm(x, declination=", declination, ")"))
-    oceDebug(debug, "} # applyMagneticDeclinationCm\n", unindent=1)
-    res
-}
+        oceDebug(debug, "object is of type 'cm'; declination=", declination, "\n")
+        if (identical(object@metadata$north, "geographic")) {
+            warning("a declination has already been applied, so expect odd results")
+        }
+        res <- object
+        S <- sin(-declination * pi / 180)
+        C <- cos(-declination * pi / 180)
+        r <- matrix(c(C, S, -S, C), nrow=2)
+        uvr <- r %*% rbind(object@data$u, object@data$v)
+        res@data$u <- uvr[1, ]
+        res@data$v <- uvr[2, ]
+        oceDebug(debug, "originally, u[1:3] =", object@data$u[1:3], "\n")
+        oceDebug(debug, "    set u[1:3] to", res@data$u[1:3], "\n")
+        oceDebug(debug, "originally, v[1:3] =", object@data$v[1:3], "\n")
+        oceDebug(debug, "    set v[1:3] to", res@data$v[1:3], "\n")
+        dataNames <- names(object@data)
+        for (headingName in c("Hdg", "Hdg.1")) {
+            oceDebug(debug, "rotating ", headingName, "\n")
+            if (headingName %in% dataNames) {
+                oceDebug(debug, "originally, ", headingName, "[1:3] =", object@data[headingName][1:3], "\n", sep="")
+                res@data[[headingName]] <- object@data[[headingName]] + declination
+                oceDebug(debug, "    set ", headingName, "[1:3] to ", object@data[headingName][1:3], "\n", sep="")
+            }
+        }
+        res@metadata$north <- "geographic"
+        res@processingLog <- processingLogAppend(res@processingLog,
+            paste0("applyMagneticDeclinationCm(x, declination=", declination, ")"))
+        oceDebug(debug, "} # applyMagneticDeclinationCm\n", unindent=1)
+        res
+    })
