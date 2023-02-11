@@ -5,4 +5,3 @@
 #' be printed. If one function calls another, it usually reduces the value of
 #' `debug` first, so that a user can often obtain deeper debugging
 #' by specifying higher `debug` values.
-

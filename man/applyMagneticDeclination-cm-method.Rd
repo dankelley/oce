@@ -19,20 +19,22 @@ positive for clockwise from north.}
 \item{debug}{a debugging flag, set to a positive value to get debugging.}
 }
 \value{
-Object, with velocity components (and heading data, if they exist)
-adjusted as outlined in \sQuote{Description}.
+A \linkS4class{cm} object, adjusted as outlined in \sQuote{Details}.
 }
 \description{
 Current-meter (\code{cm}) instruments determine directions from onboard compasses,
 so interpreting velocity components in geographical coordinates requires that
 magnetic declination be taken into account.  This is what the present
-function does.  It rotates the \code{u} and \code{v} velocity components so that \code{u}
-points eastward and \code{v} points northwards, and it also changes the
-\code{Hdg} (heading) vectors in the same way. To signal that the work has been
-done, the \code{north} item in the \code{metadata} is set to \code{"geographic"}. (This is
-set to \code{"magnetic"} by \code{\link[=read.cm]{read.cm()}}.)  A warning is issued if the data
-are already in geographic coordinates, but the \code{declination} is applied
-nevertheless, so that a user can correct previous values if necessary.
+function does (see \sQuote{Details}).
+}
+\details{
+The returned value is a copy of \code{object} that has been modified in 4 ways.
+(1) the horizontal components of velocity are rotated clockwise by
+\code{declination} degrees.  (2) If the object holds heading values, then
+\code{declination} is added to them. (3) The \code{north} item in the \code{metadata} slot
+is set to \code{"geographic"}, and a warning is issued if this was also the value
+in \code{object}.  (4) The \code{declination} item in the \code{metadata} slot is set to
+the value supplied to this function.
 }
 \seealso{
 Use \code{\link[=magneticField]{magneticField()}} to determine the declination,

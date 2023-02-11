@@ -813,8 +813,11 @@ setMethod(f="show",
 #' [applyMagneticDeclination()] is a generic function that handles this task by
 #' altering velocity components (and heading values, if they exist).  It works
 #' for objects of the [cm-class], [adp-class] and [adv-class] and [cm-class]
-#' classes by calling specialized methods for those
-#' classes.
+#' classes by calling [applyMagneticDeclination,adp-method()],
+#' [applyMagneticDeclination,adv-method()], or
+#' [applyMagneticDeclination,cm-method()], respectively.
+#'
+#' @template declinationTemplate
 #'
 #' @param object an object of [cm-class], [adp-class], or [adv-class] class.
 #'
@@ -823,16 +826,8 @@ setMethod(f="show",
 #'
 #' @param debug a debugging flag, set to a positive value to get debugging.
 #'
-#' @return an object of the same class as `object`, in which the velocities
-#' (and headings, if they exist) 
-#' have been rotated to the `v` coordinate is aligned to true (geographic)
-#' north.
-#' Also, the item named `north` in the `metadata`
-#' slot will be set to `geographic`.  If `x` already has this setting, then
-#' a warning is issued, so that users can alter the declination setting, but
-#' will have been made aware of a previously-set value.  Use e.g.
-#' `x[["north"]]` to see the existing setting, if it exists.  (Objects
-#' created with previous versions of oce will not have this setting.)
+#' @return an object of the same class as `object`, modified as described
+#' in \sQuote{Details}.
 #'
 #' @author Dan Kelley, aided, for the [adp-class] and [adv-class] variants,
 #' by Clark Richards and Jaimie Harbin.
@@ -854,8 +849,11 @@ setGeneric(name="applyMagneticDeclination",
 #' [applyMagneticDeclination()] is a generic function that handles this task by
 #' altering velocity components (and heading values, if they exist).  It works
 #' for objects of the [cm-class], [adp-class] and [adv-class] and [cm-class]
-#' classes by calling specialized methods for those
-#' classes.
+#' classes by calling [applyMagneticDeclination,adp-method()],
+#' [applyMagneticDeclination,adv-method()], or
+#' [applyMagneticDeclination,cm-method()], respectively.
+#'
+#' @template declinationTemplate
 #'
 #' @param object an object of [cm-class], [adp-class], or [adv-class] class.
 #'
@@ -864,16 +862,8 @@ setGeneric(name="applyMagneticDeclination",
 #'
 #' @param debug a debugging flag, set to a positive value to get debugging.
 #'
-#' @return an object of the same class as `object`, in which the velocities
-#' (and headings, if they exist) 
-#' have been rotated to the `v` coordinate is aligned to true (geographic)
-#' north.
-#' Also, the item named `north` in the `metadata`
-#' slot will be set to `geographic`.  If `x` already has this setting, then
-#' a warning is issued, so that users can alter the declination setting, but
-#' will have been made aware of a previously-set value.  Use e.g.
-#' `x[["north"]]` to see the existing setting, if it exists.  (Objects
-#' created with previous versions of oce will not have this setting.)
+#' @return an object of the same class as `object`, modified as outlined in
+#' \sQuote{Details}.
 #'
 #' @author Dan Kelley, aided, for the [adp-class] and [adv-class] variants,
 #' by Clark Richards and Jaimie Harbin.
@@ -890,13 +880,10 @@ setMethod(f="applyMagneticDeclination",
         }
         if (inherits(object, "cm")) {
             callNextMethod()
-            #applyMagneticDeclinationCm(object, declination, debug)
         } else if (inherits(object, "adp")) {
             callNextMethod()
-            #applyMagneticDeclinationAdp(object, declination, debug)
         } else if (inherits(object, "adv")) {
             callNextMethod()
-            #applyMagneticDeclinationAdv(object, declination, debug)
         } else {
             stop("method only works for 'adp', 'adv' and 'cm' objects")
         }

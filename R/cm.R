@@ -140,9 +140,8 @@ setMethod(f="summary",
         showMetadataItem(object, "model",        "Instr. model:  ")
         showMetadataItem(object, "serialNumber", "Serial Num.:   ")
         showMetadataItem(object, "version",      "Version:       ")
-        if ("north" %in% names(object@metadata)) {
-            showMetadataItem(object, "north",    "North:         ")
-        }
+        showMetadataItem(object, "north",        "North:         ")
+        showMetadataItem(object, "declination",  "Declination:   ")
         invisible(callNextMethod()) # summary
     })
 
@@ -944,13 +943,9 @@ setMethod(f="plot",
 #' Current-meter (`cm`) instruments determine directions from onboard compasses,
 #' so interpreting velocity components in geographical coordinates requires that
 #' magnetic declination be taken into account.  This is what the present
-#' function does.  It rotates the `u` and `v` velocity components so that `u`
-#' points eastward and `v` points northwards, and it also changes the
-#' `Hdg` (heading) vectors in the same way. To signal that the work has been
-#' done, the `north` item in the `metadata` is set to `"geographic"`. (This is
-#' set to `"magnetic"` by [read.cm()].)  A warning is issued if the data
-#' are already in geographic coordinates, but the `declination` is applied
-#' nevertheless, so that a user can correct previous values if necessary.
+#' function does (see \sQuote{Details}).
+#'
+#' @template declinationTemplate
 #'
 #' @param object a [cm-class] object.
 #'
@@ -959,8 +954,7 @@ setMethod(f="plot",
 #'
 #' @param debug a debugging flag, set to a positive value to get debugging.
 #'
-#' @return Object, with velocity components (and heading data, if they exist)
-#' adjusted as outlined in \sQuote{Description}.
+#' @return A [cm-class] object, adjusted as outlined in \sQuote{Details}.
 #'
 #' @seealso Use [magneticField()] to determine the declination,
 #' inclination and intensity at a given spot on the world, at a given time.
@@ -1001,8 +995,9 @@ setMethod(f="applyMagneticDeclination",
             }
         }
         res@metadata$north <- "geographic"
+        res@metadata$declination <- declination[1]
         res@processingLog <- processingLogAppend(res@processingLog,
-            paste0("applyMagneticDeclinationCm(x, declination=", declination, ")"))
+            paste0("applyMagneticDeclinationCm(x, declination=", declination[1], ")"))
         oceDebug(debug, "} # applyMagneticDeclinationCm\n", unindent=1)
         res
     })

@@ -626,6 +626,8 @@ setMethod(f="summary",
         #? } else {
         #?     invisible(callNextMethod()) # summary
         #? }
+        showMetadataItem(object, "north",        "North:         ")
+        showMetadataItem(object, "declination",  "Declination:   ")
         invisible(callNextMethod()) # summary
     })
 
@@ -4448,12 +4450,10 @@ adpFlagPastBoundary <- function(x=NULL, fields=NULL, df=20, trim=0.15, good=1, b
 #' Acoustic-Doppler profiling instruments that infer direction using magnetic
 #' compasses to determine current direction need to have a correction applied
 #' for magnetic declination, if the goal is to infer currents with x and y
-#' oriented eastward and northward, respectively.  This function, which
-#' may be called directly or indirectly via [applyMagneticDeclination()],
-#' handles this task by altering velocity components (and heading values,
-#' if they exist), and also by setting the `north` item of the `metadata`
-#' slot to `"geographic"`.  (If `north` already has this value, the declination
-#' is still applied, but with a warning.)
+#' oriented eastward and northward, respectively.  This is what the present
+#' function does (see \sQuote{Details}).
+#'
+#' @template declinationTemplate
 #'
 #' @param object an [adp-class] object.
 #'
@@ -4462,7 +4462,7 @@ adpFlagPastBoundary <- function(x=NULL, fields=NULL, df=20, trim=0.15, good=1, b
 #'
 #' @param debug a debugging flag, set to a positive value to get debugging.
 #'
-#' @return An [adp-class] object, modified as explained in \sQuote{Description}.
+#' @return An [adp-class] object, modified as outlined  in \sQuote{Description}.
 #'
 #' @seealso Use [magneticField()] to determine the declination,
 #' inclination and intensity at a given spot on the world, at a given time.
@@ -4516,8 +4516,9 @@ setMethod(f="applyMagneticDeclination",
             }
         }
         res@metadata$north <- "geographic"
+        res@metadata$declination <- declination[1]
         res@processingLog <- processingLogAppend(res@processingLog,
-            paste0("applyMagneticDeclinationAdp(object, declination=", declination, ")"))
+            paste0("applyMagneticDeclinationAdp(object, declination=", declination[1], ")"))
         oceDebug(debug, "} # applyMagneticDeclinationAdp\n", unindent=1)
         res
     })

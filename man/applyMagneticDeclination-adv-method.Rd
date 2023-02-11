@@ -19,17 +19,22 @@ positive for clockwise from north.}
 \item{debug}{a debugging flag, set to a positive value to get debugging.}
 }
 \value{
-An \linkS4class{adv} object, modified as explained in \sQuote{Description}.
+A \linkS4class{adv} object, adjusted as outlined in \sQuote{Details}.
 }
 \description{
 Acoustic-Doppler velocimetry instruments that infer direction using magnetic
 compasses need to have a correction applied for magnetic declination, if the
 goal is to infer currents with x and y oriented eastward and northward,
-respectively.  This function, which may be called directly or indirectly via
-\code{\link[=applyMagneticDeclination]{applyMagneticDeclination()}}, handles this task by altering velocity
-components (and heading values, if they exist), and also by setting the
-\code{north} item of the \code{metadata} slot to \code{"geographic"}.  (If \code{north} already
-has this value, the declination is still applied, but with a warning.)
+respectively.  This is what the present function does (see \sQuote{Details}).
+}
+\details{
+The returned value is a copy of \code{object} that has been modified in 4 ways.
+(1) the horizontal components of velocity are rotated clockwise by
+\code{declination} degrees.  (2) If the object holds heading values, then
+\code{declination} is added to them. (3) The \code{north} item in the \code{metadata} slot
+is set to \code{"geographic"}, and a warning is issued if this was also the value
+in \code{object}.  (4) The \code{declination} item in the \code{metadata} slot is set to
+the value supplied to this function.
 }
 \seealso{
 Use \code{\link[=magneticField]{magneticField()}} to determine the declination,

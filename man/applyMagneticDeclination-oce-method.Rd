@@ -19,16 +19,8 @@ positive for clockwise from north.}
 \item{debug}{a debugging flag, set to a positive value to get debugging.}
 }
 \value{
-an object of the same class as \code{object}, in which the velocities
-(and headings, if they exist)
-have been rotated to the \code{v} coordinate is aligned to true (geographic)
-north.
-Also, the item named \code{north} in the \code{metadata}
-slot will be set to \code{geographic}.  If \code{x} already has this setting, then
-a warning is issued, so that users can alter the declination setting, but
-will have been made aware of a previously-set value.  Use e.g.
-\code{x[["north"]]} to see the existing setting, if it exists.  (Objects
-created with previous versions of oce will not have this setting.)
+an object of the same class as \code{object}, modified as outlined in
+\sQuote{Details}.
 }
 \description{
 Current-measuring instruments that infer flow direction using magnetic
@@ -37,8 +29,18 @@ currents with x and y oriented eastward and northward, respectively.
 \code{\link[=applyMagneticDeclination]{applyMagneticDeclination()}} is a generic function that handles this task by
 altering velocity components (and heading values, if they exist).  It works
 for objects of the \linkS4class{cm}, \linkS4class{adp} and \linkS4class{adv} and \linkS4class{cm}
-classes by calling specialized methods for those
-classes.
+classes by calling \code{\link[=applyMagneticDeclination,adp-method]{applyMagneticDeclination,adp-method()}},
+\code{\link[=applyMagneticDeclination,adv-method]{applyMagneticDeclination,adv-method()}}, or
+\code{\link[=applyMagneticDeclination,cm-method]{applyMagneticDeclination,cm-method()}}, respectively.
+}
+\details{
+The returned value is a copy of \code{object} that has been modified in 4 ways.
+(1) the horizontal components of velocity are rotated clockwise by
+\code{declination} degrees.  (2) If the object holds heading values, then
+\code{declination} is added to them. (3) The \code{north} item in the \code{metadata} slot
+is set to \code{"geographic"}, and a warning is issued if this was also the value
+in \code{object}.  (4) The \code{declination} item in the \code{metadata} slot is set to
+the value supplied to this function.
 }
 \seealso{
 Use \code{\link[=magneticField]{magneticField()}} to determine the declination,
