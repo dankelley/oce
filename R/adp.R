@@ -3716,7 +3716,6 @@ xyzToEnuAdp <- function(x, declination=0, debug=getOption("oceDebug"))
     if (length(heading) < np) {
         heading <- rep(heading, length.out=np)
     }
-    heading <- heading
     if (length(pitch) < np) {
         pitch <- rep(pitch, length.out=np)
     }
@@ -3967,67 +3966,6 @@ enuToOtherAdp <- function(x, heading=0, pitch=0, roll=0)
     res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(expr=match.call()), sep="", collapse=""))
     res
 }
-
-#<><><> #' Set declination for an adp object of 'enu' coordinates
-#<><><> #'
-#<><><> #' This works only if `x` is in `enu` (east-north-up) coordinates.
-#<><><> #' The supplied `declination` is used to recompute velocity coordinates,
-#<><><> #' bottom-tracking coordinates (if they exist) and stored heading (if
-#<><><> #' that exists).  To signal that this change has been made, the `metadata`
-#<><><> #' item named `north` is set to `"geographic"`.  To prevent problems,
-#<><><> #' objects that already have `north` set to `"geographic"` are returned
-#<><><> #' unaltered, with a warning indicating that the user might want to use
-#<><><> #' [enuToOtherAdp()] or [enuToOtherAdv()], depending on whether
-#<><><> #' `x` is an "adp" or "adv" object.
-#<><><> #'
-#<><><> #' @author Dan Kelley, with help from Clark Richards and Jaimie Harbin.
-#<><><> #'
-#<><><> #' @family things related to adp data
-#<><><> #' @family things related to adv data
-#<><><> applyDeclination <- function(x, declination=0.0, debug=getOption("oceDebug"))
-#<><><> {
-#<><><>     if (!inherits(x, "adp")) {
-#<><><>         stop("method is only for objects of class '", "adp", "' FIXME: handle adv")
-#<><><>     }
-#<><><>     if (is.ad2cp(x)) {
-#<><><>         stop("this function does not work yet for AD2CP data")
-#<><><>     }
-#<><><>     if (!identical(x@metadata$oceCoordinate, "enu")) {
-#<><><>         stop("x must be in enu coordinates, not ", x@metadata$oceCoordinate, " coordinates")
-#<><><>     }
-#<><><>     if (length(declination) != 1L) {
-#<><><>         stop("length of 'declination' must equal 1")
-#<><><>     }
-#<><><>     if (identical(x@metadata$north == "geographic")) {
-#<><><>         warning("a declination has already been applied; perhaps try enuToOther()")
-#<><><>         return(x)
-#<><><>     }
-#<><><>     res@metadata$north <- "geographic"
-#<><><>     res <- x
-#<><><>     np <- dim(x[["v"]])[1]           # number of profiles
-#<><><>     declination <- rep(declination, length.out=np)
-#<><><>     pitch <- rep(0.0, length.out=np)
-#<><><>     roll <- rep(0.0, length.out=np)
-#<><><>     nc <- dim(x[["v"]])[2]           # numberOfCells
-#<><><>     for (c in 1:nc) {
-#<><><>         other <- do_sfm_enu(declination, pitch, roll, x[["v"]][, c, 1], x[["v"]][, c, 2], x[["v"]][, c, 3])
-#<><><>         res@data$v[, c, 1] <- other$east
-#<><><>         res@data$v[, c, 2] <- other$north
-#<><><>         res@data$v[, c, 3] <- other$up
-#<><><>     }
-#<><><>     if ("bv" %in% names(x@data)) {
-#<><><>         other <- do_sfm_enu(declination, pitch, roll, x@data$bv[, 1], x@data$bv[, 2], x@data$bv[, 3])
-#<><><>         res@data$bv[, 1] <- other$east
-#<><><>         res@data$bv[, 2] <- other$north
-#<><><>         res@data$bv[, 3] <- other$up
-#<><><>     }
-#<><><>     if ("heading" %in% names(x@data)) {
-#<><><>         res@data$heading <- x@data$heading + declination
-#<><><>     }
-#<><><>     res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(expr=match.call()), sep="", collapse=""))
-#<><><>     res
-#<><><> }
-
 
 peek.ahead <- function(file, bytes=2, debug=!TRUE)
 {
