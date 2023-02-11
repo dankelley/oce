@@ -12,15 +12,21 @@ U <- c(1, 0, -1, 0)
 V <- c(0, 1, 0, -1)
 Ur <- c(0, 1, 0, -1)
 Vr <- c(-1, 0, 1, 0)
+H <- 1:4
+Hr <- H + 90
 
 # Current meter (cm-class)
 test_that("applyMagneticDeclination,cm-method()", {
     data(cm)
     cm@data$u <- U
     cm@data$v <- V
+    cm@data$Hdg <- H
+    cm@data$Hdg.1 <- H
     cm2 <- applyMagneticDeclination(cm, 90) # rotate clockwise 90deg
     expect_equal(cm2[["u"]], Ur)
     expect_equal(cm2[["v"]], Vr)
+    expect_equal(cm2[["Hdg"]], Hr)
+    expect_equal(cm2[["Hdg.1"]], Hr)
     expect_equal(cm2[["north"]], "geographic")
     expect_equal(cm2[["declination"]], 90)
 })
@@ -30,9 +36,11 @@ test_that("applyMagneticDeclination,adp-method()", {
     data(adp)
     adp@data$v[1:4, 1, 1] <- U
     adp@data$v[1:4, 1, 2] <- V
+    adp@data$heading[1:4] <- H
     adp2 <- applyMagneticDeclination(adp, 90) # rotate clockwise 90deg
     expect_equal(adp2@data$v[1:4, 1, 1], Ur)
     expect_equal(adp2@data$v[1:4, 1, 2], Vr)
+    expect_equal(adp2@data$heading[1:4], Hr)
     expect_equal(adp2[["north"]], "geographic")
     expect_equal(adp2[["declination"]], 90)
 })
@@ -42,9 +50,11 @@ test_that("applyMagneticDeclination,adv-method()", {
     data(adv)
     adv@data$v[1:4, 1] <- U
     adv@data$v[1:4, 2] <- V
+    adv@data$heading[1:4] <- H
     adv2 <- applyMagneticDeclination(adv, 90) # rotate clockwise 90deg
     expect_equal(adv2@data$v[1:4, 1], Ur)
     expect_equal(adv2@data$v[1:4, 2], Vr)
+    expect_equal(adv2@data$heading[1:4], Hr)
     expect_equal(adv2[["north"]], "geographic")
     expect_equal(adv2[["declination"]], 90)
 })

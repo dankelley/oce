@@ -966,11 +966,12 @@ setMethod(f="plot",
 setMethod(f="applyMagneticDeclination",
     signature(object="cm", declination="ANY", debug="ANY"),
     definition=function(object, declination=0.0, debug=getOption("oceDebug")) {
-        oceDebug(debug, "applyMagneticDeclination(object, declination=", declination, ") {\n", sep="", unindent=1)
+        oceDebug(debug, "applyMagneticDeclination,cm-method(object, declination=", declination, ") {\n", sep="", unindent=1)
         if (length(declination) != 1L) {
             stop("length of 'declination' must equal 1")
         }
-        oceDebug(debug, "object is of type 'cm'; declination=", declination, "\n")
+        # Note that, unlike the adp and adv methods, we do not check on
+        # metadata$coordinate, because it does not exist for cm-class objects.
         if (identical(object@metadata$north, "geographic")) {
             warning("a declination has already been applied, so expect odd results")
         }

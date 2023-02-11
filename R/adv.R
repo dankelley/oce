@@ -1598,7 +1598,7 @@ enuToOtherAdv <- function(x, heading=0, pitch=0, roll=0, debug=getOption("oceDeb
 setMethod(f="applyMagneticDeclination",
     signature(object="adv", declination="ANY", debug="ANY"),
     definition=function(object, declination=0.0, debug=getOption("oceDebug")) {
-        oceDebug(debug, "applyMagneticDeclination(object, declination=", declination, ") {\n", sep="", unindent=1)
+        oceDebug(debug, "applyMagneticDeclination,adp-method(object, declination=", declination, ") {\n", sep="", unindent=1)
         if (length(declination) != 1L) {
             stop("length of 'declination' must equal 1")
         }
@@ -1606,8 +1606,7 @@ setMethod(f="applyMagneticDeclination",
             stop("object must be in enu coordinates, not ", object@metadata$oceCoordinate, " coordinates")
         }
         if (identical(object@metadata$north, "geographic")) {
-            warning("a declination has already been applied; perhaps try enuToOther()")
-            return(object)
+            warning("a declination has already been applied, so expect odd results")
         }
         res <- object
         np <- dim(object@data$v)[1]           # number of samples
