@@ -1493,11 +1493,14 @@ xyzToEnuAdv <- function(x, declination=0, cabled=FALSE, horizontalCase, sensorOr
     if (length(roll) < np) {
         roll <- rep(roll, length.out=np)
     }
-    enu <- do_sfm_enu(heading + declination, pitch, roll, starboard, forward, mast)
+    enu <- do_sfm_enu(heading + declination[1], pitch, roll, starboard, forward, mast)
     x@data$v[, 1] <- enu$east
     x@data$v[, 2] <- enu$north
     x@data$v[, 3] <- enu$up
+    x@data$heading <- x@data$heading + declination[1] # FIXME: is this ok, given up/down etc?
     x@metadata$oceCoordinate <- "enu"
+    x@metadata$north <- "geographic"
+    x@metadata$declination <- declination[1]
     x@processingLog <- processingLogAppend(x@processingLog,
         paste("xyzToEnu(x",
             ", declination=", declination,

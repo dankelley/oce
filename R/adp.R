@@ -3546,6 +3546,7 @@ xyzToEnuAdp <- function(x, declination=0, debug=getOption("oceDebug"))
     if (!inherits(x, "adp")) {
         stop("method is only for objects of class '", "adp", "'")
     }
+    # NOTE: this code side-tracked by first test.  FIXME: revisit later.
     # Treat AD2CP differently because e.g. if it has AHRS, then there is may be need or
     # benefit in extracting heading, etc., as for the other cases. Also, the orientation
     # names are different for this type, so isolating the code makes things clearer
@@ -3562,13 +3563,14 @@ xyzToEnuAdp <- function(x, declination=0, debug=getOption("oceDebug"))
         warning("instrument orientation is not stored in x; assuming it is \"upward\"")
         orientation <- "upward"
     }
-    if (is.null(oceCoordinate) || (oceCoordinate != "xyz" && oceCoordinate != "sfm"))
+    if (is.null(oceCoordinate) || (oceCoordinate != "xyz" && oceCoordinate != "sfm")) {
         stop("input must be in xyz or sfm coordinates")
+    }
     heading <- x[["heading"]]
     pitch <- x[["pitch"]]
     roll <- x[["roll"]]
     res <- x
-    isAD2CP <- is.ad2cp(x)
+    isAD2CP <- is.ad2cp(x) # FIXME: never TRUE, given first test, but that was temporary
     haveBv <- "bv" %in% names(x@data)
     # Case-by-case alteration of heading, pitch and roll, so we can use one formula for all.
     if (1 == length(agrep("rdi", manufacturer, ignore.case=TRUE))) {
@@ -3714,6 +3716,7 @@ xyzToEnuAdp <- function(x, declination=0, debug=getOption("oceDebug"))
     if (length(heading) < np) {
         heading <- rep(heading, length.out=np)
     }
+    heading <- heading
     if (length(pitch) < np) {
         pitch <- rep(pitch, length.out=np)
     }
@@ -3733,9 +3736,12 @@ xyzToEnuAdp <- function(x, declination=0, debug=getOption("oceDebug"))
         res@data$bv[, 2] <- enu$north
         res@data$bv[, 3] <- enu$up
     }
+    res@data$heading <- x@data$heading + declination[1] # FIXME: is this ok, given up/down etc?
     res@metadata$oceCoordinate <- "enu"
+    res@metadata$north <- "geographic"
+    res@metadata$declination <- declination[1]
     res@processingLog <- processingLogAppend(res@processingLog,
-        paste("xyzToEnuAdp(x", ", declination=", declination, ", debug=", debug, ")", sep=""))
+        paste("xyzToEnuAdp(x", ", declination=", declination[1], ", debug=", debug, ")", sep=""))
     oceDebug(debug, "} # xyzToEnuAdp()\n", unindent=1)
     res
 }                                      # xyzToEnuAdp
