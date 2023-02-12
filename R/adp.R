@@ -3573,6 +3573,10 @@ xyzToEnuAdp <- function(x, declination=0, debug=getOption("oceDebug"))
     isAD2CP <- is.ad2cp(x) # FIXME: never TRUE, given first test, but that was temporary
     haveBv <- "bv" %in% names(x@data)
     # Case-by-case alteration of heading, pitch and roll, so we can use one formula for all.
+    oceDebug(debug, vectorShow(heading, "heading (before adjustment)"))
+    oceDebug(debug, vectorShow(pitch, "pitch (before adjustment)"))
+    oceDebug(debug, vectorShow(roll, "roll (before adjustment)"))
+
     if (1 == length(agrep("rdi", manufacturer, ignore.case=TRUE))) {
         # "teledyne rdi"
         # h/p/r and s/f/m from Clark Richards pers. comm. 2011-03-14, revised 2011-03-15
@@ -4430,7 +4434,6 @@ setMethod(f="applyMagneticDeclination",
         }
         if (identical(object@metadata$north, "geographic")) {
             warning("a declination has already been applied; perhaps try enuToOther()")
-            return(object)
         }
         res <- object
         np <- dim(object[["v"]])[1]           # number of profiles
@@ -4455,7 +4458,9 @@ setMethod(f="applyMagneticDeclination",
             res@data$bv[, 3] <- other$up
         }
         for (headingName in c("heading")) { # code paves way if other heading variables needed
+            oceDebug(debug, "possibly adding declination=", declination[1], " to ", headingName, "\n")
             if (headingName %in% dataNames) {
+                oceDebug(debug, "yes, adding declination\n")
                 res@data[[headingName]] <- object@data[[headingName]] + declination
             }
         }
