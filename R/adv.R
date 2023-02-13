@@ -1154,7 +1154,7 @@ setMethod(f="plot",
 #' @family things related to adv data
 toEnuAdv <- function(x, declination=0, debug=getOption("oceDebug"))
 {
-    oceDebug(debug, "adv.2enu() {\n", unindent=1)
+    oceDebug(debug, "toEnuAdv(x, declination=", declination, ", debug=", debug, ") {\n", unindent=1)
     coord <- x@metadata$oceCoordinate
     if (coord == "beam") {
         x <- xyzToEnuAdv(beamToXyzAdv(x, debug=debug-1), declination=declination, debug=debug-1)
@@ -1163,7 +1163,7 @@ toEnuAdv <- function(x, declination=0, debug=getOption("oceDebug"))
     } else if (coord != "enu") {
         warning("toEnuAdv cannot convert from coordinate system ", coord, " to ENU, so returning argument as-is")
     }
-    oceDebug(debug, "} # adv.2enu()\n", unindent=1)
+    oceDebug(debug, "} # toEnuAdv()\n", unindent=1)
     x
 }
 
@@ -1318,8 +1318,13 @@ beamToXyzAdv <- function(x, debug=getOption("oceDebug"))
 #'
 #' @param x an [adv-class] object.
 #'
-#' @param declination magnetic declination to be added to the heading, to get
-#' ENU with N as "true" north.
+#' @param declination magnetic declination to be added to the heading after
+#' "righting" (see below), to get ENU with N as "true" north.  If this
+#' is set to NULL, then the returned object is set up without adjusting
+#' the compass for declination.  That means that `north` in its `metadata`
+#' slot will be set to `"magnetic"`, and also that there will be no item
+#' named `declination` in that slot.  Note that [applyMagneticDeclination()]
+#' can be used later, to set a declination.
 #'
 #' @param cabled boolean value indicating whether the sensor head is connected
 #' to the pressure case with a cable.  If `cabled=FALSE`, then
@@ -1493,14 +1498,24 @@ xyzToEnuAdv <- function(x, declination=0, cabled=FALSE, horizontalCase, sensorOr
     if (length(roll) < np) {
         roll <- rep(roll, length.out=np)
     }
+    noDeclination <- is.null(declination)
+    if (declination) {
+        oceDebug(debug, "object is being created in magnetic coordinates\n")
+        declination <- 0.0
+    }
     enu <- do_sfm_enu(heading + declination[1], pitch, roll, starboard, forward, mast)
     x@data$v[, 1] <- enu$east
     x@data$v[, 2] <- enu$north
     x@data$v[, 3] <- enu$up
     x@data$heading <- x@data$heading + declination[1] # FIXME: is this ok, given up/down etc?
     x@metadata$oceCoordinate <- "enu"
-    x@metadata$north <- "geographic"
-    x@metadata$declination <- declination[1]
+    if (noDeclination) {
+        x@metadata$north <- "magnetic"
+        x@metadata$declination <- NULL
+    } else {
+        x@metadata$north <- "geographic"
+        x@metadata$declination <- declination[1]
+    }
     x@processingLog <- processingLogAppend(x@processingLog,
         paste("xyzToEnu(x",
             ", declination=", declination,
@@ -1609,7 +1624,7 @@ setMethod(f="applyMagneticDeclination",
             stop("object must be in enu coordinates, not ", object@metadata$oceCoordinate, " coordinates")
         }
         if (identical(object@metadata$north, "geographic")) {
-            warning("a declination has already been applied, so expect odd results")
+            warning("a declination has already been applied, so this action is cumulative")
         }
         res <- object
         np <- dim(object@data$v)[1]           # number of samples

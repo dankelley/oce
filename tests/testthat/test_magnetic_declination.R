@@ -63,7 +63,7 @@ test_that("various ways of handling declination (real-world RDI data)", {
     # adp1 = specify declination when converting from xyz
     # adp2 = set declination=0 when converting from xyz
     # adp3 = specify declination after converting from xyz
-    declination <- -18.1
+    declination <- -18.036
     file <- system.file("extdata", "adp_rdi.000", package="oce")
     beam <- read.oce(file, from=1, to=4)
     xyz <- beamToXyzAdp(beam)
