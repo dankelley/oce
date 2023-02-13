@@ -4408,12 +4408,31 @@ adpFlagPastBoundary <- function(x=NULL, fields=NULL, df=20, trim=0.15, good=1, b
 #' @param declination numeric value holding magnetic declination in degrees,
 #' positive for clockwise from north.
 #'
-#' @param debug a debugging flag, set to a positive value to get debugging.
+#' @template debugTemplate
 #'
 #' @return An [adp-class] object, modified as outlined  in \sQuote{Description}.
 #'
 #' @seealso Use [magneticField()] to determine the declination,
 #' inclination and intensity at a given spot on the world, at a given time.
+#'
+#' @examples
+#' # Transform beam coordinate to xyx, then to enu with respect to
+#' # magnetic north, and then to geographic north.  Note that the
+#' # last step issues a warning that the object already had a
+#' # declination stored within it.
+#' library(oce)
+#' file <- system.file("extdata", "adp_rdi.000", package="oce")
+#' lon <- -69.73433
+#' lat <- 47.88126
+#' beam <- read.oce(file, from=1, to=4, longitude=lon, latitude=lat)
+#' dec <- magneticField(lon, lat, beam[["time"]][1])$declination
+#' xyz <- beamToXyzAdp(beam)
+#' # Here, we let xyzToEnuAdp() set declination=0 by default, so
+#' # we can demonstrate the use of applyMagneticDeclination(),
+#' # but in fact the latter could be skipped if we just supplied
+#' # the known declination to xyzToEnuAdp().
+#' enuMag <- xyzToEnuAdp(xyz) # sets declination=0 by default
+#' enuGeo <- applyMagneticDeclination(enuMag, declination=dec)
 #'
 #' @author Dan Kelley, aided by Clark Richards and Jaimie Harbin.
 #'

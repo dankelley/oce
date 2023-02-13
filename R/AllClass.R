@@ -824,7 +824,7 @@ setMethod(f="show",
 #' @param declination numeric value holding magnetic declination in degrees,
 #' positive for clockwise from north.
 #'
-#' @param debug a debugging flag, set to a positive value to get debugging.
+#' @template debugTemplate
 #'
 #' @return an object of the same class as `object`, modified as described
 #' in \sQuote{Details}.

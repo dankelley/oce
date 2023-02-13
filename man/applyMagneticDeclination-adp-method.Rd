@@ -16,7 +16,13 @@
 \item{declination}{numeric value holding magnetic declination in degrees,
 positive for clockwise from north.}
 
-\item{debug}{a debugging flag, set to a positive value to get debugging.}
+\item{debug}{an integer specifying whether debugging information is
+to be printed during the processing. This is a general parameter that
+is used by many \code{oce} functions. Generally, setting \code{debug=0}
+turns off the printing, while higher values suggest that more information
+be printed. If one function calls another, it usually reduces the value of
+\code{debug} first, so that a user can often obtain deeper debugging
+by specifying higher \code{debug} values.}
 }
 \value{
 An \linkS4class{adp} object, modified as outlined  in \sQuote{Description}.
@@ -36,6 +42,26 @@ The returned value is a copy of \code{object} that has been modified in 4 ways.
 is set to \code{"geographic"}, and a warning is issued if this was also the value
 in \code{object}.  (4) The \code{declination} item in the \code{metadata} slot is set to
 the value supplied to this function.
+}
+\examples{
+# Transform beam coordinate to xyx, then to enu with respect to
+# magnetic north, and then to geographic north.  Note that the
+# last step issues a warning that the object already had a
+# declination stored within it.
+library(oce)
+file <- system.file("extdata", "adp_rdi.000", package="oce")
+lon <- -69.73433
+lat <- 47.88126
+beam <- read.oce(file, from=1, to=4, longitude=lon, latitude=lat)
+dec <- magneticField(lon, lat, beam[["time"]][1])$declination
+xyz <- beamToXyzAdp(beam)
+# Here, we let xyzToEnuAdp() set declination=0 by default, so
+# we can demonstrate the use of applyMagneticDeclination(),
+# but in fact the latter could be skipped if we just supplied
+# the known declination to xyzToEnuAdp().
+enuMag <- xyzToEnuAdp(xyz) # sets declination=0 by default
+enuGeo <- applyMagneticDeclination(enuMag, declination=dec)
+
 }
 \seealso{
 Use \code{\link[=magneticField]{magneticField()}} to determine the declination,

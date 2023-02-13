@@ -1587,7 +1587,7 @@ enuToOtherAdv <- function(x, heading=0, pitch=0, roll=0, debug=getOption("oceDeb
 #' @param declination numeric value holding magnetic declination in degrees,
 #' positive for clockwise from north.
 #'
-#' @param debug a debugging flag, set to a positive value to get debugging.
+#' @template debugTemplate
 #'
 #' @return A [adv-class] object, adjusted as outlined in \sQuote{Details}.
 #'

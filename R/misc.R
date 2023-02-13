@@ -4754,10 +4754,11 @@ integerToAscii <- function(i)
 #' suggest that the proposed application time interval is from years 1900 to 2025, inclusive,
 #' but that only dates from 1945 to 2015 are to be considered definitive.
 #'
-#' @param longitude longitude in degrees east (negative for degrees west).  The
-#' dimensions must conform to lat.
+#' @param longitude longitude in degrees east (negative for degrees west), as a
+#' number, a vector, or a matrix.
 #'
-#' @param latitude latitude in degrees north, a number, vector, or matrix.
+#' @param latitude latitude in degrees north, as a number, vector, or matrix.
+#' The shape (length or dimensions) must conform to the dimensions of `longitude`.
 #'
 #' @param time The time at which the field is desired. This may be a
 #' single value or a vector or matrix that is structured to match
@@ -4805,8 +4806,9 @@ integerToAscii <- function(i)
 #' # Construct matrix holding declination
 #' lon <- seq(-180, 180)
 #' lat <- seq(-90, 90)
-#' dec2000 <- function(lon, lat)
+#' dec2000 <- function(lon, lat) {
 #'     magneticField(lon, lat, 2000)$declination
+#' }
 #' dec <- outer(lon, lat, dec2000) # hint: outer() is very handy!
 #' # Contour, unlabelled for small increments, labeled for
 #' # larger increments.
