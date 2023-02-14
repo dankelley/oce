@@ -591,25 +591,25 @@ setMethod(f="summary",
             beamUnspreaded <- object[["oceBeamUnspreaded"]]
             cat("* Beams::\n")
             if ("vv" %in% names(object@data)) {
-                cat("    Number:          ", if (is.null(numberOfBeams)) "?" else numberOfBeams, "slanted, plus 1 central\n")
+                cat("    Number:          ", if (is.null(numberOfBeams)) "?" else numberOfBeams, " slanted, plus 1 central\n", sep="")
             } else {
-                cat("    Number:          ", if (is.null(numberOfBeams)) "?" else numberOfBeams, "slanted\n")
+                cat("    Number:          ", if (is.null(numberOfBeams)) "?" else numberOfBeams, " slanted\n", sep="")
             }
-            cat("    Slantwise Angle: ", if (is.null(beamAngle)) "?" else beamAngle, "\n")
+            cat("    Slantwise Angle: ", if (is.null(beamAngle)) "?" else beamAngle, "\n", sep="")
             if (numberOfBeams > 0) {
-                cat("    Orientation:     ", if (is.null(orientation)) "?" else orientation, "\n")
+                cat("    Orientation:     ", if (is.null(orientation)) "?" else orientation, "\n", sep="")
             }
-            cat("    Unspreaded:      ", if (is.null(beamUnspreaded)) "?" else beamUnspreaded, "\n")
+            cat("    Unspreaded:      ", if (is.null(beamUnspreaded)) "?" else beamUnspreaded, "\n", sep="")
         }
         transformationMatrix <- object[["transformationMatrix"]]
         if (!is.null(transformationMatrix) && dim(transformationMatrix)[2] >= 3) {
             digits <- 4
             cat("* Transformation matrix::\n")
-            cat("  ", format(transformationMatrix[1, ], width=digits+4, digits=digits, justify="right"), "\n")
-            cat("  ", format(transformationMatrix[2, ], width=digits+4, digits=digits, justify="right"), "\n")
-            cat("  ", format(transformationMatrix[3, ], width=digits+4, digits=digits, justify="right"), "\n")
+            cat("  ", format(transformationMatrix[1, ], width=digits+4, digits=digits, justify="right"), "\n", sep="")
+            cat("  ", format(transformationMatrix[2, ], width=digits+4, digits=digits, justify="right"), "\n", sep="")
+            cat("  ", format(transformationMatrix[3, ], width=digits+4, digits=digits, justify="right"), "\n", sep="")
             if (object[["numberOfBeams"]] > 3) {
-                cat("  ", format(transformationMatrix[4, ], width=digits+4, digits=digits, justify="right"), "\n")
+                cat("  ", format(transformationMatrix[4, ], width=digits+4, digits=digits, justify="right"), "\n", sep="")
             }
         }
         #? if (isAD2CP) {
