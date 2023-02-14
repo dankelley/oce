@@ -6,7 +6,7 @@
 \title{Handle Flags in ARGO Objects}
 \usage{
 \S4method{handleFlags}{argo}(
-  object,
+  object = "oce",
   flags = NULL,
   actions = NULL,
   where = NULL,

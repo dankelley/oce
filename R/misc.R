@@ -126,59 +126,6 @@ angleRemap <- function(theta)
     atan2(sin(toRad * theta), cos(toRad * theta)) / toRad
 }
 
-
-#' Earth magnetic declination
-#'
-#' Instruments that use magnetic compasses to determine current direction need
-#' to have corrections applied for magnetic declination, to get currents with
-#' the y component oriented to geographic, not magnetic, north.  Sometimes, and
-#' for some instruments, the declination is specified when the instrument is
-#' set up, so that the velocities as recorded are already.  Other times, the
-#' data need to be adjusted.  This function is for the latter case.
-#'
-#' @param x an [oce-class] object.
-#'
-#' @param declination magnetic declination (to be added to the heading)
-#'
-#' @param debug a debugging flag, set to a positive value to get debugging.
-#'
-#' @return Object, with velocity components adjusted to be aligned with
-#' geographic north and east.
-#'
-#' @author Dan Kelley
-#'
-#' @seealso Use [magneticField()] to determine the declination,
-#' inclination and intensity at a given spot on the world, at a given time.
-#'
-#' @references
-#' 1. \samp{https://www.ngdc.noaa.gov/IAGA/vmod/igrf.html}
-#'
-#' @family things related to magnetism
-applyMagneticDeclination <- function(x, declination=0, debug=getOption("oceDebug"))
-{
-    oceDebug(debug, "applyMagneticDeclination(x,declination=", declination, ") {\n", sep="", unindent=1)
-    if (inherits(x, "cm")) {
-        oceDebug(debug, "object is of type 'cm'\n")
-        res <- x
-        S <- sin(-declination * pi / 180)
-        C <- cos(-declination * pi / 180)
-        r <- matrix(c(C, S, -S, C), nrow=2)
-        uvr <- r %*% rbind(x@data$u, x@data$v)
-        res@data$u <- uvr[1, ]
-        res@data$v <- uvr[2, ]
-        oceDebug(debug, "originally, first u:", x@data$u[1:3], "\n")
-        oceDebug(debug, "originally, first v:", x@data$v[1:3], "\n")
-        oceDebug(debug, "after application, first u:", res@data$u[1:3], "\n")
-        oceDebug(debug, "after application, first v:", res@data$v[1:3], "\n")
-    } else {
-        stop("cannot apply declination to object of class ", paste(class(x), collapse=", "), "\n")
-    }
-    res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
-    oceDebug(debug, "} # applyMagneticDeclination\n", unindent=1)
-    res
-}
-
-
 #' Trilinear interpolation in a 3D array
 #'
 #' Interpolate within a 3D array, using the trilinear approximation.
@@ -4807,10 +4754,11 @@ integerToAscii <- function(i)
 #' suggest that the proposed application time interval is from years 1900 to 2025, inclusive,
 #' but that only dates from 1945 to 2015 are to be considered definitive.
 #'
-#' @param longitude longitude in degrees east (negative for degrees west).  The
-#' dimensions must conform to lat.
+#' @param longitude longitude in degrees east (negative for degrees west), as a
+#' number, a vector, or a matrix.
 #'
-#' @param latitude latitude in degrees north, a number, vector, or matrix.
+#' @param latitude latitude in degrees north, as a number, vector, or matrix.
+#' The shape (length or dimensions) must conform to the dimensions of `longitude`.
 #'
 #' @param time The time at which the field is desired. This may be a
 #' single value or a vector or matrix that is structured to match
@@ -4858,8 +4806,9 @@ integerToAscii <- function(i)
 #' # Construct matrix holding declination
 #' lon <- seq(-180, 180)
 #' lat <- seq(-90, 90)
-#' dec2000 <- function(lon, lat)
+#' dec2000 <- function(lon, lat) {
 #'     magneticField(lon, lat, 2000)$declination
+#' }
 #' dec <- outer(lon, lat, dec2000) # hint: outer() is very handy!
 #' # Contour, unlabelled for small increments, labeled for
 #' # larger increments.

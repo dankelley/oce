@@ -5,7 +5,7 @@
 \title{Handle Flags in adp Objects}
 \usage{
 \S4method{handleFlags}{adp}(
-  object,
+  object = "oce",
   flags = NULL,
   actions = NULL,
   where = NULL,
@@ -149,6 +149,7 @@ Other things related to adp data:
 \code{\link{adpRdiFileTrim}()},
 \code{\link{adp_rdi.000}},
 \code{\link{adp}},
+\code{\link{applyMagneticDeclination,adp-method}},
 \code{\link{as.adp}()},
 \code{\link{beamName}()},
 \code{\link{beamToXyzAdpAD2CP}()},

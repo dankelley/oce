@@ -5,7 +5,7 @@
 \title{Handle Flags in ctd Objects}
 \usage{
 \S4method{handleFlags}{ctd}(
-  object,
+  object = "oce",
   flags = NULL,
   actions = NULL,
   where = NULL,

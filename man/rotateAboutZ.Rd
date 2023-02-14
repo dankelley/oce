@@ -56,6 +56,7 @@ Other things related to adp data:
 \code{\link{adpRdiFileTrim}()},
 \code{\link{adp_rdi.000}},
 \code{\link{adp}},
+\code{\link{applyMagneticDeclination,adp-method}},
 \code{\link{as.adp}()},
 \code{\link{beamName}()},
 \code{\link{beamToXyzAdpAD2CP}()},
@@ -94,6 +95,7 @@ Other things related to adv data:
 \code{\link{[[<-,adv-method}},
 \code{\link{adv-class}},
 \code{\link{adv}},
+\code{\link{applyMagneticDeclination,adv-method}},
 \code{\link{beamName}()},
 \code{\link{beamToXyz}()},
 \code{\link{enuToOtherAdv}()},
@@ -115,6 +117,7 @@ Other things related to adv data:
 Other things related to cm data: 
 \code{\link{[[,cm-method}},
 \code{\link{[[<-,cm-method}},
+\code{\link{applyMagneticDeclination,cm-method}},
 \code{\link{as.cm}()},
 \code{\link{cm-class}},
 \code{\link{cm}},

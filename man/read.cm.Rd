@@ -121,6 +121,16 @@ return value, but it is no longer stored, since it can be derived from the
 \code{u} and \code{v} values.
 }
 
+\section{Changes}{
+
+\itemize{
+\item On 2023-02-09 an item named \code{north} was added to the \code{metadata} slot.  This
+is initialized to \code{"magnetic"} by \code{\link[=read.cm]{read.cm()}}, but this is really just a
+guess, and users ought to consider using \code{\link[=applyMagneticDeclination]{applyMagneticDeclination()}} to take
+magnetic declination into account.
+}
+}
+
 \examples{
 \dontrun{
   library(oce)
@@ -134,6 +144,7 @@ return value, but it is no longer stored, since it can be derived from the
 Other things related to cm data: 
 \code{\link{[[,cm-method}},
 \code{\link{[[<-,cm-method}},
+\code{\link{applyMagneticDeclination,cm-method}},
 \code{\link{as.cm}()},
 \code{\link{cm-class}},
 \code{\link{cm}},

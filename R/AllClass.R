@@ -97,16 +97,16 @@ setMethod(f="summary",
                 } else {
                     if (deltat < 60) {
                         cat("* Time:          ", format(from), " to ", format(to),
-                            " (", nt, " samples, mean increment ", deltat, "s)\n", sep="")
+                            " (", nt, " samples, mean increment ", deltat, " s)\n", sep="")
                     } else if (deltat < 3600) {
                         cat("* Time:          ", format(from), " to ", format(to),
-                            " (", nt, " samples , mean increment ", deltat/60, "min)\n", sep="")
+                            " (", nt, " samples, mean increment ", deltat/60, " min)\n", sep="")
                     } else if (deltat < 24*3600) {
                         cat("* Time:          ", format(from), " to ", format(to),
-                            " (", nt, " samples , mean increment ", deltat/3600, "hour)\n", sep="")
+                            " (", nt, " samples, mean increment ", deltat/3600, " hour)\n", sep="")
                     } else {
                         cat("* Time:          ", format(from), " to ", format(to),
-                            " (", nt, " samples , mean increment ", deltat/3600/24, "day)\n", sep="")
+                            " (", nt, " samples, mean increment ", deltat/3600/24, " day)\n", sep="")
                     }
                 }
             }
@@ -805,6 +805,90 @@ setMethod(f="show",
         options(digits=odigits) # return to original digits value
     })
 
+#' Alter an object to account for magnetic declination
+#'
+#' Current-measuring instruments that infer flow direction using magnetic
+#' compasses require a correction for magnetic declination, in order to infer
+#' currents with x and y oriented eastward and northward, respectively.
+#' [applyMagneticDeclination()] is a generic function that handles this task by
+#' altering velocity components (and heading values, if they exist).  It works
+#' for objects of the [cm-class], [adp-class] and [adv-class] and [cm-class]
+#' classes by calling [applyMagneticDeclination,adp-method()],
+#' [applyMagneticDeclination,adv-method()], or
+#' [applyMagneticDeclination,cm-method()], respectively.
+#'
+#' @template declinationTemplate
+#'
+#' @param object an object of [cm-class], [adp-class], or [adv-class] class.
+#'
+#' @param declination numeric value holding magnetic declination in degrees,
+#' positive for clockwise from north.
+#'
+#' @template debugTemplate
+#'
+#' @return an object of the same class as `object`, modified as described
+#' in \sQuote{Details}.
+#'
+#' @author Dan Kelley, aided, for the [adp-class] and [adv-class] variants,
+#' by Clark Richards and Jaimie Harbin.
+#'
+#' @seealso Use [magneticField()] to determine the declination,
+#' inclination and intensity at a given spot on the world, at a given time.
+#'
+#' @family things related to magnetism
+setGeneric(name="applyMagneticDeclination",
+    def=function(object="oce", declination="ANY", debug="ANY") {
+        standardGeneric("applyMagneticDeclination")
+    })
+
+#' Alter an object to account for magnetic declination
+#'
+#' Current-measuring instruments that infer flow direction using magnetic
+#' compasses require a correction for magnetic declination, in order to infer
+#' currents with x and y oriented eastward and northward, respectively.
+#' [applyMagneticDeclination()] is a generic function that handles this task by
+#' altering velocity components (and heading values, if they exist).  It works
+#' for objects of the [cm-class], [adp-class] and [adv-class] and [cm-class]
+#' classes by calling [applyMagneticDeclination,adp-method()],
+#' [applyMagneticDeclination,adv-method()], or
+#' [applyMagneticDeclination,cm-method()], respectively.
+#'
+#' @template declinationTemplate
+#'
+#' @param object an object of [cm-class], [adp-class], or [adv-class] class.
+#'
+#' @param declination numeric value holding magnetic declination in degrees,
+#' positive for clockwise from north.
+#'
+#' @param debug a debugging flag, set to a positive value to get debugging.
+#'
+#' @return an object of the same class as `object`, modified as outlined in
+#' \sQuote{Details}.
+#'
+#' @author Dan Kelley, aided, for the [adp-class] and [adv-class] variants,
+#' by Clark Richards and Jaimie Harbin.
+#'
+#' @seealso Use [magneticField()] to determine the declination,
+#' inclination and intensity at a given spot on the world, at a given time.
+#'
+#' @family things related to magnetism
+setMethod(f="applyMagneticDeclination",
+    signature=c(object="oce", declination="ANY", debug="ANY"),
+    definition=function(object, declination=0.0, debug=getOption("oceDebug")) {
+        if (length(declination) != 1L) {
+            stop("length of declination must equal 1")
+        }
+        if (inherits(object, "cm")) {
+            callNextMethod()
+        } else if (inherits(object, "adp")) {
+            callNextMethod()
+        } else if (inherits(object, "adv")) {
+            callNextMethod()
+        } else {
+            stop("method only works for 'adp', 'adv' and 'cm' objects")
+        }
+    })
+
 
 #' Create a composite object by averaging across good data
 #'
@@ -857,8 +941,9 @@ setMethod("composite",
 #' @param object an [oce-class] object.
 #'
 #' @template handleFlagsTemplate
-setGeneric("handleFlags", function(object, flags=NULL, actions=NULL, where=NULL, debug=getOption("oceDebug")) {
-    standardGeneric("handleFlags")
+setGeneric(name="handleFlags",
+    def=function(object="oce", flags=NULL, actions=NULL, where=NULL, debug=getOption("oceDebug")) {
+        standardGeneric("handleFlags")
     })
 
 #' Signal erroneous application to non-oce objects
@@ -867,7 +952,8 @@ setGeneric("handleFlags", function(object, flags=NULL, actions=NULL, where=NULL,
 #' @param actions Ignored.
 #' @param where Ignored.
 #' @param debug Ignored.
-setMethod("handleFlags", signature=c(object="vector", flags="ANY", actions="ANY", where="ANY", debug="ANY"),
+setMethod(f="handleFlags",
+    signature=c(object="vector", flags="ANY", actions="ANY", where="ANY", debug="ANY"),
     definition=function(object, flags=list(), actions=list(), where=list(), debug=getOption("oceDebug")) {
         stop("handleFlags() can only be applied to objects inheriting from \"oce\"")
     })
@@ -881,7 +967,8 @@ setMethod("handleFlags", signature=c(object="vector", flags="ANY", actions="ANY"
 #' @param object an [oce-class] object.
 #
 #' @template handleFlagsTemplate
-setMethod("handleFlags", signature=c(object="oce", flags="ANY", actions="ANY", where="ANY", debug="ANY"),
+setMethod(f="handleFlags",
+    signature=c(object="oce", flags="ANY", actions="ANY", where="ANY", debug="ANY"),
     definition=function(object, flags=NULL, actions=NULL, where=NULL, debug=getOption("oceDebug")) {
         # DEVELOPER 1: alter the next comment to explain your setup
         if (is.null(flags)) {

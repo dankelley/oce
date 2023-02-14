@@ -80,6 +80,7 @@ Other functions that replace parts of oce objects:
 
 Other things related to cm data: 
 \code{\link{[[,cm-method}},
+\code{\link{applyMagneticDeclination,cm-method}},
 \code{\link{as.cm}()},
 \code{\link{cm-class}},
 \code{\link{cm}},

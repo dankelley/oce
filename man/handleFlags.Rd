@@ -5,7 +5,7 @@
 \title{Handle flags in oce objects}
 \usage{
 handleFlags(
-  object,
+  object = "oce",
   flags = NULL,
   actions = NULL,
   where = NULL,

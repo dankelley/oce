@@ -80,7 +80,8 @@
 #'
 #' Corresponding to the velocity array are two arrays of type raw, and
 #' identical dimension, accessed by `adp[["a"]]` and `adp[["q"]]`,
-#' holding measures of signal strength and data quality quality,
+#' holding measures of signal strength and data quality (referred
+#' to as "correlation" in some documentation),
 #' respectively.  (The exact meanings of these depend on the particular type
 #' of instrument, and it is assumed that users will be familiar enough with
 #' instruments to know both the meanings and their practical consequences in
@@ -625,6 +626,8 @@ setMethod(f="summary",
         #? } else {
         #?     invisible(callNextMethod()) # summary
         #? }
+        showMetadataItem(object, "north",        "North:         ")
+        showMetadataItem(object, "declination",  "Declination:   ")
         invisible(callNextMethod()) # summary
     })
 
@@ -3510,7 +3513,12 @@ beamToXyzAdpAD2CP <- function(x, debug=getOption("oceDebug"))
 #' @param x an [adp-class] object.
 #'
 #' @param declination magnetic declination to be added to the heading after
-#' "righting" (see below), to get ENU with N as "true" north.
+#' "righting" (see below), to get ENU with N as "true" north.  If this
+#' is set to NULL, then the returned object is set up without adjusting
+#' the compass for declination.  That means that `north` in its `metadata`
+#' slot will be set to `"magnetic"`, and also that there will be no item
+#' named `declination` in that slot.  Note that [applyMagneticDeclination()]
+#' can be used later, to set a declination.
 #'
 #' @template debugTemplate
 #'
@@ -3543,6 +3551,14 @@ xyzToEnuAdp <- function(x, declination=0, debug=getOption("oceDebug"))
     if (!inherits(x, "adp")) {
         stop("method is only for objects of class '", "adp", "'")
     }
+    oceDebug(debug, "xyzToEnuAdp(x, declination=", declination, ", debug=", debug, ") {\n", sep="", unindent=1)
+    originalDeclination <- declination
+    noDeclination <- is.null(declination)
+    if (noDeclination) {
+        oceDebug(debug, "object is being created in magnetic coordinates\n")
+        declination <- 0.0 # for computation
+    }
+    # NOTE: this code side-tracked by first test.  FIXME: revisit later.
     # Treat AD2CP differently because e.g. if it has AHRS, then there is may be need or
     # benefit in extracting heading, etc., as for the other cases. Also, the orientation
     # names are different for this type, so isolating the code makes things clearer
@@ -3550,7 +3566,6 @@ xyzToEnuAdp <- function(x, declination=0, debug=getOption("oceDebug"))
     if (is.ad2cp(x)) {
         return(xyzToEnuAdpAD2CP(x=x, declination=declination, debug=debug))
     }
-    oceDebug(debug, "xyzToEnuAdp(x, declination=", declination, ", debug=", debug, ") {\n", sep="", unindent=1)
     ## Now, address non-AD2CP cases.
     manufacturer <- x[["manufacturer"]]
     oceCoordinate <- x[["oceCoordinate"]]
@@ -3559,15 +3574,20 @@ xyzToEnuAdp <- function(x, declination=0, debug=getOption("oceDebug"))
         warning("instrument orientation is not stored in x; assuming it is \"upward\"")
         orientation <- "upward"
     }
-    if (is.null(oceCoordinate) || (oceCoordinate != "xyz" && oceCoordinate != "sfm"))
+    if (is.null(oceCoordinate) || (oceCoordinate != "xyz" && oceCoordinate != "sfm")) {
         stop("input must be in xyz or sfm coordinates")
+    }
     heading <- x[["heading"]]
     pitch <- x[["pitch"]]
     roll <- x[["roll"]]
     res <- x
-    isAD2CP <- is.ad2cp(x)
+    isAD2CP <- is.ad2cp(x) # FIXME: never TRUE, given first test, but that was temporary
     haveBv <- "bv" %in% names(x@data)
     # Case-by-case alteration of heading, pitch and roll, so we can use one formula for all.
+    oceDebug(debug, vectorShow(heading, "heading (before adjustment)"))
+    oceDebug(debug, vectorShow(pitch, "pitch (before adjustment)"))
+    oceDebug(debug, vectorShow(roll, "roll (before adjustment)"))
+
     if (1 == length(agrep("rdi", manufacturer, ignore.case=TRUE))) {
         # "teledyne rdi"
         # h/p/r and s/f/m from Clark Richards pers. comm. 2011-03-14, revised 2011-03-15
@@ -3730,9 +3750,17 @@ xyzToEnuAdp <- function(x, declination=0, debug=getOption("oceDebug"))
         res@data$bv[, 2] <- enu$north
         res@data$bv[, 3] <- enu$up
     }
+    res@data$heading <- x@data$heading + declination[1] # FIXME: is this ok, given up/down etc?
     res@metadata$oceCoordinate <- "enu"
+    if (noDeclination) {
+        res@metadata$north <- "magnetic"
+        res@metadata$declination <- NULL
+    } else {
+        res@metadata$north <- "geographic"
+        res@metadata$declination <- declination[1]
+    }
     res@processingLog <- processingLogAppend(res@processingLog,
-        paste("xyzToEnuAdp(x", ", declination=", declination, ", debug=", debug, ")", sep=""))
+        paste("xyzToEnuAdp(x", ", declination=", originalDeclination, ", debug=", debug, ")", sep=""))
     oceDebug(debug, "} # xyzToEnuAdp()\n", unindent=1)
     res
 }                                      # xyzToEnuAdp
@@ -4380,3 +4408,100 @@ adpFlagPastBoundary <- function(x=NULL, fields=NULL, df=20, trim=0.15, good=1, b
     oceDebug(debug, "} # adpFlagPastBoundary()\n", sep="", unindent=1, style="bold")
     return(x)
 }
+
+#' Alter an adp-class object to account for magnetic declination
+#'
+#' Acoustic-Doppler profiling instruments that infer direction using magnetic
+#' compasses to determine current direction need to have a correction applied
+#' for magnetic declination, if the goal is to infer currents with x and y
+#' oriented eastward and northward, respectively.  This is what the present
+#' function does (see \sQuote{Details}).
+#'
+#' @template declinationTemplate
+#'
+#' @param object an [adp-class] object.
+#'
+#' @param declination numeric value holding magnetic declination in degrees,
+#' positive for clockwise from north.
+#'
+#' @template debugTemplate
+#'
+#' @return An [adp-class] object, modified as outlined  in \sQuote{Description}.
+#'
+#' @seealso Use [magneticField()] to determine the declination,
+#' inclination and intensity at a given spot on the world, at a given time.
+#'
+#' @examples
+#' # Transform beam coordinate to xyx, then to enu with respect to
+#' # magnetic north, and then to geographic north.
+#' library(oce)
+#' file <- system.file("extdata", "adp_rdi.000", package="oce")
+#' lon <- -69.73433
+#' lat <- 47.88126
+#' beam <- read.oce(file, from=1, to=4, longitude=lon, latitude=lat)
+#' dec <- magneticField(lon, lat, beam[["time"]][1])$declination
+#' xyz <- beamToXyzAdp(beam)
+#' # Here, we tell xyzToEnuAdp() not to set a declination,
+#' # so enuMag has metadata$north equal to "magnetic".  We could
+#' # also skip the use of applyMagneticDeclination() by supplying
+#' # the known declination to xyzToEnuAdp().
+#' enuMag <- xyzToEnuAdp(xyz, declination=NULL)
+#' enuGeo <- applyMagneticDeclination(enuMag, declination=dec)
+#'
+#' @author Dan Kelley, aided by Clark Richards and Jaimie Harbin.
+#'
+#' @family things related to magnetism
+#' @family things related to adp data
+setMethod(f="applyMagneticDeclination",
+    signature(object="adp", declination="ANY", debug="ANY"),
+    definition=function(object, declination=0.0, debug=getOption("oceDebug")) {
+        oceDebug(debug, "applyMagneticDeclinationAdp(object, declination=", declination, ") {\n", sep="", unindent=1)
+        if (is.ad2cp(object)) {
+            stop("this function does not work yet for AD2CP data")
+        }
+        if (length(declination) != 1L) {
+            stop("length of 'declination' must equal 1, but it is ", length(declination))
+        }
+        if (!identical(object@metadata$oceCoordinate, "enu")) {
+            stop("object must be in enu coordinates, not ", object@metadata$oceCoordinate, " coordinates")
+        }
+        if (identical(object@metadata$north, "geographic")) {
+            warning("a declination has already been applied, so this action is cumulative")
+        }
+        res <- object
+        np <- dim(object[["v"]])[1]           # number of profiles
+        declination <- rep(declination, length.out=np)
+        pitch <- rep(0.0, length.out=np)
+        roll <- rep(0.0, length.out=np)
+        nc <- dim(object[["v"]])[2]           # numberOfCells
+        velo <- object[["v"]]
+        for (c in 1:nc) {
+            other <- do_sfm_enu(declination, pitch, roll, velo[, c, 1], velo[, c, 2], velo[, c, 3])
+            res@data$v[, c, 1] <- other$east
+            res@data$v[, c, 2] <- other$north
+            res@data$v[, c, 3] <- other$up
+        }
+        rm(velo) # possibly reduce memory pressure
+        dataNames <- names(object@data)
+        if ("bv" %in% dataNames) {
+            bv <- object@data$bv
+            other <- do_sfm_enu(declination, pitch, roll, bv[, 1], bv[, 2], bv[, 3])
+            res@data$bv[, 1] <- other$east
+            res@data$bv[, 2] <- other$north
+            res@data$bv[, 3] <- other$up
+        }
+        for (headingName in c("heading")) { # code paves way if other heading variables needed
+            oceDebug(debug, "possibly adding declination=", declination[1], " to ", headingName, "\n")
+            if (headingName %in% dataNames) {
+                oceDebug(debug, "yes, adding declination\n")
+                res@data[[headingName]] <- object@data[[headingName]] + declination
+            }
+        }
+        res@metadata$north <- "geographic"
+        res@metadata$declination <- declination[1]
+        res@processingLog <- processingLogAppend(res@processingLog,
+            paste0("applyMagneticDeclinationAdp(object, declination=", declination[1], ")"))
+        oceDebug(debug, "} # applyMagneticDeclinationAdp\n", unindent=1)
+        res
+    })
+
