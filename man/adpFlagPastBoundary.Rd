@@ -8,7 +8,7 @@ adpFlagPastBoundary(
   x = NULL,
   fields = NULL,
   df = 20,
-  trim = 0.15,
+  trim = 0.06,
   good = 1,
   bad = 4,
   debug = getOption("oceDebug")
@@ -50,7 +50,11 @@ then be used to remove such data.
 This works by fitting a smoothing spline to a bottom range with a defined
 number of degrees of freedom. For each time, it then searches to determine
 which associated distances are greater than the predicted smooth spline
-multiplied by \eqn{1-trim}.
+multiplied by \code{trim}. \code{trim} comes from the equation
+\eqn{cos(beamAngle*pi/180)} where beamAngle is the angle of the beams,
+and can sometimes be found by \code{x[["beamAngle"]]}. This means, if the
+beamAngle is known, an appropriate \code{trim} argument would be equal to
+\eqn{cos(beamAngle*pi/180)}.
 }
 \seealso{
 Other things related to adp data: 
