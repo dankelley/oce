@@ -4339,10 +4339,14 @@ adpConvertRawToNumeric <- function(object=NULL, variables=NULL, debug=getOption(
 #' objects that contain bottom ranges. Commonly, [handleFlags()] would
 #' then be used to remove such data.
 #'
-#' This works by fitting a smoothing spline to a bottom range with a defined
-#' number of degrees of freedom. For each time, it then searches to determine
-#' which associated distances are greater than the predicted smooth spline
-#' multiplied by \eqn{1-trim}.
+#' This works by using [smooth.spline()] on the time-dependent bottom ranges,
+#' beam-by-beam. The `df` value of the present function is passed to this
+#' spline call, as a way to control smoothness.  Once this is done, data within
+#' distance of \eqn{1-trim} times the range are flagged as being bad.
+#' The default value of `trim` is 0.15, which is close to the value (0.134)
+#' of \eqn{1-cos(beam angle)} for a beam angle of 30 degrees.
+#' FIXME(JH): I altered the above paragraph.  Please see if it seems ok and
+#' FIXME(JH): remove this comment if so.
 #'
 #' @param x an [adp-class] object containing bottom ranges.
 #'
@@ -4387,6 +4391,12 @@ adpFlagPastBoundary <- function(x=NULL, fields=NULL, df=20, trim=0.15, good=1, b
     }
     mask <- array(good, dim=dim(x[["v"]]))
     time <- x[["time"]]
+    # FIXME(JH): 0. Clarify the docs, esp what the default means i.t.o. the beam
+    # FIXME(JH):    angle.
+    # FIXME(JH): 1. Add warning if not beam coordinates.
+    # FIXME(JH): 2. If not beam, average the ranges for all the beams,
+    # FIXME(JH):    and use that.
+    # FIXME(JH): 3. Use pressure??
     for (kbeam in seq_len(x[["numberOfBeams"]])) {
         timeSeconds <- as.numeric(time)
         br <- x[["br"]][, kbeam]
@@ -4394,9 +4404,9 @@ adpFlagPastBoundary <- function(x=NULL, fields=NULL, df=20, trim=0.15, good=1, b
         X <- timeSeconds[ok]
         y <- br[ok]
         s <- smooth.spline(X, y, df=df)
-        p <- predict(s, timeSeconds)$y
+        boundary <- predict(s, timeSeconds)$y
         for (itime in seq_along(x[["time"]])) {
-            jbad <- x[["distance"]] > (1-trim)*p[itime]
+            jbad <- x[["distance"]] > (1.0 - trim) * boundary[itime]
             mask[itime, jbad, kbeam] <- bad
         }
     }
