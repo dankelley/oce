@@ -4342,7 +4342,11 @@ adpConvertRawToNumeric <- function(object=NULL, variables=NULL, debug=getOption(
 #' This works by fitting a smoothing spline to a bottom range with a defined
 #' number of degrees of freedom. For each time, it then searches to determine
 #' which associated distances are greater than the predicted smooth spline
-#' multiplied by \eqn{1-trim}.
+#' multiplied by `trim`. `trim` comes from the equation
+#' \eqn{cos(beamAngle*pi/180)} where beamAngle is the angle of the beams,
+#' and can sometimes be found by `x[["beamAngle"]]`. This means, if the
+#' beamAngle is known, an appropriate `trim` argument would be equal to
+#' \eqn{cos(beamAngle*pi/180)}.
 #'
 #' @param x an [adp-class] object containing bottom ranges.
 #'
@@ -4365,7 +4369,7 @@ adpConvertRawToNumeric <- function(object=NULL, variables=NULL, debug=getOption(
 #' @family things related to adp data
 #'
 #' @export
-adpFlagPastBoundary <- function(x=NULL, fields=NULL, df=20, trim=0.15, good=1, bad=4, debug=getOption("oceDebug"))
+adpFlagPastBoundary <- function(x=NULL, fields=NULL, df=20, trim=0.06, good=1, bad=4, debug=getOption("oceDebug"))
 {
     oceDebug(debug, "adpFlagPastBoundary() {\n", sep="", unindent=1, style="bold")
     if (!inherits(x, "adp")) {
@@ -4396,7 +4400,7 @@ adpFlagPastBoundary <- function(x=NULL, fields=NULL, df=20, trim=0.15, good=1, b
         s <- smooth.spline(X, y, df=df)
         p <- predict(s, timeSeconds)$y
         for (itime in seq_along(x[["time"]])) {
-            jbad <- x[["distance"]] > (1-trim)*p[itime]
+            jbad <- x[["distance"]] > (trim)*p[itime]
             mask[itime, jbad, kbeam] <- bad
         }
     }
