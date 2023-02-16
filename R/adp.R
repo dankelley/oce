@@ -4333,20 +4333,21 @@ adpConvertRawToNumeric <- function(object=NULL, variables=NULL, debug=getOption(
 
 #' Flag adp Data Past Water Column Boundary
 #'
-#' Flag variables with the same dimension of `v` in
-#' an [adp-class] object that are beyond the water column boundary.
-#' Currently, this operation can only be performed on [adp-class]
-#' objects that contain bottom ranges. Commonly, [handleFlags()] would
-#' then be used to remove such data.
+#' Flag variables with the same dimension of `v` in an [adp-class] object that
+#' are beyond the water column boundary while retaining existing flags.
+#' Currently, this operation can only be performed on [adp-class] objects that
+#' contain bottom ranges. Commonly, [handleFlags()] would then be used to remove
+#' such data.
 #'
-#' This works by using [smooth.spline()] on the time-dependent bottom ranges,
-#' beam-by-beam. The `df` value of the present function is passed to this
-#' spline call, as a way to control smoothness.  Once this is done, data within
-#' distance of \eqn{1-trim} times the range are flagged as being bad.
-#' The default value of `trim` is 0.15, which is close to the value (0.134)
-#' of \eqn{1-cos(beam angle)} for a beam angle of 30 degrees.
-#' FIXME(JH): I altered the above paragraph.  Please see if it seems ok and
-#' FIXME(JH): remove this comment if so.
+#' If the object's `oceCoordinate` is `"beam"`, this works by using
+#' [smooth.spline()] on the time-dependent bottom ranges, beam-by-beam. If
+#' `oceCoordinate` is `"enu"`, `"xyz"`, or `"other"`, a [smooth.spline()] is
+#' used on a time-dependent bottom range averaged across all the beams. The `df`
+#' value of the present function is passed to [smooth.spline()], as a way to
+#' control smoothness.  Once this is done, data within distance of \eqn{1-trim}
+#' multiplied by the bottom range are flagged as being bad.  The default value
+#' of `trim` is 0.15, which is close to the value (0.134) of \eqn{1-cos(beam
+#' angle*pi/180)} for a beam angle of 30 degrees.
 #'
 #' @param x an [adp-class] object containing bottom ranges.
 #'
@@ -4359,6 +4360,7 @@ adpConvertRawToNumeric <- function(object=NULL, variables=NULL, debug=getOption(
 #' @param good number stored in flags to indicate good data.
 #'
 #' @param bad number stored in flags to indicate bad data.
+#'
 #' @template debugTemplate
 #'
 #' @return `adpFlagPastBoundary` returns an [adp-class] object with flags
@@ -4375,8 +4377,11 @@ adpFlagPastBoundary <- function(x=NULL, fields=NULL, df=20, trim=0.15, good=1, b
     if (!inherits(x, "adp")) {
         stop("x must be an adp object")
     }
-    if (!"br" %in% names(x@data)) {
-        stop("adpFlagPastBoundary can only flag fields that have the same dimension as \"v\"")
+    if (!("br" %in% names(x@data))) {
+        stop("Can only flag fields that have the same dimension as \"v\"")
+    }
+    if (is.null(x[["oceCoordinate"]])) {
+        stop("This object doesn't have an oceCoordinate. You can set it using oceSetMetadata()")
     }
     dimNeeded <- dim(x[["v"]])
     if (is.null(fields)) {
@@ -4391,27 +4396,36 @@ adpFlagPastBoundary <- function(x=NULL, fields=NULL, df=20, trim=0.15, good=1, b
     }
     mask <- array(good, dim=dim(x[["v"]]))
     time <- x[["time"]]
-    # FIXME(JH): 0. Clarify the docs, esp what the default means i.t.o. the beam
-    # FIXME(JH):    angle.
-    # FIXME(JH): 1. Add warning if not beam coordinates.
-    # FIXME(JH): 2. If not beam, average the ranges for all the beams,
-    # FIXME(JH):    and use that.
-    # FIXME(JH): 3. Use pressure??
-    for (kbeam in seq_len(x[["numberOfBeams"]])) {
-        timeSeconds <- as.numeric(time)
-        br <- x[["br"]][, kbeam]
-        ok <- is.finite(br)
+    if (identical(x[["oceCoordinate"]], "beam")) {
+        for (kbeam in seq_len(x[["numberOfBeams"]])) {
+            timeSeconds <- as.numeric(time)
+            br <- x[["br"]][, kbeam]
+            ok <- is.finite(br)
+            X <- timeSeconds[ok]
+            y <- br[ok]
+            s <- smooth.spline(X, y, df=df)
+            boundary <- predict(s, timeSeconds)$y
+            for (itime in seq_along(x[["time"]])) {
+                jbad <- x[["distance"]] > (1.0 - trim) * boundary[itime]
+                mask[itime, jbad, kbeam] <- bad
+            }
+        }
+    } else if (x[["oceCoordinate"]] %in% c("enu", "xyz", "other")) {
+        warning("oceCoordinate is ", x[["oceCoordinate"]], ". This code is new (2023-02-16)")
+        brVector <- apply(x[["br"]], 1, mean, na.rm=TRUE)
+        ok <- is.finite(brVector)
+        timeSeconds <- as.numeric(x[["time"]])
         X <- timeSeconds[ok]
-        y <- br[ok]
+        y <- brVector[ok]
         s <- smooth.spline(X, y, df=df)
         boundary <- predict(s, timeSeconds)$y
         for (itime in seq_along(x[["time"]])) {
             jbad <- x[["distance"]] > (1.0 - trim) * boundary[itime]
-            mask[itime, jbad, kbeam] <- bad
+            mask[itime, jbad, ] <- bad
         }
     }
     for (f in fields) {
-        x[["flags"]][[f]] <- mask
+        x[["flags"]][[f]][mask == bad] <- bad
         oceDebug(debug, "handled field '", f, "'\n", sep="")
     }
     x@processingLog <- processingLogAppend(x@processingLog, paste(deparse(match.call()), sep="", collapse=""))

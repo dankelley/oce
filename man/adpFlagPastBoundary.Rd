@@ -40,17 +40,22 @@ by specifying higher \code{debug} values.}
 adjusted in the specified fields if data are beyond the water column boundary.
 }
 \description{
-Flag variables with the same dimension of \code{v} in
-an \linkS4class{adp} object that are beyond the water column boundary.
-Currently, this operation can only be performed on \linkS4class{adp}
-objects that contain bottom ranges. Commonly, \code{\link[=handleFlags]{handleFlags()}} would
-then be used to remove such data.
+Flag variables with the same dimension of \code{v} in an \linkS4class{adp} object that
+are beyond the water column boundary while retaining existing flags.
+Currently, this operation can only be performed on \linkS4class{adp} objects that
+contain bottom ranges. Commonly, \code{\link[=handleFlags]{handleFlags()}} would then be used to remove
+such data.
 }
 \details{
-This works by fitting a smoothing spline to a bottom range with a defined
-number of degrees of freedom. For each time, it then searches to determine
-which associated distances are greater than the predicted smooth spline
-multiplied by \eqn{1-trim}.
+If the object's \code{oceCoordinate} is \code{"beam"}, this works by using
+\code{\link[=smooth.spline]{smooth.spline()}} on the time-dependent bottom ranges, beam-by-beam. If
+\code{oceCoordinate} is \code{"enu"}, \code{"xyz"}, or \code{"other"}, a \code{\link[=smooth.spline]{smooth.spline()}} is
+used on a time-dependent bottom range averaged across all the beams. The \code{df}
+value of the present function is passed to \code{\link[=smooth.spline]{smooth.spline()}}, as a way to
+control smoothness.  Once this is done, data within distance of \eqn{1-trim}
+multiplied by the bottom range are flagged as being bad.  The default value
+of \code{trim} is 0.15, which is close to the value (0.134) of \eqn{1-cos(beam
+angle*pi/180)} for a beam angle of 30 degrees.
 }
 \seealso{
 Other things related to adp data: 
