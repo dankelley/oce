@@ -4309,8 +4309,7 @@ adpConvertRawToNumeric <- function(object=NULL, variables=NULL, debug=getOption(
         dataNames <- names(object@data)
         keep <- sapply(dataNames,
             function(variableTrial) {
-                dimtest <- dim(object[[variableTrial]])
-                length(dimtest) == 3 && all(dimtest == dimNeeded)
+                identical(dim(object[[variableTrial]]), dimNeeded)
             })
         variables <- dataNames[keep]
         oceDebug(debug, "inferred variables:", paste(variables, collapse=", "), "\n")
@@ -4346,12 +4345,14 @@ adpConvertRawToNumeric <- function(object=NULL, variables=NULL, debug=getOption(
 #' value of the present function is passed to [smooth.spline()], as a way to
 #' control smoothness.  Once this is done, data within distance of \eqn{1-trim}
 #' multiplied by the bottom range are flagged as being bad.  The default value
-#' of `trim` is 0.15, which is close to the value (0.134) of \eqn{1-cos(beam
-#' angle*pi/180)} for a beam angle of 30 degrees.
+#' of `trim` is 0.15, which is close to the value (0.134) of
+#' \eqn{1-cos(angle*pi/180)}, with angle=30 as the beam angle in degrees.
 #'
 #' @param x an [adp-class] object containing bottom ranges.
 #'
 #' @param fields a variable contained within `x` indicating which field to flag.
+#' If NULL (the default) then [adpFlagPastBoundary()] applies itself to all flag
+#' fields that have the same dimensionality as `v` in the `data` slot.
 #'
 #' @param df the degrees of freedom to use during the smoothing spline operation.
 #'
@@ -4378,7 +4379,7 @@ adpFlagPastBoundary <- function(x=NULL, fields=NULL, df=20, trim=0.15, good=1, b
         stop("x must be an adp object")
     }
     if (!("br" %in% names(x@data))) {
-        stop("Can only flag fields that have the same dimension as \"v\"")
+        stop("this adp object lacks a bottom-range ('br') field")
     }
     if (is.null(x[["oceCoordinate"]])) {
         stop("This object doesn't have an oceCoordinate. You can set it using oceSetMetadata()")
@@ -4388,8 +4389,7 @@ adpFlagPastBoundary <- function(x=NULL, fields=NULL, df=20, trim=0.15, good=1, b
         dataNames <- names(x@data)
         keep <- sapply(dataNames,
             function(variableTrial) {
-                dimtest <- dim(x[[variableTrial]])
-                length(dimtest) == 3 && all(dimtest == dimNeeded)
+                identical(dim(x[[variableTrial]]), dimNeeded)
             })
         fields <- dataNames[keep]
         oceDebug(debug, "inferred fields:", paste(fields, collapse=", "), "\n")

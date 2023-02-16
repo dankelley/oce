@@ -17,7 +17,9 @@ adpFlagPastBoundary(
 \arguments{
 \item{x}{an \linkS4class{adp} object containing bottom ranges.}
 
-\item{fields}{a variable contained within \code{x} indicating which field to flag.}
+\item{fields}{a variable contained within \code{x} indicating which field to flag.
+If NULL (the default) then \code{\link[=adpFlagPastBoundary]{adpFlagPastBoundary()}} applies itself to all flag
+fields that have the same dimensionality as \code{v} in the \code{data} slot.}
 
 \item{df}{the degrees of freedom to use during the smoothing spline operation.}
 
@@ -54,8 +56,8 @@ used on a time-dependent bottom range averaged across all the beams. The \code{d
 value of the present function is passed to \code{\link[=smooth.spline]{smooth.spline()}}, as a way to
 control smoothness.  Once this is done, data within distance of \eqn{1-trim}
 multiplied by the bottom range are flagged as being bad.  The default value
-of \code{trim} is 0.15, which is close to the value (0.134) of \eqn{1-cos(beam
-angle*pi/180)} for a beam angle of 30 degrees.
+of \code{trim} is 0.15, which is close to the value (0.134) of
+\eqn{1-cos(angle*pi/180)}, with angle=30 as the beam angle in degrees.
 }
 \seealso{
 Other things related to adp data: 
