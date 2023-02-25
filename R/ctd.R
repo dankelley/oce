@@ -4832,6 +4832,10 @@ drawIsopycnals <- function(nlevels=6, levels, rotate=TRUE, rho1000=FALSE, digits
     Tn <- 200
     Tline <- seq(TAxisMin, TAxisMax, length.out=Tn)
     cex.par <- par("cex")               # need to scale text() differently than mtext()
+    # Increase digits if density span is small
+    digitsTrial <- 1 - floor(log10(diff(range(levels))))
+    if (digitsTrial > digits)
+        digits <- digitsTrial
     for (rho in levels) {
         rhoLabel <- if (rho1000) 1000+rho else rho
         rhoLabel <- round(rhoLabel, digits)

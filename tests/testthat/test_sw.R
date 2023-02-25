@@ -37,7 +37,7 @@ library(oce)
 # [2] Trevor J. McDougall, 1987. Neutral Surfaces, Journal of Physical
 #     Oceanography, volume 17, pages 1950-1964.
 
-test_that("rho and sigma", {
+test_that("1. rho and sigma", {
     # 1. rho and sigma
     # 1.1 UNESCO rho [1 p19]. Note that we must
     # convert to the T68 temperature scale, which was in use at the time
@@ -47,6 +47,14 @@ test_that("rho and sigma", {
     pre <- c(0, 1e4,   0, 1e4,   0, 1e4,   0, 1e4)
     rho <- c(999.96675, 1044.12802, 997.04796, 1037.90204, 1027.67547, 1069.48914, 1023.34306, 1062.53817)
     expect_equal(swRho(sal, tem, pre, eos="unesco"), rho)
+    # Does swRho() work for a ctd object?
+    ctd <- as.ctd(sal, tem, pre)
+    expect_equal(swRho(ctd, eos="unesco"), rho)
+    # Does accessor work for a ctd object?
+    oldEOS <- getOption("oceEOS")
+    options(oceEOS="unesco")
+    expect_equal(ctd[["density", eos="unesco"]], rho)
+    options(oceEOS=oldEOS)
     # check sigma from this
     expect_equal(swRho(sal, tem, pre, eos="unesco")-1000, swSigma(sal, tem, pre, eos="unesco"))
     # 1.2 GSW
@@ -60,15 +68,15 @@ test_that("rho and sigma", {
     CT <- gsw::gsw_CT_from_t(SA, t, p)
     # Test density.
     rhoGSW <- gsw::gsw_rho(SA, CT, p)
-    rho <- swRho(SP, t, p, longitude, latitude, "gsw")
+    rho <- swRho(SP, t, p, longitude, latitude, eos="gsw")
     expect_equal(rhoGSW, rho)
     # Now use density to test sigma (not provided by gsw).
-    sigma <- swSigma(SP, t, p, longitude, latitude, "gsw")
+    sigma <- swSigma(SP, t, p, longitude, latitude, eos="gsw")
     expect_equal(rhoGSW-1000, sigma)
     # The following was hard-coded using values from GSW3.03, and it failed with GSW3.05.
     expect_equal(30.818302, swSigma(35, T90fromT68(13), 1000, eos="unesco"), tolerance=0.000001)
-    # The sigmaT tests are not from definititive test values, and so are just
-    # checks against future changes.
+    # The sigmaT tests are not from definitive test values, but only provide a check
+    # against future changes.
     expect_equal(swSigmaT(35, T90fromT68(13), 1000, eos="unesco"), 26.393538, tolerance=0.000001)
 
     # Tests from issue 1904
@@ -244,7 +252,13 @@ test_that("swSTrho", {
     pre <- 0
     # 9.1 UNESCO swSTrho
     Su <- swSTrho(T90fromT68(tem), rho, pre, eos="unesco")
-    expect_equal(Su, 28.65114808083)
+    # Next was 28.65114808083 before issue 2044, but the precision
+    # of the calculation was increased then, so a new check value
+    # is needed here. The relative difference is 1.3e-7, so
+    # certainly not a concern, but we want this test suite to
+    # check on changes to the code, in addition to checking
+    # on test values reflecting external knowledge.
+    expect_equal(Su, 28.65114435553552) # was 28.65114808083 before issue 2045
     expect_equal(rho, swRho(Su, T90fromT68(tem), 0, eos="unesco"))
     # 9.2 GSW swSTrho
     CT <- gsw::gsw_CT_from_t(Su, tem, pre)
@@ -256,7 +270,12 @@ test_that("misc sw calculations", {
     # The following was hard-coded using values from GSW3.03, and it failed with GSW3.05.
     # expect_equal(Sg, 28.7842812841013,tolerance=1e-8)
     tem <- swTSrho(35, 23, 0, eos="unesco") # 26.11301
-    expect_equal(T68fromT90(tem), 26.1130113601685, tolerance=1e-8)
+    # As above, the check value was changed in addressing issue
+    # 2044.  The old value was 26.1130113601685, which has
+    # relative difference of 1.1e-6 compared to the new value. Note
+    # that the value differs because tem differs, reflecting the
+    # change in swTSrho(); there is no change to T68fromT90().
+    expect_equal(T68fromT90(tem), 26.1130395531654, tolerance=1e-8)
     expect_equal(swRho(35, tem, 0, eos="unesco"), 1023, tolerance=1e-5)
 })
 

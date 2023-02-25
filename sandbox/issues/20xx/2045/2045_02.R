@@ -1,4 +1,9 @@
-# map diff between rho-unesco and rho-gsw
+# sandbox/issues/20xx/2045/2045_2.R
+#
+# Map diff between density computed with unesco and gsw methods.
+#
+# See https://github.com/dankelley/oce/issues/2045
+
 library(oce)
 data(coastlineWorld)
 lon <- seq(-180, 180, 1)
