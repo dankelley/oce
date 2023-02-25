@@ -1,4 +1,10 @@
-# standalone code for rapid development
+# sandbox/issues/20xx/2044/2044_01.R
+#
+# Test an idea for having plotTS() draw isopycnals by plotting. I had this idea
+# whilst working on issue 2044, but it was not needed there.  Still, the code is
+# worth keeping, in case the idea proves useful at some later time.
+#
+# see https://github.com/dankelley/oce/issues/2044
 library(oce)
 # Fake data
 SAd <- c(34.83376, 34.84024)
