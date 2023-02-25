@@ -254,11 +254,11 @@ test_that("swSTrho", {
     Su <- swSTrho(T90fromT68(tem), rho, pre, eos="unesco")
     # Next was 28.65114808083 before issue 2044, but the precision
     # of the calculation was increased then, so a new check value
-    # is needed here. The relative difference is 1.3e-7, so
+    # is needed here. The relative difference is 1.7e-7, so
     # certainly not a concern, but we want this test suite to
     # check on changes to the code, in addition to checking
     # on test values reflecting external knowledge.
-    expect_equal(Su, 28.65114435553552) # was 28.65114808083 before issue 2045
+    expect_equal(Su, 28.6511432379484)
     expect_equal(rho, swRho(Su, T90fromT68(tem), 0, eos="unesco"))
     # 9.2 GSW swSTrho
     CT <- gsw::gsw_CT_from_t(Su, tem, pre)

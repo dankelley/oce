@@ -4759,8 +4759,9 @@ plotTS <- function(x,
 #' @param rho1000 boolean, set to `TRUE` to write isopycnal labels as e.g.
 #' 1024 instead of 24.
 #'
-#' @param digits number of decimal digits to use in label (supplied to
-#' [round()]).
+#' @param digits minimum number of decimal digits to use in label (supplied to
+#' [round()]). If the density range is very small, [drawIsopycnals()]
+#' will increase value of `digits`, to try to make labels be distinct.
 #'
 #' @param eos equation of state to be used, either `"unesco"` or
 #' `"gsw"`.
@@ -4801,6 +4802,7 @@ drawIsopycnals <- function(nlevels=6, levels, rotate=TRUE, rho1000=FALSE, digits
     eos=getOption("oceEOS", default="gsw"), trimIsopycnals=TRUE,
     cex=0.75*par("cex"), col="darkgray", lwd=par("lwd"), lty=par("lty"))
 {
+    #cat("in drawIsopycnals 1\n", file=stderr())
     eos <- match.arg(eos, c("unesco", "gsw"))
     usr <- par("usr")
     SAxisMin <- max(0.1, usr[1])       # avoid NaN, which UNESCO density gives for freshwater
@@ -4836,10 +4838,13 @@ drawIsopycnals <- function(nlevels=6, levels, rotate=TRUE, rho1000=FALSE, digits
     digitsTrial <- 1 - floor(log10(diff(range(levels))))
     if (digitsTrial > digits)
         digits <- digitsTrial
+    #cat(file=stderr(), vectorShow(Tline))
     for (rho in levels) {
+        #cat(file=stderr(), vectorShow(rho))
         rhoLabel <- if (rho1000) 1000+rho else rho
         rhoLabel <- round(rhoLabel, digits)
         # FIXME-gsw: will this handle gsw?
+        #cat(file=stderr(), "about to call swSTrho()\n")
         Sline <- swSTrho(Tline, rep(rho, Tn), rep(0, Tn), eos=eos)
         # Eliminate NA (for crazy T)
         ok <- !is.na(Sline)
@@ -4862,7 +4867,7 @@ drawIsopycnals <- function(nlevels=6, levels, rotate=TRUE, rho1000=FALSE, digits
             lines(Sok, Tok, col=col, lwd=lwd, lty=lty)
             if (cex > 0) {
                 if (Sok[length(Sok)] > SAxisMax) {
-                    ## to right of box
+                    # label to right of box
                     i <- match(TRUE, Sok > SAxisMax)
                     if (rotate) {
                         mtext(rhoLabel, side=4, at=Tok[i], line=0.1, cex=cex, col=col)
@@ -4870,7 +4875,7 @@ drawIsopycnals <- function(nlevels=6, levels, rotate=TRUE, rho1000=FALSE, digits
                         text(usr[2], Tok[i], rhoLabel, pos=4, cex=cex/cex.par, col=col, xpd=TRUE)
                     }
                 } else {
-                    # above box ... if the line got there
+                    # label above box ... if the line got there
                     if (max(Tok) > (TAxisMax - 0.05 * (TAxisMax - TAxisMin))) {
                         mtext(rhoLabel, side=3, at=Sline[Tn], line=0.1, cex=cex, col=col)
                     }

@@ -347,11 +347,16 @@ void sw_strho(int *n, double *pT, double *prho, double *pp, int *teos, double *r
       //Rprintf("  sw_strho(pT=%f, prho=%f, pp=%f, res=%f, teos=%d) about to do bisection\n", *pT, *prho, *pp, S, *teos);
       // Note regarding next two lines: every bisection reduces the x
       // range by a factor of two, so it's not too expensive to ask for
-      // tight resolution.  (I decreased these two values by a factor of 10 on
-      // 2023-02-24, whist working on https://github.com/dankelley/oce/issues/2044)
-      double xresolution = 1e-5; // salinity criterion
-      double ftol = 1e-4; // density criterion
-      strho_bisection_search(&S, 0, 500.0, xresolution, ftol, *teos);
+      // tight resolution.
+      //
+      // See https://github.com/dankelley/oce/issues/2044 for
+      // discussion of the values needed in high-zoom TS plots.
+      //
+      // Until 2023-02-25 xresolution was 1e-4 and ftol was 1e-3, but
+      // on this date I reduced each by a factor of 100.
+      double xresolution = 1.0e-6; // salinity criterion
+      double ftol = 1.0e-6; // density criterion
+      strho_bisection_search(&S, 0, 100.0, xresolution, ftol, *teos);
       //Rprintf("  ... after bisection, sw_strho() returning %f\n", S);
       res[i] = S;
     }
@@ -458,6 +463,7 @@ int strho_bisection_search(double *x, double x1, double x2, double xresolution, 
   while (fabs(g = strho_f(*x = (x1 + x2) / 2.0, teos)) > ftol || fabs (x1 - x2) > xresolution) {
     if (++iteration > maxiteration) {
       *x = NA_REAL;
+      //Rprintf("too many iterations\n");
       return(1);
     }
     //Rprintf("    strho_bisection_search() in loop x=%f   g=%f   g1=%f   (iteration %d)\n",*x, g, g1, iteration);
@@ -476,6 +482,7 @@ int strho_bisection_search(double *x, double x1, double x2, double xresolution, 
       return (1); /* exact solution */
     }
   }
+  //Rprintf("  x=%f at iteration: %d\n", *x, iteration);
   //Rprintf("  strho_bisection_search() returning %.4f\n",*x);
   return (0);  /* converged by default */
 }

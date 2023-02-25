@@ -856,6 +856,8 @@ swSCTp <- function(conductivity, temperature=NULL, pressure=NULL,
 #' @family functions that calculate seawater properties
 swSTrho <- function(temperature, density, pressure, eos=getOption("oceEOS", default="gsw"))
 {
+    #cat(file=stderr(), "swSTrho(", temperature[1], ", ", density[1], ", ", pressure[1], ", ", eos, "\n", sep="")
+    #cat(file=stderr(), vectorShow(length(temperature)))
     # FIXME-gsw add gsw version
     eos <- match.arg(eos, c("unesco", "gsw"))
     teos <- eos == "gsw" # FIXME still the best way?
@@ -868,6 +870,7 @@ swSTrho <- function(temperature, density, pressure, eos=getOption("oceEOS", defa
     if (nt == 1) temperature <- rep(temperature, nt)
     sigma <- ifelse(density > 500, density - 1000, density)
     if (eos == "unesco") {
+        #cat(file=stderr(), "  about to call C function sw_strho()\n")
         res <- .C("sw_strho",
             as.integer(nt),
             as.double(T68fromT90(temperature)),
@@ -923,6 +926,8 @@ swSTrho <- function(temperature, density, pressure, eos=getOption("oceEOS", defa
 #' @family functions that calculate seawater properties
 swTSrho <- function(salinity, density, pressure=NULL, eos=getOption("oceEOS", default="gsw"))
 {
+    #cat(file=stderr(), "swTSrho(", salinity[1],", ", density[1], ", ", pressure[1], ", ", eos, "\n")
+    #cat(file=stderr(), vectorShow(length(salinity)))
     # FIXME-gsw add gsw version
     if (missing(salinity)) {
         stop("must provide salinity")

@@ -32,8 +32,9 @@ horizontally.}
 \item{rho1000}{boolean, set to \code{TRUE} to write isopycnal labels as e.g.
 1024 instead of 24.}
 
-\item{digits}{number of decimal digits to use in label (supplied to
-\code{\link[=round]{round()}}).}
+\item{digits}{minimum number of decimal digits to use in label (supplied to
+\code{\link[=round]{round()}}). If the density range is very small, \code{\link[=drawIsopycnals]{drawIsopycnals()}}
+will increase value of \code{digits}, to try to make labels be distinct.}
 
 \item{eos}{equation of state to be used, either \code{"unesco"} or
 \code{"gsw"}.}
