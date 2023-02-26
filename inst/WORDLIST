@@ -688,6 +688,7 @@ io
 ipss
 isobath
 isobaths
+isopleths
 isopycnal
 isopycnals
 issuecomment
@@ -1038,6 +1039,7 @@ vapour
 vectorize
 velocimeter
 velocimeters
+velocimetry
 velocityStatistics
 verlag
 version
