@@ -87,7 +87,7 @@ Diffusive Stability: Spiciness.} Progress in Oceanography, Observations of the
 
 2.McDougall, Trevor J., and Oliver A. Krzysik. \dQuote{Spiciness.}
 Journal of Marine Research 73, no. 5 (September 1, 2015): 141-52.
-\doi{10.1357/002224015816665589}
+doi: \code{10.1357/002224015816665589}
 }
 \seealso{
 Other functions that calculate seawater properties: 

@@ -2646,7 +2646,7 @@ swSpecificHeat <- function(salinity, temperature=NULL, pressure=0,
 #'
 #' 2.McDougall, Trevor J., and Oliver A. Krzysik. \dQuote{Spiciness.}
 #' Journal of Marine Research 73, no. 5 (September 1, 2015): 141-52.
-#' \doi{10.1357/002224015816665589}
+#' doi: \code{10.1357/002224015816665589}
 #'
 #' @family functions that calculate seawater properties
 swSpice <- function(salinity, temperature=NULL, pressure=NULL,
