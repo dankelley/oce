@@ -31,6 +31,7 @@ plotTS(
   Tlim,
   drawFreezing = TRUE,
   trimIsopycnals = TRUE,
+  gridIsopycnals = c(30, 50),
   mgp = getOption("oceMgp"),
   mar = c(mgp[1] + 1.5, mgp[1] + 1.5, mgp[1], mgp[1]),
   lwd = par("lwd"),
@@ -116,6 +117,17 @@ indicates whether to trim isopycnal curves
 to the region of temperature-salinity space for which density
 computations are considered to be valid in the context of the
 chosen \code{eos}; see \dQuote{Details}.}
+
+\item{gridIsopycnals}{a parameter that controls how the isopycnals
+are computed.  This may be NULL, or an integer vector of length 2.
+\emph{Case 1:} the isopycnals are drawn by tracing density
+isopleths in salinity-temperature space. This method was
+used as the default prior to version 1.7-11, but it was
+found to yield staircase-like isopycnal curves for highly
+zoomed-in plots (e.g. with millidegree temperature ranges).
+\emph{Case 2:} a grid of density is constructed, with \code{gridIsopycnals[1]}
+salinity levels and \code{gridIsopycnals[2]} temperature levels, and
+then \code{\link[=contourLines]{contourLines()}} is used to trace the isopycnals.}
 
 \item{mgp}{3-element numerical vector to use for \verb{[par](mgp)}, and also
 for \link{par}\code{(mar)}, computed from this.  The default is tighter than the R

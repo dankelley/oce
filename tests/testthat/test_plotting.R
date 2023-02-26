@@ -1,6 +1,6 @@
 library(oce)
 test_that("multi-panel plots leave usr as it was originally", {
-    skip_on_cran()
+    skip_on_cran() # for timing considerations
     orig <- par("usr")
     data(adp)
     expect_silent(plot(adp))
