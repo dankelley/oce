@@ -9,26 +9,55 @@
 # see https://github.com/dankelley/oce/issues/2046
 library(oce)
 
-trimIsopycnal <- function(S, T, longitude, latitude, eos="unesco")
+trimIsopycnalLine <- function(contourline, longitude, latitude, eos="unesco")
 {
-    # Find intersection point of data and FPL
+    # See sandbox/issues/20xx/2046/2046_0[1:3].R, noting that here
+    # x is S and y is T. The method centres on finding the
+    # intersection, if any, between y=y(x) and the freezing point
+    # line, FPL.
+    x <- contourline$x
+    y <- contourline$y
     FPL <- if (eos == "unesco") {
-        function(S) swTFreeze(S, 0, eos=eos)
+        function(x) swTFreeze(x, 0, eos=eos)
     } else {
-        function(S) swTFreeze(S, 0, longitude=longitude, latitude=latitude, eos=eos)
+        function(x) swTFreeze(x, 0, longitude=longitude, latitude=latitude, eos=eos)
     }
-    m <- approxfun(S, T, rule=2)
-    frozen <- T < FPL(S)
+    frozen <- y < FPL(x)
     if (any(frozen)) {
         if (all(frozen)) {
-            return(list(S=NULL, T=NULL))
+            contourline$x <- NULL
+            contourline$y <- NULL
         }
-        u <- uniroot(function(S) {m(S) - FPL(S)}, range(S, na.rm=TRUE))
-        Skeep <- S[!frozen]
-        Tkeep <- T[!frozen]
-        return(list(S=c(u$root, Skeep), T=c(FPL(u$root), Tkeep)))
+        #>m <- approxfun(x, y, rule=2)
+        #>xkeep <- x[!frozen]
+        #>ykeep <- y[!frozen]
+        # If there is no local maximum in density, uniroot will find the
+        # intersection.  (This fails for very low salinities, so in those
+        # cases we simply trim frozen points.)
+        #>u <- try(uniroot(function(x) {m(x) - FPL(x)}, range(x, na.rm=TRUE)), silent=TRUE)
+        #>cat(vectorShow(u$root, digits=10)) # 30.7487257336249
+        #>print(frozen)
+        # bracket the crossing points
+        after <- which(!frozen)[1]
+        if (after < 2L) {
+            # something is wrong. Just give up on the cutoff at the FPL
+            return(contourline)
+        }
+        before <- after - 1L
+        #>lines(x, y, type="o")
+        #>points(x[before], y[before], col=2, pch=20)
+        #>points(x[after], y[after], col=3, pch=20)
+        m <- approxfun(x[c(before, after)], y[c(before, after)], rule=2)
+        u <- try(uniroot(function(x) {m(x) - FPL(x)}, range(x, na.rm=TRUE)), silent=TRUE)
+        #>cat(vectorShow(u$root, digits=10)) # 30.7487257336249
+        if (!inherits(u, "try-error")) {
+            xkeep <- x[!frozen]
+            ykeep <- y[!frozen]
+            contourline$x <- c(u$root, xkeep)
+            contourline$y <- c(FPL(u$root), ykeep)
+        }
     }
-    list(S=S, T=T)
+    contourline
 }
 
 # DEVELOPER TESTS:
@@ -42,7 +71,7 @@ latitude <- 40 # only used for eos="gsw"
 
 # Create fake data (obviously not an actual isopycnal!)
 S <- seq(30, 34, length.out=20)
-T <- -3 + (S-30) + (S-30)^2 # add 2 to make it all warmer than FPL
+T <- -3 + (S-30) + 0.1*(S-30)^2 # add 2 to make it all warmer than FPL
 plot(S, T, type="l")
 # Show FPL
 FPL <- if (eos == "unesco") {
@@ -52,9 +81,9 @@ FPL <- if (eos == "unesco") {
 }
 Sf <- seq(min(S), max(S), length.out=100)
 lines(Sf, FPL(Sf), col=4)
-
-ST <- trimIsopycnal(S, T)
-lines(ST$S, ST$T, lwd=3)
+cl <- list(value=1, x=S, y=T)
+clTrimmed <- trimIsopycnalLine(cl, longitude, latitude, eos)
+lines(clTrimmed$x, clTrimmed$y, lwd=3)
 legend("topleft", lwd=c(1, 3, 1), col=c(1, 1, 4),
     legend=c("cold data", "warm data", "FPL"))
 
