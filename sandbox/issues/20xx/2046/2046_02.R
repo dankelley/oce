@@ -28,28 +28,21 @@ trimIsopycnalLine <- function(contourline, longitude, latitude, eos="unesco")
             contourline$x <- NULL
             contourline$y <- NULL
         }
-        #>m <- approxfun(x, y, rule=2)
-        #>xkeep <- x[!frozen]
-        #>ykeep <- y[!frozen]
-        # If there is no local maximum in density, uniroot will find the
-        # intersection.  (This fails for very low salinities, so in those
-        # cases we simply trim frozen points.)
-        #>u <- try(uniroot(function(x) {m(x) - FPL(x)}, range(x, na.rm=TRUE)), silent=TRUE)
-        #>cat(vectorShow(u$root, digits=10)) # 30.7487257336249
-        #>print(frozen)
-        # bracket the crossing points
+        # Bracket the crossing points and then find intersection of that line
+        # with the FPL.
         after <- which(!frozen)[1]
         if (after < 2L) {
             # something is wrong. Just give up on the cutoff at the FPL
             return(contourline)
         }
         before <- after - 1L
-        #>lines(x, y, type="o")
-        #>points(x[before], y[before], col=2, pch=20)
-        #>points(x[after], y[after], col=3, pch=20)
         m <- approxfun(x[c(before, after)], y[c(before, after)], rule=2)
-        u <- try(uniroot(function(x) {m(x) - FPL(x)}, range(x, na.rm=TRUE)), silent=TRUE)
-        #>cat(vectorShow(u$root, digits=10)) # 30.7487257336249
+        # In an earlier attempt, m() approximated the whole curve.  But that
+        # made for a failure in the root-finder if the salinity was so low that
+        # the isopycnal crossed an isohaline line at two points.  (This happened
+        # in the test of lobo plotting, since that machine was in very fresh
+        # water.)
+        u <- try(uniroot(function(x) {m(x) - FPL(x)}, range(x[c(before, after)], na.rm=TRUE)), silent=TRUE)
         if (!inherits(u, "try-error")) {
             xkeep <- x[!frozen]
             ykeep <- y[!frozen]
@@ -70,8 +63,8 @@ longitude <- -63 # only used for eos="gsw"
 latitude <- 40 # only used for eos="gsw"
 
 # Create fake data (obviously not an actual isopycnal!)
-S <- seq(30, 34, length.out=20)
-T <- -3 + (S-30) + 0.1*(S-30)^2 # add 2 to make it all warmer than FPL
+S <- seq(30, 32, length.out=20)
+T <- -3 + (S-30) + runif(1, 0.0, 0.8)*(S-30)^2 # add 2 to make it all warmer than FPL
 plot(S, T, type="l")
 # Show FPL
 FPL <- if (eos == "unesco") {

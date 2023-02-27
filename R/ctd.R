@@ -4560,6 +4560,28 @@ plotTS <- function(x,
                 latitude <- rep(x[["latitude"]], each=dim[1])
             }
             x <- as.ctd(SP, t, p, longitude=longitude, latitude=latitude)
+        } else if (inherits(x, "lobo")) {
+            oceDebug(debug, "x is a lobo object\n")
+            salinity <- x[["salinity"]]
+            temperature <- x[["temperature"]]
+            pressure <- x[["pressure"]]
+            if (is.null(pressure) || !any(is.finite(pressure))) {
+                warning("no good pressures, so setting all to 0.0 dbar")
+                pressure <- rep(0.0, length(salinity))
+            }
+            longitude <- x[["longitude"]]
+            latitude <- x[["latitude"]]
+            if (eos == "gsw") {
+                if (is.null(longitude) || is.null(latitude)) {
+                    warning("no longitude and latitude, so changing eos to unesco")
+                    x <- as.ctd(salinity, temperature, pressure)
+                    eos <- "unesco"
+                } else {
+                    x <- as.ctd(salinity, temperature, pressure, longitude=longitude, latitude=latitude)
+                }
+            } else {
+                x <- as.ctd(salinity, temperature, pressure)
+            }
         } else if (is.list(x)) {
             oceDebug(debug, "x is a list\n")
             if (inherits(x[[1]], "ctd")) {
@@ -4866,13 +4888,28 @@ drawIsopycnals <- function(nlevels=6, levels, rotate=TRUE, rho1000=FALSE, digits
                 contourline$x <- NULL
                 contourline$y <- NULL
             }
-            m <- approxfun(x, y, rule=2)
+            # Preliminary estimate (will be over-ridden if we can find the
+            # intersection of the isopycnal and the FPL).
             xkeep <- x[!frozen]
             ykeep <- y[!frozen]
-            # If there is no local maximum in density, uniroot will find the
-            # intersection.  (This fails for very low salinities, so in those
-            # cases we simply trim frozen points.)
-            u <- try(uniroot(function(x) {m(x) - FPL(x)}, range(x, na.rm=TRUE)), silent=TRUE)
+            # Bracket the crossing points, form a function for the line joining
+            # them, and then find the intersection of that line with the FPL.
+            after <- which(!frozen)[1]
+            if (after < 2L) {
+                # Although I think this is impossible, we don't want an error,
+                # so give up on the trimming attempt.
+                return(contourline)
+            }
+            before <- after - 1L
+            # In an earlier attempt, m() approximated the whole curve.  But that
+            # made for a failure in the root-finder if the salinity was so low that
+            # the isopycnal crossed an isohaline line at two points.  (This happened
+            # in the test of lobo plotting, since that machine was in very fresh
+            # water.)
+            m <- approxfun(x[c(before, after)], y[c(before, after)], rule=2)
+            u <- try(uniroot(function(x) {
+                m(x) - FPL(x)
+            }, range(x[c(before, after)], na.rm=TRUE)), silent=TRUE)
             if (!inherits(u, "try-error")) {
                 xkeep <- x[!frozen]
                 ykeep <- y[!frozen]
@@ -4882,7 +4919,7 @@ drawIsopycnals <- function(nlevels=6, levels, rotate=TRUE, rho1000=FALSE, digits
         }
         contourline
     }
-    #cat("in drawIsopycnals 1\n", file=stderr())
+
     eos <- match.arg(eos, c("unesco", "gsw"))
     if (eos == "gsw" && (is.null(longitude) || is.null(latitude))) {
         stop("longitude and latitude must be supplied, since eos=\"gsw\"")
