@@ -1,5 +1,4 @@
 library(oce)
-source("~/git/oce/R/ctd.R")
 data(ctd)
 ctd@data$pressure[1] <- 0 # put top point at surface
 par(mfrow=c(1, 2))

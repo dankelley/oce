@@ -341,11 +341,7 @@ setMethod(f="plot",
             } else if (w == 2) {
                 oce.plot.ts(x[["time"]], x[["salinity"]], ylab=resizableLabel("S"), debug=debug-1, ...)
             } else if (w == 3) {
-                if (any(!is.na(x[["pressure"]]))) {
-                    plotTS(as.ctd(x[["salinity"]], x[["temperature"]], x[["pressure"]]), eos="unesco", debug=debug-1, ...)
-                } else {
-                    plotTS(as.ctd(x[["salinity"]], x[["temperature"]], 0), eos="unesco", debug=debug-1, ...)
-                }
+                plotTS(x, debug=debug-1, ...)
             } else if (w == 4) {
                 oce.plot.ts(x[["time"]], x[["u"]], ylab=resizableLabel("u"), debug=debug-1, ...)
             } else if (w == 5) {

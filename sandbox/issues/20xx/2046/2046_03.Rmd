@@ -1,0 +1,69 @@
+---
+title: "2046_03.Rmd: Demonstration of new isopycnal-plot method for plotTS()"
+date: 2023-02-26
+output: pdf_document
+---
+
+**Goal**
+
+Test a way for plotTS() to draw isopycnals by contouring.
+See https://github.com/dankelley/oce/issues/2046 for more discussion.
+
+**Methods**
+
+The code below produces plots that explore some important `plotTS()` parameters
+relating to isopycnals.  (There are more, though!) In each row, the left panel
+is the result of not supplying the `gridIsopycnal` parameter, the middle is
+with a coarse grid, and the right is for `gridIsopycnal=NULL` (which yields the
+previous behaviour.)
+
+Plots are labeled in the top-right corners. The panels in a row are:
+
+* A: **new method** with `gridIsopycnals` unspecified, so it defaults the *new*
+  method with `c(50,50)`.
+* B: **new method** with `gridIsopycnals=c(3,3)`, illustrating what this arg
+  does.
+* C: **old method** illustrating two errors: 1. `trimIsopycnals` is ignored if
+  `eos="unesco"` and the results are wrong (isopycnals extend past the
+  freezing-point line) if `eos="gsw"`.
+
+**Observations**
+
+1. The new method (A and B panels) gives the expected results in each case.
+2. The old method (C panels) fails in some conditions:
+    1. The isopycnals are trimmed in 1C, despite the value of `trimIsopycnals`.
+       This is a "unesco" case.
+    2. The isopycnals are not trimmed accurately in 4C. This is a "gsw" case.
+
+**Conclusions**
+
+The new method is superior to the old method.
+
+```{r fig.height=3, dev.args=list(pointsize=11)}
+library(oce)
+data(ctd)
+
+mar <- c(3, 3, 10, 1)
+par(mfrow=c(1, 3))
+cex <- par("cex")
+R <- 1 # row of plot
+for (trimIsopycnals in c(FALSE, TRUE)) {
+    for (eos in c("unesco", "gsw")) {
+        prefix <- paste0("eos=\"", eos, "\"\ntrimIsopycnals=", trimIsopycnals, "\n")
+        plotTS(ctd, eos=eos, ylim=c(-2, 15), mar=mar,
+            trimIsopycnals=trimIsopycnals)
+        mtext(paste0(prefix, " gridIsopycnals unspecified"), line=1, cex=cex, col=2)
+        mtext(paste0(R, "A "), line=-1, adj=1, cex=cex, col=2, font=2)
+        plotTS(ctd, eos=eos, ylim=c(-2, 15), mar=mar,
+            gridIsopycnals=c(3, 3), trimIsopycnals=trimIsopycnals)
+        mtext(paste0(prefix, " gridIsopycnals=c(3,3)"), line=1, cex=cex, col=2)
+        mtext(paste0(R, "B "), line=-1, adj=1, cex=cex, col=2, font=2)
+        plotTS(ctd, eos=eos, ylim=c(-2, 15), mar=mar,
+            gridIsopycnals=NULL, trimIsopycnals=trimIsopycnals)
+        mtext(paste0(prefix, " gridIsopycnals=NULL"), line=1, cex=cex, col=2)
+        mtext(paste0(R, "C "), line=-1, adj=1, cex=cex, col=2, font=2)
+        R <- R + 1
+    }
+}
+```
+

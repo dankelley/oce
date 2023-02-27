@@ -1,6 +1,6 @@
 library(oce)
 test_that("multi-panel plots leave usr as it was originally", {
-    skip_on_cran()
+    skip_on_cran() # for timing considerations
     orig <- par("usr")
     data(adp)
     expect_silent(plot(adp))
@@ -18,7 +18,9 @@ test_that("multi-panel plots leave usr as it was originally", {
     expect_silent(plot(lisst))
     expect_equal(par("usr"), orig)
     data(lobo)
-    expect_silent(plot(lobo))
+    expect_warning(expect_warning(plot(lobo),
+                                  "no good pressures"),
+                   "no longitude")
     expect_equal(par("usr"), orig)
     data(rsk)
     expect_silent(plot(rsk))

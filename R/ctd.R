@@ -4385,6 +4385,17 @@ time.formats <- c("%b %d %Y %H:%M:%s", "%Y%m%d")
 #' computations are considered to be valid in the context of the
 #' chosen `eos`; see \dQuote{Details}.
 #'
+#' @param gridIsopycnals a parameter that controls how the isopycnals
+#' are computed.  This may be NULL, or an integer vector of length 2.
+#' *Case 1:* the isopycnals are drawn by tracing density
+#' isopleths in salinity-temperature space. This method was
+#' used as the default prior to version 1.7-11, but it was
+#' found to yield staircase-like isopycnal curves for highly
+#' zoomed-in plots (e.g. with millidegree temperature ranges).
+#' *Case 2:* a grid of density is constructed, with `gridIsopycnals[1]`
+#' salinity levels and `gridIsopycnals[2]` temperature levels, and
+#' then [contourLines()] is used to trace the isopycnals.
+#'
 #' @param mgp 3-element numerical vector to use for `[par](mgp)`, and also
 #' for [par]`(mar)`, computed from this.  The default is tighter than the R
 #' default, in order to use more space for the data and less for the axes.
@@ -4483,32 +4494,33 @@ time.formats <- c("%b %d %Y %H:%M:%s", "%Y%m%d")
 #' @family functions that plot oce data
 #' @family things related to ctd data
 plotTS <- function(x,
-    inSitu=FALSE,
-    type="p",
-    referencePressure=0,
-    nlevels=6, levels,
-    grid=TRUE,
-    col.grid="lightgray",
-    lty.grid="dotted",
-    rho1000=FALSE,
-    eos=getOption("oceEOS", default="gsw"),
-    cex=par("cex"), col=par("col"), pch=par("pch"),
-    bg="white", pt.bg="transparent",
-    col.rho=gray(0.5),
-    cex.rho=3/4*par("cex"),
-    rotate=TRUE,
-    useSmoothScatter=FALSE,
-    xlab, ylab,
-    Slim, Tlim,
-    drawFreezing=TRUE,
-    trimIsopycnals=TRUE,
-    mgp=getOption("oceMgp"),
-    mar=c(mgp[1]+1.5, mgp[1]+1.5, mgp[1], mgp[1]),
-    lwd=par("lwd"), lty=par("lty"),
-    lwd.rho=par("lwd"), lty.rho=par("lty"),
-    add=FALSE, inset=FALSE,
-    debug=getOption("oceDebug"),
-    ...)
+                   inSitu=FALSE,
+                   type="p",
+                   referencePressure=0,
+                   nlevels=6, levels,
+                   grid=TRUE,
+                   col.grid="lightgray",
+                   lty.grid="dotted",
+                   rho1000=FALSE,
+                   eos=getOption("oceEOS", default="gsw"),
+                   cex=par("cex"), col=par("col"), pch=par("pch"),
+                   bg="white", pt.bg="transparent",
+                   col.rho=gray(0.5),
+                   cex.rho=3/4*par("cex"),
+                   rotate=TRUE,
+                   useSmoothScatter=FALSE,
+                   xlab, ylab,
+                   Slim, Tlim,
+                   drawFreezing=TRUE,
+                   trimIsopycnals=TRUE,
+                   gridIsopycnals=c(30, 50),
+                   mgp=getOption("oceMgp"),
+                   mar=c(mgp[1]+1.5, mgp[1]+1.5, mgp[1], mgp[1]),
+                   lwd=par("lwd"), lty=par("lty"),
+                   lwd.rho=par("lwd"), lty.rho=par("lty"),
+                   add=FALSE, inset=FALSE,
+                   debug=getOption("oceDebug"),
+                   ...)
 {
     oceDebug(debug, "plotTS(..., lwd.rho=", lwd.rho, ", lty.rho=", lty.rho, ",",
         "Slim=", if (!missing(Slim)) paste("c(", Slim[1], ",", Slim[2], ")") else "(missing)", ", ",
@@ -4548,6 +4560,28 @@ plotTS <- function(x,
                 latitude <- rep(x[["latitude"]], each=dim[1])
             }
             x <- as.ctd(SP, t, p, longitude=longitude, latitude=latitude)
+        } else if (inherits(x, "lobo")) {
+            oceDebug(debug, "x is a lobo object\n")
+            salinity <- x[["salinity"]]
+            temperature <- x[["temperature"]]
+            pressure <- x[["pressure"]]
+            if (is.null(pressure) || !any(is.finite(pressure))) {
+                warning("no good pressures, so setting all to 0.0 dbar")
+                pressure <- rep(0.0, length(salinity))
+            }
+            longitude <- x[["longitude"]]
+            latitude <- x[["latitude"]]
+            if (eos == "gsw") {
+                if (is.null(longitude) || is.null(latitude)) {
+                    warning("no longitude and latitude, so changing eos to unesco")
+                    x <- as.ctd(salinity, temperature, pressure)
+                    eos <- "unesco"
+                } else {
+                    x <- as.ctd(salinity, temperature, pressure, longitude=longitude, latitude=latitude)
+                }
+            } else {
+                x <- as.ctd(salinity, temperature, pressure)
+            }
         } else if (is.list(x)) {
             oceDebug(debug, "x is a list\n")
             if (inherits(x[[1]], "ctd")) {
@@ -4717,9 +4751,11 @@ plotTS <- function(x,
         grid(col=col.grid, lty=lty.grid)
     }
     drawIsopycnals(nlevels=nlevels, levels=levels, rotate=rotate, rho1000=rho1000, digits=2,
-        eos=eos,
+        eos=eos, longitude=x[["longitude"]], latitude=x[["latitude"]],
         trimIsopycnals=trimIsopycnals,
-        cex=cex.rho, col=col.rho, lwd=lwd.rho, lty=lty.rho)
+        gridIsopycnals=gridIsopycnals,
+        cex=cex.rho, col=col.rho, lwd=lwd.rho, lty=lty.rho,
+        debug=debug-1)
     usr <- par("usr")
     Sr <- seq(max(0, usr[1]), usr[2], length.out=100)
     if (drawFreezing) {
@@ -4740,11 +4776,16 @@ plotTS <- function(x,
 }
 
 
-#' Add Isopycnal Curves to TS Plot
+#' Add Isopycnal Curves to a TS Plot
 #'
 #' Adds isopycnal lines to an existing temperature-salinity plot.  This is
 #' called by [plotTS()], and may be called by the user also, e.g. if
 #' an image plot is used to show TS data density.
+#'
+#' The default method of drawing isopycnals was changed in February of 2023,
+#' so that even plots that are zoomed in to have millidegree temperature ranges
+#' will have smooth curves.  See the discussion of `gridIsopycnals` for
+#' details.
 #'
 #' @param nlevels suggested number of density levels (i.e. isopycnal curves);
 #' ignored if `levels` is supplied.  If this is set to 0, no isopycnal
@@ -4764,7 +4805,12 @@ plotTS <- function(x,
 #' will increase value of `digits`, to try to make labels be distinct.
 #'
 #' @param eos equation of state to be used, either `"unesco"` or
-#' `"gsw"`.
+#' `"gsw"`.  If it is `"gsw"` then `latitude` and `longitude` must
+#' be supplied, since these are needed to computer density in that
+#' formulation.
+#'
+#' @param longitude,latitude numerical values giving the location
+#' to be used in density calculations, if `eos` is `"gsw"`.
 #'
 #' @param trimIsopycnals logical value (`TRUE` by default) that
 #' indicates whether to trim isopycnal curves (if drawn)
@@ -4773,6 +4819,19 @@ plotTS <- function(x,
 #' chosen `eos`; see the \dQuote{Details} of the documentation
 #' for [plotTS()].
 #'
+#' @param gridIsopycnals a parameter that controls how the isopycnals
+#' are computed.  This may be NULL, or an integer vector of length 2.
+#' *Case 1:* the isopycnals are drawn by tracing density
+#' isopleths in salinity-temperature space. This method was
+#' used as the default prior to version 1.7-11, but it was
+#' found to yield staircase-like isopycnal curves for highly
+#' zoomed-in plots (e.g. with millidegree temperature ranges).
+#' *Case 2:* a grid of density is constructed, with `gridIsopycnals[1]`
+#' salinity levels and `gridIsopycnals[2]` temperature levels, and
+#' then [contourLines()] is used to trace the isopycnals. The default
+#' value of `gridIsopycnals` yields a grid of millimeter-scale spacing
+#' for a typical plot.
+#'
 #' @param cex size for labels.
 #'
 #' @param col color for lines and labels.
@@ -4780,6 +4839,8 @@ plotTS <- function(x,
 #' @param lwd line width for isopycnal curves
 #'
 #' @param lty line type for isopycnal curves
+#'
+#' @template debugTemplate
 #'
 #' @return None.
 #'
@@ -4799,11 +4860,70 @@ plotTS <- function(x,
 #'
 #' @author Dan Kelley
 drawIsopycnals <- function(nlevels=6, levels, rotate=TRUE, rho1000=FALSE, digits=2,
-    eos=getOption("oceEOS", default="gsw"), trimIsopycnals=TRUE,
-    cex=0.75*par("cex"), col="darkgray", lwd=par("lwd"), lty=par("lty"))
+                           eos=getOption("oceEOS", default="gsw"),
+                           longitude=NULL, latitude=NULL,
+                           trimIsopycnals=TRUE, gridIsopycnals=c(50, 50),
+                           cex=0.75*par("cex"), col="darkgray", lwd=par("lwd"), lty=par("lty"),
+                           debug=getOption("oceDebug"))
 {
-    #cat("in drawIsopycnals 1\n", file=stderr())
+    oceDebug(debug, "drawIsopycnals(nlevels=", nlevels,
+        "..., gridIsopycnals=", paste(gridIsopycnals, collapse=" "),
+        "){\n", sep="", unindent=1, style="bold")
+    trimIsopycnalLine <- function(contourline, longitude, latitude, eos="unesco")
+    {
+        # See sandbox/issues/20xx/2046/2046_0[1:3].R, noting that here
+        # x is S and y is T. The method centres on finding the
+        # intersection, if any, between y=y(x) and the freezing point
+        # line, FPL.
+        x <- contourline$x
+        y <- contourline$y
+        FPL <- if (eos == "unesco") {
+            function(x) swTFreeze(x, 0, eos=eos)
+        } else {
+            function(x) swTFreeze(x, 0, longitude=longitude, latitude=latitude, eos=eos)
+        }
+        frozen <- y < FPL(x)
+        if (any(frozen)) {
+            if (all(frozen)) {
+                contourline$x <- NULL
+                contourline$y <- NULL
+            }
+            # Preliminary estimate (will be over-ridden if we can find the
+            # intersection of the isopycnal and the FPL).
+            xkeep <- x[!frozen]
+            ykeep <- y[!frozen]
+            # Bracket the crossing points, form a function for the line joining
+            # them, and then find the intersection of that line with the FPL.
+            after <- which(!frozen)[1]
+            if (after < 2L) {
+                # Although I think this is impossible, we don't want an error,
+                # so give up on the trimming attempt.
+                return(contourline)
+            }
+            before <- after - 1L
+            # In an earlier attempt, m() approximated the whole curve.  But that
+            # made for a failure in the root-finder if the salinity was so low that
+            # the isopycnal crossed an isohaline line at two points.  (This happened
+            # in the test of lobo plotting, since that machine was in very fresh
+            # water.)
+            m <- approxfun(x[c(before, after)], y[c(before, after)], rule=2)
+            u <- try(uniroot(function(x) {
+                m(x) - FPL(x)
+            }, range(x[c(before, after)], na.rm=TRUE)), silent=TRUE)
+            if (!inherits(u, "try-error")) {
+                xkeep <- x[!frozen]
+                ykeep <- y[!frozen]
+                contourline$x <- c(u$root, xkeep)
+                contourline$y <- c(FPL(u$root), ykeep)
+            }
+        }
+        contourline
+    }
+
     eos <- match.arg(eos, c("unesco", "gsw"))
+    if (eos == "gsw" && (is.null(longitude) || is.null(latitude))) {
+        stop("longitude and latitude must be supplied, since eos=\"gsw\"")
+    }
     usr <- par("usr")
     SAxisMin <- max(0.1, usr[1])       # avoid NaN, which UNESCO density gives for freshwater
     SAxisMax <- usr[2]
@@ -4824,7 +4944,7 @@ drawIsopycnals <- function(nlevels=6, levels, rotate=TRUE, rho1000=FALSE, digits
         levels <- NULL
     if (missing(levels)) {
         levels <- pretty(c(rhoMin, rhoMax), n=nlevels)
-        ## Trim first and last values, since not in box
+        # Trim first and last values, since not in box
         levels <- levels[-1]
         levels <- levels[-length(levels)]
     }
@@ -4836,53 +4956,96 @@ drawIsopycnals <- function(nlevels=6, levels, rotate=TRUE, rho1000=FALSE, digits
     cex.par <- par("cex")               # need to scale text() differently than mtext()
     # Increase digits if density span is small
     digitsTrial <- 1 - floor(log10(diff(range(levels))))
-    if (digitsTrial > digits)
+    if (digitsTrial > digits) {
         digits <- digitsTrial
+    }
     #cat(file=stderr(), vectorShow(Tline))
-    for (rho in levels) {
-        #cat(file=stderr(), vectorShow(rho))
-        rhoLabel <- if (rho1000) 1000+rho else rho
-        rhoLabel <- round(rhoLabel, digits)
-        # FIXME-gsw: will this handle gsw?
-        #cat(file=stderr(), "about to call swSTrho()\n")
-        Sline <- swSTrho(Tline, rep(rho, Tn), rep(0, Tn), eos=eos)
-        # Eliminate NA (for crazy T)
-        ok <- !is.na(Sline)
-        # Prevent drawing in the invalid temperature-salinity region (see Details)
-        if (eos == "unesco") {
-            ok <- ok & swTFreeze(Sline, 0, eos="unesco") < Tline
-        }
-        if (trimIsopycnals) {
-            validTS <- if (eos == "unesco") {
-                # The use of 'ok &' below prevents NAs from creeping back in.
-                ok & -2 <= Tline & Tline <= 40 & 0 <= Sline & Sline <= 42
-            } else {
-                ok & -2 <= Tline & Tline <= 33 & 0 <= Sline & Sline <= 40
+    oceDebug(debug, vectorShow(gridIsopycnals))
+    if (is.null(gridIsopycnals)) { # old method: trace lines
+        oceDebug(debug, "handling gridIsopycnals=NULL case\n")
+        for (rho in levels) {
+            #cat(file=stderr(), vectorShow(rho))
+            rhoLabel <- if (rho1000) 1000+rho else rho
+            rhoLabel <- round(rhoLabel, digits)
+            # FIXME-gsw: will this handle gsw?
+            #cat(file=stderr(), "about to call swSTrho()\n")
+            Sline <- swSTrho(Tline, rep(rho, Tn), rep(0, Tn), eos=eos)
+            # Eliminate NA (for crazy T)
+            ok <- !is.na(Sline)
+            # Prevent drawing in the invalid temperature-salinity region (see Details)
+            if (eos == "unesco") {
+                ok <- ok & swTFreeze(Sline, 0, eos="unesco") < Tline
             }
-            ok <- ok & validTS
-        }
-        if (sum(ok) > 2) {
-            Sok <- Sline[ok]
-            Tok <- Tline[ok]
-            lines(Sok, Tok, col=col, lwd=lwd, lty=lty)
-            if (cex > 0) {
-                if (Sok[length(Sok)] > SAxisMax) {
-                    # label to right of box
-                    i <- match(TRUE, Sok > SAxisMax)
-                    if (rotate) {
-                        mtext(rhoLabel, side=4, at=Tok[i], line=0.1, cex=cex, col=col)
-                    } else {
-                        text(usr[2], Tok[i], rhoLabel, pos=4, cex=cex/cex.par, col=col, xpd=TRUE)
-                    }
+            if (trimIsopycnals) {
+                validTS <- if (eos == "unesco") {
+                    # The use of 'ok &' below prevents NAs from creeping back in.
+                    ok & -2 <= Tline & Tline <= 40 & 0 <= Sline & Sline <= 42
                 } else {
-                    # label above box ... if the line got there
-                    if (max(Tok) > (TAxisMax - 0.05 * (TAxisMax - TAxisMin))) {
-                        mtext(rhoLabel, side=3, at=Sline[Tn], line=0.1, cex=cex, col=col)
+                    ok & -2 <= Tline & Tline <= 33 & 0 <= Sline & Sline <= 40
+                }
+                ok <- ok & validTS
+            }
+            if (sum(ok) > 2) {
+                Sok <- Sline[ok]
+                Tok <- Tline[ok]
+                lines(Sok, Tok, col=col, lwd=lwd, lty=lty)
+                if (cex > 0) {
+                    if (Sok[length(Sok)] > SAxisMax) {
+                        # label to right of box
+                        i <- match(TRUE, Sok > SAxisMax)
+                        if (rotate) {
+                            mtext(rhoLabel, side=4, at=Tok[i], line=0.1, cex=cex, col=col)
+                        } else {
+                            text(usr[2], Tok[i], rhoLabel, pos=4, cex=cex/cex.par, col=col, xpd=TRUE)
+                        }
+                    } else {
+                        # label above box ... if the line got there
+                        if (max(Tok) > (TAxisMax - 0.05 * (TAxisMax - TAxisMin))) {
+                            mtext(rhoLabel, side=3, at=Sline[Tn], line=0.1, cex=cex, col=col)
+                        }
                     }
                 }
             }
         }
+    } else if (is.numeric(gridIsopycnals) && length(gridIsopycnals) == 2L) {
+        oceDebug(debug, "handling gridIsopycnals=c(integer,integer) case\n")
+        NS <- gridIsopycnals[1]
+        NT <- gridIsopycnals[2]
+        usr <- par("usr")
+        SS <- seq(usr[1], usr[2], length.out=NS)
+        TT <- seq(usr[3], usr[4], length.out=NT)
+        #cat(vectorShow(SS))
+        #cat(vectorShow(TT))
+        grid <- expand.grid(SS=SS, TT=TT, KEEP.OUT.ATTRS=FALSE)
+        #cat(vectorShow(grid))
+        if (eos == "unesco") {
+            sigma <- swSigma(salinity=grid$SS,
+                temperature=grid$TT,
+                pressure=rep(0.0, prod(gridIsopycnals)),
+                eos="unesco")
+        } else {
+            sigma <- gsw::gsw_sigma0(grid$SS, grid$TT)
+        }
+        #cat(vectorShow(sigma))
+        sigma <- matrix(sigma, byrow=FALSE, nrow=NS, ncol=NT)
+        contourlines <- contourLines(SS, TT, sigma, levels=levels)
+        for (contourline in contourlines) {
+            if (trimIsopycnals) {
+                contourline <- trimIsopycnalLine(contourline, longitude, latitude, eos=eos)
+            }
+            lines(contourline$x, contourline$y, col=col, lty=lty, lwd=lwd)
+            hitTop <- abs(tail(contourline$y, 1) - usr[4]) < (usr[4] - usr[3]) / (2*NT)
+            #cat(vectorShow(hitTop))
+            if (hitTop) {
+                mtext(contourline$level, side=3, at=tail(contourline$x, 1), cex=cex, col=col)
+            } else {
+                mtext(contourline$level, side=4, at=tail(contourline$y, 1), cex=cex, col=col)
+            }
+        }
+    } else {
+        stop(vectorShow(gridIsopycnals, msg="gridIsopycnals must be either NULL or a two-element integer vector, but it is"))
     }
+    oceDebug(debug, "} # drawIsopycnals(...)\n", sep="", unindent=1, style="bold")
 }
 
 
