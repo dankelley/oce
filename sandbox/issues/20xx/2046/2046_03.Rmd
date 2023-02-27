@@ -18,6 +18,7 @@ with a coarse grid, and the right is for `gridIsopycnal=NULL` (which yields the
 previous behaviour.)
 
 Plots are labeled in the top-right corners. The panels in a row are:
+
 * A: **new method** with `gridIsopycnals` unspecified, so it defaults the *new*
   method with `c(50,50)`.
 * B: **new method** with `gridIsopycnals=c(3,3)`, illustrating what this arg
