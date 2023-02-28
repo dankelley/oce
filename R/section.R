@@ -1849,6 +1849,7 @@ setMethod(f="plot", signature=signature("section"),
                     if (!is.null(contourLevels) && !is.null(contourLabels)) {
                         oceDebug(debug, "user-supplied contourLevels: ", contourLevels, "\n")
                         if (ztype == "contour") {
+                            message("FIXME issue=2009 line~1852")
                             contour(x=xx[xx.unique], y=yy[yy.unique], z=zz[xx.unique, yy.unique],
                                 axes=FALSE, add=TRUE, levels=contourLevels, labels=contourLabels,
                                 col=col, xaxs="i", yaxs="i", labcex=labcex, ...)
@@ -1871,6 +1872,7 @@ setMethod(f="plot", signature=signature("section"),
                             if (any(!is.finite(zzrange))) {
                                 stop("cannot draw a contour diagram because all values are NA or Inf")
                             }
+                            message("FIXME issue=2009 line~1875")
                             contour(x=xx[xx.unique], y=yy[yy.unique], z=zz[xx.unique, yy.unique],
                                 add=TRUE, col=col, labcex=labcex, ...)
                         } else if (ztype == "image") {
@@ -1879,6 +1881,7 @@ setMethod(f="plot", signature=signature("section"),
                             if (is.function(zcol)) {
                                 zcol <- zcol(1+length(zbreaks))
                             }
+                            message("FIXME issue=2009 line~1884")
                             .filled.contour(x=xx[xx.unique], y=yy[yy.unique], z=zz[xx.unique, yy.unique],
                                 levels=zbreaks, col=zcol)
                         } else if (ztype == "points") {
@@ -1949,7 +1952,7 @@ setMethod(f="plot", signature=signature("section"),
                     legend(legend.loc, legend=vtitle, bg="white", x.intersp=0, y.intersp=0.5, cex=1)
                 }
                 usr <- par("usr")
-                par("usr"=c(usr[1], usr[2], -usr[3], usr[4]))
+                #par("usr"=c(usr[1], usr[2], -usr[3], usr[4]))
             }
             par(mar=omar)
             oceDebug(debug, "} # plotSubsection()\n", unindent=1)
@@ -2055,19 +2058,24 @@ setMethod(f="plot", signature=signature("section"),
         # FIXME: why checking just first which[] value?
         if (which.ytype == 1) {
             if (!is.na(which[1]) && which[1] == "data" || ztype == "points") {
-                yy <- c(0, -max(x[["pressure"]]))
+                yy <- c(max(x[["pressure"]]), 0)
+                oceDebug(debug, "near line 2062 ", vectorShow(yy))
             } else {
-                yy <- rev(-x@data$station[[stationIndices[1]]]@data$pressure)
+                yy <- rev(x@data$station[[stationIndices[1]]]@data$pressure)
+                oceDebug(debug, "near line 2065 ", vectorShow(yy))
             }
         } else if (which.ytype == 2) {
             if (!is.na(which[1]) && which[1] == "data" || ztype == "points") {
-                yy <- c(-max(x[["pressure"]], na.rm=TRUE), 0)
+                yy <- c(max(x[["pressure"]], na.rm=TRUE), 0)
+                oceDebug(debug, "section.R near L2070: ", vectorShow(yy))
             } else {
-                yy <- rev(-swDepth(x@data$station[[stationIndices[1]]]@data$pressure))
+                yy <- rev(swDepth(x@data$station[[stationIndices[1]]]@data$pressure))
+                oceDebug(debug, "section.R near L~2073 ", vectorShow(yy)
             }
         } else {
             stop("unknown ytype")
         }
+        message("FIXME issue=2009 L~2078 ", vectorShow(yy))
         par(mgp=mgp, mar=mar)
         if (lw > 1) {
             if (lw > 2) {
