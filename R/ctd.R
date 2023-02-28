@@ -5451,14 +5451,13 @@ plotProfile <- function(x, xtype="salinity+temperature", ytype="pressure",
         par(mar=mar, mgp=mgp)
     }
     if (is.numeric(xtype) && length(xtype) == length(y) && length(y) > 1) {
-        oceDebug(debug, "case 1\n")
-        #if (!missing(Slim)) cat(vectorShow(Slim))
-        #if (!missing(plim)) cat(vectorShow(plim))
-        #if (!missing(xlim)) cat(vectorShow(xlim))
-        #if (!missing(ylim)) cat(vectorShow(ylim))
+        oceDebug(debug, "xtype is a numeric vector\n")
+        # Actually, I don't see why I am allowing for no axes here. Maybe it's
+        # to add things to an existing plot?  To see why I am looking at this
+        # again (Feb 2023), see https://github.com/dankelley/oce/issues/2047
         if ("axes" %in% names(list(...))) {
-            oceDebug(debug, "case 1.1\n")
-            plot(xtype, y, xlab="", ylab=yname, type=type,
+            oceDebug(debug, "  numeric vector, with 'axes' in ... arg\n")
+            plot(xtype, y, xlab="", ylab="", type=type, axes=FALSE,
                 xaxs=xaxs, yaxs=yaxs,
                 xlim=xlim, ylim=ylim,
                 col=col, lty=lty, cex=cex, pch=pch, ...)
@@ -5466,17 +5465,19 @@ plotProfile <- function(x, xtype="salinity+temperature", ytype="pressure",
                 axis(3)
                 mtext(xlab, side=3, line=axisNameLoc, cex=par("cex"))
                 axis(2)
+                mtext(yname, side=2, line=axisNameLoc, cex=par("cex"))
             }
             box()
         } else {
-            oceDebug(debug, "case 1.2\n")
-            plot(xtype, y, xlab="", ylab=yname, type=type, axes=FALSE,
+            oceDebug(debug, "  numeric vector, with no 'axes' in ... arg\n")
+            plot(xtype, y, xlab="", ylab="", type=type, axes=FALSE,
                 xaxs=xaxs, yaxs=yaxs,
                 xlim=if (!missing(xlim)) xlim, ylim=if (!missing(ylim)) ylim,
                 col=col, lty=lty, cex=cex, pch=pch, ...)
             axis(3)
             mtext(xlab, side=3, line=axisNameLoc, cex=par("cex"))
             axis(2)
+            mtext(yname, side=2, line=axisNameLoc, cex=par("cex"))
             box()
         }
         if (grid) {
@@ -5485,38 +5486,15 @@ plotProfile <- function(x, xtype="salinity+temperature", ytype="pressure",
             at <- par("xaxp")
             abline(v=seq(at[1], at[2], length.out=at[3]+1), col=col.grid, lty=lty.grid)
         }
-    } else if (FALSE && is.numeric(xtype)) { # DISABLED 2023-02-28
-        oceDebug(debug, "case 2: xtype is numeric\n")
-        if (length(xtype) != length(y)) {
-            stop("length(xtype) must match number of levels in the CTD object")
-        }
-        if (add) {
-            lines(xtype, y, type=type, lty=lty, ...)
-        } else {
-            plot(xtype, y, xlab="", ylab=yname, type=type, axes=FALSE,
-                xaxs=xaxs, yaxs=yaxs,
-                #xlim=if (!is.null(xlim)) xlim else range(x, na.rm=TRUE),
-                ylim=ylim,
-                lty=lty, cex=cex, pch=pch, ...)
-            axis(3)
-            mtext(xlab, side=3, line=axisNameLoc, cex=par("cex")) # no unit is provided
-            axis(2)
-            box()
-            if (grid) {
-                at <- par("yaxp")
-                abline(h=seq(at[1], at[2], length.out=at[3]+1), col=col.grid, lty=lty.grid)
-                at <- par("xaxp")
-                abline(v=seq(at[1], at[2], length.out=at[3]+1), col=col.grid, lty=lty.grid)
-            }
-        }
     } else if (xtype == "index") {
         oceDebug(debug, "case 3: xtype is \"index\"\n")
         index <- seq_along(x[["pressure"]])
-        plot(index, x[["pressure"]], ylim=ylim, col=col, lty=lty, xlab="", ylab=yname,
+        plot(index, x[["pressure"]], ylim=ylim, col=col, lty=lty, xlab="", ylab="",
              type=type, xaxs=xaxs, yaxs=yaxs, cex=cex, pch=pch, axes=FALSE)
         axis(3)
         mtext(if (is.null(xlab)) "index" else xlab, side=3, line=axisNameLoc, cex=par("cex")) # no unit is provided
         axis(2)
+        mtext(yname, side=2, line=axisNameLoc, cex=par("cex"))
         box()
         if (grid) {
             at <- par("yaxp")
@@ -5539,10 +5517,11 @@ plotProfile <- function(x, xtype="salinity+temperature", ytype="pressure",
         look <- if (keepNA) seq_along(y) else !is.na(sig0) & !is.na(y)
         look <- as.vector(look)
         plot(sig0[look], y[look], xlim=densitylim, ylim=ylim, cex=cex, pch=pch,
-             type=type, col=col.rho, lty=lty, xlab="", ylab=yname, axes=FALSE, xaxs=xaxs, yaxs=yaxs, ...)
+             type=type, col=col.rho, lty=lty, xlab="", ylab="", axes=FALSE, xaxs=xaxs, yaxs=yaxs, ...)
         axis(3, col=col.rho, col.axis=col.rho, col.lab=col.rho)
         mtext(resizableLabel(if (eos=="unesco") "sigmaTheta" else "sigma0"), side=3, line=axisNameLoc, col=col.rho, cex=par("cex"))
         axis(2)
+        mtext(yname, side=2, line=axisNameLoc, cex=par("cex"))
         box()
         par(new=TRUE)                # FIXME: this probably won't work if add=TRUE
         if (missing(timelim)) {
@@ -5583,7 +5562,7 @@ plotProfile <- function(x, xtype="salinity+temperature", ytype="pressure",
         look <- as.vector(look)
         plot(st[look], y[look],
              xlim=densitylim, ylim=ylim, col=col.rho, lty=lty, cex=cex, pch=pch,
-             type=type, xlab="", ylab=yname, axes=FALSE, xaxs=xaxs, yaxs=yaxs, ...)
+             type=type, xlab="", ylab="", axes=FALSE, xaxs=xaxs, yaxs=yaxs, ...)
         axis(3, col=col.rho, col.axis=col.rho, col.lab=col.rho)
         if (getOption("oceUnitBracket") == "[") {
             mtext(expression(paste(sigma[theta], " [", kg/m^3, "] ")), side=3, line=axisNameLoc, col=col.rho, cex=par("cex"))
@@ -5591,6 +5570,7 @@ plotProfile <- function(x, xtype="salinity+temperature", ytype="pressure",
             mtext(expression(paste(sigma[theta], " (", kg/m^3, ") ")), side=3, line=axisNameLoc, col=col.rho, cex=par("cex"))
         }
         axis(2)
+        mtext(yname, side=2, line=axisNameLoc, cex=par("cex"))
         box()
         # lines(st, y, col=col.rho, lwd=lwd)
         par(new=TRUE)
@@ -5646,8 +5626,9 @@ plotProfile <- function(x, xtype="salinity+temperature", ytype="pressure",
             }
         }
         if (useSmoothScatter) {
-            smoothScatter(salinity, y, xlim=Slim, ylim=ylim, xlab="", ylab=yname, axes=FALSE, ...)
+            smoothScatter(salinity, y, xlim=Slim, ylim=ylim, xlab="", ylab="", axes=FALSE, ...)
             axis(2)
+            mtext(yname, side=2, line=axisNameLoc, cex=par("cex"))
             axis(3)
             box()
             if (xtype == "SA") {
@@ -5662,7 +5643,7 @@ plotProfile <- function(x, xtype="salinity+temperature", ytype="pressure",
             if (!add) {
                 plot(salinity[look], y[look],
                     xlim=Slim, ylim=ylim, lty=lty, cex=cex, pch=pch,
-                    type="n", xlab="", ylab=yname, axes=FALSE, xaxs=xaxs, yaxs=yaxs, ...)
+                    type="n", xlab="", ylab="", axes=FALSE, xaxs=xaxs, yaxs=yaxs, ...)
                 if (xtype == "SA") {
                     mtext(if (is.null(xlab)) resizableLabel("absolute salinity", "x", unit=NULL, debug=debug-1) else xlab,
                         side=3, line=axisNameLoc, cex=par("cex"))
