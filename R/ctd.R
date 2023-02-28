@@ -5060,9 +5060,11 @@ drawIsopycnals <- function(nlevels=6, levels, rotate=TRUE, rho1000=FALSE, digits
 #'
 #' @param x a [ctd-class] object.
 #'
-#' @param xtype Item(s) plotted on the x axis, either a vector of length equal
-#' to that of `pressure` in the `data` slot,
-#' or a text code from the list below.
+#' @param xtype item(s) to be plotted on the x axis, either a character
+#' value taken from the following list, or a numeric vector of length
+#' matching the `pressure` field stored in `x`. (In the second case,
+#' as of version 1.7-11, a label is auto-constructed, unless the user
+#' supplied a character value for `xlab`.)
 #'
 #' * `"salinity"` Profile of salinity.
 #'
@@ -5114,10 +5116,10 @@ drawIsopycnals <- function(nlevels=6, levels, rotate=TRUE, rho1000=FALSE, digits
 #' `"gsw"`.
 #'
 #' @param xlab optional label for x axis (at top of plot). If not
-#' provided, the value of `xtype` is used (along with the units
-#' of the variable) to construct a label. For user-supplied `xlab`,
-#' the unit (if any) must be specified as in e.g.
-#' `xlab=expression("Speed ["*m/s*"]")`.
+#' provided, a label is inferred from the value of `xtype`. For
+#' the user-supplied case, bear in mind that the easy way to get
+#' units is to use an expression, e.g.
+#' `xlab=expression("Acceleration ["*m/s^2*"]")`.
 #'
 #' @param ylab optional label for y axis.  See `xlab` for a note on
 #' units.  Setting `ylab=""` prevents labelling the axis.
@@ -5236,38 +5238,37 @@ drawIsopycnals <- function(nlevels=6, levels, rotate=TRUE, rho1000=FALSE, digits
 #'
 #' @family functions that plot oce data
 #' @family things related to ctd data
-plotProfile <- function(x,
-    xtype="salinity+temperature", ytype="pressure",
-    eos=getOption("oceEOS", default="gsw"),
-    lty=1,
-    xlab=NULL, ylab=NULL,
-    col="black",
-    col.salinity="darkgreen",
-    col.temperature="red",
-    col.rho="blue",
-    col.N2="brown",
-    col.dpdt="darkgreen",
-    col.time="darkgreen",
-    pt.bg="transparent",
-    grid=TRUE,
-    col.grid="lightgray",
-    lty.grid="dotted",
-    Slim, Clim, Tlim, densitylim, N2lim, Rrholim, dpdtlim, timelim, plim,
-    xlim, ylim,
-    lwd=par("lwd"),
-    xaxs="r",
-    yaxs="r",
-    cex=1, pch=1,
-    useSmoothScatter=FALSE,
-    df,
-    keepNA=FALSE,
-    type="l",
-    mgp=getOption("oceMgp"),
-    mar,
-    add=FALSE,
-    inset=FALSE,
-    debug=getOption("oceDebug", 0),
-    ...)
+plotProfile <- function(x, xtype="salinity+temperature", ytype="pressure",
+                        eos=getOption("oceEOS", default="gsw"),
+                        lty=1,
+                        xlab=NULL, ylab=NULL,
+                        col="black",
+                        col.salinity="darkgreen",
+                        col.temperature="red",
+                        col.rho="blue",
+                        col.N2="brown",
+                        col.dpdt="darkgreen",
+                        col.time="darkgreen",
+                        pt.bg="transparent",
+                        grid=TRUE,
+                        col.grid="lightgray",
+                        lty.grid="dotted",
+                        Slim, Clim, Tlim, densitylim, N2lim, Rrholim, dpdtlim, timelim, plim,
+                        xlim, ylim,
+                        lwd=par("lwd"),
+                        xaxs="r",
+                        yaxs="r",
+                        cex=1, pch=1,
+                        useSmoothScatter=FALSE,
+                        df,
+                        keepNA=FALSE,
+                        type="l",
+                        mgp=getOption("oceMgp"),
+                        mar,
+                        add=FALSE,
+                        inset=FALSE,
+                        debug=getOption("oceDebug", 0),
+                        ...)
 {
     debug <- max(0, min(debug, 3))
     oceDebug(debug, "plotProfile(x, xtype=",
@@ -5288,13 +5289,18 @@ plotProfile <- function(x,
         }
     }
     plimGiven <- !missing(plim)
-
+    # issue 2047: if xtype is a numeric vector, and if user did not supply xlab,
+    # then set xlab by parsing the call.
+    if (is.null(xlab) && length(xtype) == length(x[["pressure"]])) {
+        xlab <- deparse1(substitute(xtype))
+        oceDebug(debug, "auto-set xlab to \"", xlab, "\"\n", sep="")
+    }
     plotJustProfile <- function(x, y, col="black", type="l", lty=lty,
-        xlim=NULL, ylim=NULL,
-        xlab=NULL,
-        lwd=par("lwd"),
-        cex=1, pch=1, pt.bg="transparent",
-        df=df, keepNA=FALSE, debug=getOption("oceDebug", 0))
+                                xlim=NULL, ylim=NULL,
+                                xlab=NULL,
+                                lwd=par("lwd"),
+                                cex=1, pch=1, pt.bg="transparent",
+                                df=df, keepNA=FALSE, debug=getOption("oceDebug", 0))
     {
         oceDebug(debug, "plotJustProfile(...,",
             argShow(col), ", debug=", debug, ") {\n", sep="", style="bold", unindent=1)
@@ -5347,11 +5353,11 @@ plotProfile <- function(x,
         yname <- ylab
     } else {
         yname <- switch(ytype,
-            pressure=resizableLabel("p", "y", debug=debug-1),
-            z=resizableLabel("z", "y", debug=debug-1),
-            depth=resizableLabel("depth", "y", debug=debug-1),
-            sigmaTheta=resizableLabel("sigmaTheta", "y", debug=debug-1),
-            sigma0=resizableLabel("sigma0", "y", debug=debug-1))
+        pressure=resizableLabel("p", "y", debug=debug-1),
+        z=resizableLabel("z", "y", debug=debug-1),
+        depth=resizableLabel("depth", "y", debug=debug-1),
+        sigmaTheta=resizableLabel("sigmaTheta", "y", debug=debug-1),
+        sigma0=resizableLabel("sigma0", "y", debug=debug-1))
     }
     # If plim given on a pressure plot, then it takes precedence over ylim; same
     # for densitylim.
@@ -5444,7 +5450,7 @@ plotProfile <- function(x,
     if (!add) {
         par(mar=mar, mgp=mgp)
     }
-    if (length(xtype) == length(y) && length(y) > 1) {
+    if (is.numeric(xtype) && length(xtype) == length(y) && length(y) > 1) {
         oceDebug(debug, "case 1\n")
         #if (!missing(Slim)) cat(vectorShow(Slim))
         #if (!missing(plim)) cat(vectorShow(plim))
@@ -5473,7 +5479,13 @@ plotProfile <- function(x,
             axis(2)
             box()
         }
-    } else if (is.numeric(xtype)) {
+        if (grid) {
+            at <- par("yaxp")
+            abline(h=seq(at[1], at[2], length.out=at[3]+1), col=col.grid, lty=lty.grid)
+            at <- par("xaxp")
+            abline(v=seq(at[1], at[2], length.out=at[3]+1), col=col.grid, lty=lty.grid)
+        }
+    } else if (FALSE && is.numeric(xtype)) { # DISABLED 2023-02-28
         oceDebug(debug, "case 2: xtype is numeric\n")
         if (length(xtype) != length(y)) {
             stop("length(xtype) must match number of levels in the CTD object")
