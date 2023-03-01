@@ -1331,7 +1331,7 @@ sectionAddCtd <- sectionAddStation
 #' plot(GSg, which="temperature", ztype="image",
 #'     zbreaks=seq(0,25,2), zcol=oceColorsTemperature)
 #'
-#' @author Dan Kelley
+#' @author Dan Kelley, with help from Clark Richards and Chantelle Layton.
 #'
 #' @family functions that plot oce data
 #' @family things related to section data
