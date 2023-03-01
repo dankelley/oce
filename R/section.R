@@ -1361,6 +1361,18 @@ setMethod(f="plot", signature=signature("section"),
             c("depth", "pressure"))
         ztype <- match.arg(ztype,
             c("contour", "image", "points"))
+        # Ensure that ylim makes sense
+        if (!is.null(ylim)) {
+            if (length(ylim) != 2L) {
+                stop("In plot,section-method() : length(ylim) must be 2, but it is ", length(ylim))
+            }
+            if (any(ylim < 0.0)) {
+                stop("In plot,section-method() : ylim elements cannot be negative, but ylim=c(", ylim[1], ",", ylim[2], ") was provided")
+            }
+            if (ylim[1] <= ylim[2]) {
+                stop("In plot,section-method() require ylim[2]<ylim[1], but ylim=c(", ylim[1], ",", ylim[2], ") was provided")
+            }
+        }
         # nolint start object_usage_linter
         drawPoints <- ztype == "points"
         # nolint end object_usage_linter
@@ -1423,8 +1435,11 @@ setMethod(f="plot", signature=signature("section"),
         #oceDebug(debug, "which=c(", paste(which, collapse=","), ")\n")
         oceDebug(debug, "plot.section(, ..., which=c(",
             paste(which, collapse=","), "), eos=\"", eos, "\"",
-            ", xtype=\"", xtype, "\",",
-            ", ztype=\"", ztype, "\", ...) {\n", sep="", unindent=1)
+            ", xtype=", xtype,
+            ", ztype=", ztype,
+            ", xlim=c(", paste(xlim, collapse=","), ")",
+            ", ylim=c(", paste(ylim, collapse=","), ")",
+            ", \", ...) {\n", sep="", unindent=1)
         # Ensure data on levels, for plots requiring pressure (e.g. sections). Note
         # that we break out of the loop, once we grid the section.
         if (is.na(which[1]) || which[1] != "data" || which[1] != "map") {
@@ -1485,15 +1500,17 @@ setMethod(f="plot", signature=signature("section"),
                                    debug=0,
                                    ...)
         {
-            oceDebug(debug, "plotSubsection(variable=\"", variable,
-                "\", eos=\"", eos,
-                "\", which.xtype=\"", which.xtype,
-                "\", col=", if (missing(col)) "(missing)" else col,
-                "\", cex=", if (missing(cex)) "(missing)" else cex,
-                "\", pch=", if (missing(pch)) "(missing)" else pch,
-                "\", ztype=\"", ztype,
-                "\", zcol=", if (missing(zcol)) "(missing)" else "(provided)",
-                "\", span=", if (missing(span)) "(missing)" else span,
+            oceDebug(debug, "plotSubsection(variable=\"", variable, "\"",
+                ", eos=\"", eos, "\"",
+                ", which.xtype=\"", which.xtype, "\"",
+                ", xlim=c(", paste(xlim, collapse=","), ")",
+                ", ylim=c(", paste(ylim, collapse=","), ")",
+                ", col=", if (missing(col)) "(missing)" else col,
+                ", cex=", if (missing(cex)) "(missing)" else cex,
+                ", pch=", if (missing(pch)) "(missing)" else pch,
+                ", ztype=\"", ztype,
+                ", zcol=", if (missing(zcol)) "(missing)" else "(provided)",
+                ", span=", if (missing(span)) "(missing)" else span,
                 ", showStations=", showStations,
                 ", axes=", axes, ", ...) {\n", sep="", unindent=1)
             #>message("in plotSubsection:")
@@ -1692,7 +1709,9 @@ setMethod(f="plot", signature=signature("section"),
                 # FIXME: contours don't get to plot edges
                 xxrange <- range(xx, na.rm=TRUE)
                 yyrange <- range(yy, na.rm=TRUE)
-                ylim <- if (!is.null(ylim)) sort(-abs(ylim)) else yyrange
+                if (is.null(ylim)) {
+                    ylim <- yyrange
+                }
                 par(xaxs="i", yaxs="i")
                 ylab <- if ("ylab" %in% names(list(...))) {
                     list(...)$ylab
