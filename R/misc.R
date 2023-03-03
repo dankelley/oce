@@ -5149,7 +5149,11 @@ ctimeToSeconds <- function(ctime)
 #' @param style either a string or a function. If a string,
 #' it must be `"plain"` (the default) for plain text,
 #' `"bold"`, `"italic"`, `"red"`, `"green"` or `"blue"` (with
-#' obvious meanings).
+#' obvious meanings).  Note that none of these has any effect
+#' for non-interactive use, because doing so would make it difficult
+#' to work with Rmd and similar documents that are to be run
+#' through latex.
+#'
 #' If `style` is a function, it must prepend and postpend the text
 #' with control codes, as in the cyan-coloured example; note that
 #' \CRANpkg{crayon} provides many functions that work well for `style`.
@@ -5173,6 +5177,7 @@ ctimeToSeconds <- function(ctime)
 #' oceDebug(debug=1, "Example", 7, "User-set cyan", style=mycyan)
 oceDebug <- function(debug=0, ..., style="plain", unindent=0, sep="")
 {
+    catSpecial <- function(...) if (interactive()) cat(...)
     debug <- if (debug > 4) 4 else max(0, floor(debug + 0.5))
     if (debug > 0) {
         n <- 5 - debug - unindent
@@ -5182,40 +5187,40 @@ oceDebug <- function(debug=0, ..., style="plain", unindent=0, sep="")
             }
             cat(..., sep=sep)
         } else if (is.character(style) && style == "bold") {
-            cat("\033[1m")
+            catSpecial("\033[1m")
             if (n > 0) {
                 cat(paste(rep("  ", n), collapse=""))
             }
             cat(..., sep=sep)
-            cat("\033[0m")
+            catSpecial("\033[0m")
         } else if (is.character(style) && style == "italic") {
-            cat("\033[3m")
+            catSpecial("\033[3m")
             if (n > 0) {
                 cat(paste(rep("  ", n), collapse=""))
             }
             cat(..., sep=sep)
-            cat("\033[0m")
+            catSpecial("\033[0m")
         } else if (is.character(style) && style == "red") {
-            cat("\033[31m")
+            catSpecial("\033[31m")
             if (n > 0) {
                 cat(paste(rep("  ", n), collapse=""))
             }
             cat(..., sep=sep)
-            cat("\033[0m")
+            catSpecial("\033[0m")
         } else if (is.character(style) && style == "green") {
-            cat("\033[32m")
+            catSpecial("\033[32m")
             if (n > 0) {
                 cat(paste(rep("  ", n), collapse=""))
             }
             cat(..., sep=sep)
-            cat("\033[0m")
+            catSpecial("\033[0m")
         } else if (is.character(style) && style == "blue") {
-            cat("\033[34m")
+            catSpecial("\033[34m")
             if (n > 0) {
                 cat(paste(rep("  ", n), collapse=""))
             }
             cat(..., sep=sep)
-            cat("\033[0m")
+            catSpecial("\033[0m")
         } else if (is.function(style)) {
             if (n > 0) {
                 cat(style(paste(rep("  ", n), collapse="")))
