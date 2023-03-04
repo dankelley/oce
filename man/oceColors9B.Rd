@@ -14,8 +14,8 @@ oceColors9B(n)
 The results are similar to those of \code{\link[=oceColorsJet]{oceColorsJet()}}, but
 with white hues in the centre, rather than green ones. The scheme
 may be useful in displaying signed quantities, and thus is somewhat
-analogous to \code{\link[=oceColorsTwo]{oceColorsTwo()}}, except that they (average)
-eye may be more able to distinguish colors with \code{oceColors9B}.
+analogous to \code{\link[=oceColorsTwo]{oceColorsTwo()}}, except that some viewers
+may be able to distinguish more colors with \code{oceColors9B}.
 }
 \examples{
 library(oce)

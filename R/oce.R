@@ -2800,8 +2800,8 @@ oce.colors9A <- oceColors9A <- oce.colorsJet <- oceColorsJet
 #' The results are similar to those of [oceColorsJet()], but
 #' with white hues in the centre, rather than green ones. The scheme
 #' may be useful in displaying signed quantities, and thus is somewhat
-#' analogous to [oceColorsTwo()], except that they (average)
-#' eye may be more able to distinguish colors with `oceColors9B`.
+#' analogous to [oceColorsTwo()], except that some viewers
+#' may be able to distinguish more colors with `oceColors9B`.
 #'
 #' @aliases oceColors9B oce.colors9B
 #'
