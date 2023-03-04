@@ -4435,39 +4435,38 @@ time.formats <- c("%b %d %Y %H:%M:%s", "%Y%m%d")
 #' [read.ctd()] scans it from a file.
 #'
 #' @examples
-#' # For a simple ctd object
+#' # 1. ctd object
 #' library(oce)
 #' data(ctd)
 #' plotTS(ctd)
 #'
-#' # For a section object (note the outlier!)
+#' # 2. section object (note the outlier!)
 #' data(section)
 #' plotTS(section)
 #'
-#' # For an argo object
+#' # 3. argo object
 #' data(argo)
 #' plotTS(handleFlags(argo))
 #'
-#' # Oxygen-based colormap
+#' # 4. oxygen-based colormap
 #' marOrig <- par("mar") # so later plots with palettes have same margins
 #' cm <- colormap(section[["oxygen"]])
 #' drawPalette(colormap=cm, zlab="Oxygen")
 #' plotTS(section, pch=19, col=cm$zcol, mar=par("mar")) # the mar adjusts for the palette
 #'
-#' # Station-based colormap
-#' Tlim <- range(section[["temperature"]], na.rm=TRUE)
-#' Slim <- range(section[["salinity"]], na.rm=TRUE)
-#' cm <- colormap(seq_along(section[["latitude", "byStation"]]))
-#' par(mar=marOrig) # same as previous plot
-#' drawPalette(colormap=cm, zlab="Latitude")
-#' plotTS(section, Tlim=Tlim, Slim=Slim, pch=NA, mar=par("mar"))
-#' jnk <- mapply(
-#'     function(s, col) {
-#'         plotTS(s, col=col, add=TRUE, type="l")
+#' # 5. waters near Gulf Stream, colour-coded for longitude.
+#' sec <- subset(section, abs(longitude + 71.6) < 1)
+#' cm <- colormap(sec[["longitude", "byStation"]], col=oceColors9B)
+#' par(mar=c(3.3, 3.3, 1, 1.5))
+#' drawPalette(colormap=cm, zlab="Longitude")
+#' plotTS(sec, type="n", xaxs="r", mar=par("mar"))
+#' jnk <- mapply(function(s, col)
+#'     {
+#'         plotTS(s, type="o", col="gray", pt.bg=col, pch=21, add=TRUE)
 #'     },
-#'     section[["station"]], col=cm$zcol)
+#'     sec[["station"]], col=cm$zcol)
 #'
-#' # Add spiciness contours
+#' # 6. with added spiciness contours
 #' data(ctd)
 #' plotTS(ctd, eos="gsw") # MANDATORY so x=SA and y=CT
 #' usr <- par("usr")
@@ -4648,6 +4647,9 @@ plotTS <- function(x,
     canPlot <- is.finite(salinity) & is.finite(y)
     if (length(col) == length(y)) {
         col <- col[canPlot]
+    }
+    if (length(pt.bg) == length(y)) {
+        pt.bg <- pt.bg[canPlot]
     }
     if (length(bg) == length(y)) {
         bg <- bg[canPlot]
@@ -4875,6 +4877,9 @@ drawIsopycnals <- function(nlevels=6, levels, rotate=TRUE, rho1000=FALSE, digits
         # x is S and y is T. The method centres on finding the
         # intersection, if any, between y=y(x) and the freezing point
         # line, FPL.
+        if (!("x" %in% names(contourline))) {
+            return(contourline)
+        }
         x <- contourline$x
         y <- contourline$y
         FPL <- if (eos == "unesco") {
@@ -4895,7 +4900,7 @@ drawIsopycnals <- function(nlevels=6, levels, rotate=TRUE, rho1000=FALSE, digits
             # Bracket the crossing points, form a function for the line joining
             # them, and then find the intersection of that line with the FPL.
             after <- which(!frozen)[1]
-            if (after < 2L) {
+            if (is.na(after) || after < 2L) {
                 # Although I think this is impossible, we don't want an error,
                 # so give up on the trimming attempt.
                 return(contourline)
@@ -5035,11 +5040,12 @@ drawIsopycnals <- function(nlevels=6, levels, rotate=TRUE, rho1000=FALSE, digits
             }
             lines(contourline$x, contourline$y, col=col, lty=lty, lwd=lwd)
             hitTop <- abs(tail(contourline$y, 1) - usr[4]) < (usr[4] - usr[3]) / (2*NT)
-            #cat(vectorShow(hitTop))
-            if (hitTop) {
-                mtext(contourline$level, side=3, at=tail(contourline$x, 1), cex=cex, col=col)
-            } else {
-                mtext(contourline$level, side=4, at=tail(contourline$y, 1), cex=cex, col=col)
+            if (length(hitTop) > 0L) {
+                if (hitTop) {
+                    mtext(contourline$level, side=3, at=tail(contourline$x, 1), cex=cex, col=col)
+                } else {
+                    mtext(contourline$level, side=4, at=tail(contourline$y, 1), cex=cex, col=col)
+                }
             }
         }
     } else {
