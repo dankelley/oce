@@ -42,7 +42,7 @@ setMethod(f="initialize",
         dots <- list(...)
         dotsNames <- names(dots)
         for (i in seq_along(dots)) {
-            ##message("extra column named: ", dotsNames[i])
+            #message("extra column named: ", dotsNames[i])
             .Object@data[dotsNames[i]] <- dots[i]
         }
         .Object@processingLog$time <- presentTime()
@@ -199,7 +199,7 @@ as.ladp <- function(longitude, latitude, station, time, pressure, u, v, uz, vz, 
         latitude <- x[["latitude"]]
         station <- x[["station"]]
         time <- x[["time"]]
-        ## try hard to get pressure
+        # try hard to get pressure
         pressure <- x[["pressure"]]
         if (is.null(pressure)) {
             z <- x[["z"]]

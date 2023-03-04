@@ -31,7 +31,7 @@ Convert Longitude and Latitude to UTM
 }
 \examples{
 library(oce)
-## Cape Split, in the Minas Basin of the Bay of Fundy
+# Cape Split, in the Minas Basin of the Bay of Fundy
 lonlat2utm(-64.496567, 45.334626)
 
 }

@@ -138,7 +138,7 @@ read.ctd.odv <- function(file, columns=NULL, station=NULL, missingValue,
         flagColumnsToDelete <- c(flagColumnsToDelete, i+1)
         dataNamesOriginal$oxygen <- "DOX2 [micromole/kg]"
     }
-    ## "chl-a_fluorometry [ug/l]"
+    # "chl-a_fluorometry [ug/l]"
     i  <- grep("chl-a_fluorometry \\[ug/l\\]", colNames)
     if (1 == length(i)) {
         colNames[i] <- "fluorometry"
@@ -220,7 +220,7 @@ read.ctd.odv <- function(file, columns=NULL, station=NULL, missingValue,
         units$nitrogen <- list(unit=expression(mmol/m^3), scale="")
         flags$nitrogen <- data[, i+1]
         flagColumnsToDelete <- c(flagColumnsToDelete, i+1)
-        ## warning("code ODSDM017 is not understood\n")
+        # warning("code ODSDM017 is not understood\n")
         dataNamesOriginal$nitrogen <- "ODSDM017 [millimole/m3]"
     }
     # "Sal_conductivity-cell [TU]"
@@ -289,8 +289,8 @@ read.ctd.odv <- function(file, columns=NULL, station=NULL, missingValue,
     res@metadata$dataNamesOriginal <- dataNamesOriginal
     res@metadata$units <- units
     res@metadata$flags <- flags
-    ## Move some things from data to metadata, if there is only one value and if it
-    ## makes sense.  (Basically, in R terms, make it untidy.)
+    # Move some things from data to metadata, if there is only one value and if it
+    # makes sense.  (Basically, in R terms, make it untidy.)
     for (thing in c("Station", "Cruise", "Type", "longitude", "latitude")) {
         if (thing %in% names(data)) {
             THING <- data[[thing]]
@@ -317,7 +317,7 @@ read.ctd.odv <- function(file, columns=NULL, station=NULL, missingValue,
     }
     res@metadata$type <- ""
     res@data <- as.list(data)
-    ## Fix dates
+    # Fix dates
     for (i in grep("^time[\\.0-9]*$", names(data))) {
         D <- gsub(" UTC", "", res@data[[i]])
         res@data[[i]] <- numberAsPOSIXct(unlist(lapply(D, function(t) if (nchar(t) > 0) as.POSIXct(t, tz="UTC") else NA)))

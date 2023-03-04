@@ -153,15 +153,15 @@ setMethod(f="[[<-",
 #' longitude and longitude, and further adornment of the plot must be done with
 #' e.g.  [mapPoints()] instead of [points()].
 #'
-## These archaic arguments have not worked for a long time, if ever.
-## A pkg::build_site() run on April 1, 2020 flagged them as
-## problematic, so they were removed then.  (In plot,ctd-method,
-## these were deprecated in 2016.)
-## @param parameters optional parameters to map projection (see
-## [mapPlot()] for details).
-##
-## @param orientation optional orientation of map projection (see
-## [mapPlot()] for details).
+# These archaic arguments have not worked for a long time, if ever.
+# A pkg::build_site() run on April 1, 2020 flagged them as
+# problematic, so they were removed then.  (In plot,ctd-method,
+# these were deprecated in 2016.)
+# @param parameters optional parameters to map projection (see
+# [mapPlot()] for details).
+#
+# @param orientation optional orientation of map projection (see
+# [mapPlot()] for details).
 #'
 #' @param expand numerical factor for the expansion of plot limits, showing
 #' area outside the plot, e.g. if showing a ship track as a gps, and then an
@@ -264,7 +264,7 @@ setMethod(f="plot",
         latitude <- x[["latitude"]]
         dots <- list(...)
         dotsNames <- names(dots)
-        ##gave.center <- !missing(clongitude) && !missing(clatitude)
+        #gave.center <- !missing(clongitude) && !missing(clatitude)
         if ("center" %in% dotsNames) {
             stop("use 'clongitude' and 'clatitude' instead of 'center'")
         }
@@ -306,7 +306,7 @@ setMethod(f="plot",
                 # Expand
                 if (missing(span)) {
                     if (expand >= 0 && max(abs(xr0)) < 100 && max(abs(yr0) < 70)) {
-                        ## don't expand if full map
+                        # don't expand if full map
                         xr <- mean(xr0) + expand * diff(xr0) * c(-1/2, 1/2)
                         yr <- mean(yr0) + expand * diff(yr0) * c(-1/2, 1/2)
                     } else {

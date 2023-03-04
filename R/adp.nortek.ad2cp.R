@@ -321,63 +321,63 @@ ad2cpCodeToName <- function(code=NULL, prefix=TRUE)
 #' |     `0x23` |             35 |    `echosounderRaw` |
 #' |     `0xa0` |            160 |              `text` |
 #'
-## The coding is based mainly on descriptions in various versions of a Nortek
-## manual (see \dQuote{References}). However, there are some gaps and
-## contradictions in these manuals, owing partly to evolution of the data
-## format. These things posed a challenge in the writing of [read.adp.ad2cp()].
-## Thankfully, personnel in Nortek technical support team were able to supply
-## the help that was needed.
-##
-## Comments in the code, along with some warnings and messages that may be
-## issued during processing, are used to highlight some areas that may need
-## attention in revisions to this function.
-##
-## Early in the year 2022, support was added for 12-byte headers. Until
-## August 2022, this support was provisional and the results were unlikely
-## to be correct. However, personal contacts with Nortek experts shed
-## a great deal of light on the format, and so the present results are
-## thought to be correct.  At about the same time, support was added for
-## what oce calls `echosounderRaw` format, the details of which were
-## kindly communicated by Nortek personnel, in lieu of official documentation
-## that had not yet been finalized.
-##
-## The \dQuote{References} section lists some manuals that were consulted during
-## the coding of `read.adp.ad2cp()].  Since instruments evolve over time, one
-## might think that Nortek (2022) would be the best place to start, in coding to
-## read AD2CP files. That would be a mistake, because that manual (as of August
-## 2022) employs a new presentation style that is less straightforward than the
-## older manuals, with some significant gaps (e.g. no discussion of the checksum
-## computation method) and errors (e.g. in stating storage classes, whether
-## floating-point or integer).  A new manual is expected soon, however, and this
-## is expected to lead the way revision of this function and its documentation.
-##
-## 2. The Nortek (2022) explanation of the data format differs from the older
-## explanations and is arguably more difficult to understand.  With the new
-## leading-underscore format (see Nortek 2022, page 79), information is spread
-## throughout the document, making it challenging to understand data fields in
-## isolation.  The older documents laid things out more clearly, e.g. the
-## average/burst format is laid out in detail, *in one place* on pages 57 to 64
-## of Nortek, with the optional fields being clearly labelled in the rightmost
-## column of Table 6.1.3.
-##
-## 3. Nortek (2022) does not always specify units correctly.  For example, on
-## page 82, Pressure is said to have "Unit \[dBar\]" in green text, but the
-## black text above states "Raw data given as 0.001 dBar". If the stated storage
-## class (uint32) is to be believed, then it seems clear that the unit must be
-## 0.001 dBar, so the green text should be ignored.  The same can be said of
-## items throughout the data-format tables. In coding `read.adp.ad2cp()], the
-## green "Unit" text was ignored in basically every case.
-##
-## Second, Nortek (2022) contains significant errors, e.g. the following.
-##
-## 1. Nortek (2022 page 89) states the storage class for "Altimeter
-## data. Altimeter distance" (called `AltimeterDistance` by the present function)
-## to be `int32`, but Nortek (2017, 2018) both state it to be `float32`. Tests
-## with actual datasets make it clear that the format is `float32`, since wild
-## result are inferred by following the Nortek (2022) guidance.
-##
-## 2. As above, but for "AST data.AST distance" (called `ASTDistance` by the
-## present function).
+# The coding is based mainly on descriptions in various versions of a Nortek
+# manual (see \dQuote{References}). However, there are some gaps and
+# contradictions in these manuals, owing partly to evolution of the data
+# format. These things posed a challenge in the writing of [read.adp.ad2cp()].
+# Thankfully, personnel in Nortek technical support team were able to supply
+# the help that was needed.
+#
+# Comments in the code, along with some warnings and messages that may be
+# issued during processing, are used to highlight some areas that may need
+# attention in revisions to this function.
+#
+# Early in the year 2022, support was added for 12-byte headers. Until
+# August 2022, this support was provisional and the results were unlikely
+# to be correct. However, personal contacts with Nortek experts shed
+# a great deal of light on the format, and so the present results are
+# thought to be correct.  At about the same time, support was added for
+# what oce calls `echosounderRaw` format, the details of which were
+# kindly communicated by Nortek personnel, in lieu of official documentation
+# that had not yet been finalized.
+#
+# The \dQuote{References} section lists some manuals that were consulted during
+# the coding of `read.adp.ad2cp()].  Since instruments evolve over time, one
+# might think that Nortek (2022) would be the best place to start, in coding to
+# read AD2CP files. That would be a mistake, because that manual (as of August
+# 2022) employs a new presentation style that is less straightforward than the
+# older manuals, with some significant gaps (e.g. no discussion of the checksum
+# computation method) and errors (e.g. in stating storage classes, whether
+# floating-point or integer).  A new manual is expected soon, however, and this
+# is expected to lead the way revision of this function and its documentation.
+#
+# 2. The Nortek (2022) explanation of the data format differs from the older
+# explanations and is arguably more difficult to understand.  With the new
+# leading-underscore format (see Nortek 2022, page 79), information is spread
+# throughout the document, making it challenging to understand data fields in
+# isolation.  The older documents laid things out more clearly, e.g. the
+# average/burst format is laid out in detail, *in one place* on pages 57 to 64
+# of Nortek, with the optional fields being clearly labelled in the rightmost
+# column of Table 6.1.3.
+#
+# 3. Nortek (2022) does not always specify units correctly.  For example, on
+# page 82, Pressure is said to have "Unit \[dBar\]" in green text, but the
+# black text above states "Raw data given as 0.001 dBar". If the stated storage
+# class (uint32) is to be believed, then it seems clear that the unit must be
+# 0.001 dBar, so the green text should be ignored.  The same can be said of
+# items throughout the data-format tables. In coding `read.adp.ad2cp()], the
+# green "Unit" text was ignored in basically every case.
+#
+# Second, Nortek (2022) contains significant errors, e.g. the following.
+#
+# 1. Nortek (2022 page 89) states the storage class for "Altimeter
+# data. Altimeter distance" (called `AltimeterDistance` by the present function)
+# to be `int32`, but Nortek (2017, 2018) both state it to be `float32`. Tests
+# with actual datasets make it clear that the format is `float32`, since wild
+# result are inferred by following the Nortek (2022) guidance.
+#
+# 2. As above, but for "AST data.AST distance" (called `ASTDistance` by the
+# present function).
 #'
 #' @param file a connection or a character string giving the name of the file to
 #' load.
@@ -406,11 +406,11 @@ ad2cpCodeToName <- function(code=NULL, prefix=TRUE)
 #' @param tz a character value indicating time zone. This is used in
 #' interpreting times stored in the file.
 #'
-## @param ignoreChecksums a logical value indicating whether to ignore
-## checksums.  This is FALSE by default, meaning that any data chunk with an
-## improper checksum is ignored.  It may be necessary to set this to TRUE to
-## parse some problematic files, but users are asked to report issues in
-## such cases.  (This parameter may be removed without notice.)
+# @param ignoreChecksums a logical value indicating whether to ignore
+# checksums.  This is FALSE by default, meaning that any data chunk with an
+# improper checksum is ignored.  It may be necessary to set this to TRUE to
+# parse some problematic files, but users are asked to report issues in
+# such cases.  (This parameter may be removed without notice.)
 #'
 #' @param longitude,latitude numerical values indicating the observation
 #' location.
@@ -455,10 +455,10 @@ ad2cpCodeToName <- function(code=NULL, prefix=TRUE)
 #' @param \dots ignored.
 #'
 #'
-## @examples
-##\dontrun{
-## d <- read.adp.ad2cp("~/test.ad2cp", to=100) # or read.oce()
-##}
+# @examples
+#\dontrun{
+# d <- read.adp.ad2cp("~/test.ad2cp", to=100) # or read.oce()
+#}
 #'
 #' @return Either an [adp-class] object with `metadata$fileType` equal to
 #' `"AD2CP"`, or a data table summarizing the file contents by ID.
@@ -476,8 +476,8 @@ ad2cpCodeToName <- function(code=NULL, prefix=TRUE)
 #' Nortek AS. \dQuote{Signature Integration 55|250|500|1000kHz.} Nortek AS,
 #' March 31, 2022.
 #'
-## Nortek AS. \dQuote{Operations Manual - Signature 250, 500 and 1000.} Nortek AS,
-## September 21, 2018.
+# Nortek AS. \dQuote{Operations Manual - Signature 250, 500 and 1000.} Nortek AS,
+# September 21, 2018.
 #'
 #' @family things related to adp data
 #' @family things related to ad2cp data

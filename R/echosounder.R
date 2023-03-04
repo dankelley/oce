@@ -126,7 +126,7 @@ setMethod(f="summary",
         cat(sprintf("* Channel:             %d\n", object[["channel"]]))
         cat(sprintf("* Measurements:        %s %s to %s %s\n", format(time[1]), tz, format(time[nt]), tz))
         cat(sprintf("* Sound speed:         %.2f m/s\n", object[["soundSpeed"]]))
-        ##cat(sprintf("* Time between pings:  %.2e s\n", object[["samplingDeltat"]]))
+        #cat(sprintf("* Time between pings:  %.2e s\n", object[["samplingDeltat"]]))
         if ("pulseDuration" %in% metadataNames) {
             cat(sprintf("* Pulse duration:      %g s\n", object[["pulseDuration"]]/1e6))
         }
@@ -698,7 +698,7 @@ setMethod(f="plot",
                 latitude <- x[["latitude"]]
                 longitude <- x[["longitude"]]
                 jitter <- rnorm(length(latitude), sd=1e-8) # jitter lat by equiv 1mm to avoid colocation
-                distance <- geodDist(longitude, jitter+latitude, alongPath=TRUE) ## FIXME: jitter should be in imagep
+                distance <- geodDist(longitude, jitter+latitude, alongPath=TRUE) # FIXME: jitter should be in imagep
                 depth <- x[["depth"]]
                 a <- x[["a"]]
                 if (despike) {
@@ -960,7 +960,7 @@ read.echosounder <- function(file,
     # do *not* know is whether files will always have these byte groupsing in this order, but at
     # least setting to a zero value is likely to cause an error, if that ever occurs. (I may just
     # need to reorder some code, if problems arise.)
-    samplesPerPing <- 0 ## overriddent later; here just to prevent code-diagnostic warning
+    samplesPerPing <- 0 # overriddent later; here just to prevent code-diagnostic warning
     while (offset < fileSize) {
         #print <- debug && tuple < 200
         N <- .C("uint16_le", buf[offset+1:2], 1L, res=integer(1), NAOK=TRUE, PACKAGE="oce")$res
@@ -988,7 +988,7 @@ read.echosounder <- function(file,
             thisChannel <- .C("uint16_le", buf[offset+4+1:2], 1L, res=integer(1), NAOK=TRUE, PACKAGE="oce")$res
             pingNumber <- readBin(buf[offset+6+1:4], "integer", size=4L, n=1L, endian="little")
             pingElapsedTime <- 0.001 * readBin(buf[offset+10+1:4], "integer", size=4L, n=1L, endian="little")
-            ##message("samplersPerPing=", samplesPerPing)
+            #message("samplersPerPing=", samplesPerPing)
             ns <- .C("uint16_le", buf[offset+14+1:2], 1L, res=integer(1), NAOK=TRUE, PACKAGE="oce")$res # number of samples
             if (thisChannel == channelNumber[channel]) {
                 if (debug > 3) {
@@ -1199,7 +1199,7 @@ read.echosounder <- function(file,
     if (debug > 1) cat("transducerSerialNumber '", res@metadata$transducerSerialNumber, "' (expect DT600085 for 01-Fish.dt4)\n", sep="")
     res@metadata$calibrationTime <- numberAsPOSIXct(readBin(rxee[36+1:4], "integer"), tz="UTC") # [1 p16] offset=36
     if (debug > 1) cat("calibrationTime: ", format(res@metadata$calibrationTime), " (expect Thu Apr 13 02:36:38 2000 for 01-Fish.dt4)\n", sep="")
-    ##res@metadata$sl <- 0.1 * .C("int16_le", rxee[58+1:2], 1L, res=integer(1), NAOK=TRUE, PACKAGE="oce")$res # [p16 1]
+    #res@metadata$sl <- 0.1 * .C("int16_le", rxee[58+1:2], 1L, res=integer(1), NAOK=TRUE, PACKAGE="oce")$res # [p16 1]
     res@metadata$sourceLevel <- 0.1 * readBin(rxee[58+1:2], "integer", n=1L, size=2L, endian="little") # [p16 1]
     if (debug > 1) cat("sl=", res@metadata$sourceLevel, " (expect 220 for 01-Fish.dt4 source level SourceLevel_dBuPa)\n", sep="")
     #res@metadata$rs <- 0.1 * .C("int16_le", rxee[1+64+1:2], 1L, res=integer(1), NAOK=TRUE, PACKAGE="oce")$res # [p16 1]

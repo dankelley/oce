@@ -148,13 +148,13 @@ Similar steps can be followed on other servers.
 
 \examples{
 \dontrun{
-## Example 1: read from a local file
+# Example 1: read from a local file
 library(oce)
 d <- read.argo("/data/OAR/6900388_prof.nc")
 summary(d)
 plot(d)
 
-## Example 2: construct URL for download (brittle)
+# Example 2: construct URL for download (brittle)
 id <- "6900388"
 url <- "https://www.usgodae.org/ftp/outgoing/argo"
 if (!length(list.files(pattern="argo_index.txt")))

@@ -26,7 +26,7 @@ NULL
 
 colormapNames <- c("gmt_relief", "gmt_ocean", "gmt_globe", "gmt_gebco")
 
-## keeping this (which was called 'colorize' until 2014-05-07) for a while, but not in NAMESPACE.
+# keeping this (which was called 'colorize' until 2014-05-07) for a while, but not in NAMESPACE.
 colormap_colorize <- function(z=NULL, zlim, zclip=FALSE, breaks,
                               col=oceColorsViridis, colormap=NULL, segments=1, missingColor="gray",
                               debug=getOption("oceDebug"))
@@ -56,13 +56,13 @@ colormap_colorize <- function(z=NULL, zlim, zclip=FALSE, breaks,
                 }
             }
             if (length(breaks) == 1) {
-                ## special case: 'breaks' means *number* of breaks
+                # special case: 'breaks' means *number* of breaks
                 if (!missing(zlim) && !is.null(zlim)) {
                     breaks <- seq(zlim[1], zlim[2], length.out=breaks)
-                    ##message("pretty(zlim)")
+                    #message("pretty(zlim)")
                 } else if (!is.null(z)) {
                     breaks <- pretty(z, n=breaks) # note use of pretty(), which extends from data
-                    ##message("pretty(z)")
+                    #message("pretty(z)")
                 } else {
                     stop("must give z or zlim if length(breaks)=1")
                 }
@@ -165,7 +165,7 @@ colormap_colorize <- function(z=NULL, zlim, zclip=FALSE, breaks,
     res
 }
 
-## NB: I've not documented this, because it is not in the NAMESPACE.
+# NB: I've not documented this, because it is not in the NAMESPACE.
 colormapGmtNumeric <- function(x0, x1, col0, col1, bpl=1)
 {
     n <- length(x0)
@@ -186,7 +186,7 @@ colormapGmtNumeric <- function(x0, x1, col0, col1, bpl=1)
         col <- c(col, colorRampPalette(c(col0[i], col1[i]))(1+bpl))
     }
     nbreaks <- length(breaks)
-    ## extend a bit to the right
+    # extend a bit to the right
     delta <- mean(diff(breaks[1:2])) / 1000
     breaks <- c(breaks, breaks[nbreaks] + delta)
     res <- list(breaks=breaks, col=col)
@@ -349,11 +349,11 @@ colormapGMT <- function(name, debug=getOption("oceDebug"))
             N       128     128     128"
         } else if (name == "gmt_gebco") {
             oceDebug(debug, "case 1.4: built-in gmt_gebco\n")
-            ## $Id: GMT_gebco.cpt,v 1.1.1.1 2000/12/28 01:23:45 gmt Exp $
-            ##
-            ## Bathymetry colors approximating the GEBCO charts
-            ## Designed by Andrew Goodwillie, Scripps
-            ## COLOR_MODEL = RGB
+            # $Id: GMT_gebco.cpt,v 1.1.1.1 2000/12/28 01:23:45 gmt Exp $
+            #
+            # Bathymetry colors approximating the GEBCO charts
+            # Designed by Andrew Goodwillie, Scripps
+            # COLOR_MODEL = RGB
             text <- "-7000   0       240     255     -6000   0       240     255
             -6000   35      255     255     -5000   35      255     255
             -5000   90      255     255     -4000   90      255     255
@@ -417,7 +417,7 @@ colormapGMT <- function(name, debug=getOption("oceDebug"))
             warning("cannot decode \"B\" from \"", line, "\"")
         }
     }
-    ## "N" named here as missingColor to match e.g. imagep()
+    # "N" named here as missingColor to match e.g. imagep()
     N <- "gray"
     if (length(grep("^\\s*N", text))) {
         line <- text[grep("^\\s*N", text)]
@@ -595,18 +595,18 @@ colormapGMT <- function(name, debug=getOption("oceDebug"))
 #'
 #' @examples
 #' library(oce)
-#' ## Example 1. color scheme for points on xy plot
+#' # Example 1. color scheme for points on xy plot
 #' x <- seq(0, 1, length.out=40)
 #' y <- sin(2 * pi * x)
 #' par(mar=c(3, 3, 1, 1))
 #' mar <- par('mar') # prevent margin creep by drawPalette()
-#' ## First, default breaks
+#' # First, default breaks
 #' c <- colormap(y)
 #' drawPalette(c$zlim, col=c$col, breaks=c$breaks)
 #' plot(x, y, bg=c$zcol, pch=21, cex=1)
 #' grid()
 #' par(mar=mar)
-#' ## Second, 100 breaks, yielding a smoother palette
+#' # Second, 100 breaks, yielding a smoother palette
 #' c <- colormap(y, breaks=100)
 #' drawPalette(c$zlim, col=c$col, breaks=c$breaks)
 #' plot(x, y, bg=c$zcol, pch=21, cex=1)
@@ -614,14 +614,14 @@ colormapGMT <- function(name, debug=getOption("oceDebug"))
 #' par(mar=mar)
 #'
 #'\dontrun{
-#' ## Example 2. topographic image with a standard color scheme
+#' # Example 2. topographic image with a standard color scheme
 #' par(mfrow=c(1,1))
 #' data(topoWorld)
 #' cm <- colormap(name="gmt_globe")
 #' imagep(topoWorld, breaks=cm$breaks, col=cm$col)
 #'
-#' ## Example 3. topographic image with modified colors,
-#' ## black for depths below 4km.
+#' # Example 3. topographic image with modified colors,
+#' # black for depths below 4km.
 #' cm <- colormap(name="gmt_globe")
 #' deep <- cm$x0 < -4000
 #' cm$col0[deep] <- 'black'
@@ -629,10 +629,10 @@ colormapGMT <- function(name, debug=getOption("oceDebug"))
 #' cm <- colormap(x0=cm$x0, x1=cm$x1, col0=cm$col0, col1=cm$col1)
 #' imagep(topoWorld, breaks=cm$breaks, col=cm$col)
 #'
-#' ## Example 4. image of world topography with water colorized
-#' ## smoothly from violet at 8km depth to blue
-#' ## at 4km depth, then blending in 0.5km increments
-#' ## to white at the coast, with tan for land.
+#' # Example 4. image of world topography with water colorized
+#' # smoothly from violet at 8km depth to blue
+#' # at 4km depth, then blending in 0.5km increments
+#' # to white at the coast, with tan for land.
 #' cm <- colormap(x0=c(-8000, -4000,   0,  100),
 #'                x1=c(-4000,     0, 100, 5000),
 #'                col0=c("violet","blue","white","tan"),
@@ -643,13 +643,13 @@ colormapGMT <- function(name, debug=getOption("oceDebug"))
 #' imagep(lon, lat, z, breaks=cm$breaks, col=cm$col)
 #' contour(lon, lat, z, levels=0, add=TRUE)
 #'
-#' ## Example 5. visualize GMT style color map
+#' # Example 5. visualize GMT style color map
 #' cm <- colormap(name="gmt_globe", debug=4)
 #' plot(seq_along(cm$x0), cm$x0, pch=21, bg=cm$col0)
 #' grid()
 #' points(seq_along(cm$x1), cm$x1, pch=21, bg=cm$col1)
 #'
-#' ## Example 6. colfunction
+#' # Example 6. colfunction
 #' cm <- colormap(c(0, 1))
 #' x <- 1:10
 #' y <- (x - 5.5)^2
@@ -911,7 +911,7 @@ colormap_colormap <- function(name, x0, x1, col0, col1, n=1, zclip=FALSE, debug=
             oceDebug(debug, "  col0[i-1]:", col0[i-1], "col0[i]:", col0[i], "\n")
             oceDebug(debug, "  col1[i-1]:", col1[i-1], "col1[i]:", col1[i], "\n")
         }
-        ## next is wrong -- should not just tack on one value unless n=1
+        # next is wrong -- should not just tack on one value unless n=1
         x0r <- c(x0r, tail(x0, 1))
         x1r <- c(x1r, tail(x1, 1))
         col0r <- c(col0r, tail(col0, 1))
@@ -924,7 +924,7 @@ colormap_colormap <- function(name, x0, x1, col0, col1, n=1, zclip=FALSE, debug=
     res
 }
 
-## internal function for palettes
+# internal function for palettes
 palette2breakscolor <- function(name, breaksPerLevel=1, topoRegion=c("water", "land", "both"))
 {
     knownPalettes <- c("GMT_relief", "GMT_ocean", "globe")

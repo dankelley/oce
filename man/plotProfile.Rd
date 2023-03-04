@@ -54,9 +54,11 @@ plotProfile(
 \arguments{
 \item{x}{a \linkS4class{ctd} object.}
 
-\item{xtype}{Item(s) plotted on the x axis, either a vector of length equal
-to that of \code{pressure} in the \code{data} slot,
-or a text code from the list below.
+\item{xtype}{item(s) to be plotted on the x axis, either a character
+value taken from the following list, or a numeric vector of length
+matching the \code{pressure} field stored in \code{x}. (In the second case,
+as of version 1.7-11, a label is auto-constructed, unless the user
+supplied a character value for \code{xlab}.)
 \itemize{
 \item \code{"salinity"} Profile of salinity.
 \item \code{"conductivity"} Profile of conductivity.
@@ -97,10 +99,10 @@ to 0dbar (i.e. the surface), 1000dbar, 2000dbar, 3000dbar, and 4000dbar.
 \item{lty}{line type for the profile.}
 
 \item{xlab}{optional label for x axis (at top of plot). If not
-provided, the value of \code{xtype} is used (along with the units
-of the variable) to construct a label. For user-supplied \code{xlab},
-the unit (if any) must be specified as in e.g.
-\code{xlab=expression("Speed ["*m/s*"]")}.}
+provided, a label is inferred from the value of \code{xtype}. For
+the user-supplied case, bear in mind that the easy way to get
+units is to use an expression, e.g.
+\code{xlab=expression("Acceleration ["*m/s^2*"]")}.}
 
 \item{ylab}{optional label for y axis.  See \code{xlab} for a note on
 units.  Setting \code{ylab=""} prevents labelling the axis.}

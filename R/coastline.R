@@ -151,10 +151,10 @@ setMethod(f="[[<-",
 #' @examples
 #' library(oce)
 #' data(coastlineWorld)
-#' ## Subset to a box centred on Nova Scotia, Canada
+#' # Subset to a box centred on Nova Scotia, Canada
 #' if (requireNamespace("sf")) {
 #'     cl <- subset(coastlineWorld, -80<lon & lon<-50 & 30<lat & lat<60)
-#'     ## The plot demonstrates that the trimming is as requested.
+#'     # The plot demonstrates that the trimming is as requested.
 #'     plot(cl, clon=-65, clat=45, span=6000)
 #'     rect(-80, 30, -50, 60, bg="transparent", border="red")
 #' }
@@ -497,7 +497,7 @@ as.coastline <- function(longitude, latitude, fillable=FALSE)
 #' plot(coastlineWorld)
 #' plot(coastlineWorld, clongitude=-63.6, clatitude=44.6, span=1000)
 #'
-#' ## Canada in Lambert projection
+#' # Canada in Lambert projection
 #' plot(coastlineWorld, clongitude=-95, clatitude=65, span=5500,
 #'      grid=10, projection='+proj=laea +lon_0=-100 +lat_0=55')
 #'}
@@ -580,7 +580,7 @@ setMethod(f="plot",
                 stop("In plot,coastline-method() : if longitudelim or latitudelim are given, then clongitude, clatitude, and span may not be given",
                     call.=FALSE)
             }
-            ##message("A")
+            #message("A")
             clongitude <- mean(longitudelim)
             clatitude <- mean(latitudelim)
             span <- geodDist(min(longitudelim), min(latitudelim), max(longitudelim), max(latitudelim))
@@ -687,7 +687,7 @@ setMethod(f="plot",
                     # Expand
                     if (missing(span)) {
                         if (expand >= 0 && max(abs(xr0)) < 100 && max(abs(yr0) < 70)) {
-                            ## don't expand if full map
+                            # don't expand if full map
                             xr <- mean(xr0) + expand * diff(xr0) * c(-1/2, 1/2)
                             yr <- mean(yr0) + expand * diff(yr0) * c(-1/2, 1/2)
                         } else {
@@ -720,7 +720,7 @@ setMethod(f="plot",
                     plot.window(xr, yr, asp=asp, xlab=xlab, ylab=ylab, xaxs="i", yaxs="i", log="", ...)
                     usr <- par("usr")
                     oceDebug(debug, "drawing background bg=", bg, vectorShow(par("usr")))
-                    ## polygon(usr[c(1,2,2,1)], usr[c(3,3,4,4)], col=bg)
+                    # polygon(usr[c(1,2,2,1)], usr[c(3,3,4,4)], col=bg)
                     rect(usr[1], usr[3], usr[2], usr[4], col=bg)
                     par(new=TRUE)
                 }
@@ -1231,7 +1231,7 @@ read.coastline.shapefile <- function(file, lonlim=c(-180, 180), latlim=c(-90, 90
     while (TRUE) {
         record <- record + 1
         if ((o + 53) > fileSize) {
-            ## FIXME could be more clever on eof
+            # FIXME could be more clever on eof
             oceDebug(debug, "o:", o, ", fileSize:", fileSize, " ... so finished\n")
             break
         }
@@ -1243,7 +1243,7 @@ read.coastline.shapefile <- function(file, lonlim=c(-180, 180), latlim=c(-90, 90
         if (shapeType < 0) stop("cannot have shapeType < 0, but got ", shapeType, " (programming error)")
         if (shapeType > 31) stop("cannot have shapeType > 31, but got ", shapeType, " (programming error)")
         if (shapeType == 0) {
-            ## NULL record; just skip 4 bytes (I guess; [1] table 3)
+            # NULL record; just skip 4 bytes (I guess; [1] table 3)
             o <- o + 12
         } else {
             if (shapeType != shapeTypeFile) {

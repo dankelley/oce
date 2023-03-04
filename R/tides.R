@@ -181,7 +181,6 @@ setMethod(f="summary",
         ok <- object@data$p <= p | version == 3L
         haveP <- any(!is.na(object@data$p))
         if (missing(constituent)) {
-            ####browser()
             fit <- data.frame(Const=object@data$const[ok],
                 Name=object@data$name[ok],
                 Freq=object@data$freq[ok],
@@ -235,7 +234,6 @@ setMethod(f="summary",
                 cat("f:\n")
                 print(f)
             }
-            ####browser()
             rownames(f) <- as.character(fit[, 2])
             if (haveP) {
                 printCoefmat(f, digits=3,
@@ -1547,7 +1545,6 @@ tidem <- function(t, x, constituents, infer=NULL, latitude=NULL,
             ic <- ic + 2 # skip forward 2 since non-Z0 takes 2 columns (contrast above)
         }
     }
-    ####browser()
     oceDebug(debug, vectorShow(phase))
     phase <- phase * 180 / pi
     phase <- ifelse(phase < -360, 720 + phase, phase)

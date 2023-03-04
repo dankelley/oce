@@ -187,7 +187,7 @@ profile <- NULL # does *not* affect the subset() call that follows
 return(subset(x, profile %in% j))
         }
         namesData <- names(x@data)
-        ## handle some computed items
+        # handle some computed items
         if (i %in% c("CT", paste("conservative", "temperature"), "N2",
             "SA", paste("Absolute", "Salinity"),
             "sigmaTheta",
@@ -517,7 +517,7 @@ getData <- function(file, name, quiet=FALSE)
 #' @family things related to argo data
 argoNames2oceNames <- function(names, ignore.case=TRUE)
 {
-    ## do NOT change the order below, because we are working with partial strings.
+    # do NOT change the order below, because we are working with partial strings.
     names <- gsub("^BBP([0-9_]*)", "BBP\\1", names, ignore.case=ignore.case)
     names <- gsub("^BETA_BACKSCATTERING([0-9_]*)", "betaBackscattering\\1", names, ignore.case=ignore.case)
     names <- gsub("^BPHASE_DOXY", "bphaseOxygen", names, ignore.case=ignore.case)
@@ -634,7 +634,7 @@ argoNames2oceNames <- function(names, ignore.case=TRUE)
 #'\dontrun{
 #' par(mfrow=c(1, 2))
 #' plot(argo, which="map")
-#' ## Can get a boundary with e.g. locator(4)
+#' # Can get a boundary with e.g. locator(4)
 #' boundary <- list(x=c(-65, -40, -40, -65), y=c(65, 65, 45, 45))
 #' argoSubset <- subset(argo, within=boundary)
 #' plot(argoSubset, which="map")
@@ -657,7 +657,7 @@ setMethod(f="subset",
         oceDebug(debug, "subset,argo-method() {\n", sep="", unindent=1, style="bold")
               if (withinGiven) {
             oceDebug(debug, "subsetting with 'within' method\n")
-            ## {{{ OLD 'sp::point.in.polygon' method
+            # {{{ OLD 'sp::point.in.polygon' method
             polygon <- dots$within
             if (!is.data.frame(polygon) && !is.list(polygon)) {
                 stop("'within' must be a data frame or a polygon")
@@ -795,12 +795,12 @@ setMethod(f="subset",
                     keep <- eval(expr=substitute(expr=subset, env=environment()), envir=tmp, enclos=parent.frame(2))
                     rm(tmp)
                 } else if (length(grep("pressure", subsetString))) {
-                    # issue1628 ## check that it is a "gridded" argo
+                    # issue1628 # check that it is a "gridded" argo
                     # issue1628 gridded <- ifelse(all(apply(x@data$pressure, 1, diff) == 0, na.rm=TRUE), TRUE, FALSE)
                     # issue1628 if (gridded) {
-                    # issue1628     x@data$pressure <- x@data$pressure[, 1] ## FIXME: have to convert pressure to vector
+                    # issue1628     x@data$pressure <- x@data$pressure[, 1] # FIXME: have to convert pressure to vector
                     # issue1628     keep <- eval(substitute(subset), x@data, parent.frame(2))
-                    # issue1628     x@data$pressure <- res@data$pressure ## FIXME: convert back to original for subsetting below
+                    # issue1628     x@data$pressure <- res@data$pressure # FIXME: convert back to original for subsetting below
                     # issue1628 } else {
                     # issue1628     stop("cannot subset ungridded argo by pressure -- use argoGrid() first", call.=FALSE)
                     # issue1628 }
@@ -954,7 +954,7 @@ ncdfFixMatrix <- function(x)
 #' par(mfrow=c(2,1))
 #' t <- g[["time"]]
 #' z <- -g[["pressure"]][,1]
-#' ## Set zlim because of spurious temperatures.
+#' # Set zlim because of spurious temperatures.
 #' imagep(t, z, t(g[['temperature']]), ylim=c(-100,0), zlim=c(0,20))
 #' imagep(t, z, t(g[['salinity']]), ylim=c(-100,0))
 #'
@@ -965,9 +965,9 @@ argoGrid <- function(argo, p, debug=getOption("oceDebug"), ...)
     oceDebug(debug, "argoGrid() {\n", sep="", unindent=1)
     warningMessages <- NULL
     dim <- dim(argo@data$pressure)
-    ## ndepth <- dim[1]
+    # ndepth <- dim[1]
     nprofile <- dim[2]
-    ## FIXME: modify sal, temp, and pre.  In the end, pre constant along first index
+    # FIXME: modify sal, temp, and pre.  In the end, pre constant along first index
     res <- argo
     res[["flags"]] <- NULL
     warningMessages <- c(warningMessages,
@@ -1117,13 +1117,13 @@ argoDecodeFlags <- function(f) # local function
 #'
 #' @examples
 #'\dontrun{
-#' ## Example 1: read from a local file
+#' # Example 1: read from a local file
 #' library(oce)
 #' d <- read.argo("/data/OAR/6900388_prof.nc")
 #' summary(d)
 #' plot(d)
 #'
-#' ## Example 2: construct URL for download (brittle)
+#' # Example 2: construct URL for download (brittle)
 #' id <- "6900388"
 #' url <- "https://www.usgodae.org/ftp/outgoing/argo"
 #' if (!length(list.files(pattern="argo_index.txt")))
@@ -2126,9 +2126,9 @@ setMethod(f="plot",
         invisible(NULL)
     })
 
-## DEVELOPERS: please pattern functions and documentation on the 'ctd' code, for uniformity.
-## DEVELOPERS: You will need to change the docs, and the 3 spots in the code
-## DEVELOPERS: marked '# DEVELOPER 1:', etc.
+# DEVELOPERS: please pattern functions and documentation on the 'ctd' code, for uniformity.
+# DEVELOPERS: You will need to change the docs, and the 3 spots in the code
+# DEVELOPERS: marked '# DEVELOPER 1:', etc.
 #' @title Handle Flags in ARGO Objects
 #'
 #' @param object an [argo-class] object.

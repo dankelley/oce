@@ -331,7 +331,7 @@ as.cm <- function(time, u=NULL, v=NULL,
         res@metadata$units$pressure <- list(unit=expression(dbar), scale="")
     }
     if (firstArgIsOce) {
-        ## Copy some metadata that are used sometimes (esp. ODF files)
+        # Copy some metadata that are used sometimes (esp. ODF files)
         if ("type" %in% mnames) {
             res@metadata$type <- x@metadata$type
         }
@@ -677,8 +677,8 @@ read.cm.s4 <- function(file, from=1, to, by=1, tz=getOption("oceTz"), longitude=
     res@metadata$type <- type
     res@metadata$longitude <- longitude
     res@metadata$latitude <- latitude
-    ## res@metadata$units$u <- list(unit=expression(m/s), scale="")
-    ## res@metadata$units$v <- list(unit=expression(m/s), scale="")
+    # res@metadata$units$u <- list(unit=expression(m/s), scale="")
+    # res@metadata$units$v <- list(unit=expression(m/s), scale="")
     res@metadata$units$conductivity <- list(unit=expression(mS/cm), scale="")
     res@metadata$units$salinity <- list(unit=expression(), scale="PSS-78")
     res@metadata$units$temperature <- list(unit=expression(degree*C), scale="ITS-90")
@@ -840,7 +840,7 @@ setMethod(f="plot",
                     main=main, mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
                     tformat=tformat)
             } else if (which[w] == 3) {
-                ## or "progressive vector"
+                # or "progressive vector"
                 oceDebug(debug, "progressive vector plot\n")
                 dt <- as.numeric(difftime(x@data$time[2], x@data$time[1], units="sec")) # FIXME: assuming equal dt
                 mPerKm <- 1000

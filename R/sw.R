@@ -172,41 +172,36 @@ T90fromT48 <- function(temperature) (temperature-4.4e-6*temperature * (100-tempe
 #' @return A list with elements of the same names but possibly filled in from the first element.
 #'
 #' @examples
-#' ## 1. If first item is not a CTD object, just return the input
+#' # 1. If first item is not a CTD object, just return the input
 #' lookWithin(list(a=1, b=2)) # returns a list
-#' ## 2. Extract salinity from a CTD object
+#' # 2. Extract salinity from a CTD object
 #' data(ctd)
 #' str(lookWithin(list(salinity=ctd)))
-#' ## 3. Extract salinity and temperature. Note that the
-#' ## value specified for temperature is ignored; all that matters
-#' ## is that temperature is named.
+#' # 3. Extract salinity and temperature. Note that the
+#' # value specified for temperature is ignored; all that matters
+#' # is that temperature is named.
 #' str(lookWithin(list(salinity=ctd, temperature=NULL)))
-#' ## 4. How it is used by swRho()
+#' # 4. How it is used by swRho()
 #' rho1 <- swRho(ctd, eos="unesco")
 #' rho2 <- swRho(ctd[["salinity"]], ctd[["temperature"]], ctd[["pressure"]], eos="unesco")
 #' stopifnot(all.equal(rho1, rho2))
 lookWithin <- function(list)
 {
-    ##>>> message("in lookWithin")
     n <- length(list)
     names <- names(list)
-    ## str(list)
     list1 <- list[[1]]
     if (inherits(list[[1]], "oce")) {
-        ##>>> message("  in lookWithin, list type; n=", n)
         for (i in 1:n) {
-            ##>>> message("names[", i, "]: ", names[i])
             if ("eos" != names[i]) {
-                ## Note: the accessor [[]] will return temperature
-                ## in ITS-90 regardless of how it is stored, and similarly pressure
-                ## in dbar and salinity in FIXME: what unit to use??
+                # Note: the accessor [[]] will return temperature
+                # in ITS-90 regardless of how it is stored, and similarly pressure
+                # in dbar and salinity in FIXME: what unit to use??
                 try({
                     list[[i]] <- list1[[names[i], "nowarn"]]
                 }, silent=TRUE)
             }
         }
         if (inherits(list1, "ctd")) {
-            ##>>> message(" lookWithin it is a CTD")
             nrows <- length(list[[names[1]]])
             if (length(list[["longitude"]])) {
                 list[["longitude"]] <- rep(mean(list[["longitude"]], na.rm=TRUE), nrows)
@@ -215,7 +210,7 @@ lookWithin <- function(list)
                 list[["latitude"]] <- rep(mean(list[["latitude"]], na.rm=TRUE), nrows)
             }
         }
-        ## FIXME: should special-case some other object types
+        # FIXME: should special-case some other object types
     }
     if ("eos" %in% names) {
         list[["eos"]] <- match.arg(list[["eos"]], c("unesco", "gsw"))
@@ -302,14 +297,14 @@ swRrho <- function(ctd,
     if (eos == "unesco") {
         theta <- ctd[["theta"]]
         ok <- !is.na(p) & !is.na(salinity) & !is.na(temperature)
-        ## infer d(theta)/dp and d(salinity)/dp from smoothing splines
+        # infer d(theta)/dp and d(salinity)/dp from smoothing splines
         temperatureSpline <- smooth.spline(p[ok], temperature[ok], df=df)
         salinitySpline <- smooth.spline(p[ok], salinity[ok], df=df)
-        ## Smooth temperature and salinity to get smoothed alpha and beta
+        # Smooth temperature and salinity to get smoothed alpha and beta
         CTD <- as.ctd(predict(salinitySpline, p)$y, predict(temperatureSpline, p)$y, p)
         alpha <- swAlpha(CTD, eos="unesco")
         beta <- swBeta(CTD, eos="unesco")
-        ## Using alpha ... is that right, since we have theta?
+        # Using alpha ... is that right, since we have theta?
         thetaSpline <- smooth.spline(p[ok], theta[ok], df=df)
         dthetadp <- predict(thetaSpline, p, deriv=1)$y
         dsalinitydp <- predict(salinitySpline, p, deriv=1)$y
@@ -428,8 +423,8 @@ swRrho <- function(ctd,
 swN2 <- function(pressure, sigmaTheta=NULL, derivs, df, debug=getOption("oceDebug"),  ...)
 {
     oceDebug(debug, "swN2(...) {\n", sep="", unindent=1)
-    ##cat("swN2(..., df=", df, ")\n",sep="")
-    ##useSmoothing <- !missing(df) && is.finite(df)
+    #cat("swN2(..., df=", df, ")\n",sep="")
+    #useSmoothing <- !missing(df) && is.finite(df)
     if (inherits(pressure, "oce")) {
         p <- pressure[["pressure"]]
         pref <- median(p, na.rm=TRUE)
@@ -533,7 +528,7 @@ swPressure <- function(depth, latitude=45, eos=getOption("oceEOS", default="gsw"
     }
     res <- vector("numeric", ndepth)
     eos <- match.arg(eos, c("unesco", "gsw"))
-    ## Takes 3.55s for 15225 points
+    # Takes 3.55s for 15225 points
     if (eos == "unesco") {
         for (i in 1:ndepth) {
             # FIXME: this loop is slow and should be done in C, like swCStp()
@@ -879,10 +874,10 @@ swSTrho <- function(temperature, density, pressure, eos=getOption("oceEOS", defa
             as.integer(teos),
             S=double(nt),
             NAOK=TRUE, PACKAGE="oce")$S
-        ##NAOK=TRUE)$S # permits dyn.load() on changing .so
+        #NAOK=TRUE)$S # permits dyn.load() on changing .so
     } else if (eos == "gsw") {
         density <- ifelse(density < 900, density + 1000, density)
-        res <- gsw::gsw_SA_from_rho(density, temperature, pressure) ## assumes temperature=CT
+        res <- gsw::gsw_SA_from_rho(density, temperature, pressure) # assumes temperature=CT
     }
     dim(res) <- dim
     res
@@ -1078,7 +1073,7 @@ swTFreeze <- function(salinity, pressure=NULL, longitude=NULL, latitude=NULL,
     }
     dim <- dim(l$salinity)
     if (eos == "gsw") {
-        ## Note that l$pressure is used for computing SA, but not for gsw_t_freezing().
+        # Note that l$pressure is used for computing SA, but not for gsw_t_freezing().
         SA <- gsw::gsw_SA_from_SP(SP=l$salinity, p=l$pressure, longitude=l$longitude, latitude=l$latitude)
         res <- gsw::gsw_t_freezing(SA=SA, p=l$pressure, saturation_fraction=saturation_fraction)
     } else if (eos == "unesco") {
@@ -1340,8 +1335,8 @@ swBeta <- function(salinity, temperature=NULL, pressure=0,
     res
 }
 
-## thermal (not electrical) conductivity, using Caldwell (1974) as of 2015-jan-9
-## NOTE: no gsw equivalent
+# thermal (not electrical) conductivity, using Caldwell (1974) as of 2015-jan-9
+# NOTE: no gsw equivalent
 
 
 #' Seawater thermal conductivity
@@ -1615,7 +1610,7 @@ swDynamicHeight <- function(x, referencePressure=2000,
                 p <- p[o]
                 SA <- ctd[["SA"]][o]
                 CT <- ctd[["CT"]][o]
-                ## handle repeated values
+                # handle repeated values
                 dp0 <- diff(p) == 0
                 if (any(dp0)) {
                     SA <- SA[!dp0]
@@ -2354,11 +2349,11 @@ swSigma4 <- function(salinity, temperature=NULL, pressure=NULL,
 #' 3. `http://resource.npl.co.uk/acoustics/techguides/seaabsorption/`
 #'
 #' @examples
-#' ## Fisher & Simmons (1977 table IV) gives 0.52 dB/km for 35 PSU, 5 degC, 500 atm
-#' ## (4990 dbar of water)a and 10 kHz
+#' # Fisher & Simmons (1977 table IV) gives 0.52 dB/km for 35 PSU, 5 degC, 500 atm
+#' # (4990 dbar of water)a and 10 kHz
 #' alpha <- swSoundAbsorption(35, 4, 4990, 10e3)
 #'
-#' ## reproduce part of Fig 8 of Francois and Garrison (1982 Fig 8)
+#' # reproduce part of Fig 8 of Francois and Garrison (1982 Fig 8)
 #' f <- 1e3 * 10^(seq(-1,3,0.1)) # in KHz
 #' plot(f/1000, 1e3*swSoundAbsorption(f, 35, 10, 0, formulation='fr'),
 #'      xlab=" Freq [kHz]", ylab=" dB/km", type='l', log='xy')
@@ -2372,7 +2367,7 @@ swSoundAbsorption <- function(frequency, salinity, temperature, pressure, pH=8,
     formulation <- match.arg(formulation)
     # nolint start T_and_F_symbol_linter
     if (formulation == "fisher-simmons") {
-        ## Equation numbers are from Fisher & Simmons (1977); see help page for ref
+        # Equation numbers are from Fisher & Simmons (1977); see help page for ref
         p <- 1 + pressure / 10  # add atmophere, then convert water part from dbar
         S <- salinity
         T <- T68fromT90(temperature)
@@ -2393,18 +2388,18 @@ swSoundAbsorption <- function(frequency, salinity, temperature, pressure, pH=8,
         c <- 1412 + 3.21 * T + 1.19 * S + 0.0167 * D # sound speed m/s
         f <- frequency / 1000          # convert to kHz
         theta <- 273 + T
-        ## f1 in kHz
+        # f1 in kHz
         f1 <- 2.8 * sqrt(S / 35) * 10^(4 - 1245 / theta) # nolint (space before left parenthesis)
-        ## subscript 1 for boric acid contribution
-        ## A1 in dB / km / kHz
+        # subscript 1 for boric acid contribution
+        # A1 in dB / km / kHz
         A1 <- 8.86 / c * 10^(0.78 * pH - 5) # nolint (space before left parenthesis)
         P1 <- 1
-        ## MgSO4 contribution
+        # MgSO4 contribution
         A2 <- 21.44 * (S / c) * (1 + 0.025 * T) # dB / km / kHz
         P2 <- 1 - 1.37e-4 * D + 6.2e-9 * D^2
-        ## f2 in kHz
+        # f2 in kHz
         f2 <- (8.17 * 10^(8 - 1990 / theta)) / (1 + 0.0018 * (S - 35)) # nolint (space before left parenthesis)
-        ## pure water contribution
+        # pure water contribution
         A3 <- 3.964e-4 - 1.146e-5 * T + 1.45e-7 * T^2 - 6.5e-10 * T^3 # dB / km / kHz^2
         P3 <- 1 - 3.83e-5 * D + 4.9e-10 * D^2
         alpha <- (A1 * P1 * f1 * f^2) / (f^2 + f1^2) + (A2 * P2 * f2 * f^2) / (f^2 + f2^2) + A3 * P3 * f^2
@@ -2494,8 +2489,8 @@ swSoundSpeed <- function(salinity, temperature=NULL, pressure=NULL,
 
 
 #' Seawater specific heat
-## Source= http://sam.ucsd.edu/sio210/propseawater/ppsw_fortran/ppsw.f
-## check value: cpsw = 3849.500 j/(kg deg. c) for s = 40 (ipss-78),
+# Source= http://sam.ucsd.edu/sio210/propseawater/ppsw_fortran/ppsw.f
+# check value: cpsw = 3849.500 j/(kg deg. c) for s = 40 (ipss-78),
 #'
 #' Compute specific heat of seawater.
 #'
@@ -2627,7 +2622,7 @@ swSpecificHeat <- function(salinity, temperature=NULL, pressure=0,
 #' by references 1 and 2.
 #'
 #' @examples
-#' ## Contrast the two formulations.
+#' # Contrast the two formulations.
 #' library(oce)
 #' data(ctd)
 #' p <- ctd[["pressure"]]
@@ -2736,7 +2731,7 @@ swSpice <- function(salinity, temperature=NULL, pressure=NULL,
 #'
 #' @param eos equation of state, either `"unesco"` (references 1 and 2) or `"gsw"`
 #' (references 3 and 4).
-##'
+#'
 #' @return Potential temperature (\eqn{^\circ}{deg}C) of seawater, referenced
 #' to pressure `referencePressure`.
 #'
@@ -2924,7 +2919,7 @@ swViscosity <- function(salinity, temperature)
 #' with [swAbsoluteSalinity()].  For a ctd object, conservative
 #' temperature may also be recovered by indexing as e.g.
 #' \code{ctd[["conservativeTemperature"]]} or \code{ctd[["CT"]]}.
-## NOTE: the markdown-Rd translator balks on the above if backticks are used
+# NOTE: the markdown-Rd translator balks on the above if backticks are used
 #'
 #' @references McDougall, T.J. and P.M. Barker, 2011: Getting started with
 #' TEOS-10 and the Gibbs Seawater (GSW) Oceanographic Toolbox, 28pp.,
@@ -2997,7 +2992,7 @@ swConservativeTemperature <- function(salinity, temperature=NULL, pressure=NULL,
 #' computed with [swConservativeTemperature()].  For a ctd object,
 #' absolute salinity may also be recovered by indexing as e.g.
 #' \code{ctd[["absoluteSalinity"]]} or \code{ctd[["SA"]]}.
-## NOTE: the markdown-Rd translator balks on the above if backticks are used
+# NOTE: the markdown-Rd translator balks on the above if backticks are used
 #'
 #' @references McDougall, T.J. and P.M. Barker, 2011: Getting started with
 #' TEOS-10 and the Gibbs Seawater (GSW) Oceanographic Toolbox, 28pp.,

@@ -325,12 +325,12 @@ and international boundaries.
 }
 
 \examples{
-## 1. simple plot
+# 1. simple plot
 library(oce)
 data(ctd)
 plot(ctd)
 
-## 2. how to customize depth contours
+# 2. how to customize depth contours
 par(mfrow=c(1, 2))
 data(section)
 stn <- section[["station", 105]]

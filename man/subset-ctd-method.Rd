@@ -34,9 +34,9 @@ then that expression is used to subset each item within the
 library(oce)
 data(ctd)
 plot(ctd)
-## Example 1
+# Example 1
 plot(subset(ctd, pressure<10))
-## Example 2
+# Example 2
 plot(subset(ctd, indices=1:10))
 
 }

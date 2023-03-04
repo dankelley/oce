@@ -211,8 +211,8 @@ plot.lobo.timeseries.TS <- function(lobo, S.col = "blue", T.col = "darkgreen", d
 {
     plot(lobo@data$time, lobo[["salinity"]], type="l", ylab="", axes=FALSE, ...)
     mgp <- par("mgp")
-    ##cat("mgp=",paste(par("mgp"), collapse=" "), "\n")
-    ##cat("mar=",paste(par("mar"), collapse=" "), "\n")
+    #cat("mgp=",paste(par("mgp"), collapse=" "), "\n")
+    #cat("mar=",paste(par("mar"), collapse=" "), "\n")
     axis(2, col.lab=S.col)
     axis.POSIXct(1, lobo@data$time)
     mtext("S [PSU]", side=2, line=mgp[1], col=S.col, cex=par("cex"))

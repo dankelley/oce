@@ -181,7 +181,7 @@ appropriate. Further alteration of the pressure can be accomplished with the
 
 \examples{
 library(oce)
-## 1. fake data, with default units
+# 1. fake data, with default units
 pressure <- 1:50
 temperature <- 10 - tanh((pressure - 20) / 5) + 0.02*rnorm(50)
 salinity <- 34 + 0.5*tanh((pressure - 20) / 5) + 0.01*rnorm(50)
@@ -192,7 +192,7 @@ ctd <- oceSetData(ctd, name="fluorescence", value=fluo,
                   unit=list(unit=expression(mg/m^3), scale=""))
 summary(ctd)
 
-## 2. fake data, with supplied units (which are the defaults, actually)
+# 2. fake data, with supplied units (which are the defaults, actually)
 ctd <- as.ctd(salinity, temperature, pressure,
     units=list(salinity=list(unit=expression(), scale="PSS-78"),
     temperature=list(unit=expression(degree*C), scale="ITS-90"),

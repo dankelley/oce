@@ -247,9 +247,9 @@ NULL
 NULL
 
 
-## DEVELOPERS: please pattern functions and documentation on this, for uniformity.
-## DEVELOPERS: You will need to change the docs, and the 3 spots in the code
-## DEVELOPERS: marked '# DEVELOPER 1:', etc.
+# DEVELOPERS: please pattern functions and documentation on this, for uniformity.
+# DEVELOPERS: You will need to change the docs, and the 3 spots in the code
+# DEVELOPERS: marked '# DEVELOPER 1:', etc.
 #' @title Handle Flags in ctd Objects
 #'
 #' @param object a [ctd-class] object.
@@ -930,10 +930,10 @@ setMethod(f="[[<-",
 #'
 #' @param time optional vector of times of observation.
 #'
-## @param other **deprecated** optional list of other data columns that are not
-## in the standard list. Note that this argument will be removed soon. Please
-## use `as.ctd()` to construct a [ctd-class] object, and then use [oceSetData()]
-## later, to add other data, as needed.
+# @param other **deprecated** optional list of other data columns that are not
+# in the standard list. Note that this argument will be removed soon. Please
+# use `as.ctd()` to construct a [ctd-class] object, and then use [oceSetData()]
+# later, to add other data, as needed.
 #'
 #' @param units an optional list containing units.  If not supplied,
 #' defaults are set for `pressure`, `temperature`, `salinity`,
@@ -953,22 +953,22 @@ setMethod(f="[[<-",
 #'
 #' @param ship optional string containing the ship from which the observations were made.
 #'
-##1108 @param scientist optional string containing the chief scientist on the cruise.
-##1108
-##1108 @param institute optional string containing the institute behind the work.
-##1108
-##1108 @param address optional string containing the address of the institute.
-##1108
+#1108 @param scientist optional string containing the chief scientist on the cruise.
+#1108
+#1108 @param institute optional string containing the institute behind the work.
+#1108
+#1108 @param address optional string containing the address of the institute.
+#1108
 #' @param cruise optional string containing a cruise identifier.
 #'
 #' @param station optional string containing a station identifier.
 #'
-##1108 @param date optional string indicating
-##1108 the date at which the profile was started. This is copied verbatim into
-##1108 the result's `metadata` slot, and is not used in any processing. Since
-##1108 it serves no purpose, this argument is deprecated as of April 2016,
-##1108 and will be marked 'defunct' in an upcoming CRAN release;
-##1108 see [oce-deprecated].
+#1108 @param date optional string indicating
+#1108 the date at which the profile was started. This is copied verbatim into
+#1108 the result's `metadata` slot, and is not used in any processing. Since
+#1108 it serves no purpose, this argument is deprecated as of April 2016,
+#1108 and will be marked 'defunct' in an upcoming CRAN release;
+#1108 see [oce-deprecated].
 #'
 #' @param startTime optional indication of the start time for the profile,
 #' which is used in some several plotting functions.  This is best given as a
@@ -976,10 +976,10 @@ setMethod(f="[[<-",
 #' that can be converted to a time with [as.POSIXct()],
 #' using `UTC` as the timezone.
 #'
-##1108 @param recovery optional indication of the recovery time, in the format
-##1108 described for `startTime`.  This is not presently used by `oce`,
-##1108 and is stored in the result's `metadata` slot just in case the user
-##1108 requires it.
+#1108 @param recovery optional indication of the recovery time, in the format
+#1108 described for `startTime`.  This is not presently used by `oce`,
+#1108 and is stored in the result's `metadata` slot just in case the user
+#1108 requires it.
 #'
 #' @param longitude optional numerical value containing longitude in decimal
 #' degrees, positive in the eastern hemisphere. If this is a single number,
@@ -1004,11 +1004,11 @@ setMethod(f="[[<-",
 #' (This altered pressure is also used in calculating `salinity`, if
 #' that is to be computed from `conductivity`, etc., using
 #' [swSCTp()]; see `salinity` above.)
-##
-##1108 @param waterDepth optional numerical value indicating the water depth in
-##1108 metres. This is different from the maximum recorded pressure, although
-##1108 the latter is used by some oce functions as a guess on water depth, the
-##1108 most important example being [plot,section-method()].
+#
+#1108 @param waterDepth optional numerical value indicating the water depth in
+#1108 metres. This is different from the maximum recorded pressure, although
+#1108 the latter is used by some oce functions as a guess on water depth, the
+#1108 most important example being [plot,section-method()].
 #'
 #' @param sampleInterval optional numerical value indicating the time between
 #' samples in the profile.
@@ -1018,7 +1018,7 @@ setMethod(f="[[<-",
 #' `argo` objects. Currently the `profile` argument is only utilized for
 #' [argo-class] objects.
 #'
-##1108 @param src optional string indicating data source.
+#1108 @param src optional string indicating data source.
 #'
 #' @template debugTemplate
 #'
@@ -1064,7 +1064,7 @@ setMethod(f="[[<-",
 #'
 #' @examples
 #' library(oce)
-#' ## 1. fake data, with default units
+#' # 1. fake data, with default units
 #' pressure <- 1:50
 #' temperature <- 10 - tanh((pressure - 20) / 5) + 0.02*rnorm(50)
 #' salinity <- 34 + 0.5*tanh((pressure - 20) / 5) + 0.01*rnorm(50)
@@ -1075,7 +1075,7 @@ setMethod(f="[[<-",
 #'                   unit=list(unit=expression(mg/m^3), scale=""))
 #' summary(ctd)
 #'
-#' ## 2. fake data, with supplied units (which are the defaults, actually)
+#' # 2. fake data, with supplied units (which are the defaults, actually)
 #' ctd <- as.ctd(salinity, temperature, pressure,
 #'     units=list(salinity=list(unit=expression(), scale="PSS-78"),
 #'     temperature=list(unit=expression(degree*C), scale="ITS-90"),
@@ -1313,7 +1313,7 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
                         stop("profile cannot exceed ", ncol, " for a data matrix with ", ncol, " columns")
                     }
                     res@data[[field]] <- d[[field]][, profile]
-                } else if (is.array(dataInField)) { ## argo can sometimes come out this (odd) way
+                } else if (is.array(dataInField)) { # argo can sometimes come out this (odd) way
                     warning("argo data \"", field, "\" converted from 1-D array to 1-col matrix")
                     if (1 == length(dim(d[[field]]))) {
                         d[[field]] <- as.vector(d[[field]])
@@ -1359,7 +1359,7 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
         }
         res@metadata$deploymentType <- deploymentType
         res@metadata$dataNamesOriginal <- m$dataNamesOriginal
-        ## move e.g. salinityFlag from data slot to metadata$flags
+        # move e.g. salinityFlag from data slot to metadata$flags
         dataNames <- names(res@data)
         flagNameIndices <- grep(".*Flag$", dataNames)
         if (length(flagNameIndices)) {
@@ -1413,7 +1413,7 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
                 res@data$salinity <- x$salinity
                 res@data$temperature <- x$temperature
                 res@metadata$units <- units
-                ##1108 res@metadata$pressureType <- pressureType
+                #1108 res@metadata$pressureType <- pressureType
                 res@metadata$pressureType <- "sea"
             } else if (3 == sum(c("PSAL", "TEMP", "PRES") %in% names)) {
                 oceDebug(debug, "found 'PSAL', 'TEMP' and 'PRES' in names\n")
@@ -1421,7 +1421,7 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
                 res@data$salinity <- x$PSAL
                 res@data$temperature <- x$TEMP
                 res@metadata$units <- units
-                ##1108 res@metadata$pressureType <- pressureType
+                #1108 res@metadata$pressureType <- pressureType
                 res@metadata$pressureType <- "sea"
             } else {
                 stop("the first argument must contain salinity, temperature, and pressure")
@@ -1462,7 +1462,7 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
     } else {
         oceDebug(debug, "case 2: salinity, temperature, pressure (etc) supplied\n")
         # 3. explicit mode
-        ##1108 if (missing(temperature) && missing(CT)) stop("must give temperature or CT")
+        #1108 if (missing(temperature) && missing(CT)) stop("must give temperature or CT")
         if (missing(temperature)) {
             stop("must give temperature")
         }
@@ -1472,7 +1472,7 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
         if (!missing(units)) {
             res@metadata$units <- units
         }
-        ##1108 res@metadata$pressureType <- pressureType
+        #1108 res@metadata$pressureType <- pressureType
         res@metadata$pressureType <- "sea"
         salinity <- as.vector(salinity)
         temperature <- as.vector(temperature)
@@ -1524,12 +1524,12 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
         if (!missing(conductivity)) {
             data$conductivity <- as.vector(conductivity)
         }
-        ##1108 if (!missing(quality)) data$quality <- quality
-        ##1108 if (!missing(oxygen)) data$oxygen <- oxygen
-        ##1108 if (!missing(nitrate)) data$nitrate <- nitrate
-        ##1108 if (!missing(nitrite)) data$nitrite <- nitrite
-        ##1108 if (!missing(phosphate)) data$phosphate <- phosphate
-        ##1108 if (!missing(silicate)) data$silicate <- silicate
+        #1108 if (!missing(quality)) data$quality <- quality
+        #1108 if (!missing(oxygen)) data$oxygen <- oxygen
+        #1108 if (!missing(nitrate)) data$nitrate <- nitrate
+        #1108 if (!missing(nitrite)) data$nitrite <- nitrite
+        #1108 if (!missing(phosphate)) data$phosphate <- phosphate
+        #1108 if (!missing(silicate)) data$silicate <- silicate
         if (!missing(time)) {
             data$time <- time
         }
@@ -1790,7 +1790,7 @@ ctdDecimate <- function(x, p=1, method="boxcar", rule=1, e=1.5, debug=getOption(
     # https://github.com/dankelley/oce/issues/2014
     isTime <- sapply(names(x@data), function(name) inherits(x@data[[name]], "POSIXt"))
     if (methodFunction) {
-        ##message("function must have take three args: x, y and xout; x will be pressure.")
+        #message("function must have take three args: x, y and xout; x will be pressure.")
         pressure <- x[["pressure"]]
         tooDeep <- pt > max(pressure, na.rm=TRUE)
         for (datumName in names(x@data)) {
@@ -2170,7 +2170,7 @@ ctdFindProfiles <- function(x, cutoff=0.5, minLength=10, minHeight,
             stop("direction must be either \"ascending\" or \"descending\"") # cannot reach here
         }
         start <- which(diff(look) == 1)
-        ## the first data are often a downcast, after all!
+        # the first data are often a downcast, after all!
         if (look[1] && length(start) > 0 && start[1] != 1) {
             start <- c(1, start)
         }
@@ -2592,7 +2592,7 @@ ctdTrim <- function(x, method, removeDepthInversions=FALSE, parameters=NULL,
             oceDebug(debug, "removed data at indices from ", max.location,
                 " (where pressure is ", pressure[max.location], ") to the end of the data\n", sep="")
             if (!pminGiven) {
-                ## new method, after Feb 2008
+                # new method, after Feb 2008
                 submethodChoices <- c("A", "B")
                 sm <- pmatch(submethod, submethodChoices)
                 if (is.na(sm)) {
@@ -3221,12 +3221,12 @@ write.ctd <- function(object, file, metadata=TRUE, flags=TRUE, format="csv")
 #'     and international boundaries.
 #'
 #' @examples
-#' ## 1. simple plot
+#' # 1. simple plot
 #' library(oce)
 #' data(ctd)
 #' plot(ctd)
 #'
-#' ## 2. how to customize depth contours
+#' # 2. how to customize depth contours
 #' par(mfrow=c(1, 2))
 #' data(section)
 #' stn <- section[["station", 105]]
@@ -3499,7 +3499,7 @@ setMethod(f="plot",
                     useSmoothScatter=useSmoothScatter,
                     grid=grid, col.grid="lightgray", lty.grid="dotted",
                     cex=cex[w], pch=pch[w],
-                    ##type=type[w],
+                    #type=type[w],
                     keepNA=keepNA, inset=inset, add=add,
                     debug=debug-1,
                     ...)
@@ -3550,7 +3550,7 @@ setMethod(f="plot",
                     ...)
             } else if (which[w] == "TS") { # a special case because can use Slim and Tlim
                 oceDebug(debug, "handling which[", w, "]=\"", whichOrig[w], "\" as a special case\n", sep="")
-                ##par(mar=c(3.5, 3, 2, 2))
+                #par(mar=c(3.5, 3, 2, 2))
                 lwd.rho <- if ("lwd.rho" %in% names(dots)) dots$lwd.rho else par("lwd")
                 lty.rho <- if ("lty.rho" %in% names(dots)) dots$lty.rho else par("lty")
                 plotTS(x, Slim=Slim, Tlim=Tlim,
@@ -3918,9 +3918,9 @@ setMethod(f="plot",
 #' library(oce)
 #' data(ctd)
 #' plot(ctd)
-#' ## Example 1
+#' # Example 1
 #' plot(subset(ctd, pressure<10))
-#' ## Example 2
+#' # Example 2
 #' plot(subset(ctd, indices=1:10))
 #'
 #' @author Dan Kelley
@@ -3954,7 +3954,7 @@ setMethod(f="subset",
         res <- new("ctd")
         res@metadata <- x@metadata
         res@processingLog <- x@processingLog
-        ## FIXME: next 2 lines used to be in the loop but I don't see why, so moved out
+        # FIXME: next 2 lines used to be in the loop but I don't see why, so moved out
         r <- eval(substitute(expr=subset, env=environment()), x@data, parent.frame(2))
         r <- r & !is.na(r)
         for (i in seq_along(x@data)) {
@@ -4174,7 +4174,7 @@ read.ctd <- function(file, type=NULL, columns=NULL, station=NULL, missingValue, 
         line <- scan(file, what="char", sep="\n", n=1, quiet=TRUE) # slow, but just one line
         pushBack(line, file)
         #.line <- readLines(file, n=1)
-        ## FIXME: detect ODV type in first or second line; see oce.magic().
+        # FIXME: detect ODV type in first or second line; see oce.magic().
         if ("CTD" == substr(line, 1, 3)) {
             type <- "WOCE"
         } else if ("* Sea-Bird" == substr(line, 1, 10)) {
@@ -4241,9 +4241,9 @@ parseLatLon <- function(line, debug=getOption("oceDebug"))
     # * NMEA Latitude = 47 54.760 N
     # ** Latitude:      47 53.27 N
     x <- line
-    ## degree signs will be '?' by prior conversion; make them blank
+    # degree signs will be '?' by prior conversion; make them blank
     x <- gsub("\\?", " ", x)
-    ##positive <- TRUE
+    #positive <- TRUE
     oceDebug(debug, "parseLatLon(\"", line, "\") {\n", sep="")
     oceDebug(debug, "  step 1. \"", x, "\" (as provided)\n", sep="")
     x <- sub("^[ =a-z*:]*", "", x, ignore.case=TRUE)
@@ -4678,7 +4678,7 @@ plotTS <- function(x,
     }
     if (!add) {
         if (!inset) {
-            ## on.exit(par(mar=omar, mgp=omgp))
+            # on.exit(par(mar=omar, mgp=omgp))
             if (3 == length(mgp)) {
                 par(mgp=mgp)
             }
@@ -5060,9 +5060,11 @@ drawIsopycnals <- function(nlevels=6, levels, rotate=TRUE, rho1000=FALSE, digits
 #'
 #' @param x a [ctd-class] object.
 #'
-#' @param xtype Item(s) plotted on the x axis, either a vector of length equal
-#' to that of `pressure` in the `data` slot,
-#' or a text code from the list below.
+#' @param xtype item(s) to be plotted on the x axis, either a character
+#' value taken from the following list, or a numeric vector of length
+#' matching the `pressure` field stored in `x`. (In the second case,
+#' as of version 1.7-11, a label is auto-constructed, unless the user
+#' supplied a character value for `xlab`.)
 #'
 #' * `"salinity"` Profile of salinity.
 #'
@@ -5114,10 +5116,10 @@ drawIsopycnals <- function(nlevels=6, levels, rotate=TRUE, rho1000=FALSE, digits
 #' `"gsw"`.
 #'
 #' @param xlab optional label for x axis (at top of plot). If not
-#' provided, the value of `xtype` is used (along with the units
-#' of the variable) to construct a label. For user-supplied `xlab`,
-#' the unit (if any) must be specified as in e.g.
-#' `xlab=expression("Speed ["*m/s*"]")`.
+#' provided, a label is inferred from the value of `xtype`. For
+#' the user-supplied case, bear in mind that the easy way to get
+#' units is to use an expression, e.g.
+#' `xlab=expression("Acceleration ["*m/s^2*"]")`.
 #'
 #' @param ylab optional label for y axis.  See `xlab` for a note on
 #' units.  Setting `ylab=""` prevents labelling the axis.
@@ -5236,38 +5238,37 @@ drawIsopycnals <- function(nlevels=6, levels, rotate=TRUE, rho1000=FALSE, digits
 #'
 #' @family functions that plot oce data
 #' @family things related to ctd data
-plotProfile <- function(x,
-    xtype="salinity+temperature", ytype="pressure",
-    eos=getOption("oceEOS", default="gsw"),
-    lty=1,
-    xlab=NULL, ylab=NULL,
-    col="black",
-    col.salinity="darkgreen",
-    col.temperature="red",
-    col.rho="blue",
-    col.N2="brown",
-    col.dpdt="darkgreen",
-    col.time="darkgreen",
-    pt.bg="transparent",
-    grid=TRUE,
-    col.grid="lightgray",
-    lty.grid="dotted",
-    Slim, Clim, Tlim, densitylim, N2lim, Rrholim, dpdtlim, timelim, plim,
-    xlim, ylim,
-    lwd=par("lwd"),
-    xaxs="r",
-    yaxs="r",
-    cex=1, pch=1,
-    useSmoothScatter=FALSE,
-    df,
-    keepNA=FALSE,
-    type="l",
-    mgp=getOption("oceMgp"),
-    mar,
-    add=FALSE,
-    inset=FALSE,
-    debug=getOption("oceDebug", 0),
-    ...)
+plotProfile <- function(x, xtype="salinity+temperature", ytype="pressure",
+                        eos=getOption("oceEOS", default="gsw"),
+                        lty=1,
+                        xlab=NULL, ylab=NULL,
+                        col="black",
+                        col.salinity="darkgreen",
+                        col.temperature="red",
+                        col.rho="blue",
+                        col.N2="brown",
+                        col.dpdt="darkgreen",
+                        col.time="darkgreen",
+                        pt.bg="transparent",
+                        grid=TRUE,
+                        col.grid="lightgray",
+                        lty.grid="dotted",
+                        Slim, Clim, Tlim, densitylim, N2lim, Rrholim, dpdtlim, timelim, plim,
+                        xlim, ylim,
+                        lwd=par("lwd"),
+                        xaxs="r",
+                        yaxs="r",
+                        cex=1, pch=1,
+                        useSmoothScatter=FALSE,
+                        df,
+                        keepNA=FALSE,
+                        type="l",
+                        mgp=getOption("oceMgp"),
+                        mar,
+                        add=FALSE,
+                        inset=FALSE,
+                        debug=getOption("oceDebug", 0),
+                        ...)
 {
     debug <- max(0, min(debug, 3))
     oceDebug(debug, "plotProfile(x, xtype=",
@@ -5288,13 +5289,18 @@ plotProfile <- function(x,
         }
     }
     plimGiven <- !missing(plim)
-
+    # issue 2047: if xtype is a numeric vector, and if user did not supply xlab,
+    # then set xlab by parsing the call.
+    if (is.null(xlab) && length(xtype) == length(x[["pressure"]])) {
+        xlab <- deparse1(substitute(xtype))
+        oceDebug(debug, "auto-set xlab to \"", xlab, "\"\n", sep="")
+    }
     plotJustProfile <- function(x, y, col="black", type="l", lty=lty,
-        xlim=NULL, ylim=NULL,
-        xlab=NULL,
-        lwd=par("lwd"),
-        cex=1, pch=1, pt.bg="transparent",
-        df=df, keepNA=FALSE, debug=getOption("oceDebug", 0))
+                                xlim=NULL, ylim=NULL,
+                                xlab=NULL,
+                                lwd=par("lwd"),
+                                cex=1, pch=1, pt.bg="transparent",
+                                df=df, keepNA=FALSE, debug=getOption("oceDebug", 0))
     {
         oceDebug(debug, "plotJustProfile(...,",
             argShow(col), ", debug=", debug, ") {\n", sep="", style="bold", unindent=1)
@@ -5347,11 +5353,11 @@ plotProfile <- function(x,
         yname <- ylab
     } else {
         yname <- switch(ytype,
-            pressure=resizableLabel("p", "y", debug=debug-1),
-            z=resizableLabel("z", "y", debug=debug-1),
-            depth=resizableLabel("depth", "y", debug=debug-1),
-            sigmaTheta=resizableLabel("sigmaTheta", "y", debug=debug-1),
-            sigma0=resizableLabel("sigma0", "y", debug=debug-1))
+        pressure=resizableLabel("p", "y", debug=debug-1),
+        z=resizableLabel("z", "y", debug=debug-1),
+        depth=resizableLabel("depth", "y", debug=debug-1),
+        sigmaTheta=resizableLabel("sigmaTheta", "y", debug=debug-1),
+        sigma0=resizableLabel("sigma0", "y", debug=debug-1))
     }
     # If plim given on a pressure plot, then it takes precedence over ylim; same
     # for densitylim.
@@ -5444,15 +5450,14 @@ plotProfile <- function(x,
     if (!add) {
         par(mar=mar, mgp=mgp)
     }
-    if (length(xtype) == length(y) && length(y) > 1) {
-        oceDebug(debug, "case 1\n")
-        #if (!missing(Slim)) cat(vectorShow(Slim))
-        #if (!missing(plim)) cat(vectorShow(plim))
-        #if (!missing(xlim)) cat(vectorShow(xlim))
-        #if (!missing(ylim)) cat(vectorShow(ylim))
+    if (is.numeric(xtype) && length(xtype) == length(y) && length(y) > 1) {
+        oceDebug(debug, "xtype is a numeric vector\n")
+        # Actually, I don't see why I am allowing for no axes here. Maybe it's
+        # to add things to an existing plot?  To see why I am looking at this
+        # again (Feb 2023), see https://github.com/dankelley/oce/issues/2047
         if ("axes" %in% names(list(...))) {
-            oceDebug(debug, "case 1.1\n")
-            plot(xtype, y, xlab="", ylab=yname, type=type,
+            oceDebug(debug, "  numeric vector, with 'axes' in ... arg\n")
+            plot(xtype, y, xlab="", ylab="", type=type, axes=FALSE,
                 xaxs=xaxs, yaxs=yaxs,
                 xlim=xlim, ylim=ylim,
                 col=col, lty=lty, cex=cex, pch=pch, ...)
@@ -5460,51 +5465,36 @@ plotProfile <- function(x,
                 axis(3)
                 mtext(xlab, side=3, line=axisNameLoc, cex=par("cex"))
                 axis(2)
+                mtext(yname, side=2, line=axisNameLoc, cex=par("cex"))
             }
             box()
         } else {
-            oceDebug(debug, "case 1.2\n")
-            plot(xtype, y, xlab="", ylab=yname, type=type, axes=FALSE,
+            oceDebug(debug, "  numeric vector, with no 'axes' in ... arg\n")
+            plot(xtype, y, xlab="", ylab="", type=type, axes=FALSE,
                 xaxs=xaxs, yaxs=yaxs,
                 xlim=if (!missing(xlim)) xlim, ylim=if (!missing(ylim)) ylim,
                 col=col, lty=lty, cex=cex, pch=pch, ...)
             axis(3)
             mtext(xlab, side=3, line=axisNameLoc, cex=par("cex"))
             axis(2)
+            mtext(yname, side=2, line=axisNameLoc, cex=par("cex"))
             box()
         }
-    } else if (is.numeric(xtype)) {
-        oceDebug(debug, "case 2: xtype is numeric\n")
-        if (length(xtype) != length(y)) {
-            stop("length(xtype) must match number of levels in the CTD object")
-        }
-        if (add) {
-            lines(xtype, y, type=type, lty=lty, ...)
-        } else {
-            plot(xtype, y, xlab="", ylab=yname, type=type, axes=FALSE,
-                xaxs=xaxs, yaxs=yaxs,
-                #xlim=if (!is.null(xlim)) xlim else range(x, na.rm=TRUE),
-                ylim=ylim,
-                lty=lty, cex=cex, pch=pch, ...)
-            axis(3)
-            mtext(xlab, side=3, line=axisNameLoc, cex=par("cex")) # no unit is provided
-            axis(2)
-            box()
-            if (grid) {
-                at <- par("yaxp")
-                abline(h=seq(at[1], at[2], length.out=at[3]+1), col=col.grid, lty=lty.grid)
-                at <- par("xaxp")
-                abline(v=seq(at[1], at[2], length.out=at[3]+1), col=col.grid, lty=lty.grid)
-            }
+        if (grid) {
+            at <- par("yaxp")
+            abline(h=seq(at[1], at[2], length.out=at[3]+1), col=col.grid, lty=lty.grid)
+            at <- par("xaxp")
+            abline(v=seq(at[1], at[2], length.out=at[3]+1), col=col.grid, lty=lty.grid)
         }
     } else if (xtype == "index") {
         oceDebug(debug, "case 3: xtype is \"index\"\n")
         index <- seq_along(x[["pressure"]])
-        plot(index, x[["pressure"]], ylim=ylim, col=col, lty=lty, xlab="", ylab=yname,
+        plot(index, x[["pressure"]], ylim=ylim, col=col, lty=lty, xlab="", ylab="",
              type=type, xaxs=xaxs, yaxs=yaxs, cex=cex, pch=pch, axes=FALSE)
         axis(3)
         mtext(if (is.null(xlab)) "index" else xlab, side=3, line=axisNameLoc, cex=par("cex")) # no unit is provided
         axis(2)
+        mtext(yname, side=2, line=axisNameLoc, cex=par("cex"))
         box()
         if (grid) {
             at <- par("yaxp")
@@ -5527,10 +5517,11 @@ plotProfile <- function(x,
         look <- if (keepNA) seq_along(y) else !is.na(sig0) & !is.na(y)
         look <- as.vector(look)
         plot(sig0[look], y[look], xlim=densitylim, ylim=ylim, cex=cex, pch=pch,
-             type=type, col=col.rho, lty=lty, xlab="", ylab=yname, axes=FALSE, xaxs=xaxs, yaxs=yaxs, ...)
+             type=type, col=col.rho, lty=lty, xlab="", ylab="", axes=FALSE, xaxs=xaxs, yaxs=yaxs, ...)
         axis(3, col=col.rho, col.axis=col.rho, col.lab=col.rho)
         mtext(resizableLabel(if (eos=="unesco") "sigmaTheta" else "sigma0"), side=3, line=axisNameLoc, col=col.rho, cex=par("cex"))
         axis(2)
+        mtext(yname, side=2, line=axisNameLoc, cex=par("cex"))
         box()
         par(new=TRUE)                # FIXME: this probably won't work if add=TRUE
         if (missing(timelim)) {
@@ -5571,7 +5562,7 @@ plotProfile <- function(x,
         look <- as.vector(look)
         plot(st[look], y[look],
              xlim=densitylim, ylim=ylim, col=col.rho, lty=lty, cex=cex, pch=pch,
-             type=type, xlab="", ylab=yname, axes=FALSE, xaxs=xaxs, yaxs=yaxs, ...)
+             type=type, xlab="", ylab="", axes=FALSE, xaxs=xaxs, yaxs=yaxs, ...)
         axis(3, col=col.rho, col.axis=col.rho, col.lab=col.rho)
         if (getOption("oceUnitBracket") == "[") {
             mtext(expression(paste(sigma[theta], " [", kg/m^3, "] ")), side=3, line=axisNameLoc, col=col.rho, cex=par("cex"))
@@ -5579,6 +5570,7 @@ plotProfile <- function(x,
             mtext(expression(paste(sigma[theta], " (", kg/m^3, ") ")), side=3, line=axisNameLoc, col=col.rho, cex=par("cex"))
         }
         axis(2)
+        mtext(yname, side=2, line=axisNameLoc, cex=par("cex"))
         box()
         # lines(st, y, col=col.rho, lwd=lwd)
         par(new=TRUE)
@@ -5593,7 +5585,7 @@ plotProfile <- function(x,
              xlim=dpdtlim, ylim=ylim, type=type, xlab="", ylab=yname, axes=FALSE, lwd=lwd, col=col.dpdt, cex=cex, pch=pch,
              xaxs=xaxs, yaxs=yaxs, lty=lty, ...)
         axis(1, col=col.dpdt, col.axis=col.dpdt, col.lab=col.dpdt)
-        ## lines(dpdt.sm$y, dpdt.sm$x, lwd=lwd, col=col.dpdt)
+        # lines(dpdt.sm$y, dpdt.sm$x, lwd=lwd, col=col.dpdt)
         if (getOption("oceUnitBracket") == "[") {
             if (knowTimeUnit) {
                 mtext(expression(dp/dt * " [dbar/s]"),
@@ -5634,8 +5626,9 @@ plotProfile <- function(x,
             }
         }
         if (useSmoothScatter) {
-            smoothScatter(salinity, y, xlim=Slim, ylim=ylim, xlab="", ylab=yname, axes=FALSE, ...)
+            smoothScatter(salinity, y, xlim=Slim, ylim=ylim, xlab="", ylab="", axes=FALSE, ...)
             axis(2)
+            mtext(yname, side=2, line=axisNameLoc, cex=par("cex"))
             axis(3)
             box()
             if (xtype == "SA") {
@@ -5650,7 +5643,7 @@ plotProfile <- function(x,
             if (!add) {
                 plot(salinity[look], y[look],
                     xlim=Slim, ylim=ylim, lty=lty, cex=cex, pch=pch,
-                    type="n", xlab="", ylab=yname, axes=FALSE, xaxs=xaxs, yaxs=yaxs, ...)
+                    type="n", xlab="", ylab="", axes=FALSE, xaxs=xaxs, yaxs=yaxs, ...)
                 if (xtype == "SA") {
                     mtext(if (is.null(xlab)) resizableLabel("absolute salinity", "x", unit=NULL, debug=debug-1) else xlab,
                         side=3, line=axisNameLoc, cex=par("cex"))
@@ -6119,7 +6112,7 @@ plotProfile <- function(x,
                 abline(v=seq(at[1], at[2], length.out=at[3]+1), col=col.grid, lty=lty.grid)
             }
         }
-        ## 2014-02-07: use col (not col.rho) here, since no second axis to worry about
+        # 2014-02-07: use col (not col.rho) here, since no second axis to worry about
         plotJustProfile(x=N2, y=y, col=col, type=type, lwd=lwd, lty=lty,
             cex=cex, pch=pch, pt.bg=pt.bg,
             keepNA=keepNA, debug=debug-1)
@@ -6229,12 +6222,12 @@ plotProfile <- function(x,
             axis(3)
             #mtext(resizableLabel("pressure", "y"), side=2, line=axisNameLoc, cex=par("cex"))
             mtext(yname, side=2, line=axisNameLoc, cex=par("cex"))
-            ## label <- if (w <= length(x@metadata$labels)) x@metadata$labels[w] else
-            ##     as.character(xtype)
+            # label <- if (w <= length(x@metadata$labels)) x@metadata$labels[w] else
+            #     as.character(xtype)
             if (is.character(label) && label == "sigmaTheta")
                 label <- resizableLabel("sigmaTheta", "x", debug=debug-1)
-            ##issue1684/2020-04-20 label <- resizableLabel(label, "x", unit=x@metadata$units[[xtype]], debug=debug-1)
-            ##issue1684/2020-04-20 oceDebug(debug, "x name computed as \"", paste0(as.character(label)), "\"\n", sep="")
+            #issue1684/2020-04-20 label <- resizableLabel(label, "x", unit=x@metadata$units[[xtype]], debug=debug-1)
+            #issue1684/2020-04-20 oceDebug(debug, "x name computed as \"", paste0(as.character(label)), "\"\n", sep="")
             mtext(if (is.null(xlab)) label else xlab,
                 side=3, line=axisNameLoc, cex=par("cex"))
             axis(2)

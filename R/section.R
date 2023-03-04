@@ -1331,7 +1331,7 @@ sectionAddCtd <- sectionAddStation
 #' plot(GSg, which="temperature", ztype="image",
 #'     zbreaks=seq(0,25,2), zcol=oceColorsTemperature)
 #'
-#' @author Dan Kelley
+#' @author Dan Kelley, with help from Clark Richards and Chantelle Layton.
 #'
 #' @family functions that plot oce data
 #' @family things related to section data
@@ -1361,6 +1361,18 @@ setMethod(f="plot", signature=signature("section"),
             c("depth", "pressure"))
         ztype <- match.arg(ztype,
             c("contour", "image", "points"))
+        # Ensure that ylim makes sense
+        if (!is.null(ylim)) {
+            if (length(ylim) != 2L) {
+                stop("In plot,section-method() : length(ylim) must be 2, but it is ", length(ylim))
+            }
+            if (any(ylim < 0.0)) {
+                stop("In plot,section-method() : ylim elements cannot be negative, but ylim=c(", ylim[1], ",", ylim[2], ") was provided")
+            }
+            if (ylim[1] <= ylim[2]) {
+                stop("In plot,section-method() require ylim[2]<ylim[1], but ylim=c(", ylim[1], ",", ylim[2], ") was provided")
+            }
+        }
         # nolint start object_usage_linter
         drawPoints <- ztype == "points"
         # nolint end object_usage_linter
@@ -1423,8 +1435,11 @@ setMethod(f="plot", signature=signature("section"),
         #oceDebug(debug, "which=c(", paste(which, collapse=","), ")\n")
         oceDebug(debug, "plot.section(, ..., which=c(",
             paste(which, collapse=","), "), eos=\"", eos, "\"",
-            ", xtype=\"", xtype, "\",",
-            ", ztype=\"", ztype, "\", ...) {\n", sep="", unindent=1)
+            ", xtype=", xtype,
+            ", ztype=", ztype,
+            ", xlim=c(", paste(xlim, collapse=","), ")",
+            ", ylim=c(", paste(ylim, collapse=","), ")",
+            ", \", ...) {\n", sep="", unindent=1)
         # Ensure data on levels, for plots requiring pressure (e.g. sections). Note
         # that we break out of the loop, once we grid the section.
         if (is.na(which[1]) || which[1] != "data" || which[1] != "map") {
@@ -1485,15 +1500,17 @@ setMethod(f="plot", signature=signature("section"),
                                    debug=0,
                                    ...)
         {
-            oceDebug(debug, "plotSubsection(variable=\"", variable,
-                "\", eos=\"", eos,
-                "\", which.xtype=\"", which.xtype,
-                "\", col=", if (missing(col)) "(missing)" else col,
-                "\", cex=", if (missing(cex)) "(missing)" else cex,
-                "\", pch=", if (missing(pch)) "(missing)" else pch,
-                "\", ztype=\"", ztype,
-                "\", zcol=", if (missing(zcol)) "(missing)" else "(provided)",
-                "\", span=", if (missing(span)) "(missing)" else span,
+            oceDebug(debug, "plotSubsection(variable=\"", variable, "\"",
+                ", eos=\"", eos, "\"",
+                ", which.xtype=\"", which.xtype, "\"",
+                ", xlim=c(", paste(xlim, collapse=","), ")",
+                ", ylim=c(", paste(ylim, collapse=","), ")",
+                ", col=", if (missing(col)) "(missing)" else col,
+                ", cex=", if (missing(cex)) "(missing)" else cex,
+                ", pch=", if (missing(pch)) "(missing)" else pch,
+                ", ztype=\"", ztype,
+                ", zcol=", if (missing(zcol)) "(missing)" else "(provided)",
+                ", span=", if (missing(span)) "(missing)" else span,
                 ", showStations=", showStations,
                 ", axes=", axes, ", ...) {\n", sep="", unindent=1)
             #>message("in plotSubsection:")
@@ -1505,7 +1522,8 @@ setMethod(f="plot", signature=signature("section"),
             omar <- par("mar")
             xIsTime <- inherits(xx, "POSIXt")
             #canPlot <- TRUE      # assume we can plot; use this instead of nested 'break's
-            if (as.character(variable) == "map") {
+            isMap <- as.character(variable) == "map"
+            if (isMap) {
                 lat <- array(NA_real_, numStations)
                 lon <- array(NA_real_, numStations)
                 for (i in 1:numStations) {
@@ -1657,7 +1675,7 @@ setMethod(f="plot", signature=signature("section"),
                     ylab <- x@metadata$latitude[numStations]  - dy * sign(x@metadata$latitude[numStations-1]  - x@metadata$latitude[numStations])
                 }
             } else {
-                # not a map
+                # not isMap
                 z <- x[[variable]]
                 zAllMissing <- all(is.na(z))
                 if ((drawPoints || ztype == "image") && !zAllMissing) {
@@ -1691,7 +1709,9 @@ setMethod(f="plot", signature=signature("section"),
                 # FIXME: contours don't get to plot edges
                 xxrange <- range(xx, na.rm=TRUE)
                 yyrange <- range(yy, na.rm=TRUE)
-                ylim <- if (!is.null(ylim)) sort(-abs(ylim)) else yyrange
+                if (is.null(ylim)) {
+                    ylim <- yyrange
+                }
                 par(xaxs="i", yaxs="i")
                 ylab <- if ("ylab" %in% names(list(...))) {
                     list(...)$ylab
@@ -1714,13 +1734,21 @@ setMethod(f="plot", signature=signature("section"),
                         gettext("Time", domain="R-oce"),
                         resizableLabel("along-spine distance km"))
                     }
+                    oceDebug(debug, vectorShow(yyrange))
+                    if (!isMap) {
+                        yyrange <- rev(yyrange)
+                        oceDebug(debug, "reversed yyrange to be ", vectorShow(yyrange))
+                        ylim <- rev(sort(ylim))
+                        oceDebug(debug, "reversed ylim to be ", vectorShow(ylim))
+                    }
                     plot(xxrange, yyrange, xaxs="i", yaxs="i", xlim=xlim, ylim=ylim,
                         xlab=xlab, ylab=ylab, col="white", axes=FALSE)
                     if (axes) {
-                        # oceDebug(debug, "drawing axes\n")
+                        oceDebug(debug, "drawing axes (before contouring etc)\n")
                         axis(4L, labels=FALSE)
                         ytics <- axis(2L, labels=FALSE)
-                        axis(2L, at=ytics, labels=-ytics)
+                        axis(2L, at=ytics, labels=ytics)
+                        #browser()
                         # If constructing labels for time, need to check xlim
                         if (xIsTime) {
                             if (!is.null(xlim)) {
@@ -1748,6 +1776,7 @@ setMethod(f="plot", signature=signature("section"),
                     }
                     box()
                 }
+                #browser()
                 # Bottom trace
                 usr <- par("usr")
                 graph.bottom <- usr[3]
@@ -1801,7 +1830,7 @@ setMethod(f="plot", signature=signature("section"),
                 }
                 bottom.x <- c(xx[1], xx, xx[length(xx)])
                 bottom.y <- if (any(is.finite(waterDepth))) {
-                    c(graph.bottom, -waterDepth, graph.bottom)
+                    c(graph.bottom, waterDepth, graph.bottom)
                 } else {
                     rep(NA, length(bottom.x)+2)
                 }
@@ -1815,13 +1844,34 @@ setMethod(f="plot", signature=signature("section"),
                     zz <- zz[ox, ]     # FIXME keep this???
                     ii <- ii[ox]
                     bottom.x <- c(min(xxOrig), xxOrig[ox], max(xxOrig))
-                    bottom.y <- c(graph.bottom, -waterDepth[ox], graph.bottom)
+                    bottom.y <- c(graph.bottom, waterDepth[ox], graph.bottom)
                 }
+                # Construct xm, ym and zm that can be contoured. That requires
+                # unique and increasing x and y values.
                 # cannot contour with duplicates in x or y; the former is the only problem
                 xx.unique <- c(TRUE, 0 != diff(xx))
                 yy.unique <- c(TRUE, 0 != diff(yy))
                 xx.unique <- xx.unique & !is.na(xx.unique)
                 yy.unique <- yy.unique & !is.na(yy.unique)
+                # contour() requires x and y to be increasing, and pressure/depth are not.
+                if (diff(yy[yy.unique][1:2]) < 0.0) {
+                    oceDebug(debug, "flipping matrix for contouring\n")
+                    # must flip in y
+                    xm <- xx[xx.unique]
+                    ym <- yy[yy.unique]
+                    zm <- zz[xx.unique, yy.unique]
+                    j <- rev(seq_along(ym))
+                    ym <- ym[j]
+                    zm <- zm[, j]
+                    #message("flip flip flip")
+                    #browser()
+                    #contour(xxx, yyy[j], zzz[, j], ylim=rev(range(yyy)))
+                } else {
+                    oceDebug(debug, "no need to flip matrix for contouring\n")
+                    xm <- xx[xx.unique]
+                    ym <- yy[yy.unique]
+                    zm <- zz[xx.unique, yy.unique]
+                }
                 # a problem with mbari data revealed that we need to chop NA valaues too
                 if (variable == "data") {
                     for (i in 1:numStations) {
@@ -1849,17 +1899,18 @@ setMethod(f="plot", signature=signature("section"),
                     if (!is.null(contourLevels) && !is.null(contourLabels)) {
                         oceDebug(debug, "user-supplied contourLevels: ", contourLevels, "\n")
                         if (ztype == "contour") {
-                            contour(x=xx[xx.unique], y=yy[yy.unique], z=zz[xx.unique, yy.unique],
+                            oceDebug(debug, "about to call contour() near L1885\n")
+                            contour(x=xm, y=ym, z=zm,
+                                ylim=if (is.null(ylim)) rev(range(ym)) else ylim,
                                 axes=FALSE, add=TRUE, levels=contourLevels, labels=contourLabels,
                                 col=col, xaxs="i", yaxs="i", labcex=labcex, ...)
                         } else if (ztype == "image") {
-                            zz[zz < min(zbreaks)] <- min(zbreaks)
-                            zz[zz > max(zbreaks)] <- max(zbreaks)
+                            zm[zm < min(zbreaks)] <- min(zbreaks)
+                            zm[zm > max(zbreaks)] <- max(zbreaks)
                             if (is.function(zcol)) {
                                 zcol <- zcol(1+length(zbreaks))
                             }
-                            .filled.contour(x=xx[xx.unique], y=yy[yy.unique], z=zz[xx.unique, yy.unique],
-                                levels=zbreaks, col=zcol)
+                            .filled.contour(x=xm, y=ym, z=zm, levels=zbreaks, col=zcol)
                         } else {
                             stop("unknown ztype: \"", ztype, "\" [2]")
                         }
@@ -1871,16 +1922,16 @@ setMethod(f="plot", signature=signature("section"),
                             if (any(!is.finite(zzrange))) {
                                 stop("cannot draw a contour diagram because all values are NA or Inf")
                             }
-                            contour(x=xx[xx.unique], y=yy[yy.unique], z=zz[xx.unique, yy.unique],
-                                add=TRUE, col=col, labcex=labcex, ...)
+                            oceDebug(debug, "about to call contour() near L1908\n")
+                            contour(x=xm, y=ym, z=zm, add=TRUE, col=col, labcex=labcex, ...)
                         } else if (ztype == "image") {
                             zz[zz < min(zbreaks)] <- min(zbreaks)
                             zz[zz > max(zbreaks)] <- max(zbreaks)
                             if (is.function(zcol)) {
                                 zcol <- zcol(1+length(zbreaks))
                             }
-                            .filled.contour(x=xx[xx.unique], y=yy[yy.unique], z=zz[xx.unique, yy.unique],
-                                levels=zbreaks, col=zcol)
+                            oceDebug(debug, "about to call contour() near L1916\n")
+                            .filled.contour(x=xm, y=ym, z=zm, levels=zbreaks, col=zcol)
                         } else if (ztype == "points") {
                             # nothing to do now
                         } else {
@@ -1949,7 +2000,7 @@ setMethod(f="plot", signature=signature("section"),
                     legend(legend.loc, legend=vtitle, bg="white", x.intersp=0, y.intersp=0.5, cex=1)
                 }
                 usr <- par("usr")
-                par("usr"=c(usr[1], usr[2], -usr[3], usr[4]))
+                #par("usr"=c(usr[1], usr[2], -usr[3], usr[4]))
             }
             par(mar=omar)
             oceDebug(debug, "} # plotSubsection()\n", unindent=1)
@@ -2055,19 +2106,24 @@ setMethod(f="plot", signature=signature("section"),
         # FIXME: why checking just first which[] value?
         if (which.ytype == 1) {
             if (!is.na(which[1]) && which[1] == "data" || ztype == "points") {
-                yy <- c(0, -max(x[["pressure"]]))
+                yy <- c(max(x[["pressure"]]), 0)
+                oceDebug(debug, "ytype case 1A near L2062 ", vectorShow(yy))
             } else {
-                yy <- rev(-x@data$station[[stationIndices[1]]]@data$pressure)
+                yy <- rev(x@data$station[[stationIndices[1]]]@data$pressure)
+                oceDebug(debug, "ytype case 1B near L2065 ", vectorShow(yy))
             }
         } else if (which.ytype == 2) {
             if (!is.na(which[1]) && which[1] == "data" || ztype == "points") {
-                yy <- c(-max(x[["pressure"]], na.rm=TRUE), 0)
+                yy <- c(max(x[["pressure"]], na.rm=TRUE), 0)
+                oceDebug(debug, "ytype case 2A near L2070 ", vectorShow(yy))
             } else {
-                yy <- rev(-swDepth(x@data$station[[stationIndices[1]]]@data$pressure))
+                yy <- rev(swDepth(x@data$station[[stationIndices[1]]]@data$pressure))
+                oceDebug(debug, "ytype case 2B near L2073 ", vectorShow(yy))
             }
         } else {
             stop("unknown ytype")
         }
+        oceDebug(debug, "near L2078 ", vectorShow(yy))
         par(mgp=mgp, mar=mar)
         if (lw > 1) {
             if (lw > 2) {
@@ -2462,18 +2518,18 @@ read.section <- function(file,
 #' GS <- subset(section, 113<=stationId&stationId<=129)
 #' GSg <- sectionGrid(GS, p=seq(0, 5000, 100))
 #' plot(GSg, which="temperature")
-## plot(GSg, map.xlim=c(-80,-60))
-## # Show effects of various depth schemes
-## par(mfrow=c(3, 1))
-## default <- sectionGrid(GS)
-## approxML <- sectionGrid(GS, method="approxML")
-## standardDepths5 <- sectionGrid(GS, p=standardDepths(5))
-## plot(default, which="temperature", ztype="image", ylim=c(200,0))
-## mtext("default sectionGrid()")
-## plot(approxML, which="temperature", ztype="image", ylim=c(200,0))
-## mtext("sectionGrid(..., method=\"approxML\")")
-## plot(standardDepths5, which="temperature", ztype="image", ylim=c(200,0))
-## mtext("sectionGrid(..., p=standardDepths(5))")
+# plot(GSg, map.xlim=c(-80,-60))
+# # Show effects of various depth schemes
+# par(mfrow=c(3, 1))
+# default <- sectionGrid(GS)
+# approxML <- sectionGrid(GS, method="approxML")
+# standardDepths5 <- sectionGrid(GS, p=standardDepths(5))
+# plot(default, which="temperature", ztype="image", ylim=c(200,0))
+# mtext("default sectionGrid()")
+# plot(approxML, which="temperature", ztype="image", ylim=c(200,0))
+# mtext("sectionGrid(..., method=\"approxML\")")
+# plot(standardDepths5, which="temperature", ztype="image", ylim=c(200,0))
+# mtext("sectionGrid(..., p=standardDepths(5))")
 #'
 #' @author Dan Kelley
 #'
@@ -2698,25 +2754,25 @@ sectionGrid <- function(section, p, method="approx", trim=TRUE, debug=getOption(
 #' plot(gsBarnes, which="temperature")
 #' mtext("Barnes-smoothed")
 #'
-## # Kriging.
-## # As of early March, 2022, two CRAN test machines (running R-devel
-## # on linux-fedora) started to fail on the code shown below, so it
-## # was deactivated, as a cautionary measure.  It may reactivated
-## # later, if the CRAN machines start handling it properly again.
-##\dontrun{
-## if (requireNamespace("automap",quietly=TRUE)&&requireNamespace("sp",quietly=TRUE)) {
-##   krig <- function(x, y, F, xg, xr, yg, yr) {
-##     xy <- data.frame(x=x/xr, y=y/yr)
-##     K <- automap::autoKrige(F~1, remove_duplicates=TRUE,
-##                             input_data=sp::SpatialPointsDataFrame(xy, data.frame(F)),
-##                             new_data=sp::SpatialPoints(expand.grid(xg/xr, yg/yr)))
-##     matrix(K$krige_output@data$var1.pred, nrow=length(xg), ncol=length(yg))
-##   }
-##   gsKrig <- sectionSmooth(gs, krig)
-##   plot(gsKrig, which="temperature")
-##   mtext("Kriging-smoothed")
-## }
-##}
+# # Kriging.
+# # As of early March, 2022, two CRAN test machines (running R-devel
+# # on linux-fedora) started to fail on the code shown below, so it
+# # was deactivated, as a cautionary measure.  It may reactivated
+# # later, if the CRAN machines start handling it properly again.
+#\dontrun{
+# if (requireNamespace("automap",quietly=TRUE)&&requireNamespace("sp",quietly=TRUE)) {
+#   krig <- function(x, y, F, xg, xr, yg, yr) {
+#     xy <- data.frame(x=x/xr, y=y/yr)
+#     K <- automap::autoKrige(F~1, remove_duplicates=TRUE,
+#                             input_data=sp::SpatialPointsDataFrame(xy, data.frame(F)),
+#                             new_data=sp::SpatialPoints(expand.grid(xg/xr, yg/yr)))
+#     matrix(K$krige_output@data$var1.pred, nrow=length(xg), ncol=length(yg))
+#   }
+#   gsKrig <- sectionSmooth(gs, krig)
+#   plot(gsKrig, which="temperature")
+#   mtext("Kriging-smoothed")
+# }
+#}
 #'
 #' @author Dan Kelley
 #'

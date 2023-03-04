@@ -43,7 +43,8 @@ if (file.exists(f)) {
 \seealso{
 Other functions that trim data files: 
 \code{\link{adpAd2cpFileTrim}()},
-\code{\link{adpRdiFileTrim}()}
+\code{\link{adpRdiFileTrim}()},
+\code{\link{advSontekAdrFileTrim}()}
 }
 \author{
 Dan Kelley

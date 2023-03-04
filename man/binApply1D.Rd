@@ -32,7 +32,7 @@ consider using \code{\link[=binMean2D]{binMean2D()}} instead, since it should be
 }
 \examples{
 library(oce)
-## salinity profile with median and quartile 1 and 3
+# salinity profile with median and quartile 1 and 3
 data(ctd)
 p <- ctd[["pressure"]]
 S <- ctd[["salinity"]]

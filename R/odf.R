@@ -491,17 +491,17 @@ findInHeader <- function(key, lines, returnOnlyFirst=TRUE, numeric=FALSE, prefix
 #' the adjustment of suffix numbers. The following code have been seen in data files from
 #' the Bedford Institute of Oceanography: `ALTB`, `PHPH` and `QCFF`.
 #'
-## @section A note on unit conventions:
-## Some older ODF files contain non-standard units for conductivity,
-## including `mho/m`, `mmho/cm`, and `mmHo`. As the
-## units for conductivity are important for derived quantities
-## (e.g. salinity), such units are converted to standard units
-## (e.g. `S/m` and `mS/cm`).  (This was once done with a warning,
-## but on 2020-02-07 the warning was removed, since it did not
-## indicate a problem with the file or the data scanning; rather,
-## it was a simple matter of nudging towards uniformity in a way
-## that ought to confuse no users, akin to converting `m**3` to
-## `m^3`, which is also done here without warning.)
+# @section A note on unit conventions:
+# Some older ODF files contain non-standard units for conductivity,
+# including `mho/m`, `mmho/cm`, and `mmHo`. As the
+# units for conductivity are important for derived quantities
+# (e.g. salinity), such units are converted to standard units
+# (e.g. `S/m` and `mS/cm`).  (This was once done with a warning,
+# but on 2020-02-07 the warning was removed, since it did not
+# indicate a problem with the file or the data scanning; rather,
+# it was a simple matter of nudging towards uniformity in a way
+# that ought to confuse no users, akin to converting `m**3` to
+# `m^3`, which is also done here without warning.)
 #'
 #' @param ODFnames vector of character values that hold ODF names.
 #'
@@ -921,7 +921,7 @@ ODFListFromHeader <- function(header)
 #' # read.odf() on this data file produces a warning suggesting that the user
 #' # repair the unit, using the method outlined here.
 #' odf <- read.odf(system.file("extdata", "CTD_BCD2014666_008_1_DN.ODF.gz", package="oce"))
-#' ctd <- as.ctd(odf) ## so we can e.g. extract potential temperature
+#' ctd <- as.ctd(odf) # so we can e.g. extract potential temperature
 #' ctd[["conductivityUnit"]] <- list(unit=expression(), scale="")
 #' #
 #' # 2. Make a CTD, and plot (with span to show NS)
@@ -1083,7 +1083,7 @@ read.odf <- function(file, columns=NULL, header="list", exclude=NULL, encoding="
         if (grepl("^[a-zA-Z]", h[i])) {
             indexCategory <- indexCategory + 1
             headerlist[[indexCategory]] <- list()
-            ##> message("* '", h[i], "' is indexCategory ", indexCategory)
+            #> message("* '", h[i], "' is indexCategory ", indexCategory)
             lhsUsed <- NULL
         } else {
             if (0 == indexCategory) {
@@ -1144,7 +1144,7 @@ read.odf <- function(file, columns=NULL, header="list", exclude=NULL, encoding="
     parameterTable <- list(code=NULL, nameOrig=NULL, name=NULL, oceName=NULL, units=NULL, scale=NULL)
     for (l in linePARAMETER_HEADER) {
         lstart <- l + 1
-        ## Isolate this block. Note that there seem to be two ways to end blocks.
+        # Isolate this block. Note that there seem to be two ways to end blocks.
         lend <- 0
         for (ll in seq.int(lstart, min(lstart + 100, nlines))) {
             if (length(grep("^\\s*(PARAMETER_HEADER|RECORD_HEADER)", lines[ll]))) {
@@ -1373,7 +1373,7 @@ read.odf <- function(file, columns=NULL, header="list", exclude=NULL, encoding="
     res@metadata$recovery <- NULL
     res@metadata$sampleInterval <- NA
     res@metadata$filename <- filename
-    #> ## fix issue 768
+    #> # fix issue 768
     #> lines <- lines[grep('%[0-9.]*f', lines,invert=TRUE)]
     # issue1226 data <- read.table(file, skip=dataStart, stringsAsFactors=FALSE)
     data <- scan(text=lines, what="character", skip=dataStart, quiet=TRUE)
@@ -1411,7 +1411,7 @@ read.odf <- function(file, columns=NULL, header="list", exclude=NULL, encoding="
         data$time <- as.POSIXct(strptime(as.character(data$time), format="%d-%b-%Y %H:%M:%S", tz="UTC"))
     }
     res@data <- as.list(data)
-    ## Move flags into metadata.
+    # Move flags into metadata.
     dnames <- names(res@data)
     iflags <- grep("Flag$", dnames)
     oceDebug(debug, "About to move flags from @data to @metadata\n")

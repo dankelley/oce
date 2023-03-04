@@ -23,7 +23,7 @@ Subsetting can be by \code{time} or \code{distance}, but these may not be
 combined; use a sequence of calls to subset by both.
 }
 \examples{
-## northern hemisphere
+# northern hemisphere
 library(oce)
 data(topoWorld)
 plot(subset(topoWorld, latitude > 0))

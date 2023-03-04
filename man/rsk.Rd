@@ -16,7 +16,7 @@ NASA Oceans Melting Greenland project.
 \examples{
 library(oce)
 data(rsk)
-## The object doesn't "know" it is CTD until told so
+# The object doesn't "know" it is CTD until told so
 plot(rsk)
 plot(as.ctd(rsk))
 

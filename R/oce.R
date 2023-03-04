@@ -71,9 +71,9 @@
 NULL
 
 
-##################################################################
-## DEVELOPER NOTE: Update this whenever function status changes. #
-##################################################################
+#################################################################
+# DEVELOPER NOTE: Update this whenever function status changes. #
+#################################################################
 #' Deprecated and Defunct Elements of the oce package
 #'
 #' Certain functions and function arguments are still provided for
@@ -91,7 +91,7 @@ NULL
 #'
 #' \tabular{lllll}{
 #' **Deprecated**             \tab **Replacement**   \tab **Deprecated**  \tab **Defunct** \tab **Removed** \cr
-## `byteToBinary(x,"endian")` \tab [rawToBits()]     \tab 1.1-1           \tab 1.1-3       \tab 1.1-4       \cr
+# `byteToBinary(x,"endian")` \tab [rawToBits()]     \tab 1.1-1           \tab 1.1-3       \tab 1.1-4       \cr
 #' }
 #'
 #' The following are marked "defunct", so calling them in the
@@ -1710,10 +1710,10 @@ oce.write.table <- function(x, file="", ...)
 #' @references
 #' 1. Sverdrup, H U, Martin W Johnson, and Richard H Fleming. The Oceans,
 #' Their Physics, Chemistry, and General Biology. New York: Prentice-Hall, 1942.
-## `https://ark.cdlib.org/ark:/13030/kt167nb66r`
-## next worked well most of the time, but I got a failure on 2021-08-07 and
-## I just don't see the point in retaining a link that will *ever* fail, given
-## the possible consequence in terms of CRAN.
+# `https://ark.cdlib.org/ark:/13030/kt167nb66r`
+# next worked well most of the time, but I got a failure on 2021-08-07 and
+# I just don't see the point in retaining a link that will *ever* fail, given
+# the possible consequence in terms of CRAN.
 #' \code{https://publishing.cdlib.org/ucpressebooks/view?docId=kt167nb66r}
 #'
 #' 2.Locarnini, R. A., A. V. Mishonov, J. I. Antonov, T. P. Boyer,

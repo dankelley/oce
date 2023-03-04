@@ -351,7 +351,7 @@ read.adp.sontek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         oceDebug(debug, "BEFORE: length(heading)=", nheading, ", nv=", nv, "\n")
         #xout <- seq(1, nheading, length.out=nv)
         heading <- approx(1:nheading, heading, seq(1, nheading, length.out=nv))$y
-        ##print(data.frame(xout=xout, heading=heading))
+        #print(data.frame(xout=xout, heading=heading))
         pitch <- approx(1:nheading, pitch, seq(1, nheading, length.out=nv))$y
         roll <- approx(1:nheading, roll, seq(1, nheading, length.out=nv))$y
         oceDebug(debug, "AFTER:  length(heading)=", length(heading), "\n")
@@ -389,9 +389,9 @@ read.adp.sontek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     res@metadata$orientation <- if (1==orientation) "upward" else "downward"
     if (numberOfBeams == 3) {
         if (res@metadata$orientation == "upward") {
-            ##S  <- 1 / (3 * sin(25 * pi / 180))             # 0.7887339
-            ##CS <- 1 / cos(30*pi/180) / sin(25*pi/180) / 2  # 1.366127 (30deg from 3-beam pattern)
-            ##C  <- 1 / (3 * cos(25 * pi / 180))             # 0.3677926
+            #S  <- 1 / (3 * sin(25 * pi / 180))             # 0.7887339
+            #CS <- 1 / cos(30*pi/180) / sin(25*pi/180) / 2  # 1.366127 (30deg from 3-beam pattern)
+            #C  <- 1 / (3 * cos(25 * pi / 180))             # 0.3677926
             S  <- 1 / (3 * sin(beamAngle * pi / 180)) # 0.7887339
             CS <- 1 / cos(30*pi/180) / sin(beamAngle*pi/180) / 2 # 1.366127 (30deg from 3-beam pattern)
             C  <- 1 / (3 * cos(beamAngle * pi / 180))             # 0.3677926
@@ -619,7 +619,7 @@ read.adp.sontek.serial <- function(file,
     cellSize <- 0.01*readBin(buf[p[1]+32:33], what="integer", n=1, size=2, signed=FALSE, endian="little")
     blankingDistance <- 0.01*readBin(buf[p[1]+34:35], what="integer", n=1, size=2, signed=FALSE)
     distance <- blankingDistance + cellSize * seq(from=0.5, by=cellSize, length.out=numberOfCells)
-    ## trim, if from and to are integers
+    # trim, if from and to are integers
     if (!missing(to)) {
         if (is.numeric(from) && is.numeric(to) && is.numeric(by)) {
             if (from < 1) {

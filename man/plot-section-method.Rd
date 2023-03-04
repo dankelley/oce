@@ -385,7 +385,7 @@ Other things related to section data:
 \code{\link{summary,section-method}}
 }
 \author{
-Dan Kelley
+Dan Kelley, with help from Clark Richards and Chantelle Layton.
 }
 \concept{functions that plot oce data}
 \concept{things related to section data}

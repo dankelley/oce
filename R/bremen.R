@@ -111,7 +111,7 @@ setMethod(f="plot",
     signature=signature("bremen"),
     definition=function(x, type, ...) {
         names <- names(x@data)
-        ##n <- length(names)
+        #n <- length(names)
         if (missing(type)) {
             if ("salinity" %in% names) {
                 plot(as.ctd(x), ...)
@@ -266,7 +266,7 @@ read.bremen <- function(file, encoding="latin1")
     res@metadata$model <- findInHeaderBremen("CTD_Model", h)
     res@metadata$waterDepth <- as.numeric(findInHeaderBremen("WaterDepth", h))
     res@metadata$maxPress <- as.numeric(findInHeaderBremen("MaxPress", h))
-    ## Columns have nicknames
+    # Columns have nicknames
     nicknames <- strsplit(gsub(" ", "", strsplit(h[grep("^(Columns)|(Fields)", h)], "=")[[1]][2]), ":")[[1]]
     names <- nicknames
     names[nicknames=="p"] <- "pressure"
@@ -276,7 +276,7 @@ read.bremen <- function(file, encoding="latin1")
     names[nicknames=="s"] <- "salinity"
     names[nicknames=="o"] <- "oxygen"
     names[nicknames=="z"] <- "pressure" # NOTE: bremen files have positive z values
-    ## infer column names from last line of header (guessing a bit)
+    # infer column names from last line of header (guessing a bit)
     data <- read.table(text=lines[-seq.int(1, headerLength)], header=FALSE, col.names=names, encoding=encoding)
     for (name in names(data)) {
         # FIXME: I have no idea what "uz" is, so I cannot guess the unit
