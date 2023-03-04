@@ -39,11 +39,11 @@ consider using \code{\link[=binMean2D]{binMean2D()}} instead, since it should be
 \examples{
 library(oce)
 \donttest{
-## secchi depths in lat and lon bins
+# secchi depths in lat and lon bins
 if (requireNamespace("ocedata", quietly=TRUE)) {
     data(secchi, package="ocedata")
-    ## Note that zlim is provided to the colormap(), to prevent a few
-    ## points from setting a very wide scale.
+    # Note that zlim is provided to the colormap(), to prevent a few
+    # points from setting a very wide scale.
     cm <- colormap(z=secchi$depth, col=oceColorsViridis, zlim=c(0, 15))
     par(mar=c(2, 2, 2, 2))
     drawPalette(colormap=cm, zlab="Secchi Depth")

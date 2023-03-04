@@ -20,10 +20,10 @@
 #'
 #' @param processingLog ignored.
 #'
-## @examples
-## library(oce)
-## f <- system.file("extdata", "ctd_ssda.csv", package="oce")
-## d <- read.ctd(f)
+# @examples
+# library(oce)
+# f <- system.file("extdata", "ctd_ssda.csv", package="oce")
+# d <- read.ctd(f)
 #'
 #' @family things related to ctd data
 #' @family functions that read ctd data

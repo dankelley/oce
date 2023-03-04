@@ -31,3 +31,36 @@ header plus the first \code{n} data chunks (recognized by the three-byte sequenc
 \code{0xA5}, \code{0x11}, `0x3c') into a new file. This can be useful in supplying
 small sample files for bug reports.
 }
+\seealso{
+Other things related to adv data: 
+\code{\link{[[,adv-method}},
+\code{\link{[[<-,adv-method}},
+\code{\link{adv-class}},
+\code{\link{adv}},
+\code{\link{applyMagneticDeclination,adv-method}},
+\code{\link{beamName}()},
+\code{\link{beamToXyz}()},
+\code{\link{enuToOtherAdv}()},
+\code{\link{enuToOther}()},
+\code{\link{plot,adv-method}},
+\code{\link{read.adv.nortek}()},
+\code{\link{read.adv.sontek.adr}()},
+\code{\link{read.adv.sontek.serial}()},
+\code{\link{read.adv.sontek.text}()},
+\code{\link{read.adv}()},
+\code{\link{rotateAboutZ}()},
+\code{\link{subset,adv-method}},
+\code{\link{summary,adv-method}},
+\code{\link{toEnuAdv}()},
+\code{\link{toEnu}()},
+\code{\link{velocityStatistics}()},
+\code{\link{xyzToEnuAdv}()},
+\code{\link{xyzToEnu}()}
+
+Other functions that trim data files: 
+\code{\link{adpAd2cpFileTrim}()},
+\code{\link{adpRdiFileTrim}()},
+\code{\link{oceFileTrim}()}
+}
+\concept{functions that trim data files}
+\concept{things related to adv data}

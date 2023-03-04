@@ -50,14 +50,14 @@
 #'
 #' @family things related to adp data
 #' @family functions that trim data files
-## @examples
-##\dontrun{
-## # Can only be run by the developer, since it uses a private file.
-## f  <- "/Users/kelley/Dropbox/data/archive/sleiwex/2008/moorings/m09/adp/rdi_2615/raw/adp_rdi_2615.000"
-## if (file.exists(f)) {
-##     adpRdiFileTrim(f, 9L, "test.000")
-## }
-##}
+# @examples
+#\dontrun{
+# # Can only be run by the developer, since it uses a private file.
+# f  <- "/Users/kelley/Dropbox/data/archive/sleiwex/2008/moorings/m09/adp/rdi_2615/raw/adp_rdi_2615.000"
+# if (file.exists(f)) {
+#     adpRdiFileTrim(f, 9L, "test.000")
+# }
+#}
 #' @author Dan Kelley
 adpRdiFileTrim <- function(infile, n=100L, outfile, debug=getOption("oceDebug"))
 {
@@ -157,7 +157,7 @@ decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceT
     oceDebug(debug, "LSB=", paste(bitsFLD5, collapse=" "), "\n")
     bitsFLD6 <- rawToBits(FLD[6])
     oceDebug(debug, "MSB=", paste(bitsFLD6, collapse=" "), "\n")
-    ## NOTE: the nearby code should perhaps use .Call("get_bit", ...) for speed and clarity
+    # NOTE: the nearby code should perhaps use .Call("get_bit", ...) for speed and clarity
     if (isSentinel) {
         if (bits == "010") frequency <- 250        # kHz
         else if (bits == "011") frequency <-  500
@@ -840,7 +840,7 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
         oceDebug(debug, "isSentinel=", isSentinel, " near adp.rdi.R line 652\n")
         oceDebug(debug, "about to call ldc_rdi_in_file\n")
         if (is.numeric(from) && is.numeric(to) && is.numeric(by)) {
-            ## check for large files
+            # check for large files
             byteMax <- 200e6           # for reasoning, see the help file
             if (!byGiven) {
                 if (to == 0) {         # whole file
@@ -859,7 +859,7 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
                 }
             }
             ldc <- do_ldc_rdi_in_file(filename=filename, from=from, to=to, by=by, startIndex=startIndex, mode=0L, debug=debug-1)
-            ##}
+            #}
             oceDebug(debug, "done with do_ldc_rdi_in_file() with numeric from and to, near adp.rdi.R line 683")
         } else {
             if (is.character(from)) {
@@ -1206,7 +1206,7 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
             }
             oceDebug(debug, "profilesToRead=", profilesToRead, "\n")
             unhandled <- list(xxGGA=0, xxVTA=0, xxGSA=0)
-            ##. unknownWarningCount <- 0
+            #. unknownWarningCount <- 0
             nmea <- NULL
             nmeaLen <- 0
             orientation <- vector("character", profilesToRead)
@@ -1736,7 +1736,7 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
                                 attitudeTemp=attitudeTemp,
                                 attitude=attitude,
                                 contaminationSensor=contaminationSensor,
-                                ## Next are as described starting on p77 of VmDas_Users_Guide_May12.pdf
+                                # Next are as described starting on p77 of VmDas_Users_Guide_May12.pdf
                                 avgSpeed=avgSpeed,
                                 avgMagnitudeVelocityEast=avgMagnitudeVelocityEast,
                                 avgMagnitudeVelocityNorth=avgMagnitudeVelocityNorth,

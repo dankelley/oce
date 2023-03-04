@@ -194,7 +194,7 @@ setMethod(f="[[<-",
 #' @return A new [topo-class] object.
 #'
 #' @examples
-#' ## northern hemisphere
+#' # northern hemisphere
 #' library(oce)
 #' data(topoWorld)
 #' plot(subset(topoWorld, latitude > 0))
@@ -906,13 +906,13 @@ read.topo <- function(file, encoding="latin1", debug=getOption("oceDebug"))
                 longitude <- as.vector(ncdf4::ncvar_get(ncdf, "lon"))
                 latitude <- as.vector(ncdf4::ncvar_get(ncdf, "lat"))
                 dataNamesOriginal <- list(longitude="lon", latitude="lat", z="Band1")
-                ##cat(vectorShow(longitude, "longitude in reading Band1"))
+                #cat(vectorShow(longitude, "longitude in reading Band1"))
             } else {
                 oceDebug(debug, "file has no variable named 'Band1', so computing longitude and",
                     " latitude from 'x_range' and 'y_range' together with 'spacing', and reading z as 'z'\n")
                 xrange <- ncdf4::ncvar_get(ncdf, "x_range")
                 yrange <- ncdf4::ncvar_get(ncdf, "y_range")
-                ##zrange <- ncdf4::ncvar_get(ncdf, "z_range")
+                #zrange <- ncdf4::ncvar_get(ncdf, "z_range")
                 spacing <- ncdf4::ncvar_get(ncdf, "spacing")
                 longitude <- seq(xrange[1], xrange[2], by=spacing[1])
                 latitude <- seq(yrange[1], yrange[2], by=spacing[2])

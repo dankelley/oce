@@ -52,7 +52,7 @@ setClass("rsk", contains="oce")
 #' @examples
 #' library(oce)
 #' data(rsk)
-#' ## The object doesn't "know" it is CTD until told so
+#' # The object doesn't "know" it is CTD until told so
 #' plot(rsk)
 #' plot(as.ctd(rsk))
 #'
@@ -199,26 +199,26 @@ setMethod(f="subset",
         res <- new("rsk") # start afresh in case x@data is a data.frame
         res@metadata <- x@metadata
         res@processingLog <- x@processingLog
-        ## message("NOTE: debugging output coming up!")
+        # message("NOTE: debugging output coming up!")
         for (i in seq_along(x@data)) {
-            ####  message("i: ", i)
-            ####  str(x@data)
-            ####  str(x@data$time[1])
-            ####  print(x@data$time[1])
-            ####  print(x@data$time[2])
-            ####  print(is.language(substitute(subset)))
-            ####  str(substitute(subset))
-            ####  Prior to 2015-01-15 the next line was
-            ##    r <- eval(substitute(subset), x@data)#, parent.frame())
-            ## But that failed when calling subset from within other functions; see
-            ## github (FIXME: fill in issue link, when issue is submitted).
-            ##     http://r.789695.n4.nabble.com/getting-environment-from-quot-top-quot-promise-td4685138.html
-            ## for a question regarding environments. I used to have parent.frame() here, and
-            ## in other "subset" definitions, but my tests are suggesting parent.frame(2)
-            ## will work more generally: (a) within flat code and (b) within a function
-            ## that is passed items to go in the subset.
+            #  message("i: ", i)
+            #  str(x@data)
+            #  str(x@data$time[1])
+            #  print(x@data$time[1])
+            #  print(x@data$time[2])
+            #  print(is.language(substitute(subset)))
+            #  str(substitute(subset))
+            #  Prior to 2015-01-15 the next line was
+            #    r <- eval(substitute(subset), x@data)#, parent.frame())
+            # But that failed when calling subset from within other functions; see
+            # github (FIXME: fill in issue link, when issue is submitted).
+            #     http://r.789695.n4.nabble.com/getting-environment-from-quot-top-quot-promise-td4685138.html
+            # for a question regarding environments. I used to have parent.frame() here, and
+            # in other "subset" definitions, but my tests are suggesting parent.frame(2)
+            # will work more generally: (a) within flat code and (b) within a function
+            # that is passed items to go in the subset.
             r <- eval(substitute(expr=subset, env=environment()), envir=x@data, enclos=parent.frame(2))
-            ####  str(r)
+            #  str(r)
             r <- r & !is.na(r)
             res@data[[i]] <- x@data[[i]][r]
         }
@@ -245,18 +245,18 @@ setMethod(f="subset",
 #' @family functions that interpret variable names and units from headers
 unitFromStringRsk <- function(s)
 {
-    ## Note: some of these use e.g. [lL] because the Ruskin GUI uses upper case,
-    ## whereas at least one file has used lower case. Another odd case is
-    ## "dbar" vs "dBar", both of which have been seen in files. Still, it
-    ## was decided not to use ignore.case=TRUE in the grep() commands,
-    ## because that seems to overly blunt the tool.
-    ##
-    ## Here's how to figure out special characters:
-    ## print(s) # nolint
-    ## [1] "µMol/m²/s"
-    ## Browse[1]> Encoding(s)<-"bytes" # nolint
-    ## Browse[2]> print(s) # nolint
-    ## [1] "\\xc2\\xb5Mol/m\\xc2\\xb2/s"
+    # Note: some of these use e.g. [lL] because the Ruskin GUI uses upper case,
+    # whereas at least one file has used lower case. Another odd case is
+    # "dbar" vs "dBar", both of which have been seen in files. Still, it
+    # was decided not to use ignore.case=TRUE in the grep() commands,
+    # because that seems to overly blunt the tool.
+    #
+    # Here's how to figure out special characters:
+    # print(s) # nolint
+    # [1] "µMol/m²/s"
+    # Browse[1]> Encoding(s)<-"bytes" # nolint
+    # Browse[2]> print(s) # nolint
+    # [1] "\\xc2\\xb5Mol/m\\xc2\\xb2/s"
     #
     # 2022-06-28 upcoming version of R will require elimination of \x sequences; see
     # https://developer.r-project.org/Blog/public/2022/06/27/why-to-avoid-%5Cx-in-regular-expressions/index.html
@@ -462,7 +462,7 @@ as.rsk <- function(time, columns,
 #' data(rsk)
 #' plot(rsk) # default timeseries plot of all data fields
 #'
-#' ## A multipanel plot of just pressure and temperature with ylim
+#' # A multipanel plot of just pressure and temperature with ylim
 #' par(mfrow=c(2, 1))
 #' plot(rsk, which="pressure", ylim=c(10, 30))
 #' plot(rsk, which="temperature", ylim=c(2, 4))
@@ -1272,7 +1272,7 @@ read.rsk <- function(file, from=1, to, by=1, type, encoding=NA,
             Tcol <- 3
             pcol <- 4
         } else
-            stop("wrong number of variables; need 2, 4, or 5, but got ", nvar)    ## subset
+            stop("wrong number of variables; need 2, 4, or 5, but got ", nvar)    # subset
         # subset times
         if (inherits(from, "POSIXt") || inherits(from, "character")) {
             keep <- from <= time & time <= to # FIXME: from may be int or time
@@ -1363,10 +1363,10 @@ rsk2ctd <- function(x, pressureAtmospheric=0, longitude=NULL, latitude=NULL,
     oceDebug(debug, "rsk2ctd(...) {\n", sep="", unindent=1)
     res <- new("ctd")
     res@metadata <- x@metadata
-    ## The user may have already inserted some metadata, even if read.rsk() didn't, so
-    ## we have to take care of two cases in deciding on some things. The procedure is
-    ## to use the argument to rsk2ctd if one is given, otherwise to use the value already
-    ## in x@metadata, otherwise to set a default that matches as.ctd().
+    # The user may have already inserted some metadata, even if read.rsk() didn't, so
+    # we have to take care of two cases in deciding on some things. The procedure is
+    # to use the argument to rsk2ctd if one is given, otherwise to use the value already
+    # in x@metadata, otherwise to set a default that matches as.ctd().
     res@metadata$longitude <- if (!is.null(longitude)) {
         longitude
     } else {
@@ -1611,7 +1611,7 @@ rskToc <- function(dir, from, to, debug=getOption("oceDebug"))
         if (length(lines) < 1) {
             stop("found no data in file ", paste(dir, tbl.file, sep="/"))
         }
-        ## "File \\day179\\SL08A179.023 started at Fri Jun 27 22:00:00 2008"
+        # "File \\day179\\SL08A179.023 started at Fri Jun 27 22:00:00 2008"
         for (line in lines) {
             s <- strsplit(line, "[ \t]+")[[1]]
             if (length(s) > 2) {

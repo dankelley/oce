@@ -292,9 +292,9 @@ setMethod(f="initialize",
     })
 
 
-## DEVELOPERS: please pattern functions and documentation on this, for uniformity.
-## DEVELOPERS: You will need to change the docs, and the 3 spots in the code
-## DEVELOPERS: marked '# DEVELOPER 1:', etc.
+# DEVELOPERS: please pattern functions and documentation on this, for uniformity.
+# DEVELOPERS: You will need to change the docs, and the 3 spots in the code
+# DEVELOPERS: marked '# DEVELOPER 1:', etc.
 #' @title Handle Flags in adp Objects
 #'
 #' @details
@@ -386,17 +386,17 @@ setMethod("initializeFlags",
 #' library(oce)
 #' data(adp)
 #'
-#' ## Example 1: flag first 10 samples in a mid-depth bin of beam 1
+#' # Example 1: flag first 10 samples in a mid-depth bin of beam 1
 #' i1 <- data.frame(1:20, 40, 1)
 #' adpQC <- initializeFlags(adp, "v", 2)
 #' adpQC <- setFlags(adpQC, "v", i1, 3)
 #' adpClean1 <- handleFlags(adpQC, flags=list(3), actions=list("NA"))
 #' par(mfrow=c(2, 1))
-#' ## Top: original, bottom: altered
+#' # Top: original, bottom: altered
 #' plot(adp, which="u1")
 #' plot(adpClean1, which="u1")
 #'
-#' ## Example 2: percent-good and error-beam scheme
+#' # Example 2: percent-good and error-beam scheme
 #' v <- adp[["v"]]
 #' i2 <- array(FALSE, dim=dim(v))
 #' g <- adp[["g", "numeric"]]
@@ -408,7 +408,7 @@ setMethod("initializeFlags",
 #' adpQC2 <- initializeFlags(adp, "v", 2)
 #' adpQC2 <- setFlags(adpQC2, "v", i2, 3)
 #' adpClean2 <- handleFlags(adpQC2, flags=list(3), actions=list("NA"))
-#' ## Top: original, bottom: altered
+#' # Top: original, bottom: altered
 #' plot(adp, which="u1")
 #' plot(adpClean2, which="u1") # differs at 8h and 20h
 #'
@@ -578,8 +578,8 @@ setMethod(f="summary",
                 if (is.null(oceCoordinate)) "?" else oceCoordinate, "[presently]\n", ...)
             numberOfBeams <- object[["numberOfBeams"]]
             beamAngle <- object[["beamAngle"]]
-            ## As of Aug 10, 2019, orientation may be a vector, so we summarize
-            ## a table of values, if so.
+            # As of Aug 10, 2019, orientation may be a vector, so we summarize
+            # a table of values, if so.
             orientation <- object[["orientation"]]
             if (length(orientation) > 1) {
                 torientation <- table(orientation)
@@ -765,7 +765,7 @@ setMethod(f="[[",
             #. dataNames <- names(x@data)
             if (ISAD2CP) {
                 # AD2CP has 'burst' data records in one list, with 'average' records in another one.
-                # Permit e.g. "burst:numeric" and "burst numeric" ## FIXME: document this
+                # Permit e.g. "burst:numeric" and "burst numeric" FIXME: document this
                 returnNumeric <- FALSE # defult: leave 'raw' data as 'raw'.
                 if (missing(j)) {
                     # message("0 a")
@@ -782,17 +782,17 @@ setMethod(f="[[",
                     if (length(grep("numeric", j))) {
                         returnNumeric <- TRUE
                         j <- gsub("numeric", "", j)
-                        ##>message("0 b. j='", j, "'")
+                        #>message("0 b. j='", j, "'")
                     } else if (length(grep("raw", j))) {
                         returnNumeric <- FALSE
                         j <- gsub("raw", "", j)
-                        ##>message("0 c. j='", j, "'")
+                        #>message("0 c. j='", j, "'")
                     }
                     j <- gsub("[ :]+", "", j) # clean spaces or colons, if any
-                    ## Look up this name
-                    ##>message("0 d. j='", j, "'")
+                    # Look up this name
+                    #>message("0 d. j='", j, "'")
                     j <- ad2cpDefaultDataItem(x, j)
-                    ##>message("0 e. j='", j, "'")
+                    #>message("0 e. j='", j, "'")
                 }
                 if (1 == length(grep("^[ ]*$", j))) {
                     j <- "average"
@@ -830,7 +830,7 @@ setMethod(f="[[",
                 x@metadata[[i]]
             }
         } else if (i == "transformationMatrix") {
-            ##>message("0000")
+            #>message("0000")
             if (ISAD2CP) {
                 # message("AD2CP  tm...")
                 theta <- x@metadata$beamAngle * atan2(1, 1) / 45
@@ -1295,53 +1295,53 @@ as.adp <- function(time, distance, v, a=NULL, q=NULL, orientation="upward", coor
 }
 
 
-## head.adp <- function(x, n=6L, ...)
-## {
-##     numberOfProfiles <- dim(x[["v"]])[1]
-##     if (n < 0)
-##         look <- seq.int(max(1, (1 + numberOfProfiles + n)), numberOfProfiles)
-##     else
-##         look <- seq.int(1, min(n, numberOfProfiles))
-##     res <- x
-##     for (name in names(x@data)) {
-##         if ("distance" == name)
-##             next
-##         if (is.vector(x@data[[name]])) {
-##             res@data[[name]] <- x@data[[name]][look]
-##         } else if (is.matrix(x@data[[name]])) {
-##             res@data[[name]] <- x@data[[name]][look,]
-##         } else if (is.array(x@data[[name]])) {
-##             res@data[[name]] <- x@data[[name]][look,,]
-##         } else {
-##             res@data[[name]] <- x@data[[name]][look] # for reasons unknown, 'time' is not a vector
-##         }
-##     }
-##     res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
-##     res
-## }
+# head.adp <- function(x, n=6L, ...)
+# {
+#     numberOfProfiles <- dim(x[["v"]])[1]
+#     if (n < 0)
+#         look <- seq.int(max(1, (1 + numberOfProfiles + n)), numberOfProfiles)
+#     else
+#         look <- seq.int(1, min(n, numberOfProfiles))
+#     res <- x
+#     for (name in names(x@data)) {
+#         if ("distance" == name)
+#             next
+#         if (is.vector(x@data[[name]])) {
+#             res@data[[name]] <- x@data[[name]][look]
+#         } else if (is.matrix(x@data[[name]])) {
+#             res@data[[name]] <- x@data[[name]][look,]
+#         } else if (is.array(x@data[[name]])) {
+#             res@data[[name]] <- x@data[[name]][look,,]
+#         } else {
+#             res@data[[name]] <- x@data[[name]][look] # for reasons unknown, 'time' is not a vector
+#         }
+#     }
+#     res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+#     res
+# }
 
-## tail.adp <- function(x, n = 6L, ...)
-## {
-##     numberOfProfiles <- dim(x[["v"]])[1]
-##     if (n < 0)
-##         look <- seq.int(1, min(numberOfProfiles, numberOfProfiles + n))
-##     else
-##         look <- seq.int(max(1, (1 + numberOfProfiles - n)), numberOfProfiles)
-##     res <- x
-##     for (name in names(x@data)) {
-##         if (is.vector(x@data[[name]])) {
-##             res@data[[name]] <- x@data[[name]][look]
-##         } else if (is.matrix(x@data[[name]])) {
-##             res@data[[name]] <- x@data[[name]][look,]
-##         } else if (is.array(x@data[[name]])) {
-##             res@data[[name]] <- x@data[[name]][look,,]
-##         } else {
-##             res@data[[name]] <- x@data[[name]][look] # for reasons unknown, 'time' is not a vector
-##         }
-##     }
-##     res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
-##     res
-## }
+# tail.adp <- function(x, n = 6L, ...)
+# {
+#     numberOfProfiles <- dim(x[["v"]])[1]
+#     if (n < 0)
+#         look <- seq.int(1, min(numberOfProfiles, numberOfProfiles + n))
+#     else
+#         look <- seq.int(max(1, (1 + numberOfProfiles - n)), numberOfProfiles)
+#     res <- x
+#     for (name in names(x@data)) {
+#         if (is.vector(x@data[[name]])) {
+#             res@data[[name]] <- x@data[[name]][look]
+#         } else if (is.matrix(x@data[[name]])) {
+#             res@data[[name]] <- x@data[[name]][look,]
+#         } else if (is.array(x@data[[name]])) {
+#             res@data[[name]] <- x@data[[name]][look,,]
+#         } else {
+#             res@data[[name]] <- x@data[[name]][look] # for reasons unknown, 'time' is not a vector
+#         }
+#     }
+#     res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+#     res
+# }
 
 
 
@@ -1979,7 +1979,7 @@ setMethod(f="plot",
                     stop("zlim must be a vector of length 2, or a matrix with 2 columns")
                 }
             } else {
-                ## FIXME: should this be made into a matrix?
+                # FIXME: should this be made into a matrix?
                 zlimAsGiven <- zlim
             }
         }
@@ -2119,7 +2119,7 @@ setMethod(f="plot",
                         oceDebug(debug, "a velocity component image/timeseries\n")
                         z <- x[["v", j]][, , which[w]]
                         oceDebug(debug, "class(z) after subsetting for 3rd dimension:: ", class(z), "\n")
-                        ## oceDebug(debug, "dim(z): ", paste(dim(z), collapse="x"), "\n")
+                        # oceDebug(debug, "dim(z): ", paste(dim(z), collapse="x"), "\n")
                         zlab <- if (missing(titles)) beamName(x, which[w]) else titles[w]
                         oceDebug(debug, "zlab:", zlab, "\n")
                         xdistance <- x[["distance", j]]
@@ -2144,7 +2144,7 @@ setMethod(f="plot",
                     }
                 } else if (which[w] %in% 5:8) {
                     oceDebug(debug, "which[", w, "]=", which[w], "; this is some type of amplitude\n", sep="")
-                    ## amplitude
+                    # amplitude
                     if (j == "diagnostic" && "aDia" %in% names(x@data)) {
                         oceDebug(debug, "a diagnostic amplitude component image/timeseries\n")
                         z <- x[["aDia", "numeric"]][, , which[w]-4]
@@ -2162,7 +2162,7 @@ setMethod(f="plot",
                         z <- a[, , which[w]-4]
                         dim(z) <- dim(a)[1:2]
                         oceDebug(debug, "accessed data, of dim=", paste(dim(z), collapse="x"), "\n")
-                        ##OLD dim(z) <- dim(x@data$a)[1:2] # FIXME: why was this here?
+                        #OLD dim(z) <- dim(x@data$a)[1:2] # FIXME: why was this here?
                         xdistance <- x[["distance", j]]
                         oceDebug(debug, vectorShow(xdistance))
                         y.look <- if (ylimGiven) ylimAsGiven[1] <= xdistance & xdistance <= ylimAsGiven[2] else rep(TRUE, length(xdistance))
@@ -2369,7 +2369,7 @@ setMethod(f="plot",
                 # time-series types
                 col <- if (colGiven) rep(col, length.out=nw) else rep("black", length.out=nw)
                 oceDebug(debug, "graph ", w, " is a timeseries\n", sep="")
-                ##par(mgp=mgp, mar=mar, cex=cex)
+                #par(mgp=mgp, mar=mar, cex=cex)
                 tlim <- range(x[["time", j]])
                 if (which[w] == 13) {
                     oceDebug(debug, "which[", w, "] == 13 (salinity)\n", sep="")
@@ -2921,7 +2921,7 @@ setMethod(f="plot",
                     xx <- major * cos(theta)
                     yy <- minor * sin(theta)
                     theta0 <- atan2(e$vectors[2, 1], e$vectors[1, 1])
-                    ##cat("major", major, "minor", minor, "theta0", theta0, "\n")
+                    #cat("major", major, "minor", minor, "theta0", theta0, "\n")
                     rotate <- rbind(c(cos(theta0), -sin(theta0)),
                         c(sin(theta0), cos(theta0)))
                     xxyy <- rotate %*% rbind(xx, yy)
@@ -2964,9 +2964,9 @@ setMethod(f="plot",
                             stop("In plot,adp-method() : no latitude or longitude in object's metadata, so cannot draw map", call.=FALSE)
                         }
                     } else {
-                        ## named coastline
+                        # named coastline
                         if (!exists(paste("^", coastline, "$", sep=""))) {
-                            ## load it, if necessary
+                            # load it, if necessary
                             if (requireNamespace("ocedata", quietly=TRUE)) {
                                 if (coastline == "best") {
                                     best <- coastlineBest(span=span, debug=debug-1)
@@ -3118,14 +3118,14 @@ toEnuAdp <- function(x, declination=0, debug=getOption("oceDebug"))
 #' plot(adp, which=5) # beam 1 echo intensity
 #' adp.att <- beamUnspreadAdp(adp)
 #' plot(adp.att, which=5) # beam 1 echo intensity
-#' ## Profiles
+#' # Profiles
 #' par(mar=c(4, 4, 1, 1))
 #' a <- adp[["a", "numeric"]]             # second arg yields matrix return value
 #' distance <- adp[["distance"]]
 #' plot(apply(a,2,mean), distance, type='l', xlim=c(0,256))
 #' lines(apply(a,2,median), distance, type='l',col='red')
 #' legend("topright",lwd=1,col=c("black","red"),legend=c("original","attenuated"))
-#' ## Image
+#' # Image
 #' plot(adp.att, which="amplitude",col=oce.colorsViridis(100))
 #'
 #' @family things related to adp data
@@ -3399,31 +3399,31 @@ beamToXyzAdpAD2CP <- function(x, debug=getOption("oceDebug"))
                                 c(0,              0, -TMc*TMa, TMc*TMa),
                                 c(TMb,          TMb,      TMb,     TMb),
                                 c(TMd,          TMd,     -TMd,    -TMd))
-                    ## TIMING new way:
-                    ## TIMING    user  system elapsed
-                    ## TIMING  11.661  27.300  89.293
-                    ## TIMING old way:
-                    ## TIMING    user  system elapsed
-                    ## TIMING  15.977  24.182  88.971
-                    ## TIMING cat("new way:\n")
-                    ## TIMING print(system.time({
-                    ## TIMING     v1 <- V[,,1]
-                    ## TIMING     v2 <- V[,,2]
-                    ## TIMING     v3 <- V[,,3]
-                    ## TIMING     v4 <- V[,,4]
-                    ## TIMING     res@data[[j]]$v[,,1] <- tm[1,1]*v1 + tm[1,2]*v2 + tm[1,3]*v3 + tm[1,4]*v4
-                    ## TIMING     res@data[[j]]$v[,,2] <- tm[2,1]*v1 + tm[2,2]*v2 + tm[2,3]*v3 + tm[2,4]*v4
-                    ## TIMING     res@data[[j]]$v[,,3] <- tm[3,1]*v1 + tm[3,2]*v2 + tm[3,3]*v3 + tm[3,4]*v4
-                    ## TIMING     res@data[[j]]$v[,,4] <- tm[4,1]*v1 + tm[4,2]*v2 + tm[4,3]*v3 + tm[4,4]*v4
-                    ## TIMING     rm(v1, v2, v3, v4)
-                    ## TIMING }))
-                    ## TIMING cat("old way:\n")
-                    ## TIMING print(system.time({
-                    ## TIMING     res@data[[j]]$v[,,1] <- tm[1,1]*V[,,1] + tm[1,2]*V[,,2] + tm[1,3]*V[,,3] + tm[1,4]*V[,,4]
-                    ## TIMING     res@data[[j]]$v[,,2] <- tm[2,1]*V[,,1] + tm[2,2]*V[,,2] + tm[2,3]*V[,,3] + tm[2,4]*V[,,4]
-                    ## TIMING     res@data[[j]]$v[,,3] <- tm[3,1]*V[,,1] + tm[3,2]*V[,,2] + tm[3,3]*V[,,3] + tm[3,4]*V[,,4]
-                    ## TIMING     res@data[[j]]$v[,,4] <- tm[4,1]*V[,,1] + tm[4,2]*V[,,2] + tm[4,3]*V[,,3] + tm[4,4]*V[,,4]
-                    ## TIMING }))
+                    # TIMING new way:
+                    # TIMING    user  system elapsed
+                    # TIMING  11.661  27.300  89.293
+                    # TIMING old way:
+                    # TIMING    user  system elapsed
+                    # TIMING  15.977  24.182  88.971
+                    # TIMING cat("new way:\n")
+                    # TIMING print(system.time({
+                    # TIMING     v1 <- V[,,1]
+                    # TIMING     v2 <- V[,,2]
+                    # TIMING     v3 <- V[,,3]
+                    # TIMING     v4 <- V[,,4]
+                    # TIMING     res@data[[j]]$v[,,1] <- tm[1,1]*v1 + tm[1,2]*v2 + tm[1,3]*v3 + tm[1,4]*v4
+                    # TIMING     res@data[[j]]$v[,,2] <- tm[2,1]*v1 + tm[2,2]*v2 + tm[2,3]*v3 + tm[2,4]*v4
+                    # TIMING     res@data[[j]]$v[,,3] <- tm[3,1]*v1 + tm[3,2]*v2 + tm[3,3]*v3 + tm[3,4]*v4
+                    # TIMING     res@data[[j]]$v[,,4] <- tm[4,1]*v1 + tm[4,2]*v2 + tm[4,3]*v3 + tm[4,4]*v4
+                    # TIMING     rm(v1, v2, v3, v4)
+                    # TIMING }))
+                    # TIMING cat("old way:\n")
+                    # TIMING print(system.time({
+                    # TIMING     res@data[[j]]$v[,,1] <- tm[1,1]*V[,,1] + tm[1,2]*V[,,2] + tm[1,3]*V[,,3] + tm[1,4]*V[,,4]
+                    # TIMING     res@data[[j]]$v[,,2] <- tm[2,1]*V[,,1] + tm[2,2]*V[,,2] + tm[2,3]*V[,,3] + tm[2,4]*V[,,4]
+                    # TIMING     res@data[[j]]$v[,,3] <- tm[3,1]*V[,,1] + tm[3,2]*V[,,2] + tm[3,3]*V[,,3] + tm[3,4]*V[,,4]
+                    # TIMING     res@data[[j]]$v[,,4] <- tm[4,1]*V[,,1] + tm[4,2]*V[,,2] + tm[4,3]*V[,,3] + tm[4,4]*V[,,4]
+                    # TIMING }))
                     res@data[[item]]$v[, , 1] <- tm[1, 1]*v1 + tm[1, 2]*v2 + tm[1, 3]*v3 + tm[1, 4]*v4
                     res@data[[item]]$v[, , 2] <- tm[2, 1]*v1 + tm[2, 2]*v2 + tm[2, 3]*v3 + tm[2, 4]*v4
                     res@data[[item]]$v[, , 3] <- tm[3, 1]*v1 + tm[3, 2]*v2 + tm[3, 3]*v3 + tm[3, 4]*v4
@@ -3527,12 +3527,12 @@ beamToXyzAdpAD2CP <- function(x, debug=getOption("oceDebug"))
 #'
 #' @author Dan Kelley and Clark Richards
 #'
-## @section Limitations:
-## For AD2CP objects, created by[read.adp.ad2cp()],
-## the transformation to ENU coordinates is only possible if the instrument
-## orientation is `"AHRS"`. Other orientations may be added, if users
-## indicat a need for them, and supply the developers with test file (including
-## at least a few expected results).
+# @section Limitations:
+# For AD2CP objects, created by[read.adp.ad2cp()],
+# the transformation to ENU coordinates is only possible if the instrument
+# orientation is `"AHRS"`. Other orientations may be added, if users
+# indicat a need for them, and supply the developers with test file (including
+# at least a few expected results).
 #'
 #' @references
 #' 1. Teledyne RD Instruments. \dQuote{ADCP Coordinate Transformation: Formulas and Calculations,}
@@ -3566,7 +3566,7 @@ xyzToEnuAdp <- function(x, declination=0, debug=getOption("oceDebug"))
     if (is.ad2cp(x)) {
         return(xyzToEnuAdpAD2CP(x=x, declination=declination, debug=debug))
     }
-    ## Now, address non-AD2CP cases.
+    # Now, address non-AD2CP cases.
     manufacturer <- x[["manufacturer"]]
     oceCoordinate <- x[["oceCoordinate"]]
     orientation <- x[["orientation"]][1]
@@ -3865,7 +3865,7 @@ xyzToEnuAdpAD2CP <- function(x, declination=0, debug=getOption("oceDebug"))
                     # R method
                     # user  system elapsed
                     # 0.400   0.139   0.540
-                    ##
+                    #
                     #> message("R method")
                     # Prior to 2022-07-08 (when read.adp.nortek() was
                     # vectorized), AHRS was a rotation matrix.  After that, it
@@ -4100,7 +4100,7 @@ binmapAdp <- function(x, debug=getOption("oceDebug"))
     if (!inherits(x, "adp"))
         stop("x must be an \"adp\" object")
     v <- x[["v"]]
-    a <- x[["a"]] ## FIXME: should ensure that this exist
+    a <- x[["a"]] # FIXME: should ensure that this exist
     q <- x[["q"]]
     g <- x[["g"]]
     if (4 != dim(v)[3])
@@ -4109,10 +4109,10 @@ binmapAdp <- function(x, debug=getOption("oceDebug"))
     distance <- x[["distance"]]
     roll <- x[["roll"]]
     pitch <- x[["pitch"]]
-    ## Below, we loop through the profiles.  I tried an experiment in
-    ## vectorizing across the loop, by combining into a single vector
-    ## for (distance, cr, ...), but it was no faster, and the code was
-    ## more complicated to read.
+    # Below, we loop through the profiles.  I tried an experiment in
+    # vectorizing across the loop, by combining into a single vector
+    # for (distance, cr, ...), but it was no faster, and the code was
+    # more complicated to read.
     vbm <- array(double(), dim=dim(v))
     abm <- array(raw(), dim=dim(v))
     qbm <- array(raw(), dim=dim(v))
@@ -4154,26 +4154,26 @@ binmapAdp <- function(x, debug=getOption("oceDebug"))
             vbm[profile, , 3] <- NA
             vbm[profile, , 4] <- NA
         }
-        ## a
+        # a
         rule <- 2                      # FIXME: is is OK to extend data to edges?
         abm[profile, , 1] <- oce.as.raw(approx(z1, as.numeric(a[profile, , 1], rule=rule), distance)$y)
         abm[profile, , 2] <- oce.as.raw(approx(z2, as.numeric(a[profile, , 2], rule=rule), distance)$y)
         abm[profile, , 3] <- oce.as.raw(approx(z3, as.numeric(a[profile, , 3], rule=rule), distance)$y)
         abm[profile, , 4] <- oce.as.raw(approx(z4, as.numeric(a[profile, , 4], rule=rule), distance)$y)
-        ## q
+        # q
         qbm[profile, , 1] <- oce.as.raw(approx(z1, as.numeric(q[profile, , 1], rule=rule), distance)$y)
         qbm[profile, , 2] <- oce.as.raw(approx(z2, as.numeric(q[profile, , 2], rule=rule), distance)$y)
         qbm[profile, , 3] <- oce.as.raw(approx(z3, as.numeric(q[profile, , 3], rule=rule), distance)$y)
         qbm[profile, , 4] <- oce.as.raw(approx(z4, as.numeric(q[profile, , 4], rule=rule), distance)$y)
-        ## g
+        # g
         gbm[profile, , 1] <- oce.as.raw(approx(z1, as.numeric(g[profile, , 1], rule=rule), distance)$y)
         gbm[profile, , 2] <- oce.as.raw(approx(z2, as.numeric(g[profile, , 2], rule=rule), distance)$y)
         gbm[profile, , 3] <- oce.as.raw(approx(z3, as.numeric(g[profile, , 3], rule=rule), distance)$y)
         gbm[profile, , 4] <- oce.as.raw(approx(z4, as.numeric(g[profile, , 4], rule=rule), distance)$y)
     }
     res@data$v <- vbm
-    ##cat("R : v1      ", format(v[1,1:8,1], width=11, digits=7), "\n")
-    ##cat("R : V1      ", format(vbm[1,1:8,1], width=11, digits=7), "\n")
+    #cat("R : v1      ", format(v[1,1:8,1], width=11, digits=7), "\n")
+    #cat("R : V1      ", format(vbm[1,1:8,1], width=11, digits=7), "\n")
     res@data$a <- abm
     res@data$q <- qbm
     res@data$g <- gbm
@@ -4241,7 +4241,7 @@ adpEnsembleAverage <- function(x, n=5, leftover=FALSE, na.rm=TRUE, ...)
     for (field in names(d)) {
         if (field != "time" && field != "distance") {
             if (is.vector(d[[field]])) {
-                ##res@data[[field]] <- binAverage(pings, d[[field]], xinc=n)$y
+                #res@data[[field]] <- binAverage(pings, d[[field]], xinc=n)$y
                 res@data[[field]] <- as.numeric(lapply(split(as.numeric(d[[field]]), fac), mean, na.rm=na.rm, ...))
             } else if (is.array(d[[field]])) {
                 fdim <- dim(d[[field]])

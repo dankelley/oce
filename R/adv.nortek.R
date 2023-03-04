@@ -411,7 +411,7 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         oceDebug(debug, "vsd.dt=", vsd.dt, "(from twoTimes)\n")
         vvdStart <- vvdStart[vsdStart[fromIndex] <= vvdStart & vvdStart <= vsdStart[toIndex]]
         # vvdDt <- vsd.dt * (toIndex - fromIndex) / length(vvdStart)
-        ## find vvd region that lies inside the vsd [from, to] region.
+        # find vvd region that lies inside the vsd [from, to] region.
         # vvdStartFrom <- max(1, vvdStart[vvdStart < fromPair$index])
         # vvdStartTo   <- min(length(vvdStart), vvdStart[vvdStart > toPair$index])
     } else {
@@ -494,8 +494,8 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     status <- buf[vsdStart[floor(0.5*length(vsdStart))] + 23]
     res@metadata$orientation <- if ("0" == substr(byteToBinary(status, endian="big"), 1, 1)) "upward" else "downward"
     # FIXME: should read roll and pitch "out of range" or "OK" here, in bites 3 and 2
-    # FIXME was wrong## res@metadata$burstLength <- round(length(vvdStart) / length(vsdStart), 0) # FIXME: surely this is in the header (?!?)
-    # FIXME was wrong## oceDebug(debug, vectorShow(res@metadata$burstLength, "burstLength"))
+    # FIXME was wrong# res@metadata$burstLength <- round(length(vvdStart) / length(vsdStart), 0) # FIXME: surely this is in the header (?!?)
+    # FIXME was wrong# oceDebug(debug, vectorShow(res@metadata$burstLength, "burstLength"))
     vvdStart2 <- sort(c(vvdStart, 1 + vvdStart))
     vvdLen <- length(vvdStart)          # FIXME: should be subsampled with 'by' ... but how???
     if (haveAnalog1) {
@@ -539,8 +539,8 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     #sec <- as.numeric(vsdTime) - as.numeric(vsdTime[1])
     #vds <- var(diff(sec))
     #BAD: vvdSec <- .Call("stutter_time", sec, 8)
-    ######vvdSec <- approx(seq(0, 1, length.out=length(vsdTime)), vsdTime, seq(0, 1, length.out=length(vvdStart)))$y
-    ######oceDebug(debug, vectorShow(vvdSec, "vvdSec"))
+    #vvdSec <- approx(seq(0, 1, length.out=length(vsdTime)), vsdTime, seq(0, 1, length.out=length(vvdStart)))$y
+    #oceDebug(debug, vectorShow(vvdSec, "vvdSec"))
     oceDebug(debug, vectorShow(vsdStart, "vsdStart"))
     oceDebug(debug, vectorShow(vvdStart, "vvdStart"))
     rm(buf)
@@ -556,10 +556,10 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     len <- length(vvdStart)
     look <- seq(1, len, by=by)
     oceDebug(debug, "length(vvdStart)=", length(vvdStart), "\n")
-    ##vvdStart.orig <- vvdStart
+    #vvdStart.orig <- vvdStart
     vvdStart <- vvdStart[look]
     oceDebug(debug, "length(vvdStart)=", length(vvdStart), "(after 'look'ing) with by=", by, "\n")
-    ######vvdSec <- vvdSec[look]
+    #vvdSec <- vvdSec[look]
     pressure <- pressure[look]          # only output at burst headers, not with velo (FIXME: huh??)
     v <- v[look, ]
     a <- a[look, ]

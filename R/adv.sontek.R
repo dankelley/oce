@@ -146,7 +146,7 @@ read.adv.sontek.serial <- function(file, from=1, to, by=1, tz=getOption("oceTz")
     res@metadata$subsampleStart <- time[1] # FIXME: this seems wrong
     res@metadata$subsampleEnd <- time[length(time)] # FIXME: this seems wrong
     res@metadata$subsampleDeltat <- deltat
-    res@metadata$##velocityScale <- velocityScale
+    #??? very old code, but meaningless -- res@metadata$##velocityScale <- velocityScale
     res@metadata$originalCoordinate <- "xyz" # guess
     res@metadata$velocityResolution <- velocityScale
     res@metadata$velocityMaximum <- velocityScale * 2^15
@@ -872,8 +872,8 @@ read.adv.sontek.text <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
 #' @return `advSontekAdrFileTrim()` returns the name of the output file, `outfile`, as
 #' provided or constructed.
 #'
-## @family things related to adv data
-## @family functions that trim data files
+#' @family things related to adv data
+#' @family functions that trim data files
 advSontekAdrFileTrim <- function(infile, n=100, outfile, debug=getOption("oceDebug"))
 {
     oceDebug(debug, "advSontekAdrFileTrim(\"", infile, "\", n=", n, ", ...) {\n", sep="", unindent=1)

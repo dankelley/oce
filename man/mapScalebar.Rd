@@ -42,7 +42,7 @@ but now it can be any diagram showing longitude and latitude in degrees.
 \donttest{
 library(oce)
 data(coastlineWorld)
-## Arctic Ocean
+# Arctic Ocean
 par(mar=c(2.5, 2.5, 1, 1))
 mapPlot(coastlineWorld, latitudelim=c(60, 120), longitudelim=c(-130,-50),
         col="lightgray", projection="+proj=stere +lat_0=90")

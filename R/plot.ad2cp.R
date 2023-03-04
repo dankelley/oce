@@ -236,10 +236,10 @@ plotAD2CP <- function(x, which=NULL, cex, col, pch, lwd, type, debug=getOption("
         if (length(beams) > 1L)
             par(opar)
         #message(vectorShow(D))
-        ##message(vectorShow(nbeam))
+        #message(vectorShow(nbeam))
         #dots <- list(...)
         #dotsNames <- names(dots)
-        ##cat(str(dots))
+        #cat(str(dots))
         #beams <- if (nw < 2L) seq_len(nbeam) else w[2]
         #if (length(beams) > 1L)
         #    par(mfrow=c(length(beams), 1))

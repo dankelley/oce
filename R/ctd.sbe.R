@@ -128,7 +128,7 @@
 #' `scan`        \tab `scan`                     \tab -                    \tab   \cr
 #' `seaTurbMtr~` \tab `turbidity`                \tab FTU; Seapoint        \tab   \cr
 #' `secS-priS`   \tab `salinityDifference`       \tab -, PSS-78            \tab   \cr
-## `sigma-é`     \tab `sigmaTheta`               \tab kg/m^3               \tab 5 \cr
+# `sigma-é`     \tab `sigmaTheta`               \tab kg/m^3               \tab 5 \cr
 #' \code{sigma-}\enc{é}{e} \tab `sigmaTheta`     \tab kg/m^3               \tab 5 \cr
 #' `sigma-t`     \tab `sigmaT`                   \tab kg/m^3               \tab   \cr
 #' `sigma-theta` \tab `sigmaTheta`               \tab kg/m^3               \tab 5 \cr
@@ -201,7 +201,7 @@
 #'
 #' @template debugTemplate
 #'
-## NOTE: @return is handled in readCtdTemplate
+# NOTE: @return is handled in readCtdTemplate
 #'
 #' @author Dan Kelley
 #'
@@ -417,11 +417,11 @@ cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
         name <- "pressure"
         unit <- list(unit=expression(dbar), scale="")
     } else if (1 == length(grep("^prdE$", name))) {
-        ## Caution: English unit
+        # Caution: English unit
         name <- "pressurePSI"
         unit <- list(unit=expression(psi), scale="")
     } else if (1 == length(grep("^prDE$", name))) {
-        ## Caution: English unit
+        # Caution: English unit
         name <- "pressurePSI"
         unit <- list(unit=expression(psi), scale="")
     } else if (1 == length(grep("^prM$", name))) {
@@ -525,7 +525,7 @@ cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
             # for this, and throughout.  See
             # https://github.com/dankelley/oce/issues/1977 for details.
         } else {
-            name <- "sigma" ## give up; this is a default
+            name <- "sigma" # give up; this is a default
         }
         # In all these cases, the unit is the same
         unit <- list(unit=expression(kg/m^3), scale="")
@@ -554,11 +554,11 @@ cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
         name <- "temperature"
         unit <- list(unit=expression(degree*C), scale="ITS-90")
     } else if (name %in% c("t4968C", "tnc68C", "tv268C", "tnc268C", "t3868C", "t3836C1", "t38_68C")) {
-        ## [1] p169-170
+        # [1] p169-170
         name <- "temperature"
         unit <- list(unit=expression(degree*C), scale="IPTS-68")
     } else if (name %in% c("t4990C", "tnc90C", "tv290C", "tnc290C", "t3890C", "t3890C1", "t38_90C")) {
-        ## [1] p169-170
+        # [1] p169-170
         name <- "temperature"
         unit <- list(unit=expression(degree*C), scale="ITS-90")
     } else if (1 == length(grep("^timeH$", name))) {
@@ -661,11 +661,11 @@ cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
 #' to `"salinity"`.  Also, the "avg" and "sdev" columns are blended together, with
 #' all the latter named as in the file, but with `"_sdev"` appended.
 #'
-## @param humanDateFormat optional character string specifying the format for dates
-## in the human-entered header line that starts with "`** Date:`". See the
-## \dQuote{A note on hand-entered headers} section for the reason for this parameter.
-## If supplied, then `humanDateFormat` is supplied as the `format` argument to
-## [as.POSIXct()], which is supplied with the information on this date line.
+# @param humanDateFormat optional character string specifying the format for dates
+# in the human-entered header line that starts with "`** Date:`". See the
+# \dQuote{A note on hand-entered headers} section for the reason for this parameter.
+# If supplied, then `humanDateFormat` is supplied as the `format` argument to
+# [as.POSIXct()], which is supplied with the information on this date line.
 #'
 #' @author Dan Kelley and Clark Richards
 #'
@@ -891,10 +891,10 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
     header <- c()
     foundHeaderLatitude <- foundHeaderLongitude <- FALSE
     serialNumber <- serialNumberConductivity <- serialNumberTemperature <- ""
-    ## units$conductivity <- list(unit=expression(), scale="") # guess; other types are "mS/cm" and "S/m"
-    ## units$temperature <- list(unit=expression(degree*C), scale="ITS-90") # guess; other option is IPTS-68
+    # units$conductivity <- list(unit=expression(), scale="") # guess; other types are "mS/cm" and "S/m"
+    # units$temperature <- list(unit=expression(degree*C), scale="ITS-90") # guess; other option is IPTS-68
     pressureType <- "sea"              # guess; other option is "absolute"
-    ## Silence warnings because binary files have 'NUL' characters that spew many warnings
+    # Silence warnings because binary files have 'NUL' characters that spew many warnings
     warn <- options("warn")$warn
     options(warn=-1)
     # 2022-07-15: drop encoding=, which is a problem for upcoming R.
@@ -948,10 +948,10 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
         #line <- scan(file, what='char', sep="\n", n=1, quiet=TRUE)
         oceDebug(debug > 1L, paste("Examining header line ", iline, " '", line, "'\n", sep=""))
         header <- c(header, line)
-        ##if (length(grep("\*END\*", line))) #BUG# why is this regexp no good (new with R-2.1.0)
+        #if (length(grep("\*END\*", line))) #BUG# why is this regexp no good (new with R-2.1.0)
         aline <- iconv(line, from="UTF-8", to="ASCII", sub="?")
         if (length(grep("^\\s*\\*END\\*\\s*$", aline, perl=TRUE))) {
-            ## Sometimes SBE files have a header line after the *END* line.
+            # Sometimes SBE files have a header line after the *END* line.
             iline <- iline + 1
             if (length(grep("[a-cf-zA-CF-Z]", lines[iline]))) {
                 iline <- iline + 1
@@ -1087,8 +1087,8 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
             waterDepth<- as.numeric(look)
             oceDebug(debug, "inferred waterDepth=", waterDepth, "[m] from '", aline, "'\n", sep="")
         }
-        ## [1] "# interval = seconds: 1
-        ## [1] "# interval = decibars: 1
+        # [1] "# interval = seconds: 1
+        # [1] "# interval = decibars: 1
         if (grepl("^# interval = .*$", lline)) {
             value <- gsub("^.*:[ ]*([0-9.]*)[ ]*$", "\\1", lline)
             units <- gsub("^.*=[ ]*(.*):(.*)$", "\\1", lline)
@@ -1220,7 +1220,7 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
         sdevValid <- !is.na(sdev[1, ]) & !grepl("Date", names(sdev))
         sdev <- sdev[, sdevValid]
         names(sdev) <- paste0(names(sdev), "_sdev")
-        ## Recombine, then trim the "type" columns, which we kept only for testing, so far
+        # Recombine, then trim the "type" columns, which we kept only for testing, so far
         data <- cbind(avg, sdev)
         trimCols <- grep("^(type)|(typeSdev)$", names(data))
         if (2 != length(trimCols)) {

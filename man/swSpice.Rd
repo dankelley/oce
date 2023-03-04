@@ -65,7 +65,7 @@ degrees). Note that pressure, longitude and latitude are all
 ignored in the Flament definition.
 }
 \examples{
-## Contrast the two formulations.
+# Contrast the two formulations.
 library(oce)
 data(ctd)
 p <- ctd[["pressure"]]

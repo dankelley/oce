@@ -29,7 +29,7 @@ was changed to \code{"big"} on 2017 May 6.
 }
 \examples{
 library(oce)
-## Note comparison with rawToBits():
+# Note comparison with rawToBits():
 a <- as.raw(0x0a)
 byteToBinary(a, "big")        # "00001010"
 as.integer(rev(rawToBits(a))) # 0 0 0 0 1 0 1 0

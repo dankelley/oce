@@ -2518,18 +2518,18 @@ read.section <- function(file,
 #' GS <- subset(section, 113<=stationId&stationId<=129)
 #' GSg <- sectionGrid(GS, p=seq(0, 5000, 100))
 #' plot(GSg, which="temperature")
-## plot(GSg, map.xlim=c(-80,-60))
-## # Show effects of various depth schemes
-## par(mfrow=c(3, 1))
-## default <- sectionGrid(GS)
-## approxML <- sectionGrid(GS, method="approxML")
-## standardDepths5 <- sectionGrid(GS, p=standardDepths(5))
-## plot(default, which="temperature", ztype="image", ylim=c(200,0))
-## mtext("default sectionGrid()")
-## plot(approxML, which="temperature", ztype="image", ylim=c(200,0))
-## mtext("sectionGrid(..., method=\"approxML\")")
-## plot(standardDepths5, which="temperature", ztype="image", ylim=c(200,0))
-## mtext("sectionGrid(..., p=standardDepths(5))")
+# plot(GSg, map.xlim=c(-80,-60))
+# # Show effects of various depth schemes
+# par(mfrow=c(3, 1))
+# default <- sectionGrid(GS)
+# approxML <- sectionGrid(GS, method="approxML")
+# standardDepths5 <- sectionGrid(GS, p=standardDepths(5))
+# plot(default, which="temperature", ztype="image", ylim=c(200,0))
+# mtext("default sectionGrid()")
+# plot(approxML, which="temperature", ztype="image", ylim=c(200,0))
+# mtext("sectionGrid(..., method=\"approxML\")")
+# plot(standardDepths5, which="temperature", ztype="image", ylim=c(200,0))
+# mtext("sectionGrid(..., p=standardDepths(5))")
 #'
 #' @author Dan Kelley
 #'
@@ -2754,25 +2754,25 @@ sectionGrid <- function(section, p, method="approx", trim=TRUE, debug=getOption(
 #' plot(gsBarnes, which="temperature")
 #' mtext("Barnes-smoothed")
 #'
-## # Kriging.
-## # As of early March, 2022, two CRAN test machines (running R-devel
-## # on linux-fedora) started to fail on the code shown below, so it
-## # was deactivated, as a cautionary measure.  It may reactivated
-## # later, if the CRAN machines start handling it properly again.
-##\dontrun{
-## if (requireNamespace("automap",quietly=TRUE)&&requireNamespace("sp",quietly=TRUE)) {
-##   krig <- function(x, y, F, xg, xr, yg, yr) {
-##     xy <- data.frame(x=x/xr, y=y/yr)
-##     K <- automap::autoKrige(F~1, remove_duplicates=TRUE,
-##                             input_data=sp::SpatialPointsDataFrame(xy, data.frame(F)),
-##                             new_data=sp::SpatialPoints(expand.grid(xg/xr, yg/yr)))
-##     matrix(K$krige_output@data$var1.pred, nrow=length(xg), ncol=length(yg))
-##   }
-##   gsKrig <- sectionSmooth(gs, krig)
-##   plot(gsKrig, which="temperature")
-##   mtext("Kriging-smoothed")
-## }
-##}
+# # Kriging.
+# # As of early March, 2022, two CRAN test machines (running R-devel
+# # on linux-fedora) started to fail on the code shown below, so it
+# # was deactivated, as a cautionary measure.  It may reactivated
+# # later, if the CRAN machines start handling it properly again.
+#\dontrun{
+# if (requireNamespace("automap",quietly=TRUE)&&requireNamespace("sp",quietly=TRUE)) {
+#   krig <- function(x, y, F, xg, xr, yg, yr) {
+#     xy <- data.frame(x=x/xr, y=y/yr)
+#     K <- automap::autoKrige(F~1, remove_duplicates=TRUE,
+#                             input_data=sp::SpatialPointsDataFrame(xy, data.frame(F)),
+#                             new_data=sp::SpatialPoints(expand.grid(xg/xr, yg/yr)))
+#     matrix(K$krige_output@data$var1.pred, nrow=length(xg), ncol=length(yg))
+#   }
+#   gsKrig <- sectionSmooth(gs, krig)
+#   plot(gsKrig, which="temperature")
+#   mtext("Kriging-smoothed")
+# }
+#}
 #'
 #' @author Dan Kelley
 #'

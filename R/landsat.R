@@ -156,7 +156,7 @@
 #' 11. Konda, M. Imasato N., Nishi, K., and T. Toda, 1994.  Measurement of the Sea
 #' Surface Emissivity.  *Journal of Oceanography*, 50, 17:30.
 #' \doi{10.1007/BF02233853}
-## \code{http://www.terrapub.co.jp/journals/JO/pdf/5001/50010017.pdf}
+# \code{http://www.terrapub.co.jp/journals/JO/pdf/5001/50010017.pdf}
 #'
 #' @author Dan Kelley and Clark Richards
 #'
@@ -907,7 +907,7 @@ read.landsatmeta <- function(file, encoding="latin1", debug=getOption("oceDebug"
     time <- as.POSIXct(paste(date, centerTime), tz="UTC")
     spacecraft <- getItem(info, "SPACECRAFT_ID", numeric=FALSE)
     id <- getItem(info, "LANDSAT_SCENE_ID", numeric=FALSE)
-    ## Bounding region (not a latlon box!)
+    # Bounding region (not a latlon box!)
     ullat <- getItem(info, "CORNER_UL_LAT_PRODUCT")
     ullon <- getItem(info, "CORNER_UL_LON_PRODUCT")
     urlat <- getItem(info, "CORNER_UR_LAT_PRODUCT")
@@ -927,7 +927,7 @@ read.landsatmeta <- function(file, encoding="latin1", debug=getOption("oceDebug"
     gridCellSizePanchromatic <- getItem(info, "GRID_CELL_SIZE_PANCHROMATIC")
     gridCellSizeReflective <- getItem(info, "GRID_CELL_SIZE_REFLECTIVE")
     gridCellSizeThermal <- getItem(info, "GRID_CELL_SIZE_THERMAL")
-    # ## Image dimensions
+    # # Image dimensions
     # l <- getItem(info, "PANCHROMATIC_LINES")
     # s <- getItem(info, "PANCHROMATIC_SAMPLES")
     # dimPanchromatic <- c(l, s)         # or reverse?
@@ -974,15 +974,15 @@ read.landsatmeta <- function(file, encoding="latin1", debug=getOption("oceDebug"
     list(header=header,
         time=time, spacecraft=spacecraft, id=id,
         bandnames=bandnames, filesuffices=filesuffices,
-        ullat=ullat, ullon=ullon, urlat=urlat, urlon=urlon, ## possibly not needed with UTM
-        lllat=lllat, lllon=lllon, lrlat=lrlat, lrlon=lrlon, ## possibly not needed with UTM
+        ullat=ullat, ullon=ullon, urlat=urlat, urlon=urlon, # possibly not needed with UTM
+        lllat=lllat, lllon=lllon, lrlat=lrlat, lrlon=lrlon, # possibly not needed with UTM
         llUTM=llUTM, urUTM=urUTM, zoneUTM=zoneUTM,
         gridCellSizePanchromatic=gridCellSizePanchromatic,
         gridCellSizeReflective=gridCellSizeReflective,
         gridCellSizeThermal=gridCellSizeThermal)
-    ##dimPanchromatic=dimPanchromatic,
-    ##dimReflective=dimReflective,
-    ##dimThermal=dimThermal)
+    #dimPanchromatic=dimPanchromatic,
+    #dimReflective=dimReflective,
+    #dimThermal=dimThermal)
 }
 
 
@@ -1084,7 +1084,7 @@ read.landsatmeta <- function(file, encoding="latin1", debug=getOption("oceDebug"
 #' 1. Konda, M. Imasato N., Nishi, K., and T. Toda, 1994.  Measurement of the Sea
 #' Surface Emissivity.  *Journal of Oceanography*, 50, 17:30.
 #' \doi{10.1007/BF02233853}
-## \code{http://www.terrapub.co.jp/journals/JO/pdf/5001/50010017.pdf}
+# \code{http://www.terrapub.co.jp/journals/JO/pdf/5001/50010017.pdf}
 #'
 #' @author Dan Kelley
 #'
@@ -1167,7 +1167,7 @@ read.landsat <- function(file,
     options <- options("warn") # avoid readTIFF() warnings about geo tags
     options(warn=-1)
     for (b in seq_along(band)) {
-        ## 'band' is numeric
+        # 'band' is numeric
         bandfilename <- paste(file, "/", actualfilename, "_", header$filesuffices[band[b]], sep="") # FIXME: 1 more layer of indexing?
         d <- tiff::readTIFF(bandfilename)
         if (decimateGiven) {
@@ -1352,7 +1352,7 @@ landsatTrim <- function(x, ll, ur, box, debug=getOption("oceDebug"))
     oceDebug(debug, "      :", nStart, ", nEnd:", nEnd, "after trimming\n")
     oceDebug(debug, "Easting  trim range: eStart:", eStart, ", eEnd:", eEnd, "\n")
     oceDebug(debug, "Northing trim range: nStart:", nStart, ", nEnd:", nEnd, "\n")
-    ## Convert lat-lon limits to i-j indices
+    # Convert lat-lon limits to i-j indices
     for (b in seq_along(x@data)) {
         oceDebug(debug, "Trimming band", x@metadata$bands[b], "\n")
         isList <- is.list(x@data[[b]])

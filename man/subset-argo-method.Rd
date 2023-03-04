@@ -77,7 +77,7 @@ plotTS(subset(argo, "adjusted"))
 \dontrun{
 par(mfrow=c(1, 2))
 plot(argo, which="map")
-## Can get a boundary with e.g. locator(4)
+# Can get a boundary with e.g. locator(4)
 boundary <- list(x=c(-65, -40, -40, -65), y=c(65, 65, 45, 45))
 argoSubset <- subset(argo, within=boundary)
 plot(argoSubset, which="map")

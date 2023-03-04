@@ -240,11 +240,11 @@ as.met <- function(time, temperature, pressure, u, v, filename="(constructed fro
 {
     if (missing(time)) stop("must provide time")
     if (inherits(time, "data.frame")) {
-        ## Try to see whether this was created by a function in the canadaHCL package
+        # Try to see whether this was created by a function in the canadaHCL package
         # Copy the data, renaming some things that we know are named differently
         # in canadaHSD::hcd_hourly().
         res <- new("met")
-        ## Extract Station ID to the metadata
+        # Extract Station ID to the metadata
         names <- names(time)
         if ("Station" %in% names) {
             res@metadata$station <- time$Station[1]
@@ -599,41 +599,41 @@ metNames2oceNames <- function(names, scheme)
 #'
 #' @author Dan Kelley
 #'
-## @examples
-## # The examples do not run on some Windows machines, owing
-## # to encoding issues, and so all these examples are marked
-## # as "don't run".
-##\dontrun{
-## # Example 1: "csv1" Environment Canada format (found to be obsolete as of Oct 2019)
-## csv1 <- read.met(system.file("extdata", "test_met_vsn1.csv", package="oce"))
-## csv1 <- oceSetData(csv1, "time", csv1[["time"]]+4*3600,
-##     note="add 4h to local time to get UTC time")
-##
-## # Example 2: "csv2" Environment Canada format (found to be obsolete as of Jan 2022)
-## csv2 <- read.met(system.file("extdata", "test_met_vsn2.csv", package="oce"))
-## csv2 <- oceSetData(csv2, "time", csv2[["time"]]+4*3600,
-##     note="add 4h to local time to get UTC time")
-##
-## # Example 3: "csv3" Environment Canada format. Note timezone correction
-## csv3 <- read.met(system.file("extdata", "test_met_vsn3.csv", package="oce"))
-## csv3 <- oceSetData(csv3, "time", csv3[["time"]]+4*3600,
-##     note="add 4h to local time to get UTC time")
-##
-## # Example 4: "xml2" format. (Uncertain timezone, so not corrected.)
-## if (requireNamespace("XML", quietly=TRUE))
-##     xml2 <- read.met(system.file("extdata", "test_met_xml2.xml", package="oce"))
-##}
-##
-## # Example 5: download and plot
-## \dontrun{
-## library(oce)
-## # Recreate data(met) and plot u(t) and v(t)
-## metFile <- download.met(id=6358, year=2003, month=9, destdir=".")
-## met <- read.met(metFile)
-## met <- oceSetData(met, "time", met[["time"]]+4*3600,
-##     note="add 4h to local time to get UTC time")
-## plot(met)
-## }
+# @examples
+# # The examples do not run on some Windows machines, owing
+# # to encoding issues, and so all these examples are marked
+# # as "don't run".
+#\dontrun{
+# # Example 1: "csv1" Environment Canada format (found to be obsolete as of Oct 2019)
+# csv1 <- read.met(system.file("extdata", "test_met_vsn1.csv", package="oce"))
+# csv1 <- oceSetData(csv1, "time", csv1[["time"]]+4*3600,
+#     note="add 4h to local time to get UTC time")
+#
+# # Example 2: "csv2" Environment Canada format (found to be obsolete as of Jan 2022)
+# csv2 <- read.met(system.file("extdata", "test_met_vsn2.csv", package="oce"))
+# csv2 <- oceSetData(csv2, "time", csv2[["time"]]+4*3600,
+#     note="add 4h to local time to get UTC time")
+#
+# # Example 3: "csv3" Environment Canada format. Note timezone correction
+# csv3 <- read.met(system.file("extdata", "test_met_vsn3.csv", package="oce"))
+# csv3 <- oceSetData(csv3, "time", csv3[["time"]]+4*3600,
+#     note="add 4h to local time to get UTC time")
+#
+# # Example 4: "xml2" format. (Uncertain timezone, so not corrected.)
+# if (requireNamespace("XML", quietly=TRUE))
+#     xml2 <- read.met(system.file("extdata", "test_met_xml2.xml", package="oce"))
+#}
+#
+# # Example 5: download and plot
+# \dontrun{
+# library(oce)
+# # Recreate data(met) and plot u(t) and v(t)
+# metFile <- download.met(id=6358, year=2003, month=9, destdir=".")
+# met <- read.met(metFile)
+# met <- oceSetData(met, "time", met[["time"]]+4*3600,
+#     note="add 4h to local time to get UTC time")
+# plot(met)
+# }
 #'
 #' @references
 #' 1. Environment Canada website for Historical Climate Data
@@ -723,7 +723,7 @@ read.met.csv1 <- function(file,
     res <- new("met", time=1)
     text <- readLines(file, warn=FALSE)
     oceDebug(debug, "file has ", length(text), " lines\n")
-    ##print(header[1:19])
+    #print(header[1:19])
     textItem <- function(text, name, numeric=TRUE) {
         i <- grep(name, text)
         if (length(i)) {
@@ -740,11 +740,11 @@ read.met.csv1 <- function(file,
     latitude <- textItem(text, "Latitude")
     longitude <- textItem(text, "Longitude")
     station <- textItem(text, "Station Name", FALSE)
-    ##province <- textItem(text, "Province", FALSE) # is this too specific to Canada??
+    #province <- textItem(text, "Province", FALSE) # is this too specific to Canada??
     climateIdentifier <- textItem(text, "Climate Identifier", FALSE)
     WMOIdentifier <- textItem(text, "WMO Identifier", FALSE)
     TCIdentifier <- textItem(text, "TC Identifier", FALSE)
-    ##Identifier <- textItem(text, "Climate Identifier", FALSE)
+    #Identifier <- textItem(text, "Climate Identifier", FALSE)
     if (is.null(skip)) {
         skip <- grep("^\"Date/Time\"", text)[1] - 1
     }
@@ -1311,10 +1311,10 @@ read.met.xml2 <- function(file, skip=NULL, tz=getOption("oceTz"),
 #' data(met)
 #' plot(met, which=3:4)
 #'
-#' ## Wind speed and direction during Hurricane Juan
-#' ## Compare with the final figure in a white paper by Chris Fogarty
-#' ## (available at http://www.novaweather.net/Hurricane_Juan_files/McNabs_plot.pdf
-#' ## downloaded 2017-01-02).
+#' # Wind speed and direction during Hurricane Juan
+#' # Compare with the final figure in a white paper by Chris Fogarty
+#' # (available at http://www.novaweather.net/Hurricane_Juan_files/McNabs_plot.pdf
+#' # downloaded 2017-01-02).
 #' library(oce)
 #' data(met)
 #' t0 <- as.POSIXct("2003-09-29 04:00:00", tz="UTC")

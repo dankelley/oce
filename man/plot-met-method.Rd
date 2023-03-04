@@ -56,10 +56,10 @@ library(oce)
 data(met)
 plot(met, which=3:4)
 
-## Wind speed and direction during Hurricane Juan
-## Compare with the final figure in a white paper by Chris Fogarty
-## (available at http://www.novaweather.net/Hurricane_Juan_files/McNabs_plot.pdf
-## downloaded 2017-01-02).
+# Wind speed and direction during Hurricane Juan
+# Compare with the final figure in a white paper by Chris Fogarty
+# (available at http://www.novaweather.net/Hurricane_Juan_files/McNabs_plot.pdf
+# downloaded 2017-01-02).
 library(oce)
 data(met)
 t0 <- as.POSIXct("2003-09-29 04:00:00", tz="UTC")

@@ -21,7 +21,7 @@ it must be \code{"plain"} (the default) for plain text,
 \code{"bold"}, \code{"italic"}, \code{"red"}, \code{"green"} or \code{"blue"} (with
 obvious meanings).  Note that none of these has any effect
 for non-interactive use, because doing so would make it difficult
-to work with Rmd and similar documents that are to be run
+to work with R-markdown and similar documents that are to be run
 through latex.
 
 If \code{style} is a function, it must prepend and postpend the text

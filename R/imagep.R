@@ -1,4 +1,4 @@
-## vim: tw=80 shiftwidth=4 softtabstop=4 expandtab:
+# vim: tw=80 shiftwidth=4 softtabstop=4 expandtab:
 
 PLEN <- 300 # palette has this many default levels
 
@@ -43,18 +43,18 @@ abbreviateTimeLabels <- function(t, ...)
         return(t)
     }
     year <- substr(t, 1, 4)
-    ## strip years, if all the same
+    # strip years, if all the same
     for (i in 2:n) if (year[i] != year[1]) return(t)
     t <- substr(t, 6, nchar(t))
-    ## strip months, if all the same
+    # strip months, if all the same
     month <- substr(t, 1, 2)
     for (i in 2:n) if (month[i] != month[1]) return(t)
     t <- substr(t, 4, nchar(t))
-    ## strip seconds, if all the same
+    # strip seconds, if all the same
     seconds <- substr(t, nchar(t)-2, nchar(t))
     for (i in 2:n) if (seconds[i] != seconds[1]) return(t)
     t <- substr(t, 1, nchar(t)-3)
-    ## strip minutes, if all the same (this may be confusing)
+    # strip minutes, if all the same (this may be confusing)
     minutes <- substr(t, nchar(t)-2, nchar(t))
     for (i in 2:n) if (minutes[i] != minutes[1]) return(t)
     t <- substr(t, 1, nchar(t)-3)
@@ -112,11 +112,11 @@ paletteCalculations <- function(separation=par("cin")[2]/2, width=par("cin")[2],
     pc$mai1 <- pc$mai0
     pc$mai1f <- pc$mai0
     pc$mai2 <- pc$mai0
-    ##P <- separation + width
+    #P <- separation + width
     P <- width
     A <- tickSpace + textSpace
     if (pos == 1) {
-        ## alter top and bottom margins
+        # alter top and bottom margins
         pc$mai1[1] <- A
         pc$mai1[3] <- figureHeight - P - A
         pc$mai1f[2] <- 0
@@ -124,7 +124,7 @@ paletteCalculations <- function(separation=par("cin")[2]/2, width=par("cin")[2],
         pc$mai2[1] <- P + A + pc$mai0[1]
         pc$mai2[3] <- pc$mai0[3]
     } else if (pos == 2) {
-        ## alter left and right margins
+        # alter left and right margins
         pc$mai1[2] <- A
         pc$mai1[4] <- figureWidth - P - A
         pc$mai1f[4] <- 0
@@ -132,7 +132,7 @@ paletteCalculations <- function(separation=par("cin")[2]/2, width=par("cin")[2],
         pc$mai2[2] <- P + A + pc$mai0[2]
         pc$mai2[4] <- pc$mai0[4]
     } else if (pos == 3) {
-        ## alter top and bottom margins
+        # alter top and bottom margins
         pc$mai1[1] <- figureHeight - P - A
         pc$mai1[3] <- A
         pc$mai1f[1] <- 0
@@ -140,8 +140,8 @@ paletteCalculations <- function(separation=par("cin")[2]/2, width=par("cin")[2],
         pc$mai2[1] <- pc$mai0[1]
         pc$mai2[3] <- P + A + pc$mai0[3]
     } else if (pos == 4) {
-        ## DEVELOPER: work here first since it's the common case
-        ## alter left and right margins
+        # DEVELOPER: work here first since it's the common case
+        # alter left and right margins
         pc$mai1[2] <- figureWidth - P - A
         pc$mai1[4] <- A
         pc$mai1f[2] <- 0
@@ -151,7 +151,7 @@ paletteCalculations <- function(separation=par("cin")[2]/2, width=par("cin")[2],
     } else {
         stop("pos must be in 1:4") # never reached
     }
-    ## Adjust palette margins (mai1); FIXME: should this also alter mai2?
+    # Adjust palette margins (mai1); FIXME: should this also alter mai2?
     pc$mai1 <- pc$mai1 + maidiff
     pc$mai1f <- pc$mai1f + maidiff
     oceDebug(debug, "pc$mail1: ", paste(round(pc$mai1, 2), sep=" "), "\n")
@@ -246,7 +246,7 @@ paletteCalculations <- function(separation=par("cin")[2]/2, width=par("cin")[2],
 #' @param tformat optional format for axis labels, if the variable is a time
 #' type (ignored otherwise).
 #'
-## @param cex.zlab character expansion factor for z label
+# @param cex.zlab character expansion factor for z label
 #'
 #' @param debug a flag that turns on debugging.  Set to 1 to get a moderate
 #' amount of debugging information, or to 2 to get more.
@@ -269,16 +269,16 @@ paletteCalculations <- function(separation=par("cin")[2]/2, width=par("cin")[2],
 #' library(oce)
 #' par(mgp=getOption("oceMgp"))
 #'
-#' ## 1. A three-panel plot
+#' # 1. A three-panel plot
 #' par(mfrow=c(3, 1), mar=c(3, 3, 1, 1))
 #' omar <- par("mar")                 # save initial margin
 #'
-#' ## 1a. top panel: simple case with Viridis scheme
+#' # 1a. top panel: simple case with Viridis scheme
 #' drawPalette(zlim=c(0, 1), col=oce.colorsViridis(10))
 #' plot(1:10, 1:10, col=oce.colorsViridis(10)[1:10],pch=20,cex=3,xlab='x', ylab='y')
 #' par(mar=omar)                      # reset margin
 #'
-#' ## 1b. middle panel: colormap
+#' # 1b. middle panel: colormap
 #' cm <- colormap(name="gmt_globe")
 #' drawPalette(colormap=cm)
 #' icol <- seq_along(cm$col)
@@ -286,7 +286,7 @@ paletteCalculations <- function(separation=par("cin")[2]/2, width=par("cin")[2],
 #'      xlab="Palette index", ylab="Palette breaks")
 #' par(mar=omar)                      # reset margin
 #'
-#' ## 1c. bottom panel: space for palette (to line up graphs)
+#' # 1c. bottom panel: space for palette (to line up graphs)
 #' drawPalette(plot=FALSE)
 #' plot(1:10, 1:10, col=oce.colorsViridis(10)[1:10],pch=20,cex=3,xlab='x', ylab='y')
 #' par(mar=omar)                      # reset margin
@@ -388,9 +388,9 @@ drawPalette <- function(zlim, zlab="", breaks, col, colormap, mai, cex=par("cex"
         oceDebug(debug, "colormap was given, so getting breaks and col from it\n")
         breaks <- colormap$breaks
         col <- colormap$col
-        ## Trick the code below, to avoid auto-creating breaks
+        # Trick the code below, to avoid auto-creating breaks
         breaksGiven <- TRUE
-        ##colGiven <- TRUE
+        #colGiven <- TRUE
         if (!zlimGiven) {
             zlim <- range(breaks, na.rm=TRUE)
         }
@@ -407,8 +407,8 @@ drawPalette <- function(zlim, zlab="", breaks, col, colormap, mai, cex=par("cex"
             } else {
                 zrange <- zlim
                 if (missing(col)) {
-                    ## Change: this used to be pretty(zlim) but when would a person
-                    ## ever want an image with just a few colours?
+                    # Change: this used to be pretty(zlim) but when would a person
+                    # ever want an image with just a few colours?
                     breaks <- seq(zlim[1], zlim[2], length.out=PLEN) # smooth image color scale
                     contours <- breaks
                     oceDebug(debug, "breaks not given, col not given: set", length(breaks), "breaks\n")
@@ -429,7 +429,7 @@ drawPalette <- function(zlim, zlab="", breaks, col, colormap, mai, cex=par("cex"
             }
             if (missing(col)) {
                 oceDebug(debug, "setting default 'col' to oce.colorsViridis(near line 394)\n")
-                ##col <- oce.colorsPalette(n=length(breaks)-1)
+                #col <- oce.colorsPalette(n=length(breaks)-1)
                 col <- oce.colorsViridis(n=length(breaks)-1)
             }
             if (is.function(col)) {
@@ -868,28 +868,28 @@ drawPalette <- function(zlim, zlab="", breaks, col, colormap, mai, cex=par("cex"
 #' @seealso This uses [drawPalette()], and is used by [plot,adp-method()],
 #' [plot,landsat-method()], and other image-generating functions.
 #'
-## @section Note for RStudio/OSX users:
-## On OSX computers, some versions of RStudio produce a margin-size error when
-## `imagep` is called. The problem is not isolated to `imagep`;
-## it occurs with other packages, and a web
-## search reveals repeated bug reports submitted to RStudio.
-## The problem seems to come and go, as RStudio evolves. In the
-## `imagep` case, things worked properly for
-## RStudio version 0.99.451 (released late in 2015), but not
-## for version 0.99.878 (released early
-## in 2016). A bug report was sent to RStudio in
-## January 2016, with a minimal example that boiled the issue
-## down to a few lines of basic R code (not using `imagep`
-## or even `oce`).
-## Although communications with RStudio gave
-## reason for optimism, the problem persisted in version 0.99.892,
-## released March 4. New versions of RStudio will be checked as they
-## come out, with status updates here.
-## Pending an RStudio solution, users can avoid the error
-## simply by opening
-## a new (and separate) plotting window with [dev.new()].
-## In doing so, they may find that this is preferable generally,
-## given the limitations of one-window interfaces.
+# @section Note for RStudio/OSX users:
+# On OSX computers, some versions of RStudio produce a margin-size error when
+# `imagep` is called. The problem is not isolated to `imagep`;
+# it occurs with other packages, and a web
+# search reveals repeated bug reports submitted to RStudio.
+# The problem seems to come and go, as RStudio evolves. In the
+# `imagep` case, things worked properly for
+# RStudio version 0.99.451 (released late in 2015), but not
+# for version 0.99.878 (released early
+# in 2016). A bug report was sent to RStudio in
+# January 2016, with a minimal example that boiled the issue
+# down to a few lines of basic R code (not using `imagep`
+# or even `oce`).
+# Although communications with RStudio gave
+# reason for optimism, the problem persisted in version 0.99.892,
+# released March 4. New versions of RStudio will be checked as they
+# come out, with status updates here.
+# Pending an RStudio solution, users can avoid the error
+# simply by opening
+# a new (and separate) plotting window with [dev.new()].
+# In doing so, they may find that this is preferable generally,
+# given the limitations of one-window interfaces.
 #'
 #' @examples
 #' library(oce)
@@ -1052,7 +1052,7 @@ imagep <- function(x, y, z,
         x <- as.POSIXct(x)
     }
 
-    ##haveZlab <- !is.null(zlab) && sum(nchar(zlab)) > 0
+    #haveZlab <- !is.null(zlab) && sum(nchar(zlab)) > 0
     if (!missing(x) && is.list(x)) {
         names <- names(x)
         if (!missing(y)) {
@@ -1079,12 +1079,12 @@ imagep <- function(x, y, z,
         }
         z <- x
         z <- if (length(dim(x)) > 2) z <- x[, , 1] else x
-        ##y <- seq(0, 1, length.out=ncol(x))
-        ##x <- seq(0, 1, length.out=nrow(x))
+        #y <- seq(0, 1, length.out=ncol(x))
+        #x <- seq(0, 1, length.out=nrow(x))
         y <- seq.int(1L, ncol(x))
         x <- seq.int(1L, nrow(x))
     } else if (!missing(x) && inherits(x, "topo")) {
-        ## NB. rewrites x, so put that last
+        # NB. rewrites x, so put that last
         y <- x[["latitude"]]
         z <- x[["z"]]
         x <- x[["longitude"]]
@@ -1158,7 +1158,7 @@ imagep <- function(x, y, z,
     if (1 == length(decimate)) {
         decimate <- rep(decimate, 2)
     }
-    ##> message("dim(z): ", paste(dim(z), collapse=" "))
+    #> message("dim(z): ", paste(dim(z), collapse=" "))
     oceDebug(debug, "decimation: ", paste(decimate, collapse=" "), "\n")
     if (decimate[1] > 1) {
         ilook <- seq.int(1, dim[1], by=decimate[1])
@@ -1195,13 +1195,13 @@ imagep <- function(x, y, z,
     # FIXME: should check on equal values
     ox <- order(x)
     if (any(diff(ox) < 0)) {
-        ##warning("reordered some x values")
+        #warning("reordered some x values")
         x <- x[ox]
         z <- z[ox, ]
     }
     oy <- order(y)
     if (any(diff(oy) < 0)) {
-        ##warning("reordered some y values")
+        #warning("reordered some y values")
         y <- y[oy]
         z <- z[, oy]
     }
@@ -1437,7 +1437,7 @@ imagep <- function(x, y, z,
                 image(x=x, y=y, z=z, axes=FALSE, xlab="", ylab="", col=col2,
                     xlim=xlim, ylim=ylim, zlim=c(0, 1), asp=asp, add=add, useRaster=useRaster, ...)
             } else {
-                ## issue 489: use breaks/col instead of breaks2/col2
+                # issue 489: use breaks/col instead of breaks2/col2
                 image(x=x, y=y, z=z, axes=FALSE, xlab="", ylab="", breaks=breaks, col=col,
                   xlim=xlim, ylim=ylim, zlim=zlim, asp=asp, add=add, useRaster=useRaster, cex=cex, ...)
             }

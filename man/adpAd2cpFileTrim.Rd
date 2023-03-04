@@ -96,6 +96,7 @@ Other things related to ad2cp data:
 
 Other functions that trim data files: 
 \code{\link{adpRdiFileTrim}()},
+\code{\link{advSontekAdrFileTrim}()},
 \code{\link{oceFileTrim}()}
 }
 \author{

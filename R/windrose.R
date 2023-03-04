@@ -317,7 +317,7 @@ setMethod(f="plot",
             max <- max(x@data$mean, na.rm=TRUE)
             for (i in 1:nt) {
                 r <- x@data$mean[i] / max
-                ##cat("t=", t[i], " r=", r, "\n")
+                #cat("t=", t[i], " r=", r, "\n")
                 xlist <- c(0, r * cos(t[i] - dt2), r * cos(t[i] + dt2), 0)
                 ylist <- c(0, r * sin(t[i] - dt2), r * sin(t[i] + dt2), 0)
                 polygon(xlist, ylist, col=col[1], border=col[3])

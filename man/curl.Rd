@@ -70,14 +70,14 @@ of December 2014 and is unlikely to be stabilized until February 2015.
 
 \examples{
 library(oce)
-## 1. Shear flow with uniform curl.
+# 1. Shear flow with uniform curl.
 x <- 1:4
 y <- 1:10
 u <- outer(x, y, function(x, y) y/2)
 v <- outer(x, y, function(x, y) -x/2)
 C <- curl(u, v, x, y, FALSE)
 
-## 2. Rankine vortex: constant curl inside circle, zero outside
+# 2. Rankine vortex: constant curl inside circle, zero outside
 rankine <- function(x, y)
 {
     r <- sqrt(x^2 + y^2)
@@ -90,7 +90,7 @@ y <- seq(-2, 2, length.out=50)
 u <- outer(x, y, function(x, y) rankine(x, y)$u)
 v <- outer(x, y, function(x, y) rankine(x, y)$v)
 C <- curl(u, v, x, y, FALSE)
-## plot results
+# plot results
 par(mfrow=c(2, 2))
 imagep(x, y, u, zlab="u", asp=1)
 imagep(x, y, v, zlab="v", asp=1)

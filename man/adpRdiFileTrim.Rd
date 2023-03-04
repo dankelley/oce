@@ -80,6 +80,7 @@ Other things related to adp data:
 
 Other functions that trim data files: 
 \code{\link{adpAd2cpFileTrim}()},
+\code{\link{advSontekAdrFileTrim}()},
 \code{\link{oceFileTrim}()}
 }
 \author{

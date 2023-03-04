@@ -25,7 +25,7 @@ infer the angles.
 \examples{
 
 library(oce)
-## fake some heading data that lie near due-north (0 degrees)
+# fake some heading data that lie near due-north (0 degrees)
 n <- 20
 heading <- 360 + rnorm(n, sd=10)
 heading <- ifelse(heading > 360, heading - 360, heading)

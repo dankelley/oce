@@ -103,7 +103,7 @@ library(oce)
 data(rsk)
 plot(rsk) # default timeseries plot of all data fields
 
-## A multipanel plot of just pressure and temperature with ylim
+# A multipanel plot of just pressure and temperature with ylim
 par(mfrow=c(2, 1))
 plot(rsk, which="pressure", ylim=c(10, 30))
 plot(rsk, which="temperature", ylim=c(2, 4))

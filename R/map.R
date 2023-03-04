@@ -91,7 +91,7 @@ repairProjection <- function(projection, longlatProj, debug=getOption("oceDebug"
 #'
 #' @param inv logical value, False by default, indicating whether an inverse projection is requested.
 #'
-## @param use_ob_tran,legacy,passNA ignored in oce 1.0.3, and will be disallowed in oce 1.0.4.
+# @param use_ob_tran,legacy,passNA ignored in oce 1.0.3, and will be disallowed in oce 1.0.4.
 #'
 #' @template debugTemplate
 #'
@@ -724,14 +724,14 @@ mapAxis <- function(side=1:2, longitude=TRUE, latitude=TRUE,
 #' @family functions related to maps
 mapContour <- function(longitude, latitude, z,
                        nlevels=10, levels=pretty(range(z, na.rm=TRUE), nlevels),
-                       ##labels=null,
-                       ##xlim=range(longitude, finite=TRUE),
+                       #labels=null,
+                       #xlim=range(longitude, finite=TRUE),
                        #ylim=range(latitude, finite=TRUE),
                        labcex=0.6,
                        drawlabels=TRUE,
                        underlay="erase",
-                       ##vfont,
-                       ## axes=TRUE, frame.plot=axes,
+                       #vfont,
+                       # axes=TRUE, frame.plot=axes,
                        col=par("fg"), lty=par("lty"), lwd=par("lwd"),
                        debug=getOption("oceDebug"))
 {
@@ -863,7 +863,7 @@ mapContour <- function(longitude, latitude, z,
                             insideNew <- sf::st_intersection(pointsNew, polyNew)
                             tmpMatrix <- matrix(pointsNew %in% insideNew, ncol=2)
                             eraseNew <- tmpMatrix[, 1] & tmpMatrix[, 2] # could also use an apply op, but this is simple
-                            ##eraseOld <- erase
+                            #eraseOld <- erase
                             if (!isTRUE(all.equal(eraseNew, erase))) {
                                 warning("mapContour() : 'erase' disagreement with trial 'sf' method. ",
                                     "Please post an issue on www.github.com/dankelley/oce/issues\n",
@@ -992,7 +992,7 @@ mapCoordinateSystem <- function(longitude, latitude, L=100, phi=0, ...)
 #' lat <- 45 + seq(-15, 15, 5)
 #' lonm <- matrix(expand.grid(lon, lat)[, 1], nrow=length(lon))
 #' latm <- matrix(expand.grid(lon, lat)[, 2], nrow=length(lon))
-#' ## vectors pointed 45 degrees clockwise from north
+#' # vectors pointed 45 degrees clockwise from north
 #' u <- matrix(1/sqrt(2), nrow=length(lon), ncol=length(lat))
 #' v <- matrix(1/sqrt(2), nrow=length(lon), ncol=length(lat))
 #' mapDirectionField(lon, lat, u, v, scale=3)
@@ -1177,24 +1177,24 @@ mapLongitudeLatitudeXY <- function(longitude, latitude)
 #' | General sinusoidal series                 | `gn_sinu`  | `m`, `n`                           |
 #' | Gnomonic                                  | `gnom`     | -                                  |
 #' | Goode homolosine                          | `goode`    | -                                  |
-## Mod. stererographics of 48 U.S.           | `gs48`     | -                                  |
-## Mod. stererographics of 50 U.S.           | `gs50`     | -                                  |
+# Mod. stererographics of 48 U.S.           | `gs48`     | -                                  |
+# Mod. stererographics of 50 U.S.           | `gs50`     | -                                  |
 #' | Hatano asymmetrical equal area            | `hatano`   | -                                  |
-## NOTE: healpix was removed 2020-08-03 because sf does not support it well
-## HEALPix                                   | `healpix`  | -                                  |
-## NOTE: rhealpix was removed 2020-08-03 because sf does not support it well
-## rHEALPix                                  | `rhealpix` | `north_square`, `south_square`     |
+# NOTE: healpix was removed 2020-08-03 because sf does not support it well
+# HEALPix                                   | `healpix`  | -                                  |
+# NOTE: rhealpix was removed 2020-08-03 because sf does not support it well
+# rHEALPix                                  | `rhealpix` | `north_square`, `south_square`     |
 #' | Interrupted Goode homolosine              | `igh`      | -                                  |
-## Int'l map of the world polyconic          | `imw_p`    | `lat_1`, `lat_2`, `lon_1`          |
+# Int'l map of the world polyconic          | `imw_p`    | `lat_1`, `lat_2`, `lon_1`          |
 #' | Kavraisky V                               | `kav5`     | -                                  |
 #' | Kavraisky VII                             | `kav7`     | -                                  |
-## Krovak                                    | `krovak`   | -                                  |
+# Krovak                                    | `krovak`   | -                                  |
 #' | Lambert azimuthal equal area              | `laea`     | -                                  |
 #' | Longitude and latitude                    | `longlat`  | -                                  |
 #' | Longitude and latitude                    | `latlong`  | -                                  |
 #' | Lambert conformal conic                   | `lcc`      | `lat_1`, `lat_2` or `lat_0`, `k_0` |
 #' | Lambert equal area conic                  | `leac`     | `lat_1`, `south`                   |
-## Lee oblated stereographic                 | `lee_os`   | -                                  |
+# Lee oblated stereographic                 | `lee_os`   | -                                  |
 #' | Loximuthal                                | `loxim`    | -                                  |
 #' | Space oblique for Landsat                 | `lsat`     | `lsat`, `path`                     |
 #' | McBryde-Thomas flat-polar sine, no. 1     | `mbt_s`    | -                                  |
@@ -1224,8 +1224,8 @@ mapLongitudeLatitudeXY <- function(longitude, latitude)
 #' |                                           |            | `lonc`, `lon_1`, `lat_1`,          |
 #' |                                           |            | `lon_2`, `lat_2`                   |
 #' | Orthographic                              | `ortho`    | -                                  |
-## NOTE: pconic was removed 2020-08-03 because sf does not support it well
-## Perspective conic                           | `pconic`   | `lat_1`, `lat_2`                   |
+# NOTE: pconic was removed 2020-08-03 because sf does not support it well
+# Perspective conic                           | `pconic`   | `lat_1`, `lat_2`                   |
 #' | Polyconic American                        | `poly`     | -                                  |
 #' | Putnins P1                                | `putp1`    | -                                  |
 #' | Putnins P2                                | `putp2`    | -                                  |
@@ -1244,7 +1244,7 @@ mapLongitudeLatitudeXY <- function(longitude, latitude)
 #' | Swiss. oblique Mercator                   | `somerc`   | -                                  |
 #' | Stereographic                             | `stere`    | `lat_ts`                           |
 #' | Oblique stereographic alternative         | `sterea`   | -                                  |
-## | Gauss-Schreiber transverse Mercator       | `gstmerc`  | `lat_0`, `lon_0`, `k_0`            |
+# | Gauss-Schreiber transverse Mercator       | `gstmerc`  | `lat_0`, `lon_0`, `k_0`            |
 #' | Transverse cylindrical equal area         | `tcea`     | -                                  |
 #' | Tissot                                    | `tissot`   | `lat_1`, `lat_2`                   |
 #' | Transverse Mercator                       | `tmerc`    | `approx`                           |
@@ -1475,7 +1475,7 @@ mapLongitudeLatitudeXY <- function(longitude, latitude)
 #' @param ... optional arguments passed to some plotting functions.  This can
 #' be useful in many ways, e.g.  Example 5 shows how to use `xlim` etc to
 #' reproduce a scale exactly between two plots.
-##'
+#'
 #' @seealso
 #' Points may be added to a map with [mapPoints()], lines with
 #' [mapLines()], text with [mapText()], polygons with
@@ -1571,7 +1571,7 @@ mapLongitudeLatitudeXY <- function(longitude, latitude)
 #' 1. Snyder, John P., 1987.  Map Projections: A Working Manual.  USGS
 #' Professional Paper: 1395
 #' `https://pubs.er.usgs.gov/publication/pp1395`
-## \doi{10.3133/pp1395}
+# \doi{10.3133/pp1395}
 #'
 #' 2. Natural Resources Canada
 #' `https://www.nrcan.gc.ca/earth-sciences/geography/topographic-information/maps/9805`
@@ -1666,7 +1666,7 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
     if (inherits(longitude, "topo")) {
         topo <- longitude
         isTopo <- TRUE
-        ## set up to corners of topo lonlat box
+        # set up to corners of topo lonlat box
         longitude <- range(topo[["longitude"]], na.rm=TRUE)
         latitude <- range(topo[["latitude"]], na.rm=TRUE)
     } else if ("data" %in% slotNames(longitude) && # handle e.g. 'coastline' class
@@ -1698,13 +1698,13 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
     oce_uhl <- options()$oce_uhl
     if (!is.null(oce_uhl) && oce_uhl == "method 1") {
         message("using test code to remove ugly horiz. lines, since options$oce_uhl=='method 1'")
-        ## Insert NA to break long horizontal jumps, which can be caused by coastline
-        ## segments that "pass across" the edge of a plot.
+        # Insert NA to break long horizontal jumps, which can be caused by coastline
+        # segments that "pass across" the edge of a plot.
         dx <- abs(diff(x))
         bigJumps <- which(dx > (mean(dx, na.rm=TRUE) + 10 * sd(dx, na.rm=TRUE)))
-        ##print(longitude[bigJumps])
+        #print(longitude[bigJumps])
         for (j in bigJumps) {
-            ##message("chopping j=", j)
+            #message("chopping j=", j)
             lenx <- length(x)
             x <- c(x[seq.int(1, j)], NA, x[seq.int(j+1, lenx)])
             longitude <- c(longitude[seq.int(1, j)], NA, longitude[seq.int(j+1, lenx)])
@@ -1716,7 +1716,7 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
         y <- xy$y
     }
 
-    ## range gets caught up on Inf values, so we make tmp variables xtmp and ytmp
+    # range gets caught up on Inf values, so we make tmp variables xtmp and ytmp
     xtmp <- x
     xtmp[!is.finite(x)] <- NA
     ytmp <- y
@@ -1803,7 +1803,7 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
                     cex=if (missing(cex)) NULL else cex,
                     ...)
             }
-            ## points(jitter(box$x), jitter(box$y), pch=1, col='red')
+            # points(jitter(box$x), jitter(box$y), pch=1, col='red')
         } else {
             oceDebug(debug, "neither latitudelim nor longitudelim was given\n")
             if (type == "polygon") {
@@ -2412,7 +2412,7 @@ mapGrid <- function(dlongitude=15, dlatitude=15, longitude, latitude,
 #'\donttest{
 #' library(oce)
 #' data(coastlineWorld)
-#' ## Arctic Ocean
+#' # Arctic Ocean
 #' par(mar=c(2.5, 2.5, 1, 1))
 #' mapPlot(coastlineWorld, latitudelim=c(60, 120), longitudelim=c(-130,-50),
 #'         col="lightgray", projection="+proj=stere +lat_0=90")
@@ -2438,7 +2438,7 @@ mapScalebar <- function(x, y=NULL, length,
     }
     projection <- .Projection()$type
     usr <- par("usr")
-    ## determine scale from centre of region
+    # determine scale from centre of region
     x0 <- 0.5 * (usr[1] + usr[2])
     y0 <- 0.5 * (usr[3] + usr[4])
     dusr <- 0.01 * (usr[2] - usr[1]) # 1 percent of device width
@@ -2567,8 +2567,8 @@ mapText <- function(longitude, latitude, labels, ...)
 #' @references
 #' 1. Snyder, John P., 1987.  Map Projections: A Working Manual.  USGS
 #' Professional Paper: 1395
-## `https://pubs.er.usgs.gov/publication/pp1395`
-## \doi{10.3133/pp1395}
+# `https://pubs.er.usgs.gov/publication/pp1395`
+# \doi{10.3133/pp1395}
 #'
 #' @examples
 #'\donttest{
@@ -2999,7 +2999,7 @@ mapLocator <- function(n=512, type="n", ...)
 #'
 #' @examples
 #' library(oce)
-#' ## Cape Split, in the Minas Basin of the Bay of Fundy
+#' # Cape Split, in the Minas Basin of the Bay of Fundy
 #' cs <- list(longitude=-64.49657, latitude=45.33462)
 #' xy <- lonlat2map(cs, projection="+proj=merc")
 #' map2lonlat(xy)
@@ -3050,17 +3050,17 @@ map2lonlat <- function(x, y, init=NULL, debug=getOption("oceDebug"))
 #' @param density,angle,border,col,lty,...,fillOddEven handled as
 #' [polygon()] handles the same arguments.
 #'
-## @param angle as for [polygon()].
-##
-## @param border as for [polygon()].
-##
-## @param col as for [polygon()].
-##
-## @param lty as for [polygon()].
-##
-## @param ... as for [polygon()].
-##
-## @param fillOddEven as for [polygon()].
+# @param angle as for [polygon()].
+#
+# @param border as for [polygon()].
+#
+# @param col as for [polygon()].
+#
+# @param lty as for [polygon()].
+#
+# @param ... as for [polygon()].
+#
+# @param fillOddEven as for [polygon()].
 #'
 #' @examples
 #' \donttest{
@@ -3068,7 +3068,7 @@ map2lonlat <- function(x, y, init=NULL, debug=getOption("oceDebug"))
 #' data(coastlineWorld)
 #' data(topoWorld)
 #'
-#' ## Bathymetry near southeastern Canada
+#' # Bathymetry near southeastern Canada
 #' par(mfrow=c(1,1), mar=c(2,2,1,1))
 #' cm <- colormap(zlim=c(-5000, 0), col=oceColorsGebco)
 #' drawPalette(colormap=cm)
@@ -3334,7 +3334,7 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
     zmax <- max(z, na.rm=TRUE)
     zrange <- zmax - zmin
     small <- .Machine$double.eps
-    ## 20140802/issue516: next if block (clipping) rewritten
+    # 20140802/issue516: next if block (clipping) rewritten
     if (zclip) {
         oceDebug(debug, "using missingColor for out-of-range values\n")
         if (zlimGiven) {
@@ -3374,7 +3374,7 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
     xy <- lonlat2map(poly$longitude, poly$latitude)
     xy$x[!is.finite(xy$x)] <- NA
     xy$y[!is.finite(xy$y)] <- NA
-    ## issue #638 - kludge to get data into same longitue scheme as axes
+    # issue #638 - kludge to get data into same longitue scheme as axes
     usr12 <- par("usr")[1:2]
     xrange <- range(xy$x, na.rm=TRUE)
     if (xrange[1] > usr12[2]) {
@@ -3565,7 +3565,7 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
 #'
 #' @examples
 #' library(oce)
-#' ## Cape Split, in the Minas Basin of the Bay of Fundy
+#' # Cape Split, in the Minas Basin of the Bay of Fundy
 #' lonlat2utm(-64.496567, 45.334626)
 #'
 #' @family functions related to maps
@@ -3597,7 +3597,7 @@ lonlat2utm <- function(longitude, latitude, zone, km=FALSE)
         zone <- floor((180 + longitude) / 6) # FIXME: this works for zone but not positive its ok
         zone <- floor((longitude / 6) + 31)
         zone <- ifelse(zone > 60, zone-60, zone)
-        ## message("zone not given; inferred to be ", zone)
+        # message("zone not given; inferred to be ", zone)
     }
     lambda0 <- rpd * (zone * 6 - 183)
     xiprime <- atan(t / cos(lambda - lambda0))
@@ -3659,7 +3659,7 @@ lonlat2utm <- function(longitude, latitude, zone, km=FALSE)
 #'
 #' @examples
 #' library(oce)
-#' ## Cape Split, in the Minas Basin of the Bay of Fundy
+#' # Cape Split, in the Minas Basin of the Bay of Fundy
 #' utm2lonlat(852863, 5029997, 19)
 #'
 #' @family functions related to maps
@@ -3706,54 +3706,54 @@ utm2lonlat <- function(easting, northing, zone=1, hemisphere="N", km=FALSE)
     list(longitude=longitude, latitude=latitude)
 }
 
-## This list of known projections includes only those with inverses. To create the list
-## first I did
-##      proj -lP > A
-## in the commandline, and then I hand-edited out the entries that said that no
-## inverse was available. Then I used grep and sed and an editor action to create the
-## list.  The reason for demanding an inverse is to avoid errors that arise
-## otherwise.  Eventually, a scheme could be set up for doing an approximate
-## inverse within oce, but the arguments against that include (a) the difficulty
-## in implementing it and (b) the possibility that non-invertable projections
-## simply haven't been generated enough interest in the broader cartographic
-## community to merit inclusion in oce.
+# This list of known projections includes only those with inverses. To create the list
+# first I did
+#      proj -lP > A
+# in the commandline, and then I hand-edited out the entries that said that no
+# inverse was available. Then I used grep and sed and an editor action to create the
+# list.  The reason for demanding an inverse is to avoid errors that arise
+# otherwise.  Eventually, a scheme could be set up for doing an approximate
+# inverse within oce, but the arguments against that include (a) the difficulty
+# in implementing it and (b) the possibility that non-invertable projections
+# simply haven't been generated enough interest in the broader cartographic
+# community to merit inclusion in oce.
 
-## 1. alsk overdraws world, pluts it's a niche proj (Alaska)
-## 2. calcofi is deleted because it's nor really a projection; it's more
-##    like a coordinate transformation.
-## 3. isea is deleted because it causes a segmentation fault on coastlineWorld.
-## 4. krovak causes overdrawn coastlines, plus it's a niche proj (Czech Republic)
-## 5. labrd is deleted because it returns NaN for every point
-##    on the coastlineWorld; fixing this is not a high priority
-##    given that it is a niche projection that has caused problems
-##    in PROJ.4 also.
-## 6. lsat seems not to work in rgdal or standlone proj.4, so
-##    it was removed from oce on 2017-11-17.
-##    See https://github.com/dankelley/oce/issues/1337 for details.
-## 7. imw_p can hang on some inverse values, and I found that the
-##    problem is deep in the PROJ.4 code (since the error occurs also with PROJ.4
-##    compiled a few days before Nov 19th) and therefore imw_p was removed
-##    on 2017-11-19 .
-##    See https://github.com/dankelley/oce/issues/1319 for details.
+# 1. alsk overdraws world, pluts it's a niche proj (Alaska)
+# 2. calcofi is deleted because it's nor really a projection; it's more
+#    like a coordinate transformation.
+# 3. isea is deleted because it causes a segmentation fault on coastlineWorld.
+# 4. krovak causes overdrawn coastlines, plus it's a niche proj (Czech Republic)
+# 5. labrd is deleted because it returns NaN for every point
+#    on the coastlineWorld; fixing this is not a high priority
+#    given that it is a niche projection that has caused problems
+#    in PROJ.4 also.
+# 6. lsat seems not to work in rgdal or standlone proj.4, so
+#    it was removed from oce on 2017-11-17.
+#    See https://github.com/dankelley/oce/issues/1337 for details.
+# 7. imw_p can hang on some inverse values, and I found that the
+#    problem is deep in the PROJ.4 code (since the error occurs also with PROJ.4
+#    compiled a few days before Nov 19th) and therefore imw_p was removed
+#    on 2017-11-19 .
+#    See https://github.com/dankelley/oce/issues/1319 for details.
 knownProj4 <- c("aea", "aeqd", "aitoff",         "bipc", "bonne",
                 "cass", "cc", "cea", "collg", "crast", "eck1", "eck2", "eck3",
                 "eck4", "eck5", "eck6", "eqc", "eqdc", "eqearth", "euler", "etmerc",
                 "fahey", "fouc", "fouc_s", "gall", "geos", "gn_sinu", "gnom",
-                ##"goode",                 "hatano", "healpix", "rhealpix",
+                #"goode",                 "hatano", "healpix", "rhealpix",
                 "goode",                   "hatano",
                 "igh", "kav5", "kav7",
                 "laea",   "lonlat", "longlat", "latlon", "lcc", "leac",
-                ##"loxim", "lsat", "mbt_s", "mbt_fps", "mbtfpp", "mbtfpq",
+                #"loxim", "lsat", "mbt_s", "mbt_fps", "mbtfpp", "mbtfpq",
                 "loxim", "mbt_s", "mbt_fps", "mbtfpp", "mbtfpq",
                 "mbtfps", "merc", "mil_os", "mill", "moll", "murd1", "murd2",
-                ##"murd3", "natearth", "nell", "nell_h", "nsper", "nzmg",
+                #"murd3", "natearth", "nell", "nell_h", "nsper", "nzmg",
                 "murd3",   "natearth", "nell", "nell_h", "nsper",
-                ##"ob_tran", "ocea", "oea", "omerc", "ortho", "pconic", "poly",
+                #"ob_tran", "ocea", "oea", "omerc", "ortho", "pconic", "poly",
                 "ob_tran",   "ocea", "oea", "omerc", "ortho",           "poly",
                 "putp1", "putp2", "putp3", "putp3p", "putp4", "putp4p",
                 "putp5", "putp5p", "putp6", "putp6p", "qsc", "qua_aut",
                 "robin", "rouss", "sinu", "somerc", "stere", "sterea"
-                ##"gstmerc", "tcea", "tissot", "tmerc", "tpeqd", "tpers", "ups"
+                #"gstmerc", "tcea", "tissot", "tmerc", "tpeqd", "tpers", "ups"
                 ,            "tcea", "tissot", "tmerc", "tpeqd", "tpers", "ups",
                 "urm5", "urmfps", "utm", "vandg", "vitk1", "wag1", "wag2",
                 "wag3", "wag4", "wag5", "wag6", "weren", "wink1", "wintri")
@@ -3791,7 +3791,7 @@ knownProj4 <- c("aea", "aeqd", "aitoff",         "bipc", "bonne",
 #'
 #' @examples
 #' library(oce)
-#' ## Cape Split, in the Minas Basin of the Bay of Fundy
+#' # Cape Split, in the Minas Basin of the Bay of Fundy
 #' cs <- list(longitude=-64.49657, latitude=45.33462)
 #' xy <- lonlat2map(cs, projection="+proj=merc")
 #' map2lonlat(xy)
