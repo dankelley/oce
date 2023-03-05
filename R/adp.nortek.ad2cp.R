@@ -519,7 +519,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, dataType=NULL,
         "echosounderRaw"=0x23)
     dataTypeOrig <- dataType
     if (!is.null(dataType)) {
-        oceDebug(debug, "original dataType=\"", dataType, "\n")
+        #oceDebug(debug, "original dataType=\"", dataType, "\n")
         if (length(dataType) > 1L) {
             stop("length of dataType (", length(dataType), ") must not exceed 1")
         }
@@ -541,7 +541,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, dataType=NULL,
         } else {
             stop("dataType must be character or numeric")
         }
-        oceDebug(debug, "after processing, dataType=\"", dataType, "\n")
+        #oceDebug(debug, "after processing, dataType=\"", dataType, "\n")
     }
 
     #i2005 if (any(grepl("\\?", which))) {
@@ -595,13 +595,14 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, dataType=NULL,
     planGiven <- !missing(plan)
     typeGiven <- !missing(type)
 
-    oceDebug(debug, "read.adp.ad2cp(...,\n",
-        "    dataType=", dataType, " (after possible conversion)",
+    oceDebug(debug, "read.adp.ad2cp(filename",
+        ", dataType=", dataType, " (original was ", dataTypeOrig, ")",
         ", from=", if (fromGiven) format(from) else "(missing)",
         ", to=", if (toGiven) to else "(missing)",
-        ", by=", if (byGiven) by else "(missing)\n",
-        "    plan=", if (planGiven) plan else "(missing)",
-        ", type=\"", if (typeGiven) type else "(missing)",
+        ", by=", if (byGiven) by else "(missing)",
+        "  plan=", if (planGiven) plan else "(missing)",
+        ", type=", if (typeGiven) paste0("\"", type, "\"") else "(missing)",
+        ", debug=", debug,
         #", ignoreChecksums=", ignoreChecksums,
         ", ...)\n", sep="", unindent=1, style="bold")
     if (typeGiven) {
@@ -1028,12 +1029,11 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, dataType=NULL,
     tmp <- readBin(d$buf[pointer2 + 35L], "integer", size=2, n=N, signed=FALSE, endian="little")
     blankingDistanceFactor <- ifelse(blankingDistanceInCm==1, 1e-2, 1e-3)
     blankingDistance <- blankingDistanceFactor * tmp
-    if (debug > 0) {
-        message(vectorShow(tmp, n=10))
-        message(vectorShow(blankingDistanceInCm, n=10))
-        message(vectorShow(blankingDistanceFactor, n=10))
-        message(vectorShow(blankingDistance, n=10))
-    }
+    oceDebug(debug, "computation of blanking distance\n")
+    oceDebug(debug, "    ", vectorShow(tmp, n=10))
+    oceDebug(debug, "    ", vectorShow(blankingDistanceInCm, n=10))
+    oceDebug(debug, "    ", vectorShow(blankingDistanceFactor, n=10))
+    oceDebug(debug, "    ", vectorShow(blankingDistance, n=10))
     nominalCorrelation <- readBin(d$buf[pointer1 + 37], "integer", size=1, n=N, signed=FALSE, endian="little")
     # Magnetometer (Table 6.2, page 82, ref 1b)
     magnetometerx <- readBin(d$buf[pointer2 + 41], "integer", size=2, n=N, signed=TRUE, endian="little")
