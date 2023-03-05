@@ -630,7 +630,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, dataType=NULL,
     }
     if (to == 0) {
         to <- 1e9                      # this should be enough to read any file
-        oceDebug(debug, "In read.adp.ad2cp() : 'to' not given; defaulting to ", to, " so we will likely get to the end of the file\n", call.=FALSE)
+        oceDebug(debug, "'to' not given; using to=", to, " so we may hit end of file\n", sep="")
     }
     if (is.character(file)) {
         filename <- fullFilename(file)
@@ -652,8 +652,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, dataType=NULL,
     seek(file, where=0, origin="end")
     fileSize <- seek(file, where=0)
     seek(file, 0, "start")
-
-    oceDebug(debug, "fileSize:", fileSize, "\n")
+    oceDebug(debug, vectorShow(fileSize))
     buf <- readBin(file, what="raw", n=fileSize, size=1)
     oceDebug(debug, "first 10 bytes in file: ",
         paste(paste("0x", head(buf, 10), sep=""), collapse=" "), "\n", sep="")
@@ -812,8 +811,9 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, dataType=NULL,
     # Try to find a header, as the first record-type that has id=0xa0.
     header <- NULL
     idHeader <- which(d$id == 0xa0) # text chunk
+    oceDebug(debug, vectorShow(idHeader))
     if (length(idHeader)) {
-        oceDebug(debug, "this file has a header at id=", idHeader, "\n", sep="")
+        oceDebug(debug, "this file has a text chunk (0xa0) so setting idHeader[1]=", idHeader[1], "\n", sep="")
         chars <- rawToChar(d$buf[seq.int(2L+d$index[idHeader], by=1L, length.out=-1L+d$dataLength[idHeader[1]])])
         header <- strsplit(chars, "\r\n")[[1]]
         if (!typeGiven) {
@@ -882,26 +882,48 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, dataType=NULL,
     # The vectorization scheme used in this function assumes that configurations
     # match within a given ID type.  This seems like a reasonable assumption,
     # and one backed up by the impression of a Nortek representative, but I do
-    # not see definititive statement of the requirement in any documentation
+    # not see definitive statement of the requirement in any documentation
     # I've studied. Since we *need* this to be true in order to read the data in
     # vectorized way, we *insist* on it here, rather than trying to catch
     # problems later. Use local() to avoid polluting namespace.
     local(
         {
+            oceDebug(debug, "Checking commonData$configuration consistency within columns {\n")
+            badID <- 0L
             for (id in as.raw(unique(d$id))) {
                 config <- commonData$configuration[d$id==id, ]
                 if (is.matrix(config)) {
-                    ok <- TRUE
-                    for (col in seq(2L, ncol(config)))
-                    ok <- ok && all(config[, col] == config[1, col])
-                    if (!ok) {
-                        oceDebug(debug, "commonData$configuration DIFFERS from the first value, in ",
-                            sum(!ok), " instances for chunk key 0x", as.raw(id), " (", ad2cpCodeToName(id), ")\n")
-                        stop("Variable \"", ad2cpCodeToName(id), "\" configuration detected, so expect ",
-                            "erroneous results. Please submit a bug report.")
+                    oceDebug(debug, "    checking id ", ad2cpCodeToName(id), "\n")
+                    badColumn <- 0L
+                    for (column in seq(2L, ncol(config))) {
+                        numberDifferent <- sum(config[, column] != config[1, column])
+                        if (numberDifferent > 0L) {
+                            oceDebug(debug, "        column ", column, " has inconsistencies in ", numberDifferent,
+                                " of the ", nrow(config), " rows\n", sep="")
+                            warning("id ", ad2cpCodeToName(id), " column ", column,
+                                " has inconsistencies in ", numberDifferent, " of the ",
+                                nrow(config), " rows\n", sep="")
+                        }
+                        if (numberDifferent > 0L) {
+                            badColumn <- badColumn + 1L
+                        }
+                    }
+                    if (badColumn == 0L) {
+                        oceDebug(debug, "        no inconsistencies in any column\n")
+                    } else {
+                        badID <- badID + 1L
+                        warning("id ", ad2cpCodeToName(id),
+                            " has non-uniform commonData$configuration within ", badColumn, " columns\n")
                     }
                 }
             }
+            if (badID > 0L) {
+                oceDebug(debug, "    summary: commonData$configuration inconsistencies for ", badID, " ID type(s)\n")
+                warning("Found commonData$configuration inconsistencies for ", badID, " ID type(s)\n")
+            } else {
+                oceDebug(debug, "no ID types had inconsistencies\n")
+            }
+            oceDebug(debug, "} finished checking commonData$configuration consistency\n")
         }
     )
     # Extract columns as simply-named flags, for convenience. The variable
@@ -1032,7 +1054,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, dataType=NULL,
     # FIXME: next, using offset 59, is true only for currents ('average' or 'burst').
     # Nortek (2022) page 82.
     velocityFactor <- 10^readBin(d$buf[pointer1 + 59], "integer", size=1, n=N, signed=TRUE, endian="little")
-    oceDebug(debug, "velocityFactor=", velocityFactor[1], " (for current-profiler data ONLY)")
+    oceDebug(debug, "velocityFactor=", velocityFactor[1], " (for current-profiler data ONLY)\n")
     # 0.001 for 'average' in private file ~/Dropbox/oce_secret_data/ad2cp_secret_1.ad2cp
     powerLevel <- readBin(d$buf[pointer1 + 60], "integer", size=1, n=N, signed=TRUE, endian="little")
     temperatureMagnetometer <- 0.001 * readBin(d$buf[pointer2 + 61], "integer", size=2, n=N, signed=TRUE, endian="little")
