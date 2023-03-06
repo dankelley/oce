@@ -889,7 +889,9 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, dataType=NULL,
     # problems later. Use local() to avoid polluting namespace.
     local(
         {
-            oceDebug(debug, "Checking commonData$configuration consistency within columns {\n")
+            oceDebug(debug, "Checking commonData$configuration (a ",
+                paste(dim(commonData$configuration), collapse="x"),
+                " matrix) consistency within columns {\n")
             badID <- 0L
             for (id in as.raw(unique(d$id))) {
                 config <- commonData$configuration[d$id==id, ]
@@ -1029,7 +1031,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, dataType=NULL,
     tmp <- readBin(d$buf[pointer2 + 35L], "integer", size=2, n=N, signed=FALSE, endian="little")
     blankingDistanceFactor <- ifelse(blankingDistanceInCm==1, 1e-2, 1e-3)
     blankingDistance <- blankingDistanceFactor * tmp
-    oceDebug(debug, "computation of blanking distance\n")
+    oceDebug(debug, "Steps in the computation of blanking distance\n")
     oceDebug(debug, "    ", vectorShow(tmp, n=10))
     oceDebug(debug, "    ", vectorShow(blankingDistanceInCm, n=10))
     oceDebug(debug, "    ", vectorShow(blankingDistanceFactor, n=10))
