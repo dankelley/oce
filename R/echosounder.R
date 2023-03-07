@@ -117,9 +117,8 @@ setMethod(f="summary",
         showMetadataItem(object, "transducerSerialNumber", "Transducer serial #: ", quote=FALSE)
         metadataNames <- names(object@metadata)
         cat(sprintf("* File type:           %s\n", object[["fileType"]]))
-        if ("beamType" %in% metadataNames) {
+        if ("beamType" %in% metadataNames)
             cat(sprintf("* Beam type:           %s\n", object[["beamType"]]))
-        }
         time <- object[["time"]]
         tz <- attr(time[1], "tzone")
         nt <- length(time)
@@ -127,9 +126,8 @@ setMethod(f="summary",
         cat(sprintf("* Measurements:        %s %s to %s %s\n", format(time[1]), tz, format(time[nt]), tz))
         cat(sprintf("* Sound speed:         %.2f m/s\n", object[["soundSpeed"]]))
         #cat(sprintf("* Time between pings:  %.2e s\n", object[["samplingDeltat"]]))
-        if ("pulseDuration" %in% metadataNames) {
+        if ("pulseDuration" %in% metadataNames)
             cat(sprintf("* Pulse duration:      %g s\n", object[["pulseDuration"]]/1e6))
-        }
         cat(sprintf("* Frequency:           %f\n", object[["frequency"]]))
         cat(sprintf("* Blanked samples:     %d\n", object[["blankedSamples"]]))
         cat(sprintf("* Pings in file:       %d\n", object[["pingsInFile"]]))
@@ -266,9 +264,8 @@ setMethod(f="subset",
         res <- x
         dots <- list(...)
         debug <- if (length(dots) && ("debug" %in% names(dots))) dots$debug else getOption("oceDebug")
-        if (missing(subset)) {
+        if (missing(subset))
             stop("must give 'subset'")
-        }
         if (length(grep("time", subsetString))) {
             oceDebug(debug, "subsetting an echosounder object by time\n")
             keep <- eval(substitute(expr=subset, env=environment()), envir=x@data, enclos=parent.frame(2))
@@ -277,31 +274,24 @@ setMethod(f="subset",
             # trim fast variables, handling matrix 'a' differently, and skipping 'distance'
             dataNames <- names(res@data)
             res@data$a <- x@data$a[keep, ]
-            if ("b" %in% dataNames) {
+            if ("b" %in% dataNames)
                 res@data$b <- x@data$b[keep, ]
-            }
-            if ("c" %in% dataNames) {
+            if ("c" %in% dataNames)
                 res@data$c <- x@data$c[keep, ]
-            }
             # lots of debugging in here, in case other data types have other variable names
             oceDebug(debug, "dataNames (orig):", dataNames, "\n")
-            if (length(grep("^a$", dataNames))) {
+            if (length(grep("^a$", dataNames)))
                 dataNames <- dataNames[-grep("^a$", dataNames)]
-            }
-            if (length(grep("^b$", dataNames))) {
+            if (length(grep("^b$", dataNames)))
                 dataNames <- dataNames[-grep("^b$", dataNames)]
-            }
-            if (length(grep("^c$", dataNames))) {
+            if (length(grep("^c$", dataNames)))
                 dataNames <- dataNames[-grep("^c$", dataNames)]
-            }
             oceDebug(debug, "dataNames (step 2):", dataNames, "\n")
-            if (length(grep("^depth$", dataNames))) {
+            if (length(grep("^depth$", dataNames)))
                 dataNames <- dataNames[-grep("^depth$", dataNames)]
-            }
             oceDebug(debug, "dataNames (step 3):", dataNames, "\n")
-            if (length(grep("Slow", dataNames))) {
+            if (length(grep("Slow", dataNames)))
                 dataNames <- dataNames[-grep("Slow", dataNames)]
-            }
             oceDebug(debug, "dataNames (final), i.e. fast dataNames to be trimmed by time:", dataNames, "\n")
             for (dataName in dataNames) {
                 oceDebug(debug, "fast variable:", dataName, "orig length", length(x@data[[dataName]]), "\n")
@@ -325,12 +315,10 @@ setMethod(f="subset",
             res[["depth"]] <- res[["depth"]][keep]
             dataNames <- names(res@data)
             res[["a"]] <- res[["a"]][, keep]
-            if ("b" %in% dataNames) {
+            if ("b" %in% dataNames)
                 res@data$b <- x@data$b[, keep]
-            }
-            if ("c" %in% dataNames) {
+            if ("c" %in% dataNames)
                 res@data$c <- x@data$c[, keep]
-            }
         } else {
             stop("can only subset an echosounder object by 'time' or 'depth'")
         }
@@ -384,13 +372,13 @@ setMethod(f="subset",
 #'
 #' @family things related to echosounder data
 as.echosounder <- function(time, depth, a, src="",
-                           sourceLevel=220,
-                           receiverSensitivity=-55.4,
-                           transmitPower=0,
-                           pulseDuration=400,
-                           beamwidthX=6.5, beamwidthY=6.5,
-                           frequency=41800,
-                           correction=0)
+    sourceLevel=220,
+    receiverSensitivity=-55.4,
+    transmitPower=0,
+    pulseDuration=400,
+    beamwidthX=6.5, beamwidthY=6.5,
+    frequency=41800,
+    correction=0)
 {
     res <- new("echosounder", filename=src)
     res@metadata$channel <- 1
@@ -417,9 +405,8 @@ as.echosounder <- function(time, depth, a, src="",
     if ("longitude" %in% names) res@metadata$units$longitude <- list(unit=expression(degree*E), scale="")
     if ("latitudeSlow" %in% names) res@metadata$units$latitudeSlow <- list(unit=expression(degree*N), scale="")
     if ("longitudeSlow" %in% names) res@metadata$units$longitudeSlow <- list(unit=expression(degree*E), scale="")
-    if ("depth" %in% names) {
+    if ("depth" %in% names)
         res@metadata$units$depth <- list(unit=expression(m), scale="")
-    }
     res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     res
 }
@@ -568,30 +555,29 @@ findBottom <- function(x, ignore=5, clean=despike)
 setMethod(f="plot",
     signature=signature("echosounder"),
     definition=function(x, which = 1, # 1=z-t section 2=dist-t section 3=map
-                        beam="a",
-                        newx,
-                        xlab, ylab,
-                        xlim, ylim, zlim,
-                        type="l", col=oceColorsJet, lwd=2,
-                        despike=FALSE,
-                        drawBottom, ignore=5,
-                        drawTimeRange=FALSE, drawPalette=TRUE,
-                        radius, coastline,
-                        mgp=getOption("oceMgp"),
-                        mar=c(mgp[1], mgp[1]+1.5, mgp[2]+1/2, 1/2),
-                        atTop, labelsTop,
-                        tformat,
-                        debug=getOption("oceDebug"),
-                        ...)
+        beam="a",
+        newx,
+        xlab, ylab,
+        xlim, ylim, zlim,
+        type="l", col=oceColorsJet, lwd=2,
+        despike=FALSE,
+        drawBottom, ignore=5,
+        drawTimeRange=FALSE, drawPalette=TRUE,
+        radius, coastline,
+        mgp=getOption("oceMgp"),
+        mar=c(mgp[1], mgp[1]+1.5, mgp[2]+1/2, 1/2),
+        atTop, labelsTop,
+        tformat,
+        debug=getOption("oceDebug"),
+        ...)
     {
         dots <- list(...)
         res <- list(xat=NULL, yat=NULL)
         dotsNames <- names(dots)
         oceDebug(debug, "plot() { # for echosounder\n", unindent=1, style="bold")
         lw <- length(which)
-        if (length(beam) < lw) {
+        if (length(beam) < lw)
             beam <- rep(beam, lw)
-        }
         #opar <- par(no.readonly = TRUE)
         par(mgp=mgp, mar=mar)
         if (lw > 1) {
@@ -611,21 +597,18 @@ setMethod(f="plot",
             if (which[w] == 1) {
                 time <- x[["time"]]
                 xInImage <- time
-                if (!length(time)) {
+                if (!length(time))
                     stop("plot.echosounder() cannot plot, because @data$time has zero length")
-                }
                 signal <- x[[beam[w]]]
                 newxGiven <- !missing(newx)
                 if (newxGiven) {
                     t <- as.numeric(time)
-                    if (length(newx) != length(t)) {
+                    if (length(newx) != length(t))
                         stop("length of 'newx' must match that of time within the object")
-                    }
                     xInImage <- newx
                 }
-                if (despike) {
+                if (despike)
                     signal <- apply(signal, 2, smooth)
-                }
                 if (beam[w] == "Sv" || beam[w] == "TS") {
                     z <- signal
                 } else {
@@ -726,9 +709,8 @@ setMethod(f="plot",
                     debug=debug-1,
                     zlab=beam[w])
                 if (!missing(drawBottom)) {
-                    if (is.logical(drawBottom) && drawBottom) {
+                    if (is.logical(drawBottom) && drawBottom)
                         drawBottom <- "white"
-                    }
                     ndistance <- length(distance)
                     distance2 <- c(distance[1], distance, distance[ndistance])
                     axisBottom <- par("usr")[3]
@@ -860,16 +842,13 @@ read.echosounder <- function(file,
     debug=getOption("oceDebug"),
     processingLog)
 {
-    if (missing(file)) {
+    if (missing(file))
         stop("must supply 'file'")
-    }
     if (is.character(file)) {
-        if (!file.exists(file)) {
+        if (!file.exists(file))
             stop("cannot find file '", file, "'")
-        }
-        if (0L == file.info(file)$size) {
+        if (0L == file.info(file)$size)
             stop("empty file '", file, "'")
-        }
     }
     oceDebug(debug, "read.echosounder(file=\"", file, "\", tz=\"", tz, "\", debug=", debug, ") {\n", sep="", unindent=1, style="bold")
     filename <- NULL
@@ -878,9 +857,8 @@ read.echosounder <- function(file,
         file <- file(file, "rb")
         on.exit(close(file))
     }
-    if (!inherits(file, "connection")) {
+    if (!inherits(file, "connection"))
         stop("argument `file' must be a character string or connection")
-    }
     if (!isOpen(file)) {
         open(file, "rb")
         on.exit(close(file))

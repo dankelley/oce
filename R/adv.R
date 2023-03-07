@@ -326,12 +326,10 @@ setMethod(f="subset",
         } else {
             getOption("oceDebug")
         }
-        if (missing(subset)) {
+        if (missing(subset))
             stop("must give 'subset'")
-        }
-        if (missing(subset)) {
+        if (missing(subset))
             stop("must specify a 'subset'")
-        }
         if (length(grep("time", subsetString))) {
             oceDebug(debug, "subsetting an adv object by time\n")
             #keep <- eval(substitute(subset), x@data, parent.frame(2)) # used for $ts and $ma, but $tsSlow gets another
@@ -404,24 +402,20 @@ setMethod(f="subset",
 #' (This will not be the case for files that are created by data loggers that
 #' chop the raw data up into a series of sub-files, e.g. once per hour.)
 read.adv <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
-                     type=c("nortek", "sontek", "sontek.adr", "sontek.text"),
-                     header=TRUE, encoding=NA, longitude=NA, latitude=NA, start=NULL, deltat=NA,
-                     debug=getOption("oceDebug"), monitor=FALSE, processingLog=NULL)
+    type=c("nortek", "sontek", "sontek.adr", "sontek.text"),
+    header=TRUE, encoding=NA, longitude=NA, latitude=NA, start=NULL, deltat=NA,
+    debug=getOption("oceDebug"), monitor=FALSE, processingLog=NULL)
 {
-    if (missing(file)) {
+    if (missing(file))
         stop("must supply 'file'")
-    }
     if (is.character(file)) {
-        if (!file.exists(file)) {
+        if (!file.exists(file))
             stop("cannot find file '", file, "'")
-        }
-        if (0L == file.info(file)$size) {
+        if (0L == file.info(file)$size)
             stop("empty file '", file, "'")
-        }
     }
-    if (!interactive()) {
+    if (!interactive())
         monitor <- FALSE
-    }
     type <- match.arg(type)
     # FIXME: all these read.adv variants should have the same argument list
     if (type == "nortek") {
@@ -621,11 +615,11 @@ read.adv <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
 setMethod(f="plot",
     signature=signature("adv"),
     definition=function(x, which=c(1:3, 14, 15),
-                        col, titles, type="l", lwd=par("lwd"), drawTimeRange=getOption("oceDrawTimeRange"),
-                        drawZeroLine=FALSE, useSmoothScatter, mgp=getOption("oceMgp"), mar=c(mgp[1]+1.5, mgp[1]+1.5, 1.5, 1.5),
-                        tformat, marginsAsImage=FALSE, cex=par("cex"), cex.axis=par("cex.axis"),
-                        cex.lab=par("cex.lab"), cex.main=par("cex.main"), xlim, ylim,
-                        brushCorrelation, colBrush="red", main="", debug=getOption("oceDebug"), ...)
+        col, titles, type="l", lwd=par("lwd"), drawTimeRange=getOption("oceDrawTimeRange"),
+        drawZeroLine=FALSE, useSmoothScatter, mgp=getOption("oceMgp"), mar=c(mgp[1]+1.5, mgp[1]+1.5, 1.5, 1.5),
+        tformat, marginsAsImage=FALSE, cex=par("cex"), cex.axis=par("cex.axis"),
+        cex.lab=par("cex.lab"), cex.main=par("cex.main"), xlim, ylim,
+        brushCorrelation, colBrush="red", main="", debug=getOption("oceDebug"), ...)
     {
         debug <- min(4, max(0, round(debug)))
         oceDebug(debug, "plot.adv(x, which=c(", paste(which, collapse=","), "), type=\"", type, "\", ...) {\n", sep="", unindent=1)
@@ -1203,12 +1197,10 @@ toEnuAdv <- function(x, declination=0, debug=getOption("oceDebug"))
 beamToXyzAdv <- function(x, debug=getOption("oceDebug"))
 {
     oceDebug(debug, "beamToXyzAdv() {\n", unindent=1)
-    if (!inherits(x, "adv")) {
+    if (!inherits(x, "adv"))
         stop("method is only for objects of class '", "adv", "'")
-    }
-    if (x@metadata$oceCoordinate != "beam") {
+    if (x@metadata$oceCoordinate != "beam")
         stop("input must be in beam coordinates, but it is in ", x@metadata$oceCoordinate, " coordinates")
-    }
     if (is.null(x@metadata$transformationMatrix)) {
         cat("How to add a transformation matrix to a velocimeter record named 'x':
             x@metadata$transformationMatrix <- rbind(c(11100, -5771,  -5321),
@@ -1357,22 +1349,19 @@ beamToXyzAdv <- function(x, debug=getOption("oceDebug"))
 #'
 #' @family things related to adv data
 xyzToEnuAdv <- function(x, declination=0, cabled=FALSE, horizontalCase, sensorOrientation,
-                        debug=getOption("oceDebug"))
+    debug=getOption("oceDebug"))
 {
     oceDebug(debug, "xyzToEnuAdv(x, declination[1]=", declination[1],
         ",cabled=", cabled,
         ",horizontalCase=", if (missing(horizontalCase)) "(not provided)" else horizontalCase,
         ",sensorOrientation=", if (missing(sensorOrientation)) "(not provided)" else sensorOrientation,
         ",debug) {\n", unindent=1)
-    if (!inherits(x, "adv")) {
+    if (!inherits(x, "adv"))
         stop("method is only for objects of class '", "adv", "'")
-    }
-    if (x@metadata$oceCoordinate != "xyz") {
+    if (x@metadata$oceCoordinate != "xyz")
         stop("input must be in xyz coordinates, but it is in ", x@metadata$oceCoordinate, " coordinates")
-    }
-    if ("ts" %in% names(x@data) || "ma" %in% names(x@data)) {
+    if ("ts" %in% names(x@data) || "ma" %in% names(x@data))
         stop("cannot handle ADV objects that were created with oce version < 0.3")
-    }
     haveSlow <- "timeSlow" %in% names(x@data)
     if (haveSlow) {
         oceDebug(debug, "interpolating slowly-varying heading, pitch, and roll to the quickly-varying velocity times\n")
@@ -1394,9 +1383,8 @@ xyzToEnuAdv <- function(x, declination=0, cabled=FALSE, horizontalCase, sensorOr
     # Adjust various things, so that the xyz-to-enu formulae (based on RDI) will work
     #
     # The various cases are defined by help(xyzToEnuAdv).
-    if (missing(sensorOrientation)) {
+    if (missing(sensorOrientation))
         sensorOrientation  <- x@metadata$orientation
-    }
     if (1 == length(agrep("nortek", x@metadata$manufacturer))) {
         if (!cabled) {
             if (sensorOrientation == "upward") {
@@ -1459,9 +1447,8 @@ xyzToEnuAdv <- function(x, declination=0, cabled=FALSE, horizontalCase, sensorOr
             }
         }
     } else if (1 == length(agrep("sontek", x@metadata$manufacturer))) {
-        if (cabled) {
+        if (cabled)
             stop("cannot handle the case of a cabled Sontek unit (does it even exist?)")
-        }
         if (sensorOrientation == "upward") {
             oceDebug(debug, "Case 7: Sontek ADV velocimeter with upward-pointing sensor.\n")
             oceDebug(debug, "        Using heading=heading=90, pitch=roll, roll=-pitch, S=X, F=-Y, and M=-Z.\n")
@@ -1489,15 +1476,12 @@ xyzToEnuAdv <- function(x, declination=0, cabled=FALSE, horizontalCase, sensorOr
         stop("unknown type of instrument; x@metadata$manufacturer must contain either \"sontek\" or \"nortek\"")
     }
     np <- dim(x@data$v)[1]           # number of profiles
-    if (length(heading) < np) {
+    if (length(heading) < np)
         heading <- rep(heading, length.out=np)
-    }
-    if (length(pitch) < np) {
+    if (length(pitch) < np)
         pitch <- rep(pitch, length.out=np)
-    }
-    if (length(roll) < np) {
+    if (length(roll) < np)
         roll <- rep(roll, length.out=np)
-    }
     noDeclination <- is.null(declination)
     if (declination) {
         oceDebug(debug, "object is being created in magnetic coordinates\n")
@@ -1560,24 +1544,19 @@ xyzToEnuAdv <- function(x, declination=0, cabled=FALSE, horizontalCase, sensorOr
 #' @family things related to adv data
 enuToOtherAdv <- function(x, heading=0, pitch=0, roll=0, debug=getOption("oceDebug"))
 {
-    if (!inherits(x, "adv")) {
+    if (!inherits(x, "adv"))
         stop("method is only for objects of class '", "adv", "'")
-    }
-    if (x@metadata$oceCoordinate != "enu") {
+    if (x@metadata$oceCoordinate != "enu")
         stop("input must be in \"enu\" coordinates, but it is in ", x@metadata$oceCoordinate, " coordinates")
-    }
     oceDebug(debug, "enuToOtherAdv(x, heading=", heading, ", pitch=",
              pitch, ", roll=", roll, ", debug=", debug, ")", unindent=1)
     np <- dim(x@data$v)[1]           # number of profiles
-    if (length(heading) < np) {
+    if (length(heading) < np)
         heading <- rep(heading, length.out=np)
-    }
-    if (length(pitch) < np) {
+    if (length(pitch) < np)
         pitch <- rep(pitch, length.out=np)
-    }
-    if (length(roll) < np) {
+    if (length(roll) < np)
         roll <- rep(roll, length.out=np)
-    }
     other <- do_sfm_enu(heading, pitch, roll, x@data$v[, 1], x@data$v[, 2], x@data$v[, 3])
     x@data$v[, 1] <- other$east
     x@data$v[, 2] <- other$north
@@ -1617,15 +1596,12 @@ setMethod(f="applyMagneticDeclination",
     signature(object="adv", declination="ANY", debug="ANY"),
     definition=function(object, declination=0.0, debug=getOption("oceDebug")) {
         oceDebug(debug, "applyMagneticDeclination,adp-method(object, declination=", declination, ") {\n", sep="", unindent=1)
-        if (length(declination) != 1L) {
+        if (length(declination) != 1L)
             stop("length of 'declination' must equal 1")
-        }
-        if (!identical(object@metadata$oceCoordinate, "enu")) {
+        if (!identical(object@metadata$oceCoordinate, "enu"))
             stop("object must be in enu coordinates, not ", object@metadata$oceCoordinate, " coordinates")
-        }
-        if (identical(object@metadata$north, "geographic")) {
+        if (identical(object@metadata$north, "geographic"))
             warning("a declination has already been applied, so this action is cumulative")
-        }
         res <- object
         np <- dim(object@data$v)[1]           # number of samples
         declination <- rep(declination, length.out=np)

@@ -1,5 +1,26 @@
 # vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
 
+# Internal function, mainly used in plotting raw images
+
+asNumeric <- function(x)
+{
+    if (is.numeric(x))
+        return(x)
+    rval <- as.numeric(x)
+    if (is.array(x))
+        dim(rval) <- dim(x)
+   rval 
+}
+
+# Internal function; use as e.g. oce:::pluralize().  Supply n and singular,
+# but only give plural if it is different from singular with a 's' tacked on.
+pluralize <- function(n, singular, plural)
+{
+    if (missing(plural))
+        plural <- paste0(singular, "s")
+    paste(n, if (n > 1L) plural else singular)
+}
+
 #' Create a Possibly Gappy Indexing Vector
 #'
 #' This is used internally to construct indexing arrays, mainly for adv and adp
@@ -87,12 +108,10 @@ gappyIndex <- function(starts, offset=0L, length=4L)
 
 abbreviateVector <- function(x)
 {
-    if (1 >= length(x)) {
+    if (1 >= length(x))
         return(x)
-    } else {
-        ud <- unique(diff(x))
-        if (1 == length(ud) && 1 == ud) return(paste(x[1], ":", tail(x, 1), sep="")) else return(x)
-    }
+    ud <- unique(diff(x))
+    if (1L == length(ud) && 1L == ud) paste(x[1], ":", tail(x, 1), sep="") else x
 }
 
 
@@ -171,62 +190,45 @@ angleRemap <- function(theta)
 approx3d <- function(x, y, z, f, xout, yout, zout)
 {
     # Were all arguments given?
-    if (missing(x)) {
+    if (missing(x))
         stop("must provide x")
-    }
-    if (missing(y)) {
+    if (missing(y))
         stop("must provide y")
-    }
-    if (missing(z)) {
+    if (missing(z))
         stop("must provide z")
-    }
-    if (missing(f)) {
+    if (missing(f))
         stop("must provide f")
-    }
-    if (missing(xout)) {
+    if (missing(xout))
         stop("must provide xout")
-    }
-    if (missing(yout)) {
+    if (missing(yout))
         stop("must provide yout")
-    }
-    if (missing(zout)) {
+    if (missing(zout))
         stop("must provide zout")
-    }
     # Are there enough data to interpolate?
-    if (length(x) < 2) {
+    if (length(x) < 2)
         stop("must have more than one x value")
-    }
-    if (length(y) < 2) {
+    if (length(y) < 2)
         stop("must have more than one y value")
-    }
-    if (length(z) < 2) {
+    if (length(z) < 2)
         stop("must have more than one z value")
-    }
     # Are the array dimensions consistent with x, y, and z?
-    if (3 != length(dim(f))) {
+    if (3 != length(dim(f)))
         stop("f must be an array with 3 dimensions")
-    }
-    if (length(x) != dim(f)[1]) {
+    if (length(x) != dim(f)[1])
         stop("length of x and dim(f)[1] must agree, but they are ", length(x), " and ", dim(f)[1])
-    }
-    if (length(y) != dim(f)[2]) {
+    if (length(y) != dim(f)[2])
         stop("length of y and dim(f)[2] must agree, but they are ", length(y), " and ", dim(f)[2])
-    }
-    if (length(z) != dim(f)[3]) {
+    if (length(z) != dim(f)[3])
         stop("length of z and dim(f)[3] must agree, but they are ", length(z), " and ", dim(f)[3])
-    }
     # Are x, y and z equi-spaced?
     if (length(x) > 2) {
         equispaced <- function(a) sd(diff(a)) / mean(diff(a)) < 1e-5
-        if (!equispaced(x)) {
+        if (!equispaced(x))
             stop("x values must be equi-spaced")
-        }
-        if (!equispaced(y)) {
+        if (!equispaced(y))
             stop("y values must be equi-spaced")
-        }
-        if (!equispaced(z)) {
+        if (!equispaced(z))
             stop("z values must be equi-spaced")
-        }
     }
     do_approx3d(x, y, z, f, xout, yout, zout)
 }
@@ -243,9 +245,8 @@ approx3d <- function(x, y, z, f, xout, yout, zout)
 #' @param sep the separator between name and value
 argShow <- function(x, nshow=4, last=FALSE, sep="=")
 {
-    if (missing(x)) {
+    if (missing(x))
         return("")
-    }
     name <- paste(substitute(expr=x, env=environment()))
     res <- ""
     nx <- length(x)
@@ -398,9 +399,8 @@ labelWithUnit <- function(name, unit=NULL)
 #' @param v A numerical vector or array.
 firstFinite <- function(v)
 {
-    if (!is.vector(v)) {
+    if (!is.vector(v))
         v <- as.vector(v)
-    }
     first <- which(is.finite(v))
     if (length(first) > 0) v[first[1]] else NULL
 }
@@ -431,20 +431,16 @@ firstFinite <- function(v)
 #}
 read.woa <- function(file, name, positive=FALSE, encoding=NA)
 {
-    if (missing(file)) {
+    if (missing(file))
         stop("must supply 'file'")
-    }
     if (is.character(file)) {
-        if (!file.exists(file)) {
+        if (!file.exists(file))
             stop("cannot find file '", file, "'")
-        }
-        if (0L == file.info(file)$size) {
+        if (0L == file.info(file)$size)
             stop("empty file '", file, "'")
-        }
     }
-    if (!is.character(file)) {
+    if (!is.character(file))
         stop("'file' must be a character string")
-    }
     con <- ncdf4::nc_open(file)
     if (missing(name)) {
         varnames <- names(con$var)
@@ -557,9 +553,8 @@ snakeToCamel <- function(s, specialCases=NULL)
         s <- gsub("QC$", "Q_C", s)         # for e.g. PROFILE_DOXY_QC
         s <- gsub("Qc$", "QC", s)          # for e.g. positionQc (converted previously)
     }
-    if (ns < 1) {
+    if (ns < 1)
         stop("'s' must be a vector of character values")
-    }
     res <- vector("character", length=ns)
     for (is in seq(1L, length(s))) {
         if (!grepl("_", s[is])) {
@@ -610,192 +605,132 @@ snakeToCamel <- function(s, specialCases=NULL)
 #' @family functions that interpret variable names and units from headers
 unitFromString <- function(unit, scale=NULL)
 {
-    if (length(unit) > 1L) {
+    if (length(unit) > 1L)
         stop("cannot work with a vector of strings")
-    }
     u <- trimws(unit)                  # remove any leading/trailing whitespace
     U <- toupper(u)                    # simplify some match tests
     #> message("unit=\"", unit, "\", scale=\"", scale, "\"")
-    if (U == "" || U == "NONE" || U == "(NONE)") {
+    if (U == "" || U == "NONE" || U == "(NONE)")
         return(list(unit=expression(), scale=if (is.null(scale)) "" else scale))
-    }
-    if (U == "10**3CELLS/L") {
+    if (U == "10**3CELLS/L")
         return(list(unit=expression(10^3*cells/l), scale=if (is.null(scale)) "" else scale))
-    }
-    if (U == "CODE") {
+    if (U == "CODE")
         return(list(unit=expression(), scale=if (is.null(scale)) "" else scale))
-    }
-    if (U == "COUNTS") {
+    if (U == "COUNTS")
         return(list(unit=expression(), scale=if (is.null(scale)) "" else scale))
-    }
-    if (U == "DB") {
+    if (U == "DB")
         # NOTE: this really should be decibel, but ODF files use it for decibar, sometimes
         return(list(unit=expression(dbar), scale=if (is.null(scale)) "" else scale))
-    }
-    if (U == "DBAR" || U == "DECIBAR" || U == "DECIBARS") {
+    if (U == "DBAR" || U == "DECIBAR" || U == "DECIBARS")
         return(list(unit=expression(dbar), scale=if (is.null(scale)) "" else scale))
-    }
-    if (U == "DEG C" || U == "DEGREES C") {
+    if (U == "DEG C" || U == "DEGREES C")
         return(list(unit=expression(degree*C), scale=if (is.null(scale)) "ITS-90" else scale))
-    }
-    if (U == "FMOL/KG") {
+    if (U == "FMOL/KG")
         return(list(unit=expression(fmol/kg), scale=if (is.null(scale)) "" else scale))
-    }
-    if (U == "G") {
+    if (U == "G")
         return(list(unit=expression(g), scale=if (is.null(scale)) "" else scale))
-    }
-    if (U == "GMT") {
+    if (U == "GMT")
         return(list(unit=expression(), scale=if (is.null(scale)) "" else scale))
-    }
-    if (U == "HPA") {
+    if (U == "HPA")
         return(list(unit=expression(hPa), scale=if (is.null(scale)) "" else scale))
-    }
-    if (U == "HZ") {
+    if (U == "HZ")
         return(list(unit=expression(Hz), scale=if (is.null(scale)) "" else scale))
-    }
-    if (U == "ITS-90" || U == "ITS-90 DEGC") {
+    if (U == "ITS-90" || U == "ITS-90 DEGC")
         return(list(unit=expression(degree*C), scale=if (is.null(scale)) "ITS-90" else scale))
-    }
-    if (U == "IPTS-68" || U == "IPTS-68 DEGC" || U == "IPTS-68, DEG C") {
+    if (U == "IPTS-68" || U == "IPTS-68 DEGC" || U == "IPTS-68, DEG C")
         return(list(unit=expression(degree*C), scale=if (is.null(scale)) "IPTS-68" else scale))
-    }
-    if (U == "ITS-68" || U == "ITS-68 DEGC" || U == "ITS-68, DEG C") { # not an accepted unit, but seen in ODF files
+    if (U == "ITS-68" || U == "ITS-68 DEGC" || U == "ITS-68, DEG C") # not an accepted unit, but seen in ODF files
         return(list(unit=expression(degree*C), scale=if (is.null(scale)) "IPTS-68" else scale))
-    }
-    if (U == "KG/M^3" || U == "KG/M**3") {
+    if (U == "KG/M^3" || U == "KG/M**3")
         return(list(unit=expression(kg/m^3), scale=if (is.null(scale)) "" else scale))
-    }
-    if (U == "M" || U == "METER" || U == "METRE" || U == "METERS" || U == "METRES") {
+    if (U == "M" || U == "METER" || U == "METRE" || U == "METERS" || U == "METRES")
         return(list(unit=expression(m), scale=if (is.null(scale)) "" else scale))
-    }
-    if (U == "M**3/KG" || U == "M^3/KG") {
+    if (U == "M**3/KG" || U == "M^3/KG")
         return(list(unit=expression(m^3/kg), scale=if (is.null(scale)) "" else scale))
-    }
-    if (U == "MA") {
+    if (U == "MA")
         return(list(unit=expression(ma), scale=if (is.null(scale)) "" else scale))
-    }
-    if (U == "M/S" || U == "METER/SEC" || U == "M/S" || U == "METRE/SEC") {
+    if (U == "M/S" || U == "METER/SEC" || U == "M/S" || U == "METRE/SEC")
         return(list(unit=expression(m/s), scale=if (is.null(scale)) "" else scale))
-    }
-    if (U == "MG/M^3" || U == "MG/M**3") {
+    if (U == "MG/M^3" || U == "MG/M**3")
         return(list(unit=expression(mg/m^3), scale=if (is.null(scale)) "" else scale))
-    }
-    if (U == "MICRON" || U == "MICRONS") {
+    if (U == "MICRON" || U == "MICRONS")
         return(list(unit=expression(mu*m), scale=if (is.null(scale)) "" else scale))
-    }
-    if (grepl("^\\s*MICRO[ ]?MOL[E]?S/M(\\*){0,2}2/S(EC)?\\s*$", U)) {
+    if (grepl("^\\s*MICRO[ ]?MOL[E]?S/M(\\*){0,2}2/S(EC)?\\s*$", U))
         return(list(unit=expression(mu*mol/m/s), scale=if (is.null(scale)) "" else scale))
-    }
-    if (U == "ML/L") {
+    if (U == "ML/L")
         return(list(unit=expression(ml/l), scale=if (is.null(scale)) "" else scale))
-    }
-    if (U == "M/S" || U == "M/SEC") {
+    if (U == "M/S" || U == "M/SEC")
         return(list(unit=expression(m/s), scale=if (is.null(scale)) "" else scale))
-    }
-    if (U == "M^-1/SR") {
+    if (U == "M^-1/SR")
         return(list(unit=expression(1/m/sr), scale=if (is.null(scale)) "" else scale))
-    }
-    if (U == "MHO/CM" || U == "MHOS/CM") { # 1 mho (archaic) = 1 Siemen (modern)
+    if (U == "MHO/CM" || U == "MHOS/CM") # 1 mho (archaic) = 1 Siemen (modern)
         return(list(unit=expression(S/cm), scale=if (is.null(scale)) "" else scale))
-    }
-    if (U == "MHO/M" || U == "MHOS/M") { # 1 mho (archaic) = 1 Siemen (modern)
+    if (U == "MHO/M" || U == "MHOS/M") # 1 mho (archaic) = 1 Siemen (modern)
         return(list(unit=expression(S/m), scale=if (is.null(scale)) "" else scale))
-    }
-    if (U == "MHO/CM" || U == "MHOS/CM") { # 1 mho (archaic) = 1 Siemen (modern)
+    if (U == "MHO/CM" || U == "MHOS/CM") # 1 mho (archaic) = 1 Siemen (modern)
         return(list(unit=expression(S/cm), scale=if (is.null(scale)) "" else scale))
-    }
-    if (U == "MMHO") { # 1 mho (archaic) = 1 Siemen (modern)
+    if (U == "MMHO") # 1 mho (archaic) = 1 Siemen (modern)
         return(list(unit=expression(mS), scale=if (is.null(scale)) "" else scale))
-    }
-    if (U == "NBS SCALE") {
+    if (U == "NBS SCALE")
         return(list(unit=expression(), scale=if (is.null(scale)) "NBS" else scale))
-    }
-    if (U == "NTU") {
+    if (U == "NTU")
         return(list(unit=expression(NTU), scale=if (is.null(scale)) "" else scale))
-    }
-    if (U == "PPM") {
+    if (U == "PPM")
         return(list(unit=expression(ppm), scale=if (is.null(scale)) "" else scale))
-    }
-    if (U == "PSS-78" || U == "PSU") {
+    if (U == "PSS-78" || U == "PSU")
         return(list(unit=expression(), scale=if (is.null(scale)) "PSS-78" else scale))
-    }
-    if (U == "PMOL/KG") {
+    if (U == "PMOL/KG")
         return(list(unit=expression(pmol/kg), scale=if (is.null(scale)) "" else scale))
-    }
-    if (U == "PSU") {
+    if (U == "PSU")
         return(list(unit=expression(), scale=if (is.null(scale)) "PSS-78" else scale))
-    }
-    if (U == "ML/L") {
+    if (U == "ML/L")
         return(list(unit=expression(ml/l), scale=if (is.null(scale)) "" else scale))
-    }
-    if (U == "S" || U == "SEC" || U == "SECOND") {
+    if (U == "S" || U == "SEC" || U == "SECOND")
         return(list(unit=expression(s), scale=if (is.null(scale)) "" else scale))
-    }
-    if (u == "s/m") {
+    if (u == "s/m")
         return(list(unit=expression(s/m), scale=if (is.null(scale)) "" else scale))
-    }
-    if (u == "S/m") {
+    if (u == "S/m")
         return(list(unit=expression(S/m), scale=if (is.null(scale)) "" else scale))
-    }
-    if (u == "Total scale") {
+    if (u == "Total scale")
         return(list(unit=expression(), scale=if (is.null(scale)) "" else scale))
-    }
-    if (u == "True degrees") {
+    if (u == "True degrees")
         return(list(unit=expression(degree), scale=if (is.null(scale)) "" else scale))
-    }
-    if (u == "uA") {
+    if (u == "uA")
         return(list(unit=expression(mu*a), scale=if (is.null(scale)) "" else scale))
-    }
     # > stringi::stri_escape_unicode() indicates that Greek mu is "\u00b5"
-    if (u == "\u00b5einsteins/s/m^2" || U == "UEINSTEINS/S/M**2" || U == "UEINSTEINS/S/M^2") {
+    if (u == "\u00b5einsteins/s/m^2" || U == "UEINSTEINS/S/M**2" || U == "UEINSTEINS/S/M^2")
         return(list(unit=expression(mu*mol/m^2/s), scale=if (is.null(scale)) "" else scale))
-    }
     # > stringi::stri_escape_unicode() indicates that Greek mu is "\u00b5"
-    if (u == "\u00b5M") {
+    if (u == "\u00b5M")
         return(list(unit=expression(mu*M), scale=if (is.null(scale)) "" else scale))
-    }
-    if (U == "UMOL/KG") {
+    if (U == "UMOL/KG")
         return(list(unit=expression(mu*mol/kg), scale=if (is.null(scale)) "" else scale))
-    }
-    if (u == "ug/l") {
+    if (u == "ug/l")
         return(list(unit=expression(mu*g/l), scale=if (is.null(scale)) "" else scale))
-    }
-    if (grepl("^mmol/m\\*\\*3$", unit, ignore.case=TRUE)) {
+    if (grepl("^mmol/m\\*\\*3$", unit, ignore.case=TRUE))
         return(list(unit=expression(mmol/m^3), scale=if (is.null(scale)) "" else scale))
-    }
-    if (grepl("^mmol/m\\^3$", unit, ignore.case=TRUE)) {
+    if (grepl("^mmol/m\\^3$", unit, ignore.case=TRUE))
         return(list(unit=expression(mmol/m^3), scale=if (is.null(scale)) "" else scale))
-    }
-    if (U == "UMOL/KG") {
+    if (U == "UMOL/KG")
         return(list(unit=expression(mmol/kg), scale=if (is.null(scale)) "" else scale))
-    }
-    if (U == "UMOL/M**3") {
+    if (U == "UMOL/M**3")
         return(list(unit=expression(mu*mol/m^3), scale=if (is.null(scale)) "" else scale))
-    }
-    if (U == "UMOL/M**2/S") {
+    if (U == "UMOL/M**2/S")
         return(list(unit=expression(mu*mol/m^2/s), scale=if (is.null(scale)) "" else scale))
-    }
-    if (U == "UMOL PHOTONS/M2/S") {
+    if (U == "UMOL PHOTONS/M2/S")
         return(list(unit=expression(mu*mol/m^2/s), scale=if (is.null(scale)) "" else scale))
-    }
-    if (U == "UTC") {
+    if (U == "UTC")
         return(list(unit=expression(), scale=if (is.null(scale)) "" else scale))
-    }
-    if (U == "V") {
+    if (U == "V")
         return(list(unit=expression(V), scale=if (is.null(scale)) "" else scale))
-    }
-    if (U == "1/CM") {
+    if (U == "1/CM")
         return(list(unit=expression(1/cm), scale=if (is.null(scale)) "" else scale))
-    }
-    if (U == "1/M") {
+    if (U == "1/M")
         return(list(unit=expression(1/m), scale=if (is.null(scale)) "" else scale))
-    }
-    if (U == "VOLT" || U == "VOLTS") {
+    if (U == "VOLT" || U == "VOLTS")
         return(list(unit=expression(V), scale=if (is.null(scale)) "" else scale))
-    }
-    if (U == "%") {
+    if (U == "%")
         return(list(unit=expression(percent), scale=if (is.null(scale)) "" else scale))
-    }
     # If none of the above worked, just try our best.
     return(list(unit=as.expression(unit), scale=if (is.null(scale)) "" else scale))
 }
@@ -940,8 +875,8 @@ dataLabel <- function(names, units)
 titleCase <- function(w)
 {
     unlist(lapply(seq_along(w),
-                  function(i) paste(toupper(substr(w[i], 1, 1)),
-                                    tolower(substr(w[i], 2, nchar(w[i]))), sep="")))
+            function(i) paste(toupper(substr(w[i], 1, 1)),
+                tolower(substr(w[i], 2, nchar(w[i]))), sep="")))
 }
 
 
@@ -1268,13 +1203,11 @@ binApply2D <- function(x, y, f, xbreaks, ybreaks, FUN, ...)
 binCount1D <- function(x, xbreaks)
 {
     if (missing(x)) stop("must supply 'x'")
-    if (missing(xbreaks)) {
+    if (missing(xbreaks))
         xbreaks <- pretty(x)
-    }
     nxbreaks <- length(xbreaks)
-    if (nxbreaks < 2) {
+    if (nxbreaks < 2)
         stop("must have more than 1 break")
-    }
     res <- .C("bin_count_1d", length(x), as.double(x),
         length(xbreaks), as.double(xbreaks),
         number=integer(nxbreaks-1),
@@ -1318,24 +1251,19 @@ binCount1D <- function(x, xbreaks)
 #' @family bin-related functions
 binMean1D <- function(x, f, xbreaks)
 {
-    if (missing(x)) {
+    if (missing(x))
         stop("must supply 'x'")
-    }
     fGiven <- !missing(f)
-    if (!fGiven) {
+    if (!fGiven)
         f <- rep(1, length(x))
-    }
     nx <- length(x)
-    if (nx != length(f)) {
+    if (nx != length(f))
         stop("lengths of x and f must agree")
-    }
-    if (missing(xbreaks)) {
+    if (missing(xbreaks))
         xbreaks <- pretty(x)
-    }
     nxbreaks <- length(xbreaks)
-    if (nxbreaks < 2) {
+    if (nxbreaks < 2)
         stop("must have more than 1 break")
-    }
     res <- .C("bin_mean_1d", length(x), as.double(x), as.double(f),
         length(xbreaks), as.double(xbreaks),
         number=integer(nxbreaks-1),
@@ -1469,9 +1397,8 @@ binMean2D <- function(x, y, f, xbreaks, ybreaks, flatten=FALSE, fill=FALSE, fill
     if (missing(y)) stop("must supply 'y'")
     if (fillgap == 0) stop("cannot have a negative 'fillgap' value")
     fGiven <- !missing(f)
-    if (!fGiven) {
+    if (!fGiven)
         f <- rep(1, length(x))
-    }
     if (length(x) != length(y)) stop("lengths of x and y must agree")
     if (length(x) != length(f)) stop("lengths of x and f must agree")
     if (missing(xbreaks)) xbreaks <- pretty(x)
@@ -1551,24 +1478,18 @@ binMean2D <- function(x, y, f, xbreaks, ybreaks, flatten=FALSE, fill=FALSE, fill
 #' @family bin-related functions
 binAverage <- function(x, y, xmin, xmax, xinc)
 {
-    if (missing(y)) {
+    if (missing(y))
         stop("must supply 'y'")
-    }
-    if (missing(xmin)) {
+    if (missing(xmin))
         xmin <- min(as.numeric(x), na.rm=TRUE)
-    }
-    if (missing(xmax)) {
+    if (missing(xmax))
         xmax <- max(as.numeric(x), na.rm=TRUE)
-    }
-    if (missing(xinc)) {
+    if (missing(xinc))
         xinc  <- (xmax - xmin) / 10
-    }
-    if (xmax <= xmin) {
+    if (xmax <= xmin)
         stop("must have xmax > xmin")
-    }
-    if (xinc <= 0) {
+    if (xinc <= 0)
         stop("must have xinc > 0")
-    }
     xx <- head(seq(xmin, xmax, xinc), -1) + xinc / 2
     #cat("xx:", xx, "\n")
     nb <- length(xx)
@@ -1650,32 +1571,24 @@ ungrid <- function(x, y, grid)
 #' errorbars(S, T, 0.05, 0.5)
 errorbars <- function(x, y, xe, ye, percent=FALSE, style=0, length=0.025, ...)
 {
-    if (missing(x)) {
+    if (missing(x))
         stop("must supply x")
-    }
-    if (missing(y)) {
+    if (missing(y))
         stop("must supply y")
-    }
     n <- length(x)
-    if (n != length(y)) {
+    if (n != length(y))
         stop("x and y must be of same length\n")
-    }
-    if (missing(xe) && missing(ye)) {
+    if (missing(xe) && missing(ye))
         stop("must give either xe or ye")
-    }
-    if (1 == length(xe)) {
+    if (1 == length(xe))
         xe <- rep(xe, n) # FIXME probably gives wrong length
-    }
-    if (1 == length(ye)) {
+    if (1 == length(ye))
         ye <- rep(ye, n)
-    }
     if (!missing(xe)) {
-        if (n != length(xe)) {
+        if (n != length(xe))
             stop("x and xe must be of same length\n")
-        }
-        if (percent) {
+        if (percent)
             xe <- xe * x / 100
-        }
         look <- xe != 0
         if (style == 0) {
             segments(x[look], y[look], x[look]+xe[look], y[look], ...)
@@ -1688,12 +1601,10 @@ errorbars <- function(x, y, xe, ye, percent=FALSE, style=0, length=0.025, ...)
         }
     }
     if (!missing(ye)) {
-        if (n != length(ye)) {
+        if (n != length(ye))
             stop("y and ye must be of same length\n")
-        }
-        if (percent) {
+        if (percent)
             ye <- ye * y / 100
-        }
         look <- ye != 0
         if (style == 0) {
             segments(x[look], y[look], x[look], y[look]+ye[look], ...)
@@ -1784,38 +1695,31 @@ plotTaylor <- function(x, y, scale, pch, col, labels, pos, ...)
 {
     if (missing(x)) stop("must supply 'x'")
     if (missing(y)) stop("must supply 'y'")
-    if (is.vector(y)) {
+    if (is.vector(y))
         y <- matrix(y)
-    }
     ncol <- ncol(y)
-    if (missing(pch)) {
+    if (missing(pch))
         pch <- 1:ncol
-    }
-    if (missing(col)) {
+    if (missing(col))
         col <- rep("black", ncol)
-    }
     haveLabels <- !missing(labels)
-    if (missing(pos)) {
+    if (missing(pos))
         pos <- rep(2, ncol)
-    }
-    if (length(pos) < ncol) {
+    if (length(pos) < ncol)
         pos <- rep(pos[1], ncol)
-    }
     xSD <- sd(x, na.rm=TRUE)
     ySD <- sd(as.vector(y), na.rm=TRUE)
     if (missing(y)) stop("must supply 'y'")
     halfArc <- seq(0, pi, length.out=200)
     # FIXME: use figure geometry, to avoid axis cutoff
-    if (missing(scale)) {
+    if (missing(scale))
         scale <- max(pretty(c(xSD, ySD)))
-    }
     plot.new()
     plot.window(c(-1.2, 1.2) * scale, c(0, 1.2) * scale, asp=1)
     #plot.window(c(-1.1, 1.1), c(0.1, 1.2), asp=1)
     sdPretty <- pretty(c(0, scale))
-    for (radius in sdPretty) {
+    for (radius in sdPretty)
         lines(radius * cos(halfArc), radius * sin(halfArc), col="gray")
-    }
     # spokes
     for (rr in seq(-1, 1, 0.2)) {
         lines(c(0, max(sdPretty)*cos(pi/2 + rr * pi / 2)),
@@ -1964,12 +1868,10 @@ rescale <- function(x, xlow, xhigh, rlow=0, rhigh=1, clip=TRUE)
     x <- as.numeric(x)
     finite <- is.finite(x)
     #r <- range(x, na.rm=TRUE)
-    if (missing(xlow)) {
+    if (missing(xlow))
         xlow <- min(x, na.rm=TRUE)
-    }
-    if (missing(xhigh)) {
+    if (missing(xhigh))
         xhigh <- max(x, na.rm=TRUE)
-    }
     res <- rlow + (rhigh - rlow) * (x - xlow) / (xhigh - xlow)
     if (clip) {
         res <- ifelse(res < min(rlow, rhigh), rlow, res)
@@ -2026,18 +1928,14 @@ rescale <- function(x, xlow, xhigh, rlow=0, rhigh=1, clip=TRUE)
 #' plot(adv[["time"]], adv2[["time"]]-adv[["time"]], type="l")
 retime <- function(x, a, b, t0, debug=getOption("oceDebug"))
 {
-    if (missing(x)) {
+    if (missing(x))
         stop("must give argument 'x'")
-    }
-    if (missing(a)) {
+    if (missing(a))
         stop("must give argument 'a'")
-    }
-    if (missing(b)) {
+    if (missing(b))
         stop("must give argument 'b'")
-    }
-    if (missing(t0)) {
+    if (missing(t0))
         stop("must give argument 't0'")
-    }
     oceDebug(debug, paste("retime.adv(x, a=", a, ", b=", b, ", t0=\"", format(t0), "\")\n"), sep="", unindent=1)
     res <- x
     oceDebug(debug, "retiming x@data$time")
@@ -2260,7 +2158,7 @@ detrend <- function(x, y)
 #' CTD <- despike(ctd)
 #' plot(CTD)
 despike <- function(x, reference=c("median", "smooth", "trim"), n=4, k=7, min=NA, max=NA,
-                    replace=c("reference", "NA"), skip)
+    replace=c("reference", "NA"), skip)
 {
     if (is.vector(x)) {
         x <- despikeColumn(x, reference=reference, n=n, k=k, min=min, max=max, replace=replace)
@@ -2304,7 +2202,7 @@ despike <- function(x, reference=c("median", "smooth", "trim"), n=4, k=7, min=NA
 }
 
 despikeColumn <- function(x, reference=c("median", "smooth", "trim"), n=4, k=7, min=NA, max=NA,
-                          replace=c("reference", "NA"))
+    replace=c("reference", "NA"))
 {
     reference <- match.arg(reference)
     replace <- match.arg(replace)
@@ -2648,27 +2546,26 @@ vectorShow <- function(v, msg="", postscript="", digits=5L, n=2L, showNA=FALSE, 
     if (is.list(v) || (is.vector(v) && length(names(v)) > 0L)) {
         names <- names(v)
         values <- unname(v)
-        msg <- paste(msg, ": ", sep="")
+        msg <- paste0(msg, ": ")
         nv <- length(v)
         for (iv in seq_len(nv)) {
-            msg <- paste(msg, names[iv], "=", startEnd(values[[iv]], n), sep="")
+            msg <- paste0(msg, names[iv], "=", startEnd(values[[iv]], n))
             if (iv < nv) {
-                msg <- paste(msg, ", ", sep="")
+                msg <- paste0(msg, ", ")
             }
         }
         if (showNewline) {
-            msg <- paste(msg, "\n", sep="")
+            msg <- paste0(msg, "\n")
         }
         return(msg)
     } else {
         if (!is.null(dimv)) {
-            msg <- paste(msg,
-                paste("[",
-                    paste(unlist(lapply(dimv, function(x) paste("1:", x, sep=""))), collapse=", "),
-                    "]",
-                    sep=""))
+            msg <- paste0(msg,
+                paste0("[",
+                    paste(unlist(lapply(dimv, function(x) paste0("1:", x))), collapse=", "),
+                    "]"))
         } else if (nv > 1) {
-            msg <- paste(msg, paste("[1:", nv, "]", sep=""))
+            msg <- paste0(msg, paste0("[1:", nv, "]"))
         }
         if (nchar(msg) && !grepl(":$", msg)) {
             msg <- paste0(msg, ": ")
@@ -3156,9 +3053,8 @@ resizableLabel <- function(item, axis="x", sep, unit=NULL, debug=getOption("oceD
 #' @family things related to cm data
 rotateAboutZ <- function(x, angle)
 {
-    if (missing(angle)) {
+    if (missing(angle))
         stop("must supply angle")
-    }
     S <- sin(angle * pi / 180)
     C <- cos(angle * pi / 180)
     rotation <- matrix(c(C, S, -S, C), nrow=2)
@@ -3169,12 +3065,10 @@ rotateAboutZ <- function(x, angle)
             paste(allowedClasses, collapse="\" \""), "\")")
     }
     if (inherits(x, "adp")) {
-        if (is.ad2cp(x)) {
+        if (is.ad2cp(x))
             stop("this function does not work yet for AD2CP data")
-        }
-        if (x[["oceCoordinate"]] != "enu") {
+        if (x[["oceCoordinate"]] != "enu")
             stop("cannot rotate adp unless coordinate system is 'enu'; see ?toEnu or ?xyzToEnu")
-        }
         V <- x[["v"]]
         # Work through the bins, transforming a 3D array operation to a
         # sequence of 2D matrix operations.
@@ -3321,9 +3215,8 @@ lonFormat <- function(lon, digits=max(6, getOption("digits") - 1))
 #' lon360(c(179, -179))
 lon360 <- function(x)
 {
-    if (missing(x)) {
+    if (missing(x))
         stop("must provide 'x'")
-    }
     shift <- function(X) ifelse(X < 0, 360 + X, X)
     res <- x
     if (inherits(x, "section")) {
@@ -3335,12 +3228,10 @@ lon360 <- function(x)
         }
         res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     } else if (inherits(x, "oce")) {
-        if ("longitude" %in% names(x[["metadata"]])) {
+        if ("longitude" %in% names(x[["metadata"]]))
             res@metadata$longitude <- shift(res@metadata$longitude)
-        }
-        if ("longitude" %in% names(x[["data"]])) {
+        if ("longitude" %in% names(x[["data"]]))
             res@data$longitude <- shift(res@data$longitude)
-        }
         res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     } else if (is.numeric(x)) {
         res <- shift(x)
@@ -3494,9 +3385,8 @@ GMTOffsetFromTz <- function(tz)
 #' g <- gravity(45) # 9.8
 gravity <- function(latitude=45, degrees=TRUE)
 {
-    if (degrees) {
+    if (degrees)
         latitude <- latitude * 0.0174532925199433
-    }
     9.780318 * (1.0 + 5.3024e-3 * sin(latitude)^2 - 5.9e-6 * sin(2*latitude)^2)
 }
 
@@ -3604,9 +3494,8 @@ gravity <- function(latitude=45, degrees=TRUE)
 makeFilter <- function(type=c("blackman-harris", "rectangular", "hamming", "hann"), m, asKernel=TRUE)
 {
     type <- match.arg(type)
-    if (missing(m)) {
+    if (missing(m))
         stop("must supply 'm'")
-    }
     i <- seq(0, m - 1)
     if (type == "blackman-harris") {
         # See Harris (1978) table on p65
@@ -3702,20 +3591,16 @@ makeFilter <- function(type=c("blackman-harris", "rectangular", "hamming", "hann
 #' mtext("note that normal filter rolls off at end")
 oceFilter <- function(x, a=1, b, zero.phase=FALSE)
 {
-    if (missing(x)) {
+    if (missing(x))
         stop("must supply x")
-    }
-    if (missing(b)) {
+    if (missing(b))
         stop("must supply b")
-    }
-    if (!zero.phase) {
+    if (!zero.phase)
         return(do_oce_filter(x, a, b))
-    } else {
-        res <- do_oce_filter(x, a, b)
-        res <- rev(res)
-        res <- do_oce_filter(res, a, b)
-        return(rev(res))
-    }
+    res <- do_oce_filter(x, a, b)
+    res <- rev(res)
+    res <- do_oce_filter(res, a, b)
+    return(rev(res))
 }
 oce.filter <- oceFilter
 
@@ -3829,10 +3714,10 @@ oce.filter <- oceFilter
 #' plot(S, p, cex=0.5, col="blue", ylim=rev(range(p)))
 #' lines(g$zg, g$xg, col="red")
 interpBarnes <- function(x, y, z, w,
-                         xg, yg, xgl, ygl,
-                         xr, yr, gamma=0.5, iterations=2, trim=0,
-                         pregrid=FALSE,
-                         debug=getOption("oceDebug"))
+    xg, yg, xgl, ygl,
+    xr, yr, gamma=0.5, iterations=2, trim=0,
+    pregrid=FALSE,
+    debug=getOption("oceDebug"))
 {
     debug <- max(0, debug)
     oceDebug(debug, "interpBarnes(",
@@ -3852,21 +3737,17 @@ interpBarnes <- function(x, y, z, w,
         argShow(trim),
         argShow(pregrid, last=TRUE),
         ") {\n", unindent=1, sep="")
-    if (!is.vector(x)) {
+    if (!is.vector(x))
         stop("x must be a vector")
-    }
     n <- length(x)
-    if (length(y) != n) {
+    if (length(y) != n)
         stop("lengths of x and y disagree; they are ", n, " and ", length(y))
-    }
-    if (length(z) != n) {
+    if (length(z) != n)
         stop("lengths of x and z disagree; they are ", n, " and ", length(z))
-    }
     xrGiven <- !missing(xr)
     yrGiven <- !missing(yr)
-    if (missing(w)) {
+    if (missing(w))
         w <- rep(1.0, length(x))
-    }
     if (missing(xg)) {
         if (missing(xgl)) {
             if (0 == diff(range(x, na.rm=TRUE))) {
@@ -4036,13 +3917,11 @@ coriolis <- function(latitude, degrees=TRUE)
 #'}
 undriftTime <- function(x, slowEnd = 0, tname="time")
 {
-    if (!inherits(x, "oce")) {
+    if (!inherits(x, "oce"))
         stop("method is only for oce objects")
-    }
     names <- names(x@data)
-    if (!(tname %in% names)) {
+    if (!(tname %in% names))
         stop("no column named '", tname, "'; only found: ", paste(names, collapse=" "))
-    }
     res <- x
     time <- res@data[[tname]]
     nt <- length(time)
@@ -4107,9 +3986,8 @@ undriftTime <- function(x, slowEnd = 0, tname="time")
 #' print(data.frame(x, y))
 fillGap <- function(x, method=c("linear"), rule=1)
 {
-    if (!is.numeric(x)) {
+    if (!is.numeric(x))
         stop("only works for numeric 'x'")
-    }
     method <- match.arg(method)
     class <- class(x)
     if (is.vector(x)) {
@@ -4178,9 +4056,8 @@ fillGap <- function(x, method=c("linear"), rule=1)
 #' plot(adpDec)
 decimate <- function(x, by=10, to, filter, debug=getOption("oceDebug"))
 {
-    if (!inherits(x, "oce")) {
+    if (!inherits(x, "oce"))
         stop("method is only for oce objects")
-    }
     oceDebug(debug, "in decimate(x, by=", by, ", to=", if (missing(to)) "unspecified" else to, "...)\n")
     res <- x
     do.filter <- !missing(filter)
@@ -4402,9 +4279,8 @@ decimate <- function(x, by=10, to, filter, debug=getOption("oceDebug"))
 #' plot(d)
 oceSmooth <- function(x, ...)
 {
-    if (!inherits(x, "oce")) {
+    if (!inherits(x, "oce"))
         stop("method is only for oce objects")
-    }
     res <- x
     if (inherits(x, "adp")) {
         stop("cannot smooth ADP objects (feel free to request this from the author)")
@@ -4623,9 +4499,8 @@ formatCI <- function(ci, style=c("+/-", "parentheses"), model, digits=NULL)
     formatCI.one <- function(ci, style, digits=NULL)
     {
         debug <- FALSE
-        if (missing(ci)) {
+        if (missing(ci))
             stop("must supply ci")
-        }
         ci <- as.numeric(ci)
         if (length(ci) == 3) {
             x <- ci[2]
@@ -4848,17 +4723,14 @@ integerToAscii <- function(i)
 #' @family things related to magnetism
 magneticField <- function(longitude, latitude, time, version=13)
 {
-    if (missing(longitude) || missing(latitude) || missing(time)) {
+    if (missing(longitude) || missing(latitude) || missing(time))
         stop("must provide longitude, latitude, and time")
-    }
     dim <- dim(latitude)
-    if (!all(dim == dim(longitude))) {
+    if (!all(dim == dim(longitude)))
         stop("dimensions of longitude and latitude must agree")
-    }
     n <- length(latitude)
-    if (inherits(time, "Date")) {
+    if (inherits(time, "Date"))
         time <- as.POSIXct(time, tz="UTC")
-    }
     if (inherits(time, "POSIXt")) {
         d <- as.POSIXlt(time, tz="UTC")
         year <- d$year+1900
@@ -4928,12 +4800,10 @@ magneticField <- function(longitude, latitude, time, version=13)
 #' print(match)
 matchBytes <- function(input, b1, ...)
 {
-    if (missing(input)) {
+    if (missing(input))
         stop("must provide \"input\"")
-    }
-    if (missing(b1)) {
+    if (missing(b1))
         stop("must provide at least one byte to match")
-    }
     #n <- length(input)
     dots <- list(...)
     lb <- 1 + length(dots)
@@ -4965,16 +4835,13 @@ matchBytes <- function(input, b1, ...)
 #' @seealso [shiftLongitude()] and [standardizeLongitude()].
 matrixShiftLongitude <- function(m, longitude)
 {
-    if (missing(m)) {
+    if (missing(m))
         stop("must supply m")
-    }
     n <- dim(m)[1]
-    if (missing(longitude)) {
+    if (missing(longitude))
         longitude <- seq.int(0, 360, length.out=n)
-    }
-    if (n != length(longitude)) {
+    if (n != length(longitude))
         stop("dim(m) and length(longitude) are incompatible")
-    }
     if (max(longitude, na.rm=TRUE) > 180) {
         cut <- which.min(abs(longitude-180))
         longitude <- c(longitude[seq.int(cut+1L, n)]-360, longitude[seq.int(1L, cut)])
@@ -5017,9 +4884,8 @@ matrixShiftLongitude <- function(m, longitude)
 #' par(opar)
 matrixSmooth <- function(m, passes=1)
 {
-    if (missing(m)) {
+    if (missing(m))
         stop("must provide matrix 'm'")
-    }
     storage.mode(m) <- "double"
     if (passes > 0) {
         for (pass in seq.int(1, passes, 1)) {
@@ -5052,9 +4918,8 @@ matrixSmooth <- function(m, passes=1)
 #' @family things related to time
 secondsToCtime <- function(sec)
 {
-    if (sec < 60) {
+    if (sec < 60)
         return(sprintf("00:00:%02d", sec))
-    }
     if (sec < 3600) {
         min <- floor(sec / 60)
         sec <- sec - 60 * min
@@ -5265,24 +5130,18 @@ showMetadataItem <- function(object, name, label="", postlabel="", isdate=FALSE,
 {
     if (name %in% names(object@metadata)) {
         item <- object@metadata[[name]]
-        if (is.null(item)) {
+        if (is.null(item))
             return()
-        }
-        if (is.na(item)) {
+        if (is.na(item))
             return()
-        }
-        if (is.character(item) && nchar(item) == 0) {
+        if (is.character(item) && nchar(item) == 0)
             return()
-        }
-        if (is.na(item)) {
+        if (is.na(item))
             return()
-        }
-        if (isdate) {
+        if (isdate)
             item <- format(item)
-        }
-        if (quote) {
+        if (quote)
             item <- paste("\"", item, "\"", sep="")
-        }
         cat(paste("* ", label, item, postlabel, "\n", sep=""))
     }
 }
@@ -5440,15 +5299,12 @@ integrateTrapezoid <- function(x, y, type=c("A", "dA", "cA"), xmin, xmax)
 #' @family things relating to vector calculus
 grad <- function(h, x=seq(0, 1, length.out=nrow(h)), y=seq(0, 1, length.out=ncol(h)))
 {
-    if (missing(h)) {
+    if (missing(h))
         stop("must give h")
-    }
-    if (length(x) != nrow(h)) {
+    if (length(x) != nrow(h))
         stop("length of x (", length(x), ") must equal number of rows in h (", nrow(h), ")")
-    }
-    if (length(y) != ncol(h)) {
+    if (length(y) != ncol(h))
         stop("length of y (", length(y), ") must equal number of cols in h (", ncol(h), ")")
-    }
     # ensure that all three args are double, so the C code won't misinterpret
     dim <- dim(h)
     h <- as.double(h)
@@ -5599,19 +5455,15 @@ trimString <- function(s)
 lowpass <- function(x, filter="hamming", n, replace=TRUE, coefficients=FALSE)
 {
     # .Call("hammingFilter", x, n)
-    if (missing(x) && !coefficients) {
+    if (missing(x) && !coefficients)
         stop("must supply x")
-    }
-    if (missing(n)) {
+    if (missing(n))
         stop("must supply n")
-    }
-    if (n < 1) {
+    if (n < 1)
         stop("n must be be an integer exceeding 1")
-    }
     n2 <- n %/% 2 # half width
-    if (2 * n2 == n) {
+    if (2 * n2 == n)
         stop("n must be an odd integer")
-    }
     twopi <- 8 * atan2(1, 1)
     ii <- n2 + seq.int(-n2, n2, 1)
     if (filter == "hamming") {

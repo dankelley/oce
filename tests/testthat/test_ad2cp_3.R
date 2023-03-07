@@ -27,9 +27,7 @@ if (file.exists(file)) {
     test_that("signature 250 burstAltimeterRaw",
         {
             expect_message(
-                expect_message(
-                    bar <- read.oce(file, dataType="burstAltimeterRaw"),
-                    "using to=1477 based on file contents"),
+                bar <- read.oce(file, dataType="burstAltimeterRaw"),
                 "setting plan=0, the most common value in this file")
             ar <- bar[["altimeterRaw"]]
             expect_equal(
@@ -44,9 +42,7 @@ if (file.exists(file)) {
     test_that("signature 250 average",
         {
             expect_message(
-                expect_message(
-                    a <- read.oce(file, dataType="average"),
-                    "using to=1477 based on file contents"),
+                a <- read.oce(file, dataType="average"),
                 "setting plan=0, the most common value in this file")
             # Identifiers
             expect_equal(a[["type"]], "Signature250")
@@ -56,8 +52,8 @@ if (file.exists(file)) {
                 c("nominalCorrelation", "ensemble", "time", "soundSpeed",
                     "temperature", "pressure", "heading", "pitch", "roll",
                     "magnetometer", "accelerometer", "temperatureMagnetometer",
-                    "temperatureRTC", "transmitEnergy", "powerLevel", "v", "a",
-                    "q"))
+                    "temperatureRTC", "transmitEnergy", "powerLevel", "distance",
+                    "v", "a", "q"))
             # Beams and cells
             expect_equal(a[["oceCoordinate"]], "beam")
             expect_equal(a[["cellSize"]], 1)
@@ -90,9 +86,7 @@ if (file.exists(file)) {
 
             # bottomTrack -- FIXME
             expect_message(
-                expect_message(
-                    bt <- read.oce(file, dataType="bottomTrack"),
-                    "using to=1477 based on file contents"),
+                bt <- read.oce(file, dataType="bottomTrack"),
                 "setting plan=0, the most common value in this file")
 
             #bt <- d[["bottomTrack"]] # FIXME: the values are crazy, e.g. lots of v of order e-15

@@ -117,9 +117,8 @@ sunAngle <- function(t, longitude=0.0, latitude=0.0, useRefraction=FALSE)
     }
     # Ensure that the timezone is UTC. Note that Sys.Date() gives a NULL tzone.
     tzone <- attr(as.POSIXct(t[1]), "tzone")
-    if (is.null(tzone) || "UTC" != tzone) {
+    if (is.null(tzone) || "UTC" != tzone)
         attributes(t)$tzone <- "UTC"
-    }
     ok <- is.finite(t)
     if (!all(ok)) {
         warning("removing ", sum(!ok), " data, for which time is not finite")
@@ -131,21 +130,17 @@ sunAngle <- function(t, longitude=0.0, latitude=0.0, useRefraction=FALSE)
     # the code below is derived from fortran code, downloaded 2009-11-1 from
     # ftp://climate1.gsfc.nasa.gov/wiscombe/Solar_Rad/SunAngles/sunae.f
     t <- as.POSIXlt(t)                 # use this so we can work on hours, etc
-    if ("UTC" != attr(as.POSIXct(t[1]), "tzone")) {
+    if ("UTC" != attr(as.POSIXct(t[1]), "tzone"))
         stop("t must be in UTC")
-    }
     year <- t$year + 1900
-    if (any(year < 1950) || any(year > 2050)) {
+    if (any(year < 1950) || any(year > 2050))
         warning("year=", year[year<1950|year>2050][1], " (and possibly others) is outside the acceptable range of 1950-2050")
-    }
     day <- t$yday + 1
-    if (any(day < 1) || any(day > 366)) {
+    if (any(day < 1) || any(day > 366))
         stop("day is not in range 1 to 366")
-    }
     hour <- t$hour + t$min / 60 + t$sec / 3600
-    if (any(hour < -13) || any(hour > 36)) {
+    if (any(hour < -13) || any(hour > 36))
         stop("hour outside range -13 to 36")
-    }
     if (any(latitude <  -90)) {
         warning("latitude(s) trimmed to range -90 to 90")
         latitude[latitude <  -90] <- -90

@@ -34,9 +34,8 @@ small sample files for bug reports.
 \dontrun{
 # Can only be run by the developer, since it uses a private file.
 f  <- "/Users/kelley/Dropbox/oce_secret_data/ad2cp/byg_trimmed.ad2cp"
-if (file.exists(f)) {
+if (file.exists(f))
     adpAd2cpFileTrim(f, 100L) # this file is already trimmed to 200 chunks
-}
 }
 }
 \seealso{
@@ -91,7 +90,6 @@ Other things related to ad2cp data:
 \code{\link{ad2cpCodeToName}()},
 \code{\link{ad2cpHeaderValue}()},
 \code{\link{is.ad2cp}()},
-\code{\link{plotAD2CP}()},
 \code{\link{read.adp.ad2cp}()}
 
 Other functions that trim data files: 

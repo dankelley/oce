@@ -63,22 +63,19 @@ adpRdiFileTrim <- function(infile, n=100L, outfile, debug=getOption("oceDebug"))
 {
     oceDebug(debug, "adpRdiFileTrim(infile=\"", infile, "\", n=", n, ", debug=", debug, ") { #\n", unindent=1)
     debug <- ifelse(debug < 1, 0L, ifelse(debug < 2, 1, 2))
-    if (missing(infile)) {
+    if (missing(infile))
         stop("must provide 'infile'")
-    }
     n <- as.integer(n)
-    if (n < 1L) {
+    if (n < 1L)
         stop("'n' must be a positive number, but it is ", n)
-    }
     if (missing(outfile)) {
         outfile <- gsub("^(.*)\\.([^.]*)$", "\\1_trimmed.\\2", infile)
         oceDebug(debug, "created outfile value \"", outfile, "\"")
     }
     r <- read.oce(infile, which="??")
     nmax <- length(r$start)
-    if (n >= nmax) {
+    if (n >= nmax)
         stop("maximum allowed 'n' for this file is ", nmax)
-    }
     # add 1 to profile count; go back 1 char before that
     last <- r$start[n+1L] - 1L
     buf <- readBin(infile, "raw", n=last)
@@ -92,24 +89,21 @@ decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceT
 {
     # header length 6+2*numberOfDataTypes bytes (see e.g. Figure 44, page 160 of Surveyor docs)
     oceDebug(debug, "decodeHeaderRDI(buf, debug=", debug, ") {\n", unindent=1)
-    if (buf[1] != 0x7f || buf[2] != 0x7f) {
+    if (buf[1] != 0x7f || buf[2] != 0x7f)
         stop("first two bytes in file must be 0x7f 0x7f, but they are 0x", buf[1], " 0x", buf[2])
-    }
     # FIXME: for sentinel files bytesPerEnsemble isn't the same for all ensembles
     bytesPerEnsemble <- readBin(buf[3:4], "integer", n=1, size=2, endian="little", signed=FALSE)
     oceDebug(debug, "bytesPerEnsemble=", bytesPerEnsemble, "\n")
     # byte5 not used
     numberOfDataTypes <- readBin(buf[6], "integer", n=1, size=1)
-    if (numberOfDataTypes < 1 || 200 < numberOfDataTypes) {
+    if (numberOfDataTypes < 1 || 200 < numberOfDataTypes)
         stop("cannot have ", numberOfDataTypes, " data types, as header indicates")
-    }
     oceDebug(debug, "numberOfDataTypes=", numberOfDataTypes, "\n")
     haveActualData <- numberOfDataTypes > 2 # will be 2 if just have headers
     oceDebug(debug, "haveActualData=", haveActualData, "\n")
     dataOffset <- readBin(buf[7+0:(2*numberOfDataTypes)], "integer", n=numberOfDataTypes, size=2, endian="little", signed=FALSE)
-    if (dataOffset[1]!=6+2*numberOfDataTypes) {
+    if (dataOffset[1]!=6+2*numberOfDataTypes)
         warning("dataOffset and numberOfDataTypes are inconsistent -- this dataset seems damaged")
-    }
     oceDebug(debug, "dataOffset=", paste(dataOffset, sep=" "), "\n")
     oceDebug(debug, "sort(diff(dataOffset))=", paste(sort(diff(dataOffset)), sep=" "), "\n")
     # Set up codes
@@ -124,12 +118,10 @@ decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceT
     # Fixed Leader Data, abbreviated FLD, pointed to by the dataOffset
     FLD <- buf[dataOffset[1]+1:(dataOffset[2] - dataOffset[1])]
     oceDebug(debug, "Fixed Leader Data:", paste(FLD, collapse=" "), "\n")
-    if (FLD[1] != 0x00 && FLD[1] != 0x01) {
+    if (FLD[1] != 0x00 && FLD[1] != 0x01)
         stop("first byte of fixed leader header must be 0x00 or 0x01 but it is ", FLD[1])
-    }
-    if (FLD[2] != 0x00) {
+    if (FLD[2] != 0x00)
         stop("second byte of fixed leader header must be a0x00 but it is ", FLD[2])
-    }
     firmwareVersionMajor <- readBin(FLD[3], "integer", n=1, size=1, signed=FALSE)
     firmwareVersionMinor <- readBin(FLD[4], "integer", n=1, size=1, signed=FALSE)
     firmwareVersion <- paste(firmwareVersionMajor, firmwareVersionMinor, sep=".")
@@ -233,9 +225,8 @@ decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceT
     oceDebug(debug, "numberOfCells", numberOfCells, "\n")
     pingsPerEnsemble <- readBin(FLD[11:12], "integer", n=1, size=2, endian="little")
     cellSize <- readBin(FLD[13:14], "integer", n=1, size=2, endian="little") / 100 # WS in m
-    if (cellSize < 0 || cellSize > 64) {
+    if (cellSize < 0 || cellSize > 64)
         stop("cellSize of ", cellSize, "m is not in the allowed range of 0m to 64m")
-    }
     #blank.after.transmit <- readBin(FLD[15:16], "integer", n=1, size=2, endian="little") / 100 # in m
     profilingMode <- readBin(FLD[17], "integer", n=1, size=1) # WM
     lowCorrThresh <- readBin(FLD[18], "integer", n=1, size=1)
@@ -754,24 +745,20 @@ decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceT
 #' @family things related to adp data
 #' @family functions that read adp data
 read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
-                         longitude=NA, latitude=NA, type=c("workhorse"), which, encoding=NA,
-                         monitor=FALSE, despike=FALSE, processingLog, testing=FALSE,
-                         debug=getOption("oceDebug"), ...)
+    longitude=NA, latitude=NA, type=c("workhorse"), which, encoding=NA,
+    monitor=FALSE, despike=FALSE, processingLog, testing=FALSE,
+    debug=getOption("oceDebug"), ...)
 {
-    if (missing(file)) {
+    if (missing(file))
         stop("must supply 'file'")
-    }
     if (is.character(file)) {
-        if (!file.exists(file)) {
+        if (!file.exists(file))
             stop("cannot find file '", file, "'")
-        }
-        if (0L == file.info(file)$size) {
+        if (0L == file.info(file)$size)
             stop("empty file '", file, "'")
-        }
     }
-    if (!interactive()) {
+    if (!interactive())
         monitor <- FALSE
-    }
     warningUnknownCode <- list()
     fromGiven <- !missing(from) # FIXME document THIS
     toGiven <- !missing(to) # FIXME document THIS
@@ -781,15 +768,12 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
         ", to=", if (toGiven) format(to) else "(missing)",
         ", by=", if (byGiven) format(by) else "(missing)",
         "...) {\n", unindent=1, sep="")
-    if (!fromGiven) {
+    if (!fromGiven)
         from <- 1
-    }
-    if (!byGiven) {
+    if (!byGiven)
         by <- 1
-    }
-    if (!toGiven) {
+    if (!toGiven)
         to <- 0
-    }
     profileStart <- NULL # prevent scope warning from rstudio; defined later anyway
     if (is.character(file)) {
         filename <- fullFilename(file)
@@ -821,9 +805,8 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
     buf <- readBin(file, what="raw", n=min(fileSize, 10000), endian="little")
     if (buf[1] != 0x7F || buf[2] != 0x7F) {
         startIndex <- matchBytes(buf, 0x7f, 0x7f)[1]
-        if (!length(startIndex)) {
+        if (!length(startIndex))
             stop("cannot find a 0x7f 0x7f byte sequence near the start of this file")
-        }
         message("file does not start with 7F7F byte sequence, so skipping to byte ", startIndex)
         buf <- buf[seq(startIndex, length(buf))]
     }
@@ -1501,9 +1484,8 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
             heading <- 0.01 * readBin(buf[profileStart2 + 18], "integer",
                 n=profilesToRead, size=2, endian="little", signed=FALSE) - header$headingBias
             oceDebug(debug, vectorShow(heading, "heading"))
-            if (header$headingBias != 0) {
+            if (header$headingBias != 0)
                 cat("read.adp.rdi(): subtracted a headingBias of ", header$headingBias, " degrees\n")
-            }
             pitch <- 0.01 * readBin(buf[profileStart2 + 20], "integer", n=profilesToRead, size=2, endian="little", signed=TRUE)
             oceDebug(debug, vectorShow(profileStart2, "profileStart2"))
             oceDebug(debug, vectorShow(pitch, "pitch"))
@@ -1539,9 +1521,8 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
             oceDebug(debug, vectorShow(temperature, "temperature"))
             oceDebug(debug, vectorShow(pressure, "pressure"))
             res <- new("adp")
-            for (name in names(header)) {
+            for (name in names(header))
                 res@metadata[[name]] <- header[[name]]
-            }
             res@metadata$orientation <- orientation # overrides a single value fromd decodeHeader()
             res@metadata$ensembleNumber <- ensembleNumber
             res@metadata$manufacturer <- "rdi"
@@ -1609,9 +1590,8 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
                     tm.d,            tm.d,      -tm.d,     -tm.d),
                     nrow=4, byrow=TRUE)
             }
-            if (monitor) {
+            if (monitor)
                 cat("\nFinished reading ", profilesToRead, " profiles from \"", filename, "\"\n", sep="")
-            }
             # Sometimes a non-VMDAS file will have some profiles that have the VMDAS flag.
             # It is not clear why this happens, but in any case, provide a warning.
             nbadVMDAS <- length(badVMDAS)
@@ -1712,56 +1692,56 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
                     speedMadeGoodEast=speedMadeGoodEast,
                     speedMadeGoodNorth=speedMadeGoodNorth)
             } else if (!bFound && isVMDAS) {
-               oceDebug(debug, "creating data slot for a file with !bFound&&isVMDAS\n")
-               res@data <- list(v=v, q=q, a=a, g=g,
-                                distance=seq(bin1Distance, by=cellSize, length.out=numberOfCells),
-                                time=time,
-                                pressure=pressure,
-                                temperature=temperature,
-                                salinity=salinity,
-                                depth=depth,
-                                soundSpeed=soundSpeed,
-                                heading=heading,
-                                pitch=pitch,
-                                roll=roll,
-                                headingStd=headingStd,
-                                pitchStd=pitchStd,
-                                rollStd=rollStd,
-                                pressureStd=pressureStd,
-                                xmitCurrent=xmitCurrent,
-                                xmitVoltage=xmitVoltage,
-                                ambientTemp=ambientTemp,
-                                pressurePlus=pressurePlus,
-                                pressureMinus=pressureMinus,
-                                attitudeTemp=attitudeTemp,
-                                attitude=attitude,
-                                contaminationSensor=contaminationSensor,
-                                # Next are as described starting on p77 of VmDas_Users_Guide_May12.pdf
-                                avgSpeed=avgSpeed,
-                                avgMagnitudeVelocityEast=avgMagnitudeVelocityEast,
-                                avgMagnitudeVelocityNorth=avgMagnitudeVelocityNorth,
-                                avgTrackMagnetic=avgTrackMagnetic,
-                                avgTrackTrue=avgTrackTrue,
-                                avgTrueVelocityEast=avgTrueVelocityEast,
-                                avgTrueVelocityNorth=avgTrueVelocityNorth,
-                                directionMadeGood=directionMadeGood,
-                                firstLatitude=firstLatitude,
-                                firstLongitude=firstLongitude,
-                                firstTime=firstTime,
-                                lastLatitude=lastLatitude,
-                                lastLongitude=lastLongitude,
-                                lastTime=lastTime,
-                                numberOfHeadingSamplesAveraged=numberOfHeadingSamplesAveraged,
-                                numberOfMagneticTrackSamplesAveraged=numberOfMagneticTrackSamplesAveraged,
-                                numberOfPitchRollSamplesAveraged=numberOfPitchRollSamplesAveraged,
-                                numberOfSpeedSamplesAveraged=numberOfSpeedSamplesAveraged,
-                                numberOfTrueTrackSamplesAveraged=numberOfTrueTrackSamplesAveraged,
-                                primaryFlags=primaryFlags,
-                                shipHeading=shipHeading,
-                                shipPitch=shipPitch,
-                                shipRoll=shipRoll,
-                                speedMadeGood=speedMadeGood,
-                                speedMadeGoodEast=speedMadeGoodEast,
+                oceDebug(debug, "creating data slot for a file with !bFound&&isVMDAS\n")
+                res@data <- list(v=v, q=q, a=a, g=g,
+                    distance=seq(bin1Distance, by=cellSize, length.out=numberOfCells),
+                    time=time,
+                    pressure=pressure,
+                    temperature=temperature,
+                    salinity=salinity,
+                    depth=depth,
+                    soundSpeed=soundSpeed,
+                    heading=heading,
+                    pitch=pitch,
+                    roll=roll,
+                    headingStd=headingStd,
+                    pitchStd=pitchStd,
+                    rollStd=rollStd,
+                    pressureStd=pressureStd,
+                    xmitCurrent=xmitCurrent,
+                    xmitVoltage=xmitVoltage,
+                    ambientTemp=ambientTemp,
+                    pressurePlus=pressurePlus,
+                    pressureMinus=pressureMinus,
+                    attitudeTemp=attitudeTemp,
+                    attitude=attitude,
+                    contaminationSensor=contaminationSensor,
+                    # Next are as described starting on p77 of VmDas_Users_Guide_May12.pdf
+                    avgSpeed=avgSpeed,
+                    avgMagnitudeVelocityEast=avgMagnitudeVelocityEast,
+                    avgMagnitudeVelocityNorth=avgMagnitudeVelocityNorth,
+                    avgTrackMagnetic=avgTrackMagnetic,
+                    avgTrackTrue=avgTrackTrue,
+                    avgTrueVelocityEast=avgTrueVelocityEast,
+                    avgTrueVelocityNorth=avgTrueVelocityNorth,
+                    directionMadeGood=directionMadeGood,
+                    firstLatitude=firstLatitude,
+                    firstLongitude=firstLongitude,
+                    firstTime=firstTime,
+                    lastLatitude=lastLatitude,
+                    lastLongitude=lastLongitude,
+                    lastTime=lastTime,
+                    numberOfHeadingSamplesAveraged=numberOfHeadingSamplesAveraged,
+                    numberOfMagneticTrackSamplesAveraged=numberOfMagneticTrackSamplesAveraged,
+                    numberOfPitchRollSamplesAveraged=numberOfPitchRollSamplesAveraged,
+                    numberOfSpeedSamplesAveraged=numberOfSpeedSamplesAveraged,
+                    numberOfTrueTrackSamplesAveraged=numberOfTrueTrackSamplesAveraged,
+                    primaryFlags=primaryFlags,
+                    shipHeading=shipHeading,
+                    shipPitch=shipPitch,
+                    shipRoll=shipRoll,
+                    speedMadeGood=speedMadeGood,
+                    speedMadeGoodEast=speedMadeGoodEast,
                     speedMadeGoodNorth=speedMadeGoodNorth)
             } else if (isSentinel) {
                 oceDebug(debug, "creating data slot for a SentinelV file\n")
@@ -1818,17 +1798,15 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
             }
         } else {
             warning("There are no profiles in this file.")
-            for (name in names(header)) {
+            for (name in names(header))
                 res@metadata[[name]] <- header[[name]]
-            }
             res@metadata$filename <- filename
             res@data <- NULL
         }
     } else {
         warning("The header indicates that there are no profiles in this file.")
-        for (name in names(header)) {
+        for (name in names(header))
             res@metadata[[name]] <- header[[name]]
-        }
         res@metadata$filename <- filename
         res@data <- NULL
     }
@@ -1860,9 +1838,8 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
         }
     }
     res@metadata$manufacturer <- "teledyne rdi"
-    if (missing(processingLog)) {
+    if (missing(processingLog))
         processingLog <- paste(deparse(match.call()), sep="", collapse="")
-    }
     hitem <- processingLogItem(processingLog)
     res@processingLog <- unclass(hitem)
     res@metadata$units$v <- list(unit=expression(m/s), scale="")

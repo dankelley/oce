@@ -25,9 +25,8 @@
 #' as.unit("UMOL/KG")
 as.unit <- function(u, default=list(unit=expression(), scale=""))
 {
-    if (missing(u) || !is.character(u)) {
+    if (missing(u) || !is.character(u))
         return(default)
-    }
     if (length(grep("DBAR", u, ignore.case=TRUE))) {
         res <- list(unit=expression(dbar), scale="")
     } else if (length(grep("IPTS-68", u, ignore.case=TRUE))) {

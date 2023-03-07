@@ -100,15 +100,12 @@ setMethod(f="[[",
                 data=sort(names(x@data)),
                 dataDerived=sort(dataDerived)))
         }
-        if (i == "p") {
+        if (i == "p")
             return(x@data$pressure)
-        }
-        if (i == "t") {
+        if (i == "t")
             return(x@data$temperature)
-        }
-        if (i == "S") {
+        if (i == "S")
             return(x@data$salinity)
-        }
         callNextMethod()     # [[
     })
 
@@ -146,7 +143,7 @@ setMethod(f="plot",
     definition=function(x, which=c("u", "v"), ...) {
         par(mfrow=c(1, length(which)))
         for (w in which)
-        plotProfile(x, xtype=w, ...)
+            plotProfile(x, xtype=w, ...)
     })
 
 fixColumn <- function(x) {
@@ -205,9 +202,8 @@ as.ladp <- function(longitude, latitude, station, time, pressure, u, v, uz, vz, 
             z <- x[["z"]]
             if (is.null(z)) {
                 depth <- x[["depth"]]
-                if (is.null(depth)) {
+                if (is.null(depth))
                     stop("parent object lacks pressure, depth, and z")
-                }
                 pressure <- abs(depth)
             } else {
                 pressure <- abs(z)

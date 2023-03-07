@@ -27,16 +27,13 @@ read.ctd.odv <- function(file, columns=NULL, station=NULL, missingValue,
     deploymentType, encoding="latin1", monitor=FALSE, debug=getOption("oceDebug"),
     processingLog, ...)
 {
-    if (missing(file)) {
+    if (missing(file))
         stop("must supply 'file'")
-    }
     if (is.character(file)) {
-        if (!file.exists(file)) {
+        if (!file.exists(file))
             stop("cannot find file '", file, "'")
-        }
-        if (0L == file.info(file)$size) {
+        if (0L == file.info(file)$size)
             stop("empty file '", file, "'")
-        }
     }
     oceDebug(debug, "read.ctd.odv() {\n", unindent=1)
     filename <- ""
@@ -56,15 +53,12 @@ read.ctd.odv <- function(file, columns=NULL, station=NULL, missingValue,
     lines <- readLines(file)
     nlines <- length(lines)
     dataStart <- grep("^//.*$", lines, invert=TRUE)[1]
-    if (!dataStart) {
+    if (!dataStart)
         stop("cannot locate the end of the header in this ODV file")
-    }
-    if (nlines - dataStart < 1) {
+    if (nlines - dataStart < 1)
         stop("file has column header, but nothing else")
-    }
-    if (nlines - dataStart < 2) {
+    if (nlines - dataStart < 2)
         stop("file has two rows of column header, but nothing else")
-    }
     oceDebug(debug, "data (column names) start at line", dataStart, "\n")
     res@metadata$filename <- filename
     res@metadata$header <- lines[seq(1, dataStart-1)]
@@ -283,9 +277,8 @@ read.ctd.odv <- function(file, columns=NULL, station=NULL, missingValue,
     oceDebug(debug, "post-processed colNames=c(\"", paste(colNames, collapse="\", \""), "\")\n", sep="")
     names(data) <- colNames
     # Delete the flag columns from 'data', since we have stored them in the metadata
-    if (length(flagColumnsToDelete)) {
+    if (length(flagColumnsToDelete))
         data <- data[, -flagColumnsToDelete]
-    }
     res@metadata$dataNamesOriginal <- dataNamesOriginal
     res@metadata$units <- units
     res@metadata$flags <- flags

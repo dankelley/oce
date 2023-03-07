@@ -1,6 +1,5 @@
 # vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
 
-
 #' Class to Store ODF Data
 #'
 #' This class is for data stored in a format used at Canadian
@@ -126,21 +125,17 @@ setMethod(f="subset",
         subsetString <- paste(deparse(substitute(expr=subset, env=environment())), collapse=" ")
         res <- x
         #dots <- list(...)
-        if (missing(subset)) {
+        if (missing(subset))
             stop("must give 'subset'")
-        }
-        if (missing(subset)) {
+        if (missing(subset))
             stop("must specify a 'subset'")
-        }
         keep <- eval(substitute(expr=subset, env=environment()), envir=x@data,
             enclos=parent.frame(2)) # used for $ts and $ma, but $tsSlow gets another
         res <- x
-        for (i in seq_along(x@data)) {
+        for (i in seq_along(x@data))
             res@data[[i]] <- x@data[[i]][keep]
-        }
-        for (i in seq_along(x@metadata$flags)) {
+        for (i in seq_along(x@metadata$flags))
             res@metadata$flags[[i]] <- x@metadata$flags[[i]][keep]
-        }
         res@processingLog <- processingLogAppend(res@processingLog, paste("subset(x, subset=", subsetString, ")", sep=""))
         res
     })
@@ -279,9 +274,8 @@ setMethod(f="summary",
 # find first match in header
 findInHeader <- function(key, lines, returnOnlyFirst=TRUE, numeric=FALSE, prefix=TRUE) # local function
 {
-    if (prefix) {
+    if (prefix)
         key <- paste("^[ ]*", key, sep="")
-    }
     i <- grep(key, lines)
     rval <- ""
     rval <- list()
@@ -1003,32 +997,26 @@ ODFListFromHeader <- function(header)
 #' @family things related to odf data
 read.odf <- function(file, columns=NULL, header="list", exclude=NULL, encoding="latin1", debug=getOption("oceDebug"))
 {
-    if (missing(file)) {
+    if (missing(file))
         stop("must supply 'file'")
-    }
     if (is.character(file)) {
-        if (!file.exists(file)) {
+        if (!file.exists(file))
             stop("cannot find file '", file, "'")
-        }
-        if (0L == file.info(file)$size) {
+        if (0L == file.info(file)$size)
             stop("empty file '", file, "'")
-        }
     }
     debug <- as.integer(min(max(debug, 0), 3))
     oceDebug(debug, "read.odf(\"", file, "\", exclude=",
              if (is.null(exclude)) "NULL" else paste0("'", exclude, "'"), ", ...) {\n", unindent=1, sep="", style="bold")
     if (!is.null(header)) {
-        if (!is.character(header)) {
+        if (!is.character(header))
             stop("the header argument must be NULL, \"character\", or \"list\"")
-        }
-        if (!(header %in% c("character", "list"))) {
+        if (!(header %in% c("character", "list")))
             stop("the header argument must be NULL, \"character\" or \"list\"")
-        }
     }
     if (is.character(file)) {
-        if (nchar(file) == 0) {
+        if (nchar(file) == 0)
             stop("'file' cannot be an empty string")
-        }
         filename <- fullFilename(file)
         file <- file(file, "r", encoding=encoding)
         on.exit(close(file))
@@ -1064,15 +1052,13 @@ read.odf <- function(file, columns=NULL, header="list", exclude=NULL, encoding="
     # the first line, actually.) I have no idea whether this start-with-blank is part of the
     # ODF format, but I *can* say that quite a few of the ODF files on my computer have
     # this property.
-    if (length(grep("^ ", h))) {
+    if (length(grep("^ ", h)))
         h <- gsub("^ ", "", h)
-    }
     categoryIndex <- grep("^[a-zA-Z]", h)
     categoryNames <- h[categoryIndex]
     headerlist <- list()
-    if (length(categoryIndex > 0)) {
+    if (length(categoryIndex > 0))
         headerlist <- vector("list", length(categoryIndex))
-    }
     oceDebug(debug > 2, "headerlist will have", length(headerlist), "items\n")
     names(headerlist) <- categoryNames
     indexCategory <- 0
@@ -1106,9 +1092,8 @@ read.odf <- function(file, columns=NULL, header="list", exclude=NULL, encoding="
             lhsUsed <- c(lhsUsed, lhs)
         }
     }
-    if (length(headerlist)) {
+    if (length(headerlist))
         names(headerlist) <- unduplicateNames(names(headerlist))
-    }
     res@metadata$header <- headerlist
     # Learn about each parameter from its own header block
     linePARAMETER_HEADER <- grep("^\\s*PARAMETER_HEADER,\\s*$", lines)
@@ -1157,12 +1142,10 @@ read.odf <- function(file, columns=NULL, header="list", exclude=NULL, encoding="
         }
         # Get CODE (mandatory)
         icode <- grep("^\\s*(WMO_)?CODE\\s*=\\s*'?", lines[lstart:lend])
-        if (length(icode) == 0) {
+        if (length(icode) == 0)
             stop("cannot locate a CODE line in PARAMETER_HEADER block starting at line ", lstart-1)
-        }
-        if (length(icode) > 1) {
+        if (length(icode) > 1)
             stop("cannot handle more than one code line in PARAMETER_HEADER block starting at line ", lstart-1)
-        }
         code <- gsub("^\\s*(WMO_)?CODE\\s*=\\s*'?([^',]*)'?,?\\s*$", "\\2", lines[lstart+icode-1])
         parameterTable$code <- c(parameterTable$code, code)
         # Get NAME (mandatory), e.g. from
@@ -1452,9 +1435,8 @@ read.odf <- function(file, columns=NULL, header="list", exclude=NULL, encoding="
         }
     }
     names(res@metadata$units) <- unitNames
-    if (exists("DATA_TYPE") && DATA_TYPE == "CTD") {
+    if (exists("DATA_TYPE") && DATA_TYPE == "CTD")
         res@metadata$pressureType <- "sea"
-    }
     res@processingLog <- processingLogAppend(res@processingLog,
         paste("read.odf(\"", filename, "\", ",
             "columns=c(\"", paste(columns, collapse="\", \""), "\"), ",
@@ -1498,16 +1480,13 @@ read.odf <- function(file, columns=NULL, header="list", exclude=NULL, encoding="
 read.ctd.odf <- function(file, columns=NULL, station=NULL, missingValue, deploymentType="unknown",
     monitor=FALSE, exclude=NULL, encoding="latin1", debug=getOption("oceDebug"), processingLog, ...)
 {
-    if (missing(file)) {
+    if (missing(file))
         stop("must supply 'file'")
-    }
     if (is.character(file)) {
-        if (!file.exists(file)) {
+        if (!file.exists(file))
             stop("cannot find file '", file, "'")
-        }
-        if (0L == file.info(file)$size) {
+        if (0L == file.info(file)$size)
             stop("empty file '", file, "'")
-        }
     }
     oceDebug(debug, "read.ctd.odf(\"", file, "\", ...) {\n", sep="", unindent=1, style="bold")
     if (!is.null(columns)) warning("'columns' is ignored by read.ctd.odf() at present")
@@ -1519,12 +1498,10 @@ read.ctd.odf <- function(file, columns=NULL, station=NULL, missingValue, deploym
             res@data[[item]] <- ifelse(res@data[[item]]==missingValue, NA, res@data[[item]])
         }
     }
-    if (!is.null(station)) {
+    if (!is.null(station))
         res@metadata$station <- station
-    }
-    for (mname in names(odf@metadata)) {
+    for (mname in names(odf@metadata))
         res@metadata[[mname]] <- odf@metadata[[mname]]
-    }
     res@metadata$pressureType <- "sea"
     res@metadata$deploymentType <- deploymentType
     oceDebug(debug, "} # read.ctd.odf()\n", unindent=1, style="bold")

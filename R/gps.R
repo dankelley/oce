@@ -214,9 +214,9 @@ setMethod(f="[[<-",
 setMethod(f="plot",
     signature=signature("gps"),
     definition=function(x, xlab="", ylab="", asp, clongitude, clatitude, span, projection,
-                        expand=1, mgp=getOption("oceMgp"), mar=c(mgp[1]+1, mgp[1]+1, 1, 1), bg,
-                        axes=TRUE, cex.axis=par("cex.axis"), add=FALSE, inset=FALSE, geographical=0,
-                        debug=getOption("oceDebug"), ...)
+        expand=1, mgp=getOption("oceMgp"), mar=c(mgp[1]+1, mgp[1]+1, 1, 1), bg,
+        axes=TRUE, cex.axis=par("cex.axis"), add=FALSE, inset=FALSE, geographical=0,
+        debug=getOption("oceDebug"), ...)
     {
         oceDebug(debug, "plot.gps(...",
             ", clongitude=", if (missing(clongitude)) "(missing)" else clongitude,
@@ -497,16 +497,13 @@ as.gps <- function(longitude, latitude, filename="")
 #' @family things related to gps data
 read.gps <- function(file, type=NULL, encoding="latin1", debug=getOption("oceDebug"), processingLog)
 {
-    if (missing(file)) {
+    if (missing(file))
         stop("must supply 'file'")
-    }
     if (is.character(file)) {
-        if (!file.exists(file)) {
+        if (!file.exists(file))
             stop("cannot find file '", file, "'")
-        }
-        if (0L == file.info(file)$size) {
+        if (0L == file.info(file)$size)
             stop("empty file '", file, "'")
-        }
     }
     oceDebug(debug, "read.gps(...) {\n", sep="", style="bold", unindent=1)
     filename <- NULL

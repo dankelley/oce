@@ -17,9 +17,8 @@
 presentTime <- function(tz="UTC")
 {
     t <- Sys.time()
-    if (!is.null(tz) && nchar(tz) > 0) {
+    if (!is.null(tz) && nchar(tz) > 0)
         attr(t, "tzone") <- tz
-    }
     t
 }
 
@@ -387,17 +386,14 @@ setMethod(f="plot",
 setMethod(f="subset",
     signature="oce",
     definition=function(x, subset, ...) {
-        if (missing(subset)) {
+        if (missing(subset))
             stop("must give 'subset'")
-        }
         keep <- eval(expr=substitute(expr=subset, env=environment()), envir=x@data, enclos=parent.frame())
         res <- x
-        for (i in seq_along(x@data)) {
+        for (i in seq_along(x@data))
             res@data[[i]] <- res@data[[i]][keep]
-        }
-        for (i in seq_along(x@metadata$flags)) {
+        for (i in seq_along(x@metadata$flags))
             res@metadata$flags[[i]] <- res@metadata$flag[[i]][keep]
-        }
         res@processingLog <- processingLogAppend(res@processingLog,
             paste(deparse(match.call(call=sys.call(sys.parent(1)))),
                 sep="", collapse=""))
@@ -875,9 +871,8 @@ setGeneric(name="applyMagneticDeclination",
 setMethod(f="applyMagneticDeclination",
     signature=c(object="oce", declination="ANY", debug="ANY"),
     definition=function(object, declination=0.0, debug=getOption("oceDebug")) {
-        if (length(declination) != 1L) {
+        if (length(declination) != 1L)
             stop("length of declination must equal 1")
-        }
         if (inherits(object, "cm")) {
             callNextMethod()
         } else if (inherits(object, "adp")) {
@@ -1040,12 +1035,10 @@ handleFlagsInternal <- function(object, flags, actions, where, debug=0) {
         warning("no actions supplied (internal error; report to developer)")
         return(object)
     }
-    if (missing(where)) {
+    if (missing(where))
         where <- NULL
-    }
-    if (any(names(flags) != names(actions))) {
+    if (any(names(flags) != names(actions)))
         stop("names of flags must match those of actions")
-    }
     oceDebug(debug, "flags=", paste(as.vector(flags), collapse=","), "\n", sep="")
     oflags <- if (is.null(where)) object@metadata$flags else object@metadata$flags[[where]]
     odata <- if (is.null(where)) object@data else object@data[[where]]
@@ -1200,13 +1193,11 @@ handleFlagsInternal <- function(object, flags, actions, where, debug=0) {
 #' @family functions relating to data-quality flags
 defaultFlags <- function(object)
 {
-    if (is.null(object@metadata$flagScheme)) {
+    if (is.null(object@metadata$flagScheme))
         return(NULL)
-    }
     default <- object@metadata$flagScheme$default
-    if (!is.null(default)) {
+    if (!is.null(default))
         return(default)
-    }
     scheme <- object@metadata$flagScheme$name
     if (is.null(scheme)) {
         return(NULL)
@@ -1251,21 +1242,16 @@ setFlagsInternal <- function(object, name=NULL, i=NULL, value=NULL, debug=getOpt
         unindent=1)
     res <- object
     # Ensure proper argument setup.
-    if (is.null(name)) {
+    if (is.null(name))
         stop("must supply a name")
-    }
-    if (is.null(i)) {
+    if (is.null(i))
         stop("must supply 'i'")
-    }
-    if (is.null(value)) {
+    if (is.null(value))
         stop("must supply 'value'")
-    }
-    if (length(name) > 1) {
+    if (length(name) > 1)
         stop("must specify one 'name' at a time (this restriction may be relaxed in the future)")
-    }
-    if (!(name %in% names(object@metadata$flags))) {
+    if (!(name %in% names(object@metadata$flags)))
         stop("object has no flag for \"", name, "\"; try one of: \"", paste(names(object@data), collapse=" "), "\"")
-    }
     # Done with argument analysis.
 
     # Permit 'value' to be a character string, if a scheme already
@@ -1409,9 +1395,8 @@ setMethod("initializeFlagScheme",
 initializeFlagSchemeInternal <- function(object, name=NULL, mapping=NULL, default=NULL, update=NULL, debug=0)
 {
     oceDebug(debug, "initializeFlagSchemeInternal(object, name=\"", name, "\", debug=", debug, ") {", sep="", unindent=1)
-    if (is.null(name)) {
+    if (is.null(name))
         stop("must supply 'name'")
-    }
     res <- object
     if (!is.null(object@metadata$flagScheme) && !(is.logical(update) && update)) {
         warning("cannot alter a flagScheme that is already is place")

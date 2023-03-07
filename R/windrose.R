@@ -172,12 +172,10 @@ as.windrose <- function(x, y, dtheta=15.0, debug=getOption("oceDebug"))
     # patience and insight.
     ai <- 1 + floor((angle+pi)/dt)
     ai <- (ai-1)%%nt + 1 # clean up problems (thanks, adeckmyn at github!!)
-    if (min(ai) < 1) {
+    if (min(ai) < 1)
         stop("problem setting up bins (ai<1)")
-    }
-    if (max(ai) > nt) {
+    if (max(ai) > nt)
         stop("problem setting up bins (ai>xlen)")
-    }
     for (i in 1:nt) {
         inside <- ai==i
         oceDebug(debug, sum(inside), "counts for angle category", i,
@@ -187,9 +185,8 @@ as.windrose <- function(x, y, dtheta=15.0, debug=getOption("oceDebug"))
         mean[i] <- mean(R[inside], na.rm=TRUE)
         fives[i, ] <- fivenum(R[inside])
     }
-    if (sum(count) != xlen) {
+    if (sum(count) != xlen)
         stop("miscount in angles")
-    }
     res <- new("windrose")
     res@data <- list(n=length(x), x.mean=mean(x, na.rm=TRUE), y.mean=mean(y, na.rm=TRUE),
         theta=theta*180/pi, count=count, mean=mean, fives=fives)
@@ -251,16 +248,15 @@ as.windrose <- function(x, y, dtheta=15.0, debug=getOption("oceDebug"))
 setMethod(f="plot",
     signature=signature("windrose"),
     definition=function(x,
-                        type=c("count", "mean", "median", "fivenum"),
-                        convention=c("meteorological", "oceanographic"),
-                        mgp=getOption("oceMgp"),
-                        mar=c(mgp[1], mgp[1], 1+mgp[1], mgp[1]),
-                        col,
-                        ...)
+        type=c("count", "mean", "median", "fivenum"),
+        convention=c("meteorological", "oceanographic"),
+        mgp=getOption("oceMgp"),
+        mar=c(mgp[1], mgp[1], 1+mgp[1], mgp[1]),
+        col,
+        ...)
     {
-        if (!inherits(x, "windrose")) {
+        if (!inherits(x, "windrose"))
             stop("method is only for objects of class '", "windrose", "'")
-        }
         type <- match.arg(type)
         convention <- match.arg(convention)
         nt <- length(x@data$theta)

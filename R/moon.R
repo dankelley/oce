@@ -101,9 +101,8 @@
 #' @family things related to astronomy
 moonAngle <- function(t, longitude=0, latitude=0, useRefraction=TRUE)
 {
-    if (missing(t)) {
+    if (missing(t))
         stop("must provide 't'")
-    }
     if (is.character(t)) {
         t <- as.POSIXct(t, tz="UTC")
     } else if (inherits(t, "Date")) {

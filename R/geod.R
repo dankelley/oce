@@ -79,9 +79,8 @@ geodXy <- function(longitude, latitude, longitudeRef, latitudeRef, debug=getOpti
     if (missing(longitudeRef)) stop("must provide longitudeRef")
     if (missing(latitudeRef)) stop("must provide latitudeRef")
     n <- length(longitude)
-    if (length(latitude) != n) {
+    if (length(latitude) != n)
         stop("longitude and latitude vectors of unequal length")
-    }
     xy  <- do_geod_xy(longitude, latitude, longitudeRef, latitudeRef, a, f)
     data.frame(x=xy$x, y=xy$y)
 }
@@ -119,19 +118,15 @@ geodXyInverse <- function(x, y, longitudeRef, latitudeRef, debug=getOption("oceD
 {
     a <- 6378137.00          # WGS84 major axis
     f <- 1/298.257223563     # WGS84 flattening parameter
-    if (missing(x) || missing(y)) {
+    if (missing(x) || missing(y))
         stop("must provide x and y")
-    }
-    if (missing(longitudeRef)) {
+    if (missing(longitudeRef))
         stop("must provide longitudeRef")
-    }
-    if (missing(latitudeRef)) {
+    if (missing(latitudeRef))
         stop("must provide latitudeRef")
-    }
     n <- length(x)
-    if (length(y) != n) {
+    if (length(y) != n)
         stop("x and y vectors of unequal length")
-    }
     ll <- do_geod_xy_inverse(x, y, longitudeRef, latitudeRef, a, f)
     data.frame(longitude=ll$longitude, latitude=ll$latitude)
 }
@@ -226,19 +221,15 @@ geodDist <- function(longitude1, latitude1=NULL, longitude2=NULL, latitude2=NULL
             res <- do_geoddist_alongpath(longitude1, latitude1, a, f) / 1000
         } else {
             n1 <- length(latitude1)
-            if (length(longitude1) != n1) {
+            if (length(longitude1) != n1)
                 stop("latitude1 and longitude1 must be vectors of the same length")
-            }
-            if (is.null(longitude2)) {
+            if (is.null(longitude2))
                 longitude2 <- longitude1[1]
-            }
-            if (is.null(latitude2)) {
+            if (is.null(latitude2))
                 latitude2 <- latitude1[1]
-            }
             n2 <- length(latitude2)
-            if (length(longitude2) != n2) {
+            if (length(longitude2) != n2)
                 stop("latitude2 and longitude2 must be vectors of the same length")
-            }
             if (n2 < n1) {
                 latitude2 <- rep(latitude2[1], n1)
                 longitude2 <- rep(longitude2[1], n1)
@@ -290,9 +281,8 @@ geodDist <- function(longitude1, latitude1=NULL, longitude2=NULL, latitude2=NULL
 geodGc <- function(longitude, latitude, dmax)
 {
     n <- length(latitude)
-    if (n != length(longitude)) {
+    if (n != length(longitude))
         stop("lengths of longitude and latude must match")
-    }
     d2r <- atan2(1, 1) / 45
     rlat <- d2r * latitude
     rlon <- d2r * longitude
@@ -319,8 +309,7 @@ geodGc <- function(longitude, latitude, dmax)
     lon <- c(lon, longitude[n])
     lat <- c(lat, latitude[n])
     # use range 0 to 360 if input longitudes in that way
-    if (any(longitude > 180)) {
-        lon <- ifelse(lon < 0, lon+360, lon)
-    }
+    if (any(longitude > 180.0))
+        lon <- ifelse(lon < 0.0, lon+360.0, lon)
     list(longitude=lon, latitude=lat)
 }

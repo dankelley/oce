@@ -176,12 +176,10 @@ setMethod(f="subset",
         res <- x
         dots <- list(...)
         debug <- getOption("oceDebug")
-        if (length(dots) && ("debug" %in% names(dots))) {
+        if (length(dots) && ("debug" %in% names(dots)))
             debug <- dots$debug
-        }
-        if (missing(subset)) {
+        if (missing(subset))
             stop("must give 'subset'")
-        }
         if (grepl("time", subsetString)) {
             oceDebug(debug, "subsetting a cm by time\n")
             keep <- eval(expr=substitute(expr=subset, env=environment()), envir=x@data, enclos=parent.frame(2))
@@ -244,8 +242,8 @@ setMethod(f="subset",
 #'
 #' @family things related to cm data
 as.cm <- function(time, u=NULL, v=NULL,
-                  pressure=NULL, conductivity=NULL, temperature=NULL, salinity=NULL,
-                  longitude=NA, latitude=NA, filename="", debug=getOption("oceDebug"))
+    pressure=NULL, conductivity=NULL, temperature=NULL, salinity=NULL,
+    longitude=NA, latitude=NA, filename="", debug=getOption("oceDebug"))
 {
     oceDebug(debug, "as.ctd() {\n", unindent=1)
     rpd <- atan2(1, 1) / 45            # radians per degree (avoid 'pi')
@@ -255,31 +253,23 @@ as.cm <- function(time, u=NULL, v=NULL,
         x <- time
         mnames <- names(x@metadata)
         dnames <- names(x@data)
-        if (!("time" %in% dnames)) {
+        if (!("time" %in% dnames))
             stop("first argument is an oce object, but it does not hold time")
-        }
         time <- x@data$time
-        if ("pressure" %in% dnames) {
+        if ("pressure" %in% dnames)
             pressure <- x@data$pressure
-        }
-        if ("conductivity" %in% dnames) {
+        if ("conductivity" %in% dnames)
             conductivity <- x@data$conductivity
-        }
-        if ("temperature" %in% dnames) {
+        if ("temperature" %in% dnames)
             temperature <- x@data$temperature
-        }
-        if ("salinity" %in% dnames) {
+        if ("salinity" %in% dnames)
             salinity <- x@data$salinity
-        }
-        if ("longitude" %in% mnames) {
+        if ("longitude" %in% mnames)
             longitude <- x@metadata$longitude
-        }
-        if ("latitude" %in% mnames) {
+        if ("latitude" %in% mnames)
             latitude <- x@metadata$latitude
-        }
-        if ("filename" %in% mnames) {
+        if ("filename" %in% mnames)
             filename <- x@metadata$filename
-        }
         if (inherits(x, "adp")) {
             if (1 == dim(x@data$v)[2]) {
                 oceDebug(debug, "x is an adp object with just 1 cell\n")
@@ -332,36 +322,26 @@ as.cm <- function(time, u=NULL, v=NULL,
     }
     if (firstArgIsOce) {
         # Copy some metadata that are used sometimes (esp. ODF files)
-        if ("type" %in% mnames) {
+        if ("type" %in% mnames)
             res@metadata$type <- x@metadata$type
-        }
-        if ("model" %in% mnames) {
+        if ("model" %in% mnames)
             res@metadata$model <- x@metadata$model
-        }
-        if ("serialNumber" %in% mnames) {
+        if ("serialNumber" %in% mnames)
             res@metadata$serialNumber <- x@metadata$serialNumber
-        }
-        if ("ship" %in% mnames) {
+        if ("ship" %in% mnames)
             res@metadata$ship <- x@metadata$ship
-        }
-        if ("scientist" %in% mnames) {
+        if ("scientist" %in% mnames)
             res@metadata$scientist <- x@metadata$scientist
-        }
-        if ("cruise" %in% mnames) {
+        if ("cruise" %in% mnames)
             res@metadata$cruise <- x@metadata$cruise
-        }
-        if ("station" %in% mnames) {
+        if ("station" %in% mnames)
             res@metadata$station <- x@metadata$station
-        }
-        if ("countryInstituteCode" %in% mnames) {
+        if ("countryInstituteCode" %in% mnames)
             res@metadata$countryInstituteCode <- x@metadata$countryInstituteCode
-        }
-        if ("cruiseNumber" %in% mnames) {
+        if ("cruiseNumber" %in% mnames)
             res@metadata$cruiseNumber <- x@metadata$cruiseNumber
-        }
-        if ("waterDepth" %in% mnames) {
+        if ("waterDepth" %in% mnames)
             res@metadata$waterDepth <- x@metadata$waterDepth
-        }
         # determine original names, where known
         if ("dataNamesOriginal" %in% mnames) {
             if (is.list(x@metadata$dataNamesOriginal)) {
@@ -504,19 +484,16 @@ as.cm <- function(time, u=NULL, v=NULL,
 #'
 #' @author Dan Kelley
 read.cm <- function(file, from=1, to, by=1, tz=getOption("oceTz"), type=c("s4"),
-                    longitude=NA, latitude=NA, debug=getOption("oceDebug"),
-                    encoding="latin1", monitor=FALSE, processingLog)
+    longitude=NA, latitude=NA, debug=getOption("oceDebug"),
+    encoding="latin1", monitor=FALSE, processingLog)
 {
-    if (missing(file)) {
+    if (missing(file))
         stop("must supply 'file'")
-    }
     if (is.character(file)) {
-        if (!file.exists(file)) {
+        if (!file.exists(file))
             stop("cannot find file '", file, "'")
-        }
-        if (0L == file.info(file)$size) {
+        if (0L == file.info(file)$size)
             stop("empty file '", file, "'")
-        }
     }
     oceDebug(debug, "read.cm(file=\"", file,
         "\", from=", format(from),
@@ -533,22 +510,18 @@ read.cm <- function(file, from=1, to, by=1, tz=getOption("oceTz"), type=c("s4"),
 }
 
 read.cm.s4 <- function(file, from=1, to, by=1, tz=getOption("oceTz"), longitude=NA, latitude=NA,
-                       monitor=FALSE, encoding="latin1", debug=getOption("oceDebug"), processingLog)
+    monitor=FALSE, encoding="latin1", debug=getOption("oceDebug"), processingLog)
 {
-    if (missing(file)) {
+    if (missing(file))
         stop("must supply 'file'")
-    }
     if (is.character(file)) {
-        if (!file.exists(file)) {
+        if (!file.exists(file))
             stop("cannot find file '", file, "'")
-        }
-        if (0L == file.info(file)$size) {
+        if (0L == file.info(file)$size)
             stop("empty file '", file, "'")
-        }
     }
-    if (debug > 1) {
-        debug <- 1
-    }
+    if (debug > 1)
+        debug <- 1L
     oceDebug(debug, "read.cm.s4(file=\"", file,
         "\", from=", format(from),
         ", to=", if (missing(to)) "(missing)" else format(to), ", by=", by, ", ...) {\n", sep="", unindent=1)
@@ -629,32 +602,26 @@ read.cm.s4 <- function(file, from=1, to, by=1, tz=getOption("oceTz"), longitude=
     n <- length(d$u)
     time <- seq(t0, by=deltat, length.out=n)
     if (inherits(from, "POSIXt")) {
-        if (!inherits(to, "POSIXt")) {
+        if (!inherits(to, "POSIXt"))
             stop("if 'from' is POSIXt, then 'to' must be, also")
-        }
-        if (!is.numeric(by) || by != 1) {
+        if (!is.numeric(by) || by != 1)
             stop("sorry, 'by' must equal 1, in this version of read.cm.s4()")
-        }
         #from.to.POSIX <- TRUE
         from.index <- which(time >= from)[1]
-        if (is.na(from.index)) {
+        if (is.na(from.index))
             from.index <- 1
-        }
         to.index <- which(to <= time)[1]
-        if (is.na(to.index)) {
+        if (is.na(to.index))
             to.index <- n
-        }
         oceDebug(debug, "Time-based trimming: from=", format(from),
             "to=", format(to), "yield from.index=", from.index, "and to.index=", to.index, "\n")
         keep <- seq(from.index, to.index)
     } else {
-        if (!is.numeric(from)) {
+        if (!is.numeric(from))
             stop("'from' must be either POSIXt or numeric")
-        }
         to <- n
-        if (!is.numeric(to)) {
+        if (!is.numeric(to))
             stop("'to' must be either POSIXt or numeric")
-        }
         keep <- seq(from, to)
     }
     keep <- keep[1 <= keep]
@@ -781,17 +748,17 @@ read.cm.s4 <- function(file, from=1, to, by=1, tz=getOption("oceTz"), longitude=
 setMethod(f="plot",
     signature=signature("cm"),
     definition=function(x,
-                        which=c(1:2),
-                        type="l",
-                        drawTimeRange=getOption("oceDrawTimeRange"),
-                        drawZeroLine=FALSE,
-                        mgp=getOption("oceMgp"),
-                        mar=c(mgp[1]+1.5, mgp[1]+1.5, 1.5, 1.5),
-                        small=2000,
-                        main="",
-                        tformat,
-                        debug=getOption("oceDebug"),
-                        ...)
+        which=c(1:2),
+        type="l",
+        drawTimeRange=getOption("oceDrawTimeRange"),
+        drawZeroLine=FALSE,
+        mgp=getOption("oceMgp"),
+        mar=c(mgp[1]+1.5, mgp[1]+1.5, 1.5, 1.5),
+        small=2000,
+        main="",
+        tformat,
+        debug=getOption("oceDebug"),
+        ...)
     {
         oceDebug(debug, "plot.cm() {\n", unindent=1)
         oceDebug(debug, "  par(mar)=", paste(par("mar"), collapse=" "), "\n")
@@ -803,9 +770,8 @@ setMethod(f="plot",
         opar <- par(no.readonly = TRUE)
         lw <- length(which)
         oceDebug(debug, "length(which) =", lw, "\n")
-        if (lw > 1) {
+        if (lw > 1)
             on.exit(par(opar))
-        }
         par(mgp=mgp, mar=mar)
         dots <- list(...)
         oceDebug(debug, "later on in plot,cm-method:\n")
@@ -967,14 +933,12 @@ setMethod(f="applyMagneticDeclination",
     signature(object="cm", declination="ANY", debug="ANY"),
     definition=function(object, declination=0.0, debug=getOption("oceDebug")) {
         oceDebug(debug, "applyMagneticDeclination,cm-method(object, declination=", declination, ") {\n", sep="", unindent=1)
-        if (length(declination) != 1L) {
+        if (length(declination) != 1L)
             stop("length of 'declination' must equal 1")
-        }
         # Note that, unlike the adp and adv methods, we do not check on
         # metadata$coordinate, because it does not exist for cm-class objects.
-        if (identical(object@metadata$north, "geographic")) {
+        if (identical(object@metadata$north, "geographic"))
             warning("a declination has already been applied, so expect odd results")
-        }
         res <- object
         S <- sin(-declination * pi / 180)
         C <- cos(-declination * pi / 180)

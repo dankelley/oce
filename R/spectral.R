@@ -127,16 +127,15 @@
 #' pw <- pwelch(co2, nfft=256, plot=FALSE)
 #' lines(log10(pw$freq), pw$spec * pw$freq, col='red')
 pwelch <- function(x, window, noverlap, nfft, fs, spec,
-                   demean=FALSE, detrend=TRUE,
-                   plot=TRUE, debug=getOption("oceDebug"), ...)
+    demean=FALSE, detrend=TRUE,
+    plot=TRUE, debug=getOption("oceDebug"), ...)
 {
     #http://octave.svn.sourceforge.net/viewvc/octave/trunk/octave-forge/main/signal/inst/pwelch.m
     hamming.local <- function(n) # avoid having to pull in the signal library
     {
         n <- round(n)
-        if (n < 0) {
+        if (n < 0)
             stop("n must round to a positive integer")
-        }
         if (n == 1) {
             c <- 1
         } else {
@@ -176,58 +175,49 @@ pwelch <- function(x, window, noverlap, nfft, fs, spec,
         }
     }
     nx <- length(x)
-    if (nx < 1) {
+    if (nx < 1)
         stop("need more than one data point")
-    }
     if (gave.spec) {
-        if (!gave.nfft) {
+        if (!gave.nfft)
             stop("must give nfft if spec is given")
-        }
-        if (gave.window) {
+        if (gave.window)
             stop("window must not be given, if spec is given")
-        }
     } else {
         if (gave.window) {
             if (gave.nfft && (length(window) != nfft))
                 stop("if both 'window' and 'nfft' are given, then length(window) must equal nfft")
             if (length(window) == 1) {
                 window <- as.integer(window)
-                if (window < 1L) {
+                if (window < 1L)
                     stop("window must be a positive integer, if length(window)==1")
-                }
                 window <- hamming.local(floor(nx / window))
             } else if (!is.vector(window)) {
                 stop("'window' must be a numeric vector")
             }
         } else {
             if (gave.nfft) {
-                if (nfft < 1) {
+                if (nfft < 1)
                     stop("'nfft' must be a positive integer")
-                }
-                if (nfft > 0.5 * nx) {
+                if (nfft > 0.5 * nx)
                     nfft <- nx
-                }
                 window <- hamming.local(nfft)
             } else {
-                if (gave.noverlap) {
-                    windowLength <- min(nx, floor(nx / 8))
-                } else {
-                    windowLength <- min(nx, floor(nx / 8 / 0.5)) # FIXME: should we use 'overlap' here?
-                }
+                # FIXME: should we use 'overlap' here?
+                windowLength <- min(nx,
+                    if (gave.noverlap) floor(nx / 8)
+                    else floor(nx / 8 / 0.5))
                 window <- hamming.local(windowLength)
             }
         }
     }
     normalization <- mean(window^2)
     window.len <- length(window)
-    if (missing(noverlap)) {
+    if (missing(noverlap))
         noverlap <- floor(window.len / 2)
-    }
     step <- floor(window.len - noverlap + 1)
     oceDebug(debug, "using window.len=", window.len, "  step=", step, "  noverlap=", noverlap, "  nx=", nx, "\n", sep="")
-    if (step < 1) {
+    if (step < 1)
         stop("overlap cannot exceed segment length")
-    }
     # i0 <- 1
     # nwindows <- floor(nx / window.len)
     psd <- NULL
@@ -239,9 +229,8 @@ pwelch <- function(x, window, noverlap, nfft, fs, spec,
             oceDebug(debug, "  calculating subspectrum using user-supplied 'spec', at indices ", start, "to", end, "\n")
             xx <- ts(x[start:end], frequency=fs)
             s <- spec(xx, ...)         # note the ...
-            if (nrow == 0) {
+            if (nrow == 0)
                 freq <- s$freq
-            }
             psd <- c(psd, s$spec)
             start <- start + step
             end <- end + step
@@ -265,9 +254,8 @@ pwelch <- function(x, window, noverlap, nfft, fs, spec,
             xx <- ts(window * x[start:end], frequency=fs)
             args$x <- xx                   # before issue 242, wrapped RHS in as.vector()
             s <- do.call(spectrum, args=args)
-            if (nrow == 0) {
+            if (nrow == 0)
                 freq <- s$freq
-            }
             psd <- c(psd, s$spec)
             start <- start + step
             end <- end + step

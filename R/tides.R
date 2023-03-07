@@ -370,14 +370,14 @@ setMethod(f="[[<-",
 setMethod(f="plot",
     signature=signature("tidem"),
     definition=function(x,
-                        which=1,
-                        constituents=c("SA", "O1", "K1", "M2", "S2", "M4"),
-                        sides=NULL,
-                        col="blue",
-                        log="",
-                        mgp=getOption("oceMgp"),
-                        mar=c(mgp[1]+1, mgp[1]+1, mgp[2]+0.25, mgp[2]+1),
-                        ...)
+        which=1,
+        constituents=c("SA", "O1", "K1", "M2", "S2", "M4"),
+        sides=NULL,
+        col="blue",
+        log="",
+        mgp=getOption("oceMgp"),
+        mar=c(mgp[1]+1, mgp[1]+1, mgp[2]+0.25, mgp[2]+1),
+        ...)
     {
         dots <- list(...)
         dotsNames <- names(dots)
@@ -403,9 +403,8 @@ setMethod(f="plot",
         }
         opar <- par(no.readonly = TRUE)
         lw <- length(which)
-        if (lw > 1) {
+        if (lw > 1)
             on.exit(par(opar))
-        }
         par(mgp=mgp, mar=mar)
         frequency <- x@data$freq[-1] # trim z0
         amplitude <- x@data$amplitude[-1]
@@ -554,28 +553,21 @@ setMethod(f="plot",
 as.tidem <- function(tRef, latitude, name, amplitude, phase, debug=getOption("oceDebug"))
 {
     oceDebug(debug, "as.tidem() {\n", sep="", unindent=1)
-    if (missing(tRef)) {
+    if (missing(tRef))
         stop("tRef must be given")
-    }
-    if (missing(latitude)) {
+    if (missing(latitude))
         stop("latitude must be given")
-    }
-    if (missing(name)) {
+    if (missing(name))
         stop("name must be given")
-    }
-    if (missing(amplitude)) {
+    if (missing(amplitude))
         stop("amplitude must be given")
-    }
-    if (missing(phase)) {
+    if (missing(phase))
         stop("phase must be given")
-    }
     nname <- length(name)
-    if (nname != length(amplitude)) {
+    if (nname != length(amplitude))
         stop("lengths of name and amplitude must be equal but they are ", nname, " and ", length(amplitude))
-    }
-    if (nname != length(phase)) {
+    if (nname != length(phase))
         stop("lengths of name and phase must be equal but they are ", nname, " and ", length(phase))
-    }
     data("tidedata", package="oce", envir=environment())
     tidedata <- get("tidedata")
     tRef <- numberAsPOSIXct(3600 * round(as.numeric(tRef, tz="UTC") / 3600), tz="UTC")
@@ -669,9 +661,8 @@ as.tidem <- function(tRef, latitude, name, amplitude, phase, debug=getOption("oc
 tidemVuf <- function(t, j, latitude=NULL)
 {
     debug <- 0
-    if (length(t) > 1) {
+    if (length(t) > 1)
         stop("t must be a single POSIXct item")
-    }
     data("tidedata", package="oce", envir=environment())
     tidedata <- get("tidedata")#, pos=globalenv())
     a <- tidemAstron(t)
@@ -787,13 +778,11 @@ tidemVuf <- function(t, j, latitude=NULL)
 #' @family things related to tides
 tidemAstron <- function(t)
 {
-    if (length(t) > 1) {
+    if (length(t) > 1)
         stop("t must be a single POSIXct item")
-    }
     debug <- FALSE
-    if (is.numeric(t)) {
+    if (is.numeric(t))
         t <- numberAsPOSIXct(t, tz="UTC")
-    }
     d <- as.numeric(difftime(t, ISOdatetime(1899, 12, 31, 12, 0, 0, tz="UTC"), units="days"))
     D <- d / 10000
     a <- matrix(c(1.0, d, D^2, D^3), ncol=1)
@@ -845,27 +834,23 @@ tidemAstron <- function(t)
 tidemConstituentNameFix <- function(names, debug=1)
 {
     if ("MS" %in% names) {
-        if (debug) {
+        if (debug)
             warning("constituent name switched from T-TIDE 'MS' to Foreman (1978) 'M8'")
-        }
         names[names == "MS"] <- "M8"
     }
     if ("-MS" %in% names) {
-        if (debug) {
+        if (debug)
             warning("removed-constituent name switched from T-TIDE 'MS' to Foreman (1978) 'M8'")
-        }
         names[names == "-MS"] <- "-M8"
     }
     if ("UPSI" %in% names) {
-        if (debug) {
+        if (debug)
             warning("constituent name switched from T-TIDE 'UPSI' to Foreman (1978) 'UPS1'")
-        }
         names[names == "UPSI"] <- "UPS1"
     }
     if ("-UPSI" %in% names) {
-        if (debug) {
+        if (debug)
             warning("removed-constituent name switched from T-TIDE 'UPSI' to Foreman (1978) 'UPS1'")
-        }
         names[names == "-UPSI"] <- "-UPS1"
     }
     names
@@ -1146,7 +1131,7 @@ tidemConstituentNameFix <- function(names, debug=1)
 #'
 #' @family things related to tides
 tidem <- function(t, x, constituents, infer=NULL, latitude=NULL,
-                  rc=1, regress=lm, debug=getOption("oceDebug"))
+    rc=1, regress=lm, debug=getOption("oceDebug"))
 {
     oceDebug(debug, "tidem(t, x,\n", sep="", unindent=1)
     oceDebug(debug, "      constituents=",
@@ -1160,29 +1145,25 @@ tidem <- function(t, x, constituents, infer=NULL, latitude=NULL,
     oceDebug(debug, "      rc=", rc, ",\n", sep="", unindent=1)
     oceDebug(debug, "      debug=", debug, ") {\n", sep="", unindent=1)
     cl <- match.call()
-    if (missing(t)) {
+    if (missing(t))
         stop("must supply 't', either a vector of times or a sealevel object")
-    }
     if (inherits(t, "sealevel")) {
         sl <- t
         t <- sl[["time"]]
         x <- sl[["elevation"]]
-        if (is.null(latitude)) {
+        if (is.null(latitude))
             latitude <- sl[["latitude"]]
-        }
     } else {
-        if (missing(x)) {
+        if (missing(x))
             stop("must supply 'x', since the first argument is not a sealevel object")
-        }
         if (inherits(x, "POSIXt")) {
             warning("tidem() switching first 2 args to permit old-style usage")
             tmp <- x
             x <- t
             t <- tmp
         }
-        if (length(x) != length(t)) {
+        if (length(x) != length(t))
             stop("lengths of 'x' and 't' must match, but they are ", length(x), " and ", length(t), " respectively")
-        }
         if (inherits(t, "POSIXt")) {
             t <- as.POSIXct(t)
         } else {
@@ -1198,50 +1179,39 @@ tidem <- function(t, x, constituents, infer=NULL, latitude=NULL,
     ntc <- length(tc$name)
     # 'infer' sanity-check
     if (!is.null(infer)) {
-        if (!is.list(infer)) {
+        if (!is.list(infer))
             stop("infer must be a list")
-        }
-        if (length(infer) != 4) {
+        if (length(infer) != 4)
             stop("infer must hold 4 elements")
-        }
-        if (!all.equal(sort(names(infer)), c("amp", "from", "name", "phase"))) {
+        if (!all.equal(sort(names(infer)), c("amp", "from", "name", "phase")))
             stop("infer must contain 'name', 'from', 'amp', and 'phase', and nothing else")
-        }
-        if (!is.character(infer$name)) {
+        if (!is.character(infer$name))
             stop("infer$name must be a vector of character strings")
-        }
         infer$name <- tidemConstituentNameFix(infer$name)
-        if (!is.character(infer$from)) {
+        if (!is.character(infer$from))
             stop("infer$from must be a vector of character strings")
-        }
         infer$from <- tidemConstituentNameFix(infer$from)
-        if (length(infer$name) != length(infer$from)) {
+        if (length(infer$name) != length(infer$from))
             stop("lengths of infer$name and infer$from must be equal")
-        }
-        if (length(infer$name) != length(infer$amp)) {
+        if (length(infer$name) != length(infer$amp))
             stop("lengths of infer$name and infer$amp must be equal")
-        }
-        if (length(infer$name) != length(infer$phase)) {
+        if (length(infer$name) != length(infer$phase))
             stop("lengths of infer$name and infer$phase must be equal")
-        }
         for (n in infer$name) {
-            if (!(n %in% tc$name)) {
+            if (!(n %in% tc$name))
                 stop("infer$name value '", n, "' is not a known tidal constituent; see const$name in ?tidedata")
-            }
         }
         for (n in infer$from) {
-            if (!(n %in% tc$name)) {
+            if (!(n %in% tc$name))
                 stop("infer$from value '", n, "' is not a known tidal constituent; see const$name in ?tidedata")
-            }
         }
     }                                  # 'infer' sanity-check
     # The arguments seem to be OK, so start the actual analysis now.
     startTime <- t[1]
     endTime <- tail(t, 1)
     years <- as.numeric(difftime(endTime, startTime, units="secs")) / 86400 / 365.25
-    if (years > 18.6) {
+    if (years > 18.6)
         warning("Time series spans 18.6 years, but tidem() is ignoring this important fact")
-    }
     standard <- tc$ikmpr > 0
     addedConstituents <- NULL
     if (missing(constituents)) {
@@ -1257,9 +1227,8 @@ tidem <- function(t, x, constituents, infer=NULL, latitude=NULL,
         for (i in seq_along(constituents)) {
             if (constituents[i] == "standard") {
                 # must be first!
-                if (i != 1) {
+                if (i != 1)
                     stop("\"standard\" must occur first in constituents list")
-                }
                 name <- tc$name[standard]
             } else {
                 constituents <- tidemConstituentNameFix(constituents)
@@ -1280,9 +1249,8 @@ tidem <- function(t, x, constituents, infer=NULL, latitude=NULL,
                 } else {
                     # Case 2: addition. Require a valid name, and ignore repeat requests.
                     add <- which(tc$name == constituents[i])
-                    if (1 != length(add)) {
+                    if (1 != length(add))
                         stop("'", constituents[i], "' is not a known tidal constituent (line 1093)")
-                    }
                     if (!(constituents[i] %in% name)) {
                         name <- c(name, tc$name[add])
                         addedConstituents <- c(addedConstituents, add)
@@ -1301,9 +1269,8 @@ tidem <- function(t, x, constituents, infer=NULL, latitude=NULL,
     if (any(!(name %in% tc$name))) {
         bad <- NULL
         for (n in name) {
-            if (!(n %in% tc$name)) {
+            if (!(n %in% tc$name))
                 bad <- c(bad, n)
-            }
         }
         stop("unknown constituent names: ", paste(bad, collapse=" "), " (please report this error to developer)")
     }
@@ -1323,9 +1290,8 @@ tidem <- function(t, x, constituents, infer=NULL, latitude=NULL,
         if (length(cc)) {
             cannotFit <- (interval * abs(freq[i]-tc$freq[cc])) < rc
             oceDebug(debug, "i=", i, ", name=", name[i], ", kmpr[", i, "]=", kmpr[i], ", cannotFit=", cannotFit, "\n", sep="")
-            if (cannotFit) {
+            if (cannotFit)
                 dropTerm <- c(dropTerm, i)
-            }
         }
     }
     oceDebug(debug, "before trimming constituents for Rayleigh condition, name[1:", length(name), "]=", paste(name, collapse=" "), sep="", "\n")
@@ -1391,9 +1357,8 @@ tidem <- function(t, x, constituents, infer=NULL, latitude=NULL,
     oceDebug(debug, "after reordering indices, ", vectorShow(name))
     oceDebug(debug, "after reordering indices, ", vectorShow(freq))
     rm(oindices) # clean up namespace
-    if (0L == nc) {
+    if (0L == nc)
         stop("cannot fit for any constituents")
-    }
     elevation <- sl[["elevation"]]
     time <- sl[["time"]]
     nt <- length(elevation)
@@ -1428,7 +1393,7 @@ tidem <- function(t, x, constituents, infer=NULL, latitude=NULL,
     # doesn't just say the matrix cannot be inverted and die!)  The approximate
     # criterion is based on a test case in the context of the local machine
     # epsilon.  I use a criterion of 0.01 because for "good" cases (and my
-    # 6-hour test file for drifter data) have C and S span of very nearly 2, but for "bad" cases, it is 
+    # 6-hour test file for drifter data) have C and S span of very nearly 2, but for "bad" cases, it is
     # of order e-7 or so. Any dividing line would do, I think, but maybe for short records
     # the span might not get to be -1 to +1 and so I am choosing 1e-2 as a criterion. This value
     # might need to be revisited.
@@ -1510,9 +1475,8 @@ tidem <- function(t, x, constituents, infer=NULL, latitude=NULL,
     for (i in seq_len(nc)) {
         # Z0 has Z0_C but no Z0_S (since zero is a degenerate regression variable)
         if (name[i] == "Z0") {
-            if (i != 1) {
+            if (i != 1)
                 stop("Z0 should be at the start of the regression coefficients. Please report this to developer.")
-            }
             j <- which(tidedata$const$name==name[i])
             vuf <- tidemVuf(tRef, j=j, latitude=latitude)
             amplitude[i] <- coef[ic]
@@ -1745,15 +1709,13 @@ predict.tidem <- function(object, newdata, ...)
     dots <- list(...)
     debug <- if ("debug" %in% names(dots)) dots$debug else 0
     oceDebug(debug, "predict.tidem() {\n", sep="", unindent=1)
-    if (!missing(newdata) && !inherits(newdata, "POSIXt")) {
+    if (!missing(newdata) && !inherits(newdata, "POSIXt"))
         stop("newdata must be of class POSIXt")
-    }
     version <- object@metadata$version
     if (!is.null(version) && version == 3) {
         oceDebug(debug, "object@metadata$version is 3, so assuming the object was created by as.tidem()\n")
-        if (missing(newdata)) {
+        if (missing(newdata))
             stop("must supply newdata because object was created with as.tidem()")
-        }
         hour2pi <- 2 * pi * (as.numeric(newdata) - as.numeric(object[["tRef"]])) / 3600
         oceDebug(debug, vectorShow(hour2pi))
         # message("head(hour2pi): ", paste(head(hour2pi), collapse=" "))
@@ -1914,10 +1876,10 @@ predict.tidem <- function(object, newdata, ...)
 #'
 #' @family things related to tides
 webtide <- function(action=c("map", "predict"),
-                    longitude, latitude, node, time,
-                    basedir=getOption("webtide"),
-                    region="nwatl",
-                    plot=TRUE, tformat, debug=getOption("oceDebug"), ...)
+    longitude, latitude, node, time,
+    basedir=getOption("webtide"),
+    region="nwatl",
+    plot=TRUE, tformat, debug=getOption("oceDebug"), ...)
 {
     debug <- max(0, min(floor(debug), 2))
     oceDebug(debug, "webtide(action=\"", action, "\", ...)\n",
@@ -2002,13 +1964,11 @@ webtide <- function(action=c("map", "predict"),
             return(list(node=node, latitude=latitude, longitude=longitude))
         }
     } else if (action == "predict") {
-        if (missing(time)) {
+        if (missing(time))
             time <- seq.POSIXt(from=presentTime(), by="15 min", length.out=7*4*24) # Q: what about timezone?
-        }
         if (missing(node)) {
-            if (missing(longitude) || missing(latitude)) {
+            if (missing(longitude) || missing(latitude))
                 stop("'longitude' and 'latitude' must be given unless 'node' is given")
-            }
             node <- which.min(geodDist(triangles$longitude, triangles$latitude, longitude, latitude))
         } else {
             latitude <- triangles$latitude[node]

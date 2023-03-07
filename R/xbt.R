@@ -149,9 +149,8 @@ setMethod(f="initialize",
     # the only thing we know for sure is that temperature will be given
     definition=function(.Object, z=NULL, depth=NULL, temperature=NULL, units, ...) {
         .Object <- callNextMethod(.Object, ...)
-        if (!is.null(depth) && !is.null(z)) {
+        if (!is.null(depth) && !is.null(z))
             stop("cannot initialize XBT with both depth and z")
-        }
         if (missing(units)) {
             if (!is.null(temperature)) {
                 .Object@metadata$units$temperature <- list(unit=expression(degree*C), scale="ITS-90")
@@ -164,15 +163,12 @@ setMethod(f="initialize",
         } else {
             .Object@metadata$units <- units # CAUTION: we are being quite trusting here
         }
-        if (!is.null(depth)) {
+        if (!is.null(depth))
             .Object@data$depth <- depth
-        }
-        if (!is.null(z)) {
+        if (!is.null(z))
             .Object@data$z <- z
-        }
-        if (!is.null(temperature)) {
+        if (!is.null(temperature))
             .Object@data$temperature <- temperature
-        }
         .Object@processingLog$time <- presentTime()
         .Object@processingLog$value <- "create 'xbt' object"
         return(.Object)
@@ -237,21 +233,18 @@ setMethod(f="subset",
         res <- x
         dots <- list(...)
         debug <- getOption("oceDebug")
-        if (length(dots) && ("debug" %in% names(dots))) {
+        if (length(dots) && ("debug" %in% names(dots)))
             debug <- dots$debug
-        }
-        if (missing(subset)) {
+        if (missing(subset))
             stop("must give 'subset'")
-        }
         if (length(grep("depth", subsetString))) {
             oceDebug(debug, "subsetting an xbt by depth\n")
             keep <- eval(expr=substitute(expr=subset, env=environment()), envir=x@data, enclos=parent.frame(2))
             names <- names(x@data)
             oceDebug(debug, vectorShow(keep, "keeping bins:"))
             res <- x
-            for (name in names(x@data)) {
+            for (name in names(x@data))
                 res@data[[name]] <- x@data[[name]][keep]
-            }
         }
         res@processingLog <- processingLogAppend(res@processingLog, paste("subset.xbt(x, subset=", subsetString, ")", sep=""))
         res
@@ -280,15 +273,12 @@ setMethod(f="subset",
 as.xbt <- function(z, temperature, longitude=NA, latitude=NA, filename="", sequenceNumber=NA,
     serialNumber="")
 {
-    if (missing(z)) {
+    if (missing(z))
         stop("must provide z")
-    }
-    if (missing(temperature)) {
+    if (missing(temperature))
         stop("must provide temperture")
-    }
-    if (length(z) != length(temperature)) {
+    if (length(z) != length(temperature))
         stop("length of z (", length(z), ") does not match length of temperature (", length(temperature), ")")
-    }
     res <- new("xbt", z=z, temperature=temperature)
     # res@data$z <- z
     # res@metadata$units$z <- list(unit=expression(m), scale="")
@@ -355,33 +345,27 @@ read.xbt <- function(file,
     debug=getOption("oceDebug"),
     processingLog)
 {
-    if (missing(file)) {
+    if (missing(file))
         stop("must supply 'file'")
-    }
     if (is.character(file)) {
-        if (!file.exists(file)) {
+        if (!file.exists(file))
             stop("cannot find file '", file, "'")
-        }
-        if (0L == file.info(file)$size) {
+        if (0L == file.info(file)$size)
             stop("empty file '", file, "'")
-        }
     }
     oceDebug(debug, "read.xbt(file=\"", file, "\", type=\"",
         type, "\", longitude=", longitude, ", latitude=", latitude, "...) {\n", sep="", unindent=1)
-    if (is.character(file) && "http://" != substr(file, 1, 7) && 0 == file.info(file)$size) {
+    if (is.character(file) && "http://" != substr(file, 1, 7) && 0 == file.info(file)$size)
         stop("empty file (read.xbt)")
-    }
     type <- match.arg(type)
     res <- if (type == "sippican") {
         read.xbt.edf(file=file, longitude=longitude, latitude=latitude,
             encoding=encoding, debug=debug-1, processingLog=processingLog)
     } else if (type == "noaa1") {
-        if (!is.null(longitude)) {
+        if (!is.null(longitude))
             warning("longitude argument is ignored for type=\"noaa1\"\n")
-        }
-        if (!is.null(latitude)) {
+        if (!is.null(latitude))
             warning("latitude argument is ignored for type=\"noaa1\"\n")
-        }
         read.xbt.noaa1(file=file, encoding=encoding, debug=debug-1, processingLog=processingLog)
     } else {
         stop("unknown type of current meter")
@@ -440,31 +424,26 @@ read.xbt.edf <- function(file, longitude=NA, latitude=NA, encoding="latin1",
         res <- l[grep(name, l)]
         gsub(paste(name, "[ ]*:[ ]*", sep=""), "", res)
     }
-    if (missing(file)) {
+    if (missing(file))
         stop("must supply 'file'")
-    }
     if (is.character(file)) {
-        if (!file.exists(file)) {
+        if (!file.exists(file))
             stop("cannot find file '", file, "'")
-        }
-        if (0L == file.info(file)$size) {
+        if (0L == file.info(file)$size)
             stop("empty file '", file, "'")
-        }
     }
-    if (is.character(file) && "http://" != substr(file, 1, 7) && 0 == file.info(file)$size) {
+    if (is.character(file) && "http://" != substr(file, 1, 7) && 0 == file.info(file)$size)
         stop("empty file (read.xbt.edf)")
-    }
     oceDebug(debug, "read.xbt(file=\"", file, "\", longitude=", longitude, ", latitude=", latitude, "...) {\n",
-             sep="", unindent=1)
+        sep="", unindent=1)
     filename <- ""
     if (is.character(file)) {
         filename <- fullFilename(file)
         file <- file(file, "r", encoding=encoding)
         on.exit(close(file))
     }
-    if (!inherits(file, "connection")) {
+    if (!inherits(file, "connection"))
         stop("argument `file' must be a character string or connection")
-    }
     if (!isOpen(file)) {
         open(file, "r", encoding=encoding)
         on.exit(close(file))
@@ -549,16 +528,13 @@ read.xbt.edf <- function(file, longitude=NA, latitude=NA, encoding="latin1",
 read.xbt.noaa1 <- function(file, debug=getOption("oceDebug"), missingValue=-9.99,
     encoding="latin1", processingLog)
 {
-    if (missing(file)) {
+    if (missing(file))
         stop("must supply 'file'")
-    }
     if (is.character(file)) {
-        if (!file.exists(file)) {
+        if (!file.exists(file))
             stop("cannot find file '", file, "'")
-        }
-        if (0L == file.info(file)$size) {
+        if (0L == file.info(file)$size)
             stop("empty file '", file, "'")
-        }
     }
     oceDebug(debug, "read.xbt(file=\"", file, "\", type=\"", "...) {\n", sep="", unindent=1)
     filename <- "?"
@@ -567,9 +543,8 @@ read.xbt.noaa1 <- function(file, debug=getOption("oceDebug"), missingValue=-9.99
         file <- file(file, "r", encoding=encoding)
         on.exit(close(file))
     }
-    if (!inherits(file, "connection")) {
+    if (!inherits(file, "connection"))
         stop("argument `file' must be a character string or connection")
-    }
     if (!isOpen(file)) {
         open(file, "r", encoding=encoding)
         on.exit(close(file))
@@ -651,15 +626,13 @@ setMethod(f="plot",
         debug=getOption("oceDebug"), ...)
     {
         oceDebug(debug, "plot.xbt() {\n", unindent=1)
-        if (missing(mar)) {
+        if (missing(mar))
             mar <- c(1, mgp[1]+1.5, mgp[1]+1.5, mgp[1])
-        }
         opar <- par(no.readonly = TRUE)
         lw <- length(which)
         oceDebug(debug, "length(which) =", lw, "\n")
-        if (lw > 1) {
+        if (lw > 1)
             on.exit(par(opar))
-        }
         par(mgp=mgp, mar=mar)
         oceDebug(debug, "which: c(", paste(which, collapse=", "), ")\n")
         if (lw > 1) {

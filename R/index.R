@@ -66,31 +66,27 @@
 #' oce.plot.ts(soirecent$t, soirecent$index)
 #'}
 read.index <- function(file,
-                       format,
-                       missingValue,
-                       tz=getOption("oceTz"),
-                       encoding="latin1",
-                       debug=getOption("oceDebug"))
+    format,
+    missingValue,
+    tz=getOption("oceTz"),
+    encoding="latin1",
+    debug=getOption("oceDebug"))
 {
-    if (missing(file)) {
+    if (missing(file))
         stop("must supply 'file'")
-    }
     if (is.character(file)) {
-        if (!file.exists(file)) {
+        if (!file.exists(file))
             stop("cannot find file '", file, "'")
-        }
-        if (0L == file.info(file)$size) {
+        if (0L == file.info(file)$size)
             stop("empty file '", file, "'")
-        }
     }
     if (is.character(file)) {
         #filename <- fullFilename(file)
         file <- file(file, "r", encoding=encoding)
         on.exit(close(file))
     }
-    if (!inherits(file, "connection")) {
+    if (!inherits(file, "connection"))
         stop("file must be a character string or connection")
-    }
     if (!isOpen(file)) {
         open(file, "r", encoding=encoding)
         on.exit(close(file))
@@ -108,9 +104,8 @@ read.index <- function(file,
     }
     formatAllowed <- c("noaa", "ucar")
     formatIndex <- pmatch(format, formatAllowed)
-    if (is.na(formatIndex)) {
+    if (is.na(formatIndex))
         stop("unknown format; must be 'noaa' or 'ucar'")
-    }
     format <- formatAllowed[formatIndex]
     if (format == "noaa") {
         lines <- lines[-1] # drop first header line
@@ -119,9 +114,8 @@ read.index <- function(file,
         n <- unlist(lapply(seq_along(lines),
             function(l) length(scan(text=lines[l], what="numeric", quiet=TRUE))))
         onetoken <- which(n==1)[1]
-        if (is.na(onetoken)) {
+        if (is.na(onetoken))
             stop("cannot find missing-value token")
-        }
         missingValue <- as.numeric(lines[onetoken])
         lines <- lines[seq.int(1L, onetoken-1)]
         d <- as.matrix(read.table(text=lines, header=FALSE, encoding=encoding))

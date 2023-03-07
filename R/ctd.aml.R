@@ -88,22 +88,18 @@
 #' @family functions that read ctd data
 read.ctd.aml <- function(file, format, encoding="UTF-8-BOM", debug=getOption("oceDebug"), processingLog, ...)
 {
-    if (missing(file)) {
+    if (missing(file))
         stop("must supply 'file'")
-    }
     if (is.character(file)) {
-        if (!file.exists(file)) {
+        if (!file.exists(file))
             stop("cannot find file '", file, "'")
-        }
-        if (0L == file.info(file)$size) {
+        if (0L == file.info(file)$size)
             stop("empty file '", file, "'")
-        }
     }
     debug <- max(0L, as.integer(debug))
     oceDebug(debug, "read.ctd.aml(file=\"", file, "\", ...) {\n", unindent=1, style="bold")
-    if (is.character(file) && 0 == file.info(file)$size) {
+    if (is.character(file) && 0 == file.info(file)$size)
         stop("empty file")
-    }
     filename <- ""
     if (is.character(file)) {
         filename <- fullFilename(file)

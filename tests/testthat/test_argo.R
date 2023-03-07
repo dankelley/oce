@@ -92,7 +92,7 @@ test_that("subset(argo, pressure < 500))", {
 if (requireNamespace("sf", quietly=TRUE)) {
 
     test_that("subset(argo, within=(POLYGON))", {
-        ## Labrador Sea (this test will fail if data(argo) is changed)
+        # Labrador Sea (this test will fail if data(argo) is changed)
         nlevel <- 56
         nold <- 223
         nnew <- 53

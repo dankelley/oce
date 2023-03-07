@@ -30,18 +30,15 @@ clipmin <- function(x, min=0)
 #' e.g.  [plot,adp-method()].
 abbreviateTimeLabels <- function(t, ...)
 {
-    if (!inherits(t, "POSIXt")) {
+    if (!inherits(t, "POSIXt"))
         return(t)                     # not a time, so just return the argument
-    }
     dots <- list(...)
-    if ("format" %in% names(dots$format)) {
+    if ("format" %in% names(dots$format))
         return(format(t, dots$format)) # a format was specified, so just return the argument
-    }
     t <- format(t, "%Y-%m-%d %H:%M:%S")
     n <- length(t)
-    if (n < 2) {
+    if (n < 2)
         return(t)
-    }
     year <- substr(t, 1, 4)
     # strip years, if all the same
     for (i in 2:n) if (year[i] != year[1]) return(t)
@@ -63,7 +60,7 @@ abbreviateTimeLabels <- function(t, ...)
 
 
 paletteCalculations <- function(separation=par("cin")[2]/2, width=par("cin")[2], pos=4,
-                                zlab, maidiff=c(0, 0, 0, 0), debug=getOption("oceDebug"))
+    zlab, maidiff=c(0, 0, 0, 0), debug=getOption("oceDebug"))
 {
     # This returns a list with the following entries:
     #   mai0  = before this call
@@ -299,8 +296,8 @@ paletteCalculations <- function(separation=par("cin")[2]/2, width=par("cin")[2],
 #' contour(volcano, add=TRUE)
 #' drawPalette(c(90, 200), fullpage=TRUE, col=oce.colorsViridis)
 drawPalette <- function(zlim, zlab="", breaks, col, colormap, mai, cex=par("cex"), pos=4, las=0,
-                        labels=NULL, at=NULL, levels, drawContours=FALSE, plot=TRUE, fullpage=FALSE,
-                        drawTriangles=FALSE, axisPalette, tformat, debug=getOption("oceDebug"), ...)
+    labels=NULL, at=NULL, levels, drawContours=FALSE, plot=TRUE, fullpage=FALSE,
+    drawTriangles=FALSE, axisPalette, tformat, debug=getOption("oceDebug"), ...)
 {
     debug <- max(0, min(debug, 2))
     oceDebug(debug, "drawPalette(",
@@ -317,18 +314,14 @@ drawPalette <- function(zlim, zlab="", breaks, col, colormap, mai, cex=par("cex"
     breaksGiven <- !missing(breaks)
     zlimGiven <- !missing(zlim)
     if (zlimGiven) {
-        if (!is.numeric(zlim)) {
+        if (!is.numeric(zlim))
             stop("zlim must be 'numeric', not '", class(zlim), "'")
-        }
-        if (sum(is.finite(zlim)) < 2L) {
+        if (sum(is.finite(zlim)) < 2L)
             stop("zlim must hold 2 or more non-NA values")
-        }
-        if (length(zlim) > 2L) {
+        if (length(zlim) > 2L)
             zlim <- range(is.finite(zlim), na.rm=TRUE)
-        }
-        if (zlim[2] < zlim[1]) {
+        if (zlim[2] < zlim[1])
             stop("zlim must be ordered")
-        }
     }
     # If 'zlim' was not given, try to infer it from 'breaks' or from 'at' if
     # 'breaks' was not given.  If none of the three is given, we cannot draw the
@@ -350,38 +343,32 @@ drawPalette <- function(zlim, zlab="", breaks, col, colormap, mai, cex=par("cex"
     oceDebug(debug, "colormapGiven=", colormapGiven, "\n", sep="")
     # Cannot plot if none of (zlim,breaks,at) was given.  But other computations
     # are still undertaken, for other purposes.
-    if (!zlimGiven && !colormapGiven && !breaksGiven && !atGiven) {
+    if (!zlimGiven && !colormapGiven && !breaksGiven && !atGiven)
         plot <- FALSE
-    }
     levelsGiven <- !missing(levels)
-    if (zlimGiven) {
+    if (zlimGiven)
         zlim <- range(zlim, na.rm=TRUE)
-    }
     pos <- as.integer(pos)
-    if (!(pos %in% 1:4)) {
+    if (!(pos %in% 1:4))
         stop("'pos' must be 1, 2, 3 or 4")
-    }
     maiGiven <- !missing(mai)
     haveZlab <- !is.null(zlab) && sum(nchar(zlab)) > 0
     if (colormapGiven && !zlimGiven) {
         oceDebug(debug, "inferring zlim from colormap\n")
         zlim <- colormap$zlim
         zlimGiven <- TRUE
-        if (zlim[2] <= zlim[1]) {
+        if (zlim[2] <= zlim[1])
             stop("colormap zlim values must be ordered and distinct")
-        }
     }
     zIsTime <- zlimGiven && inherits(zlim[1], "POSIXt")
     zlimTZ <- if (zlimGiven) attr(zlim[1], "tzone") else NA
     oceDebug(debug, "zIsTime=", zIsTime, "\n")
-    if (zIsTime) {
+    if (zIsTime)
         zlim <- as.numeric(zlim)
-    }
     omai <- par("mai")
     oceDebug(debug, "original mai: omai=c(", paste(format(omai, digits=3), collapse=","), ")\n")
-    if (!maiGiven) {
+    if (!maiGiven)
         mai <- rep(0, 4)
-    }
     pc <- paletteCalculations(maidiff=mai, pos=pos, zlab=zlab, debug=debug-1)
     contours <- if (breaksGiven) breaks else NULL
     if (colormapGiven) {
@@ -573,9 +560,8 @@ drawPalette <- function(zlim, zlab="", breaks, col, colormap, mai, cex=par("cex"
         labels <- sub("[ ]*$", "", labels)
         oceDebug(debug, "'labels' c(", paste(at, collapse=", "), ") after trim whitespace at right\n")
         # FIXME: just guessing on best 'line', used below
-        if (!missing(axisPalette)) {
+        if (!missing(axisPalette))
             axis <- axisPalette
-        }
         oceDebug(debug, "about to draw palette axis at pos=", pos, " with zlab=\"", zlab, "\" with cex=", cex, "\n", sep="")
         # Use 'zlim' to infer axis labels, unless 'at' was given
         if (zlimGiven && is.null(at)) {
@@ -937,33 +923,33 @@ drawPalette <- function(zlim, zlab="", breaks, col, colormap, mai, cex=par("cex"
 #'
 #' @author Dan Kelley and Clark Richards
 imagep <- function(x, y, z,
-                   xlim, ylim, zlim,
-                   zclip=FALSE, flipy=FALSE,
-                   xlab="", ylab="", zlab="", zlabPosition=c("top", "side"),
-                   las.palette=0,
-                   decimate=TRUE,
-                   quiet=FALSE,
-                   breaks, col, colormap, labels=NULL, at=NULL,
-                   drawContours=FALSE,
-                   drawPalette=TRUE,
-                   drawTriangles=FALSE,
-                   tformat,
-                   drawTimeRange=getOption("oceDrawTimeRange"),
-                   filledContour=FALSE,
-                   missingColor=NULL,
-                   useRaster,
-                   mgp=getOption("oceMgp"),
-                   mar, mai.palette,
-                   xaxs="i", yaxs="i",
-                   asp=NA,
-                   cex=par("cex"),
-                   cex.axis=cex, cex.lab=cex, cex.main=cex,
-                   axes=TRUE,
-                   main="",
-                   axisPalette,
-                   add=FALSE,
-                   debug=getOption("oceDebug"),
-                   ...)
+    xlim, ylim, zlim,
+    zclip=FALSE, flipy=FALSE,
+    xlab="", ylab="", zlab="", zlabPosition=c("top", "side"),
+    las.palette=0,
+    decimate=TRUE,
+    quiet=FALSE,
+    breaks, col, colormap, labels=NULL, at=NULL,
+    drawContours=FALSE,
+    drawPalette=TRUE,
+    drawTriangles=FALSE,
+    tformat,
+    drawTimeRange=getOption("oceDrawTimeRange"),
+    filledContour=FALSE,
+    missingColor=NULL,
+    useRaster,
+    mgp=getOption("oceMgp"),
+    mar, mai.palette,
+    xaxs="i", yaxs="i",
+    asp=NA,
+    cex=par("cex"),
+    cex.axis=cex, cex.lab=cex, cex.main=cex,
+    axes=TRUE,
+    main="",
+    axisPalette,
+    add=FALSE,
+    debug=getOption("oceDebug"),
+    ...)
 {
     debug <- max(0, min(debug, 3))
     oceDebug(debug, "imagep(x,y,z,xlab,ylab,",
@@ -979,9 +965,8 @@ imagep <- function(x, y, z,
         argShow(breaks),
         ")\n", sep="", style="bold", unindent=1)
     zlabPosition <- match.arg(zlabPosition)
-    if (!is.logical(flipy)) {
+    if (!is.logical(flipy))
         stop("flipy must be TRUE or FALSE")
-    }
     if (is.logical(add)) {
         if (add) {
             if (missing(x)) stop("must give 'x'")
@@ -1020,9 +1005,8 @@ imagep <- function(x, y, z,
             oceDebug(debug, "decimate: ", paste(decimate, collapse=" "), " (after calculation)\n")
             ix <- seq(1L, length(x), by=decimate[1])
             iy <- seq(1L, length(y), by=decimate[2])
-            if (is.function(col)) {
+            if (is.function(col))
                 col <- col(n=length(breaks)-1)
-            }
             image(x[ix], y[iy], z[ix, iy], breaks=breaks, col=col, useRaster=useRaster, #why useRaster?
                 add=TRUE)
             return(invisible(list(xat=NULL, yat=NULL, decimate=decimate)))
@@ -1040,43 +1024,35 @@ imagep <- function(x, y, z,
     if (zlimGiven && !(length(zlim) %in% 1:2)) stop("length of zlim must be 1 or 2")
 
     breaksGiven <- !missing(breaks)
-    if (zlimGiven && breaksGiven && length(breaks) > 1) {
+    if (zlimGiven && breaksGiven && length(breaks) > 1)
         stop("cannot specify both zlim and breaks, unless length(breaks)==1")
-    }
 
     xat <- NULL
     yat <- NULL
 
     # issue 674: permit POSIXlt in addition to POSIXct
-    if (inherits(x, "POSIXt")) {
+    if (inherits(x, "POSIXt"))
         x <- as.POSIXct(x)
-    }
 
     #haveZlab <- !is.null(zlab) && sum(nchar(zlab)) > 0
     if (!missing(x) && is.list(x)) {
         names <- names(x)
-        if (!missing(y)) {
+        if (!missing(y))
             stop("may not give y, since x is a list")
-        }
-        if (!missing(z)) {
+        if (!missing(z))
             stop("may not give z, since x is a list")
-        }
-        if (!("x" %in% names)) {
+        if (!("x" %in% names))
             stop("since x is a list, it must have an item named 'x'")
-        }
-        if (!("y" %in% names)) {
+        if (!("y" %in% names))
             stop("since x is a list, it must have an item named 'y'")
-        }
-        if (!("z" %in% names)) {
+        if (!("z" %in% names))
             stop("since x is a list, it must have an item named 'z'")
-        }
         y <- x$y
         z <- x$z
         x <- x$x
     } else if (!missing(x) && is.array(x) && missing(z)) {
-        if (length(dim(x)) > 2) {
+        if (length(dim(x)) > 2)
             stop("x must be a matrix, not an array with dim(x) = c(", paste(dim(x), collapse=","), ")\n")
-        }
         z <- x
         z <- if (length(dim(x)) > 2) z <- x[, , 1] else x
         #y <- seq(0, 1, length.out=ncol(x))
@@ -1098,12 +1074,10 @@ imagep <- function(x, y, z,
         y <- seq.int(1L, ncol(z))
         z <- z
     } else {
-        if (missing(y)) {
+        if (missing(y))
             stop("must supply y")
-        }
-        if (missing(z)) {
+        if (missing(z))
             stop("must supply z")
-        }
     }
     z[!is.finite(z)] <- NA # so range(z, na.rm=TRUE) will not be thwarted Inf
     oceDebug(debug, "range(z):", paste(range(z, na.rm=TRUE), collapse=" to "), "\n")
@@ -1178,19 +1152,15 @@ imagep <- function(x, y, z,
             warning("auto-decimating second index of large image by ", decimate[2], "; use decimate=FALSE to prevent this")
         }
     }
-    if (!inherits(x, "POSIXct") && !inherits(x, "POSIXct")) {
+    if (!inherits(x, "POSIXct") && !inherits(x, "POSIXct"))
         x <- as.vector(x)
-    }
-    if (!inherits(y, "POSIXct") && !inherits(y, "POSIXct")) {
+    if (!inherits(y, "POSIXct") && !inherits(y, "POSIXct"))
         y <- as.vector(y)
-    }
     dim <- dim(z)
-    if (nrow(z) != length(x) && (1+nrow(z)) != length(x)) {
+    if (nrow(z) != length(x) && (1+nrow(z)) != length(x))
         stop("nrow(image)=", nrow(z), " does not match length(x)=", length(x), sep="")
-    }
-    if (ncol(z) != length(y) && (1+ncol(z)) != length(y)) {
+    if (ncol(z) != length(y) && (1+ncol(z)) != length(y))
         stop("ncol(image)=", ncol(z), " does not match length(y)=", length(y), sep="")
-    }
     # Ensure that x and y increase
     # FIXME: should check on equal values
     ox <- order(x)
@@ -1244,9 +1214,8 @@ imagep <- function(x, y, z,
     zlimHistogram <- zlimGiven && length(zlim) == 1 && zlim == "histogram"
     breaksGiven <- !missing(breaks)
     colormapGiven <- !missing(colormap)
-    if (colormapGiven && missing(missingColor)) {
+    if (colormapGiven && missing(missingColor))
         missingColor <- colormap$missingColor
-    }
     zrange <- range(z, na.rm=TRUE)
 
     if (colormapGiven) {
@@ -1320,19 +1289,16 @@ imagep <- function(x, y, z,
             breaks2 <- c(min(c(zrange[1], breaks, na.rm=TRUE))-db/100,
                 breaks,
                 max(c(zrange[2], breaks, na.rm=TRUE))+db/100)
-            if (!is.function(col)) {
+            if (!is.function(col))
                 col2 <- c(col[1], col, col[length(col)])
-            }
             oceDebug(debug, "USE breaks2 and col2 as calculated\n")
         } else {
             oceDebug(debug, "IGNORE breaks2 and col2 as calculated\n")
             # 20140801 warning("2014-07-17/#489 trial code: ignore breaks2 and col2")
-            if (!missing(breaks)) {
+            if (!missing(breaks))
                 breaks2 <- breaks
-            }
-            if (!missing(col)) {
+            if (!missing(col))
                 col2 <- col
-            }
         }
         if (is.function(col)) {
             if (zlimHistogram) {
@@ -1407,24 +1373,21 @@ imagep <- function(x, y, z,
         z[z < zlim[1]] <- zlim[1]
         z[z > zlim[2]] <- zlim[2]
     }
-    if (flipy) {
+    if (flipy)
         ylim <- rev(sort(ylim))
-    }
     if (zclip && !zlimHistogram) {
         oceDebug(debug, "using missingColor for out-of-range values")
         z[z < zlim[1]] <- NA
         z[z > zlim[2]] <- NA
     }
-    if (is.function(col2) && !is.null(breaks2)) {
+    if (is.function(col2) && !is.null(breaks2))
         col2 <- col2(n=length(breaks2)-1)
-    }
     if (xIsTime) {
         oceDebug(debug, "the x axis represents time\n")
         if (filledContour) {
             oceDebug(debug, "doing filled contours [1]\n")
-            if (!is.double(z)) {
+            if (!is.double(z))
                 storage.mode(z) <- "double"
-            }
             plot.new()
             plot.window(xlim=xlim, ylim=ylim, xaxs=xaxs, yaxs=yaxs, asp=asp, ...)
             # Filled contours became official in version 2.15.0 of R.

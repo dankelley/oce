@@ -36,23 +36,18 @@
 #' @author Dan Kelley
 read.argo.copernicus <- function(file, encoding=NA, debug=getOption("oceDebug"), processingLog, ...)
 {
-    if (missing(file)) {
+    if (missing(file))
         stop("must supply 'file'")
-    }
     if (is.character(file)) {
-        if (!file.exists(file)) {
+        if (!file.exists(file))
             stop("cannot find file '", file, "'")
-        }
-        if (0L == file.info(file)$size) {
+        if (0L == file.info(file)$size)
             stop("empty file '", file, "'")
-        }
     }
-    if (!requireNamespace("ncdf4", quietly=TRUE)) {
+    if (!requireNamespace("ncdf4", quietly=TRUE))
         stop("must install.packages(\"ncdf4\") to read argo data")
-    }
-    if (missing(processingLog)) {
+    if (missing(processingLog))
         processingLog <- paste(deparse(match.call()), sep="", collapse="")
-    }
     filename <- ""
     # NOTE: need to name ncdf4 package because otherwise R checks give warnings.
     if (is.character(file)) {

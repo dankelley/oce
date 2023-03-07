@@ -29,10 +29,7 @@ changed from \code{beam} to \code{xyz}.
 Convert ADP velocity components from a beam-based coordinate system to a
 xyz-based coordinate system. The action depends on the type of object.
 Objects creating by reading RDI Teledyne, Sontek, and some Nortek
-instruments are handled directly. However, Nortek
-data stored in in the AD2CP format are handled by the specialized
-function \code{\link[=beamToXyzAdpAD2CP]{beamToXyzAdpAD2CP()}}, the documentation for which
-should be consulted, rather than the material given blow.
+instruments are handled directly.
 }
 \details{
 For a 3-beam Nortek \code{aquadopp} object, the beams are transformed into

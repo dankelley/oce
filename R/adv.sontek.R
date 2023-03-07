@@ -10,23 +10,19 @@
 #'
 #' @param deltat the time between samples.
 read.adv.sontek.serial <- function(file, from=1, to, by=1, tz=getOption("oceTz"), longitude=NA, latitude=NA,
-                                   start=NULL, deltat=NULL, encoding=NA, monitor=FALSE,
-                                   debug=getOption("oceDebug"), processingLog=NULL)
+    start=NULL, deltat=NULL, encoding=NA, monitor=FALSE,
+    debug=getOption("oceDebug"), processingLog=NULL)
 {
-    if (missing(file)) {
+    if (missing(file))
         stop("must supply 'file'")
-    }
     if (is.character(file)) {
-        if (!file.exists(file)) {
+        if (!file.exists(file))
             stop("cannot find file '", file, "'")
-        }
-        if (0L == file.info(file)$size) {
+        if (0L == file.info(file)$size)
             stop("empty file '", file, "'")
-        }
     }
-    if (!interactive()) {
+    if (!interactive())
         monitor <- FALSE
-    }
     oceDebug(debug, paste("read.adv.sontek.serial(file[1]=\"", file[1],
         "\", from=", format(from),
         if (!missing(to)) sprintf(", to=%s, ", format(to)),
@@ -36,25 +32,20 @@ read.adv.sontek.serial <- function(file, from=1, to, by=1, tz=getOption("oceTz")
         ", debug=", debug,
         ", monitor=", monitor,
         ", processingLog=(not shown)) {\n", sep=""), unindent=1)
-    if (is.null(start) || is.numeric(start)) {
+    if (is.null(start) || is.numeric(start))
         stop("'start' must be a string, or a POSIXt time")
-    }
-    if (is.character(start)) {
+    if (is.character(start))
         start <- as.POSIXct(start, tz=tz)
-    }
-    if (!is.numeric(deltat)) {
+    if (!is.numeric(deltat))
         stop("must supply deltat, the number of seconds between observations")
-    }
     nstart <- length(start)
     nfile <- length(file)
-    if (nstart != nfile) {
+    if (nstart != nfile)
         stop("length of 'file' must equal length of 'start', but they are ", nfile, " and ", nstart, " respectively")
-    }
     warning("cannot infer coordinate system, etc., since header=FALSE; see documentation.")
     oceDebug(debug, "time series is inferred to start at", format(start[1]), "\n")
-    if (is.character(deltat)) {
+    if (is.character(deltat))
         deltat <- ctimeToSeconds(deltat)
-    }
     oceDebug(debug, "time series is inferred to have data every", deltat, "s\n")
     if (nstart > 1) {
         # handle multiple files
@@ -77,9 +68,8 @@ read.adv.sontek.serial <- function(file, from=1, to, by=1, tz=getOption("oceTz")
             file <- file(file, "rb")
             on.exit(close(file))
         }
-        if (!inherits(file, "connection")) {
+        if (!inherits(file, "connection"))
             stop("argument `file' must be a character string or connection")
-        }
         if (!isOpen(file)) {
             filename <- "(connection)"
             open(file, "rb")
@@ -91,7 +81,6 @@ read.adv.sontek.serial <- function(file, from=1, to, by=1, tz=getOption("oceTz")
         oceDebug(debug, "filesize=", fileSize, "\n")
         buf <- readBin(file, what="raw", n=fileSize, endian="little")
     }
-
     p <- .Call("ldc_sontek_adv_22", buf, 0) # the 0 means to get all pointers to data chunks
     pp <- sort(c(p, p+1))
     len <- length(p)
@@ -162,9 +151,8 @@ read.adv.sontek.serial <- function(file, from=1, to, by=1, tz=getOption("oceTz")
     res@metadata$units$pitch <- list(unit=expression(degree), scale="")
     res@metadata$units$roll <- list(unit=expression(degree), scale="")
     res@metadata$units$temperature <- list(unit=expression(degree*C), scale="")
-    if (is.null(processingLog)) {
+    if (is.null(processingLog))
         processingLog <- paste(deparse(match.call()), sep="", collapse="")
-    }
     res@processingLog <- processingLogAppend(res@processingLog, processingLog)
     res
 }
@@ -185,23 +173,19 @@ read.adv.sontek.serial <- function(file, from=1, to, by=1, tz=getOption("oceTz")
 #' SonTek/YSI, May 1, 2001.
 #' https://eng.ucmerced.edu/snsjho/files/San_Joaquin/Sensors_and_Loggers/SonTek/SonTek_Argonaut/ArgonautXR.pdf.
 read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oceTz"), header=TRUE,
-                                longitude=NA, latitude=NA, encoding=NA,
-                                debug=getOption("oceDebug"), monitor=FALSE, processingLog=NULL)
+    longitude=NA, latitude=NA, encoding=NA,
+    debug=getOption("oceDebug"), monitor=FALSE, processingLog=NULL)
 {
-    if (missing(file)) {
+    if (missing(file))
         stop("must supply 'file'")
-    }
     if (is.character(file)) {
-        if (!file.exists(file)) {
+        if (!file.exists(file))
             stop("cannot find file '", file, "'")
-        }
-        if (0L == file.info(file)$size) {
+        if (0L == file.info(file)$size)
             stop("empty file '", file, "'")
-        }
     }
-    if (!interactive()) {
+    if (!interactive())
         monitor <- FALSE
-    }
     bisectAdvSontekAdr <- function(burstTime, tFind, add=0, debug=0) {
         oceDebug(debug, "bisectAdvSontekAdr(tFind=", format(tFind), ", add=", add, "\n")
         len <- length(burstTime)
@@ -236,9 +220,8 @@ read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oceTz"), h
         file <- file(file, "rb")
         on.exit(close(file))
     }
-    if (!inherits(file, "connection")) {
+    if (!inherits(file, "connection"))
         stop("argument `file' must be a character string or connection")
-    }
     if (!isOpen(file)) {
         filename <- "(connection)"
         open(file, "rb")
@@ -306,14 +289,12 @@ read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oceTz"), h
         oceDebug(debug, "recorderInstalled=", res@metadata$recorderInstalled, "\n")
         res@metadata$thermometerInstalled <- as.integer(hardwareConfiguration[7]) == 1
         oceDebug(debug, "thermometerInstalled=", res@metadata$thermometerInstalled, "\n")
-        if (!res@metadata$thermometerInstalled) {
+        if (!res@metadata$thermometerInstalled)
             stop("cannot handle data files for ADV files that lack thermometer data")
-        }
         res@metadata$pressureInstalled <- as.integer(hardwareConfiguration[8]) == 1
         oceDebug(debug, "pressureInstalled=", res@metadata$pressureInstalled, "\n")
-        if (!res@metadata$pressureInstalled) {
+        if (!res@metadata$pressureInstalled)
             stop("cannot handle data files for ADV files that lack pressure data")
-        }
         # we report pressure in dbar, so use the fact that 1 nanobar/count = 1e-8 dbar/count
         res@metadata$pressureScale <- 1e-8 * readBin(hardwareConfiguration[9:12], "integer", size=4, n=1, endian="little")
         oceDebug(debug, "pressureScale=", res@metadata$pressureScale, " dbar/count (header gives in nanobar/count)\n")
@@ -350,9 +331,8 @@ read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oceTz"), h
         oceDebug(debug, "probeSize=", res@metadata$probeSize, " (0 means 5cm; 1 means 10cm probe, according to docs)\n")
         res@metadata$numberOfBeams <- readBin(probeConfiguration[19:20], "integer", n=1, size=2, endian="little")
         oceDebug(debug, "numberOfBeams=", res@metadata$numberOfBeams, " (should be 3)\n")
-        if (res@metadata$numberOfBeams != 3) {
+        if (res@metadata$numberOfBeams != 3)
             warning("number of beams should be 3, but it is ", res@metadata$numberOfBeams, " ... reseting to 3")
-        }
         res@metadata$probeNomPeakPos <- readBin(probeConfiguration[21:22], "integer", n=1, size=2, endian="little")
         oceDebug(debug, "probeNomPeakPos=", res@metadata$probeNomPeakPos, " (not used here)\n")
         res@metadata$probeNsamp <- readBin(probeConfiguration[23:24], "integer", n=1, size=2, endian="little")
@@ -380,47 +360,38 @@ read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oceTz"), h
         # FIXME why is this not 164 bytes in total?
         #
         # Analyze "deploymentParameters" header
-        if (deploymentParameters[1]!=0x12) {
+        if (deploymentParameters[1]!=0x12)
             stop("first byte of deploymentParameters header should be 0x12 but it is 0x", deploymentParameters[1])
-        }
-        if (deploymentParameters[2]!=0x01) {
+        if (deploymentParameters[2]!=0x01)
             stop("first byte of deploymentParameters header should be 0x01 but it is 0x", deploymentParameters[2])
-        }
         res@metadata$velocityRangeIndex <- as.numeric(deploymentParameters[20])
         oceDebug(debug, "velocityRangeIndex=", res@metadata$velocityRangeIndex, "\n")
-        if (res@metadata$velocityRangeIndex == 4) {
+        if (res@metadata$velocityRangeIndex == 4)
             res@metadata$velocityScale <- 2 * res@metadata$velocityScale # range 4 differs from ranges 1:3
-        }
         originalCoordinateCode <- as.integer(deploymentParameters[22]) # 1 (0=beam 1=xyz 2=ENU)
         res@metadata$originalCoordinate <- c("beam", "xyz", "enu")[1+originalCoordinateCode]
         res@metadata$oceCoordinate <- res@metadata$originalCoordinate
         oceDebug(debug, "originalCoordinate=", res@metadata$originalCoordinate, "\n")
-        if (res@metadata$originalCoordinate == "beam") {
+        if (res@metadata$originalCoordinate == "beam")
             stop("cannot handle beam coordinates")
-        }
         # FIXME: bug: docs say samplingRate in units of 0.1Hz, but the SLEIWEX-2008-m3 data file is in 0.01Hz
         samplingRate <- 0.01*readBin(deploymentParameters[23:28], "integer", n=3, size=2, endian="little", signed=FALSE)
-        if (samplingRate[2] != 0 || samplingRate[3] != 0) {
+        if (samplingRate[2] != 0 || samplingRate[3] != 0)
             warning("ignoring non-zero items 2 and/or 3 of samplingRate vector")
-        }
         res@metadata$samplingRate <- samplingRate[1]
-        if (res@metadata$samplingRate < 0) {
+        if (res@metadata$samplingRate < 0)
             stop("samplingRate must be a positive integer, but got ", res@metadata$samplingRate)
-        }
         res@metadata$measurementDeltat <- 1 / res@metadata$samplingRate
         res@metadata$burstInterval <- readBin(deploymentParameters[29:34], "integer", n=3, size=2, endian="little", signed=FALSE)
-        if (res@metadata$burstInterval[2] !=0 || res@metadata$burstInterval[3] != 0) {
+        if (res@metadata$burstInterval[2] !=0 || res@metadata$burstInterval[3] != 0)
             warning("ignoring non-zero items 2 and/or 3 in burstInterval vector")
-        }
         res@metadata$burstInterval <- res@metadata$burstInterval[1]
         res@metadata$samplesPerBurst <- readBin(deploymentParameters[35:40], "integer", n=3, size=2, endian="little", signed=FALSE)
-        if (res@metadata$samplesPerBurst[2] !=0 || res@metadata$samplesPerBurst[3] != 0) {
+        if (res@metadata$samplesPerBurst[2] !=0 || res@metadata$samplesPerBurst[3] != 0)
             warning("ignoring non-zero items 2 and/or 3 in samplesPerBurst vector")
-        }
         res@metadata$samplesPerBurst <- res@metadata$samplesPerBurst[1]
-        if (res@metadata$samplesPerBurst < 0) {
+        if (res@metadata$samplesPerBurst < 0)
             stop("samplesPerBurst must be a positive integer, but got ", res@metadata$samplesPerBurst)
-        }
         res@metadata$deploymentName <- paste(integerToAscii(as.integer(deploymentParameters[49:57])), collapse="")
         res@metadata$comments1 <- paste(integerToAscii(as.integer(deploymentParameters[66:125])), collapse="")
         res@metadata$comments2 <- paste(integerToAscii(as.integer(deploymentParameters[126:185])), collapse="")
@@ -475,9 +446,8 @@ read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oceTz"), h
     fromKeep <- from
     toKeep <- to
     if (inherits(from, "POSIXt")) {
-        if (!inherits(to, "POSIXt")) {
+        if (!inherits(to, "POSIXt"))
             stop("if 'from' is POSIXt, then 'to' must be, also")
-        }
         fromToPOSIX <- TRUE
         fromPair <- bisectAdvSontekAdr(burstTime, from, add=-1, debug=debug-1)
         fromBurst <- fromPair$index
@@ -498,16 +468,14 @@ read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oceTz"), h
         toIndex <- to
         # Determine bursts, and offsets within bursts, for fromIndex and toIndex
         tmp <- approx(burstSampleIndex, burst, fromIndex)$y
-        if (is.na(tmp)) {
+        if (is.na(tmp))
             stop("fromIndex", from, " is not in thisFile")
-        }
         fromBurst <- floor(tmp)
         fromBurstOffset <- floor(0.5 + (tmp - fromBurst)*samplesPerBurst[fromBurst])
         oceDebug(debug, "from is at index ", fromIndex, ", which is in burst ", fromBurst, ", at offset ", fromBurstOffset, "\n")
         tmp <- approx(burstSampleIndex, burst, toIndex)$y
-        if (is.na(tmp)) {
+        if (is.na(tmp))
             stop("toIndex", from, " is not in thisFile")
-        }
         toBurst <- floor(tmp)
         toBurstOffset <- floor(0.5 + (tmp - toBurst)*samplesPerBurst[toBurst])
         oceDebug(debug, "to is at index ", toIndex, ", which is in burst ", toBurst, ", at offset ", toBurstOffset, "\n")
@@ -549,9 +517,8 @@ read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oceTz"), h
             burstBufindexFocus[b]+burstHeaderLength, " and n=", n, "\n")
         bufSubset <- buf[burstBufindexFocus[b]+burstHeaderLength+0:(-1+dataLength*n)]
         m <- matrix(bufSubset, ncol=dataLength, byrow=TRUE)
-        if (n != dim(m)[1]) {
+        if (n != dim(m)[1])
             stop("something is wrong with the data.  Perhaps the record length is not the assumed value of ", dataLength)
-        }
         r <- rowOffset + seq_len(n)
         v[r, 1] <- velocityScale * readBin(t(m[, 1:2]), "integer", n=n, size=2, signed=TRUE, endian="little")
         v[r, 2] <- velocityScale * readBin(t(m[, 3:4]), "integer", n=n, size=2, signed=TRUE, endian="little")
@@ -581,9 +548,8 @@ read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oceTz"), h
             }
         }
     }
-    if (monitor) {
+    if (monitor)
         cat("\n")
-    }
     rm(buf, bufSubset, m)              # clean up, in case space is tight
     class(time) <- c("POSIXt", "POSIXct")
     attr(time, "tzone") <- attr(burstTimeFocus[1], "tzone")
@@ -615,9 +581,8 @@ read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oceTz"), h
         iii <- seq(focusFrom, focusTo, by=by)
     }
     oceDebug(debug, vectorShow(iii))
-    if (any(iii < 0)) {
+    if (any(iii < 0))
         stop("got negative numbers in iii, which indicates a coding problem; range(iii)=", paste(range(iii), collapse=" to "))
-    }
     oceDebug(debug, "dim(v)=", paste(dim(v), collapse=" "), "\n")
     v <- v[iii, ]
     a <- a[iii, ]
@@ -650,9 +615,8 @@ read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oceTz"), h
     res@metadata$units$pitch <- list(unit=expression(degree), scale="")
     res@metadata$units$roll <- list(unit=expression(degree), scale="")
     res@metadata$units$temperature <- list(unit=expression(degree*C), scale="")
-    if (is.null(processingLog)) {
+    if (is.null(processingLog))
         processingLog <- paste(deparse(match.call()), sep="", collapse="")
-    }
     hitem <- processingLogItem(processingLog)
     res@processingLog <- hitem
     res
@@ -680,31 +644,25 @@ read.adv.sontek.text <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     originalCoordinate="xyz", transformationMatrix, longitude=NA, latitude=NA, encoding="latin1",
     monitor=FALSE, debug=getOption("oceDebug"), processingLog=NULL)
 {
-    if (missing(file)) {
+    if (missing(file))
         stop("must supply 'file'")
-    }
     if (is.character(file)) {
-        if (!file.exists(file)) {
+        if (!file.exists(file))
             stop("cannot find file '", file, "'")
-        }
-        if (0L == file.info(file)$size) {
+        if (0L == file.info(file)$size)
             stop("empty file '", file, "'")
-        }
     }
-    if (!interactive()) {
+    if (!interactive())
         monitor <- FALSE
-    }
     # FIXME: It would be better to deal with the binary file, but the format is unclear to me;
     # FIXME: two files are available to me, and they differ considerably, neither matching the
     # FIXME: SonTek documentation.
-    if (by != 1) {
+    if (by != 1)
         stop("must have \"by\"=1, in this version of the package")
-    }
     suffices <- c("hd1", "ts1")
     itemsPerSample <- 16
-    if (missing(file)) {
+    if (missing(file))
         stop("need to supply a file, e.g. \"A\" to read \"A.hd1\" and \"A.ts1\"")
-    }
     basefile <- file
     hd <- paste(basefile, suffices[1], sep=".")
     ts <- paste(basefile, suffices[2], sep=".")
@@ -756,9 +714,8 @@ read.adv.sontek.text <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     look <- min(5000, bytesInFile)
     b <- readBin(tsFile, "raw", n=look)
     newlines <- which(b == 0x0a)
-    if (0 != diff(range(fivenum(diff(newlines))))) {
+    if (0 != diff(range(fivenum(diff(newlines)))))
         stop("need equal line lengths in ", ts)
-    }
     # Line length
     bytesInSample <- diff(newlines)[1]
     oceDebug(debug, "line length in \".", suffices[2], "\" file: ", bytesInSample, " bytes\n")
@@ -841,9 +798,8 @@ read.adv.sontek.text <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     res@metadata$oceCoordinate <- originalCoordinate
     res@metadata$originalCoordinate <- originalCoordinate
     warning("sensor orientation cannot be inferred without a header; \"", res@metadata$orientation, "\" was assumed.")
-    if (is.null(processingLog)) {
+    if (is.null(processingLog))
         processingLog <- paste(deparse(match.call()), sep="", collapse="")
-    }
     hitem <- processingLogItem(processingLog)
     res@processingLog <- hitem
 }
@@ -877,20 +833,16 @@ read.adv.sontek.text <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
 advSontekAdrFileTrim <- function(infile, n=100, outfile, debug=getOption("oceDebug"))
 {
     oceDebug(debug, "advSontekAdrFileTrim(\"", infile, "\", n=", n, ", ...) {\n", sep="", unindent=1)
-    if (missing(infile)) {
+    if (missing(infile))
         stop("provide infile")
-    }
-    if (!is.character(infile)) {
+    if (!is.character(infile))
         stop("infile must be a character value naming a Sontek ADR adv file")
-    }
     magic <- oceMagic(infile)
-    if (!identical(magic, "adv/sontek/adr")) {
+    if (!identical(magic, "adv/sontek/adr"))
         stop("function only works for Sontek ADR adv files, but this is a '", magic, "' file")
-    }
     oceDebug(debug, "infile=\"", infile, "\"\n", sep="")
-    if (missing(outfile)) {
+    if (missing(outfile))
         outfile <- gsub(".adr", "_trimmed.adr", infile)
-    }
     oceDebug(debug, "outfile=\"", outfile, "\"\n", sep="")
     fileSize <- file.info(infile)$size
     oceDebug(debug, "filesize=", fileSize, "\n")

@@ -26,9 +26,8 @@ setMethod(f="initialize",
     signature="lobo",
     definition=function(.Object, time, u, v, salinity, temperature, airtemperature, pressure, nitrate, fluorescence, filename, ...) {
         .Object <- callNextMethod(.Object, ...)
-        if (!missing(time)) {
+        if (!missing(time))
             .Object@data$time <- time
-        }
         if (!missing(u)) {
             .Object@data$u <- u
             .Object@metadata$units$u <- list(unit=expression(m/s), scale="")
@@ -226,9 +225,8 @@ plot.lobo.timeseries.TS <- function(lobo, S.col = "blue", T.col = "darkgreen", d
     lines(lobo@data$time, lobo[["temperature"]], col=T.col, ...)
     axis(4, col=T.col)
     mtext(expression(paste("T [", degree, "C]")), side=4, line=mgp[1], col=T.col, cex=par("cex"))
-    if (draw.legend) {
+    if (draw.legend)
         legend("topright", c("S", "T"), col=c(S.col, T.col), lwd=2)
-    }
     mtext(paste(paste(format(range(lobo@data$time, na.rm=TRUE)), collapse=" to "),
         attr(lobo@data$time[1], "tzone")),
         side=3, cex=3/4*par("cex.axis"), adj=0)
@@ -249,9 +247,8 @@ plot.lobo.timeseries.uv <- function(lobo, col.u = "blue", col.v = "darkgreen", d
     mgp <- par("mgp")
     mtext("U [m/s]", side=2, line=mgp[1], col=col.u, cex=par("cex"))
     mtext("V [m/s]", side=4, line=mgp[1], col=col.v, cex=par("cex"))
-    if (draw.legend) {
+    if (draw.legend)
         legend("topright", c("U", "V"), col=c(col.u, col.v), lwd=2)
-    }
     invisible(lobo)
 }
 
@@ -273,9 +270,8 @@ plot.lobo.timeseries.biology <- function(lobo, col.fluorescence = "blue", col.ni
     lines(lobo@data$time, lobo@data$nitrate, col=col.nitrate)
     axis(4, col=col.nitrate)
     mtext("Nitrate", side=4, line=mgp[1], col=col.nitrate, cex=par("cex"))
-    if (draw.legend) {
+    if (draw.legend)
         legend("top", c("nitrate", "fluorescence"), col=c(col.nitrate, col.fluorescence), lwd=2, ...)
-    }
 }
 
 #' @family things related to lobo data
@@ -320,7 +316,7 @@ plot.lobo.TS <- function(lobo, ...)
 setMethod(f="plot",
     signature=signature("lobo"),
     definition=function(x, which=c(1, 2, 3), mgp=getOption("oceMgp"), mar=c(mgp[2]+1, mgp[1]+1, 1, mgp[1]+1.25),
-                        debug=getOption("oceDebug"), ...)
+        debug=getOption("oceDebug"), ...)
     {
         oceDebug(debug, "plot.lobo(...)\n", sep="")
         opar <- par(no.readonly = TRUE)
@@ -397,16 +393,13 @@ setMethod(f="plot",
 #' @family things related to lobo data
 read.lobo <- function(file, cols=7, encoding="latin1", processingLog)
 {
-    if (missing(file)) {
+    if (missing(file))
         stop("must supply 'file'")
-    }
     if (is.character(file)) {
-        if (!file.exists(file)) {
+        if (!file.exists(file))
             stop("cannot find file '", file, "'")
-        }
-        if (0L == file.info(file)$size) {
+        if (0L == file.info(file)$size)
             stop("empty file '", file, "'")
-        }
     }
     # header <- scan(file, what=character(), sep="\t", nlines=1, quiet=TRUE)
     # d <- scan(file, what=character(), sep="\t", skip=1,  quiet=TRUE)
@@ -416,9 +409,8 @@ read.lobo <- function(file, cols=7, encoding="latin1", processingLog)
         file <- file(file, "r", encoding=encoding)
         on.exit(close(file))
     } else {
-        if (!inherits(file, "connection")) {
+        if (!inherits(file, "connection"))
             stop("argument `file' must be a character string or connection")
-        }
         if (!isOpen(file)) {
             open(file, "r", encoding=encoding)
             on.exit(close(file))
@@ -449,9 +441,8 @@ read.lobo <- function(file, cols=7, encoding="latin1", processingLog)
     nitrate <- if (length(nitrateCol)) as.numeric(d[, nitrateCol]) else rep(NA, n)
     fluorescence <- if (length(fluorescenceCol)) as.numeric(d[, fluorescenceCol]) else rep(NA, n)
     pressure <- if (length(pressureCol)) as.numeric(d[, pressureCol]) else rep(NA, n)
-    if (missing(processingLog)) {
+    if (missing(processingLog))
         processingLog <- paste(deparse(match.call()), sep="", collapse="")
-    }
     res <- new("lobo", time=time, u=u, v=v, salinity=salinity, temperature=temperature,
         airtemperature=airtemperature, pressure=pressure,
         nitrate=nitrate, fluorescence=fluorescence, filename=filename)
@@ -488,9 +479,8 @@ read.lobo <- function(file, cols=7, encoding="latin1", processingLog)
 #' @family things related to lobo data
 as.lobo <- function(time, u, v, salinity, temperature, pressure, nitrate, fluorescence, filename="")
 {
-    if (missing(u) || missing(v) || missing(salinity) || missing(temperature) || missing(pressure)) {
+    if (missing(u) || missing(v) || missing(salinity) || missing(temperature) || missing(pressure))
         stop("must give u, v, salinity, temperature, and pressure")
-    }
     new("lobo", u=u, v=v, salinity=salinity, temperature=temperature, pressure=pressure,
         nitrate=nitrate, fluorescence=fluorescence, filename=filename)
 }

@@ -253,12 +253,10 @@ as.met <- function(time, temperature, pressure, u, v, filename="(constructed fro
         }
         # Change the following names.
         # DateTime Temp DewPointTemp RelHumidity WindDir WindSpeed Visibility Pressure Humidex WindChill Weather
-        if ("WindDir" %in% names) {
+        if ("WindDir" %in% names)
             time$WindDir <- 10 * time$WindDir
-        }
-        if ("WindSpeed" %in% names) {
+        if ("WindSpeed" %in% names)
             time$WindSpeed <- (1000 / 3600) * time$WindSpeed
-        }
         names[names=="DateTime"] <- "time"
         names[names=="Temp"] <- "temperature"
         names[names=="DewPointTemp"] <- "dewPoint"
@@ -271,9 +269,8 @@ as.met <- function(time, temperature, pressure, u, v, filename="(constructed fro
         names[names=="WindChill"] <- "windChill"
         names[names=="Weather"] <- "weather"
         names(time) <- names
-        for (item in names) {
+        for (item in names)
             res@data[[item]] <- time[[item]]
-        }
         if (!("u" %in% names) && !("v" %in% names)) {
             rpd <- atan2(1, 1) / 45            # radian/degree
             theta <- (90 - time[["direction"]]) * rpd
@@ -388,27 +385,22 @@ download.met <- function(id, year, month, deltat, type="xml",
     destdir=".", destfile, force=FALSE, quiet=FALSE,
     debug=getOption("oceDebug"))
 {
-    if (missing(id)) {
+    if (missing(id))
         id <- 6358
-    }
     id <- as.integer(id)
-    if (missing(deltat)) {
+    if (missing(deltat))
         deltat <- "hour"
-    }
     deltatChoices <- c("hour", "month") # FIXME: add "day"
     deltatIndex <- pmatch(deltat, deltatChoices)
-    if (!(type %in% c("csv", "xml"))) {
+    if (!(type %in% c("csv", "xml")))
         stop("type '", type, "' not permitted; try 'csv' or 'xml'")
-    }
-    if (is.na(deltatIndex)) {
+    if (is.na(deltatIndex))
         stop("deltat=\"", deltat, "\" is not supported; try \"hour\" or \"month\"")
-    }
     deltat <- deltatChoices[deltatIndex]
     if (deltat == "hour") {
         today <- as.POSIXlt(presentTime())
-        if (missing(year)) {
+        if (missing(year))
             year <- today$year + 1900
-        }
         if (missing(month)) {
             month <- today$mon + 1         # so 1=jan etc
             month <- month - 1             # we want *previous* month, which should have data
@@ -425,9 +417,8 @@ download.met <- function(id, year, month, deltat, type="xml",
             "&Year=", year,
             "&Month=", month,
             "&timeframe=1&submit=Download+Data", sep="")
-        if (missing(destfile)) {
+        if (missing(destfile))
             destfile <- sprintf("met_%d_hourly_%04d_%02d_%02d.%s", id, year, month, 1, type)
-        }
     } else if (deltat == "month") {
         # Next line reverse engineered from monthly data at Resolute. I don't imagine we
         # need Year and Month and Day.
@@ -647,21 +638,17 @@ read.met <- function(file,
     tz=getOption("oceTz"),
     debug=getOption("oceDebug"))
 {
-    if (missing(file)) {
+    if (missing(file))
         stop("must supply 'file'")
-    }
     if (is.character(file)) {
-        if (!file.exists(file)) {
+        if (!file.exists(file))
             stop("cannot find file '", file, "'")
-        }
-        if (0L == file.info(file)$size) {
+        if (0L == file.info(file)$size)
             stop("empty file '", file, "'")
-        }
     }
     oceDebug(debug, "read.met(file=\"", file, "\", ...) {\n", sep="", unindent=1, style="bold")
-    if (!is.character(file)) {
+    if (!is.character(file))
         stop("'file' must be a string")
-    }
     someLines <- readLines(file, 30L, warn=FALSE)
     if (length(someLines) == 0L) {
         stop("no data in file")
@@ -952,9 +939,8 @@ read.met.csv2 <- function(file,
     tz=getOption("oceTz"),
     debug=getOption("oceDebug"))
 {
-    if (missing(file)) {
+    if (missing(file))
         stop("must supply 'file'")
-    }
     oceDebug(debug, "read.met.csv2(\"", file, "\", skip=", skip, ", encoding=\"", encoding, "\") { # for either type 2 or 3 \n",
         sep="", unindent=1, style="bold")
     # I thank Ivan Krylov for telling me that the 'encoding' arg belongs in the

@@ -67,24 +67,17 @@ f3 <- "~/Dropbox/oce_secret_data/ad2cp/secret3_trimmed.ad2cp"
 
 if (file.exists(f1)) {
     skip_on_cran()
-
     test_that("'dataType' works for 0x16, 24, and \"average\"",
         {
             expect_message(
-                expect_message(
-                    d1 <- read.oce(f1, dataType="average"),
-                    "using to=100 based on file contents"),
+                d1 <- read.oce(f1, dataType="average"),
                 "setting plan=0")
             expect_equal(11L, length(d1[["time"]]))
             expect_message(
-                expect_message(
-                    d2 <- read.oce(f1, dataType=22),
-                    "using to=100 based on file contents"),
+                d2 <- read.oce(f1, dataType=22),
                 "setting plan=0")
             expect_message(
-                expect_message(
-                    d3 <- read.oce(f1, dataType="average"),
-                    "using to=100 based on file contents"),
+                d3 <- read.oce(f1, dataType="average"),
                 "setting plan=0")
             expect_equal(d1@data, d2@data)
             expect_equal(d1@data, d3@data)
@@ -104,14 +97,14 @@ if (file.exists(f1)) {
                 c("nominalCorrelation", "ensemble", "time", "soundSpeed",
                     "temperature", "pressure", "heading", "pitch", "roll",
                     "magnetometer", "accelerometer", "temperatureMagnetometer",
-                    "temperatureRTC", "transmitEnergy", "powerLevel", "v", "a",
-                    "q", "AHRS"))
+                    "temperatureRTC", "transmitEnergy", "powerLevel", "distance",
+                    "v", "a", "q", "AHRS"))
             expect_equal(names(burst[["data"]]),
                 c("nominalCorrelation", "ensemble", "time", "soundSpeed",
                     "temperature", "pressure", "heading", "pitch", "roll",
                     "magnetometer", "accelerometer", "temperatureMagnetometer",
-                    "temperatureRTC", "transmitEnergy", "powerLevel", "v", "a",
-                    "q", "AHRS"))
+                    "temperatureRTC", "transmitEnergy", "powerLevel", "distance",
+                    "v", "a", "q", "AHRS"))
             expect_equal(average[["type"]], "Signature1000")
             expect_equal(average[["type"]], ad2cpHeaderValue(d1, "ID", "STR", FALSE))
             expect_equal(average[["fileType"]], "AD2CP")
@@ -254,28 +247,28 @@ if (file.exists(f1)) {
             accxAverageMatlab <- c(-0.9497070, -0.9492188, -0.9477539, -0.9472656, -0.9458008,
                 -0.9497070, -0.9501953, -0.9516602, -0.9511719, -0.9516602)
             accel <- average[["accelerometer"]]
-            expect_equal(accel$x[1:10], accxAverageMatlab, tolerance=1e-5)
+            expect_equal(accel[1:10, 1], accxAverageMatlab, tolerance=1e-5)
             # >> Data.Average_AccelerometerY(1:10)
             accyAverageMatlab <- c(-0.3134766, -0.3139648, -0.3168945, -0.3125000, -0.3178711,
                 -0.3164062, -0.3168945, -0.3129883, -0.3154297, -0.3154297)
-            expect_equal(accel$y[1:10], accyAverageMatlab, tolerance=1e-5)
+            expect_equal(accel[1:10, 2], accyAverageMatlab, tolerance=1e-5)
             # >> Data.Average_AccelerometerZ(1:10)
             acczAverageMatlab <- c(0.0668945, 0.0649414, 0.0659180, 0.0649414, 0.0678711,
                 0.0668945, 0.0693359, 0.0693359, 0.0649414, 0.0649414)
-            expect_equal(accel$z[1:10], acczAverageMatlab, tolerance=1e-5)
+            expect_equal(accel[1:10, 3], acczAverageMatlab, tolerance=1e-5)
             #>> Data.BurstHR_AccelerometerX(1:10)
             accxBurstMatlab <- c(-0.9472656, -0.9497070, -0.9492188, -0.9467773, -0.9511719,
                 -0.9506836, -0.9472656, -0.9492188, -0.9482422, -0.9506836)
 
-            expect_equal(burst[["accelerometer"]]$x[1:10], accxBurstMatlab, tolerance=1e-5)
+            expect_equal(burst[["accelerometer"]][1:10, 1], accxBurstMatlab, tolerance=1e-5)
             #>> Data.BurstHR_AccelerometerY(1:10)
             accyBurstMatlab <- c(-0.3144531, -0.3178711, -0.3159180, -0.3168945, -0.3149414,
                 -0.3154297, -0.3168945, -0.3139648, -0.3183594, -0.3154297)
-            expect_equal(burst[["accelerometer"]]$y[1:10], accyBurstMatlab, tolerance=1e-5)
+            expect_equal(burst[["accelerometer"]][1:10, 2], accyBurstMatlab, tolerance=1e-5)
             #>> Data.BurstHR_AccelerometerZ(1:10)
             acczBurstMatlab <- c(0.066895, 0.065918, 0.065430, 0.066406, 0.065918,
                 0.068359, 0.070801, 0.068359, 0.069336, 0.069336)
-            expect_equal(burst[["accelerometer"]]$z[1:10], acczBurstMatlab, tolerance=1e-5)
+            expect_equal(burst[["accelerometer"]][1:10, 3], acczBurstMatlab, tolerance=1e-5)
             expect_true(is.null(average[["junk"]]))
             expect_equal(dim(average[["v"]]), c(11, 150, 4))
             expect_equal(dim(burst[["v"]]), c(88, 256, 1))
@@ -356,21 +349,23 @@ if (file.exists(f2)) {
     test_that("read.adp() on a private AD2CP file that has only 'burst' data",
         {
             N <- 99                       # known value for subset of a larger file
-            expect_equal(N, read.oce(f2)[1, "occurance"])
+            expect_message(toc <- read.oce(f2, TOC=TRUE),
+                "setting plan=0")
+            expect_equal(N, toc[[1]]$Count[1])
             # Note: using read.adp() to ensure that it also works
             expect_warning(
-                expect_message(
+                expect_warning(
                     expect_message(burst <- read.adp(f2, dataType="burst"),
-                        "using to=100 based on file contents"),
-                    "setting plan=0, the only value in the file"),
-                "ignoring 'despike'")
+                        "setting plan=0, the only value in the file"),
+                    "ignoring 'despike'"),
+                "ignoring 'monitor'")
             expect_equal(burst[["oceCoordinate"]], "beam")
             expect_equal(names(burst@data),
                     c("nominalCorrelation", "ensemble", "time", "soundSpeed",
                         "temperature", "pressure", "heading", "pitch", "roll",
                         "magnetometer", "accelerometer",
                         "temperatureMagnetometer", "temperatureRTC",
-                        "transmitEnergy", "powerLevel", "v", "a", "q"))
+                        "transmitEnergy", "powerLevel", "distance", "v", "a", "q"))
             expect_equal(burst[["fileType"]], "AD2CP")
             expect_equal(burst[["serialNumber"]], ad2cpHeaderValue(burst, "ID", "SN"))
             expect_equal(burst[["type"]], "Aquadopp2")
@@ -392,43 +387,39 @@ if (file.exists(f3)) {
     test_that("read.oce() on a private AD2CP file that has 'burst' and 'interleavedBurst' data",
         {
             N <- 100
-            ## Note: using read.oce() to ensure that it also works
+            # Note: using read.oce() to ensure that it also works
             expect_message(
-                expect_message(
-                    b <- read.oce(f3, dataType="burst"),
-                    "using to=100 based on file contents"),
+                b <- read.oce(f3, dataType="burst"),
                 "setting plan=1, the only value in the file")
             expect_message(
-                expect_message(
-                    ib <- read.oce(f3, dataType="interleavedBurst"),
-                    "using to=100 based on file contents"),
+                ib <- read.oce(f3, dataType="interleavedBurst"),
                 "setting plan=1, the only value in the file")
-            ## Compare with some header values
+            # Compare with some header values
             expect_equal(b[["fileType"]], "AD2CP")
             expect_equal(b[["serialNumber"]], ad2cpHeaderValue(b, "ID", "SN"))
             expect_equal("Signature1000", ad2cpHeaderValue(b, "ID", "STR", FALSE))
             expect_equal(b[["type"]], ad2cpHeaderValue(b, "ID", "STR", FALSE))
             expect_equal(b[["cellSize"]], ad2cpHeaderValue(b, "GETBURST", "CS"))
             expect_equal(b[["blankingDistance"]], ad2cpHeaderValue(b, "GETBURST", "BD"))
-            ## NOTE: the next uses GETBURST, not GETBURSTHR. I do not understand the format
+            # NOTE: the next uses GETBURST, not GETBURSTHR. I do not understand the format
             expect_equal(b[["oceCoordinate"]], tolower(ad2cpHeaderValue(b, "GETBURST", "CY", FALSE)))
-            ## NB in the header is 5, which I suppose refers to the whole
-            ## instrument, but d3[["numberOfBeams"]] is 4 for the slant-beam
-            ## samples and 1 for the vertical-beam samples. But this is an
-            ## interleavedBurst mode, so I guess 5 is the right number. In any
-            ## case, I have sidestepped the test.
+            # NB in the header is 5, which I suppose refers to the whole
+            # instrument, but d3[["numberOfBeams"]] is 4 for the slant-beam
+            # samples and 1 for the vertical-beam samples. But this is an
+            # interleavedBurst mode, so I guess 5 is the right number. In any
+            # case, I have sidestepped the test.
             #> if (FALSE)
             #>    expect_equal(d3[["burst"]]$numberOfBeams, ad2cpHeaderValue(d3, "GETBURST", "NB"))
             expect_equal(ib[["cellSize"]], ad2cpHeaderValue(ib, "GETBURST1", "CS"))
             expect_equal(ib[["blankingDistance"]], ad2cpHeaderValue(ib, "GETBURST1", "BD"))
             expect_equal(ib[["oceCoordinate"]], tolower(ad2cpHeaderValue(ib, "GETBURST1", "CY", FALSE)))
 
-            ## FIXME: I think the nbeams might be wrong for burst
+            # FIXME: I think the nbeams might be wrong for burst
 
-            ## The dimension tests are not ground-truthed; they merely reflect
-            ## what the oce code gives, so that a flag will go off if things
-            ## change greatly in the code. This also checks the accessors
-            ## against direct lookup.
+            # The dimension tests are not ground-truthed; they merely reflect
+            # what the oce code gives, so that a flag will go off if things
+            # change greatly in the code. This also checks the accessors
+            # against direct lookup.
             vb <- b[["v"]]
             vib <- ib[["v"]]
             expect_equal(dim(vb), c(50, 88, 4))
