@@ -167,17 +167,14 @@ setMethod(f="[[<-",
 setMethod(f="subset",
     signature="coastline",
     definition=function(x, subset, ...) {
-        if (missing(subset)) {
+        if (missing(subset))
             stop("must give 'subset'")
-        }
         dots <- list(...)
         debug <- dots$debug
-        if (is.null(debug)) {
+        if (is.null(debug))
             debug <- options("oceDebug")$debug
-        }
-        if (is.null(debug)) {
+        if (is.null(debug))
             debug <- 0
-        }
         # 's0' is a character string that we decompose to find W, E, S
         # and N.  This is done in small steps because that might help in
         # locating any bugs that might crop up. Note that the elements
@@ -224,9 +221,8 @@ setMethod(f="subset",
         res <- x
         cllon <- x[["longitude"]]
         cllat <- x[["latitude"]]
-        if (!requireNamespace("sf", quietly=TRUE)) {
+        if (!requireNamespace("sf", quietly=TRUE))
             stop("\"sf\" package must be installed for this to work")
-        }
         box <- sf::st_polygon(list(outer=cbind(c(W, W, E, E, W), c(S, N, N, S, S))))
         owarn <- options("warn")$warn
         options(warn=-1)
@@ -511,23 +507,22 @@ as.coastline <- function(longitude, latitude, fillable=FALSE)
 setMethod(f="plot",
     signature=signature("coastline"),
     definition=function(x, xlab="", ylab="", showHemi=TRUE,
-                        asp, clongitude, clatitude, span,
-                        lonlabels=TRUE, latlabels=TRUE,
-                        projection=NULL,
-                        expand=1,
-                        mgp=getOption("oceMgp"), mar=c(mgp[1]+1, mgp[1]+1, 1, 1),
-                        bg, fill, type="polygon",
-                        border=NULL, col=NULL,
-                        axes=TRUE, cex.axis=par("cex.axis"),
-                        add=FALSE, inset=FALSE,
-                        geographical=0,
-                        longitudelim, latitudelim, # for old usage
-                        debug=getOption("oceDebug"),
-                         ...)
+        asp, clongitude, clatitude, span,
+        lonlabels=TRUE, latlabels=TRUE,
+        projection=NULL,
+        expand=1,
+        mgp=getOption("oceMgp"), mar=c(mgp[1]+1, mgp[1]+1, 1, 1),
+        bg, fill, type="polygon",
+        border=NULL, col=NULL,
+        axes=TRUE, cex.axis=par("cex.axis"),
+        add=FALSE, inset=FALSE,
+        geographical=0,
+        longitudelim, latitudelim, # for old usage
+        debug=getOption("oceDebug"),
+        ...)
     {
-        if (!missing(projection) && inherits(projection, "CRS")) {
+        if (!missing(projection) && inherits(projection, "CRS"))
             projection <- projection@projargs
-        }
         oceDebug(debug, "plot,coastline-method(...",
             ", clongitude=", if (missing(clongitude)) "(missing)" else clongitude,
             ", clatitude=", if (missing(clatitude)) "(missing)" else clatitude,
@@ -645,9 +640,8 @@ setMethod(f="plot",
             }
             if ("xlim" %in% dotsNames) stop("do not specify 'xlim'; give 'clongitude' and 'span' instead")
             if ("ylim" %in% dotsNames) stop("do not specify 'ylim'; give 'clatitude' and 'span' instead")
-            if (!inset) {
+            if (!inset)
                 par(mar=mar)
-            }
             par(mgp=mgp)
             if (add) {
                 # FIXME: handle 'type' values 'p', 'l' and 'o' here
@@ -663,9 +657,8 @@ setMethod(f="plot",
                 }
               } else {
                 if (!missing(clatitude) && !missing(clongitude)) {
-                    if (!missing(asp)) {
+                    if (!missing(asp))
                         warning("argument 'asp' being ignored, because argument 'clatitude' and 'clongitude' were given")
-                    }
                     asp <- 1 / cos(clatitude * atan2(1, 1) / 45) #  ignore any provided asp, because lat from center over-rides it
                     xr <- clongitude + sqrt(1/2) * span * c(-1/2, 1/2) / 111.11 / asp
                     yr <- clatitude + sqrt(1/2) * span * c(-1/2, 1/2) / 111.11
@@ -732,9 +725,8 @@ setMethod(f="plot",
                     prettyLat<-function(yr, ...)
                     {
                         res <- pretty(yr, ...)
-                        if (diff(yr) > 100) {
+                        if (diff(yr) > 100)
                             res <- seq(-90, 90, 45)
-                        }
                         res
                     }
                     prettyLon<-function(xr, ...)
@@ -898,22 +890,19 @@ setMethod(f="plot",
 #' @author Dan Kelley
 download.coastline <- function(resolution, item="coastline", destdir=".", destfile, server="naturalearth", debug=getOption("oceDebug"))
 {
-    if (missing(resolution)) {
+    if (missing(resolution))
         resolution <- "50m"
-    }
     resolutionChoices <- c("10m", "50m", "110m")
-    if (!(resolution %in% resolutionChoices)) {
+    if (!(resolution %in% resolutionChoices))
         stop("'resolution' must be one of: '", paste(resolutionChoices, collapse="' '"), "'")
-    }
     if (server == "naturalearth") {
         urlBase <- "https://www.naturalearthdata.com/downloads"
     } else {
         stop("the only server that works is naturalearth")
     }
     filename <- paste("ne_", resolution, "_", item, ".zip", sep="")
-    if (missing(destfile)) {
+    if (missing(destfile))
         destfile <- filename
-    }
     url <- paste(urlBase, "/", resolution, "/physical/", filename, sep="")
     destination <- paste(destdir, destfile, sep="/")
     if (1 == length(list.files(path=destdir, pattern=paste("^", destfile, "$", sep="")))) {
@@ -957,18 +946,15 @@ download.coastline <- function(resolution, item="coastline", destdir=".", destfi
 #'
 #' @author Dan Kelley
 read.coastline <- function(file, type=c("R", "S", "mapgen", "shapefile", "openstreetmap"),
-                           encoding="latin1", monitor=FALSE, debug=getOption("oceDebug"), processingLog)
+    encoding="latin1", monitor=FALSE, debug=getOption("oceDebug"), processingLog)
 {
-    if (missing(file)) {
+    if (missing(file))
         stop("must supply 'file'")
-    }
     if (is.character(file)) {
-        if (!file.exists(file)) {
+        if (!file.exists(file))
             stop("cannot find file '", file, "'")
-        }
-        if (0L == file.info(file)$size) {
+        if (0L == file.info(file)$size)
             stop("empty file '", file, "'")
-        }
     }
     type <- match.arg(type)
     oceDebug(debug, "read.coastline(file=\"", file, "\", type=\"", type, "\", ...) {\n", sep="", unindent=1, style="bold")
@@ -1034,9 +1020,8 @@ read.coastline <- function(file, type=c("R", "S", "mapgen", "shapefile", "openst
     } else {
         stop("unknown method.  Should be \"R\", \"S\", or \"mapgen\"")
     }
-    if (missing(processingLog)) {
+    if (missing(processingLog))
         processingLog <- paste(deparse(match.call()), sep="", collapse="")
-    }
     res@processingLog <- processingLogAppend(res@processingLog, processingLog)
     oceDebug(debug, "} # read.coastline()\n", unindent=1, style="bold")
     res
@@ -1089,18 +1074,15 @@ read.coastline <- function(file, type=c("R", "S", "mapgen", "shapefile", "openst
 #'
 #' @author Dan Kelley
 read.coastline.shapefile <- function(file, lonlim=c(-180, 180), latlim=c(-90, 90),
-                                     encoding=NA, monitor=FALSE, debug=getOption("oceDebug"), processingLog)
+    encoding=NA, monitor=FALSE, debug=getOption("oceDebug"), processingLog)
 {
-    if (missing(file)) {
+    if (missing(file))
         stop("must supply 'file'")
-    }
     if (is.character(file)) {
-        if (!file.exists(file)) {
+        if (!file.exists(file))
             stop("cannot find file '", file, "'")
-        }
-        if (0L == file.info(file)$size) {
+        if (0L == file.info(file)$size)
             stop("empty file '", file, "'")
-        }
     }
     oceDebug(debug, "read.shapefile(file=\"", file, "\", ...) {\n", sep="", unindent=1, style="bold")
     shapeTypeList <- c("nullshape",    # 0
@@ -1187,14 +1169,12 @@ read.coastline.shapefile <- function(file, lonlim=c(-180, 180), latlim=c(-90, 90
     # main header is always 100 bytes [ESRI White paper page 3]
     header <- buf[1:100]
     fieldCode <- readBin(header[1:4], "integer", n=1, size=4, endian="big")
-    if (fieldCode != 9994) {
+    if (fieldCode != 9994)
         stop("first four bytes of file must yield 9994 (as a big-endian integer) but yield ", fieldCode, "\n")
-    }
     fileSizeHeader <- 2*readBin(buf[25:28], "integer", n=1, size=4, endian="big") # it's in 2-byte words
     oceDebug(debug, "fileSizeHeader:", fileSizeHeader, "as interpreted from header\n")
-    if (fileSizeHeader != fileSize) {
+    if (fileSizeHeader != fileSize)
         warning("file size is ", fileSize, " but the header suggests it to be ", fileSizeHeader, "; using the former")
-    }
     shapeTypeFile <- readBin(buf[33:36], "integer", n=1, size=4, endian="little")
     oceDebug(debug, "shapeTypeFile:", shapeTypeFile, "(", shapeTypeList[shapeTypeFile+1], ")\n")
     if (shapeTypeFile != 5 && shapeTypeFile != 3 && shapeTypeFile != 15) {
@@ -1313,16 +1293,13 @@ read.coastline.shapefile <- function(file, lonlim=c(-180, 180), latlim=c(-90, 90
 read.coastline.openstreetmap <- function(file, lonlim=c(-180, 180), latlim=c(-90, 90),
                                          monitor=FALSE, encoding=NA, debug=getOption("oceDebug"), processingLog)
 {
-    if (missing(file)) {
+    if (missing(file))
         stop("must supply 'file'")
-    }
     if (is.character(file)) {
-        if (!file.exists(file)) {
+        if (!file.exists(file))
             stop("cannot find file '", file, "'")
-        }
-        if (0L == file.info(file)$size) {
+        if (0L == file.info(file)$size)
             stop("empty file '", file, "'")
-        }
     }
     oceDebug(debug, "read.coastline.openstreetmap(file=\"", file, "\", ...) {\n", sep="", unindent=1, style="bold")
     # FIXME: ignoring lonlim and latlim
@@ -1352,9 +1329,8 @@ read.coastline.openstreetmap <- function(file, lonlim=c(-180, 180), latlim=c(-90
     coastlineWayEnd <- grep('k="natural" v="coastline"', d)
     ncoastline <- length(coastlineWayEnd)
     coastlineWayStart <- vector("integer", ncoastline)
-    for (i in 1:ncoastline) {
+    for (i in 1:ncoastline)
         coastlineWayStart[i] <- wayStart[max(which(wayStart < coastlineWayEnd[i]))]
-    }
     oceDebug(debug, "ncoastline:", ncoastline, "\n")
     latitude <- longitude <- NULL
     for (i in 1:ncoastline) {
@@ -1374,9 +1350,8 @@ read.coastline.openstreetmap <- function(file, lonlim=c(-180, 180), latlim=c(-90
     }
     res@data$latitude <- latitude
     res@data$longitude <- longitude
-    if (missing(processingLog)) {
+    if (missing(processingLog))
         processingLog <- paste(deparse(match.call()), sep="", collapse="")
-    }
     res@processingLog <- processingLogAppend(res@processingLog, processingLog)
     oceDebug(debug, "} # read.coastline.openstreetmap()\n", unindent=1, style="bold")
     res
@@ -1425,15 +1400,12 @@ coastlineBest <- function(lonRange, latRange, span, debug=getOption("oceDebug"))
     if (missing(span)) {
         oceDebug(debug, "inferring span from lonRange=c(", paste(lonRange, collapse=","),
             ") and latRange=c(", paste(latRange, collapse=","), ")\n")
-        if (missing(lonRange) || missing(latRange)) {
+        if (missing(lonRange) || missing(latRange))
             return("coastlineWorld")
-        }
-        if (length(lonRange) != 2) {
+        if (length(lonRange) != 2)
             stop("lonRange must be of length 2")
-        }
-        if (length(latRange) != 2) {
+        if (length(latRange) != 2)
             stop("latRange must be of length 2")
-        }
         if (any(lonRange > 180)) {
             lonRange <- lonRange - 360 # FIXME: does this always work?
             oceDebug(debug, "adjusted lonRange:", lonRange, "\n")
@@ -1497,9 +1469,8 @@ coastlineBest <- function(lonRange, latRange, span, debug=getOption("oceDebug"))
 #' @author Dan Kelley
 coastlineCut <- function(coastline, lon_0=0)
 {
-    if (lon_0 == 0) {
+    if (lon_0 == 0)
         return(coastline)
-    }
     cleanAngle<-function(a) {
         ifelse(a < -180, a+360, ifelse(a > 180, a-360, a))
     }

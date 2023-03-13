@@ -64,13 +64,9 @@
 #' https://www.nortekusa.com/en/knowledge-center
 #' may be of help if problems arise in dealing with data from Nortek instruments.
 decodeHeaderNortek <- function(buf,
-                               type=c("aquadoppHR",
-                                   "aquadoppProfiler",
-                                   "aquadopp",
-                                   "aquadoppPlusMagnetometer",
-                                   "vector"),
-                               debug=getOption("oceDebug"),
-                               ...)
+    type=c("aquadoppHR", "aquadoppProfiler", "aquadopp", "aquadoppPlusMagnetometer", "vector"),
+    debug=getOption("oceDebug"),
+    ...)
 {
     type <- match.arg(type)
     oceDebug(debug, "decodeHeaderNortek(buf, type=\"", type, "\", ...) {\n", sep="", unindent=1)
@@ -89,19 +85,16 @@ decodeHeaderNortek <- function(buf,
         # FIXME: code is needlessly written as if headers could be in different order
         oceDebug(debug, "\n")
         #oceDebug(debug, "examining buf[o+2]=", buf[o+2], "to see what type of header block is next...\n")
-        if (buf[o+1] != syncCode) {
+        if (buf[o+1] != syncCode)
             stop("expecting syncCode 0x", syncCode, " but got 0x", buf[o+1], " instead (while reading header #", header, ")")
-        }
         if (buf[o+2] == idHardwareConfiguration) {
             # see page 29 of System Integrator Guide
             oceDebug(debug, "\nHARDWARE CONFIGURATION\n", unindent=1)
             hardware$size <- readBin(buf[o+3:4], "integer", signed=FALSE, n=1, size=2, endian="little")
-            if (hardware$size != 24) {
+            if (hardware$size != 24)
                 stop("size of hardware header expected to be 24 two-byte words, but got ", hardware$size)
-            }
-            if (2 * hardware$size != headerLengthHardware) {
+            if (2 * hardware$size != headerLengthHardware)
                 stop("size of hardware header expected to be ", headerLengthHardware, "but got ", hardware$size)
-            }
             oceDebug(debug, "hardware$size=", hardware$size, "\n")
             hardware$serialNumber <- gsub(" *$", "", paste(readBin(buf[o+5:18], "character", n=14, size=1), collapse=""))
             oceDebug(debug, "hardware$serialNumber", hardware$serialNumber, "\n")
@@ -125,9 +118,8 @@ decodeHeaderNortek <- function(buf,
             oceDebug(debug, "HEAD CONFIGURATION\n", unindent=1)
             #buf <- readBin(file, "raw", headerLengthHead)
             head$size <- readBin(buf[o+3:4], "integer", signed=FALSE, n=1, size=2)
-            if (2 * head$size != headerLengthHead) {
+            if (2 * head$size != headerLengthHead)
                 stop("size of head header expected to be ", headerLengthHead, "but got ", head$size)
-            }
             oceDebug(debug, "head$size=", head$size, "\n")
             # Nortek doc "system-integrator-manual_Mar2016.pdf" (page 23) says for the "head configuration":
             # bit 0: Pressure sensor (0=no, 1=yes)
@@ -185,9 +177,8 @@ decodeHeaderNortek <- function(buf,
             # User Configuration [p30-32 of System Integrator Guide]
             oceDebug(debug, "USER CONFIGURATION\n", unindent=1)
             user$size <- readBin(buf[o+3:4], what="integer", n=1, size=2, endian="little")
-            if (2 * user$size != headerLengthUser) {
+            if (2 * user$size != headerLengthUser)
                 stop("size of user header expected to be ", headerLengthUser, "but got ", user$size)
-            }
             #buf <- readBin(file, "raw", headerLengthUser)
             user$transmitPulseLength <- readBin(buf[o+5:6], "integer", n=1, size=2, endian="little", signed=FALSE)
             oceDebug(debug, "user$transmitPulseLength=", user$transmitPulseLength, "\n")
@@ -399,36 +390,32 @@ decodeHeaderNortek <- function(buf,
 #' @family things related to adp data
 #' @family functions that read adp data
 read.aquadopp <- function(file,
-                          from=1,
-                          to,
-                          by=1,
-                          tz=getOption("oceTz"),
-                          longitude=NA,
-                          latitude=NA,
-                          type="aquadopp",
-                          orientation,
-                          distance,
-                          monitor=FALSE,
-                          despike=FALSE,
-                          encoding=NA,
-                          processingLog,
-                          debug=getOption("oceDebug"),
-                          ...)
+    from=1,
+    to,
+    by=1,
+    tz=getOption("oceTz"),
+    longitude=NA,
+    latitude=NA,
+    type="aquadopp",
+    orientation,
+    distance,
+    monitor=FALSE,
+    despike=FALSE,
+    encoding=NA,
+    processingLog,
+    debug=getOption("oceDebug"),
+    ...)
 {
-    if (missing(file)) {
+    if (missing(file))
         stop("must supply 'file'")
-    }
     if (is.character(file)) {
-        if (!file.exists(file)) {
+        if (!file.exists(file))
             stop("cannot find file '", file, "'")
-        }
-        if (0L == file.info(file)$size) {
+        if (0L == file.info(file)$size)
             stop("empty file '", file, "'")
-        }
     }
-    if (!interactive()) {
+    if (!interactive())
         monitor <- FALSE
-    }
     return(read.adp.nortek(file, from=from, to=to, by=by, tz=tz,
         longitude=longitude, latitude=latitude,
         type=type, orientation=orientation, distance=distance,
@@ -482,35 +469,31 @@ read.aquadopp <- function(file,
 #' @family things related to adp data
 #' @family functions that read adp data
 read.aquadoppHR <- function(file,
-                            from=1,
-                            to,
-                            by=1,
-                            tz=getOption("oceTz"),
-                            longitude=NA,
-                            latitude=NA,
-                            orientation=orientation,
-                            distance,
-                            monitor=FALSE,
-                            despike=FALSE,
-                            encoding=NA,
-                            processingLog,
-                            debug=getOption("oceDebug"),
-                            ...)
+    from=1,
+    to,
+    by=1,
+    tz=getOption("oceTz"),
+    longitude=NA,
+    latitude=NA,
+    orientation=orientation,
+    distance,
+    monitor=FALSE,
+    despike=FALSE,
+    encoding=NA,
+    processingLog,
+    debug=getOption("oceDebug"),
+    ...)
 {
-    if (missing(file)) {
+    if (missing(file))
         stop("must supply 'file'")
-    }
     if (is.character(file)) {
-        if (!file.exists(file)) {
+        if (!file.exists(file))
             stop("cannot find file '", file, "'")
-        }
-        if (0L == file.info(file)$size) {
+        if (0L == file.info(file)$size)
             stop("empty file '", file, "'")
-        }
     }
-    if (!interactive()) {
+    if (!interactive())
         monitor <- FALSE
-    }
     return(read.adp.nortek(file, from=from, to=to, by=by, tz=tz,
         longitude=longitude, latitude=latitude,
         type="aquadoppHR",
@@ -565,31 +548,28 @@ read.aquadoppHR <- function(file,
 #' @family things related to adp data
 #' @family functions that read adp data
 read.aquadoppProfiler <- function(file,
-                                  from=1,
-                                  to,
-                                  by=1,
-                                  tz=getOption("oceTz"),
-                                  longitude=NA,
-                                  latitude=NA,
-                                  orientation,
-                                  distance,
-                                  monitor=FALSE,
-                                  despike=FALSE,
-                                  encoding=NA,
-                                  processingLog,
-                                  debug=getOption("oceDebug"),
-                                  ...)
+    from=1,
+    to,
+    by=1,
+    tz=getOption("oceTz"),
+    longitude=NA,
+    latitude=NA,
+    orientation,
+    distance,
+    monitor=FALSE,
+    despike=FALSE,
+    encoding=NA,
+    processingLog,
+    debug=getOption("oceDebug"),
+    ...)
 {
-    if (missing(file)) {
+    if (missing(file))
         stop("must supply 'file'")
-    }
     if (is.character(file)) {
-        if (!file.exists(file)) {
+        if (!file.exists(file))
             stop("cannot find file '", file, "'")
-        }
-        if (0L == file.info(file)$size) {
+        if (0L == file.info(file)$size)
             stop("empty file '", file, "'")
-        }
     }
     return(read.adp.nortek(file, from=from, to=to, by=by, tz=tz,
         longitude=longitude, latitude=latitude,
@@ -638,31 +618,23 @@ read.aquadoppProfiler <- function(file,
 #' @family things related to adp data
 #' @family functions that read adp data
 read.adp.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
-                            longitude=NA, latitude=NA,
-                            type=c("aquadoppHR",
-                                "aquadoppProfiler",
-                                "aquadopp",
-                                "aquadoppPlusMagnetometer"),
-                            orientation, distance,
-                            encoding=NA,
-                            monitor=FALSE, despike=FALSE, processingLog,
-                            debug=getOption("oceDebug"),
-                            ...)
+    longitude=NA, latitude=NA,
+    type=c("aquadoppHR", "aquadoppProfiler", "aquadopp", "aquadoppPlusMagnetometer"), orientation, distance,
+    encoding=NA,
+    monitor=FALSE, despike=FALSE, processingLog,
+    debug=getOption("oceDebug"),
+    ...)
 {
-    if (missing(file)) {
+    if (missing(file))
         stop("must supply 'file'")
-    }
     if (is.character(file)) {
-        if (!file.exists(file)) {
+        if (!file.exists(file))
             stop("cannot find file '", file, "'")
-        }
-        if (0L == file.info(file)$size) {
+        if (0L == file.info(file)$size)
             stop("empty file '", file, "'")
-        }
     }
-    if (!interactive()) {
+    if (!interactive())
         monitor <- FALSE
-    }
     #degToRad <- atan2(1, 1) / 45
     profileStart <- NULL # prevents scope warning in rstudio; defined later anyway
     bisectAdpNortek <- function(buf, t.find, add=0, debug=0) {
@@ -710,9 +682,8 @@ read.adp.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         oceDebug(debug, "result: t=", format(t), " at vsd.start[", middle, "]=", profileStart[middle], "\n")
         return(list(index=middle, time=t))
     }
-    if (missing(to)) {
+    if (missing(to))
         to <- NA                       # will catch this later
-    }
     type <- match.arg(type)
     if (type=="aquadoppPlusMagnetometer") oceDebug(debug, "Reading an aquadopp file which includes raw magnetometer data\n")
     oceDebug(debug, "read.adp.nortek(...,from=", format(from), ",to=", format(to), "...)\n")
@@ -725,9 +696,8 @@ read.adp.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         file <- file(file, "rb")
         on.exit(close(file))
     }
-    if (!inherits(file, "connection")) {
+    if (!inherits(file, "connection"))
         stop("argument `file' must be a character string or connection")
-    }
     if (!isOpen(file)) {
         filename <- "(connection)"
         open(file, "rb")
@@ -812,21 +782,18 @@ read.adp.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         dt <- as.numeric(difftime(time2, time1, units="secs"))
         oceDebug(debug, "dt=", dt, "s; at this stage, by=", by, "(not interpreted yet)\n")
         profileStart <- profileStart[profileStart[fromIndex] < profileStart & profileStart < profileStart[toIndex]]
-        if (is.character(by)) {
+        if (is.character(by))
             by <- floor(0.5 + ctimeToSeconds(by) / dt)
-        }
         oceDebug(debug, "by=", by, "profiles (after change)\n")
         profileStart <- profileStart[seq(1, length(profileStart), by=by)]
         oceDebug(debug, "dt=", dt, "\n", "by=", by, "profileStart[1:10] after indexing:", profileStart[1:10], "\n")
     } else {
         fromIndex <- from
         toIndex <- to
-        if (toIndex < 1 + fromIndex) {
+        if (toIndex < 1 + fromIndex)
             stop("need more separation between from and to")
-        }
-        if (is.character(by)) {
+        if (is.character(by))
             stop("cannot have string for 'by' if 'from' and 'to' are integers")
-        }
         profileStart <- profileStart[seq(from=from, to=to, by=by)]
         oceDebug(debug, "profileStart[1:10] after indexing:", profileStart[1:10], "\n")
     }
@@ -1085,9 +1052,8 @@ read.adp.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     res@metadata$units$pitchStd <- list(unit=expression(degree), scale="")
     res@metadata$units$rollStd <- list(unit=expression(degree), scale="")
     res@metadata$units$attitude <- list(unit=expression(degree), scale="")
-    if (missing(processingLog)) {
+    if (missing(processingLog))
         processingLog <- paste("read.adp.nortek(file=\"", filename, "\", from=", from, ", to=", to, ", by=", by, ")", sep="")
-    }
     res@processingLog <- processingLogItem(processingLog)
     res
 }                                       # read.adp.nortek()

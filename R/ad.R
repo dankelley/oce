@@ -39,13 +39,11 @@ velocityStatistics <- function(x, control, ...)
 {
     if (inherits(x, "adp")) {
         if (!missing(control) && !is.null(control$bin)) {
-            if (control$bin < 1) {
+            if (control$bin < 1)
                 stop("cannot have control$bin less than 1, but got ", control$bin)
-            }
             max.bin <- dim(x@data$v)[2]
-            if (control$bin > max.bin) {
+            if (control$bin > max.bin)
                 stop("cannot have control$bin larger than ", max.bin, " but got ", control$bin)
-            }
             u <- x@data$v[, control$bin, 1]
             v <- x@data$v[, control$bin, 2]
         } else {

@@ -145,23 +145,18 @@ setMethod(f="[[<-",
 #' @family things related to g1sst data
 read.g1sst <- function(file, encoding=NA)
 {
-    if (missing(file)) {
+    if (missing(file))
         stop("must supply 'file'")
-    }
     if (is.character(file)) {
-        if (!file.exists(file)) {
+        if (!file.exists(file))
             stop("cannot find file '", file, "'")
-        }
-        if (0L == file.info(file)$size) {
+        if (0L == file.info(file)$size)
             stop("empty file '", file, "'")
-        }
     }
-    if (!requireNamespace("ncdf4", quietly=TRUE)) {
+    if (!requireNamespace("ncdf4", quietly=TRUE))
         stop('must install.packages("ncdf4") to read g1sst data')
-    }
-    if (!is.character(file)) {
+    if (!is.character(file))
         stop("file must be a character string")
-    }
     f <- ncdf4::nc_open(file)
     res <- new("g1sst", file=file)
     # Change the 1-col ncdf4 output to a vector

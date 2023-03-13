@@ -35,10 +35,7 @@ an enu-based coordinate system, by using the instrument's recording of
 information relating to heading, pitch, and roll. The action is based
 on what is stored in the data, and so it depends greatly on instrument type
 and the style of original data format. This function handles data from
-RDI Teledyne, Sontek, and some Nortek instruments directly. However, Nortek
-data stored in in the AD2CP format are handled by the specialized
-function \code{\link[=xyzToEnuAdpAD2CP]{xyzToEnuAdpAD2CP()}}, the documentation for which
-should be consulted, rather than the material given blow.
+RDI Teledyne, Sontek, and some Nortek instruments directly.
 }
 \details{
 The first step is to convert the (x,y,z) velocity components (stored in the

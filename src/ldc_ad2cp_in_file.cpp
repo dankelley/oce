@@ -164,7 +164,6 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, IntegerVector from, IntegerV
   FILE *fp = fopen(fn.c_str(), "rb");
   if (!fp)
     ::Rf_error("cannot open file '%s'\n", fn.c_str());
-
   if (from[0] < 0)
     ::Rf_error("'from' must be positive but it is %d", from[0]);
   //unsigned int from_value = from[0];
@@ -180,7 +179,7 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, IntegerVector from, IntegerV
   long long int filesize = ftell(fp);
   fseek(fp, 0L, SEEK_SET);
   if (debug) {
-    Rprintf("do_ldc_ad2cp_in_file(filename, from=%d, to=%d, by=%d, ...) {\n", from[0], to[0], by[0]);
+    Rprintf("do_ldc_ad2cp_in_file(filename, from=%d, to=%d, by=%d, debug=%d) {\n", from[0], to[0], by[0], DEBUG[0]);
     Rprintf("  filename=\"%s\"\n", fn.c_str());
     //Rprintf("  ignoreChecksums[0]=%d\n", ignoreChecksums[0]);
     Rprintf("  filesize=%d bytes\n", filesize);
@@ -448,6 +447,7 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, IntegerVector from, IntegerV
     data_length[i] = data_length_buf[i];
     id[i] = id_buf[i];
   }
+  // Delete the temporary (_buf) storage items.
   R_Free(start_buf);
   R_Free(index_buf);
   R_Free(header_length_buf);

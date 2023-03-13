@@ -64,15 +64,12 @@ setMethod(f="initialize",
     signature="rsk",
     definition=function(.Object, time, pressure, temperature, filename="", ...) {
         .Object <- callNextMethod(.Object, ...)
-        if (!missing(time)) {
+        if (!missing(time))
             .Object@data$time <- time
-        }
-        if (!missing(pressure)) {
+        if (!missing(pressure))
             .Object@data$pressure <- pressure
-        }
-        if (!missing(temperature)) {
+        if (!missing(temperature))
             .Object@data$temperature <- temperature
-        }
         .Object@metadata$filename <- filename
         .Object@metadata$model <- NA
         .Object@metadata$pressureType <- "absolute"
@@ -110,12 +107,10 @@ setMethod(f="summary",
         cat("rsk summary\n-----------\n", ...)
         cat("* Instrument:    model ", m$model,
             " serial number ", m$serialNumber, "\n", sep="")
-        if ("pressureAtmospheric" %in% mnames)  {
+        if ("pressureAtmospheric" %in% mnames)
             cat(paste("* Atm. press.:   ", m$pressureAtmospheric, "\n", sep=""))
-        }
-        if ("pressureType" %in% mnames) {
+        if ("pressureType" %in% mnames)
             cat(paste("* Pressure type: ", m$pressureType, "\n", sep=""))
-        }
         cat(paste("* Source:        `", m$filename, "`\n", sep=""))
         invisible(callNextMethod()) # summary
     })
@@ -348,21 +343,17 @@ as.rsk <- function(time, columns,
     debug <- min(debug, 1)
     oceDebug(debug, "as.rsk(..., filename=\"", filename, "\",
         serialNumber=\"", serialNumber, "\")\n", sep="", unindent=1)
-    if (inherits(time, "oce")) {
+    if (inherits(time, "oce"))
         stop("cannot coerce from general oce object to rsk; submit an issue if you need this")
-    }
-    if (missing(time)) {
+    if (missing(time))
         stop("must give time")
-    }
-    if (!inherits(time, "POSIXt")) {
+    if (!inherits(time, "POSIXt"))
         stop("'time' must be POSIXt")
-    }
     time <- as.POSIXct(time)
     res <- new("rsk")
     res@metadata$instrumentType <- instrumentType
-    if (nchar(model)) {
+    if (nchar(model))
         res@metadata$model <-model
-    }
     res@metadata$serialNumber <- serialNumber
     res@metadata$filename <- filename
     res@metadata$sampleInterval <- if (is.na(sampleInterval)) {
@@ -497,12 +488,10 @@ setMethod(f="plot",
         # FIXME: In the below, we could be more clever for single-panel plots
         # but it may be better to get users out of the habit of supplying xlim
         # etc (which will yield errors in plot.lm(), for example).
-        if ("xlim" %in% dotsNames) {
+        if ("xlim" %in% dotsNames)
             stop("in plot.rsk() : 'xlim' not allowed; use tlim", call.=FALSE)
-        }
-        if (any(which=="timeseries")) {
+        if (any(which=="timeseries"))
             which <- "timeseries" # "timeseries" overrides any others
-        }
         lw <- length(which)
         if (lw == 1 && which=="timeseries") {
             opar <- par(no.readonly = TRUE)
@@ -705,19 +694,16 @@ setMethod(f="plot",
 #'
 #' @family things related to rsk data
 read.rsk <- function(file, from=1, to, by=1, type, encoding=NA,
-                     tz=getOption("oceTz", default="UTC"), tzOffsetLocation,
-                     patm=FALSE, allTables=TRUE, processingLog, debug=getOption("oceDebug"))
+    tz=getOption("oceTz", default="UTC"), tzOffsetLocation,
+    patm=FALSE, allTables=TRUE, processingLog, debug=getOption("oceDebug"))
 {
-    if (missing(file)) {
+    if (missing(file))
         stop("must supply 'file'")
-    }
     if (is.character(file)) {
-        if (!file.exists(file)) {
+        if (!file.exists(file))
             stop("cannot find file '", file, "'")
-        }
-        if (0L == file.info(file)$size) {
+        if (0L == file.info(file)$size)
             stop("empty file '", file, "'")
-        }
     }
     from <- from[1]
     debug <- max(0, min(debug, 2))
@@ -739,9 +725,8 @@ read.rsk <- function(file, from=1, to, by=1, type, encoding=NA,
         }
         on.exit(close(file))
     }
-    if (!inherits(file, "connection")) {
+    if (!inherits(file, "connection"))
         stop("'file' must be a character string or connection")
-    }
     if (!isOpen(file)) {
         open(file, "r", encoding=encoding) # ignored if rsk
         on.exit(close(file))
@@ -762,12 +747,10 @@ read.rsk <- function(file, from=1, to, by=1, type, encoding=NA,
     pressureAtmospheric <- NA
     res <- new("rsk", filename=filename)
     if (!missing(type) && type == "rsk") {
-        if (!requireNamespace("RSQLite", quietly=TRUE)) {
+        if (!requireNamespace("RSQLite", quietly=TRUE))
             stop('must install.packages("RSQLite") to read rsk data')
-        }
-        if (!requireNamespace("DBI", quietly=TRUE)) {
+        if (!requireNamespace("DBI", quietly=TRUE))
             stop('must install.packages("DBI") to read rsk data')
-        }
         con <- DBI::dbConnect(RSQLite::SQLite(), dbname=filename)
         # Advanced users might want to see what tables are in this file.
         tableNames <- RSQLite::dbListTables(con)
@@ -906,9 +889,8 @@ read.rsk <- function(file, from=1, to, by=1, type, encoding=NA,
             from <- as.character(as.numeric(as.POSIXct(from, tz=tz))*1000)
         }
         if (!all(is.na(time))) {
-            if (is.numeric(from)) {
+            if (is.numeric(from))
                 from <- t1000[from]
-            }
             if (missing(to)) { # FIXME: can this happen, given earlier code?
                 to <- tail(t1000, 1)
             } else if (is.numeric(to)) {
@@ -1535,9 +1517,8 @@ rskPatm <- function(x, dp=0.5)
 {
     p <- if (inherits(x, "rsk")) x@data$pressure else x
     sap <- 10.1325                      # standard atm pressure
-    if (length(p) < 1) {
+    if (length(p) < 1)
         return(rep(sap, 4))
-    }
     p <- p[(sap - dp) <= p & p <= (sap + dp)] # window near sap
     w <- exp(-2 * ((p - sap) / dp)^2)
     if (length(p) < 4) {
@@ -1595,22 +1576,19 @@ rskPatm <- function(x, dp=0.5)
 #' @family things related to rsk data
 rskToc <- function(dir, from, to, debug=getOption("oceDebug"))
 {
-    if (missing(dir)) {
+    if (missing(dir))
         stop("need a 'dir', naming a directory containing a file with suffix .TBL, and also data files named in that file")
-    }
     tbl.files <- list.files(path=dir, pattern="*.TBL$")
-    if (length(tbl.files) < 1) {
+    if (length(tbl.files) < 1)
         stop("could not locate a .TBL file in direcory ", dir)
-    }
     tref <- as.POSIXct("2010-01-01", tz="UTC") # arbitrary time, to make integers
     file.code <- NULL
     startTime <- NULL
     for (tbl.file in tbl.files) {
         oceDebug(debug, tbl.file)
         lines <- readLines(paste(dir, tbl.file, sep="/"))
-        if (length(lines) < 1) {
+        if (length(lines) < 1)
             stop("found no data in file ", paste(dir, tbl.file, sep="/"))
-        }
         # "File \\day179\\SL08A179.023 started at Fri Jun 27 22:00:00 2008"
         for (line in lines) {
             s <- strsplit(line, "[ \t]+")[[1]]

@@ -244,9 +244,8 @@ siderealTime <- function(t)
 julianDay <- function(t, year=NA, month=NA, day=NA, hour=NA, min=NA, sec=NA, tz="UTC")
 {
     if (missing(t))  {
-        if (is.na(year) || is.na(month) || is.na(day) || is.na(hour) || is.na(min) || is.na(sec)) {
+        if (is.na(year) || is.na(month) || is.na(day) || is.na(hour) || is.na(min) || is.na(sec))
             stop("must supply year, month, day, hour, min, and sec")
-        }
         t <- ISOdatetime(year, month, day, hour, min, sec, tz=tz)
     }
     tt <- as.POSIXlt(t, tz=tz)

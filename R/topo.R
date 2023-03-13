@@ -1,6 +1,5 @@
 # vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
 
-
 #' Class to Store Topographic Data
 #'
 #' This class stores topographic data, as read with
@@ -172,10 +171,10 @@ setMethod(f="[[",
 #'
 #' @template sub_subsetTemplate
 setMethod(f="[[<-",
-          signature(x="topo", i="ANY", j="ANY"),
-          definition=function(x, i, j, ..., value) {
-              callNextMethod(x=x, i=i, j=j, ..., value=value) # [[<-
-          })
+    signature(x="topo", i="ANY", j="ANY"),
+    definition=function(x, i, j, ..., value) {
+        callNextMethod(x=x, i=i, j=j, ..., value=value) # [[<-
+    })
 
 #' @title Subset a Topo Object
 #'
@@ -210,12 +209,10 @@ setMethod(f="subset",
         res <- x
         dots <- list(...)
         debug <- getOption("oceDebug")
-        if (length(dots) && ("debug" %in% names(dots))) {
+        if (length(dots) && ("debug" %in% names(dots)))
             debug <- dots$debug
-        }
-        if (missing(subset)) {
+        if (missing(subset))
             stop("must give 'subset'")
-        }
         if (length(grep("longitude", subsetString))) {
             oceDebug(debug, "subsetting a topo object by longitude\n")
             keep <- eval(expr=substitute(expr=subset, env=environment()), envir=x@data, enclos=parent.frame(2))
@@ -314,8 +311,8 @@ setMethod(f="subset",
 #' @family functions that download files
 #' @family things related to topo data
 download.topo <- function(west, east, south, north, resolution=4,
-                          destdir=".", destfile, format, server="https://gis.ngdc.noaa.gov",
-                          debug=getOption("oceDebug"))
+    destdir=".", destfile, format, server="https://gis.ngdc.noaa.gov",
+    debug=getOption("oceDebug"))
 {
     oceDebug(debug, "download.topo(west=", west,
         ", east=", east,
@@ -569,15 +566,15 @@ topoInterpolate <- function(longitude, latitude, topo)
 setMethod(f="plot",
     signature=signature("topo"),
     definition=function(x, xlab="", ylab="", asp,
-                        clongitude, clatitude, span, expand=1.5,
-                        water.z, col.water, lty.water, lwd.water,
-                        land.z, col.land, lty.land, lwd.land,
-                        geographical=FALSE,
-                        location="topright",
-                        mgp=getOption("oceMgp"),
-                        mar=c(mgp[1]+1, mgp[1]+1, 1, 1),
-                        debug=getOption("oceDebug"),
-                        ...)
+        clongitude, clatitude, span, expand=1.5,
+        water.z, col.water, lty.water, lwd.water,
+        land.z, col.land, lty.land, lwd.land,
+        geographical=FALSE,
+        location="topright",
+        mgp=getOption("oceMgp"),
+        mar=c(mgp[1]+1, mgp[1]+1, 1, 1),
+        debug=getOption("oceDebug"),
+        ...)
     {
         if (!inherits(x, "topo")) {
             stop("method is only for objects of class '", "topo", "'")
@@ -599,9 +596,8 @@ setMethod(f="plot",
             clongitude <- clongitude + 360
         }
         if (gave.center) {
-            if (!missing(asp)) {
+            if (!missing(asp))
                 warning("argument 'asp' being ignored, because argument 'center' was given")
-            }
             asp <- 1 / cos(clatitude * atan2(1, 1) / 45) #  ignore any provided asp, because lat from center over-rides it
             xr <- clongitude + span * c(-1/2, 1/2) / 111.11 / asp
             yr <- clatitude  + span * c(-1/2, 1/2) / 111.11
@@ -629,12 +625,10 @@ setMethod(f="plot",
             }
         }
         zr <- range(x[["z"]], na.rm=TRUE)
-        if (gave.center && !is.null(dots$xlim)) {
+        if (gave.center && !is.null(dots$xlim))
             stop("cannot give 'xlim' argument if the 'center' argument was given")
-        }
-        if (gave.center && !is.null(dots$ylim)) {
+        if (gave.center && !is.null(dots$ylim))
             stop("cannot give 'ylim' argument if the 'center' argument was given")
-        }
         # auto-scale based on data in window, if window provided
         if (!is.null(dots$xlim) && !is.null(dots$ylim)) {
             xr <- dots$xlim
@@ -697,9 +691,8 @@ setMethod(f="plot",
         if (yr[1] < lat.range[1]) yr[1] <- lat.range[1]
         if (yr[2] > lat.range[2]) yr[2] <- lat.range[2]
         plot(xr, yr, asp=asp, xlab="", ylab="", type="n", xaxs="i", yaxs="i", axes=FALSE, ...)
-        if (debug > 0) {
+        if (debug > 0)
             points(xr, yr, col="blue", pch=20, cex=3)
-        }
         xr.pretty <- pretty(xr)
         yr.pretty <- pretty(yr)
         oceDebug(debug, "xr.pretty=", xr.pretty, "(before trimming)\n")
@@ -749,9 +742,8 @@ setMethod(f="plot",
             stop("there are no topographic data within the longitudes of the plot region.")
         }
         yy <- yy[!yclip]
-        if (length(yy) < 1) {
+        if (length(yy) < 1)
             stop("there are no topographic data within the latitudes of the plot region.")
-        }
         zz <- Z[!xclip, !yclip]
         zr <- range(zz)
         contour(xx, yy, zz,
@@ -876,16 +868,13 @@ setMethod(f="plot",
 #' @family things related to topo data
 read.topo <- function(file, encoding="latin1", debug=getOption("oceDebug"))
 {
-    if (missing(file)) {
+    if (missing(file))
         stop("must supply 'file'")
-    }
     if (is.character(file)) {
-        if (!file.exists(file)) {
+        if (!file.exists(file))
             stop("cannot find file '", file, "'")
-        }
-        if (0L == file.info(file)$size) {
+        if (0L == file.info(file)$size)
             stop("empty file '", file, "'")
-        }
     }
     oceDebug(debug, "read.topo(file=\"", file, "\") {\n", sep="", style="bold", unindent=1)
     # handle GEBCO netcdf files or an ascii format

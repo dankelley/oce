@@ -16,15 +16,14 @@ test_that("array values in data slot of 'adp' dataset are well-formed", {
 
 test_that("test all 'which' values listed in ?'plot,adp-method' on 2019 May 23", {
     skip_on_cran()
-    ## Most of the numerical tests have character equivalents, but we
-    ## test both. All this test really does is to ensure that the plots
-    ## do not produce warnings, apart from known things, e.g. a warning
-    ## if trying to plot bottom-tracking items, because data(adp) has
-    ## no bottom-tracking data.
+    # Most of the numerical tests have character equivalents, but we
+    # test both. All this test really does is to ensure that the plots
+    # do not produce warnings, apart from known things, e.g. a warning
+    # if trying to plot bottom-tracking items, because data(adp) has
+    # no bottom-tracking data.
     for (which in c(1:4, 5:8, 9:12, 60, 70:73, 80:83, 13, 14, 15:18,
             19:22, 23, 24:28, 29, 30, 40, 41:44, 50, 51:54, 55,
             100)) {
-        ## cat(file=stderr(), "plot(adp, which=", which, ")\n", sep="")
         if (which %in% c(40:44, 50:54)) expect_error(plot(adp, which=which), "ADP object lacks bottom-tracking data")
         else if (which == 80)           expect_error(plot(adp, which=which), "ADP object lacks a 'vv' data item")
         else if (which == 81)           expect_error(plot(adp, which=which), "ADP object lacks a 'va' data item")
@@ -43,7 +42,6 @@ test_that("test all 'which' values listed in ?'plot,adp-method' on 2019 May 23",
             "bottomVelocity3", "bottomVelocity4",
             "bottomVelocity", "heaving", "soundSpeed", "velocity",
             "amplitude", "quality", "hydrography", "angles")) {
-        ## cat(file=stderr(), "plot(adp, which=\"", which, "\")\n", sep="")
         if (length(grep("bottom", which))) expect_error(plot(adp, which=which), "ADP object lacks bottom-tracking data")
         else if (which == "vertical")      expect_error(plot(adp, which=which), "ADP object lacks a 'vv' data item")
         else if (which == "vv")            expect_error(plot(adp, which=which), "ADP object lacks a 'vv' data item")
@@ -84,7 +82,7 @@ test_that("adpEnsembleAverage() produces correctly-dimensioned results", {
     expect_equal(adpAvg[["v"]][1, 1, 1], mean(adp[["v"]][1:n, 1, 1]))
     expect_equal(adpAvg[["v"]][1, 2, 1], mean(adp[["v"]][1:n, 2, 1]))
     expect_equal(adpAvg[["v"]][1, 1, 2], mean(adp[["v"]][1:n, 1, 2]))
-    ## Test leftover bins: case 1, with a leftover
+    # Test leftover bins: case 1, with a leftover
     adpAvg <- adpEnsembleAverage(adp, n=4, leftover=TRUE)
     nexpected <- 7               # have 6*4 full bins, plus 1 leftover bin
     expect_equal(length(adpAvg[["time"]]), nexpected)
@@ -93,7 +91,7 @@ test_that("adpEnsembleAverage() produces correctly-dimensioned results", {
     expect_equal(dim(adpAvg[["v"]]), dim(adpAvg[["q"]]))
     expect_equal(dim(adpAvg[["v"]]), dim(adpAvg[["a"]]))
     expect_equal(dim(adpAvg[["v"]]), dim(adpAvg[["g"]]))
-    ## Test leftover bins: case 2, with no leftover
+    # Test leftover bins: case 2, with no leftover
     adpAvg <- adpEnsembleAverage(adp, n=4)
     nexpected <- 6               # because 6*4 < 25
     expect_equal(length(adpAvg[["time"]]), nexpected)
@@ -245,11 +243,11 @@ if (file.exists(f)) {
 }
 
 test_that("three RDI reading methods (from, to, by not given)", {
-    ## https://github.com/dankelley/oce/issues/1557
+    # https://github.com/dankelley/oce/issues/1557
     adp1 <- read.oce(system.file("extdata", "adp_rdi.000", package="oce"))
     adp2 <- read.adp(system.file("extdata", "adp_rdi.000", package="oce"))
     adp3 <- read.adp.rdi(system.file("extdata", "adp_rdi.000", package="oce"))
-    ## Do arrays match?
+    # Do arrays match?
     for (item in c("v", "a", "g", "q")) {
         expect_equal(dim(adp1[[item]]), c(9, 84, 4))
         expect_equal(adp1[[item]], adp2[[item]])
@@ -258,11 +256,11 @@ test_that("three RDI reading methods (from, to, by not given)", {
 })
 
 test_that("three RDI reading methods (from given)", {
-    ## https://github.com/dankelley/oce/issues/1557
+    # https://github.com/dankelley/oce/issues/1557
     adp1 <- read.oce(system.file("extdata", "adp_rdi.000", package="oce"), from=2)
     adp2 <- read.adp(system.file("extdata", "adp_rdi.000", package="oce"), from=2)
     adp3 <- read.adp.rdi(system.file("extdata", "adp_rdi.000", package="oce"), from=2)
-    ## Do arrays match?
+    # Do arrays match?
     for (item in c("v", "a", "g", "q")) {
         expect_equal(dim(adp1[[item]]), c(8, 84, 4))
         expect_equal(adp1[[item]], adp2[[item]])
@@ -271,11 +269,11 @@ test_that("three RDI reading methods (from given)", {
 })
 
 test_that("three RDI reading methods (from and by given)", {
-    ## https://github.com/dankelley/oce/issues/1557
+    # https://github.com/dankelley/oce/issues/1557
     adp1 <- read.oce(system.file("extdata", "adp_rdi.000", package="oce"), from=2, by=2)
     adp2 <- read.adp(system.file("extdata", "adp_rdi.000", package="oce"), from=2, by=2)
     adp3 <- read.adp.rdi(system.file("extdata", "adp_rdi.000", package="oce"), from=2, by=2)
-    ## Do arrays match?
+    # Do arrays match?
     for (item in c("v", "a", "g", "q")) {
         expect_equal(dim(adp1[[item]]), c(4, 84, 4))
         expect_equal(adp1[[item]], adp2[[item]])
@@ -284,11 +282,11 @@ test_that("three RDI reading methods (from and by given)", {
 })
 
 test_that("three RDI reading methods (from, by and to given)", {
-    ## https://github.com/dankelley/oce/issues/1557
+    # https://github.com/dankelley/oce/issues/1557
     adp1 <- read.oce(system.file("extdata", "adp_rdi.000", package="oce"), from=2, by=2, to=4)
     adp2 <- read.adp(system.file("extdata", "adp_rdi.000", package="oce"), from=2, by=2, to=4)
     adp3 <- read.adp.rdi(system.file("extdata", "adp_rdi.000", package="oce"), from=2, by=2, to=4)
-    ## Do arrays match?
+    # Do arrays match?
     for (item in c("v", "a", "g", "q")) {
         expect_equal(dim(adp1[[item]]), c(2, 84, 4))
         expect_equal(adp1[[item]], adp2[[item]])

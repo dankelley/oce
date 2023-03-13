@@ -62,18 +62,15 @@ setMethod(f="plot",
     {
         oceDebug(debug, "plot.satellite(..., y=c(",
             if (missing(y)) "(missing)" else y, ", ...) {\n", sep="", unindent=1)
-        if (missing(y)) {
+        if (missing(y))
             stop("must indicate what to plot")
-        }
         lon <- x[["longitude"]]
         lat <- x[["latitude"]]
-        if (missing(asp)) {
+        if (missing(asp))
             asp <- 1/cos(pi/180*abs(mean(lat, na.rm=TRUE)))
-        }
-        if ("zlab" %in% names(list(...))) {
+        if ("zlab" %in% names(list(...)))
             imagep(lon, lat, x[[y]], asp=asp, ...)
-        } else {
+        else
             imagep(lon, lat, x[[y]], asp=asp, zlab=y, ...)
-        }
         oceDebug(debug, "} # plot.satellite()\n", unindent=1)
     })

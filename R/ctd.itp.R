@@ -26,16 +26,13 @@ read.ctd.itp <- function(file, columns=NULL,
     encoding="latin1",
     monitor=FALSE, debug=getOption("oceDebug"), processingLog, ...)
 {
-    if (missing(file)) {
+    if (missing(file))
         stop("must supply 'file'")
-    }
     if (is.character(file)) {
-        if (!file.exists(file)) {
+        if (!file.exists(file))
             stop("cannot find file '", file, "'")
-        }
-        if (0L == file.info(file)$size) {
+        if (0L == file.info(file)$size)
             stop("empty file '", file, "'")
-        }
     }
     oceDebug(debug, "read.ctd.itp() {\n", unindent=1)
     if (is.character(file)) {
@@ -59,9 +56,8 @@ read.ctd.itp <- function(file, columns=NULL,
         lines <- lines[1:(nlines-1)]
         nlines <- nlines - 1
     }
-    if (nlines < 2) {
+    if (nlines < 2)
         stop("file is too short; must have more than 2 lines")
-    }
     isProfile <- "%" != substr(lines[2], 1, 1)
     # see e.g. https://www.whoi.edu/page.do?pid=125516
     if (isProfile) {
@@ -76,9 +72,8 @@ read.ctd.itp <- function(file, columns=NULL,
         year <- d[1]
         yearday <- d[2]
         longitude <- d[3]
-        if (longitude < 0) {
+        if (longitude < 0)
             longitude <- 360 + longitude
-        }
         latitude <- d[4]
         oceDebug(debug, "station '", station, "' at ", latitude, "N, ", longitude, "E\n", sep="")
         namesLine <- grep("^%year day", lines[1:10])

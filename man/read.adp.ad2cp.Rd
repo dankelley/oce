@@ -6,21 +6,21 @@
 \usage{
 read.adp.ad2cp(
   file,
-  from = 1,
-  to = 0,
-  by = 1,
+  from = 1L,
+  to = 0L,
+  by = 1L,
   dataType = NULL,
+  dataSet = 1L,
   tz = getOption("oceTz"),
   longitude = NA,
   latitude = NA,
+  plan,
+  TOC = FALSE,
+  debug = getOption("oceDebug"),
   orientation,
   distance,
-  plan,
-  type,
-  monitor = FALSE,
-  despike = FALSE,
-  processingLog,
-  debug = getOption("oceDebug"),
+  monitor,
+  despike,
   ...
 )
 }
@@ -46,8 +46,13 @@ case, which includes both base-10 numbers and \code{raw} values, \code{dataType}
 converted to an integer that is taken to indicate the data type via ID. The
 permitted values follow the Nortek convention, a summary of which is shown
 the table at the start of the \dQuote{Details} section.  In the character
-case, it must be a string taken from that same table, or \code{"TOC"}, which
-causes a time-indexed table of contents to be returned.}
+case, it must be a string taken from that same table.}
+
+\item{dataSet}{a positive integer that indicates which of the possibly
+several data sets stored within a file is to be focussed upon.  By
+default, the first data set is chosen. Note that data sets are found
+by trying to match each text data chunk against the regular expression
+\code{"^GETCLOCKSTR,TIME="}.}
 
 \item{tz}{a character value indicating time zone. This is used in
 interpreting times stored in the file.}
@@ -55,48 +60,31 @@ interpreting times stored in the file.}
 \item{longitude, latitude}{numerical values indicating the observation
 location.}
 
-\item{orientation}{ignored by \code{\link[=read.adp.ad2cp]{read.adp.ad2cp()}}, and provided only for
-similarity to other \verb{read.adp.*} functions.}
+\item{plan}{optional integer specifying which 'plan' to focus on (see}
 
-\item{distance}{ignored by \code{\link[=read.adp.ad2cp]{read.adp.ad2cp()}}, and provided only for similarity
-to other \verb{read.adp.*} functions.}
-
-\item{plan}{optional integer specifying which 'plan' to focus on (see
-reference 1 for the meaning of 'plan').  If this is not given, it defaults to
-the most common plan in the requested subset of the data.}
-
-\item{type}{optional character value indicating the type of Nortek
-instrument.  If this is not provided, an attempt is made to infer it from the
-file header (if there is one), and \code{"Signature1000"} is used, otherwise. The
-importance of knowing the type is for inferring the slantwise beam angle,
-which is used in the conversion from beam coordinates to xyz coordinates. If
-\code{type} is provided, it must be one of \code{"Signature250"}, \code{"Signature500"}, or
-\code{"Signature1000"}; the first of these has a 20 degree slant-beam angle, while
-the others each have 20 degrees (see reference 2, section 2 on page 6). Note
-that \code{\link[=oceSetMetadata]{oceSetMetadata()}} can be used to alter the slantwise beam angle of an
-existing object, and this will alter any later conversion from beam to xyz
-coordinates.}
-
-\item{monitor}{a boolean value indicating whether to indicate the progress of
-reading the file, by using \code{\link[=txtProgressBar]{txtProgressBar()}} or otherwise.  The value of
-\code{monitor} is changed to \code{FALSE} automatically, for non-interactive sessions.}
-
-\item{despike}{ignored by \code{\link[=read.adp.ad2cp]{read.adp.ad2cp()}}, and provided only for similarity
-to other \verb{read.adp.*} functions.}
-
-\item{processingLog}{a character value that, if provided, is saved within the
-\code{processingLog} slot of the returned value.}
+\item{TOC}{a logical value.  If this is FALSE (the default) then
+the other parameters of the function are used to select data from
+the indicated \code{filename}, and an \linkS4class{adp} object is returned.
+However, if \code{TOC} is TRUE, then the number of datasets held within
+the file is returned.}
 
 \item{debug}{an integer value indicating the level of debugging.  Set to 1 to
 get a moderate amount of debugging information, from the R code only, to 2 to
 get some debugging information from the C++ code that is used to parse the
 data chunks, or to 3 for intensive debugging at both levels.}
 
-\item{\dots}{ignored.}
+\item{orientation, distance, monitor, despike}{ignored, provided only for
+calling compatibility with other functions that read \linkS4class{adp}
+files.  A warning is issued if any of these is supplied in a call
+to \code{read.adp.ad2cp()}.}
+
+\item{\dots}{ignored parameters that might be passed to \code{read.adp.ad2cp()}
+by \code{\link[=read.oce]{read.oce()}}.}
 }
 \value{
-Either an \linkS4class{adp} object with \code{metadata$fileType} equal to
-\code{"AD2CP"}, or a data table summarizing the file contents by ID.
+\code{read.adp.ad2cp()} returns either an \linkS4class{adp} object or
+the number of data sets within the file, according to the value
+of \code{TOC}.
 }
 \description{
 This function is under active development and may change without notice.  In
@@ -216,8 +204,7 @@ Other things related to ad2cp data:
 \code{\link{ad2cpCodeToName}()},
 \code{\link{ad2cpHeaderValue}()},
 \code{\link{adpAd2cpFileTrim}()},
-\code{\link{is.ad2cp}()},
-\code{\link{plotAD2CP}()}
+\code{\link{is.ad2cp}()}
 
 Other functions that read adp data: 
 \code{\link{read.adp.nortek}()},

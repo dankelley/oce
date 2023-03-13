@@ -23,20 +23,16 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     header=TRUE, longitude=NA, latitude=NA, encoding=NA, type=c("vector", "aquadopp"),
     haveAnalog1=FALSE, haveAnalog2=FALSE, debug=getOption("oceDebug"), monitor=FALSE, processingLog=NULL)
 {
-    if (missing(file)) {
+    if (missing(file))
         stop("must supply 'file'")
-    }
     if (is.character(file)) {
-        if (!file.exists(file)) {
+        if (!file.exists(file))
             stop("cannot find file '", file, "'")
-        }
-        if (0L == file.info(file)$size) {
+        if (0L == file.info(file)$size)
             stop("empty file '", file, "'")
-        }
     }
-    if (!interactive()) {
+    if (!interactive())
         monitor <- FALSE
-    }
     #   vvd=vector velocity data [p35 SIG], containing the data: pressure, vel, amp, corr (plus sensemble counter etc)
     #   vsd=velocity system data [p36 SIG], containing times, temperatures, angles, etc
     # NOTE: we interpolate from vsd to vvd, to get the final data$time, etc.
@@ -47,34 +43,28 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         longitude=", longitude, ", latitude=", latitude, ", type=\"",
         type, "\", debug=", debug, ", monitor=", monitor, ",
         processingLog=(not shown)) {\n", sep="", unindent=1)
-    if (is.numeric(by) && by < 1) {
+    if (is.numeric(by) && by < 1)
         stop("cannot handle negative 'by' values")
-    }
-    if (by != 1) {
+    if (by != 1)
         warning("'by' argument only applies to fast-scale items such as velocity; temperature, etc. are not affected")
-    }
-    if (is.numeric(from) && from < 1) {
+    if (is.numeric(from) && from < 1)
         stop("argument \"from\" must be 1 or larger")
-    }
-    if (!missing(to) && is.numeric(to)   && to   < 1) {
+    if (!missing(to) && is.numeric(to) && to < 1)
         stop("argument \"to\" must be 1 or larger")
-    }
     if (is.character(file)) {
         filename <- fullFilename(file)
         file <- file(file, "rb")
         on.exit(close(file))
     }
-    if (!inherits(file, "connection")) {
+    if (!inherits(file, "connection"))
         stop("argument `file' must be a character string or connection")
-    }
     if (!isOpen(file)) {
         filename <- "(connection)"
         open(file, "rb")
         on.exit(close(file))
     }
-    if (!header) {
+    if (!header)
         stop("header must be TRUE")
-    }
     oceDebug(debug, "  read.adv.nortek() about to read header\n")
     oceDebug(debug, "  read.adv.nortek() finished reading header\n")
     # find file length
@@ -125,9 +115,8 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     res@metadata$oceCoordinate <- header$user$originalCoordinate
     res@metadata$oceBeamUnspreaded <- FALSE
     res@metadata$comments <- header$user$comments
-    if (is.null(processingLog)) {
+    if (is.null(processingLog))
         processingLog <- paste(deparse(match.call()), sep="", collapse="")
-    }
     hitem <- processingLogItem(processingLog)
     # Find the focus time by bisection, based on "sd" (system data, containing a time).
     vsdStart <- NULL # prevent scope warning from rstudio; defined later anyway
@@ -445,25 +434,21 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     oceDebug(debug, "from=", from, "to=", to, "\n")
     # Find spanning subset, expanded a little for now
     subsetStart <- head(which(vvdStart[1] < vsdStart), 1)
-    if (subsetStart > 1) {
+    if (subsetStart > 1)
         subsetStart <- subsetStart - 1 # extend a bit (for now)
-    }
     subsetEnd <- tail(which(vsdStart < vvdStart[length(vvdStart)]), 1)
     oceDebug(debug, "first guess: subsetEnd=", subsetEnd, "\n")
-    if (subsetEnd < length(vsdStart)) {
+    if (subsetEnd < length(vsdStart))
         subsetEnd <- subsetEnd + 1
-    }
     oceDebug(debug, "try start vsdStart[subsetStart=", subsetStart, "] = ", vsdStart[subsetStart], "\n")
     oceDebug(debug, "try end   vsdStart[subsetEnd=  ", subsetEnd,   "] = ", vsdStart[subsetEnd],   "\n")
     oceDebug(debug, vectorShow(vsdStart, "before trimming, vsdStart:"))
     vsdStart <- vsdStart[seq(subsetStart, subsetEnd-1, 1)]
     oceDebug(debug, vectorShow(vsdStart, "after  trimming, vsdStart:"))
-    if (2 > length(vsdStart)) {
+    if (2 > length(vsdStart))
         stop("need at least 2 velocity-system-data chunks to determine the timing; try increasing the difference between 'from' and 'to'")
-    }
-    if (toIndex <= fromIndex) {
+    if (toIndex <= fromIndex)
         stop("no data in specified range from=", format(from), " to=", format(to))
-    }
     # we make the times *after* trimming, because this is a slow operation
     # NOTE: the ISOdatetime() call takes 60% of the entire time for this function.
     vsdTime <- ISOdatetime(2000 + bcdToInteger(buf[vsdStart+8]),  # year
@@ -599,12 +584,10 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     res@data$pitchSlow <- pitch
     res@data$rollSlow <- roll
     res@data$temperatureSlow <- temperature
-    if (haveAnalog1) {
+    if (haveAnalog1)
         res@data$analog1 <- analog1
-    }
-    if (haveAnalog2) {
+    if (haveAnalog2)
         res@data$analog2 <- analog2
-    }
     res@metadata$velocityResolution <- res@metadata$velocityScale
     res@metadata$velocityMaximum <- res@metadata$velocityScale * 2^15
     res@metadata$units$v <- list(unit=expression(m/s), scale="")

@@ -264,9 +264,8 @@ setMethod(f="initialize",
     signature="adp",
     definition=function(.Object, time, distance, v, a, q, oceCoordinate="enu", orientation="upward", ...) {
         .Object <- callNextMethod(.Object, ...)
-        if (!missing(time)) {
+        if (!missing(time))
             .Object@data$time <- time
-        }
         if (!missing(distance)) {
             .Object@data$distance <- distance
             .Object@metadata$cellSize <- tail(diff(distance), 1) # first one has blanking, perhaps
@@ -276,12 +275,10 @@ setMethod(f="initialize",
             .Object@metadata$numberOfBeams <- dim(v)[3]
             .Object@metadata$numberOfCells <- dim(v)[2]
         }
-        if (!missing(a)) {
+        if (!missing(a))
             .Object@data$a <- a
-        }
-        if (!missing(q)) {
+        if (!missing(q))
             .Object@data$q <- q
-        }
         .Object@metadata$units$v <- list(unit=expression(m/s), scale="")
         .Object@metadata$units$distance <- list(unit=expression(m), scale="")
         .Object@metadata$oceCoordinate <- oceCoordinate # FIXME: should check that it is allowed
@@ -340,23 +337,20 @@ setMethod("handleFlags", signature=c(object="adp", flags="ANY", actions="ANY", w
         # DEVELOPER 1: alter the next comment to explain your setup
         names <- names(object[["flags"]])
         for (name in names) {
-            if (is.raw(object@data[[name]])) {
+            if (is.raw(object@data[[name]]))
                 stop("use adpConvertRawToNumeric() first to convert raw values to numeric")
-            }
         }
         if (is.null(flags)) {
             flags <- defaultFlags(object)
-            if (is.null(flags)) {
+            if (is.null(flags))
                 stop("must supply 'flags', or use initializeFlagScheme() on the adp object first")
-            }
         }
         if (is.null(actions)) {
             actions <- list("NA") # DEVELOPER 2: alter this line to suit a new data class
             names(actions) <- names(flags)
         }
-        if (any(names(actions)!=names(flags))) {
+        if (any(names(actions)!=names(flags)))
             stop("names of flags and actions must match")
-        }
         res <- handleFlagsInternal(object=object, flags=flags, actions=actions, where=where, debug=debug-1L)
         oceDebug(debug, "} # handleFlags,adp-method()\n", sep="", style="bold", unindent=1)
         res
@@ -369,9 +363,8 @@ setMethod("initializeFlags",
     c(object="adp", name="ANY", value="ANY", debug="ANY"),
     function(object, name=NULL, value=NULL, debug=getOption("oceDebug")) {
         oceDebug(debug, "setFlags,adp-method name=", name, ", value=", value, "\n")
-        if (is.null(name)) {
+        if (is.null(name))
             stop("must supply 'name'")
-        }
         res <- initializeFlagsInternal(object, name, value, debug-1)
         res
     })
@@ -416,9 +409,8 @@ setMethod("initializeFlags",
 setMethod("setFlags",
     c(object="adp", name="ANY", i="ANY", value="ANY", debug="ANY"),
     function(object, name=NULL, i=NULL, value=NULL, debug=getOption("oceDebug")) {
-        if (is.null(name)) {
+        if (is.null(name))
             stop("must specify 'name'")
-        }
         setFlagsInternal(object, name, i, value, debug-1)
     })
 
@@ -447,32 +439,28 @@ setMethod(f="summary",
     signature="adp",
     definition=function(object, ...) {
         mnames <- names(object@metadata)
-        isAD2CP <- is.ad2cp(object)
+        #-isAD2CP <- is.ad2cp(object)
         cat("ADP Summary\n-----------\n\n", ...)
-        if ("filename" %in% mnames) {
+        if ("filename" %in% mnames)
             cat(paste("* Filename:      \"", object@metadata$filename, "\"\n", sep=""), ...)
-        }
-        if ("instrumentType" %in% mnames) {
+        if ("instrumentType" %in% mnames)
             cat(paste("* Instrument:    ", object@metadata$instrumentType, "\n", sep=""), ...)
-        }
-        if ("manufacturer" %in% mnames) {
+        if ("manufacturer" %in% mnames)
             cat(paste("* Manufacturer:  ", object@metadata$manufacturer, "\n", sep=""), ...)
-        }
-        if ("serialNumber" %in% mnames) {
+        if ("type" %in% mnames)
+            cat(paste("* Model:         ", object@metadata$type, "\n", sep=""), ...)
+        if ("serialNumber" %in% mnames)
             cat(paste("* Serial number: ", object@metadata$serialNumber, "\n", sep=""), ...)
-        }
-        if ("fileType" %in% mnames) {
+        if ("fileType" %in% mnames)
             cat(paste("* File type:     ", object@metadata$fileType, "\n", sep=""), ...)
-        }
-        if (isAD2CP) {
-            cat(paste("* Data type:     0x",
-                as.raw(object@metadata$dataType), "=",
-                as.integer(object@metadata$dataType), "=",
-                ad2cpCodeToName(object@metadata$dataType, prefix=FALSE), "\n", sep=""), ...)
-        }
-        if ("firmwareVersion" %in% mnames) {
+        #-if (isAD2CP) {
+        #-    cat(paste("* Data type:     0x",
+        #-        as.raw(object@metadata$dataType), "=",
+        #-        as.integer(object@metadata$dataType), "=",
+        #-        ad2cpCodeToName(object@metadata$dataType, prefix=FALSE), "\n", sep=""), ...)
+        #-}
+        if ("firmwareVersion" %in% mnames)
             cat(paste("* Firmware:      ", object@metadata$firmwareVersion, "\n", sep=""), ...)
-        }
         if ("latitude" %in% names(object@metadata)) {
             cat(paste("* Location:      ",
                 if (is.na(object@metadata$latitude)) "unknown latitude" else sprintf("%.5f N", object@metadata$latitude), ", ",
@@ -481,13 +469,13 @@ setMethod(f="summary",
                 "\n", sep=""))
         }
         v.dim <- dim(object[["v"]])
-        if (!isAD2CP) {
-            cat("* # of beams:    ", v.dim[3], "\n", sep="")
-            cat("* # profiles:    ", v.dim[1], "\n", sep="")
-            cat("* # cells:       ", v.dim[2], "\n", sep="")
-            cat("* # beams:       ", v.dim[3], "\n", sep="")
-            cat("* Cell size:     ", object[["cellSize"]], "m\n", sep="")
-        }
+        #-if (!isAD2CP) {
+        #-    cat("* # of beams:    ", v.dim[3], "\n", sep="")
+        #-    cat("* # profiles:    ", v.dim[1], "\n", sep="")
+        #-    cat("* # cells:       ", v.dim[2], "\n", sep="")
+        #-    cat("* # beams:       ", v.dim[3], "\n", sep="")
+        #-    cat("* Cell size:     ", object[["cellSize"]], "m\n", sep="")
+        #-}
         #?if ("time" %in% names(object@data)) {
         #?    cat("* Summary of times between profiles:\n")
         #?    print(summary(diff(as.numeric(object@data$time))))
@@ -561,46 +549,45 @@ setMethod(f="summary",
                 cat("* Ensemble Numbers:   ", paste(en, collapse=", "), "\n", sep="")
             }
         }
-        if (!isAD2CP) {
-            if ("numberOfCells" %in% metadataNames) {
-                dist <- object[["distance"]]
-                if (object[["numberOfCells"]] > 1) {
-                    cat(sprintf("* Cells:              %d, centered at %.3f m to %.3f m, spaced by %.3f m\n",
-                        object[["numberOfCells"]], dist[1], tail(dist, 1), diff(dist[1:2])), ...)
-                } else {
-                    cat(sprintf("* Cells:              one cell, centered at %.3f m\n", dist[1]), ...)
-                }
-            }
-            originalCoordinate <- object[["originalCoordinate"]]
-            oceCoordinate <- object[["oceCoordinate"]]
-            cat("* Coordinate system: ",
-                if (is.null(originalCoordinate)) "?" else originalCoordinate, "[originally],",
-                if (is.null(oceCoordinate)) "?" else oceCoordinate, "[presently]\n", ...)
-            numberOfBeams <- object[["numberOfBeams"]]
-            beamAngle <- object[["beamAngle"]]
-            # As of Aug 10, 2019, orientation may be a vector, so we summarize
-            # a table of values, if so.
-            orientation <- object[["orientation"]]
-            if (length(orientation) > 1) {
-                torientation <- table(orientation)
-                orientation <- paste(unlist(lapply(names(torientation),
-                    function(x) {
-                        paste(x, torientation[[x]], sep=":")
-                    })), collapse=", ")
-            }
-            beamUnspreaded <- object[["oceBeamUnspreaded"]]
-            cat("* Beams::\n")
-            if ("vv" %in% names(object@data)) {
-                cat("    Number:          ", if (is.null(numberOfBeams)) "?" else numberOfBeams, " slanted, plus 1 central\n", sep="")
-            } else {
-                cat("    Number:          ", if (is.null(numberOfBeams)) "?" else numberOfBeams, " slanted\n", sep="")
-            }
-            cat("    Slantwise Angle: ", if (is.null(beamAngle)) "?" else beamAngle, "\n", sep="")
-            if (numberOfBeams > 0) {
-                cat("    Orientation:     ", if (is.null(orientation)) "?" else orientation, "\n", sep="")
-            }
-            cat("    Unspreaded:      ", if (is.null(beamUnspreaded)) "?" else beamUnspreaded, "\n", sep="")
-        }
+        #-if (!isAD2CP) {
+        #-    if ("numberOfCells" %in% metadataNames) {
+        #-        dist <- object[["distance"]]
+        #-        if (object[["numberOfCells"]] > 1) {
+        #-            cat(sprintf("* Cells:              %d, centered at %.3f m to %.3f m, spaced by %.3f m\n",
+        #-                object[["numberOfCells"]], dist[1], tail(dist, 1), diff(dist[1:2])), ...)
+        #-        } else {
+        #-            cat(sprintf("* Cells:              one cell, centered at %.3f m\n", dist[1]), ...)
+        #-        }
+        #-    }
+        #-    originalCoordinate <- object[["originalCoordinate"]]
+        #-    oceCoordinate <- object[["oceCoordinate"]]
+        #-    cat("* Coordinate system: ",
+        #-        if (is.null(originalCoordinate)) "?" else originalCoordinate, "[originally],",
+        #-        if (is.null(oceCoordinate)) "?" else oceCoordinate, "[presently]\n", ...)
+        #-    numberOfBeams <- object[["numberOfBeams"]]
+        #-    beamAngle <- object[["beamAngle"]]
+        #-    # As of Aug 10, 2019, orientation may be a vector, so we summarize
+        #-    # a table of values, if so.
+        #-    orientation <- object[["orientation"]]
+        #-    if (length(orientation) > 1) {
+        #-        torientation <- table(orientation)
+        #-        orientation <- paste(unlist(lapply(names(torientation),
+        #-            function(x) {
+        #-                paste(x, torientation[[x]], sep=":")
+        #-            })), collapse=", ")
+        #-    }
+        #-    beamUnspreaded <- object[["oceBeamUnspreaded"]]
+        #-    cat("* Beams::\n")
+        #-    if ("vv" %in% names(object@data)) {
+        #-        cat("    Number:          ", if (is.null(numberOfBeams)) "?" else numberOfBeams, " slanted, plus 1 central\n", sep="")
+        #-    } else {
+        #-        cat("    Number:          ", if (is.null(numberOfBeams)) "?" else numberOfBeams, " slanted\n", sep="")
+        #-    }
+        #-    cat("    Slantwise Angle: ", if (is.null(beamAngle)) "?" else beamAngle, "\n", sep="")
+        #-    if (numberOfBeams > 0)
+        #-        cat("    Orientation:     ", if (is.null(orientation)) "?" else orientation, "\n", sep="")
+        #-    cat("    Unspreaded:      ", if (is.null(beamUnspreaded)) "?" else beamUnspreaded, "\n", sep="")
+        #-}
         transformationMatrix <- object[["transformationMatrix"]]
         if (!is.null(transformationMatrix) && dim(transformationMatrix)[2] >= 3) {
             digits <- 4
@@ -641,10 +628,10 @@ setMethod(f="concatenate",
     definition=function(object, ...) {
         rval <- callNextMethod() # do general work
         # Make the metadata profile count match the data array dimensions.
-        rval@metadata$numberOfSamples <- dim(rval@data$v)[1] # FIXME: handle AD2CP
+        rval@metadata$numberOfSamples <- dim(rval@data$v)[1]
         # The general method didn't know that 'distance' was special, and should
         # not be concatenated, so undo that.
-        rval@data$distance <- object@data$distance # FIXME: handle AD2CP
+        rval@data$distance <- object@data$distance
         rval
     })
 
@@ -660,17 +647,17 @@ setMethod(f="concatenate",
 #' instrument to instrument, and so are only sketched here, and in the output
 #' from `[["?"]]`.
 #'
-#' If `x` is an AD2CP object, as read by [read.adp.ad2cp()], then the general `[[`
-#' method is used, meaning that the only items that can be looked up are those
-#' produced by `names(x@metadata)` or `names(x@data)`.  This is because AD2CP
-#' objects store their contents several levels deep, and so using `i` and `j` is
-#' insufficient.  Another advantage is that this enables R completion.  For
-#' example, the user might type `x[["burst"]]$` in an interactive session, and
-#' then type TAB to see what further choices are possible, and so on, to arrive
-#' at `x[["burst"]]$AHRS$quaternions$W`, which is a fairly complicated
-#' expression to type by memory.
-#'
-#' For non-AD2CP objects, the rules are as shown next.
+#- If `x` is an AD2CP object, as read by [read.adp.ad2cp()], then the general `[[`
+#- method is used, meaning that the only items that can be looked up are those
+#- produced by `names(x@metadata)` or `names(x@data)`.  This is because AD2CP
+#- objects store their contents several levels deep, and so using `i` and `j` is
+#- insufficient.  Another advantage is that this enables R completion.  For
+#- example, the user might type `x[["burst"]]$` in an interactive session, and
+#- then type TAB to see what further choices are possible, and so on, to arrive
+#- at `x[["burst"]]$AHRS$quaternions$W`, which is a fairly complicated
+#- expression to type by memory.
+#-
+#- For non-AD2CP objects, the rules are as shown next.
 #'
 #' * If `i` is `"?"`, then the return value is a list
 #' containing four items, each of which is a character vector
@@ -713,18 +700,17 @@ setMethod(f="[[",
     signature(x="adp", i="ANY", j="ANY"),
     definition=function(x, i, j, ...) {
         # message("top: i='", i, "'")
-        if (length(i) != 1L) {
+        if (length(i) != 1L)
             stop("In [[,adp-method() : may only extract 1 item at a time.\n", call.=FALSE)
-        }
-        ISAD2CP <- is.ad2cp(x)
+        #-ISAD2CP <- is.ad2cp(x)
         # 2022-07-29 only permit level-one lookup.  It's too confusing for
         # user, otherwise.
-        if (ISAD2CP) {
-            return(callNextMethod())
-        }
+        #-if (ISAD2CP)
+        #-    return(callNextMethod())
         # message("ISAD2CP=", ISAD2CP)
         metadataDerived <- c("coordinate")
-        numberOfBeams <- if (ISAD2CP) 4 else x@metadata$numberOfBeams
+        #-numberOfBeams <- if (ISAD2CP) 4 else x@metadata$numberOfBeams
+        numberOfBeams <- x@metadata$numberOfBeams
         if (is.null(numberOfBeams)) {
             dataDerived <- c("a", "u", "q")
         } else {
@@ -740,14 +726,15 @@ setMethod(f="[[",
         }
         if (i == "distance") {
             #>message("asking for 'distance'")
-            if (ISAD2CP) {
-                # AD2CP is stored in a tricky way.
-                j <- if (missing(j)) ad2cpDefaultDataItem(x) else ad2cpDefaultDataItem(x, j)
-                res <- x@data[[j]]$blankingDistance + x@data[[j]]$cellSize*seq(1, x@data[[j]]$numberOfCells)
-            } else {
-                res <- x@data$distance
-            }
-            res
+            #-if (ISAD2CP) {
+            #-    # AD2CP is stored in a tricky way.
+            #-    j <- if (missing(j)) ad2cpDefaultDataItem(x) else ad2cpDefaultDataItem(x, j)
+            #-    res <- x@data[[j]]$blankingDistance + x@data[[j]]$cellSize*seq(1, x@data[[j]]$numberOfCells)
+            #-} else {
+            #-    res <- x@data$distance
+            #-}
+            #-res
+            return(x@data$distance)
         } else if (i %in% c("originalCoordinate", "oceCoordinate",
                 "cellSize", "blankingDistance", "orientation",
                 "beamUnspreaded", # Note: beamAngle is handled later since it is in metadata
@@ -763,103 +750,104 @@ setMethod(f="[[",
             #message("i='", i, "'")
             metadataNames <- names(x@metadata)
             #. dataNames <- names(x@data)
-            if (ISAD2CP) {
-                # AD2CP has 'burst' data records in one list, with 'average' records in another one.
-                # Permit e.g. "burst:numeric" and "burst numeric" FIXME: document this
-                returnNumeric <- FALSE # defult: leave 'raw' data as 'raw'.
-                if (missing(j)) {
-                    # message("0 a")
-                    j <- ad2cpDefaultDataItem(x)
-                    returnNumeric <- FALSE
-                    # nolint start object_usage_linter
-                    jorig <- "(missing)"
-                    # nolint end object_usage_linter
-                    # message("'[[' is defaulting to '", j, "' type of data-record, since 'j' not specified", sep="")
-                } else {
-                    jorig <- j
-                    # message("0 a. j='", j, "'")
-                    # find out if numeric or raw, and clean 'j' of that flag once it is known
-                    if (length(grep("numeric", j))) {
-                        returnNumeric <- TRUE
-                        j <- gsub("numeric", "", j)
-                        #>message("0 b. j='", j, "'")
-                    } else if (length(grep("raw", j))) {
-                        returnNumeric <- FALSE
-                        j <- gsub("raw", "", j)
-                        #>message("0 c. j='", j, "'")
-                    }
-                    j <- gsub("[ :]+", "", j) # clean spaces or colons, if any
-                    # Look up this name
-                    #>message("0 d. j='", j, "'")
-                    j <- ad2cpDefaultDataItem(x, j)
-                    #>message("0 e. j='", j, "'")
-                }
-                if (1 == length(grep("^[ ]*$", j))) {
-                    j <- "average"
-                }
-                # message("5. j = '", j, "'", sep="")
-                j <- ad2cpDefaultDataItem(x, j)
-                # message("6. i='", i, "', j='", j, "', returnNumeric=", returnNumeric)
-                res <- x@data[[j]][[i]]
-                if (returnNumeric) {
-                    # message("6-a.")
-                    dimres <- dim(res)
-                    res <- as.numeric(res)
-                    dim(res) <- dimres
-                }
-                # message("7 res=", res)
+            #- if (ISAD2CP) {
+            #-     # AD2CP has 'burst' data records in one list, with 'average' records in another one.
+            #-     # Permit e.g. "burst:numeric" and "burst numeric" FIXME: document this
+            #-     returnNumeric <- FALSE # defult: leave 'raw' data as 'raw'.
+            #-     if (missing(j)) {
+            #-         # message("0 a")
+            #-         j <- ad2cpDefaultDataItem(x)
+            #-         returnNumeric <- FALSE
+            #-         # nolint start object_usage_linter
+            #-         jorig <- "(missing)"
+            #-         # nolint end object_usage_linter
+            #-         # message("'[[' is defaulting to '", j, "' type of data-record, since 'j' not specified", sep="")
+            #-     } else {
+            #-         jorig <- j
+            #-         # message("0 a. j='", j, "'")
+            #-         # find out if numeric or raw, and clean 'j' of that flag once it is known
+            #-         if (length(grep("numeric", j))) {
+            #-             returnNumeric <- TRUE
+            #-             j <- gsub("numeric", "", j)
+            #-             #>message("0 b. j='", j, "'")
+            #-         } else if (length(grep("raw", j))) {
+            #-             returnNumeric <- FALSE
+            #-             j <- gsub("raw", "", j)
+            #-             #>message("0 c. j='", j, "'")
+            #-         }
+            #-         j <- gsub("[ :]+", "", j) # clean spaces or colons, if any
+            #-         # Look up this name
+            #-         #>message("0 d. j='", j, "'")
+            #-         j <- ad2cpDefaultDataItem(x, j)
+            #-         #>message("0 e. j='", j, "'")
+            #-     }
+            #-     if (1 == length(grep("^[ ]*$", j)))
+            #-         j <- "average"
+            #-     # message("5. j = '", j, "'", sep="")
+            #-     j <- ad2cpDefaultDataItem(x, j)
+            #-     # message("6. i='", i, "', j='", j, "', returnNumeric=", returnNumeric)
+            #-     res <- x@data[[j]][[i]]
+            #-     if (returnNumeric) {
+            #-         # message("6-a.")
+            #-         dimres <- dim(res)
+            #-         res <- as.numeric(res)
+            #-         dim(res) <- dimres
+            #-     }
+            #-     # message("7 res=", res)
+            #-     res
+            #-} else {
+            if (!missing(j) && grepl("numeric", j)) {
+                res <- x@data[[i]]
+                dim <- dim(res)
+                res <- as.numeric(res)
+                dim(res) <- dim
                 res
             } else {
-                if (!missing(j) && 1 == length(grep("numeric", j))) {
-                    res <- x@data[[i]]
-                    dim <- dim(res)
-                    res <- as.numeric(res)
-                    dim(res) <- dim
-                    res
-                } else {
-                    if (i %in% metadataNames) x@metadata[[i]] else x@data[[i]]
-                }
+                if (i %in% metadataNames) x@metadata[[i]] else x@data[[i]]
             }
+            #-}
         } else if (i %in% c("numberOfBeams", "numberOfCells")) {
             # message("asking for 'numberOfBeams' or 'numberOfCells'")
             # message("AA i=", i)
-            if (ISAD2CP) {
-                j <- if (missing(j)) ad2cpDefaultDataItem(x) else ad2cpDefaultDataItem(x, j)
-                x@data[[j]][[i]]
-            } else {
-                x@metadata[[i]]
-            }
+            #-if (ISAD2CP) {
+            #-    j <- if (missing(j)) ad2cpDefaultDataItem(x) else ad2cpDefaultDataItem(x, j)
+            #-    x@data[[j]][[i]]
+            #-} else {
+            #-    x@metadata[[i]]
+            #-}
+            x@metadata[[i]]
         } else if (i == "transformationMatrix") {
             #>message("0000")
-            if (ISAD2CP) {
-                # message("AD2CP  tm...")
-                theta <- x@metadata$beamAngle * atan2(1, 1) / 45
-                # The creation of a transformation matrix is covered in Section 5.3 of
-                # RD Instruments. ADCP Coordinate Transformation. RD Instruments, July 1998.
-                TMc <- 1 # for convex (diverging) beam setup; use -1 for concave
-                TMa <- 1 / (2 * sin(theta))
-                TMb <- 1 / (4 * cos(theta))
-                TMd <- TMa / sqrt(2)
-                rbind(
-                    c(TMc*TMa, -TMc*TMa,        0,       0),
-                    c(0,              0, -TMc*TMa, TMc*TMa),
-                    c(TMb,          TMb,      TMb,     TMb),
-                    c(TMd,          TMd,     -TMd,    -TMd))
-            } else {
-                # message("normal tm...")
-                x@metadata$transformationMatrix
-            }
+            #-if (ISAD2CP) {
+            #-    # message("AD2CP  tm...")
+            #-    theta <- x@metadata$beamAngle * atan2(1, 1) / 45
+            #-    # The creation of a transformation matrix is covered in Section 5.3 of
+            #-    # RD Instruments. ADCP Coordinate Transformation. RD Instruments, July 1998.
+            #-    TMc <- 1 # for convex (diverging) beam setup; use -1 for concave
+            #-    TMa <- 1 / (2 * sin(theta))
+            #-    TMb <- 1 / (4 * cos(theta))
+            #-    TMd <- TMa / sqrt(2)
+            #-    rbind(
+            #-        c(TMc*TMa, -TMc*TMa,        0,       0),
+            #-        c(0,              0, -TMc*TMa, TMc*TMa),
+            #-        c(TMb,          TMb,      TMb,     TMb),
+            #-        c(TMd,          TMd,     -TMd,    -TMd))
+            #-} else {
+            #-    # message("normal tm...")
+            #-    x@metadata$transformationMatrix
+            #-}
+            x@metadata$transformationMatrix
         } else if (i == "recordTypes") {
             # message("asking for 'recordTypes'")
             # FIXME: _AD2CPrecordtype_ update if new record types added to read.adp.ad2cp()
-            if (ISAD2CP) {
-                allowed <- c("burst", "average", "bottomTrack", "interleavedBurst", "burstAltimeter",
-                    "DVLBottomTrack", "echosounder", "waterTrack", "altimeter", "averageAltimeter", "text")
-                res <- allowed[allowed %in% names(x@data)]
-            } else {
-                res <- "depends on the data setup"
-            }
-            res
+            #-if (ISAD2CP) {
+            #-    allowed <- c("burst", "average", "bottomTrack", "interleavedBurst", "burstAltimeter",
+            #-        "DVLBottomTrack", "echosounder", "waterTrack", "altimeter", "averageAltimeter", "text")
+            #-    res <- allowed[allowed %in% names(x@data)]
+            #-} else {
+            #-    res <- "depends on the data setup"
+            #-}
+            "depends on the data setup"
         } else if (i == "va") {
             # message("asking for 'va'")
             if (!"va" %in% names(x@data)) {
@@ -1001,12 +989,12 @@ setValidity("adp",
 #' carry out combined operations, e.g.
 #' `subset(subset(adp,distance<d0), time<t0)`
 #'
-#' For the special
-#' case of AD2CP data (see [read.adp.ad2cp()]), it is possible to subset
-#' to the "average" data records with `subset="average"`, to the
-#' "burst" records with `subset="burst"`, or to the "interleavedBurst"
-#' with `subset="interleavedBurst"`; note that no warning is issued,
-#' if this leaves an object with no useful data.
+#- For the special
+#- case of AD2CP data (see [read.adp.ad2cp()]), it is possible to subset
+#- to the "average" data records with `subset="average"`, to the
+#- "burst" records with `subset="burst"`, or to the "interleavedBurst"
+#- with `subset="interleavedBurst"`; note that no warning is issued,
+#- if this leaves an object with no useful data.
 #'
 #' @param x an [adp-class] object.
 #'
@@ -1040,27 +1028,22 @@ setMethod(f="subset",
         res <- x
         dots <- list(...)
         debug <- getOption("oceDebug")
-        if (length(dots) && ("debug" %in% names(dots))) {
+        if (length(dots) && ("debug" %in% names(dots)))
             debug <- dots$debug
-        }
-        if (missing(subset)) {
+        if (missing(subset))
             stop("must give 'subset'")
-        }
         if (grepl("time", subsetString) || grepl("ensembleNumber", subsetString)) {
             if (grepl("time", subsetString)) {
                 oceDebug(debug, "subsetting an adp by time\n")
-                if (length(grep("distance", subsetString))) {
+                if (length(grep("distance", subsetString)))
                     stop("cannot subset by both time and distance; split into multiple calls")
-                }
                 keep <- eval(expr=substitute(expr=subset, env=environment()), envir=x@data, enclos=parent.frame(2))
             } else if (grepl("ensembleNumber", subsetString)) {
                 oceDebug(debug, "subsetting an adp by ensembleNumber\n")
-                if (length(grep("distance", subsetString))) {
+                if (length(grep("distance", subsetString)))
                     stop("cannot subset by both ensembleNumber and distance; split into multiple calls")
-                }
-                if (!"ensembleNumber" %in% names(x@metadata)) {
+                if (!"ensembleNumber" %in% names(x@metadata))
                     stop("cannot subset by ensembleNumber because this adp object lacks that information")
-                }
                 # FIXME: in other places, e.g. AllClass.R:350, we have parent.frame().  What is right?
                 keep <- eval(expr=substitute(expr=subset, env=environment()), envir=x@metadata, enclos=parent.frame(2))
             } else {
@@ -1075,23 +1058,20 @@ setMethod(f="subset",
             }
             oceDebug(debug, vectorShow(keep, "keeping bins:"))
             oceDebug(debug, "number of kept bins:", sum(keep), "\n")
-            if (sum(keep) < 2) {
+            if (sum(keep) < 2)
                 stop("must keep at least 2 profiles")
-            }
             res <- x
             # Update those metadata that have one value per ensemble
             mnames <- names(x@metadata)
             for (name in c("ensembleNumber", "orientation")) {
-                if (name %in% mnames) {
+                if (name %in% mnames)
                     res@metadata[[name]] <- x@metadata[[name]][keep]
-                }
             }
             # FIXME: check to see if we handling slow timescale data properly
             for (name in names(x@data)) {
                 if (length(grep("Dia$", name))) {
-                    if ("distance" == name) {
+                    if ("distance" == name)
                         next
-                    }
                     if (name == "timeDia" || is.vector(x@data[[name]])) {
                         oceDebug(debug, "subsetting x@data$", name, ", which is a vector\n", sep="")
                         res@data[[name]] <- x@data[[name]][keepDia]
@@ -1127,9 +1107,8 @@ setMethod(f="subset",
             }
         } else if (length(grep("distance", subsetString))) {
             oceDebug(debug, "subsetting an adp by distance\n")
-            if (grepl("time|pressure", subsetString)) {
+            if (grepl("time|pressure", subsetString))
                 stop("cannot subset by both bin (e.g. distance) and profile (i.e. time or pressure)")
-            }
             # keep <- eval(substitute(subset), x@data, parent.frame(2))
             keep <- eval(expr=substitute(expr=subset, env=environment()), envir=x@data, enclos=parent.frame(2))
             oceDebug(debug, "subset() will retain", sum(keep), "of", length(keep), "bins in slant beams\n")
@@ -1144,15 +1123,13 @@ setMethod(f="subset",
                 stop("must keep at least 2 bins")
             }
             res <- x
-            res@data$distance <- x@data$distance[keep] # FIXME: broken for AD2CP
+            res@data$distance <- x@data$distance[keep]
             res@metadata$numberOfCells <- sum(keep)
-            if (haveVerticalBeam) {
+            if (haveVerticalBeam)
                 res@data$vdistance <- x@data$vdistance[vkeep]
-            }
             for (name in names(x@data)) {
-                if (name == "time") {
+                if (name == "time")
                     next
-                }
                 # Handle vertical beam.  These items are 2D fields, index1=profile index2=cell. We
                 # use vkeep, based on vdistance, for the subset.
                 if (haveVerticalBeam && (name %in% c("va", "vg", "vq", "vv"))) {
@@ -1177,9 +1154,8 @@ setMethod(f="subset",
             }
         } else if (grepl("pressure", subsetString)) {
             # FIXME: should subset flags (https://github.com/dankelley/oce/issues/1837#issuecomment-862293585)
-            if (grepl("distance", subsetString)) {
+            if (grepl("distance", subsetString))
                 stop("cannot subset by both profile (e.g. time or pressure) and bin (e.g. distance)")
-            }
             # keep <- eval(substitute(subset), x@data, parent.frame(2))
             keep <- eval(expr=substitute(expr=subset, env=environment()), envir=x@data, enclos=parent.frame(2))
             oceDebug(debug, "subset() will retain", sum(keep), "of", length(keep), "profiles\n")
@@ -1234,8 +1210,8 @@ setMethod(f="subset",
             stop("subset should be by \"distance\", \"time\", \"average\", \"burst\", or \"interleavedBurst\"; ",
                 subsetString, "\" is not permitted\"")
         }
-        res@metadata$numberOfSamples <- dim(res@data$v)[1] # FIXME: handle AD2CP
-        res@metadata$numberOfCells <- dim(res@data$v)[2] # FIXME: handle AD2CP
+        res@metadata$numberOfSamples <- dim(res@data$v)[1]
+        res@metadata$numberOfCells <- dim(res@data$v)[2]
         res@processingLog <- processingLogAppend(res@processingLog, paste("subset.adp(x, subset=", subsetString, ")", sep=""))
         res
     })
@@ -1284,12 +1260,12 @@ as.adp <- function(time, distance, v, a=NULL, q=NULL, orientation="upward", coor
 {
     res <- new("adp", time=time, distance=distance, v=v, a=a, q=q)
     if (!missing(v)) {
-        res@metadata$numberOfBeams <- dim(v)[3] # FIXME: handle AD2CP
-        res@metadata$numberOfCells <- dim(v)[2] # FIXME: handle AD2CP
+        res@metadata$numberOfBeams <- dim(v)[3]
+        res@metadata$numberOfCells <- dim(v)[2]
     }
-    res@metadata$oceCoordinate <- coordinate # FIXME: handle AD2CP
-    res@metadata$orientation <- orientation # FIXME: handle AD2CP
-    res@metadata$cellSize <- if (missing(distance)) NA else diff(distance[1:2]) # FIXME: handle AD2CP
+    res@metadata$oceCoordinate <- coordinate
+    res@metadata$orientation <- orientation
+    res@metadata$cellSize <- if (missing(distance)) NA else diff(distance[1:2])
     res@metadata$units <- list(v="m/s", distance="m")
     res
 }
@@ -1415,20 +1391,16 @@ read.adp <- function(file, from, to, by, tz=getOption("oceTz"), longitude=NA, la
                      manufacturer, encoding=NA, monitor=FALSE, despike=FALSE,
                      processingLog, debug=getOption("oceDebug"), ...)
 {
-    if (missing(file)) {
+    if (missing(file))
         stop("must supply 'file'")
-    }
     if (is.character(file)) {
-        if (!file.exists(file)) {
+        if (!file.exists(file))
             stop("cannot find file '", file, "'")
-        }
-        if (0L == file.info(file)$size) {
+        if (0L == file.info(file)$size)
             stop("empty file '", file, "'")
-        }
     }
-    if (!interactive()) {
+    if (!interactive())
         monitor <- FALSE
-    }
     fromGiven <- !missing(from) # FIXME document THIS
     toGiven <- !missing(to) # FIXME document THIS
     byGiven <- !missing(by) # FIXME document THIS
@@ -1438,15 +1410,12 @@ read.adp <- function(file, from, to, by, tz=getOption("oceTz"), longitude=NA, la
         ", by=", if (byGiven) format(by) else "(missing)",
         ", manufacturer=\"", if (missing(manufacturer)) "(missing)" else manufacturer, "\", ...) {\n",
         sep="", unindent=1)
-    if (!fromGiven) {
+    if (!fromGiven)
         from <- 1
-    }
-    if (!byGiven) {
+    if (!byGiven)
         by <- 1
-    }
-    if (!toGiven) {
+    if (!toGiven)
         to <- 0
-    }
     if (missing(manufacturer)) {
         oceDebug(debug, "using read.oce() since 'manufacturer' argument is missing\n")
         res <- read.oce(file=file, from=from, to=to, by=by, tz=tz,
@@ -1484,10 +1453,11 @@ read.adp <- function(file, from, to, by, tz=getOption("oceTz"), longitude=NA, la
 
 #' Plot an adp Object
 #'
-#' Create a summary plot of data measured by an acoustic doppler profiler. Note
-#' that if the object is of the AD2CP variety, the present function works
-#' by calling [plotAD2CP()], and that means that `which` is handled very
-#' differently than is the case here.
+#' Create a summary plot of data measured by an acoustic Doppler profiler.
+#- Note
+#- that if the object is of the AD2CP variety, the present function works
+#- by calling [plotAD2CP()], and that means that `which` is handled very
+#- differently than is the case here.
 #'
 #' The plot may have one or more panels, with the content being controlled by
 #' the `which` argument.
@@ -1610,8 +1580,27 @@ read.adp <- function(file, from, to, by, tz=getOption("oceTz"), longitude=NA, la
 #' * `which=55` (or `"heaving"`) for time-integrated,
 #' depth-averaged, vertical velocity, i.e. a time series of heaving.
 #'
+#' * `which=60` (or `"map"`) for a map.
+#'
 #' * `which=100` (or `"soundSpeed"`) for a time series of sound speed.
 #'
+#' * `which=200` (or `"accelerometerx"`) for a time-series of the x component of
+#' the accelerometer reading.
+#'
+#' * `which=201` (or `"accelerometery"`) for a time-series of the y component of
+#' the accelerometer reading.
+#'
+#' * `which=202` (or `"accelerometerz"`) for a time-series of the z component of
+#' the accelerometer reading.
+#'
+#' * `which=210` (or `"magnetometerx"`) for a time-series of the x component of
+#' the magnetometer reading.
+#'
+#' * `which=211` (or `"magnetometery"`) for a time-series of the y component of
+#' the magnetometer reading.
+#'
+#' * `which=212` (or `"magnetometerz"`) for a time-series of the z component of
+#' the magnetometer reading.
 #'
 #' In addition to the above, the following shortcuts are defined:
 #'
@@ -1630,6 +1619,9 @@ read.adp <- function(file, from, to, by, tz=getOption("oceTz"), longitude=NA, la
 #'
 #' * `which="angles"` equivalent to `which=16:18` for
 #' heading, pitch and roll.
+#'
+#' * `which="accelerometer"` to plot a 3-panel timeseries
+#' of acceleration, equivalent to `which=110:102`.
 #'
 #' The color scheme for image plots (`which` in 1:12) is provided by the
 #' `col` argument, which is passed to [image()] to do the actual
@@ -1664,11 +1656,12 @@ read.adp <- function(file, from, to, by, tz=getOption("oceTz"), longitude=NA, la
 #' @param j optional string specifying a sub-class of `which`. For
 #' Nortek Aquadopp profilers, this may either be `"default"` (or missing)
 #' to get the main signal, or `"diagnostic"` to get a diagnostic
-#' signal. For Nortek AD2CP profiles, this may be any one of
-#' `"average"` (or missing) for averaged data, `"burst"`
-#' for burst data, or `"interleaved burst"` for interleaved burst data;
-#' more data types are provided by that instrument, and may be added here
-#' at some future time.
+#' signal.
+#- For Nortek AD2CP profiles, this may be any one of
+#- `"average"` (or missing) for averaged data, `"burst"`
+#- for burst data, or `"interleaved burst"` for interleaved burst data;
+#- more data types are provided by that instrument, and may be added here
+#- at some future time.
 #'
 #' @param col optional indication of color(s) to use.  If not provided, the
 #' default for images is `oce.colorsPalette(128,1)`, and for lines and
@@ -1800,28 +1793,28 @@ read.adp <- function(file, from, to, by, tz=getOption("oceTz"), longitude=NA, la
 setMethod(f="plot",
     signature=signature("adp"),
     definition=function(x, which, j,
-                        col, breaks, zlim,
-                        titles,
-                        lwd=par("lwd"),
-                        type="l",
-                        ytype=c("profile", "distance"),
-                        drawTimeRange=getOption("oceDrawTimeRange"),
-                        useSmoothScatter,
-                        missingColor="gray",
-                        mgp=getOption("oceMgp"),
-                        mar=c(mgp[1]+1.5, mgp[1]+1.5, 1.5, 1.5),
-                        mai.palette=rep(0, 4),
-                        tformat,
-                        marginsAsImage=FALSE,
-                        cex=par("cex"), cex.axis=par("cex.axis"), cex.lab=par("cex.lab"),
-                        xlim, ylim,
-                        control,
-                        useLayout=FALSE,
-                        coastline="coastlineWorld", span=300,
-                        main="",
-                        grid=FALSE, grid.col="darkgray", grid.lty="dotted", grid.lwd=1,
-                        debug=getOption("oceDebug"),
-                        ...)
+        col, breaks, zlim,
+        titles,
+        lwd=par("lwd"),
+        type="l",
+        ytype=c("profile", "distance"),
+        drawTimeRange=getOption("oceDrawTimeRange"),
+        useSmoothScatter,
+        missingColor="gray",
+        mgp=getOption("oceMgp"),
+        mar=c(mgp[1]+1.5, mgp[1]+1.5, 1.5, 1.5),
+        mai.palette=rep(0, 4),
+        tformat,
+        marginsAsImage=FALSE,
+        cex=par("cex"), cex.axis=par("cex.axis"), cex.lab=par("cex.lab"),
+        xlim, ylim,
+        control,
+        useLayout=FALSE,
+        coastline="coastlineWorld", span=300,
+        main="",
+        grid=FALSE, grid.col="darkgray", grid.lty="dotted", grid.lwd=1,
+        debug=getOption("oceDebug"),
+        ...)
     {
         debug <- max(0, min(debug, 4))
         theCall <- gsub(" = [^,)]*", "", deparse(expr=match.call()))
@@ -1829,32 +1822,27 @@ setMethod(f="plot",
         theCall <- gsub("[ ]+", " ", theCall)
         theCall <- gsub(".local", "plot,adp-method", theCall)
         oceDebug(debug, theCall, " {\n", style="bold", sep="", unindent=1)
-        if (is.ad2cp(x)) {
-            return(plotAD2CP(x, if (!missing(which)) which else NULL, col=col, cex=cex, lwd=lwd, type=type, ...))
-        }
+        #if (is.ad2cp(x))
+        #    return(plotAD2CP(x, if (!missing(which)) which else NULL, col=col, cex=cex, lwd=lwd, type=type, ...))
         dots <- list(...)
         dotsNames <- names(dots)
         # Catch some errors users might make
-        if ("colormap" %in% dotsNames) {
+        if ("colormap" %in% dotsNames)
             warning("In plot,adp-method() : \"colormap\" is handled by this function\n", call.=FALSE)
-        }
         # oceDebug(debug, "par(mar)=", paste(par('mar'), collapse=" "), "\n")
         # oceDebug(debug, "par(mai)=", paste(par('mai'), collapse=" "), "\n")
         # oceDebug(debug, "par(mfg)=", paste(par('mfg'), collapse=" "), "\n")
         # oceDebug(debug, "mai.palette=", paste(mai.palette, collapse=" "), "\n")
         instrumentType <- x[["instrumentType"]]
-        if (is.null(instrumentType)) {
+        if (is.null(instrumentType))
             instrumentType <- "" # simplifies later checks
-        }
         oceDebug(debug, "instrumentType=\"", instrumentType, "\"\n", sep="")
         fileType <- x[["fileType"]]
-        if (is.null(fileType)) {
+        if (is.null(fileType))
             fileType <- ""       # simplifies later checks
-        }
         # interpret mode, j
-        if (missing(j)) {
+        if (missing(j))
             j <- ""
-        }
         if (instrumentType == "aquadopp") {
             if (!missing(j) && j == "diagnostic") {
                 if (x[["numberOfCells"]] != 1) {
@@ -1870,27 +1858,23 @@ setMethod(f="plot",
         }
         if (missing(which)) {
             # Note that j is ignored for e.g. RDI adp.
-            which <- seq_len(dim(x[["v", j]])[3])
+            which <- seq_len(dim(x[["v"]])[3])
             oceDebug(debug, "setting which=c(", paste(which, collapse=","), "), based on the data\n", sep="")
         }
         colGiven <- !missing(col)
         breaksGiven <- !missing(breaks)
         zlimGiven <- !missing(zlim)
-        if (breaksGiven && zlimGiven) {
+        if (breaksGiven && zlimGiven)
             stop("cannot supply both zlim and breaks")
-        }
         ylimGiven <- !missing(ylim)
         oceDebug(debug, "ylimGiven=", ylimGiven, "\n")
         res <- list(xat=NULL, yat=NULL)
-        if (ylimGiven) {
+        if (ylimGiven)
             oceDebug(debug, "ylim=c(", paste(ylim, collapse=", "), ")\n")
-        }
-        if (!inherits(x, "adp")) {
+        if (!inherits(x, "adp"))
             stop("method is only for objects of class '", "adp", "'")
-        }
-        if (!(is.null(x@metadata$haveActualData) || x@metadata$haveActualData)) {
+        if (!(is.null(x@metadata$haveActualData) || x@metadata$haveActualData))
             stop("In plot,adp-method() : there are no profiles in this dataset", call.=FALSE)
-        }
         opar <- par(no.readonly = TRUE)
         nw <- length(which)
         fac <- if (nw < 3) 1 else 0.66 # try to emulate par(mfrow)
@@ -1906,7 +1890,8 @@ setMethod(f="plot",
         numberOfCells <- x[["numberOfCells", j]]
         oceDebug(debug, "numberOfCells=", numberOfCells, " (note: j=\"", j, "\")\n", sep="")
         if (nw == 1) {
-            pm <- pmatch(which, c("velocity", "amplitude", "quality", "hydrography", "angles"))
+            pm <- pmatch(which, c("velocity", "amplitude", "quality", "hydrography", "angles",
+                    "accelerometer", "magnetometer"))
             # FIXME: decide what to do about 5-beam ADCPs
             if (!is.na(pm)) {
                 if (pm == 1) {
@@ -1919,16 +1904,19 @@ setMethod(f="plot",
                     which <- 14:15
                 } else if (pm == 5) {
                     which <- 16:18
+                } else if (pm == 6) { # accelerometer
+                    which <- 200:202
+                } else if (pm == 7) { # magnetometer
+                    which <- 210:212
                 }
                 nw <- length(which)
             }
         }
-        if (!missing(titles) && length(titles) != nw) {
+        #message(vectorShow(which))
+        if (!missing(titles) && length(titles) != nw)
             stop("length of 'titles' must equal length of 'which'")
-        }
-        if (nw > 1) {
+        if (nw > 1)
             on.exit(par(opar))
-        }
         if (is.numeric(which)) {
             # nolint start object_usage_linter
             whichFraction <- which - floor(which)
@@ -1997,7 +1985,7 @@ setMethod(f="plot",
         # oceDebug(debug, "later on in plot,adp-method:\n")
         # oceDebug(debug, "  par(mar)=", paste(par('mar'), collapse=" "), "\n")
         # oceDebug(debug, "  par(mai)=", paste(par('mai'), collapse=" "), "\n")
-        oceDebug(debug, "which:", which, "\n")
+        oceDebug(debug, "which: ", paste(which, collapse=","), "\n")
         whichOrig <- which
         which <- oce.pmatch(which,
             list(u1=1, u2=2, u3=3, u4=4,
@@ -2027,14 +2015,20 @@ setMethod(f="plot",
                 hydrography=14:15,
                 angles=16:18,
                 vertical=80:81,
-                vv=80, va=81, vq=82, vg=83))
+                vv=80, va=81, vq=82, vg=83,
+                accelerationx=200,
+                accelerationy=201,
+                accelerationz=202,
+                magnetometerx=210,
+                magnetometery=211,
+                magnetometerz=212
+                ))
         nw <- length(which) # may be longer with e.g. which='velocity'
-        if (any(is.na(which))) {
+        if (any(is.na(which)))
             stop("plot,adp-method(): unrecognized 'which' code: ", paste(whichOrig[is.na(which)], collapse=" "), call.=FALSE)
-        }
-        oceDebug(debug, "which:", which, "(after conversion to numerical codes)\n")
+        oceDebug(debug, "which:", paste(which, collapse=","), "(after conversion to numerical codes)\n")
         images <- c(1:12, 70:73, 80:83)
-        timeseries <- c(13:22, 40:44, 50:54, 55, 100)
+        timeseries <- c(13:22, 40:44, 50:54, 55, 100, 200:202, 210:212)
         spatial <- 23:27
         #speed <- 28
         tt <- x[["time", j]]
@@ -2051,9 +2045,8 @@ setMethod(f="plot",
         }
         # oceDebug(debug, "useLayout=", useLayout, "\n")
         showBottom <- ("bottomRange" %in% names(x@data)) && !missing(control) && !is.null(control["drawBottom"])
-        if (showBottom) {
+        if (showBottom)
             bottom <- apply(x@data$bottomRange, 1, mean, na.rm=TRUE)
-        }
         oceDebug(debug, "showBottom=", showBottom, "\n")
         oceDebug(debug, "cex=", cex, ", par('cex')=", par("cex"), "\n")
         if (useLayout) {
@@ -2158,8 +2151,8 @@ setMethod(f="plot",
                         zlab <- c(expression(aDia[1]), expression(a[2]), expression(aDia[3]), expression(aDia[4]))[which[w]-4]
                     } else {
                         oceDebug(debug, "an amplitude component image/timeseries\n")
-                        a <- x[["a", paste(j, "numeric")]]
-                        z <- a[, , which[w]-4]
+                        a <- x[["a"]]
+                        z <- oce:::asNumeric(a[, , which[w]-4])
                         dim(z) <- dim(a)[1:2]
                         oceDebug(debug, "accessed data, of dim=", paste(dim(z), collapse="x"), "\n")
                         #OLD dim(z) <- dim(x@data$a)[1:2] # FIXME: why was this here?
@@ -2310,7 +2303,7 @@ setMethod(f="plot",
                                 ...)
                         } else {
                             oceDebug(debug, "about to call imagep() with time[1]=", format(tt[[1]], "%Y-%m-%d %H:%M:%S"), "\n")
-                            ats <- imagep(x=tt, y=x[["distance", j]], z=z,
+                            ats <- imagep(x=tt, y=x[["distance", j]], z,
                                 zlim=zlim,
                                 flipy=flipy,
                                 ylim=if (ylimGiven) ylim[w, ] else range(x[["distance", j]], na.rm=TRUE),
@@ -2340,9 +2333,8 @@ setMethod(f="plot",
                                 debug=debug-1,
                                 ...)
                         }
-                        if (showBottom) {
+                        if (showBottom)
                             lines(x[["time", j]], bottom)
-                        }
                     } else {
                         col <- if (colGiven) rep(col, length.out=nw) else rep("black", length.out=nw)
                         time  <- if (j== "diagnostic") x@data$timeDia else x[["time"]]
@@ -2371,7 +2363,7 @@ setMethod(f="plot",
                 oceDebug(debug, "graph ", w, " is a timeseries\n", sep="")
                 #par(mgp=mgp, mar=mar, cex=cex)
                 tlim <- range(x[["time", j]])
-                if (which[w] == 13) {
+                if (which[w] == 13) { # salinity time-series
                     oceDebug(debug, "which[", w, "] == 13 (salinity)\n", sep="")
                     if (haveTimeImages) drawPalette(debug=debug-1)
                     ats <- oce.plot.ts(x[["time", j]], x[["salinity", j]],
@@ -2763,6 +2755,60 @@ setMethod(f="plot",
                         stop("In plot,adp-method() : ADP object lacks bottom-tracking data, so which=50:54 ",
                             "and which=\"bottomVelocity[*]\" cannot work", call.=FALSE)
                     }
+                } else if (which[w] == 200) { # acc x
+                    oceDebug(debug, "which[", w, "] (accelerometer x)\n", sep="")
+                    ats <- oce.plot.ts(x@data$time, x@data$accelerometer[, 1],
+                        xlim=if (xlimGiven) xlim[w, ] else tlim,
+                        ylim=if (ylimGiven) ylim[w, ],
+                        xaxs="i", col=col[w], lwd=lwd[w], cex=1, cex.axis=1, cex.lab=1,
+                        main=main[w], ylab="Accelerometer x", type=type, mgp=mgp,
+                        mar=omar, drawTimeRange=drawTimeRange, tformat=tformat,
+                        debug=debug-1)
+                } else if (which[w] == 201) { # acc y
+                    oceDebug(debug, "which[", w, "] (accelerometer y)\n", sep="")
+                    ats <- oce.plot.ts(x@data$time, x@data$accelerometer[, 2],
+                        xlim=if (xlimGiven) xlim[w, ] else tlim,
+                        ylim=if (ylimGiven) ylim[w, ],
+                        xaxs="i", col=col[w], lwd=lwd[w], cex=1, cex.axis=1, cex.lab=1,
+                        main=main[w], ylab="Accelerometer y", type=type, mgp=mgp,
+                        mar=omar, drawTimeRange=drawTimeRange, tformat=tformat,
+                        debug=debug-1)
+                } else if (which[w] == 202) { # acc z
+                    oceDebug(debug, "which[", w, "] (accelerometer z)\n", sep="")
+                    ats <- oce.plot.ts(x@data$time, x@data$accelerometer[, 3],
+                        xlim=if (xlimGiven) xlim[w, ] else tlim,
+                        ylim=if (ylimGiven) ylim[w, ],
+                        xaxs="i", col=col[w], lwd=lwd[w], cex=1, cex.axis=1, cex.lab=1,
+                        main=main[w], ylab="Accelerometer z", type=type, mgp=mgp,
+                        mar=omar, drawTimeRange=drawTimeRange, tformat=tformat,
+                        debug=debug-1)
+                } else if (which[w] == 210) { # mag x
+                    oceDebug(debug, "which[", w, "] (magnetometer z)\n", sep="")
+                    ats <- oce.plot.ts(x@data$time, x@data$magnetometer[, 1],
+                        xlim=if (xlimGiven) xlim[w, ] else tlim,
+                        ylim=if (ylimGiven) ylim[w, ],
+                        xaxs="i", col=col[w], lwd=lwd[w], cex=1, cex.axis=1, cex.lab=1,
+                        main=main[w], ylab="Magnetometer x", type=type, mgp=mgp,
+                        mar=omar, drawTimeRange=drawTimeRange, tformat=tformat,
+                        debug=debug-1)
+                } else if (which[w] == 211) { # mag y
+                    oceDebug(debug, "which[", w, "] (magnetometer y)\n", sep="")
+                    ats <- oce.plot.ts(x@data$time, x@data$magnetometer[, 2],
+                        xlim=if (xlimGiven) xlim[w, ] else tlim,
+                        ylim=if (ylimGiven) ylim[w, ],
+                        xaxs="i", col=col[w], lwd=lwd[w], cex=1, cex.axis=1, cex.lab=1,
+                        main=main[w], ylab="Magnetometer y", type=type, mgp=mgp,
+                        mar=omar, drawTimeRange=drawTimeRange, tformat=tformat,
+                        debug=debug-1)
+                } else if (which[w] == 212) { # mag z
+                    oceDebug(debug, "which[", w, "] (magnetometer z)\n", sep="")
+                    ats <- oce.plot.ts(x@data$time, x@data$magnetometer[, 3],
+                        xlim=if (xlimGiven) xlim[w, ] else tlim,
+                        ylim=if (ylimGiven) ylim[w, ],
+                        xaxs="i", col=col[w], lwd=lwd[w], cex=1, cex.axis=1, cex.lab=1,
+                        main=main[w], ylab="Magnetometer z", type=type, mgp=mgp,
+                        mar=omar, drawTimeRange=drawTimeRange, tformat=tformat,
+                        debug=debug-1)
                 }
                 # FIXME delete the next block, after testing.
                 if (marginsAsImage && useLayout)  {
@@ -2953,7 +2999,7 @@ setMethod(f="plot",
                     }
                 }
             } else if (which[w] == 60) {
-                oceDebug(debug, "draw(adp, ...) of type MAP\n")
+                oceDebug(debug, "draw(adp, ...) of type map\n")
                 # get coastline file
                 if (is.character(coastline)) {
                     if (coastline == "none") {
@@ -3060,9 +3106,8 @@ setMethod(f="plot",
 #' @family things related to adp data
 toEnuAdp <- function(x, declination=0, debug=getOption("oceDebug"))
 {
-    if (is.ad2cp(x)) {
+    if (is.ad2cp(x))
         stop("does not work with ad2cp files, which might have several velocity streams")
-    }
     debug <- max(0L, as.integer(min(debug, 3)))
     oceDebug(debug, "toEnuAdp() {\n", unindent=1)
     coord <- x[["oceCoordinate"]]
@@ -3132,9 +3177,8 @@ toEnuAdp <- function(x, declination=0, debug=getOption("oceDebug"))
 beamUnspreadAdp <- function(x, count2db=c(0.45, 0.45, 0.45, 0.45), asMatrix=FALSE, debug=getOption("oceDebug"))
 {
     oceDebug(debug, "beamUnspreadAdp(...) {\n", unindent=1)
-    if (!inherits(x, "adp")) {
+    if (!inherits(x, "adp"))
         stop("method is only for objects of class '", "adp", "'")
-    }
     # make compatible with old function name (will remove in Jan 2013)
     if (!is.null(x@metadata$oceBeamUnattenuated) && x@metadata$oceBeamUnattenuated) {
         warning("the beams are already unspreaded in this dataset.")
@@ -3176,10 +3220,11 @@ beamUnspreadAdp <- function(x, count2db=c(0.45, 0.45, 0.45, 0.45), asMatrix=FALS
 #' Convert ADP velocity components from a beam-based coordinate system to a
 #' xyz-based coordinate system. The action depends on the type of object.
 #' Objects creating by reading RDI Teledyne, Sontek, and some Nortek
-#' instruments are handled directly. However, Nortek
-#' data stored in in the AD2CP format are handled by the specialized
-#' function [beamToXyzAdpAD2CP()], the documentation for which
-#' should be consulted, rather than the material given blow.
+#' instruments are handled directly.
+#- However, Nortek
+#- data stored in in the AD2CP format are handled by the specialized
+#- function [beamToXyzAdpAD2CP()], the documentation for which
+#- should be consulted, rather than the material given blow.
 #'
 #' For a 3-beam Nortek `aquadopp` object, the beams are transformed into
 #' velocities using the matrix stored in the header.
@@ -3232,15 +3277,12 @@ beamUnspreadAdp <- function(x, count2db=c(0.45, 0.45, 0.45, 0.45), asMatrix=FALS
 #' @family things related to adp data
 beamToXyzAdp <- function(x, debug=getOption("oceDebug"))
 {
-    if (is.ad2cp(x)) {
+    if (is.ad2cp(x))
         stop("does not work with ad2cp files, which might have several velocity streams")
-    }
-    if (!inherits(x, "adp")) {
+    if (!inherits(x, "adp"))
         stop("method is only for objects of class \"adp\"")
-    }
-    if (x[["oceCoordinate"]] != "beam") {
+    if (x[["oceCoordinate"]] != "beam")
         stop("input must be in beam coordinates")
-    }
     if (is.ad2cp(x)) {
         oceDebug(debug, "beamToXyzAdp(x, debug=", debug, ") {\n", sep="", unindent=1)
         res <- beamToXyzAdpAD2CP(x=x, debug=debug - 1)
@@ -3253,25 +3295,21 @@ beamToXyzAdp <- function(x, debug=getOption("oceDebug"))
         stop("missing x[[\"numberOfBeams\"]]")
     }
     tm <- x[["transformationMatrix"]]
-    if (is.null(tm)) {
+    if (is.null(tm))
         stop("missing x[[\"transformationMatrix\"]]")
-    }
-    if (!all.equal(dim(tm), c(nb, nb))) {
+    if (!all.equal(dim(tm), c(nb, nb)))
         stop("number of beams, ", nb, ", contradicts the ", dim(tm)[1], "x", dim(tm)[2], " transformationMatrix")
-    }
     manufacturer <- x[["manufacturer"]]
-    if (is.null(manufacturer)) {
+    if (is.null(manufacturer))
         stop("cannot rotate the data, since there is no 'manufacturer' entry in the metadata slot")
-    }
     oceDebug(debug, "transformation matrix follows\n")
     if (debug > 0)
         print(tm)
     res <- x
     V <- x[["v"]]
     if (length(grep(".*rdi.*", manufacturer))) {
-        if (nb != 4) {
+        if (nb != 4)
             stop("can only handle 4-beam ADP units from RDI")
-        }
         res@data$v[, , 1] <- tm[1, 1]*V[, , 1] + tm[1, 2]*V[, , 2] + tm[1, 3]*V[, , 3] + tm[1, 4]*V[, , 4]
         res@data$v[, , 2] <- tm[2, 1]*V[, , 1] + tm[2, 2]*V[, , 2] + tm[2, 3]*V[, , 3] + tm[2, 4]*V[, , 4]
         res@data$v[, , 3] <- tm[3, 1]*V[, , 1] + tm[3, 2]*V[, , 2] + tm[3, 3]*V[, , 3] + tm[3, 4]*V[, , 4]
@@ -3361,15 +3399,12 @@ beamToXyzAdpAD2CP <- function(x, debug=getOption("oceDebug"))
 {
     debug <- if (debug > 0) 1 else 0
     oceDebug(debug, "beamToXyzAdpAD2CP(x, debug=", debug, ") {\n", sep="", unindent=1)
-    if (!inherits(x, "adp")) {
+    if (!inherits(x, "adp"))
         stop("method is only for objects of class \"adp\"")
-    }
-    if (!is.ad2cp(x)) {
+    if (!is.ad2cp(x))
         stop("method is only for AD2CP objects")
-    }
-    if (!is.ad2cp(x)) {
+    if (!is.ad2cp(x))
         stop("only 4-beam AD2CP data are handled")
-    }
     res <- x
     for (item in names(x@data)) {
         oceDebug(debug, "item='", item, "'...\n", sep="")
@@ -3455,10 +3490,11 @@ beamToXyzAdpAD2CP <- function(x, debug=getOption("oceDebug"))
 #' information relating to heading, pitch, and roll. The action is based
 #' on what is stored in the data, and so it depends greatly on instrument type
 #' and the style of original data format. This function handles data from
-#' RDI Teledyne, Sontek, and some Nortek instruments directly. However, Nortek
-#' data stored in in the AD2CP format are handled by the specialized
-#' function [xyzToEnuAdpAD2CP()], the documentation for which
-#' should be consulted, rather than the material given blow.
+#' RDI Teledyne, Sontek, and some Nortek instruments directly.
+#- However, Nortek
+#- data stored in in the AD2CP format are handled by the specialized
+#- function [xyzToEnuAdpAD2CP()], the documentation for which
+#- should be consulted, rather than the material given blow.
 #'
 #' The first step is to convert the (x,y,z) velocity components (stored in the
 #' three columns of `x[["v"]][,,1:3]`) into what RDI (reference 1, pages 11 and 12)
@@ -3527,12 +3563,12 @@ beamToXyzAdpAD2CP <- function(x, debug=getOption("oceDebug"))
 #'
 #' @author Dan Kelley and Clark Richards
 #'
-# @section Limitations:
-# For AD2CP objects, created by[read.adp.ad2cp()],
-# the transformation to ENU coordinates is only possible if the instrument
-# orientation is `"AHRS"`. Other orientations may be added, if users
-# indicat a need for them, and supply the developers with test file (including
-# at least a few expected results).
+#- @section Limitations:
+#- For AD2CP objects, created by[read.adp.ad2cp()],
+#- the transformation to ENU coordinates is only possible if the instrument
+#- orientation is `"AHRS"`. Other orientations may be added, if users
+#- indicat a need for them, and supply the developers with test file (including
+#- at least a few expected results).
 #'
 #' @references
 #' 1. Teledyne RD Instruments. \dQuote{ADCP Coordinate Transformation: Formulas and Calculations,}
@@ -3544,13 +3580,11 @@ beamToXyzAdpAD2CP <- function(x, debug=getOption("oceDebug"))
 #' @family things related to adp data
 xyzToEnuAdp <- function(x, declination=0, debug=getOption("oceDebug"))
 {
-    if (is.ad2cp(x)) {
+    if (is.ad2cp(x))
         stop("does not work with ad2cp files, which might have several velocity streams")
-    }
     debug <- if (debug > 0) 1 else 0
-    if (!inherits(x, "adp")) {
+    if (!inherits(x, "adp"))
         stop("method is only for objects of class '", "adp", "'")
-    }
     oceDebug(debug, "xyzToEnuAdp(x, declination=", declination, ", debug=", debug, ") {\n", sep="", unindent=1)
     originalDeclination <- declination
     noDeclination <- is.null(declination)
@@ -3563,9 +3597,8 @@ xyzToEnuAdp <- function(x, declination=0, debug=getOption("oceDebug"))
     # benefit in extracting heading, etc., as for the other cases. Also, the orientation
     # names are different for this type, so isolating the code makes things clearer
     # and easier to maintain.  (FIXME: consider splitting the RDI and Sontek cases, too.)
-    if (is.ad2cp(x)) {
+    if (is.ad2cp(x))
         return(xyzToEnuAdpAD2CP(x=x, declination=declination, debug=debug))
-    }
     # Now, address non-AD2CP cases.
     manufacturer <- x[["manufacturer"]]
     oceCoordinate <- x[["oceCoordinate"]]
@@ -3574,9 +3607,8 @@ xyzToEnuAdp <- function(x, declination=0, debug=getOption("oceDebug"))
         warning("instrument orientation is not stored in x; assuming it is \"upward\"")
         orientation <- "upward"
     }
-    if (is.null(oceCoordinate) || (oceCoordinate != "xyz" && oceCoordinate != "sfm")) {
+    if (is.null(oceCoordinate) || (oceCoordinate != "xyz" && oceCoordinate != "sfm"))
         stop("input must be in xyz or sfm coordinates")
-    }
     heading <- x[["heading"]]
     pitch <- x[["pitch"]]
     roll <- x[["roll"]]
@@ -3728,15 +3760,12 @@ xyzToEnuAdp <- function(x, declination=0, debug=getOption("oceDebug"))
     oceDebug(debug, vectorShow(roll, "roll (after adjustment)"))
     nc <- dim(x@data$v)[2]         # numberOfCells
     np <- dim(x@data$v)[1]         # number of profiles
-    if (length(heading) < np) {
+    if (length(heading) < np)
         heading <- rep(heading, length.out=np)
-    }
-    if (length(pitch) < np) {
+    if (length(pitch) < np)
         pitch <- rep(pitch, length.out=np)
-    }
-    if (length(roll) < np) {
+    if (length(roll) < np)
         roll <- rep(roll, length.out=np)
-    }
     # ADP and ADV calculations are both handled by sfm_enu for non-AD2CP.
     for (c in seq_len(nc)) {
         enu <- do_sfm_enu(heading + declination, pitch, roll, starboard[, c], forward[, c], mast[, c])
@@ -3795,20 +3824,16 @@ xyzToEnuAdp <- function(x, declination=0, debug=getOption("oceDebug"))
 #' @family things related to adp data
 xyzToEnuAdpAD2CP <- function(x, declination=0, debug=getOption("oceDebug"))
 {
-    if (is.ad2cp(x)) {
+    if (is.ad2cp(x))
         stop("does not work with ad2cp files, which might have several velocity streams")
-    }
     debug <- if (debug > 0) 1 else 0
     oceDebug(debug, "xyzToEnuAdpAD2CP(x, declination=", declination, ", debug=", debug, ") {\n", sep="", unindent=1)
-    if (!inherits(x, "adp")) {
+    if (!inherits(x, "adp"))
         stop("method is only for objects of class '", "adp", "'")
-    }
-    if (!is.ad2cp(x)) {
+    if (!is.ad2cp(x))
         stop("this function only works for adp objects created by read.adp.ad2cp()")
-    }
-    if (0 != declination) {
+    if (0 != declination)
         stop("nonzero declination is not handled yet; please contact the author if you ned this") # FIXME
-    }
     res <- x
     # FIXME: deal with other ad2cp orientations. Can (should) we use a methodology
     # similar to the non-ad2cp, for non-AHRS cases?
@@ -3948,27 +3973,21 @@ xyzToEnuAdpAD2CP <- function(x, declination=0, debug=getOption("oceDebug"))
 #' @family things related to adp data
 enuToOtherAdp <- function(x, heading=0, pitch=0, roll=0)
 {
-    if (!inherits(x, "adp")) {
+    if (!inherits(x, "adp"))
         stop("method is only for objects of class '", "adp", "'")
-    }
-    if (is.ad2cp(x)) {
+    if (is.ad2cp(x))
         stop("this function does not work yet for AD2CP data")
-    }
     oceCoordinate <- x[["oceCoordinate"]]
-    if (oceCoordinate != "enu") {
+    if (oceCoordinate != "enu")
         stop("input must be in enu coordinates, but it is in ", oceCoordinate, " coordinates")
-    }
     res <- x
     np <- dim(x[["v"]])[1]           # number of profiles
-    if (length(heading) != np) {
+    if (length(heading) != np)
         heading <- rep(heading, length.out=np)
-    }
-    if (length(pitch) != np) {
+    if (length(pitch) != np)
         pitch <- rep(pitch, length.out=np)
-    }
-    if (length(roll) != np) {
+    if (length(roll) != np)
         roll <- rep(roll, length.out=np)
-    }
     nc <- dim(x[["v"]])[2]           # numberOfCells
     for (c in 1:nc) {
         other <- do_sfm_enu(heading, pitch, roll, x[["v"]][, c, 1], x[["v"]][, c, 2], x[["v"]][, c, 3])
@@ -4222,9 +4241,8 @@ binmapAdp <- function(x, debug=getOption("oceDebug"))
 #' @family things related to adp data
 adpEnsembleAverage <- function(x, n=5, leftover=FALSE, na.rm=TRUE, ...)
 {
-    if (!inherits(x, "adp")) {
+    if (!inherits(x, "adp"))
         stop("Must be an object of class adp")
-    }
     res <- new("adp", distance=x[["distance"]])
     res@metadata <- x@metadata
     d <- x@data
@@ -4294,15 +4312,13 @@ adpEnsembleAverage <- function(x, n=5, leftover=FALSE, na.rm=TRUE, ...)
 adpConvertRawToNumeric <- function(object=NULL, variables=NULL, debug=getOption("oceDebug"))
 {
     oceDebug(debug, "adpConvertRawToNumeric() {\n", sep="", unindent=1, style="bold")
-    if (!inherits(object, "adp")) {
+    if (!inherits(object, "adp"))
         stop("object must be an adp object")
-    }
     # nolint start object_usage_linter
     v <- object[["v"]]
     # nolint end object_usage_linter
-    if (!exists("v")) {
+    if (!exists("v"))
         stop("the adp object must contain \"v\"")
-    }
     # Find relevant variables if variable=NULL
     dimNeeded <- dim(v)
     if (is.null(variables)) {
@@ -4316,12 +4332,10 @@ adpConvertRawToNumeric <- function(object=NULL, variables=NULL, debug=getOption(
     }
     for (variable in variables) {
         # Catch errors
-        if (length(dim(object[[variable]])) != 3) {
+        if (length(dim(object[[variable]])) != 3)
             stop("\"", variable, "\" does not have three dimensions")
-        }
-        if (all(dim(object[[variable]]) != dimNeeded)) {
+        if (all(dim(object[[variable]]) != dimNeeded))
             stop("\"", variable, "\" must have dimension ", paste(dimNeeded, collapse="x"))
-        }
         # Convert this relevant variable from raw to numeric
         object[[variable]] <- object[[variable, "numeric"]]
     }
@@ -4375,15 +4389,12 @@ adpConvertRawToNumeric <- function(object=NULL, variables=NULL, debug=getOption(
 adpFlagPastBoundary <- function(x=NULL, fields=NULL, df=20, trim=0.15, good=1, bad=4, debug=getOption("oceDebug"))
 {
     oceDebug(debug, "adpFlagPastBoundary() {\n", sep="", unindent=1, style="bold")
-    if (!inherits(x, "adp")) {
+    if (!inherits(x, "adp"))
         stop("x must be an adp object")
-    }
-    if (!("br" %in% names(x@data))) {
+    if (!("br" %in% names(x@data)))
         stop("this adp object lacks a bottom-range ('br') field")
-    }
-    if (is.null(x[["oceCoordinate"]])) {
+    if (is.null(x[["oceCoordinate"]]))
         stop("This object doesn't have an oceCoordinate. You can set it using oceSetMetadata()")
-    }
     dimNeeded <- dim(x[["v"]])
     if (is.null(fields)) {
         dataNames <- names(x@data)
@@ -4480,18 +4491,14 @@ setMethod(f="applyMagneticDeclination",
     signature(object="adp", declination="ANY", debug="ANY"),
     definition=function(object, declination=0.0, debug=getOption("oceDebug")) {
         oceDebug(debug, "applyMagneticDeclinationAdp(object, declination=", declination, ") {\n", sep="", unindent=1)
-        if (is.ad2cp(object)) {
+        if (is.ad2cp(object))
             stop("this function does not work yet for AD2CP data")
-        }
-        if (length(declination) != 1L) {
+        if (length(declination) != 1L)
             stop("length of 'declination' must equal 1, but it is ", length(declination))
-        }
-        if (!identical(object@metadata$oceCoordinate, "enu")) {
+        if (!identical(object@metadata$oceCoordinate, "enu"))
             stop("object must be in enu coordinates, not ", object@metadata$oceCoordinate, " coordinates")
-        }
-        if (identical(object@metadata$north, "geographic")) {
+        if (identical(object@metadata$north, "geographic"))
             warning("a declination has already been applied, so this action is cumulative")
-        }
         res <- object
         np <- dim(object[["v"]])[1]           # number of profiles
         declination <- rep(declination, length.out=np)
@@ -4528,4 +4535,3 @@ setMethod(f="applyMagneticDeclination",
         oceDebug(debug, "} # applyMagneticDeclinationAdp\n", unindent=1)
         res
     })
-

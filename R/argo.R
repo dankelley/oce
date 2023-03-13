@@ -180,24 +180,20 @@ setMethod(f="[[",
             # https://stackoverflow.com/questions/23475309/in-r-is-it-possible-to-suppress-note-no-visible-binding-for-global-variable?noredirect=1&lq=1
             # https://stackoverflow.com/questions/9439256/how-can-i-handle-r-cmd-check-no-visible-binding-for-global-variable-notes-when
             # nolint end line_length_linter
-profile <- NULL # does *not* affect the subset() call that follows
+
+            profile <- NULL # does *not* affect the subset() call that follows
             if (missing(j)) {
                 stop("must provide an integer vector to access, e.g. argo[[\"profile\", 1:3]]")
-}
-return(subset(x, profile %in% j))
+            }
+            return(subset(x, profile %in% j))
         }
         namesData <- names(x@data)
         # handle some computed items
         if (i %in% c("CT", paste("conservative", "temperature"), "N2",
-            "SA", paste("Absolute", "Salinity"),
-            "sigmaTheta",
-            "theta",
-            #paste("sigma", 0:4, sep=""),
-            "spice")
-        #paste("spiciness", 0:2, sep="")
-    ) {
-salinity <- x[["salinity", debug=debug-1]]
-pressure <- x[["pressure", debug=debug-1]]
+                "SA", paste("Absolute", "Salinity"), "sigmaTheta",
+                "theta", "spice")) {
+            salinity <- x[["salinity", debug=debug-1]]
+            pressure <- x[["pressure", debug=debug-1]]
             temperature <- x[["temperature", debug=debug-1]]
 dim <- dim(salinity)
             # Do not need longitude and latitude if eos="unesco", but retain for code clarity
@@ -346,12 +342,12 @@ dim <- dim(salinity)
                 res <- unadjusted
             }
         } else {
-            #message("[[,argo-method calling next method")
             res <- callNextMethod()         # [[ defined in R/AllClass.R
         }
         oceDebug(debug, "} # [[,argo-method\n", sep="", style="bold", unindent=1)
         res
-    })
+    }) # [[
+
 
 #' Replace Parts of an Argo Object
 #'
@@ -364,7 +360,7 @@ setMethod(f="[[<-",
     signature(x="argo", i="ANY", j="ANY"),
     definition=function(x, i, j, ..., value) {
         callNextMethod(x=x, i=i, j=j, ...=..., value=value) # [[<-
-    })
+    }) # [[<-
 
 setMethod(f="initialize",
     signature="argo",
@@ -383,7 +379,7 @@ setMethod(f="initialize",
         .Object@processingLog$value <- "create 'argo' object"
         .Object <- initializeFlagScheme(.Object, "argo")
         return(.Object)
-    })
+    }) # initialize
 
 # a local function -- no need to pollute namespace with it
 maybeLC <- function(s, lower)
@@ -402,15 +398,13 @@ getData <- function(file, name, quiet=FALSE)
             res <- try(ncdf4::ncvar_get(file, name), silent=TRUE)
         })
     if (inherits(res, "try-error")) {
-        if (!quiet) {
+        if (!quiet)
             warning(file$filename, " has no variable named '", name, "'\n", sep="")
-        }
         res <- NULL
     }
     # FIXME: the logic of the next linechanged 2023-01-03 because it looked wrong to me then
-    if (is.array(res) && 1 == length(dim(res))) {
+    if (is.array(res) && 1 == length(dim(res)))
         res <- matrix(res) # FIXME: is this right?
-    }
     res
 }
 
@@ -657,19 +651,21 @@ setMethod(f="subset",
         oceDebug(debug, "subset,argo-method() {\n", sep="", unindent=1, style="bold")
               if (withinGiven) {
             oceDebug(debug, "subsetting with 'within' method\n")
-            # {{{ OLD 'sp::point.in.polygon' method
+            #<OLD> # OLD 'sp::point.in.polygon' method
+            #<OLD> polygon <- dots$within
+            #<OLD> if (!is.data.frame(polygon) && !is.list(polygon)) {
+            #<OLD>     stop("'within' must be a data frame or a polygon")
+            #<OLD> }
+            #<OLD> polygonNames <- names(polygon)
+            #<OLD> if (requireNamespace("sp", quietly=TRUE)) {
+            #<OLD>     keep <- 1==sp::point.in.polygon(lon, lat, lonp, latp)
+            #<OLD> } else {
+            #<OLD>     stop("cannot use 'within' because the 'sp' package is not installed")
+            #<OLD> }
+            # NEW{ 'sf' method
+            # <OLD> Compare with 'sf' results
             polygon <- dots$within
-            if (!is.data.frame(polygon) && !is.list(polygon)) {
-                stop("'within' must be a data frame or a polygon")
-            }
             polygonNames <- names(polygon)
-            lonp <- if ("x" %in% polygonNames) {
-                polygon$x
-            } else if ("longitude" %in% polygonNames) {
-                polygon$longitude
-            } else {
-                stop("'within' must contain either 'x' or 'longitude'")
-            }
             latp <- if ("y" %in% polygonNames) {
                 polygon$y
             } else if ("latitude" %in% polygonNames) {
@@ -677,26 +673,25 @@ setMethod(f="subset",
             } else {
                 stop("'within' must contain either 'y' or 'latitude'")
             }
+            lonp <- if ("x" %in% polygonNames) {
+                polygon$x
+            } else if ("longitude" %in% polygonNames) {
+                polygon$longitude
+            } else {
+                stop("'within' must contain either 'x' or 'longitude'")
+            }
             lon <- x[["longitude", "byStation"]]
             lat <- x[["latitude", "byStation"]]
-            if (requireNamespace("sp", quietly=TRUE)) {
-                keep <- 1==sp::point.in.polygon(lon, lat, lonp, latp)
-            } else {
-                stop("cannot use 'within' because the 'sp' package is not installed")
-            }
-            # }}}
-            # {{{ NEW 'sf' method
-            # Compare with 'sf' results
-            polyNew <- sf::st_polygon(list(outer=cbind(c(lonp, lonp[1]), c(latp, latp[1]))))
-            pointsNew <- sf::st_multipoint(cbind(lon, lat))
-            insideNew <- sf::st_intersection(pointsNew, polyNew)
-            keepNew <- matrix(pointsNew %in% insideNew, ncol=2)[, 1]
-            if (!all.equal(keepNew, keep)) {
-                warning("subset,argo-method disagreement between old 'sp' method and new 'sf' method\n")
-            } else {
-                oceDebug(debug, "subset,argo-method: old 'sp' method and new 'sf' method gave identical results\n")
-            }
-            # }}}
+            poly <- sf::st_polygon(list(outer=cbind(c(lonp, lonp[1]), c(latp, latp[1]))))
+            points <- sf::st_multipoint(cbind(lon, lat))
+            inside <- sf::st_intersection(points, poly)
+            keep <- matrix(points %in% inside, ncol=2)[, 1]
+            #<OLD>if (!all.equal(keepNew, keep)) {
+            #<OLD>    warning("subset,argo-method disagreement between old 'sp' method and new 'sf' method\n")
+            #<OLD>} else {
+            #<OLD>    oceDebug(debug, "subset,argo-method: old 'sp' method and new 'sf' method gave identical results\n")
+            #<OLD>}
+            # }NEW
             # Metadata
             for (name in names(x@metadata)) {
                 oceDebug(debug, "subsetting metadata item named '", name, "'.\n", sep="")

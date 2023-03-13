@@ -52,9 +52,8 @@ setMethod(f="initialize",
     signature="amsr",
     definition=function(.Object, filename, ...) {
         .Object <- callNextMethod(.Object, ...)
-        if (!missing(filename)) {
+        if (!missing(filename))
             .Object@metadata$filename <- filename
-        }
         .Object@processingLog$time <- presentTime()
         .Object@processingLog$value <- "create 'amsr' object"
         return(.Object)
@@ -127,9 +126,8 @@ setMethod(f="summary",
         showMetadataItem(object, "filename",   "Data file:           ")
         cat(sprintf("* Longitude range:     %.4fE to %.4fE\n", object@metadata$longitude[1], tail(object@metadata$longitude, 1)))
         cat(sprintf("* Latitude range:      %.4fN to %.4fN\n", object@metadata$latitude[1], tail(object@metadata$latitude, 1)))
-        for (name in names(object@data)) {
+        for (name in names(object@data))
             object@data[[name]] <- object[[name]] # translate to science units
-        }
         invisible(callNextMethod())        # summary
     })
 
@@ -205,13 +203,11 @@ setMethod(f="[[",
     definition=function(x, i, j, ...) {
         debug <- getOption("oceDebug")
         oceDebug(debug, "amsr [[ {\n", unindent=1)
-        if (missing(i)) {
+        if (missing(i))
             stop("Must name a amsr item to retrieve, e.g. '[[\"panchromatic\"]]'", call.=FALSE)
-        }
         i <- i[1]                # drop extras if more than one given
-        if (!is.character(i)) {
+        if (!is.character(i))
             stop("amsr item must be specified by name", call.=FALSE)
-        }
         dataDerived <- c("cloud", "LFwind", "MFwind", "rain", "SST",
             "time", "vapor")
         if (i == "?") {
@@ -451,21 +447,20 @@ setMethod(f="plot",
     signature=signature("amsr"),
     # FIXME: how to let it default on band??
     definition=function(x, y, asp=NULL,
-                        breaks, col, colormap, zlim,
-                        missingColor=list(land="papayaWhip",
-                            none="lightGray",
-                            bad="gray",
-                            rain="plum",
-                            ice="mediumVioletRed"),
-                        debug=getOption("oceDebug"), ...)
+        breaks, col, colormap, zlim,
+        missingColor=list(land="papayaWhip",
+            none="lightGray",
+            bad="gray",
+            rain="plum",
+            ice="mediumVioletRed"),
+        debug=getOption("oceDebug"), ...)
     {
         dots <- list(...)
         oceDebug(debug, "plot.amsr(..., y=c(",
             if (missing(y)) "(missing)" else y, ", ...) {\n", sep="", style="bold", unindent=1)
         zlimGiven <- !missing(zlim)
-        if (missing(y)) {
+        if (missing(y))
             y <- "SST"
-        }
         lon <- x[["longitude"]]
         lat <- x[["latitude"]]
         # Examine ylim (if asp is not NULL) and also at both xlim and ylim to
@@ -546,12 +541,10 @@ setMethod(f="plot",
         # that I added a new element of the return value of imagep(), to get the
         # decimation factor.
         missingColorLength <- length(missingColor)
-        if (5 != missingColorLength) {
+        if (5 != missingColorLength)
             stop("must have 5 elements in the missingColor argument")
-        }
-        if (!all(sort(names(missingColor))==sort(c("land", "none", "bad", "ice", "rain")))) {
+        if (!all(sort(names(missingColor))==sort(c("land", "none", "bad", "ice", "rain"))))
             stop("missingColor names must be: 'land', 'none', 'bad', 'ice' and 'rain'")
-        }
         lonDecIndices <- seq(1L, length(lon), by=i$decimate[1])
         latDecIndices <- seq(1L, length(lat), by=i$decimate[2])
         lon <- lon[lonDecIndices]
@@ -638,9 +631,8 @@ download.amsr <- function(year, month, day, destdir=".", server="http://data.rem
 {
     # ftp ftp://ftp.ssmi.com/amsr2/bmaps_v07.2/y2016/m08/f34_20160804v7.2.gz
     if (missing(year) && missing(month)) {
-        if (missing(day)) {
+        if (missing(day))
             day <- 3
-        }
         day <- abs(day)
         today <- as.POSIXlt(Sys.Date() - day)
         year <- 1900 + today$year
@@ -660,16 +652,13 @@ download.amsr <- function(year, month, day, destdir=".", server="http://data.rem
     if (0 == length(list.files(path=destdir, pattern=paste("^", destfile, "$", sep="")))) {
         source <- sprintf("%s/y%4d/m%02d/%s", server, year, month, destfile)
         bad <- download.file(source, destfile)
-        if (!bad && destdir != ".") {
+        if (!bad && destdir != ".")
             system(paste("mv", destfile, destpath))
-        }
     } else {
         message("Not downloading ", destfile, " because it is already present in ", destdir)
     }
     if (destdir == ".") destfile else destpath
 }
-
-
 
 #' Read an amsr File
 #'
@@ -705,16 +694,13 @@ download.amsr <- function(year, month, day, destdir=".", server="http://data.rem
 #' @family things related to amsr data
 read.amsr <- function(file, encoding=NA, debug=getOption("oceDebug"))
 {
-    if (missing(file)) {
+    if (missing(file))
         stop("must supply 'file'")
-    }
     if (is.character(file)) {
-        if (!file.exists(file)) {
+        if (!file.exists(file))
             stop("cannot find file '", file, "'")
-        }
-        if (0L == file.info(file)$size) {
+        if (0L == file.info(file)$size)
             stop("empty file '", file, "'")
-        }
     }
     oceDebug(debug, "read.amsr(file=\"", file, "\",",
         #if (length(band) > 1) paste("band=c(\"", paste(band, collapse="\",\""), "\")", sep="") else
@@ -832,26 +818,23 @@ setMethod("composite",
     function(object, ...) {
         dots <- list(...)
         ndots <- length(dots)
-        if (ndots < 1) {
+        if (ndots < 1)
             stop("need more than one argument")
-        }
         for (idot in 1:ndots) {
             if (!inherits(dots[[idot]], "amsr")) stop("argument ", 1+idot, " does not inherit from 'amsr'")
         }
         # inherit most of the metadata from the last argument
         res <- dots[[ndots]]
         filenames <- object[["filename"]]
-        for (idot in 1:ndots) {
+        for (idot in 1:ndots)
             filenames <- paste(filenames, ",", dots[[idot]][["filename"]], sep="")
-        }
         n <- 1 + ndots
         dim <- c(dim(object@data[[1]]), n)
         for (name in names(object@data)) {
             a <- array(as.raw(0xff), dim=dim)
             a[, , 1] <- object@data[[name]]
-            for (idot in 1:ndots) {
+            for (idot in 1:ndots)
                 a[, , 1+idot] <- dots[[idot]]@data[[name]]
-            }
             A <- do_amsr_composite(a, dim(a))
             res@data[[name]] <- A
         }

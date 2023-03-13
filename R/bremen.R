@@ -113,17 +113,15 @@ setMethod(f="plot",
         names <- names(x@data)
         #n <- length(names)
         if (missing(type)) {
-            if ("salinity" %in% names) {
+            if ("salinity" %in% names)
                 plot(as.ctd(x), ...)
-            } else {
+            else
                 plot(as.ladp(x), ...)
-            }
         } else {
-            if (!is.na(pmatch(type, "ctd"))) {
+            if (!is.na(pmatch(type, "ctd")))
                 plot(as.ctd(x), ...)
-            } else if (!is.na(pmatch(type, "ladp"))) {
+            else if (!is.na(pmatch(type, "ladp")))
                 plot(as.ladp(x), ...)
-            }
         }
     })
 
@@ -166,11 +164,7 @@ setMethod(f="summary",
 findInHeaderBremen <- function(key, lines)
 {
     i <- grep(paste("^", key, sep=""), lines)[1] # only take first -- may be problematic
-    if (length(i) < 1) {
-        ""
-    } else {
-        gsub("^.*=[ ]*", "", lines[i])
-    }
+    if (length(i) < 1) "" else gsub("^.*=[ ]*", "", lines[i])
 }
 
 
@@ -212,16 +206,13 @@ findInHeaderBremen <- function(key, lines)
 #' @family things related to bremen data
 read.bremen <- function(file, encoding="latin1")
 {
-    if (missing(file)) {
+    if (missing(file))
         stop("must supply 'file'")
-    }
     if (is.character(file)) {
-        if (!file.exists(file)) {
+        if (!file.exists(file))
             stop("cannot find file '", file, "'")
-        }
-        if (0L == file.info(file)$size) {
+        if (0L == file.info(file)$size)
             stop("empty file '", file, "'")
-        }
     }
     if (is.character(file)) {
         filename <- fullFilename(file)
@@ -249,9 +240,8 @@ read.bremen <- function(file, encoding="latin1")
     res@metadata$latitude <- latitude
     lon <- strsplit(findInHeaderBremen("Longitude", h), " ")[[1]]
     longitude <- as.numeric(lon[1]) + as.numeric(lon[2]) / 60 # assume N hemi
-    if (lon[3] == "W") {
+    if (lon[3] == "W")
         longitude <- -longitude
-    }
     res@metadata$longitude <- longitude
     date <- findInHeaderBremen("Date", h)
     time <- findInHeaderBremen("Time", h)

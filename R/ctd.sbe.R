@@ -220,14 +220,12 @@
 cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
 {
     oceDebug(debug, "cnvName2oceName() {\n", unindent=1)
-    if (length(h) != 1) {
+    if (length(h) != 1)
         stop("oceNameFromSBE() expects just 1 line of header")
-    }
     # An example, for which the grep is designed, is below.
     # '# name 4 = t190C: Temperature, 2 [ITS-90, deg C]' # nolint
-    if (1 != length(grep("^# name [0-9][0-9]* = .*:.*$", h, ignore.case=TRUE))) {
+    if (1 != length(grep("^# name [0-9][0-9]* = .*:.*$", h, ignore.case=TRUE)))
         stop("header line does not contain a variable name")
-    }
     # 2022-07-15: drop useBytes=TRUE, which is a problem for upcoming R.
     name <- gsub("^# name [0-9][0-9]* = (.*):.*$", "\\1", h, ignore.case=TRUE)
     nameAfterColon <- gsub("^# name [0-9][0-9]* = .*:(.*)$", "\\1", h, ignore.case=TRUE)
@@ -824,20 +822,17 @@ cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
 #'
 #' @family functions that read ctd data
 read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
-                         deploymentType="unknown", btl=FALSE, monitor=FALSE,
-                         encoding="latin1",
-                         debug=getOption("oceDebug"), processingLog, ...)
+    deploymentType="unknown", btl=FALSE, monitor=FALSE,
+    encoding="latin1",
+    debug=getOption("oceDebug"), processingLog, ...)
 {
-    if (missing(file)) {
+    if (missing(file))
         stop("must supply 'file'")
-    }
     if (is.character(file)) {
-        if (!file.exists(file)) {
+        if (!file.exists(file))
             stop("cannot find file '", file, "'")
-        }
-        if (0L == file.info(file)$size) {
+        if (0L == file.info(file)$size)
             stop("empty file '", file, "'")
-        }
     }
     # If 'file' is a wildcard, call this function on each indicated file.  Only
     # that filename, 'encoding' and 'debug' are passed along, so if you need
@@ -852,14 +847,12 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
         res <- vector("list", nfiles)
         for (i in 1:nfiles) {
             res[[i]] <- read.ctd.sbe(files[i], encoding=encoding, debug=debug-1)
-            if (monitor) {
+            if (monitor)
                 setTxtProgressBar(pb, i)
-            }
         }
         oceDebug(debug, "} # read.ctd.sbe() {\n")
-        if (monitor) {
+        if (monitor)
             close(pb)
-        }
         return(res)
     }
     oceDebug(debug, "read.ctd.sbe(file=\"", file, "\") {\n", unindent=1)
@@ -871,9 +864,8 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
         file <- file(file, "r", encoding=encoding)
         on.exit(close(file))
     }
-    if (!inherits(file, "connection")) {
+    if (!inherits(file, "connection"))
         stop("argument `file' must be a character string or connection")
-    }
     if (!isOpen(file)) {
         open(file, "r", encoding=encoding)
         on.exit(close(file))
@@ -953,9 +945,8 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
         if (length(grep("^\\s*\\*END\\*\\s*$", aline, perl=TRUE))) {
             # Sometimes SBE files have a header line after the *END* line.
             iline <- iline + 1
-            if (length(grep("[a-cf-zA-CF-Z]", lines[iline]))) {
+            if (length(grep("[a-cf-zA-CF-Z]", lines[iline])))
                 iline <- iline + 1
-            }
             break
         }
         lline <- tolower(aline)
@@ -998,25 +989,20 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
                 }
             }
         }
-        if (0 < regexpr(".*seacat profiler.*", lline)) {
+        if (0 < regexpr(".*seacat profiler.*", lline))
             serialNumber <- gsub("[ ].*$", "", gsub(".*sn[ ]*", "", lline))
-        }
-        if (length(grep("^\\* Temperature SN", lline, ignore.case=TRUE))) {
+        if (length(grep("^\\* Temperature SN", lline, ignore.case=TRUE)))
             serialNumberTemperature <- gsub("^.*=\\s", "", lline)
-        }
-        if (length(grep("^\\* Conductivity SN", lline, ignore.case=TRUE))) {
+        if (length(grep("^\\* Conductivity SN", lline, ignore.case=TRUE)))
             serialNumberConductivity <- gsub("^.*=\\s", "", lline)
-        }
-        if (length(grep("^#[ \t]*file_type[ \t]*=[ \t]*", lline))) {
+        if (length(grep("^#[ \t]*file_type[ \t]*=[ \t]*", lline)))
             fileType <- gsub("[ \t\n]+$", "", gsub(".*=[ \t]*", "", lline))
-        }
         if (length(grep("^\\* Sea-Bird SBE (.*) Data File:$", lline, ignore.case=TRUE))) {
             model <- gsub("^\\* sea-bird sbe (.*) data file:$", "\\1", lline)
             res@metadata$model <- model
         }
-        if (grepl("filename", lline)) {
+        if (grepl("filename", lline))
             hexfilename <- sub("(.*)FileName =([ ])*", "", ignore.case=TRUE, lline)
-        }
         if (grepl("system upload time", lline)) {
             d <- sub("([^=]*)[ ]*=[ ]*", "", ignore.case=TRUE, lline)
             systemUploadTime <- decodeTime(d)
@@ -1042,39 +1028,31 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
             ship <- sub("(.*)ship:([ \t])*", "", ignore.case=TRUE, line) # note: using full string
             ship <- sub("[ \t]*$", "", ship)
         }
-        if (grepl("scientist:", lline)) {
+        if (grepl("scientist:", lline))
             scientist <- sub("(.*)scientist:([ ])*", "", ignore.case=TRUE, line) # full string
-        }
-        if (grepl("chef", lline)) {
+        if (grepl("chef", lline))
             scientist <- sub("(.*):([ ])*", "", ignore.case=TRUE, line) # full string
-        }
-        if (grepl("institute:", lline)) {
+        if (grepl("institute:", lline))
             institute <- sub("(.*)institute:([ ])*", "", ignore.case=TRUE, line) # full string
-        }
-        if (grepl("address:", lline)) {
+        if (grepl("address:", lline))
             address <- sub("(.*)address:([ ])*", "", ignore.case=TRUE, line) # full string
-        }
         if (grepl("cruise:", lline)) {
             cruise <- sub("(.*)cruise:([ ])*", "", ignore.case=TRUE, line) # full string
             cruise <- sub("[ ]*$", "", ignore.case=TRUE, cruise) # full string
         }
         if (is.null(station)) {
-            if (grepl("station:", lline)) {
+            if (grepl("station:", lline))
                 station <- sub("[ ]*$", "", sub("(.*)station:([ ])*", "", ignore.case=TRUE, line))
-            }
-            if (grepl("station_name:", lline)) {
+            if (grepl("station_name:", lline))
                 station <- sub("[ ]*$", "", sub("(.*)station_name:([ ])*", "", ignore.case=TRUE, line))
-            }
         }
-        if (grepl("recovery:", lline)) {
+        if (grepl("recovery:", lline))
             recoveryTime <- sub("(.*)recovery:([ ])*", "", lline)
-        }
         if (grepl("^#[ \t]+bad_flag[ \t]*=", lline)) {
             # bad_flag = -9.990e-29
             bad_flag <- sub("#[ \t]*bad_flag[ \t]*=[ \t]*", "", lline)
-            if (missing(missingValue)) {
+            if (missing(missingValue))
                 missingValue <- as.numeric(bad_flag)
-            }
         }
         # Water depth
         # See https://github.com/dankelley/oce/issues/1950
@@ -1120,26 +1098,20 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
     }
     oceDebug(debug, "Finished reading header\n")
     if (debug > 0) {
-        if (is.nan(sampleInterval)) {
+        if (is.nan(sampleInterval))
             warning("'* sample rate =' not found in header")
-        }
-        if (is.nan(latitude)) {
+        if (is.nan(latitude))
             warning("'** Latitude:' not found in header")
-        }
-        if (is.na(longitude)) {
+        if (is.na(longitude))
             warning("'** Longitude:' not found in header")
-        }
-        if (is.na(date)) {
+        if (is.na(date))
             warning("'** Date:' not found in header")
-        }
-        if (is.na(recoveryTime)) {
+        if (is.na(recoveryTime))
             warning("'** Recovery:' not found in header")
-        }
     }
     # Require p,S,T data at least
-    if (!btl && !("temperature" %in% colNamesInferred)) {
+    if (!btl && !("temperature" %in% colNamesInferred))
         warning("cannot find temperature; try using the 'columns' argument")
-    }
     res@metadata$header <- header
     res@metadata$type <- "SBE"
     res@metadata$hexfilename <- hexfilename # from instrument
@@ -1158,13 +1130,11 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
     res@metadata$station <- station
     res@metadata$deploymentType <- deploymentType
     res@metadata$date <- date
-    if (!is.na(startTime) && startTime < as.POSIXct("1950-01-01")) {
+    if (!is.na(startTime) && startTime < as.POSIXct("1950-01-01"))
         warning("startTime (", startTime, ") is < 1950, suggesting a turn-of-the-century problem in this cnv file")
-    }
     res@metadata$startTime <- startTime
-    if (!is.na(recoveryTime) && recoveryTime < as.POSIXct("1950-01-01")) {
+    if (!is.na(recoveryTime) && recoveryTime < as.POSIXct("1950-01-01"))
         warning("recoveryTime < 1950, suggesting y2k problem in this cnv file")
-    }
     res@metadata$recoveryTime <- recoveryTime
     res@metadata$latitude <- latitude
     res@metadata$longitude <- longitude
@@ -1185,9 +1155,8 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
         # of errors in this code.  See https://github.com/dankelley/oce/issues/1681
         oceDebug(debug, "About to read .btl data\n")
         dataHeaderStartLine <- grep("^[^#^*]", lines)[1]
-        if (!length(dataHeaderStartLine)) {
+        if (!length(dataHeaderStartLine))
             stop("cannot find the start of .btl data")
-        }
         colNames <- tail(strsplit(lines[dataHeaderStartLine], "[ ]+")[[1]], -1)
         colNames <- c(colNames, "type") # tack on col for "(avg)" or "(sdev)"
         oceDebug(debug, "colNames=c(\"", paste(colNames, collapse="\", \""), "\")\n", sep="")
@@ -1223,9 +1192,8 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
         # Recombine, then trim the "type" columns, which we kept only for testing, so far
         data <- cbind(avg, sdev)
         trimCols <- grep("^(type)|(typeSdev)$", names(data))
-        if (2 != length(trimCols)) {
+        if (2 != length(trimCols))
             stop("expecting 2 'type' columns to trim, but found ", length(trimCols))
-        }
         data <- data[, -trimCols]
         data$time <- as.POSIXct(paste(data$Date, hms), format="%b %d %Y %H:%M:%S", tz="UTC")
         data <- data[, -which(names(data) == "Date")]
@@ -1256,9 +1224,8 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
     }
     # replace any missingValue with NA
     if (!missing(missingValue) && !is.null(missingValue)) {
-        for (item in names(data)) {
+        for (item in names(data))
             data[[item]] <- ifelse(data[[item]]==missingValue, NA, data[[item]])
-        }
     }
     res@data <- data
     # Add standard things, if missing

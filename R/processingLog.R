@@ -41,9 +41,8 @@
 #' @family things related to processing logs
 processingLogAppend <- function(h, value="")
 {
-    if (inherits(h, "oce")) {
+    if (inherits(h, "oce"))
         h <- h@processingLog
-    }
     res <- if (is.null(h)) list(time=NULL, value=NULL) else h
     if (is.null(h$time[1])) {
         res$time <- presentTime()

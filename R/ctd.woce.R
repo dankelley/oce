@@ -74,9 +74,8 @@ oceNames2whpNames <- function(names)
 #' @family functions that interpret variable names and units from headers
 oceUnits2whpUnits <- function(units, scales)
 {
-    if (length(units) != length(scales)) {
+    if (length(units) != length(scales))
         stop("lengths of units and scales must match")
-    }
     rval <- NULL
     for (i in seq_along(units)) {
         #message("i=", i, ", units=\"", units[i], "\", scales=\"", scales[i], "\"", sep="")
@@ -208,39 +207,28 @@ woceNames2oceNames <- function(names)
 woceUnit2oceUnit <- function(woceUnit)
 {
     # message("woceUnit2oceUnit(\"", woceUnit, "\")", sep="")
-    if (woceUnit == "DB" || woceUnit == "DBAR") {
+    if (woceUnit == "DB" || woceUnit == "DBAR")
         return(list(unit=expression(dbar), scale=""))
-    }
-    if (woceUnit == "DEG C") {
+    if (woceUnit == "DEG C")
         return(list(unit=expression(degree*C), scale="")) # unknown scale
-    }
-    if (woceUnit == "FMOL/KG") {
+    if (woceUnit == "FMOL/KG")
         return(list(unit=expression(fmol/kg), scale=""))
-    }
-    if (woceUnit == "ITS-90" || woceUnit == "ITS-90 DEGC") {
+    if (woceUnit == "ITS-90" || woceUnit == "ITS-90 DEGC")
         return(list(unit=expression(degree*C), scale="ITS-90"))
-    }
-    if (woceUnit == "IPTS-68" || woceUnit == "ITS-68" || woceUnit == "ITS-68 DEGC") {
+    if (woceUnit == "IPTS-68" || woceUnit == "ITS-68" || woceUnit == "ITS-68 DEGC")
         return(list(unit=expression(degree*C), scale="IPTS-68"))
-    }
-    if (woceUnit == "ML/L") {
+    if (woceUnit == "ML/L")
         return(list(unit=expression(ml/l), scale=""))
-    }
-    if (woceUnit == "PMOL/KG") {
+    if (woceUnit == "PMOL/KG")
         return(list(unit=expression(pmol/kg), scale=""))
-    }
-    if (woceUnit == "PSU" || woceUnit == "PSS-78") {
+    if (woceUnit == "PSU" || woceUnit == "PSS-78")
         return(list(unit=expression(), scale="PSS-78"))
-    }
-    if (woceUnit == "UG/L") {
+    if (woceUnit == "UG/L")
         return(list(unit=expression(mu*g/l), scale=""))
-    }
-    if (woceUnit == "UMOL/KG") {
+    if (woceUnit == "UMOL/KG")
         return(list(unit=expression(mu*mol/kg), scale=""))
-    }
-    if (woceUnit == "%") {
+    if (woceUnit == "%")
         return(list(unit=expression(percent), scale=""))
-    }
     return(list(unit=expression(), scale=""))
 }
 
@@ -266,33 +254,28 @@ woceUnit2oceUnit <- function(woceUnit)
 #'
 #' @author Dan Kelley
 read.ctd.woce <- function(file, columns=NULL, station=NULL, missingValue,
-                          deploymentType="unknown", monitor=FALSE, encoding="latin1",
-                          debug=getOption("oceDebug"), processingLog, ...)
+    deploymentType="unknown", monitor=FALSE, encoding="latin1",
+    debug=getOption("oceDebug"), processingLog, ...)
 {
-    if (missing(file)) {
+    if (missing(file))
         stop("must supply 'file'")
-    }
     if (is.character(file)) {
-        if (!file.exists(file)) {
+        if (!file.exists(file))
             stop("cannot find file '", file, "'")
-        }
-        if (0L == file.info(file)$size) {
+        if (0L == file.info(file)$size)
             stop("empty file '", file, "'")
-        }
     }
     if (is.character(file) && length(grep("\\*", file))) {
         oceDebug(debug, "read.ctd.woce(file=\"", file, "\") { # will read a series of files\n", unindent=1)
         files <- list.files(pattern=file)
         nfiles <- length(files)
-        if (monitor) {
+        if (monitor)
             pb <- txtProgressBar(1, nfiles, style=3)
-        }
         res <- vector("list", nfiles)
         for (i in 1:nfiles) {
             res[[i]] <- read.ctd.woce(files[i], deploymentType=deploymentType, debug=debug-1)
-            if (monitor) {
+            if (monitor)
                 setTxtProgressBar(pb, i)
-            }
         }
         oceDebug(debug, "} # read.ctd.woce() {\n")
         return(res)
@@ -492,9 +475,8 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missingValue,
         # nolint end object_usage_linter
         if (gotDate && gotTime) {
             #message("gotDate && gotTime")
-            if (nchar(time) == 3) {
+            if (nchar(time) == 3)
                 time <- paste("0", time, sep="")
-            }
             startTime <- as.POSIXct(paste(date, time), format="%Y%m%d %H%M", tz="UTC")
         }
         if (!gotHeader) {
@@ -531,9 +513,8 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missingValue,
         # on a final empty string to the vector named unitsOriginal.
         line <- scan(file, what="char", sep="\n", n=1, quiet=TRUE)
         unitsOriginal<- strsplit(line, split=",")[[1]] # nolint (variable not used)
-        if (substr(line, nchar(line), nchar(line)) == ",") {
+        if (substr(line, nchar(line), nchar(line)) == ",")
             unitsOriginal <- c(unitsOriginal, "")
-        }
         units <- list()
         for (i in seq_along(names)) {
             oceDebug(debug, "names[", i, "]='", names[i], "', unitsOriginal[", i, "]='", unitsOriginal[i], "'\n", sep="")
@@ -546,9 +527,8 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missingValue,
         lines <- readLines(file)
         #> options(warn=owarn)
         nlines <- length(lines)
-        if (length(grep("^END", lines[nlines]))) {
+        if (length(grep("^END", lines[nlines])))
             lines <- lines[-nlines]
-        }
         dataAndFlags <- read.csv(text=lines, header=FALSE, col.names=names, sep=",", encoding=encoding)
         nonflags <- grep("Flag$", names, invert=TRUE)
         flags <- grep("Flag$", names)
@@ -600,12 +580,10 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missingValue,
             Smin <- min(data[["salinity"]], na.rm=TRUE)
             Tmin <- min(data[["temperature"]], na.rm=TRUE)
             mv <- NULL
-            if (!is.na(Smin) && Smin < -8) {
+            if (!is.na(Smin) && Smin < -8)
                 mv <- c(mv, Smin)
-            }
-            if (!is.na(Tmin) && Tmin < -8) {
+            if (!is.na(Tmin) && Tmin < -8)
                 mv <- c(mv, Tmin)
-            }
             if (length(mv) == 1) {
                 missingValue <- mv
                 msg <- paste("missingValue inferred as ", missingValue, " from S or T minimum", sep="")
@@ -622,9 +600,8 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missingValue,
         }
     }
     if (!missing(missingValue) && !is.null(missingValue)) {
-        for (item in names(data)) {
+        for (item in names(data))
             data[[item]] <- ifelse(data[[item]]==missingValue, NA, data[[item]])
-        }
     }
     res@data <- data
     if (missing(processingLog)) {
@@ -653,19 +630,16 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missingValue,
 #'
 #' @author Dan Kelley
 read.ctd.woce.other <- function(file, columns=NULL, station=NULL, missingValue,
-                                deploymentType="unknown", monitor=FALSE, encoding="latin1",
-                                debug=getOption("oceDebug"), processingLog, ...)
+    deploymentType="unknown", monitor=FALSE, encoding="latin1",
+    debug=getOption("oceDebug"), processingLog, ...)
 {
-    if (missing(file)) {
+    if (missing(file))
         stop("must supply 'file'")
-    }
     if (is.character(file)) {
-        if (!file.exists(file)) {
+        if (!file.exists(file))
             stop("cannot find file '", file, "'")
-        }
-        if (0L == file.info(file)$size) {
+        if (0L == file.info(file)$size)
             stop("empty file '", file, "'")
-        }
     }
     #EXPOCODE 06MT18/1      WHP-ID A1E    DATE 090591
     #STNNBR    558 CASTNO   1 NO.RECORDS=   83
@@ -712,9 +686,8 @@ read.ctd.woce.other <- function(file, columns=NULL, station=NULL, missingValue,
     }
     # replace any missingValue with NA
     if (!missing(missingValue)) {
-        for (name in names(data)) {
+        for (name in names(data))
             data[[name]][missingValue == data[[name]]] <- NA
-        }
     }
     res@data <- data
     res@metadata$dataNamesOriginal <- dataNamesOriginal

@@ -21,24 +21,20 @@
 #' @family things related to adp data
 #' @family functions that read adp data
 read.adp.sontek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
-                            longitude=NA, latitude=NA, type=c("adp", "pcadp"), encoding=NA,
-                            monitor=FALSE, despike=FALSE, processingLog,
-                            debug=getOption("oceDebug"), ...)
+    longitude=NA, latitude=NA, type=c("adp", "pcadp"), encoding=NA,
+    monitor=FALSE, despike=FALSE, processingLog,
+    debug=getOption("oceDebug"), ...)
 {
-    if (missing(file)) {
+    if (missing(file))
         stop("must supply 'file'")
-    }
     if (is.character(file)) {
-        if (!file.exists(file)) {
+        if (!file.exists(file))
             stop("cannot find file '", file, "'")
-        }
-        if (0L == file.info(file)$size) {
+        if (0L == file.info(file)$size)
             stop("empty file '", file, "'")
-        }
     }
-    if (!interactive()) {
+    if (!interactive())
         monitor <- FALSE
-    }
     missing.to <- missing(to)
     # In this function, comments in [] refer to logical page number of ADPManual_v710.pd; add 14 for file page number
     profileStart <- NULL # prevent scope warning from rstudio; defined later anyway
@@ -71,9 +67,8 @@ read.adp.sontek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
             } else {
                 lower <- middle
             }
-            if (upper - lower < 2) {
+            if (upper - lower < 2)
                 break
-            }
             oceDebug(debug, "middle=", middle, " lower=", lower, " upper=", upper, " pass=", pass, " of max=", passes, "\n")
         }
         middle <- middle + add          # may use add to extend before and after window
@@ -103,9 +98,8 @@ read.adp.sontek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         file <- file(file, "rb")
         on.exit(close(file))
     }
-    if (!inherits(file, "connection")) {
+    if (!inherits(file, "connection"))
         stop("argument `file' must be a character string or connection")
-    }
     if (!isOpen(file)) {
         filename <- "(connection)"
         open(file, "rb")
@@ -245,16 +239,13 @@ read.adp.sontek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         oceDebug(debug, "dt=", dt, "\n", "by=", by, "profileStart[1:10] after indexing:", profileStart[1:10], "\n")
     } else {
         fromIndex <- from
-        if (missing.to) {
+        if (missing.to)
             to <- length(profileStart)
-        }
         to.index <- to
-        if (to.index < 1 + fromIndex) {
+        if (to.index < 1 + fromIndex)
             stop("need more separation between from and to")
-        }
-        if (is.character(by)) {
+        if (is.character(by))
             stop("cannot have string for 'by' if 'from' and 'to' are integers")
-        }
         profileStart <- profileStart[seq(from=from, to=to, by=by)]
         oceDebug(debug, "profileStart[1:10] after indexing:", profileStart[1:10], "\n")
     }
@@ -471,16 +462,13 @@ read.adp.sontek.serial <- function(file,
     beamAngle=25, orientation, encoding=NA, monitor=FALSE, processingLog,
                                    debug=getOption("oceDebug"), ...)
 {
-    if (missing(file)) {
+    if (missing(file))
         stop("must supply 'file'")
-    }
     if (is.character(file)) {
-        if (!file.exists(file)) {
+        if (!file.exists(file))
             stop("cannot find file '", file, "'")
-        }
-        if (0L == file.info(file)$size) {
+        if (0L == file.info(file)$size)
             stop("empty file '", file, "'")
-        }
     }
     # Data format is described in
     #   SonTek/YSI
@@ -548,15 +536,13 @@ read.adp.sontek.serial <- function(file,
         oceDebug(debug, "handling multiple files\n")
         buf <- NULL
         for (i in 1:nfile) {
-            if (monitor) {
+            if (monitor)
                 cat("\"", file[i], "\" ", sep="")
-            }
             thisFile <- file(file[i], "rb")
             seek(thisFile, 0, "end", rw="read")
             fileSize <- seek(thisFile, 0, origin="start", rw="read")
-            if (monitor) {
+            if (monitor)
                 cat(fileSize, "bytes\n")
-            }
             buf <- c(buf, readBin(thisFile, what="raw", n=fileSize, endian="little"))
             close(thisFile)
         }
@@ -622,24 +608,19 @@ read.adp.sontek.serial <- function(file,
     # trim, if from and to are integers
     if (!missing(to)) {
         if (is.numeric(from) && is.numeric(to) && is.numeric(by)) {
-            if (from < 1) {
+            if (from < 1)
                 stop("from=", from, " but must exceed 1")
-            }
-            if (to < 1) {
+            if (to < 1)
                 stop("to=", to, " but must exceed 1")
-            }
-            if (by < 1) {
+            if (by < 1)
                 stop("by=", by, " but must exceed 1")
-            }
-            if (to <= from) {
+            if (to <= from)
                 stop("from=", from, " must exceed to=", to)
-            }
             p <- p[seq(from=from, to=to, by=by)]
         } else {
             if (inherits(from, "POSIXt")) {
-                if (!inherits(to, "POSIXt")) {
+                if (!inherits(to, "POSIXt"))
                     stop("if 'from' is POSIXt, then 'to' must be, also")
-                }
                 if (!is.numeric(by)) {
                     warning("'by' must be numeric")
                     by <- 1
@@ -708,9 +689,8 @@ read.adp.sontek.serial <- function(file,
             }
         }
     }
-    if (monitor) {
+    if (monitor)
         cat("\nRead", np,  "of the", np, "profiles in", filename[1], "\n")
-    }
     S  <- sin(beamAngle * pi / 180)
     C  <- cos(beamAngle * pi / 180)
     # FIXME: use the transformation.matrix, if it has been discovered in a header

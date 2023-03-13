@@ -350,16 +350,13 @@ read.lisst <- function(file,
     latitude=NA,
     encoding="latin1")
 {
-    if (missing(file)) {
+    if (missing(file))
         stop("must supply 'file'")
-    }
     if (is.character(file)) {
-        if (!file.exists(file)) {
+        if (!file.exists(file))
             stop("cannot find file '", file, "'")
-        }
-        if (0L == file.info(file)$size) {
+        if (0L == file.info(file)$size)
             stop("empty file '", file, "'")
-        }
     }
     filename <- NULL
     if (is.character(file)) {
@@ -378,11 +375,9 @@ read.lisst <- function(file,
     res <- as.lisst(data, filename=filename, year=year, tz=tz, longitude=longitude, latitude=latitude)
     res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     names <- names(data)
-    if ("pressure" %in% names) {
+    if ("pressure" %in% names)
         res@metadata$units$pressure <- list(unit=expression(dbar), scale="")
-    }
-    if ("temperature" %in% names) {
+    if ("temperature" %in% names)
         res@metadata$units$temperature <- list(unit=expression(degree*C), scale="")
-    }
     res
 }

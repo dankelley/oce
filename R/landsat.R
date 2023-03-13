@@ -1,6 +1,5 @@
 # vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
 
-
 #' Class to Store landsat Data
 #'
 #' This class holds landsat data. Such are available at several
@@ -328,15 +327,12 @@ setMethod(f="[[",
     definition=function(x, i, j, ...) {
         debug <- getOption("oceDebug")
         oceDebug(debug, "landsat [[ {\n", unindent=1)
-        if (missing(i)) {
+        if (missing(i))
             stop("Must name a landsat item to retrieve, e.g. '[[\"panchromatic\"]]'", call.=FALSE)
-        }
-        if (length(i) > 1L) {
+        if (length(i) > 1L)
             stop("[[,landsat-method requires length(i) to be of 1\n")
-        }
-        if (!is.character(i)) {
+        if (!is.character(i))
             stop("landsat item must be specified by name", call.=FALSE)
-        }
         dataDerived <- c("longitude", "latitude", "temperature", "panchromatic")
         if (i == "?") {
             return(list(metadata=sort(names(x@metadata)),
@@ -469,9 +465,8 @@ dim <- dim(d)
                 i <- ii
             }
         }
-        if (is.na(ii)) {
+        if (is.na(ii))
             stop("this landsat object lacks a band named \"", i, "\"", call.=FALSE)
-        }
         oceDebug(getOption("oceDebug"), "band:", iorig, "\n")
         isList <- is.list(x@data[[i]])
         if (isList) {
@@ -688,13 +683,13 @@ setMethod(f="[[<-",
 setMethod(f="plot",
     signature=signature("landsat"),
     definition=function(x, band, which=1, decimate=TRUE, zlim, utm=FALSE,
-                        col=oce.colorsPalette,
-                        drawPalette=TRUE,
-                        showBandName=TRUE,
-                        alpha.f=1, red.f=1.7, green.f=1.5, blue.f=6,
-                        offset=c(0, -0.05, -0.2, 0),
-                        transform=diag(c(red.f, green.f, blue.f, alpha.f)),
-                        debug=getOption("oceDebug"), ...)
+        col=oce.colorsPalette,
+        drawPalette=TRUE,
+        showBandName=TRUE,
+        alpha.f=1, red.f=1.7, green.f=1.5, blue.f=6,
+        offset=c(0, -0.05, -0.2, 0),
+        transform=diag(c(red.f, green.f, blue.f, alpha.f)),
+        debug=getOption("oceDebug"), ...)
     {
         oceDebug(debug, "plot,landsat-method(..., which=c(", paste(which, collapse=","),
             "), decimate=", decimate,
@@ -808,9 +803,8 @@ setMethod(f="plot",
                             stop("landsat object has only missing values in the \"", band, "\" band", call.=FALSE)
                         }
                     }
-                    if (all(d == 0)) {
+                    if (all(d == 0))
                         stop("landsat object has only zero values in the \"", band, "\" band", call.=FALSE)
-                    }
                     if (is.na(pmatch(band, "temperature"))) {
                         d[d == 0] <- NA  # only makes sense for count data
                     }
@@ -951,9 +945,8 @@ read.landsatmeta <- function(file, encoding="latin1", debug=getOption("oceDebug"
     names(header) <- tolower(names)
     header <- as.list(header)
     # Make numeric if possible
-    for (i in seq_along(header)) {
+    for (i in seq_along(header))
         try(header[[i]] <- scan(text=header[[i]], quiet=TRUE), silent=TRUE)
-    }
     # Band (L4TM, L5TM, and L7ETM+) names from http://landsat.usgs.gov/best_spectral_bands_to_use.php
     if ("LANDSAT_4" == spacecraft)  {
         bandnames <- c("blue", "green", "red", "nir", "swir1", "tirs1", "tirs2", "swir2")
@@ -1090,22 +1083,19 @@ read.landsatmeta <- function(file, encoding="latin1", debug=getOption("oceDebug"
 #'
 #' @family things related to landsat data
 read.landsat <- function(file,
-                         band="all",
-                         emissivity=0.984,
-                         decimate,
-                         encoding="latin1",
-                         debug=getOption("oceDebug"))
+    band="all",
+    emissivity=0.984,
+    decimate,
+    encoding="latin1",
+    debug=getOption("oceDebug"))
 {
-    if (missing(file)) {
+    if (missing(file))
         stop("must supply 'file'")
-    }
     if (is.character(file)) {
-        if (!file.exists(file)) {
+        if (!file.exists(file))
             stop("cannot find file '", file, "'")
-        }
-        if (0L == file.info(file)$size) {
+        if (0L == file.info(file)$size)
             stop("empty file '", file, "'")
-        }
     }
     oceDebug(debug, "read.landsat(file=\"", file, "\",",
         if (length(band) > 1) {
@@ -1118,12 +1108,10 @@ read.landsat <- function(file,
         band <- c("red", "green", "nir")
     }
     decimateGiven <- !missing(decimate)
-    if (decimateGiven && decimate < 1) {
+    if (decimateGiven && decimate < 1)
         warning("invalid value of decimate (", decimate, ") being ignored")
-    }
-    if (!requireNamespace("tiff", quietly=TRUE)) {
+    if (!requireNamespace("tiff", quietly=TRUE))
         stop('must install.packages("tiff") to read landsat data')
-    }
     res <- new("landsat")
     file <- gsub("/$", "", file)
     actualfilename <- gsub("/$", "", file) # permit e.g. "LE71910202005194ASN00/"
@@ -1224,17 +1212,14 @@ read.landsat <- function(file,
 #' @family things related to landsat data
 landsatAdd <- function(x, data, name, debug=getOption("oceDebug"))
 {
-    if (!is.matrix(data)) {
+    if (!is.matrix(data))
         stop("data must be a matrix")
-    }
-    if (missing(name)) {
+    if (missing(name))
         stop("must provide a name for the data")
-    }
     dimNew <- dim(data)
     dimOld <- dim(x@data[[1]]$msb)
-    if (any(dimNew != dimOld)) {
+    if (any(dimNew != dimOld))
         stop("dim(data) = c(", dimNew[1], ",", dimNew[2], ") must match existing dimension c(", dimOld[1], ",", dimOld[2], ")")
-    }
     res <- x
     res@data[[name]] <- data
     res
@@ -1287,34 +1272,27 @@ landsatAdd <- function(x, data, name, debug=getOption("oceDebug"))
 #' @family things related to landsat data
 landsatTrim <- function(x, ll, ur, box, debug=getOption("oceDebug"))
 {
-    if (!inherits(x, "landsat")) {
+    if (!inherits(x, "landsat"))
         stop("method is only for landsat objects")
-    }
-    if (missing(ll) != missing(ur)) {
+    if (missing(ll) != missing(ur))
         stop("must provide both ll and ur, or neither")
-    }
-    if (!missing(ll) && !missing(box)) {
+    if (!missing(ll) && !missing(box))
         stop("cannot provide both box and (ll, ur)")
-    }
     if (missing(box)) {
-        if (is.null(names(ll))) {
+        if (is.null(names(ll)))
             ll <- list(longitude=ll[1], latitude=ll[2])
-        }
-        if (is.null(names(ur))) {
+        if (is.null(names(ur)))
             ur <- list(longitude=ur[1], latitude=ur[2])
-        }
     } else {
         ll <- list(longitude=box$x[1], latitude=box$y[1])
         ur <- list(longitude=box$x[2], latitude=box$y[2])
     }
     oceDebug(debug, "ll:", ll$longitude, "E, ", ll$latitude, "N\n", sep="")
     oceDebug(debug, "ur:", ur$longitude, "E, ", ur$latitude, "N\n", sep="")
-    if (2 != sum(c("longitude", "latitude") %in% names(ll))) {
+    if (2 != sum(c("longitude", "latitude") %in% names(ll)))
         stop("'ll' must have named items 'longitude' and 'latitude'")
-    }
-    if (2 != sum(c("longitude", "latitude") %in% names(ur))) {
+    if (2 != sum(c("longitude", "latitude") %in% names(ur)))
         stop("'ur' must have named items 'longitude' and 'latitude'")
-    }
     # Trim to box, either by lon-lat (old way) or UTM (new way)
     ll$longitude <- max(ll$longitude, x@metadata$lllon)
     ur$longitude <- min(ur$longitude, x@metadata$urlon)

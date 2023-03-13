@@ -101,7 +101,6 @@ Other things related to ad2cp data:
 \code{\link{ad2cpHeaderValue}()},
 \code{\link{adpAd2cpFileTrim}()},
 \code{\link{is.ad2cp}()},
-\code{\link{plotAD2CP}()},
 \code{\link{read.adp.ad2cp}()}
 }
 \author{

@@ -111,12 +111,10 @@ setMethod(f="initialize",
     signature="sealevel",
     definition=function(.Object, elevation, time, ...) {
         .Object <- callNextMethod(.Object, ...)
-        if (!missing(elevation)) {
+        if (!missing(elevation))
             .Object@data$elevation <- elevation
-        }
-        if (!missing(time)) {
+        if (!missing(time))
             .Object@data$time <- time
-        }
         .Object@processingLog$time <- presentTime()
         .Object@processingLog$value <- "create 'sealevel' object"
         return(.Object)
@@ -350,34 +348,29 @@ setValidity("sealevel",
 #' summary(sl)
 #' @family things related to sealevel data
 as.sealevel <- function(elevation, time, header=NULL,
-                        stationNumber=NA, stationVersion=NA, stationName=NULL,
-                        region=NULL, year=NA, longitude=NA, latitude=NA, GMTOffset=NA,
-                        decimationMethod=NA, referenceOffset=NA, referenceCode=NA, deltat)
+    stationNumber=NA, stationVersion=NA, stationName=NULL,
+    region=NULL, year=NA, longitude=NA, latitude=NA, GMTOffset=NA,
+    decimationMethod=NA, referenceOffset=NA, referenceCode=NA, deltat)
 {
-    if (missing(elevation)) {
+    if (missing(elevation))
         stop("must supply sealevel height, elevation, in metres")
-    }
-    if (inherits(elevation, "POSIXt")) {
+    if (inherits(elevation, "POSIXt"))
         stop("elevation must be a numeric vector, not a time vector")
-    }
     res <- new("sealevel")
     n <- length(elevation)
     if (missing(time)) {
         # construct hourly from time "zero"
         start <- as.POSIXct("0000-01-01 00:00:00", tz="UTC")
         time <- as.POSIXct(start + seq(0, n - 1, 1) * 3600, tz="UTC")
-        if (is.na(GMTOffset)) {
+        if (is.na(GMTOffset))
             GMTOffset <- 0 # FIXME: do I want to do this?
-        }
     } else {
         time <- as.POSIXct(time, tz="UTC")
     }
-    if (missing(deltat)) {
+    if (missing(deltat))
         deltat <- as.numeric(difftime(time[2], time[1], units="hours"))
-    }
-    if (is.na(deltat) || deltat <= 0) {
+    if (is.na(deltat) || deltat <= 0)
         deltat <- 1
-    }
     res@metadata$filename <- ""
     res@metadata$header <- header
     res@metadata$year <- year
@@ -476,12 +469,12 @@ as.sealevel <- function(elevation, time, header=NULL,
 setMethod(f="plot",
     signature=signature("sealevel"),
     definition=function(x, which=1:3,
-                        drawTimeRange=getOption("oceDrawTimeRange"),
-                        mgp=getOption("oceMgp"),
-                        mar=c(mgp[1]+0.5, mgp[1]+1.5, mgp[2]+1, mgp[2]+3/4),
-                        marginsAsImage=FALSE,
-                        debug=getOption("oceDebug"),
-                        ...)
+        drawTimeRange=getOption("oceDrawTimeRange"),
+        mgp=getOption("oceMgp"),
+        mar=c(mgp[1]+0.5, mgp[1]+1.5, mgp[2]+1, mgp[2]+3/4),
+        marginsAsImage=FALSE,
+        debug=getOption("oceDebug"),
+        ...)
     {
         oceDebug(debug, "plot.sealevel(..., mar=c(", paste(mar, collapse=", "), "), ...) {\n", sep="", unindent=1)
         titlePlot <- function(x)
@@ -496,12 +489,10 @@ setMethod(f="plot",
                     if (!is.null(x@metadata$region)) x@metadata$region else "",
                     sep="")
             }
-            if (!is.na(x@metadata$latitude) && !is.na(x@metadata$longitude)) {
+            if (!is.na(x@metadata$latitude) && !is.na(x@metadata$longitude))
                 title <- paste(title, latlonFormat(x@metadata$latitude, x@metadata$longitude), sep="")
-            }
-            if (nchar(title) > 0) {
+            if (nchar(title) > 0)
                 mtext(side=3, title, adj=1, cex=2/3)
-            }
         }
         drawConstituent <- function(frequency=0.0805114007, label="M2", col="darkred", side=1)
         {
@@ -517,23 +508,19 @@ setMethod(f="plot",
             drawConstituent(0.0805114007, "M2", side=3)
             drawConstituent(0.0833333333, "S2", side=1)
         }
-
-        if (!inherits(x, "sealevel")) {
+        if (!inherits(x, "sealevel"))
             stop("method is only for objects of class '", "sealevel", "'")
-        }
         opar <- par(no.readonly = TRUE)
         par(mgp=mgp, mar=mar)
         lw <- length(which)
         if (marginsAsImage) {
             scale <- 0.7
             w <- (1.5 + par("mgp")[2]) * par("csi") * scale * 2.54 + 0.5
-            if (lw > 1) {
+            if (lw > 1)
                 layout(matrix(1:(2*lw), nrow=lw, byrow=TRUE), widths=rep(c(1, lcm(w)), lw))
-            }
         } else {
-            if (lw > 1) {
+            if (lw > 1)
                 layout(cbind(1:lw))
-            }
         }
         if (lw > 1) on.exit(par(opar))
         # tidal constituents (in cpd):
@@ -566,9 +553,8 @@ setMethod(f="plot",
                 to <- from + 28 * 86400 # 28 days
                 look <- from <= x@data$time & x@data$time <= to
                 xx <- x
-                for (i in seq_along(x@data)) {
+                for (i in seq_along(x@data))
                     xx@data[[i]] <- x@data[[i]][look]
-                }
                 if (any(is.finite(xx@data$elevation))) {
                     atWeek <- seq(from=from, to=to, by="week")
                     atDay  <- seq(from=from, to=to, by="day")
@@ -689,18 +675,15 @@ setMethod(f="plot",
 #'
 #' @family things related to sealevel data
 read.sealevel <- function(file, tz=getOption("oceTz"), encoding="latin1",
-                          processingLog, debug=getOption("oceDebug"))
+    processingLog, debug=getOption("oceDebug"))
 {
-    if (missing(file)) {
+    if (missing(file))
         stop("must supply 'file'")
-    }
     if (is.character(file)) {
-        if (!file.exists(file)) {
+        if (!file.exists(file))
             stop("cannot find file '", file, "'")
-        }
-        if (0L == file.info(file)$size) {
+        if (0L == file.info(file)$size)
             stop("empty file '", file, "'")
-        }
     }
     oceDebug(debug, "read.sealevel(file=\"", file, "\", ...) {\n", sep="", unindent=1)
     filename <- "?"
@@ -709,9 +692,8 @@ read.sealevel <- function(file, tz=getOption("oceTz"), encoding="latin1",
         file <- file(file, "r", encoding=encoding)
         on.exit(close(file))
     }
-    if (!inherits(file, "connection")) {
+    if (!inherits(file, "connection"))
         stop("argument `file' must be a character string or connection")
-    }
     if (!isOpen(file)) {
         filename <- "(connection)"
         open(file, "r", encoding=encoding)
@@ -747,9 +729,8 @@ read.sealevel <- function(file, tz=getOption("oceTz"), encoding="latin1",
         # 01/01/2001 12:00 AM,1.82,
         headerLength <- 8
         header <- readLines(file, n=headerLength)
-        if (debug > 0) {
+        if (debug > 0)
             print(header)
-        }
         stationName   <- strsplit(header[1], ",")[[1]][2]
         stationNumber <- as.numeric(strsplit(header[2], ",")[[1]][2])
         latitude      <- as.numeric(strsplit(header[3], ",")[[1]][2])

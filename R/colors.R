@@ -28,8 +28,8 @@ colormapNames <- c("gmt_relief", "gmt_ocean", "gmt_globe", "gmt_gebco")
 
 # keeping this (which was called 'colorize' until 2014-05-07) for a while, but not in NAMESPACE.
 colormap_colorize <- function(z=NULL, zlim, zclip=FALSE, breaks,
-                              col=oceColorsViridis, colormap=NULL, segments=1, missingColor="gray",
-                              debug=getOption("oceDebug"))
+    col=oceColorsViridis, colormap=NULL, segments=1, missingColor="gray",
+    debug=getOption("oceDebug"))
 {
     oceDebug(debug, "colormap_colorize(z=",
         if (is.null(z)) "(missing)" else paste("c(", z[1], ",...)", sep=""), ",",
@@ -74,9 +74,8 @@ colormap_colorize <- function(z=NULL, zlim, zclip=FALSE, breaks,
         }
         if (is.null(z)) {
             oceDebug(debug, "z is NULL\n")
-            if (missing(zlim) || is.null(zlim)) {
+            if (missing(zlim) || is.null(zlim))
                 zlim <- range(breaks)
-            }
             zcol <- "black"
         } else {
             oceDebug(debug, "z is not NULL\n")
@@ -101,22 +100,18 @@ colormap_colorize <- function(z=NULL, zlim, zclip=FALSE, breaks,
         }
     } else {
         # have a colormap
-        if (!missing(col)) {
+        if (!missing(col))
             stop("cannot supply 'col' and 'colormap' at the same time")
-        }
-        if (!missing(breaks)) {
+        if (!missing(breaks))
             stop("cannot supply 'breaks' and 'colormap' at the same time")
-        }
         if (is.character(colormap)) {
             colormap <- colormap_colormap(name=colormap, debug=debug-1)
-            if (missing(zlim)) {
+            if (missing(zlim))
                 zlim <- colormap$zlim
-            }
             missingColor <- colormap$missingColor
         }
-        if (inherits(colormap, "colormap")) {
+        if (inherits(colormap, "colormap"))
             missingColor <- colormap$missingColor
-        }
         breaks <- NULL
         col <- NULL
         # Could preallocate but colormaps are small so do not bother
@@ -133,11 +128,8 @@ colormap_colorize <- function(z=NULL, zlim, zclip=FALSE, breaks,
         breaks <- c(breaks, breaks[nbreaks] + delta)
         # FIXME: next might miss top color
         if (is.null(zlim)) {
-            if (is.null(z)) {
-                zlim <- range(breaks)
-            } else {
-                zlim <- rangeExtended(z) # note the extended range
-            }
+            zlim <- if (is.null(z)) range(breaks)
+                else rangeExtended(z) # note the extended range
         }
         if (is.null(z)) {
             zcol <- "black"
@@ -169,15 +161,12 @@ colormap_colorize <- function(z=NULL, zlim, zclip=FALSE, breaks,
 colormapGmtNumeric <- function(x0, x1, col0, col1, bpl=1)
 {
     n <- length(x0)
-    if (length(x1) != n) {
+    if (length(x1) != n)
         stop("mismatched lengths of x0 and x1 (", n, " and ", length(x1), ")")
-    }
-    if (length(col0) != n) {
+    if (length(col0) != n)
         stop("mismatched lengths of x0 and col0 (", n, " and ", length(col0), ")")
-    }
-    if (length(col1) != n) {
+    if (length(col1) != n)
         stop("mismatched lengths of x0 and col1 (", n, " and ", length(col1), ")")
-    }
     breaks <- NULL
     col <- NULL
     # Could preallocate but colormaps are small so do not bother
@@ -372,9 +361,8 @@ colormapGMT <- function(name, debug=getOption("oceDebug"))
         oceDebug(debug, "case 2: file or URL\n")
         # Look for local file or URL
         text <- try(readLines(name), silent=TRUE)
-        if (inherits(text, "try-error")) {
+        if (inherits(text, "try-error"))
             stop("unknown colormap name: \"", name, "\" (not built-in, not local file, not working URL)")
-        }
     }
     text <- text[!grepl("^#", text)] # remove comments, if any exist (as in files read in)
     textData <- text[grep("^[ ]*[-0-9]", text)]
@@ -662,7 +650,7 @@ colormapGMT <- function(name, debug=getOption("oceDebug"))
 #'
 #' @template colourBlindnessTemplate
 colormap <- function(z=NULL, zlim, zclip=FALSE, breaks, col=oceColorsViridis,
-                     name, x0, x1, col0, col1, blend=0, missingColor, debug=getOption("oceDebug"))
+    name, x0, x1, col0, col1, blend=0, missingColor, debug=getOption("oceDebug"))
 {
     debug <- min(max(0, debug), 1)
     #oceDebug(debug, gsub(" = [^,)]*", "", deparse(expr=match.call())), " {\n", style="bold", sep="", unindent=1)
@@ -728,36 +716,29 @@ colormap <- function(z=NULL, zlim, zclip=FALSE, breaks, col=oceColorsViridis,
     } # end of case C
     if (case == "B") {                 # x0 col0 x1 col1
         oceDebug(debug, "Case B\n", style="bold")
-        if (!(x0Known && col0Known && x1Known && col1Known)) {
+        if (!(x0Known && col0Known && x1Known && col1Known))
             stop("'x0', 'col0', 'x1', 'col1' must all be supplied, if any is supplied")
-        }
         for (disallowed in c("name", "breaks", "col")) {
             if (get(paste0(disallowed, "Known"))) {
                 stop("cannot supply '", disallowed, "' since `x0`, `col0`, `x1` and `col1` were supplied (i.e. in Case B)\n")
             }
         }
-        if (length(x0) != length(x1)) {
+        if (length(x0) != length(x1))
             stop("lengths of x0 and x1 must agree")
-        }
-        if (length(col0) != length(col1)) {
+        if (length(col0) != length(col1))
             stop("lengths of col0 and col1 must agree")
-        }
-        if (length(x0) != length(col0)) {
+        if (length(x0) != length(col0))
             stop("lengths of x0 and col0 must agree")
-        }
-        if (!identical(x0, sort(x0))) {
+        if (!identical(x0, sort(x0)))
             stop("'x0' must be ordered from small to large")
-        }
-        if (!identical(x1, sort(x1))) {
+        if (!identical(x1, sort(x1)))
             stop("'x1' must be ordered from small to large")
-        }
         breaks <- c(x0, tail(x1, 1))
         # blend colors
         col <- col2rgb(col0) # will overwrite
         oceDebug(debug, "blend=", blend, "\n", sep="")
-        for (i in seq_along(col0)) {
+        for (i in seq_along(col0))
             col[, i] <- colorRamp(c(col0[i], col1[i]))(blend)[1, ]
-        }
         col <- rgb(col[1, ], col[2, ], col[3, ], maxColorValue=255)
         if (!missingColorKnown)
             missingColor <- "gray"
@@ -794,9 +775,8 @@ colormap <- function(z=NULL, zlim, zclip=FALSE, breaks, col=oceColorsViridis,
             zlimKnown <- TRUE
         } else if (zKnown) {
             oceDebug(debug, "zlimKnown=", zlimKnown, ", so inferring zlim from z\n", sep="")
-            if (!any(is.finite(z))) {
+            if (!any(is.finite(z)))
                 stop("cannot infer zlim, since z has no finite values, and breaks was not given")
-            }
             zlim <- rangeExtended(z[is.finite(z)])
             zlimKnown <- TRUE
         } else  {
@@ -876,23 +856,18 @@ colormap_colormap <- function(name, x0, x1, col0, col1, n=1, zclip=FALSE, debug=
         res <- colormapGMT(name, debug=debug-1)
     } else {
         oceDebug(debug, "name was not specified, so using x0, x1, etc., to compute colormap\n")
-        if (missing(x0) || missing(x1) || missing(col0) || missing(col1)) {
+        if (missing(x0) || missing(x1) || missing(col0) || missing(col1))
             stop('give either "name" or all of: "x0", "x1", "col0" and "col1"')
-        }
         xlen <- length(x0)
-        if (length(x1) != xlen) {
+        if (length(x1) != xlen)
             stop('lengths of "x0" and "x1" must agree')
-        }
-        if (length(col0) != xlen) {
+        if (length(col0) != xlen)
             stop('lengths of "x0" and "col0" must agree')
-        }
-        if (length(col1) != xlen) {
+        if (length(col1) != xlen)
             stop('lengths of "x0" and "col1" must agree')
-        }
         x0r <- x1r <- col0r <- col1r <- NULL
-        if (length(n) != xlen - 1) {
+        if (length(n) != xlen - 1)
             n <- rep(n[1], length.out=xlen)
-        }
         oceDebug(debug, "x0:", x0, "\n")
         oceDebug(debug, "x1:", x1, "\n")
         oceDebug(debug, "col0:", col0, "\n")
@@ -929,9 +904,8 @@ palette2breakscolor <- function(name, breaksPerLevel=1, topoRegion=c("water", "l
 {
     knownPalettes <- c("GMT_relief", "GMT_ocean", "globe")
     palette <- pmatch(name, knownPalettes)
-    if (is.na(palette)) {
+    if (is.na(palette))
        stop("unknown palette name \"", name, "\"")
-    }
     name <- knownPalettes[palette]
     if (name == "GMT_relief") {
         # GMT based on

@@ -18,42 +18,49 @@ if (file.exists(file)) {
 
     test_that("'dataType' catches errors",
         {
-            expect_error(read.oce(file, dataType=999), "dataType=999 not allowed")
-            expect_error(read.oce(file, dataType="unknown"), "dataType=\"unknown\" not allowed")
+            expect_error(read.oce(file, dataType=999), "dataType=999 not understood")
+            expect_error(read.oce(file, dataType="unknown"), "dataType=\"unknown\" not understood")
         })
 
     test_that("missing 'dataType' works",
         {
-            expect_warning(d <- read.adp.ad2cp(file), "early EOF")
-            expect_warning(d <- read.oce(file), "early EOF")
-            expect_equal(d,
-                structure(list(
-                        IDhex=c("0x16", "0x1c", "0x23", "0xa0"),
-                        IDdec=c(22L, 28L, 35L, 160L),
-                        name=c("average", "echosounder", "echosounderRaw", "text"),
-                        occurance=c(7L, 2L, 2L, 1L)),
-                    class="data.frame",
-                    row.names=c(NA, -4L)))
+            expect_error(d <- read.adp.ad2cp(file), "must supply 'dataType'")
+            expect_error(d <- read.oce(file), "must supply 'dataType'")
+        })
+
+    test_that("toc works",
+        {
+            expect_message(
+                expect_warning(
+                    expect_warning(
+                        toc <- read.oce(file, TOC=TRUE), "early EOF in chunk"),
+                    "setting blankingDistance"),
+                "setting plan=0")
+            expect_equal(toc[[1]],
+                structure(list(ID.hex=c("0x16", "0x1c", "0x23", "0xa0"),
+                        ID.dec=c(22L, 28L, 35L, 160L),
+                        Name=c("average", "echosounder", "echosounderRaw", "text"),
+                        Count = c(7L, 2L, 2L, 1L)),
+                    class = "data.frame",
+                    row.names = c(NA, -4L)))
         })
 
     test_that("local_data/ad2cp/ad2cp_01.ad2cp 'average' is okay",
         {
             expect_message(
                 expect_warning(
-                    expect_message(
-                        expect_warning(
-                            d <- read.oce(file, dataType="average"),
-                            "early EOF in chunk 13"),
-                        "using to=12 based on file contents"),
+                    expect_warning(
+                        d <- read.oce(file, dataType="average"),
+                        "early EOF in chunk 13"),
                     "setting blankingDistanceInCm to FALSE"),
-                "setting plan=0, the most common value in this file")
+                "setting plan=0")
             # Identifiers
             expect_equal(d[["type"]], "Signature100")
             expect_equal(d[["fileType"]], "AD2CP")
             expect_equal(d[["serialNumber"]], 101135)
             # Entry names
             expect_equal(sort(names(d[["data"]])),
-                c("a", "accelerometer",
+                c("a", "accelerometer", "distance",
                     "ensemble", "heading", "magnetometer", "nominalCorrelation",
                     "pitch", "powerLevel",
                     "pressure", "q", "roll", "soundSpeed", "temperature",
@@ -123,11 +130,9 @@ if (file.exists(file)) {
         {
             expect_message(
                 expect_warning(
-                    expect_message(
-                        expect_warning(
-                            d <- read.oce(file, dataType="echosounder"),
-                            "early EOF in chunk 13"),
-                        "using to=12 based on file contents"),
+                    expect_warning(
+                        d <- read.oce(file, dataType="echosounder"),
+                        "early EOF in chunk 13"),
                     "setting blankingDistanceInCm to FALSE"),
                 "setting plan=0, the most common value in this file")
             # Regression tests
