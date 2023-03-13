@@ -9,6 +9,7 @@ if (FALSE) {
     message("run 'codemetar::write_codemeta()' and then git push")
 }
 t <- devtools::spell_check()
+print(t)
 stopifnot(t == "No spelling errors found.")
 urlchecker::url_check()
 devtools::check_win_release()
