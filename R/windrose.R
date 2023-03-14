@@ -283,9 +283,8 @@ setMethod(f="plot",
         if (missing(col)) {
             col <- c("red", "pink", "blue", "darkgray")
         } else {
-            if (length(col) != 4) {
+            if (length(col) != 4)
                 stop("'col' should be a list of 4 colors")
-            }
         }
         # Draw circle and radii
         tt <- seq(0, 2*pi, length.out=100)

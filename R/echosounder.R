@@ -1121,9 +1121,8 @@ read.echosounder <- function(file,
             if (debug > 3) cat(" unknown code IGNORED\n")
         }
         N6 <- .C("uint16_le", buf[offset+N+5:6], 1L, res=integer(1), NAOK=TRUE, PACKAGE="oce")$res
-        if (N6 != N + 6) {
+        if (N6 != N + 6)
             stop("error reading tuple number ", tuple, " (mismatch in redundant header-length flags)")
-        }
         offset <- offset + N + 6
         tuple <- tuple + 1
     }

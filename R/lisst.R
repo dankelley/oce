@@ -278,7 +278,8 @@ as.lisst <- function(data, filename="", year=0, tz="UTC", longitude=NA, latitude
 {
     res <- new("lisst", filename=filename, latitude=latitude, longitude=longitude)
     ncols <- ncol(data)
-    if (ncols < 42) stop("data file must hold at least 42 space-separated columns")
+    if (ncols < 42)
+        stop("data file must hold at least 42 space-separated columns")
     if (ncols > 42) {
         warning("data file has more than 42 columns; only first 42 are used")
         data <- data[, 1:42]
@@ -343,12 +344,8 @@ as.lisst <- function(data, filename="", year=0, tz="UTC", longitude=NA, latitude
 #' @author Dan Kelley
 #'
 #' @family things related to lisst data
-read.lisst <- function(file,
-    year=0,
-    tz="UTC",
-    longitude=NA,
-    latitude=NA,
-    encoding="latin1")
+read.lisst <- function(file, year=0, tz="UTC",
+    longitude=NA, latitude=NA, encoding="latin1")
 {
     if (missing(file))
         stop("must supply 'file'")
@@ -364,9 +361,8 @@ read.lisst <- function(file,
         file <- file(file, "r", encoding=encoding)
         on.exit(close(file))
     }
-    if (!inherits(file, "connection")) {
+    if (!inherits(file, "connection"))
         stop("argument `file' must be a character string or connection")
-    }
     if (!isOpen(file)) {
         open(file, "r", encoding=encoding)
         on.exit(close(file))

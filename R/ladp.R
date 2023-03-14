@@ -210,9 +210,11 @@ as.ladp <- function(longitude, latitude, station, time, pressure, u, v, uz, vz, 
             }
         }
         u <- x[["u"]]
-        if (is.null(u)) stop("parent object lacks u")
+        if (is.null(u))
+            stop("parent object lacks u")
         v <- x[["v"]]
-        if (is.null(v)) stop("parent object lacks v")
+        if (is.null(v))
+            stop("parent object lacks v")
         uz <- x[["uz"]]
         vz <- x[["vz"]]
         salinity <- x[["salinity"]]
@@ -225,23 +227,31 @@ as.ladp <- function(longitude, latitude, station, time, pressure, u, v, uz, vz, 
         station <- x$station[1]
         time <- x$time
         pressure <- x$pressure
-        if (is.null(pressure)) stop("parent object lacks pressure")
+        if (is.null(pressure))
+            stop("parent object lacks pressure")
         u <- x$u
-        if (is.null(u)) stop("parent object lacks u")
+        if (is.null(u))
+            stop("parent object lacks u")
         v <- x$v
-        if (is.null(v)) stop("parent object lacks v")
+        if (is.null(v))
+            stop("parent object lacks v")
         uz <- if ("uz" %in% names) x$uz else NULL
         vz <- if ("vz" %in% names) x$vz else NULL
         salinity <- if ("salinity" %in% names) x$salinity else NULL
         temperature <- if ("temperature" %in% names) x$temperature else NULL
     } else {
-        if (missing(longitude)) stop("must supply longitude")
-        if (missing(latitude)) stop("must supply latitude")
+        if (missing(longitude))
+            stop("must supply longitude")
+        if (missing(latitude))
+            stop("must supply latitude")
         if (missing(station)) station <- "?"
         if (missing(time)) time <- NULL
-        if (missing(pressure)) stop("must supply pressure")
-        if (missing(u)) stop("must supply u") else u <- fixColumn(u)
-        if (missing(v)) stop("must supply v") else v <- fixColumn(v)
+        if (missing(pressure))
+            stop("must supply pressure")
+        if (missing(u))
+            stop("must supply u") else u <- fixColumn(u)
+        if (missing(v))
+            stop("must supply v") else v <- fixColumn(v)
         uz <- if (missing(uz)) NULL else fixColumn(uz)
         vz <- if (missing(vz)) NULL else fixColumn(vz)
         salinity <- if (missing(salinity)) NULL else fixColumn(salinity)

@@ -1659,8 +1659,10 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
     if (nchar(projection) && substr(projection, 1, 1) != "+")
         stop("use PROJ format, e.g. projection=\"+proj=merc\" for Mercator\n", sep="")
     xy <- lonlat2map(longitude, latitude, projection=projection, debug=debug-1)
-    if (!missing(latitudelim) && 0 == diff(latitudelim)) stop("latitudelim must contain two distinct values")
-    if (!missing(longitudelim) && 0 == diff(longitudelim)) stop("longitudelim must contain two distinct values")
+    if (!missing(latitudelim) && 0 == diff(latitudelim))
+        stop("latitudelim must contain two distinct values")
+    if (!missing(longitudelim) && 0 == diff(longitudelim))
+        stop("longitudelim must contain two distinct values")
     limitsGiven <- !missing(latitudelim) && !missing(longitudelim)
 
     x <- xy$x
@@ -2965,9 +2967,8 @@ map2lonlat <- function(x, y, init=NULL, debug=getOption("oceDebug"))
         x <- x$x
     }
     n <- length(x)
-    if (n != length(y)) {
+    if (n != length(y))
         stop("lengths of x and y must match, but they are ", n, " and ", length(y))
-    }
     # Pass same debug level to oceProject(), since this is just a wrapper.
     XY <- oceProject(xy=cbind(x, y), proj=.Projection()$projection, inv=TRUE, debug=debug)
     list(longitude=XY[, 1], latitude=XY[, 2])
@@ -3206,9 +3207,8 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
             longitude <- longitude$x   # destroys container
         }
     }
-    if (!is.matrix(z)) {
+    if (!is.matrix(z))
         stop("z must be a matrix")
-    }
     breaksGiven <- !missing(breaks)
     if (!missing(colormap)) {
         # takes precedence over breaks and col

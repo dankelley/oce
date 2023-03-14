@@ -182,9 +182,8 @@ setMethod(f="[[",
             # nolint end line_length_linter
 
             profile <- NULL # does *not* affect the subset() call that follows
-            if (missing(j)) {
+            if (missing(j))
                 stop("must provide an integer vector to access, e.g. argo[[\"profile\", 1:3]]")
-            }
             return(subset(x, profile %in% j))
         }
         namesData <- names(x@data)
@@ -233,9 +232,8 @@ dim <- dim(salinity)
                 if (missing(j)) {
                     res <- swSpice(x)
                 } else {
-                    if (!j %in% c("gsw", "unesco")) {
+                    if (!j %in% c("gsw", "unesco"))
                         stop("\"", j, "\" not allowed; use either \"gsw\" or \"unesco\"")
-                    }
                     res <- swSpice(x, eos=j)
                 }
             } else if (i == "sigmaTheta") {
@@ -745,9 +743,8 @@ setMethod(f="subset",
                     length(keep), " stations", sep=""))
         } else {
             if (is.character(substitute(expr=subset, env=environment()))) {
-                if (subset != "adjusted") {
+                if (subset != "adjusted")
                     stop("if subset is a string, it must be \"adjusted\"")
-                }
                 dataNames <- names(x@data)
                 # Seek 'Adjusted' names
                 adjustedIndices <- grep(".*Adjusted$", dataNames)
@@ -975,9 +972,8 @@ argoGrid <- function(argo, p, debug=getOption("oceDebug"), ...)
         pt <- pt[pt < max(pressure, na.rm=TRUE)]
     } else if (is.numeric(p)) {
         if (length(p) == 1) {
-            if (p < 1) {
+            if (p < 1)
                 stop("'p' must exceed 1")
-            }
             pt <- seq(0, max(pressure, na.rm=TRUE), length.out=p)
         } else {
             pt <- p
@@ -1125,8 +1121,10 @@ argoDecodeFlags <- function(f) # local function
 #'     download.file(paste(url, "ar_index_global_meta.txt", sep="/"), "argo_index.txt")
 #' index <- readLines("argo_index.txt")
 #' line <- grep(id, index)
-#' if (0 == length(line)) stop("id ", id, " not found")
-#' if (1 < length(line)) stop("id ", id, " found multiple times")
+#' if (0 == length(line))
+#'     stop("id ", id, " not found")
+#' if (1 < length(line))
+#'     stop("id ", id, " found multiple times")
 #' dac <- strsplit(index[line], "/")[[1]][1]
 #' profile <- paste(id, "_prof.nc", sep="")
 #' float <- paste(url, "dac", dac, id, profile, sep="/")
@@ -1193,21 +1191,17 @@ argoDecodeFlags <- function(f) # local function
 #' @family things related to argo data
 read.argo <- function(file, encoding=NA, debug=getOption("oceDebug"), processingLog, ...)
 {
-    if (missing(file)) {
+    if (missing(file))
         stop("must supply 'file'")
-    }
     if (is.character(file)) {
-        if (!file.exists(file)) {
+        if (!file.exists(file))
             stop("cannot find file '", file, "'")
-        }
-        if (0L == file.info(file)$size) {
+        if (0L == file.info(file)$size)
             stop("empty file '", file, "'")
-        }
     }
     debug <- max(0, min(2, floor(as.numeric(debug))))
-    if (!requireNamespace("ncdf4", quietly=TRUE)) {
+    if (!requireNamespace("ncdf4", quietly=TRUE))
         stop('must install.packages("ncdf4") to read argo data')
-    }
     if (missing(processingLog)) processingLog <- paste(deparse(match.call()), sep="", collapse="")
     # ofile <- file
     filename <- ""
@@ -1217,9 +1211,8 @@ read.argo <- function(file, encoding=NA, debug=getOption("oceDebug"), processing
         file <- ncdf4::nc_open(file)
         on.exit(ncdf4::nc_close(file))
     } else {
-        if (!inherits(file, "connection")) {
+        if (!inherits(file, "connection"))
             stop("argument `file' must be a character string or connection")
-        }
         if (!isOpen(file)) {
             file <- ncdf4::nc_open(file)
             on.exit(ncdf4::nc_close(file))
@@ -1777,13 +1770,20 @@ as.argo <- function(time, longitude, latitude, salinity, temperature, pressure, 
         latitude <- if ("latitude" %in% names) df$latitude else NULL
         id <- if ("id" %in% names) df$id else NULL
     } else {
-        if (missing(time)) stop("must give time")
-        if (missing(longitude)) stop("must give longitude")
-        if (missing(latitude)) stop("must give latitude")
-        if (missing(temperature)) stop("must give temperature")
-        if (missing(salinity)) stop("must give salinity")
-        if (missing(pressure)) stop("must give pressure")
-        if (missing(id)) stop("must give id")
+        if (missing(time))
+            stop("must give time")
+        if (missing(longitude))
+            stop("must give longitude")
+        if (missing(latitude))
+            stop("must give latitude")
+        if (missing(temperature))
+            stop("must give temperature")
+        if (missing(salinity))
+            stop("must give salinity")
+        if (missing(pressure))
+            stop("must give pressure")
+        if (missing(id))
+            stop("must give id")
     }
     res <- new("argo", time=time, id=id,
         longitude=longitude, latitude=latitude, salinity=salinity,
@@ -1909,9 +1909,8 @@ setMethod(f="plot",
         tformat, debug=getOption("oceDebug"), ...)
     {
         debug <- min(3L, max(0L, as.integer(debug)))
-        if (!inherits(x, "argo")) {
+        if (!inherits(x, "argo"))
             stop("method is only for objects of class '", "argo", "'")
-        }
         oceDebug(debug, "plot.argo(x, which=c(", paste(which, collapse=","), "),",
             argShow(mgp),
             argShow(mar),
@@ -1919,13 +1918,11 @@ setMethod(f="plot",
             " ...) {\n", sep="", unindent=1, style="bold")
         coastline <- match.arg(coastline)
         nw  <- length(which)
-        if (nw > 1) {
+        if (nw > 1)
             par(mfcol=c(1, nw))
-        }
         par(mgp=mgp, mar=mar)
-        if (missing(level) || level == "all") {
+        if (missing(level) || level == "all")
             level <- seq(1L, dim(x@data$temperature)[1])
-        }
         longitude <- x[["longitude"]]
         latitude <- x[["latitude"]]
         dim <- dim(x@data$salinity)
@@ -2012,7 +2009,6 @@ setMethod(f="plot",
                         haveCoastline <- TRUE
                     }
                 }
-                # if (!is.character(coastline)) stop("coastline must be a character string")
                 if (!is.null(projection)) {
                     oceDebug(debug, "drawing an argo map with a projection\n")
                     meanlat <- mean(x[["latitude"]], na.rm=TRUE)
@@ -2153,17 +2149,15 @@ setMethod("handleFlags", signature=c(object="argo", flags="ANY", actions="ANY", 
         # DEVELOPER 1: alter the next comment to explain your setup
         if (is.null(flags)) {
             flags <- defaultFlags(object)
-            if (is.null(flags)) {
+            if (is.null(flags))
                 stop("must supply 'flags', or use initializeFlagScheme() on the argo object first")
-            }
         }
         if (is.null(actions)) {
             actions <- list("NA") # DEVELOPER 3: alter this line to suit a new data class
             names(actions) <- names(flags)
         }
-        if (any(names(actions)!=names(flags))) {
+        if (any(names(actions)!=names(flags)))
             stop("names of flags and actions must match")
-        }
         handleFlagsInternal(object=object, flags=flags, actions=actions, where=where, debug=debug)
     })
 
@@ -2277,12 +2271,10 @@ setMethod("handleFlags", signature=c(object="argo", flags="ANY", actions="ANY", 
 #' (with respect to storing the preference in the `metadata` slot).
 preferAdjusted <- function(argo, which="all", fallback=TRUE)
 {
-    if (!inherits(argo, "argo")) {
+    if (!inherits(argo, "argo"))
         stop("'argo' must be an oce 'argo' object")
-    }
-    if (!is.logical(fallback)) {
+    if (!is.logical(fallback))
         stop("fallback must be a logical value")
-    }
     argo@metadata$adjustedFallback <- fallback
     argo@metadata$adjustedWhich <- which
     argo

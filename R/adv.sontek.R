@@ -282,9 +282,8 @@ read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oceTz"), h
         oceDebug(debug, "orientation=", res@metadata$orientation, "\n")
         res@metadata$compassInstalled <- as.integer(hardwareConfiguration[5]) == 1
         oceDebug(debug, "compassInstalled=", res@metadata$compassInstalled, "\n")
-        if (!res@metadata$compassInstalled) {
+        if (!res@metadata$compassInstalled)
             stop("cannot handle data files for ADV files that lack compass data")
-        }
         res@metadata$recorderInstalled <- if (as.integer(hardwareConfiguration[6]) == 1) TRUE else FALSE
         oceDebug(debug, "recorderInstalled=", res@metadata$recorderInstalled, "\n")
         res@metadata$thermometerInstalled <- as.integer(hardwareConfiguration[7]) == 1
@@ -673,9 +672,8 @@ read.adv.sontek.text <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     t <- ISOdatetime(year=hdt[, 2], month=hdt[, 3], day=hdt[, 4], hour=hdt[, 5], min=hdt[, 6], sec=hdt[, 7], tz=tz)
     if (inherits(from, "POSIXt")) {
         ignore <- t < from
-        if (sum(ignore) == 0) {
+        if (sum(ignore) == 0)
             stop("no data in this time interval, starting at time ", from, "\n")
-        }
         fromBurst <- which(ignore == FALSE)[1]
         oceDebug(debug, "\"from\" is burst number", fromBurst, "at", format(t[fromBurst]), "\n")
     } else {
@@ -686,9 +684,8 @@ read.adv.sontek.text <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     } else {
         if (inherits(from, "POSIXt")) {
             ignore <- t < to
-            if (sum(ignore) == 0) {
+            if (sum(ignore) == 0)
                 stop("no data in this time interval, starting at time ", to, "\n")
-            }
             toBurst <- which(ignore == FALSE)[1] + 1 # add 1 since we'll chop later
             toBurst <- min(toBurst, length(t))
             oceDebug(debug, "\"to\" is burst number", toBurst, "at", format(t[toBurst]), "\n")
@@ -704,9 +701,8 @@ read.adv.sontek.text <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     #sr <- spb / 3600
     tsFile <- file(ts, "rb")
     on.exit(close(tsFile))
-    if (!inherits(tsFile, "connection")) {
+    if (!inherits(tsFile, "connection"))
         stop("argument `tsFile' must be a character string or connection")
-    }
     # Examine ".ts1" file to see if we can deal with it.
     seek(tsFile, where=0, origin="end")
     bytesInFile <- seek(tsFile, where=0, origin="start")
@@ -724,9 +720,8 @@ read.adv.sontek.text <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     d <- scan(tsFile, what="character", nlines=1, quiet=TRUE)
     oceDebug(debug, "first line in \".", suffices[2], "\" file: ", paste(d, collapse=" "), "\n")
     #itemsPerLine <- length(d)
-    if (itemsPerSample != length(d)) {
+    if (itemsPerSample != length(d))
         stop("file \".", suffices[2], "\" should have ", itemsPerSample, " elemetns per line, but it has ", length(d))
-    }
     oceDebug(debug, "elements per line in \".", suffices[2], "\" file: ", length(d), "\n")
     linesInFile <- bytesInFile / bytesInSample
     oceDebug(debug, "lines in \".", suffices[2], "\" file: ", linesInFile, "\n")

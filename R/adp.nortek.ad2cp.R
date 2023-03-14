@@ -756,7 +756,9 @@ read.adp.ad2cp <- function(file,
     configText <- textBlocks[textBlockIsConfig]
     numberOfDataSets <- length(configText)
     oceDebug(debug, "This file has ", pluralize(numberOfDataSets, "data set"), "\n")
+    # nolint start object_usage_linter
     commentText <- textBlocks[!textBlockIsConfig]
+    # nolint end object_usage_linter
     if (dataSet > numberOfDataSets)
         stop("Cannot access dataSet ", dataSet, " because the file contains only ", pluralize(numberOfDataSets, "dataset"))
     dataSetTime <- as.POSIXct(sapply(configText,
@@ -1225,9 +1227,8 @@ read.adp.ad2cp <- function(file,
             iv <- gappyIndex(i, i0v, 4L)
             NS <- readBin(buf[iv], "integer", size=4L, n=NP, endian="little") # no. samples (tmp var)
             dNS <- diff(range(NS))
-            if (0 != dNS) {
+            if (0 != dNS)
                 stop("altimeterRawNumberOfSamples not all equal.  Range is ", dNS[1], " to ", dNS[2])
-            }
             NS <- NS[1]
             object$altimeterRaw$numberOfSamples <- NS
             object$altimeterRaw$blankingDistance <- object$blankingDistance

@@ -1023,9 +1023,8 @@ read.odf <- function(file, columns=NULL, header="list", exclude=NULL, encoding="
     } else {
         filename <- ""
     }
-    if (!inherits(file, "connection")) {
+    if (!inherits(file, "connection"))
         stop("argument `file' must be a character string or connection")
-    }
     if (!isOpen(file)) {
         open(file, "r", encoding=encoding)
         on.exit(close(file))
@@ -1137,9 +1136,8 @@ read.odf <- function(file, columns=NULL, header="list", exclude=NULL, encoding="
                 break
             }
         }
-        if (lend < 0) {
+        if (lend < 0)
             stop("cannot find the end of a PARAMETER_HEADER block starting at line ", lstart-1)
-        }
         # Get CODE (mandatory)
         icode <- grep("^\\s*(WMO_)?CODE\\s*=\\s*'?", lines[lstart:lend])
         if (length(icode) == 0)
@@ -1306,9 +1304,8 @@ read.odf <- function(file, columns=NULL, header="list", exclude=NULL, encoding="
     if (length(res@metadata$sounding)) {
         res@metadata$waterDepth <- res@metadata$sounding[1]
     } else {
-        if (length(res@metadata$depthMax)) {
+        if (length(res@metadata$depthMax))
             res@metadata$waterDepth <- res@metadata$depthMax[1]
-        }
     }
     res@metadata$type <- findInHeader("INST_TYPE", lines)
     res@metadata$serialNumber <- findInHeader("SERIAL_NUMBER", lines)
@@ -1345,11 +1342,9 @@ read.odf <- function(file, columns=NULL, header="list", exclude=NULL, encoding="
     res@metadata$units <- tmp
     # Store @metadata$namesOriginal
     namesOriginal <- list()
-    for (i in seq_len(nrow(parameterTable))) {
-        if (!parameterTable$isFlag[i]) {
+    for (i in seq_len(nrow(parameterTable)))
+        if (!parameterTable$isFlag[i])
             namesOriginal[parameterTable$oceName[i]] <- parameterTable$nameOrig[i]
-        }
-    }
     res@metadata$dataNamesOriginal <- namesOriginal
     # Store other things more directly
     res@metadata$address <- NULL
@@ -1374,9 +1369,8 @@ read.odf <- function(file, columns=NULL, header="list", exclude=NULL, encoding="
             data[[j]] <- as.character(data[[j]])
         }
     }
-    if (length(data) != length(oceNames2$names)) {
+    if (length(data) != length(oceNames2$names))
         stop("mismatch between length of data names (", length(oceNames2$names), ") and number of columns in data matrix (", length(data), ")")
-    }
     names(data) <- parameterTable$oceName
     if (length(NAvalueList)) {
         for (name in names(data)) {

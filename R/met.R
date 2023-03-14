@@ -238,7 +238,8 @@ setMethod(f="subset",
 #' @family things related to met data
 as.met <- function(time, temperature, pressure, u, v, filename="(constructed from data)")
 {
-    if (missing(time)) stop("must provide time")
+    if (missing(time))
+        stop("must provide time")
     if (inherits(time, "data.frame")) {
         # Try to see whether this was created by a function in the canadaHCL package
         # Copy the data, renaming some things that we know are named differently
@@ -650,18 +651,15 @@ read.met <- function(file,
     if (!is.character(file))
         stop("'file' must be a string")
     someLines <- readLines(file, 30L, warn=FALSE)
-    if (length(someLines) == 0L) {
+    if (length(someLines) == 0L)
         stop("no data in file")
-    }
-    if (!is.null(type) && !(type %in% c("csv", "csv1", "csv2", "xml2"))) {
+    if (!is.null(type) && !(type %in% c("csv", "csv1", "csv2", "xml2")))
         stop("type='", type, "' not allowed; try 'csv', 'csv1', 'csv2' or 'xml2'")
-    }
     if (is.null(type)) {
         if (grepl("xml$", file) || 1 == grepl("xml version", someLines[1])) {
             # an xml file
-            if (grepl(".weather.gc.ca", someLines[1])) {
+            if (grepl(".weather.gc.ca", someLines[1]))
                 type <- "xml2"
-            }
         } else {
             # must be a csv
             if (1 == length(grep('"WMO Identifier",', someLines))) {
@@ -693,9 +691,8 @@ read.met.csv1 <- function(file,
     tz=getOption("oceTz"),
     debug=getOption("oceDebug"))
 {
-    if (missing(file)) {
+    if (missing(file))
         stop("must supply 'file'")
-    }
     oceDebug(debug, "read.met.csv1(\"", file, "\", skip=", if (is.null(skip)) "NULL" else skip,
         ", encoding=\"", encoding, "\", tz=\"", tz, "\") {\n", sep="", unindent=1, style="bold")
     # I thank Ivan Krylov for telling me that the 'encoding' arg belongs in the

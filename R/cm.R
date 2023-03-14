@@ -186,9 +186,8 @@ setMethod(f="subset",
             names <- names(x@data)
             oceDebug(debug, vectorShow(keep, "keeping bins:"))
             oceDebug(debug, "number of kept bins:", sum(keep), "\n")
-            if (sum(keep) < 2) {
+            if (sum(keep) < 2)
                 stop("must keep at least 2 profiles")
-            }
             res <- x
             # FIXME: are we handling slow timescale data?
             for (name in names(x@data)) {
@@ -530,9 +529,8 @@ read.cm.s4 <- function(file, from=1, to, by=1, tz=getOption("oceTz"), longitude=
         file <- file(file, "r", encoding=encoding)
         on.exit(close(file))
     }
-    if (!inherits(file, "connection")) {
+    if (!inherits(file, "connection"))
         stop("argument `file' must be a character string or connection")
-    }
     if (!isOpen(file)) {
         filename <- "(connection)"
         open(file, "rb")

@@ -427,9 +427,8 @@ read.lobo <- function(file, cols=7, encoding="latin1", processingLog)
     TCol <- grep("^temperature", names, ignore.case=TRUE)
     TaCol <- grep("^Air.*temperature", names, ignore.case=TRUE)
     pressureCol <- grep("pressure", names)
-    if (!length(tCol)) {
+    if (!length(tCol))
         stop("no time column in data file.  The column names are: ", paste(names, collapse=" "))
-    }
     # until issue 808, used as.POSIXct() here
     time <- strptime(d[, tCol], "%Y-%m-%d %H:%M:%S", tz="UTC") # tz is likely wrong
     n <- dim(d)[1]

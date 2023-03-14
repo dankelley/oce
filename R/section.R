@@ -736,8 +736,10 @@ setMethod(f="subset",
             n <- length(indices)
             if (is.logical(indices))
                 indices <- (1:n)[indices]
-            if (min(indices) < 1) stop("cannot have negative indices")
-            if (max(indices) > length(x@data$station)) stop("cannot indices exceeding # stations")
+            if (min(indices) < 1)
+                stop("cannot have negative indices")
+            if (max(indices) > length(x@data$station))
+                stop("cannot indices exceeding # stations")
             stn <- x@metadata$stationId[indices]
             lat <- x@metadata$lat[indices]
             lon <- x@metadata$lon[indices]
@@ -1014,10 +1016,14 @@ sectionSort <- function(section, by, decreasing=FALSE)
 #' @family things related to section data
 sectionAddStation <- function(section, station)
 {
-    if (missing(section)) stop("must provide a section to which the ctd is to be added")
-    if (!inherits(section, "section")) stop("'section' is not a 'section' object")
-    if (missing(station)) return(section)
-    if (!inherits(station, "ctd")) stop("'station' is not a 'ctd' object")
+    if (missing(section))
+        stop("must provide a section to which the ctd is to be added")
+    if (!inherits(section, "section"))
+        stop("'section' is not a 'section' object")
+    if (missing(station))
+        return(section)
+    if (!inherits(station, "ctd"))
+        stop("'station' is not a 'ctd' object")
     res <- section
     n.orig <- length(section@data$station)
     s <- vector("list", n.orig + 1)
@@ -1982,9 +1988,8 @@ setMethod(f="plot", signature=signature("section"),
         } else {
             numStations <- length(stationIndices)
         }
-        if (numStations < 2) {
+        if (numStations < 2)
             stop("In plot() :\n  cannot plot a section containing fewer than 2 stations", call.=FALSE)
-        }
         firstStation <- x@data$station[[stationIndices[1]]]
         num.depths <- length(firstStation@data$pressure)
         zz <- array(NA_real_, dim=c(numStations, num.depths))
@@ -2034,9 +2039,8 @@ setMethod(f="plot", signature=signature("section"),
             xx <- numberAsPOSIXct(xx)
         } else if (which.xtype == 6) {
             # see https://github.com/dankelley/oce-issues/blob/master/16xx/1678
-            if (!("spine" %in% names(x@metadata))) {
+            if (!("spine" %in% names(x@metadata)))
                 stop("In plot,section-metod() :\n  this section has no spine; use addSpine() to add a spine", call.=FALSE)
-            }
             spine <- x@metadata$spine
             # Parametric lon=lon(s), at=lat(s)
             # nolint start object_usage_linter
@@ -2099,11 +2103,10 @@ setMethod(f="plot", signature=signature("section"),
         available <- sort(unique(c("data", "map", unlist(c(x[["?"]][c("data", "dataDerived")])))))
         for (w in 1:lw) {
             oceDebug(debug, "handling which[", w, "]=\"", which[w], "\"\n", sep="")
-            if (!which[w] %in% available) {
+            if (!which[w] %in% available)
                 stop("in plot(section) : which='", which[w], "' is not available; please try one of c(\"",
                     paste(available, collapse="\",\""),
                     "\")", call.=FALSE)
-            }
             station1 <- x[["station", 1]]
             #OLD unit <- station1[[paste(which[w], "Unit", sep="")]][[1]] # FIXME: what if not in that station?
             if (!missing(contourLevels)) {
@@ -2508,12 +2511,10 @@ sectionGrid <- function(section, p, method="approx", trim=TRUE, debug=getOption(
             if (p=="levitus") {
                 pt <- standardDepths()
             } else {
-                if (!is.numeric(p)) {
+                if (!is.numeric(p))
                     stop("p must be numeric")
-                }
-                if (p <= 0) {
+                if (p <= 0)
                     stop("p must be a positive number")
-                }
                 pt <- seq(0, pMax, p)
             }
         } else {
@@ -2780,9 +2781,8 @@ sectionSmooth <- function(section, method="spline",
     xg <- xg[keep]
     oceDebug(debug, "after trimming", vectorShow(xg))
     stn1pressure <- stations[[1]][["pressure"]]
-    if (identical(method, "spline") && !identical(yg, stn1pressure)) {
+    if (identical(method, "spline") && !identical(yg, stn1pressure))
         stop("for method=\"spline\", yg must match the pressure vector in first station")
-    }
     nxg <- length(xg)
     nyg <- length(yg)
     # varsAll holds the names of all variables in the section.
@@ -3084,12 +3084,18 @@ as.section <- function(salinity, temperature, pressure, longitude, latitude, sta
         stop("argument 'salinity' is missing")
     res <- new("section", sectionId="")
     if (is.numeric(salinity)) {
-        if (missing(temperature)) stop("must provide temperature")
-        if (missing(temperature)) stop("must provide temperature")
-        if (missing(pressure)) stop("must provide pressure")
-        if (missing(longitude)) stop("must provide longitude")
-        if (missing(latitude)) stop("must provide latitude")
-        if (missing(station)) stop("must provide station")
+        if (missing(temperature))
+            stop("must provide temperature")
+        if (missing(temperature))
+            stop("must provide temperature")
+        if (missing(pressure))
+            stop("must provide pressure")
+        if (missing(longitude))
+            stop("must provide longitude")
+        if (missing(latitude))
+            stop("must provide latitude")
+        if (missing(station))
+            stop("must provide station")
         stationFactor <- factor(station)
         stationLevels <- levels(stationFactor)
         nstation <- length(stationLevels)
@@ -3135,18 +3141,16 @@ as.section <- function(salinity, temperature, pressure, longitude, latitude, sta
     } else if (inherits(salinity, "list")) {
         oceDebug(debug, "first argument is a list (assumed to be a list of oce objects)\n")
         thelist <- salinity            # prevent accidental overwriting
-        if (!length(thelist)) {
+        if (!length(thelist))
             stop("no data in this list")
-        }
         if (inherits(thelist[[1]], "oce")) {
             nstation <- length(salinity)
             ctds <- vector("list", nstation)
             badDepths <- NULL
             for (i in seq_len(nstation)) {
                 oceDebug(debug, "processing item", i, "of", nstation, "\n")
-                if (!("pressure" %in% names(thelist[[i]]@data))) {
+                if (!("pressure" %in% names(thelist[[i]]@data)))
                     stop("cannot create a section from this first argument, because its ", i, "-th element lacks pressure")
-                }
                 # Replace NA water depth with highest pressure. Note that this action is skipped
                 # if there is no water depth (e.g. if the first argument is a list of Argo objects).
                 # See https://github.com/dankelley/oce/issues/1797

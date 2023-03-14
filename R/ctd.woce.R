@@ -289,9 +289,8 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missingValue,
     } else {
         filename <- ""
     }
-    if (!inherits(file, "connection")) {
+    if (!inherits(file, "connection"))
         stop("argument `file' must be a character string or connection")
-    }
     if (!isOpen(file)) {
         open(file, "r", encoding=encoding)
         on.exit(close(file))
@@ -333,9 +332,8 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missingValue,
         lines <- readLines(file)
         oceDebug(debug, "file has", length(lines), "lines\n")
         headerEnd <- grep("[ ]*DB[ ]*,", lines)
-        if (is.na(headerEnd)) {
+        if (is.na(headerEnd))
             stop("cannot decode the header in this CTD file")
-        }
         header <- lines[1:headerEnd]
         oceDebug(debug, "headerEnd:", headerEnd, "\n")
         dataNamesOriginal <- as.list(gsub(" *$", "", strsplit(header[headerEnd-1], ",")[[1]]))
@@ -344,9 +342,8 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missingValue,
         unitsOriginal <- gsub(" *$", "", gsub("^ *", "", strsplit(header[headerEnd], ",")[[1]]))
         # FIXME: decode to real units
         units <- list()
-        for (i in seq_along(names)) {
+        for (i in seq_along(names))
             units[[names[i]]] <- woceUnit2oceUnit(unitsOriginal[i])
-        }
         for (i in seq_along(header)) {
             oceDebug(debug, " header[", i, "]=\"", header[i], "\"\n", sep="")
             if (length(grep("CRUISE", header[i], ignore.case=TRUE))) {

@@ -55,9 +55,8 @@ read.argo.copernicus <- function(file, encoding=NA, debug=getOption("oceDebug"),
         file <- ncdf4::nc_open(file)
         on.exit(ncdf4::nc_close(file))
     } else {
-        if (!inherits(file, "connection")) {
+        if (!inherits(file, "connection"))
             stop("argument `file' must be a character string or connection")
-        }
         if (!isOpen(file)) {
             file <- ncdf4::nc_open(file)
             on.exit(ncdf4::nc_close(file))

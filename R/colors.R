@@ -668,23 +668,18 @@ colormap <- function(z=NULL, zlim, zclip=FALSE, breaks, col=oceColorsViridis,
     col1Known <- !missing(col1)
     missingColorKnown <- !missing(missingColor)
     # Sanity checks on args
-    if (blend < 0 || blend > 1) {
+    if (blend < 0 || blend > 1)
         stop("blend must be between 0 and 1")
-    }
     if (zlimKnown) {
-        if (length(zlim) != 2) {
+        if (length(zlim) != 2)
             stop("'zlim' must be of length 2")
-        }
-        if (any(!is.finite(zlim))) {
+        if (any(!is.finite(zlim)))
             stop("'zlim' values must be finite")
-        }
-        if (zlim[2] <= zlim[1]) {
+        if (zlim[2] <= zlim[1])
             stop("'zlim' values must be ordered and distinct")
-        }
     }
-    if (zlimKnown && breaksKnown && length(breaks) > 1) {
+    if (zlimKnown && breaksKnown && length(breaks) > 1)
         stop("cannot specify both zlim and breaks, unless length(breaks)==1")
-    }
     # Find cases (as a way to clarify code, and link it with the docs).
     if (nameKnown) {
         case <- "C"
@@ -700,9 +695,8 @@ colormap <- function(z=NULL, zlim, zclip=FALSE, breaks, col=oceColorsViridis,
     if (case == "C") {
         oceDebug(debug, "Case C: name given\n", style="bold")
         for (disallowed in c("zlim", "breaks", "col", "x0", "col0", "x1", "col1", "missingColor")) {
-            if (get(paste0(disallowed, "Known"))) {
+            if (get(paste0(disallowed, "Known")))
                 stop("cannot supply '", disallowed, "' since 'name' was supplied (i.e. in Case C)\n")
-            }
         }
         res <- colormap_colormap(name=name, debug=debug-1)
         res$zclip <- zclip

@@ -247,36 +247,29 @@ setMethod(f="plot",
                 debug=debug, ...))
         }
         geographical <- round(geographical)
-        if (geographical < 0 || geographical > 2) {
+        if (geographical < 0 || geographical > 2)
             stop("argument geographical must be 0, 1, or 2")
-        }
         if (is.list(x) && "latitude" %in% names(x)) {
-            if (!("longitude" %in% names(x))) {
+            if (!("longitude" %in% names(x)))
                 stop("list must contain item named 'longitude'")
-            }
             x <- as.gps(longitude=x$longitude, latitude=x$latitude)
         } else {
-            if (!inherits(x, "gps")) {
+            if (!inherits(x, "gps"))
                 stop("method is only for gps objects, or lists that contain 'latitude' and 'longitude'")
-            }
         }
         longitude <- x[["longitude"]]
         latitude <- x[["latitude"]]
         dots <- list(...)
         dotsNames <- names(dots)
         #gave.center <- !missing(clongitude) && !missing(clatitude)
-        if ("center" %in% dotsNames) {
+        if ("center" %in% dotsNames)
             stop("use 'clongitude' and 'clatitude' instead of 'center'")
-        }
-        if ("xlim" %in% dotsNames) {
+        if ("xlim" %in% dotsNames)
             stop("cannot supply 'xlim'; use 'clongitude' and 'span' instead")
-        }
-        if ("ylim" %in% dotsNames) {
+        if ("ylim" %in% dotsNames)
             stop("cannot supply 'ylim'; use 'clatitude' and 'span' instead")
-        }
-        if (!inset) {
+        if (!inset)
             par(mar=mar)
-        }
         par(mgp=mgp)
         if (add) {
             lines(longitude, latitude, ...)
@@ -512,9 +505,8 @@ read.gps <- function(file, type=NULL, encoding="latin1", debug=getOption("oceDeb
         file <- file(file, "r", encoding=encoding)
         on.exit(close(file))
     }
-    if (!inherits(file, "connection")) {
+    if (!inherits(file, "connection"))
         stop("argument `file' must be a character string or connection")
-    }
     if (!isOpen(file)) {
         open(file, "r", encoding=encoding)
         on.exit(close(file))

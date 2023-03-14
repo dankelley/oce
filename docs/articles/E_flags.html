@@ -96,7 +96,7 @@
       <h1 data-toc-skip>5. Dealing with data-quality flags</h1>
                         <h4 data-toc-skip class="author">Dan Kelley (<a href="https://orcid.org/0000-0001-7808-5911" class="external-link uri">https://orcid.org/0000-0001-7808-5911</a>)</h4>
             
-            <h4 data-toc-skip class="date">2023-01-05</h4>
+            <h4 data-toc-skip class="date">2023-03-14</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/dankelley/oce/blob/HEAD/vignettes/E_flags.Rmd" class="external-link"><code>vignettes/E_flags.Rmd</code></a></small>
       <div class="hidden name"><code>E_flags.Rmd</code></div>
@@ -233,12 +233,12 @@ situations.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dankelley.github.io/oce/" class="external-link">oce</a></span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">ctdRaw</span><span class="op">)</span></span></code></pre></div>
-<p>that contains some clearly anomalous values that are revealed clearly
-in a summary plot (Figure 1):</p>
+<p>that contains anomalous values that are revealed clearly in a summary
+plot (Figure 1):</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">ctdRaw</span><span class="op">)</span></span></code></pre></div>
 <div class="figure">
-<img src="E_flags_files/figure-html/unnamed-chunk-4-1.png" alt="Figure 1. Summary plot for raw CTD profile." width="700"><p class="caption">
+<img src="E_flags_files/figure-html/unnamed-chunk-4-1.png" alt="Figure 1. Summary plot for raw CTD profile." width="360"><p class="caption">
 Figure 1. Summary plot for raw CTD profile.
 </p>
 </div>
@@ -261,9 +261,9 @@ ways, but the simplest is to create logical vectors, e.g.</p>
 <code>salinity</code> and <code>temperature</code> in the namespace, but
 it would also be common to use e.g.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">S</span> <span class="op">&lt;-</span> <span class="va">ctdRaw</span><span class="op">[[</span><span class="st">"salinity"</span><span class="op">]</span><span class="op">]</span></span>
-<span><span class="cn">T</span> <span class="op">&lt;-</span> <span class="va">ctdRaw</span><span class="op">[[</span><span class="st">"temperature"</span><span class="op">]</span><span class="op">]</span></span>
-<span><span class="va">bad</span> <span class="op">&lt;-</span> <span class="op">(</span><span class="va">S</span> <span class="op">&lt;</span> <span class="fl">25</span> <span class="op">|</span> <span class="fl">40</span> <span class="op">&lt;</span> <span class="va">S</span><span class="op">)</span> <span class="op">|</span> <span class="op">(</span><span class="cn">T</span> <span class="op">&lt;</span> <span class="op">-</span><span class="fl">2</span> <span class="op">|</span> <span class="fl">40</span> <span class="op">&lt;</span> <span class="cn">T</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">salinity</span> <span class="op">&lt;-</span> <span class="va">ctdRaw</span><span class="op">[[</span><span class="st">"salinity"</span><span class="op">]</span><span class="op">]</span></span>
+<span><span class="va">temperature</span> <span class="op">&lt;-</span> <span class="va">ctdRaw</span><span class="op">[[</span><span class="st">"temperature"</span><span class="op">]</span><span class="op">]</span></span>
+<span><span class="va">bad</span> <span class="op">&lt;-</span> <span class="op">(</span><span class="va">salinity</span> <span class="op">&lt;</span> <span class="fl">25</span> <span class="op">|</span> <span class="fl">40</span> <span class="op">&lt;</span> <span class="va">salinity</span><span class="op">)</span> <span class="op">|</span> <span class="op">(</span><span class="va">temperature</span> <span class="op">&lt;</span> <span class="op">-</span><span class="fl">2</span> <span class="op">|</span> <span class="fl">40</span> <span class="op">&lt;</span> <span class="va">temperature</span><span class="op">)</span></span></code></pre></div>
 <p>Since the goal here is to illustrate setting multiple flags, the
 <code>badS</code> and <code>badT</code> values will be used. The first
 step is to copy the original data, so that the flag operations will not
@@ -323,19 +323,19 @@ using</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">qch</span><span class="op">)</span></span></code></pre></div>
 <div class="figure">
-<img src="E_flags_files/figure-html/unnamed-chunk-14-1.png" alt="Figure 2. Summary plot for range-checked CTD profile." width="700"><p class="caption">
+<img src="E_flags_files/figure-html/unnamed-chunk-14-1.png" alt="Figure 2. Summary plot for range-checked CTD profile." width="360"><p class="caption">
 Figure 2. Summary plot for range-checked CTD profile.
 </p>
 </div>
 <p>shows significant improvements. The downcast and the upcast can be
-seen quite clearly now, although there appears to be an issue of low
-salinity at the turnaround point. Setting a flag for pressure increase
-with time will isolate the downcast somewhat, although some smoothing
-will be required. Another issue related to the path of the instrument is
-that it may have been held below the surface for a while to equilibrate.
-Again, a flag could be set up to remove such data. However, it ought to
-be noted that <code>ctdTrim</code> can be used to address issues
-relating to instrument movement.</p>
+seen quite clearly now, although salinity is suspiciously low at the
+turnaround point. Setting a flag for pressure increase with time will
+isolate the downcast somewhat, although some smoothing will be required.
+Another issue related to the path of the instrument is that it may have
+been held below the surface for a while to equilibrate. Again, a flag
+could be set up to remove such data. However, it ought to be noted that
+<code>ctdTrim</code> can be used to address issues relating to
+instrument movement.</p>
 </div>
 <div class="section level3">
 <h3 id="interactive-editing-of-ctd-profiles">Interactive editing of CTD profiles<a class="anchor" aria-label="anchor" href="#interactive-editing-of-ctd-profiles"></a>
@@ -403,7 +403,12 @@ Atlantic section that is provided with oce.</p>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mfrow<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/plotTS.html">plotTS</a></span><span class="op">(</span><span class="va">section</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/plotTS.html">plotTS</a></span><span class="op">(</span><span class="va">s</span><span class="op">)</span></span></code></pre></div>
-<p><img src="E_flags_files/figure-html/unnamed-chunk-16-1.png" width="700"></p>
+<div class="figure">
+<img src="E_flags_files/figure-html/unnamed-chunk-16-1.png" alt="Temperature-salinity diagram for section data, with flags ignored (top) and handled (bottom)." width="360"><p class="caption">
+Temperature-salinity diagram for section data, with flags ignored (top)
+and handled (bottom).
+</p>
+</div>
 <p>Note, in the above, that the archiving agency had evidently flagged
 not just wild data (e.g. the salinity near <span class="math inline">\(26\)</span>g/kg) but also data that were anomalous
 in more subtle ways (e.g. cleaning up several points that stood out from
@@ -431,14 +436,19 @@ differ.</p>
 <span><span class="va">G</span> <span class="op">&lt;-</span> <span class="fl">25</span>                  <span class="co"># for percent-good field, named 'g'</span></span>
 <span><span class="va">V4</span> <span class="op">&lt;-</span> <span class="fl">0.45</span>               <span class="co"># for error velocity field, in beam 4</span></span>
 <span><span class="kw">for</span> <span class="op">(</span><span class="va">k</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">)</span></span>
-<span>    <span class="va">i2</span><span class="op">[</span>,,<span class="va">k</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="op">(</span><span class="op">(</span><span class="va">g</span><span class="op">[</span>,,<span class="va">k</span><span class="op">]</span><span class="op">+</span><span class="va">g</span><span class="op">[</span>,,<span class="fl">4</span><span class="op">]</span><span class="op">)</span> <span class="op">&lt;</span> <span class="va">G</span><span class="op">)</span> <span class="op">|</span> <span class="op">(</span><span class="va">v</span><span class="op">[</span>,,<span class="fl">4</span><span class="op">]</span> <span class="op">&gt;</span> <span class="va">V4</span><span class="op">)</span></span>
+<span>    <span class="va">i2</span><span class="op">[</span>, , <span class="va">k</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="op">(</span><span class="op">(</span><span class="va">g</span><span class="op">[</span>, , <span class="va">k</span><span class="op">]</span><span class="op">+</span><span class="va">g</span><span class="op">[</span>, , <span class="fl">4</span><span class="op">]</span><span class="op">)</span> <span class="op">&lt;</span> <span class="va">G</span><span class="op">)</span> <span class="op">|</span> <span class="op">(</span><span class="va">v</span><span class="op">[</span>, , <span class="fl">4</span><span class="op">]</span> <span class="op">&gt;</span> <span class="va">V4</span><span class="op">)</span></span>
 <span><span class="va">adpQC2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/initializeFlags.html">initializeFlags</a></span><span class="op">(</span><span class="va">adp</span>, <span class="st">"v"</span>, <span class="fl">2</span><span class="op">)</span></span>
 <span><span class="va">adpQC2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/setFlags.html">setFlags</a></span><span class="op">(</span><span class="va">adpQC2</span>, <span class="st">"v"</span>, <span class="va">i2</span>, <span class="fl">3</span><span class="op">)</span></span>
 <span><span class="va">adpClean2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/handleFlags.html">handleFlags</a></span><span class="op">(</span><span class="va">adpQC2</span>, flags<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fl">3</span><span class="op">)</span>, actions<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"NA"</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mfrow<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>,<span class="fl">1</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">adp</span>, which<span class="op">=</span><span class="st">"u1"</span><span class="op">)</span>                  <span class="co"># original</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">adpClean2</span>, which<span class="op">=</span><span class="st">"u1"</span><span class="op">)</span>            <span class="co"># altered</span></span></code></pre></div>
-<p><img src="E_flags_files/figure-html/unnamed-chunk-17-1.png" width="700"></p>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mfrow<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset</a></span><span class="op">(</span><span class="va">adp</span>, <span class="va">distance</span> <span class="op">&gt;</span> <span class="fl">35</span><span class="op">)</span>, which<span class="op">=</span><span class="st">"u1"</span><span class="op">)</span>                 <span class="co"># original</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset</a></span><span class="op">(</span><span class="va">adpClean2</span>, <span class="va">distance</span> <span class="op">&gt;</span> <span class="fl">35</span><span class="op">)</span>, which<span class="op">=</span><span class="st">"u1"</span><span class="op">)</span>           <span class="co"># altered</span></span></code></pre></div>
+<div class="figure">
+<img src="E_flags_files/figure-html/unnamed-chunk-17-1.png" alt="Near-surface eastward component of ADP velocity, unaltered (top) and after handling flags (bottom)." width="432"><p class="caption">
+Near-surface eastward component of ADP velocity, unaltered (top) and
+after handling flags (bottom).
+</p>
+</div>
 <p>Note, in the above, that <code>initializeFlagScheme</code> has not
 been used, because the author is unaware of any common notation for such
 data. The values used for <code>G</code> and <code>V4</code> were

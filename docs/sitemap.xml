@@ -115,6 +115,9 @@
     <loc>/reference/adv.html</loc>
   </url>
   <url>
+    <loc>/reference/advSontekAdrFileTrim.html</loc>
+  </url>
+  <url>
     <loc>/reference/airRho.html</loc>
   </url>
   <url>
@@ -128,6 +131,18 @@
   </url>
   <url>
     <loc>/reference/angleRemap.html</loc>
+  </url>
+  <url>
+    <loc>/reference/applyMagneticDeclination-adp-method.html</loc>
+  </url>
+  <url>
+    <loc>/reference/applyMagneticDeclination-adv-method.html</loc>
+  </url>
+  <url>
+    <loc>/reference/applyMagneticDeclination-cm-method.html</loc>
+  </url>
+  <url>
+    <loc>/reference/applyMagneticDeclination-oce-method.html</loc>
   </url>
   <url>
     <loc>/reference/applyMagneticDeclination.html</loc>

@@ -218,9 +218,8 @@ as.oce <- function(x, ...)
         names <- names(x)
         return(if ("EVENT_HEADER" %in% names) ODF2oce(x) else x)
     }
-    if (!is.list(x) && !is.data.frame(x)) {
+    if (!is.list(x) && !is.data.frame(x))
         stop("x must be a list, a data frame, or an oce object")
-    }
     names <- names(x)
     if ("temperature" %in% names && "pressure" %in% names && "salinity" %in% names) {
         # Assume it's a CTD
@@ -668,8 +667,10 @@ tail.oce <- function(x, n=6L, ...)
 plotPolar <- function(r, theta, debug=getOption("oceDebug"), ...)
 {
     oceDebug(debug, "plotPolar(...)\n", unindent=1)
-    if (missing(r)) stop("must supply 'r'")
-    if (missing(theta)) stop("must supply 'theta'")
+    if (missing(r))
+        stop("must supply 'r'")
+    if (missing(theta))
+        stop("must supply 'theta'")
     thetaRad <- theta * atan2(1, 1) / 45
     x <- r * cos(thetaRad)
     y <- r * sin(thetaRad)
@@ -797,9 +798,8 @@ oceApprox <- function(x, y, xout, method=c("rr", "unesco"))
     if (missing(xout)) {
         xout <- seq(min(x, na.rm=TRUE), max(x, na.rm=TRUE), length.out=lx)
     } else {
-        if (any(is.na(xout))) {
+        if (any(is.na(xout)))
             stop("must not have any NA values in xout")
-        }
     }
     do_oceApprox(x=x, y=y, xout=xout, method=pmatch(method, c("unesco", "rr")))
 }
@@ -1207,13 +1207,11 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, log="", logStyle="r", flipy=
     xlimGiven <- !missing(xlim)
     # Trim data to visible window (to improve speed and to facilitate 'simplify' calculation)
     if (xlimGiven) {
-        if (2 != length(xlim)) {
+        if (2 != length(xlim))
             stop("'xlim' must be of length 2, but it is of length ", length(xlim))
-        }
-        if (xlim[2] <= xlim[1]) {
+        if (xlim[2] <= xlim[1])
             stop("the elements of xlim must be in order, but they are ",
                 format(xlim[1]), " and ", format(xlim[2]), ", respectively")
-        }
         # Comment-out next line for issue 1508, since trim_ts
         # fails if times are NA.
         # ends <- trim_ts(x, xlim, 0.04)
@@ -1500,22 +1498,19 @@ oceEdit <- function(x, item, value, action, reason="", person="", debug=getOptio
     }
     slot <- NULL
     if (!missing(item)) {
-        if (missing(value)) {
+        if (missing(value))
             stop("must supply a value")
-        }
         #oceDebug(debug, "ORIG item='", item, "'\n", sep="")
         # Split out the slotname, if any.
         if (length(grep("@", item))) {
             slot <- gsub("@.*$", "", item)
-            if (slot != "metadata" && slot != "data") {
+            if (slot != "metadata" && slot != "data")
                 stop("slot must be 'metadata' or 'data'")
-            }
             item <- gsub("^.*@", "", item)
         }
         #oceDebug(debug, "LATER slot='", slot, "' and item='", item, "'\n", sep="")
-        if (missing(value)) {
+        if (missing(value))
             stop("must supply a 'value' for this 'item'")
-        }
         if (inherits(x, "adv")) {
             oceDebug(debug, "object is an ADV\n")
             hpr <- 0 < length(grep("heading|pitch|roll", item))
@@ -1784,10 +1779,9 @@ oceMagic <- function(file, encoding="latin1", debug=getOption("oceDebug"))
         if (grepl(".nc$", filename, ignore.case=TRUE)) {
             # argo or netcdf?
             if (requireNamespace("ncdf4", quietly=TRUE)) {
-                if (substr(filename, 1, 5) == "http:") {
+                if (substr(filename, 1, 5) == "http:")
                     stop("cannot open netcdf files over the web; try doing as follows\n    download.file(\"",
                          filename, "\", \"", gsub(".*/", "", filename), "\")")
-                }
                 # NOTE: need to name ncdf4 package because otherwise R checks give warnings.
                 f <- ncdf4::nc_open(filename)
                 if ("DATA_TYPE" %in% names(f$var)) {
@@ -1868,9 +1862,8 @@ oceMagic <- function(file, encoding="latin1", debug=getOption("oceDebug"))
         }
         file <- file(file, "r", encoding=encoding)
     }
-    if (!inherits(file, "connection")) {
+    if (!inherits(file, "connection"))
         stop("argument `file' must be a character string or connection")
-    }
     oceDebug(debug, "'file' is a connection\n")
     if (!isOpen(file))
         open(file, "r", encoding=encoding)
@@ -1914,14 +1907,17 @@ oceMagic <- function(file, encoding="latin1", debug=getOption("oceDebug"))
         seek(file, 0)
         oceDebug(debug, "This is probably a nortek file of some sort.  Reading further to see for sure ...\n")
         hardware.configuration <- readBin(file, what="raw", n=48) # FIXME: this hard-wiring is repeated elsewhere
-        if (hardware.configuration[1] != 0xa5 || hardware.configuration[2] != 0x05) return("unknown")
+        if (hardware.configuration[1] != 0xa5 || hardware.configuration[2] != 0x05)
+            return("unknown")
         oceDebug(debug, "hardware.configuration[1:2]", hardware.configuration[1:2], "(expect 0xa5 0x05)\n")
         head.configuration <- readBin(file, what="raw", n=224)
         oceDebug(debug, "head.configuration[1:2]", head.configuration[1:2], "(expect 0xa5 0x04)\n")
-        if (head.configuration[1] != 0xa5 || head.configuration[2] != 0x04) return("unknown")
+        if (head.configuration[1] != 0xa5 || head.configuration[2] != 0x04)
+            return("unknown")
         user.configuration <- readBin(file, what="raw", n=512)
         oceDebug(debug, "user.configuration[1:2]", user.configuration[1:2], "(expect 0xa5 0x00)\n")
-        if (user.configuration[1] != 0xa5 || user.configuration[2] != 0x00) return("unknown")
+        if (user.configuration[1] != 0xa5 || user.configuration[2] != 0x00)
+            return("unknown")
         nextTwoBytes <- readBin(file, what="raw", n=2)
         oceDebug(debug, "nextTwoBytes:", paste("0x", nextTwoBytes[1], sep=""),
             paste("0x", nextTwoBytes[2], sep=""), "(e.g. 0x5 0x12 is adv/nortek/vector)\n")
@@ -3472,9 +3468,8 @@ numberAsPOSIXct <- function(t, type, tz="UTC")
         resOriginal <- t * 86400 + as.POSIXct("0001-01-01 00:00:00", tz="UTC")
         return(resOriginal - 2 * 86400) # kludge for ht of https://github.com/dankelley/oce/issues/738
     } else if (type == "gps") {
-        if (!is.matrix(t) || dim(t)[2] != 2) {
+        if (!is.matrix(t) || dim(t)[2] != 2)
             stop("for GPS times, 't' must be a two-column matrix, with first col the week, second the second")
-        }
         # Account for leap seconds since the GPS start time in 1980 (for the present week wraparound grouping).
         #20171014 See http://en.wikipedia.org/wiki/Leap_second and other sources for a list.  Updates can happen
         #20171014 # on June 30 and December 31 of any given year.  The information below was last updated
@@ -3504,9 +3499,8 @@ numberAsPOSIXct <- function(t, type, tz="UTC")
     } else if (type == "sas") {
         t <- as.POSIXct(t, origin="1960-01-01", tz=tz)
     } else if (type == "epic") {
-        if (!is.matrix(t) || dim(t)[2] != 2) {
+        if (!is.matrix(t) || dim(t)[2] != 2)
             stop("for epic times, 't' must be a two-column matrix, with first column the julian day, and second the millisecond within that day")
-        }
         r <- do_epic_time_to_ymdhms(t[, 1], t[, 2])
         t <- ISOdatetime(r$year, r$month, r$day, r$hour, r$minute, r$second, tz=tz)
     } else if (type == "vms") {
@@ -3594,23 +3588,18 @@ plotInset <- function(xleft, ybottom, xright, ytop, expr,
         }
     }
     if (is.character(xleft)) {
-        if (xleft != "bottomleft") {
+        if (xleft != "bottomleft")
             stop("only named position is \"bottomleft\"")
-        }
         f1 <- 0.02
         f2 <- 1/3
-        if (xLog) {
+        if (xLog)
             stop("cannot handle xlog yet")
-        } else {
-            xleft <- usr[1] + f1 * (usr[2] - usr[1])
-            xright <- usr[1] + f2 * (usr[2] - usr[1])
-        }
-        if (yLog) {
+        xleft <- usr[1] + f1 * (usr[2] - usr[1])
+        xright <- usr[1] + f2 * (usr[2] - usr[1])
+        if (yLog)
             stop("cannot handle ylog yet")
-        } else {
-            ybottom <- usr[3] + f1 * (usr[4] - usr[3])
-            ytop <- usr[3] + f2 * (usr[4] - usr[3])
-        }
+        ybottom <- usr[3] + f1 * (usr[4] - usr[3])
+        ytop <- usr[3] + f2 * (usr[4] - usr[3])
     } else {
         oceDebug(debug, "plotInset(xleft=", xleft, ", ybottom=", ybottom,
             ", xright=", xright, ", ytop=", ytop,
@@ -3887,15 +3876,12 @@ drawDirectionField <- function(x, y, u, v, scalex, scaley, skip, length=0.05, ad
         uu <- as.vector(u[ix, iy])
         vv <- as.vector(v[ix, iy])
     } else {
-        if (length(x) != length(y)) {
+        if (length(x) != length(y))
             stop("lengths of x and y must match")
-        }
-        if (length(x) != length(u)) {
+        if (length(x) != length(u))
             stop("lengths of x and u must match")
-        }
-        if (length(x) != length(v)) {
+        if (length(x) != length(v))
             stop("lengths of x and v must match")
-        }
         xx <- x
         yy <- y
         uu <- u

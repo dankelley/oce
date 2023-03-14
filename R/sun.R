@@ -82,12 +82,10 @@ sunAngle <- function(t, longitude=0.0, latitude=0.0, useRefraction=FALSE)
     if (missing(t)) {
         stop("must provide t")
     } else {
-        if (is.character(t)) {
+        if (is.character(t))
             t <- as.POSIXct(t, tz="UTC")
-        }
-        if (inherits(t, "Date")) {
+        if (inherits(t, "Date"))
             t <- as.POSIXct(t)
-        }
         if (!inherits(t, "POSIXt")) {
             if (is.numeric(t)) {
                 tref <- as.POSIXct("2000-01-01 00:00:00", tz="UTC") # arbitrary

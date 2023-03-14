@@ -452,9 +452,8 @@ read.xbt.edf <- function(file, longitude=NA, latitude=NA, encoding="latin1",
     pushBack(l, file)
     # FIXME: is this detection of the end of the header robust?
     headerEnd <- grep("^Depth \\(", l)
-    if (0 == length(headerEnd)) {
+    if (0 == length(headerEnd))
         stop("programming error: increase #lines read for header")
-    }
     res <- new("xbt")
     # Convert from latin1 to UTF-8, so a degree sign does not cause problems
     # res@metadata$header <- l[1:headerEnd]

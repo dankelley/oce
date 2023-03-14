@@ -42,9 +42,8 @@ read.ctd.odv <- function(file, columns=NULL, station=NULL, missingValue,
         file <- file(file, "r", encoding=encoding)
         on.exit(close(file))
     }
-    if (!inherits(file, "connection")) {
+    if (!inherits(file, "connection"))
         stop("argument `file' must be a character string or connection")
-    }
     if (!isOpen(file)) {
         open(file, "r", encoding=encoding)
         on.exit(close(file))

@@ -135,6 +135,7 @@ by specifying higher <code>debug</code> values.</p></dd>
     <div class="dont-index"><p>Other things related to cm data: 
 <code><a href="sub-sub-cm-method.html">[[,cm-method</a></code>,
 <code>[[&lt;-,cm-method</code>,
+<code><a href="applyMagneticDeclination-cm-method.html">applyMagneticDeclination,cm-method</a></code>,
 <code><a href="cm-class.html">cm-class</a></code>,
 <code><a href="cm.html">cm</a></code>,
 <code><a href="plot-cm-method.html">plot,cm-method</a></code>,
@@ -156,19 +157,20 @@ by specifying higher <code>debug</code> values.</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Cm summary</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ----------</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> * Time:          2023-01-05 11:23:46 to 2023-01-05 11:24:36 (51 samples, mean increment 1s)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> * North:         magnetic</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> * Time:          2023-03-14 11:37:37 to 2023-03-14 11:38:27 (51 samples, mean increment 1 s)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> * Data Overview</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                           Min.       Mean       Max. Dim. NAs</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     time            1672932226 1672932251 1672932276    0   0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     u [m/s]            -3.3934    0.16095     2.4373    0   0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     v [m/s]            -2.9667  0.0085905     2.0162    0   0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     pressure [dbar]     97.672     99.901     102.03    0   0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     time            1678804657 1678804682 1678804707    0   0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     u [m/s]             -3.085  -0.045378     2.1861    0   0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     v [m/s]            -2.8341   0.004622     2.3862    0   0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     pressure [dbar]     98.447     100.05     102.04    0   0</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> * Processing Log</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2023-01-05 15:23:46 UTC: `create 'cm' object`</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2023-01-05 15:23:46 UTC: `as.cm(time = t, u = u, v = v, pressure = p)`</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2023-03-14 14:37:37 UTC: `create 'cm' object`</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2023-03-14 14:37:37 UTC: `as.cm(time = t, u = u, v = v, pressure = p)`</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Example 2: creation from an adv object</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">adv</span><span class="op">)</span></span></span>
@@ -176,9 +178,10 @@ by specifying higher <code>debug</code> values.</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Cm summary</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ----------</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> * File source:        "(file name redacted)"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> * Serial Number:      (serial number redacted)</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> * Time:          2008-07-01 00:00:00 to 2008-07-01 00:00:59 (480 samples, mean increment 0.1250001s)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> * File source:   "(file name redacted)"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> * Serial Num.:   (serial number redacted)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> * North:         magnetic</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> * Time:          2008-07-01 00:00:00 to 2008-07-01 00:00:59 (480 samples, mean increment 0.1250001 s)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> * Data Overview</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                           Min.       Mean       Max. Dim. NAs</span>
@@ -196,7 +199,7 @@ by specifying higher <code>debug</code> values.</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     - 2015-12-23 17:53:55 UTC: `use aquadoppHR heading; despike own pitch and roll`</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     - 2015-12-23 17:54:11 UTC: `beamToXyzAdv(x = x)`</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     - 2015-12-23 17:54:34 UTC: `xyzToEnu(x, declination=-18.099, horizontalCase=TRUE, sensorOrientiation=upward, debug=0)`</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2023-01-05 15:23:46 UTC: `as.cm(time = adv)`</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2023-03-14 14:37:37 UTC: `as.cm(time = adv)`</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

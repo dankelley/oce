@@ -343,20 +343,17 @@ download.topo <- function(west, east, south, north, resolution=4,
     west <- round(west - 0.005, 2)
     south <- round(south - 0.005, 2)
     north <- round(north + 0.005, 2)
-    if (west > 180) {
+    if (west > 180)
         west <- west - 360
-    }
-    if (east > 180) {
+    if (east > 180)
         east <- east - 360
-    }
     wName <- paste(abs(west), if (west <= 0) "W" else "E", sep="")
     eName <- paste(abs(east), if (east <= 0) "W" else "E", sep="")
     sName <- paste(abs(south), if (south <= 0) "S" else "N", sep="")
     nName <- paste(abs(north), if (north <= 0) "S" else "N", sep="")
     resolutionName <- paste(resolution, "min", sep="")
-    if (missing(destfile)) {
+    if (missing(destfile))
         destfile <- paste0(paste("topo", wName, eName, sName, nName, resolutionName, sep="_"), ".nc")
-    }
     destination <- paste0(destdir, "/", destfile)
     oceDebug(debug, "destination='", destination, "'\n", sep="")
     if (file.exists(destination)) {
@@ -365,13 +362,11 @@ download.topo <- function(west, east, south, north, resolution=4,
         return(destination)
     }
     nlon <- as.integer((east - west) * 60.0 / resolution)
-    if (nlon < 1L) {
+    if (nlon < 1L)
         stop("Cannot download topo file, since east-west (=", east-west, " deg) is less than resolution (=", resolution, " min)")
-    }
     nlat <- as.integer((north - south) * 60.0 / resolution)
-    if (nlat < 1L) {
+    if (nlat < 1L)
         stop("Cannot download topo file, since north-south(=", north-south, " deg) is less than resolution (=", resolution, " min)")
-    }
     urlOLD <- paste0(server, "/arcgis/rest/services/DEM_mosaics/ETOPO1_bedrock/ImageServer/exportImage",
         "?bbox=", west, ",", south, ",", east, ",", north,
         "&bboxSR=4326",
@@ -412,12 +407,10 @@ download.topo <- function(west, east, south, north, resolution=4,
         "%27%22}",
         "&f=image")
     oceDebug(debug, "querying \"", url, "\"\n", sep="")
-    if (!requireNamespace("terra", quietly=TRUE)) {
+    if (!requireNamespace("terra", quietly=TRUE))
         stop("must install.packages(\"terra\") before using download.topo()")
-    }
-    if (!requireNamespace("ncdf4", quietly=TRUE)) {
+    if (!requireNamespace("ncdf4", quietly=TRUE))
         stop("must install.packages(\"ncdf4\") before using download.topo()")
-    }
     r <- terra::rast(x=url)
     oceDebug(debug, "converting data\n", sep="")
     longitude <- seq(terra::xmin(r), terra::xmax(r), length.out=ncol(r))
@@ -467,10 +460,14 @@ download.topo <- function(west, east, south, north, resolution=4,
 #' @family things related to topo data
 topoInterpolate <- function(longitude, latitude, topo)
 {
-    if (missing(longitude)) stop("must supply longitude")
-    if (missing(latitude)) stop("must supply latitude")
-    if (missing(topo)) stop("must supply topo")
-    if (length(latitude) != length(longitude)) stop("lengths of latitude and longitude must match")
+    if (missing(longitude))
+        stop("must supply longitude")
+    if (missing(latitude))
+        stop("must supply latitude")
+    if (missing(topo))
+        stop("must supply topo")
+    if (length(latitude) != length(longitude))
+        stop("lengths of latitude and longitude must match")
     bilinearInterp(longitude, latitude, topo[["longitude"]], topo[["latitude"]], topo[["z"]])
 }
 
@@ -576,25 +573,24 @@ setMethod(f="plot",
         debug=getOption("oceDebug"),
         ...)
     {
-        if (!inherits(x, "topo")) {
+        if (!inherits(x, "topo"))
             stop("method is only for objects of class '", "topo", "'")
-        }
         oceDebug(debug, "plot.topo() {\n", unindent=1)
         #opar <- par(no.readonly = TRUE)
         #on.exit(par(opar))
         par(mgp=mgp, mar=mar)
         dots <- list(...)
         dotsNames <- names(dots)
-        if ("center" %in% dotsNames) stop("please use 'clatitude' and 'clongitude' instead of 'center'")
+        if ("center" %in% dotsNames)
+            stop("please use 'clatitude' and 'clongitude' instead of 'center'")
         gave.center <- !missing(clatitude) && !missing(clongitude)
         gave.span <- !missing(span)
-        if (gave.center != gave.span) stop("must give all of 'clatitude', 'clongitude' and 'span', or none of them")
-        if (!missing(clongitude) && clongitude > 180) {
+        if (gave.center != gave.span)
+            stop("must give all of 'clatitude', 'clongitude' and 'span', or none of them")
+        if (!missing(clongitude) && clongitude > 180)
             clongitude <- clongitude - 360
-        }
-        if (!missing(clongitude) && clongitude < -180) {
+        if (!missing(clongitude) && clongitude < -180)
             clongitude <- clongitude + 360
-        }
         if (gave.center) {
             if (!missing(asp))
                 warning("argument 'asp' being ignored, because argument 'center' was given")
@@ -738,9 +734,8 @@ setMethod(f="plot",
         xclip <- xx < xr[1] | xr[2] < xx
         yclip <- yy < yr[1] | yr[2] < yy
         xx <- xx[!xclip]
-        if (length(xx) < 1) {
+        if (length(xx) < 1)
             stop("there are no topographic data within the longitudes of the plot region.")
-        }
         yy <- yy[!yclip]
         if (length(yy) < 1)
             stop("there are no topographic data within the latitudes of the plot region.")
@@ -1002,12 +997,10 @@ as.topo <- function(longitude, latitude, z, filename="")
     # longitudeLowerLeft <- min(longitude, na.rm=TRUE)
     # latitudeLowerLeft <- min(latitude, na.rm=TRUE)
     dim <- dim(z)
-    if (dim[1] != ncols) {
+    if (dim[1] != ncols)
         stop("longitude vector has length ", ncols, ", which does not match matrix width ", dim[1])
-    }
-    if (dim[2] != nrows) {
+    if (dim[2] != nrows)
         stop("latitude vector has length ", ncols, ", which does not match matrix height ", dim[2])
-    }
     units <- list(latitude=list(unit=expression(degree*E), scale=""),
         longitude=list(unit=expression(degree*N), scale=""),
         z=list(unit=expression(m), scale=""))

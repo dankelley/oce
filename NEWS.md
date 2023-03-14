@@ -4,7 +4,7 @@
 * Add `ctdFindProfilesRBR()` (issue 2027).
 * Change `applyMagneticDeclination()` to also handle `adp` and `adv` (issue 2038).
 * Change `download.topo()` to handle new NOAA database (issue 2015).
-* Change `plotMap()` to remove a low-level error (issue 2036).
+* Change `mapPlot()` to remove a low-level error (issue 2036).
 * Change `plotProfile()` to create xlab on vector input (issue 2047).
 * Change `plotTS()` to compute isopycnals more accurately (issue 2046).
 * Change `plotTS()` to handle lobo objects directly.
@@ -12,6 +12,7 @@
 * Change `read.adp.ad2cp()`, and structure of AD2CP objects (issue 2005).
 * Change `read.rsk()` to read geographic information (issue 2024).
 * Change `tidem()` (and summary method) to handle 6-hourly data (issue 2034).
+* Remove `plotAD2CP()`, now superseded by generic `plot()` method (issue 2005).
 * Remove dependence on `rgeos` and `raster` packages (issue 2028).
 
 # oce 1.7.10 (on CRAN)
@@ -227,7 +228,7 @@
 
 # Version 0.9-22
 
-* plot,section-method() can use external bathymetry
+* `plot,section-method()` can use external bathymetry
 * `lowpass()` added
 * `ctdTrim()` can isolate upcasts
 * deprecate `byteToBinary()`

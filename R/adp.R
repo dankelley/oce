@@ -468,7 +468,7 @@ setMethod(f="summary",
                     object@metadata$longitude),
                 "\n", sep=""))
         }
-        v.dim <- dim(object[["v"]])
+        #-v.dim <- dim(object[["v"]])
         #-if (!isAD2CP) {
         #-    cat("* # of beams:    ", v.dim[3], "\n", sep="")
         #-    cat("* # profiles:    ", v.dim[1], "\n", sep="")
@@ -538,7 +538,7 @@ setMethod(f="summary",
         #             format(subsampleStart), attr(subsampleStart, "tzone"),
         #             format(subsampleEnd),  attr(subsampleEnd, "tzone"),
         #             1 / subsampleDeltat))
-        metadataNames <- names(object@metadata)
+        #-metadataNames <- names(object@metadata)
         cat("* Frequency:    ", object[["frequency"]], "kHz\n", ...)
         if ("ensembleNumber" %in% names(object@metadata)) {
             en <- object@metadata$ensembleNumber
@@ -1942,13 +1942,11 @@ setMethod(f="plot",
         xlimGiven <- !missing(xlim)
         if (xlimGiven) {
             if (is.matrix(xlim)) {
-                if (dim(xlim)[2] != nw) {
+                if (dim(xlim)[2] != nw)
                     xlim2 <- matrix(xlim, ncol=2, nrow=nw) # FIXME: is this what I want?
-                }
             } else {
-                if (length(xlim) != 2) {
+                if (length(xlim) != 2)
                     stop("xlim must be a vector of length 2, or a 2-column matrix")
-                }
                 xlim2 <- matrix(xlim[1:2], ncol=2, nrow=nw, byrow=TRUE)
             }
             class(xlim2) <- class(xlim)
@@ -3846,29 +3844,24 @@ xyzToEnuAdpAD2CP <- function(x, declination=0, debug=getOption("oceDebug"))
             # message("  numberOfBeams=", numberOfBeams)
             if (!is.null(numberOfBeams) && numberOfBeams == 4) {
                 orientation <- x@data[[item]]$orientation
-                if (is.null(orientation)) {
+                if (is.null(orientation))
                     stop("no known orientation for '", item, "' in the object data slot")
-                }
                 # FIXME: handle 'xup', 'xdown', 'yup', 'ydown', 'zup', 'zdown'
-                if (orientation[1] != "AHRS") {
+                if (orientation[1] != "AHRS")
                     stop("only the 'AHRS' orientation is handled, but '", item, "' has orientation '", orientation[1], "'")
-                }
                 AHRS <- x@data[[item]]$AHRS
                 #cat(str(AHRS))
-                if (is.null(AHRS)) {
+                if (is.null(AHRS))
                     stop("'", item, "' within the object data slot does not contain coordinate-change matrix 'AHRS'")
-                }
                 oceCoordinate <- x@data[[item]]$oceCoordinate
-                if (is.null(oceCoordinate)) {
+                if (is.null(oceCoordinate))
                     stop("'", item, "' within the object data slot has no 'oceCoordinate'")
-                }
                 # If the item is already in 'enu', we just leave it alone
                 # message("oceCoordinate: '", oceCoordinate, "'")
                 if (oceCoordinate == "xyz") {
                     V <- x@data[[item]]$v
-                    if (is.null(V)) {
+                    if (is.null(V))
                         stop("'", item, "' within the object data slot does not contain velocity 'v'")
-                    }
                     nc <- dim(V)[2]
                     #cat("nc=",nc,"\n")
                     # DEVELOPER NOTE

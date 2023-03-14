@@ -91,9 +91,8 @@ read.adp.sontek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     oceDebug(debug, "read.adp.sontek(...,from=", from, ",to=", if (missing.to) "(missing)" else to, ",by=", by, "type=", type, "...)\n")
     #parameters <- list(profile.byte1 = 0xa5, profile.byte2=0x10, profile.headerLength=80)
     if (is.character(file)) {
-        if (0 == file.info(file)$size) {
+        if (0 == file.info(file)$size)
             stop("empty file")
-        }
         filename <- fullFilename(file)
         file <- file(file, "rb")
         on.exit(close(file))
@@ -158,9 +157,8 @@ read.adp.sontek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     # Only read (important) things that don't change profile-by-profile
     numberOfBeams <- as.integer(buf[s+26])
     oceDebug(debug, "numberOfBeams=", numberOfBeams, "\n")
-    if (numberOfBeams != 3) {
+    if (numberOfBeams != 3)
         stop("there should be 3 beams, but the file indicates ", numberOfBeams)
-    }
     orientation <- as.integer(buf[s+27])
     oceDebug(debug, "orientation=", orientation, "\n")
     temp.mode <- as.integer(buf[s+28])
@@ -207,9 +205,8 @@ read.adp.sontek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     oceDebug(debug, "sampling.deltat=", format(measurementDeltat), "\n")
     # Window data buffer, using bisection in case of a variable number of vd between sd pairs.
     if (inherits(from, "POSIXt")) {
-        if (!inherits(to, "POSIXt")) {
+        if (!inherits(to, "POSIXt"))
             stop("if 'from' is POSIXt, then 'to' must be, also")
-        }
         fromPair <- bisectSontekAdp(buf, from, -1, debug-1)
         from <- fromIndex <- fromPair$index
         toPair <- bisectSontekAdp(buf, to, 1, debug-1)
@@ -554,9 +551,8 @@ read.adp.sontek.serial <- function(file,
             file <- file(file, "rb")
             on.exit(close(file))
         }
-        if (!inherits(file, "connection")) {
+        if (!inherits(file, "connection"))
             stop("argument `file' must be a character string or connection")
-        }
         if (!isOpen(file)) {
             filename <- "(connection)"
             open(file, "rb")
@@ -585,9 +581,8 @@ read.adp.sontek.serial <- function(file,
             stop("orientation=", orientation, "but must be 0 (upward), 1 (downward), or 2 (sideward)")
         }
     } else {
-        if (orientation != "upward" && orientation != "downward") {
+        if (orientation != "upward" && orientation != "downward")
             stop("orientation \"", orientation, " is not allowed; try \"upward\" or \"downward\"")
-        }
     }
     # 28 is tempmode
     # coord.system 0=beam 1=XYZ 2=ENU

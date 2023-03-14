@@ -497,9 +497,8 @@ setMethod(f="plot",
             opar <- par(no.readonly = TRUE)
             on.exit(par(opar))
             names <- names(x@data)
-            if (!"time" %in% names) {
+            if (!"time" %in% names)
                 stop("plot.rsk() cannot plot timeseries, since no \"time\" data", call.=FALSE)
-            }
             names <- names[names != "time" & names != "tstamp"]
             par(mfrow=c(length(names), 1))
             for (name in names) {
@@ -733,15 +732,12 @@ read.rsk <- function(file, from=1, to, by=1, type, encoding=NA,
     }
     from.keep <- from
     # measurement.deltat <- 0
-    if (is.numeric(from) && from < 1) {
+    if (is.numeric(from) && from < 1)
         stop("from cannot be an integer less than 1")
-    }
-    if (!missing(to) && is.numeric(to) && to < 1) {
+    if (!missing(to) && is.numeric(to) && to < 1)
         stop("to cannot be an integer less than 1")
-    }
-    if (!missing(to)) {
+    if (!missing(to))
         to.keep <- to
-    }
     header <- c()
     measurementStart <-measurementEnd <- measurementDeltat <- NULL
     pressureAtmospheric <- NA
@@ -1024,9 +1020,8 @@ read.rsk <- function(file, from=1, to, by=1, type, encoding=NA,
                 }
             } else if (is.numeric(patm)) {
                 npatm <- length(patm)
-                if (1 < npatm && npatm != length(pressure)) {
+                if (1L < npatm && npatm != length(pressure))
                     stop("if patm is numeric, its length must equal 1, or the length(pressure).")
-                }
                 oceDebug(debug, "patm is numeric, so subtracting it from pressure\n")
                 # This code is a bit tricky because we modify existing pressure in-place
                 dataNames <- names(res@data)
@@ -1096,10 +1091,9 @@ read.rsk <- function(file, from=1, to, by=1, type, encoding=NA,
         oceDebug(debug, "sampleInterval: ", sampleInterval, "\n")
         oceDebug(debug, "File has ", numberOfChannels, "channels", "\n")
         channelNames <- NULL
-        for (iChannel in 1:numberOfChannels) {
+        for (iChannel in 1:numberOfChannels)
             channelNames <- c(channelNames,
                 tolower(unlist(strsplit(l[grep(paste0("Channel\\[", iChannel, "\\]"), l)], "="))[2]))
-        }
         oceDebug(debug, "Channel names are:", channelNames, "\n")
         skip <- grep("Date & Time", l)      # Where should I start reading the data?
         oceDebug(debug, "Data starts on line", skip, "\n")
@@ -1109,36 +1103,30 @@ read.rsk <- function(file, from=1, to, by=1, type, encoding=NA,
         time <- as.POSIXct(paste(d$V1, d$V2), format="%d-%b-%Y %H:%M:%OS", tz=tz)
         n <- length(time)
         channels <- list()
-        for (iChannel in 1:numberOfChannels) {
+        for (iChannel in 1:numberOfChannels)
             channels[[iChannel]] <- d[, iChannel+2]
-        }
         names(channels) <- channelNames
         # Now do subsetting
         if (inherits(from, "POSIXt") || inherits(from, "character")) {
-            if (!inherits(to, "POSIXt") && !inherits(to, "character")) {
+            if (!inherits(to, "POSIXt") && !inherits(to, "character"))
                 stop("if 'from' is POSIXt or character, then 'to' must be, also")
-            }
-            if (to <= from) {
+            if (to <= from)
                 stop("cannot have 'to' <= 'from'")
-            }
             from <- as.numeric(difftime(as.POSIXct(from, tz=tz), measurementStart, units="secs")) / measurementDeltat
             oceDebug(debug, "inferred from =", format(from, width=7), " based on 'from' arg", from.keep, "\n")
             to <- as.numeric(difftime(as.POSIXct(to, tz=tz), measurementStart, units="secs")) / measurementDeltat
             oceDebug(debug, "inferred   to =",   format(to, width=7), " based on   'to' arg", to.keep, "\n")
         } else {
-            if (from < 1) {
+            if (from < 1)
                 stop("cannot have 'from' < 1")
-            }
-            if (!missing(to) && to < from) {
+            if (!missing(to) && to < from)
                 stop("cannot have 'to' < 'from'")
-            }
         }
         oceDebug(debug, "from=", from, "\n")
         oceDebug(debug, "to=", if (missing(to)) "(not given)" else format(to), "\n")
         oceDebug(debug, "by=", by, "\n")
-        if (inherits(by, "character")) {
+        if (inherits(by, "character"))
             by <- ctimeToSeconds(by)/sampleInterval # FIXME: Is this right?
-        }
         oceDebug(debug, "inferred by=", by, "samples\n")
         # subset times
         if (inherits(from, "POSIXt") || inherits(from, "character")) {
@@ -1196,23 +1184,19 @@ read.rsk <- function(file, from=1, to, by=1, type, encoding=NA,
         oceDebug(debug, "serialNumber=", serialNumber, "\n")
         # Now that we know the logging times, we can work with 'from 'and 'to'
         if (inherits(from, "POSIXt") || inherits(from, "character")) {
-            if (!inherits(to, "POSIXt") && !inherits(to, "character")) {
+            if (!inherits(to, "POSIXt") && !inherits(to, "character"))
                 stop("if 'from' is POSIXt or character, then 'to' must be, also")
-            }
-            if (to <= from) {
+            if (to <= from)
                 stop("cannot have 'to' <= 'from'")
-            }
             from <- as.numeric(difftime(as.POSIXct(from, tz=tz), measurementStart, units="secs")) / measurementDeltat
             oceDebug(debug, "inferred from =", format(from, width=7), " based on 'from' arg", from.keep, "\n")
             to <- as.numeric(difftime(as.POSIXct(to, tz=tz), measurementStart, units="secs")) / measurementDeltat
             oceDebug(debug, "inferred   to =",   format(to, width=7), " based on   'to' arg", to.keep, "\n")
         } else {
-            if (from < 1) {
+            if (from < 1)
                 stop("cannot have 'from' < 1")
-            }
-            if (!missing(to) && to < from) {
+            if (!missing(to) && to < from)
                 stop("cannot have 'to' < 'from'")
-            }
         }
         oceDebug(debug, "by=", by, "in argument list\n")
         by <- ctimeToSeconds(by)
@@ -1407,9 +1391,8 @@ rsk2ctd <- function(x, pressureAtmospheric=0, longitude=NULL, latitude=NULL,
     # for pressure, because RBR devices store absolute pressure, not the sea
     # pressure that we have in CTD objects.
     res@data <- x@data
-    if (!("pressure" %in% names(res@data))) {
+    if (!("pressure" %in% names(res@data)))
         stop("there is no pressure in this rsk object, so it cannot be converted to a ctd object")
-    }
     pressureAtmosphericStandard <- 10.1325
     if (is.null(x@metadata$pressureType)) {
         oceDebug(debug, "metadata$pressureType is NULL so guessing absolute pressure:\n")

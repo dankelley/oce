@@ -206,9 +206,8 @@ setMethod(f="summary",
                 warning("the following constituents are not handled: '",
                     paste(constituent[bad], collapse="', '"), "'\n", sep="")
             }
-            if (length(i) == 0) {
+            if (length(i) == 0)
                 stop("In summary,tidem-method() : no known constituents were provided", call.=FALSE)
-            }
             i <- unique(i)
             fit <- data.frame(Const=object@data$const[i],
                 Name=object@data$name[i],
@@ -1502,7 +1501,9 @@ tidem <- function(t, x, constituents, infer=NULL, latitude=NULL,
             vuf <- tidemVuf(tRef, j=j, latitude=latitude)
             amplitude[i] <- amplitude[i] / vuf$f
             p[i] <- 0.5 * (p.all[ic+1] + p.all[ic])
-            #<<cat("i=", i, ", ic=", ic, ", name='", name[i], "', p.all[ic]=", p.all[ic], ", p.all[ic+1]=", p.all[ic+1], ", we set p[i]=", p[i], " (the mean)\n", sep="")
+            #<<cat("i=", i, ", ic=", ic, ", name='", name[i], "', p.all[ic]=",
+            #p.all[ic], ", p.all[ic+1]=", p.all[ic+1], ", we set p[i]=", p[i],
+            #" (the mean)\n", sep="")
             oceDebug(debug, "processed coefs at i=", i, ", ic=", ic, ", name=", name[i],
                 ", S=", S, ", C=", C, ", f=", vuf$f, ", angle adj=", (vuf$u+vuf$v)*360, ",
                 amplitude=", amplitude[i], ", phase=", phase[i], ", p=", p[i], "\n", sep="")
@@ -1903,9 +1904,8 @@ webtide <- function(action=c("map", "predict"),
             oceDebug(debug, "looked for webtide information in '", nodFile, "' but this file does not exist\n", sep="")
         }
     }
-    if (is.null(triangles)) {
+    if (is.null(triangles))
         stop("cannot find WebTide data file; rerun with debug=1 to see the searched list")
-    }
     if (action == "map") {
         if (plot) {
             asp <- 1 / cos(rpd*mean(range(triangles$latitude, na.rm=TRUE)))

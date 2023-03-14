@@ -92,21 +92,21 @@ usual <code>oce</code> pattern.</p>
     <div id="ref-usage">
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">read.adp.ad2cp</span><span class="op">(</span></span>
 <span>  <span class="va">file</span>,</span>
-<span>  from <span class="op">=</span> <span class="fl">1</span>,</span>
-<span>  to <span class="op">=</span> <span class="fl">0</span>,</span>
-<span>  by <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>  from <span class="op">=</span> <span class="fl">1L</span>,</span>
+<span>  to <span class="op">=</span> <span class="fl">0L</span>,</span>
+<span>  by <span class="op">=</span> <span class="fl">1L</span>,</span>
 <span>  dataType <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  dataSet <span class="op">=</span> <span class="fl">1L</span>,</span>
 <span>  tz <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"oceTz"</span><span class="op">)</span>,</span>
 <span>  longitude <span class="op">=</span> <span class="cn">NA</span>,</span>
 <span>  latitude <span class="op">=</span> <span class="cn">NA</span>,</span>
+<span>  <span class="va">plan</span>,</span>
+<span>  TOC <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  debug <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"oceDebug"</span><span class="op">)</span>,</span>
 <span>  <span class="va">orientation</span>,</span>
 <span>  <span class="va">distance</span>,</span>
-<span>  <span class="va">plan</span>,</span>
-<span>  <span class="va">type</span>,</span>
-<span>  monitor <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  despike <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  <span class="va">processingLog</span>,</span>
-<span>  debug <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"oceDebug"</span><span class="op">)</span>,</span>
+<span>  <span class="va">monitor</span>,</span>
+<span>  <span class="va">despike</span>,</span>
 <span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -143,8 +143,15 @@ case, which includes both base-10 numbers and <code>raw</code> values, <code>dat
 converted to an integer that is taken to indicate the data type via ID. The
 permitted values follow the Nortek convention, a summary of which is shown
 the table at the start of the “Details” section.  In the character
-case, it must be a string taken from that same table, or <code>"TOC"</code>, which
-causes a time-indexed table of contents to be returned.</p></dd>
+case, it must be a string taken from that same table.</p></dd>
+
+
+<dt>dataSet</dt>
+<dd><p>a positive integer that indicates which of the possibly
+several data sets stored within a file is to be focussed upon.  By
+default, the first data set is chosen. Note that data sets are found
+by trying to match each text data chunk against the regular expression
+<code>"^GETCLOCKSTR,TIME="</code>.</p></dd>
 
 
 <dt>tz</dt>
@@ -157,50 +164,16 @@ interpreting times stored in the file.</p></dd>
 location.</p></dd>
 
 
-<dt>orientation</dt>
-<dd><p>ignored by <code>read.adp.ad2cp()</code>, and provided only for
-similarity to other <code>read.adp.*</code> functions.</p></dd>
-
-
-<dt>distance</dt>
-<dd><p>ignored by <code>read.adp.ad2cp()</code>, and provided only for similarity
-to other <code>read.adp.*</code> functions.</p></dd>
-
-
 <dt>plan</dt>
-<dd><p>optional integer specifying which 'plan' to focus on (see
-reference 1 for the meaning of 'plan').  If this is not given, it defaults to
-the most common plan in the requested subset of the data.</p></dd>
+<dd><p>optional integer specifying which 'plan' to focus on (see</p></dd>
 
 
-<dt>type</dt>
-<dd><p>optional character value indicating the type of Nortek
-instrument.  If this is not provided, an attempt is made to infer it from the
-file header (if there is one), and <code>"Signature1000"</code> is used, otherwise. The
-importance of knowing the type is for inferring the slantwise beam angle,
-which is used in the conversion from beam coordinates to xyz coordinates. If
-<code>type</code> is provided, it must be one of <code>"Signature250"</code>, <code>"Signature500"</code>, or
-<code>"Signature1000"</code>; the first of these has a 20 degree slant-beam angle, while
-the others each have 20 degrees (see reference 2, section 2 on page 6). Note
-that <code><a href="oceSetMetadata.html">oceSetMetadata()</a></code> can be used to alter the slantwise beam angle of an
-existing object, and this will alter any later conversion from beam to xyz
-coordinates.</p></dd>
-
-
-<dt>monitor</dt>
-<dd><p>a boolean value indicating whether to indicate the progress of
-reading the file, by using <code><a href="https://rdrr.io/r/utils/txtProgressBar.html" class="external-link">txtProgressBar()</a></code> or otherwise.  The value of
-<code>monitor</code> is changed to <code>FALSE</code> automatically, for non-interactive sessions.</p></dd>
-
-
-<dt>despike</dt>
-<dd><p>ignored by <code>read.adp.ad2cp()</code>, and provided only for similarity
-to other <code>read.adp.*</code> functions.</p></dd>
-
-
-<dt>processingLog</dt>
-<dd><p>a character value that, if provided, is saved within the
-<code>processingLog</code> slot of the returned value.</p></dd>
+<dt>TOC</dt>
+<dd><p>a logical value.  If this is FALSE (the default) then
+the other parameters of the function are used to select data from
+the indicated <code>filename</code>, and an <a href="adp-class.html">adp</a> object is returned.
+However, if <code>TOC</code> is TRUE, then the number of datasets held within
+the file is returned.</p></dd>
 
 
 <dt>debug</dt>
@@ -210,16 +183,25 @@ get some debugging information from the C++ code that is used to parse the
 data chunks, or to 3 for intensive debugging at both levels.</p></dd>
 
 
+<dt>orientation, distance, monitor, despike</dt>
+<dd><p>ignored, provided only for
+calling compatibility with other functions that read <a href="adp-class.html">adp</a>
+files.  A warning is issued if any of these is supplied in a call
+to <code>read.adp.ad2cp()</code>.</p></dd>
+
+
 <dt>...</dt>
-<dd><p>ignored.</p></dd>
+<dd><p>ignored parameters that might be passed to <code>read.adp.ad2cp()</code>
+by <code><a href="read.oce.html">read.oce()</a></code>.</p></dd>
 
 </dl></div>
     <div id="value">
     <h2>Value</h2>
     
 
-<p>Either an <a href="adp-class.html">adp</a> object with <code>metadata$fileType</code> equal to
-<code>"AD2CP"</code>, or a data table summarizing the file contents by ID.</p>
+<p><code>read.adp.ad2cp()</code> returns either an <a href="adp-class.html">adp</a> object or
+the number of data sets within the file, according to the value
+of <code>TOC</code>.</p>
     </div>
     <div id="details">
     <h2>Details</h2>
@@ -266,6 +248,7 @@ March 31, 2022.</p>
 <code><a href="adpRdiFileTrim.html">adpRdiFileTrim</a>()</code>,
 <code><a href="adp_rdi.000.html">adp_rdi.000</a></code>,
 <code><a href="adp.html">adp</a></code>,
+<code><a href="applyMagneticDeclination-adp-method.html">applyMagneticDeclination,adp-method</a></code>,
 <code><a href="as.adp.html">as.adp</a>()</code>,
 <code><a href="beamName.html">beamName</a>()</code>,
 <code><a href="beamToXyzAdpAD2CP.html">beamToXyzAdpAD2CP</a>()</code>,
@@ -302,8 +285,7 @@ March 31, 2022.</p>
 <code><a href="ad2cpCodeToName.html">ad2cpCodeToName</a>()</code>,
 <code><a href="ad2cpHeaderValue.html">ad2cpHeaderValue</a>()</code>,
 <code><a href="adpAd2cpFileTrim.html">adpAd2cpFileTrim</a>()</code>,
-<code><a href="is.ad2cp.html">is.ad2cp</a>()</code>,
-<code><a href="plotAD2CP.html">plotAD2CP</a>()</code></p>
+<code><a href="is.ad2cp.html">is.ad2cp</a>()</code></p>
 <p>Other functions that read adp data: 
 <code><a href="read.adp.nortek.html">read.adp.nortek</a>()</code>,
 <code><a href="read.adp.rdi.html">read.adp.rdi</a>()</code>,

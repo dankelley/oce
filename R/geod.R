@@ -75,9 +75,12 @@ geodXy <- function(longitude, latitude, longitudeRef, latitudeRef, debug=getOpti
 {
     a <- 6378137.00          # WGS84 major axis
     f <- 1/298.257223563     # WGS84 flattening parameter
-    if (missing(longitude) || missing(latitude)) stop("must provide longitude and latitude")
-    if (missing(longitudeRef)) stop("must provide longitudeRef")
-    if (missing(latitudeRef)) stop("must provide latitudeRef")
+    if (missing(longitude) || missing(latitude))
+        stop("must provide longitude and latitude")
+    if (missing(longitudeRef))
+        stop("must provide longitudeRef")
+    if (missing(latitudeRef))
+        stop("must provide latitudeRef")
     n <- length(longitude)
     if (length(latitude) != n)
         stop("longitude and latitude vectors of unequal length")

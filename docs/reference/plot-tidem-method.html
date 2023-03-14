@@ -138,7 +138,9 @@ default, in order to use more space for the data and less for the axes.</p></dd>
 
 
 <dt>...</dt>
-<dd><p>optional arguments passed to plotting functions.</p></dd>
+<dd><p>optional arguments passed to plotting functions, not all
+of which are obeyed.  For example, if ... contains <code>type</code>, that value will be
+ignored because it is set internally, according to the value of <code>which</code>.</p></dd>
 
 </dl></div>
     <div id="historical-note">
@@ -175,7 +177,6 @@ because the more useful argument <code>constituents</code> had been added.</p>
 <code><a href="plot-topo-method.html">plot,topo-method</a></code>,
 <code><a href="plot-windrose-method.html">plot,windrose-method</a></code>,
 <code><a href="plot-xbt-method.html">plot,xbt-method</a></code>,
-<code><a href="plotAD2CP.html">plotAD2CP</a>()</code>,
 <code><a href="plotProfile.html">plotProfile</a>()</code>,
 <code><a href="plotScan.html">plotScan</a>()</code>,
 <code><a href="plotTS.html">plotTS</a>()</code>,

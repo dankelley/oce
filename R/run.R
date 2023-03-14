@@ -62,14 +62,18 @@
 #'        legend=c("swN2()", "using runlm()"))
 runlm <- function(x, y, xout, window=c("hanning", "boxcar"), L, deriv)
 {
-    if (missing(x)) stop("must supply 'x'")
-    if (missing(y)) stop("must supply 'y'")
+    if (missing(x))
+        stop("must supply 'x'")
+    if (missing(y))
+        stop("must supply 'y'")
     x <- as.vector(x)
     y <- as.vector(y)
     nx <- length(x)
     ny <- length(y)
-    if (nx != ny) stop("lengths of x and y must match, but they are ", nx, " and ", ny, ", respectively\n")
-    if (!missing(deriv) && deriv != 0 && deriv != 1) stop("deriv must be 0 or 1\n")
+    if (nx != ny)
+        stop("lengths of x and y must match, but they are ", nx, " and ", ny, ", respectively\n")
+    if (!missing(deriv) && deriv != 0 && deriv != 1)
+        stop("deriv must be 0 or 1\n")
     if (missing(xout)) xout <- x
     window <- match.arg(window)
     if (missing(L)) {

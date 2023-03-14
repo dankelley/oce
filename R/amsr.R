@@ -343,9 +343,8 @@ setMethod(f="subset",
         res <- x
         subsetString <- paste(deparse(substitute(expr=subset, env=environment())), collapse=" ")
         if (length(grep("longitude", subsetString))) {
-            if (length(grep("latitude", subsetString))) {
+            if (length(grep("latitude", subsetString)))
                 stop("the subset must not contain both longitude and latitude. Call this twice, to combine these")
-            }
             keep <- eval(expr=substitute(expr=subset, env=environment()),
                 envir=data.frame(longitude=x@metadata$longitude), enclos=parent.frame(2))
             oceDebug(debug, "keeping", sum(keep), "of", length(keep), "longitudes\n")
@@ -355,9 +354,8 @@ setMethod(f="subset",
             }
             res@metadata$longitude <- x@metadata$longitude[keep]
         } else if (length(grep("latitude", subsetString))) {
-            if (length(grep("longitude", subsetString))) {
+            if (length(grep("longitude", subsetString)))
                 stop("the subset must not contain both longitude and latitude. Call this twice, to combine these")
-            }
             keep <- eval(expr=substitute(expr=subset, env=environment()),
                 envir=data.frame(latitude=x@metadata$latitude), enclos=parent.frame(2))
             oceDebug(debug, "keeping", sum(keep), "of", length(keep), "latitudes\n")
@@ -821,7 +819,8 @@ setMethod("composite",
         if (ndots < 1)
             stop("need more than one argument")
         for (idot in 1:ndots) {
-            if (!inherits(dots[[idot]], "amsr")) stop("argument ", 1+idot, " does not inherit from 'amsr'")
+            if (!inherits(dots[[idot]], "amsr"))
+                stop("argument ", 1+idot, " does not inherit from 'amsr'")
         }
         # inherit most of the metadata from the last argument
         res <- dots[[ndots]]

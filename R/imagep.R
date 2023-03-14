@@ -67,9 +67,8 @@ paletteCalculations <- function(separation=par("cin")[2]/2, width=par("cin")[2],
     #   mai1  = just before plotting palette (i.e. lots of white space on one side)
     #   mai1f = set before plotting fullpage palette
     #   mai2  = ready for post-palette drawing (i.e. good for a diagram beside palette)
-    if (!(pos %in% 1:4)) {
+    if (!(pos %in% 1:4))
         stop("pos must be 1, 2, 3 or 4")
-    }
     oceDebug(debug, "paletteCalculations(separation=", separation,
         ", width=", width, ", pos=", pos,
         ", zlab=", if (missing(zlab)) "(missing)" else zlab,
@@ -969,12 +968,17 @@ imagep <- function(x, y, z,
         stop("flipy must be TRUE or FALSE")
     if (is.logical(add)) {
         if (add) {
-            if (missing(x)) stop("must give 'x'")
-            if (missing(y)) stop("must give 'y'")
-            if (missing(z)) stop("must give 'z'")
+            if (missing(x))
+                stop("must give 'x'")
+            if (missing(y))
+                stop("must give 'y'")
+            if (missing(z))
+                stop("must give 'z'")
             if (missing(colormap)) {
-                if (missing(breaks)) stop("must give 'breaks'")
-                if (missing(col)) stop("must give 'col'")
+                if (missing(breaks))
+                    stop("must give 'breaks'")
+                if (missing(col))
+                    stop("must give 'col'")
             } else {
                 breaks <- colormap$breaks
                 col <- colormap$col
@@ -1019,9 +1023,12 @@ imagep <- function(x, y, z,
     ylimGiven <- !missing(ylim)
     zlimGiven <- !missing(zlim) && !is.null(zlim) # latter is used by plot,adp-method
     # Guard against poor setup
-    if (xlimGiven && length(xlim) != 2) stop("length of xlim must be 2")
-    if (ylimGiven && length(ylim) != 2) stop("length of ylim must be 2")
-    if (zlimGiven && !(length(zlim) %in% 1:2)) stop("length of zlim must be 1 or 2")
+    if (xlimGiven && length(xlim) != 2)
+        stop("length of xlim must be 2")
+    if (ylimGiven && length(ylim) != 2)
+        stop("length of ylim must be 2")
+    if (zlimGiven && !(length(zlim) %in% 1:2))
+        stop("length of zlim must be 1 or 2")
 
     breaksGiven <- !missing(breaks)
     if (zlimGiven && breaksGiven && length(breaks) > 1)

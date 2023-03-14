@@ -361,8 +361,10 @@ setMethod(f="[[",
         }
         d <- NULL                # check for this later to see found data
         if (!is.na(pmatch(i, "temperature"))) {
-            if (!("tirs1" %in% names(x@data))) stop("cannot compute temperature without \"tirs1\" band")
-            if (!is.list(x@data$tirs1)) stop("the \"tirs1\" band is not stored in two-byte format")
+            if (!("tirs1" %in% names(x@data)))
+                stop("cannot compute temperature without \"tirs1\" band")
+            if (!is.list(x@data$tirs1))
+                stop("the \"tirs1\" band is not stored in two-byte format")
             # First, determine whether decimation is needed.
             decimate <- 1        # decimation step
             emissivity <- if ("emissivity" %in% names(x@metadata)) x@metadata$emissivity else 1
@@ -374,9 +376,11 @@ setMethod(f="[[",
                 if (is.logical(j)) {
                     decimate <- if (j) max(as.integer(round(maxdim / 800)), 1) else 1
                 } else {
-                    if (round(j) < 1) stop("cannot decimate by a step smaller than 1, but got ", j)
+                    if (round(j) < 1)
+                        stop("cannot decimate by a step smaller than 1, but got ", j)
                     decimate <- as.integer(round(j))
-                    if (decimate > min(dim)) stop("cannot decimate by a step larger than image dimension")
+                    if (decimate > min(dim))
+                        stop("cannot decimate by a step larger than image dimension")
                 }
                 ilook <- seq.int(1, dim[1], by=decimate)
                 jlook <- seq.int(1, dim[2], by=decimate)
@@ -707,10 +711,10 @@ setMethod(f="plot",
         if (which == 1) {
             if (!missing(band) && is.character(band) && !is.na(pmatch(band, "kelley"))) {
                 kelley <- TRUE
-                if (missing(drawPalette)) drawPalette <- FALSE
-                if (!("red" %in% datanames && "green" %in% datanames && "blue" %in% datanames)) {
+                if (missing(drawPalette))
+                    drawPalette <- FALSE
+                if (!("red" %in% datanames && "green" %in% datanames && "blue" %in% datanames))
                     stop("band=\"kelley\" requires landsat object to contain \"red\", \"green\" and \"blue\"")
-                }
                 message("'kelley' band -- TEMPORARY test; set debug=3 for more")
                 r <- x[["red", decimate]]
                 g <- x[["green", decimate]]
@@ -735,9 +739,8 @@ setMethod(f="plot",
             } else if (!missing(band) && is.character(band) && !is.na(pmatch(band, "terralook"))) {
                 terralook <- TRUE
                 if (missing(drawPalette)) drawPalette <- FALSE
-                if (!("red" %in% datanames && "green" %in% datanames && "nir" %in% datanames)) {
+                if (!("red" %in% datanames && "green" %in% datanames && "nir" %in% datanames))
                     stop("band=\"terralook\" requires landsat object to contain \"red\", \"green\" and \"nir\"")
-                }
                 oceDebug(debug, "extracting red data\n")
                 r <- x[["red", decimate]]
                 oceDebug(debug, "range(red): ", paste(range(r), collapse=" to "), "\n")
@@ -790,9 +793,8 @@ setMethod(f="plot",
                     knownBands <- c("temperature", datanames)
                     band <- band[1]
                     i <- pmatch(band, knownBands)
-                    if (is.na(i)) {
+                    if (is.na(i))
                         stop("this landsat object has no band named \"", band, "\"", call.=FALSE)
-                    }
                     band <- knownBands[i]
                     d <- x[[band, decimate]]
                     if (!any(!is.na(d))) {

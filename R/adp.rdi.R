@@ -349,12 +349,10 @@ decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceT
     VLD <- buf[dataOffset[2]+1:nVLD]
     oceDebug(debug, "Variable Leader Data (", length(VLD), "bytes):", paste(VLD, collapse=" "), "\n")
     # ensure that header is not ill-formed
-    if (VLD[1] != 0x80) {
+    if (VLD[1] != 0x80)
         stop("byte 1 of variable leader data should be 0x80, but it is ", VLD[1])
-    }
-    if (VLD[2] != 0x00) {
+    if (VLD[2] != 0x00)
         stop("byte 2 of variable leader data should be 0x00, but it is ", VLD[2])
-    }
     #ensemble.number <- readBin(VLD[3:4], "integer", n=1, size=2, endian="little")
     # Assemble the time.  This follows section 5.3 (paper 132, file page 140) of "Workhorse Commands and Output Data Format_Nov07.pdf"
     # FIXME: probably would save time to read all elements at once.  Instrument to check
@@ -793,9 +791,8 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
     seek(file, where=0, origin="end")
     fileSize <- seek(file, where=0)
     oceDebug(debug, "fileSize=", fileSize, "\n")
-    if (fileSize < 1) {
+    if (fileSize < 1)
         stop("empty data file")
-    }
     # FIXME 20170107
     # We process the header wholly in R, and we don't need more than probably 2000 bytes
     # but let's read 10000 just in case. It might be worth thinking about this in more
@@ -889,9 +886,8 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
         # location for these, based on the "Always Output" indication in Fig 46
         # on page 145 of teledyne2014ostm.
         profileStart <- ensembleStart + as.numeric(buf[ensembleStart[1]+8]) + 256*as.numeric(buf[ensembleStart[1]+9])
-        if (any(profileStart < 1)) {
+        if (any(profileStart < 1))
             stop("difficulty detecting ensemble (profile) start indices")
-        }
         # offset for data type 1 (velocity)
         oceDebug(debug, vectorShow(profileStart, "profileStart before trimming"))
         profilesInFile <- length(profileStart)
@@ -1068,7 +1064,8 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
                 vItems <- numberOfVCells
                 # V series config
                 ii <- base::which(codes[, 1]==0x00 & codes[, 2]==0x70)
-                if (length(ii) < 1) stop("Didn't find V series Configuration data ID")
+                if (length(ii) < 1)
+                    stop("Didn't find V series Configuration data ID")
                 oceDebug(debug, "Reading V series configuration\n")
                 firmwareVersionPrimary <- as.numeric(buf[ensembleStart[1]+header$dataOffset[ii]+2])
                 firmwareVersionSecondary <- as.numeric(buf[ensembleStart[1]+header$dataOffset[ii]+3])
@@ -1090,9 +1087,8 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
                     schemaRev=schemaRev)
                 # Read V series ping setup
                 ii <- base::which(codes[, 1]==0x01 & codes[, 2]==0x70)
-                if (length(ii) < 1) {
+                if (length(ii) < 1)
                     stop("Didn't find V series ping setup data ID")
-                }
                 oceDebug(debug, "Reading V series ping setup\n")
                 ensembleInterval <- readBin(buf[ensembleStart[1] + header$dataOffset[ii] + 4:7], "integer", endian="little")
                 numberOfPings <- readBin(buf[ensembleStart[1] + header$dataOffset[ii] + 8:9], "integer", size=2, endian="little")
@@ -1172,9 +1168,8 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
             badProfiles <- NULL
             #haveBottomTrack <- FALSE          # FIXME maybe we can determine this from the header
             oceDebug(debug, "length(profileStart):", length(profileStart), "\n")
-            if (profilesToRead < 1) {
+            if (profilesToRead < 1)
                 stop("no profilesToRead")
-            }
             velocityScale <- 1e-3
             isVMDAS <- FALSE           # flag for file type
             badVMDAS <- NULL           # erroneous VMDAS profiles
@@ -1184,9 +1179,8 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
             # FIXME: data seen to date.
             oceDebug(debug, "header$numberOfDataTypes: ", header$numberOfDataTypes, "\n")
             #profilesToShow <- 2 # only if debug>0
-            if (monitor) {
+            if (monitor)
                 progressBar <- txtProgressBar(max=profilesToRead, style=3, title="Reading profiles")
-            }
             oceDebug(debug, "profilesToRead=", profilesToRead, "\n")
             unhandled <- list(xxGGA=0, xxVTA=0, xxGSA=0)
             #. unknownWarningCount <- 0

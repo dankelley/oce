@@ -205,7 +205,8 @@ in earth coordinates. Note the semidurnal tidal signal, and the pattern of missi
 data at the ocean surface (gray blotches at the top).</p>
 <p>Corresponding to the velocity array are two arrays of type raw, and
 identical dimension, accessed by <code>adp[["a"]]</code> and <code>adp[["q"]]</code>,
-holding measures of signal strength and data quality quality,
+holding measures of signal strength and data quality (referred
+to as "correlation" in some documentation),
 respectively.  (The exact meanings of these depend on the particular type
 of instrument, and it is assumed that users will be familiar enough with
 instruments to know both the meanings and their practical consequences in
@@ -344,6 +345,7 @@ transfer either beam or xyz to enu.  Enu may be converted to other coordinates
 <code><a href="adpRdiFileTrim.html">adpRdiFileTrim</a>()</code>,
 <code><a href="adp_rdi.000.html">adp_rdi.000</a></code>,
 <code><a href="adp.html">adp</a></code>,
+<code><a href="applyMagneticDeclination-adp-method.html">applyMagneticDeclination,adp-method</a></code>,
 <code><a href="as.adp.html">as.adp</a>()</code>,
 <code><a href="beamName.html">beamName</a>()</code>,
 <code><a href="beamToXyzAdpAD2CP.html">beamToXyzAdpAD2CP</a>()</code>,

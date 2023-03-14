@@ -90,12 +90,13 @@ NOAA website (see reference 1).</p>
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>longitude</dt>
-<dd><p>longitude in degrees east (negative for degrees west).  The
-dimensions must conform to lat.</p></dd>
+<dd><p>longitude in degrees east (negative for degrees west), as a
+number, a vector, or a matrix.</p></dd>
 
 
 <dt>latitude</dt>
-<dd><p>latitude in degrees north, a number, vector, or matrix.</p></dd>
+<dd><p>latitude in degrees north, as a number, vector, or matrix.
+The shape (length or dimensions) must conform to the dimensions of <code>longitude</code>.</p></dd>
 
 
 <dt>time</dt>
@@ -152,6 +153,10 @@ Nature 565 (January 9, 2019): 143.
     <div id="see-also">
     <h2>See also</h2>
     <div class="dont-index"><p>Other things related to magnetism: 
+<code><a href="applyMagneticDeclination-adp-method.html">applyMagneticDeclination,adp-method</a></code>,
+<code><a href="applyMagneticDeclination-adv-method.html">applyMagneticDeclination,adv-method</a></code>,
+<code><a href="applyMagneticDeclination-cm-method.html">applyMagneticDeclination,cm-method</a></code>,
+<code><a href="applyMagneticDeclination-oce-method.html">applyMagneticDeclination,oce-method</a></code>,
 <code><a href="applyMagneticDeclination.html">applyMagneticDeclination</a>()</code></p></div>
     </div>
     <div id="author">
@@ -168,13 +173,13 @@ SM to DK dated June 5, 2015).</p>
 <span class="r-in"><span><span class="co"># 1. Today's value at Halifax NS</span></span></span>
 <span class="r-in"><span><span class="fu">magneticField</span><span class="op">(</span><span class="op">-</span><span class="op">(</span><span class="fl">63</span><span class="op">+</span><span class="fl">36</span><span class="op">/</span><span class="fl">60</span><span class="op">)</span>, <span class="fl">44</span><span class="op">+</span><span class="fl">39</span><span class="op">/</span><span class="fl">60</span>, <span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.Date</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $declination</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] -16.57231</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] -16.54683</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $inclination</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 66.5872</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 66.56837</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $intensity</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 51321.47</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 51309</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># 2. World map of declination in year 2000.</span></span></span>
@@ -185,8 +190,9 @@ SM to DK dated June 5, 2015).</p>
 <span class="r-in"><span><span class="co"># Construct matrix holding declination</span></span></span>
 <span class="r-in"><span><span class="va">lon</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="op">-</span><span class="fl">180</span>, <span class="fl">180</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">lat</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="op">-</span><span class="fl">90</span>, <span class="fl">90</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">dec2000</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">lon</span>, <span class="va">lat</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">dec2000</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">lon</span>, <span class="va">lat</span><span class="op">)</span> <span class="op">{</span></span></span>
 <span class="r-in"><span>    <span class="fu">magneticField</span><span class="op">(</span><span class="va">lon</span>, <span class="va">lat</span>, <span class="fl">2000</span><span class="op">)</span><span class="op">$</span><span class="va">declination</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
 <span class="r-in"><span><span class="va">dec</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/outer.html" class="external-link">outer</a></span><span class="op">(</span><span class="va">lon</span>, <span class="va">lat</span>, <span class="va">dec2000</span><span class="op">)</span> <span class="co"># hint: outer() is very handy!</span></span></span>
 <span class="r-in"><span><span class="co"># Contour, unlabelled for small increments, labeled for</span></span></span>
 <span class="r-in"><span><span class="co"># larger increments.</span></span></span>

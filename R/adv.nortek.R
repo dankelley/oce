@@ -371,9 +371,8 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     }
     # Window data buffer, using bisection in case of a variable number of vd between sd pairs.
     if (inherits(from, "POSIXt")) {
-        if (!inherits(to, "POSIXt")) {
+        if (!inherits(to, "POSIXt"))
             stop("if 'from' is POSIXt, then 'to' must be, also")
-        }
         fromPair <- bisectNortekVectorSd(from, -1, debug-1)
         from <- fromIndex <- fromPair$index
         toPair <- bisectNortekVectorSd(to, 1, debug-1)
@@ -408,9 +407,8 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         oceDebug(debug, "numeric values for args from=", from, "to=", to, "by=", by, "\n")
         fromIndex <- from
         toIndex <- to
-        if (toIndex < 1 + fromIndex) {
+        if (toIndex < 1 + fromIndex)
             stop("need more separation between from and to")
-        }
         oceDebug(debug, "fromIndex=", fromIndex, "toIndex=", toIndex, "\n")
         oceDebug(debug, vectorShow(vvdStart, "before subset, vvdStart is"))
         oceDebug(debug, vectorShow(vsdStart, "before subset, vsdStart is"))

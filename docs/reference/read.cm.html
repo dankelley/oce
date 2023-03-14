@@ -222,11 +222,21 @@ explaining the data format would be especially appreciated!</p>
 return value, but it is no longer stored, since it can be derived from the
 <code>u</code> and <code>v</code> values.</p>
     </div>
+    <div id="changes">
+    <h2>Changes</h2>
+    
+
+<ul><li><p>On 2023-02-09 an item named <code>north</code> was added to the <code>metadata</code> slot.  This
+is initialized to <code>"magnetic"</code> by <code>read.cm()</code>, but this is really just a
+guess, and users ought to consider using <code><a href="applyMagneticDeclination.html">applyMagneticDeclination()</a></code> to take
+magnetic declination into account.</p></li>
+</ul></div>
     <div id="see-also">
     <h2>See also</h2>
     <div class="dont-index"><p>Other things related to cm data: 
 <code><a href="sub-sub-cm-method.html">[[,cm-method</a></code>,
 <code>[[&lt;-,cm-method</code>,
+<code><a href="applyMagneticDeclination-cm-method.html">applyMagneticDeclination,cm-method</a></code>,
 <code><a href="as.cm.html">as.cm</a>()</code>,
 <code><a href="cm-class.html">cm-class</a></code>,
 <code><a href="cm.html">cm</a></code>,

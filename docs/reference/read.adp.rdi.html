@@ -348,6 +348,13 @@ file.  For example, if <code>d</code> is an object read with <code>read.adp.rdi<
 <p></p><div class="sourceCode"><pre><code><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(d[[<span class="st">"time"</span>]][<span class="sc">-</span><span class="dv">1</span>], <span class="fu">diff</span>(d[[<span class="st">"ensembleInFile"</span>]]))</span></code></pre><p></p></div>
 <p>can be a good way to narrow in on problems.</p>
     </div>
+    <div id="changes">
+    <h2>Changes</h2>
+    
+
+<ul><li><p>The <code>bq</code> (bottom-track quality) field was called <code>bc</code> until 2023-02-09.
+See https://github.com/dankelley/oce/issues/2039 for discussion.</p></li>
+</ul></div>
     <div id="references">
     <h2>References</h2>
     
@@ -380,6 +387,7 @@ P/N 957-6171-00 (June 2001) <code>WinRiver User Guide International Version.pdf.
 <code><a href="adpRdiFileTrim.html">adpRdiFileTrim</a>()</code>,
 <code><a href="adp_rdi.000.html">adp_rdi.000</a></code>,
 <code><a href="adp.html">adp</a></code>,
+<code><a href="applyMagneticDeclination-adp-method.html">applyMagneticDeclination,adp-method</a></code>,
 <code><a href="as.adp.html">as.adp</a>()</code>,
 <code><a href="beamName.html">beamName</a>()</code>,
 <code><a href="beamToXyzAdpAD2CP.html">beamToXyzAdpAD2CP</a>()</code>,
@@ -434,32 +442,20 @@ P/N 957-6171-00 (June 2001) <code>WinRiver User Guide International Version.pdf.
 <span class="r-out co"><span class="r-pr">#&gt;</span> ADP Summary</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> -----------</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> * Filename:      "/private/var/folders/8b/l4h64m1j22v5pb7vj049ff140000gn/T/RtmpmgaEXq/temp_libpath466210478f0d/oce/extdata/adp_rdi.000"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> * Filename:      "/private/var/folders/8b/l4h64m1j22v5pb7vj049ff140000gn/T/Rtmpav9Rqb/temp_libpath23ed31fb3673/oce/extdata/adp_rdi.000"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> * Instrument:    adcp</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> * Manufacturer:  teledyne rdi</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> * Serial number: unknown</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> * Firmware:      16.28</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> * Location:      unknown latitude, unknown longitude</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> * # of beams:    4</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> * # profiles:    9</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> * # cells:       84</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> * # beams:       4</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> * Cell size:     0.5m</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> * Frequency:     600 kHz</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> * Ensemble Numbers:   1, 2, ..., 8, 9</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> * Cells:              84, centered at 2.230 m to 43.730 m, spaced by 0.500 m</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> * Coordinate system:  beam [originally], beam [presently]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> * Beams::</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     Number:           4 slanted</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     Slantwise Angle:  20 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     Orientation:      upward:9 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     Unspreaded:       FALSE </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> * Transformation matrix::</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>       1.462   -1.462    0.000    0.000 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>       0.000    0.000   -1.462    1.462 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>       0.266    0.266    0.266    0.266 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>       1.034    1.034   -1.034   -1.034 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> * Time:          2008-06-25 10:00:00 to 2008-06-25 10:01:20 (9 samples, mean increment 10s)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      1.462  -1.462   0.000   0.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      0.000   0.000  -1.462   1.462</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      0.266   0.266   0.266   0.266</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      1.034   1.034  -1.034  -1.034</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> * Time:          2008-06-25 10:00:00 to 2008-06-25 10:01:20 (9 samples, mean increment 10 s)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> * Data Overview</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                                    Min.       Mean       Max. Dim. NAs</span>
@@ -492,7 +488,7 @@ P/N 957-6171-00 (June 2001) <code>WinRiver User Guide International Version.pdf.
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> * Processing Log</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2023-01-05 15:25:59 UTC: `read.adp.rdi(file = system.file("extdata", "adp_rdi.000", package = "oce"))`</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2023-03-14 14:39:59 UTC: `read.adp.rdi(file = system.file("extdata", "adp_rdi.000", package = "oce"))`</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

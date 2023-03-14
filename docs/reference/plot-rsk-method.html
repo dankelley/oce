@@ -241,7 +241,6 @@ the temperature field.</p>
 <code><a href="plot-topo-method.html">plot,topo-method</a></code>,
 <code><a href="plot-windrose-method.html">plot,windrose-method</a></code>,
 <code><a href="plot-xbt-method.html">plot,xbt-method</a></code>,
-<code><a href="plotAD2CP.html">plotAD2CP</a>()</code>,
 <code><a href="plotProfile.html">plotProfile</a>()</code>,
 <code><a href="plotScan.html">plotScan</a>()</code>,
 <code><a href="plotTS.html">plotTS</a>()</code>,
@@ -271,7 +270,7 @@ the temperature field.</p>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">rsk</span><span class="op">)</span> <span class="co"># default timeseries plot of all data fields</span></span></span>
 <span class="r-plt img"><img src="plot-rsk-method-1.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co">## A multipanel plot of just pressure and temperature with ylim</span></span></span>
+<span class="r-in"><span><span class="co"># A multipanel plot of just pressure and temperature with ylim</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mfrow<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">rsk</span>, which<span class="op">=</span><span class="st">"pressure"</span>, ylim<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">10</span>, <span class="fl">30</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">rsk</span>, which<span class="op">=</span><span class="st">"temperature"</span>, ylim<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">4</span><span class="op">)</span><span class="op">)</span></span></span>

@@ -267,12 +267,10 @@ setMethod(f="[[<-",
             # do not store as indicated; interpolate to the Slow variant
             if (haveSlow) {
                 name <- paste(i, "Slow", sep="")
-                if (!(name %in% names(x@data))) {
+                if (!(name %in% names(x@data)))
                     stop("no variable named '", name, "' in object's data slot")
-                }
-                if (length(value) != length(x@data[[name]])) {
+                if (length(value) != length(x@data[[name]]))
                     stop("length mismatch; value has ", length(value), " but ", name, " has ", length(x@data[[name]]), " elements")
-                }
                 x@data[[name]] <- value
             } else {
                 x@data[[i]] <- value
@@ -335,9 +333,8 @@ setMethod(f="subset",
             #keep <- eval(substitute(subset), x@data, parent.frame(2)) # used for $ts and $ma, but $tsSlow gets another
             keep <- eval(expr=substitute(expr=subset, env=environment()), envir=x@data, enclos=parent.frame(2))
             sum.keep <- sum(keep)
-            if (sum.keep < 2L) {
+            if (sum.keep < 2L)
                 stop("must keep at least 2 profiles")
-            }
             oceDebug(debug, "keeping", sum.keep, "of the", length(keep), "time slots\n")
             oceDebug(debug, vectorShow(keep, "keeping bins:"))
             res <- x
@@ -658,16 +655,13 @@ setMethod(f="plot",
             col <- rep("black", length.out=nw)
         } else {
             colPerPoint <- length(col) == length(x@data$time) # FIXME slow timescale here?
-            if (!colPerPoint) {
+            if (!colPerPoint)
                 col <- rep(col, length.out=nw)
-            }
         }
-        if (!missing(titles) && length(titles) != nw) {
+        if (!missing(titles) && length(titles) != nw)
             stop("length of 'titles' must equal length of 'which'")
-        }
-        if (nw > 1) {
+        if (nw > 1)
             on.exit(par(opar))
-        }
         par(mgp=mgp, mar=mar)
         dots <- list(...)
         # user may specify a matrix for xlim and ylim
@@ -686,13 +680,11 @@ setMethod(f="plot",
         gave.xlim <- !missing(xlim)
         if (gave.xlim) {
             if (is.matrix(xlim)) {
-                if (dim(xlim)[2] != nw) {
+                if (dim(xlim)[2] != nw)
                     xlim2 <- matrix(xlim, ncol=2, nrow=nw) # FIXME: is this what I want?
-                }
             } else {
-                if (length(xlim) != 2) {
+                if (length(xlim) != 2)
                     stop("xlim must be a vector of length 2, or a 2-column matrix")
-                }
                 xlim2 <- matrix(xlim[1:2], ncol=2, nrow=nw, byrow=TRUE)
             }
             xlim <- xlim2
@@ -1412,12 +1404,10 @@ xyzToEnuAdv <- function(x, declination=0, cabled=FALSE, horizontalCase, sensorOr
             }
         } else {
             # vector with a cable: cases 3 to 6
-            if (missing(horizontalCase)) {
+            if (missing(horizontalCase))
                 stop("must give horizontalCase for cabled Nortek Vector (cases 3 to 6)")
-            }
-            if (!is.logical(horizontalCase)) {
+            if (!is.logical(horizontalCase))
                 stop("must give horizontalCase as TRUE or FALSE")
-            }
             if (horizontalCase) {
                 if (sensorOrientation == "upward") {
                     oceDebug(debug, "Case 3: Nortek vector velocimeter with upward-pointing sensor, cabled to a horizontal pressure case.\n")

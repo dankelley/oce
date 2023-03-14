@@ -752,9 +752,8 @@ read.adp.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     measurementDeltat <- (as.numeric(measurementEnd) - as.numeric(measurementStart)) / profilesInFile
     oceDebug(debug, "NEW  measurementDeltat=", measurementDeltat, "\n")
     if (inherits(from, "POSIXt")) {
-        if (!inherits(to, "POSIXt")) {
+        if (!inherits(to, "POSIXt"))
             stop("if 'from' is POSIXt, then 'to' must be, also")
-        }
         fromPair <- bisectAdpNortek(buf, from, -1, debug-1)
         from <- fromIndex <- fromPair$index
         toPair <- bisectAdpNortek(buf, to, 1, debug-1)

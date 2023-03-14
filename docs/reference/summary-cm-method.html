@@ -101,6 +101,7 @@ of <code>cm</code> objects, and also outlines the other functions dealing with t
 <p>Other things related to cm data: 
 <code><a href="sub-sub-cm-method.html">[[,cm-method</a></code>,
 <code>[[&lt;-,cm-method</code>,
+<code><a href="applyMagneticDeclination-cm-method.html">applyMagneticDeclination,cm-method</a></code>,
 <code><a href="as.cm.html">as.cm</a>()</code>,
 <code><a href="cm-class.html">cm-class</a></code>,
 <code><a href="cm.html">cm</a></code>,
@@ -122,11 +123,12 @@ of <code>cm</code> objects, and also outlines the other functions dealing with t
 <span class="r-out co"><span class="r-pr">#&gt;</span> Cm summary</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ----------</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> * File source:        "/data/archive/sleiwex/2008/moorings/m11/cm/interocean_0811786/manufacturer/cm_interocean_0811786.s4a.tab"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> * Instrument type:    (2Hz)S4</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> * Serial Number:      8111786</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> * Version:            2.399</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> * Time:          2008-06-26 to 2008-06-26 23:59:00 (1440 samples , mean increment 1min)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> * File source:   "/Users/kelley/Dropbox/data/archive/sleiwex/2008/moorings/m11/cm/interocean_0811786/manufacturer/cm_interocean_0811786.s4a.tab"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> * Instr. type:   (2Hz)S4</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> * Serial Num.:   8111786</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> * Version:       2.399</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> * North:         magnetic</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> * Time:          2008-06-26 to 2008-06-26 23:59:00 (1440 samples, mean increment 1 min)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> * Data Overview</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                                    Min.       Mean       Max. Dim. NAs OriginalName</span>
@@ -175,9 +177,9 @@ of <code>cm</code> objects, and also outlines the other functions dealing with t
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> * Processing Log</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2016-08-01 11:20:36 UTC: `create 'cm' object`</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2016-08-01 11:20:36 UTC: `read.oce(file = "/data/archive/sleiwex/2008/moorings/m11/cm/interocean_0811786/manufacturer/cm_interocean_0811786.s4a.tab",     from = 840, to = 840 + 24 * 60)`</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2016-08-01 11:20:36 UTC: `subset.cm(x, subset=time &lt; as.POSIXct("2008-06-27 00:00:00", tz = "UTC"))`</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2023-02-10 12:50:57 UTC: `create 'cm' object`</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2023-02-10 12:50:57 UTC: `read.oce("~/data/archive/sleiwex/2008/moorings/m11/cm/interocean_0811786/manufacturer/cm_interocean_0811786.s4a.tab", ...)`</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2023-02-10 12:50:57 UTC: `subset.cm(x, subset=time &lt; as.POSIXct("2008-06-27 00:00:00", tz = "UTC"))`</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

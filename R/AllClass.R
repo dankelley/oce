@@ -483,31 +483,26 @@ setMethod(f="[[",
         if (i == "conductivity") {
             C <- x@data$conductivity
             if (!is.null(C) && !missing(j)) {
-                if (!(j %in% c("", "ratio", "uS/cm", "mS/cm", "S/m"))) {
+                if (!(j %in% c("", "ratio", "uS/cm", "mS/cm", "S/m")))
                     stop("unknown conductivity unit \"", j, "\"; must be \"\", \"ratio\", \"uS/cm\", \"mS/cm\" or \"S/m\"")
-                }
-                if (j == "") {
+                if (j == "")
                     j <- "ratio" # lets us use switch()
-                }
                 unit <- x@metadata$units$conductivity$unit
-                if (is.null(unit) || !length(unit)) {
-                    # FIXME: maybe should look at median value, to make a guess
+                # FIXME: maybe should look at median value, to make a guess
+                if (is.null(unit) || !length(unit))
                     unit <- "ratio"
-                }
                 unit <- as.character(unit)
                 C <- x@data$conductivity
                 # Rather than convert from 3 inputs to 3 outputs, express as ratio, then convert as desired
-                if (!unit %in% c("ratio", "uS/cm", "mS/cm", "S/m")) {
+                if (!unit %in% c("ratio", "uS/cm", "mS/cm", "S/m"))
                     stop("object has unknown conductivity unit \"", unit, "\"; must be \"ratio\", \"uS/cm\", \"mS/cm\" or \"S/m\"")
-                }
                 C <- C / switch(unit, "uS/cm"=42914, "mS/cm"=42.914, "S/m"=4.2914, "ratio"=1)
                 C <- C * switch(j, "uS/cm"=42914, "mS/cm"=42.914, "S/m"=4.2914, "ratio"=1)
             }
             return(C)
         } else if (i %in% c("CT", "Conservative Temperature")) {
-            if (!any(is.finite(x[["longitude"]])) || !any(is.finite(x[["latitude"]]))) {
+            if (!any(is.finite(x[["longitude"]])) || !any(is.finite(x[["latitude"]])))
                 stop("need longitude and latitude to compute SA (needed for CT)")
-            }
             return(gsw::gsw_CT_from_t(SA=x[["SA"]], t=x[["temperature"]], p=x[["pressure"]]))
         } else if (i == "density") {
             return(swRho(x))
@@ -968,17 +963,15 @@ setMethod(f="handleFlags",
         # DEVELOPER 1: alter the next comment to explain your setup
         if (is.null(flags)) {
             flags <- defaultFlags(object)
-            if (is.null(flags)) {
+            if (is.null(flags))
                 stop("must supply 'flags', or use initializeFlagScheme() on the ctd object first")
-            }
         }
         if (is.null(actions)) {
             actions <- list("NA") # DEVELOPER 3: alter this line to suit a new data class
             names(actions) <- names(flags)
         }
-        if (any(names(actions)!=names(flags))) {
+        if (any(names(actions)!=names(flags)))
             stop("names of flags and actions must match")
-        }
         handleFlagsInternal(object=object, flags=flags, actions=actions, where=where, debug=debug)
     })
 
@@ -1045,9 +1038,8 @@ handleFlagsInternal <- function(object, flags, actions, where, debug=0) {
     if (length(oflags)) {
         singleFlag <- is.null(names(oflags)) # TRUE if there is just one flag for all data fields
         oceDebug(debug, "singleFlag=", singleFlag, "\n", sep="")
-        if (singleFlag && (length(actions) > 1 || !is.null(names(actions)))) {
+        if (singleFlag && (length(actions) > 1 || !is.null(names(actions))))
             stop("if flags is a list of a single unnamed item, actions must be similar")
-        }
         oceDebug(debug, "names(odata)=c(\"", paste(names(odata),
             collapse="\", \""), "\")\n", sep="")
         if (singleFlag) {
@@ -1276,21 +1268,17 @@ setFlagsInternal <- function(object, name=NULL, i=NULL, value=NULL, debug=getOpt
     } else if (is.array(object@data[[name]])) {
         dimData <- dim(object@data[[name]])
         if (is.array(i)) {
-            if (!is.logical(i)) {
+            if (!is.logical(i))
                 stop("array 'i' must be logical")
-            }
-            if (!identical(dim(i), dimData)) {
+            if (!identical(dim(i), dimData))
                 stop("dim(i) is ", paste(dim(i), collapse="x"), " but need ",
                      paste(dimData, collapse="x"), " to match '", name, "'")
-            }
             res@metadata$flags[[name]][i] <- value
         } else if (is.data.frame(i)) {
-            if (ncol(i) != length(dimData)) {
+            if (ncol(i) != length(dimData))
                 stop("data frame 'i' must have ", length(dimData), " columns to match shape of '", name, "'")
-            }
-            for (j in seq_len(nrow(i))) {
+            for (j in seq_len(nrow(i)))
                 res@metadata$flags[[name]][i[j, 1], i[j, 2], i[j, 3]] <- value
-            }
         } else {
             stop("'i' must be a matrix or a data frame")
         }
@@ -1326,12 +1314,10 @@ initializeFlagsInternal <- function(object, name=NULL, value=NULL, debug=getOpti
 {
     oceDebug(debug, "initializeFlagsInternal(object, name=\"", name, "\", value, debug=", debug, ") {", sep="", unindent=1)
     res <- object
-    if (is.null(name)) {
+    if (is.null(name))
         stop("must supply name")
-    }
-    if (is.null(value)) {
+    if (is.null(value))
         stop("must supply value")
-    }
     valueOrig <- value
     if (!is.null(object@metadata$flags[[name]])) {
         warning("cannot re-initialize flags; use setFlags() to alter values")
@@ -1345,10 +1331,9 @@ initializeFlagsInternal <- function(object, name=NULL, value=NULL, debug=getOpti
         #              "\"")
         #     value <- object@metadata$flagScheme$mapping[[value]]
         # }
-        if (!(name %in% names(object@data))) {
+        if (!(name %in% names(object@data)))
             stop("name=\"", name, "\" is not in the data slot of object; try one of: \"",
                  paste(name(object@data), collapse="\", \""), "\"")
-        }
         # Flag is set up with dimensions matching data
         if (is.vector(object@data[[name]])) {
             oceDebug(debug, name, " is a vector\n")
@@ -1404,9 +1389,8 @@ initializeFlagSchemeInternal <- function(object, name=NULL, mapping=NULL, defaul
         # DEVELOPER NOTE: keep in synch with tests/testthat/test_flags.R and man-roxygen/initializeFlagScheme.R
         predefined <- c("argo", "BODC", "DFO", "WHP bottle", "WHP CTD")
         if (name %in% predefined) {
-            if (!is.null(mapping)) {
+            if (!is.null(mapping))
                 stop("cannot redefine the mapping for existing scheme named \"", name, "\"")
-            }
             if (name == "argo") {
                 # The argo mapping and default were changed in June 2020,
                 # to accomodate new understanding of argo flags, developed
@@ -1460,9 +1444,8 @@ initializeFlagSchemeInternal <- function(object, name=NULL, mapping=NULL, defaul
                 stop("internal coding error in initializeFlagSchemeInternal(); please report to developer")
             }
         } else {
-            if (is.null(mapping)) {
+            if (is.null(mapping))
                 stop("must supply 'mapping' for new scheme named \"", name, "\"")
-            }
         }
         res@metadata$flagScheme <- list(name=name, mapping=mapping, default=default)
     }
@@ -1502,14 +1485,12 @@ setMethod("concatenate",
     definition=function(object, ...) {
         dots <- list(...)
         ndots <- length(dots)
-        if (0 == ndots) {
+        if (0 == ndots)
             return(object)
-        }
         # Insist everything be an oce object.
         for (i in seq_len(ndots)) {
-            if (!inherits(dots[[i]], "oce")) {
+            if (!inherits(dots[[i]], "oce"))
                 stop("concatenate() argument ", i+1, " does not inherit from \"oce\"")
-            }
         }
         # Concatenate the data (and flags, if there are such).
         res <- object
@@ -1522,11 +1503,10 @@ setMethod("concatenate",
         for (i in 1:ndots) {
             # Data
             ni <- sort(names(dots[[i]]@data))
-            if (!identical(n1, ni)) {
+            if (!identical(n1, ni))
                 stop("data name mismatch between argument 1 (",
                     paste(n1, collapse=" "), ") and argument ", i,
                     "(", paste(ni, collapse=" "), ")")
-            }
             data <- dots[[i]]@data
             for (n in ni) {
                 if (is.vector(dots[[1]]@data[[n]]) || n == "time" || is.factor(n)) {
@@ -1557,11 +1537,10 @@ setMethod("concatenate",
             if (!is.null(f1)) {
                 metadata <- dots[[i]]@metadata
                 fi <- sort(names(dots[[i]]@metadata$flags))
-                if (!identical(f1, fi)) {
+                if (!identical(f1, fi))
                     stop("flag mismatch between argument 1 (",
                         paste(f1, collapse=" "), ") and argument ", i,
                         "(", paste(fi, collapse=" "), ")")
-                }
                 for (f in fi) {
                     res@metadata$flags[[f]] <- c(res@metadata$flags[[f]], metadata$flags[[f]])
                 }

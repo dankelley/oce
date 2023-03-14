@@ -184,9 +184,8 @@ setMethod(f="subset",
         # to work simply.
         s0 <- deparse(substitute(expr=subset, env=environment()), width.cutoff=500)
         oceDebug(debug, "subset,coastline-method(..., ", s0, ") {\n", unindent=1, sep="", style="bold")
-        if (length(grep(">", s0))) {
+        if (length(grep(">", s0)))
             stop("the 'subset' may not contain the character '>'")
-        }
         s1 <- gsub(" ", "", s0) # remove all spaces
         oceDebug(debug, "s1='", s1, "'\n", sep="")
         s2 <- gsub("&&", "&", gsub("=", "", gsub("[ ]*", "", s1))) # && becomes &
@@ -213,10 +212,14 @@ setMethod(f="subset",
                 N <- as.numeric(strsplit(s4, "<")[[1]][2])
             }
         }
-        if (is.na(W)) stop("could not determine western longitude limit")
-        if (is.na(E)) stop("could not determine eastern longitude limit")
-        if (is.na(S)) stop("could not determine southern latitude limit")
-        if (is.na(N)) stop("could not determine northern latitude limit")
+        if (is.na(W))
+            stop("could not determine western longitude limit")
+        if (is.na(E))
+            stop("could not determine eastern longitude limit")
+        if (is.na(S))
+            stop("could not determine southern latitude limit")
+        if (is.na(N))
+            stop("could not determine northern latitude limit")
         oceDebug(debug, "W=", W, ", E=", E, ", S=", S, ", N=", N, "\n", sep="")
         res <- x
         cllon <- x[["longitude"]]
@@ -235,11 +238,14 @@ setMethod(f="subset",
             oceDebug(debug, "iseg=", iseg, "\n")
             look <- seq.int(na[iseg-1]+1, na[iseg]-1)
             lon <- cllon[look]
-            if (any(is.na(lon))) stop("step 1: double lon NA at iseg=", iseg) # checks ok on coastlineWorld
+            if (any(is.na(lon)))
+                stop("step 1: double lon NA at iseg=", iseg) # checks ok on coastlineWorld
             lat <- cllat[look]
-            if (any(is.na(lat))) stop("step 1: double lat NA at iseg=", iseg) # checks ok on coastlineWorld
+            if (any(is.na(lat)))
+                stop("step 1: double lat NA at iseg=", iseg) # checks ok on coastlineWorld
             n <- length(lon)
-            if (n < 1) stop("how can we have no data?")
+            if (n < 1)
+                stop("how can we have no data?")
             # was using sp and raster, but this caused assert() errors
             # see https://github.com/dankelley/oce/issues/1657
             C <- sf::st_polygon(list(outer=cbind(c(lon, lon[1]), c(lat, lat[1]))))
@@ -307,17 +313,18 @@ setMethod(f="summary",
 #' @author Dan Kelley
 as.coastline <- function(longitude, latitude, fillable=FALSE)
 {
-    if (missing(longitude)) stop("must provide longitude")
-    if (missing(latitude)) stop("must provide latitude")
+    if (missing(longitude))
+        stop("must provide longitude")
+    if (missing(latitude))
+        stop("must provide latitude")
     names <- names(longitude)
     if ("longitude" %in% names && "latitude" %in% names) {
         latitude <- longitude[["latitude"]]
         longitude <- longitude[["longitude"]]
     }
     n <- length(latitude)
-    if (n != length(longitude)) {
+    if (n != length(longitude))
         stop("Lengths of longitude and latitude must be equal")
-    }
     res <- new("coastline", longitude=longitude, latitude=latitude, fillable=fillable)
     res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     res
@@ -564,17 +571,14 @@ setMethod(f="plot",
                 bg=col, col=if (missing(fill)) "lightgray" else fill, border=border, debug=debug-1)
             return(invisible(NULL))
         }
-        if (!missing(clongitude)) {
-            if (clongitude > 180) clongitude <- clongitude - 360
-        }
+        if (!missing(clongitude) && clongitude > 180)
+            clongitude <- clongitude - 360
         if (!missing(longitudelim) || !missing(latitudelim)) {
-            if (missing(longitudelim) || missing(latitudelim)) {
+            if (missing(longitudelim) || missing(latitudelim))
                 stop("In plot,coastline-method() : if either longitudelim or latitudelim are given, both must be given", call.=FALSE)
-            }
-            if (!missing(clongitude) || !missing(clatitude) || !missing(span)) {
+            if (!missing(clongitude) || !missing(clatitude) || !missing(span))
                 stop("In plot,coastline-method() : if longitudelim or latitudelim are given, then clongitude, clatitude, and span may not be given",
                     call.=FALSE)
-            }
             #message("A")
             clongitude <- mean(longitudelim)
             clatitude <- mean(latitudelim)
@@ -638,8 +642,10 @@ setMethod(f="plot",
             if ("center" %in% dotsNames) {
                 stop("use 'clongitude' and 'clatitude' instead of 'center'")
             }
-            if ("xlim" %in% dotsNames) stop("do not specify 'xlim'; give 'clongitude' and 'span' instead")
-            if ("ylim" %in% dotsNames) stop("do not specify 'ylim'; give 'clatitude' and 'span' instead")
+            if ("xlim" %in% dotsNames)
+                stop("do not specify 'xlim'; give 'clongitude' and 'span' instead")
+            if ("ylim" %in% dotsNames)
+                stop("do not specify 'ylim'; give 'clatitude' and 'span' instead")
             if (!inset)
                 par(mar=mar)
             par(mgp=mgp)
@@ -1220,8 +1226,10 @@ read.coastline.shapefile <- function(file, lonlim=c(-180, 180), latlim=c(-90, 90
         #recordLength <- readBin(buf[o + 5:8], "integer", n=1, size=4, endian="big")
         # first part of data is shape type [1 table 3 for null, etc] LITTLE endian
         shapeType <- readBin(buf[o + 9:12], "integer", n=1, size=4, endian="little")
-        if (shapeType < 0) stop("cannot have shapeType < 0, but got ", shapeType, " (programming error)")
-        if (shapeType > 31) stop("cannot have shapeType > 31, but got ", shapeType, " (programming error)")
+        if (shapeType < 0)
+            stop("cannot have shapeType < 0, but got ", shapeType, " (programming error)")
+        if (shapeType > 31)
+            stop("cannot have shapeType > 31, but got ", shapeType, " (programming error)")
         if (shapeType == 0) {
             # NULL record; just skip 4 bytes (I guess; [1] table 3)
             o <- o + 12
@@ -1291,7 +1299,7 @@ read.coastline.shapefile <- function(file, lonlim=c(-180, 180), latlim=c(-90, 90
 #'
 #' @author Dan Kelley
 read.coastline.openstreetmap <- function(file, lonlim=c(-180, 180), latlim=c(-90, 90),
-                                         monitor=FALSE, encoding=NA, debug=getOption("oceDebug"), processingLog)
+    monitor=FALSE, encoding=NA, debug=getOption("oceDebug"), processingLog)
 {
     if (missing(file))
         stop("must supply 'file'")
@@ -1308,9 +1316,8 @@ read.coastline.openstreetmap <- function(file, lonlim=c(-180, 180), latlim=c(-90
         file <- file(file, "rb") # FIXME why 'b'?
         on.exit(close(file))
     }
-    if (!inherits(file, "connection")) {
+    if (!inherits(file, "connection"))
         stop("argument `file' must be a character string or connection")
-    }
     if (!isOpen(file)) {
         filename <- "(connection)"
         open(file, "rb") # FIXME why 'b'?

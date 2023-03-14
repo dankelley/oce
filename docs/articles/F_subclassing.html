@@ -96,7 +96,7 @@
       <h1 data-toc-skip>6. Subclassing oce objects</h1>
                         <h4 data-toc-skip class="author">Dan Kelley (<a href="https://orcid.org/0000-0001-7808-5911" class="external-link uri">https://orcid.org/0000-0001-7808-5911</a>)</h4>
             
-            <h4 data-toc-skip class="date">2023-01-05</h4>
+            <h4 data-toc-skip class="date">2023-03-14</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/dankelley/oce/blob/HEAD/vignettes/F_subclassing.Rmd" class="external-link"><code>vignettes/F_subclassing.Rmd</code></a></small>
       <div class="hidden name"><code>F_subclassing.Rmd</code></div>
@@ -166,7 +166,7 @@ much:</p>
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">o</span><span class="op">)</span></span>
 <span><span class="co">#&gt; * Processing Log</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;     - 2023-01-05 15:28:32 UTC: `Create oce object`</span></span></code></pre></div>
+<span><span class="co">#&gt;     - 2023-03-14 14:42:39 UTC: `Create oce object`</span></span></code></pre></div>
 <p>but if we populate the object with some data and metadata</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">o</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/oceSetData.html">oceSetData</a></span><span class="op">(</span><span class="va">o</span>, <span class="st">"time"</span>, <span class="va">db</span><span class="op">$</span><span class="va">t</span><span class="op">)</span></span>
@@ -176,7 +176,7 @@ much:</p>
 <p>then the summary is more informative</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">o</span><span class="op">)</span></span>
-<span><span class="co">#&gt; * Time:          2021-11-01 21:04:00 to 2021-11-08 06:00:00 (146 samples , mean increment 1.054713hour)</span></span>
+<span><span class="co">#&gt; * Time:          2021-11-01 21:04:00 to 2021-11-08 06:00:00 (146 samples, mean increment 1.054713 hour)</span></span>
 <span><span class="co">#&gt; * Data Overview</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt;                     Min.       Mean       Max. Dim. NAs</span></span>
@@ -186,11 +186,11 @@ much:</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; * Processing Log</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;     - 2023-01-05 15:28:32 UTC: `Create oce object`</span></span>
-<span><span class="co">#&gt;     - 2023-01-05 15:28:32 UTC: `oceSetData(object = o, name = "time", value = db$t)`</span></span>
-<span><span class="co">#&gt;     - 2023-01-05 15:28:32 UTC: `oceSetData(object = o, name = "longitude", value = db$lon)`</span></span>
-<span><span class="co">#&gt;     - 2023-01-05 15:28:32 UTC: `oceSetData(object = o, name = "latitude", value = db$lat)`</span></span>
-<span><span class="co">#&gt;     - 2023-01-05 15:28:32 UTC: `oceSetMetadata(object = o, name = "ID", value = 4201703)`</span></span></code></pre></div>
+<span><span class="co">#&gt;     - 2023-03-14 14:42:39 UTC: `Create oce object`</span></span>
+<span><span class="co">#&gt;     - 2023-03-14 14:42:39 UTC: `oceSetData(object = o, name = "time", value = db$t)`</span></span>
+<span><span class="co">#&gt;     - 2023-03-14 14:42:39 UTC: `oceSetData(object = o, name = "longitude", value = db$lon)`</span></span>
+<span><span class="co">#&gt;     - 2023-03-14 14:42:39 UTC: `oceSetData(object = o, name = "latitude", value = db$lat)`</span></span>
+<span><span class="co">#&gt;     - 2023-03-14 14:42:39 UTC: `oceSetMetadata(object = o, name = "ID", value = 4201703)`</span></span></code></pre></div>
 <p>Note, however, that the <code>ID</code> is not listed by
 <code><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary()</a></code>. This is because the general form of that
 function is set up to focus on the contents of the <code>data</code>
@@ -205,9 +205,9 @@ besides <code><a href="https://rdrr.io/r/base/summary.html" class="external-link
 <p>We can also use the default <code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code> function to show the
 interdependence of entries in the <code>data</code> slot.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">o</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">o</span>, pch<span class="op">=</span><span class="fl">20</span>, cex<span class="op">=</span><span class="fl">0.5</span><span class="op">)</span></span></code></pre></div>
 <div class="figure">
-<img src="F_subclassing_files/figure-html/unnamed-chunk-8-1.png" alt="**Figure 1.** Demonstration of base-level plot()." width="700"><p class="caption">
+<img src="F_subclassing_files/figure-html/unnamed-chunk-8-1.png" alt="**Figure 1.** Demonstration of base-level plot()." width="288"><p class="caption">
 <strong>Figure 1.</strong> Demonstration of base-level plot().
 </p>
 </div>
@@ -286,7 +286,7 @@ longitude and latitude, and the third shows the trajectory.</p>
 <span>                ylab<span class="op">=</span><span class="va">lonlab</span>, <span class="va">...</span><span class="op">)</span></span>
 <span>        <span class="op">}</span> <span class="kw">else</span> <span class="kw">if</span> <span class="op">(</span><span class="va">which</span> <span class="op">==</span> <span class="fl">2</span><span class="op">)</span> <span class="op">{</span></span>
 <span>            <span class="fu"><a href="../reference/oce.plot.ts.html">oce.plot.ts</a></span><span class="op">(</span><span class="va">x</span><span class="op">[[</span><span class="st">"time"</span><span class="op">]</span><span class="op">]</span>, <span class="va">x</span><span class="op">[[</span><span class="st">"latitude"</span><span class="op">]</span><span class="op">]</span>,</span>
-<span>                ylab<span class="op">=</span><span class="va">latlab</span>,<span class="va">...</span><span class="op">)</span></span>
+<span>                ylab<span class="op">=</span><span class="va">latlab</span>, <span class="va">...</span><span class="op">)</span></span>
 <span>        <span class="op">}</span> <span class="kw">else</span> <span class="kw">if</span> <span class="op">(</span><span class="va">which</span> <span class="op">==</span> <span class="fl">3</span><span class="op">)</span> <span class="op">{</span></span>
 <span>            <span class="va">asp</span> <span class="op">&lt;-</span> <span class="fl">1</span> <span class="op">/</span> <span class="fu"><a href="https://rdrr.io/r/base/Trig.html" class="external-link">cos</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/range.html" class="external-link">range</a></span><span class="op">(</span><span class="va">x</span><span class="op">[[</span><span class="st">"latitude"</span><span class="op">]</span><span class="op">]</span><span class="op">)</span> <span class="op">*</span> <span class="va">pi</span> <span class="op">/</span> <span class="fl">180</span><span class="op">)</span><span class="op">)</span></span>
 <span>            <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">x</span><span class="op">[[</span><span class="st">"longitude"</span><span class="op">]</span><span class="op">]</span>, <span class="va">x</span><span class="op">[[</span><span class="st">"latitude"</span><span class="op">]</span><span class="op">]</span>,</span>
@@ -298,8 +298,8 @@ longitude and latitude, and the third shows the trajectory.</p>
 <p>The three plot types are fairly rudimentary, but the <code>...</code>
 argument can be used for customization, as in the following example.</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mar<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3.3</span>,<span class="fl">3.3</span>,<span class="fl">1</span>,<span class="fl">1</span><span class="op">)</span>, mgp<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>,<span class="fl">0.7</span>,<span class="fl">0</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/layout.html" class="external-link">layout</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">3</span>,<span class="fl">2</span>,<span class="fl">3</span><span class="op">)</span>,nrow<span class="op">=</span><span class="fl">2</span>,byrow<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mar<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3.3</span>, <span class="fl">3.3</span>, <span class="fl">1</span>, <span class="fl">1</span><span class="op">)</span>, mgp<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">0.7</span>, <span class="fl">0</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/layout.html" class="external-link">layout</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">3</span>, <span class="fl">2</span>, <span class="fl">3</span><span class="op">)</span>, nrow<span class="op">=</span><span class="fl">2</span>, byrow<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">d</span>, which<span class="op">=</span><span class="fl">1</span>, drawTimeRange<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">d</span>, which<span class="op">=</span><span class="fl">2</span>, drawTimeRange<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">d</span>, which<span class="op">=</span><span class="fl">3</span><span class="op">)</span></span></code></pre></div>
@@ -331,7 +331,7 @@ drifter. The rest of the information provided by the base-level
 <span><span class="co">#&gt; -----------</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; * ID:          4201703</span></span>
-<span><span class="co">#&gt; * Time:          2021-11-01 21:04:00 to 2021-11-08 06:00:00 (146 samples , mean increment 1.054713hour)</span></span>
+<span><span class="co">#&gt; * Time:          2021-11-01 21:04:00 to 2021-11-08 06:00:00 (146 samples, mean increment 1.054713 hour)</span></span>
 <span><span class="co">#&gt; * Data Overview</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt;                     Min.       Mean       Max. Dim. NAs</span></span>
@@ -341,7 +341,7 @@ drifter. The rest of the information provided by the base-level
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; * Processing Log</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;     - 2023-01-05 15:28:32 UTC: `create 'drifter' object`</span></span></code></pre></div>
+<span><span class="co">#&gt;     - 2023-03-14 14:42:39 UTC: `create 'drifter' object`</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="specializing-the-accessor">Specializing the <code>[[</code> accessor<a class="anchor" aria-label="anchor" href="#specializing-the-accessor"></a>
@@ -358,7 +358,6 @@ adding to <code>[[</code>. This may be done as follows.</p>
 <span>                <span class="va">dx</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/diff.html" class="external-link">diff</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span>
 <span>                <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">dx</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>, <span class="va">dx</span><span class="op">)</span></span>
 <span>            <span class="op">}</span></span>
-<span>            <span class="va">dist</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/geodDist.html">geodDist</a></span><span class="op">(</span><span class="va">x</span><span class="op">[[</span><span class="st">"longitude"</span><span class="op">]</span><span class="op">]</span>, <span class="va">x</span><span class="op">[[</span><span class="st">"latitude"</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span>
 <span>            <span class="va">lat</span> <span class="op">&lt;-</span> <span class="va">x</span><span class="op">[[</span><span class="st">"latitude"</span><span class="op">]</span><span class="op">]</span></span>
 <span>            <span class="va">lon</span> <span class="op">&lt;-</span> <span class="va">x</span><span class="op">[[</span><span class="st">"longitude"</span><span class="op">]</span><span class="op">]</span></span>
 <span>            <span class="va">dt</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/deriv.html" class="external-link">D</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="va">x</span><span class="op">[[</span><span class="st">"time"</span><span class="op">]</span><span class="op">]</span><span class="op">)</span><span class="op">)</span> <span class="co"># seconds</span></span>
@@ -374,11 +373,11 @@ adding to <code>[[</code>. This may be done as follows.</p>
 <p>As a test, we can plot the velocity components.</p>
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">uv</span> <span class="op">&lt;-</span> <span class="va">d</span><span class="op">[[</span><span class="st">"velocity"</span><span class="op">]</span><span class="op">]</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mfrow<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>,<span class="fl">1</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="fu"><a href="../reference/oce.plot.ts.html">oce.plot.ts</a></span><span class="op">(</span><span class="va">d</span><span class="op">[[</span><span class="st">"time"</span><span class="op">]</span><span class="op">]</span>, <span class="va">uv</span><span class="op">$</span><span class="va">u</span>, ylab<span class="op">=</span><span class="st">"Eastward velocity [m/s]"</span>, grid<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span>
-<span><span class="fu"><a href="../reference/oce.plot.ts.html">oce.plot.ts</a></span><span class="op">(</span><span class="va">d</span><span class="op">[[</span><span class="st">"time"</span><span class="op">]</span><span class="op">]</span>, <span class="va">uv</span><span class="op">$</span><span class="va">v</span>, ylab<span class="op">=</span><span class="st">"Northward velocity [m/s]"</span>, grid<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mfrow<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/oce.plot.ts.html">oce.plot.ts</a></span><span class="op">(</span><span class="va">d</span><span class="op">[[</span><span class="st">"time"</span><span class="op">]</span><span class="op">]</span>, <span class="va">uv</span><span class="op">$</span><span class="va">u</span>, ylab<span class="op">=</span><span class="st">"Eastward velo. [m/s]"</span>, grid<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/oce.plot.ts.html">oce.plot.ts</a></span><span class="op">(</span><span class="va">d</span><span class="op">[[</span><span class="st">"time"</span><span class="op">]</span><span class="op">]</span>, <span class="va">uv</span><span class="op">$</span><span class="va">v</span>, ylab<span class="op">=</span><span class="st">"Northward vel. [m/s]"</span>, grid<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 <div class="figure">
-<img src="F_subclassing_files/figure-html/unnamed-chunk-18-1.png" alt="**Figure 3.** Velocities inferred from drifter motion." width="700"><p class="caption">
+<img src="F_subclassing_files/figure-html/unnamed-chunk-18-1.png" alt="**Figure 3.** Velocities inferred from drifter motion." width="360"><p class="caption">
 <strong>Figure 3.</strong> Velocities inferred from drifter motion.
 </p>
 </div>
@@ -389,13 +388,13 @@ signals (but see Exercise 3), as follows.</p>
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">tidedata</span><span class="op">)</span></span>
 <span><span class="va">M2period</span> <span class="op">&lt;-</span> <span class="fl">1</span> <span class="op">/</span> <span class="fu"><a href="https://rdrr.io/r/base/with.html" class="external-link">with</a></span><span class="op">(</span><span class="va">tidedata</span><span class="op">$</span><span class="va">const</span>, <span class="va">freq</span><span class="op">[[</span><span class="fu"><a href="https://rdrr.io/r/base/which.html" class="external-link">which</a></span><span class="op">(</span><span class="va">name</span><span class="op">==</span><span class="st">"M2"</span><span class="op">)</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span>
 <span><span class="va">uv</span> <span class="op">&lt;-</span> <span class="va">d</span><span class="op">[[</span><span class="st">"velocity"</span><span class="op">]</span><span class="op">]</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mfrow<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>,<span class="fl">1</span><span class="op">)</span>, mar<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3</span>,<span class="fl">3</span>,<span class="fl">1</span>,<span class="fl">1</span><span class="op">)</span>, mgp<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>,<span class="fl">0.7</span>,<span class="fl">0</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mfrow<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">1</span><span class="op">)</span>, mar<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3</span>, <span class="fl">3</span>, <span class="fl">1</span>, <span class="fl">1</span><span class="op">)</span>, mgp<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">0.7</span>, <span class="fl">0</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/stats/acf.html" class="external-link">acf</a></span><span class="op">(</span><span class="va">uv</span><span class="op">$</span><span class="va">u</span>, main<span class="op">=</span><span class="st">""</span>, ylab<span class="op">=</span><span class="st">"u ACF"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/abline.html" class="external-link">abline</a></span><span class="op">(</span>v<span class="op">=</span><span class="va">M2period</span>, col<span class="op">=</span><span class="fl">2</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/stats/acf.html" class="external-link">acf</a></span><span class="op">(</span><span class="va">uv</span><span class="op">$</span><span class="va">v</span>, main<span class="op">=</span><span class="st">""</span>, ylab<span class="op">=</span><span class="st">"v ACF"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/abline.html" class="external-link">abline</a></span><span class="op">(</span>v<span class="op">=</span><span class="va">M2period</span>, col<span class="op">=</span><span class="fl">2</span><span class="op">)</span></span></code></pre></div>
 <div class="figure">
-<img src="F_subclassing_files/figure-html/unnamed-chunk-19-1.png" alt="**Figure 4.** Autocorrelation analysis of drifter velocities, showing also the M2 period." width="700"><p class="caption">
+<img src="F_subclassing_files/figure-html/unnamed-chunk-19-1.png" alt="**Figure 4.** Autocorrelation analysis of drifter velocities, showing also the M2 period." width="360"><p class="caption">
 <strong>Figure 4.</strong> Autocorrelation analysis of drifter
 velocities, showing also the M2 period.
 </p>

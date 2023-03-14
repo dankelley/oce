@@ -118,15 +118,13 @@ read.ctd.aml <- function(file, format, encoding="UTF-8-BOM", debug=getOption("oc
         l <- grep(paste0("^", name, "="), lines, ignore.case=ignore.case)
         res <- NA
         if (length(l) > 0L) {
-            if (length(l) > 1L) {
+            if (length(l) > 1L)
                 oceDebug(debug, "using second of ", length(l), " values\n")
-            }
             # We take second definition, ignoring first (or any others).
             l <- l[2]
             res <- trimws(strsplit(lines[l], "=")[[1]][2])
-            if (numeric) {
+            if (numeric)
                 res <- if (grepl("no-lock", res, ignore.case=TRUE)) NA else as.numeric(res)
-            }
         }
         oceDebug(debug, "returning ", res, "\n")
         oceDebug(debug, "#} getMetadataItem()\n", style="bold", unindent=1)
@@ -145,21 +143,18 @@ read.ctd.aml <- function(file, format, encoding="UTF-8-BOM", debug=getOption("oc
         oceDebug(debug, "inferred format=", format, " from file's first line\n")
     }
     format <- as.integer(format)
-    if (format != 1L && format != 2L) {
+    if (format != 1L && format != 2L)
         stop("unrecognized format value, ", format, "; it must be 1 or 2")
-    }
     # FIXME: add other relevant metadata here.  This will require some
     # familiarity with the typical contents of the metadata.  For example,
     # I see 'SN' and 'BoardSN', and am inferring that we want to save
     # the first, but maybe it's the second...
     longitude <- getMetadataItem(lines, "longitude", ignore.case=TRUE, debug=debug-1L)
-    if (is.na(longitude)) {
+    if (is.na(longitude))
         longitude <- getMetadataItem(lines, "lon", ignore.case=TRUE, debug=debug-1L)
-    }
     latitude <- getMetadataItem(lines, "latitude", ignore.case=TRUE, debug=debug-1L)
-    if (is.na(latitude)) {
+    if (is.na(latitude))
         latitude <- getMetadataItem(lines, "lat", ignore.case=TRUE, debug=debug-1L)
-    }
     serialNumber <- getMetadataItem(lines, "sn", ignore.case=TRUE, numeric=FALSE, debug=debug-1L)
     oceDebug(debug, "inferred location ", longitude, "E, ", latitude, "N, ", " serialNumber ", serialNumber, "\n", sep="")
     header <- ""
@@ -172,18 +167,14 @@ read.ctd.aml <- function(file, format, encoding="UTF-8-BOM", debug=getOption("oc
         col.names <- strsplit(lines[1], ",")[[1]]
     }
     oceDebug(debug, "step 1 col.names: c(\"", paste(col.names, collapse="\", \""), "\")\n")
-    if (length(col.names) < 1L) {
+    if (length(col.names) < 1L)
         stop("cannot determine column names")
-    }
-    if (!("Temperature (C)" %in% col.names)) {
+    if (!("Temperature (C)" %in% col.names))
         stop("no 'Temperature (C)' column found")
-    }
-    if (!("Conductivity (mS/cm)" %in% col.names)) {
+    if (!("Conductivity (mS/cm)" %in% col.names))
         stop("no 'Conductivity (mS/cm)' column found")
-    }
-    if (!("Pressure (dBar)" %in% col.names) && !("Depth (m)" %in% col.names)) {
+    if (!("Pressure (dBar)" %in% col.names) && !("Depth (m)" %in% col.names))
         stop("No 'Pressure (dBar)' or 'Depth (m)' column found")
-    }
     col.names[col.names == "Temperature (C)"] <- "temperature"
     col.names[col.names == "Conductivity (mS/cm)"] <- "conductivity"
     col.names[col.names == "Pressure (dBar)"] <- "pressure"

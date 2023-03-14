@@ -143,9 +143,11 @@ on a plot.</p>
 
 
 <dt>xtype</dt>
-<dd><p>Item(s) plotted on the x axis, either a vector of length equal
-to that of <code>pressure</code> in the <code>data</code> slot,
-or a text code from the list below.</p><ul><li><p><code>"salinity"</code> Profile of salinity.</p></li>
+<dd><p>item(s) to be plotted on the x axis, either a character
+value taken from the following list, or a numeric vector of length
+matching the <code>pressure</code> field stored in <code>x</code>. (In the second case,
+as of version 1.7-11, a label is auto-constructed, unless the user
+supplied a character value for <code>xlab</code>.)</p><ul><li><p><code>"salinity"</code> Profile of salinity.</p></li>
 <li><p><code>"conductivity"</code> Profile of conductivity.</p></li>
 <li><p><code>"temperature"</code> Profile of <em>in-situ</em> temperature.</p></li>
 <li><p><code>"theta"</code> Profile of potential temperature.</p></li>
@@ -192,10 +194,10 @@ to 0dbar (i.e. the surface), 1000dbar, 2000dbar, 3000dbar, and 4000dbar.</p></li
 
 <dt>xlab</dt>
 <dd><p>optional label for x axis (at top of plot). If not
-provided, the value of <code>xtype</code> is used (along with the units
-of the variable) to construct a label. For user-supplied <code>xlab</code>,
-the unit (if any) must be specified as in e.g.
-<code>xlab=expression("Speed ["*m/s*"]")</code>.</p></dd>
+provided, a label is inferred from the value of <code>xtype</code>. For
+the user-supplied case, bear in mind that the easy way to get
+units is to use an expression, e.g.
+<code>xlab=expression("Acceleration ["*m/s^2*"]")</code>.</p></dd>
 
 
 <dt>ylab</dt>
@@ -410,7 +412,6 @@ objects, and <code><a href="plotTS.html">plotTS()</a></code> plots a temperature
 <code><a href="plot-topo-method.html">plot,topo-method</a></code>,
 <code><a href="plot-windrose-method.html">plot,windrose-method</a></code>,
 <code><a href="plot-xbt-method.html">plot,xbt-method</a></code>,
-<code><a href="plotAD2CP.html">plotAD2CP</a>()</code>,
 <code><a href="plotScan.html">plotScan</a>()</code>,
 <code><a href="plotTS.html">plotTS</a>()</code>,
 <code><a href="tidem-class.html">tidem-class</a></code></p>

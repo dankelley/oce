@@ -9,7 +9,7 @@ asNumeric <- function(x)
     rval <- as.numeric(x)
     if (is.array(x))
         dim(rval) <- dim(x)
-   rval 
+    rval
 }
 
 # Internal function; use as e.g. oce:::pluralize().  Supply n and singular,
@@ -57,15 +57,20 @@ pluralize <- function(n, singular, plural)
 #' @author Dan Kelley
 gappyIndex <- function(starts, offset=0L, length=4L)
 {
-    if (missing(starts)) stop("must provide 'starts', an integer vector")
+    if (missing(starts))
+        stop("must provide 'starts', an integer vector")
     if (any(starts < 1L)) {
         w <- which(starts < 1L)[1]
         stop("'starts' must consist of positive values, but e.g. starts[", w, "] is ", starts[w])
     }
-    if (length(offset) != 1L) stop("'offset' must be a single number")
-    if (length(length) != 1L) stop("'length' must be a single number")
-    if (offset < 0L) stop("'offset' must be non-negative")
-    if (length < 1L) stop("'length' must be positive")
+    if (length(offset) != 1L)
+        stop("'offset' must be a single number")
+    if (length(length) != 1L)
+        stop("'length' must be a single number")
+    if (offset < 0L)
+        stop("'offset' must be non-negative")
+    if (length < 1L)
+        stop("'length' must be positive")
     do_gappy_index(starts, offset, length)
 }
 
@@ -971,17 +976,28 @@ titleCase <- function(w)
 #' @family things relating to vector calculus
 curl <- function(u, v, x, y, geographical=FALSE, method=1)
 {
-    if (missing(u)) stop("must supply u")
-    if (missing(v)) stop("must supply v")
-    if (missing(x)) stop("must supply x")
-    if (missing(y)) stop("must supply y")
-    if (length(x) <= 1) stop("length(x) must exceed 1 but it is ", length(x))
-    if (length(y) <= 1) stop("length(y) must exceed 1 but it is ", length(y))
-    if (length(x) != nrow(u)) stop("length(x) must equal nrow(u)")
-    if (length(y) != ncol(u)) stop("length(x) must equal ncol(u)")
-    if (nrow(u) != nrow(v)) stop("nrow(u) and nrow(v) must match")
-    if (ncol(u) != ncol(v)) stop("ncol(u) and ncol(v) must match")
-    if (!is.logical(geographical)) stop("geographical must be a logical quantity")
+    if (missing(u))
+        stop("must supply u")
+    if (missing(v))
+        stop("must supply v")
+    if (missing(x))
+        stop("must supply x")
+    if (missing(y))
+        stop("must supply y")
+    if (length(x) <= 1)
+        stop("length(x) must exceed 1 but it is ", length(x))
+    if (length(y) <= 1)
+        stop("length(y) must exceed 1 but it is ", length(y))
+    if (length(x) != nrow(u))
+        stop("length(x) must equal nrow(u)")
+    if (length(y) != ncol(u))
+        stop("length(x) must equal ncol(u)")
+    if (nrow(u) != nrow(v))
+        stop("nrow(u) and nrow(v) must match")
+    if (ncol(u) != ncol(v))
+        stop("ncol(u) and ncol(v) must match")
+    if (!is.logical(geographical))
+        stop("geographical must be a logical quantity")
     method <- as.integer(round(method))
     if (1 == method) {
         res <- do_curl1(u, v, x, y, geographical)
@@ -1059,11 +1075,16 @@ rangeExtended <- function(x, extend=0.04) # extend by 4% on each end, like axes
 #' @family bin-related functions
 binApply1D <- function(x, f, xbreaks, FUN, ...)
 {
-    if (missing(x)) stop("must supply 'x'")
-    if (missing(f)) stop("must supply 'f'")
-    if (missing(xbreaks)) xbreaks <- pretty(x, 20)
-    if (missing(FUN)) stop("must supply 'FUN'")
-    if (!is.function(FUN)) stop("'FUN' must be a function")
+    if (missing(x))
+        stop("must supply 'x'")
+    if (missing(f))
+        stop("must supply 'f'")
+    if (missing(xbreaks))
+        xbreaks <- pretty(x, 20)
+    if (missing(FUN))
+        stop("must supply 'FUN'")
+    if (!is.function(FUN))
+        stop("'FUN' must be a function")
     fSplit <- split(f, cut(x, xbreaks, include.lowest=TRUE, labels=FALSE))
     result <- unlist(lapply(fSplit, FUN, ...))
     result[!is.finite(result)] <- NA
@@ -1141,19 +1162,27 @@ binApply1D <- function(x, f, xbreaks, FUN, ...)
 #' @family bin-related functions
 binApply2D <- function(x, y, f, xbreaks, ybreaks, FUN, ...)
 {
-    if (missing(x)) stop("must supply 'x'")
-    if (missing(y)) stop("must supply 'y'")
-    if (missing(f)) stop("must supply 'f'")
+    if (missing(x))
+        stop("must supply 'x'")
+    if (missing(y))
+        stop("must supply 'y'")
+    if (missing(f))
+        stop("must supply 'f'")
     nx <- length(x)
-    if (nx != length(y)) stop("lengths of x and y must agree")
+    if (nx != length(y))
+        stop("lengths of x and y must agree")
     if (missing(xbreaks)) xbreaks <- pretty(x, 20)
     if (missing(ybreaks)) ybreaks <- pretty(y, 20)
-    if (missing(FUN)) stop("must supply 'FUN'")
-    if (!is.function(FUN)) stop("'FUN' must be a function")
+    if (missing(FUN))
+        stop("must supply 'FUN'")
+    if (!is.function(FUN))
+        stop("'FUN' must be a function")
     nxbreaks <- length(xbreaks)
-    if (nxbreaks < 2) stop("must have more than 1 xbreak")
+    if (nxbreaks < 2)
+        stop("must have more than 1 xbreak")
     nybreaks <- length(ybreaks)
-    if (nybreaks < 2) stop("must have more than 1 ybreak")
+    if (nybreaks < 2)
+        stop("must have more than 1 ybreak")
     res <- matrix(NA_real_, nrow=nxbreaks-1, ncol=nybreaks-1)
     # this 'method' is just for testing during development. For the data in
     # tests/testthat/test_misc.R, we get the same results for the two
@@ -1202,7 +1231,8 @@ binApply2D <- function(x, y, f, xbreaks, ybreaks, FUN, ...)
 #' @family bin-related functions
 binCount1D <- function(x, xbreaks)
 {
-    if (missing(x)) stop("must supply 'x'")
+    if (missing(x))
+        stop("must supply 'x'")
     if (missing(xbreaks))
         xbreaks <- pretty(x)
     nxbreaks <- length(xbreaks)
@@ -1307,15 +1337,22 @@ binMean1D <- function(x, f, xbreaks)
 #' @family bin-related functions
 binCount2D <- function(x, y, xbreaks, ybreaks, flatten=FALSE)
 {
-    if (missing(x)) stop("must supply 'x'")
-    if (missing(y)) stop("must supply 'y'")
-    if (length(x) != length(y)) stop("lengths of x and y must agree")
-    if (missing(xbreaks)) xbreaks <- pretty(x)
-    if (missing(ybreaks)) ybreaks <- pretty(y)
+    if (missing(x))
+        stop("must supply 'x'")
+    if (missing(y))
+        stop("must supply 'y'")
+    if (length(x) != length(y))
+        stop("lengths of x and y must agree")
+    if (missing(xbreaks))
+        xbreaks <- pretty(x)
+    if (missing(ybreaks))
+        ybreaks <- pretty(y)
     nxbreaks <- length(xbreaks)
-    if (nxbreaks < 2) stop("must have more than 1 xbreak")
+    if (nxbreaks < 2)
+        stop("must have more than 1 xbreak")
     nybreaks <- length(ybreaks)
-    if (nybreaks < 2) stop("must have more than 1 ybreak")
+    if (nybreaks < 2)
+        stop("must have more than 1 ybreak")
     M <- .C("bin_count_2d", length(x), as.double(x), as.double(y),
         length(xbreaks), as.double(xbreaks),
         length(ybreaks), as.double(ybreaks),
@@ -1393,20 +1430,29 @@ binCount2D <- function(x, y, xbreaks, ybreaks, flatten=FALSE)
 #' @family bin-related functions
 binMean2D <- function(x, y, f, xbreaks, ybreaks, flatten=FALSE, fill=FALSE, fillgap=-1)
 {
-    if (missing(x)) stop("must supply 'x'")
-    if (missing(y)) stop("must supply 'y'")
-    if (fillgap == 0) stop("cannot have a negative 'fillgap' value")
+    if (missing(x))
+        stop("must supply 'x'")
+    if (missing(y))
+        stop("must supply 'y'")
+    if (fillgap == 0)
+        stop("cannot have a negative 'fillgap' value")
     fGiven <- !missing(f)
     if (!fGiven)
         f <- rep(1, length(x))
-    if (length(x) != length(y)) stop("lengths of x and y must agree")
-    if (length(x) != length(f)) stop("lengths of x and f must agree")
-    if (missing(xbreaks)) xbreaks <- pretty(x)
-    if (missing(ybreaks)) ybreaks <- pretty(y)
+    if (length(x) != length(y))
+        stop("lengths of x and y must agree, but they are ", length(x), " and ", length(y))
+    if (length(x) != length(f))
+        stop("lengths of x and f must agree, but they are ", length(x), " and ", length(f))
+    if (missing(xbreaks))
+        xbreaks <- pretty(x)
+    if (missing(ybreaks))
+        ybreaks <- pretty(y)
     nxbreaks <- length(xbreaks)
-    if (nxbreaks < 2) stop("must have more than 1 xbreak")
+    if (nxbreaks < 2)
+        stop("must have more than 1 xbreak")
     nybreaks <- length(ybreaks)
-    if (nybreaks < 2) stop("must have more than 1 ybreak")
+    if (nybreaks < 2)
+        stop("must have more than 1 ybreak")
     M <- .C("bin_mean_2d", length(x), as.double(x), as.double(y), as.double(f),
         length(xbreaks), as.double(xbreaks),
         length(ybreaks), as.double(ybreaks),
@@ -1693,8 +1739,10 @@ filterSomething <- function(x, filter)
 #' plotTaylor(x, cbind(M2, S2))
 plotTaylor <- function(x, y, scale, pch, col, labels, pos, ...)
 {
-    if (missing(x)) stop("must supply 'x'")
-    if (missing(y)) stop("must supply 'y'")
+    if (missing(x))
+        stop("must supply 'x'")
+    if (missing(y))
+        stop("must supply 'y'")
     if (is.vector(y))
         y <- matrix(y)
     ncol <- ncol(y)
@@ -1709,7 +1757,8 @@ plotTaylor <- function(x, y, scale, pch, col, labels, pos, ...)
         pos <- rep(pos[1], ncol)
     xSD <- sd(x, na.rm=TRUE)
     ySD <- sd(as.vector(y), na.rm=TRUE)
-    if (missing(y)) stop("must supply 'y'")
+    if (missing(y))
+        stop("must supply 'y'")
     halfArc <- seq(0, pi, length.out=200)
     # FIXME: use figure geometry, to avoid axis cutoff
     if (missing(scale))
@@ -2045,23 +2094,20 @@ normalize <- function(x)
 #' points(x, d$Y + d$a + d$b * x, col="blue", pch="+")
 detrend <- function(x, y)
 {
-    if (missing(x)) {
+    if (missing(x))
         stop("must give x")
-    }
     n <- length(x)
     if (missing(y)) {
         y <- x
         x <- seq_along(y)
     } else {
-        if (length(y) != n) {
+        if (length(y) != n)
             stop("x and y must be of same length, but they are ", n, " and ", length(y))
-        }
     }
     first <- which(is.finite(y))[1]
     last <- 1 + length(y) - which(is.finite(rev(y)))[1]
-    if (x[first] == x[last]) {
+    if (x[first] == x[last])
         stop("the first and last x values must be distinct")
-    }
     b <- (y[first] - y[[last]]) / (x[first] - x[[last]])
     a <- y[first] - b * x[first]
     list(Y=y - (a+b*x), a=a, b=b)
@@ -2685,12 +2731,10 @@ resizableLabel <- function(item, axis="x", sep, unit=NULL, debug=getOption("oceD
         "\", axis=\"", axis,
         "\", sep=\"", if (missing(sep)) "(missing)" else sep, "\", ...) {\n",
         sep="", unindent=1, style="bold")
-    if (missing(item)) {
+    if (missing(item))
         stop("must provide 'item'")
-    }
-    if (axis != "x" && axis != "y") {
+    if (axis != "x" && axis != "y")
         stop("axis must be \"x\" or \"y\"")
-    }
     itemAllowed <- c("salinity", "S", "SA", "C", "CT", paste("conductivity", "mS/cm"),
         paste("conductivity", "S/m"), "T", "temperature", "theta", "sigmaTheta",
         paste("Conservative", "Temperature"), paste("Absolute", "Salinity"),
@@ -3060,10 +3104,9 @@ rotateAboutZ <- function(x, angle)
     rotation <- matrix(c(C, S, -S, C), nrow=2)
     res <- x
     allowedClasses <- c("adp", "adv", "cm")
-    if (!(class(x) %in% allowedClasses)) {
+    if (!(class(x) %in% allowedClasses))
         stop("cannot rotate for class \"", class(x), "\"; try one of: \"",
             paste(allowedClasses, collapse="\" \""), "\")")
-    }
     if (inherits(x, "adp")) {
         if (is.ad2cp(x))
             stop("this function does not work yet for AD2CP data")
@@ -3079,9 +3122,8 @@ rotateAboutZ <- function(x, angle)
         }
         res@data$v <- V
     } else if (inherits(x, "adv")) {
-        if (x[["oceCoordinate"]] != "enu") {
+        if (x[["oceCoordinate"]] != "enu")
             stop("cannot rotate adv unless coordinate system is 'enu'; see ?toEnu or ?xyzToEnu")
-        }
         V <- x[["v"]]
         uvr <- rotation %*% t(V[, 1:2])
         V[, 1] <- uvr[1, ]
@@ -3152,7 +3194,8 @@ latlonFormat <- function(lat, lon, digits=max(6, getOption("digits") - 1))
 latFormat <- function(lat, digits=max(6, getOption("digits") - 1))
 {
     n <- length(lat)
-    if (n < 1) return("")
+    if (n < 1)
+        return("")
     res <- vector("character", n)
     for (i in 1:n) {
         if (is.na(lat[i])) {
@@ -3183,7 +3226,8 @@ latFormat <- function(lat, digits=max(6, getOption("digits") - 1))
 lonFormat <- function(lon, digits=max(6, getOption("digits") - 1))
 {
     n <- length(lon)
-    if (n < 1) return("")
+    if (n < 1)
+        return("")
     res <- vector("character", n)
     for (i in 1:n)
     if (is.na(lon[i])) {
@@ -3514,12 +3558,10 @@ makeFilter <- function(type=c("blackman-harris", "rectangular", "hamming", "hann
         coef <- 0.50 - 0.50 * cos(2 * pi * i / (m-1))
     }
     coef <- coef / sum(coef)           # ensure unit sum
-    if (!asKernel) {
+    if (!asKernel)
         return(coef)
-    }
-    if (m == 2 * floor(m/2)) {
+    if (m == 2 * floor(m/2))
         stop("m must be odd")
-    }
     middle <- ceiling(m / 2)
     coef <- coef[middle:m]
     # the r=0 is to prevent code-analysis warning; it only applies to Fejer, which we do not use
@@ -3801,15 +3843,12 @@ interpBarnes <- function(x, y, z, w,
             w <- rep(1, length(x))
         }
     } else {
-        if (!is.numeric(pregrid)) {
+        if (!is.numeric(pregrid))
             stop("pregrid must be logical or a numeric vector")
-        }
-        if (length(pregrid) < 0 || length(pregrid) > 2) {
+        if (length(pregrid) < 0 || length(pregrid) > 2)
             stop("length(pregrid) must be 1 or 2")
-        }
-        if (length(pregrid) == 1) {
+        if (length(pregrid) == 1)
             pregrid <- rep(pregrid, 2)
-        }
         oceDebug(debug, "pregrid: ", paste(pregrid, collapse=" "))
         pg <- binMean2D(x, y, z,
             xbreaks=seq(xg[1], tail(xg, 1), (xg[2]-xg[1])/pregrid[1]),
@@ -4062,9 +4101,8 @@ decimate <- function(x, by=10, to, filter, debug=getOption("oceDebug"))
     res <- x
     do.filter <- !missing(filter)
     if ("time" %in% names(x@data)) {
-        if (missing(to)) {
+        if (missing(to))
             to <- length(x@data$time[[1]])
-        }
         if (length(by) == 1) {
             # FIXME: probably should not be here
             select <- seq(from=1, to=to, by=by)
@@ -4078,35 +4116,31 @@ decimate <- function(x, by=10, to, filter, debug=getOption("oceDebug"))
         #nbeam <- dim(x@data$v)[3]
         for (name in names(x@data)) {
             oceDebug(debug, "decimating item named '", name, "'\n")
-            if ("distance" == name) {
+            if ("distance" == name)
                 next
-            }
             if ("time" == name) {
                 res@data[[name]] <- x@data[[name]][select]
             } else if (is.vector(x@data[[name]])) {
                 oceDebug(debug, "subsetting x@data$", name, ", which is a vector\n", sep="")
-                if (do.filter) {
+                if (do.filter)
                     res@data[[name]] <- filterSomething(x@data[[name]], filter)
-                }
                 res@data[[name]] <- res@data[[name]][select]
             } else if (is.matrix(x@data[[name]])) {
                 dim <- dim(x@data[[name]])
                 for (j in 1: dim[2]) {
                     oceDebug(debug, "subsetting x@data[[", name, ",", j, "]], which is a matrix\n", sep="")
-                    if (do.filter) {
+                    if (do.filter)
                         res@data[[name]][, j] <- filterSomething(x@data[[name]][, j], filter)
-                    }
                     res@data[[name]][, j] <- res@data[[name]][, j][select]
                 }
             } else if (is.array(x@data[[name]])) {
                 dim <- dim(x@data[[name]])
-                print(dim)
+                #print(dim)
                 for (k in seq_len(dim[2])) {
                     for (j in seq_len(dim[3])) {
                         oceDebug(debug, "subsetting x@data[[", name, "]][", j, ",", k, "], which is an array\n", sep="")
-                        if (do.filter) {
+                        if (do.filter)
                             res@data[[name]][, j, k] <- filterSomething(x@data[[name]][, j, k], filter)
-                        }
                         res@data[[name]][, j, k] <- res@data[[name]][, j, k][select]
                     }
                 }
@@ -4122,17 +4156,15 @@ decimate <- function(x, by=10, to, filter, debug=getOption("oceDebug"))
                 res@data[[name]] <- x@data[[name]][select]
             } else if (is.vector(x@data[[name]])) {
                 oceDebug(debug, "decimating x@data$", name, ", which is a vector\n", sep="")
-                if (do.filter) {
+                if (do.filter)
                     res@data[[name]] <- filterSomething(x@data[[name]], filter)
-                }
                 res@data[[name]] <- res@data[[name]][select]
             } else if (is.matrix(x@data[[name]])) {
                 dim <- dim(x@data[[name]])
                 for (j in 1: dim[2]) {
                     oceDebug(debug, "decimating x@data[[", name, ",", j, "]], which is a matrix\n", sep="")
-                    if (do.filter) {
+                    if (do.filter)
                         res@data[[name]][, j] <- filterSomething(x@data[[name]][, j], filter)
-                    }
                     res@data[[name]][, j] <- res@data[[name]][, j][select]
                 }
             } else if (is.array(x@data[[name]])) {
@@ -4140,9 +4172,8 @@ decimate <- function(x, by=10, to, filter, debug=getOption("oceDebug"))
                 for (k in seq_len(dim[2])) {
                     for (j in seq_len(dim[3])) {
                         oceDebug(debug, "decimating x@data[[", name, ",", j, ",", k, "]], which is an array\n", sep="")
-                        if (do.filter) {
+                        if (do.filter)
                             res@data[[name]][, j, k] <- filterSomething(x@data[[name]][, j, k], filter)
-                        }
                         res@data[[name]][, j, k] <- res@data[[name]][, j, k][select]
                     }
                 }
@@ -4153,37 +4184,31 @@ decimate <- function(x, by=10, to, filter, debug=getOption("oceDebug"))
     } else if (inherits(x, "ctd")) {
         warning("decimate(ctd) not working yet ... just returning the ctd unchanged")
         return(res) # FIXME
-        if (do.filter) {
+        if (do.filter)
             stop("cannot (yet) filter ctd data during decimation") # FIXME
-        }
         select <- seq(1, dim(x@data)[1], by=by)
         res@data <- x@data[select, ]
     } else if (inherits(x, "pt")) {
         warning("decimate(pt) not working yet ... just returning the pt unchanged")
         return(res) # FIXME
-        if (do.filter) {
+        if (do.filter)
             stop("cannot (yet) filter pt data during decimation") # FIXME
-        }
-        for (name in names(res@data)) {
+        for (name in names(res@data))
             res@data[[name]] <- x@data[[name]][select]
-        }
     } else if (inherits(x, "echosounder")) {
         oceDebug(debug, "decimate() on an 'echosounder' object\n")
         # use 'by', ignoring 'to' and filter'
-        if (length(by) != 2) {
+        if (length(by) != 2)
             stop("length(by) must equal 2.  First element is width of boxcar in pings, second is width in depths")
-        }
         by <- as.integer(by)
         byPing <- by[1]
         kPing <- as.integer(by[1])
-        if (0 == kPing%%2) {
+        if (0 == kPing%%2)
             kPing <- kPing + 1
-        }
         byDepth <- by[2]
         kDepth <- as.integer(by[2])
-        if (0 == kDepth%%2) {
+        if (0 == kDepth%%2)
             kDepth <- kDepth + 1
-        }
         if (byDepth > 1) {
             depth <- x[["depth"]]
             a <- x[["a"]]
@@ -4530,7 +4555,8 @@ formatCI <- function(ci, style=c("+/-", "parentheses"), model, digits=NULL)
             #scale <- 10^floor(log10(x))
             #x0 <- x / scale
             #ci0 <- ci / scale
-            if (pm > x) return(paste(sign*x, "+/-", pm, sep=""))
+            if (pm > x)
+                return(paste(sign*x, "+/-", pm, sep=""))
             digits <- floor(log10(scale) + 0.1)
             if (digits < 0) {
                 fmt <- paste("%.", abs(digits), "f", sep="")
@@ -5193,7 +5219,8 @@ showMetadataItem <- function(object, name, label="", postlabel="", isdate=FALSE,
 integrateTrapezoid <- function(x, y, type=c("A", "dA", "cA"), xmin, xmax)
 {
     type <- match.arg(type)
-    if (missing(x)) stop("must supply 'x'")
+    if (missing(x))
+        stop("must supply 'x'")
     if (missing(y)) {
         y <- x
         x <- seq_along(y)
