@@ -146,12 +146,11 @@ setMethod(f="summary",
                     # message("AllClass.R:48  u: '", u, "'")
                     # message("AllClass.R:48  name: '", names(object@metadata$units)[i], "'")
                     # message("length(u[1][[1]]): ", length(u[1][[1]]))
-                    if (0 == length(u[1][[1]])) {
-                        if (2 == length(u)) return(u[2]) else return("")
-                    }
-                    if (length(u) == 1) {
+                    if (0L == length(u[1][[1]]))
+                        return(if (2 == length(u)) u[2] else "")
+                    if (1L == length(u)) {
                         res <- if (is.expression(u)) as.character(u) else u
-                    } else if (length(u) == 2) {
+                    } else if (2L == length(u)) {
                         res <- if (nchar(u[2])) paste(u[[1]], u[[2]], sep=", ") else u[[1]]
                     } else {
                         res <- ""
