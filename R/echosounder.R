@@ -492,9 +492,11 @@ findBottom <- function(x, ignore=5, clean=despike)
 #' @param type type of graph, `"l"` for line, `"p"` for points, or
 #' `"b"` for both.
 #'
-#' @param col color scale for image, a function
+#' @param col a function providing the color scale for image plots.
+#' (The default was [oceColorsJet()] until 2023-03-15, when it was
+#' switched to [oceColorsTurbo()].)
 #'
-#' @param lwd line width (ignored if `type="p"`)
+#' @param lwd line width (ignored if `type="p"`).
 #'
 #' @param atTop optional vector of time values, for labels at the top of the
 #' plot produced with `which=2`.  If `labelsTop` is provided, then it
@@ -566,7 +568,7 @@ setMethod(f="plot",
         newx,
         xlab, ylab,
         xlim, ylim, zlim,
-        type="l", col=oceColorsJet, lwd=2,
+        type="l", col=oceColorsTurbo, lwd=2,
         despike=FALSE,
         drawBottom, ignore=5,
         drawTimeRange=FALSE, drawPalette=TRUE,
