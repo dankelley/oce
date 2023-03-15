@@ -180,12 +180,9 @@ setMethod(f="summary",
 setMethod(f="[[",
     signature(x="echosounder", i="ANY", j="ANY"),
     definition=function(x, i, j, ...) {
-        if (i == "?") {
-            return(list(metadata=sort(names(x@metadata)),
-                metadataDerived=NULL,
-                data=sort(names(x@data)),
-                dataDerived=c("Sv", "TS")))
-        }
+        if (i == "?")
+            return(list(metadata=sort(names(x@metadata)), metadataDerived=NULL,
+                    data=sort(names(x@data)), dataDerived=c("Sv", "TS")))
         if (i %in% c("Sv", "TS")) {
             range <- rev(x@data$depth)
             a <- x@data$a
@@ -324,7 +321,7 @@ setMethod(f="subset",
         }
         res@processingLog <- processingLogAppend(res@processingLog, paste("subset.echosounder(x, subset=", subsetString, ")", sep=""))
         res
-    })
+    }) # subset,echosounder-method
 
 
 #' Coerce Data into an Echosounder Object
@@ -372,13 +369,8 @@ setMethod(f="subset",
 #'
 #' @family things related to echosounder data
 as.echosounder <- function(time, depth, a, src="",
-    sourceLevel=220,
-    receiverSensitivity=-55.4,
-    transmitPower=0,
-    pulseDuration=400,
-    beamwidthX=6.5, beamwidthY=6.5,
-    frequency=41800,
-    correction=0)
+    sourceLevel=220, receiverSensitivity=-55.4, transmitPower=0, pulseDuration=400,
+    beamwidthX=6.5, beamwidthY=6.5, frequency=41800, correction=0)
 {
     res <- new("echosounder", filename=src)
     res@metadata$channel <- 1
@@ -616,9 +608,8 @@ setMethod(f="plot",
                 }
                 z[!is.finite(z)] <- NA # prevent problem in computing range
                 if (!missing(drawBottom)) {
-                    if (is.logical(drawBottom) && drawBottom) {
+                    if (is.logical(drawBottom) && drawBottom)
                         drawBottom <- "lightgray"
-                    }
                     waterDepth <- findBottom(x, ignore=ignore)$depth
                     axisBottom <- par("usr")[3]
                     deepestWater <- max(abs(waterDepth))
@@ -666,9 +657,8 @@ setMethod(f="plot",
                 if (newxGiven) {
                     if (!missing(atTop)) {
                         at <- approx(as.numeric(x[["time"]]), newx, as.numeric(atTop))$y
-                        if (missing(labelsTop)) {
+                        if (missing(labelsTop))
                             labelsTop <- format(atTop, format=if ("format" %in% dotsNames)  dots$format else "%H:%M:%S")
-                        }
                         axis(side=3, at=at, labels=labelsTop, cex.axis=par("cex"))
                     } else {
                         pretty <- pretty(time)
@@ -684,15 +674,13 @@ setMethod(f="plot",
                 distance <- geodDist(longitude, jitter+latitude, alongPath=TRUE) # FIXME: jitter should be in imagep
                 depth <- x[["depth"]]
                 a <- x[["a"]]
-                if (despike) {
+                if (despike)
                     a <- apply(a, 2, smooth)
-                }
                 z <- log10(ifelse(a > 1, a, 1)) # FIXME: make an argument for this 1
                 deepestWater <- max(abs(depth))
                 if (!missing(drawBottom)) {
-                    if (is.logical(drawBottom) && drawBottom) {
+                    if (is.logical(drawBottom) && drawBottom)
                         drawBottom <- "lightgray"
-                    }
                     waterDepth <- findBottom(x, ignore=ignore)
                     axisBottom <- par("usr")[3]
                     deepestWater <- max(abs(waterDepth$depth))
@@ -719,9 +707,8 @@ setMethod(f="plot",
                 }
                 if (!missing(atTop)) {
                     at <- approx(as.numeric(x[["time"]]), distance, as.numeric(atTop))$y
-                    if (missing(labelsTop)) {
+                    if (missing(labelsTop))
                         labelsTop <- format(atTop, format=if ("format" %in% dotsNames)  dots$format else "%H:%M:%S")
-                    }
                     axis(side=3, at=at, labels=labelsTop, cex.axis=par("cex"))
                 }
                 if (drawTimeRange) {
@@ -1210,9 +1197,8 @@ read.echosounder <- function(file,
     if ("latitudeSlow" %in% names) res@metadata$units$latitudeSlow <- list(unit=expression(degree*N), scale="")
     if ("longitudeSlow" %in% names) res@metadata$units$longitudeSlow <- list(unit=expression(degree*E), scale="")
     if ("depth" %in% names) res@metadata$units$depth <- list(unit=expression(m), scale="")
-    if (!missing(processingLog)) {
+    if (!missing(processingLog))
         res@processingLog <- processingLogItem(processingLog)
-    }
     res@processingLog <- processingLogAppend(res@processingLog,
         paste("read.echosounder(\"", filename, "\", channel=", channel, ", soundSpeed=",
             if (missing(soundSpeed)) "(missing)" else soundSpeed, ", tz=\"", tz, "\", debug=", debug, ", processingLog)", sep=""))
