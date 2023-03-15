@@ -330,18 +330,33 @@ setMethod(f="subset",
 #'
 #' Creates an echosounder file.  The defaults for e.g.  `transmitPower`
 #' are taken from the `echosounder` dataset, and they are unlikely to make
-#' sense generally.
+#' sense generally.  The first three parameters must be supplied, and the
+#' dimension of `a` must align with the lengths of `time` and `depths`. The
+#' other parameters have defaults that are unlikely to be correct for
+#' arbitrary application, but they are not essential for basic plots,
+#' etc.
 #'
-#' @param time times of pings
+#' Those who use the \CRANpkg{readHAC} package to read echosounder
+#' data should note that it stores the `a` matrix in a flipped and
+#' transposed format. See that package's demo code for a function
+#' named `flip()` that transforms the matrix as required by
+#' [as.echosounder()]. Indeed, users working with HAC
+#' data ought to study the whole of the \CRANpkg{readHAC}
+#' documentation, to learn what data are stored, so that
+#' [oceSetMetadata()] and [oceSetData()] can be used as needed
+#' to flesh out the contents returned by [as.echosounder()].
 #'
-#' @param depth depths of samples within pings
+#' @param time times of pings.
 #'
-#' @param a matrix of amplitudes
+#' @param depth depths of samples within pings.
 #'
-#' @param src optional string indicating data source
+#' @param a matrix of echo amplitudes, as would be stored with
+#' [read.echosounder()].
+#'
+#' @param src optional string indicating data source.
 #'
 #' @param sourceLevel source level, in dB (uPa at 1m), denoted `sl` in
-#' reference 1 p15, where it is in units 0.1dB (uPa at 1m)
+#' reference 1 p15, where it is in units 0.1dB (uPa at 1m).
 #'
 #' @param receiverSensitivity receiver sensitivity of the main element, in
 #' dB(counts/uPa), denoted `rs` in reference 1 p15, where it is in units of
@@ -374,7 +389,7 @@ as.echosounder <- function(time, depth, a, src="",
 {
     res <- new("echosounder", filename=src)
     res@metadata$channel <- 1
-    res@metadata$soundSpeed <- swSoundSpeed(35, 10, 1)
+    res@metadata$soundSpeed <- swSoundSpeed(35, 10, 1, eos="unesco") # don't bother with gsw
     res@metadata$samplingDeltat <- as.numeric(time[2]) - as.numeric(time[1])
     dim <- dim(a)
     res@metadata$pingsInFile <- dim[1]
@@ -587,6 +602,7 @@ setMethod(f="plot",
         for (w in seq_along(which)) {
             oceDebug(debug, "this which:", which[w], "\n")
             if (which[w] == 1) {
+                oceDebug(debug, "handling which[", w, "]==1\n", sep="")
                 time <- x[["time"]]
                 xInImage <- time
                 if (!length(time))
@@ -602,12 +618,15 @@ setMethod(f="plot",
                 if (despike)
                     signal <- apply(signal, 2, smooth)
                 if (beam[w] == "Sv" || beam[w] == "TS") {
+                    oceDebug(debug, "using signal for z")
                     z <- signal
                 } else {
+                    oceDebug(debug, "using log10(signal) for z\n")
                     z <- log10(signal)
                 }
                 z[!is.finite(z)] <- NA # prevent problem in computing range
                 if (!missing(drawBottom)) {
+                    oceDebug(debug, "drawBottom is TRUE\n")
                     if (is.logical(drawBottom) && drawBottom)
                         drawBottom <- "lightgray"
                     waterDepth <- findBottom(x, ignore=ignore)$depth
@@ -638,6 +657,7 @@ setMethod(f="plot",
                         polygon(time2, waterDepth, col=drawBottom)
                     }
                 } else {
+                    oceDebug(debug, "drawBottom is FALSE\n")
                     ats <- imagep(xInImage, y=-x[["depth"]], z=z,
                         xlab=if (missing(xlab)) "" else xlab, # time
                         ylab=if (missing(ylab)) "z [m]" else ylab, # depth
@@ -668,6 +688,7 @@ setMethod(f="plot",
                     }
                 }
             } else if (which[w] == 2) {
+                oceDebug(debug, "handling which[", w, "]==2\n", sep="")
                 latitude <- x[["latitude"]]
                 longitude <- x[["longitude"]]
                 jitter <- rnorm(length(latitude), sd=1e-8) # jitter lat by equiv 1mm to avoid colocation
@@ -719,6 +740,7 @@ setMethod(f="plot",
                 res$xat <- ats$xat
                 res$yat <- ats$yat
             } else if (which[w] == 3) {
+                oceDebug(debug, "handling which[", w, "]==3\n", sep="")
                 lat <- x[["latitude"]]
                 lon <- x[["longitude"]]
                 asp <- 1 / cos(mean(range(lat, na.rm=TRUE))*pi/180)
