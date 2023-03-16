@@ -1,5 +1,8 @@
 library(oce)
 raw <- read.oce("060130_20150904_1159.rsk")
+#print(str(raw@metadata))
+#print(str(raw@data))
+#stop()
 raw <- oceSetMetadata(raw, "longitude", -(56 + 26.232/60))
 raw <- oceSetMetadata(raw, "latitude", 73 + 13.727/60)
 raw <- oceSetMetadata(raw, "station", "C18")

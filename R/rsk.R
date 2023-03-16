@@ -764,8 +764,18 @@ read.rsk <- function(file, from=1, to, by=1, type, encoding=NA,
                     #    message("Skipping ", name, "$blob")
                     #    tmp["blob"] <- NULL
                     #}
-                    res@metadata[[name]] <- tmp
-                    oceDebug(debug, "    Stored @metadata$", name, "\n", sep="")
+                    if (nrow(tmp) > 0L) {
+                        for (tmpname in names(tmp)) {
+                            if (inherits(tmp[[tmpname]], "blob")) {
+                                oceDebug(debug, "        Skipping @metadata$", name, "$", tmpname, " because it is a blob\n", sep="")
+                                tmp$tmpname <- NULL
+                            }
+                        }
+                        res@metadata[[name]] <- tmp
+                        oceDebug(debug, "    Storing @metadata$", name, "\n", sep="")
+                    } else {
+                        oceDebug(debug, "    Not storing @metadata$", name, " because it has no data\n", sep="")
+                    }
                 }
             }
         }
@@ -1155,9 +1165,8 @@ read.rsk <- function(file, from=1, to, by=1, type, encoding=NA,
         # to read the "old" TDR files
         while (TRUE) {
             line <- scan(file, what="char", sep="\n", n=1, quiet=TRUE)
-            if (0 < (r<-regexpr("Temp[ \t]*Pres", line))) { # nolint
+            if (0 < (r<-regexpr("Temp[ \t]*Pres", line))) # nolint
                 break
-            }
             header <- c(header, line)
             if (0 < (r<-regexpr("Logging[ \t]*start", line))) {
                 l <- sub("[ ]*Logging[ \t]*start[ ]*", "", line)
@@ -1275,9 +1284,8 @@ read.rsk <- function(file, from=1, to, by=1, type, encoding=NA,
     } else {
         stop("patm must be logical or numeric")
     }
-    if (missing(processingLog)) {
+    if (missing(processingLog))
         processingLog <- paste(deparse(match.call()), sep="", collapse="")
-    }
     res@processingLog <- processingLogAppend(res@processingLog, processingLog)
     oceDebug(debug, "} # read.rsk()\n", sep="", unindent=1)
     res
