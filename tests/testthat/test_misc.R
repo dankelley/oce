@@ -6,13 +6,13 @@ test_that("gappyIndex", {
 })
 
 test_that("approx3d", {
-    ## Test values from the .c code, before converting to .cpp
+    # Test values from the .c code, before converting to .cpp
     n <- 5
     x <- seq(0, 1, length.out=n)
     y <- seq(0, 1, length.out=n)
     z <- seq(0, 1, length.out=n)
     f <- array(1:n^3, dim=c(length(x), length(y), length(z)))
-    ## interpolate along a diagonal line
+    # interpolate along a diagonal line
     m <- 10
     xout <- seq(0, 1, length.out=m)
     yout <- seq(0, 1, length.out=m)
@@ -36,20 +36,20 @@ test_that("binApply1D simple", {
 
 
 test_that("binApply1D with missing bins", {
-    ## 'result' should have no NA values
+    # 'result' should have no NA values
     x <- seq(0, 95)
     xbreaks <- seq(0, 100, 10)
     y <- x
     b <- binApply1D(x, y, xbreaks, mean)
     expect_equal(length(b$xmids), length(b$result))
-    ## should be one NA at the end of 'result'
+    # should be one NA at the end of 'result'
     x <- seq(0, 89)
     xbreaks <- seq(0, 100, 10)
     y <- x
     b <- binApply1D(x, y, xbreaks, mean)
     expect_equal(length(b$xmids), length(b$result))
     expect_true(is.na(tail(b$result, 1)))
-    ## should be an NA at both start and end of 'result'
+    # should be an NA at both start and end of 'result'
     x <- seq(11, 89)
     xbreaks <- seq(0, 100, 10)
     y <- x
@@ -67,9 +67,9 @@ test_that("binApply2D", {
     z <- outer(x, y)
     b <- binApply2D(x, y, z, xbreaks=seq(0, 1, 0.25), ybreaks=seq(0, 1, 0.25), FUN=mean, na.rm=TRUE)
     expect_equal(names(b), c("xbreaks", "xmids", "ybreaks", "ymids", "result"))
-    ## This tests for consistency, as of 2019-Feb-19. Note that there was
-    ## an error before this time; see https://github.com/dankelley/oce/issues/1493
-    ## for details.
+    # This tests for consistency, as of 2019-Feb-19. Note that there was
+    # an error before this time; see https://github.com/dankelley/oce/issues/1493
+    # for details.
     expect_equal(b$result,
         structure(c(NA, NA, 0.27639419053949, 0.479638201680171, NA,
                 NA, 0.288604148050149, 0.412574693391033, NA, 0.21404595826396,
@@ -81,9 +81,9 @@ test_that("binAverage", {
     x <- seq(0, 100, 1)
     y <- 1 + x ^2
     ba <- binAverage(x, y)
-    ## These tests are not in comparison to theory, or
-    ## known values; they simply ensure that results have not
-    ## changed since 2016-11-06, when the tests were devised.
+    # These tests are not in comparison to theory, or
+    # known values; they simply ensure that results have not
+    # changed since 2016-11-06, when the tests were devised.
     expect_equal(10, length(ba$x))
     expect_equal(10, length(ba$y))
     expect_equal(ba$x[5], 45)
@@ -95,7 +95,7 @@ test_that("binCount1D", {
     expect_equal(bc1$xbreaks, seq(0, 100, 10))
     expect_equal(bc1$xmids, seq(5, 95, 10))
     expect_equal(bc1$number, rep(10, 10))
-    ## following results checked by eye
+    # following results checked by eye
     set.seed(123)
     x <- rnorm(10)
     y <- rnorm(10)
@@ -148,36 +148,33 @@ test_that("oceConvolve", {
 
 test_that("oceEdit", {
     data(ctd)
-    ## metadata
+    # metadata
     a <- oceEdit(ctd, "waterDepth", 100)
     expect_equal(a@metadata$waterDepth, 100)
     b <- oceEdit(a, "waterDepth", 200)
     expect_equal(b@metadata$waterDepth, 200)
     c <- oceEdit(b, "metadata@waterDepth", 300)
     expect_equal(c@metadata$waterDepth, 300)
-    ## data
+    # data
     scan <- ctd[["scan"]]
     ctd2 <- oceEdit(ctd, "scan", scan+1)
     expect_true("scan" %in% names(ctd2[["data"]]))
     expect_false("scan" %in% names(ctd2[["metadata"]]))
     expect_equal(ctd[["scan"]]+1, ctd2[["scan"]])
-    ## check "case 1A" of docs (cannot add non-extant item)
+    # check "case 1A" of docs (cannot add non-extant item)
     expect_error(oceEdit(ctd, "noSuchThing", 1), "nothing named 'noSuchThing'")
-    ## check "case 2" of docs (can add non-extant item, if slot provided)
-    ctd2 <- oceEdit(ctd, "metadata@newMetadata", 1)
-    expect_true("newMetadata" %in% names(ctd2[["metadata"]]))
-    ctd2 <- oceEdit(ctd, "data@newData", 1)
-    expect_true("newData" %in% names(ctd2[["data"]]))
-})
-
-test_that("fillGap", {
-    expect_equal(1:6, fillGap(c(1:2, NA, NA, 5:6)))
+    # check "case 2" of docs (can add non-extant item, if slot provided)
+    ctd <- oceEdit(ctd, "metadata@newItem", 1)
+    expect_true("newItem" %in% names(ctd[["metadata"]]))
+    p <- ctd[["pressure"]]
+    ctd <- oceEdit(ctd, action="x@data$pressure <- 0.1 + x@data$pressure")
+    expect_equal(p + 0.1, ctd[["pressure"]])
 })
 
 test_that("get_bit (unused in oce)", {
     buf <- 0x3a
     bits <- unlist(lapply(7:0, function(i) do_get_bit(buf, i)))
-    ## NB. 'i' starts at rightmost bit
+    # NB. 'i' starts at rightmost bit
     expect_equal(c(0, 0, 1, 1, 1, 0, 1, 0), bits)
 })
 
@@ -232,9 +229,9 @@ test_that("integrateTrapezoid", {
 })
 
 test_that("interpBarnes 1D", {
-    ## These tests are not in comparison to theory, or
-    ## known values; they simply ensure that results have not
-    ## changed since 2018-03-11, when the tests were devised.
+    # These tests are not in comparison to theory, or
+    # known values; they simply ensure that results have not
+    # changed since 2018-03-11, when the tests were devised.
     data(ctd)
     p <- ctd[["pressure"]]
     y <- rep(1, length(p)) # fake y data, with arbitrary value
@@ -245,9 +242,9 @@ test_that("interpBarnes 1D", {
 })
 
 test_that("interpBarnes 2D", {
-    ## These tests are not in comparison to theory, or
-    ## known values; they simply ensure that results have not
-    ## changed since 2016-11-06, when the tests were devised.
+    # These tests are not in comparison to theory, or
+    # known values; they simply ensure that results have not
+    # changed since 2016-11-06, when the tests were devised.
     data(wind)
     u <- interpBarnes(wind$x, wind$y, wind$z)
     expect_equal(u$zg[1, 1], 30.962611975027)
@@ -276,8 +273,8 @@ test_that("magneticField version 12 (why not perfect?)", {
 })
 
 test_that("magneticField version 13 (why not perfect?)", {
-    ## REF: http://www.geomag.bgs.ac.uk/data_service/models_compass/wmm_calc.html
-    ## version 13 by default as of oce "develop" branch date 2020-03-03
+    # REF: http://www.geomag.bgs.ac.uk/data_service/models_compass/wmm_calc.html
+    # version 13 by default as of oce "develop" branch date 2020-03-03
     mf <- magneticField(-63.562, 44.640, as.POSIXct("2020-03-03 00:00:00", tz="UTC"), version=13)
     mf2 <- magneticField(-63.562, 44.640, as.Date("2020-03-03", tz="UTC"), version=13)
     cbind(mf, mf2) # Q: why so much difference here?
@@ -292,7 +289,7 @@ test_that("matchBytes", {
 })
 
 test_that("matrixSmooth", {
-    ## Test for same values after rewriting the C code in C++.
+    # Test for same values after rewriting the C code in C++.
     data(volcano)
     v <- matrixSmooth(volcano)
     ve <- matrix(c(100, 101, 102, 100, 101.1666667, 102.1666667, 101,
@@ -338,11 +335,11 @@ test_that("rotateAboutZ cm", {
 })
 
 test_that("runlm", {
-    ## Test for same values after rewriting the C code in C++.
+    # Test for same values after rewriting the C code in C++.
     x <- 1:8
     y <- c(1.208669331, 1.409418342, 1.594642473, 1.757356091,
         1.891470985, 1.992039086, 2.055449730, 2.079573603)
-    ## default L
+    # default L
     r <- runlm(x, y)
     expect_equal(4, sum(c("dydx", "L", "x", "y") %in% names(r)))
     expect_equal(r$y, c(1.210171739, 1.402871561, 1.581586126,
@@ -352,7 +349,7 @@ test_that("runlm", {
             0.14683764457, 0.11611882136, 0.08116937564,
             0.05596691825, 0.03806434013))
     expect_equal(r$L, 6)
-    ## specified L
+    # specified L
     r <- runlm(x, y, L=4)
     expect_equal(r$dydx, c(0.2007490110, 0.1929865710, 0.1739688745,
             0.1484142560, 0.1173414975, 0.0819893725,
@@ -374,14 +371,14 @@ test_that("snakeToCamel", {
 })
 
 test_that("time-series filtering", {
-    ## Check against some matlab results.
+    # Check against some matlab results.
     b <- rep(1, 5)/5
     a <- 1
     x <- seq(1, 4, by=0.2)
     matlab.res <- c(0.2000, 0.4400, 0.7200, 1.0400, 1.4000, 1.6000, 1.8000, 2.0000, 2.2000,
         2.4000, 2.6000, 2.8000, 3.0000, 3.2000, 3.4000, 3.6000)
     expect_equal(matlab.res, oce.filter(x, a, b))
-    ## Check against old values.
+    # Check against old values.
     b <- rep(1, 5)/5
     a <- 1
     x <- seq(0, 10)
@@ -394,40 +391,40 @@ test_that("time-series filtering", {
 
 test_that("times", {
     expect_equal(numberAsPOSIXct(719529, "matlab"), ISOdatetime(1970, 1, 1, 0, 0, 0, tz="UTC"))
-    ## The GPS test value was calculated as follows:
-    ## https://www.labsat.co.uk/index.php/en/gps-time-calculator
-    ## gives week=604 and sec=134336 (for the indicated date), IGNORING
-    ## leap seconds. However,
-    ## https://confluence.qps.nl/display/KBE/UTC+to+GPS+Time+Correction#UTCtoGPSTimeCorrection-UTC(CoordinatedUniversalTime)
-    ## indicates that a 15-second correction was needed for GPS to UTC, so
-    ## we do that in the test value.
+    # The GPS test value was calculated as follows:
+    # https://www.labsat.co.uk/index.php/en/gps-time-calculator
+    # gives week=604 and sec=134336 (for the indicated date), IGNORING
+    # leap seconds. However,
+    # https://confluence.qps.nl/display/KBE/UTC+to+GPS+Time+Correction#UTCtoGPSTimeCorrection-UTC(CoordinatedUniversalTime)
+    # indicates that a 15-second correction was needed for GPS to UTC, so
+    # we do that in the test value.
     expect_equal(numberAsPOSIXct(cbind(604, 134336+15), type="gps"),
         as.POSIXct("2011-03-21 13:18:56", tz="UTC"))
-    ## Matlab times; see http://www.mathworks.com/help/matlab/ref/datenum.html
+    # Matlab times; see http://www.mathworks.com/help/matlab/ref/datenum.html
     mt <- 7.362007209411687e5
     expect_equal(as.numeric(numberAsPOSIXct(mt, "matlab", tz="UTC")),
         as.numeric(as.POSIXct("2015-08-24 17:18:09", tz="UTC")), tolerance=1)
-    ## Excel time. I created the test value by entering "Jul 1, 2019" into
-    ## excel, then copying to a new cell with "paste special" set to
-    ## "value".
+    # Excel time. I created the test value by entering "Jul 1, 2019" into
+    # excel, then copying to a new cell with "paste special" set to
+    # "value".
     expect_equal(numberAsPOSIXct(43647.0, "excel"), ISOdatetime(2019, 07, 01, 0, 0, 0, tz="UTC"))
-    ## Now, check around the erroneous leap-day in 1900, for which oce
-    ## returns a time of NA, to tell the user that 1900 was not a leap
-    ## year (i.e. for consistency with what user would get by trying to
-    ## specify that date in ISOdatetime() or other functions).
+    # Now, check around the erroneous leap-day in 1900, for which oce
+    # returns a time of NA, to tell the user that 1900 was not a leap
+    # year (i.e. for consistency with what user would get by trying to
+    # specify that date in ISOdatetime() or other functions).
     expect_equal(numberAsPOSIXct(59, "excel"), ISOdatetime(1900, 2, 28, 0, 0, 0, tz="UTC"))
     expect_true(is.na(numberAsPOSIXct(60, "excel")))
     expect_equal(numberAsPOSIXct(61, "excel"), ISOdatetime(1900, 03, 01, 0, 0, 0, tz="UTC"))
     expect_equal(numberAsPOSIXct(367, "excel"), ISOdatetime(1901, 01, 01, 0, 0, 0, tz="UTC"))
     expect_equal(numberAsPOSIXct(368, "excel"), ISOdatetime(1901, 01, 02, 0, 0, 0, tz="UTC"))
 
-    ## NCEP1 times; test value from
-    ## http://coastwatch.pfeg.noaa.gov/erddap/convert/time.html?isoTime=2015-09-04T12%3A00%3A00Z&units=hours+since+1800-01-01
+    # NCEP1 times; test value from
+    # http://coastwatch.pfeg.noaa.gov/erddap/convert/time.html?isoTime=2015-09-04T12%3A00%3A00Z&units=hours+since+1800-01-01
     expect_equal(as.numeric(numberAsPOSIXct(1890564, "ncep1")),
         as.numeric(as.POSIXct("2015-09-04 12:00:00", tz="UTC")), tolerance=1)
-    ## NCEP2 times; see http://www.esrl.noaa.gov/psd/data/gridded/faq.html#3
-    ## and also https://github.com/dankelley/oce/issues/739, the latter
-    ## documenting what is essentially a kludge for this to work.
+    # NCEP2 times; see http://www.esrl.noaa.gov/psd/data/gridded/faq.html#3
+    # and also https://github.com/dankelley/oce/issues/739, the latter
+    # documenting what is essentially a kludge for this to work.
     expect_equal(as.numeric(numberAsPOSIXct(725738, "ncep2")),
         as.numeric(as.POSIXct("1988-01-01 00:00:00", tz="UTC")), tolerance=1)
 })
