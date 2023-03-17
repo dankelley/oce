@@ -41,7 +41,10 @@ setClass("rsk", contains="oce")
 #' The data were obtained September 2015, off the west coast
 #' of Greenland, by Matt Rutherford and Nicole Trenholm of the
 #' Ocean Research Project, in collaboration with RBR and with the
-#' NASA Oceans Melting Greenland project.
+#' NASA Oceans Melting Greenland project. The `rsk` object was
+#' created with the `allTables` parameter of [read.rsk()] set to
+#' FALSE, to yield an object of suitably small size for inclusion
+#' in a CRAN package.
 #'
 #' @name rsk
 #'

@@ -11,7 +11,10 @@ A sample \code{rsk} object derived from a Concerto CTD manufactured by RBR Ltd.
 The data were obtained September 2015, off the west coast
 of Greenland, by Matt Rutherford and Nicole Trenholm of the
 Ocean Research Project, in collaboration with RBR and with the
-NASA Oceans Melting Greenland project.
+NASA Oceans Melting Greenland project. The \code{rsk} object was
+created with the \code{allTables} parameter of \code{\link[=read.rsk]{read.rsk()}} set to
+FALSE, to yield an object of suitably small size for inclusion
+in a CRAN package.
 }
 \examples{
 library(oce)
