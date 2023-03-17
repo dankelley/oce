@@ -662,10 +662,10 @@ setMethod(f="plot",
 #' @param patm controls the handling of atmospheric pressure, an important issue
 #' for RBR instruments that record absolute pressure; see \dQuote{Details}.
 #'
-#' @param allTables logical value, TRUE by default, indicating whether to read
-#' all the tables (except one named `"blob"`, if it exists) and save them in the
-#' `metadata` slot of the return value. This information can be useful for a
-#' variety of detailed calculations.
+#' @param allTables logical value, TRUE by default, indicating whether to save
+#' all the non-empty tables in the database (pruned of `blob` columns) in the
+#' `metadata` slot of the returned object. This may be useful for detailed
+#' analysis.
 #'
 #' @param processingLog if provided, the action item to be stored in the log.
 #' This is typically only provided for internal calls; the default that it provides
