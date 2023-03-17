@@ -1,12 +1,10 @@
 library(oce)
-raw <- read.oce("060130_20150904_1159.rsk", allTables=FALSE)
-raw <- oceSetMetadata(raw, "longitude", -(56 + 26.232/60))
-raw <- oceSetMetadata(raw, "latitude", 73 + 13.727/60)
-raw <- oceSetMetadata(raw, "station", "C18")
-raw <- oceSetMetadata(raw, "ship", "Ault")
-raw <- oceSetMetadata(raw, "institute", "Ocean Research Project")
-focus <- structure(c(1441381041, 1441381483), class=c("POSIXct", "POSIXt"), tzone = "UTC")
-rsk <- subset(raw, focus[1] <= time & time <= focus[2])
+rsk <- read.oce("060130_20150904_1159.rsk", allTables=FALSE)
+rsk <- oceSetMetadata(rsk, "longitude", -(56 + 26.232/60))
+rsk <- oceSetMetadata(rsk, "latitude", 73 + 13.727/60)
+rsk <- oceSetMetadata(rsk, "station", "C18")
+rsk <- oceSetMetadata(rsk, "ship", "Ault")
+rsk <- oceSetMetadata(rsk, "institute", "Ocean Research Project")
 
 # Save in version 2, because otherwise users with R 3.5.x and earlier will not
 # be able to use data("rsk")
