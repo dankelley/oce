@@ -8,6 +8,8 @@
 * Change `plotProfile()` to create xlab on vector input (issue 2047).
 * Change `plotTS()` to compute isopycnals more accurately (issue 2046).
 * Change `plotTS()` to handle lobo objects directly.
+* Change `plot,echosounder-method()` default `col` to `oceColorsViridis()`
+  (issue 2060).
 * Change `plot,tidem-method()` to obey `...` parameter (issue 2035).
 * Change `read.adp.ad2cp()`, and structure of AD2CP objects (issue 2005).
 * Change `read.rsk()` to read geographic information (issue 2024).
