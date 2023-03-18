@@ -493,8 +493,11 @@ findBottom <- function(x, ignore=5, clean=despike)
 #' `"b"` for both.
 #'
 #' @param col a function providing the color scale for image plots.
-#' (The default was [oceColorsJet()] until 2023-03-15, when it was
-#' switched to [oceColorsTurbo()].)
+#' This value is passed to [imagep()], which draws
+#' the images.  Since [imagep()] defaults `col` to
+#' [oceColorsViridis()], that is effectively also the default
+#' for the present function. (Prior to 2023-03-18, the present
+#' function defaulted `col` to [oceColorsJet()].)
 #'
 #' @param lwd line width (ignored if `type="p"`).
 #'
@@ -568,7 +571,7 @@ setMethod(f="plot",
         newx,
         xlab, ylab,
         xlim, ylim, zlim,
-        type="l", col=oceColorsTurbo, lwd=2,
+        type="l", col, lwd=2,
         despike=FALSE,
         drawBottom, ignore=5,
         drawTimeRange=FALSE, drawPalette=TRUE,

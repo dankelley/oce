@@ -16,7 +16,7 @@
   ylim,
   zlim,
   type = "l",
-  col = oceColorsTurbo,
+  col,
   lwd = 2,
   despike = FALSE,
   drawBottom,
@@ -69,8 +69,11 @@ not provided, the labels depend on the value of \code{which}.}
 \code{"b"} for both.}
 
 \item{col}{a function providing the color scale for image plots.
-(The default was \code{\link[=oceColorsJet]{oceColorsJet()}} until 2023-03-15, when it was
-switched to \code{\link[=oceColorsTurbo]{oceColorsTurbo()}}.)}
+This value is passed to \code{\link[=imagep]{imagep()}}, which draws
+the images.  Since \code{\link[=imagep]{imagep()}} defaults \code{col} to
+\code{\link[=oceColorsViridis]{oceColorsViridis()}}, that is effectively also the default
+for the present function. (Prior to 2023-03-18, the present
+function defaulted \code{col} to \code{\link[=oceColorsJet]{oceColorsJet()}}.)}
 
 \item{lwd}{line width (ignored if \code{type="p"}).}
 
