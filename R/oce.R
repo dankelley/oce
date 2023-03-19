@@ -598,7 +598,7 @@ headOrTail <- function(x, n=6L, headTail=head, ...)
         #   sealevel
         for (name in names(x@data)) {
             # For reasons I don't understand, the 'time' items are not vectors.
-            if ((is.vector(x@data[[name]]) && !is.list(x@data[[name]])) || name=="time") {
+            if ((is.vector(x@data[[name]]) && !is.list(x@data[[name]])) || (name=="time" || name=="tstamp")) {
                 res@data[[name]] <- headTail(x@data[[name]], n)
             } else if (is.data.frame(x@data[[name]])) {
                 res@data[[name]] <- headTail(x@data[[name]], n)
