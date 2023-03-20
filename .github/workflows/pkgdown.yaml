@@ -1,0 +1,66 @@
+on:
+  push:
+    branches:
+      - develop
+      - main
+
+name: pkgdown
+
+jobs:
+  pkgdown:
+    runs-on: macOS-latest
+    env:
+      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: r-lib/actions/setup-r@v1
+
+      - uses: r-lib/actions/setup-pandoc@v1
+      
+      # dd: Using gfortran should be easier than this; however, modifying
+      # ~/.R/Makevars doesn't appear to work in this context; nor does
+      # ln -s with the library directory. This part of the action is
+      # temporary and should be removed when CRAN oce can be used
+      #DEK# - name: Link gfortran for devel oce 
+      #DEK#   run: |
+      #DEK#     ln -s `which gfortran-10` /usr/local/bin/gfortran
+      #DEK#     gfortran --version || true
+      #DEK#     ls /usr/local/Cellar/gcc | tail -n 1
+      #DEK#     
+      #DEK#     sudo mkdir -p /usr/local/gfortran
+      #DEK#     sudo cp -r /usr/local/Cellar/gcc/`ls /usr/local/Cellar/gcc | tail -n 1`/lib/gcc/10 /usr/local/gfortran/lib
+      #DEK#     sudo chmod 755 /usr/local/gfortran
+      #DEK#     sudo chmod 755 /usr/local/gfortran/lib
+      #DEK#     
+      #DEK#     ls /usr/local/gfortran/lib || true
+
+      - name: Query dependencies
+        run: |
+          install.packages('remotes')
+          saveRDS(remotes::dev_package_deps(dependencies = TRUE), ".github/depends.Rds", version = 2)
+          writeLines(sprintf("R-%i.%i", getRversion()$major, getRversion()$minor), ".github/R-version")
+        shell: Rscript {0}
+
+      - name: Cache R packages
+        uses: actions/cache@v2
+        with:
+          path: ${{ env.R_LIBS_USER }}
+          key: ${{ runner.os }}-${{ hashFiles('.github/R-version') }}-1-${{ hashFiles('.github/depends.Rds') }}
+          restore-keys: ${{ runner.os }}-${{ hashFiles('.github/R-version') }}-1-
+
+      - name: Install dependencies
+        run: |
+          remotes::install_deps(dependencies = TRUE)
+          install.packages("pkgdown", type = "binary")
+        shell: Rscript {0}
+
+      - name: Install package
+        run: R CMD INSTALL .
+        
+
+      - name: Deploy package
+        run: |
+          git config --local user.email "actions@github.com"
+          git config --local user.name "GitHub Actions"
+          Rscript -e 'pkgdown::deploy_to_branch(new_process = FALSE, run_dont_run = TRUE)'
