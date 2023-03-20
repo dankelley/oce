@@ -41,6 +41,14 @@ if (requireNamespace("RSQLite", quietly=TRUE)) {
             expect_equal(rsk[["rskVersion"]], c(1, 9, 0))
             expect_equal(rsk[["ruskinVersion"]], c(1, 10, 0))
             expect_equal(sort(names(rsk[["data"]])), c("conductivity", "pressure", "temperature", "time",  "tstamp"))
+            # Note: the internal representation, checked below, is a bit
+            # counter-intuitive for a time in milliseconds, but this is just a
+            # reflection of how the storage is done.  Another way to see the
+            # data is as follows, and these numbers make sense. Please see
+            # https://github.com/dankelley/oce/issues/2062 for more discussion.
+            #     > rsk@data$tstamp[1:3]
+            #     integer64
+            #     [1] 1441380732000 1441380732167 1441380732333
             expect_equal(rsk@data$tstamp[1:3],
                 structure(c(7.12136702258709e-312, 7.12136702341218e-312, 7.12136702423233e-312
                         ), class = "integer64"))

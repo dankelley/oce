@@ -41,7 +41,10 @@ setClass("rsk", contains="oce")
 #' The data were obtained September 2015, off the west coast
 #' of Greenland, by Matt Rutherford and Nicole Trenholm of the
 #' Ocean Research Project, in collaboration with RBR and with the
-#' NASA Oceans Melting Greenland project.
+#' NASA Oceans Melting Greenland project. The `rsk` object was
+#' created with [read.rsk()] with `allTables=FALSE`, after which
+#' some metadata were added and the samples were trimmed to
+#' just the downcast portion.
 #'
 #' @name rsk
 #'
@@ -451,12 +454,10 @@ as.rsk <- function(time, columns,
 #' @examples
 #' library(oce)
 #' data(rsk)
-#' plot(rsk) # default timeseries plot of all data fields
-#'
-#' # A multipanel plot of just pressure and temperature with ylim
-#' par(mfrow=c(2, 1))
-#' plot(rsk, which="pressure", ylim=c(10, 30))
-#' plot(rsk, which="temperature", ylim=c(2, 4))
+#' # 1. default timeseries plot of all data fields
+#' plot(rsk)
+#' # 2. plot in ctd format
+#' plot(as.ctd(rsk))
 #'
 #' @seealso
 #' The documentation for [rsk-class] explains the structure of
@@ -659,10 +660,10 @@ setMethod(f="plot",
 #' @param patm controls the handling of atmospheric pressure, an important issue
 #' for RBR instruments that record absolute pressure; see \dQuote{Details}.
 #'
-#' @param allTables logical value, TRUE by default, indicating whether to read
-#' all the tables (except one named `"blob"`, if it exists) and save them in the
-#' `metadata` slot of the return value. This information can be useful for a
-#' variety of detailed calculations.
+#' @param allTables logical value, TRUE by default, indicating whether to save
+#' all the non-empty tables in the database (pruned of `blob` columns) in the
+#' `metadata` slot of the returned object. This may be useful for detailed
+#' analysis.
 #'
 #' @param processingLog if provided, the action item to be stored in the log.
 #' This is typically only provided for internal calls; the default that it provides
@@ -764,8 +765,18 @@ read.rsk <- function(file, from=1, to, by=1, type, encoding=NA,
                     #    message("Skipping ", name, "$blob")
                     #    tmp["blob"] <- NULL
                     #}
-                    res@metadata[[name]] <- tmp
-                    oceDebug(debug, "    Stored @metadata$", name, "\n", sep="")
+                    if (nrow(tmp) > 0L) {
+                        for (tmpname in names(tmp)) {
+                            if (inherits(tmp[[tmpname]], "blob")) {
+                                oceDebug(debug, "        Skipping @metadata$", name, "$", tmpname, " because it is a blob\n", sep="")
+                                tmp$tmpname <- NULL
+                            }
+                        }
+                        res@metadata[[name]] <- tmp
+                        oceDebug(debug, "    Storing @metadata$", name, "\n", sep="")
+                    } else {
+                        oceDebug(debug, "    Not storing @metadata$", name, " because it has no data\n", sep="")
+                    }
                 }
             }
         }
@@ -1155,9 +1166,8 @@ read.rsk <- function(file, from=1, to, by=1, type, encoding=NA,
         # to read the "old" TDR files
         while (TRUE) {
             line <- scan(file, what="char", sep="\n", n=1, quiet=TRUE)
-            if (0 < (r<-regexpr("Temp[ \t]*Pres", line))) { # nolint
+            if (0 < (r<-regexpr("Temp[ \t]*Pres", line))) # nolint
                 break
-            }
             header <- c(header, line)
             if (0 < (r<-regexpr("Logging[ \t]*start", line))) {
                 l <- sub("[ ]*Logging[ \t]*start[ ]*", "", line)
@@ -1275,9 +1285,8 @@ read.rsk <- function(file, from=1, to, by=1, type, encoding=NA,
     } else {
         stop("patm must be logical or numeric")
     }
-    if (missing(processingLog)) {
+    if (missing(processingLog))
         processingLog <- paste(deparse(match.call()), sep="", collapse="")
-    }
     res@processingLog <- processingLogAppend(res@processingLog, processingLog)
     oceDebug(debug, "} # read.rsk()\n", sep="", unindent=1)
     res

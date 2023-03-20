@@ -5,6 +5,8 @@
 * Change `applyMagneticDeclination()` to also handle `adp` and `adv` (issue 2038).
 * Change `download.topo()` to handle new NOAA database (issue 2015).
 * Change `mapPlot()` to remove a low-level error (issue 2036).
+* Change `plot,echosounder-method()` to use `oceColorsTurbo()` instead of
+  `oceColorsJet()`.
 * Change `plotProfile()` to create xlab on vector input (issue 2047).
 * Change `plotTS()` to compute isopycnals more accurately (issue 2046).
 * Change `plotTS()` to handle lobo objects directly.

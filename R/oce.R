@@ -1444,7 +1444,7 @@ oceFileTrim <- function(infile, n=100L, outfile, debug=getOption("oceDebug"))
 #' 2. If `item` and `value` are not supplied, then `action` must
 #' be supplied.  This is a character string specifying some action to be
 #' performed on the object, e.g. a manipulation of a column.  The action must
-#' refer to the object as `x`; see Examples.
+#' refer to the object as `x`, as in Example 2.
 #'
 #' In any case, a log entry is stored in the object, to document the change.
 #' Indeed, this is the main benefit to using this function, instead of altering
@@ -1475,17 +1475,19 @@ oceFileTrim <- function(infile, n=100L, outfile, debug=getOption("oceDebug"))
 #' @param debug an integer that specifies a level of debugging, with 0 or less
 #' indicating no debugging, and 1 or more indicating debugging.
 #'
-#' @return A [oce-class] object, altered
-#' appropriately, and with a log item indicating the nature of the alteration.
+#' @return A [oce-class] object, altered appropriately, and with a log item
+#' indicating the nature of the alteration.
 #'
 #' @author Dan Kelley
 #'
 #' @examples
 #' library(oce)
 #' data(ctd)
+#' # Example 1: change latitude
 #' ctd2 <- oceEdit(ctd, item="latitude", value=47.8879,
-#'                reason="illustration", person="Dan Kelley")
-#' ctd3 <- oceEdit(ctd,action="x@@data$pressure<-x@@data$pressure-1")
+#'     reason="illustration", person="Dan Kelley")
+#' # Example 2: add 0.1 dbar to pressure
+#' ctd3 <- oceEdit(ctd,action="x@@data$pressure<-x@@data$pressure+0.1")
 oceEdit <- function(x, item, value, action, reason="", person="", debug=getOption("oceDebug"))
 {
     oceDebug(debug, "oceEdit() {\n", unindent=1)
@@ -1583,8 +1585,9 @@ oceEdit <- function(x, item, value, action, reason="", person="", debug=getOptio
             }
         }
     } else if (!missing(action)) {
-        warning("the 'action' method may not work -- this needs testing!")
-        eval(parse(text=action))        # FIXME: should check if it worked
+        t <- try(eval(parse(text=action)), silent=TRUE)
+        if (inherits(t, "try-error"))
+            stop("cannot parse and evaluate the supplied action")
     } else {
         stop("must supply either an 'item' plus a 'value', or an 'action'")
     }

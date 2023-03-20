@@ -38,8 +38,8 @@ action on the object.}
 indicating no debugging, and 1 or more indicating debugging.}
 }
 \value{
-A \linkS4class{oce} object, altered
-appropriately, and with a log item indicating the nature of the alteration.
+A \linkS4class{oce} object, altered appropriately, and with a log item
+indicating the nature of the alteration.
 }
 \description{
 Edit an element of an oce object, inserting a note in the processing
@@ -68,7 +68,7 @@ in which the change is done. In contrast with case 1A, this will
 \item If \code{item} and \code{value} are not supplied, then \code{action} must
 be supplied.  This is a character string specifying some action to be
 performed on the object, e.g. a manipulation of a column.  The action must
-refer to the object as \code{x}; see Examples.
+refer to the object as \code{x}, as in Example 2.
 }
 
 In any case, a log entry is stored in the object, to document the change.
@@ -80,9 +80,11 @@ brief note on the \code{reason} for the change, and the name of the
 \examples{
 library(oce)
 data(ctd)
+# Example 1: change latitude
 ctd2 <- oceEdit(ctd, item="latitude", value=47.8879,
-               reason="illustration", person="Dan Kelley")
-ctd3 <- oceEdit(ctd,action="x@data$pressure<-x@data$pressure-1")
+    reason="illustration", person="Dan Kelley")
+# Example 2: add 0.1 dbar to pressure
+ctd3 <- oceEdit(ctd,action="x@data$pressure<-x@data$pressure+0.1")
 }
 \author{
 Dan Kelley
