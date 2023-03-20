@@ -454,9 +454,6 @@
     <loc>/reference/findBottom.html</loc>
   </url>
   <url>
-    <loc>/reference/findInOrdered.html</loc>
-  </url>
-  <url>
     <loc>/reference/firstFinite.html</loc>
   </url>
   <url>
@@ -961,9 +958,6 @@
     <loc>/reference/plot-xbt-method.html</loc>
   </url>
   <url>
-    <loc>/reference/plotAD2CP.html</loc>
-  </url>
-  <url>
     <loc>/reference/plotInset.html</loc>
   </url>
   <url>
@@ -1166,9 +1160,6 @@
   </url>
   <url>
     <loc>/reference/read.xbt.noaa1.html</loc>
-  </url>
-  <url>
-    <loc>/reference/renameData.html</loc>
   </url>
   <url>
     <loc>/reference/rescale.html</loc>
@@ -1655,15 +1646,6 @@
   </url>
   <url>
     <loc>/reference/tail.oce.html</loc>
-  </url>
-  <url>
-    <loc>/reference/test_met_csv1.csv.html</loc>
-  </url>
-  <url>
-    <loc>/reference/test_met_csv2.csv.html</loc>
-  </url>
-  <url>
-    <loc>/reference/test_met_xml2.xml.html</loc>
   </url>
   <url>
     <loc>/reference/threenum.html</loc>
