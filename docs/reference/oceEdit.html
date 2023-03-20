@@ -132,8 +132,8 @@ indicating no debugging, and 1 or more indicating debugging.</p></dd>
     <h2>Value</h2>
     
 
-<p>A <a href="oce-class.html">oce</a> object, altered
-appropriately, and with a log item indicating the nature of the alteration.</p>
+<p>A <a href="oce-class.html">oce</a> object, altered appropriately, and with a log item
+indicating the nature of the alteration.</p>
     </div>
     <div id="details">
     <h2>Details</h2>
@@ -155,7 +155,7 @@ in which the change is done. In contrast with case 1A, this will
 <li><p>If <code>item</code> and <code>value</code> are not supplied, then <code>action</code> must
 be supplied.  This is a character string specifying some action to be
 performed on the object, e.g. a manipulation of a column.  The action must
-refer to the object as <code>x</code>; see Examples.</p></li>
+refer to the object as <code>x</code>, as in Example 2.</p></li>
 </ol><p>In any case, a log entry is stored in the object, to document the change.
 Indeed, this is the main benefit to using this function, instead of altering
 the object directly.  The log entry will be most useful if it contains a
@@ -171,10 +171,11 @@ brief note on the <code>reason</code> for the change, and the name of the
     <h2>Examples</h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dankelley.github.io/oce/" class="external-link">oce</a></span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">ctd</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="co"># Example 1: change latitude</span></span></span>
 <span class="r-in"><span><span class="va">ctd2</span> <span class="op">&lt;-</span> <span class="fu">oceEdit</span><span class="op">(</span><span class="va">ctd</span>, item<span class="op">=</span><span class="st">"latitude"</span>, value<span class="op">=</span><span class="fl">47.8879</span>,</span></span>
-<span class="r-in"><span>               reason<span class="op">=</span><span class="st">"illustration"</span>, person<span class="op">=</span><span class="st">"Dan Kelley"</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">ctd3</span> <span class="op">&lt;-</span> <span class="fu">oceEdit</span><span class="op">(</span><span class="va">ctd</span>,action<span class="op">=</span><span class="st">"x@data$pressure&lt;-x@data$pressure-1"</span><span class="op">)</span></span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>the 'action' method may not work -- this needs testing!</span>
+<span class="r-in"><span>    reason<span class="op">=</span><span class="st">"illustration"</span>, person<span class="op">=</span><span class="st">"Dan Kelley"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="co"># Example 2: add 0.1 dbar to pressure</span></span></span>
+<span class="r-in"><span><span class="va">ctd3</span> <span class="op">&lt;-</span> <span class="fu">oceEdit</span><span class="op">(</span><span class="va">ctd</span>,action<span class="op">=</span><span class="st">"x@data$pressure&lt;-x@data$pressure+0.1"</span><span class="op">)</span></span></span>
 </code></pre></div>
     </div>
   </div>

@@ -156,10 +156,10 @@ for RBR instruments that record absolute pressure; see “Details”.</p></dd>
 
 
 <dt>allTables</dt>
-<dd><p>logical value, TRUE by default, indicating whether to read
-all the tables (except one named <code>"blob"</code>, if it exists) and save them in the
-<code>metadata</code> slot of the return value. This information can be useful for a
-variety of detailed calculations.</p></dd>
+<dd><p>logical value, TRUE by default, indicating whether to save
+all the non-empty tables in the database (pruned of <code>blob</code> columns) in the
+<code>metadata</code> slot of the returned object. This may be useful for detailed
+analysis.</p></dd>
 
 
 <dt>processingLog</dt>

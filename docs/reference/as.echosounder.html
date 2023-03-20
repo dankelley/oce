@@ -97,24 +97,25 @@
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>time</dt>
-<dd><p>times of pings</p></dd>
+<dd><p>times of pings.</p></dd>
 
 
 <dt>depth</dt>
-<dd><p>depths of samples within pings</p></dd>
+<dd><p>depths of samples within pings.</p></dd>
 
 
 <dt>a</dt>
-<dd><p>matrix of amplitudes</p></dd>
+<dd><p>matrix of echo amplitudes, as would be stored with
+<code><a href="read.echosounder.html">read.echosounder()</a></code>.</p></dd>
 
 
 <dt>src</dt>
-<dd><p>optional string indicating data source</p></dd>
+<dd><p>optional string indicating data source.</p></dd>
 
 
 <dt>sourceLevel</dt>
 <dd><p>source level, in dB (uPa at 1m), denoted <code>sl</code> in
-reference 1 p15, where it is in units 0.1dB (uPa at 1m)</p></dd>
+reference 1 p15, where it is in units 0.1dB (uPa at 1m).</p></dd>
 
 
 <dt>receiverSensitivity</dt>
@@ -161,7 +162,20 @@ in reference 1 p16, where the unit is 0.2 deg</p></dd>
     <h2>Details</h2>
     <p>Creates an echosounder file.  The defaults for e.g.  <code>transmitPower</code>
 are taken from the <code>echosounder</code> dataset, and they are unlikely to make
-sense generally.</p>
+sense generally.  The first three parameters must be supplied, and the
+dimension of <code>a</code> must align with the lengths of <code>time</code> and <code>depths</code>. The
+other parameters have defaults that are unlikely to be correct for
+arbitrary application, but they are not essential for basic plots,
+etc.</p>
+<p>Those who use the <a href="https://CRAN.R-project.org/package=readHAC" class="external-link"><span class="pkg">readHAC</span></a> package to read echosounder
+data should note that it stores the <code>a</code> matrix in a flipped and
+transposed format. See that package's demo code for a function
+named <code>flip()</code> that transforms the matrix as required by
+<code>as.echosounder()</code>. Indeed, users working with HAC
+data ought to study the whole of the <a href="https://CRAN.R-project.org/package=readHAC" class="external-link"><span class="pkg">readHAC</span></a>
+documentation, to learn what data are stored, so that
+<code><a href="oceSetMetadata.html">oceSetMetadata()</a></code> and <code><a href="oceSetData.html">oceSetData()</a></code> can be used as needed
+to flesh out the contents returned by <code>as.echosounder()</code>.</p>
     </div>
     <div id="see-also">
     <h2>See also</h2>
