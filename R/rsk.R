@@ -42,9 +42,9 @@ setClass("rsk", contains="oce")
 #' of Greenland, by Matt Rutherford and Nicole Trenholm of the
 #' Ocean Research Project, in collaboration with RBR and with the
 #' NASA Oceans Melting Greenland project. The `rsk` object was
-#' created with the `allTables` parameter of [read.rsk()] set to
-#' FALSE, to yield an object of suitably small size for inclusion
-#' in a CRAN package.
+#' created with [read.rsk()] with `allTables=FALSE`, after which
+#' some metadata were added and the samples were trimmed to
+#' just the downcast portion.
 #'
 #' @name rsk
 #'
