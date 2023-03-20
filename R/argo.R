@@ -1421,8 +1421,11 @@ read.argo <- function(file, encoding=NA, debug=getOption("oceDebug"), processing
     oceDebug(debug-1, "At processing step 15, the ", length(varNames),
         " varnames are: c(\"", paste(sort(varNames), collapse="\",\""), "\")\n", sep="")
     t0 <- strptime(t0s, "%Y%m%d%M%H%S", tz="UTC")
+    oceDebug(debug, vectorShow(t0))
+    oceDebug(debug, vectorShow(res@metadata$juld))
     #julianDayTime <- as.vector(ncdf4::ncvar_get(file, maybeLC("JULD", lc)))
     res@data$time <- t0 + res@metadata$juld * 86400
+    oceDebug(debug, vectorShow(res@data$time))
     rm(list=c("t0s", "t0")) # no longer needed
     res@metadata$juldQC <- if (maybeLC("JULD_QC", lc) %in% varNames) {
         as.vector(ncdf4::ncvar_get(file, maybeLC("JULD_QC", lc)))
