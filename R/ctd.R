@@ -589,7 +589,7 @@ setMethod(f="summary",
         }
         showMetadataItem(object, "waterDepth", "Water depth:         ")
         showMetadataItem(object, "levels", "Number of levels: ")
-        names <- names(object@data)
+        #names <- names(object@data)
         invisible(callNextMethod()) # summary
     })
 
@@ -896,6 +896,62 @@ setMethod(f="[[<-",
 #' Salinity values, in which case the processing of the other arguments is
 #' relatively straightforward.
 #'
+#' The following sections provide an some notes on how `as.ctd()` handles
+#' certain object types given as the first parameter.
+#'
+#' **Converting argo objects**
+#'
+#' If the `salinity` argument is an object of [argo-class], then that
+#' object is dismantled and reassembled as a [ctd-class] object in ways that
+#' are mostly straightforward, although the handling of time depends
+#' on the information in the original netcdf data file that was used
+#' by [read.argo()] to create the [argo-class] object.
+#'
+#' All Argo data files contain an item called `juld` from which the profile
+#' time can be computed, and some also contain an additional item named `MTIME`,
+#' from which the times of individual measurements can also be computed.  Both
+#' cases are handled by `as.ctd()`, using a scheme outlined in
+#' Note 4 of the Details section of the [read.argo()] documentation.
+#'
+#' **Converting rsk objects**
+#'
+#' If the `salinity` argument is an object of [rsk-class],
+#' then `as.ctd` passes it,
+#' `pressureAtmospheric`,
+#' `longitude`,
+#' `latitude`
+#' `ship`,
+#' `cruise`,
+#' `station` and
+#' `deploymentType`
+#' to [rsk2ctd()], which builds the ctd object that is
+#' returned by `as.ctd`. The other arguments to `as.ctd`
+#' are ignored in this instance, because `rsk` objects already
+#' contain their information. If required, any data or metadata
+#' element can be added to the value returned by `as.ctd`
+#' using [oceSetData()] or [oceSetMetadata()],
+#' respectively.
+#'
+#' The returned [rsk-class] object contains pressure in a form that
+#' may need to be adjusted, because `rsk` objects may contain
+#' either absolute pressure or sea pressure. This adjustment is handled
+#' automatically by `as.ctd`, by examination of the metadata item
+#' named `pressureType` (described in the documentation for
+#' [read.rsk()]).  Once the sea pressure is determined,
+#' adjustments may be made with the `pressureAtmospheric` argument,
+#' although in that case it is better considered a pressure adjustment
+#' than the atmospheric pressure.
+#'
+#' [rsk-class] objects may store sea pressure or absolute pressure (the
+#' sum of sea pressure and atmospheric pressure), depending on how the object was
+#' created with [as.rsk()] or [read.rsk()].  However,
+#' [ctd-class] objects store sea pressure, which is needed for
+#' plotting, calculating density, etc. This poses no difficulties, however,
+#' because `as.ctd` automatically converts absolute pressure to sea pressure,
+#' if the metadata in the [rsk-class] object indicates that this is
+#' appropriate. Further alteration of the pressure can be accomplished with the
+#' `pressureAtmospheric` argument, as noted above.
+#'
 #' @param salinity may be (1) a numeric vector holding Practical Salinity,
 #' (2) a list or data frame holding `salinity` and other
 #' hydrographic variables or (3) an `oce-class` object that holds
@@ -1017,43 +1073,6 @@ setMethod(f="[[<-",
 #'
 #' @template debugTemplate
 #'
-#' @section Converting rsk objects:
-#' If the `salinity` argument is an object of [rsk-class],
-#' then `as.ctd` passes it,
-#' `pressureAtmospheric`,
-#' `longitude`,
-#' `latitude`
-#' `ship`,
-#' `cruise`,
-#' `station` and
-#' `deploymentType`
-#' to [rsk2ctd()], which builds the ctd object that is
-#' returned by `as.ctd`. The other arguments to `as.ctd`
-#' are ignored in this instance, because `rsk` objects already
-#' contain their information. If required, any data or metadata
-#' element can be added to the value returned by `as.ctd`
-#' using [oceSetData()] or [oceSetMetadata()],
-#' respectively.
-#'
-#' The returned [rsk-class] object contains pressure in a form that
-#' may need to be adjusted, because `rsk` objects may contain
-#' either absolute pressure or sea pressure. This adjustment is handled
-#' automatically by `as.ctd`, by examination of the metadata item
-#' named `pressureType` (described in the documentation for
-#' [read.rsk()]).  Once the sea pressure is determined,
-#' adjustments may be made with the `pressureAtmospheric` argument,
-#' although in that case it is better considered a pressure adjustment
-#' than the atmospheric pressure.
-#'
-#' [rsk-class] objects may store sea pressure or absolute pressure (the
-#' sum of sea pressure and atmospheric pressure), depending on how the object was
-#' created with [as.rsk()] or [read.rsk()].  However,
-#' [ctd-class] objects store sea pressure, which is needed for
-#' plotting, calculating density, etc. This poses no difficulties, however,
-#' because `as.ctd` automatically converts absolute pressure to sea pressure,
-#' if the metadata in the [rsk-class] object indicates that this is
-#' appropriate. Further alteration of the pressure can be accomplished with the
-#' `pressureAtmospheric` argument, as noted above.
 #'
 #' @return A [ctd-class] object.
 #'
@@ -1118,9 +1137,8 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
     }
     res <- new("ctd")
     waterDepth <- NA
-    if (!is.null(startTime) && is.character(startTime)) {
+    if (!is.null(startTime) && is.character(startTime))
         startTime <- as.POSIXct(startTime, tz="UTC")
-    }
     if (!salinityGiven) {
         if (!missing(conductivity) && !missing(temperature) && !missing(pressure)) {
             salinity <- swSCTp(conductivity=conductivity, temperature=temperature, pressure=pressure)
@@ -1143,18 +1161,16 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
         # Check whether various things have been specified in this call to
         # as.ctd().  If not, try looking for values in the metadata or data of
         # the first parameter.
-        if (is.null(ship) && "ship" %in% mnames) {
+        if (is.null(ship) && "ship" %in% mnames)
             ship <- m$ship
-        }
-        if (is.null(cruise) && "cruise" %in% mnames) {
+        if (is.null(cruise) && "cruise" %in% mnames)
             cruise <- m$cruise
-        }
-        if (is.null(station) && "station" %in% mnames) {
+        if (is.null(station) && "station" %in% mnames)
             station <- m$station
-        }
-        if (is.null(startTime) && "startTime" %in% mnames) {
+        if (is.null(startTime) && "startTime" %in% mnames)
             startTime <- as.POSIXct(m$startTime, tz="UTC")
-        }
+        if ("time" %in% mnames)
+            res@metadata$time <- m$time
         if (is.null(longitude)) {
             if ("longitude" %in% dnames) {
                 longitude <- d$longitude
@@ -1169,26 +1185,20 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
                 latitude <- m$latitude
             }
         }
-        if (is.null(serialNumber) && "serialNumber" %in% mnames) {
+        if (is.null(serialNumber) && "serialNumber" %in% mnames)
             serialNumber <- m$serialNumber
-        }
-        if (is.null(sampleInterval) && "sampleInterval" %in% mnames) {
+        if (is.null(sampleInterval) && "sampleInterval" %in% mnames)
             sampleInterval <- m$sampleInterval
-        }
-        if (is.na(waterDepth) && "waterDepth" %in% mnames) {
+        if (is.na(waterDepth) && "waterDepth" %in% mnames)
             waterDepth <- m$waterDepth
-        }
         # Copy some WOCE-named quantities into oce names, whilst retaining the
         # originals.
-        if ("PSAL" %in% dnames && !("salinity" %in% dnames)) {
+        if ("PSAL" %in% dnames && !("salinity" %in% dnames))
             d$salinity <- d$PSAL
-        }
-        if ("TEMP" %in% dnames && !("temperature" %in% dnames)) {
+        if ("TEMP" %in% dnames && !("temperature" %in% dnames))
             d$temperature <- d$TEMP
-        }
-        if ("PRES" %in% dnames && !("pressure" %in% dnames)) {
+        if ("PRES" %in% dnames && !("pressure" %in% dnames))
             d$pressure <- d$PRES
-        }
         if (pressureAtmospheric != 0.0) {
             len <- length(pressureAtmospheric)
             if (1 != len && len != length(pressure))
@@ -1197,45 +1207,34 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
         }
         salinity <- d$salinity
         res@metadata$units <- o@metadata$units
-        if (!is.null(flags)) {
+        if (!is.null(flags))
             res@metadata$flags <- flags
-        }
-        if (!is.null(o@metadata$flags)) {
+        if (!is.null(o@metadata$flags))
             res@metadata$flags <- o@metadata$flags
-        }
         #1108 res@metadata$pressureType <- pressureType
         # copy relevant metadata.
         #1108 if ("date" %in% mnames) res@metadata$date <- o@metadata$date
         # if any changes here, update oce.R @ ODF_CTD_LINK {
         res@metadata$startTime <- startTime
-        if ("eventNumber" %in% mnames) {
+        if ("eventNumber" %in% mnames)
             res@metadata$eventNumber <- o@metadata$eventNumber
-        }
-        if ("eventQualifier" %in% mnames) {
+        if ("eventQualifier" %in% mnames)
             res@metadata$eventQualifier <- o@metadata$eventQualifier
-        }
         # } ODF_CTD_LINK
-        if ("deploymentType" %in% mnames) {
+        if ("deploymentType" %in% mnames)
             res@metadata$deploymentType <- o@metadata$deploymentType
-        }
-        if ("filename" %in% mnames) {
+        if ("filename" %in% mnames)
             res@metadata$filename <- o@metadata$filename
-        }
-        if ("serialNumber" %in% mnames) {
+        if ("serialNumber" %in% mnames)
             res@metadata$serialNumber <- o@metadata$serialNumber
-        }
-        if ("ship" %in% mnames) {
+        if ("ship" %in% mnames)
             res@metadata$ship <- o@metadata$ship
-        }
-        if ("cruise" %in% mnames) {
+        if ("cruise" %in% mnames)
             res@metadata$cruise <- o@metadata$cruise
-        }
-        if ("station" %in% mnames) {
+        if ("station" %in% mnames)
             res@metadata$station <- o@metadata$station
-        }
-        if ("scientist" %in% mnames) {
+        if ("scientist" %in% mnames)
             res@metadata$scientist <- o@metadata$scientist
-        }
         if ("units" %in% mnames) {
             # the usual case
             # res@metadata$units$conductivity <- o@metadata$units$conductivity
@@ -1250,9 +1249,8 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
                 res@metadata$units$temperature <- o@metadata$temperatureUnit
             }
         }
-        if ("pressureType" %in% mnames) {
+        if ("pressureType" %in% mnames)
             res@metadata$pressureType <- o@metadata$pressureType
-        }
         # if ("scan" %in% dnames) res@data$scan <- d$scan
         # FIXME: time goes into metadata or data ... does that make sense?
         if ("time" %in% dnames) {
@@ -1281,15 +1279,26 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
             # Convert data items from array to vector
             for (field in names(d)) {
                 dataInField <- d[[field]]
-                oceDebug(debug, "handling argo data$", field, "\n", sep="")
+                oceDebug(debug, "  handling data$", field, "\n", sep="")
                 # in argo objects there are both matrix (temperature,
                 # salinity, etc) and vector (time, latitude, etc)
                 # data fields. For the former we want to extract the
-                # single column. For the latter we want to extract
-                # the single value associated with that column
-                if (field == "time") { # apparently POSIXct class things aren't vectors
-                    res@metadata$startTime <- d[[field]][profile]
-                    res@data$time <- NULL
+                # single column. For the longitude and latitude we extract a
+                # single value.  We do that also for time, storing the single
+                # value in the `metadata` slot, *unless* MTIME is
+                # defined, in which case we can construct a full time vector and
+                # place it in the 'data` slot.
+                #<old>if (field == "time") { # apparently POSIXct class things aren't vectors
+                #<old>    message("TIME")
+                #<old>    if ("MTIME" %in% names(d)) {
+                #<old>        # FIXME: is profile correct in the next line?
+                #<old>        res@data$time <- d[["time"]][profile] + d[["MTIME"]][profile] * 86400.0
+                #<old>    } else {
+                #<old>        res@metadata$time <- d[[field]][profile]
+                #<old>    }
+                if (field == "mtime") {
+                    res@data$time <- res@metadata$time + 86400 * d$mtime
+                    res@data$mtime <- d$mtime
                 } else if (is.vector(dataInField)) {
                     ncol <- length(d[[field]])
                     if (profile > ncol)
@@ -1306,12 +1315,13 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
                     res@data[[field]] <- d[[field]][, profile]
                 } else if (is.array(dataInField)) { # argo can sometimes come out this (odd) way
                     warning("argo data \"", field, "\" converted from 1-D array to 1-col matrix")
-                    if (1 == length(dim(d[[field]]))) {
+                    if (1 == length(dim(d[[field]])))
                         d[[field]] <- as.vector(d[[field]])
-                    }
                     res@data[[field]] <- d[[field]]
                 } else {
-                    warning("not storing \"", field, "\" because it is in an unknown format")
+                    if (1 == length(dim(d[[field]])))
+                        d[[field]] <- as.vector(d[[field]])
+                    res@data[[field]] <- d[[field]]
                 }
             }
             # Convert flags from array to vector

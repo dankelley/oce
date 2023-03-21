@@ -28,8 +28,7 @@ if (1 == length(list.files("6900388_prof.nc", path="local_data")) && requireName
                     "pressureAdjusted", "pressureAdjustedError",
                     "salinity", "salinityAdjusted",
                     "salinityAdjustedError", "temperature",
-                    "temperatureAdjusted", "temperatureAdjustedError",
-                    "time")))
+                    "temperatureAdjusted", "temperatureAdjustedError")))
 })}
 
 if (1 == length(list.files("BR5904179_001.nc", path="local_data")) && requireNamespace("ncdf4", quietly=TRUE)) {
@@ -47,7 +46,7 @@ if (1 == length(list.files("BR5904179_001.nc", path="local_data")) && requireNam
                     "longitude", "nitrate", "nitrateAdjusted",
                     "nitrateAdjustedError", "oxygen", "oxygenAdjusted",
                     "oxygenAdjustedError", "pressure",
-                    "temperatureOxygen", "time",
-                    "UVIntensityDarkNitrate", "UVIntensityNitrate")))
+                    "temperatureOxygen",  "UVIntensityDarkNitrate",
+                    "UVIntensityNitrate")))
         }
 })}

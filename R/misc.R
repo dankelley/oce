@@ -2042,6 +2042,8 @@ threenum <- function(x)
         res <- rep(NA, 3)
     } else if (0 < sum(!is.na(x))) {
         res <- c(min(x, na.rm=TRUE), mean(x, na.rm=TRUE), max(x, na.rm=TRUE))
+    } else if (inherits(x, "POSIXt")) {
+        res <- c(min(x, na.rm=TRUE), mean(x, na.rm=TRUE), max(x, na.rm=TRUE))
     } else {
         res <- rep(NA, 3)
     }

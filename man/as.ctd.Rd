@@ -139,7 +139,25 @@ this function with the first argument being a simple vector of Practical
 Salinity values, in which case the processing of the other arguments is
 relatively straightforward.
 }
-\section{Converting rsk objects}{
+\details{
+The following sections provide an some notes on how \code{as.ctd()} handles
+certain object types given as the first parameter.
+
+\strong{Converting argo objects}
+
+If the \code{salinity} argument is an object of \linkS4class{argo}, then that
+object is dismantled and reassembled as a \linkS4class{ctd} object in ways that
+are mostly straightforward, although the handling of time depends
+on the information in the original netcdf data file that was used
+by \code{\link[=read.argo]{read.argo()}} to create the \linkS4class{argo} object.
+
+All Argo data files contain an item called \code{juld} from which the profile
+time can be computed, and some also contain an additional item named \code{MTIME},
+from which the times of individual measurements can also be computed.  Both
+cases are handled by \code{as.ctd()}, using a scheme outlined in
+Note 4 of the Details section of the \code{\link[=read.argo]{read.argo()}} documentation.
+
+\strong{Converting rsk objects}
 
 If the \code{salinity} argument is an object of \linkS4class{rsk},
 then \code{as.ctd} passes it,
@@ -178,7 +196,6 @@ if the metadata in the \linkS4class{rsk} object indicates that this is
 appropriate. Further alteration of the pressure can be accomplished with the
 \code{pressureAtmospheric} argument, as noted above.
 }
-
 \examples{
 library(oce)
 # 1. fake data, with default units

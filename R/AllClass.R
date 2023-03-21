@@ -245,8 +245,11 @@ setMethod(f="summary",
                     #colnames(threes) <- c(colnames(threes), "OriginalName")
                 }
                 #message("threes step 6:");print(threes)
-                if ("time" %in% row.names(threes)) {
-                    threes <- threes[-which("time" == dataNames), , drop=FALSE]
+                if ("time" %in% dataNames) {
+                    timeRow <- which("time" == dataNames)
+                    threes[[timeRow, 1L]] <- format(numberAsPOSIXct(threes[timeRow, 1L]))
+                    threes[[timeRow, 2L]] <- format(numberAsPOSIXct(threes[timeRow, 2L]))
+                    threes[[timeRow, 3L]] <- format(numberAsPOSIXct(threes[timeRow, 3L]))
                 }
                 owidth <- options("width")
                 options(width=150) # make wide to avoid line breaks

@@ -534,6 +534,7 @@ argoNames2oceNames <- function(names, ignore.case=TRUE)
     names <- gsub("^TEMP_VOLTAGE_DOXY", "temperatureVoltageOxygen", names, ignore.case=ignore.case)
     names <- gsub("^TEMP_", "temperature_", names, ignore.case=ignore.case)
     names <- gsub("^POSITION_ACCURACY", "positionAccuracy", names, ignore.case=ignore.case)
+    names <- gsub("^MTIME", "mtime", names, ignore.case=ignore.case)
     names <- gsub("^NITRATE", "nitrate", names, ignore.case=ignore.case)
     names <- gsub("^DOXY", "oxygen", names, ignore.case=ignore.case)
     names <- gsub("^PRES", "pressure", names, ignore.case=ignore.case)
@@ -888,26 +889,24 @@ setMethod(f="summary",
         showMetadataItem(object, "filename",                  "Source:              ", quote=TRUE)
         nid <- length(unique(object@metadata$id))
         if (1 == nid) {
-            cat("* id:                  \"", object@metadata$id[1], "\"\n", sep="")
+            cat("* ID:                  \"", object@metadata$id[1], "\"\n", sep="")
         } else {
             cat("* ID list:             \"", object@metadata$id[1], "\", \"", object@metadata$id[2], "\", ...\n", sep="")
         }
-        if ("featureType" %in% names(object@metadata)) {
+        if ("featureType" %in% names(object@metadata))
             cat("* Feature type:        \"", object@metadata$featureType, "\"\n", sep="")
-        }
         nD <- sum(object@metadata$dataMode == "D")
         nA <- sum(object@metadata$dataMode == "A")
         nR <- sum(object@metadata$dataMode == "R")
         cat("* Profiles:            ", nD, " delayed; ", nA, " adjusted; ", nR, " realtime", "\n", sep="")
+        if ("time" %in% names(object@metadata))
+            cat("* Time:                ", format(object@metadata$time), "\n", sep="")
         invisible(callNextMethod()) # summary
     })
 
 ncdfFixMatrix <- function(x)
 {
-    if (length(dim(x)) == 1) {
-        x <- as.vector(x)
-    }
-    x
+    if (length(dim(x)) == 1L) as.vector(x) else x
 }
 
 #' Grid Argo float data
@@ -1026,7 +1025,11 @@ argoDecodeFlags <- function(f) # local function
 #' Many items listed in section 2.2.3 of reference 3 are read from the
 #' file and stored in the `metadata` slot, with the exception of
 #' `longitude` and `latitude`, which are stored in the
-#' `data` slot, alongside hydrographic information.
+#' `data` slot, alongside hydrographic information.  The details of storage
+#' in the return value are somewhat complex, although the following notes
+#' might be helpful to readers seeking to learn more.
+#'
+#' *1. Variable renaming.*
 #'
 #' The names of several data parameters stored within the netCDF file
 #' are altered to fit the oce context. For example, `PRES` becomes `pressure`,
@@ -1036,39 +1039,6 @@ argoDecodeFlags <- function(f) # local function
 #' the renaming should not be too inconvenient to Argo experts who
 #' are new to oce.
 #'
-#' Several of the netCDF global attributes are also renamed before
-#' placement in the `metadata` slot of the return value.  These include
-#' `conventions`, `featureType`, `history`, `institution`,
-#' `nParameters`, `nProfiles`,  `references`, `source`, `title`,
-#' and `userManualVersion`.
-#' These names are derived from those in the netcdf
-#' file, and mainly follow the pattern explained in the
-#' \dQuote{Variable renaming convention} section.
-#'
-#' For profile data (as indicated by the NetCDF global attribute
-#' named `"featureType"` being equal to `"trajectoryProfile"`),
-#' the NetCDF item named `"STATION_PARAMETERS"` controls
-#' whether variables in the source file will be stored in the
-#' `metadata` or `data` slot of the returned object.
-#' If `STATION_PARAMETERS` is not present, as is the case for
-#' trajectory files (which are detected by `featureType` being
-#' `"trajectory"`), some guesses are made as to what goes in
-#' `data` and `metadata` slots.
-#'
-#' Each data item can have variants, as
-#' described in Sections 2.3.4 of reference 3.
-#' For example, if `"PRES"` is found in `STATION_PARAMETERS`,
-#' then `PRES` (pressure) data are sought in the file, along with
-#' `PRES_QC`, `PRES_ADJUSTED`, `PRES_ADJUSTED_QC`, and
-#' `PRES_ERROR`. The same pattern works for other profile data. The variables
-#' are stored with names created as explained in the
-#' \dQuote{Variable renaming convention} section below. Note that
-#' flags, which are stored variables ending in `"_QC"` in the netcdf
-#' file, are stored in the `flags` item within the `metadata` slot
-#' of the returned object; thus, for example,
-#' `PRES_QC` is stored as `pressure` in `flags`.
-#'
-#' @section Variable renaming convention:
 #' Argo netcdf files employ a `"SNAKE_CASE"` naming scheme (sometimes
 #' using lower case) that is inconsistent with the `"camelCase"` scheme
 #' used in oce. Since argo objects are just a small part of oce, a decision
@@ -1089,6 +1059,62 @@ argoDecodeFlags <- function(f) # local function
 #' in reverse may be easier than simply guessing at what names oce has chosen.
 #' (Note that prior to 2020 June 24, some metadata items were stored in
 #' `"SNAKE_CASE"`.)
+#'
+#' *2. Metadata.*
+#'
+#' Several of the netCDF global attributes are also renamed before
+#' placement in the `metadata` slot of the return value.  These include
+#' `conventions`, `featureType`, `history`, `institution`,
+#' `nParameters`, `nProfiles`,  `references`, `source`, `title`,
+#' and `userManualVersion`.
+#' These names are derived from those in the netcdf
+#' file, and mainly follow the pattern explained in the
+#' \dQuote{Variable renaming convention} section.
+#'
+#' For profile data (as indicated by the NetCDF global attribute
+#' named `"featureType"` being equal to `"trajectoryProfile"`),
+#' the NetCDF item named `"STATION_PARAMETERS"` controls
+#' whether variables in the source file will be stored in the
+#' `metadata` or `data` slot of the returned object.
+#' If `STATION_PARAMETERS` is not present, as is the case for
+#' trajectory files (which are detected by `featureType` being
+#' `"trajectory"`), some guesses are made as to what goes in
+#' `data` and `metadata` slots.
+#'
+#' *3. Data variants.*
+#'
+#' Each data item can have variants, as
+#' described in Sections 2.3.4 of reference 3.
+#' For example, if `"PRES"` is found in `STATION_PARAMETERS`,
+#' then `PRES` (pressure) data are sought in the file, along with
+#' `PRES_QC`, `PRES_ADJUSTED`, `PRES_ADJUSTED_QC`, and
+#' `PRES_ERROR`. The same pattern works for other profile data. The variables
+#' are stored with names created as explained in the
+#' \dQuote{Variable renaming convention} section below. Note that
+#' flags, which are stored variables ending in `"_QC"` in the netcdf
+#' file, are stored in the `flags` item within the `metadata` slot
+#' of the returned object; thus, for example,
+#' `PRES_QC` is stored as `pressure` in `flags`.
+#'
+#' *4. How time is handled.*
+#'
+#' The netcdf files for profile data store time in an item named `juld`,
+#' which measures the elapsed time, in days, compared with a reference time
+#' that is also stored in the file (and seems to be the start of the year
+#' 1950, at least in files examined before writing this code).  From this
+#' information, an POSIX value named `time` is stored in the `metadata` slot
+#' of the return value.  It may be accessed as e.g. `a[["time"]]`, where `a`
+#' is the [argo-class] object returned by `read.argo()]. Importantly,
+#' this time matches the time listed in profile index files.  In addition to
+#' this time indication, some files contain a field called `MTIME`, which
+#' stands for the measurement time, measured as a difference (in days) to
+#' the value of `time`.  So, in such files, the time of individual measurement
+#' can be found by computing e.g. \code{a[["time"]]+86400*a[["mtime"]]}, where
+#' the first term uses `[[` to find an element in the `metadata` slot, and
+#' the second finds a vector in the `data` slot. This scheme is employed
+#' by [as.ctd()], if it is provided with an [argo-class] object that came
+#' from a file with an `MTIME` entry.
+#'
 #'
 #' @param file A character string giving the name of the file to load.
 #'
@@ -1424,8 +1450,8 @@ read.argo <- function(file, encoding=NA, debug=getOption("oceDebug"), processing
     oceDebug(debug, vectorShow(t0))
     oceDebug(debug, vectorShow(res@metadata$juld))
     #julianDayTime <- as.vector(ncdf4::ncvar_get(file, maybeLC("JULD", lc)))
-    res@data$time <- t0 + res@metadata$juld * 86400
-    oceDebug(debug, vectorShow(res@data$time))
+    res@metadata$time <- t0 + res@metadata$juld * 86400
+    oceDebug(debug, vectorShow(res@metadata$time))
     rm(list=c("t0s", "t0")) # no longer needed
     res@metadata$juldQC <- if (maybeLC("JULD_QC", lc) %in% varNames) {
         as.vector(ncdf4::ncvar_get(file, maybeLC("JULD_QC", lc)))
@@ -1473,6 +1499,12 @@ read.argo <- function(file, encoding=NA, debug=getOption("oceDebug"), processing
         } else {
             list(unit=expression(degree*W), scale="")
         }
+    }
+    if (maybeLC("MTIME", lc) %in% varNames) {
+        res@data$mtime <- as.vector(ncdf4::ncvar_get(file, maybeLC("MTIME", lc)))
+        res@metadata$dataNamesOriginal$mtime <- "MTIME"
+        varNames <- varNamesOmit(varNames, "MTIME")
+        res@metadata$units$mtime <- list(unit=expression(day), scale="")
     }
     res@metadata$positionQC <- if (maybeLC("POSITION_QC", lc) %in% varNames)
         as.vector(ncdf4::ncvar_get(file, maybeLC("POSITION_QC", lc))) else NULL
@@ -1599,32 +1631,34 @@ read.argo <- function(file, encoding=NA, debug=getOption("oceDebug"), processing
     names(res@metadata$flags) <- gsub("QC$", "", names(res@metadata$flags))
     # Now, work through the columnar data. Note how we remove entries from varNames again,
     # after having interrupted that practice whilst finding units and flags.
+    # Skip MTIME, if it exists, since it is handled separately.
+    if ("MTIME" %in% stationParameters)
+        stationParameters <- stationParameters[stationParameters != "MTIME"]
     oceDebug(debug, "About to process stationParameters: c(\"",
         paste(stationParameters, collapse="\",\""), "\")\n", sep="")
     for (item in stationParameters) {
-        if (!nchar(item)) {
-            # some files have unnamed variables, so we skip them
+        # some files have unnamed variables, so we skip them
+        if (!nchar(item))
             next
-        }
         n <- item
         d <- getData(file, maybeLC(n, lc))
         varNames <- varNamesOmit(varNames, n)
         if (!is.null(d)) {
-            oceDebug(debug, "Storing \"", n, "\" as \"", argoNames2oceNames(n), "\" in the data slot.\n", sep="")
+            oceDebug(debug, "  Storing \"", n, "\" as \"", argoNames2oceNames(n), "\" in the data slot.\n", sep="")
             res@data[[argoNames2oceNames(n)]] <- d
             res@metadata$dataNamesOriginal[[argoNames2oceNames(n)]] <- n
         } else {
-            oceDebug(debug, "Set item = \"", n, "\" in data slot to NULL, since the data file contains no data for this.\n", sep="")
+            oceDebug(debug, "  Set item = \"", n, "\" in data slot to NULL, since the data file contains no data for this.\n", sep="")
             res@data[[argoNames2oceNames(n)]] <- NULL
         }
-        oceDebug(debug-1, "Remaining ", length(varNames), "are: =", paste(varNames, collapse=" "), "\n")
+        oceDebug(debug-1, "  Remaining ", length(varNames), "are: =", paste(varNames, collapse=" "), "\n")
         n <- paste(item, maybeLC("_QC", lc), sep="")
-        oceDebug(debug-2, "about to try to get '", n, "' from netcdf file\n", sep="")
+        oceDebug(debug-2, "  about to try to get '", n, "' from netcdf file\n", sep="")
         d <- getData(file, maybeLC(n, lc), quiet=TRUE)
-        oceDebug(debug-2, "... got it\n", sep="")
+        oceDebug(debug-2, "  ... got it\n", sep="")
         varNames <- varNamesOmit(varNames, n)
         oceDebug(debug-1, n, "\n")
-        oceDebug(debug-1, "B varNames=", paste(sort(varNames), collapse=","), "\n")
+        oceDebug(debug-1, "  B varNames=", paste(sort(varNames), collapse=","), "\n")
         if (!is.null(d)) res@metadata$flags[[argoNames2oceNames(n)]] <- argoDecodeFlags(d)
         n <- paste(item, maybeLC("_ADJUSTED", lc), sep="")
         if (n %in% varNames) {
@@ -1697,17 +1731,15 @@ read.argo <- function(file, encoding=NA, debug=getOption("oceDebug"), processing
                 oceDebug(debug, "ncdf4::ncvar_get() error diagnosis ... name=", name, " len=",
                     file$var[[name]]$dim[[file$var[[name]]$ndim]]$len,
                     " (if this is 0, will not save '", name, "' to metadata)\n")
-                if (0 != file$var[[name]]$dim[[file$var[[name]]$ndim]]$len) {
+                if (0 != file$var[[name]]$dim[[file$var[[name]]$ndim]]$len)
                     oceDebug(debug, "ncvar_get() failed for \"", name, "\" (Index exceeds dimension), so it isn't stored in metadata\n")
-                }
             } else {
                 oceDebug(debug, "ncvar_get() failed for \"", name, "\", so it isn't stored in metadata\n")
             }
-        } else{
+        } else {
             # Make a vector, if it is a single-column matrix
-            if (1 == length(dim(value))) {
+            if (1 == length(dim(value)))
                 value <- as.vector(value)
-            }
             # Trim leading/trailing whitespace, if it is a string
             if (is.character(value)) {
                 origValue <- value
