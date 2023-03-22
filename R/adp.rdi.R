@@ -87,10 +87,13 @@ adpRdiFileTrim <- function(infile, n=100L, outfile, debug=getOption("oceDebug"))
 
 decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceTz"), ...)
 {
+    byte1 <- as.raw(0x7f)
+    byte2 <- as.raw(0x7f)
+    #<<>> byte2 <- as.raw(0x79)
     # header length 6+2*numberOfDataTypes bytes (see e.g. Figure 44, page 160 of Surveyor docs)
     oceDebug(debug, "decodeHeaderRDI(buf, debug=", debug, ") {\n", unindent=1)
-    if (buf[1] != 0x7f || buf[2] != 0x7f)
-        stop("first two bytes in file must be 0x7f 0x7f, but they are 0x", buf[1], " 0x", buf[2])
+    if (buf[1] != byte1 || buf[2] != byte2)
+        stop("first two bytes in file must be 0x", byte1, " 0x", byte2, ", but they are 0x", buf[1], " 0x", buf[2])
     # FIXME: for sentinel files bytesPerEnsemble isn't the same for all ensembles
     bytesPerEnsemble <- readBin(buf[3:4], "integer", n=1, size=2, endian="little", signed=FALSE)
     oceDebug(debug, "bytesPerEnsemble=", bytesPerEnsemble, "\n")
@@ -108,13 +111,13 @@ decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceT
     oceDebug(debug, "sort(diff(dataOffset))=", paste(sort(diff(dataOffset)), sep=" "), "\n")
     # Set up codes
     codes <- cbind(buf[1 + c(0, dataOffset)], buf[1+c(0, dataOffset) + 1])
-    oceDebug(debug, "set up codes starting at buf[1:10]=", paste("0x", paste(buf[1:10], sep=", "), sep=""), "\n")
-    oceDebug(debug, " codes[,1]=", paste("0x", paste(codes[, 1], sep=""), sep=""), "\n")
-    oceDebug(debug, " codes[,2]=", paste("0x", paste(codes[, 2], sep=""), sep=""), "\n")
+    oceDebug(debug, "set up codes starting at buf[1:10]=", paste("0x", paste(buf[1:10], sep=", "), collapse=" ", sep=""), "\n")
+    oceDebug(debug, " codes[,1]=", paste("0x", paste(codes[, 1], sep=""), collapse=" ", sep=""), "\n")
+    oceDebug(debug, " codes[,2]=", paste("0x", paste(codes[, 2], sep=""), collapse=" ", sep=""), "\n")
     # Determine whether this is a Sentinel V file.
     isSentinel <- FALSE
     isSentinel <- any(codes[, 1] == 0x00 & codes[, 2] == 0x70)
-    oceDebug(debug, "isSentinel =", isSentinel, "(inferred from whether we have 0x00 0x70 ID)\n")
+    oceDebug(debug, "isSentinel =", isSentinel, " (inferred from whether we have 0x00 0x70 ID)\n")
     # Fixed Leader Data, abbreviated FLD, pointed to by the dataOffset
     FLD <- buf[dataOffset[1]+1:(dataOffset[2] - dataOffset[1])]
     oceDebug(debug, "Fixed Leader Data:", paste(FLD, collapse=" "), "\n")
@@ -747,6 +750,9 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
     monitor=FALSE, despike=FALSE, processingLog, testing=FALSE,
     debug=getOption("oceDebug"), ...)
 {
+    byte1 <- as.raw(0x7f)
+    byte2 <- as.raw(0x7f)
+    #<<>> byte2 <- as.raw(0x79)
     if (missing(file))
         stop("must supply 'file'")
     if (is.character(file)) {
@@ -800,11 +806,13 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
     # in writing this code.
     startIndex <- 1L                   # index of byte pair 0x7f 0x7f
     buf <- readBin(file, what="raw", n=min(fileSize, 10000), endian="little")
-    if (buf[1] != 0x7F || buf[2] != 0x7F) {
-        startIndex <- matchBytes(buf, 0x7f, 0x7f)[1]
+    if (buf[1] != byte1 || buf[2] != byte2) {
+        message("This file does not start with a 0x", byte1, " 0x", byte2, "byte sequence (first two bytes are 0x",
+            buf[1], " 0x", buf[2], ")")
+        startIndex <- matchBytes(buf, byte1, byte2)[1]
         if (!length(startIndex))
-            stop("cannot find a 0x7f 0x7f byte sequence near the start of this file")
-        message("file does not start with 7F7F byte sequence, so skipping to byte ", startIndex)
+            stop("cannot find a 0x", byte1, " 0x", byte2, " byte sequence near the start of this file")
+        message("This file does not start with a 0x", byte1, " 0x", byte2, "byte sequence, so skipping to byte ", startIndex)
         buf <- buf[seq(startIndex, length(buf))]
     }
     header <- decodeHeaderRDI(buf, debug=debug-1)
@@ -817,7 +825,7 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
         cellSize <- header$cellSize
         #message("1. isSentinel=", isSentinel)
         isSentinel <- header$instrumentSubtype == "sentinelV"
-        oceDebug(debug, "isSentinel=", isSentinel, " near adp.rdi.R line 652\n")
+        oceDebug(debug, "isSentinel=", isSentinel, " near adp.rdi.R line 829\n")
         oceDebug(debug, "about to call ldc_rdi_in_file\n")
         if (is.numeric(from) && is.numeric(to) && is.numeric(by)) {
             # check for large files
