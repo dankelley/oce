@@ -80,8 +80,8 @@ separation of 973 only occurs for 0x7f.  And, more oddly, the high-separation
 
 # Can oce read the file if the byte-pair is changed?
 
-I have tried altering the existing oce code to recognize the start-pair 0x79
-0x7f but the values that get read do not make much sense. Frankly, this is not
+I have tried altering the existing oce code to recognize the start-pair 0x7f
+0x79 but the values that get read do not make much sense. Frankly, this is not
 especially surprising.  If I were an RDI engineer, and we had a chance to make
 a whole new format, I might change things.  Perhaps new things need to be
 stored now. Perhaps the bit-packing has run into limitations, requiring an
