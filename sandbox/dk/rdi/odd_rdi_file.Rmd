@@ -14,9 +14,10 @@ result of my investigation of its contents, after I confirmed that, indeed,
 
 # How does the file start?
 
-According to RDI documentation in my possession (which includes documents from
-2006), the first two bytes of an RDI file must be 0x7f 0x7f. Using `od`
-to inspect the file,
+According to RDI documentation in my possession (from a few months ago, see
+References, and going back to which 2006), the first two bytes of an RDI file
+must be 0x7f 0x7f. Using `od` to inspect the file,
+
 ```
 od -x ~/Downloads/wetransfer_dplsp000-000_2023-03-20_0847/DPLSP000.000 | head -1
 ```
@@ -87,7 +88,13 @@ a whole new format, I might change things.  Perhaps new things need to be
 stored now. Perhaps the bit-packing has run into limitations, requiring an
 extra byte here and there. Perhaps the checksum algorithm would be more
 error-tolerant if it were changed. Changes along these lines cannot be inferred
-by looking at bytes and guessing.  We need a manual that documents the format.
+by looking at bytes and guessing.  We need a manual that documents the format,
+and the Sentinel V manual from January 2023 (see References) is not such
+a manual, because it explicitly indicates that the ensemble leading bytes must be 0x7f 0x7f.
 
 So, for now, oce cannot read these files.
+
+# References
+
+Teledyne Marine. “Sentinel V Self-Contained Sentinel V Real-Time Operation Manual,” January 2023. http://www.teledynemarine.com/Documents/Brand%20Support/RD%20INSTRUMENTS/Technical%20Resources/Manuals%20and%20Guides/Sentinel%20V%20and%20Velocity/Sentinel_V_SC_RT_Operation_Manual.pdf.
 
