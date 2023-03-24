@@ -1,47 +1,19 @@
-# Submission of oce 1.7-10
+# Submission of oce 1.7-11
 
-As in previous versions, we request an exception to the 10-minute rule, on
-account of the package size (300+ functions, covering 60k lines of R, 6k lines
-of C/C++ and 1k line of Fortran).
+As in previous CRAN submissions, we request an exception to the 10-minute rule,
+on account of the package size (300+ functions, covering 60k lines of R, 6k
+lines of C/C++ and 1k line of Fortran).
 
-The major changes from the previous version are as follows.
-
-* Change a latex fragment within a manpage.
-
-
-
-# Submission of oce 1.7-9
-
-As in previous versions, we request an exception to the 10-minute rule, on
-account of the package size (300+ functions, covering 60k lines of R, 6k lines
-of C/C++ and 1k line of Fortran).
-
-The major changes from the previous version are as follows.
-
-* Prepare for the upcoming R release by eliminating `\x` assemblages in
-  `grep()` and `gsub()` calls, and adding an `encoding` parameter to the oce
-  `read` functions. We thank Tomas Kalibera and Kurt Hornik for helping with
-  this, and doing so with remarkable patience.
-
-* Address issues reported on the CRAN machine named
-  `r-devel-linux-x86_64-debian-clang`. The new code was tested using
-  `rhub::check(platform="debian-clang-devel")`, a system that
-  `rhub::platforms()` describes as `Debian Linux, R-devel, clang, ISO-8859-15
-  locale`.
-
-* Address formatting problems in two generated Rd files (`swTFreeze.html` and
-  `swSpecificHeat.Rd`) reported on some CRAN test systems.
-
-* Enhance the handling of Nortek AD2CP-format Acoustic Doppler Profiler files.
-
-# Tests
+The NEWS.md file lists over a dozen changes, mainly improvements to existing
+functions and not breaking changes. The most significant of these is that the
+code for reading AD2CP datasets is simplified, and the returned object now
+fits within the oce toolbox of generic functions.
 
 ## Local Tests
 
-Local MacOS-13(Ventura beta) with R 4.2.1 and also R Under development
-(unstable) (2022-06-27 r82528): no ERRORs, no WARNINGs, and 2 NOTEs, one naming
-the author the other reporting that sub-directories were of size of 1MB or
-more: R 3.0Mb, data 1.0Mb, doc 2.0Mb, and help 3.8Mb.
+Local MacOS-13(Ventura 13.3) with R 4.2.3: no ERRORs, no WARNINGs, and 2 NOTEs,
+one naming the author the other reporting that sub-directories were of size of
+1MB or more: R 3.0Mb, data 1.0Mb, doc 2.0Mb, and help 3.8Mb.
 
 ## Remote Windows Checks
 
@@ -62,12 +34,17 @@ rhub::check_for_cran()
 produced no errors relating to oce.
 
 
-# Reverse Dependency Checks
+## Other checks
 
-Using
+No problems were found with any of the following
 ```
-# devtools::install_github("r-lib/revdepcheck")
-revdepcheck::revdep_check(quiet=FALSE)
+devtools::spell_check()
+urlchecker::url_check()
+devtools::check_win_release()
+devtools::check_win_devel()
+devtools::check_win_oldrelease()
+rhub::check_for_cran(email="Dan.Kelley@Dal.Ca", show_status=FALSE)
+rhub::check(platform="debian-clang-devel", show_status=FALSE)
+revdepcheck::revdep_reset()
+revdepcheck::revdep_check(num_workers=4)
 ```
-identified no errors and no warnings.
-
