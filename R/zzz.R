@@ -13,7 +13,6 @@
         oceEOS="gsw",
         oceEOS="unesco",
         webtide="/usr/local/WebTide",
-        #insertCalculatedDataCTD=TRUE,
         oceDebug=0)
     toset <- !(names(opOce) %in% names(op))
     if (any(toset)) {

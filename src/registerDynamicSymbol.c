@@ -75,4 +75,3 @@ void R_init_oce(DllInfo* info) {
     R_registerRoutines(info, NULL, CallEntries, NULL, NULL);
     R_useDynamicSymbols(info, TRUE);
 }
-
