@@ -128,7 +128,10 @@ better for normal calls by a user.)</p></dd>
 Many items listed in section 2.2.3 of reference 3 are read from the
 file and stored in the <code>metadata</code> slot, with the exception of
 <code>longitude</code> and <code>latitude</code>, which are stored in the
-<code>data</code> slot, alongside hydrographic information.</p>
+<code>data</code> slot, alongside hydrographic information.  The details of storage
+in the return value are somewhat complex, although the following notes
+might be helpful to readers seeking to learn more.</p>
+<p><em>1. Variable renaming.</em></p>
 <p>The names of several data parameters stored within the netCDF file
 are altered to fit the oce context. For example, <code>PRES</code> becomes <code>pressure</code>,
 matching the name of this variable in other oce data types.
@@ -136,40 +139,6 @@ The original names are reported by <code>summary,argo-method</code>, and
 data may be extracted with <code>[[,argo-method</code> using those names, so
 the renaming should not be too inconvenient to Argo experts who
 are new to oce.</p>
-<p>Several of the netCDF global attributes are also renamed before
-placement in the <code>metadata</code> slot of the return value.  These include
-<code>conventions</code>, <code>featureType</code>, <code>history</code>, <code>institution</code>,
-<code>nParameters</code>, <code>nProfiles</code>,  <code>references</code>, <code>source</code>, <code>title</code>,
-and <code>userManualVersion</code>.
-These names are derived from those in the netcdf
-file, and mainly follow the pattern explained in the
-“Variable renaming convention” section.</p>
-<p>For profile data (as indicated by the NetCDF global attribute
-named <code>"featureType"</code> being equal to <code>"trajectoryProfile"</code>),
-the NetCDF item named <code>"STATION_PARAMETERS"</code> controls
-whether variables in the source file will be stored in the
-<code>metadata</code> or <code>data</code> slot of the returned object.
-If <code>STATION_PARAMETERS</code> is not present, as is the case for
-trajectory files (which are detected by <code>featureType</code> being
-<code>"trajectory"</code>), some guesses are made as to what goes in
-<code>data</code> and <code>metadata</code> slots.</p>
-<p>Each data item can have variants, as
-described in Sections 2.3.4 of reference 3.
-For example, if <code>"PRES"</code> is found in <code>STATION_PARAMETERS</code>,
-then <code>PRES</code> (pressure) data are sought in the file, along with
-<code>PRES_QC</code>, <code>PRES_ADJUSTED</code>, <code>PRES_ADJUSTED_QC</code>, and
-<code>PRES_ERROR</code>. The same pattern works for other profile data. The variables
-are stored with names created as explained in the
-“Variable renaming convention” section below. Note that
-flags, which are stored variables ending in <code>"_QC"</code> in the netcdf
-file, are stored in the <code>flags</code> item within the <code>metadata</code> slot
-of the returned object; thus, for example,
-<code>PRES_QC</code> is stored as <code>pressure</code> in <code>flags</code>.</p>
-    </div>
-    <div id="variable-renaming-convention">
-    <h2>Variable renaming convention</h2>
-    
-
 <p>Argo netcdf files employ a <code>"SNAKE_CASE"</code> naming scheme (sometimes
 using lower case) that is inconsistent with the <code>"camelCase"</code> scheme
 used in oce. Since argo objects are just a small part of oce, a decision
@@ -190,6 +159,51 @@ of all items in the <code>metadata</code> slot (or similar with <code>"data"</co
 in reverse may be easier than simply guessing at what names oce has chosen.
 (Note that prior to 2020 June 24, some metadata items were stored in
 <code>"SNAKE_CASE"</code>.)</p>
+<p><em>2. Metadata.</em></p>
+<p>Several of the netCDF global attributes are also renamed before
+placement in the <code>metadata</code> slot of the return value.  These include
+<code>conventions</code>, <code>featureType</code>, <code>history</code>, <code>institution</code>,
+<code>nParameters</code>, <code>nProfiles</code>,  <code>references</code>, <code>source</code>, <code>title</code>,
+and <code>userManualVersion</code>.
+These names are derived from those in the netcdf
+file, and mainly follow the pattern explained in the
+“Variable renaming convention” section.</p>
+<p>For profile data (as indicated by the NetCDF global attribute
+named <code>"featureType"</code> being equal to <code>"trajectoryProfile"</code>),
+the NetCDF item named <code>"STATION_PARAMETERS"</code> controls
+whether variables in the source file will be stored in the
+<code>metadata</code> or <code>data</code> slot of the returned object.
+If <code>STATION_PARAMETERS</code> is not present, as is the case for
+trajectory files (which are detected by <code>featureType</code> being
+<code>"trajectory"</code>), some guesses are made as to what goes in
+<code>data</code> and <code>metadata</code> slots.</p>
+<p><em>3. Data variants.</em></p>
+<p>Each data item can have variants, as
+described in Sections 2.3.4 of reference 3.
+For example, if <code>"PRES"</code> is found in <code>STATION_PARAMETERS</code>,
+then <code>PRES</code> (pressure) data are sought in the file, along with
+<code>PRES_QC</code>, <code>PRES_ADJUSTED</code>, <code>PRES_ADJUSTED_QC</code>, and
+<code>PRES_ERROR</code>. The same pattern works for other profile data. The variables
+are stored with names created as explained in the
+“Variable renaming convention” section below. Note that
+flags, which are stored variables ending in <code>"_QC"</code> in the netcdf
+file, are stored in the <code>flags</code> item within the <code>metadata</code> slot
+of the returned object; thus, for example,
+<code>PRES_QC</code> is stored as <code>pressure</code> in <code>flags</code>.</p>
+<p><em>4. How time is handled.</em></p>
+<p>The netcdf files for profile data store time in an item named <code>juld</code>,
+which holds the overall profile time, in what the Argo documentation
+calls Julian days, with respect to a reference time that is also stored
+in the file.  Based on this information, a <a href="https://rdrr.io/r/base/DateTimeClasses.html" class="external-link">POSIXct</a> value named <code>time</code>
+is stored in the <code>metadata</code> slot of the returned value, and this
+may be found with e.g. <code>a[["time"]]</code>, where <code>a</code> is that returned value.
+Importantly, this value matches the time listed in profile index files.
+In addition, some profile data files contain a field called <code>MTIME</code>,
+which holds the offset (in days) between the time of individual measurements and the
+overall profile time. For such files, the measurement times may be
+computed with <code>a[["time"]]+86400*a[["mtime"]]</code>. (This formula is used by
+<code><a href="as.ctd.html">as.ctd()</a></code>, if its first argument is an <a href="argo-class.html">argo</a> object created
+by supplying <code>read.argo()</code> with such a data file.)</p>
     </div>
     <div id="data-sources">
     <h2>Data sources</h2>

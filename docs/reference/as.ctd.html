@@ -265,10 +265,22 @@ by specifying higher <code>debug</code> values.</p></dd>
 
 <p>A <a href="ctd-class.html">ctd</a> object.</p>
     </div>
-    <div id="converting-rsk-objects">
-    <h2>Converting rsk objects</h2>
-    
-
+    <div id="details">
+    <h2>Details</h2>
+    <p>The following sections provide an some notes on how <code>as.ctd()</code> handles
+certain object types given as the first parameter.</p>
+<p><strong>Converting argo objects</strong></p>
+<p>If the <code>salinity</code> argument is an object of <a href="argo-class.html">argo</a>, then that
+object is dismantled and reassembled as a <a href="ctd-class.html">ctd</a> object in ways that
+are mostly straightforward, although the handling of time depends
+on the information in the original netcdf data file that was used
+by <code><a href="read.argo.html">read.argo()</a></code> to create the <a href="argo-class.html">argo</a> object.</p>
+<p>All Argo data files contain an item called <code>juld</code> from which the profile
+time can be computed, and some also contain an additional item named <code>MTIME</code>,
+from which the times of individual measurements can also be computed.  Both
+cases are handled by <code>as.ctd()</code>, using a scheme outlined in
+Note 4 of the Details section of the <code><a href="read.argo.html">read.argo()</a></code> documentation.</p>
+<p><strong>Converting rsk objects</strong></p>
 <p>If the <code>salinity</code> argument is an object of <a href="rsk-class.html">rsk</a>,
 then <code>as.ctd</code> passes it,
 <code>pressureAtmospheric</code>,
@@ -381,16 +393,16 @@ Engineering</em>, volume <strong>5</strong>, pages 22-23.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                                 Min.   Mean   Max. Dim. NAs</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     scan                           1   25.5     50    0   0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     salinity [PSS-78]         33.489 34.111 34.517    0   0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     temperature [°C, ITS-90]  8.9705 9.7814 11.024    0   0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     salinity [PSS-78]         33.488 34.113 34.537    0   0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     temperature [°C, ITS-90]  8.9539 9.7792 11.028    0   0</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     pressure [dbar]                1   25.5     50    0   0</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     fluorescence [mg/m³]     0.41042 1.7903 4.7561    0   0</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> * Processing Log</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2023-03-20 17:17:14 UTC: `create 'ctd' object`</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2023-03-20 17:17:14 UTC: `as.ctd(salinity = salinity, temperature = temperature, pressure = pressure)`</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2023-03-20 17:17:14 UTC: `oceSetData(object = ctd, name = "fluorescence", value = fluo,     unit = list(unit = expression(mg/m^3), scale = ""))`</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2023-03-27 19:14:51 UTC: `create 'ctd' object`</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2023-03-27 19:14:51 UTC: `as.ctd(salinity = salinity, temperature = temperature, pressure = pressure)`</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2023-03-27 19:14:51 UTC: `oceSetData(object = ctd, name = "fluorescence", value = fluo,     unit = list(unit = expression(mg/m^3), scale = ""))`</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># 2. fake data, with supplied units (which are the defaults, actually)</span></span></span>
 <span class="r-in"><span><span class="va">ctd</span> <span class="op">&lt;-</span> <span class="fu">as.ctd</span><span class="op">(</span><span class="va">salinity</span>, <span class="va">temperature</span>, <span class="va">pressure</span>,</span></span>
