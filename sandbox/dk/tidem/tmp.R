@@ -67,7 +67,7 @@ tlim <- t1[c(1, 14*24)] # two weeks
 oce.plot.ts(t1, e1, xlim=tlim, drawTimeRange=FALSE)
 points(t6, e6, pch=20)
 lines(t1, predict(m1), col=2)
-oce.plot.ts(t6, e6, xlim=tlim), drawTimeRange=FALSE
+oce.plot.ts(t6, e6, xlim=tlim, drawTimeRange=FALSE)
 lines(t6, predict(mm), col=2)
 
 #source("~/git/oce/R/tides.R");plot(mm)#, xlim=c(0, 0.5))

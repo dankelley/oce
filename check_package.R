@@ -1,3 +1,4 @@
+# for a checklist see e.g. https://github.com/dankelley/oce/issues/2068
 #install.packages("codemetar")
 requireNamespace(c("codemetar", "devtools", "urlchecker", "rhub", "revdepcheck"))
 # codemeta changes a timestamp, so requiring a commit after every call. That is
@@ -41,12 +42,3 @@ rhub::check(platform="debian-clang-devel", show_status=FALSE)
 # remotes::install_github("r-lib/revdepcheck")
 revdepcheck::revdep_reset()
 revdepcheck::revdep_check(num_workers=4)
-
-# Use these in a GH comment to indicate progress towards a merge or commit.
-# * [ ] local build + check
-# * [ ] `devtools::spell_check()`
-# * [ ] `urlchecker::url_check()`
-# * [ ] `devtools::check_mac_release()`
-# * [ ] `devtools::check_win_release()`
-# * [ ] `devtools::check_win_devel()`
-# * [ ] `devtools::check_win_oldrelease()`
