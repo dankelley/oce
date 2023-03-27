@@ -113,20 +113,18 @@ of the returned object; thus, for example,
 \emph{4. How time is handled.}
 
 The netcdf files for profile data store time in an item named \code{juld},
-which measures the elapsed time, in days, compared with a reference time
-that is also stored in the file (and seems to be the start of the year
-1950, at least in files examined before writing this code).  From this
-information, an POSIX value named \code{time} is stored in the \code{metadata} slot
-of the return value.  It may be accessed as e.g. \code{a[["time"]]}, where \code{a}
-is the \linkS4class{argo} object returned by \code{\link[=read.argo]{read.argo()}}. Importantly,
-this time matches the time listed in profile index files.  In addition to
-this time indication, some files contain a field called \code{MTIME}, which
-stands for the measurement time, measured as a difference (in days) to
-the value of \code{time}.  So, in such files, the time of individual measurement
-can be found by computing e.g. \code{a[["time"]]+86400*a[["mtime"]]}.
-This scheme is employed
-by \code{\link[=as.ctd]{as.ctd()}}, if it is provided with an \linkS4class{argo} object that came
-from a file with an \code{MTIME} entry.
+which holds the overall profile time, in what the Argo documentation
+calls Julian days, with respect to a reference time that is also stored
+in the file.  Based on this information, a \link{POSIXct} value named \code{time}
+is stored in the \code{metadata} slot of the returned value, and this
+may be found with e.g. \code{a[["time"]]}, where \code{a} is that returned value.
+Importantly, this value matches the time listed in profile index files.
+In addition, some profile data files contain a field called \code{MTIME},
+which holds the offset (in days) between the time of individual measurements and the
+overall profile time. For such files, the measurement times may be
+computed with \code{a[["time"]]+86400*a[["mtime"]]}. (This formula is used by
+\code{\link[=as.ctd]{as.ctd()}}, if its first argument is an \linkS4class{argo} object created
+by supplying \code{\link[=read.argo]{read.argo()}} with such a data file.)
 }
 \section{Data sources}{
 

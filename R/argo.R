@@ -461,6 +461,7 @@ getData <- function(file, name, quiet=FALSE)
 #' `LATITUDE` \tab `latitude`\cr
 #' `LONGITUDE` \tab `longitude`\cr
 #' `MOLAR_DOXY` \tab `oxygenUncompensated`\cr
+#' `MTIME` \tab `mtime`\cr
 #' `PH_IN_SITU_FREE` \tab `pHFree`\cr
 #' `PH_IN_SITU_TOTAL` \tab `pH`\cr
 #' `PI_NAME` \tab `PIName`\cr
@@ -1099,21 +1100,18 @@ argoDecodeFlags <- function(f) # local function
 #' *4. How time is handled.*
 #'
 #' The netcdf files for profile data store time in an item named `juld`,
-#' which measures the elapsed time, in days, compared with a reference time
-#' that is also stored in the file (and seems to be the start of the year
-#' 1950, at least in files examined before writing this code).  From this
-#' information, an POSIX value named `time` is stored in the `metadata` slot
-#' of the return value.  It may be accessed as e.g. `a[["time"]]`, where `a`
-#' is the [argo-class] object returned by [read.argo()]. Importantly,
-#' this time matches the time listed in profile index files.  In addition to
-#' this time indication, some files contain a field called `MTIME`, which
-#' stands for the measurement time, measured as a difference (in days) to
-#' the value of `time`.  So, in such files, the time of individual measurement
-#' can be found by computing e.g. `a[["time"]]+86400*a[["mtime"]]`.
-#' This scheme is employed
-#' by [as.ctd()], if it is provided with an [argo-class] object that came
-#' from a file with an `MTIME` entry.
-#'
+#' which holds the overall profile time, in what the Argo documentation
+#' calls Julian days, with respect to a reference time that is also stored
+#' in the file.  Based on this information, a [POSIXct] value named `time`
+#' is stored in the `metadata` slot of the returned value, and this
+#' may be found with e.g. `a[["time"]]`, where `a` is that returned value.
+#' Importantly, this value matches the time listed in profile index files.
+#' In addition, some profile data files contain a field called `MTIME`,
+#' which holds the offset (in days) between the time of individual measurements and the
+#' overall profile time. For such files, the measurement times may be
+#' computed with `a[["time"]]+86400*a[["mtime"]]`. (This formula is used by
+#' [as.ctd()], if its first argument is an [argo-class] object created
+#' by supplying [read.argo()] with such a data file.)
 #'
 #' @param file A character string giving the name of the file to load.
 #'

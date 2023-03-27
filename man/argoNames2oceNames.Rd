@@ -72,6 +72,7 @@ are translated to \code{Adjusted}, \code{Error}, and \code{QC}, respectively.
 \code{LATITUDE} \tab \code{latitude}\cr
 \code{LONGITUDE} \tab \code{longitude}\cr
 \code{MOLAR_DOXY} \tab \code{oxygenUncompensated}\cr
+\code{MTIME} \tab \code{mtime}\cr
 \code{PH_IN_SITU_FREE} \tab \code{pHFree}\cr
 \code{PH_IN_SITU_TOTAL} \tab \code{pH}\cr
 \code{PI_NAME} \tab \code{PIName}\cr
