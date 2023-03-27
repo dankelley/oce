@@ -4,10 +4,14 @@ As in previous CRAN submissions, we request an exception to the 10-minute rule,
 on account of the package size (300+ functions, covering 60k lines of R, 6k
 lines of C/C++ and 1k line of Fortran).
 
-The NEWS.md file lists over a dozen changes, mainly improvements to existing
-functions and not breaking changes. The most significant of these is that the
-code for reading AD2CP datasets is simplified, and the returned object now
-fits within the oce toolbox of generic functions.
+The main reason for the submission is a request to remove dependence on rgeos
+and raster packages, which are being superseded by newer packages.
+
+The NEWS.md file also lists over a dozen improvements.  Of these, two have
+user-visible changes.  First, plot() for echosounder-class objects now uses the
+viridis colourscheme by default (it was jet, previously). Second, and more
+significantly, AD2CP objects now have a layout that matches other oce objects,
+simplifying the analysis of such data.
 
 ## Local Tests
 
