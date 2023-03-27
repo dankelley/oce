@@ -125,8 +125,8 @@ overall profile time. For such files, the measurement times may be
 computed with \code{a[["time"]]+86400*a[["mtime"]]}. (This formula is used by
 \code{\link[=as.ctd]{as.ctd()}}, if its first argument is an \linkS4class{argo} object created
 by supplying \code{\link[=read.argo]{read.argo()}} with such a data file.)
-}
-\section{Data sources}{
+
+\emph{5. Data sources.}
 
 Argo data are made available at several websites. A bit of detective
 work can be required to track down the data.
@@ -166,7 +166,6 @@ over time.
 
 Similar steps can be followed on other servers.
 }
-
 \examples{
 \dontrun{
 # Example 1: read from a local file
