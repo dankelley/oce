@@ -118,7 +118,15 @@ that is also stored in the file (and seems to be the start of the year
 1950, at least in files examined before writing this code).  From this
 information, an POSIX value named \code{time} is stored in the \code{metadata} slot
 of the return value.  It may be accessed as e.g. \code{a[["time"]]}, where \code{a}
-is the \linkS4class{argo} object returned by \verb{read.argo()]. Importantly, this time matches the time listed in profile index files.  In addition to this time indication, some files contain a field called }MTIME\verb{, which stands for the measurement time, measured as a difference (in days) to the value of }time\verb{.  So, in such files, the time of individual measurement can be found by computing e.g. \code{a[["time"]]+86400*a[["mtime"]]}, where the first term uses }[[\verb{to find an element in the}metadata\verb{slot, and the second finds a vector in the}data\verb{slot. This scheme is employed by [as.ctd()], if it is provided with an [argo-class] object that came from a file with an}MTIME` entry.
+is the \linkS4class{argo} object returned by \code{\link[=read.argo]{read.argo()}}. Importantly,
+this time matches the time listed in profile index files.  In addition to
+this time indication, some files contain a field called \code{MTIME}, which
+stands for the measurement time, measured as a difference (in days) to
+the value of \code{time}.  So, in such files, the time of individual measurement
+can be found by computing e.g. \code{a[["time"]]+86400*a[["mtime"]]}.
+This scheme is employed
+by \code{\link[=as.ctd]{as.ctd()}}, if it is provided with an \linkS4class{argo} object that came
+from a file with an \code{MTIME} entry.
 }
 \section{Data sources}{
 

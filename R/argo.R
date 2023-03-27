@@ -1104,14 +1104,13 @@ argoDecodeFlags <- function(f) # local function
 #' 1950, at least in files examined before writing this code).  From this
 #' information, an POSIX value named `time` is stored in the `metadata` slot
 #' of the return value.  It may be accessed as e.g. `a[["time"]]`, where `a`
-#' is the [argo-class] object returned by `read.argo()]. Importantly,
+#' is the [argo-class] object returned by [read.argo()]. Importantly,
 #' this time matches the time listed in profile index files.  In addition to
 #' this time indication, some files contain a field called `MTIME`, which
 #' stands for the measurement time, measured as a difference (in days) to
 #' the value of `time`.  So, in such files, the time of individual measurement
-#' can be found by computing e.g. \code{a[["time"]]+86400*a[["mtime"]]}, where
-#' the first term uses `[[` to find an element in the `metadata` slot, and
-#' the second finds a vector in the `data` slot. This scheme is employed
+#' can be found by computing e.g. `a[["time"]]+86400*a[["mtime"]]`.
+#' This scheme is employed
 #' by [as.ctd()], if it is provided with an [argo-class] object that came
 #' from a file with an `MTIME` entry.
 #'
