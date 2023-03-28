@@ -9,7 +9,9 @@ sunAngle(t, longitude = 0, latitude = 0, useRefraction = FALSE)
 \arguments{
 \item{t}{time, a POSIXt object (converted to timezone \code{"UTC"},
 if it is not already in that timezone), a character or numeric value that
-corresponds to such a time.}
+corresponds to such a time.  This may be a single value or a vector
+of values.  In the latter case, \code{longitude}, \code{latitude} and \code{useRefraction}
+are all made to be of the same length as \code{time}, by calling \code{\link[=rep]{rep()}}.}
 
 \item{longitude}{observer longitude in degrees east.}
 
@@ -45,9 +47,9 @@ mismatch <- function(lonlat)
     sunAngle(rise, lonlat[1], lonlat[2])$altitude^2 + sunAngle(set, lonlat[1], lonlat[2])$altitude^2
 }
 result <- optim(c(1,1), mismatch)
-lon.hfx <- (-63.55274)
-lat.hfx <- 44.65
-dist <- geodDist(result$par[1], result$par[2], lon.hfx, lat.hfx)
+lonHfx <- (-63.55274)
+latHfx <- 44.65
+dist <- geodDist(result$par[1], result$par[2], lonHfx, latHfx)
 cat(sprintf("Infer Halifax latitude \%.2f and longitude \%.2f; distance mismatch \%.0f km",
             result$par[2], result$par[1], dist))
 

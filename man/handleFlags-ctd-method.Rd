@@ -5,7 +5,7 @@
 \title{Handle Flags in ctd Objects}
 \usage{
 \S4method{handleFlags}{ctd}(
-  object,
+  object = "oce",
   flags = NULL,
   actions = NULL,
   where = NULL,
@@ -103,8 +103,8 @@ f <- function(x) {
   sp <- smooth.spline(T, S, df=df)
   0.5 * (S + predict(sp, T)$y)
 }
-par(mfrow=c(1,2))
-STN3 <- handleFlags(stn, flags=list(salinity=c(1,3:9)), action=list(salinity=f))
+par(mfrow=c(1, 2))
+STN3 <- handleFlags(stn, flags=list(salinity=c(1, 3:9)), action=list(salinity=f))
 plotProfile(stn, "salinity", mar=c(3, 3, 3, 1))
 p <- stn[["pressure"]]
 par(mar=c(3, 3, 3, 1))
@@ -165,6 +165,7 @@ Other things related to ctd data:
 \code{\link{ctd-class}},
 \code{\link{ctd.cnv}},
 \code{\link{ctdDecimate}()},
+\code{\link{ctdFindProfilesRBR}()},
 \code{\link{ctdFindProfiles}()},
 \code{\link{ctdRaw}},
 \code{\link{ctdRepair}()},

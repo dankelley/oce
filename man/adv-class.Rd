@@ -118,7 +118,9 @@ Other classes provided by oce:
 Other things related to adv data: 
 \code{\link{[[,adv-method}},
 \code{\link{[[<-,adv-method}},
+\code{\link{advSontekAdrFileTrim}()},
 \code{\link{adv}},
+\code{\link{applyMagneticDeclination,adv-method}},
 \code{\link{beamName}()},
 \code{\link{beamToXyz}()},
 \code{\link{enuToOtherAdv}()},

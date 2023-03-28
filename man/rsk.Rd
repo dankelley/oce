@@ -11,12 +11,15 @@ A sample \code{rsk} object derived from a Concerto CTD manufactured by RBR Ltd.
 The data were obtained September 2015, off the west coast
 of Greenland, by Matt Rutherford and Nicole Trenholm of the
 Ocean Research Project, in collaboration with RBR and with the
-NASA Oceans Melting Greenland project.
+NASA Oceans Melting Greenland project. The \code{rsk} object was
+created with \code{\link[=read.rsk]{read.rsk()}} with \code{allTables=FALSE}, after which
+some metadata were added and the samples were trimmed to
+just the downcast portion.
 }
 \examples{
 library(oce)
 data(rsk)
-## The object doesn't "know" it is CTD until told so
+# The object doesn't "know" it is CTD until told so
 plot(rsk)
 plot(as.ctd(rsk))
 
@@ -51,6 +54,7 @@ Other things related to rsk data:
 \code{\link{[[,rsk-method}},
 \code{\link{[[<-,rsk-method}},
 \code{\link{as.rsk}()},
+\code{\link{ctdFindProfilesRBR}()},
 \code{\link{plot,rsk-method}},
 \code{\link{read.rsk}()},
 \code{\link{rsk-class}},

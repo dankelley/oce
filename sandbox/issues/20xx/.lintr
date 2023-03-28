@@ -1,0 +1,11 @@
+# https://lintr.r-lib.org/reference/object_name_linter.html
+linters:linters_with_defaults(
+    line_length_linter(150),
+    object_name_linter=NULL,
+    infix_spaces_linter=NULL,
+    brace_linter=NULL,
+    commented_code_linter=NULL,
+    object_length_linter(length=40L),
+    cyclocomp_linter(complexity_limit=400L),
+    T_and_F_symbol_linter=NULL
+  )

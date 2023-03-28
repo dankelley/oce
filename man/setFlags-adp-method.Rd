@@ -67,17 +67,17 @@ The only flag that may be set is \code{v}, for the array holding velocity. See \
 library(oce)
 data(adp)
 
-## Example 1: flag first 10 samples in a mid-depth bin of beam 1
+# Example 1: flag first 10 samples in a mid-depth bin of beam 1
 i1 <- data.frame(1:20, 40, 1)
 adpQC <- initializeFlags(adp, "v", 2)
 adpQC <- setFlags(adpQC, "v", i1, 3)
 adpClean1 <- handleFlags(adpQC, flags=list(3), actions=list("NA"))
 par(mfrow=c(2, 1))
-## Top: original, bottom: altered
+# Top: original, bottom: altered
 plot(adp, which="u1")
 plot(adpClean1, which="u1")
 
-## Example 2: percent-good and error-beam scheme
+# Example 2: percent-good and error-beam scheme
 v <- adp[["v"]]
 i2 <- array(FALSE, dim=dim(v))
 g <- adp[["g", "numeric"]]
@@ -89,7 +89,7 @@ for (k in 1:3)
 adpQC2 <- initializeFlags(adp, "v", 2)
 adpQC2 <- setFlags(adpQC2, "v", i2, 3)
 adpClean2 <- handleFlags(adpQC2, flags=list(3), actions=list("NA"))
-## Top: original, bottom: altered
+# Top: original, bottom: altered
 plot(adp, which="u1")
 plot(adpClean2, which="u1") # differs at 8h and 20h
 
@@ -129,6 +129,7 @@ Other things related to adp data:
 \code{\link{adpRdiFileTrim}()},
 \code{\link{adp_rdi.000}},
 \code{\link{adp}},
+\code{\link{applyMagneticDeclination,adp-method}},
 \code{\link{as.adp}()},
 \code{\link{beamName}()},
 \code{\link{beamToXyzAdpAD2CP}()},

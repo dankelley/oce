@@ -1,6 +1,5 @@
 # vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
 
-
 #' Class to Store Sealevel Data
 #'
 #' This class stores sealevel data, e.g. from a tide gauge.
@@ -9,7 +8,9 @@
 #'
 #' @templateVar dataExample The key items stored in this slot are `time` and `elevation`.
 #'
+# nolint start (long lines)
 #' @templateVar metadataExample An example of the former might be the location at which a `sealevel` measurement was made, stored in `longitude` and `latitude`, and of the latter might be `filename`, the name of the data source.
+# nolint end (long lines)
 #'
 #' @template slot_summary
 #'
@@ -107,17 +108,17 @@ NULL
 NULL
 
 setMethod(f="initialize",
-          signature="sealevel",
-          definition=function(.Object, elevation, time, ...) {
-              .Object <- callNextMethod(.Object, ...)
-              if (!missing(elevation))
-                  .Object@data$elevation <- elevation
-              if (!missing(time))
-                  .Object@data$time <- time
-              .Object@processingLog$time <- presentTime()
-              .Object@processingLog$value <- "create 'sealevel' object"
-              return(.Object)
-          })
+    signature="sealevel",
+    definition=function(.Object, elevation, time, ...) {
+        .Object <- callNextMethod(.Object, ...)
+        if (!missing(elevation))
+            .Object@data$elevation <- elevation
+        if (!missing(time))
+            .Object@data$time <- time
+        .Object@processingLog$time <- presentTime()
+        .Object@processingLog$value <- "create 'sealevel' object"
+        return(.Object)
+    })
 
 #' @title Summarize a Sealevel Object
 #'
@@ -140,23 +141,22 @@ setMethod(f="initialize",
 #'
 #' @family things related to sealevel data
 setMethod(f="summary",
-          signature="sealevel",
-          definition=function(object, ...) {
-              cat("Sealevel Summary\n----------------\n\n")
-              showMetadataItem(object, "stationNumber",  "number:              ")
-              showMetadataItem(object, "version", "version:             ")
-              showMetadataItem(object, "stationName",    "name:                ")
-              showMetadataItem(object, "region",  "region:              ")
-              showMetadataItem(object, "deltat",  "sampling delta-t:    ")
-              cat("* Location:           ",       latlonFormat(object@metadata$latitude,
-                                                               object@metadata$longitude,
-                                                               digits=5), "\n")
-              showMetadataItem(object, "year",    "year:                ")
-              ndata <- length(object@data$elevation)
-              cat("* number of observations:  ", ndata, "\n")
-              cat("*    \"      non-missing:   ", sum(!is.na(object@data$elevation)), "\n")
-              invisible(callNextMethod()) # summary
-          })
+    signature="sealevel",
+    definition=function(object, ...) {
+        cat("Sealevel Summary\n----------------\n\n")
+        showMetadataItem(object, "stationNumber", "number:              ")
+        showMetadataItem(object, "version", "version:             ")
+        showMetadataItem(object, "stationName", "name:                ")
+        showMetadataItem(object, "region", "region:              ")
+        showMetadataItem(object, "deltat", "sampling delta-t:    ")
+        cat("* Location:           ", latlonFormat(object@metadata$latitude,
+            object@metadata$longitude, digits=5), "\n")
+        showMetadataItem(object, "year",    "year:                ")
+        ndata <- length(object@data$elevation)
+        cat("* number of observations:  ", ndata, "\n")
+        cat("*    \"      non-missing:   ", sum(!is.na(object@data$elevation)), "\n")
+        invisible(callNextMethod()) # summary
+    })
 
 
 #' @title Subset a Sealevel Object
@@ -185,23 +185,21 @@ setMethod(f="summary",
 #' @family things related to sealevel data
 #' @family functions that subset oce objects
 setMethod(f="subset",
-          signature="sealevel",
-          definition=function(x, subset, ...) {
-              res <- new("sealevel")
-              res@metadata <- x@metadata
-              res@processingLog <- x@processingLog
-              for (i in seq_along(x@data)) {
-                  r <- eval(expr=substitute(expr=subset, env=environment()), envir=x@data, enclos=parent.frame(2))
-                  r <- r & !is.na(r)
-                  res@data[[i]] <- x@data[[i]][r]
-              }
-              names(res@data) <- names(x@data)
-              subsetString <- paste(deparse(substitute(expr=subset, env=environment())), collapse=" ")
-              res@processingLog <- processingLogAppend(res@processingLog, paste("subset.sealevel(x, subset=", subsetString, ")", sep=""))
-              res
-          })
-
-
+    signature="sealevel",
+    definition=function(x, subset, ...) {
+        res <- new("sealevel")
+        res@metadata <- x@metadata
+        res@processingLog <- x@processingLog
+        for (i in seq_along(x@data)) {
+            r <- eval(expr=substitute(expr=subset, env=environment()), envir=x@data, enclos=parent.frame(2))
+            r <- r & !is.na(r)
+            res@data[[i]] <- x@data[[i]][r]
+        }
+        names(res@data) <- names(x@data)
+        subsetString <- paste(deparse(substitute(expr=subset, env=environment())), collapse=" ")
+        res@processingLog <- processingLogAppend(res@processingLog, paste("subset.sealevel(x, subset=", subsetString, ")", sep=""))
+        res
+    })
 
 #' @title Extract Something From a Sealevel Object
 #'
@@ -231,15 +229,16 @@ setMethod(f="subset",
 #'
 #' @family things related to sealevel data
 setMethod(f="[[",
-          signature(x="sealevel", i="ANY", j="ANY"),
-          definition=function(x, i, j, ...) {
-              if (i == "?")
-                  return(list(metadata=sort(names(x@metadata)),
-                          metadataDerived=NULL,
-                          data=sort(names(x@data)),
-                          dataDerived=NULL))
-              callNextMethod()         # [[
-          })
+    signature(x="sealevel", i="ANY", j="ANY"),
+    definition=function(x, i, j, ...) {
+        if (i == "?") {
+            return(list(metadata=sort(names(x@metadata)),
+                metadataDerived=NULL,
+                data=sort(names(x@data)),
+                dataDerived=NULL))
+        }
+        callNextMethod()         # [[
+    })
 
 
 #' @title Replace Parts of a Sealevel Object
@@ -250,23 +249,25 @@ setMethod(f="[[",
 #'
 #' @family things related to sealevel data
 setMethod(f="[[<-",
-          signature(x="sealevel", i="ANY", j="ANY"),
-          definition=function(x, i, j, ..., value) {
-              callNextMethod(x=x, i=i, j=j, ...=..., value=value) # [[<-
-          })
+    signature(x="sealevel", i="ANY", j="ANY"),
+    definition=function(x, i, j, ..., value) {
+        callNextMethod(x=x, i=i, j=j, ...=..., value=value) # [[<-
+    })
 
 setValidity("sealevel",
-            function(object) {
-                ndata <- length(object@data)
-                lengths <- vector("numeric", ndata)
-                for (i in 1:ndata)
-                    lengths[i] <- length(object@data[[i]])
-                if (var(lengths) != 0) {
-                    cat("lengths of data elements are unequal\n")
-                    return(FALSE)
-                } else
-                    return(TRUE)
-            })
+    function(object) {
+        ndata <- length(object@data)
+        lengths <- vector("numeric", ndata)
+        for (i in 1:ndata) {
+            lengths[i] <- length(object@data[[i]])
+        }
+        if (var(lengths) != 0) {
+            cat("lengths of data elements are unequal\n")
+            return(FALSE)
+        } else {
+            return(TRUE)
+        }
+    })
 
 
 
@@ -346,29 +347,19 @@ setValidity("sealevel",
 #' sl <- as.sealevel(elevation, time)
 #' summary(sl)
 #' @family things related to sealevel data
-as.sealevel <- function(elevation,
-                        time,
-                        header=NULL,
-                        stationNumber=NA,
-                        stationVersion=NA,
-                        stationName=NULL,
-                        region=NULL,
-                        year=NA,
-                        longitude=NA, latitude=NA,
-                        GMTOffset=NA,
-                        decimationMethod=NA,
-                        referenceOffset=NA,
-                        referenceCode=NA,
-                        deltat)
+as.sealevel <- function(elevation, time, header=NULL,
+    stationNumber=NA, stationVersion=NA, stationName=NULL,
+    region=NULL, year=NA, longitude=NA, latitude=NA, GMTOffset=NA,
+    decimationMethod=NA, referenceOffset=NA, referenceCode=NA, deltat)
 {
     if (missing(elevation))
         stop("must supply sealevel height, elevation, in metres")
     if (inherits(elevation, "POSIXt"))
         stop("elevation must be a numeric vector, not a time vector")
-    res <- new('sealevel')
+    res <- new("sealevel")
     n <- length(elevation)
     if (missing(time)) {
-        ## construct hourly from time "zero"
+        # construct hourly from time "zero"
         start <- as.POSIXct("0000-01-01 00:00:00", tz="UTC")
         time <- as.POSIXct(start + seq(0, n - 1, 1) * 3600, tz="UTC")
         if (is.na(GMTOffset))
@@ -378,7 +369,7 @@ as.sealevel <- function(elevation,
     }
     if (missing(deltat))
         deltat <- as.numeric(difftime(time[2], time[1], units="hours"))
-    if (is.na(deltat) | deltat <= 0)
+    if (is.na(deltat) || deltat <= 0)
         deltat <- 1
     res@metadata$filename <- ""
     res@metadata$header <- header
@@ -466,7 +457,7 @@ as.sealevel <- function(elevation,
 #' @examples
 #' library(oce)
 #' data(sealevel)
-#' ## local Halifax time is UTC + 4h
+#' # local Halifax time is UTC + 4h
 #' juan <- as.POSIXct("2003-09-29 00:15:00", tz="UTC")+4*3600
 #' plot(sealevel, which=1, xlim=juan+86400*c(-7, 7))
 #' abline(v=juan, col='red')
@@ -476,186 +467,163 @@ as.sealevel <- function(elevation,
 #'
 #' @aliases plot.sealevel
 setMethod(f="plot",
-          signature=signature("sealevel"),
-          definition=function(x, which=1:3,
-                              drawTimeRange=getOption("oceDrawTimeRange"),
-                              mgp=getOption("oceMgp"),
-                              mar=c(mgp[1]+0.5, mgp[1]+1.5, mgp[2]+1, mgp[2]+3/4),
-                              marginsAsImage=FALSE,
-                              debug=getOption("oceDebug"),
-                              ...)
-          {
-              oceDebug(debug, "plot.sealevel(..., mar=c(", paste(mar, collapse=", "), "), ...) {\n", sep="", unindent=1)
-              ##> dots <- list(...)
-              titlePlot<-function(x)
-              {
-                  title <- ""
-                  if (!is.null(x@metadata$stationNumber) || !is.null(x@metadata$stationName) || !is.null(x@metadata$region))
-                      title <- paste(title, gettext("Station ", domain="R-oce"),
-                                     if (!is.na(x@metadata$stationNumber)) x@metadata$stationNumber else "",
-                                     " ",
-                                     if (!is.null(x@metadata$stationName)) x@metadata$stationName else "",
-                                     " ",
-                                     if (!is.null(x@metadata$region)) x@metadata$region else "",
-                                     sep="")
-                  if (!is.na(x@metadata$latitude) && !is.na(x@metadata$longitude))
-                      title <- paste(title, latlonFormat(x@metadata$latitude, x@metadata$longitude), sep="")
-                  if (nchar(title) > 0)
-                      mtext(side=3, title, adj=1, cex=2/3)
-              }
-              drawConstituent<-function(frequency=0.0805114007, label="M2", col="darkred", side=1)
-              {
-                  abline(v=frequency, col=col)
-                  mtext(label, side=side, at=frequency, col=col, cex=3/4*par("cex"))
-              }
-              drawConstituents<-function()
-              {
-                  drawConstituent(0.0387306544, "O1", side=1)
-                  ##draw.constituent(0.0416666721, "S1", side=3)
-                  drawConstituent(0.0417807462, "K1", side=3)
-                  drawConstituent(0.0789992488, "N2", side=1)
-                  drawConstituent(0.0805114007, "M2", side=3)
-                  drawConstituent(0.0833333333, "S2", side=1)
-              }
-
-              if (!inherits(x, "sealevel"))
-                  stop("method is only for objects of class '", "sealevel", "'")
-              opar <- par(no.readonly = TRUE)
-              par(mgp=mgp, mar=mar)
-              lw <- length(which)
-              if (marginsAsImage) {
-                  scale <- 0.7
-                  w <- (1.5 + par("mgp")[2]) * par("csi") * scale * 2.54 + 0.5
-                  if (lw > 1)
-                      lay <- layout(matrix(1:(2*lw), nrow=lw, byrow=TRUE), widths=rep(c(1, lcm(w)), lw))
-              } else {
-                  if (lw > 1)
-                      lay <- layout(cbind(1:lw))
-              }
-              if (lw > 1) on.exit(par(opar))
-
-              ## tidal constituents (in cpd):
-              ## http://www.soest.hawaii.edu/oceanography/dluther/HOME/Tables/Kaw.htm
-              num.NA <- sum(is.na(x@data$elevation))
-
-              par(mgp=mgp)
-              ##par(mar=c(mgp[1],mgp[1]+2.5,mgp[2]+0.5,mgp[2]+1))
-              par(mar=mar)
-              ##> MSL <- mean(x@data$elevation, na.rm=TRUE)
-              ##> if ("xlim" %in% names(dots)) {
-              ##>     xtmp <- subset(x@data$elevation, dots$xlim[1] <= x@data$time & x@data$time <= dots$xlim[2])
-              ##>     tmp <- max(abs(range(xtmp-MSL, na.rm=TRUE)))
-              ##> } else {
-              ##>     tmp <- max(abs(range(x@data$elevation-MSL, na.rm=TRUE)))
-              ##> }
-              ##> ylim <- c(-tmp, tmp)
-              ##> oceDebug(debug, "ylim=", ylim, "\n")
-              n <- length(x@data$elevation) # do not trust value in metadata
-
-              oceDebug(debug, "which:", which, "\n")
-              which2 <- oce.pmatch(which, list(all=1, month=2, spectrum=3, cumulativespectrum=4))
-              oceDebug(debug, "which2:", which2, "\n")
-
-              for (w in seq_along(which2)) {
-                  oceDebug(debug, "plotting for code which2[", w, "] = ", which2[w], "\n", sep="")
-                  if (which2[w] == 1) {
-                      plot(x@data$time, x@data$elevation,
-                           xlab="",
-                           ylab=resizableLabel("elevation"),
-                           type='l', xaxs="i",
-                           lwd=0.5, axes=FALSE, ...)
-                      tics <- oce.axis.POSIXct(1, x@data$time, drawTimeRange=drawTimeRange, cex.axis=1, debug=debug-1)
-                      box()
-                      titlePlot(x)
-                      yax <- axis(2)
-                      abline(h=yax, col="darkgray", lty="dotted")
-                      abline(v=tics, col="darkgray", lty="dotted")
-                      ##> abline(h=0, col="darkgreen")
-                      ##> mtext(side=4, text=sprintf("%.2f m", MSL), col="darkgreen", cex=2/3)
-                  } else if (which2[w] == 2) {
-                      ## sample month
-                      from <- trunc(x@data$time[1], "day")
-                      to <- from + 28 * 86400 # 28 days
-                      look <- from <= x@data$time & x@data$time <= to
-                      xx <- x
-                      for (i in seq_along(x@data)) {
-                          xx@data[[i]] <- x@data[[i]][look]
-                      }
-                      if (any(is.finite(xx@data$elevation))) {
-                          atWeek <- seq(from=from, to=to, by="week")
-                          atDay  <- seq(from=from, to=to, by="day")
-                          ##> tmp <- max(abs(range(xx@data$elevation, na.rm=TRUE)))
-                          plot(xx@data$time, xx@data$elevation,
-                               xlab="",
-                               ylab=resizableLabel("elevation"),
-                               type='l', xaxs="i",
-                               axes=FALSE)
-                          oce.axis.POSIXct(1, xx@data$time, drawTimeRange=drawTimeRange, cex.axis=1, debug=debug-1)
-                          yax <- axis(2)
-                          abline(h=yax, col="lightgray", lty="dotted")
-                          box()
-                          abline(v=atWeek, col="darkgray", lty="dotted")
-                          abline(v=atDay, col="lightgray", lty="dotted")
-                          ##> abline(h=0, col="darkgreen")
-                          ##> mtext(side=4, text=sprintf("%.2f m", MSL), col="darkgreen", cex=2/3)
-                      } else {
-                          plot(0:1, 0:1, type="n", xlab="", ylab="", axes=FALSE)
-                          box()
-                          text(0.5, 0.5, "Cannot show first month, since all data are NA then")
-                      }
-                  } else if (which2[w] == 3) { # "spectrum"
-                      if (num.NA == 0) {
-                          Elevation <- ts(x@data$elevation, start=1, deltat=x@metadata$deltat)
-                          ##s <- spectrum(Elevation-mean(Elevation),spans=c(5, 3),plot=FALSE,log="y",demean=TRUE,detrend=TRUE)
-                          s <- spectrum(Elevation-mean(Elevation), plot=FALSE, log="y", demean=TRUE, detrend=TRUE)
-                          par(mar=c(mgp[1]+1.25, mgp[1]+1.5, mgp[2]+0.25, mgp[2]+3/4))
-                          xlim <- c(0, 0.1) # FIXME: should be able to set this
-                          ylim <- range(subset(s$spec, xlim[1] <= s$freq & s$freq <= xlim[2]))
-                          plot(s$freq, s$spec, xlim=xlim, ylim=ylim,
-                               xlab=resizableLabel("frequency cph"),
-                               ylab=resizableLabel("spectral density m2/cph"),
-                               #[m^2/cph]",
-                               type='l', log="y")
-                          grid()
-                          drawConstituents()
-                      } else {
-                          plot(0:1, 0:1, type="n", xlab="", ylab="", axes=FALSE)
-                          box()
-                          text(0.5, 0.5, "Some elevations are NA, so cannot calculate the spectrum")
-                      }
-                  } else if (which2[w] == 4) { # "cumulativespectrum"
-                      if (num.NA == 0) {
-                          n <- length(x@data$elevation)
-                          Elevation <- ts(x@data$elevation, start=1, deltat=x@metadata$deltat)
-                          s <- spectrum(Elevation-mean(Elevation), plot=FALSE, log="y", demean=TRUE, detrend=TRUE)
-                          nCumSpec <- length(s$spec)
-                          cumSpec <- sqrt(cumsum(s$spec) / nCumSpec)
-                          ##e <- x@data$elevation - mean(x@data$elevation)
-                          par(mar=c(mgp[1]+1.25, mgp[1]+2.5, mgp[2]+0.25, mgp[2]+0.25))
-                          plot(s$freq, cumSpec,
-                               xlab=resizableLabel("frequency cph"),
-                               ylab=expression(paste(integral(Gamma, 0, f), " df [m]")),
-                               type='l', xlim=c(0, 0.1))
-                          grid()
-                          drawConstituents()
-                      } else {
-                          warning("cannot draw sealevel spectum, because the series contains missing values")
-                      }
-                  } else {
-                      stop("unrecognized value of which: ", which[w])
-                  }
-                  if (marginsAsImage)  {
-                      ## blank plot, to get axis length same as for images
-                      omar <- par("mar")
-                      par(mar=c(mar[1], 1/4, mgp[2]+1/2, mgp[2]+1))
-                      plot(1:2, 1:2, type='n', axes=FALSE, xlab="", ylab="")
-                      par(mar=omar)
-                  }
-              }
-              oceDebug(debug, "} # plot.sealevel()\n", unindent=1)
-              invisible(NULL)
-          })
-
+    signature=signature("sealevel"),
+    definition=function(x, which=1:3,
+        drawTimeRange=getOption("oceDrawTimeRange"),
+        mgp=getOption("oceMgp"),
+        mar=c(mgp[1]+0.5, mgp[1]+1.5, mgp[2]+1, mgp[2]+3/4),
+        marginsAsImage=FALSE,
+        debug=getOption("oceDebug"),
+        ...)
+    {
+        oceDebug(debug, "plot.sealevel(..., mar=c(", paste(mar, collapse=", "), "), ...) {\n", sep="", unindent=1)
+        titlePlot <- function(x)
+        {
+            title <- ""
+            if (!is.null(x@metadata$stationNumber) || !is.null(x@metadata$stationName) || !is.null(x@metadata$region)) {
+                title <- paste(title, gettext("Station ", domain="R-oce"),
+                    if (!is.na(x@metadata$stationNumber)) x@metadata$stationNumber else "",
+                    " ",
+                    if (!is.null(x@metadata$stationName)) x@metadata$stationName else "",
+                    " ",
+                    if (!is.null(x@metadata$region)) x@metadata$region else "",
+                    sep="")
+            }
+            if (!is.na(x@metadata$latitude) && !is.na(x@metadata$longitude))
+                title <- paste(title, latlonFormat(x@metadata$latitude, x@metadata$longitude), sep="")
+            if (nchar(title) > 0)
+                mtext(side=3, title, adj=1, cex=2/3)
+        }
+        drawConstituent <- function(frequency=0.0805114007, label="M2", col="darkred", side=1)
+        {
+            abline(v=frequency, col=col)
+            mtext(label, side=side, at=frequency, col=col, cex=3/4*par("cex"))
+        }
+        drawConstituents <- function()
+        {
+            drawConstituent(0.0387306544, "O1", side=1)
+            # draw.constituent(0.0416666721, "S1", side=3)
+            drawConstituent(0.0417807462, "K1", side=3)
+            drawConstituent(0.0789992488, "N2", side=1)
+            drawConstituent(0.0805114007, "M2", side=3)
+            drawConstituent(0.0833333333, "S2", side=1)
+        }
+        if (!inherits(x, "sealevel"))
+            stop("method is only for objects of class '", "sealevel", "'")
+        opar <- par(no.readonly = TRUE)
+        par(mgp=mgp, mar=mar)
+        lw <- length(which)
+        if (marginsAsImage) {
+            scale <- 0.7
+            w <- (1.5 + par("mgp")[2]) * par("csi") * scale * 2.54 + 0.5
+            if (lw > 1)
+                layout(matrix(1:(2*lw), nrow=lw, byrow=TRUE), widths=rep(c(1, lcm(w)), lw))
+        } else {
+            if (lw > 1)
+                layout(cbind(1:lw))
+        }
+        if (lw > 1) on.exit(par(opar))
+        # tidal constituents (in cpd):
+        # http://www.soest.hawaii.edu/oceanography/dluther/HOME/Tables/Kaw.htm
+        num.NA <- sum(is.na(x@data$elevation))
+        par(mgp=mgp)
+        #par(mar=c(mgp[1],mgp[1]+2.5,mgp[2]+0.5,mgp[2]+1))
+        par(mar=mar)
+        #?used? n <- length(x@data$elevation) # do not trust value in metadata
+        oceDebug(debug, "which:", which, "\n")
+        which2 <- oce.pmatch(which, list(all=1, month=2, spectrum=3, cumulativespectrum=4))
+        oceDebug(debug, "which2:", which2, "\n")
+        for (w in seq_along(which2)) {
+            oceDebug(debug, "plotting for code which2[", w, "] = ", which2[w], "\n", sep="")
+            if (which2[w] == 1) {
+                plot(x@data$time, x@data$elevation,
+                    xlab="",
+                    ylab=resizableLabel("elevation"),
+                    type="l", xaxs="i",
+                    lwd=0.5, axes=FALSE, ...)
+                tics <- oce.axis.POSIXct(1, x@data$time, drawTimeRange=drawTimeRange, cex.axis=1, debug=debug-1)
+                box()
+                titlePlot(x)
+                yax <- axis(2)
+                abline(h=yax, col="darkgray", lty="dotted")
+                abline(v=tics, col="darkgray", lty="dotted")
+            } else if (which2[w] == 2) {
+                # sample month
+                from <- trunc(x@data$time[1], "day")
+                to <- from + 28 * 86400 # 28 days
+                look <- from <= x@data$time & x@data$time <= to
+                xx <- x
+                for (i in seq_along(x@data))
+                    xx@data[[i]] <- x@data[[i]][look]
+                if (any(is.finite(xx@data$elevation))) {
+                    atWeek <- seq(from=from, to=to, by="week")
+                    atDay  <- seq(from=from, to=to, by="day")
+                    plot(xx@data$time, xx@data$elevation,
+                        xlab="",
+                        ylab=resizableLabel("elevation"),
+                        type="l", xaxs="i",
+                        axes=FALSE)
+                    oce.axis.POSIXct(1, xx@data$time, drawTimeRange=drawTimeRange, cex.axis=1, debug=debug-1)
+                    yax <- axis(2)
+                    abline(h=yax, col="lightgray", lty="dotted")
+                    box()
+                    abline(v=atWeek, col="darkgray", lty="dotted")
+                    abline(v=atDay, col="lightgray", lty="dotted")
+                } else {
+                    plot(0:1, 0:1, type="n", xlab="", ylab="", axes=FALSE)
+                    box()
+                    text(0.5, 0.5, "Cannot show first month, since all data are NA then")
+                }
+            } else if (which2[w] == 3) { # "spectrum"
+                if (num.NA == 0) {
+                    Elevation <- ts(x@data$elevation, start=1, deltat=x@metadata$deltat)
+                    s <- spectrum(Elevation-mean(Elevation), plot=FALSE, log="y", demean=TRUE, detrend=TRUE)
+                    par(mar=c(mgp[1]+1.25, mgp[1]+1.5, mgp[2]+0.25, mgp[2]+3/4))
+                    xlim <- c(0, 0.1) # FIXME: should be able to set this
+                    ylim <- range(subset(s$spec, xlim[1] <= s$freq & s$freq <= xlim[2]))
+                    plot(s$freq, s$spec, xlim=xlim, ylim=ylim,
+                        xlab=resizableLabel("frequency cph"),
+                        ylab=resizableLabel("spectral density m2/cph"),
+                        #[m^2/cph]",
+                        type="l", log="y")
+                    grid()
+                    drawConstituents()
+                } else {
+                    plot(0:1, 0:1, type="n", xlab="", ylab="", axes=FALSE)
+                    box()
+                    text(0.5, 0.5, "Some elevations are NA, so cannot calculate the spectrum")
+                }
+            } else if (which2[w] == 4) { # "cumulativespectrum"
+                if (num.NA == 0) {
+                    #?used? n <- length(x@data$elevation)
+                    Elevation <- ts(x@data$elevation, start=1, deltat=x@metadata$deltat)
+                    s <- spectrum(Elevation-mean(Elevation), plot=FALSE, log="y", demean=TRUE, detrend=TRUE)
+                    nCumSpec <- length(s$spec)
+                    cumSpec <- sqrt(cumsum(s$spec) / nCumSpec)
+                    par(mar=c(mgp[1]+1.25, mgp[1]+2.5, mgp[2]+0.25, mgp[2]+0.25))
+                    plot(s$freq, cumSpec,
+                        xlab=resizableLabel("frequency cph"),
+                        ylab=expression(paste(integral(Gamma, 0, f), " df [m]")),
+                        type="l", xlim=c(0, 0.1))
+                    grid()
+                    drawConstituents()
+                } else {
+                    warning("cannot draw sealevel spectum, because the series contains missing values")
+                }
+            } else {
+                stop("unrecognized value of which: ", which[w])
+            }
+            if (marginsAsImage)  {
+                # blank plot, to get axis length same as for images
+                omar <- par("mar")
+                par(mar=c(mar[1], 1/4, mgp[2]+1/2, mgp[2]+1))
+                plot(1:2, 1:2, type="n", axes=FALSE, xlab="", ylab="")
+                par(mar=omar)
+            }
+        }
+        oceDebug(debug, "} # plot.sealevel()\n", unindent=1)
+        invisible(NULL)
+    })
 
 
 #' Read a Sealevel File
@@ -706,11 +674,8 @@ setMethod(f="plot",
 #' @author Dan Kelley
 #'
 #' @family things related to sealevel data
-read.sealevel <- function(file,
-    tz=getOption("oceTz"),
-    encoding="latin1",
-    processingLog,
-    debug=getOption("oceDebug"))
+read.sealevel <- function(file, tz=getOption("oceTz"), encoding="latin1",
+    processingLog, debug=getOption("oceDebug"))
 {
     if (missing(file))
         stop("must supply 'file'")
@@ -720,7 +685,6 @@ read.sealevel <- function(file,
         if (0L == file.info(file)$size)
             stop("empty file '", file, "'")
     }
-
     oceDebug(debug, "read.sealevel(file=\"", file, "\", ...) {\n", sep="", unindent=1)
     filename <- "?"
     if (is.character(file)) {
@@ -751,23 +715,22 @@ read.sealevel <- function(file,
     decimationMethod <- NA
     referenceOffset <- NA
     referenceCode <- NA
-    res <- new('sealevel')
+    res <- new("sealevel")
     if (substr(firstLine, 1, 12) == "Station_Name") {
         oceDebug(debug, "File is of format 1 (e.g. as in MEDS archives)\n")
-        ## Station_Name,HALIFAX
-        ## Station_Number,490
-        ## Latitude_Decimal_Degrees,44.666667
-        ## Longitude_Decimal_Degrees,63.583333
-        ## Datum,CD
-        ## Time_Zone,AST
-        ## SLEV=Observed Water Level
-        ## Obs_date,SLEV
-        ## 01/01/2001 12:00 AM,1.82,
+        # Station_Name,HALIFAX
+        # Station_Number,490
+        # Latitude_Decimal_Degrees,44.666667
+        # Longitude_Decimal_Degrees,63.583333
+        # Datum,CD
+        # Time_Zone,AST
+        # SLEV=Observed Water Level
+        # Obs_date,SLEV
+        # 01/01/2001 12:00 AM,1.82,
         headerLength <- 8
         header <- readLines(file, n=headerLength)
-        if (debug > 0) {
+        if (debug > 0)
             print(header)
-        }
         stationName   <- strsplit(header[1], ",")[[1]][2]
         stationNumber <- as.numeric(strsplit(header[2], ",")[[1]][2])
         latitude      <- as.numeric(strsplit(header[3], ",")[[1]][2])
@@ -786,21 +749,21 @@ read.sealevel <- function(file,
         }
         elevation <- as.numeric(x$V2)
         oceDebug(debug, "tz=", tz, "so GMTOffset=", GMTOffset, "\n",
-                  "first pass has time string:", as.character(x$V1)[1], "\n",
-                  "first pass has time start:", format(time[1]), " ", attr(time[1], "tzone"), "\n")
+            "first pass has time string:", as.character(x$V1)[1], "\n",
+            "first pass has time start:", format(time[1]), " ", attr(time[1], "tzone"), "\n")
         year <- as.POSIXlt(time[1])$year + 1900
     } else {
         oceDebug(debug, "File is of type 2 or 3\n")
         d <- readLines(file)
         n <- length(d)
         header <- d[1]
-        if (grepl("LAT=", header) && grepl("LONG=", header) && grepl("TIMEZONE",header)) {
-            ## URL
-            ## http://uhslc.soest.hawaii.edu/woce/h275.dat
-            ## is a sample file, which starts as below (with quote marks added):
-            ## '275HALIFAX 1895  LAT=44 40.0N  LONG=063 35.0W  TIMEZONE=GMT '
-            ## '275HALIFAX 189501011 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999'
-            ## '275HALIFAX 189501012 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999'
+        if (grepl("LAT=", header) && grepl("LONG=", header) && grepl("TIMEZONE", header)) {
+            # URL
+            # http://uhslc.soest.hawaii.edu/woce/h275.dat
+            # is a sample file, which starts as below (with quote marks added):
+            # '275HALIFAX 1895  LAT=44 40.0N  LONG=063 35.0W  TIMEZONE=GMT '
+            # '275HALIFAX 189501011 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999'
+            # '275HALIFAX 189501012 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999'
             oceDebug(debug, "type 3 (format inferred/guessed from e.g. http://uhslc.soest.hawaii.edu/woce/h275.dat)\n")
             stationNumber <- strtrim(header, 3)
             oceDebug(debug, "  stationNumber='", stationNumber, "'\n", sep="")
@@ -828,18 +791,18 @@ read.sealevel <- function(file,
             oceDebug(debug, "  latitudeMinute='", latitudeMinute, "' after removing NS suffix\n", sep="")
             latitude <- latitudeSign * (as.numeric(latitudeDegree) + as.numeric(latitudeMinute)/60)
             oceDebug(debug, "  latitude=", latitude, "\n")
-            ## Remove interspersed year boundaries (which look like the first line).
+            # Remove interspersed year boundaries (which look like the first line).
             d2 <- d[!grepl("LAT=.*LONG=", d)]
-            start <- 1 + which(strsplit(header,"")[[1]]==" ")[1]
+            start <- 1 + which(strsplit(header, "")[[1]]==" ")[1]
             d3 <- substr(d2, start, 1000L)
-            ## Fix problem where the month is sometimes e.g. ' 1' instead of '01'
+            # Fix problem where the month is sometimes e.g. ' 1' instead of '01'
             d4 <- gsub("^([1-9][0-9]{3}) ", "\\10", d3)
-            ## Fix problem where the day is sometimes e.g. ' 1' instead of '01'
+            # Fix problem where the day is sometimes e.g. ' 1' instead of '01'
             d5 <- gsub("^([1-9][0-9]{3}[0-9]{2}) ", "\\10", d4)
             n <- length(d5)
-            ## Now we have as below. But the second block sometimes has ' ' for '0', so we
-            ## need to fix that.
-            ## '275HALIFAX 189501011 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999'
+            # Now we have as below. But the second block sometimes has ' ' for '0', so we
+            # need to fix that.
+            # '275HALIFAX 189501011 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999'
             twelve <- seq(1, 12, 1)
             elevation <- rep(NA, 12 * n)
             time <- rep(NA, 12 * n)
@@ -847,7 +810,6 @@ read.sealevel <- function(file,
             for (i in 1:n) {
                 sp <- strsplit(d5[i], "[ ]+")[[1]]
                 target.index <- 12 * (i-1) + twelve
-                ## oceDebug(debug, " i=", i, ", length(sp)=", length(sp), "\n")
                 if (length(sp) != 13) {
                     stop("cannot parse tokens on line '", d2[i], "'\n", sep="")
                 }
@@ -868,7 +830,7 @@ read.sealevel <- function(file,
                     }
                 }
                 lastDayPortion <- dayPortion
-                time[target.index] <- as.POSIXct(sp[1], format="%Y%m%d",tz="UTC")+3600*(seq(0,11) + 12 * (dayPortion-1))
+                time[target.index] <- as.POSIXct(sp[1], format="%Y%m%d", tz="UTC") + 3600 * (seq(0, 11) + 12 * (dayPortion-1))
             }
             elevation[elevation==9999] <- NA
             elevation <- elevation  / 1000 # convert mm to m
@@ -902,8 +864,6 @@ read.sealevel <- function(file,
                     stop("require units to be 'mm' or 'MM', not '", units, "'")
             }
             elevation <- array(NA_real_, 12 * (n-1))
-            ## first.twelve.hours  <- 3600 * (0:11)
-            ## second.twelve.hours <- 3600 * (12:23)
             twelve <- seq(1, 12, 1)
             lastDayPortion <- -1 # ignored; prevents undefined warning in code analysis
             for (i in 2:n) {
@@ -915,11 +875,13 @@ read.sealevel <- function(file,
                     startDay <- as.POSIXct(strptime(paste(substr(sp[3], 1, 8), "00:00:00"), "%Y%m%d"), tz=tz)
                 } else {
                     if (dayPortion == 1) {
-                        if (i > 2 && lastDayPortion != 2)
+                        if (i > 2 && lastDayPortion != 2) {
                             stop("non-alternating day portions on data line ", i)
+                        }
                     } else if (dayPortion == 2) {
-                        if (i > 2 && lastDayPortion != 1)
+                        if (i > 2 && lastDayPortion != 1) {
                             stop("non-alternating day portions on data line ", i)
+                        }
                     } else {
                         stop("day portion is ", dayPortion, " but must be 1 or 2, on data line", i)
                     }
@@ -935,8 +897,6 @@ read.sealevel <- function(file,
             }
         }
     }
-    ##num.missing <- sum(is.na(elevation))
-    ##if (num.missing > 0) warning("there are ", num.missing, " missing points in this timeseries, at indices ", paste(which(is.na(elevation)), ""))
     res@metadata$filename <- filename
     res@metadata$header <- header
     res@metadata$year <- year
@@ -952,13 +912,11 @@ read.sealevel <- function(file,
     res@metadata$referenceCode <- referenceCode
     res@metadata$units <- list(elevation=list(unit=expression(m), scale=""))
     res@metadata$n <- length(time)
-    ## deltat is in hours
+    # deltat is in hours
     res@metadata$deltat <- if (res@metadata$n > 1) (as.numeric(time[2]) - as.numeric(time[1])) / 3600 else 0
-    if (missing(processingLog))
-        processingLog <- paste('read.sealevel(file="', file, '", tz="', tz, sep="", collapse="")
     res@data$elevation <- elevation
     res@data$time <- time
     res@processingLog <- processingLogAppend(res@processingLog,
-                                              paste('read.sealevel(file="', fileOrig, '", tz="', tz, '")', sep="", collapse=""))
+        paste('read.sealevel(file="', fileOrig, '", tz="', tz, '")', sep="", collapse=""))
     res
 }

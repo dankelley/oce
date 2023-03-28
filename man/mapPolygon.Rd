@@ -38,7 +38,7 @@ library(oce)
 data(coastlineWorld)
 data(topoWorld)
 
-## Bathymetry near southeastern Canada
+# Bathymetry near southeastern Canada
 par(mfrow=c(1,1), mar=c(2,2,1,1))
 cm <- colormap(zlim=c(-5000, 0), col=oceColorsGebco)
 drawPalette(colormap=cm)

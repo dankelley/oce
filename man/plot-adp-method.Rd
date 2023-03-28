@@ -53,11 +53,7 @@ for each beam. See \dQuote{Details} for the meanings of various values of \code{
 \item{j}{optional string specifying a sub-class of \code{which}. For
 Nortek Aquadopp profilers, this may either be \code{"default"} (or missing)
 to get the main signal, or \code{"diagnostic"} to get a diagnostic
-signal. For Nortek AD2CP profiles, this may be any one of
-\code{"average"} (or missing) for averaged data, \code{"burst"}
-for burst data, or \code{"interleaved burst"} for interleaved burst data;
-more data types are provided by that instrument, and may be added here
-at some future time.}
+signal.}
 
 \item{col}{optional indication of color(s) to use.  If not provided, the
 default for images is \code{oce.colorsPalette(128,1)}, and for lines and
@@ -185,10 +181,7 @@ A list is silently returned, containing \code{xat} and \code{yat},
 values that can be used by \code{\link[=oce.grid]{oce.grid()}} to add a grid to the plot.
 }
 \description{
-Create a summary plot of data measured by an acoustic doppler profiler. Note
-that if the object is of the AD2CP variety, the present function works
-by calling \code{\link[=plotAD2CP]{plotAD2CP()}}, and that means that \code{which} is handled very
-differently than is the case here.
+Create a summary plot of data measured by an acoustic Doppler profiler.
 }
 \details{
 The plot may have one or more panels, with the content being controlled by
@@ -282,7 +275,20 @@ from all beams of the instrument.
 \code{"bottomVelocity4"}) for bottom velocity from beams 1 to 4.
 \item \code{which=55} (or \code{"heaving"}) for time-integrated,
 depth-averaged, vertical velocity, i.e. a time series of heaving.
+\item \code{which=60} (or \code{"map"}) for a map.
 \item \code{which=100} (or \code{"soundSpeed"}) for a time series of sound speed.
+\item \code{which=200} (or \code{"accelerometerx"}) for a time-series of the x component of
+the accelerometer reading.
+\item \code{which=201} (or \code{"accelerometery"}) for a time-series of the y component of
+the accelerometer reading.
+\item \code{which=202} (or \code{"accelerometerz"}) for a time-series of the z component of
+the accelerometer reading.
+\item \code{which=210} (or \code{"magnetometerx"}) for a time-series of the x component of
+the magnetometer reading.
+\item \code{which=211} (or \code{"magnetometery"}) for a time-series of the y component of
+the magnetometer reading.
+\item \code{which=212} (or \code{"magnetometerz"}) for a time-series of the z component of
+the magnetometer reading.
 }
 
 In addition to the above, the following shortcuts are defined:
@@ -298,6 +304,8 @@ components.
 for temperature and pressure.
 \item \code{which="angles"} equivalent to \code{which=16:18} for
 heading, pitch and roll.
+\item \code{which="accelerometer"} to plot a 3-panel timeseries
+of acceleration, equivalent to \code{which=110:102}.
 }
 
 The color scheme for image plots (\code{which} in 1:12) is provided by the
@@ -373,6 +381,7 @@ Other things related to adp data:
 \code{\link{adpRdiFileTrim}()},
 \code{\link{adp_rdi.000}},
 \code{\link{adp}},
+\code{\link{applyMagneticDeclination,adp-method}},
 \code{\link{as.adp}()},
 \code{\link{beamName}()},
 \code{\link{beamToXyzAdpAD2CP}()},

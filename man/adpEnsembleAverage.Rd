@@ -23,7 +23,9 @@ before the computation proceeds}
 \item{...}{extra arguments to be passed to the \code{mean()} function.}
 }
 \value{
-A new \linkS4class{adp} object with ensembles averaged as specified. E.g. for an \code{adp} object with 100 pings and \code{n=5} the number of rows of the data arrays will be reduced by a factor of 5.
+A new \linkS4class{adp} object with ensembles averaged as specified. E.g. for
+an \code{adp} object with 100 pings and \code{n=5} the number of rows of the data arrays
+will be reduced by a factor of 5.
 }
 \description{
 Ensemble averaging of \code{adp} objects is often necessary to
@@ -56,6 +58,7 @@ Other things related to adp data:
 \code{\link{adpRdiFileTrim}()},
 \code{\link{adp_rdi.000}},
 \code{\link{adp}},
+\code{\link{applyMagneticDeclination,adp-method}},
 \code{\link{as.adp}()},
 \code{\link{beamName}()},
 \code{\link{beamToXyzAdpAD2CP}()},

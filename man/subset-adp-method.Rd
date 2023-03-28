@@ -27,19 +27,12 @@ subsetting can be by \code{time}, \code{ensembleNumber}, or \code{distance}.
 These may not be combined, but it is easy to use a string of calls to
 carry out combined operations, e.g.
 \code{subset(subset(adp,distance<d0), time<t0)}
-
-For the special
-case of AD2CP data (see \code{\link[=read.adp.ad2cp]{read.adp.ad2cp()}}), it is possible to subset
-to the "average" data records with \code{subset="average"}, to the
-"burst" records with \code{subset="burst"}, or to the "interleavedBurst"
-with \code{subset="interleavedBurst"}; note that no warning is issued,
-if this leaves an object with no useful data.
 }
 \examples{
 library(oce)
 data(adp)
 # 1. Look at first part of time series, organized by time
-earlyTime <- subset(adp, time < mean(range(adp[['time']])))
+earlyTime <- subset(adp, time < mean(range(adp[["time"]])))
 plot(earlyTime)
 
 # 2. Look at first ten ensembles (AKA profiles)
@@ -62,6 +55,7 @@ Other things related to adp data:
 \code{\link{adpRdiFileTrim}()},
 \code{\link{adp_rdi.000}},
 \code{\link{adp}},
+\code{\link{applyMagneticDeclination,adp-method}},
 \code{\link{as.adp}()},
 \code{\link{beamName}()},
 \code{\link{beamToXyzAdpAD2CP}()},

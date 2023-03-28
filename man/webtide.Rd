@@ -123,14 +123,14 @@ Users should be on the lookout for odd results.
 
 \examples{
 \dontrun{
-## needs WebTide at the system level
+# needs WebTide at the system level
 library(oce)
-## 1. prediction at Halifax NS
+# 1. prediction at Halifax NS
 longitude <- -63.57
 latitude <- 44.65
 prediction <- webtide("predict", longitude=longitude, latitude=latitude)
 mtext(sprintf("prediction at \%fN \%fE", latitude, longitude), line=0.75, side=3)
-## 2. map
+# 2. map
 webtide(lon=-63.57,lat=44.65,xlim=c(-64,-63),ylim=c(43.0,46))
 }
 

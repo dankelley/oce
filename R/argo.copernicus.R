@@ -34,11 +34,7 @@
 #' @family things related to argo data
 #'
 #' @author Dan Kelley
-read.argo.copernicus <- function(file,
-    encoding=NA,
-    debug=getOption("oceDebug"),
-    processingLog,
-    ...)
+read.argo.copernicus <- function(file, encoding=NA, debug=getOption("oceDebug"), processingLog, ...)
 {
     if (missing(file))
         stop("must supply 'file'")
@@ -50,10 +46,10 @@ read.argo.copernicus <- function(file,
     }
     if (!requireNamespace("ncdf4", quietly=TRUE))
         stop("must install.packages(\"ncdf4\") to read argo data")
-    if (missing(processingLog)) processingLog <- paste(deparse(match.call()), sep="", collapse="")
-    ## ofile <- file
+    if (missing(processingLog))
+        processingLog <- paste(deparse(match.call()), sep="", collapse="")
     filename <- ""
-    ## NOTE: need to name ncdf4 package because otherwise R checks give warnings.
+    # NOTE: need to name ncdf4 package because otherwise R checks give warnings.
     if (is.character(file)) {
         filename <- fullFilename(file)
         file <- ncdf4::nc_open(file)
@@ -68,7 +64,7 @@ read.argo.copernicus <- function(file,
     }
     oceDebug(debug, "read.argo.copernicus(file=\"", filename, "\", ...) {\n", sep="", unindent=1, style="bold")
     varNames <- names(file$var)
-    oceDebug(debug, "varNames=c(\"", paste(varNames,collapse="\", \""), "\")\n")
+    oceDebug(debug, "varNames=c(\"", paste(varNames, collapse="\", \""), "\")\n")
     res <- new("argo")
 
     getGlobalAttribute <- function(file, attname)
@@ -130,11 +126,9 @@ read.argo.copernicus <- function(file,
         "TEMP"="temperature",
         "TEMP_ADJUSTED"="temperatureAdjusted",
         "TEMP_ADJUSTED_ERROR"="temperatureAdjustedError",
-        "VERTICAL_SAMPLING_SCHEME"="verticalSamplingScheme"
-        )
+        "VERTICAL_SAMPLING_SCHEME"="verticalSamplingScheme")
     varNamesKnown <- names(nameMap)
     QCNamesKnown <- paste0(names(nameMap), "_QC")
-    #print(QCNamesKnown)
     res@metadata$units <- list()
     for (name in varNames) {
         if (name %in% varNamesKnown) {
@@ -142,29 +136,30 @@ read.argo.copernicus <- function(file,
             res@data[[oceName]] <- ncdf4::ncvar_get(file, name)
             res@metadata$dataNamesOriginal[oceName] <- name
             oceDebug(debug, "inferring ", oceName, " from ", name, "\n")
-            if (grepl("^BBP700", name))
+            if (grepl("^BBP700", name)) {
                 res@metadata$units[[oceName]] <- list(unit=expression(1/m), scale="")
-            else if (grepl("^CNDC", name))
+            } else if (grepl("^CNDC", name)) {
                 res@metadata$units[[oceName]] <- list(unit=expression(S/m), scale="")
-            else if (grepl("^CPHL", name))
+            } else if (grepl("^CPHL", name)) {
                 res@metadata$units[[oceName]] <- list(unit=expression(mg/m^3), scale="")
-            else if (grepl("^DOX2", name))
+            } else if (grepl("^DOX2", name)) {
                 res@metadata$units[[oceName]] <- list(unit=expression(umol/kg), scale="")
-            else if (grepl("^DOXY", name))
+            } else if (grepl("^DOXY", name)) {
                 res@metadata$units[[oceName]] <- list(unit=expression(mmol/m^3), scale="")
-            else if (grepl("^NTAW", name))
+            } else if (grepl("^NTAW", name)) {
                 res@metadata$units[[oceName]] <- list(unit=expression(umol/kg), scale="")
-            else if (grepl("^PHPH", name))
+            } else if (grepl("^PHPH", name)) {
                 res@metadata$units[[oceName]] <- list(unit=expression(), scale="")
-            else if (grepl("^PRES", name))
+            } else if (grepl("^PRES", name)) {
                 res@metadata$units[[oceName]] <- list(unit=expression(dbar), scale="")
-            else if (grepl("^PSAL", name))
+            } else if (grepl("^PSAL", name)) {
                 res@metadata$units[[oceName]] <- list(unit=expression(), scale="")
-            else if (grepl("^TEMP", name))
+            } else if (grepl("^TEMP", name)) {
                 res@metadata$units[[oceName]] <- list(unit=expression(degree*C), scale="")
-        } else if (name %in% QCNamesKnown) {
-            oceName <- nameMap[[gsub("_QC", "", name)]]
-            res@metadata$flags[[oceName]] <- ncdf4::ncvar_get(file, name)
+            } else if (name %in% QCNamesKnown) {
+                oceName <- nameMap[[gsub("_QC", "", name)]]
+                res@metadata$flags[[oceName]] <- ncdf4::ncvar_get(file, name)
+            }
             oceDebug(debug, "inferring flags[", oceName, "] from ", name, "\n")
         } else if (!(name %in% c("TIME", "POSITION_QC", "TIME_QC"))) { # some special cases skipped
             oceDebug(debug, "saving \"", name, "\" to data slot, without renaming\n", sep="")
@@ -198,4 +193,3 @@ read.argo.copernicus <- function(file,
     oceDebug(debug, "} # read.argo.copernicus()\n", sep="", unindent=1, style="bold")
     res
 }
-

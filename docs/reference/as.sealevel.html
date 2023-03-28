@@ -20,7 +20,7 @@ file formerly available at reference 1."><!-- mathjax --><script src="https://cd
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-10</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-11</span>
       </span>
     </div>
 
@@ -227,16 +227,17 @@ with them.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> * Location:            Lat and lon unknown </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> * number of observations:   8761 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> *    "      non-missing:    8761 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> * Time ranges from 0000-01-01 to 0000-12-31 with 8761 samples and mean increment 1 hour</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> * Time:          0000-01-01 to 0000-12-31 (8761 samples, mean increment 1 hour)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> * Data Overview</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                   Min.       Mean Max. Dim. NAs OriginalName</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     elevation [m]   -2 0.00089588    2 8761   0            -</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                         Min.                Mean       Max. Dim. NAs</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     elevation [m]         -2          0.00089588          2    0   0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     time          0000-01-01 0000-07-01 12:00:00 0000-12-31    0   0</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> * Processing Log</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2022-08-18 15:44:11 UTC: `create 'sealevel' object`</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2022-08-18 15:44:11 UTC: `as.sealevel(elevation = elevation)`</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2023-03-27 19:26:30 UTC: `create 'sealevel' object`</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2023-03-27 19:26:30 UTC: `as.sealevel(elevation = elevation)`</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># As above, but start at the Y2K time.</span></span></span>
 <span class="r-in"><span><span class="va">time</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/as.POSIXlt.html" class="external-link">as.POSIXct</a></span><span class="op">(</span><span class="st">"2000-01-01"</span><span class="op">)</span> <span class="op">+</span> <span class="va">h</span> <span class="op">*</span> <span class="fl">3600</span></span></span>
@@ -249,16 +250,17 @@ with them.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> * Location:            Lat and lon unknown </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> * number of observations:   8761 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> *    "      non-missing:    8761 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> * Time ranges from 2000-01-01 to 2000-12-31 with 8761 samples and mean increment 1 hour</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> * Time:          2000-01-01 to 2000-12-31 (8761 samples, mean increment 1 hour)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> * Data Overview</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                   Min.       Mean Max. Dim. NAs OriginalName</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     elevation [m]   -2 0.00089588    2 8761   0            -</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                  Min.                Mean                Max. Dim. NAs</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     elevation [m]                  -2          0.00089588                   2    0   0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     time          2000-01-01 04:00:00 2000-07-01 16:00:00 2000-12-31 04:00:00    0   0</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> * Processing Log</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2022-08-18 15:44:11 UTC: `create 'sealevel' object`</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2022-08-18 15:44:11 UTC: `as.sealevel(elevation = elevation, time = time)`</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2023-03-27 19:26:30 UTC: `create 'sealevel' object`</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2023-03-27 19:26:30 UTC: `as.sealevel(elevation = elevation, time = time)`</span>
 </code></pre></div>
     </div>
   </div>
@@ -273,7 +275,7 @@ with them.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>

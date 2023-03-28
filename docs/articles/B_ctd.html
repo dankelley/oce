@@ -33,7 +33,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-10</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-11</span>
       </span>
     </div>
 
@@ -97,7 +97,7 @@
                         <h4 data-toc-skip class="author">Dan Kelley (<a href="https://orcid.org/0000-0001-7808-5911" class="external-link uri">https://orcid.org/0000-0001-7808-5911</a>) and Clark
 Richards (<a href="https://orcid.org/0000-0002-7833-206X" class="external-link uri">https://orcid.org/0000-0002-7833-206X</a>)</h4>
             
-            <h4 data-toc-skip class="date">2022-08-18</h4>
+            <h4 data-toc-skip class="date">2023-03-27</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/dankelley/oce/blob/HEAD/vignettes/B_ctd.Rmd" class="external-link"><code>vignettes/B_ctd.Rmd</code></a></small>
       <div class="hidden name"><code>B_ctd.Rmd</code></div>
@@ -145,17 +145,17 @@ summary and plot (Figure 2) are created as follows.</p>
 <span><span class="co">#&gt; * Cruise:              Halifax Harbour</span></span>
 <span><span class="co">#&gt; * Vessel:              Divcom3</span></span>
 <span><span class="co">#&gt; * Station:             Stn 2</span></span>
-<span><span class="co">#&gt; * Location:            44.684N 63.644W</span></span>
+<span><span class="co">#&gt; * Mean Location:       44.684N 63.644W</span></span>
 <span><span class="co">#&gt; * Data Overview</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt;                                 Min.   Mean   Max. Dim. NAs OriginalName</span></span>
-<span><span class="co">#&gt;     scan                         130    220    310  181   0         scan</span></span>
-<span><span class="co">#&gt;     timeS [s]                    129    219    309  181   0        timeS</span></span>
-<span><span class="co">#&gt;     pressure [dbar]             1.48 22.885 44.141  181   0           pr</span></span>
-<span><span class="co">#&gt;     depth [m]                  1.468 22.698 43.778  181   0         depS</span></span>
-<span><span class="co">#&gt;     temperature [°C, IPTS-68]  2.919 7.5063 14.237  181   0         t068</span></span>
-<span><span class="co">#&gt;     salinity [PSS-78]         29.916 31.219 31.498  181   0        sal00</span></span>
-<span><span class="co">#&gt;     flag                           0      0      0  181   0         flag</span></span>
+<span><span class="co">#&gt;     scan                         130    220    310    0   0         scan</span></span>
+<span><span class="co">#&gt;     timeS [s]                    129    219    309    0   0        timeS</span></span>
+<span><span class="co">#&gt;     pressure [dbar]             1.48 22.885 44.141    0   0           pr</span></span>
+<span><span class="co">#&gt;     depth [m]                  1.468 22.698 43.778    0   0         depS</span></span>
+<span><span class="co">#&gt;     temperature [°C, IPTS-68]  2.919 7.5063 14.237    0   0         t068</span></span>
+<span><span class="co">#&gt;     salinity [PSS-78]         29.916 31.219 31.498    0   0        sal00</span></span>
+<span><span class="co">#&gt;     flag                           0      0      0    0   0         flag</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; * Processing Log</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -262,10 +262,10 @@ time.)</p>
 <span><span class="co"># http://cchdo.ucsd.edu/data/7971/ar18_58JH19941029_ct1.zip</span></span>
 <span><span class="co"># setwd("~/Downloads/ar18_58JH19941029_ct1")</span></span>
 <span><span class="va">files</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.html" class="external-link">system</a></span><span class="op">(</span><span class="st">"ls *.csv"</span>, intern<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span>
-<span><span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">files</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span><span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_along</a></span><span class="op">(</span><span class="va">files</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
 <span>    <span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/read.ctd.html">read.ctd</a></span><span class="op">(</span><span class="va">files</span><span class="op">[</span><span class="va">i</span><span class="op">]</span><span class="op">)</span></span>
 <span>    <span class="kw">if</span> <span class="op">(</span><span class="va">i</span> <span class="op">==</span> <span class="fl">1</span><span class="op">)</span> <span class="op">{</span></span>
-<span>        <span class="fu"><a href="../reference/plotTS.html">plotTS</a></span><span class="op">(</span><span class="va">x</span>, Slim<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">31</span>, <span class="fl">35.5</span><span class="op">)</span>, Tlim<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">2</span>, <span class="fl">10</span><span class="op">)</span>, type<span class="op">=</span><span class="st">'o'</span><span class="op">)</span></span>
+<span>        <span class="fu"><a href="../reference/plotTS.html">plotTS</a></span><span class="op">(</span><span class="va">x</span>, Slim<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">31</span>, <span class="fl">35.5</span><span class="op">)</span>, Tlim<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">2</span>, <span class="fl">10</span><span class="op">)</span>, type<span class="op">=</span><span class="st">"o"</span><span class="op">)</span></span>
 <span>    <span class="op">}</span> <span class="kw">else</span> <span class="op">{</span></span>
 <span>        <span class="fu"><a href="https://rdrr.io/r/graphics/points.html" class="external-link">points</a></span><span class="op">(</span><span class="va">x</span><span class="op">[[</span><span class="st">"salinity"</span><span class="op">]</span><span class="op">]</span>, <span class="va">x</span><span class="op">[[</span><span class="st">"potential temperature"</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span>
 <span>        <span class="fu"><a href="https://rdrr.io/r/graphics/lines.html" class="external-link">lines</a></span><span class="op">(</span><span class="va">x</span><span class="op">[[</span><span class="st">"salinity"</span><span class="op">]</span><span class="op">]</span>, <span class="va">x</span><span class="op">[[</span><span class="st">"potential temperature"</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span>
@@ -326,13 +326,13 @@ fairly large dataset, so the processing will take up to a minute.)</p>
 <span>    <span class="va">ctds</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/read.ctd.html">read.ctd</a></span><span class="op">(</span><span class="va">files</span><span class="op">[</span><span class="va">i</span><span class="op">]</span><span class="op">)</span></span>
 <span>    <span class="va">station</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">ctds</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span><span class="op">[[</span><span class="st">"station"</span><span class="op">]</span><span class="op">]</span></span>
 <span><span class="op">}</span></span>
-<span><span class="va">S</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/unlist.html" class="external-link">unlist</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="va">n</span>, <span class="kw">function</span><span class="op">(</span><span class="va">i</span><span class="op">)</span> <span class="va">ctds</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span><span class="op">[[</span><span class="st">"salinity"</span><span class="op">]</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="cn">T</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/unlist.html" class="external-link">unlist</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="va">n</span>, <span class="kw">function</span><span class="op">(</span><span class="va">i</span><span class="op">)</span> <span class="va">ctds</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span><span class="op">[[</span><span class="st">"temperature"</span><span class="op">]</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="va">p</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/unlist.html" class="external-link">unlist</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="va">n</span>, <span class="kw">function</span><span class="op">(</span><span class="va">i</span><span class="op">)</span> <span class="va">ctds</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span><span class="op">[[</span><span class="st">"pressure"</span><span class="op">]</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="va">overall</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/as.ctd.html">as.ctd</a></span><span class="op">(</span><span class="va">S</span>, <span class="cn">T</span>, <span class="va">p</span><span class="op">)</span></span>
+<span><span class="va">sal</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/unlist.html" class="external-link">unlist</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="va">n</span>, <span class="kw">function</span><span class="op">(</span><span class="va">i</span><span class="op">)</span> <span class="va">ctds</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span><span class="op">[[</span><span class="st">"salinity"</span><span class="op">]</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">tem</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/unlist.html" class="external-link">unlist</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="va">n</span>, <span class="kw">function</span><span class="op">(</span><span class="va">i</span><span class="op">)</span> <span class="va">ctds</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span><span class="op">[[</span><span class="st">"temperature"</span><span class="op">]</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">pre</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/unlist.html" class="external-link">unlist</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="va">n</span>, <span class="kw">function</span><span class="op">(</span><span class="va">i</span><span class="op">)</span> <span class="va">ctds</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span><span class="op">[[</span><span class="st">"pressure"</span><span class="op">]</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">overall</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/as.ctd.html">as.ctd</a></span><span class="op">(</span><span class="va">sal</span>, <span class="va">tem</span>, <span class="va">pre</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/grDevices/png.html" class="external-link">png</a></span><span class="op">(</span><span class="st">"ar18_%02d.png"</span><span class="op">)</span></span>
 <span><span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="va">n</span><span class="op">)</span> <span class="op">{</span></span>
-<span>    <span class="fu"><a href="../reference/plotTS.html">plotTS</a></span><span class="op">(</span><span class="va">overall</span>, col<span class="op">=</span><span class="st">'gray'</span><span class="op">)</span></span>
+<span>    <span class="fu"><a href="../reference/plotTS.html">plotTS</a></span><span class="op">(</span><span class="va">overall</span>, col<span class="op">=</span><span class="st">"gray"</span><span class="op">)</span></span>
 <span>    <span class="fu"><a href="https://rdrr.io/r/graphics/lines.html" class="external-link">lines</a></span><span class="op">(</span><span class="va">ctds</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span><span class="op">[[</span><span class="st">"salinity"</span><span class="op">]</span><span class="op">]</span>, <span class="va">ctds</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span><span class="op">[[</span><span class="st">"potential temperature"</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span>
 <span>    <span class="fu"><a href="https://rdrr.io/r/graphics/mtext.html" class="external-link">mtext</a></span><span class="op">(</span><span class="va">station</span><span class="op">[</span><span class="va">i</span><span class="op">]</span>, side<span class="op">=</span><span class="fl">3</span>, line<span class="op">=</span><span class="fl">0</span><span class="op">)</span></span>
 <span><span class="op">}</span></span>
@@ -357,7 +357,7 @@ fairly large dataset, so the processing will take up to a minute.)</p>
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer>

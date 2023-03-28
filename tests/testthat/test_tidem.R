@@ -90,7 +90,9 @@ test_that("tidemVuf() agrees with T_TIDE", {
 })
 
 test_that("tidem constituents match previous versions", {
-    expect_output(m <- tidem(sealevel), "the tidal record is too short to fit for constituents")
+    expect_message(
+        m <- tidem(sealevel),
+        "the tidal record is too short to fit for constituents")
     nameExpected <- c("Z0", "SSA", "MSM", "MM", "MSF", "MF", "ALP1", "2Q1", "SIG1", "Q1", "RHO1", "O1", "TAU1",
         "BET1", "NO1", "CHI1", "P1", "K1", "PHI1", "THE1", "J1", "SO1", "OO1", "UPS1", "OQ2",
         "EPS2", "2N2", "MU2", "N2", "NU2", "M2", "MKS2", "LDA2", "L2", "S2", "K2", "MSN2", "ETA2",
@@ -131,7 +133,7 @@ test_that("tidem constituents match previous versions", {
 })
 
 test_that("prediction works with newdata and without newdata", {
-    expect_output(
+    expect_message(
         m <- tidem(sealevel),
         "the tidal record is too short to fit for constituents")
     p1 <- predict(m)
@@ -144,7 +146,8 @@ test_that("tailoring of constituents", {
     tide3 <- tidem(sealevel, constituents = c("M2", "K2"))
     expect_equal(tide3[["data"]]$name, c("M2", "K2"))
     # check that we can remove constituents
-    expect_output(tide5 <- tidem(sealevel, constituents = c("standard", "-M2")),
+    expect_message(
+        tide5 <- tidem(sealevel, constituents = c("standard", "-M2")),
         "the tidal record is too short to fit for constituents")
     expect_equal(tide5[["data"]]$name, resolvable[resolvable != "M2"])
 })
@@ -161,7 +164,7 @@ test_that("Foreman (1977 App 7.3) and T-TIDE (Pawlowciz 2002 Table 1) test", {
     # this is set up to matche the test in Foreman's Appendix 7.1 (and 7.3),
     # and also in the TTIDE paper by Pawlowicz et al 2002 (Table 1).
     data("sealevelTuktoyaktuk")
-    expect_output(
+    expect_message(
         m <- tidem(sealevelTuktoyaktuk, constituents=c("standard", "M10"),
             infer=list(name=c("P1", "K2"), # 0.0415525871 0.0835614924
                 from=c("K1", "S2"), # 0.0417807462 0.0833333333
@@ -177,11 +180,11 @@ test_that("Foreman (1977 App 7.3) and T-TIDE (Pawlowciz 2002 Table 1) test", {
     expect_equal(0.33093,
         m[["amplitude"]][which(m[["name"]]=="P1")]/m[["amplitude"]][which(m[["name"]]=="K1")])
     expect_equal(m[["phase"]][which(m[["name"]]=="P1")],
-        m[["phase"]][which(m[["name"]]=="K1")]-(-7.07))
+        m[["phase"]][which(m[["name"]]=="K1")] - (-7.07))
     expect_equal(0.27215,
         m[["amplitude"]][which(m[["name"]]=="K2")]/m[["amplitude"]][which(m[["name"]]=="S2")])
     expect_equal(m[["phase"]][which(m[["name"]]=="K2")],
-        m[["phase"]][which(m[["name"]]=="S2")]-(-22.40))
+        m[["phase"]][which(m[["name"]]=="S2")] - (-22.40))
 
     # Compare amplitude and phase with T_TIDE (exact match)
     expect_equal(sum(abs(ttide$amplitude - round(m[["amplitude"]], 4))), 0)
@@ -202,6 +205,4 @@ test_that("Foreman (1977 App 7.3) and T-TIDE (Pawlowciz 2002 Table 1) test", {
     # for one thing.
     expect_lt(max(abs(foreman$A - ttide$amplitude)), 0.000201)
     expect_lt(max(abs(foreman$G - ttide$phase)), 0.121)
-}
-    )
-
+})

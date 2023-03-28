@@ -19,7 +19,7 @@ CTD/bottle profiles."><!-- mathjax --><script src="https://cdnjs.cloudflare.com/
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-10</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-11</span>
       </span>
     </div>
 
@@ -107,24 +107,25 @@ these pressures.</p></dd>
 
 <dt>method</dt>
 <dd><p>the method to be used for calculating decimated values.  This may
-be a function or a string naming a built-in method.  The built-in methods are
-as follows.</p><ul><li><p><code>"boxcar"</code> (based on a local average)</p></li>
+be a string specifying the method, or a function. In the string case, the
+possibilities are as follows.</p><ul><li><p><code>"boxcar"</code> (based on a local average)</p></li>
 <li><p><code>"approx"</code> (based on linear
 interpolation between neighboring points, using <code><a href="https://rdrr.io/r/stats/approxfun.html" class="external-link">approx()</a></code>
 with the <code>rule</code> argument specified here)</p></li>
 <li><p><code>"approxML"</code> as <code>"approx"</code>,
 except that a mixed layer is assumed to apply above the top data value; this
 is done by setting the <code>yleft</code> argument to <code><a href="https://rdrr.io/r/stats/approxfun.html" class="external-link">approx()</a></code>, and
-by calling that function with <code>rule=c(2,1))</code></p></li>
+by calling that function with <code>rule=c(2, 1))</code></p></li>
 <li><p><code>"lm"</code> (based on local
 regression, with <code>e</code> setting the size of the local region);</p></li>
 <li><p><code>"rr"</code> for the Reiniger and Ross method, carried out with <code><a href="oceApprox.html">oce.approx()</a></code>;</p></li>
 <li><p><code>"unesco"</code> (for the UNESCO method, carried out with <code><a href="oceApprox.html">oce.approx()</a></code>.</p></li>
 </ul><p>On the other hand, if <code>method</code> is a function, then it must take
-three arguments, the first being pressure, the second being an arbitrary
-variable in another column of the data, and the third being a vector of target
-pressures at which the calculation is carried out, and the return value must be
-a vector.  See “Examples”.</p></dd>
+two arguments, named <code>data</code> and <code>parameters</code>. The first is set to <code>x@data</code> by
+<code><a href="ctdTrim.html">ctdTrim()</a></code>. The second is passed directly to the user's function (see
+Example 2). The return value from the function must be a logical vector of
+the same length as the <code>pressure</code> data, with TRUE values meaning to keep the
+corresponding entries of the <code>data</code> slot.</p></dd>
 
 
 <dt>rule</dt>
@@ -212,6 +213,7 @@ CTD objects, and also outlines the other functions dealing with them.</p>
 <code><a href="cnvName2oceName.html">cnvName2oceName</a>()</code>,
 <code><a href="ctd-class.html">ctd-class</a></code>,
 <code><a href="ctd.cnv.html">ctd.cnv</a></code>,
+<code><a href="ctdFindProfilesRBR.html">ctdFindProfilesRBR</a>()</code>,
 <code><a href="ctdFindProfiles.html">ctdFindProfiles</a>()</code>,
 <code><a href="ctdRaw.html">ctdRaw</a></code>,
 <code><a href="ctdRepair.html">ctdRepair</a>()</code>,
@@ -279,7 +281,7 @@ CTD objects, and also outlines the other functions dealing with them.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>

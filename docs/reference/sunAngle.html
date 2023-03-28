@@ -19,7 +19,7 @@ based on "The Astronomical Almanac".'><!-- mathjax --><script src="https://cdnjs
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-10</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-11</span>
       </span>
     </div>
 
@@ -90,7 +90,9 @@ based on "The Astronomical Almanac".</p>
     <dl><dt>t</dt>
 <dd><p>time, a POSIXt object (converted to timezone <code>"UTC"</code>,
 if it is not already in that timezone), a character or numeric value that
-corresponds to such a time.</p></dd>
+corresponds to such a time.  This may be a single value or a vector
+of values.  In the latter case, <code>longitude</code>, <code>latitude</code> and <code>useRefraction</code>
+are all made to be of the same length as <code>time</code>, by calling <code><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep()</a></code>.</p></dd>
 
 
 <dt>longitude</dt>
@@ -172,9 +174,9 @@ Goddard Space Flight Center).</p>
 <span class="r-in"><span>    <span class="fu">sunAngle</span><span class="op">(</span><span class="va">rise</span>, <span class="va">lonlat</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>, <span class="va">lonlat</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span><span class="op">)</span><span class="op">$</span><span class="va">altitude</span><span class="op">^</span><span class="fl">2</span> <span class="op">+</span> <span class="fu">sunAngle</span><span class="op">(</span><span class="va">set</span>, <span class="va">lonlat</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>, <span class="va">lonlat</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span><span class="op">)</span><span class="op">$</span><span class="va">altitude</span><span class="op">^</span><span class="fl">2</span></span></span>
 <span class="r-in"><span><span class="op">}</span></span></span>
 <span class="r-in"><span><span class="va">result</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/optim.html" class="external-link">optim</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">1</span><span class="op">)</span>, <span class="va">mismatch</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">lon.hfx</span> <span class="op">&lt;-</span> <span class="op">(</span><span class="op">-</span><span class="fl">63.55274</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">lat.hfx</span> <span class="op">&lt;-</span> <span class="fl">44.65</span></span></span>
-<span class="r-in"><span><span class="va">dist</span> <span class="op">&lt;-</span> <span class="fu"><a href="geodDist.html">geodDist</a></span><span class="op">(</span><span class="va">result</span><span class="op">$</span><span class="va">par</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>, <span class="va">result</span><span class="op">$</span><span class="va">par</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span>, <span class="va">lon.hfx</span>, <span class="va">lat.hfx</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">lonHfx</span> <span class="op">&lt;-</span> <span class="op">(</span><span class="op">-</span><span class="fl">63.55274</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">latHfx</span> <span class="op">&lt;-</span> <span class="fl">44.65</span></span></span>
+<span class="r-in"><span><span class="va">dist</span> <span class="op">&lt;-</span> <span class="fu"><a href="geodDist.html">geodDist</a></span><span class="op">(</span><span class="va">result</span><span class="op">$</span><span class="va">par</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>, <span class="va">result</span><span class="op">$</span><span class="va">par</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span>, <span class="va">lonHfx</span>, <span class="va">latHfx</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sprintf.html" class="external-link">sprintf</a></span><span class="op">(</span><span class="st">"Infer Halifax latitude %.2f and longitude %.2f; distance mismatch %.0f km"</span>,</span></span>
 <span class="r-in"><span>            <span class="va">result</span><span class="op">$</span><span class="va">par</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span>, <span class="va">result</span><span class="op">$</span><span class="va">par</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>, <span class="va">dist</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Infer Halifax latitude 39.44 and longitude -63.56; distance mismatch 579 km</span>
@@ -193,7 +195,7 @@ Goddard Space Flight Center).</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>

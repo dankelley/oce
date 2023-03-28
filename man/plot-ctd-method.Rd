@@ -58,7 +58,7 @@
 \item{which}{a numeric or character vector specifying desired plot types. If
 \code{which} is not supplied, a default will be used. This default depends on
 \code{deploymentType} in the \code{metadata} slot of \code{x}.  If \code{deploymentType} is
-\code{"profile"} or missing, then \code{which} defaults to \code{c(1,2,3,5)}.  If
+\code{"profile"} or missing, then \code{which} defaults to \code{c(1, 2, 3, 5)}.  If
 \code{deploymentType} is \code{"moored"} or \code{"thermosalinograph"} then \code{which} defaults
 to \code{c(30, 3, 31, 5)}. Finally, if \code{deploymentType} is \code{towyo} then \code{which}
 defaults to \code{c(30, 31, 32, 3)}.
@@ -180,8 +180,8 @@ for panels in which the value of \code{which} equals \code{"map"} or
 the equivalent numerical code, \code{5}. If \code{drawIsobaths} is
 \code{FALSE}, then no contours are drawn. If \code{drawIsobaths}
 is \code{TRUE}, then contours are selected automatically,
-using \link{pretty}\code{(c(0,300))} if the station depth is
-under 100m or \link{pretty}\code{(c(0,5500))} otherwise.
+using \link{pretty}\code{(c(0, 300))} if the station depth is
+under 100m or \link{pretty}\code{(c(0, 5500))} otherwise.
 If \code{drawIsobaths} is a numerical vector,
 then the indicated depths are drawn. For plots drawn with \code{projection}
 set to \code{NULL}, the contours are added with \code{\link[=contour]{contour()}}
@@ -325,13 +325,13 @@ and international boundaries.
 }
 
 \examples{
-## 1. simple plot
+# 1. simple plot
 library(oce)
 data(ctd)
 plot(ctd)
 
-## 2. how to customize depth contours
-par(mfrow=c(1,2))
+# 2. how to customize depth contours
+par(mfrow=c(1, 2))
 data(section)
 stn <- section[["station", 105]]
 plot(stn, which="map", drawIsobaths=TRUE)
@@ -341,9 +341,9 @@ tlon <- topoWorld[["longitude"]]
 tlat <- topoWorld[["latitude"]]
 tdep <- -topoWorld[["z"]]
 contour(tlon, tlat, tdep, drawlabels=FALSE,
-        levels=seq(1000,6000,1000), col='lightblue', add=TRUE)
+        levels=seq(1000, 6000, 1000), col="lightblue", add=TRUE)
 contour(tlon, tlat, tdep, vfont=c("sans serif", "bold"),
-        levels=stn[['waterDepth']], col='red', lwd=2, add=TRUE)
+        levels=stn[["waterDepth"]], col="red", lwd=2, add=TRUE)
 
 }
 \seealso{
@@ -388,6 +388,7 @@ Other things related to ctd data:
 \code{\link{ctd-class}},
 \code{\link{ctd.cnv}},
 \code{\link{ctdDecimate}()},
+\code{\link{ctdFindProfilesRBR}()},
 \code{\link{ctdFindProfiles}()},
 \code{\link{ctdRaw}},
 \code{\link{ctdRepair}()},

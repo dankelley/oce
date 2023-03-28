@@ -101,7 +101,7 @@ test_that("subset(section, indices=(LOGICAL))", {
     long <- subset(eastern,
         indices=unlist(lapply(eastern[["station"]], function(s) 10<length(s[["pressure"]]))))
     expect_equal(7, length(long[["station"]]))
-    expect_equal(eastern[["station",2]], long[["station",2]])
+    expect_equal(eastern[["station", 2]], long[["station", 2]])
 })
 
 test_that("subset(section, longitude < (NUMERIC))", {
@@ -121,7 +121,7 @@ test_that("subset(section, pressure > 1000)", {
     deep <- subset(section, pressure > 1000) # drops stn 1, 2, 123, 124
     w <- which(section[["station", 100]][["pressure"]] > 1000)
     d <- data.frame(section[["station", 100]][["data"]])[w, ]
-    rownames(d) <- 1:dim(d)[1]
+    rownames(d) <- seq_len(nrow(d))
     expect_equal(d, as.data.frame(deep[["station", 98]][["data"]]))
 })
 
@@ -187,19 +187,19 @@ test_that("stationReplaceIndividualStation", {
 })
 
 test_that("stationReplaceAllStations", {
-    expect_false("N2" %in% names(eastern[["station",1]][["data"]]))
+    expect_false("N2" %in% names(eastern[["station", 1]][["data"]]))
     eastern[["station"]] <- lapply(eastern[["station"]], function(x) oceSetData(x, "N2", swN2(x)))
-    expect_true("N2" %in% names(eastern[["station",1]][["data"]]))
+    expect_true("N2" %in% names(eastern[["station", 1]][["data"]]))
 })
 
 test_that("sectionGrid units and flags", {
     # Work with a subset for speed of test.
     sg <- sectionGrid(eastern, p=seq(0, 5000, 500))
     # Check flag names (in this dataset, all stations have same flags)
-    expect_equal(sort(names(section[["station",1]][["flags"]]), method="radix"),
-        sort(names(sg[["station",1]][["flags"]]), method="radix"))
+    expect_equal(sort(names(section[["station", 1]][["flags"]]), method="radix"),
+        sort(names(sg[["station", 1]][["flags"]]), method="radix"))
     # Check units (in this dataset, all stations have same units)
-    expect_equal(eastern[["station",1]][["units"]], sg[["station",1]][["units"]])
+    expect_equal(eastern[["station", 1]][["units"]], sg[["station", 1]][["units"]])
 })
 
 # Next takes 1.8 s with section and 1km, 0.09 s with eastern and 10km.
@@ -207,8 +207,8 @@ test_that("sectionSmooth grid extends past data (issue 1583)", {
     # xgrid extends past data, owing to the ceiling(). This caused
     # an error (reported as issue 1583) prior to 2019 July 19.
     expect_silent(sectionSmooth(eastern, "barnes",
-            xg=seq(0, ceiling(max(eastern[['distance', 'byStation']])), by=10),
-            yg=seq(5, ceiling(max(eastern[['pressure']])), by=25)))
+        xg=seq(0, ceiling(max(eastern[["distance", "byStation"]])), by=10),
+        yg=seq(5, ceiling(max(eastern[["pressure"]])), by=25)))
 })
 
 test_that("sectionSmooth units and flags", {
@@ -220,10 +220,10 @@ test_that("sectionSmooth units and flags", {
     # methods.
     sspline <- sectionSmooth(sectionGrid(s, p=seq(0, 5000, 500)), "spline")
     # Check flag names (in this dataset, all stations have same flags)
-    expect_equal(sort(names(sspline[["station",1]][["flags"]]), method="radix"),
-        sort(names(s[["station",1]][["flags"]]), method="radix"))
+    expect_equal(sort(names(sspline[["station", 1]][["flags"]]), method="radix"),
+        sort(names(s[["station", 1]][["flags"]]), method="radix"))
     # Check units (in this dataset, all stations have same units)
-    expect_equal(sspline[["station",1]][["units"]], s[["station",1]][["units"]])
+    expect_equal(sspline[["station", 1]][["units"]], s[["station", 1]][["units"]])
 })
 
 test_that("sectionSmooth by spline", {
@@ -231,7 +231,7 @@ test_that("sectionSmooth by spline", {
     sspline <- sectionSmooth(sg, "spline")
     expect_equal(length(sg[["station"]]), length(sspline[["station"]]))
     # Check dimensionality when xg is given
-    sspline2 <- sectionSmooth(sg, "spline", xg=seq(0,200,50))
+    sspline2 <- sectionSmooth(sg, "spline", xg=seq(0, 200, 50))
     expect_equal(length(sspline2[["station"]]), 3)
 })
 
@@ -277,4 +277,3 @@ test_that("lon360 works as intended", {
     expect_equal(360 + section[["longitude"]], sectionShifted[["longitude"]])
     expect_equal(c(179, 181), lon360(c(179, -179)))
 })
-

@@ -57,7 +57,7 @@ lon <- seq(-120, -60, 15)
 lat <- 45 + seq(-15, 15, 5)
 lonm <- matrix(expand.grid(lon, lat)[, 1], nrow=length(lon))
 latm <- matrix(expand.grid(lon, lat)[, 2], nrow=length(lon))
-## vectors pointed 45 degrees clockwise from north
+# vectors pointed 45 degrees clockwise from north
 u <- matrix(1/sqrt(2), nrow=length(lon), ncol=length(lat))
 v <- matrix(1/sqrt(2), nrow=length(lon), ncol=length(lat))
 mapDirectionField(lon, lat, u, v, scale=3)

@@ -21,7 +21,7 @@ be printed. If one function calls another, it usually reduces the value of
 by specifying higher \code{debug} values.}
 }
 \value{
-A \linkS4class{topo} object that.
+A \linkS4class{topo} object.
 }
 \description{
 Read a file that contains topographic data in the ETOPO dataset, as was once provided by

@@ -19,6 +19,7 @@ imagep(
   zlabPosition = c("top", "side"),
   las.palette = 0,
   decimate = TRUE,
+  quiet = FALSE,
   breaks,
   col,
   colormap,
@@ -52,17 +53,21 @@ imagep(
 }
 \arguments{
 \item{x, y}{These have different meanings in different modes of operation.
+
 \emph{Mode 1.} One
 mode has them meaning the locations of coordinates along which values
 matrix \code{z} are defined. In this case, both \code{x} and \code{y}
 must be supplied and, within each, the values must be finite and
 distinct; if values are out of order, they (and \code{z}) will be
 transformed to put them in order.
-ordered in a matching way).  \emph{Mode 2.}
+ordered in a matching way).
+
+\emph{Mode 2.}
 If \code{z} is provided but not \code{x} and \code{y}, then the latter
 are constructed to
 indicate the indices of the matrix, in contrast
 to the range of 0 to 1, as is the case for \code{\link[=image]{image()}}.
+
 \emph{Mode 3.} If
 \code{x} is a list, its components \code{x$x} and \code{x$y} are used
 for \code{x} and \code{y}, respectively. If the list has component
@@ -135,6 +140,9 @@ the same is done for the \code{y} direction.
 the first index of \code{z}, and the second is used for the second
 index.
 }}
+
+\item{quiet}{logical value indicating whether to silence warnings that
+might occur if the image is being decimated.}
 
 \item{breaks}{The z values for breaks in the color scheme.  If this is of
 length 1, the value indicates the desired number of breaks, which is

@@ -20,16 +20,17 @@ as.echosounder(
 )
 }
 \arguments{
-\item{time}{times of pings}
+\item{time}{times of pings.}
 
-\item{depth}{depths of samples within pings}
+\item{depth}{depths of samples within pings.}
 
-\item{a}{matrix of amplitudes}
+\item{a}{matrix of echo amplitudes, as would be stored with
+\code{\link[=read.echosounder]{read.echosounder()}}.}
 
-\item{src}{optional string indicating data source}
+\item{src}{optional string indicating data source.}
 
 \item{sourceLevel}{source level, in dB (uPa at 1m), denoted \code{sl} in
-reference 1 p15, where it is in units 0.1dB (uPa at 1m)}
+reference 1 p15, where it is in units 0.1dB (uPa at 1m).}
 
 \item{receiverSensitivity}{receiver sensitivity of the main element, in
 dB(counts/uPa), denoted \code{rs} in reference 1 p15, where it is in units of
@@ -60,7 +61,21 @@ Coerces a dataset into a echosounder dataset.
 \details{
 Creates an echosounder file.  The defaults for e.g.  \code{transmitPower}
 are taken from the \code{echosounder} dataset, and they are unlikely to make
-sense generally.
+sense generally.  The first three parameters must be supplied, and the
+dimension of \code{a} must align with the lengths of \code{time} and \code{depths}. The
+other parameters have defaults that are unlikely to be correct for
+arbitrary application, but they are not essential for basic plots,
+etc.
+
+Those who use the \CRANpkg{readHAC} package to read echosounder
+data should note that it stores the \code{a} matrix in a flipped and
+transposed format. See that package's demo code for a function
+named \code{flip()} that transforms the matrix as required by
+\code{\link[=as.echosounder]{as.echosounder()}}. Indeed, users working with HAC
+data ought to study the whole of the \CRANpkg{readHAC}
+documentation, to learn what data are stored, so that
+\code{\link[=oceSetMetadata]{oceSetMetadata()}} and \code{\link[=oceSetData]{oceSetData()}} can be used as needed
+to flesh out the contents returned by \code{\link[=as.echosounder]{as.echosounder()}}.
 }
 \seealso{
 Other things related to echosounder data: 

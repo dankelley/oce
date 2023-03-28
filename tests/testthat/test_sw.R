@@ -37,18 +37,26 @@ library(oce)
 # [2] Trevor J. McDougall, 1987. Neutral Surfaces, Journal of Physical
 #     Oceanography, volume 17, pages 1950-1964.
 
-test_that("rho and sigma", {
+test_that("1. rho and sigma", {
     # 1. rho and sigma
     # 1.1 UNESCO rho [1 p19]. Note that we must
     # convert to the T68 temperature scale, which was in use at the time
     # that [1] was written.
-    S <- c( 0,   0,   0,   0,  35,  35,  35,  35)
-    T <- T90fromT68(c( 5,   5,  25,  25,   5,   5,  25,  25))
-    p <- c( 0, 1e4,   0, 1e4,   0, 1e4,   0, 1e4)
+    sal <- c(0,   0,   0,   0,  35,  35,  35,  35)
+    tem <- T90fromT68(c(5,   5,  25,  25,   5,   5,  25,  25))
+    pre <- c(0, 1e4,   0, 1e4,   0, 1e4,   0, 1e4)
     rho <- c(999.96675, 1044.12802, 997.04796, 1037.90204, 1027.67547, 1069.48914, 1023.34306, 1062.53817)
-    expect_equal(swRho(S, T, p, eos="unesco"), rho)
+    expect_equal(swRho(sal, tem, pre, eos="unesco"), rho)
+    # Does swRho() work for a ctd object?
+    ctd <- as.ctd(sal, tem, pre)
+    expect_equal(swRho(ctd, eos="unesco"), rho)
+    # Does accessor work for a ctd object?
+    oldEOS <- getOption("oceEOS")
+    options(oceEOS="unesco")
+    expect_equal(ctd[["density", eos="unesco"]], rho)
+    options(oceEOS=oldEOS)
     # check sigma from this
-    expect_equal(swRho(S, T, p, eos="unesco")-1000, swSigma(S,T,p,eos="unesco"))
+    expect_equal(swRho(sal, tem, pre, eos="unesco")-1000, swSigma(sal, tem, pre, eos="unesco"))
     # 1.2 GSW
     # Since gsw_ functions are tested in the gsw package, we just need a consistency check.
     longitude <- 188
@@ -60,23 +68,23 @@ test_that("rho and sigma", {
     CT <- gsw::gsw_CT_from_t(SA, t, p)
     # Test density.
     rhoGSW <- gsw::gsw_rho(SA, CT, p)
-    rho <- swRho(SP, t, p, longitude, latitude, "gsw")
+    rho <- swRho(SP, t, p, longitude, latitude, eos="gsw")
     expect_equal(rhoGSW, rho)
     # Now use density to test sigma (not provided by gsw).
-    sigma <- swSigma(SP, t, p, longitude, latitude, "gsw")
+    sigma <- swSigma(SP, t, p, longitude, latitude, eos="gsw")
     expect_equal(rhoGSW-1000, sigma)
     # The following was hard-coded using values from GSW3.03, and it failed with GSW3.05.
-    expect_equal(30.818302,swSigma(35,T90fromT68(13),1000,eos="unesco"),tolerance=0.000001)
-    # The sigmaT tests are not from definititive test values, and so are just
-    # checks against future changes.
-    expect_equal(swSigmaT(35, T90fromT68(13), 1000, eos="unesco"), 26.393538,tolerance=0.000001)
+    expect_equal(30.818302, swSigma(35, T90fromT68(13), 1000, eos="unesco"), tolerance=0.000001)
+    # The sigmaT tests are not from definitive test values, but only provide a check
+    # against future changes.
+    expect_equal(swSigmaT(35, T90fromT68(13), 1000, eos="unesco"), 26.393538, tolerance=0.000001)
 
     # Tests from issue 1904
     data(section)
     stn <- section[["station", 100]] # 4.3km deep
     # Ensure that the sigmaTheta is the same whether called directly or with [[
-    expect_equal(swSigmaTheta(stn,eos="unesco"), stn[["sigmaTheta", "unesco"]])
-    expect_equal(swSigmaTheta(stn,eos="gsw"), stn[["sigmaTheta", "gsw"]])
+    expect_equal(swSigmaTheta(stn, eos="unesco"), stn[["sigmaTheta", "unesco"]])
+    expect_equal(swSigmaTheta(stn, eos="gsw"), stn[["sigmaTheta", "gsw"]])
 
     # The oceEOS option must be obeyed.
     options(oceEOS="unesco")
@@ -95,8 +103,8 @@ test_that("rho and sigma", {
     expect_false(identical(stn[["sigma0", "gsw"]], stn[["sigma0", "unesco"]]))
 
     # sigmaTheta and sigma0 (function form) should not match between unesco and gsw
-    expect_false(identical(swSigmaTheta(stn,eos="unesco"), swSigmaTheta(stn,eos="gsw")))
-    expect_false(identical(swSigma0(stn,eos="unesco"), swSigma0(stn,eos="gsw")))
+    expect_false(identical(swSigmaTheta(stn, eos="unesco"), swSigmaTheta(stn, eos="gsw")))
+    expect_false(identical(swSigma0(stn, eos="unesco"), swSigma0(stn, eos="gsw")))
 })
 
 test_that("potential_temperature (UNESCO)", {
@@ -106,12 +114,12 @@ test_that("potential_temperature (UNESCO)", {
     # second with a ctd object as an arg. Note the need to convert to the 1968
     # temperature scale, which was used in the UNESCO formulation.
     expect_equal(swTheta(40, T90fromT68(40), 10000, eos="unesco"),
-        T90fromT68(36.89073),tolerance=0.00002)
+        T90fromT68(36.89073), tolerance=0.00002)
     expect_equal(swTheta(as.ctd(40, T90fromT68(40), 10000), eos="unesco"),
-        T90fromT68(36.89073),tolerance=0.00002)
+        T90fromT68(36.89073), tolerance=0.00002)
     # Test self-consistency at the surface (also a test of vector reframing)
-    T <- 10 + rnorm(50)
-    expect_equal(0, sum(abs(T - swTheta(rep(35, 50), T, 0, eos="unesco"))))
+    tem <- 10 + rnorm(50)
+    expect_equal(0, sum(abs(tem - swTheta(rep(35, 50), tem, 0, eos="unesco"))))
 })
 
 test_that("SA and CT, sound speed (GSW)", {
@@ -133,8 +141,8 @@ test_that("SA and CT, sound speed (GSW)", {
     expect_equal(SA, swAbsoluteSalinity(ctd))
     expect_equal(CT, swConservativeTemperature(salinity=SP, temperature=t, pressure=p, longitude=lon, latitude=lat))
     expect_equal(CT, swConservativeTemperature(ctd))
-    expect_equal(1731.995, swSoundSpeed(40,T90fromT68(40),1e4,eos="unesco"),tolerance=0.001)
-    expect_equal(1731.995, swSoundSpeed(as.ctd(40,T90fromT68(40),1e4),eos="unesco"),tolerance=0.001)
+    expect_equal(1731.995, swSoundSpeed(40, T90fromT68(40), 1e4, eos="unesco"), tolerance=0.001)
+    expect_equal(1731.995, swSoundSpeed(as.ctd(40, T90fromT68(40), 1e4), eos="unesco"), tolerance=0.001)
     SA <- gsw::gsw_SA_from_SP(SP=40, p=1e4, longitude=300, latitude=30)
     CT <- gsw::gsw_CT_from_t(SA, 40, 1e4)
     speedGSW <- gsw::gsw_sound_speed(SA, CT, 1e4)
@@ -149,7 +157,7 @@ test_that("temperature scales", {
 test_that("freezing temperature", {
     # 5.1 UNESCO freezing temperature [1 p29]
     Tf <- swTFreeze(40, 500, eos="unesco")
-    expect_equal(Tf, T90fromT68(-2.588567),tolerance=1e-6)
+    expect_equal(Tf, T90fromT68(-2.588567), tolerance=1e-6)
     # 5.2 GSW freezing temperature. This is actually just a test that
     # the GSW functions are called correctly -- it is *not* using
     # check values. However, we don't have to worry about check
@@ -170,7 +178,7 @@ test_that("specific heat", {
     lon <- 300
     lat <- 30
     C <- swSpecificHeat(salinity=SP, temperature=T90fromT68(t), pressure=p, eos="unesco")
-    expect_equal(C, 3849.499,tolerance=1e-3)
+    expect_equal(C, 3849.499, tolerance=1e-3)
     SA <- gsw::gsw_SA_from_SP(SP=SP, p=p, longitude=lon, latitude=lat)
     CGSW <- gsw::gsw_cp_t_exact(SA=SA, t=t, p=p)
     C <- swSpecificHeat(salinity=SP, temperature=t, pressure=p, longitude=lon, latitude=lat, eos="gsw")
@@ -202,12 +210,12 @@ test_that("alpha and beta", {
     # Since [2] gives formula is in terms of theta=10C, we must compute the
     # corresponding in-situ temperature first. Use S=40 and 4000dbar to match
     # his check value.
-    T <- uniroot(function(x) 10-swTheta(40, x, 4000, eos="unesco"), c(9, 12))$root
+    tem <- uniroot(function(x) 10-swTheta(40, x, 4000, eos="unesco"), c(9, 12))$root
     # The beta=7.2088e-4 value is from the last sentence of McDougall's Appendix.
-    expect_equal(7.2088e-4, swBeta(40, T, 4000, eos="unesco"),tolerance=4e-8)
+    expect_equal(7.2088e-4, swBeta(40, tem, 4000, eos="unesco"), tolerance=4e-8)
     # The alpha/beta=0.34763 is from the left-hand column of McDougall's p1964.
-    expect_equal(0.34763, swAlphaOverBeta(40, T, 4000, eos="unesco"),tolerance=2e-5)
-    expect_equal(0.34763*7.20883e-4, swAlpha(40, T, 4000, eos="unesco"),tolerance=2e-5)
+    expect_equal(0.34763, swAlphaOverBeta(40, tem, 4000, eos="unesco"), tolerance=2e-5)
+    expect_equal(0.34763*7.20883e-4, swAlpha(40, tem, 4000, eos="unesco"), tolerance=2e-5)
     # 8.1 GSW alpha and beta
     # Check against gsw_ values, which we know to be correct from the gsw test suite.
     SP <- 40
@@ -225,39 +233,50 @@ test_that("alpha and beta", {
     expect_equal(b, bGSW)
     # 8.2 swAlphaOverBeta
     # Ensure that alpha, beta, and alpha/beta are consistent, in both EOS
-    S <- 34
-    T <- 10
-    p <- 100
-    expect_equal(swAlphaOverBeta(S, T, p, longitude=300, latitude=30, eos="gsw"),
-        swAlpha(S, T, p, longitude=300, latitude=30, eos="gsw") /
-        swBeta(S, T, p, longitude=300, latitude=30, eos="gsw"))
-    expect_equal(swAlphaOverBeta(S, T, p, eos="unesco"),
-        swAlpha(S, T, p, eos="unesco") /
-        swBeta(S, T, p, eos="unesco"))
+    sal <- 34
+    tem <- 10
+    pre <- 100
+    expect_equal(swAlphaOverBeta(sal, tem, pre, longitude=300, latitude=30, eos="gsw"),
+        swAlpha(sal, tem, pre, longitude=300, latitude=30, eos="gsw") /
+        swBeta(sal, tem, pre, longitude=300, latitude=30, eos="gsw"))
+    expect_equal(swAlphaOverBeta(sal, tem, pre, eos="unesco"),
+        swAlpha(sal, tem, pre, eos="unesco") /
+        swBeta(sal, tem, pre, eos="unesco"))
 })
 
 test_that("swSTrho", {
     # 9. swSTrho
     # This is used to draw isopycnals on TS diagrams.
-    T <- 10
+    tem <- 10
     rho <- 1022
-    p <- 0
+    pre <- 0
     # 9.1 UNESCO swSTrho
-    Su <- swSTrho(T90fromT68(T), rho, p, eos="unesco")
-    expect_equal(Su, 28.65114808083)
-    expect_equal(rho, swRho(Su, T90fromT68(T), 0, eos="unesco"))
+    Su <- swSTrho(T90fromT68(tem), rho, pre, eos="unesco")
+    # Next was 28.65114808083 before issue 2044, but the precision
+    # of the calculation was increased then, so a new check value
+    # is needed here. The relative difference is 1.7e-7, so
+    # certainly not a concern, but we want this test suite to
+    # check on changes to the code, in addition to checking
+    # on test values reflecting external knowledge.
+    expect_equal(Su, 28.6511432379484)
+    expect_equal(rho, swRho(Su, T90fromT68(tem), 0, eos="unesco"))
     # 9.2 GSW swSTrho
-    CT <- gsw::gsw_CT_from_t(Su, T, p)
-    Sg <- swSTrho(CT, rho, p, eos="gsw")
-    expect_equal(gsw::gsw_rho(Sg,CT,p), rho)
+    CT <- gsw::gsw_CT_from_t(Su, tem, pre)
+    Sg <- swSTrho(CT, rho, pre, eos="gsw")
+    expect_equal(gsw::gsw_rho(Sg, CT, pre), rho)
 })
 
 test_that("misc sw calculations", {
     # The following was hard-coded using values from GSW3.03, and it failed with GSW3.05.
     # expect_equal(Sg, 28.7842812841013,tolerance=1e-8)
-    T <- swTSrho(35, 23, 0, eos="unesco") # 26.11301
-    expect_equal(T68fromT90(T), 26.1130113601685,tolerance=1e-8)
-    expect_equal(swRho(35, T, 0, eos="unesco"),1023,tolerance=1e-5)
+    tem <- swTSrho(35, 23, 0, eos="unesco") # 26.11301
+    # As above, the check value was changed in addressing issue
+    # 2044.  The old value was 26.1130113601685, which has
+    # relative difference of 1.1e-6 compared to the new value. Note
+    # that the value differs because tem differs, reflecting the
+    # change in swTSrho(); there is no change to T68fromT90().
+    expect_equal(T68fromT90(tem), 26.1130395531654, tolerance=1e-8)
+    expect_equal(swRho(35, tem, 0, eos="unesco"), 1023, tolerance=1e-5)
 })
 
 test_that("sound absorption", {
@@ -271,22 +290,22 @@ test_that("sound absorption", {
 test_that("viscosity", {
     # This is just a test against future changes, for
     # the original reference did not provide a test value.
-    expect_equal(1000*swViscosity(30, 10), 1.383779,tolerance=0.000002)
+    expect_equal(1000*swViscosity(30, 10), 1.383779, tolerance=0.000002)
 })
 
 test_that("thermal conductivity", {
     # Caldwell 1975 table 1 gives 4 digits, i.e. to 1e-6
     joulePerCalorie <- 4.18400
     cmPerM <- 100
-    test <- swThermalConductivity(31.5,10,1000) / joulePerCalorie / cmPerM
-    expect_equal(1000*test, 1.478,tolerance=0.001)
+    test <- swThermalConductivity(31.5, 10, 1000) / joulePerCalorie / cmPerM
+    expect_equal(1000*test, 1.478, tolerance=0.001)
 })
 
 test_that("electrical conductivity: definitional check values", {
     expect_equal(swCSTp(35, T90fromT68(15), 0, eos="unesco"),  1)
     expect_equal(swCSTp(35, T90fromT68(15), 0, eos="gsw"), 1)
-    expect_equal(swSCTp( 1, T90fromT68(15), 0, eos="unesco"), 35)
-    expect_equal(swSCTp( 1, T90fromT68(15), 0, eos="gsw"), 35)
+    expect_equal(swSCTp(1, T90fromT68(15), 0, eos="unesco"), 35)
+    expect_equal(swSCTp(1, T90fromT68(15), 0, eos="gsw"), 35)
     expect_equal(swSCTp(0.5, 10, 100, eos="unesco"),
         swSCTp(0.5, 10, 100, eos="gsw"))
     # These test values are not against a known standard; rather, they simply
@@ -326,13 +345,13 @@ test_that("depth and pressure", {
     # but the GSW test is against gsw_z_from_p(), which is well-tested in
     # the building of the gsw package.
     depth <- swDepth(10000, 30, eos="unesco")
-    expect_equal(depth, 9712.653,tolerance=0.001)
+    expect_equal(depth, 9712.653, tolerance=0.001)
     depth <- swDepth(10000, 30, eos="gsw")
-    expect_equal(depth, 9713.735,tolerance=0.001)
+    expect_equal(depth, 9713.735, tolerance=0.001)
     pressure <- swPressure(9712.653, 30, eos="unesco")
-    expect_equal(pressure, 10000.,tolerance=0.001)
+    expect_equal(pressure, 10000., tolerance=0.001)
     pressure <- swPressure(9712.653, 30, eos="gsw")
-    expect_equal(pressure, gsw::gsw_p_from_z(-9712.653, 30),tolerance=0.001)
+    expect_equal(pressure, gsw::gsw_p_from_z(-9712.653, 30), tolerance=0.001)
 })
 
 test_that("spiciness", {
@@ -342,12 +361,12 @@ test_that("spiciness", {
     expect_equal(sp, 1.131195, tolerance=0.0000015)
     # compare against direct gsw:: computation
     data(ctd)
-    S <- ctd[["salinity"]]
-    T <- ctd[["temperature"]]
-    p <- ctd[["pressure"]]
-    lon <- rep(ctd[["longitude"]], length(S))
-    lat <- rep(ctd[["latitude"]], length(S))
-    piOce <- swSpice(S, T, p, longitude=lon, latitude=lat, eos="gsw")
+    sal <- ctd[["salinity"]]
+    tem <- ctd[["temperature"]]
+    pre <- ctd[["pressure"]]
+    lon <- rep(ctd[["longitude"]], length(sal))
+    lat <- rep(ctd[["latitude"]], length(sal))
+    piOce <- swSpice(sal, tem, pre, longitude=lon, latitude=lat, eos="gsw")
     piGsw <- gsw::gsw_spiciness0(ctd[["SA"]], ctd[["CT"]])
     expect_equal(piOce, piGsw)
 })
@@ -395,23 +414,23 @@ test_that("swRho handles matrix and array data", {
     data(ctd)
     lon <- ctd[["longitude"]]
     lat <- ctd[["latitude"]]
-    S <- ctd[["salinity"]][1:20]
-    T <- ctd[["temperature"]][1:20]
-    p <- ctd[["pressure"]][1:20]
-    Sm <- matrix(S, nrow=10)
-    Tm <- matrix(T, nrow=10)
-    pm <- matrix(p, nrow=10)
-    Sa <- array(S, dim=c(2, 2, 5))
-    Ta <- array(T, dim=c(2, 2, 5))
-    pa <- array(p, dim=c(2, 2, 5))
+    sal <- ctd[["salinity"]][1:20]
+    tem <- ctd[["temperature"]][1:20]
+    pre <- ctd[["pressure"]][1:20]
+    Sm <- matrix(sal, nrow=10)
+    Tm <- matrix(tem, nrow=10)
+    pm <- matrix(pre, nrow=10)
+    Sa <- array(sal, dim=c(2, 2, 5))
+    Ta <- array(tem, dim=c(2, 2, 5))
+    pa <- array(pre, dim=c(2, 2, 5))
     # unesco equation of state
-    rho <- swRho(S, T, p, eos="unesco")
+    rho <- swRho(sal, tem, pre, eos="unesco")
     expect_equal(swRho(Sm, Tm, pm, eos="unesco"),
         matrix(rho, nrow=10))
     expect_equal(swRho(Sa, Ta, pa, eos="unesco"),
         array(rho, dim=c(2, 2, 5)))
     # gsw equation of state
-    rho <- swRho(S, T, p, longitude=lon, latitude=lat, eos="gsw")
+    rho <- swRho(sal, tem, pre, longitude=lon, latitude=lat, eos="gsw")
     expect_equal(swRho(Sm, Tm, pm, longitude=lon, latitude=lat, eos="gsw"),
         matrix(rho, nrow=10))
     expect_equal(swRho(Sa, Ta, pa, longitude=lon, latitude=lat, eos="gsw"),
@@ -428,4 +447,3 @@ test_that("sigma0 works as expected (issue 1933)", {
     sigma0direct <- gsw_sigma0(SA=SA, CT=CT)
     expect_equal(sigma0, sigma0direct)
 })
-

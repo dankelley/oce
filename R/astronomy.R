@@ -36,8 +36,8 @@ angle2hms <- function(angle)
 {
     hourDecimal <- 24 * angle / 360
     hour <- floor(hourDecimal)
-    minute <- floor(60*(hourDecimal - hour))
-    second <- 3600*(hourDecimal - hour - minute / 60)
+    minute <- floor(60 * (hourDecimal - hour))
+    second <- 3600 * (hourDecimal - hour - minute / 60)
     floorSecond <- floor(second)
     centiSecond <- round(100 * (second - floorSecond))
     string <- sprintf("%.0fh%.0fm%.0fs.%.0f", hour, minute, floorSecond, centiSecond)
@@ -128,12 +128,12 @@ eclipticalToEquatorial <- function(lambda, beta, epsilon)
 equatorialToLocalHorizontal <- function(rightAscension, declination, t, longitude, latitude)
 {
     RPD <- atan2(1, 1) / 45            # radians per degree
-    ## sidereal Greenwich time (in hours)
+    # sidereal Greenwich time (in hours)
     theta0 <- siderealTime(t)
     H <- theta0 * 15 + longitude - rightAscension
-    ## Local horizontal coordinates; see reference 1 eq 8.5 and 8.6 or reference 2 eq 12.5 and 12.6
+    # Local horizontal coordinates; see reference 1 eq 8.5 and 8.6 or reference 2 eq 12.5 and 12.6
     A <- atan2(sin(RPD * H), cos(RPD * H) * sin(RPD * latitude) - tan(RPD * declination) * cos(RPD * latitude))
-    ## the atan2() form matches websites on azimuth at Halifax in April 2012
+    # the atan2() form matches websites on azimuth at Halifax in April 2012
     h <- asin(sin(RPD * latitude) * sin(RPD * declination) + cos(RPD * latitude) * cos(RPD * declination) * cos(RPD * H))
     data.frame(azimuth=A/RPD, altitude=h/RPD)
 }
@@ -173,9 +173,10 @@ siderealTime <- function(t)
     tt$sec <- rep(0, n)
     jd <- julianDay(t)
     jd0 <- julianDay(tt)
-    T <- (jd0 - 2415020.0) / 36525      # reference 1 eq 7.1 (different in reference 2)
+    # reference 1 eq 7.1 (different in reference 2)
+    T <- (jd0 - 2415020.0) / 36525      # nolint
     hoursLeftOver <- 24 * (jd - jd0)
-    res <- 6.6460656 + 2400.051262 * T + 0.00002581 * T * T
+    res <- 6.6460656 + 2400.051262 * T + 0.00002581 * T * T # nolint
     res <- res + 1.002737908 * hoursLeftOver
     res <- res %% 24
     res
@@ -234,7 +235,7 @@ siderealTime <- function(t)
 #'
 #' @examples
 #' library(oce)
-#' ## example from Meeus
+#' # example from Meeus
 #' t <- ISOdatetime(1977, 4, 26, hour=0, min=0, sec=0, tz="UTC")+0.4*86400
 #' stopifnot(all.equal(julianDay(t), 2443259.9))
 #'
@@ -243,8 +244,7 @@ siderealTime <- function(t)
 julianDay <- function(t, year=NA, month=NA, day=NA, hour=NA, min=NA, sec=NA, tz="UTC")
 {
     if (missing(t))  {
-        if (is.na(year) || is.na(month) || is.na(day) || is.na(hour)
-            || is.na(min) || is.na(sec))
+        if (is.na(year) || is.na(month) || is.na(day) || is.na(hour) || is.na(min) || is.na(sec))
             stop("must supply year, month, day, hour, min, and sec")
         t <- ISOdatetime(year, month, day, hour, min, sec, tz=tz)
     }
@@ -257,7 +257,7 @@ julianDay <- function(t, year=NA, month=NA, day=NA, hour=NA, min=NA, sec=NA, tz=
     A <- floor(y / 100)
     B <- 2 - A + floor(A / 4)
     jd <- floor(365.25 * y) + floor(30.6001 * (m + 1)) + day + 1720994.5
-    ## correct for Gregorian calendar
+    # correct for Gregorian calendar
     jd <- ifelse(tt > ISOdatetime(1582, 10, 15, 0, 0, 0), jd + B, jd)
     jd
 }
@@ -293,4 +293,3 @@ julianCenturyAnomaly <- function(jd)
 {
     (jd - 2415020.0) / 36525         # reference 1 Meeus 1982 (eq 7.1 or 15.1)
 }
-

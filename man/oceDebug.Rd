@@ -19,7 +19,11 @@ contains a string with a newline character (as in the example).}
 \item{style}{either a string or a function. If a string,
 it must be \code{"plain"} (the default) for plain text,
 \code{"bold"}, \code{"italic"}, \code{"red"}, \code{"green"} or \code{"blue"} (with
-obvious meanings).
+obvious meanings).  Note that none of these has any effect
+for non-interactive use, because doing so would make it difficult
+to work with R-markdown and similar documents that are to be run
+through latex.
+
 If \code{style} is a function, it must prepend and postpend the text
 with control codes, as in the cyan-coloured example; note that
 \CRANpkg{crayon} provides many functions that work well for \code{style}.}

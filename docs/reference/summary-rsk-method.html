@@ -18,7 +18,7 @@ as the station name, sampling location, data ranges, etc."><!-- mathjax --><scri
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-10</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-11</span>
       </span>
     </div>
 
@@ -102,6 +102,7 @@ of CTD objects, and also outlines the other functions dealing with them.</p>
 <code><a href="sub-sub-rsk-method.html">[[,rsk-method</a></code>,
 <code>[[&lt;-,rsk-method</code>,
 <code><a href="as.rsk.html">as.rsk</a>()</code>,
+<code><a href="ctdFindProfilesRBR.html">ctdFindProfilesRBR</a>()</code>,
 <code><a href="plot-rsk-method.html">plot,rsk-method</a></code>,
 <code><a href="read.rsk.html">read.rsk</a>()</code>,
 <code><a href="rsk-class.html">rsk-class</a></code>,
@@ -122,28 +123,30 @@ of CTD objects, and also outlines the other functions dealing with them.</p>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">rsk</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> rsk summary</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> -----------</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> * Instrument:         model RBRconcerto serial number 60130</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> * Atmosph. pressure:  10.1325</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> * Pressure type:      absolute</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> * Source:             ``060130_20150904_1159.rsk``</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> * Time ranges from 2015-09-04 15:37:21 to 2015-09-04 15:44:43 with 2653 samples and mean increment 0.1666667 s</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> * Instrument:    model RBRconcerto serial number 60130</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> * Atm. press.:   10.1325</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> * Pressure type: absolute</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> * Source:        `060130_20150904_1159.rsk`</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> * Time:          2015-09-04 15:37:20 to 2015-09-04 15:44:39 (2639 samples, mean increment 0.1666664 s)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> * Data Overview</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                                  Min.   Mean   Max. Dim. NAs OriginalName</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     conductivity [mS/cm]       28.856 30.061 30.985 2653   0       cond06</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     temperature [°C, ITS-90]  0.92965 1.9098 4.3835 2653   0       temp03</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     pressure [dbar, absolute]  11.206 257.71 463.85 2653   0       pres07</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                              Min.                Mean                Max. Dim. NAs OriginalName</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     time                      2015-09-04 15:37:20 2015-09-04 15:41:00 2015-09-04 15:44:39    0   0            -</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     conductivity [mS/cm]                   26.211              30.051              30.985    0   0       cond06</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     temperature [°C, ITS-90]              0.92965              1.9082              4.3835    0   0       temp03</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     pressure [dbar, absolute]              10.146              255.76              463.39    0   0       pres07</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     tstamp                            7.1214e-312         7.1214e-312         7.1214e-312    0   0       tstamp</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> * Processing Log</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2016-07-24 17:46:02 UTC: `create 'rsk' object`</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2016-07-24 17:46:02 UTC: `read.rsk(file = file, processingLog = processingLog)`</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2016-07-24 17:46:02 UTC: `oceSetMetadata(object = raw, name = "longitude", value = -(56 +     26.232/60))`</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2016-07-24 17:46:02 UTC: `oceSetMetadata(object = raw, name = "latitude", value = 73 +     13.727/60)`</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2016-07-24 17:46:02 UTC: `oceSetMetadata(object = raw, name = "station", value = "C18")`</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2016-07-24 17:46:02 UTC: `oceSetMetadata(object = raw, name = "ship", value = "Ault")`</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2016-07-24 17:46:02 UTC: `oceSetMetadata(object = raw, name = "institute", value = "Ocean Research Project")`</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2016-07-24 17:46:02 UTC: `subset.rsk(x, subset=focus[1] &lt;= time &amp; time &lt;= focus[2])`</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2023-03-19 11:48:48 UTC: `create 'rsk' object`</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2023-03-19 11:48:48 UTC: `read.rsk(file = file, encoding = encoding, allTables = FALSE,     processingLog = processingLog)`</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2023-03-19 11:48:48 UTC: `oceSetMetadata(object = rsk, name = "longitude", value = -(56 +     26.232/60))`</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2023-03-19 11:48:48 UTC: `oceSetMetadata(object = rsk, name = "latitude", value = 73 +     13.727/60)`</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2023-03-19 11:48:48 UTC: `oceSetMetadata(object = rsk, name = "station", value = "C18")`</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2023-03-19 11:48:48 UTC: `oceSetMetadata(object = rsk, name = "ship", value = "Ault")`</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2023-03-19 11:48:48 UTC: `oceSetMetadata(object = rsk, name = "institute", value = "Ocean Research Project")`</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2023-03-19 11:48:48 UTC: `subset.rsk(x, subset=1441381040 &lt; time &amp; time &lt; 1441381480)`</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
@@ -159,7 +162,7 @@ of CTD objects, and also outlines the other functions dealing with them.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>

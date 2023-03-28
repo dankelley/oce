@@ -16,8 +16,13 @@ xyzToEnuAdv(
 \arguments{
 \item{x}{an \linkS4class{adv} object.}
 
-\item{declination}{magnetic declination to be added to the heading, to get
-ENU with N as "true" north.}
+\item{declination}{magnetic declination to be added to the heading after
+"righting" (see below), to get ENU with N as "true" north.  If this
+is set to NULL, then the returned object is set up without adjusting
+the compass for declination.  That means that \code{north} in its \code{metadata}
+slot will be set to \code{"magnetic"}, and also that there will be no item
+named \code{declination} in that slot.  Note that \code{\link[=applyMagneticDeclination]{applyMagneticDeclination()}}
+can be used later, to set a declination.}
 
 \item{cabled}{boolean value indicating whether the sensor head is connected
 to the pressure case with a cable.  If \code{cabled=FALSE}, then
@@ -130,7 +135,9 @@ Other things related to adv data:
 \code{\link{[[,adv-method}},
 \code{\link{[[<-,adv-method}},
 \code{\link{adv-class}},
+\code{\link{advSontekAdrFileTrim}()},
 \code{\link{adv}},
+\code{\link{applyMagneticDeclination,adv-method}},
 \code{\link{beamName}()},
 \code{\link{beamToXyz}()},
 \code{\link{enuToOtherAdv}()},

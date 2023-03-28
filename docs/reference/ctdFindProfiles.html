@@ -18,7 +18,7 @@ either indices to these events or a vector of CTD records containing the events.
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-10</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-11</span>
       </span>
     </div>
 
@@ -84,7 +84,7 @@ either indices to these events or a vector of CTD records containing the events.
 <span>  <span class="va">x</span>,</span>
 <span>  cutoff <span class="op">=</span> <span class="fl">0.5</span>,</span>
 <span>  minLength <span class="op">=</span> <span class="fl">10</span>,</span>
-<span>  minHeight <span class="op">=</span> <span class="fl">0.1</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/diff.html" class="external-link">diff</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/range.html" class="external-link">range</a></span><span class="op">(</span><span class="va">x</span><span class="op">[[</span><span class="st">"pressure"</span><span class="op">]</span><span class="op">]</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  <span class="va">minHeight</span>,</span>
 <span>  smoother <span class="op">=</span> <span class="va">smooth.spline</span>,</span>
 <span>  direction <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"descending"</span>, <span class="st">"ascending"</span><span class="op">)</span>,</span>
 <span>  <span class="va">breaks</span>,</span>
@@ -102,15 +102,19 @@ either indices to these events or a vector of CTD records containing the events.
 
 
 <dt>cutoff</dt>
-<dd><p>criterion on pressure difference; see “Details”.</p></dd>
+<dd><p>criterion on pressure difference; see “Details”. If not
+provided, this defaults to 0.5.</p></dd>
 
 
 <dt>minLength</dt>
-<dd><p>lower limit on number of points in candidate profiles.</p></dd>
+<dd><p>lower limit on number of points in candidate profiles. If
+not
+provided, this defaults to 10.</p></dd>
 
 
 <dt>minHeight</dt>
-<dd><p>lower limit on height of candidate profiles.</p></dd>
+<dd><p>lower limit on height of candidate profiles. If not
+provided, this defaults to 0.1 times the pressure span.</p></dd>
 
 
 <dt>smoother</dt>
@@ -140,8 +144,8 @@ in <code>x</code>.</p></dd>
 
 
 <dt>arr.ind</dt>
-<dd><p>Logical indicating whether the array indices should be returned;
-the alternative is to return a vector of ctd objects.</p></dd>
+<dd><p>logical value indicating whether the array indices should be
+returned; the alternative is to return a vector of ctd objects.</p></dd>
 
 
 <dt>distinct</dt>
@@ -208,6 +212,7 @@ of CTD objects, and also outlines the other functions dealing with them.</p>
 <code><a href="ctd-class.html">ctd-class</a></code>,
 <code><a href="ctd.cnv.html">ctd.cnv</a></code>,
 <code><a href="ctdDecimate.html">ctdDecimate</a>()</code>,
+<code><a href="ctdFindProfilesRBR.html">ctdFindProfilesRBR</a>()</code>,
 <code><a href="ctdRaw.html">ctdRaw</a></code>,
 <code><a href="ctdRepair.html">ctdRepair</a>()</code>,
 <code><a href="ctdTrim.html">ctdTrim</a>()</code>,
@@ -290,7 +295,7 @@ of CTD objects, and also outlines the other functions dealing with them.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>

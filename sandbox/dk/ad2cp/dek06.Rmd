@@ -1,0 +1,101 @@
+---
+title: dek06 computing distance for 0x23 (echosounderRaw) data chunks
+author: Dan Kelley
+date: "`r Sys.Date()`"
+---
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(warning=FALSE, message=FALSE)
+```
+
+**Abstract.** Ellie Best's (2022-08-28) formula for the `cellSize` of
+`echosounderRaw` (0x23) samples yields a distance range that is 29 percent
+smaller than that of `echosounder` (0x1c). I speculate here on a replacement
+formula, but I'm basically clutching at straws, and hope someone at Nortek can
+comment on this.
+
+In the oce code, echosounder distance vectors are computed from variables named
+`blankingDistance`, `cellSize` and `numberOfSamples`.  Unfortunately, this method cannot
+be applied to `echosounderRaw`, since its data stream does not store
+`cellSize`.  A solution was suggested in EB's email dated on or near
+2022-08-28: compute `echosounderRaw$cellSize` as the ratio of
+`echosounder$blankingDistance` to `echosounderRaw$startSampleIndex`.
+(Here and henceforth, I'll use R notation sometimes; the dollar sign takes the place of a period in some other languages.)
+
+```{r results="hide", echo=FALSE}
+suppressPackageStartupMessages(library(oce))
+d <- read.oce("~/git/oce/tests/testthat/local_data/ad2cp/ad2cp_01.ad2cp")
+```
+
+When I do this with the sample file I call `ad2cp_01.ad2cp` that we
+have been discussing for a few weeks now, I get maximal `echosounderRaw` (0x23)
+distance
+`r max(d@data$echosounderRaw$distance)`
+m, which is at odds to the
+`echosounder` maximal distance of
+`r max(d@data$echosounder$distance)`
+m.
+(For context, this 29 percent difference greatly exceeds the 6 percent difference that would result by
+changing the value of `startSampleIndex` by 1.)
+
+To see this (running the very latest github.com/dankelley/oce "ad2cp" source),
+do as follows.
+
+```{r eval=FALSE}
+library(oce)
+d <- read.oce("~/git/oce/tests/testthat/local_data/ad2cp/ad2cp_01.ad2cp")
+```
+
+
+```{r}
+max(d@data$echosounderRaw$distance)
+max(d@data$echosounder$distance)
+```
+
+Sensing something was wrong, I worked in steps to explore the computation.
+
+First, I verified in various ways that I am inferring
+`echosounderRaw$numberOfSamples` correctly as
+`r d@data$echosounderRaw$numberOfSamples`.  Since the maximal
+distance is the product of this distance and the `echosounderRaw` cell size,
+I'll turn my focus to the computation of that cell size.
+
+The code is presently inferring `echosounderRaw$cellSize` using EB's formula, that is,
+dividing `echosounder$blankingDistance`
+(`r d@data$echosounder$blankingDistance` m) by a quantity I name as
+`echosounderRaw$startSampleIndex`
+(`r d@data$echosounderRaw$startSampleIndex`).  This yields
+`r with(d@data, echosounder$blankingDistance/echosounderRaw$startSampleIndex)` m.
+Multiplying this by `echosounderRaw$numberOfSamples`
+(`r d@data$echosounderRaw$numberOfSamples`) yields
+maximal distance `r max(d@data$echosounderRaw$distance)` m as stated above.
+
+I scanned the documentation for clues, but did not find anything.  Then I
+looked at the data header, and noticed something called `RANGESTART1` in the
+`READECHO` header line. We can retrieve this value with
+```{r}
+ad2cpHeaderValue(d, "READECHO", "RANGESTART1")
+```
+Perhaps -- and I admit to clutching at straws -- we ought
+to take this as an origin offset.  Trying this with
+```{r}
+BDnew <- d@data$echosounder$blankingDistance - ad2cpHeaderValue(d,"READECHO","RANGESTART1")
+CSnew <- BDnew / d@data$echosounderRaw$startSampleIndex
+maxDistance <- CSnew * d@data$echosounderRaw$numberOfSamples
+```
+yields `maxDistance`=`r maxDistance` m, which indeed is quite close to the
+maximal distance of `r max(d@data$echosounder$distance)` m computed
+for the `echosounder` data stream.
+
+**Hypothesis** The suggested formula for `echosounderRaw$cellSize` as the ratio
+of `echosounder$blankingDistance` to `echosounderRaw$startSampleIndex`, should
+be amended by subtracting `RANGESTART1` from the numerator.
+
+**Question for Nortek:** Is there anything sensible in the above?  Basically,
+is there merit to my modification of EB's formula, or is the improved agreement
+just a coincidence?  And, if there *is* merit to my idea, is there a way I can
+infer `RANGESTART1` from the data stream, without looking at the header?  (I
+ask about the header-less case because oceanographers sometimes break big files
+up into pieces, and only the first would have the header.)
+
+
+

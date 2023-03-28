@@ -1,4 +1,4 @@
-library(oce);
+library(oce)
 cat("Some test cases; see Appendix of Gill's textbook...\n")
 swRho(35, 13, 1000)
 swSigma(35, 13, 1000)

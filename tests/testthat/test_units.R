@@ -13,10 +13,9 @@ test_that("as.unit", {
 if (dir.exists("local_data")) {
     test_that("units in a CTD file of type WOCE (style 1)", {
         woce <- read.ctd.woce("local_data/ctd/18HU2010014_00003_00001_ct1.csv")
-        ## test units (issue 1194)
+        # test units (issue 1194)
         expect_equal(woce[["pressureUnit"]], list(unit=expression(dbar), scale=""))
         expect_equal(woce[["temperatureUnit"]], list(unit=expression(degree*C), scale="IPTS-68"))
         expect_equal(woce[["salinityUnit"]], list(unit=expression(), scale="PSS-78"))
         expect_equal(woce[["oxygenUnit"]], list(unit=expression(mu*mol/kg), scale=""))
 })}
-

@@ -12,13 +12,15 @@ read.rsk(
   type,
   encoding = NA,
   tz = getOption("oceTz", default = "UTC"),
+  tzOffsetLocation,
   patm = FALSE,
+  allTables = TRUE,
   processingLog,
   debug = getOption("oceDebug")
 )
 }
 \arguments{
-\item{file}{a connection or a character string giving the name of the file to
+\item{file}{a connection or a character string giving the name of the RSK file to
 load. Note that \code{file} must be a character string, because connections are
 not used in that case, which is instead handled with database calls.}
 
@@ -44,8 +46,23 @@ attempt will be made to infer the type from the file name and contents.}
 
 \item{tz}{time zone.  The value \code{oceTz} is set at package setup.}
 
+\item{tzOffsetLocation}{offset, in hours, between the CTD clock and
+the clock in the controlling computer/tablet/phone (if one was used during
+the sampling). This offset is required to relate location information from the
+controller to hydrographic information from the CTD, using timestamps as an
+index (see "A note on location information" in \sQuote{Details}).
+If the user supplies a value for \code{tzOffsetLocation}, then that is used.
+If not, an attempt is made to infer it from a table named \code{epochs} in the
+file. If no value can be inferred from either of these two methods, then
+\code{tzOffsetLocation} is set to zero.}
+
 \item{patm}{controls the handling of atmospheric pressure, an important issue
 for RBR instruments that record absolute pressure; see \dQuote{Details}.}
+
+\item{allTables}{logical value, TRUE by default, indicating whether to save
+all the non-empty tables in the database (pruned of \code{blob} columns) in the
+\code{metadata} slot of the returned object. This may be useful for detailed
+analysis.}
 
 \item{processingLog}{if provided, the action item to be stored in the log.
 This is typically only provided for internal calls; the default that it provides
@@ -72,17 +89,36 @@ database format. The first four options are provided mainly for historical
 reasons, since RBR instruments at the date of writing commonly use the SQLite
 format, though the first option is common for all instruments that produce a
 \code{hex} file that can be read using Ruskin.
-
 Options 2-4 are mostly obsolete, and will be removed from future versions.
 
-\emph{A note on conductivity.} RBR devices record conductivity in mS/cm, and it
+\strong{A note on location information.}
+It is possible to couple RBR CTD devices with smart phones or tablets
+(see RBR-global, 2020), with the location data from the latter being stored
+in the output \code{.rsk} file. The format does not seem to be documented by RBR,
+but \code{read.rsk()} attempts to infer location nevertheless.
+The procedure involves comparing the \code{tstamp} (time-stamp)
+field from the hydrographic part of the dataset (which is in a database
+table named \code{data}) with the \code{tstamp} field in the geographical part of the
+dataset (in a table named \code{geodata}). (The \code{geodata} entries are filtered to
+those for which the \code{origin} field equals \code{"auto"}. This seems to align
+with times shown for "LOCATION" data in RBR-provided viewing software.)
+The connection between the two fields is done with \code{\link[=approx]{approx()}}, after
+adding \code{tzOffsetLocation} (with units converted appropriately) to the
+time inferred from \code{geodata$tstamp} field, to account for the fact that phones and tablets
+may be set to local time. If the procedure succeeds, then \code{longitude} and
+\code{latitude} are inserted into the \code{metadata} slot of the return value, in the
+form of vectors with the same length as \code{pressure} in the \code{data} slot.
+
+\strong{A note on conductivity.}
+RBR devices record conductivity in mS/cm, and it
 is this value that is stored in the object returned by \code{read.rsk}. This can
 be converted to conductivity ratio (which is what many other instruments report)
 by dividing by 42.914 (see Culkin and Smith, 1980) which will be necessary in
 any seawater-related function that takes conductivity ratio as an argument (see
 \dQuote{Examples}).
 
-\emph{A note on pressure.} RBR devices tend to record absolute pressure (i.e.
+\strong{A note on pressure.}
+RBR devices tend to record absolute pressure (i.e.
 sea pressure plus atmospheric pressure), unlike most oceanographic instruments
 that record sea pressure (or an estimate thereof).  The handling of pressure
 is controlled with the \code{patm} argument, for which there are three
@@ -107,6 +143,9 @@ Culkin, F., and Norman D. Smith, 1980. Determination of the concentration of
 potassium chloride solution having the same electrical conductivity, at 15 C and
 infinite frequency, as standard seawater of salinity 35.0000 ppt (Chlorinity
 19.37394 ppt). \emph{IEEE Journal of Oceanic Engineering}, \strong{5}, pp 22-23.
+
+RBR-global.com, 2020. “Ruskin User Guide.” RBR, August 18, 2020.
+Revision RBR#0006105revH.
 }
 \seealso{
 The documentation for \linkS4class{rsk} explains the structure of
@@ -120,6 +159,7 @@ Other things related to rsk data:
 \code{\link{[[,rsk-method}},
 \code{\link{[[<-,rsk-method}},
 \code{\link{as.rsk}()},
+\code{\link{ctdFindProfilesRBR}()},
 \code{\link{plot,rsk-method}},
 \code{\link{rsk-class}},
 \code{\link{rskPatm}()},

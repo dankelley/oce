@@ -10,7 +10,12 @@ xyzToEnuAdp(x, declination = 0, debug = getOption("oceDebug"))
 \item{x}{an \linkS4class{adp} object.}
 
 \item{declination}{magnetic declination to be added to the heading after
-"righting" (see below), to get ENU with N as "true" north.}
+"righting" (see below), to get ENU with N as "true" north.  If this
+is set to NULL, then the returned object is set up without adjusting
+the compass for declination.  That means that \code{north} in its \code{metadata}
+slot will be set to \code{"magnetic"}, and also that there will be no item
+named \code{declination} in that slot.  Note that \code{\link[=applyMagneticDeclination]{applyMagneticDeclination()}}
+can be used later, to set a declination.}
 
 \item{debug}{an integer specifying whether debugging information is
 to be printed during the processing. This is a general parameter that
@@ -30,10 +35,7 @@ an enu-based coordinate system, by using the instrument's recording of
 information relating to heading, pitch, and roll. The action is based
 on what is stored in the data, and so it depends greatly on instrument type
 and the style of original data format. This function handles data from
-RDI Teledyne, Sontek, and some Nortek instruments directly. However, Nortek
-data stored in in the AD2CP format are handled by the specialized
-function \code{\link[=xyzToEnuAdpAD2CP]{xyzToEnuAdpAD2CP()}}, the documentation for which
-should be consulted, rather than the material given blow.
+RDI Teledyne, Sontek, and some Nortek instruments directly.
 }
 \details{
 The first step is to convert the (x,y,z) velocity components (stored in the
@@ -108,6 +110,7 @@ Other things related to adp data:
 \code{\link{adpRdiFileTrim}()},
 \code{\link{adp_rdi.000}},
 \code{\link{adp}},
+\code{\link{applyMagneticDeclination,adp-method}},
 \code{\link{as.adp}()},
 \code{\link{beamName}()},
 \code{\link{beamToXyzAdpAD2CP}()},

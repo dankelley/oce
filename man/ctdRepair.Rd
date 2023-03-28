@@ -47,9 +47,9 @@ is retained, unaltered.
 \examples{
 library(oce)
 data(ctd)
-# Insert location information into 'data', although it belongs in 'metadata'.
-ctd@data$latitude <- ctd@metadata$latitude   # do NOT do this!
-ctd@data$longitude <- ctd@metadata$longitude # do NOT do this!
+# Insert location information into 'data' slot, although it belongs in 'metadata'.
+ctd@data$latitude <- ctd@metadata$latitude   # Done by experts only!
+ctd@data$longitude <- ctd@metadata$longitude # Done by experts only!
 repaired <- ctdRepair(ctd)
 
 }
@@ -63,6 +63,7 @@ Other things related to ctd data:
 \code{\link{ctd-class}},
 \code{\link{ctd.cnv}},
 \code{\link{ctdDecimate}()},
+\code{\link{ctdFindProfilesRBR}()},
 \code{\link{ctdFindProfiles}()},
 \code{\link{ctdRaw}},
 \code{\link{ctdTrim}()},

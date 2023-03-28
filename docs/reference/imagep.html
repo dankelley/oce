@@ -20,7 +20,7 @@ drawPalette() and then draw the main diagram.'><!-- mathjax --><script src="http
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-10</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-11</span>
       </span>
     </div>
 
@@ -99,6 +99,7 @@ e.g. to get an x-y plot with points colored according to a palette, use
 <span>  zlabPosition <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"top"</span>, <span class="st">"side"</span><span class="op">)</span>,</span>
 <span>  las.palette <span class="op">=</span> <span class="fl">0</span>,</span>
 <span>  decimate <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  quiet <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  <span class="va">breaks</span>,</span>
 <span>  <span class="va">col</span>,</span>
 <span>  <span class="va">colormap</span>,</span>
@@ -134,19 +135,20 @@ e.g. to get an x-y plot with points colored according to a palette, use
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>x, y</dt>
-<dd><p>These have different meanings in different modes of operation.
-<em>Mode 1.</em> One
+<dd><p>These have different meanings in different modes of operation.</p>
+<p><em>Mode 1.</em> One
 mode has them meaning the locations of coordinates along which values
 matrix <code>z</code> are defined. In this case, both <code>x</code> and <code>y</code>
 must be supplied and, within each, the values must be finite and
 distinct; if values are out of order, they (and <code>z</code>) will be
 transformed to put them in order.
-ordered in a matching way).  <em>Mode 2.</em>
+ordered in a matching way).</p>
+<p><em>Mode 2.</em>
 If <code>z</code> is provided but not <code>x</code> and <code>y</code>, then the latter
 are constructed to
 indicate the indices of the matrix, in contrast
-to the range of 0 to 1, as is the case for <code><a href="https://rdrr.io/r/graphics/image.html" class="external-link">image()</a></code>.
-<em>Mode 3.</em> If
+to the range of 0 to 1, as is the case for <code><a href="https://rdrr.io/r/graphics/image.html" class="external-link">image()</a></code>.</p>
+<p><em>Mode 3.</em> If
 <code>x</code> is a list, its components <code>x$x</code> and <code>x$y</code> are used
 for <code>x</code> and <code>y</code>, respectively. If the list has component
 <code>z</code> this is used for <code>z</code>. (NOTE: these arguments are meant to
@@ -234,6 +236,11 @@ the same is done for the <code>y</code> direction.</p></li>
 the first index of <code>z</code>, and the second is used for the second
 index.</p></li>
 </ol></dd>
+
+
+<dt>quiet</dt>
+<dd><p>logical value indicating whether to silence warnings that
+might occur if the image is being decimated.</p></dd>
 
 
 <dt>breaks</dt>
@@ -502,7 +509,7 @@ here only the first is permitted.)</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>

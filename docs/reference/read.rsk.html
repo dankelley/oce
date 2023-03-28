@@ -18,7 +18,7 @@ object of class rsk."><!-- mathjax --><script src="https://cdnjs.cloudflare.com/
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-10</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-11</span>
       </span>
     </div>
 
@@ -88,7 +88,9 @@ object of class <code>rsk</code>.</p>
 <span>  <span class="va">type</span>,</span>
 <span>  encoding <span class="op">=</span> <span class="cn">NA</span>,</span>
 <span>  tz <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"oceTz"</span>, default <span class="op">=</span> <span class="st">"UTC"</span><span class="op">)</span>,</span>
+<span>  <span class="va">tzOffsetLocation</span>,</span>
 <span>  patm <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  allTables <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  <span class="va">processingLog</span>,</span>
 <span>  debug <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"oceDebug"</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -97,7 +99,7 @@ object of class <code>rsk</code>.</p>
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>file</dt>
-<dd><p>a connection or a character string giving the name of the file to
+<dd><p>a connection or a character string giving the name of the RSK file to
 load. Note that <code>file</code> must be a character string, because connections are
 not used in that case, which is instead handled with database calls.</p></dd>
 
@@ -136,9 +138,28 @@ attempt will be made to infer the type from the file name and contents.</p></dd>
 <dd><p>time zone.  The value <code>oceTz</code> is set at package setup.</p></dd>
 
 
+<dt>tzOffsetLocation</dt>
+<dd><p>offset, in hours, between the CTD clock and
+the clock in the controlling computer/tablet/phone (if one was used during
+the sampling). This offset is required to relate location information from the
+controller to hydrographic information from the CTD, using timestamps as an
+index (see "A note on location information" in ‘Details’).
+If the user supplies a value for <code>tzOffsetLocation</code>, then that is used.
+If not, an attempt is made to infer it from a table named <code>epochs</code> in the
+file. If no value can be inferred from either of these two methods, then
+<code>tzOffsetLocation</code> is set to zero.</p></dd>
+
+
 <dt>patm</dt>
 <dd><p>controls the handling of atmospheric pressure, an important issue
 for RBR instruments that record absolute pressure; see “Details”.</p></dd>
+
+
+<dt>allTables</dt>
+<dd><p>logical value, TRUE by default, indicating whether to save
+all the non-empty tables in the database (pruned of <code>blob</code> columns) in the
+<code>metadata</code> slot of the returned object. This may be useful for detailed
+analysis.</p></dd>
 
 
 <dt>processingLog</dt>
@@ -169,15 +190,34 @@ depth in the water column is given after the pressure; (5) an SQLite-based
 database format. The first four options are provided mainly for historical
 reasons, since RBR instruments at the date of writing commonly use the SQLite
 format, though the first option is common for all instruments that produce a
-<code>hex</code> file that can be read using Ruskin.</p>
-<p>Options 2-4 are mostly obsolete, and will be removed from future versions.</p>
-<p><em>A note on conductivity.</em> RBR devices record conductivity in mS/cm, and it
+<code>hex</code> file that can be read using Ruskin.
+Options 2-4 are mostly obsolete, and will be removed from future versions.</p>
+<p><strong>A note on location information.</strong>
+It is possible to couple RBR CTD devices with smart phones or tablets
+(see RBR-global, 2020), with the location data from the latter being stored
+in the output <code>.rsk</code> file. The format does not seem to be documented by RBR,
+but <code>read.rsk()</code> attempts to infer location nevertheless.
+The procedure involves comparing the <code>tstamp</code> (time-stamp)
+field from the hydrographic part of the dataset (which is in a database
+table named <code>data</code>) with the <code>tstamp</code> field in the geographical part of the
+dataset (in a table named <code>geodata</code>). (The <code>geodata</code> entries are filtered to
+those for which the <code>origin</code> field equals <code>"auto"</code>. This seems to align
+with times shown for "LOCATION" data in RBR-provided viewing software.)
+The connection between the two fields is done with <code><a href="https://rdrr.io/r/stats/approxfun.html" class="external-link">approx()</a></code>, after
+adding <code>tzOffsetLocation</code> (with units converted appropriately) to the
+time inferred from <code>geodata$tstamp</code> field, to account for the fact that phones and tablets
+may be set to local time. If the procedure succeeds, then <code>longitude</code> and
+<code>latitude</code> are inserted into the <code>metadata</code> slot of the return value, in the
+form of vectors with the same length as <code>pressure</code> in the <code>data</code> slot.</p>
+<p><strong>A note on conductivity.</strong>
+RBR devices record conductivity in mS/cm, and it
 is this value that is stored in the object returned by <code>read.rsk</code>. This can
 be converted to conductivity ratio (which is what many other instruments report)
 by dividing by 42.914 (see Culkin and Smith, 1980) which will be necessary in
 any seawater-related function that takes conductivity ratio as an argument (see
 “Examples”).</p>
-<p><em>A note on pressure.</em> RBR devices tend to record absolute pressure (i.e.
+<p><strong>A note on pressure.</strong>
+RBR devices tend to record absolute pressure (i.e.
 sea pressure plus atmospheric pressure), unlike most oceanographic instruments
 that record sea pressure (or an estimate thereof).  The handling of pressure
 is controlled with the <code>patm</code> argument, for which there are three
@@ -203,6 +243,8 @@ setup facilitates the conversion of <a href="rsk-class.html">rsk</a> objects to
 potassium chloride solution having the same electrical conductivity, at 15 C and
 infinite frequency, as standard seawater of salinity 35.0000 ppt (Chlorinity
 19.37394 ppt). <em>IEEE Journal of Oceanic Engineering</em>, <strong>5</strong>, pp 22-23.</p>
+<p>RBR-global.com, 2020. “Ruskin User Guide.” RBR, August 18, 2020.
+Revision RBR#0006105revH.</p>
     </div>
     <div id="see-also">
     <h2>See also</h2>
@@ -216,6 +258,7 @@ generic plot obeys the CTD format.</p>
 <code><a href="sub-sub-rsk-method.html">[[,rsk-method</a></code>,
 <code>[[&lt;-,rsk-method</code>,
 <code><a href="as.rsk.html">as.rsk</a>()</code>,
+<code><a href="ctdFindProfilesRBR.html">ctdFindProfilesRBR</a>()</code>,
 <code><a href="plot-rsk-method.html">plot,rsk-method</a></code>,
 <code><a href="rsk-class.html">rsk-class</a></code>,
 <code><a href="rskPatm.html">rskPatm</a>()</code>,
@@ -241,7 +284,7 @@ generic plot obeys the CTD format.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>

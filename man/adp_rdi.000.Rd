@@ -34,6 +34,7 @@ Other things related to adp data:
 \code{\link{adpFlagPastBoundary}()},
 \code{\link{adpRdiFileTrim}()},
 \code{\link{adp}},
+\code{\link{applyMagneticDeclination,adp-method}},
 \code{\link{as.adp}()},
 \code{\link{beamName}()},
 \code{\link{beamToXyzAdpAD2CP}()},

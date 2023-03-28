@@ -7,10 +7,6 @@ output:
     toc: true
     number_sections: true
     fig_caption: yes
-    fig_width: 3.5
-    fig_height: 3.5
-    dpi: 72
-    dev.args: list(pointsize=11)
 vignette: >
   %\VignetteIndexEntry{4. Using map projections}
   %\VignetteEngine{knitr::rmarkdown}
@@ -21,7 +17,7 @@ vignette: >
 <!-- Look in oce.Rmd for instructions. -->
 
 ```{r, echo = FALSE}
-knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
+knitr::opts_chunk$set(collapse=TRUE, comment="#>")
 ```
 
 **Abstract.** An overview of the handling of map projections in oce is
@@ -58,8 +54,6 @@ with
 ```{r eval=FALSE}
 install.packages("sf")
 ```
-(Of course, this step need not be repeated to use `oce`.)
-
 
 There are far too many projections to illustrate here. See
 `https://dankelley.github.io/r/2015/04/03/oce-proj.html` for a blog item that
@@ -79,9 +73,9 @@ an appropriate aspect ratio so that circular islands will appear circular in
 the plot.
 
 To see the need for setting the aspect ratio, consider the following view of
-eastern North America.
+North America.
 
-```{r}
+```{r fig.cap="Distorted North American view, without control of aspect ratio.", fig.width=3, fig.height=3, dpi=72, dev.args=list(pointsize=10)}
 library(oce)
 data(coastlineWorld)
 lon <- coastlineWorld[["longitude"]]
@@ -93,10 +87,10 @@ plot(lon, lat, type="l",
 
 Readers familiar with this region will notice that the coastline
 shapes are distorted.  The solution to this problem is to set
-the `asp` argument of `plot()` to a value that will compensate
-for meridional convergence at the poles, as below.
+the `asp` argument of `plot()` to a value appropriate
+to the general latitude of the view (45N, in this case).
 
-```{r}
+```{r fig.cap="North American view, with distortion limited by choice of aspect ratio.", fig.width=3, fig.height=3, dpi=72, dev.args=list(pointsize=10)}
 par(mar=c(4, 4, 0.5, 0.5))
 plot(lon, lat, type="l",
      xlim=c(-130, -50), ylim=c(40, 50), asp=1/cos(45*pi/180))
@@ -106,7 +100,7 @@ Although the above approach is not exactly taxing, the effort of setting the
 aspect ratio and setting line-type plots can be spared by using the generic
 `plot()` function for `coastline` objects, as follows.
 
-```{r}
+```{r fig.cap="North American view, drawn with mapPlot().", fig.width=3, fig.height=3, dpi=72, dev.args=list(pointsize=10)}
 plot(coastlineWorld, clongitude=-90, clatitude=45, span=7000)
 ```
 
@@ -168,10 +162,10 @@ solution to this problem, e.g. in the following (which employs a trick on the
 latitude limit, specifying an image point on the other side of the planet, with
 the pole in between).
 
-```{r fig.cap="Polar view with stereographic projection.", fig.width=5, fig.height=5, dpi=72, dev.args=list(pointsize=10)}
+```{r fig.cap="Polar view with stereographic projection.", fig.width=3, fig.height=3, dpi=72, dev.args=list(pointsize=10)}
 par(mar=c(1.5, 1.5, 0.5, 0.5))
 mapPlot(coastlineWorld, longitudelim=c(-130, 50), latitudelim=c(60, 120),
-        projection="+proj=stere +lat_0=90", col='gray')
+        projection="+proj=stere +lat_0=90", col="gray")
 ```
 
 Here, the region of interest is defined with `longitudelim` and `latitudelim`,
@@ -188,15 +182,15 @@ arguments, and for citations to external resources that explain what they mean.
 The Lambert Conformal view is often used in maps that span wide
 longitudinal ranges, e.g. a map of Canada may be produced as follows.
 
-```{r}
+```{r fig.cap="Canada in Lambert Conformal projection.", fig.width=3, fig.height=3, dpi=72, dev.args=list(pointsize=10)}
 par(mar=c(1.5, 1.5, 0.5, 0.5))
 mapPlot(coastlineWorld,
-    longitudelim=c(-130,-55), latitudelim=c(45, 70),
-    projection="+proj=lcc +lat_1=50 +lat_2=65 +lon_0=-100", col='gray')
+    longitudelim=c(-130, -55), latitudelim=c(45, 70),
+    projection="+proj=lcc +lat_1=50 +lat_2=65 +lon_0=-100", col="gray")
 ```
 
 Here, `lat_1` and `lat_2`, the latitudes where the projection cone intersects
-the earth, are set to span the populated region of Canada and the northern USA,
+the earth, are set to span southern Canada and northern USA,
 and `lon_0`, the meridian that will be vertical on the plot, is chosen to lie
 near the middle of the continent.
 
@@ -229,7 +223,7 @@ common tasks.
 
 **Exercise 1.** Plot the world with a Robinson projection, using gray shading for land.
 
-```{r fig.cap="World coastline with Robinson projection.", fig.width=5, fig.height=2.7, dpi=72, dev.args=list(pointsize=10)}
+```{r fig.cap="World coastline with Robinson projection (exercise 1).", fig.width=5, fig.height=2.7, dpi=72, dev.args=list(pointsize=10)}
 par(mar=rep(0.5, 4))
 mapPlot(coastlineWorld, col="lightgray", projection="+proj=robin")
 ```
@@ -238,7 +232,7 @@ mapPlot(coastlineWorld, col="lightgray", projection="+proj=robin")
 
 Note that some adjustment of the margins is required to fit the colorbar.
 
-```{r fig.cap="World topography with Mollweide projection.", fig.width=5, fig.height=2.7, dpi=72, dev.args=list(pointsize=10)}
+```{r fig.cap="World topography with Mollweide projection (exercise 2).", fig.width=5, fig.height=2.7, dpi=72, dev.args=list(pointsize=10)}
 par(mar=c(1.5, 1, 1.5, 1))
 data(topoWorld)
 topo <- decimate(topoWorld, 2) # coarsen grid: 4X faster plot
@@ -253,16 +247,16 @@ mapImage(lon, lat, z, colormap=cm)
 
 **Exercise 3.** Draw a view of Antarctica and the Southern Ocean.
 
-```{r}
+```{r fig.cap="Antarctica (exercise 3).", fig.width=3, fig.height=3, dpi=72, dev.args=list(pointsize=10)}
 par(mar=c(1.5, 1.5, 0.5, 0.5))
 mapPlot(coastlineWorld, longitudelim=c(-180, 180), latitudelim=c(-130, -50),
-       projection="+proj=stere +lat_0=-90", col='gray', grid=15)
+       projection="+proj=stere +lat_0=-90", col="gray", grid=15)
 ```
 
 
 **Exercise 4.** Plot the eastern North Atlantic using a Mercator projection.
 
-```{r fig.cap="Eastern North Atlantic with Mercator projection.", fig.width=5, fig.height=5, dpi=72, dev.args=list(pointsize=10)}
+```{r fig.cap="Eastern North Atlantic with Mercator projection (exercise 4).", fig.width=5, fig.height=5, dpi=72, dev.args=list(pointsize=10)}
 par(mar=c(1.5, 1.5, 0.5, 0.5))
 mapPlot(coastlineWorld, col="lightgray",
         projection="+proj=merc",
@@ -284,7 +278,7 @@ diagram.
 
 
 
-```{r fig.cap="Eastern North Atlantic with Albers equal-area projection.", fig.width=5, fig.height=5, dpi=72, dev.args=list(pointsize=10)}
+```{r fig.cap="Eastern North Atlantic with Albers equal-area projection (exercise 5).", fig.width=5, fig.height=5, dpi=72, dev.args=list(pointsize=10)}
 par(mar=c(1.5, 1.5, 0.5, 0.5))
 mapPlot(coastlineWorld, col="lightgray",
         projection="+proj=aea +lat_1=30 +lat_2=50 +lon_0=-60",
@@ -295,12 +289,12 @@ mapPlot(coastlineWorld, col="lightgray",
 
 Note that the temperature is provided by the `ocedata` package.
 
-```{r fig.cap="SST contours with the Goode projection", fig.width=5, fig.height=2.7, dpi=72, dev.args=list(pointsize=10)}
+```{r fig.cap="SST contours with the Goode projection (exercise 6)", fig.width=5, fig.height=2.7, dpi=72, dev.args=list(pointsize=10)}
 par(mar=rep(0.5, 4))
 mapPlot(coastlineWorld, projection="+proj=goode", col="lightgray")
 if (requireNamespace("ocedata", quietly=TRUE)) {
     data(levitus, package="ocedata")
-    mapContour(levitus[['longitude']], levitus[['latitude']], levitus[['SST']])
+    mapContour(levitus[["longitude"]], levitus[["latitude"]], levitus[["SST"]])
 }
 ```
 
@@ -322,5 +316,3 @@ Snyder, John P., and Philip M. Voxland. "An Album of Map Projections."
 U. S.  Geological Survey Professional Paper. Washington, DC, USA: U. S.
 Department of the Interior: U. S. Geological Survey, 1994.
 `https://pubs.er.usgs.gov/publication/pp1453`
-
-

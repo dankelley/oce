@@ -57,15 +57,15 @@ read.ctd.itp <- function(file, columns=NULL,
     }
     if (nlines < 2)
         stop("file is too short; must have more than 2 lines")
-    isProfile <- '%' != substr(lines[2], 1, 1)
-    ## see e.g. https://www.whoi.edu/page.do?pid=125516
+    isProfile <- "%" != substr(lines[2], 1, 1)
+    # see e.g. https://www.whoi.edu/page.do?pid=125516
     if (isProfile) {
-        ## %ITP 59, profile 2: year day longitude(E+) latitude(N+) ndepths
-        ## 2013  247.25002   156.2163  80.3189  371
-        ## %year day pressure(dbar) temperature(C) salinity oxygen(umol/kg)
-        ## 2013  247.25036   18   -1.6548   30.5816  366.5573
-        ## 2013  247.25043   20   -1.6523   30.7274  365.4786
-        ## 2013  247.25052   22   -1.6537   31.1021  362.6732
+        # %ITP 59, profile 2: year day longitude(E+) latitude(N+) ndepths
+        # 2013  247.25002   156.2163  80.3189  371
+        # %year day pressure(dbar) temperature(C) salinity oxygen(umol/kg)
+        # 2013  247.25036   18   -1.6548   30.5816  366.5573
+        # 2013  247.25043   20   -1.6523   30.7274  365.4786
+        # 2013  247.25052   22   -1.6537   31.1021  362.6732
         station <- gsub(":.*", "", gsub(".*profile[ ]*", "", lines[1]))
         d <- scan(text=lines[2], quiet=TRUE)
         year <- d[1]
@@ -81,7 +81,7 @@ read.ctd.itp <- function(file, columns=NULL,
             hline <- gsub("%", "", lines[namesLine])
             tokens <- strsplit(hline, " ")[[1]]
             names <- gsub("\\(.*\\)", "", tokens)
-            ## unitGiven <- grep("\\(", tokens)
+            # unitGiven <- grep("\\(", tokens)
             units <- list()
             for (i in seq_along(names)) {
                 if (names[i] == "temperature") {
@@ -92,18 +92,17 @@ read.ctd.itp <- function(file, columns=NULL,
                     units[[names[i]]] <- list(unit=expression(dbar), scale="")
                 } else if (names[i] == "oxygen") {
                     unit <- gsub("(.*)\\((.*)\\)", "\\2", tokens[i])
-                    if (unit == "umol/kg")
+                    if (unit == "umol/kg") {
                         units[[names[i]]] <- list(unit=expression(mu*mol/kg), scale="")
-                    else
+                    } else {
                         units[[names[i]]] <- list(unit=expression(unit), scale="")
+                    }
                 } else if (names[i] != "year" && names[i] != "day") {
                     unit <- gsub("(.*)\\((.*)\\)", "\\2", tokens[i])
                     units[[names[i]]] <- list(unit=as.expression(unit), scale="")
                 }
             }
             d <- read.table(text=lines[-seq.int(1, namesLine)], col.names=names, encoding=encoding)
-            ## print(head(d), 2)
-            ## print(str(units))
             pressure <- d$pressure
             salinity <- d$salinity
             temperature <- d$temperature
@@ -121,7 +120,7 @@ read.ctd.itp <- function(file, columns=NULL,
             salinity <- d[, Scol]
             oxygen <- d[, Ocol]
         }
-        ## replace any missingValue with NA
+        # replace any missingValue with NA
         if (!missing(missingValue) && !is.null(missingValue)) {
             pressure <- ifelse(pressure==missingValue, NA, pressure)
             temperature <- ifelse(temperature==missingValue, NA, temperature)
@@ -129,14 +128,14 @@ read.ctd.itp <- function(file, columns=NULL,
             oxygen <- ifelse(oxygen==missingValue, NA, oxygen)
         }
         res <- as.ctd(salinity, temperature, pressure,
-                      longitude=longitude, latitude=latitude,
-                      startTime=ISOdate(year, 1, 1) + yearday * 3600 * 24,
-                      deploymentType=deploymentType,
-                      station=station)
+            longitude=longitude, latitude=latitude,
+            startTime=ISOdate(year, 1, 1) + yearday * 3600 * 24,
+            deploymentType=deploymentType,
+            station=station)
         res <- oceSetData(res, name="oxygen", value=oxygen, unit=units$oxygen, originalName="oxygen")
         res <- oceSetMetadata(res, "filename", filename)
         res <- oceSetMetadata(res, "dataNamesOriginal",
-                              list(temperature="temperature", salinity="salinity", oxygen="oxygen", pressure="pressure"))
+            list(temperature="temperature", salinity="salinity", oxygen="oxygen", pressure="pressure"))
         res <- oceSetData(res, "year", year, originalName="year")
         res <- oceSetData(res, "yearday", yearday, originalName="yearday")
     } else {

@@ -10,7 +10,7 @@ test_that("as.ctd(argo,profile=1L) flattens flags", {
             flagname <- paste0(name, "Flag")
             expect_true(is.array(argo[[flagname]]))
             expect_true(is.vector(ctd[[flagname]]))
-            expect_equal(argo[[flagname]][,profile], ctd[[flagname]])
+            expect_equal(argo[[flagname]][, profile], ctd[[flagname]])
         }
     }
 })
@@ -102,11 +102,11 @@ test_that("as.ctd() with a list of oce objects", {
 })
 
 test_that("ctd[[\"CT\"]], ctd[[\"SA\"]] and ctd[[\"Sstar\"]] require location", {
-    a <- as.ctd(35,10,0)
+    a <- as.ctd(35, 10, 0)
     expect_error(a[["CT"]], "need longitude and latitude to compute")
     expect_error(a[["SA"]], "need longitude and latitude to compute")
     expect_error(a[["Sstar"]], "need longitude and latitude to compute")
-    b <- as.ctd(35,10,100,longitude=-40, latitude=30)
+    b <- as.ctd(35, 10, 100, longitude=-40, latitude=30)
     expect_silent(b[["CT"]])
     expect_silent(b[["SA"]])
     expect_silent(b[["Sstar"]])
@@ -115,8 +115,8 @@ test_that("ctd[[\"CT\"]], ctd[[\"SA\"]] and ctd[[\"Sstar\"]] require location", 
 test_that("ctd[[\"CT\"]], ctd[[\"SA\"]] and ctd[[\"Sstar\"]] give expected values", {
     b <- as.ctd(35, 10, 1000, longitude=188, latitude=4)
     expect_silent(b[["CT"]])
-    expect_equal(b[["SA"]], gsw::gsw_SA_from_SP(SP=35,p=1000,longitude=188,latitude=4))
-    expect_equal(b[["Sstar"]], gsw::gsw_Sstar_from_SP(SP=35,p=1000,longitude=188,latitude=4))
+    expect_equal(b[["SA"]], gsw::gsw_SA_from_SP(SP=35, p=1000, longitude=188, latitude=4))
+    expect_equal(b[["Sstar"]], gsw::gsw_Sstar_from_SP(SP=35, p=1000, longitude=188, latitude=4))
     SA <- b[["SA"]]
     expect_equal(b[["CT"]], gsw::gsw_CT_from_t(SA, 10, 1000))
 })
@@ -144,7 +144,7 @@ test_that("as.ctd() with specified arguments, not including salinity", {
 
 test_that("as.ctd() with a data frame", {
     data(ctd)
-    ctd_df <- as.ctd(data.frame(pressure=ctd[["pressure"]],temperature=ctd[["temperature"]],salinity=ctd[["salinity"]]))
+    ctd_df <- as.ctd(data.frame(pressure=ctd[["pressure"]], temperature=ctd[["temperature"]], salinity=ctd[["salinity"]]))
     expect_equal(ctd[["salinity"]], ctd_df[["salinity"]])
     expect_equal(ctd[["temperature"]], ctd_df[["temperature"]])
     expect_equal(ctd[["pressure"]], ctd_df[["pressure"]])
@@ -152,7 +152,7 @@ test_that("as.ctd() with a data frame", {
 
 test_that("as.ctd() with a list", {
     data(ctd)
-    ctd_l <- as.ctd(list(pressure=ctd[["pressure"]],temperature=ctd[["temperature"]],salinity=ctd[["salinity"]]))
+    ctd_l <- as.ctd(list(pressure=ctd[["pressure"]], temperature=ctd[["temperature"]], salinity=ctd[["salinity"]]))
     expect_equal(ctd[["salinity"]], ctd_l[["salinity"]])
     expect_equal(ctd[["temperature"]], ctd_l[["temperature"]])
     expect_equal(ctd[["pressure"]], ctd_l[["pressure"]])
@@ -186,35 +186,35 @@ test_that("ctd subsetting and trimming", {
     # both scales.
     #
     # 1. SBE trimming method
-    p <- c(rep(4, 1000),
+    pressure <- c(rep(4, 1000),
         seq(4, 0.5, length.out = 50),
         seq(0.5, 100, length.out=1000),
         rep(100, 100),
         seq(100, 0, length.out=1000))
-    S <- 35-p/100
-    T <- 10+(100-p)/50
-    d <- as.ctd(S, T, p)
+    salinity <- 35 - pressure / 100
+    temperature <- 10 + (100 - pressure) / 50
+    d <- as.ctd(salinity, temperature, pressure)
     plotScan(d)
     dt <- ctdTrim(d, method="sbe")
     dt2 <- ctdTrim(d)
     #  2. trim by scan
-    scanRange <- range(ctd[['scan']])
+    scanRange <- range(ctd[["scan"]])
     newScanRange <- c(scanRange[1] + 20, scanRange[2] - 20)
     ctdTrimmed <- ctdTrim(ctd, "scan", parameters=newScanRange)
     # below are the data at the top of this trim spot
     # 150    149.000      6.198      6.148    11.7372    30.8882  0.000e+00
     # 151    150.000      6.437      6.384    11.6331    30.9301  0.000e+00
     # 152    151.000      6.770      6.715    11.4273    30.8928  0.000e+00
-    expect_equal(ctdTrimmed[["scan"]][1:3], c(150,151,152))
-    expect_equal(ctdTrimmed[["salinity"]][1:3], c(30.8882,30.9301,30.8928))
-    expect_equal(ctdTrimmed[["pressure"]][1:3], c(6.198,6.437,6.770))
+    expect_equal(ctdTrimmed[["scan"]][1:3], c(150, 151, 152))
+    expect_equal(ctdTrimmed[["salinity"]][1:3], c(30.8882, 30.9301, 30.8928))
+    expect_equal(ctdTrimmed[["pressure"]][1:3], c(6.198, 6.437, 6.770))
     # The next two lines check on whether the data in the object match
     # exactly the data file, and then whether the accessor converts from
     # the old temperature scale that is in the data file to the new one
     # that formulas are based on. There are changes here to account for
     # a change to data(ctd) that addressed a bug discussed in issue 1293.
-    expect_equal(ctdTrimmed@data$temperature[1:3], c(11.7372,11.6331,11.4273))
-    expect_equal(ctdTrimmed[["temperature"]][1:3], T90fromT68(c(11.7372,11.6331,11.4273)))
+    expect_equal(ctdTrimmed@data$temperature[1:3], c(11.7372, 11.6331, 11.4273))
+    expect_equal(ctdTrimmed[["temperature"]][1:3], T90fromT68(c(11.7372, 11.6331, 11.4273)))
     # next is from a test for issue 669
     n <- length(ctd[["salinity"]])
     set.seed(669)
@@ -227,10 +227,10 @@ test_that("ctd subsetting and trimming", {
     ctdnew@metadata$latitude <- NULL
     ctdnew@data$latitude <- lat
     ctdnewSubset <- subset(ctdnew, 200 <= scan & scan <= 300)
-    ctdnewTrim <- ctdTrim(ctdnew, method='scan', parameters = c(200, 300))
-    expect_equal(ctdnewSubset[['salinity']], ctdnewTrim[['salinity']])
-    expect_equal(ctdnewSubset[['scan']], ctdnewTrim[['scan']])
-    expect_equal(length(ctdnewSubset[['scan']]), length(ctdnewSubset[['longitude']]))
+    ctdnewTrim <- ctdTrim(ctdnew, method="scan", parameters = c(200, 300))
+    expect_equal(ctdnewSubset[["salinity"]], ctdnewTrim[["salinity"]])
+    expect_equal(ctdnewSubset[["scan"]], ctdnewTrim[["scan"]])
+    expect_equal(length(ctdnewSubset[["scan"]]), length(ctdnewSubset[["longitude"]]))
 })
 
 test_that("ctd subsetting by index", {
@@ -250,7 +250,7 @@ test_that("alter ctd metadata", {
     ctd[["salinity"]] <- S + 1
     expect_equal(ctd[["salinity"]], S+1)
     top <- subset(ctd, pressure < 5)
-    expect_true(max(top[['pressure']]) < 5)
+    expect_true(max(top[["pressure"]]) < 5)
 })
 
 test_that("gsw calculations on ctd data", {
@@ -294,12 +294,12 @@ test_that("ability to change conductivityUnit", {
     # These came from issue 731
     ctd2 <- ctd
     ctd2@data$conductivity <- swCSTp(ctd2) * 42.914
-    ctd2[['conductivityUnit']] <- list(unit=expression(mS/cm), scale="")
-    expect_equal(swSCTp(ctd2), ctd2[['salinity']], tolerance=1e-8) # OK on 64-bit OSX
+    ctd2[["conductivityUnit"]] <- list(unit=expression(mS/cm), scale="")
+    expect_equal(swSCTp(ctd2), ctd2[["salinity"]], tolerance=1e-8) # OK on 64-bit OSX
     ctd3 <- ctd
     ctd3@data$conductivity <- swCSTp(ctd3) * 4.2914
-    ctd3[['conductivityUnit']] <- list(unit=expression(S/m), scale="")
-    expect_equal(swSCTp(ctd3), ctd3[['salinity']], tolerance=1e-8) # OK on 64-bit OSX
+    ctd3[["conductivityUnit"]] <- list(unit=expression(S/m), scale="")
+    expect_equal(swSCTp(ctd3), ctd3[["salinity"]], tolerance=1e-8) # OK on 64-bit OSX
 })
 
 test_that("column renaming with a cnv file", {
@@ -309,7 +309,7 @@ test_that("column renaming with a cnv file", {
             "this CNV file has temperature in the IPTS\\-68 scale"),
         "1950, suggesting")
     expect_equal(names(d1[["data"]]),
-        c("scan","timeS","pressure","depth","temperature","salinity","flag"))
+        c("scan", "timeS", "pressure", "depth", "temperature", "salinity", "flag"))
     expect_warning(
         expect_warning(
             expect_warning(
@@ -320,7 +320,7 @@ test_that("column renaming with a cnv file", {
             "cannot find salinity or conductivity in .cnv file"),
         "1950, suggesting")
     expect_equal(names(d2[["data"]]),
-        c("scan","timeS","pressure","depth","temperature","FAKE","flag"))
+        c("scan", "timeS", "pressure", "depth", "temperature", "FAKE", "flag"))
 })
 
 
@@ -348,11 +348,11 @@ test_that("Dalhousie-produced cnv file", {
     expect_equal(d1[["station"]], "Stn 2")
     expect_equal(d1[["latitude"]], 44+41.056/60)
     expect_equal(d1[["longitude"]], -(63+38.633/60))
-    expect_equal(d1[['salinity']][1:3], c(29.9210, 29.9205, 29.9206))
-    expect_equal(d1[['pressure']][1:3], c(1.480, 1.671, 2.052))
+    expect_equal(d1[["salinity"]][1:3], c(29.9210, 29.9205, 29.9206))
+    expect_equal(d1[["pressure"]][1:3], c(1.480, 1.671, 2.052))
     # Check on IPTS-68 vs ITS-90 issue[s]
     expect_equal(d1@data$temperature[1:3], c(14.2245, 14.2299, 14.2285))
-    expect_equal(d1[['temperature']][1:3], c(14.22108694, 14.22648564, 14.22508598))
+    expect_equal(d1[["temperature"]][1:3], c(14.22108694, 14.22648564, 14.22508598))
     # Check that what we read here matches exactly data(ctd), as an
     # ensurance that any code changes to read.ctd.sbe() are always
     # followed by updates to data(ctd) via "make clean ; make ; make
@@ -383,9 +383,9 @@ test_that("Beaufort sea data I (reading ctd/woce/exchange)", {
     expect_equal(d2[["date"]], as.POSIXct("2003-08-11", tz="UTC"))
     expect_equal(d2[["latitude"]], 71.391)
     expect_equal(d2[["longitude"]], -134.001)
-    expect_equal(d2[['pressure']][1:3], 1:3)
-    expect_equal(d2[['temperature']][1:3], c(-1.1999, -1.2250, -1.2270))
-    expect_equal(d2[['salinity']][1:3], c(28.4279, 27.9823, 28.0095))
+    expect_equal(d2[["pressure"]][1:3], 1:3)
+    expect_equal(d2[["temperature"]][1:3], c(-1.1999, -1.2250, -1.2270))
+    expect_equal(d2[["salinity"]][1:3], c(28.4279, 27.9823, 28.0095))
 })
 
 ## A file containing CTD data acquired in the Beaufort Sea in 20l2,
@@ -412,9 +412,9 @@ test_that("Beaufort sea data II", {
     expect_equal(d3[["waterDepth"]], 87)
     expect_equal(d3[["latitude"]], 71+20.70/60)
     expect_equal(d3[["longitude"]], -(151+47.26/60))
-    expect_equal(d3[['pressure']][1:3], c(1,2,3))
-    expect_equal(d3[['temperature']][1:3], c(-0.0155,0.0005,0.0092))
-    expect_equal(d3[['salinity']][1:3], c(25.1637,25.1964,25.3011))
+    expect_equal(d3[["pressure"]][1:3], c(1, 2, 3))
+    expect_equal(d3[["temperature"]][1:3], c(-0.0155, 0.0005, 0.0092))
+    expect_equal(d3[["salinity"]][1:3], c(25.1637, 25.1964, 25.3011))
 })
 
 test_that("pressure accessor handles psi unit", {
@@ -435,7 +435,7 @@ test_that("pressure accessor handles missing pressure", {
     # add new
     ctd2 <- oceSetData(ctd, name="depth", value=depth, unit=list(unit=expression(m), scale=""))
     # test
-    expect_equal(porig, ctd2[['pressure']], tolerance=0.0001) # swDepth is approximate; sub-mm is good enough anyway
+    expect_equal(porig, ctd2[["pressure"]], tolerance=0.0001) # swDepth is approximate; sub-mm is good enough anyway
 })
 
 test_that("salinity accessor computes value from conductivity", {
@@ -478,9 +478,9 @@ test_that("as.ctd(rsk) transfers information properly", {
                 info=paste("failed while checking data$", item, sep=""))
         }
     }
-    expect_equal(ctd[['pressure']], rsk[['pressure']] - rsk[['pressureAtmospheric']])
+    expect_equal(ctd[["pressure"]], rsk[["pressure"]] - rsk[["pressureAtmospheric"]])
     ctd <- as.ctd(rsk, pressureAtmospheric=1)
-    expect_equal(ctd[['pressure']], rsk[['pressure']] - rsk[['pressureAtmospheric']] - 1)
+    expect_equal(ctd[["pressure"]], rsk[["pressure"]] - rsk[["pressureAtmospheric"]] - 1)
     # specify some values to check that we can over-ride some metadata
     latitude <- 42.244
     longitude <- -8.76
@@ -500,13 +500,13 @@ test_that("as.ctd(rsk) transfers information properly", {
 })
 
 test_that("ctdFindProfiles", {
-    S <- ctd[["salinity"]]
-    T <- ctd[["temperature"]]
-    p <- ctd[["pressure"]]
+    sal <- ctd[["salinity"]]
+    tem <- ctd[["temperature"]]
+    pre <- ctd[["pressure"]]
     n <- 10                      # number of fake profiles
-    SS <- rep(c(S, rev(S)), n)
-    TT <- rep(c(T, rev(T)), n)
-    pp <- rep(c(p, rev(p)), n)
+    SS <- rep(c(sal, rev(sal)), n)
+    TT <- rep(c(tem, rev(tem)), n)
+    pp <- rep(c(pre, rev(pre)), n)
     towyow <- as.ctd(SS, TT, pp, latitude=ctd[["latitude"]], longitude=ctd[["longitude"]])
     casts <- ctdFindProfiles(towyow)
     expect_equal(length(casts), n)
@@ -596,16 +596,16 @@ test_that("conductivity unit", {
 test_that("as.ctd() handles multiple longitude and latitude", {
     # test code for issue 1440 (https://github.com/dankelley/oce/issues/1440)
     for (n in c(1, 20)) {
-        T <- seq(2,3, length.out=n)
-        S <- seq(31.4, 31.6, length.out=n)
-        p <- seq(0, n, length.out=n)
+        tem <- seq(2, 3, length.out=n)
+        sal <- seq(31.4, 31.6, length.out=n)
+        pre <- seq(0, n, length.out=n)
         lat <- rep(44.5, n)
         lon <- rep(-63, n)
-        stn <- 'fake'
-        time <- seq(from=as.POSIXct("2012-01-01 00:00", tz='UTC'), by='min', length.out=20)
-        ctd <- as.ctd(salinity=S,
-            temperature=T,
-            pressure=p,
+        stn <- "fake"
+        time <- seq(from=as.POSIXct("2012-01-01 00:00", tz="UTC"), by="min", length.out=20)
+        ctd <- as.ctd(salinity=sal,
+            temperature=tem,
+            pressure=pre,
             time=time,
             longitude=lon,
             latitude=lat,
@@ -686,5 +686,3 @@ test_that("character 'which' works", {
         expect_silent(plot(ctd, which=w))
     }
 })
-
-

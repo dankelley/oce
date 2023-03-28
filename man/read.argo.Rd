@@ -39,7 +39,11 @@ See the Argo documentation (see references 2 and 3) for some details on what fil
 Many items listed in section 2.2.3 of reference 3 are read from the
 file and stored in the \code{metadata} slot, with the exception of
 \code{longitude} and \code{latitude}, which are stored in the
-\code{data} slot, alongside hydrographic information.
+\code{data} slot, alongside hydrographic information.  The details of storage
+in the return value are somewhat complex, although the following notes
+might be helpful to readers seeking to learn more.
+
+\emph{1. Variable renaming.}
 
 The names of several data parameters stored within the netCDF file
 are altered to fit the oce context. For example, \code{PRES} becomes \code{pressure},
@@ -48,40 +52,6 @@ The original names are reported by \verb{summary,argo-method}, and
 data may be extracted with \verb{[[,argo-method} using those names, so
 the renaming should not be too inconvenient to Argo experts who
 are new to oce.
-
-Several of the netCDF global attributes are also renamed before
-placement in the \code{metadata} slot of the return value.  These include
-\code{conventions}, \code{featureType}, \code{history}, \code{institution},
-\code{nParameters}, \code{nProfiles},  \code{references}, \code{source}, \code{title},
-and \code{userManualVersion}.
-These names are derived from those in the netcdf
-file, and mainly follow the pattern explained in the
-\dQuote{Variable renaming convention} section.
-
-For profile data (as indicated by the NetCDF global attribute
-named \code{"featureType"} being equal to \code{"trajectoryProfile"}),
-the NetCDF item named \code{"STATION_PARAMETERS"} controls
-whether variables in the source file will be stored in the
-\code{metadata} or \code{data} slot of the returned object.
-If \code{STATION_PARAMETERS} is not present, as is the case for
-trajectory files (which are detected by \code{featureType} being
-\code{"trajectory"}), some guesses are made as to what goes in
-\code{data} and \code{metadata} slots.
-
-Each data item can have variants, as
-described in Sections 2.3.4 of reference 3.
-For example, if \code{"PRES"} is found in \code{STATION_PARAMETERS},
-then \code{PRES} (pressure) data are sought in the file, along with
-\code{PRES_QC}, \code{PRES_ADJUSTED}, \code{PRES_ADJUSTED_QC}, and
-\code{PRES_ERROR}. The same pattern works for other profile data. The variables
-are stored with names created as explained in the
-\dQuote{Variable renaming convention} section below. Note that
-flags, which are stored variables ending in \code{"_QC"} in the netcdf
-file, are stored in the \code{flags} item within the \code{metadata} slot
-of the returned object; thus, for example,
-\code{PRES_QC} is stored as \code{pressure} in \code{flags}.
-}
-\section{Variable renaming convention}{
 
 Argo netcdf files employ a \code{"SNAKE_CASE"} naming scheme (sometimes
 using lower case) that is inconsistent with the \code{"camelCase"} scheme
@@ -103,9 +73,60 @@ of all items in the \code{metadata} slot (or similar with \code{"data"}), since 
 in reverse may be easier than simply guessing at what names oce has chosen.
 (Note that prior to 2020 June 24, some metadata items were stored in
 \code{"SNAKE_CASE"}.)
-}
 
-\section{Data sources}{
+\emph{2. Metadata.}
+
+Several of the netCDF global attributes are also renamed before
+placement in the \code{metadata} slot of the return value.  These include
+\code{conventions}, \code{featureType}, \code{history}, \code{institution},
+\code{nParameters}, \code{nProfiles},  \code{references}, \code{source}, \code{title},
+and \code{userManualVersion}.
+These names are derived from those in the netcdf
+file, and mainly follow the pattern explained in the
+\dQuote{Variable renaming convention} section.
+
+For profile data (as indicated by the NetCDF global attribute
+named \code{"featureType"} being equal to \code{"trajectoryProfile"}),
+the NetCDF item named \code{"STATION_PARAMETERS"} controls
+whether variables in the source file will be stored in the
+\code{metadata} or \code{data} slot of the returned object.
+If \code{STATION_PARAMETERS} is not present, as is the case for
+trajectory files (which are detected by \code{featureType} being
+\code{"trajectory"}), some guesses are made as to what goes in
+\code{data} and \code{metadata} slots.
+
+\emph{3. Data variants.}
+
+Each data item can have variants, as
+described in Sections 2.3.4 of reference 3.
+For example, if \code{"PRES"} is found in \code{STATION_PARAMETERS},
+then \code{PRES} (pressure) data are sought in the file, along with
+\code{PRES_QC}, \code{PRES_ADJUSTED}, \code{PRES_ADJUSTED_QC}, and
+\code{PRES_ERROR}. The same pattern works for other profile data. The variables
+are stored with names created as explained in the
+\dQuote{Variable renaming convention} section below. Note that
+flags, which are stored variables ending in \code{"_QC"} in the netcdf
+file, are stored in the \code{flags} item within the \code{metadata} slot
+of the returned object; thus, for example,
+\code{PRES_QC} is stored as \code{pressure} in \code{flags}.
+
+\emph{4. How time is handled.}
+
+The netcdf files for profile data store time in an item named \code{juld},
+which holds the overall profile time, in what the Argo documentation
+calls Julian days, with respect to a reference time that is also stored
+in the file.  Based on this information, a \link{POSIXct} value named \code{time}
+is stored in the \code{metadata} slot of the returned value, and this
+may be found with e.g. \code{a[["time"]]}, where \code{a} is that returned value.
+Importantly, this value matches the time listed in profile index files.
+In addition, some profile data files contain a field called \code{MTIME},
+which holds the offset (in days) between the time of individual measurements and the
+overall profile time. For such files, the measurement times may be
+computed with \code{a[["time"]]+86400*a[["mtime"]]}. (This formula is used by
+\code{\link[=as.ctd]{as.ctd()}}, if its first argument is an \linkS4class{argo} object created
+by supplying \code{\link[=read.argo]{read.argo()}} with such a data file.)
+
+\emph{5. Data sources.}
 
 Argo data are made available at several websites. A bit of detective
 work can be required to track down the data.
@@ -145,24 +166,25 @@ over time.
 
 Similar steps can be followed on other servers.
 }
-
 \examples{
 \dontrun{
-## Example 1: read from a local file
+# Example 1: read from a local file
 library(oce)
 d <- read.argo("/data/OAR/6900388_prof.nc")
 summary(d)
 plot(d)
 
-## Example 2: construct URL for download (brittle)
+# Example 2: construct URL for download (brittle)
 id <- "6900388"
 url <- "https://www.usgodae.org/ftp/outgoing/argo"
 if (!length(list.files(pattern="argo_index.txt")))
     download.file(paste(url, "ar_index_global_meta.txt", sep="/"), "argo_index.txt")
 index <- readLines("argo_index.txt")
 line <- grep(id, index)
-if (0 == length(line)) stop("id ", id, " not found")
-if (1 < length(line)) stop("id ", id, " found multiple times")
+if (0 == length(line))
+    stop("id ", id, " not found")
+if (1 < length(line))
+    stop("id ", id, " found multiple times")
 dac <- strsplit(index[line], "/")[[1]][1]
 profile <- paste(id, "_prof.nc", sep="")
 float <- paste(url, "dac", dac, id, profile, sep="/")

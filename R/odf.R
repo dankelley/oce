@@ -1,6 +1,5 @@
 # vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
 
-
 #' Class to Store ODF Data
 #'
 #' This class is for data stored in a format used at Canadian
@@ -46,7 +45,7 @@ setMethod(f="initialize",
     signature="odf",
     definition=function(.Object, time, filename="", ...) {
         .Object <- callNextMethod(.Object, ...)
-        ## Assign to some columns so they exist if needed later (even if they are NULL)
+        # Assign to some columns so they exist if needed later (even if they are NULL)
         .Object@data$time <- if (missing(time)) NULL else time
         .Object@metadata$filename <- filename
         .Object@metadata$deploymentType <- "" # see ctd
@@ -77,11 +76,12 @@ setMethod(f="initialize",
 setMethod(f="[[",
     signature(x="odf", i="ANY", j="ANY"),
     definition=function(x, i, j, ...) {
-        if (i == "?")
+        if (i == "?") {
             return(list(metadata=sort(names(x@metadata)),
-                    metadataDerived=NULL,
-                    data=sort(names(x@data)),
-                    dataDerived=NULL))
+                metadataDerived=NULL,
+                data=sort(names(x@data)),
+                dataDerived=NULL))
+        }
         callNextMethod()         # [[
     })
 
@@ -124,20 +124,18 @@ setMethod(f="subset",
     definition=function(x, subset, ...) {
         subsetString <- paste(deparse(substitute(expr=subset, env=environment())), collapse=" ")
         res <- x
-        ##dots <- list(...)
+        #dots <- list(...)
         if (missing(subset))
             stop("must give 'subset'")
-
         if (missing(subset))
             stop("must specify a 'subset'")
-        keep <- eval(substitute(expr=subset, env=environment()), envir=x@data, enclos=parent.frame(2)) # used for $ts and $ma, but $tsSlow gets another
+        keep <- eval(substitute(expr=subset, env=environment()), envir=x@data,
+            enclos=parent.frame(2)) # used for $ts and $ma, but $tsSlow gets another
         res <- x
-        for (i in seq_along(x@data)) {
+        for (i in seq_along(x@data))
             res@data[[i]] <- x@data[[i]][keep]
-        }
-        for (i in seq_along(x@metadata$flags)) {
+        for (i in seq_along(x@metadata$flags))
             res@metadata$flags[[i]] <- x@metadata$flags[[i]][keep]
-        }
         res@processingLog <- processingLogAppend(res@processingLog, paste("subset(x, subset=", subsetString, ")", sep=""))
         res
     })
@@ -193,22 +191,25 @@ setMethod(f="plot",
             } else {
                 nok <- 0
                 for (i in 1:n) {
-                    if (dataNames[i] != "time" && any(is.finite(data[[i]])))
+                    if (dataNames[i] != "time" && any(is.finite(data[[i]]))) {
                         nok <- nok + 1
+                    }
                 }
             }
             time <- data$time
             if (!is.null(time)) {
-                if (!blanks)
+                if (!blanks) {
                     n <- nok
+                }
                 if (n > 5) {
                     # make a roughly square grid
                     N <- as.integer(0.5 + sqrt(n - 1))
                     M <- as.integer(n / N)
                     # may need to add 1, but use a loop in case my logic is mixed up
                     # if that would
-                    while (N * M < n)
+                    while (N * M < n) {
                         M <- M + 1
+                    }
                     par(mfrow=c(N, M))
                     oceDebug(debug, "N=", N, ", M=", M, ", prod=", N*M, ", n=", n, "\n", sep="")
                 } else {
@@ -218,10 +219,12 @@ setMethod(f="plot",
                     if (dataNames[i] != "time") {
                         y <- data[[dataNames[i]]]
                         yok <- any(is.finite(y))
-                        if (blanks || yok)
+                        if (blanks || yok) {
                             oce.plot.ts(time, y, ylab=dataNames[i], mar=c(2, 3, 0.5, 1), drawTimeRange=FALSE)
-                        if (!yok)
+                        }
+                        if (!yok) {
                             warning(paste("In plot,odf-method() : '", dataNames[i], "' has no finite data", sep=""), call.=FALSE)
+                        }
                     }
                 }
             }
@@ -277,30 +280,20 @@ findInHeader <- function(key, lines, returnOnlyFirst=TRUE, numeric=FALSE, prefix
     rval <- ""
     rval <- list()
     for (j in seq_along(i)) {
-        #. cat("j=", j, ", i=", i, "\n")
         # ----------
         # RISKY CODE: only look at first match
         # ----------
-        # isolate the RHS of the eqquality
+        # isolate the RHS of the equality
         tmp <- gsub("\\s*$", "", gsub("^\\s*", "", gsub("'", "", gsub(",", "", strsplit(lines[i[j]], "=")[[1]][2]))))
         # convert e.g. D+00 to e+00
         if (length(grep("[-A-CF-Za-cf-z ]", tmp))) {
-            #. cat("case A. tmp '", tmp, "'\n", sep="")
             rval[[j]] <- tmp
         } else {
-            #. cat("case B. tmp '", tmp, "'\n", sep="")
             tmp <- gsub("(.*)D([-+])([0-9]{2})", "\\1e\\2\\3", tmp)
             number <- 0 == length(grep("[-+.0-9eEdD ]*", tmp))
-            #. cat("number=", number, "\n")
             rval[[j]] <- if (number && numeric) as.numeric(tmp) else tmp
         }
-        #.message("j=", j, " end")
     }
-    #.message("A")
-    #.print(rval)
-    #? if (numeric)
-    #?     rval <- as.numeric(rval)
-    #.message("B")
     if (0 < length(rval)) {
         if (returnOnlyFirst) {
             rval[[1]]
@@ -492,17 +485,17 @@ findInHeader <- function(key, lines, returnOnlyFirst=TRUE, numeric=FALSE, prefix
 #' the adjustment of suffix numbers. The following code have been seen in data files from
 #' the Bedford Institute of Oceanography: `ALTB`, `PHPH` and `QCFF`.
 #'
-## @section A note on unit conventions:
-## Some older ODF files contain non-standard units for conductivity,
-## including `mho/m`, `mmho/cm`, and `mmHo`. As the
-## units for conductivity are important for derived quantities
-## (e.g. salinity), such units are converted to standard units
-## (e.g. `S/m` and `mS/cm`).  (This was once done with a warning,
-## but on 2020-02-07 the warning was removed, since it did not
-## indicate a problem with the file or the data scanning; rather,
-## it was a simple matter of nudging towards uniformity in a way
-## that ought to confuse no users, akin to converting `m**3` to
-## `m^3`, which is also done here without warning.)
+# @section A note on unit conventions:
+# Some older ODF files contain non-standard units for conductivity,
+# including `mho/m`, `mmho/cm`, and `mmHo`. As the
+# units for conductivity are important for derived quantities
+# (e.g. salinity), such units are converted to standard units
+# (e.g. `S/m` and `mS/cm`).  (This was once done with a warning,
+# but on 2020-02-07 the warning was removed, since it did not
+# indicate a problem with the file or the data scanning; rather,
+# it was a simple matter of nudging towards uniformity in a way
+# that ought to confuse no users, akin to converting `m**3` to
+# `m^3`, which is also done here without warning.)
 #'
 #' @param ODFnames vector of character values that hold ODF names.
 #'
@@ -527,12 +520,10 @@ findInHeader <- function(key, lines, returnOnlyFirst=TRUE, numeric=FALSE, prefix
 #' for the [odf-class].
 #'
 #' @family things related to odf data
-ODFNames2oceNames <- function(ODFnames,
-    # ODFunits=NULL,
-    columns=NULL, PARAMETER_HEADER=NULL, debug=getOption("oceDebug"))
+ODFNames2oceNames <- function(ODFnames, columns=NULL, PARAMETER_HEADER=NULL, debug=getOption("oceDebug"))
 {
     oceDebug(debug, "ODFNames2oceNames() {\n", unindent=1, sep="", style="bold")
-    n <- length(ODFnames)
+    #unused? n <- length(ODFnames)
     names <- ODFnames
     # If 'name' is mentioned in columns, then use columns and ignore the lookup table.
     if (!is.null(columns)) {
@@ -707,174 +698,7 @@ ODFNames2oceNames <- function(ODFnames,
     oceDebug(debug, "STAGE 2 names: ", paste(names, collapse=" "), "\n")
     names <- unduplicateNames(names)
     oceDebug(debug, "STAGE 3 names (i.e. after unduplicating): ", paste(names, collapse=" "), "\n")
-    #- # Handle units
-    #- units <- list()
-    #- oceDebug(debug, "STAGE 4 units: ", paste(units, collapse=" "), "\n")
-    #- ODFunits <- gsub("^/", "1/", ODFunits)
-    #- oceDebug(debug, "STAGE 5 units: ", paste(units, collapse=" "), " (after changing '/*' to '1/*')\n")
-    #- for (i in seq_along(names)) {
-    #-     ## NOTE: this was originally coded with ==, but as errors in ODF
-    #-     ## formatting have been found, I've moved to grep() instead; for
-    #-     ## example, the sigma-theta case is done that way, because the
-    #-     ## original code expected kg/m^3 but then (issue 1051) I ran
-    #-     ## across an ODF file that wrote density as Kg/m^3.
-    #-     oceDebug(debug, paste("ODFnames[",i,"]='",ODFnames[i],"', names[",i,"]='", names[i], "', ODFunits[", i, "]='", ODFunits[i], "'\n", sep=""))
-    #-     thisUnit <- trimws(ODFunits[i])
-    #-     #- message("i=", i, ", name=\"", names[i], "\", thisUnit='", thisUnit, "'")
-    #-     units[[names[i]]] <- if (thisUnit == "10**3cells/L") {
-    #-         list(unit=expression(10^3*cells/l), scale="")
-    #-     } else if (thisUnit == "code") {
-    #-         list(unit=expression(), scale="")
-    #-     } else if (thisUnit == "counts") {
-    #-         list(unit=expression(), scale="")
-    #-     } else if (thisUnit == "db") { # this ought to be decibel ... does it ever occur in ODF?
-    #-         list(unit=expression(dbar), scale="")
-    #-     } else if (thisUnit == "decibars") {
-    #-         list(unit=expression(dbar), scale="")
-    #-     } else if (grepl("^deg(ree)?(s)?$", thisUnit, ignore.case=TRUE)) {
-    #-         list(unit=expression(degree), scale="")
-    #-     } else if (thisUnit == "deg C" || thisUnit == "degrees C" || thisUnit == "Degrees C") {
-    #-         list(unit=expression(degree*C), scale="ITS-90") # guess on scale
-    #-     } else if (thisUnit == "degrees") {
-    #-         list(unit=expression(degree), scale="")
-    #-     } else if (thisUnit == "IPTS-68, deg C") {
-    #-         list(unit=expression(degree*C), scale="IPTS-68")
-    #-     } else if (thisUnit == "ITS-68, deg C") {
-    #-         # I think ITS-68 is an invalid scale, but it appears in some files.
-    #-         list(unit=expression(degree*C), scale="IPTS-68")
-    #-     } else if (thisUnit == "FTU") {
-    #-         list(unit=expression(FTU), scale="")
-    #-     } else if (thisUnit == "g") {
-    #-         list(unit=expression(g), scale="")
-    #-     } else if (thisUnit == "GMT") {
-    #-         list(unit=expression(), scale="")
-    #-     } else if (thisUnit == "hPa") {
-    #-         list(unit=expression(hPa), scale="")
-    #-     } else if (thisUnit == "ITS-90, deg C") {
-    #-         list(unit=expression(degree*C), scale="ITS-90")
-    #-     } else if (thisUnit == "hertz" || thisUnit == "Hertz") {
-    #-         list(unit=expression(Hz), scale="")
-    #-     } else if (thisUnit == "kg/m^3" || thisUnit == "kg/m**3") {
-    #-         list(unit=expression(kg/m^3), scale="")
-    #-     } else if (thisUnit == "m") {
-    #-         list(unit=expression(m), scale="")
-    #-     } else if (thisUnit == "m**3/s") {
-    #-         list(unit=expression(m^3/s), scale="")
-    #-     } else if (thisUnit == "metres" || thisUnit == "meters") {
-    #-         list(unit=expression(m), scale="")
-    #-     } else if (thisUnit == "m**3/kg") {
-    #-         list(unit=expression(m^3/kg), scale="")
-    #-     } else if (thisUnit == "mg/m^3") {
-    #-         list(unit=expression(mg/m^3), scale="")
-    #-     } else if (thisUnit == "mg/m**3") {
-    #-         list(unit=expression(mg/m^3), scale="")
-    #-     } else if (thisUnit == "ml/l") {
-    #-         list(unit=expression(ml/l), scale="")
-    #-     } else if (thisUnit == "m/s" || thisUnit == "M/s") {
-    #-         list(unit=expression(m/s), scale="")
-    #-     } else if (thisUnit == "m/sec") {
-    #-         list(unit=expression(m/s), scale="")
-    #-     } else if (thisUnit == "m^-1/sr") {
-    #-         list(unit=expression(1/m/sr), scale="")
-    #-     } else if (grepl("^\\s*mho[s]{0,1}/m\\s*$", thisUnit, ignore.case=TRUE)) {
-    #-         ##20200207 warning('Changed unit mho/m to S/m for conductivity')
-    #-         list(unit=expression(S/m), scale="")
-    #-     #} else if (1 == length(grep("^\\s*micro[ ]?mols/m2/s\\s*$", thisUnit, ignore.case=TRUE))) {
-    #-     #    list(unit=expression(mu*mol/m^2/s), scale="")
-    #-     } else if (grepl("^\\s*mmho[s]?/cm\\s*$", thisUnit, ignore.case=TRUE)) {
-    #-         ##20200207 warning('Changed unit mmho/cm to mS/cm for conductivity')
-    #-         list(unit=expression(mS/cm), scale="")
-    #-     } else if (thisUnit == "mmHo") { # FIXME: this must be an error, unless ODF is very strange, but see unitFromString() anyway
-    #-         ##20200207 warning('Changed unit mmHo to S/m for conductivity')
-    #-         list(unit=expression(S/m), scale="")
-    #-     ##} else if (thisUnit == "[(]*none[)]$") {
-    #-     } else if (thisUnit == "none") {
-    #-         list(unit=expression(), scale="")
-    #-     } else if (grepl("^[\\(]*none[\\)]*$", thisUnit, ignore.case=TRUE)) {
-    #-         list(unit=expression(), scale="")
-    #-     } else if (thisUnit == "NBS scale") {
-    #-         list(unit=expression(), scale="NBS scale")
-    #-     } else if (thisUnit == "NTU") {
-    #-         list(unit=expression(NTU), scale="")
-    #-     } else if (thisUnit == "ppm" || thisUnit == "PPM") {
-    #-         list(unit=expression(ppm), scale="")
-    #-     } else if (thisUnit == "psu" || thisUnit == "PSU") {
-    #-         list(unit=expression(), scale="PSS-78")
-    #-     } else if (thisUnit == "ma") {
-    #-         list(unit=expression(ma), scale="")
-    #-     } else if (thisUnit == "metres/sec") {
-    #-         list(unit=expression(m/s), scale="")
-    #-     } else if (thisUnit == "microns") {
-    #-         list(unit=expression(mu*m), scale="")
-    #-     } else if (grepl("^\\s*micro[ ]?mol[e]?s/m(\\*){0,2}2/s(ec)?\\s*$", thisUnit, ignore.case=TRUE)) {
-    #-         list(unit=expression(mu*mol/m^2/s), scale="")
-    #-     } else if (thisUnit == "ratio") {
-    #-         list(unit=expression(ratio), scale="")
-    #-     } else if (grepl("^\\s*sigma-theta,\\s*kg/m\\^3\\s*$", thisUnit, ignore.case=TRUE)) {
-    #-         list(unit=expression(kg/m^3), scale="")
-    #-     } else if (thisUnit == "s" || thisUnit == "seconds") {
-    #-         list(unit=expression(s), scale="")
-    #-     } else if (thisUnit == "S/m") {
-    #-         list(unit=expression(S/m), scale="")
-    #-     } else if (thisUnit == "Total scale") {
-    #-         list(unit=expression(), scale="")
-    #-     } else if (thisUnit == "True degrees") {
-    #-         list(unit=expression(), scale="")
-    #-     } else if (thisUnit == "uA") {
-    #-         list(unit=expression(mu*a), scale="")
-    #-     } else if (thisUnit == "ueinsteins/s/m**2") {
-    #-         list(unit=expression(mu*einstein/s/m^2), scale="")
-    #-     } else if (thisUnit == "ug/l") {
-    #-         list(unit=expression(mu*g/l), scale="")
-    #-     } else if (grepl("^\\s*mmol/m\\*\\*3\\s*$", thisUnit, ignore.case=TRUE)) {
-    #-         list(unit=expression(mmol/m^3), scale="")
-    #-     } else if (thisUnit == "umol/kg") {
-    #-         list(unit=expression(mmol/kg), scale="")
-    #-     } else if (thisUnit == "umol/m**3") {
-    #-         list(unit=expression(mu*mol/m^3), scale="")
-    #-     } else if (thisUnit == "umol/m**2/s") {
-    #-         list(unit=expression(mu*mol/m^2/s), scale="")
-    #-     } else if (thisUnit == "umol photons/m2/s") {
-    #-         list(unit=expression(mu*mol/m^2/s), scale="")
-    #-     } else if (thisUnit == "UTC") {
-    #-         list(unit=expression(), scale="")
-    #-     } else if (thisUnit == "V") {
-    #-         list(unit=expression(V), scale="")
-    #-     } else if (thisUnit == "1/cm") {
-    #-         list(unit=expression(1/cm), scale="")
-    #-     } else if (thisUnit == "1/m") {
-    #-         list(unit=expression(1/m), scale="")
-    #-     } else if (thisUnit == "%") {
-    #-         list(unit=expression("%"), scale="")
-    #-     } else if (thisUnit == "volts") {
-    #-         list(unit=expression(V), scale="")
-    #-     } else if (nchar(thisUnit) == 0) {
-    #-         list(unit=expression(), scale="")
-    #-     } else {
-    #-         # print(names)
-    #-         warning("unable to interpret ODFunits[", i, "]='", thisUnit, "', for item code-named '", names[i], "', so making an educated guess using parse() or, as a last-ditch effort, simply copying the string", sep="")
-    #-         uu <- try(parse(text=thisUnit), silent=TRUE)
-    #-         if (inherits(uu, "try-error"))
-    #-             uu <- thisUnit
-    #-         list(unit=uu, scale="")
-    #-     }
-    #- }
-    #- # Catch some problems I've seen in data
-    #- directionVariables <- which(names == "directionMagnetic" | names == "directionTrue")
-    #- for (directionVariable in directionVariables) {
-    #-     unit <- units[[directionVariable]]$unit
-    #-     if (is.null(unit)) {
-    #-         warning("no unit found for '",
-    #-                 names[[directionVariable]], "'; this will not affect calculations, though")
-    #-         ## units[[directionVariable]]$unit <- expression(degree)
-    #-     } else if (is.character(unit) && "degree" != unit && "degrees" != unit) {
-    #-         warning("odd unit, '", unit, "', for '",
-    #-                 names[directionVariable], "'; this will not affect calculations, though")
-    #-         ## units[[directionVariable]]$unit <- expression(degree)
-    #-     }
-    #- }
     oceDebug(debug, "} # ODFNames2oceNames()\n", unindent=1, sep="", style="bold")
-    #list(names=names, units=units)
     list(names=names)
 }
 
@@ -971,16 +795,12 @@ ODF2oce <- function(ODF, coerce=TRUE, debug=getOption("oceDebug"))
     nd <- length(resNames)
     for (i in 1:nd) {
         if (is.numeric(res@data[[i]])) {
-            #message("NULL_VALUE='", ODF$PARAMETER_HEADER[[i]]$NULL_VALUE, "'")
             NAvalue <- as.numeric(gsub("D", "e", ODF$PARAMETER_HEADER[[i]]$NULL_VALUE))
-            #message("NAvalue=", NAvalue)
-            # message("NAvalue: ", NAvalue)
             res@data[[i]][res@data[[i]] == NAvalue] <- NA
         }
     }
     # Stage 3. rename QQQQ_* columns as flags on the previous column
     names <- names(res@data)
-    #- message("names 1");print(names)
     for (i in seq_along(names)) {
         if (substr(names[i], 1, 4) == "QQQQ" || (i > 1 && names[i] == paste0("Q", names[i-1]))) {
             if (i > 1) {
@@ -988,7 +808,6 @@ ODF2oce <- function(ODF, coerce=TRUE, debug=getOption("oceDebug"))
             }
         }
     }
-    #- message("names 2");print(names)
     names(res@data) <- names
     res
 }
@@ -1013,22 +832,17 @@ ODFListFromHeader <- function(header)
     starts <- A + 1
     ends <- c(A[-1], length(header) + 1) - 1
     for (i in seq_along(starts)) {
-        #msg(header[A[i]], "\n")
         nitems <- 1 + ends[i] - starts[i]
-        #msg("  nitems: ", nitems)
         h[[i]] <- vector("list", length=nitems)
         itemsNames <- NULL
         itemsI <- 1
         for (ii in starts[i]:ends[i]) {
-            #msg("line <", header[ii], ">")
             name <- gsub("^[ ]*([^=]*)[ ]*=.*$", "\\1", header[ii])
-            #msg("    name  <", name, ">")
             value <- gsub("^[ ]*([^=]*)[ ]*=[ ]*", "", header[ii])
-            #msg("    value <", value, "> (original)")
             # Trim trailing comma (which seems to occur for all but last item in a list)
-            if ("," == substr(value, nchar(value), nchar(value)))
+            if ("," == substr(value, nchar(value), nchar(value))) {
                 value <- substr(value, 1, nchar(value)-1)
-            #msg("    value <", value, ">  (after trailing-comma removal)")
+            }
             # Trim leading single-quote, and its matching trailing single-quote; warn
             # if former is present but latter is missing.
             if ("'" == substr(value, 1, 1)) {
@@ -1039,7 +853,6 @@ ODFListFromHeader <- function(header)
                     warning("malformed string in ODF header line <", header[ii], ">\n", sep="")
                 }
             }
-            #msg("    value <", value, ">    (after '' removal)")
             itemsNames <- c(itemsNames, name)
             h[[i]][[itemsI]] <- value
             itemsI <- itemsI + 1
@@ -1102,7 +915,7 @@ ODFListFromHeader <- function(header)
 #' # read.odf() on this data file produces a warning suggesting that the user
 #' # repair the unit, using the method outlined here.
 #' odf <- read.odf(system.file("extdata", "CTD_BCD2014666_008_1_DN.ODF.gz", package="oce"))
-#' ctd <- as.ctd(odf) ## so we can e.g. extract potential temperature
+#' ctd <- as.ctd(odf) # so we can e.g. extract potential temperature
 #' ctd[["conductivityUnit"]] <- list(unit=expression(), scale="")
 #' #
 #' # 2. Make a CTD, and plot (with span to show NS)
@@ -1182,12 +995,7 @@ ODFListFromHeader <- function(header)
 #' @author Dan Kelley, with help from Chantelle Layton
 #'
 #' @family things related to odf data
-read.odf <- function(file,
-    columns=NULL,
-    header="list",
-    exclude=NULL,
-    encoding="latin1",
-    debug=getOption("oceDebug"))
+read.odf <- function(file, columns=NULL, header="list", exclude=NULL, encoding="latin1", debug=getOption("oceDebug"))
 {
     if (missing(file))
         stop("must supply 'file'")
@@ -1235,7 +1043,6 @@ read.odf <- function(file,
     if (!length(dataStart))
         stop("ODF files must contain a line with \"-- DATA --\"")
     res <- new("odf")
-
     nlines <- length(lines)
     # Make a list holding all the information in the header. Note that this is entirely
     # separate from e.g. inference of longitude and latitude from a header.
@@ -1246,7 +1053,6 @@ read.odf <- function(file,
     # this property.
     if (length(grep("^ ", h)))
         h <- gsub("^ ", "", h)
-
     categoryIndex <- grep("^[a-zA-Z]", h)
     categoryNames <- h[categoryIndex]
     headerlist <- list()
@@ -1256,14 +1062,13 @@ read.odf <- function(file,
     names(headerlist) <- categoryNames
     indexCategory <- 0
     lhsc <- list() # set up a list for counts of lhs patterns, used in renaming
-
     nh <- length(h)
     for (i in seq_len(nh)) {
         oceDebug(debug>3, "examine header line ", i, " of ", nh, "\n", sep="")
         if (grepl("^[a-zA-Z]", h[i])) {
             indexCategory <- indexCategory + 1
             headerlist[[indexCategory]] <- list()
-            ##> message("* '", h[i], "' is indexCategory ", indexCategory)
+            #> message("* '", h[i], "' is indexCategory ", indexCategory)
             lhsUsed <- NULL
         } else {
             if (0 == indexCategory) {
@@ -1273,22 +1078,21 @@ read.odf <- function(file,
             }
             # Use regexp to find lhs and rhs. This is better than using strsplit on '=' because some
             # rhs have '=' in them.
-            lhs <- gsub("^[ ]*([^=]*)=(.*)$","\\1", h[i])
+            lhs <- gsub("^[ ]*([^=]*)=(.*)$", "\\1", h[i])
             if (!(lhs %in% names(lhsc))) {
                 lhsc[[lhs]] <- 1
             } else {
                 lhsc[[lhs]] <- 1 + lhsc[[lhs]]
             }
             lhs <- paste0(lhs, "_", lhsc[[lhs]])
-            rhs <- gsub("^[^=]*=[ ]*(.*)[,]*$","\\1", h[i])
+            rhs <- gsub("^[^=]*=[ ]*(.*)[,]*$", "\\1", h[i])
             oceDebug(debug>3, "lhs=\"", lhs, "\",  rhs=\"", rhs, "\"\n", sep="")
             headerlist[[indexCategory]][[lhs]] <- rhs
             lhsUsed <- c(lhsUsed, lhs)
         }
     }
-    if (length(headerlist)) {
+    if (length(headerlist))
         names(headerlist) <- unduplicateNames(names(headerlist))
-    }
     res@metadata$header <- headerlist
     # Learn about each parameter from its own header block
     linePARAMETER_HEADER <- grep("^\\s*PARAMETER_HEADER,\\s*$", lines)
@@ -1299,9 +1103,11 @@ read.odf <- function(file,
     # extract column codes in a step-by-step way, to make it easier to adjust if the format changes
     if (TRUE) { # FIXME: delete this later, after recoding to get individualized NA codes
         # The mess below hides warnings on non-numeric missing-value codes.
-        options <- options('warn')
+        options <- options("warn")
         options(warn=-1)
+        # nolint start object_usage_linter
         nullValue <- NA
+        # nolint end object_usage_linter
         t <- try({nullValue <- as.numeric(gsub("D\\+", "e+", findInHeader("NULL_VALUE", lines))[1])},
             silent=TRUE)
         if (inherits(t, "try-error")) {
@@ -1309,7 +1115,9 @@ read.odf <- function(file,
         }
         options(warn=options$warn)
     }
+    # nolint start object_usage_linter
     ODForiginalNames <- NULL
+    # nolint end object_usage_linter
     ODFnames <- NULL
     ODFunits <- NULL
     # This list, later converted to a data frame, is used for renaming the data in the file, for
@@ -1320,7 +1128,7 @@ read.odf <- function(file,
     parameterTable <- list(code=NULL, nameOrig=NULL, name=NULL, oceName=NULL, units=NULL, scale=NULL)
     for (l in linePARAMETER_HEADER) {
         lstart <- l + 1
-        ## Isolate this block. Note that there seem to be two ways to end blocks.
+        # Isolate this block. Note that there seem to be two ways to end blocks.
         lend <- 0
         for (ll in seq.int(lstart, min(lstart + 100, nlines))) {
             if (length(grep("^\\s*(PARAMETER_HEADER|RECORD_HEADER)", lines[ll]))) {
@@ -1342,11 +1150,15 @@ read.odf <- function(file,
         # "  NAME= 'Sea Temperature (IPTS-68)',"
         # "  NAME= 'CNTR_01',"
         iname <- grep("^\\s*?NAME\\s*=\\s*'?", lines[lstart:lend])
-        if (length(iname) == 0L)
+        if (length(iname) == 0L) {
             stop("cannot locate a NAME line in PARAMETER_HEADER block starting at line ", lstart-1)
-        if (length(iname) > 1L)
+        }
+        if (length(iname) > 1L) {
             stop("cannot handle more than one NAME line in PARAMETER_HEADER block starting at line ", lstart-1)
+        }
+        # nolint start object_usage_linter
         nameOrig <- gsub("^\\s*NAME\\s*=\\s*'?([^']*)'?,?\\s*$", "\\1", lines[lstart+iname-1])
+        # nolint end object_usage_linter
         parameterTable$nameOrig <- c(parameterTable$nameOrig, code)
         iunits <- grep("^\\s*UNITS\\s*=\\s*'?", lines[lstart:lend])
         units <- if (length(iunits) == 0) "" else gsub("^\\s*UNITS\\s*=\\s*'?(.*)',?\\s*$", "\\1", lines[lstart+iunits[1]-1])
@@ -1398,32 +1210,18 @@ read.odf <- function(file,
             parameterTable$oceName[i] <- newname
         }
     }
-    #- message("parameterTable$oceName 2");print(parameterTable$oceName)
-    #> sink("parameterTable");print(parameterTable);sink() # FIXME: debug
-    #> sink("parameterTable2");print(as.data.frame(parameterTable),width=200);sink() # FIXME: debug
-
     # FIXME: get rid of next 3 items -- want everything in parameter table
     ODFunits <- parameterTable$units   # FIXME: archaic
     ODForiginalNames <- parameterTable$code # FIXME: archaic
     ODFnames <- parameterTable$nameOrig # FIXME: archaic
-
-    #??? # Do not permit renaming FLOR_.. to FWETLABS, which seems as though it might be a hand-edit in
-    #??? # the system.file("extdata", "CTD_BCD2014666_008_1_DN.ODF.gz", package="oce") BIO-dialect test
-    #??? # file provided with the package.
-    #??? w <- grep("FWETLABS", parameterTable$name)
-    #??? if (length(w)) {
-    #???     warning("renaming \"", parameterTable$name[w[1]], "\" to \"", parameterTable$code[w[1]], "\"\n", sep="")
-    #???     parameterTable$name[w[1]] <- parameterTable$code[w[1]]
-    #??? }
     if (FALSE) {
         # Remove extraneous units in S and T names, which are present (sometimes) for the variables but
         # *not* for the quality-control flags
         for (i in seq_along(parameterTable$code)) {
-            #- message("parameterTable$isFlag[", i, "]=", parameterTable$isFlag[i])
             # Find cross-references for flags.
             if (parameterTable$isFlag[i]) {
                 oceDebug(debug, "find variable name referred to by flag with description \"", parameterTable$name[i], "\"\n", sep="")
-                # To accomodate both DFO and IML variants, we must check multiple variants of the syntax
+                # To accommodate both BIO and IML variants, we must check multiple variants of the syntax
                 # in the QQQQ name. And we must also check against both variable NAME and CODE, because
                 # the DFO file provided with this package sometimes has NAME==CODE but other times
                 # it is not CODE. The uniformity of ODF files is not high.
@@ -1447,7 +1245,6 @@ read.odf <- function(file,
         }
     }
     parameterTable <- data.frame(parameterTable)
-    #- message("next is parameterTable");print(parameterTable)
     options(warn=options$warn)
     ODFunits <- trimws(ODFunits)
     # FIXME: document why we need to find names again (already in parameterTable)
@@ -1459,7 +1256,6 @@ read.odf <- function(file,
     res@metadata$endLatitude <- findInHeader("END_LATITUDE", lines, returnOnlyFirst=TRUE, numeric=TRUE)
     res@metadata$endLongitude <- findInHeader("END_LONGITUDE", lines, returnOnlyFirst=TRUE, numeric=TRUE)
     res@metadata$samplingInterval <- findInHeader("SAMPLING_INTERVAL", lines, returnOnlyFirst=TRUE, numeric=TRUE)
-
     res@metadata$scientist <- findInHeader("CHIEF_SCIENTIST", lines)
     res@metadata$ship <- findInHeader("PLATFORM", lines) # maybe should rename, e.g. for helicopter
     res@metadata$institute <- findInHeader("ORGANIZATION", lines) # maybe should rename, e.g. for helicopter
@@ -1471,17 +1267,12 @@ read.odf <- function(file,
     res@metadata$cruiseNumber <- findInHeader("CRUISE_NUMBER", lines)
     DATA_TYPE <- trimws(findInHeader("DATA_TYPE", lines))
     res@metadata$deploymentType <- if ("CTD" == DATA_TYPE) "profile" else if ("MCTD" == DATA_TYPE) "moored" else "unknown"
-    ## date <- strptime(findInHeader("START_DATE", lines), "%b %d/%y")
-
-    ## if any changes here, update ctd.R @ ODF_CTD_LINK {
+    # if any changes here, update ctd.R @ ODF_CTD_LINK {
     res@metadata$startTime <- as.POSIXct(strptime(tolower(findInHeader("START_DATE_TIME", lines)), "%d-%b-%Y %H:%M:%S", tz="UTC"))
     res@metadata$date <- res@metadata$time
     res@metadata$eventNumber <- findInHeader("EVENT_NUMBER", lines) # synchronize with ctd.R at ODFMETADATA tag
     res@metadata$eventQualifier <- findInHeader("EVENT_QUALIFIER", lines)# synchronize with ctd.R at ODFMETADATA tag
     # } ODF_CTD_LINK
-
-    # endTime <- strptime(tolower(findInHeader("END_DATE_TIME", lines)), "%d-%b-%Y %H:%M:%S", tz="UTC")
-
     # FIXME: The next block tries to infer a single numeric NA value, if
     # FIXME: possible; otherwise it returns the first value.  Perhaps we should be
     # FIXME: keeping all these values and using them for individual columns, but (a)
@@ -1490,25 +1281,21 @@ read.odf <- function(file,
     # FIXME: numerical NULL_VALUE and (c) what should we do if there are elements in
     # FIXME: the header, which are not in columns?
     NAvalue <- unlist(findInHeader("NULL_VALUE", lines, FALSE))
-    oceDebug(debug, "NAvalue (step 1): ", paste(deparse(NAvalue),collapse=""), "\n", sep="")
-    #> message("NAvalue=", paste(NAvalue, collapse=" "))
+    oceDebug(debug, "NAvalue (step 1): ", paste(deparse(NAvalue), collapse=""), "\n", sep="")
     NAvalue <- gsub("D([+-])+", "e\\1", NAvalue)
-    oceDebug(debug, "NAvalue (step 2): ", paste(deparse(NAvalue),collapse=""), "\n", sep="")
-    #> message("NAvalue=", paste(NAvalue, collapse=" "))
-    #? NAvalue <- NAvalue[!grepl("[a-df-zA-DFZ]+", NAvalue)] # remove e.g. times
+    oceDebug(debug, "NAvalue (step 2): ", paste(deparse(NAvalue), collapse=""), "\n", sep="")
     NAvalue[NAvalue == "NA"] <- NA
-    oceDebug(debug, "NAvalue (step 3): ", paste(deparse(NAvalue),collapse=""), "\n", sep="")
-    #> message("NAvalue=", paste(NAvalue, collapse=" "))
+    oceDebug(debug, "NAvalue (step 3): ", paste(deparse(NAvalue), collapse=""), "\n", sep="")
     if (length(NAvalue) > 1) {
         NAvalue <- gsub("D", "e", NAvalue) # R does not like e.g. "-.99D+02"
-        options <- options('warn')
+        options <- options("warn")
         options(warn=-1)
         NAvalue <- try({as.numeric(unlist(NAvalue))}, silent=TRUE)
         NAvalueList <- NAvalue
         names(NAvalueList) <- parameterTable$oceName
         options(warn=options$warn)
     }
-    oceDebug(debug, "NAvalue (step 4): ", paste(deparse(NAvalue),collapse=""), "\n", sep="")
+    oceDebug(debug, "NAvalue (step 4): ", paste(deparse(NAvalue), collapse=""), "\n", sep="")
     res@metadata$depthMin <- as.numeric(findInHeader("MIN_DEPTH", lines))
     res@metadata$depthMax <- as.numeric(findInHeader("MAX_DEPTH", lines))
     res@metadata$sounding <- as.numeric(findInHeader("SOUNDING", lines))
@@ -1540,9 +1327,13 @@ read.odf <- function(file,
             ustring <- tolower(parameterTable$units[w])
             if (length(ustring) &&
                 ustring != "" &&
-                ustring != "ratio" && ustring != "(ratio)" &&
-                ustring != "none" && ustring != "(none)")
-                warning("\"", parameterTable$oceName[w], "\" (code name \"", parameterTable$code[w], "\") is a conductivity ratio, which has no units, but the file lists \"", ustring, "\" as a unit. Consult ?read.odf to see how to rectify this error.")
+            ustring != "ratio" && ustring != "(ratio)" &&
+            ustring != "none" && ustring != "(none)") {
+                warning("\"", parameterTable$oceName[w], "\" (code name \"",
+                    parameterTable$code[w], "\") is a conductivity ratio, which has no units, ",
+                    "but the file lists \"", ustring, "\" as a unit. ",
+                    "Consult ?read.odf to see how to rectify this error.")
+            }
         }
     }
     # Store @metadata$units
@@ -1560,7 +1351,7 @@ read.odf <- function(file,
     res@metadata$recovery <- NULL
     res@metadata$sampleInterval <- NA
     res@metadata$filename <- filename
-    #> ## fix issue 768
+    #> # fix issue 768
     #> lines <- lines[grep('%[0-9.]*f', lines,invert=TRUE)]
     # issue1226 data <- read.table(file, skip=dataStart, stringsAsFactors=FALSE)
     data <- scan(text=lines, what="character", skip=dataStart, quiet=TRUE)
@@ -1568,8 +1359,8 @@ read.odf <- function(file,
     data <- as.data.frame(data, stringsAsFactors=FALSE)
     # some files have text string for e.g. dates, species lengths, etc.
     colIsChar <- as.logical(lapply(seq_len(dim(data)[2]),
-                                   function(j) any(grep("[ a-zA-Z\\(\\)]", data[,j]))))
-    for (j in 1:dim(data)[2]) {
+        function(j) any(grep("[ a-zA-Z\\(\\)]", data[, j]))))
+    for (j in seq_len(dim(data)[2])) {
         if (!colIsChar[j]) {
             oceDebug(debug, "setting data[[,", j, "]] to numeric mode\n", sep="")
             data[[j]] <- as.numeric(data[[j]])
@@ -1581,22 +1372,23 @@ read.odf <- function(file,
     if (length(data) != length(oceNames2$names))
         stop("mismatch between length of data names (", length(oceNames2$names), ") and number of columns in data matrix (", length(data), ")")
     names(data) <- parameterTable$oceName
-    #- print(NAvalueList)
     if (length(NAvalueList)) {
         for (name in names(data)) {
-            #- message("name=", name)
             if (is.finite(NAvalueList[[name]])) {
                 bad <- data[[name]] == NAvalueList[[name]]
                 data[[name]][bad] <- NA
-                if (sum(bad) > 0)
-                    oceDebug(debug, "set ", sum(bad), " values in '", name, "' to NA, because they matched the NULL_VALUE (", NAvalueList[[name]], ")\n", sep="")
+                if (sum(bad) > 0) {
+                    oceDebug(debug, "set ", sum(bad), " values in '", name,
+                        "' to NA, because they matched the NULL_VALUE (", NAvalueList[[name]], ")\n", sep="")
+                }
             }
         }
     }
-    if ("time" %in% oceNames2$names)
+    if ("time" %in% oceNames2$names) {
         data$time <- as.POSIXct(strptime(as.character(data$time), format="%d-%b-%Y %H:%M:%S", tz="UTC"))
+    }
     res@data <- as.list(data)
-    ## Move flags into metadata.
+    # Move flags into metadata.
     dnames <- names(res@data)
     iflags <- grep("Flag$", dnames)
     oceDebug(debug, "About to move flags from @data to @metadata\n")
@@ -1679,17 +1471,8 @@ read.odf <- function(file,
 #' @family functions that read ctd data
 #'
 #' @author Dan Kelley
-read.ctd.odf <- function(file,
-    columns=NULL,
-    station=NULL,
-    missingValue,
-    deploymentType="unknown",
-    monitor=FALSE,
-    exclude=NULL,
-    encoding="latin1",
-    debug=getOption("oceDebug"),
-    processingLog,
-    ...)
+read.ctd.odf <- function(file, columns=NULL, station=NULL, missingValue, deploymentType="unknown",
+    monitor=FALSE, exclude=NULL, encoding="latin1", debug=getOption("oceDebug"), processingLog, ...)
 {
     if (missing(file))
         stop("must supply 'file'")
@@ -1718,4 +1501,3 @@ read.ctd.odf <- function(file,
     oceDebug(debug, "} # read.ctd.odf()\n", unindent=1, style="bold")
     res
 }
-

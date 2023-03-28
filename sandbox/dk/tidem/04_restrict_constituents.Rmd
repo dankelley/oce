@@ -1,0 +1,69 @@
+---
+title: Handling 6-hourly tidal data
+date: "`r Sys.Date()`"
+output: pdf_document
+---
+
+A simple approach to handling 6-hourly data might be to restrict `tidem()` to
+focus only on low-frequency constituents. The Nyquist criterion might provide a
+guide, as in the following experiment with the `sealevel` dataset from the
+`oce` package.
+
+In the graphs that are created by the following code, the two columns represent
+the original 1-hourly dataset (left) and a 6-hourly data constructed from it
+(right).
+
+The top panels show that the amount of energy contained in the diurnal
+component (e.g. K1, shown) seems to be reasonable, but that a great deal of
+energy is attributed to semidiurnal frequencies (e.g. M2, shown).
+
+However, since semidiurnal (12-hour) frequencies are just at the edge of the
+Nyquist frequency for 6-hour sampling, considerable caution should be exercised
+in interpreting the semidiurnal band in the fitted results.
+
+Moving on to the second row of panels, note the very large difference in
+character between the left panel (the 1-hour data) and the right panel (the
+constructed 6-hour data). This suggests a beating phenomenon between twice the
+period of sampling and a 12-hour signal in the data.
+
+The bottom row of panels shows the fits for the two case.  For each, the
+general character is reflected in the predictions, but if the goal was to try
+to infer the underlying signal from the 6-hour data, the conclusion is that the
+method is not workable.
+
+```{r}
+
+
+library(oce)
+data(sealevel)
+data(tidedata)
+t1 <- sealevel[["time"]]
+e1 <- sealevel[["elevation"]]
+
+# Interpolate to avoid issues with uneven sampling in t1
+t6 <- seq(t1[1], tail(t1, 1), by="6 hour")
+e6 <- approx(t1, e1, t6)$y
+
+source("~/git/oce/R/tides.R")
+m1 <- tidem(t1, e1)
+m6 <- tidem(t6, e6)
+
+# Method: Given data sampled at interval dt, restrict tidem() to only consider
+# constituents with period exceeding 0.5/dt.
+dt <- 6 # sampling rate
+#keep <- tidedata$const$freq < (0.5 - sqrt(.Machine$double.eps)) / dt
+keep <- tidedata$const$freq < 0.5 / dt
+const <- tidedata$const$name[keep]
+freq <- tidedata$const$freq[keep]
+m6 <- tidem(t6, e6, constituents=const)
+par(mfcol=c(3, 2))
+tlim <- t1[c(1, 28*24)] # 4 weeks
+
+plot(m1, xlim=c(0, 0.35), cex=0.6, constituents=c("K1", "M2", "S4"), ylim=c(0, 2.4))
+oce.plot.ts(t1, e1, xlim=tlim, drawTimeRange=FALSE)
+oce.plot.ts(t1, predict(m1), xlim=tlim, drawTimeRange=FALSE)
+
+plot(m6, xlim=c(0, 0.35), cex=0.6, constituents=c("K1", "M2", "S4"), ylim=c(0, 2.4))
+oce.plot.ts(t6, e6, xlim=tlim, drawTimeRange=FALSE)
+oce.plot.ts(t6, predict(m6), xlim=tlim, drawTimeRange=FALSE)
+```

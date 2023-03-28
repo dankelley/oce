@@ -1,23 +1,14 @@
-
-
-
 # oce <img src="https://raw.githubusercontent.com/dankelley/oce/develop/oce-logo-3.png" align="right" height="95" />
 
 <!-- badges: start -->
 
-[![Project Status: Active – The project has reached a stable, usable
-state and is being actively
-developed.](http://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/)
-[![status](https://joss.theoj.org/papers/10.21105/joss.03594/status.svg)](https://joss.theoj.org/papers/10.21105/joss.03594)
-[![R-CMD-check](https://github.com/dankelley/oce/workflows/R-CMD-check/badge.svg)](https://github.com/dankelley/oce/actions)
-[![Codecov test
-coverage](https://codecov.io/gh/dankelley/oce/branch/develop/graph/badge.svg)](https://app.codecov.io/gh/dankelley/oce?branch=develop)
 [![CRAN\_Status\_Badge](https://www.r-pkg.org/badges/version/oce)](https://cran.r-project.org/package=oce)
-![RStudio CRAN mirror
-downloads](https://cranlogs.r-pkg.org/badges/last-month/oce) ![RStudio
-CRAN mirror downloads](https://cranlogs.r-pkg.org/badges/last-week/oce)
-![RStudio CRAN mirror
-downloads](https://cranlogs.r-pkg.org/badges/last-day/oce)
+[![status](https://joss.theoj.org/papers/10.21105/joss.03594/status.svg)](https://joss.theoj.org/papers/10.21105/joss.03594)
+[![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](http://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/)
+[![R-CMD-check](https://github.com/dankelley/oce/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/dankelley/oce/actions/workflows/R-CMD-check.yaml)
+![RStudio CRAN mirror downloads](https://cranlogs.r-pkg.org/badges/last-month/oce)
+![RStudio CRAN mirror downloads](https://cranlogs.r-pkg.org/badges/last-week/oce)
+![RStudio CRAN mirror downloads](https://cranlogs.r-pkg.org/badges/last-day/oce)
 <!-- badges: end -->
 
 ## Why use R for oceanographic analysis?

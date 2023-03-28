@@ -348,9 +348,15 @@ void sw_strho(int *n, double *pT, double *prho, double *pp, int *teos, double *r
       // Note regarding next two lines: every bisection reduces the x
       // range by a factor of two, so it's not too expensive to ask for
       // tight resolution.
-      double xresolution = 1e-4; // 4 fractional digits in salinity, for < 1% of typical axis axis interval
-      double ftol = 1e-3; // 3 fractional digits in isopycnal, for <1% of typical contour interval
-      strho_bisection_search(&S, 0, 500.0, xresolution, ftol, *teos);
+      //
+      // See https://github.com/dankelley/oce/issues/2044 for
+      // discussion of the values needed in high-zoom TS plots.
+      //
+      // Until 2023-02-25 xresolution was 1e-4 and ftol was 1e-3, but
+      // on this date I reduced each by a factor of 100.
+      double xresolution = 1.0e-6; // salinity criterion
+      double ftol = 1.0e-6; // density criterion
+      strho_bisection_search(&S, 0, 100.0, xresolution, ftol, *teos);
       //Rprintf("  ... after bisection, sw_strho() returning %f\n", S);
       res[i] = S;
     }
@@ -453,10 +459,11 @@ int strho_bisection_search(double *x, double x1, double x2, double xresolution, 
   }
   //Rprintf("strho_bisection_search(*x=%g, x1=%g, x2=%g, ..., teos=%d) where x means salinity\n",*x, x1, x2, teos);
   int iteration = 0;
-  int maxiteration = 50; // with range <100deg, have 100/2^20 < 1e-4 degC, good enough for practical
+  int maxiteration = 100; // with range <100deg, have 100/2^20 < 1e-4 degC, good enough for practical
   while (fabs(g = strho_f(*x = (x1 + x2) / 2.0, teos)) > ftol || fabs (x1 - x2) > xresolution) {
     if (++iteration > maxiteration) {
       *x = NA_REAL;
+      //Rprintf("too many iterations\n");
       return(1);
     }
     //Rprintf("    strho_bisection_search() in loop x=%f   g=%f   g1=%f   (iteration %d)\n",*x, g, g1, iteration);
@@ -475,6 +482,7 @@ int strho_bisection_search(double *x, double x1, double x2, double xresolution, 
       return (1); /* exact solution */
     }
   }
+  //Rprintf("  x=%f at iteration: %d\n", *x, iteration);
   //Rprintf("  strho_bisection_search() returning %.4f\n",*x);
   return (0);  /* converged by default */
 }
@@ -660,7 +668,7 @@ void sw_tsrho(double *pS, double *prho, double *pp, int *teos, double *res)
    * bisection from working.  I found this out by using a TLOW
    * value of -50.  The range below should be OK for oceanographic use.
    */
-  tsrho_bisection_search(&T, -3.0, 40.0, 0.0001, 0.0001, *teos);
+  tsrho_bisection_search(&T, -3.0, 40.0, 1.0e-5, 1.0e-5, *teos);
   *res = T;
 }
 

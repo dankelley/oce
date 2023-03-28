@@ -4,93 +4,95 @@
 # @richardsc.  It contains burstAltimeterRaw data (unlike the dataset used by
 # test_ad2cp_1.R and test_ad2cp_2.R).
 #
-# The tests measure consistency over time, as a guard against code changes (e.g.
-# the conversion in June and July of 2022 to vectorized reading) and UI changes
-# (e.g. renaming of variables).
+# The tests are all of the 'regression' typie, i.e. they check for consistency
+# over time, as a guard against code changes (e.g.  the conversion in June and
+# July of 2022 to vectorized reading) and UI changes (e.g. renaming of
+# variables).
 
 library(oce)
 
 file <- "local_data/ad2cp/S102791A002_Barrow_v2.ad2cp"
+
+# > read.oce(file)
+#   IDhex IDdec              name occurance
+# 1  0x15    21             burst       648
+# 2  0x16    22           average       360
+# 3  0x17    23       bottomTrack       360
+# 4  0x1a    26 burstAltimeterRaw       108
+# 5  0xa0   160              text         1
+
 if (file.exists(file)) {
-    test_that("S102791A002_Barrow_v2.ad2cp 'distance' works",
+    skip_on_cran()
+
+    test_that("signature 250 burstAltimeterRaw",
         {
-            expect_warning(
-                expect_warning(
-                    d <- read.oce(file),
-                    "using to=1477 based on file contents"),
-                "'plan' defaulting to 0")
+            expect_message(
+                bar <- read.oce(file, dataType="burstAltimeterRaw"),
+                "setting plan=0, the most common value in this file")
+            ar <- bar[["altimeterRaw"]]
             expect_equal(
-                head(d@data$burstAltimeterRaw$altimeterRaw$distance),
+                head(bar[["altimeterRaw"]]$distance, 6),
                 c(40.024, 40.048, 40.072, 40.096, 40.12, 40.144))
             expect_equal(
-                tail(d@data$burstAltimeterRaw$altimeterRaw$distance),
+                tail(bar[["altimeterRaw"]]$distance, 6),
                 c(83.872, 83.896, 83.92, 83.944, 83.968, 83.992))
-            expect_equal(
-                length(d@data$burstAltimeterRaw$altimeterRaw$distance),
-                1833L)
+            expect_equal(length(bar[["altimeterRaw"]]$distance), 1833L)
         })
-    test_that("various tests for S102791A002_Barrow_v2.ad2cp (signature 250)",
+
+    test_that("signature 250 average",
         {
-            expect_warning(
-                expect_warning(
-                    d <- read.oce(file),
-                    "using to=1477 based on file contents"),
-                "'plan' defaulting to 0")
+            expect_message(
+                a <- read.oce(file, dataType="average"),
+                "setting plan=0, the most common value in this file")
             # Identifiers
-            expect_equal(d[["type"]], "Signature250")
-            expect_equal(d[["fileType"]], "AD2CP")
-            expect_equal(d[["serialNumber"]], 102791)
-            # Entry names
-            expect_equal(sort(names(d[["data"]])),
-                c("average", "bottomTrack", "burst", "burstAltimeterRaw"))
-
-            expect_equal(sort(names(d[["average"]])),
-                c("a", "accelerometer", "blankingDistance", "cellSize",
-                    "configuration", "datasetDescription", "distance",
-                    "ensemble", "heading", "magnetometer", "nominalCorrelation",
-                    "numberOfBeams", "numberOfCells", "oceCoordinate",
-                    "orientation", "originalCoordinate", "pitch", "powerLevel",
-                    "pressure", "q", "roll", "soundSpeed", "temperature",
-                    "temperatureMagnetometer", "temperatureRTC", "time",
-                    "transmitEnergy", "v"))
-
+            expect_equal(a[["type"]], "Signature250")
+            expect_equal(a[["fileType"]], "AD2CP")
+            expect_equal(a[["serialNumber"]], 102791)
+            expect_equal(names(a[["data"]]),
+                c("nominalCorrelation", "ensemble", "time", "soundSpeed",
+                    "temperature", "pressure", "heading", "pitch", "roll",
+                    "magnetometer", "accelerometer", "temperatureMagnetometer",
+                    "temperatureRTC", "transmitEnergy", "powerLevel", "distance",
+                    "v", "a", "q"))
             # Beams and cells
-            expect_equal(d[["average"]]$oceCoordinate, "beam")
-            # data$average
-            a <- d[["average"]]
-            expect_equal(a$cellSize, 1)
-            expect_equal(a$blankingDistance, 0.5)
-            expect_equal(a$numberOfBeams, 4)
-            expect_equal(a$numberOfCells, 87)
-            expect_equal(a$blankingDistance, 0.5)
-            expect_equal(dim(a$v), c(360, 87, 4))
-            expect_equal(dim(a$a), c(360, 87, 4))
-            expect_equal(dim(a$q), c(360, 87, 4))
-            expect_equal(a$v[1:3,1:3,1:3],
+            expect_equal(a[["oceCoordinate"]], "beam")
+            expect_equal(a[["cellSize"]], 1)
+            expect_equal(a[["blankingDistance"]], 0.5)
+            expect_equal(a[["numberOfBeams"]], 4)
+            expect_equal(a[["numberOfCells"]], 87)
+            expect_equal(a[["blankingDistance"]], 0.5)
+            expect_equal(dim(a[["v"]]), c(360, 87, 4))
+            expect_equal(dim(a[["a"]]), c(360, 87, 4))
+            expect_equal(dim(a[["q"]]), c(360, 87, 4))
+            expect_equal(a[["v"]][1:3, 1:3, 1:3],
                 structure(c(-0.553, -0.542, -0.545, 2.255, -0.448, 1.695, 2.003,
                         0.612, 2.415, 0.647, 0.641, 0.649, 1.701, 1.449, 1.762,
                         0.861, 0.971, 1.773, 0.099, 0.065, 0.096, -0.239, -0.235,
                         -0.217, -0.37, -0.365, -0.393), dim=c(3L, 3L, 3L)))
-            expect_equal(a$a[1:3,1:3,1:3],
+            expect_equal(a[["a"]][1:3, 1:3, 1:3],
                 structure(as.raw(c(0x6e, 0x6e, 0x6e, 0x34, 0x35, 0x34, 0x24, 0x22,
                             0x24, 0x70, 0x70, 0x70, 0x37, 0x37, 0x36, 0x23, 0x22,
                             0x21, 0x67, 0x67, 0x67, 0x6c, 0x6c, 0x6c, 0x4b, 0x4b,
                             0x4b)), dim=c(3L, 3L, 3L)))
-            expect_equal(a$q[1:3,1:3,1:3],
+            expect_equal(a[["q"]][1:3, 1:3, 1:3],
                 structure(as.raw(c(0x20, 0x21, 0x21, 0x15, 0x0d, 0x19, 0x1d, 0x15,
                             0x18, 0x3a, 0x3a, 0x3a, 0x11, 0x15, 0x08, 0x19, 0x1e,
                             0x16, 0x55, 0x54, 0x55, 0x58, 0x59, 0x59, 0x4b, 0x4c,
                             0x4d)), dim=c(3L, 3L, 3L)))
-            expect_equal(head(a$time),
+            expect_equal(head(a[["time"]]),
                 structure(c(1653479685.6677, 1653479687.6677, 1653479689.6677,
                         1653479691.6677, 1653479693.6677, 1653479695.6677),
                     class=c("POSIXct", "POSIXt"), tzone="UTC"))
 
             # bottomTrack -- FIXME
-            bt <- d[["bottomTrack"]] # FIXME: the values are crazy, e.g. lots of v of order e-15
+            expect_message(
+                bt <- read.oce(file, dataType="bottomTrack"),
+                "setting plan=0, the most common value in this file")
+
+            #bt <- d[["bottomTrack"]] # FIXME: the values are crazy, e.g. lots of v of order e-15
 
             # burst -- FIXME
-            b <- d[["burst"]]
+            #b <- d[["burst"]]
 
             # FIXME: values are crazy, e.g. just 1 ASTDistance and ASTPressure,
             # and what else is supposed to be there?
@@ -161,4 +163,3 @@ if (file.exists(file)) {
             #??? expect_equal(d[["roll"]], d[["roll", "average"]])
         })
 }
-

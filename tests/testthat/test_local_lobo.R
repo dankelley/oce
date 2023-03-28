@@ -5,7 +5,6 @@ test_that("lobo", {
         expect_equal(sort(names(lobo[["metadata"]])), c("filename", "flags", "units"))
         expect_equal(sort(names(lobo[["data"]])),
             c("airtemperature", "fluorescence", "nitrate", "pressure", "salinity",
-                "temperature", "time", "u", "v")) 
+                "temperature", "time", "u", "v"))
     }
 })
-

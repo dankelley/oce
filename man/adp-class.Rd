@@ -122,9 +122,9 @@ Thus, for example,
 \preformatted{
 library(oce)
 data(adp)
-t <- adp[['time']]
-d <- adp[['distance']]
-eastward <- adp[['v']][,,1]
+t <- adp[["time"]]
+d <- adp[["distance"]]
+eastward <- adp[["v"]][,,1]
 imagep(t, d, eastward, missingColor="gray")
 }
 plots an image of the eastward component of velocity as a function of time (the x axis)
@@ -134,7 +134,8 @@ data at the ocean surface (gray blotches at the top).
 
 Corresponding to the velocity array are two arrays of type raw, and
 identical dimension, accessed by \code{adp[["a"]]} and \code{adp[["q"]]},
-holding measures of signal strength and data quality quality,
+holding measures of signal strength and data quality (referred
+to as "correlation" in some documentation),
 respectively.  (The exact meanings of these depend on the particular type
 of instrument, and it is assumed that users will be familiar enough with
 instruments to know both the meanings and their practical consequences in
@@ -197,15 +198,15 @@ data in \code{xyz}, \code{sfm}, \code{enu} or \code{other} coordinate systems). 
 the list below, the quoted phrases are quantities as defined in Figure 9
 of reference 1.
 \itemize{
-\item \code{v} is ``velocity'' in m/s, inferred from two-byte signed
+\item \code{v} is \code{velocity} in m/s, inferred from two-byte signed
 integer values (multiplied by the scale factor that is stored in
 \code{velocityScale} in the metadata).
-\item \code{q} is ``correlation magnitude'' a one-byte quantity stored
+\item \code{q} is "correlation magnitude" a one-byte quantity stored
 as type \code{raw} in the object. The values may range from 0 to 255.
-\item \code{a} is \verb{backscatter amplitude}, also known as ``echo
-intensity'' a one-byte quantity stored as type \code{raw} in the object.
+\item \code{a} is "backscatter amplitude", also known as "echo
+intensity" a one-byte quantity stored as type \code{raw} in the object.
 The values may range from 0 to 255.
-\item \code{g} is ``percent good'' a one-byte quantity stored as \code{raw}
+\item \code{g} is "percent good" a one-byte quantity stored as \code{raw}
 in the object.  The values may range from 0 to 100.
 }
 
@@ -317,6 +318,7 @@ Other things related to adp data:
 \code{\link{adpRdiFileTrim}()},
 \code{\link{adp_rdi.000}},
 \code{\link{adp}},
+\code{\link{applyMagneticDeclination,adp-method}},
 \code{\link{as.adp}()},
 \code{\link{beamName}()},
 \code{\link{beamToXyzAdpAD2CP}()},

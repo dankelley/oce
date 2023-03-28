@@ -69,6 +69,7 @@ Other things related to adp data:
 \code{\link{adpRdiFileTrim}()},
 \code{\link{adp_rdi.000}},
 \code{\link{adp}},
+\code{\link{applyMagneticDeclination,adp-method}},
 \code{\link{beamName}()},
 \code{\link{beamToXyzAdpAD2CP}()},
 \code{\link{beamToXyzAdp}()},

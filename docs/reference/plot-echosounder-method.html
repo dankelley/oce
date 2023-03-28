@@ -20,7 +20,7 @@ used, and this may be added in the future."><!-- mathjax --><script src="https:/
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-10</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-11</span>
       </span>
     </div>
 
@@ -96,7 +96,7 @@ used, and this may be added in the future.</p>
 <span>  <span class="va">ylim</span>,</span>
 <span>  <span class="va">zlim</span>,</span>
 <span>  type <span class="op">=</span> <span class="st">"l"</span>,</span>
-<span>  col <span class="op">=</span> <span class="va">oceColorsJet</span>,</span>
+<span>  <span class="va">col</span>,</span>
 <span>  lwd <span class="op">=</span> <span class="fl">2</span>,</span>
 <span>  despike <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  <span class="va">drawBottom</span>,</span>
@@ -169,11 +169,16 @@ not provided, the labels depend on the value of <code>which</code>.</p></dd>
 
 
 <dt>col</dt>
-<dd><p>color scale for image, a function</p></dd>
+<dd><p>a function providing the color scale for image plots.
+This value is passed to <code><a href="imagep.html">imagep()</a></code>, which draws
+the images.  Since <code><a href="imagep.html">imagep()</a></code> defaults <code>col</code> to
+<code><a href="oceColorsViridis.html">oceColorsViridis()</a></code>, that is effectively also the default
+for the present function. (Prior to 2023-03-18, the present
+function defaulted <code>col</code> to <code><a href="oceColorsJet.html">oceColorsJet()</a></code>.)</p></dd>
 
 
 <dt>lwd</dt>
-<dd><p>line width (ignored if <code>type="p"</code>)</p></dd>
+<dd><p>line width (ignored if <code>type="p"</code>).</p></dd>
 
 
 <dt>despike</dt>
@@ -301,7 +306,7 @@ values that can be used by <code><a href="oce.grid.html">oce.grid()</a></code> t
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>

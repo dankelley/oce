@@ -30,15 +30,15 @@
 setClass("bremen", contains="oce") # 20150528 may be called "geomar" or something later
 
 setMethod(f="initialize",
-          signature="bremen",
-          definition=function(.Object, filename="", ...) {
-              .Object <- callNextMethod(.Object, ...)
-              ## Assign to some columns so they exist if needed later (even if they are NULL)
-              .Object@metadata$filename <- filename
-              .Object@processingLog$time <- presentTime()
-              .Object@processingLog$value <- "create 'bremen' object"
-              return(.Object)
-          })
+    signature="bremen",
+    definition=function(.Object, filename="", ...) {
+        .Object <- callNextMethod(.Object, ...)
+        # Assign to some columns so they exist if needed later (even if they are NULL)
+        .Object@metadata$filename <- filename
+        .Object@processingLog$time <- presentTime()
+        .Object@processingLog$value <- "create 'bremen' object"
+        return(.Object)
+    })
 
 #' Extract Something From a Bremen Object
 #'
@@ -62,15 +62,16 @@ setMethod(f="initialize",
 #'
 #' @family things related to bremen data
 setMethod(f="[[",
-          signature(x="bremen", i="ANY", j="ANY"),
-          definition=function(x, i, j, ...) {
-              if (i == "?")
-                  return(list(metadata=sort(names(x@metadata)),
-                          metadataDerived=NULL,
-                          data=sort(names(x@data)),
-                          dataDerived=NULL))
-              callNextMethod()         # [[
-          })
+    signature(x="bremen", i="ANY", j="ANY"),
+    definition=function(x, i, j, ...) {
+        if (i == "?") {
+            return(list(metadata=sort(names(x@metadata)),
+                metadataDerived=NULL,
+                data=sort(names(x@data)),
+                dataDerived=NULL))
+        }
+        callNextMethod()         # [[
+    })
 
 #' Replace Parts of a Bremen Object
 #'
@@ -107,18 +108,22 @@ setMethod(f="[[<-",
 #'
 #' @aliases plot.bremen
 setMethod(f="plot",
-          signature=signature("bremen"),
-          definition=function(x, type, ...) {
-              names <- names(x@data)
-              ##n <- length(names)
-              if (missing(type)) {
-                  if ("salinity" %in% names) plot(as.ctd(x), ...)
-                  else plot(as.ladp(x), ...)
-              } else {
-                  if (!is.na(pmatch(type, "ctd"))) plot(as.ctd(x), ...)
-                  else if (!is.na(pmatch(type, "ladp"))) plot(as.ladp(x), ...)
-              }
-          })
+    signature=signature("bremen"),
+    definition=function(x, type, ...) {
+        names <- names(x@data)
+        #n <- length(names)
+        if (missing(type)) {
+            if ("salinity" %in% names)
+                plot(as.ctd(x), ...)
+            else
+                plot(as.ladp(x), ...)
+        } else {
+            if (!is.na(pmatch(type, "ctd")))
+                plot(as.ctd(x), ...)
+            else if (!is.na(pmatch(type, "ladp")))
+                plot(as.ladp(x), ...)
+        }
+    })
 
 
 #' Summarize a Bremen Object
@@ -134,28 +139,27 @@ setMethod(f="plot",
 #'
 #' @family things related to bremen data
 setMethod(f="summary",
-          signature="bremen",
-          definition=function(object, ...) {
-              cat("Bremen Summary\n--------------\n\n")
-              #showMetadataItem(object, "type", "Instrument: ")
-              showMetadataItem(object, "model", "Instrument model:    ")
-              #showMetadataItem(object, "serialNumber", "Instrument serial number:  ")
-              #showMetadataItem(object, "serialNumberTemperature", "Temperature serial number:  ")
-              #showMetadataItem(object, "serialNumberConductivity", "Conductivity serial number:  ")
-              showMetadataItem(object, "filename", "File source:         ")
-              showMetadataItem(object, "hexfilename", "Original file source (hex):  ")
-              showMetadataItem(object, "institute", "Institute:           ")
-              showMetadataItem(object, "scientist", "Chief scientist:     ")
-              showMetadataItem(object, "date", "Date:      ", isdate=TRUE)
-              showMetadataItem(object, "startTime", "Start time:          ", isdate=TRUE)
-              showMetadataItem(object, "systemUploadTime", "System upload time:  ", isdate=TRUE)
-              showMetadataItem(object, "cruise",  "Cruise:              ")
-              showMetadataItem(object, "ship",    "Vessel:              ")
-              showMetadataItem(object, "station", "Station:             ")
-              showMetadataItem(object, "profile", "Profile:             ")
-              invisible(callNextMethod()) # summary
-          })
-
+    signature="bremen",
+    definition=function(object, ...) {
+        cat("Bremen Summary\n--------------\n\n")
+        #showMetadataItem(object, "type", "Instrument: ")
+        showMetadataItem(object, "model", "Instrument model:    ")
+        #showMetadataItem(object, "serialNumber", "Instrument serial number:  ")
+        #showMetadataItem(object, "serialNumberTemperature", "Temperature serial number:  ")
+        #showMetadataItem(object, "serialNumberConductivity", "Conductivity serial number:  ")
+        showMetadataItem(object, "filename", "File source:         ")
+        showMetadataItem(object, "hexfilename", "Original file source (hex):  ")
+        showMetadataItem(object, "institute", "Institute:           ")
+        showMetadataItem(object, "scientist", "Chief scientist:     ")
+        showMetadataItem(object, "date", "Date:      ", isdate=TRUE)
+        showMetadataItem(object, "startTime", "Start time:          ", isdate=TRUE)
+        showMetadataItem(object, "systemUploadTime", "System upload time:  ", isdate=TRUE)
+        showMetadataItem(object, "cruise",  "Cruise:              ")
+        showMetadataItem(object, "ship",    "Vessel:              ")
+        showMetadataItem(object, "station", "Station:             ")
+        showMetadataItem(object, "profile", "Profile:             ")
+        invisible(callNextMethod()) # summary
+    })
 
 findInHeaderBremen <- function(key, lines)
 {
@@ -223,15 +227,16 @@ read.bremen <- function(file, encoding="latin1")
     }
     res <- new("bremen")
     lines <- readLines(file)
-    ## Discover header as lines starting with a letter
+    # Discover header as lines starting with a letter
     headerLength <- max(grep("^[a-zA-Z]", lines))
     h <- lines[1:headerLength]
     res@metadata$filename <- filename
     res@metadata$header <- h
     lat <- strsplit(findInHeaderBremen("Latitude", h), " ")[[1]]
     latitude <- as.numeric(lat[1]) + as.numeric(lat[2]) / 60 # assume N hemi
-    if (lat[3] == "S")
+    if (lat[3] == "S") {
         latitude <- -latitude
+    }
     res@metadata$latitude <- latitude
     lon <- strsplit(findInHeaderBremen("Longitude", h), " ")[[1]]
     longitude <- as.numeric(lon[1]) + as.numeric(lon[2]) / 60 # assume N hemi
@@ -251,7 +256,7 @@ read.bremen <- function(file, encoding="latin1")
     res@metadata$model <- findInHeaderBremen("CTD_Model", h)
     res@metadata$waterDepth <- as.numeric(findInHeaderBremen("WaterDepth", h))
     res@metadata$maxPress <- as.numeric(findInHeaderBremen("MaxPress", h))
-    ## Columns have nicknames
+    # Columns have nicknames
     nicknames <- strsplit(gsub(" ", "", strsplit(h[grep("^(Columns)|(Fields)", h)], "=")[[1]][2]), ":")[[1]]
     names <- nicknames
     names[nicknames=="p"] <- "pressure"
@@ -261,10 +266,10 @@ read.bremen <- function(file, encoding="latin1")
     names[nicknames=="s"] <- "salinity"
     names[nicknames=="o"] <- "oxygen"
     names[nicknames=="z"] <- "pressure" # NOTE: bremen files have positive z values
-    ## infer column names from last line of header (guessing a bit)
+    # infer column names from last line of header (guessing a bit)
     data <- read.table(text=lines[-seq.int(1, headerLength)], header=FALSE, col.names=names, encoding=encoding)
     for (name in names(data)) {
-        ## FIXME: I have no idea what "uz" is, so I cannot guess the unit
+        # FIXME: I have no idea what "uz" is, so I cannot guess the unit
         if (name == "u" || name == "v" || name == "uz" || name == "vz") {
             res@data[name] <- data[name] / 100 # velocities in cm/s
         } else if (name == "salinity" || name == "temperature") {

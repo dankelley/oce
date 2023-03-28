@@ -7,7 +7,7 @@ if (file.exists("/data/nwatl")) {
         pattern <- "nwatl_ll.nod"
         if (1 == length(list.files(path=path, pattern=pattern))) {
             a <- webtide("predict", longitude=-63, latitude=44, plot=FALSE)
-            expect_equal(names(a), c("time", "elevation", "u", "v", "node", "basedir","region"))
+            expect_equal(names(a), c("time", "elevation", "u", "v", "node", "basedir", "region"))
             b <- webtide("map", longitude=-63, latitude=44, plot=FALSE)
             expect_equal(names(b), c("node", "latitude", "longitude"))
             # The next three tests will fail if webtide is updated and the numbers

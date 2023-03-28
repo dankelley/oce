@@ -31,6 +31,7 @@ plotTS(
   Tlim,
   drawFreezing = TRUE,
   trimIsopycnals = TRUE,
+  gridIsopycnals = c(30, 50),
   mgp = getOption("oceMgp"),
   mar = c(mgp[1] + 1.5, mgp[1] + 1.5, mgp[1], mgp[1]),
   lwd = par("lwd"),
@@ -117,6 +118,17 @@ to the region of temperature-salinity space for which density
 computations are considered to be valid in the context of the
 chosen \code{eos}; see \dQuote{Details}.}
 
+\item{gridIsopycnals}{a parameter that controls how the isopycnals
+are computed.  This may be NULL, or an integer vector of length 2.
+\emph{Case 1:} the isopycnals are drawn by tracing density
+isopleths in salinity-temperature space. This method was
+used as the default prior to version 1.7-11, but it was
+found to yield staircase-like isopycnal curves for highly
+zoomed-in plots (e.g. with millidegree temperature ranges).
+\emph{Case 2:} a grid of density is constructed, with \code{gridIsopycnals[1]}
+salinity levels and \code{gridIsopycnals[2]} temperature levels, and
+then \code{\link[=contourLines]{contourLines()}} is used to trace the isopycnals.}
+
 \item{mgp}{3-element numerical vector to use for \verb{[par](mgp)}, and also
 for \link{par}\code{(mar)}, computed from this.  The default is tighter than the R
 default, in order to use more space for the data and less for the axes.}
@@ -182,39 +194,38 @@ to 33C, as in McDougall et al. (2003 section 3), even though the
 "funnel" imposes no upper limit on this variable.
 }
 \examples{
-# For a simple ctd object
+# 1. ctd object
 library(oce)
 data(ctd)
 plotTS(ctd)
 
-# For a section object (note the outlier!)
+# 2. section object (note the outlier!)
 data(section)
 plotTS(section)
 
-# For an argo object
+# 3. argo object
 data(argo)
 plotTS(handleFlags(argo))
 
-# Oxygen-based colormap
+# 4. oxygen-based colormap
 marOrig <- par("mar") # so later plots with palettes have same margins
-cm <- colormap(section[['oxygen']])
-drawPalette(colormap=cm, zlab='Oxygen')
-plotTS(section, pch=19, col=cm$zcol, mar=par('mar')) # the mar adjusts for the palette
+cm <- colormap(section[["oxygen"]])
+drawPalette(colormap=cm, zlab="Oxygen")
+plotTS(section, pch=19, col=cm$zcol, mar=par("mar")) # the mar adjusts for the palette
 
-# Station-based colormap
-Tlim <- range(section[['temperature']], na.rm=TRUE)
-Slim <- range(section[['salinity']], na.rm=TRUE)
-cm <- colormap(seq_along(section[['latitude', 'byStation']]))
-par(mar=marOrig) # same as previous plot
-drawPalette(colormap=cm, zlab='Latitude')
-plotTS(section, Tlim=Tlim, Slim=Slim, pch=NA, mar=par('mar'))
-jnk <- mapply(
-    function(s, col) {
-        plotTS(s, col=col, add=TRUE, type='l')
+# 5. waters near Gulf Stream, colour-coded for longitude.
+sec <- subset(section, abs(longitude + 71.6) < 1)
+cm <- colormap(sec[["longitude", "byStation"]], col=oceColors9B)
+par(mar=c(3.3, 3.3, 1, 1.5))
+drawPalette(colormap=cm, zlab="Longitude")
+plotTS(sec, type="n", xaxs="r", mar=par("mar"))
+jnk <- mapply(function(s, col)
+    {
+        plotTS(s, type="o", col="gray", pt.bg=col, pch=21, add=TRUE)
     },
-    section[['station']], col=cm$zcol)
+    sec[["station"]], col=cm$zcol)
 
-# Add spiciness contours
+# 6. with added spiciness contours
 data(ctd)
 plotTS(ctd, eos="gsw") # MANDATORY so x=SA and y=CT
 usr <- par("usr")
@@ -281,6 +292,7 @@ Other things related to ctd data:
 \code{\link{ctd-class}},
 \code{\link{ctd.cnv}},
 \code{\link{ctdDecimate}()},
+\code{\link{ctdFindProfilesRBR}()},
 \code{\link{ctdFindProfiles}()},
 \code{\link{ctdRaw}},
 \code{\link{ctdRepair}()},

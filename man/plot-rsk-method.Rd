@@ -101,12 +101,10 @@ the temperature field.
 \examples{
 library(oce)
 data(rsk)
-plot(rsk) # default timeseries plot of all data fields
-
-## A multipanel plot of just pressure and temperature with ylim
-par(mfrow=c(2, 1))
-plot(rsk, which="pressure", ylim=c(10, 30))
-plot(rsk, which="temperature", ylim=c(2, 4))
+# 1. default timeseries plot of all data fields
+plot(rsk)
+# 2. plot in ctd format
+plot(as.ctd(rsk))
 
 }
 \seealso{
@@ -146,6 +144,7 @@ Other things related to rsk data:
 \code{\link{[[,rsk-method}},
 \code{\link{[[<-,rsk-method}},
 \code{\link{as.rsk}()},
+\code{\link{ctdFindProfilesRBR}()},
 \code{\link{read.rsk}()},
 \code{\link{rsk-class}},
 \code{\link{rskPatm}()},

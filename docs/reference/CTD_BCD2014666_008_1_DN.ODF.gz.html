@@ -18,7 +18,7 @@ at "Station 2" of the Halifax Line on the Scotian Shelf.'><!-- mathjax --><scrip
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-10</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-11</span>
       </span>
     </div>
 
@@ -97,6 +97,7 @@ at "Station 2" of the Halifax Line on the Scotian Shelf.</p>
 <code><a href="ctd-class.html">ctd-class</a></code>,
 <code><a href="ctd.cnv.html">ctd.cnv</a></code>,
 <code><a href="ctdDecimate.html">ctdDecimate</a>()</code>,
+<code><a href="ctdFindProfilesRBR.html">ctdFindProfilesRBR</a>()</code>,
 <code><a href="ctdFindProfiles.html">ctdFindProfiles</a>()</code>,
 <code><a href="ctdRaw.html">ctdRaw</a></code>,
 <code><a href="ctdRepair.html">ctdRepair</a>()</code>,
@@ -158,21 +159,21 @@ at "Station 2" of the Halifax Line on the Scotian Shelf.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> * Cruise:              Scotian Shelf</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> * Vessel:              CCGS SIGMA T (Call Sign: unknown)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> * Station:             008</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> * Location:            44.267N 63.318W</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> * Mean Location:       44.267N 63.318W</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> * Water depth:         156</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> * Data Overview</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                                  Min.    Mean    Max. Dim. NAs OriginalName</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     scan                         1781  3695.5    4995  294   0      CNTR_01</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     pressure [dbar]               0.5  74.248   147.5  294   0      PRES_01</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     temperature [°C, IPTS-68]  3.9824  7.5195  10.421  294   0      TEMP_01</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     conductivity [S/m]        0.69343 0.78562 0.89532  294   0      CRAT_01</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     oxygenVoltage [V]          1.6158  2.2027  2.5992  294   0      OXYV_01</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     fluorescence [mg/m³]       0.3636  1.6972  4.5732  294   0      FLOR_01</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     PSAR                      0.00197  4.7286  104.43  294   0      PSAR_01</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     salinity [PSS-78]          30.851  32.693  34.868  294   0      PSAL_01</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     oxygen [ml/l]              3.0636  5.0665  6.5227  294   0      DOXY_01</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     sigmaTheta [kg/m³]          24.29  25.515   26.78  294   0      SIGP_01</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     scan                         1781  3695.5    4995    0   0      CNTR_01</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     pressure [dbar]               0.5  74.248   147.5    0   0      PRES_01</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     temperature [°C, IPTS-68]  3.9824  7.5195  10.421    0   0      TEMP_01</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     conductivity [S/m]        0.69343 0.78562 0.89532    0   0      CRAT_01</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     oxygenVoltage [V]          1.6158  2.2027  2.5992    0   0      OXYV_01</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     fluorescence [mg/m³]       0.3636  1.6972  4.5732    0   0      FLOR_01</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     PSAR                      0.00197  4.7286  104.43    0   0      PSAR_01</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     salinity [PSS-78]          30.851  32.693  34.868    0   0      PSAL_01</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     oxygen [ml/l]              3.0636  5.0665  6.5227    0   0      DOXY_01</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     sigmaTheta [kg/m³]          24.29  25.515   26.78    0   0      SIGP_01</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> * Data-quality Flags</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
@@ -190,8 +191,8 @@ at "Station 2" of the Halifax Line on the Scotian Shelf.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> * Processing Log</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2022-08-18 15:43:52 UTC: `create 'ctd' object`</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2022-08-18 15:43:52 UTC: `as.ctd(salinity = odf, debug = debug - 1)`</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2023-03-27 19:26:09 UTC: `create 'ctd' object`</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2023-03-27 19:26:09 UTC: `as.ctd(salinity = odf, debug = debug - 1)`</span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">ctd</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="CTD_BCD2014666_008_1_DN.ODF.gz-1.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
@@ -209,7 +210,7 @@ at "Station 2" of the Halifax Line on the Scotian Shelf.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>

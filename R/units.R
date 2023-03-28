@@ -1,3 +1,5 @@
+# vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
+
 #' Convert a String to a Unit
 #'
 #' This function is not presently used by any `oce` functions, and is

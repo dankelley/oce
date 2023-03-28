@@ -13,4 +13,3 @@ oce.plot.ts(t, etaDetided, xaxs="i",   # bottom: de-tided sea level
     grid=TRUE, ylab="De-tided sea level [m]")
 
 dev.off()
-

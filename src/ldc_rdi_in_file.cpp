@@ -220,6 +220,7 @@ List do_ldc_rdi_in_file(StringVector filename,
   int c, clast=0x00;
   int byte1 = 0x7f;
   int byte2 = 0x7f;
+  //int byte2 = 0x79;
   unsigned short int check_sum, desired_check_sum;
   unsigned int bytes_to_check = 0;
   unsigned int bytes_to_check_last = 0; // used to prevent freakouts if the chunk length is wrong (issue 1437)
@@ -267,7 +268,8 @@ List do_ldc_rdi_in_file(StringVector filename,
     c = fgetc(fp);
     cindex++;
     if (c == EOF) {
-      Rprintf("Got to end of data while trying to read the first header byte of an RDI file (cindex=%d; last7f7f=%d)\n", cindex, last7f7f);
+      Rprintf("Got to end of data while trying to read the first header byte of an RDI file (cindex=%d; last7f7f=%d)\n",
+              cindex, last7f7f);
       break;
     }
     // Locate "ensemble starts", spots where a 0x7f is followed by a second 0x7f,

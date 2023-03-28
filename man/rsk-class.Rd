@@ -9,11 +9,13 @@ This class stores Ruskin data, from RBR (see reference 1).
 }
 \details{
 A \linkS4class{rsk} object may be read with \code{\link[=read.rsk]{read.rsk()}} or created with
-\code{\link[=as.rsk]{as.rsk()}}.  Plots can be made with \code{\link[=plot,rsk-method]{plot,rsk-method()}}, while
+\code{\link[=as.rsk]{as.rsk()}}, but the former method is much preferred because it
+retains the entirety of the information in the file.
+Plots can be made with \code{\link[=plot,rsk-method]{plot,rsk-method()}}, while
 \code{\link[=summary,rsk-method]{summary,rsk-method()}} produces statistical summaries and \code{show}
 produces overviews.   If atmospheric pressure has not been removed from the
-data, the functions \code{\link[=rskPatm]{rskPatm()}} may provide guidance as to its value;
-however, this last function is no equal to decent record-keeping at sea.
+data, \code{\link[=rskPatm]{rskPatm()}} may provide guidance as to its value,
+but this is no equal to record-keeping at sea.
 }
 \section{Slots}{
 
@@ -106,6 +108,7 @@ Other things related to rsk data:
 \code{\link{[[,rsk-method}},
 \code{\link{[[<-,rsk-method}},
 \code{\link{as.rsk}()},
+\code{\link{ctdFindProfilesRBR}()},
 \code{\link{plot,rsk-method}},
 \code{\link{read.rsk}()},
 \code{\link{rskPatm}()},

@@ -59,6 +59,8 @@ Other things related to adv data:
 \code{\link{[[,adv-method}},
 \code{\link{[[<-,adv-method}},
 \code{\link{adv-class}},
+\code{\link{advSontekAdrFileTrim}()},
+\code{\link{applyMagneticDeclination,adv-method}},
 \code{\link{beamName}()},
 \code{\link{beamToXyz}()},
 \code{\link{enuToOtherAdv}()},

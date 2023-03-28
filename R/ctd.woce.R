@@ -20,8 +20,10 @@
 #' @family functions that interpret variable names and units from headers
 oceNames2whpNames <- function(names)
 {
-    ## see woceNames2oceNames, and update both at once when new items added
-    ## SAMPNO,BTLNBR,BTLNBR_FLAG_W,DATE,TIME,LATITUDE,LONGITUDE,DEPTH,CTDPRS,CTDTMP,CTDSAL,CTDSAL_FLAG_W,SALNTY,SALNTY_FLAG_W,OXYGEN,OXYGEN_FLAG_W,SILCAT,SILCAT_FLAG_W,NITRIT,NITRIT_FLAG_W,NO2+NO3,NO2+NO3_FLAG_W,PHSPHT,PHSPHT_FLAG_W
+    # see woceNames2oceNames, and update both at once when new items added
+    # nolint start line_length_linter
+    # SAMPNO,BTLNBR,BTLNBR_FLAG_W,DATE,TIME,LATITUDE,LONGITUDE,DEPTH,CTDPRS,CTDTMP,CTDSAL,CTDSAL_FLAG_W,SALNTY,SALNTY_FLAG_W,OXYGEN,OXYGEN_FLAG_W,SILCAT,SILCAT_FLAG_W,NITRIT,NITRIT_FLAG_W,NO2+NO3,NO2+NO3_FLAG_W,PHSPHT,PHSPHT_FLAG_W
+    # nolint end line_length_linter
     names <- gsub("Flag", "_FLAG_W", names)
     names <- gsub("totalAlkalinity", "ALKALI", names)
     names <- gsub("CFC12", "CFC-12", names)
@@ -36,14 +38,14 @@ oceNames2whpNames <- function(names)
     names <- gsub("ammonium", "NH4", names)
     names <- gsub("phosphate", "PHSPHT", names)
     names <- gsub("pHTotal", "PH_TOT", names)
-    names <- gsub("pHTemperature","PH_TMP", names) # what is this??
+    names <- gsub("pHTemperature", "PH_TMP", names) # what is this??
     names <- gsub("nitrate", "NITRAT", names)
     names <- gsub("nitrite", "NITRIT", names)
     names <- gsub("number", "NUMBER", names)
     names <- gsub("nitrite+nitrate", "NO2+NO3", names)
     names <- gsub("oxygen", "OXYGEN", names)
     names <- gsub("quality", "QUALT", names) # flags, really, but we are not capturing that info yet
-    names <- gsub("salinityBottle","SALNTY", names)
+    names <- gsub("salinityBottle", "SALNTY", names)
     names <- gsub("SF6", "SF6", names)
     names <- gsub("silicate", "SILCAT", names)
     names <- gsub("totalCarbon", "TCARBN", names)
@@ -76,13 +78,14 @@ oceUnits2whpUnits <- function(units, scales)
         stop("lengths of units and scales must match")
     rval <- NULL
     for (i in seq_along(units)) {
-        ##message("i=", i, ", units=\"", units[i], "\", scales=\"", scales[i], "\"", sep="")
+        #message("i=", i, ", units=\"", units[i], "\", scales=\"", scales[i], "\"", sep="")
         if (is.na(units[i])) {
-            ##message("NA ... scales[", i, "]=\"", scales[i], "\"", sep="")
-            if (scales[i] == "PSS-78")
+            #message("NA ... scales[", i, "]=\"", scales[i], "\"", sep="")
+            if (scales[i] == "PSS-78") {
                 rval[i] <- "PSS-78" # FIXME: check for other salinity units
-            else
+            } else {
                 rval[i] <- ""
+            }
         } else if (units[i] == "") { # might be salinity
             rval[i] <- if (scales[i] != "") toupper(scales[i]) else "PSAL"
         } else if (units[i] == "dbar") {
@@ -102,15 +105,15 @@ oceUnits2whpUnits <- function(units, scales)
     rval
 
     #units <- gsub("^dbar$", "DBAR", units)
-    ### units <- gsub("^degree \\* C$", "DEG C", units)
+    #units <- gsub("^degree \\* C$", "DEG C", units)
     #units <- gsub("^degree \\* C$", "ITS-90", units)
     #units <- gsub("^m$", "M", units)
     #units <- gsub("^s$", "S", units)
-    ###units <- gsub("^$", "PSS-78", units) # problem: lots of things have no units.
+    #units <- gsub("^$", "PSS-78", units) # problem: lots of things have no units.
     #print(units)
     #return(units)
 
-    ### message("woceUnit2oceUnit(\"", woceUnit, "\")", sep="")
+    # message("woceUnit2oceUnit(\"", woceUnit, "\")", sep="")
     #if (unit == "FMOL/KG")
     #    return(list(unit=expression(fmol/kg), scale=""))
     #if (unit == "ITS-90" || unit == "ITS-90 DEGC")
@@ -153,13 +156,15 @@ oceUnits2whpUnits <- function(units, scales)
 #' @family functions that interpret variable names and units from headers
 woceNames2oceNames <- function(names)
 {
-    ## see woceNames2oceNames, and update both at once when new items added
-    ##
-    ## FIXME: this almost certainly needs a lot more translations. The next comment lists some that
-    ## FIXME: I've seen. But how are we to know, definitively? It would be great to find an official
-    ## FIXME: list, partly because the present function should be documented, and that documentation
-    ## FIXME: should list a source.
-    ## SAMPNO,BTLNBR,BTLNBR_FLAG_W,DATE,TIME,LATITUDE,LONGITUDE,DEPTH,CTDPRS,CTDTMP,CTDSAL,CTDSAL_FLAG_W,SALNTY,SALNTY_FLAG_W,OXYGEN,OXYGEN_FLAG_W,SILCAT,SILCAT_FLAG_W,NITRIT,NITRIT_FLAG_W,NO2+NO3,NO2+NO3_FLAG_W,PHSPHT,PHSPHT_FLAG_W
+    # see woceNames2oceNames, and update both at once when new items added
+    #
+    # FIXME: this almost certainly needs a lot more translations. The next comment lists some that
+    # FIXME: I've seen. But how are we to know, definitively? It would be great to find an official
+    # FIXME: list, partly because the present function should be documented, and that documentation
+    # FIXME: should list a source.
+    # nolint start line_length_linter
+    # SAMPNO,BTLNBR,BTLNBR_FLAG_W,DATE,TIME,LATITUDE,LONGITUDE,DEPTH,CTDPRS,CTDTMP,CTDSAL,CTDSAL_FLAG_W,SALNTY,SALNTY_FLAG_W,OXYGEN,OXYGEN_FLAG_W,SILCAT,SILCAT_FLAG_W,NITRIT,NITRIT_FLAG_W,NO2+NO3,NO2+NO3_FLAG_W,PHSPHT,PHSPHT_FLAG_W
+    # nolint end line_length_linter
     names <- gsub("_FLAG_W", "Flag", names)
     names <- gsub("_FLAG_I", "Flag", names)
     names <- gsub("ALKALI", "totalAlkalinity", names)
@@ -201,7 +206,7 @@ woceNames2oceNames <- function(names)
 #' @family functions that interpret variable names and units from headers
 woceUnit2oceUnit <- function(woceUnit)
 {
-    ## message("woceUnit2oceUnit(\"", woceUnit, "\")", sep="")
+    # message("woceUnit2oceUnit(\"", woceUnit, "\")", sep="")
     if (woceUnit == "DB" || woceUnit == "DBAR")
         return(list(unit=expression(dbar), scale=""))
     if (woceUnit == "DEG C")
@@ -248,16 +253,9 @@ woceUnit2oceUnit <- function(woceUnit)
 #' @family functions that read ctd data
 #'
 #' @author Dan Kelley
-read.ctd.woce <- function(file,
-    columns=NULL,
-    station=NULL,
-    missingValue,
-    deploymentType="unknown",
-    monitor=FALSE,
-    encoding="latin1",
-    debug=getOption("oceDebug"),
-    processingLog,
-    ...)
+read.ctd.woce <- function(file, columns=NULL, station=NULL, missingValue,
+    deploymentType="unknown", monitor=FALSE, encoding="latin1",
+    debug=getOption("oceDebug"), processingLog, ...)
 {
     if (missing(file))
         stop("must supply 'file'")
@@ -282,7 +280,7 @@ read.ctd.woce <- function(file,
         oceDebug(debug, "} # read.ctd.woce() {\n")
         return(res)
     }
-    ## FIXME: should have an argument that selects CTDSAL or SALNTY
+    # FIXME: should have an argument that selects CTDSAL or SALNTY
     oceDebug(debug, "read.ctd.woce(file=\"", file, "\", ..., debug=", debug, ", ...) {\n", sep="", unindent=1)
     if (is.character(file)) {
         filename <- fullFilename(file)
@@ -298,7 +296,7 @@ read.ctd.woce <- function(file,
         on.exit(close(file))
     }
     res <- new("ctd", pressureType="sea")
-    ## Header
+    # Header
     scientist <- ship <- institute <- address <- NULL
     filename.orig <- NULL
     sampleInterval <- NaN
@@ -308,29 +306,29 @@ read.ctd.woce <- function(file,
     waterDepth <- NA
     date <- recoveryTime <- NULL
     header <- c()
-    ##col.names.inferred <- NULL
-    ##conductivity.standard <- 4.2914
-    ## http://www.nodc.noaa.gov/woce_V2/disk02/exchange/exchange_format_desc.htm
-    ## First line
-    line <- scan(file, what='char', sep="\n", n=1, quiet=TRUE)
+    #col.names.inferred <- NULL
+    #conductivity.standard <- 4.2914
+    # http://www.nodc.noaa.gov/woce_V2/disk02/exchange/exchange_format_desc.htm
+    # First line
+    line <- scan(file, what="char", sep="\n", n=1, quiet=TRUE)
     oceDebug(debug, paste("examining header line '", line, "'\n", sep=""))
     header <- line
     waterDepthWarning <- FALSE
 
-    ## Handle a format used in a 2003 survey of the Canada Basin
+    # Handle a format used in a 2003 survey of the Canada Basin
     if (substr(line, 1, 3) == "CTD" && substr(line, 4, 4) != ",")  {
         oceDebug(debug, "WOCE-like style used in a 2003 survey of the Arctic Canada Basin\n")
-        ##CTD
-        ##CRUISE NAME = LSSL 2003-21
-        ##AREA = Arctic Ocean, Canada Basin
-        ##SHIP = CCGS Louis S St.Laurent
-        ##CASTNO = 1
-        ##DATE = 11-Aug-2003
-        ##LATITUDE (N)= 71.391
-        ##LONGITUDE (W)= 134.001
-        ##Pressure,Temperature,Salinity,Oxygen,Fluorescence,Transmission
-        ##   DB   ,ITS-90 DEGC,   PSU  , ML/L ,     UG/L   ,      %
-        ##         1,   -1.1999,   28.4279,      8.77,     0.026,    87.679
+        #CTD
+        #CRUISE NAME = LSSL 2003-21
+        #AREA = Arctic Ocean, Canada Basin
+        #SHIP = CCGS Louis S St.Laurent
+        #CASTNO = 1
+        #DATE = 11-Aug-2003
+        #LATITUDE (N)= 71.391
+        #LONGITUDE (W)= 134.001
+        #Pressure,Temperature,Salinity,Oxygen,Fluorescence,Transmission
+        #   DB   ,ITS-90 DEGC,   PSU  , ML/L ,     UG/L   ,      %
+        #         1,   -1.1999,   28.4279,      8.77,     0.026,    87.679
         lines <- readLines(file)
         oceDebug(debug, "file has", length(lines), "lines\n")
         headerEnd <- grep("[ ]*DB[ ]*,", lines)
@@ -342,11 +340,10 @@ read.ctd.woce <- function(file,
         names <- tolower(dataNamesOriginal)
         names(dataNamesOriginal) <- names
         unitsOriginal <- gsub(" *$", "", gsub("^ *", "", strsplit(header[headerEnd], ",")[[1]]))
-        ## FIXME: decode to real units
+        # FIXME: decode to real units
         units <- list()
-        for (i in seq_along(names)) {
+        for (i in seq_along(names))
             units[[names[i]]] <- woceUnit2oceUnit(unitsOriginal[i])
-        }
         for (i in seq_along(header)) {
             oceDebug(debug, " header[", i, "]=\"", header[i], "\"\n", sep="")
             if (length(grep("CRUISE", header[i], ignore.case=TRUE))) {
@@ -377,9 +374,9 @@ read.ctd.woce <- function(file,
         res@metadata$filename.orig <- filename.orig # from instrument
         res@metadata$systemUploadTime <- systemUploadTime
         res@metadata$units <- units
-        ## res@metadata$units <- list(temperature=list(unit=expression(degree*C), scale="ITS-90"),
-        ##                            salinity=list(unit=expression(), scale="PSS-78"),
-        ##                            conductivity=list(unit=expression(), scale=""))
+        # res@metadata$units <- list(temperature=list(unit=expression(degree*C), scale="ITS-90"),
+        #                            salinity=list(unit=expression(), scale="PSS-78"),
+        #                            conductivity=list(unit=expression(), scale=""))
         res@metadata$dataNamesOriginal <- as.list(dataNamesOriginal)
         names(res@metadata$dataNamesOriginal) <- names
         res@metadata$pressureType <- "sea"
@@ -397,29 +394,24 @@ read.ctd.woce <- function(file,
         res@metadata$deploymentType <- deploymentType
         res@metadata$waterDepth <- max(abs(data$pressure), na.rm=TRUE) # not in header
         res@metadata$sampleInterval <- sampleInterval
-        ##res@metadata$names <- names
-        ##res@metadata$labels <- labels
+        #res@metadata$names <- names
+        #res@metadata$labels <- labels
         res@metadata$src <- filename
     } else {
         oceDebug(debug, "handling woce-exchange style, in which first line starts 'CTD,'\n")
-        ## CTD,20000718WHPOSIOSCD
+        # CTD,20000718WHPOSIOSCD
         tmp <- sub("(.*), ", "", line)
         date <- substr(tmp, 1, 8)
-        ##cat("DATE '", date, "'\n", sep="")
-        ## 20170424 diw <- substr(tmp, 9, nchar(tmp)) # really, divisionINSTITUTEwho
-        ## 20170424 institute <- diw # BUG: really, it is division, institute, who, strung together
-        ## 20170424 ## Kludge: recognize some institutes
-        ## 20170424 if (0 < regexpr("SIO", diw))
-        ## 20170424     institute <- "SIO"
         gotHeader <- FALSE
         gotDate <- FALSE
         gotTime <- FALSE
         startTime <- NULL
+        # nolint start object_usage_linter
         while (TRUE) {
-            line <- scan(file, what='char', sep="\n", n=1, quiet=TRUE) # slow, for perhaps 20 lines of header
+            line <- scan(file, what="char", sep="\n", n=1, quiet=TRUE) # slow, for perhaps 20 lines of header
             oceDebug(debug, paste("examining header line '", line, "'\n"))
             if (0 < (r<-regexpr("FILE_NAME", line))) {
-                ##  #CTDFILE_NAME:     KB51D003.WCT
+                #  #CTDFILE_NAME:     KB51D003.WCT
                 oceDebug(debug, "infer filename from:", line, "\n")
                 filename.orig <- sub("^.*NAME:[ ]*", "", line)
                 oceDebug(debug, " trim to '", filename.orig, "'\n", sep='')
@@ -427,49 +419,48 @@ read.ctd.woce <- function(file,
                 oceDebug(debug, " trim to '", filename.orig, "'\n", sep='')
             }
             header <- c(header, line)
-            ## SAMPLE:
-            ##      EXPOCODE = 31WTTUNES_3
-            ##      SECTION_ID = P16C
-            ##      STNNBR = 221
-            ##      CAST = 1
-            ##      DATE = 19910901
-            ##      TIME = 0817
-            ##      LATITUDE = -17.5053
-            ##      LONGITUDE = -150.4812
-            ##      BOTTOM = 3600
+            # SAMPLE:
+            #      EXPOCODE = 31WTTUNES_3
+            #      SECTION_ID = P16C
+            #      STNNBR = 221
+            #      CAST = 1
+            #      DATE = 19910901
+            #      TIME = 0817
+            #      LATITUDE = -17.5053
+            #      LONGITUDE = -150.4812
+            #      BOTTOM = 3600
             if (!(0 < (r<-regexpr("^[ ]*#", line)[1]))) {
-                ## first non-hash line
-                ## NUMBER_HEADERS = 10
+                # first non-hash line
+                # NUMBER_HEADERS = 10
                 nh <- as.numeric(sub("(.*)NUMBER_HEADERS = ", "", ignore.case=TRUE, line))
                 if (is.finite(nh)) {
                     for (i in 2:nh) {
-                        line <- scan(file, what='char', sep="\n", n=1, quiet=TRUE)
-                        ##message("line: ", line)
+                        line <- scan(file, what="char", sep="\n", n=1, quiet=TRUE)
+                        #message("line: ", line)
                         header <- c(header, line)
                         oceDebug(debug, line, "\n")
-                        if (0 < (r<-regexpr("LATITUDE",  line)))
+                        if (0 < (r<-regexpr("LATITUDE",  line))) {
                             latitude  <- as.numeric(sub("[a-zA-Z =]*", "", line))
-                        else if (0 < (r<-regexpr("LONGITUDE", line)))
+                        } else if (0 < (r<-regexpr("LONGITUDE", line))) {
                             longitude <- as.numeric(sub("(.*) =", "", line))
-                        else if (0 < (r<-regexpr("DATE", line))) {
-                            ## FIXME: check to see whether woce-exchange always gives dates as 8 digits
+                        } else if (0 < (r<-regexpr("DATE", line))) {
+                            # FIXME: check to see whether woce-exchange always gives dates as 8 digits
                             date <- sub(" *$", "", sub("[ ]*DATE[ ]*=[ ]*", "", line))
                             gotDate <- TRUE
-                            ##message("got date=", date)
                         } else if (0 < (r<-regexpr(pattern="TIME", text=line, ignore.case=TRUE))) {
                             time <- sub("[a-zA-Z =]*", "", line)
                             gotTime <- TRUE
-                            ##message("got time=", time)
-                        } else if (0 < (r<-regexpr(pattern="DEPTH", text=line, ignore.case=TRUE)))
+                        } else if (0 < (r<-regexpr(pattern="DEPTH", text=line, ignore.case=TRUE))) {
                             waterDepth <- as.numeric(sub("[a-zA-Z =:]*", "", line))
-                        else if (0 < (r<-regexpr(pattern="Profondeur", text=line, ignore.case=TRUE)))
+                        } else if (0 < (r<-regexpr(pattern="Profondeur", text=line, ignore.case=TRUE))) {
                             waterDepth <- as.numeric(sub("[a-zA-Z =]*", "", line))
-                        else if (0 < (r<-regexpr(pattern="STNNBR", text=line, ignore.case=TRUE)))
+                        } else if (0 < (r<-regexpr(pattern="STNNBR", text=line, ignore.case=TRUE))) {
                             station <- as.numeric(sub("[a-zA-Z =]*", "", line))
-                        else if (0 < (r<-regexpr(pattern="Station", text=line, ignore.case=TRUE)))
+                        } else if (0 < (r<-regexpr(pattern="Station", text=line, ignore.case=TRUE))) {
                             station <- as.numeric(sub("[a-zA-Z =]*", "", line))
-                        else if (0 < (r<-regexpr(pattern="Mission", text=line, ignore.case=TRUE)))
+                        } else if (0 < (r<-regexpr(pattern="Mission", text=line, ignore.case=TRUE))) {
                             scientist <- sub("[ ]*$", "", sub(".*:", "", line))
+                        }
                     }
                     break
                 } else {
@@ -478,49 +469,46 @@ read.ctd.woce <- function(file,
                 }
             }
         }
+        # nolint end object_usage_linter
         if (gotDate && gotTime) {
-            ##message("gotDate && gotTime")
+            #message("gotDate && gotTime")
             if (nchar(time) == 3)
                 time <- paste("0", time, sep="")
             startTime <- as.POSIXct(paste(date, time), format="%Y%m%d %H%M", tz="UTC")
         }
         if (!gotHeader) {
             while (TRUE) {
-                ## catch any remaining "#" lines
-                line <- scan(file, what='char', sep="\n", n=1, quiet=TRUE)
-                if (!(0 < (r<-regexpr("^#", line))))
+                # catch any remaining "#" lines
+                line <- scan(file, what="char", sep="\n", n=1, quiet=TRUE)
+                if (!(0 < (r<-regexpr("^#", line)))) {
                     break
+                }
                 header <- c(header, line)
             }
         }
-        ## nolint start (long lines)
-        ## 2 more header lines, one giving quantities, the next units, e.g.
-        ## EXPOCODE,SECT_ID,STNNBR,CASTNO,SAMPNO,BTLNBR,BTLNBR_FLAG_W,DATE,TIME,LATITUDE,LONGITUDE,DEPTH,CTDPRS,CTDTMP,CTDSAL,CTDSAL_FLAG_W,SALNTY,SALNTY_FLAG_W,OXYGEN,OXYGEN_FLAG_W,SILCAT,SILCAT_FLAG_W,NITRIT,NITRIT_FLAG_W,NO2+NO3,NO2+NO3_FLAG_W,PHSPHT,PHSPHT_FLAG_W
-        ## ,,,,,,,,,,,,DBAR,IPTS-68,PSS-78,,PSS-78,,UMOL/KG,,UMOL/KG,,UMOL/KG,,UMOL/KG,,UMOL/KG,
-        ## nolint end (long lines)
+        # 2 more header lines, one giving quantities, the next units, e.g.
+        # nolint start (long lines)
+        # EXPOCODE,SECT_ID,STNNBR,CASTNO,SAMPNO,BTLNBR,BTLNBR_FLAG_W,DATE,TIME,LATITUDE,LONGITUDE,DEPTH,CTDPRS,CTDTMP,CTDSAL,CTDSAL_FLAG_W,SALNTY,SALNTY_FLAG_W,OXYGEN,OXYGEN_FLAG_W,SILCAT,SILCAT_FLAG_W,NITRIT,NITRIT_FLAG_W,NO2+NO3,NO2+NO3_FLAG_W,PHSPHT,PHSPHT_FLAG_W
+        # ,,,,,,,,,,,,DBAR,IPTS-68,PSS-78,,PSS-78,,UMOL/KG,,UMOL/KG,,UMOL/KG,,UMOL/KG,,UMOL/KG,
+        # nolint end (long lines)
         dataNamesOriginal <- as.list(trimws(strsplit(line, ",")[[1]]))
         oceDebug(debug, "dataNamesOriginal: ", paste(dataNamesOriginal, sep=" "), "\n")
         dataNamesOriginalCorrected <- dataNamesOriginal
 
-        ## catch some typos that have occured in files processed by oce
+        # catch some typos that have occured in files processed by oce
         oceDebug(debug, paste("before correcting typos, dataNamesOriginal        =c(\"",
-                              paste(dataNamesOriginal, collapse="\", \""), "\")\n", sep=""))
-        ## Meteor39/4 cruise in Lab Sea had CTDSAL_FLAW_W for all 248 stations
+            paste(dataNamesOriginal, collapse="\", \""), "\")\n", sep=""))
+        # Meteor39/4 cruise in Lab Sea had CTDSAL_FLAW_W for all 248 stations
         dataNamesOriginalCorrected <- gsub("FLAW", "FLAG", dataNamesOriginalCorrected)
         oceDebug(debug, paste("after correcting typos, dataNamesOriginalCorrected=c(\"",
-                              paste(dataNamesOriginalCorrected, collapse="\", \""), "\")\n", sep=""))
+            paste(dataNamesOriginalCorrected, collapse="\", \""), "\")\n", sep=""))
 
         names <- woceNames2oceNames(dataNamesOriginalCorrected)
         names(dataNamesOriginal) <- names
         oceDebug(debug, "names: ", paste(names, sep=" "), "\n")
-        ##> varNames <- strsplit(line, split=",")[[1]]
-        ##> oceDebug(debug, "varNames: ", paste(varNames, sep=" "), "\n")
-        ##> oceDebug(debug, "oce names: ", paste(woceNames2oceNames(varNames), sep=" "), "\n")
-        ##> varNames <- gsub("^ *", "", gsub(" *$", "", varNames)) # trim whitespace
-
-        ## Units. Note that if this line ends in ",", then we need to tack
-        ## on a final empty string to the vector named unitsOriginal.
-        line <- scan(file, what='char', sep="\n", n=1, quiet=TRUE)
+        # Units. Note that if this line ends in ",", then we need to tack
+        # on a final empty string to the vector named unitsOriginal.
+        line <- scan(file, what="char", sep="\n", n=1, quiet=TRUE)
         unitsOriginal<- strsplit(line, split=",")[[1]] # nolint (variable not used)
         if (substr(line, nchar(line), nchar(line)) == ",")
             unitsOriginal <- c(unitsOriginal, "")
@@ -529,36 +517,8 @@ read.ctd.woce <- function(file,
             oceDebug(debug, "names[", i, "]='", names[i], "', unitsOriginal[", i, "]='", unitsOriginal[i], "'\n", sep="")
             units[[names[i]]] <- woceUnit2oceUnit(unitsOriginal[i])
         }
-
-        ##20161218 pcol <- pmatch("CTDPRS", varNames)
-        ##20161218 if (is.na(pcol)) {
-        ##20161218     pcol <- pmatch("DB", varNames)
-        ##20161218     if (is.na(pcol))
-        ##20161218         stop("cannot find pressure column in list c(\"", paste(varNames, '","'), "\"); need 'DB' or 'CTDPRS'")
-        ##20161218 }
-        ##20161218 Scol <- pmatch("CTDSAL", varNames)
-        ##20161218 if (is.na(Scol)) {
-        ##20161218     Scol <- pmatch("SALNTY", varNames)
-        ##20161218     if (is.na(Scol))
-        ##20161218         stop("cannot find salinity column in list c(\"", paste(varNames, '","'), "\"); need 'CTDSAL' or 'SALNTY'")
-        ##20161218 }
-        ##20161218 ## FIXME: use these flags ... they are ignored at present.
-        ##20161218 Sflagcol <- pmatch("CTDSAL_FLAG", varNames)
-        ##20161218 if (is.na(Sflagcol)) {
-        ##20161218     Sflagcol <- pmatch("SALNTY_FLAG", varNames)
-        ##20161218     if (is.na(Sflagcol))
-        ##20161218         stop("cannot find salinity-flag column in list c(\"", paste(varNames, '","'), "\"); need 'CTDSAL_FLAG...' or 'SALNTY_FLAG...'")
-        ##20161218 }
-        ##20161218 Tcol <- pmatch("CTDTMP", varNames)
-        ##20161218 if (is.na(Tcol))
-        ##20161218     stop("cannot find temperature column in list", paste(varNames, ","))
-        ##20161218 Ocol <- pmatch("CTDOXY", varNames)
-        ##20161218 oceDebug(debug, "pcol=", pcol, "Scol=", Scol, "Tcol=", Tcol, "Ocol=", Ocol, "\n")
-        ##20161218 line <- scan(file, what='char', sep="\n", n=1, quiet=TRUE)
-        ##20161218 varUnits <- strsplit(line, split=",")[[1]] # nolint (variable not used)
-
-        ## Read the data into a buffer, since there will likely be
-        ## a trailer line at the end, and read.table() cannot handle that.
+        # Read the data into a buffer, since there will likely be
+        # a trailer line at the end, and read.table() cannot handle that.
         #> owarn <- options('warn')$warn
         #> options(warn=-1)
         lines <- readLines(file)
@@ -567,20 +527,6 @@ read.ctd.woce <- function(file,
         if (length(grep("^END", lines[nlines])))
             lines <- lines[-nlines]
         dataAndFlags <- read.csv(text=lines, header=FALSE, col.names=names, sep=",", encoding=encoding)
-
-        ## nlines <- length(lines)
-        ## pressure <- vector("numeric", nlines)
-        ## temperature <- vector("numeric", nlines)
-        ## salinity <- vector("numeric", nlines)
-        ## oxygen <- vector("numeric", nlines)
-        ## b <- 0
-        ##20161218 oceDebug(debug, "pcol:", pcol, ", Scol:", Scol, ", Tcol:", Tcol, ", Ocol:", Ocol, "\n")
-        ##20161218 ##m <- matrix(NA, nrow=nlines, ncol=length(varNames))
-        ##20161218 ending <- grep("END_DATA", lines)
-        ##20161218 if (length(ending) == 1)
-        ##20161218     lines <- lines[-ending]
-        ##20161218 varNamesOce <- woceNames2oceNames(varNames)
-        ##print(data.frame(varNames, varNamesOce))
         nonflags <- grep("Flag$", names, invert=TRUE)
         flags <- grep("Flag$", names)
         dataAndFlags <- read.csv(text=lines, header=FALSE, col.names=woceNames2oceNames(names), encoding=encoding)
@@ -588,19 +534,19 @@ read.ctd.woce <- function(file,
         flags <- as.list(dataAndFlags[, flags])
         names(flags) <- gsub("Flag", "", names(flags))
         names <- names(data)
-        ##labels <- titleCase(names)
         if (is.na(waterDepth)) {
             waterDepth <- max(abs(data$pressure), na.rm=TRUE)
             waterDepthWarning <- TRUE
         }
-        ## catch e.g. -999 sometimes used for water depth's missing value
-        if (is.finite(waterDepth) && waterDepth <= 0)
+        # catch e.g. -999 sometimes used for water depth's missing value
+        if (is.finite(waterDepth) && waterDepth <= 0) {
             waterDepth <- NA
+        }
         res@metadata$header <- header
         res@metadata$filename <- filename # provided to this routine
         res@metadata$filename.orig <- filename.orig # from instrument
         res@metadata$units <- list(temperature=list(unit=expression(degree*C), scale="ITS-90"),
-                                   conductivity=list(unit=expression(), scale=""))
+            conductivity=list(unit=expression(), scale=""))
         res@metadata$flags <- flags
         res@metadata$pressureType <- "sea"
         res@metadata$systemUploadTime <- systemUploadTime
@@ -618,14 +564,14 @@ read.ctd.woce <- function(file,
         res@metadata$deploymentType <- deploymentType
         res@metadata$waterDepth <- waterDepth
         res@metadata$sampleInterval <- sampleInterval
-        ##res@metadata$names <- names
-        ##res@metadata$labels <- labels
+        #res@metadata$names <- names
+        #res@metadata$labels <- labels
         res@metadata$src <- filename
-        ## trim units (there can be flag units in the list)
+        # trim units (there can be flag units in the list)
         units <- units[names(units) %in% names]
     }
-    ## replace any missingValue with NA. If missingValue is not supplied, look
-    ## for crazy S values, and if none are found, look for crazy T values.
+    # replace any missingValue with NA. If missingValue is not supplied, look
+    # for crazy S values, and if none are found, look for crazy T values.
     if (missing(missingValue)) {
         if ("salinity" %in% names(data) && "temperature" %in% names(data)) {
             Smin <- min(data[["salinity"]], na.rm=TRUE)
@@ -651,16 +597,17 @@ read.ctd.woce <- function(file,
         }
     }
     if (!missing(missingValue) && !is.null(missingValue)) {
-        for (item in names(data)) {
+        for (item in names(data))
             data[[item]] <- ifelse(data[[item]]==missingValue, NA, data[[item]])
-        }
     }
     res@data <- data
-    if (missing(processingLog))
+    if (missing(processingLog)) {
         processingLog <- paste(deparse(match.call()), sep="", collapse="")
+    }
     res@processingLog <- processingLogAppend(res@processingLog, processingLog)
-    if (waterDepthWarning)
+    if (waterDepthWarning) {
         res@processingLog <- processingLogAppend(res@processingLog, "inferred water depth from maximum pressure")
+    }
     oceDebug(debug, "} # read.ctd.woce()\n", unindent=1) # FIXME: use S4 for ctd / woce
     # res@metadata$units$pressure <- list(unit=expression(dbar), scale="")
     res@metadata$units <- units
@@ -679,16 +626,9 @@ read.ctd.woce <- function(file,
 #' @family functions that read ctd data
 #'
 #' @author Dan Kelley
-read.ctd.woce.other <- function(file,
-    columns=NULL,
-    station=NULL,
-    missingValue,
-    deploymentType="unknown",
-    monitor=FALSE,
-    encoding="latin1",
-    debug=getOption("oceDebug"),
-    processingLog,
-    ...)
+read.ctd.woce.other <- function(file, columns=NULL, station=NULL, missingValue,
+    deploymentType="unknown", monitor=FALSE, encoding="latin1",
+    debug=getOption("oceDebug"), processingLog, ...)
 {
     if (missing(file))
         stop("must supply 'file'")
@@ -698,15 +638,15 @@ read.ctd.woce.other <- function(file,
         if (0L == file.info(file)$size)
             stop("empty file '", file, "'")
     }
-    ##EXPOCODE 06MT18/1      WHP-ID A1E    DATE 090591
-    ##STNNBR    558 CASTNO   1 NO.RECORDS=   83
-    ##INSTRUMENT NO. NB3 SAMPLING RATE  31.25 HZ
-    ##  CTDPRS  CTDTMP  CTDSAL  CTDOXY  NUMBER  QUALT1
-    ##    DBAR  ITS-90  PSS-78 UMOL/KG    OBS.       *
-    ## ******* ******* ******* *******               *
-    ##     4.0  6.7068 34.7032   327.8      -9    2222
-    ##     6.0  6.7059 34.7035   328.1      -9    2222
-    ##     8.0  6.6928 34.7041   328.8      -9    2222
+    #EXPOCODE 06MT18/1      WHP-ID A1E    DATE 090591
+    #STNNBR    558 CASTNO   1 NO.RECORDS=   83
+    #INSTRUMENT NO. NB3 SAMPLING RATE  31.25 HZ
+    #  CTDPRS  CTDTMP  CTDSAL  CTDOXY  NUMBER  QUALT1
+    #    DBAR  ITS-90  PSS-78 UMOL/KG    OBS.       *
+    # ******* ******* ******* *******               *
+    #     4.0  6.7068 34.7032   327.8      -9    2222
+    #     6.0  6.7059 34.7035   328.1      -9    2222
+    #     8.0  6.6928 34.7041   328.8      -9    2222
     res <- new("ctd")
     examineHeaderLines <- 10
     header <- readLines(file, n=examineHeaderLines)
@@ -741,18 +681,17 @@ read.ctd.woce.other <- function(file,
     } else {
         stop("cannot decode data header, since no line therein contains the string \"CTDPRS\"\n")
     }
-    ## replace any missingValue with NA
+    # replace any missingValue with NA
     if (!missing(missingValue)) {
-        for (name in names(data)) {
+        for (name in names(data))
             data[[name]][missingValue == data[[name]]] <- NA
-        }
     }
     res@data <- data
     res@metadata$dataNamesOriginal <- dataNamesOriginal
     if (length(names) == length(units)) {
         n <- length(names)
-        ## example
-        ##  "DBAR"    "ITS-90"  "PSS-7"   "UMOL/KG" "V"       "V"       "OBS."    "*"
+        # example
+        #  "DBAR"    "ITS-90"  "PSS-7"   "UMOL/KG" "V"       "V"       "OBS."    "*"
         for (i in 1:n) {
             if (units[i] == "DBAR") {
                 res@metadata$units[[names[i]]] <- list(unit=expression(dbar), scale="")

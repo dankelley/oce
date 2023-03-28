@@ -15,6 +15,7 @@
 Form averages for each item in the \code{data} slot of the supplied objects,
 taking into account the bad-data codes.
 
+Items within the \code{data} slots of the
 objects that are supplied as arguments are averaged in a way that
 makes sense for the object class, i.e. taking into account
 the particular bad-data codes of that particular class.

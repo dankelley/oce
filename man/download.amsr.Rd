@@ -64,7 +64,7 @@ becoming
 
 \examples{
 \dontrun{
-## The download takes several seconds.
+# The download takes several seconds.
 f <- download.amsr(2017, 1, 14) # Jan 14, 2017
 d <- read.amsr(f)
 plot(d)

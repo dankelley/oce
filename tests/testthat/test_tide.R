@@ -49,12 +49,12 @@ df[1] <- 0                              # Z0 is special (???) BUG: fixme
 ############################
 get.satellite <- function(x, o)
 {
-    ldel  <- as.numeric(substr(x,o+01,o+03))            # I3
-    mdel  <- as.numeric(substr(x,o+04,o+06))            # I3
-    ndel  <- as.numeric(substr(x,o+07,o+09))            # I3
-    ph    <- as.numeric(substr(x,o+10,o+13))            # F4.2
-    ee    <- as.numeric(substr(x,o+14,o+20))            # F7.4
-    ir    <- as.numeric(substr(x,o+22,o+22))            # 1x, I1
+    ldel  <- as.numeric(substr(x, o+01, o+03))            # I3
+    mdel  <- as.numeric(substr(x, o+04, o+06))            # I3
+    ndel  <- as.numeric(substr(x, o+07, o+09))            # I3
+    ph    <- as.numeric(substr(x, o+10, o+13))            # F4.2
+    ee    <- as.numeric(substr(x, o+14, o+20))            # F7.4
+    ir    <- as.numeric(substr(x, o+22, o+22))            # 1x, I1
     c(ldel, mdel, ndel, ph, ee, ir)
 }
 
@@ -97,7 +97,7 @@ while (TRUE) {
             xs <- readLines(file, n=1)
             nxs <- nchar(xs)
             if (nxs != 31 && nxs != 33 && nxs != 39 && nxs != 54 && nxs != 56 && nxs != 77 && nxs != 79) {
-                cat("GOT BAD LINE AS FOLLOWS:\n12345678901234567890123456789012345678901234567890\n",xs,"\n",sep="")
+                cat("GOT BAD LINE AS FOLLOWS:\n12345678901234567890123456789012345678901234567890\n", xs, "\n", sep="")
                 stop("need 31, 33, 39, 54, 56, 77 or 79 chars, but got ", nxs)
             }
             s <- get.satellite(xs, 11)
@@ -158,7 +158,7 @@ iconst <- vector("numeric", num.shallow)   # names as T_TIDE
 coef   <- vector("numeric", num.shallow)
 iname  <- vector("numeric", num.shallow)
 this.shallow <- 1
-while(TRUE) {
+while (TRUE) {
     x <- readLines(file, n=1)
     nx <- nchar(x)
     if (nx < 10) break
@@ -214,7 +214,7 @@ const <- data.frame(name=name,
                     kmpr=kmpr,
                     ikmpr=ikmpr,
                     df=df,
-                    d1=d1,d2=d2,d3=d3,d4=d4,d5=d5,d6=d6, # T_TIDE has these as matrix 'doodson'
+                    d1=d1, d2=d2, d3=d3, d4=d4, d5=d5, d6=d6,  # T_TIDE has these as matrix 'doodson'
                     semi=semi,
                     nsat=nsat,
                     ishallow=ishallow,
@@ -226,9 +226,9 @@ tidedata <- list(const=const, sat=sat, shallow=shallow)
 
 test_that("deldood", {
           expect_equal(sum(nsat), ns)
-          expect_equal(sat$deldood[1,], c(-1,  0, 0))
-          expect_equal(sat$deldood[2,], c( 0, -1, 0))
-          expect_equal(sat$deldood[3,], c(-2, -2, 0))
+          expect_equal(sat$deldood[1, ], c(-1,  0, 0))
+          expect_equal(sat$deldood[2, ], c(0,  -1, 0))
+          expect_equal(sat$deldood[3, ], c(-2, -2, 0))
 })
 
 test_that("constituents were read correctly", {
@@ -241,7 +241,7 @@ test_that("constituents were read correctly", {
 
 test_that("shallow constitutents", {
           shallow <- data.frame(iconst=iconst, coef=coef, iname=iname)
-          expect_equal(tidedata$shallow$iconst[1:5], c(26,26,27,27,30))
+          expect_equal(tidedata$shallow$iconst[1:5], c(26, 26, 27, 27, 30))
           expect_equal(tidedata$shallow$coef[1:5], c(2, -1, 1, -1, 2))
           expect_equal(tidedata$shallow$iname[1:5], c(19, 13, 57, 13, 48))
           expect_equal(df[48], 0.08051140070000)
@@ -250,8 +250,8 @@ test_that("shallow constitutents", {
 })
 
 test_that("doodson", {
-          expect_equal(tidedata$const$doodsonspecies[c(2,3,10)], c(0,0,-1))
-          expect_equal(tidedata$const$doodsonamp[c(2,3,10)], c(0.01160000000000,0.07299000000000,0.01153000000000))
+          expect_equal(tidedata$const$doodsonspecies[c(2, 3, 10)], c(0, 0, -1))
+          expect_equal(tidedata$const$doodsonamp[c(2, 3, 10)], c(0.01160000000000, 0.07299000000000, 0.01153000000000))
 })
 
 test_that("ancillary code", {
@@ -265,8 +265,7 @@ test_that("ancillary code", {
     expect_equal(vuf$u, c(0), tolerance=1e-8)
     expect_equal(vuf$f, c(1), tolerance=1e-8)
     vuf <- tidemVuf(t, c(48, 49), 45)
-    expect_equal(vuf$v, c(0.57722632857477,0.62841490855698), tolerance=1e-8)
-    expect_equal(vuf$u, c(0.00295677805220,0.00180270946435), tolerance=1e-8)
-    expect_equal(vuf$f, c(0.96893771510868,0.98142639461951), tolerance=1e-8)
+    expect_equal(vuf$v, c(0.57722632857477, 0.62841490855698), tolerance=1e-8)
+    expect_equal(vuf$u, c(0.00295677805220, 0.00180270946435), tolerance=1e-8)
+    expect_equal(vuf$f, c(0.96893771510868, 0.98142639461951), tolerance=1e-8)
 })
-

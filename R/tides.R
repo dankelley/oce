@@ -1,4 +1,4 @@
-## vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
+# vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
 
 #' Class to Store Tidal Models
 #'
@@ -22,14 +22,14 @@
 setClass("tidem", contains="oce")
 
 setMethod(f="initialize",
-          signature="tidem",
-          definition=function(.Object, ...) {
-              .Object <- callNextMethod(.Object, ...)
-              .Object@metadata$version <- ""
-              .Object@processingLog$time <- presentTime()
-              .Object@processingLog$value <- "create 'tidem' object"
-              return(.Object)
-          })
+    signature="tidem",
+    definition=function(.Object, ...) {
+        .Object <- callNextMethod(.Object, ...)
+        .Object@metadata$version <- ""
+        .Object@processingLog$time <- presentTime()
+        .Object@processingLog$value <- "create 'tidem' object"
+        return(.Object)
+    })
 
 
 #' Tidal Constituent Information
@@ -174,83 +174,83 @@ NULL
 #'
 #' @family things related to tides
 setMethod(f="summary",
-          signature="tidem",
-          definition=function(object, p, constituent, ...) {
-              debug <- if ("debug" %in% names(list(...))) list(...)$debug else 0
-              version <- object@metadata$version
-              if (missing(p))
-                  p <- 1
-              ok <- object@data$p <= p | version == 3
-              haveP <- any(!is.na(object@data$p))
-              if (missing(constituent)) {
-                  fit <- data.frame(Const=object@data$const[ok],
-                                    Name=object@data$name[ok],
-                                    Freq=object@data$freq[ok],
-                                    Amplitude=object@data$amplitude[ok],
-                                    Phase=object@data$phase[ok],
-                                    p=object@data$p[ok])
-                  if (debug) {
-                      cat("For missing(constituent) case, fit is:\n")
-                      print(fit)
-                  }
-              } else {
-                  i <- NULL
-                  bad <- NULL
-                  for (iconst in seq_along(constituent)) {
-                      w <- which(object@data$name==constituent[iconst])
-                      if (length(w) == 1) {
-                          i <- c(i, w)
-                      } else {
-                          bad <- c(bad, iconst)
-                      }
-                  }
-                  if (length(bad)) {
-                      warning("the following constituents are not handled: '",
-                              paste(constituent[bad], collapse="', '"), "'\n", sep="")
-                  }
-                  if (length(i) == 0)
-                      stop("In summary,tidem-method() : no known constituents were provided", call.=FALSE)
-                  i <- unique(i)
-                  fit <- data.frame(Const=object@data$const[i],
-                                    Name=object@data$name[i],
-                                    Freq=object@data$freq[i],
-                                    Amplitude=object@data$amplitude[i],
-                                    Phase=object@data$phase[i],
-                                    p=object@data$p[i])
-                  if (debug) {
-                      cat("For !missing(constituent) case, fit is:\n")
-                      print(fit)
-                  }
-              }
-              cat("tidem summary\n-------------\n")
-              if (version != "3") {
-                  cat("\nCall:\n")
-                  cat(paste(deparse(object[["call"]]), sep="\n", collapse="\n"), "\n", sep="")
-                  cat("RMS misfit to data: ", sqrt(var(object[["model"]]$residuals)), '\n')
-                  cat("\nFitted Model:\n")
-                  f <- fit[3:6]
-                  if (debug > 0) {
-                      cat("fit:\n");print(fit)
-                      cat("f:\n");print(f)
-                  }
-                  rownames(f) <- as.character(fit[, 2])
-                  if (haveP) {
-                      printCoefmat(f, digits=3,
-                                   signif.stars=getOption("show.signif.stars"),
-                                   signif.legend=TRUE,
-                                   P.values=TRUE, has.Pvalue=TRUE, ...)
-                  } else {
-                      printCoefmat(f[, -4], digits=3)
-                  }
-              } else {
-                  cat("\nSupplied Model:\n")
-                  f <- fit[3:5]
-                  rownames(f) <- as.character(fit[, 2])
-                  printCoefmat(f, digits=3)
-              }
-              processingLogShow(object)
-              invisible(NULL)
-          })
+    signature="tidem",
+    definition=function(object, p=1.0, constituent, ...) {
+        debug <- if ("debug" %in% names(list(...))) list(...)$debug else 0
+        version <- object@metadata$version
+        ok <- object@data$p <= p | version == 3L
+        haveP <- any(!is.na(object@data$p))
+        if (missing(constituent)) {
+            fit <- data.frame(Const=object@data$const[ok],
+                Name=object@data$name[ok],
+                Freq=object@data$freq[ok],
+                Amplitude=object@data$amplitude[ok],
+                Phase=object@data$phase[ok],
+                p=object@data$p[ok])
+            if (debug) {
+                cat("For missing(constituent) case, fit is:\n")
+                print(fit)
+            }
+        } else {
+            i <- NULL
+            bad <- NULL
+            for (iconst in seq_along(constituent)) {
+                w <- which(object@data$name==constituent[iconst])
+                if (length(w) == 1L) {
+                    i <- c(i, w)
+                } else {
+                    bad <- c(bad, iconst)
+                }
+            }
+            if (length(bad)) {
+                warning("the following constituents are not handled: '",
+                    paste(constituent[bad], collapse="', '"), "'\n", sep="")
+            }
+            if (length(i) == 0)
+                stop("In summary,tidem-method() : no known constituents were provided", call.=FALSE)
+            i <- unique(i)
+            fit <- data.frame(Const=object@data$const[i],
+                Name=object@data$name[i],
+                Freq=object@data$freq[i],
+                Amplitude=object@data$amplitude[i],
+                Phase=object@data$phase[i],
+                p=object@data$p[i])
+            if (debug) {
+                cat("For !missing(constituent) case, fit is:\n")
+                print(fit)
+            }
+        }
+        cat("tidem summary\n-------------\n")
+        if (version != "3") {
+            cat("\nCall:\n")
+            cat(paste(deparse(object[["call"]]), sep="\n", collapse="\n"), "\n", sep="")
+            cat("RMS misfit to data: ", sqrt(var(object[["model"]]$residuals)), "\n")
+            cat("\nFitted Model:\n")
+            f <- fit[3:6]
+            if (debug > 0) {
+                cat("fit:\n")
+                print(fit)
+                cat("f:\n")
+                print(f)
+            }
+            rownames(f) <- as.character(fit[, 2])
+            if (haveP) {
+                printCoefmat(f, digits=3,
+                    signif.stars=getOption("show.signif.stars"),
+                    signif.legend=TRUE,
+                    P.values=TRUE, has.Pvalue=TRUE, ...)
+            } else {
+                printCoefmat(f[, -4], digits=3)
+            }
+        } else {
+            cat("\nSupplied Model:\n")
+            f <- fit[3:5]
+            rownames(f) <- as.character(fit[, 2])
+            printCoefmat(f, digits=3)
+        }
+        processingLogShow(object)
+        invisible(NULL)
+    })
 
 #' Extract Something From a tidem Object
 #'
@@ -263,7 +263,7 @@ setMethod(f="summary",
 #' holding the names of things that can be accessed with `[[`.
 #' The `data` and `metadata` items hold the names of
 #' entries in the object's data and metadata
-#' slots, respectively. The 
+#' slots, respectively. The
 #' `metadataDerived` holds only `""`, because
 #' no derived metadata values are defined for `cm` objects.
 #'
@@ -281,17 +281,19 @@ setMethod(f="summary",
 #'
 #' @family things related to tides
 setMethod(f="[[",
-          signature(x="tidem", i="ANY", j="ANY"),
-          definition=function(x, i, j, ...) {
-              if (i == "?")
-                  return(list(metadata=sort(names(x@metadata)),
-                          metadataDerived=NULL,
-                          data=sort(names(x@data)),
-                          dataDerived="frequency"))
-              if (i == "frequency")
-                  return(x@data$freq)
-              callNextMethod()         # [[
-          })
+    signature(x="tidem", i="ANY", j="ANY"),
+    definition=function(x, i, j, ...) {
+        if (i == "?") {
+            return(list(metadata=sort(names(x@metadata)),
+                metadataDerived=NULL,
+                data=sort(names(x@data)),
+                dataDerived="frequency"))
+        }
+        if (i == "frequency") {
+            return(x@data$freq)
+        }
+        callNextMethod()         # [[
+    })
 
 #' Replace Parts of a Tidem Object
 #'
@@ -301,10 +303,10 @@ setMethod(f="[[",
 #'
 #' @family things related to tides
 setMethod(f="[[<-",
-          signature(x="tidem", i="ANY", j="ANY"),
-          definition=function(x, i, j, ..., value) {
-              callNextMethod(x=x, i=i, j=j, ...=..., value=value) # [[<-
-          })
+    signature(x="tidem", i="ANY", j="ANY"),
+    definition=function(x, i, j, ..., value) {
+        callNextMethod(x=x, i=i, j=j, ...=..., value=value) # [[<-
+    })
 
 
 
@@ -340,7 +342,9 @@ setMethod(f="[[<-",
 #'
 #' @param mar value to be used with `[`par`]("mar")`.
 #'
-#' @param \dots optional arguments passed to plotting functions.
+#' @param \dots optional arguments passed to plotting functions, not all
+#' of which are obeyed.  For example, if \dots contains `type`, that value will be
+#' ignored because it is set internally, according to the value of `which`.
 #'
 #' @examples
 #'\dontrun{
@@ -363,69 +367,89 @@ setMethod(f="[[<-",
 #'
 #' @family things related to tides
 setMethod(f="plot",
-          signature=signature("tidem"),
-          definition=function(x,
-                              which=1,
-                              constituents=c("SA", "O1", "K1", "M2", "S2", "M4"),
-                              sides=NULL,
-                              col="blue",
-                              log="",
-                              mgp=getOption("oceMgp"),
-                              mar=c(mgp[1]+1, mgp[1]+1, mgp[2]+0.25, mgp[2]+1),
-                              ...)
-          {
-              data("tidedata", package="oce", envir=environment())
-              tidedata <- get("tidedata")#, pos=globalenv())
-              drawConstituent<-function(name="M2", side=3, col="blue", adj=NULL)
-              {
-                  w <- which(tidedata$const$name == name)
-                  ## message("w:")
-                  ## print(w)
-                  if (!length(w)) {
-                      warning("constituent '", name, "' is unknown")
-                      return()
-                  }
-                  frequency <- tidedata$const$freq[w]
-                  ## message("constituent '", name, "' has frequency ", frequency, " cph")
-                  abline(v=frequency, col=col, lty="dotted")
-                  if (par('usr')[1] < frequency && frequency <= par('usr')[2]) {
-                      if (is.null(adj))
-                          mtext(name, side=side, at=frequency, col=col, cex=0.8)
-                      else
-                          mtext(name, side=side, at=frequency, col=col, cex=0.8, adj=adj)
-                  }
-              }
-              opar <- par(no.readonly = TRUE)
-              lw <- length(which)
-              if (lw > 1) on.exit(par(opar))
-              par(mgp=mgp, mar=mar)
-              frequency <- x@data$freq[-1] # trim z0
-              amplitude <- x@data$amplitude[-1]
-              name      <- x@data$name[-1]
-              if (!is.null(constituents)) {
-                  sides <- if (is.null(sides)) rep(3, length(constituents))
-                  else rep(sides, length.out=length(constituents))
-                  col <- rep(col, length.out=length(constituents))
-              }
-              sides[sides!=1&sides!=3] <- 3 # default to top
-              for (w in 1:lw) {
-                  ##message("w=", w, "; which[w]=", which[w])
-                  if (which[w] == 2) {
-                      plot(frequency, amplitude, col="white", xlab="Frequency [ cph ]", ylab="Amplitude [ m ]", log=log)
-                      segments(frequency, 0, frequency, amplitude)
-                      for (i in seq_along(constituents))
-                          drawConstituent(constituents[i], side=sides[i], col=col[i])
-                  } else if (which[w] == 1) {
-                      plot(frequency, cumsum(amplitude), xlab="Frequency [ cph ]", ylab="Amplitude [ m ]", log=log, type='s')
-                      for (i in seq_along(constituents))
-                          drawConstituent(constituents[i], side=sides[i], col=col[i])
-                  } else {
-                      stop("unknown value of which ", which, "; should be 1 or 2")
-                  }
-              }
-              ##mtext(x$call, side=4, adj=1, cex=2/3)
-              if (!all(is.na(pmatch(names(list(...)), "main")))) title(...)
-          })
+    signature=signature("tidem"),
+    definition=function(x,
+        which=1,
+        constituents=c("SA", "O1", "K1", "M2", "S2", "M4"),
+        sides=NULL,
+        col="blue",
+        log="",
+        mgp=getOption("oceMgp"),
+        mar=c(mgp[1]+1, mgp[1]+1, mgp[2]+0.25, mgp[2]+1),
+        ...)
+    {
+        dots <- list(...)
+        dotsNames <- names(dots)
+        data("tidedata", package="oce", envir=environment())
+        tidedata <- get("tidedata")#, pos=globalenv())
+        drawConstituent <- function(name="M2", side=3, col="blue", adj=NULL, cex=0.8)
+        {
+            w <- which(tidedata$const$name == name)
+            if (!length(w)) {
+                warning("constituent '", name, "' is unknown")
+                return()
+            }
+            frequency <- tidedata$const$freq[w]
+            # message("constituent '", name, "' has frequency ", frequency, " cph")
+            abline(v=frequency, col=col, lty="dotted")
+            if (par("usr")[1] < frequency && frequency <= par("usr")[2]) {
+                if (is.null(adj)) {
+                    mtext(name, side=side, at=frequency, col=col, cex=cex)
+                } else {
+                    mtext(name, side=side, at=frequency, col=col, cex=cex, adj=adj)
+                }
+            }
+        }
+        opar <- par(no.readonly = TRUE)
+        lw <- length(which)
+        if (lw > 1)
+            on.exit(par(opar))
+        par(mgp=mgp, mar=mar)
+        frequency <- x@data$freq[-1] # trim z0
+        amplitude <- x@data$amplitude[-1]
+        #name      <- x@data$name[-1]
+        # Place in frequency order (required for cumulative plot), because user
+        # might have given constituents in any order.
+        order <- order(frequency)
+        frequency <- frequency[order]
+        #name <- name[order]
+        amplitude <- amplitude[order]
+        #print(data.frame(name=name, period=1/frequency, amplitude=amplitude))
+        if (!is.null(constituents)) {
+            sides <- if (is.null(sides)) {
+                rep(3, length(constituents))
+            } else {
+                rep(sides, length.out=length(constituents))
+            }
+            col <- rep(col, length.out=length(constituents))
+        }
+        sides[sides!=1&sides!=3] <- 3 # default to top
+        cex <- if ("cex" %in% names(dots)) dots$cex else 0.8
+        # We specify these things directly but they are not parameters of this
+        # function, so we must remove them from '...' before passing that to plot().
+        if ("cex" %in% dotsNames) dots$cex <- NULL
+        if ("type" %in% dotsNames) dots$type <- NULL
+        for (w in 1:lw) {
+            #message("w=", w, "; which[w]=", which[w])
+            if (which[w] == 2) {
+                plot(frequency, amplitude, type="n",
+                    xlab="Frequency [ cph ]", ylab="Amplitude [ m ]", log=log, ...)
+                segments(frequency, 0, frequency, amplitude)
+                for (i in seq_along(constituents)) {
+                    drawConstituent(constituents[i], side=sides[i], col=col[i], cex=cex)
+                }
+            } else if (which[w] == 1) {
+                plot(frequency, cumsum(amplitude),
+                    xlab="Frequency [ cph ]", ylab="Amplitude [ m ]", log=log, type="s", ...)
+                for (i in seq_along(constituents)) {
+                    drawConstituent(constituents[i], side=sides[i], col=col[i], cex=cex)
+                }
+            } else {
+                stop("unknown value of which ", which, "; should be 1 or 2")
+            }
+        }
+        if (!all(is.na(pmatch(names(list(...)), "main")))) title(...)
+    })
 
 #' Create tidem object from fitted harmonic data
 #'
@@ -452,7 +476,7 @@ setMethod(f="plot",
 #' observations used to develop the harmonic model. This is rounded
 #' to the nearest hour in [as.tidem()], to match [tidem()].
 #'
-#' @param latitude Numerical value indicating the latitude of the
+#' @param latitude numerical value indicating the latitude of the
 #' observations that were used to create the harmonic model. This
 #' is needed for nodal-correction procedures carried out
 #' by [tidemVuf()].
@@ -549,7 +573,6 @@ as.tidem <- function(tRef, latitude, name, amplitude, phase, debug=getOption("oc
     oceDebug(debug, "input head(name): ", paste(head(name), collapse=" "), "\n")
     oceDebug(debug, "input head(phase): ", paste(head(phase), collapse=" "), "\n")
     oceDebug(debug, "input head(amplitude): ", paste(head(amplitude), collapse=" "), "\n")
-
     freq <- rep(NA, nname)
     indices <- rep(NA, nname)
     ibad <- NULL
@@ -581,14 +604,14 @@ as.tidem <- function(tRef, latitude, name, amplitude, phase, debug=getOption("oc
     oceDebug(debug, "after vuf correction, head(amplitude): ", paste(head(amplitude), collapse=" "), "\n")
     oceDebug(debug, "} # as.tidem()\n", sep="", unindent=1)
     phase <- phase %% 360
-    res <- new('tidem')
+    res <- new("tidem")
     res@data <- list(tRef=tRef,
-                      const=indices,
-                      name=name,
-                      freq=freq,
-                      amplitude=amplitude,
-                      phase=phase,
-                      p=rep(NA, length(name)))
+        const=indices,
+        name=name,
+        freq=freq,
+        amplitude=amplitude,
+        phase=phase,
+        p=rep(NA, length(name)))
     res@metadata$version <- 3
     res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     oceDebug(debug, "} # as.tidem()\n", sep="", unindent=1)
@@ -618,7 +641,7 @@ as.tidem <- function(tRef, latitude, name, amplitude, phase, debug=getOption("oc
 #' of the `T_TIDE` Matlab package (see Pawlowicz et al. 2002).
 #'
 #' @examples
-#' ## Look up values for the M2 constituent in Halifax Harbour, Canada.
+#' # Look up values for the M2 constituent in Halifax Harbour, Canada.
 #' library(oce)
 #' data("tidedata")
 #' j <- with(tidedata$const, which(name=="M2"))
@@ -641,47 +664,41 @@ tidemVuf <- function(t, j, latitude=NULL)
         stop("t must be a single POSIXct item")
     data("tidedata", package="oce", envir=environment())
     tidedata <- get("tidedata")#, pos=globalenv())
-
     a <- tidemAstron(t)
-
     if (debug > 0) print(a)
-
     doodson <- cbind(tidedata$const$d1,
-                     tidedata$const$d2,
-                     tidedata$const$d3,
-                     tidedata$const$d4,
-                     tidedata$const$d5,
-                     tidedata$const$d6)
-
-    ##v=rem( const.doodson*astro+const.semi, 1);
+        tidedata$const$d2,
+        tidedata$const$d3,
+        tidedata$const$d4,
+        tidedata$const$d5,
+        tidedata$const$d6)
     oceDebug(debug,
-              "doodson[1,]=", doodson[1, ], "\n",
-              "doodson[2,]=", doodson[2, ], "\n",
-              "doodson[3,]=", doodson[3, ], "\n")
+        "doodson[1,]=", doodson[1, ], "\n",
+        "doodson[2,]=", doodson[2, ], "\n",
+        "doodson[3,]=", doodson[3, ], "\n")
     v <- doodson %*% a$astro + tidedata$const$semi
     oceDebug(debug, "tidedata$const$semi[", j, "]=", tidedata$const$semi[j], "\n")
     v <- v - trunc(v)
     oceDebug(debug, "v[1:3]=", v[1:3], "\n")
     if (!is.null(latitude) && !is.na(latitude)) {
-        if (abs(latitude) < 5) latitude <- sign(latitude) * 5
+        if (abs(latitude) < 5) {
+            latitude <- sign(latitude) * 5
+        }
         slat <- sin(pi * latitude / 180)
         k <- which(tidedata$sat$ilatfac == 1)
         rr    <- tidedata$sat$amprat
         rr[k] <- rr[k] * 0.36309 * (1.0 - 5.0 * slat * slat) / slat
         k     <- which(tidedata$sat$ilatfac == 2)
         rr[k] <- rr[k] * 2.59808 * slat
-
         uu <- tidedata$sat$deldood %*% a$astro[4:6] + tidedata$sat$phcorr
         uu <- uu - trunc(uu)
-
         oceDebug(debug, "uu[1:3]=", uu[1:3], "\n")
-
         nsat <- length(tidedata$sat$iconst)
-        ##nfreq <- length(tidedata$const$numsat)
-        ## loop, rather than make a big matrix
+        #nfreq <- length(tidedata$const$numsat)
+        # loop, rather than make a big matrix
         oceDebug(debug,
-                  "tidedata$sat$iconst=", tidedata$sat$iconst, "\n",
-                  "length(sat$iconst)=", length(tidedata$sat$iconst), "\n")
+            "tidedata$sat$iconst=", tidedata$sat$iconst, "\n",
+            "length(sat$iconst)=", length(tidedata$sat$iconst), "\n")
         fsum.vec <- vector("numeric", nsat)
         u.vec <- vector("numeric", nsat)
         for (isat in 1:nsat) {
@@ -696,20 +713,20 @@ tidemVuf <- function(t, j, latitude=NULL)
             }
         }
         oceDebug(debug,
-                  "uvec[", j, "]=", u.vec[j], "\n",
-                  "fsum.vec[", j, "]=", fsum.vec[j], "\n")
+            "uvec[", j, "]=", u.vec[j], "\n",
+            "fsum.vec[", j, "]=", fsum.vec[j], "\n")
         f <- abs(fsum.vec)
         u <- Arg(fsum.vec)/2/pi
         oceDebug(debug, "f=", f, "\n")
         oceDebug(debug, "u=", u, "\n")
-
         for (k in which(!is.na(tidedata$const$ishallow))) {
             ik <- tidedata$const$ishallow[k] + 0:(tidedata$const$nshallow[k] - 1)
             f[k] <- prod(f[tidedata$shallow$iname[ik]]^abs(tidedata$shallow$coef[ik]))
             u[k] <- sum(u[tidedata$shallow$iname[ik]]*tidedata$shallow$coef[ik])
             v[k] <- sum(v[tidedata$shallow$iname[ik]]*tidedata$shallow$coef[ik])
-            if (debug>0 && k < 28)
+            if (debug>0 && k < 28) {
                 cat("k=", k, "f[k]=", f[k], " u[k]=", u[k], "v[k]=", v[k], "\n")
+            }
         }
         u <- u[j]
         v <- v[j]
@@ -768,24 +785,18 @@ tidemAstron <- function(t)
     d <- as.numeric(difftime(t, ISOdatetime(1899, 12, 31, 12, 0, 0, tz="UTC"), units="days"))
     D <- d / 10000
     a <- matrix(c(1.0, d, D^2, D^3), ncol=1)
-
     oceDebug(debug, "d=", formatC(d, digits=10), "D=", D, "a=", a, "\n")
-
     scHcPcNpPp <-
-        matrix(c(270.434164, 13.1763965268, -0.0000850,   0.000000039,
-                 279.696678,  0.9856473354,  0.00002267,  0.000000000,
-                 334.329556,  0.1114040803, -0.0007739,  -0.00000026,
-                 -259.183275, 0.0529539222, -0.0001557,  -0.000000050,
-                 281.220844,  0.0000470684,  0.0000339,   0.000000070),
-               nrow=5, ncol=4, byrow=TRUE)
-    astro <- ( (scHcPcNpPp %*% a) / 360 ) %% 1
-
+    matrix(c(270.434164, 13.1763965268, -0.0000850,   0.000000039,
+        279.696678,  0.9856473354,  0.00002267,  0.000000000,
+        334.329556,  0.1114040803, -0.0007739,  -0.00000026,
+        -259.183275, 0.0529539222, -0.0001557,  -0.000000050,
+        281.220844,  0.0000470684,  0.0000339,   0.000000070),
+        nrow=5, ncol=4, byrow=TRUE)
+    astro <- ((scHcPcNpPp %*% a) / 360) %% 1
     oceDebug(debug, "astro=", astro, "\n")
-
     rem <- as.numeric(difftime(t, trunc.POSIXt(t, units="days"), tz="UTC", units="days"))
-
     oceDebug(debug, "rem2=", rem, "\n")
-
     tau <- rem + astro[2, 1] - astro[1, 1]
     astro <- c(tau, astro)
     da <- matrix(c(0.0, 1.0, 2e-4*D, 3e-4*D^2), nrow=4, ncol=1)
@@ -849,7 +860,9 @@ tidemConstituentNameFix <- function(names, debug=1)
 #'
 #' The fit is done in terms of sine and cosine components at the indicated
 #' tidal frequencies, with the amplitude and phase being calculated from the
-#' resultant coefficients on the sine and cosine terms.
+#' resultant coefficients on the sine and cosine terms. The scheme
+#' was devised for hourly data; for other sampling schemes, please see
+#' \sQuote{Application to non-hourly data}.
 #'
 #' The tidal constituents to be used in the analysis are specified as follows;
 #' see \dQuote{Constituent Naming Convention}.
@@ -1004,6 +1017,32 @@ tidemConstituentNameFix <- function(names, debug=1)
 #' sine() and cosine() portions used in fitting; whether it makes any sense is
 #' an open question.}
 #'
+#' @section Application to non-hourly data:
+#'
+#' The framework on which [tidem()] rests on the assumption of data
+#' that have been sampled on a 1-hour interval (see e.g. Foreman, 1977).
+#' Since regression (as opposed to spectral analysis) is used to infer
+#' the amplitude and phase of tidal constituents, data gaps do not pose
+#' a serious problem. Sampling intervals under an hour are also not a
+#' problem. However, trying to use [tidem()] on time series that are
+#' sampled at uniform intervals that exceed 1 hour can lead to results
+#' that are difficult to interpret.  For example, some drifter data are
+#' sampled at a 6-hour interval.  This makes it impossible to fit for the
+#' S4 component (which has exactly 6 cycles per day), because the method
+#' works by constructing sine and cosine series at tidal frequencies and
+#' using these as the basis for regression.  Each of these series will have
+#' a constant value through the constructed time, and regression cannot handle
+#' that (in addition to a constant-value constructed series that is used to fit
+#' for the Z0 constituent).  [tidem()] tries to handle such problems by examining
+#' the range of the constructed sine and cosine time-series, omitting any
+#' constituents that yield near-constant values in either of these. Messages are
+#' issued if this problem is encountered.  This prevents failure of the regression,
+#' and the predictions of the regression seem to represent the data reasonably well,
+#' but the inferred constituent amplitudes are not physically reasonable. Cautious
+#' use of [tidem()] to infer individual constituents might be warranted, but
+#' users must be aware that the results will be difficult to interpret. The tool
+#' is simply not designed for this use.
+#'
 #' @section Bugs:
 #'
 #' \enumerate{
@@ -1047,12 +1086,19 @@ tidemConstituentNameFix <- function(names, debug=1)
 #'
 #' @references
 #'
-#' Foreman, M. G. G., 1978. Manual for Tidal Currents Analysis and Prediction.
-#' Pacific Marine Science Report. British Columbia, Canada: Institute of Ocean
-#' Sciences, Patricia Bay.
+#' Foreman, M G., 1977 (revised 1996).
+#' Manual for Tidal Heights Analysis and Prediction.
+#' Pacific Marine Science Report 77-10.
+#' British Columbia, Canada: Institute of Ocean Sciences, Patricia Bay.
 #'
-#' Foreman, M. G. G., Neufeld, E. T., 1991.  Harmonic tidal analyses of long
-#' time series.  International Hydrographic Review, 68 (1), 95-108.
+#' Foreman, M. G. G., 1978.
+#' Manual for Tidal Currents Analysis and Prediction.
+#' Pacific Marine Science Report 78-6.
+#' British Columbia, Canada: Institute of Ocean Sciences, Patricia Bay,
+#'
+#' Foreman, M. G. G., Neufeld, E. T., 1991.
+#' Harmonic tidal analyses of long time series.
+#' International Hydrographic Review, 68 (1), 95-108.
 #'
 #' Leffler, K. E. and D. A. Jay, 2009.  Enhancing tidal harmonic analysis:
 #' Robust (hybrid) solutions.  Continental Shelf Research, 29(1):78-88.
@@ -1083,12 +1129,17 @@ tidemConstituentNameFix <- function(names, debug=1)
 #' summary(m)
 #'
 #' @family things related to tides
-tidem <- function(t, x, constituents, infer=NULL,
-                  latitude=NULL, rc=1, regress=lm,
-                  debug=getOption("oceDebug"))
+tidem <- function(t, x, constituents, infer=NULL, latitude=NULL,
+    rc=1, regress=lm, debug=getOption("oceDebug"))
 {
     oceDebug(debug, "tidem(t, x,\n", sep="", unindent=1)
-    oceDebug(debug, "      constituents=", if (missing(constituents)) "(missing)" else paste("c('", paste(constituents, collapse="', '"), "')", sep=""), ",\n", sep="", unindent=1)
+    oceDebug(debug, "      constituents=",
+        if (missing(constituents)) {
+            "(missing)"
+        } else {
+            paste("c('", paste(constituents, collapse="', '"), "')", sep="")
+        },
+        ",\n", sep="", unindent=1)
     oceDebug(debug, "      latitude=", if (is.null(latitude)) "NULL" else latitude, ",\n", sep="", unindent=1)
     oceDebug(debug, "      rc=", rc, ",\n", sep="", unindent=1)
     oceDebug(debug, "      debug=", debug, ") {\n", sep="", unindent=1)
@@ -1119,14 +1170,13 @@ tidem <- function(t, x, constituents, infer=NULL,
         }
         sl <- as.sealevel(x, t)
     }
-
-    ## Check infer extensively, to prevent weird errors for e.g. an improperly-named
-    ## constituent.
+    # Check infer extensively, to prevent weird errors for e.g. an improperly-named
+    # constituent.
     data("tidedata", package="oce", envir=environment())
     tidedata <- get("tidedata")#, pos=globalenv())
     tc <- tidedata$const
     ntc <- length(tc$name)
-    ## 'infer' sanity-check
+    # 'infer' sanity-check
     if (!is.null(infer)) {
         if (!is.list(infer))
             stop("infer must be a list")
@@ -1155,56 +1205,48 @@ tidem <- function(t, x, constituents, infer=NULL,
                 stop("infer$from value '", n, "' is not a known tidal constituent; see const$name in ?tidedata")
         }
     }                                  # 'infer' sanity-check
-
-    ## The arguments seem to be OK, so start the actual analysis now.
+    # The arguments seem to be OK, so start the actual analysis now.
     startTime <- t[1]
     endTime <- tail(t, 1)
     years <- as.numeric(difftime(endTime, startTime, units="secs")) / 86400 / 365.25
     if (years > 18.6)
         warning("Time series spans 18.6 years, but tidem() is ignoring this important fact")
-
     standard <- tc$ikmpr > 0
     addedConstituents <- NULL
     if (missing(constituents)) {
-        ## Default 'name', 'freq', 'kmpr' and 'indices'; drop Z0 because we infer it directly.
-        ##> message("head(name)=", paste(head(name), collapse=" "), " BEFORE")
+        # Default 'name', 'freq', 'kmpr' and 'indices'; drop Z0 because we infer it directly.
         name <- tc$name[standard]
-        ##> message("head(name)=", paste(head(name), collapse=" "), " AFTER")
         freq <- tc$freq[standard]
         kmpr <- tc$kmpr[standard]
         indices <- seq(1:ntc)[standard] # NB. Z0 need not be dropped; we work with indices later anyway
         oceDebug(debug, "starting with ", length(name), " default constituents: ", paste(name, collapse=" "), sep="", "\n")
     } else {
-        ## Build up 'name'; later, infer 'indices' and thereby 'freq' and 'kmpr'.
+        # Build up 'name'; later, infer 'indices' and thereby 'freq' and 'kmpr'.
         name <- NULL
-        #nconst <- length(constituents)
-        #oceDebug(debug, "tc$name[standard]=", paste(tc$name[standard], collapse=" "), "\n", sep="")
         for (i in seq_along(constituents)) {
-            ## if (debug > 0) cat("[", constituents[i], "]\n", sep="")
             if (constituents[i] == "standard") {
-                ## must be first!
+                # must be first!
                 if (i != 1)
                     stop("\"standard\" must occur first in constituents list")
-                ##OLD name <- tc$name[standard][-1] # the -1 is to remove Z0
                 name <- tc$name[standard]
             } else {
-                ##oceDebug(debug > 1, "before renaming: ", paste(constituents), "\n")
                 constituents <- tidemConstituentNameFix(constituents)
-                ##oceDebug(debug > 1, "after renaming: ", paste(constituents), "\n")
                 if (substr(constituents[i], 1, 1) == "-") {
-                    ## Case 1: removal. Require a valid name, and warn if not in the list already.
+                    # Case 1: removal. Require a valid name, and warn if not in the list already.
                     nameRemove <- substr(constituents[i], 2, nchar(constituents[i]))
-                    if (1 != sum(tc$name == nameRemove))
+                    if (1 != sum(tc$name == nameRemove)) {
                         stop("'", nameRemove, "' is not a known tidal constituent; try one of: ",
-                             paste(tc$name, collapse=" "))
+                            paste(tc$name, collapse=" "))
+                    }
                     remove <- which(name == nameRemove)
                     oceDebug(debug > 1, "removed '", nameRemove, "'\n", sep="")
-                    if (0 == length(remove))
+                    if (0 == length(remove)) {
                         warning("'", nameRemove, "' is not in the list of constituents currently under study", sep="")
-                    else
+                    } else {
                         name <- name[-remove]
+                    }
                 } else {
-                    ## Case 2: addition. Require a valid name, and ignore repeat requests.
+                    # Case 2: addition. Require a valid name, and ignore repeat requests.
                     add <- which(tc$name == constituents[i])
                     if (1 != length(add))
                         stop("'", constituents[i], "' is not a known tidal constituent (line 1093)")
@@ -1213,38 +1255,32 @@ tidem <- function(t, x, constituents, infer=NULL,
                         addedConstituents <- c(addedConstituents, add)
                     }
                 }
-                ##oceDebug(debug, "using names= ", paste(name, collapse=" "), "\n")
             }
         }
     }
     oceDebug(debug, "will fit for ", length(name), " constituents: ", paste(name, collapse=" "), "\n", sep="")
-    ## We let users add "Z0" as a constituent, but we remove it now since the
-    ## regression will have an intercept and that becomes Z0.
+    # We let users add "Z0" as a constituent, but we remove it now since the
+    # regression will have an intercept and that becomes Z0.
     fitForZ0 <- "Z0" %in% name
     oceDebug(debug, "fitForZ0=", fitForZ0, "\n")
-    ## All of the names should be valid from the above, but to protect against code changes,
-    ## we check to be sure.
+    # All of the names should be valid from the above, but to protect against code changes,
+    # we check to be sure.
     if (any(!(name %in% tc$name))) {
         bad <- NULL
-        for (n in name)
+        for (n in name) {
             if (!(n %in% tc$name))
                 bad <- c(bad, n)
+        }
         stop("unknown constituent names: ", paste(bad, collapse=" "), " (please report this error to developer)")
     }
-    ## Infer indices from the names, sort them as in the tidal-constituent
-    ## table, tc, and then look up freq and kmpr from that table.
-    indices <- sort(unlist(lapply(name,function(name) which(tc$name==name))))
+    # Infer indices from the names, sort them as in the tidal-constituent
+    # table, tc, and then look up freq and kmpr from that table.
+    indices <- sort(unlist(lapply(name, function(name) which(tc$name==name))))
     name <- tc$name[indices]
     freq <- tc$freq[indices]
     kmpr <- tc$kmpr[indices]
-    ## if (debug > 2) {
-    ##     cat("next is at line 875 (initial setup, before 'infer' handled)\n")
-    ##     print(data.frame(name=name, indices=indices, freq=freq, kmpr=kmpr))
-    ## }
-
     nc <- length(name)
-
-    ## Check Rayleigh criterion
+    # Check Rayleigh criterion
     interval <- diff(range(as.numeric(sl@data$time), na.rm=TRUE)) / 3600 # in hours
     oceDebug(debug, "interval=", interval, " hours\n")
     dropTerm <- NULL
@@ -1252,37 +1288,39 @@ tidem <- function(t, x, constituents, infer=NULL,
         cc <- which(tc$name == kmpr[i])
         if (length(cc)) {
             cannotFit <- (interval * abs(freq[i]-tc$freq[cc])) < rc
-            oceDebug(debug, "i=", i, ", name=", name[i], ", kmpr[", i, "]=", kmpr[i],", cannotFit=", cannotFit,"\n", sep="")
-            if (cannotFit) {
+            oceDebug(debug, "i=", i, ", name=", name[i], ", kmpr[", i, "]=", kmpr[i], ", cannotFit=", cannotFit, "\n", sep="")
+            if (cannotFit)
                 dropTerm <- c(dropTerm, i)
-            }
         }
     }
     oceDebug(debug, "before trimming constituents for Rayleigh condition, name[1:", length(name), "]=", paste(name, collapse=" "), sep="", "\n")
     if (length(dropTerm) > 0) {
-        cat("Note: the tidal record is too short to fit for constituents: ", paste(name[dropTerm], collapse=" "), "\n")
+        # Bookmark 1A (see also 1B: link up variables)
+        message("Note: the tidal record is too short to fit for constituents: ", paste(name[dropTerm], collapse=", "))
         indices <- indices[-dropTerm]
         name <- name[-dropTerm]
         freq <- freq[-dropTerm]
         kmpr <- kmpr[-dropTerm]
     }
-    oceDebug(debug, "after trimming constituents for Rayleight condition, name[1:", length(name), "]=", paste(name, collapse=" "), sep="", "\n")
-    ## Ensure that any added constituents are in the list, i.e. prevent
-    ## the Rayleigh criterion from trimming them. (Before work on
-    ## issue 1350, they would simply be dropped if they failed the Rayleigh
-    ## criterion. Although that was a sensible choice, it was decided
-    ## on 2017-12-27, whilst working on issue 1350, to make tidem() do the
-    ## the same thing as the Foreman 1978 code as exemplified in his appendices
-    ## 7.2 and 7.3.)
+    oceDebug(debug, "after trimming constituents for Rayleigh condition, name[1:", length(name), "]=", paste(name, collapse=" "), sep="", "\n")
+    # Ensure that any added constituents are in the list, i.e. prevent
+    # the Rayleigh criterion from trimming them. (Before work on
+    # issue 1350, they would simply be dropped if they failed the Rayleigh
+    # criterion. Although that was a sensible choice, it was decided
+    # on 2017-12-27, whilst working on issue 1350, to make tidem() do the
+    # the same thing as the Foreman 1978 code as exemplified in his appendices
+    # 7.2 and 7.3.)
     if (length(addedConstituents)) {
         oceDebug(debug, "addedConstituents=", paste(addedConstituents, collapse=" "), "\n")
         for (a in addedConstituents) {
-            ## Avoid adding constituents that we already have
+            # Avoid adding constituents that we already have
             if (!(tc$name[a] %in% name)) {
-                message("ADDING:")
-                message("  tc$name[a=", a, "]='", tc$name[a], "'", sep="")
-                message("  tc$freq[a=", a, "]='", tc$freq[a], "'", sep="")
-                message("  tc$kmpr[a=", a, "]='", tc$kmpr[a], "'", sep="")
+                if (debug > 0) {
+                    message("ADDING:")
+                    message("  tc$name[a=", a, "]='", tc$name[a], "'", sep="")
+                    message("  tc$freq[a=", a, "]='", tc$freq[a], "'", sep="")
+                    message("  tc$kmpr[a=", a, "]='", tc$kmpr[a], "'", sep="")
+                }
                 indices <- c(indices, which(tc$name==name[a]))
                 name <- c(name, tc$name[a])
                 freq <- c(freq, tc$freq[a])
@@ -1290,9 +1328,10 @@ tidem <- function(t, x, constituents, infer=NULL,
             }
         }
     }
-    oceDebug(debug, "after adding new constituents, name[1:", length(name), "]=", paste(name, collapse=" "), sep="", "\n")
-    ## Ensure that we fit for any infer$from constituents, *regardless* of whether
-    ## those consitituents are permitted by the Rayleigh criterion.
+    oceDebug(debug, "after adding new constituents, ", vectorShow(name))
+    oceDebug(debug, "after adding new constituents, ", vectorShow(freq))
+    # Ensure that we fit for any infer$from constituents, *regardless* of whether
+    # those consitituents are permitted by the Rayleigh criterion.
     if (!is.null(infer)) {
         for (n in c(infer$from)) {
             if (!(n %in% name)) {
@@ -1305,17 +1344,19 @@ tidem <- function(t, x, constituents, infer=NULL,
             }
         }
     }
-
-    ## sort constituents by index (which, among other things, ensures that Z0 is at the start, if it exists)
+    oceDebug(debug, "after handling 'infer', ", vectorShow(name))
+    oceDebug(debug, "after handling 'infer', ", vectorShow(freq))
+    # sort constituents by index (which, among other things, ensures that Z0 is at the start, if it exists)
     oindices <- order(indices)
     indices <- indices[oindices]
     name <- name[oindices]
     freq <- freq[oindices]
     kmpr <- kmpr[oindices]
     nc <- length(name)
-    oceDebug(debug, "name[1:", length(name), "]: ", paste(name, collapse=" "), "\n", sep="")
+    oceDebug(debug, "after reordering indices, ", vectorShow(name))
+    oceDebug(debug, "after reordering indices, ", vectorShow(freq))
     rm(oindices) # clean up namespace
-    if (0 == nc)
+    if (0L == nc)
         stop("cannot fit for any constituents")
     elevation <- sl[["elevation"]]
     time <- sl[["time"]]
@@ -1326,54 +1367,113 @@ tidem <- function(t, x, constituents, infer=NULL,
     x[, 1] <- rep(1, nt)
     pi <- 4 * atan2(1, 1)
     rpd <- atan2(1, 1) / 45            # radians per degree
-    ##tRef <- ISOdate(1899, 12, 31, 12, 0, 0, tz="UTC") # was this ever used?
-    ##tRef <- centralTime # used previous to "dk" branch early 2018
+    #tRef <- ISOdate(1899, 12, 31, 12, 0, 0, tz="UTC") # was this ever used?
+    #tRef <- centralTime # used previous to "dk" branch early 2018
     tRef <- numberAsPOSIXct(3600 * round(mean(as.numeric(time, tz="UTC")) / 3600), tz="UTC")
-    ## message("  tRef=", format(tRef, "%Y-%m-%d %H:%M:%S"), " (in tidem)")
     hour2pi <- 2 * pi * (as.numeric(time) - as.numeric(tRef)) / 3600
     oceDebug(debug, "tRef=", tRef, ", nc=", nc, ", length(name)=", length(name), "\n")
-    ##    cat(sprintf("hour[1] %.3f\n",hour[1]))
-    ##    cat(sprintf("hour.offset[1] %.3f\n",hour.offset[1]))
+
+    # The sameCriterion was added in January 2023, after this portion of tidem()
+    # had been stable for a decade or more.  Also, I am trying to make tidem()
+    # do something that (I think) neither Foreman's code nor t-tide does.
+    # Therefore, I am putting a long comment here!  Please also see
+    # https://github.com/dankelley/oce/issues/2034 to learn where this idea of
+    # using sameCriterion got started.
+    #
+    # In the code below, we keep track of any constituents for which the
+    # constructed C and S vectors will be constant (or nearly so).  This came up
+    # because I was trying to analyse data sampled on a 6-hour interval. That
+    # works out to match the S4 period (approximately, but sampling times are
+    # not given to an infinite number of digits and neither is the S4 period in
+    # this code). Imagine a perfect match.  Then, S and C would both be constant
+    # across the times used in the loop.  And that's bad because the regression
+    # already has a constant column (for Z0).  The lm() computation then gives
+    # NA values for coefficients, p value, etc. for the repeat.  (Luckily, it
+    # doesn't just say the matrix cannot be inverted and die!)  The approximate
+    # criterion is based on a test case in the context of the local machine
+    # epsilon.  I use a criterion of 0.01 because for "good" cases (and my
+    # 6-hour test file for drifter data) have C and S span of very nearly 2, but for "bad" cases, it is
+    # of order e-7 or so. Any dividing line would do, I think, but maybe for short records
+    # the span might not get to be -1 to +1 and so I am choosing 1e-2 as a criterion. This value
+    # might need to be revisited.
+    iBad <- NULL
+    icBad <- NULL
+    sdCriterion <- 1e-2
+    oceDebug(debug, vectorShow(sdCriterion))
+    #20230122 danS <- danC <- NULL
     for (i in 1:nc) {
-        oceDebug(debug, "setting ", i, "-th coefficient (name=", name[i], " freq=", freq[i], " cph)", "\n", sep="")
+        #20230122 oceDebug(debug+1, "setting ", i, "-th coefficient (name=", name[i], " period=", 1/freq[i], " h)", "\n", sep="")
         ft <- freq[i] * hour2pi
-        x[, 1 + 2*(i-1)] <- cos(ft)
-        x[, 2 + 2*(i-1)] <- sin(ft)
+        C <- cos(ft)
+        S <- sin(ft)
+        sdS <- sd(S)
+        sdC <- sd(C)
+        #20230122 danS <- c(danS, sdS) # FIXME: remove
+        #20230122 danC <- c(danC, sdC) # FIXME: remove
+        #20230122 oceDebug(debug+1, sprintf("    sdC %.4g; sdS %.4g\n", sdC, sdS))
+        # Find whether anything is uncomputable. We ignore Z0 because that is handled later.
+        if (name[i] != "Z0" && (sdS < sdCriterion || sdC < sdCriterion)) {
+            oceDebug(debug, "    ** uncomputable at ", name[i], " (period ", 1/freq[i], "h) **\n")
+            icBad <- c(icBad, 1 + 2 * (i - 1))
+            icBad <- c(icBad, 2 + 2 * (i - 1))
+            iBad <- c(iBad, i)
+        }
+        x[, 1 + 2 * (i-1)] <- C
+        x[, 2 + 2 * (i-1)] <- S
     }
     name2 <- matrix(rbind(paste(name, "_C", sep=""), paste(name, "_S", sep="")), nrow=length(name), ncol=2)
     dim(name2) <- c(2 * length(name), 1)
     colnames(x) <- name2
-    #model <- lm(elevation ~ x, na.action=na.exclude)
-    oceDebug(debug, "about to do regression\n")
+    #<< cat("The following should be omitted: ", vectorShow(name2[uncomputable], n=20))
+    #<< cat("Their indices are", vectorShow(uncomputable, n=20))
+    oceDebug(debug, "cleaning up 'x' matrix prior to doing regression\n")
+    # Remove problematic constutuents; see https://github.com/dankelley/oce/issues/2034
+    if (length(iBad)) {
+        message("Note: the sampling interval is too coarse to fit for constituents: ", paste(name[iBad], collapse=", "))
+        #20230122 browser()
+        #20230122 A<-colnames(x)
+        #20230122 B<-name2
+        #20230122 C<-name
+        indices <- indices[-iBad]
+        name <- name[-iBad]
+        freq <- freq[-iBad]
+        kmpr <- kmpr[-iBad]
+        nc <- nc - length(iBad)
+        oceDebug(debug, "Removing: ", paste(name2[icBad], collapse=", "))
+        x <- x[, -icBad]
+        name2 <- name2[-icBad]
+        #20230122 # A check with 6-h case (sandbox/dk/tidem/04_restrict_coefficients.R)
+        #20230122 print(A[!A%in%colnames(x)]) # should be S2_C S2_S S4_C S4_S
+        #20230122 print(B[!B%in%name2]) # should be S2_C S2_S S4_C S4_S
+        #20230122 print(C[!C%in%name]) # should be S2 S4
+    }
+    # Remove the sine() part of the Z0 constituent, which makes no sense for a constant.
     if ("Z0_S" %in% colnames(x)) {
         x <- x[, -which("Z0_S" == colnames(x))]
         oceDebug(debug, "model has Z0, so trimming the sin(freq*time) column\n")
     }
-    if (debug) {
-        cat("x[,1]:\n");print(x[,1])
-        cat("x[,2]:\n");print(x[,2])
-    }
+    oceDebug(debug, "about to do regression\n")
+    oceDebug(debug, vectorShow(colnames(x)))
     model <- regress(elevation ~ x - 1, na.action=na.exclude)
+    #>> browser()
     if (debug > 0) {
         cat("regression worked OK; the results are as follows:\n")
         print(summary(model))
     }
-    coef  <- model$coefficients
-    p.all <- if (4 == dim(summary(model)$coefficients)[2])
-        summary(model)$coefficients[, 4]
-    else
-        rep(NA, length=1+nc)
+    coef <- model$coefficients
+    p.all <- if (4L == ncol(summary(model)$coefficients)) {
+        summary(model)$coefficients[, 4L]
+    } else {
+        rep(NA, length=1L+nc)
+    }
     amplitude <- phase <- p <- vector("numeric", length=nc)
     oceDebug(debug, vectorShow(nc))
     oceDebug(debug, vectorShow(phase))
-    ## FIXME: should do offset/trend removal explicitly
-    ## amplitude[1] <- coef[1]
-    ## phase[1] <- 0
-    ## p[1] <- p.all[1]
     oceDebug(debug, vectorShow(name))
     ic <- 1
     for (i in seq_len(nc)) {
-        if (name[i] == "Z0") { # Z0 has Z0_C but no Z0_S (since zero is a degenerate regression variable)
+        # Z0 has Z0_C but no Z0_S (since zero is a degenerate regression variable)
+        if (name[i] == "Z0") {
             if (i != 1)
                 stop("Z0 should be at the start of the regression coefficients. Please report this to developer.")
             j <- which(tidedata$const$name==name[i])
@@ -1381,45 +1481,40 @@ tidem <- function(t, x, constituents, infer=NULL,
             amplitude[i] <- coef[ic]
             phase[i] <- 0
             p[i] <- p.all[ic]
-            oceDebug(debug, "processed coefs at i=", i, ", ic=", ic, ", name=", name[i], ", f=", vuf$f, ", angle adj=", (vuf$u+vuf$v)*360, ", amplitude=", amplitude[i], ", phase=", phase[i], ", p=", p[i], "\n", sep="")
-            ic <- ic + 1
+            oceDebug(debug, "processed coefs at i=", i, ", ic=", ic,
+                ", name=", name[i], ", f=", vuf$f, ", angle adj=", (vuf$u+vuf$v)*360,
+                ", amplitude=", amplitude[i], ", phase=", phase[i], ", p=", p[i], "\n", sep="")
+            ic <- ic + 1 # only skip forward 1 since Z0 takes 1 column (contrast below)
         } else {
             C <- coef[ic]              # coefficient on cos(t)
             S <- coef[ic+1]            # coefficient on sin(t)
             amplitude[i] <- sqrt(S^2 + C^2)
-            ## Calculate phase from the coefficients on sin() and cos().  Generally,
-            ##    cos(t - phase) == cos(phase)*cos(t) + sin(phase)*sin(t)
-            ## By the definition of the regression model, we have
-            ##    cos(t - phase) == c * cos(t) + s * sin(t)
-            ## and thus phase is defined by
-            ##    tan(phase) == s/c
+            # Calculate phase from the coefficients on sin() and cos().  Generally,
+            #    cos(t - phase) == cos(phase)*cos(t) + sin(phase)*sin(t)
+            # By the definition of the regression model, we have
+            #    cos(t - phase) == c * cos(t) + s * sin(t)
+            # and thus phase is defined by
+            #    tan(phase) == s/c
             phase[i] <- atan2(S, C)
-            ## Adjust amplitude phase, as in ~/src/foreman/tide12_r2.f:405
+            # Adjust amplitude phase, as in ~/src/foreman/tide12_r2.f:405
             j <- which(tidedata$const$name==name[i])
             vuf <- tidemVuf(tRef, j=j, latitude=latitude)
             amplitude[i] <- amplitude[i] / vuf$f
             p[i] <- 0.5 * (p.all[ic+1] + p.all[ic])
-            oceDebug(debug, "processed coefs at i=", i, ", ic=", ic, ", name=", name[i], ", S=", S, ", C=", C, ", f=", vuf$f, ", angle adj=", (vuf$u+vuf$v)*360, ", amplitude=", amplitude[i], ", phase=", phase[i], ", p=", p[i], "\n", sep="")
-            ic <- ic + 2
+            #<<cat("i=", i, ", ic=", ic, ", name='", name[i], "', p.all[ic]=",
+            #p.all[ic], ", p.all[ic+1]=", p.all[ic+1], ", we set p[i]=", p[i],
+            #" (the mean)\n", sep="")
+            oceDebug(debug, "processed coefs at i=", i, ", ic=", ic, ", name=", name[i],
+                ", S=", S, ", C=", C, ", f=", vuf$f, ", angle adj=", (vuf$u+vuf$v)*360, ",
+                amplitude=", amplitude[i], ", phase=", phase[i], ", p=", p[i], "\n", sep="")
+            ic <- ic + 2 # skip forward 2 since non-Z0 takes 2 columns (contrast above)
         }
     }
     oceDebug(debug, vectorShow(phase))
     phase <- phase * 180 / pi
     phase <- ifelse(phase < -360, 720 + phase, phase)
     phase <- ifelse(phase < 0, 360 + phase, phase)
-
-    ## FIXME: if 'inference calculation' is to be done, it should match
-    ##     ~/src/t_tide_v1.3beta/t_tide.m:468
-    ##     ~/src/foreman/tide12_r2.f:422
-
-    ##FTESTING if (FALSE) { # FIXME
-    ##FTESTING ## The regression gives us an intercept, which we call Z0
-    ##FTESTING indices <- c(1, indices) # the index for Z0 is 1
-    ##FTESTING name <- c("Z0", name)
-    ##FTESTING freq <- c(0, freq)
-    ##FTESTING }
-
-    ## Do Greenwich phase corerrection, if `infer` is TRUE
+    # Do Greenwich phase correction, if `infer` is TRUE
     C <- unlist(lapply(name, function(n) which(n == tidedata$const$name)))
     vuf <- tidemVuf(tRef, j=C, latitude=latitude)
     oceDebug(debug, vectorShow(freq))
@@ -1429,141 +1524,100 @@ tidem <- function(t, x, constituents, infer=NULL,
     phase <- phase + (vuf$v+vuf$u)*360
     phase <- ifelse(phase < 0, phase+360, phase)
     phase <- ifelse(phase > 360, phase-360, phase)
-
-    ## Handle (optional) inferred constituents. We know that
-    ## this list is well-formed because of extensive tests near
-    ## the start of this function.
+    # Handle (optional) inferred constituents. We know that
+    # this list is well-formed because of extensive tests near
+    # the start of this function.
     if (!is.null(infer)) {
         if (debug > 0) {
             cat("BEFORE inference:\n")
-            print(data.frame(name=name, freq=round(freq,6), amplitude=round(amplitude,4)))
+            print(data.frame(name=name, freq=round(freq, 6), amplitude=round(amplitude, 4)))
         }
         for (n in seq_along(infer$name)) {
             oceDebug(debug, "n=", n, "; handling inferred constituent ", infer$name[n], "\n")
             iname <- which(tc$name == infer$name[n])[1]
             oceDebug(debug, "infer$name[", n, "]='", infer$name[n], "' yields iname=", iname, "\n", sep="")
             oceDebug(debug, "iname=", iname, "\n")
-            ## NOTE: we know that infer$from has been fitted for, because we forced it to be,
-            ## irrespective of the Rayleight Criterion. Still, we test here, in case the code
-            ## gets changed later.
+            # NOTE: we know that infer$from has been fitted for, because we forced it to be,
+            # irrespective of the Rayleight Criterion. Still, we test here, in case the code
+            # gets changed later.
             if (infer$from[n] %in% name) {
                 ifrom <- which(name == infer$from[n])[1]
                 if (infer$name[n] %in% name) {
-                    ##message("name already in list")
+                    #message("name already in list")
                     iname <- which(name == infer$name[n])[1]
-                    ## Update, skipping 'indices', 'name' and 'freq', since they are already OK.
+                    # Update, skipping 'indices', 'name' and 'freq', since they are already OK.
                     amplitude[iname] <- infer$amp[n] * amplitude[ifrom]
                     phase[iname] <- phase[ifrom] - infer$phase[n]
                     p[iname] <- p[ifrom]
                     oceDebug(debug, "replace existing ", name[iname], " based on ", name[ifrom], " (", freq[ifrom], " cph)\n", sep="")
-                    warning("inferring '", infer$name[n], "' which is already included in the regression. Foreman says to skip it; unsure on what T_TIDE does\n")
+                    warning("inferring '", infer$name[n],
+                        "' which is already included in the regression. Foreman says to skip it; unsure on what T_TIDE does\n")
                 } else {
-                    ## We append new values at the end, knowing that they will get
-                    ## shifted back to their proper positions when we reorder the
-                    ## whole solution, after handling these inferences.
-                    ##
-                    ## The first step is to adjust the amp and phase of infer$from; this
-                    ## is done based on formulae in Foreman (1978) sec 2.3.4. It looks
-                    ## as though t_tide.m on and after about line 472 is doing a
-                    ## similar thing, although the numbers do not agree exactly,
-                    ## as shown in issue 1351, code 1351c.R.
-                    ##TTIDE ## below is some broken code. It was not working,
-                    ##TTIDE ## so I gave up and just coded in Foreman's equations
-                    ##TTIDE ## directly.
-                    ##TTIDE ## snarg=nobsu*pi*(fi(ii)   -fu(jref(ii)) )*dt;
-                    ##TTIDE ##message("T_TIDE")
-                    ##TTIDE tRangeHours <- diff(range(as.numeric(t))) / 3600
-                    ##TTIDE freqName <- tc$freq[which(infer$name[n] == tc$name)]
-                    ##TTIDE freqFrom <- tc$freq[which(infer$from[n] == tc$name)]
-                    ##TTIDE snarg <- pi * tRangeHours * (freqName - freqFrom)
-                    ##TTIDE ## t_tide.m:473 scarg=sin(snarg)./snarg;
-                    ##TTIDE scarg <- sin(snarg) / snarg
-                    ##TTIDE ##message("  snarg=", snarg, ",  scarg=", scarg)
-                    ##TTIDE ## t_tide.m 310
-                    ##TTIDE ## mu=length(fu); % # base frequencies
-                    ##TTIDE ## t_tide.m 311
-                    ##TTIDE ## mi=length(fi); % # inferred
-                    ##TTIDE ## t_tide.m:449
-                    ##TTIDE ## [v,u,f]=t_vuf(ltype,centraltime,[ju;jinf],lat);
-                    ##TTIDE ## t_tide.m:451
-                    ##TTIDE ## vu=(v+u)*360; % total phase correction (degrees)
-                    ##TTIDE ## t_tide.m:476
-                    ##TTIDE ## pearg=2*pi*(vu(mu+ii)-vu(jref(ii))+inf.ph(ii))/360;
-                    ##TTIDE if (debug > 1) {
-                    ##TTIDE     cat("vuf for 'name' follows (arg j=", which(tc$name==infer$name[n])[1], ")\n")
-                    ##TTIDE     print(tidemVuf(tRef, which(tc$name==infer$name[n])[1], latitude=latitude))
-                    ##TTIDE     cat("vuf for 'from' follows (arg j=", which(tc$name==infer$from[n])[1], ")\n")
-                    ##TTIDE     print(tidemVuf(tRef, which(tc$name==infer$name[n])[1], latitude=latitude))
-                    ##TTIDE }
-                    ##TTIDE vufName <- tidemVuf(tRef, which(tc$name==infer$name[n])[1], latitude=latitude)
-                    ##TTIDE vuName <- (vufName$v + vufName$u) * 360
-                    ##TTIDE vufFrom <- tidemVuf(tRef, which(tc$name==infer$from[n])[1], latitude=latitude)
-                    ##TTIDE vuFrom <- (vufFrom$v + vufFrom$u) * 360
-                    ##TTIDE pearg <- 2 * pi * (vuName - vuFrom + infer$phase[n]) / 360
-                    ##TTIDE ## t_tide.m:477
-                    ##TTIDE ## pcfac=inf.amprat(ii).*f(mu+ii)./f(jref(ii)).*exp(i*pearg);
-                    ##TTIDE ## Relates loosely to Foreman (1978 sec2.3.4 p28) "S"
-                    ##TTIDE pcfac <- infer$amp[n] * vufName$f / vufFrom$f * cos(pearg)
-                    ##TTIDE ## t_tide.m:478
-                    ##TTIDE ## pcorr=1+pcfac.*scarg;
-                    ##TTIDE pcorr <- 1 + pcfac * scarg
-                    ##TTIDE ##message("  pearg=", pearg, ", pcfac=", pcfac)
-                    ##TTIDE ##message("  pcorr=", pcorr, " (should divide infer amp by this)")
-                    ##TTIDE ##message("  new amp for (", infer$from[n], ") might be=", pcorr*amplitude[ifrom])
-                    ##
-                    ## Foreman (1978) sec 2.3.4.
-                    ## Notation: suffices "1" and "2" refer to "from" and "name" here.
+                    # We append new values at the end, knowing that they will get
+                    # shifted back to their proper positions when we reorder the
+                    # whole solution, after handling these inferences.
+                    #
+                    # The first step is to adjust the amp and phase of infer$from; this
+                    # is done based on formulae in Foreman (1978) sec 2.3.4. It looks
+                    # as though t_tide.m on and after about line 472 is doing a
+                    # similar thing, although the numbers do not agree exactly,
+                    # as shown in issue 1351, code 1351c.R.
+                    #
+                    # Foreman (1978) sec 2.3.4.
+                    # Notation: suffices "1" and "2" refer to "from" and "name" here.
                     i1 <- which(tc$name==infer$from[n])[1]
                     i2 <- which(tc$name==infer$name[n])[1]
-                    oceDebug(1+debug, "tRef=", format(tRef, "%Y-%m-%d %H:%M:%S"),
-                             ", i1=", i1, ", i2=", i2, ", lat=", latitude, "\n")
+                    oceDebug(debug, "tRef=", format(tRef, "%Y-%m-%d %H:%M:%S"),
+                        ", i1=", i1, ", i2=", i2, ", lat=", latitude, "\n")
                     vuf12 <- tidemVuf(tRef, c(i1, i2), latitude=latitude)
                     #vuf2 <- tidemVuf(tRef, i2, latitude=latitude)
                     f1 <- vuf12$f[1]
                     f2 <- vuf12$f[2]
-                    oceDebug(1+debug, "f1=", f1, ", f2=", f2, "\n")
-                    ## FIXME: what is unit of u and v? t_tide.m:482 suggests it is degrees
-                    ## Foreman's tide12_r2.f:399 suggests U and V are in cycles,
-                    ## and this is consistent with Pawlowicz's t_tide.m:451
-                    ## We convert vu1 and vu2 to be in degrees, as t_tide.m does
+                    oceDebug(debug, "f1=", f1, ", f2=", f2, "\n")
+                    # FIXME: what is unit of u and v? t_tide.m:482 suggests it is degrees
+                    # Foreman's tide12_r2.f:399 suggests U and V are in cycles,
+                    # and this is consistent with Pawlowicz's t_tide.m:451
+                    # We convert vu1 and vu2 to be in degrees, as t_tide.m does
                     vu1 <- (vuf12$v[1] + vuf12$u[1]) * 360
                     vu2 <- (vuf12$v[2] + vuf12$u[2]) * 360
                     oceDebug(debug, "vu1=", vu1, ", vu2=", vu2, "\n")
                     sigma1 <- tc$freq[i1]
                     sigma2 <- tc$freq[i2]
                     oceDebug(debug, "sigma1=", sigma1, ", sigma2=", sigma2, "\n")
-                    ## tmp is pi*N*(sigma2-sigma1) in Foreman
+                    # tmp is pi*N*(sigma2-sigma1) in Foreman
                     tmp <- pi * interval * (sigma2 - sigma1)
                     r12 <- infer$amp[n]
-                    ## FIXME: sign for Foreman?
+                    # FIXME: sign for Foreman?
                     zeta <- infer$phase[n]
-                    S <- r12 * (f2/f1) * sin(tmp) * sin(rpd*(vu2-vu1+zeta)) / tmp
-                    C <- 1 + r12 * (f2/f1) * sin(tmp) * cos(rpd*(vu2-vu1+zeta)) / tmp
+                    S <- r12 * (f2/f1) * sin(tmp) * sin(rpd * (vu2-vu1+zeta)) / tmp
+                    C <- 1 + r12 * (f2/f1) * sin(tmp) * cos(rpd * (vu2-vu1+zeta)) / tmp
                     oceDebug(debug, "tmp=", tmp, ", S=", S, ", C=", C, ", sqrt(S^2+C^2)=", sqrt(S^2+C^2), "\n")
-                    oceDebug(1+debug, infer$from[n], "amplitude, old=", amplitude[ifrom], ", new=", amplitude[ifrom]/sqrt(S^2+C^2), "\n")
+                    oceDebug(debug, infer$from[n], "amplitude, old=", amplitude[ifrom], ", new=", amplitude[ifrom]/sqrt(S^2+C^2), "\n")
                     amplitude[ifrom] <- amplitude[ifrom] / sqrt(S^2+C^2)
-                    oceDebug(1+debug, infer$from[n], "phase, old=", phase[ifrom], ", new=", phase[ifrom]+atan2(S, C) / rpd, "\n")
+                    oceDebug(debug, infer$from[n], "phase, old=", phase[ifrom], ", new=", phase[ifrom]+atan2(S, C) / rpd, "\n")
                     phase[ifrom] <- phase[ifrom] + atan2(S, C) / rpd
-                    ## End of Foreman 1978 inference calculation. Now we can define 'name' i.t.o. 'from'
+                    # End of Foreman 1978 inference calculation. Now we can define 'name' i.t.o. 'from'
                     iname <- which(tc$name == infer$name[n])[1]
-                    oceDebug(1+debug, "Below is inference for ", infer$name[n], " (index=", iname, ")\n")
+                    oceDebug(debug, "Below is inference for ", infer$name[n], " (index=", iname, ")\n")
                     indices <- c(indices, iname)
                     name <- c(name, infer$name[n])
                     freq <- c(freq, tc$freq[iname])
                     amplitudeInferred <- infer$amp[n] * amplitude[ifrom]
                     phaseInferred <- phase[ifrom] - infer$phase[n]
-                    oceDebug(1+debug, "  ", infer$name[n], "inferred amplitude=", amplitudeInferred, "\n")
-                    oceDebug(1+debug, "  ", infer$name[n], "inferred phase=", phaseInferred, "\n")
+                    oceDebug(debug, "  ", infer$name[n], "inferred amplitude=", amplitudeInferred, "\n")
+                    oceDebug(debug, "  ", infer$name[n], "inferred phase=", phaseInferred, "\n")
                     amplitude <- c(amplitude, amplitudeInferred)
                     phase <- c(phase, phaseInferred)
                     p <- c(p, p[ifrom])
-                    oceDebug(1+debug, "  create ", infer$name[n], " (index=", iname, ", ", tc$freq[iname], " cph) based on ", name[ifrom], " (index ", ifrom, ", ", freq[ifrom], " cph)\n", sep="")
+                    oceDebug(debug, "  create ", infer$name[n], " (index=", iname, ", ",
+                        tc$freq[iname], " cph) based on ", name[ifrom],
+                        " (index ", ifrom, ", ", freq[ifrom], " cph)\n", sep="")
                 }
             } else {
                 stop("Internal error (please report): cannot infer ", infer$name[n], " from ", infer$from[n], " because the latter was not computed")
             }
         }
-        ## reorder by original position in tc
+        # reorder by original position in tc
         o <- order(indices)
         indices <- indices[o]
         stopifnot(length(o)==length(name))
@@ -1579,20 +1633,21 @@ tidem <- function(t, x, constituents, infer=NULL,
         rm(o)
         if (debug > 0) {
             cat("AFTER inference\n")
-            print(data.frame(name=name, freq=round(freq,5), amplitude=round(amplitude,4)))
+            print(data.frame(name=name, freq=round(freq, 5), amplitude=round(amplitude, 4)))
         }
     }
     phase <- phase %% 360
-    res <- new('tidem')
+    res <- new("tidem")
+    o <- order(freq)
     res@data <- list(model=model,
-                      call=cl,
-                      tRef=tRef,
-                      const=indices,
-                      name=name,
-                      freq=freq,
-                      amplitude=amplitude,
-                      phase=phase,
-                      p=p)
+        call=cl,
+        tRef=tRef,
+        const=indices[o],
+        name=name[o],
+        freq=freq[o],
+        amplitude=amplitude[o],
+        phase=phase[o],
+        p=p[o])
     res@metadata$rc <- rc
     res@metadata$version <- 2
     res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
@@ -1635,7 +1690,7 @@ tidem <- function(t, x, constituents, infer=NULL,
 #' # 2. prediction at specified times
 #' data(sealevel)
 #' m <- tidem(sealevel)
-#' ## Check fit over 2 days (interpolating to finer timescale)
+#' # Check fit over 2 days (interpolating to finer timescale)
 #' look <- 1:48
 #' time <- sealevel[["time"]]
 #' elevation <- sealevel[["elevation"]]
@@ -1664,7 +1719,7 @@ predict.tidem <- function(object, newdata, ...)
             stop("must supply newdata because object was created with as.tidem()")
         hour2pi <- 2 * pi * (as.numeric(newdata) - as.numeric(object[["tRef"]])) / 3600
         oceDebug(debug, vectorShow(hour2pi))
-        ## message("head(hour2pi): ", paste(head(hour2pi), collapse=" "))
+        # message("head(hour2pi): ", paste(head(hour2pi), collapse=" "))
         nc <- length(object@data$name)
         res <- rep(0, length(hour2pi))
         for (i in seq_len(nc)) {
@@ -1689,7 +1744,7 @@ predict.tidem <- function(object, newdata, ...)
             for (i in 1:nc) {
                 omega.t <- freq[i] * hour2pi
                 x[, 2*i-1] <- cos(omega.t)
-                x[, 2*i  ] <- sin(omega.t)
+                x[, 2*i] <- sin(omega.t)
             }
             colnames(x) <- matrix(rbind(paste(name, "_C", sep=""), paste(name, "_S", sep="")), nrow=length(name), ncol=2)
             if ("Z0_S" %in% colnames(x)) {
@@ -1702,8 +1757,9 @@ predict.tidem <- function(object, newdata, ...)
             res <- as.numeric(predict(object@data$model, ...))
         }
     } else {
-        if (!("version" %in% names(object@metadata)))
+        if (!("version" %in% names(object@metadata))) {
             warning("prediction is being made based on an old object; it may be wrong\n")
+        }
         res <- as.numeric(predict(object@data$model, ...))
     }
     oceDebug(debug, "} # predict.tidem()\n", sep="", unindent=1)
@@ -1806,14 +1862,14 @@ predict.tidem <- function(object, newdata, ...)
 #'
 #' @examples
 #'\dontrun{
-#' ## needs WebTide at the system level
+#' # needs WebTide at the system level
 #' library(oce)
-#' ## 1. prediction at Halifax NS
+#' # 1. prediction at Halifax NS
 #' longitude <- -63.57
 #' latitude <- 44.65
 #' prediction <- webtide("predict", longitude=longitude, latitude=latitude)
 #' mtext(sprintf("prediction at %fN %fE", latitude, longitude), line=0.75, side=3)
-#' ## 2. map
+#' # 2. map
 #' webtide(lon=-63.57,lat=44.65,xlim=c(-64,-63),ylim=c(43.0,46))
 #'}
 #'
@@ -1835,8 +1891,7 @@ webtide <- function(action=c("map", "predict"),
     longitudeGiven <- !missing(longitude)
     latitudeGiven <- !missing(latitude)
     path <- paste(basedir, "/data/", region, sep="")
-
-    ## 2016-02-03: it seems that there are several possibilities for this filename.
+    # 2016-02-03: it seems that there are several possibilities for this filename.
     suffices <- c(".nod", "ll.nod", "_ll.nod")
     nodFiles <- paste(region, suffices, sep="")
     triangles <- NULL
@@ -1856,8 +1911,8 @@ webtide <- function(action=c("map", "predict"),
             asp <- 1 / cos(rpd*mean(range(triangles$latitude, na.rm=TRUE)))
             par(mfrow=c(1, 1), mar=c(3, 3, 2, 1), mgp=c(2, 0.7, 0))
             plot(triangles$longitude, triangles$latitude, pch=2, cex=1/4, lwd=1/8,
-                 asp=asp, xlab="", ylab="", ...)
-            ## Try for a coastline of well-suite resolution, if we have ocedata installed.
+                asp=asp, xlab="", ylab="", ...)
+            # Try for a coastline of well-suite resolution, if we have ocedata installed.
             usr <- par("usr")
             bestcoastline <- coastlineBest(lonRange=usr[1:2], latRange=usr[3:4], debug=debug-1)
             oceDebug(debug, "coastlineBest() suggests using", bestcoastline, "as the coastline\n")
@@ -1875,8 +1930,8 @@ webtide <- function(action=c("map", "predict"),
                     coastlineWorld <- get("coastlineWorld")
                 }
             }
-            polygon(coastlineWorld[['longitude']], coastlineWorld[['latitude']], col="tan")
-            ## use lon and lat, if node not given
+            polygon(coastlineWorld[["longitude"]], coastlineWorld[["latitude"]], col="tan")
+            # use lon and lat, if node not given
             if (!nodeGiven && longitudeGiven && latitudeGiven) {
                 closest <- which.min(geodDist(triangles$longitude, triangles$latitude, longitude, latitude))
                 node <- triangles$triangle[closest]
@@ -1894,9 +1949,9 @@ webtide <- function(action=c("map", "predict"),
                     node <- triangles$triangle[node]
                     longitude <- triangles$longitude[node]
                     latitude <- triangles$latitude[node]
-                    points(longitude, latitude, pch=20, cex=2, col='blue')
-                    legend("topleft", pch=20, pt.cex=2, cex=3/4, col='blue', bg='white',
-                           legend=sprintf("node %.0f %.3fN %.3fE", node, latitude, longitude))
+                    points(longitude, latitude, pch=20, cex=2, col="blue")
+                    legend("topleft", pch=20, pt.cex=2, cex=3/4, col="blue", bg="white",
+                        legend=sprintf("node %.0f %.3fN %.3fE", node, latitude, longitude))
                 }
             }
             oceDebug(debug, "} # webtide()\n", sep="", unindent=1, style="bold")
@@ -1920,7 +1975,7 @@ webtide <- function(action=c("map", "predict"),
             longitude <- triangles$longitude[node]
         }
         oceDebug(debug, latitude, "N ", longitude, "E -- use node ", node,
-                 " at ", triangles$latitude[node], "N ", triangles$longitude[node], "E\n", sep="")
+            " at ", triangles$latitude[node], "N ", triangles$longitude[node], "E\n", sep="")
         constituentse <- dir(path=path, pattern="*.s2c")
         constituentsuv <- dir(path=path, pattern="*.v2c")
         nconstituents <- length(constituentse)
@@ -1931,12 +1986,12 @@ webtide <- function(action=c("map", "predict"),
             twoLetter <- substr(constituentse[i], 1, 2)
             C <- which(twoLetter == tidedata$const$name)
             period[i] <- 1 / tidedata$const$freq[C]
-            ## Elevation file contains one entry per node, starting with e.g.:
-            ##tri
-            ## period 23.934470 (hours) first harmonic
-            ##260.000000 (days)
-            ##1 0.191244 223.820954
-            ##2 0.188446 223.141200
+            # Elevation file contains one entry per node, starting with e.g.:
+            #tri
+            # period 23.934470 (hours) first harmonic
+            #260.000000 (days)
+            #1 0.191244 223.820954
+            #2 0.188446 223.141200
             coneFile <- paste(path, constituentse[i], sep="/")
             cone <- read.table(coneFile, skip=3, encoding="latin1")[node, ]
             ampe[i] <- cone[[2]]
@@ -1948,49 +2003,48 @@ webtide <- function(action=c("map", "predict"),
             ampv[i] <- conuv[[4]]
             phasev[i] <- conuv[[5]]
             oceDebug(debug, coneFile, sprintf("%s ", twoLetter),
-                     sprintf("%4.2fh", period[i]),
-                     sprintf(" (node %d) ", node),
-                     sprintf("%4.4fm ", ampe[i]), sprintf("%3.3fdeg", phasee[i]), "\n", sep="")
+                sprintf("%4.2fh", period[i]),
+                sprintf(" (node %d) ", node),
+                sprintf("%4.4fm ", ampe[i]), sprintf("%3.3fdeg", phasee[i]), "\n", sep="")
         }
         elevation <- u <- v <- rep(0, length(time))
-        ## NOTE: tref is the *central time* for tidem()
+        # NOTE: tref is the *central time* for tidem()
         tRef <- ISOdate(1899, 12, 31, 12, 0, 0, tz="UTC")
         h <- (as.numeric(time) - as.numeric(tRef)) / 3600
         tRef <- 3600 * round(mean(as.numeric(time)) / 3600)
-
         for (i in 1:nconstituents) {
             twoLetter <- substr(constituentse[i], 1, 2)
             C <- which(twoLetter == tidedata$const$name)
             vuf <- tidemVuf(tRef, j=C, latitude=latitude)
             phaseOffset <- (vuf$u + vuf$v) * 360
-            ## NOTE: phase is *subtracted* here, but *added* in tidem()
-            elevation <- elevation + ampe[i] * cos( (360 * h / period[i] - phasee[i] + phaseOffset) * rpd)
-            ##> lines(time, elevation, col=i,lwd=3) ## Debug
-            u <- u + ampu[i] * cos( (360 * h / period[i] - phaseu[i] + phaseOffset) * rpd)
-            v <- v + ampv[i] * cos( (360 * h / period[i] - phasev[i] + phaseOffset) * rpd)
+            # NOTE: phase is *subtracted* here, but *added* in tidem()
+            elevation <- elevation + ampe[i] * cos((360 * h / period[i] - phasee[i] + phaseOffset) * rpd)
+            #> lines(time, elevation, col=i,lwd=3) # Debug
+            u <- u + ampu[i] * cos((360 * h / period[i] - phaseu[i] + phaseOffset) * rpd)
+            v <- v + ampv[i] * cos((360 * h / period[i] - phasev[i] + phaseOffset) * rpd)
             oceDebug(debug, sprintf("%s ", twoLetter),
-                     sprintf("%4.2fh ", period[i]),
-                     sprintf("%4.4fm ", ampe[i]), sprintf("%3.3fdeg", phasee[i]), "\n", sep="")
+                sprintf("%4.2fh ", period[i]),
+                sprintf("%4.4fm ", ampe[i]), sprintf("%3.3fdeg", phasee[i]), "\n", sep="")
         }
         if (plot) {
             par(mfrow=c(3, 1))
-            oce.plot.ts(time, elevation, type='l', xlab="", ylab=resizableLabel("elevation"),
-                        main=sprintf("node %.0f %.3fN %.3fE", node, latitude, longitude),
-                        tformat=tformat)
-            abline(h=0, lty='dotted', col='gray')
-            oce.plot.ts(time, u, type='l', xlab="", ylab=resizableLabel("u"),
-                        drawTimeRange=FALSE, tformat=tformat)
-            abline(h=0, lty='dotted', col='gray')
-            oce.plot.ts(time, v, type='l', xlab="", ylab=resizableLabel("v"),
-                        drawTimeRange=FALSE, tformat=tformat)
-            abline(h=0, lty='dotted', col='gray')
+            oce.plot.ts(time, elevation, type="l", xlab="", ylab=resizableLabel("elevation"),
+                main=sprintf("node %.0f %.3fN %.3fE", node, latitude, longitude),
+                tformat=tformat)
+            abline(h=0, lty="dotted", col="gray")
+            oce.plot.ts(time, u, type="l", xlab="", ylab=resizableLabel("u"),
+                drawTimeRange=FALSE, tformat=tformat)
+            abline(h=0, lty="dotted", col="gray")
+            oce.plot.ts(time, v, type="l", xlab="", ylab=resizableLabel("v"),
+                drawTimeRange=FALSE, tformat=tformat)
+            abline(h=0, lty="dotted", col="gray")
             oceDebug(debug, "} # webtide()\n", sep="", unindent=1, style="bold")
             return(invisible(list(time=time, elevation=elevation, u=u, v=v,
-                                  node=node, basedir=basedir, region=region)))
+                node=node, basedir=basedir, region=region)))
         } else {
             oceDebug(debug, "} # webtide()\n", sep="", unindent=1, style="bold")
             return(list(time=time, elevation=elevation, u=u, v=v,
-                        node=node, basedir=basedir, region=region))
+                node=node, basedir=basedir, region=region))
         }
     }
 }

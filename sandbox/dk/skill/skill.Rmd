@@ -1,0 +1,82 @@
+---
+title: "Wilmott's Skill Parameter"
+date: "`r Sys.Date()`"
+output: pdf_document
+---
+
+# Method 1
+
+In a context of of comparing oceanic measurements model predictions, Shan and Sheng (2022) use a skill parameter (their equation 3), citing Zhong and Li (2006) as a source. The latter cite Warner et al. (2005), who in turn cites Wilmott (1981).  No citation is provided by Wilmott (1981) for the formula, and the context of that paper suggests that this is, indeed, the original source. Accordingly, the notation of Wilmott (1981) will be used, writing the skill measure as
+
+\begin{equation}
+d = 1 - \frac{\sum_{i=1}^N\left(P_i-O_i\right)^2}{\sum_{i=1}^N \left( |P_i'| + |O_i'|\right)^2}
+\end {equation}
+
+where $P_i$ is the $i$-th prediction, $O_i$ is the $i$-th observation,
+$P_i'=P_i-\overline{O}$, $O_i'=O_i-\overline{O}$, and $\overline{O}=N^{-1}\sum_{i=1}^n O_i$.
+
+# Method 2
+
+Thompson et al. (2003) suggest a skill measure defined as
+\begin{equation}
+\gamma^2 = \frac{var(O-P}{var(O)}
+\end{equation}
+where $var$ is the variance.
+
+
+
+# Code
+
+```{r}
+method1 <- function(O, P)
+{
+    Obar <- mean(O, na.rm=TRUE)
+    Oprime <- O - Obar
+    Pprime <- P - Obar
+    ssqr <- function(x) sum(x^2, na.rm=TRUE)
+    1 - ssqr(P-O) / ssqr(abs(Pprime) + abs(Oprime))
+}
+
+method2 <- function(O, P)
+{
+    var <- function(x) sd(x)^2
+    var(O-P) / var(O)
+}
+```
+
+# Demonstration
+
+```{r}
+n <- 100
+i <- seq_len(n)
+P <- 1 + exp(-i/n) * sin(2 * pi * i / (n/3))
+O <- P + rnorm(n, sd=0.1)
+plot(i, O, type="p", cex=0.5, ylim=range(c(O, P)),
+    xlab="time", ylab="Obsservation=black, Prediction=red")
+lines(i, P, col=2)
+mtext(sprintf("method 1 skill=%.2f; method 2 gamma^2=%.2f", method1(O, P), method2(O, P)))
+```
+
+# References
+
+Shan, Shiliang, and Jinyu Sheng. “Numerical Study of Topographic Effects on
+Wind-Driven Coastal Upwelling on the Scotian Shelf.” Journal of Marine Science
+and Engineering 10, no. 4 (April 3, 2022): 497.
+https: //doi.org/10.3390/jmse10040497.
+
+Thompson, Keith R. “Prediction of Surface Currents and Drifter Trajectories on the Inner Scotian Shelf.”
+Journal of Geophysical Research 108, no. C9 (2003): 3287.
+https://doi.org/10.1029/2001JC001119.
+
+Warner, John C. “Numerical Modeling of an Estuary: A Comprehensive Skill
+Assessment.” Journal of Geophysical Research 110, no. C5 (2005): C05001.
+https://doi.org/10.1029/2004JC002691.
+
+Willmott, Cort J. “On the Validation of Models.” Physical Geography 2, no. 2
+(July 1981): 184–94.
+https://doi.org/10.1080/02723646.1981.10642213.
+
+Zhong, L.; Li, M. Tidal Energy Fluxes and Dissipation in the Chesapeake Bay.
+Cont. Shelf Res. 2006, 26, 752–770.
+https://sci-hub.se/10.1016/j.csr.2006.02.006
+

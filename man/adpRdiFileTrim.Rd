@@ -43,6 +43,7 @@ Other things related to adp data:
 \code{\link{adpFlagPastBoundary}()},
 \code{\link{adp_rdi.000}},
 \code{\link{adp}},
+\code{\link{applyMagneticDeclination,adp-method}},
 \code{\link{as.adp}()},
 \code{\link{beamName}()},
 \code{\link{beamToXyzAdpAD2CP}()},
@@ -79,6 +80,7 @@ Other things related to adp data:
 
 Other functions that trim data files: 
 \code{\link{adpAd2cpFileTrim}()},
+\code{\link{advSontekAdrFileTrim}()},
 \code{\link{oceFileTrim}()}
 }
 \author{

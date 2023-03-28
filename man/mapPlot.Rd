@@ -371,7 +371,7 @@ those used in the examples.
 \section{Changes}{
 
 \itemize{
-\item 2020-12-24: complete switch from \CRANpkg{rgdal} to \CRANpkg{sf},
+\item 2020-12-24: complete switch from \code{rgdal} to \CRANpkg{sf},
 removing the testing scheme created on 2020-08-03.
 \item 2020-08-03: added support for the \code{eqearth} projection (like \code{robin} but
 an equal-area method).
@@ -380,7 +380,7 @@ and \code{rhealpix} projections, which caused errors with the
 \CRANpkg{sf} package.  (This is not a practical loss, since these
 interrupted projections were handled badly by \code{mapPlot()}
 in any case.)
-\item 2020-08-03: switch from \CRANpkg{rgdal} to \CRANpkg{sf} for
+\item 2020-08-03: switch from \code{rgdal} to \CRANpkg{sf} for
 calculations related to map projection, owing to some
 changes in the former package that broke \CRANpkg{oce}
 code.  (To catch problems, \CRANpkg{oce} was set up to use
@@ -388,14 +388,14 @@ both packages temporarily, issuing warnings if the results differed
 by more than 1 metre in easting or northing values.)
 \item 2019-03-20: the test code provided the \dQuote{Examples} section
 is disabled on i386/windows machines, on which the requisite
-\CRANpkg{rgdal} package continues to fail on common projections.
+\code{rgdal} package continues to fail on common projections.
 \item 2017-11-19: \code{imw_p} removed, because it has problems doing
 inverse calculations.
 This is a also problem in the standalone PROJ.4 application version
 4.9.3, downloaded and built on OSX.
 See \verb{https://github.com/dankelley/oce/issues/1319} for details.
 \item 2017-11-17: \code{lsat} removed, because it does not work in
-\CRANpkg{rgdal} or in the latest standalone PROJ.4 application.
+\code{rgdal} or in the latest standalone PROJ.4 application.
 This is a also problem in the standalone PROJ.4 application version
 4.9.3, downloaded and built on OSX.
 See \verb{https://github.com/dankelley/oce/issues/1337} for details.
@@ -499,8 +499,6 @@ Professional Paper: 1395
 Open Source Geospatial Foundation, n.d.
 \verb{https://proj.org}.
 \item Bivand, Roger (2020) Why have CRS, projections and transformations changed?
-Vignette for rgdal 1.5-13
-\verb{https://rgdal.r-forge.r-project.org/articles/CRS_projections_transformations.html}
 \item A gallery of map plots is provided at
 \verb{https://dankelley.github.io/r/2020/08/02/oce-proj.html}
 \item Snyder, John Parr.

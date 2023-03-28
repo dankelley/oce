@@ -22,8 +22,8 @@ pressures from 0dbar to the rounded maximum pressure are used, incrementing by
 these pressures.}
 
 \item{method}{the method to be used for calculating decimated values.  This may
-be a function or a string naming a built-in method.  The built-in methods are
-as follows.
+be a string specifying the method, or a function. In the string case, the
+possibilities are as follows.
 \itemize{
 \item \code{"boxcar"} (based on a local average)
 \item \code{"approx"} (based on linear
@@ -32,7 +32,7 @@ with the \code{rule} argument specified here)
 \item \code{"approxML"} as \code{"approx"},
 except that a mixed layer is assumed to apply above the top data value; this
 is done by setting the \code{yleft} argument to \code{\link[=approx]{approx()}}, and
-by calling that function with \verb{rule=c(2,1))}
+by calling that function with \verb{rule=c(2, 1))}
 \item \code{"lm"} (based on local
 regression, with \code{e} setting the size of the local region);
 \item \code{"rr"} for the Reiniger and Ross method, carried out with \code{\link[=oce.approx]{oce.approx()}};
@@ -40,10 +40,11 @@ regression, with \code{e} setting the size of the local region);
 }
 
 On the other hand, if \code{method} is a function, then it must take
-three arguments, the first being pressure, the second being an arbitrary
-variable in another column of the data, and the third being a vector of target
-pressures at which the calculation is carried out, and the return value must be
-a vector.  See \dQuote{Examples}.}
+two arguments, named \code{data} and \code{parameters}. The first is set to \code{x@data} by
+\code{ctdTrim()}. The second is passed directly to the user's function (see
+Example 2). The return value from the function must be a logical vector of
+the same length as the \code{pressure} data, with TRUE values meaning to keep the
+corresponding entries of the \code{data} slot.}
 
 \item{rule}{an integer that is passed to \code{\link[=approx]{approx()}}, in the
 case where \code{method} is \code{"approx"}. Note that the default value
@@ -139,6 +140,7 @@ Other things related to ctd data:
 \code{\link{cnvName2oceName}()},
 \code{\link{ctd-class}},
 \code{\link{ctd.cnv}},
+\code{\link{ctdFindProfilesRBR}()},
 \code{\link{ctdFindProfiles}()},
 \code{\link{ctdRaw}},
 \code{\link{ctdRepair}()},

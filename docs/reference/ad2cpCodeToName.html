@@ -19,7 +19,7 @@ read.adp.ad2cp() uses the present function as it analyses AD2CP files.'><!-- mat
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-10</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-11</span>
       </span>
     </div>
 
@@ -82,7 +82,7 @@ hexadecimal (in R, "raw") code to indicate the nature of each data chunk, and
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">ad2cpCodeToName</span><span class="op">(</span>code <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">ad2cpCodeToName</span><span class="op">(</span>code <span class="op">=</span> <span class="cn">NULL</span>, prefix <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -90,6 +90,11 @@ hexadecimal (in R, "raw") code to indicate the nature of each data chunk, and
     <dl><dt>code</dt>
 <dd><p>a <a href="https://rdrr.io/r/base/raw.html" class="external-link">raw</a> (or corresponding integer) vector indicating the IDs of
 interest, or NULL to get a summary of possible values.</p></dd>
+
+
+<dt>prefix</dt>
+<dd><p>logical value indicating whether to show the raw value as a
+prefix (e.g. <code>"0x1c=echosounder"</code> as opposed to <code>"echosounder"</code>).</p></dd>
 
 </dl></div>
     <div id="value">
@@ -102,7 +107,7 @@ with the raw form of the code linked with the name, as in the example.</p>
     </div>
     <div id="details">
     <h2>Details</h2>
-    <p>The mapping from code (hex or decimal) to oce name is as follows.</p><table class="table table"><tr><td>code (raw)</td><td>code (integer)</td><td>oce name</td></tr><tr><td>----------</td><td>--------------</td><td>-----------------</td></tr><tr><td><code>0x15</code></td><td>21</td><td><code>burst</code></td></tr><tr><td><code>0x16</code></td><td>22</td><td><code>average</code></td></tr><tr><td><code>0x17</code></td><td>23</td><td><code>bottomTrack</code></td></tr><tr><td><code>0x18</code></td><td>24</td><td><code>interleavedBurst</code></td></tr><tr><td><code>0x1a</code></td><td>26</td><td><code>burstAltimeterRaw</code></td></tr><tr><td><code>0x1b</code></td><td>27</td><td><code>DVLBottomTrack</code></td></tr><tr><td><code>0x1c</code></td><td>28</td><td><code>echosounder</code></td></tr><tr><td><code>0x1d</code></td><td>29</td><td><code>DVLWaterTrack</code></td></tr><tr><td><code>0x1e</code></td><td>30</td><td><code>altimeter</code></td></tr><tr><td><code>0x1f</code></td><td>31</td><td><code>averageAltimeter</code></td></tr><tr><td><code>0xa0</code></td><td>160</td><td><code>text</code></td></tr></table></div>
+    <p>The mapping from code (hex or decimal) to oce name is as follows.</p><table class="table table"><tr><td>code (raw)</td><td>code (integer)</td><td>oce name</td></tr><tr><td>----------</td><td>--------------</td><td>-----------------</td></tr><tr><td><code>0x15</code></td><td>21</td><td><code>burst</code></td></tr><tr><td><code>0x16</code></td><td>22</td><td><code>average</code></td></tr><tr><td><code>0x17</code></td><td>23</td><td><code>bottomTrack</code></td></tr><tr><td><code>0x18</code></td><td>24</td><td><code>interleavedBurst</code></td></tr><tr><td><code>0x1a</code></td><td>26</td><td><code>burstAltimeterRaw</code></td></tr><tr><td><code>0x1b</code></td><td>27</td><td><code>DVLBottomTrack</code></td></tr><tr><td><code>0x1c</code></td><td>28</td><td><code>echosounder</code></td></tr><tr><td><code>0x1d</code></td><td>29</td><td><code>DVLWaterTrack</code></td></tr><tr><td><code>0x1e</code></td><td>30</td><td><code>altimeter</code></td></tr><tr><td><code>0x1f</code></td><td>31</td><td><code>averageAltimeter</code></td></tr><tr><td><code>0x23</code></td><td>35</td><td><code>echosounderRaw</code></td></tr><tr><td><code>0xa0</code></td><td>160</td><td><code>text</code></td></tr></table></div>
     <div id="references">
     <h2>References</h2>
     <p>Nortek AS. “Signature Integration 55|250|500|1000kHz.” Nortek AS,
@@ -122,6 +127,7 @@ March 31, 2022.</p>
 <code><a href="adpRdiFileTrim.html">adpRdiFileTrim</a>()</code>,
 <code><a href="adp_rdi.000.html">adp_rdi.000</a></code>,
 <code><a href="adp.html">adp</a></code>,
+<code><a href="applyMagneticDeclination-adp-method.html">applyMagneticDeclination,adp-method</a></code>,
 <code><a href="as.adp.html">as.adp</a>()</code>,
 <code><a href="beamName.html">beamName</a>()</code>,
 <code><a href="beamToXyzAdpAD2CP.html">beamToXyzAdpAD2CP</a>()</code>,
@@ -184,7 +190,7 @@ March 31, 2022.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>

@@ -64,7 +64,7 @@ velocityStatistics <- function(x, control, ...)
     uMean <- mean(u, ...)
     vMean <- mean(v, ...)
     list(ellipseMajor=ellipseMajor, ellipseMinor=ellipseMinor, ellipseAngle=ellipseAngle,
-         uMean=uMean, vMean=vMean)
+        uMean=uMean, vMean=vMean)
 }
 
 
@@ -87,12 +87,13 @@ velocityStatistics <- function(x, control, ...)
 #' @family things related to adv data
 beamToXyz <- function(x, ...)
 {
-    if (inherits(x, "adp"))
+    if (inherits(x, "adp")) {
         beamToXyzAdp(x, ...)
-    else if (inherits(x, "adv"))
+    } else if (inherits(x, "adv")) {
         beamToXyzAdv(x, ...)
-    else
+    } else {
         stop("class of object must inherit from either 'adv' or 'adp'")
+    }
 }
 
 #' Convert Acoustic-Doppler Data From xyz to enu Coordinates
@@ -110,12 +111,13 @@ beamToXyz <- function(x, ...)
 #' @family things related to adv data
 xyzToEnu <- function(x, ...)
 {
-    if (inherits(x, "adp"))
+    if (inherits(x, "adp")) {
         xyzToEnuAdp(x=x, ...)
-    else if (inherits(x, "adv"))
+    } else if (inherits(x, "adv")) {
         xyzToEnuAdv(x=x, ...)
-    else
+    } else {
         stop("class of object must inherit from either 'adv' or 'adp'")
+    }
 }
 
 
@@ -133,12 +135,13 @@ xyzToEnu <- function(x, ...)
 #' @family things related to adv data
 enuToOther <- function(x, ...)
 {
-    if (inherits(x, "adp"))
+    if (inherits(x, "adp")) {
         enuToOtherAdp(x, ...)
-    else if (inherits(x, "adv"))
+    } else if (inherits(x, "adv")) {
         enuToOtherAdv(x, ...)
-    else
+    } else {
         stop("class of object must inherit from either 'adv' or 'adp'")
+    }
 }
 
 #' Rotate acoustic-Doppler data to the enu coordinate system
@@ -155,10 +158,11 @@ enuToOther <- function(x, ...)
 #' @family things related to adv data
 toEnu <- function(x, ...)
 {
-    if (inherits(x, "adp"))
+    if (inherits(x, "adp")) {
         toEnuAdp(x, ...)
-    else if (inherits(x, "adv"))
+    } else if (inherits(x, "adv")) {
         toEnuAdv(x, ...)
-    else
+    } else {
         stop("class of object must inherit from either 'adv' or 'adp'")
+    }
 }

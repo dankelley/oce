@@ -19,7 +19,7 @@ in the Argo documentation (see references 2 and 3)."><!-- mathjax --><script src
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-10</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-11</span>
       </span>
     </div>
 
@@ -128,7 +128,10 @@ better for normal calls by a user.)</p></dd>
 Many items listed in section 2.2.3 of reference 3 are read from the
 file and stored in the <code>metadata</code> slot, with the exception of
 <code>longitude</code> and <code>latitude</code>, which are stored in the
-<code>data</code> slot, alongside hydrographic information.</p>
+<code>data</code> slot, alongside hydrographic information.  The details of storage
+in the return value are somewhat complex, although the following notes
+might be helpful to readers seeking to learn more.</p>
+<p><em>1. Variable renaming.</em></p>
 <p>The names of several data parameters stored within the netCDF file
 are altered to fit the oce context. For example, <code>PRES</code> becomes <code>pressure</code>,
 matching the name of this variable in other oce data types.
@@ -136,40 +139,6 @@ The original names are reported by <code>summary,argo-method</code>, and
 data may be extracted with <code>[[,argo-method</code> using those names, so
 the renaming should not be too inconvenient to Argo experts who
 are new to oce.</p>
-<p>Several of the netCDF global attributes are also renamed before
-placement in the <code>metadata</code> slot of the return value.  These include
-<code>conventions</code>, <code>featureType</code>, <code>history</code>, <code>institution</code>,
-<code>nParameters</code>, <code>nProfiles</code>,  <code>references</code>, <code>source</code>, <code>title</code>,
-and <code>userManualVersion</code>.
-These names are derived from those in the netcdf
-file, and mainly follow the pattern explained in the
-“Variable renaming convention” section.</p>
-<p>For profile data (as indicated by the NetCDF global attribute
-named <code>"featureType"</code> being equal to <code>"trajectoryProfile"</code>),
-the NetCDF item named <code>"STATION_PARAMETERS"</code> controls
-whether variables in the source file will be stored in the
-<code>metadata</code> or <code>data</code> slot of the returned object.
-If <code>STATION_PARAMETERS</code> is not present, as is the case for
-trajectory files (which are detected by <code>featureType</code> being
-<code>"trajectory"</code>), some guesses are made as to what goes in
-<code>data</code> and <code>metadata</code> slots.</p>
-<p>Each data item can have variants, as
-described in Sections 2.3.4 of reference 3.
-For example, if <code>"PRES"</code> is found in <code>STATION_PARAMETERS</code>,
-then <code>PRES</code> (pressure) data are sought in the file, along with
-<code>PRES_QC</code>, <code>PRES_ADJUSTED</code>, <code>PRES_ADJUSTED_QC</code>, and
-<code>PRES_ERROR</code>. The same pattern works for other profile data. The variables
-are stored with names created as explained in the
-“Variable renaming convention” section below. Note that
-flags, which are stored variables ending in <code>"_QC"</code> in the netcdf
-file, are stored in the <code>flags</code> item within the <code>metadata</code> slot
-of the returned object; thus, for example,
-<code>PRES_QC</code> is stored as <code>pressure</code> in <code>flags</code>.</p>
-    </div>
-    <div id="variable-renaming-convention">
-    <h2>Variable renaming convention</h2>
-    
-
 <p>Argo netcdf files employ a <code>"SNAKE_CASE"</code> naming scheme (sometimes
 using lower case) that is inconsistent with the <code>"camelCase"</code> scheme
 used in oce. Since argo objects are just a small part of oce, a decision
@@ -190,11 +159,52 @@ of all items in the <code>metadata</code> slot (or similar with <code>"data"</co
 in reverse may be easier than simply guessing at what names oce has chosen.
 (Note that prior to 2020 June 24, some metadata items were stored in
 <code>"SNAKE_CASE"</code>.)</p>
-    </div>
-    <div id="data-sources">
-    <h2>Data sources</h2>
-    
-
+<p><em>2. Metadata.</em></p>
+<p>Several of the netCDF global attributes are also renamed before
+placement in the <code>metadata</code> slot of the return value.  These include
+<code>conventions</code>, <code>featureType</code>, <code>history</code>, <code>institution</code>,
+<code>nParameters</code>, <code>nProfiles</code>,  <code>references</code>, <code>source</code>, <code>title</code>,
+and <code>userManualVersion</code>.
+These names are derived from those in the netcdf
+file, and mainly follow the pattern explained in the
+“Variable renaming convention” section.</p>
+<p>For profile data (as indicated by the NetCDF global attribute
+named <code>"featureType"</code> being equal to <code>"trajectoryProfile"</code>),
+the NetCDF item named <code>"STATION_PARAMETERS"</code> controls
+whether variables in the source file will be stored in the
+<code>metadata</code> or <code>data</code> slot of the returned object.
+If <code>STATION_PARAMETERS</code> is not present, as is the case for
+trajectory files (which are detected by <code>featureType</code> being
+<code>"trajectory"</code>), some guesses are made as to what goes in
+<code>data</code> and <code>metadata</code> slots.</p>
+<p><em>3. Data variants.</em></p>
+<p>Each data item can have variants, as
+described in Sections 2.3.4 of reference 3.
+For example, if <code>"PRES"</code> is found in <code>STATION_PARAMETERS</code>,
+then <code>PRES</code> (pressure) data are sought in the file, along with
+<code>PRES_QC</code>, <code>PRES_ADJUSTED</code>, <code>PRES_ADJUSTED_QC</code>, and
+<code>PRES_ERROR</code>. The same pattern works for other profile data. The variables
+are stored with names created as explained in the
+“Variable renaming convention” section below. Note that
+flags, which are stored variables ending in <code>"_QC"</code> in the netcdf
+file, are stored in the <code>flags</code> item within the <code>metadata</code> slot
+of the returned object; thus, for example,
+<code>PRES_QC</code> is stored as <code>pressure</code> in <code>flags</code>.</p>
+<p><em>4. How time is handled.</em></p>
+<p>The netcdf files for profile data store time in an item named <code>juld</code>,
+which holds the overall profile time, in what the Argo documentation
+calls Julian days, with respect to a reference time that is also stored
+in the file.  Based on this information, a <a href="https://rdrr.io/r/base/DateTimeClasses.html" class="external-link">POSIXct</a> value named <code>time</code>
+is stored in the <code>metadata</code> slot of the returned value, and this
+may be found with e.g. <code>a[["time"]]</code>, where <code>a</code> is that returned value.
+Importantly, this value matches the time listed in profile index files.
+In addition, some profile data files contain a field called <code>MTIME</code>,
+which holds the offset (in days) between the time of individual measurements and the
+overall profile time. For such files, the measurement times may be
+computed with <code>a[["time"]]+86400*a[["mtime"]]</code>. (This formula is used by
+<code><a href="as.ctd.html">as.ctd()</a></code>, if its first argument is an <a href="argo-class.html">argo</a> object created
+by supplying <code>read.argo()</code> with such a data file.)</p>
+<p><em>5. Data sources.</em></p>
 <p>Argo data are made available at several websites. A bit of detective
 work can be required to track down the data.</p>
 <p>Some servers provide data for floats that surfaced in a given ocean
@@ -266,21 +276,23 @@ objects, and also outlines the other functions dealing with them.</p>
     <div id="ref-examples">
     <h2>Examples</h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span></span>
-<span class="r-in"><span><span class="co">## Example 1: read from a local file</span></span></span>
+<span class="r-in"><span><span class="co"># Example 1: read from a local file</span></span></span>
 <span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dankelley.github.io/oce/" class="external-link">oce</a></span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">d</span> <span class="op">&lt;-</span> <span class="fu">read.argo</span><span class="op">(</span><span class="st">"/data/OAR/6900388_prof.nc"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">d</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">d</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co">## Example 2: construct URL for download (brittle)</span></span></span>
+<span class="r-in"><span><span class="co"># Example 2: construct URL for download (brittle)</span></span></span>
 <span class="r-in"><span><span class="va">id</span> <span class="op">&lt;-</span> <span class="st">"6900388"</span></span></span>
 <span class="r-in"><span><span class="va">url</span> <span class="op">&lt;-</span> <span class="st">"https://www.usgodae.org/ftp/outgoing/argo"</span></span></span>
 <span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.files.html" class="external-link">list.files</a></span><span class="op">(</span>pattern<span class="op">=</span><span class="st">"argo_index.txt"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span>    <span class="fu"><a href="https://rdrr.io/r/utils/download.file.html" class="external-link">download.file</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="va">url</span>, <span class="st">"ar_index_global_meta.txt"</span>, sep<span class="op">=</span><span class="st">"/"</span><span class="op">)</span>, <span class="st">"argo_index.txt"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">index</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readLines.html" class="external-link">readLines</a></span><span class="op">(</span><span class="st">"argo_index.txt"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">line</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grep</a></span><span class="op">(</span><span class="va">id</span>, <span class="va">index</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="fl">0</span> <span class="op">==</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">line</span><span class="op">)</span><span class="op">)</span> <span class="kw"><a href="https://rdrr.io/r/base/stop.html" class="external-link">stop</a></span><span class="op">(</span><span class="st">"id "</span>, <span class="va">id</span>, <span class="st">" not found"</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="fl">1</span> <span class="op">&lt;</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">line</span><span class="op">)</span><span class="op">)</span> <span class="kw"><a href="https://rdrr.io/r/base/stop.html" class="external-link">stop</a></span><span class="op">(</span><span class="st">"id "</span>, <span class="va">id</span>, <span class="st">" found multiple times"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="fl">0</span> <span class="op">==</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">line</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span>    <span class="kw"><a href="https://rdrr.io/r/base/stop.html" class="external-link">stop</a></span><span class="op">(</span><span class="st">"id "</span>, <span class="va">id</span>, <span class="st">" not found"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="fl">1</span> <span class="op">&lt;</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">line</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span>    <span class="kw"><a href="https://rdrr.io/r/base/stop.html" class="external-link">stop</a></span><span class="op">(</span><span class="st">"id "</span>, <span class="va">id</span>, <span class="st">" found multiple times"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">dac</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/strsplit.html" class="external-link">strsplit</a></span><span class="op">(</span><span class="va">index</span><span class="op">[</span><span class="va">line</span><span class="op">]</span>, <span class="st">"/"</span><span class="op">)</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span></span></span>
 <span class="r-in"><span><span class="va">profile</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="va">id</span>, <span class="st">"_prof.nc"</span>, sep<span class="op">=</span><span class="st">""</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">float</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="va">url</span>, <span class="st">"dac"</span>, <span class="va">dac</span>, <span class="va">id</span>, <span class="va">profile</span>, sep<span class="op">=</span><span class="st">"/"</span><span class="op">)</span></span></span>
@@ -304,7 +316,7 @@ objects, and also outlines the other functions dealing with them.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>

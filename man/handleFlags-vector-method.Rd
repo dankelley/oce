@@ -5,7 +5,7 @@
 \title{Signal erroneous application to non-oce objects}
 \usage{
 \S4method{handleFlags}{vector}(
-  object,
+  object = "oce",
   flags = list(),
   actions = list(),
   where = list(),

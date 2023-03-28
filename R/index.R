@@ -81,12 +81,12 @@ read.index <- function(file,
             stop("empty file '", file, "'")
     }
     if (is.character(file)) {
-        ##filename <- fullFilename(file)
+        #filename <- fullFilename(file)
         file <- file(file, "r", encoding=encoding)
         on.exit(close(file))
     }
     if (!inherits(file, "connection"))
-        stop("argument `file' must be a character string or connection")
+        stop("file must be a character string or connection")
     if (!isOpen(file)) {
         open(file, "r", encoding=encoding)
         on.exit(close(file))
@@ -94,9 +94,13 @@ read.index <- function(file,
     lines <- readLines(file, warn=FALSE)
     if (missing(format)) {
         ntokens <- length(scan(text=lines[1], quiet=TRUE))
-        if (2 == ntokens) format <- "noaa"
-        else if (13 == ntokens) format <- "ucar"
-        else stop("first line must contain either 2 or 13 tokens, but it contains ", ntokens, " tokens")
+        if (2 == ntokens) {
+            format <- "noaa"
+        } else if (13 == ntokens) {
+            format <- "ucar"
+        } else {
+            stop("first line must contain either 2 or 13 tokens, but it contains ", ntokens, " tokens")
+        }
     }
     formatAllowed <- c("noaa", "ucar")
     formatIndex <- pmatch(format, formatAllowed)
@@ -105,10 +109,10 @@ read.index <- function(file,
     format <- formatAllowed[formatIndex]
     if (format == "noaa") {
         lines <- lines[-1] # drop first header line
-        ## the missing value is on a line by itself, and after that
-        ## is footer that we will ignore for now.
+        # the missing value is on a line by itself, and after that
+        # is footer that we will ignore for now.
         n <- unlist(lapply(seq_along(lines),
-                           function(l) length(scan(text=lines[l], what="numeric", quiet=TRUE))))
+            function(l) length(scan(text=lines[l], what="numeric", quiet=TRUE))))
         onetoken <- which(n==1)[1]
         if (is.na(onetoken))
             stop("cannot find missing-value token")
@@ -124,13 +128,16 @@ read.index <- function(file,
         year <- m[, 1]
         data <- as.vector(t(m[, -1]))
         t <- seq(ISOdatetime(year[1], 1, 15, 0, 0, 0, tz="UTC"), by="month", length.out=12*length(year))
-    } else stop("unknown format '", format, "'; must be 'noaa' or 'ucar'")
+    } else {
+        stop("unknown format '", format, "'; must be 'noaa' or 'ucar'")
+    }
     if (missing(missingValue)) {
-        ## guess, probably dangerous
+        # guess, probably dangerous
         data[data <= -99] <- NA
     } else {
-        if (!is.null(missingValue))
+        if (!is.null(missingValue)) {
             data[data==missingValue] <- NA
+        }
     }
     data.frame(t=t, index=data)
 }

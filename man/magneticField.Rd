@@ -7,10 +7,11 @@
 magneticField(longitude, latitude, time, version = 13)
 }
 \arguments{
-\item{longitude}{longitude in degrees east (negative for degrees west).  The
-dimensions must conform to lat.}
+\item{longitude}{longitude in degrees east (negative for degrees west), as a
+number, a vector, or a matrix.}
 
-\item{latitude}{latitude in degrees north, a number, vector, or matrix.}
+\item{latitude}{latitude in degrees north, as a number, vector, or matrix.
+The shape (length or dimensions) must conform to the dimensions of \code{longitude}.}
 
 \item{time}{The time at which the field is desired. This may be a
 single value or a vector or matrix that is structured to match
@@ -62,19 +63,20 @@ mapPlot(coastlineWorld, projection="+proj=robin", col="lightgray")
 # Construct matrix holding declination
 lon <- seq(-180, 180)
 lat <- seq(-90, 90)
-dec2000 <- function(lon, lat)
+dec2000 <- function(lon, lat) {
     magneticField(lon, lat, 2000)$declination
+}
 dec <- outer(lon, lat, dec2000) # hint: outer() is very handy!
 # Contour, unlabelled for small increments, labeled for
 # larger increments.
-mapContour(lon, lat, dec, col='blue', levels=seq(-180, -5, 5),
+mapContour(lon, lat, dec, col="blue", levels=seq(-180, -5, 5),
            lty=3, drawlabels=FALSE)
-mapContour(lon, lat, dec, col='blue', levels=seq(-180, -20, 20))
-mapContour(lon, lat, dec, col='red', levels=seq(5, 180, 5),
+mapContour(lon, lat, dec, col="blue", levels=seq(-180, -20, 20))
+mapContour(lon, lat, dec, col="red", levels=seq(5, 180, 5),
            lty=3, drawlabels=FALSE)
-mapContour(lon, lat, dec, col='red', levels=seq(20, 180, 20))
-mapContour(lon, lat, dec, levels=180, col='black', lwd=2, drawlabels=FALSE)
-mapContour(lon, lat, dec, levels=0, col='black', lwd=2)
+mapContour(lon, lat, dec, col="red", levels=seq(20, 180, 20))
+mapContour(lon, lat, dec, levels=180, col="black", lwd=2, drawlabels=FALSE)
+mapContour(lon, lat, dec, levels=0, col="black", lwd=2)
 }
 
 # 3. Declination differences between versions 12 and 13
@@ -114,6 +116,10 @@ Nature 565 (January 9, 2019): 143.
 }
 \seealso{
 Other things related to magnetism: 
+\code{\link{applyMagneticDeclination,adp-method}},
+\code{\link{applyMagneticDeclination,adv-method}},
+\code{\link{applyMagneticDeclination,cm-method}},
+\code{\link{applyMagneticDeclination,oce-method}},
 \code{\link{applyMagneticDeclination}()}
 }
 \author{

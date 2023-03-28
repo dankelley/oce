@@ -1,5 +1,26 @@
 # vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
 
+# Internal function, mainly used in plotting raw images
+
+asNumeric <- function(x)
+{
+    if (is.numeric(x))
+        return(x)
+    rval <- as.numeric(x)
+    if (is.array(x))
+        dim(rval) <- dim(x)
+    rval
+}
+
+# Internal function; use as e.g. oce:::pluralize().  Supply n and singular,
+# but only give plural if it is different from singular with a 's' tacked on.
+pluralize <- function(n, singular, plural)
+{
+    if (missing(plural))
+        plural <- paste0(singular, "s")
+    paste(n, if (n > 1L) plural else singular)
+}
+
 #' Create a Possibly Gappy Indexing Vector
 #'
 #' This is used internally to construct indexing arrays, mainly for adv and adp
@@ -36,15 +57,20 @@
 #' @author Dan Kelley
 gappyIndex <- function(starts, offset=0L, length=4L)
 {
-    if (missing(starts)) stop("must provide 'starts', an integer vector")
+    if (missing(starts))
+        stop("must provide 'starts', an integer vector")
     if (any(starts < 1L)) {
         w <- which(starts < 1L)[1]
         stop("'starts' must consist of positive values, but e.g. starts[", w, "] is ", starts[w])
     }
-    if (length(offset) != 1L) stop("'offset' must be a single number")
-    if (length(length) != 1L) stop("'length' must be a single number")
-    if (offset < 0L) stop("'offset' must be non-negative")
-    if (length < 1L) stop("'length' must be positive")
+    if (length(offset) != 1L)
+        stop("'offset' must be a single number")
+    if (length(length) != 1L)
+        stop("'length' must be a single number")
+    if (offset < 0L)
+        stop("'offset' must be non-negative")
+    if (length < 1L)
+        stop("'length' must be positive")
     do_gappy_index(starts, offset, length)
 }
 
@@ -87,12 +113,10 @@ gappyIndex <- function(starts, offset=0L, length=4L)
 
 abbreviateVector <- function(x)
 {
-    if (1 >= length(x)) {
+    if (1 >= length(x))
         return(x)
-    } else {
-        ud <- unique(diff(x))
-        if (1 == length(ud) && 1 == ud) return(paste(x[1], ":", tail(x, 1), sep="")) else return(x)
-    }
+    ud <- unique(diff(x))
+    if (1L == length(ud) && 1L == ud) paste(x[1], ":", tail(x, 1), sep="") else x
 }
 
 
@@ -113,71 +137,18 @@ abbreviateVector <- function(x)
 #' @examples
 #'
 #' library(oce)
-#' ## fake some heading data that lie near due-north (0 degrees)
+#' # fake some heading data that lie near due-north (0 degrees)
 #' n <- 20
 #' heading <- 360 + rnorm(n, sd=10)
 #' heading <- ifelse(heading > 360, heading - 360, heading)
 #' x <- 1:n
-#' plot(x, heading, ylim=c(-10, 360), type='l', col='lightgray', lwd=10)
+#' plot(x, heading, ylim=c(-10, 360), type="l", col="lightgray", lwd=10)
 #' lines(x, angleRemap(heading))
 angleRemap <- function(theta)
 {
     toRad <- atan2(1, 1) / 45
     atan2(sin(toRad * theta), cos(toRad * theta)) / toRad
 }
-
-
-#' Earth magnetic declination
-#'
-#' Instruments that use magnetic compasses to determine current direction need
-#' to have corrections applied for magnetic declination, to get currents with
-#' the y component oriented to geographic, not magnetic, north.  Sometimes, and
-#' for some instruments, the declination is specified when the instrument is
-#' set up, so that the velocities as recorded are already.  Other times, the
-#' data need to be adjusted.  This function is for the latter case.
-#'
-#' @param x an [oce-class] object.
-#'
-#' @param declination magnetic declination (to be added to the heading)
-#'
-#' @param debug a debugging flag, set to a positive value to get debugging.
-#'
-#' @return Object, with velocity components adjusted to be aligned with
-#' geographic north and east.
-#'
-#' @author Dan Kelley
-#'
-#' @seealso Use [magneticField()] to determine the declination,
-#' inclination and intensity at a given spot on the world, at a given time.
-#'
-#' @references
-#' 1. \samp{https://www.ngdc.noaa.gov/IAGA/vmod/igrf.html}
-#'
-#' @family things related to magnetism
-applyMagneticDeclination <- function(x, declination=0, debug=getOption("oceDebug"))
-{
-    oceDebug(debug, "applyMagneticDeclination(x,declination=", declination, ") {\n", sep="", unindent=1)
-    if (inherits(x, "cm")) {
-        oceDebug(debug, "object is of type 'cm'\n")
-        res <- x
-        S <- sin(-declination * pi / 180)
-        C <- cos(-declination * pi / 180)
-        r <- matrix(c(C, S, -S, C), nrow=2)
-        uvr <- r %*% rbind(x@data$u, x@data$v)
-        res@data$u <- uvr[1, ]
-        res@data$v <- uvr[2, ]
-        oceDebug(debug, "originally, first u:", x@data$u[1:3], "\n")
-        oceDebug(debug, "originally, first v:", x@data$v[1:3], "\n")
-        oceDebug(debug, "after application, first u:", res@data$u[1:3], "\n")
-        oceDebug(debug, "after application, first v:", res@data$v[1:3], "\n")
-    } else {
-        stop("cannot apply declination to object of class ", paste(class(x), collapse=", "), "\n")
-    }
-    res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
-    oceDebug(debug, "} # applyMagneticDeclination\n", unindent=1)
-    res
-}
-
 
 #' Trilinear interpolation in a 3D array
 #'
@@ -204,26 +175,26 @@ applyMagneticDeclination <- function(x, declination=0, debug=getOption("oceDebug
 #' @author Dan Kelley and Clark Richards
 #'
 #' @examples
-#' ## set up a grid
+#' # set up a grid
 #' library(oce)
 #' n <- 5
 #' x <- seq(0, 1, length.out=n)
 #' y <- seq(0, 1, length.out=n)
 #' z <- seq(0, 1, length.out=n)
 #' f <- array(1:n^3, dim=c(length(x), length(y), length(z)))
-#' ## interpolate along a diagonal line
+#' # interpolate along a diagonal line
 #' m <- 100
 #' xout <- seq(0, 1, length.out=m)
 #' yout <- seq(0, 1, length.out=m)
 #' zout <- seq(0, 1, length.out=m)
 #' approx <- approx3d(x, y, z, f, xout, yout, zout)
-#' ## graph the results
-#' plot(xout, approx, type='l')
+#' # graph the results
+#' plot(xout, approx, type="l")
 #' points(xout[1], f[1, 1, 1])
-#' points(xout[m], f[n,n,n])
+#' points(xout[m], f[n, n, n])
 approx3d <- function(x, y, z, f, xout, yout, zout)
 {
-    ## Were all arguments given?
+    # Were all arguments given?
     if (missing(x))
         stop("must provide x")
     if (missing(y))
@@ -238,14 +209,14 @@ approx3d <- function(x, y, z, f, xout, yout, zout)
         stop("must provide yout")
     if (missing(zout))
         stop("must provide zout")
-    ## Are there enough data to interpolate?
+    # Are there enough data to interpolate?
     if (length(x) < 2)
         stop("must have more than one x value")
     if (length(y) < 2)
         stop("must have more than one y value")
     if (length(z) < 2)
         stop("must have more than one z value")
-    ## Are the array dimensions consistent with x, y, and z?
+    # Are the array dimensions consistent with x, y, and z?
     if (3 != length(dim(f)))
         stop("f must be an array with 3 dimensions")
     if (length(x) != dim(f)[1])
@@ -254,7 +225,7 @@ approx3d <- function(x, y, z, f, xout, yout, zout)
         stop("length of y and dim(f)[2] must agree, but they are ", length(y), " and ", dim(f)[2])
     if (length(z) != dim(f)[3])
         stop("length of z and dim(f)[3] must agree, but they are ", length(z), " and ", dim(f)[3])
-    ## Are x, y and z equi-spaced?
+    # Are x, y and z equi-spaced?
     if (length(x) > 2) {
         equispaced <- function(a) sd(diff(a)) / mean(diff(a)) < 1e-5
         if (!equispaced(x))
@@ -293,7 +264,7 @@ argShow <- function(x, nshow=4, last=FALSE, sep="=")
             if (is.function(x)) {
                 res <- "(provided)"
             } else if (nx==1) {
-                res <- if (is.character(x)) paste('"', x[1], '"', sep="") else x[1]
+                res <- if (is.character(x)) paste("\"", x[1], "\"", sep="") else x[1]
             } else {
                 look <- seq.int(1L, min(nshow, nx)-1)
                 res <- paste(format(x[look], digits=4), collapse=",")
@@ -302,8 +273,9 @@ argShow <- function(x, nshow=4, last=FALSE, sep="=")
         }
     }
     res <- if (nx == 1) paste(name, "=", res,  sep="") else paste(name, "=c(", res, ")", sep="")
-    if (!last)
+    if (!last) {
         res <- paste(res, ",", sep="")
+    }
     res
 }
 
@@ -417,7 +389,9 @@ labelWithUnit <- function(name, unit=NULL)
     } else if (name == "Sstar") {
         rval <- if (is.null(unit)) bquote(S["*"]*.(L)*kg/m^3*.(R)) else bquote(S["*"]*.(L)*.(u)*.(R))
     } else if (name == "temperature") {
+        # nolint start T_and_F_symbol_linter
         rval <- if (is.null(unit)) bquote(T*.(L)*degree*C*.(R)) else bquote(T*.(L)*.(u)*.(R))
+        # nolint end T_and_F_symbol_linter
     } else if (name == "z") {
         rval <- if (is.null(unit)) bquote(z*.(L)*m*.(R)) else bquote(z*.(L)*.(u)*.(R))
     } else {
@@ -454,12 +428,12 @@ firstFinite <- function(v)
 #' is true, then `longitude` will be converted to range from 0
 #' to 360, and the array will be shuffled accordingly.
 #'
-## @examples
-##\dontrun{
-## ## Mean SST at 5-degree spatial resolution
-## tmn <- read.woa("/data/woa13/woa13_decav_t00_5dv2.nc", "t_mn")
-## imagep(tmn$longitude, tmn$latitude, tmn$t_mn[,,1], zlab="SST")
-##}
+# @examples
+#\dontrun{
+# # Mean SST at 5-degree spatial resolution
+# tmn <- read.woa("/data/woa13/woa13_decav_t00_5dv2.nc", "t_mn")
+# imagep(tmn$longitude, tmn$latitude, tmn$t_mn[, , 1], zlab="SST")
+#}
 read.woa <- function(file, name, positive=FALSE, encoding=NA)
 {
     if (missing(file))
@@ -486,16 +460,17 @@ read.woa <- function(file, name, positive=FALSE, encoding=NA)
         lon2 <- ifelse(longitude < 0, longitude + 360, longitude)
         i  <- order(lon2)
         longitude <- longitude[i]
-        ## Crude method to reorder field on first index, whether it is 2D, 3D or 4D,
-        ## although I'm not sure that any 4D items occur in the World Ocean Atlas.
+        # Crude method to reorder field on first index, whether it is 2D, 3D or 4D,
+        # although I'm not sure that any 4D items occur in the World Ocean Atlas.
         if (is.array(field)) {
             ndim <- length(dim(field))
-            if (ndim == 2)
-                field <- field[i,]
-            else if (ndim == 3)
-                field <- field[i,,]
-            else if (ndim == 4)
-                field <- field[i,,,]
+            if (ndim == 2) {
+                field <- field[i, ]
+            } else if (ndim == 3) {
+                field <- field[i, , ]
+            } else if (ndim == 4) {
+                field <- field[i, , , ]
+            }
         }
     }
     rval <- list(longitude=longitude, latitude=latitude, depth=depth, field=field)
@@ -503,10 +478,10 @@ read.woa <- function(file, name, positive=FALSE, encoding=NA)
     rval
 }
 
-## alphabetized functions END
+# alphabetized functions END
 
 
-## unalphabetized functions START
+# unalphabetized functions START
 
 shortenTimeString <- function(t, debug=getOption("oceDebug"))
 {
@@ -515,24 +490,24 @@ shortenTimeString <- function(t, debug=getOption("oceDebug"))
     oceDebug(debug, "A: '", paste(t, collapse="' '"), "'\n")
     tc <- gsub(" [A-Z]{3}$", "", tc) # remove timezone
     if (all(grepl("^[0-9]{4}", tc))) {
-        ## leading years
+        # leading years
         years <- substr(tc, 1, 4)
         if (1 == length(unique(years))) {
             tc <- gsub("^[0-9]{4}", "", tc)
             tc <- gsub("^-", "", tc) # works for ISO dates
-            oceDebug(debug, "B: '", paste(tc, collapse="' '"), "'\n", sep='')
+            oceDebug(debug, "B: '", paste(tc, collapse="' '"), "'\n", sep="")
         }
     } else if (any(grepl("[a-zA-Z]", tc))) {
-        ## Change e.g. 'Jul 01' to 'Jul' if all labels end in 01
+        # Change e.g. 'Jul 01' to 'Jul' if all labels end in 01
         if (all(grepl("01\\s*$", tc))) {
             tc <- gsub(" 01\\s*$", "", tc)
-            oceDebug(debug, "B: '", paste(tc, collapse="' '"), "'\n", sep='')
+            oceDebug(debug, "B: '", paste(tc, collapse="' '"), "'\n", sep="")
         }
     }
-    oceDebug(debug, "C: '", paste(tc, collapse="' '"), "'\n", sep='')
+    oceDebug(debug, "C: '", paste(tc, collapse="' '"), "'\n", sep="")
     tc <- gsub("^\\s*", "", tc)
     tc <- gsub("\\s*$", "", tc)
-    oceDebug(debug, "D: '", paste(tc, collapse="' '"), "'\n", sep='')
+    oceDebug(debug, "D: '", paste(tc, collapse="' '"), "'\n", sep="")
     oceDebug(debug, "}\n", unindent=1)
     tc
 }
@@ -588,19 +563,19 @@ snakeToCamel <- function(s, specialCases=NULL)
     res <- vector("character", length=ns)
     for (is in seq(1L, length(s))) {
         if (!grepl("_", s[is])) {
-            ## Handle the single-word case. If all upper-case, convert to lower,
-            ## but otherwise, leave it as it is.
+            # Handle the single-word case. If all upper-case, convert to lower,
+            # but otherwise, leave it as it is.
             res[is] <- if (s[is] == toupper(s[is])) tolower(s[is]) else s[is]
         } else {
-            ## Handle the multi-word case. Start by making it lower case.
+            # Handle the multi-word case. Start by making it lower case.
             s[is] <- tolower(s[is])
-            ## Now, split and then work through the words
+            # Now, split and then work through the words
             w <- strsplit(s[is], "_")[[1]]
             nw <- length(w)
             res[is] <- w[1]
-            for (iw in 2:nw) {
+            for (iw in seq(2L, nw)) {
                 wl <- tolower(w[iw])
-                res[is] <- paste0(res[is], toupper(substring(wl,1,1)), substring(wl,2))
+                res[is] <- paste0(res[is], toupper(substring(wl, 1, 1)), substring(wl, 2))
             }
         }
     }
@@ -648,7 +623,8 @@ unitFromString <- function(unit, scale=NULL)
         return(list(unit=expression(), scale=if (is.null(scale)) "" else scale))
     if (U == "COUNTS")
         return(list(unit=expression(), scale=if (is.null(scale)) "" else scale))
-    if (U == "DB") # NOTE: this really should be decibel, but ODF files use it for decibar, sometimes
+    if (U == "DB")
+        # NOTE: this really should be decibel, but ODF files use it for decibar, sometimes
         return(list(unit=expression(dbar), scale=if (is.null(scale)) "" else scale))
     if (U == "DBAR" || U == "DECIBAR" || U == "DECIBARS")
         return(list(unit=expression(dbar), scale=if (is.null(scale)) "" else scale))
@@ -764,35 +740,6 @@ unitFromString <- function(unit, scale=NULL)
     return(list(unit=as.expression(unit), scale=if (is.null(scale)) "" else scale))
 }
 
-## #' Rename a duplicated item (used in reading CTD files)
-## #'
-## #' Determine a new name for an item that is already in a list of names. This is
-## #' done by e.g. appending a `2` to the second occurrence of a name, etc.
-## #' The purpose is to create distinct variable names for
-## #' [read.ctd.sbe()].
-## #'
-## #' @param existingNames Vector of strings with names already processed.
-## #' @param name String with a candidate name.
-## #' @return names String with an unduplicated name.
-## #' @seealso [unduplicateNames()] is similar, but considers
-## #' a vector of names.
-## #'
-## #' @examples
-## #' unduplicateName("a", c("a", "b", "a")) # returns "a3"
-## unduplicateName <- function(name, existingNames)
-## {
-##     counter <- 0
-##     for (i in seq_along(existingNames)) {
-##         if (name == existingNames[i])
-##             counter <- counter + 1
-##     }
-##     res <- if (counter > 0) paste(name, counter+1, sep="") else name
-##     ## message("unduplicateName() name: '", name, "'")
-##     ## message("         existingNames '", paste(existingNames, collapse="' '"))
-##     ## message("         returning '", res, "'")
-##     res
-## }
-
 #' Rename duplicated character strings
 #'
 #' Append numeric suffices to character strings, to avoid repeats.
@@ -820,7 +767,7 @@ unitFromString <- function(unit, scale=NULL)
 #' unduplicateNames(c("a", "b", "a", "c", "b"), style=2)
 unduplicateNames <- function(strings, style=1)
 {
-    ## Handle duplicated names
+    # Handle duplicated names
     if (style == 1) {
         for (i in seq_along(strings)) {
             w <- which(strings == strings[i])
@@ -845,60 +792,6 @@ unduplicateNames <- function(strings, style=1)
     strings
 }
 
-
-#removed #' Rename items in the data slot of an oce object (defunct)
-#removed #'
-#removed #' **WARNING:** This function will be removed in oce 1.6.0; see [oce-defunct].
-#removed ##
-#removed ## This was deprecated in December 2019, because [oceRenameData()] does
-#removed ## a better job and is more consistent with other functions that work
-#removed ## with items in the `data` and `metadata` slots.
-#removed ## This function may be used to rename elements within the
-#removed ## `data` slot of `oce` objects. It also updates
-#removed ## the processing log of the returned object, indicating
-#removed ## the changes.
-#removed #'
-#removed #' @param x Ignored, since this function is defunct.
-#removed #'
-#removed #' @param old Ignored, since this function is defunct.
-#removed #'
-#removed #' @param new Ignored, since this function is defunct.
-#removed #'
-#removed ## @examples
-#removed ## data(ctd)
-#removed ## new <- renameData(ctd, "temperature", "temperature68")
-#removed ## new <- oceSetData(new, name="temperature",
-#removed ##                   value=T90fromT68(new[["temperature68"]]),
-#removed ##                   unit=list(unit=expression(degree*C),scale="ITS=90"))
-#removed #'
-#removed #' @author Dan Kelley
-#removed #'
-#removed #' @family deprecated functions
-#removed renameData <- function(x, old=NULL, new=NULL)
-#removed {
-#removed     #1.6.0 .Defunct("renameData",
-#removed     #1.6.0     msg="renameData() is disallowed and will be removed in oce 1.6.0.  Use oceRenameData() instead. See ?'oce-defunct'."
-#removed     .Deprecated("oceRenameData", msg="Superceded by oceRenameData(), as of December 2019")
-#removed     if (is.null(old)) stop("need to supply old")
-#removed     if (is.null(new)) stop("need to supply new")
-#removed     n <- length(old)
-#removed     if (n != length(new)) stop("lengths of old and new must match")
-#removed     Old <- names(x@data)
-#removed     New <- Old
-#removed     for (i in 1:n) {
-#removed         w <- which(Old == old[i])
-#removed         if (length(w) == 0) stop("'", old[i], "' is not in the data slot of x")
-#removed         if (length(w) > 1) stop("multiple matches are not permitted")
-#removed         ## message("i: ", i, ", old[i]: ", old[i], ", w:", w)
-#removed         New[w] <- new[i]
-#removed     }
-#removed     # ensure unique ... this is a common user error
-#removed     if (length(New) != length(unique(New))) stop("cannot have two columns of same name")
-#removed     names(x@data) <- New
-#removed     x@processingLog <- processingLogAppend(x@processingLog, paste(deparse(match.call()), sep="", collapse=""))
-#removed     x
-#removed }
-
 #' Calculate a rounded bound, rounded up to mantissa 1, 2, or 5
 #'
 #' @param x a single positive number
@@ -914,10 +807,6 @@ bound125 <- function(x)
         xx <- x / exp10
         m <- if (xx <= 1) 1 else if (xx <=2) 2 else if (xx <= 5) 5 else 10
         res <- m * exp10
-        ##> r <- 10^rnorm(1e4)
-        ##> R <- unlist(lapply(1:1e4, function(i) bound125(r[i]))
-        ##> range(r/R)
-        ##> message("x: ", x, ", exp10: ", exp10, ", m: ", m, ", xx: ", xx, ", res: ", res)
     }
     res
 }
@@ -951,20 +840,20 @@ standardizeLongitude <- function(longitude) ifelse(longitude > 180, longitude-36
 dataLabel <- function(names, units)
 {
     res <- names
-    ## message("in dataLabel()")
+    # message("in dataLabel()")
     if (!missing(units)) {
-        ## message("  dataLabel(); next line is names")
-        ## print(names)
-        ## message("  dataLabel(); next line is units")
-        ## print(units)
+        # message("  dataLabel(); next line is names")
+        # print(names)
+        # message("  dataLabel(); next line is units")
+        # print(units)
         unitsNames <- names(units)
-        ##message("  dataLabel(); next line is unitsNames")
-        ##print(unitsNames)
+        # message("  dataLabel(); next line is unitsNames")
+        # print(unitsNames)
         for (i in seq_along(names)) {
-            ##message("  i: ", i, ", name: ", names[i])
+            # message("  i: ", i, ", name: ", names[i])
             w <- which(unitsNames == names[i])
             if (length(w)) {
-                ##message("  we match a unit at index w=",  paste(w, collapse=" "))
+                # message("  we match a unit at index w=",  paste(w, collapse=" "))
                 u <- units[w]
                 if (!is.null(u)) {
                     if (is.character(u)) {
@@ -976,12 +865,7 @@ dataLabel <- function(names, units)
             }
         }
     }
-    ##> message("names:", paste(names, collapse=" | "))
-    ##> message("units:", paste(units, collapse=" | "))
-    ##> message("res:", paste(res, collapse=" | "))
     res <- gsub(" *\\[\\]", "", res)
-    ##message("dataLabel() returning:")
-    ##print(res)
     res
 }
 
@@ -996,8 +880,8 @@ dataLabel <- function(names, units)
 titleCase <- function(w)
 {
     unlist(lapply(seq_along(w),
-                  function(i) paste(toupper(substr(w[i], 1, 1)),
-                                    tolower(substr(w[i], 2, nchar(w[i]))), sep="")))
+            function(i) paste(toupper(substr(w[i], 1, 1)),
+                tolower(substr(w[i], 2, nchar(w[i]))), sep="")))
 }
 
 
@@ -1063,14 +947,14 @@ titleCase <- function(w)
 #'
 #' @examples
 #' library(oce)
-#' ## 1. Shear flow with uniform curl.
+#' # 1. Shear flow with uniform curl.
 #' x <- 1:4
 #' y <- 1:10
 #' u <- outer(x, y, function(x, y) y/2)
 #' v <- outer(x, y, function(x, y) -x/2)
 #' C <- curl(u, v, x, y, FALSE)
 #'
-#' ## 2. Rankine vortex: constant curl inside circle, zero outside
+#' # 2. Rankine vortex: constant curl inside circle, zero outside
 #' rankine <- function(x, y)
 #' {
 #'     r <- sqrt(x^2 + y^2)
@@ -1083,7 +967,7 @@ titleCase <- function(w)
 #' u <- outer(x, y, function(x, y) rankine(x, y)$u)
 #' v <- outer(x, y, function(x, y) rankine(x, y)$v)
 #' C <- curl(u, v, x, y, FALSE)
-#' ## plot results
+#' # plot results
 #' par(mfrow=c(2, 2))
 #' imagep(x, y, u, zlab="u", asp=1)
 #' imagep(x, y, v, zlab="v", asp=1)
@@ -1092,24 +976,36 @@ titleCase <- function(w)
 #' @family things relating to vector calculus
 curl <- function(u, v, x, y, geographical=FALSE, method=1)
 {
-    if (missing(u)) stop("must supply u")
-    if (missing(v)) stop("must supply v")
-    if (missing(x)) stop("must supply x")
-    if (missing(y)) stop("must supply y")
-    if (length(x) <= 1) stop("length(x) must exceed 1 but it is ", length(x))
-    if (length(y) <= 1) stop("length(y) must exceed 1 but it is ", length(y))
-    if (length(x) != nrow(u)) stop("length(x) must equal nrow(u)")
-    if (length(y) != ncol(u)) stop("length(x) must equal ncol(u)")
-    if (nrow(u) != nrow(v)) stop("nrow(u) and nrow(v) must match")
-    if (ncol(u) != ncol(v)) stop("ncol(u) and ncol(v) must match")
-    if (!is.logical(geographical)) stop("geographical must be a logical quantity")
+    if (missing(u))
+        stop("must supply u")
+    if (missing(v))
+        stop("must supply v")
+    if (missing(x))
+        stop("must supply x")
+    if (missing(y))
+        stop("must supply y")
+    if (length(x) <= 1)
+        stop("length(x) must exceed 1 but it is ", length(x))
+    if (length(y) <= 1)
+        stop("length(y) must exceed 1 but it is ", length(y))
+    if (length(x) != nrow(u))
+        stop("length(x) must equal nrow(u)")
+    if (length(y) != ncol(u))
+        stop("length(x) must equal ncol(u)")
+    if (nrow(u) != nrow(v))
+        stop("nrow(u) and nrow(v) must match")
+    if (ncol(u) != ncol(v))
+        stop("ncol(u) and ncol(v) must match")
+    if (!is.logical(geographical))
+        stop("geographical must be a logical quantity")
     method <- as.integer(round(method))
-    if (1 == method)
+    if (1 == method) {
         res <- do_curl1(u, v, x, y, geographical)
-    else if (2 == method)
+    } else if (2 == method) {
         res <- do_curl2(u, v, x, y, geographical)
-    else
+    } else {
         stop("method must be 1 or 2")
+    }
     res
 }
 
@@ -1165,50 +1061,45 @@ rangeExtended <- function(x, extend=0.04) # extend by 4% on each end, like axes
 #'
 #' @examples
 #' library(oce)
-#' ## salinity profile with median and quartile 1 and 3
+#' # salinity profile with median and quartile 1 and 3
 #' data(ctd)
 #' p <- ctd[["pressure"]]
 #' S <- ctd[["salinity"]]
 #' q1 <- binApply1D(p, S, pretty(p, 30), function(x) quantile(x, 1/4))
 #' q3 <- binApply1D(p, S, pretty(p, 30), function(x) quantile(x, 3/4))
-#' plotProfile(ctd, "salinity", col='gray', type='n')
+#' plotProfile(ctd, "salinity", col="gray", type="n")
 #' polygon(c(q1$result, rev(q3$result)),
-#' c(q1$xmids, rev(q1$xmids)), col='gray')
+#' c(q1$xmids, rev(q1$xmids)), col="gray")
 #' points(S, p, pch=20)
 #'
 #' @family bin-related functions
 binApply1D <- function(x, f, xbreaks, FUN, ...)
 {
-    if (missing(x)) stop("must supply 'x'")
-    if (missing(f)) stop("must supply 'f'")
-    if (missing(xbreaks)) xbreaks <- pretty(x, 20)
-    if (missing(FUN)) stop("must supply 'FUN'")
-    if (!is.function(FUN)) stop("'FUN' must be a function")
-    ## FIXME: maybe employ the code below to get data from oce objects
-    ##if ("data" %in% slotNames(x)) # oce objects have this
-    ##    x <- x@data
-    ##t <- try(x <- data.frame(x), silent=TRUE)
-    ##if (inherits(t,"try-error"))
-    ##    stop("cannot coerce 'data' into a data.frame")
+    if (missing(x))
+        stop("must supply 'x'")
+    if (missing(f))
+        stop("must supply 'f'")
+    if (missing(xbreaks))
+        xbreaks <- pretty(x, 20)
+    if (missing(FUN))
+        stop("must supply 'FUN'")
+    if (!is.function(FUN))
+        stop("'FUN' must be a function")
     fSplit <- split(f, cut(x, xbreaks, include.lowest=TRUE, labels=FALSE))
-    ##message("length(xbreaks)=", length(xbreaks))
-    ##message("length(fSplit)=", length(fSplit))
     result <- unlist(lapply(fSplit, FUN, ...))
     result[!is.finite(result)] <- NA
     names(result) <- NULL
-    ## Put some NAs at start and end of 'result', if required because of
-    ## 'xbreaks' bins that have no 'x' data.
+    # Put some NAs at start and end of 'result', if required because of
+    # 'xbreaks' bins that have no 'x' data.
     xmin <- min(x, na.rm=TRUE)
     xmax <- max(x, na.rm=TRUE)
     nxbreaks <- length(xbreaks)
     if (xmin > xbreaks[2]) {
         m <- which(xbreaks < xmin)[1]
-        ##message("condition 1; m=", m)
         result <- c(rep(NA, m), result)
     }
     if (xmax < xbreaks[nxbreaks]) {
         m <- which(xbreaks > xmax)[1]
-        ##message("condition 2; m=", m)
         result <- c(result, rep(NA, nxbreaks-m))
     }
     list(xbreaks=xbreaks, xmids=xbreaks[-1]-0.5*diff(xbreaks), result=result)
@@ -1248,17 +1139,17 @@ binApply1D <- function(x, f, xbreaks, FUN, ...)
 #' @examples
 #' library(oce)
 #'\donttest{
-#' ## secchi depths in lat and lon bins
+#' # secchi depths in lat and lon bins
 #' if (requireNamespace("ocedata", quietly=TRUE)) {
 #'     data(secchi, package="ocedata")
-#'     ## Note that zlim is provided to the colormap(), to prevent a few
-#'     ## points from setting a very wide scale.
+#'     # Note that zlim is provided to the colormap(), to prevent a few
+#'     # points from setting a very wide scale.
 #'     cm <- colormap(z=secchi$depth, col=oceColorsViridis, zlim=c(0, 15))
 #'     par(mar=c(2, 2, 2, 2))
 #'     drawPalette(colormap=cm, zlab="Secchi Depth")
 #'     data(coastlineWorld)
 #'     mapPlot(coastlineWorld, longitudelim=c(-5, 20), latitudelim=c(50, 66),
-#'       grid=5, col='gray', projection="+proj=lcc +lat_1=50 +lat_2=65")
+#'       grid=5, col="gray", projection="+proj=lcc +lat_1=50 +lat_2=65")
 #'     bc <- binApply2D(secchi$longitude, secchi$latitude,
 #'                      pretty(secchi$longitude, 80),
 #'                      pretty(secchi$latitude, 40),
@@ -1271,26 +1162,34 @@ binApply1D <- function(x, f, xbreaks, FUN, ...)
 #' @family bin-related functions
 binApply2D <- function(x, y, f, xbreaks, ybreaks, FUN, ...)
 {
-    if (missing(x)) stop("must supply 'x'")
-    if (missing(y)) stop("must supply 'y'")
-    if (missing(f)) stop("must supply 'f'")
+    if (missing(x))
+        stop("must supply 'x'")
+    if (missing(y))
+        stop("must supply 'y'")
+    if (missing(f))
+        stop("must supply 'f'")
     nx <- length(x)
-    if (nx != length(y)) stop("lengths of x and y must agree")
+    if (nx != length(y))
+        stop("lengths of x and y must agree")
     if (missing(xbreaks)) xbreaks <- pretty(x, 20)
     if (missing(ybreaks)) ybreaks <- pretty(y, 20)
-    if (missing(FUN)) stop("must supply 'FUN'")
-    if (!is.function(FUN)) stop("'FUN' must be a function")
+    if (missing(FUN))
+        stop("must supply 'FUN'")
+    if (!is.function(FUN))
+        stop("'FUN' must be a function")
     nxbreaks <- length(xbreaks)
-    if (nxbreaks < 2) stop("must have more than 1 xbreak")
+    if (nxbreaks < 2)
+        stop("must have more than 1 xbreak")
     nybreaks <- length(ybreaks)
-    if (nybreaks < 2) stop("must have more than 1 ybreak")
+    if (nybreaks < 2)
+        stop("must have more than 1 ybreak")
     res <- matrix(NA_real_, nrow=nxbreaks-1, ncol=nybreaks-1)
-    ## this 'method' is just for testing during development. For the data in
-    ## tests/testthat/test_misc.R, we get the same results for the two
-    ## methods. Still, I plan to keep this code in here for a while.
+    # this 'method' is just for testing during development. For the data in
+    # tests/testthat/test_misc.R, we get the same results for the two
+    # methods. Still, I plan to keep this code in here for a while.
     method <- 1
     if (method == 1) {
-        ## this is 28X faster on the secchi example.
+        # this is 28X faster on the secchi example.
         A <- split(f, cut(y, ybreaks, labels=FALSE))
         B <- split(x, cut(y, ybreaks, labels=FALSE))
         for (i in seq_along(A)) {
@@ -1308,8 +1207,8 @@ binApply2D <- function(x, y, f, xbreaks, ybreaks, FUN, ...)
         }
     }
     list(xbreaks=xbreaks, xmids=xbreaks[-1]-0.5*diff(xbreaks),
-         ybreaks=ybreaks, ymids=ybreaks[-1]-0.5*diff(ybreaks),
-         result=res)
+        ybreaks=ybreaks, ymids=ybreaks[-1]-0.5*diff(ybreaks),
+        result=res)
 }
 
 
@@ -1332,21 +1231,21 @@ binApply2D <- function(x, y, f, xbreaks, ybreaks, FUN, ...)
 #' @family bin-related functions
 binCount1D <- function(x, xbreaks)
 {
-    if (missing(x)) stop("must supply 'x'")
-    ##nx <- length(x)
+    if (missing(x))
+        stop("must supply 'x'")
     if (missing(xbreaks))
         xbreaks <- pretty(x)
     nxbreaks <- length(xbreaks)
     if (nxbreaks < 2)
         stop("must have more than 1 break")
     res <- .C("bin_count_1d", length(x), as.double(x),
-              length(xbreaks), as.double(xbreaks),
-              number=integer(nxbreaks-1),
-              result=double(nxbreaks-1),
-              NAOK=TRUE, PACKAGE="oce")
+        length(xbreaks), as.double(xbreaks),
+        number=integer(nxbreaks-1),
+        result=double(nxbreaks-1),
+        NAOK=TRUE, PACKAGE="oce")
     list(xbreaks=xbreaks,
-         xmids=xbreaks[-1]-0.5*diff(xbreaks),
-         number=res$number)
+        xmids=xbreaks[-1]-0.5*diff(xbreaks),
+        number=res$number)
 }
 
 #' Bin-average f=f(x)
@@ -1375,14 +1274,15 @@ binCount1D <- function(x, xbreaks)
 #' T <- ctd[["temperature"]]
 #' plot(T, z)
 #' TT <- binMean1D(z, T, seq(-100, 0, 1))
-#' lines(TT$result, TT$xmids, col='red')
+#' lines(TT$result, TT$xmids, col="red")
 #'
 #' @author Dan Kelley
 #'
 #' @family bin-related functions
 binMean1D <- function(x, f, xbreaks)
 {
-    if (missing(x)) stop("must supply 'x'")
+    if (missing(x))
+        stop("must supply 'x'")
     fGiven <- !missing(f)
     if (!fGiven)
         f <- rep(1, length(x))
@@ -1395,14 +1295,14 @@ binMean1D <- function(x, f, xbreaks)
     if (nxbreaks < 2)
         stop("must have more than 1 break")
     res <- .C("bin_mean_1d", length(x), as.double(x), as.double(f),
-              length(xbreaks), as.double(xbreaks),
-              number=integer(nxbreaks-1),
-              result=double(nxbreaks-1),
-              NAOK=TRUE, PACKAGE="oce")
+        length(xbreaks), as.double(xbreaks),
+        number=integer(nxbreaks-1),
+        result=double(nxbreaks-1),
+        NAOK=TRUE, PACKAGE="oce")
     list(xbreaks=xbreaks,
-         xmids=xbreaks[-1]-0.5*diff(xbreaks),
-         number=res$number,
-         result=if (fGiven) res$result else rep(NA, length=nx))
+        xmids=xbreaks[-1]-0.5*diff(xbreaks),
+        number=res$number,
+        result=if (fGiven) res$result else rep(NA, length=nx))
 }
 
 #' Bin-count matrix data
@@ -1437,26 +1337,33 @@ binMean1D <- function(x, f, xbreaks)
 #' @family bin-related functions
 binCount2D <- function(x, y, xbreaks, ybreaks, flatten=FALSE)
 {
-    if (missing(x)) stop("must supply 'x'")
-    if (missing(y)) stop("must supply 'y'")
-    if (length(x) != length(y)) stop("lengths of x and y must agree")
-    if (missing(xbreaks)) xbreaks <- pretty(x)
-    if (missing(ybreaks)) ybreaks <- pretty(y)
+    if (missing(x))
+        stop("must supply 'x'")
+    if (missing(y))
+        stop("must supply 'y'")
+    if (length(x) != length(y))
+        stop("lengths of x and y must agree")
+    if (missing(xbreaks))
+        xbreaks <- pretty(x)
+    if (missing(ybreaks))
+        ybreaks <- pretty(y)
     nxbreaks <- length(xbreaks)
-    if (nxbreaks < 2) stop("must have more than 1 xbreak")
+    if (nxbreaks < 2)
+        stop("must have more than 1 xbreak")
     nybreaks <- length(ybreaks)
-    if (nybreaks < 2) stop("must have more than 1 ybreak")
+    if (nybreaks < 2)
+        stop("must have more than 1 ybreak")
     M <- .C("bin_count_2d", length(x), as.double(x), as.double(y),
-            length(xbreaks), as.double(xbreaks),
-            length(ybreaks), as.double(ybreaks),
-            number=integer( (nxbreaks-1) * (nybreaks-1) ),
-            mean=double( (nxbreaks-1) * (nybreaks-1) ),
-            NAOK=TRUE, PACKAGE="oce")
+        length(xbreaks), as.double(xbreaks),
+        length(ybreaks), as.double(ybreaks),
+        number=integer((nxbreaks-1) * (nybreaks-1)),
+        mean=double((nxbreaks-1) * (nybreaks-1)),
+        NAOK=TRUE, PACKAGE="oce")
     res <- list(xbreaks=xbreaks,
-                ybreaks=ybreaks,
-                xmids=xbreaks[-1] - 0.5 * diff(xbreaks),
-                ymids=ybreaks[-1] - 0.5 * diff(ybreaks),
-                number=matrix(M$number, nrow=nxbreaks-1))
+        ybreaks=ybreaks,
+        xmids=xbreaks[-1] - 0.5 * diff(xbreaks),
+        ymids=ybreaks[-1] - 0.5 * diff(ybreaks),
+        number=matrix(M$number, nrow=nxbreaks-1))
     if (flatten) {
         res2 <- list()
         res2$x <- rep(res$xmids, times=nybreaks-1)
@@ -1523,33 +1430,42 @@ binCount2D <- function(x, y, xbreaks, ybreaks, flatten=FALSE)
 #' @family bin-related functions
 binMean2D <- function(x, y, f, xbreaks, ybreaks, flatten=FALSE, fill=FALSE, fillgap=-1)
 {
-    if (missing(x)) stop("must supply 'x'")
-    if (missing(y)) stop("must supply 'y'")
-    if (fillgap == 0) stop("cannot have a negative 'fillgap' value")
+    if (missing(x))
+        stop("must supply 'x'")
+    if (missing(y))
+        stop("must supply 'y'")
+    if (fillgap == 0)
+        stop("cannot have a negative 'fillgap' value")
     fGiven <- !missing(f)
     if (!fGiven)
         f <- rep(1, length(x))
-    if (length(x) != length(y)) stop("lengths of x and y must agree")
-    if (length(x) != length(f)) stop("lengths of x and f must agree")
-    if (missing(xbreaks)) xbreaks <- pretty(x)
-    if (missing(ybreaks)) ybreaks <- pretty(y)
+    if (length(x) != length(y))
+        stop("lengths of x and y must agree, but they are ", length(x), " and ", length(y))
+    if (length(x) != length(f))
+        stop("lengths of x and f must agree, but they are ", length(x), " and ", length(f))
+    if (missing(xbreaks))
+        xbreaks <- pretty(x)
+    if (missing(ybreaks))
+        ybreaks <- pretty(y)
     nxbreaks <- length(xbreaks)
-    if (nxbreaks < 2) stop("must have more than 1 xbreak")
+    if (nxbreaks < 2)
+        stop("must have more than 1 xbreak")
     nybreaks <- length(ybreaks)
-    if (nybreaks < 2) stop("must have more than 1 ybreak")
+    if (nybreaks < 2)
+        stop("must have more than 1 ybreak")
     M <- .C("bin_mean_2d", length(x), as.double(x), as.double(y), as.double(f),
-            length(xbreaks), as.double(xbreaks),
-            length(ybreaks), as.double(ybreaks),
-            as.integer(fill), as.integer(fillgap),
-            number=integer( (nxbreaks-1) * (nybreaks-1) ),
-            mean=double( (nxbreaks-1) * (nybreaks-1) ),
-            NAOK=TRUE, PACKAGE="oce")
+        length(xbreaks), as.double(xbreaks),
+        length(ybreaks), as.double(ybreaks),
+        as.integer(fill), as.integer(fillgap),
+        number=integer((nxbreaks-1) * (nybreaks-1)),
+        mean=double((nxbreaks-1) * (nybreaks-1)),
+        NAOK=TRUE, PACKAGE="oce")
     res <- list(xbreaks=xbreaks,
-                 ybreaks=ybreaks,
-                 xmids=xbreaks[-1] - 0.5 * diff(xbreaks),
-                 ymids=ybreaks[-1] - 0.5 * diff(ybreaks),
-                 number=matrix(M$number, nrow=nxbreaks-1),
-                 result=if (fGiven) matrix(M$mean, nrow=nxbreaks-1) else matrix(NA, ncol=nybreaks-1, nrow=nxbreaks-1))
+        ybreaks=ybreaks,
+        xmids=xbreaks[-1] - 0.5 * diff(xbreaks),
+        ymids=ybreaks[-1] - 0.5 * diff(ybreaks),
+        number=matrix(M$number, nrow=nxbreaks-1),
+        result=if (fGiven) matrix(M$mean, nrow=nxbreaks-1) else matrix(NA, ncol=nybreaks-1, nrow=nxbreaks-1))
     if (flatten) {
         res2 <- list()
         res2$x <- rep(res$xmids, times=nybreaks-1)
@@ -1586,24 +1502,24 @@ binMean2D <- function(x, y, f, xbreaks, ybreaks, flatten=FALSE, fill=FALSE, fill
 #'
 #' @examples
 #' library(oce)
-#' ## A. fake linear data
+#' # A. fake linear data
 #' x <- seq(0, 100, 1)
 #' y <- 1 + 2 * x
 #' plot(x, y, pch=1)
 #' ba <- binAverage(x, y)
-#' points(ba$x, ba$y, pch=3, col='red', cex=3)
+#' points(ba$x, ba$y, pch=3, col="red", cex=3)
 #'
-#' ## B. fake quadratic data
+#' # B. fake quadratic data
 #' y <- 1 + x ^2
 #' plot(x, y, pch=1)
 #' ba <- binAverage(x, y)
-#' points(ba$x, ba$y, pch=3, col='red', cex=3)
+#' points(ba$x, ba$y, pch=3, col="red", cex=3)
 #'
-#' ## C. natural data
+#' # C. natural data
 #' data(co2)
 #' plot(co2)
 #' avg <- binAverage(time(co2), co2, 1950, 2000, 2)
-#' points(avg$x, avg$y, col='red')
+#' points(avg$x, avg$y, col="red")
 #'
 #' @family bin-related functions
 binAverage <- function(x, y, xmin, xmax, xinc)
@@ -1623,11 +1539,11 @@ binAverage <- function(x, y, xmin, xmax, xinc)
     xx <- head(seq(xmin, xmax, xinc), -1) + xinc / 2
     #cat("xx:", xx, "\n")
     nb <- length(xx)
-    ##dyn.load("bin_average.so") # include this whilst debugging
+    #dyn.load("bin_average.so") # include this whilst debugging
     yy <- .C("bin_average", length(x), as.double(x), as.double(y),
-             as.double(xmin), as.double(xmax), as.double(xinc),
-             ##means=double(nb), NAOK=TRUE)$means
-             means=double(nb), NAOK=TRUE, PACKAGE="oce")$means # include this whilst debugging
+        as.double(xmin), as.double(xmax), as.double(xinc),
+        #means=double(nb), NAOK=TRUE)$means
+        means=double(nb), NAOK=TRUE, PACKAGE="oce")$means # include this whilst debugging
     list(x=xx, y=yy)
 }
 
@@ -1823,8 +1739,10 @@ filterSomething <- function(x, filter)
 #' plotTaylor(x, cbind(M2, S2))
 plotTaylor <- function(x, y, scale, pch, col, labels, pos, ...)
 {
-    if (missing(x)) stop("must supply 'x'")
-    if (missing(y)) stop("must supply 'y'")
+    if (missing(x))
+        stop("must supply 'x'")
+    if (missing(y))
+        stop("must supply 'y'")
     if (is.vector(y))
         y <- matrix(y)
     ncol <- ncol(y)
@@ -1839,26 +1757,28 @@ plotTaylor <- function(x, y, scale, pch, col, labels, pos, ...)
         pos <- rep(pos[1], ncol)
     xSD <- sd(x, na.rm=TRUE)
     ySD <- sd(as.vector(y), na.rm=TRUE)
-    if (missing(y)) stop("must supply 'y'")
+    if (missing(y))
+        stop("must supply 'y'")
     halfArc <- seq(0, pi, length.out=200)
-    ## FIXME: use figure geometry, to avoid axis cutoff
+    # FIXME: use figure geometry, to avoid axis cutoff
     if (missing(scale))
         scale <- max(pretty(c(xSD, ySD)))
     plot.new()
     plot.window(c(-1.2, 1.2) * scale, c(0, 1.2) * scale, asp=1)
-    ##plot.window(c(-1.1, 1.1), c(0.1, 1.2), asp=1)
+    #plot.window(c(-1.1, 1.1), c(0.1, 1.2), asp=1)
     sdPretty <- pretty(c(0, scale))
     for (radius in sdPretty)
-        lines(radius * cos(halfArc), radius * sin(halfArc), col='gray')
-    ## spokes
-    for (rr in seq(-1, 1, 0.2))
+        lines(radius * cos(halfArc), radius * sin(halfArc), col="gray")
+    # spokes
+    for (rr in seq(-1, 1, 0.2)) {
         lines(c(0, max(sdPretty)*cos(pi/2 + rr * pi / 2)),
-              c(0, max(sdPretty)*sin(pi/2 + rr * pi / 2)), col='gray')
+            c(0, max(sdPretty)*sin(pi/2 + rr * pi / 2)), col="gray")
+    }
     axisLabels <- format(sdPretty)
     axisLabels[1] <- paste(0)
     axis(1, pos=0, at=sdPretty, labels=axisLabels)
-    ## temporarily permit labels outside the platting zone
-    xpdOld <- par('xpd')
+    # temporarily permit labels outside the platting zone
+    xpdOld <- par("xpd")
     par(xpd=NA)
     m <- max(sdPretty)
     text(m, 0, "R=1", pos=4)
@@ -1869,12 +1789,12 @@ plotTaylor <- function(x, y, scale, pch, col, labels, pos, ...)
     for (column in seq_len(ncol(y))) {
         ySD <- sd(y[, column], na.rm=TRUE)
         R <- cor(x, y[, column])^2
-        ##cat("column=", column, "ySD=", ySD, "R=", R, "col=", col[column], "pch=", pch[column], "\n")
-        xx <- ySD * cos( (1 - R) * pi / 2 )
-        yy <- ySD * sin( (1 - R) * pi / 2 )
+        #cat("column=", column, "ySD=", ySD, "R=", R, "col=", col[column], "pch=", pch[column], "\n")
+        xx <- ySD * cos((1 - R) * pi / 2)
+        yy <- ySD * sin((1 - R) * pi / 2)
         points(xx, yy, pch=pch[column], lwd=2, col=col[column], cex=2)
         if (haveLabels) {
-            ##cat(labels[column], "at", pos[column], "\n")
+            #cat(labels[column], "at", pos[column], "\n")
             text(xx, yy, labels[column], pos=pos[column], ...)
         }
     }
@@ -1905,28 +1825,28 @@ prettyPosition <- function(x, debug=getOption("oceDebug"))
 {
     oceDebug(debug, "prettyPosition(...) {\n", sep="", unindent=1)
     r <- diff(range(x, na.rm=TRUE))
-    oceDebug(debug, 'range(x)=', range(x), 'r=', r, '\n')
+    oceDebug(debug, "range(x)=", range(x), ", r=", r, "\n")
     if (r > 5) {
-        ## D only
+        # D only
         res <- pretty(x)
     } else if (r > 1) {
-        ## round to 30 minutes
+        # round to 30 minutes
         res <- (1 / 2) * pretty(2 * x)
         oceDebug(debug, "case 1: res=", res, "\n")
     } else if (r > 30/60) {
-        ## round to 1 minute, with extras
+        # round to 1 minute, with extras
         res <- (1 / 60) * pretty(60 * x, n=6)
         oceDebug("case 2: res=", res, "\n")
     } else if (r > 5/60) {
-        ## round to 1 minute
+        # round to 1 minute
         res <- (1 / 60) * pretty(60 * x, 4)
         oceDebug(debug, "case 3: res=", res, "\n")
     } else if (r > 10/3600) {
-        ## round to 10 sec
+        # round to 10 sec
         res <- (1 / 360) * pretty(360 * x)
         oceDebug(debug, "case 4: res=", res, "\n")
     } else {
-        ## round to seconds
+        # round to seconds
         res <- (1 / 3600) * pretty(3600 * x)
         if (debug) cat("case 5: res=", res, "\n")
     }
@@ -1990,13 +1910,13 @@ smoothSomething <- function(x, ...)
 #' palette <- oce.colorsViridis(100)
 #' zlim <- range(T)
 #' drawPalette(zlim=zlim, col=palette)
-#' plot(x, z, type='p', pch=20, cex=3,
+#' plot(x, z, type="p", pch=20, cex=3,
 #'      col=palette[rescale(T, xlow=zlim[1], xhigh=zlim[2], rlow=1, rhigh=100)])
 rescale <- function(x, xlow, xhigh, rlow=0, rhigh=1, clip=TRUE)
 {
     x <- as.numeric(x)
     finite <- is.finite(x)
-    ##r <- range(x, na.rm=TRUE)
+    #r <- range(x, na.rm=TRUE)
     if (missing(xlow))
         xlow <- min(x, na.rm=TRUE)
     if (missing(xhigh))
@@ -2053,8 +1973,8 @@ rescale <- function(x, xlow, xhigh, rlow=0, rhigh=1, clip=TRUE)
 #' @examples
 #' library(oce)
 #' data(adv)
-#' adv2 <- retime(adv,0,1e-4,as.POSIXct("2008-07-01 00:00:00",tz="UTC"))
-#' plot(adv[["time"]], adv2[["time"]]-adv[["time"]], type='l')
+#' adv2 <- retime(adv,0,1e-4,as.POSIXct("2008-07-01 00:00:00", tz="UTC"))
+#' plot(adv[["time"]], adv2[["time"]]-adv[["time"]], type="l")
 retime <- function(x, a, b, t0, debug=getOption("oceDebug"))
 {
     if (missing(x))
@@ -2107,7 +2027,7 @@ threenum <- function(x)
         res <- rep(NA, 3)
     } else if (is.list(x)) {
         if (2 == sum(c("lsb", "msb") %in% names(x))) {
-            ## e.g. landsat data
+            # e.g. landsat data
             x <- as.numeric(x$lsb) + 256 * as.numeric(x$msb)
             dim(x) <- dim
             res <- c(min(x, na.rm=TRUE), mean(x, na.rm=TRUE), max(x, na.rm=TRUE))
@@ -2122,32 +2042,22 @@ threenum <- function(x)
         res <- rep(NA, 3)
     } else if (0 < sum(!is.na(x))) {
         res <- c(min(x, na.rm=TRUE), mean(x, na.rm=TRUE), max(x, na.rm=TRUE))
+    } else if (inherits(x, "POSIXt")) {
+        res <- c(min(x, na.rm=TRUE), mean(x, na.rm=TRUE), max(x, na.rm=TRUE))
     } else {
         res <- rep(NA, 3)
     }
-    ## 20160314: tack on dimensions, neccessitating conversion to character
-    ##res <- format(res, digits=4)
-    ##r1 <- format(res[1], digits=5)
-    ##r2 <- format(res[2], digits=5)
-    ##r3 <- format(res[3], digits=5)
-    ## res[1] <- format(res[1], digits=4) # do these independently
-    ## res[2] <- format(res[2], digits=4)
-    ## res[3] <- format(res[3], digits=4)
-    ## if (is.array(x)) {
-    ##     res <- c(res, paste(dim(x), collapse="x"))
-    ## } else {
-    ##     res <- c(res, format(length(x)))
-    ## }
     res
 }
 
 normalize <- function(x)
 {
     var <- var(x, na.rm=TRUE)
-    if (var == 0)
+    if (var == 0) {
         rep(0, length(x))
-    else
+    } else {
         (x - mean(x, na.rm=TRUE)) / sqrt(var)
+    }
 }
 
 
@@ -2181,9 +2091,9 @@ normalize <- function(x)
 #' plot(x, y, ylim=c(0, 1))
 #' d <- detrend(x, y)
 #' points(x, d$Y, pch=20)
-#' abline(d$a, d$b, col='blue')
+#' abline(d$a, d$b, col="blue")
 #' abline(h=0)
-#' points(x, d$Y + d$a + d$b * x, col='blue', pch='+')
+#' points(x, d$Y + d$a + d$b * x, col="blue", pch="+")
 detrend <- function(x, y)
 {
     if (missing(x))
@@ -2280,10 +2190,10 @@ detrend <- function(x, y)
 #' x <- 1:n
 #' y <- rnorm(n=n)
 #' y[n/2] <- 10                    # 10 standard deviations
-#' plot(x, y, type='l')
-#' lines(x, despike(y), col='red')
-#' lines(x, despike(y, reference="smooth"), col='darkgreen')
-#' lines(x, despike(y, reference="trim", min=-3, max=3), col='blue')
+#' plot(x, y, type="l")
+#' lines(x, despike(y), col="red")
+#' lines(x, despike(y, reference="smooth"), col="darkgreen")
+#' lines(x, despike(y, reference="trim", min=-3, max=3), col="blue")
 #' legend("topright", lwd=1, col=c("black", "red", "darkgreen", "blue"),
 #'        legend=c("raw", "median", "smooth", "trim"))
 #'
@@ -2296,27 +2206,28 @@ detrend <- function(x, y)
 #' CTD <- despike(ctd)
 #' plot(CTD)
 despike <- function(x, reference=c("median", "smooth", "trim"), n=4, k=7, min=NA, max=NA,
-                    replace=c("reference", "NA"), skip)
+    replace=c("reference", "NA"), skip)
 {
     if (is.vector(x)) {
         x <- despikeColumn(x, reference=reference, n=n, k=k, min=min, max=max, replace=replace)
     } else {
         if (missing(skip)) {
-            if (inherits(x, "ctd"))
+            if (inherits(x, "ctd")) {
                 skip <- c("time", "scan", "pressure")
-            else
+            } else {
                 skip <- NULL
+            }
         }
         if (inherits(x, "oce")) {
             columns <- names(x@data)
             for (column in columns) {
                 if (!(column %in% skip)) {
-                    ## check for NA column
+                    # check for NA column
                     if (all(is.na(x[[column]]))) {
                         warning(paste("Column", column, "contains only NAs. Skipping"))
                     } else {
                         x[[column]] <- despikeColumn(x[[column]],
-                                                     reference=reference, n=n, k=k, min=min, max=max, replace=replace)
+                            reference=reference, n=n, k=k, min=min, max=max, replace=replace)
                     }
                 }
             }
@@ -2329,7 +2240,7 @@ despike <- function(x, reference=c("median", "smooth", "trim"), n=4, k=7, min=NA
                         warning(paste("Column", column, "contains only NAs. Skipping"))
                     } else {
                         x[[column]] <- despikeColumn(x[[column]],
-                                                     reference=reference, n=n, k=k, min=min, max=max, replace=replace)
+                            reference=reference, n=n, k=k, min=min, max=max, replace=replace)
                     }
                 }
             }
@@ -2339,14 +2250,14 @@ despike <- function(x, reference=c("median", "smooth", "trim"), n=4, k=7, min=NA
 }
 
 despikeColumn <- function(x, reference=c("median", "smooth", "trim"), n=4, k=7, min=NA, max=NA,
-                          replace=c("reference", "NA"))
+    replace=c("reference", "NA"))
 {
     reference <- match.arg(reference)
     replace <- match.arg(replace)
     gave.min <- !is.na(min)
     gave.max <- !is.na(max)
     nx <- length(x)
-    ## degap
+    # degap
     na <- is.na(x)
     if (sum(na) > 0) {
         i <- 1:nx
@@ -2355,19 +2266,21 @@ despikeColumn <- function(x, reference=c("median", "smooth", "trim"), n=4, k=7, 
         x.gapless <- x
     }
     if (reference == "median" || reference == "smooth") {
-        if (reference == "median")
+        if (reference == "median") {
             x.reference <- runmed(x.gapless, k=k)
-        else
+        } else {
             x.reference <- as.numeric(smooth(x.gapless))
+        }
         distance <- abs(x.reference - x.gapless)
         stddev <- sqrt(var(distance))
         bad <- distance > n * stddev
         nbad <- sum(bad)
         if (nbad > 0) {
-            if (replace == "reference")
+            if (replace == "reference") {
                 x[bad] <- x.reference[bad]
-            else
+            } else {
                 x[bad] <- rep(NA, nbad)
+            }
         }
     } else if (reference == "trim") {
         if (!gave.min || !gave.max)
@@ -2435,11 +2348,7 @@ rangeLimit <- function(x, min, max)
 #' @family things related to time
 unabbreviateYear <- function(year)
 {
-    ## handle e.g. 2008 as 2008 (full year), 8 (year-2000 offset), or 108 (year 1900 offset)
-    ##cat("year[1]=",year[1])
-    ##res <- ifelse(year > 1800, year, ifelse(year > 100, year + 1900, year + 2000))
-    ##cat(" became ", res[1], "\n")
-    ##res
+    # handle e.g. 2008 as 2008 (full year), 8 (year-2000 offset), or 108 (year 1900 offset)
     ifelse(year > 1800, year, ifelse(year > 50, year + 1900, year + 2000))
 }
 
@@ -2535,8 +2444,8 @@ unwrapAngle <- function(angle)
 #' oce.pmatch(c("s", "at", "te"), list(salinity=1, temperature=3.1))
 ocePmatch <- function(x, table, nomatch=NA_integer_, duplicates.ok=FALSE)
 {
-    ## FIXME: do element by element, and extend as follows, to allow string numbers
-    ## if (1 == length(grep("^[0-9]*$", ww))) which2[w] <- as.numeric(ww)
+    # FIXME: do element by element, and extend as follows, to allow string numbers
+    # if (1 == length(grep("^[0-9]*$", ww))) which2[w] <- as.numeric(ww)
     if (is.numeric(x)) {
         return(x)
     } else if (is.character(x)) {
@@ -2547,12 +2456,12 @@ ocePmatch <- function(x, table, nomatch=NA_integer_, duplicates.ok=FALSE)
                 res <- c(res, as.numeric(x[i]))
             } else {
                 ix <- pmatch(x[i], names(table), nomatch=nomatch, duplicates.ok=duplicates.ok)
-                ## use unlist() to expand e.g. list(x=1:10)
+                # use unlist() to expand e.g. list(x=1:10)
                 res <- c(res, if (is.na(ix)) NA else unlist(table[[ix]]))
             }
         }
-        ##m <- pmatch(x, names(table), nomatch=nomatch, duplicates.ok=duplicates.ok)
-        ##return(as.numeric(table)[m])
+        #m <- pmatch(x, names(table), nomatch=nomatch, duplicates.ok=duplicates.ok)
+        #return(as.numeric(table)[m])
         return(as.numeric(res))
     } else {
         stop("'x' must be numeric or character")
@@ -2599,8 +2508,9 @@ oceSpectrum <- function(x, ...)
     dt <- diff(res$freq[1:2])
     normalize <- var(x) / (sum(res$spec) * dt)
     res$spec <- normalize * res$spec
-    if (want.plot)
+    if (want.plot) {
         plot(res)
+    }
     invisible(res)
 }
 oce.spectrum <- oceSpectrum
@@ -2669,37 +2579,41 @@ vectorShow <- function(v, msg="", postscript="", digits=5L, n=2L, showNA=FALSE, 
 {
     startEnd <- function(v, n)
     {
-        if (length(v) < 2L*n)
+        if (length(v) < 2L*n) {
             paste(v, collapse=", ")
-        else
-            paste0(paste(head(v,n), collapse=","), ",...,", paste(paste(tail(v,n)), collapse=","))
+        } else {
+            paste0(paste(head(v, n), collapse=","), ",...,",
+                paste(paste(tail(v, n)), collapse=","))
+        }
     }
     dimv <- dim(v)
     nv <- length(v)
-    if (!nchar(msg))
+    if (!nchar(msg)) {
         msg <- deparse(substitute(expr=v, env=environment()))
+    }
     if (is.list(v) || (is.vector(v) && length(names(v)) > 0L)) {
         names <- names(v)
         values <- unname(v)
-        msg <- paste(msg, ": ", sep="")
+        msg <- paste0(msg, ": ")
         nv <- length(v)
         for (iv in seq_len(nv)) {
-            msg <- paste(msg, names[iv], "=", startEnd(values[[iv]], n), sep="")
-            if (iv < nv)
-                msg <- paste(msg, ", ", sep="")
+            msg <- paste0(msg, names[iv], "=", startEnd(values[[iv]], n))
+            if (iv < nv) {
+                msg <- paste0(msg, ", ")
+            }
         }
-        if (showNewline)
-            msg <- paste(msg, "\n", sep="")
+        if (showNewline) {
+            msg <- paste0(msg, "\n")
+        }
         return(msg)
     } else {
         if (!is.null(dimv)) {
-            msg <- paste(msg,
-                paste("[",
-                    paste(unlist(lapply(dimv, function(x) paste("1:",x,sep=""))),collapse=", "),
-                    "]",
-                    sep=""))
+            msg <- paste0(msg,
+                paste0("[",
+                    paste(unlist(lapply(dimv, function(x) paste0("1:", x))), collapse=", "),
+                    "]"))
         } else if (nv > 1) {
-            msg <- paste(msg, paste("[1:", nv, "]", sep=""))
+            msg <- paste0(msg, paste0("[1:", nv, "]"))
         }
         if (nchar(msg) && !grepl(":$", msg)) {
             msg <- paste0(msg, ": ")
@@ -2720,8 +2634,8 @@ vectorShow <- function(v, msg="", postscript="", digits=5L, n=2L, showNA=FALSE, 
                 res <- paste(msg, paste(format(v, digits=digits), collapse=", "), sep="")
             } else {
                 res <- paste(msg, paste(format(v[1:n], digits=digits), collapse=", "),
-                             ", ..., ", paste(format(v[nv-seq.int(n-1, 0)], digits=digits), collapse=", "),
-                             sep="")
+                    ", ..., ", paste(format(v[nv-seq.int(n-1, 0)], digits=digits), collapse=", "),
+                    sep="")
                 if (showNA)
                     res <- paste0(res, " (", sum(is.na(v)), " NA)")
             }
@@ -2736,10 +2650,12 @@ vectorShow <- function(v, msg="", postscript="", digits=5L, n=2L, showNA=FALSE, 
             }
         }
     }
-    if (nchar(postscript) > 0)
+    if (nchar(postscript) > 0) {
         res <- paste(res, postscript)
-    if (showNewline)
+    }
+    if (showNewline) {
         res <- paste(res, "\n", sep="")
+    }
     res
 }
 
@@ -2758,7 +2674,7 @@ vectorShow <- function(v, msg="", postscript="", digits=5L, n=2L, showNA=FALSE, 
 #' @author Dan Kelley
 fullFilename <- function(filename)
 {
-    warn <- options('warn')$warn
+    warn <- options("warn")$warn
     options(warn=-1)
     res <- normalizePath(filename)
     options(warn=warn)
@@ -2811,8 +2727,7 @@ fullFilename <- function(filename)
 #' @family functions that create labels
 #'
 #' @author Dan Kelley
-resizableLabel <- function(item, axis="x", sep, unit=NULL,
-    debug=getOption("oceDebug"))
+resizableLabel <- function(item, axis="x", sep, unit=NULL, debug=getOption("oceDebug"))
 {
     oceDebug(debug, "resizableLabel(item=\"", item,
         "\", axis=\"", axis,
@@ -2836,21 +2751,23 @@ resizableLabel <- function(item, axis="x", sep, unit=NULL,
         paste("spectral", "density", "m2/cph"), "sigma0", "sigma1", "sigma2",
         "sigma3", "sigma4", "Sstar", "SR")
 
-    ## FIXME: if anything is added, run the next, and paste results into roxygen.
-    ## > A<-paste0("'",paste(sort(itemAllowed), collapse="'`, `'"),"'");A
-    ## NOTE: some hand-tweaking must be done to fix linebreaks and (preferably) to
-    ## change the ' into a ".
+    # FIXME: if anything is added, run the next, and paste results into roxygen.
+    # > A<-paste0("'",paste(sort(itemAllowed), collapse="'`, `'"),"'");A
+    # NOTE: some hand-tweaking must be done to fix linebreaks and (preferably) to
+    # change the ' into a ".
     if (!missing(unit)) {
         if (is.list(unit)) {
             unit <- unit[[1]] # second item is a scale
         }
-        if (0 == length(unit) || 0 == nchar(unit))
+        if (0 == length(unit) || 0 == nchar(unit)) {
             unit <- NULL
+        }
     }
-    ## Previous to 2016-06-11, an error was reported if there was no match.
+    # Previous to 2016-06-11, an error was reported if there was no match.
     itemAllowedMatch <- pmatch(item, itemAllowed)
-    if (!is.na(itemAllowedMatch))
+    if (!is.na(itemAllowedMatch)) {
         item <- itemAllowed[itemAllowedMatch[1]]
+    }
     if (getOption("oceUnitBracket") == "[") {
         L <- " ["
         R <- "]"
@@ -2867,11 +2784,11 @@ resizableLabel <- function(item, axis="x", sep, unit=NULL,
     if (item == "T" || item == "temperature") {
         var <- gettext("Temperature", domain="R-oce")
         if (is.null(unit)) {
-            ##message("no unit given for temperature")
+            #message("no unit given for temperature")
             full <- bquote(.(var)*.(L)*degree*"C"*.(R))
             abbreviated <- bquote("T"*.(L)*degree*"C"*.(R))
         } else {
-            ##message("unit given for temperature")
+            #message("unit given for temperature")
             full <- bquote(.(var)*.(L)*.(unit[[1]])*.(R))
             abbreviated <- bquote("T"*.(L)*.(unit[[1]])*.(R))
         }
@@ -2884,14 +2801,14 @@ resizableLabel <- function(item, axis="x", sep, unit=NULL,
         full <- bquote(.(var)*.(L)*S/m*.(R))
         abbreviated <- bquote("C"*.(L)*S/m*.(R))
     } else if (item == "C") {
-        ## unitless form
+        # unitless form
         var <- gettext("Conductivity Ratio", domain="R-oce")
         unit <- gettext("unitless", domain="R-oce")
         full <- bquote(.(var)*.(L)*.(unit[[1]])*.(R))
         abbreviated <- bquote("C")
     } else if (item %in% c("CT",
-            paste("conservative", "temperature"),
-            paste("Conservative", "Temperature"))) {
+        paste("conservative", "temperature"),
+        paste("Conservative", "Temperature"))) {
         var <- gettext("Conservative Temperature", domain="R-oce")
         full <- bquote(.(var)*.(L)*degree*"C"*.(R))
         abbreviated <- bquote(Theta*.(L)*degree*"C"*.(R))
@@ -2942,7 +2859,7 @@ resizableLabel <- function(item, axis="x", sep, unit=NULL,
             abbreviated <- bquote(phantom()^3*H*.(L)*.(unit[[1]])*.(R))
         }
     } else if (item == "N2") {
-        ## full <- bquote("Square of Buoyancy Frequency"*.(L)*s^-2*.(R))
+        # full <- bquote("Square of Buoyancy Frequency"*.(L)*s^-2*.(R))
         full  <- bquote(N^2*.(L)*s^-2*.(R))
         abbreviated <- bquote(N^2*.(L)*s^-2*.(R))
     } else if (item == "nitrate") {
@@ -3027,7 +2944,7 @@ resizableLabel <- function(item, axis="x", sep, unit=NULL,
     } else if (item == "fluorescence") {
         var <- gettext("Fluorescence", domain="R-oce")
         if (is.null(unit)) {
-            ## I've no idea what a 'standard' unit might be
+            # I've no idea what a 'standard' unit might be
             full <- bquote(.(var))
             abbreviated <- full
         } else {
@@ -3047,8 +2964,8 @@ resizableLabel <- function(item, axis="x", sep, unit=NULL,
         full <- gettext("Salinity", domain="R-oce")
         abbreviated <- expression(S)
     } else if (item %in% c("SA",
-            paste("absolute", "salinity"),
-            paste("Absolute", "Salinity"))) {
+        paste("absolute", "salinity"),
+        paste("Absolute", "Salinity"))) {
         var <- gettext("Absolute Salinity", domain="R-oce")
         full <- bquote(.(var)*.(L)*g/kg*.(R))
         abbreviated <- bquote(S[A]*.(L)*g/kg*.(R))
@@ -3099,11 +3016,11 @@ resizableLabel <- function(item, axis="x", sep, unit=NULL,
         abbreviated <- full <- bquote(.(var)*.(L)*m/s*.(R))
     } else if (item == "latitude") {
         var <- gettext("Latitude", domain="R-oce")
-        ## maybe add deg "N" "S" etc here, but maybe not (aesthetics)
+        # maybe add deg "N" "S" etc here, but maybe not (aesthetics)
         abbreviated <- full <- var
     } else if (item == "longitude") {
         var <- gettext("Longitude", domain="R-oce")
-        ## maybe add deg "E" "W" etc here, but maybe not (aesthetics)
+        # maybe add deg "E" "W" etc here, but maybe not (aesthetics)
         abbreviated <- full <- var
     } else if (item == paste("frequency", "cph")) {
         var <- gettext("Frequency", domain="R-oce")
@@ -3122,7 +3039,7 @@ resizableLabel <- function(item, axis="x", sep, unit=NULL,
         oceDebug(debug, "unknown item=\"", item, "\"\n", sep="")
         if (is.null(unit)) {
             oceDebug(debug, "no unit given\n")
-            ##message("no unit given")
+            #message("no unit given")
             full <- item
             abbreviated <- full
         } else {
@@ -3135,13 +3052,6 @@ resizableLabel <- function(item, axis="x", sep, unit=NULL,
     whichAxis <- if (axis == "x") 1 else 2
     spaceAvailable <- abs(par("fin")[whichAxis])
     fraction <- spaceNeeded / spaceAvailable
-    ##cat("pin=", par('pin'), "\n")
-    ##cat("spaceNeeded: in inches:", spaceNeeded, "\n")
-    ##cat("whichAxis=", whichAxis, "\n")
-    ##cat("spaceAvailable=", spaceAvailable, "\n")
-    ##cat("fraction=", fraction, "\n")
-    #print(full)
-    #print(abbreviated)
     oceDebug(debug, "} # resizableLabel\n", unindent=1, style="bold")
     if (fraction < 1) full else abbreviated
 }
@@ -3198,15 +3108,15 @@ rotateAboutZ <- function(x, angle)
     allowedClasses <- c("adp", "adv", "cm")
     if (!(class(x) %in% allowedClasses))
         stop("cannot rotate for class \"", class(x), "\"; try one of: \"",
-             paste(allowedClasses, collapse="\" \""), "\")")
+            paste(allowedClasses, collapse="\" \""), "\")")
     if (inherits(x, "adp")) {
         if (is.ad2cp(x))
             stop("this function does not work yet for AD2CP data")
         if (x[["oceCoordinate"]] != "enu")
             stop("cannot rotate adp unless coordinate system is 'enu'; see ?toEnu or ?xyzToEnu")
         V <- x[["v"]]
-        ## Work through the bins, transforming a 3D array operation to a
-        ## sequence of 2D matrix operations.
+        # Work through the bins, transforming a 3D array operation to a
+        # sequence of 2D matrix operations.
         for (j in seq_len(dim(V)[2])) {
             uvr <- rotation %*% t(V[, j, 1:2])
             V[, j, 1] <- uvr[1, ]
@@ -3227,11 +3137,11 @@ rotateAboutZ <- function(x, angle)
         res@data$v <- uvr[2, ]
     } else {
         stop("cannot rotate for class \"", class(x), "\"; try one of: \"",
-             paste(allowedClasses, collapse="\" \""), "\". (internal error: please report)")
+            paste(allowedClasses, collapse="\" \""), "\". (internal error: please report)")
     }
-    ## Update processing log
+    # Update processing log
     res@processingLog <- processingLogAppend(res@processingLog,
-                                             paste("rotateAboutZ(x, angle=", angle, ")", sep=""))
+        paste("rotateAboutZ(x, angle=", angle, ")", sep=""))
     res
 }
 
@@ -3255,15 +3165,16 @@ latlonFormat <- function(lat, lon, digits=max(6, getOption("digits") - 1))
     n <- length(lon)
     res <- vector("character", n)
     for (i in 1:n) {
-        if (is.na(lat[i]) || is.na(lon[i]))
+        if (is.na(lat[i]) || is.na(lon[i])) {
             res[i] <- "Lat and lon unknown"
-        else
+        } else {
             res[i] <- paste(format(abs(lat[i]), digits=digits),
-                             if (lat[i] > 0) gettext("N", domain="R-oce") else gettext("S", domain="R-oce"),
-                             " ",
-                             format(abs(lon[i]), digits=digits),
-                             if (lon[i] > 0) gettext("E", domain="R-oce") else gettext("W", domain="R-oce"),
-                             sep="")
+                if (lat[i] > 0) gettext("N", domain="R-oce") else gettext("S", domain="R-oce"),
+                " ",
+                format(abs(lon[i]), digits=digits),
+                if (lon[i] > 0) gettext("E", domain="R-oce") else gettext("W", domain="R-oce"),
+                sep="")
+        }
     }
     res
 }
@@ -3285,14 +3196,17 @@ latlonFormat <- function(lat, lon, digits=max(6, getOption("digits") - 1))
 latFormat <- function(lat, digits=max(6, getOption("digits") - 1))
 {
     n <- length(lat)
-    if (n < 1) return("")
+    if (n < 1)
+        return("")
     res <- vector("character", n)
     for (i in 1:n) {
-        if (is.na(lat[i]))
+        if (is.na(lat[i])) {
             res[i] <-  ""
-        else
+        } else {
             res[i] <- paste(format(abs(lat[i]), digits=digits),
-                             if (lat[i] > 0) gettext("N", domain="R-oce") else gettext("S", domain="R-oce"), sep="")
+                gettext(if (lat[i] > 0.0) "N" else "S", domain="R-oce"),
+                sep="")
+        }
     }
     res
 }
@@ -3314,15 +3228,17 @@ latFormat <- function(lat, digits=max(6, getOption("digits") - 1))
 lonFormat <- function(lon, digits=max(6, getOption("digits") - 1))
 {
     n <- length(lon)
-    if (n < 1) return("")
+    if (n < 1)
+        return("")
     res <- vector("character", n)
     for (i in 1:n)
-        if (is.na(lon[i]))
-            res[i] <- ""
-        else
-            res[i] <- paste(format(abs(lon[i]), digits=digits),
-                             if (lon[i] > 0) gettext("E", domain="R-oce") else gettext("W", domain="R-oce"),
-                             sep="")
+    if (is.na(lon[i])) {
+        res[i] <- ""
+    } else {
+        res[i] <- paste(format(abs(lon[i]), digits=digits),
+            gettext(if (lon[i] > 0.0) "E" else "W", domain="R-oce"),
+            sep="")
+    }
     res
 }
 
@@ -3350,11 +3266,12 @@ lon360 <- function(x)
     shift <- function(X) ifelse(X < 0, 360 + X, X)
     res <- x
     if (inherits(x, "section")) {
-        ## Shift section-level metadata.
+        # Shift section-level metadata.
         res@metadata$longitude <- shift(x@metadata$longitude)
-        ## Shift each station, by calling lon360() on that (CTD) object.
-        for (istn in seq_along(x[["station"]]))
+        # Shift each station, by calling lon360() on that (CTD) object.
+        for (istn in seq_along(x[["station"]])) {
             res@data$station[[istn]] <- lon360(x@data$station[[istn]])
+        }
         res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     } else if (inherits(x, "oce")) {
         if ("longitude" %in% names(x[["metadata"]]))
@@ -3391,100 +3308,100 @@ lon360 <- function(x)
 #' @family things relating to time
 GMTOffsetFromTz <- function(tz)
 {
-    ## Data are from
-    ##   https://www.timeanddate.com/library/abbreviations/timezones/
-    ## and hand-edited, so there may be errors.  Also, note that some of these
-    ## contradict ... I've commented out conflicting definitions that I think
-    ## will come up most rarely in use, but perhaps something better should
-    ## be devised.  (Maybe this is not a problem.  Maybe only MEDS uses these,
-    ## as opposed to GMT offsets, and maybe they only work in 5 zones, anyway...)
-    if (tz == "A"   )   return( -1  ) # Alpha Time Zone Military        UTC + 1 hour
-    if (tz == "ACDT")   return(-10.5) # Australian Central Daylight Time   Australia    UTC + 10:30 hours
-    if (tz == "ACST")   return( -9.5) # Australian Central Standard Time  Australia     UTC + 9:30 hours
-    if (tz == "ADT" )   return( 3   ) # Atlantic Daylight Time  North America   UTC - 3 hours
-    if (tz == "AEDT")   return(-11  ) # Aus. East. Day. Time or Aus. East Summer Time Aus. UTC + 11 hours
-    if (tz == "AEST")   return(-10  ) # Australian Eastern Standard Time  Australia UTC + 10 hours
-    if (tz == "AKDT")   return(  8  ) # Alaska Daylight Time    North America   UTC - 8 hours
-    if (tz == "AKST")   return(  9  ) # Alaska Standard Time    North America   UTC - 9 hours
-    if (tz == "AST" )   return(  4  ) # Atlantic Standard Time  North America   UTC - 4 hours
-    if (tz == "AWDT")   return( -9  ) # Australian Western Daylight Time        Australia       UTC + 9 hours
-    if (tz == "AWST")   return( -8  ) # Australian Western Standard Time        Australia       UTC + 8 hours
-    if (tz == "B"   )   return( -2  ) # Bravo Time Zone Military        UTC + 2 hours
-    if (tz == "BST" )   return( -1  ) # British Summer Time     Europe  UTC + 1 hour
-    if (tz == "C"   )   return( -3  ) # Charlie Time Zone       Military        UTC + 3 hours
-    ##if (tz == "CDT")  return(-10.5) # Central Daylight Time   Australia       UTC + 10:30 hours
-    if (tz == "CDT" )   return(  5  ) # Central Daylight Time   North America   UTC - 5 hours
-    if (tz == "CEDT")   return( -2  ) # Central European Daylight Time  Europe  UTC + 2 hours
-    if (tz == "CEST")   return( -2  ) # Central European Summer Time    Europe  UTC + 2 hours
-    if (tz == "CET" )   return( -1  ) # Central European Time   Europe  UTC + 1 hour
-    ##if (tz == "CST" ) return(-10.5) # Central Summer Time     Australia       UTC + 10:30 hours
-    ##if (tz == "CST" ) return( -9.5) # Central Standard Time   Australia       UTC + 9:30 hours
-    if (tz == "CST" )   return(  6  ) # Central Standard Time   North America   UTC - 6 hours
-    if (tz == "CXT" )   return( -7  ) # Christmas Island Time   Australia       UTC + 7 hours
-    if (tz == "D"   )   return( -4  ) # Delta Time Zone Military        UTC + 4 hours
-    if (tz == "E"   )   return( -5  ) # Echo Time Zone  Military        UTC + 5 hours
-    ##if (tz == "EDT" ) return( -11 ) # Eastern Daylight Time   Australia       UTC + 11 hours
-    if (tz == "EDT" )   return(  4  ) # Eastern Daylight Time   North America   UTC - 4 hours
-    if (tz == "EEDT")   return( -3  ) # Eastern European Daylight Time  Europe  UTC + 3 hours
-    if (tz == "EEST")   return( -3  ) # Eastern European Summer Time    Europe  UTC + 3 hours
-    if (tz == "EET")    return( -2  ) # Eastern European Time   Europe  UTC + 2 hours
-    ##if (tz == "EST")  return( -11 ) # Eastern Summer Time     Australia       UTC + 11 hours
-    ##if (tz == "EST")  return( -10 ) # Eastern Standard Time   Australia       UTC + 10 hours
-    if (tz == "EST" )   return(  5  ) # Eastern Standard Time   North America   UTC - 5 hours
-    if (tz == "F"   )   return( -6  ) # Foxtrot Time Zone       Military        UTC + 6 hours
-    if (tz == "G"   )   return( -7  ) # Golf Time Zone  Military        UTC + 7 hours
-    if (tz == "GMT" )   return(  0  ) # Greenwich Mean Time     Europe  UTC
-    if (tz == "H"   )   return( -8  ) # Hotel Time Zone Military        UTC + 8 hours
-    if (tz == "HAA" )   return(  3  ) # Heure Avancee de l'Atlantique   North America   UTC - 3 hours
-    if (tz == "HAC" )   return(  5  ) # Heure Avancee du Centre North America   UTC - 5 hours
-    if (tz == "HADT")   return(  9  ) # Hawaii-Aleutian Daylight Time   North America   UTC - 9 hours
-    if (tz == "HAE" )   return(  4  ) # Heure Avancee de l'Est  North America   UTC - 4 hours
-    if (tz == "HAP" )   return(  7  ) # Heure Avancee du Pacifique      North America   UTC - 7 hours
-    if (tz == "HAR" )   return(  6  ) # Heure Avancee des Rocheuses     North America   UTC - 6 hours
-    if (tz == "HAST")   return( 10  ) # Hawaii-Aleutian Standard Time   North America   UTC - 10 hours
-    if (tz == "HAT" )   return(  2.5) # Heure Avancee de Terre-Neuve    North America   UTC - 2:30 hours
-    if (tz == "HAY" )   return(  8  ) # Heure Avancee du Yukon  North America   UTC - 8 hours
-    if (tz == "HNA" )   return(  4  ) # Heure Normaee de l'Atlantique   North America   UTC - 4 hours
-    if (tz == "HNC" )   return(  6  ) # Heure Normale du Centre North America   UTC - 6 hours
-    if (tz == "HNE" )   return(  5  ) # Heure Normale de l'Est  North America   UTC - 5 hours
-    if (tz == "HNP" )   return(  8  ) # Heure Normale du Pacifique      North America   UTC - 8 hours
-    if (tz == "HNR" )   return(  7  ) # Heure Normale des Rocheuses     North America   UTC - 7 hours
-    if (tz == "HNT" )   return(  3.5) # Heure Normale de Terre-Neuve    North America   UTC - 3:30 hours
-    if (tz == "HNY" )   return(  9  ) # Heure Normale du Yukon  North America   UTC - 9 hours
-    if (tz == "I"   )   return( -9  ) # India Time Zone Military        UTC + 9 hours
-    if (tz == "IST" )   return( -1  ) # Irish Summer Time       Europe  UTC + 1 hour
-    if (tz == "K"   )   return(-10  ) # Kilo Time Zone  Military        UTC + 10 hours
-    if (tz == "L"   )   return(-11  ) # Lima Time Zone  Military        UTC + 11 hours
-    if (tz == "M"   )   return(-12  ) # Mike Time Zone  Military        UTC + 12 hours
-    if (tz == "MDT" )   return(  6  ) # Mountain Daylight Time  North America   UTC - 6 hours
-    if (tz == "MESZ")   return( -2  ) # Mitteleuroaische Sommerzeit     Europe  UTC + 2 hours
-    if (tz == "MEZ" )   return( -1  ) # Mitteleuropaische Zeit  Europe  UTC + 1 hour
-    if (tz == "MST" )   return(  7  ) # Mountain Standard Time  North America   UTC - 7 hours
-    if (tz == "N"   )   return(  1  ) # November Time Zone      Military        UTC - 1 hour
-    if (tz == "NDT" )   return(  2.5) # Newfoundland Daylight Time      North America   UTC - 2:30 hours
-    if (tz == "NFT" )   return(-11.5) # Norfolk (Island) Time   Australia       UTC + 11:30 hours
-    if (tz == "NST" )   return(  3.5) # Newfoundland Standard Time      North America   UTC - 3:30 hours
-    if (tz == "O"   )   return(  1  ) # Oscar Time Zone Military        UTC - 2 hours
-    if (tz == "P"   )   return(  3  ) # Papa Time Zone  Military        UTC - 3 hours
-    if (tz == "PDT" )   return(  7  ) # Pacific Daylight Time   North America   UTC - 7 hours
-    if (tz == "PST" )   return(  8  ) # Pacific Standard Time   North America   UTC - 8 hours
-    if (tz == "Q"   )   return(  4  ) # Quebec Time Zone        Military        UTC - 4 hours
-    if (tz == "R"   )   return(  4  ) # Romeo Time Zone Military        UTC - 5 hours
-    if (tz == "S"   )   return(  6  ) # Sierra Time Zone        Military        UTC - 6 hours
-    if (tz == "T"   )   return(  7  ) # Tango Time Zone Military        UTC - 7 hours
-    if (tz == "U"   )   return(  8  ) # Uniform Time Zone       Military        UTC - 8 hours
-    if (tz == "UTC" )   return(  0  ) # Coordinated Universal Time      Europe  UTC
-    if (tz == "V"   )   return(  9  ) # Victor Time Zone        Military        UTC - 9 hours
-    if (tz == "W"   )   return( 10  ) # Whiskey Time Zone       Military        UTC - 10 hours
-    if (tz == "WDT" )   return( -9  ) # Western Daylight Time   Australia       UTC + 9 hours
-    if (tz == "WEDT")   return( -1  ) # Western European Daylight Time  Europe  UTC + 1 hour
-    if (tz == "WEST")   return( -1  ) # Western European Summer Time    Europe  UTC + 1 hour
-    if (tz == "WET")    return(  0  ) # Western European Time   Europe  UTC
-    ##if (tz == "WST")  return( -9  ) # Western Summer Time     Australia       UTC + 9 hours
-    if (tz == "WST")    return( -8  ) # Western Standard Time   Australia       UTC + 8 hours
-    if (tz == "X"  )    return( 11  ) # X-ray Time Zone Military        UTC - 11 hours
-    if (tz == "Y"  )    return( 12  ) # Yankee Time Zone        Military        UTC - 12 hours
-    if (tz == "Z"  )    return(  0  ) # Zulu Time Zone  Military        UTC
+    # Data are from
+    #   https://www.timeanddate.com/library/abbreviations/timezones/
+    # and hand-edited, so there may be errors.  Also, note that some of these
+    # contradict ... I've commented out conflicting definitions that I think
+    # will come up most rarely in use, but perhaps something better should
+    # be devised.  (Maybe this is not a problem.  Maybe only MEDS uses these,
+    # as opposed to GMT offsets, and maybe they only work in 5 zones, anyway...)
+    if (tz == "A")      return(-1) # Alpha Time Zone Military                UTC + 1 hour
+    if (tz == "ACDT")   return(-10.5) # Aus. Central Daylight Time  Aus.     UTC + 10:30 hours
+    if (tz == "ACST")   return(-9.5) # Aus. Central Standard Time Aus.ralia  UTC + 9:30 hours
+    if (tz == "ADT")    return(3) # Atlantic Daylight Time  North America    UTC - 3 hours
+    if (tz == "AEDT")   return(-11) # Aus. E Day. or Aus. E Sum Time Aus.    UTC + 11 hours
+    if (tz == "AEST")   return(-10) # Australian Eastern Standard Time  Aus. UTC + 10 hours
+    if (tz == "AKDT")   return(8) # Alaska Daylight Time    North America    UTC - 8 hours
+    if (tz == "AKST")   return(9) # Alaska Standard Time    North America    UTC - 9 hours
+    if (tz == "AST")    return(4) # Atlantic Standard Time  North America    UTC - 4 hours
+    if (tz == "AWDT")   return(-9) # Australian Western Daylight Time Aus.   UTC + 9 hours
+    if (tz == "AWST")   return(-8) # Australian Western Standard Time Aus.   UTC + 8 hours
+    if (tz == "B")      return(-2) # Bravo Time Zone Military                UTC + 2 hours
+    if (tz == "BST")    return(-1) # British Summer Time     Europe          UTC + 1 hour
+    if (tz == "C")      return(-3) # Charlie Time Zone       Military        UTC + 3 hours
+    #if (tz == "CDT")  return(-10.5) # Central Daylight Time   Australia    UTC + 10:30 hours
+    if (tz == "CDT")    return(5) # Central Daylight Time   North America    UTC - 5 hours
+    if (tz == "CEDT")   return(-2) # Central European Daylight Time  Europe  UTC + 2 hours
+    if (tz == "CEST")   return(-2) # Central European Summer Time    Europe  UTC + 2 hours
+    if (tz == "CET")    return(-1) # Central European Time   Europe          UTC + 1 hour
+    #if (tz == "CST")  return(-10.5) # Central Summer Time     Australia    UTC + 10:30 hours
+    #if (tz == "CST")  return(-9.5) # Central Standard Time   Australia     UTC + 9:30 hours
+    if (tz == "CST")    return(6) # Central Standard Time   North America    UTC - 6 hours
+    if (tz == "CXT")    return(-7) # Christmas Island Time   Australia       UTC + 7 hours
+    if (tz == "D")      return(-4) # Delta Time Zone Military                UTC + 4 hours
+    if (tz == "E")      return(-5) # Echo Time Zone  Military                UTC + 5 hours
+    #if (tz == "EDT")  return(-11) # Eastern Daylight Time   Australia      UTC + 11 hours
+    if (tz == "EDT")    return(4) # Eastern Daylight Time   North America    UTC - 4 hours
+    if (tz == "EEDT")   return(-3) # Eastern European Daylight Time  Europe  UTC + 3 hours
+    if (tz == "EEST")   return(-3) # Eastern European Summer Time    Europe  UTC + 3 hours
+    if (tz == "EET")    return(-2) # Eastern European Time   Europe          UTC + 2 hours
+    #if (tz == "EST")  return(-11) # Eastern Summer Time     Australia      UTC + 11 hours
+    #if (tz == "EST")  return(-10) # Eastern Standard Time   Australia      UTC + 10 hours
+    if (tz == "EST")    return(5) # Eastern Standard Time   North America    UTC - 5 hours
+    if (tz == "F")      return(-6) # Foxtrot Time Zone       Military        UTC + 6 hours
+    if (tz == "G")      return(-7) # Golf Time Zone  Military                UTC + 7 hours
+    if (tz == "GMT")    return(0) # Greenwich Mean Time     Europe           UTC
+    if (tz == "H")      return(-8) # Hotel Time Zone Military                UTC + 8 hours
+    if (tz == "HAA")    return(3) # Heure Avancee de l'Atlantique N. Amer.   UTC - 3 hours
+    if (tz == "HAC")    return(5) # Heure Avancee du Centre North America    UTC - 5 hours
+    if (tz == "HADT")   return(9) # Hawaii-Aleutian Daylight Time N. Amer.   UTC - 9 hours
+    if (tz == "HAE")    return(4) # Heure Avancee de l'Est  North America    UTC - 4 hours
+    if (tz == "HAP")    return(7) # Heure Avancee du Pacifique  N. America   UTC - 7 hours
+    if (tz == "HAR")    return(6) # Heure Avancee des Rocheuses N. America   UTC - 6 hours
+    if (tz == "HAST")   return(10) # Hawaii-Aleutian Standard Time N. Amer.  UTC - 10 hours
+    if (tz == "HAT")    return(2.5) # Heure Avancee de Terre-Neuve N. Amer.  UTC - 2:30 hours
+    if (tz == "HAY")    return(8) # Heure Avancee du Yukon  North America    UTC - 8 hours
+    if (tz == "HNA")    return(4) # Heure Normaee de l'Atlantique N. Amer.   UTC - 4 hours
+    if (tz == "HNC")    return(6) # Heure Normale du Centre North America    UTC - 6 hours
+    if (tz == "HNE")    return(5) # Heure Normale de l'Est  North America    UTC - 5 hours
+    if (tz == "HNP")    return(8) # Heure Normale du Pacifique  N. America   UTC - 8 hours
+    if (tz == "HNR")    return(7) # Heure Normale des Rocheuses N. America   UTC - 7 hours
+    if (tz == "HNT")    return(3.5) # Heure Normale de Terre-Neuve N.Amer.   UTC - 3:30 hours
+    if (tz == "HNY")    return(9) # Heure Normale du Yukon  North America    UTC - 9 hours
+    if (tz == "I")      return(-9) # India Time Zone Military                UTC + 9 hours
+    if (tz == "IST")    return(-1) # Irish Summer Time       Europe          UTC + 1 hour
+    if (tz == "K")      return(-10) # Kilo Time Zone  Military               UTC + 10 hours
+    if (tz == "L")      return(-11) # Lima Time Zone  Military               UTC + 11 hours
+    if (tz == "M")      return(-12) # Mike Time Zone  Military               UTC + 12 hours
+    if (tz == "MDT")    return(6) # Mountain Daylight Time  North America    UTC - 6 hours
+    if (tz == "MESZ")   return(-2) # Mitteleuroaische Sommerzeit Europe      UTC + 2 hours
+    if (tz == "MEZ")    return(-1) # Mitteleuropaische Zeit  Europe          UTC + 1 hour
+    if (tz == "MST")    return(7) # Mountain Standard Time  North America    UTC - 7 hours
+    if (tz == "N")      return(1) # November Time Zone      Military         UTC - 1 hour
+    if (tz == "NDT")    return(2.5) # NFLD Daylight Time North America       UTC - 2:30 hours
+    if (tz == "NFT")    return(-11.5) # Norfolk (Island) Time   Australia    UTC + 11:30 hours
+    if (tz == "NST")    return(3.5) # NFLD Std. Time North America           UTC - 3:30 hours
+    if (tz == "O")      return(1) # Oscar Time Zone Military                 UTC - 2 hours
+    if (tz == "P")      return(3) # Papa Time Zone  Military                 UTC - 3 hours
+    if (tz == "PDT")    return(7) # Pacific Daylight Time   North America    UTC - 7 hours
+    if (tz == "PST")    return(8) # Pacific Standard Time   North America    UTC - 8 hours
+    if (tz == "Q")      return(4) # Quebec Time Zone        Military         UTC - 4 hours
+    if (tz == "R")      return(4) # Romeo Time Zone Military                 UTC - 5 hours
+    if (tz == "S")      return(6) # Sierra Time Zone        Military         UTC - 6 hours
+    if (tz == "T")      return(7) # Tango Time Zone Military                 UTC - 7 hours
+    if (tz == "U")      return(8) # Uniform Time Zone       Military         UTC - 8 hours
+    if (tz == "UTC")    return(0) # Coordinated Universal Time      Europe   UTC
+    if (tz == "V")      return(9) # Victor Time Zone        Military         UTC - 9 hours
+    if (tz == "W")      return(10) # Whiskey Time Zone       Military        UTC - 10 hours
+    if (tz == "WDT")    return(-9) # Western Daylight Time   Australia       UTC + 9 hours
+    if (tz == "WEDT")   return(-1) # Western European Daylight Time  Europe  UTC + 1 hour
+    if (tz == "WEST")   return(-1) # Western European Summer Time    Europe  UTC + 1 hour
+    if (tz == "WET")    return(0) # Western European Time   Europe  UTC
+    #if (tz == "WST")  return(-9) # Western Summer Time     Australia       UTC + 9 hours
+    if (tz == "WST")    return(-8) # Western Standard Time   Australia       UTC + 8 hours
+    if (tz == "X")      return(11) # X-ray Time Zone Military                UTC - 11 hours
+    if (tz == "Y")      return(12) # Yankee Time Zone        Military        UTC - 12 hours
+    if (tz == "Z")      return(0) # Zulu Time Zone  Military                 UTC
 }
 
 
@@ -3514,8 +3431,9 @@ GMTOffsetFromTz <- function(tz)
 #' g <- gravity(45) # 9.8
 gravity <- function(latitude=45, degrees=TRUE)
 {
-    if (degrees) latitude <- latitude * 0.0174532925199433
-    9.780318 * ( 1.0 + 5.3024e-3 * sin(latitude)^2 - 5.9e-6 * sin(2*latitude)^2 )
+    if (degrees)
+        latitude <- latitude * 0.0174532925199433
+    9.780318 * (1.0 + 5.3024e-3 * sin(latitude)^2 - 5.9e-6 * sin(2*latitude)^2)
 }
 
 
@@ -3579,13 +3497,13 @@ gravity <- function(latitude=45, degrees=TRUE)
 #' # 1. Demonstrate step-function response
 #' y <- c(rep(1, 10), rep(-1, 10))
 #' x <- seq_along(y)
-#' plot(x, y, type='o', ylim=c(-1.05, 1.05))
+#' plot(x, y, type="o", ylim=c(-1.05, 1.05))
 #' BH <- makeFilter("blackman-harris", 11, asKernel=FALSE)
 #' H <- makeFilter("hamming", 11, asKernel=FALSE)
 #' yBH <- stats::filter(y, BH)
-#' points(x, yBH, col=2, type='o')
+#' points(x, yBH, col=2, type="o")
 #' yH <- stats::filter(y, H)
-#' points(yH, col=3, type='o')
+#' points(yH, col=3, type="o")
 #' legend("topright", col=1:3, cex=2/3, pch=1,
 #'        legend=c("input", "Blackman Harris", "Hamming"))
 #'
@@ -3602,19 +3520,19 @@ gravity <- function(latitude=45, degrees=TRUE)
 #' sRH <- spectrum(rh, plot=FALSE, spans=c(11, 5, 3))
 #' par(mfrow=c(2, 1), mar=c(3, 3, 1, 1), mgp=c(2, 0.7, 0))
 #' plot(sR$freq, sRH$spec/sR$spec, xlab="Frequency", ylab="Power Transfer",
-#'      type='l', lwd=5, col='gray')
+#'      type="l", lwd=5, col="gray")
 #' theory <- freqz(H, n=seq(0,pi,length.out=100))
 #' # Note we must square the modulus for the power spectrum
-#' lines(theory$f/pi/2, Mod(theory$h)^2, lwd=1, col='red')
+#' lines(theory$f/pi/2, Mod(theory$h)^2, lwd=1, col="red")
 #' grid()
 #' legend("topright", col=c("gray", "red"), lwd=c(5, 1), cex=2/3,
 #'        legend=c("Practical", "Theory"), bg="white")
 #' plot(log10(sR$freq), log10(sRH$spec/sR$spec),
 #'      xlab="log10 Frequency", ylab="log10 Power Transfer",
-#'      type='l', lwd=5, col='gray')
+#'      type="l", lwd=5, col="gray")
 #' theory <- freqz(H, n=seq(0,pi,length.out=100))
 #' # Note we must square the modulus for the power spectrum
-#' lines(log10(theory$f/pi/2), log10(Mod(theory$h)^2), lwd=1, col='red')
+#' lines(log10(theory$f/pi/2), log10(Mod(theory$h)^2), lwd=1, col="red")
 #' grid()
 #' legend("topright", col=c("gray", "red"), lwd=c(5, 1), cex=2/3,
 #'        legend=c("Practical", "Theory"), bg="white")
@@ -3626,7 +3544,7 @@ makeFilter <- function(type=c("blackman-harris", "rectangular", "hamming", "hann
         stop("must supply 'm'")
     i <- seq(0, m - 1)
     if (type == "blackman-harris") {
-        ## See Harris (1978) table on p65
+        # See Harris (1978) table on p65
         if (m == 2 * floor(m/2)) {
             m <- m + 1
             warning("increased filter length by 1, to make it odd")
@@ -3648,7 +3566,8 @@ makeFilter <- function(type=c("blackman-harris", "rectangular", "hamming", "hann
         stop("m must be odd")
     middle <- ceiling(m / 2)
     coef <- coef[middle:m]
-    return(kernel(coef=coef, name=paste(type, "(", m, ")", sep=""), r=0)) # the r=0 is to prevent code-analysis warning; it only applies to Fejer, which we do not use
+    # the r=0 is to prevent code-analysis warning; it only applies to Fejer, which we do not use
+    return(kernel(coef=coef, name=paste(type, "(", m, ")", sep=""), r=0))
 }
 
 
@@ -3704,7 +3623,7 @@ makeFilter <- function(type=c("blackman-harris", "rectangular", "hamming", "hann
 #' x <- seq(0, 10)
 #' y <- ifelse(x == 5, 1, 0)
 #' f1 <- oceFilter(y, a, b)
-#' plot(x, y, ylim=c(-0, 1.5), pch="o", type='b')
+#' plot(x, y, ylim=c(-0, 1.5), pch="o", type="b")
 #' points(x, f1, pch="x", col="red")
 #'
 #' # remove the phase lag
@@ -3720,14 +3639,12 @@ oceFilter <- function(x, a=1, b, zero.phase=FALSE)
         stop("must supply x")
     if (missing(b))
         stop("must supply b")
-    if (!zero.phase) {
+    if (!zero.phase)
         return(do_oce_filter(x, a, b))
-    } else {
-        res <- do_oce_filter(x, a, b)
-        res <- rev(res)
-        res <- do_oce_filter(res, a, b)
-        return(rev(res))
-    }
+    res <- do_oce_filter(x, a, b)
+    res <- rev(res)
+    res <- do_oce_filter(res, a, b)
+    return(rev(res))
 }
 oce.filter <- oceFilter
 
@@ -3841,10 +3758,10 @@ oce.filter <- oceFilter
 #' plot(S, p, cex=0.5, col="blue", ylim=rev(range(p)))
 #' lines(g$zg, g$xg, col="red")
 interpBarnes <- function(x, y, z, w,
-                         xg, yg, xgl, ygl,
-                         xr, yr, gamma=0.5, iterations=2, trim=0,
-                         pregrid=FALSE,
-                         debug=getOption("oceDebug"))
+    xg, yg, xgl, ygl,
+    xr, yr, gamma=0.5, iterations=2, trim=0,
+    pregrid=FALSE,
+    debug=getOption("oceDebug"))
 {
     debug <- max(0, debug)
     oceDebug(debug, "interpBarnes(",
@@ -3901,25 +3818,27 @@ interpBarnes <- function(x, y, z, w,
     }
     if (!xrGiven) {
         xr <- diff(range(x, na.rm=TRUE)) / sqrt(n)
-        if (xr == 0)
+        if (xr == 0) {
             xr <- 1
+        }
         oceDebug(debug, "computed xr=", xr, " based on data density\n")
     }
     if (!yrGiven) {
         yr <- diff(range(y, na.rm=TRUE)) / sqrt(n)
-        if (yr == 0)
+        if (yr == 0) {
             yr <- 1
+        }
         oceDebug(debug, "computed yr=", yr, " based on data density\n")
     }
-    ## Handle pre-gridding (code not DRY but short enough to be ok)
+    # Handle pre-gridding (code not DRY but short enough to be ok)
     if (is.logical(pregrid)) {
         if (pregrid) {
             pregrid <- c(4, 4)
             oceDebug(debug, "pregrid: ", paste(pregrid, collapse=" "))
             pg <- binMean2D(x, y, z,
-                            xbreaks=seq(xg[1], tail(xg, 1), (xg[2]-xg[1]) / pregrid[1]),
-                            ybreaks=seq(yg[1], tail(yg, 1), (yg[2]-yg[1]) / pregrid[2]),
-                            flatten=TRUE)
+                xbreaks=seq(xg[1], tail(xg, 1), (xg[2]-xg[1]) / pregrid[1]),
+                ybreaks=seq(yg[1], tail(yg, 1), (yg[2]-yg[1]) / pregrid[2]),
+                flatten=TRUE)
             x <- pg$x
             y <- pg$y
             z <- pg$f
@@ -3934,16 +3853,16 @@ interpBarnes <- function(x, y, z, w,
             pregrid <- rep(pregrid, 2)
         oceDebug(debug, "pregrid: ", paste(pregrid, collapse=" "))
         pg <- binMean2D(x, y, z,
-                        xbreaks=seq(xg[1], tail(xg, 1), (xg[2]-xg[1])/pregrid[1]),
-                        ybreaks=seq(yg[1], tail(yg, 1), (yg[2]-yg[1])/pregrid[2]),
-                        flatten=TRUE)
+            xbreaks=seq(xg[1], tail(xg, 1), (xg[2]-xg[1])/pregrid[1]),
+            ybreaks=seq(yg[1], tail(yg, 1), (yg[2]-yg[1])/pregrid[2]),
+            flatten=TRUE)
         x <- pg$x
         y <- pg$y
         z <- pg$f
     }
-    for (i in seq_len(iterations))
+    for (i in seq_len(iterations)) {
         oceDebug(debug, "  Iteration ", i, ": use xr=", xr*gamma^((i-1)/2), " and yr=", yr*gamma^((i-1)/2), "\n")
-
+    }
     ok <- !is.na(x) & !is.na(y) & !is.na(z) & !is.na(w)
     if (sum(ok) > 0) {
         g <- do_interp_barnes(x[ok], y[ok], z[ok], w[ok], xg, yg, xr, yr, gamma, iterations)
@@ -3954,9 +3873,9 @@ interpBarnes <- function(x, y, z, w,
         rval <- list(xg=xg, yg=yg, zg=g$zg, wg=g$wg, zd=g$zd)
     } else {
         rval <- list(xg=xg, yg=yg,
-                     zg=matrix(NA, nrow=length(xg), ncol=length(yg)),
-                     wg=matrix(NA, nrow=length(xg), ncol=length(yg)),
-                     zd=rep(NA, length(x)))
+            zg=matrix(NA, nrow=length(xg), ncol=length(yg)),
+            wg=matrix(NA, nrow=length(xg), ncol=length(yg)),
+            zd=rep(NA, length(x)))
     }
     oceDebug(debug, sprintf("filled %.3f%% of z matrix\n", 100*sum(is.finite(rval$zg))/prod(dim(rval$zg))))
     oceDebug(debug, "} # interpBarnes(...)\n", unindent=1, sep="")
@@ -3996,12 +3915,11 @@ interpBarnes <- function(x, y, z, w,
 #' C <- coriolis(45) # 1e-4
 coriolis <- function(latitude, degrees=TRUE)
 {
-    ## Siderial day 86164.1 s.
+    # Siderial day 86164.1 s.
     if (degrees) latitude <- latitude * 0.0174532925199433
-    ## http://www.iag-aig.org/attach/e354a3264d1e420ea0a9920fe762f2a0/51-groten.pdf 7292115e-11
+    # http://www.iag-aig.org/attach/e354a3264d1e420ea0a9920fe762f2a0/51-groten.pdf 7292115e-11
     2 * 7292115e-11 * sin(latitude)
 }
-
 
 
 #' Correct for drift in instrument clock
@@ -4048,8 +3966,9 @@ undriftTime <- function(x, slowEnd = 0, tname="time")
     res <- x
     time <- res@data[[tname]]
     nt <- length(time)
-    if (nt < 2) warning("too few data to to undrift time; returning object unaltered")
-    else {
+    if (nt < 2) {
+        warning("too few data to to undrift time; returning object unaltered")
+    } else {
         sampleInterval <- as.numeric(difftime(time[2], time[1], units="s"))
         nt <- length(time)
         nt.out <- floor(0.5 + nt + slowEnd / sampleInterval)
@@ -4070,8 +3989,6 @@ undriftTime <- function(x, slowEnd = 0, tname="time")
     res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     res
 }
-
-
 
 
 #' Fill a gap in an oce object
@@ -4103,11 +4020,11 @@ undriftTime <- function(x, slowEnd = 0, tname="time")
 #' # Integers
 #' x <- c(1:2, NA, NA, 5:6)
 #' y <- fillGap(x)
-#' print(data.frame(x,y))
+#' print(data.frame(x, y))
 #' # Floats
 #' x <- x + 0.1
 #' y <- fillGap(x)
-#' print(data.frame(x,y))
+#' print(data.frame(x, y))
 fillGap <- function(x, method=c("linear"), rule=1)
 {
     if (!is.numeric(x))
@@ -4115,14 +4032,16 @@ fillGap <- function(x, method=c("linear"), rule=1)
     method <- match.arg(method)
     class <- class(x)
     if (is.vector(x)) {
-        ##res <- .Call("fillgap1d", as.numeric(x), rule)
+        #res <- .Call("fillgap1d", as.numeric(x), rule)
         res <- do_fill_gap_1d(x, rule)
     } else if (is.matrix(x))  {
         res <- x
-        for (col in seq_len(ncol(x)))
+        for (col in seq_len(ncol(x))) {
             res[, col] <- do_fill_gap_1d(x[, col], rule)
-        for (row in seq_len(nrow(x)))
+        }
+        for (row in seq_len(nrow(x))) {
             res[row, ] <- do_fill_gap_1d(x[row, ], rule)
+        }
     } else {
         stop("only works if 'x' is a vector or a matrix")
     }
@@ -4174,20 +4093,20 @@ fillGap <- function(x, method=c("linear"), rule=1)
 #' library(oce)
 #' data(adp)
 #' plot(adp)
-#' adpDec <- decimate(adp,by=2,filter=c(1/4, 1/2, 1/4))
+#' adpDec <- decimate(adp, by=2, filter=c(1/4, 1/2, 1/4))
 #' plot(adpDec)
 decimate <- function(x, by=10, to, filter, debug=getOption("oceDebug"))
 {
     if (!inherits(x, "oce"))
         stop("method is only for oce objects")
-    oceDebug(debug, "in decimate(x,by=", by, ",to=", if (missing(to)) "unspecified" else to, "...)\n")
+    oceDebug(debug, "in decimate(x, by=", by, ", to=", if (missing(to)) "unspecified" else to, "...)\n")
     res <- x
     do.filter <- !missing(filter)
     if ("time" %in% names(x@data)) {
         if (missing(to))
             to <- length(x@data$time[[1]])
         if (length(by) == 1) {
-            ## FIXME: probably should not be here
+            # FIXME: probably should not be here
             select <- seq(from=1, to=to, by=by)
             oceDebug(debug, vectorShow(select, "select:"))
         }
@@ -4196,7 +4115,7 @@ decimate <- function(x, by=10, to, filter, debug=getOption("oceDebug"))
         oceDebug(debug, "decimate() on an ADP object\n")
         warning("decimate(adp) not working yet ... just returning the adp unchanged")
         return(res) # FIXME
-        ##nbeam <- dim(x@data$v)[3]
+        #nbeam <- dim(x@data$v)[3]
         for (name in names(x@data)) {
             oceDebug(debug, "decimating item named '", name, "'\n")
             if ("distance" == name)
@@ -4218,9 +4137,9 @@ decimate <- function(x, by=10, to, filter, debug=getOption("oceDebug"))
                 }
             } else if (is.array(x@data[[name]])) {
                 dim <- dim(x@data[[name]])
-                print(dim)
-                for (k in 1:dim[2]) {
-                    for (j in 1:dim[3]) {
+                #print(dim)
+                for (k in seq_len(dim[2])) {
+                    for (j in seq_len(dim[3])) {
                         oceDebug(debug, "subsetting x@data[[", name, "]][", j, ",", k, "], which is an array\n", sep="")
                         if (do.filter)
                             res@data[[name]][, j, k] <- filterSomething(x@data[[name]][, j, k], filter)
@@ -4230,7 +4149,7 @@ decimate <- function(x, by=10, to, filter, debug=getOption("oceDebug"))
             }
         }
     } else if (inherits(x, "adv")) {
-        ## FIXME: the (newer) adp code is probably better than this ADV code
+        # FIXME: the (newer) adp code is probably better than this ADV code
         oceDebug(debug, "decimate() on an ADV object\n")
         warning("decimate(adv) not working yet ... just returning the adv unchanged")
         return(res) # FIXME
@@ -4252,8 +4171,8 @@ decimate <- function(x, by=10, to, filter, debug=getOption("oceDebug"))
                 }
             } else if (is.array(x@data[[name]])) {
                 dim <- dim(x@data[[name]])
-                for (k in 1:dim[2]) {
-                    for (j in 1: dim[3]) {
+                for (k in seq_len(dim[2])) {
+                    for (j in seq_len(dim[3])) {
                         oceDebug(debug, "decimating x@data[[", name, ",", j, ",", k, "]], which is an array\n", sep="")
                         if (do.filter)
                             res@data[[name]][, j, k] <- filterSomething(x@data[[name]][, j, k], filter)
@@ -4280,7 +4199,7 @@ decimate <- function(x, by=10, to, filter, debug=getOption("oceDebug"))
             res@data[[name]] <- x@data[[name]][select]
     } else if (inherits(x, "echosounder")) {
         oceDebug(debug, "decimate() on an 'echosounder' object\n")
-        ## use 'by', ignoring 'to' and filter'
+        # use 'by', ignoring 'to' and filter'
         if (length(by) != 2)
             stop("length(by) must equal 2.  First element is width of boxcar in pings, second is width in depths")
         by <- as.integer(by)
@@ -4300,30 +4219,32 @@ decimate <- function(x, by=10, to, filter, debug=getOption("oceDebug"))
             ii <- 1:ncol
             depth2 <- binAverage(ii, depth, 1, ncol, byDepth)$y
             a2 <- matrix(nrow=nrow(a), ncol=length(depth2))
-            for (r in 1:nrow)
+            for (r in 1:nrow) {
                 a2[r, ] <- binAverage(ii, runmed(a[r, ], kDepth), 1, ncol, byDepth)$y
+            }
             res <- x
             res[["depth"]] <- depth2
             res[["a"]] <- a2
             x <- res # need for next step
         }
         if (byPing > 1) {
-            ##time <- x[["time"]]
+            #time <- x[["time"]]
             a <- x[["a"]]
             ncol <- ncol(a)
             nrow <- nrow(a)
             jj <- 1:nrow
             time2 <- binAverage(jj, as.numeric(x[["time"]]), 1, nrow, byPing)$y + as.POSIXct("1970-01-01 00:00:00", tz="UTC")
             a2 <- matrix(nrow=length(time2), ncol=ncol(a))
-            for (c in 1:ncol)
+            for (c in 1:ncol) {
                 a2[, c] <- binAverage(jj, runmed(a[, c], kPing), 1, nrow, byPing)$y
+            }
             res <- x
             res[["time"]] <- time2
             res[["latitude"]] <- binAverage(jj, x[["latitude"]], 1, nrow, byPing)$y
             res[["longitude"]] <- binAverage(jj, x[["longitude"]], 1, nrow, byPing)$y
             res[["a"]] <- a2
         }
-        ## do depth, rows of matrix, time, cols of matrix
+        # do depth, rows of matrix, time, cols of matrix
     } else if (inherits(x, "topo")) {
         oceDebug(debug, "Decimating a topo object")
         lonlook <- seq(1, length(x[["longitude"]]), by=by)
@@ -4337,8 +4258,9 @@ decimate <- function(x, by=10, to, filter, debug=getOption("oceDebug"))
             b <- x@data[[i]]
             if (is.list(b)) {
                 dim <- dim(b$msb)
-                if (!is.null(dim))
+                if (!is.null(dim)) {
                     res@data[[i]]$msb <- b$msb[seq(1, dim[1], by=by), seq(1, dim[2], by=by)]
+                }
                 dim <- dim(b$lsb)
                 res@data[[i]]$lsb <- b$lsb[seq(1, dim[1], by=by), seq(1, dim[2], by=by)]
             } else {
@@ -4391,20 +4313,21 @@ oceSmooth <- function(x, ...)
         stop("cannot smooth ADP objects (feel free to request this from the author)")
     } else if (inherits(x, "adv")) {
         for (name in names(x@data)) {
-            if (length(grep("^time", name)))
+            if (length(grep("^time", name))) {
                 next
+            }
             if (is.vector(x@data[[name]])) {
                 oceDebug(debug, "smoothing x@data$", name, ", which is a vector\n", sep="")
                 res@data[[name]] <- smooth(x@data[[name]], ...)
             } else if (is.matrix(x@data[[name]])) {
-                for (j in 1: dim(x@data[[name]])[2]) {
+                for (j in seq_len(dim(x@data[[name]])[2])) {
                     oceDebug(debug, "smoothing x@data[[", name, ",", j, "]], which is a matrix\n", sep="")
                     res@data[[name, j]] <- smooth(x@data[[name, j]], ...)
                 }
             } else if (is.array(x@data[[name]])) {
                 dim <- dim(x@data[[name]])
-                for (k in 1:dim[2]) {
-                    for (j in 1: dim[3]) {
+                for (k in seq_len(dim[2])) {
+                    for (j in seq_len(dim[3])) {
                         oceDebug(debug, "smoothing x@data[[", name, ",", j, "]], which is an arry \n", sep="")
                         res@data[[name, j, k]] <- smooth(x@data[[name, j, k]], ...)
                     }
@@ -4414,8 +4337,9 @@ oceSmooth <- function(x, ...)
         warning("oce.smooth() has recently been recoded for 'adv' objects -- do not trust it yet!")
     } else if (inherits(x, "ctd")) {
         res <- x
-        for (name in names(x@data))
+        for (name in names(x@data)) {
             res@data[[name]] <- smooth(x@data[[name]], ...)
+        }
     } else {
         stop("smoothing does not work (yet) for objects of class ", paste(class(x), collapse=" "))
     }
@@ -4477,44 +4401,45 @@ bcdToInteger <- function(x, endian=c("little", "big"))
 #'
 #' @examples
 #' library(oce)
-#' ## Note comparison with rawToBits():
+#' # Note comparison with rawToBits():
 #' a <- as.raw(0x0a)
 #' byteToBinary(a, "big")        # "00001010"
 #' as.integer(rev(rawToBits(a))) # 0 0 0 0 1 0 1 0
 byteToBinary <- function(x, endian="big")
 {
-    if (endian != "big")
+    if (endian != "big") {
         .Defunct("rawToBits",
                  msg="byteToBinary(.,'little') is disallowed and will be removed soon. See ?'oce-defunct'.")
-    ## onebyte2binary <- function(x)
-    ## {
-    ##     c("0000", "0001", "0010", "0011",
-    ##       "0100", "0101", "0110", "0111",
-    ##       "1000", "1001", "1010", "1011",
-    ##       "1100", "1101", "1110", "1111")[x+1]
-    ## }
-    ## res <- NULL
-    ## if (class(x) == "raw")
-    ##     x <- readBin(x, "int", n=length(x), size=1, signed=FALSE)
-    ## for (i in seq_along(x)) {
-    ##     if (x[i] < 0) {
-    ##         res <- c(res, "??")
-    ##     } else {
-    ##         ## FIXME: these are not bytes here; they are nibbles.  I don't think endian="little"
-    ##         ## makes ANY SENSE at all.  2012-11-22
-    ##         byte1 <- as.integer(floor(x[i] / 16))
-    ##         byte2 <- x[i] - 16 * byte1
-    ##         ##cat("input=",x[i],"byte1=",byte1,"byte2=",byte2,"\n")
-    ##         if (endian == "little")
-    ##             res <- c(res, paste(onebyte2binary(byte2), onebyte2binary(byte1), sep=""))
-    ##         else
-    ##             res <- c(res, paste(onebyte2binary(byte1), onebyte2binary(byte2), sep=""))
-    ##         ##cat(" res=",res,"\n")
-    ##     }
-    ## }
-    ## res
+    }
+    # onebyte2binary <- function(x)
+    # {
+    #     c("0000", "0001", "0010", "0011",
+    #       "0100", "0101", "0110", "0111",
+    #       "1000", "1001", "1010", "1011",
+    #       "1100", "1101", "1110", "1111")[x+1]
+    # }
+    # res <- NULL
+    # if (class(x) == "raw")
+    #     x <- readBin(x, "int", n=length(x), size=1, signed=FALSE)
+    # for (i in seq_along(x)) {
+    #     if (x[i] < 0) {
+    #         res <- c(res, "??")
+    #     } else {
+    #         # FIXME: these are not bytes here; they are nibbles.  I don't think endian="little"
+    #         # makes ANY SENSE at all.  2012-11-22
+    #         byte1 <- as.integer(floor(x[i] / 16))
+    #         byte2 <- x[i] - 16 * byte1
+    #         #cat("input=",x[i],"byte1=",byte1,"byte2=",byte2,"\n")
+    #         if (endian == "little")
+    #             res <- c(res, paste(onebyte2binary(byte2), onebyte2binary(byte1), sep=""))
+    #         else
+    #             res <- c(res, paste(onebyte2binary(byte1), onebyte2binary(byte2), sep=""))
+    #         #cat(" res=",res,"\n")
+    #     }
+    # }
+    # res
     x <- as.raw(x)
-    paste(ifelse(rev(rawToBits(x)==as.raw(0x01)), "1", "0"),collapse="")
+    paste(ifelse(rev(rawToBits(x)==as.raw(0x01)), "1", "0"), collapse="")
 }
 
 
@@ -4616,10 +4541,11 @@ formatCI <- function(ci, style=c("+/-", "parentheses"), model, digits=NULL)
         x <- abs(x)
         if (style == "+/-") {
             pm <- abs(diff(ci)/2)
-            if (is.null(digits))
+            if (is.null(digits)) {
                 paste(format(sign * x, digits=getOption("digits")), "+/-", format(pm, digits=getOption("digits")), sep="")
-            else
+            } else {
                 paste(format(sign * x, digits=digits), "+/-", format(pm, digits=digits), sep="")
+            }
         } else {
             pm <- abs(diff(ci)/2)
             scale <- 10^floor(log10(pm))
@@ -4628,24 +4554,28 @@ formatCI <- function(ci, style=c("+/-", "parentheses"), model, digits=NULL)
                 pmr <- 1
                 scale <- scale * 10
             }
-            ##scale <- 10^floor(log10(x))
-            ##x0 <- x / scale
-            ##ci0 <- ci / scale
-            if (pm > x) return(paste(sign*x, "+/-", pm, sep=""))
+            #scale <- 10^floor(log10(x))
+            #x0 <- x / scale
+            #ci0 <- ci / scale
+            if (pm > x)
+                return(paste(sign*x, "+/-", pm, sep=""))
             digits <- floor(log10(scale) + 0.1)
-            if (digits < 0)
+            if (digits < 0) {
                 fmt <- paste("%.", abs(digits), "f", sep="")
-            else
+            } else {
                 fmt <- "%.f"
-            oceDebug(debug, "pm=", pm, ";pmr=", pmr, "; scale=", scale, "pm/scale=", pm/scale, "round(pm/scale)=", round(pm/scale), "\n", " x=", x,  "; x/scale=", x/scale, "digits=", digits, "fmt=", fmt, "\n")
+            }
+            oceDebug(debug, "pm=", pm, ";pmr=", pmr, "; scale=", scale, "pm/scale=",
+                pm/scale, "round(pm/scale)=", round(pm/scale), "\n", " x=", x,
+                "; x/scale=", x/scale, "digits=", digits, "fmt=", fmt, "\n")
             paste(sprintf(fmt, sign*x), "(", pmr, ")", sep="")
         }
     }
     style <- match.arg(style)
     if (!missing(model)) {
         cm <- class(model)
-        ## > qt(0.6914619, 100000)
-        ## [1] 0.5
+        # > qt(0.6914619, 100000)
+        # [1] 0.5
         if (cm == "lm" || cm == "nls") {
             ci <- confint(model, level=0.6914619)
             names <- dimnames(ci)[[1]]
@@ -4653,14 +4583,15 @@ formatCI <- function(ci, style=c("+/-", "parentheses"), model, digits=NULL)
             res <- matrix("character", nrow=n, ncol=1)
             rownames(res) <- names
             colnames(res) <- "value"
-            for (row in 1:dim(ci)[1]) {
+            for (row in seq_len(dim(ci)[1])) {
                 res[row, 1] <- formatCI.one(ci=ci[row, ], style=style, digits=digits)
             }
         }
         res
     } else {
-        if (missing(ci))
+        if (missing(ci)) {
             stop("must give either ci or model")
+        }
         formatCI.one(ci=ci, style=style, digits=digits)
     }
 }
@@ -4726,10 +4657,11 @@ integerToAscii <- function(i)
 #' suggest that the proposed application time interval is from years 1900 to 2025, inclusive,
 #' but that only dates from 1945 to 2015 are to be considered definitive.
 #'
-#' @param longitude longitude in degrees east (negative for degrees west).  The
-#' dimensions must conform to lat.
+#' @param longitude longitude in degrees east (negative for degrees west), as a
+#' number, a vector, or a matrix.
 #'
-#' @param latitude latitude in degrees north, a number, vector, or matrix.
+#' @param latitude latitude in degrees north, as a number, vector, or matrix.
+#' The shape (length or dimensions) must conform to the dimensions of `longitude`.
 #'
 #' @param time The time at which the field is desired. This may be a
 #' single value or a vector or matrix that is structured to match
@@ -4777,19 +4709,20 @@ integerToAscii <- function(i)
 #' # Construct matrix holding declination
 #' lon <- seq(-180, 180)
 #' lat <- seq(-90, 90)
-#' dec2000 <- function(lon, lat)
+#' dec2000 <- function(lon, lat) {
 #'     magneticField(lon, lat, 2000)$declination
+#' }
 #' dec <- outer(lon, lat, dec2000) # hint: outer() is very handy!
 #' # Contour, unlabelled for small increments, labeled for
 #' # larger increments.
-#' mapContour(lon, lat, dec, col='blue', levels=seq(-180, -5, 5),
+#' mapContour(lon, lat, dec, col="blue", levels=seq(-180, -5, 5),
 #'            lty=3, drawlabels=FALSE)
-#' mapContour(lon, lat, dec, col='blue', levels=seq(-180, -20, 20))
-#' mapContour(lon, lat, dec, col='red', levels=seq(5, 180, 5),
+#' mapContour(lon, lat, dec, col="blue", levels=seq(-180, -20, 20))
+#' mapContour(lon, lat, dec, col="red", levels=seq(5, 180, 5),
 #'            lty=3, drawlabels=FALSE)
-#' mapContour(lon, lat, dec, col='red', levels=seq(20, 180, 20))
-#' mapContour(lon, lat, dec, levels=180, col='black', lwd=2, drawlabels=FALSE)
-#' mapContour(lon, lat, dec, levels=0, col='black', lwd=2)
+#' mapContour(lon, lat, dec, col="red", levels=seq(20, 180, 20))
+#' mapContour(lon, lat, dec, levels=180, col="black", lwd=2, drawlabels=FALSE)
+#' mapContour(lon, lat, dec, levels=0, col="black", lwd=2)
 #'}
 #'
 #' # 3. Declination differences between versions 12 and 13
@@ -4843,22 +4776,23 @@ magneticField <- function(longitude, latitude, time, version=13)
         dim(latitude) <- n
         dim(time) <- n
     }
-    ##isv <- 0
-    ##itype <- 1                          # geodetic
-    ##alt <- 0.0                          # altitude in km
+    #isv <- 0
+    #itype <- 1                          # geodetic
+    #alt <- 0.0                          # altitude in km
     elong <- ifelse(longitude < 0, 360 + longitude, longitude)
     colat <- 90 - latitude
     iversion <- as.integer(version)
-    if (!(iversion %in% c(12L, 13L)))
+    if (!(iversion %in% c(12L, 13L))) {
         stop("version must be 12 or 13, but it is ", iversion)
-    ## message("time:", time, " (", as.numeric(time), ")")
+    }
+    # message("time:", time, " (", as.numeric(time), ")")
     r <- .Fortran("md_driver",
-                  as.double(colat), as.double(elong), as.double(time),
-                  as.integer(n),
-                  declination=double(n),
-                  inclination=double(n),
-                  intensity=double(n),
-                  as.integer(iversion))
+        as.double(colat), as.double(elong), as.double(time),
+        as.integer(n),
+        declination=double(n),
+        inclination=double(n),
+        intensity=double(n),
+        as.integer(iversion))
     declination <- r$declination
     inclination <- r$inclination
     intensity <- r$intensity
@@ -4898,15 +4832,16 @@ matchBytes <- function(input, b1, ...)
         stop("must provide \"input\"")
     if (missing(b1))
         stop("must provide at least one byte to match")
-    ##n <- length(input)
+    #n <- length(input)
     dots <- list(...)
     lb <- 1 + length(dots)
-    if (lb == 2)
+    if (lb == 2) {
         .Call("match2bytes", as.raw(input), as.raw(b1), as.raw(dots[[1]]), FALSE)
-    else if (lb == 3)
+    } else if (lb == 3) {
         .Call("match3bytes", as.raw(input), as.raw(b1), as.raw(dots[[1]]), as.raw(dots[[2]]))
-    else
+    } else {
         stop("must provide 2 or 3 bytes")
+    }
 }
 
 
@@ -4920,7 +4855,8 @@ matchBytes <- function(input, b1, ...)
 #'
 #' @param m The matrix to be modified.
 #'
-#' @param longitude A vector containing the longitude in the 0-360 convention. If missing, this is constructed to range from 0 to 360, with as many elements as the first index of `m`.
+#' @param longitude A vector containing the longitude in the 0-360 convention. If missing,
+#' this is constructed to range from 0 to 360, with as many elements as the first index of `m`.
 #'
 #' @return A list containing `m` and `longitude`, both rearranged as appropriate.
 #'
@@ -5059,30 +4995,30 @@ ctimeToSeconds <- function(ctime)
     s
 }
 
-##showThrees <- function(x, indent="    ")
-##{
-##    if (!("threes" %in% names(x)))
-##        stop("'x' has no item named 'threes'")
-##    rownames <- rownames(x$threes)
-##    colnames <- colnames(x$threes)
-##    data.width <- max(nchar(colnames)) + 10
-##    name.width <- max(nchar(rownames(x$threes))) + 4 # space for left-hand column
-##    ncol <- length(colnames)
-##    nrow <- length(rownames)
-##    res <- indent
-##    res <- paste(res, format(" ", width=1+name.width), collapse="")
-##    res <- paste(res, paste(format(colnames, width=data.width, justify="right"), collapse=" "))
-##    res <- paste(res, "\n", sep="")
-##    digits <- max(5, getOption("digits") - 1)
-##    for (irow in 1L:nrow) {
-##        res <- paste(res, indent, format(rownames[irow], width=name.width), "  ", sep="") # FIXME: should not need the "  "
-##        for (icol in 1L:ncol) {
-##            res <- paste(res, format(x$threes[irow,icol], digits=digits, width=data.width, justify="right"), sep=" ")
-##        }
-##        res <- paste(res, "\n", sep="")
-##    }
-##    res
-##}
+#showThrees <- function(x, indent="    ")
+#{
+#    if (!("threes" %in% names(x)))
+#        stop("'x' has no item named 'threes'")
+#    rownames <- rownames(x$threes)
+#    colnames <- colnames(x$threes)
+#    data.width <- max(nchar(colnames)) + 10
+#    name.width <- max(nchar(rownames(x$threes))) + 4 # space for left-hand column
+#    ncol <- length(colnames)
+#    nrow <- length(rownames)
+#    res <- indent
+#    res <- paste(res, format(" ", width=1+name.width), collapse="")
+#    res <- paste(res, paste(format(colnames, width=data.width, justify="right"), collapse=" "))
+#    res <- paste(res, "\n", sep="")
+#    digits <- max(5, getOption("digits") - 1)
+#    for (irow in 1L:nrow) {
+#        res <- paste(res, indent, format(rownames[irow], width=name.width), "  ", sep="") # FIXME: should not need the "  "
+#        for (icol in 1L:ncol) {
+#            res <- paste(res, format(x$threes[irow,icol], digits=digits, width=data.width, justify="right"), sep=" ")
+#        }
+#        res <- paste(res, "\n", sep="")
+#    }
+#    res
+#}
 
 
 
@@ -5106,7 +5042,11 @@ ctimeToSeconds <- function(ctime)
 #' @param style either a string or a function. If a string,
 #' it must be `"plain"` (the default) for plain text,
 #' `"bold"`, `"italic"`, `"red"`, `"green"` or `"blue"` (with
-#' obvious meanings).
+#' obvious meanings).  Note that none of these has any effect
+#' for non-interactive use, because doing so would make it difficult
+#' to work with R-markdown and similar documents that are to be run
+#' through latex.
+#'
 #' If `style` is a function, it must prepend and postpend the text
 #' with control codes, as in the cyan-coloured example; note that
 #' \CRANpkg{crayon} provides many functions that work well for `style`.
@@ -5130,50 +5070,59 @@ ctimeToSeconds <- function(ctime)
 #' oceDebug(debug=1, "Example", 7, "User-set cyan", style=mycyan)
 oceDebug <- function(debug=0, ..., style="plain", unindent=0, sep="")
 {
+    catSpecial <- function(...) if (interactive()) cat(...)
     debug <- if (debug > 4) 4 else max(0, floor(debug + 0.5))
     if (debug > 0) {
         n <- 5 - debug - unindent
         if (is.character(style) && style == "plain") {
-            if (n > 0)
+            if (n > 0) {
                 cat(paste(rep("  ", n), collapse=""))
+            }
             cat(..., sep=sep)
         } else if (is.character(style) && style == "bold") {
-            cat("\033[1m")
-            if (n > 0)
+            catSpecial("\033[1m")
+            if (n > 0) {
                 cat(paste(rep("  ", n), collapse=""))
+            }
             cat(..., sep=sep)
-            cat("\033[0m")
+            catSpecial("\033[0m")
         } else if (is.character(style) && style == "italic") {
-            cat("\033[3m")
-            if (n > 0)
+            catSpecial("\033[3m")
+            if (n > 0) {
                 cat(paste(rep("  ", n), collapse=""))
+            }
             cat(..., sep=sep)
-            cat("\033[0m")
+            catSpecial("\033[0m")
         } else if (is.character(style) && style == "red") {
-            cat("\033[31m")
-            if (n > 0)
+            catSpecial("\033[31m")
+            if (n > 0) {
                 cat(paste(rep("  ", n), collapse=""))
+            }
             cat(..., sep=sep)
-            cat("\033[0m")
+            catSpecial("\033[0m")
         } else if (is.character(style) && style == "green") {
-            cat("\033[32m")
-            if (n > 0)
+            catSpecial("\033[32m")
+            if (n > 0) {
                 cat(paste(rep("  ", n), collapse=""))
+            }
             cat(..., sep=sep)
-            cat("\033[0m")
+            catSpecial("\033[0m")
         } else if (is.character(style) && style == "blue") {
-            cat("\033[34m")
-            if (n > 0)
+            catSpecial("\033[34m")
+            if (n > 0) {
                 cat(paste(rep("  ", n), collapse=""))
+            }
             cat(..., sep=sep)
-            cat("\033[0m")
+            catSpecial("\033[0m")
         } else if (is.function(style)) {
-            if (n > 0)
+            if (n > 0) {
                 cat(style(paste(rep("  ", n), collapse="")))
+            }
             cat(style(...), sep=sep)
         } else { # fallback
-            if (n > 0)
+            if (n > 0) {
                 cat(paste(rep("  ", n), collapse=""))
+            }
             cat(..., sep=sep)
         }
         flush.console()
@@ -5217,8 +5166,10 @@ showMetadataItem <- function(object, name, label="", postlabel="", isdate=FALSE,
             return()
         if (is.na(item))
             return()
-        if (isdate) item <- format(item)
-        if (quote) item <- paste('"', item, '"', sep="")
+        if (isdate)
+            item <- format(item)
+        if (quote)
+            item <- paste("\"", item, "\"", sep="")
         cat(paste("* ", label, item, postlabel, "\n", sep=""))
     }
 }
@@ -5270,19 +5221,22 @@ showMetadataItem <- function(object, name, label="", postlabel="", isdate=FALSE,
 integrateTrapezoid <- function(x, y, type=c("A", "dA", "cA"), xmin, xmax)
 {
     type <- match.arg(type)
-    if (missing(x)) stop("must supply 'x'")
+    if (missing(x))
+        stop("must supply 'x'")
     if (missing(y)) {
         y <- x
         x <- seq_along(y)
     }
-    if (length(x) == 1 && length(y) > 1)
+    if (length(x) == 1 && length(y) > 1) {
        x <- x * seq_along(y)
-    if (length(x) != length(y))
+    }
+    if (length(x) != length(y)) {
         stop("'x' and 'y' must be of same length")
+    }
     xout <- x
     yout <- y
-    ## message("x: ", paste(x, collapse=" "))
-    ## message("y: ", paste(y, collapse=" "))
+    # message("x: ", paste(x, collapse=" "))
+    # message("y: ", paste(y, collapse=" "))
     if (!missing(xmin) || !missing(xmax)) {
         if (missing(xmin) || missing(xmax))
             stop("'xmin' and 'xmax' must both be supplied, if either is")
@@ -5297,9 +5251,9 @@ integrateTrapezoid <- function(x, y, type=c("A", "dA", "cA"), xmin, xmax)
             xout <- xout[xout >= xmin]
             xout <- c(xmin, xout)
         }
-
-        if (xmax < min(x, na.rm=TRUE))
+        if (xmax < min(x, na.rm=TRUE)) {
             stop("xmax must be greater than min(x)")
+        }
         if (xmax > max(x, na.rm=TRUE)) {
             xout <- c(xout, xmax)
         } else {
@@ -5308,24 +5262,17 @@ integrateTrapezoid <- function(x, y, type=c("A", "dA", "cA"), xmin, xmax)
         }
         yout <- approx(x, y, xout, rule=2)$y
     }
-    ## message("\nabout to .Call(\"trap\", xout, yout, ...) with:\n")
-    ## message("xout as follows:\n", paste(head(xout, 10), collapse="\n"))
-    ## message("yout as follows:\n", paste(head(yout, 10), collapse="\n"))
-    ##:::res <- .Call("trap", xout, yout, as.integer(switch(match.arg(type), A=0, dA=1, cA=2)))
-    ##:::res <- trap(x=xout, y=yout, type=as.integer(switch(match.arg(type), A=0, dA=1, cA=2)))
-    ##
-    ## I think we should be able to use trap(), which gets defined into
-    ## R/RcppExports.R but that doesn't seem to be put into the loadspace.
-    ## My guess is that the problem is because we are not doing exports in
-    ## the recommended (automatic) way, but I don't want to do exports that
-    ## way since things are ok now, and have been for years.
-    ## I don't see much point trying to figure this out, because we already
-    ## have things set up for a .Call() from before the switch from C to Cpp.
-    ##
-    ## NOTE: must run Rcpp::compileAttributes() after creating trap in
-    ## src/trap.cpp
+    # I think we should be able to use trap(), which gets defined into
+    # R/RcppExports.R but that doesn't seem to be put into the loadspace.
+    # My guess is that the problem is because we are not doing exports in
+    # the recommended (automatic) way, but I don't want to do exports that
+    # way since things are ok now, and have been for years.
+    # I don't see much point trying to figure this out, because we already
+    # have things set up for a .Call() from before the switch from C to Cpp.
+    #
+    # NOTE: must run Rcpp::compileAttributes() after creating trap in
+    # src/trap.cpp
     res <- do_trap(xout, yout, as.integer(switch(match.arg(type), A=0, dA=1, cA=2)))
-    ##> res <- trap( xout, yout, as.integer(switch(match.arg(type), A=0, dA=1, cA=2)))
     res
 }
 
@@ -5350,7 +5297,7 @@ integrateTrapezoid <- function(x, y, type=c("A", "dA", "cA"), xmin, xmax)
 #' @author Dan Kelley, based on advice of Clark Richards, and mimicking a matlab function.
 #'
 #' @examples
-#' ## 1. Built-in volcano dataset
+#' # 1. Built-in volcano dataset
 #' g <- grad(volcano)
 #' par(mfrow=c(2, 2), mar=c(3, 3, 1, 1), mgp=c(2, 0.7, 0))
 #' imagep(volcano, zlab="h")
@@ -5359,7 +5306,7 @@ integrateTrapezoid <- function(x, y, type=c("A", "dA", "cA"), xmin, xmax)
 #' imagep(g$gx, zlab="dh/dx", zlim=zlim)
 #' imagep(g$gy, zlab="dh/dy", zlim=zlim)
 #'
-#' ## 2. Geostrophic flow around an eddy
+#' # 2. Geostrophic flow around an eddy
 #' library(oce)
 #' dx <- 5e3
 #' dy <- 10e3
@@ -5387,7 +5334,7 @@ grad <- function(h, x=seq(0, 1, length.out=nrow(h)), y=seq(0, 1, length.out=ncol
         stop("length of x (", length(x), ") must equal number of rows in h (", nrow(h), ")")
     if (length(y) != ncol(h))
         stop("length of y (", length(y), ") must equal number of cols in h (", ncol(h), ")")
-    ## ensure that all three args are double, so the C code won't misinterpret
+    # ensure that all three args are double, so the C code won't misinterpret
     dim <- dim(h)
     h <- as.double(h)
     dim(h) <- dim
@@ -5417,7 +5364,7 @@ grad <- function(h, x=seq(0, 1, length.out=nrow(h)), y=seq(0, 1, length.out=ncol
 #' data.frame(x, oce.as.raw(x))
 oce.as.raw <- function(x)
 {
-    ## prevent warnings from out-of-range with as.raw()
+    # prevent warnings from out-of-range with as.raw()
     na <- is.na(x)
     x[na] <- 0                 # FIXME: what to do here?
     x <- ifelse(x < 0, 0, x)
@@ -5459,8 +5406,8 @@ oce.as.raw <- function(x)
 #' filter <- exp(-seq(5*tau, 0) / tau)
 #' filter <- filter / sum(filter)
 #' observation <- oce.convolve(signal, filter)
-#' plot(t, signal, type='l')
-#' lines(t, observation, lty='dotted')
+#' plot(t, signal, type="l")
+#' lines(t, observation, lty="dotted")
 oceConvolve <- function(x, f, end=2)
 {
     do_oce_convolve(x, f, end)
@@ -5530,7 +5477,7 @@ trimString <- function(s)
 #' coef <- lowpass(n=5, coefficients=TRUE)
 #' plot(-2:2, coef, ylim=c(0, 1), xlab="Lag", ylab="Coefficient")
 #' x <- seq(-5, 5) + rnorm(11)
-#' plot(1:11, x, type='o', xlab="time", ylab="x and X")
+#' plot(1:11, x, type="o", xlab="time", ylab="x and X")
 #' X <- lowpass(x, n=5)
 #' lines(1:11, X, col=2)
 #' points(1:11, X, col=2)
@@ -5548,14 +5495,15 @@ lowpass <- function(x, filter="hamming", n, replace=TRUE, coefficients=FALSE)
         stop("n must be an odd integer")
     twopi <- 8 * atan2(1, 1)
     ii <- n2 + seq.int(-n2, n2, 1)
-    if (filter == "hamming")
+    if (filter == "hamming") {
         f <- 0.54 - 0.46 * cos(twopi * ii / (n - 1))
-    else if (filter == "hanning")
+    } else if (filter == "hanning") {
         f <- 0.5 * (1 - cos(twopi * ii / (n - 1)))
-    else if (filter == "boxcar")
+    } else if (filter == "boxcar") {
         f <- rep(1/n, n)
-    else
+    } else {
         stop("filter must be \"hanning\", \"hamming\", or \"boxcar\"")
+    }
     if (coefficients) {
         rval <- f
     } else {
@@ -5571,6 +5519,3 @@ lowpass <- function(x, filter="hamming", n, replace=TRUE, coefficients=FALSE)
     }
     rval
 }
-
-
-

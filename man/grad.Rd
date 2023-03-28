@@ -29,7 +29,7 @@ infer the components of the grad.  Along the edges, first-order differences
 are used.
 }
 \examples{
-## 1. Built-in volcano dataset
+# 1. Built-in volcano dataset
 g <- grad(volcano)
 par(mfrow=c(2, 2), mar=c(3, 3, 1, 1), mgp=c(2, 0.7, 0))
 imagep(volcano, zlab="h")
@@ -38,7 +38,7 @@ zlim <- c(-1, 1) * max(g$g)
 imagep(g$gx, zlab="dh/dx", zlim=zlim)
 imagep(g$gy, zlab="dh/dy", zlim=zlim)
 
-## 2. Geostrophic flow around an eddy
+# 2. Geostrophic flow around an eddy
 library(oce)
 dx <- 5e3
 dy <- 10e3

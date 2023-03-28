@@ -7,14 +7,10 @@ output:
     toc: true
     number_sections: true
     fig_caption: yes
-    fig_width: 3.5
-    fig_height: 3.5
-    dpi: 72
-    dev.args: list(pointsize=11)
 vignette: >
   %\VignetteIndexEntry{5. Dealing with data-quality flags}
   %\VignetteEngine{knitr::rmarkdown}
-  \usepackage[utf8]{inputenc}
+  %\VignetteEncoding{UTF-8}
 ---
 
 <!-- HOW TO BUILD THE VIGNETTE. -->
@@ -22,7 +18,7 @@ vignette: >
 
 
 ```{r, echo = FALSE}
-knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
+knitr::opts_chunk$set(collapse=TRUE, comment="#>")
 ```
 
 **Abstract.** This vignette explains the basics of working with data-quality
@@ -145,9 +141,9 @@ library(oce)
 data(ctdRaw)
 ```
 
-that contains some clearly anomalous values that are revealed clearly
+that contains anomalous values that are revealed clearly
 in a summary plot (Figure 1):
-```{r fig.cap="Figure 1. Summary plot for raw CTD profile."}
+```{r fig.cap="Figure 1. Summary plot for raw CTD profile.", fig.width=5, fig.height=5, dpi=72, dev.args=list(pointsize=13)}
 plot(ctdRaw)
 ```
 
@@ -171,9 +167,9 @@ badT <- with(ctdRaw[["data"]], temperature < -2 | 40 < temperature)
 In the above, `with` has been used to avoid inserting `salinity` and
 `temperature` in the namespace, but it would also be common to use e.g.
 ```{r}
-S <- ctdRaw[["salinity"]]
-T <- ctdRaw[["temperature"]]
-bad <- (S < 25 | 40 < S) | (T < -2 | 40 < T)
+salinity <- ctdRaw[["salinity"]]
+temperature <- ctdRaw[["temperature"]]
+bad <- (salinity < 25 | 40 < salinity) | (temperature < -2 | 40 < temperature)
 ```
 
 Since the goal here is to illustrate setting multiple flags, the `badS` and
@@ -245,12 +241,12 @@ qch <- handleFlags(qc, flags=list(c(1, 3:9)))
 ```
 
 Comparing Figure 1 with the summary plot for `qch` (Figure 2), constructed with
-```{r fig.cap="Figure 2. Summary plot for range-checked CTD profile."}
+```{r fig.cap="Figure 2. Summary plot for range-checked CTD profile.", fig.width=5, fig.height=5, dpi=72, dev.args=list(pointsize=13)}
 plot(qch)
 ```
 
 shows significant improvements. The downcast and the upcast can be seen quite
-clearly now, although there appears to be an issue of low salinity at the
+clearly now, although salinity is suspiciously low at the
 turnaround point.  Setting a flag for pressure increase with time will isolate
 the downcast somewhat, although some smoothing will be required.  Another issue
 related to the path of the instrument is that it may have been held below the
@@ -318,7 +314,7 @@ easily with functions of the *same names* as for the ctd case.
 As a simple example, the following shows how to clean up the "A03" Atlantic
 section that is provided with oce.
 
-```{r}
+```{r fig.cap="Temperature-salinity diagram for section data, with flags ignored (top) and handled (bottom).", fig.width=5, fig.height=5, dpi=72, dev.args=list(pointsize=13)}
 data(section)
 s <- handleFlags(section, flags=list(c(1, 3:9)))
 par(mfrow=c(2, 1))
@@ -343,7 +339,7 @@ instrument and those identified by the scheme illustrated here; look near 8h
 and 20h. However, altering the values for `G` and `V4` will reveal that the
 schemes do differ.
 
-```{r}
+```{r fig.cap="Near-surface eastward component of ADP velocity, unaltered (top) and after handling flags (bottom).", fig.width=6, fig.height=4, dpi=72, dev.args=list(pointsize=13)}
 data(adp)
 v <- adp[["v"]]
 i2 <- array(FALSE, dim=dim(v)) # construct array to match 'v'
@@ -351,18 +347,16 @@ g <- adp[["g", "numeric"]]
 G <- 25                  # for percent-good field, named 'g'
 V4 <- 0.45               # for error velocity field, in beam 4
 for (k in 1:3)
-    i2[,,k] <- ((g[,,k]+g[,,4]) < G) | (v[,,4] > V4)
+    i2[, , k] <- ((g[, , k]+g[, , 4]) < G) | (v[, , 4] > V4)
 adpQC2 <- initializeFlags(adp, "v", 2)
 adpQC2 <- setFlags(adpQC2, "v", i2, 3)
 adpClean2 <- handleFlags(adpQC2, flags=list(3), actions=list("NA"))
-par(mfrow=c(2,1))
-plot(adp, which="u1")                  # original
-plot(adpClean2, which="u1")            # altered
+par(mfrow=c(2, 1))
+plot(subset(adp, distance > 35), which="u1")                 # original
+plot(subset(adpClean2, distance > 35), which="u1")           # altered
 ```
 
 Note, in the above, that `initializeFlagScheme`
 has not been used, because the author is unaware of any common notation for
 such data. The values used for `G` and `V4` were provided by colleagues at the
 Bedford Institute of Oceanography.
-
-

@@ -6,7 +6,7 @@
 \title{Handle flags in Section Objects}
 \usage{
 \S4method{handleFlags}{section}(
-  object,
+  object = "oce",
   flags = NULL,
   actions = NULL,
   where = where,

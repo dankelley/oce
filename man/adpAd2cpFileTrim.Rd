@@ -34,9 +34,8 @@ small sample files for bug reports.
 \dontrun{
 # Can only be run by the developer, since it uses a private file.
 f  <- "/Users/kelley/Dropbox/oce_secret_data/ad2cp/byg_trimmed.ad2cp"
-if (file.exists(f)) {
+if (file.exists(f))
     adpAd2cpFileTrim(f, 100L) # this file is already trimmed to 200 chunks
-}
 }
 }
 \seealso{
@@ -52,6 +51,7 @@ Other things related to adp data:
 \code{\link{adpRdiFileTrim}()},
 \code{\link{adp_rdi.000}},
 \code{\link{adp}},
+\code{\link{applyMagneticDeclination,adp-method}},
 \code{\link{as.adp}()},
 \code{\link{beamName}()},
 \code{\link{beamToXyzAdpAD2CP}()},
@@ -94,6 +94,7 @@ Other things related to ad2cp data:
 
 Other functions that trim data files: 
 \code{\link{adpRdiFileTrim}()},
+\code{\link{advSontekAdrFileTrim}()},
 \code{\link{oceFileTrim}()}
 }
 \author{

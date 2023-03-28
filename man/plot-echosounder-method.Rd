@@ -16,7 +16,7 @@
   ylim,
   zlim,
   type = "l",
-  col = oceColorsJet,
+  col,
   lwd = 2,
   despike = FALSE,
   drawBottom,
@@ -68,9 +68,14 @@ not provided, the labels depend on the value of \code{which}.}
 \item{type}{type of graph, \code{"l"} for line, \code{"p"} for points, or
 \code{"b"} for both.}
 
-\item{col}{color scale for image, a function}
+\item{col}{a function providing the color scale for image plots.
+This value is passed to \code{\link[=imagep]{imagep()}}, which draws
+the images.  Since \code{\link[=imagep]{imagep()}} defaults \code{col} to
+\code{\link[=oceColorsViridis]{oceColorsViridis()}}, that is effectively also the default
+for the present function. (Prior to 2023-03-18, the present
+function defaulted \code{col} to \code{\link[=oceColorsJet]{oceColorsJet()}}.)}
 
-\item{lwd}{line width (ignored if \code{type="p"})}
+\item{lwd}{line width (ignored if \code{type="p"}).}
 
 \item{despike}{remove vertical banding by using \code{\link[=smooth]{smooth()}} to
 smooth across image columns, row by row.}

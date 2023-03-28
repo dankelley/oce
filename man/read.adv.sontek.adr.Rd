@@ -268,6 +268,16 @@ test.
 }
 }
 
+\section{References}{
+
+\enumerate{
+\item SonTek/YSI Incorporated. “ADVField/Hydra Operation Manual,” September 1, 2001.
+\item SonTek/YSI Incorporated. “Argonaut Acoustic Doppler Current Meter Operation Manual Firmware Version 7.9.”
+SonTek/YSI, May 1, 2001.
+https://eng.ucmerced.edu/snsjho/files/San_Joaquin/Sensors_and_Loggers/SonTek/SonTek_Argonaut/ArgonautXR.pdf.
+}
+}
+
 \examples{
 \dontrun{
 library(oce)
@@ -304,7 +314,9 @@ Other things related to adv data:
 \code{\link{[[,adv-method}},
 \code{\link{[[<-,adv-method}},
 \code{\link{adv-class}},
+\code{\link{advSontekAdrFileTrim}()},
 \code{\link{adv}},
+\code{\link{applyMagneticDeclination,adv-method}},
 \code{\link{beamName}()},
 \code{\link{beamToXyz}()},
 \code{\link{enuToOtherAdv}()},

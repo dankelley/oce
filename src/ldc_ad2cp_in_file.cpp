@@ -154,16 +154,16 @@ unsigned short cs(unsigned char *data, unsigned short size, int debug)
   return(checksum);
 }
 
+//List do_ldc_ad2cp_in_file(CharacterVector filename, IntegerVector from, IntegerVector to, IntegerVector by, IntegerVector ignoreChecksums, IntegerVector DEBUG)
 
 // [[Rcpp::export]]
-List do_ldc_ad2cp_in_file(CharacterVector filename, IntegerVector from, IntegerVector to, IntegerVector by, IntegerVector ignoreChecksums, IntegerVector DEBUG)
+List do_ldc_ad2cp_in_file(CharacterVector filename, IntegerVector from, IntegerVector to, IntegerVector by, IntegerVector DEBUG)
 {
   int debug = DEBUG[0] < 0 ? 0 : DEBUG[0];
   std::string fn = Rcpp::as<std::string>(filename(0));
   FILE *fp = fopen(fn.c_str(), "rb");
   if (!fp)
     ::Rf_error("cannot open file '%s'\n", fn.c_str());
-
   if (from[0] < 0)
     ::Rf_error("'from' must be positive but it is %d", from[0]);
   //unsigned int from_value = from[0];
@@ -173,16 +173,15 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, IntegerVector from, IntegerV
   if (by[0] < 0)
     ::Rf_error("'by' must be positive but it is %d", by[0]);
   //unsigned int by_value = by[0];
-  int twelve_byte_header = 0;
 
   // Find file size, and return to start
   fseek(fp, 0L, SEEK_END);
   long long int filesize = ftell(fp);
   fseek(fp, 0L, SEEK_SET);
   if (debug) {
-    Rprintf("do_ldc_ad2cp_in_file(filename, from=%d, to=%d, by=%d, ...) {\n", from[0], to[0], by[0]);
+    Rprintf("do_ldc_ad2cp_in_file(filename, from=%d, to=%d, by=%d, debug=%d) {\n", from[0], to[0], by[0], DEBUG[0]);
     Rprintf("  filename=\"%s\"\n", fn.c_str());
-    Rprintf("  ignoreChecksums[0]=%d\n", ignoreChecksums[0]);
+    //Rprintf("  ignoreChecksums[0]=%d\n", ignoreChecksums[0]);
     Rprintf("  filesize=%d bytes\n", filesize);
   }
   long long int chunk = 0;
@@ -229,7 +228,8 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, IntegerVector from, IntegerV
   unsigned int nchunk = 100000;
   unsigned int *start_buf = (unsigned int*)R_Calloc((size_t)nchunk, unsigned int);
   unsigned int *index_buf = (unsigned int*)R_Calloc((size_t)nchunk, unsigned int);
-  unsigned int *length_buf = (unsigned int*)R_Calloc((size_t)nchunk, unsigned int);
+  unsigned int *header_length_buf = (unsigned int*)R_Calloc((size_t)nchunk, unsigned int);
+  unsigned int *data_length_buf = (unsigned int*)R_Calloc((size_t)nchunk, unsigned int);
   unsigned int *id_buf = (unsigned int*)R_Calloc((size_t)nchunk, unsigned int);
   int early_EOF = 0;
   int reset_cindex = 0; // set to 1 if we skipped to find a new header start, after a bad checksum
@@ -242,7 +242,8 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, IntegerVector from, IntegerV
       nchunk = (unsigned int) floor(chunk * 1.4); // increase buffer size by sqrt(2)
       start_buf = (unsigned int*)R_Realloc(start_buf, nchunk, unsigned int);
       index_buf = (unsigned int*)R_Realloc(index_buf, nchunk, unsigned int);
-      length_buf = (unsigned int*)R_Realloc(length_buf, nchunk, unsigned int);
+      header_length_buf = (unsigned int*)R_Realloc(header_length_buf, nchunk, unsigned int);
+      data_length_buf = (unsigned int*)R_Realloc(data_length_buf, nchunk, unsigned int);
       id_buf = (unsigned int*)R_Realloc(id_buf, nchunk, unsigned int);
       if (debug)
         Rprintf(" to %d ... done\n", nchunk);
@@ -267,7 +268,6 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, IntegerVector from, IntegerV
       // Give 2 bytes back, since we read 12 and only need 10
       fseek(fp, -2, SEEK_CUR);
     } else if (header.header_size == 12) {
-      twelve_byte_header = 1;
       header.data_size = header_bytes[4] + 256 * (header_bytes[5] + 256 * (header_bytes[6] + 256 * header_bytes[7]));
       header.data_checksum = header_bytes[8] + 256 * header_bytes[9];
       header.header_checksum = header_bytes[10] + 256 * header_bytes[11];
@@ -302,12 +302,13 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, IntegerVector from, IntegerV
     // See if header checksum is correct
     unsigned short computed_header_checksum;
     computed_header_checksum = cs(header_bytes, header.header_size-2, debug);
-    if (ignoreChecksums[0] > 0 || computed_header_checksum == header.header_checksum) {
+    //if (ignoreChecksums[0] > 0 || computed_header_checksum == header.header_checksum) {
+    if (computed_header_checksum == header.header_checksum) {
       if (debug > 1) {
         if (computed_header_checksum == header.header_checksum) {
           Rprintf("    cindex=%ld: header checksum 0x%02x is correct\n", cindex, header.header_checksum);
         } else {
-          Rprintf("    cindex=%ld: header checksum 0x%02x disagrees with expection 0x%02x but ignoreChecksums is TRUE\n", cindex, computed_header_checksum, header.header_checksum);
+          Rprintf("    cindex=%ld: header checksum 0x%02x disagrees with expectation 0x%02x\n", cindex, computed_header_checksum, header.header_checksum);
         }
       }
     } else {
@@ -318,7 +319,8 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, IntegerVector from, IntegerV
     start_buf[chunk] = cindex;
     cindex = cindex + header.header_size;
     index_buf[chunk] = cindex;
-    length_buf[chunk] = header.data_size;
+    header_length_buf[chunk] = header.header_size;
+    data_length_buf[chunk] = header.data_size;
 
     int found = 0;
     for (int idi = 0; idi < NID_ALLOWED; idi++) {
@@ -328,10 +330,7 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, IntegerVector from, IntegerV
       }
     }
     if (found == 0)
-      Rprintf("warning : ldc_ad2cp_in_file() skipping undocumented header.id=0x%02x=%d at cindex=%ld header_size=0x%02x=%d family=0x%02x data_size=%d\n",
-          header.id, header.id, cindex,
-          header.header_size, header.header_size, header.family,
-          header.data_size);
+      Rf_warning("undocumented header ID 0x%02x at cindex %ld", header.id, cindex);
     id_buf[chunk] = header.id;
     // Check the header checksum.
     // Increase size of data buffer, if required.
@@ -341,7 +340,6 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, IntegerVector from, IntegerV
             dbuflen, header.data_size, cindex, 100.0*cindex/filesize);
       if (cindex != ftell(fp))
         Rprintf("  *BUG*: cindex=%ld is out of synch with ftell(fp)=%ld\n", cindex, ftell(fp));
-
       dbuflen = header.data_size;
       dbuf = (unsigned char *)R_Realloc(dbuf, dbuflen, unsigned char);
     }
@@ -349,7 +347,7 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, IntegerVector from, IntegerV
     bytes_read = fread(dbuf, 1, header.data_size, fp);
     // Check that we got all the data
     if (bytes_read != header.data_size) {
-      Rprintf("warning : ldc_ad2cp_in_file() EOF before end of chunk %ld at cindex=%ld\n",
+      Rf_warning("early EOF in chunk %ld at cindex=%ld",
           chunk+1, cindex-header.header_size);
       break; // give up
     }
@@ -357,14 +355,15 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, IntegerVector from, IntegerV
     // Compare data checksum to the value stated in the header
     unsigned short dbufcs;
     dbufcs = cs(dbuf, header.data_size, debug);
-    if (ignoreChecksums[0] > 0 || dbufcs == header.data_checksum) {
+    //if (ignoreChecksums[0] > 0 || dbufcs == header.data_checksum) {
+    if (dbufcs == header.data_checksum) {
       //cindex_last_good = cindex - header.header_size - header.data_size;
       reset_cindex = 0;
       if (debug > 1) {
         if (dbufcs == header.data_checksum) {
           Rprintf("    cindex=%d: data checksum 0x%02x equals expectation\n", cindex, dbufcs);
         } else {
-          Rprintf("    cincex=%d: data checksum 0x%02x disagrees with expectation 0x%02x but ignoreChecksums is TRUE\n", cindex, dbufcs, header.data_checksum);
+          Rprintf("    cincex=%d: data checksum 0x%02x disagrees with expectation 0x%02x\n", cindex, dbufcs, header.data_checksum);
         }
       }
     } else {
@@ -440,26 +439,29 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, IntegerVector from, IntegerV
       chunk++;
     }
   }
-  IntegerVector start(chunk), index(chunk), length(chunk), id(chunk);
+  IntegerVector start(chunk), index(chunk), header_length(chunk), data_length(chunk), id(chunk);
   for (unsigned int i = 0; i < chunk; i++) {
     start[i] = start_buf[i];
     index[i] = index_buf[i];
-    length[i] = length_buf[i];
+    header_length[i] = header_length_buf[i];
+    data_length[i] = data_length_buf[i];
     id[i] = id_buf[i];
   }
+  // Delete the temporary (_buf) storage items.
   R_Free(start_buf);
   R_Free(index_buf);
-  R_Free(length_buf);
+  R_Free(header_length_buf);
+  R_Free(data_length_buf);
   R_Free(id_buf);
   if (debug)
     Rprintf("} # do_ldc_ad2cp_in_file()\n");
   return(List::create(
         Named("start")=start,
         Named("index")=index,
-        Named("length")=length,
+        Named("headerLength")=header_length,
+        Named("dataLength")=data_length,
         Named("id")=id,
         Named("checksumFailures")=checksum_failures,
-        Named("earlyEOF")=early_EOF,
-        Named("twelve_byte_header")=twelve_byte_header));
+        Named("earlyEOF")=early_EOF));
 }
 

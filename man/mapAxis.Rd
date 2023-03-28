@@ -110,8 +110,8 @@ latlim <- c(70, 110)
 # mapGrid() and mapAxis() are best avoided; it is
 # simpler to let mapPlot() handle these things.
 mapPlot(coastlineWorld, projection="+proj=stere +lat_0=90",
-        longitudelim=lonlim, latitudelim=latlim,
-        col="tan", axes=FALSE, grid=FALSE)
+    longitudelim=lonlim, latitudelim=latlim,
+    col="tan", axes=FALSE, grid=FALSE)
 mapGrid(15, 15)
 mapAxis(axisStyle=5)
 }

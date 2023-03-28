@@ -66,15 +66,16 @@ setClass("g1sst", contains="satellite")
 #'
 #' @family things related to g1sst data
 setMethod(f="[[",
-          signature(x="g1sst", i="ANY", j="ANY"),
-          definition=function(x, i, j, ...) {
-              if (i == "?")
-                  return(list(metadata=sort(names(x@metadata)),
-                          metadataDerived=NULL,
-                          data=sort(names(x@data)),
-                          dataDerived=NULL))
-              callNextMethod()         # [[
-          })
+    signature(x="g1sst", i="ANY", j="ANY"),
+    definition=function(x, i, j, ...) {
+        if (i == "?") {
+            return(list(metadata=sort(names(x@metadata)),
+                metadataDerived=NULL,
+                data=sort(names(x@data)),
+                dataDerived=NULL))
+        }
+        callNextMethod()         # [[
+    })
 
 #' @title Replace Parts of a G1SST Object
 #'
@@ -84,13 +85,10 @@ setMethod(f="[[",
 #'
 #' @family things related to g1sst data
 setMethod(f="[[<-",
-          signature(x="g1sst", i="ANY", j="ANY"),
-          definition=function(x, i, j, ..., value) {
-              callNextMethod(x=x, i=i, j=j, ...=..., value=value) # [[<-
-          })
-
-
-
+    signature(x="g1sst", i="ANY", j="ANY"),
+    definition=function(x, i, j, ..., value) {
+        callNextMethod(x=x, i=i, j=j, ...=..., value=value) # [[<-
+    })
 
 #' @title Read a G1SST file
 #'
@@ -161,7 +159,7 @@ read.g1sst <- function(file, encoding=NA)
         stop("file must be a character string")
     f <- ncdf4::nc_open(file)
     res <- new("g1sst", file=file)
-    ## Change the 1-col ncdf4 output to a vector
+    # Change the 1-col ncdf4 output to a vector
     res@metadata$longitude <- as.vector(ncdf4::ncvar_get(f, "longitude"))
     res@metadata$latitude <- as.vector(ncdf4::ncvar_get(f, "latitude"))
     res@metadata$time <- numberAsPOSIXct(ncdf4::ncvar_get(f, "time"))

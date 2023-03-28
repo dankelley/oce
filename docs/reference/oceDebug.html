@@ -20,7 +20,7 @@ level."><!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/math
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-10</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-11</span>
       </span>
     </div>
 
@@ -105,8 +105,11 @@ contains a string with a newline character (as in the example).</p></dd>
 <dd><p>either a string or a function. If a string,
 it must be <code>"plain"</code> (the default) for plain text,
 <code>"bold"</code>, <code>"italic"</code>, <code>"red"</code>, <code>"green"</code> or <code>"blue"</code> (with
-obvious meanings).
-If <code>style</code> is a function, it must prepend and postpend the text
+obvious meanings).  Note that none of these has any effect
+for non-interactive use, because doing so would make it difficult
+to work with R-markdown and similar documents that are to be run
+through latex.</p>
+<p>If <code>style</code> is a function, it must prepend and postpend the text
 with control codes, as in the cyan-coloured example; note that
 <a href="https://CRAN.R-project.org/package=crayon" class="external-link"><span class="pkg">crayon</span></a> provides many functions that work well for <code>style</code>.</p></dd>
 
@@ -131,15 +134,15 @@ it to <code><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat(
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu">oceDebug</span><span class="op">(</span>debug<span class="op">=</span><span class="fl">1</span>, <span class="st">"Example"</span>, <span class="fl">1</span>, <span class="st">"Plain text"</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>         Example1Plain text</span>
 <span class="r-in"><span><span class="fu">oceDebug</span><span class="op">(</span>debug<span class="op">=</span><span class="fl">1</span>, <span class="st">"Example"</span>, <span class="fl">2</span>, <span class="st">"Bold"</span>, style<span class="op">=</span><span class="st">"bold"</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="font-weight: bold;">        Example2Bold</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>         Example2Bold</span>
 <span class="r-in"><span><span class="fu">oceDebug</span><span class="op">(</span>debug<span class="op">=</span><span class="fl">1</span>, <span class="st">"Example"</span>, <span class="fl">3</span>, <span class="st">"Italic"</span>, style<span class="op">=</span><span class="st">"italic"</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="font-style: italic;">        Example3Italic</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>         Example3Italic</span>
 <span class="r-in"><span><span class="fu">oceDebug</span><span class="op">(</span>debug<span class="op">=</span><span class="fl">1</span>, <span class="st">"Example"</span>, <span class="fl">4</span>, <span class="st">"Red"</span>, style<span class="op">=</span><span class="st">"red"</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BB0000;">        Example4Red</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>         Example4Red</span>
 <span class="r-in"><span><span class="fu">oceDebug</span><span class="op">(</span>debug<span class="op">=</span><span class="fl">1</span>, <span class="st">"Example"</span>, <span class="fl">5</span>, <span class="st">"Green"</span>, style<span class="op">=</span><span class="st">"green"</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">        Example5Green</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>         Example5Green</span>
 <span class="r-in"><span><span class="fu">oceDebug</span><span class="op">(</span>debug<span class="op">=</span><span class="fl">1</span>, <span class="st">"Example"</span>, <span class="fl">6</span>, <span class="st">"Blue"</span>, style<span class="op">=</span><span class="st">"blue"</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #0000BB;">        Example6Blue</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>         Example6Blue</span>
 <span class="r-in"><span><span class="va">mycyan</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">...</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="st">"\033[36m"</span>, <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="va">...</span>, sep<span class="op">=</span><span class="st">" "</span><span class="op">)</span>, <span class="st">"\033[0m"</span>, sep<span class="op">=</span><span class="st">""</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu">oceDebug</span><span class="op">(</span>debug<span class="op">=</span><span class="fl">1</span>, <span class="st">"Example"</span>, <span class="fl">7</span>, <span class="st">"User-set cyan"</span>, style<span class="op">=</span><span class="va">mycyan</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">        Example 7 User-set cyan</span></span>
@@ -157,7 +160,7 @@ it to <code><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat(
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>

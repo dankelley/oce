@@ -103,7 +103,9 @@ an open question.}
 \description{
 The fit is done in terms of sine and cosine components at the indicated
 tidal frequencies, with the amplitude and phase being calculated from the
-resultant coefficients on the sine and cosine terms.
+resultant coefficients on the sine and cosine terms. The scheme
+was devised for hourly data; for other sampling schemes, please see
+\sQuote{Application to non-hourly data}.
 }
 \details{
 The tidal constituents to be used in the analysis are specified as follows;
@@ -174,6 +176,34 @@ data(tidedata)
 print(tidedata$const)
 }
 }
+\section{Application to non-hourly data}{
+
+
+The framework on which \code{\link[=tidem]{tidem()}} rests on the assumption of data
+that have been sampled on a 1-hour interval (see e.g. Foreman, 1977).
+Since regression (as opposed to spectral analysis) is used to infer
+the amplitude and phase of tidal constituents, data gaps do not pose
+a serious problem. Sampling intervals under an hour are also not a
+problem. However, trying to use \code{\link[=tidem]{tidem()}} on time series that are
+sampled at uniform intervals that exceed 1 hour can lead to results
+that are difficult to interpret.  For example, some drifter data are
+sampled at a 6-hour interval.  This makes it impossible to fit for the
+S4 component (which has exactly 6 cycles per day), because the method
+works by constructing sine and cosine series at tidal frequencies and
+using these as the basis for regression.  Each of these series will have
+a constant value through the constructed time, and regression cannot handle
+that (in addition to a constant-value constructed series that is used to fit
+for the Z0 constituent).  \code{\link[=tidem]{tidem()}} tries to handle such problems by examining
+the range of the constructed sine and cosine time-series, omitting any
+constituents that yield near-constant values in either of these. Messages are
+issued if this problem is encountered.  This prevents failure of the regression,
+and the predictions of the regression seem to represent the data reasonably well,
+but the inferred constituent amplitudes are not physically reasonable. Cautious
+use of \code{\link[=tidem]{tidem()}} to infer individual constituents might be warranted, but
+users must be aware that the results will be difficult to interpret. The tool
+is simply not designed for this use.
+}
+
 \section{Bugs}{
 
 
@@ -242,12 +272,19 @@ summary(m)
 
 }
 \references{
-Foreman, M. G. G., 1978. Manual for Tidal Currents Analysis and Prediction.
-Pacific Marine Science Report. British Columbia, Canada: Institute of Ocean
-Sciences, Patricia Bay.
+Foreman, M G., 1977 (revised 1996).
+Manual for Tidal Heights Analysis and Prediction.
+Pacific Marine Science Report 77-10.
+British Columbia, Canada: Institute of Ocean Sciences, Patricia Bay.
 
-Foreman, M. G. G., Neufeld, E. T., 1991.  Harmonic tidal analyses of long
-time series.  International Hydrographic Review, 68 (1), 95-108.
+Foreman, M. G. G., 1978.
+Manual for Tidal Currents Analysis and Prediction.
+Pacific Marine Science Report 78-6.
+British Columbia, Canada: Institute of Ocean Sciences, Patricia Bay,
+
+Foreman, M. G. G., Neufeld, E. T., 1991.
+Harmonic tidal analyses of long time series.
+International Hydrographic Review, 68 (1), 95-108.
 
 Leffler, K. E. and D. A. Jay, 2009.  Enhancing tidal harmonic analysis:
 Robust (hybrid) solutions.  Continental Shelf Research, 29(1):78-88.

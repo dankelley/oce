@@ -79,11 +79,11 @@ if (1 == length(list.files(path=".", pattern="local_data"))) {
 if (1 == length(list.files(path=".", pattern="local_data"))) {
     test_that("Teledyn/RDI read (POSIXct from,to)", {
         beam <- read.oce("local_data/adp_rdi",
-            from=as.POSIXct("2008-06-25 10:01:00",tz="UTC"),
-            to=as.POSIXct("2008-06-25 10:03:00",tz="UTC"))
+            from=as.POSIXct("2008-06-25 10:01:00", tz="UTC"),
+            to=as.POSIXct("2008-06-25 10:03:00", tz="UTC"))
         expect_true(is.na(beam[["latitude"]]))
         expect_true(is.na(beam[["longitude"]]))
-        expect_equal(dim(beam[["v"]]), c(13,84,4))
+        expect_equal(dim(beam[["v"]]), c(13, 84, 4))
 })}
 
 if (1 == length(list.files(path=".", pattern="local_data"))) {
@@ -181,7 +181,7 @@ if (1 == length(list.files(path=".", pattern="local_data"))) {
         keepVertical <- sum(d[["vdistance"]] < median(d[["distance"]]))
         dsd <- subset(d, distance < median(d[["distance"]]))
         expect_equal(keepSlant, length(dsd[["distance"]]))
-        expect_equal(keepVertical , length(dsd[["vdistance"]]))
+        expect_equal(keepVertical, length(dsd[["vdistance"]]))
         for (vert in c("va", "vq", "vv")) { # no "vg" in this dataset
             expect_equal(keepVertical, dim(dsd[[vert]])[2])
         }
@@ -189,4 +189,3 @@ if (1 == length(list.files(path=".", pattern="local_data"))) {
             expect_equal(keepSlant, dim(dsd[[slant]])[2])
         }
 })}
-

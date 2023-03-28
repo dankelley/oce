@@ -24,9 +24,7 @@ A \code{coastline} object.
 }
 \description{
 Subsets a coastline object according to limiting values for longitude
-and latitude. This uses functions in the \CRANpkg{raster} package
-for some calculations, and so it will fail unless that package is
-installed.
+and latitude.
 }
 \details{
 As illustrated in the \dQuote{Examples}, \code{subset} must be an
@@ -45,10 +43,10 @@ as in the \dQuote{Examples}.
 \examples{
 library(oce)
 data(coastlineWorld)
-## Subset to a box centred on Nova Scotia, Canada
+# Subset to a box centred on Nova Scotia, Canada
 if (requireNamespace("sf")) {
     cl <- subset(coastlineWorld, -80<lon & lon<-50 & 30<lat & lat<60)
-    ## The plot demonstrates that the trimming is as requested.
+    # The plot demonstrates that the trimming is as requested.
     plot(cl, clon=-65, clat=45, span=6000)
     rect(-80, 30, -50, 60, bg="transparent", border="red")
 }

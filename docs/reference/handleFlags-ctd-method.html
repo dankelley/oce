@@ -35,7 +35,7 @@ entry in object."><!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-10</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-11</span>
       </span>
     </div>
 
@@ -116,7 +116,7 @@ entry in <code>object</code>.</p>
     <div id="ref-usage">
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="co"># S4 method for ctd</span></span>
 <span><span class="fu"><a href="handleFlags.html">handleFlags</a></span><span class="op">(</span></span>
-<span>  <span class="va">object</span>,</span>
+<span>  object <span class="op">=</span> <span class="st">"oce"</span>,</span>
 <span>  flags <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  actions <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  where <span class="op">=</span> <span class="cn">NULL</span>,</span>
@@ -213,6 +213,7 @@ handled for each data item. If not supplied, this defaults to the value of
 <code><a href="ctd-class.html">ctd-class</a></code>,
 <code><a href="ctd.cnv.html">ctd.cnv</a></code>,
 <code><a href="ctdDecimate.html">ctdDecimate</a>()</code>,
+<code><a href="ctdFindProfilesRBR.html">ctdFindProfilesRBR</a>()</code>,
 <code><a href="ctdFindProfiles.html">ctdFindProfiles</a>()</code>,
 <code><a href="ctdRaw.html">ctdRaw</a></code>,
 <code><a href="ctdRepair.html">ctdRepair</a>()</code>,
@@ -294,8 +295,8 @@ handled for each data item. If not supplied, this defaults to the value of
 <span class="r-in"><span>  <span class="va">sp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/smooth.spline.html" class="external-link">smooth.spline</a></span><span class="op">(</span><span class="cn">T</span>, <span class="va">S</span>, df<span class="op">=</span><span class="va">df</span><span class="op">)</span></span></span>
 <span class="r-in"><span>  <span class="fl">0.5</span> <span class="op">*</span> <span class="op">(</span><span class="va">S</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict</a></span><span class="op">(</span><span class="va">sp</span>, <span class="cn">T</span><span class="op">)</span><span class="op">$</span><span class="va">y</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mfrow<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">2</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">STN3</span> <span class="op">&lt;-</span> <span class="fu"><a href="handleFlags.html">handleFlags</a></span><span class="op">(</span><span class="va">stn</span>, flags<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>salinity<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">3</span><span class="op">:</span><span class="fl">9</span><span class="op">)</span><span class="op">)</span>, action<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>salinity<span class="op">=</span><span class="va">f</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mfrow<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">STN3</span> <span class="op">&lt;-</span> <span class="fu"><a href="handleFlags.html">handleFlags</a></span><span class="op">(</span><span class="va">stn</span>, flags<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>salinity<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">3</span><span class="op">:</span><span class="fl">9</span><span class="op">)</span><span class="op">)</span>, action<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>salinity<span class="op">=</span><span class="va">f</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="plotProfile.html">plotProfile</a></span><span class="op">(</span><span class="va">stn</span>, <span class="st">"salinity"</span>, mar<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3</span>, <span class="fl">3</span>, <span class="fl">3</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">p</span> <span class="op">&lt;-</span> <span class="va">stn</span><span class="op">[[</span><span class="st">"pressure"</span><span class="op">]</span><span class="op">]</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mar<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3</span>, <span class="fl">3</span>, <span class="fl">3</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span></span></span>
@@ -333,7 +334,7 @@ handled for each data item. If not supplied, this defaults to the value of
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>

@@ -1,6 +1,7 @@
 ADCP
 ADCPs
 ADPs
+ADR
 ADVField
 ADVs
 AFL
@@ -23,6 +24,7 @@ Appl
 Aquadopp
 Aquatracka
 ArcGIS
+ArgonautXR
 AvgInterval
 Azimuthal
 BAMS
@@ -135,6 +137,7 @@ Gridded
 Grinten
 Groten
 Guo
+HAC
 HDG
 HDT
 HEALPix
@@ -215,6 +218,7 @@ MEDS
 MGL
 MLI
 MSB
+MTIME
 MacNeil
 Macnab
 Mahy
@@ -424,6 +428,7 @@ Yu
 Yutaka
 Zimmerle
 Zweng
+accelerometer
 addColumn
 addCtdColumn
 adiabatically
@@ -686,11 +691,13 @@ io
 ipss
 isobath
 isobaths
+isopleths
 isopycnal
 isopycnals
 issuecomment
 itp
 jcommops
+joss
 juld
 julian
 julianDay
@@ -889,6 +896,7 @@ replot
 rescale
 reseting
 retime
+revH
 rgdal
 riley
 rotateAboutZ
@@ -922,6 +930,7 @@ situ
 sle
 smoothScatter
 snakeCase
+snsjho
 soest
 soi
 sontek
@@ -984,6 +993,7 @@ topoInterpolate
 topoMaritimes
 topoWorld
 towyo
+trac
 transmissometry
 travelled
 travelling
@@ -996,6 +1006,7 @@ tz
 uPa
 uS
 uchicago
+ucmerced
 ucp
 ucp
 ucsd
@@ -1032,6 +1043,7 @@ vapour
 vectorize
 velocimeter
 velocimeters
+velocimetry
 velocityStatistics
 verlag
 version

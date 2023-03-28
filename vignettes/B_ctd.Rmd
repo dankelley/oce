@@ -144,10 +144,10 @@ library(oce)
 # http://cchdo.ucsd.edu/data/7971/ar18_58JH19941029_ct1.zip
 # setwd("~/Downloads/ar18_58JH19941029_ct1")
 files <- system("ls *.csv", intern=TRUE)
-for (i in 1:length(files)) {
+for (i in seq_along(files)) {
     x <- read.ctd(files[i])
     if (i == 1) {
-        plotTS(x, Slim=c(31, 35.5), Tlim=c(-2, 10), type='o')
+        plotTS(x, Slim=c(31, 35.5), Tlim=c(-2, 10), type="o")
     } else {
         points(x[["salinity"]], x[["potential temperature"]])
         lines(x[["salinity"]], x[["potential temperature"]])
@@ -213,17 +213,15 @@ for (i in 1:n) {
     ctds[[i]] <- read.ctd(files[i])
     station[[i]] <- ctds[[i]][["station"]]
 }
-S <- unlist(lapply(1:n, function(i) ctds[[i]][["salinity"]]))
-T <- unlist(lapply(1:n, function(i) ctds[[i]][["temperature"]]))
-p <- unlist(lapply(1:n, function(i) ctds[[i]][["pressure"]]))
-overall <- as.ctd(S, T, p)
+sal <- unlist(lapply(1:n, function(i) ctds[[i]][["salinity"]]))
+tem <- unlist(lapply(1:n, function(i) ctds[[i]][["temperature"]]))
+pre <- unlist(lapply(1:n, function(i) ctds[[i]][["pressure"]]))
+overall <- as.ctd(sal, tem, pre)
 png("ar18_%02d.png")
 for (i in 1:n) {
-    plotTS(overall, col='gray')
+    plotTS(overall, col="gray")
     lines(ctds[[i]][["salinity"]], ctds[[i]][["potential temperature"]])
     mtext(station[i], side=3, line=0)
 }
 dev.off()
 ```
-
-

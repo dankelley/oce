@@ -23,7 +23,7 @@ relatively straightforward."><!-- mathjax --><script src="https://cdnjs.cloudfla
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-10</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-11</span>
       </span>
     </div>
 
@@ -265,10 +265,22 @@ by specifying higher <code>debug</code> values.</p></dd>
 
 <p>A <a href="ctd-class.html">ctd</a> object.</p>
     </div>
-    <div id="converting-rsk-objects">
-    <h2>Converting rsk objects</h2>
-    
-
+    <div id="details">
+    <h2>Details</h2>
+    <p>The following sections provide an some notes on how <code>as.ctd()</code> handles
+certain object types given as the first parameter.</p>
+<p><strong>Converting argo objects</strong></p>
+<p>If the <code>salinity</code> argument is an object of <a href="argo-class.html">argo</a>, then that
+object is dismantled and reassembled as a <a href="ctd-class.html">ctd</a> object in ways that
+are mostly straightforward, although the handling of time depends
+on the information in the original netcdf data file that was used
+by <code><a href="read.argo.html">read.argo()</a></code> to create the <a href="argo-class.html">argo</a> object.</p>
+<p>All Argo data files contain an item called <code>juld</code> from which the profile
+time can be computed, and some also contain an additional item named <code>MTIME</code>,
+from which the times of individual measurements can also be computed.  Both
+cases are handled by <code>as.ctd()</code>, using a scheme outlined in
+Note 4 of the Details section of the <code><a href="read.argo.html">read.argo()</a></code> documentation.</p>
+<p><strong>Converting rsk objects</strong></p>
 <p>If the <code>salinity</code> argument is an object of <a href="rsk-class.html">rsk</a>,
 then <code>as.ctd</code> passes it,
 <code>pressureAtmospheric</code>,
@@ -322,6 +334,7 @@ Engineering</em>, volume <strong>5</strong>, pages 22-23.</p>
 <code><a href="ctd-class.html">ctd-class</a></code>,
 <code><a href="ctd.cnv.html">ctd.cnv</a></code>,
 <code><a href="ctdDecimate.html">ctdDecimate</a>()</code>,
+<code><a href="ctdFindProfilesRBR.html">ctdFindProfilesRBR</a>()</code>,
 <code><a href="ctdFindProfiles.html">ctdFindProfiles</a>()</code>,
 <code><a href="ctdRaw.html">ctdRaw</a></code>,
 <code><a href="ctdRepair.html">ctdRepair</a>()</code>,
@@ -363,7 +376,7 @@ Engineering</em>, volume <strong>5</strong>, pages 22-23.</p>
     <div id="ref-examples">
     <h2>Examples</h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dankelley.github.io/oce/" class="external-link">oce</a></span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="co">## 1. fake data, with default units</span></span></span>
+<span class="r-in"><span><span class="co"># 1. fake data, with default units</span></span></span>
 <span class="r-in"><span><span class="va">pressure</span> <span class="op">&lt;-</span> <span class="fl">1</span><span class="op">:</span><span class="fl">50</span></span></span>
 <span class="r-in"><span><span class="va">temperature</span> <span class="op">&lt;-</span> <span class="fl">10</span> <span class="op">-</span> <span class="fu"><a href="https://rdrr.io/r/base/Hyperbolic.html" class="external-link">tanh</a></span><span class="op">(</span><span class="op">(</span><span class="va">pressure</span> <span class="op">-</span> <span class="fl">20</span><span class="op">)</span> <span class="op">/</span> <span class="fl">5</span><span class="op">)</span> <span class="op">+</span> <span class="fl">0.02</span><span class="op">*</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">50</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">salinity</span> <span class="op">&lt;-</span> <span class="fl">34</span> <span class="op">+</span> <span class="fl">0.5</span><span class="op">*</span><span class="fu"><a href="https://rdrr.io/r/base/Hyperbolic.html" class="external-link">tanh</a></span><span class="op">(</span><span class="op">(</span><span class="va">pressure</span> <span class="op">-</span> <span class="fl">20</span><span class="op">)</span> <span class="op">/</span> <span class="fl">5</span><span class="op">)</span> <span class="op">+</span> <span class="fl">0.01</span><span class="op">*</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">50</span><span class="op">)</span></span></span>
@@ -378,20 +391,20 @@ Engineering</em>, volume <strong>5</strong>, pages 22-23.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> * Data Overview</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                                 Min.   Mean   Max. Dim. NAs OriginalName</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     scan                           1   25.5     50   50   0            -</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     salinity [PSS-78]         33.481 34.109 34.526   50   0            -</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     temperature [°C, ITS-90]  8.9767 9.7817 11.021   50   0            -</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     pressure [dbar]                1   25.5     50   50   0            -</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     fluorescence [mg/m³]     0.41042 1.7903 4.7561   50   0            -</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                 Min.   Mean   Max. Dim. NAs</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     scan                           1   25.5     50    0   0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     salinity [PSS-78]         33.496  34.11 34.514    0   0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     temperature [°C, ITS-90]  8.9829 9.7833 11.037    0   0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     pressure [dbar]                1   25.5     50    0   0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     fluorescence [mg/m³]     0.41042 1.7903 4.7561    0   0</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> * Processing Log</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2022-08-18 15:44:08 UTC: `create 'ctd' object`</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2022-08-18 15:44:08 UTC: `as.ctd(salinity = salinity, temperature = temperature, pressure = pressure)`</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2022-08-18 15:44:08 UTC: `oceSetData(object = ctd, name = "fluorescence", value = fluo,     unit = list(unit = expression(mg/m^3), scale = ""))`</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2023-03-27 19:26:27 UTC: `create 'ctd' object`</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2023-03-27 19:26:27 UTC: `as.ctd(salinity = salinity, temperature = temperature, pressure = pressure)`</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2023-03-27 19:26:27 UTC: `oceSetData(object = ctd, name = "fluorescence", value = fluo,     unit = list(unit = expression(mg/m^3), scale = ""))`</span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co">## 2. fake data, with supplied units (which are the defaults, actually)</span></span></span>
+<span class="r-in"><span><span class="co"># 2. fake data, with supplied units (which are the defaults, actually)</span></span></span>
 <span class="r-in"><span><span class="va">ctd</span> <span class="op">&lt;-</span> <span class="fu">as.ctd</span><span class="op">(</span><span class="va">salinity</span>, <span class="va">temperature</span>, <span class="va">pressure</span>,</span></span>
 <span class="r-in"><span>    units<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>salinity<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>unit<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/expression.html" class="external-link">expression</a></span><span class="op">(</span><span class="op">)</span>, scale<span class="op">=</span><span class="st">"PSS-78"</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>    temperature<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>unit<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/expression.html" class="external-link">expression</a></span><span class="op">(</span><span class="va">degree</span><span class="op">*</span><span class="va">C</span><span class="op">)</span>, scale<span class="op">=</span><span class="st">"ITS-90"</span><span class="op">)</span>,</span></span>
@@ -411,7 +424,7 @@ Engineering</em>, volume <strong>5</strong>, pages 22-23.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>

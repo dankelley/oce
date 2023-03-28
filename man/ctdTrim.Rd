@@ -40,10 +40,14 @@ be printed. If one function calls another, it usually reduces the value of
 by specifying higher \code{debug} values.}
 }
 \value{
-Either a \linkS4class{ctd} object of or a logical vector of length
-matching the data. The first option is the default. The second option,
-achieved by setting \code{indices=FALSE}, may be useful in constructing
-data flags to be inserted into the object.
+Either a \linkS4class{ctd} object or a logical vector of length matching
+the data. In the first case, which is the default, the elements of the \code{data}
+slot will have been trimmed, along with some elements of the \code{metadata} slot
+(e.g. \code{metadata4flags} and, if present and of length matching
+\code{data$pressure}, both \code{metadata$longitude} and \code{metadata$latitude}).  The
+second case, achieved by setting \code{indices=FALSE}, may be helpful for advanced
+users who wish to do things like construct data flags to be inserted into the
+object.
 }
 \description{
 Often in CTD profiling, the goal is to isolate only the downcast, discarding measurements made in
@@ -123,7 +127,7 @@ between \code{parameters$from} (the lower limit) and \code{parameters$to} (the u
 critical value: select if the named column exceeds the value.  For example, \code{ctd2 <-
     ctdTrim(ctd, "range", parameters=list(item="scan", from=5))} starts at scan number 5 and
 continues to the end, while
-\code{ctdTrim(ctd,"range",parameters=list(item="scan",from=5,to=100))} also starts at scan 5,
+\code{ctdTrim(ctd,"range", parameters=list(item="scan", from=5, to=100))} also starts at scan 5,
 but extends only to scan 100.
 \item If \code{method} is a function, then it must return a vector of \code{\link[=logical]{logical()}}
 values, computed based on two arguments: \code{data} (a
@@ -132,15 +136,24 @@ values, computed based on two arguments: \code{data} (a
 \dQuote{Examples}.
 }
 }
+\section{Historical Note}{
+
+
+The subsetting of \code{longitude} and \code{latitude} in the \code{metadata} slot was
+introduced on 2022-12-13, for use with \linkS4class{ctd} objects created using
+\code{\link[=as.ctd]{as.ctd()}} on \linkS4class{rsk} objects created by using \code{\link[=read.rsk]{read.rsk()}} on Ruskin
+files that hold data from RBR CTD instruments linked with phone/tablet
+devices equipped with GPS sensors.
+}
+
 \examples{
+
 \dontrun{
 library(oce)
 data(ctdRaw)
-plot(ctdRaw) # barely recognizable, due to pre- and post-cast junk
-plot(ctdTrim(ctdRaw)) # looks like a real profile ...
-plot(ctdDecimate(ctdTrim(ctdRaw),method="boxcar")) # ... smoothed
-# Demonstrate use of a function. The scan limits were chosen
-# by using locator(2) on a graph made by plotScan(ctdRaw).
+# Example 1: focus on downcast
+plot(ctdTrim(ctdRaw))
+# Example 2: user-supplied function.
 trimByIndex<-function(data, parameters) {
   parameters[1] < data$scan & data$scan < parameters[2]
 }
@@ -165,6 +178,7 @@ Other things related to ctd data:
 \code{\link{ctd-class}},
 \code{\link{ctd.cnv}},
 \code{\link{ctdDecimate}()},
+\code{\link{ctdFindProfilesRBR}()},
 \code{\link{ctdFindProfiles}()},
 \code{\link{ctdRaw}},
 \code{\link{ctdRepair}()},

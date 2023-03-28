@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-10</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7-11</span>
       </span>
     </div>
 
@@ -348,6 +348,13 @@ file.  For example, if <code>d</code> is an object read with <code>read.adp.rdi<
 <p></p><div class="sourceCode"><pre><code><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(d[[<span class="st">"time"</span>]][<span class="sc">-</span><span class="dv">1</span>], <span class="fu">diff</span>(d[[<span class="st">"ensembleInFile"</span>]]))</span></code></pre><p></p></div>
 <p>can be a good way to narrow in on problems.</p>
     </div>
+    <div id="changes">
+    <h2>Changes</h2>
+    
+
+<ul><li><p>The <code>bq</code> (bottom-track quality) field was called <code>bc</code> until 2023-02-09.
+See https://github.com/dankelley/oce/issues/2039 for discussion.</p></li>
+</ul></div>
     <div id="references">
     <h2>References</h2>
     
@@ -380,6 +387,7 @@ P/N 957-6171-00 (June 2001) <code>WinRiver User Guide International Version.pdf.
 <code><a href="adpRdiFileTrim.html">adpRdiFileTrim</a>()</code>,
 <code><a href="adp_rdi.000.html">adp_rdi.000</a></code>,
 <code><a href="adp.html">adp</a></code>,
+<code><a href="applyMagneticDeclination-adp-method.html">applyMagneticDeclination,adp-method</a></code>,
 <code><a href="as.adp.html">as.adp</a>()</code>,
 <code><a href="beamName.html">beamName</a>()</code>,
 <code><a href="beamToXyzAdpAD2CP.html">beamToXyzAdpAD2CP</a>()</code>,
@@ -434,66 +442,53 @@ P/N 957-6171-00 (June 2001) <code>WinRiver User Guide International Version.pdf.
 <span class="r-out co"><span class="r-pr">#&gt;</span> ADP Summary</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> -----------</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> * Filename:      "/private/var/folders/8b/l4h64m1j22v5pb7vj049ff140000gn/T/Rtmp0xs5P1/temp_libpathcbac25e016bc/oce/extdata/adp_rdi.000"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> * Instrument:    adcp</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> * Manufacturer:  teledyne rdi</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> * Serial number: unknown</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> * File name:     "/private/var/folders/8b/l4h64m1j22v5pb7vj049ff140000gn/T/RtmpMVjKWh/temp_libpath54107b4abcb3/oce/extdata/adp_rdi.000"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> * Firmware:      16.28</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> * Location:      unknown latitude, unknown longitude</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> * # of beams:    4</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> * # profiles:    9</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> * # cells:       84</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> * # beams:       4</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> * Cell size:     0.5m</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> * Summary of times between profiles:</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>      10      10      10      10      10      10 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> * Frequency:     600 kHz</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> * Ensemble Numbers:   1, 2, ..., 8, 9</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> * Cells:              84, centered at 2.230 m to 43.730 m, spaced by 0.500 m</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> * Coordinate system:  beam [originally], beam [presently]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> * Beams::</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     Number:           4 slanted</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     Slantwise Angle:  20 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     Orientation:      upward:9 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     Unspreaded:       FALSE </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> * Transformation matrix::</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>       1.462   -1.462    0.000    0.000 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>       0.000    0.000   -1.462    1.462 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>       0.266    0.266    0.266    0.266 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>       1.034    1.034   -1.034   -1.034 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> * Time ranges from 2008-06-25 10:00:00 to 2008-06-25 10:01:20 with 9 samples and mean increment 10 s</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      1.462  -1.462   0.000   0.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      0.000   0.000  -1.462   1.462</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      0.266   0.266   0.266   0.266</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      1.034   1.034  -1.034  -1.034</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> * Time:          2008-06-25 10:00:00 to 2008-06-25 10:01:20 (9 samples, mean increment 10 s)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> * Data Overview</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                                Min.     Mean   Max.   Dim. NAs OriginalName</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     v [m/s]                  -0.416 0.011534  0.406 9x84x4   0            -</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     q                            16    25.18     34 9x84x4   0            -</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     a                            45   50.164     55 9x84x4   0            -</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     g                           100      100    100 9x84x4   0            -</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     distance [m]               2.23    22.98  43.73     84   0            -</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     pressure [dbar]          -0.274 -0.23489 -0.193      9   0            -</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     temperature [°C, ITS-90]  12.06   12.082  12.11      9   0            -</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     salinity [PSS-78]            35       35     35      9   0            -</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     depth [m]                     0        0      0      9   0            -</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     soundSpeed [m/s]           1497     1497   1497      9   0            -</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     heading [°]              276.39   277.14 278.14      9   0            -</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     pitch [°]                1.1209   1.2033 1.4212      9   0            -</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     roll [°]                  -2.49  -2.4033  -2.35      9   0            -</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     headingStd [°]                0  0.22222      1      9   0            -</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     pitchStd [°]                0.1  0.11111    0.2      9   0            -</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     rollStd [°]                   0 0.088889    0.1      9   0            -</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     pressureStd                  76      100    135      9   0            -</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     xmitCurrent                  61       61     61      9   0            -</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     xmitVoltage                 155      155    155      9   0            -</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     ambientTemp                 103      103    103      9   0            -</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     pressurePlus                 77       77     77      9   0            -</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     pressureMinus                76   76.778     77      9   0            -</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     attitudeTemp                101      101    101      9   0            -</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     attitude [°]                130      130    130      9   0            -</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     contaminationSensor         159      159    159      9   0            -</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                             Min.                Mean                Max. Dim. NAs</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     v [m/s]                               -0.416            0.011534               0.406    0   0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     q                                         16               25.18                  34    0   0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     a                                         45              50.164                  55    0   0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     g                                        100                 100                 100    0   0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     distance [m]                            2.23               22.98               43.73    0   0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     time                     2008-06-25 10:00:00 2008-06-25 10:00:40 2008-06-25 10:01:20    0   0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     pressure [dbar]                       -0.274            -0.23489              -0.193    0   0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     temperature [°C, ITS-90]               12.06              12.082               12.11    0   0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     salinity [PSS-78]                         35                  35                  35    0   0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     depth [m]                                  0                   0                   0    0   0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     soundSpeed [m/s]                        1497                1497                1497    0   0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     heading [°]                           276.39              277.14              278.14    0   0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     pitch [°]                             1.1209              1.2033              1.4212    0   0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     roll [°]                               -2.49             -2.4033               -2.35    0   0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     headingStd [°]                             0             0.22222                   1    0   0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     pitchStd [°]                             0.1             0.11111                 0.2    0   0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     rollStd [°]                                0            0.088889                 0.1    0   0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     pressureStd                               76                 100                 135    0   0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     xmitCurrent                               61                  61                  61    0   0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     xmitVoltage                              155                 155                 155    0   0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     ambientTemp                              103                 103                 103    0   0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     pressurePlus                              77                  77                  77    0   0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     pressureMinus                             76              76.778                  77    0   0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     attitudeTemp                             101                 101                 101    0   0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     attitude [°]                             130                 130                 130    0   0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     contaminationSensor                      159                 159                 159    0   0</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> * Processing Log</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2022-08-18 15:46:46 UTC: `read.adp.rdi(file = system.file("extdata", "adp_rdi.000", package = "oce"))`</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2023-03-27 19:28:55 UTC: `read.adp.rdi(file = system.file("extdata", "adp_rdi.000", package = "oce"))`</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
@@ -509,7 +504,7 @@ P/N 957-6171-00 (June 2001) <code>WinRiver User Guide International Version.pdf.
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>

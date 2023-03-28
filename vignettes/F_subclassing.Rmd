@@ -7,9 +7,6 @@ output:
     toc: true
     number_sections: true
     fig_caption: yes
-    fig_width: 4
-    fig_height: 4
-    dpi: 72
     dev.args: list(pointsize=11)
 vignette: >
   %\VignetteIndexEntry{6. Subclassing oce objects}
@@ -98,8 +95,8 @@ str(o[["latitude"]])
 
 We can also use the default `plot()` function to show the interdependence of
 entries in the `data` slot.
-```{r fig.cap="**Figure 1.** Demonstration of base-level plot()."}
-plot(o)
+```{r fig.cap="**Figure 1.** Demonstration of base-level plot().", fig.width=4, fig.height=4, dpi=72, dev.args=list(pointsize=10)}
+plot(o, pch=20, cex=0.5)
 ```
 
 Although this plot provides a useful overview of the data, it is not something
@@ -183,7 +180,7 @@ setMethod(f="plot",
                 ylab=lonlab, ...)
         } else if (which == 2) {
             oce.plot.ts(x[["time"]], x[["latitude"]],
-                ylab=latlab,...)
+                ylab=latlab, ...)
         } else if (which == 3) {
             asp <- 1 / cos(mean(range(x[["latitude"]]) * pi / 180))
             plot(x[["longitude"]], x[["latitude"]],
@@ -198,8 +195,8 @@ The three plot types are fairly rudimentary, but the `...` argument can be used
 for customization, as in the following example.
 
 ```{r fig.cap="**Figure 2.** Demonstration of specialized plot()."}
-par(mar=c(3.3,3.3,1,1), mgp=c(2,0.7,0))
-layout(matrix(c(1,3,2,3),nrow=2,byrow=TRUE))
+par(mar=c(3.3, 3.3, 1, 1), mgp=c(2, 0.7, 0))
+layout(matrix(c(1, 3, 2, 3), nrow=2, byrow=TRUE))
 plot(d, which=1, drawTimeRange=FALSE)
 plot(d, which=2, drawTimeRange=FALSE)
 plot(d, which=3)
@@ -245,7 +242,6 @@ setMethod(f="[[",
                 dx <- diff(x)
                 c(dx[1], dx)
             }
-            dist <- geodDist(x[["longitude"]], x[["latitude"]])
             lat <- x[["latitude"]]
             lon <- x[["longitude"]]
             dt <- D(as.numeric(x[["time"]])) # seconds
@@ -261,22 +257,22 @@ setMethod(f="[[",
 ```
 
 As a test, we can plot the velocity components.
-```{r fig.cap="**Figure 3.** Velocities inferred from drifter motion."}
+```{r fig.cap="**Figure 3.** Velocities inferred from drifter motion.", fig.width=5, fig.height=3, dpi=72, dev.args=list(pointsize=10)}
 uv <- d[["velocity"]]
-par(mfrow=c(2,1))
-oce.plot.ts(d[["time"]], uv$u, ylab="Eastward velocity [m/s]", grid=TRUE)
-oce.plot.ts(d[["time"]], uv$v, ylab="Northward velocity [m/s]", grid=TRUE)
+par(mfrow=c(2, 1))
+oce.plot.ts(d[["time"]], uv$u, ylab="Eastward velo. [m/s]", grid=TRUE)
+oce.plot.ts(d[["time"]], uv$v, ylab="Northward vel. [m/s]", grid=TRUE)
 ```
 
 The `acf()` function, which computes lagged autocorrelation, can shed some
 light on the periodicity of the velocity signals (but see Exercise 3), as
 follows.
 
-```{r fig.cap="**Figure 4.** Autocorrelation analysis of drifter velocities, showing also the M2 period."}
+```{r fig.cap="**Figure 4.** Autocorrelation analysis of drifter velocities, showing also the M2 period.", fig.width=5, fig.height=3, dpi=72, dev.args=list(pointsize=10)}
 data(tidedata)
 M2period <- 1 / with(tidedata$const, freq[[which(name=="M2")]])
 uv <- d[["velocity"]]
-par(mfrow=c(2,1), mar=c(3,3,1,1), mgp=c(2,0.7,0))
+par(mfrow=c(2, 1), mar=c(3, 3, 1, 1), mgp=c(2, 0.7, 0))
 acf(uv$u, main="", ylab="u ACF")
 abline(v=M2period, col=2)
 acf(uv$v, main="", ylab="v ACF")
@@ -309,4 +305,3 @@ code provided in the previous sections.
 5. As an alternative to the lagged-autocorrelation method, test for periodicity
    of velocity by using `nls()`, supplied with a sinusoidal function that has
    adjustable amplitude, phase, and frequency.
-

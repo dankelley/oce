@@ -132,7 +132,7 @@ test_that("accessor operations, specifying data or metadata", {
     expect_equal(o[["foo"]], "metadataBar")
     expect_equal(o[["foo", "metadata"]], "metadataBar")
     expect_equal(o[["foo", "data"]], "dataBar")
-    expect_error(o[["foo","unknown"]], "second arg must be")
+    expect_error(o[["foo", "unknown"]], "second arg must be")
 })
 
 test_that("derived quantities handled properly (ctd)", {
@@ -169,8 +169,8 @@ test_that("derived quantities handled properly (ctd)", {
 test_that("accessor operations (adp)", {
     data(adp)
     v <- adp[["v"]]
-    expect_equal(v[1:5,1,1], c(-0.11955770778, -0.09925398341, 0.10203801933,
-            0.09613003081, 0.24394126236))
+    expect_equal(v[1:5, 1, 1], c(-0.11955770778, -0.09925398341, 0.10203801933,
+        0.09613003081, 0.24394126236))
     expect_null(adp[["noSuchThing"]])
     adp[["somethingNew"]] <- 1:4
     expect_true("somethingNew" %in% names(adp[["data"]]))
@@ -187,4 +187,3 @@ test_that("argo original names (issue 1640)", {
     data(argo)
     expect_equal(argo[["temperature"]], argo[["TEMP"]])
 })
-

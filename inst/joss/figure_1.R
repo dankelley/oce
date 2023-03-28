@@ -5,4 +5,3 @@ data(ctd)
 plot(ctd)
 
 dev.off()
-

@@ -42,7 +42,7 @@ T <- 5 + 10 * exp(z / 100)
 palette <- oce.colorsViridis(100)
 zlim <- range(T)
 drawPalette(zlim=zlim, col=palette)
-plot(x, z, type='p', pch=20, cex=3,
+plot(x, z, type="p", pch=20, cex=3,
      col=palette[rescale(T, xlow=zlim[1], xhigh=zlim[2], rlow=1, rhigh=100)])
 }
 \author{

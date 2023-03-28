@@ -46,15 +46,16 @@ setClass("lisst", contains="oce")
 #'
 #' @family things related to lisst data
 setMethod(f="[[",
-          signature(x="lisst", i="ANY", j="ANY"),
-          definition=function(x, i, j, ...) {
-              if (i == "?")
-                  return(list(metadata=sort(names(x@metadata)),
-                          metadataDerived=NULL,
-                          data=sort(names(x@data)),
-                          dataDerived=NULL))
-              callNextMethod()         # [[
-          })
+    signature(x="lisst", i="ANY", j="ANY"),
+    definition=function(x, i, j, ...) {
+        if (i == "?") {
+            return(list(metadata=sort(names(x@metadata)),
+                metadataDerived=NULL,
+                data=sort(names(x@data)),
+                dataDerived=NULL))
+        }
+        callNextMethod()         # [[
+    })
 
 #' Replace Parts of a LISST Object
 #'
@@ -64,10 +65,10 @@ setMethod(f="[[",
 #'
 #' @family things related to lisst data
 setMethod(f="[[<-",
-          signature(x="lisst", i="ANY", j="ANY"),
-          definition=function(x, i, j, ..., value) {
-              callNextMethod(x=x, i=i, j=j, ...=..., value=value) # [[<-
-          })
+    signature(x="lisst", i="ANY", j="ANY"),
+    definition=function(x, i, j, ..., value) {
+        callNextMethod(x=x, i=i, j=j, ...=..., value=value) # [[<-
+    })
 
 
 #' LISST Dataset
@@ -89,20 +90,20 @@ setMethod(f="[[<-",
 NULL
 
 setMethod(f="initialize",
-          signature="lisst",
-          definition=function(.Object, filename="", longitude=NA, latitude=NA, ...) {
-              .Object <- callNextMethod(.Object, ...)
-              .Object@metadata$filename <- filename
-              .Object@metadata$longitude <- longitude
-              .Object@metadata$latitude <- latitude
-              .Object@processingLog$time <- presentTime()
-              .Object@processingLog$value <- paste("create 'lisst' object with",
-                                                   " filename=\"", filename, "\"",
-                                                   ", longitude=", longitude,
-                                                   ", latitude=",
-                                                   latitude, sep="")
-              return(.Object)
-          })
+    signature="lisst",
+    definition=function(.Object, filename="", longitude=NA, latitude=NA, ...) {
+        .Object <- callNextMethod(.Object, ...)
+        .Object@metadata$filename <- filename
+        .Object@metadata$longitude <- longitude
+        .Object@metadata$latitude <- latitude
+        .Object@processingLog$time <- presentTime()
+        .Object@processingLog$value <- paste("create 'lisst' object with",
+            " filename=\"", filename, "\"",
+            ", longitude=", longitude,
+            ", latitude=",
+            latitude, sep="")
+        return(.Object)
+    })
 
 #' Summarize a LISST Object
 #'
@@ -122,14 +123,12 @@ setMethod(f="initialize",
 #'
 #' @family things related to lisst data
 setMethod(f="summary",
-          signature="lisst",
-          definition=function(object, ...) {
-              cat("LISST Summary\n-------------\n\n")
-              showMetadataItem(object, "filename", "File source:        ")
-              invisible(callNextMethod()) # summary
-          })
-
-
+    signature="lisst",
+    definition=function(object, ...) {
+        cat("LISST Summary\n-------------\n\n")
+        showMetadataItem(object, "filename", "File source:        ")
+        invisible(callNextMethod()) # summary
+    })
 
 #' Plot a lisst Object
 #'
@@ -195,54 +194,54 @@ setMethod(f="summary",
 #'
 #' @aliases plot.lisst
 setMethod(f="plot",
-          signature="lisst",
-          definition=function(x, which = c(16, 37, 38), tformat, debug=getOption("oceDebug"), ...) {
-              oceDebug(debug, "plot.lisst(..., which=c(", paste(which, collapse=","), "),...) {\n", sep="", unindent=1)
-              nw <- length(which)
-              oceDebug(debug, "which:", which, "\n")
-              which <- oce.pmatch(which,
-                                  list(C1=1, C2=2, C3=3, C4=4, C5=5, C6=6, C7=7, C8=8, C9=9, C10=10,
-                                      C11=11, C12=12, C13=13, C14=14, C15=15, C16=16, C17=17, C18=18, C19=19, C20=20,
-                                      C21=21, C22=22, C23=23, C24=24, C25=25, C26=26, C27=27, C28=28, C29=29, C30=30,
-                                      C31=31, C32=32,
-                                      lts=33, voltage=34, aux=35, lrs=36,
-                                      pressure=37, temperature=38, transmission=41, beam=42))
-              oceDebug(debug, "which:", which, "\n")
-              opar <- par(no.readonly = TRUE)
-              if (length(which) > 1) on.exit(par(opar))
-              par(mfrow=c(nw, 1))
-              time <- x[["time"]]
-              for (w in 1:nw) {
-                  ww <- which[w]
-                  if      (ww <= 32) oce.plot.ts(time, x@data[[which[w]]],
-                                                 ylab=paste(gettext("Size Class #", domain="R-oce"), ww, sep=""),
-                                                 tformat=tformat, debug=debug-1, ...)
-                  else if (ww == 33) oce.plot.ts(time, x[["lts"]],
-                                                 ylab=gettext("Laser Trans. Sensor", domain="R-oce"),
-                                                 tformat=tformat, debug=debug-1, ...)
-                  else if (ww == 34) oce.plot.ts(time, x[["voltage"]],
-                                                 ylab=gettext("Voltage", domain="R-oce"),
-                                                 tformat=tformat, debug=debug-1, ...)
-                  else if (ww == 35) oce.plot.ts(time, x[["aux"]],
-                                                 ylab=gettext("Ext. Aux. Input", domain="R-oce"),
-                                                 tformat=tformat, debug=debug-1, ...)
-                  else if (ww == 36) oce.plot.ts(time, x[["lrs"]],
-                                                 ylab=gettext("Laser Ref. Sensor", domain="R-oce"),
-                                                 tformat=tformat, debug=debug-1, ...)
-                  else if (ww == 37) oce.plot.ts(time, x[["pressure"]],
-                                                 ylab=resizableLabel("p"),
-                                                 tformat=tformat, debug=debug-1, ...)
-                  else if (ww == 38) oce.plot.ts(time, x[["temperature"]],
-                                                 ylab=resizableLabel("T"),
-                                                 tformat=tformat, debug=debug-1, ...)
-                  else if (ww == 41) oce.plot.ts(time, x[["transmission"]],
-                                                 ylab=gettext("Transmission %", domain="R-oce"),
-                                                 tformat=tformat, debug=debug-1, ...)
-                  else if (ww == 42) oce.plot.ts(time, x[["beam"]],
-                                                 ylab=gettext("Beam-C [1/m]", domain="R-oce"),
-                                                 tformat=tformat, debug=debug-1, ...)
-              }
-          })
+    signature="lisst",
+    definition=function(x, which = c(16, 37, 38), tformat, debug=getOption("oceDebug"), ...) {
+        oceDebug(debug, "plot.lisst(..., which=c(", paste(which, collapse=","), "),...) {\n", sep="", unindent=1)
+        nw <- length(which)
+        oceDebug(debug, "which:", which, "\n")
+        which <- oce.pmatch(which,
+            list(C1=1, C2=2, C3=3, C4=4, C5=5, C6=6, C7=7, C8=8, C9=9, C10=10,
+                C11=11, C12=12, C13=13, C14=14, C15=15, C16=16, C17=17, C18=18, C19=19, C20=20,
+                C21=21, C22=22, C23=23, C24=24, C25=25, C26=26, C27=27, C28=28, C29=29, C30=30,
+                C31=31, C32=32,
+                lts=33, voltage=34, aux=35, lrs=36,
+                pressure=37, temperature=38, transmission=41, beam=42))
+        oceDebug(debug, "which:", which, "\n")
+        opar <- par(no.readonly = TRUE)
+        if (length(which) > 1) on.exit(par(opar))
+        par(mfrow=c(nw, 1))
+        time <- x[["time"]]
+        for (w in 1:nw) {
+            ww <- which[w]
+            if (ww <= 32) oce.plot.ts(time, x@data[[which[w]]],
+                ylab=paste(gettext("Size Class #", domain="R-oce"), ww, sep=""),
+                tformat=tformat, debug=debug-1, ...)
+            else if (ww == 33) oce.plot.ts(time, x[["lts"]],
+                ylab=gettext("Laser Trans. Sensor", domain="R-oce"),
+                tformat=tformat, debug=debug-1, ...)
+            else if (ww == 34) oce.plot.ts(time, x[["voltage"]],
+                ylab=gettext("Voltage", domain="R-oce"),
+                tformat=tformat, debug=debug-1, ...)
+            else if (ww == 35) oce.plot.ts(time, x[["aux"]],
+                ylab=gettext("Ext. Aux. Input", domain="R-oce"),
+                tformat=tformat, debug=debug-1, ...)
+            else if (ww == 36) oce.plot.ts(time, x[["lrs"]],
+                ylab=gettext("Laser Ref. Sensor", domain="R-oce"),
+                tformat=tformat, debug=debug-1, ...)
+            else if (ww == 37) oce.plot.ts(time, x[["pressure"]],
+                ylab=resizableLabel("p"),
+                tformat=tformat, debug=debug-1, ...)
+            else if (ww == 38) oce.plot.ts(time, x[["temperature"]],
+                ylab=resizableLabel("T"),
+                tformat=tformat, debug=debug-1, ...)
+            else if (ww == 41) oce.plot.ts(time, x[["transmission"]],
+                ylab=gettext("Transmission %", domain="R-oce"),
+                tformat=tformat, debug=debug-1, ...)
+            else if (ww == 42) oce.plot.ts(time, x[["beam"]],
+                ylab=gettext("Beam-C [1/m]", domain="R-oce"),
+                tformat=tformat, debug=debug-1, ...)
+        }
+    })
 
 
 
@@ -318,7 +317,7 @@ as.lisst <- function(data, filename="", year=0, tz="UTC", longitude=NA, latitude
 
 #' Read a LISST File
 #'
-#' Read a LISST data file. 
+#' Read a LISST data file.
 #' The file should contain 42 columns, with no header.  If there are fewer than
 #' 42 columns, an error results.  If there are more, only the first 42 are
 #' used.  Note that [read.oce()] can recognize LISST files by their
@@ -345,12 +344,8 @@ as.lisst <- function(data, filename="", year=0, tz="UTC", longitude=NA, latitude
 #' @author Dan Kelley
 #'
 #' @family things related to lisst data
-read.lisst <- function(file,
-    year=0,
-    tz="UTC",
-    longitude=NA,
-    latitude=NA,
-    encoding="latin1")
+read.lisst <- function(file, year=0, tz="UTC",
+    longitude=NA, latitude=NA, encoding="latin1")
 {
     if (missing(file))
         stop("must supply 'file'")
@@ -376,7 +371,9 @@ read.lisst <- function(file,
     res <- as.lisst(data, filename=filename, year=year, tz=tz, longitude=longitude, latitude=latitude)
     res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     names <- names(data)
-    if ("pressure" %in% names) res@metadata$units$pressure <- list(unit=expression(dbar), scale="")
-    if ("temperature" %in% names) res@metadata$units$temperature <- list(unit=expression(degree*C), scale="")
+    if ("pressure" %in% names)
+        res@metadata$units$pressure <- list(unit=expression(dbar), scale="")
+    if ("temperature" %in% names)
+        res@metadata$units$temperature <- list(unit=expression(degree*C), scale="")
     res
 }

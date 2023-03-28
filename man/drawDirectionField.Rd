@@ -100,9 +100,9 @@ the line.
 }
 \examples{
 library(oce)
-plot(c(-1.5, 1.5), c(-1.5, 1.5), xlab="", ylab="", type='n')
+plot(c(-1.5, 1.5), c(-1.5, 1.5), xlab="", ylab="", type="n")
 drawDirectionField(x=rep(0, 2), y=rep(0, 2), u=c(1, 1), v=c(1, -1), scalex=0.5, add=TRUE)
-plot(c(-1.5, 1.5), c(-1.5, 1.5), xlab="", ylab="", type='n')
+plot(c(-1.5, 1.5), c(-1.5, 1.5), xlab="", ylab="", type="n")
 drawDirectionField(x=rep(0, 2), y=rep(0, 2), u=c(1, 1), v=c(1, -1), scalex=0.5, add=TRUE,
                    type=2)
 

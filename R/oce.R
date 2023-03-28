@@ -71,9 +71,9 @@
 NULL
 
 
-##################################################################
-## DEVELOPER NOTE: Update this whenever function status changes. #
-##################################################################
+#################################################################
+# DEVELOPER NOTE: Update this whenever function status changes. #
+#################################################################
 #' Deprecated and Defunct Elements of the oce package
 #'
 #' Certain functions and function arguments are still provided for
@@ -91,7 +91,7 @@ NULL
 #'
 #' \tabular{lllll}{
 #' **Deprecated**             \tab **Replacement**   \tab **Deprecated**  \tab **Defunct** \tab **Removed** \cr
-## `byteToBinary(x,"endian")` \tab [rawToBits()]     \tab 1.1-1           \tab 1.1-3       \tab 1.1-4       \cr
+# `byteToBinary(x,"endian")` \tab [rawToBits()]     \tab 1.1-1           \tab 1.1-3       \tab 1.1-4       \cr
 #' }
 #'
 #' The following are marked "defunct", so calling them in the
@@ -239,8 +239,9 @@ as.oce <- function(x, ...)
     # Not sure what it is, so make a generic oce object. We
     # have no way to guess the unit.
     res <- new("oce")
-    for (name in names)
+    for (name in names) {
         res <- oceSetData(res, name=name, value=x[[name]])
+    }
     res
 }
 
@@ -344,13 +345,13 @@ useHeading <- function(b, g, add=0)
 #' bottom <- window(adp, start=0, end=20, which="distance")
 #' plot(bottom)
 window.oce <- function(x, start=NULL, end=NULL, frequency=NULL, deltat=NULL, extend=FALSE,
-                       which=c("time", "distance"), indexReturn=FALSE,
-                       debug=getOption("oceDebug"), ...)
+    which=c("time", "distance"), indexReturn=FALSE,
+    debug=getOption("oceDebug"), ...)
 {
     oceDebug(debug, "window.oce(...,start=",
-             paste(format(start), collapse=","), ",end=",
-             paste(format(end), collapse=","),
-             ",indexReturn=", indexReturn, ",...) {\n", unindent=1)
+        paste(format(start), collapse=","), ",end=",
+        paste(format(end), collapse=","),
+        ",indexReturn=", indexReturn, ",...) {\n", unindent=1)
     if (extend)
         stop("cannot handle extend=TRUE yet")
     if (!is.null(frequency))
@@ -396,8 +397,9 @@ window.oce <- function(x, start=NULL, end=NULL, frequency=NULL, deltat=NULL, ext
             return(res)
         } else {
             for (name in names(res@data)) {
-                if ("distance" == name)
+                if ("distance" == name) {
                     next
+                }
                 if (length(grep("^time", name)) || is.vector(res@data[[name]])) {
                     if (1 == length(agrep("Slow$", name))) {
                         oceDebug(debug, "windowing 'slow' variable data$", name, "\n", sep="")
@@ -429,7 +431,7 @@ window.oce <- function(x, start=NULL, end=NULL, frequency=NULL, deltat=NULL, ext
         keep <- start <= res@data$distance & res@data$distance < end
         res@data$distance <- x@data$distanc[keep]
         for (name in names(res@data)) {
-            if (is.array(res@data[[name]]) && 3 == length(dim(x@data[[name]]))){
+            if (is.array(res@data[[name]]) && 3 == length(dim(x@data[[name]]))) {
                 res@data[[name]] <- res@data[[name]][, keep, ]
             }
         }
@@ -463,7 +465,9 @@ window.oce <- function(x, start=NULL, end=NULL, frequency=NULL, deltat=NULL, ext
 #'
 #' @author Dan Kelley
 head.oce <- function(x, n=6L, ...)
+{
     headOrTail(x=x, n=n, headTail=head, ...)
+}
 
 headOrTail <- function(x, n=6L, headTail=head, ...)
 {
@@ -473,18 +477,20 @@ headOrTail <- function(x, n=6L, headTail=head, ...)
     if (inherits(x, "adp") || inherits(x, "adv")) {
         look <- headTail(seq_len(dim(x@data$v)[1]), n)
         for (name in names(x@data)) {
-            if ("distance" == name)
+            if ("distance" == name) {
                 next
-            if (name == "time") {
-                res@data[[name]] <- headTail(x@data[[name]], n)
-            } else if (is.vector(x@data[[name]])) {
-                res@data[[name]] <- x@data[[name]][look]
-            } else if (is.matrix(x@data[[name]])) {
-                res@data[[name]] <- x@data[[name]][look, ]
-            } else if (is.array(x@data[[name]])) {
-                res@data[[name]] <- x@data[[name]][look, , ]
             } else {
-                res@data[[name]] <- x@data[[name]][look] # for reasons unknown, 'time' is not a vector
+                if (name == "time") {
+                    res@data[[name]] <- headTail(x@data[[name]], n)
+                } else if (is.vector(x@data[[name]])) {
+                    res@data[[name]] <- x@data[[name]][look]
+                } else if (is.matrix(x@data[[name]])) {
+                    res@data[[name]] <- x@data[[name]][look, ]
+                } else if (is.array(x@data[[name]])) {
+                    res@data[[name]] <- x@data[[name]][look, , ]
+                } else {
+                    res@data[[name]] <- x@data[[name]][look] # for reasons unknown, 'time' is not a vector
+                }
             }
         }
     } else if (inherits(x, "amsr")) {
@@ -493,8 +499,9 @@ headOrTail <- function(x, n=6L, headTail=head, ...)
         res@metadata$longitude <- x@metadata$longitude[looklon]
         res@metadata$latitude <- x@metadata$latitude[looklat]
         for (n in names(res@data)) {
-            if (is.matrix(res@data[[n]]))
+            if (is.matrix(res@data[[n]])) {
                 res@data[[n]] <- x@data[[n]][looklon, looklat]
+            }
         }
     } else if (inherits(x, "argo")) {
         for (name in names(x@metadata)) {
@@ -512,8 +519,6 @@ headOrTail <- function(x, n=6L, headTail=head, ...)
             } else if (is.matrix(x@metadata[[name]])) {
                 look <- headTail(seq_len(dim(x@metadata[[name]])[2]), n)
                 res@metadata[[name]] <- x@metadata[[name]][, look]
-            #} else {
-            #    warning("ignoring metadata item: '", name, "'")
             }
         }
         for (name in names(x@data)) {
@@ -530,19 +535,22 @@ headOrTail <- function(x, n=6L, headTail=head, ...)
             }
         }
     } else if (inherits(x, "ctd")) {
-        for (name in names(x@data))
+        for (name in names(x@data)) {
             res@data[[name]] <- headTail(x@data[[name]], n)
-        for (fname in names(x@metadata$flags))
+        }
+        for (fname in names(x@metadata$flags)) {
             res@metadata$flags[[fname]] <- headTail(x@metadata$flags[[fname]], n)
+        }
     } else if (inherits(x, "coastline")) {
-        for (name in c("longitude", "latitude"))
+        for (name in c("longitude", "latitude")) {
             res@data[[name]] <- headTail(x@data[[name]], n)
+        }
     } else if (inherits(x, "echosounder")) {
         look <- headTail(seq_along(x@data$latitude), n=n)
-        for (name in c("longitude", "latitude", "time"))
+        for (name in c("longitude", "latitude", "time")) {
             res@data[[name]] <- x@data[[name]][look]
+        }
         res@data$a <- x@data$a[look, ]
-        # FIXME: decide whether the 'Slow' variables should be altered
     } else if (inherits(x, "g1sst")) {
         # not in the test suite, because the files are too big, but
         # looks fine manually on the following test file
@@ -555,16 +563,19 @@ headOrTail <- function(x, n=6L, headTail=head, ...)
         res@data$SST <- x@data$SST[looklon, looklat]
     } else if (inherits(x, "lisst")) {
         look <- headTail(seq_along(x@data[[1]]), n=n)
-        for (name in names(x@data))
+        for (name in names(x@data)) {
             res@data[[name]] <- x@data[[name]][look]
+        }
     } else if (inherits(x, "met")) {
         look <- headTail(seq_along(x@data$temperature), n=n)
-        for (name in names(x@data))
+        for (name in names(x@data)) {
             res@data[[name]] <- x@data[[name]][look]
+        }
     } else if (inherits(x, "section")) {
         look <- headTail(seq_along(x@metadata$latitude), n=n)
-        for (name in c("stationId", "longitude", "latitude", "time"))
+        for (name in c("stationId", "longitude", "latitude", "time")) {
             res@metadata[[name]] <- x@metadata[[name]][look]
+        }
         res@data$station <- x@data$station[look]
     } else if (inherits(x, "topo")) {
         looklon <- headTail(seq_along(x@data$longitude), n)
@@ -587,7 +598,7 @@ headOrTail <- function(x, n=6L, headTail=head, ...)
         #   sealevel
         for (name in names(x@data)) {
             # For reasons I don't understand, the 'time' items are not vectors.
-            if ((is.vector(x@data[[name]]) && !is.list(x@data[[name]])) || name=="time") {
+            if ((is.vector(x@data[[name]]) && !is.list(x@data[[name]])) || (name=="time" || name=="tstamp")) {
                 res@data[[name]] <- headTail(x@data[[name]], n)
             } else if (is.data.frame(x@data[[name]])) {
                 res@data[[name]] <- headTail(x@data[[name]], n)
@@ -599,8 +610,9 @@ headOrTail <- function(x, n=6L, headTail=head, ...)
         for (fname in names(x@metadata$flags)) {
             if (is.list(x@metadata$flags[[fname]])) {
                 #> message("x@metadata$flags$", fname, " is a list")
-                for (fname2 in names(x@metadata$flags[[fname]]))
+                for (fname2 in names(x@metadata$flags[[fname]])) {
                     res@metadata$flags[[fname]][[fname2]] <- headTail(x@metadata$flags[[fname]][[fname2]], n)
+                }
             } else {
                 res@metadata$flags[[fname]] <- headTail(x@metadata$flags[[fname]], n)
             }
@@ -626,7 +638,9 @@ headOrTail <- function(x, n=6L, headTail=head, ...)
 #'
 #' @author Dan Kelley
 tail.oce <- function(x, n=6L, ...)
+{
     headOrTail(x=x, n=n, headTail=tail, ...)
+}
 
 
 #' Draw a Polar Plot
@@ -652,10 +666,11 @@ tail.oce <- function(x, n=6L, ...)
 #' plotPolar(r, theta)
 plotPolar <- function(r, theta, debug=getOption("oceDebug"), ...)
 {
-
     oceDebug(debug, "plotPolar(...)\n", unindent=1)
-    if (missing(r)) stop("must supply 'r'")
-    if (missing(theta)) stop("must supply 'theta'")
+    if (missing(r))
+        stop("must supply 'r'")
+    if (missing(theta))
+        stop("must supply 'theta'")
     thetaRad <- theta * atan2(1, 1) / 45
     x <- r * cos(thetaRad)
     y <- r * sin(thetaRad)
@@ -667,9 +682,8 @@ plotPolar <- function(r, theta, debug=getOption("oceDebug"), ...)
     xa <- axis(1, pos=0)
     abline(v=0)
     th <- seq(0, 2 * atan2(1, 1) * 4, length.out=100)
-    for (radius in xa[xa>0]) {
+    for (radius in xa[xa>0])
         lines(radius * cos(th), radius * sin(th))
-    }
     abline(h=0)
     abline(v=0)
     oceDebug(debug, "} # plotPolar()\n", unindent=1)
@@ -781,11 +795,12 @@ oceApprox <- function(x, y, xout, method=c("rr", "unesco"))
     keep <- c(TRUE, 0 != diff(x))
     x <- x[keep]
     y <- y[keep]
-    if (missing(xout))
+    if (missing(xout)) {
         xout <- seq(min(x, na.rm=TRUE), max(x, na.rm=TRUE), length.out=lx)
-    else
+    } else {
         if (any(is.na(xout)))
             stop("must not have any NA values in xout")
+    }
     do_oceApprox(x=x, y=y, xout=xout, method=pmatch(method, c("unesco", "rr")))
 }
 oce.approx <- oceApprox
@@ -888,18 +903,18 @@ plotSticks <- function(x, y, u, v, yscale=1, add=FALSE, length=1/20,
     col <- rep(col, length.out=n)
     par(mar=mar, mgp=mgp)
     if (!add)
-        plot(range(x), range(y), type='n', xlab=xlab, ylab=ylab, ...)
+        plot(range(x), range(y), type="n", xlab=xlab, ylab=ylab, ...)
     usr <- par("usr")
     yrxr <- (usr[4] - usr[3]) / (usr[2] - usr[1])
     warn <- options("warn")$warn # FIXME: fails to quieten arrows()
     options(warn=0)
     ok <- !is.na(u) & !is.na(v) & (u^2+v^2) > 0
     arrows(as.numeric(x[ok]),
-           y[ok],
-           (as.numeric(x[ok]) + u[ok] / yscale / yrxr * page.ratio),
-           (y[ok] + v[ok] / yscale),
-           length=length, col=col[ok],
-           ...)
+        y[ok],
+        (as.numeric(x[ok]) + u[ok] / yscale / yrxr * page.ratio),
+        (y[ok] + v[ok] / yscale),
+        length=length, col=col[ok],
+        ...)
     options(warn=warn)
 }
 
@@ -960,8 +975,12 @@ oce.grid <- function(xat, yat, col="lightgray", lty="dotted", lwd=par("lwd"))
             yat <- xat$yat
             xat <- xat$xat
         }
-        if (!missing(xat)) abline(v=xat, col=col, lty=lty, lwd=lwd)
-        if (!missing(yat)) abline(h=yat, col=col, lty=lty, lwd=lwd)
+        if (!missing(xat)) {
+            abline(v=xat, col=col, lty=lty, lwd=lwd)
+        }
+        if (!missing(yat)) {
+            abline(h=yat, col=col, lty=lty, lwd=lwd)
+        }
     }
 }
 
@@ -1122,18 +1141,18 @@ oce.grid <- function(xat, yat, col="lightgray", lty="dotted", lwd=par("lwd"))
 #' # Flip the y axis
 #' oce.plot.ts(t, y, flipy=TRUE)
 oce.plot.ts <- function(x, y, type="l", xlim, ylim, log="", logStyle="r", flipy=FALSE, xlab, ylab,
-                        drawTimeRange, simplify=2560, fill=FALSE, col=par("col"), pch=par("pch"),
-                        cex=par("cex"), cex.axis=par("cex.axis"), cex.lab=par("cex.lab"), cex.main=par("cex.main"),
-                        xaxs=par("xaxs"), yaxs=par("yaxs"),
-                        mgp=getOption("oceMgp"),
-                        mar=c(mgp[1]+if (nchar(xlab)>0) 1.5 else 1, mgp[1]+1.5, mgp[2]+1, mgp[2]+3/4),
-                        main="",
-                        despike=FALSE,
-                        axes=TRUE, tformat,
-                        marginsAsImage=FALSE,
-                        grid=FALSE, grid.col="lightgray", grid.lty="dotted", grid.lwd=par("lwd"),
-                        debug=getOption("oceDebug"),
-                        ...)
+    drawTimeRange, simplify=2560, fill=FALSE, col=par("col"), pch=par("pch"),
+    cex=par("cex"), cex.axis=par("cex.axis"), cex.lab=par("cex.lab"), cex.main=par("cex.main"),
+    xaxs=par("xaxs"), yaxs=par("yaxs"),
+    mgp=getOption("oceMgp"),
+    mar=c(mgp[1]+if (nchar(xlab)>0) 1.5 else 1, mgp[1]+1.5, mgp[2]+1, mgp[2]+3/4),
+    main="",
+    despike=FALSE,
+    axes=TRUE, tformat,
+    marginsAsImage=FALSE,
+    grid=FALSE, grid.col="lightgray", grid.lty="dotted", grid.lwd=par("lwd"),
+    debug=getOption("oceDebug"),
+    ...)
 {
     if (is.function(x))
         stop("x cannot be a function")
@@ -1148,27 +1167,26 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, log="", logStyle="r", flipy=
     #ocex <- par("cex")
     #par(cex=cex)
     debug <- min(debug, 4)
-    oceDebug(debug, "oce.plot.ts(...,debug=", debug,",",
-             argShow(type),
-             argShow(flipy),
-             argShow(log), "\n", sep="", unindent=1, style="bold")
+    oceDebug(debug, "oce.plot.ts(...,debug=", debug, ",",
+        argShow(type),
+        argShow(flipy),
+        argShow(log), "\n", sep="", unindent=1, style="bold")
     oceDebug(debug,
-             "          ",
-             argShow(mar),
-             argShow(mgp), "\n", sep="", style="bold")
+        "          ",
+        argShow(mar),
+        argShow(mgp), "\n", sep="", style="bold")
     oceDebug(debug,
-             "          ",
-             argShow(cex),
-             argShow(cex.axis),
-             argShow(cex.lab),
-             "...) {\n", sep="", style="bold")
+        "          ",
+        argShow(cex),
+        argShow(cex.axis),
+        argShow(cex.lab),
+        "...) {\n", sep="", style="bold")
     if (!is.logical(flipy))
         stop("flipy must be TRUE or FALSE")
     if (!log %in% c("", "y"))
         stop("log must be either an empty string or \"y\", not \"", log, "\" as given")
     if (!is.na(simplify) && (!is.numeric(simplify) || simplify <= 0))
         stop("simplify must be NA or a positive number, but it is ", simplify)
-
     #oceDebug(debug, "length(x)", length(x), "; length(y)", length(y), "\n")
     #oceDebug(debug, "marginsAsImage=", marginsAsImage, ")\n")
     oceDebug(debug, "x has timezone", attr(x[1], "tzone"), "\n")
@@ -1182,7 +1200,6 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, log="", logStyle="r", flipy=
         cex <- rep(cex, length.out=nx)
         oceDebug(debug, "made col, pch and cex of length ", nx, " to match length(x)\n")
     }
-
     pc <- paletteCalculations(maidiff=rep(0, 4))
     oceDebug(debug, as.character(dput(pc)), "\n", style="red")
     par(mgp=mgp, mar=mar)
@@ -1194,7 +1211,7 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, log="", logStyle="r", flipy=
             stop("'xlim' must be of length 2, but it is of length ", length(xlim))
         if (xlim[2] <= xlim[1])
             stop("the elements of xlim must be in order, but they are ",
-                 format(xlim[1]), " and ", format(xlim[2]), ", respectively")
+                format(xlim[1]), " and ", format(xlim[2]), ", respectively")
         # Comment-out next line for issue 1508, since trim_ts
         # fails if times are NA.
         # ends <- trim_ts(x, xlim, 0.04)
@@ -1235,7 +1252,7 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, log="", logStyle="r", flipy=
     }
     # Handle 'simplify' argument
     nx <- length(x)
-    if (type == "l" && is.numeric(simplify) & nx > (5L*simplify)) {
+    if (type == "l" && is.numeric(simplify) && nx > (5L*simplify)) {
         warning("simplifying a large dataset; set simplify=NA to see raw data\n")
         xgrid <- seq(min(x, na.rm=TRUE), max(x, na.rm=TRUE), length.out=simplify)
         df <- data.frame(x, y)
@@ -1259,9 +1276,9 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, log="", logStyle="r", flipy=
     maybeflip <- function(y) if (flipy) rev(sort(y)) else y
     if (!is.finite(yrange[1])) {
         plot(xrange, c(0, 1), axes=FALSE, xaxs=xaxs, yaxs=yaxs,
-             xlim=if (xlimGiven) xlim else xrange,
-             ylim=if (missing(ylim)) maybeflip(range(y, na.rm=TRUE)) else maybeflip(ylim),
-             xlab=xlab, ylab=ylab, type='n', log=log, col=col, pch=pch, cex=cex)
+            xlim=if (xlimGiven) xlim else xrange,
+            ylim=if (missing(ylim)) maybeflip(range(y, na.rm=TRUE)) else maybeflip(ylim),
+            xlab=xlab, ylab=ylab, type="n", log=log, col=col, pch=pch, cex=cex)
         oce.axis.POSIXct(1, drawTimeRange=FALSE)
         box()
         mtext("bad data", side=3, line=-1, cex=cex)
@@ -1273,44 +1290,45 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, log="", logStyle="r", flipy=
             xx <- c(x[1], x, x[length(x)])
             yy <- c(0, y, 0)
             plot(x, y, axes=FALSE, xaxs=xaxs, yaxs=yaxs,
-                 xlim=if (xlimGiven) xlim else range(x, na.rm=TRUE),
-                 ylim=if (missing(ylim)) maybeflip(range(y, na.rm=TRUE)) else maybeflip(ylim),
-                 xlab="", ylab="",
-                 type=type, col=col, cex=cex, pch=pch, log=log, ...)
+                xlim=if (xlimGiven) xlim else range(x, na.rm=TRUE),
+                ylim=if (missing(ylim)) maybeflip(range(y, na.rm=TRUE)) else maybeflip(ylim),
+                xlab="", ylab="",
+                type=type, col=col, cex=cex, pch=pch, log=log, ...)
             mtext(xlab, side=1, cex=cex.lab*par("cex"), line=mgp[1])
             mtext(ylab, side=2, cex=cex.lab*par("cex"), line=mgp[1])
             fillcol <- if ("col" %in% names(args)) args$col else "lightgray" # FIXME: should this be a formal argument?
             do.call(polygon, list(x=xx, y=yy, col=fillcol))
         } else {
             plot(x, y, axes=FALSE, xaxs=xaxs, yaxs=yaxs,
-                 xlim=if (missing(xlim)) NULL else xlim,
-                 ylim=if (missing(ylim)) maybeflip(range(y, na.rm=TRUE)) else maybeflip(ylim),
-                 xlab="", ylab="",
-                 type=type, col=col, cex=cex, cex.axis=cex.axis, cex.lab=cex.lab, pch=pch, log=log, ...)
-            #mtext(paste("TEST: xlab at mgp[1]", xlab), side=1, cex=cex.lab*par('cex'), line=mgp[1])
-            mtext(ylab, side=2, cex=cex.lab*par('cex'), line=mgp[1])
+                xlim=if (missing(xlim)) NULL else xlim,
+                ylim=if (missing(ylim)) maybeflip(range(y, na.rm=TRUE)) else maybeflip(ylim),
+                xlab="", ylab="",
+                type=type, col=col, cex=cex, cex.axis=cex.axis, cex.lab=cex.lab, pch=pch, log=log, ...)
+            #mtext(paste("TEST: xlab at mgp[1]", xlab), side=1, cex=cex.lab*par("cex"), line=mgp[1])
+            mtext(ylab, side=2, cex=cex.lab*par("cex"), line=mgp[1])
         }
         xat <- NULL
         yat <- NULL
         if (axes) {
             xaxt <- list(...)["xaxt"]
-            drawxaxis <- !is.null(xaxt) && xaxt != 'n'
+            drawxaxis <- !is.null(xaxt) && xaxt != "n"
             yaxt <- list(...)["yaxt"]
-            drawyaxis <- !is.null(yaxt) && yaxt != 'n'
+            drawyaxis <- !is.null(yaxt) && yaxt != "n"
             if (drawxaxis) {
                 xlabs <- oce.axis.POSIXct(1, x=x, drawTimeRange=drawTimeRange, main=main,
-                                          mgp=mgp,
-                                          xlim=if (missing(xlim)) range(x) else xlim,
-                                          cex.axis=cex.axis, cex.main=cex.main, cex.lab=cex.lab,
-                                          tformat=tformat,
-                                          debug=debug-1)
+                    mgp=mgp,
+                    xlim=if (missing(xlim)) range(x) else xlim,
+                    cex.axis=cex.axis, cex.main=cex.main, cex.lab=cex.lab,
+                    tformat=tformat,
+                    debug=debug-1)
                 xat <- xlabs
                 oceDebug(debug, "drawing x axis; set xat=c(", paste(xat, collapse=","), ")", "\n", sep="")
             }
             if (FALSE && grid) { # FIXME: don't w do this below? Why here also?
                 lwd <- par("lwd")
-                if (drawxaxis)
+                if (drawxaxis) {
                     abline(v=xlabs, col="lightgray", lty="dotted", lwd=lwd)
+                }
                 yaxp <- par("yaxp")
                 if (log == "y") {
                     abline(h=axTicks(2), col="lightgray", lty="dotted", lwd=lwd)
@@ -1320,7 +1338,7 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, log="", logStyle="r", flipy=
                 }
             }
             box()
-            #cat("cex.axis=",cex.axis,"; par('cex.axis') is", par('cex.axis'), "; par('cex') is", par('cex'), "\n")
+            #cat("cex.axis=",cex.axis,"; par('cex.axis') is", par("cex.axis"), "; par('cex') is", par("cex"), "\n")
             if (drawyaxis) {
                 if (log != "y" || logStyle == "r") {
                     axis(2, cex.axis=cex.axis, cex=cex.axis)
@@ -1338,8 +1356,8 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, log="", logStyle="r", flipy=
                 at <- axTicks(2)
                 lat <- log10(at)
                 powerOfTen <- abs(lat - round(lat)) < 1e-4
-                    abline(h=if (any(powerOfTen)) at[powerOfTen] else at,
-                           col=grid.col, lty=grid.lty, lwd=grid.lwd)
+                abline(h=if (any(powerOfTen)) at[powerOfTen] else at,
+                    col=grid.col, lty=grid.lty, lwd=grid.lwd)
             } else {
                 abline(h=axTicks(2), col=grid.col, lty=grid.lty, lwd=grid.lwd)
             }
@@ -1393,8 +1411,8 @@ oceFileTrim <- function(infile, n=100L, outfile, debug=getOption("oceDebug"))
     if (!magic %in% allowed)
         stop("this file, of type ", magic, ", is not understood; only files of the following types are allowed: ", paste(allowed, collapse=", "))
     switch(magic,
-        "adp/nortek/ad2cp"=adpAd2cpFileTrim(infile, n, outfile, debug),
-        "adp/rdi"=adpRdiFileTrim(infile, n, outfile, debug))
+    "adp/nortek/ad2cp"=adpAd2cpFileTrim(infile, n, outfile, debug),
+    "adp/rdi"=adpRdiFileTrim(infile, n, outfile, debug))
 }
 
 #' Edit an Oce Object
@@ -1426,7 +1444,7 @@ oceFileTrim <- function(infile, n=100L, outfile, debug=getOption("oceDebug"))
 #' 2. If `item` and `value` are not supplied, then `action` must
 #' be supplied.  This is a character string specifying some action to be
 #' performed on the object, e.g. a manipulation of a column.  The action must
-#' refer to the object as `x`; see Examples.
+#' refer to the object as `x`, as in Example 2.
 #'
 #' In any case, a log entry is stored in the object, to document the change.
 #' Indeed, this is the main benefit to using this function, instead of altering
@@ -1457,19 +1475,20 @@ oceFileTrim <- function(infile, n=100L, outfile, debug=getOption("oceDebug"))
 #' @param debug an integer that specifies a level of debugging, with 0 or less
 #' indicating no debugging, and 1 or more indicating debugging.
 #'
-#' @return A [oce-class] object, altered
-#' appropriately, and with a log item indicating the nature of the alteration.
+#' @return A [oce-class] object, altered appropriately, and with a log item
+#' indicating the nature of the alteration.
 #'
 #' @author Dan Kelley
 #'
 #' @examples
 #' library(oce)
 #' data(ctd)
+#' # Example 1: change latitude
 #' ctd2 <- oceEdit(ctd, item="latitude", value=47.8879,
-#'                reason="illustration", person="Dan Kelley")
-#' ctd3 <- oceEdit(ctd,action="x@@data$pressure<-x@@data$pressure-1")
-oceEdit <- function(x, item, value, action, reason="", person="",
-                     debug=getOption("oceDebug"))
+#'     reason="illustration", person="Dan Kelley")
+#' # Example 2: add 0.1 dbar to pressure
+#' ctd3 <- oceEdit(ctd,action="x@@data$pressure<-x@@data$pressure+0.1")
+oceEdit <- function(x, item, value, action, reason="", person="", debug=getOption("oceDebug"))
 {
     oceDebug(debug, "oceEdit() {\n", unindent=1)
     if (!inherits(x, "oce"))
@@ -1566,8 +1585,9 @@ oceEdit <- function(x, item, value, action, reason="", person="",
             }
         }
     } else if (!missing(action)) {
-        warning("the 'action' method may not work -- this needs testing!")
-        eval(parse(text=action))        # FIXME: should check if it worked
+        t <- try(eval(parse(text=action)), silent=TRUE)
+        if (inherits(t, "try-error"))
+            stop("cannot parse and evaluate the supplied action")
     } else {
         stop("must supply either an 'item' plus a 'value', or an 'action'")
     }
@@ -1603,7 +1623,7 @@ oce.edit <- oceEdit
 #' @author Dan Kelley
 #'
 #' @seealso `[utils::write.table()], which does the actual work.
-oce.write.table <- function (x, file="", ...)
+oce.write.table <- function(x, file="", ...)
 {
     if (!inherits(x, "oce"))
         stop("method is only for oce objects")
@@ -1648,10 +1668,10 @@ oce.write.table <- function (x, file="", ...)
 #' @references
 #' 1. Sverdrup, H U, Martin W Johnson, and Richard H Fleming. The Oceans,
 #' Their Physics, Chemistry, and General Biology. New York: Prentice-Hall, 1942.
-## `https://ark.cdlib.org/ark:/13030/kt167nb66r`
-## next worked well most of the time, but I got a failure on 2021-08-07 and
-## I just don't see the point in retaining a link that will *ever* fail, given
-## the possible consequence in terms of CRAN.
+# `https://ark.cdlib.org/ark:/13030/kt167nb66r`
+# next worked well most of the time, but I got a failure on 2021-08-07 and
+# I just don't see the point in retaining a link that will *ever* fail, given
+# the possible consequence in terms of CRAN.
 #' \code{https://publishing.cdlib.org/ucpressebooks/view?docId=kt167nb66r}
 #'
 #' 2.Locarnini, R. A., A. V. Mishonov, J. I. Antonov, T. P. Boyer,
@@ -1661,7 +1681,7 @@ oce.write.table <- function (x, file="", ...)
 standardDepths <- function(n=0)
 {
     d <- c(0, 10, 20, 30, 40, 50, 75, 100, 125, 150, 200, 250,
-           seq(300, 1500, by=100), 1750, seq(2000, 10000, by=500))
+        seq(300, 1500, by=100), 1750, seq(2000, 10000, by=500))
     n <- as.integer(n)
     if (n < 0)
         stop("cannot have negative n")
@@ -1670,7 +1690,7 @@ standardDepths <- function(n=0)
     ul <- cbind(head(d, -1), tail(d, -1))
     res <- NULL
     for (i in seq_len(nrow(ul)))
-        res <- c(res, approx(c(0, 1), ul[i,], seq(0, 1, by=1/(n+1)))$y)
+        res <- c(res, approx(c(0, 1), ul[i, ], seq(0, 1, by=1 / (n+1)))$y)
     unique(res) # remove duplicates from one 'l' being the next 'u'
 }
 
@@ -1719,7 +1739,7 @@ oceMagic <- function(file, encoding="latin1", debug=getOption("oceDebug"))
         oceDebug(debug, "'file' is a character value\n")
         if (grepl(".asc$", filename)) {
             someLines <- readLines(file, n=1L)
-            if (42 == length(strsplit(someLines[1], ' ')[[1]])) {
+            if (42 == length(strsplit(someLines[1], " ")[[1]])) {
                 oceDebug(debug, "} # oceMagic returning lisst\n", unindent=1, style="bold")
                 return("lisst")
             }
@@ -1762,10 +1782,9 @@ oceMagic <- function(file, encoding="latin1", debug=getOption("oceDebug"))
         if (grepl(".nc$", filename, ignore.case=TRUE)) {
             # argo or netcdf?
             if (requireNamespace("ncdf4", quietly=TRUE)) {
-                if (substr(filename, 1, 5) == "http:") {
+                if (substr(filename, 1, 5) == "http:")
                     stop("cannot open netcdf files over the web; try doing as follows\n    download.file(\"",
                          filename, "\", \"", gsub(".*/", "", filename), "\")")
-                }
                 # NOTE: need to name ncdf4 package because otherwise R checks give warnings.
                 f <- ncdf4::nc_open(filename)
                 if ("DATA_TYPE" %in% names(f$var)) {
@@ -1818,11 +1837,11 @@ oceMagic <- function(file, encoding="latin1", debug=getOption("oceDebug"))
             } else if (1L == length(grep('^.*"WMO Identifier",', someLines))) {
                 oceDebug(debug, "} # oceMagic returning met/csv1\n", unindent=1, style="bold")
                 return("met/csv1") # FIXME: may be other things too ...
-            } else if (grepl('^.*Longitude.*Latitude.*Station Name.*Climate ID.*Dew Point', someLines[1])) {
+            } else if (grepl("^.*Longitude.*Latitude.*Station Name.*Climate ID.*Dew Point", someLines[1])) {
                 oceDebug(debug, "} # oceMagic returning met/csv2 or met/csv3\n", unindent=1, style="bold")
                 if (grepl("Time \\(LST\\)", someLines[1])) {
                     oceDebug(debug, "} # oceMagic returning met/csv2\n", unindent=1, style="bold")
-                    return("met/csv3" )
+                    return("met/csv3")
                 } else {
                     oceDebug(debug, "} # oceMagic returning met/csv3\n", unindent=1, style="bold")
                     return("met/csv2")
@@ -1873,10 +1892,11 @@ oceMagic <- function(file, encoding="latin1", debug=getOption("oceDebug"))
     }
     if (bytes[1] == 0x10 && bytes[2] == 0x02) {
         # 'ADPManual v710.pdf' p83
-        if (96 == readBin(bytes[3:4], "integer", n=1, size=2, endian="little"))
+        if (96 == readBin(bytes[3:4], "integer", n=1, size=2, endian="little")) {
             oceDebug(debug, "this is adp/sontek (4 byte match)\n  }\n")
-        else
+        } else {
             oceDebug(debug, "this is adp/sontek (2 byte match, but bytes 3 and 4 should become integer 96)\n  }\n")
+        }
         oceDebug(debug, "} # oceMagic returning adp/sontek\n", unindent=1, style="bold")
         return("adp/sontek")
     }
@@ -1890,18 +1910,20 @@ oceMagic <- function(file, encoding="latin1", debug=getOption("oceDebug"))
         seek(file, 0)
         oceDebug(debug, "This is probably a nortek file of some sort.  Reading further to see for sure ...\n")
         hardware.configuration <- readBin(file, what="raw", n=48) # FIXME: this hard-wiring is repeated elsewhere
-        if (hardware.configuration[1] != 0xa5 || hardware.configuration[2] != 0x05) return("unknown")
+        if (hardware.configuration[1] != 0xa5 || hardware.configuration[2] != 0x05)
+            return("unknown")
         oceDebug(debug, "hardware.configuration[1:2]", hardware.configuration[1:2], "(expect 0xa5 0x05)\n")
         head.configuration <- readBin(file, what="raw", n=224)
         oceDebug(debug, "head.configuration[1:2]", head.configuration[1:2], "(expect 0xa5 0x04)\n")
-        if (head.configuration[1] != 0xa5 || head.configuration[2] != 0x04) return("unknown")
+        if (head.configuration[1] != 0xa5 || head.configuration[2] != 0x04)
+            return("unknown")
         user.configuration <- readBin(file, what="raw", n=512)
         oceDebug(debug, "user.configuration[1:2]", user.configuration[1:2], "(expect 0xa5 0x00)\n")
-        if (user.configuration[1] != 0xa5 || user.configuration[2] != 0x00) return("unknown")
+        if (user.configuration[1] != 0xa5 || user.configuration[2] != 0x00)
+            return("unknown")
         nextTwoBytes <- readBin(file, what="raw", n=2)
-        oceDebug(debug, "nextTwoBytes:", paste("0x", nextTwoBytes[1], sep=''),
-                 paste("0x", nextTwoBytes[2], sep=''),
-                 "(e.g. 0x5 0x12 is adv/nortek/vector)\n")
+        oceDebug(debug, "nextTwoBytes:", paste("0x", nextTwoBytes[1], sep=""),
+            paste("0x", nextTwoBytes[2], sep=""), "(e.g. 0x5 0x12 is adv/nortek/vector)\n")
         if (nextTwoBytes[1] == 0xa5 && nextTwoBytes[2] == 0x12) {
             oceDebug(debug, "} # oceMagic returning adv/nortek/vector\n", unindent=1, style="bold")
             return("adv/nortek/vector")
@@ -1944,12 +1966,11 @@ oceMagic <- function(file, encoding="latin1", debug=getOption("oceDebug"))
         oceDebug(debug, "} # oceMagic returning ctd/woce/other\n", unindent=1, style="bold")
         return("ctd/woce/other")
     }
-    if (1 == length(grep("^\\s*ODF_HEADER", line))){
+    if (1 == length(grep("^\\s*ODF_HEADER", line))) {
         oceDebug(debug, "} # oceMagic returning odf\n", unindent=1, style="bold")
         return("odf")
     }
-    if (grepl("^\\* Sea-Bird SBE", line) ||
-        grepl("^\\* Viking Buoy CTD file", line)) {
+    if (grepl("^\\* Sea-Bird SBE", line) || grepl("^\\* Viking Buoy CTD file", line)) {
         oceDebug(debug, "} # oceMagic returning ctd/sbe\n", unindent=1, style="bold")
         return("ctd/sbe")
     }
@@ -2110,16 +2131,18 @@ read.oce <- function(file, ..., encoding="latin1")
         fromHeader <- function(key)
         {
             i <- grep(key, lines)
-            if (length(i) < 1)
+            if (length(i) < 1) {
                 ""
-            else
+            } else {
                 gsub("\\s*$", "", gsub("^\\s*", "", gsub("'", "", gsub(",", "", strsplit(lines[i[1]], "=")[[1]][2]))))
+            }
         }
         lines <- readLines(file)
         nlines <- length(lines)
         headerEnd <- grep("-- DATA --", lines)
-        if (1 != length(headerEnd))
+        if (1 != length(headerEnd)) {
             stop("found zero or multiple '-- DATA --' (end of header) lines in a mtg/odf file")
+        }
         #header <- lines[1:headerEnd]
         data <- lines[seq.int(headerEnd+1, nlines)]
         res <- read.table(text=data, header=FALSE, col.names=c("time", "temperature", "ptotal", "psea", "depth"), encoding=encoding)
@@ -2160,7 +2183,7 @@ read.oce <- function(file, ..., encoding="latin1")
     } else if (type == "RBR/rsk") {
         res <- read.rsk(file, encoding=encoding, processingLog=processingLog, ...)
     } else if (type == "RBR/txt") {
-        res <- read.rsk(file, encoding=encoding, processingLog=processingLog, type='txt', ...)
+        res <- read.rsk(file, encoding=encoding, processingLog=processingLog, type="txt", ...)
     } else if (type == "section") {
         res <- read.section(file, encoding=encoding, processingLog=processingLog, ...)
     } else if (type == "ctd/woce/other") {
@@ -2230,19 +2253,12 @@ read.netcdf <- function(file, ..., encoding=NA)
     res <- new("oce")
     names <- names(f$var)
     data <- list()
-
     for (name in names) {
         # message("name=", name)
         if (1 == length(grep("^history_", name)))
             next
-        # if (name == "history_institution" || name == "history_step" || name == "history_software"
-        #     || name == "history_software_release" || name == "history_reference" || name == "history_date"
-        #     || name == "history_action" || name == "history_parameter" || name == "history_start_pres"
-        #     || name == "history_stop_pres" || name == "history_previous_value"
-        #     || name == "history_qctest")
-        #     next
         item <- ncdf4::ncvar_get(f, name)
-        if (is.array(item) && 1 == length(dim(item))) # 1D array converted to 1col matrix
+        if (is.array(item) && 1 == length(dim(item))) # 1D array converted to 1 column matrix
             item <- matrix(item)
         data[[name]] <- item
         if (name=="TIME") {
@@ -2277,8 +2293,7 @@ read.netcdf <- function(file, ..., encoding=NA)
         res@metadata$cruise <- ncdf4::ncatt_get(f, 0, "Cruise")$value
     if (ncdf4::ncatt_get(f, 0, "cruise")$hasatt)
         res@metadata$cruise <- ncdf4::ncatt_get(f, 0, "cruise")$value
-    res@processingLog <- processingLogAppend(res@processingLog,
-                                              paste("read.netcdf(\"", file, "\")", sep=""))
+    res@processingLog <- processingLogAppend(res@processingLog, paste("read.netcdf(\"", file, "\")", sep=""))
     res
 }
 
@@ -2328,7 +2343,7 @@ oceAxis <- function(side, labels=TRUE, logStyle="r", ...)
         return(invisible(axis(side=side, labels=labels, ...)))
     } else {
         # use decade axis if previous plot() call made this coordinate be logarithmic
-        if (((side %in% c(1,3)) && par("xlog")) || ((side %in% c(2,4)) && par("ylog"))) {
+        if (((side %in% c(1, 3)) && par("xlog")) || ((side %in% c(2, 4)) && par("ylog"))) {
             usr <- if (side %in% c(1, 3)) par("usr")[1:2] else par("usr")[3:4]
             lowerDecade <- floor(usr[1])
             upperDecade <- floor(1 + usr[2])
@@ -2338,9 +2353,8 @@ oceAxis <- function(side, labels=TRUE, logStyle="r", ...)
             for (bigTick in lowerDecade:upperDecade) {
                 bigTickAt <- c(bigTickAt, bigTick)
                 bigTickLabel <- c(bigTickLabel,
-                                  if (bigTick < -1L || bigTick > 1L)
-                                      substitute(10^A, list(A=bigTick)) else 10^bigTick)
-
+                    if (bigTick < -1L || bigTick > 1L)
+                    substitute(10^A, list(A=bigTick)) else 10^bigTick)
                 smallTickAt <- c(smallTickAt, -1 + bigTick + log10(2:9))
                 smallTickAt <- c(smallTickAt,      bigTick + log10(2:9))
             }
@@ -2349,7 +2363,7 @@ oceAxis <- function(side, labels=TRUE, logStyle="r", ...)
             bigTickLabel <- as.expression(bigTickLabel[bigTickInWindow])
             smallTickInWindow <- usr[1] <= smallTickAt & smallTickAt <= usr[2]
             smallTickAt <- smallTickAt[smallTickInWindow]
-            rval <- axis(side=side, at=10^bigTickAt, labels=if(labels) bigTickLabel else FALSE)
+            rval <- axis(side=side, at=10^bigTickAt, labels=if (labels) bigTickLabel else FALSE)
             rug(side=side, x=10^smallTickAt, tcl=0.5*par("tcl"), lwd=par("lwd"))
             return(invisible(rval))
         } else {
@@ -2381,22 +2395,31 @@ oceAxis <- function(side, labels=TRUE, logStyle="r", ...)
 #' imagep(volcano-mean(range(volcano)), col=oceColorsTwo(128),
 #'        zlim="symmetric", zlab="oceColorsTwo")
 #' @family things related to colors
-oceColorsTwo <- function (n, low=2/3, high=0, smax=1, alpha = 1)
+oceColorsTwo <- function(n, low=2/3, high=0, smax=1, alpha = 1)
 {
     # code borrows heavily from cm.color()
-    if ( (n <- as.integer(n[1])) > 0 ) {
+    if ((n <- as.integer(n[1])) > 0) {
         even.n <- n%%2 == 0
         k <- n%/%2
         l1 <- k + 1 - even.n
         l2 <- n - k + even.n
-        c(if (l1 > 0) hsv(h = low,
-                          s = seq.int(smax, ifelse(even.n, 0.5/k, 0), length.out = l1),
-                          v = 1, alpha = alpha),
-          if (l2 > 1) hsv(h = high,
-                          s = seq.int(0, smax, length.out = l2)[-1],
-                          v = 1, alpha = alpha))
+        c(if (l1 > 0)
+            {
+                hsv(h=low,
+                    s=seq.int(smax, ifelse(even.n, 0.5/k, 0), length.out=l1),
+                    v=1,
+                    alpha = alpha)
+            },
+            if (l2 > 1)
+            {
+                hsv(h=high,
+                    s=seq.int(0, smax, length.out=l2)[-1],
+                    v=1,
+                    alpha = alpha)
+            })
+    } else {
+        character(0)
     }
-    else character(0)
 }
 oce.colorsTwo <- oceColorsTwo
 
@@ -2431,11 +2454,10 @@ oceColorsGebco <- function(n=9, region=c("water", "land", "both"), type=c("fill"
     oceDebug(debug, "oceColorsGebco(n=", n, ", region=\"", region, "\", type=\"", type, "\", debug=", debug, ")\n", sep="", unindent=1)
     region <- match.arg(region)
     type <- match.arg(type)
-
     land <- c("#FEF1E0", "#FDE3C1", "#FBC784", "#F1C37A", "#E6B670", "#DCA865",
-              "#D19A5C", "#C79652", "#BD9248", "#B38E3E")
+        "#D19A5C", "#C79652", "#BD9248", "#B38E3E")
     water <- c("#0F7CAB", "#2292B5", "#38A7BF", "#4FBBC9", "#68CDD4", "#83DEDE",
-               "#A0E8E4", "#BFF2EC", "#E1FCF7", "#F0FDFB")
+        "#A0E8E4", "#BFF2EC", "#E1FCF7", "#F0FDFB")
     if (type == "fill") {
         # generate land colors by e.g. rgb(t(col2rgb(land[5])-1*c(10, 4, 10))/255)
         # until 2020-12-14 land <- c("#FBC784", "#F1C37A", "#E6B670", "#DCA865", "#D19A5C",
@@ -2447,15 +2469,15 @@ oceColorsGebco <- function(n=9, region=c("water", "land", "both"), type=c("fill"
         #water <- c("#0F7CAB", "#2292B5", "#38A7BF", "#4FBBC9", "#68CDD4", "#83DEDE",
         #           "#A0E8E4", "#BFF2EC", "#E1FCF7", "#F0FDFB")
         land <- c("#FFF0DF", "#FFE9D0", "#FFE2C1", "#FDD6A6", "#FBC98A", "#F7C580", "#F2C37B", "#EDBE76", "#E8B872", "#E3B26D",
-                  "#DEAB67", "#D9A563", "#D49E5E", "#CF995A", "#CA9755", "#C59550", "#C1934C", "#BC9147", "#B78F42", "#B38E3E")
+            "#DEAB67", "#D9A563", "#D49E5E", "#CF995A", "#CA9755", "#C59550", "#C1934C", "#BC9147", "#B78F42", "#B38E3E")
         water <- c("#0F7CAB", "#1886AF", "#2090B4", "#2B9AB9", "#35A4BD", "#40AEC2", "#4BB7C7", "#56C0CC", "#62C9D1", "#6FD1D6",
-                   "#7BD9DB", "#89E0DF", "#96E4E2", "#A4E9E5", "#B3EEE9", "#C2F3ED", "#D2F7F2", "#E2FCF7", "#EBFDF9", "#F5FEFC")
+            "#7BD9DB", "#89E0DF", "#96E4E2", "#A4E9E5", "#B3EEE9", "#C2F3ED", "#D2F7F2", "#E2FCF7", "#EBFDF9", "#F5FEFC")
     } else {
         oceDebug(debug, "type='line'\n")
         land <- c("#FBC784", "#F1C37A", "#E6B670", "#DCA865", "#D19A5C",
-                  "#C79652", "#BD9248", "#B38E3E", "#A98A34")
+            "#C79652", "#BD9248", "#B38E3E", "#A98A34")
         water <- rev(c("#A4FCE3", "#72EFE9", "#4FE3ED", "#47DCF2", "#46D7F6",
-                       "#3FC0DF", "#3FC0DF", "#3BB7D3", "#36A5C3"))
+            "#3FC0DF", "#3FC0DF", "#3BB7D3", "#36A5C3"))
     }
     if (region == "water") {
         rgb.list <- col2rgb(water) / 255
@@ -2524,7 +2546,7 @@ oceColorsClosure <- function(spec) {
             data("ocecolors", package="oce", envir=environment())
             col <- get("ocecolors")[[spec]]
         } else if (is.data.frame(spec) || is.matrix(spec)) {
-            col <- rgb(spec[,1], spec[,2], spec[,3])
+            col <- rgb(spec[, 1], spec[, 2], spec[, 3])
         } else {
             stop("oceColorsClosure(): first arg must be character, data frame, or 3-column matrix", call.=FALSE)
         }
@@ -2689,12 +2711,12 @@ oceColorsVorticity <- oce.colorsVorticity <- oceColorsClosure("vorticity")
 #' @family things related to colors
 oceColorsJet <- function(n)
 {
-    if (missing(n) || n <= 0)
+    if (missing(n) || n <= 0) {
         colorRampPalette(c("#00007F", "blue", "#007FFF", "cyan",
-                           "#7FFF7F", "yellow", "#FF7F00", "red", "#7F0000"))
-    else {
+            "#7FFF7F", "yellow", "#FF7F00", "red", "#7F0000"))
+    } else {
         colorRampPalette(c("#00007F", "blue", "#007FFF", "cyan",
-                           "#7FFF7F", "yellow", "#FF7F00", "red", "#7F0000"))(n)
+            "#7FFF7F", "yellow", "#FF7F00", "red", "#7F0000"))(n)
     }
 }
 oce.colors9A <- oceColors9A <- oce.colorsJet <- oceColorsJet
@@ -2704,8 +2726,8 @@ oce.colors9A <- oceColors9A <- oce.colorsJet <- oceColorsJet
 #' The results are similar to those of [oceColorsJet()], but
 #' with white hues in the centre, rather than green ones. The scheme
 #' may be useful in displaying signed quantities, and thus is somewhat
-#' analogous to [oceColorsTwo()], except that they (average)
-#' eye may be more able to distinguish colors with `oceColors9B`.
+#' analogous to [oceColorsTwo()], except that some viewers
+#' may be able to distinguish more colors with `oceColors9B`.
 #'
 #' @aliases oceColors9B oce.colors9B
 #'
@@ -2720,12 +2742,12 @@ oce.colors9A <- oceColors9A <- oce.colorsJet <- oceColorsJet
 #' @family things related to colors
 oceColors9B <- function(n)
 {
-    if (missing(n) || n <= 0)
+    if (missing(n) || n <= 0) {
         colorRampPalette(c("#00007F", "blue", "#007FFF", "#22e4e7",
-                           "white", "#ffe45e", "#FF7F00", "red", "#7F0000"))
-    else {
+            "white", "#ffe45e", "#FF7F00", "red", "#7F0000"))
+    } else {
         colorRampPalette(c("#00007F", "blue", "#007FFF", "#22e4e7",
-                           "white", "#ffe45e", "#FF7F00", "red", "#7F0000"))(n)
+            "white", "#ffe45e", "#FF7F00", "red", "#7F0000"))(n)
     }
 }
 oce.colors9B <- oceColors9B
@@ -2750,23 +2772,23 @@ oce.colors9B <- oceColors9B
 #' @family things related to colors
 oceColorsPalette <- function(n, which=1)
 {
-    if ( (n <- as.integer(n[1])) > 0 ) {
+    if ((n <- as.integer(n[1])) > 0) {
         if (which == 1) {
             # Started with http://www.personal.psu.edu/cab38/ColorBrewer/ColorBrewer.html
             # RdBu 11 divisions
             # and then smoothed the components with smooth.spline(...,df=6)
             rgb <- matrix(c(
-                            103, 000, 026,
-                            178, 024, 046,
-                            214, 096, 072,
-                            244, 165, 136,
-                            253, 219, 195,
-                            247, 247, 247,
-                            209, 229, 238,
-                            146, 197, 226,
-                            067, 147, 184,
-                            033, 102, 179,
-                            005, 048,  97), ncol=3, byrow=TRUE) / 255
+                103, 000, 026,
+                178, 024, 046,
+                214, 096, 072,
+                244, 165, 136,
+                253, 219, 195,
+                247, 247, 247,
+                209, 229, 238,
+                146, 197, 226,
+                067, 147, 184,
+                033, 102, 179,
+                005, 048,  97), ncol=3, byrow=TRUE) / 255
             m <- dim(rgb)[1]
             i <- 1:m
             xout <- seq(1, m, length.out=n)
@@ -2778,21 +2800,22 @@ oceColorsPalette <- function(n, which=1)
             # http://www.personal.psu.edu/cab38/ColorBrewer/ColorBrewer.html
             m <- 11                         # number of classes
             r <- c(165, 215, 244, 253, 254, 255, 224, 171, 116,  69,  49) / 255
-            g <- c(  0,  48, 109, 174, 224, 255, 243, 217, 173, 117,  54) / 255
-            b <- c( 38,  39,  67,  97, 144, 191, 248, 233, 209, 180, 149) / 255
+            g <- c(0,  48, 109, 174, 224, 255, 243, 217, 173, 117,  54) / 255
+            b <- c(38,  39,  67,  97, 144, 191, 248, 233, 209, 180, 149) / 255
             i <- 1:m
             xout <- seq(1, m, length.out=n)
             rev(rgb(approx(i, r, xout, rule=1)$y,
-                    approx(i, g, xout, rule=1)$y,
-                    approx(i, b, xout, rule=1)$y))
+                approx(i, g, xout, rule=1)$y,
+                approx(i, b, xout, rule=1)$y))
         } else if (which == 9.01 || which == "9A" || which == "jet") {
             # jet, also known as 9A or 9.01
             oceColorsJet(n)
         } else if (which == 9.02 || which == "9B") {
             oceColors9B(n)
         } else stop("unknown which")
+    } else {
+        character(0)
     }
-    else character(0)
 }
 oce.colorsPalette <- oceColorsPalette
 
@@ -2884,14 +2907,14 @@ oce.colorsPalette <- oceColorsPalette
 #' @author Dan Kelley
 #'
 #' @seealso This is used mainly by [oce.plot.ts()].
-oce.axis.POSIXct <- function (side, x, at, tformat, labels = TRUE,
-                              drawTimeRange,
-                              abbreviateTimeRange=FALSE, drawFrequency=FALSE,
-                              cex.axis=par("cex.axis"), cex.lab=par("cex.lab"), cex.main=par("cex.main"),
-                              mar=par("mar"),
-                              mgp=par("mgp"),
-                              main="",
-                              debug=getOption("oceDebug"), ...)
+oce.axis.POSIXct <- function(side, x, at, tformat, labels = TRUE,
+    drawTimeRange,
+    abbreviateTimeRange=FALSE, drawFrequency=FALSE,
+    cex.axis=par("cex.axis"), cex.lab=par("cex.lab"), cex.main=par("cex.main"),
+    mar=par("mar"),
+    mgp=par("mgp"),
+    main="",
+    debug=getOption("oceDebug"), ...)
 {
     oceDebug(debug, "oce.axis.POSIXct(..., debug=", debug, ",...) {\n", sep="", unindent=1, style="bold")
     oceDebug(debug, argShow(mar), "\n")
@@ -2904,14 +2927,14 @@ oce.axis.POSIXct <- function (side, x, at, tformat, labels = TRUE,
     # This was written because axis.POSIXt in R version 2.8.x did not obey the
     # time zone in the data.  (Version 2.9.0 obeys the time zone.)
     if (missing(x))
-        x <- numberAsPOSIXct(par('usr')[1:2])
+        x <- numberAsPOSIXct(par("usr")[1:2])
     dots <- list(...)
     if ("xlim" %in% names(dots)) {
         ok <- dots$xlim[1] <= x & x <= dots$xlim[2]
         x <- x[ok]
     }
     mat <- missing(at) || is.null(at)
-    if (!mat) x <- as.POSIXct(at) else x <- as.POSIXct(x)
+    x <- if (!mat) as.POSIXct(at) else as.POSIXct(x)
     range <- par("usr")[if (side%%2) 1:2 else 3:4]
     d <- range[2] - range[1]            # time span, in seconds
     z <- c(range, x[is.finite(x)])
@@ -2919,10 +2942,10 @@ oce.axis.POSIXct <- function (side, x, at, tformat, labels = TRUE,
     rr <- range + as.POSIXct("2000-01-20") - as.numeric(as.POSIXct("2000-01-20"))
     attr(rr, "tzone") <- attr(x, "tzone")
     oceDebug(debug, "range=",
-              format.POSIXct(rr[1], "%Y-%m-%d %H:%M:%S", tz="UTC"),
-              "UTC to ",
-              format.POSIXct(rr[2], "%Y-%m-%d %H:%M:%S", tz="UTC"),
-              "UTC\n")
+        format.POSIXct(rr[1], "%Y-%m-%d %H:%M:%S", tz="UTC"),
+        "UTC to ",
+        format.POSIXct(rr[2], "%Y-%m-%d %H:%M:%S", tz="UTC"),
+        "UTC\n")
     z.sub <- NULL # unlabelled tics may be set in some time ranges, e.g. hours, for few-day plots
     oceDebug(debug, "d=", d, " (time range)\n")
     if (d <= 2) {
@@ -2932,15 +2955,15 @@ oce.axis.POSIXct <- function (side, x, at, tformat, labels = TRUE,
         t.start <- rr[1]
         t.end <- rr[2]
         span <- as.numeric(t.end) - as.numeric(t.start)
-        if (     span > 1     ) round <- 0.5
-        else if (span > 0.1   ) round <- 0.05
-        else if (span > 0.01  ) round <- 0.005
-        else if (span > 0.001 ) round <- 0.0005
+        if (span > 1) round <- 0.5
+        else if (span > 0.1) round <- 0.05
+        else if (span > 0.01) round <- 0.005
+        else if (span > 0.001) round <- 0.0005
         else if (span > 0.0001) round <- 0.00005
         else round <- 0.00001
         t0 <- trunc(t.start, "sec")
-        t.start <- t0 + round * floor( (as.numeric(t.start) - as.numeric(t0)) / round )
-        t.end <- t0 + round * floor( (as.numeric(t.end) - as.numeric(t0)) / round )
+        t.start <- t0 + round * floor((as.numeric(t.start) - as.numeric(t0)) / round)
+        t.end <- t0 + round * floor((as.numeric(t.end) - as.numeric(t0)) / round)
         z <- seq(t.start, t.end, by=round)
         oceDebug(debug, vectorShow(z, "TIME RANGE is under 2 seconds; z="))
         # BOOKMARK 1A
@@ -3141,14 +3164,13 @@ oce.axis.POSIXct <- function (side, x, at, tformat, labels = TRUE,
     }
     if (!mat)
         z <- x[is.finite(x)]
-    #
     # FIXME: I was twiddling the numbers, to get more labels, but xaxs="r" fixes that.
     twiddle <- 0.04 * diff(as.numeric(range))  # FIXME: do I need this anymore?
     oceDebug(debug, "range=",
-              format.POSIXct(rr[1], "%Y-%m-%d %H:%M:%S", tz="UTC"),
-              "UTC to ",
-              format.POSIXct(rr[2], "%Y-%m-%d %H:%M:%S", tz="UTC"),
-              "UTC\n")
+        format.POSIXct(rr[1], "%Y-%m-%d %H:%M:%S", tz="UTC"),
+        "UTC to ",
+        format.POSIXct(rr[2], "%Y-%m-%d %H:%M:%S", tz="UTC"),
+        "UTC\n")
     keep <- range[1] <= (z + twiddle) & (z - twiddle) <= range[2]
     #oceDebug(debug, vectorShow(keep, "keep"))
     oceDebug(debug>1, vectorShow(z, "z before keep"))
@@ -3205,9 +3227,9 @@ oce.axis.POSIXct <- function (side, x, at, tformat, labels = TRUE,
         deltat <- mean(diff(as.numeric(x)), na.rm=TRUE)
         # only show timezone if hours are shown
         oceDebug(debug, "time.range[1]:", format(time.range[1]), "\n")
-        oceDebug(debug, "round(time.range[1], 'days'):", format(round(time.range[1], 'days')), "\n")
+        oceDebug(debug, "round(time.range[1], 'days'):", format(round(time.range[1], "days")), "\n")
         oceDebug(debug, "time.range[2]:", format(time.range[2]), "\n")
-        oceDebug(debug, "round(time.range[2], 'days'):", format(round(time.range[2], 'days')), "\n")
+        oceDebug(debug, "round(time.range[2], 'days'):", format(round(time.range[2], "days")), "\n")
         tzone <- c(attr(time.range[1], "tzone"), attr(time.range[2], "tzone"))
         # Only show tzone if it is UTC (https://github.com/dankelley/oce/issues/1811)
         tzone <- if (all(tzone == "UTC")) c("", "UTC") else rep("", 2)
@@ -3218,14 +3240,15 @@ oce.axis.POSIXct <- function (side, x, at, tformat, labels = TRUE,
         } else {
             label <- paste(tr1, tzone[1], " to ", tr2,  tzone[2], sep="")
         }
-        if (drawFrequency && is.finite(1/deltat))
+        if (drawFrequency && is.finite(1/deltat)) {
             label <- paste(label, "@", sprintf("%.4g Hz", 1/deltat), sep=" ")
+        }
         oceDebug(debug, "label=\"", label, "\" at cex.lab=", cex.lab, "\n", sep="")
-        mtext(label, side=if (side==1) 3 else 1, cex=cex.lab*par('cex'), adj=0)
-        oceDebug(debug, "cex.axis=", cex.axis, "; par('cex')=", par('cex'), "\n")
+        mtext(label, side=if (side==1) 3 else 1, cex=cex.lab*par("cex"), adj=0)
+        oceDebug(debug, "cex.axis=", cex.axis, "; par(\"cex\")=", par("cex"), "\n")
     }
     if (nchar(main) > 0) {
-        mtext(main, side=if (side==1) 3 else 1, cex=cex.lab*par('cex'), adj=1)
+        mtext(main, side=if (side==1) 3 else 1, cex=cex.lab*par("cex"), adj=1)
     }
     oceDebug(debug, vectorShow(z, "z="))
     if (length(z.sub) > 0) {
@@ -3233,11 +3256,11 @@ oce.axis.POSIXct <- function (side, x, at, tformat, labels = TRUE,
         oceDebug(debug, vectorShow(z.sub, "z.sub="))
     }
     oceDebug(debug, vectorShow(labels, "labels="))
-    #ocex <- par('cex')
-    ocex.axis <- par('cex.axis')
-    ocex.lab <- par('cex.lab')
-    ocex.main <- par('cex.main')
-    omgp <- par('mgp')
+    #ocex <- par("cex")
+    ocex.axis <- par("cex.axis")
+    ocex.lab <- par("cex.lab")
+    ocex.main <- par("cex.main")
+    omgp <- par("mgp")
     par(cex.axis=cex.axis, cex.lab=cex.lab, cex.main=cex.main, mgp=mgp, tcl=-0.5)
     #axis(side, at=z, line=0, labels=labels, cex=cex, cex.axis=cex.axis, cex.main=cex.main, mar=mar, mgp=mgp)
 
@@ -3290,7 +3313,7 @@ numberAsHMS <- function(t, default=0)
     t[nc==2] <- paste("00", t[nc==2], sep="")
     t[nc==3] <- paste("0", t[nc==3], sep="")
     nc <- nchar(t)
-    warn <- options('warn')$warn
+    warn <- options("warn")$warn
     options(warn=-1)
     try({
         hour <- as.numeric(substr(t, 1, 2))
@@ -3298,7 +3321,7 @@ numberAsHMS <- function(t, default=0)
         second <- rep(0, length(hour))
     }, silent=TRUE)
     options(warn=warn)
-    bad <- nc > 4 | grepl('[^[0-9]]*', t)
+    bad <- nc > 4 | grepl("[^[0-9]]*", t)
     hour[bad] <- default
     minute[bad] <- default
     second[bad] <- default
@@ -3450,7 +3473,6 @@ numberAsPOSIXct <- function(t, type, tz="UTC")
     } else if (type == "gps") {
         if (!is.matrix(t) || dim(t)[2] != 2)
             stop("for GPS times, 't' must be a two-column matrix, with first col the week, second the second")
-
         # Account for leap seconds since the GPS start time in 1980 (for the present week wraparound grouping).
         #20171014 See http://en.wikipedia.org/wiki/Leap_second and other sources for a list.  Updates can happen
         #20171014 # on June 30 and December 31 of any given year.  The information below was last updated
@@ -3482,7 +3504,7 @@ numberAsPOSIXct <- function(t, type, tz="UTC")
     } else if (type == "epic") {
         if (!is.matrix(t) || dim(t)[2] != 2)
             stop("for epic times, 't' must be a two-column matrix, with first column the julian day, and second the millisecond within that day")
-        r <- do_epic_time_to_ymdhms(t[,1], t[,2])
+        r <- do_epic_time_to_ymdhms(t[, 1], t[, 2])
         t <- ISOdatetime(r$year, r$month, r$day, r$hour, r$minute, r$second, tz=tz)
     } else if (type == "vms") {
         t <- as.POSIXct(t, origin="1858-11-17", tz=tz)
@@ -3544,76 +3566,72 @@ numberAsPOSIXct <- function(t, type, tz="UTC")
 #'           coastline="coastlineWorld",
 #'           span=5000, mar=NULL, cex.axis=3/4))
 plotInset <- function(xleft, ybottom, xright, ytop, expr,
-                      mar=c(2, 2, 1, 1),
-                      debug=getOption("oceDebug"))
+    mar=c(2, 2, 1, 1),
+    debug=getOption("oceDebug"))
 {
     opar <- par(no.readonly=TRUE)
-    mai <- par('mai')                  # bottom left top right
-    #omfg <- par('mfg')                 # original mfg
-    xLog <- par('xlog')
-    yLog <- par('ylog')
-    usr <- par('usr')                  # xmin xmax ymin ymax
-    fin <- par('fin') # figure width height
+    mai <- par("mai")                  # bottom left top right
+    #omfg <- par("mfg")                 # original mfg
+    xLog <- par("xlog")
+    yLog <- par("ylog")
+    usr <- par("usr")                  # xmin xmax ymin ymax
+    fin <- par("fin") # figure width height
     x2in <- function(x) {
-        if (xLog)
+        if (xLog) {
             mai[2] + (log10(x) - usr[1]) * (fin[1]-mai[2]-mai[4]) / (usr[2]-usr[1])
-        else
+        } else {
             mai[2] + (x-usr[1]) * (fin[1]-mai[2]-mai[4]) / (usr[2]-usr[1])
+        }
     }
     y2in <- function(y) {
-        if (yLog)
+        if (yLog) {
             mai[1] + (log10(y) - usr[3]) * (fin[2]-mai[1]-mai[3]) / (usr[4]-usr[3])
-        else
+        } else {
             mai[1] + (y-usr[3]) * (fin[2]-mai[1]-mai[3]) / (usr[4]-usr[3])
+        }
     }
-
     if (is.character(xleft)) {
         if (xleft != "bottomleft")
             stop("only named position is \"bottomleft\"")
         f1 <- 0.02
         f2 <- 1/3
-        if (xLog) {
+        if (xLog)
             stop("cannot handle xlog yet")
-        } else {
-            xleft <- usr[1] + f1 * (usr[2] - usr[1])
-            xright <- usr[1] + f2 * (usr[2] - usr[1])
-        }
-        if (yLog) {
+        xleft <- usr[1] + f1 * (usr[2] - usr[1])
+        xright <- usr[1] + f2 * (usr[2] - usr[1])
+        if (yLog)
             stop("cannot handle ylog yet")
-        } else {
-            ybottom <- usr[3] + f1 * (usr[4] - usr[3])
-            ytop <- usr[3] + f2 * (usr[4] - usr[3])
-        }
+        ybottom <- usr[3] + f1 * (usr[4] - usr[3])
+        ytop <- usr[3] + f2 * (usr[4] - usr[3])
     } else {
         oceDebug(debug, "plotInset(xleft=", xleft, ", ybottom=", ybottom,
-                 ", xright=", xright, ", ytop=", ytop,
-                 ",  ...) {\n",
-                 sep="", unindent=1)
+            ", xright=", xright, ", ytop=", ytop,
+            ",  ...) {\n",
+            sep="", unindent=1)
     }
-    oceDebug(debug, "par('mfg')=", par('mfg'), "\n")
-    oceDebug(debug, "par('mai')=", par('mai'), '\n')
-    oceDebug(debug, "par('usr')=", par('usr'), '\n')
+    oceDebug(debug, "par('mfg')=", par("mfg"), "\n")
+    oceDebug(debug, "par('mai')=", par("mai"), "\n")
+    oceDebug(debug, "par('usr')=", par("usr"), "\n")
     oceDebug(debug, "par('fin')=", fin, "(figure width and height)\n")
     nmai <- c(y2in(ybottom), x2in(xleft), fin[2]-y2in(ytop), fin[1]-x2in(xright))
     oceDebug(debug, "nmai:", nmai, "\n")
-    if (any(nmai < 0)) {
+    if (any(nmai < 0))
         warning("part of the inset is off the page")
-    }
     nmai[nmai<0] <- 0
     if (nmai[1] < 0) nmai[1] <- fin[1]
     if (nmai[2] < 0) nmai[2] <- fin[1]
     if (nmai[3] > fin[2] - 0.2) nmai[3] <- fin[2] - 0.2
     if (nmai[4] > fin[1] - 0.2) nmai[4] <- fin[1] - 0.2
     oceDebug(debug, "nmai:", nmai, "(after trimming negatives)\n")
-    #mfg2 <- par('mfg')
+    #mfg2 <- par("mfg")
     par(new=TRUE, mai=nmai)
-    thismar <- par('mar')
+    thismar <- par("mar")
     par(mar=thismar+mar)
     if (debug > 1) {
         cat("\n\nBEFORE expr, PAR IS:\n")
         str(par())
     }
-    mfg <- par('mfg')
+    mfg <- par("mfg")
     oceDebug(debug, "BEFORE expr, mfg=", mfg, "\n")
     # Draw the inset plot (or perform any action, actually)
     expr
@@ -3625,7 +3643,7 @@ plotInset <- function(xleft, ybottom, xright, ytop, expr,
         par(new=TRUE)
     }
     # Reset some things that could have been set in the inset, and
-    # then adjust 'new' appropriately.
+    # then adjust new appropriately.
     par(usr=opar$usr, mai=opar$mai, cex=opar$cex, lwd=opar$lwd, lty=opar$lty, bg=opar$bg)
     oceDebug(debug, "} # plotInset()\n", unindent=1)
     invisible(NULL)
@@ -3709,27 +3727,25 @@ plotInset <- function(xleft, ybottom, xright, ytop, expr,
 #' @family functions relating to time
 decodeTime <- function(time, timeFormats, tz="UTC")
 {
-    if (missing(timeFormats))
+    if (missing(timeFormats)) {
         timeFormats <- c("%b %d %Y %H:%M:%S", "%b %d %Y", # Jul 1 2013
-                         "%B %d %Y %H:%M:%S", "%B %d %Y", # July 1 2013
-                         "%d %b %Y %H:%M:%S", "%d %b %Y", # 1 Jul 2013
-                         "%d %B %Y %H:%M:%S", "%d %B %Y", # 1 July 2013
-                         "%Y-%m-%d %H:%M:%S", "%Y-%m-%d", # 2013-07-01
-                         "%Y-%b-%d %H:%M:%S", "%Y-%b-%d", # 2013-Jul-01
-                         "%Y-%B-%d %H:%M:%S", "%Y-%B-%d", # 2013-July-01
-                         "%d-%b-%Y %H:%M:%S", "%d-%b-%Y", # 01-Jul-2013
-                         "%d-%B-%Y %H:%M:%S", "%d-%B-%Y", # 01-July-2013
-                         "%Y/%m/%d %H:%M:%S", "%Y/%m/%d", # 2013/07/01
-                         "%Y/%b/%d %H:%M:%S", "%Y/%b/%d", # 2013/Jul/01
-                         "%Y/%B/%d %H:%M:%S", "%Y/%B/%d", # 2013/July/01
-                         "%Y/%m/%d %H:%M:%S", "%Y/%m/%d") # 2013/07/01
-    # FIXME: permit time to be a vector
+            "%B %d %Y %H:%M:%S", "%B %d %Y", # July 1 2013
+            "%d %b %Y %H:%M:%S", "%d %b %Y", # 1 Jul 2013
+            "%d %B %Y %H:%M:%S", "%d %B %Y", # 1 July 2013
+            "%Y-%m-%d %H:%M:%S", "%Y-%m-%d", # 2013-07-01
+            "%Y-%b-%d %H:%M:%S", "%Y-%b-%d", # 2013-Jul-01
+            "%Y-%B-%d %H:%M:%S", "%Y-%B-%d", # 2013-July-01
+            "%d-%b-%Y %H:%M:%S", "%d-%b-%Y", # 01-Jul-2013
+            "%d-%B-%Y %H:%M:%S", "%d-%B-%Y", # 01-July-2013
+            "%Y/%m/%d %H:%M:%S", "%Y/%m/%d", # 2013/07/01
+            "%Y/%b/%d %H:%M:%S", "%Y/%b/%d", # 2013/Jul/01
+            "%Y/%B/%d %H:%M:%S", "%Y/%B/%d", # 2013/July/01
+            "%Y/%m/%d %H:%M:%S", "%Y/%m/%d") # 2013/07/01
+    }
     res <- NA
     for (format in timeFormats) {
-        #cat("TRYING FORMAT:", format, "\n")
         res <- as.POSIXct(time, format=format, tz=tz)
         if (!is.na(res)) {
-            #cat("YES!\n")
             break
         }
     }
@@ -3808,9 +3824,9 @@ decodeTime <- function(time, timeFormats, tz="UTC")
 #'
 #' @examples
 #' library(oce)
-#' plot(c(-1.5, 1.5), c(-1.5, 1.5), xlab="", ylab="", type='n')
+#' plot(c(-1.5, 1.5), c(-1.5, 1.5), xlab="", ylab="", type="n")
 #' drawDirectionField(x=rep(0, 2), y=rep(0, 2), u=c(1, 1), v=c(1, -1), scalex=0.5, add=TRUE)
-#' plot(c(-1.5, 1.5), c(-1.5, 1.5), xlab="", ylab="", type='n')
+#' plot(c(-1.5, 1.5), c(-1.5, 1.5), xlab="", ylab="", type="n")
 #' drawDirectionField(x=rep(0, 2), y=rep(0, 2), u=c(1, 1), v=c(1, -1), scalex=0.5, add=TRUE,
 #'                    type=2)
 #'
@@ -3826,16 +3842,16 @@ decodeTime <- function(time, timeFormats, tz="UTC")
 #'
 #' @author Dan Kelley and Clark Richards
 drawDirectionField <- function(x, y, u, v, scalex, scaley, skip, length=0.05, add=FALSE,
-                               type=1, col=par("fg"), pch=1, cex=par("cex"),
-                               lwd=par("lwd"), lty=par("lty"),
-                               xlab='', ylab='',
-                               debug=getOption("oceDebug"),
-                               ...)
+    type=1, col=par("fg"), pch=1, cex=par("cex"),
+    lwd=par("lwd"), lty=par("lty"),
+    xlab="", ylab="",
+    debug=getOption("oceDebug"),
+    ...)
 {
     oceDebug(debug, "drawDirectionField(...) {\n", unindent=1)
     if (missing(x) || missing(y) || missing(u) || missing(v))
         stop("must supply x, y, u, and v")
-    if ( (missing(scalex) && missing(scaley)) || (!missing(scalex) && !missing(scaley)) )
+    if ((missing(scalex) && missing(scaley)) || (!missing(scalex) && !missing(scaley)))
         stop("either 'scalex' or 'scaley' must be specified (but not both)")
     if (is.matrix(u) && !is.matrix(v))
         stop("if 'u' is a matrix, then 'v' must also be a matrix")
@@ -3843,10 +3859,10 @@ drawDirectionField <- function(x, y, u, v, scalex, scaley, skip, length=0.05, ad
         stop("if 'v' is a matrix, then 'u' must also be a matrix")
     if (is.matrix(u) && is.matrix(v)) {
         oceDebug(debug, "u, v are matrices")
-        if ( (dim(u)[1] != dim(v)[1]) & (dim(u)[2] != dim(v)[2]) )
+        if ((dim(u)[1] != dim(v)[1]) && (dim(u)[2] != dim(v)[2]))
             stop("dimensions of u and v must match")
         dim <- dim(u)
-        if (length(x) != dim[1] | length(y) != dim[2])
+        if (length(x) != dim[1] || length(y) != dim[2])
             stop("lengths of x, y must match dimensions of u, v")
         if (missing(skip)) {
             skip <- c(1, 1)
@@ -3858,8 +3874,8 @@ drawDirectionField <- function(x, y, u, v, scalex, scaley, skip, length=0.05, ad
         ny <- length(y)
         ix <- seq(1, nx, skip[1])
         iy <- seq(1, ny, skip[2])
-        xx <- expand.grid(x[ix], y[iy])[,1]
-        yy <- expand.grid(x[ix], y[iy])[,2]
+        xx <- expand.grid(x[ix], y[iy])[, 1]
+        yy <- expand.grid(x[ix], y[iy])[, 2]
         uu <- as.vector(u[ix, iy])
         vv <- as.vector(v[ix, iy])
     } else {
@@ -3874,15 +3890,14 @@ drawDirectionField <- function(x, y, u, v, scalex, scaley, skip, length=0.05, ad
         uu <- u
         vv <- v
     }
-    if (!add) {
-        plot(xx, yy, type='n', xlab=xlab, ylab=ylab, ...)
-    }
-    usr <- par('usr')
-    pin <- par('pin')
-    #mai <- par('mai')
+    if (!add)
+        plot(xx, yy, type="n", xlab=xlab, ylab=ylab, ...)
+    usr <- par("usr")
+    pin <- par("pin")
+    #mai <- par("mai")
     xPerInch <- diff(usr[1:2]) / pin[1]
     yPerInch <- diff(usr[3:4]) / pin[2]
-    oceDebug(debug, 'pin=', pin, 'usr=', usr, 'xPerInch=', xPerInch, 'yPerInch=', yPerInch, '\n')
+    oceDebug(debug, "pin=", pin, "usr=", usr, "xPerInch=", xPerInch, "yPerInch=", yPerInch, "\n")
     if (missing(scaley)) {
         oceDebug(debug, "scaling for x\n")
         uPerX <- 1 / scalex
@@ -3892,9 +3907,9 @@ drawDirectionField <- function(x, y, u, v, scalex, scaley, skip, length=0.05, ad
         uPerX <- vPerY * yPerInch / xPerInch
         oceDebug(debug, "scaling for y\n")
     }
-    oceDebug(debug, 'uPerX=', uPerX, '\n')
-    oceDebug(debug, 'vPerY=', vPerY, '\n')
-    len <- sqrt( (u/uPerX)^2 + (v/vPerY)^2 )
+    oceDebug(debug, "uPerX=", uPerX, "\n")
+    oceDebug(debug, "vPerY=", vPerY, "\n")
+    len <- sqrt((u/uPerX)^2 + (v/vPerY)^2)
     ok <- len > 0.0
     xx <- xx[ok]
     yy <- yy[ok]
@@ -3963,15 +3978,15 @@ drawDirectionField <- function(x, y, u, v, scalex, scaley, skip, length=0.05, ad
 #' oce.contour(lon, lat, z, levels=0, drawlabels=FALSE)
 #' oce.contour(lon, lat, z, levels=-130, drawlabels=FALSE, col='blue', add=TRUE)
 oce.contour <- function(x, y, z, revx=FALSE, revy=FALSE, add=FALSE,
-                       tformat, drawTimeRange=getOption("oceDrawTimeRange"),
-                       debug=getOption("oceDebug"), ...)
+    tformat, drawTimeRange=getOption("oceDrawTimeRange"),
+    debug=getOption("oceDebug"), ...)
 {
     #dots <- list(...)
     #dotsNames <- names(dots)
     mustReverseX <- any(0 > diff(order(x)))
     mustReverseY <- any(0 > diff(order(y)))
-    oceDebug(debug, "mustReverseX:", mustReverseX, '\n')
-    oceDebug(debug, "mustReverseY:", mustReverseY, '\n')
+    oceDebug(debug, "mustReverseX:", mustReverseX, "\n")
+    oceDebug(debug, "mustReverseY:", mustReverseY, "\n")
 
     # perhaps get (x,y,z) from x, etc., trying to emulate contour()
     if (missing(z)) {
@@ -3984,14 +3999,14 @@ oce.contour <- function(x, y, z, revx=FALSE, revy=FALSE, add=FALSE,
                 z <- x
                 x <- seq.int(0, 1, length.out = nrow(z))
             }
-        } else stop("no 'z' matrix specified")
+        } else {
+            stop("no 'z' matrix specified")
+        }
     } else if (is.list(x)) {
         y <- x$y
         x <- x$x
     }
     zdim <- dim(z)
-
-
     # store local values for the tricky cases of reversing axes etc
     xx <- x
     yy <- y
@@ -4015,29 +4030,28 @@ oce.contour <- function(x, y, z, revx=FALSE, revy=FALSE, add=FALSE,
         }
         contour(xx, yy, zz, axes=FALSE, ...)
         # see src/library/graphics/R/contour.R
-        xaxp <- par('xaxp')
+        xaxp <- par("xaxp")
         xat <- seq(xaxp[1], xaxp[2], length.out=xaxp[3])
         xlabels <- format(xat)
-        yaxp <- par('yaxp')
+        yaxp <- par("yaxp")
         yat <- seq(yaxp[1], yaxp[2], length.out=yaxp[3])
         ylabels <- format(yat)
         xIsTime <- inherits(x, "POSIXt") || inherits(x, "POSIXct") || inherits(x, "POSIXlt")
-
         if (revx) {
             if (xIsTime) {
                 oce.axis.POSIXct(side=1, x=x,
-                                 drawTimeRange=drawTimeRange,
-                                 #mar=mar, mgp=mgp,
-                                 tformat=tformat, debug=debug-1)
+                    drawTimeRange=drawTimeRange,
+                    #mar=mar, mgp=mgp,
+                    tformat=tformat, debug=debug-1)
             } else {
                 Axis(xx, side=1, at=xat, labels=rev(xlabels))
             }
         } else {
             if (xIsTime) {
                 oce.axis.POSIXct(side=1, x=x,
-                                 drawTimeRange=drawTimeRange,
-                                 #mar=mar, mgp=mgp,
-                                 tformat=tformat, debug=debug-1)
+                    drawTimeRange=drawTimeRange,
+                    #mar=mar, mgp=mgp,
+                    tformat=tformat, debug=debug-1)
             } else {
                 Axis(xx, side=1)
             }
