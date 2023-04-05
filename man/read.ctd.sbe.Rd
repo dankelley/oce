@@ -243,7 +243,7 @@ Note that reading a file that contains IPTS-68 temperatures produces a warning.
 }
 
 \examples{
-f <- system.file("extdata", "ctd.cnv", package="oce")
+f <- system.file("extdata", "ctd.cnv.gz", package="oce")
 d <- read.ctd(f)
 
 }
@@ -271,17 +271,17 @@ Other things related to ctd data:
 \code{\link{as.ctd}()},
 \code{\link{cnvName2oceName}()},
 \code{\link{ctd-class}},
-\code{\link{ctd.cnv}},
+\code{\link{ctd.cnv.gz}},
 \code{\link{ctdDecimate}()},
 \code{\link{ctdFindProfilesRBR}()},
 \code{\link{ctdFindProfiles}()},
 \code{\link{ctdRaw}},
 \code{\link{ctdRepair}()},
 \code{\link{ctdTrim}()},
-\code{\link{ctd_aml.csv}},
+\code{\link{ctd_aml.csv.gz}},
 \code{\link{ctd}},
-\code{\link{d200321-001.ctd}},
-\code{\link{d201211_0011.cnv}},
+\code{\link{d200321-001.ctd.gz}},
+\code{\link{d201211_0011.cnv.gz}},
 \code{\link{handleFlags,ctd-method}},
 \code{\link{initialize,ctd-method}},
 \code{\link{initializeFlagScheme,ctd-method}},

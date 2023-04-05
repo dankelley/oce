@@ -2,8 +2,8 @@
 % Please edit documentation in R/extdata.R
 \docType{data}
 \encoding{UTF-8}
-\name{ctd_aml.csv}
-\alias{ctd_aml.csv}
+\name{ctd_aml.csv.gz}
+\alias{ctd_aml.csv.gz}
 \title{Sample ctd dataset in AML format}
 \description{
 This file may be read with \code{\link[=read.ctd.aml]{read.ctd.aml()}}.  It is based
@@ -13,7 +13,7 @@ identifying information (serial number, IP address, and WEP
 code) zeroed-out.
 }
 \examples{
-ctd <- read.ctd.aml(system.file("extdata", "ctd_aml.csv", package="oce"))
+ctd <- read.ctd.aml(system.file("extdata", "ctd_aml.csv.gz", package="oce"))
 summary(ctd)
 plot(ctd)
 
@@ -22,9 +22,9 @@ plot(ctd)
 Other raw datasets: 
 \code{\link{CTD_BCD2014666_008_1_DN.ODF.gz}},
 \code{\link{adp_rdi.000}},
-\code{\link{ctd.cnv}},
-\code{\link{d200321-001.ctd}},
-\code{\link{d201211_0011.cnv}},
+\code{\link{ctd.cnv.gz}},
+\code{\link{d200321-001.ctd.gz}},
+\code{\link{d201211_0011.cnv.gz}},
 \code{\link{xbt.edf}}
 
 Other things related to ctd data: 
@@ -34,7 +34,7 @@ Other things related to ctd data:
 \code{\link{as.ctd}()},
 \code{\link{cnvName2oceName}()},
 \code{\link{ctd-class}},
-\code{\link{ctd.cnv}},
+\code{\link{ctd.cnv.gz}},
 \code{\link{ctdDecimate}()},
 \code{\link{ctdFindProfilesRBR}()},
 \code{\link{ctdFindProfiles}()},
@@ -42,8 +42,8 @@ Other things related to ctd data:
 \code{\link{ctdRepair}()},
 \code{\link{ctdTrim}()},
 \code{\link{ctd}},
-\code{\link{d200321-001.ctd}},
-\code{\link{d201211_0011.cnv}},
+\code{\link{d200321-001.ctd.gz}},
+\code{\link{d201211_0011.cnv.gz}},
 \code{\link{handleFlags,ctd-method}},
 \code{\link{initialize,ctd-method}},
 \code{\link{initializeFlagScheme,ctd-method}},

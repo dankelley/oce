@@ -73,7 +73,7 @@
 #'
 #' @examples
 #' library(oce)
-#' f <- system.file("extdata", "ctd_aml.csv", package="oce")
+#' f <- system.file("extdata", "ctd_aml.csv.gz", package="oce")
 #' d <- read.ctd.aml(f)
 #' summary(d)
 #'

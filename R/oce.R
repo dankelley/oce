@@ -2054,7 +2054,7 @@ oceMagic <- function(file, encoding="latin1", debug=getOption("oceDebug"))
 #'
 #' @examples
 #' library(oce)
-#' x <- read.oce(system.file("extdata", "ctd.cnv", package="oce"))
+#' x <- read.oce(system.file("extdata", "ctd.cnv.gz", package="oce"))
 #' plot(x) # summary with TS and profiles
 #' plotTS(x) # just the TS
 read.oce <- function(file, ..., encoding="latin1")

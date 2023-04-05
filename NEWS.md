@@ -19,6 +19,7 @@
 * Remove `plotAD2CP()`, now superseded by generic `plot()` method (issue 2005).
 * Remove dependence on `rgeos` and `raster` packages (issue 2028).
 * Remove plots from test suite (issue 2073) but retain in developer suite.
+* Compress several files in inst/extdata to reduce package size slightly.
 
 # oce 1.7.10 (on CRAN)
 

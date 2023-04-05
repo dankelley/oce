@@ -231,7 +231,7 @@ test_that("ability to change conductivityUnit", {
 test_that("column renaming with a cnv file", {
     expect_warning(
         expect_warning(
-            d1 <- read.oce(system.file("extdata", "ctd.cnv", package="oce")),
+            d1 <- read.oce(system.file("extdata", "ctd.cnv.gz", package="oce")),
             "this CNV file has temperature in the IPTS\\-68 scale"),
         "1950, suggesting")
     expect_equal(names(d1[["data"]]),
@@ -239,7 +239,7 @@ test_that("column renaming with a cnv file", {
     expect_warning(
         expect_warning(
             expect_warning(
-                d2 <- read.oce(system.file("extdata", "ctd.cnv", package="oce"),
+                d2 <- read.oce(system.file("extdata", "ctd.cnv.gz", package="oce"),
                     columns=list(FAKE=list(name="sal00",
                             unit=list(unit=expression(), scale="PSS-78")))),
                 "this CNV file has temperature in the IPTS\\-68 scale"),
@@ -260,7 +260,7 @@ test_that("column renaming with a cnv file", {
 test_that("Dalhousie-produced cnv file", {
     expect_warning(
         expect_warning(
-            d1 <- read.oce(system.file("extdata", "ctd.cnv", package="oce")),
+            d1 <- read.oce(system.file("extdata", "ctd.cnv.gz", package="oce")),
             "this CNV file has temperature in the IPTS\\-68 scale"),
         "1950, suggesting")
     expect_equal(d1[["temperatureUnit"]]$unit, expression(degree*C))
@@ -300,7 +300,7 @@ test_that("Dalhousie-produced cnv file", {
 ##'LATITUDE (N)= 71.391 '
 ##'LONGITUDE (W)= 134.001 '
 test_that("Beaufort sea data I (reading ctd/woce/exchange)", {
-    d2 <- read.oce(system.file("extdata", "d200321-001.ctd", package="oce"))
+    d2 <- read.oce(system.file("extdata", "d200321-001.ctd.gz", package="oce"))
     expect_equal(d2[["temperatureUnit"]], list(unit=expression(degree*C), scale="ITS-90"))
     expect_equal(d2[["pressureUnit"]], list(unit=expression(dbar), scale=""))
     expect_equal(d2[["pressureType"]], "sea")
@@ -327,7 +327,7 @@ test_that("Beaufort sea data I (reading ctd/woce/exchange)", {
 ##'* NMEA Longitude = 151 47.26 W'
 ##'* NMEA UTC (Time) = Aug 09 2012 06:34:34'
 test_that("Beaufort sea data II", {
-    d3 <- read.oce(system.file("extdata", "d201211_0011.cnv", package="oce"))
+    d3 <- read.oce(system.file("extdata", "d201211_0011.cnv.gz", package="oce"))
     expect_equal(d3[["temperatureUnit"]]$unit, expression(degree*C))
     expect_equal(d3[["temperatureUnit"]]$scale, "ITS-90")
     expect_equal(d3[["conductivityUnit"]]$unit, expression(mS/cm))
@@ -440,7 +440,7 @@ test_that("ctdFindProfiles", {
 
 test_that("original names pair with final names", {
     # This should help to ensure that bug 1141 does not return
-    f <- system.file("extdata", "d201211_0011.cnv", package="oce")
+    f <- system.file("extdata", "d201211_0011.cnv.gz", package="oce")
     d <- read.oce(f)
     expect_equal(names(d[["data"]]),
         c("scan", "pressure", "depth", "temperature",

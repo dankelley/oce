@@ -2,15 +2,15 @@
 % Please edit documentation in R/extdata.R
 \docType{data}
 \encoding{UTF-8}
-\name{ctd.cnv}
-\alias{ctd.cnv}
+\name{ctd.cnv.gz}
+\alias{ctd.cnv.gz}
 \title{Sample ctd dataset in .cnv format}
 \description{
 Sample ctd dataset in .cnv format
 }
 \examples{
 \dontrun{
-read.oce(system.file("extdata", "ctd.cnv", package="oce"))
+read.oce(system.file("extdata", "ctd.cnv.gz", package="oce"))
 }
 
 }
@@ -18,9 +18,9 @@ read.oce(system.file("extdata", "ctd.cnv", package="oce"))
 Other raw datasets: 
 \code{\link{CTD_BCD2014666_008_1_DN.ODF.gz}},
 \code{\link{adp_rdi.000}},
-\code{\link{ctd_aml.csv}},
-\code{\link{d200321-001.ctd}},
-\code{\link{d201211_0011.cnv}},
+\code{\link{ctd_aml.csv.gz}},
+\code{\link{d200321-001.ctd.gz}},
+\code{\link{d201211_0011.cnv.gz}},
 \code{\link{xbt.edf}}
 
 Other things related to ctd data: 
@@ -36,10 +36,10 @@ Other things related to ctd data:
 \code{\link{ctdRaw}},
 \code{\link{ctdRepair}()},
 \code{\link{ctdTrim}()},
-\code{\link{ctd_aml.csv}},
+\code{\link{ctd_aml.csv.gz}},
 \code{\link{ctd}},
-\code{\link{d200321-001.ctd}},
-\code{\link{d201211_0011.cnv}},
+\code{\link{d200321-001.ctd.gz}},
+\code{\link{d201211_0011.cnv.gz}},
 \code{\link{handleFlags,ctd-method}},
 \code{\link{initialize,ctd-method}},
 \code{\link{initializeFlagScheme,ctd-method}},
