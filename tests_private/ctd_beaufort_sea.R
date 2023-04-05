@@ -7,7 +7,7 @@ Sys.setenv(TZ="America/Halifax")       # without a TZ, problems on macos high-si
 count <- 0L
 years <- 2003:2012
 for (year in years) {
-    cat("year=", year, "\n")
+    cat("year=", year, "\n", sep="")
     path <- paste("~/data/arctic/beaufort/", year, sep="")
     files <- sort(list.files(path=path, pattern=".cnv", full.names=TRUE))
     nfiles <- length(files)
@@ -29,8 +29,6 @@ for (year in years) {
             dev.off()
         count <- count + 1L
     }
-    cat("Successfully checked", nfiles, "CNV files in", path[1], "and sister directories\n")
+    cat("Successfully checked ", nfiles, " CNV files in ", path[1], "and sister directories\n", sep="")
 }
-cat("Processed", count, "files\n")
-
-
+cat("Processed ", count, " files\n", sep="")

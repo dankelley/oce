@@ -9,17 +9,17 @@ if (!interactive()) png("adp_rdi_01-%02d.png")
 for (file in files) {
     try({
         if ("adp/rdi" == oceMagic(file)) {
-            cat(file, "is adp/rdi\n")
+            cat(file, " is adp/rdi\n", sep="")
             d <- read.oce(file)
             summary(d)
             plot(d)
             n <- n + 1
         } else {
             if (!grepl(".*R$", file) && !grepl(".*txt$", file) && !grepl(".*out$", file) && !grepl(".*~$", file)) {
-                cat(file, "is not adp/rdi, so it is being skipped\n")
+                cat(file, " is not adp/rdi, so it is being skipped\n", sep="")
             }
         }
     })
 }
 if (!interactive()) dev.off()
-cat("Successfully checked", n, "ADP files in", path, "\n")
+cat("Successfully checked ", n, " ADP files in ", path, "\n", sep="")
