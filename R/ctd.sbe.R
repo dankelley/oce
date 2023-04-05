@@ -990,19 +990,19 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
             }
         }
         if (0 < regexpr(".*seacat profiler.*", lline))
-            serialNumber <- gsub("[ ].*$", "", gsub(".*sn[ ]*", "", lline))
+            serialNumber <- trimws(gsub("[ ].*$", "", gsub(".*sn[ ]*", "", lline)))
         if (length(grep("^\\* Temperature SN", lline, ignore.case=TRUE)))
-            serialNumberTemperature <- gsub("^.*=\\s", "", lline)
+            serialNumberTemperature <- trimws(gsub("^.*=\\s", "", lline))
         if (length(grep("^\\* Conductivity SN", lline, ignore.case=TRUE)))
-            serialNumberConductivity <- gsub("^.*=\\s", "", lline)
+            serialNumberConductivity <- trimws(gsub("^.*=\\s", "", lline))
         if (length(grep("^#[ \t]*file_type[ \t]*=[ \t]*", lline)))
-            fileType <- gsub("[ \t\n]+$", "", gsub(".*=[ \t]*", "", lline))
+            fileType <- trimws(gsub("[ \t\n]+$", "", gsub(".*=[ \t]*", "", lline)))
         if (length(grep("^\\* Sea-Bird SBE (.*) Data File:$", lline, ignore.case=TRUE))) {
             model <- gsub("^\\* sea-bird sbe (.*) data file:$", "\\1", lline)
             res@metadata$model <- model
         }
         if (grepl("filename", lline))
-            hexfilename <- sub("(.*)FileName =([ ])*", "", ignore.case=TRUE, lline)
+            hexfilename <- trimws(sub("(.*)FileName =([ ])*", "", ignore.case=TRUE, lline))
         if (grepl("system upload time", lline)) {
             d <- sub("([^=]*)[ ]*=[ ]*", "", ignore.case=TRUE, lline)
             systemUploadTime <- decodeTime(d)

@@ -19,7 +19,6 @@ for (i in seq_along(files)) {
     cat("time starts: ", paste(d[["time"]][1:3], collapse=", "), "\n", sep="")
     plot(d)
 }
-cat("Successfully checked", nfiles, "CNV files in", path, "\n")
+cat("Successfully checked ", nfiles, " CNV files in ", path, "\n", sep="")
 
 if (!interactive()) dev.off()
-

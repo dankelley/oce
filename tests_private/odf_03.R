@@ -6,7 +6,7 @@ files <- system(sprintf("find '%s' -iname '*.ODF'", dir), intern=TRUE)
 
 i <- 0
 for (file in files) {
-    cat("\n# ", file, "\n")
+    cat("\n# ", file, "\n", sep="")
     d <- read.oce(file)
     summary(d)                     # VISUALLY: check .out file for incorrect units or unmatched names
     if ("temperature" %in% names(d[["data"]]) && min(d[["temperature"]], na.rm=TRUE) < -5)
@@ -18,8 +18,7 @@ for (file in files) {
     i <- i + 1
 }
 if (i > 0) {
-    cat("Successfully checked", i, "ODF files in ", dir, "\n")
+    cat("Successfully checked", i, "ODF files in ", dir, "\n", sep="")
 } else {
-    cat("Found no ODF fies in", dir, "\n")
+    cat("Found no ODF fies in", dir, "\n", sep="")
 }
-

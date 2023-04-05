@@ -7,7 +7,7 @@ Sys.setenv(TZ="America/Halifax")       # without a TZ, problems on macos high-si
 years <- 2011:2014
 path <- paste("~/data/flemishCap/CTD/", years, sep="")
 files <- list.files(path=path, pattern=".cnv", full.names=TRUE)
-cat("have ", length(files), "files\n")
+cat("have ", length(files), "files\n", sep="")
 nfiles <- length(files)
 if (!interactive()) png('flemish_cap_%03d.png')
 for (i in seq_along(files)) {
@@ -20,6 +20,6 @@ for (i in seq_along(files)) {
     cat("time starts: ", paste(d[["time"]][1:3], collapse=", "), "\n", sep="")
     plot(d)
 }
-cat("Successfully checked", nfiles, "CNV files in ~/data/flemishCap/CTD/*/\n")
+cat("Successfully checked ", nfiles, " CNV files in ~/data/flemishCap/CTD/*/\n", sep="")
 
 if (!interactive()) dev.off()
