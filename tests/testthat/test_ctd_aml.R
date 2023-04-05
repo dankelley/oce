@@ -1,6 +1,6 @@
 # vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
 library(oce)
-file <- system.file("extdata", "ctd_aml.csv", package="oce")
+file <- system.file("extdata", "ctd_aml.csv.gz", package="oce")
 
 # https://github.com/dankelley/oce/issues/1891
 test_that("read.ctd.aml() works (issue 1924)", {

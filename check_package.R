@@ -10,7 +10,6 @@ if (FALSE) {
    message("run 'codemetar::write_codemeta()' and then git push")
 }
 t <- devtools::spell_check()
-print(t)
 stopifnot(t == "No spelling errors found.")
 urlchecker::url_check()
 
@@ -31,8 +30,10 @@ devtools::check_win_oldrelease()
 # to be useful, and that the next one is so unreliable, I don't know
 # if there is any point in keeping the next.  Oh, and bonus: the
 # tests in the next block often don't report for half a day.
-rhub::check_for_cran(email="Dan.Kelley@Dal.Ca", show_status=FALSE)
-rhub::check(platform="debian-clang-devel", show_status=FALSE)
+if (FALSE) {
+    rhub::check_for_cran(email="Dan.Kelley@Dal.Ca", show_status=FALSE)
+    rhub::check(platform="debian-clang-devel", show_status=FALSE)
+}
 #> rhub::platforms()
 #debian-clang-devel:
 #    Debian Linux, R-devel, clang, ISO-8859-15 locale

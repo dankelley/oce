@@ -343,6 +343,9 @@
     <loc>/reference/ctd-class.html</loc>
   </url>
   <url>
+    <loc>/reference/ctd.cnv.gz.html</loc>
+  </url>
+  <url>
     <loc>/reference/ctd.cnv.html</loc>
   </url>
   <url>
@@ -367,6 +370,9 @@
     <loc>/reference/ctdTrim.html</loc>
   </url>
   <url>
+    <loc>/reference/ctd_aml.csv.gz.html</loc>
+  </url>
+  <url>
     <loc>/reference/ctd_aml.csv.html</loc>
   </url>
   <url>
@@ -376,7 +382,13 @@
     <loc>/reference/curl.html</loc>
   </url>
   <url>
+    <loc>/reference/d200321-001.ctd.gz.html</loc>
+  </url>
+  <url>
     <loc>/reference/d200321-001.ctd.html</loc>
+  </url>
+  <url>
+    <loc>/reference/d201211_0011.cnv.gz.html</loc>
   </url>
   <url>
     <loc>/reference/d201211_0011.cnv.html</loc>

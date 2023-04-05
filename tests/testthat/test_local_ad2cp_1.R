@@ -66,7 +66,6 @@ f3 <- "~/Dropbox/oce_secret_data/ad2cp/secret3_trimmed.ad2cp"
 
 
 if (file.exists(f1)) {
-    skip_on_cran()
     test_that("'dataType' works for 0x16, 24, and \"average\"",
         {
             expect_message(
@@ -345,7 +344,6 @@ if (file.exists(f1)) {
 }
 
 if (file.exists(f2)) {
-    skip_on_cran()
     test_that("read.adp() on a private AD2CP file that has only 'burst' data",
         {
             N <- 99                       # known value for subset of a larger file
@@ -383,7 +381,6 @@ if (file.exists(f2)) {
 }
 
 if (file.exists(f3)) {
-    skip_on_cran()
     test_that("read.oce() on a private AD2CP file that has 'burst' and 'interleavedBurst' data",
         {
             N <- 100

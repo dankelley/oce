@@ -6,14 +6,14 @@
 #' identifying information (serial number, IP address, and WEP
 #' code) zeroed-out.
 #'
-#' @name ctd_aml.csv
+#' @name ctd_aml.csv.gz
 #'
 #' @docType data
 #'
 #' @encoding UTF-8
 #'
 #' @examples
-#' ctd <- read.ctd.aml(system.file("extdata", "ctd_aml.csv", package="oce"))
+#' ctd <- read.ctd.aml(system.file("extdata", "ctd_aml.csv.gz", package="oce"))
 #' summary(ctd)
 #' plot(ctd)
 #'
@@ -61,7 +61,7 @@ NULL
 
 #' Sample ctd dataset in .cnv format
 #'
-#' @name ctd.cnv
+#' @name ctd.cnv.gz
 #'
 #' @docType data
 #'
@@ -69,7 +69,7 @@ NULL
 #'
 #' @examples
 #'\dontrun{
-#' read.oce(system.file("extdata", "ctd.cnv", package="oce"))
+#' read.oce(system.file("extdata", "ctd.cnv.gz", package="oce"))
 #'}
 #'
 #' @family raw datasets
@@ -79,7 +79,7 @@ NULL
 
 #' Sample ctd dataset in .ctd format
 #'
-#' @name d200321-001.ctd
+#' @name d200321-001.ctd.gz
 #'
 #' @docType data
 #'
@@ -87,7 +87,7 @@ NULL
 #'
 #' @examples
 #'\dontrun{
-#' read.oce(system.file("extdata", "d200321-001.ctd", package="oce"))
+#' read.oce(system.file("extdata", "d200321-001.ctd.gz", package="oce"))
 #'}
 #'
 #' @family raw datasets
@@ -97,7 +97,7 @@ NULL
 
 #' Sample ctd dataset in .cnv format
 #'
-#' @name d201211_0011.cnv
+#' @name d201211_0011.cnv.gz
 #'
 #' @docType data
 #'
@@ -105,7 +105,7 @@ NULL
 #'
 #' @examples
 #'\dontrun{
-#' read.oce(system.file("extdata", "d201211_0011.cnv", package="oce"))
+#' read.oce(system.file("extdata", "d201211_0011.cnv.gz", package="oce"))
 #'}
 #'
 #' @family raw datasets

@@ -18,10 +18,10 @@ xbt <- read.oce(system.file("extdata", "xbt.edf", package="oce"))
 Other raw datasets: 
 \code{\link{CTD_BCD2014666_008_1_DN.ODF.gz}},
 \code{\link{adp_rdi.000}},
-\code{\link{ctd.cnv}},
-\code{\link{ctd_aml.csv}},
-\code{\link{d200321-001.ctd}},
-\code{\link{d201211_0011.cnv}}
+\code{\link{ctd.cnv.gz}},
+\code{\link{ctd_aml.csv.gz}},
+\code{\link{d200321-001.ctd.gz}},
+\code{\link{d201211_0011.cnv.gz}}
 
 Other things related to xbt data: 
 \code{\link{[[,xbt-method}},

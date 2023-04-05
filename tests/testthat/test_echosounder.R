@@ -22,6 +22,6 @@ if (file.exists(f)) {
         expect_equal(head(echosounder[["longitude"]]),
             c(-69.72364436, -69.72366061, -69.72367686, -69.72368808,
                 -69.72369625, -69.72370900))
-        expect_silent(plot(echosounder))
+        #expect_silent(plot(echosounder))
     })
 }

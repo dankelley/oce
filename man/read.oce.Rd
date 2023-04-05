@@ -35,7 +35,7 @@ and with any additional arguments being supplied.
 }
 \examples{
 library(oce)
-x <- read.oce(system.file("extdata", "ctd.cnv", package="oce"))
+x <- read.oce(system.file("extdata", "ctd.cnv.gz", package="oce"))
 plot(x) # summary with TS and profiles
 plotTS(x) # just the TS
 }

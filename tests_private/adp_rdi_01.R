@@ -23,5 +23,3 @@ for (file in files) {
 }
 if (!interactive()) dev.off()
 cat("Successfully checked", n, "ADP files in", path, "\n")
-
-

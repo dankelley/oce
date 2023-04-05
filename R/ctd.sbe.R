@@ -510,7 +510,7 @@ cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
             # 2016-12-22 DK
             #
             # The above regexp matches for what we see in the supplied file
-            #    system.file("extdata", "d201211_0011.cnv", package="oce")
+            #    system.file("extdata", "d201211_0011.cnv.gz", package="oce")
             # at line 54, an acute-accented "e" (which maybe looked like a theta
             # to someone at SBE, when the format was invented. Clark found the
             # SBE docs and did some tests, which made it clear that this
@@ -802,7 +802,7 @@ cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
 #' Note that reading a file that contains IPTS-68 temperatures produces a warning.
 #'
 #' @examples
-#' f <- system.file("extdata", "ctd.cnv", package="oce")
+#' f <- system.file("extdata", "ctd.cnv.gz", package="oce")
 #' d <- read.ctd(f)
 #'
 #' @references

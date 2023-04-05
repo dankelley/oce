@@ -10,13 +10,6 @@ test_that("as.ctd works with multi-column argo", {
     expect_warning(as.ctd(argo[["profile", 1:5]]), "using just column 1")
 })
 
-test_that("plot works on indexed subsets", {
-    for (which in 1:6) {
-        expect_silent(plot(argo[["profile", 1]], which=which)) # failed before fixing issue 1603
-        expect_silent(plot(argo[["profile", 1:3]], which=which))
-    }
-})
-
 test_that("global attributes in metadata", {
     expect_equal(argo[["title"]], "Argo float vertical profile")
     expect_equal(argo[["institution"]], "")

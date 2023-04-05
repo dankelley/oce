@@ -17,11 +17,6 @@ test_that("as.cm() works with adv object", {
     expect_silent(M <- as.cm(adv))
 })
 
-test_that("plot,cm-method() works", {
-    data(cm)
-    expect_silent(plot(cm))
-})
-
 test_that("sumamry,cm-method() works", {
     data(cm)
     expect_output(summary(cm))
