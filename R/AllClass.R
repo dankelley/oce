@@ -187,20 +187,22 @@ setMethod(f="summary",
             #> message("units:");str(units)
             if (!is.null(threes)) {
                 #. message("threes step 1:");print(threes)
-                if (is.ad2cp(object)) {
-                    rownames(threes) <- c("v", "a", "q")
-                } else {
-                    rownames(threes) <- paste("    ", dataLabel(dataNames, units), sep="")
-                }
+                #<> # I don't think this next applies to the new ad2cp model.
+                #<> if (is.ad2cp(object)) {
+                #<>     rownames(threes) <- c("v", "a", "q")
+                #<> } else {
+                #<>     rownames(threes) <- paste("    ", dataLabel(dataNames, units), sep="")
+                #<> }
+                rownames(threes) <- paste("    ", dataLabel(dataNames, units), sep="")
                 #. message("threes step 2:");print(threes)
                 threes <- cbind(threes,
-                    as.vector(lapply(row.names(threes),
+                    as.vector(lapply(dataNames, #row.names(threes),
                         function(name) {
                             xx <- object@data[[name]]
                             if (is.array(xx)) paste(dim(xx), collapse="x")
                             else length(xx)
                         })),
-                    as.vector(lapply(row.names(threes),
+                    as.vector(lapply(dataNames, #row.names(threes),
                         function(name) {
                             sum(is.na(object@data[[name]]))
                         })))
