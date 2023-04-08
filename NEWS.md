@@ -17,9 +17,9 @@
 * Change `read.adp.ad2cp()`, and structure of AD2CP objects (issue 2005).
 * Change `read.rsk()` to read geographic information (issue 2024).
 * Change `tidem()` (and summary method) to handle 6-hourly data (issue 2034).
-* Remove `plotAD2CP()`, now superseded by generic `plot()` method (issue 2005).
 * Remove dependence on `rgeos` and `raster` packages (issue 2028).
-* Remove plots from test suite (issue 2073) but retain in developer suite.
+* Remove `plotAD2CP()`, now superseded by generic `plot()` method (issue 2005).
+* Remove plotting tests but retain in developer suite (issue 2073).
 
 # oce 1.7.10 (on CRAN)
 
