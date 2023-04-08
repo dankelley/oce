@@ -4,6 +4,7 @@
 * Add `ctdFindProfilesRBR()` (issue 2027).
 * Change `applyMagneticDeclination()` to also handle `adp` and `adv` (issue 2038).
 * Change `download.topo()` to handle new NOAA database (issue 2015).
+* Change `inst/extdata` by compressing some files.
 * Change `mapPlot()` to remove a low-level error (issue 2036).
 * Change `plot,echosounder-method()` to use `oceColorsTurbo()` instead of
   `oceColorsJet()`.
@@ -19,7 +20,6 @@
 * Remove `plotAD2CP()`, now superseded by generic `plot()` method (issue 2005).
 * Remove dependence on `rgeos` and `raster` packages (issue 2028).
 * Remove plots from test suite (issue 2073) but retain in developer suite.
-* Compress several files in inst/extdata to reduce package size slightly.
 
 # oce 1.7.10 (on CRAN)
 
