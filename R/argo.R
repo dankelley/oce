@@ -649,21 +649,8 @@ setMethod(f="subset",
         withinGiven <- length(dots) && ("within" %in% dotsNames)
         debug <- if (length(dots) && ("debug" %in% names(dots))) dots$debug else getOption("oceDebug")
         oceDebug(debug, "subset,argo-method() {\n", sep="", unindent=1, style="bold")
-              if (withinGiven) {
+        if (withinGiven) {
             oceDebug(debug, "subsetting with 'within' method\n")
-            #<OLD> # OLD 'sp::point.in.polygon' method
-            #<OLD> polygon <- dots$within
-            #<OLD> if (!is.data.frame(polygon) && !is.list(polygon)) {
-            #<OLD>     stop("'within' must be a data frame or a polygon")
-            #<OLD> }
-            #<OLD> polygonNames <- names(polygon)
-            #<OLD> if (requireNamespace("sp", quietly=TRUE)) {
-            #<OLD>     keep <- 1==sp::point.in.polygon(lon, lat, lonp, latp)
-            #<OLD> } else {
-            #<OLD>     stop("cannot use 'within' because the 'sp' package is not installed")
-            #<OLD> }
-            # NEW{ 'sf' method
-            # <OLD> Compare with 'sf' results
             polygon <- dots$within
             polygonNames <- names(polygon)
             latp <- if ("y" %in% polygonNames) {

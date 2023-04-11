@@ -777,11 +777,6 @@ setMethod(f="subset",
             }
             lon <- x[["longitude", "byStation"]]
             lat <- x[["latitude", "byStation"]]
-            #if (requireNamespace("sp", quietly=TRUE)) {
-            #    keep <- 1==sp::point.in.polygon(lon, lat, lonp, latp)
-            #} else {
-            #    stop("subset,section-method cannot use 'within' because the 'sp' package is not installed")
-            #}
             polyNew <- sf::st_polygon(list(outer=cbind(c(lonp, lonp[1]), c(latp, latp[1]))))
             pointsNew <- sf::st_multipoint(cbind(lon, lat))
             inside <- sf::st_intersection(pointsNew, polyNew)
@@ -2587,7 +2582,7 @@ sectionGrid <- function(section, p, method="approx", trim=TRUE, debug=getOption(
 #' The `df` argument sets the degree of freedom of the spline, with
 #' larger values indicating less smoothing.
 #'
-#' * For the (much slower) `method="barnes"` method, smoothing is done across
+#' * For the `method="barnes"` method, smoothing is done across
 #' both horizontal and vertical coordinates, using [interpBarnes()].
 #' The output station locations are computed by linear interpolation of
 #' input locations, using [approx()] on the original
@@ -2595,6 +2590,14 @@ sectionGrid <- function(section, p, method="approx", trim=TRUE, debug=getOption(
 #' being the distance along the track, computed with [geodDist()].
 #' The values of `xg`, `yg`, `xgl` and `ygl` control
 #' the smoothing.
+#'
+#' * For the `method="kriging"` method, smoothing is done across
+#' both horizontal and vertical coordinates, using `autoKrige()` from
+#' the `automap` package.  Note that the value returned by this
+#' this function have changed over the years, so `method="kriging"`
+#' cannot be regarded as very reliable.  For this reason, the
+#' example for this `method` is wrapped in a condition, as a way
+#' to avoid problems on CRAN test machines.
 #'
 #' * If `method` is a function, then that function is applied to
 #' the (distance, pressure) data for each variable at a grid defined by
@@ -2606,12 +2609,9 @@ sectionGrid <- function(section, p, method="approx", trim=TRUE, debug=getOption(
 #' the distance along the section, as computed with [geodDist()],
 #' and repeated for each of the points at each station.  The corresponding
 #' pressures are provided in `y`, and the value to be gridded is
-#' in `v`, which will be `temperture` on one call to the function,
+#' in `v`, which will be `temperature` on one call to the function,
 #' `salinity` on another call, etc. The other quantities
-#' have the meanings as described below.  See the \dQuote{Examples}
-#' for a description of how to set up and use a function for the gridding
-#' method known as Kriging.
-#'
+#' have the meanings as described below.
 #'
 #' @param section A `section` object containing the section to be smoothed.
 #' For `method="spline"`, the pressure levels must match for each station in
@@ -2704,25 +2704,12 @@ sectionGrid <- function(section, p, method="approx", trim=TRUE, debug=getOption(
 #' plot(gsBarnes, which="temperature")
 #' mtext("Barnes-smoothed")
 #'
-# # Kriging.
-# # As of early March, 2022, two CRAN test machines (running R-devel
-# # on linux-fedora) started to fail on the code shown below, so it
-# # was deactivated, as a cautionary measure.  It may reactivated
-# # later, if the CRAN machines start handling it properly again.
-#\dontrun{
-# if (requireNamespace("automap",quietly=TRUE)&&requireNamespace("sp",quietly=TRUE)) {
-#   krig <- function(x, y, F, xg, xr, yg, yr) {
-#     xy <- data.frame(x=x/xr, y=y/yr)
-#     K <- automap::autoKrige(F~1, remove_duplicates=TRUE,
-#                             input_data=sp::SpatialPointsDataFrame(xy, data.frame(F)),
-#                             new_data=sp::SpatialPoints(expand.grid(xg/xr, yg/yr)))
-#     matrix(K$krige_output@data$var1.pred, nrow=length(xg), ncol=length(yg))
-#   }
-#   gsKrig <- sectionSmooth(gs, krig)
-#   plot(gsKrig, which="temperature")
-#   mtext("Kriging-smoothed")
-# }
-#}
+#' # Kriging (not run on CRAN test machines)
+#' if (interactive()) {
+#'     gsKriging <- sectionSmooth(gs, "kriging", xr=50, yr=200)
+#'     plot(gsKrig, which="temperature")
+#'     mtext("Kriging-smoothed")
+#' }
 #'
 #' @author Dan Kelley
 #'
@@ -2899,22 +2886,24 @@ sectionSmooth <- function(section, method="spline",
                     if (all(is.na(smu$z)))
                         warning("All \"", var, "\" data are NA, so gridded field is a matrix of NA values\n")
                 } else if (method == "kriging") {
-                    if (requireNamespace("automap", quietly=TRUE) && requireNamespace("sp", quietly=TRUE)) {
+                    if (requireNamespace("automap", quietly=TRUE) && requireNamespace("sf", quietly=TRUE)) {
                         krigFunction <- function(x, y, F, xg, xr, yg, yr) {
-                            xy <- data.frame(x=x/xr, y=y/yr)
+                            # dividing by xr and yr to perhaps improve numerics
+                            # (FIXME: is this needed? even useful?)
+                            data <- sf::st_as_sf(data.frame(x=x/xr, y=y/yr, F=F), coords=c("x", "y"))
+                            grid <- sf::st_as_sf(expand.grid(xg=xg/xr, yg=yg/yr))
                             # nolint start T_and_F_symbol_linter
                             K <- automap::autoKrige(F~1, remove_duplicates=TRUE,
-                                input_data=sp::SpatialPointsDataFrame(xy, data.frame(F)),
-                                new_data=sp::SpatialPoints(expand.grid(xg/xr, yg/yr)))
+                                input_data=data, new_data=grid)
                             # nolint end T_and_F_symbol_linter
-                            matrix(K$krige_output@data$var1.pred, nrow=length(xg), ncol=length(yg))
+                            matrix(K$krige_output$data$var1.pred, nrow=length(xg), ncol=length(yg))
                         }
                         owarn <- options("warn")$warn
                         options(warn=-1) # silence autoKrige chattiness on e.g. method selection
                         capture.output(
-                                       {
-                                           smu <- list(z=krigFunction(X[ok], P[ok], v[ok], xg=xg, xr=xr, yg=yg, yr=yr))
-                                       }
+                            {
+                                smu <- list(z=krigFunction(X[ok], P[ok], v[ok], xg=xg, xr=xr, yg=yg, yr=yr), x=xg, y=yg)
+                            }
                         )
                         options(warn=owarn)
                     } else {
@@ -2926,8 +2915,7 @@ sectionSmooth <- function(section, method="spline",
             } else {
                 # method is not a character. It must be a function, but let's check again, anyway.
                 if (is.function(method)) {
-                    smu <- list(z=method(X[ok], P[ok], v[ok], xg=xg, xr=xr, yg=yg, yr=yr),
-                        x=xg, y=yg)
+                    smu <- list(z=method(X[ok], P[ok], v[ok], xg=xg, xr=xr, yg=yg, yr=yr), x=xg, y=yg)
                 } else {
                     stop('method must be "barnes", "kriging", "spline", "barnes" or a function')
                 }

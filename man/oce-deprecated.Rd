@@ -20,7 +20,7 @@ release of \CRANpkg{oce} will mark these as "defunct", which is the
 last step before outright removal.
 
 \tabular{lllll}{
-\strong{Deprecated}             \tab \strong{Replacement}   \tab \strong{Deprecated}  \tab \strong{Defunct} \tab \strong{Removed} \cr
+\strong{Deprecated}            \tab \strong{Replacement}   \tab \strong{Deprecated}  \tab \strong{Defunct} \tab \strong{Removed} \cr
 }
 
 The following are marked "defunct", so calling them in the
@@ -61,8 +61,6 @@ until 2020 August 11.
 \item The \code{eos} argument of \code{\link[=swN2]{swN2()}} was removed on 2019
 April 11; for details, see the \dQuote{Deprecation Notation} section
 of the documentation for \code{\link[=swN2]{swN2()}}.
-\item The \code{endian} argument of \code{\link[=byteToBinary]{byteToBinary()}} will be removed sometime
-in the year 2017, and should be set to \code{"big"} in the meantime.
 \item The \code{parameters} argument of \code{\link[=plot,ctd-method]{plot,ctd-method()}}
 was deprecated on 2016-12-30.  It was once used by
 \code{\link[=plot,coastline-method]{plot,coastline-method()}} but has been ignored by that

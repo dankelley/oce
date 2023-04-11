@@ -153,14 +153,10 @@ of the values of \code{lonlabels} and \code{latlabels}.}
 \item{latlabels}{As \code{lonlabels}, but for latitude, on the left
 plot axis.}
 
-\item{projection}{optional indication of projection, in one of two
-forms. First, it may be a character string in the "CRS" format that is
-used by the \CRANpkg{sf} package (and in much of modern computer-based
-cartography). For example, \code{projection="+proj=merc"} specifies a
-Mercator projection. The second format is the output from
-\code{\link[sp:CRS-class]{sp::CRS()}} in the \CRANpkg{sp} package, which is an object
-with a slot named \code{projarg} that gets used as a projection string.
-See \dQuote{Details}.}
+\item{projection}{character value indicating the map projection. See a table
+in \sQuote{Details} for the projections that are available. Prior to version
+1.8.0, \code{projection} could also be a value created by a now-defunction
+\code{sp} function; see \sQuote{Historical Notes}.}
 
 \item{tissot}{logical value indicating whether to use \code{\link[=mapTissot]{mapTissot()}}
 to plot Tissot indicatrices, i.e. ellipses at grid intersection points, which
@@ -368,9 +364,12 @@ Generally, issues are tackled first for commonly used projections, such as
 those used in the examples.
 }
 
-\section{Changes}{
+\section{Historical Notes}{
 
 \itemize{
+\item 2022-04-11: require \code{projection} to be a string.  (Previously,
+output from \code{sp::CRS()} was also accepted, but this function
+has been deprecated.)
 \item 2020-12-24: complete switch from \code{rgdal} to \CRANpkg{sf},
 removing the testing scheme created on 2020-08-03.
 \item 2020-08-03: added support for the \code{eqearth} projection (like \code{robin} but

@@ -116,7 +116,7 @@ laterally, using \code{\link[=smooth.spline]{smooth.spline()}} on individual pre
 be used first to create a \code{section} object that can be used here.)
 The \code{df} argument sets the degree of freedom of the spline, with
 larger values indicating less smoothing.
-\item For the (much slower) \code{method="barnes"} method, smoothing is done across
+\item For the \code{method="barnes"} method, smoothing is done across
 both horizontal and vertical coordinates, using \code{\link[=interpBarnes]{interpBarnes()}}.
 The output station locations are computed by linear interpolation of
 input locations, using \code{\link[=approx]{approx()}} on the original
@@ -124,6 +124,13 @@ longitudes and longitudes of stations, with the independent variable
 being the distance along the track, computed with \code{\link[=geodDist]{geodDist()}}.
 The values of \code{xg}, \code{yg}, \code{xgl} and \code{ygl} control
 the smoothing.
+\item For the \code{method="kriging"} method, smoothing is done across
+both horizontal and vertical coordinates, using \code{autoKrige()} from
+the \code{automap} package.  Note that the value returned by this
+this function have changed over the years, so \code{method="kriging"}
+cannot be regarded as very reliable.  For this reason, the
+example for this \code{method} is wrapped in a condition, as a way
+to avoid problems on CRAN test machines.
 \item If \code{method} is a function, then that function is applied to
 the (distance, pressure) data for each variable at a grid defined by
 \code{xg}, \code{xgl}, \code{yg} and \code{ygl}. The function must
@@ -134,11 +141,9 @@ The \code{x} value that is supplied to this function is set as
 the distance along the section, as computed with \code{\link[=geodDist]{geodDist()}},
 and repeated for each of the points at each station.  The corresponding
 pressures are provided in \code{y}, and the value to be gridded is
-in \code{v}, which will be \code{temperture} on one call to the function,
+in \code{v}, which will be \code{temperature} on one call to the function,
 \code{salinity} on another call, etc. The other quantities
-have the meanings as described below.  See the \dQuote{Examples}
-for a description of how to set up and use a function for the gridding
-method known as Kriging.
+have the meanings as described below.
 }
 }
 \examples{
@@ -162,6 +167,12 @@ gsBarnes <- sectionSmooth(gs, "barnes", xr=50, yr=200)
 plot(gsBarnes, which="temperature")
 mtext("Barnes-smoothed")
 
+# Kriging (not run on CRAN test machines)
+if (interactive()) {
+    gsKriging <- sectionSmooth(gs, "kriging", xr=50, yr=200)
+    plot(gsKrig, which="temperature")
+    mtext("Kriging-smoothed")
+}
 
 }
 \seealso{
