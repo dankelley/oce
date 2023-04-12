@@ -7,7 +7,7 @@ lines of C/C++ and 1k line of Fortran).
 A key reason for the submission is a request to remove dependence on rgeos and
 raster packages, which are being superseded by newer packages.
 
-The NEWS.md file lists over a dozen additional chnges.  Of these, two have
+The NEWS.md file lists over a dozen additional changes.  Of these, two have
 user-visible changes.  First, plot() for echosounder-class objects now uses the
 viridis colour-scheme by default (it was jet, previously). Second, and more
 significantly, AD2CP objects now have a layout that matches other oce objects,

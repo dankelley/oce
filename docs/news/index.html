@@ -79,7 +79,8 @@
 <li>Change <code><a href="../reference/applyMagneticDeclination.html">applyMagneticDeclination()</a></code> to also handle <code>adp</code> and <code>adv</code> (issue 2038).</li>
 <li>Change <code><a href="../reference/download.topo.html">download.topo()</a></code> to handle new NOAA database (issue 2015).</li>
 <li>Change <code>inst/extdata</code> by compressing some files.</li>
-<li>Change <code><a href="../reference/mapPlot.html">mapPlot()</a></code> to remove a low-level error (issue 2036).</li>
+<li>Change <code><a href="../reference/mapPlot.html">mapPlot()</a></code> to remove an infrequent low-level error (issue 2036).</li>
+<li>Change <code><a href="../reference/mapPlot.html">mapPlot()</a></code> to require <code>projection</code> to be a string (issue 2076).</li>
 <li>Change <code>plot,echosounder-method()</code> to use <code><a href="../reference/oceColorsTurbo.html">oceColorsTurbo()</a></code> instead of <code><a href="../reference/oceColorsJet.html">oceColorsJet()</a></code>.</li>
 <li>Change <code><a href="../reference/plotProfile.html">plotProfile()</a></code> to create xlab on vector input (issue 2047).</li>
 <li>Change <code><a href="../reference/plotTS.html">plotTS()</a></code> to compute isopycnals more accurately (issue 2046).</li>
@@ -88,8 +89,9 @@
 <li>Change <code>plot,tidem-method()</code> to obey <code>...</code> parameter (issue 2035).</li>
 <li>Change <code><a href="../reference/read.adp.ad2cp.html">read.adp.ad2cp()</a></code>, and structure of AD2CP objects (issue 2005).</li>
 <li>Change <code><a href="../reference/read.rsk.html">read.rsk()</a></code> to read geographic information (issue 2024).</li>
+<li>Change <code><a href="../reference/sectionSmooth.html">sectionSmooth()</a></code> to handle <code>method="kriging"</code> again</li>
 <li>Change <code><a href="../reference/tidem.html">tidem()</a></code> (and summary method) to handle 6-hourly data (issue 2034).</li>
-<li>Remove dependence on <code>rgeos</code> and <code>raster</code> packages (issue 2028).</li>
+<li>Remove package dependence on <code>rgeos</code> and <code>raster</code> packages (issue 2028).</li>
 <li>Remove <code>plotAD2CP()</code>, now superseded by generic <code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code> method (issue 2005).</li>
 <li>Remove plotting tests but retain in developer suite (issue 2073).</li>
 </ul></div>

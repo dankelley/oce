@@ -1434,7 +1434,7 @@ mapLongitudeLatitudeXY <- function(longitude, latitude)
 #'
 #' @param projection character value indicating the map projection. See a table
 #' in \sQuote{Details} for the projections that are available. Prior to version
-#' 1.8.0, `projection` could also be a value created by a now-defunction
+#' 1.8.0, `projection` could also be a value created by a now-defunct
 #' `sp` function; see \sQuote{Historical Notes}.
 #'
 #' @param trim logical value indicating whether to trim islands or lakes

@@ -211,7 +211,7 @@ laterally, using <code><a href="https://rdrr.io/r/stats/smooth.spline.html" clas
 be used first to create a <code>section</code> object that can be used here.)
 The <code>df</code> argument sets the degree of freedom of the spline, with
 larger values indicating less smoothing.</p></li>
-<li><p>For the (much slower) <code>method="barnes"</code> method, smoothing is done across
+<li><p>For <code>method="barnes"</code>, smoothing is done across
 both horizontal and vertical coordinates, using <code><a href="interpBarnes.html">interpBarnes()</a></code>.
 The output station locations are computed by linear interpolation of
 input locations, using <code><a href="https://rdrr.io/r/stats/approxfun.html" class="external-link">approx()</a></code> on the original
@@ -219,21 +219,27 @@ longitudes and longitudes of stations, with the independent variable
 being the distance along the track, computed with <code><a href="geodDist.html">geodDist()</a></code>.
 The values of <code>xg</code>, <code>yg</code>, <code>xgl</code> and <code>ygl</code> control
 the smoothing.</p></li>
+<li><p>For <code>method="kriging"</code>, smoothing is done across
+both horizontal and vertical coordinates, using <code>autoKrige()</code> from
+the <a href="https://CRAN.R-project.org/package=automap" class="external-link"><span class="pkg">automap</span></a> package (along with support from the
+<a href="https://CRAN.R-project.org/package=sp" class="external-link"><span class="pkg">sp</span></a> package to format the data).  Note that the format of
+the value returned by <code>autoKrige()</code> has changed over the years,
+and <code>method="kriging"</code> can only handle two particular formats,
+one of which is the result from version 1.1.9 of
+<a href="https://CRAN.R-project.org/package=automap" class="external-link"><span class="pkg">automap</span></a>.</p></li>
 <li><p>If <code>method</code> is a function, then that function is applied to
 the (distance, pressure) data for each variable at a grid defined by
 <code>xg</code>, <code>xgl</code>, <code>yg</code> and <code>ygl</code>. The function must
-be of the form <code>function(x,y,F,xg,xr,yg,yr)</code>, and must
+be of the form <code>function(x,y,z,xg,xr,yg,yr)</code>, and must
 return a matrix of the gridded result, with first index indicating
 the "grid" station number and second index indicating "grid" pressure.
 The <code>x</code> value that is supplied to this function is set as
 the distance along the section, as computed with <code><a href="geodDist.html">geodDist()</a></code>,
 and repeated for each of the points at each station.  The corresponding
 pressures are provided in <code>y</code>, and the value to be gridded is
-in <code>v</code>, which will be <code>temperture</code> on one call to the function,
+in <code>z</code>, which may be <code>temperature</code> on one call to the function,
 <code>salinity</code> on another call, etc. The other quantities
-have the meanings as described below.  See the “Examples”
-for a description of how to set up and use a function for the gridding
-method known as Kriging.</p></li>
+have the meanings as described below.</p></li>
 </ul></div>
     <div id="see-also">
     <h2>See also</h2>
@@ -267,21 +273,27 @@ method known as Kriging.</p></li>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mfrow<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">2</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">gs</span>, which<span class="op">=</span><span class="st">"temperature"</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/mtext.html" class="external-link">mtext</a></span><span class="op">(</span><span class="st">"unsmoothed"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/mtext.html" class="external-link">mtext</a></span><span class="op">(</span><span class="st">"Original data, without smoothing"</span>, line<span class="op">=</span><span class="fl">0.5</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Spline</span></span></span>
 <span class="r-in"><span><span class="va">gsg</span> <span class="op">&lt;-</span> <span class="fu"><a href="sectionGrid.html">sectionGrid</a></span><span class="op">(</span><span class="va">gs</span>, p<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">5000</span>, <span class="fl">100</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">gsSpline</span> <span class="op">&lt;-</span> <span class="fu">sectionSmooth</span><span class="op">(</span><span class="va">gsg</span>, <span class="st">"spline"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">gsSpline</span>, which<span class="op">=</span><span class="st">"temperature"</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/mtext.html" class="external-link">mtext</a></span><span class="op">(</span><span class="st">"spline-smoothed"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/mtext.html" class="external-link">mtext</a></span><span class="op">(</span><span class="st">"sectionSmooth(..., method=\"spline\")"</span>, line<span class="op">=</span><span class="fl">0.5</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Barnes</span></span></span>
 <span class="r-in"><span><span class="va">gsBarnes</span> <span class="op">&lt;-</span> <span class="fu">sectionSmooth</span><span class="op">(</span><span class="va">gs</span>, <span class="st">"barnes"</span>, xr<span class="op">=</span><span class="fl">50</span>, yr<span class="op">=</span><span class="fl">200</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">gsBarnes</span>, which<span class="op">=</span><span class="st">"temperature"</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/mtext.html" class="external-link">mtext</a></span><span class="op">(</span><span class="st">"Barnes-smoothed"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/mtext.html" class="external-link">mtext</a></span><span class="op">(</span><span class="st">"sectionSmooth(..., method=\"barnes\")"</span>, line<span class="op">=</span><span class="fl">0.5</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Kriging (brittle to changes in automap)</span></span></span>
+<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"automap"</span>, quietly<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span> <span class="op">&amp;&amp;</span> <span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"sf"</span>, quietly<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span>    <span class="va">gsKriging</span> <span class="op">&lt;-</span> <span class="fu">sectionSmooth</span><span class="op">(</span><span class="va">gs</span>, <span class="st">"kriging"</span>, xr<span class="op">=</span><span class="fl">50</span>, yr<span class="op">=</span><span class="fl">200</span><span class="op">)</span></span></span>
+<span class="r-in"><span>    <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">gsKriging</span>, which<span class="op">=</span><span class="st">"temperature"</span><span class="op">)</span></span></span>
+<span class="r-in"><span>    <span class="fu"><a href="https://rdrr.io/r/graphics/mtext.html" class="external-link">mtext</a></span><span class="op">(</span><span class="st">"sectionSmooth(..., method=\"kriging\")"</span>, line<span class="op">=</span><span class="fl">0.5</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
 <span class="r-plt img"><img src="sectionSmooth-1.png" alt="" width="700" height="433"></span>
+<span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
   </div>

@@ -155,7 +155,7 @@ plot axis.}
 
 \item{projection}{character value indicating the map projection. See a table
 in \sQuote{Details} for the projections that are available. Prior to version
-1.8.0, \code{projection} could also be a value created by a now-defunction
+1.8.0, \code{projection} could also be a value created by a now-defunct
 \code{sp} function; see \sQuote{Historical Notes}.}
 
 \item{tissot}{logical value indicating whether to use \code{\link[=mapTissot]{mapTissot()}}

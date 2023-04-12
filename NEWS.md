@@ -17,6 +17,7 @@
 * Change `plot,tidem-method()` to obey `...` parameter (issue 2035).
 * Change `read.adp.ad2cp()`, and structure of AD2CP objects (issue 2005).
 * Change `read.rsk()` to read geographic information (issue 2024).
+* Change `sectionSmooth()` to handle `method="kriging"` again
 * Change `tidem()` (and summary method) to handle 6-hourly data (issue 2034).
 * Remove package dependence on `rgeos` and `raster` packages (issue 2028).
 * Remove `plotAD2CP()`, now superseded by generic `plot()` method (issue 2005).
