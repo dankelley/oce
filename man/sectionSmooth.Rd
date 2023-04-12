@@ -116,7 +116,7 @@ laterally, using \code{\link[=smooth.spline]{smooth.spline()}} on individual pre
 be used first to create a \code{section} object that can be used here.)
 The \code{df} argument sets the degree of freedom of the spline, with
 larger values indicating less smoothing.
-\item For the (much slower) \code{method="barnes"} method, smoothing is done across
+\item For \code{method="barnes"}, smoothing is done across
 both horizontal and vertical coordinates, using \code{\link[=interpBarnes]{interpBarnes()}}.
 The output station locations are computed by linear interpolation of
 input locations, using \code{\link[=approx]{approx()}} on the original
@@ -124,21 +124,27 @@ longitudes and longitudes of stations, with the independent variable
 being the distance along the track, computed with \code{\link[=geodDist]{geodDist()}}.
 The values of \code{xg}, \code{yg}, \code{xgl} and \code{ygl} control
 the smoothing.
+\item For \code{method="kriging"}, smoothing is done across
+both horizontal and vertical coordinates, using \code{autoKrige()} from
+the \CRANpkg{automap} package (along with support from the
+\CRANpkg{sp} package to format the data).  Note that the format of
+the value returned by \code{autoKrige()} has changed over the years,
+and \code{method="kriging"} can only handle two particular formats,
+one of which is the result from version 1.1.9 of
+\CRANpkg{automap}.
 \item If \code{method} is a function, then that function is applied to
 the (distance, pressure) data for each variable at a grid defined by
 \code{xg}, \code{xgl}, \code{yg} and \code{ygl}. The function must
-be of the form \verb{function(x,y,F,xg,xr,yg,yr)}, and must
+be of the form \verb{function(x,y,z,xg,xr,yg,yr)}, and must
 return a matrix of the gridded result, with first index indicating
 the "grid" station number and second index indicating "grid" pressure.
 The \code{x} value that is supplied to this function is set as
 the distance along the section, as computed with \code{\link[=geodDist]{geodDist()}},
 and repeated for each of the points at each station.  The corresponding
 pressures are provided in \code{y}, and the value to be gridded is
-in \code{v}, which will be \code{temperture} on one call to the function,
+in \code{z}, which may be \code{temperature} on one call to the function,
 \code{salinity} on another call, etc. The other quantities
-have the meanings as described below.  See the \dQuote{Examples}
-for a description of how to set up and use a function for the gridding
-method known as Kriging.
+have the meanings as described below.
 }
 }
 \examples{
@@ -149,19 +155,25 @@ gs <- subset(section, 115<=stationId&stationId<=125)
 par(mfrow=c(2, 2))
 
 plot(gs, which="temperature")
-mtext("unsmoothed")
+mtext("Original data, without smoothing", line=0.5)
 
 # Spline
 gsg <- sectionGrid(gs, p=seq(0, 5000, 100))
 gsSpline <- sectionSmooth(gsg, "spline")
 plot(gsSpline, which="temperature")
-mtext("spline-smoothed")
+mtext("sectionSmooth(..., method=\"spline\")", line=0.5)
 
 # Barnes
 gsBarnes <- sectionSmooth(gs, "barnes", xr=50, yr=200)
 plot(gsBarnes, which="temperature")
-mtext("Barnes-smoothed")
+mtext("sectionSmooth(..., method=\"barnes\")", line=0.5)
 
+# Kriging (brittle to changes in automap)
+if (requireNamespace("automap", quietly=TRUE) && requireNamespace("sf", quietly=TRUE)) {
+    gsKriging <- sectionSmooth(gs, "kriging", xr=50, yr=200)
+    plot(gsKriging, which="temperature")
+    mtext("sectionSmooth(..., method=\"kriging\")", line=0.5)
+}
 
 }
 \seealso{

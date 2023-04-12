@@ -11,8 +11,9 @@ oceProject(xy, proj, inv = FALSE, debug = getOption("oceDebug"))
 longitude and \code{xy[,2]} will hold latitude, but if \code{inv} is True, then the columns will be easting
 and northing values (in metres).}
 
-\item{proj}{character string indicating the desired map projection, or an object of class \code{crs};
-see the documentation for \code{\link[sf:sf_project]{sf::sf_project()}}.}
+\item{proj}{a character value specifying the desired map projection.  See
+the \code{projection} parameter of \code{\link[=mapPlot]{mapPlot()}} for details, including a
+historical note dated 2023-04-11 about the now-deprecated \code{sp} package.}
 
 \item{inv}{logical value, False by default, indicating whether an inverse projection is requested.}
 

@@ -90,7 +90,7 @@ NULL
 #' last step before outright removal.
 #'
 #' \tabular{lllll}{
-#' **Deprecated**             \tab **Replacement**   \tab **Deprecated**  \tab **Defunct** \tab **Removed** \cr
+#' **Deprecated**            \tab **Replacement**   \tab **Deprecated**  \tab **Defunct** \tab **Removed** \cr
 # `byteToBinary(x,"endian")` \tab [rawToBits()]     \tab 1.1-1           \tab 1.1-3       \tab 1.1-4       \cr
 #' }
 #'
@@ -134,8 +134,8 @@ NULL
 #' April 11; for details, see the \dQuote{Deprecation Notation} section
 #' of the documentation for [swN2()].
 #'
-#' * The `endian` argument of [byteToBinary()] will be removed sometime
-#' in the year 2017, and should be set to `"big"` in the meantime.
+# * The `endian` argument of [byteToBinary()] will be removed sometime
+# in the year 2017, and should be set to `"big"` in the meantime.
 #'
 #' * The `parameters` argument of [plot,ctd-method()]
 #' was deprecated on 2016-12-30.  It was once used by

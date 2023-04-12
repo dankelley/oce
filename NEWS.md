@@ -5,7 +5,8 @@
 * Change `applyMagneticDeclination()` to also handle `adp` and `adv` (issue 2038).
 * Change `download.topo()` to handle new NOAA database (issue 2015).
 * Change `inst/extdata` by compressing some files.
-* Change `mapPlot()` to remove a low-level error (issue 2036).
+* Change `mapPlot()` to remove an infrequent low-level error (issue 2036).
+* Change `mapPlot()` to require `projection` to be a string (issue 2076).
 * Change `plot,echosounder-method()` to use `oceColorsTurbo()` instead of
   `oceColorsJet()`.
 * Change `plotProfile()` to create xlab on vector input (issue 2047).
@@ -16,8 +17,9 @@
 * Change `plot,tidem-method()` to obey `...` parameter (issue 2035).
 * Change `read.adp.ad2cp()`, and structure of AD2CP objects (issue 2005).
 * Change `read.rsk()` to read geographic information (issue 2024).
+* Change `sectionSmooth()` to handle `method="kriging"` again
 * Change `tidem()` (and summary method) to handle 6-hourly data (issue 2034).
-* Remove dependence on `rgeos` and `raster` packages (issue 2028).
+* Remove package dependence on `rgeos` and `raster` packages (issue 2028).
 * Remove `plotAD2CP()`, now superseded by generic `plot()` method (issue 2005).
 * Remove plotting tests but retain in developer suite (issue 2073).
 

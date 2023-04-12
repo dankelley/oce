@@ -173,11 +173,12 @@ x-y coordinates.  See “Details” for how this interacts with
 
 
 <dt>gridder</dt>
-<dd><p>Name of gridding function used if <code>filledContour</code> is <code>TRUE</code>.
-This can be either <code>"binMean2D"</code> to select <code><a href="binMean2D.html">binMean2D()</a></code> or <code>"interp"</code> to
-select <code><a href="https://rdrr.io/pkg/interp/man/interp.html" class="external-link">interp::interp()</a></code>.  The former produces cruder results, but the
-latter can be slow for large datasets.  Note that <code>"akima"</code> is taken as a
-synonym for <code>"interp"</code> (see “Historical Note”).</p></dd>
+<dd><p>character value specifying the gridding function to be used
+if <code>filledContour</code> is <code>TRUE</code>. This can be either <code>"binMean2D"</code> to select
+<code><a href="binMean2D.html">binMean2D()</a></code> or <code>"interp"</code> to select <code><a href="https://rdrr.io/pkg/interp/man/interp.html" class="external-link">interp::interp()</a></code>.  The former
+produces cruder results, but the latter can be slow for large datasets.
+Note that <code>"akima"</code> is taken as a synonym for <code>"interp"</code>
+(see “Historical Notes”).</p></dd>
 
 
 <dt>debug</dt>
@@ -209,8 +210,8 @@ perhaps various grid refinement values) to guard against misinterpretation.</p>
 <p>If a <code><a href="https://rdrr.io/r/grDevices/png.html" class="external-link">png()</a></code> device is to be used, it is advised to supply
 arguments <code>type="cairo"</code> and <code>antialias="none"</code> (see reference 1).</p>
     </div>
-    <div id="historical-note">
-    <h2>Historical Note</h2>
+    <div id="historical-notes">
+    <h2>Historical Notes</h2>
     
 
 

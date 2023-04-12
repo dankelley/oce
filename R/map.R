@@ -86,8 +86,9 @@ repairProjection <- function(projection, longlatProj, debug=getOption("oceDebug"
 #' longitude and `xy[,2]` will hold latitude, but if `inv` is True, then the columns will be easting
 #' and northing values (in metres).
 #'
-#' @param proj character string indicating the desired map projection, or an object of class `crs`;
-#' see the documentation for [sf::sf_project()].
+#' @param proj a character value specifying the desired map projection.  See
+#' the `projection` parameter of [mapPlot()] for details, including a
+#' historical note dated 2023-04-11 about the now-deprecated `sp` package.
 #'
 #' @param inv logical value, False by default, indicating whether an inverse projection is requested.
 #'
@@ -1268,7 +1269,11 @@ mapLongitudeLatitudeXY <- function(longitude, latitude)
 #' Generally, issues are tackled first for commonly used projections, such as
 #' those used in the examples.
 #'
-#' @section Changes:
+#' @section Historical Notes:
+#'
+#' * 2022-04-11: require `projection` to be a string.  (Previously,
+#' output from `sp::CRS()` was also accepted, but this function
+#' has been deprecated.)
 #'
 #' * 2020-12-24: complete switch from `rgdal` to \CRANpkg{sf},
 #' removing the testing scheme created on 2020-08-03.
@@ -1427,14 +1432,10 @@ mapLongitudeLatitudeXY <- function(longitude, latitude)
 #' @param latlabels As `lonlabels`, but for latitude, on the left
 #' plot axis.
 #'
-#' @param projection optional indication of projection, in one of two
-#' forms. First, it may be a character string in the "CRS" format that is
-#' used by the \CRANpkg{sf} package (and in much of modern computer-based
-#' cartography). For example, `projection="+proj=merc"` specifies a
-#' Mercator projection. The second format is the output from
-#' [sp::CRS()] in the \CRANpkg{sp} package, which is an object
-#' with a slot named `projarg` that gets used as a projection string.
-#' See \dQuote{Details}.
+#' @param projection character value indicating the map projection. See a table
+#' in \sQuote{Details} for the projections that are available. Prior to version
+#' 1.8.0, `projection` could also be a value created by a now-defunct
+#' `sp` function; see \sQuote{Historical Notes}.
 #'
 #' @param trim logical value indicating whether to trim islands or lakes
 #' containing only points that are off-scale of the current plot box.  This
@@ -1603,8 +1604,18 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
     geographical <- round(geographical)
     if (geographical < 0 || geographical > 4)
         stop("argument geographical must be an integer between 0 to 4, inclusive")
-    if (!missing(projection) && inherits(projection, "CRS"))
-        projection <- projection@projargs
+    # Note the deprecation of sp::CRS() values.  I do not plan to permit values
+    # fromsf::st_crs() because I can't find documentation of the fields of those
+    # values, and so adding the capability would introduce a brittleness without
+    # much justification.
+    if (!missing(projection)) {
+        if (inherits(projection, "CRS")) {
+            warning("'projection' should be a character value (see ?mapPlot Historical Notes for 2023-04-11)")
+            projection <- projection@projargs
+        } else if (!is.character(projection)) {
+            stop("projection must be a character value (see Historical Notes for 2023-04-11)")
+        }
+    }
     if (packageVersion("sf") >= "0.8.1") {
         oceDebug(debug, "using sf version ", as.character(packageVersion("sf")), "\n")
         tmp <- sf::st_crs(projection)$proj4string
@@ -3087,7 +3098,7 @@ mapPolygon <- function(longitude, latitude, density=NULL, angle=45,
 #' If a [png()] device is to be used, it is advised to supply
 #' arguments `type="cairo"` and `antialias="none"` (see reference 1).
 #'
-#' @section Historical Note:
+#' @section Historical Notes:
 #'
 #' Until oce 1.7.4, the `gridder` argument could be set to `"akima"`, which used
 #' the `akima` package.  However, that package is not released with a FOSS license,
@@ -3141,11 +3152,12 @@ mapPolygon <- function(longitude, latitude, density=NULL, angle=45,
 #' x-y coordinates.  See \dQuote{Details} for how this interacts with
 #' `gridder`.
 #'
-#' @param gridder Name of gridding function used if `filledContour` is `TRUE`.
-#' This can be either `"binMean2D"` to select [binMean2D()] or `"interp"` to
-#' select [interp::interp()].  The former produces cruder results, but the
-#' latter can be slow for large datasets.  Note that `"akima"` is taken as a
-#' synonym for `"interp"` (see \dQuote{Historical Note}).
+#' @param gridder character value specifying the gridding function to be used
+#' if `filledContour` is `TRUE`. This can be either `"binMean2D"` to select
+#' [binMean2D()] or `"interp"` to select [interp::interp()].  The former
+#' produces cruder results, but the latter can be slow for large datasets.
+#' Note that `"akima"` is taken as a synonym for `"interp"`
+#' (see \dQuote{Historical Notes}).
 #'
 #' @param debug A flag that turns on debugging.  Set to 1 to get a
 #' moderate amount of debugging information, or to 2 to get more.
@@ -3176,10 +3188,10 @@ mapPolygon <- function(longitude, latitude, density=NULL, angle=45,
 #'
 #' @family functions related to maps
 mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
-                     breaks, col, colormap, border=NA,
-                     lwd=par("lwd"), lty=par("lty"), missingColor=NA,
-                     filledContour=FALSE, gridder="binMean2D",
-                     debug=getOption("oceDebug"))
+    breaks, col, colormap, border=NA,
+    lwd=par("lwd"), lty=par("lty"), missingColor=NA,
+    filledContour=FALSE, gridder="binMean2D",
+    debug=getOption("oceDebug"))
 {
     if ("none" == .Projection()$type)
         stop("must create a map first, with mapPlot()\n")
@@ -3752,8 +3764,10 @@ lonlat2map <- function(longitude, latitude, projection="", debug=getOption("oceD
     # Use proj4 if it has been set up (and still exists).
     if ("" == projection)
         projection <- .Projection()$projection # FIXME
-    if (inherits(projection, "CRS"))
+    if (inherits(projection, "CRS")) {
+        warning("'projection' should be a character value (see ?mapPlot Historical Notes for 2023-04-11)")
         projection <- projection@projargs
+    }
     pr <- gsub(".*\\+proj=([^ ]*).*", "\\1", projection)
     oceDebug(debug, "in lonlat2map(), projection=\"", projection, "\"\n", sep="")
     oceDebug(debug, "in lonlat2map(), pr=        \"", projection, "\"\n", sep="")

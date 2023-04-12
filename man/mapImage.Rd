@@ -70,11 +70,12 @@ resampling rate to be used in interpolating from lon-lat coordinates to
 x-y coordinates.  See \dQuote{Details} for how this interacts with
 \code{gridder}.}
 
-\item{gridder}{Name of gridding function used if \code{filledContour} is \code{TRUE}.
-This can be either \code{"binMean2D"} to select \code{\link[=binMean2D]{binMean2D()}} or \code{"interp"} to
-select \code{\link[interp:interp]{interp::interp()}}.  The former produces cruder results, but the
-latter can be slow for large datasets.  Note that \code{"akima"} is taken as a
-synonym for \code{"interp"} (see \dQuote{Historical Note}).}
+\item{gridder}{character value specifying the gridding function to be used
+if \code{filledContour} is \code{TRUE}. This can be either \code{"binMean2D"} to select
+\code{\link[=binMean2D]{binMean2D()}} or \code{"interp"} to select \code{\link[interp:interp]{interp::interp()}}.  The former
+produces cruder results, but the latter can be slow for large datasets.
+Note that \code{"akima"} is taken as a synonym for \code{"interp"}
+(see \dQuote{Historical Notes}).}
 
 \item{debug}{A flag that turns on debugging.  Set to 1 to get a
 moderate amount of debugging information, or to 2 to get more.}
@@ -108,7 +109,7 @@ perhaps various grid refinement values) to guard against misinterpretation.
 If a \code{\link[=png]{png()}} device is to be used, it is advised to supply
 arguments \code{type="cairo"} and \code{antialias="none"} (see reference 1).
 }
-\section{Historical Note}{
+\section{Historical Notes}{
 
 
 Until oce 1.7.4, the \code{gridder} argument could be set to \code{"akima"}, which used

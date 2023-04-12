@@ -528,8 +528,10 @@ setMethod(f="plot",
         debug=getOption("oceDebug"),
         ...)
     {
-        if (!missing(projection) && inherits(projection, "CRS"))
+        if (!missing(projection) && inherits(projection, "CRS")) {
+            warning("'projection' should be a character value (see ?mapPlot Historical Notes for 2023-04-11)")
             projection <- projection@projargs
+        }
         oceDebug(debug, "plot,coastline-method(...",
             ", clongitude=", if (missing(clongitude)) "(missing)" else clongitude,
             ", clatitude=", if (missing(clatitude)) "(missing)" else clatitude,
