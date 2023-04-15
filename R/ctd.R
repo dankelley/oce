@@ -487,18 +487,14 @@ setMethod(f="initialize",
         #.Object@metadata$filename <- filename
         if (missing(units)) {
             .Object@metadata$units <- list()
-            if (!missing(pressure)) {
+            if (!missing(pressure))
                 .Object@metadata$units$pressure <- list(unit=expression(dbar), scale="")
-            }
-            if (!missing(salinity)) {
+            if (!missing(salinity))
                 .Object@metadata$units$salinity <- list(unit=expression(), scale="PSS-78")
-            }
-            if (!missing(temperature)) {
+            if (!missing(temperature))
                 .Object@metadata$units$temperature <- list(unit=expression(degree*C), scale="ITS-90")
-            }
-            if (!missing(conductivity)) {
+            if (!missing(conductivity))
                 .Object@metadata$units$conductivity <- list(unit=expression(), scale="")
-            }
         } else {
             .Object@metadata$units <- units # CAUTION: we are being quite trusting here
         }
