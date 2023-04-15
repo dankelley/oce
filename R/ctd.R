@@ -4078,7 +4078,9 @@ read.ctd <- function(file, type=NULL, columns=NULL, station=NULL, missingValue, 
 {
     if (missing(file))
         stop("must supply 'file'")
+    filename <- "" # we will learn it in a moment, if 'file' is a character value.
     if (is.character(file)) {
+        filename <- file
         if (!file.exists(file))
             stop("cannot find file '", file, "'")
         if (0L == file.info(file)$size)
@@ -4144,6 +4146,10 @@ read.ctd <- function(file, type=NULL, columns=NULL, station=NULL, missingValue, 
         ODV=read.ctd.odv(file, encoding=encoding, columns=columns, station=station,
             missingValue=missingValue, deploymentType=deploymentType,
             monitor=monitor, debug=debug, processingLog=processingLog, ...))
+    # We add the filename rather than figure out how to learn it from 'file',
+    # which is a connection.
+    if (is.null(res@metadata$filename) || 0 == nchar(res@metadata$filename))
+        res@metadata$filename <- filename
     res
 }
 
