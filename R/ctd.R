@@ -487,18 +487,14 @@ setMethod(f="initialize",
         #.Object@metadata$filename <- filename
         if (missing(units)) {
             .Object@metadata$units <- list()
-            if (!missing(pressure)) {
+            if (!missing(pressure))
                 .Object@metadata$units$pressure <- list(unit=expression(dbar), scale="")
-            }
-            if (!missing(salinity)) {
+            if (!missing(salinity))
                 .Object@metadata$units$salinity <- list(unit=expression(), scale="PSS-78")
-            }
-            if (!missing(temperature)) {
+            if (!missing(temperature))
                 .Object@metadata$units$temperature <- list(unit=expression(degree*C), scale="ITS-90")
-            }
-            if (!missing(conductivity)) {
+            if (!missing(conductivity))
                 .Object@metadata$units$conductivity <- list(unit=expression(), scale="")
-            }
         } else {
             .Object@metadata$units <- units # CAUTION: we are being quite trusting here
         }
@@ -4082,7 +4078,9 @@ read.ctd <- function(file, type=NULL, columns=NULL, station=NULL, missingValue, 
 {
     if (missing(file))
         stop("must supply 'file'")
+    filename <- "" # we will learn it in a moment, if 'file' is a character value.
     if (is.character(file)) {
+        filename <- file
         if (!file.exists(file))
             stop("cannot find file '", file, "'")
         if (0L == file.info(file)$size)
@@ -4148,6 +4146,10 @@ read.ctd <- function(file, type=NULL, columns=NULL, station=NULL, missingValue, 
         ODV=read.ctd.odv(file, encoding=encoding, columns=columns, station=station,
             missingValue=missingValue, deploymentType=deploymentType,
             monitor=monitor, debug=debug, processingLog=processingLog, ...))
+    # We add the filename rather than figure out how to learn it from 'file',
+    # which is a connection.
+    if (is.null(res@metadata$filename) || 0 == nchar(res@metadata$filename))
+        res@metadata$filename <- filename
     res
 }
 
