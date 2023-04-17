@@ -388,9 +388,7 @@ test_that("time-series filtering", {
             0.08, 0.04, 0.00))
 })
 
-
-test_that("times", {
-    expect_equal(numberAsPOSIXct(719529, "matlab"), ISOdatetime(1970, 1, 1, 0, 0, 0, tz="UTC"))
+test_that("gps time", {
     # The GPS test value was calculated as follows:
     # https://www.labsat.co.uk/index.php/en/gps-time-calculator
     # gives week=604 and sec=134336 (for the indicated date), IGNORING
@@ -400,10 +398,27 @@ test_that("times", {
     # we do that in the test value.
     expect_equal(numberAsPOSIXct(cbind(604, 134336+15), type="gps"),
         as.POSIXct("2011-03-21 13:18:56", tz="UTC"))
+    expect_equal(numberAsPOSIXct(cbind(604, 134336+15, 1), type="gps"),
+        as.POSIXct("2011-03-21 13:18:56", tz="UTC"))
+    # Check internal computation of leap seconds
+    ls <- as.POSIXct(.leap.seconds, tz="UTC")
+    t <- numberAsPOSIXct(cbind(566, 345615), type="gps")
+    expect_equal(15, sum(as.POSIXct("1980-01-01",tz="UTC") < ls & ls < t))
+    # For 3-column mode (and this test value) see https://github.com/dankelley/oce/issues/2077
+    expect_equal(numberAsPOSIXct(cbind(2250, 502834.494144, 0), type="gps"),
+        as.POSIXct("2023-02-24 19:40:16.494", tz="UTC"))
+})
+
+test_that("matlab time", {
     # Matlab times; see http://www.mathworks.com/help/matlab/ref/datenum.html
+    expect_equal(numberAsPOSIXct(719529, "matlab"), ISOdatetime(1970, 1, 1, 0, 0, 0, tz="UTC"))
     mt <- 7.362007209411687e5
     expect_equal(as.numeric(numberAsPOSIXct(mt, "matlab", tz="UTC")),
         as.numeric(as.POSIXct("2015-08-24 17:18:09", tz="UTC")), tolerance=1)
+})
+
+
+test_that("excel time", {
     # Excel time. I created the test value by entering "Jul 1, 2019" into
     # excel, then copying to a new cell with "paste special" set to
     # "value".
@@ -417,7 +432,9 @@ test_that("times", {
     expect_equal(numberAsPOSIXct(61, "excel"), ISOdatetime(1900, 03, 01, 0, 0, 0, tz="UTC"))
     expect_equal(numberAsPOSIXct(367, "excel"), ISOdatetime(1901, 01, 01, 0, 0, 0, tz="UTC"))
     expect_equal(numberAsPOSIXct(368, "excel"), ISOdatetime(1901, 01, 02, 0, 0, 0, tz="UTC"))
+})
 
+test_that("ncep1 and ncep2 time", {
     # NCEP1 times; test value from
     # http://coastwatch.pfeg.noaa.gov/erddap/convert/time.html?isoTime=2015-09-04T12%3A00%3A00Z&units=hours+since+1800-01-01
     expect_equal(as.numeric(numberAsPOSIXct(1890564, "ncep1")),
@@ -428,3 +445,4 @@ test_that("times", {
     expect_equal(as.numeric(numberAsPOSIXct(725738, "ncep2")),
         as.numeric(as.POSIXct("1988-01-01 00:00:00", tz="UTC")), tolerance=1)
 })
+

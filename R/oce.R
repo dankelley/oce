@@ -3331,8 +3331,12 @@ numberAsHMS <- function(t, default=0)
 
 #' Convert a Numeric Time to a POSIXct Time
 #'
-#' There are many varieties, according to the value of `type` as defined
-#' in \sQuote{Details}.
+#' This converts numerical values into POSIXct times.  There are many
+#' schemes for doing this, with the `type` parameter being used
+#' to select between them.  See \sQuote{Details} for a listing, broken
+#' down by scheme.
+#'
+#' The possible choices for `type` are as listed below.
 #'
 #' * `"unix"` handles Unix times, measured in seconds since the start
 #' of the year 1970.
@@ -3342,10 +3346,19 @@ numberAsHMS <- function(t, default=0)
 #' 0, 0)} in R notation).
 #'
 #' * `"gps"` handles the GPS convention. For this, `t` is a
-#' two-column matrix, with the first column being the the GPS "week"
-#' (referenced to 1999-08-22) and the second being the GPS "second" (i.e. the
-#' second within the week). Since the GPS satellites do not handle leap
-#' seconds, the R-defined `.leap.seconds` is used for corrections.
+#' matrix containing either 2 or 3 columns.  In the 2-column case,
+#' the first column is the number of weeks after 1999-08-22, and the
+#' second column is the number of elapsed seconds in that week. In the
+#' 3-column mode, allowances can be made for the problem that GPS
+#' week data are stored in a 10-bit format that rolls over (resets to 0)
+#' every 1024 weeks. The initial sequence of times had week defined with respect
+#' to 1980-01-06, and if this is known to be the situation for a given
+#' dataset, the third column must be set to 0.  Setting the third
+#' column to 1 (the default) indicates that time is referenced to 1999-08-22.
+#' This pattern continues.  For example, a 2 should be used if the
+#' reference date is 2019-04-07, etc.  For both 2-column and 3-column
+#' cases, the `leap` parameter controls whether leap seconds ought to
+#' be taken into account (see \sQuote{Handling of Leap Seconds}).
 #'
 #' * `"argo"` handles Argo times, measured in days since the start of
 #' the year 1900.
@@ -3382,23 +3395,39 @@ numberAsHMS <- function(t, default=0)
 #' [julianDay()], for example), and with the second column being the
 #' millisecond within that day. See reference 4.
 #'
-#' `"vms"` handles a convention used in the VMS operating system and
+#' * `"vms"` handles a convention used in the VMS operating system and
 #' for Modified Julian Day, in which `t` is the number of seconds
 #' past 1859-11-17T00:00:00 UTC. See reference 5.
 #'
 #' @param t an integer corresponding to a time, in a way that depends on
 #' `type`.
 #'
-#' @param type the type of time (see \dQuote{Details}).
+#' @param type character value indicating the time type.  The permitted values
+#' are `"argo"`, `"epic"`, `"excel"`, `"gps"`, `"matlab"`, `"ncep1"`, `"ncep2"`,
+#' `"sas"`, `"spss"`, `"unix"`, and `"yearday"`, the first of these being
+#' the default.
 #'
-#' @param tz a string indicating the time zone, used only for unix and matlab
-#' times, since GPS times are always referenced to the UTC timezone.
+#' @param tz a string indicating the time zone, by default `"UTC"`.
+#'
+#' @param leap a logical value, TRUE by default, indicator whether to alter
+#' the results to account for leap seconds. This parameter is ignored
+#' unless `type` is `"gps"`.  See \sQuote{Handling of Leap Seconds}.
+#'
+#' @section Handling of Leap Seconds:
+#'
+#' If `type` is `"gps"` and `leap` is TRUE, then 1 second is subtracted
+#' from the return value, for each of the [.leap.seconds] that occurred
+#' between 1980 and the computed time; see
+#' https://www.labsat.co.uk/index.php/en/gps-time-calculator for an online
+#' calculator that can be used for checking.  Whether leap seconds ought to be
+#' accounted for with other `type`s is somewhat of an open question, as
+#' of April 2023.
 #'
 #' @return A [POSIXct()] time vector.
 #'
 #' @author Dan Kelley
 #'
-#' @seealso [numberAsHMS()]
+#' @family things related to time
 #'
 #' @references
 #' 1. Matlab times:
@@ -3406,7 +3435,7 @@ numberAsHMS <- function(t, default=0)
 #'
 #' 2. NCEP times: `https://psl.noaa.gov/data/gridded/faq.html`
 #'
-#' 3. problem with NCEP times:
+#' 3. Problem with NCEP times:
 #' `https://github.com/dankelley/oce/issues/738`
 #'
 #' 4. EPIC times: software and manuals at `https://www.pmel.noaa.gov/epic/download/index.html#epslib`;
@@ -3415,29 +3444,43 @@ numberAsHMS <- function(t, default=0)
 #'
 #' 5. VMS times: https://en.wikipedia.org/wiki/Epoch_(computing)
 #'
+#' 6. GPS times: https://www.labsat.co.uk/index.php/en/gps-time-calculator
+#'
+#'
 #' @examples
-#' numberAsPOSIXct(0)                     # unix time 0
-#' numberAsPOSIXct(1, type="matlab")      # matlab time 1
-#' numberAsPOSIXct(cbind(566, 345615), type="gps") # Canada Day, zero hour UTC
+#' # Example 1. default (unix)
+#' numberAsPOSIXct(0)
+#'
+#' # Example 2. Matlab
+#' numberAsPOSIXct(1, type="matlab")
+#'
+#' # Example 3. GPS with default week rollover or with no rollover (Canada Day, year 2010)
+#' numberAsPOSIXct(cbind(566, 345615), type="gps")
+#' numberAsPOSIXct(cbind(566, 345615, 1), type="gps")
+#' numberAsPOSIXct(cbind(1024+566, 345615, 0), type="gps")
+#' # Show how to deal with leap seconds (15 of them, in this case)
+#' sum(as.POSIXct("1980-01-01") < .leap.seconds & .leap.seconds <= as.POSIXct("2010-07-01"))
+#' -15 + numberAsPOSIXct(cbind(1024+566, 345615, 0), type="gps", leap=FALSE)
+#'
+#' # Example 4. yearday
 #' numberAsPOSIXct(cbind(2013, 1), type="yearday") # start of 2013
 #'
-#' # Epic time, one hour into Canada Day of year 2018. In computing the
+#' # Example 5. Epic time, one hour into Canada Day of year 2018. In computing the
 #' # Julian day, note that this starts at noon.
 #' jd <- julianDay(as.POSIXct("2018-07-01 12:00:00", tz="UTC"))
 #' numberAsPOSIXct(cbind(jd, 1e3 * 1 * 3600), type="epic", tz="UTC")
 #'
+#' # Example 6. Julian day, note that this starts at noon.
+#' jd <- julianDay(as.POSIXct("2018-07-01 12:00:00", tz="UTC"))
+#' numberAsPOSIXct(cbind(jd, 1e3 * 1 * 3600), type="epic", tz="UTC")
+#'
 #' @family things related to time
-numberAsPOSIXct <- function(t, type, tz="UTC")
+numberAsPOSIXct <- function(t, type="unix", tz="UTC", leap=TRUE)
 {
-    if (missing(type)) {
-        type <- "unix"
-    } else {
-        typeAllowed <- c("unix", "matlab", "gps", "argo", "excel", "ncep1", "ncep2", "sas", "spss", "yearday", "epic", "vms")
-        type <- pmatch(type, typeAllowed, nomatch=NA)
-        if (is.na(type))
-            stop("only permitted type values are: \"", paste(typeAllowed, collapse="\", \""), "\".", sep="")
-        type <- typeAllowed[type]
-    }
+    typeAllowed <- c("argo", "epic", "excel", "gps", "matlab",
+        "ncep1", "ncep2", "sas", "spss", "unix", "yearday")
+    if (!type %in% typeAllowed)
+        stop("type must be one of the following: \"", paste(typeAllowed, collapse="\", \""), "\".", sep="")
     if (type == "unix") {
         # We add something with a timezone, and then subtract it, as a trick to inherit the timezone
         tref <- if (!is.null(tz)) as.POSIXct("2000-01-01", tz=tz) else as.POSIXct("2000-01-01")
@@ -3471,8 +3514,10 @@ numberAsPOSIXct <- function(t, type, tz="UTC")
         resOriginal <- t * 86400 + as.POSIXct("0001-01-01 00:00:00", tz="UTC")
         return(resOriginal - 2 * 86400) # kludge for ht of https://github.com/dankelley/oce/issues/738
     } else if (type == "gps") {
-        if (!is.matrix(t) || dim(t)[2] != 2)
-            stop("for GPS times, 't' must be a two-column matrix, with first col the week, second the second")
+        if (!is.matrix(t) || !(ncol(t) %in% 2:3))
+            stop("for GPS times, 't' must be a matrix with either 2 or 3 columns")
+        if (ncol(t) == 2L)
+            t <- cbind(t, 1)
         # Account for leap seconds since the GPS start time in 1980 (for the present week wraparound grouping).
         #20171014 See http://en.wikipedia.org/wiki/Leap_second and other sources for a list.  Updates can happen
         #20171014 # on June 30 and December 31 of any given year.  The information below was last updated
@@ -3483,20 +3528,17 @@ numberAsPOSIXct <- function(t, type, tz="UTC")
         #20171014 #                                   "2012-07-01", "2015-07-01", "2016-12-31"),
         #20171014 #                                 format="%Y-%m-%d", tz="UTC"))
         #20171014 message("leapsOLD ", paste(leapsOLD, collapse=" "))
-        leaps <- as.POSIXlt(.leap.seconds, tz="UTC")
         #20171014 message("leaps A ", paste(leaps, collapse=" "))
-        leaps <- leaps[leaps > as.POSIXlt("1980-01-01 00:00:00", tz="UTC")]
         #20171014 message("leaps B ", paste(leaps, collapse=" "))
-        leaps <- leaps[leaps > as.POSIXlt("1980-01-01 00:00:00", tz="UTC")]
         #20171014 message("leaps C ", paste(leaps, collapse=" "))
-        t <- as.POSIXct("1999-08-22 00:00:00", tz="UTC") + 86400*7*t[, 1] + t[, 2]
-        #>message("initially, t=", paste(t, collapse=" "))
-        for (l in seq_along(leaps)) {
-            t <- t - ifelse(t >= leaps[l], 1, 0)
-            #20171014 message("l=", l, ", leaps[l]=", leaps[l],
-            #20171014         ", t=", paste(t, collapse=" "), ", t>=leaps[l] ", t>=leaps[l])
+        week <- t[, 1] + 1024*(t[, 3] - 1)
+        second <- t[, 2]
+        t <- as.POSIXct("1999-08-22 00:00:00", tz="UTC") + 86400*7*week + second
+        if (leap) {
+            leaps <- as.POSIXlt(.leap.seconds, tz="UTC")
+            leapOffset <- sum(as.POSIXlt("1980-01-01 00:00:00", tz="UTC") < leaps & leaps < as.POSIXlt(t, tz="UTC"))
+            t <- t - leapOffset # subtrace 1 second for each leap-second year between 1980 and the computed time
         }
-        #20171014 print(leapsOLD - leaps) # mostly 0 but a few one-day shifts; I trust .leap.seconds more
     } else if (type == "spss") {
         t <- as.POSIXct(t, origin="1582-10-14", tz=tz)
     } else if (type == "sas") {
