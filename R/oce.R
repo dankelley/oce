@@ -3345,20 +3345,26 @@ numberAsHMS <- function(t, default=0)
 #' MathWorks (reference 1) calls ``January 0, 0000'' (i.e.  \code{ISOdatetime(0, 1, 1, 0,
 #' 0, 0)} in R notation).
 #'
-#' * `"gps"` handles the GPS convention. For this, `t` is a
-#' matrix containing either 2 or 3 columns.  In the 2-column case,
-#' the first column is the number of weeks after 1999-08-22, and the
-#' second column is the number of elapsed seconds in that week. In the
-#' 3-column mode, allowances can be made for the problem that GPS
-#' week data are stored in a 10-bit format that rolls over (resets to 0)
-#' every 1024 weeks. The initial sequence of times had week defined with respect
-#' to 1980-01-06, and if this is known to be the situation for a given
-#' dataset, the third column must be set to 0.  Setting the third
-#' column to 1 (the default) indicates that time is referenced to 1999-08-22.
-#' This pattern continues.  For example, a 2 should be used if the
-#' reference date is 2019-04-07, etc.  For both 2-column and 3-column
-#' cases, the `leap` parameter controls whether leap seconds ought to
-#' be taken into account (see \sQuote{Handling of Leap Seconds}).
+#' * `"gps"` handles the Global Positioning System convention. The
+#' scheme is complicated, owing to hardware limitations of
+#' GPS satellites.  As illustrated in Example 3, `t` may be
+#' a matrix with either 2 or 3 columns. In the 2-column format, the
+#' first column holds the number of weeks after 1999-08-22, modulo
+#' 1024 (approximately 19.6 years), and the second column (here
+#' and also in the 3-column format) holds the number of seconds
+#' in the referenced week, with leap seconds being handled with
+#' the `leap` parameter. The modulo calculation is required
+#' because GPS satellites dedicate only 10 bits to the
+#' week number. The resultant ambiguity (e.g. a rollover in
+#' 2019-04-07) is addressed in the 3-column format, in which the
+#' last column holds the number of 1024-week rollover events
+#' since 1980-01-06. Users should set this column to 0 for times
+#' prior to 1999-08-22, to 1 for later times prior
+#' to 2019-04-07, to 2 for later times prior to 2038-11-21,
+#' etc. However, there will be an exception to this rule,
+#' when satellites start dedicating 12 bits to the week value.
+#' For such data, the third column will need to be 0 for all times
+#' prior to 2137-01-06.
 #'
 #' * `"argo"` handles Argo times, measured in days since the start of
 #' the year 1900.
@@ -3409,19 +3415,13 @@ numberAsHMS <- function(t, default=0)
 #'
 #' @param tz a string indicating the time zone, by default `"UTC"`.
 #'
-#' @param leap a logical value, TRUE by default, indicator whether to alter
-#' the results to account for leap seconds. This parameter is ignored
-#' unless `type` is `"gps"`.  See \sQuote{Handling of Leap Seconds}.
-#'
-#' @section Handling of Leap Seconds:
-#'
-#' If `type` is `"gps"` and `leap` is TRUE, then 1 second is subtracted
-#' from the return value, for each of the [.leap.seconds] that occurred
-#' between 1980 and the computed time; see
-#' https://www.labsat.co.uk/index.php/en/gps-time-calculator for an online
-#' calculator that can be used for checking.  Whether leap seconds ought to be
-#' accounted for with other `type`s is somewhat of an open question, as
-#' of April 2023.
+#' @param leap a logical value, TRUE by default, that applies only
+#' if `type` is `"gps"`.  If `leap` is TRUE, then the built-in
+#' dataset named [.leap.seconds] is consulted to find
+#' of the number of leap seconds between 1980 (when the
+#' GPS program started) and the time computed from the other
+#' parameters, and the return value is decreased accordingly
+#' (see Example 3).
 #'
 #' @return A [POSIXct()] time vector.
 #'
