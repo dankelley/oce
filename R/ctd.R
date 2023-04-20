@@ -4809,6 +4809,9 @@ drawIsopycnals <- function(nlevels=6, levels, rotate=TRUE, rho1000=FALSE, digits
             return(contourline)
         x <- contourline$x
         y <- contourline$y
+        ok <- x > 0
+        x <- x[ok]
+        y <- y[ok]
         FPL <- if (eos == "unesco") {
             function(x) swTFreeze(x, 0, eos=eos)
         } else {
