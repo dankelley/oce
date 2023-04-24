@@ -7,6 +7,7 @@
 * Change `inst/extdata` by compressing some files.
 * Change `mapPlot()` to remove an infrequent low-level error (issue 2036).
 * Change `mapPlot()` to require `projection` to be a string (issue 2076).
+* Change `numberAsPOSIXct(t, type="gps")` to handle week rollover (issue 2077).
 * Change `plot,echosounder-method()` to use `oceColorsTurbo()` instead of
   `oceColorsJet()`.
 * Change `plotProfile()` to create xlab on vector input (issue 2047).

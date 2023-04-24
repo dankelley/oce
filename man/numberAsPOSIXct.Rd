@@ -4,36 +4,64 @@
 \alias{numberAsPOSIXct}
 \title{Convert a Numeric Time to a POSIXct Time}
 \usage{
-numberAsPOSIXct(t, type, tz = "UTC")
+numberAsPOSIXct(t, type = "unix", tz = "UTC", leap = TRUE)
 }
 \arguments{
 \item{t}{an integer corresponding to a time, in a way that depends on
 \code{type}.}
 
-\item{type}{the type of time (see \dQuote{Details}).}
+\item{type}{character value indicating the time type.  The permitted values
+are \code{"argo"}, \code{"epic"}, \code{"excel"}, \code{"gps"}, \code{"matlab"}, \code{"ncep1"}, \code{"ncep2"},
+\code{"sas"}, \code{"spss"}, \code{"unix"}, and \code{"yearday"}, the first of these being
+the default.}
 
-\item{tz}{a string indicating the time zone, used only for unix and matlab
-times, since GPS times are always referenced to the UTC timezone.}
+\item{tz}{a string indicating the time zone, by default \code{"UTC"}.}
+
+\item{leap}{a logical value, TRUE by default, that applies only
+if \code{type} is \code{"gps"}.  If \code{leap} is TRUE, then the built-in
+dataset named \link{.leap.seconds} is consulted to find
+of the number of leap seconds between 1980 (when the
+GPS program started) and the time computed from the other
+parameters, and the return value is decreased accordingly
+(see Example 3).}
 }
 \value{
 A \code{\link[=POSIXct]{POSIXct()}} time vector.
 }
 \description{
-There are many varieties, according to the value of \code{type} as defined
-in \sQuote{Details}.
+This converts numerical values into POSIXct times.  There are many
+schemes for doing this, with the \code{type} parameter being used
+to select between them.  See \sQuote{Details} for a listing, broken
+down by scheme.
 }
 \details{
+The possible choices for \code{type} are as listed below.
 \itemize{
 \item \code{"unix"} handles Unix times, measured in seconds since the start
 of the year 1970.
 \item \code{"matlab"} handles Matlab times, measured in days since what
 MathWorks (reference 1) calls ``January 0, 0000'' (i.e.  \code{ISOdatetime(0, 1, 1, 0,
 0, 0)} in R notation).
-\item \code{"gps"} handles the GPS convention. For this, \code{t} is a
-two-column matrix, with the first column being the the GPS "week"
-(referenced to 1999-08-22) and the second being the GPS "second" (i.e. the
-second within the week). Since the GPS satellites do not handle leap
-seconds, the R-defined \code{.leap.seconds} is used for corrections.
+\item \code{"gps"} handles the Global Positioning System convention. The
+scheme is complicated, owing to hardware limitations of
+GPS satellites.  As illustrated in Example 3, \code{t} may be
+a matrix with either 2 or 3 columns. In the 2-column format, the
+first column holds the number of weeks after 1999-08-22, modulo
+1024 (approximately 19.6 years), and the second column (here
+and also in the 3-column format) holds the number of seconds
+in the referenced week, with leap seconds being handled with
+the \code{leap} parameter. The modulo calculation is required
+because GPS satellites dedicate only 10 bits to the
+week number. The resultant ambiguity (e.g. a rollover in
+2019-04-07) is addressed in the 3-column format, in which the
+last column holds the number of 1024-week rollover events
+since 1980-01-06. Users should set this column to 0 for times
+prior to 1999-08-22, to 1 for later times prior
+to 2019-04-07, to 2 for later times prior to 2038-11-21,
+etc. However, there will be an exception to this rule,
+when satellites start dedicating 12 bits to the week value.
+For such data, the third column will need to be 0 for all times
+prior to 2137-01-06.
 \item \code{"argo"} handles Argo times, measured in days since the start of
 the year 1900.
 \item \code{"excel"} handles Excel times, measured in days since the start of
@@ -61,20 +89,35 @@ from the Pacific Marine Environmental Laboratory, in which \code{t} is a
 two-column matrix, with the first column being the julian Day (as defined in
 \code{\link[=julianDay]{julianDay()}}, for example), and with the second column being the
 millisecond within that day. See reference 4.
-}
-
-\code{"vms"} handles a convention used in the VMS operating system and
+\item \code{"vms"} handles a convention used in the VMS operating system and
 for Modified Julian Day, in which \code{t} is the number of seconds
 past 1859-11-17T00:00:00 UTC. See reference 5.
 }
+}
 \examples{
-numberAsPOSIXct(0)                     # unix time 0
-numberAsPOSIXct(1, type="matlab")      # matlab time 1
-numberAsPOSIXct(cbind(566, 345615), type="gps") # Canada Day, zero hour UTC
+# Example 1. default (unix)
+numberAsPOSIXct(0)
+
+# Example 2. Matlab
+numberAsPOSIXct(1, type="matlab")
+
+# Example 3. GPS with default week rollover or with no rollover (Canada Day, year 2010)
+numberAsPOSIXct(cbind(566, 345615), type="gps")
+numberAsPOSIXct(cbind(566, 345615, 1), type="gps")
+numberAsPOSIXct(cbind(1024+566, 345615, 0), type="gps")
+# Show how to deal with leap seconds (15 of them, in this case)
+sum(as.POSIXct("1980-01-01") < .leap.seconds & .leap.seconds <= as.POSIXct("2010-07-01"))
+-15 + numberAsPOSIXct(cbind(1024+566, 345615, 0), type="gps", leap=FALSE)
+
+# Example 4. yearday
 numberAsPOSIXct(cbind(2013, 1), type="yearday") # start of 2013
 
-# Epic time, one hour into Canada Day of year 2018. In computing the
+# Example 5. Epic time, one hour into Canada Day of year 2018. In computing the
 # Julian day, note that this starts at noon.
+jd <- julianDay(as.POSIXct("2018-07-01 12:00:00", tz="UTC"))
+numberAsPOSIXct(cbind(jd, 1e3 * 1 * 3600), type="epic", tz="UTC")
+
+# Example 6. Julian day, note that this starts at noon.
 jd <- julianDay(as.POSIXct("2018-07-01 12:00:00", tz="UTC"))
 numberAsPOSIXct(cbind(jd, 1e3 * 1 * 3600), type="epic", tz="UTC")
 
@@ -84,16 +127,23 @@ numberAsPOSIXct(cbind(jd, 1e3 * 1 * 3600), type="epic", tz="UTC")
 \item Matlab times:
 \verb{https://www.mathworks.com/help/matlab/ref/datenum.html}
 \item NCEP times: \verb{https://psl.noaa.gov/data/gridded/faq.html}
-\item problem with NCEP times:
+\item Problem with NCEP times:
 \verb{https://github.com/dankelley/oce/issues/738}
 \item EPIC times: software and manuals at \verb{https://www.pmel.noaa.gov/epic/download/index.html#epslib};
 see also Denbo, Donald W., and Nancy N. Soreide. \dQuote{EPIC.} Oceanography 9 (1996).
 \doi{10.5670/oceanog.1996.10}
 \item VMS times: https://en.wikipedia.org/wiki/Epoch_(computing)
+\item GPS times: https://www.labsat.co.uk/index.php/en/gps-time-calculator
 }
 }
 \seealso{
-\code{\link[=numberAsHMS]{numberAsHMS()}}
+Other things related to time: 
+\code{\link{ctimeToSeconds}()},
+\code{\link{julianCenturyAnomaly}()},
+\code{\link{julianDay}()},
+\code{\link{numberAsHMS}()},
+\code{\link{secondsToCtime}()},
+\code{\link{unabbreviateYear}()}
 
 Other things related to time: 
 \code{\link{ctimeToSeconds}()},
