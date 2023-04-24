@@ -272,7 +272,7 @@ SEXP match2bytes(SEXP buf, SEXP m1, SEXP m2, SEXP demand_sequential)
   n = LENGTH(buf);
   unsigned short seq_last=0, seq_this;
   // Rprintf("demand_sequential=%d\n",ds);
-  int nnn=10;
+  //int nnn=10;
 
   /* FIXME: the two passes repeat too much code, and should be done as a subroutine */
 
@@ -307,7 +307,7 @@ SEXP match2bytes(SEXP buf, SEXP m1, SEXP m2, SEXP demand_sequential)
   resp = NUMERIC_POINTER(res);
   j = 0;
   seq_last = 0;
-  nnn = 1000;
+  //nnn = 1000;
   //Rprintf("PASS 2\n");
   n_match = 0;                  /* don't demand anything at start */
   for (i = 0; i < n - 1; i++) {
@@ -325,7 +325,7 @@ SEXP match2bytes(SEXP buf, SEXP m1, SEXP m2, SEXP demand_sequential)
         } else {
           //if (nnn > 0) Rprintf("DISCARD\n");
         }
-        nnn--;
+        //nnn--;
       } else {
         resp[j++] = i + 1; /* the 1 is to offset from C to R */
         ++i;   /* skip */
