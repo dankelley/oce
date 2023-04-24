@@ -15,7 +15,7 @@ simplifying the analysis of such data.
 
 ## Local Tests
 
-R 4.2.3 on MacOS-14 (beta) revealed no ERRORs, no WARNINGs, and 2 NOTEs. One of
+R 4.3.0 on MacOS-14 (beta) revealed no ERRORs, no WARNINGs, and 2 NOTEs. One of
 the NOTEs is the standard naming of the author, and the other is an indication
 of sub-directories over 1MB in size, now as has been the case going back
 several years, for this large package.
