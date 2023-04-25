@@ -1,4 +1,8 @@
-# oce 1.8.0
+# oce 1.8.1
+
+* TBA
+
+# oce 1.8.0 (on CRAN)
 
 * Add `advSontekAdrFileTrim()` (issue 1994).
 * Add `ctdFindProfilesRBR()` (issue 2027).
