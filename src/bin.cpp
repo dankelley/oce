@@ -165,7 +165,9 @@ extern "C" {
             }
         }
         if (*fill && *fillgap !=0) { // a logical in R calling functions
+#ifdef DEBUG
             int bad = 0;
+#endif
             int im, ip, jm, jp;
             // Reminder: ij = j + i * nj, for column-order matrices, so i corresponds to x
             // FIXME: is upper limit in the next loops correct?
@@ -197,7 +199,9 @@ extern "C" {
                             mean[ij(i, j)] = SUM / N;
                             number[ij(i, j)] = 1; // doesn't have much meaning
                         }
+#ifdef DEBUG
                         bad++;
+#endif
                     }
                 }
             }
