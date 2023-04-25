@@ -1,6 +1,6 @@
 # oce 1.8.1
 
-* TBA
+* Remove kriging example (issue 2080)
 
 # oce 1.8.0 (on CRAN)
 

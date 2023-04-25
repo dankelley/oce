@@ -2705,12 +2705,16 @@ sectionGrid <- function(section, p, method="approx", trim=TRUE, debug=getOption(
 #' plot(gsBarnes, which="temperature")
 #' mtext("sectionSmooth(..., method=\"barnes\")", line=0.5)
 #'
-#' # Kriging (brittle to changes in automap)
-#' if (requireNamespace("automap", quietly=TRUE) && requireNamespace("sf", quietly=TRUE)) {
+#' # Kriging (using dontrun because this makes a warning on a CRAN
+#' # test machine, which gets converted to an error).
+#'\dontrun{
+#' if (requireNamespace("automap", quietly=TRUE)
+#'        && requireNamespace("sf", quietly=TRUE)) {
 #'     gsKriging <- sectionSmooth(gs, "kriging", xr=50, yr=200)
 #'     plot(gsKriging, which="temperature")
 #'     mtext("sectionSmooth(..., method=\"kriging\")", line=0.5)
 #' }
+#'}
 #'
 #' @author Dan Kelley
 #'
