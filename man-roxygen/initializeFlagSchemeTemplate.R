@@ -3,7 +3,7 @@
 #' @title Establish a data-quality scheme for a <%=class%> object
 #'
 #' @description
-#' This function stores add an item named `flagScheme`
+#' This function adds an item named `flagScheme`
 #' to the `metadata` slot of an object inheriting from
 #' [<%=class%>-class]. This is a list containing two
 #' items: `name` and `mapping`, as provided in the

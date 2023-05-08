@@ -47,7 +47,7 @@ in \code{object}.}
 An object with the \code{metadata} slot containing \code{flagScheme}.
 }
 \description{
-This function stores add an item named \code{flagScheme}
+This function adds an item named \code{flagScheme}
 to the \code{metadata} slot of an object inheriting from
 \linkS4class{ctd}. This is a list containing two
 items: \code{name} and \code{mapping}, as provided in the
