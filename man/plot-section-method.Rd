@@ -178,7 +178,7 @@ See \dQuote{Examples}.}
 \code{TRUE} and \code{section} has had a spine added with \code{\link[=addSpine]{addSpine()}}, then
 the spine is drawn in blue.}
 
-\item{drawPalette}{Logical value indicating whether to draw a palette when \code{ztype="image"}
+\item{drawPalette}{logical value indicating whether to draw a palette when \code{ztype="image"}
 ignored otherwise.}
 
 \item{axes}{Logical value indicating whether to draw axes.}
