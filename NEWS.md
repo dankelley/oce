@@ -1,6 +1,8 @@
 # oce 1.8.1
 
 * Remove kriging example (issue 2080)
+* Image-style section plots obey zlim, and gain triangles to indicate past-limit
+  values (issue 2083)
 
 # oce 1.8.0 (on CRAN)
 
