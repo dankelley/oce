@@ -1670,9 +1670,10 @@ setMethod(f="plot", signature=signature("section"),
                         if (is.null(zlim))
                             zlim <- range(zbreaks, na.rm=TRUE) # FIXME: is this used/ok?
                         if (drawPalette) {
-                            # draw triangles if zlim is inside the data range 
+                            # draw triangles if data extend past either end of the palette
+                            drawTriangles <- c(zRANGE[1] < zlim[1], zRANGE[2] > zlim[2])
                             drawPalette(zlim=zlim, breaks=zbreaks, col=zcol,
-                                drawTriangles=zRANGE[1] < zlim[1] || zRANGE[2] > zlim[2])
+                                drawTriangles=drawTriangles)
                         }
                     }
                 }
