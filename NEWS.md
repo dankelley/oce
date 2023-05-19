@@ -3,6 +3,7 @@
 * Remove kriging example (issue 2080)
 * Image-style section plots obey zlim, and gain triangles to indicate past-limit
   values (issue 2083)
+* Change `plotTS()` to obey `rho1000` parameter again (issue 2085).
 
 # oce 1.8.0 (on CRAN)
 

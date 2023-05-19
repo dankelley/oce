@@ -4461,6 +4461,7 @@ plotTS <- function(x,
         "Slim=", if (!missing(Slim)) paste("c(", Slim[1], ",", Slim[2], ")") else "(missing)", ", ",
         "Tlim=", if (!missing(Tlim)) paste("c(", Tlim[1], ",", Tlim[2], ")") else "(missing)", ", ",
         "eos=\"", eos, "\", ",
+        "rho1000=", rho1000, ", ",
         "mgp=c(", paste(mgp, collapse=","), "), ",
         "mar=c(", paste(mar, collapse=","), "), ",
         "debug=", debug, ", ...) {\n", sep="", unindent=1, style="bold")
@@ -4798,7 +4799,7 @@ drawIsopycnals <- function(nlevels=6, levels, rotate=TRUE, rho1000=FALSE, digits
 {
     oceDebug(debug, "drawIsopycnals(nlevels=", nlevels,
         "..., gridIsopycnals=", paste(gridIsopycnals, collapse=" "),
-        "){\n", sep="", unindent=1, style="bold")
+        ", rho1000=", rho1000, ", ...){\n", sep="", unindent=1, style="bold")
     trimIsopycnalLine <- function(contourline, longitude, latitude, eos="unesco")
     {
         # See sandbox/issues/20xx/2046/2046_0[1:3].R, noting that here
@@ -4967,10 +4968,11 @@ drawIsopycnals <- function(nlevels=6, levels, rotate=TRUE, rho1000=FALSE, digits
             lines(contourline$x, contourline$y, col=col, lty=lty, lwd=lwd)
             hitTop <- abs(tail(contourline$y, 1) - usr[4]) < (usr[4] - usr[3]) / (2*NT)
             if (length(hitTop) > 0L) {
+                label <- if (rho1000) contourline$level + 1000 else contourline$level
                 if (hitTop) {
-                    mtext(contourline$level, side=3, at=tail(contourline$x, 1), cex=cex, col=col)
+                    mtext(label, side=3, at=tail(contourline$x, 1), cex=cex, col=col)
                 } else {
-                    mtext(contourline$level, side=4, at=tail(contourline$y, 1), cex=cex, col=col)
+                    mtext(label, side=4, at=tail(contourline$y, 1), cex=cex, col=col)
                 }
             }
         }
