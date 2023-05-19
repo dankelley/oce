@@ -2294,10 +2294,17 @@ ctdFindProfilesRBR <- function(x, direction="descending", arr.ind=FALSE, debug=g
     endTime <- endTime[keep]
     oceDebug(debug, "after trimming, ", vectorShow(startTime))
     oceDebug(debug, "after trimming, ", vectorShow(endTime))
-    start <- sapply(startTime, function(t) which(time==t)[1])
-    end <- sapply(endTime, function(t) which(time==t)[1])
-    oceDebug(debug, vectorShow(start))
-    oceDebug(debug, vectorShow(end))
+    timeNumeric <- as.numeric(time)
+    startTimeNumeric <- as.numeric(startTime)
+    endTimeNumeric <- as.numeric(endTime)
+    start <- sapply(startTimeNumeric,
+        function(t)
+            which.min(abs(timeNumeric - t)))
+    end <- sapply(endTimeNumeric,
+        function(t)
+            which.min(abs(timeNumeric - t)))
+    if (debug)
+        print(data.frame(start=start, end=end))
     if (identical(arr.ind, TRUE)) {
         oceDebug(debug, "} # ctdFindProfilesRBR()\n", sep="", unindent=1)
         return(data.frame(start=start, end=end))
