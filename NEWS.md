@@ -1,9 +1,10 @@
 # oce 1.8.1
 
-* Remove kriging example (issue 2080)
-* Image-style section plots obey zlim, and gain triangles to indicate past-limit
-  values (issue 2083)
+* Change `plot,section-method()`, removing krigging example from docs (issue 2080).
+* Change `plot,section-method(ztype="image")` to obey zlim (issue 2083).
+* Change `plot,section-method(ztype="image")` to show palette triangles if necessary (issue 2083).
 * Change `plotTS()` to obey `rho1000` parameter again (issue 2085).
+* Change `summary,adp-method()` to handle the new format for AD2CP data (issue 2087).
 
 # oce 1.8.0 (on CRAN)
 

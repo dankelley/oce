@@ -118,18 +118,23 @@ setMethod(f="summary",
                 threes <- matrix(nrow=3, ncol=3)
                 # FIXME get burst and average separately
                 i <- 1
+                dataNames <- NULL
                 if ("v" %in% names(object@data)) {
                     threes[i, ] <- threenum(object[["v"]])
                     i <- i + 1
+                    dataNames <- c(dataNames, "v")
                 }
                 if ("a" %in% names(object@data)) {
                     threes[i, ] <- threenum(object[["a"]])
                     i <- i + 1
+                    dataNames <- c(dataNames, "a")
                 }
                 if ("q" %in% names(object@data)) {
                     threes[i, ] <- threenum(object[["q"]])
                     i <- i + 1
+                    dataNames <- c(dataNames, "q")
                 }
+                #message(vectorShow(dataNames)) # https://github.com/dankelley/oce/issues/2087
             } else {
                 threes <- matrix(nrow=ndata, ncol=3)
                 for (i in 1:ndata) {

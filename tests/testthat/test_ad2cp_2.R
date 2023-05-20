@@ -39,7 +39,7 @@ if (file.exists(file)) {
             expect_equal(toc[[1]],
                 structure(list(ID.hex=c("0x16", "0x1c", "0x23", "0xa0"),
                         ID.dec=c(22L, 28L, 35L, 160L),
-                        Name=c("average", "echosounder", "echosounderRaw", "text"),
+                        dataType=c("average", "echosounder", "echosounderRaw", "text"),
                         Count = c(7L, 2L, 2L, 1L)),
                     class = "data.frame",
                     row.names = c(NA, -4L)))
