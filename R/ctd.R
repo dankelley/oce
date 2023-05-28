@@ -1163,10 +1163,12 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
             cruise <- m$cruise
         if (is.null(station) && "station" %in% mnames)
             station <- m$station
-        if (is.null(startTime) && "startTime" %in% mnames)
-            startTime <- as.POSIXct(m$startTime, tz="UTC")
-        if ("time" %in% mnames)
-            res@metadata$time <- m$time
+        if (is.null(startTime)) {
+            if ("startTime" %in% mnames)
+                startTime <- as.POSIXct(m$startTime, tz="UTC")
+            else if ("time" %in% mnames)
+                startTime <- as.POSIXct(m$time, tz="UTC")
+        }
         if (is.null(longitude)) {
             if ("longitude" %in% dnames) {
                 longitude <- d$longitude

@@ -2232,12 +2232,16 @@ read.oce <- function(file, ..., encoding="latin1")
 #' lower case, since that is the oce convention.
 #'
 #' @param file the name of a file
+#'
 #' @template encodingIgnoredTemplate
+#'
 #' @param ... ignored
+#'
+#' @template debugTemplate
 #'
 #' @return
 #' An [oce-class] object.
-read.netcdf <- function(file, ..., encoding=NA)
+read.netcdf <- function(file, ..., encoding=NA, debug=getOption("oceDebug"))
 {
     if (missing(file))
         stop("must supply 'file'")
@@ -2249,28 +2253,29 @@ read.netcdf <- function(file, ..., encoding=NA)
     }
     if (!requireNamespace("ncdf4", quietly=TRUE))
         stop('must install.packages("ncdf4") to read netcdf data')
+    oceDebug(debug, "read.netcdf() {\n", unindent=1)
     f <- ncdf4::nc_open(file)
     res <- new("oce")
     names <- names(f$var)
     data <- list()
     for (name in names) {
-        # message("name=", name)
-        if (1 == length(grep("^history_", name)))
+        oceDebug(debug, "  name=\"", name, "\"\n")
+        if (1 == grepl("^history_", name))
             next
         item <- ncdf4::ncvar_get(f, name)
         if (is.array(item) && 1 == length(dim(item))) # 1D array converted to 1 column matrix
             item <- matrix(item)
-        data[[name]] <- item
-        if (name=="TIME") {
+        if (tolower(name) == "time") {
             u <- ncdf4::ncatt_get(f, name, "units")$value
             if ("seconds since 1970-01-01 UTC" == u) {
-                data[[name]] <- numberAsPOSIXct(item)
+                res@metadata[["time"]] <- numberAsPOSIXct(item[1])
             } else {
                 warning("time unit is not understood, so it remains simply numeric")
             }
+        } else {
+            res@data[[name]] <- item
         }
     }
-    res@data <- data
     # Try to get some global attributes.
     # Inelegantly permit first letter lower-case or upper-case
     if (ncdf4::ncatt_get(f, 0, "Longitude")$hasatt)
@@ -2293,7 +2298,10 @@ read.netcdf <- function(file, ..., encoding=NA)
         res@metadata$cruise <- ncdf4::ncatt_get(f, 0, "Cruise")$value
     if (ncdf4::ncatt_get(f, 0, "cruise")$hasatt)
         res@metadata$cruise <- ncdf4::ncatt_get(f, 0, "cruise")$value
+    if (ncdf4::ncatt_get(f, 0, "time")$hasatt)
+        res@metadata$time <- ncdf4::ncatt_get(f, 0, "time")$value
     res@processingLog <- processingLogAppend(res@processingLog, paste("read.netcdf(\"", file, "\")", sep=""))
+    oceDebug(debug, "} # read.netcdf()\n", unindent=1)
     res
 }
 
