@@ -5,6 +5,7 @@
 * Change `plot,section-method(ztype="image")` to obey zlim (issue 2083).
 * Change `plot,section-method(ztype="image")` to show palette triangles if necessary (issue 2083).
 * Change `plotTS()` to obey `rho1000` parameter again (issue 2085).
+* Change `read.netcdf()` to read more items.
 * Change `summary,adp-method()` to handle the new format for AD2CP data (issue 2087).
 
 # oce 1.8.0 (on CRAN)
