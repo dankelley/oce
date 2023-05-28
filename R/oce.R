@@ -2264,7 +2264,7 @@ read.netcdf <- function(file, ..., encoding=NA, debug=getOption("oceDebug"))
             next
         item <- ncdf4::ncvar_get(f, name)
         if (is.array(item) && 1 == length(dim(item))) # 1D array converted to 1 column matrix
-            item <- matrix(item)
+            item <- as.vector(item)
         if (tolower(name) == "time") {
             u <- ncdf4::ncatt_get(f, name, "units")$value
             if ("seconds since 1970-01-01 UTC" == u) {
@@ -2272,6 +2272,8 @@ read.netcdf <- function(file, ..., encoding=NA, debug=getOption("oceDebug"))
             } else {
                 warning("time unit is not understood, so it remains simply numeric")
             }
+        } else if (tolower(name) == "station") {
+            res@metadata[["station"]] <- trimws(item[1])
         } else {
             res@data[[name]] <- item
         }
