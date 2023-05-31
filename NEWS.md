@@ -1,6 +1,7 @@
 # oce 1.8.1
 
 * Change `as.ctd()` to work harder in discovering start time.
+* Change `imagep()` to ensure `z` (if provided) is a matrix (issue 2091).
 * Change `plot,section-method()`, removing krigging example from docs (issue 2080).
 * Change `plot,section-method(ztype="image")` to obey zlim (issue 2083).
 * Change `plot,section-method(ztype="image")` to show palette triangles if necessary (issue 2083).
