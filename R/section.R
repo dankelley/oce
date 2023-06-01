@@ -1836,10 +1836,10 @@ setMethod(f="plot", signature=signature("section"),
                         pressure <- thisStation[["pressure"]]
                         if (which.xtype == 4) {
                             longitude <- mean(thisStation[["longitude"]], na.rm=TRUE)
-                            points(rep(longitude, length(pressure)), -pressure, cex=cex, pch=pch, col=col)
+                            points(rep(longitude, length(pressure)), pressure, cex=cex, pch=pch, col=col)
                         } else {
                             # FIXME: shouldn't the next line work for all types??
-                            points(rep(xx[i], length(pressure)), -pressure, cex=cex, pch=pch, col=col)
+                            points(rep(xx[i], length(pressure)), pressure, cex=cex, pch=pch, col=col)
                         }
                     }
                 } else if (!drawPoints) {
@@ -1980,7 +1980,7 @@ setMethod(f="plot", signature=signature("section"),
             }
             par(mar=omar)
             oceDebug(debug, "} # plotSubsection()\n", unindent=1)
-        }                        # plotSubsection()
+        }
         opar <- par(no.readonly=TRUE)
         if (length(which) > 1)
             on.exit(par(opar))
@@ -2137,15 +2137,16 @@ setMethod(f="plot", signature=signature("section"),
                         which.ytype=which.ytype,
                         variable=which[w], eos=eos,
                         vtitle=if (is.null(legend.text[w])) vtitle else legend.text[w],
-                        xlim=xlim, ylim=ylim, ztype=ztype, zbreaks=zbreaks, zcol=zcol,
-                        axes=axes, col=col, debug=debug-1, ...)
+                        xlim=xlim, ylim=ylim, ztype=ztype, zbreaks=zbreaks, zcol=zcol, axes=axes,
+                        pch=pch, cex=cex, col=col,
+                        debug=debug-1, ...)
                 }
             }
             if (!is.na(which[w]) && which[w] == 20) {
                 plotSubsection(xx, yy, zz,
                     which.xtype=which.xtype, which.ytype=which.ytype,
                     variable="data", vtitle="", unit=NULL,
-                    xlim=xlim, ylim=ylim, col=col, legend=FALSE,
+                    xlim=xlim, ylim=ylim, cex=cex, pch=pch, col=col, legend=FALSE,
                     debug=debug-1, ...)
             }
             if (!is.na(which[w]) && (which[w] == 99 || which[w] == "map")) {
