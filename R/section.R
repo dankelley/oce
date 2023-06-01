@@ -1339,7 +1339,7 @@ setMethod(f="plot", signature=signature("section"),
         legend.loc="bottomright", legend.text=NULL,
         showStations=FALSE, showStart=TRUE, stationTicks=TRUE, showBottom=TRUE,
         showSpine=TRUE, drawPalette=TRUE,
-        axes=TRUE, mgp, mar, col, cex, pch, lwd, labcex=1,
+        axes=TRUE, mgp, mar, col, cex, pch, lwd, labcex=par("cex"),
         debug=getOption("oceDebug"),
         ...)
     {
@@ -1419,17 +1419,17 @@ setMethod(f="plot", signature=signature("section"),
             ", \", ...) {\n", sep="", unindent=1)
         # Contour and image plots, e.g. for which="temperature" and so forth, require
         # gridded data.
-        message("DAN ", vectorShow(ztype))
-        message("DAN ", vectorShow(which))
+        #2092 message("DAN ", vectorShow(ztype))
+        #2092 message("DAN ", vectorShow(which))
         if (which[1] != "data" && which[1] != "map") {
-            message("DAN will it grid???")
+            #2092 message("DAN will it grid???")
             p1 <- x[["station", 1]][["pressure"]]
             numStations <- length(x@data$station)
             for (ix in 2:numStations) {
                 thisStation <- x@data$station[[ix]]
                 thisPressure <- thisStation[["pressure"]]
                 if ("points" != ztype && !identical(p1, thisPressure)) {
-                    message("DAN gridding")
+                    #2092 message("DAN gridding")
                     oceDebug(debug, "gridding section because pressures at station ", ix, " differ from those at station 1\n")
                     x <- sectionGrid(x, debug=debug-1)
                     break
@@ -1758,7 +1758,7 @@ setMethod(f="plot", signature=signature("section"),
                 # For ztype == "points", plot the points.  Otherwise, collect them in zz
                 # for the contour or image plot.
                 for (i in seq_len(numStations)) {
-                    message("DAN 1758 i=", i)
+                    #2092 message("DAN 1758 i=", i)
                     thisStation <- x[["station", i]]
                     p <- thisStation[["pressure"]] # assume that we always have pressure
                     np <- length(p)
@@ -1781,8 +1781,8 @@ setMethod(f="plot", signature=signature("section"),
                             points(rep(xx[i], np), -p, pch=pch, cex=cex,
                                 col=zcol[rescale(v, xlow=zlim[1], xhigh=zlim[2], rlow=1, rhigh=nbreaks)])
                         } else {
-                            message(vectorShow(dim(zz)))
-                            message(vectorShow(v))
+                            #2092 message(vectorShow(dim(zz)))
+                            #2092 message(vectorShow(v))
                             zz[i, ] <- rev(v)
                         }
                     }
@@ -1795,11 +1795,11 @@ setMethod(f="plot", signature=signature("section"),
                         x@data$station[[stationIndices[i]]]@metadata$waterDepth else NA
                     #in.land <- which(is.na(x@data$station[[stationIndices[i]]]@data$temperature[-3])) # skip first 3 points
                     waterDepth <- c(waterDepth, wd)
-                    message(sprintf("DAN i=%d x=%.2f depth=%.0f", i, xx[i], wd))
+                    #2092 message(sprintf("DAN i=%d x=%.2f depth=%.0f", i, xx[i], wd))
                 }
                 if (!grid && axes && stationTicks)
                     Axis(side=3, at=xx, labels=FALSE, tcl=-1/3, lwd=0.5) # station locations
-                message("DAN next is xx. Is it in order of station or axis?")
+                #2092 message("DAN next is xx. Is it in order of station or axis?")
                 bottom.x <- c(xx[1], xx, xx[length(xx)])
                 bottom.y <- if (any(is.finite(waterDepth)))
                     c(graph.bottom, waterDepth, graph.bottom)
@@ -1811,22 +1811,22 @@ setMethod(f="plot", signature=signature("section"),
                 ox <- seq_along(xx) #<20230601>
                 xxOrig <- xx
                 ii <- seq_along(xxOrig) # so we can use it later for drawing bottoms
-                message("DAN 1")
-                print(head(data.frame(bottom.x=bottom.x, bottom.y=bottom.y), 2))
-                print(tail(data.frame(bottom.x=bottom.x, bottom.y=bottom.y), 2))
-                lines(bottom.x, bottom.y, col=2, lwd=2)
+                #2092 message("DAN 1")
+                #2092 print(head(data.frame(bottom.x=bottom.x, bottom.y=bottom.y), 2))
+                #2092 print(tail(data.frame(bottom.x=bottom.x, bottom.y=bottom.y), 2))
+                #2092 lines(bottom.x, bottom.y, col=2, lwd=2)
                 if (any(xx[ox] != xx, na.rm=TRUE)) { # for issue 1583: handle the NA just inserted
-                    message("DAN BARK")
+                    #2092 message("DAN BARK")
                     xx <- xx[ox]
                     zz <- zz[ox, ]     # FIXME keep this???
                     #<20230601> ii <- ii[ox]
                     bottom.x <- c(min(xxOrig), xxOrig[ox], max(xxOrig))
                     bottom.y <- c(graph.bottom, waterDepth[ox], graph.bottom)
                 }
-                message("DAN 2")
-                print(head(data.frame(bottom.x=bottom.x, bottom.y=bottom.y), 2))
-                print(tail(data.frame(bottom.x=bottom.x, bottom.y=bottom.y), 2))
-                lines(bottom.x, bottom.y, col=3, lwd=2, lty=2)
+                #2092 message("DAN 2")
+                #2092 print(head(data.frame(bottom.x=bottom.x, bottom.y=bottom.y), 2))
+                #2092 print(tail(data.frame(bottom.x=bottom.x, bottom.y=bottom.y), 2))
+                #2092 lines(bottom.x, bottom.y, col=3, lwd=2, lty=2)
                 # Construct xm, ym and zm that can be contoured. That requires
                 # unique and increasing x and y values.
                 # cannot contour with duplicates in x or y; the former is the only problem
@@ -1852,7 +1852,7 @@ setMethod(f="plot", signature=signature("section"),
                 }
                 # a problem with mbari data revealed that we need to chop NA valaues too
                 if (variable == "data") {
-                    message(vectorShow(which.xtype))
+                    #2092 message(vectorShow(which.xtype))
                     for (i in 1:numStations) {
                         thisStation <- x[["station", i]]
                         pressure <- thisStation[["pressure"]]
@@ -1940,14 +1940,14 @@ setMethod(f="plot", signature=signature("section"),
                                 zbreaksNEW <- c(zbreaksNEW, zmRange[2])
                                 zcolNEW <- c(zcolNEW, tail(zcolNEW, 1))
                             }
-                            print(zbreaksNEW)
-                            str(xm)
-                            str(ym)
-                            str(zm)
+                            #2092 print(zbreaksNEW)
+                            #2092 str(xm)
+                            #2092 str(ym)
+                            #2092 str(zm)
                             # ensure ordered values (required by this contouring function)
                             oxm <- order(xm)
                             oym <- order(ym)
-                            message("DAN about to filled.contour")
+                            #2092 message("DAN about to filled.contour")
                             .filled.contour(x=xm[oxm], y=ym[oym], z=zm[oxm,oym], levels=zbreaksNEW, col=zcolNEW)
                         } else if (ztype == "points") {
                             # nothing to do now
@@ -1961,14 +1961,14 @@ setMethod(f="plot", signature=signature("section"),
                     if (is.character(showBottom)) {
                         type <- showBottom
                     }
-                    message("DAN about to plot")
-                    print(head(data.frame(bottom.x=bottom.x, bottom.y=bottom.y), 2))
-                    print(tail(data.frame(bottom.x=bottom.x, bottom.y=bottom.y), 2))
-                    message("DAN KLUDGE!! reversing bottom.x")
-                    message("DAN ORIG ", vectorShow(head(bottom.x)))
-                    #???bottom.x<-rev(bottom.x) # KLUDGE
-                    message("DAN LATER ", vectorShow(head(bottom.x)))
-                    message("DAN ", vectorShow(xtype))
+                    #2092 message("DAN about to plot")
+                    #2092 print(head(data.frame(bottom.x=bottom.x, bottom.y=bottom.y), 2))
+                    #2092 print(tail(data.frame(bottom.x=bottom.x, bottom.y=bottom.y), 2))
+                    #2092 message("DAN KLUDGE!! reversing bottom.x")
+                    #2092 message("DAN ORIG ", vectorShow(head(bottom.x)))
+                    #2092 #???bottom.x<-rev(bottom.x) # KLUDGE
+                    #2092 message("DAN LATER ", vectorShow(head(bottom.x)))
+                    #2092 message("DAN ", vectorShow(xtype))
                     if (length(bottom.x) == length(bottom.y)) {
                         bottom <- par("usr")[3]
                         if (type == "polygon") {

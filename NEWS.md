@@ -2,9 +2,9 @@
 
 * Change `as.ctd()` to work harder in discovering start time.
 * Change `imagep()` to ensure `z` (if provided) is a matrix (issue 2091).
-* Change `plot,section-method()`, removing krigging example from docs (issue 2080).
-* Change `plot,section-method(ztype="image")` to obey zlim (issue 2083).
-* Change `plot,section-method(ztype="image")` to show palette triangles if necessary (issue 2083).
+* Change `plot,section-method()` to skip the krigging example (issue 2080), to
+  show palette triangles if necessary (issue 2083), to to obey zlim (issue 2083),
+  and to show data and bottom correctly (issue 2092).
 * Change `plotTS()` to obey `rho1000` parameter again (issue 2085).
 * Change `read.netcdf()` to read more items.
 * Change `summary,adp-method()` to handle the new format for AD2CP data (issue 2087).
