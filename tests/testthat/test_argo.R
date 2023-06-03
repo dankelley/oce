@@ -199,7 +199,7 @@ test_that("argo name conversion", {
     UP_RADIANCE upwellingRadiance
     UV_INTENSITY_DARK_NITRATE UVIntensityDarkNitrate
     UV_INTENSITY_NITRATE UVIntensityNitrate
-    VRS_PH VRSpH
+    VRS_PH pHSensorVoltageDifference
     "
 
     ## REMAINING TO DO--
