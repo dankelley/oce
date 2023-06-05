@@ -1,6 +1,6 @@
 # oce 1.8.1
 
-* Change `as.ctd()` to work harder in discovering start time.
+* Change `as.ctd()` to handle startTime, PRES, PSAL and TEMP better.
 * Change `imagep()` to ensure `z` (if provided) is a matrix (issue 2091).
 * Change `plot,section-method()` to skip the krigging example (issue 2080), to
   show palette triangles if necessary (issue 2083), to to obey zlim (issue 2083),

@@ -1131,8 +1131,8 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
         oceDebug(debug, "} # as.ctd()\n", sep="", unindent=1, style="bold")
         return(res)
     }
+    # Not an rsk object.
     res <- new("ctd")
-    waterDepth <- NA
     if (!is.null(startTime) && is.character(startTime))
         startTime <- as.POSIXct(startTime, tz="UTC")
     if (!salinityGiven) {
@@ -1144,9 +1144,12 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
         }
     }
     filename <- ""
+    waterDepth <- NA
     ounits <- NULL # replace with metadata$units if first arg is an oce object
+    # First argument is an oce object
     if (inherits(salinity, "oce")) {
         oceDebug(debug, "first argument is an oce object, so ignoring some other arguments\n")
+        dataNamesOriginal <- list()
         o <- salinity
         d <- o@data
         m <- o@metadata
@@ -1172,15 +1175,31 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
         if (is.null(longitude)) {
             if ("longitude" %in% dnames) {
                 longitude <- d$longitude
+                d$longitude <- NULL
+            } else if ("LONGITUDE" %in% dnames) {
+                longitude <- d$LONGITUDE
+                d$LONGITUDE <- NULL
             } else if ("longitude" %in% mnames) {
                 longitude <- m$longitude
+                m$longitude <- NULL
+            } else if ("LONGITUDE" %in% mnames) {
+                longitude <- m$LONGITUDE
+                m$LONGITUDE <- NULL
             }
         }
         if (is.null(latitude)) {
             if ("latitude" %in% dnames) {
                 latitude <- d$latitude
+                d$latitude <- NULL
+            } else if ("LATITUDE" %in% dnames) {
+                latitude <- d$LATITUDE
+                d$LATITUDE <- NULL
             } else if ("latitude" %in% mnames) {
                 latitude <- m$latitude
+                m$latitude <- NULL
+            } else if ("LATITUDE" %in% mnames) {
+                latitude <- m$LATITUDE
+                m$LATITUDE <- NULL
             }
         }
         if (is.null(serialNumber) && "serialNumber" %in% mnames)
@@ -1189,14 +1208,19 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
             sampleInterval <- m$sampleInterval
         if (is.na(waterDepth) && "waterDepth" %in% mnames)
             waterDepth <- m$waterDepth
-        # Copy some WOCE-named quantities into oce names, whilst retaining the
-        # originals.
-        if ("PSAL" %in% dnames && !("salinity" %in% dnames))
-            d$salinity <- d$PSAL
-        if ("TEMP" %in% dnames && !("temperature" %in% dnames))
-            d$temperature <- d$TEMP
-        if ("PRES" %in% dnames && !("pressure" %in% dnames))
-            d$pressure <- d$PRES
+        # Rename nicknames as oce names, updating dataNamesOriginal as required.
+        if ("PSAL" %in% dnames && !("salinity" %in% dnames)) {
+            names(d) <- gsub("PSAL", "salinity", names(d))
+            res@metadata$dataNamesOriginal[["salinity"]] <- "PSAL"
+        }
+        if ("TEMP" %in% dnames && !("temperature" %in% dnames)) {
+            names(d) <- gsub("TEMP", "temperature", names(d))
+            res@metadata$dataNamesOriginal[["temperature"]] <- "TEMP"
+        }
+        if ("PRES" %in% dnames && !("pressure" %in% dnames)) {
+            names(d) <- gsub("PRES", "pressure", names(d))
+            res@metadata$dataNamesOriginal[["pressure"]] <- "PRES"
+        }
         if (pressureAtmospheric != 0.0) {
             len <- length(pressureAtmospheric)
             if (1 != len && len != length(pressure))
@@ -1209,6 +1233,20 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
             res@metadata$flags <- flags
         if (!is.null(o@metadata$flags))
             res@metadata$flags <- o@metadata$flags
+        # Store QC items (as read.netcdf() can store) as flags.
+        QCitems <- grep("QC$", names(d))
+        #print(names(d))
+        #print(names(d[QCitems]))
+        for (QCitem in QCitems) {
+            QCName <- names(d)[QCitem]
+            #message(vectorShow(QCName))
+            flagName <- gsub("[_]{0,1}QC", "", QCName)
+            #message(vectorShow(flagName))
+            res@metadata$flags[[flagName]] <- d[[QCName]]
+            oceDebug(debug, "data$", QCName, " moved to metadata$flags$", flagName, "\n", sep="")
+        }
+        d[QCitems] <- NULL
+        # Handle other special variables
         #1108 res@metadata$pressureType <- pressureType
         # copy relevant metadata.
         #1108 if ("date" %in% mnames) res@metadata$date <- o@metadata$date
@@ -1356,7 +1394,7 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
             }
         }
         res@metadata$deploymentType <- deploymentType
-        res@metadata$dataNamesOriginal <- m$dataNamesOriginal
+        #res@metadata$dataNamesOriginal <- m$dataNamesOriginal
         # move e.g. salinityFlag from data slot to metadata$flags
         dataNames <- names(res@data)
         flagNameIndices <- grep(".*Flag$", dataNames)
