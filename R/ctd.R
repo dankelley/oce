@@ -1153,6 +1153,7 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
         o <- salinity
         d <- o@data
         m <- o@metadata
+        res@metadata$dataNamesOriginal <- m$dataNamesOriginal
         ounits <- o@metadata$units
         dnames <- names(d)
         mnames <- names(m)
