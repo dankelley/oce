@@ -1669,13 +1669,20 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
     oceDebug(debug, "drawGrid=", drawGrid, "\n")
     if (nchar(projection) && substr(projection, 1, 1) != "+")
         stop("use PROJ format, e.g. projection=\"+proj=merc\" for Mercator\n", sep="")
+    longitudelimGiven <- !missing(longitudelim)
+    latitudelimGiven <- !missing(latitudelim)
+    if (longitudelimGiven && (length(longitudelim) != 2L || !is.numeric(longitudelim) || diff(longitudelim) == 0.0))
+        stop("longitudelim must contain two distinct numerical values, but it is ", paste(longitudelim, collapse=" "))
+    if (latitudelimGiven && (length(latitudelim) != 2L || !is.numeric(latitudelim) || diff(latitudelim) == 0.0))
+        stop("latitudelim must contain two distinct numerical values, but it is ", paste(latitudelim, collapse=" "))
+    if (TRUE) { # enable if CR and CL agree (see https://github.com/dankelley/oce/issues/2097)
+        if (longitudelimGiven && !latitudelimGiven)
+            warning("it is advisable to provide latitudelim, if longitudelim is provided")
+        if (latitudelimGiven && !longitudelimGiven)
+            warning("it is advisable to provide longitudelim, if latitudelim is provided")
+    }
     xy <- lonlat2map(longitude, latitude, projection=projection, debug=debug-1)
-    if (!missing(latitudelim) && 0 == diff(latitudelim))
-        stop("latitudelim must contain two distinct values")
-    if (!missing(longitudelim) && 0 == diff(longitudelim))
-        stop("longitudelim must contain two distinct values")
-    limitsGiven <- !missing(latitudelim) && !missing(longitudelim)
-
+    limitsGiven <- longitudelimGiven && latitudelimGiven
     x <- xy$x
     y <- xy$y
     xorig <- xy$x
