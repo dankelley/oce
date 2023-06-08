@@ -4584,8 +4584,8 @@ plotTS <- function(x,
                 }
             } else if (inherits(x[[1]], "argo")) {
                 oceDebug(debug, "x is a list of argo objects\n")
-                message("FIXME: this ought to be done with as.ctd() so other methods can do simiarly")
-                message("FIXME: determine if 1-col or multi-col (affects latitude lookup)")
+                #message("FIXME: this ought to be done with as.ctd() so other methods can do simiarly")
+                #message("FIXME: determine if 1-col or multi-col (affects latitude lookup)")
                 x <- if (eos == "gsw") {
                     stop("FIXME: for argo (gsw)")
                 } else {
