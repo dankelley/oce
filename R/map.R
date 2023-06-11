@@ -1615,6 +1615,8 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
         } else if (!is.character(projection)) {
             stop("projection must be a character value (see Historical Notes for 2023-04-11)")
         }
+        if (grepl("+proj=utm", projection) && !grepl("+zone=", projection))
+            stop("A +proj=utm projection requires a +zone= value.")
     }
     if (packageVersion("sf") >= "0.8.1") {
         oceDebug(debug, "using sf version ", as.character(packageVersion("sf")), "\n")
@@ -1675,7 +1677,6 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
     if (!missing(longitudelim) && 0 == diff(longitudelim))
         stop("longitudelim must contain two distinct values")
     limitsGiven <- !missing(latitudelim) && !missing(longitudelim)
-
     x <- xy$x
     y <- xy$y
     xorig <- xy$x
@@ -1736,11 +1737,16 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
             oceDebug(debug, "latitudelim: ", paste(latitudelim, collapse=" "), "\n")
             oceDebug(debug, "longitudelim: ", paste(longitudelim, collapse=" "), "\n")
             # transform so can do e.g. latlim=c(70, 110) to centre on pole
+            # See https://github.com/dankelley/oce/issues/2098 for discussion of 
+            # an issue that I noticed in June of 2023.  The commented-out line
+            # you see below was causing latitude lines not to plot for e.g.
+            # latitudelim=c(70,110), which is a way to centre the pole on the
+            # plot.
             #message("latitudelim: ", paste(latitudelim, collapse=" "))
             #message("longitudelim: ", paste(longitudelim, collapse=" "))
             if (latitudelim[2] > 90) {
                 longitudelim[2] <- 360 + longitudelim[2] - 180
-                latitudelim[2] <- 180 - latitudelim[2]
+                #<github issue 2098> latitudelim[2] <- 180 - latitudelim[2]
             }
             #message("latitudelim: ", paste(latitudelim, collapse=" "))
             #message("longitudelim: ", paste(longitudelim, collapse=" "))
@@ -2153,13 +2159,12 @@ mapGrid <- function(dlongitude=15, dlatitude=15, longitude, latitude,
     longitudelim, latitudelim,
     debug=getOption("oceDebug"))
 {
-    oceDebug(debug, "mapGrid(",
-        argShow(dlongitude), #dlongitude=", dlongitude,
-        argShow(dlatitude), # ", dlatitude=", dlatitude,
-        argShow(longitude), # ", longitude=", if (missing(longitude)) "(missing)" else "(given)",
-        argShow(latitude), # ", latitude=", if (missing(latitude)) "(missing)" else "(given)",
-        "...) {\n", unindent=1, sep="", style="bold")
     debug <- min(3, max(0, debug)) # trim to range 0 to 3
+    oceDebug(debug, "mapGrid(",
+        argShow(dlongitude), argShow(dlatitude),
+        argShow(longitude), argShow(latitude),
+        argShow(longitudelim), argShow(latitudelim),
+        "...) {\n", unindent=1, sep="", style="bold")
     if ("none" == .Projection()$type)
         stop("must create a map first, with mapPlot()\n")
     rval <- list(side=NULL, value=NULL, type=NULL, at=NULL)
@@ -2210,6 +2215,7 @@ mapGrid <- function(dlongitude=15, dlatitude=15, longitude, latitude,
     }
     if (!missing(latitudelim)) {
         # limit to 2 times lon/lim limit range (FIXME: enough for curvy cases?)
+        oceDebug(debug, vectorShow(latitudelim))
         latMin <- latitudelim[1] - 2*diff(latitudelim)
         latMax <- latitudelim[2] + 2*diff(latitudelim)
         oceDebug(debug, "latMin=", latMin, ", latMax=", latMax, "\n")
