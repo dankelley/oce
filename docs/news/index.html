@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.8-0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.8-1</span>
       </span>
     </div>
 
@@ -73,7 +73,17 @@
     </div>
 
     <div class="section level2">
-<h2 class="page-header" data-toc-text="1.8.0" id="oce-180">oce 1.8.0<a class="anchor" aria-label="anchor" href="#oce-180"></a></h2>
+<h2 class="page-header" data-toc-text="1.8.1" id="oce-181">oce 1.8.1<a class="anchor" aria-label="anchor" href="#oce-181"></a></h2>
+<ul><li>Change <code><a href="../reference/as.ctd.html">as.ctd()</a></code> to handle startTime, PRES, PSAL and TEMP better.</li>
+<li>Change <code><a href="../reference/imagep.html">imagep()</a></code> to ensure <code>z</code> (if provided) is a matrix (issue 2091).</li>
+<li>Change <code>plot,section-method()</code> to skip the krigging example (issue 2080), to show palette triangles if necessary (issue 2083), to to obey zlim (issue 2083), and to show data and bottom correctly (issue 2092).</li>
+<li>Change <code><a href="../reference/plotTS.html">plotTS()</a></code> to obey <code>rho1000</code> parameter again (issue 2085).</li>
+<li>Change <code><a href="../reference/read.argo.html">read.argo()</a></code> to translate more variable names.</li>
+<li>Change <code><a href="../reference/read.netcdf.html">read.netcdf()</a></code> to read more items.</li>
+<li>Change <code>summary,adp-method()</code> to handle the new format for AD2CP data (issue 2087).</li>
+</ul></div>
+    <div class="section level2">
+<h2 class="page-header" data-toc-text="1.8.0" id="oce-180-on-cran">oce 1.8.0 (on CRAN)<a class="anchor" aria-label="anchor" href="#oce-180-on-cran"></a></h2>
 <ul><li>Add <code><a href="../reference/advSontekAdrFileTrim.html">advSontekAdrFileTrim()</a></code> (issue 1994).</li>
 <li>Add <code><a href="../reference/ctdFindProfilesRBR.html">ctdFindProfilesRBR()</a></code> (issue 2027).</li>
 <li>Change <code><a href="../reference/applyMagneticDeclination.html">applyMagneticDeclination()</a></code> to also handle <code>adp</code> and <code>adv</code> (issue 2038).</li>

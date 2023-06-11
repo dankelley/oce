@@ -44,19 +44,10 @@ argument is ignored).  If \code{longitude} is missing, both it and
 \item{latitude}{numeric vector of latitudes of points to be plotted (ignored
 if the first argument contains both latitude and longitude).}
 
-\item{longitudelim}{optional numeric vector of length two, indicating the
-longitude limits of the plot. This value is used in the selection of
-longitude lines that are shown (and possibly
-labelled on the axes). In some cases, e.g. for polar views,
-this can lead to odd results, with some expected longitude lines
-being left out of the plot.  Altering \code{longitudelim} can
-often help in such cases, e.g. \code{longitudelim=c(-180, 180)} will
-force the drawing of lines all around the globe.}
-
-\item{latitudelim}{optional vector of length two, indicating
-the latitude limits of the plot. This, together with \code{longitudelim}
-(and, importantly, the geometry of the plot device) is used in the
-selection of map scale.}
+\item{longitudelim, latitudelim}{optional numeric vectors of length two, indicating the
+limits of the plot. A warning is issued if these are not specified together.
+See Example 5 for the special case of polar plots, which use latitudes
+"past" the poles as a way to ensure that the pole appears.}
 
 \item{grid}{either a number (or pair of numbers) indicating the spacing of
 longitude and latitude lines, in degrees, or a logical value (or pair of
@@ -153,10 +144,11 @@ of the values of \code{lonlabels} and \code{latlabels}.}
 \item{latlabels}{As \code{lonlabels}, but for latitude, on the left
 plot axis.}
 
-\item{projection}{character value indicating the map projection. See a table
-in \sQuote{Details} for the projections that are available. Prior to version
-1.8.0, \code{projection} could also be a value created by a now-defunct
-\code{sp} function; see \sQuote{Historical Notes}.}
+\item{projection}{either character value indicating the map projection, or
+the output from \code{\link[sf:st_crs]{sf::st_crs()}}. In the first case, see a table
+in \sQuote{Details} for the projections that are available.
+In the second case, note that \code{\link[=mapPlot]{mapPlot()}} reports an error if
+a similar function from the old \code{sp} package is used.}
 
 \item{tissot}{logical value indicating whether to use \code{\link[=mapTissot]{mapTissot()}}
 to plot Tissot indicatrices, i.e. ellipses at grid intersection points, which
@@ -206,17 +198,6 @@ in reference 7.  To get an idea of how projections are being created
 nowadays, see reference 8, about the \code{eqearth} projection that was added
 to \CRANpkg{oce} in August 2020.
 }
-\section{A warning about 'sf' version 0.9-8}{
-
-This version of \CRANpkg{sf}, released in March of 2021, has errors
-with respect to some projections.  This was noticed for the \code{"ortho"}
-projection, but the problem may occur for other projections as well.
-Therefore, the user ought to use \CRANpkg{sf} versions prior to 0.9-8,
-or subsequent to it.  Most likely, this message will become moot
-in the summer of 2021, when a new version of \CRANpkg{sf} will
-become available on CRAN.
-}
-
 \section{Available Projections}{
 
 
@@ -367,9 +348,6 @@ those used in the examples.
 \section{Historical Notes}{
 
 \itemize{
-\item 2022-04-11: require \code{projection} to be a string.  (Previously,
-output from \code{sp::CRS()} was also accepted, but this function
-has been deprecated.)
 \item 2020-12-24: complete switch from \code{rgdal} to \CRANpkg{sf},
 removing the testing scheme created on 2020-08-03.
 \item 2020-08-03: added support for the \code{eqearth} projection (like \code{robin} but
@@ -385,9 +363,6 @@ changes in the former package that broke \CRANpkg{oce}
 code.  (To catch problems, \CRANpkg{oce} was set up to use
 both packages temporarily, issuing warnings if the results differed
 by more than 1 metre in easting or northing values.)
-\item 2019-03-20: the test code provided the \dQuote{Examples} section
-is disabled on i386/windows machines, on which the requisite
-\code{rgdal} package continues to fail on common projections.
 \item 2017-11-19: \code{imw_p} removed, because it has problems doing
 inverse calculations.
 This is a also problem in the standalone PROJ.4 application version
@@ -442,27 +417,27 @@ if (utils::packageVersion("sf") != "0.9.8") {
 # away from the equator, here illustrated for the USA and Canada.
 par(mar=c(3, 3, 1, 1))
 mapPlot(coastlineCut(coastlineWorld, -100),
-        longitudelim=c(-130,-55), latitudelim=c(35, 60),
-        projection="+proj=lcc +lat_0=30 +lat_1=60 +lon_0=-100", col='gray')
+    longitudelim=c(-130,-55), latitudelim=c(35, 60),
+    projection="+proj=lcc +lat_0=30 +lat_1=60 +lon_0=-100", col="gray")
 mtext("Lambert conformal", adj=1)
 
 # Example 5.
-# The stereographic projection (reference 1, page 120) is conformal, used
-# below for an Arctic view with a Canadian focus.  Note the trick of going
-# past the pole: the second latitudelim value is 180 minus the first, and the
-# second longitudelim is 180 plus the first; this uses image points "over"
-# the pole.
+# The stereographic projection (reference 1, page 120) in the standard
+# form used NSIDC (National Snow and Ice Data Center) for the Arctic.
+# (See "A Guide to NSIDC's Polar Stereographic Projection" at
+# https://nsidc.org/data/user-resources/help-center.)
+# Note how the latitude limit extends 20 degrees past the pole,
+# symmetrically.
 par(mar=c(3, 3, 1, 1))
-mapPlot(coastlineCut(coastlineWorld, -135),
-        longitudelim=c(-130, 50), latitudelim=c(70, 110),
-        projection="+proj=stere +lat_0=90 +lon_0=-135", col='gray')
+mapPlot(coastlineWorld,
+    longitudelim=c(-180, 180), latitudelim=c(70, 110),
+    projection=sf::st_crs("EPSG:3413"), col="gray")
 mtext("Stereographic", adj=1)
-
-# Example 6.
-# Spinning globe: create PNG files that can be assembled into a movie
 }
 
 \dontrun{
+# Example 6.
+# Spinning globe: create PNG files that can be assembled into a movie
 if (utils::packageVersion("sf") != "0.9.8") {
     # sf version 0.9-8 has a problem with this projection
     png("globe-\%03d.png")

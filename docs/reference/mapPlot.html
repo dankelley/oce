@@ -23,7 +23,7 @@ available projections."><!-- mathjax --><script src="https://cdnjs.cloudflare.co
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.8-0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.8-1</span>
       </span>
     </div>
 
@@ -136,22 +136,11 @@ argument is ignored).  If <code>longitude</code> is missing, both it and
 if the first argument contains both latitude and longitude).</p></dd>
 
 
-<dt>longitudelim</dt>
-<dd><p>optional numeric vector of length two, indicating the
-longitude limits of the plot. This value is used in the selection of
-longitude lines that are shown (and possibly
-labelled on the axes). In some cases, e.g. for polar views,
-this can lead to odd results, with some expected longitude lines
-being left out of the plot.  Altering <code>longitudelim</code> can
-often help in such cases, e.g. <code>longitudelim=c(-180, 180)</code> will
-force the drawing of lines all around the globe.</p></dd>
-
-
-<dt>latitudelim</dt>
-<dd><p>optional vector of length two, indicating
-the latitude limits of the plot. This, together with <code>longitudelim</code>
-(and, importantly, the geometry of the plot device) is used in the
-selection of map scale.</p></dd>
+<dt>longitudelim, latitudelim</dt>
+<dd><p>optional numeric vectors of length two, indicating the
+limits of the plot. A warning is issued if these are not specified together.
+See Example 5 for the special case of polar plots, which use latitudes
+"past" the poles as a way to ensure that the pole appears.</p></dd>
 
 
 <dt>grid</dt>
@@ -286,10 +275,11 @@ plot axis.</p></dd>
 
 
 <dt>projection</dt>
-<dd><p>character value indicating the map projection. See a table
-in ‘Details’ for the projections that are available. Prior to version
-1.8.0, <code>projection</code> could also be a value created by a now-defunct
-<code>sp</code> function; see ‘Historical Notes’.</p></dd>
+<dd><p>either character value indicating the map projection, or
+the output from <code><a href="https://r-spatial.github.io/sf/reference/st_crs.html" class="external-link">sf::st_crs()</a></code>. In the first case, see a table
+in ‘Details’ for the projections that are available.
+In the second case, note that <code>mapPlot()</code> reports an error if
+a similar function from the old <code>sp</code> package is used.</p></dd>
 
 
 <dt>tissot</dt>
@@ -339,18 +329,6 @@ in reference 7.  To get an idea of how projections are being created
 nowadays, see reference 8, about the <code>eqearth</code> projection that was added
 to <a href="https://CRAN.R-project.org/package=oce" class="external-link"><span class="pkg">oce</span></a> in August 2020.</p>
     </div>
-    <div id="a-warning-about-sf-version-">
-    <h2>A warning about 'sf' version 0.9-8</h2>
-    
-
-<p>This version of <a href="https://CRAN.R-project.org/package=sf" class="external-link"><span class="pkg">sf</span></a>, released in March of 2021, has errors
-with respect to some projections.  This was noticed for the <code>"ortho"</code>
-projection, but the problem may occur for other projections as well.
-Therefore, the user ought to use <a href="https://CRAN.R-project.org/package=sf" class="external-link"><span class="pkg">sf</span></a> versions prior to 0.9-8,
-or subsequent to it.  Most likely, this message will become moot
-in the summer of 2021, when a new version of <a href="https://CRAN.R-project.org/package=sf" class="external-link"><span class="pkg">sf</span></a> will
-become available on CRAN.</p>
-    </div>
     <div id="available-projections">
     <h2>Available Projections</h2>
     
@@ -397,10 +375,7 @@ those used in the examples.</p>
     <h2>Historical Notes</h2>
     
 
-<ul><li><p>2022-04-11: require <code>projection</code> to be a string.  (Previously,
-output from <code><a href="https://rdrr.io/pkg/sp/man/CRS-class.html" class="external-link">sp::CRS()</a></code> was also accepted, but this function
-has been deprecated.)</p></li>
-<li><p>2020-12-24: complete switch from <code>rgdal</code> to <a href="https://CRAN.R-project.org/package=sf" class="external-link"><span class="pkg">sf</span></a>,
+<ul><li><p>2020-12-24: complete switch from <code>rgdal</code> to <a href="https://CRAN.R-project.org/package=sf" class="external-link"><span class="pkg">sf</span></a>,
 removing the testing scheme created on 2020-08-03.</p></li>
 <li><p>2020-08-03: added support for the <code>eqearth</code> projection (like <code>robin</code> but
 an equal-area method).</p></li>
@@ -415,9 +390,6 @@ changes in the former package that broke <a href="https://CRAN.R-project.org/pac
 code.  (To catch problems, <a href="https://CRAN.R-project.org/package=oce" class="external-link"><span class="pkg">oce</span></a> was set up to use
 both packages temporarily, issuing warnings if the results differed
 by more than 1 metre in easting or northing values.)</p></li>
-<li><p>2019-03-20: the test code provided the “Examples” section
-is disabled on i386/windows machines, on which the requisite
-<code>rgdal</code> package continues to fail on common projections.</p></li>
 <li><p>2017-11-19: <code>imw_p</code> removed, because it has problems doing
 inverse calculations.
 This is a also problem in the standalone PROJ.4 application version
@@ -539,29 +511,29 @@ projections (with graphs).</p>
 <span class="r-in"><span><span class="co"># away from the equator, here illustrated for the USA and Canada.</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mar<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3</span>, <span class="fl">3</span>, <span class="fl">1</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu">mapPlot</span><span class="op">(</span><span class="fu"><a href="coastlineCut.html">coastlineCut</a></span><span class="op">(</span><span class="va">coastlineWorld</span>, <span class="op">-</span><span class="fl">100</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>        longitudelim<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">130</span>,<span class="op">-</span><span class="fl">55</span><span class="op">)</span>, latitudelim<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">35</span>, <span class="fl">60</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>        projection<span class="op">=</span><span class="st">"+proj=lcc +lat_0=30 +lat_1=60 +lon_0=-100"</span>, col<span class="op">=</span><span class="st">'gray'</span><span class="op">)</span></span></span>
+<span class="r-in"><span>    longitudelim<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">130</span>,<span class="op">-</span><span class="fl">55</span><span class="op">)</span>, latitudelim<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">35</span>, <span class="fl">60</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>    projection<span class="op">=</span><span class="st">"+proj=lcc +lat_0=30 +lat_1=60 +lon_0=-100"</span>, col<span class="op">=</span><span class="st">"gray"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/mtext.html" class="external-link">mtext</a></span><span class="op">(</span><span class="st">"Lambert conformal"</span>, adj<span class="op">=</span><span class="fl">1</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="mapPlot-4.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Example 5.</span></span></span>
-<span class="r-in"><span><span class="co"># The stereographic projection (reference 1, page 120) is conformal, used</span></span></span>
-<span class="r-in"><span><span class="co"># below for an Arctic view with a Canadian focus.  Note the trick of going</span></span></span>
-<span class="r-in"><span><span class="co"># past the pole: the second latitudelim value is 180 minus the first, and the</span></span></span>
-<span class="r-in"><span><span class="co"># second longitudelim is 180 plus the first; this uses image points "over"</span></span></span>
-<span class="r-in"><span><span class="co"># the pole.</span></span></span>
+<span class="r-in"><span><span class="co"># The stereographic projection (reference 1, page 120) in the standard</span></span></span>
+<span class="r-in"><span><span class="co"># form used NSIDC (National Snow and Ice Data Center) for the Arctic.</span></span></span>
+<span class="r-in"><span><span class="co"># (See "A Guide to NSIDC's Polar Stereographic Projection" at</span></span></span>
+<span class="r-in"><span><span class="co"># https://nsidc.org/data/user-resources/help-center.)</span></span></span>
+<span class="r-in"><span><span class="co"># Note how the latitude limit extends 20 degrees past the pole,</span></span></span>
+<span class="r-in"><span><span class="co"># symmetrically.</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mar<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3</span>, <span class="fl">3</span>, <span class="fl">1</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu">mapPlot</span><span class="op">(</span><span class="fu"><a href="coastlineCut.html">coastlineCut</a></span><span class="op">(</span><span class="va">coastlineWorld</span>, <span class="op">-</span><span class="fl">135</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>        longitudelim<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">130</span>, <span class="fl">50</span><span class="op">)</span>, latitudelim<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">70</span>, <span class="fl">110</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>        projection<span class="op">=</span><span class="st">"+proj=stere +lat_0=90 +lon_0=-135"</span>, col<span class="op">=</span><span class="st">'gray'</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">mapPlot</span><span class="op">(</span><span class="va">coastlineWorld</span>,</span></span>
+<span class="r-in"><span>    longitudelim<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">180</span>, <span class="fl">180</span><span class="op">)</span>, latitudelim<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">70</span>, <span class="fl">110</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>    projection<span class="op">=</span><span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_crs.html" class="external-link">st_crs</a></span><span class="op">(</span><span class="st">"EPSG:3413"</span><span class="op">)</span>, col<span class="op">=</span><span class="st">"gray"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/mtext.html" class="external-link">mtext</a></span><span class="op">(</span><span class="st">"Stereographic"</span>, adj<span class="op">=</span><span class="fl">1</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="mapPlot-5.png" alt="" width="700" height="433"></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># Example 6.</span></span></span>
-<span class="r-in"><span><span class="co"># Spinning globe: create PNG files that can be assembled into a movie</span></span></span>
 <span class="r-in"><span><span class="co"># }</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span><span class="co"># Example 6.</span></span></span>
+<span class="r-in"><span><span class="co"># Spinning globe: create PNG files that can be assembled into a movie</span></span></span>
 <span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="fu">utils</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/utils/packageDescription.html" class="external-link">packageVersion</a></span><span class="op">(</span><span class="st">"sf"</span><span class="op">)</span> <span class="op">!=</span> <span class="st">"0.9.8"</span><span class="op">)</span> <span class="op">{</span></span></span>
 <span class="r-in"><span>    <span class="co"># sf version 0.9-8 has a problem with this projection</span></span></span>
 <span class="r-in"><span>    <span class="fu"><a href="https://rdrr.io/r/grDevices/png.html" class="external-link">png</a></span><span class="op">(</span><span class="st">"globe-%03d.png"</span><span class="op">)</span></span></span>

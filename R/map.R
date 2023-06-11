@@ -1106,14 +1106,14 @@ mapLongitudeLatitudeXY <- function(longitude, latitude)
 #' nowadays, see reference 8, about the `eqearth` projection that was added
 #' to \CRANpkg{oce} in August 2020.
 #'
-#' @section A warning about 'sf' version 0.9-8:
-#' This version of \CRANpkg{sf}, released in March of 2021, has errors
-#' with respect to some projections.  This was noticed for the `"ortho"`
-#' projection, but the problem may occur for other projections as well.
-#' Therefore, the user ought to use \CRANpkg{sf} versions prior to 0.9-8,
-#' or subsequent to it.  Most likely, this message will become moot
-#' in the summer of 2021, when a new version of \CRANpkg{sf} will
-#' become available on CRAN.
+## @section A warning about 'sf' version 0.9-8:
+## This version of \CRANpkg{sf}, released in March of 2021, has errors
+## with respect to some projections.  This was noticed for the `"ortho"`
+## projection, but the problem may occur for other projections as well.
+## Therefore, the user ought to use \CRANpkg{sf} versions prior to 0.9-8,
+## or subsequent to it.  Most likely, this message will become moot
+## in the summer of 2021, when a new version of \CRANpkg{sf} will
+## become available on CRAN.
 #'
 #' @section Available Projections:
 #'
@@ -1271,9 +1271,9 @@ mapLongitudeLatitudeXY <- function(longitude, latitude)
 #'
 #' @section Historical Notes:
 #'
-#' * 2022-04-11: require `projection` to be a string.  (Previously,
-#' output from `sp::CRS()` was also accepted, but this function
-#' has been deprecated.)
+## * 2022-04-11: require `projection` to be a string.  (Previously,
+## output from `sp::CRS()` was also accepted, but this function
+## has been deprecated.)
 #'
 #' * 2020-12-24: complete switch from `rgdal` to \CRANpkg{sf},
 #' removing the testing scheme created on 2020-08-03.
@@ -1294,9 +1294,9 @@ mapLongitudeLatitudeXY <- function(longitude, latitude)
 #' both packages temporarily, issuing warnings if the results differed
 #' by more than 1 metre in easting or northing values.)
 #'
-#' * 2019-03-20: the test code provided the \dQuote{Examples} section
-#' is disabled on i386/windows machines, on which the requisite
-#' `rgdal` package continues to fail on common projections.
+## * 2019-03-20: the test code provided the \dQuote{Examples} section
+## is disabled on i386/windows machines, on which the requisite
+## `rgdal` package continues to fail on common projections.
 #'
 #' * 2017-11-19: `imw_p` removed, because it has problems doing
 #' inverse calculations.
@@ -1323,19 +1323,22 @@ mapLongitudeLatitudeXY <- function(longitude, latitude)
 #' @param latitude numeric vector of latitudes of points to be plotted (ignored
 #' if the first argument contains both latitude and longitude).
 #'
-#' @param longitudelim optional numeric vector of length two, indicating the
-#' longitude limits of the plot. This value is used in the selection of
-#' longitude lines that are shown (and possibly
-#' labelled on the axes). In some cases, e.g. for polar views,
-#' this can lead to odd results, with some expected longitude lines
-#' being left out of the plot.  Altering `longitudelim` can
-#' often help in such cases, e.g. `longitudelim=c(-180, 180)` will
-#' force the drawing of lines all around the globe.
-#'
-#' @param latitudelim optional vector of length two, indicating
-#' the latitude limits of the plot. This, together with `longitudelim`
-#' (and, importantly, the geometry of the plot device) is used in the
-#' selection of map scale.
+#' @param longitudelim,latitudelim optional numeric vectors of length two, indicating the
+#' limits of the plot. A warning is issued if these are not specified together.
+#' See Example 5 for the special case of polar plots, which use latitudes
+#' "past" the poles as a way to ensure that the pole appears.
+## This value is used in the selection of
+## longitude lines that are shown (and possibly
+## labelled on the axes). In some cases, e.g. for polar views,
+## this can lead to odd results, with some expected longitude lines
+## being left out of the plot.  Altering `longitudelim` can
+## often help in such cases, e.g. `longitudelim=c(-180, 180)` will
+## force the drawing of lines all around the globe.
+##
+## @param latitudelim optional vector of length two, indicating
+## the latitude limits of the plot. This, together with `longitudelim`
+## (and, importantly, the geometry of the plot device) is used in the
+## selection of map scale.
 #'
 #' @param grid either a number (or pair of numbers) indicating the spacing of
 #' longitude and latitude lines, in degrees, or a logical value (or pair of
@@ -1432,10 +1435,13 @@ mapLongitudeLatitudeXY <- function(longitude, latitude)
 #' @param latlabels As `lonlabels`, but for latitude, on the left
 #' plot axis.
 #'
-#' @param projection character value indicating the map projection. See a table
-#' in \sQuote{Details} for the projections that are available. Prior to version
-#' 1.8.0, `projection` could also be a value created by a now-defunct
-#' `sp` function; see \sQuote{Historical Notes}.
+#' @param projection either character value indicating the map projection, or
+#' the output from [sf::st_crs()]. In the first case, see a table
+#' in \sQuote{Details} for the projections that are available.
+#' In the second case, note that [mapPlot()] reports an error if
+#' a similar function from the old `sp` package is used.
+## Prior to version#' 1.8.0, `projection` could also be a value created by a now-defunct
+## `sp` function; see \sQuote{Historical Notes}.
 #'
 #' @param trim logical value indicating whether to trim islands or lakes
 #' containing only points that are off-scale of the current plot box.  This
@@ -1502,27 +1508,27 @@ mapLongitudeLatitudeXY <- function(longitude, latitude)
 #' # away from the equator, here illustrated for the USA and Canada.
 #' par(mar=c(3, 3, 1, 1))
 #' mapPlot(coastlineCut(coastlineWorld, -100),
-#'         longitudelim=c(-130,-55), latitudelim=c(35, 60),
-#'         projection="+proj=lcc +lat_0=30 +lat_1=60 +lon_0=-100", col='gray')
+#'     longitudelim=c(-130,-55), latitudelim=c(35, 60),
+#'     projection="+proj=lcc +lat_0=30 +lat_1=60 +lon_0=-100", col="gray")
 #' mtext("Lambert conformal", adj=1)
 #'
 #' # Example 5.
-#' # The stereographic projection (reference 1, page 120) is conformal, used
-#' # below for an Arctic view with a Canadian focus.  Note the trick of going
-#' # past the pole: the second latitudelim value is 180 minus the first, and the
-#' # second longitudelim is 180 plus the first; this uses image points "over"
-#' # the pole.
+#' # The stereographic projection (reference 1, page 120) in the standard
+#' # form used NSIDC (National Snow and Ice Data Center) for the Arctic.
+#' # (See "A Guide to NSIDC's Polar Stereographic Projection" at
+#' # https://nsidc.org/data/user-resources/help-center.)
+#' # Note how the latitude limit extends 20 degrees past the pole,
+#' # symmetrically.
 #' par(mar=c(3, 3, 1, 1))
-#' mapPlot(coastlineCut(coastlineWorld, -135),
-#'         longitudelim=c(-130, 50), latitudelim=c(70, 110),
-#'         projection="+proj=stere +lat_0=90 +lon_0=-135", col='gray')
+#' mapPlot(coastlineWorld,
+#'     longitudelim=c(-180, 180), latitudelim=c(70, 110),
+#'     projection=sf::st_crs("EPSG:3413"), col="gray")
 #' mtext("Stereographic", adj=1)
-#'
-#' # Example 6.
-#' # Spinning globe: create PNG files that can be assembled into a movie
 #'}
 #'
 #' \dontrun{
+#' # Example 6.
+#' # Spinning globe: create PNG files that can be assembled into a movie
 #' if (utils::packageVersion("sf") != "0.9.8") {
 #'     # sf version 0.9-8 has a problem with this projection
 #'     png("globe-%03d.png")
@@ -1594,7 +1600,9 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
         argShow(longitudelim),
         argShow(latitudelim),
         argShow(type),
-        argShow(projection),
+        if (inherits(projection, "crs"))
+            paste("projection=sf::st_crs(\"", projection$input, "\"),", sep="")
+        else if (!missing(projection)) paste("projection=", projection, "\",", sep=""),
         argShow(grid),
         argShow(geographical),
         ", ...) {\n", sep="", unindent=1, style="bold")
@@ -1605,13 +1613,16 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
     if (geographical < 0 || geographical > 4)
         stop("argument geographical must be an integer between 0 to 4, inclusive")
     # Note the deprecation of sp::CRS() values.  I do not plan to permit values
-    # fromsf::st_crs() because I can't find documentation of the fields of those
+    # from sf::st_crs() because I can't find documentation of the fields of those
     # values, and so adding the capability would introduce a brittleness without
     # much justification.
     if (!missing(projection)) {
         if (inherits(projection, "CRS")) {
-            warning("'projection' should be a character value (see ?mapPlot Historical Notes for 2023-04-11)")
-            projection <- projection@projargs
+            stop("projection cannot be the result of an sp::CRS() call, since that library is defunct")
+        } else if (inherits(projection, "crs")) {
+            tmp <- projection
+            projection <- projection$proj4string
+            oceDebug(debug, "projection expanded from a CRS string to", projection, "\n")
         } else if (!is.character(projection)) {
             stop("projection must be a character value (see Historical Notes for 2023-04-11)")
         }

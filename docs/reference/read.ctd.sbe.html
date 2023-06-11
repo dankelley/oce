@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.8-0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.8-1</span>
       </span>
     </div>
 
@@ -109,10 +109,10 @@ pattern.</p></dd>
 data names to resultant variable names.  This is used only by
 <code>read.ctd.sbe()</code> and <code><a href="read.ctd.odf.html">read.ctd.odf()</a></code>. For example,
 if a data file named salinity as <code>"SAL"</code>, then using</p>
-<p></p><div class="sourceCode"><pre><code><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>d <span class="ot">&lt;-</span> <span class="fu">read.ctd</span>(f, <span class="at">columns=</span><span class="fu">list</span>(</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    <span class="at">salinity=</span><span class="fu">list</span>(<span class="at">name=</span><span class="st">"SAL"</span>,</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>                  <span class="at">unit=</span><span class="fu">list</span>(<span class="at">unit=</span><span class="fu">expression</span>(),</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>                  <span class="at">scale=</span><span class="st">"PSS-78"</span>))))</span></code></pre><p></p></div>
+<p></p><div class="sourceCode"><pre><code><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a>d <span class="ot">&lt;-</span> <span class="fu">read.ctd</span>(f, <span class="at">columns=</span><span class="fu">list</span>(</span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a>    <span class="at">salinity=</span><span class="fu">list</span>(<span class="at">name=</span><span class="st">"SAL"</span>,</span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a>                  <span class="at">unit=</span><span class="fu">list</span>(<span class="at">unit=</span><span class="fu">expression</span>(),</span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a>                  <span class="at">scale=</span><span class="st">"PSS-78"</span>))))</span></code></pre><p></p></div>
 <p>would assign the <code>"SAL"</code> column to the <code>salinity</code> entry in the data
 slot of the CTD object returned by the <code>read.*</code> function.</p></dd>
 
@@ -227,22 +227,22 @@ things.</p>
 <p>For example, consider the <code>date</code> item in the <code>metadata</code> slot of the returned
 value.  <code>read.ctd.sbe()</code> infers this value in one of two ways.  First, if
 there is a header line staring with</p>
-<p></p><div class="sourceCode"><pre><code><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="sc">*</span> NMEA <span class="fu">UTC</span> (Time) <span class="ot">=</span></span></code></pre><p></p></div>
+<p></p><div class="sourceCode"><pre><code><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="sc">*</span> NMEA <span class="fu">UTC</span> (Time) <span class="ot">=</span></span></code></pre><p></p></div>
 <p>then that value is decoded and used for <code>date</code>.  This header line, preceded
 by a single asterisk, is not human-entered, and so there is reason to hope
 for a uniform format that can be handled by <code>read.ctd.sbe()</code>.  However, if
 there is no NMEA header line, then <code>read.ctd.sbe()</code> will look for a line
 starting with</p>
-<p></p><div class="sourceCode"><pre><code><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="sc">**</span> Date<span class="sc">:</span></span></code></pre><p></p></div>
+<p></p><div class="sourceCode"><pre><code><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="sc">**</span> Date<span class="sc">:</span></span></code></pre><p></p></div>
 <p>which was human-entered. This is the second choice, because humans write
 dates in a bewildering variety of ways, and <code><a href="https://rdrr.io/r/base/as.POSIXlt.html" class="external-link">as.POSIXct()</a></code>, which
 <code>read.ctd.sbe</code> uses to parse the date, cannot handle them all. If there is a
 problem, <code>read.ctd.sbe()</code> issues a warning and stores NA in <code>date</code>.</p>
 <p>A similar error-detection procedure is used for human-entered location data,
 which appear in lines starting with either</p>
-<p></p><div class="sourceCode"><pre><code><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="sc">**</span> Longitude<span class="sc">:</span></span></code></pre><p></p></div>
+<p></p><div class="sourceCode"><pre><code><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="sc">**</span> Longitude<span class="sc">:</span></span></code></pre><p></p></div>
 <p>or</p>
-<p></p><div class="sourceCode"><pre><code><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="sc">**</span> Latitude<span class="sc">:</span></span></code></pre><p></p></div>
+<p></p><div class="sourceCode"><pre><code><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="sc">**</span> Latitude<span class="sc">:</span></span></code></pre><p></p></div>
 <p>which often take forms that <code>read.ctd.sbe()</code> cannot parse.</p>
 <p>It is important to note that, even if no warnings are issued, there is a
 reasonably high chance that human-entered data will be scanned incorrectly.
@@ -258,13 +258,13 @@ but if many files are systematically problematic, say for a whole cruise or
 perhaps even for a whole institution, then it might sense to set up a wrapper
 function to correct deficiencies in the CNV files. As an example, the
 following handles dates specified in a particular nonstandard way.</p>
-<p></p><div class="sourceCode"><pre><code><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>read.ctd.sbe.wrapper <span class="ot">&lt;-</span> <span class="cf">function</span>(cnv)</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>{</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    lines <span class="ot">&lt;-</span> <span class="fu">readLines</span>(cnv)</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Change month-day-year to year-month-day, so as.POSIXct() can parse it.</span></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    lines <span class="ot">&lt;-</span> <span class="fu">gsub</span>(<span class="st">"^</span><span class="sc">\\</span><span class="st">*</span><span class="sc">\\</span><span class="st">* Date: (.*)-(.*)-(.*)"</span>, <span class="st">"** Date: </span><span class="sc">\\</span><span class="st">3-</span><span class="sc">\\</span><span class="st">1-</span><span class="sc">\\</span><span class="st">2"</span>, lines)</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">read.ctd.sbe</span>(<span class="fu">textConnection</span>(lines))</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>}</span></code></pre><p></p></div>
+<p></p><div class="sourceCode"><pre><code><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a>read.ctd.sbe.wrapper <span class="ot">&lt;-</span> <span class="cf">function</span>(cnv)</span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a>{</span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a>    lines <span class="ot">&lt;-</span> <span class="fu">readLines</span>(cnv)</span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a>    <span class="co"># Change month-day-year to year-month-day, so as.POSIXct() can parse it.</span></span>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a>    lines <span class="ot">&lt;-</span> <span class="fu">gsub</span>(<span class="st">"^</span><span class="sc">\\</span><span class="st">*</span><span class="sc">\\</span><span class="st">* Date: (.*)-(.*)-(.*)"</span>, <span class="st">"** Date: </span><span class="sc">\\</span><span class="st">3-</span><span class="sc">\\</span><span class="st">1-</span><span class="sc">\\</span><span class="st">2"</span>, lines)</span>
+<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a>    <span class="fu">read.ctd.sbe</span>(<span class="fu">textConnection</span>(lines))</span>
+<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a>}</span></code></pre><p></p></div>
     </div>
     <div id="a-note-on-sampling-times">
     <h2>A note on sampling times</h2>
