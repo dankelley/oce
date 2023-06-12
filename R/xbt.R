@@ -210,7 +210,7 @@ setMethod(f="summary",
 #' @param x an [xbt-class] object.
 #'
 #' @param subset a condition to be applied to the `data` portion of `x`.
-#' See \sQuote{Details}.
+#' See \dQuote{Details}.
 #'
 #' @param ... ignored.
 #'

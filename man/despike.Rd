@@ -20,11 +20,11 @@ despike(
 or an \linkS4class{oce} object.}
 
 \item{reference}{indication of the type of reference time series to be used
-in the detection of spikes; see \sQuote{Details}.}
+in the detection of spikes; see \dQuote{Details}.}
 
 \item{n}{an indication of the limit to differences between \code{x} and the
 reference time series, used for \code{reference="median"} or
-\code{reference="smooth"}; see \sQuote{Details.}}
+\code{reference="smooth"}; see \dQuote{Details.}}
 
 \item{k}{length of running median used with \code{reference="median"}, and
 ignored for other values of \code{reference}.}

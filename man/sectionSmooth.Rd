@@ -28,7 +28,7 @@ sectionSmooth(
 For \code{method="spline"}, the pressure levels must match for each station in
 the section.}
 
-\item{method}{A string or a function that specifies the method to use; see \sQuote{Details}.}
+\item{method}{A string or a function that specifies the method to use; see \dQuote{Details}.}
 
 \item{x}{Optional numerical vector, of the same length as the number of stations in \code{section},
 which will be used in gridding in the lateral direction. If not provided, this

@@ -22,7 +22,7 @@ by specifying higher \code{debug} values.}
 }
 \value{
 an object of the same class as \code{object}, modified as described
-in \sQuote{Details}.
+in \dQuote{Details}.
 }
 \description{
 Current-measuring instruments that infer flow direction using magnetic

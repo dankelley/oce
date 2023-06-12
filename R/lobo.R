@@ -177,7 +177,7 @@ setMethod(f="summary",
 #' @param x a [lobo-class] object.
 #'
 #' @param subset a condition to be applied to the `data` portion of
-#' `x`.  See \sQuote{Details}.
+#' `x`.  See \dQuote{Details}.
 #'
 #' @param \dots ignored.
 #'

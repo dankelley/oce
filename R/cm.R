@@ -153,7 +153,7 @@ setMethod(f="summary",
 #' @param x a [cm-class] object.
 #'
 #' @param subset a condition to be applied to the `data` portion of `x`.
-#' See \sQuote{Details}.
+#' See \dQuote{Details}.
 #'
 #' @param ... ignored.
 #'
@@ -907,7 +907,7 @@ setMethod(f="plot",
 #' Current-meter (`cm`) instruments determine directions from onboard compasses,
 #' so interpreting velocity components in geographical coordinates requires that
 #' magnetic declination be taken into account.  This is what the present
-#' function does (see \sQuote{Details}).
+#' function does (see \dQuote{Details}).
 #'
 #' @template declinationTemplate
 #'
@@ -918,7 +918,7 @@ setMethod(f="plot",
 #'
 #' @template debugTemplate
 #'
-#' @return A [cm-class] object, adjusted as outlined in \sQuote{Details}.
+#' @return A [cm-class] object, adjusted as outlined in \dQuote{Details}.
 #'
 #' @seealso Use [magneticField()] to determine the declination,
 #' inclination and intensity at a given spot on the world, at a given time.

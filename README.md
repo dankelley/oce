@@ -22,7 +22,7 @@ oceanographers turn to open-source systems such as Python and R. A particular
 strength of R is its provision of many powerful and well-vetted packages for
 handling specialized calculations. The oce package is a prime example.
 
-## About oce
+## What the oce package provides
 
 The oce package handles a wide variety of tasks that come up in the analysis of
 Oceanographic data. In addition to the present README file, a brief sketch of

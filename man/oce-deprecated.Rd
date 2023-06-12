@@ -71,7 +71,7 @@ was deprecated on 2016-12-30.  It was once used by
 function since February 2016.
 }
 
-Several \sQuote{oce} function arguments are considered "defunct", which
+Several \dQuote{oce} function arguments are considered "defunct", which
 means they will be removed in the next CRAN release. They are as follows.
 \itemize{
 \item The \code{fill} argument of \code{\link[=mapPlot]{mapPlot()}} was confusing
@@ -84,7 +84,7 @@ The functionality is preserved, in the \code{col} argument.
 }
 }
 \seealso{
-The \sQuote{Bioconductor} scheme for removing functions is
+The \dQuote{Bioconductor} scheme for removing functions is
 described at
 \verb{https://www.bioconductor.org/developers/how-to/deprecation/} and it is
 extended here to function arguments.

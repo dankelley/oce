@@ -2234,7 +2234,7 @@ setMethod(f="plot", signature=signature("section"),
 #' is stored as `salinityBottle`.
 #'
 #' @param file A file containing a set of CTD observations.  At present, only the
-#' *exchange BOT* format is accepted (see \sQuote{Details}).
+#' *exchange BOT* format is accepted (see \dQuote{Details}).
 #'
 #' @param directory A character string indicating the name of a  directory that
 #' contains a set of CTD files that hold individual stations in the section.
@@ -2677,7 +2677,7 @@ sectionGrid <- function(section, p, method="approx", trim=TRUE, debug=getOption(
 #' For `method="spline"`, the pressure levels must match for each station in
 #' the section.
 #'
-#' @param method A string or a function that specifies the method to use; see \sQuote{Details}.
+#' @param method A string or a function that specifies the method to use; see \dQuote{Details}.
 #'
 #' @param x Optional numerical vector, of the same length as the number of stations in `section`,
 #' which will be used in gridding in the lateral direction. If not provided, this
@@ -3095,7 +3095,7 @@ sectionSmooth <- function(section, method="spline",
 #' as the salinity, and the other arguments are used for the other components of
 #' [ctd-class] objects. Alternatively, it may be one of a variety of
 #' other objects from which the CTD objects can be inferred, in which case the
-#' other arguments are ignored; see \sQuote{Details}.
+#' other arguments are ignored; see \dQuote{Details}.
 #'
 #' @param temperature Temperature, in a vector holding values for all stations.
 #'

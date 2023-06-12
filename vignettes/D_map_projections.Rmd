@@ -82,7 +82,7 @@ lon <- coastlineWorld[["longitude"]]
 lat <- coastlineWorld[["latitude"]]
 par(mar=c(4, 4, 0.5, 0.5))
 plot(lon, lat, type="l",
-     xlim=c(-130, -50), ylim=c(40, 50))
+    xlim=c(-130, -50), ylim=c(40, 50))
 ```
 
 Readers familiar with this region will notice that the coastline
@@ -93,7 +93,7 @@ to the general latitude of the view (45N, in this case).
 ```{r fig.cap="North American view, with distortion limited by choice of aspect ratio.", fig.width=3, fig.height=3, dpi=72, dev.args=list(pointsize=10)}
 par(mar=c(4, 4, 0.5, 0.5))
 plot(lon, lat, type="l",
-     xlim=c(-130, -50), ylim=c(40, 50), asp=1/cos(45*pi/180))
+    xlim=c(-130, -50), ylim=c(40, 50), asp=1/cos(45*pi/180))
 ```
 
 Although the above approach is not exactly taxing, the effort of setting the
@@ -164,8 +164,8 @@ the pole in between).
 
 ```{r fig.cap="Polar view with stereographic projection.", fig.width=3, fig.height=3, dpi=72, dev.args=list(pointsize=10)}
 par(mar=c(1.5, 1.5, 0.5, 0.5))
-mapPlot(coastlineWorld, longitudelim=c(-130, 50), latitudelim=c(60, 120),
-        projection="+proj=stere +lat_0=90", col="gray")
+mapPlot(coastlineWorld, longitudelim=c(-180, 180), latitudelim=c(60, 90),
+    projection="+proj=stere +lat_0=90 +lat_ts=90", col="gray")
 ```
 
 Here, the region of interest is defined with `longitudelim` and `latitudelim`,
@@ -194,9 +194,10 @@ the earth, are set to span southern Canada and northern USA,
 and `lon_0`, the meridian that will be vertical on the plot, is chosen to lie
 near the middle of the continent.
 
-**Exercise 4.** Plot the eastern North Atlantic using a Mercator projection.
+**Exercise 4.** Plot the eastern North Atlantic using the Universal
+Transverse Mercator projection.
 
-**Exercise 5.** Plot the eastern North Atlantic using an Albers Equal-Area
+**Exercise 5.** Plot the eastern North Atlantic using the Albers Equal-Area
 Conic projection.
 
 
@@ -250,18 +251,21 @@ mapImage(lon, lat, z, colormap=cm)
 ```{r fig.cap="Antarctica (exercise 3).", fig.width=3, fig.height=3, dpi=72, dev.args=list(pointsize=10)}
 par(mar=c(1.5, 1.5, 0.5, 0.5))
 mapPlot(coastlineWorld, longitudelim=c(-180, 180), latitudelim=c(-130, -50),
-       projection="+proj=stere +lat_0=-90", col="gray", grid=15)
+    projection="+proj=stere +lat_0=-90", col="gray", grid=15)
 ```
 
 
-**Exercise 4.** Plot the eastern North Atlantic using a Mercator projection.
+**Exercise 4.** Plot the eastern North Atlantic using the Universal Transverse Mercator projection.
 
-```{r fig.cap="Eastern North Atlantic with Mercator projection (exercise 4).", fig.width=5, fig.height=5, dpi=72, dev.args=list(pointsize=10)}
+Zone 20 includes Nova Scotia, which is also a good place to centre the view.
+
+```{r fig.cap="Eastern Canadian waters shown in Universal Transverse Mercator projection.", fig.width=3, fig.height=3, dpi=72, dev.args=list(pointsize=10)}
 par(mar=c(1.5, 1.5, 0.5, 0.5))
 mapPlot(coastlineWorld, col="lightgray",
-        projection="+proj=merc",
-        longitudelim=c(-80, -40), latitudelim=c(20, 60))
+    projection="+proj=utm +zone=20",
+    longitudelim=c(-85, -45), latitudelim=c(40, 60))
 ```
+
 
 **Exercise 5.** Plot the eastern North Atlantic using an Albers Equal-Area
 Conic projection.
@@ -276,13 +280,11 @@ of Nova Scotia (at $45^\circ$N) and Ungava Bay (at $60^\circ$N) in this Albers
 Equal-Area projection, and the Mercator projection shown in the previous
 diagram.
 
-
-
-```{r fig.cap="Eastern North Atlantic with Albers equal-area projection (exercise 5).", fig.width=5, fig.height=5, dpi=72, dev.args=list(pointsize=10)}
+```{r fig.cap="Eastern North Atlantic with Albers equal-area projection (exercise 5).", fig.width=3, fig.height=3, dpi=72, dev.args=list(pointsize=10)}
 par(mar=c(1.5, 1.5, 0.5, 0.5))
 mapPlot(coastlineWorld, col="lightgray",
-        projection="+proj=aea +lat_1=30 +lat_2=50 +lon_0=-60",
-        longitudelim=c(-80, -40), latitudelim=c(20, 60))
+    projection="+proj=aea +lat_1=45 +lat_2=55 +lon_0=-65",
+    longitudelim=c(-85, -45), latitudelim=c(40, 60))
 ```
 
 **Exercise 6.** Plot the world with the Goode projection, superimposing sea surface temperature as contours.

@@ -25,10 +25,10 @@ on the ITS-90 scale; see \dQuote{Temperature units} in the documentation for
 \item{pressure}{seawater pressure (dbar)}
 
 \item{longitude}{longitude of observation (only used if \code{eos="gsw"};
-see \sQuote{Details}).}
+see \dQuote{Details}).}
 
 \item{latitude}{latitude of observation (only used if \code{eos="gsw"}; see
-\sQuote{Details}).}
+\dQuote{Details}).}
 
 \item{eos}{equation of state, either \code{"unesco"} or \code{"gsw"}.}
 }

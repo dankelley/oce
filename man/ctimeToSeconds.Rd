@@ -7,7 +7,7 @@
 ctimeToSeconds(ctime)
 }
 \arguments{
-\item{ctime}{a character string (see \sQuote{Details}.}
+\item{ctime}{a character string (see \dQuote{Details}.}
 }
 \value{
 A numeric value, the number of seconds represented by the string.

@@ -174,7 +174,7 @@ setMethod(f="[[<-",
 #' @param x an [rsk-class] object.
 #'
 #' @param subset a condition to be applied to the `data` portion of `x`.
-#' See \sQuote{Details}.
+#' See \dQuote{Details}.
 #'
 #' @param \dots ignored.
 #'
@@ -651,7 +651,7 @@ setMethod(f="plot",
 #' the clock in the controlling computer/tablet/phone (if one was used during
 #' the sampling). This offset is required to relate location information from the
 #' controller to hydrographic information from the CTD, using timestamps as an
-#' index (see "A note on location information" in \sQuote{Details}).
+#' index (see "A note on location information" in \dQuote{Details}).
 #' If the user supplies a value for `tzOffsetLocation`, then that is used.
 #' If not, an attempt is made to infer it from a table named `epochs` in the
 #' file. If no value can be inferred from either of these two methods, then

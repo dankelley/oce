@@ -827,7 +827,7 @@ setMethod(f="show",
 #' @template debugTemplate
 #'
 #' @return an object of the same class as `object`, modified as described
-#' in \sQuote{Details}.
+#' in \dQuote{Details}.
 #'
 #' @author Dan Kelley, aided, for the [adp-class] and [adv-class] variants,
 #' by Clark Richards and Jaimie Harbin.
@@ -863,7 +863,7 @@ setGeneric(name="applyMagneticDeclination",
 #' @param debug a debugging flag, set to a positive value to get debugging.
 #'
 #' @return an object of the same class as `object`, modified as outlined in
-#' \sQuote{Details}.
+#' \dQuote{Details}.
 #'
 #' @author Dan Kelley, aided, for the [adp-class] and [adv-class] variants,
 #' by Clark Richards and Jaimie Harbin.

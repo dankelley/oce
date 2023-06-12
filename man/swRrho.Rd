@@ -18,7 +18,7 @@ swRrho(
 \code{latitude}.}
 
 \item{sense}{an indication of the sense of double diffusion under study and
-therefore of the definition of Rrho; see \sQuote{Details}}
+therefore of the definition of Rrho; see \dQuote{Details}}
 
 \item{smoothingLength}{ignored if \code{df} supplied, but otherwise the
 latter is calculated as the number of data points, divided by the number

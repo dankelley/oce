@@ -19,7 +19,7 @@ the file to load.}
 
 \item{format}{an integer indicating the format type.  If not supplied, the
 first line is examined to determine whether the file matches the \code{format=1} or
-\code{format=2} style (see \sQuote{Details}).}
+\code{format=2} style (see \dQuote{Details}).}
 
 \item{encoding}{a character value that indicates the encoding to be used for
 this data file, if it is textual.  The default value for most functions is
@@ -45,7 +45,7 @@ by specifying higher \code{debug} values.}
 \code{\link[=read.ctd.aml]{read.ctd.aml()}} reads files that hold data acquired with an AML
 Oceanographic BaseX2 CTD instrument. The SeaCast software associated with
 this device can output data in several formats, of which only two are
-handled, and only one is recommended (see \sQuote{Details}).
+handled, and only one is recommended (see \dQuote{Details}).
 }
 \details{
 The handled formats match files available to the author, both of which

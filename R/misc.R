@@ -2155,11 +2155,11 @@ detrend <- function(x, y)
 #' or an [oce-class] object.
 #'
 #' @param reference indication of the type of reference time series to be used
-#' in the detection of spikes; see \sQuote{Details}.
+#' in the detection of spikes; see \dQuote{Details}.
 #'
 #' @param n an indication of the limit to differences between `x` and the
 #' reference time series, used for `reference="median"` or
-#' `reference="smooth"`; see \sQuote{Details.}
+#' `reference="smooth"`; see \dQuote{Details.}
 #'
 #' @param k length of running median used with `reference="median"`, and
 #' ignored for other values of `reference`.
@@ -4966,7 +4966,7 @@ secondsToCtime <- function(sec)
 #' Interpret a character string as a time interval
 #' Strings are of the form MM:SS or HH:MM:SS.
 #'
-#' @param ctime a character string (see \sQuote{Details}.
+#' @param ctime a character string (see \dQuote{Details}.
 #'
 #' @return A numeric value, the number of seconds represented by the string.
 #'

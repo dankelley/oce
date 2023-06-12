@@ -5,7 +5,7 @@
 #' [read.ctd.aml()] reads files that hold data acquired with an AML
 #' Oceanographic BaseX2 CTD instrument. The SeaCast software associated with
 #' this device can output data in several formats, of which only two are
-#' handled, and only one is recommended (see \sQuote{Details}).
+#' handled, and only one is recommended (see \dQuote{Details}).
 #'
 #' The handled formats match files available to the author, both of which
 #' diverge slightly from the format described in the AML documentation (see
@@ -59,7 +59,7 @@
 #'
 #' @param format an integer indicating the format type.  If not supplied, the
 #' first line is examined to determine whether the file matches the `format=1` or
-#' `format=2` style (see \sQuote{Details}).
+#' `format=2` style (see \dQuote{Details}).
 #'
 #' @template encodingTemplate
 #'

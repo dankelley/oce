@@ -999,7 +999,7 @@ setValidity("adp",
 #' @param x an [adp-class] object.
 #'
 #' @param subset A condition to be applied to the `data` portion of
-#' `x`.  See \sQuote{Details}.
+#' `x`.  See \dQuote{Details}.
 #'
 #' @param ... Ignored.
 #'
@@ -4443,7 +4443,7 @@ adpFlagPastBoundary <- function(x=NULL, fields=NULL, df=20, trim=0.15, good=1, b
 #' compasses to determine current direction need to have a correction applied
 #' for magnetic declination, if the goal is to infer currents with x and y
 #' oriented eastward and northward, respectively.  This is what the present
-#' function does (see \sQuote{Details}).
+#' function does (see \dQuote{Details}).
 #'
 #' @template declinationTemplate
 #'
@@ -4454,7 +4454,7 @@ adpFlagPastBoundary <- function(x=NULL, fields=NULL, df=20, trim=0.15, good=1, b
 #'
 #' @template debugTemplate
 #'
-#' @return An [adp-class] object, modified as outlined  in \sQuote{Description}.
+#' @return An [adp-class] object, modified as outlined  in \dQuote{Description}.
 #'
 #' @seealso Use [magneticField()] to determine the declination,
 #' inclination and intensity at a given spot on the world, at a given time.

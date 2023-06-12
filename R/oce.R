@@ -147,7 +147,7 @@ NULL
 #' [plot,coastline-method()] but has been ignored by that
 #' function since February 2016.
 #'
-#' Several \sQuote{oce} function arguments are considered "defunct", which
+#' Several \dQuote{oce} function arguments are considered "defunct", which
 #' means they will be removed in the next CRAN release. They are as follows.
 #'
 #' * The `fill` argument of [mapPlot()] was confusing
@@ -162,7 +162,7 @@ NULL
 #'
 #' @name oce-deprecated
 #'
-#' @seealso The \sQuote{Bioconductor} scheme for removing functions is
+#' @seealso The \dQuote{Bioconductor} scheme for removing functions is
 #' described at
 #' `https://www.bioconductor.org/developers/how-to/deprecation/` and it is
 #' extended here to function arguments.
@@ -3247,7 +3247,7 @@ numberAsHMS <- function(t, default=0)
 #'
 #' This converts numerical values into POSIXct times.  There are many
 #' schemes for doing this, with the `type` parameter being used
-#' to select between them.  See \sQuote{Details} for a listing, broken
+#' to select between them.  See \dQuote{Details} for a listing, broken
 #' down by scheme.
 #'
 #' The possible choices for `type` are as listed below.

@@ -105,7 +105,7 @@ The fit is done in terms of sine and cosine components at the indicated
 tidal frequencies, with the amplitude and phase being calculated from the
 resultant coefficients on the sine and cosine terms. The scheme
 was devised for hourly data; for other sampling schemes, please see
-\sQuote{Application to non-hourly data}.
+\dQuote{Application to non-hourly data}.
 }
 \details{
 The tidal constituents to be used in the analysis are specified as follows;

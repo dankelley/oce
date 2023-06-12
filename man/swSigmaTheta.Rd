@@ -34,10 +34,10 @@ using \code{\link[=T68fromT90]{T68fromT90()}}.}
 \item{referencePressure}{The reference pressure, in dbar.}
 
 \item{longitude}{longitude of observation (only used if \code{eos="gsw"};
-see \sQuote{Details}).}
+see \dQuote{Details}).}
 
 \item{latitude}{latitude of observation (only used if \code{eos="gsw"}; see
-\sQuote{Details}).}
+\dQuote{Details}).}
 
 \item{eos}{equation of state, either \code{"unesco"} (references 1 and 2)
 or \code{"gsw"} (references 3 and 4).}

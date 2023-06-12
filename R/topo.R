@@ -186,7 +186,7 @@ setMethod(f="[[<-",
 #' @param x a [topo-class] object.
 #'
 #' @param subset A condition to be applied to the `data` portion of `x`.
-#' See \sQuote{Details}.
+#' See \dQuote{Details}.
 #'
 #' @param ... Ignored.
 #'

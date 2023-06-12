@@ -1023,7 +1023,7 @@ read.landsatmeta <- function(file, encoding="latin1", debug=getOption("oceDebug"
 #' @param band The bands to be read, by default all of the bands.  Use
 #' `band=NULL` to skip the reading of bands, instead reading only the
 #' image metadata, which is often enough to check if the image is of
-#' interest in a given study. See \sQuote{Details} for the names of the
+#' interest in a given study. See \dQuote{Details} for the names of the
 #' bands, some of which are pseudo-bands, computed from the actual data.
 #'
 #' @param emissivity Value of the emissivity of the surface, stored as

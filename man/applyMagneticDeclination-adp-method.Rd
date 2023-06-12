@@ -25,14 +25,14 @@ be printed. If one function calls another, it usually reduces the value of
 by specifying higher \code{debug} values.}
 }
 \value{
-An \linkS4class{adp} object, modified as outlined  in \sQuote{Description}.
+An \linkS4class{adp} object, modified as outlined  in \dQuote{Description}.
 }
 \description{
 Acoustic-Doppler profiling instruments that infer direction using magnetic
 compasses to determine current direction need to have a correction applied
 for magnetic declination, if the goal is to infer currents with x and y
 oriented eastward and northward, respectively.  This is what the present
-function does (see \sQuote{Details}).
+function does (see \dQuote{Details}).
 }
 \details{
 The returned value is a copy of \code{object} that has been modified in 4 ways.

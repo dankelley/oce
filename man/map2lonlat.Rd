@@ -31,10 +31,10 @@ values indicating points that are off the globe as displayed.
 }
 \description{
 Convert from x-y coordinates to longitude and latitude. This is normally called
-internally within oce; see \sQuote{Bugs}.
+internally within oce; see \dQuote{Bugs}.
 A projection must already have been set up, by a call to \code{\link[=mapPlot]{mapPlot()}}
 or \code{\link[=lonlat2map]{lonlat2map()}}. It should be noted that not all projections are
-handled well; see \sQuote{Bugs}.
+handled well; see \dQuote{Bugs}.
 }
 \section{Bugs}{
 
