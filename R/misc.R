@@ -1308,7 +1308,7 @@ binMean1D <- function(x, f, xbreaks)
     if (nxbreaks < 2)
         stop("must have more than 1 break")
     res <- .C("bin_mean_1d", length(x), as.double(x), as.double(f),
-        length(xbreaks), as.doublsz(xbreaks),
+        length(xbreaks), as.double(xbreaks),
         number=integer(nxbreaks-1),
         result=double(nxbreaks-1),
         NAOK=TRUE, PACKAGE="oce")
