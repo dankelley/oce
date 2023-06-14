@@ -31,7 +31,7 @@ test_that("binApply1D simple", {
     b <- binApply1D(x, f, xbreaks=seq(0, 1, 0.25), FUN=mean)
     expect_equal(b$xbreaks, c(0, 0.25, 0.5, 0.75, 1))
     expect_equal(b$xmids, c(0.125, 0.375, 0.625, 0.875))
-    expect_equal(b$result, c(NA, 0.1249814763, 0.6214249866))
+    expect_equal(b$result, c(NA, 0.1249814763, NA, 0.6214249866))
 })
 
 
