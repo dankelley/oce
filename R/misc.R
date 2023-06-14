@@ -1085,23 +1085,36 @@ binApply1D <- function(x, f, xbreaks, FUN, ...)
         stop("must supply 'FUN'")
     if (!is.function(FUN))
         stop("'FUN' must be a function")
+    #<2103> cat(vectorShow(names(xbreaks), n=100))
     fSplit <- split(f, cut(x, xbreaks, include.lowest=TRUE, labels=FALSE))
-    result <- unlist(lapply(fSplit, FUN, ...))
-    result[!is.finite(result)] <- NA
-    names(result) <- NULL
-    # Put some NAs at start and end of 'result', if required because of
-    # 'xbreaks' bins that have no 'x' data.
-    xmin <- min(x, na.rm=TRUE)
-    xmax <- max(x, na.rm=TRUE)
-    nxbreaks <- length(xbreaks)
-    if (xmin > xbreaks[2]) {
-        m <- which(xbreaks < xmin)[1]
-        result <- c(rep(NA, m), result)
-    }
-    if (xmax < xbreaks[nxbreaks]) {
-        m <- which(xbreaks > xmax)[1]
-        result <- c(result, rep(NA, nxbreaks-m))
-    }
+    #<2103> targetNames <- as.integer(names(fSplit))
+    result <- rep(NA_real_, length(xbreaks)-1L) # FIXME: ensure xbreaks has length >1
+    #<2103> cat(vectorShow(outputBins, n=100))
+    #<2103> cat(vectorShow(targetNames, n=100))
+    #<2103> cat(vectorShow(names(fSplit), n=100))
+    tmp <- unlist(lapply(fSplit, FUN, ...))
+    result[as.integer(names(tmp))] <- tmp
+    #<2103> cat(vectorShow(outputBins, n=100))
+    #<2103> #<2103> message("next is result")
+    #<2103> print(result)
+    #<2103> result[!is.finite(result)] <- NA
+    #<2103> names(result) <- NULL
+    #<2103> # Put some NAs at start and end of 'result', if required because of
+    #<2103> # 'xbreaks' bins that have no 'x' data.
+    #<2103> xmin <- min(x, na.rm=TRUE)
+    #<2103> xmax <- max(x, na.rm=TRUE)
+    #<2103> nxbreaks <- length(xbreaks)
+    #<2103> # Add leading/trailing NAs if data extend beyond xbreaks
+    #<2103> if (xmin > xbreaks[2]) {
+    #<2103>     message("DEK case 1")
+    #<2103>     m <- which(xbreaks < xmin)[1]
+    #<2103>     result <- c(rep(NA, m), result)
+    #<2103> }
+    #<2103> if (xmax < xbreaks[nxbreaks]) {
+    #<2103>     message("DEK case 2")
+    #<2103>     m <- which(xbreaks > xmax)[1]
+    #<2103>     result <- c(result, rep(NA, nxbreaks-m))
+    #<2103> }
     list(xbreaks=xbreaks, xmids=xbreaks[-1]-0.5*diff(xbreaks), result=result)
 }
 
@@ -1295,7 +1308,7 @@ binMean1D <- function(x, f, xbreaks)
     if (nxbreaks < 2)
         stop("must have more than 1 break")
     res <- .C("bin_mean_1d", length(x), as.double(x), as.double(f),
-        length(xbreaks), as.double(xbreaks),
+        length(xbreaks), as.doublsz(xbreaks),
         number=integer(nxbreaks-1),
         result=double(nxbreaks-1),
         NAOK=TRUE, PACKAGE="oce")
