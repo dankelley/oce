@@ -21,6 +21,17 @@ the count (\code{number}) of \code{x} values between successive breaks.
 Count the number of elements of a given vector that fall within
 successive pairs of values within a second vector.
 }
+\details{
+To contextualize this in terms of base R functions, note that
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{binCount1D(1:20, seq(0, 20, 2))
+}\if{html}{\out{</div>}}
+
+is analogous to
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{unname(table(cut(1:20, seq(0, 20, 2))))
+}\if{html}{\out{</div>}}
+}
 \seealso{
 Other bin-related functions: 
 \code{\link{binApply1D}()},

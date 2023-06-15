@@ -6,8 +6,8 @@
 
 //#define DEBUG
 
-// These functions use the STL function lower_bound to find the index of the
-// smallest break exceeding x[i].  Data exceeding the top break get index equal
+// These functions use the STL functions to find indices of the
+// relevant breaks.  Data exceeding the top break get index equal
 // to nbreak.
 
 
@@ -39,9 +39,9 @@ extern "C" {
             number[i] = 0;
         }
         for (int i = 0; i < (*nx); i++) {
-            std::vector<double>::iterator lower_bound;
-            lower_bound = std::lower_bound(b.begin(), b.end(), x[i]);
-            int bi = lower_bound - b.begin();
+            std::vector<double>::iterator lower;
+            lower = std::lower_bound(b.begin(), b.end(), x[i]);
+            int bi = lower - b.begin();
             if (bi > 0 && bi < (*nxbreaks)) {
 #ifdef DEBUG
                 Rprintf("x: %6.3f   bi: %d    (%f to %f)\n", x[i], bi, xbreaks[bi-1], xbreaks[bi]);
@@ -67,9 +67,9 @@ extern "C" {
         }
         for (int i = 0; i < (*nx); i++) {
             if (!ISNA(f[i])) {
-                std::vector<double>::iterator lower_bound;
-                lower_bound = std::lower_bound(b.begin(), b.end(), x[i]);
-                int bi = lower_bound - b.begin();
+                std::vector<double>::iterator lower;
+                lower = std::lower_bound(b.begin(), b.end(), x[i]);
+                int bi = lower - b.begin();
                 if (bi > 0 && bi < (*nxbreaks)) {
 #ifdef DEBUG
                     Rprintf("x: %6.3f   bi: %d    (%f to %f)\n", x[i], bi, xbreaks[bi-1], xbreaks[bi]);
@@ -110,8 +110,8 @@ extern "C" {
             number[bij] = 0;
         }
         for (int i = 0; i < (*nx); i++) {
-            int bi = std::lower_bound(bx.begin(), bx.end(), x[i]) - bx.begin();
-            int bj = std::lower_bound(by.begin(), by.end(), y[i]) - by.begin();
+            int bi = std::upper_bound(bx.begin(), bx.end(), x[i]) - bx.begin();
+            int bj = std::upper_bound(by.begin(), by.end(), y[i]) - by.begin();
             if (bi > 0 && bj > 0 && bi < (*nxbreaks) && bj < (*nybreaks)) {
 #ifdef DEBUG
                 Rprintf("x: %6.3f, y: %6.3f, bi: %d, bj: %d\n", x[i], y[i], bi, bj);
@@ -146,8 +146,8 @@ extern "C" {
         }
         for (int i = 0; i < (*nx); i++) {
             if (!ISNA(f[i])) {
-                int bi = std::lower_bound(bx.begin(), bx.end(), x[i]) - bx.begin();
-                int bj = std::lower_bound(by.begin(), by.end(), y[i]) - by.begin();
+                int bi = std::upper_bound(bx.begin(), bx.end(), x[i]) - bx.begin();
+                int bj = std::upper_bound(by.begin(), by.end(), y[i]) - by.begin();
                 if (bi > 0 && bj > 0 && bi < (*nxbreaks) && bj < (*nybreaks)) {
 #ifdef DEBUG
                     Rprintf("x: %6.3f, y: %6.3f, bi: %d, bj: %d\n", x[i], y[i], bi, bj);

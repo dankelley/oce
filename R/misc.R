@@ -1086,14 +1086,26 @@ binApply1D <- function(x, f, xbreaks, FUN, ...)
     if (!is.function(FUN))
         stop("'FUN' must be a function")
     #<2103> cat(vectorShow(names(xbreaks), n=100))
-    fSplit <- split(f, cut(x, xbreaks, include.lowest=TRUE, labels=FALSE))
+    fCut <- cut(x, xbreaks, include.lowest=TRUE, labels=FALSE)
+    #?fCut <- cut(x, xbreaks, labels=FALSE) # may have NAs
+    fSplit <- split(f, fCut)
+    #?indices <- seq_along(levels(fSplit))
     #<2103> targetNames <- as.integer(names(fSplit))
-    result <- rep(NA_real_, length(xbreaks)-1L) # FIXME: ensure xbreaks has length >1
+    #?result <- rep(NA_real_, length(xbreaks)-1L) # FIXME: ensure xbreaks has length >1
     #<2103> cat(vectorShow(outputBins, n=100))
     #<2103> cat(vectorShow(targetNames, n=100))
     #<2103> cat(vectorShow(names(fSplit), n=100))
-    tmp <- unlist(lapply(fSplit, FUN, ...))
-    result[as.integer(names(tmp))] <- tmp
+    #?tmp <- unlist(lapply(fSplit, FUN, ...))
+    xmids <- xbreaks[-1]-0.5*diff(xbreaks)
+    nbreaks <- length(xbreaks)
+    result <- rep(NA_real_, nbreaks - 1L)
+    for (i in seq_len(nbreaks - 1L)) {
+        look <- xbreaks[i] < x & x <= xbreaks[i+1]
+        result[i] <- if (sum(look) > 0L) FUN(f[look]) else NA
+    }
+    #?OLDresult <- unname(unlist(lapply(fSplit, function(fs) if (length(fs)) FUN(fs) else 0.0)))
+    #browser()
+    #?result[as.integer(names(tmp))] <- tmp
     #<2103> cat(vectorShow(outputBins, n=100))
     #<2103> #<2103> message("next is result")
     #<2103> print(result)
@@ -1115,7 +1127,7 @@ binApply1D <- function(x, f, xbreaks, FUN, ...)
     #<2103>     m <- which(xbreaks > xmax)[1]
     #<2103>     result <- c(result, rep(NA, nxbreaks-m))
     #<2103> }
-    list(xbreaks=xbreaks, xmids=xbreaks[-1]-0.5*diff(xbreaks), result=result)
+    list(xbreaks=xbreaks, xmids=xmids, result=result)
 }
 
 #' Apply a function to matrix data
@@ -1230,6 +1242,15 @@ binApply2D <- function(x, y, f, xbreaks, ybreaks, FUN, ...)
 #' Count the number of elements of a given vector that fall within
 #' successive pairs of values within a second vector.
 #'
+#' To contextualize this in terms of base R functions, note that
+#' ```
+#' binCount1D(1:20, seq(0, 20, 2))
+#' ```
+#' is analogous to
+#' ```
+#' unname(table(cut(1:20, seq(0, 20, 2))))
+#' ```
+#'
 #' @param x vector of numerical values.
 #'
 #' @param xbreaks Vector of values of x at the boundaries between bins, calculated using
@@ -1323,15 +1344,11 @@ binMean1D <- function(x, f, xbreaks)
 #' Count the number of elements of a given matrix z=z(x,y) that fall within
 #' successive pairs of breaks in x and y.
 #'
-#' @param x vector of numerical values.
+#' @param x,y vectors of numerical values.
 #'
-#' @param y vector of numerical values.
-#'
-#' @param xbreaks Vector of values of `x` at the boundaries between bins, calculated using
-#' [`pretty``]`(x)` if not supplied.
-#'
-#' @param ybreaks Vector of values of `y` at the boundaries between bins, calculated using
-#' [`pretty`]`(y)` if not supplied.
+#' @param xbreaks,ybreaks vector of values of `x` and `y` 
+#' at the boundaries between the 2D bins, calculated using
+#' [pretty()] on each of `x` and `y`, if not supplied.
 #'
 #' @param flatten A logical value indicating whether
 #' the return value also contains equilength

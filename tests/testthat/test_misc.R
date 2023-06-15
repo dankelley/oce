@@ -23,7 +23,7 @@ test_that("approx3d", {
             69.88888889, 83.66666667, 97.44444444, 111.22222222, NA))
 })
 
-test_that("binApply1D simple", {
+test_that("binApply1D", {
     set.seed(123)
     n <- 3
     x <- runif(n)
@@ -34,6 +34,30 @@ test_that("binApply1D simple", {
     expect_equal(b$result, c(NA, 0.1249814763, NA, 0.6214249866))
 })
 
+test_that("binMean1D", {
+    set.seed(123)
+    n <- 3
+    # Since x is 0.2875775201 0.7883051354 0.4089769218,
+    # we expect as follows.
+    #
+    # number  result
+    # 0       NA
+    # 2       0.1249814763=mean(c(0.2875775201, 0.4089769218)^2)
+    # 0       NA
+    # 1       0.6214249865=0.7883051354^2
+    x <- runif(n)
+    x<-sort(x)
+    f <- x^2
+    m <- binMean1D(x, f, seq(0, 1, .25))
+    expect_equal(m$xbreaks,
+        c(0.00, 0.25, 0.50, 0.75, 1.00))
+    expect_equal(m$xmids,
+        c(0.125, 0.375, 0.625, 0.875))
+    expect_equal(m$number,
+        c(0, 2, 0, 1))
+    expect_equal(m$result,
+        c(NA, 0.1249814763, NA, 0.6214249866))
+})
 
 test_that("binApply1D with missing bins", {
     # 'result' should have no NA values
@@ -91,10 +115,10 @@ test_that("binAverage", {
 })
 
 test_that("binCount1D", {
-    bc1 <- binCount1D(1:100, seq(0, 100, 10))
-    expect_equal(bc1$xbreaks, seq(0, 100, 10))
-    expect_equal(bc1$xmids, seq(5, 95, 10))
-    expect_equal(bc1$number, rep(10, 10))
+    bc1 <- binCount1D(1:20, seq(0, 20, 2))
+    expect_equal(bc1$xbreaks, seq(0, 20, 2))
+    expect_equal(bc1$xmids, seq(1, 19, 2))
+    expect_equal(bc1$number, rep(2, 10))
     # following results checked by eye
     set.seed(123)
     x <- rnorm(10)
@@ -109,13 +133,6 @@ test_that("binCount1D", {
             c(0, 1, 2, 1),
             c(0, 1, 2, 0),
             c(0, 0, 1, 1)))
-})
-
-test_that("binCount2D", {
-    bc <- binCount1D(1:100, seq(0, 100, 10))
-    expect_equal(bc$xbreaks, seq(0, 100, 10))
-    expect_equal(bc$xmids, seq(5, 95, 10))
-    expect_equal(bc$number, rep(10, 10))
 })
 
 test_that("Coriolis", {

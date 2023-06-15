@@ -7,15 +7,11 @@
 binCount2D(x, y, xbreaks, ybreaks, flatten = FALSE)
 }
 \arguments{
-\item{x}{vector of numerical values.}
+\item{x, y}{vectors of numerical values.}
 
-\item{y}{vector of numerical values.}
-
-\item{xbreaks}{Vector of values of \code{x} at the boundaries between bins, calculated using
-[\verb{pretty``]}(x)` if not supplied.}
-
-\item{ybreaks}{Vector of values of \code{y} at the boundaries between bins, calculated using
-\code{\link{pretty}}\code{(y)} if not supplied.}
+\item{xbreaks, ybreaks}{vector of values of \code{x} and \code{y}
+at the boundaries between the 2D bins, calculated using
+\code{\link[=pretty]{pretty()}} on each of \code{x} and \code{y}, if not supplied.}
 
 \item{flatten}{A logical value indicating whether
 the return value also contains equilength
