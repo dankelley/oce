@@ -11,30 +11,35 @@ binApply2D(x, y, f, xbreaks, ybreaks, FUN, ...)
 
 \item{y}{a vector of numerical values.}
 
-\item{f}{a vector of data to which the elements of \code{FUN} may be
-supplied}
+\item{f}{a vector of data to which \code{FUN} will be applied.}
 
 \item{xbreaks}{values of \code{x} at the boundaries between the
 bins; calculated using \code{\link[=pretty]{pretty()}} if not supplied.}
 
 \item{ybreaks}{as \code{xbreaks}, but for \code{y}.}
 
-\item{FUN}{univariate function that is applied to the \code{f} data within
-any given bin}
+\item{FUN}{function that is applied to the \code{f} values
+in each (x,y) bin.  This must take two numeric vectors
+as input, and return a single numeric value.}
 
-\item{\dots}{arguments to pass to the function \code{FUN}}
+\item{\dots}{optional arguments to pass to \code{FUN}.}
 }
 \value{
-A list with the following elements: the breaks in \code{x} and
-\code{y} (i.e. \code{xbreaks} and \code{ybreaks}), the break mid-points
-(i.e. \code{xmids} and \code{ymids}), and a matrix containing the
-result of applying \code{FUN()} to the \code{f} values, as
-subsetted by these breaks.
+A list with the following elements:
+\code{xbreaks} and \code{ybreaks} as used, mid-points
+\code{xmids} and \code{ymids}, and \code{result}, a matrix containing the
+result of applying \code{FUN()} to the \code{f} values
+in the designated bins.
 }
 \description{
 The function \code{FUN} is applied to \code{f} in bins specified by
-\code{xbreaks} and \code{ybreaks}.  (If \code{FUN} is \code{\link[=mean]{mean()}},
-consider using \code{\link[=binMean2D]{binMean2D()}} instead, since it should be faster.)
+\code{xbreaks} and \code{ybreaks}. The bins are open at the left and closed
+on the right (see \code{\link[=binApply1D]{binApply1D()}} for an explanation in 1D).
+}
+\details{
+If \code{FUN} is \code{\link[=mean]{mean()}},
+consider using \code{\link[=binMean2D]{binMean2D()}} instead, which may be faster
+for large datasets.
 }
 \examples{
 library(oce)
@@ -49,11 +54,10 @@ if (requireNamespace("ocedata", quietly=TRUE)) {
     drawPalette(colormap=cm, zlab="Secchi Depth")
     data(coastlineWorld)
     mapPlot(coastlineWorld, longitudelim=c(-5, 20), latitudelim=c(50, 66),
-      grid=5, col="gray", projection="+proj=lcc +lat_1=50 +lat_2=65")
+        grid=5, col="gray", projection="+proj=lcc +lat_1=50 +lat_2=65")
     bc <- binApply2D(secchi$longitude, secchi$latitude,
-                     pretty(secchi$longitude, 80),
-                     pretty(secchi$latitude, 40),
-                     f=secchi$depth, FUN=mean)
+        pretty(secchi$longitude, 80), pretty(secchi$latitude, 40),
+        f=secchi$depth, FUN=mean)
     mapImage(bc$xmids, bc$ymids, bc$result, zlim=cm$zlim, col=cm$zcol)
     mapPolygon(coastlineWorld, col="gray")
 }

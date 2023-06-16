@@ -1037,40 +1037,47 @@ rangeExtended <- function(x, extend=0.04) # extend by 4% on each end, like axes
 #' Apply a function to vector data
 #'
 #' The function `FUN` is applied to `f` in bins specified by
-#' `xbreaks`.  (If `FUN` is [mean()],
-#' consider using [binMean2D()] instead, since it should be faster.)
+#' `xbreaks`.  Following the convention of [cut()], the bins are
+#' open on the left and closed on the right.  That is, a point `x`
+#' is in bin `i` if the following is true
+#'```
+#' xbreaks[i] < x & x <= xbreaks[i+1]
+#'```
+#'
+#' If `FUN` is [mean()],
+#' consider using [binMean1D()] instead, which may be faster
+#' for large datasets.
 #'
 #' @param x a vector of numerical values.
 #'
-#' @param f a vector of data to which the elements of `FUN` may be
-#' supplied
+#' @param f a vector of data to which `FUN` will be applied.
 #'
-#' @param xbreaks values of x at the boundaries between bins; calculated using
-#' [pretty()] if not supplied.
+#' @param xbreaks optional vector holding values of x at the boundaries between bins.
+#' If this is not given, it is computed by calling [pretty()] with n=20 segments.
 #'
-#' @param FUN function to apply to the data
+#' @param FUN function that is applied to the `f` values
+#' in each x bin.  This must take a single numeric vector
+#' as input, and return a single numeric value.
 #'
-#' @param \dots arguments to pass to the function `FUN`
+#' @param \dots optional arguments to pass to `FUN`.
 #'
-#' @return A list with the following elements: the breaks in x and y
-#' (`xbreaks` and `ybreaks`), the break mid-points (`xmids` and
-#' `ymids`), and a matrix containing the result of applying function
-#' `FUN` to `f` subsetted by these breaks.
-#'
-#' @author Dan Kelley
+#' @return A list with the following elements: `xbreaks` as
+#' used, `xmids` (the mid-points between those breaks) and
+#' `result` (the result of applying `FUN` to the `f` values
+#' in the designated bins).
 #'
 #' @examples
 #' library(oce)
-#' # salinity profile with median and quartile 1 and 3
+#' # salinity profile (black) with 1-dbar bin means (red)
 #' data(ctd)
+#' plotProfile(ctd, "salinity")
 #' p <- ctd[["pressure"]]
 #' S <- ctd[["salinity"]]
-#' q1 <- binApply1D(p, S, pretty(p, 30), function(x) quantile(x, 1/4))
-#' q3 <- binApply1D(p, S, pretty(p, 30), function(x) quantile(x, 3/4))
-#' plotProfile(ctd, "salinity", col="gray", type="n")
-#' polygon(c(q1$result, rev(q3$result)),
-#' c(q1$xmids, rev(q1$xmids)), col="gray")
-#' points(S, p, pch=20)
+#' pbreaks <- seq(0, max(p), 1)
+#' binned <- binApply1D(p, S, pbreaks, mean)
+#' lines(binned$result, binned$xmids, lwd=2, col=rgb(1, 0, 0, 0.9))
+#'
+#' @author Dan Kelley
 #'
 #' @family bin-related functions
 binApply1D <- function(x, f, xbreaks, FUN, ...)
@@ -1085,79 +1092,50 @@ binApply1D <- function(x, f, xbreaks, FUN, ...)
         stop("must supply 'FUN'")
     if (!is.function(FUN))
         stop("'FUN' must be a function")
-    #<2103> cat(vectorShow(names(xbreaks), n=100))
-    fCut <- cut(x, xbreaks, include.lowest=TRUE, labels=FALSE)
-    #?fCut <- cut(x, xbreaks, labels=FALSE) # may have NAs
-    fSplit <- split(f, fCut)
-    #?indices <- seq_along(levels(fSplit))
-    #<2103> targetNames <- as.integer(names(fSplit))
-    #?result <- rep(NA_real_, length(xbreaks)-1L) # FIXME: ensure xbreaks has length >1
-    #<2103> cat(vectorShow(outputBins, n=100))
-    #<2103> cat(vectorShow(targetNames, n=100))
-    #<2103> cat(vectorShow(names(fSplit), n=100))
-    #?tmp <- unlist(lapply(fSplit, FUN, ...))
-    xmids <- xbreaks[-1]-0.5*diff(xbreaks)
     nbreaks <- length(xbreaks)
+    if (nbreaks < 2)
+        stop("must have at least 2 breaks")
+    xmids <- xbreaks[-1]-0.5*diff(xbreaks)
     result <- rep(NA_real_, nbreaks - 1L)
     for (i in seq_len(nbreaks - 1L)) {
         look <- xbreaks[i] < x & x <= xbreaks[i+1]
         result[i] <- if (sum(look) > 0L) FUN(f[look]) else NA
     }
-    #?OLDresult <- unname(unlist(lapply(fSplit, function(fs) if (length(fs)) FUN(fs) else 0.0)))
-    #browser()
-    #?result[as.integer(names(tmp))] <- tmp
-    #<2103> cat(vectorShow(outputBins, n=100))
-    #<2103> #<2103> message("next is result")
-    #<2103> print(result)
-    #<2103> result[!is.finite(result)] <- NA
-    #<2103> names(result) <- NULL
-    #<2103> # Put some NAs at start and end of 'result', if required because of
-    #<2103> # 'xbreaks' bins that have no 'x' data.
-    #<2103> xmin <- min(x, na.rm=TRUE)
-    #<2103> xmax <- max(x, na.rm=TRUE)
-    #<2103> nxbreaks <- length(xbreaks)
-    #<2103> # Add leading/trailing NAs if data extend beyond xbreaks
-    #<2103> if (xmin > xbreaks[2]) {
-    #<2103>     message("DEK case 1")
-    #<2103>     m <- which(xbreaks < xmin)[1]
-    #<2103>     result <- c(rep(NA, m), result)
-    #<2103> }
-    #<2103> if (xmax < xbreaks[nxbreaks]) {
-    #<2103>     message("DEK case 2")
-    #<2103>     m <- which(xbreaks > xmax)[1]
-    #<2103>     result <- c(result, rep(NA, nxbreaks-m))
-    #<2103> }
     list(xbreaks=xbreaks, xmids=xmids, result=result)
 }
 
 #' Apply a function to matrix data
 #'
 #' The function `FUN` is applied to `f` in bins specified by
-#' `xbreaks` and `ybreaks`.  (If `FUN` is [mean()],
-#' consider using [binMean2D()] instead, since it should be faster.)
+#' `xbreaks` and `ybreaks`. The bins are open at the left and closed
+#' on the right (see [binApply1D()] for an explanation in 1D).
+#'
+#' If `FUN` is [mean()],
+#' consider using [binMean2D()] instead, which may be faster
+#' for large datasets.
 #'
 #' @param x a vector of numerical values.
 #'
 #' @param y a vector of numerical values.
 #'
-#' @param f a vector of data to which the elements of `FUN` may be
-#' supplied
+#' @param f a vector of data to which `FUN` will be applied.
 #'
 #' @param xbreaks values of `x` at the boundaries between the
 #' bins; calculated using [pretty()] if not supplied.
 #'
 #' @param ybreaks as `xbreaks`, but for `y`.
 #'
-#' @param FUN univariate function that is applied to the `f` data within
-#' any given bin
+#' @param FUN function that is applied to the `f` values
+#' in each (x,y) bin.  This must take two numeric vectors
+#' as input, and return a single numeric value.
 #'
-#' @param \dots arguments to pass to the function `FUN`
+#' @param \dots optional arguments to pass to `FUN`.
 #'
-#' @return A list with the following elements: the breaks in `x` and
-#' `y` (i.e. `xbreaks` and `ybreaks`), the break mid-points
-#' (i.e. `xmids` and `ymids`), and a matrix containing the
-#' result of applying `FUN()` to the `f` values, as
-#' subsetted by these breaks.
+#' @return A list with the following elements:
+#' `xbreaks` and `ybreaks` as used, mid-points
+#' `xmids` and `ymids`, and `result`, a matrix containing the
+#' result of applying `FUN()` to the `f` values
+#' in the designated bins.
 #'
 #' @author Dan Kelley
 #'
@@ -1174,11 +1152,10 @@ binApply1D <- function(x, f, xbreaks, FUN, ...)
 #'     drawPalette(colormap=cm, zlab="Secchi Depth")
 #'     data(coastlineWorld)
 #'     mapPlot(coastlineWorld, longitudelim=c(-5, 20), latitudelim=c(50, 66),
-#'       grid=5, col="gray", projection="+proj=lcc +lat_1=50 +lat_2=65")
+#'         grid=5, col="gray", projection="+proj=lcc +lat_1=50 +lat_2=65")
 #'     bc <- binApply2D(secchi$longitude, secchi$latitude,
-#'                      pretty(secchi$longitude, 80),
-#'                      pretty(secchi$latitude, 40),
-#'                      f=secchi$depth, FUN=mean)
+#'         pretty(secchi$longitude, 80), pretty(secchi$latitude, 40),
+#'         f=secchi$depth, FUN=mean)
 #'     mapImage(bc$xmids, bc$ymids, bc$result, zlim=cm$zlim, col=cm$zcol)
 #'     mapPolygon(coastlineWorld, col="gray")
 #' }
@@ -1225,7 +1202,7 @@ binApply2D <- function(x, y, f, xbreaks, ybreaks, FUN, ...)
     } else {
         for (ix in seq.int(1, nxbreaks-1)) {
             for (iy in seq.int(1, nybreaks-1)) {
-                keep <- xbreaks[ix] <= x & x < xbreaks[ix+1] & ybreaks[iy] <= y & y < ybreaks[iy+1]
+                keep <- xbreaks[ix] < x & x <= xbreaks[ix+1] & ybreaks[iy] < y & y <= ybreaks[iy+1]
                 if (any(keep))
                     res[ix, iy] <- FUN(f[keep], ...)
             }

@@ -9,39 +9,47 @@ binApply1D(x, f, xbreaks, FUN, ...)
 \arguments{
 \item{x}{a vector of numerical values.}
 
-\item{f}{a vector of data to which the elements of \code{FUN} may be
-supplied}
+\item{f}{a vector of data to which \code{FUN} will be applied.}
 
-\item{xbreaks}{values of x at the boundaries between bins; calculated using
-\code{\link[=pretty]{pretty()}} if not supplied.}
+\item{xbreaks}{optional vector holding values of x at the boundaries between bins.
+If this is not given, it is computed by calling \code{\link[=pretty]{pretty()}} with n=20 segments.}
 
-\item{FUN}{function to apply to the data}
+\item{FUN}{function that is applied to the \code{f} values
+in each x bin.  This must take a single numeric vector
+as input, and return a single numeric value.}
 
-\item{\dots}{arguments to pass to the function \code{FUN}}
+\item{\dots}{optional arguments to pass to \code{FUN}.}
 }
 \value{
-A list with the following elements: the breaks in x and y
-(\code{xbreaks} and \code{ybreaks}), the break mid-points (\code{xmids} and
-\code{ymids}), and a matrix containing the result of applying function
-\code{FUN} to \code{f} subsetted by these breaks.
+A list with the following elements: \code{xbreaks} as
+used, \code{xmids} (the mid-points between those breaks) and
+\code{result} (the result of applying \code{FUN} to the \code{f} values
+in the designated bins).
 }
 \description{
 The function \code{FUN} is applied to \code{f} in bins specified by
-\code{xbreaks}.  (If \code{FUN} is \code{\link[=mean]{mean()}},
-consider using \code{\link[=binMean2D]{binMean2D()}} instead, since it should be faster.)
+\code{xbreaks}.  Following the convention of \code{\link[=cut]{cut()}}, the bins are
+open on the left and closed on the right.  That is, a point \code{x}
+is in bin \code{i} if the following is true
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{xbreaks[i] < x & x <= xbreaks[i+1]
+}\if{html}{\out{</div>}}
+}
+\details{
+If \code{FUN} is \code{\link[=mean]{mean()}},
+consider using \code{\link[=binMean1D]{binMean1D()}} instead, which may be faster
+for large datasets.
 }
 \examples{
 library(oce)
-# salinity profile with median and quartile 1 and 3
+# salinity profile (black) with 1-dbar bin means (red)
 data(ctd)
+plotProfile(ctd, "salinity")
 p <- ctd[["pressure"]]
 S <- ctd[["salinity"]]
-q1 <- binApply1D(p, S, pretty(p, 30), function(x) quantile(x, 1/4))
-q3 <- binApply1D(p, S, pretty(p, 30), function(x) quantile(x, 3/4))
-plotProfile(ctd, "salinity", col="gray", type="n")
-polygon(c(q1$result, rev(q3$result)),
-c(q1$xmids, rev(q1$xmids)), col="gray")
-points(S, p, pch=20)
+pbreaks <- seq(0, max(p), 1)
+binned <- binApply1D(p, S, pbreaks, mean)
+lines(binned$result, binned$xmids, lwd=2, col=rgb(1, 0, 0, 0.9))
 
 }
 \seealso{
