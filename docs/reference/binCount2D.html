@@ -85,22 +85,14 @@ successive pairs of breaks in x and y.</p>
 
     <div id="arguments">
     <h2>Arguments</h2>
-    <dl><dt>x</dt>
-<dd><p>vector of numerical values.</p></dd>
+    <dl><dt>x, y</dt>
+<dd><p>vectors of numerical values.</p></dd>
 
 
-<dt>y</dt>
-<dd><p>vector of numerical values.</p></dd>
-
-
-<dt>xbreaks</dt>
-<dd><p>Vector of values of <code>x</code> at the boundaries between bins, calculated using
-[<code>pretty``]</code>(x)` if not supplied.</p></dd>
-
-
-<dt>ybreaks</dt>
-<dd><p>Vector of values of <code>y</code> at the boundaries between bins, calculated using
-<code><a href="https://rdrr.io/r/base/pretty.html" class="external-link">pretty</a></code><code>(y)</code> if not supplied.</p></dd>
+<dt>xbreaks, ybreaks</dt>
+<dd><p>vector of values of <code>x</code> and <code>y</code>
+at the boundaries between the 2D bins, calculated using
+<code><a href="https://rdrr.io/r/base/pretty.html" class="external-link">pretty()</a></code> on each of <code>x</code> and <code>y</code>, if not supplied.</p></dd>
 
 
 <dt>flatten</dt>
