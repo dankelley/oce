@@ -114,11 +114,11 @@ setMethod(f="summary",
     signature="adv",
     definition=function(object, ...) {
         cat("ADV Summary\n-----------\n\n", ...)
-        cat(paste("* Instrument:             ", object@metadata$instrumentType,
+        cat(paste("* Instrument:    ", object@metadata$instrumentType,
             ", serial number ``", object@metadata$serialNumber, "``\n", sep=""))
-        cat(paste("* Source filename:        ``", object@metadata$filename, "``\n", sep=""))
+        cat(paste("* Filename:      `", object@metadata$filename, "`\n", sep=""))
         if ("latitude" %in% names(object@metadata)) {
-            cat(paste("* Location:              ",
+            cat(paste("* Location:     ",
                 if (is.na(object@metadata$latitude)) {
                     "unknown latitude"
                 } else {
