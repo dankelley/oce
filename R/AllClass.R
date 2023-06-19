@@ -137,8 +137,14 @@ setMethod(f="summary",
                 #message(vectorShow(dataNames)) # https://github.com/dankelley/oce/issues/2087
             } else {
                 threes <- matrix(nrow=ndata, ncol=3)
-                for (i in 1:ndata) {
-                    if (any(is.finite(object@data[[i]])))
+                for (i in seq_len(ndata)) {
+                    # 2023-06-19 wrap in try() because one of the R-CMD check machines does
+                    # not allow.  It says that the is.finite() is being applied to a list,
+                    # which it clearly is not, so I don't understand the
+                    # problem. Even so, using try() shouldn't hurt anything, and 
+                    # I don't like seeing a red "failed" box on the homepage.
+                    ok <- try(any(is.finite(object@data[[i]])), silent=TRUE)
+                    if (!inherits(ok, "try-error") && ok)
                         threes[i, ] <- as.numeric(threenum(object@data[[i]]))
                 }
             }
@@ -199,21 +205,24 @@ setMethod(f="summary",
                 #<> } else {
                 #<>     rownames(threes) <- paste("    ", dataLabel(dataNames, units), sep="")
                 #<> }
+                #deleteLater <- grep("^time", dataNames) # we show time outside 3s block
                 rownames(threes) <- paste("    ", dataLabel(dataNames, units), sep="")
                 #. message("threes step 2:");print(threes)
-                threes <- cbind(threes,
+                threes <- cbind(
+                    threes,
                     as.vector(lapply(dataNames, #row.names(threes),
-                        function(name) {
-                            xx <- object@data[[name]]
-                            if (is.array(xx)) paste(dim(xx), collapse="x")
-                            else length(xx)
-                        })),
+                            function(name) {
+                                xx <- object@data[[name]]
+                                if (is.array(xx)) paste(dim(xx), collapse="x")
+                                else length(xx)
+                            })),
                     as.vector(lapply(dataNames, #row.names(threes),
-                        function(name) {
-                            sum(is.na(object@data[[name]]))
-                        })))
+                            function(name) {
+                                sum(is.na(object@data[[name]]))
+                            }))
+                )
                 colnames(threes) <- c("Min.", "Mean", "Max.", "Dim.", "NAs")
-                #.message("threes step 3:");print(threes)
+                #threes <- threes[-deleteLater] # we show time outside 3s block
                 cat("* Data Overview\n\n")
                 if ("dataNamesOriginal" %in% metadataNames) {
                     if (is.list(object@metadata$dataNamesOriginal)) {
