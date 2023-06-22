@@ -8,7 +8,8 @@
 * Change `plotTS()` to obey `rho1000` parameter again (issue 2085).
 * Change `read.argo()` to translate more variable names.
 * Change `read.netcdf()` to read more items.
-* Change `summary,adp-method()` to handle the new format for AD2CP data (issue 2087).
+* Change `read.rsk()` to obey the `tz` argument (issue 2108).
+* Change `summary-adp-method()` to handle the new format for AD2CP data (issue 2087).
 
 # oce 1.8.0 (on CRAN)
 

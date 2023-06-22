@@ -127,12 +127,14 @@ file:</p>
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span>oceEOS<span class="op">=</span><span class="st">"gsw"</span><span class="op">)</span></span></code></pre></div>
 <p><em>but</em> it should be noted that setting values in
 <code>~/.Rprofile</code> will render the user’s code non-reproducible
-(unless that file is provided along with the analysis code). The better
-method is to simply supply desired properties to relevant functions,
-e.g. calling <code>plotTS(...,eos="UNESCO")</code> to get a graph in an
-old format that shows Potential Temperature vs Practical Salinity, if
-that is required instead of the new standard of Conservative Temperature
-vs Absolute Salinity.</p>
+(unless that file is provided along with the analysis code).</p>
+<p>The preferred method is not to use <code>~/.Rprofile</code>, but
+instead to specify the desired properties as arguments to relevant
+functions. For example, calling <code>plotTS(...,eos="unesco")</code>
+instead of letting <code>eos</code> take on the default value of
+<code>"gsw"</code>. (It is the ability to specify a choice by such a
+parameter that is indicated in the right-most column of the following
+table.)</p>
 <table class="table">
 <colgroup>
 <col width="30%">
@@ -142,7 +144,7 @@ vs Absolute Salinity.</p>
 <thead><tr class="header">
 <th>Name</th>
 <th>Value</th>
-<th>Settable as a function parameter</th>
+<th>Selected by a function parameter</th>
 </tr></thead>
 <tbody>
 <tr class="odd">
