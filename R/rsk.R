@@ -645,8 +645,11 @@ setMethod(f="plot",
 #'
 #' @template encodingIgnoredTemplate
 #'
-#' @param tz the timezone assumed for the CTD data.  If `tz` is not provided
-#' as an aargument, then the value obtained with `options()$oceTz` is used.
+#' @param tz the timezone assumed for the time values stored in the
+#' data file.  Unless the user has set an alternative value in the
+#' `~/.Rprofile` file, the default will be `"UTC"`; see the
+#' \dQuote{Altering oce Defaults} vignette for more on the use
+#' of the `~/.Rprofile` file.
 #'
 #' @param tzOffsetLocation offset, in hours, between the CTD clock and
 #' the clock in the controlling computer/tablet/phone (if one was used during
@@ -654,8 +657,9 @@ setMethod(f="plot",
 #' controller to hydrographic information from the CTD, using timestamps as an
 #' index (see "A note on location information" in \dQuote{Details}).
 #' If the user supplies a value for `tzOffsetLocation`, then that is used.
-#' If not, an attempt is made to infer it from a table named `epochs` in the
-#' file. If no value can be inferred from either of these two methods, then
+#' If not, an attempt is made to infer it from an item named `UTCdelta`
+#' that might be present within a table named `epochs` in the file. If no
+#' value can be inferred from either of these two methods, then
 #' `tzOffsetLocation` is set to zero.
 #'
 #' @param patm controls the handling of atmospheric pressure, an important issue
