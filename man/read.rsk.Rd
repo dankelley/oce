@@ -44,7 +44,8 @@ attempt will be made to infer the type from the file name and contents.}
 
 \item{encoding}{ignored.}
 
-\item{tz}{time zone.  The value \code{oceTz} is set at package setup.}
+\item{tz}{the timezone assumed for the CTD data.  If \code{tz} is not provided
+as an aargument, then the value obtained with \code{options()$oceTz} is used.}
 
 \item{tzOffsetLocation}{offset, in hours, between the CTD clock and
 the clock in the controlling computer/tablet/phone (if one was used during

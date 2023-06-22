@@ -645,7 +645,8 @@ setMethod(f="plot",
 #'
 #' @template encodingIgnoredTemplate
 #'
-#' @param tz time zone.  The value `oceTz` is set at package setup.
+#' @param tz the timezone assumed for the CTD data.  If `tz` is not provided
+#' as an aargument, then the value obtained with `options()$oceTz` is used.
 #'
 #' @param tzOffsetLocation offset, in hours, between the CTD clock and
 #' the clock in the controlling computer/tablet/phone (if one was used during
