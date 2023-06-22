@@ -768,7 +768,7 @@ read.rsk <- function(file, from=1, to, by=1, type, encoding=NA,
                     if (nrow(tmp) > 0L) {
                         for (tmpname in names(tmp)) {
                             if (inherits(tmp[[tmpname]], "blob")) {
-                                oceDebug(debug, "        Skipping @metadata$", name, "$", tmpname, " because it is a blob\n", sep="")
+                                oceDebug(debug, "    Not storing @metadata$", name, "$", tmpname, " because it is a blob\n", sep="")
                                 tmp$tmpname <- NULL
                             }
                         }
@@ -875,7 +875,8 @@ read.rsk <- function(file, from=1, to, by=1, type, encoding=NA,
                     })
                 t1000 <- DBI::dbFetch(qres, n=-1)[[1]]
                 RSQLite::dbClearResult(qres)
-                time <- numberAsPOSIXct(as.numeric(t1000) / 1000, type="unix")
+                time <- numberAsPOSIXct(as.numeric(t1000) / 1000, type="unix", tz=tz)
+                oceDebug(debug, "at rsk.R bookmark A 1 of 3: time[1] is ", format(time[1], "%Y-%m-%d %H:%M:%S (UTC%z, i.e. %Z)"), "\n")
             }
         }
         if (is.numeric(from) && from != 1 && all(is.na(time))) {
@@ -887,7 +888,8 @@ read.rsk <- function(file, from=1, to, by=1, type, encoding=NA,
                 })
             t1000 <- DBI::dbFetch(qres, n=-1)[[1]]
             RSQLite::dbClearResult(qres)
-            time <- numberAsPOSIXct(as.numeric(t1000) / 1000, type="unix")
+            time <- numberAsPOSIXct(as.numeric(t1000) / 1000, type="unix", tz=tz)
+            oceDebug(debug, "at rsk.R bookmark A 2 of 3: time[1] is ", format(time[1], "%Y-%m-%d %H:%M:%S (UTC%z, i.e. %Z)"), "\n")
         }
         # format to and from that match tstamp from the rsk file
         if (inherits(from, "POSIXt")) {
@@ -931,7 +933,8 @@ read.rsk <- function(file, from=1, to, by=1, type, encoding=NA,
         data <- data[timeOrder, ]
         oceDebug(debug, "after trimming data, it has dimension ", paste(dim(data), collapse="x"), "\n")
         tstamp <- data[, 1]
-        time <- numberAsPOSIXct(as.numeric(tstamp)/1000, type="unix")
+        time <- numberAsPOSIXct(as.numeric(tstamp)/1000, type="unix", tz=tz)
+        oceDebug(debug, "at rsk.R bookmark A 3 of 3: time[1] is ", format(time[1], "%Y-%m-%d %H:%M:%S (UTC%z, i.e. %Z)"), "\n")
         # Need to check if there is a datasetID column (for rskVersion >= 1.12.2)
         # If so, for now just extract it from the data matrix
         hasDatasetID <- sum(grep("datasetID", names(data))) > 0
