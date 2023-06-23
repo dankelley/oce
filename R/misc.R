@@ -1242,7 +1242,7 @@ binApply2D <- function(x, y, f, xbreaks, ybreaks, FUN, ...)
 #' [pretty()] if not supplied.
 #'
 #' @param include.lowest logical value indicating whether to include
-#' x values that equal xbreaks[1].  See \dQuote{Details}.
+#' `x` values that equal `xbreaks[1]`.  See \dQuote{Details}.
 #'
 #' @return A list with the following elements: the breaks (`xbreaks`,
 #' midpoints (`xmids`) between those breaks, and

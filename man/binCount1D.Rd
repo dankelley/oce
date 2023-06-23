@@ -13,7 +13,7 @@ binCount1D(x, xbreaks, include.lowest = FALSE)
 \code{\link[=pretty]{pretty()}} if not supplied.}
 
 \item{include.lowest}{logical value indicating whether to include
-x values that equal xbreaks\link{1}.  See \dQuote{Details}.}
+\code{x} values that equal \code{xbreaks[1]}.  See \dQuote{Details}.}
 }
 \value{
 A list with the following elements: the breaks (\code{xbreaks},
