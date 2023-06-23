@@ -5,6 +5,7 @@
 #include <vector>
 
 //#define DEBUG
+//#define DEBUGbc1d
 
 // These functions use the STL functions to find indices of the
 // relevant breaks.  Data exceeding the top break get index equal
@@ -27,29 +28,46 @@
 */
 
 extern "C" {
-    void bin_count_1d(int *nx, double *x, int *nxbreaks, double *xbreaks,
-            int *number, double *mean)
-    {
-
-        if (*nxbreaks < 2)
-            error("cannot have fewer than 1 break"); // already checked in R but be safe
-        std::vector<double> b(xbreaks, xbreaks + *nxbreaks);
-        std::sort(b.begin(), b.end()); // STL wants breaks ordered
-        for (int i = 0; i < (*nxbreaks-1); i++) {
-            number[i] = 0;
-        }
-        for (int i = 0; i < (*nx); i++) {
-            std::vector<double>::iterator lower;
-            lower = std::lower_bound(b.begin(), b.end(), x[i]);
-            int bi = lower - b.begin();
-            if (bi > 0 && bi < (*nxbreaks)) {
-#ifdef DEBUG
-                Rprintf("x: %6.3f   bi: %d    (%f to %f)\n", x[i], bi, xbreaks[bi-1], xbreaks[bi]);
+void bin_count_1d(int *nx, double *x, int *nxbreaks, double *xbreaks,
+                  int *include_lowest, int *number)
+{
+    if (*nxbreaks < 2)
+        error("cannot have fewer than 1 break"); // already checked in R but be safe
+#ifdef DEBUGbc1d
+    Rprintf("bin_count_1d() given *include_lowest=%d\n", *include_lowest);
 #endif
-                number[bi-1]++;
+    std::vector<double> b(xbreaks, xbreaks + *nxbreaks);
+    std::sort(b.begin(), b.end()); // STL wants breaks ordered
+    for (int i = 0; i < (*nxbreaks-1); i++) {
+        number[i] = 0;
+    }
+    for (int i = 0; i < (*nx); i++) {
+        std::vector<double>::iterator lower;
+        lower = std::lower_bound(b.begin(), b.end(), x[i]);
+        int bi = lower - b.begin();
+        if (bi > 0 && bi < (*nxbreaks)) {
+#ifdef DEBUGbc1d
+            Rprintf("x: %6.3f   bi: %d    (%f to %f)\n", x[i], bi, xbreaks[bi-1], xbreaks[bi]);
+#endif
+            number[bi-1]++;
+        }
+    }
+    // optionally, count how many x values might be at the left of the leftmost bin
+    if (*include_lowest != 0) {
+#ifdef DEBUGbc1d
+        Rprintf("will now see if any x are at lowest break value\n");
+#endif
+
+        for (int i = 0; i < (*nx); i++) {
+            if (x[i] == xbreaks[0]) {
+                number[0]++;
+#ifdef DEBUGbc1d
+                Rprintf("x=%6.3f included in first bin, yielding number[0]=%d\n", x[i], number[0]);
+#endif
             }
         }
     }
+}
 }
 
 extern "C" {

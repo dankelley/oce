@@ -1219,11 +1219,19 @@ binApply2D <- function(x, y, f, xbreaks, ybreaks, FUN, ...)
 #' Count the number of elements of a given vector that fall within
 #' successive pairs of values within a second vector.
 #'
-#' To contextualize this in terms of base R functions, note that
+#' The sub-intervals defined by the `breaks` argument are open
+#' on the left and closed on the right, to match the behaviour
+#' of [cut()].  An open interval does not include points on
+#' the boundary, and so any `x` values that exactly match
+#' the first `breaks` value will not be counted.  To count such
+#' points, set `include.lowest` to TRUE.
+#'
+#' To contextualize `binCount1D()` in terms of base R functions,
+#' note that
 #' ```
-#' binCount1D(1:20, seq(0, 20, 2))
+#' binCount1D(1:20, seq(0, 20, 2))$number
 #' ```
-#' is analogous to
+#' matches
 #' ```
 #' unname(table(cut(1:20, seq(0, 20, 2))))
 #' ```
@@ -1233,6 +1241,9 @@ binApply2D <- function(x, y, f, xbreaks, ybreaks, FUN, ...)
 #' @param xbreaks Vector of values of x at the boundaries between bins, calculated using
 #' [pretty()] if not supplied.
 #'
+#' @param include.lowest logical value indicating whether to include
+#' x values that equal xbreaks[1].  See \dQuote{Details}.
+#'
 #' @return A list with the following elements: the breaks (`xbreaks`,
 #' midpoints (`xmids`) between those breaks, and
 #' the count (`number`) of `x` values between successive breaks.
@@ -1240,7 +1251,7 @@ binApply2D <- function(x, y, f, xbreaks, ybreaks, FUN, ...)
 #' @author Dan Kelley
 #'
 #' @family bin-related functions
-binCount1D <- function(x, xbreaks)
+binCount1D <- function(x, xbreaks, include.lowest=FALSE)
 {
     if (missing(x))
         stop("must supply 'x'")
@@ -1249,13 +1260,16 @@ binCount1D <- function(x, xbreaks)
     nxbreaks <- length(xbreaks)
     if (nxbreaks < 2)
         stop("must have more than 1 break")
-    res <- .C("bin_count_1d", length(x), as.double(x),
-        length(xbreaks), as.double(xbreaks),
-        number=integer(nxbreaks-1),
-        result=double(nxbreaks-1),
+    res <- .C("bin_count_1d",
+        nx=length(x),
+        x=as.double(x),
+        nxbreaks=as.integer(nxbreaks),
+        xbreaks=as.double(xbreaks),
+        include_lowest=as.integer(include.lowest),
+        number=integer(nxbreaks-1L),
         NAOK=TRUE, PACKAGE="oce")
     list(xbreaks=xbreaks,
-        xmids=xbreaks[-1]-0.5*diff(xbreaks),
+        xmids=xbreaks[-1L] - 0.5*diff(xbreaks),
         number=res$number)
 }
 
