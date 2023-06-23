@@ -149,3 +149,28 @@ test_that("binCount1D() with/without include.lowest, tested against correspondin
     expect_equal(binCount1DB$number, as.integer(table(as.integer(cutB))))
 })
 
+test_that("binMean1D() with/without include.lowest, tested against corresponding cut()", {
+    # see https://github.com/dankelley/oce/issues/2112 and also the test just
+    # previous to this one.
+    x <- 1:5
+    f <- x^2
+    b <- seq(1, 5, 2)
+    binMean1DA <- binMean1D(x, f, b)
+    # str(binMean1DA)
+    # List of 4
+    #  $ xbreaks: num [1:3] 1 3 5
+    #  $ xmids  : num [1:2] 2 4
+    #  $ number : int [1:2] 2 2
+    #  $ result : num [1:2] 6.5 20.5
+    binMean1DB <- binMean1D(x, f, b, include.lowest=TRUE)
+    # str(binMean1DB)
+    # List of 4
+    #  $ xbreaks: num [1:3] 1 3 5
+    #  $ xmids  : num [1:2] 2 4
+    #  $ number : int [1:2] 3 2
+    #  $ result : num [1:2] 4.67 20.5
+    expect_equal(binMean1DA$result, c(mean(f[2:3]), mean(f[4:5])))
+    expect_equal(binMean1DB$result, c(mean(f[1:3]), mean(f[4:5])))
+})
+
+

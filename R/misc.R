@@ -1219,7 +1219,7 @@ binApply2D <- function(x, y, f, xbreaks, ybreaks, FUN, ...)
 #' Count the number of elements of a given vector that fall within
 #' successive pairs of values within a second vector.
 #'
-#' The sub-intervals defined by the `breaks` argument are open
+#' The sub-intervals defined by the `xbreaks` argument are open
 #' on the left and closed on the right, to match the behaviour
 #' of [cut()].  An open interval does not include points on
 #' the boundary, and so any `x` values that exactly match
@@ -1279,12 +1279,23 @@ binCount1D <- function(x, xbreaks, include.lowest=FALSE)
 #' vector `x`. A common example might be averaging CTD profile
 #' data into pressure bins (see \dQuote{Examples}).
 #'
-#' @param x vector of numerical values.
+#' The sub-intervals defined by the `xbreaks` argument are open
+#' on the left and closed on the right, to match the behaviour
+#' of [cut()].  An open interval does not include points on
+#' the boundary, and so any `x` values that exactly match
+#' the first `breaks` value will not be counted.  To include
+#' such points in the calculation, set `include.lowest` to TRUE.
 #'
-#' @param f vector of numerical values.
+#' @param x vector of numerical values that will be categorized into
+#' bins via the `xbreaks` parameter.
 #'
-#' @param xbreaks Vector of values of x at the boundaries between bins, calculated using
+#' @param f vector of numerical values that are associated with the `x` values.
+#'
+#' @param xbreaks vector of values of `x` at the boundaries between bins, calculated using
 #' [pretty()] if not supplied.
+#'
+#' @param include.lowest logical value indicating whether to include
+#' `x` values that equal `xbreaks[1]`.  See \dQuote{Details}.
 #'
 #' @return A list with the following elements: the breaks (`xbreaks`,
 #' midpoints (`xmids`) between those breaks,
@@ -1293,18 +1304,20 @@ binCount1D <- function(x, xbreaks, include.lowest=FALSE)
 #' `x` breaks.
 #'
 #' @examples
+#' # Plot raw temperature profile as circles, with lines indicating
+#' # the result of averaging in 1-metre depth intervals.
 #' library(oce)
 #' data(ctd)
 #' z <- ctd[["z"]]
 #' T <- ctd[["temperature"]]
-#' plot(T, z)
+#' plot(T, z, cex=0.3)
 #' TT <- binMean1D(z, T, seq(-100, 0, 1))
-#' lines(TT$result, TT$xmids, col="red")
+#' lines(TT$result, TT$xmids, col=rgb(1, 0, 0, 0.9), lwd=2)
 #'
 #' @author Dan Kelley
 #'
 #' @family bin-related functions
-binMean1D <- function(x, f, xbreaks)
+binMean1D <- function(x, f, xbreaks, include.lowest=FALSE)
 {
     if (missing(x))
         stop("must supply 'x'")
@@ -1319,15 +1332,20 @@ binMean1D <- function(x, f, xbreaks)
     nxbreaks <- length(xbreaks)
     if (nxbreaks < 2)
         stop("must have more than 1 break")
-    res <- .C("bin_mean_1d", length(x), as.double(x), as.double(f),
-        length(xbreaks), as.double(xbreaks),
+    res <- .C("bin_mean_1d",
+        nx=length(x),
+        x=as.double(x),
+        f=as.double(f),
+        nxbreaks=length(xbreaks),
+        xbreaks=as.double(xbreaks),
+        include_lowest=as.integer(include.lowest),
         number=integer(nxbreaks-1),
         result=double(nxbreaks-1),
         NAOK=TRUE, PACKAGE="oce")
     list(xbreaks=xbreaks,
-        xmids=xbreaks[-1]-0.5*diff(xbreaks),
+        xmids=xbreaks[-1L] - 0.5*diff(xbreaks),
         number=res$number,
-        result=if (fGiven) res$result else rep(NA, length=nx))
+        result=res$result)
 }
 
 #' Bin-count matrix data

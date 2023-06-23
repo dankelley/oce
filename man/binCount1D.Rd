@@ -25,7 +25,7 @@ Count the number of elements of a given vector that fall within
 successive pairs of values within a second vector.
 }
 \details{
-The sub-intervals defined by the \code{breaks} argument are open
+The sub-intervals defined by the \code{xbreaks} argument are open
 on the left and closed on the right, to match the behaviour
 of \code{\link[=cut]{cut()}}.  An open interval does not include points on
 the boundary, and so any \code{x} values that exactly match

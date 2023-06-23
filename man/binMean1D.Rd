@@ -4,15 +4,19 @@
 \alias{binMean1D}
 \title{Bin-average f=f(x)}
 \usage{
-binMean1D(x, f, xbreaks)
+binMean1D(x, f, xbreaks, include.lowest = FALSE)
 }
 \arguments{
-\item{x}{vector of numerical values.}
+\item{x}{vector of numerical values that will be categorized into
+bins via the \code{xbreaks} parameter.}
 
-\item{f}{vector of numerical values.}
+\item{f}{vector of numerical values that are associated with the \code{x} values.}
 
-\item{xbreaks}{Vector of values of x at the boundaries between bins, calculated using
+\item{xbreaks}{vector of values of \code{x} at the boundaries between bins, calculated using
 \code{\link[=pretty]{pretty()}} if not supplied.}
+
+\item{include.lowest}{logical value indicating whether to include
+\code{x} values that equal \code{xbreaks[1]}.  See \dQuote{Details}.}
 }
 \value{
 A list with the following elements: the breaks (\code{xbreaks},
@@ -26,14 +30,24 @@ Average the values of a vector \code{f} in bins defined on another
 vector \code{x}. A common example might be averaging CTD profile
 data into pressure bins (see \dQuote{Examples}).
 }
+\details{
+The sub-intervals defined by the \code{xbreaks} argument are open
+on the left and closed on the right, to match the behaviour
+of \code{\link[=cut]{cut()}}.  An open interval does not include points on
+the boundary, and so any \code{x} values that exactly match
+the first \code{breaks} value will not be counted.  To include
+such points in the calculation, set \code{include.lowest} to TRUE.
+}
 \examples{
+# Plot raw temperature profile as circles, with lines indicating
+# the result of averaging in 1-metre depth intervals.
 library(oce)
 data(ctd)
 z <- ctd[["z"]]
 T <- ctd[["temperature"]]
-plot(T, z)
+plot(T, z, cex=0.3)
 TT <- binMean1D(z, T, seq(-100, 0, 1))
-lines(TT$result, TT$xmids, col="red")
+lines(TT$result, TT$xmids, col=rgb(1, 0, 0, 0.9), lwd=2)
 
 }
 \seealso{
