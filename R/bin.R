@@ -3,16 +3,17 @@
 #' Apply a function to vector data
 #'
 #' The function `FUN` is applied to `f` in bins specified by
-#' `xbreaks`.  Following the convention of [cut()], the bins are
-#' open on the left and closed on the right.  That is, a point `x`
-#' is in bin `i` if the following is true
-#'```
-#' xbreaks[i] < x & x <= xbreaks[i+1]
-#'```
+#' `xbreaks`.
 #'
-#' If `FUN` is [mean()],
-#' consider using [binMean1D()] instead, which may be faster
-#' for large datasets.
+#' The sub-intervals defined by the `xbreaks` argument are open
+#' on the left and closed on the right, to match the behaviour
+#' of [cut()].  An open interval does not include points on
+#' the boundary, and so any `x` values that exactly match
+#' the first `breaks` value will not be counted.  To include
+#' such points in the calculation, set `include.lowest` to TRUE.
+#'
+#' If `FUN` is [mean()], consider using [binMean1D()] instead, which ought
+#' to be much faster for large datasets.
 #'
 #' @param x a vector of numerical values.
 #'
@@ -24,6 +25,9 @@
 #' @param FUN function that is applied to the `f` values
 #' in each x bin.  This must take a single numeric vector
 #' as input, and return a single numeric value.
+#'
+#' @param include.lowest logical value indicating whether to include
+#' `x` values that equal `xbreaks[1]`.  See \dQuote{Details}.
 #'
 #' @param \dots optional arguments to pass to `FUN`.
 #'
@@ -46,7 +50,7 @@
 #' @author Dan Kelley
 #'
 #' @family bin-related functions
-binApply1D <- function(x, f, xbreaks, FUN, ...)
+binApply1D <- function(x, f, xbreaks, FUN, include.lowest=FALSE, ...)
 {
     if (missing(x))
         stop("must supply 'x'")
@@ -61,11 +65,15 @@ binApply1D <- function(x, f, xbreaks, FUN, ...)
     nbreaks <- length(xbreaks)
     if (nbreaks < 2)
         stop("must have at least 2 breaks")
-    xmids <- xbreaks[-1]-0.5*diff(xbreaks)
+    xmids <- xbreaks[-1L] - 0.5*diff(xbreaks)
     result <- rep(NA_real_, nbreaks - 1L)
     for (i in seq_len(nbreaks - 1L)) {
-        look <- xbreaks[i] < x & x <= xbreaks[i+1]
-        result[i] <- if (sum(look) > 0L) FUN(f[look]) else NA
+        look <- if (i == 1L && include.lowest)
+            xbreaks[i] <= x & x <= xbreaks[i+1]
+        else
+            xbreaks[i] < x & x <= xbreaks[i+1]
+        if (any(look))
+            result[i] <- FUN(f[look])
     }
     list(xbreaks=xbreaks, xmids=xmids, result=result)
 }

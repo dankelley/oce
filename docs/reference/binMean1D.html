@@ -74,7 +74,7 @@ data into pressure bins (see &amp;#8220;Examples&amp;#8221;)."><!-- mathjax --><
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Bin-average f=f(x)</h1>
-    <small class="dont-index">Source: <a href="https://github.com/dankelley/oce/blob/HEAD/R/misc.R" class="external-link"><code>R/misc.R</code></a></small>
+    <small class="dont-index">Source: <a href="https://github.com/dankelley/oce/blob/HEAD/R/bin.R" class="external-link"><code>R/bin.R</code></a></small>
     <div class="hidden name"><code>binMean1D.Rd</code></div>
     </div>
 
@@ -85,22 +85,28 @@ data into pressure bins (see “Examples”).</p>
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">binMean1D</span><span class="op">(</span><span class="va">x</span>, <span class="va">f</span>, <span class="va">xbreaks</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">binMean1D</span><span class="op">(</span><span class="va">x</span>, <span class="va">f</span>, <span class="va">xbreaks</span>, include.lowest <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>x</dt>
-<dd><p>vector of numerical values.</p></dd>
+<dd><p>vector of numerical values that will be categorized into
+bins via the <code>xbreaks</code> parameter.</p></dd>
 
 
 <dt>f</dt>
-<dd><p>vector of numerical values.</p></dd>
+<dd><p>vector of numerical values that are associated with the <code>x</code> values.</p></dd>
 
 
 <dt>xbreaks</dt>
-<dd><p>Vector of values of x at the boundaries between bins, calculated using
+<dd><p>vector of values of <code>x</code> at the boundaries between bins, calculated using
 <code><a href="https://rdrr.io/r/base/pretty.html" class="external-link">pretty()</a></code> if not supplied.</p></dd>
+
+
+<dt>include.lowest</dt>
+<dd><p>logical value indicating whether to include
+<code>x</code> values that equal <code>xbreaks[1]</code>.  See “Details”.</p></dd>
 
 </dl></div>
     <div id="value">
@@ -112,6 +118,15 @@ midpoints (<code>xmids</code>) between those breaks,
 the count (<code>number</code>) of <code>x</code> values between successive breaks,
 and the resultant average (<code>result</code>) of <code>f</code>, classified by the
 <code>x</code> breaks.</p>
+    </div>
+    <div id="details">
+    <h2>Details</h2>
+    <p>The sub-intervals defined by the <code>xbreaks</code> argument are open
+on the left and closed on the right, to match the behaviour
+of <code><a href="https://rdrr.io/r/base/cut.html" class="external-link">cut()</a></code>.  An open interval does not include points on
+the boundary, and so any <code>x</code> values that exactly match
+the first <code>breaks</code> value will not be counted.  To include
+such points in the calculation, set <code>include.lowest</code> to TRUE.</p>
     </div>
     <div id="see-also">
     <h2>See also</h2>
@@ -130,13 +145,15 @@ and the resultant average (<code>result</code>) of <code>f</code>, classified by
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dankelley.github.io/oce/" class="external-link">oce</a></span><span class="op">)</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Plot raw temperature profile as circles, with lines indicating</span></span></span>
+<span class="r-in"><span><span class="co"># the result of averaging in 1-metre depth intervals.</span></span></span>
+<span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dankelley.github.io/oce/" class="external-link">oce</a></span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">ctd</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">z</span> <span class="op">&lt;-</span> <span class="va">ctd</span><span class="op">[[</span><span class="st">"z"</span><span class="op">]</span><span class="op">]</span></span></span>
 <span class="r-in"><span><span class="cn">T</span> <span class="op">&lt;-</span> <span class="va">ctd</span><span class="op">[[</span><span class="st">"temperature"</span><span class="op">]</span><span class="op">]</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="cn">T</span>, <span class="va">z</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="cn">T</span>, <span class="va">z</span>, cex<span class="op">=</span><span class="fl">0.3</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">TT</span> <span class="op">&lt;-</span> <span class="fu">binMean1D</span><span class="op">(</span><span class="va">z</span>, <span class="cn">T</span>, <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="op">-</span><span class="fl">100</span>, <span class="fl">0</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/lines.html" class="external-link">lines</a></span><span class="op">(</span><span class="va">TT</span><span class="op">$</span><span class="va">result</span>, <span class="va">TT</span><span class="op">$</span><span class="va">xmids</span>, col<span class="op">=</span><span class="st">"red"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/lines.html" class="external-link">lines</a></span><span class="op">(</span><span class="va">TT</span><span class="op">$</span><span class="va">result</span>, <span class="va">TT</span><span class="op">$</span><span class="va">xmids</span>, col<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/grDevices/rgb.html" class="external-link">rgb</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">0.9</span><span class="op">)</span>, lwd<span class="op">=</span><span class="fl">2</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="binMean1D-1.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>

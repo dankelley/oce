@@ -1,7 +1,7 @@
 # vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
 library(oce)
 
-test_that("binApply1D", {
+test_that("binApply1D old test", {
     set.seed(123)
     n <- 3
     x <- runif(n)
@@ -10,6 +10,27 @@ test_that("binApply1D", {
     expect_equal(b$xbreaks, c(0, 0.25, 0.5, 0.75, 1))
     expect_equal(b$xmids, c(0.125, 0.375, 0.625, 0.875))
     expect_equal(b$result, c(NA, 0.1249814763, NA, 0.6214249866))
+})
+
+test_that("binApply1D() with/without include.lowest, tested against corresponding cut()", {
+    # Test against the "binMean1D() with..." test, below.
+    x <- 1:5
+    f <- x^2
+    b <- seq(1, 5, 2)
+    binApply1DA <- binApply1D(x, f, b, mean)
+    # str(binApply1DA, digits.d=10)
+    # List of 3
+    #  $ xbreaks: num [1:3] 1 3 5
+    #  $ xmids  : num [1:2] 2 4
+    #  $ result : num [1:2] 6.833333333 20.833333333
+    binApply1DB <- binApply1D(x, f, b, mean, include.lowest=TRUE)
+    # str(binApply1DB, digits.d=10)
+    # List of 3
+    #  $ xbreaks: num [1:3] 1 3 5
+    #  $ xmids  : num [1:2] 2 4
+    #  $ result : num [1:2] 6.5 16.66666667
+    expect_equal(binApply1DA$result, c(mean(f[2:3]), mean(f[4:5])))
+    expect_equal(binApply1DB$result, c(mean(f[1:3]), mean(f[4:5])))
 })
 
 test_that("binMean1D", {

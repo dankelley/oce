@@ -472,6 +472,7 @@ setMethod("initializeFlagScheme",
 #' plot(ctd, eos="gsw")
 #'
 #' @aliases initialize,ctd-method
+#' @aliases initialize.ctd
 setMethod(f="initialize",
     signature="ctd",
     definition=function(.Object, pressure, salinity, temperature, conductivity, units, pressureType, deploymentType, ...) {
@@ -531,6 +532,7 @@ setMethod(f="initialize",
 #' @author Dan Kelley
 #'
 #' @family things related to ctd data
+#' @aliases summary.ctd
 setMethod(f="summary",
     signature="ctd",
     definition=function(object, ...) {
