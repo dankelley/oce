@@ -492,8 +492,17 @@ binMean2D <- function(x, y, f, xbreaks, ybreaks, flatten=FALSE, fill=FALSE, fill
 
 #' Bin-average a vector y, based on x values
 #'
-#' The `y` vector is averaged in bins defined for `x`.  Missing
-#' values in `y` are ignored.
+#' [binAverage()] works by calling [binMean1D()], after computing
+#' the `xbreaks` parameter of the latter function as `seq(xmin,xmax,xinc)`.
+#' Note that the return value of [binAverage()] uses only the `xmids` and
+#' `result` entries of the [binMean1D()] result.
+#'
+#' The sub-intervals defined by `xmin`, `xinc` and `xmax`
+#' arguments are open on the left and closed on the right, to match
+#' the behaviour of [cut()].  An open interval does not include
+#' points on the boundary, and so any `x` values that exactly match
+#' the first `breaks` value will not be counted.  To include
+#' such points in the calculation, set `include.lowest` to TRUE.
 #'
 #' @param x a vector of numerical values.
 #'
@@ -507,6 +516,10 @@ binMean2D <- function(x, y, f, xbreaks, ybreaks, flatten=FALSE, fill=FALSE, fill
 #'
 #' @param xinc width of bins, in terms of x value; 1/10th of `xmax-xmin`
 #' will be used if this is not provided.
+#'
+#' @param include.lowest logical value indicating whether to include
+#' `y` values for which the corresponding `x` is equal to `xmin`.
+#' See \dQuote{Details}.
 #'
 #' @return A list with two elements: `x`, the mid-points of the bins, and
 #' `y`, the average `y` value in the bins.
@@ -535,7 +548,7 @@ binMean2D <- function(x, y, f, xbreaks, ybreaks, flatten=FALSE, fill=FALSE, fill
 #' points(avg$x, avg$y, col="red")
 #'
 #' @family bin-related functions
-binAverage <- function(x, y, xmin, xmax, xinc)
+binAverage <- function(x, y, xmin, xmax, xinc, include.lowest=FALSE)
 {
     if (missing(y))
         stop("must supply 'y'")
@@ -549,14 +562,8 @@ binAverage <- function(x, y, xmin, xmax, xinc)
         stop("must have xmax > xmin")
     if (xinc <= 0)
         stop("must have xinc > 0")
-    xx <- head(seq(xmin, xmax, xinc), -1) + xinc / 2
-    #cat("xx:", xx, "\n")
-    nb <- length(xx)
-    #dyn.load("bin_average.so") # include this whilst debugging
-    yy <- .C("bin_average", length(x), as.double(x), as.double(y),
-        as.double(xmin), as.double(xmax), as.double(xinc),
-        #means=double(nb), NAOK=TRUE)$means
-        means=double(nb), NAOK=TRUE, PACKAGE="oce")$means # include this whilst debugging
-    list(x=xx, y=yy)
+    xbreaks <- seq(xmin, xmax, xinc)
+    res <- binMean1D(x, y, xbreaks, include.lowest=include.lowest)
+    list(x=res$xmids, y=res$result)
 }
 

@@ -7,6 +7,7 @@
 //#define DEBUG
 //#define DEBUGbc1d
 //#define DEBUGbm1d
+#define DEBUGba
 
 /*
 
@@ -24,8 +25,9 @@
 */
 
 extern "C" {
-void bin_count_1d(int *nx, double *x, int *nxbreaks, double *xbreaks,
-                  int *include_lowest, int *number)
+void bin_count_1d(
+    int *nx, double *x, int *nxbreaks, double *xbreaks, int *include_lowest,
+    int *number)
 {
     if (*nxbreaks < 2)
         error("cannot have fewer than 1 break"); // already checked in R but be safe
@@ -245,3 +247,76 @@ extern "C" {
 }
 #undef ij
 
+// removed this on 2023-06-24 because it's better for binAverage() to work by
+// calling binMean1D().
+//
+//extern "C" {
+//void bin_average(
+//    int *nx, double *x, double *y, double *xmin, double *xmax, double *xinc, int *include_lowest,
+//    double *means)
+//{
+//#ifdef DEBUGba
+//    Rprintf("*include_lowest = %d\n", *include_lowest);
+//#endif
+//    if (*nx < 1)
+//        error("invalid vector length (%d)", *nx);
+//    if (*xmin >= *xmax)
+//        error("xmin (%f) may not exceed xmax (%f)", *xmin, *xmax);
+//    if (*xinc <= 0)
+//        error("cannot have non-positive xinc (%f)", *xinc);
+//    // 'b' stands for bin
+//    int nb = (int)floor(((*xmax - *xmin) / *xinc));
+//#ifdef DEBUGba
+//    Rprintf("xmin=%f  xmax=%f  xinc=%f  so calculate nb=%d\n", *xmin, *xmax, *xinc, nb);
+//#endif
+//    if (nb < 1)
+//        error("calculated number of regions (%d) is less than 1", nb);
+//    // Get storage using the R allocator, so it can be removed by the R garbage
+//    // collector at a later time.
+//    int *num = (int*)R_alloc(nb, sizeof(int));
+//    for (int b = 0; b < nb; b++) {
+//        num[b] = 0;
+//        means[b] = 0.0;
+//    }
+//    int b;
+//    for (int i = 0; i < *nx; i++) {
+//        // ignore missing data
+//        if (ISNA(y[i]))
+//            continue;
+//        // ignore x values outside the interval from xmin to xmax
+//        if (x[i] < *xmin || *xmax < x[i])
+//            continue;
+//        // find bin to fill (must be in range 0 to nb-1)
+//        b = (int)floor((x[i] - *xmin) / (*xinc));
+//#ifdef DEBUGba
+//        Rprintf("  x[%d]=%f yields b=%d (%.20f) (%.20f)", i, x[i], b, x[i]-*xmin, (x[i]-*xmin)/ *xinc);
+//#endif
+//        if (b < 0L || b >= nb) {
+//            Rprintf("ERROR at x[%d]=%f, computed bin b=%d but it should be from 0 to %d\n",
+//                    i, x[i], b, nb);
+//            continue;
+//        }
+//        if (x[i] == *xmin) {
+//            if (*include_lowest) {
+//                num[b]++;
+//                means[b] +=y[i];
+//#ifdef DEBUGba
+//                Rprintf("  put x[%d]=%f (at xmin), y[%d]=%f into bin b=%d\n", i, x[i], i, y[i], b);
+//#endif
+//            }
+//        } else {
+//            num[b]++;
+//            means[b] +=y[i];
+//#ifdef DEBUGba
+//            Rprintf("  put x[%d]=%f, y[%d]=%f into bin b=%d\n", i, x[i], i, y[i], b);
+//#endif
+//        }
+//    }
+//    for (int b = 0; b < nb; b++) {
+//        if (num[b] > 0)
+//            means[b] = means[b] / num[b];
+//        else
+//            means[b] = NA_REAL;
+//    }
+//}
+//}

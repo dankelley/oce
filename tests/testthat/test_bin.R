@@ -101,16 +101,14 @@ test_that("binApply2D", {
 })
 
 test_that("binAverage", {
-    x <- seq(0, 100, 1)
-    y <- 1 + x ^2
-    ba <- binAverage(x, y)
-    # These tests are not in comparison to theory, or
-    # known values; they simply ensure that results have not
-    # changed since 2016-11-06, when the tests were devised.
-    expect_equal(10, length(ba$x))
-    expect_equal(10, length(ba$y))
-    expect_equal(ba$x[5], 45)
-    expect_equal(ba$y[5], 1989.5)
+    x <- seq(0, 20, 5)
+    y <- x^2
+    baA <- binAverage(x, y, xmin=0, xmax=20, xinc=10)
+    expect_equal(baA$x, c(5, 15))
+    expect_equal(baA$y, c(mean(y[2:3]), mean(y[4:5])))
+    baB <- binAverage(x, y, xmin=0, xmax=20, xinc=10, include.lowest=TRUE)
+    expect_equal(baB$x, c(5, 15))
+    expect_equal(baB$y, c(mean(y[1:3]), mean(y[4:5])))
 })
 
 test_that("binCount1D", {
