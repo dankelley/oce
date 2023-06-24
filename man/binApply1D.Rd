@@ -34,7 +34,7 @@ The function \code{FUN} is applied to \code{f} in bins specified by
 \code{xbreaks}.
 }
 \details{
-The sub-intervals defined by the \code{xbreaks} argument are open
+By default, the sub-intervals defined by the \code{xbreaks} argument are open
 on the left and closed on the right, to match the behaviour
 of \code{\link[=cut]{cut()}}.  An open interval does not include points on
 the boundary, and so any \code{x} values that exactly match

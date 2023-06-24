@@ -35,7 +35,7 @@ Note that the return value of \code{\link[=binAverage]{binAverage()}} uses only 
 \code{result} entries of the \code{\link[=binMean1D]{binMean1D()}} result.
 }
 \details{
-The sub-intervals defined by \code{xmin}, \code{xinc} and \code{xmax}
+By default, the sub-intervals defined by \code{xmin}, \code{xinc} and \code{xmax}
 arguments are open on the left and closed on the right, to match
 the behaviour of \code{\link[=cut]{cut()}}.  An open interval does not include
 points on the boundary, and so any \code{x} values that exactly match

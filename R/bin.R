@@ -5,7 +5,7 @@
 #' The function `FUN` is applied to `f` in bins specified by
 #' `xbreaks`.
 #'
-#' The sub-intervals defined by the `xbreaks` argument are open
+#' By default, the sub-intervals defined by the `xbreaks` argument are open
 #' on the left and closed on the right, to match the behaviour
 #' of [cut()].  An open interval does not include points on
 #' the boundary, and so any `x` values that exactly match
@@ -81,12 +81,15 @@ binApply1D <- function(x, f, xbreaks, FUN, include.lowest=FALSE, ...)
 #' Apply a function to matrix data
 #'
 #' The function `FUN` is applied to `f` in bins specified by
-#' `xbreaks` and `ybreaks`. The bins are open at the left and closed
-#' on the right (see [binApply1D()] for an explanation in 1D).
-#'
-#' If `FUN` is [mean()],
-#' consider using [binMean2D()] instead, which may be faster
+#' `xbreaks` and `ybreaks`. If `FUN` is [mean()], consider
+#' using [binMean2D()] instead, which may be faster
 #' for large datasets.
+#'
+#' The division into bins is done with [cut()], to which `include.lowest`
+#' is passed. By default, the `x` bins are open at the left and closed
+#' on the right, and the `y` bins are open at the bottom and closed
+#' at the top.  However, if `include.lowest` is TRUE, then those
+#' boundary points are included in the calculation.
 #'
 #' @param x a vector of numerical values.
 #'
@@ -102,6 +105,10 @@ binApply1D <- function(x, f, xbreaks, FUN, include.lowest=FALSE, ...)
 #' @param FUN function that is applied to the `f` values
 #' in each (x,y) bin.  This must take two numeric vectors
 #' as input, and return a single numeric value.
+#'
+#' @param include.lowest logical value indicating whether to include
+#' `x` values that equal `xbreaks[1]` and `y` values that equal
+#' `ybreaks[1].  See \dQuote{Details}.
 #'
 #' @param \dots optional arguments to pass to `FUN`.
 #'
@@ -136,7 +143,7 @@ binApply1D <- function(x, f, xbreaks, FUN, include.lowest=FALSE, ...)
 #'}
 #'
 #' @family bin-related functions
-binApply2D <- function(x, y, f, xbreaks, ybreaks, FUN, ...)
+binApply2D <- function(x, y, f, xbreaks, ybreaks, FUN, include.lowest=FALSE, ...)
 {
     if (missing(x))
         stop("must supply 'x'")
@@ -147,8 +154,10 @@ binApply2D <- function(x, y, f, xbreaks, ybreaks, FUN, ...)
     nx <- length(x)
     if (nx != length(y))
         stop("lengths of x and y must agree")
-    if (missing(xbreaks)) xbreaks <- pretty(x, 20)
-    if (missing(ybreaks)) ybreaks <- pretty(y, 20)
+    if (missing(xbreaks))
+        xbreaks <- pretty(x, 20)
+    if (missing(ybreaks))
+        ybreaks <- pretty(y, 20)
     if (missing(FUN))
         stop("must supply 'FUN'")
     if (!is.function(FUN))
@@ -160,28 +169,21 @@ binApply2D <- function(x, y, f, xbreaks, ybreaks, FUN, ...)
     if (nybreaks < 2)
         stop("must have more than 1 ybreak")
     res <- matrix(NA_real_, nrow=nxbreaks-1, ncol=nybreaks-1)
-    # this 'method' is just for testing during development. For the data in
-    # tests/testthat/test_misc.R, we get the same results for the two
-    # methods. Still, I plan to keep this code in here for a while.
-    method <- 1
-    if (method == 1) {
-        # this is 28X faster on the secchi example.
-        A <- split(f, cut(y, ybreaks, labels=FALSE))
-        B <- split(x, cut(y, ybreaks, labels=FALSE))
-        for (i in seq_along(A)) {
-            fSplit <- split(A[[i]], cut(B[[i]], xbreaks, labels=FALSE))
-            res[as.numeric(names(fSplit)), i] <- unlist(lapply(fSplit, FUN, ...))
-        }
-        res[!is.finite(res)] <- NA
-    } else {
-        for (ix in seq.int(1, nxbreaks-1)) {
-            for (iy in seq.int(1, nybreaks-1)) {
-                keep <- xbreaks[ix] < x & x <= xbreaks[ix+1] & ybreaks[iy] < y & y <= ybreaks[iy+1]
-                if (any(keep))
-                    res[ix, iy] <- FUN(f[keep], ...)
-            }
-        }
+    #> old code (28X slower than the cut method, in a secchi-disk test)
+    #> for (ix in seq.int(1, nxbreaks-1)) {
+    #>     for (iy in seq.int(1, nybreaks-1)) {
+    #>         keep <- xbreaks[ix] < x & x <= xbreaks[ix+1] & ybreaks[iy] < y & y <= ybreaks[iy+1]
+    #>         if (any(keep))
+    #>             res[ix, iy] <- FUN(f[keep], ...)
+    #>     }
+    #> }
+    A <- split(f, cut(y, ybreaks, labels=FALSE, include.lowest=include.lowest))
+    B <- split(x, cut(y, ybreaks, labels=FALSE, include.lowest=include.lowest))
+    for (i in seq_along(A)) {
+        fSplit <- split(A[[i]], cut(B[[i]], xbreaks, labels=FALSE, include.lowest=include.lowest))
+        res[as.integer(names(fSplit)), i] <- unlist(lapply(fSplit, FUN, ...))
     }
+    res[!is.finite(res)] <- NA
     list(xbreaks=xbreaks, xmids=xbreaks[-1]-0.5*diff(xbreaks),
         ybreaks=ybreaks, ymids=ybreaks[-1]-0.5*diff(ybreaks),
         result=res)
@@ -193,7 +195,7 @@ binApply2D <- function(x, y, f, xbreaks, ybreaks, FUN, ...)
 #' Count the number of elements of a given vector that fall within
 #' successive pairs of values within a second vector.
 #'
-#' The sub-intervals defined by the `xbreaks` argument are open
+#' By default, the sub-intervals defined by the `xbreaks` argument are open
 #' on the left and closed on the right, to match the behaviour
 #' of [cut()].  An open interval does not include points on
 #' the boundary, and so any `x` values that exactly match
@@ -253,7 +255,7 @@ binCount1D <- function(x, xbreaks, include.lowest=FALSE)
 #' vector `x`. A common example might be averaging CTD profile
 #' data into pressure bins (see \dQuote{Examples}).
 #'
-#' The sub-intervals defined by the `xbreaks` argument are open
+#' By default, the sub-intervals defined by the `xbreaks` argument are open
 #' on the left and closed on the right, to match the behaviour
 #' of [cut()].  An open interval does not include points on
 #' the boundary, and so any `x` values that exactly match
@@ -497,7 +499,7 @@ binMean2D <- function(x, y, f, xbreaks, ybreaks, flatten=FALSE, fill=FALSE, fill
 #' Note that the return value of [binAverage()] uses only the `xmids` and
 #' `result` entries of the [binMean1D()] result.
 #'
-#' The sub-intervals defined by `xmin`, `xinc` and `xmax`
+#' By default, the sub-intervals defined by `xmin`, `xinc` and `xmax`
 #' arguments are open on the left and closed on the right, to match
 #' the behaviour of [cut()].  An open interval does not include
 #' points on the boundary, and so any `x` values that exactly match

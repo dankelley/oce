@@ -4,7 +4,7 @@
 \alias{binApply2D}
 \title{Apply a function to matrix data}
 \usage{
-binApply2D(x, y, f, xbreaks, ybreaks, FUN, ...)
+binApply2D(x, y, f, xbreaks, ybreaks, FUN, include.lowest = FALSE, ...)
 }
 \arguments{
 \item{x}{a vector of numerical values.}
@@ -22,6 +22,10 @@ bins; calculated using \code{\link[=pretty]{pretty()}} if not supplied.}
 in each (x,y) bin.  This must take two numeric vectors
 as input, and return a single numeric value.}
 
+\item{include.lowest}{logical value indicating whether to include
+\code{x} values that equal \code{xbreaks[1]} and \code{y} values that equal
+`ybreaks\link{1}.  See \dQuote{Details}.}
+
 \item{\dots}{optional arguments to pass to \code{FUN}.}
 }
 \value{
@@ -33,13 +37,16 @@ in the designated bins.
 }
 \description{
 The function \code{FUN} is applied to \code{f} in bins specified by
-\code{xbreaks} and \code{ybreaks}. The bins are open at the left and closed
-on the right (see \code{\link[=binApply1D]{binApply1D()}} for an explanation in 1D).
+\code{xbreaks} and \code{ybreaks}. If \code{FUN} is \code{\link[=mean]{mean()}}, consider
+using \code{\link[=binMean2D]{binMean2D()}} instead, which may be faster
+for large datasets.
 }
 \details{
-If \code{FUN} is \code{\link[=mean]{mean()}},
-consider using \code{\link[=binMean2D]{binMean2D()}} instead, which may be faster
-for large datasets.
+The division into bins is done with \code{\link[=cut]{cut()}}, to which \code{include.lowest}
+is passed. By default, the \code{x} bins are open at the left and closed
+on the right, and the \code{y} bins are open at the bottom and closed
+at the top.  However, if \code{include.lowest} is TRUE, then those
+boundary points are included in the calculation.
 }
 \examples{
 library(oce)
