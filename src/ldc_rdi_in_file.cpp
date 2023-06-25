@@ -1,8 +1,8 @@
 /* vim: set expandtab shiftwidth=2 softtabstop=2 tw=70: */
 
-#include <Rcpp.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <Rcpp.h>
 using namespace Rcpp;
 
 // Cross-reference work:

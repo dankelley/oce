@@ -1,8 +1,8 @@
 // assemble_polygons(): construct lat-lon polygons, hopefully to speed up mapImage()
+#include <math.h>
 #include <R.h>
 #include <Rdefines.h>
 #include <Rinternals.h>
-#include <math.h>
 
 //#define DEBUG
 
