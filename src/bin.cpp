@@ -1,251 +1,279 @@
-#include <R.h>
-#include <Rdefines.h>
-#include <Rinternals.h>
-#include <algorithm>
-#include <vector>
-
-//#define DEBUG
-//#define DEBUGbc1d
-//#define DEBUGbm1d
-#define DEBUGba
-
-/*
-
-   library(oce)
-   system("R CMD SHLIB bin.cpp")
-   dyn.load("bin.so")
-   set.seed(123)
-   x <- rnorm(10, sd=1)
-   f <- 2*x
-   source('../R/misc.R')
-   m <- binMean1D(x, f, seq(-1.5, 1.5, 0.5))
-   old <- binAverage(x, f, -1.5, 1.5, 0.5)
-   data.frame(mids=m$xmids, mean=m$mean, oldMethod=old$y)
-
-*/
-
-extern "C" {
-void bin_count_1d(
-    int *nx, double *x, int *nxbreaks, double *xbreaks, int *include_lowest,
-    int *number)
-{
-    if (*nxbreaks < 2)
-        error("cannot have fewer than 1 break"); // already checked in R but be safe
-#ifdef DEBUGbc1d
-    Rprintf("bin_count_1d() given *include_lowest=%d\n", *include_lowest);
-#endif
-    std::vector<double> b(xbreaks, xbreaks + *nxbreaks);
-    std::sort(b.begin(), b.end()); // STL wants breaks ordered
-    for (int i = 0; i < (*nxbreaks-1); i++) {
-        number[i] = 0;
-    }
-    for (int i = 0; i < (*nx); i++) {
-        std::vector<double>::iterator lower;
-        lower = std::lower_bound(b.begin(), b.end(), x[i]);
-        int bi = lower - b.begin();
-        if (bi > 0 && bi < (*nxbreaks)) {
-#ifdef DEBUGbc1d
-            Rprintf("x: %6.3f   bi: %d    (%f to %f)\n", x[i], bi, xbreaks[bi-1], xbreaks[bi]);
-#endif
-            number[bi-1]++;
-        }
-    }
-    // optionally, count any x values sitting on the left boundary
-    if (*include_lowest != 0) {
-#ifdef DEBUGbc1d
-        Rprintf("will now see if any x are at lowest break value\n");
-#endif
-        for (int i = 0; i < (*nx); i++) {
-            if (x[i] == xbreaks[0]) {
-                number[0]++;
-#ifdef DEBUGbc1d
-                Rprintf("x=%6.3f included in first bin, yielding number[0]=%d\n", x[i], number[0]);
-#endif
-            }
-        }
-    }
-}
-}
-
-extern "C" {
-void bin_mean_1d(int *nx, double *x, double *f, int *nxbreaks, double *xbreaks,
-                 int *include_lowest, int *number, double *mean)
-{
-    if (*nxbreaks < 2)
-        error("cannot have fewer than 1 break"); // already checked in R but be safe
-#ifdef DEBUGbm1d
-    Rprintf("bin_mean_1d() given *include_lowest=%d\n", *include_lowest);
-#endif
-    std::vector<double> b(xbreaks, xbreaks + *nxbreaks);
-    std::sort(b.begin(), b.end()); // STL wants breaks ordered
-    for (int i = 0; i < (*nxbreaks-1); i++) {
-        number[i] = 0;
-        mean[i] = 0.0;
-    }
-    for (int i = 0; i < (*nx); i++) {
-        if (!ISNA(f[i])) {
-            std::vector<double>::iterator lower;
-            lower = std::lower_bound(b.begin(), b.end(), x[i]);
-            int bi = lower - b.begin();
-            if (bi > 0 && bi < (*nxbreaks)) {
-#ifdef DEBUGbm1d
-                Rprintf("  x: %6.3f   bi: %d    (%f to %f)\n", x[i], bi, xbreaks[bi-1], xbreaks[bi]);
-#endif
-                number[bi-1]++;
-                mean[bi-1] += f[i];
-            }
-        }
-    }
-    // optionally, incorporate any x values sitting on the left boundary
-    if (*include_lowest != 0) {
-#ifdef DEBUGbm1d
-        Rprintf("  will now see if any x are at lowest break value\n");
-#endif
-        for (int i = 0; i < (*nx); i++) {
-            if (x[i] == xbreaks[0]) {
-                number[0]++;
-                mean[0] += f[i];
-#ifdef DEBUGbm1d
-                Rprintf("    x=%6.3f included in first bin\n", x[i]);
-#endif
-            }
-        }
-    }
-    // finally, divide by the number in each bin, to get mean values
-    for (int i = 0; i < (*nxbreaks-1); i++) {
-        if (number[i] > 0) {
-            mean[i] = mean[i] / number[i];
-        } else {
-            mean[i] = NA_REAL;
-        }
-    }
-}
-}
-
-
-#define ij(i, j) ((i) + (*nxbreaks-1) * (j))
-extern "C" {
-    void bin_count_2d(int *nx, double *x, double *y,
-            int *nxbreaks, double *xbreaks,
-            int *nybreaks, double *ybreaks,
-            int *number, double *mean)
-    {
-#ifdef DEBUG
-        Rprintf("nxbreaks: %d, nybreaks: %d\n", *nxbreaks, *nybreaks);
-#endif
-        if (*nxbreaks < 2) error("cannot have fewer than 1 xbreak"); // already checked in R but be safe
-        if (*nybreaks < 2) error("cannot have fewer than 1 ybreak"); // already checked in R but be safe
-        std::vector<double> bx(xbreaks, xbreaks + *nxbreaks);
-        std::sort(bx.begin(), bx.end()); // STL wants breaks ordered
-        std::vector<double> by(ybreaks, ybreaks + *nybreaks);
-        std::sort(by.begin(), by.end()); // STL wants breaks ordered
-        for (int bij = 0; bij < (*nxbreaks-1) * (*nybreaks-1); bij++) {
-            number[bij] = 0;
-        }
-        for (int i = 0; i < (*nx); i++) {
-            int bi = std::upper_bound(bx.begin(), bx.end(), x[i]) - bx.begin();
-            int bj = std::upper_bound(by.begin(), by.end(), y[i]) - by.begin();
-            if (bi > 0 && bj > 0 && bi < (*nxbreaks) && bj < (*nybreaks)) {
-#ifdef DEBUG
-                Rprintf("x: %6.3f, y: %6.3f, bi: %d, bj: %d\n", x[i], y[i], bi, bj);
-#endif
-                number[ij(bi-1, bj-1)]++;
-            }
-        }
-    }
-}
-#undef ij
-
-
-#define ij(i, j) ((i) + (*nxbreaks-1) * (j))
-extern "C" {
-    void bin_mean_2d(int *nx, double *x, double *y, double *f,
-            int *nxbreaks, double *xbreaks,
-            int *nybreaks, double *ybreaks,
-            int *fill, int *fillgap, int *number, double *mean)
-    {
-#ifdef DEBUG
-        Rprintf("nxbreaks: %d, nybreaks: %d\n", *nxbreaks, *nybreaks);
-#endif
-        if (*nxbreaks < 2) error("cannot have fewer than 1 xbreak"); // already checked in R but be safe
-        if (*nybreaks < 2) error("cannot have fewer than 1 ybreak"); // already checked in R but be safe
-        std::vector<double> bx(xbreaks, xbreaks + *nxbreaks);
-        std::sort(bx.begin(), bx.end()); // STL wants breaks ordered
-        std::vector<double> by(ybreaks, ybreaks + *nybreaks);
-        std::sort(by.begin(), by.end()); // STL wants breaks ordered
-        for (int bij = 0; bij < (*nxbreaks-1) * (*nybreaks-1); bij++) {
-            number[bij] = 0;
-            mean[bij] = 0.0;
-        }
-        for (int i = 0; i < (*nx); i++) {
-            if (!ISNA(f[i])) {
-                int bi = std::upper_bound(bx.begin(), bx.end(), x[i]) - bx.begin();
-                int bj = std::upper_bound(by.begin(), by.end(), y[i]) - by.begin();
-                if (bi > 0 && bj > 0 && bi < (*nxbreaks) && bj < (*nybreaks)) {
-#ifdef DEBUG
-                    Rprintf("x: %6.3f, y: %6.3f, bi: %d, bj: %d\n", x[i], y[i], bi, bj);
-#endif
-                    number[ij(bi-1, bj-1)]++;
-                    mean[ij(bi-1, bj-1)] += f[i];
-                }
-            }
-        }
-        for (int bij = 0; bij < (*nxbreaks-1) * (*nybreaks-1); bij++) {
-            if (number[bij] > 0) {
-                mean[bij] = mean[bij] / number[bij];
-            } else {
-                mean[bij] = NA_REAL;
-            }
-        }
-        if (*fill && *fillgap !=0) { // a logical in R calling functions
-#ifdef DEBUG
-            int bad = 0;
-#endif
-            int im, ip, jm, jp;
-            // Reminder: ij = j + i * nj, for column-order matrices, so i corresponds to x
-            // FIXME: is upper limit in the next loops correct?
-            for (int i = 0; i < *nxbreaks-1; i++) {
-                for (int j = 0; j < *nybreaks-1; j++) {
-                    if (ISNA(mean[ij(i,j)])) {
-                        for (im=i-1; im > -1; im--) if (!ISNA(mean[ij(im, j)])) break;
-                        for (jm=j-1; jm > -1; jm--) if (!ISNA(mean[ij(i, jm)])) break;
-                        // FIXME: is the limit correct on next ... maybe nxbreaks-1 ???
-                        for (ip=i+1; ip < *nxbreaks-1; ip++) if (!ISNA(mean[ij(ip, j)])) break;
-                        for (jp=j+1; jp < *nybreaks-1; jp++) if (!ISNA(mean[ij(i, jp)])) break;
-                        int N=0;
-                        double SUM=0.0;
-                        if (0 <= im && ip < *(nxbreaks)-1) {
-                            if ((*fillgap) < 0 || (*fillgap) >= (ip-im)) {
-                                double interpolant = mean[ij(im,j)]+(mean[ij(ip,j)]-mean[ij(im,j)])*(i-im)/(ip-im);
-                                SUM += interpolant;
-                                N++;
-                            }
-                        }
-                        if (0 <= jm && jp < *(nybreaks)-1) {
-                            if ((*fillgap) < 0 || (*fillgap) >= (jp-jm)) {
-                                double interpolant = mean[ij(i,jm)]+(mean[ij(i,jp)]-mean[ij(i,jm)])*(j-jm)/(jp-jm);
-                                SUM += interpolant;
-                                N++;
-                            }
-                        }
-                        if (N > 0) {
-                            mean[ij(i, j)] = SUM / N;
-                            number[ij(i, j)] = 1; // doesn't have much meaning
-                        }
-#ifdef DEBUG
-                        bad++;
-#endif
-                    }
-                }
-            }
-#ifdef DEBUG
-            Rprintf("nxbreaks: %d, nybreaks: %d\n", *nxbreaks, *nybreaks);
-            Rprintf("number of gaps filled: %d\n", bad);
-#endif
-        }
-    }
-}
-#undef ij
+// 2023-06-25 #include <algorithm>
+// 2023-06-25 #include <vector>
+// 2023-06-25 #include <R.h>
+// 2023-06-25 #include <Rdefines.h>
+// 2023-06-25 #include <Rinternals.h>
+// 2023-06-25
+// 2023-06-25 //#define DEBUG
+// 2023-06-25 //#define DEBUGbc1d
+// 2023-06-25 //#define DEBUGbm1d
+// 2023-06-25 #define DEBUGbc2d
+// 2023-06-25
+// 2023-06-25 extern "C" {
+// 2023-06-25 void bin_count_1d(
+// 2023-06-25     int *nx, double *x, int *nxbreaks, double *xbreaks, int *include_lowest,
+// 2023-06-25     int *number)
+// 2023-06-25 {
+// 2023-06-25     if (*nxbreaks < 2)
+// 2023-06-25         error("cannot have fewer than 1 break"); // already checked in R but be safe
+// 2023-06-25 #ifdef DEBUGbc1d
+// 2023-06-25     Rprintf("bin_count_1d() given *include_lowest=%d\n", *include_lowest);
+// 2023-06-25 #endif
+// 2023-06-25     std::vector<double> b(xbreaks, xbreaks + *nxbreaks);
+// 2023-06-25     std::sort(b.begin(), b.end()); // STL wants breaks ordered
+// 2023-06-25     for (int i = 0; i < (*nxbreaks-1); i++) {
+// 2023-06-25         number[i] = 0;
+// 2023-06-25     }
+// 2023-06-25     for (int i = 0; i < (*nx); i++) {
+// 2023-06-25         std::vector<double>::iterator lower;
+// 2023-06-25         lower = std::lower_bound(b.begin(), b.end(), x[i]);
+// 2023-06-25         int bi = lower - b.begin();
+// 2023-06-25         if (0 < bi && bi < (*nxbreaks)) {
+// 2023-06-25 #ifdef DEBUGbc1d
+// 2023-06-25             Rprintf("x: %6.3f   bi: %d    (%f to %f)\n", x[i], bi, xbreaks[bi-1], xbreaks[bi]);
+// 2023-06-25 #endif
+// 2023-06-25             number[bi-1]++;
+// 2023-06-25         }
+// 2023-06-25     }
+// 2023-06-25     // optionally, count any x values sitting on the left boundary
+// 2023-06-25     if (*include_lowest != 0) {
+// 2023-06-25 #ifdef DEBUGbc1d
+// 2023-06-25         Rprintf("will now see if any x are at lowest break value\n");
+// 2023-06-25 #endif
+// 2023-06-25         for (int i = 0; i < (*nx); i++) {
+// 2023-06-25             if (x[i] == xbreaks[0]) {
+// 2023-06-25                 number[0]++;
+// 2023-06-25 #ifdef DEBUGbc1d
+// 2023-06-25                 Rprintf("x=%6.3f included in first bin, yielding number[0]=%d\n", x[i], number[0]);
+// 2023-06-25 #endif
+// 2023-06-25             }
+// 2023-06-25         }
+// 2023-06-25     }
+// 2023-06-25 }
+// 2023-06-25 }
+// 2023-06-25
+// 2023-06-25 extern "C" {
+// 2023-06-25 void bin_mean_1d(int *nx, double *x, double *f, int *nxbreaks, double *xbreaks,
+// 2023-06-25                  int *include_lowest, int *number, double *mean)
+// 2023-06-25 {
+// 2023-06-25     if (*nxbreaks < 2)
+// 2023-06-25         error("cannot have fewer than 1 break"); // already checked in R but be safe
+// 2023-06-25 #ifdef DEBUGbm1d
+// 2023-06-25     Rprintf("bin_mean_1d() given *include_lowest=%d\n", *include_lowest);
+// 2023-06-25 #endif
+// 2023-06-25     std::vector<double> b(xbreaks, xbreaks + *nxbreaks);
+// 2023-06-25     std::sort(b.begin(), b.end()); // STL wants breaks ordered
+// 2023-06-25     for (int i = 0; i < (*nxbreaks-1); i++) {
+// 2023-06-25         number[i] = 0;
+// 2023-06-25         mean[i] = 0.0;
+// 2023-06-25     }
+// 2023-06-25     for (int i = 0; i < (*nx); i++) {
+// 2023-06-25         if (!ISNA(f[i])) {
+// 2023-06-25             std::vector<double>::iterator lower;
+// 2023-06-25             lower = std::lower_bound(b.begin(), b.end(), x[i]);
+// 2023-06-25             int bi = lower - b.begin();
+// 2023-06-25             if (bi > 0 && bi < (*nxbreaks)) {
+// 2023-06-25 #ifdef DEBUGbm1d
+// 2023-06-25                 Rprintf("  x: %6.3f   bi: %d    (%f to %f)\n", x[i], bi, xbreaks[bi-1], xbreaks[bi]);
+// 2023-06-25 #endif
+// 2023-06-25                 number[bi-1]++;
+// 2023-06-25                 mean[bi-1] += f[i];
+// 2023-06-25             }
+// 2023-06-25         }
+// 2023-06-25     }
+// 2023-06-25     // optionally, incorporate any x values sitting on the left boundary
+// 2023-06-25     if (*include_lowest != 0) {
+// 2023-06-25 #ifdef DEBUGbm1d
+// 2023-06-25         Rprintf("  will now see if any x are at lowest break value\n");
+// 2023-06-25 #endif
+// 2023-06-25         for (int i = 0; i < (*nx); i++) {
+// 2023-06-25             if (x[i] == xbreaks[0]) {
+// 2023-06-25                 number[0]++;
+// 2023-06-25                 mean[0] += f[i];
+// 2023-06-25 #ifdef DEBUGbm1d
+// 2023-06-25                 Rprintf("    x=%6.3f included in first bin\n", x[i]);
+// 2023-06-25 #endif
+// 2023-06-25             }
+// 2023-06-25         }
+// 2023-06-25     }
+// 2023-06-25     // finally, divide by the number in each bin, to get mean values
+// 2023-06-25     for (int i = 0; i < (*nxbreaks-1); i++) {
+// 2023-06-25         if (number[i] > 0) {
+// 2023-06-25             mean[i] = mean[i] / number[i];
+// 2023-06-25         } else {
+// 2023-06-25             mean[i] = NA_REAL;
+// 2023-06-25         }
+// 2023-06-25     }
+// 2023-06-25 }
+// 2023-06-25 }
+// 2023-06-25
+// 2023-06-25 // do this in R now
+// 2023-06-25 #define ij(i, j) ((i) + (*nxbreaks-1) * (j))
+// 2023-06-25 extern "C" {
+// 2023-06-25 void bin_count_2d(
+// 2023-06-25     int *nx, double *x, double *y,
+// 2023-06-25     int *nxbreaks, double *xbreaks,
+// 2023-06-25     int *nybreaks, double *ybreaks,
+// 2023-06-25     int *include_lowest,
+// 2023-06-25     int *number)
+// 2023-06-25 {
+// 2023-06-25 #ifdef DEBUGbc2d
+// 2023-06-25     Rprintf("nxbreaks=%d, nybreaks=%d, include_lowest=%d\n", *nxbreaks, *nybreaks, *include_lowest);
+// 2023-06-25 #endif
+// 2023-06-25     if (*nxbreaks < 2) error("cannot have fewer than 1 xbreak"); // already checked in R but be safe
+// 2023-06-25     if (*nybreaks < 2) error("cannot have fewer than 1 ybreak"); // already checked in R but be safe
+// 2023-06-25     std::vector<double> bx(xbreaks, xbreaks + *nxbreaks);
+// 2023-06-25     std::sort(bx.begin(), bx.end()); // STL wants breaks ordered
+// 2023-06-25     std::vector<double> by(ybreaks, ybreaks + *nybreaks);
+// 2023-06-25     std::sort(by.begin(), by.end()); // STL wants breaks ordered
+// 2023-06-25     for (int bij = 0; bij < (*nxbreaks-1) * (*nybreaks-1); bij++) {
+// 2023-06-25         number[bij] = 0;
+// 2023-06-25     }
+// 2023-06-25     for (int i = 0; i < (*nx); i++) {
+// 2023-06-25         int bi = std::lower_bound(bx.begin(), bx.end(), x[i]) - bx.begin();
+// 2023-06-25         int bj = std::lower_bound(by.begin(), by.end(), y[i]) - by.begin();
+// 2023-06-25         if (0 < bi && 0 < bj && bi < (*nxbreaks) && bj < (*nybreaks)) {
+// 2023-06-25 #ifdef DEBUGbc2d
+// 2023-06-25             Rprintf("  interior: x=%6.3f, y=%6.3f, bi=%d, bj=%d, ij=%d\n", x[i], y[i], bi, bj, ij(bi-1,bj-1));
+// 2023-06-25 #endif
+// 2023-06-25             number[ij(bi-1, bj-1)]++;
+// 2023-06-25         }
+// 2023-06-25     }
+// 2023-06-25     if (*include_lowest != 0) {
+// 2023-06-25 #ifdef DEBUGbc2d
+// 2023-06-25         Rprintf("counting points along the left boundary ...\n");
+// 2023-06-25 #endif
+// 2023-06-25         for (int i = 0; i < (*nx); i++) {
+// 2023-06-25             if (x[i] == xbreaks[0]) {
+// 2023-06-25                 int bj = std::lower_bound(by.begin(), by.end(), y[i]) - by.begin();
+// 2023-06-25                 if (y[i] != ybreaks[0] && 0 < bj && bj < *nybreaks) {
+// 2023-06-25                     number[ij(0, bj-1)]++;
+// 2023-06-25 #ifdef DEBUGbc2d
+// 2023-06-25                     Rprintf("  left edge: x=%6.3f, y=%6.3f, bi=%d, bj=%d, ij=%d\n", x[i], y[i], 0, bj, ij(0,bj-1));
+// 2023-06-25 #endif
+// 2023-06-25                 }
+// 2023-06-25             }
+// 2023-06-25         }
+// 2023-06-25 #ifdef DEBUGbc2d
+// 2023-06-25         Rprintf("checking points along the bottom boundary ...\n");
+// 2023-06-25 #endif
+// 2023-06-25         for (int i = 0; i < (*nx); i++) {
+// 2023-06-25             if (y[i] == ybreaks[0]) {
+// 2023-06-25                 int bi = std::upper_bound(bx.begin(), bx.end(), x[i]) - bx.begin();
+// 2023-06-25                 if (x[i] != xbreaks[0] && 0 < bi && bi < (*nxbreaks)) {
+// 2023-06-25                     number[ij(bi-1, 0)]++;
+// 2023-06-25 #ifdef DEBUGbc2d
+// 2023-06-25                     Rprintf("  bottom edge: x=%6.3f, y=%6.3f, bi=%d, bj=%d, ij=%d\n", x[i], y[i], bi, 0, ij(bi-1,0));
+// 2023-06-25 #endif
+// 2023-06-25                 }
+// 2023-06-25             }
+// 2023-06-25         }
+// 2023-06-25 #ifdef DEBUGbc2d
+// 2023-06-25         Rprintf("checking points at bottom-left corner ...\n");
+// 2023-06-25 #endif
+// 2023-06-25         for (int i = 0; i < (*nx); i++) {
+// 2023-06-25             if (x[i] == xbreaks[0] && y[i] == ybreaks[0]) {
+// 2023-06-25                 number[ij(0, 0)]++;
+// 2023-06-25 #ifdef DEBUGbc2d
+// 2023-06-25                 Rprintf("  bottom-left corner: x=%6.3f, y=%6.3f, ij=%d\n", x[i], y[i], ij(0,0));
+// 2023-06-25 #endif
+// 2023-06-25             }
+// 2023-06-25         }
+// 2023-06-25     }
+// 2023-06-25 }
+// 2023-06-25 }
+// 2023-06-25 #undef ij
+// 2023-06-25 
+// 2023-06-25 // do this in R now
+// 2023-06-25 #define ij(i, j) ((i) + (*nxbreaks-1) * (j))
+// 2023-06-25 extern "C" {
+// 2023-06-25     void bin_mean_2d(int *nx, double *x, double *y, double *f,
+// 2023-06-25             int *nxbreaks, double *xbreaks,
+// 2023-06-25             int *nybreaks, double *ybreaks,
+// 2023-06-25             int *fill, int *fillgap, int *number, double *mean)
+// 2023-06-25     {
+// 2023-06-25 #ifdef DEBUG
+// 2023-06-25         Rprintf("nxbreaks: %d, nybreaks: %d\n", *nxbreaks, *nybreaks);
+// 2023-06-25 #endif
+// 2023-06-25         if (*nxbreaks < 2) error("cannot have fewer than 1 xbreak"); // already checked in R but be safe
+// 2023-06-25         if (*nybreaks < 2) error("cannot have fewer than 1 ybreak"); // already checked in R but be safe
+// 2023-06-25         std::vector<double> bx(xbreaks, xbreaks + *nxbreaks);
+// 2023-06-25         std::sort(bx.begin(), bx.end()); // STL wants breaks ordered
+// 2023-06-25         std::vector<double> by(ybreaks, ybreaks + *nybreaks);
+// 2023-06-25         std::sort(by.begin(), by.end()); // STL wants breaks ordered
+// 2023-06-25         for (int bij = 0; bij < (*nxbreaks-1) * (*nybreaks-1); bij++) {
+// 2023-06-25             number[bij] = 0;
+// 2023-06-25             mean[bij] = 0.0;
+// 2023-06-25         }
+// 2023-06-25         for (int i = 0; i < (*nx); i++) {
+// 2023-06-25             if (!ISNA(f[i])) {
+// 2023-06-25                 int bi = std::upper_bound(bx.begin(), bx.end(), x[i]) - bx.begin();
+// 2023-06-25                 int bj = std::upper_bound(by.begin(), by.end(), y[i]) - by.begin();
+// 2023-06-25                 if (bi > 0 && bj > 0 && bi < (*nxbreaks) && bj < (*nybreaks)) {
+// 2023-06-25 #ifdef DEBUG
+// 2023-06-25                     Rprintf("x: %6.3f, y: %6.3f, bi: %d, bj: %d\n", x[i], y[i], bi, bj);
+// 2023-06-25 #endif
+// 2023-06-25                     number[ij(bi-1, bj-1)]++;
+// 2023-06-25                     mean[ij(bi-1, bj-1)] += f[i];
+// 2023-06-25                 }
+// 2023-06-25             }
+// 2023-06-25         }
+// 2023-06-25         for (int bij = 0; bij < (*nxbreaks-1) * (*nybreaks-1); bij++) {
+// 2023-06-25             if (number[bij] > 0) {
+// 2023-06-25                 mean[bij] = mean[bij] / number[bij];
+// 2023-06-25             } else {
+// 2023-06-25                 mean[bij] = NA_REAL;
+// 2023-06-25             }
+// 2023-06-25         }
+// 2023-06-25         if (*fill && *fillgap !=0) { // a logical in R calling functions
+// 2023-06-25 #ifdef DEBUG
+// 2023-06-25             int bad = 0;
+// 2023-06-25 #endif
+// 2023-06-25             int im, ip, jm, jp;
+// 2023-06-25             // Reminder: ij = j + i * nj, for column-order matrices, so i corresponds to x
+// 2023-06-25             // FIXME: is upper limit in the next loops correct?
+// 2023-06-25             for (int i = 0; i < *nxbreaks-1; i++) {
+// 2023-06-25                 for (int j = 0; j < *nybreaks-1; j++) {
+// 2023-06-25                     if (ISNA(mean[ij(i,j)])) {
+// 2023-06-25                         for (im=i-1; im > -1; im--) if (!ISNA(mean[ij(im, j)])) break;
+// 2023-06-25                         for (jm=j-1; jm > -1; jm--) if (!ISNA(mean[ij(i, jm)])) break;
+// 2023-06-25                         // FIXME: is the limit correct on next ... maybe nxbreaks-1 ???
+// 2023-06-25                         for (ip=i+1; ip < *nxbreaks-1; ip++) if (!ISNA(mean[ij(ip, j)])) break;
+// 2023-06-25                         for (jp=j+1; jp < *nybreaks-1; jp++) if (!ISNA(mean[ij(i, jp)])) break;
+// 2023-06-25                         int N=0;
+// 2023-06-25                         double SUM=0.0;
+// 2023-06-25                         if (0 <= im && ip < *(nxbreaks)-1) {
+// 2023-06-25                             if ((*fillgap) < 0 || (*fillgap) >= (ip-im)) {
+// 2023-06-25                                 double interpolant = mean[ij(im,j)]+(mean[ij(ip,j)]-mean[ij(im,j)])*(i-im)/(ip-im);
+// 2023-06-25                                 SUM += interpolant;
+// 2023-06-25                                 N++;
+// 2023-06-25                             }
+// 2023-06-25                         }
+// 2023-06-25                         if (0 <= jm && jp < *(nybreaks)-1) {
+// 2023-06-25                             if ((*fillgap) < 0 || (*fillgap) >= (jp-jm)) {
+// 2023-06-25                                 double interpolant = mean[ij(i,jm)]+(mean[ij(i,jp)]-mean[ij(i,jm)])*(j-jm)/(jp-jm);
+// 2023-06-25                                 SUM += interpolant;
+// 2023-06-25                                 N++;
+// 2023-06-25                             }
+// 2023-06-25                         }
+// 2023-06-25                         if (N > 0) {
+// 2023-06-25                             mean[ij(i, j)] = SUM / N;
+// 2023-06-25                             number[ij(i, j)] = 1; // doesn't have much meaning
+// 2023-06-25                         }
+// 2023-06-25 #ifdef DEBUG
+// 2023-06-25                         bad++;
+// 2023-06-25 #endif
+// 2023-06-25                     }
+// 2023-06-25                 }
+// 2023-06-25             }
+// 2023-06-25 #ifdef DEBUG
+// 2023-06-25             Rprintf("nxbreaks: %d, nybreaks: %d\n", *nxbreaks, *nybreaks);
+// 2023-06-25             Rprintf("number of gaps filled: %d\n", bad);
+// 2023-06-25 #endif
+// 2023-06-25         }
+// 2023-06-25     }
+// 2023-06-25 }
+// 2023-06-25 #undef ij
 
 // removed this on 2023-06-24 because it's better for binAverage() to work by
 // calling binMean1D().
