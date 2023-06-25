@@ -93,7 +93,9 @@ spatial data into location bins.</p>
 <span>  <span class="va">ybreaks</span>,</span>
 <span>  flatten <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  fill <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  fillgap <span class="op">=</span> <span class="op">-</span><span class="fl">1</span></span>
+<span>  fillgap <span class="op">=</span> <span class="op">-</span><span class="fl">1</span>,</span>
+<span>  include.lowest <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  na.rm <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -141,16 +143,33 @@ across. If this is negative (as in the default), gaps will be filled
 regardless of their size. If it is positive, then gaps exceeding this
 number of indices will not be filled.</p></dd>
 
+
+<dt>include.lowest</dt>
+<dd><p>logical value indicating whether to include
+<code>y</code> values for which the corresponding <code>x</code> is equal to <code>xmin</code>.
+See “Details”.</p></dd>
+
+
+<dt>na.rm</dt>
+<dd><p>logical value indicating whether to remove NA values before
+doing the computation of the average. This is passed to <code><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean()</a></code>, which
+does the work of the present function.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
     
 
-<p>A list with the following elements: the midpoints (renamed as
-<code>x</code> and <code>y</code>), the count (<code>number</code>) of <code>f(x,y)</code> values
-for <code>x</code> and <code>y</code> values that lie between corresponding breaks,
-and the resultant average (<code>f</code>) of <code>f(x,y)</code>, classified by the
-<code>x</code> and <code>y</code> breaks.</p>
+<p>By default, i.e. with <code>flatten</code> being FALSE, <code>binMean2D()</code> returns a
+list with the following elements: <code>xmids</code>, a vector holding the x-bin midpoints;
+<code>ymids</code>, a vector holding the y-bin midpoints; <code>number</code>, a matrix holding the
+number the points in each bin; and <code>result</code>, a matrix holding the mean
+value in each bin. If <code>flatten</code> is TRUE, the <code>number</code> and <code>result</code></p>
+
+
+<p>matrices are renamed as <code>n</code> and <code>f</code> and transformed to vectors, while
+the bin midpoints are renamed as <code>x</code> and <code>y</code> and extended to match the length
+of <code>n</code> and <code>f</code>.</p>
     </div>
     <div id="see-also">
     <h2>See also</h2>
@@ -170,15 +189,19 @@ and the resultant average (<code>f</code>) of <code>f(x,y)</code>, classified by
     <div id="ref-examples">
     <h2>Examples</h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dankelley.github.io/oce/" class="external-link">oce</a></span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span><span class="fl">500</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">y</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span><span class="fl">500</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">f</span> <span class="op">&lt;-</span> <span class="va">x</span> <span class="op">+</span> <span class="va">y</span></span></span>
-<span class="r-in"><span><span class="va">xb</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">1</span>, <span class="fl">0.1</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">yb</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">1</span>, <span class="fl">0.2</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span><span class="fl">500</span>, <span class="fl">0</span>, <span class="fl">0.5</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">y</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span><span class="fl">500</span>, <span class="fl">0</span>, <span class="fl">0.5</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">f</span> <span class="op">&lt;-</span> <span class="va">x</span><span class="op">^</span><span class="fl">2</span> <span class="op">+</span> <span class="va">y</span><span class="op">^</span><span class="fl">2</span></span></span>
+<span class="r-in"><span><span class="va">xb</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0.5</span>, <span class="fl">0.1</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">yb</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0.5</span>, <span class="fl">0.1</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">m</span> <span class="op">&lt;-</span> <span class="fu">binMean2D</span><span class="op">(</span><span class="va">x</span>, <span class="va">y</span>, <span class="va">f</span>, <span class="va">xb</span>, <span class="va">yb</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">y</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/contour.html" class="external-link">contour</a></span><span class="op">(</span><span class="va">m</span><span class="op">$</span><span class="va">xmids</span>, <span class="va">m</span><span class="op">$</span><span class="va">ymids</span>, <span class="va">m</span><span class="op">$</span><span class="va">result</span>, add<span class="op">=</span><span class="cn">TRUE</span>, levels<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">2</span>, <span class="fl">0.5</span><span class="op">)</span>, labcex<span class="op">=</span><span class="fl">1</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">cm</span> <span class="op">&lt;-</span> <span class="fu"><a href="colormap.html">colormap</a></span><span class="op">(</span><span class="va">f</span>, col<span class="op">=</span><span class="va">oceColorsTurbo</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">opar</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>no.readonly<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="drawPalette.html">drawPalette</a></span><span class="op">(</span>colormap<span class="op">=</span><span class="va">cm</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">y</span>, col<span class="op">=</span><span class="va">cm</span><span class="op">$</span><span class="va">zcol</span>, pch<span class="op">=</span><span class="fl">20</span>, cex<span class="op">=</span><span class="fl">1.4</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/contour.html" class="external-link">contour</a></span><span class="op">(</span><span class="va">m</span><span class="op">$</span><span class="va">xmids</span>, <span class="va">m</span><span class="op">$</span><span class="va">ymids</span>, <span class="va">m</span><span class="op">$</span><span class="va">result</span>, add<span class="op">=</span><span class="cn">TRUE</span>, labcex<span class="op">=</span><span class="fl">1.4</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="binMean2D-1.png" alt="" width="700" height="433"></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span><span class="va">opar</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

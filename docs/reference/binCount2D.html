@@ -83,7 +83,7 @@ successive pairs of breaks in x and y.</p>
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">binCount2D</span><span class="op">(</span><span class="va">x</span>, <span class="va">y</span>, <span class="va">xbreaks</span>, <span class="va">ybreaks</span>, flatten <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">binCount2D</span><span class="op">(</span><span class="va">x</span>, <span class="va">y</span>, <span class="va">xbreaks</span>, <span class="va">ybreaks</span>, flatten <span class="op">=</span> <span class="cn">FALSE</span>, include.lowest <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -105,6 +105,11 @@ vectors <code>x</code>, <code>y</code>, <code>z</code> and <code>n</code>, a fla
 representation of <code>xmids</code>, <code>ymids</code>, <code>result</code> and
 <code>number</code>.</p></dd>
 
+
+<dt>include.lowest</dt>
+<dd><p>logical value indicating whether to include
+points where <code>x</code> equals <code>xbreaks[1]</code> or <code>y</code> equals <code>ybreaks[1]</code>.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
@@ -117,6 +122,15 @@ representation of <code>xmids</code>, <code>ymids</code>, <code>result</code> an
 between those breaks, and
 the count (<code>number</code>) of <code>f</code> values in the boxes defined
 between successive breaks.</p>
+    </div>
+    <div id="details">
+    <h2>Details</h2>
+    <p>By default, the sub-intervals defined by <code>xbreaks</code> and <code>ybreaks</code>
+are open on the left/bottom and closed on the right/top, to match
+the behaviour of <code><a href="https://rdrr.io/r/base/cut.html" class="external-link">cut()</a></code>.  An open interval does not include
+points on the boundary, and so any <code>x</code> and <code>y</code> values that equal
+<code>xbreaks[1]</code> or <code>ybreaks[1]</code> will not be counted.  To include
+such points in the calculation, set <code>include.lowest</code> to TRUE.</p>
     </div>
     <div id="see-also">
     <h2>See also</h2>
