@@ -31,7 +31,7 @@ in the designated bins).
 }
 \description{
 The function \code{FUN} is applied to \code{f} in bins specified by
-\code{xbreaks}.
+\code{xbreaks}.  The division of data into bins is done with \code{\link[=cut]{cut()}}.
 }
 \details{
 By default, the sub-intervals defined by the \code{xbreaks} argument are open
@@ -40,9 +40,6 @@ of \code{\link[=cut]{cut()}}.  An open interval does not include points on
 the boundary, and so any \code{x} values that exactly match
 the first \code{breaks} value will not be counted.  To include
 such points in the calculation, set \code{include.lowest} to TRUE.
-
-If \code{FUN} is \code{\link[=mean]{mean()}}, consider using \code{\link[=binMean1D]{binMean1D()}} instead, which ought
-to be much faster for large datasets.
 }
 \examples{
 library(oce)

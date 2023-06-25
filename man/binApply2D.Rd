@@ -24,7 +24,7 @@ as input, and return a single numeric value.}
 
 \item{include.lowest}{logical value indicating whether to include
 \code{x} values that equal \code{xbreaks[1]} and \code{y} values that equal
-`ybreaks\link{1}.  See \dQuote{Details}.}
+\code{ybreaks[1]}.  See \dQuote{Details}.}
 
 \item{\dots}{optional arguments to pass to \code{FUN}.}
 }
@@ -37,9 +37,7 @@ in the designated bins.
 }
 \description{
 The function \code{FUN} is applied to \code{f} in bins specified by
-\code{xbreaks} and \code{ybreaks}. If \code{FUN} is \code{\link[=mean]{mean()}}, consider
-using \code{\link[=binMean2D]{binMean2D()}} instead, which may be faster
-for large datasets.
+\code{xbreaks} and \code{ybreaks}.
 }
 \details{
 The division into bins is done with \code{\link[=cut]{cut()}}, to which \code{include.lowest}
@@ -47,29 +45,6 @@ is passed. By default, the \code{x} bins are open at the left and closed
 on the right, and the \code{y} bins are open at the bottom and closed
 at the top.  However, if \code{include.lowest} is TRUE, then those
 boundary points are included in the calculation.
-}
-\examples{
-library(oce)
-\donttest{
-# secchi depths in lat and lon bins
-if (requireNamespace("ocedata", quietly=TRUE)) {
-    data(secchi, package="ocedata")
-    # Note that zlim is provided to the colormap(), to prevent a few
-    # points from setting a very wide scale.
-    cm <- colormap(z=secchi$depth, col=oceColorsViridis, zlim=c(0, 15))
-    par(mar=c(2, 2, 2, 2))
-    drawPalette(colormap=cm, zlab="Secchi Depth")
-    data(coastlineWorld)
-    mapPlot(coastlineWorld, longitudelim=c(-5, 20), latitudelim=c(50, 66),
-        grid=5, col="gray", projection="+proj=lcc +lat_1=50 +lat_2=65")
-    bc <- binApply2D(secchi$longitude, secchi$latitude,
-        pretty(secchi$longitude, 80), pretty(secchi$latitude, 40),
-        f=secchi$depth, FUN=mean)
-    mapImage(bc$xmids, bc$ymids, bc$result, zlim=cm$zlim, col=cm$zcol)
-    mapPolygon(coastlineWorld, col="gray")
-}
-}
-
 }
 \seealso{
 Other bin-related functions: 

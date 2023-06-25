@@ -2,6 +2,7 @@
 
 * Change `as.ctd()` to handle startTime, PRES, PSAL and TEMP better.
 * Change `binCount1D()` + 6 related functions by adding `include.lowest` parameter (issue 2113).
+* Change C++ files to avoid an include error (issue 2119).
 * Change `imagep()` to ensure `z` (if provided) is a matrix (issue 2091).
 * Change `plot.section()` to skip the kriging example (issue 2080).
 * Change `plot.section()` to show palette triangles if necessary (issue 2083).

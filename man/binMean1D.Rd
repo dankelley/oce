@@ -4,7 +4,7 @@
 \alias{binMean1D}
 \title{Bin-average f=f(x)}
 \usage{
-binMean1D(x, f, xbreaks, include.lowest = FALSE)
+binMean1D(x, f, xbreaks, include.lowest = FALSE, na.rm = FALSE)
 }
 \arguments{
 \item{x}{vector of numerical values that will be categorized into
@@ -17,6 +17,10 @@ bins via the \code{xbreaks} parameter.}
 
 \item{include.lowest}{logical value indicating whether to include
 \code{x} values that equal \code{xbreaks[1]}.  See \dQuote{Details}.}
+
+\item{na.rm}{logical value indicating whether to remove NA values before
+doing the computation of the average. This is passed to \code{\link[=mean]{mean()}}, which
+does the work of the present function.}
 }
 \value{
 A list with the following elements: the breaks (\code{xbreaks},
@@ -27,8 +31,7 @@ and the resultant average (\code{result}) of \code{f}, classified by the
 }
 \description{
 Average the values of a vector \code{f} in bins defined on another
-vector \code{x}. A common example might be averaging CTD profile
-data into pressure bins (see \dQuote{Examples}).
+vector \code{x}. The values are broken up into bins using \code{\link[=cut]{cut()}}.
 }
 \details{
 By default, the sub-intervals defined by the \code{xbreaks} argument are open

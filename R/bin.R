@@ -3,7 +3,7 @@
 #' Apply a function to vector data
 #'
 #' The function `FUN` is applied to `f` in bins specified by
-#' `xbreaks`.
+#' `xbreaks`.  The division of data into bins is done with [cut()].
 #'
 #' By default, the sub-intervals defined by the `xbreaks` argument are open
 #' on the left and closed on the right, to match the behaviour
@@ -11,9 +11,6 @@
 #' the boundary, and so any `x` values that exactly match
 #' the first `breaks` value will not be counted.  To include
 #' such points in the calculation, set `include.lowest` to TRUE.
-#'
-#' If `FUN` is [mean()], consider using [binMean1D()] instead, which ought
-#' to be much faster for large datasets.
 #'
 #' @param x a vector of numerical values.
 #'
@@ -62,28 +59,32 @@ binApply1D <- function(x, f, xbreaks, FUN, include.lowest=FALSE, ...)
         stop("must supply 'FUN'")
     if (!is.function(FUN))
         stop("'FUN' must be a function")
-    nbreaks <- length(xbreaks)
-    if (nbreaks < 2)
-        stop("must have at least 2 breaks")
+    # 2023-06-24 # Stop using C++ for this.
+    # 2023-06-24 nbreaks <- length(xbreaks)
+    # 2023-06-24 if (nbreaks < 2)
+    # 2023-06-24     stop("must have at least 2 breaks")
+    # 2023-06-24 xmids <- xbreaks[-1L] - 0.5*diff(xbreaks)
+    # 2023-06-24 result <- rep(NA_real_, nbreaks - 1L)
+    # 2023-06-24 for (i in seq_len(nbreaks - 1L)) {
+    # 2023-06-24     look <- if (i == 1L && include.lowest)
+    # 2023-06-24         xbreaks[i] <= x & x <= xbreaks[i+1]
+    # 2023-06-24     else
+    # 2023-06-24         xbreaks[i] < x & x <= xbreaks[i+1]
+    # 2023-06-24     if (any(look))
+    # 2023-06-24         result[i] <- FUN(f[look])
+    # 2023-06-24 }
+    # Use cut, instead of old loopy code ... why re-invent the wheel?
     xmids <- xbreaks[-1L] - 0.5*diff(xbreaks)
-    result <- rep(NA_real_, nbreaks - 1L)
-    for (i in seq_len(nbreaks - 1L)) {
-        look <- if (i == 1L && include.lowest)
-            xbreaks[i] <= x & x <= xbreaks[i+1]
-        else
-            xbreaks[i] < x & x <= xbreaks[i+1]
-        if (any(look))
-            result[i] <- FUN(f[look])
-    }
+    ysplit <- split(f, cut(x, xbreaks, include.lowest=include.lowest))
+    result <- unname(sapply(ysplit, FUN))
+    result[!is.finite(result)] <- NA
     list(xbreaks=xbreaks, xmids=xmids, result=result)
-}
+} # binApply1D()
 
 #' Apply a function to matrix data
 #'
 #' The function `FUN` is applied to `f` in bins specified by
-#' `xbreaks` and `ybreaks`. If `FUN` is [mean()], consider
-#' using [binMean2D()] instead, which may be faster
-#' for large datasets.
+#' `xbreaks` and `ybreaks`.
 #'
 #' The division into bins is done with [cut()], to which `include.lowest`
 #' is passed. By default, the `x` bins are open at the left and closed
@@ -108,7 +109,7 @@ binApply1D <- function(x, f, xbreaks, FUN, include.lowest=FALSE, ...)
 #'
 #' @param include.lowest logical value indicating whether to include
 #' `x` values that equal `xbreaks[1]` and `y` values that equal
-#' `ybreaks[1].  See \dQuote{Details}.
+#' `ybreaks[1]`.  See \dQuote{Details}.
 #'
 #' @param \dots optional arguments to pass to `FUN`.
 #'
@@ -119,28 +120,28 @@ binApply1D <- function(x, f, xbreaks, FUN, include.lowest=FALSE, ...)
 #' in the designated bins.
 #'
 #' @author Dan Kelley
-#'
-#' @examples
-#' library(oce)
-#'\donttest{
-#' # secchi depths in lat and lon bins
-#' if (requireNamespace("ocedata", quietly=TRUE)) {
-#'     data(secchi, package="ocedata")
-#'     # Note that zlim is provided to the colormap(), to prevent a few
-#'     # points from setting a very wide scale.
-#'     cm <- colormap(z=secchi$depth, col=oceColorsViridis, zlim=c(0, 15))
-#'     par(mar=c(2, 2, 2, 2))
-#'     drawPalette(colormap=cm, zlab="Secchi Depth")
-#'     data(coastlineWorld)
-#'     mapPlot(coastlineWorld, longitudelim=c(-5, 20), latitudelim=c(50, 66),
-#'         grid=5, col="gray", projection="+proj=lcc +lat_1=50 +lat_2=65")
-#'     bc <- binApply2D(secchi$longitude, secchi$latitude,
-#'         pretty(secchi$longitude, 80), pretty(secchi$latitude, 40),
-#'         f=secchi$depth, FUN=mean)
-#'     mapImage(bc$xmids, bc$ymids, bc$result, zlim=cm$zlim, col=cm$zcol)
-#'     mapPolygon(coastlineWorld, col="gray")
-#' }
-#'}
+##
+## @examples
+## library(oce)
+##\donttest{
+## # secchi depths in lat and lon bins
+## if (requireNamespace("ocedata", quietly=TRUE)) {
+##     data(secchi, package="ocedata")
+##     # Note that zlim is provided to the colormap(), to prevent a few
+##     # points from setting a very wide scale.
+##     cm <- colormap(z=secchi$depth, col=oceColorsViridis, zlim=c(0, 15))
+##     par(mar=c(2, 2, 2, 2))
+##     drawPalette(colormap=cm, zlab="Secchi Depth")
+##     data(coastlineWorld)
+##     mapPlot(coastlineWorld, longitudelim=c(-5, 20), latitudelim=c(50, 66),
+##         grid=5, col="gray", projection="+proj=lcc +lat_1=50 +lat_2=65")
+##     bc <- binApply2D(secchi$longitude, secchi$latitude,
+##         pretty(secchi$longitude, 80), pretty(secchi$latitude, 40),
+##         f=secchi$depth, FUN=mean)
+##     mapImage(bc$xmids, bc$ymids, bc$result, zlim=cm$zlim, col=cm$zcol)
+##     mapPolygon(coastlineWorld, col="gray")
+## }
+##}
 #'
 #' @family bin-related functions
 binApply2D <- function(x, y, f, xbreaks, ybreaks, FUN, include.lowest=FALSE, ...)
@@ -169,25 +170,32 @@ binApply2D <- function(x, y, f, xbreaks, ybreaks, FUN, include.lowest=FALSE, ...
     if (nybreaks < 2)
         stop("must have more than 1 ybreak")
     res <- matrix(NA_real_, nrow=nxbreaks-1, ncol=nybreaks-1)
-    #> old code (28X slower than the cut method, in a secchi-disk test)
-    #> for (ix in seq.int(1, nxbreaks-1)) {
-    #>     for (iy in seq.int(1, nybreaks-1)) {
-    #>         keep <- xbreaks[ix] < x & x <= xbreaks[ix+1] & ybreaks[iy] < y & y <= ybreaks[iy+1]
-    #>         if (any(keep))
-    #>             res[ix, iy] <- FUN(f[keep], ...)
-    #>     }
-    #> }
-    A <- split(f, cut(y, ybreaks, labels=FALSE, include.lowest=include.lowest))
-    B <- split(x, cut(y, ybreaks, labels=FALSE, include.lowest=include.lowest))
-    for (i in seq_along(A)) {
-        fSplit <- split(A[[i]], cut(B[[i]], xbreaks, labels=FALSE, include.lowest=include.lowest))
-        res[as.integer(names(fSplit)), i] <- unlist(lapply(fSplit, FUN, ...))
+    ycut <- cut(y, ybreaks, labels=FALSE, include.lowest=include.lowest)
+    F <- split(f, ycut)
+    X <- split(x, ycut)
+    #cat("next is F before loop\n");print(F)
+    #cat("next is X before loop\n");print(X)
+    for (iF in seq_along(F)) {
+        xcut <- cut(X[[iF]], xbreaks, labels=FALSE, include.lowest=include.lowest)
+        FF <- split(F[[iF]], xcut)
+        #browser()
+        ii <- as.integer(names(FF))
+        jj <- as.integer(names(F)[[iF]])
+        resiijj <- unlist(lapply(FF, FUN, ...))
+        #message(vectorShow(dim(res)))
+        #message("ii=", paste(ii, collapse=" "), ", jj=", paste(jj, collapse=" "),
+        #    ", resiijj=", paste(resiijj, collapse=" "))
+        res[ii, jj] <- resiijj
+        #message("set res[",
+        #    paste(ii, collapse=" "), ", ",
+        #    paste(jj, collapse=" "), "] to ",
+        #    paste(resiijj, collapse=" "))
     }
     res[!is.finite(res)] <- NA
     list(xbreaks=xbreaks, xmids=xbreaks[-1]-0.5*diff(xbreaks),
         ybreaks=ybreaks, ymids=ybreaks[-1]-0.5*diff(ybreaks),
         result=res)
-}
+} # binApply2D()
 
 
 #' Bin-count vector data
@@ -236,24 +244,27 @@ binCount1D <- function(x, xbreaks, include.lowest=FALSE)
     nxbreaks <- length(xbreaks)
     if (nxbreaks < 2)
         stop("must have more than 1 break")
-    res <- .C("bin_count_1d",
-        nx=length(x),
-        x=as.double(x),
-        nxbreaks=as.integer(nxbreaks),
-        xbreaks=as.double(xbreaks),
-        include_lowest=as.integer(include.lowest),
-        number=integer(nxbreaks-1L),
-        NAOK=TRUE, PACKAGE="oce")
+    # 2023-06-24 # stop using C++ for this.
+    # 2023-06-24 res <- .C("bin_count_1d",
+    # 2023-06-24     nx=length(x),
+    # 2023-06-24     x=as.double(x),
+    # 2023-06-24     nxbreaks=as.integer(nxbreaks),
+    # 2023-06-24     xbreaks=as.double(xbreaks),
+    # 2023-06-24     include_lowest=as.integer(include.lowest),
+    # 2023-06-24     number=integer(nxbreaks-1L),
+    # 2023-06-24     NAOK=TRUE, PACKAGE="oce")
+    C <- cut(x, xbreaks, include.lowest=include.lowest)
+    number <- unlist(unname(sapply(split(x, C), length)))
     list(xbreaks=xbreaks,
         xmids=xbreaks[-1L] - 0.5*diff(xbreaks),
-        number=res$number)
-}
+        number=number)
+} # binCount1D
+
 
 #' Bin-average f=f(x)
 #'
 #' Average the values of a vector `f` in bins defined on another
-#' vector `x`. A common example might be averaging CTD profile
-#' data into pressure bins (see \dQuote{Examples}).
+#' vector `x`. The values are broken up into bins using [cut()].
 #'
 #' By default, the sub-intervals defined by the `xbreaks` argument are open
 #' on the left and closed on the right, to match the behaviour
@@ -272,6 +283,10 @@ binCount1D <- function(x, xbreaks, include.lowest=FALSE)
 #'
 #' @param include.lowest logical value indicating whether to include
 #' `x` values that equal `xbreaks[1]`.  See \dQuote{Details}.
+#'
+#' @param na.rm logical value indicating whether to remove NA values before
+#' doing the computation of the average. This is passed to [mean()], which
+#' does the work of the present function.
 #'
 #' @return A list with the following elements: the breaks (`xbreaks`,
 #' midpoints (`xmids`) between those breaks,
@@ -293,7 +308,7 @@ binCount1D <- function(x, xbreaks, include.lowest=FALSE)
 #' @author Dan Kelley
 #'
 #' @family bin-related functions
-binMean1D <- function(x, f, xbreaks, include.lowest=FALSE)
+binMean1D <- function(x, f, xbreaks, include.lowest=FALSE, na.rm=FALSE)
 {
     if (missing(x))
         stop("must supply 'x'")
@@ -308,30 +323,48 @@ binMean1D <- function(x, f, xbreaks, include.lowest=FALSE)
     nxbreaks <- length(xbreaks)
     if (nxbreaks < 2)
         stop("must have more than 1 break")
-    res <- .C("bin_mean_1d",
-        nx=length(x),
-        x=as.double(x),
-        f=as.double(f),
-        nxbreaks=length(xbreaks),
-        xbreaks=as.double(xbreaks),
-        include_lowest=as.integer(include.lowest),
-        number=integer(nxbreaks-1),
-        result=double(nxbreaks-1),
-        NAOK=TRUE, PACKAGE="oce")
+    # 2023-06-24 # Stop using C++ for this.
+    # 2023-06-24 res <- .C("bin_mean_1d",
+    # 2023-06-24     nx=length(x),
+    # 2023-06-24     x=as.double(x),
+    # 2023-06-24     f=as.double(f),
+    # 2023-06-24     nxbreaks=length(xbreaks),
+    # 2023-06-24     xbreaks=as.double(xbreaks),
+    # 2023-06-24     include_lowest=as.integer(include.lowest),
+    # 2023-06-24     number=integer(nxbreaks-1),
+    # 2023-06-24     result=double(nxbreaks-1),
+    # 2023-06-24     NAOK=TRUE, PACKAGE="oce")
+    if (na.rm) {
+        ok <- is.finite(x) & is.finite(f)
+        x <- x[ok]
+        f <- f[ok]
+    }
+    C <- cut(x, xbreaks, include.lowest=include.lowest)
+    S <- split(f, C)
+    number <- unlist(unname(lapply(S, length)))
+    result <- unlist(unname(lapply(S, mean)))
+    result[!is.finite(result)] <- NA
     list(xbreaks=xbreaks,
         xmids=xbreaks[-1L] - 0.5*diff(xbreaks),
-        number=res$number,
-        result=res$result)
-}
+        number=number,
+        result=result)
+} # binMean1D
 
 #' Bin-count matrix data
 #'
 #' Count the number of elements of a given matrix z=z(x,y) that fall within
 #' successive pairs of breaks in x and y.
 #'
+#' By default, the sub-intervals defined by `xbreaks` and `ybreaks`
+#' are open on the left/bottom and closed on the right/top, to match
+#' the behaviour of [cut()].  An open interval does not include
+#' points on the boundary, and so any `x` and `y` values that equal
+#' `xbreaks[1]` or `ybreaks[1]` will not be counted.  To include
+#' such points in the calculation, set `include.lowest` to TRUE.
+#'
 #' @param x,y vectors of numerical values.
 #'
-#' @param xbreaks,ybreaks vector of values of `x` and `y` 
+#' @param xbreaks,ybreaks vector of values of `x` and `y`
 #' at the boundaries between the 2D bins, calculated using
 #' [pretty()] on each of `x` and `y`, if not supplied.
 #'
@@ -340,6 +373,9 @@ binMean1D <- function(x, f, xbreaks, include.lowest=FALSE)
 #' vectors `x`, `y`, `z` and `n`, a flattened
 #' representation of `xmids`, `ymids`, `result` and
 #' `number`.
+#'
+#' @param include.lowest logical value indicating whether to include
+#' points where `x` equals `xbreaks[1]` or `y` equals `ybreaks[1]`.
 #'
 #' @return A list with the following elements: the breaks (`xbreaks`
 #' and `ybreaks`), the midpoints (`xmids` and `ymids`)
@@ -350,7 +386,7 @@ binMean1D <- function(x, f, xbreaks, include.lowest=FALSE)
 #' @author Dan Kelley
 #'
 #' @family bin-related functions
-binCount2D <- function(x, y, xbreaks, ybreaks, flatten=FALSE)
+binCount2D <- function(x, y, xbreaks, ybreaks, flatten=FALSE, include.lowest=FALSE)
 {
     if (missing(x))
         stop("must supply 'x'")
@@ -368,17 +404,30 @@ binCount2D <- function(x, y, xbreaks, ybreaks, flatten=FALSE)
     nybreaks <- length(ybreaks)
     if (nybreaks < 2)
         stop("must have more than 1 ybreak")
-    M <- .C("bin_count_2d", length(x), as.double(x), as.double(y),
-        length(xbreaks), as.double(xbreaks),
-        length(ybreaks), as.double(ybreaks),
-        number=integer((nxbreaks-1) * (nybreaks-1)),
-        mean=double((nxbreaks-1) * (nybreaks-1)),
-        NAOK=TRUE, PACKAGE="oce")
-    res <- list(xbreaks=xbreaks,
-        ybreaks=ybreaks,
-        xmids=xbreaks[-1] - 0.5 * diff(xbreaks),
-        ymids=ybreaks[-1] - 0.5 * diff(ybreaks),
-        number=matrix(M$number, nrow=nxbreaks-1))
+    # 2023-06-24 # Stop using C++ for this.
+    # 2023-06-24 M <- .C("bin_count_2d",
+    # 2023-06-24     nx=length(x),
+    # 2023-06-24     x=as.double(x),
+    # 2023-06-24     y=as.double(y),
+    # 2023-06-24     nxbreaks=nxbreaks,
+    # 2023-06-24     xbreaks=as.double(xbreaks),
+    # 2023-06-24     nybreaks=nybreaks,
+    # 2023-06-24     ybreaks=as.double(ybreaks),
+    # 2023-06-24     include_lowest=as.integer(if (include.lowest) 1L else 0L),
+    # 2023-06-24     number=integer((nxbreaks-1) * (nybreaks-1)),
+    # 2023-06-24     NAOK=TRUE,
+    # 2023-06-24     PACKAGE="oce")
+    # 2023-06-24 res <- list(xbreaks=xbreaks,
+    # 2023-06-24     ybreaks=ybreaks,
+    # 2023-06-24     xmids=xbreaks[-1] - 0.5 * diff(xbreaks),
+    # 2023-06-24     ymids=ybreaks[-1] - 0.5 * diff(ybreaks),
+    # 2023-06-24     number=matrix(M$number, nrow=nxbreaks-1))
+    res <- binApply2D(x, y, rep(1, length(x)), xbreaks, ybreaks, length, include.lowest=include.lowest)
+    names(res) <- gsub("result", "number", names(res))
+    dim <- dim(res$number)
+    res$number <- as.integer(res$number)
+    dim(res$number) <- dim
+    res$number[is.na(res$number)] <- 0L
     if (flatten) {
         res2 <- list()
         res2$x <- rep(res$xmids, times=nybreaks-1)
@@ -387,7 +436,7 @@ binCount2D <- function(x, y, xbreaks, ybreaks, flatten=FALSE)
         res <- res2
     }
     res
-}
+} # binCount2D
 
 
 #' Bin-average f=f(x,y)
@@ -423,27 +472,42 @@ binCount2D <- function(x, y, xbreaks, ybreaks, flatten=FALSE)
 #' regardless of their size. If it is positive, then gaps exceeding this
 #' number of indices will not be filled.
 #'
-#' @return A list with the following elements: the midpoints (renamed as
-#' `x` and `y`), the count (`number`) of `f(x,y)` values
-#' for `x` and `y` values that lie between corresponding breaks,
-#' and the resultant average (`f`) of `f(x,y)`, classified by the
-#' `x` and `y` breaks.
+#' @param include.lowest logical value indicating whether to include
+#' `y` values for which the corresponding `x` is equal to `xmin`.
+#' See \dQuote{Details}.
+#'
+#' @param na.rm logical value indicating whether to remove NA values before
+#' doing the computation of the average. This is passed to [mean()], which
+#' does the work of the present function.
+#'
+#' @return By default, i.e. with `flatten` being FALSE, [binMean2D()] returns a
+#' list with the following elements: `xmids`, a vector holding the x-bin midpoints;
+#' `ymids`, a vector holding the y-bin midpoints; `number`, a matrix holding the
+#' number the points in each bin; and `result`, a matrix holding the mean
+#' value in each bin. If `flatten` is TRUE, the `number` and `result`
+#' matrices are renamed as `n` and `f` and transformed to vectors, while
+#' the bin midpoints are renamed as `x` and `y` and extended to match the length
+#' of `n` and `f`.
 #'
 #' @examples
 #' library(oce)
-#' x <- runif(500)
-#' y <- runif(500)
-#' f <- x + y
-#' xb <- seq(0, 1, 0.1)
-#' yb <- seq(0, 1, 0.2)
+#' x <- runif(500, 0, 0.5)
+#' y <- runif(500, 0, 0.5)
+#' f <- x^2 + y^2
+#' xb <- seq(0, 0.5, 0.1)
+#' yb <- seq(0, 0.5, 0.1)
 #' m <- binMean2D(x, y, f, xb, yb)
-#' plot(x, y)
-#' contour(m$xmids, m$ymids, m$result, add=TRUE, levels=seq(0, 2, 0.5), labcex=1)
+#' cm <- colormap(f, col=oceColorsTurbo)
+#' opar <- par(no.readonly=TRUE)
+#' drawPalette(colormap=cm)
+#' plot(x, y, col=cm$zcol, pch=20, cex=1.4)
+#' contour(m$xmids, m$ymids, m$result, add=TRUE, labcex=1.4)
+#' par(opar)
 #'
 #' @author Dan Kelley
 #'
 #' @family bin-related functions
-binMean2D <- function(x, y, f, xbreaks, ybreaks, flatten=FALSE, fill=FALSE, fillgap=-1)
+binMean2D <- function(x, y, f, xbreaks, ybreaks, flatten=FALSE, fill=FALSE, fillgap=-1, include.lowest=FALSE, na.rm=FALSE)
 {
     if (missing(x))
         stop("must supply 'x'")
@@ -468,19 +532,23 @@ binMean2D <- function(x, y, f, xbreaks, ybreaks, flatten=FALSE, fill=FALSE, fill
     nybreaks <- length(ybreaks)
     if (nybreaks < 2)
         stop("must have more than 1 ybreak")
-    M <- .C("bin_mean_2d", length(x), as.double(x), as.double(y), as.double(f),
-        length(xbreaks), as.double(xbreaks),
-        length(ybreaks), as.double(ybreaks),
-        as.integer(fill), as.integer(fillgap),
-        number=integer((nxbreaks-1) * (nybreaks-1)),
-        mean=double((nxbreaks-1) * (nybreaks-1)),
-        NAOK=TRUE, PACKAGE="oce")
+    resCount <- binCount2D(x=x, y=y, xbreaks=xbreaks, ybreaks=ybreaks, include.lowest=include.lowest)
+    resMean <- binApply2D(x=x, y=y, f=f, xbreaks=xbreaks, ybreaks=ybreaks, FUN=mean, include.lowest=include.lowest, na.rm=TRUE)
+    # 2023-06-25 M <- .C("bin_mean_2d", length(x), as.double(x), as.double(y), as.double(f),
+    # 2023-06-25     length(xbreaks), as.double(xbreaks),
+    # 2023-06-25     length(ybreaks), as.double(ybreaks),
+    # 2023-06-25     as.integer(fill), as.integer(fillgap),
+    # 2023-06-25     number=integer((nxbreaks-1) * (nybreaks-1)),
+    # 2023-06-25     mean=double((nxbreaks-1) * (nybreaks-1)),
+    # 2023-06-25     NAOK=TRUE, PACKAGE="oce")
     res <- list(xbreaks=xbreaks,
         ybreaks=ybreaks,
         xmids=xbreaks[-1] - 0.5 * diff(xbreaks),
         ymids=ybreaks[-1] - 0.5 * diff(ybreaks),
-        number=matrix(M$number, nrow=nxbreaks-1),
-        result=if (fGiven) matrix(M$mean, nrow=nxbreaks-1) else matrix(NA, ncol=nybreaks-1, nrow=nxbreaks-1))
+        number=resCount$number,
+        result=resMean$result)
+        #number=matrix(M$number, nrow=nxbreaks-1),
+        #result=if (fGiven) matrix(M$mean, nrow=nxbreaks-1) else matrix(NA, ncol=nybreaks-1, nrow=nxbreaks-1))
     if (flatten) {
         res2 <- list()
         res2$x <- rep(res$xmids, times=nybreaks-1)
@@ -490,7 +558,7 @@ binMean2D <- function(x, y, f, xbreaks, ybreaks, flatten=FALSE, fill=FALSE, fill
         res <- res2
     }
     res
-}
+} # binMean2D
 
 #' Bin-average a vector y, based on x values
 #'
@@ -523,6 +591,10 @@ binMean2D <- function(x, y, f, xbreaks, ybreaks, flatten=FALSE, fill=FALSE, fill
 #' `y` values for which the corresponding `x` is equal to `xmin`.
 #' See \dQuote{Details}.
 #'
+#' @param na.rm logical value indicating whether to remove NA values before
+#' doing the computation of the average. This is passed to [mean()], which
+#' does the work of the present function.
+#'
 #' @return A list with two elements: `x`, the mid-points of the bins, and
 #' `y`, the average `y` value in the bins.
 #'
@@ -550,7 +622,7 @@ binMean2D <- function(x, y, f, xbreaks, ybreaks, flatten=FALSE, fill=FALSE, fill
 #' points(avg$x, avg$y, col="red")
 #'
 #' @family bin-related functions
-binAverage <- function(x, y, xmin, xmax, xinc, include.lowest=FALSE)
+binAverage <- function(x, y, xmin, xmax, xinc, include.lowest=FALSE, na.rm=FALSE)
 {
     if (missing(y))
         stop("must supply 'y'")
@@ -565,7 +637,7 @@ binAverage <- function(x, y, xmin, xmax, xinc, include.lowest=FALSE)
     if (xinc <= 0)
         stop("must have xinc > 0")
     xbreaks <- seq(xmin, xmax, xinc)
-    res <- binMean1D(x, y, xbreaks, include.lowest=include.lowest)
+    res <- binMean1D(x, y, xbreaks, include.lowest=include.lowest, na.rm=na.rm)
     list(x=res$xmids, y=res$result)
 }
 

@@ -4,7 +4,7 @@
 \alias{binAverage}
 \title{Bin-average a vector y, based on x values}
 \usage{
-binAverage(x, y, xmin, xmax, xinc, include.lowest = FALSE)
+binAverage(x, y, xmin, xmax, xinc, include.lowest = FALSE, na.rm = FALSE)
 }
 \arguments{
 \item{x}{a vector of numerical values.}
@@ -23,6 +23,10 @@ will be used if this is not provided.}
 \item{include.lowest}{logical value indicating whether to include
 \code{y} values for which the corresponding \code{x} is equal to \code{xmin}.
 See \dQuote{Details}.}
+
+\item{na.rm}{logical value indicating whether to remove NA values before
+doing the computation of the average. This is passed to \code{\link[=mean]{mean()}}, which
+does the work of the present function.}
 }
 \value{
 A list with two elements: \code{x}, the mid-points of the bins, and
