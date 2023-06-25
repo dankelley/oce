@@ -1229,7 +1229,10 @@ imagep <- function(x, y, z,
     if (colormapGiven && missing(missingColor))
         missingColor <- colormap$missingColor
     zrange <- range(z, na.rm=TRUE)
-
+    # 2023-06-26 issue 2120 permit constant-value matrix
+    if (diff(zrange) == 0.0)
+        zrange <- zrange + c(-1, 1) * sqrt(.Machine$double.eps)
+    #message("DAN L1241 ", vectorShow(zrange))
     if (colormapGiven) {
         oceDebug(debug, "colormap provided\n", sep="")
         breaks <- colormap$breaks
