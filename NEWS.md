@@ -1,16 +1,16 @@
 # oce 1.8.1
 
-* Change `as.ctd()` to handle startTime, PRES, PSAL and TEMP better.
+* Change `as.ctd()` to handle `startTime`, `PRES`, `PSAL` and `TEMP` better.
 * Change `binCount1D()` + 6 related functions by adding `include.lowest` parameter (issue 2113).
-* Change C++ files to avoid an include error (issue 2119).
+* Change C++ files to avoid an error relating to include statements (issue 2119).
 * Change `imagep()` to ensure `z` (if provided) is a matrix (issue 2091).
 * Change `plot.section()` to skip the kriging example (issue 2080).
 * Change `plot.section()` to show palette triangles if necessary (issue 2083).
 * Change `plot.section()` to show data and bottom correctly (issue 2092).
-* Change `plotTS()` to obey `rho1000` parameter again (issue 2085).
+* Change `plotTS()` to obey the `rho1000` parameter again (issue 2085).
 * Change `read.argo()` to translate more variable names.
 * Change `read.netcdf()` to read more items.
-* Change `read.rsk()` to obey the `tz` argument (issue 2108).
+* Change `read.rsk()` to obey the `tz` parameter (issue 2108).
 * Change `summary.adp()` to handle the new format for AD2CP data (issue 2087).
 
 # oce 1.8.0 (on CRAN)
