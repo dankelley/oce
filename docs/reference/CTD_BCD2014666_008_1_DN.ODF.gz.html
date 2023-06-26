@@ -151,52 +151,6 @@ at "Station 2" of the Halifax Line on the Scotian Shelf.</p>
     <h2>Examples</h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">ctd</span> <span class="op">&lt;-</span> <span class="fu"><a href="read.ctd.html">read.ctd</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"CTD_BCD2014666_008_1_DN.ODF.gz"</span>, package<span class="op">=</span><span class="st">"oce"</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>"conductivity" (code name "CRAT_01") is a conductivity ratio, which has no units, but the file lists "s/m" as a unit. Consult ?read.odf to see how to rectify this error.</span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">ctd</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> CTD Summary</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> -----------</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> * Instrument:          Sea-Bird SBE25</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> * File:                "/private/var/folders/8b/l4h64m1j22v5pb7vj049ff140000gn/T/RtmpRvzYz7/temp_libpathf34f5d7fa2d3/oce/extdata/CTD_BCD2014666_008_1_DN.ODF.gz"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> * Institute:           OESD @ BIO</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> * Chief scientist:     Catherine Johnson</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> * Start time:          2014-12-16 14:09:09</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> * Cruise:              Scotian Shelf</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> * Vessel:              CCGS SIGMA T (Call Sign: unknown)</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> * Station:             008</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> * Mean Location:       44.267N 63.318W</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> * Water depth:         156</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> * Data Overview</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                                  Min.    Mean    Max. Dim. NAs OriginalName</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     scan                         1781  3695.5    4995  294   0      CNTR_01</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     pressure [dbar]               0.5  74.248   147.5  294   0      PRES_01</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     temperature [°C, IPTS-68]  3.9824  7.5195  10.421  294   0      TEMP_01</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     conductivity [S/m]        0.69343 0.78562 0.89532  294   0      CRAT_01</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     oxygenVoltage [V]          1.6158  2.2027  2.5992  294   0      OXYV_01</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     fluorescence [mg/m³]       0.3636  1.6972  4.5732  294   0      FLOR_01</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     PSAR                      0.00197  4.7286  104.43  294   0      PSAR_01</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     salinity [PSS-78]          30.851  32.693  34.868  294   0      PSAL_01</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     oxygen [ml/l]              3.0636  5.0665  6.5227  294   0      DOXY_01</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     sigmaTheta [kg/m³]          24.29  25.515   26.78  294   0      SIGP_01</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> * Data-quality Flags</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     pressure:      "1" 294</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     temperature:   "1" 294</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     conductivity:  "1" 294</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     oxygenVoltage: "1" 294</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     fluorescence:  "1" 294</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     PSAR:          "1" 294</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     salinity:      "1" 293, "3" 1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     oxygen:        "1" 294</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     sigmaTheta:    "1" 290, "3" 4</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     overall(FFFF): "0" 294</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     overall(QCFF): "0" 290, "2048" 3, "4096" 1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> * Processing Log</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2023-06-26 11:53:33 UTC: `create 'ctd' object`</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2023-06-26 11:53:33 UTC: `as.ctd(salinity = odf, debug = debug - 1)`</span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">ctd</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="CTD_BCD2014666_008_1_DN.ODF.gz-1.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
