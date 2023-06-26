@@ -1,5 +1,4 @@
 # for a checklist see e.g. https://github.com/dankelley/oce/issues/2068
-#install.packages("codemetar")
 requireNamespace(c("codemetar", "devtools", "urlchecker", "rhub", "revdepcheck"))
 # codemeta changes a timestamp, so requiring a commit after every call. That is
 # senseless, so I only run the false part of the following conditional in the
@@ -10,7 +9,6 @@ if (FALSE) {
    message("run 'codemetar::write_codemeta()' and then git push")
 }
 t <- devtools::spell_check()
-t
 stopifnot(t == "No spelling errors found.")
 urlchecker::url_check()
 
