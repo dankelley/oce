@@ -218,3 +218,43 @@ test_that("binCount2D() with include.lowest=TRUE", {
             c(0, 0, 0)))
 })
 
+test_that("binMean2D() with include.lowest=FALSE", {
+    # following results checked by eye
+    x <- c(-0.5, -0.5, -2.0,  0.0,  0.0, 2.0, 0.5, -2.0)
+    y <- c( 1.0,  0.5,  0.0, -2.0, -0.5, 2.0, 0.5, -2.0)
+    f <- c(    1,   2,    3,    4,    5,   6,   7,    8)
+    xb <- seq(-2, 2, 1)
+    yb <- seq(-2, 1, 1)
+    bc2 <- binMean2D(x, y, f, xb, yb)
+    expect_equal(bc2$xbreaks, c(-2, -1, 0, 1, 2))
+    expect_equal(bc2$ybreaks, c(-2, -1, 0, 1))
+    expect_equal(bc2$xmids, c(-1.5, -0.5, 0.5, 1.5))
+    expect_equal(bc2$ymids, c(-1.5, -0.5, 0.5))
+    expect_equal(bc2$result,
+        rbind(
+            c(NA,  NA,  NA),
+            c(NA,   5, 1.5),
+            c(NA,  NA, 7.0),
+            c(NA,  NA,  NA)))
+})
+
+test_that("binMean2D() with include.lowest=TRUE", {
+    # following results checked by eye
+    x <- c(-0.5, -0.5, -2.0,  0.0,  0.0, 2.0, 0.5, -2.0)
+    y <- c( 1.0,  0.5,  0.0, -2.0, -0.5, 2.0, 0.5, -2.0)
+    f <- c(    1,   2,    3,    4,    5,   6,   7,    8)
+    xb <- seq(-2, 2, 1)
+    yb <- seq(-2, 1, 1)
+    bc2 <- binMean2D(x, y, f, xb, yb, include.lowest=TRUE)
+    expect_equal(bc2$xbreaks, c(-2, -1, 0, 1, 2))
+    expect_equal(bc2$ybreaks, c(-2, -1, 0, 1))
+    expect_equal(bc2$xmids, c(-1.5, -0.5, 0.5, 1.5))
+    expect_equal(bc2$ymids, c(-1.5, -0.5, 0.5))
+    expect_equal(bc2$result,
+        rbind(
+            c( 8,  3,  NA),
+            c( 4,  5, 1.5),
+            c(NA, NA, 7.0),
+            c(NA, NA,  NA)))
+})
+
