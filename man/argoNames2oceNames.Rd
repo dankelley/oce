@@ -26,10 +26,10 @@ as names).
 }
 \details{
 Initially, Feb 2016, the inference of names was initially done
-by DK's inspection of some data files, based on reference 1. Later, in June
-2023, AV's inspection of more files and documentes yielded about ten
-additions, and a single correction (\code{VRSpH} was renamed
-\code{phSensorVoltageDifference}, to match related names that had been added.)
+by an inspection of some data files, based on reference 1. Later, in June
+2023, broader inspection of more files and documents yielded about ten
+additions, and a single correction: \code{VRSpH} was renamed
+\code{phSensorVoltageDifference}, to match related names that had been added.
 
 It should be noted that the data files examined contain some names that are not
 documented in reference 1, and others that are listed only in its changelog,
