@@ -9,7 +9,7 @@ years <- 2003:2012
 for (year in years) {
     cat("year=", year, "\n", sep="")
     path <- paste("~/data/arctic/beaufort/", year, sep="")
-    files <- sort(list.files(path=path, pattern=".cnv", full.names=TRUE))
+    files <- sort(list.files(path=path, pattern=".cnv$|.ctd$", full.names=TRUE))
     nfiles <- length(files)
     for (i in seq_along(files)) {
         if (!interactive())
@@ -29,6 +29,6 @@ for (year in years) {
             dev.off()
         count <- count + 1L
     }
-    cat("Successfully checked ", nfiles, " CNV files in ", path[1], "and sister directories\n", sep="")
+    cat("Successfully checked ", nfiles, " CTD files (.cnv or .ctd) in ", path[1], "\n", sep="")
 }
 cat("Processed ", count, " files\n", sep="")
