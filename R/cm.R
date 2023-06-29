@@ -701,6 +701,15 @@ read.cm.s4 <- function(file, from=1, to, by=1, tz=getOption("oceTz"), longitude=
 #'
 #' @param type type of plot, as for [plot()].
 #'
+#' @param xlim,ylim optional limit to the x and y axes, passed to [oce.plot.ts()] for
+#' time-series plots.
+#'
+#' @param xaxs,yaxs optional controls over the limits of the x and y axes,
+#' passed to [oce.plot.ts()] for time-series plots.  These values default
+#' to `"r"`, meaning to use the regular method of extend the plot past
+#' its normal limits.  It is common to use `"i"` to make the graph extend
+#' to the panel limits.
+#'
 #' @param drawTimeRange boolean that applies to panels with time as the horizontal
 #' axis, indicating whether to draw the time range in the top-left margin of the
 #' plot.
@@ -748,6 +757,7 @@ setMethod(f="plot",
     definition=function(x,
         which=c(1:2),
         type="l",
+        xlim, ylim, xaxs="r", yaxs="r",
         drawTimeRange=getOption("oceDrawTimeRange"),
         drawZeroLine=FALSE,
         mgp=getOption("oceMgp"),
@@ -794,12 +804,14 @@ setMethod(f="plot",
             if (which[w] == 1) {
                 oce.plot.ts(x@data$time, x@data$u,
                     type=type,
+                    xlim=xlim, ylim=ylim, xaxs=xaxs, yaxs=yaxs,
                     xlab="", ylab=resizableLabel("u"),
                     main=main, mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
                     tformat=tformat)
             } else if (which[w] == 2) {
                 oce.plot.ts(x@data$time, x@data$v,
                     type=type,
+                    xlim=xlim, ylim=ylim, xaxs=xaxs, yaxs=yaxs,
                     xlab="", ylab=resizableLabel("v"),
                     main=main, mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
                     tformat=tformat)
@@ -858,18 +870,21 @@ setMethod(f="plot",
                 swPressure(x@data$depth, eos="gsw")
                 oce.plot.ts(x@data$time, p,
                     type=type,
+                    xlim=xlim, ylim=ylim, xaxs=xaxs, yaxs=yaxs,
                     xlab="", ylab=resizableLabel("p", "y"),
                     main=main, mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
                     tformat=tformat)
             } else if (which[w] == 8) {
                 oce.plot.ts(x@data$time, x[["salinity"]],
                     type=type,
+                    xlim=xlim, ylim=ylim, xaxs=xaxs, yaxs=yaxs,
                     xlab="", ylab=resizableLabel("S", "y"),
                     main=main, mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
                     tformat=tformat)
             } else if (which[w] == 9) {
                 oce.plot.ts(x@data$time, x[["temperature"]],
                     type=type,
+                    xlim=xlim, ylim=ylim, xaxs=xaxs, yaxs=yaxs,
                     xlab="", ylab=resizableLabel("T", "y"),
                     main=main, mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
                     tformat=tformat)
@@ -881,6 +896,7 @@ setMethod(f="plot",
                 cu <- as.character(cu$unit)
                 oce.plot.ts(x@data$time, x@data$conductivity,
                     type=type,
+                    xlim=xlim, ylim=ylim, xaxs=xaxs, yaxs=yaxs,
                     xlab="",
                     ylab=if (0 == length(cu)) resizableLabel("C", "y") else
                     if (cu=="mS/cm") resizableLabel("conductivity mS/cm", "y") else
@@ -891,6 +907,7 @@ setMethod(f="plot",
             } else if (which[w] == 20) {
                 oce.plot.ts(x@data$time, x@data$direction,
                     type=type,
+                    xlim=xlim, ylim=ylim, xaxs=xaxs, yaxs=yaxs,
                     xlab="", ylab=resizableLabel("direction"),
                     main=main, mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
                     tformat=tformat)
