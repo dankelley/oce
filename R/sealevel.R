@@ -148,7 +148,7 @@ setMethod(f="summary",
         showMetadataItem(object, "version", "version:             ")
         showMetadataItem(object, "stationName", "name:                ")
         showMetadataItem(object, "region", "region:              ")
-        showMetadataItem(object, "deltat", "sampling delta-t:    ")
+        showMetadataItem(object, "deltat", "sampling delta-t:    ", postlabel=" hour")
         cat("* Location:           ", latlonFormat(object@metadata$latitude,
             object@metadata$longitude, digits=5), "\n")
         showMetadataItem(object, "year",    "year:                ")
@@ -699,7 +699,6 @@ read.sealevel <- function(file, tz=getOption("oceTz"), encoding="latin1",
         open(file, "r", encoding=encoding)
         on.exit(close(file))
     }
-    fileOrig <- file
     firstLine <- readLines(file, n=1)
     header <- firstLine
     oceDebug(debug, "header (first line in file): '", header, "'\n", sep="")
@@ -917,6 +916,6 @@ read.sealevel <- function(file, tz=getOption("oceTz"), encoding="latin1",
     res@data$elevation <- elevation
     res@data$time <- time
     res@processingLog <- processingLogAppend(res@processingLog,
-        paste('read.sealevel(file="', fileOrig, '", tz="', tz, '")', sep="", collapse=""))
+        paste('read.sealevel(file="', filename, '", tz="', tz, '")', sep="", collapse=""))
     res
 }
