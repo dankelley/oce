@@ -1,5 +1,6 @@
 # oce 1.8.2
 
+* Remove `trimString()` after a long deprecation (issue 2123).
 * Change `plot.cm()` to obey `xlim`, `ylim`, `xaxs` and `yaxs` (issue 2121).
 
 # oce 1.8.1 (on CRAN)

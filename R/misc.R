@@ -3894,7 +3894,7 @@ byteToBinary <- function(x, endian="big")
 {
     if (endian != "big") {
         .Defunct("rawToBits",
-                 msg="byteToBinary(.,'little') is disallowed and will be removed soon. See ?'oce-defunct'.")
+            msg="byteToBinary(.,'little') is disallowed and will be removed soon. See ?'oce-defunct'.")
     }
     # onebyte2binary <- function(x)
     # {
@@ -4900,23 +4900,21 @@ oceConvolve <- function(x, f, end=2)
 oce.convolve <- oceConvolve
 
 
-#' Remove leading and trailing whitespace from strings (deprecated)
-#'
-#' This function will be removed from an upcoming version of oce, because
-#' the base function [trimws()] does the same and more, without having
-#' problems with encoding (see `https://github.com/dankelley/oce/issues/1993`).
-#'
-#' @param s vector of character strings
-#'
-#' @return a new vector formed by trimming leading and trailing whitespace
-#' from the elements of `s`.
-#'
-#' @family deprecated functions
-trimString <- function(s)
-{
-    .Deprecated("trimString", msg="Use trimws() instead, as of August 2022")
-    gsub("^ *", "", gsub(" *$", "", s, perl=TRUE), perl=TRUE)
-}
+#20230712 #' Remove leading and trailing whitespace from strings (defunct)
+#20230712 #'
+#20230712 #' This marked 'deprecated' in August 2022, and marked 'defunct'
+#20230712 #' in July 2023.  It will be removed entirely, soon.  Use [trimws()]
+#20230712 #' instead.
+#20230712 #'
+#20230712 #' @param s ignored.
+#20230712 #'
+#20230712 #' @return an error is issued.
+#20230712 #'
+#20230712 #' @family defunct functions
+#20230712 trimString <- function(s)
+#20230712 {
+#20230712     .Defunct("trimws")
+#20230712 }
 
 #' Perform lowpass digital filtering
 #'

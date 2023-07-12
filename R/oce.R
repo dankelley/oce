@@ -101,7 +101,6 @@ NULL
 #'
 #'\tabular{lll}{
 #' **Defunct**         \tab **Replacement**                \tab **Version**\cr
-#' `trimString()`      \tab [trimws()]                     \tab 1.7-9      \cr
 #'}
 #'
 #' The following functions were removed after having been marked as "deprecated"
@@ -120,6 +119,7 @@ NULL
 #' `mapZones()`        \tab [mapGrid()]                    \tab 1.1-2      \cr
 #' `oce.as.POSIXlt()`  \tab [lubridate::parse_date_time()] \tab 1.1-2      \cr
 #' `renameData()`      \tab [oceRenameData()]              \tab 1.7-9      \cr
+#' `trimString()`      \tab [trimws()]                     \tab 1.8-2      \cr
 #'}
 #'
 #' Several \CRANpkg{oce} function arguments are considered "deprecated", which
