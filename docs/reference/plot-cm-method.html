@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.8-1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.8-2</span>
       </span>
     </div>
 
@@ -86,6 +86,10 @@
 <span>  <span class="va">x</span>,</span>
 <span>  which <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">2</span><span class="op">)</span>,</span>
 <span>  type <span class="op">=</span> <span class="st">"l"</span>,</span>
+<span>  <span class="va">xlim</span>,</span>
+<span>  <span class="va">ylim</span>,</span>
+<span>  xaxs <span class="op">=</span> <span class="st">"r"</span>,</span>
+<span>  yaxs <span class="op">=</span> <span class="st">"r"</span>,</span>
 <span>  drawTimeRange <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"oceDrawTimeRange"</span><span class="op">)</span>,</span>
 <span>  drawZeroLine <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  mgp <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"oceMgp"</span><span class="op">)</span>,</span>
@@ -112,6 +116,19 @@ values of <code>which</code>.</p></dd>
 
 <dt>type</dt>
 <dd><p>type of plot, as for <code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code>.</p></dd>
+
+
+<dt>xlim, ylim</dt>
+<dd><p>optional limit to the x and y axes, passed to <code><a href="oce.plot.ts.html">oce.plot.ts()</a></code> for
+time-series plots.</p></dd>
+
+
+<dt>xaxs, yaxs</dt>
+<dd><p>optional controls over the limits of the x and y axes,
+passed to <code><a href="oce.plot.ts.html">oce.plot.ts()</a></code> for time-series plots.  These values default
+to <code>"r"</code>, meaning to use the regular method of extend the plot past
+its normal limits.  It is common to use <code>"i"</code> to make the graph extend
+to the panel limits.</p></dd>
 
 
 <dt>drawTimeRange</dt>
