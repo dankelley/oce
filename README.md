@@ -9,6 +9,7 @@
 ![RStudio CRAN mirror downloads](https://cranlogs.r-pkg.org/badges/last-month/oce)
 ![RStudio CRAN mirror downloads](https://cranlogs.r-pkg.org/badges/last-week/oce)
 ![RStudio CRAN mirror downloads](https://cranlogs.r-pkg.org/badges/last-day/oce)
+![RStudio CRAN mirror downloads](https://cranlogs.r-pkg.org/badges/grand-total/oce)
 <!-- badges: end -->
 
 ## Why use R for oceanographic analysis?

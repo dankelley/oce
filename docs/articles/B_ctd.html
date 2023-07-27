@@ -124,7 +124,7 @@ Richards (<a href="https://orcid.org/0000-0002-7833-206X" class="external-link u
 <p><strong>Abstract.</strong> The basics of working with CTD data are
 outlined in this vignette, as a supplement to a shorter entry in the <a href="A_oce.html">main vignette</a>.</p>
 <div class="section level2">
-<h2 id="example-with-pre-trimmed-data">Example with pre-trimmed data<a class="anchor" aria-label="anchor" href="#example-with-pre-trimmed-data"></a>
+<h2 id="pre-trimmed-data">Pre-trimmed data<a class="anchor" aria-label="anchor" href="#pre-trimmed-data"></a>
 </h2>
 <p>Many of the object types supported by <code>oce</code> come with
 built-in data. For an example, <code>data(ctd)</code> yields a CTD
@@ -186,7 +186,7 @@ these values to what are sometimes called “science” units.</p>
 <code>ctd</code> data set. (Hint: use <code><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset()</a></code>.)</p>
 </div>
 <div class="section level2">
-<h2 id="example-with-raw-data">Example with raw data<a class="anchor" aria-label="anchor" href="#example-with-raw-data"></a>
+<h2 id="raw-data">Raw data<a class="anchor" aria-label="anchor" href="#raw-data"></a>
 </h2>
 <p>Practicing Oceanographers may be wondering how the CTD cast used in
 the preceding section was trimmed of equilibration-phase and
@@ -232,7 +232,7 @@ file takes just one line of code:</p>
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu"><a href="../reference/ctdDecimate.html">ctdDecimate</a></span><span class="op">(</span><span class="fu"><a href="../reference/ctdTrim.html">ctdTrim</a></span><span class="op">(</span><span class="fu"><a href="../reference/read.ctd.html">read.ctd</a></span><span class="op">(</span><span class="st">"stn123.cnv"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="example-with-woce-archive-data">Example with WOCE archive data<a class="anchor" aria-label="anchor" href="#example-with-woce-archive-data"></a>
+<h2 id="woce-archive-data">WOCE archive data<a class="anchor" aria-label="anchor" href="#woce-archive-data"></a>
 </h2>
 <p>The package has a harder time scanning the headers of data files in
 the WOCE archive format than it does in the Seabird format illustrated
