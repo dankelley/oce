@@ -5,25 +5,26 @@
 \title{Download and Cache an amsr File}
 \usage{
 download.amsr(
-  year,
+  year = NULL,
   month,
   day,
   destdir = ".",
-  server = "http://data.remss.com/amsr2/bmaps_v08"
+  server = "https://data.remss.com/amsr2/ocean/L3/v08.2",
+  type = "3day",
+  debug = 0
 )
 }
 \arguments{
-\item{year, month, day}{Numerical values of the year, month, and day
-of the desired dataset. Note that one file is archived per day,
-so these three values uniquely identify a dataset.
-If \code{day} and \code{month} are not provided but \code{day} is,
-then the time is provided in a relative sense, based on the present
-date, with \code{day} indicating the number of days in the past.
-Owing to issues with timezones and the time when the data
-are uploaded to the server, \code{day=3} may yield the
-most recent available data. For this reason, there is a
-third option, which is to leave \code{day} unspecified, which
-works as though \code{day=3} had been given.}
+\item{year, month, day}{integer values indicating the desired observation time.
+Set \code{year} to NULL (the default) to default to the most recent data; otherwise
+specify all three of these values if \code{type} is \code{"3day"}, \code{"daily"} or \code{"weekly"},
+or just the first two of them if \code{type} is \code{"monthly"}.  If these
+things are provided, then they just match exactly the values in the sought-after
+file on the remote server.  If \code{year} is NULL, then \code{\link[=download.amsr]{download.amsr()}} constructs
+a URL that ought to be the most recent available file: 3 days prior
+to the present date (if \code{type} is \code{"3day"} or \code{"daily"}), the Saturday
+two weeks prior to the present date (if \code{type} is \code{"weekly"}), or
+two months in the past (if \code{type} is \code{"monthly"}).}
 
 \item{destdir}{A string naming the directory in which to cache the downloaded file.
 The default is to store in the present directory, but many users find it more
@@ -32,18 +33,29 @@ downloaded amsr files in one place.}
 
 \item{server}{A string naming the server from which data
 are to be acquired. See \dQuote{History}.}
+
+\item{type}{character value indicating where to get the data.  This may be
+\code{"3day"} (the default), for a composite covering 3 days of observation, which
+removes most viewing-path and cloud blanks, \code{"daily"} for a daily reading,
+\code{"weekly"} for a composite covering a week, or \code{"monthly"} for a composite
+covering a month.  In the \code{"daily"} case, the data arrays are 3D, with the
+third dimension representing ascending and descending traces, but in all the
+other cases, the arrays are 2D.}
 }
 \value{
-A character value indicating the filename of the result; if
-there is a problem of any kind, the result will be the empty
-string.
+\code{download.amsr} returns a character value holding the full pathname
+of the downloaded file.
 }
 \description{
 If the file is already present in \code{destdir}, then it is not
 downloaded again. The default \code{destdir} is the present directory,
 but it probably makes more sense to use something like \code{"~/data/amsr"}
 to make it easy for scripts in other directories to use the cached data.
-The file is downloaded with \code{\link[=download.file]{download.file()}}.
+The file is downloaded with \code{\link[=download.file]{download.file()}}.  Please read the
+\sQuote{History} section for important details on how \code{\link[=download.amsr]{download.amsr()}}
+and also \code{\link[=read.amsr]{read.amsr()}} have had be altered over the years, to deal
+with changes in the directory structure and file format on the
+server from which files are downloaded.
 }
 \section{History}{
 
@@ -60,22 +72,24 @@ had changed, e.g.
 \verb{http://data.remss.com/amsr2/bmaps_v07.2/y2017/m01/f34_20170114v7.2.gz}
 becoming
 \verb{http://data.remss.com/amsr2/bmaps_v08/y2017/m01/f34_20170114v8.gz}
+
+On 26 July 2023, it was noticed that the server-url naming convention
+had changed again, requiring not only the alteration of the default
+\code{server} value but also the addition of a new parameter named \code{type}.
+Worse yet -- much worse -- the file format is now changed from a gzipped
+format to a NetCDF format, and this will require a complete rewriting
+of \code{\link[=read.amsr]{read.amsr()}}.
 }
 
 \examples{
 \dontrun{
-# The download takes several seconds.
+# The download may take up to about a minute.
 f <- download.amsr(2017, 1, 14) # Jan 14, 2017
 d <- read.amsr(f)
 plot(d)
 mtext(d[["filename"]], side=3, line=0, adj=0)
 }
 
-}
-\references{
-\verb{http://images.remss.com/amsr/amsr2_data_daily.html}
-provides daily images going back to 2012. Three-day,
-monthly, and monthly composites are also provided on that site.
 }
 \seealso{
 Other functions that download files: 
@@ -122,6 +136,9 @@ Other things related to amsr data:
 \code{\link{read.amsr}()},
 \code{\link{subset,amsr-method}},
 \code{\link{summary,amsr-method}}
+}
+\author{
+Dan Kelley
 }
 \concept{functions that download files}
 \concept{functions that plot oce data}

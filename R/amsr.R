@@ -568,26 +568,38 @@ setMethod(f="plot",
 #' downloaded again. The default `destdir` is the present directory,
 #' but it probably makes more sense to use something like `"~/data/amsr"`
 #' to make it easy for scripts in other directories to use the cached data.
-#' The file is downloaded with [download.file()].
+#' The file is downloaded with [download.file()].  Please read the
+#' \sQuote{History} section for important details on how [download.amsr()]
+#' and also [read.amsr()] have had be altered over the years, to deal
+#' with changes in the directory structure and file format on the
+#' server from which files are downloaded.
 #'
-#' @param year,month,day Numerical values of the year, month, and day
-#' of the desired dataset. Note that one file is archived per day,
-#' so these three values uniquely identify a dataset.
-#' If `day` and `month` are not provided but `day` is,
-#' then the time is provided in a relative sense, based on the present
-#' date, with `day` indicating the number of days in the past.
-#' Owing to issues with timezones and the time when the data
-#' are uploaded to the server, `day=3` may yield the
-#' most recent available data. For this reason, there is a
-#' third option, which is to leave `day` unspecified, which
-#' works as though `day=3` had been given.
+#' @param year,month,day integer values indicating the desired observation time.
+#' Set `year` to NULL (the default) to default to the most recent data; otherwise
+#' specify all three of these values if `type` is `"3day"`, `"daily"` or `"weekly"`,
+#' or just the first two of them if `type` is `"monthly"`.  If these
+#' things are provided, then they just match exactly the values in the sought-after
+#' file on the remote server.  If `year` is NULL, then [download.amsr()] constructs
+#' a URL that ought to be the most recent available file: 3 days prior
+#' to the present date (if `type` is `"3day"` or `"daily"`), the Saturday
+#' two weeks prior to the present date (if `type` is `"weekly"`), or
+#' two months in the past (if `type` is `"monthly"`).
+#'
+#' @param server A string naming the server from which data
+#' are to be acquired. See \dQuote{History}.
+#'
+#' @param type character value indicating where to get the data.  This may be
+#' `"3day"` (the default), for a composite covering 3 days of observation, which
+#' removes most viewing-path and cloud blanks, `"daily"` for a daily reading,
+#' `"weekly"` for a composite covering a week, or `"monthly"` for a composite
+#' covering a month.  In the `"daily"` case, the data arrays are 3D, with the
+#' third dimension representing ascending and descending traces, but in all the
+#' other cases, the arrays are 2D.
 #'
 #' @param destdir A string naming the directory in which to cache the downloaded file.
 #' The default is to store in the present directory, but many users find it more
 #' helpful to use something like `"~/data/amsr"` for this, to collect all
 #' downloaded amsr files in one place.
-#' @param server A string naming the server from which data
-#' are to be acquired. See \dQuote{History}.
 #'
 #' @section History:
 #' Until 25 March 2017, the default server was
@@ -604,13 +616,19 @@ setMethod(f="plot",
 #' becoming
 #' `http://data.remss.com/amsr2/bmaps_v08/y2017/m01/f34_20170114v8.gz`
 #'
-#' @return A character value indicating the filename of the result; if
-#' there is a problem of any kind, the result will be the empty
-#' string.
+#' On 26 July 2023, it was noticed that the server-url naming convention
+#' had changed again, requiring not only the alteration of the default
+#' `server` value but also the addition of a new parameter named `type`.
+#' Worse yet -- much worse -- the file format is now changed from a gzipped
+#' format to a NetCDF format, and this will require a complete rewriting
+#' of [read.amsr()].
+#'
+#' @return `download.amsr` returns a character value holding the full pathname
+#' of the downloaded file.
 #'
 #' @examples
 #'\dontrun{
-#' # The download takes several seconds.
+#' # The download may take up to about a minute.
 #' f <- download.amsr(2017, 1, 14) # Jan 14, 2017
 #' d <- read.amsr(f)
 #' plot(d)
@@ -621,42 +639,129 @@ setMethod(f="plot",
 #' @family functions that plot oce data
 #' @family things related to amsr data
 #'
-#' @references
-#' `http://images.remss.com/amsr/amsr2_data_daily.html`
-#' provides daily images going back to 2012. Three-day,
-#' monthly, and monthly composites are also provided on that site.
-download.amsr <- function(year, month, day, destdir=".", server="http://data.remss.com/amsr2/bmaps_v08")
+#' @author Dan Kelley
+download.amsr <- function(year=NULL, month, day, destdir=".",
+    server="https://data.remss.com/amsr2/ocean/L3/v08.2", type="3day",
+    debug=0)
 {
-    # ftp ftp://ftp.ssmi.com/amsr2/bmaps_v07.2/y2016/m08/f34_20160804v7.2.gz
-    if (missing(year) && missing(month)) {
-        if (missing(day))
-            day <- 3
-        day <- abs(day)
-        today <- as.POSIXlt(Sys.Date() - day)
-        year <- 1900 + today$year
-        month <- 1 + today$mon
-        day <- today$mday
-    }
-    year <- as.integer(year)
-    month <- as.integer(month)
-    day <- as.integer(day)
-    destfile <- sprintf("f34_%4d%02d%02dv8.gz", year, month, day)
-    destpath <- paste(destdir, destfile, sep="/")
-    # example
-    # http://data.remss.com/amsr2/bmaps_v07.2/y2015/m11/f34_20151101v7.2.gz
-    if (tail(destpath, 1)=="/") { # remove trailing slash
-        destpath <- substr(destpath, 1, length(destpath)-1)
-    }
-    if (0 == length(list.files(path=destdir, pattern=paste("^", destfile, "$", sep="")))) {
-        source <- sprintf("%s/y%4d/m%02d/%s", server, year, month, destfile)
-        bad <- download.file(source, destfile)
-        if (!bad && destdir != ".")
-            system(paste("mv", destfile, destpath))
+    oceDebug(debug, "download.amsr(type=\"", type, "\", ...) {\n", sep="", unindent=1)
+    if (!type %in% c("3day", "daily", "weekly", "monthly"))
+        stop("type='", type, "' not permitted; try '3day', 'daily', 'weekly' or 'monthly'")
+    # If year, month, day not given, default to 3 days ago.
+    today <- as.POSIXlt(Sys.Date())
+    usingDefaultTime <- is.null(year)
+    if (usingDefaultTime) {
+        oceDebug(debug, "year is NULL, so a default time will be used\n")
     } else {
-        message("Not downloading ", destfile, " because it is already present in ", destdir)
+        if (missing(month))
+            stop("month must be provided, if year is provided")
+        if (type %in% c("3day", "daily") && missing(day))
+            stop("day must be provided for type of '3day' or 'daily'")
+        # convert to integers (needed for formatting URLs, below)
+        year <- as.integer(year)
+        month <- as.integer(month)
+        day <- as.integer(day)
     }
-    if (destdir == ".") destfile else destpath
+    if (type %in% c("3day", "daily")) {
+        # https://data.remss.com/amsr2/ocean/L3/v08.2/3day/2023/RSS_AMSR2_ocean_L3_3day_2023-07-24_v08.2.nc
+        # ^                                           ^    ^                       ^    ^    ^  ^
+        # server                                      type year                  type year month day
+        if (usingDefaultTime) {
+            focus <- as.POSIXlt(Sys.Date() - 3L)
+            year <- 1900L + focus$year
+            month <- 1L + focus$mon
+            day <- focus$mday
+            oceDebug(debug, "defaulting to year=", year, ", month=", month, " and day=", day, "\n", sep="")
+        } else {
+            oceDebug(debug, "user-supplied year=", year, ", month=", month, " and day=", day, "\n", sep="")
+        }
+        url <- sprintf("%s/%s/%d/RSS_AMSR2_ocean_L3_%s_%04d-%02d-%02d_v08.2.nc",
+            server, type, year, type, year, month, day)
+    } else if (identical(type, "weekly")) {
+        if (usingDefaultTime) {
+            # use the Saturday previous to the most recent Saturday
+            today <- Sys.Date()
+            dayName <- weekdays(today)
+            offset <- switch(dayName,
+                "Saturday"=0, "Sunday"=1, "Monday"=2, "Tuesday"=3, "Wednesday"=4, "Thursday"=5, "Friday"=6)
+            ymd <- format(today - offset - 7L)
+            oceDebug(debug, "defaulting to ymd=\"", ymd, "\"\n")
+        } else {
+            ymd <- sprintf("%4d-%02d-%02d", year, month, day)
+            oceDebug(debug, "user-provided ymd=\"", ymd, "\"\n")
+        }
+        # https://data.remss.com/amsr2/ocean/L3/v08.2/weekly/RSS_AMSR2_ocean_L3_weekly_2023-07-15_v08.2.nc
+        # ^                                           ^                            ^    ^
+        # server                                      type                       type   ymd
+        url <- sprintf("%s/%s/RSS_AMSR2_ocean_L3_%s_%s_v08.2.nc",
+            server, type, type, ymd)
+    } else if (identical(type, "monthly")) {
+        # https://data.remss.com/amsr2/ocean/L3/v08.2/monthly/RSS_AMSR2_ocean_L3_monthly_2023-05_v08.2.nc
+        # ^                                           ^                            ^    ^    ^
+        # server                                      type                       type year month
+        # use the month previous to the previous month
+        if (usingDefaultTime) {
+            year <- 1900L + today$year
+            month <- 1L + today$mon
+            if (month < 3L) {
+                year <- year - 1L
+                month <- 12L - 2L + month
+            } else {
+                month <- month - 2L
+            }
+            oceDebug(debug, "defaulting to year=", year, ", month=", month, "\n", sep="")
+        } else {
+            oceDebug(debug, "user-supplied year=", year, ", month=", month, "\n", sep="")
+        }
+        url <- sprintf("%s/%s/RSS_AMSR2_ocean_L3_%s_%04d-%02d_v08.2.nc",
+            server, type, type, year, month)
+    } else {
+        # check again (but should not be able to get here)
+        stop("type='", type, "' not permitted; try '3day', 'daily', 'weekly' or 'monthly'")
+    }
+    file <- gsub(".*/", "", url)
+    oceDebug(debug, "url=\"", url, "\"\n", sep="")
+    oceDebug(debug, "file=\"", file, "\"\n", sep="")
+    # try
+    destfile <- paste(destdir, file, sep="/")
+    ok <- try(download.file(url, destfile))
+    if (inherits(ok, "try-error"))
+        stop("could not download \"", url, "\" to local file \"", destfile, "\"")
+    oceDebug(debug, "} # download.amsr\n", sep="", unindent=1)
+    destfile
 }
+#<2023-07-29> download.amsr <- function(year, month, day, destdir=".", server="http://data.remss.com/amsr2/bmaps_v08")
+#<2023-07-29> {
+#<2023-07-29>     # ftp ftp://ftp.ssmi.com/amsr2/bmaps_v07.2/y2016/m08/f34_20160804v7.2.gz
+#<2023-07-29>     if (missing(year) && missing(month)) {
+#<2023-07-29>         if (missing(day))
+#<2023-07-29>             day <- 3
+#<2023-07-29>         day <- abs(day)
+#<2023-07-29>         today <- as.POSIXlt(Sys.Date() - day)
+#<2023-07-29>         year <- 1900 + today$year
+#<2023-07-29>         month <- 1 + today$mon
+#<2023-07-29>         day <- today$mday
+#<2023-07-29>     }
+#<2023-07-29>     year <- as.integer(year)
+#<2023-07-29>     month <- as.integer(month)
+#<2023-07-29>     day <- as.integer(day)
+#<2023-07-29>     destfile <- sprintf("f34_%4d%02d%02dv8.gz", year, month, day)
+#<2023-07-29>     destpath <- paste(destdir, destfile, sep="/")
+#<2023-07-29>     # example
+#<2023-07-29>     # http://data.remss.com/amsr2/bmaps_v07.2/y2015/m11/f34_20151101v7.2.gz
+#<2023-07-29>     if (tail(destpath, 1)=="/") { # remove trailing slash
+#<2023-07-29>         destpath <- substr(destpath, 1, length(destpath)-1)
+#<2023-07-29>     }
+#<2023-07-29>     if (0 == length(list.files(path=destdir, pattern=paste("^", destfile, "$", sep="")))) {
+#<2023-07-29>         source <- sprintf("%s/y%4d/m%02d/%s", server, year, month, destfile)
+#<2023-07-29>         bad <- download.file(source, destfile)
+#<2023-07-29>         if (!bad && destdir != ".")
+#<2023-07-29>             system(paste("mv", destfile, destpath))
+#<2023-07-29>     } else {
+#<2023-07-29>         message("Not downloading ", destfile, " because it is already present in ", destdir)
+#<2023-07-29>     }
+#<2023-07-29>     if (destdir == ".") destfile else destpath
+#<2023-07-29> }
 
 #' Read an amsr File
 #'
@@ -787,7 +892,7 @@ read.amsr <- function(file, encoding=NA, debug=getOption("oceDebug"))
     res@metadata$spacecraft <- "amsr"
     res@processingLog <- processingLogAppend(res@processingLog,
         paste(deparse(match.call()), sep="", collapse=""))
-    oceDebug(debug, "} # read.amsr()\n", unindent=1)
+    oceDebug(debug, "} # read.amsr()\n", sep="", unindent=1)
     res
 }
 
