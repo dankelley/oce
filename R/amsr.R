@@ -433,12 +433,11 @@ setMethod(f="subset",
 #' of the plotted quantity.  A reasonable default is computed, if this
 #' is not given.
 #'
-#' @param missingColor List of colors for problem cases. The names of the
-#' elements in this list must be as in the default, but the colors may
-#' be changed to any desired values. These default values work reasonably
-#' well for SST images, which are the default image, and which employ a
-#' blue-white-red blend of colors, no mixture of which matches the
-#' default values in `missingColor`.
+#' @param missingColor List of colors for problem cases. For
+#' new-format data (as of July 2023), the names of the
+#' elements in this list must be as in the default.  For old-format
+#' files, the list names must be `land`, `none`, `bad`, `ice` and `rain`.
+#' In either case, any colour can be assigned to any category.
 #'
 #' @param debug A debugging flag, integer.
 #'
@@ -469,17 +468,21 @@ setMethod(f="plot",
     # FIXME: how to let it default on band??
     definition=function(x, y, asp=NULL,
         breaks, col, colormap, zlim,
-        missingColor=list(land="papayaWhip",
-            none="lightGray",
-            bad="gray",
-            rain="plum",
-            ice="mediumVioletRed"),
+        # FIXME: how do the old-format categories map to new ones?  (They don't
+        # seem to.)  For now, the next argument is just for new-format.
+        missingColor=list(
+            coast="gray",
+            land="papayaWhip",
+            noObs="lightGray",
+            seaIce="mediumVioletRed"),
         debug=getOption("oceDebug"), ...)
     {
         dots <- list(...)
         oceDebug(debug, "plot.amsr(..., y=c(",
             if (missing(y)) "(missing)" else y, ", ...) {\n", sep="", style="bold", unindent=1)
         zlimGiven <- !missing(zlim)
+        newFormat <- !("SSTDay" %in% names(x@data))
+        oceDebug(debug, "the object was created from a file in ", if (newFormat) "new" else "old", "-format file\n")
         if (missing(y))
             y <- "SST"
         lon <- x[["longitude"]]
@@ -555,30 +558,51 @@ setMethod(f="plot",
             oceDebug(debug, "calling imagep() with asp=", asp, ", and no zlab argument\n", sep="")
             imagep(lon, lat, z, colormap=colormap, zlab=y, asp=asp, debug=debug-1, ...)
         }
-        # Handle missing-data codes by redrawing the (decimate) image. Perhaps
+        # Handle missing-data codes by redrawing the (possibly decimated) image. Perhaps
         # imagep() should be able to do this, but imagep() is a long function
         # with a lot of interlocking arguments so I'll start by doing this
-        # manually here, and, if I like it, I'll extend imagep() later. Note
-        # that I added a new element of the return value of imagep(), to get the
-        # decimation factor.
+        # manually here, and, if I like it, I may extend imagep() later.
         missingColorLength <- length(missingColor)
-        if (5 != missingColorLength)
-            stop("must have 5 elements in the missingColor argument")
-        if (!all(sort(names(missingColor))==sort(c("land", "none", "bad", "ice", "rain"))))
-            stop("missingColor names must be: 'land', 'none', 'bad', 'ice' and 'rain'")
+        if (newFormat) {
+            if (4 != missingColorLength)
+                stop("must have 4 elements in the missingColor argument for new-format data")
+            if (!identical(sort(names(missingColor)), sort(c("coast", "land", "noObs", "seaIce"))))
+                stop("missingColor names must be: 'coast', 'land', 'noObs', 'seaIce'")
+        } else {
+            if (5 != missingColorLength)
+                stop("must have 5 elements in the missingColor argument for old-format data")
+            if (!all(sort(names(missingColor))==sort(c("land", "none", "bad", "ice", "rain"))))
+                stop("missingColor names must be: 'land', 'none', 'bad', 'ice' and 'rain'")
+        }
         lonDecIndices <- seq(1L, length(lon), by=i$decimate[1])
         latDecIndices <- seq(1L, length(lat), by=i$decimate[2])
         lon <- lon[lonDecIndices]
         lat <- lat[latDecIndices]
-        codes <- list(land=as.raw(255), # land
-            none=as.raw(254), # missing data
-            bad=as.raw(253), # bad observation
-            ice=as.raw(252), # sea ice
-            rain=as.raw(251)) # heavy rain
-        for (codeName in names(codes)) {
-            bad <- x[[y, "raw"]][lonDecIndices, latDecIndices] == as.raw(codes[[codeName]])
-            image(lon, lat, bad,
-                col=c("transparent", missingColor[[codeName]]), add=TRUE)
+        # Handle new-format with Masks, old-format with particular
+        # (raw) values.
+        if (newFormat) {
+            for (mask in c("coastMask", "landMask", "noObsMask", "seaIceMask")) {
+                oceDebug(debug, "adding colour for ", mask, "\n")
+                image(lon, lat, x@data[[mask]][lonDecIndices, latDecIndices],
+                    col=c("transparent", missingColor[[gsub("Mask$", "", mask)]]), add=TRUE)
+            }
+        } else {
+            missingColor <- list(land="papayaWhip",
+                none="lightGray",
+                bad="gray",
+                rain="plum",
+                ice="mediumVioletRed")
+            codes <- list(land=as.raw(255), # land
+                none=as.raw(254), # missing data
+                bad=as.raw(253), # bad observation
+                ice=as.raw(252), # sea ice
+                rain=as.raw(251)) # heavy rain
+            for (codeName in names(codes)) {
+                oceDebug(debug, "adding colour for ", codeName, "\n")
+                bad <- x[[y, "raw"]][lonDecIndices, latDecIndices] == as.raw(codes[[codeName]])
+                image(lon, lat, bad,
+                    col=c("transparent", missingColor[[codeName]]), add=TRUE)
+            }
         }
         box()
         oceDebug(debug, "} # plot.amsr()\n", sep="", style="bold", unindent=1)

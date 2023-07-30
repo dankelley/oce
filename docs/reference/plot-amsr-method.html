@@ -90,8 +90,8 @@
 <span>  <span class="va">col</span>,</span>
 <span>  <span class="va">colormap</span>,</span>
 <span>  <span class="va">zlim</span>,</span>
-<span>  missingColor <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>land <span class="op">=</span> <span class="st">"papayaWhip"</span>, none <span class="op">=</span> <span class="st">"lightGray"</span>, bad <span class="op">=</span> <span class="st">"gray"</span>, rain <span class="op">=</span></span>
-<span>    <span class="st">"plum"</span>, ice <span class="op">=</span> <span class="st">"mediumVioletRed"</span><span class="op">)</span>,</span>
+<span>  missingColor <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>coast <span class="op">=</span> <span class="st">"gray"</span>, land <span class="op">=</span> <span class="st">"papayaWhip"</span>, noObs <span class="op">=</span> <span class="st">"lightGray"</span>, seaIce <span class="op">=</span></span>
+<span>    <span class="st">"mediumVioletRed"</span><span class="op">)</span>,</span>
 <span>  debug <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"oceDebug"</span><span class="op">)</span>,</span>
 <span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -144,12 +144,11 @@ is not given.</p></dd>
 
 
 <dt>missingColor</dt>
-<dd><p>List of colors for problem cases. The names of the
-elements in this list must be as in the default, but the colors may
-be changed to any desired values. These default values work reasonably
-well for SST images, which are the default image, and which employ a
-blue-white-red blend of colors, no mixture of which matches the
-default values in <code>missingColor</code>.</p></dd>
+<dd><p>List of colors for problem cases. For
+new-format data (as of July 2023), the names of the
+elements in this list must be as in the default.  For old-format
+files, the list names must be <code>land</code>, <code>none</code>, <code>bad</code>, <code>ice</code> and <code>rain</code>.
+In either case, any colour can be assigned to any category.</p></dd>
 
 
 <dt>debug</dt>

@@ -13,8 +13,8 @@
   col,
   colormap,
   zlim,
-  missingColor = list(land = "papayaWhip", none = "lightGray", bad = "gray", rain =
-    "plum", ice = "mediumVioletRed"),
+  missingColor = list(coast = "gray", land = "papayaWhip", noObs = "lightGray", seaIce =
+    "mediumVioletRed"),
   debug = getOption("oceDebug"),
   ...
 )
@@ -50,12 +50,11 @@ See \dQuote{Examples} for an example of using the "turbo" colour scheme.}
 of the plotted quantity.  A reasonable default is computed, if this
 is not given.}
 
-\item{missingColor}{List of colors for problem cases. The names of the
-elements in this list must be as in the default, but the colors may
-be changed to any desired values. These default values work reasonably
-well for SST images, which are the default image, and which employ a
-blue-white-red blend of colors, no mixture of which matches the
-default values in \code{missingColor}.}
+\item{missingColor}{List of colors for problem cases. For
+new-format data (as of July 2023), the names of the
+elements in this list must be as in the default.  For old-format
+files, the list names must be \code{land}, \code{none}, \code{bad}, \code{ice} and \code{rain}.
+In either case, any colour can be assigned to any category.}
 
 \item{debug}{A debugging flag, integer.}
 
