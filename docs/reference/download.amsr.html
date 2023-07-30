@@ -3,7 +3,11 @@
 downloaded again. The default destdir is the present directory,
 but it probably makes more sense to use something like "~/data/amsr"
 to make it easy for scripts in other directories to use the cached data.
-The file is downloaded with download.file().'><!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
+The file is downloaded with download.file().  Please read the
+&amp;#8216;History&amp;#8217; section for important details on how download.amsr()
+and also read.amsr() have had be altered over the years, to deal
+with changes in the directory structure and file format on the
+server from which files are downloaded.'><!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
 <![endif]--></head><body data-spy="scroll" data-target="#toc">
@@ -85,33 +89,38 @@ The file is downloaded with download.file().'><!-- mathjax --><script src="https
 downloaded again. The default <code>destdir</code> is the present directory,
 but it probably makes more sense to use something like <code>"~/data/amsr"</code>
 to make it easy for scripts in other directories to use the cached data.
-The file is downloaded with <code><a href="https://rdrr.io/r/utils/download.file.html" class="external-link">download.file()</a></code>.</p>
+The file is downloaded with <code><a href="https://rdrr.io/r/utils/download.file.html" class="external-link">download.file()</a></code>.  Please read the
+‘History’ section for important details on how <code>download.amsr()</code>
+and also <code><a href="read.amsr.html">read.amsr()</a></code> have had be altered over the years, to deal
+with changes in the directory structure and file format on the
+server from which files are downloaded.</p>
     </div>
 
     <div id="ref-usage">
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">download.amsr</span><span class="op">(</span></span>
-<span>  <span class="va">year</span>,</span>
+<span>  year <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  <span class="va">month</span>,</span>
 <span>  <span class="va">day</span>,</span>
 <span>  destdir <span class="op">=</span> <span class="st">"."</span>,</span>
-<span>  server <span class="op">=</span> <span class="st">"http://data.remss.com/amsr2/bmaps_v08"</span></span>
+<span>  server <span class="op">=</span> <span class="st">"https://data.remss.com/amsr2/ocean/L3/v08.2"</span>,</span>
+<span>  type <span class="op">=</span> <span class="st">"3day"</span>,</span>
+<span>  debug <span class="op">=</span> <span class="fl">0</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>year, month, day</dt>
-<dd><p>Numerical values of the year, month, and day
-of the desired dataset. Note that one file is archived per day,
-so these three values uniquely identify a dataset.
-If <code>day</code> and <code>month</code> are not provided but <code>day</code> is,
-then the time is provided in a relative sense, based on the present
-date, with <code>day</code> indicating the number of days in the past.
-Owing to issues with timezones and the time when the data
-are uploaded to the server, <code>day=3</code> may yield the
-most recent available data. For this reason, there is a
-third option, which is to leave <code>day</code> unspecified, which
-works as though <code>day=3</code> had been given.</p></dd>
+<dd><p>integer values indicating the desired observation time.
+Set <code>year</code> to NULL (the default) to default to the most recent data; otherwise
+specify all three of these values if <code>type</code> is <code>"3day"</code>, <code>"daily"</code> or <code>"weekly"</code>,
+or just the first two of them if <code>type</code> is <code>"monthly"</code>.  If these
+things are provided, then they just match exactly the values in the sought-after
+file on the remote server.  If <code>year</code> is NULL, then <code>download.amsr()</code> constructs
+a URL that ought to be the most recent available file: 3 days prior
+to the present date (if <code>type</code> is <code>"3day"</code> or <code>"daily"</code>), the Saturday
+two weeks prior to the present date (if <code>type</code> is <code>"weekly"</code>), or
+two months in the past (if <code>type</code> is <code>"monthly"</code>).</p></dd>
 
 
 <dt>destdir</dt>
@@ -125,14 +134,33 @@ downloaded amsr files in one place.</p></dd>
 <dd><p>A string naming the server from which data
 are to be acquired. See “History”.</p></dd>
 
+
+<dt>type</dt>
+<dd><p>character value indicating where to get the data.  This may be
+<code>"3day"</code> (the default), for a composite covering 3 days of observation, which
+removes most viewing-path and cloud blanks, <code>"daily"</code> for a daily reading,
+<code>"weekly"</code> for a composite covering a week, or <code>"monthly"</code> for a composite
+covering a month.  In the <code>"daily"</code> case, the data arrays are 3D, with the
+third dimension representing ascending and descending traces, but in all the
+other cases, the arrays are 2D.</p></dd>
+
+
+<dt>debug</dt>
+<dd><p>an integer specifying whether debugging information is
+to be printed during the processing. This is a general parameter that
+is used by many <code>oce</code> functions. Generally, setting <code>debug=0</code>
+turns off the printing, while higher values suggest that more information
+be printed. If one function calls another, it usually reduces the value of
+<code>debug</code> first, so that a user can often obtain deeper debugging
+by specifying higher <code>debug</code> values.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
     
 
-<p>A character value indicating the filename of the result; if
-there is a problem of any kind, the result will be the empty
-string.</p>
+<p><code>download.amsr</code> returns a character value holding the full pathname
+of the downloaded file.</p>
     </div>
     <div id="history">
     <h2>History</h2>
@@ -150,12 +178,12 @@ had changed, e.g.
 <code>http://data.remss.com/amsr2/bmaps_v07.2/y2017/m01/f34_20170114v7.2.gz</code>
 becoming
 <code>http://data.remss.com/amsr2/bmaps_v08/y2017/m01/f34_20170114v8.gz</code></p>
-    </div>
-    <div id="references">
-    <h2>References</h2>
-    <p><code>http://images.remss.com/amsr/amsr2_data_daily.html</code>
-provides daily images going back to 2012. Three-day,
-monthly, and monthly composites are also provided on that site.</p>
+<p>On 26 July 2023, it was noticed that the server-url naming convention
+had changed again, requiring not only the alteration of the default
+<code>server</code> value but also the addition of a new parameter named <code>type</code>.
+Worse yet -- much worse -- the file format is now changed from a gzipped
+format to a NetCDF format, and this will require a complete rewriting
+of <code><a href="read.amsr.html">read.amsr()</a></code>.</p>
     </div>
     <div id="see-also">
     <h2>See also</h2>
@@ -202,12 +230,16 @@ monthly, and monthly composites are also provided on that site.</p>
 <code><a href="subset-amsr-method.html">subset,amsr-method</a></code>,
 <code><a href="summary-amsr-method.html">summary,amsr-method</a></code></p></div>
     </div>
+    <div id="author">
+    <h2>Author</h2>
+    <p>Dan Kelley</p>
+    </div>
 
     <div id="ref-examples">
     <h2>Examples</h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span></span>
-<span class="r-in"><span><span class="co"># The download takes several seconds.</span></span></span>
-<span class="r-in"><span><span class="va">f</span> <span class="op">&lt;-</span> <span class="fu">download.amsr</span><span class="op">(</span><span class="fl">2017</span>, <span class="fl">1</span>, <span class="fl">14</span><span class="op">)</span> <span class="co"># Jan 14, 2017</span></span></span>
+<span class="r-in"><span><span class="co"># The download may take up to about a minute.</span></span></span>
+<span class="r-in"><span><span class="va">f</span> <span class="op">&lt;-</span> <span class="fu">download.amsr</span><span class="op">(</span><span class="fl">2023</span>, <span class="fl">7</span>, <span class="fl">27</span>, destdir<span class="op">=</span><span class="st">"~/data/amsr"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">d</span> <span class="op">&lt;-</span> <span class="fu"><a href="read.amsr.html">read.amsr</a></span><span class="op">(</span><span class="va">f</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">d</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/mtext.html" class="external-link">mtext</a></span><span class="op">(</span><span class="va">d</span><span class="op">[[</span><span class="st">"filename"</span><span class="op">]</span><span class="op">]</span>, side<span class="op">=</span><span class="fl">3</span>, line<span class="op">=</span><span class="fl">0</span>, adj<span class="op">=</span><span class="fl">0</span><span class="op">)</span></span></span>
