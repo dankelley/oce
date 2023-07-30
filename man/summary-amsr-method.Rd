@@ -12,8 +12,7 @@
 \item{...}{ignored.}
 }
 \description{
-Although the data are stored in \code{\link[=raw]{raw()}} form, the summary
-presents results in physical units.
+Print a summary of key components of the object.
 }
 \seealso{
 Other things related to amsr data: 

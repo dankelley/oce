@@ -59,34 +59,31 @@ setMethod(f="initialize",
         return(.Object)
     })
 
-setMethod(f="show",
-    signature="amsr",
-    definition=function(object) {
-        cat("Data (physical units):\n")
-        dataNames <- names(object@data)
-        for (b in seq_along(dataNames)) {
-            dim <- if (is.list(object@data[[b]])) dim(object@data[[b]]$lsb) else dim(object@data[[b]])
-            cat("  \"", dataNames[b], "\" has dimension c(", dim[1], ",", dim[2], ")\n", sep="")
-        }
-    })
-
+#<?> setMethod(f="show",
+#<?>     signature="amsr",
+#<?>     definition=function(object) {
+#<?>         cat("Data (physical units):\n")
+#<?>         dataNames <- names(object@data)
+#<?>         for (b in seq_along(dataNames)) {
+#<?>             dim <- if (is.list(object@data[[b]])) dim(object@data[[b]]$lsb) else dim(object@data[[b]])
+#<?>             cat("  \"", dataNames[b], "\" has dimension c(", dim[1], ",", dim[2], ")\n", sep="")
+#<?>         }
+#<?>     })
+#<?>
 
 #' An amsr dataset for waters near Nova Scotia
 #'
-#' This is a composite satellite image combining views for
-#' 2020 August 9, 10 and 11, trimmed from a world view to a view
-#' spanning 30N to 60N and 80W to 40W; see \dQuote{Details}.
+#' This is a three-day composite satellite image for
+#' July 27, 2023, trimmed to show waters south and east of
+#' Nova Scotia, using code provide in the \dQuote{Details}
+#' section.
 #'
 #' The following code was used to create this dataset.
 #'\preformatted{
 #' library(oce)
-#' data(coastlineWorldFine, package="ocedata")
-#' d1 <- read.amsr(download.amsr(2020, 8,  9, "~/data/amsr"))
-#' d2 <- read.amsr(download.amsr(2020, 8, 10, "~/data/amsr"))
-#' d3 <- read.amsr(download.amsr(2020, 8, 11, "~/data/amsr"))
-#' d <- composite(d1, d2, d3)
-#' amsr <- subset(d,    -80 < longitude & longitude < -40)
-#' amsr <- subset(amsr,  30 < latitude  &  latitude <  60)
+#' amsr <- read.amsr(download.amsr(2023, 7, 27, destdir="~/data/amsr"))
+#' amsr <- subset(amsr, -71 < longitude & longitude < -60, debug=2)
+#' amsr <- subset(amsr,  36 < latitude  &  latitude <  45, debug=2)
 #'}
 #'
 #' @name amsr
@@ -109,8 +106,7 @@ NULL
 
 #' Summarize an amsr Object
 #'
-#' Although the data are stored in [raw()] form, the summary
-#' presents results in physical units.
+#' Print a summary of key components of the object.
 #'
 #' @param object an [amsr-class] object.
 #'
@@ -123,9 +119,9 @@ setMethod(f="summary",
     signature="amsr",
     definition=function(object, ...) {
         cat("Amsr Summary\n------------\n\n")
-        showMetadataItem(object, "filename",   "Data file:           ")
-        cat(sprintf("* Longitude range:     %.4fE to %.4fE\n", object@metadata$longitude[1], tail(object@metadata$longitude, 1)))
-        cat(sprintf("* Latitude range:      %.4fN to %.4fN\n", object@metadata$latitude[1], tail(object@metadata$latitude, 1)))
+        showMetadataItem(object, "filename",   "Data file:       ")
+        cat(sprintf("* Longitude range: %.4fE to %.4fE\n", object@metadata$longitude[1], tail(object@metadata$longitude, 1)))
+        cat(sprintf("* Latitude range:  %.4fN to %.4fN\n", object@metadata$latitude[1], tail(object@metadata$latitude, 1)))
         for (name in names(object@data))
             object@data[[name]] <- object[[name]] # translate to science units
         invisible(callNextMethod())        # summary
@@ -137,58 +133,63 @@ setMethod(f="summary",
 #'
 #' @section Details of the Specialized Method:
 #'
+#' The `[[[` method handles both old-format and new-format [amsr-class]
+#' objects. Old-format objects are read by [read.amsr()]
+#' from from gzipped files holding data in raw format, from which
+#' `[[` computes numeric results with linear
+#' relationships provided at at `http://www.remss.com/missions/amsre`.
+#' By contrast, new-format objects are read
+#' from NetCDF files that hold the data as 4-byte
+#' numeric values that are read directly, without applying a
+#' scaling transformation.  The other
+#' difference is that old-format objects contain day and night values,
+#' e.g. `SSTDay` and `SSTNight`, whereas new-format objects contain
+#' single values that combine these, e.g. `SST`.
+#'
 #' If `i` is `"?"`, then the return value is a list
 #' containing four items, each of which is a character vector
 #' holding the names of things that can be accessed with `[[`.
 #' The `data` and `metadata` items hold the names of
 #' entries in the object's data and metadata
 #' slots, respectively. The `dataDerived`
-#' and `metadataDerived` items are each NULL, because
-#' no derived values are defined by [cm-class] objects.
+#' and `metadataDerived` items are things that
+#' `[[` can compute and then return.
 #'
-#' Data within the `data` slot may be found directly, e.g.
-#' `i="SSTDay"` will yield sea-surface temperature in the daytime
-#' satellite, and `i="SSTNight"` is used to access the nighttime data. In
-#' addition, `i="SST"` yields a computed average of the night and day values
-#' (using just one of these, if the other is missing). This scheme of
-#' providing computed averages works for
-#' all the data stored in `amsr` objects, namely:
-#' `time`, `SST`, `LFwind`, `MFwind`,
-#' `vapor`, `cloud` and `rain`.  In each case, the default
-#' is to calculate values in scientific units, unless `j="raw"`, in
-#' which case the raw data are returned.
+#' Data within the `data` slot may be found directly (for
+#' both new-format and old-format objects) or indirectly (only
+#' for old-style objects).  For example, `SST` works by direct
+#' lookup for new-format objects, but it is computed using 
+#' `SSTNight` and `SSTDay` for old-format objects.  Use e.g.
+#' `a[["?"]]` for any given object, to see what can be retrieved.
 #'
-#' The conversion from raw to scientific units is done with formulae
-#' found at `http://www.remss.com/missions/amsre`, e.g. SST is
-#' computed by converting the raw value to an integer (between 0 and 255),
-#' multiplying by 0.15C, and subtracting 3C.
-#'
-#' The `"raw"` mode can be useful
-#' in decoding the various types of missing value that are used by `amsr`
-#' data, namely `as.raw(255)` for land, `as.raw(254)` for
-#' a missing observation, `as.raw(253)` for a bad observation,
-#' `as.raw(252)` for sea ice, or `as.raw(251)` for missing SST
-#' due to rain or missing water vapour due to heavy rain. Note that
-#' something special has to be done for e.g. `d[["SST","raw"]]`
-#' because the idea is that this syntax (as opposed to specifying
-#' `"SSTDay"`) is a request to try to find good
-#' data by looking at both the Day and Night measurements. The scheme
-#' employed is quite detailed. Denote by "A" the raw value of the desired field
-#' in the daytime pass, and by "B" the corresponding value in the
-#' nighttime pass. If either A or B is 255, the code for land, then the
-#' result will be 255. If A is 254 (i.e. there is no observation),
-#' then B is returned, and the reverse holds also. Similarly, if either
-#' A or B equals 253 (bad observation), then the other is returned.
-#' The same is done for code 252 (ice) and code 251 (rain).
+## The conversion from raw to scientific units is done with formulae
+## found at `http://www.remss.com/missions/amsre`, e.g. SST is
+## computed by converting the raw value to an integer (between 0 and 255),
+## multiplying by 0.15C, and subtracting 3C.
+##
+## The `"raw"` mode can be useful
+## in decoding the various types of missing value that are used by `amsr`
+## data, namely `as.raw(255)` for land, `as.raw(254)` for
+## a missing observation, `as.raw(253)` for a bad observation,
+## `as.raw(252)` for sea ice, or `as.raw(251)` for missing SST
+## due to rain or missing water vapour due to heavy rain. Note that
+## something special has to be done for e.g. `d[["SST","raw"]]`
+## because the idea is that this syntax (as opposed to specifying
+## `"SSTDay"`) is a request to try to find good
+## data by looking at both the Day and Night measurements. The scheme
+## employed is quite detailed. Denote by "A" the raw value of the desired field
+## in the daytime pass, and by "B" the corresponding value in the
+## nighttime pass. If either A or B is 255, the code for land, then the
+## result will be 255. If A is 254 (i.e. there is no observation),
+## then B is returned, and the reverse holds also. Similarly, if either
+## A or B equals 253 (bad observation), then the other is returned.
+## The same is done for code 252 (ice) and code 251 (rain).
 #'
 #' @return
-#' In all cases, the returned value is a matrix with
-#' with `NA` values inserted at locations where
-#' the raw data equal `as.raw(251:255)`, as explained
-#' in \dQuote{Details}.
+#' `[[` returns numeric matrix data.
 #'
 #' @examples
-#' # Histogram of SST values
+#' # Histogram of SST values (for an old-format dataset)
 #' library(oce)
 #' data(amsr)
 #' hist(amsr[["SST"]])
@@ -204,88 +205,110 @@ setMethod(f="[[",
         debug <- getOption("oceDebug")
         oceDebug(debug, "amsr [[ {\n", unindent=1)
         if (missing(i))
-            stop("Must name a amsr item to retrieve, e.g. '[[\"panchromatic\"]]'", call.=FALSE)
+            stop("Must name a amsr item to retrieve, e.g. '[[\"SST\"]]'", call.=FALSE)
         i <- i[1]                # drop extras if more than one given
         if (!is.character(i))
             stop("amsr item must be specified by name", call.=FALSE)
-        dataDerived <- c("cloud", "LFwind", "MFwind", "rain", "SST",
-            "time", "vapor")
-        if (i == "?") {
-            return(list(metadata=sort(names(x@metadata)),
-                metadataDerived=NULL,
-                data=sort(names(x@data)),
-                dataDerived=sort(dataDerived)))
-        }
-        if (is.character(i) && !is.na(pmatch(i, names(x@metadata)))) {
-            oceDebug(debug, "} # amsr [[\n", unindent=1)
-            return(x@metadata[[i]])
-        }
-        namesAllowed <- c(names(x@data), dataDerived)
-        if (!(i %in% namesAllowed)) {
-            stop("band '", i, "' is not available in this object; try one of: ",
-                paste(namesAllowed, collapse=" "))
-        }
-        # get numeric band, changing land, n-obs, bad-obs, sea-ice and windy to NA
-        getBand<-function(b) {
-            bad <- b == as.raw(0xff)| # land mass
-            b == as.raw(0xfe)| # no observations
-            b == as.raw(0xfd)| # bad observations
-            b == as.raw(0xfc)| # sea ice
-            b == as.raw(0xfb) # missing SST or wind due to rain, or missing water vapour due to heavy rain
-            b <- as.numeric(b)
-            b[bad] <- NA
-            b
-        }
-        dim <- c(length(x@metadata$longitude), length(x@metadata$latitude))
-        if (missing(j) || j != "raw") {
-            # Apply units; see http://www.remss.com/missions/amsre
-            # FIXME: the table at above link has two factors for time; I've no idea
-            # what that means, and am extracting what seems to be seconds in the day.
-            if      (i == "timeDay") res <- 60*6*getBand(x@data[[i]]) # FIXME: guessing on amsr time units
-            else if (i == "timeNight") res <- 60*6*getBand(x@data[[i]]) # FIXME: guessing on amsr time units
-            else if (i == "time") res <- 60*6*getBand(do_amsr_average(x@data[["timeDay"]], x@data[["timeNight"]]))
-            else if (i == "SSTDay") res <- -3 + 0.15 * getBand(x@data[[i]])
-            else if (i == "SSTNight") res <- -3 + 0.15 * getBand(x@data[[i]])
-            else if (i == "SST") res <- -3 + 0.15 * getBand(do_amsr_average(x@data[["SSTDay"]], x@data[["SSTNight"]]))
-            else if (i == "LFwindDay") res <- 0.2 * getBand(x@data[[i]])
-            else if (i == "LFwindNight") res <- 0.2 * getBand(x@data[[i]])
-            else if (i == "LFwind") res <- 0.2 * getBand(do_amsr_average(x@data[["LFwindDay"]], x@data[["LFwindNight"]]))
-            else if (i == "MFwindDay") res <- 0.2 * getBand(x@data[[i]])
-            else if (i == "MFwindNight") res <- 0.2 * getBand(x@data[[i]])
-            else if (i == "MFwind") res <- 0.2 * getBand(do_amsr_average(x@data[["MFwindDay"]], x@data[["MFwindNight"]]))
-            else if (i == "vaporDay") res <- 0.3 * getBand(x@data[[i]])
-            else if (i == "vaporNight") res <- 0.3 * getBand(x@data[[i]])
-            else if (i == "vapor") res <- 0.3 * getBand(do_amsr_average(x@data[["vaporDay"]], x@data[["vaporNight"]]))
-            else if (i == "cloudDay") res <- -0.05 + 0.01 * getBand(x@data[[i]])
-            else if (i == "cloudNight") res <- -0.05 + 0.01 * getBand(x@data[[i]])
-            else if (i == "cloud") res <- -0.05 + 0.01 * getBand(do_amsr_average(x@data[["cloudDay"]], x@data[["cloudNight"]]))
-            else if (i == "rainDay") res <- 0.01 * getBand(x@data[[i]])
-            else if (i == "rainNight") res <- 0.01 * getBand(x@data[[i]])
-            else if (i == "rain") res <- 0.01 * getBand(do_amsr_average(x@data[["rainDay"]], x@data[["rainNight"]]))
-            else if (i == "data") return(x@data)
+        # The storage for the new (netcdf) format is much simpler than that
+        # for the old format, since the latter required the use of scale factors
+        # on raw numbers, etc.  We handle both new and old formats here.
+        newFormat <- !("SSTDay" %in% names(x@data))
+        if (newFormat) {
+            if (i == "?") {
+                return(list(metadata=sort(names(x@metadata)),
+                        metadataDerived=NULL,
+                        data=sort(names(x@data)),
+                        dataDerived=NULL))
+            }
+            if (grepl("(Day|Night)$", i)) {
+                iorig <- i
+                i <- gsub("(Day|Night)$", "", i)
+                oceDebug(debug, "returning \"", i, "\" for \"", iorig, "\"\n")
+            }
+            if (i %in% names(x@metadata))
+                return(x@metadata[[i]])
+            else
+                return(x@data[[i]])
         } else {
-            if      (i == "timeDay") res <- x@data[[i]]
-            else if (i == "timeNight") res <- x@data[[i]]
-            else if (i == "time") res <- getBand(do_amsr_average(x@data[["timeDay"]], x@data[["timeNight"]]))
-            else if (i == "SSTDay") res <- x@data[[i]]
-            else if (i == "SSTNight") res <- x@data[[i]]
-            else if (i == "SST") res <- do_amsr_average(x@data[["SSTDay"]], x@data[["SSTNight"]])
-            else if (i == "LFwindDay") res <- x@data[[i]]
-            else if (i == "LFwindNight") res <- x@data[[i]]
-            else if (i == "LFwind") res <- do_amsr_average(x@data[["LFwindDay"]], x@data[["LFwindNight"]])
-            else if (i == "MFwindDay") res <- x@data[[i]]
-            else if (i == "MFwindNight") res <- x@data[[i]]
-            else if (i == "MFwind") res <- do_amsr_average(x@data[["MFwindDay"]], x@data[["MFwindNight"]])
-            else if (i == "vaporDay") res <- x@data[[i]]
-            else if (i == "vaporNight") res <- x@data[[i]]
-            else if (i == "vapor") res <- do_amsr_average(x@data[["vaporDay"]], x@data[["vaporNight"]])
-            else if (i == "cloudDay") res <- x@data[[i]]
-            else if (i == "cloudNight") res <- x@data[[i]]
-            else if (i == "cloud") res <- do_amsr_average(x@data[["cloudDay"]], x@data[["cloudNight"]])
-            else if (i == "rainDay") res <- x@data[[i]]
-            else if (i == "rainNight") res <- x@data[[i]]
-            else if (i == "rain") res <- do_amsr_average(x@data[["rainDay"]], x@data[["rainNight"]])
-            else if (i == "data") return(x@data)
+            dataDerived <- c("cloud", "LFwind", "MFwind", "rain", "SST",
+                "time", "vapor")
+            if (i == "?") {
+                return(list(metadata=sort(names(x@metadata)),
+                        metadataDerived=NULL,
+                        data=sort(names(x@data)),
+                        dataDerived=sort(dataDerived)))
+            }
+            if (is.character(i) && !is.na(pmatch(i, names(x@metadata)))) {
+                oceDebug(debug, "} # amsr [[\n", unindent=1)
+                return(x@metadata[[i]])
+            }
+            namesAllowed <- c(names(x@data), dataDerived)
+            if (!(i %in% namesAllowed)) {
+                stop("band '", i, "' is not available in this object; try one of: ",
+                    paste(namesAllowed, collapse=" "))
+            }
+            # get numeric band, changing land, n-obs, bad-obs, sea-ice and windy to NA
+            getBand<-function(b) {
+                bad <- b == as.raw(0xff)| # land mass
+                    b == as.raw(0xfe)| # no observations
+                    b == as.raw(0xfd)| # bad observations
+                    b == as.raw(0xfc)| # sea ice
+                    b == as.raw(0xfb) # missing SST or wind due to rain, or missing water vapour due to heavy rain
+                b <- as.numeric(b)
+                b[bad] <- NA
+                b
+            }
+            dim <- c(length(x@metadata$longitude), length(x@metadata$latitude))
+            if (missing(j) || j != "raw") {
+                # Apply units; see http://www.remss.com/missions/amsre
+                # FIXME: the table at above link has two factors for time; I've no idea
+                # what that means, and am extracting what seems to be seconds in the day.
+                if      (i == "timeDay") res <- 60*6*getBand(x@data[[i]]) # FIXME: guessing on amsr time units
+                else if (i == "timeNight") res <- 60*6*getBand(x@data[[i]]) # FIXME: guessing on amsr time units
+                else if (i == "time") res <- 60*6*getBand(do_amsr_average(x@data[["timeDay"]], x@data[["timeNight"]]))
+                else if (i == "SSTDay") res <- -3 + 0.15 * getBand(x@data[[i]])
+                else if (i == "SSTNight") res <- -3 + 0.15 * getBand(x@data[[i]])
+                else if (i == "SST") res <- -3 + 0.15 * getBand(do_amsr_average(x@data[["SSTDay"]], x@data[["SSTNight"]]))
+                else if (i == "LFwindDay") res <- 0.2 * getBand(x@data[[i]])
+                else if (i == "LFwindNight") res <- 0.2 * getBand(x@data[[i]])
+                else if (i == "LFwind") res <- 0.2 * getBand(do_amsr_average(x@data[["LFwindDay"]], x@data[["LFwindNight"]]))
+                else if (i == "MFwindDay") res <- 0.2 * getBand(x@data[[i]])
+                else if (i == "MFwindNight") res <- 0.2 * getBand(x@data[[i]])
+                else if (i == "MFwind") res <- 0.2 * getBand(do_amsr_average(x@data[["MFwindDay"]], x@data[["MFwindNight"]]))
+                else if (i == "vaporDay") res <- 0.3 * getBand(x@data[[i]])
+                else if (i == "vaporNight") res <- 0.3 * getBand(x@data[[i]])
+                else if (i == "vapor") res <- 0.3 * getBand(do_amsr_average(x@data[["vaporDay"]], x@data[["vaporNight"]]))
+                else if (i == "cloudDay") res <- -0.05 + 0.01 * getBand(x@data[[i]])
+                else if (i == "cloudNight") res <- -0.05 + 0.01 * getBand(x@data[[i]])
+                else if (i == "cloud") res <- -0.05 + 0.01 * getBand(do_amsr_average(x@data[["cloudDay"]], x@data[["cloudNight"]]))
+                else if (i == "rainDay") res <- 0.01 * getBand(x@data[[i]])
+                else if (i == "rainNight") res <- 0.01 * getBand(x@data[[i]])
+                else if (i == "rain") res <- 0.01 * getBand(do_amsr_average(x@data[["rainDay"]], x@data[["rainNight"]]))
+                else if (i == "data") return(x@data)
+            } else {
+                if      (i == "timeDay") res <- x@data[[i]]
+                else if (i == "timeNight") res <- x@data[[i]]
+                else if (i == "time") res <- getBand(do_amsr_average(x@data[["timeDay"]], x@data[["timeNight"]]))
+                else if (i == "SSTDay") res <- x@data[[i]]
+                else if (i == "SSTNight") res <- x@data[[i]]
+                else if (i == "SST") res <- do_amsr_average(x@data[["SSTDay"]], x@data[["SSTNight"]])
+                else if (i == "LFwindDay") res <- x@data[[i]]
+                else if (i == "LFwindNight") res <- x@data[[i]]
+                else if (i == "LFwind") res <- do_amsr_average(x@data[["LFwindDay"]], x@data[["LFwindNight"]])
+                else if (i == "MFwindDay") res <- x@data[[i]]
+                else if (i == "MFwindNight") res <- x@data[[i]]
+                else if (i == "MFwind") res <- do_amsr_average(x@data[["MFwindDay"]], x@data[["MFwindNight"]])
+                else if (i == "vaporDay") res <- x@data[[i]]
+                else if (i == "vaporNight") res <- x@data[[i]]
+                else if (i == "vapor") res <- do_amsr_average(x@data[["vaporDay"]], x@data[["vaporNight"]])
+                else if (i == "cloudDay") res <- x@data[[i]]
+                else if (i == "cloudNight") res <- x@data[[i]]
+                else if (i == "cloud") res <- do_amsr_average(x@data[["cloudDay"]], x@data[["cloudNight"]])
+                else if (i == "rainDay") res <- x@data[[i]]
+                else if (i == "rainNight") res <- x@data[[i]]
+                else if (i == "rain") res <- do_amsr_average(x@data[["rainDay"]], x@data[["rainNight"]])
+                else if (i == "data") return(x@data)
+            }
         }
         dim(res) <- dim
         res
@@ -347,9 +370,9 @@ setMethod(f="subset",
                 stop("the subset must not contain both longitude and latitude. Call this twice, to combine these")
             keep <- eval(expr=substitute(expr=subset, env=environment()),
                 envir=data.frame(longitude=x@metadata$longitude), enclos=parent.frame(2))
-            oceDebug(debug, "keeping", sum(keep), "of", length(keep), "longitudes\n")
+            oceDebug(debug, "keeping ", sum(keep), " of ", length(keep), " longitudes\n")
             for (name in names(res@data)) {
-                oceDebug(debug, "processing", name, "\n")
+                oceDebug(debug, "processing ", name, "\n")
                 res@data[[name]] <- res[[name, "raw"]][keep, ]
             }
             res@metadata$longitude <- x@metadata$longitude[keep]
@@ -358,9 +381,9 @@ setMethod(f="subset",
                 stop("the subset must not contain both longitude and latitude. Call this twice, to combine these")
             keep <- eval(expr=substitute(expr=subset, env=environment()),
                 envir=data.frame(latitude=x@metadata$latitude), enclos=parent.frame(2))
-            oceDebug(debug, "keeping", sum(keep), "of", length(keep), "latitudes\n")
+            oceDebug(debug, "keeping ", sum(keep), " of ", length(keep), " latitudes\n")
             for (name in names(res@data)) {
-                oceDebug(debug, "processing", name, "\n")
+                oceDebug(debug, "processing ", name, "\n")
                 res@data[[name]] <- x[[name, "raw"]][, keep]
             }
             res@metadata$latitude <- res@metadata$latitude[keep]
@@ -585,6 +608,11 @@ setMethod(f="plot",
 #' two weeks prior to the present date (if `type` is `"weekly"`), or
 #' two months in the past (if `type` is `"monthly"`).
 #'
+#' @param destdir A string naming the directory in which to cache the downloaded file.
+#' The default is to store in the present directory, but many users find it more
+#' helpful to use something like `"~/data/amsr"` for this, to collect all
+#' downloaded amsr files in one place.
+#'
 #' @param server A string naming the server from which data
 #' are to be acquired. See \dQuote{History}.
 #'
@@ -596,10 +624,7 @@ setMethod(f="plot",
 #' third dimension representing ascending and descending traces, but in all the
 #' other cases, the arrays are 2D.
 #'
-#' @param destdir A string naming the directory in which to cache the downloaded file.
-#' The default is to store in the present directory, but many users find it more
-#' helpful to use something like `"~/data/amsr"` for this, to collect all
-#' downloaded amsr files in one place.
+#' @template debugTemplate
 #'
 #' @section History:
 #' Until 25 March 2017, the default server was
@@ -629,7 +654,7 @@ setMethod(f="plot",
 #' @examples
 #'\dontrun{
 #' # The download may take up to about a minute.
-#' f <- download.amsr(2017, 1, 14) # Jan 14, 2017
+#' f <- download.amsr(2023, 7, 27, destdir="~/data/amsr")
 #' d <- read.amsr(f)
 #' plot(d)
 #' mtext(d[["filename"]], side=3, line=0, adj=0)
@@ -722,8 +747,12 @@ download.amsr <- function(year=NULL, month, day, destdir=".",
     file <- gsub(".*/", "", url)
     oceDebug(debug, "url=\"", url, "\"\n", sep="")
     oceDebug(debug, "file=\"", file, "\"\n", sep="")
-    # try
     destfile <- paste(destdir, file, sep="/")
+    if (file.exists(destfile)) {
+        oceDebug(debug, "using existing file \"", destfile, "\"\n", sep="")
+        oceDebug(debug, "} # download.amsr\n", sep="", style="bold", unindent=1)
+        return(destfile)
+    }
     ok <- try(download.file(url, destfile))
     if (inherits(ok, "try-error"))
         stop("could not download \"", url, "\" to local file \"", destfile, "\"")
@@ -799,99 +828,158 @@ read.amsr <- function(file, encoding=NA, debug=getOption("oceDebug"))
 {
     if (missing(file))
         stop("must supply 'file'")
-    if (is.character(file)) {
-        if (!file.exists(file))
-            stop("cannot find file '", file, "'")
-        if (0L == file.info(file)$size)
-            stop("empty file '", file, "'")
-    }
-    oceDebug(debug, "read.amsr(file=\"", file, "\",",
-        #if (length(band) > 1) paste("band=c(\"", paste(band, collapse="\",\""), "\")", sep="") else
-        ", debug=", debug, ") {\n", sep="", unindent=1)
+    if (!is.character(file))
+        stop("file must be a filename")
+    if (!file.exists(file))
+        stop("cannot find file '", file, "'")
+    if (0L == file.info(file)$size)
+        stop("file '", file, "' is empty")
+    oceDebug(debug, "read.amsr(file=\"", file, "\",", ", debug=", debug, ") {\n", sep="", unindent=1)
+    isgz <- grepl(".gz$", file)
+    isncdf <- grepl(".nc$", file)
+    if (!any(c(isgz, isncdf))) # also rechecked later
+        stop("file must end in either \".gz\" or \".nc\"")
     res <- new("amsr")
     filename <- file
     res@metadata$filename <- filename
-    file <- if (length(grep(".*.gz$", filename))) gzfile(filename, "rb") else file(filename, "rb")
-    on.exit(close(file))
-    # we can hard-code a max size because the satellite data size is not variable
-    buf <- readBin(file, what="raw", n=50e6, endian="little")
-    nbuf <- length(buf)
-    dim <- c(1440, 720)
-    nchunks <- nbuf / prod(dim)
-    if (nchunks != round(nchunks))
-        stop("error: the data length ", nbuf, " is not an integral multiple of ", dim[1], "*", dim[2])
-    # From an amsr webpage --
-    # Each binary data file available from our ftp site consists of fourteen (daily) or
-    # six (averaged) 0.25 x 0.25 degree grid (1440,720) byte maps. For daily files,
-    # seven daytime, ascending maps in the following order, Time (UTC), Sea Surface
-    # Temperature (SST), 10 meter Surface Wind Speed (WSPD-LF), 10 meter Surface
-    # Wind Speed (WSPD-MF), Atmospheric Water Vapor (VAPOR), Cloud Liquid Water (CLOUD),
-    # and Rain Rate (RAIN), are followed by seven nighttime maps in the same order.
-    # Time-Averaged files contain just the geophysical layers in the same order
-    # [SST, WSPD-LF, WSPD-MF,VAPOR, CLOUD, RAIN].
-    select <- seq.int(1L, prod(dim))
-    if (nchunks == 14) {
-        oceDebug(debug, "14-chunk amsr file\n")
-        timeDay <- buf[select]
-        SSTDay <- buf[prod(dim) + select]
-        LFwindDay <- buf[2*prod(dim) + select]
-        MFwindDay <- buf[3*prod(dim) + select]
-        vaporDay <- buf[4*prod(dim) + select]
-        cloudDay <- buf[5*prod(dim) + select]
-        rainDay <- buf[6*prod(dim) + select]
-        dim(timeDay) <- dim
-        dim(SSTDay) <- dim
-        dim(LFwindDay) <- dim
-        dim(MFwindDay) <- dim
-        dim(vaporDay) <- dim
-        dim(cloudDay) <- dim
-        dim(rainDay) <- dim
+    if (isgz) {
+        oceDebug(debug, "old-style file, with name ending in \".gz\"\n")
+        file <- if (length(grep(".*.gz$", filename))) gzfile(filename, "rb") else file(filename, "rb")
+        on.exit(close(file))
+        # we can hard-code a max size because the satellite data size is not variable
+        buf <- readBin(file, what="raw", n=50e6, endian="little")
+        nbuf <- length(buf)
+        dim <- c(1440, 720)
+        nchunks <- nbuf / prod(dim)
+        if (nchunks != round(nchunks))
+            stop("error: the data length ", nbuf, " is not an integral multiple of ", dim[1], "*", dim[2])
+        # From an amsr webpage --
+        # Each binary data file available from our ftp site consists of fourteen (daily) or
+        # six (averaged) 0.25 x 0.25 degree grid (1440,720) byte maps. For daily files,
+        # seven daytime, ascending maps in the following order, Time (UTC), Sea Surface
+        # Temperature (SST), 10 meter Surface Wind Speed (WSPD-LF), 10 meter Surface
+        # Wind Speed (WSPD-MF), Atmospheric Water Vapor (VAPOR), Cloud Liquid Water (CLOUD),
+        # and Rain Rate (RAIN), are followed by seven nighttime maps in the same order.
+        # Time-Averaged files contain just the geophysical layers in the same order
+        # [SST, WSPD-LF, WSPD-MF,VAPOR, CLOUD, RAIN].
+        select <- seq.int(1L, prod(dim))
+        if (nchunks == 14) {
+            oceDebug(debug, "14-chunk amsr file\n")
+            timeDay <- buf[select]
+            SSTDay <- buf[prod(dim) + select]
+            LFwindDay <- buf[2*prod(dim) + select]
+            MFwindDay <- buf[3*prod(dim) + select]
+            vaporDay <- buf[4*prod(dim) + select]
+            cloudDay <- buf[5*prod(dim) + select]
+            rainDay <- buf[6*prod(dim) + select]
+            dim(timeDay) <- dim
+            dim(SSTDay) <- dim
+            dim(LFwindDay) <- dim
+            dim(MFwindDay) <- dim
+            dim(vaporDay) <- dim
+            dim(cloudDay) <- dim
+            dim(rainDay) <- dim
 
-        timeNight <- buf[7*prod(dim) + select]
-        SSTNight <- buf[8*prod(dim) + select]
-        LFwindNight <- buf[9*prod(dim) + select]
-        MFwindNight <- buf[10*prod(dim) + select]
-        vaporNight <- buf[11*prod(dim) + select]
-        cloudNight <- buf[12*prod(dim) + select]
-        rainNight <- buf[13*prod(dim) + select]
-        dim(timeNight) <- dim
-        dim(SSTNight) <- dim
-        dim(LFwindNight) <- dim
-        dim(MFwindNight) <- dim
-        dim(vaporNight) <- dim
-        dim(cloudNight) <- dim
-        dim(rainNight) <- dim
-        res@metadata$units$SSTDay <- list(unit=expression(degree*C), scale="ITS-90")
-        res@metadata$units$SSTNight <- list(unit=expression(degree*C), scale="ITS-90")
-        res@metadata$units$LFwindDay <- list(unit=expression(m/s), scale="")
-        res@metadata$units$LFwindNight <- list(unit=expression(m/s), scale="")
-        res@metadata$units$MFwindDay <- list(unit=expression(m/s), scale="")
-        res@metadata$units$MFwindNight <- list(unit=expression(m/s), scale="")
-        res@metadata$units$rainDay <- list(unit=expression(mm/h), scale="")
-        res@metadata$units$rainNight <- list(unit=expression(mm/h), scale="")
-        res@data <- list(timeDay=timeDay,
-            SSTDay=SSTDay, LFwindDay=LFwindDay, MFwindDay=MFwindDay,
-            vaporDay=vaporDay, cloudDay=cloudDay, rainDay=rainDay,
-            timeNight=timeNight,
-            SSTNight=SSTNight, LFwindNight=LFwindNight, MFwindNight=MFwindNight,
-            vaporNight=vaporNight, cloudNight=cloudNight, rainNight=rainNight)
+            timeNight <- buf[7*prod(dim) + select]
+            SSTNight <- buf[8*prod(dim) + select]
+            LFwindNight <- buf[9*prod(dim) + select]
+            MFwindNight <- buf[10*prod(dim) + select]
+            vaporNight <- buf[11*prod(dim) + select]
+            cloudNight <- buf[12*prod(dim) + select]
+            rainNight <- buf[13*prod(dim) + select]
+            dim(timeNight) <- dim
+            dim(SSTNight) <- dim
+            dim(LFwindNight) <- dim
+            dim(MFwindNight) <- dim
+            dim(vaporNight) <- dim
+            dim(cloudNight) <- dim
+            dim(rainNight) <- dim
+            res@metadata$units$SSTDay <- list(unit=expression(degree*C), scale="ITS-90")
+            res@metadata$units$SSTNight <- list(unit=expression(degree*C), scale="ITS-90")
+            res@metadata$units$LFwindDay <- list(unit=expression(m/s), scale="")
+            res@metadata$units$LFwindNight <- list(unit=expression(m/s), scale="")
+            res@metadata$units$MFwindDay <- list(unit=expression(m/s), scale="")
+            res@metadata$units$MFwindNight <- list(unit=expression(m/s), scale="")
+            res@metadata$units$rainDay <- list(unit=expression(mm/h), scale="")
+            res@metadata$units$rainNight <- list(unit=expression(mm/h), scale="")
+            res@data <- list(timeDay=timeDay,
+                SSTDay=SSTDay, LFwindDay=LFwindDay, MFwindDay=MFwindDay,
+                vaporDay=vaporDay, cloudDay=cloudDay, rainDay=rainDay,
+                timeNight=timeNight,
+                SSTNight=SSTNight, LFwindNight=LFwindNight, MFwindNight=MFwindNight,
+                vaporNight=vaporNight, cloudNight=cloudNight, rainNight=rainNight)
+            res@metadata$longitude  <- 0.25 * 1:dim[1] - 0.125
+            res@metadata$latitude <- 0.25 * 1:dim[2] - 90.125
+            # rearrange matrices so that Greenwich is near the centre
+            for (name in names(res@data)) {
+                t <- matrixShiftLongitude(res@data[[name]], res@metadata$longitude)
+                res@data[[name]] <- t$m
+            }
+            res@metadata$longitude <- t$longitude
+        } else if (nchunks == 6) {
+            stop("Cannot (yet) read 6-chunk data. Please contact the developers if you need this file (and be sure to send the file to them).")
+        } else {
+            stop("Can only handle 14-chunk data; this file has ",
+                nchunks, " chunks. Please contact the developers if you need to read this file.")
+        }
+    } else if (isncdf) {
+        if (!requireNamespace("ncdf4", quietly=TRUE))
+            stop('must install.packages("ncdf4") to read new-style amsr data')
+        # > sort(names(a1@data))
+        #  [1] "cloudDay"    "cloudNight"  "LFwindDay"   "LFwindNight"
+        #  [5] "MFwindDay"   "MFwindNight" "rainDay"     "rainNight"
+        #  [9] "SSTDay"      "SSTNight"    "timeDay"     "timeNight"
+        # [13] "vaporDay"    "vaporNight"
+        oceDebug(debug, "new-style file, with name ending in \".nc\"\n")
+        nc <- ncdf4::nc_open(file)
+        SST <- ncdf4::ncvar_get(nc, "SST")
+        dim <- dim(SST)
+        # print(sort(names(nc$var)))
+        #  [1] "cloud_liquid_water" "coast_mask"
+        #  [3] "land_mask"          "noobs_mask"
+        #  [5] "rain_rate"          "sea_ice_mask"
+        #  [7] "SST"                "water_vapor"
+        #  [9] "wind_speed_AW"      "wind_speed_LF"
+        # [11] "wind_speed_MF"
+        # Note that fixMatrix() uses the value of longitude, which is in 0-to-360
+        # convention; we rewrite as -180-to-180 later, to match oce convention.
         res@metadata$longitude  <- 0.25 * 1:dim[1] - 0.125
         res@metadata$latitude <- 0.25 * 1:dim[2] - 90.125
-        # rearrange matrices so that Greenwich is near the centre
-        for (name in names(res@data)) {
-            t <- matrixShiftLongitude(res@data[[name]], res@metadata$longitude)
-            res@data[[name]] <- t$m
+        fixMatrix <- function(name) {
+            val <- ncdf4::ncvar_get(nc, name)
+            matrixShiftLongitude(val, res@metadata$longitude)
         }
-        res@metadata$longitude <- t$longitude
-    } else if (nchunks == 6) {
-        stop("Cannot (yet) read 6-chunk data. Please contact the developers if you need this file (and be sure to send the file to them).")
+        tmp <- fixMatrix("cloud_liquid_water")
+        res@data$cloud <- tmp$m
+        longitudeNew <- tmp$longitude
+        res@data$rain <- fixMatrix("rain_rate")$m
+        res@data$SST <- fixMatrix("SST")$m
+        res@data$vapor <- fixMatrix("water_vapor")$m
+        res@data$AWwind  <- fixMatrix("wind_speed_AW")$m
+        res@data$LFwind  <- fixMatrix("wind_speed_LF")$m
+        res@data$MFwind  <- fixMatrix("wind_speed_MF")$m
+        res@data$coastMask <- fixMatrix("coast_mask")$m
+        res@data$landMask <- fixMatrix("land_mask")$m
+        res@data$noObsMask <- fixMatrix("noobs_mask")$m
+        res@data$seaIceMask <- fixMatrix("sea_ice_mask")$m
+        # finally, we can update longitude
+        res@metadata$longitude <- longitudeNew
     } else {
-        stop("Can only handle 14-chunk data; this file has ",
-            nchunks, " chunks. Please contact the developers if you need to read this file.")
+        stop("file must end in either \".gz\" or \".nc\"")
     }
     res@metadata$spacecraft <- "amsr"
+    res@metadata$units <- list(
+        longitude=list(unit=expression(degree*E), scale=""),
+        latitude=list(unit=expression(degree*N), scale=""),
+        SST=list(unit=expression(degree*C), scale=""),
+        AWwind=list(unit=expression(m/s), scale=""), # all weater
+        LFwind=list(unit=expression(m/s), scale=""), # low-frequency 10.65 to 36.5 GHz
+        MFwind=list(unit=expression(m/s), scale=""), # medium-frequency 18.7 to 36.5 GHz
+        vapor=list(unit=expression(kg/m^2), scale=""),
+        cloud=list(unit=expression(kg/m^2), scale=""),
+        rain=list(unit=expression(mm/hr), scale=""))
     res@processingLog <- processingLogAppend(res@processingLog,
-        paste(deparse(match.call()), sep="", collapse=""))
+        paste0("read.amsr(file=\"", filename, "\")"))
     oceDebug(debug, "} # read.amsr()\n", sep="", unindent=1)
     res
 }

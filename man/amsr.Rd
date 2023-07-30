@@ -8,21 +8,18 @@
 data(amsr)
 }
 \description{
-This is a composite satellite image combining views for
-2020 August 9, 10 and 11, trimmed from a world view to a view
-spanning 30N to 60N and 80W to 40W; see \dQuote{Details}.
+This is a three-day composite satellite image for
+July 27, 2023, trimmed to show waters south and east of
+Nova Scotia, using code provide in the \dQuote{Details}
+section.
 }
 \details{
 The following code was used to create this dataset.
 \preformatted{
 library(oce)
-data(coastlineWorldFine, package="ocedata")
-d1 <- read.amsr(download.amsr(2020, 8,  9, "~/data/amsr"))
-d2 <- read.amsr(download.amsr(2020, 8, 10, "~/data/amsr"))
-d3 <- read.amsr(download.amsr(2020, 8, 11, "~/data/amsr"))
-d <- composite(d1, d2, d3)
-amsr <- subset(d,    -80 < longitude & longitude < -40)
-amsr <- subset(amsr,  30 < latitude  &  latitude <  60)
+amsr <- read.amsr(download.amsr(2023, 7, 27, destdir="~/data/amsr"))
+amsr <- subset(amsr, -71 < longitude & longitude < -60, debug=2)
+amsr <- subset(amsr,  36 < latitude  &  latitude <  45, debug=2)
 }
 }
 \examples{

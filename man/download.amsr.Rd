@@ -41,6 +41,14 @@ removes most viewing-path and cloud blanks, \code{"daily"} for a daily reading,
 covering a month.  In the \code{"daily"} case, the data arrays are 3D, with the
 third dimension representing ascending and descending traces, but in all the
 other cases, the arrays are 2D.}
+
+\item{debug}{an integer specifying whether debugging information is
+to be printed during the processing. This is a general parameter that
+is used by many \code{oce} functions. Generally, setting \code{debug=0}
+turns off the printing, while higher values suggest that more information
+be printed. If one function calls another, it usually reduces the value of
+\code{debug} first, so that a user can often obtain deeper debugging
+by specifying higher \code{debug} values.}
 }
 \value{
 \code{download.amsr} returns a character value holding the full pathname
@@ -84,7 +92,7 @@ of \code{\link[=read.amsr]{read.amsr()}}.
 \examples{
 \dontrun{
 # The download may take up to about a minute.
-f <- download.amsr(2017, 1, 14) # Jan 14, 2017
+f <- download.amsr(2023, 7, 27, destdir="~/data/amsr")
 d <- read.amsr(f)
 plot(d)
 mtext(d[["filename"]], side=3, line=0, adj=0)
