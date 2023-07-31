@@ -668,16 +668,26 @@ setMethod(f="plot",
 #' with changes in the directory structure and file format on the
 #' server from which files are downloaded.
 #'
-#' @param year,month,day integer values indicating the desired observation time.
-#' Set `year` to NULL (the default) to default to the most recent data; otherwise
-#' specify all three of these values if `type` is `"3day"`, `"daily"` or `"weekly"`,
+#' @param year,month,day a specification of the desired observation time.
+#' There are 3 choices for this specification.  (a) If `year` is an object
+#' created by [as.Date()], then that specifies the time, and so `month`
+#' and `day` are ignored.  This scheme can be convenient for creating a
+#' sequence of images, starting at a particular date, because adding 1
+#' to an object of class `Date` increases the time by 1 day, saving
+#' the user from having to know how many days are in any given month.
+#' (b) If `year` is an integer, then it is taken to be the year, and
+#' the user must also specify `month` and `day`, also integers. (c)
+#' If `year` is NULL (which is the default), then the focus is set to
+#' the most recent date, but this depends on the value of
+#' `type` (see next).  If `type` is `"3day"`, `"daily"` or `"weekly"`,
 #' or just the first two of them if `type` is `"monthly"`.  If these
-#' things are provided, then they just match exactly the values in the sought-after
-#' file on the remote server.  If `year` is NULL, then [download.amsr()] constructs
-#' a URL that ought to be the most recent available file: 3 days prior
-#' to the present date (if `type` is `"3day"` or `"daily"`), the Saturday
-#' two weeks prior to the present date (if `type` is `"weekly"`), or
-#' two months in the past (if `type` is `"monthly"`).
+#' things are provided, then they just match exactly the values in the
+#' sought-after file on the remote server.  If `year` is NULL, then
+#' [download.amsr()] constructs a URL that ought to be the most recent
+#' available file: 3 days prior to the present date (if `type` is
+#' `"3day"` or `"daily"`), the Saturday two weeks prior to the
+#' present date (if `type` is `"weekly"`), or two months in the
+#' past (if `type` is `"monthly"`).
 #'
 #' @param destdir A string naming the directory in which to cache the downloaded file.
 #' The default is to store in the present directory, but many users find it more
@@ -749,14 +759,25 @@ download.amsr <- function(year=NULL, month, day, destdir=".",
     if (usingDefaultTime) {
         oceDebug(debug, "year is NULL, so a default time will be used\n")
     } else {
-        if (missing(month))
-            stop("month must be provided, if year is provided")
-        if (type %in% c("3day", "daily") && missing(day))
-            stop("day must be provided for type of '3day' or 'daily'")
-        # convert to integers (needed for formatting URLs, below)
-        year <- as.integer(year)
-        month <- as.integer(month)
-        day <- as.integer(day)
+        if (inherits(year, "Date")) {
+            tmp <- as.POSIXlt(year)
+            year <- tmp$year + 1900
+            month <- 1L + tmp$mon
+            day <- tmp$mday
+            oceDebug(debug, "computed year=", year, ", month=", month, ", day=", day, " from a Date object\n")
+        } else {
+            if (missing(month))
+                stop("month must be provided, if year is provided")
+            year <- as.integer(year)
+            month <- as.integer(month)
+            if (type %in% c("3day", "daily")) {
+                if (missing(day))
+                    stop("day must be provided for type of '3day' or 'daily'")
+                day <- as.integer(day)
+            } else {
+                day <- 1L # not used later, because weekly and monthly data don't need this
+            }
+        }
     }
     if (type %in% c("3day", "daily")) {
         # https://data.remss.com/amsr2/ocean/L3/v08.2/3day/2023/RSS_AMSR2_ocean_L3_3day_2023-07-24_v08.2.nc

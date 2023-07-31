@@ -15,16 +15,26 @@ download.amsr(
 )
 }
 \arguments{
-\item{year, month, day}{integer values indicating the desired observation time.
-Set \code{year} to NULL (the default) to default to the most recent data; otherwise
-specify all three of these values if \code{type} is \code{"3day"}, \code{"daily"} or \code{"weekly"},
+\item{year, month, day}{a specification of the desired observation time.
+There are 3 choices for this specification.  (a) If \code{year} is an object
+created by \code{\link[=as.Date]{as.Date()}}, then that specifies the time, and so \code{month}
+and \code{day} are ignored.  This scheme can be convenient for creating a
+sequence of images, starting at a particular date, because adding 1
+to an object of class \code{Date} increases the time by 1 day, saving
+the user from having to know how many days are in any given month.
+(b) If \code{year} is an integer, then it is taken to be the year, and
+the user must also specify \code{month} and \code{day}, also integers. (c)
+If \code{year} is NULL (which is the default), then the focus is set to
+the most recent date, but this depends on the value of
+\code{type} (see next).  If \code{type} is \code{"3day"}, \code{"daily"} or \code{"weekly"},
 or just the first two of them if \code{type} is \code{"monthly"}.  If these
-things are provided, then they just match exactly the values in the sought-after
-file on the remote server.  If \code{year} is NULL, then \code{\link[=download.amsr]{download.amsr()}} constructs
-a URL that ought to be the most recent available file: 3 days prior
-to the present date (if \code{type} is \code{"3day"} or \code{"daily"}), the Saturday
-two weeks prior to the present date (if \code{type} is \code{"weekly"}), or
-two months in the past (if \code{type} is \code{"monthly"}).}
+things are provided, then they just match exactly the values in the
+sought-after file on the remote server.  If \code{year} is NULL, then
+\code{\link[=download.amsr]{download.amsr()}} constructs a URL that ought to be the most recent
+available file: 3 days prior to the present date (if \code{type} is
+\code{"3day"} or \code{"daily"}), the Saturday two weeks prior to the
+present date (if \code{type} is \code{"weekly"}), or two months in the
+past (if \code{type} is \code{"monthly"}).}
 
 \item{destdir}{A string naming the directory in which to cache the downloaded file.
 The default is to store in the present directory, but many users find it more
