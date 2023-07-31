@@ -103,6 +103,17 @@ setMethod(f="initialize",
 #' @family things related to amsr data
 NULL
 
+# Local function to determine amsr version.  An error results if x is not
+# an amsr object.  If the object does not contain metadata$version,
+# return 1L; otherwise, return metadata$version.
+amsrType <- function(x)
+{
+    if (!inherits(x, "amsr"))
+        stop("x is not an amsr object")
+    type <- x@metadata$type
+    if (is.null(type)) 1L else type
+}
+
 
 #' Summarize an amsr Object
 #'
@@ -122,8 +133,13 @@ setMethod(f="summary",
         showMetadataItem(object, "filename",   "Data file:       ")
         cat(sprintf("* Longitude range: %.4fE to %.4fE\n", object@metadata$longitude[1], tail(object@metadata$longitude, 1)))
         cat(sprintf("* Latitude range:  %.4fN to %.4fN\n", object@metadata$latitude[1], tail(object@metadata$latitude, 1)))
-        for (name in names(object@data))
-            object@data[[name]] <- object[[name]] # translate to science units
+        cat(sprintf("* Format type:     %d\n", amsrType(object)))
+        # Version 1 data are in raw format, so use [[ to get scientific units
+        type <- amsrType(object)
+        if (type == 1L) {
+            for (name in names(object@data))
+                object@data[[name]] <- object[[name]]
+        }
         invisible(callNextMethod())        # summary
     })
 
@@ -201,7 +217,7 @@ setMethod(f="summary",
 #' @family things related to amsr data
 setMethod(f="[[",
     signature(x="amsr", i="ANY", j="ANY"),
-    definition=function(x, i, j, ...) {
+    definition=function(x, i, j, ...) { # [[,amsr-method
         debug <- getOption("oceDebug")
         oceDebug(debug, "amsr [[ {\n", unindent=1)
         if (missing(i))
@@ -212,26 +228,9 @@ setMethod(f="[[",
         # The storage for the new (netcdf) format is much simpler than that
         # for the old format, since the latter required the use of scale factors
         # on raw numbers, etc.  We handle both new and old formats here.
-        newFormat <- !("SSTDay" %in% names(x@data))
-        if (newFormat) {
-            if (i == "?") {
-                return(list(metadata=sort(names(x@metadata)),
-                        metadataDerived=NULL,
-                        data=sort(names(x@data)),
-                        dataDerived=NULL))
-            }
-            if (grepl("(Day|Night)$", i)) {
-                iorig <- i
-                i <- gsub("(Day|Night)$", "", i)
-                oceDebug(debug, "returning \"", i, "\" for \"", iorig, "\"\n")
-            }
-            if (i %in% names(x@metadata))
-                return(x@metadata[[i]])
-            else
-                return(x@data[[i]])
-        } else {
-            dataDerived <- c("cloud", "LFwind", "MFwind", "rain", "SST",
-                "time", "vapor")
+        type <- amsrType(x)
+        if (type == 1L) {
+            dataDerived <- c("cloud", "LFwind", "MFwind", "rain", "SST", "time", "vapor")
             if (i == "?") {
                 return(list(metadata=sort(names(x@metadata)),
                         metadataDerived=NULL,
@@ -309,10 +308,28 @@ setMethod(f="[[",
                 else if (i == "rain") res <- do_amsr_average(x@data[["rainDay"]], x@data[["rainNight"]])
                 else if (i == "data") return(x@data)
             }
+        } else if (type == 2L) {
+            if (i == "?") {
+                return(list(metadata=sort(names(x@metadata)),
+                        metadataDerived=NULL,
+                        data=sort(names(x@data)),
+                        dataDerived=NULL))
+            }
+            if (grepl("(Day|Night)$", i)) {
+                iorig <- i
+                i <- gsub("(Day|Night)$", "", i)
+                oceDebug(debug, "returning \"", i, "\" for \"", iorig, "\"\n")
+            }
+            if (i %in% names(x@metadata))
+                return(x@metadata[[i]])
+            else
+                return(x@data[[i]])
+        } else {
+            stop("type ", type, " not understood; only types 1 and 2 are handled")
         }
         dim(res) <- dim
         res
-    })
+    }) # [[,amsr-method
 
 #' Replace Parts of an amsr Object
 #'
@@ -359,22 +376,30 @@ setMethod(f="[[<-",
 #' @family functions that subset oce objects
 setMethod(f="subset",
     signature="amsr",
-    definition=function(x, subset, ...) {
+    definition=function(x, subset, ...) { # subset,amsr-method
         dots <- list(...)
         debug <- if ("debug" %in% names(dots)) dots$debug else 0
         oceDebug(debug, "subset,amsr-method() {\n", style="bold", sep="", unindent=1)
         res <- x
         subsetString <- paste(deparse(substitute(expr=subset, env=environment())), collapse=" ")
+        type <- amsrType(x)
         if (length(grep("longitude", subsetString))) {
             if (length(grep("latitude", subsetString)))
                 stop("the subset must not contain both longitude and latitude. Call this twice, to combine these")
             keep <- eval(expr=substitute(expr=subset, env=environment()),
                 envir=data.frame(longitude=x@metadata$longitude), enclos=parent.frame(2))
             oceDebug(debug, "keeping ", sum(keep), " of ", length(keep), " longitudes\n")
-            for (name in names(res@data)) {
-                oceDebug(debug, "processing ", name, "\n")
-                res@data[[name]] <- res[[name, "raw"]][keep, ]
-            }
+            if (type == 1L) {
+                for (name in names(res@data)) {
+                    oceDebug(debug, "processing ", name, " (type 1)\n")
+                    res@data[[name]] <- res[[name, "raw"]][keep, ]
+                }
+            } else if (type == 2L) {
+                for (name in names(res@data)) {
+                    oceDebug(debug, "processing ", name, " (type 2)\n")
+                    res@data[[name]] <- res[[name]][keep, ]
+                }
+            } else stop("type ", type, " not understood; only types 1 and 2 are handled")
             res@metadata$longitude <- x@metadata$longitude[keep]
         } else if (length(grep("latitude", subsetString))) {
             if (length(grep("longitude", subsetString)))
@@ -382,10 +407,19 @@ setMethod(f="subset",
             keep <- eval(expr=substitute(expr=subset, env=environment()),
                 envir=data.frame(latitude=x@metadata$latitude), enclos=parent.frame(2))
             oceDebug(debug, "keeping ", sum(keep), " of ", length(keep), " latitudes\n")
-            for (name in names(res@data)) {
-                oceDebug(debug, "processing ", name, "\n")
-                res@data[[name]] <- x[[name, "raw"]][, keep]
-            }
+            if (type == 1L) {
+                for (name in names(res@data)) {
+                    oceDebug(debug, "processing ", name, " (type 1)\n")
+                    res@data[[name]] <- x[[name, "raw"]][, keep]
+                }
+            } else if (type == 2L) {
+                for (name in names(res@data)) {
+                    oceDebug(debug, "processing ", name, " (type 2)\n")
+                    res@data[[name]] <- x[[name]][, keep]
+                }
+
+            } else stop("type ", type, " not understood; only types 1 and 2 are handled")
+
             res@metadata$latitude <- res@metadata$latitude[keep]
         } else {
             stop("may only subset by longitude or latitude")
@@ -425,21 +459,24 @@ setMethod(f="subset",
 #' @param colormap a specification of the colormap to use, as created
 #' with [colormap()].  If `colormap` is NULL, which is the default, then
 #' a colormap is created to cover the range of data values, using
-#' [oceColorsTemperature] colour scheme.
+#' [oceColorsTemperature] color scheme.
 #' If `colormap` is provided, it takes precedence over `breaks` and `col`.
-#' See \dQuote{Examples} for an example of using the "turbo" colour scheme.
+#' See \dQuote{Examples} for an example of using the "turbo" color scheme.
 #'
 #' @param zlim optional numeric vector of length 2, giving the limits
 #' of the plotted quantity.  A reasonable default is computed, if this
 #' is not given.
 #'
-#' @param missingColor List of colors for problem cases. For
-#' new-format data (as of July 2023), the names of the
-#' elements in this list must be as in the default.  For old-format
-#' files, the list names must be `land`, `none`, `bad`, `ice` and `rain`.
-#' In either case, any colour can be assigned to any category.
+#' @param missingColor optional list specifying colors to use for
+#' non-data categories.  If not provided, a default is used.  For
+#' type 1, that default is
+#' `list(land="papayaWhip", none="lightGray", bad="gray", rain="plum",
+#' ice="mediumVioletRed")`.  For type 2, it is
+#' `list(coast="gray", land="papayaWhip", noObs="lightGray",
+#' seaIce="mediumVioletRed")`.  Any colors may be used in place of these,
+#' but the names must match, and all names must be present.
 #'
-#' @param debug A debugging flag, integer.
+#' @template debugTemplate
 #'
 #' @param ... extra arguments passed to [imagep()], e.g. to control
 #' the view with `xlim` (for longitude) and `ylim` (for latitude).
@@ -449,11 +486,11 @@ setMethod(f="subset",
 #' data(coastlineWorld)
 #' data(amsr) # see ?amsr for how to read and composite such objects
 #'
-#' # Example 1: plot with default colour scheme, oceColorsTemperature()
+#' # Example 1: plot with default color scheme, oceColorsTemperature()
 #' plot(amsr, "SST")
 #' lines(coastlineWorld[['longitude']], coastlineWorld[['latitude']])
 #'
-#' # Example 2: 'turbo' colour scheme
+#' # Example 2: 'turbo' color scheme
 #' plot(amsr, "SST", col=oceColorsTurbo)
 #' lines(coastlineWorld[['longitude']], coastlineWorld[['latitude']])
 #'
@@ -466,23 +503,19 @@ setMethod(f="subset",
 setMethod(f="plot",
     signature=signature("amsr"),
     # FIXME: how to let it default on band??
-    definition=function(x, y, asp=NULL,
+    definition=function(x, y, asp=NULL, # plot,amsr-method
         breaks, col, colormap, zlim,
         # FIXME: how do the old-format categories map to new ones?  (They don't
         # seem to.)  For now, the next argument is just for new-format.
-        missingColor=list(
-            coast="gray",
-            land="papayaWhip",
-            noObs="lightGray",
-            seaIce="mediumVioletRed"),
+        missingColor,
         debug=getOption("oceDebug"), ...)
     {
         dots <- list(...)
         oceDebug(debug, "plot.amsr(..., y=c(",
             if (missing(y)) "(missing)" else y, ", ...) {\n", sep="", style="bold", unindent=1)
         zlimGiven <- !missing(zlim)
-        newFormat <- !("SSTDay" %in% names(x@data))
-        oceDebug(debug, "the object was created from a file in ", if (newFormat) "new" else "old", "-format file\n")
+        type <- amsrType(x)
+        oceDebug(debug, "amsr type: ", type, "\n")
         if (missing(y))
             y <- "SST"
         lon <- x[["longitude"]]
@@ -562,31 +595,37 @@ setMethod(f="plot",
         # imagep() should be able to do this, but imagep() is a long function
         # with a lot of interlocking arguments so I'll start by doing this
         # manually here, and, if I like it, I may extend imagep() later.
-        missingColorLength <- length(missingColor)
-        if (newFormat) {
-            if (4 != missingColorLength)
-                stop("must have 4 elements in the missingColor argument for new-format data")
-            if (!identical(sort(names(missingColor)), sort(c("coast", "land", "noObs", "seaIce"))))
-                stop("missingColor names must be: 'coast', 'land', 'noObs', 'seaIce'")
+        type <- amsrType(x)
+        if (missing(missingColor)) {
+            if (type == 1L) {
+                missingColor <- list(land="papayaWhip", none="lightGray", bad="gray", rain="plum", ice="mediumVioletRed")
+            } else if (type == 2L) {
+                missingColor <- list(coast="gray", land="papayaWhip", noObs="lightGray", seaIce="mediumVioletRed")
+            } else {
+                stop("unrecognized amsr type, ", type, " (only 1 and 2 are allowed)")
+            }
         } else {
-            if (5 != missingColorLength)
-                stop("must have 5 elements in the missingColor argument for old-format data")
-            if (!all(sort(names(missingColor))==sort(c("land", "none", "bad", "ice", "rain"))))
-                stop("missingColor names must be: 'land', 'none', 'bad', 'ice' and 'rain'")
+            missingColorLength <- length(missingColor)
+            if (type == 1L) {
+                if (4 != missingColorLength)
+                    stop("must have 4 elements in the missingColor argument for new-format data")
+                if (!identical(sort(names(missingColor)), c("coast", "land", "noObs", "seaIce")))
+                    stop("missingColor names must be: 'coast', 'land', 'noObs', 'seaIce'")
+            } else if (type == 2L) {
+                if (5 != missingColorLength)
+                    stop("must have 5 elements in the missingColor argument for old-format data")
+                if (!all(sort(names(missingColor))==sort(c("land", "none", "bad", "ice", "rain"))))
+                    stop("missingColor names must be: 'land', 'none', 'bad', 'ice' and 'rain'")
+            } else {
+                stop("unrecognized amsr format, ", type, " (only 1 and 2 are allowed)")
+            }
         }
         lonDecIndices <- seq(1L, length(lon), by=i$decimate[1])
         latDecIndices <- seq(1L, length(lat), by=i$decimate[2])
         lon <- lon[lonDecIndices]
         lat <- lat[latDecIndices]
-        # Handle new-format with Masks, old-format with particular
-        # (raw) values.
-        if (newFormat) {
-            for (mask in c("coastMask", "landMask", "noObsMask", "seaIceMask")) {
-                oceDebug(debug, "adding colour for ", mask, "\n")
-                image(lon, lat, x@data[[mask]][lonDecIndices, latDecIndices],
-                    col=c("transparent", missingColor[[gsub("Mask$", "", mask)]]), add=TRUE)
-            }
-        } else {
+        # Masks are stored very differently in type 1 and type 2.
+        if (type == 1L) {
             missingColor <- list(land="papayaWhip",
                 none="lightGray",
                 bad="gray",
@@ -598,15 +637,23 @@ setMethod(f="plot",
                 ice=as.raw(252), # sea ice
                 rain=as.raw(251)) # heavy rain
             for (codeName in names(codes)) {
-                oceDebug(debug, "adding colour for ", codeName, "\n")
+                oceDebug(debug, "adding color for ", codeName, "\n")
                 bad <- x[[y, "raw"]][lonDecIndices, latDecIndices] == as.raw(codes[[codeName]])
                 image(lon, lat, bad,
                     col=c("transparent", missingColor[[codeName]]), add=TRUE)
             }
+        } else if (type == 2L) {
+            for (mask in c("coastMask", "landMask", "noObsMask", "seaIceMask")) {
+                oceDebug(debug, "adding color for ", mask, "\n")
+                image(lon, lat, x@data[[mask]][lonDecIndices, latDecIndices],
+                    col=c("transparent", missingColor[[gsub("Mask$", "", mask)]]), add=TRUE)
+            }
+        } else {
+            stop("type ", type, " not understood; only types 1 and 2 are handled")
         }
         box()
         oceDebug(debug, "} # plot.amsr()\n", sep="", style="bold", unindent=1)
-    })
+    }) # plot,amsr-method
 
 
 #' Download and Cache an amsr File
@@ -818,23 +865,30 @@ download.amsr <- function(year=NULL, month, day, destdir=".",
 
 #' Read an amsr File
 #'
-#' Read a compressed amsr file, generating an [amsr-class] object.
-#' Note that only compressed files are read in this version.
+#' Read an amsr file, generating an [amsr-class] object.
+#' Two file types are handled: type 1 is from gzipped files that were available
+#' until perhaps the year 2022, and type 2 is from NetCDF files that
+#' were available afterwards.
+#' The type is stored in the `metadata` slot
+#' as `type`, and this is detected in other functions relating to
+#' [amsr-class] data.  The best way to locate amsr files is to use
+#' [download.amsr()], but if this fails, it may be necessary to search
+#' the web for a source.
 #'
-#' AMSR files are provided at the FTP site, at
-#' \code{ftp.ssmi.com/amsr2/bmaps_v07.2} as of April 2021.
-#' To acquire such files,
-#' log in as "guest",
-#' then enter a year-based directory (e.g. `y2016` for the year 2016),
-#' then enter a month-based directory (e.g. `m08` for August, the 8th
-#' month), and then download a file for the present date, e.g.
-#' `f34_20160803v7.2.gz` for August 3rd, 2016. Do not uncompress
-#' this file, since `read.amsr` can only read the raw files from the server.
-#' If `read.amsr` reports an error on the number of chunks, try
-#' downloading a similarly-named file (e.g. in the present example,
-#' `read.amsr("f34_20160803v7.2_d3d.gz")` will report an error
-#' about inability to read a 6-chunk file, but
-#' `read.amsr("f34_20160803v7.2.gz")` will work properly.
+## AMSR files are provided at the FTP site, at
+## \code{ftp.ssmi.com/amsr2/bmaps_v07.2} as of April 2021.
+## To acquire such files,
+## log in as "guest",
+## then enter a year-based directory (e.g. `y2016` for the year 2016),
+## then enter a month-based directory (e.g. `m08` for August, the 8th
+## month), and then download a file for the present date, e.g.
+## `f34_20160803v7.2.gz` for August 3rd, 2016. Do not uncompress
+## this file, since `read.amsr` can only read the raw files from the server.
+## If `read.amsr` reports an error on the number of chunks, try
+## downloading a similarly-named file (e.g. in the present example,
+## `read.amsr("f34_20160803v7.2_d3d.gz")` will report an error
+## about inability to read a 6-chunk file, but
+## `read.amsr("f34_20160803v7.2.gz")` will work properly.
 #'
 #' @param file String indicating the name of a compressed file. See
 #' \dQuote{File sources}.
@@ -992,6 +1046,7 @@ read.amsr <- function(file, encoding=NA, debug=getOption("oceDebug"))
         stop("file must end in either \".gz\" or \".nc\"")
     }
     res@metadata$spacecraft <- "amsr"
+    res@metadata$type <- if ("SSTDay" %in% names(res@data)) 1L else 2L
     res@metadata$units <- list(
         longitude=list(unit=expression(degree*E), scale=""),
         latitude=list(unit=expression(degree*N), scale=""),

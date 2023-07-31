@@ -13,8 +13,7 @@
   col,
   colormap,
   zlim,
-  missingColor = list(coast = "gray", land = "papayaWhip", noObs = "lightGray", seaIce =
-    "mediumVioletRed"),
+  missingColor,
   debug = getOption("oceDebug"),
   ...
 )
@@ -42,21 +41,28 @@ If \code{colormap} is provided, it takes precedence over \code{breaks} and \code
 \item{colormap}{a specification of the colormap to use, as created
 with \code{\link[=colormap]{colormap()}}.  If \code{colormap} is NULL, which is the default, then
 a colormap is created to cover the range of data values, using
-\link{oceColorsTemperature} colour scheme.
+\link{oceColorsTemperature} color scheme.
 If \code{colormap} is provided, it takes precedence over \code{breaks} and \code{col}.
-See \dQuote{Examples} for an example of using the "turbo" colour scheme.}
+See \dQuote{Examples} for an example of using the "turbo" color scheme.}
 
 \item{zlim}{optional numeric vector of length 2, giving the limits
 of the plotted quantity.  A reasonable default is computed, if this
 is not given.}
 
-\item{missingColor}{List of colors for problem cases. For
-new-format data (as of July 2023), the names of the
-elements in this list must be as in the default.  For old-format
-files, the list names must be \code{land}, \code{none}, \code{bad}, \code{ice} and \code{rain}.
-In either case, any colour can be assigned to any category.}
+\item{missingColor}{optional list specifying colors to use for
+non-data categories.  If not provided, a default is used.  For
+type 1, that default is
+\code{list(land="papayaWhip", none="lightGray", bad="gray", rain="plum", ice="mediumVioletRed")}.  For type 2, it is
+\code{list(coast="gray", land="papayaWhip", noObs="lightGray", seaIce="mediumVioletRed")}.  Any colors may be used in place of these,
+but the names must match, and all names must be present.}
 
-\item{debug}{A debugging flag, integer.}
+\item{debug}{an integer specifying whether debugging information is
+to be printed during the processing. This is a general parameter that
+is used by many \code{oce} functions. Generally, setting \code{debug=0}
+turns off the printing, while higher values suggest that more information
+be printed. If one function calls another, it usually reduces the value of
+\code{debug} first, so that a user can often obtain deeper debugging
+by specifying higher \code{debug} values.}
 
 \item{...}{extra arguments passed to \code{\link[=imagep]{imagep()}}, e.g. to control
 the view with \code{xlim} (for longitude) and \code{ylim} (for latitude).}
@@ -74,11 +80,11 @@ library(oce)
 data(coastlineWorld)
 data(amsr) # see ?amsr for how to read and composite such objects
 
-# Example 1: plot with default colour scheme, oceColorsTemperature()
+# Example 1: plot with default color scheme, oceColorsTemperature()
 plot(amsr, "SST")
 lines(coastlineWorld[['longitude']], coastlineWorld[['latitude']])
 
-# Example 2: 'turbo' colour scheme
+# Example 2: 'turbo' color scheme
 plot(amsr, "SST", col=oceColorsTurbo)
 lines(coastlineWorld[['longitude']], coastlineWorld[['latitude']])
 
