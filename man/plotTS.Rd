@@ -55,7 +55,8 @@ because those cases the y axis is necessarily the conservative formulation
 of temperature.}
 
 \item{type}{representation of data, \code{"p"} for points, \code{"l"} for
-connecting lines, or \code{"n"} for no indication.}
+connecting lines, \code{"b"} for spaced connecting lines, or \code{"n"}
+for no indication.}
 
 \item{referencePressure}{reference pressure, to be used in calculating
 potential temperature, if \code{inSitu} is \code{FALSE}.}

@@ -111,16 +111,26 @@ server from which files are downloaded.</p>
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>year, month, day</dt>
-<dd><p>integer values indicating the desired observation time.
-Set <code>year</code> to NULL (the default) to default to the most recent data; otherwise
-specify all three of these values if <code>type</code> is <code>"3day"</code>, <code>"daily"</code> or <code>"weekly"</code>,
+<dd><p>a specification of the desired observation time.
+There are 3 choices for this specification.  (a) If <code>year</code> is an object
+created by <code><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date()</a></code>, then that specifies the time, and so <code>month</code>
+and <code>day</code> are ignored.  This scheme can be convenient for creating a
+sequence of images, starting at a particular date, because adding 1
+to an object of class <code>Date</code> increases the time by 1 day, saving
+the user from having to know how many days are in any given month.
+(b) If <code>year</code> is an integer, then it is taken to be the year, and
+the user must also specify <code>month</code> and <code>day</code>, also integers. (c)
+If <code>year</code> is NULL (which is the default), then the focus is set to
+the most recent date, but this depends on the value of
+<code>type</code> (see next).  If <code>type</code> is <code>"3day"</code>, <code>"daily"</code> or <code>"weekly"</code>,
 or just the first two of them if <code>type</code> is <code>"monthly"</code>.  If these
-things are provided, then they just match exactly the values in the sought-after
-file on the remote server.  If <code>year</code> is NULL, then <code>download.amsr()</code> constructs
-a URL that ought to be the most recent available file: 3 days prior
-to the present date (if <code>type</code> is <code>"3day"</code> or <code>"daily"</code>), the Saturday
-two weeks prior to the present date (if <code>type</code> is <code>"weekly"</code>), or
-two months in the past (if <code>type</code> is <code>"monthly"</code>).</p></dd>
+things are provided, then they just match exactly the values in the
+sought-after file on the remote server.  If <code>year</code> is NULL, then
+<code>download.amsr()</code> constructs a URL that ought to be the most recent
+available file: 3 days prior to the present date (if <code>type</code> is
+<code>"3day"</code> or <code>"daily"</code>), the Saturday two weeks prior to the
+present date (if <code>type</code> is <code>"weekly"</code>), or two months in the
+past (if <code>type</code> is <code>"monthly"</code>).</p></dd>
 
 
 <dt>destdir</dt>

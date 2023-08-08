@@ -4309,7 +4309,8 @@ time.formats <- c("%b %d %Y %H:%M:%s", "%Y%m%d")
 #' of temperature.
 #'
 #' @param type representation of data, `"p"` for points, `"l"` for
-#' connecting lines, or `"n"` for no indication.
+#' connecting lines, `"b"` for spaced connecting lines, or `"n"`
+#' for no indication.
 #'
 #' @param referencePressure reference pressure, to be used in calculating
 #' potential temperature, if `inSitu` is `FALSE`.
@@ -4513,6 +4514,7 @@ plotTS <- function(x,
         "Tlim=", if (!missing(Tlim)) paste("c(", Tlim[1], ",", Tlim[2], ")") else "(missing)", ", ",
         "eos=\"", eos, "\", ",
         "rho1000=", rho1000, ", ",
+        "type=\"", type, "\", ",
         "mgp=c(", paste(mgp, collapse=","), "), ",
         "mar=c(", paste(mar, collapse=","), "), ",
         "debug=", debug, ", ...) {\n", sep="", unindent=1, style="bold")
@@ -4694,15 +4696,12 @@ plotTS <- function(x,
     } else {
         if (add) {
             oceDebug(debug, "add=TRUE, so adding to an existing plot\n")
-            if (type == "p") {
-                points(salinity, y, cex=cex, pch=pch, col=col, bg=pt.bg, lwd=lwd, lty=lty)
-            } else if (type == "l") {
+            if (type == "l") {
                 lines(salinity, y, col=col, lwd=lwd, lty=lty, ...)
-            } else if (type == "o") {
-                points(salinity, y, cex=cex, pch=pch, col=col, bg=pt.bg, lwd=lwd, lty=lty)
-                lines(salinity, y, col=col, lwd=lwd, lty=lty, ...)
+            } else if (type %in% c("b", "p", "o")) {
+                points(salinity, y, bg=pt.bg, cex=cex, col=col, lty=lty, lwd=lwd, pch=pch, type=type, ...)
             } else if (type != "n") {
-                points(salinity, y, cex=cex, pch=pch, col=col, bg=pt.bg, lwd=lwd, lty=lty)
+                stop("type is \"", type, "\" but only \"b\", \"l\", \"o\" and \"p\" are allowed")
             }
             return()
         } else {
@@ -4717,15 +4716,12 @@ plotTS <- function(x,
                 usr <- par("usr")
                 rect(usr[1], usr[3], usr[2], usr[4], col=bg)
             }
-            if (type == "p") {
-                points(salinity, y, cex=cex, pch=pch, col=col, bg=pt.bg, lwd=lwd, lty=lty, ...)
-            } else if (type == "l") {
+            if (type == "l") {
                 lines(salinity, y, col=col, lwd=lwd, lty=lty, ...)
-            } else if (type == "o") {
-                points(salinity, y, cex=cex, pch=pch, col=col, bg=pt.bg, lwd=lwd, lty=lty, ...)
-                lines(salinity, y, col=col, lwd=lwd, lty=lty, ...)
+            } else if (type == "b" || type == "p" || type == "o") {
+                points(salinity, y, bg=pt.bg, cex=cex, col=col, lty=lty, lwd=lwd, pch=pch, type=type, ...)
             } else if (type != "n") {
-                points(salinity, y, cex=cex, pch=pch, col=col, bg=pt.bg, lwd=lwd, lty=lty, ...)
+                stop("type is \"", type, "\" but only \"b\", \"l\", \"o\" and \"p\" are allowed")
             }
         }
     }
@@ -5267,6 +5263,8 @@ plotProfile <- function(x,
         ", xlim=", if (missing(xlim)) "MISSING" else paste("c(", paste(xlim, collapse=","), ")", sep=""),
         ", ylim=", if (missing(ylim)) "MISSING" else paste("c(", paste(ylim, collapse=","), ")", sep=""),
         ", col=", col,
+        ", cex=", cex,
+        ", pch=", pch,
         ", ...) {\n", sep="", style="bold", unindent=1)
     eos <- match.arg(eos, c("unesco", "gsw"))
     if (missing(mar)) {
@@ -5306,20 +5304,10 @@ plotProfile <- function(x,
         }
         if (type == "l") {
             lines(x, y, col=col, lwd=lwd, lty=lty, ...)
-        } else if (type == "s") {
-            lines(x, y, col=col, lwd=lwd, lty=lty, type="s")
-        } else if (type == "p") {
-            points(x, y, col=col, cex=cex, lwd=lwd, pch=pch, bg=pt.bg)
-        } else if (type == "o") {
-            lines(x, y, col=col, lwd=lwd, lty=lty, ...)
-            points(x, y, col=col, cex=cex, lwd=lwd, pch=pch, bg=pt.bg)
-        } else if (type == "b") {
-            lines(x, y, col=col, lwd=lwd, lty=lty, ...)
-            points(x, y, col=col, cex=cex, lwd=lwd, pch=pch, bg=pt.bg)
-        #} else if (type == "n") {
-        #    ; # skip it
-        } else {
-            lines(x, y, col=col, lwd=lwd, lty=lty)
+        } else if (type %in% c("b", "p", "o")) {
+            points(x, y, bg=pt.bg, cex=cex, col=col, lty=lty, lwd=lwd, pch=pch, type=type, ...)
+        } else if (type != "n") {
+            stop("type is \"", type, "\" but only \"b\", \"l\", \"o\" and \"p\" are allowed")
         }
         oceDebug(debug, "} # plotJustProfile\n", style="bold", unindent=1)
     }                                  # plotJustProfile
@@ -6024,11 +6012,10 @@ plotProfile <- function(x,
         box()
         if (type == "l") {
             lines(sig0, y, col=col.rho, lwd=lwd, lty=lty)
-        } else if (type == "p") {
-            points(sig0, y, col=col.rho, pch=pch, cex=cex)
-        } else {
-            points(sig0, y, col=col.rho, pch=pch, cex=cex)
-            lines(sig0, y, col=col.rho, lwd=lwd, lty=lty)
+        } else if (type %in% c("b", "p", "o")) {
+            points(sig0, y, bg=pt.bg, cex=cex, col=col, lty=lty, lwd=lwd, pch=pch, type=type, ...)
+        } else if (type != "n") {
+            stop("type is \"", type, "\" but only \"b\", \"l\", \"o\" and \"p\" are allowed")
         }
         par(new=TRUE)
         N2 <- swN2(x, df=df, eos=eos)
@@ -6047,11 +6034,10 @@ plotProfile <- function(x,
         axis(1, col=col.N2, col.axis=col.N2, col.lab=col.N2)
         if (type == "l") {
             lines(N2, y, col=col.N2, lwd=lwd, lty=lty)
-        } else if (type == "p") {
-            points(N2, y, col=col.N2, pch=pch, cex=cex)
-        } else {
-            points(N2, y, col=col.N2, pch=pch, cex=cex)
-            lines(N2, y, col=col.N2, lwd=lwd, lty=lty)
+        } else if (type %in% c("b", "p", "o")) {
+            points(N2, y, bg=pt.bg, cex=cex, col=col, lty=lty, lwd=lwd, pch=pch, type=type, ...)
+        } else if (type != "n") {
+            stop("type is \"", type, "\" but only \"b\", \"l\", \"o\" and \"p\" are allowed")
         }
         mtext(resizableLabel("N2"), side=1, line=axisNameLoc, col=col.N2, cex=par("cex"))
         box()
@@ -6203,13 +6189,10 @@ plotProfile <- function(x,
         }
         if (type == "l") {
             lines(x@data[[w]], y, lwd=lwd, col=col, lty=lty)
-        } else if (type == "p") {
-            points(x@data[[w]], y, lwd=lwd, pch=pch, col=col, lty=lty, cex=cex)
-        } else if (type == "b" || type == "o") {
-            lines(x@data[[w]], y, lwd=lwd, col=col)
-            points(x@data[[w]], y, lwd=lwd, pch=pch, col=col, lty=lty, cex=cex)
-        # issue1791 } else {
-        # issue1791     points(x@data[[w]], y, lwd=lwd, pch=pch, col=col, lty=lty, cex=cex)
+        } else if (type %in% c("b", "p", "o")) {
+            points(x@data[[w]], y, bg=pt.bg, cex=cex, col=col, lty=lty, lwd=lwd, pch=pch, type=type, ...)
+        } else if (type != "n") {
+            stop("type is \"", type, "\" but only \"b\", \"l\", \"o\" and \"p\" are allowed")
         }
         if (grid) {
             at <- par("xaxp")

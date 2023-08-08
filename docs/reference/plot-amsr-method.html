@@ -90,8 +90,7 @@
 <span>  <span class="va">col</span>,</span>
 <span>  <span class="va">colormap</span>,</span>
 <span>  <span class="va">zlim</span>,</span>
-<span>  missingColor <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>coast <span class="op">=</span> <span class="st">"gray"</span>, land <span class="op">=</span> <span class="st">"papayaWhip"</span>, noObs <span class="op">=</span> <span class="st">"lightGray"</span>, seaIce <span class="op">=</span></span>
-<span>    <span class="st">"mediumVioletRed"</span><span class="op">)</span>,</span>
+<span>  <span class="va">missingColor</span>,</span>
 <span>  debug <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"oceDebug"</span><span class="op">)</span>,</span>
 <span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -132,9 +131,9 @@ If <code>colormap</code> is provided, it takes precedence over <code>breaks</cod
 <dd><p>a specification of the colormap to use, as created
 with <code><a href="colormap.html">colormap()</a></code>.  If <code>colormap</code> is NULL, which is the default, then
 a colormap is created to cover the range of data values, using
-<a href="oceColorsTemperature.html">oceColorsTemperature</a> colour scheme.
+<a href="oceColorsTemperature.html">oceColorsTemperature</a> color scheme.
 If <code>colormap</code> is provided, it takes precedence over <code>breaks</code> and <code>col</code>.
-See “Examples” for an example of using the "turbo" colour scheme.</p></dd>
+See “Examples” for an example of using the "turbo" color scheme.</p></dd>
 
 
 <dt>zlim</dt>
@@ -144,15 +143,22 @@ is not given.</p></dd>
 
 
 <dt>missingColor</dt>
-<dd><p>List of colors for problem cases. For
-new-format data (as of July 2023), the names of the
-elements in this list must be as in the default.  For old-format
-files, the list names must be <code>land</code>, <code>none</code>, <code>bad</code>, <code>ice</code> and <code>rain</code>.
-In either case, any colour can be assigned to any category.</p></dd>
+<dd><p>optional list specifying colors to use for
+non-data categories.  If not provided, a default is used.  For
+type 1, that default is
+<code>list(land="papayaWhip", none="lightGray", bad="gray", rain="plum", ice="mediumVioletRed")</code>.  For type 2, it is
+<code>list(coast="gray", land="papayaWhip", noObs="lightGray", seaIce="mediumVioletRed")</code>.  Any colors may be used in place of these,
+but the names must match, and all names must be present.</p></dd>
 
 
 <dt>debug</dt>
-<dd><p>A debugging flag, integer.</p></dd>
+<dd><p>an integer specifying whether debugging information is
+to be printed during the processing. This is a general parameter that
+is used by many <code>oce</code> functions. Generally, setting <code>debug=0</code>
+turns off the printing, while higher values suggest that more information
+be printed. If one function calls another, it usually reduces the value of
+<code>debug</code> first, so that a user can often obtain deeper debugging
+by specifying higher <code>debug</code> values.</p></dd>
 
 
 <dt>...</dt>
@@ -218,12 +224,12 @@ which combines the day and night fields.</p>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">coastlineWorld</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">amsr</span><span class="op">)</span> <span class="co"># see ?amsr for how to read and composite such objects</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># Example 1: plot with default colour scheme, oceColorsTemperature()</span></span></span>
+<span class="r-in"><span><span class="co"># Example 1: plot with default color scheme, oceColorsTemperature()</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">amsr</span>, <span class="st">"SST"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/lines.html" class="external-link">lines</a></span><span class="op">(</span><span class="va">coastlineWorld</span><span class="op">[[</span><span class="st">'longitude'</span><span class="op">]</span><span class="op">]</span>, <span class="va">coastlineWorld</span><span class="op">[[</span><span class="st">'latitude'</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="plot-amsr-method-1.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># Example 2: 'turbo' colour scheme</span></span></span>
+<span class="r-in"><span><span class="co"># Example 2: 'turbo' color scheme</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">amsr</span>, <span class="st">"SST"</span>, col<span class="op">=</span><span class="va">oceColorsTurbo</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/lines.html" class="external-link">lines</a></span><span class="op">(</span><span class="va">coastlineWorld</span><span class="op">[[</span><span class="st">'longitude'</span><span class="op">]</span><span class="op">]</span>, <span class="va">coastlineWorld</span><span class="op">[[</span><span class="st">'latitude'</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="plot-amsr-method-2.png" alt="" width="700" height="433"></span>

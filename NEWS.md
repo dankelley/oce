@@ -3,6 +3,7 @@
 * Remove `trimString()` after a long deprecation (issue 2123).
 * Change `amsr` dataset and related functions for new format (issues 2124 to 2133).
 * Change `plot.cm()` to obey `xlim`, `ylim`, `xaxs` and `yaxs` (issue 2121).
+* Change `plotTS()` and `plotProfile()` to accept `type="b"`.
 
 # oce 1.8.1 (on CRAN)
 
