@@ -25,9 +25,13 @@ its return value may be changed at any moment (e.g. to include units as well
 as names).
 }
 \details{
-The inference of names was done
-by inspection of some data files, based on reference 1. It should be noted,
-however, that the data files examined contain some names that are not
+Initially, Feb 2016, the inference of names was initially done
+by an inspection of some data files, based on reference 1. Later, in June
+2023, broader inspection of more files and documents yielded about ten
+additions, and a single correction: \code{VRSpH} was renamed
+\code{phSensorVoltageDifference}, to match related names that had been added.
+
+It should be noted that the data files examined contain some names that are not
 documented in reference 1, and others that are listed only in its changelog,
 with no actual definitions being given. For example, the files had six distinct
 variable names that seem to relate to phase in the oxygen sensor, but
@@ -45,11 +49,17 @@ the qualifiers
 \verb{_ADJUSTED}, \verb{_ERROR} and \verb{_QC},
 are translated to \code{Adjusted}, \code{Error}, and \code{QC}, respectively.
 
+An incomplete list of name translations is as follows, where \code{~}
+represents digit sequences in some instances and letters
+in others.  Note that until June 2023, \code{pHSensorVoltageDifference}
+was called \code{VRSpH}.
+
 \tabular{ll}{
 \strong{Argo name} \tab \strong{oce name}\cr
 \code{BBP} \tab \code{bbp}\cr
 \code{BETA_BACKSCATTERING} \tab \code{betaBackscattering}\cr
 \code{BPHASE_OXY} \tab \code{bphaseOxygen}\cr
+\code{C~PHASE_DOXY} \tab \code{C~phaseOxygen}\cr
 \code{CDOM} \tab \code{CDOM}\cr
 \code{CNDC} \tab \code{conductivity}\cr
 \code{CHLA} \tab \code{chlorophyllA}\cr
@@ -66,6 +76,8 @@ are translated to \code{Adjusted}, \code{Error}, and \code{QC}, respectively.
 \code{FIT_ERROR_NITRATE} \tab \code{fitErrorNitrate}\cr
 \code{FLUORESCENCE_CDOM} \tab \code{fluorescenceCDOM}\cr
 \code{FLUORESCENCE_CHLA} \tab \code{fluorescenceChlorophyllA}\cr
+\code{IB_PH} \tab \code{pHBaseCurrent}\cr
+\code{IK_PH} \tab \code{pHCounterCurrent}\cr
 \code{INST_REFERENCE} \tab \code{instReference}\cr
 \code{JULD} \tab \code{juld} (and used to compute \code{time})\cr
 \code{JULD_QC_LOCATION} \tab \code{juldQCLocation}\cr
@@ -73,6 +85,7 @@ are translated to \code{Adjusted}, \code{Error}, and \code{QC}, respectively.
 \code{LONGITUDE} \tab \code{longitude}\cr
 \code{MOLAR_DOXY} \tab \code{oxygenUncompensated}\cr
 \code{MTIME} \tab \code{mtime}\cr
+\code{NB_SAMPLE_CTD} \tab \code{nbSampleCtd}\cr
 \code{PH_IN_SITU_FREE} \tab \code{pHFree}\cr
 \code{PH_IN_SITU_TOTAL} \tab \code{pH}\cr
 \code{PI_NAME} \tab \code{PIName}\cr
@@ -92,12 +105,13 @@ are translated to \code{Adjusted}, \code{Error}, and \code{QC}, respectively.
 \code{TEMP_PH} \tab \code{temperaturePH}\cr
 \code{TEMP_SPECTROPHOTOMETER_NITRATE} \tab \code{temperatureSpectrophotometerNitrate}\cr
 \code{TILT} \tab \code{tilt}\cr
+\code{TPHASE_DOXY} \tab \code{tphaseOxygen}\cr
 \code{TURBIDITY} \tab \code{turbidity}\cr
 \code{UP_RADIANCE} \tab \code{upwellingRadiance}\cr
 \code{UV_INTENSITY} \tab \code{UVIntensity}\cr
 \code{UV_INTENSITY_DARK_NITRATE} \tab \code{UVIntensityDarkNitrate}\cr
 \code{UV_INTENSITY_NITRATE} \tab \code{UVIntensityNitrate}\cr
-\code{VRS_PH} \tab \code{VRSpH}\cr
+\code{VRS_PH} \tab \code{pHSensorVoltageDifference}\cr
 \code{WMO_INST_TYPE} \tab \code{WMOInstType}\cr
 }
 }
@@ -123,5 +137,8 @@ Other things related to argo data:
 \code{\link{read.argo}()},
 \code{\link{subset,argo-method}},
 \code{\link{summary,argo-method}}
+}
+\author{
+Dan Kelley, with help from Anna Victor
 }
 \concept{things related to argo data}

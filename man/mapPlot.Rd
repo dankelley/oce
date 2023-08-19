@@ -44,19 +44,11 @@ argument is ignored).  If \code{longitude} is missing, both it and
 \item{latitude}{numeric vector of latitudes of points to be plotted (ignored
 if the first argument contains both latitude and longitude).}
 
-\item{longitudelim}{optional numeric vector of length two, indicating the
-longitude limits of the plot. This value is used in the selection of
-longitude lines that are shown (and possibly
-labelled on the axes). In some cases, e.g. for polar views,
-this can lead to odd results, with some expected longitude lines
-being left out of the plot.  Altering \code{longitudelim} can
-often help in such cases, e.g. \code{longitudelim=c(-180, 180)} will
-force the drawing of lines all around the globe.}
-
-\item{latitudelim}{optional vector of length two, indicating
-the latitude limits of the plot. This, together with \code{longitudelim}
-(and, importantly, the geometry of the plot device) is used in the
-selection of map scale.}
+\item{longitudelim, latitudelim}{optional numeric vectors of length two, indicating the
+limits of the plot. A warning is issued if these are not specified together.
+See \dQuote{Examples} for a polar-region example, noting that
+the whole-globe span of \code{longitudelim} is used to centre the plot
+at the north pole.}
 
 \item{grid}{either a number (or pair of numbers) indicating the spacing of
 longitude and latitude lines, in degrees, or a logical value (or pair of
@@ -153,10 +145,11 @@ of the values of \code{lonlabels} and \code{latlabels}.}
 \item{latlabels}{As \code{lonlabels}, but for latitude, on the left
 plot axis.}
 
-\item{projection}{character value indicating the map projection. See a table
-in \sQuote{Details} for the projections that are available. Prior to version
-1.8.0, \code{projection} could also be a value created by a now-defunct
-\code{sp} function; see \sQuote{Historical Notes}.}
+\item{projection}{either character value indicating the map projection, or
+the output from \code{\link[sf:st_crs]{sf::st_crs()}}. In the first case, see a table
+in \dQuote{Details} for the projections that are available.
+In the second case, note that \code{\link[=mapPlot]{mapPlot()}} reports an error if
+a similar function from the old \code{sp} package is used.}
 
 \item{tissot}{logical value indicating whether to use \code{\link[=mapTissot]{mapTissot()}}
 to plot Tissot indicatrices, i.e. ellipses at grid intersection points, which
@@ -182,8 +175,10 @@ provided by the \CRANpkg{sf} package.  The projection information specified
 with the \code{mapPlot()} call is stored in a global variable that can be retrieved
 by related functions, making it easy to add points, lines, text, images
 or contours to an existing map.
-See the \dQuote{Details} for a list of
-available projections.
+The \dQuote{Details} section, below, provides a list of
+available projections. The "Using map projections" vignette
+offers examples of several map plots, in addition to the single
+example provided in the \dQuote{Examples} section, below.
 }
 \details{
 The calculations for map projections are done with
@@ -206,17 +201,6 @@ in reference 7.  To get an idea of how projections are being created
 nowadays, see reference 8, about the \code{eqearth} projection that was added
 to \CRANpkg{oce} in August 2020.
 }
-\section{A warning about 'sf' version 0.9-8}{
-
-This version of \CRANpkg{sf}, released in March of 2021, has errors
-with respect to some projections.  This was noticed for the \code{"ortho"}
-projection, but the problem may occur for other projections as well.
-Therefore, the user ought to use \CRANpkg{sf} versions prior to 0.9-8,
-or subsequent to it.  Most likely, this message will become moot
-in the summer of 2021, when a new version of \CRANpkg{sf} will
-become available on CRAN.
-}
-
 \section{Available Projections}{
 
 
@@ -367,9 +351,6 @@ those used in the examples.
 \section{Historical Notes}{
 
 \itemize{
-\item 2022-04-11: require \code{projection} to be a string.  (Previously,
-output from \code{sp::CRS()} was also accepted, but this function
-has been deprecated.)
 \item 2020-12-24: complete switch from \code{rgdal} to \CRANpkg{sf},
 removing the testing scheme created on 2020-08-03.
 \item 2020-08-03: added support for the \code{eqearth} projection (like \code{robin} but
@@ -385,9 +366,6 @@ changes in the former package that broke \CRANpkg{oce}
 code.  (To catch problems, \CRANpkg{oce} was set up to use
 both packages temporarily, issuing warnings if the results differed
 by more than 1 metre in easting or northing values.)
-\item 2019-03-20: the test code provided the \dQuote{Examples} section
-is disabled on i386/windows machines, on which the requisite
-\code{rgdal} package continues to fail on common projections.
 \item 2017-11-19: \code{imw_p} removed, because it has problems doing
 inverse calculations.
 This is a also problem in the standalone PROJ.4 application version
@@ -405,83 +383,28 @@ wildly inaccurate in a Pacific Antarctic-Alaska application
 }
 
 \examples{
-\donttest{
+# NOTE: the map-projection vignette has many more examples.
 library(oce)
 data(coastlineWorld)
+# Demonstrate a high-latitude view using a built-in "CRS" value that is used
+# by the National Snow and Ice Data Center (NSIDC) for representing
+# the northern-hemisphere ice zone.  The view is meant to mimic the figure
+# at the top of the document entitled "A Guide to NSIDC's Polar Stereographic
+# Projection" at https://nsidc.org/data/user-resources/help-center, with the
+# box indicating the region of the NSIDC grid.
+library(oce)
+data(coastlineWorld)
+projection <- sf::st_crs("EPSG:3413")
+cat(projection$proj4string, "\n") # see the projection details
+par(mar=c(2, 2, 1, 1))            # tighten margins
+mapPlot(coastlineWorld, projection=projection,
+   col=gray(0.9), geographical=4,
+   longitudelim=c(-180, 180), latitudelim=c(10, 90))
+# Coordinates of box from Table 6 of the NSIDC document
+box <- cbind(-360+c(168.35,102.34,350.3,279.26,168.35),
+    c(30.98, 31.37, 34.35, 33.92, 30.98))
+mapLines(box[,1], box[,2], lwd=2)
 
-# Example 1.
-# Mollweide (referenc 1 page 54) is an equal-area projection that works well
-# for whole-globe views.
-mapPlot(coastlineWorld, projection="+proj=moll", col='gray')
-mtext("Mollweide", adj=1)
-
-# Example 2.
-# Note that filling is not employed (`col` is not
-# given) when the prime meridian is shifted, because
-# this causes a problem with Antarctica
-cl180 <- coastlineCut(coastlineWorld, lon_0=-180)
-mapPlot(cl180, projection="+proj=moll +lon_0=-180")
-mtext("Mollweide with coastlineCut", adj=1)
-
-# Example 3.
-# Orthographic projections resemble a globe, making them attractive for
-# non-technical use, but they are neither conformal nor equal-area, so they
-# are somewhat limited for serious use on large scales.  See Section 20 of
-# reference 1. Note that filling is not employed because it causes a problem with
-# Antarctica.
-if (utils::packageVersion("sf") != "0.9.8") {
-    # sf version 0.9-8 has a problem with this projection
-    par(mar=c(3, 3, 1, 1))
-    mapPlot(coastlineWorld, projection="+proj=ortho +lon_0=-180")
-    mtext("Orthographic", adj=1)
-}
-
-# Example 4.
-# The Lambert conformal conic projection is an equal-area projection
-# recommended by reference 1, page 95, for regions of large east-west extent
-# away from the equator, here illustrated for the USA and Canada.
-par(mar=c(3, 3, 1, 1))
-mapPlot(coastlineCut(coastlineWorld, -100),
-        longitudelim=c(-130,-55), latitudelim=c(35, 60),
-        projection="+proj=lcc +lat_0=30 +lat_1=60 +lon_0=-100", col='gray')
-mtext("Lambert conformal", adj=1)
-
-# Example 5.
-# The stereographic projection (reference 1, page 120) is conformal, used
-# below for an Arctic view with a Canadian focus.  Note the trick of going
-# past the pole: the second latitudelim value is 180 minus the first, and the
-# second longitudelim is 180 plus the first; this uses image points "over"
-# the pole.
-par(mar=c(3, 3, 1, 1))
-mapPlot(coastlineCut(coastlineWorld, -135),
-        longitudelim=c(-130, 50), latitudelim=c(70, 110),
-        projection="+proj=stere +lat_0=90 +lon_0=-135", col='gray')
-mtext("Stereographic", adj=1)
-
-# Example 6.
-# Spinning globe: create PNG files that can be assembled into a movie
-}
-
-\dontrun{
-if (utils::packageVersion("sf") != "0.9.8") {
-    # sf version 0.9-8 has a problem with this projection
-    png("globe-\%03d.png")
-    lons <- seq(360, 0, -15)
-    par(mar=rep(0, 4))
-    for (i in seq_along(lons)) {
-        p <- paste("+proj=ortho +lat_0=30 +lon_0=", lons[i], sep="")
-        if (i == 1) {
-            mapPlot(coastlineCut(coastlineWorld, lons[i]), projection=p, col="gray")
-            xlim <- par("usr")[1:2]
-            ylim <- par("usr")[3:4]
-        } else {
-            mapPlot(coastlineCut(coastlineWorld, lons[i]), projection=p, col="gray",
-                    xlim=xlim, ylim=ylim, xaxs="i", yaxs="i")
-        }
-    }
-    dev.off()
-}
-}
 
 }
 \references{

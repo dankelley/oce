@@ -31,7 +31,7 @@ A \code{\link[=POSIXct]{POSIXct()}} time vector.
 \description{
 This converts numerical values into POSIXct times.  There are many
 schemes for doing this, with the \code{type} parameter being used
-to select between them.  See \sQuote{Details} for a listing, broken
+to select between them.  See \dQuote{Details} for a listing, broken
 down by scheme.
 }
 \details{

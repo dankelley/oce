@@ -1,5 +1,5 @@
 what=amsr
-all: create_$(what).out check_$(what).out
+all: create_amsr.out check_amsr.out # note order
 %.out: %.R
 	R --no-save < $< > $@
 clean:

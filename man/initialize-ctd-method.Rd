@@ -2,6 +2,7 @@
 % Please edit documentation in R/ctd.R
 \name{initialize,ctd-method}
 \alias{initialize,ctd-method}
+\alias{initialize.ctd}
 \title{Initialize storage for a ctd object}
 \usage{
 \S4method{initialize}{ctd}(

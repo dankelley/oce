@@ -7,11 +7,12 @@
 as.unit(u, default = list(unit = expression(), scale = ""))
 }
 \arguments{
-\item{u}{A character string indicating a variable name. The following
-names are recognized: \code{"DBAR"},
-\code{"IPTS-68"}, \code{"ITS-90"}, \code{"PSS-78"}, and \code{"UMOL/KG"}.
-All other names yield a return value equal to the value of the
-\code{default} argument.}
+\item{u}{A character string indicating a unit. Case is ignored, so that e.g.
+\code{"dbar"} and \code{"DBAR"} yield equal results.  The following are recognized:
+c(\code{"m-1"}, \code{"dbar"}, \code{"decibar"}, \code{"degree"}, \code{"degree_Celcius"},
+\code{"degree_north"}, \code{"degree_east"}, \code{"ipts-68"},
+\code{"its-90"}, \code{"m/s^1"}, \code{"m/s^2"}, \code{"pss-78"},
+\code{"umol/kg"}, \code{"micromole/kg"})}
 
 \item{default}{A default to be used for the return value, if \code{u}
 is not a recognized string.}
@@ -21,8 +22,9 @@ A list with elements \code{unit}, an \code{\link[=expression]{expression()}},
 and \code{scale}, a string.
 }
 \description{
-This function is not presently used by any \code{oce} functions, and is
-provided as a convenience function for users.
+This converts strings to unit objects.  Only a few strings are recognized,
+because most oce functions have specialized unit vocabularies and so
+have little need of this function.
 }
 \examples{
 as.unit("DBAR")

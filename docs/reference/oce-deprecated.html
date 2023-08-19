@@ -23,7 +23,7 @@ up-to-date.'><!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.8-0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.8-2</span>
       </span>
     </div>
 
@@ -54,6 +54,9 @@ up-to-date.'><!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs
     </li>
     <li>
       <a href="../articles/F_subclassing.html">6. Subclassing oce objects</a>
+    </li>
+    <li>
+      <a href="../articles/G_altering_defaults.html">7. Altering oce Defaults</a>
     </li>
   </ul></li>
 <li>
@@ -100,11 +103,11 @@ last step before outright removal.</p>
 the present version produces an error message that hints at a replacement
 function. Once a function is marked "defunct" on one CRAN release, it will
 be slated for outright deletion in some subsequent release.</p>
-<table class="table table"><tr><td><strong>Defunct</strong></td><td><strong>Replacement</strong></td><td><strong>Version</strong></td></tr><tr><td><code><a href="trimString.html">trimString()</a></code></td><td><code><a href="https://rdrr.io/r/base/trimws.html" class="external-link">trimws()</a></code></td><td>1.7-9</td></tr></table><p>The following functions were removed after having been marked as "deprecated"
+<table class="table table"><tr><td><strong>Defunct</strong></td><td><strong>Replacement</strong></td><td><strong>Version</strong></td></tr></table><p>The following functions were removed after having been marked as "deprecated"
 in at least one CRAN release, and possibly as "defunct" in at least
 one CRAN release.  (The version number in the table is the first
 version to lack the named function.)</p>
-<table class="table table"><tr><td><strong>Function</strong></td><td><strong>Replacement</strong></td><td><strong>Version</strong></td></tr><tr><td><code>addColumn()</code></td><td><code><a href="oceSetData.html">oceSetData()</a></code></td><td>1.1-2</td></tr><tr><td><code>ctdAddColumn()</code></td><td><code><a href="oceSetData.html">oceSetData()</a></code></td><td>1.1-2</td></tr><tr><td><code>ctdUpdateHeader()</code></td><td><code><a href="oceSetMetadata.html">oceSetMetadata()</a></code></td><td>1.1-2</td></tr><tr><td><code>findInOrdered()</code></td><td><code><a href="https://rdrr.io/r/base/findInterval.html" class="external-link">findInterval()</a></code></td><td>1.1-2</td></tr><tr><td><code>makeSection()</code></td><td><code><a href="as.section.html">as.section()</a></code></td><td>0.9.24</td></tr><tr><td><code>mapMeridians()</code></td><td><code><a href="mapGrid.html">mapGrid()</a></code></td><td>1.1-2</td></tr><tr><td><code>mapZones()</code></td><td><code><a href="mapGrid.html">mapGrid()</a></code></td><td>1.1-2</td></tr><tr><td><code>oce.as.POSIXlt()</code></td><td><code><a href="https://lubridate.tidyverse.org/reference/parse_date_time.html" class="external-link">lubridate::parse_date_time()</a></code></td><td>1.1-2</td></tr><tr><td><code>renameData()</code></td><td><code><a href="oceRenameData.html">oceRenameData()</a></code></td><td>1.7-9</td></tr></table><p>Several <a href="https://CRAN.R-project.org/package=oce" class="external-link"><span class="pkg">oce</span></a> function arguments are considered "deprecated", which
+<table class="table table"><tr><td><strong>Function</strong></td><td><strong>Replacement</strong></td><td><strong>Version</strong></td></tr><tr><td><code>addColumn()</code></td><td><code><a href="oceSetData.html">oceSetData()</a></code></td><td>1.1-2</td></tr><tr><td><code>ctdAddColumn()</code></td><td><code><a href="oceSetData.html">oceSetData()</a></code></td><td>1.1-2</td></tr><tr><td><code>ctdUpdateHeader()</code></td><td><code><a href="oceSetMetadata.html">oceSetMetadata()</a></code></td><td>1.1-2</td></tr><tr><td><code>findInOrdered()</code></td><td><code><a href="https://rdrr.io/r/base/findInterval.html" class="external-link">findInterval()</a></code></td><td>1.1-2</td></tr><tr><td><code>makeSection()</code></td><td><code><a href="as.section.html">as.section()</a></code></td><td>0.9.24</td></tr><tr><td><code>mapMeridians()</code></td><td><code><a href="mapGrid.html">mapGrid()</a></code></td><td>1.1-2</td></tr><tr><td><code>mapZones()</code></td><td><code><a href="mapGrid.html">mapGrid()</a></code></td><td>1.1-2</td></tr><tr><td><code>oce.as.POSIXlt()</code></td><td><code><a href="https://lubridate.tidyverse.org/reference/parse_date_time.html" class="external-link">lubridate::parse_date_time()</a></code></td><td>1.1-2</td></tr><tr><td><code>renameData()</code></td><td><code><a href="oceRenameData.html">oceRenameData()</a></code></td><td>1.7-9</td></tr><tr><td><code>trimString()</code></td><td><code><a href="https://rdrr.io/r/base/trimws.html" class="external-link">trimws()</a></code></td><td>1.8-2</td></tr></table><p>Several <a href="https://CRAN.R-project.org/package=oce" class="external-link"><span class="pkg">oce</span></a> function arguments are considered "deprecated", which
 means they will be marked "defunct" in the next CRAN release. These are normally
 listed in the help page for the function in question. A few that may be
 of general interest are also listed below.</p><ul><li><p>The <code>adorn</code> argument was still being checked for (in the dots argument)
@@ -120,7 +123,7 @@ function since February 2016.</p></li>
 was deprecated on 2016-12-30.  It was once used by
 <code><a href="plot-coastline-method.html">plot,coastline-method()</a></code> but has been ignored by that
 function since February 2016.</p></li>
-</ul><p>Several ‘oce’ function arguments are considered "defunct", which
+</ul><p>Several “oce” function arguments are considered "defunct", which
 means they will be removed in the next CRAN release. They are as follows.</p><ul><li><p>The <code>fill</code> argument of <code><a href="mapPlot.html">mapPlot()</a></code> was confusing
 to users, so it was designated as deprecated in June 2016.
 (The confusion stemmed from subtle differences between
@@ -131,7 +134,7 @@ The functionality is preserved, in the <code>col</code> argument.</p></li>
 </ul></div>
     <div id="see-also">
     <h2>See also</h2>
-    <div class="dont-index"><p>The ‘Bioconductor’ scheme for removing functions is
+    <div class="dont-index"><p>The “Bioconductor” scheme for removing functions is
 described at
 <code>https://www.bioconductor.org/developers/how-to/deprecation/</code> and it is
 extended here to function arguments.</p></div>

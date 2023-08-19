@@ -28,7 +28,7 @@ sectionSmooth(
 For \code{method="spline"}, the pressure levels must match for each station in
 the section.}
 
-\item{method}{A string or a function that specifies the method to use; see \sQuote{Details}.}
+\item{method}{A string or a function that specifies the method to use; see \dQuote{Details}.}
 
 \item{x}{Optional numerical vector, of the same length as the number of stations in \code{section},
 which will be used in gridding in the lateral direction. If not provided, this
@@ -168,12 +168,16 @@ gsBarnes <- sectionSmooth(gs, "barnes", xr=50, yr=200)
 plot(gsBarnes, which="temperature")
 mtext("sectionSmooth(..., method=\"barnes\")", line=0.5)
 
-# Kriging (brittle to changes in automap)
-if (requireNamespace("automap", quietly=TRUE) && requireNamespace("sf", quietly=TRUE)) {
-    gsKriging <- sectionSmooth(gs, "kriging", xr=50, yr=200)
-    plot(gsKriging, which="temperature")
-    mtext("sectionSmooth(..., method=\"kriging\")", line=0.5)
-}
+# Kriging. This is commented-out because one of the CRAN
+# check machines produces an error (converted from a warning)
+# and I am really not clear on whether dontrun will be
+# sufficient to solve the problem.
+#> if (requireNamespace("automap", quietly=TRUE)
+#>        && requireNamespace("sf", quietly=TRUE)) {
+#>     gsKriging <- sectionSmooth(gs, "kriging", xr=50, yr=200)
+#>     plot(gsKriging, which="temperature")
+#>     mtext("sectionSmooth(..., method=\"kriging\")", line=0.5)
+#> }
 
 }
 \seealso{

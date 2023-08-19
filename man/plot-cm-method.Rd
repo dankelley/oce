@@ -9,6 +9,10 @@
   x,
   which = c(1:2),
   type = "l",
+  xlim,
+  ylim,
+  xaxs = "r",
+  yaxs = "r",
   drawTimeRange = getOption("oceDrawTimeRange"),
   drawZeroLine = FALSE,
   mgp = getOption("oceMgp"),
@@ -28,6 +32,15 @@ down from the top of the page.  See \dQuote{Details} for the meanings of various
 values of \code{which}.}
 
 \item{type}{type of plot, as for \code{\link[=plot]{plot()}}.}
+
+\item{xlim, ylim}{optional limit to the x and y axes, passed to \code{\link[=oce.plot.ts]{oce.plot.ts()}} for
+time-series plots.}
+
+\item{xaxs, yaxs}{optional controls over the limits of the x and y axes,
+passed to \code{\link[=oce.plot.ts]{oce.plot.ts()}} for time-series plots.  These values default
+to \code{"r"}, meaning to use the regular method of extend the plot past
+its normal limits.  It is common to use \code{"i"} to make the graph extend
+to the panel limits.}
 
 \item{drawTimeRange}{boolean that applies to panels with time as the horizontal
 axis, indicating whether to draw the time range in the top-left margin of the

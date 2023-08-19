@@ -15,24 +15,15 @@ read.amsr(file, encoding = NA, debug = getOption("oceDebug"))
 \item{debug}{A debugging flag, integer.}
 }
 \description{
-Read a compressed amsr file, generating an \linkS4class{amsr} object.
-Note that only compressed files are read in this version.
-}
-\details{
-AMSR files are provided at the FTP site, at
-\code{ftp.ssmi.com/amsr2/bmaps_v07.2} as of April 2021.
-To acquire such files,
-log in as "guest",
-then enter a year-based directory (e.g. \code{y2016} for the year 2016),
-then enter a month-based directory (e.g. \code{m08} for August, the 8th
-month), and then download a file for the present date, e.g.
-\code{f34_20160803v7.2.gz} for August 3rd, 2016. Do not uncompress
-this file, since \code{read.amsr} can only read the raw files from the server.
-If \code{read.amsr} reports an error on the number of chunks, try
-downloading a similarly-named file (e.g. in the present example,
-\code{read.amsr("f34_20160803v7.2_d3d.gz")} will report an error
-about inability to read a 6-chunk file, but
-\code{read.amsr("f34_20160803v7.2.gz")} will work properly.
+Read an amsr file, generating an \linkS4class{amsr} object.
+Two file types are handled: type 1 is from gzipped files that were available
+until perhaps the year 2022, and type 2 is from NetCDF files that
+were available afterwards.
+The type is stored in the \code{metadata} slot
+as \code{type}, and this is detected in other functions relating to
+\linkS4class{amsr} data.  The best way to locate amsr files is to use
+\code{\link[=download.amsr]{download.amsr()}}, but if this fails, it may be necessary to search
+the web for a source.
 }
 \seealso{
 \code{\link[=plot,amsr-method]{plot,amsr-method()}} for an example.

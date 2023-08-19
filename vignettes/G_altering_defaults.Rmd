@@ -1,0 +1,56 @@
+---
+title: "7. Altering oce Defaults"
+author: "Dan Kelley (https://orcid.org/0000-0001-7808-5911)"
+date: "`r Sys.Date()`"
+output:
+  rmarkdown::html_vignette:
+    toc: true
+    number_sections: true
+    fig_caption: yes
+    dev.args: list(pointsize=11)
+vignette: >
+  %\VignetteIndexEntry{7. Altering oce Defaults}
+  %\VignetteEngine{knitr::rmarkdown}
+  \usepackage[utf8]{inputenc}
+---
+
+**Abstract.** When R loads the `oce` package, certain defaults are defined for
+values such as the chosen equation of state, the expected timezone, etc.  This
+vignette lists those defaults and explains how (with caution) they may be
+altered with the `~/.Rprofile` file.
+
+The table below shows the default values of some quantities that `oce` uses in
+its processing.  In most cases, these values make their way into the package as
+default values of function parameters via calls to the `getOption()` function.  See
+`?plotTS` for an example.
+
+Note that any of these values may be altered in the user's `~/.Rprofile` file.
+For example, a user preferring that the old UNESCO equation of state be used in
+operations like plotting CTD data, might insert the following line in the
+`~/.Rprofile` file:
+```{r eval=FALSE}
+options(oceEOS="gsw")
+```
+*but* it should be noted that setting values in `~/.Rprofile` will render the
+user's code non-reproducible (unless that file is provided along with the
+analysis code).
+
+The preferred method is not to use `~/.Rprofile`, but instead to specify the
+desired properties as arguments to relevant functions.  For example, calling
+`plotTS(...,eos="unesco")` instead of letting `eos` take on the default value of
+`"gsw"`.  (It is the ability to specify a choice by such a parameter that is
+indicated in the right-most column of the following table.)
+
+| Name                     | Value                  | Selected by a function parameter |
+| ------------------------ | ---------------------- | -------------------------------- |
+| `oceAbbreviateTimeRange` | `TRUE`                 | yes                              |
+| `oceDebug`               | `0`                    | yes                              |
+| `oceDrawTimeRange`       | `TRUE`                 | yes                              |
+| `oceEOS`                 | `"gsw"`                | yes                              |
+| `oceMar`                 | `c(3, 3, 2, 2)`        | yes                              |
+| `oceMgp`                 | `c(2.0, 0.7, 0)`       | yes                              |
+| `oceTimeFormat`          | `"%Y-%m-%d %H:%M:%S"`  | yes                              |
+| `oceTz`                  | `"UTC"`                | yes                              |
+| `oceUnitBracket`         | `"["`                  | no                               |
+| `webtide`                | `"/usr/local/WebTide"` | yes                              |
+

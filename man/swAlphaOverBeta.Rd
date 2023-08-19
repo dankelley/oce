@@ -24,10 +24,10 @@ which case \code{salinity}, etc. are inferred from the object).}
 \item{pressure}{pressure (dbar)}
 
 \item{longitude}{longitude of observation (only used if \code{eos="gsw"};
-see \sQuote{Details}).}
+see \dQuote{Details}).}
 
 \item{latitude}{latitude of observation (only used if \code{eos="gsw"}; see
-\sQuote{Details}).}
+\dQuote{Details}).}
 
 \item{eos}{equation of state, either \code{"unesco"} or \code{"gsw"}.}
 }

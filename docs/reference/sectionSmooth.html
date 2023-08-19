@@ -18,7 +18,7 @@ direction or in both the vertical and lateral directions."><!-- mathjax --><scri
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.8-0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.8-2</span>
       </span>
     </div>
 
@@ -49,6 +49,9 @@ direction or in both the vertical and lateral directions."><!-- mathjax --><scri
     </li>
     <li>
       <a href="../articles/F_subclassing.html">6. Subclassing oce objects</a>
+    </li>
+    <li>
+      <a href="../articles/G_altering_defaults.html">7. Altering oce Defaults</a>
     </li>
   </ul></li>
 <li>
@@ -109,7 +112,7 @@ the section.</p></dd>
 
 
 <dt>method</dt>
-<dd><p>A string or a function that specifies the method to use; see ‘Details’.</p></dd>
+<dd><p>A string or a function that specifies the method to use; see “Details”.</p></dd>
 
 
 <dt>x</dt>
@@ -286,14 +289,18 @@ have the meanings as described below.</p></li>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">gsBarnes</span>, which<span class="op">=</span><span class="st">"temperature"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/mtext.html" class="external-link">mtext</a></span><span class="op">(</span><span class="st">"sectionSmooth(..., method=\"barnes\")"</span>, line<span class="op">=</span><span class="fl">0.5</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># Kriging (brittle to changes in automap)</span></span></span>
-<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"automap"</span>, quietly<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span> <span class="op">&amp;&amp;</span> <span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"sf"</span>, quietly<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
-<span class="r-in"><span>    <span class="va">gsKriging</span> <span class="op">&lt;-</span> <span class="fu">sectionSmooth</span><span class="op">(</span><span class="va">gs</span>, <span class="st">"kriging"</span>, xr<span class="op">=</span><span class="fl">50</span>, yr<span class="op">=</span><span class="fl">200</span><span class="op">)</span></span></span>
-<span class="r-in"><span>    <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">gsKriging</span>, which<span class="op">=</span><span class="st">"temperature"</span><span class="op">)</span></span></span>
-<span class="r-in"><span>    <span class="fu"><a href="https://rdrr.io/r/graphics/mtext.html" class="external-link">mtext</a></span><span class="op">(</span><span class="st">"sectionSmooth(..., method=\"kriging\")"</span>, line<span class="op">=</span><span class="fl">0.5</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="op">}</span></span></span>
-<span class="r-plt img"><img src="sectionSmooth-1.png" alt="" width="700" height="433"></span>
+<span class="r-in"><span><span class="co"># Kriging. This is commented-out because one of the CRAN</span></span></span>
+<span class="r-in"><span><span class="co"># check machines produces an error (converted from a warning)</span></span></span>
+<span class="r-in"><span><span class="co"># and I am really not clear on whether dontrun will be</span></span></span>
+<span class="r-in"><span><span class="co"># sufficient to solve the problem.</span></span></span>
+<span class="r-in"><span><span class="co">#&gt; if (requireNamespace("automap", quietly=TRUE)</span></span></span>
+<span class="r-in"><span><span class="co">#&gt;        &amp;&amp; requireNamespace("sf", quietly=TRUE)) {</span></span></span>
+<span class="r-in"><span><span class="co">#&gt;     gsKriging &lt;- sectionSmooth(gs, "kriging", xr=50, yr=200)</span></span></span>
+<span class="r-in"><span><span class="co">#&gt;     plot(gsKriging, which="temperature")</span></span></span>
+<span class="r-in"><span><span class="co">#&gt;     mtext("sectionSmooth(..., method=\"kriging\")", line=0.5)</span></span></span>
+<span class="r-in"><span><span class="co">#&gt; }</span></span></span>
 <span class="r-in"><span></span></span>
+<span class="r-plt img"><img src="sectionSmooth-1.png" alt="" width="700" height="433"></span>
 </code></pre></div>
     </div>
   </div>

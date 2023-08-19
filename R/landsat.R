@@ -895,8 +895,10 @@ read.landsatmeta <- function(file, encoding="latin1", debug=getOption("oceDebug"
             res <- gsub("[ ]+$", "", res)
         }
         res <- if (numeric) as.numeric(res) else gsub("\"", "", res)
+        oceDebug(debug, "read.landsatmeta()/getItem(info,name=\"", name, "\") returning ", res, "\n")
         res
     }
+    oceDebug(debug, "read.landsatmeta(file=\"", file, "\"\n", sep="", unindent=1)
     info <- readLines(file, warn=FALSE)
     date <- getItem(info, "DATE_ACQUIRED", numeric=FALSE)
     centerTime <- getItem(info, "SCENE_CENTER_TIME", numeric=FALSE)
@@ -966,7 +968,7 @@ read.landsatmeta <- function(file, encoding="latin1", debug=getOption("oceDebug"
         stop("spacecraft type ", spacecraft, " cannot be handled yet")
     }
     filesuffices <- paste(filesuffices, ".TIF", sep="")
-    list(header=header,
+    rval <- list(header=header,
         time=time, spacecraft=spacecraft, id=id,
         bandnames=bandnames, filesuffices=filesuffices,
         ullat=ullat, ullon=ullon, urlat=urlat, urlon=urlon, # possibly not needed with UTM
@@ -975,6 +977,8 @@ read.landsatmeta <- function(file, encoding="latin1", debug=getOption("oceDebug"
         gridCellSizePanchromatic=gridCellSizePanchromatic,
         gridCellSizeReflective=gridCellSizeReflective,
         gridCellSizeThermal=gridCellSizeThermal)
+    oceDebug(debug, "} # read.landsatmeta()\n", sep="", unindent=1)
+    rval
     #dimPanchromatic=dimPanchromatic,
     #dimReflective=dimReflective,
     #dimThermal=dimThermal)
@@ -1019,7 +1023,7 @@ read.landsatmeta <- function(file, encoding="latin1", debug=getOption("oceDebug"
 #' @param band The bands to be read, by default all of the bands.  Use
 #' `band=NULL` to skip the reading of bands, instead reading only the
 #' image metadata, which is often enough to check if the image is of
-#' interest in a given study. See \sQuote{Details} for the names of the
+#' interest in a given study. See \dQuote{Details} for the names of the
 #' bands, some of which are pseudo-bands, computed from the actual data.
 #'
 #' @param emissivity Value of the emissivity of the surface, stored as
@@ -1106,9 +1110,8 @@ read.landsat <- function(file,
             paste("band=\"", band, "\"", sep="")
         },
         ", debug=", debug, ") {\n", sep="", unindent=1)
-    if (band[1] == "terralook") {
+    if (band[1] == "terralook")
         band <- c("red", "green", "nir")
-    }
     decimateGiven <- !missing(decimate)
     if (decimateGiven && decimate < 1)
         warning("invalid value of decimate (", decimate, ") being ignored")
@@ -1156,10 +1159,14 @@ read.landsat <- function(file,
     # res@metadata[["bandfiles"]] <- paste(file,"/",actualfilename,"_B",band,".TIF",sep="")
     options <- options("warn") # avoid readTIFF() warnings about geo tags
     options(warn=-1)
+    availableFiles <- list.files(file, pattern="TIF$", full.names=TRUE)
     for (b in seq_along(band)) {
         # 'band' is numeric
         bandfilename <- paste(file, "/", actualfilename, "_", header$filesuffices[band[b]], sep="") # FIXME: 1 more layer of indexing?
+        bandfilename <- availableFiles[grep(paste0(band[b], ".TIF"), availableFiles)]
+        oceDebug(debug, "about to tiff::readTIFF(\"", bandfilename, "\") ...\n", sep="")
         d <- tiff::readTIFF(bandfilename)
+        oceDebug(debug, "    ... ok\n")
         if (decimateGiven) {
             dim <- dim(d)
             d <- d[seq.int(1, dim[1], by=decimate), seq.int(1, dim[2], by=decimate)]

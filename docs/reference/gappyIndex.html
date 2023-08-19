@@ -25,7 +25,7 @@ developers."><!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.8-0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.8-2</span>
       </span>
     </div>
 
@@ -56,6 +56,9 @@ developers."><!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs
     </li>
     <li>
       <a href="../articles/F_subclassing.html">6. Subclassing oce objects</a>
+    </li>
+    <li>
+      <a href="../articles/G_altering_defaults.html">7. Altering oce Defaults</a>
     </li>
   </ul></li>
 <li>
@@ -119,11 +122,11 @@ elements of that sequence.</p></dd>
 1000 and 2000, and that the goal is to skip the first 4 bytes of each of
 these sequences, and then to read the next 2 bytes as an unsigned 16-bit
 integer. This could be accomplished as follows.</p>
-<p></p><div class="sourceCode"><pre><code><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(oce)</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>buf <span class="ot">&lt;-</span> <span class="fu">readBin</span>(<span class="st">"filename"</span>, <span class="st">"raw"</span>, <span class="at">n=</span><span class="dv">5000</span>, <span class="at">size=</span><span class="dv">1</span>)</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>i <span class="ot">&lt;-</span> <span class="fu">gappyIndex</span>(<span class="fu">c</span>(<span class="dv">1000</span>, <span class="dv">2000</span>, <span class="dv">3000</span>), <span class="dv">4</span>, <span class="dv">2</span>)</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co"># i is 1004,1005, 2004,2005, 3004,3005</span></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>values <span class="ot">&lt;-</span> <span class="fu">readBin</span>(buf[i], <span class="st">"integer"</span>, <span class="at">size=</span><span class="dv">2</span>, <span class="at">n=</span><span class="dv">3</span>, <span class="at">endian=</span><span class="st">"little"</span>)</span></code></pre><p></p></div>
+<p></p><div class="sourceCode"><pre><code><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">library</span>(oce)</span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a>buf <span class="ot">&lt;-</span> <span class="fu">readBin</span>(<span class="st">"filename"</span>, <span class="st">"raw"</span>, <span class="at">n=</span><span class="dv">5000</span>, <span class="at">size=</span><span class="dv">1</span>)</span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a>i <span class="ot">&lt;-</span> <span class="fu">gappyIndex</span>(<span class="fu">c</span>(<span class="dv">1000</span>, <span class="dv">2000</span>, <span class="dv">3000</span>), <span class="dv">4</span>, <span class="dv">2</span>)</span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a><span class="co"># i is 1004,1005, 2004,2005, 3004,3005</span></span>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a>values <span class="ot">&lt;-</span> <span class="fu">readBin</span>(buf[i], <span class="st">"integer"</span>, <span class="at">size=</span><span class="dv">2</span>, <span class="at">n=</span><span class="dv">3</span>, <span class="at">endian=</span><span class="st">"little"</span>)</span></code></pre><p></p></div>
     </div>
     <div id="author">
     <h2>Author</h2>

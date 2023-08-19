@@ -27,7 +27,7 @@ webtide(
 \arguments{
 \item{action}{An indication of the action, either \code{action="map"} to
 draw a map or \code{action="predict"} to get a prediction; see
-\sQuote{Details}.}
+\dQuote{Details}.}
 
 \item{longitude, latitude}{optional location at which prediction is required (ignored if
 \code{node} is given).}

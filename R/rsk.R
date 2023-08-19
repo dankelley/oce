@@ -174,7 +174,7 @@ setMethod(f="[[<-",
 #' @param x an [rsk-class] object.
 #'
 #' @param subset a condition to be applied to the `data` portion of `x`.
-#' See \sQuote{Details}.
+#' See \dQuote{Details}.
 #'
 #' @param \dots ignored.
 #'
@@ -645,16 +645,21 @@ setMethod(f="plot",
 #'
 #' @template encodingIgnoredTemplate
 #'
-#' @param tz time zone.  The value `oceTz` is set at package setup.
+#' @param tz the timezone assumed for the time values stored in the
+#' data file.  Unless the user has set an alternative value in the
+#' `~/.Rprofile` file, the default will be `"UTC"`; see the
+#' \dQuote{Altering oce Defaults} vignette for more on the use
+#' of the `~/.Rprofile` file.
 #'
 #' @param tzOffsetLocation offset, in hours, between the CTD clock and
 #' the clock in the controlling computer/tablet/phone (if one was used during
 #' the sampling). This offset is required to relate location information from the
 #' controller to hydrographic information from the CTD, using timestamps as an
-#' index (see "A note on location information" in \sQuote{Details}).
+#' index (see "A note on location information" in \dQuote{Details}).
 #' If the user supplies a value for `tzOffsetLocation`, then that is used.
-#' If not, an attempt is made to infer it from a table named `epochs` in the
-#' file. If no value can be inferred from either of these two methods, then
+#' If not, an attempt is made to infer it from an item named `UTCdelta`
+#' that might be present within a table named `epochs` in the file. If no
+#' value can be inferred from either of these two methods, then
 #' `tzOffsetLocation` is set to zero.
 #'
 #' @param patm controls the handling of atmospheric pressure, an important issue
@@ -768,7 +773,7 @@ read.rsk <- function(file, from=1, to, by=1, type, encoding=NA,
                     if (nrow(tmp) > 0L) {
                         for (tmpname in names(tmp)) {
                             if (inherits(tmp[[tmpname]], "blob")) {
-                                oceDebug(debug, "        Skipping @metadata$", name, "$", tmpname, " because it is a blob\n", sep="")
+                                oceDebug(debug, "    Not storing @metadata$", name, "$", tmpname, " because it is a blob\n", sep="")
                                 tmp$tmpname <- NULL
                             }
                         }
@@ -875,7 +880,8 @@ read.rsk <- function(file, from=1, to, by=1, type, encoding=NA,
                     })
                 t1000 <- DBI::dbFetch(qres, n=-1)[[1]]
                 RSQLite::dbClearResult(qres)
-                time <- numberAsPOSIXct(as.numeric(t1000) / 1000, type="unix")
+                time <- numberAsPOSIXct(as.numeric(t1000) / 1000, type="unix", tz=tz)
+                oceDebug(debug, "at rsk.R bookmark A 1 of 3: time[1] is ", format(time[1], "%Y-%m-%d %H:%M:%S (UTC%z, i.e. %Z)"), "\n")
             }
         }
         if (is.numeric(from) && from != 1 && all(is.na(time))) {
@@ -887,7 +893,8 @@ read.rsk <- function(file, from=1, to, by=1, type, encoding=NA,
                 })
             t1000 <- DBI::dbFetch(qres, n=-1)[[1]]
             RSQLite::dbClearResult(qres)
-            time <- numberAsPOSIXct(as.numeric(t1000) / 1000, type="unix")
+            time <- numberAsPOSIXct(as.numeric(t1000) / 1000, type="unix", tz=tz)
+            oceDebug(debug, "at rsk.R bookmark A 2 of 3: time[1] is ", format(time[1], "%Y-%m-%d %H:%M:%S (UTC%z, i.e. %Z)"), "\n")
         }
         # format to and from that match tstamp from the rsk file
         if (inherits(from, "POSIXt")) {
@@ -931,7 +938,8 @@ read.rsk <- function(file, from=1, to, by=1, type, encoding=NA,
         data <- data[timeOrder, ]
         oceDebug(debug, "after trimming data, it has dimension ", paste(dim(data), collapse="x"), "\n")
         tstamp <- data[, 1]
-        time <- numberAsPOSIXct(as.numeric(tstamp)/1000, type="unix")
+        time <- numberAsPOSIXct(as.numeric(tstamp)/1000, type="unix", tz=tz)
+        oceDebug(debug, "at rsk.R bookmark A 3 of 3: time[1] is ", format(time[1], "%Y-%m-%d %H:%M:%S (UTC%z, i.e. %Z)"), "\n")
         # Need to check if there is a datasetID column (for rskVersion >= 1.12.2)
         # If so, for now just extract it from the data matrix
         hasDatasetID <- sum(grep("datasetID", names(data))) > 0

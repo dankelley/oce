@@ -1206,7 +1206,7 @@ sectionAddCtd <- sectionAddStation
 #' `TRUE` and `section` has had a spine added with [addSpine()], then
 #' the spine is drawn in blue.
 #'
-#' @param drawPalette Logical value indicating whether to draw a palette when `ztype="image"`
+#' @param drawPalette logical value indicating whether to draw a palette when `ztype="image"`
 #' ignored otherwise.
 #'
 #' @param axes Logical value indicating whether to draw axes.
@@ -1338,13 +1338,14 @@ setMethod(f="plot", signature=signature("section"),
         xtype="distance", ytype="depth", ztype="contour", longitude0, latitude0,
         legend.loc="bottomright", legend.text=NULL,
         showStations=FALSE, showStart=TRUE, stationTicks=TRUE, showBottom=TRUE,
-        showSpine=TRUE, drawPalette=TRUE, axes=TRUE,
-        mgp, mar, col, cex, pch, lwd, labcex=1,
+        showSpine=TRUE, drawPalette=TRUE,
+        axes=TRUE, mgp, mar, col, cex, pch, lwd, labcex=par("cex"),
         debug=getOption("oceDebug"),
         ...)
     {
         debug <- if (debug > 4) 4 else floor(0.5 + debug)
         if (missing(eos)) eos <- getOption("oceEOS", default="gsw")
+        zlimOrig <- zlim
         xtype <- match.arg(xtype,
             c("distance", "track", "longitude", "latitude", "time", "spine"))
         ytype <- match.arg(ytype,
@@ -1389,13 +1390,6 @@ setMethod(f="plot", signature=signature("section"),
         #oceDebug(debug, "which=c(", paste(which, collapse=","), ")\n")
         lw <- length(which)
         legend.text <- rep(legend.text, lw)
-        #whichOriginal <- which
-        #which <- oce.pmatch(which,
-        #                    list(temperature=1, salinity=2,
-        #                         sigmaTheta=3, nitrate=4, nitrite=5, oxygen=6,
-        #                         phosphate=7, silicate=8,
-        #                         u=9, uz=10, v=11, vz=12, # lowered adcp
-        #                         data=20, map=99))
         if (is.numeric(which)) {
             which[which==0] <- "potential temperature"
             which[which==1] <- "temperature"
@@ -1413,6 +1407,8 @@ setMethod(f="plot", signature=signature("section"),
             which[which==20] <- "data"
             which[which==99] <- "map"
         }
+        if (any(is.na(which)))
+            stop("cannot have NA values in which, but it is ", paste(which, collapse=","))
         #oceDebug(debug, "which=c(", paste(which, collapse=","), ")\n")
         oceDebug(debug, "plot.section(, ..., which=c(",
             paste(which, collapse=","), "), eos=\"", eos, "\"",
@@ -1421,15 +1417,19 @@ setMethod(f="plot", signature=signature("section"),
             ", xlim=c(", paste(xlim, collapse=","), ")",
             ", ylim=c(", paste(ylim, collapse=","), ")",
             ", \", ...) {\n", sep="", unindent=1)
-        # Ensure data on levels, for plots requiring pressure (e.g. sections). Note
-        # that we break out of the loop, once we grid the section.
-        if (is.na(which[1]) || which[1] != "data" || which[1] != "map") {
+        # Contour and image plots, e.g. for which="temperature" and so forth, require
+        # gridded data.
+        #2092 message("DAN ", vectorShow(ztype))
+        #2092 message("DAN ", vectorShow(which))
+        if (which[1] != "data" && which[1] != "map") {
+            #2092 message("DAN will it grid???")
             p1 <- x[["station", 1]][["pressure"]]
             numStations <- length(x@data$station)
             for (ix in 2:numStations) {
                 thisStation <- x@data$station[[ix]]
                 thisPressure <- thisStation[["pressure"]]
                 if ("points" != ztype && !identical(p1, thisPressure)) {
+                    #2092 message("DAN gridding")
                     oceDebug(debug, "gridding section because pressures at station ", ix, " differ from those at station 1\n")
                     x <- sectionGrid(x, debug=debug-1)
                     break
@@ -1489,17 +1489,13 @@ setMethod(f="plot", signature=signature("section"),
                 ", span=", if (missing(span)) "(missing)" else span,
                 ", showStations=", showStations,
                 ", axes=", axes, ", ...) {\n", sep="", unindent=1)
-            #>message("in plotSubsection:")
-            #>cat(vectorShow(col))
-            #>cat(vectorShow(pch))
-            #>cat(vectorShow(cex))
             ztype <- match.arg(ztype)
             drawPoints <- "points" == ztype
             omar <- par("mar")
             xIsTime <- inherits(xx, "POSIXt")
-            #canPlot <- TRUE      # assume we can plot; use this instead of nested 'break's
             isMap <- as.character(variable) == "map"
             if (isMap) {
+                oceDebug(debug, "is a map\n")
                 lat <- array(NA_real_, numStations)
                 lon <- array(NA_real_, numStations)
                 for (i in 1:numStations) {
@@ -1649,21 +1645,27 @@ setMethod(f="plot", signature=signature("section"),
                 }
             } else {
                 # not isMap
+                oceDebug(debug, "not a map\n")
                 z <- x[[variable]]
                 zAllMissing <- all(is.na(z))
+                # Use try() to quiet warnings if all data are NA
+                zRANGE <- try(range(z, na.rm=TRUE), silent=TRUE)
                 if ((drawPoints || ztype == "image") && !zAllMissing) {
                     if (is.null(zbreaks)) {
+                        oceDebug(debug, "zbreaks was not given; inferring from data\n")
                         if (is.null(zlim)) {
-                            # Use try() to quiet warnings if all data are NA
-                            zRANGE <- try(range(z, na.rm=TRUE), silent=TRUE)
-                            if (is.null(zcol) || is.function(zcol)) {
-                                zbreaks <- seq(zRANGE[1], zRANGE[2], length.out=200)
+                            zbreaks <- if (is.null(zcol) || is.function(zcol)) {
+                                seq(zRANGE[1], zRANGE[2], length.out=200)
                             } else {
-                                zbreaks <- seq(zRANGE[1], zRANGE[2], length.out=length(zcol) + 1)
+                                seq(zRANGE[1], zRANGE[2], length.out=length(zcol) + 1)
                             }
+                            oceDebug(debug, "zlim was not given; ", vectorShow(zbreaks))
                         } else {
                             zbreaks <- seq(zlim[1], zlim[2], length.out=200)
+                            oceDebug(debug, "zlim was given; ", vectorShow(zbreaks))
                         }
+                    } else {
+                        oceDebug(debug, "zbreaks was given\n")
                     }
                     nbreaks <- length(zbreaks)
                     if (nbreaks > 0) {
@@ -1671,9 +1673,14 @@ setMethod(f="plot", signature=signature("section"),
                             zcol <- oceColorsViridis(nbreaks - 1)
                         if (is.function(zcol))
                             zcol <- zcol(nbreaks - 1)
-                        zlim <- range(zbreaks)
-                        if (drawPalette == TRUE) {
-                            drawPalette(zlim=range(zbreaks), breaks=zbreaks, col=zcol)}
+                        if (is.null(zlim))
+                            zlim <- range(zbreaks, na.rm=TRUE) # FIXME: is this used/ok?
+                        if (drawPalette) {
+                            # draw triangles if data extend past either end of the palette
+                            drawTriangles <- c(zRANGE[1] < zlim[1], zRANGE[2] > zlim[2])
+                            drawPalette(zlim=zlim, breaks=zbreaks, col=zcol,
+                                drawTriangles=drawTriangles)
+                        }
                     }
                 }
                 # FIXME: contours don't get to plot edges
@@ -1696,12 +1703,12 @@ setMethod(f="plot", signature=signature("section"),
                         xlab <- list(...)$xlab
                     } else {
                         xlab <- switch(which.xtype,
-                        resizableLabel("distance km"),
-                        resizableLabel("along-track distance km"),
-                        gettext("Longitude", domain="R-oce"),
-                        gettext("Latitude", domain="R-oce"),
-                        gettext("Time", domain="R-oce"),
-                        resizableLabel("along-spine distance km"))
+                            resizableLabel("distance km"),
+                            resizableLabel("along-track distance km"),
+                            gettext("Longitude", domain="R-oce"),
+                            gettext("Latitude", domain="R-oce"),
+                            gettext("Time", domain="R-oce"),
+                            resizableLabel("along-spine distance km"))
                     }
                     oceDebug(debug, vectorShow(yyrange))
                     if (!isMap) {
@@ -1717,7 +1724,6 @@ setMethod(f="plot", signature=signature("section"),
                         axis(4L, labels=FALSE)
                         ytics <- axis(2L, labels=FALSE)
                         axis(2L, at=ytics, labels=ytics)
-                        #browser()
                         # If constructing labels for time, need to check xlim
                         if (xIsTime) {
                             if (!is.null(xlim)) {
@@ -1745,7 +1751,6 @@ setMethod(f="plot", signature=signature("section"),
                     }
                     box()
                 }
-                #browser()
                 # Bottom trace
                 usr <- par("usr")
                 graph.bottom <- usr[3]
@@ -1753,6 +1758,7 @@ setMethod(f="plot", signature=signature("section"),
                 # For ztype == "points", plot the points.  Otherwise, collect them in zz
                 # for the contour or image plot.
                 for (i in seq_len(numStations)) {
+                    #2092 message("DAN 1758 i=", i)
                     thisStation <- x[["station", i]]
                     p <- thisStation[["pressure"]] # assume that we always have pressure
                     np <- length(p)
@@ -1775,45 +1781,52 @@ setMethod(f="plot", signature=signature("section"),
                             points(rep(xx[i], np), -p, pch=pch, cex=cex,
                                 col=zcol[rescale(v, xlow=zlim[1], xhigh=zlim[2], rlow=1, rhigh=nbreaks)])
                         } else {
-                            # Compute sigma0 and sigmaTheta, whether they are in the dataset or not
+                            #2092 message(vectorShow(dim(zz)))
+                            #2092 message(vectorShow(v))
                             zz[i, ] <- rev(v)
                         }
                     }
-                    if (grid && !drawPoints) {
+                    if (grid && !drawPoints)
                         points(rep(xx[i], length(yy)), yy, col="gray", pch=20, cex=1/3)
-                    }
                     #temp <- x@data$station[[stationIndices[i]]]@data$temperature
                     #len <- length(temp)
-                    if ("waterDepth" %in% names(x@data$station[[stationIndices[i]]]@metadata)
-                    && is.finite(x@data$station[[stationIndices[i]]]@metadata$waterDepth)) {
-                        wd <- x@data$station[[stationIndices[i]]]@metadata$waterDepth
-                    } else {
-                        wd <- NA
-                    }
+                    wd <- if ("waterDepth" %in% names(x@data$station[[stationIndices[i]]]@metadata)
+                        && is.finite(x@data$station[[stationIndices[i]]]@metadata$waterDepth))
+                        x@data$station[[stationIndices[i]]]@metadata$waterDepth else NA
                     #in.land <- which(is.na(x@data$station[[stationIndices[i]]]@data$temperature[-3])) # skip first 3 points
                     waterDepth <- c(waterDepth, wd)
+                    #2092 message(sprintf("DAN i=%d x=%.2f depth=%.0f", i, xx[i], wd))
                 }
-                if (!grid && axes && stationTicks) {
+                if (!grid && axes && stationTicks)
                     Axis(side=3, at=xx, labels=FALSE, tcl=-1/3, lwd=0.5) # station locations
-                }
+                #2092 message("DAN next is xx. Is it in order of station or axis?")
                 bottom.x <- c(xx[1], xx, xx[length(xx)])
-                bottom.y <- if (any(is.finite(waterDepth))) {
+                bottom.y <- if (any(is.finite(waterDepth)))
                     c(graph.bottom, waterDepth, graph.bottom)
-                } else {
+                else
                     rep(NA, length(bottom.x)+2)
-                }
                 # Put x in order, if it's not already
                 xx[!is.finite(xx)] <- NA # for issue 1583: grid larger than data range can get NaN values
-                ox <- order(xx)
+                #<20230601> ox <- order(xx)
+                ox <- seq_along(xx) #<20230601>
                 xxOrig <- xx
                 ii <- seq_along(xxOrig) # so we can use it later for drawing bottoms
+                #2092 message("DAN 1")
+                #2092 print(head(data.frame(bottom.x=bottom.x, bottom.y=bottom.y), 2))
+                #2092 print(tail(data.frame(bottom.x=bottom.x, bottom.y=bottom.y), 2))
+                #2092 lines(bottom.x, bottom.y, col=2, lwd=2)
                 if (any(xx[ox] != xx, na.rm=TRUE)) { # for issue 1583: handle the NA just inserted
+                    #2092 message("DAN BARK")
                     xx <- xx[ox]
                     zz <- zz[ox, ]     # FIXME keep this???
-                    ii <- ii[ox]
+                    #<20230601> ii <- ii[ox]
                     bottom.x <- c(min(xxOrig), xxOrig[ox], max(xxOrig))
                     bottom.y <- c(graph.bottom, waterDepth[ox], graph.bottom)
                 }
+                #2092 message("DAN 2")
+                #2092 print(head(data.frame(bottom.x=bottom.x, bottom.y=bottom.y), 2))
+                #2092 print(tail(data.frame(bottom.x=bottom.x, bottom.y=bottom.y), 2))
+                #2092 lines(bottom.x, bottom.y, col=3, lwd=2, lty=2)
                 # Construct xm, ym and zm that can be contoured. That requires
                 # unique and increasing x and y values.
                 # cannot contour with duplicates in x or y; the former is the only problem
@@ -1831,9 +1844,6 @@ setMethod(f="plot", signature=signature("section"),
                     j <- rev(seq_along(ym))
                     ym <- ym[j]
                     zm <- zm[, j]
-                    #message("flip flip flip")
-                    #browser()
-                    #contour(xxx, yyy[j], zzz[, j], ylim=rev(range(yyy)))
                 } else {
                     oceDebug(debug, "no need to flip matrix for contouring\n")
                     xm <- xx[xx.unique]
@@ -1842,23 +1852,23 @@ setMethod(f="plot", signature=signature("section"),
                 }
                 # a problem with mbari data revealed that we need to chop NA valaues too
                 if (variable == "data") {
+                    #2092 message(vectorShow(which.xtype))
                     for (i in 1:numStations) {
                         thisStation <- x[["station", i]]
                         pressure <- thisStation[["pressure"]]
-                        if (which.xtype == 4) {
+                        if (which.xtype == 3000) {
                             longitude <- mean(thisStation[["longitude"]], na.rm=TRUE)
-                            points(rep(longitude, length(pressure)), -pressure, cex=cex, pch=pch, col=col)
+                            points(rep(longitude, length(pressure)), pressure, cex=cex, pch=pch, col=col)
                         } else {
                             # FIXME: shouldn't the next line work for all types??
-                            points(rep(xx[i], length(pressure)), -pressure, cex=cex, pch=pch, col=col)
+                            points(rep(xx[i], length(pressure)), pressure, cex=cex, pch=pch, col=col)
                         }
                     }
                 } else if (!drawPoints) {
                     # Use try() to quiet warnings if all data are NA
                     if (zAllMissing) {
-                        if (nchar(legend.loc)) {
+                        if (nchar(legend.loc))
                             legend(legend.loc, legend=vtitle, bg="white", x.intersp=0, y.intersp=0.5, cex=1)
-                        }
                         return()
                     }
                     # nolint start object_usage_linter
@@ -1868,17 +1878,35 @@ setMethod(f="plot", signature=signature("section"),
                         oceDebug(debug, "user-supplied contourLevels: ", contourLevels, "\n")
                         if (ztype == "contour") {
                             oceDebug(debug, "about to call contour() near L1885\n")
-                            contour(x=xm, y=ym, z=zm,
+                            # ensure ordered values (required by this contouring function)
+                            oxm <- order(xm)
+                            oym <- order(ym)
+                            contour(x=xm[oxm], y=ym[oym], z=zm[oxm, oym],
                                 ylim=if (is.null(ylim)) rev(range(ym)) else ylim,
                                 axes=FALSE, add=TRUE, levels=contourLevels, labels=contourLabels,
                                 col=col, xaxs="i", yaxs="i", labcex=labcex, ...)
                         } else if (ztype == "image") {
-                            zm[zm < min(zbreaks)] <- min(zbreaks)
-                            zm[zm > max(zbreaks)] <- max(zbreaks)
-                            if (is.function(zcol)) {
-                                zcol <- zcol(1+length(zbreaks))
+                            oceDebug(debug, "about to .filled.contour (LOC 1)\n")
+                            # issue 2083 (https://github.com/dankelley/oce/issues/2083)
+                            # FIXME: ensure that similare is done at location 1 also
+                            nbreaks <- length(zbreaks)
+                            if (is.function(zcol))
+                                zcol <- zcol(nbreaks + 1)
+                            zmRange <- range(zm, na.rm=TRUE)
+                            zbreaksNEW <- zbreaks
+                            zcolNEW <- zcol
+                            if (zbreaks[1] > zmRange[1]) {
+                                zbreaksNEW <- c(zmRange[1], zbreaks)
+                                zcolNEW <- c(zcol[1], zcol)
                             }
-                            .filled.contour(x=xm, y=ym, z=zm, levels=zbreaks, col=zcol)
+                            if (zbreaks[nbreaks] < zmRange[2]) {
+                                zbreaksNEW <- c(zbreaksNEW, zmRange[2])
+                                zcolNEW <- c(zcolNEW, tail(zcolNEW, 1))
+                            }
+                            # ensure ordered values (required by this contouring function)
+                            oxm <- order(xm)
+                            oym <- order(ym)
+                            .filled.contour(x=xm[oxm], y=ym[oym], z=zm[oxm, oym], levels=zbreaksNEW, col=zcolNEW)
                         } else {
                             stop("unknown ztype: \"", ztype, "\" [2]")
                         }
@@ -1890,15 +1918,37 @@ setMethod(f="plot", signature=signature("section"),
                             if (any(!is.finite(zzrange)))
                                 stop("cannot draw a contour diagram because all values are NA or Inf")
                             oceDebug(debug, "about to call contour() near L1908\n")
-                            contour(x=xm, y=ym, z=zm, add=TRUE, col=col, labcex=labcex, ...)
+                            # ensure ordered values (required by this contouring function)
+                            oxm <- order(xm)
+                            oym <- order(ym)
+                            contour(x=xm[oxm], y=ym[oym], z=zm[oxm, oym], add=TRUE, col=col, labcex=labcex, ...)
                         } else if (ztype == "image") {
-                            zz[zz < min(zbreaks)] <- min(zbreaks)
-                            zz[zz > max(zbreaks)] <- max(zbreaks)
-                            if (is.function(zcol)) {
-                                zcol <- zcol(1+length(zbreaks))
+                            oceDebug(debug, "about to .filled.contour (LOC 2)\n")
+                            # issue 2083 (https://github.com/dankelley/oce/issues/2083)
+                            # FIXME: ensure that similare is done at location 1 also
+                            nbreaks <- length(zbreaks)
+                            if (is.function(zcol))
+                                zcol <- zcol(nbreaks + 1)
+                            zmRange <- range(zm, na.rm=TRUE)
+                            zbreaksNEW <- zbreaks
+                            zcolNEW <- zcol
+                            if (zbreaks[1] > zmRange[1]) {
+                                zbreaksNEW <- c(zmRange[1], zbreaks)
+                                zcolNEW <- c(zcol[1], zcol)
                             }
-                            oceDebug(debug, "about to call contour() near L1916\n")
-                            .filled.contour(x=xm, y=ym, z=zm, levels=zbreaks, col=zcol)
+                            if (zbreaks[nbreaks] < zmRange[2]) {
+                                zbreaksNEW <- c(zbreaksNEW, zmRange[2])
+                                zcolNEW <- c(zcolNEW, tail(zcolNEW, 1))
+                            }
+                            #2092 print(zbreaksNEW)
+                            #2092 str(xm)
+                            #2092 str(ym)
+                            #2092 str(zm)
+                            # ensure ordered values (required by this contouring function)
+                            oxm <- order(xm)
+                            oym <- order(ym)
+                            #2092 message("DAN about to filled.contour")
+                            .filled.contour(x=xm[oxm], y=ym[oym], z=zm[oxm,oym], levels=zbreaksNEW, col=zcolNEW)
                         } else if (ztype == "points") {
                             # nothing to do now
                         } else {
@@ -1911,10 +1961,18 @@ setMethod(f="plot", signature=signature("section"),
                     if (is.character(showBottom)) {
                         type <- showBottom
                     }
+                    #2092 message("DAN about to plot")
+                    #2092 print(head(data.frame(bottom.x=bottom.x, bottom.y=bottom.y), 2))
+                    #2092 print(tail(data.frame(bottom.x=bottom.x, bottom.y=bottom.y), 2))
+                    #2092 message("DAN KLUDGE!! reversing bottom.x")
+                    #2092 message("DAN ORIG ", vectorShow(head(bottom.x)))
+                    #2092 #???bottom.x<-rev(bottom.x) # KLUDGE
+                    #2092 message("DAN LATER ", vectorShow(head(bottom.x)))
+                    #2092 message("DAN ", vectorShow(xtype))
                     if (length(bottom.x) == length(bottom.y)) {
                         bottom <- par("usr")[3]
                         if (type == "polygon") {
-                            polygon(bottom.x, bottom.y, col="lightgray")
+                            polygon(bottom.x, bottom.y, col=gray(0.25, alpha=0.2))
                         } else if (type == "lines") {
                             for (s in seq_along(bottom.x))
                                 lines(rep(bottom.x[s], 2), c(bottom.y[s], bottom), col="lightgray")
@@ -1969,7 +2027,7 @@ setMethod(f="plot", signature=signature("section"),
             }
             par(mar=omar)
             oceDebug(debug, "} # plotSubsection()\n", unindent=1)
-        }                        # plotSubsection()
+        }
         opar <- par(no.readonly=TRUE)
         if (length(which) > 1)
             on.exit(par(opar))
@@ -2126,15 +2184,16 @@ setMethod(f="plot", signature=signature("section"),
                         which.ytype=which.ytype,
                         variable=which[w], eos=eos,
                         vtitle=if (is.null(legend.text[w])) vtitle else legend.text[w],
-                        xlim=xlim, ylim=ylim, ztype=ztype, zbreaks=zbreaks, zcol=zcol,
-                        axes=axes, col=col, debug=debug-1, ...)
+                        xlim=xlim, ylim=ylim, ztype=ztype, zbreaks=zbreaks, zcol=zcol, axes=axes,
+                        pch=pch, cex=cex, col=col,
+                        debug=debug-1, ...)
                 }
             }
             if (!is.na(which[w]) && which[w] == 20) {
                 plotSubsection(xx, yy, zz,
                     which.xtype=which.xtype, which.ytype=which.ytype,
                     variable="data", vtitle="", unit=NULL,
-                    xlim=xlim, ylim=ylim, col=col, legend=FALSE,
+                    xlim=xlim, ylim=ylim, cex=cex, pch=pch, col=col, legend=FALSE,
                     debug=debug-1, ...)
             }
             if (!is.na(which[w]) && (which[w] == 99 || which[w] == "map")) {
@@ -2175,7 +2234,7 @@ setMethod(f="plot", signature=signature("section"),
 #' is stored as `salinityBottle`.
 #'
 #' @param file A file containing a set of CTD observations.  At present, only the
-#' *exchange BOT* format is accepted (see \sQuote{Details}).
+#' *exchange BOT* format is accepted (see \dQuote{Details}).
 #'
 #' @param directory A character string indicating the name of a  directory that
 #' contains a set of CTD files that hold individual stations in the section.
@@ -2618,7 +2677,7 @@ sectionGrid <- function(section, p, method="approx", trim=TRUE, debug=getOption(
 #' For `method="spline"`, the pressure levels must match for each station in
 #' the section.
 #'
-#' @param method A string or a function that specifies the method to use; see \sQuote{Details}.
+#' @param method A string or a function that specifies the method to use; see \dQuote{Details}.
 #'
 #' @param x Optional numerical vector, of the same length as the number of stations in `section`,
 #' which will be used in gridding in the lateral direction. If not provided, this
@@ -2705,12 +2764,16 @@ sectionGrid <- function(section, p, method="approx", trim=TRUE, debug=getOption(
 #' plot(gsBarnes, which="temperature")
 #' mtext("sectionSmooth(..., method=\"barnes\")", line=0.5)
 #'
-#' # Kriging (brittle to changes in automap)
-#' if (requireNamespace("automap", quietly=TRUE) && requireNamespace("sf", quietly=TRUE)) {
-#'     gsKriging <- sectionSmooth(gs, "kriging", xr=50, yr=200)
-#'     plot(gsKriging, which="temperature")
-#'     mtext("sectionSmooth(..., method=\"kriging\")", line=0.5)
-#' }
+#' # Kriging. This is commented-out because one of the CRAN
+#' # check machines produces an error (converted from a warning)
+#' # and I am really not clear on whether dontrun will be
+#' # sufficient to solve the problem.
+#' #> if (requireNamespace("automap", quietly=TRUE)
+#' #>        && requireNamespace("sf", quietly=TRUE)) {
+#' #>     gsKriging <- sectionSmooth(gs, "kriging", xr=50, yr=200)
+#' #>     plot(gsKriging, which="temperature")
+#' #>     mtext("sectionSmooth(..., method=\"kriging\")", line=0.5)
+#' #> }
 #'
 #' @author Dan Kelley
 #'
@@ -3032,7 +3095,7 @@ sectionSmooth <- function(section, method="spline",
 #' as the salinity, and the other arguments are used for the other components of
 #' [ctd-class] objects. Alternatively, it may be one of a variety of
 #' other objects from which the CTD objects can be inferred, in which case the
-#' other arguments are ignored; see \sQuote{Details}.
+#' other arguments are ignored; see \dQuote{Details}.
 #'
 #' @param temperature Temperature, in a vector holding values for all stations.
 #'

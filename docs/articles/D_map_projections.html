@@ -33,7 +33,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.8-0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.8-2</span>
       </span>
     </div>
 
@@ -67,6 +67,9 @@
     <li>
       <a href="../articles/F_subclassing.html">6. Subclassing oce objects</a>
     </li>
+    <li>
+      <a href="../articles/G_altering_defaults.html">7. Altering oce Defaults</a>
+    </li>
   </ul>
 </li>
 <li>
@@ -96,7 +99,7 @@
       <h1 data-toc-skip>4. Using map projections</h1>
                         <h4 data-toc-skip class="author">Dan Kelley (<a href="https://orcid.org/0000-0001-7808-5911" class="external-link uri">https://orcid.org/0000-0001-7808-5911</a>)</h4>
             
-            <h4 data-toc-skip class="date">2023-04-24</h4>
+            <h4 data-toc-skip class="date">2023-08-08</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/dankelley/oce/blob/HEAD/vignettes/D_map_projections.Rmd" class="external-link"><code>vignettes/D_map_projections.Rmd</code></a></small>
       <div class="hidden name"><code>D_map_projections.Rmd</code></div>
@@ -170,7 +173,7 @@ view of North America.</p>
 <span><span class="va">lat</span> <span class="op">&lt;-</span> <span class="va">coastlineWorld</span><span class="op">[[</span><span class="st">"latitude"</span><span class="op">]</span><span class="op">]</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mar<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">4</span>, <span class="fl">4</span>, <span class="fl">0.5</span>, <span class="fl">0.5</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">lon</span>, <span class="va">lat</span>, type<span class="op">=</span><span class="st">"l"</span>,</span>
-<span>     xlim<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">130</span>, <span class="op">-</span><span class="fl">50</span><span class="op">)</span>, ylim<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">40</span>, <span class="fl">50</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<span>    xlim<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">130</span>, <span class="op">-</span><span class="fl">50</span><span class="op">)</span>, ylim<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">40</span>, <span class="fl">50</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <div class="figure">
 <img src="D_map_projections_files/figure-html/unnamed-chunk-3-1.png" alt="Distorted North American view, without control of aspect ratio." width="216"><p class="caption">
 Distorted North American view, without control of aspect ratio.
@@ -183,7 +186,7 @@ to the general latitude of the view (45N, in this case).</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mar<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">4</span>, <span class="fl">4</span>, <span class="fl">0.5</span>, <span class="fl">0.5</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">lon</span>, <span class="va">lat</span>, type<span class="op">=</span><span class="st">"l"</span>,</span>
-<span>     xlim<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">130</span>, <span class="op">-</span><span class="fl">50</span><span class="op">)</span>, ylim<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">40</span>, <span class="fl">50</span><span class="op">)</span>, asp<span class="op">=</span><span class="fl">1</span><span class="op">/</span><span class="fu"><a href="https://rdrr.io/r/base/Trig.html" class="external-link">cos</a></span><span class="op">(</span><span class="fl">45</span><span class="op">*</span><span class="va">pi</span><span class="op">/</span><span class="fl">180</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<span>    xlim<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">130</span>, <span class="op">-</span><span class="fl">50</span><span class="op">)</span>, ylim<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">40</span>, <span class="fl">50</span><span class="op">)</span>, asp<span class="op">=</span><span class="fl">1</span><span class="op">/</span><span class="fu"><a href="https://rdrr.io/r/base/Trig.html" class="external-link">cos</a></span><span class="op">(</span><span class="fl">45</span><span class="op">*</span><span class="va">pi</span><span class="op">/</span><span class="fl">180</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <div class="figure">
 <img src="D_map_projections_files/figure-html/unnamed-chunk-4-1.png" alt="North American view, with distortion limited by choice of aspect ratio." width="216"><p class="caption">
 North American view, with distortion limited by choice of aspect ratio.
@@ -262,8 +265,8 @@ a trick on the latitude limit, specifying an image point on the other
 side of the planet, with the pole in between).</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mar<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1.5</span>, <span class="fl">1.5</span>, <span class="fl">0.5</span>, <span class="fl">0.5</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="fu"><a href="../reference/mapPlot.html">mapPlot</a></span><span class="op">(</span><span class="va">coastlineWorld</span>, longitudelim<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">130</span>, <span class="fl">50</span><span class="op">)</span>, latitudelim<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">60</span>, <span class="fl">120</span><span class="op">)</span>,</span>
-<span>        projection<span class="op">=</span><span class="st">"+proj=stere +lat_0=90"</span>, col<span class="op">=</span><span class="st">"gray"</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="../reference/mapPlot.html">mapPlot</a></span><span class="op">(</span><span class="va">coastlineWorld</span>, longitudelim<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">180</span>, <span class="fl">180</span><span class="op">)</span>, latitudelim<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">60</span>, <span class="fl">90</span><span class="op">)</span>,</span>
+<span>    projection<span class="op">=</span><span class="st">"+proj=stere +lat_0=90 +lat_ts=90"</span>, col<span class="op">=</span><span class="st">"gray"</span><span class="op">)</span></span></code></pre></div>
 <div class="figure">
 <img src="D_map_projections_files/figure-html/unnamed-chunk-8-1.png" alt="Polar view with stereographic projection." width="216"><p class="caption">
 Polar view with stereographic projection.
@@ -300,10 +303,10 @@ the projection cone intersects the earth, are set to span southern
 Canada and northern USA, and <code>lon_0</code>, the meridian that will
 be vertical on the plot, is chosen to lie near the middle of the
 continent.</p>
-<p><strong>Exercise 4.</strong> Plot the eastern North Atlantic using a
-Mercator projection.</p>
-<p><strong>Exercise 5.</strong> Plot the eastern North Atlantic using an
-Albers Equal-Area Conic projection.</p>
+<p><strong>Exercise 4.</strong> Plot the eastern North Atlantic using
+the Universal Transverse Mercator projection.</p>
+<p><strong>Exercise 5.</strong> Plot the eastern North Atlantic using
+the Albers Equal-Area Conic projection.</p>
 </div>
 </div>
 <div class="section level2">
@@ -358,22 +361,25 @@ Southern Ocean.</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mar<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1.5</span>, <span class="fl">1.5</span>, <span class="fl">0.5</span>, <span class="fl">0.5</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/mapPlot.html">mapPlot</a></span><span class="op">(</span><span class="va">coastlineWorld</span>, longitudelim<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">180</span>, <span class="fl">180</span><span class="op">)</span>, latitudelim<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">130</span>, <span class="op">-</span><span class="fl">50</span><span class="op">)</span>,</span>
-<span>       projection<span class="op">=</span><span class="st">"+proj=stere +lat_0=-90"</span>, col<span class="op">=</span><span class="st">"gray"</span>, grid<span class="op">=</span><span class="fl">15</span><span class="op">)</span></span></code></pre></div>
+<span>    projection<span class="op">=</span><span class="st">"+proj=stere +lat_0=-90"</span>, col<span class="op">=</span><span class="st">"gray"</span>, grid<span class="op">=</span><span class="fl">15</span><span class="op">)</span></span></code></pre></div>
 <div class="figure">
 <img src="D_map_projections_files/figure-html/unnamed-chunk-12-1.png" alt="Antarctica (exercise 3)." width="216"><p class="caption">
 Antarctica (exercise 3).
 </p>
 </div>
-<p><strong>Exercise 4.</strong> Plot the eastern North Atlantic using a
-Mercator projection.</p>
+<p><strong>Exercise 4.</strong> Plot the eastern North Atlantic using
+the Universal Transverse Mercator projection.</p>
+<p>Zone 20 includes Nova Scotia, which is also a good place to centre
+the view.</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mar<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1.5</span>, <span class="fl">1.5</span>, <span class="fl">0.5</span>, <span class="fl">0.5</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/mapPlot.html">mapPlot</a></span><span class="op">(</span><span class="va">coastlineWorld</span>, col<span class="op">=</span><span class="st">"lightgray"</span>,</span>
-<span>        projection<span class="op">=</span><span class="st">"+proj=merc"</span>,</span>
-<span>        longitudelim<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">80</span>, <span class="op">-</span><span class="fl">40</span><span class="op">)</span>, latitudelim<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">20</span>, <span class="fl">60</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<span>    projection<span class="op">=</span><span class="st">"+proj=utm +zone=20"</span>,</span>
+<span>    longitudelim<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">85</span>, <span class="op">-</span><span class="fl">45</span><span class="op">)</span>, latitudelim<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">40</span>, <span class="fl">60</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <div class="figure">
-<img src="D_map_projections_files/figure-html/unnamed-chunk-13-1.png" alt="Eastern North Atlantic with Mercator projection (exercise 4)." width="360"><p class="caption">
-Eastern North Atlantic with Mercator projection (exercise 4).
+<img src="D_map_projections_files/figure-html/unnamed-chunk-13-1.png" alt="Eastern Canadian waters shown in Universal Transverse Mercator projection." width="216"><p class="caption">
+Eastern Canadian waters shown in Universal Transverse Mercator
+projection.
 </p>
 </div>
 <p><strong>Exercise 5.</strong> Plot the eastern North Atlantic using an
@@ -393,10 +399,10 @@ previous diagram.</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mar<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1.5</span>, <span class="fl">1.5</span>, <span class="fl">0.5</span>, <span class="fl">0.5</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/mapPlot.html">mapPlot</a></span><span class="op">(</span><span class="va">coastlineWorld</span>, col<span class="op">=</span><span class="st">"lightgray"</span>,</span>
-<span>        projection<span class="op">=</span><span class="st">"+proj=aea +lat_1=30 +lat_2=50 +lon_0=-60"</span>,</span>
-<span>        longitudelim<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">80</span>, <span class="op">-</span><span class="fl">40</span><span class="op">)</span>, latitudelim<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">20</span>, <span class="fl">60</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<span>    projection<span class="op">=</span><span class="st">"+proj=aea +lat_1=45 +lat_2=55 +lon_0=-65"</span>,</span>
+<span>    longitudelim<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">85</span>, <span class="op">-</span><span class="fl">45</span><span class="op">)</span>, latitudelim<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">40</span>, <span class="fl">60</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <div class="figure">
-<img src="D_map_projections_files/figure-html/unnamed-chunk-14-1.png" alt="Eastern North Atlantic with Albers equal-area projection (exercise 5)." width="360"><p class="caption">
+<img src="D_map_projections_files/figure-html/unnamed-chunk-14-1.png" alt="Eastern North Atlantic with Albers equal-area projection (exercise 5)." width="216"><p class="caption">
 Eastern North Atlantic with Albers equal-area projection (exercise 5).
 </p>
 </div>

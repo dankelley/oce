@@ -68,7 +68,7 @@ setClass("topo", contains="oce")
 #' This is created with [read.topo()], using a file downloaded with
 #'\preformatted{
 #'topoFile <- download.topo(west=-180, east=180, south=-90, north=90,
-#'                          resolution=30, destdir=".")
+#'    resolution=30, destdir=".")
 #'}
 #'
 #' @examples
@@ -186,7 +186,7 @@ setMethod(f="[[<-",
 #' @param x a [topo-class] object.
 #'
 #' @param subset A condition to be applied to the `data` portion of `x`.
-#' See \sQuote{Details}.
+#' See \dQuote{Details}.
 #'
 #' @param ... Ignored.
 #'

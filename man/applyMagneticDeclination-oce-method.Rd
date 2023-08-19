@@ -20,7 +20,7 @@ positive for clockwise from north.}
 }
 \value{
 an object of the same class as \code{object}, modified as outlined in
-\sQuote{Details}.
+\dQuote{Details}.
 }
 \description{
 Current-measuring instruments that infer flow direction using magnetic

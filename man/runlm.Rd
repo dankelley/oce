@@ -15,13 +15,13 @@ runlm(x, y, xout, window = c("hanning", "boxcar"), L, deriv)
 found.  If not provided, \code{x} is used.}
 
 \item{window}{type of weighting function used to weight data within the
-window; see \sQuote{Details}.}
+window; see \dQuote{Details}.}
 
 \item{L}{width of running window, in x units.  If not provided, a reasonable
 default will be used.}
 
 \item{deriv}{an optional indicator of the desired return value; see
-\sQuote{Examples}.}
+\dQuote{Examples}.}
 }
 \value{
 If \code{deriv} is not specified, a list containing vectors of

@@ -44,16 +44,21 @@ attempt will be made to infer the type from the file name and contents.}
 
 \item{encoding}{ignored.}
 
-\item{tz}{time zone.  The value \code{oceTz} is set at package setup.}
+\item{tz}{the timezone assumed for the time values stored in the
+data file.  Unless the user has set an alternative value in the
+\verb{~/.Rprofile} file, the default will be \code{"UTC"}; see the
+\dQuote{Altering oce Defaults} vignette for more on the use
+of the \verb{~/.Rprofile} file.}
 
 \item{tzOffsetLocation}{offset, in hours, between the CTD clock and
 the clock in the controlling computer/tablet/phone (if one was used during
 the sampling). This offset is required to relate location information from the
 controller to hydrographic information from the CTD, using timestamps as an
-index (see "A note on location information" in \sQuote{Details}).
+index (see "A note on location information" in \dQuote{Details}).
 If the user supplies a value for \code{tzOffsetLocation}, then that is used.
-If not, an attempt is made to infer it from a table named \code{epochs} in the
-file. If no value can be inferred from either of these two methods, then
+If not, an attempt is made to infer it from an item named \code{UTCdelta}
+that might be present within a table named \code{epochs} in the file. If no
+value can be inferred from either of these two methods, then
 \code{tzOffsetLocation} is set to zero.}
 
 \item{patm}{controls the handling of atmospheric pressure, an important issue

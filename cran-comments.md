@@ -1,24 +1,20 @@
-# Submission of oce 1.8-0
+# Submission of oce 1.8-1
 
 As in previous CRAN submissions, we request an exception to the 10-minute rule,
 on account of the package size (300+ functions, covering 60k lines of R, 6k
 lines of C/C++ and 1k line of Fortran).
 
-A key reason for the submission is a request to remove dependence on rgeos and
-raster packages, which are being superseded by newer packages.
+A key reason for the submission is a requirement to adjust the order of
+'include' statements in the C++ code.  (We thank Brian Ripley for explaining the
+problem in an email dated 2023-06-26.)
 
-The NEWS.md file lists over a dozen additional changes.  Of these, two have
-user-visible changes.  First, plot() for echosounder-class objects now uses the
-viridis colour-scheme by default (it was jet, previously). Second, and more
-significantly, AD2CP objects now have a layout that matches other oce objects,
-simplifying the analysis of such data.
+The NEWS.md file lists over a ten additional changes, mainly relating to support
+for the analysis of measurements of water properties and velocities.
 
 ## Local Tests
 
-R 4.3.0 on MacOS-14 (beta) revealed no ERRORs, no WARNINGs, and 2 NOTEs. One of
-the NOTEs is the standard naming of the author, and the other is an indication
-of sub-directories over 1MB in size, now as has been the case going back
-several years, for this large package.
+R 4.3.0 on macOS Ventura (13.5 Beta 22G5048d) revealed no ERRORs, no WARNINGs,
+and 2 NOTEs, one about the author name and the other about the package size.
 
 ## Remote Windows Checks
 

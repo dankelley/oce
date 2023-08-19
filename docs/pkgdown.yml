@@ -1,4 +1,4 @@
-pandoc: 2.19.2
+pandoc: 3.1.1
 pkgdown: 2.0.7
 pkgdown_sha: ~
 articles:
@@ -8,5 +8,6 @@ articles:
   D_map_projections: D_map_projections.html
   E_flags: E_flags.html
   F_subclassing: F_subclassing.html
-last_built: 2023-04-24T18:24Z
+  G_altering_defaults: G_altering_defaults.html
+last_built: 2023-08-08T19:17Z
 

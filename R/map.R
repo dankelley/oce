@@ -1083,8 +1083,10 @@ mapLongitudeLatitudeXY <- function(longitude, latitude)
 #' with the `mapPlot()` call is stored in a global variable that can be retrieved
 #' by related functions, making it easy to add points, lines, text, images
 #' or contours to an existing map.
-#' See the \dQuote{Details} for a list of
-#' available projections.
+#' The \dQuote{Details} section, below, provides a list of
+#' available projections. The "Using map projections" vignette
+#' offers examples of several map plots, in addition to the single
+#' example provided in the \dQuote{Examples} section, below.
 #'
 #' The calculations for map projections are done with
 #' the \CRANpkg{sf} package.  Importantly, though, not all
@@ -1106,14 +1108,14 @@ mapLongitudeLatitudeXY <- function(longitude, latitude)
 #' nowadays, see reference 8, about the `eqearth` projection that was added
 #' to \CRANpkg{oce} in August 2020.
 #'
-#' @section A warning about 'sf' version 0.9-8:
-#' This version of \CRANpkg{sf}, released in March of 2021, has errors
-#' with respect to some projections.  This was noticed for the `"ortho"`
-#' projection, but the problem may occur for other projections as well.
-#' Therefore, the user ought to use \CRANpkg{sf} versions prior to 0.9-8,
-#' or subsequent to it.  Most likely, this message will become moot
-#' in the summer of 2021, when a new version of \CRANpkg{sf} will
-#' become available on CRAN.
+## @section A warning about 'sf' version 0.9-8:
+## This version of \CRANpkg{sf}, released in March of 2021, has errors
+## with respect to some projections.  This was noticed for the `"ortho"`
+## projection, but the problem may occur for other projections as well.
+## Therefore, the user ought to use \CRANpkg{sf} versions prior to 0.9-8,
+## or subsequent to it.  Most likely, this message will become moot
+## in the summer of 2021, when a new version of \CRANpkg{sf} will
+## become available on CRAN.
 #'
 #' @section Available Projections:
 #'
@@ -1271,9 +1273,9 @@ mapLongitudeLatitudeXY <- function(longitude, latitude)
 #'
 #' @section Historical Notes:
 #'
-#' * 2022-04-11: require `projection` to be a string.  (Previously,
-#' output from `sp::CRS()` was also accepted, but this function
-#' has been deprecated.)
+## * 2022-04-11: require `projection` to be a string.  (Previously,
+## output from `sp::CRS()` was also accepted, but this function
+## has been deprecated.)
 #'
 #' * 2020-12-24: complete switch from `rgdal` to \CRANpkg{sf},
 #' removing the testing scheme created on 2020-08-03.
@@ -1294,9 +1296,9 @@ mapLongitudeLatitudeXY <- function(longitude, latitude)
 #' both packages temporarily, issuing warnings if the results differed
 #' by more than 1 metre in easting or northing values.)
 #'
-#' * 2019-03-20: the test code provided the \dQuote{Examples} section
-#' is disabled on i386/windows machines, on which the requisite
-#' `rgdal` package continues to fail on common projections.
+## * 2019-03-20: the test code provided the \dQuote{Examples} section
+## is disabled on i386/windows machines, on which the requisite
+## `rgdal` package continues to fail on common projections.
 #'
 #' * 2017-11-19: `imw_p` removed, because it has problems doing
 #' inverse calculations.
@@ -1323,19 +1325,23 @@ mapLongitudeLatitudeXY <- function(longitude, latitude)
 #' @param latitude numeric vector of latitudes of points to be plotted (ignored
 #' if the first argument contains both latitude and longitude).
 #'
-#' @param longitudelim optional numeric vector of length two, indicating the
-#' longitude limits of the plot. This value is used in the selection of
-#' longitude lines that are shown (and possibly
-#' labelled on the axes). In some cases, e.g. for polar views,
-#' this can lead to odd results, with some expected longitude lines
-#' being left out of the plot.  Altering `longitudelim` can
-#' often help in such cases, e.g. `longitudelim=c(-180, 180)` will
-#' force the drawing of lines all around the globe.
-#'
-#' @param latitudelim optional vector of length two, indicating
-#' the latitude limits of the plot. This, together with `longitudelim`
-#' (and, importantly, the geometry of the plot device) is used in the
-#' selection of map scale.
+#' @param longitudelim,latitudelim optional numeric vectors of length two, indicating the
+#' limits of the plot. A warning is issued if these are not specified together.
+#' See \dQuote{Examples} for a polar-region example, noting that
+#' the whole-globe span of `longitudelim` is used to centre the plot
+#' at the north pole.
+## This value is used in the selection of
+## longitude lines that are shown (and possibly
+## labelled on the axes). In some cases, e.g. for polar views,
+## this can lead to odd results, with some expected longitude lines
+## being left out of the plot.  Altering `longitudelim` can
+## often help in such cases, e.g. `longitudelim=c(-180, 180)` will
+## force the drawing of lines all around the globe.
+##
+## @param latitudelim optional vector of length two, indicating
+## the latitude limits of the plot. This, together with `longitudelim`
+## (and, importantly, the geometry of the plot device) is used in the
+## selection of map scale.
 #'
 #' @param grid either a number (or pair of numbers) indicating the spacing of
 #' longitude and latitude lines, in degrees, or a logical value (or pair of
@@ -1432,10 +1438,13 @@ mapLongitudeLatitudeXY <- function(longitude, latitude)
 #' @param latlabels As `lonlabels`, but for latitude, on the left
 #' plot axis.
 #'
-#' @param projection character value indicating the map projection. See a table
-#' in \sQuote{Details} for the projections that are available. Prior to version
-#' 1.8.0, `projection` could also be a value created by a now-defunct
-#' `sp` function; see \sQuote{Historical Notes}.
+#' @param projection either character value indicating the map projection, or
+#' the output from [sf::st_crs()]. In the first case, see a table
+#' in \dQuote{Details} for the projections that are available.
+#' In the second case, note that [mapPlot()] reports an error if
+#' a similar function from the old `sp` package is used.
+## Prior to version#' 1.8.0, `projection` could also be a value created by a now-defunct
+## `sp` function; see \dQuote{Historical Notes}.
 #'
 #' @param trim logical value indicating whether to trim islands or lakes
 #' containing only points that are off-scale of the current plot box.  This
@@ -1465,83 +1474,101 @@ mapLongitudeLatitudeXY <- function(longitude, latitude)
 #' projections (with graphs).
 #'
 #' @examples
-#'\donttest{
+#' # NOTE: the map-projection vignette has many more examples.
 #' library(oce)
 #' data(coastlineWorld)
+#' # Demonstrate a high-latitude view using a built-in "CRS" value that is used
+#' # by the National Snow and Ice Data Center (NSIDC) for representing
+#' # the northern-hemisphere ice zone.  The view is meant to mimic the figure
+#' # at the top of the document entitled "A Guide to NSIDC's Polar Stereographic
+#' # Projection" at https://nsidc.org/data/user-resources/help-center, with the
+#' # box indicating the region of the NSIDC grid.
+#' library(oce)
+#' data(coastlineWorld)
+#' projection <- sf::st_crs("EPSG:3413")
+#' cat(projection$proj4string, "\n") # see the projection details
+#' par(mar=c(2, 2, 1, 1))            # tighten margins
+#' mapPlot(coastlineWorld, projection=projection,
+#'    col=gray(0.9), geographical=4,
+#'    longitudelim=c(-180, 180), latitudelim=c(10, 90))
+#' # Coordinates of box from Table 6 of the NSIDC document
+#' box <- cbind(-360+c(168.35,102.34,350.3,279.26,168.35),
+#'     c(30.98, 31.37, 34.35, 33.92, 30.98))
+#' mapLines(box[,1], box[,2], lwd=2)
 #'
-#' # Example 1.
-#' # Mollweide (referenc 1 page 54) is an equal-area projection that works well
-#' # for whole-globe views.
-#' mapPlot(coastlineWorld, projection="+proj=moll", col='gray')
-#' mtext("Mollweide", adj=1)
-#'
-#' # Example 2.
-#' # Note that filling is not employed (`col` is not
-#' # given) when the prime meridian is shifted, because
-#' # this causes a problem with Antarctica
-#' cl180 <- coastlineCut(coastlineWorld, lon_0=-180)
-#' mapPlot(cl180, projection="+proj=moll +lon_0=-180")
-#' mtext("Mollweide with coastlineCut", adj=1)
-#'
-#' # Example 3.
-#' # Orthographic projections resemble a globe, making them attractive for
-#' # non-technical use, but they are neither conformal nor equal-area, so they
-#' # are somewhat limited for serious use on large scales.  See Section 20 of
-#' # reference 1. Note that filling is not employed because it causes a problem with
-#' # Antarctica.
-#' if (utils::packageVersion("sf") != "0.9.8") {
-#'     # sf version 0.9-8 has a problem with this projection
-#'     par(mar=c(3, 3, 1, 1))
-#'     mapPlot(coastlineWorld, projection="+proj=ortho +lon_0=-180")
-#'     mtext("Orthographic", adj=1)
-#' }
-#'
-#' # Example 4.
-#' # The Lambert conformal conic projection is an equal-area projection
-#' # recommended by reference 1, page 95, for regions of large east-west extent
-#' # away from the equator, here illustrated for the USA and Canada.
-#' par(mar=c(3, 3, 1, 1))
-#' mapPlot(coastlineCut(coastlineWorld, -100),
-#'         longitudelim=c(-130,-55), latitudelim=c(35, 60),
-#'         projection="+proj=lcc +lat_0=30 +lat_1=60 +lon_0=-100", col='gray')
-#' mtext("Lambert conformal", adj=1)
-#'
-#' # Example 5.
-#' # The stereographic projection (reference 1, page 120) is conformal, used
-#' # below for an Arctic view with a Canadian focus.  Note the trick of going
-#' # past the pole: the second latitudelim value is 180 minus the first, and the
-#' # second longitudelim is 180 plus the first; this uses image points "over"
-#' # the pole.
-#' par(mar=c(3, 3, 1, 1))
-#' mapPlot(coastlineCut(coastlineWorld, -135),
-#'         longitudelim=c(-130, 50), latitudelim=c(70, 110),
-#'         projection="+proj=stere +lat_0=90 +lon_0=-135", col='gray')
-#' mtext("Stereographic", adj=1)
-#'
-#' # Example 6.
-#' # Spinning globe: create PNG files that can be assembled into a movie
-#'}
-#'
-#' \dontrun{
-#' if (utils::packageVersion("sf") != "0.9.8") {
-#'     # sf version 0.9-8 has a problem with this projection
-#'     png("globe-%03d.png")
-#'     lons <- seq(360, 0, -15)
-#'     par(mar=rep(0, 4))
-#'     for (i in seq_along(lons)) {
-#'         p <- paste("+proj=ortho +lat_0=30 +lon_0=", lons[i], sep="")
-#'         if (i == 1) {
-#'             mapPlot(coastlineCut(coastlineWorld, lons[i]), projection=p, col="gray")
-#'             xlim <- par("usr")[1:2]
-#'             ylim <- par("usr")[3:4]
-#'         } else {
-#'             mapPlot(coastlineCut(coastlineWorld, lons[i]), projection=p, col="gray",
-#'                     xlim=xlim, ylim=ylim, xaxs="i", yaxs="i")
-#'         }
-#'     }
-#'     dev.off()
-#' }
-#'}
+## # Example 1.
+## # Mollweide (referenc 1 page 54) is an equal-area projection that works well
+## # for whole-globe views.
+## mapPlot(coastlineWorld, projection="+proj=moll", col='gray')
+## mtext("Mollweide", adj=1)
+##
+## # Example 2.
+## # Note that filling is not employed (`col` is not
+## # given) when the prime meridian is shifted, because
+## # this causes a problem with Antarctica
+## cl180 <- coastlineCut(coastlineWorld, lon_0=-180)
+## mapPlot(cl180, projection="+proj=moll +lon_0=-180")
+## mtext("Mollweide with coastlineCut", adj=1)
+##
+## # Example 3.
+## # Orthographic projections resemble a globe, making them attractive for
+## # non-technical use, but they are neither conformal nor equal-area, so they
+## # are somewhat limited for serious use on large scales.  See Section 20 of
+## # reference 1. Note that filling is not employed because it causes a problem with
+## # Antarctica.
+## if (utils::packageVersion("sf") != "0.9.8") {
+##     # sf version 0.9-8 has a problem with this projection
+##     par(mar=c(3, 3, 1, 1))
+##     mapPlot(coastlineWorld, projection="+proj=ortho +lon_0=-180")
+##     mtext("Orthographic", adj=1)
+## }
+##
+## # Example 4.
+## # The Lambert conformal conic projection is an equal-area projection
+## # recommended by reference 1, page 95, for regions of large east-west extent
+## # away from the equator, here illustrated for the USA and Canada.
+## par(mar=c(3, 3, 1, 1))
+## mapPlot(coastlineCut(coastlineWorld, -100),
+##     longitudelim=c(-130,-55), latitudelim=c(35, 60),
+##     projection="+proj=lcc +lat_0=30 +lat_1=60 +lon_0=-100", col="gray")
+## mtext("Lambert conformal", adj=1)
+##
+## # Example 5.
+## # The stereographic projection (reference 1, page 120) in the standard
+## # form used NSIDC (National Snow and Ice Data Center) for the Arctic.
+## # (See "A Guide to NSIDC's Polar Stereographic Projection" at
+## # https://nsidc.org/data/user-resources/help-center.)
+## # Note how the latitude limit extends 20 degrees past the pole,
+## # symmetrically.
+## par(mar=c(3, 3, 1, 1))
+## mapPlot(coastlineWorld,
+##     longitudelim=c(-180, 180), latitudelim=c(70, 110),
+##     projection=sf::st_crs("EPSG:3413"), col="gray")
+## mtext("Stereographic", adj=1)
+##}
+##
+## \dontrun{
+## # Example 6.
+## # Spinning globe: create PNG files that can be assembled into a movie
+## if (utils::packageVersion("sf") != "0.9.8") {
+##     # sf version 0.9-8 has a problem with this projection
+##     png("globe-%03d.png")
+##     lons <- seq(360, 0, -15)
+##     par(mar=rep(0, 4))
+##     for (i in seq_along(lons)) {
+##         p <- paste("+proj=ortho +lat_0=30 +lon_0=", lons[i], sep="")
+##         if (i == 1) {
+##             mapPlot(coastlineCut(coastlineWorld, lons[i]), projection=p, col="gray")
+##             xlim <- par("usr")[1:2]
+##             ylim <- par("usr")[3:4]
+##         } else {
+##             mapPlot(coastlineCut(coastlineWorld, lons[i]), projection=p, col="gray",
+##                     xlim=xlim, ylim=ylim, xaxs="i", yaxs="i")
+##         }
+##     }
+##     dev.off()
+## }
+##}
 #'
 #' @author Dan Kelley and Clark Richards
 #'
@@ -1594,7 +1621,9 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
         argShow(longitudelim),
         argShow(latitudelim),
         argShow(type),
-        argShow(projection),
+        if (inherits(projection, "crs"))
+            paste("projection=sf::st_crs(\"", projection$input, "\"),", sep="")
+        else if (!missing(projection)) paste("projection=", projection, "\",", sep=""),
         argShow(grid),
         argShow(geographical),
         ", ...) {\n", sep="", unindent=1, style="bold")
@@ -1605,16 +1634,21 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
     if (geographical < 0 || geographical > 4)
         stop("argument geographical must be an integer between 0 to 4, inclusive")
     # Note the deprecation of sp::CRS() values.  I do not plan to permit values
-    # fromsf::st_crs() because I can't find documentation of the fields of those
+    # from sf::st_crs() because I can't find documentation of the fields of those
     # values, and so adding the capability would introduce a brittleness without
     # much justification.
     if (!missing(projection)) {
         if (inherits(projection, "CRS")) {
-            warning("'projection' should be a character value (see ?mapPlot Historical Notes for 2023-04-11)")
-            projection <- projection@projargs
+            stop("projection cannot be the result of an sp::CRS() call, since that library is defunct")
+        } else if (inherits(projection, "crs")) {
+            tmp <- projection
+            projection <- projection$proj4string
+            oceDebug(debug, "projection expanded from a CRS string to", projection, "\n")
         } else if (!is.character(projection)) {
             stop("projection must be a character value (see Historical Notes for 2023-04-11)")
         }
+        if (grepl("+proj=utm", projection) && !grepl("+zone=", projection))
+            stop("A +proj=utm projection requires a +zone= value.")
     }
     if (packageVersion("sf") >= "0.8.1") {
         oceDebug(debug, "using sf version ", as.character(packageVersion("sf")), "\n")
@@ -1675,7 +1709,6 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
     if (!missing(longitudelim) && 0 == diff(longitudelim))
         stop("longitudelim must contain two distinct values")
     limitsGiven <- !missing(latitudelim) && !missing(longitudelim)
-
     x <- xy$x
     y <- xy$y
     xorig <- xy$x
@@ -1736,11 +1769,16 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
             oceDebug(debug, "latitudelim: ", paste(latitudelim, collapse=" "), "\n")
             oceDebug(debug, "longitudelim: ", paste(longitudelim, collapse=" "), "\n")
             # transform so can do e.g. latlim=c(70, 110) to centre on pole
+            # See https://github.com/dankelley/oce/issues/2098 for discussion of 
+            # an issue that I noticed in June of 2023.  The commented-out line
+            # you see below was causing latitude lines not to plot for e.g.
+            # latitudelim=c(70,110), which is a way to centre the pole on the
+            # plot.
             #message("latitudelim: ", paste(latitudelim, collapse=" "))
             #message("longitudelim: ", paste(longitudelim, collapse=" "))
             if (latitudelim[2] > 90) {
                 longitudelim[2] <- 360 + longitudelim[2] - 180
-                latitudelim[2] <- 180 - latitudelim[2]
+                #<github issue 2098> latitudelim[2] <- 180 - latitudelim[2]
             }
             #message("latitudelim: ", paste(latitudelim, collapse=" "))
             #message("longitudelim: ", paste(longitudelim, collapse=" "))
@@ -2153,13 +2191,12 @@ mapGrid <- function(dlongitude=15, dlatitude=15, longitude, latitude,
     longitudelim, latitudelim,
     debug=getOption("oceDebug"))
 {
-    oceDebug(debug, "mapGrid(",
-        argShow(dlongitude), #dlongitude=", dlongitude,
-        argShow(dlatitude), # ", dlatitude=", dlatitude,
-        argShow(longitude), # ", longitude=", if (missing(longitude)) "(missing)" else "(given)",
-        argShow(latitude), # ", latitude=", if (missing(latitude)) "(missing)" else "(given)",
-        "...) {\n", unindent=1, sep="", style="bold")
     debug <- min(3, max(0, debug)) # trim to range 0 to 3
+    oceDebug(debug, "mapGrid(",
+        argShow(dlongitude), argShow(dlatitude),
+        argShow(longitude), argShow(latitude),
+        argShow(longitudelim), argShow(latitudelim),
+        "...) {\n", unindent=1, sep="", style="bold")
     if ("none" == .Projection()$type)
         stop("must create a map first, with mapPlot()\n")
     rval <- list(side=NULL, value=NULL, type=NULL, at=NULL)
@@ -2210,6 +2247,7 @@ mapGrid <- function(dlongitude=15, dlatitude=15, longitude, latitude,
     }
     if (!missing(latitudelim)) {
         # limit to 2 times lon/lim limit range (FIXME: enough for curvy cases?)
+        oceDebug(debug, vectorShow(latitudelim))
         latMin <- latitudelim[1] - 2*diff(latitudelim)
         latMax <- latitudelim[2] + 2*diff(latitudelim)
         oceDebug(debug, "latMin=", latMin, ", latMax=", latMax, "\n")
@@ -2926,10 +2964,10 @@ mapLocator <- function(n=512, type="n", ...)
 #' Convert X and Y to Longitude and Latitude
 #'
 #' Convert from x-y coordinates to longitude and latitude. This is normally called
-#' internally within oce; see \sQuote{Bugs}.
+#' internally within oce; see \dQuote{Bugs}.
 #' A projection must already have been set up, by a call to [mapPlot()]
 #' or [lonlat2map()]. It should be noted that not all projections are
-#' handled well; see \sQuote{Bugs}.
+#' handled well; see \dQuote{Bugs}.
 #'
 #' @param x vector containing the x component of points in the projected space, or
 #' a list containing items named `x` and `y`, in which case the next

@@ -34,7 +34,6 @@ NULL
 #'
 #' @examples
 #' ctd <- read.ctd(system.file("extdata", "CTD_BCD2014666_008_1_DN.ODF.gz", package="oce"))
-#' summary(ctd)
 #' plot(ctd)
 #'
 #' @family raw datasets

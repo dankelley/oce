@@ -1,8 +1,10 @@
 /* vim: set expandtab shiftwidth=2 softtabstop=2 tw=70: */
 
-#include <Rcpp.h>
+#include <time.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <Rcpp.h>
+
 using namespace Rcpp;
 
 // Cross-reference work:
@@ -23,7 +25,6 @@ static int warnings = 10;
 // the arrays are chosen to be reasonable for small to medium files,
 // to avoid wasting time reallocating over and over.
 
-#include <time.h>
 
 // The windows compiler lacks timegm(). I tried lots of tricks
 // to try to access some of the supposed alternatives, namely

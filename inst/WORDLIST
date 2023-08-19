@@ -1,3 +1,4 @@
+
 ADCP
 ADCPs
 ADPs
@@ -274,6 +275,7 @@ POSIXlt
 POSIXt
 PRDID
 PROJ
+PSAL
 PSS
 PSU
 Pawlowicz
@@ -948,6 +950,7 @@ src
 sre
 sst
 standardDepths
+startTime
 stength
 stereographic
 stereopolar

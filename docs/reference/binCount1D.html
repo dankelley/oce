@@ -18,7 +18,7 @@ successive pairs of values within a second vector."><!-- mathjax --><script src=
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.8-0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.8-2</span>
       </span>
     </div>
 
@@ -50,6 +50,9 @@ successive pairs of values within a second vector."><!-- mathjax --><script src=
     <li>
       <a href="../articles/F_subclassing.html">6. Subclassing oce objects</a>
     </li>
+    <li>
+      <a href="../articles/G_altering_defaults.html">7. Altering oce Defaults</a>
+    </li>
   </ul></li>
 <li>
   <a href="../news/index.html">Changelog</a>
@@ -70,7 +73,7 @@ successive pairs of values within a second vector."><!-- mathjax --><script src=
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Bin-count vector data</h1>
-    <small class="dont-index">Source: <a href="https://github.com/dankelley/oce/blob/HEAD/R/misc.R" class="external-link"><code>R/misc.R</code></a></small>
+    <small class="dont-index">Source: <a href="https://github.com/dankelley/oce/blob/HEAD/R/bin.R" class="external-link"><code>R/bin.R</code></a></small>
     <div class="hidden name"><code>binCount1D.Rd</code></div>
     </div>
 
@@ -80,7 +83,7 @@ successive pairs of values within a second vector.</p>
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">binCount1D</span><span class="op">(</span><span class="va">x</span>, <span class="va">xbreaks</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">binCount1D</span><span class="op">(</span><span class="va">x</span>, <span class="va">xbreaks</span>, include.lowest <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -93,6 +96,11 @@ successive pairs of values within a second vector.</p>
 <dd><p>Vector of values of x at the boundaries between bins, calculated using
 <code><a href="https://rdrr.io/r/base/pretty.html" class="external-link">pretty()</a></code> if not supplied.</p></dd>
 
+
+<dt>include.lowest</dt>
+<dd><p>logical value indicating whether to include
+<code>x</code> values that equal <code>xbreaks[1]</code>.  See “Details”.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
@@ -101,6 +109,20 @@ successive pairs of values within a second vector.</p>
 <p>A list with the following elements: the breaks (<code>xbreaks</code>,
 midpoints (<code>xmids</code>) between those breaks, and
 the count (<code>number</code>) of <code>x</code> values between successive breaks.</p>
+    </div>
+    <div id="details">
+    <h2>Details</h2>
+    <p>By default, the sub-intervals defined by the <code>xbreaks</code> argument are open
+on the left and closed on the right, to match the behaviour
+of <code><a href="https://rdrr.io/r/base/cut.html" class="external-link">cut()</a></code>.  An open interval does not include points on
+the boundary, and so any <code>x</code> values that exactly match
+the first <code>breaks</code> value will not be counted.  To count such
+points, set <code>include.lowest</code> to TRUE.</p>
+<p>To contextualize <code>binCount1D()</code> in terms of base R functions,
+note that</p>
+<p></p><div class="sourceCode"><pre><code><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">binCount1D</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">20</span>, <span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">20</span>, <span class="dv">2</span>))<span class="sc">$</span>number</span></code></pre><p></p></div>
+<p>matches</p>
+<p></p><div class="sourceCode"><pre><code><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">unname</span>(<span class="fu">table</span>(<span class="fu">cut</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">20</span>, <span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">20</span>, <span class="dv">2</span>))))</span></code></pre><p></p></div>
     </div>
     <div id="see-also">
     <h2>See also</h2>

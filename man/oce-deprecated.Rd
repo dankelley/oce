@@ -30,7 +30,6 @@ be slated for outright deletion in some subsequent release.
 
 \tabular{lll}{
 \strong{Defunct}         \tab \strong{Replacement}                \tab \strong{Version}\cr
-\code{trimString()}      \tab \code{\link[=trimws]{trimws()}}                     \tab 1.7-9      \cr
 }
 
 The following functions were removed after having been marked as "deprecated"
@@ -49,6 +48,7 @@ version to lack the named function.)
 \code{mapZones()}        \tab \code{\link[=mapGrid]{mapGrid()}}                    \tab 1.1-2      \cr
 \code{oce.as.POSIXlt()}  \tab \code{\link[lubridate:parse_date_time]{lubridate::parse_date_time()}} \tab 1.1-2      \cr
 \code{renameData()}      \tab \code{\link[=oceRenameData]{oceRenameData()}}              \tab 1.7-9      \cr
+\code{trimString()}      \tab \code{\link[=trimws]{trimws()}}                     \tab 1.8-2      \cr
 }
 
 Several \CRANpkg{oce} function arguments are considered "deprecated", which
@@ -71,7 +71,7 @@ was deprecated on 2016-12-30.  It was once used by
 function since February 2016.
 }
 
-Several \sQuote{oce} function arguments are considered "defunct", which
+Several \dQuote{oce} function arguments are considered "defunct", which
 means they will be removed in the next CRAN release. They are as follows.
 \itemize{
 \item The \code{fill} argument of \code{\link[=mapPlot]{mapPlot()}} was confusing
@@ -84,7 +84,7 @@ The functionality is preserved, in the \code{col} argument.
 }
 }
 \seealso{
-The \sQuote{Bioconductor} scheme for removing functions is
+The \dQuote{Bioconductor} scheme for removing functions is
 described at
 \verb{https://www.bioconductor.org/developers/how-to/deprecation/} and it is
 extended here to function arguments.

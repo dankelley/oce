@@ -783,7 +783,7 @@ read.adp.ad2cp <- function(file,
             rval[[paste("dataSet", ds, "at", format(dataSetTime[ds]))]] <-
                 data.frame(`ID hex`=paste0("0x", as.raw(as.integer(names))),
                     `ID dec`=as.integer(names),
-                    `Name`=ad2cpCodeToName(names, prefix=FALSE),
+                    `dataType`=ad2cpCodeToName(names, prefix=FALSE),
                     Count=tv)
         }
         return(rval)

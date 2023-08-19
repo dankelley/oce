@@ -862,7 +862,7 @@ tidemConstituentNameFix <- function(names, debug=1)
 #' tidal frequencies, with the amplitude and phase being calculated from the
 #' resultant coefficients on the sine and cosine terms. The scheme
 #' was devised for hourly data; for other sampling schemes, please see
-#' \sQuote{Application to non-hourly data}.
+#' \dQuote{Application to non-hourly data}.
 #'
 #' The tidal constituents to be used in the analysis are specified as follows;
 #' see \dQuote{Constituent Naming Convention}.
@@ -1802,7 +1802,7 @@ predict.tidem <- function(object, newdata, ...)
 #'
 #' @param action An indication of the action, either `action="map"` to
 #' draw a map or `action="predict"` to get a prediction; see
-#' \sQuote{Details}.
+#' \dQuote{Details}.
 #'
 #' @param longitude,latitude optional location at which prediction is required (ignored if
 #' `node` is given).

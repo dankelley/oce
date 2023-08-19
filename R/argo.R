@@ -413,10 +413,13 @@ getData <- function(file, name, quiet=FALSE)
 #' its return value may be changed at any moment (e.g. to include units as well
 #' as names).
 #'
+#' Initially, Feb 2016, the inference of names was initially done
+#' by an inspection of some data files, based on reference 1. Later, in June
+#' 2023, broader inspection of more files and documents yielded about ten
+#' additions, and a single correction: `VRSpH` was renamed
+#' `phSensorVoltageDifference`, to match related names that had been added.
 #'
-#' The inference of names was done
-#' by inspection of some data files, based on reference 1. It should be noted,
-#' however, that the data files examined contain some names that are not
+#' It should be noted that the data files examined contain some names that are not
 #' documented in reference 1, and others that are listed only in its changelog,
 #' with no actual definitions being given. For example, the files had six distinct
 #' variable names that seem to relate to phase in the oxygen sensor, but
@@ -434,11 +437,17 @@ getData <- function(file, name, quiet=FALSE)
 #' `_ADJUSTED`, `_ERROR` and `_QC`,
 #' are translated to `Adjusted`, `Error`, and `QC`, respectively.
 #'
+#' An incomplete list of name translations is as follows, where `~`
+#' represents digit sequences in some instances and letters
+#' in others.  Note that until June 2023, `pHSensorVoltageDifference`
+#' was called `VRSpH`.
+#'
 #' \tabular{ll}{
 #' **Argo name** \tab **oce name**\cr
 #' `BBP` \tab `bbp`\cr
 #' `BETA_BACKSCATTERING` \tab `betaBackscattering`\cr
 #' `BPHASE_OXY` \tab `bphaseOxygen`\cr
+#' `C~PHASE_DOXY` \tab `C~phaseOxygen`\cr
 #' `CDOM` \tab `CDOM`\cr
 #' `CNDC` \tab `conductivity`\cr
 #' `CHLA` \tab `chlorophyllA`\cr
@@ -455,6 +464,8 @@ getData <- function(file, name, quiet=FALSE)
 #' `FIT_ERROR_NITRATE` \tab `fitErrorNitrate`\cr
 #' `FLUORESCENCE_CDOM` \tab `fluorescenceCDOM`\cr
 #' `FLUORESCENCE_CHLA` \tab `fluorescenceChlorophyllA`\cr
+#' `IB_PH` \tab `pHBaseCurrent`\cr
+#' `IK_PH` \tab `pHCounterCurrent`\cr
 #' `INST_REFERENCE` \tab `instReference`\cr
 #' `JULD` \tab `juld` (and used to compute `time`)\cr
 #' `JULD_QC_LOCATION` \tab `juldQCLocation`\cr
@@ -462,6 +473,7 @@ getData <- function(file, name, quiet=FALSE)
 #' `LONGITUDE` \tab `longitude`\cr
 #' `MOLAR_DOXY` \tab `oxygenUncompensated`\cr
 #' `MTIME` \tab `mtime`\cr
+#' `NB_SAMPLE_CTD` \tab `nbSampleCtd`\cr
 #' `PH_IN_SITU_FREE` \tab `pHFree`\cr
 #' `PH_IN_SITU_TOTAL` \tab `pH`\cr
 #' `PI_NAME` \tab `PIName`\cr
@@ -481,12 +493,13 @@ getData <- function(file, name, quiet=FALSE)
 #' `TEMP_PH` \tab `temperaturePH`\cr
 #' `TEMP_SPECTROPHOTOMETER_NITRATE` \tab `temperatureSpectrophotometerNitrate`\cr
 #' `TILT` \tab `tilt`\cr
+#' `TPHASE_DOXY` \tab `tphaseOxygen`\cr
 #' `TURBIDITY` \tab `turbidity`\cr
 #' `UP_RADIANCE` \tab `upwellingRadiance`\cr
 #' `UV_INTENSITY` \tab `UVIntensity`\cr
 #' `UV_INTENSITY_DARK_NITRATE` \tab `UVIntensityDarkNitrate`\cr
 #' `UV_INTENSITY_NITRATE` \tab `UVIntensityNitrate`\cr
-#' `VRS_PH` \tab `VRSpH`\cr
+#' `VRS_PH` \tab `pHSensorVoltageDifference`\cr
 #' `WMO_INST_TYPE` \tab `WMOInstType`\cr
 #'}
 #'
@@ -507,6 +520,8 @@ getData <- function(file, name, quiet=FALSE)
 #' 2. Argo list of parameters in an excel spreadsheet, available at
 #' `http://www.argodatamgt.org/content/download/27444/187206/file/argo-parameters-list-core-and-b.xlsx`
 #'
+#' @author Dan Kelley, with help from Anna Victor
+#'
 #' @family things related to argo data
 argoNames2oceNames <- function(names, ignore.case=TRUE)
 {
@@ -514,6 +529,7 @@ argoNames2oceNames <- function(names, ignore.case=TRUE)
     names <- gsub("^BBP([0-9_]*)", "BBP\\1", names, ignore.case=ignore.case)
     names <- gsub("^BETA_BACKSCATTERING([0-9_]*)", "betaBackscattering\\1", names, ignore.case=ignore.case)
     names <- gsub("^BPHASE_DOXY", "bphaseOxygen", names, ignore.case=ignore.case)
+    names <- gsub("^C([1-9])PHASE_DOXY", "c\\1phaseOxygen", names, ignore.case=ignore.case)
     names <- gsub("^CHLA", "chlorophyllA", names, ignore.case=ignore.case)
     names <- gsub("^CDOM", "CDOM", names, ignore.case=ignore.case)
     names <- gsub("^CNDC([0-9_]*)", "conductivity\\1", names, ignore.case=ignore.case)
@@ -521,41 +537,52 @@ argoNames2oceNames <- function(names, ignore.case=TRUE)
     names <- gsub("^CYCLE_NUMBER", "cycleNumber", names, ignore.case=ignore.case)
     names <- gsub("^DOWN_IRRADIANCE", "downwellingIrradiance", names, ignore.case=ignore.case)
     names <- gsub("^DOWNWELLING_PAR", "downwellingPAR", names, ignore.case=ignore.case)
-    names <- gsub("^FIT_ERROR_NITRATE", "fitErrorNitrate", names, ignore.case=ignore.case) # put before CHLA
-    names <- gsub("^FLUORESCENCE_CDOM", "fluorescenceCDOM", names, ignore.case=ignore.case) # put before CHLA
-    names <- gsub("^FLUORESCENCE_CHLA", "fluorescenceChlorophyllA", names, ignore.case=ignore.case) # put before CHLA
+    names <- gsub("^DOXY", "oxygen", names, ignore.case=ignore.case)
+    names <- gsub("^FIT_ERROR_NITRATE", "fitErrorNitrate", names, ignore.case=ignore.case)
+    names <- gsub("^FLUORESCENCE_CDOM", "fluorescenceCDOM", names, ignore.case=ignore.case)
+    names <- gsub("^FLUORESCENCE_CHLA", "fluorescenceChlorophyllA", names, ignore.case=ignore.case)
+    names <- gsub("^IB_PH", "pHSensorBaseCurrent", names, ignore.case=ignore.case)
+    names <- gsub("^IK_PH", "pHSensorCounterCurrent", names, ignore.case=ignore.case)
+    names <- gsub("^LATITUDE", "latitude", names, ignore.case=ignore.case)
+    names <- gsub("^LONGITUDE", "longitude", names, ignore.case=ignore.case)
     names <- gsub("^MOLAR_DOXY", "oxygenUncompensated", names, ignore.case=ignore.case)
+    names <- gsub("^MTIME", "mtime", names, ignore.case=ignore.case)
+    names <- gsub("^NB_SAMPLE_CTD", "nbSampleCTD", names, ignore.case=ignore.case)
+    names <- gsub("^NB_SAMPLE_(.*)", "nbSample\\1", names, ignore.case=ignore.case)
     names <- gsub("^PH_IN_SITU_FREE", "pHFree", names, ignore.case=ignore.case)
     names <- gsub("^PH_IN_SITU_TOTAL", "pH", names, ignore.case=ignore.case)
-    names <- gsub("^TEMP_DOXY", "temperatureOxygen", names, ignore.case=ignore.case)
-    names <- gsub("^TEMP_NITRATE", "temperatureNitrate", names, ignore.case=ignore.case)
-    names <- gsub("^TEMP_PH", "temperaturePH", names, ignore.case=ignore.case)
-    names <- gsub("^TEMP_SPECTROPHOTOMETER_NITRATE", "temperatureSpectrophotometerNitrate", names, ignore.case=ignore.case)
-    names <- gsub("^TEMP_CPU_CHLA", "temperatureCPUChlA", names, ignore.case=ignore.case)
-    names <- gsub("^TEMP_VOLTAGE_DOXY", "temperatureVoltageOxygen", names, ignore.case=ignore.case)
-    names <- gsub("^TEMP_", "temperature_", names, ignore.case=ignore.case)
-    names <- gsub("^POSITION_ACCURACY", "positionAccuracy", names, ignore.case=ignore.case)
-    names <- gsub("^MTIME", "mtime", names, ignore.case=ignore.case)
     names <- gsub("^NITRATE", "nitrate", names, ignore.case=ignore.case)
-    names <- gsub("^DOXY", "oxygen", names, ignore.case=ignore.case)
+    names <- gsub("^PHASE_DELAY_DOXY", "phaseDelayOxygen", names, ignore.case=ignore.case)
+    names <- gsub("^POSITION_ACCURACY", "positionAccuracy", names, ignore.case=ignore.case)
     names <- gsub("^PRES", "pressure", names, ignore.case=ignore.case)
     names <- gsub("^PSAL", "salinity", names, ignore.case=ignore.case)
     names <- gsub("^RAW_DOWNWELLING_IRRADIANCE", "rawDownwellingIrradiance", names, ignore.case=ignore.case)
     names <- gsub("^RAW_DOWNWELLING_PAR", "rawDownwellingPAR", names, ignore.case=ignore.case)
     names <- gsub("^RAW_UPWELLING_RADIANCE", "rawUpwellingRadiance", names, ignore.case=ignore.case)
+    names <- gsub("^TEMP_CNDC", "temperatureConductivityCell", names, ignore.case=ignore.case)
+    names <- gsub("^TEMP_CPU_CHLA", "temperatureCPUChlA", names, ignore.case=ignore.case)
+    names <- gsub("^TEMP_DOXY", "temperatureOxygen", names, ignore.case=ignore.case)
+    names <- gsub("^TEMP_NITRATE", "temperatureNitrate", names, ignore.case=ignore.case)
+    names <- gsub("^TEMP_PH", "temperaturePH", names, ignore.case=ignore.case)
+    names <- gsub("^TEMP_SPECTROPHOTOMETER_NITRATE", "temperatureSpectrophotometerNitrate", names, ignore.case=ignore.case)
+    names <- gsub("^TEMP_VOLTAGE_DOXY", "temperatureVoltageOxygen", names, ignore.case=ignore.case)
+    names <- gsub("^TEMP_", "temperature_", names, ignore.case=ignore.case)
     names <- gsub("^TEMP([0-9_]*)$", "temperature\\1", names, ignore.case=ignore.case)
     names <- gsub("^TILT([0-9_]*)$", "tilt\\1", names, ignore.case=ignore.case)
-    names <- gsub("^TRANSMITTANCE_PARTICLE_BEAM_ATTENUATION([0-9_]*)$",
-                  "transmittanceParticleBeamAttenuation\\1", names, ignore.case=ignore.case)
+    names <- gsub("^TPHASE_DOXY", "tphaseOxygen", names, ignore.case=ignore.case)
+    names <- gsub("^TRANSMITTANCE_PARTICLE_BEAM_ATTENUATION([0-9_]*)$", "transmittanceParticleBeamAttenuation\\1", names, ignore.case=ignore.case)
     names <- gsub("^TURBIDITY([0-9_]*)$", "turbidity\\1", names, ignore.case=ignore.case)
     names <- gsub("^UP_RADIANCE", "upwellingRadiance", names, ignore.case=ignore.case)
     names <- gsub("^UV_INTENSITY_DARK_NITRATE", "UVIntensityDarkNitrate", names, ignore.case=ignore.case)
     names <- gsub("^UV_INTENSITY_NITRATE", "UVIntensityNitrate", names, ignore.case=ignore.case)
     names <- gsub("^UV_INTENSITY", "UVIntensity", names, ignore.case=ignore.case)
-    names <- gsub("^VRS_PH", "VRSpH", names, ignore.case=ignore.case)
+    names <- gsub("^VRS_PH", "pHSensorVoltageDifference", names, ignore.case=ignore.case) # 2023-06-03: was
+    names <- gsub("^VK_PH", "pHSensorCounterVoltage", names, ignore.case=ignore.case)
     names <- gsub("_ADJUSTED", "Adjusted", names, ignore.case=ignore.case)
-    names <- gsub("_QC", "QC", names, ignore.case=ignore.case)
     names <- gsub("_ERROR", "Error", names, ignore.case=ignore.case)
+    names <- gsub("_MED", "Med", names, ignore.case=ignore.case)
+    names <- gsub("_QC", "QC", names, ignore.case=ignore.case)
+    names <- gsub("_STD", "Std", names, ignore.case=ignore.case)
     names
 }
 

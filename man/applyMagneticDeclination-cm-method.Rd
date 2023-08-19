@@ -25,13 +25,13 @@ be printed. If one function calls another, it usually reduces the value of
 by specifying higher \code{debug} values.}
 }
 \value{
-A \linkS4class{cm} object, adjusted as outlined in \sQuote{Details}.
+A \linkS4class{cm} object, adjusted as outlined in \dQuote{Details}.
 }
 \description{
 Current-meter (\code{cm}) instruments determine directions from onboard compasses,
 so interpreting velocity components in geographical coordinates requires that
 magnetic declination be taken into account.  This is what the present
-function does (see \sQuote{Details}).
+function does (see \dQuote{Details}).
 }
 \details{
 The returned value is a copy of \code{object} that has been modified in 4 ways.

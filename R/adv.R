@@ -114,11 +114,11 @@ setMethod(f="summary",
     signature="adv",
     definition=function(object, ...) {
         cat("ADV Summary\n-----------\n\n", ...)
-        cat(paste("* Instrument:             ", object@metadata$instrumentType,
+        cat(paste("* Instrument:    ", object@metadata$instrumentType,
             ", serial number ``", object@metadata$serialNumber, "``\n", sep=""))
-        cat(paste("* Source filename:        ``", object@metadata$filename, "``\n", sep=""))
+        cat(paste("* Filename:      `", object@metadata$filename, "`\n", sep=""))
         if ("latitude" %in% names(object@metadata)) {
-            cat(paste("* Location:              ",
+            cat(paste("* Location:     ",
                 if (is.na(object@metadata$latitude)) {
                     "unknown latitude"
                 } else {
@@ -294,7 +294,7 @@ setMethod(f="[[<-",
 #' @param x an [adv-class] object.
 #'
 #' @param subset a condition to be applied to the `data` portion of `x`.
-#' See \sQuote{Details}.
+#' See \dQuote{Details}.
 #'
 #' @param \dots ignored.
 #'
@@ -1562,7 +1562,7 @@ enuToOtherAdv <- function(x, heading=0, pitch=0, roll=0, debug=getOption("oceDeb
 #' Acoustic-Doppler velocimetry instruments that infer direction using magnetic
 #' compasses need to have a correction applied for magnetic declination, if the
 #' goal is to infer currents with x and y oriented eastward and northward,
-#' respectively.  This is what the present function does (see \sQuote{Details}).
+#' respectively.  This is what the present function does (see \dQuote{Details}).
 #'
 #' @template declinationTemplate
 #'
@@ -1573,7 +1573,7 @@ enuToOtherAdv <- function(x, heading=0, pitch=0, roll=0, debug=getOption("oceDeb
 #'
 #' @template debugTemplate
 #'
-#' @return A [adv-class] object, adjusted as outlined in \sQuote{Details}.
+#' @return A [adv-class] object, adjusted as outlined in \dQuote{Details}.
 #'
 #' @seealso Use [magneticField()] to determine the declination,
 #' inclination and intensity at a given spot on the world, at a given time.

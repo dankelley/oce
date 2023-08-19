@@ -20,7 +20,7 @@ from the object's contents."><!-- mathjax --><script src="https://cdnjs.cloudfla
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.8-0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.8-2</span>
       </span>
     </div>
 
@@ -51,6 +51,9 @@ from the object's contents."><!-- mathjax --><script src="https://cdnjs.cloudfla
     </li>
     <li>
       <a href="../articles/F_subclassing.html">6. Subclassing oce objects</a>
+    </li>
+    <li>
+      <a href="../articles/G_altering_defaults.html">7. Altering oce Defaults</a>
     </li>
   </ul></li>
 <li>
@@ -110,10 +113,7 @@ from the object's contents.</p>
     <h2>Value</h2>
     
 
-<p>In all cases, the returned value is a matrix with
-with <code>NA</code> values inserted at locations where
-the raw data equal <code>as.raw(251:255)</code>, as explained
-in “Details”.</p>
+<p><code>[[</code> returns numeric matrix data.</p>
     </div>
     <div id="details">
     <h2>Details</h2>
@@ -132,46 +132,32 @@ first use <code>x[["?"]]</code> to get a listing of the retrievable items. See
     
 
 
+<p>The <code>[[[</code> method handles both old-format and new-format <a href="amsr-class.html">amsr</a>
+objects. Old-format objects are read by <code><a href="read.amsr.html">read.amsr()</a></code>
+from from gzipped files holding data in raw format, from which
+<code>[[</code> computes numeric results with linear
+relationships provided at at <code>http://www.remss.com/missions/amsre</code>.
+By contrast, new-format objects are read
+from NetCDF files that hold the data as 4-byte
+numeric values that are read directly, without applying a
+scaling transformation.  The other
+difference is that old-format objects contain day and night values,
+e.g. <code>SSTDay</code> and <code>SSTNight</code>, whereas new-format objects contain
+single values that combine these, e.g. <code>SST</code>.</p>
 <p>If <code>i</code> is <code>"?"</code>, then the return value is a list
 containing four items, each of which is a character vector
 holding the names of things that can be accessed with <code>[[</code>.
 The <code>data</code> and <code>metadata</code> items hold the names of
 entries in the object's data and metadata
 slots, respectively. The <code>dataDerived</code>
-and <code>metadataDerived</code> items are each NULL, because
-no derived values are defined by <a href="cm-class.html">cm</a> objects.</p>
-<p>Data within the <code>data</code> slot may be found directly, e.g.
-<code>i="SSTDay"</code> will yield sea-surface temperature in the daytime
-satellite, and <code>i="SSTNight"</code> is used to access the nighttime data. In
-addition, <code>i="SST"</code> yields a computed average of the night and day values
-(using just one of these, if the other is missing). This scheme of
-providing computed averages works for
-all the data stored in <code>amsr</code> objects, namely:
-<code>time</code>, <code>SST</code>, <code>LFwind</code>, <code>MFwind</code>,
-<code>vapor</code>, <code>cloud</code> and <code>rain</code>.  In each case, the default
-is to calculate values in scientific units, unless <code>j="raw"</code>, in
-which case the raw data are returned.</p>
-<p>The conversion from raw to scientific units is done with formulae
-found at <code>http://www.remss.com/missions/amsre</code>, e.g. SST is
-computed by converting the raw value to an integer (between 0 and 255),
-multiplying by 0.15C, and subtracting 3C.</p>
-<p>The <code>"raw"</code> mode can be useful
-in decoding the various types of missing value that are used by <code>amsr</code>
-data, namely <code>as.raw(255)</code> for land, <code>as.raw(254)</code> for
-a missing observation, <code>as.raw(253)</code> for a bad observation,
-<code>as.raw(252)</code> for sea ice, or <code>as.raw(251)</code> for missing SST
-due to rain or missing water vapour due to heavy rain. Note that
-something special has to be done for e.g. <code>d[["SST","raw"]]</code>
-because the idea is that this syntax (as opposed to specifying
-<code>"SSTDay"</code>) is a request to try to find good
-data by looking at both the Day and Night measurements. The scheme
-employed is quite detailed. Denote by "A" the raw value of the desired field
-in the daytime pass, and by "B" the corresponding value in the
-nighttime pass. If either A or B is 255, the code for land, then the
-result will be 255. If A is 254 (i.e. there is no observation),
-then B is returned, and the reverse holds also. Similarly, if either
-A or B equals 253 (bad observation), then the other is returned.
-The same is done for code 252 (ice) and code 251 (rain).</p>
+and <code>metadataDerived</code> items are things that
+<code>[[</code> can compute and then return.</p>
+<p>Data within the <code>data</code> slot may be found directly (for
+both new-format and old-format objects) or indirectly (only
+for old-style objects).  For example, <code>SST</code> works by direct
+lookup for new-format objects, but it is computed using
+<code>SSTNight</code> and <code>SSTDay</code> for old-format objects.  Use e.g.
+<code>a[["?"]]</code> for any given object, to see what can be retrieved.</p>
     </div>
     <div id="details-of-the-general-method">
     <h2>Details of the General Method</h2>
@@ -260,7 +246,7 @@ directs where to look.</p></li>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Histogram of SST values</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Histogram of SST values (for an old-format dataset)</span></span></span>
 <span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dankelley.github.io/oce/" class="external-link">oce</a></span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">amsr</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/hist.html" class="external-link">hist</a></span><span class="op">(</span><span class="va">amsr</span><span class="op">[[</span><span class="st">"SST"</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span></span>

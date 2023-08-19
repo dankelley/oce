@@ -11,7 +11,6 @@ at "Station 2" of the Halifax Line on the Scotian Shelf.
 }
 \examples{
 ctd <- read.ctd(system.file("extdata", "CTD_BCD2014666_008_1_DN.ODF.gz", package="oce"))
-summary(ctd)
 plot(ctd)
 
 }

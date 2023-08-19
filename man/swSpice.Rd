@@ -24,13 +24,13 @@ ITS-90 scale; see \dQuote{Temperature units} in the documentation for
 \code{\link[=swRho]{swRho()}}.}
 
 \item{pressure}{Seawater pressure (dbar) (only used if \code{eos} is
-\code{"gsw"}); see \sQuote{Details}..}
+\code{"gsw"}); see \dQuote{Details}..}
 
 \item{longitude}{longitude of observation (only used if \code{eos} is
-\code{"gsw"}; see \sQuote{Details}).}
+\code{"gsw"}; see \dQuote{Details}).}
 
 \item{latitude}{latitude of observation (only used if \code{eos} is
-\code{"gsw"}; see \sQuote{Details}).}
+\code{"gsw"}; see \dQuote{Details}).}
 
 \item{eos}{Character value specifying the equation of state,
 either \code{"unesco"} (for the Flament formulation, although this

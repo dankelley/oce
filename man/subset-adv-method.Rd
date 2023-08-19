@@ -10,7 +10,7 @@
 \item{x}{an \linkS4class{adv} object.}
 
 \item{subset}{a condition to be applied to the \code{data} portion of \code{x}.
-See \sQuote{Details}.}
+See \dQuote{Details}.}
 
 \item{\dots}{ignored.}
 }

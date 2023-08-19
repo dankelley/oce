@@ -40,7 +40,7 @@ vignette, as a supplement to a shorter entry in the [main vignette](A_oce.html).
 
 
 
-# Example with pre-trimmed data
+# Pre-trimmed data
 
 Many of the object types supported by `oce` come with built-in data.  For an
 example, `data(ctd)` yields a CTD profile that has been trimmed to just the
@@ -67,7 +67,7 @@ to what are sometimes called "science" units.
 **Exercise 1.** Plot a profile of $\sigma_\theta$ and $N^2$ within the
 pycnocline in the built-in `ctd` data set.  (Hint: use `subset()`.)
 
-# Example with raw data
+# Raw data
 
 Practicing Oceanographers may be wondering how the CTD cast used in the
 preceding section was trimmed of equilibration-phase and upcast-phase data.
@@ -112,7 +112,7 @@ just one line of code:
 plot(ctdDecimate(ctdTrim(read.ctd("stn123.cnv"))))
 ```
 
-# Example with WOCE archive data
+# WOCE archive data
 
 The package has a harder time scanning the headers of data files in the WOCE
 archive format than it does in the Seabird format illustrated in the previous
@@ -143,7 +143,7 @@ change from time to time.)
 library(oce)
 # http://cchdo.ucsd.edu/data/7971/ar18_58JH19941029_ct1.zip
 # setwd("~/Downloads/ar18_58JH19941029_ct1")
-files <- system("ls *.csv", intern=TRUE)
+files <- list.files(pattern="*.csv$", full.names=TRUE)
 for (i in seq_along(files)) {
     x <- read.ctd(files[i])
     if (i == 1) {
@@ -205,7 +205,7 @@ this is a fairly large dataset, so the processing will take up to a minute.)
 library(oce)
 # http://cchdo.ucsd.edu/data/7971/ar18_58JH19941029_ct1.zip
 # setwd("~/Downloads/ar18_58JH19941029_ct1")
-files <- system("ls *.csv", intern=TRUE)
+files <- list.files(pattern="*.csv$", full.names=TRUE)
 n <- length(files)
 ctds <- vector("list", n) # to hold the CTD objects
 station <- vector("list", n)

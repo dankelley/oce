@@ -21,10 +21,10 @@ longitude and latitude) are inferred.}
 \item{pressure}{Seawater pressure (dbar).}
 
 \item{longitude}{Longitude of observation (only used if \code{eos="gsw"};
-see \sQuote{Details}).}
+see \dQuote{Details}).}
 
 \item{latitude}{Latitude of observation (only used if \code{eos="gsw"}; see
-\sQuote{Details}).}
+\dQuote{Details}).}
 
 \item{saturation_fraction}{The saturation fraction of dissolved air in seawater,
 ignored if \code{eos="unesco"}).}

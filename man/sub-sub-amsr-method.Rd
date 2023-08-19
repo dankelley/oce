@@ -16,10 +16,7 @@
 \item{...}{ignored.}
 }
 \value{
-In all cases, the returned value is a matrix with
-with \code{NA} values inserted at locations where
-the raw data equal \code{as.raw(251:255)}, as explained
-in \dQuote{Details}.
+\code{[[} returns numeric matrix data.
 }
 \description{
 Generally, the \code{[[} method lets users extract information from \code{oce}
@@ -42,49 +39,34 @@ first use \code{x[["?"]]} to get a listing of the retrievable items. See
 \section{Details of the Specialized Method}{
 
 
+The \verb{[[[} method handles both old-format and new-format \linkS4class{amsr}
+objects. Old-format objects are read by \code{\link[=read.amsr]{read.amsr()}}
+from from gzipped files holding data in raw format, from which
+\code{[[} computes numeric results with linear
+relationships provided at at \verb{http://www.remss.com/missions/amsre}.
+By contrast, new-format objects are read
+from NetCDF files that hold the data as 4-byte
+numeric values that are read directly, without applying a
+scaling transformation.  The other
+difference is that old-format objects contain day and night values,
+e.g. \code{SSTDay} and \code{SSTNight}, whereas new-format objects contain
+single values that combine these, e.g. \code{SST}.
+
 If \code{i} is \code{"?"}, then the return value is a list
 containing four items, each of which is a character vector
 holding the names of things that can be accessed with \code{[[}.
 The \code{data} and \code{metadata} items hold the names of
 entries in the object's data and metadata
 slots, respectively. The \code{dataDerived}
-and \code{metadataDerived} items are each NULL, because
-no derived values are defined by \linkS4class{cm} objects.
+and \code{metadataDerived} items are things that
+\code{[[} can compute and then return.
 
-Data within the \code{data} slot may be found directly, e.g.
-\code{i="SSTDay"} will yield sea-surface temperature in the daytime
-satellite, and \code{i="SSTNight"} is used to access the nighttime data. In
-addition, \code{i="SST"} yields a computed average of the night and day values
-(using just one of these, if the other is missing). This scheme of
-providing computed averages works for
-all the data stored in \code{amsr} objects, namely:
-\code{time}, \code{SST}, \code{LFwind}, \code{MFwind},
-\code{vapor}, \code{cloud} and \code{rain}.  In each case, the default
-is to calculate values in scientific units, unless \code{j="raw"}, in
-which case the raw data are returned.
-
-The conversion from raw to scientific units is done with formulae
-found at \verb{http://www.remss.com/missions/amsre}, e.g. SST is
-computed by converting the raw value to an integer (between 0 and 255),
-multiplying by 0.15C, and subtracting 3C.
-
-The \code{"raw"} mode can be useful
-in decoding the various types of missing value that are used by \code{amsr}
-data, namely \code{as.raw(255)} for land, \code{as.raw(254)} for
-a missing observation, \code{as.raw(253)} for a bad observation,
-\code{as.raw(252)} for sea ice, or \code{as.raw(251)} for missing SST
-due to rain or missing water vapour due to heavy rain. Note that
-something special has to be done for e.g. \code{d[["SST","raw"]]}
-because the idea is that this syntax (as opposed to specifying
-\code{"SSTDay"}) is a request to try to find good
-data by looking at both the Day and Night measurements. The scheme
-employed is quite detailed. Denote by "A" the raw value of the desired field
-in the daytime pass, and by "B" the corresponding value in the
-nighttime pass. If either A or B is 255, the code for land, then the
-result will be 255. If A is 254 (i.e. there is no observation),
-then B is returned, and the reverse holds also. Similarly, if either
-A or B equals 253 (bad observation), then the other is returned.
-The same is done for code 252 (ice) and code 251 (rain).
+Data within the \code{data} slot may be found directly (for
+both new-format and old-format objects) or indirectly (only
+for old-style objects).  For example, \code{SST} works by direct
+lookup for new-format objects, but it is computed using
+\code{SSTNight} and \code{SSTDay} for old-format objects.  Use e.g.
+\code{a[["?"]]} for any given object, to see what can be retrieved.
 }
 
 \section{Details of the General Method}{
@@ -132,7 +114,7 @@ directs where to look.
 }
 
 \examples{
-# Histogram of SST values
+# Histogram of SST values (for an old-format dataset)
 library(oce)
 data(amsr)
 hist(amsr[["SST"]])

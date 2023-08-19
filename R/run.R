@@ -19,13 +19,13 @@
 #' found.  If not provided, `x` is used.
 #'
 #' @param window type of weighting function used to weight data within the
-#' window; see \sQuote{Details}.
+#' window; see \dQuote{Details}.
 #'
 #' @param L width of running window, in x units.  If not provided, a reasonable
 #' default will be used.
 #'
 #' @param deriv an optional indicator of the desired return value; see
-#' \sQuote{Examples}.
+#' \dQuote{Examples}.
 #'
 #' @return If `deriv` is not specified, a list containing vectors of
 #' output values `y` and `y`, derivative (`dydx`), along with

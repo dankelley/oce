@@ -22,14 +22,14 @@ if (file.exists(file)) {
             expect_equal(toc[[1]],
                 structure(list(ID.hex=c("0x16", "0xa0"),
                         ID.dec=c(22L, 160L),
-                        Name=c("average", "text"),
+                        dataType=c("average", "text"),
                         Count=c(54L, 2L)),
                     class="data.frame",
                     row.names=c(NA, -2L)))
             expect_equal(toc[[4]],
                 structure(list(ID.hex=c("0x16", "0x17", "0xa0"),
                         ID.dec=c(22L, 23L, 160L),
-                        Name=c("average", "bottomTrack", "text"),
+                        dataType=c("average", "bottomTrack", "text"),
                         Count=c(260L, 259L, 1L)),
                     class="data.frame",
                     row.names=c(NA, -3L)))

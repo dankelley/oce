@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.8-0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.8-2</span>
       </span>
     </div>
 
@@ -48,6 +48,9 @@
     </li>
     <li>
       <a href="../articles/F_subclassing.html">6. Subclassing oce objects</a>
+    </li>
+    <li>
+      <a href="../articles/G_altering_defaults.html">7. Altering oce Defaults</a>
     </li>
   </ul></li>
 <li>
@@ -345,7 +348,7 @@ examine the original data file using other tools. To this end, <code>read.adp.rd
 inserts an element named <code>ensembleInFile</code> into the <code>metadata</code> slot.
 This gives the starting byte number of each inferred ensemble within the original data
 file.  For example, if <code>d</code> is an object read with <code>read.adp.rdi</code>, then using</p>
-<p></p><div class="sourceCode"><pre><code><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(d[[<span class="st">"time"</span>]][<span class="sc">-</span><span class="dv">1</span>], <span class="fu">diff</span>(d[[<span class="st">"ensembleInFile"</span>]]))</span></code></pre><p></p></div>
+<p></p><div class="sourceCode"><pre><code><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">plot</span>(d[[<span class="st">"time"</span>]][<span class="sc">-</span><span class="dv">1</span>], <span class="fu">diff</span>(d[[<span class="st">"ensembleInFile"</span>]]))</span></code></pre><p></p></div>
 <p>can be a good way to narrow in on problems.</p>
     </div>
     <div id="changes">
@@ -442,7 +445,7 @@ P/N 957-6171-00 (June 2001) <code>WinRiver User Guide International Version.pdf.
 <span class="r-out co"><span class="r-pr">#&gt;</span> ADP Summary</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> -----------</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> * Filename:      "/private/var/folders/8b/l4h64m1j22v5pb7vj049ff140000gn/T/Rtmp2rGooj/temp_libpathfbb677bf61fd/oce/extdata/adp_rdi.000"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> * Filename:      "/private/var/folders/8b/l4h64m1j22v5pb7vj049ff140000gn/T/Rtmpktswn8/temp_libpathaf5015d254a6/oce/extdata/adp_rdi.000"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> * Instrument:    adcp</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> * Manufacturer:  teledyne rdi</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> * Serial number: unknown</span>
@@ -460,9 +463,9 @@ P/N 957-6171-00 (June 2001) <code>WinRiver User Guide International Version.pdf.
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                                             Min.                Mean                Max.   Dim. NAs</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     v [m/s]                               -0.416            0.011534               0.406 9x84x4   0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     q                                         16               25.18                  34 9x84x4   0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     a                                         45              50.164                  55 9x84x4   0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     g                                        100                 100                 100 9x84x4   0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     q                                         NA                  NA                  NA 9x84x4   0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     a                                         NA                  NA                  NA 9x84x4   0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     g                                         NA                  NA                  NA 9x84x4   0</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     distance [m]                            2.23               22.98               43.73     84   0</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     time                     2008-06-25 10:00:00 2008-06-25 10:00:40 2008-06-25 10:01:20      9   0</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     pressure [dbar]                       -0.274            -0.23489              -0.193      9   0</span>
@@ -488,7 +491,7 @@ P/N 957-6171-00 (June 2001) <code>WinRiver User Guide International Version.pdf.
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> * Processing Log</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2023-04-24 18:28:03 UTC: `read.adp.rdi(file = system.file("extdata", "adp_rdi.000", package = "oce"))`</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2023-08-08 19:21:50 UTC: `read.adp.rdi(file = system.file("extdata", "adp_rdi.000", package = "oce"))`</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

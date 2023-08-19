@@ -20,7 +20,7 @@ load.  This is a directory name containing the data.}
 \item{band}{The bands to be read, by default all of the bands.  Use
 \code{band=NULL} to skip the reading of bands, instead reading only the
 image metadata, which is often enough to check if the image is of
-interest in a given study. See \sQuote{Details} for the names of the
+interest in a given study. See \dQuote{Details} for the names of the
 bands, some of which are pseudo-bands, computed from the actual data.}
 
 \item{emissivity}{Value of the emissivity of the surface, stored as

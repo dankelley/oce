@@ -18,7 +18,7 @@ object of class rsk."><!-- mathjax --><script src="https://cdnjs.cloudflare.com/
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.8-0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.8-2</span>
       </span>
     </div>
 
@@ -49,6 +49,9 @@ object of class rsk."><!-- mathjax --><script src="https://cdnjs.cloudflare.com/
     </li>
     <li>
       <a href="../articles/F_subclassing.html">6. Subclassing oce objects</a>
+    </li>
+    <li>
+      <a href="../articles/G_altering_defaults.html">7. Altering oce Defaults</a>
     </li>
   </ul></li>
 <li>
@@ -135,7 +138,11 @@ attempt will be made to infer the type from the file name and contents.</p></dd>
 
 
 <dt>tz</dt>
-<dd><p>time zone.  The value <code>oceTz</code> is set at package setup.</p></dd>
+<dd><p>the timezone assumed for the time values stored in the
+data file.  Unless the user has set an alternative value in the
+<code>~/.Rprofile</code> file, the default will be <code>"UTC"</code>; see the
+“Altering oce Defaults” vignette for more on the use
+of the <code>~/.Rprofile</code> file.</p></dd>
 
 
 <dt>tzOffsetLocation</dt>
@@ -143,10 +150,11 @@ attempt will be made to infer the type from the file name and contents.</p></dd>
 the clock in the controlling computer/tablet/phone (if one was used during
 the sampling). This offset is required to relate location information from the
 controller to hydrographic information from the CTD, using timestamps as an
-index (see "A note on location information" in ‘Details’).
+index (see "A note on location information" in “Details”).
 If the user supplies a value for <code>tzOffsetLocation</code>, then that is used.
-If not, an attempt is made to infer it from a table named <code>epochs</code> in the
-file. If no value can be inferred from either of these two methods, then
+If not, an attempt is made to infer it from an item named <code>UTCdelta</code>
+that might be present within a table named <code>epochs</code> in the file. If no
+value can be inferred from either of these two methods, then
 <code>tzOffsetLocation</code> is set to zero.</p></dd>
 
 

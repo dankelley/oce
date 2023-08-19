@@ -391,8 +391,8 @@ export(
     toEnuAdp,
     toEnuAdv,
     topoInterpolate,
-    ##trap, # created by Rcpp
-    trimString,
+    #trap, # created by Rcpp
+    #trimString, removed 2023-07-12 after a year of deprecated status
     unabbreviateYear,
     undriftTime,
     ungrid,

@@ -1136,9 +1136,10 @@ imagep <- function(x, y, z,
             decimate <- c(1L, 1L)
         }
     }
-    if (1 == length(decimate)) {
+    if (1 == length(decimate))
         decimate <- rep(decimate, 2)
-    }
+    if (0 == length(decimate))
+        decimate <- rep(FALSE, 2)
     #> message("dim(z): ", paste(dim(z), collapse=" "))
     oceDebug(debug, "decimation: ", paste(decimate, collapse=" "), "\n")
     if (decimate[1] > 1) {
@@ -1163,7 +1164,11 @@ imagep <- function(x, y, z,
         x <- as.vector(x)
     if (!inherits(y, "POSIXct") && !inherits(y, "POSIXct"))
         y <- as.vector(y)
+    if (!is.matrix(z))
+        stop("z must be a matrix")
     dim <- dim(z)
+    if (2 != length(dim))
+        stop("z must be a two-dimensional matrix")
     if (nrow(z) != length(x) && (1+nrow(z)) != length(x))
         stop("nrow(image)=", nrow(z), " does not match length(x)=", length(x), sep="")
     if (ncol(z) != length(y) && (1+ncol(z)) != length(y))
@@ -1224,7 +1229,10 @@ imagep <- function(x, y, z,
     if (colormapGiven && missing(missingColor))
         missingColor <- colormap$missingColor
     zrange <- range(z, na.rm=TRUE)
-
+    # 2023-06-26 issue 2120 permit constant-value matrix
+    if (diff(zrange) == 0.0)
+        zrange <- zrange + c(-1, 1) * sqrt(.Machine$double.eps)
+    #message("DAN L1241 ", vectorShow(zrange))
     if (colormapGiven) {
         oceDebug(debug, "colormap provided\n", sep="")
         breaks <- colormap$breaks

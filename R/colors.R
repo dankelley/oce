@@ -777,11 +777,12 @@ colormap <- function(z=NULL, zlim, zclip=FALSE, breaks, col=oceColorsViridis,
             stop("cannot infer zlim; please specify zlim, breaks, name, or z")
         }
     }
-    oceDebug(debug, "zlim=", if (is.null(zlim)) "NULL" else zlim, "\n")
-    oceDebug(debug, "zclip=", zclip, "\n")
+    oceDebug(debug, vectorShow(zlim))
+    oceDebug(debug, vectorShow(zclip))
     blend <- max(blend, 0L)
+    oceDebug(debug, vectorShow(blend))
     n <- if (blend > 1L) as.integer(round(blend)) else 1L
-    oceDebug(debug, "blend=", blend, "; n=", n, "\n", sep="")
+    oceDebug(debug, vectorShow(n))
     # Possibly determine breaks, if not given but if can be inferred from z or zlim
     if (!breaksKnown) {
         if (zlimKnown) {

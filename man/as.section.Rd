@@ -20,7 +20,7 @@ as.section(
 as the salinity, and the other arguments are used for the other components of
 \linkS4class{ctd} objects. Alternatively, it may be one of a variety of
 other objects from which the CTD objects can be inferred, in which case the
-other arguments are ignored; see \sQuote{Details}.}
+other arguments are ignored; see \dQuote{Details}.}
 
 \item{temperature}{Temperature, in a vector holding values for all stations.}
 

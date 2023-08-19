@@ -33,7 +33,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.8-0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.8-2</span>
       </span>
     </div>
 
@@ -67,6 +67,9 @@
     <li>
       <a href="../articles/F_subclassing.html">6. Subclassing oce objects</a>
     </li>
+    <li>
+      <a href="../articles/G_altering_defaults.html">7. Altering oce Defaults</a>
+    </li>
   </ul>
 </li>
 <li>
@@ -97,7 +100,7 @@
                         <h4 data-toc-skip class="author">Dan Kelley (<a href="https://orcid.org/0000-0001-7808-5911" class="external-link uri">https://orcid.org/0000-0001-7808-5911</a>) and Clark
 Richards (<a href="https://orcid.org/0000-0002-7833-206X" class="external-link uri">https://orcid.org/0000-0002-7833-206X</a>)</h4>
             
-            <h4 data-toc-skip class="date">2023-04-24</h4>
+            <h4 data-toc-skip class="date">2023-08-08</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/dankelley/oce/blob/HEAD/vignettes/A_oce.Rmd" class="external-link"><code>vignettes/A_oce.Rmd</code></a></small>
       <div class="hidden name"><code>A_oce.Rmd</code></div>
@@ -141,12 +144,13 @@ scientific plots and statistical analyses.</p>
 <div class="section level2">
 <h2 id="architecture-of-oce-objects">Architecture of oce objects<a class="anchor" aria-label="anchor" href="#architecture-of-oce-objects"></a>
 </h2>
-<div class="figure">
-<img src="ctd-object.png" alt=""><p class="caption"><strong>Figure 1.</strong> Basic layout of a CTD
+<div class="float">
+<img src="ctd-object.png" alt="Figure 1. Basic layout of a CTD object. All oce objects contain slots named data, metadata, and processingLog, with the contents depending on the type of data."><div class="figcaption">
+<strong>Figure 1.</strong> Basic layout of a CTD
 object. All <code>oce</code> objects contain slots named
 <code>data</code>, <code>metadata</code>, and
 <code>processingLog</code>, with the contents depending on the type of
-data.</p>
+data.</div>
 </div>
 <p>The need to scan diverse data files was one motivation for the
 creation of <code>oce</code>, but an equal goal was to make it easy to

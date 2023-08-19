@@ -57,12 +57,14 @@ for \code{\link[=plotTS]{plotTS()}}.}
 
 \item{gridIsopycnals}{a parameter that controls how the isopycnals
 are computed.  This may be NULL, or an integer vector of length 2.
-\emph{Case 1:} the isopycnals are drawn by tracing density
+\emph{Case 1:} if \code{gridIsopycnals} is NULL, then
+the isopycnals are drawn by tracing density
 isopleths in salinity-temperature space. This method was
 used as the default prior to version 1.7-11, but it was
 found to yield staircase-like isopycnal curves for highly
 zoomed-in plots (e.g. with millidegree temperature ranges).
-\emph{Case 2:} a grid of density is constructed, with \code{gridIsopycnals[1]}
+\emph{Case 2 (the new default):} If \code{gridIsopycnals} is a two-element integer
+vector, then a grid of density is constructed, with \code{gridIsopycnals[1]}
 salinity levels and \code{gridIsopycnals[2]} temperature levels, and
 then \code{\link[=contourLines]{contourLines()}} is used to trace the isopycnals. The default
 value of \code{gridIsopycnals} yields a grid of millimeter-scale spacing

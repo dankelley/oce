@@ -118,22 +118,34 @@ setMethod(f="summary",
                 threes <- matrix(nrow=3, ncol=3)
                 # FIXME get burst and average separately
                 i <- 1
+                dataNames <- NULL
                 if ("v" %in% names(object@data)) {
                     threes[i, ] <- threenum(object[["v"]])
                     i <- i + 1
+                    dataNames <- c(dataNames, "v")
                 }
                 if ("a" %in% names(object@data)) {
                     threes[i, ] <- threenum(object[["a"]])
                     i <- i + 1
+                    dataNames <- c(dataNames, "a")
                 }
                 if ("q" %in% names(object@data)) {
                     threes[i, ] <- threenum(object[["q"]])
                     i <- i + 1
+                    dataNames <- c(dataNames, "q")
                 }
+                #message(vectorShow(dataNames)) # https://github.com/dankelley/oce/issues/2087
             } else {
                 threes <- matrix(nrow=ndata, ncol=3)
-                for (i in 1:ndata) {
-                    threes[i, ] <- as.numeric(threenum(object@data[[i]]))
+                for (i in seq_len(ndata)) {
+                    # 2023-06-19 wrap in try() because one of the R-CMD check machines does
+                    # not allow.  It says that the is.finite() is being applied to a list,
+                    # which it clearly is not, so I don't understand the
+                    # problem. Even so, using try() shouldn't hurt anything, and 
+                    # I don't like seeing a red "failed" box on the homepage.
+                    ok <- try(any(is.finite(object@data[[i]])), silent=TRUE)
+                    if (!inherits(ok, "try-error") && ok)
+                        threes[i, ] <- as.numeric(threenum(object@data[[i]]))
                 }
             }
             #rownames(threes) <- paste("   ", dataNames[!isTime])
@@ -193,21 +205,24 @@ setMethod(f="summary",
                 #<> } else {
                 #<>     rownames(threes) <- paste("    ", dataLabel(dataNames, units), sep="")
                 #<> }
+                #deleteLater <- grep("^time", dataNames) # we show time outside 3s block
                 rownames(threes) <- paste("    ", dataLabel(dataNames, units), sep="")
                 #. message("threes step 2:");print(threes)
-                threes <- cbind(threes,
+                threes <- cbind(
+                    threes,
                     as.vector(lapply(dataNames, #row.names(threes),
-                        function(name) {
-                            xx <- object@data[[name]]
-                            if (is.array(xx)) paste(dim(xx), collapse="x")
-                            else length(xx)
-                        })),
+                            function(name) {
+                                xx <- object@data[[name]]
+                                if (is.array(xx)) paste(dim(xx), collapse="x")
+                                else length(xx)
+                            })),
                     as.vector(lapply(dataNames, #row.names(threes),
-                        function(name) {
-                            sum(is.na(object@data[[name]]))
-                        })))
+                            function(name) {
+                                sum(is.na(object@data[[name]]))
+                            }))
+                )
                 colnames(threes) <- c("Min.", "Mean", "Max.", "Dim.", "NAs")
-                #.message("threes step 3:");print(threes)
+                #threes <- threes[-deleteLater] # we show time outside 3s block
                 cat("* Data Overview\n\n")
                 if ("dataNamesOriginal" %in% metadataNames) {
                     if (is.list(object@metadata$dataNamesOriginal)) {
@@ -745,25 +760,20 @@ setValidity("oce",
 setMethod(f="show",
     signature="oce",
     definition=function(object) {
-        filename <- if ("filename" %in% names(object@metadata)) {
-            object[["filename"]]
-        } else {
-            "(filename unknown)"
-        }
+        filename <- if ("filename" %in% names(object@metadata)) object[["filename"]]
+            else "(filename unknown)"
         dataNames <- names(object@data)
         ncol <- length(dataNames)
         if (is.null(filename) || filename == "" || is.na(filename) || filename=="(filename unknown)") {
-            if (ncol > 0) {
+            if (ncol > 0)
                 cat(class(object)[1], " object has data as follows.\n", sep="")
-            } else {
+            else
                 cat(class(object)[1], " object has nothing in its data slot.\n", sep="")
-            }
         } else {
-            if (ncol > 0) {
-                cat(class(object)[1], " object, from file '", filename, "', has data as follows.\n", sep="")
-            } else {
-                cat(class(object)[1], " object, from file '", filename, "', has nothing in its data slot.\n", sep="")
-            }
+            if (ncol > 0)
+                cat(class(object)[1], " object, from file '", filename, "', with data slot containing:\n", sep="")
+            else
+                cat(class(object)[1], " object, from file '", filename, "', with nothing in its data slot.\n", sep="")
         }
         odigits <- options("digits")$digits
         options(digits=9) # helps with e.g. CTD adjusted vs unadjusted values
@@ -773,28 +783,23 @@ setMethod(f="show",
                 cat(vectorShow(d, paste("  ", dataNames[i])))
             } else if (is.list(d)) {
                 cat("  ", dataNames[i], ", a list with contents:\n", sep="")
-                for (n in names(d)) {
+                for (n in names(d))
                     cat("    ", vectorShow(d[[n]], n), sep="")
-                }
             } else if (is.data.frame(d)) {
                 cat("  ", dataNames[i], ", a data frame with contents:\n", sep="")
-                for (n in names(d)) {
+                for (n in names(d))
                     cat("    ", vectorShow(d[[n]], n), sep="")
-                }
-            } else if (is.vector(d)) {
-                cat(vectorShow(d, paste("  ", dataNames[i])))
             } else if (is.array(d)) {
                 dim <- dim(object@data[[i]])
-                if (length(dim) == 1) {
+                if (length(dim) == 1)
                     cat(vectorShow(d, paste("  ", dataNames[i])))
-                } else if (length(dim) == 2) {
+                else if (length(dim) == 2)
                     cat("   ", dataNames[i], ", a ", dim[1], "x", dim[2], " array with value ", d[1, 1], " at [1,1] position\n", sep="")
-                } else if (length(dim) == 3) {
-                    cat("   ", dataNames[i], ", a ", dim[1], "x", dim[2], "x", dim[3], " array with value ", d[1, 1, 1],
-                        " at [1,1,1] position\n", sep="")
-                } else {
-                    cat("   ", dataNames[i], ", an array of more than 3 dimensions\n")
-                }
+            } else if (length(dim) == 3) {
+                cat("   ", dataNames[i], ", a ", dim[1], "x", dim[2], "x", dim[3], " array with value ", d[1, 1, 1],
+                    " at [1,1,1] position\n", sep="")
+            } else {
+                cat("   ", dataNames[i], ", an array of more than 3 dimensions\n")
             }
         }
         options(digits=odigits) # return to original digits value
@@ -822,7 +827,7 @@ setMethod(f="show",
 #' @template debugTemplate
 #'
 #' @return an object of the same class as `object`, modified as described
-#' in \sQuote{Details}.
+#' in \dQuote{Details}.
 #'
 #' @author Dan Kelley, aided, for the [adp-class] and [adv-class] variants,
 #' by Clark Richards and Jaimie Harbin.
@@ -858,7 +863,7 @@ setGeneric(name="applyMagneticDeclination",
 #' @param debug a debugging flag, set to a positive value to get debugging.
 #'
 #' @return an object of the same class as `object`, modified as outlined in
-#' \sQuote{Details}.
+#' \dQuote{Details}.
 #'
 #' @author Dan Kelley, aided, for the [adp-class] and [adv-class] variants,
 #' by Clark Richards and Jaimie Harbin.

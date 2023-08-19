@@ -101,7 +101,6 @@ NULL
 #'
 #'\tabular{lll}{
 #' **Defunct**         \tab **Replacement**                \tab **Version**\cr
-#' `trimString()`      \tab [trimws()]                     \tab 1.7-9      \cr
 #'}
 #'
 #' The following functions were removed after having been marked as "deprecated"
@@ -120,6 +119,7 @@ NULL
 #' `mapZones()`        \tab [mapGrid()]                    \tab 1.1-2      \cr
 #' `oce.as.POSIXlt()`  \tab [lubridate::parse_date_time()] \tab 1.1-2      \cr
 #' `renameData()`      \tab [oceRenameData()]              \tab 1.7-9      \cr
+#' `trimString()`      \tab [trimws()]                     \tab 1.8-2      \cr
 #'}
 #'
 #' Several \CRANpkg{oce} function arguments are considered "deprecated", which
@@ -147,7 +147,7 @@ NULL
 #' [plot,coastline-method()] but has been ignored by that
 #' function since February 2016.
 #'
-#' Several \sQuote{oce} function arguments are considered "defunct", which
+#' Several \dQuote{oce} function arguments are considered "defunct", which
 #' means they will be removed in the next CRAN release. They are as follows.
 #'
 #' * The `fill` argument of [mapPlot()] was confusing
@@ -162,7 +162,7 @@ NULL
 #'
 #' @name oce-deprecated
 #'
-#' @seealso The \sQuote{Bioconductor} scheme for removing functions is
+#' @seealso The \dQuote{Bioconductor} scheme for removing functions is
 #' described at
 #' `https://www.bioconductor.org/developers/how-to/deprecation/` and it is
 #' extended here to function arguments.
@@ -2211,92 +2211,6 @@ read.oce <- function(file, ..., encoding="latin1")
     res
 }
 
-#' Read a NetCDF File
-#'
-#' Read a netcdf file, trying to interpret its contents sensibly.
-#'
-#' It is important to note that this is a preliminary version of
-#' this function, and much about it may change without notice.
-#' Indeed, it may be removed entirely.
-#'
-#' Below are some features that may be changed.
-#'
-#' 1. The names of data items are not changed from those in the netcdf
-#' file on the assumption that this will offer the least surprise to
-#' the user.
-#'
-#' 2. An attempt is made to find some common metadata from global
-#' attributes in the netcdf file. These attributes include
-#' `Longitude`, `Latitude`, `Ship` and `Cruise`.
-#' Before they are stored in the metadata, they are converted to
-#' lower case, since that is the oce convention.
-#'
-#' @param file the name of a file
-#' @template encodingIgnoredTemplate
-#' @param ... ignored
-#'
-#' @return
-#' An [oce-class] object.
-read.netcdf <- function(file, ..., encoding=NA)
-{
-    if (missing(file))
-        stop("must supply 'file'")
-    if (is.character(file)) {
-        if (!file.exists(file))
-            stop("cannot find file '", file, "'")
-        if (0L == file.info(file)$size)
-            stop("empty file '", file, "'")
-    }
-    if (!requireNamespace("ncdf4", quietly=TRUE))
-        stop('must install.packages("ncdf4") to read netcdf data')
-    f <- ncdf4::nc_open(file)
-    res <- new("oce")
-    names <- names(f$var)
-    data <- list()
-    for (name in names) {
-        # message("name=", name)
-        if (1 == length(grep("^history_", name)))
-            next
-        item <- ncdf4::ncvar_get(f, name)
-        if (is.array(item) && 1 == length(dim(item))) # 1D array converted to 1 column matrix
-            item <- matrix(item)
-        data[[name]] <- item
-        if (name=="TIME") {
-            u <- ncdf4::ncatt_get(f, name, "units")$value
-            if ("seconds since 1970-01-01 UTC" == u) {
-                data[[name]] <- numberAsPOSIXct(item)
-            } else {
-                warning("time unit is not understood, so it remains simply numeric")
-            }
-        }
-    }
-    res@data <- data
-    # Try to get some global attributes.
-    # Inelegantly permit first letter lower-case or upper-case
-    if (ncdf4::ncatt_get(f, 0, "Longitude")$hasatt)
-        res@metadata$longitude <- ncdf4::ncatt_get(f, 0, "Longitude")$value
-    if (ncdf4::ncatt_get(f, 0, "longitude")$hasatt)
-        res@metadata$longitude <- ncdf4::ncatt_get(f, 0, "longitude")$value
-    if (ncdf4::ncatt_get(f, 0, "Latitude")$hasatt)
-        res@metadata$latitude <- ncdf4::ncatt_get(f, 0, "Latitude")$value
-    if (ncdf4::ncatt_get(f, 0, "latitude")$hasatt)
-        res@metadata$latitude <- ncdf4::ncatt_get(f, 0, "latitude")$value
-    if (ncdf4::ncatt_get(f, 0, "Station")$hasatt)
-        res@metadata$station <- ncdf4::ncatt_get(f, 0, "Station")$value
-    if (ncdf4::ncatt_get(f, 0, "station")$hasatt)
-        res@metadata$station <- ncdf4::ncatt_get(f, 0, "station")$value
-    if (ncdf4::ncatt_get(f, 0, "Ship")$hasatt)
-        res@metadata$ship <- ncdf4::ncatt_get(f, 0, "Ship")$value
-    if (ncdf4::ncatt_get(f, 0, "ship")$hasatt)
-        res@metadata$ship <- ncdf4::ncatt_get(f, 0, "ship")$value
-    if (ncdf4::ncatt_get(f, 0, "Cruise")$hasatt)
-        res@metadata$cruise <- ncdf4::ncatt_get(f, 0, "Cruise")$value
-    if (ncdf4::ncatt_get(f, 0, "cruise")$hasatt)
-        res@metadata$cruise <- ncdf4::ncatt_get(f, 0, "cruise")$value
-    res@processingLog <- processingLogAppend(res@processingLog, paste("read.netcdf(\"", file, "\")", sep=""))
-    res
-}
-
 
 #' Draw an axis, possibly with decade-style logarithmic scaling
 #'
@@ -3333,7 +3247,7 @@ numberAsHMS <- function(t, default=0)
 #'
 #' This converts numerical values into POSIXct times.  There are many
 #' schemes for doing this, with the `type` parameter being used
-#' to select between them.  See \sQuote{Details} for a listing, broken
+#' to select between them.  See \dQuote{Details} for a listing, broken
 #' down by scheme.
 #'
 #' The possible choices for `type` are as listed below.

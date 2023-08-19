@@ -242,7 +242,7 @@ lookWithin <- function(list)
 #' `pressure`.  If `eos` is `"gsw"`, then it must also hold `longitude` and
 #' `latitude`.
 #' @param sense an indication of the sense of double diffusion under study and
-#' therefore of the definition of Rrho; see \sQuote{Details}
+#' therefore of the definition of Rrho; see \dQuote{Details}
 #' @param smoothingLength ignored if `df` supplied, but otherwise the
 #' latter is calculated as the number of data points, divided by the number
 #' within a depth interval of `smoothingLength` metres.
@@ -956,10 +956,10 @@ swTSrho <- function(salinity, density, pressure=NULL, eos=getOption("oceEOS", de
 #' @param pressure Seawater pressure (dbar).
 #'
 #' @param longitude Longitude of observation (only used if `eos="gsw"`;
-#' see \sQuote{Details}).
+#' see \dQuote{Details}).
 #'
 #' @param latitude Latitude of observation (only used if `eos="gsw"`; see
-#' \sQuote{Details}).
+#' \dQuote{Details}).
 #'
 #' @param saturation_fraction The saturation fraction of dissolved air in seawater,
 #' ignored if `eos="unesco"`).
@@ -1064,10 +1064,10 @@ swTFreeze <- function(salinity, pressure=NULL, longitude=NULL, latitude=NULL,
 #' @param pressure pressure (dbar)
 #'
 #' @param longitude longitude of observation (only used if `eos="gsw"`;
-#' see \sQuote{Details}).
+#' see \dQuote{Details}).
 #'
 #' @param latitude latitude of observation (only used if `eos="gsw"`; see
-#' \sQuote{Details}).
+#' \dQuote{Details}).
 #'
 #' @param eos equation of state, either `"unesco"` or `"gsw"`.
 #'
@@ -1136,10 +1136,10 @@ swAlpha <- function(salinity, temperature=NULL, pressure=0,
 #' @param pressure pressure (dbar)
 #'
 #' @param longitude longitude of observation (only used if `eos="gsw"`;
-#' see \sQuote{Details}).
+#' see \dQuote{Details}).
 #'
 #' @param latitude latitude of observation (only used if `eos="gsw"`; see
-#' \sQuote{Details}).
+#' \dQuote{Details}).
 #'
 #' @param eos equation of state, either `"unesco"` or `"gsw"`.
 #'
@@ -1221,10 +1221,10 @@ swAlphaOverBeta <- function(salinity, temperature=NULL, pressure=NULL,
 #' @param pressure seawater pressure (dbar)
 #'
 #' @param longitude longitude of observation (only used if `eos="gsw"`;
-#' see \sQuote{Details}).
+#' see \dQuote{Details}).
 #'
 #' @param latitude latitude of observation (only used if `eos="gsw"`; see
-#' \sQuote{Details}).
+#' \dQuote{Details}).
 #'
 #' @param eos equation of state, either `"unesco"` or `"gsw"`.
 #'
@@ -1618,10 +1618,10 @@ swDynamicHeight <- function(x, referencePressure=2000,
 #' @param pressure pressure (dbar)
 #'
 #' @param longitude longitude of observation (only used if `eos="gsw"`;
-#' see \sQuote{Details}).
+#' see \dQuote{Details}).
 #'
 #' @param latitude latitude of observation (only used if `eos="gsw"`; see
-#' \sQuote{Details}).
+#' \dQuote{Details}).
 #'
 #' @param eos equation of state, either `"unesco"` (references 1 and 2)
 #' or `"gsw"` (references 3 and 4).
@@ -1716,10 +1716,10 @@ swLapseRate <- function(salinity, temperature=NULL, pressure=NULL,
 #' @param pressure pressure (dbar)
 #'
 #' @param longitude longitude of observation (only used if `eos="gsw"`;
-#' see \sQuote{Details}).
+#' see \dQuote{Details}).
 #'
 #' @param latitude latitude of observation (only used if `eos="gsw"`; see
-#' \sQuote{Details}).
+#' \dQuote{Details}).
 #'
 #' @param eos equation of state, either `"unesco"` (references 1 and 2)
 #' or `"gsw"` (references 3 and 4).
@@ -2389,9 +2389,9 @@ swSoundSpeed <- function(salinity, temperature=NULL, pressure=NULL,
 #' on the ITS-90 scale.
 #' @param pressure seawater pressure (dbar)
 #' @param longitude longitude of observation (only used if `eos="gsw"`;
-#' see \sQuote{Details}).
+#' see \dQuote{Details}).
 #' @param latitude latitude of observation (only used if `eos="gsw"`; see
-#' \sQuote{Details}).
+#' \dQuote{Details}).
 #' @param eos equation of state, either `"unesco"` or `"gsw"`.
 #' @return Specific heat (J/kg/degC).
 #' @author Dan Kelley
@@ -2479,13 +2479,13 @@ swSpecificHeat <- function(salinity, temperature=NULL, pressure=0,
 #' [swRho()].
 #'
 #' @param pressure Seawater pressure (dbar) (only used if `eos` is
-#' `"gsw"`); see \sQuote{Details}..
+#' `"gsw"`); see \dQuote{Details}..
 #'
 #' @param longitude longitude of observation (only used if `eos` is
-#' `"gsw"`; see \sQuote{Details}).
+#' `"gsw"`; see \dQuote{Details}).
 #'
 #' @param latitude latitude of observation (only used if `eos` is
-#' `"gsw"`; see \sQuote{Details}).
+#' `"gsw"`; see \dQuote{Details}).
 #'
 #' @param eos Character value specifying the equation of state,
 #' either `"unesco"` (for the Flament formulation, although this
@@ -2598,10 +2598,10 @@ swSpice <- function(salinity, temperature=NULL, pressure=NULL,
 #' @param referencePressure reference pressure (dbar)
 #'
 #' @param longitude longitude of observation (only used if `eos="gsw"`;
-#' see \sQuote{Details}).
+#' see \dQuote{Details}).
 #'
 #' @param latitude latitude of observation (only used if `eos="gsw"`; see
-#' \sQuote{Details}).
+#' \dQuote{Details}).
 #'
 #' @param eos equation of state, either `"unesco"` (references 1 and 2) or `"gsw"`
 #' (references 3 and 4).

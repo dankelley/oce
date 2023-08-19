@@ -18,7 +18,7 @@ successive pairs of breaks in x and y."><!-- mathjax --><script src="https://cdn
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.8-0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.8-2</span>
       </span>
     </div>
 
@@ -50,6 +50,9 @@ successive pairs of breaks in x and y."><!-- mathjax --><script src="https://cdn
     <li>
       <a href="../articles/F_subclassing.html">6. Subclassing oce objects</a>
     </li>
+    <li>
+      <a href="../articles/G_altering_defaults.html">7. Altering oce Defaults</a>
+    </li>
   </ul></li>
 <li>
   <a href="../news/index.html">Changelog</a>
@@ -70,7 +73,7 @@ successive pairs of breaks in x and y."><!-- mathjax --><script src="https://cdn
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Bin-count matrix data</h1>
-    <small class="dont-index">Source: <a href="https://github.com/dankelley/oce/blob/HEAD/R/misc.R" class="external-link"><code>R/misc.R</code></a></small>
+    <small class="dont-index">Source: <a href="https://github.com/dankelley/oce/blob/HEAD/R/bin.R" class="external-link"><code>R/bin.R</code></a></small>
     <div class="hidden name"><code>binCount2D.Rd</code></div>
     </div>
 
@@ -80,27 +83,19 @@ successive pairs of breaks in x and y.</p>
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">binCount2D</span><span class="op">(</span><span class="va">x</span>, <span class="va">y</span>, <span class="va">xbreaks</span>, <span class="va">ybreaks</span>, flatten <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">binCount2D</span><span class="op">(</span><span class="va">x</span>, <span class="va">y</span>, <span class="va">xbreaks</span>, <span class="va">ybreaks</span>, flatten <span class="op">=</span> <span class="cn">FALSE</span>, include.lowest <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
-    <dl><dt>x</dt>
-<dd><p>vector of numerical values.</p></dd>
+    <dl><dt>x, y</dt>
+<dd><p>vectors of numerical values.</p></dd>
 
 
-<dt>y</dt>
-<dd><p>vector of numerical values.</p></dd>
-
-
-<dt>xbreaks</dt>
-<dd><p>Vector of values of <code>x</code> at the boundaries between bins, calculated using
-[<code>pretty``]</code>(x)` if not supplied.</p></dd>
-
-
-<dt>ybreaks</dt>
-<dd><p>Vector of values of <code>y</code> at the boundaries between bins, calculated using
-<code><a href="https://rdrr.io/r/base/pretty.html" class="external-link">pretty</a></code><code>(y)</code> if not supplied.</p></dd>
+<dt>xbreaks, ybreaks</dt>
+<dd><p>vector of values of <code>x</code> and <code>y</code>
+at the boundaries between the 2D bins, calculated using
+<code><a href="https://rdrr.io/r/base/pretty.html" class="external-link">pretty()</a></code> on each of <code>x</code> and <code>y</code>, if not supplied.</p></dd>
 
 
 <dt>flatten</dt>
@@ -109,6 +104,11 @@ the return value also contains equilength
 vectors <code>x</code>, <code>y</code>, <code>z</code> and <code>n</code>, a flattened
 representation of <code>xmids</code>, <code>ymids</code>, <code>result</code> and
 <code>number</code>.</p></dd>
+
+
+<dt>include.lowest</dt>
+<dd><p>logical value indicating whether to include
+points where <code>x</code> equals <code>xbreaks[1]</code> or <code>y</code> equals <code>ybreaks[1]</code>.</p></dd>
 
 </dl></div>
     <div id="value">
@@ -122,6 +122,15 @@ representation of <code>xmids</code>, <code>ymids</code>, <code>result</code> an
 between those breaks, and
 the count (<code>number</code>) of <code>f</code> values in the boxes defined
 between successive breaks.</p>
+    </div>
+    <div id="details">
+    <h2>Details</h2>
+    <p>By default, the sub-intervals defined by <code>xbreaks</code> and <code>ybreaks</code>
+are open on the left/bottom and closed on the right/top, to match
+the behaviour of <code><a href="https://rdrr.io/r/base/cut.html" class="external-link">cut()</a></code>.  An open interval does not include
+points on the boundary, and so any <code>x</code> and <code>y</code> values that equal
+<code>xbreaks[1]</code> or <code>ybreaks[1]</code> will not be counted.  To include
+such points in the calculation, set <code>include.lowest</code> to TRUE.</p>
     </div>
     <div id="see-also">
     <h2>See also</h2>

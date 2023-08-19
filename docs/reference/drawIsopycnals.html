@@ -19,7 +19,7 @@ an image plot is used to show TS data density."><!-- mathjax --><script src="htt
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.8-0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.8-2</span>
       </span>
     </div>
 
@@ -50,6 +50,9 @@ an image plot is used to show TS data density."><!-- mathjax --><script src="htt
     </li>
     <li>
       <a href="../articles/F_subclassing.html">6. Subclassing oce objects</a>
+    </li>
+    <li>
+      <a href="../articles/G_altering_defaults.html">7. Altering oce Defaults</a>
     </li>
   </ul></li>
 <li>
@@ -154,12 +157,14 @@ for <code><a href="plotTS.html">plotTS()</a></code>.</p></dd>
 <dt>gridIsopycnals</dt>
 <dd><p>a parameter that controls how the isopycnals
 are computed.  This may be NULL, or an integer vector of length 2.
-<em>Case 1:</em> the isopycnals are drawn by tracing density
+<em>Case 1:</em> if <code>gridIsopycnals</code> is NULL, then
+the isopycnals are drawn by tracing density
 isopleths in salinity-temperature space. This method was
 used as the default prior to version 1.7-11, but it was
 found to yield staircase-like isopycnal curves for highly
 zoomed-in plots (e.g. with millidegree temperature ranges).
-<em>Case 2:</em> a grid of density is constructed, with <code>gridIsopycnals[1]</code>
+<em>Case 2 (the new default):</em> If <code>gridIsopycnals</code> is a two-element integer
+vector, then a grid of density is constructed, with <code>gridIsopycnals[1]</code>
 salinity levels and <code>gridIsopycnals[2]</code> temperature levels, and
 then <code><a href="https://rdrr.io/r/grDevices/contourLines.html" class="external-link">contourLines()</a></code> is used to trace the isopycnals. The default
 value of <code>gridIsopycnals</code> yields a grid of millimeter-scale spacing
