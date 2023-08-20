@@ -2,7 +2,7 @@
 % Please edit documentation in R/adp.nortek.R
 \name{read.aquadoppProfiler}
 \alias{read.aquadoppProfiler}
-\title{Read a Nortek Aquadopp-Profiler File}
+\title{Read an adp File in Nortek Aquadopp Format}
 \usage{
 read.aquadoppProfiler(
   file,

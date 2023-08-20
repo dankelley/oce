@@ -924,7 +924,7 @@ download.coastline <- function(resolution, item="coastline", destdir=".", destfi
     destination
 }
 
-#' Read a Coastline File
+#' Read a coastline File
 #'
 #' Read a coastline file in R, Splus, mapgen, shapefile, or openstreetmap
 #' format.
@@ -1035,7 +1035,7 @@ read.coastline <- function(file, type=c("R", "S", "mapgen", "shapefile", "openst
     res
 }
 
-#' Read a Coastline File in Shapefile Format
+#' Read a coastline File in Shapefile Format
 #'
 #' Read coastline data stored in the shapefile format (see reference 1).
 #'
@@ -1289,7 +1289,7 @@ read.coastline.shapefile <- function(file, lonlim=c(-180, 180), latlim=c(-90, 90
     res
 }
 
-#' Read a Coastline File in Openstreetmap Format
+#' Read a coastline File in Openstreetmap Format
 #'
 #' Read coastline data stored in the openstreetmap format.
 #'

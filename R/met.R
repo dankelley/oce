@@ -448,7 +448,7 @@ download.met <- function(id, year, month, deltat, type="xml",
     destination
 }
 
-#' Convert met Data Name to Oce Name
+#' Convert met Data Name to oce Name
 #'
 #' Interoperability between oce functions requires that standardized data names
 #' be used, e.g. `"temperature"` for in-situ temperature. Very few

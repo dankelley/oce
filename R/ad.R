@@ -68,7 +68,7 @@ velocityStatistics <- function(x, control, ...)
 }
 
 
-#' Change ADV or ADP Coordinate Systems
+#' Change the Coordinate System in an adv or adp Object
 #'
 #' Convert velocity data from an acoustic-Doppler velocimeter or
 #' acoustic-Doppler profiler from one coordinate system to another.

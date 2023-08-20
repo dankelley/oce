@@ -2,7 +2,7 @@
 % Please edit documentation in R/adp.R
 \name{adpEnsembleAverage}
 \alias{adpEnsembleAverage}
-\title{Ensemble Average an ADP Object in Time}
+\title{Ensemble Average an adp Object in Time}
 \usage{
 adpEnsembleAverage(x, n = 5, leftover = FALSE, na.rm = TRUE, ...)
 }

@@ -1,6 +1,6 @@
 # vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
 
-#' oce: A Package for Oceanographic Analysis.
+#' A Package for Oceanographic Analysis
 #'
 #' @description
 #' The oce package provides functions for working with

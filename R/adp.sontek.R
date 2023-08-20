@@ -1,6 +1,6 @@
 # vim: tw=80 shiftwidth=4 softtabstop=4 expandtab:
 
-#' Read a Sontek ADP File
+#' Read an adp File in Sontek Format
 #'
 #' Read a Sontek acoustic-Doppler profiler file (see reference 1).
 #'

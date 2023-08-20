@@ -1,6 +1,6 @@
 # vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4:foldmethod=marker
 
-#' Class to Store argo Data
+#' Class to Store Argo Profiler Data
 #'
 #' This class stores data from Argo floats.
 #'
@@ -2330,7 +2330,7 @@ preferAdjusted <- function(argo, which="all", fallback=TRUE)
     argo
 }
 
-#' Convert time to Argo Julian Day (juld)
+#' Convert Time to Argo Julian Day (juld)
 #'
 #' This converts a POSIXct time into an Argo julian day, with the convention
 #' that juld=0 at 1950-01-01.

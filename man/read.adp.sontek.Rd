@@ -2,7 +2,7 @@
 % Please edit documentation in R/adp.sontek.R
 \name{read.adp.sontek}
 \alias{read.adp.sontek}
-\title{Read a Sontek ADP File}
+\title{Read an adp File in Sontek Format}
 \usage{
 read.adp.sontek(
   file,

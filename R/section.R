@@ -977,7 +977,7 @@ sectionSort <- function(section, by, decreasing=FALSE)
     res
 }
 
-#' Add a CTD Station to a Section
+#' Add a ctd Profile to a section Object
 #'
 #' Add a CTD profile to an existing section.
 #'

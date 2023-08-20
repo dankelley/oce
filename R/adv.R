@@ -1,6 +1,6 @@
 # vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
 
-#' Class to Store adv Data
+#' Class to Store Acoustic-Doppler Velocimeter Data
 #'
 #' This class holds data from acoustic-Doppler velocimeters.
 #'
@@ -1120,7 +1120,7 @@ setMethod(f="plot",
     })
 
 
-#' Convert an ADV Object to ENU Coordinates
+#' Convert an adv Object to ENU Coordinates
 #'
 #' @param x an [adv-class] object.
 #'
@@ -1154,7 +1154,7 @@ toEnuAdv <- function(x, declination=0, debug=getOption("oceDebug"))
 }
 
 
-#' Convert ADV from Beam to XYZ Coordinates
+#' Convert adv Object from Beam Coordinates to XYZ Coordinates
 #'
 #' Convert ADV velocity components from a beam-based coordinate system to a
 #' xyz-based coordinate system.
@@ -1221,7 +1221,7 @@ beamToXyzAdv <- function(x, debug=getOption("oceDebug"))
 }
 
 
-#' Convert an ADP from XYZ to ENU Coordinates
+#' Convert an adv Object From XYZ to ENU Coordinates
 #'
 #' Convert ADV velocity components from a xyz-based coordinate system to
 #' an enu-based coordinate system.

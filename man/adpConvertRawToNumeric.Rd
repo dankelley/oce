@@ -2,7 +2,7 @@
 % Please edit documentation in R/adp.R
 \name{adpConvertRawToNumeric}
 \alias{adpConvertRawToNumeric}
-\title{Convert Raw to Numeric Values For adp Objects}
+\title{Convert Raw to Numeric Values in an adp Object}
 \usage{
 adpConvertRawToNumeric(
   object = NULL,

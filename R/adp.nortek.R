@@ -346,7 +346,7 @@ decodeHeaderNortek <- function(buf,
     list(hardware=hardware, head=head, user=user, offset=o+1)
 }
 
-#' Read a Nortek Aquadopp File
+#' Read an adp File in Nortek Aquadopp Format
 #'
 #' The R code is based on information in the Nortek System Integrator Guide
 #' (2017), postings on the Nortek ``knowledge center'' discussion board, and
@@ -503,7 +503,7 @@ read.aquadoppHR <- function(file,
 }
 
 
-#' Read a Nortek Aquadopp-Profiler File
+#' Read an adp File in Nortek Aquadopp Format
 #'
 #' The R code is based on information in
 #' the Nortek System Integrator Guide (2008) and on postings on the Nortek
@@ -580,7 +580,7 @@ read.aquadoppProfiler <- function(file,
         debug=getOption("oceDebug"), ...))
 }
 
-#' Read a Nortek ADP File
+#' Read an adp File in Nortek Format
 #'
 #' @param despike a logical value indicating whether to use [despike()] to remove
 #' anomalous spikes in heading, etc.

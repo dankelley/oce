@@ -2,7 +2,7 @@
 % Please edit documentation in R/adp.R
 \name{beamUnspreadAdp}
 \alias{beamUnspreadAdp}
-\title{Adjust ADP Signal for Spherical Spreading}
+\title{Adjust adp Object to Account for Spherical Spreading}
 \usage{
 beamUnspreadAdp(
   x,

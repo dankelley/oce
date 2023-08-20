@@ -1,6 +1,6 @@
 # vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
 
-#' Alter Longitude and Latitude for gsw Computations.
+#' Alter Longitude and Latitude for gsw Computations
 #'
 #' This function is mainly intended for use within [swAbsoluteSalinity()] and
 #' similar functions that use the `gsw` package to compute seawater

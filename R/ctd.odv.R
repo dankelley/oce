@@ -1,4 +1,4 @@
-#' Read an ODV-type CTD File
+#' Read a "ctd" File in ODV Format
 #'
 #' @template readCtdTemplate
 #'

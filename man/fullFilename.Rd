@@ -2,7 +2,7 @@
 % Please edit documentation in R/misc.R
 \name{fullFilename}
 \alias{fullFilename}
-\title{Full name of File, Including Path}
+\title{Full Name of File, Including Path}
 \usage{
 fullFilename(filename)
 }

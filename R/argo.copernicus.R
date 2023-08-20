@@ -1,6 +1,6 @@
 # vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
 
-#' Read argo File in Copernicus Format
+#' Read an argo File in Copernicus Format
 #'
 #' This function was added to read a particular file downloaded from the
 #' Fleet Monitoring website (Reference 1).  The format was inferred

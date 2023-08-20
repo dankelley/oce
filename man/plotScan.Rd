@@ -2,7 +2,7 @@
 % Please edit documentation in R/ctd.R
 \name{plotScan}
 \alias{plotScan}
-\title{Plot CTD data in a Low-Level Fashion}
+\title{Plot a ctd Object  in a Low-Level Fashion}
 \usage{
 plotScan(
   x,

@@ -2,7 +2,7 @@
 % Please edit documentation in R/ctd.itp.R
 \name{read.ctd.itp}
 \alias{read.ctd.itp}
-\title{Read an ITP-type ctd File}
+\title{Read a ctd File in ITP Format}
 \usage{
 read.ctd.itp(
   file,
@@ -89,7 +89,7 @@ better for normal calls by a user.}
 This function returns a \linkS4class{ctd} object.
 }
 \description{
-Read an ITP-type ctd File
+Read a ctd File in ITP Format
 }
 \references{
 Information about ice-tethered profile data is provided at

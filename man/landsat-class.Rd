@@ -3,7 +3,7 @@
 \docType{class}
 \name{landsat-class}
 \alias{landsat-class}
-\title{Class to Store landsat Data}
+\title{Class to Store Landsat Satellite Data}
 \description{
 This class holds landsat data. Such are available at several
 websites (e.g. reference 1).

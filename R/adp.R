@@ -1,6 +1,6 @@
 # vim: tw=80 shiftwidth=4 softtabstop=4 expandtab:
 
-#' Class to Store adp Data
+#' Class to Store Acoustic-Doppler Profiler Data
 #'
 #' This class stores data from acoustic Doppler profilers. Some manufacturers
 #' call these ADCPs, while others call them ADPs; here the shorter form is
@@ -3083,7 +3083,7 @@ setMethod(f="plot",
 
 
 
-#' Convert an ADP Object to ENU Coordinates
+#' Convert an adp Object to ENU Coordinates
 #'
 #' @param x an [adp-class] object.
 #'
@@ -3125,7 +3125,7 @@ toEnuAdp <- function(x, declination=0, debug=getOption("oceDebug"))
 }
 
 
-#' Adjust ADP Signal for Spherical Spreading
+#' Adjust adp Object to Account for Spherical Spreading
 #'
 #' Compensate ADP signal strength for spherical spreading.
 #'
@@ -3213,7 +3213,7 @@ beamUnspreadAdp <- function(x, count2db=c(0.45, 0.45, 0.45, 0.45), asMatrix=FALS
 }
 
 
-#' Convert ADP From Beam to XYZ Coordinates
+#' Convert adp Object From Beam to XYZ Coordinates
 #'
 #' Convert ADP velocity components from a beam-based coordinate system to a
 #' xyz-based coordinate system. The action depends on the type of object.
@@ -3481,7 +3481,7 @@ beamToXyzAdpAD2CP <- function(x, debug=getOption("oceDebug"))
     res
 }
 
-#' Convert ADP From XYZ to ENU Coordinates
+#' Convert adp Object From XYZ to ENU Coordinates
 #'
 #' Convert ADP velocity components from a xyz-based coordinate system to
 #' an enu-based coordinate system, by using the instrument's recording of
@@ -3792,12 +3792,12 @@ xyzToEnuAdp <- function(x, declination=0, debug=getOption("oceDebug"))
     res
 }                                      # xyzToEnuAdp
 
-#' Convert ADP2CP adp object From XYZ to ENU Coordinates
+#' Convert adp Object of AD2CP type From XYZ to ENU Coordinates
 #'
-#' **This function will b in active development through the early
-#' months of 2019, and both the methodology and user interface may change
+#' This function is in active development,
+#' and both the methodology and user interface may change
 #' without notice. Only developers (or invitees) should be trying to
-#' use this function.**
+#' use this function.
 #'
 #' @param x an [adp-class] object created by [read.adp.ad2cp()].
 #'
@@ -3919,7 +3919,7 @@ xyzToEnuAdpAD2CP <- function(x, declination=0, debug=getOption("oceDebug"))
     res
 }
 
-#' Convert ADP ENU to Rotated Coordinate
+#' Convert adp Object from ENU Coordinate to Rotated Coordinate
 #'
 #' Convert ADP velocity components from an enu-based coordinate system to
 #' another system, perhaps to align axes with the coastline.
@@ -4192,7 +4192,7 @@ binmapAdp <- function(x, debug=getOption("oceDebug"))
     res
 }
 
-#' Ensemble Average an ADP Object in Time
+#' Ensemble Average an adp Object in Time
 #'
 #' Ensemble averaging of `adp` objects is often necessary to
 #' reduce the uncertainty in velocity estimates from single
@@ -4280,7 +4280,7 @@ adpEnsembleAverage <- function(x, n=5, leftover=FALSE, na.rm=TRUE, ...)
     res
 }
 
-#' Convert Raw to Numeric Values For adp Objects
+#' Convert Raw to Numeric Values in an adp Object
 #'
 #' Convert variables in an [adp-class] object from raw to numeric format.
 #'

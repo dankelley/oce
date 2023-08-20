@@ -1,6 +1,6 @@
 # vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
 
-#' Class to Store landsat Data
+#' Class to Store Landsat Satellite Data
 #'
 #' This class holds landsat data. Such are available at several
 #' websites (e.g. reference 1).

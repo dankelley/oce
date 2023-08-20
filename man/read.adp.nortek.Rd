@@ -2,7 +2,7 @@
 % Please edit documentation in R/adp.nortek.R
 \name{read.adp.nortek}
 \alias{read.adp.nortek}
-\title{Read a Nortek ADP File}
+\title{Read an adp File in Nortek Format}
 \usage{
 read.adp.nortek(
   file,
@@ -96,7 +96,7 @@ NMEA strings, then navigational data will be stored in an item
 called \code{nmea} in the \code{data} slot).
 }
 \description{
-Read a Nortek ADP File
+Read an adp File in Nortek Format
 }
 \references{
 \enumerate{

@@ -2,7 +2,7 @@
 % Please edit documentation in R/adp.rdi.R
 \name{read.adp.rdi}
 \alias{read.adp.rdi}
-\title{Read a Teledyne/RDI ADP File}
+\title{Read an adp File in Teledyne/RDI Format}
 \usage{
 read.adp.rdi(
   file,

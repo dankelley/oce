@@ -2154,7 +2154,7 @@ vectorShow <- function(v, msg="", postscript="", digits=5L, n=2L, showNA=FALSE, 
 }
 
 
-#' Full name of File, Including Path
+#' Full Name of File, Including Path
 #'
 #' Determines the full name of a file, including the path.  Used by many
 #' `read.X` routines, where `X` is the name of a class of object.

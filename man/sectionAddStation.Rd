@@ -3,7 +3,7 @@
 \name{sectionAddStation}
 \alias{sectionAddStation}
 \alias{sectionAddCtd}
-\title{Add a CTD Station to a Section}
+\title{Add a ctd Profile to a section Object}
 \usage{
 sectionAddStation(section, station)
 }

@@ -260,7 +260,7 @@ ad2cpCodeToName <- function(code=NULL, prefix=TRUE)
     rval
 }
 
-#' Read a Nortek AD2CP File
+#' Read an adp File in Nortek AD2CP Format
 #'
 #' This function is under active development and may change without notice.  In
 #' contrast with other `oce` reading functions, [read.adp.ad2cp()] focusses just

@@ -216,7 +216,7 @@ ctdRepair <- function(x, debug=getOption("oceDebug"))
 #' @family things related to ctd data
 NULL
 
-#' Seawater CTD Profile, Without Trimming of Extraneous Data
+#' Sample ctd Data, Not Trimmed of Extraneous Data
 #'
 #' This is sample CTD profile provided for testing.  It includes not just the
 #' (useful) portion of the dataset during which the instrument was being lowered,
@@ -2835,7 +2835,7 @@ ctdTrim <- function(x, method, removeDepthInversions=FALSE,
     res
 }
 
-#' Write a CTD Data Object as a CSV File
+#' Save a ctd Object in a CSV File
 #'
 #' Writes a comma-separated file containing the data frame stored in
 #' the `data` slot of the first argument.  The file is suitable
@@ -3971,7 +3971,7 @@ setMethod(f="subset",
     })
 
 
-#' Plot CTD data in a Low-Level Fashion
+#' Plot a ctd Object  in a Low-Level Fashion
 #'
 #' Plot CTD data as time-series against scan number, to help with trimming
 #' extraneous data from a CTD cast.
@@ -5032,7 +5032,7 @@ drawIsopycnals <- function(nlevels=6, levels, rotate=TRUE, rho1000=FALSE, digits
 }
 
 
-#' Plot a CTD Profile
+#' Plot a ctd Profile
 #'
 #' Plot a profile, showing variation of some quantity (or quantities) with
 #' pressure, using the oceanographic convention of putting lower pressures

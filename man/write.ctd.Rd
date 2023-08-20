@@ -2,7 +2,7 @@
 % Please edit documentation in R/ctd.R
 \name{write.ctd}
 \alias{write.ctd}
-\title{Write a CTD Data Object as a CSV File}
+\title{Save a ctd Object in a CSV File}
 \usage{
 write.ctd(object, file, metadata = TRUE, flags = TRUE, format = "csv")
 }

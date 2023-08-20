@@ -3,7 +3,7 @@
 \docType{class}
 \name{g1sst-class}
 \alias{g1sst-class}
-\title{Class to Store G1SST Satellite-model Data}
+\title{Class to Store G1SST Satellite/Model Data}
 \description{
 This class stores G1SST model-satellite products.
 }

@@ -2,7 +2,7 @@
 % Please edit documentation in R/ctd.R
 \name{plotProfile}
 \alias{plotProfile}
-\title{Plot a CTD Profile}
+\title{Plot a ctd Profile}
 \usage{
 plotProfile(
   x,
