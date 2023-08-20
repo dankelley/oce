@@ -2,7 +2,7 @@
 % Please edit documentation in R/misc.R
 \name{formatCI}
 \alias{formatCI}
-\title{Confidence interval in parenthetic notation}
+\title{Confidence Interval in Parenthetic Notation}
 \usage{
 formatCI(ci, style = c("+/-", "parentheses"), model, digits = NULL)
 }

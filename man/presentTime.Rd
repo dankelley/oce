@@ -2,7 +2,7 @@
 % Please edit documentation in R/AllClass.R
 \name{presentTime}
 \alias{presentTime}
-\title{Get the present time, in a stated timezone}
+\title{Get the Present Time, in a Stated Timezone}
 \usage{
 presentTime(tz = "UTC")
 }
@@ -16,7 +16,7 @@ A \code{\link[=POSIXct]{POSIXct()}}-style object holding the present time, in th
 indicated timezone.
 }
 \description{
-Get the present time, in a stated timezone
+Get the Present Time, in a Stated Timezone
 }
 \examples{
 presentTime() # UTC

@@ -2,7 +2,7 @@
 % Please edit documentation in R/processingLog.R
 \name{processingLogShow}
 \alias{processingLogShow}
-\title{Show the processing log of an oce object}
+\title{Show the Processing Log of an oce Object}
 \usage{
 processingLogShow(x)
 }
@@ -10,7 +10,7 @@ processingLogShow(x)
 \item{x}{an \linkS4class{oce} object.}
 }
 \description{
-Show the processing log of an oce object
+Show the Processing Log of an oce Object
 }
 \seealso{
 Other things related to processing logs: 

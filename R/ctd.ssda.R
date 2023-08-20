@@ -1,6 +1,6 @@
 # vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
 
-#' Read CTD format in SSDA format
+#' Read a ctd File in SSDA Format
 #'
 #' [read.ctd.ssda()] reads CTD files in Sea & Sun Technology´s Standard Data
 #' Acquisition (SSDA) format. This function is somewhat preliminary, in the

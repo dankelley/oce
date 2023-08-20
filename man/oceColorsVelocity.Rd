@@ -3,7 +3,7 @@
 \name{oceColorsVelocity}
 \alias{oceColorsVelocity}
 \alias{oce.colorsVelocity}
-\title{Create colors suitable for velocity fields}
+\title{Create Colors Suitable for velocity Fields}
 \usage{
 oceColorsVelocity(n)
 }

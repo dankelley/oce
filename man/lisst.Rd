@@ -3,7 +3,7 @@
 \docType{data}
 \name{lisst}
 \alias{lisst}
-\title{LISST Dataset}
+\title{Sample lisst Data}
 \source{
 This was constructed artificially using \code{\link[=as.lisst]{as.lisst()}},
 to approximately match values that might be measured in the field.

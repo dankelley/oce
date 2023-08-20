@@ -2,7 +2,7 @@
 % Please edit documentation in R/sw.R
 \name{swViscosity}
 \alias{swViscosity}
-\title{Seawater viscosity}
+\title{Seawater Viscosity}
 \usage{
 swViscosity(salinity, temperature)
 }

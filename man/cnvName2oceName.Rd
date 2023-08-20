@@ -2,7 +2,7 @@
 % Please edit documentation in R/ctd.sbe.R
 \name{cnvName2oceName}
 \alias{cnvName2oceName}
-\title{Infer variable name, units and scale from a Seabird (.cnv) header line}
+\title{Infer Variable Name, Units and Scale From a Seabird Header}
 \usage{
 cnvName2oceName(h, columns = NULL, debug = getOption("oceDebug"))
 }

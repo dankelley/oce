@@ -2,7 +2,7 @@
 % Please edit documentation in R/bin.R
 \name{binCount1D}
 \alias{binCount1D}
-\title{Bin-count vector data}
+\title{Bin-count Vector Data}
 \usage{
 binCount1D(x, xbreaks, include.lowest = FALSE)
 }

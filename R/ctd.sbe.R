@@ -1,6 +1,6 @@
 # vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
 
-#' Infer variable name, units and scale from a Seabird (.cnv) header line
+#' Infer Variable Name, Units and Scale From a Seabird Header
 #'
 #' This function is used by [read.ctd.sbe()] to infer data names
 #' and units from the coding used by Teledyne/Seabird (SBE) `.cnv`
@@ -647,7 +647,7 @@ cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
 }
 
 
-#' Read a Seabird CTD File
+#' Read a ctd File in Seabird Format
 #'
 #' @template readCtdTemplate
 #'

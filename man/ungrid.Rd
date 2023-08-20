@@ -2,7 +2,7 @@
 % Please edit documentation in R/misc.R
 \name{ungrid}
 \alias{ungrid}
-\title{Extract (x, y, z) from (x, y, grid)}
+\title{Extract (x, y, z) From (x, y, grid)}
 \usage{
 ungrid(x, y, grid)
 }

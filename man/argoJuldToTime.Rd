@@ -2,7 +2,7 @@
 % Please edit documentation in R/argo.R
 \name{argoJuldToTime}
 \alias{argoJuldToTime}
-\title{Convert Argo Julian Day (juld) to time}
+\title{Convert Argo Julian Day to R Time}
 \usage{
 argoJuldToTime(jday)
 }
@@ -11,7 +11,7 @@ argoJuldToTime(jday)
 with day=0 at 1950-01-01.}
 }
 \description{
-Convert Argo Julian Day (juld) to time
+Convert Argo Julian Day to R Time
 }
 \examples{
 argoJuldToTime(25749)

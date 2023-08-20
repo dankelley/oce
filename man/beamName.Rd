@@ -2,7 +2,7 @@
 % Please edit documentation in R/adp.R
 \name{beamName}
 \alias{beamName}
-\title{Get names of Acoustic-Doppler Beams}
+\title{Get Names of Acoustic-Doppler Beams}
 \usage{
 beamName(x, which)
 }
@@ -19,7 +19,7 @@ for \code{"other"} coordinates.  The coordinate system is determined
 with \code{x[["coordinate"]]}.
 }
 \description{
-Get names of Acoustic-Doppler Beams
+Get Names of Acoustic-Doppler Beams
 }
 \seealso{
 This is used by \code{\link[=read.oce]{read.oce()}}.

@@ -2,7 +2,7 @@
 % Please edit documentation in R/AllClass.R
 \name{handleFlagsInternal}
 \alias{handleFlagsInternal}
-\title{Low-level function for handling data-quality flags}
+\title{Low-Level Function for Handling Data-Quality Flags}
 \usage{
 handleFlagsInternal(object, flags, actions, where, debug = 0)
 }

@@ -2,7 +2,7 @@
 % Please edit documentation in R/misc.R
 \name{magneticField}
 \alias{magneticField}
-\title{Earth magnetic declination, inclination, and intensity}
+\title{Earth Magnetic Declination, Inclination, and Intensity}
 \usage{
 magneticField(longitude, latitude, time, version = 13)
 }

@@ -2,7 +2,7 @@
 % Please edit documentation in R/sw.R
 \name{T68fromT90}
 \alias{T68fromT90}
-\title{Convert from ITS-90 to IPTS-68 temperature}
+\title{Convert From ITS-90 to IPTS-68 Temperature}
 \usage{
 T68fromT90(temperature)
 }

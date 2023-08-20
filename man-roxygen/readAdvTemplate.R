@@ -1,4 +1,4 @@
-#' Read an ADV data file
+#' Read an adv File
 #'
 #' Read an ADV data file, producing an object of type `adv`. This
 #' function works by transferring control to a more specialized function,

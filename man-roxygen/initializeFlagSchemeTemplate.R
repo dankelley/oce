@@ -1,6 +1,6 @@
 ## DEVELOPER NOTE: keep in synch with R/AllClass.R and tests/testthat/test_flags.R
 
-#' @title Establish a data-quality scheme for a <%=class%> object
+#' @title Establish a Data-Quality Scheme for a <%=class%> Object
 #'
 #' @description
 #' This function adds an item named `flagScheme`

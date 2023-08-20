@@ -3,7 +3,7 @@
 \name{oceColorsTemperature}
 \alias{oceColorsTemperature}
 \alias{oce.colorsTemperature}
-\title{Create colors suitable for temperature fields}
+\title{Create Colors Suitable for temperature Fields}
 \usage{
 oceColorsTemperature(n)
 }

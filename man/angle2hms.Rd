@@ -2,7 +2,7 @@
 % Please edit documentation in R/astronomy.R
 \name{angle2hms}
 \alias{angle2hms}
-\title{Convert astronomical angle in degrees to hours, minutes and seconds}
+\title{Convert Astronomical Angle in Degrees to Hours, Minutes and Seconds}
 \usage{
 angle2hms(angle)
 }

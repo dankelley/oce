@@ -2,7 +2,7 @@
 % Please edit documentation in R/sw.R
 \name{swConservativeTemperature}
 \alias{swConservativeTemperature}
-\title{Seawater conservative temperature, in GSW formulation}
+\title{Seawater Conservative Temperature (GSW Formulation)}
 \usage{
 swConservativeTemperature(
   salinity,

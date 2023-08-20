@@ -2,7 +2,7 @@
 % Please edit documentation in R/odf.R
 \name{ODFNames2oceNames}
 \alias{ODFNames2oceNames}
-\title{Translate ODF CODE strings to Oce Variable Names}
+\title{Translate ODF CODE Strings to oce Variable Names}
 \usage{
 ODFNames2oceNames(
   ODFnames,

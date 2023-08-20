@@ -2,7 +2,7 @@
 % Please edit documentation in R/AllClass.R
 \name{concatenate}
 \alias{concatenate}
-\title{Concatenate oce objects}
+\title{Concatenate oce Objects (Generic)}
 \usage{
 concatenate(object, ...)
 }
@@ -15,7 +15,7 @@ concatenate(object, ...)
 An object of class corresponding to that of \code{object}.
 }
 \description{
-Concatenate oce objects
+Concatenate oce Objects (Generic)
 }
 \seealso{
 Other functions that concatenate oce objects: 

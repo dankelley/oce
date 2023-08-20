@@ -2,7 +2,7 @@
 % Please edit documentation in R/misc.R
 \name{lonFormat}
 \alias{lonFormat}
-\title{Format a longitude}
+\title{Format a Longitude}
 \usage{
 lonFormat(lon, digits = max(6, getOption("digits") - 1))
 }

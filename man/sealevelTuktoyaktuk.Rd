@@ -3,7 +3,7 @@
 \docType{data}
 \name{sealevelTuktoyaktuk}
 \alias{sealevelTuktoyaktuk}
-\title{Sea-level data set acquired in 1975 at Tuktoyaktuk}
+\title{Sample sealevel Data (Tuktoyaktuk)}
 \source{
 The data were based on the \code{T_TIDE} dataset, which in turn
 seems to be based on Appendix 7.2 of Foreman (1977).  Minor editing was on

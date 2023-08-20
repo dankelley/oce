@@ -2,7 +2,7 @@
 % Please edit documentation in R/gps.R
 \name{[[<-,gps-method}
 \alias{[[<-,gps-method}
-\title{Replace Parts of a GPS Object}
+\title{Replace Parts of a gps Object}
 \usage{
 \S4method{[[}{gps}(x, i, j, ...) <- value
 }

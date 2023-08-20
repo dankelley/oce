@@ -2,7 +2,7 @@
 % Please edit documentation in R/misc.R
 \name{undriftTime}
 \alias{undriftTime}
-\title{Correct for drift in instrument clock}
+\title{Correct for Drift in an Instrument Clock}
 \usage{
 undriftTime(x, slowEnd = 0, tname = "time")
 }

@@ -2,7 +2,7 @@
 % Please edit documentation in R/misc.R
 \name{latlonFormat}
 \alias{latlonFormat}
-\title{Format a latitude-longitude pair}
+\title{Format a Latitude-Longitude Pair}
 \usage{
 latlonFormat(lat, lon, digits = max(6, getOption("digits") - 1))
 }

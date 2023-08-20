@@ -2,7 +2,7 @@
 % Please edit documentation in R/ad.R
 \name{xyzToEnu}
 \alias{xyzToEnu}
-\title{Convert Acoustic-Doppler Data From xyz to enu Coordinates}
+\title{Convert Acoustic-Doppler Data From XYZ to ENU Coordinates}
 \usage{
 xyzToEnu(x, ...)
 }
@@ -18,7 +18,7 @@ An object of the same class as \code{x}, but with velocities
 in east-north-up coordinates instead of xyz coordinates.
 }
 \description{
-Convert Acoustic-Doppler Data From xyz to enu Coordinates
+Convert Acoustic-Doppler Data From XYZ to ENU Coordinates
 }
 \seealso{
 Other things related to adp data: 

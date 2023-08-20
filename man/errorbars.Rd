@@ -2,7 +2,7 @@
 % Please edit documentation in R/misc.R
 \name{errorbars}
 \alias{errorbars}
-\title{Draw error bars on an existing xy diagram}
+\title{Draw Error Bars on an Existing xy Diagram}
 \usage{
 errorbars(x, y, xe, ye, percent = FALSE, style = 0, length = 0.025, ...)
 }
@@ -27,7 +27,7 @@ yields simple line segments (drawn with \code{\link[=segments]{segments()}}) and
 bars, e.g. to \code{\link[=segments]{segments()}} for \code{style=0}.}
 }
 \description{
-Draw error bars on an existing xy diagram
+Draw Error Bars on an Existing xy Diagram
 }
 \examples{
 library(oce)

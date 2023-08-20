@@ -2,7 +2,7 @@
 % Please edit documentation in R/adp.R
 \name{subset,adp-method}
 \alias{subset,adp-method}
-\title{Subset an ADP Object}
+\title{Subset an adp Object}
 \usage{
 \S4method{subset}{adp}(x, subset, ...)
 }

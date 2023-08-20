@@ -2,7 +2,7 @@
 % Please edit documentation in R/windrose.R
 \name{[[,windrose-method}
 \alias{[[,windrose-method}
-\title{Extract Something From a Windrose Object}
+\title{Extract Something From a windrose Object}
 \usage{
 \S4method{[[}{windrose}(x, i, j, ...)
 }

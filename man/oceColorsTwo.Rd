@@ -3,7 +3,7 @@
 \name{oceColorsTwo}
 \alias{oceColorsTwo}
 \alias{oce.colorsTwo}
-\title{Create two-color palette}
+\title{Create Two-Color Palette}
 \usage{
 oceColorsTwo(n, low = 2/3, high = 0, smax = 1, alpha = 1)
 }

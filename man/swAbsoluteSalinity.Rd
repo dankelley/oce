@@ -2,7 +2,7 @@
 % Please edit documentation in R/sw.R
 \name{swAbsoluteSalinity}
 \alias{swAbsoluteSalinity}
-\title{Seawater absolute salinity, in GSW formulation}
+\title{Seawater Absolute Salinity (GSW Formulation)}
 \usage{
 swAbsoluteSalinity(
   salinity,

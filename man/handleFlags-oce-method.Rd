@@ -2,7 +2,7 @@
 % Please edit documentation in R/AllClass.R
 \name{handleFlags,oce-method}
 \alias{handleFlags,oce-method}
-\title{Handle flags in oce objects}
+\title{Handle Flags in oce Objects}
 \usage{
 \S4method{handleFlags}{oce}(
   object = "oce",

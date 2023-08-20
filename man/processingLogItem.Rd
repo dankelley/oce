@@ -2,7 +2,7 @@
 % Please edit documentation in R/processingLog.R
 \name{processingLogItem}
 \alias{processingLogItem}
-\title{Create an item that can be inserted into a processing log}
+\title{Create an Item That can be Inserted into a Processing Log}
 \usage{
 processingLogItem(value = "")
 }

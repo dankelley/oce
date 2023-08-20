@@ -3,7 +3,7 @@
 \name{oceSpectrum}
 \alias{oceSpectrum}
 \alias{oce.spectrum}
-\title{Wrapper to give normalized spectrum}
+\title{Normalize a Spectrum}
 \usage{
 oceSpectrum(x, ...)
 }

@@ -2,7 +2,7 @@
 % Please edit documentation in R/cm.R
 \name{read.cm}
 \alias{read.cm}
-\title{Read a CM file}
+\title{Read a cm File}
 \usage{
 read.cm(
   file,

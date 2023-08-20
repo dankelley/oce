@@ -3,7 +3,7 @@
 \name{oceColorsChlorophyll}
 \alias{oceColorsChlorophyll}
 \alias{oce.colorsChlorophyll}
-\title{Create colors suitable for chlorophyll fields}
+\title{Create Colors Suitable for chlorophyll Fields}
 \usage{
 oceColorsChlorophyll(n)
 }

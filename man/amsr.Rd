@@ -3,7 +3,7 @@
 \docType{data}
 \name{amsr}
 \alias{amsr}
-\title{An amsr dataset for waters near Nova Scotia}
+\title{Sample amsr Data (Near Nova Scotia)}
 \usage{
 data(amsr)
 }

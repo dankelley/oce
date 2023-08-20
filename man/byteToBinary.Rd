@@ -2,7 +2,7 @@
 % Please edit documentation in R/misc.R
 \name{byteToBinary}
 \alias{byteToBinary}
-\title{Format bytes as binary \link{defunct}}
+\title{Format Bytes as Binary (Defunct)}
 \usage{
 byteToBinary(x, endian = "big")
 }

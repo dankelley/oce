@@ -2,7 +2,7 @@
 % Please edit documentation in R/AllClass.R
 \name{initializeFlags}
 \alias{initializeFlags}
-\title{Create storage for a flag, and initialize values, for a oce object}
+\title{Create and Initialize oce Flags}
 \usage{
 initializeFlags(object, name = NULL, value = NULL, debug = 0)
 }

@@ -3,7 +3,7 @@
 \name{oceDebug}
 \alias{oceDebug}
 \alias{oce.debug}
-\title{Print a debugging message}
+\title{Print a Debugging Message}
 \usage{
 oceDebug(debug = 0, ..., style = "plain", unindent = 0, sep = "")
 }

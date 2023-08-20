@@ -2,7 +2,7 @@
 % Please edit documentation in R/misc.R
 \name{retime}
 \alias{retime}
-\title{Adjust the time within Oce object}
+\title{Adjust The Time Within an oce Object}
 \usage{
 retime(x, a, b, t0, debug = getOption("oceDebug"))
 }

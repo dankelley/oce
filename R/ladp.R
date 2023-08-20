@@ -50,7 +50,7 @@ setMethod(f="initialize",
         return(.Object)
     })
 
-#' Summarize an ladp object
+#' Summarize an ladp Object
 #'
 #' Pertinent summary information is presented, including the station name,
 #' sampling location, data ranges, etc.
@@ -110,7 +110,7 @@ setMethod(f="[[",
     })
 
 
-#' title Replace Parts of a ladp Object
+#' Replace Parts of an ladp Object
 #'
 #' @param x an [ladp-class] object.
 #'
@@ -152,7 +152,7 @@ fixColumn <- function(x) {
 }
 
 
-#' Coerce data into an ladp object
+#' Coerce Data Into an ladp object
 #'
 #' This function assembles vectors of pressure and velocity, possibly also with
 #' shears, salinity, temperature, etc.

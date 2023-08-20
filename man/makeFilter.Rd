@@ -2,7 +2,7 @@
 % Please edit documentation in R/misc.R
 \name{makeFilter}
 \alias{makeFilter}
-\title{Make a digital filter}
+\title{Make a Digital Filter}
 \usage{
 makeFilter(
   type = c("blackman-harris", "rectangular", "hamming", "hann"),

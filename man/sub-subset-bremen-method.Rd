@@ -2,7 +2,7 @@
 % Please edit documentation in R/bremen.R
 \name{[[<-,bremen-method}
 \alias{[[<-,bremen-method}
-\title{Replace Parts of a Bremen Object}
+\title{Replace Parts of a bremen Object}
 \usage{
 \S4method{[[}{bremen}(x, i, j, ...) <- value
 }

@@ -3,7 +3,7 @@
 \name{initialize,ctd-method}
 \alias{initialize,ctd-method}
 \alias{initialize.ctd}
-\title{Initialize storage for a ctd object}
+\title{Initialize Storage for a ctd Object}
 \usage{
 \S4method{initialize}{ctd}(
   .Object,

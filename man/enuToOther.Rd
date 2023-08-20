@@ -2,7 +2,7 @@
 % Please edit documentation in R/ad.R
 \name{enuToOther}
 \alias{enuToOther}
-\title{Rotate acoustic-Doppler data to a new coordinate system}
+\title{Rotate Acoustic-Doppler Data to a New Coordinate System}
 \usage{
 enuToOther(x, ...)
 }
@@ -17,7 +17,7 @@ An object of the same class as \code{x}, but with velocities
 in the rotated coordinate system
 }
 \description{
-Rotate acoustic-Doppler data to a new coordinate system
+Rotate Acoustic-Doppler Data to a New Coordinate System
 }
 \seealso{
 Other things related to adp data: 

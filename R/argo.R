@@ -1,6 +1,6 @@
 # vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4:foldmethod=marker
 
-#' Class to Store Argo Data
+#' Class to Store argo Data
 #'
 #' This class stores data from Argo floats.
 #'
@@ -31,15 +31,16 @@
 #' @family things related to argo data
 setClass("argo", contains="oce")
 
-#' ARGO float dataset
+#' Sample argo Data
 #'
 #' This holds data from ARGO 6900388 in the North Atlantic.
 #'
 #' Below is the official citation (note that this DOI has web links for
 #' downloads):
+#'
 #' Argo (2017). Argo float data and metadata from Global Data Assembly Centre
 #' (Argo GDAC) - Snapshot of Argo GDAC of July, 8st 2017. SEANOE.
-#' \doi{10.17882/42182#50865}
+#' DOI:\code{10.17882/42182#50865}
 #'
 #' @name argo
 #' @docType data
@@ -61,7 +62,7 @@ setClass("argo", contains="oce")
 NULL
 
 
-#' Extract Something From an Argo Object
+#' Extract Something From an argo Object
 #'
 #' @param x an [argo-class] object.
 #'
@@ -347,7 +348,7 @@ dim <- dim(salinity)
     }) # [[
 
 
-#' Replace Parts of an Argo Object
+#' Replace Parts of an argo Object
 #'
 #' @param x an [argo-class] object.
 #'
@@ -586,7 +587,7 @@ argoNames2oceNames <- function(names, ignore.case=TRUE)
     names
 }
 
-#' Subset an Argo Object
+#' Subset an argo Object
 #'
 #' Subset an argo object, either by selecting just the "adjusted" data
 #' or by subsetting by pressure or other variables.
@@ -879,7 +880,7 @@ setMethod(f="subset",
     })
 
 
-#' Summarize an Argo Object
+#' Summarize an argo Object
 #'
 #' @description Summarizes some of the data in an `argo` object.
 #'
@@ -924,7 +925,7 @@ ncdfFixMatrix <- function(x)
     if (length(dim(x)) == 1L) as.vector(x) else x
 }
 
-#' Grid Argo float data
+#' Grid Argo Float Data
 #'
 #' Grid an Argo float, by interpolating to fixed pressure levels.
 #' The gridding is done with [approx()].  If there is
@@ -1772,7 +1773,7 @@ read.argo <- function(file, encoding=NA, debug=getOption("oceDebug"), processing
     res
 }
 
-#' Coerce Data Into an Argo Dataset
+#' Coerce Data Into an argo Object
 #'
 #' Coerce a dataset into an argo dataset. This is not the right way to
 #' read official argo datasets, which are provided in NetCDF format and may
@@ -2169,7 +2170,7 @@ setMethod(f="plot",
 # DEVELOPERS: please pattern functions and documentation on the 'ctd' code, for uniformity.
 # DEVELOPERS: You will need to change the docs, and the 3 spots in the code
 # DEVELOPERS: marked '# DEVELOPER 1:', etc.
-#' @title Handle Flags in ARGO Objects
+#' @title Handle Flags in argo Objects
 #'
 #' @param object an [argo-class] object.
 #'
@@ -2343,7 +2344,7 @@ preferAdjusted <- function(argo, which="all", fallback=TRUE)
 timeToArgoJuld <- function(t)
     oce::julianDay(as.POSIXct(t, tz="UTC")) - oce::julianDay(as.POSIXct("1950-01-01", tz="UTC"))
 
-#' Convert Argo Julian Day (juld) to time
+#' Convert Argo Julian Day to R Time
 #'
 #' @param jday A numerical value indicating the julian day in the Argo convention,
 #' with day=0 at 1950-01-01.

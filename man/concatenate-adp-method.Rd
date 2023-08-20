@@ -2,7 +2,7 @@
 % Please edit documentation in R/adp.R
 \name{concatenate,adp-method}
 \alias{concatenate,adp-method}
-\title{Concatenate adp objects}
+\title{Concatenate adp Objects}
 \usage{
 \S4method{concatenate}{adp}(object, ...)
 }

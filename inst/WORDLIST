@@ -262,6 +262,7 @@ NorTek
 Nortek
 ODF
 ODV
+ORCID
 OSX
 Oblated
 Ocedata
@@ -439,6 +440,7 @@ adpEnsembleAverage
 al
 allowNAs
 alongPath
+aml
 amsr
 analyse
 anomalous
@@ -662,6 +664,7 @@ gridding
 gsfc
 gsw
 gui
+gzipped
 haline
 handleFlags
 hawaii

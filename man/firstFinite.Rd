@@ -2,13 +2,20 @@
 % Please edit documentation in R/misc.R
 \name{firstFinite}
 \alias{firstFinite}
-\title{Get first finite value in a vector or array, or NULL if none}
+\title{Get First Finite Value in a Vector or Array.}
 \usage{
 firstFinite(v)
 }
 \arguments{
 \item{v}{A numerical vector or array.}
 }
+\value{
+The first finite value, or NULL if there are no
+finite values.
+}
 \description{
-Get first finite value in a vector or array, or NULL if none
+If x is a vector, this is straightforward.  If x is
+anything else, it is first converted to a vector with
+\code{\link[=as.vector]{as.vector()}}, so the first value will be with
+respect to storage by columns, for a matrix, etc.
 }

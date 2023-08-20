@@ -3,7 +3,7 @@
 \docType{data}
 \name{adv}
 \alias{adv}
-\title{Sample adv (acoustic-doppler velocimeter) dataset}
+\title{Sample adv Data}
 \source{
 This file came from the SLEIWEX-2008 experiment.
 }

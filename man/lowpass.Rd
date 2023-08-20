@@ -2,7 +2,7 @@
 % Please edit documentation in R/misc.R
 \name{lowpass}
 \alias{lowpass}
-\title{Perform lowpass digital filtering}
+\title{Lowpass Digital Filtering}
 \usage{
 lowpass(x, filter = "hamming", n, replace = TRUE, coefficients = FALSE)
 }

@@ -2,7 +2,7 @@
 % Please edit documentation in R/adp.R
 \name{[[,adp-method}
 \alias{[[,adp-method}
-\title{Extract Something from an adp Object}
+\title{Extract Something From an adp Object}
 \usage{
 \S4method{[[}{adp}(x, i, j, ...)
 }

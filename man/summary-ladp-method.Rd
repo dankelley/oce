@@ -2,7 +2,7 @@
 % Please edit documentation in R/ladp.R
 \name{summary,ladp-method}
 \alias{summary,ladp-method}
-\title{Summarize an ladp object}
+\title{Summarize an ladp Object}
 \usage{
 \S4method{summary}{ladp}(object, ...)
 }

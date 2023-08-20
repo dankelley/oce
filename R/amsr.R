@@ -71,7 +71,7 @@ setMethod(f="initialize",
 #<?>     })
 #<?>
 
-#' An amsr dataset for waters near Nova Scotia
+#' Sample amsr Data (Near Nova Scotia)
 #'
 #' This is a three-day composite satellite image for
 #' July 27, 2023, trimmed to show waters south and east of
@@ -1084,7 +1084,7 @@ read.amsr <- function(file, encoding=NA, debug=getOption("oceDebug"))
     res
 }
 
-#' Create a composite of amsr satellite data
+#' Create a Composite of amsr Satellite Data
 #'
 #' Form averages for each item in the `data` slot of the supplied objects,
 #' taking into account the bad-data codes.

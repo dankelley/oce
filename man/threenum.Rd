@@ -2,7 +2,7 @@
 % Please edit documentation in R/misc.R
 \name{threenum}
 \alias{threenum}
-\title{Calculate min, mean, and max values}
+\title{Calculate Minimum, Mean, and Maximum Values}
 \usage{
 threenum(x)
 }

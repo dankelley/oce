@@ -2,7 +2,7 @@
 % Please edit documentation in R/colors.R
 \name{colormap}
 \alias{colormap}
-\title{Calculate color map}
+\title{Calculate a Color Map}
 \usage{
 colormap(
   z = NULL,

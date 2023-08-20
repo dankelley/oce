@@ -2,7 +2,7 @@
 % Please edit documentation in R/ctd.woce.R
 \name{read.ctd.woce.other}
 \alias{read.ctd.woce.other}
-\title{Read a WOCE-exchange EXPOCODE File}
+\title{Read a ctd File in WOCE-Exchange EXPOCODE Format}
 \usage{
 read.ctd.woce.other(
   file,

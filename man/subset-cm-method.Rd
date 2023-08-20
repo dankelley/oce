@@ -2,7 +2,7 @@
 % Please edit documentation in R/cm.R
 \name{subset,cm-method}
 \alias{subset,cm-method}
-\title{Subset a CM Object}
+\title{Subset a cm Object}
 \usage{
 \S4method{subset}{cm}(x, subset, ...)
 }

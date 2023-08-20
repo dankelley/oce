@@ -2,7 +2,7 @@
 % Please edit documentation in R/misc.R
 \name{argShow}
 \alias{argShow}
-\title{Show an argument to a function, e.g. for debugging}
+\title{Show a Function Argument}
 \usage{
 argShow(x, nshow = 4, last = FALSE, sep = "=")
 }
@@ -16,5 +16,5 @@ argShow(x, nshow = 4, last = FALSE, sep = "=")
 \item{sep}{the separator between name and value}
 }
 \description{
-Show an argument to a function, e.g. for debugging
+Show a Function Argument
 }

@@ -2,7 +2,7 @@
 % Please edit documentation in R/oce.R
 \name{as.oce}
 \alias{as.oce}
-\title{Coerce Something Into an Oce Object}
+\title{Coerce Something Into an oce Object}
 \usage{
 as.oce(x, ...)
 }
@@ -16,7 +16,7 @@ as.oce(x, ...)
 An \linkS4class{oce} object.
 }
 \description{
-Coerce Something Into an Oce Object
+Coerce Something Into an oce Object
 }
 \details{
 This function is limited and not intended for common use.

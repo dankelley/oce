@@ -2,7 +2,7 @@
 % Please edit documentation in R/rsk.R
 \name{[[,rsk-method}
 \alias{[[,rsk-method}
-\title{Extract Something From a Rsk Object}
+\title{Extract Something From a rsk Object}
 \usage{
 \S4method{[[}{rsk}(x, i, j, ...)
 }

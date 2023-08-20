@@ -2,7 +2,7 @@
 % Please edit documentation in R/amsr.R
 \name{composite,amsr-method}
 \alias{composite,amsr-method}
-\title{Create a composite of amsr satellite data}
+\title{Create a Composite of amsr Satellite Data}
 \usage{
 \S4method{composite}{amsr}(object, ...)
 }

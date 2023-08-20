@@ -3,7 +3,7 @@
 \docType{data}
 \name{met}
 \alias{met}
-\title{Sample met Object}
+\title{Sample met Data}
 \source{
 Environment Canada website on October 19, 2019.
 }

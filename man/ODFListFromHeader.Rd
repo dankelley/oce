@@ -2,7 +2,7 @@
 % Please edit documentation in R/odf.R
 \name{ODFListFromHeader}
 \alias{ODFListFromHeader}
-\title{Create a list of ODF header metadata}
+\title{Create a List of odf Header Metadata}
 \usage{
 ODFListFromHeader(header)
 }
@@ -15,7 +15,7 @@ those in the ODF header, except that duplicates are transformed
 through the use of \code{\link[=unduplicateNames]{unduplicateNames()}}.
 }
 \description{
-Create a list of ODF header metadata
+Create a List of odf Header Metadata
 }
 \seealso{
 Other things related to odf data: 

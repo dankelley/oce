@@ -2,7 +2,7 @@
 % Please edit documentation in R/misc.R
 \name{GMTOffsetFromTz}
 \alias{GMTOffsetFromTz}
-\title{Determine time offset from timezone}
+\title{Determine Time Offset From Timezone}
 \usage{
 GMTOffsetFromTz(tz)
 }

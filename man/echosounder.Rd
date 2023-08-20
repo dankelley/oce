@@ -3,7 +3,7 @@
 \docType{data}
 \name{echosounder}
 \alias{echosounder}
-\title{Echosounder Dataset}
+\title{Sample echosounder Data}
 \source{
 This file came from the SLEIWEX-2008 experiment, and was decimated
 using \code{\link[=decimate]{decimate()}} with \code{by=c()}.

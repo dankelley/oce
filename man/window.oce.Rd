@@ -2,7 +2,7 @@
 % Please edit documentation in R/oce.R
 \name{window.oce}
 \alias{window.oce}
-\title{Window an Oce Object by Time or Distance}
+\title{Window an oce Object by Time or Distance}
 \usage{
 \method{window}{oce}(
   x,

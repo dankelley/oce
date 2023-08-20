@@ -2,7 +2,7 @@
 % Please edit documentation in R/echosounder.R
 \name{summary,echosounder-method}
 \alias{summary,echosounder-method}
-\title{Summarize an Echosounder Object}
+\title{Summarize an echosounder Object}
 \usage{
 \S4method{summary}{echosounder}(object, ...)
 }

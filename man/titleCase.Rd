@@ -2,7 +2,7 @@
 % Please edit documentation in R/misc.R
 \name{titleCase}
 \alias{titleCase}
-\title{Capitalize first letter of each of a vector of words}
+\title{Capitalize First Letter of Each of a Vector of Words}
 \usage{
 titleCase(w)
 }

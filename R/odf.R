@@ -54,7 +54,7 @@ setMethod(f="initialize",
         return(.Object)
     })
 
-#' Extract Something From an ODF Object
+#' Extract Something From an odf Object
 #'
 #' @param x an [odf-class] object.
 #'
@@ -85,7 +85,7 @@ setMethod(f="[[",
         callNextMethod()         # [[
     })
 
-#' @title Replace Parts of an ODF Object
+#' @title Replace Parts of an odf Object
 #'
 #' @param x an [odf-class] object.
 #'
@@ -98,7 +98,7 @@ setMethod(f="[[<-",
         callNextMethod(x=x, i=i, j=j, ...=..., value=value) # [[<-
     })
 
-#' Subset an ODF object
+#' Subset an odf Object
 #'
 #' This function is somewhat analogous to [subset.data.frame()].
 #'
@@ -233,7 +233,7 @@ setMethod(f="plot",
     })
 
 
-#' Summarize an ODF Object
+#' Summarize an odf Object
 #'
 #' Pertinent summary information is presented, including the station name,
 #' sampling location, data ranges, etc.
@@ -305,7 +305,7 @@ findInHeader <- function(key, lines, returnOnlyFirst=TRUE, numeric=FALSE, prefix
     }
 }
 
-#' Translate ODF CODE strings to Oce Variable Names
+#' Translate ODF CODE Strings to oce Variable Names
 #'
 #' Translate ODF CODE strings to oce variable names. This
 #' is done differently for data names and quality-control
@@ -703,7 +703,7 @@ ODFNames2oceNames <- function(ODFnames, columns=NULL, PARAMETER_HEADER=NULL, deb
 }
 
 
-#' Create ODF object from the output of `ODF::read_ODF()`.
+#' Create ODF Object From Output of read_ODF in ODF package
 #'
 #' As of August 11, 2015, `ODF::read_ODF` returns a list with 9 elements,
 #' one named `DATA`, which is a [data.frame()] containing the
@@ -812,7 +812,7 @@ ODF2oce <- function(ODF, coerce=TRUE, debug=getOption("oceDebug"))
     res
 }
 
-#' Create a list of ODF header metadata
+#' Create a List of odf Header Metadata
 #'
 #' @param header Vector of character strings, holding the header
 #'
@@ -864,7 +864,7 @@ ODFListFromHeader <- function(header)
 }
 
 
-#' Read an ODF file
+#' Read an odf File
 #'
 #' ODF (Ocean Data Format) is a
 #' format developed at the Bedford Institute of Oceanography and also used
@@ -1439,7 +1439,7 @@ read.odf <- function(file, columns=NULL, header="list", exclude=NULL, encoding="
     res
 }
 
-#' Read a CTD file in ODF format
+#' Read a ctd File in odf Format
 #'
 #' @template readCtdTemplate
 #'

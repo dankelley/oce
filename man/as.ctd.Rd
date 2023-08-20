@@ -2,7 +2,7 @@
 % Please edit documentation in R/ctd.R
 \name{as.ctd}
 \alias{as.ctd}
-\title{Coerce data into CTD object}
+\title{Coerce Data Into a ctd Object}
 \usage{
 as.ctd(
   salinity,

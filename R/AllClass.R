@@ -1,6 +1,6 @@
 # vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
 
-#' Get the present time, in a stated timezone
+#' Get the Present Time, in a Stated Timezone
 #'
 #' @param tz String indicating the desired timezone. The default is
 #' to use UTC, which is used very commonly in oceanographic work. To
@@ -703,7 +703,7 @@ setMethod(f="[[",
     })
 
 
-#' @title Replace Parts of an Oce Object
+#' @title Replace Parts of an oce Object
 #'
 #' @param x an [oce-class] object.
 #'
@@ -805,7 +805,7 @@ setMethod(f="show",
         options(digits=odigits) # return to original digits value
     })
 
-#' Alter an object to account for magnetic declination
+#' Alter an Object to Account for Magnetic Declination (Generic)
 #'
 #' Current-measuring instruments that infer flow direction using magnetic
 #' compasses require a correction for magnetic declination, in order to infer
@@ -841,7 +841,7 @@ setGeneric(name="applyMagneticDeclination",
         standardGeneric("applyMagneticDeclination")
     })
 
-#' Alter an object to account for magnetic declination
+#' Alter an Object to Account for Magnetic Declination
 #'
 #' Current-measuring instruments that infer flow direction using magnetic
 #' compasses require a correction for magnetic declination, in order to infer
@@ -889,7 +889,7 @@ setMethod(f="applyMagneticDeclination",
     })
 
 
-#' Create a composite object by averaging across good data
+#' Create a Composite Object by Averaging Across Good Data
 #'
 #' @param object either a [list] of [oce-class] objects, in
 #' which case this is the only argument, or a single [oce-class] object,
@@ -931,7 +931,7 @@ setMethod("composite",
     })
 
 
-#' @title Handle flags in oce objects
+#' @title Handle Flags in oce Objects (Generic)
 #'
 #' @details
 #' Each specialized variant of this function has its own defaults
@@ -945,7 +945,7 @@ setGeneric(name="handleFlags",
         standardGeneric("handleFlags")
     })
 
-#' Signal erroneous application to non-oce objects
+#' Signal Erroneous Application to non-oce Objects
 #' @param object A vector, which cannot be the case for `oce` objects.
 #' @param flags Ignored.
 #' @param actions Ignored.
@@ -957,7 +957,7 @@ setMethod(f="handleFlags",
         stop("handleFlags() can only be applied to objects inheriting from \"oce\"")
     })
 
-#' Handle flags in oce objects
+#' Handle Flags in oce Objects
 #'
 #' @details
 #
@@ -985,8 +985,7 @@ setMethod(f="handleFlags",
     })
 
 
-# this doc uses markdown format (see https://cran.r-project.org/web/packages/roxygen2/vignettes/markdown.html)
-#' Low-level function for handling data-quality flags
+#' Low-Level Function for Handling Data-Quality Flags
 #'
 #' This function is designed for internal use within the `oce` package.  Its
 #' purpose is to carry out low-level processing relating to data-quality flags,
@@ -1150,7 +1149,7 @@ handleFlagsInternal <- function(object, flags, actions, where, debug=0) {
 }
 
 
-#' Suggest a default flag vector for bad or suspicious data
+#' Suggest a Default Flag Vector for Bad or Suspicious Data
 #'
 #' `defaultFlags` tries to suggest a reasonable default `flag` scheme
 #' for use by [handleFlags()]. It does this by looking for an item
@@ -1470,7 +1469,7 @@ initializeFlagSchemeInternal <- function(object, name=NULL, mapping=NULL, defaul
     res
 }
 
-#' Concatenate oce objects
+#' Concatenate oce Objects (Generic)
 #'
 #' @param object an [oce-class] object.
 #'
@@ -1484,7 +1483,7 @@ setGeneric("concatenate",
         standardGeneric("concatenate")
     })
 
-#' Concatenate oce objects
+#' Concatenate oce Objects (oce-Specific)
 #'
 #' @templateVar class oce
 #'
@@ -1560,7 +1559,7 @@ setMethod("concatenate",
         res
     })
 
-#' Concatenate a list of oce objects
+#' Concatenate a List of oce Objects
 #'
 #' @param object a [list] of [oce-class] objects.
 #'

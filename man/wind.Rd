@@ -3,7 +3,7 @@
 \docType{data}
 \name{wind}
 \alias{wind}
-\title{Wind dataset}
+\title{Sample Wind Data}
 \description{
 Wind data inferred from Figure 5 of Koch et al. (1983), provided to
 illustrate the \code{\link[=interpBarnes]{interpBarnes()}} function.

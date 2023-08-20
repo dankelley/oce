@@ -2,7 +2,7 @@
 % Please edit documentation in R/adp.R
 \name{as.adp}
 \alias{as.adp}
-\title{Create an ADP Object}
+\title{Create an adp Object}
 \usage{
 as.adp(
   time,
@@ -33,7 +33,7 @@ as.adp(
 An \linkS4class{adp} object.
 }
 \description{
-Create an ADP Object
+Create an adp Object
 }
 \details{
 Construct an \linkS4class{adp} object.  Only a basic

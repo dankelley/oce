@@ -2,7 +2,7 @@
 % Please edit documentation in R/adv.R
 \name{[[<-,adv-method}
 \alias{[[<-,adv-method}
-\title{Replace Parts of an ADV Object}
+\title{Replace Parts of an adv Object}
 \usage{
 \S4method{[[}{adv}(x, i, j, ...) <- value
 }

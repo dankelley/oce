@@ -2,7 +2,7 @@
 % Please edit documentation in R/adv.nortek.R
 \name{read.adv.nortek}
 \alias{read.adv.nortek}
-\title{Read an ADV data file}
+\title{Read an adv File}
 \usage{
 read.adv.nortek(
   file,

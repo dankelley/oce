@@ -2,7 +2,7 @@
 % Please edit documentation in R/misc.R
 \name{standardizeLongitude}
 \alias{standardizeLongitude}
-\title{Put longitude in the range from -180 to 180}
+\title{Put Longitude in the Range From -180 to 180}
 \usage{
 standardizeLongitude(longitude)
 }
@@ -13,7 +13,7 @@ standardizeLongitude(longitude)
 longitude in signed degrees East
 }
 \description{
-Put longitude in the range from -180 to 180
+Put Longitude in the Range From -180 to 180
 }
 \seealso{
 \code{\link[=matrixShiftLongitude]{matrixShiftLongitude()}} and \code{\link[=shiftLongitude]{shiftLongitude()}} are more

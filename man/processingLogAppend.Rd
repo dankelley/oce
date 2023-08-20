@@ -2,7 +2,7 @@
 % Please edit documentation in R/processingLog.R
 \name{processingLogAppend}
 \alias{processingLogAppend}
-\title{Append an item to a processing log}
+\title{Append an Item to a Processing Log}
 \usage{
 processingLogAppend(h, value = "")
 }
@@ -18,7 +18,7 @@ An \code{\link[=list]{list()}} containing items named
 and the text notations of those entries..
 }
 \description{
-Append an item to a processing log
+Append an Item to a Processing Log
 }
 \seealso{
 Other things related to processing logs: 

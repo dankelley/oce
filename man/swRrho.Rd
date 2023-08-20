@@ -2,7 +2,7 @@
 % Please edit documentation in R/sw.R
 \name{swRrho}
 \alias{swRrho}
-\title{Density ratio}
+\title{Density Ratio}
 \usage{
 swRrho(
   ctd,

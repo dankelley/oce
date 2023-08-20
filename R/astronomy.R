@@ -1,4 +1,4 @@
-#' Convert astronomical angle in degrees to hours, minutes and seconds
+#' Convert Astronomical Angle in Degrees to Hours, Minutes and Seconds
 #'
 #' The purpose of [angle2hms] is to facilitate comparison of
 #' `rightAscension` angles computed by [sunAngle()] and [moonAngle()]
@@ -44,7 +44,7 @@ angle2hms <- function(angle)
     list(hourDecimal=hourDecimal, hour=hour, minute=minute, second=second, string=string)
 }
 
-#' Convert ecliptical to equatorial coordinate
+#' Convert Ecliptical Coordinate to Equatorial Coordinate
 #'
 #' Convert from ecliptical to equatorial coordinates, using
 #' equations 8.3 and 8.4 of reference 1, or, equivalently,
@@ -92,7 +92,7 @@ eclipticalToEquatorial <- function(lambda, beta, epsilon)
 }
 
 
-#' Convert equatorial to local horizontal coordinate
+#' Convert Equatorial Coordinate to Local Horizontal Coordinate
 #'
 #' Convert from equatorial coordinates to local horizontal coordinates, i.e.
 #' azimuth and altitude.
@@ -139,7 +139,7 @@ equatorialToLocalHorizontal <- function(rightAscension, declination, t, longitud
 }
 
 
-#' Convert a POSIXt time to a sidereal time
+#' Convert From POSIXt Time to Sidereal Time
 #'
 #' Convert a POSIXt time to a sidereal time, using
 #' the method in Chapter 7 of reference 1.  The small correction
@@ -183,7 +183,7 @@ siderealTime <- function(t)
 }
 
 
-#' Convert a time to a Julian day
+#' Convert a Time to a Julian Day
 #'
 #' Convert a POSIXt time (given as either the `t` argument
 #' or as the `year`, `month`, and other arguments) to a Julian day,
@@ -264,7 +264,7 @@ julianDay <- function(t, year=NA, month=NA, day=NA, hour=NA, min=NA, sec=NA, tz=
 
 
 
-#' Julian-Day number to Julian century
+#' Convert Julian-Day-Number to Julian Century
 #'
 #' Convert a Julian-Day number to a time in julian centuries since noon on
 #' January 1, 1900.

@@ -3,6 +3,7 @@
 \docType{package}
 \name{oce}
 \alias{oce}
+\alias{oce-package}
 \title{oce: A Package for Oceanographic Analysis.}
 \description{
 The oce package provides functions for working with
@@ -72,3 +73,27 @@ method like \link{subset,ctd-method} for CTD data, etc.
 }
 }
 
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://dankelley.github.io/oce/}
+  \item Report bugs at \url{https://github.com/dankelley/oce/issues}
+}
+
+}
+\author{
+\strong{Maintainer}: Dan Kelley \email{Dan.Kelley@Dal.Ca} (\href{https://orcid.org/0000-0001-7808-5911}{ORCID})
+
+Authors:
+\itemize{
+  \item Clark Richards \email{clark.richards@gmail.com} (\href{https://orcid.org/0000-0002-7833-206X}{ORCID})
+}
+
+Other contributors:
+\itemize{
+  \item Chantelle Layton \email{chantelle.layton@dal.ca} (\href{https://orcid.org/0000-0002-3199-5763}{ORCID}) (curl() coauthor) [contributor]
+  \item British Geological Survey (magnetic-field subroutine) [contributor, copyright holder]
+}
+
+}
+\keyword{internal}

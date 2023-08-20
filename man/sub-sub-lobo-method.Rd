@@ -2,7 +2,7 @@
 % Please edit documentation in R/lobo.R
 \name{[[,lobo-method}
 \alias{[[,lobo-method}
-\title{Extract Something From a LOBO Object}
+\title{Extract Something From a lobo Object}
 \usage{
 \S4method{[[}{lobo}(x, i, j, ...)
 }

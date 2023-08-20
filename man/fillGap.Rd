@@ -2,7 +2,7 @@
 % Please edit documentation in R/misc.R
 \name{fillGap}
 \alias{fillGap}
-\title{Fill a gap in an oce object}
+\title{Fill a Gap in an oce Object}
 \usage{
 fillGap(x, method = c("linear"), rule = 1)
 }

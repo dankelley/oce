@@ -2,7 +2,7 @@
 % Please edit documentation in R/topo.R
 \name{[[,topo-method}
 \alias{[[,topo-method}
-\title{Extract Something From a Topo Object}
+\title{Extract Something From a topo Object}
 \usage{
 \S4method{[[}{topo}(x, i, j, ...)
 }

@@ -2,7 +2,7 @@
 % Please edit documentation in R/xbt.R
 \name{as.xbt}
 \alias{as.xbt}
-\title{Create an xbt object}
+\title{Create an xbt Object}
 \usage{
 as.xbt(
   z,
@@ -32,7 +32,7 @@ depth, i.e. \code{z} is 0 at the air-sea interface, and negative within the wate
 An \linkS4class{xbt} object.
 }
 \description{
-Create an xbt object
+Create an xbt Object
 }
 \seealso{
 Other things related to xbt data: 

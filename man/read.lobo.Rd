@@ -2,7 +2,7 @@
 % Please edit documentation in R/lobo.R
 \name{read.lobo}
 \alias{read.lobo}
-\title{Read a LOBO File}
+\title{Read a lobo File}
 \usage{
 read.lobo(file, cols = 7, encoding = "latin1", processingLog)
 }

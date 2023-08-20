@@ -2,7 +2,7 @@
 % Please edit documentation in R/misc.R
 \name{labelWithUnit}
 \alias{labelWithUnit}
-\title{Create label with unit}
+\title{Create Label With Unit}
 \usage{
 labelWithUnit(name, unit = NULL)
 }

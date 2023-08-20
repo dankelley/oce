@@ -2,7 +2,7 @@
 % Please edit documentation in R/misc.R
 \name{detrend}
 \alias{detrend}
-\title{Detrend a set of observations}
+\title{Detrend a Set of Observations}
 \usage{
 detrend(x, y)
 }

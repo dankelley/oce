@@ -2,7 +2,7 @@
 % Please edit documentation in R/windrose.R
 \name{[[<-,windrose-method}
 \alias{[[<-,windrose-method}
-\title{Replace Parts of a Windrose Object}
+\title{Replace Parts of a windrose Object}
 \usage{
 \S4method{[[}{windrose}(x, i, j, ...) <- value
 }

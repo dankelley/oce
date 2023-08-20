@@ -1,4 +1,4 @@
-#' @title Set data-quality flags within a <%=class%> object
+#' @title Set Data-Quality Flags within a <%=class%> Object
 #'
 #' @description
 #' This function changes specified entries in the data-quality

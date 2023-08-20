@@ -2,7 +2,7 @@
 % Please edit documentation in R/bremen.R
 \name{read.bremen}
 \alias{read.bremen}
-\title{Read a Bremen File}
+\title{Read a bremen File}
 \usage{
 read.bremen(file, encoding = "latin1")
 }

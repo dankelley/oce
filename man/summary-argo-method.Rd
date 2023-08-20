@@ -3,7 +3,7 @@
 \name{summary,argo-method}
 \alias{summary,argo-method}
 \alias{summary.argo}
-\title{Summarize an Argo Object}
+\title{Summarize an argo Object}
 \usage{
 \S4method{summary}{argo}(object, ...)
 }

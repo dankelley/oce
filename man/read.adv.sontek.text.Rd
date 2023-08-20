@@ -2,7 +2,7 @@
 % Please edit documentation in R/adv.sontek.R
 \name{read.adv.sontek.text}
 \alias{read.adv.sontek.text}
-\title{Read an ADV data file}
+\title{Read an adv File}
 \usage{
 read.adv.sontek.text(
   file,

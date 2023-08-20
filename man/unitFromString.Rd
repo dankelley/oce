@@ -2,7 +2,7 @@
 % Please edit documentation in R/misc.R
 \name{unitFromString}
 \alias{unitFromString}
-\title{Decode units, from strings}
+\title{Decode Units From Strings}
 \usage{
 unitFromString(unit, scale = NULL)
 }

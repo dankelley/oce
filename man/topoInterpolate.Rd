@@ -2,7 +2,7 @@
 % Please edit documentation in R/topo.R
 \name{topoInterpolate}
 \alias{topoInterpolate}
-\title{Interpolate Within a Topo Object}
+\title{Interpolate Within a topo Object}
 \usage{
 topoInterpolate(longitude, latitude, topo)
 }

@@ -2,7 +2,7 @@
 % Please edit documentation in R/map.R
 \name{usrLonLat}
 \alias{usrLonLat}
-\title{Calculate lon-lat coordinates of plot-box trace}
+\title{Calculate Geographic Coordinates of Plot Box}
 \usage{
 usrLonLat(n = 25, debug = getOption("oceDebug"))
 }

@@ -2,7 +2,7 @@
 % Please edit documentation in R/tides.R
 \name{tidemAstron}
 \alias{tidemAstron}
-\title{Astronomical Calculations for Tidem}
+\title{Astronomical Calculations for tidem}
 \usage{
 tidemAstron(t)
 }

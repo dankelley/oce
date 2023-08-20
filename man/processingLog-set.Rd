@@ -2,7 +2,7 @@
 % Please edit documentation in R/processingLog.R
 \name{processingLog<-}
 \alias{processingLog<-}
-\title{Add an item to a processing log (in place)}
+\title{Add an Item to a Processing Log}
 \usage{
 processingLog(x) <- value
 }
@@ -12,7 +12,7 @@ processingLog(x) <- value
 \item{value}{A character string with the description of the logged activity.}
 }
 \description{
-Add an item to a processing log (in place)
+Add an Item to a Processing Log
 }
 \examples{
 data(ctd)

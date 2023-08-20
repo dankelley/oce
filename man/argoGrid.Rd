@@ -2,7 +2,7 @@
 % Please edit documentation in R/argo.R
 \name{argoGrid}
 \alias{argoGrid}
-\title{Grid Argo float data}
+\title{Grid Argo Float Data}
 \usage{
 argoGrid(argo, p, debug = getOption("oceDebug"), ...)
 }

@@ -3,7 +3,7 @@
 \name{handleFlags,argo-method}
 \alias{handleFlags,argo-method}
 \alias{handleFlags.argo}
-\title{Handle Flags in ARGO Objects}
+\title{Handle Flags in argo Objects}
 \usage{
 \S4method{handleFlags}{argo}(
   object = "oce",

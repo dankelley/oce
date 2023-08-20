@@ -3,7 +3,7 @@
 \docType{data}
 \name{sealevel}
 \alias{sealevel}
-\title{Sealevel data for Halifax Harbour}
+\title{Sample sealevel Data (Halifax Harbour)}
 \source{
 The data were created as \preformatted{ sealevel <-
 read.oce("490-01-JAN-2003_slev.csv") sealevel <- oce.edit(sealevel,

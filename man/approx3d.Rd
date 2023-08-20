@@ -2,7 +2,7 @@
 % Please edit documentation in R/misc.R
 \name{approx3d}
 \alias{approx3d}
-\title{Trilinear interpolation in a 3D array}
+\title{Trilinear Interpolation in a 3D Array}
 \usage{
 approx3d(x, y, z, f, xout, yout, zout)
 }

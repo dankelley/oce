@@ -2,7 +2,7 @@
 % Please edit documentation in R/spectral.R
 \name{pwelch}
 \alias{pwelch}
-\title{Welch periodogram}
+\title{Welch Periodogram}
 \usage{
 pwelch(
   x,

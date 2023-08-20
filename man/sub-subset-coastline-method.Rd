@@ -2,7 +2,7 @@
 % Please edit documentation in R/coastline.R
 \name{[[<-,coastline-method}
 \alias{[[<-,coastline-method}
-\title{Replace Parts of a Coastline Object}
+\title{Replace Parts of a coastline Object}
 \usage{
 \S4method{[[}{coastline}(x, i, j, ...) <- value
 }

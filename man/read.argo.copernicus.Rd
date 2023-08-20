@@ -2,7 +2,7 @@
 % Please edit documentation in R/argo.copernicus.R
 \name{read.argo.copernicus}
 \alias{read.argo.copernicus}
-\title{Read argo file in Copernicus format}
+\title{Read argo File in Copernicus Format}
 \usage{
 read.argo.copernicus(
   file,

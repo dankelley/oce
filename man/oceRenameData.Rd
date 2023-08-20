@@ -2,7 +2,7 @@
 % Please edit documentation in R/accessors.R
 \name{oceRenameData}
 \alias{oceRenameData}
-\title{Rename Something in an oce data Slot}
+\title{Rename Something in the data slot of an oce Object}
 \usage{
 oceRenameData(object, old, new, note = "")
 }

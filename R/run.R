@@ -1,6 +1,6 @@
 # vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
 
-#' Calculate running linear models
+#' Calculate Running Linear Models
 #'
 #' The linear model is calculated from the slope of a localized least-squares
 #' regression model y=y(x).  The localization is defined by the x difference

@@ -2,7 +2,7 @@
 % Please edit documentation in R/echosounder.R
 \name{as.echosounder}
 \alias{as.echosounder}
-\title{Coerce Data into an Echosounder Object}
+\title{Coerce Data Into an echosounder Object}
 \usage{
 as.echosounder(
   time,

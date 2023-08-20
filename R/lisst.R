@@ -25,7 +25,7 @@
 #' @family things related to lisst data
 setClass("lisst", contains="oce")
 
-#' Extract Something From a LISST Object
+#' Extract Something From a lisst Object
 #'
 #' @param x a [lisst-class] object.
 #'
@@ -57,7 +57,7 @@ setMethod(f="[[",
         callNextMethod()         # [[
     })
 
-#' Replace Parts of a LISST Object
+#' Replace Parts of a lisst Object
 #'
 #' @param x a [lisst-class] object.
 #'
@@ -71,7 +71,7 @@ setMethod(f="[[<-",
     })
 
 
-#' LISST Dataset
+#' Sample lisst Data
 #'
 #' LISST (Laser in-situ scattering and transmissometry) dataset, constructed
 #' artificially.
@@ -105,7 +105,7 @@ setMethod(f="initialize",
         return(.Object)
     })
 
-#' Summarize a LISST Object
+#' Summarize a lisst Object
 #'
 #' Summarizes some of the data in a `lisst` object, presenting such information
 #' as the station name, sampling location, data ranges, etc.
@@ -245,9 +245,8 @@ setMethod(f="plot",
 
 
 
-#' Coerce Data Into a LISST Object
+#' Coerce Data Into a lisst Object
 #'
-#' Coerce data into a lisst object
 #' If `data` contains fewer than 42 columns, an error is reported.  If it
 #' contains more than 42 columns, only the first 42 are used.  This is used by
 #' [read.lisst()], the documentation on which explains the meanings
@@ -315,7 +314,7 @@ as.lisst <- function(data, filename="", year=0, tz="UTC", longitude=NA, latitude
 }
 
 
-#' Read a LISST File
+#' Read a lisst File
 #'
 #' Read a LISST data file.
 #' The file should contain 42 columns, with no header.  If there are fewer than

@@ -23,7 +23,7 @@
 #' @author Dan Kelley
 setClass("cm", contains="oce")
 
-#' A Current Meter (cm) Object
+#' Sample cm Data
 #'
 #' The result of using [read.cm()] on a current meter file holding measurements made with an
 #' Interocean S4 device.  See [read.cm()] for some general cautionary notes on reading such
@@ -78,7 +78,7 @@ setMethod(f="[[",
         callNextMethod()         # [[
     })
 
-#' Replace Parts of a CM Object
+#' Replace Parts of a cm Object
 #'
 #' @param x a [cm-class] object.
 #'
@@ -111,7 +111,7 @@ setMethod(f="initialize",
         return(.Object)
     })
 
-#' Summarize a CM Object
+#' Summarize a cm Object
 #'
 #' Summarizes some of the data in a `cm` object, presenting such information
 #' as the station name, sampling location, data ranges, etc.
@@ -146,7 +146,7 @@ setMethod(f="summary",
     })
 
 
-#' Subset a CM Object
+#' Subset a cm Object
 #'
 #' This function is somewhat analogous to [subset.data.frame()].
 #'
@@ -207,7 +207,7 @@ setMethod(f="subset",
         res
     })
 
-#' Coerce data into a CM object
+#' Coerce Data Into a cm Object
 #'
 #' @param time A vector of times of observation, or an `oce` object from which time
 #' and two velocity components can be inferred, e.g. an [adv-class] object, or
@@ -365,7 +365,7 @@ as.cm <- function(time, u=NULL, v=NULL,
 }
 
 
-#' Read a CM file
+#' Read a cm File
 #'
 #' Read a current-meter data file, producing a [cm-class] object.
 #'
@@ -919,7 +919,7 @@ setMethod(f="plot",
         invisible(NULL)
     })
 
-#' Alter a cm-class object to account for magnetic declination
+#' Alter a cm Object to Account for Magnetic Declination
 #'
 #' Current-meter (`cm`) instruments determine directions from onboard compasses,
 #' so interpreting velocity components in geographical coordinates requires that

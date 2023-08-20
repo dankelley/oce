@@ -2,7 +2,7 @@
 % Please edit documentation in R/gps.R
 \name{summary,gps-method}
 \alias{summary,gps-method}
-\title{Summarize a GPS Object}
+\title{Summarize a gps Object}
 \usage{
 \S4method{summary}{gps}(object, ...)
 }

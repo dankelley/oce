@@ -1,6 +1,6 @@
 # vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
 
-#' Apply a function to vector data
+#' Apply a Function to Vector Data
 #'
 #' The function `FUN` is applied to `f` in bins specified by
 #' `xbreaks`.  The division of data into bins is done with [cut()].
@@ -81,7 +81,7 @@ binApply1D <- function(x, f, xbreaks, FUN, include.lowest=FALSE, ...)
     list(xbreaks=xbreaks, xmids=xmids, result=result)
 } # binApply1D()
 
-#' Apply a function to matrix data
+#' Apply a Function to Matrix Data
 #'
 #' The function `FUN` is applied to `f` in bins specified by
 #' `xbreaks` and `ybreaks`.
@@ -198,7 +198,7 @@ binApply2D <- function(x, y, f, xbreaks, ybreaks, FUN, include.lowest=FALSE, ...
 } # binApply2D()
 
 
-#' Bin-count vector data
+#' Bin-count Vector Data
 #'
 #' Count the number of elements of a given vector that fall within
 #' successive pairs of values within a second vector.
@@ -350,7 +350,7 @@ binMean1D <- function(x, f, xbreaks, include.lowest=FALSE, na.rm=FALSE)
         result=result)
 } # binMean1D
 
-#' Bin-count matrix data
+#' Bin-count Matrix Data
 #'
 #' Count the number of elements of a given matrix z=z(x,y) that fall within
 #' successive pairs of breaks in x and y.
@@ -560,7 +560,7 @@ binMean2D <- function(x, y, f, xbreaks, ybreaks, flatten=FALSE, fill=FALSE, fill
     res
 } # binMean2D
 
-#' Bin-average a vector y, based on x values
+#' Bin-average a Vector y, Based on x Values
 #'
 #' [binAverage()] works by calling [binMean1D()], after computing
 #' the `xbreaks` parameter of the latter function as `seq(xmin,xmax,xinc)`.

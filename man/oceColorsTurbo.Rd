@@ -3,7 +3,7 @@
 \name{oceColorsTurbo}
 \alias{oceColorsTurbo}
 \alias{oce.colorsTurbo}
-\title{Create colors similar to the google turbo scheme}
+\title{Create Colors Similar to the Google Turbo Scheme}
 \usage{
 oceColorsTurbo(n)
 }

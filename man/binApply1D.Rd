@@ -2,7 +2,7 @@
 % Please edit documentation in R/bin.R
 \name{binApply1D}
 \alias{binApply1D}
-\title{Apply a function to vector data}
+\title{Apply a Function to Vector Data}
 \usage{
 binApply1D(x, f, xbreaks, FUN, include.lowest = FALSE, ...)
 }

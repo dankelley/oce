@@ -2,7 +2,7 @@
 % Please edit documentation in R/ad.R
 \name{toEnu}
 \alias{toEnu}
-\title{Rotate acoustic-Doppler data to the enu coordinate system}
+\title{Rotate Acoustic-Doppler Data to the ENU Coordinate System}
 \usage{
 toEnu(x, ...)
 }
@@ -17,7 +17,7 @@ An object of the same class as \code{x}, but with velocities
 in the enu coordinate system
 }
 \description{
-Rotate acoustic-Doppler data to the enu coordinate system
+Rotate Acoustic-Doppler Data to the ENU Coordinate System
 }
 \seealso{
 Other things related to adp data: 

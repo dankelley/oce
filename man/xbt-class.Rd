@@ -3,7 +3,7 @@
 \docType{class}
 \name{xbt-class}
 \alias{xbt-class}
-\title{Class to Store XBT Data}
+\title{Class to Store XBT (Expendable Bathythermograph) Data}
 \description{
 This class stores expendable bathythermograph (XBT) data, e.g. from a Sippican
 device.  Reference 1 gives some information on Sippican

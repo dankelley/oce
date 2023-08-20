@@ -36,9 +36,8 @@ setMethod(f="initialize",
         return(.Object)
     })
 
-#' @title Summarize a GPS Object
+#' Summarize a gps Object
 #'
-#' @description
 #' Summarize a [gps-class] object.
 #'
 #' @param object an object of class `"gps"`
@@ -55,7 +54,7 @@ setMethod(f="summary",
         invisible(callNextMethod()) # summary
     })
 
-#' Extract Something From a GPS Object
+#' Extract Something From a gps Object
 #'
 #' @param x a [gps-class] object.
 #'
@@ -94,7 +93,7 @@ setMethod(f="[[",
         callNextMethod()         # [[
     })
 
-#' Replace Parts of a GPS Object
+#' Replace Parts of a gps Object
 #'
 #' @param x a [gps-class] object.
 #'
@@ -430,7 +429,7 @@ setMethod(f="plot",
     })
 
 
-#' Coerce data into a GPS dataset
+#' Coerce Data Into a gps Object
 #'
 #' Coerces a sequence of longitudes and latitudes into a GPS dataset.
 #' This may be used when [read.gps()] cannot read a file, or when the
@@ -466,7 +465,7 @@ as.gps <- function(longitude, latitude, filename="")
 }
 
 
-#' Read a GPS File
+#' Read a gps File
 #'
 #' Reads GPX format files by simply finding all longitudes and latitudes; in
 #' other words, information on separate tracks, or waypoints, etc., is lost.

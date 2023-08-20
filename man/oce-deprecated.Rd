@@ -3,7 +3,7 @@
 \name{oce-deprecated}
 \alias{oce-deprecated}
 \alias{oce-defunct}
-\title{Deprecated and Defunct Elements of the oce package}
+\title{Deprecated and Defunct Elements of the oce Package}
 \description{
 Certain functions and function arguments are still provided for
 compatibility with older versions of \CRANpkg{oce}, but will be removed soon.

@@ -2,7 +2,7 @@
 % Please edit documentation in R/sw.R
 \name{swSCTp}
 \alias{swSCTp}
-\title{Practical salinity from electrical conductivity, temperature and pressure}
+\title{Practical Salinity From Electrical Conductivity, Temperature and Pressure}
 \usage{
 swSCTp(
   conductivity,

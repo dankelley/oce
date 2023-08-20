@@ -2,7 +2,7 @@
 % Please edit documentation in R/misc.R
 \name{integerToAscii}
 \alias{integerToAscii}
-\title{Decode integer to corresponding ASCII code}
+\title{Infer ASCII Code From an Integer Value}
 \usage{
 integerToAscii(i)
 }
@@ -13,7 +13,7 @@ integerToAscii(i)
 A character, or character vector.
 }
 \description{
-Decode integer to corresponding ASCII code
+Infer ASCII Code From an Integer Value
 }
 \examples{
 library(oce)

@@ -2,7 +2,7 @@
 % Please edit documentation in R/sw.R
 \name{swAlpha}
 \alias{swAlpha}
-\title{Seawater thermal expansion coefficient}
+\title{Seawater Thermal Expansion Coefficient}
 \usage{
 swAlpha(
   salinity,

@@ -78,7 +78,7 @@ ad2cpDefaultDataItem <- function(x, j=NULL, order=c("burst", "average",
 }
 
 
-#' Decode an item from a Nortek AD2CP file header (an internal function)
+#' Infer an Item From a Nortek AD2CP File Header
 #'
 #' @param x an [adp-class] object that holds AD2CP data.
 #'
@@ -160,7 +160,7 @@ ad2cpHeaderValue <- function(x, key, item, numeric=TRUE, default)
     res
 }
 
-#' Test whether object is an AD2CP type
+#' Test Whether Item is a ad2cp-Type adp Object
 #'
 #' @param x an [oce] object.
 #'

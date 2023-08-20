@@ -2,7 +2,7 @@
 % Please edit documentation in R/echosounder.R
 \name{[[,echosounder-method}
 \alias{[[,echosounder-method}
-\title{Extract Something from an Echosounder Object}
+\title{Extract Something From an echosounder Object}
 \usage{
 \S4method{[[}{echosounder}(x, i, j, ...)
 }

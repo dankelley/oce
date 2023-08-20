@@ -2,7 +2,7 @@
 % Please edit documentation in R/sw.R
 \name{swSoundSpeed}
 \alias{swSoundSpeed}
-\title{Seawater sound speed}
+\title{Seawater Sound Speed}
 \usage{
 swSoundSpeed(
   salinity,

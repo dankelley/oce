@@ -2,7 +2,7 @@
 % Please edit documentation in R/AllClass.R
 \name{composite}
 \alias{composite}
-\title{Create a composite object by averaging across good data}
+\title{Create a Composite Object by Averaging Across Good Data}
 \usage{
 composite(object, ...)
 }

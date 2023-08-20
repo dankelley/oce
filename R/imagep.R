@@ -13,7 +13,7 @@ clipmin <- function(x, min=0)
 }
 
 
-#' Abbreviate a vector of times by removing commonalities
+#' Abbreviate a Vector of Times by Removing Commonalities
 #'
 #' Abbreviate a vector of times by removing commonalities (e.g. year)
 #'
@@ -157,7 +157,7 @@ paletteCalculations <- function(separation=par("cin")[2]/2, width=par("cin")[2],
 }
 
 
-#' Draw a palette, leaving margins suitable for accompanying plot
+#' Draw a Palette, Leaving Margins Suitable for an Accompanying Plot
 #'
 #' In the normal use, [drawPalette()] draws an image palette near the
 #' right-hand side of the plotting device, and then adjusts the global margin

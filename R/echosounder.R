@@ -67,7 +67,7 @@
 setClass("echosounder", contains="oce")
 
 
-#' Echosounder Dataset
+#' Sample echosounder Data
 #'
 #' This is degraded subsample of measurements that were made with a Biosonics
 #' scientific echosounder, as part of the St Lawrence Internal Wave Experiment
@@ -96,7 +96,7 @@ setMethod(f="initialize",
     })
 
 
-#' Summarize an Echosounder Object
+#' Summarize an echosounder Object
 #'
 #' Summarizes some of the data in an [echosounder-class] object.
 #'
@@ -136,7 +136,7 @@ setMethod(f="summary",
     })
 
 
-#' Extract Something from an Echosounder Object
+#' Extract Something From an echosounder Object
 #'
 #' @param x an [echosounder-class] object.
 #'
@@ -214,7 +214,7 @@ setMethod(f="[[",
         }
     })
 
-#' Replace Parts of an Echosounder Object
+#' Replace Parts of an echosounder Object
 #'
 #' @param x an [echosounder-class] object.
 #'
@@ -228,7 +228,7 @@ setMethod(f="[[<-",
     })
 
 
-#' Subset an Echosounder Object
+#' Subset an echosounder Object
 #'
 #' This function is somewhat analogous to [subset.data.frame()].
 #' Subsetting can be by `time` or `depth`, but these may not be
@@ -324,7 +324,7 @@ setMethod(f="subset",
     }) # subset,echosounder-method
 
 
-#' Coerce Data into an Echosounder Object
+#' Coerce Data Into an echosounder Object
 #'
 #' Coerces a dataset into a echosounder dataset.
 #'
@@ -795,7 +795,7 @@ setMethod(f="plot",
     })
 
 
-#' Read an Echosounder File
+#' Read an echosounder File
 #'
 #' Reads a biosonics echosounder file.  This function was written for and
 #' tested with single-beam, dual-beam, and split-beam Biosonics files of type

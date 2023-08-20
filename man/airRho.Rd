@@ -2,7 +2,7 @@
 % Please edit documentation in R/air.R
 \name{airRho}
 \alias{airRho}
-\title{Air density}
+\title{Air Density}
 \usage{
 airRho(temperature, pressure, humidity)
 }

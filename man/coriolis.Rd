@@ -2,7 +2,7 @@
 % Please edit documentation in R/misc.R
 \name{coriolis}
 \alias{coriolis}
-\title{Coriolis parameter on rotating earth}
+\title{Coriolis Parameter on the Earth}
 \usage{
 coriolis(latitude, degrees = TRUE)
 }

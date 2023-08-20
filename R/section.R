@@ -50,7 +50,7 @@
 setClass("section", contains="oce")
 
 
-#' Hydrographic section
+#' Sample section Data
 #'
 #' This is line A03 (ExpoCode 90CT40_1, with nominal sampling date 1993-09-11).
 #' The chief scientist was Tereschenkov of SOI, working aboard the Russian ship
@@ -110,7 +110,7 @@ setMethod(f="initialize",
 # DEVELOPERS: please pattern functions and documentation on this, for uniformity.
 # DEVELOPERS: You will need to change the docs, and the 3 spots in the code
 # DEVELOPERS: marked '# DEVELOPER 1:', etc.
-#' @title Handle flags in Section Objects
+#' @title Handle flags in section Objects
 #'
 #' @details
 #' The default for `flags` is based on
@@ -196,7 +196,7 @@ setMethod("initializeFlagScheme",
         res
     })
 
-#' Summarize a Section Object
+#' Summarize a section Object
 #'
 #' Pertinent summary information is presented, including station locations,
 #' distance along trac, etc.
@@ -295,7 +295,7 @@ setMethod(f="summary",
     })
 
 
-#' Extract Something From a Section Object
+#' Extract Something From a section Object
 #'
 #' @param x a [section-class] object.
 #'
@@ -553,7 +553,7 @@ setMethod(f="[[",
     })                           # [[
 
 
-#' Replace Parts of a Section Object
+#' Replace Parts of a section Object
 #'
 #' @param x a [section-class] object.
 #'
@@ -621,7 +621,7 @@ setMethod(f="show",
         }
     })
 
-#' Subset a Section Object
+#' Subset a section Object
 #'
 #' Return a subset of a section object.
 #'
@@ -2214,7 +2214,7 @@ setMethod(f="plot", signature=signature("section"),
     })
 
 
-#' Read a Section File
+#' Read a section File
 #'
 #' Read a file that contains a series of `ctd` profiles that make up an
 #' oceanographic section.
@@ -3257,7 +3257,7 @@ as.section <- function(salinity, temperature, pressure, longitude, latitude, sta
     res
 }
 
-#' Add a spine to a section object
+#' Add a Spine to a section Object
 #'
 #' The purpose of this is to permit plotting with `xtype="spine"`, so that
 #' the section plot will display the distance of stations projected

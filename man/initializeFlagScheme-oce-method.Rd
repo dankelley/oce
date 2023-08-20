@@ -2,7 +2,7 @@
 % Please edit documentation in R/AllClass.R
 \name{initializeFlagScheme,oce-method}
 \alias{initializeFlagScheme,oce-method}
-\title{Establish a data-quality scheme for a oce object}
+\title{Establish a Data-Quality Scheme for a oce Object}
 \usage{
 \S4method{initializeFlagScheme}{oce}(
   object,

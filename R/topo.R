@@ -26,7 +26,7 @@
 #' @family things related to topo data
 setClass("topo", contains="oce")
 
-#' @title Global Topographic Dataset at Half-degree Resolution
+#' @title Global Topographic Data (at Half-degree Resolution)
 #'
 #' @description
 #' Global topographic dataset at half-degree resolution, downloaded from
@@ -99,9 +99,8 @@ setMethod(f="initialize",
     })
 
 
-#' @title Summarize A Topo Object
+#' Summarize a topo Object
 #'
-#' @description
 #' Pertinent summary information is presented, including the longitude and
 #' latitude range, and the range of elevation.
 #'
@@ -127,7 +126,7 @@ setMethod(f="summary",
         invisible(callNextMethod()) # summary
     })
 
-#' @title Extract Something From a Topo Object
+#' @title Extract Something From a topo Object
 #'
 #' @param x a [topo-class] object.
 #'
@@ -163,7 +162,7 @@ setMethod(f="[[",
         callNextMethod()         # [[
     })
 
-#' @title Replace Parts of a Topo Object
+#' @title Replace Parts of a topo Object
 #'
 #' @param x a [topo-class] object.
 #'
@@ -176,7 +175,7 @@ setMethod(f="[[<-",
         callNextMethod(x=x, i=i, j=j, ..., value=value) # [[<-
     })
 
-#' @title Subset a Topo Object
+#' @title Subset a topo Object
 #'
 #' @description
 #' This function is somewhat analogous to [subset.data.frame()].
@@ -431,7 +430,7 @@ download.topo <- function(west, east, south, north, resolution=4,
     destination
 }
 
-#' @title Interpolate Within a Topo Object
+#' @title Interpolate Within a topo Object
 #'
 #' @description
 #' Bilinear interpolation is used so that values will vary smoothly within a
@@ -825,7 +824,7 @@ setMethod(f="plot",
     })
 
 
-#' Read a Topo File
+#' Read a topo File
 #'
 #' Read a file that contains topographic data in the ETOPO dataset, as was once provided by
 #' the NOAA website (see [download.topo()] for a good server for such
@@ -967,7 +966,7 @@ read.topo <- function(file, encoding="latin1", debug=getOption("oceDebug"))
 }
 
 
-#' Coerce Data into Topo Object
+#' Coerce Data Into a topo Object
 #'
 #' @param longitude Either a vector of longitudes (in degrees east, and bounded by
 #' -180 and 180), or a `bathy` object created by `getNOAA.bathy()` from

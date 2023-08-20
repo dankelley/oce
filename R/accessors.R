@@ -1,6 +1,6 @@
 # vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
 
-#' Get Something from an oce data Slot
+#' Extract Something From the data Slot of an oce Object
 #'
 #' In contrast to the various `[[` functions, this is
 #' guaranteed to look only within the `data` slot. If
@@ -22,7 +22,7 @@ oceGetData <- function(object, name)
     object@data[[name]]
 }
 
-#' Delete Something in an oce data Slot
+#' Delete Something From the data Slot of an oce Object
 #'
 #' Return a copy of the supplied object that lacks the named
 #' element in its `data` slot, and that has a note
@@ -49,7 +49,7 @@ oceDeleteData <- function(object, name)
     object
 }
 
-#' Set Something in an oce data Slot
+#' Set Something in the data Slot of an oce Object
 #'
 #' Create a copy of an object in which some element of its
 #' `data` slot has been altered, or added.
@@ -164,7 +164,7 @@ oceSetData <- function(object, name, value, unit, originalName, note="")
 }
 
 
-#' Rename Something in an oce data Slot
+#' Rename Something in the data slot of an oce Object
 #'
 #' Rename an item within the `data` slot of an [oce-class] object, also changing
 #' `dataNamesOriginal` in the `metadata` slot, so that the `[[` accessor will
@@ -234,7 +234,7 @@ oceRenameData <- function(object, old, new, note="")
     object
 }
 
-#' Rename Something in an oce metadata Slot
+#' Rename Something in the metadata Slot of an oce Object
 #'
 #' Rename an item within the `metadata` slot of an [oce-class] object.
 #'
@@ -284,7 +284,7 @@ oceRenameMetadata <- function(object, old, new, note="")
     object
 }
 
-#' Get Something From an oce metadata Slot
+#' Extract Something From the metadata Slot of an oce Object
 #'
 #' In contrast to the various `[[` functions, this is
 #' guaranteed to look only within the `metadata` slot. If
@@ -329,7 +329,7 @@ oceDeleteMetadata <- function(object, name)
     object
 }
 
-#' Set Something in an oce metadata Slot
+#' Set Something in the metadata Slot of an oce Object
 #'
 #' Create a copy of an object in which some element of its
 #' `metadata` slot has been altered, or added.

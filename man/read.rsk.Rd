@@ -2,7 +2,7 @@
 % Please edit documentation in R/rsk.R
 \name{read.rsk}
 \alias{read.rsk}
-\title{Read a Rsk file}
+\title{Read a rsk File}
 \usage{
 read.rsk(
   file,

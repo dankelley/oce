@@ -2,7 +2,7 @@
 % Please edit documentation in R/accessors.R
 \name{oceRenameMetadata}
 \alias{oceRenameMetadata}
-\title{Rename Something in an oce metadata Slot}
+\title{Rename Something in the metadata Slot of an oce Object}
 \usage{
 oceRenameMetadata(object, old, new, note = "")
 }

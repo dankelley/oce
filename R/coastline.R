@@ -23,7 +23,7 @@
 setClass("coastline", contains="oce")
 
 
-#' World Coastline
+#' Sample coastline Data (Global, at 1:110M scale)
 #'
 #' This is a coarse resolution coastline at scale 1:110M, with 10,696 points,
 #' suitable for world-scale plots plotted at a small size, e.g. inset diagrams.
@@ -64,7 +64,7 @@ setMethod(f="initialize",
         return(.Object)
     })
 
-#' Extract Something From a Coastline Object
+#' Extract Something From a coastline Object
 #'
 #' @param x a [coastline-class] object.
 #'
@@ -102,7 +102,7 @@ setMethod(f="[[",
         callNextMethod()         # [[
     })
 
-#' Replace Parts of a Coastline Object
+#' Replace Parts of a coastline Object
 #'
 #' @param x a [coastline-class] object.
 #'
@@ -117,7 +117,7 @@ setMethod(f="[[<-",
         callNextMethod(x=x, i=i, j=j, ...=..., value=value) # [[<-
     })
 
-#' Subset a Coastline Object
+#' Subset a coastline Object
 #'
 #' Subsets a coastline object according to limiting values for longitude
 #' and latitude.
@@ -266,7 +266,7 @@ setMethod(f="subset",
     })
 
 
-#' Summarize a Coastline Object
+#' Summarize a coastline Object
 #'
 #' Summarizes coastline length, bounding box, etc.
 #'
@@ -289,7 +289,7 @@ setMethod(f="summary",
         invisible(callNextMethod())        # summary
     })
 
-#' Coerce Data into a Coastline Object
+#' Coerce Data Into a coastline Object
 #'
 #' Coerces a sequence of longitudes and latitudes into a coastline dataset.
 #' This may be used when [read.coastline()] cannot read a file, or

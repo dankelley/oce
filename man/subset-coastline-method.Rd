@@ -3,7 +3,7 @@
 \name{subset,coastline-method}
 \alias{subset,coastline-method}
 \alias{subset.coastline}
-\title{Subset a Coastline Object}
+\title{Subset a coastline Object}
 \usage{
 \S4method{subset}{coastline}(x, subset, ...)
 }

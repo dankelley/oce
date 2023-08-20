@@ -45,7 +45,7 @@ setClass("satellite", contains="oce")
 setClass("g1sst", contains="satellite")
 
 
-#' @title Extract Something From a G1SST Object
+#' @title Extract Something From a g1sst Object
 #'
 #' @param x a [g1sst-class] object.
 #'
@@ -77,7 +77,7 @@ setMethod(f="[[",
         callNextMethod()         # [[
     })
 
-#' @title Replace Parts of a G1SST Object
+#' @title Replace Parts of a g1sst Object
 #'
 #' @param x a [g1sst-class] object.
 #'
@@ -90,7 +90,7 @@ setMethod(f="[[<-",
         callNextMethod(x=x, i=i, j=j, ...=..., value=value) # [[<-
     })
 
-#' @title Read a G1SST file
+#' @title Read a g1sst File
 #'
 #' @description
 #' Read a G1SST file in the netcdf format provided by the ERDDAP server

@@ -2,7 +2,7 @@
 % Please edit documentation in R/bin.R
 \name{binAverage}
 \alias{binAverage}
-\title{Bin-average a vector y, based on x values}
+\title{Bin-average a Vector y, Based on x Values}
 \usage{
 binAverage(x, y, xmin, xmax, xinc, include.lowest = FALSE, na.rm = FALSE)
 }

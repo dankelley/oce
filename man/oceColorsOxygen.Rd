@@ -3,7 +3,7 @@
 \name{oceColorsOxygen}
 \alias{oceColorsOxygen}
 \alias{oce.colorsOxygen}
-\title{Create colors suitable for oxygen fields}
+\title{Create Colors Suitable for oxygen Fields}
 \usage{
 oceColorsOxygen(n)
 }

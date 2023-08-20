@@ -2,7 +2,7 @@
 % Please edit documentation in R/ctd.ssda.R
 \name{read.ctd.ssda}
 \alias{read.ctd.ssda}
-\title{Read CTD format in SSDA format}
+\title{Read a ctd File in SSDA Format}
 \usage{
 read.ctd.ssda(
   file,

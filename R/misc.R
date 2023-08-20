@@ -120,7 +120,7 @@ abbreviateVector <- function(x)
 }
 
 
-#' Convert angles from 0:360 to -180:180
+#' Convert Angle From 0:360 to -180:180 Convention
 #'
 #' This is mostly used for instrument heading angles, in cases where the
 #' instrument is aligned nearly northward, so that small variations in heading
@@ -150,7 +150,7 @@ angleRemap <- function(theta)
     atan2(sin(toRad * theta), cos(toRad * theta)) / toRad
 }
 
-#' Trilinear interpolation in a 3D array
+#' Trilinear Interpolation in a 3D Array
 #'
 #' Interpolate within a 3D array, using the trilinear approximation.
 #'
@@ -239,7 +239,7 @@ approx3d <- function(x, y, z, f, xout, yout, zout)
 }
 
 
-#' Show an argument to a function, e.g. for debugging
+#' Show a Function Argument
 #'
 #' @param x the argument
 #'
@@ -279,7 +279,7 @@ argShow <- function(x, nshow=4, last=FALSE, sep="=")
     res
 }
 
-#' Create label with unit
+#' Create Label With Unit
 #'
 #' `labelWithUnit` creates a label with a unit, for graphical
 #' display, e.g. by \code{\link{plot,section-method}}.
@@ -400,14 +400,23 @@ labelWithUnit <- function(name, unit=NULL)
     rval
 }
 
-#' Get first finite value in a vector or array, or NULL if none
+#' Get First Finite Value in a Vector or Array.
+#'
+#' If x is a vector, this is straightforward.  If x is
+#' anything else, it is first converted to a vector with
+#' [as.vector()], so the first value will be with
+#' respect to storage by columns, for a matrix, etc.
+#'
 #' @param v A numerical vector or array.
+#'
+#' @return  The first finite value, or NULL if there are no
+#' finite values.
 firstFinite <- function(v)
 {
     if (!is.vector(v))
         v <- as.vector(v)
     first <- which(is.finite(v))
-    if (length(first) > 0) v[first[1]] else NULL
+    if (length(first) > 0L) v[first[1]] else NULL
 }
 
 #' Read a World Ocean Atlas NetCDF File
@@ -512,7 +521,7 @@ shortenTimeString <- function(t, debug=getOption("oceDebug"))
     tc
 }
 
-#' Convert each of a vector of strings from SNAKE_CASE to camelCase
+#' Convert From Snake-Case to Camel-Case Notation
 #'
 #' `snakeToCamel` converts "snake-case" characters such as `"NOVA_SCOTIA"`
 #' to "camel-case" values, such as `"NovaScotia"`.  It was written for
@@ -583,7 +592,7 @@ snakeToCamel <- function(s, specialCases=NULL)
 }
 
 
-#' Decode units, from strings
+#' Decode Units From Strings
 #'
 #' This is mainly intended for internal use within the package, e.g. by
 #' [read.odf()], and so the list of string-to-unit mappings is not
@@ -740,7 +749,7 @@ unitFromString <- function(unit, scale=NULL)
     return(list(unit=as.expression(unit), scale=if (is.null(scale)) "" else scale))
 }
 
-#' Rename duplicated character strings
+#' Rename Duplicated Character Strings
 #'
 #' Append numeric suffices to character strings, to avoid repeats.
 #' This is used by various data
@@ -792,7 +801,7 @@ unduplicateNames <- function(strings, style=1)
     strings
 }
 
-#' Calculate a rounded bound, rounded up to mantissa 1, 2, or 5
+#' Calculate a Bound, Rounded up to Mantissa 1, 2, or 5
 #'
 #' @param x a single positive number
 #'
@@ -811,7 +820,7 @@ bound125 <- function(x)
     res
 }
 
-#' Put longitude in the range from -180 to 180
+#' Put Longitude in the Range From -180 to 180
 #'
 #' @param longitude in degrees East, possibly exceeding 180
 #'
@@ -822,7 +831,7 @@ bound125 <- function(x)
 #' powerful relatives to `standardizeLongitude`.
 standardizeLongitude <- function(longitude) ifelse(longitude > 180, longitude-360, longitude)
 
-#' Try to associate data names with units, for use by summary()
+#' Associate Data Names With Units
 #'
 #' Note that the whole object is not being given as an argument;
 #' possibly this will reduce copying and thus storage impact.
@@ -869,7 +878,7 @@ dataLabel <- function(names, units)
     res
 }
 
-#' Capitalize first letter of each of a vector of words
+#' Capitalize First Letter of Each of a Vector of Words
 #'
 #' This is used in making labels for data names in some ctd functions
 #'
@@ -885,7 +894,7 @@ titleCase <- function(w)
 }
 
 
-#' Curl of 2D vector field
+#' Curl of 2D Vector Field
 #'
 #' Calculate the z component of the curl of an x-y vector field.
 #'
@@ -1033,7 +1042,7 @@ rangeExtended <- function(x, extend=0.04) # extend by 4% on each end, like axes
     }
 }
 
-#' Extract (x, y, z) from (x, y, grid)
+#' Extract (x, y, z) From (x, y, grid)
 #'
 #' Extract the grid points from a grid, returning columns.
 #' This is useful for e.g. gridding large datasets, in which the first step
@@ -1070,7 +1079,7 @@ ungrid <- function(x, y, grid)
 }
 
 
-#' Draw error bars on an existing xy diagram
+#' Draw Error Bars on an Existing xy Diagram
 #'
 #' @param x,y coordinates of points on the existing plot.
 #'
@@ -1286,7 +1295,7 @@ plotTaylor <- function(x, y, scale, pch, col, labels, pos, ...)
 }
 
 
-#' Pretty lat/lon in deg, min, sec
+#' Pretty Longitude/Latitude in Degree-Minute-Second Format
 #'
 #' Round a geographical positions in degrees, minutes, and seconds
 #' Depending on the range of values in `x`, rounding is done to degrees,
@@ -1358,7 +1367,7 @@ smoothSomething <- function(x, ...)
 }
 
 
-#' Rescale values to lie in a given range
+#' Rescale Values to lie in a Given Range
 #'
 #' This is helpful in e.g. developing a color scale for an image plot.  It is
 #' not necessary that `rlow` be less than `rhigh`, and in fact
@@ -1416,7 +1425,7 @@ rescale <- function(x, xlow, xhigh, rlow=0, rhigh=1, clip=TRUE)
 }
 
 
-#' Adjust the time within Oce object
+#' Adjust The Time Within an oce Object
 #'
 #' This function compensates for drifting instrument clocks, according to
 #' \eqn{t'=t + a + b (t-t0)}{t'=t + a + b*(t-t0)}, where \eqn{t'}{t'} is the
@@ -1484,7 +1493,7 @@ retime <- function(x, a, b, t0, debug=getOption("oceDebug"))
 }
 
 
-#' Calculate min, mean, and max values
+#' Calculate Minimum, Mean, and Maximum Values
 #'
 #' This is a simpler cousin of the standard [fivenum()] function,
 #' used in [summary()] functions for `oce` objects.
@@ -1546,7 +1555,7 @@ normalize <- function(x)
 }
 
 
-#' Detrend a set of observations
+#' Detrend a Set of Observations
 #'
 #' Detrends `y` by subtracting a linear trend in `x`, to create
 #' a vector that is zero for its first and last finite value.
@@ -1602,7 +1611,7 @@ detrend <- function(x, y)
 
 
 
-#' Remove spikes from a time series
+#' Remove Spikes From a Time Series
 #'
 #' The method identifies spikes with respect to a "reference" time-series, and
 #' replaces these spikes with the reference value, or with `NA` according
@@ -1788,7 +1797,7 @@ despikeColumn <- function(x, reference=c("median", "smooth", "trim"), n=4, k=7, 
 
 
 
-#' Substitute NA for data outside a range
+#' Substitute NA for Data Outside a Range
 #'
 #' Substitute NA for data outside a range, e.g. to remove wild spikes in data.
 #'
@@ -1816,7 +1825,7 @@ rangeLimit <- function(x, min, max)
 }
 
 
-#' Determine year from various abbreviations
+#' Determine Year From Various Abbreviations
 #'
 #' Various data files may contain various abbreviations for years.  For
 #' example, 99 refers to 1999, and 8 refers to 2008.  Sometimes, even 108
@@ -1839,7 +1848,7 @@ unabbreviateYear <- function(year)
 
 
 
-#' Unwrap an angle that suffers modulo-360 problems
+#' Unwrap an Angle That Suffers Modulo-360 Problems
 #'
 #' This is mostly used for instrument heading angles, in cases where the
 #' instrument is aligned nearly northward, so that small variations in heading
@@ -1889,7 +1898,7 @@ unwrapAngle <- function(angle)
 }
 
 
-#' Partial matching of strings or numbers
+#' Partial Matching of Strings or Numbers
 #'
 #' An extended version of [pmatch()] that allows `x` to be
 #' numeric or string-based.  As with [pmatch()], partial string
@@ -1955,7 +1964,7 @@ ocePmatch <- function(x, table, nomatch=NA_integer_, duplicates.ok=FALSE)
 oce.pmatch <- ocePmatch
 
 
-#' Wrapper to give normalized spectrum
+#' Normalize a Spectrum
 #'
 #' This is a wrapper around the R [spectrum()] function, which
 #' returns spectral values that are adjusted so that the integral of those
@@ -2001,7 +2010,7 @@ oceSpectrum <- function(x, ...)
 oce.spectrum <- oceSpectrum
 
 
-#' Show some values from a list, vector or matrix
+#' Show Some Values From a List, Vector or Matrix
 #'
 #' This is similar to [str()], but it shows data at the first and last of the
 #' vector, which can be quite helpful in debugging.
@@ -2145,12 +2154,13 @@ vectorShow <- function(v, msg="", postscript="", digits=5L, n=2L, showNA=FALSE, 
 }
 
 
-#' Full name of file, including path
+#' Full name of File, Including Path
 #'
 #' Determines the full name of a file, including the path.  Used by many
 #' `read.X` routines, where `X` is the name of a class of object.
 #' This is a wrapper around [normalizePath()], with warnings turned
-#' off so that messages are not printed for unfound files (e.g. URLs).
+#' off so that messages are not printed for files that are
+#' not found (e.g. URLs).
 #'
 #' @param filename name of file
 #'
@@ -2167,7 +2177,7 @@ fullFilename <- function(filename)
 }
 
 
-#' Provide axis names in adjustable sizes
+#' Variable Names in Adjustable Sizes
 #'
 #' Provide axis names in adjustable sizes, e.g. using T instead of Temperature,
 #' and including units as appropriate.
@@ -2542,7 +2552,7 @@ resizableLabel <- function(item, axis="x", sep, unit=NULL, debug=getOption("oceD
 }
 
 
-#' Rotate velocity components within an oce object
+#' Rotate Velocity Components Within an oce Object
 #'
 #' Alter the horizontal components of velocities in `adp`,
 #' `adv` or `cm` objects, by applying a rotation about
@@ -2630,7 +2640,7 @@ rotateAboutZ <- function(x, angle)
     res
 }
 
-#' Format a latitude-longitude pair
+#' Format a Latitude-Longitude Pair
 #'
 #' Format a latitude-longitude pair, using "S" for negative latitudes, etc.
 #'
@@ -2665,7 +2675,7 @@ latlonFormat <- function(lat, lon, digits=max(6, getOption("digits") - 1))
 }
 
 
-#' Format a latitude
+#' Format a Latitude
 #'
 #' Format a latitude, using "S" for negative latitude.
 #'
@@ -2697,7 +2707,7 @@ latFormat <- function(lat, digits=max(6, getOption("digits") - 1))
 }
 
 
-#' Format a longitude
+#' Format a Longitude
 #'
 #' Format a longitude, using "W" for west longitude.
 #'
@@ -2727,7 +2737,7 @@ lonFormat <- function(lon, digits=max(6, getOption("digits") - 1))
     res
 }
 
-#' Alter longitudes from -180:180 to 0:360 convention
+#' Change Longitude From -180:180 to 0:360 Convention
 #'
 #' For numerical input, including vectors, matrices and arrays,
 #' [lon360()] simply calls [ifelse()] to add 360 to any negative values. For
@@ -2772,7 +2782,7 @@ lon360 <- function(x)
     res
 }
 
-#' Determine time offset from timezone
+#' Determine Time Offset From Timezone
 #'
 #' The data are from
 #' `https://www.timeanddate.com/time/zones/` and were
@@ -2890,7 +2900,7 @@ GMTOffsetFromTz <- function(tz)
 }
 
 
-#' Acceleration due to earth gravity
+#' Acceleration Due to Earth Gravity
 #'
 #' Compute \eqn{g}{g}, the acceleration due to gravity, as a function of
 #' latitude.
@@ -2922,7 +2932,7 @@ gravity <- function(latitude=45, degrees=TRUE)
 }
 
 
-#' Make a digital filter
+#' Make a Digital Filter
 #'
 #' The filter is suitable for use by [filter()],
 #' [convolve()] or (for the `asKernal=TRUE` case) with
@@ -3134,7 +3144,7 @@ oceFilter <- function(x, a=1, b, zero.phase=FALSE)
 oce.filter <- oceFilter
 
 
-#' Grid data using Barnes algorithm
+#' Grid Data Using the Barnes Algorithm
 #'
 #' The algorithm follows that described by Koch et al. (1983), except
 #' that `interpBarnes` adds (1) the ability to
@@ -3367,7 +3377,7 @@ interpBarnes <- function(x, y, z, w,
     rval
 }
 
-#' Coriolis parameter on rotating earth
+#' Coriolis Parameter on the Earth
 #'
 #' Compute \eqn{f}{f}, the Coriolis parameter as a function of latitude
 #' (see reference 1),
@@ -3407,7 +3417,7 @@ coriolis <- function(latitude, degrees=TRUE)
 }
 
 
-#' Correct for drift in instrument clock
+#' Correct for Drift in an Instrument Clock
 #'
 #' It is assumed that the instrument clock matches the real time at the start
 #' of the sampling, and that the clock drifts linearly (i.e. is uniformly fast
@@ -3476,7 +3486,7 @@ undriftTime <- function(x, slowEnd = 0, tname="time")
 }
 
 
-#' Fill a gap in an oce object
+#' Fill a Gap in an oce Object
 #'
 #' Sequences of `NA` values, are filled by linear interpolation between
 #' the non-`NA` values that bound the gap.
@@ -3535,7 +3545,7 @@ fillGap <- function(x, method=c("linear"), rule=1)
 }
 
 
-#' Smooth and Decimate, or Subsample, an Oce Object
+#' Smooth and Decimate, or Subsample, an oce Object
 #'
 #' Later on, other methods will be added, and [ctdDecimate()] will be
 #' retired in favour of this, a more general, function.  The filtering is done
@@ -3764,7 +3774,7 @@ decimate <- function(x, by=10, to, filter, debug=getOption("oceDebug"))
 
 
 
-#' Smooth an Oce Object
+#' Smooth an oce Object
 #'
 #' Each data element is smoothed as a timeseries. For ADP data, this is done
 #' along time, not distance.  Time vectors, if any, are not smoothed.  A good
@@ -3835,7 +3845,7 @@ oce.smooth <- oceSmooth
 
 
 
-#' Decode BCD to integer
+#' Convert a BCD Value to an Integer Value
 #'
 #' @param x a raw value, or vector of raw values, coded in binary-coded
 #' decimal.
@@ -3862,7 +3872,7 @@ bcdToInteger <- function(x, endian=c("little", "big"))
 }
 
 
-#' Format bytes as binary [defunct]
+#' Format Bytes as Binary (Defunct)
 #'
 #' **WARNING:** The `endian` argument will soon be removed
 #' from this function; see \link{oce-defunct}.
@@ -3928,7 +3938,7 @@ byteToBinary <- function(x, endian="big")
 }
 
 
-#' Confidence interval in parenthetic notation
+#' Confidence Interval in Parenthetic Notation
 #'
 #' Format a confidence interval in parenthetic notation.
 #'
@@ -4082,7 +4092,7 @@ formatCI <- function(ci, style=c("+/-", "parentheses"), model, digits=NULL)
 }
 
 
-#' Decode integer to corresponding ASCII code
+#' Infer ASCII Code From an Integer Value
 #'
 #' @param i an integer, or integer vector.
 #'
@@ -4127,7 +4137,7 @@ integerToAscii <- function(i)
 }
 
 
-#' Earth magnetic declination, inclination, and intensity
+#' Earth Magnetic Declination, Inclination, and Intensity
 #'
 #' Implements the 12th and 13th generations of the
 #' International Geomagnetic Reference Field
@@ -4290,7 +4300,7 @@ magneticField <- function(longitude, latitude, time, version=13)
 }
 
 
-#' Locate byte sequences in a raw vector
+#' Locate Byte Sequences in a Raw Vector
 #'
 #' Find spots in a raw vector that match a given byte sequence.
 #'
@@ -4330,7 +4340,7 @@ matchBytes <- function(input, b1, ...)
 }
 
 
-#' Rearrange areal matrix so Greenwich is near the centre
+#' Rearrange Areal Matrix so Greenwich is Near the Centre
 #'
 #' Sometimes datasets are provided in matrix form, with first
 #' index corresponding to longitudes ranging from 0 to 360.
@@ -4411,7 +4421,7 @@ matrixSmooth <- function(m, passes=1)
 }
 
 
-#' Time interval as colon-separated string
+#' Express Time Interval as Colon-Separated String
 #'
 #' Convert a time interval to a colon-separated string
 #'
@@ -4446,10 +4456,10 @@ secondsToCtime <- function(sec)
 }
 
 
-#' Interpret a character string as a time interval
+#' Interpret a Character String as a Time Interval
 #'
-#' Interpret a character string as a time interval
-#' Strings are of the form MM:SS or HH:MM:SS.
+#' Infer a time interval from a character string in
+#' the form MM:SS or HH:MM:SS.
 #'
 #' @param ctime a character string (see \dQuote{Details}.
 #'
@@ -4507,7 +4517,7 @@ ctimeToSeconds <- function(ctime)
 
 
 
-#' Print a debugging message
+#' Print a Debugging Message
 #'
 #' Print an indented debugging message.
 #' Many oce functions decrease the `debug` level by 1 when they call other
@@ -4617,7 +4627,7 @@ oceDebug <- function(debug=0, ..., style="plain", unindent=0, sep="")
 oce.debug <- oceDebug
 
 
-#' Show metadata item
+#' Show an Item in the metadata Slot of an oce Object
 #'
 #' This is a helper function for various `summary` functions.
 #'
@@ -4831,7 +4841,7 @@ grad <- function(h, x=seq(0, 1, length.out=nrow(h)), y=seq(0, 1, length.out=ncol
 }
 
 
-#' Version of as.raw() that clips data
+#' Version of as.raw() That Clips Data
 #'
 #' A version of as.raw() that clips data to prevent warnings
 #'
@@ -4859,7 +4869,7 @@ oce.as.raw <- function(x)
 }
 
 
-#' Convolve two time series
+#' Convolve Two Time Series
 #'
 #' Convolve two time series, using a backward-looking method.
 #' This function provides a straightforward convolution, which may be useful to
@@ -4916,7 +4926,7 @@ oce.convolve <- oceConvolve
 #20230712     .Defunct("trimws")
 #20230712 }
 
-#' Perform lowpass digital filtering
+#' Lowpass Digital Filtering
 #'
 #' The filter coefficients are constructed using standard definitions,
 #' and then [stats::filter()] is

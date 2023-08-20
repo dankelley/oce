@@ -2,7 +2,7 @@
 % Please edit documentation in R/sealevel.R
 \name{subset,sealevel-method}
 \alias{subset,sealevel-method}
-\title{Subset a Sealevel Object}
+\title{Subset a sealevel Object}
 \usage{
 \S4method{subset}{sealevel}(x, subset, ...)
 }

@@ -2,7 +2,7 @@
 % Please edit documentation in R/coastline.R
 \name{[[,coastline-method}
 \alias{[[,coastline-method}
-\title{Extract Something From a Coastline Object}
+\title{Extract Something From a coastline Object}
 \usage{
 \S4method{[[}{coastline}(x, i, j, ...)
 }

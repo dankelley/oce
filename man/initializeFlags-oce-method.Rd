@@ -2,7 +2,7 @@
 % Please edit documentation in R/AllClass.R
 \name{initializeFlags,oce-method}
 \alias{initializeFlags,oce-method}
-\title{Create storage for a flag, and initialize values, for a oce object}
+\title{Create and Initialize oce Flags}
 \usage{
 \S4method{initializeFlags}{oce}(
   object,

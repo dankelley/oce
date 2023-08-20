@@ -2,7 +2,7 @@
 % Please edit documentation in R/satellite.R
 \name{summary,satellite-method}
 \alias{summary,satellite-method}
-\title{Summarize a satellite object}
+\title{Summarize a satellite Object}
 \usage{
 \S4method{summary}{satellite}(object, ...)
 }
@@ -12,7 +12,7 @@
 \item{...}{Ignored.}
 }
 \description{
-Summarize a satellite object
+Summarize a satellite Object
 }
 \author{
 Dan Kelley

@@ -2,7 +2,7 @@
 % Please edit documentation in R/AllClass.R
 \name{setFlags}
 \alias{setFlags}
-\title{Set data-quality flags within a oce object}
+\title{Set Data-Quality Flags within a oce Object}
 \usage{
 setFlags(object, name = NULL, i = NULL, value = NULL, debug = 0)
 }

@@ -2,7 +2,7 @@
 % Please edit documentation in R/adp.R
 \name{setFlags,adp-method}
 \alias{setFlags,adp-method}
-\title{Set data-quality flags within a adp object}
+\title{Set Data-Quality Flags within a adp Object}
 \usage{
 \S4method{setFlags}{adp}(
   object,

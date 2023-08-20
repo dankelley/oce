@@ -2,7 +2,7 @@
 % Please edit documentation in R/tides.R
 \name{tidemVuf}
 \alias{tidemVuf}
-\title{Nodal Modulation Calculations for Tidem}
+\title{Nodal Modulation Calculations for Tidal Analyses}
 \usage{
 tidemVuf(t, j, latitude = NULL)
 }

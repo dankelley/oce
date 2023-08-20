@@ -2,7 +2,7 @@
 % Please edit documentation in R/accessors.R
 \name{oceSetMetadata}
 \alias{oceSetMetadata}
-\title{Set Something in an oce metadata Slot}
+\title{Set Something in the metadata Slot of an oce Object}
 \usage{
 oceSetMetadata(object, name, value, note = "")
 }

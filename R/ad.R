@@ -68,7 +68,7 @@ velocityStatistics <- function(x, control, ...)
 }
 
 
-#' Change ADV or ADP coordinate systems
+#' Change ADV or ADP Coordinate Systems
 #'
 #' Convert velocity data from an acoustic-Doppler velocimeter or
 #' acoustic-Doppler profiler from one coordinate system to another.
@@ -96,7 +96,7 @@ beamToXyz <- function(x, ...)
     }
 }
 
-#' Convert Acoustic-Doppler Data From xyz to enu Coordinates
+#' Convert Acoustic-Doppler Data From XYZ to ENU Coordinates
 #'
 #' @param x an [adp-class] or [adv-class] object.
 #'
@@ -121,7 +121,7 @@ xyzToEnu <- function(x, ...)
 }
 
 
-#' Rotate acoustic-Doppler data to a new coordinate system
+#' Rotate Acoustic-Doppler Data to a New Coordinate System
 #'
 #' @param x an [adp-class] or [adv-class] object.
 #'
@@ -144,7 +144,7 @@ enuToOther <- function(x, ...)
     }
 }
 
-#' Rotate acoustic-Doppler data to the enu coordinate system
+#' Rotate Acoustic-Doppler Data to the ENU Coordinate System
 #'
 #' @param x an [adp-class] or [adv-class] object.
 #'

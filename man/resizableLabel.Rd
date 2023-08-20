@@ -2,7 +2,7 @@
 % Please edit documentation in R/misc.R
 \name{resizableLabel}
 \alias{resizableLabel}
-\title{Provide axis names in adjustable sizes}
+\title{Variable Names in Adjustable Sizes}
 \usage{
 resizableLabel(
   item,

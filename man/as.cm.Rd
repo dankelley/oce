@@ -2,7 +2,7 @@
 % Please edit documentation in R/cm.R
 \name{as.cm}
 \alias{as.cm}
-\title{Coerce data into a CM object}
+\title{Coerce Data Into a cm Object}
 \usage{
 as.cm(
   time,
@@ -43,7 +43,7 @@ be printed. If one function calls another, it usually reduces the value of
 by specifying higher \code{debug} values.}
 }
 \description{
-Coerce data into a CM object
+Coerce Data Into a cm Object
 }
 \examples{
 library(oce)

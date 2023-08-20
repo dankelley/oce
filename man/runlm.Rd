@@ -2,7 +2,7 @@
 % Please edit documentation in R/run.R
 \name{runlm}
 \alias{runlm}
-\title{Calculate running linear models}
+\title{Calculate Running Linear Models}
 \usage{
 runlm(x, y, xout, window = c("hanning", "boxcar"), L, deriv)
 }

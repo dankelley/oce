@@ -2,7 +2,7 @@
 % Please edit documentation in R/AllClass.R
 \name{concatenate,oce-method}
 \alias{concatenate,oce-method}
-\title{Concatenate oce objects}
+\title{Concatenate oce Objects (oce-Specific)}
 \usage{
 \S4method{concatenate}{oce}(object, ...)
 }

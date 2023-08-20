@@ -2,7 +2,7 @@
 % Please edit documentation in R/rsk.R
 \name{unitFromStringRsk}
 \alias{unitFromStringRsk}
-\title{Infer Rsk units from a vector of strings}
+\title{Infer rsk Units From a Vector of Strings}
 \usage{
 unitFromStringRsk(s)
 }

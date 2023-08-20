@@ -2,7 +2,7 @@
 % Please edit documentation in R/adv.sontek.R
 \name{read.adv.sontek.serial}
 \alias{read.adv.sontek.serial}
-\title{Read an ADV data file}
+\title{Read an adv File}
 \usage{
 read.adv.sontek.serial(
   file,

@@ -2,7 +2,7 @@
 % Please edit documentation in R/lisst.R
 \name{as.lisst}
 \alias{as.lisst}
-\title{Coerce Data Into a LISST Object}
+\title{Coerce Data Into a lisst Object}
 \usage{
 as.lisst(
   data,
@@ -34,7 +34,6 @@ timestamps do not indicate the timezone.}
 A \linkS4class{lisst} object.
 }
 \description{
-Coerce data into a lisst object
 If \code{data} contains fewer than 42 columns, an error is reported.  If it
 contains more than 42 columns, only the first 42 are used.  This is used by
 \code{\link[=read.lisst]{read.lisst()}}, the documentation on which explains the meanings

@@ -2,7 +2,7 @@
 % Please edit documentation in R/tides.R
 \name{summary,tidem-method}
 \alias{summary,tidem-method}
-\title{Summarize a Tidem Object}
+\title{Summarize a tidem Object}
 \usage{
 \S4method{summary}{tidem}(object, p = 1, constituent, ...)
 }

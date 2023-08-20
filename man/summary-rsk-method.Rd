@@ -2,7 +2,7 @@
 % Please edit documentation in R/rsk.R
 \name{summary,rsk-method}
 \alias{summary,rsk-method}
-\title{Summarize a Rsk Object}
+\title{Summarize a rsk Object}
 \usage{
 \S4method{summary}{rsk}(object, ...)
 }

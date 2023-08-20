@@ -3,7 +3,7 @@
 \name{oceColorsPhase}
 \alias{oceColorsPhase}
 \alias{oce.colorsPhase}
-\title{Create colors suitable for phase fields}
+\title{Create Colors Suitable for phase Fields}
 \usage{
 oceColorsPhase(n)
 }

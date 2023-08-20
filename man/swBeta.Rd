@@ -2,7 +2,7 @@
 % Please edit documentation in R/sw.R
 \name{swBeta}
 \alias{swBeta}
-\title{Seawater haline contraction coefficient}
+\title{Seawater Haline Contraction Coefficient}
 \usage{
 swBeta(
   salinity,

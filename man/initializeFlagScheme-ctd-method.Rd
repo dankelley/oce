@@ -2,7 +2,7 @@
 % Please edit documentation in R/ctd.R
 \name{initializeFlagScheme,ctd-method}
 \alias{initializeFlagScheme,ctd-method}
-\title{Establish a data-quality scheme for a ctd object}
+\title{Establish a Data-Quality Scheme for a ctd Object}
 \usage{
 \S4method{initializeFlagScheme}{ctd}(
   object,

@@ -2,7 +2,7 @@
 % Please edit documentation in R/tides.R
 \name{tidemConstituentNameFix}
 \alias{tidemConstituentNameFix}
-\title{Change tidal constituent name from T-TIDE to Foreman convention}
+\title{Change Tidal Constituent Name from T-TIDE to Foreman Convention}
 \usage{
 tidemConstituentNameFix(names, debug = 1)
 }

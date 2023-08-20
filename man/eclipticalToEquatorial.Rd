@@ -2,7 +2,7 @@
 % Please edit documentation in R/astronomy.R
 \name{eclipticalToEquatorial}
 \alias{eclipticalToEquatorial}
-\title{Convert ecliptical to equatorial coordinate}
+\title{Convert Ecliptical Coordinate to Equatorial Coordinate}
 \usage{
 eclipticalToEquatorial(lambda, beta, epsilon)
 }

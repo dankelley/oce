@@ -2,7 +2,7 @@
 % Please edit documentation in R/misc.R
 \name{unduplicateNames}
 \alias{unduplicateNames}
-\title{Rename duplicated character strings}
+\title{Rename Duplicated Character Strings}
 \usage{
 unduplicateNames(strings, style = 1)
 }

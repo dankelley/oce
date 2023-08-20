@@ -2,7 +2,7 @@
 % Please edit documentation in R/misc.R
 \name{secondsToCtime}
 \alias{secondsToCtime}
-\title{Time interval as colon-separated string}
+\title{Express Time Interval as Colon-Separated String}
 \usage{
 secondsToCtime(sec)
 }

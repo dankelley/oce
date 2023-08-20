@@ -3,7 +3,7 @@
 \docType{data}
 \name{cm}
 \alias{cm}
-\title{A Current Meter (cm) Object}
+\title{Sample cm Data}
 \usage{
 data(cm)
 }

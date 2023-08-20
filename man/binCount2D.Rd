@@ -2,7 +2,7 @@
 % Please edit documentation in R/bin.R
 \name{binCount2D}
 \alias{binCount2D}
-\title{Bin-count matrix data}
+\title{Bin-count Matrix Data}
 \usage{
 binCount2D(x, y, xbreaks, ybreaks, flatten = FALSE, include.lowest = FALSE)
 }

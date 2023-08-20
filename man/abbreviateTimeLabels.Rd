@@ -2,7 +2,7 @@
 % Please edit documentation in R/imagep.R
 \name{abbreviateTimeLabels}
 \alias{abbreviateTimeLabels}
-\title{Abbreviate a vector of times by removing commonalities}
+\title{Abbreviate a Vector of Times by Removing Commonalities}
 \usage{
 abbreviateTimeLabels(t, ...)
 }

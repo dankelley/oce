@@ -2,7 +2,7 @@
 % Please edit documentation in R/ctd.R
 \name{ctdFindProfilesRBR}
 \alias{ctdFindProfilesRBR}
-\title{Find Profiles within a CTD object read from a RBR file}
+\title{Find Profiles Within a ctd Object Read From a RBR File}
 \usage{
 ctdFindProfilesRBR(
   x,

@@ -2,7 +2,7 @@
 % Please edit documentation in R/lobo.R
 \name{summary,lobo-method}
 \alias{summary,lobo-method}
-\title{Summarize a LOBO Object}
+\title{Summarize a lobo Object}
 \usage{
 \S4method{summary}{lobo}(object, ...)
 }

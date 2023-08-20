@@ -1,6 +1,6 @@
 # vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
 
-#' Read a NOAA ocean index file
+#' Read a NOAA Ocean Index File
 #'
 #' Read an ocean index file, in the format used by NOAA.
 #'

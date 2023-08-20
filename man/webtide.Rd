@@ -2,7 +2,7 @@
 % Please edit documentation in R/tides.R
 \name{webtide}
 \alias{webtide}
-\title{Get a Tidal Prediction from a WebTide Database}
+\title{Get a Tidal Prediction From a WebTide Database}
 \source{
 The WebTide software may be downloaded for free at the
 Department of Fisheries and Oceans (Canada) website at

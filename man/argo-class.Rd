@@ -3,7 +3,7 @@
 \docType{class}
 \name{argo-class}
 \alias{argo-class}
-\title{Class to Store Argo Data}
+\title{Class to Store argo Data}
 \description{
 This class stores data from Argo floats.
 }

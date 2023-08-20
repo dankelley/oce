@@ -2,7 +2,7 @@
 % Please edit documentation in R/odf.R
 \name{ODF2oce}
 \alias{ODF2oce}
-\title{Create ODF object from the output of \code{ODF::read_ODF()}.}
+\title{Create ODF Object From Output of read_ODF in ODF package}
 \usage{
 ODF2oce(ODF, coerce = TRUE, debug = getOption("oceDebug"))
 }

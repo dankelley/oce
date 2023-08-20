@@ -2,7 +2,7 @@
 % Please edit documentation in R/AllClass.R
 \name{[[<-,oce-method}
 \alias{[[<-,oce-method}
-\title{Replace Parts of an Oce Object}
+\title{Replace Parts of an oce Object}
 \usage{
 \S4method{[[}{oce}(x, i, j, ...) <- value
 }

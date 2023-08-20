@@ -2,7 +2,7 @@
 % Please edit documentation in R/ctd.woce.R
 \name{oceUnits2whpUnits}
 \alias{oceUnits2whpUnits}
-\title{Translate oce unit to WHP unit}
+\title{Translate oce Unit to WHP Unit}
 \usage{
 oceUnits2whpUnits(units, scales)
 }

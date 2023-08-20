@@ -4,7 +4,7 @@
 \encoding{UTF-8}
 \name{ctd_aml.csv.gz}
 \alias{ctd_aml.csv.gz}
-\title{Sample ctd dataset in AML format}
+\title{Sample ctd File in aml Format}
 \description{
 This file may be read with \code{\link[=read.ctd.aml]{read.ctd.aml()}}.  It is based
 on a file donated by Ashley Stanek, which was shortened to

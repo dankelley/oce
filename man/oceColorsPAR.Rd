@@ -3,7 +3,7 @@
 \name{oceColorsPAR}
 \alias{oceColorsPAR}
 \alias{oce.colorsPAR}
-\title{Create colors suitable for PAR fields}
+\title{Create Colors Suitable for PAR Fields}
 \usage{
 oceColorsPAR(n)
 }

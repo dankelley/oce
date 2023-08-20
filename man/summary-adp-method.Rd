@@ -4,7 +4,7 @@
 \alias{summary,adp-method}
 \alias{summary.adp}
 \alias{summary,adp,missing-method}
-\title{Summarize an ADP Object}
+\title{Summarize an adp Object}
 \usage{
 \S4method{summary}{adp}(object, ...)
 }

@@ -2,7 +2,7 @@
 % Please edit documentation in R/adp.R
 \name{[[<-,adp-method}
 \alias{[[<-,adp-method}
-\title{Replace Parts of an ADP Object}
+\title{Replace Parts of an adp Object}
 \usage{
 \S4method{[[}{adp}(x, i, j, ...) <- value
 }

@@ -2,7 +2,7 @@
 % Please edit documentation in R/misc.R
 \name{rotateAboutZ}
 \alias{rotateAboutZ}
-\title{Rotate velocity components within an oce object}
+\title{Rotate Velocity Components Within an oce Object}
 \usage{
 rotateAboutZ(x, angle)
 }

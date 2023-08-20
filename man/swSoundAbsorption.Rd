@@ -2,7 +2,7 @@
 % Please edit documentation in R/sw.R
 \name{swSoundAbsorption}
 \alias{swSoundAbsorption}
-\title{Seawater sound absorption in dB/m}
+\title{Seawater Sound Absorption}
 \usage{
 swSoundAbsorption(
   frequency,

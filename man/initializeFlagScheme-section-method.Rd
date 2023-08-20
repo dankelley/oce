@@ -2,7 +2,7 @@
 % Please edit documentation in R/section.R
 \name{initializeFlagScheme,section-method}
 \alias{initializeFlagScheme,section-method}
-\title{Establish a data-quality scheme for a section object}
+\title{Establish a Data-Quality Scheme for a section Object}
 \usage{
 \S4method{initializeFlagScheme}{section}(
   object,

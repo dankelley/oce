@@ -67,7 +67,7 @@ setMethod(f="initialize",
     })
 
 
-#' Sample LOBO Dataset
+#' Sample lobo Data
 #'
 #' This is sample lobo dataset obtained in the Northwest Arm of Halifax by
 #' Satlantic.
@@ -91,7 +91,7 @@ setMethod(f="initialize",
 #' @family things related to lobo data
 NULL
 
-#' @title Extract Something From a LOBO Object
+#' @title Extract Something From a lobo Object
 #'
 #' @param x a [lobo-class] object.
 #'
@@ -123,7 +123,7 @@ setMethod(f="[[",
         callNextMethod() # [[
     })
 
-#' Replace Parts of a LOBO Object
+#' Replace Parts of a lobo Object
 #'
 #' @param x a [lobo-class] object.
 #'
@@ -136,7 +136,7 @@ setMethod(f="[[<-",
         callNextMethod(x=x, i=i, j=j, ...=..., value=value) # [[<-
     })
 
-#' Summarize a LOBO Object
+#' Summarize a lobo Object
 #'
 #' Pertinent summary information is presented, including the sampling interval,
 #' data ranges, etc.
@@ -169,7 +169,7 @@ setMethod(f="summary",
     })
 
 
-#' Subset a LOBO Object
+#' Subset a lobo Object
 #'
 #' Subset an lobo object, in a way that is somewhat
 #' analogous to [subset.data.frame()].
@@ -351,7 +351,7 @@ setMethod(f="plot",
     })
 
 
-#' Read a LOBO File
+#' Read a lobo File
 #'
 #' Read a data file created by a LOBO instrument.
 #'
@@ -449,7 +449,7 @@ read.lobo <- function(file, cols=7, encoding="latin1", processingLog)
     res
 }
 
-#' Coerce Data into a Lobo Object
+#' Coerce Data Into a lobo Object
 #'
 #' Coerce a dataset into a lobo dataset.
 #'

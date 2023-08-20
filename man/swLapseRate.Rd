@@ -2,7 +2,7 @@
 % Please edit documentation in R/sw.R
 \name{swLapseRate}
 \alias{swLapseRate}
-\title{Seawater lapse rate}
+\title{Seawater Lapse Rate}
 \usage{
 swLapseRate(
   salinity,
