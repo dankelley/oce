@@ -2,7 +2,7 @@
 % Please edit documentation in R/astronomy.R
 \name{siderealTime}
 \alias{siderealTime}
-\title{Convert a POSIXt time to a sidereal time}
+\title{Convert From POSIXt Time to Sidereal Time}
 \usage{
 siderealTime(t)
 }

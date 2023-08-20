@@ -2,7 +2,7 @@
 % Please edit documentation in R/misc.R
 \name{curl}
 \alias{curl}
-\title{Curl of 2D vector field}
+\title{Curl of 2D Vector Field}
 \usage{
 curl(u, v, x, y, geographical = FALSE, method = 1)
 }

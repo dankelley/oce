@@ -2,7 +2,7 @@
 % Please edit documentation in R/rsk.R
 \name{rskPatm}
 \alias{rskPatm}
-\title{Estimate Atmospheric Pressure in Rsk Object}
+\title{Estimate Atmospheric Pressure in an rsk Object}
 \usage{
 rskPatm(x, dp = 0.5)
 }

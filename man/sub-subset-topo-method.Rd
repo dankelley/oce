@@ -2,7 +2,7 @@
 % Please edit documentation in R/topo.R
 \name{[[<-,topo-method}
 \alias{[[<-,topo-method}
-\title{Replace Parts of a Topo Object}
+\title{Replace Parts of a topo Object}
 \usage{
 \S4method{[[}{topo}(x, i, j, ...) <- value
 }

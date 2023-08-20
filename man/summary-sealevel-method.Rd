@@ -2,7 +2,7 @@
 % Please edit documentation in R/sealevel.R
 \name{summary,sealevel-method}
 \alias{summary,sealevel-method}
-\title{Summarize a Sealevel Object}
+\title{Summarize a sealevel Object}
 \usage{
 \S4method{summary}{sealevel}(object, ...)
 }

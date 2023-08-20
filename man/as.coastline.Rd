@@ -2,7 +2,7 @@
 % Please edit documentation in R/coastline.R
 \name{as.coastline}
 \alias{as.coastline}
-\title{Coerce Data into a Coastline Object}
+\title{Coerce Data Into a coastline Object}
 \usage{
 as.coastline(longitude, latitude, fillable = FALSE)
 }

@@ -3,7 +3,7 @@
 \name{oceColors9B}
 \alias{oceColors9B}
 \alias{oce.colors9B}
-\title{Create colors in a red-yellow-blue color scheme}
+\title{Create Colors in a Red-Yellow-Blue Color Scheme}
 \usage{
 oceColors9B(n)
 }

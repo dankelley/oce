@@ -2,7 +2,7 @@
 % Please edit documentation in R/misc.R
 \name{rescale}
 \alias{rescale}
-\title{Rescale values to lie in a given range}
+\title{Rescale Values to lie in a Given Range}
 \usage{
 rescale(x, xlow, xhigh, rlow = 0, rhigh = 1, clip = TRUE)
 }

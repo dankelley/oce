@@ -2,7 +2,7 @@
 % Please edit documentation in R/astronomy.R
 \name{julianDay}
 \alias{julianDay}
-\title{Convert a time to a Julian day}
+\title{Convert a Time to a Julian Day}
 \usage{
 julianDay(
   t,

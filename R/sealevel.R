@@ -25,9 +25,8 @@
 setClass("sealevel", contains="oce")
 
 
-#' @title Sealevel data for Halifax Harbour
+#' Sample sealevel Data (Halifax Harbour)
 #'
-#' @description
 #' This sample sea-level dataset is the 2003 record from Halifax Harbour in
 #' Nova Scotia, Canada.  For reasons that are not mentioned on the data archive
 #' website, the record ends on the 8th of October.
@@ -52,7 +51,7 @@ setClass("sealevel", contains="oce")
 #' @family things related to sealevel data
 NULL
 
-#' Sea-level data set acquired in 1975 at Tuktoyaktuk
+#' Sample sealevel Data (Tuktoyaktuk)
 #'
 #' This sea-level dataset is provided with in Appendix 7.2 of Foreman (1977)
 #' and also with the `T_TIDE` package (Pawlowicz et al., 2002). It results
@@ -120,9 +119,8 @@ setMethod(f="initialize",
         return(.Object)
     })
 
-#' @title Summarize a Sealevel Object
+#' Summarize a sealevel Object
 #'
-#' @description
 #' Summarizes some of the data in a sealevel object.
 #'
 #' @param object A [sealevel-class] object.
@@ -159,7 +157,7 @@ setMethod(f="summary",
     })
 
 
-#' @title Subset a Sealevel Object
+#' @title Subset a sealevel Object
 #'
 #' @description
 #' This function is somewhat analogous to [subset.data.frame()], but
@@ -201,7 +199,7 @@ setMethod(f="subset",
         res
     })
 
-#' @title Extract Something From a Sealevel Object
+#' Extract Something From a sealevel Object
 #'
 #' @param x a [sealevel-class] object.
 #'
@@ -241,7 +239,7 @@ setMethod(f="[[",
     })
 
 
-#' @title Replace Parts of a Sealevel Object
+#' @title Replace Parts of a sealevel Object
 #'
 #' @param x a [sealevel-class] object.
 #'
@@ -271,7 +269,7 @@ setValidity("sealevel",
 
 
 
-#' Coerce Data Into a Sealevel Object
+#' Coerce Data Into a sealevel Object
 #'
 #' Coerces a dataset (minimally, a sequence of times and heights) into a
 #' sealevel dataset.
@@ -626,7 +624,7 @@ setMethod(f="plot",
     })
 
 
-#' Read a Sealevel File
+#' Read a sealevel File
 #'
 #' Read a data file holding sea level data.  BUG: the time vector assumes GMT,
 #' regardless of the GMT.offset value.

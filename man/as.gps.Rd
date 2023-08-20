@@ -2,7 +2,7 @@
 % Please edit documentation in R/gps.R
 \name{as.gps}
 \alias{as.gps}
-\title{Coerce data into a GPS dataset}
+\title{Coerce Data Into a gps Object}
 \usage{
 as.gps(longitude, latitude, filename = "")
 }

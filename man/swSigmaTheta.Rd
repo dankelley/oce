@@ -2,7 +2,7 @@
 % Please edit documentation in R/sw.R
 \name{swSigmaTheta}
 \alias{swSigmaTheta}
-\title{Seawater potential density anomaly}
+\title{Seawater Potential Density Anomaly}
 \usage{
 swSigmaTheta(
   salinity,

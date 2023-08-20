@@ -2,7 +2,7 @@
 % Please edit documentation in R/adv.R
 \name{summary,adv-method}
 \alias{summary,adv-method}
-\title{Summarize an ADV object}
+\title{Summarize an adv Object}
 \usage{
 \S4method{summary}{adv}(object, ...)
 }

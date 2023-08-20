@@ -1,6 +1,6 @@
 # vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
 
-#' Read an ITP-type CTD File
+#' Read an ITP-type ctd File
 #'
 #' @template readCtdTemplate
 #'

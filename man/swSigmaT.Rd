@@ -2,7 +2,7 @@
 % Please edit documentation in R/sw.R
 \name{swSigmaT}
 \alias{swSigmaT}
-\title{Seawater quasi-potential density anomaly}
+\title{Seawater Quasi-Potential Density Anomaly}
 \usage{
 swSigmaT(
   salinity,

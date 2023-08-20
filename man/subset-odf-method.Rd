@@ -2,7 +2,7 @@
 % Please edit documentation in R/odf.R
 \name{subset,odf-method}
 \alias{subset,odf-method}
-\title{Subset an ODF object}
+\title{Subset an odf Object}
 \usage{
 \S4method{subset}{odf}(x, subset, ...)
 }

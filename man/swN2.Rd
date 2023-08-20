@@ -2,7 +2,7 @@
 % Please edit documentation in R/sw.R
 \name{swN2}
 \alias{swN2}
-\title{Squared buoyancy frequency for seawater}
+\title{Squared Buoyancy Frequency for Seawater}
 \usage{
 swN2(
   pressure,

@@ -2,7 +2,7 @@
 % Please edit documentation in R/sw.R
 \name{swSigma}
 \alias{swSigma}
-\title{Seawater density anomaly}
+\title{Seawater Density Anomaly}
 \usage{
 swSigma(
   salinity,

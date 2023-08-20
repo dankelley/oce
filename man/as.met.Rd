@@ -2,7 +2,7 @@
 % Please edit documentation in R/met.R
 \name{as.met}
 \alias{as.met}
-\title{Coerce Data into met Object}
+\title{Coerce Data Into a met Object}
 \usage{
 as.met(time, temperature, pressure, u, v, filename = "(constructed from data)")
 }

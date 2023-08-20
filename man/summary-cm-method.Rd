@@ -2,7 +2,7 @@
 % Please edit documentation in R/cm.R
 \name{summary,cm-method}
 \alias{summary,cm-method}
-\title{Summarize a CM Object}
+\title{Summarize a cm Object}
 \usage{
 \S4method{summary}{cm}(object, ...)
 }

@@ -2,7 +2,7 @@
 % Please edit documentation in R/map.R
 \name{oceCRS}
 \alias{oceCRS}
-\title{Coordinate Reference System strings for some oceans}
+\title{Coordinate Reference System Strings for Some Oceans}
 \usage{
 oceCRS(region)
 }

@@ -2,7 +2,7 @@
 % Please edit documentation in R/ctd.R
 \name{read.ctd}
 \alias{read.ctd}
-\title{Read a General CTD File}
+\title{Read a ctd File in General Format}
 \usage{
 read.ctd(
   file,
@@ -105,7 +105,7 @@ better for normal calls by a user.}
 This function returns a \linkS4class{ctd} object.
 }
 \description{
-Read a General CTD File
+Read a ctd File in General Format
 }
 \seealso{
 Other things related to ctd data: 

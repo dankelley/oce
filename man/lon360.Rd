@@ -2,7 +2,7 @@
 % Please edit documentation in R/misc.R
 \name{lon360}
 \alias{lon360}
-\title{Alter longitudes from -180:180 to 0:360 convention}
+\title{Change Longitude From -180:180 to 0:360 Convention}
 \usage{
 lon360(x)
 }

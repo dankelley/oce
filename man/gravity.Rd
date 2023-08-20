@@ -2,7 +2,7 @@
 % Please edit documentation in R/misc.R
 \name{gravity}
 \alias{gravity}
-\title{Acceleration due to earth gravity}
+\title{Acceleration Due to Earth Gravity}
 \usage{
 gravity(latitude = 45, degrees = TRUE)
 }

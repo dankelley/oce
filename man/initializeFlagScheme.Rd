@@ -2,7 +2,7 @@
 % Please edit documentation in R/AllClass.R
 \name{initializeFlagScheme}
 \alias{initializeFlagScheme}
-\title{Establish a data-quality scheme for a oce object}
+\title{Establish a Data-Quality Scheme for a oce Object}
 \usage{
 initializeFlagScheme(
   object,

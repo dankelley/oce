@@ -1,4 +1,4 @@
-#' Add an item to a processing log (in place)
+#' Add an Item to a Processing Log
 #'
 #' @param x an [oce-class] object.
 #'
@@ -27,7 +27,7 @@
 }
 
 
-#' Append an item to a processing log
+#' Append an Item to a Processing Log
 #'
 #' @return An [list()] containing items named
 #' `time` and `value`, i.e. the times of entries
@@ -54,7 +54,7 @@ processingLogAppend <- function(h, value="")
     res
 }
 
-#' Create an item that can be inserted into a processing log
+#' Create an Item That can be Inserted into a Processing Log
 #'
 #' A function is used internally to initialize processing logs.
 #' Users will probably prefer to use [processingLogAppend()]
@@ -73,7 +73,7 @@ processingLogItem <- function(value="")
     list(time=c(presentTime()), value=value)
 }
 
-#' Show the processing log of an oce object
+#' Show the Processing Log of an oce Object
 #'
 #' @param x an [oce-class] object.
 #'

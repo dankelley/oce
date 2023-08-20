@@ -2,7 +2,7 @@
 % Please edit documentation in R/argo.R
 \name{[[,argo-method}
 \alias{[[,argo-method}
-\title{Extract Something From an Argo Object}
+\title{Extract Something From an argo Object}
 \usage{
 \S4method{[[}{argo}(x, i, j, ...)
 }

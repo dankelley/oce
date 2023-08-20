@@ -2,7 +2,7 @@
 % Please edit documentation in R/AllClass.R
 \name{concatenate,list-method}
 \alias{concatenate,list-method}
-\title{Concatenate a list of oce objects}
+\title{Concatenate a List of oce Objects}
 \usage{
 \S4method{concatenate}{list}(object)
 }
@@ -13,7 +13,7 @@
 An object of class corresponding to that in \code{object}.
 }
 \description{
-Concatenate a list of oce objects
+Concatenate a List of oce Objects
 }
 \seealso{
 Other functions that concatenate oce objects: 

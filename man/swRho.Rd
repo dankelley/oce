@@ -2,7 +2,7 @@
 % Please edit documentation in R/sw.R
 \name{swRho}
 \alias{swRho}
-\title{Seawater density}
+\title{Seawater Density}
 \usage{
 swRho(
   salinity,

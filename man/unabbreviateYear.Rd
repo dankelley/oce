@@ -2,7 +2,7 @@
 % Please edit documentation in R/misc.R
 \name{unabbreviateYear}
 \alias{unabbreviateYear}
-\title{Determine year from various abbreviations}
+\title{Determine Year From Various Abbreviations}
 \usage{
 unabbreviateYear(year)
 }

@@ -2,7 +2,7 @@
 % Please edit documentation in R/ladp.R
 \name{as.ladp}
 \alias{as.ladp}
-\title{Coerce data into an ladp object}
+\title{Coerce Data Into an ladp object}
 \usage{
 as.ladp(
   longitude,

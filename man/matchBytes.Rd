@@ -2,7 +2,7 @@
 % Please edit documentation in R/misc.R
 \name{matchBytes}
 \alias{matchBytes}
-\title{Locate byte sequences in a raw vector}
+\title{Locate Byte Sequences in a Raw Vector}
 \usage{
 matchBytes(input, b1, ...)
 }

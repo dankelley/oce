@@ -2,7 +2,7 @@
 % Please edit documentation in R/accessors.R
 \name{oceSetData}
 \alias{oceSetData}
-\title{Set Something in an oce data Slot}
+\title{Set Something in the data Slot of an oce Object}
 \usage{
 oceSetData(object, name, value, unit, originalName, note = "")
 }

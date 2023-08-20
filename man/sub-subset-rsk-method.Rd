@@ -2,7 +2,7 @@
 % Please edit documentation in R/rsk.R
 \name{[[<-,rsk-method}
 \alias{[[<-,rsk-method}
-\title{Replace Parts of a Rsk Object}
+\title{Replace Parts of an rsk Object}
 \usage{
 \S4method{[[}{rsk}(x, i, j, ...) <- value
 }

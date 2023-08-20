@@ -2,7 +2,7 @@
 % Please edit documentation in R/imagep.R
 \name{drawPalette}
 \alias{drawPalette}
-\title{Draw a palette, leaving margins suitable for accompanying plot}
+\title{Draw a Palette, Leaving Margins Suitable for an Accompanying Plot}
 \usage{
 drawPalette(
   zlim,

@@ -2,7 +2,7 @@
 % Please edit documentation in R/AllClass.R
 \name{defaultFlags}
 \alias{defaultFlags}
-\title{Suggest a default flag vector for bad or suspicious data}
+\title{Suggest a Default Flag Vector for Bad or Suspicious Data}
 \usage{
 defaultFlags(object)
 }

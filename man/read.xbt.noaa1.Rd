@@ -2,7 +2,7 @@
 % Please edit documentation in R/xbt.R
 \name{read.xbt.noaa1}
 \alias{read.xbt.noaa1}
-\title{Read a NOAA format for AXBTs}
+\title{Read an xbt File in NOAA Format}
 \usage{
 read.xbt.noaa1(
   file,

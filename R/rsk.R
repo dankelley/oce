@@ -34,7 +34,7 @@
 #' @family things related to rsk data
 setClass("rsk", contains="oce")
 
-#' Sample Rsk Dataset
+#' Sample rsk Data
 #'
 #' A sample `rsk` object derived from a Concerto CTD manufactured by RBR Ltd.
 #'
@@ -82,7 +82,7 @@ setMethod(f="initialize",
         return(.Object)
     })
 
-#' Summarize a Rsk Object
+#' Summarize a rsk Object
 #'
 #' Summarizes some of the data in a [rsk-class] object, presenting such information
 #' as the station name, sampling location, data ranges, etc.
@@ -118,7 +118,7 @@ setMethod(f="summary",
         invisible(callNextMethod()) # summary
     })
 
-#' Extract Something From a Rsk Object
+#' Extract Something From a rsk Object
 #'
 #' @param x an [rsk-class] object.
 #'
@@ -151,7 +151,7 @@ setMethod(f="[[",
         }
     })
 
-#' Replace Parts of a Rsk Object
+#' Replace Parts of an rsk Object
 #'
 #' @param x an [rsk-class] object.
 #'
@@ -166,7 +166,7 @@ setMethod(f="[[<-",
 
 
 
-#' Subset a Rsk Object
+#' Subset a rsk Object
 #'
 #' Subset a rsk object.  This function is somewhat analogous to
 #' [subset.data.frame()], but subsetting is only permitted by time.
@@ -227,7 +227,7 @@ setMethod(f="subset",
         res
     })
 
-#' Infer Rsk units from a vector of strings
+#' Infer rsk Units From a Vector of Strings
 #'
 #' This is used by [read.rsk()] to infer the units of data, based
 #' on strings stored in `.rsk` files. Lacking a definitive guide
@@ -299,7 +299,7 @@ unitFromStringRsk <- function(s)
     }
 }
 
-#' Coerce Data Into a Rsk Object
+#' Coerce Data Into a rsk Object
 #'
 #' Create a rsk object.
 #'
@@ -556,7 +556,7 @@ setMethod(f="plot",
 
 
 
-#' Read a Rsk file
+#' Read a rsk File
 #'
 #' Read an RBR rsk or txt file, e.g. as produced by an RBR logger, producing an
 #' object of class `rsk`.
@@ -1485,7 +1485,7 @@ rsk2ctd <- function(x, pressureAtmospheric=0, longitude=NULL, latitude=NULL,
 }
 
 
-#' Estimate Atmospheric Pressure in Rsk Object
+#' Estimate Atmospheric Pressure in an rsk Object
 #'
 #' Estimate atmospheric pressure in an [rsk-class] object.  Pressures must be in
 #' decibars for this to work.  First, a subset of pressures is created, in which
@@ -1528,7 +1528,7 @@ rskPatm <- function(x, dp=0.5)
     }
 }
 
-#' Decode table-of-contents File from a Rsk File
+#' Decode Table-of-Contents From an rsk File
 #'
 #' Decode table-of-contents file from a rsk file, of the sort used by some
 #' researchers at Dalhousie University.

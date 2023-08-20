@@ -2,7 +2,7 @@
 % Please edit documentation in R/lisst.R
 \name{summary,lisst-method}
 \alias{summary,lisst-method}
-\title{Summarize a LISST Object}
+\title{Summarize a lisst Object}
 \usage{
 \S4method{summary}{lisst}(object, ...)
 }

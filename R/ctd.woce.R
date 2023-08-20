@@ -53,7 +53,7 @@ oceNames2whpNames <- function(names)
     names
 }
 
-#' Translate oce unit to WHP unit
+#' Translate oce Unit to WHP Unit
 #'
 #' Translate oce units to WHP-style strings,
 #' to match patterns.
@@ -192,9 +192,9 @@ woceNames2oceNames <- function(names)
     names
 }
 
-#' Translate WOCE units to oce units
+#' Translate WOCE Units to oce Units
 #'
-#' Translate WOCE-style units to `oce` units.
+#' Translate WOCE-style units to oce units.
 #'
 #' @param woceUnit string holding a WOCE unit
 #'
@@ -233,7 +233,7 @@ woceUnit2oceUnit <- function(woceUnit)
 }
 
 
-#' Read a WOCE-exchange CTD File
+#' Read a ctd File in WOCE-Exchange Format
 #'
 #' This reads WOCE exchange files that start with the string `"CTD"`.
 #' There are two variants: one in which the first 4 characters are
@@ -615,7 +615,7 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missingValue,
     res
 }
 
-#' Read a WOCE-exchange EXPOCODE File
+#' Read a ctd File in WOCE-Exchange EXPOCODE Format
 #'
 #' This reads WOCE exchange files that start with the string `"EXPOCODE"`.
 #'

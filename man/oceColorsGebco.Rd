@@ -3,7 +3,7 @@
 \name{oceColorsGebco}
 \alias{oceColorsGebco}
 \alias{oce.colorsGebco}
-\title{Create colors in a Gebco-like scheme}
+\title{Create Colors in a GEBCO-like Scheme}
 \usage{
 oceColorsGebco(
   n = 9,

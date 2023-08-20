@@ -1,6 +1,6 @@
 # vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
 
-#' Welch periodogram
+#' Welch Periodogram
 #'
 #' Compute periodogram using the Welch (1967) method. This is
 #' somewhat analogous to the Matlab function of the same name,

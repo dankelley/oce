@@ -2,7 +2,7 @@
 % Please edit documentation in R/argo.R
 \name{as.argo}
 \alias{as.argo}
-\title{Coerce Data Into an Argo Dataset}
+\title{Coerce Data Into an argo Object}
 \usage{
 as.argo(
   time,

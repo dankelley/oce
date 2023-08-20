@@ -2,7 +2,7 @@
 % Please edit documentation in R/sealevel.R
 \name{read.sealevel}
 \alias{read.sealevel}
-\title{Read a Sealevel File}
+\title{Read a sealevel File}
 \usage{
 read.sealevel(
   file,

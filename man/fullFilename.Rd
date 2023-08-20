@@ -2,7 +2,7 @@
 % Please edit documentation in R/misc.R
 \name{fullFilename}
 \alias{fullFilename}
-\title{Full name of file, including path}
+\title{Full name of File, Including Path}
 \usage{
 fullFilename(filename)
 }
@@ -16,7 +16,8 @@ Full file name
 Determines the full name of a file, including the path.  Used by many
 \code{read.X} routines, where \code{X} is the name of a class of object.
 This is a wrapper around \code{\link[=normalizePath]{normalizePath()}}, with warnings turned
-off so that messages are not printed for unfound files (e.g. URLs).
+off so that messages are not printed for files that are
+not found (e.g. URLs).
 }
 \author{
 Dan Kelley

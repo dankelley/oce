@@ -2,7 +2,7 @@
 % Please edit documentation in R/sw.R
 \name{swSstar}
 \alias{swSstar}
-\title{Seawater Preformed Salinity, in GSW formulation}
+\title{Seawater Preformed Salinity (GSW Formulation)}
 \usage{
 swSstar(salinity, pressure = NULL, longitude = NULL, latitude = NULL)
 }

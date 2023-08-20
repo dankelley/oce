@@ -2,7 +2,7 @@
 % Please edit documentation in R/misc.R
 \name{unwrapAngle}
 \alias{unwrapAngle}
-\title{Unwrap an angle that suffers modulo-360 problems}
+\title{Unwrap an Angle That Suffers Modulo-360 Problems}
 \usage{
 unwrapAngle(angle)
 }

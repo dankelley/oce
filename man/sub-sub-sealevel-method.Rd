@@ -2,7 +2,7 @@
 % Please edit documentation in R/sealevel.R
 \name{[[,sealevel-method}
 \alias{[[,sealevel-method}
-\title{Extract Something From a Sealevel Object}
+\title{Extract Something From a sealevel Object}
 \usage{
 \S4method{[[}{sealevel}(x, i, j, ...)
 }

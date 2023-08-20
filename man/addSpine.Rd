@@ -2,7 +2,7 @@
 % Please edit documentation in R/section.R
 \name{addSpine}
 \alias{addSpine}
-\title{Add a spine to a section object}
+\title{Add a Spine to a section Object}
 \usage{
 addSpine(section, spine, debug = getOption("oceDebug"))
 }

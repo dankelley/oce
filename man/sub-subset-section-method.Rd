@@ -2,7 +2,7 @@
 % Please edit documentation in R/section.R
 \name{[[<-,section-method}
 \alias{[[<-,section-method}
-\title{Replace Parts of a Section Object}
+\title{Replace Parts of a section Object}
 \usage{
 \S4method{[[}{section}(x, i, j, ...) <- value
 }

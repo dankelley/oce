@@ -2,7 +2,7 @@
 % Please edit documentation in R/rsk.R
 \name{as.rsk}
 \alias{as.rsk}
-\title{Coerce Data Into a Rsk Object}
+\title{Coerce Data Into a rsk Object}
 \usage{
 as.rsk(
   time,

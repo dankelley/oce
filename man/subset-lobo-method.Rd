@@ -2,7 +2,7 @@
 % Please edit documentation in R/lobo.R
 \name{subset,lobo-method}
 \alias{subset,lobo-method}
-\title{Subset a LOBO Object}
+\title{Subset a lobo Object}
 \usage{
 \S4method{subset}{lobo}(x, subset, ...)
 }

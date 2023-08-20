@@ -3,7 +3,7 @@
 \docType{data}
 \name{coastlineWorld}
 \alias{coastlineWorld}
-\title{World Coastline}
+\title{Sample coastline Data (Global, at 1:110M scale)}
 \source{
 Downloaded from \verb{https://www.naturalearthdata.com}, in
 \code{ne_110m_admin_0_countries.shp} in July 2015, with an

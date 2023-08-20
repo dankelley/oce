@@ -164,7 +164,7 @@
 setClass("landsat", contains="satellite")
 
 
-#' Sample landsat Dataset
+#' Sample landsat Data
 #'
 #' This is a subset of the Landsat-8 image designated LC80080292014065LGN00, an
 #' image from March 2014 that covers Nova Scotia and portions of the Bay of

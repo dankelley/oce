@@ -2,7 +2,7 @@
 % Please edit documentation in R/lobo.R
 \name{[[<-,lobo-method}
 \alias{[[<-,lobo-method}
-\title{Replace Parts of a LOBO Object}
+\title{Replace Parts of a lobo Object}
 \usage{
 \S4method{[[}{lobo}(x, i, j, ...) <- value
 }

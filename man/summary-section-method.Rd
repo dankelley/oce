@@ -3,7 +3,7 @@
 \name{summary,section-method}
 \alias{summary,section-method}
 \alias{summary.section}
-\title{Summarize a Section Object}
+\title{Summarize a section Object}
 \usage{
 \S4method{summary}{section}(object, ...)
 }

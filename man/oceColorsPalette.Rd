@@ -3,7 +3,7 @@
 \name{oceColorsPalette}
 \alias{oceColorsPalette}
 \alias{oce.colorsPalette}
-\title{Create a vector of colors}
+\title{Create a Vector of Colors}
 \usage{
 oceColorsPalette(n, which = 1)
 }

@@ -2,7 +2,7 @@
 % Please edit documentation in R/AllClass.R
 \name{applyMagneticDeclination}
 \alias{applyMagneticDeclination}
-\title{Alter an object to account for magnetic declination}
+\title{Alter an Object to Account for Magnetic Declination (Generic)}
 \usage{
 applyMagneticDeclination(object = "oce", declination = "ANY", debug = "ANY")
 }

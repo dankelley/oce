@@ -2,7 +2,7 @@
 % Please edit documentation in R/adp.R
 \name{beamToXyzAdpAD2CP}
 \alias{beamToXyzAdpAD2CP}
-\title{Convert AD2CP-style adp data From Beam to XYZ Coordinates}
+\title{Convert From Beam to XYZ Coordinates (AD2CP adp Data)}
 \usage{
 beamToXyzAdpAD2CP(x, debug = getOption("oceDebug"))
 }

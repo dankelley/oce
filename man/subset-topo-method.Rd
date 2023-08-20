@@ -2,7 +2,7 @@
 % Please edit documentation in R/topo.R
 \name{subset,topo-method}
 \alias{subset,topo-method}
-\title{Subset a Topo Object}
+\title{Subset a topo Object}
 \usage{
 \S4method{subset}{topo}(x, subset, ...)
 }

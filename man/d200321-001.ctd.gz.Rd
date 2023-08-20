@@ -4,9 +4,9 @@
 \encoding{UTF-8}
 \name{d200321-001.ctd.gz}
 \alias{d200321-001.ctd.gz}
-\title{Sample ctd dataset in .ctd format}
+\title{Sample ctd File in .ctd Format}
 \description{
-Sample ctd dataset in .ctd format
+Sample ctd File in .ctd Format
 }
 \examples{
 \dontrun{

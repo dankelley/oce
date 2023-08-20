@@ -3,7 +3,7 @@
 \docType{data}
 \name{rsk}
 \alias{rsk}
-\title{Sample Rsk Dataset}
+\title{Sample rsk Data}
 \description{
 A sample \code{rsk} object derived from a Concerto CTD manufactured by RBR Ltd.
 }

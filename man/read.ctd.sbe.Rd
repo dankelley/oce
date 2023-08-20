@@ -2,7 +2,7 @@
 % Please edit documentation in R/ctd.sbe.R
 \name{read.ctd.sbe}
 \alias{read.ctd.sbe}
-\title{Read a Seabird CTD File}
+\title{Read a ctd File in Seabird Format}
 \usage{
 read.ctd.sbe(
   file,
@@ -96,7 +96,7 @@ better for normal calls by a user.}
 This function returns a \linkS4class{ctd} object.
 }
 \description{
-Read a Seabird CTD File
+Read a ctd File in Seabird Format
 }
 \details{
 This function reads files stored in Seabird \code{.cnv} format.

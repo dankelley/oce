@@ -2,7 +2,7 @@
 % Please edit documentation in R/bremen.R
 \name{[[,bremen-method}
 \alias{[[,bremen-method}
-\title{Extract Something From a Bremen Object}
+\title{Extract Something From a bremen Object}
 \usage{
 \S4method{[[}{bremen}(x, i, j, ...)
 }

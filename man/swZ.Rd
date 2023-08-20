@@ -2,7 +2,7 @@
 % Please edit documentation in R/sw.R
 \name{swZ}
 \alias{swZ}
-\title{Vertical coordinate}
+\title{Vertical Coordinate}
 \usage{
 swZ(pressure, latitude = 45, eos = getOption("oceEOS", default = "gsw"))
 }

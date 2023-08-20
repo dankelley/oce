@@ -2,7 +2,7 @@
 % Please edit documentation in R/sw.R
 \name{swSR}
 \alias{swSR}
-\title{Seawater Reference Salinity, in GSW formulation}
+\title{Seawater Reference Salinity (GSW Formulation)}
 \usage{
 swSR(salinity)
 }

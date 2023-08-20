@@ -2,7 +2,7 @@
 % Please edit documentation in R/lobo.R
 \name{as.lobo}
 \alias{as.lobo}
-\title{Coerce Data into a Lobo Object}
+\title{Coerce Data Into a lobo Object}
 \usage{
 as.lobo(
   time,

@@ -75,7 +75,7 @@ setMethod(f="[[<-",
     })
 
 
-#' Sample met Object
+#' Sample met Data
 #'
 #' This is sample [met-class] object containing data for Halifax, Nova Scotia,
 #' during September of 2003 (the period during which Hurricane Juan struck the
@@ -200,7 +200,7 @@ setMethod(f="subset",
     })
 
 
-#' Coerce Data into met Object
+#' Coerce Data Into a met Object
 #'
 #' Coerces a dataset into a met dataset. This fills in only a few of the typical
 #' data fields, so the returned object is much

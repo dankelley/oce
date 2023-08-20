@@ -2,7 +2,7 @@
 % Please edit documentation in R/odf.R
 \name{[[<-,odf-method}
 \alias{[[<-,odf-method}
-\title{Replace Parts of an ODF Object}
+\title{Replace Parts of an odf Object}
 \usage{
 \S4method{[[}{odf}(x, i, j, ...) <- value
 }

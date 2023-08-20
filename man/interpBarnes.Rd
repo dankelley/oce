@@ -2,7 +2,7 @@
 % Please edit documentation in R/misc.R
 \name{interpBarnes}
 \alias{interpBarnes}
-\title{Grid data using Barnes algorithm}
+\title{Grid Data Using the Barnes Algorithm}
 \usage{
 interpBarnes(
   x,

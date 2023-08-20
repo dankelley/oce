@@ -2,7 +2,7 @@
 % Please edit documentation in R/sw.R
 \name{swSpecificHeat}
 \alias{swSpecificHeat}
-\title{Seawater specific heat}
+\title{Seawater Specific Heat}
 \usage{
 swSpecificHeat(
   salinity,

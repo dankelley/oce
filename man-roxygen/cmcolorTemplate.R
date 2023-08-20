@@ -1,4 +1,4 @@
-#' @title Create colors suitable for <%=colorItem%> fields
+#' @title Create Colors Suitable for <%=colorItem%> Fields
 #'
 #' @aliases oce.colors<%=colorItemUC%> oceColors<%=colorItemUC%>
 #'

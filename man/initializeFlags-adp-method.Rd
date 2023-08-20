@@ -2,7 +2,7 @@
 % Please edit documentation in R/adp.R
 \name{initializeFlags,adp-method}
 \alias{initializeFlags,adp-method}
-\title{Create storage for a flag, and initialize values, for a adp object}
+\title{Create and Initialize adp Flags}
 \usage{
 \S4method{initializeFlags}{adp}(
   object,

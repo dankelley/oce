@@ -2,7 +2,7 @@
 % Please edit documentation in R/sw.R
 \name{swTFreeze}
 \alias{swTFreeze}
-\title{Seawater freezing temperature}
+\title{Seawater Freezing Temperature}
 \usage{
 swTFreeze(
   salinity,

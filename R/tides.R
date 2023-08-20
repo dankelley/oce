@@ -140,7 +140,7 @@ NULL
 NULL
 
 
-#' Summarize a Tidem Object
+#' Summarize a tidem Object
 #'
 #' By default, all fitted constituents are plotted, but it is quite useful to
 #' set e.g. p=0.05 To see just those constituents that are significant at the 5
@@ -295,7 +295,7 @@ setMethod(f="[[",
         callNextMethod()         # [[
     })
 
-#' Replace Parts of a Tidem Object
+#' Replace Parts of a tidem Object
 #'
 #' @param x a [tidem-class] object.
 #'
@@ -451,7 +451,7 @@ setMethod(f="plot",
         if (!all(is.na(pmatch(names(list(...)), "main")))) title(...)
     })
 
-#' Create tidem object from fitted harmonic data
+#' Create tidem Object From Fitted Harmonic Data
 #'
 #' This function is intended to provide a bridge to
 #' [predict.tidem()], enabling tidal predictions based
@@ -619,7 +619,7 @@ as.tidem <- function(tRef, latitude, name, amplitude, phase, debug=getOption("oc
 }
 
 
-#' Nodal Modulation Calculations for Tidem
+#' Nodal Modulation Calculations for Tidal Analyses
 #'
 #' Carry out nodal modulation calculations for [tidem()]. This function is based directly
 #' on `t_vuf` in the `T_TIDE` Matlab package (Pawlowicz et al., 2002),
@@ -745,7 +745,7 @@ tidemVuf <- function(t, j, latitude=NULL)
 }
 
 
-#' Astronomical Calculations for Tidem
+#' Astronomical Calculations for tidem
 #'
 #' Do some astronomical calculations for [tidem()].  This function is based directly
 #' on `t_astron` in the `T_TIDE` Matlab package (see Pawlowicz et al. 2002),
@@ -806,7 +806,7 @@ tidemAstron <- function(t)
     list(astro=astro, ader=ader)
 }
 
-#' Change tidal constituent name from T-TIDE to Foreman convention
+#' Change Tidal Constituent Name from T-TIDE to Foreman Convention
 #'
 #' This is used by [tidem()] to permit users to specify constituent names in either
 #' the T-TIDE convention (see Pawlowicz et al. 2002) or Foreman convention
@@ -1768,7 +1768,7 @@ predict.tidem <- function(object, newdata, ...)
 
 
 
-#' Get a Tidal Prediction from a WebTide Database
+#' Get a Tidal Prediction From a WebTide Database
 #'
 #' Get a tidal prediction from a WebTide database. This only
 #' works if the standalone WebTide application is installed,

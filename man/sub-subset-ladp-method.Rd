@@ -2,7 +2,7 @@
 % Please edit documentation in R/ladp.R
 \name{[[<-,ladp-method}
 \alias{[[<-,ladp-method}
-\title{title Replace Parts of a ladp Object}
+\title{Replace Parts of an ladp Object}
 \usage{
 \S4method{[[}{ladp}(x, i, j, ...) <- value
 }

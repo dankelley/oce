@@ -2,7 +2,7 @@
 % Please edit documentation in R/sealevel.R
 \name{as.sealevel}
 \alias{as.sealevel}
-\title{Coerce Data Into a Sealevel Object}
+\title{Coerce Data Into a sealevel Object}
 \usage{
 as.sealevel(
   elevation,

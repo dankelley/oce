@@ -2,7 +2,7 @@
 % Please edit documentation in R/AllClass.R
 \name{applyMagneticDeclination,oce-method}
 \alias{applyMagneticDeclination,oce-method}
-\title{Alter an object to account for magnetic declination}
+\title{Alter an Object to Account for Magnetic Declination}
 \usage{
 \S4method{applyMagneticDeclination}{oce}(
   object = "oce",

@@ -2,7 +2,7 @@
 % Please edit documentation in R/ctd.R
 \name{setFlags,ctd-method}
 \alias{setFlags,ctd-method}
-\title{Set data-quality flags within a ctd object}
+\title{Set Data-Quality Flags within a ctd Object}
 \usage{
 \S4method{setFlags}{ctd}(
   object,

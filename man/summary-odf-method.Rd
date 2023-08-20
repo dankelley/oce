@@ -2,7 +2,7 @@
 % Please edit documentation in R/odf.R
 \name{summary,odf-method}
 \alias{summary,odf-method}
-\title{Summarize an ODF Object}
+\title{Summarize an odf Object}
 \usage{
 \S4method{summary}{odf}(object, ...)
 }

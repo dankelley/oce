@@ -2,7 +2,7 @@
 % Please edit documentation in R/ctd.aml.R
 \name{read.ctd.aml}
 \alias{read.ctd.aml}
-\title{Read an AML CTD File}
+\title{Read a ctd File in AML Format}
 \usage{
 read.ctd.aml(
   file,

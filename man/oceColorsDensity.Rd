@@ -3,7 +3,7 @@
 \name{oceColorsDensity}
 \alias{oceColorsDensity}
 \alias{oce.colorsDensity}
-\title{Create colors suitable for density fields}
+\title{Create Colors Suitable for density Fields}
 \usage{
 oceColorsDensity(n)
 }

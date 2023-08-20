@@ -2,7 +2,7 @@
 % Please edit documentation in R/g1sst.R
 \name{read.g1sst}
 \alias{read.g1sst}
-\title{Read a G1SST file}
+\title{Read a g1sst File}
 \usage{
 read.g1sst(file, encoding = NA)
 }

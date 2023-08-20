@@ -2,7 +2,7 @@
 % Please edit documentation in R/tides.R
 \name{as.tidem}
 \alias{as.tidem}
-\title{Create tidem object from fitted harmonic data}
+\title{Create tidem Object From Fitted Harmonic Data}
 \usage{
 as.tidem(tRef, latitude, name, amplitude, phase, debug = getOption("oceDebug"))
 }

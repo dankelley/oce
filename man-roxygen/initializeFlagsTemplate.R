@@ -1,4 +1,4 @@
-#' @title Create storage for a flag, and initialize values, for a <%=class%> object
+#' @title Create and Initialize <%=class%> Flags
 #'
 #' @description
 #' This function creates an item for a named variable within

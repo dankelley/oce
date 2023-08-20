@@ -2,7 +2,7 @@
 % Please edit documentation in R/misc.R
 \name{showMetadataItem}
 \alias{showMetadataItem}
-\title{Show metadata item}
+\title{Show an Item in the metadata Slot of an oce Object}
 \usage{
 showMetadataItem(
   object,

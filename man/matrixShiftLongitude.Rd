@@ -2,7 +2,7 @@
 % Please edit documentation in R/misc.R
 \name{matrixShiftLongitude}
 \alias{matrixShiftLongitude}
-\title{Rearrange areal matrix so Greenwich is near the centre}
+\title{Rearrange Areal Matrix so Greenwich is Near the Centre}
 \usage{
 matrixShiftLongitude(m, longitude)
 }

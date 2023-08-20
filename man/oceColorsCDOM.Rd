@@ -3,7 +3,7 @@
 \name{oceColorsCDOM}
 \alias{oceColorsCDOM}
 \alias{oce.colorsCDOM}
-\title{Create colors suitable for CDOM fields}
+\title{Create Colors Suitable for CDOM Fields}
 \usage{
 oceColorsCDOM(n)
 }

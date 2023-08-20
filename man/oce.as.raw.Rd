@@ -2,7 +2,7 @@
 % Please edit documentation in R/misc.R
 \name{oce.as.raw}
 \alias{oce.as.raw}
-\title{Version of as.raw() that clips data}
+\title{Version of as.raw() That Clips Data}
 \usage{
 oce.as.raw(x)
 }

@@ -1,7 +1,6 @@
 # vim: tw=80 shiftwidth=4 softtabstop=4 wrap linebreak expandtab:
 
-
-#' Data that define some color palettes
+#' Data That Define Some Color Palettes
 #'
 #' The `ocecolors` dataset is a list containing color-schemes, used
 #' by [oceColorsClosure()] to create functions such as
@@ -182,7 +181,7 @@ colormapGmtNumeric <- function(x0, x1, col0, col1, bpl=1)
     res
 }
 
-#' Create a GMT-type (CPT) colormap
+#' Create a GMT-type (CPT) Colormap
 #'
 #' `colormapGMT` creates colormaps in the Generic Mapping Tools (GMT)
 #' scheme (see References 1 to 4).  A few such schemes are built-in, and may be referred to
@@ -428,7 +427,7 @@ colormapGMT <- function(name, debug=getOption("oceDebug"))
     res
 }
 
-#' Calculate color map
+#' Calculate a Color Map
 #'
 #' Create a mapping between numeric values and colors, for use in palettes and plots.
 #' The return value can be used in various ways, including colorizing points

@@ -2,7 +2,7 @@
 % Please edit documentation in R/adp.sontek.R
 \name{read.adp.sontek.serial}
 \alias{read.adp.sontek.serial}
-\title{Read a serial Sontek ADP file}
+\title{Read an adp File in Serial Sontek Format}
 \usage{
 read.adp.sontek.serial(
   file,

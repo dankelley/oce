@@ -65,16 +65,17 @@
 #'    to learn more about general functioning, or a specialized
 #'    method like \link{subset,ctd-method} for CTD data, etc.
 #'
-#' @docType package
-#'
 #' @name oce
+#' @docType package
+#' @keywords internal
+"_PACKAGE"
 NULL
 
 
 #################################################################
 # DEVELOPER NOTE: Update this whenever function status changes. #
 #################################################################
-#' Deprecated and Defunct Elements of the oce package
+#' Deprecated and Defunct Elements of the oce Package
 #'
 #' Certain functions and function arguments are still provided for
 #' compatibility with older versions of \CRANpkg{oce}, but will be removed soon.
@@ -168,7 +169,7 @@ NULL
 #' extended here to function arguments.
 NULL
 
-#' Coerce Something Into an Oce Object
+#' Coerce Something Into an oce Object
 #'
 #' @details
 #' This function is limited and not intended for common use.
@@ -287,7 +288,7 @@ useHeading <- function(b, g, add=0)
 
 
 
-#' Window an Oce Object by Time or Distance
+#' Window an oce Object by Time or Distance
 #'
 #' Windows `x` on either time or distance, depending on the value of
 #' `which`.  In each case, values of `start` and `end` may be
@@ -2212,7 +2213,7 @@ read.oce <- function(file, ..., encoding="latin1")
 }
 
 
-#' Draw an axis, possibly with decade-style logarithmic scaling
+#' Draw an Axis, Possibly with Decade-style Logarithmic Scaling
 #'
 #' @param logStyle a character value that indicates how to draw the y axis, if
 #' `log="y"`.  If it is `"r"` (the default) then the conventional R style is used,
@@ -2287,7 +2288,7 @@ oceAxis <- function(side, labels=TRUE, logStyle="r", ...)
 }
 
 
-#' Create two-color palette
+#' Create Two-Color Palette
 #'
 #' Create colors ranging between two specified limits, with white
 #' in the middle.
@@ -2337,7 +2338,7 @@ oceColorsTwo <- function(n, low=2/3, high=0, smax=1, alpha = 1)
 }
 oce.colorsTwo <- oceColorsTwo
 
-#' Create colors in a Gebco-like scheme
+#' Create Colors in a GEBCO-like Scheme
 #'
 #' The colours were determined by examination of paper
 #' charts printed during the GEBCO Fifth Edition era.
@@ -2428,7 +2429,7 @@ oceColorsGebco <- function(n=9, region=c("water", "land", "both"), type=c("fill"
 }
 oce.colorsGebco <- oceColorsGebco
 
-#' Create color functions
+#' Create Color Functions
 #'
 #' This function generates other functions that are used to specify colors.
 #' It is used within oce to create [oceColorsTemperature()]
@@ -2468,7 +2469,7 @@ oceColorsClosure <- function(spec) {
     }
 }
 
-#' Create colors similar to the google turbo scheme
+#' Create Colors Similar to the Google Turbo Scheme
 #'
 #' This uses the coefficients published (with Apache license) by google,
 #' as described by Mikhailo (2019).
@@ -2495,7 +2496,7 @@ oceColorsClosure <- function(spec) {
 oceColorsTurbo <- oce.colorsTurbo <- oceColorsClosure("turbo")
 
 
-#' Create colors similar to the matlab Viridis scheme
+#' Create Colors Similar to the Matlab Viridis Scheme
 #'
 #' This is patterned on a \proglang{matlab}/\proglang{python} scheme that blends
 #' from yellow to blue in a way that is designed to reproduce well
@@ -2614,7 +2615,7 @@ oceColorsVelocity <- oce.colorsVelocity <- oceColorsClosure("velocity")
 oceColorsVorticity <- oce.colorsVorticity <- oceColorsClosure("vorticity")
 
 
-#' Create colors similar to the Matlab Jet scheme
+#' Create Colors Similar to the Matlab Jet Scheme
 #' @aliases oceColorsJet oce.colorsJet oceColors9A oce.colors9A
 #' @param n number of colors
 #' @examples
@@ -2635,7 +2636,7 @@ oceColorsJet <- function(n)
 }
 oce.colors9A <- oceColors9A <- oce.colorsJet <- oceColorsJet
 
-#' Create colors in a red-yellow-blue color scheme
+#' Create Colors in a Red-Yellow-Blue Color Scheme
 #'
 #' The results are similar to those of [oceColorsJet()], but
 #' with white hues in the centre, rather than green ones. The scheme
@@ -2666,7 +2667,7 @@ oceColors9B <- function(n)
 }
 oce.colors9B <- oceColors9B
 
-#' Create a vector of colors
+#' Create a Vector of Colors
 #'
 #' The available schemes are:
 #' * `which=1` for a red-white-blue scheme.

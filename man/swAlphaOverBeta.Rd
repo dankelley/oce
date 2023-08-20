@@ -2,8 +2,7 @@
 % Please edit documentation in R/sw.R
 \name{swAlphaOverBeta}
 \alias{swAlphaOverBeta}
-\title{Ratio of seawater thermal expansion coefficient to haline contraction
-coefficient}
+\title{Ratio of Seawater Thermal Expansion Coefficient to Haline Contraction Coefficient}
 \usage{
 swAlphaOverBeta(
   salinity,

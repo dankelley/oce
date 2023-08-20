@@ -2,7 +2,7 @@
 % Please edit documentation in R/section.R
 \name{[[,section-method}
 \alias{[[,section-method}
-\title{Extract Something From a Section Object}
+\title{Extract Something From a section Object}
 \usage{
 \S4method{[[}{section}(x, i, j, ...)
 }

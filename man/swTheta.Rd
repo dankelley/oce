@@ -2,7 +2,7 @@
 % Please edit documentation in R/sw.R
 \name{swTheta}
 \alias{swTheta}
-\title{Seawater potential temperature}
+\title{Seawater Potential Temperature (UNESCO Version)}
 \usage{
 swTheta(
   salinity,

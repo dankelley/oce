@@ -2,7 +2,7 @@
 % Please edit documentation in R/sw.R
 \name{swDepth}
 \alias{swDepth}
-\title{Water depth}
+\title{Water Depth}
 \usage{
 swDepth(pressure, latitude = 45, eos = getOption("oceEOS", default = "gsw"))
 }

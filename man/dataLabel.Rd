@@ -2,7 +2,7 @@
 % Please edit documentation in R/misc.R
 \name{dataLabel}
 \alias{dataLabel}
-\title{Try to associate data names with units, for use by summary()}
+\title{Associate Data Names With Units}
 \usage{
 dataLabel(names, units)
 }

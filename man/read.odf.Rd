@@ -2,7 +2,7 @@
 % Please edit documentation in R/odf.R
 \name{read.odf}
 \alias{read.odf}
-\title{Read an ODF file}
+\title{Read an odf File}
 \usage{
 read.odf(
   file,

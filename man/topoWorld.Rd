@@ -3,7 +3,7 @@
 \docType{data}
 \name{topoWorld}
 \alias{topoWorld}
-\title{Global Topographic Dataset at Half-degree Resolution}
+\title{Global Topographic Data (at Half-degree Resolution)}
 \source{
 This is created with \code{\link[=read.topo]{read.topo()}}, using a file downloaded with
 \preformatted{

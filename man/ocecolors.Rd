@@ -3,7 +3,7 @@
 \docType{data}
 \name{ocecolors}
 \alias{ocecolors}
-\title{Data that define some color palettes}
+\title{Data That Define Some Color Palettes}
 \source{
 The data come from the matplotlib site
 \verb{https://github.com/matplotlib/matplotlib}.

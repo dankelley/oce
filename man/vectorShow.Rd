@@ -2,7 +2,7 @@
 % Please edit documentation in R/misc.R
 \name{vectorShow}
 \alias{vectorShow}
-\title{Show some values from a list, vector or matrix}
+\title{Show Some Values From a List, Vector or Matrix}
 \usage{
 vectorShow(
   v,

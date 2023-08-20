@@ -2,7 +2,7 @@
 % Please edit documentation in R/adp.R
 \name{read.adp}
 \alias{read.adp}
-\title{Read an ADP File}
+\title{Read an adp File}
 \usage{
 read.adp(
   file,

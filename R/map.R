@@ -152,7 +152,7 @@ oceProject <- function(xy, proj, inv=FALSE, debug=getOption("oceDebug"))
 }
 
 
-#' Calculate lon-lat coordinates of plot-box trace
+#' Calculate Geographic Coordinates of Plot Box
 #'
 #' Trace along the plot box, converting from xy coordinates to lonlat
 #' coordinates. The results are used by [mapGrid()]
@@ -240,7 +240,7 @@ usrLonLat <- function(n=25, debug=getOption("oceDebug"))
     rval
 }
 
-#' Coordinate Reference System strings for some oceans
+#' Coordinate Reference System Strings for Some Oceans
 #'
 #' Create a coordinate reference string (CRS), suitable for use as a
 #' `projection` argument to [mapPlot()] or
@@ -876,7 +876,7 @@ mapContour <- function(longitude, latitude, z,
     oceDebug(debug, "} # mapContour()\n", sep="", unindent=1, style="bold")
 }
 
-#' Draw a coordinate system
+#' Draw a Coordinate System
 #'
 #' Draws arrows on a map to indicate a coordinate system, e.g. for an
 #' to indicate a coordinate system set up so that one axis is parallel

@@ -2,7 +2,7 @@
 % Please edit documentation in R/g1sst.R
 \name{[[,g1sst-method}
 \alias{[[,g1sst-method}
-\title{Extract Something From a G1SST Object}
+\title{Extract Something From a g1sst Object}
 \usage{
 \S4method{[[}{g1sst}(x, i, j, ...)
 }

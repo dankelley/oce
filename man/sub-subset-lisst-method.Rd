@@ -2,7 +2,7 @@
 % Please edit documentation in R/lisst.R
 \name{[[<-,lisst-method}
 \alias{[[<-,lisst-method}
-\title{Replace Parts of a LISST Object}
+\title{Replace Parts of a lisst Object}
 \usage{
 \S4method{[[}{lisst}(x, i, j, ...) <- value
 }

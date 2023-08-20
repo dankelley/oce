@@ -1,6 +1,6 @@
 # vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
 
-#' Reform longitude and latitude for use in gsw computations.
+#' Alter Longitude and Latitude for gsw Computations.
 #'
 #' This function is mainly intended for use within [swAbsoluteSalinity()] and
 #' similar functions that use the `gsw` package to compute seawater
@@ -59,7 +59,7 @@ locationForGsw <- function(x)
 
 
 
-#' Available derived water properties
+#' Show Available Derived Water Properties
 #'
 #' This checks to see whether `x` is an `oce` object containing
 #' `salinity`, `temperature`, `pressure`, `latitude` and `longitude`.
@@ -125,21 +125,21 @@ computableWaterProperties <- function(x)
     sort(unique(res))
 }
 
-#' Convert from ITS-90 to IPTS-68 temperature
+#' Convert From ITS-90 to IPTS-68 Temperature
 #'
 #' @template temperatureConversionTemplate
 #' @param temperature numeric vector of temperatures]in \eqn{^\circ}{deg}C on the ITS-90 scale.
 #' @return Corresponding temperatures in \eqn{^\circ}{deg}C on the IPTS-68 scale.
 T68fromT90 <- function(temperature) temperature * 1.00024
 
-#' Convert from IPTS-68 to ITS-90 temperature
+#' Convert From IPTS-68 to ITS-90 Temperature
 #'
 #' @template temperatureConversionTemplate
 #' @param temperature numeric vector of temperatures in \eqn{^\circ}{deg}C on the IPTS-68 scale.
 #' @return Corresponding temperatures in \eqn{^\circ}{deg}C on the ITS-90 scale.
 T90fromT68 <- function(temperature) temperature / 1.00024
 
-#' Convert from ITS-48 to ITS-90 temperature
+#' Convert From ITS-48 to ITS-90 Temperature
 #'
 #' @template temperatureConversionTemplate
 #' @param temperature Vector of temperatures in \eqn{^\circ}{deg}C on the IPTS-48 scale.
@@ -215,7 +215,7 @@ lookWithin <- function(list)
 }
 
 
-#' Density ratio
+#' Density Ratio
 #'
 #' Compute density ratio
 #'
@@ -321,7 +321,7 @@ swRrho <- function(ctd,
 }
 
 
-#' Squared buoyancy frequency for seawater
+#' Squared Buoyancy Frequency for Seawater
 #'
 #' Compute \eqn{N^2}{N^2}, the square of the buoyancy frequency for a seawater
 #' profile.
@@ -477,7 +477,7 @@ swN2 <- function(pressure, sigmaTheta=NULL, derivs, df, debug=getOption("oceDebu
 }
 
 
-#' Water pressure
+#' Water Pressure
 #'
 #' Compute seawater pressure from depth by inverting [swDepth()]
 #' using [uniroot()].
@@ -536,7 +536,7 @@ swPressure <- function(depth, latitude=45, eos=getOption("oceEOS", default="gsw"
 }
 
 
-#' Electrical conductivity ratio from salinity, temperature and pressure
+#' Electrical Conductivity Ratio From Salinity, Temperature and Pressure
 #'
 #' Compute electrical conductivity ratio based on salinity, temperature, and
 #' pressure (relative to the conductivity of seawater with salinity=35,
@@ -624,7 +624,7 @@ swCSTp <- function(salinity, temperature=15, pressure=0, eos=getOption("oceEOS",
 }
 
 
-#' Practical salinity from electrical conductivity, temperature and pressure
+#' Practical Salinity From Electrical Conductivity, Temperature and Pressure
 #'
 #' Calculate salinity from what is actually measured by a CTD, *i.e.*
 #' conductivity, *in-situ* temperature and pressure.  Often this is done
@@ -772,7 +772,7 @@ swSCTp <- function(conductivity, temperature=NULL, pressure=NULL,
 }
 
 
-#' Seawater salinity from temperature and density
+#' Seawater Salinity From Temperature and Density
 #'
 #' Compute Practical or Absolute Salinity, given in-situ or Conservative
 #' Temperature, density, and pressure. This is mainly used to draw isopycnal
@@ -860,7 +860,7 @@ swSTrho <- function(temperature, density, pressure, eos=getOption("oceEOS", defa
 }
 
 
-#' Seawater temperature from salinity and density
+#' Seawater Temperature from Salinity and Density
 #'
 #' Compute *in-situ* temperature, given salinity, density, and pressure.
 #'
@@ -937,7 +937,7 @@ swTSrho <- function(salinity, density, pressure=NULL, eos=getOption("oceEOS", de
 }
 
 
-#' Seawater freezing temperature
+#' Seawater Freezing Temperature
 #'
 #' Compute in-situ freezing temperature of seawater, using either the UNESCO
 #' formulation (computed as in Section 5 of Fofonoff and Millard, 1983) or the
@@ -1049,7 +1049,7 @@ swTFreeze <- function(salinity, pressure=NULL, longitude=NULL, latitude=NULL,
 }
 
 
-#' Seawater thermal expansion coefficient
+#' Seawater Thermal Expansion Coefficient
 #'
 #' Compute \eqn{\alpha}{alpha}, the thermal expansion coefficient for seawater.
 #'
@@ -1122,8 +1122,7 @@ swAlpha <- function(salinity, temperature=NULL, pressure=0,
 }
 
 
-#' Ratio of seawater thermal expansion coefficient to haline contraction
-#' coefficient
+#' Ratio of Seawater Thermal Expansion Coefficient to Haline Contraction Coefficient
 #'
 #' Compute \eqn{\alpha/\beta}{alpha/beta} using McDougall's (1987) algorithm.
 #'
@@ -1206,7 +1205,7 @@ swAlphaOverBeta <- function(salinity, temperature=NULL, pressure=NULL,
 }
 
 
-#' Seawater haline contraction coefficient
+#' Seawater Haline Contraction Coefficient
 #'
 #' Compute \eqn{\beta}{beta}, the haline contraction coefficient for seawater.
 #'
@@ -1290,7 +1289,7 @@ swBeta <- function(salinity, temperature=NULL, pressure=0,
 # NOTE: no gsw equivalent
 
 
-#' Seawater thermal conductivity
+#' Seawater Thermal Conductivity
 #'
 #' Compute seawater thermal conductivity, in \eqn{W
 #' m^{-1\circ}C^{-1}}{W/(m*degC)}
@@ -1354,7 +1353,7 @@ swThermalConductivity <- function(salinity, temperature=NULL, pressure=NULL)
 }
 
 
-#' Water depth
+#' Water Depth
 #'
 #' Compute depth below the surface (i.e. a positive number within the
 #' water column) based on pressure and latitude. (Use [swZ()]
@@ -1415,7 +1414,7 @@ swDepth <- function(pressure, latitude=45, eos=getOption("oceEOS", default="gsw"
     res
 }
 
-#' Vertical coordinate
+#' Vertical Coordinate
 #'
 #' Compute height above the surface. This is the negative of depth,
 #' and so is defined simply in terms of [swDepth()].
@@ -1432,7 +1431,7 @@ swZ <- function(pressure, latitude=45, eos=getOption("oceEOS", default="gsw"))
 }
 
 
-#' Dynamic height of seawater profile
+#' Dynamic Height of a Seawater Profile
 #'
 #' Compute the dynamic height of a column of seawater.
 #'
@@ -1598,7 +1597,7 @@ swDynamicHeight <- function(x, referencePressure=2000,
 }
 
 
-#' Seawater lapse rate
+#' Seawater Lapse Rate
 #'
 #' Compute adiabatic lapse rate
 #'
@@ -1691,7 +1690,7 @@ swLapseRate <- function(salinity, temperature=NULL, pressure=NULL,
 }                                      # swLapseRate
 
 
-#' Seawater density
+#' Seawater Density
 #'
 #' Compute \eqn{\rho}{rho}, the *in-situ* density of seawater.
 #'
@@ -1826,7 +1825,7 @@ swRho <- function(salinity, temperature=NULL, pressure=NULL,
 }
 
 
-#' Seawater density anomaly
+#' Seawater Density Anomaly
 #'
 #' Compute \eqn{\sigma_\theta}{sigma}, the density of seawater, minus 1000
 #' kg/m\eqn{^3}{^3}.
@@ -1856,7 +1855,7 @@ swSigma <- function(salinity, temperature=NULL, pressure=NULL,
 }
 
 
-#' Seawater quasi-potential density anomaly
+#' Seawater Quasi-Potential Density Anomaly
 #'
 #' Compute \eqn{\sigma_t}{sigma-t}, a rough estimate of potential density of
 #' seawater, minus 1000 kg/m\eqn{^3}{^3}.
@@ -1906,7 +1905,7 @@ swSigmaT <- function(salinity, temperature=NULL, pressure=NULL,
 }
 
 
-#' Seawater potential density anomaly
+#' Seawater Potential Density Anomaly
 #'
 #' Compute the potential density (minus 1000 kg/m^3) that seawater would have if raised
 #' adiabatically to the surface.  In the UNESCO system, this quantity is
@@ -1994,7 +1993,7 @@ swSigmaTheta <- function(salinity, temperature=NULL, pressure=NULL, referencePre
     res
 }
 
-#' Seawater potential density anomaly referenced to surface pressure
+#' Seawater Potential Density Anomaly Referenced to Surface Pressure
 #'
 #' Compute the potential density of seawater (minus
 #' 1000 kg/m\eqn{^3}{^3}), referenced to surface pressure. This is done using
@@ -2043,7 +2042,7 @@ swSigma0 <- function(salinity, temperature=NULL, pressure=NULL,
     }
 }
 
-#' Seawater potential density anomaly referenced to 1000db pressure
+#' Seawater Potential Density Anomaly Referenced to 1000db Pressure
 #'
 #' This is analogous to [swSigma0()], but referenced to 1000db pressure.
 #'
@@ -2084,7 +2083,7 @@ swSigma1 <- function(salinity, temperature=NULL, pressure=NULL,
     }
 }
 
-#' Seawater potential density anomaly referenced to 2000db pressure
+#' Seawater Potential Density Anomaly Referenced to 2000db Pressure
 #'
 #' This is analogous to [swSigma0()], but referenced to 2000db pressure.
 #'
@@ -2125,7 +2124,7 @@ swSigma2 <- function(salinity, temperature=NULL, pressure=NULL,
     }
 }
 
-#' Seawater potential density anomaly referenced to 3000db pressure
+#' Seawater Potential Density Anomaly Referenced to 3000db Pressure
 #'
 #' This is analogous to [swSigma0()], but referenced to 3000db pressure.
 #'
@@ -2166,7 +2165,7 @@ swSigma3 <- function(salinity, temperature=NULL, pressure=NULL,
     }
 }
 
-#' Seawater potential density anomaly referenced to 4000db pressure
+#' Seawater Potential Density Anomaly Referenced to 4000db Pressure
 #'
 #' This is analogous to [swSigma0()], but referenced to 4000db pressure.
 #'
@@ -2208,7 +2207,7 @@ swSigma4 <- function(salinity, temperature=NULL, pressure=NULL,
 }
 
 
-#' Seawater sound absorption in dB/m
+#' Seawater Sound Absorption
 #'
 #' Compute the sound absorption of seawater, in dB/m
 #'
@@ -2303,7 +2302,7 @@ swSoundAbsorption <- function(frequency, salinity, temperature, pressure, pH=8,
 }
 
 
-#' Seawater sound speed
+#' Seawater Sound Speed
 #'
 #' Compute the seawater speed of sound.
 #'
@@ -2373,7 +2372,7 @@ swSoundSpeed <- function(salinity, temperature=NULL, pressure=NULL,
 }
 
 
-#' Seawater specific heat
+#' Seawater Specific Heat
 # Source= http://sam.ucsd.edu/sio210/propseawater/ppsw_fortran/ppsw.f
 # check value: cpsw = 3849.500 j/(kg deg. c) for s = 40 (ipss-78),
 #'
@@ -2448,7 +2447,7 @@ swSpecificHeat <- function(salinity, temperature=NULL, pressure=0,
 }
 
 
-#' Seawater spiciness
+#' Seawater Spiciness
 #'
 #' Compute seawater "spice", also called "spiciness" (a variable orthogonal
 #' to density in TS space), in either of two formulations, depending on
@@ -2570,7 +2569,7 @@ swSpice <- function(salinity, temperature=NULL, pressure=NULL,
 }
 
 
-#' Seawater potential temperature
+#' Seawater Potential Temperature (UNESCO Version)
 #'
 #' Compute the potential temperature of seawater, denoted \eqn{\theta}{theta}
 #' in the UNESCO system, and `pt` in the GSW system.
@@ -2702,7 +2701,7 @@ swTheta <- function(salinity, temperature=NULL, pressure=NULL, referencePressure
 }
 
 
-#' Seawater viscosity
+#' Seawater Viscosity
 #'
 #' Compute viscosity of seawater, in \eqn{Pa\cdot s}{Pa*s}
 #'
@@ -2754,7 +2753,7 @@ swViscosity <- function(salinity, temperature)
 }
 
 
-#' Seawater conservative temperature, in GSW formulation
+#' Seawater Conservative Temperature (GSW Formulation)
 #'
 #' Compute seawater Conservative Temperature, according to the GSW/TEOS-10
 #' formulation.
@@ -2833,7 +2832,7 @@ swConservativeTemperature <- function(salinity, temperature=NULL, pressure=NULL,
 }
 
 
-#' Seawater absolute salinity, in GSW formulation
+#' Seawater Absolute Salinity (GSW Formulation)
 #'
 #' Compute the seawater Absolute Salinity, according to the GSW/TEOS-10
 #' formulation with [gsw::gsw_SA_from_SP()] in the \CRANpkg{gsw} package.
@@ -2911,7 +2910,7 @@ swAbsoluteSalinity <- function(salinity, pressure=NULL, longitude=NULL, latitude
 }
 
 
-#' Seawater Preformed Salinity, in GSW formulation
+#' Seawater Preformed Salinity (GSW Formulation)
 #'
 #' Compute seawater Preformed Salinity (S*), according to the GSW/TEOS-10
 #' formulation with [gsw::gsw_Sstar_from_SA()] in the \CRANpkg{gsw} package.
@@ -3007,7 +3006,7 @@ swSstar <- function(salinity, pressure=NULL, longitude=NULL, latitude=NULL)
 }
 
 
-#' Seawater Reference Salinity, in GSW formulation
+#' Seawater Reference Salinity (GSW Formulation)
 #'
 #' Compute seawater Reference Salinity (SR), according to the GSW/TEOS-10
 #' formulation with [gsw::gsw_SR_from_SP()] in the \CRANpkg{gsw} package.

@@ -2,7 +2,7 @@
 % Please edit documentation in R/ctd.R
 \name{ctdDecimate}
 \alias{ctdDecimate}
-\title{Decimate a CTD profile}
+\title{Decimate a ctd Profile}
 \usage{
 ctdDecimate(
   x,

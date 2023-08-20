@@ -2,7 +2,7 @@
 % Please edit documentation in R/argo.R
 \name{[[<-,argo-method}
 \alias{[[<-,argo-method}
-\title{Replace Parts of an Argo Object}
+\title{Replace Parts of an argo Object}
 \usage{
 \S4method{[[}{argo}(x, i, j, ...) <- value
 }

@@ -2,7 +2,7 @@
 % Please edit documentation in R/misc.R
 \name{prettyPosition}
 \alias{prettyPosition}
-\title{Pretty lat/lon in deg, min, sec}
+\title{Pretty Longitude/Latitude in Degree-Minute-Second Format}
 \usage{
 prettyPosition(x, debug = getOption("oceDebug"))
 }

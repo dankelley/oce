@@ -2,7 +2,7 @@
 % Please edit documentation in R/adv.R
 \name{read.adv}
 \alias{read.adv}
-\title{Read an ADV data file}
+\title{Read an adv File}
 \usage{
 read.adv(
   file,

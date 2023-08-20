@@ -2,7 +2,7 @@
 % Please edit documentation in R/adv.R
 \name{applyMagneticDeclination,adv-method}
 \alias{applyMagneticDeclination,adv-method}
-\title{Alter an adv-class object to account for magnetic declination}
+\title{Alter an adv Object to Account for Magnetic Declination}
 \usage{
 \S4method{applyMagneticDeclination}{adv}(
   object = "oce",

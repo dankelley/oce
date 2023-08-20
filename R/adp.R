@@ -1,6 +1,6 @@
 # vim: tw=80 shiftwidth=4 softtabstop=4 expandtab:
 
-#' Class to Store adp (ADCP) Data
+#' Class to Store adp Data
 #'
 #' This class stores data from acoustic Doppler profilers. Some manufacturers
 #' call these ADCPs, while others call them ADPs; here the shorter form is
@@ -229,7 +229,7 @@
 #' @family things related to adp data
 setClass("adp", contains="oce")
 
-#' Sample adp (acoustic-doppler profiler) dataset
+#' Sample adp Data
 #'
 #' This is degraded subsample of measurements that were made with an
 #' upward-pointing, moored, ADP manufactured by Teledyne-RDI, as part of the St Lawrence
@@ -415,7 +415,7 @@ setMethod("setFlags",
     })
 
 
-#' Summarize an ADP Object
+#' Summarize an adp Object
 #'
 #' Summarize data in an `adp` object.
 #'
@@ -618,7 +618,7 @@ setMethod(f="summary",
         invisible(callNextMethod()) # summary
     })
 
-#' Concatenate adp objects
+#' Concatenate adp Objects
 #'
 #' @templateVar class adp
 #'
@@ -637,7 +637,7 @@ setMethod(f="concatenate",
 
 
 
-#' @title Extract Something from an adp Object
+#' @title Extract Something From an adp Object
 #'
 #' @param x an [adp-class] object.
 #'
@@ -913,7 +913,7 @@ setMethod(f="[[",
         }
     })
 
-#' Replace Parts of an ADP Object
+#' Replace Parts of an adp Object
 #'
 #' In addition to the usual insertion of elements by name, note
 #' that e.g. `pitch` gets stored into `pitchSlow`.
@@ -978,7 +978,7 @@ setValidity("adp",
     })
 
 
-#' Subset an ADP Object
+#' Subset an adp Object
 #'
 #' Subset an adp (acoustic Doppler profile) object, in a manner that is function
 #' is somewhat analogous to [subset.data.frame()].
@@ -1216,7 +1216,7 @@ setMethod(f="subset",
         res
     })
 
-#' Create an ADP Object
+#' Create an adp Object
 #'
 #' @details
 #' Construct an [adp-class] object.  Only a basic
@@ -1321,7 +1321,7 @@ as.adp <- function(time, distance, v, a=NULL, q=NULL, orientation="upward", coor
 
 
 
-#' Get names of Acoustic-Doppler Beams
+#' Get Names of Acoustic-Doppler Beams
 #'
 #' @param x an [adp-class] object.
 #'
@@ -1358,7 +1358,7 @@ beamName <- function(x, which)
 }
 
 
-#' Read an ADP File
+#' Read an adp File
 #'
 #' Read an ADP data file, producing an [adp-class] object.
 #'
@@ -3359,7 +3359,7 @@ beamToXyzAdp <- function(x, debug=getOption("oceDebug"))
     res
 }
 
-#' Convert AD2CP-style adp data From Beam to XYZ Coordinates
+#' Convert From Beam to XYZ Coordinates (AD2CP adp Data)
 #'
 #' This looks at all the items in the `data` slot of `x`, to
 #' see if they contain an array named `v` that holds velocity.
@@ -4016,7 +4016,7 @@ display.bytes <- function(b, label="", ...)
 }
 
 
-#' Subtract Bottom Velocity from ADP
+#' Subtract Bottom Velocity From an adp Object
 #'
 #' Subtracts bottom tracking velocities from an `"adp"` object. Works for
 #' all coordinate systems (`beam`, `xyz`, and `enu`).
@@ -4068,7 +4068,7 @@ subtractBottomVelocity <- function(x, despike=FALSE, debug=getOption("oceDebug")
 }
 
 
-#' Bin-map an ADP object
+#' Bin-map an adp Object
 #'
 #' Bin-map an ADP object, by interpolating velocities, backscatter amplitudes,
 #' etc., to uniform depth bins, thus compensating for the pitch and roll of the
@@ -4437,7 +4437,7 @@ adpFlagPastBoundary <- function(x=NULL, fields=NULL, df=20, trim=0.15, good=1, b
     return(x)
 }
 
-#' Alter an adp-class object to account for magnetic declination
+#' Alter an adp Object to Account for Magnetic Declination
 #'
 #' Acoustic-Doppler profiling instruments that infer direction using magnetic
 #' compasses to determine current direction need to have a correction applied

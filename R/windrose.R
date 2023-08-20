@@ -1,6 +1,6 @@
 # vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
 
-#' Class to Store Windrose Data
+#' Class to Store windrose Data
 #'
 #' This class stores `windrose` objects, which
 #' store statistical information about winds, mainly for
@@ -35,9 +35,9 @@ setMethod(f="initialize",
         return(.Object)
     })
 
-#' Summarize a `windrose` object
+#' Summarize a windrose Object
 #'
-#' Summarizes some of the data in a `windrose` object.
+#' Summarizes some of the data in a [windrose-class] object.
 #'
 #' @param object A [windrose-class] object.
 #'
@@ -57,7 +57,7 @@ setMethod(f="summary",
     })
 
 
-#' @title Extract Something From a Windrose Object
+#' @title Extract Something From a windrose Object
 #'
 #' @param x a [windrose-class] object.
 #'
@@ -86,7 +86,7 @@ setMethod(f="[[",
         callNextMethod()         # [[
     })
 
-#' @title Replace Parts of a Windrose Object
+#' @title Replace Parts of a windrose Object
 #'
 #' @param x a [windrose-class] object.
 #'

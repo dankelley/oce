@@ -2,7 +2,7 @@
 % Please edit documentation in R/windrose.R
 \name{summary,windrose-method}
 \alias{summary,windrose-method}
-\title{Summarize a \code{windrose} object}
+\title{Summarize a windrose Object}
 \usage{
 \S4method{summary}{windrose}(object, ...)
 }
@@ -12,7 +12,7 @@
 \item{...}{Further arguments passed to or from other methods.}
 }
 \description{
-Summarizes some of the data in a \code{windrose} object.
+Summarizes some of the data in a \linkS4class{windrose} object.
 }
 \seealso{
 Other things related to windrose data: 

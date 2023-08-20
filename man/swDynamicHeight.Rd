@@ -2,7 +2,7 @@
 % Please edit documentation in R/sw.R
 \name{swDynamicHeight}
 \alias{swDynamicHeight}
-\title{Dynamic height of seawater profile}
+\title{Dynamic Height of a Seawater Profile}
 \usage{
 swDynamicHeight(
   x,

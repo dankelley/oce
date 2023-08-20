@@ -2,7 +2,7 @@
 % Please edit documentation in R/ctd.R
 \name{ctdFindProfiles}
 \alias{ctdFindProfiles}
-\title{Find Profiles within a Tow-Yow CTD Record}
+\title{Find Profiles Within a Tow-Yow ctd Record}
 \usage{
 ctdFindProfiles(
   x,

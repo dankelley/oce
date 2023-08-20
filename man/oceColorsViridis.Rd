@@ -3,7 +3,7 @@
 \name{oceColorsViridis}
 \alias{oceColorsViridis}
 \alias{oce.colorsViridis}
-\title{Create colors similar to the matlab Viridis scheme}
+\title{Create Colors Similar to the Matlab Viridis Scheme}
 \usage{
 oceColorsViridis(n)
 }

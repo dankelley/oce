@@ -2,7 +2,7 @@
 % Please edit documentation in R/sw.R
 \name{swThermalConductivity}
 \alias{swThermalConductivity}
-\title{Seawater thermal conductivity}
+\title{Seawater Thermal Conductivity}
 \usage{
 swThermalConductivity(salinity, temperature = NULL, pressure = NULL)
 }

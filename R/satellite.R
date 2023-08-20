@@ -23,7 +23,7 @@ setMethod(f="initialize",
         return(.Object)
     })
 
-#' Summarize a satellite object
+#' Summarize a satellite Object
 #'
 #' @param object a [satellite-class] object.
 #'

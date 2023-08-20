@@ -2,7 +2,7 @@
 % Please edit documentation in R/ctd.R
 \name{ctdRepair}
 \alias{ctdRepair}
-\title{Repair a malformed ctd object}
+\title{Repair a Malformed ctd Object}
 \usage{
 ctdRepair(x, debug = getOption("oceDebug"))
 }

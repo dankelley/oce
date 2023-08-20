@@ -2,7 +2,7 @@
 % Please edit documentation in R/lisst.R
 \name{[[,lisst-method}
 \alias{[[,lisst-method}
-\title{Extract Something From a LISST Object}
+\title{Extract Something From a lisst Object}
 \usage{
 \S4method{[[}{lisst}(x, i, j, ...)
 }

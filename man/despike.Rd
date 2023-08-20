@@ -2,7 +2,7 @@
 % Please edit documentation in R/misc.R
 \name{despike}
 \alias{despike}
-\title{Remove spikes from a time series}
+\title{Remove Spikes From a Time Series}
 \usage{
 despike(
   x,

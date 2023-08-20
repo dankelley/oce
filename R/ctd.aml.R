@@ -1,6 +1,6 @@
 # vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
 
-#' Read an AML CTD File
+#' Read a ctd File in AML Format
 #'
 #' [read.ctd.aml()] reads files that hold data acquired with an AML
 #' Oceanographic BaseX2 CTD instrument. The SeaCast software associated with

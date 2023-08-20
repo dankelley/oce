@@ -2,7 +2,7 @@
 % Please edit documentation in R/adp.nortek.ad2cp.R
 \name{ad2cpHeaderValue}
 \alias{ad2cpHeaderValue}
-\title{Decode an item from a Nortek AD2CP file header (an internal function)}
+\title{Infer an Item From a Nortek AD2CP File Header}
 \usage{
 ad2cpHeaderValue(x, key, item, numeric = TRUE, default)
 }
@@ -27,7 +27,7 @@ if the desired item is not found there, or if \code{x} is not of the required
 class and variety.
 }
 \description{
-Decode an item from a Nortek AD2CP file header (an internal function)
+Infer an Item From a Nortek AD2CP File Header
 }
 \examples{
 \dontrun{

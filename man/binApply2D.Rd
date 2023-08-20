@@ -2,7 +2,7 @@
 % Please edit documentation in R/bin.R
 \name{binApply2D}
 \alias{binApply2D}
-\title{Apply a function to matrix data}
+\title{Apply a Function to Matrix Data}
 \usage{
 binApply2D(x, y, f, xbreaks, ybreaks, FUN, include.lowest = FALSE, ...)
 }

@@ -2,7 +2,7 @@
 % Please edit documentation in R/tides.R
 \name{[[<-,tidem-method}
 \alias{[[<-,tidem-method}
-\title{Replace Parts of a Tidem Object}
+\title{Replace Parts of a tidem Object}
 \usage{
 \S4method{[[}{tidem}(x, i, j, ...) <- value
 }

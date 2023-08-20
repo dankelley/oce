@@ -2,7 +2,7 @@
 % Please edit documentation in R/sw.R
 \name{computableWaterProperties}
 \alias{computableWaterProperties}
-\title{Available derived water properties}
+\title{Show Available Derived Water Properties}
 \usage{
 computableWaterProperties(x)
 }

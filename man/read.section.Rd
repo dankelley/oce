@@ -2,7 +2,7 @@
 % Please edit documentation in R/section.R
 \name{read.section}
 \alias{read.section}
-\title{Read a Section File}
+\title{Read a section File}
 \usage{
 read.section(
   file,

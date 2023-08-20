@@ -2,7 +2,7 @@
 % Please edit documentation in R/oce.R
 \name{oceColorsClosure}
 \alias{oceColorsClosure}
-\title{Create color functions}
+\title{Create Color Functions}
 \usage{
 oceColorsClosure(spec)
 }

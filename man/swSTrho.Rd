@@ -2,7 +2,7 @@
 % Please edit documentation in R/sw.R
 \name{swSTrho}
 \alias{swSTrho}
-\title{Seawater salinity from temperature and density}
+\title{Seawater Salinity From Temperature and Density}
 \usage{
 swSTrho(
   temperature,

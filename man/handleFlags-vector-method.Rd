@@ -2,7 +2,7 @@
 % Please edit documentation in R/AllClass.R
 \name{handleFlags,vector-method}
 \alias{handleFlags,vector-method}
-\title{Signal erroneous application to non-oce objects}
+\title{Signal Erroneous Application to non-oce Objects}
 \usage{
 \S4method{handleFlags}{vector}(
   object = "oce",
@@ -24,5 +24,5 @@
 \item{debug}{Ignored.}
 }
 \description{
-Signal erroneous application to non-oce objects
+Signal Erroneous Application to non-oce Objects
 }

@@ -2,7 +2,7 @@
 % Please edit documentation in R/sealevel.R
 \name{[[<-,sealevel-method}
 \alias{[[<-,sealevel-method}
-\title{Replace Parts of a Sealevel Object}
+\title{Replace Parts of a sealevel Object}
 \usage{
 \S4method{[[}{sealevel}(x, i, j, ...) <- value
 }

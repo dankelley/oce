@@ -2,7 +2,7 @@
 % Please edit documentation in R/astronomy.R
 \name{julianCenturyAnomaly}
 \alias{julianCenturyAnomaly}
-\title{Julian-Day number to Julian century}
+\title{Convert Julian-Day-Number to Julian Century}
 \usage{
 julianCenturyAnomaly(jd)
 }

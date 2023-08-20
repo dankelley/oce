@@ -2,7 +2,7 @@
 % Please edit documentation in R/sw.R
 \name{swCSTp}
 \alias{swCSTp}
-\title{Electrical conductivity ratio from salinity, temperature and pressure}
+\title{Electrical Conductivity Ratio From Salinity, Temperature and Pressure}
 \usage{
 swCSTp(
   salinity,

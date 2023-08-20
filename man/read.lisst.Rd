@@ -2,7 +2,7 @@
 % Please edit documentation in R/lisst.R
 \name{read.lisst}
 \alias{read.lisst}
-\title{Read a LISST File}
+\title{Read a lisst File}
 \usage{
 read.lisst(
   file,

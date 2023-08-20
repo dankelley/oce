@@ -2,7 +2,7 @@
 % Please edit documentation in R/cm.R
 \name{applyMagneticDeclination,cm-method}
 \alias{applyMagneticDeclination,cm-method}
-\title{Alter a cm-class object to account for magnetic declination}
+\title{Alter a cm Object to Account for Magnetic Declination}
 \usage{
 \S4method{applyMagneticDeclination}{cm}(
   object = "oce",

@@ -2,7 +2,7 @@
 % Please edit documentation in R/map.R
 \name{mapCoordinateSystem}
 \alias{mapCoordinateSystem}
-\title{Draw a coordinate system}
+\title{Draw a Coordinate System}
 \usage{
 mapCoordinateSystem(longitude, latitude, L = 100, phi = 0, ...)
 }

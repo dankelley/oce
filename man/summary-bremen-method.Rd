@@ -2,7 +2,7 @@
 % Please edit documentation in R/bremen.R
 \name{summary,bremen-method}
 \alias{summary,bremen-method}
-\title{Summarize a Bremen Object}
+\title{Summarize a bremen Object}
 \usage{
 \S4method{summary}{bremen}(object, ...)
 }

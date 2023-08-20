@@ -3,7 +3,7 @@
 \name{ocePmatch}
 \alias{ocePmatch}
 \alias{oce.pmatch}
-\title{Partial matching of strings or numbers}
+\title{Partial Matching of Strings or Numbers}
 \usage{
 ocePmatch(x, table, nomatch = NA_integer_, duplicates.ok = FALSE)
 }

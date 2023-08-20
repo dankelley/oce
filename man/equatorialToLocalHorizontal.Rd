@@ -2,7 +2,7 @@
 % Please edit documentation in R/astronomy.R
 \name{equatorialToLocalHorizontal}
 \alias{equatorialToLocalHorizontal}
-\title{Convert equatorial to local horizontal coordinate}
+\title{Convert Equatorial Coordinate to Local Horizontal Coordinate}
 \usage{
 equatorialToLocalHorizontal(
   rightAscension,

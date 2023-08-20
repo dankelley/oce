@@ -2,7 +2,7 @@
 % Please edit documentation in R/sw.R
 \name{swSpice}
 \alias{swSpice}
-\title{Seawater spiciness}
+\title{Seawater Spiciness}
 \usage{
 swSpice(
   salinity,

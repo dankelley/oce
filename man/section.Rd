@@ -3,7 +3,7 @@
 \docType{data}
 \name{section}
 \alias{section}
-\title{Hydrographic section}
+\title{Sample section Data}
 \source{
 This is based on the WOCE file named \code{a03_hy1.csv}, downloaded
 from \verb{https://cchdo.ucsd.edu/cruise/90CT40_1}, 13 April 2015.

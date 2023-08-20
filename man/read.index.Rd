@@ -2,7 +2,7 @@
 % Please edit documentation in R/index.R
 \name{read.index}
 \alias{read.index}
-\title{Read a NOAA ocean index file}
+\title{Read a NOAA Ocean Index File}
 \usage{
 read.index(
   file,

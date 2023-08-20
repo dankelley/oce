@@ -1,6 +1,6 @@
 # vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
 
-#' Class to Store XBT Data
+#' Class to Store XBT (Expendable Bathythermograph) Data
 #'
 #' This class stores expendable bathythermograph (XBT) data, e.g. from a Sippican
 #' device.  Reference 1 gives some information on Sippican
@@ -37,7 +37,7 @@
 #' @author Dan Kelley
 setClass("xbt", contains="oce")
 
-#' An XBT Object
+#' Sample xbt Data
 #'
 #' An [xbt-class] object created by using [read.xbt()] on a Sippican file created by extracting the near-surface
 #' fraction of the sample provided in Section 5.5.6 of reference 1.
@@ -250,7 +250,7 @@ setMethod(f="subset",
         res
     })
 
-#' Create an xbt object
+#' Create an xbt Object
 #'
 #' @param z numeric vector giving vertical coordinates of measurements. This is the negative of
 #' depth, i.e. `z` is 0 at the air-sea interface, and negative within the water column.
@@ -374,7 +374,7 @@ read.xbt <- function(file,
     res
 }
 
-#' Read a Sippican '.edf' format xbt file
+#' Read an xbt File in Sippican Format
 #'
 #'
 #' The function was written by inspection of a particular file, and might
@@ -488,7 +488,7 @@ read.xbt.edf <- function(file, longitude=NA, latitude=NA, encoding="latin1",
     res
 }
 
-#' Read a NOAA format for AXBTs
+#' Read an xbt File in NOAA Format
 #'
 #'
 #' This file format, described at \code{https://www.aoml.noaa.gov/phod/dhos/axbt.php}, contains a header

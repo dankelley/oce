@@ -2,7 +2,7 @@
 % Please edit documentation in R/colors.R
 \name{colormapGMT}
 \alias{colormapGMT}
-\title{Create a GMT-type (CPT) colormap}
+\title{Create a GMT-type (CPT) Colormap}
 \usage{
 colormapGMT(name, debug = getOption("oceDebug"))
 }

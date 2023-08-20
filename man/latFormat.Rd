@@ -2,7 +2,7 @@
 % Please edit documentation in R/misc.R
 \name{latFormat}
 \alias{latFormat}
-\title{Format a latitude}
+\title{Format a Latitude}
 \usage{
 latFormat(lat, digits = max(6, getOption("digits") - 1))
 }

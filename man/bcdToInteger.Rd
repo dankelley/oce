@@ -2,7 +2,7 @@
 % Please edit documentation in R/misc.R
 \name{bcdToInteger}
 \alias{bcdToInteger}
-\title{Decode BCD to integer}
+\title{Convert a BCD Value to an Integer Value}
 \usage{
 bcdToInteger(x, endian = c("little", "big"))
 }
@@ -18,7 +18,7 @@ files are in that format.}
 An integer, or list of integers.
 }
 \description{
-Decode BCD to integer
+Convert a BCD Value to an Integer Value
 }
 \examples{
 library(oce)

@@ -2,7 +2,7 @@
 % Please edit documentation in R/adp.nortek.ad2cp.R
 \name{is.ad2cp}
 \alias{is.ad2cp}
-\title{Test whether object is an AD2CP type}
+\title{Test Whether Item is a ad2cp-Type adp Object}
 \usage{
 is.ad2cp(x)
 }
@@ -14,7 +14,7 @@ Logical value indicating whether \code{x} is an \linkS4class{adp} object,
 with \code{fileType} in its \code{metadata} slot equal to \code{"AD2CP"}.
 }
 \description{
-Test whether object is an AD2CP type
+Test Whether Item is a ad2cp-Type adp Object
 }
 \seealso{
 Other things related to adp data: 

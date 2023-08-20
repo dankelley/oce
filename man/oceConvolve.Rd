@@ -3,7 +3,7 @@
 \name{oceConvolve}
 \alias{oceConvolve}
 \alias{oce.convolve}
-\title{Convolve two time series}
+\title{Convolve Two Time Series}
 \usage{
 oceConvolve(x, f, end = 2)
 }

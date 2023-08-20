@@ -2,7 +2,7 @@
 % Please edit documentation in R/ad.R
 \name{beamToXyz}
 \alias{beamToXyz}
-\title{Change ADV or ADP coordinate systems}
+\title{Change ADV or ADP Coordinate Systems}
 \usage{
 beamToXyz(x, ...)
 }

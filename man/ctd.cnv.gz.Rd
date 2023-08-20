@@ -4,9 +4,9 @@
 \encoding{UTF-8}
 \name{ctd.cnv.gz}
 \alias{ctd.cnv.gz}
-\title{Sample ctd dataset in .cnv format}
+\title{Sample ctd File in .cnv Format}
 \description{
-Sample ctd dataset in .cnv format
+Sample ctd File in .cnv Format
 }
 \examples{
 \dontrun{

@@ -2,7 +2,7 @@
 % Please edit documentation in R/odf.R
 \name{[[,odf-method}
 \alias{[[,odf-method}
-\title{Extract Something From an ODF Object}
+\title{Extract Something From an odf Object}
 \usage{
 \S4method{[[}{odf}(x, i, j, ...)
 }

@@ -2,7 +2,7 @@
 % Please edit documentation in R/topo.R
 \name{summary,topo-method}
 \alias{summary,topo-method}
-\title{Summarize A Topo Object}
+\title{Summarize a topo Object}
 \usage{
 \S4method{summary}{topo}(object, ...)
 }

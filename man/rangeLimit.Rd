@@ -2,7 +2,7 @@
 % Please edit documentation in R/misc.R
 \name{rangeLimit}
 \alias{rangeLimit}
-\title{Substitute NA for data outside a range}
+\title{Substitute NA for Data Outside a Range}
 \usage{
 rangeLimit(x, min, max)
 }

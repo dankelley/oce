@@ -44,7 +44,7 @@
 #' @family things related to adv data
 setClass("adv", contains="oce")
 
-#' Sample adv (acoustic-doppler velocimeter) dataset
+#' Sample adv Data
 #'
 #' This [adv-class] object is a sampling of measurements made with a
 #' Nortek Vector acoustic Doppler velocimeter deployed as part of the St Lawrence
@@ -93,7 +93,7 @@ setMethod(f="initialize",
     })
 
 
-#' Summarize an ADV object
+#' Summarize an adv Object
 #'
 #' Summarize data in an `adv` object.
 #'
@@ -235,7 +235,7 @@ setMethod(f="[[",
         }
     })
 
-#' Replace Parts of an ADV Object
+#' Replace Parts of an adv Object
 #'
 #' @details
 #' If the `adv` object holds slow variables (i.e. if `timeSlow` is
@@ -285,7 +285,7 @@ setMethod(f="[[<-",
 
 
 
-#' Subset an ADV Object
+#' Subset an adv Object
 #'
 #' Subset an adv (acoustic Doppler profile) object.  This function is somewhat
 #' analogous to [subset.data.frame()], except that subsets can only be
@@ -1557,7 +1557,7 @@ enuToOtherAdv <- function(x, heading=0, pitch=0, roll=0, debug=getOption("oceDeb
     x
 }
 
-#' Alter an adv-class object to account for magnetic declination
+#' Alter an adv Object to Account for Magnetic Declination
 #'
 #' Acoustic-Doppler velocimetry instruments that infer direction using magnetic
 #' compasses need to have a correction applied for magnetic declination, if the

@@ -2,7 +2,7 @@
 % Please edit documentation in R/echosounder.R
 \name{[[<-,echosounder-method}
 \alias{[[<-,echosounder-method}
-\title{Replace Parts of an Echosounder Object}
+\title{Replace Parts of an echosounder Object}
 \usage{
 \S4method{[[}{echosounder}(x, i, j, ...) <- value
 }

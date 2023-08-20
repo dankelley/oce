@@ -2,7 +2,7 @@
 % Please edit documentation in R/sw.R
 \name{swSigma2}
 \alias{swSigma2}
-\title{Seawater potential density anomaly referenced to 2000db pressure}
+\title{Seawater Potential Density Anomaly Referenced to 2000db Pressure}
 \usage{
 swSigma2(
   salinity,

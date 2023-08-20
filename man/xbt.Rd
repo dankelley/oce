@@ -3,7 +3,7 @@
 \docType{data}
 \name{xbt}
 \alias{xbt}
-\title{An XBT Object}
+\title{Sample xbt Data}
 \usage{
 data(xbt)
 }

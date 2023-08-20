@@ -3,7 +3,7 @@
 \name{oceColorsSalinity}
 \alias{oceColorsSalinity}
 \alias{oce.colorsSalinity}
-\title{Create colors suitable for salinity fields}
+\title{Create Colors Suitable for salinity Fields}
 \usage{
 oceColorsSalinity(n)
 }

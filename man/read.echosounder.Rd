@@ -2,7 +2,7 @@
 % Please edit documentation in R/echosounder.R
 \name{read.echosounder}
 \alias{read.echosounder}
-\title{Read an Echosounder File}
+\title{Read an echosounder File}
 \usage{
 read.echosounder(
   file,

@@ -40,7 +40,7 @@ setMethod(f="initialize",
         return(.Object)
     })
 
-#' Extract Something From a Bremen Object
+#' Extract Something From a bremen Object
 #'
 #' @param x a [bremen-class] object.
 #'
@@ -73,7 +73,7 @@ setMethod(f="[[",
         callNextMethod()         # [[
     })
 
-#' Replace Parts of a Bremen Object
+#' Replace Parts of a bremen Object
 #'
 #' @param x a [bremen-class] object.
 #'
@@ -126,7 +126,7 @@ setMethod(f="plot",
     })
 
 
-#' Summarize a Bremen Object
+#' Summarize a bremen Object
 #'
 #' Pertinent summary information is presented, including the station name,
 #' sampling location, data ranges, etc.
@@ -168,7 +168,7 @@ findInHeaderBremen <- function(key, lines)
 }
 
 
-#' Read a Bremen File
+#' Read a bremen File
 #'
 #' Read a file in Bremen format.
 #'

@@ -1,6 +1,6 @@
 # vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
 
-#' Wind dataset
+#' Sample Wind Data
 #'
 #' Wind data inferred from Figure 5 of Koch et al. (1983), provided to
 #' illustrate the [interpBarnes()] function.
@@ -19,7 +19,7 @@
 NULL
 
 
-#' Air density
+#' Air Density
 #'
 #' Compute \eqn{\rho}{rho}, the *in-situ* density of dry air.
 #'

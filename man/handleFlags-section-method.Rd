@@ -3,7 +3,7 @@
 \name{handleFlags,section-method}
 \alias{handleFlags,section-method}
 \alias{handleFlags.section}
-\title{Handle flags in Section Objects}
+\title{Handle flags in section Objects}
 \usage{
 \S4method{handleFlags}{section}(
   object = "oce",

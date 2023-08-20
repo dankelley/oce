@@ -100,7 +100,7 @@ setAs("list", "ctd", function(from) {
     as.ctd(from) #salinity=from$salinity, temperature=from$temperature, pressure=from$pressure)
 })
 
-#' Repair a malformed ctd object
+#' Repair a Malformed ctd Object
 #'
 #' Make a [ctd-class] object adhere more closely with the expected form, e.g. by
 #' moving certain things from the `data` slot to the `metadata` slot, where
@@ -181,7 +181,7 @@ ctdRepair <- function(x, debug=getOption("oceDebug"))
     x
 }                                      # ctdRepair()
 
-#' A CTD profile in Halifax Harbour
+#' Sample ctd Data
 #'
 #' This is a CTD profile measured in Halifax Harbour in 2003, based
 #' on [ctdRaw()], but trimmed to just the downcast with
@@ -403,7 +403,7 @@ setMethod("initializeFlagScheme",
         invisible(callNextMethod())
     })
 
-#' Initialize storage for a ctd object
+#' Initialize Storage for a ctd Object
 #'
 #' This function creates [ctd-class] objects. It is mainly
 #' used by `oce` functions such as [read.ctd()] and [as.ctd()],
@@ -884,7 +884,7 @@ setMethod(f="[[<-",
     })
 
 
-#' Coerce data into CTD object
+#' Coerce Data Into a ctd Object
 #'
 #' Assemble data into a [ctd-class] object.  This function is complicated
 #' (spanning approximately 500 lines of code) because it tries to handle many
@@ -1668,7 +1668,7 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
 }
 
 
-#' Decimate a CTD profile
+#' Decimate a ctd Profile
 #'
 #' Interpolate a CTD profile to specified pressure values.  This is used
 #' by [sectionGrid()], but is also useful for dealing with individual
@@ -2013,7 +2013,7 @@ ctdDecimate <- function(x, p=1, method="boxcar", rule=1, e=1.5, debug=getOption(
     res
 }
 
-#' Find Profiles within a Tow-Yow CTD Record
+#' Find Profiles Within a Tow-Yow ctd Record
 #'
 #' Examine the pressure record looking for extended periods of either ascent or descent, and return
 #' either indices to these events or a vector of CTD records containing the events.
@@ -2270,7 +2270,7 @@ ctdFindProfiles <- function(x, cutoff=0.5, minLength=10, minHeight,
     }
 }
 
-#' Find Profiles within a CTD object read from a RBR file
+#' Find Profiles Within a ctd Object Read From a RBR File
 #'
 #' This uses information about profiles that is contained within the `metadata`
 #' slot of the first argument, `x`, having been inserted there by [read.rsk()].
@@ -4101,7 +4101,7 @@ plotScan <- function(x, which=1, xtype="scan", flipy=FALSE, type="l", mgp=getOpt
     }
 }
 
-#' Read a General CTD File
+#' Read a ctd File in General Format
 #'
 #' @template readCtdTemplate
 #' @template encodingTemplate

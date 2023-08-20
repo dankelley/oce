@@ -2,7 +2,7 @@
 % Please edit documentation in R/adp.R
 \name{binmapAdp}
 \alias{binmapAdp}
-\title{Bin-map an ADP object}
+\title{Bin-map an adp Object}
 \usage{
 binmapAdp(x, debug = getOption("oceDebug"))
 }

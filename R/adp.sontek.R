@@ -432,7 +432,7 @@ sontek.time <- function(t, tz=getOption("oceTz"))
     ISOdatetime(year, month, day, hour, minute, second+milliseconds/1000, tz=tz)
 }
 
-#' Read a serial Sontek ADP file
+#' Read an adp File in Serial Sontek Format
 #'
 #' Read a Sontek acoustic-Doppler profiler file, in a serial form that
 #' is possibly unique to Dalhousie University.

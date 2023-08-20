@@ -2,7 +2,7 @@
 % Please edit documentation in R/AllClass.R
 \name{setFlags,oce-method}
 \alias{setFlags,oce-method}
-\title{Set data-quality flags within a oce object}
+\title{Set Data-Quality Flags within a oce Object}
 \usage{
 \S4method{setFlags}{oce}(
   object,

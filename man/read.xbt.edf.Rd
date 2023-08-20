@@ -2,7 +2,7 @@
 % Please edit documentation in R/xbt.R
 \name{read.xbt.edf}
 \alias{read.xbt.edf}
-\title{Read a Sippican '.edf' format xbt file}
+\title{Read an xbt File in Sippican Format}
 \usage{
 read.xbt.edf(
   file,

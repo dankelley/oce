@@ -2,7 +2,7 @@
 % Please edit documentation in R/misc.R
 \name{angleRemap}
 \alias{angleRemap}
-\title{Convert angles from 0:360 to -180:180}
+\title{Convert Angle From 0:360 to -180:180 Convention}
 \usage{
 angleRemap(theta)
 }
