@@ -5,6 +5,7 @@
 [![CRAN\_Status\_Badge](https://www.r-pkg.org/badges/version/oce)](https://cran.r-project.org/package=oce)
 [![status](https://joss.theoj.org/papers/10.21105/joss.03594/status.svg)](https://joss.theoj.org/papers/10.21105/joss.03594)
 [![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](http://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/)
+[![GitHub last commit](https://img.shields.io/github/last-commit/dankelley/oce)](https://img.shields.io/github/last-commit/dankelley/oce)
 [![R-CMD-check](https://github.com/dankelley/oce/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/dankelley/oce/actions/workflows/R-CMD-check.yaml)
 ![RStudio CRAN mirror downloads](https://cranlogs.r-pkg.org/badges/last-month/oce)
 ![RStudio CRAN mirror downloads](https://cranlogs.r-pkg.org/badges/last-week/oce)
