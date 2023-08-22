@@ -1,7 +1,9 @@
 # oce 1.8.2
 
-* Remove `trimString()` after a long deprecation (issue 2123).
+* Add `package?oce` documentation (had been missing with a Roxygen2 change).
+* Remove `trimString()`, after it had been deprecated for a long time (issue 2123).
 * Change `amsr` dataset and related functions for new format (issues 2124 to 2133).
+* Change `computableWaterProperties` to handle a vector of variable names.
 * Change `plot.cm()` to obey `xlim`, `ylim`, `xaxs` and `yaxs` (issue 2121).
 * Change `plotTS()` and `plotProfile()` to accept `type="b"`.
 

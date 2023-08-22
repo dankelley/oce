@@ -57,6 +57,8 @@
 \item{x}{a \linkS4class{section} object.}
 
 \item{which}{a list of desired plot types, as explained in \dQuote{Details}.
+Plot types not listed in \dQuote{Details} can be generated using the
+name of the data in the \linkS4class{section} object.
 There may be up to four panels in total, and the desired plots are placed in
 these panels, in reading order.  If only one panel is plotted, \code{par} is
 not adjusted, which makes it easy to add to the plot with subsequent plotting

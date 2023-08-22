@@ -7,17 +7,40 @@
 computableWaterProperties(x)
 }
 \arguments{
-\item{x}{An \linkS4class{oce} object.}
+\item{x}{a specification of the names of known variables.  This
+may be (a) an \linkS4class{oce} object, in which case the names are
+determined by calling \code{\link[=names]{names()}} on the \code{data} slot of \code{x}, or
+(b) a vector of character values indicating the names.}
 }
 \value{
-A character vector listing the names of computable
-water properties, or NULL, if there are none.
+a sorted character vector holding the names of computable
+water properties, or NULL, if there are no computable values.
 }
 \description{
-This checks to see whether \code{x} is an \code{oce} object containing
-\code{salinity}, \code{temperature}, \code{pressure}, \code{latitude} and \code{longitude}.
-If this holds, then it returns a list of items that can be accessed
-with \code{[[}.
+This determines what things can be derived from the supplied
+variables.  For example, if \code{salinity}, \code{temperature},
+and \code{pressure} are supplied, then potential temperature, sound
+speed, and several other things can be derived.  If, in addition,
+\code{longitude} and \code{latitude} are supplied, then Absolute Salinity,
+Conservative Temperature, and some other things can be derived.
+See the \dQuote{Examples} for a full listing.
+Similarly, \code{nitrate} can be computed from \code{NO2+NO3} together
+with \code{nitrate}, and \code{nitrite} can be computed from \code{NO2+NO3}
+together with \code{nitrate}.
+}
+\examples{
+library(oce)
+# Example 1
+data(ctd)
+computableWaterProperties(ctd)
+# Example 2: nothing an be computed from just salinity
+computableWaterProperties("salinity")
+# Example 3: quite a lot can be computed from this trio of values
+computableWaterProperties(c("salinity", "temperature", "pressure"))
+# Example 4: now we can get TEOS-10 values as well
+computableWaterProperties(c("salinity", "temperature", "pressure",
+    "longitude", "latitude"))
+
 }
 \seealso{
 Other functions that calculate seawater properties: 

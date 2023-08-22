@@ -61,64 +61,67 @@ locationForGsw <- function(x)
 
 #' Show Available Derived Water Properties
 #'
-#' This checks to see whether `x` is an `oce` object containing
-#' `salinity`, `temperature`, `pressure`, `latitude` and `longitude`.
-#' If this holds, then it returns a list of items that can be accessed
-#' with `[[`.
+#' This determines what things can be derived from the supplied
+#' variables.  For example, if `salinity`, `temperature`,
+#' and `pressure` are supplied, then potential temperature, sound
+#' speed, and several other things can be derived.  If, in addition,
+#' `longitude` and `latitude` are supplied, then Absolute Salinity,
+#' Conservative Temperature, and some other things can be derived.
+#' See the \dQuote{Examples} for a full listing.
+#' Similarly, `nitrate` can be computed from `NO2+NO3` together
+#' with `nitrate`, and `nitrite` can be computed from `NO2+NO3`
+#' together with `nitrate`.
 #'
-#' @param x An [oce-class] object.
+#' @param x a specification of the names of known variables.  This
+#' may be (a) an [oce-class] object, in which case the names are
+#' determined by calling [names()] on the `data` slot of `x`, or
+#' (b) a vector of character values indicating the names.
 #'
-#' @return A character vector listing the names of computable
-#' water properties, or NULL, if there are none.
+#' @return a sorted character vector holding the names of computable
+#' water properties, or NULL, if there are no computable values.
 #'
 #' @author Dan Kelley
+#'
+#' @examples
+#' library(oce)
+#' # Example 1
+#' data(ctd)
+#' computableWaterProperties(ctd)
+#' # Example 2: nothing an be computed from just salinity
+#' computableWaterProperties("salinity")
+#' # Example 3: quite a lot can be computed from this trio of values
+#' computableWaterProperties(c("salinity", "temperature", "pressure"))
+#' # Example 4: now we can get TEOS-10 values as well
+#' computableWaterProperties(c("salinity", "temperature", "pressure",
+#'     "longitude", "latitude"))
 #'
 #' @family functions that calculate seawater properties
 computableWaterProperties <- function(x)
 {
     res <- NULL
-    if (inherits(x, "oce")) {
-        names <- unique(c(names(x@metadata), names(x@data)))
-        haveSTP <- all(c("salinity", "temperature", "pressure") %in% names)
-        haveLocation <- all(c("longitude", "latitude") %in% names)
-        if (haveSTP) {
-            res <- c(res, c("theta", paste("potential", "temperature"), "z",
-                    "depth", "spice", "Rrho", "RrhoSF", "sigmaTheta", "SP",
-                    "density", "N2", paste("sound", "speed")))
-            if (haveLocation) {
-                res <- c(res, "SR", "Sstar",
-                    paste0("sigma", 0:4),
-                    "SA", paste("Absolute", "Salinity"),
-                    "CT",  paste("Conservative", "Temperature"),
-                    paste0("spiciness", 0:2))
-            }
+    names <- if (inherits(x, "oce")) unique(c(names(x@metadata), names(x@data))) else x
+    haveSTP <- all(c("salinity", "temperature", "pressure") %in% names)
+    haveLocation <- all(c("longitude", "latitude") %in% names)
+    if (haveSTP) {
+        res <- c(res, c("theta", paste("potential", "temperature"), "z",
+                "depth", "spice", "Rrho", "RrhoSF", "sigmaTheta", "SP",
+                "density", "N2", paste("sound", "speed")))
+        if (haveLocation) {
+            res <- c(res, "SR", "Sstar",
+                paste0("sigma", 0:4),
+                "SA", paste("Absolute", "Salinity"),
+                "CT",  paste("Conservative", "Temperature"),
+                paste0("spiciness", 0:2))
         }
-        # It is possible to compute nitrate from NO2+NO3 and nitrite, if
-        # it's not stored in the object already.  This occurs in data(section).
-        # I also added a similar scheme for nitrite, although I don't know
-        # whether that condition ever happens, in practice.
-        if (!("nitrate" %in% names) && ("NO2+NO3" %in% names) && ("nitrite" %in% names)) {
-            res <- c(res, "nitrate")
-        }
-        if (!("nitrite" %in% names) && ("NO2+NO3" %in% names) && ("nitrate" %in% names)) {
-            res <- c(res, "nitrite")
-        }
-        # Below is a bad idea that I had for a while.  But it just gets
-        # confusing, dealing with synonyms, and it will mess things up terribly
-        # if e.g. the user has "nitrate" and wants to make a calibrated version,
-        # which they might call "NO4".
-        #<bad idea> # Add some synonyms.  This can yield duplicates but we use unique()
-        #<bad idea> # later, so that's not a problem.
-        #<bad idea> if ("nitrate" %in% names || "NO3" %in% names)
-        #<bad idea>     res <- c(res, "nitrate", "NO3")
-        #<bad idea> if ("nitrite" %in% names || "NO2" %in% names)
-        #<bad idea>     res <- c(res, "nitrite", "NO2")
-        #<bad idea> if ("phosphate" %in% names || "PO4" %in% names)
-        #<bad idea>     res <- c(res, "phosphate", "PO4")
-        #<bad idea> if ("silicate" %in% names || "SiO4" %in% names) {
-        #<bad idea>     res <- c(res, "silicate", "SiO4")
-        #<bad idea> }
     }
+    # It is possible to compute nitrate from NO2+NO3 and nitrite, if
+    # it's not stored in the object already.  This occurs in data(section).
+    # I also added a similar scheme for nitrite, although I don't know
+    # whether that condition ever happens, in practice.
+    if (!("nitrate" %in% names) && ("NO2+NO3" %in% names) && ("nitrite" %in% names))
+        res <- c(res, "nitrate")
+    if (!("nitrite" %in% names) && ("NO2+NO3" %in% names) && ("nitrate" %in% names))
+        res <- c(res, "nitrite")
     # Remove things that were in the original data.
     res <- res[!(res %in% names)]
     # remove duplicates, and sort
