@@ -1072,6 +1072,8 @@ sectionAddCtd <- sectionAddStation
 #' @param x a [section-class] object.
 #'
 #' @param which a list of desired plot types, as explained in \dQuote{Details}.
+#' Plot types not listed in \dQuote{Details} can be generated using the
+#' name of the data in the [section-class] object.
 #' There may be up to four panels in total, and the desired plots are placed in
 #' these panels, in reading order.  If only one panel is plotted, `par` is
 #' not adjusted, which makes it easy to add to the plot with subsequent plotting
