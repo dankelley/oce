@@ -24,10 +24,10 @@ and \code{pressure} are supplied, then potential temperature, sound
 speed, and several other things can be derived.  If, in addition,
 \code{longitude} and \code{latitude} are supplied, then Absolute Salinity,
 Conservative Temperature, and some other things can be derived.
-See the \dQuote{Examples} for a full listing.
 Similarly, \code{nitrate} can be computed from \code{NO2+NO3} together
 with \code{nitrate}, and \code{nitrite} can be computed from \code{NO2+NO3}
 together with \code{nitrate}.
+See the \dQuote{Examples} for a full listing.
 }
 \examples{
 library(oce)

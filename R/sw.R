@@ -67,10 +67,10 @@ locationForGsw <- function(x)
 #' speed, and several other things can be derived.  If, in addition,
 #' `longitude` and `latitude` are supplied, then Absolute Salinity,
 #' Conservative Temperature, and some other things can be derived.
-#' See the \dQuote{Examples} for a full listing.
 #' Similarly, `nitrate` can be computed from `NO2+NO3` together
 #' with `nitrate`, and `nitrite` can be computed from `NO2+NO3`
 #' together with `nitrate`.
+#' See the \dQuote{Examples} for a full listing.
 #'
 #' @param x a specification of the names of known variables.  This
 #' may be (a) an [oce-class] object, in which case the names are
