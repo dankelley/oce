@@ -2,7 +2,7 @@
 % Please edit documentation in R/sw.R
 \name{computableWaterProperties}
 \alias{computableWaterProperties}
-\title{Show Available Derived Water Properties}
+\title{Determine Available Derived Water Properties}
 \usage{
 computableWaterProperties(x)
 }
@@ -13,7 +13,8 @@ determined by calling \code{\link[=names]{names()}} on the \code{data} slot of \
 (b) a vector of character values indicating the names.}
 }
 \value{
-a sorted character vector holding the names of computable
+\code{\link[=computableWaterProperties]{computableWaterProperties()}} returns a sorted
+character vector holding the names of computable
 water properties, or NULL, if there are no computable values.
 }
 \description{

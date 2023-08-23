@@ -59,7 +59,7 @@ locationForGsw <- function(x)
 
 
 
-#' Show Available Derived Water Properties
+#' Determine Available Derived Water Properties
 #'
 #' This determines what things can be derived from the supplied
 #' variables.  For example, if `salinity`, `temperature`,
@@ -77,7 +77,8 @@ locationForGsw <- function(x)
 #' determined by calling [names()] on the `data` slot of `x`, or
 #' (b) a vector of character values indicating the names.
 #'
-#' @return a sorted character vector holding the names of computable
+#' @return [computableWaterProperties()] returns a sorted
+#' character vector holding the names of computable
 #' water properties, or NULL, if there are no computable values.
 #'
 #' @author Dan Kelley
