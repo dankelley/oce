@@ -487,6 +487,7 @@ setMethod(f="plot",
 #' @param amplitude Numeric vector of constituent amplitudes.
 #'
 #' @param phase Numeric vector of constituent Greenwich phases.
+#'
 #' @template debugTemplate
 #'
 #' @return An object of [tidem-class], with only minimal
@@ -494,8 +495,7 @@ setMethod(f="plot",
 #'
 #' @section Known issues:
 #' There are two known differences between [tidem()] and the Matlab
-#' `T_TIDE` package, as listed in references 3 and 4. Work on these
-#' issues is planned for the summer of 2020.
+#' `T_TIDE` package, as listed in references 3 and 4.
 #'
 #' @examples
 #' # Simulate a tide table with output from tidem().
@@ -504,7 +504,7 @@ setMethod(f="plot",
 #' m0 <- tidem(sealevelTuktoyaktuk)
 #' p0 <- predict(m0, sealevelTuktoyaktuk[["time"]])
 #' m1 <- as.tidem(mean(sealevelTuktoyaktuk[["time"]]), sealevelTuktoyaktuk[["latitude"]],
-#'                m0[["name"]], m0[["amplitude"]], m0[["phase"]])
+#'     m0[["name"]], m0[["amplitude"]], m0[["phase"]])
 #' # Test agreement with tidem() result, by comparing predicted sealevels.
 #' p1 <- predict(m1, sealevelTuktoyaktuk[["time"]])
 #' stopifnot(max(abs(p1 - p0), na.rm=TRUE) < 1e-10)
@@ -524,8 +524,8 @@ setMethod(f="plot",
 #'   S2 0.22023705 137.475767"
 #' coef <- read.table(text=h, header=TRUE)
 #' m2 <- as.tidem(mean(sealevelTuktoyaktuk[["time"]]),
-#'                sealevelTuktoyaktuk[["latitude"]],
-#'                coef$name, coef$amplitude, coef$phase)
+#'     sealevelTuktoyaktuk[["latitude"]],
+#'     coef$name, coef$amplitude, coef$phase)
 #' p2 <- predict(m2, sealevelTuktoyaktuk[["time"]])
 #' stopifnot(max(abs(p2 - p0), na.rm=TRUE) < 1)
 #' par(mfrow=c(3, 1))
