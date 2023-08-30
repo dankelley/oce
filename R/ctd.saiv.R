@@ -100,7 +100,7 @@ read.ctd.saiv <- function(file, encoding="latin1", debug=getOption("oceDebug"), 
     dataNames[dataNames == "Density"] <- "density"
     dataNames[dataNames == "S. vel."] <- "soundVelocity"
     dataNames[dataNames == "T (FTU)"] <- "turbidity"
-    dataNames[dataNames == "F (µg/l)"] <- "fluorescence"
+    dataNames[grep("^F [(]{1}", dataNames)] <- "fluorescence"
     oceDebug(debug, "data names: c(\"", paste(dataNames, collapse="\", \""), "\")\n")
     data <- read.delim(file, sep="\t", col.names=dataNames)
     # NOTE: pressure needs latitude for accuracy
