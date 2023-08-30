@@ -32,10 +32,6 @@ by specifying higher \code{debug} values.}
 \item{processingLog}{ignored.}
 
 \item{...}{ignored.}
-
-\item{format}{an integer indicating the format type.  If not supplied, the
-first line is examined to determine whether the file matches the \code{format=1} or
-\code{format=2} style (see \dQuote{Details}).}
 }
 \value{
 \code{\link[=read.ctd.aml]{read.ctd.aml()}} returns a \linkS4class{ctd} object.

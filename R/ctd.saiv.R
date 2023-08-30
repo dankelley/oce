@@ -36,10 +36,6 @@
 #' @param file a connection or a character string giving the name of
 #' the file to load.
 #'
-#' @param format an integer indicating the format type.  If not supplied, the
-#' first line is examined to determine whether the file matches the `format=1` or
-#' `format=2` style (see \dQuote{Details}).
-#'
 #' @template encodingTemplate
 #'
 #' @template debugTemplate
