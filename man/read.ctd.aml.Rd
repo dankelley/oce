@@ -137,6 +137,7 @@ Other things related to ctd data:
 \code{\link{read.ctd.itp}()},
 \code{\link{read.ctd.odf}()},
 \code{\link{read.ctd.odv}()},
+\code{\link{read.ctd.saiv}()},
 \code{\link{read.ctd.sbe}()},
 \code{\link{read.ctd.ssda}()},
 \code{\link{read.ctd.woce.other}()},
@@ -152,6 +153,7 @@ Other things related to ctd data:
 Other functions that read ctd data: 
 \code{\link{read.ctd.itp}()},
 \code{\link{read.ctd.odf}()},
+\code{\link{read.ctd.saiv}()},
 \code{\link{read.ctd.sbe}()},
 \code{\link{read.ctd.ssda}()},
 \code{\link{read.ctd.woce.other}()},

@@ -302,6 +302,7 @@ export(
     read.ctd.odf,
     read.ctd.odv,
     read.ctd.itp,
+    read.ctd.saiv,
     read.echosounder,
     read.g1sst,
     read.gps,

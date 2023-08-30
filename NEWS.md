@@ -1,6 +1,7 @@
 # oce 1.8.2
 
 * Add `package?oce` documentation (had been missing with a Roxygen2 change).
+* Add `read.ctd.saiv()` to read data from SAIV instruments.
 * Remove `trimString()`, after it had been deprecated for a long time (issue 2123).
 * Change `amsr` dataset and related functions for new format (issues 2124 to 2133).
 * Change `computableWaterProperties` to handle a vector of variable names.
