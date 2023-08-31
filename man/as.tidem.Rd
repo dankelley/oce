@@ -9,7 +9,8 @@ as.tidem(tRef, latitude, name, amplitude, phase, debug = getOption("oceDebug"))
 \arguments{
 \item{tRef}{a POSIXt value indicating the mean time of the
 observations used to develop the harmonic model. This is rounded
-to the nearest hour in \code{\link[=as.tidem]{as.tidem()}}, to match \code{\link[=tidem]{tidem()}}.}
+to the nearest hour in \code{\link[=as.tidem]{as.tidem()}}, to match the behaviour
+of \code{\link[=tidem]{tidem()}}.}
 
 \item{latitude}{numerical value indicating the latitude of the
 observations that were used to create the harmonic model. This
@@ -18,9 +19,8 @@ by \code{\link[=tidemVuf]{tidemVuf()}}.}
 
 \item{name}{character vector holding names of constituents.}
 
-\item{amplitude}{Numeric vector of constituent amplitudes.}
-
-\item{phase}{Numeric vector of constituent Greenwich phases.}
+\item{amplitude, phase}{numeric vectors of constituent amplitudes
+and phases. These must be of the same length as \code{name}.}
 
 \item{debug}{an integer specifying whether debugging information is
 to be printed during the processing. This is a general parameter that
@@ -35,25 +35,34 @@ An object of \linkS4class{tidem}, with only minimal
 contents.
 }
 \description{
-This function is intended to provide a bridge to
-\code{\link[=predict.tidem]{predict.tidem()}}, enabling tidal predictions based
-on published tables of harmonic fits.
+This function takes a set of tidal constituent amplitudes
+and phases, and constructs a return value of similar form
+to that returned by \code{\link[=tidem]{tidem()}}.  Its purpose is to enable
+predictions based on published constituent amplitudes
+and phases.
 }
 \details{
-Note that only constituent names known to \code{\link[=tidem]{tidem()}} are handled.
-The permitted names are those listed in Foreman (1978), and
-tabulated with
+All the constituent names used by \code{\link[=tidem]{tidem()}} are permitted here.
+To get a list, consult Foreman (1978), or type the following
+in an R console:
 \preformatted{
 data(tidedata)
 data.frame(name=tidedata$const$name, freq=tidedata$const$freq)
 }
-Warnings are issued for any constituent name that is not in this list; as
-of the late summer of 2019, the only example seen in practice is
-\code{M1}, which according to Wikipedia (2019) has frequency 0.0402557, which
-is very close to that of \code{NO1}, i.e. 0.04026859, perhaps explaining
-why Foreman (1978) did not handle this constituent. A warning is
-issued if this or any other unhandled constituent is provided
-in the \code{name} argument to \code{as.tidem()}.
+
+In addition to the above, \code{\link[=as.tidem]{as.tidem()}} can handle NOAA names
+of constituents.  For the most part, these match oce names, but
+there are 4 exceptions: NOAA names
+\code{"LAM2"}, \code{"M1"}, \code{"RHO"}, and \code{"2MK3"} are converted to oce names
+\code{"LDA2"}, \code{"NO1"}, \code{"RHO1"}, and \code{"MO3"}. The name mapping was
+inferred by matching frequencies; for these constituents, the
+fractional mismatch in frequencies was under 4e-8;
+see Reference 5 for more details.
+A message is printed if these name conversions are required
+in the particular use of \code{\link[=as.tidem]{as.tidem()}}.
+
+Apart from the standard oce names and this set of NOAA synonyms,
+any other constituent name is reported in a warning message.
 }
 \section{Known issues}{
 
@@ -106,10 +115,12 @@ Pacific Marine Science Report. British Columbia, Canada: Institute of Ocean
 Sciences, Patricia Bay.
 \item Wikipedia, "Theory of Tides." https://en.wikipedia.org/wiki/Theory_of_tides
 Downloaded Aug 17, 2019.
-\item Github issue 1653: tidem() and t_tide do not produce identical results
-https://github.com/dankelley/oce/issues/1653
-\item Github issue 1654: predict(tidem()) uses all constituents, unlike T_TIDE
-https://github.com/dankelley/oce/issues/1654
+\item Github issue 1653 "tidem() and t_tide do not produce identical results"
+(https://github.com/dankelley/oce/issues/1653)
+\item Github issue 1654 "predict(tidem()) uses all constituents, unlike T_TIDE"
+(https://github.com/dankelley/oce/issues/1654)
+\item Github issue 2143 "mismatch in oce/NOAA frequency of SA tidal constituent"
+(https://github.com/dankelley/oce/issues/2143)
 }
 }
 \seealso{

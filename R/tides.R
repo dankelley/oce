@@ -453,28 +453,38 @@ setMethod(f="plot",
 
 #' Create tidem Object From Fitted Harmonic Data
 #'
-#' This function is intended to provide a bridge to
-#' [predict.tidem()], enabling tidal predictions based
-#' on published tables of harmonic fits.
+#' This function takes a set of tidal constituent amplitudes
+#' and phases, and constructs a return value of similar form
+#' to that returned by [tidem()].  Its purpose is to enable
+#' predictions based on published constituent amplitudes
+#' and phases.
 #'
-#' Note that only constituent names known to [tidem()] are handled.
-#' The permitted names are those listed in Foreman (1978), and
-#' tabulated with
+#' All the constituent names used by [tidem()] are permitted here.
+#' To get a list, consult Foreman (1978), or type the following
+#' in an R console:
 #'\preformatted{
 #' data(tidedata)
 #' data.frame(name=tidedata$const$name, freq=tidedata$const$freq)
 #'}
-#' Warnings are issued for any constituent name that is not in this list; as
-#' of the late summer of 2019, the only example seen in practice is
-#' `M1`, which according to Wikipedia (2019) has frequency 0.0402557, which
-#' is very close to that of `NO1`, i.e. 0.04026859, perhaps explaining
-#' why Foreman (1978) did not handle this constituent. A warning is
-#' issued if this or any other unhandled constituent is provided
-#' in the `name` argument to `as.tidem()`.
+#'
+#' In addition to the above, [as.tidem()] can handle NOAA names
+#' of constituents.  For the most part, these match oce names, but
+#' there are 4 exceptions: NOAA names
+#' `"LAM2"`, `"M1"`, `"RHO"`, and `"2MK3"` are converted to oce names
+#' `"LDA2"`, `"NO1"`, `"RHO1"`, and `"MO3"`. The name mapping was
+#' inferred by matching frequencies; for these constituents, the
+#' fractional mismatch in frequencies was under 4e-8;
+#' see Reference 5 for more details.
+#' A message is printed if these name conversions are required
+#' in the particular use of [as.tidem()].
+#'
+#' Apart from the standard oce names and this set of NOAA synonyms,
+#' any other constituent name is reported in a warning message.
 #'
 #' @param tRef a POSIXt value indicating the mean time of the
 #' observations used to develop the harmonic model. This is rounded
-#' to the nearest hour in [as.tidem()], to match [tidem()].
+#' to the nearest hour in [as.tidem()], to match the behaviour
+#' of [tidem()].
 #'
 #' @param latitude numerical value indicating the latitude of the
 #' observations that were used to create the harmonic model. This
@@ -482,11 +492,9 @@ setMethod(f="plot",
 #' by [tidemVuf()].
 #'
 #' @param name character vector holding names of constituents.
-#' @template tideconst
 #'
-#' @param amplitude Numeric vector of constituent amplitudes.
-#'
-#' @param phase Numeric vector of constituent Greenwich phases.
+#' @param amplitude,phase numeric vectors of constituent amplitudes
+#' and phases. These must be of the same length as `name`.
 #'
 #' @template debugTemplate
 #'
@@ -542,11 +550,14 @@ setMethod(f="plot",
 #' 2. Wikipedia, "Theory of Tides." https://en.wikipedia.org/wiki/Theory_of_tides
 #' Downloaded Aug 17, 2019.
 #'
-#' 3. Github issue 1653: tidem() and t_tide do not produce identical results
-#' https://github.com/dankelley/oce/issues/1653
+#' 3. Github issue 1653 "tidem() and t_tide do not produce identical results"
+#' (https://github.com/dankelley/oce/issues/1653)
 #'
-#' 4. Github issue 1654: predict(tidem()) uses all constituents, unlike T_TIDE
-#' https://github.com/dankelley/oce/issues/1654
+#' 4. Github issue 1654 "predict(tidem()) uses all constituents, unlike T_TIDE"
+#' (https://github.com/dankelley/oce/issues/1654)
+#'
+#' 5. Github issue 2143 "mismatch in oce/NOAA frequency of SA tidal constituent"
+#' (https://github.com/dankelley/oce/issues/2143)
 #'
 #' @family things related to tides
 as.tidem <- function(tRef, latitude, name, amplitude, phase, debug=getOption("oceDebug"))
@@ -567,6 +578,17 @@ as.tidem <- function(tRef, latitude, name, amplitude, phase, debug=getOption("oc
         stop("lengths of name and amplitude must be equal but they are ", nname, " and ", length(amplitude))
     if (nname != length(phase))
         stop("lengths of name and phase must be equal but they are ", nname, " and ", length(phase))
+    # convert from NOAA name to oce name
+    # NOAA: LAM2  M1  RHO 2MK3
+    # oce:  LDA2 NO1 RHO1  MO3
+    tmpNOAA <- c("LAM2", "M1", "RHO", "2MK3")
+    tmpOce <- c("LDA2", "NO1", "RHO1", "MO3")
+    for (tmpi in seq_along(tmpNOAA)) {
+        if (tmpNOAA[tmpi]  %in% name) {
+            name[name == tmpNOAA[tmpi]] <- tmpOce[tmpi]
+            message("converted NOAA name \"", tmpNOAA[tmpi], "\" to oce name \"", tmpOce[tmpi], "\"")
+        }
+    }
     data("tidedata", package="oce", envir=environment())
     tidedata <- get("tidedata")
     tRef <- numberAsPOSIXct(3600 * round(as.numeric(tRef, tz="UTC") / 3600), tz="UTC")
