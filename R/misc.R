@@ -2243,6 +2243,7 @@ resizableLabel <- function(item, axis="x", sep, unit=NULL, debug=getOption("oceD
             "km"), "heading", "pitch", "roll", "u", "v", "w", "speed",
         "direction", "eastward", "northward", "depth", "elevation", "latitude",
         "longitude", paste("frequency", "cph"), paste("sound", "speed"),
+        "spiciness0",
         paste("spectral", "density", "m2/cph"), "sigma0", "sigma1", "sigma2",
         "sigma3", "sigma4", "Sstar", "SR")
 
@@ -2455,6 +2456,10 @@ resizableLabel <- function(item, axis="x", sep, unit=NULL, debug=getOption("oceD
             full <- bquote(.(var)*.(L)*.(unit[[1]])*.(R))
             abbreviated <- full
         }
+    } else if (item == "spiciness0") {
+        var <- gettext("Spiciness wrt surface", domain="R-oce")
+        full <- bquote(.(var)*.(L)*kg/m^3*.(R))
+        abbreviated <- bquote(sigma[0]*.(L)*kg/m^3*.(R))
     } else if (item == "S") {
         full <- gettext("Salinity", domain="R-oce")
         abbreviated <- expression(S)
