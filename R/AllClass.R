@@ -789,17 +789,19 @@ setMethod(f="show",
                 cat("  ", dataNames[i], ", a data frame with contents:\n", sep="")
                 for (n in names(d))
                     cat("    ", vectorShow(d[[n]], n), sep="")
+            } else if (is.vector(d)) {
+                cat(vectorShow(d, paste("  ", dataNames[i])))
             } else if (is.array(d)) {
                 dim <- dim(object@data[[i]])
-                if (length(dim) == 1)
+                if (length(dim) == 1L)
                     cat(vectorShow(d, paste("  ", dataNames[i])))
-                else if (length(dim) == 2)
+                else if (length(dim) == 2L)
                     cat("   ", dataNames[i], ", a ", dim[1], "x", dim[2], " array with value ", d[1, 1], " at [1,1] position\n", sep="")
             } else if (length(dim) == 3) {
                 cat("   ", dataNames[i], ", a ", dim[1], "x", dim[2], "x", dim[3], " array with value ", d[1, 1, 1],
                     " at [1,1,1] position\n", sep="")
             } else {
-                cat("   ", dataNames[i], ", an array of more than 3 dimensions\n")
+                cat("   ", dataNames[i], ", an array of more than 3 dimensions\n", sep="")
             }
         }
         options(digits=odigits) # return to original digits value
