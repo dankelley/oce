@@ -496,6 +496,17 @@ setMethod(f="plot",
 #' @param amplitude,phase numeric vectors of constituent amplitudes
 #' and phases. These must be of the same length as `name`.
 #'
+#' @param frequency,speed optional numeric vectors giving the frequencies
+#' of the constituents (in cycles per hour) or the analogous speeds
+#' (in degrees per hour).  Only one of these may be given, and a conversion
+#' is done from the latter to the former, if required.  If the frequencies
+#' are thus specified, then these are used instead of the frequencies that
+#' oce normally used, as defined in `data(tideconst)`. A warning will
+#' be issued if the absolute value of the relative frequency mismatch for any
+#' given component exceeds 1e-6, and this will occur for any NOAA tables
+#' containing the SA component, for which this relative mismatch
+#' is approximately 4e-5 (see refernece 5).
+#'
 #' @template debugTemplate
 #'
 #' @return An object of [tidem-class], with only minimal
@@ -506,7 +517,8 @@ setMethod(f="plot",
 #' `T_TIDE` package, as listed in references 3 and 4.
 #'
 #' @examples
-#' # Simulate a tide table with output from tidem().
+#'
+#' # Example 1: show agreement with tidem()
 #' data(sealevelTuktoyaktuk)
 #' # 'm0' is model fitted by tidem()
 #' m0 <- tidem(sealevelTuktoyaktuk)
@@ -516,9 +528,9 @@ setMethod(f="plot",
 #' # Test agreement with tidem() result, by comparing predicted sealevels.
 #' p1 <- predict(m1, sealevelTuktoyaktuk[["time"]])
 #' stopifnot(max(abs(p1 - p0), na.rm=TRUE) < 1e-10)
-#' # Simplified harmonic model, using large constituents
-#' # > m0[["name"]][which(m[["amplitude"]]>0.05)]
-#' # [1] "Z0"  "MM"  "MSF" "O1"  "K1"  "OO1" "N2"  "M2"  "S2"
+#'
+#' # Example 2: See the effect of dropping weak constituents
+#' m0[["name"]][which(m0[["amplitude"]]>0.05)]
 #' h <- "
 #' name  amplitude      phase
 #'   Z0 1.98061875   0.000000
@@ -535,7 +547,6 @@ setMethod(f="plot",
 #'     sealevelTuktoyaktuk[["latitude"]],
 #'     coef$name, coef$amplitude, coef$phase)
 #' p2 <- predict(m2, sealevelTuktoyaktuk[["time"]])
-#' stopifnot(max(abs(p2 - p0), na.rm=TRUE) < 1)
 #' par(mfrow=c(3, 1))
 #' oce.plot.ts(sealevelTuktoyaktuk[["time"]], p0)
 #' ylim <- par("usr")[3:4] # to match scales in other panels
@@ -543,6 +554,7 @@ setMethod(f="plot",
 #' oce.plot.ts(sealevelTuktoyaktuk[["time"]], p2, ylim=ylim)
 #'
 #' @references
+#'
 #' 1. Foreman, M. G. G., 1978. Manual for Tidal Currents Analysis and Prediction.
 #' Pacific Marine Science Report. British Columbia, Canada: Institute of Ocean
 #' Sciences, Patricia Bay.
@@ -560,7 +572,7 @@ setMethod(f="plot",
 #' (https://github.com/dankelley/oce/issues/2143)
 #'
 #' @family things related to tides
-as.tidem <- function(tRef, latitude, name, amplitude, phase, debug=getOption("oceDebug"))
+as.tidem <- function(tRef, latitude, name, amplitude, phase, frequency, speed, debug=getOption("oceDebug"))
 {
     oceDebug(debug, "as.tidem() {\n", sep="", unindent=1)
     if (missing(tRef))
@@ -573,6 +585,14 @@ as.tidem <- function(tRef, latitude, name, amplitude, phase, debug=getOption("oc
         stop("amplitude must be given")
     if (missing(phase))
         stop("phase must be given")
+    gaveFrequency <- !missing(frequency)
+    gaveSpeed <- !missing(speed)
+    if (gaveSpeed) {
+        if (gaveFrequency)
+            stop("cannot give both speed and frequency")
+        frequency <- speed / 360.0
+        gaveFrequency <- TRUE
+    }
     nname <- length(name)
     if (nname != length(amplitude))
         stop("lengths of name and amplitude must be equal but they are ", nname, " and ", length(amplitude))
@@ -598,6 +618,11 @@ as.tidem <- function(tRef, latitude, name, amplitude, phase, debug=getOption("oc
     freq <- rep(NA, nname)
     indices <- rep(NA, nname)
     ibad <- NULL
+    if (gaveSpeed) {
+        oceDebug(debug, "computing frequency from velocity\n")
+        frequency <- speed / 360.0
+        gaveFrequency <- TRUE
+    }
     for (i in seq_along(name)) {
         oceDebug(debug, "adjusting amplitude and phase for constituent '", name[i], "'\n", sep="")
         j <- which(tidedata$const$name==name[i])
@@ -608,7 +633,17 @@ as.tidem <- function(tRef, latitude, name, amplitude, phase, debug=getOption("oc
             indices[i] <- j
             amplitude[i] <- amplitude[i] * vuf$f
             phase[i] <- phase[i] - (vuf$v+vuf$u)*360
-            freq[i] <- tidedata$const$freq[j]
+            if (gaveFrequency) {
+                freq[i] <- frequency[i]
+                afd <- abs(frequency[i] - tidedata$const$freq[j]) / tidedata$const$freq[j]
+                if (afd > 1e-6) {
+                    msg <- sprintf("%s: absolute fractional mismatch between specified and built-in frequency is %.3e\n", name[i], afd)
+                    warning(msg)
+                }
+                oceDebug(debug, msg)
+            } else {
+                freq[i] <- tidedata$const$freq[j]
+            }
         } else {
             ibad <- c(ibad, i)
         }

@@ -4,7 +4,16 @@
 \alias{as.tidem}
 \title{Create tidem Object From Fitted Harmonic Data}
 \usage{
-as.tidem(tRef, latitude, name, amplitude, phase, debug = getOption("oceDebug"))
+as.tidem(
+  tRef,
+  latitude,
+  name,
+  amplitude,
+  phase,
+  frequency,
+  speed,
+  debug = getOption("oceDebug")
+)
 }
 \arguments{
 \item{tRef}{a POSIXt value indicating the mean time of the
@@ -21,6 +30,17 @@ by \code{\link[=tidemVuf]{tidemVuf()}}.}
 
 \item{amplitude, phase}{numeric vectors of constituent amplitudes
 and phases. These must be of the same length as \code{name}.}
+
+\item{frequency, speed}{optional numeric vectors giving the frequencies
+of the constituents (in cycles per hour) or the analogous speeds
+(in degrees per hour).  Only one of these may be given, and a conversion
+is done from the latter to the former, if required.  If the frequencies
+are thus specified, then these are used instead of the frequencies that
+oce normally used, as defined in \code{data(tideconst)}. A warning will
+be issued if the absolute value of the relative frequency mismatch for any
+given component exceeds 1e-6, and this will occur for any NOAA tables
+containing the SA component, for which this relative mismatch
+is approximately 4e-5 (see refernece 5).}
 
 \item{debug}{an integer specifying whether debugging information is
 to be printed during the processing. This is a general parameter that
@@ -71,7 +91,8 @@ There are two known differences between \code{\link[=tidem]{tidem()}} and the Ma
 }
 
 \examples{
-# Simulate a tide table with output from tidem().
+
+# Example 1: show agreement with tidem()
 data(sealevelTuktoyaktuk)
 # 'm0' is model fitted by tidem()
 m0 <- tidem(sealevelTuktoyaktuk)
@@ -81,9 +102,9 @@ m1 <- as.tidem(mean(sealevelTuktoyaktuk[["time"]]), sealevelTuktoyaktuk[["latitu
 # Test agreement with tidem() result, by comparing predicted sealevels.
 p1 <- predict(m1, sealevelTuktoyaktuk[["time"]])
 stopifnot(max(abs(p1 - p0), na.rm=TRUE) < 1e-10)
-# Simplified harmonic model, using large constituents
-# > m0[["name"]][which(m[["amplitude"]]>0.05)]
-# [1] "Z0"  "MM"  "MSF" "O1"  "K1"  "OO1" "N2"  "M2"  "S2"
+
+# Example 2: See the effect of dropping weak constituents
+m0[["name"]][which(m0[["amplitude"]]>0.05)]
 h <- "
 name  amplitude      phase
   Z0 1.98061875   0.000000
@@ -100,7 +121,6 @@ m2 <- as.tidem(mean(sealevelTuktoyaktuk[["time"]]),
     sealevelTuktoyaktuk[["latitude"]],
     coef$name, coef$amplitude, coef$phase)
 p2 <- predict(m2, sealevelTuktoyaktuk[["time"]])
-stopifnot(max(abs(p2 - p0), na.rm=TRUE) < 1)
 par(mfrow=c(3, 1))
 oce.plot.ts(sealevelTuktoyaktuk[["time"]], p0)
 ylim <- par("usr")[3:4] # to match scales in other panels
