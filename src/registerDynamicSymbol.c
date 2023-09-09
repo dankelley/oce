@@ -5,7 +5,7 @@
 extern SEXP _oce_bilinearInterp(SEXP, SEXP, SEXP, SEXP, SEXP);
 extern SEXP _oce_do_ad2cp_ahrs(SEXP, SEXP);
 extern SEXP _oce_do_adv_vector_time(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
-extern SEXP _oce_do_amsr_composite(SEXP, SEXP);
+//extern SEXP _oce_do_amsr_composite(SEXP, SEXP, SEXP);
 extern SEXP _oce_do_amsr_average(SEXP, SEXP);
 extern SEXP _oce_do_approx3d(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
 extern SEXP _oce_do_biosonics_ping(SEXP, SEXP, SEXP, SEXP);
@@ -40,7 +40,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_oce_do_ad2cp_ahrs", (DL_FUNC) &_oce_do_ad2cp_ahrs, 2},
     {"_oce_do_adv_vector_time", (DL_FUNC) &_oce_do_adv_vector_time, 7},
     {"_oce_do_amsr_average", (DL_FUNC) &_oce_do_amsr_average, 2},
-    {"_oce_do_amsr_composite", (DL_FUNC) &_oce_do_amsr_composite, 2},
+    //{"_oce_do_amsr_composite", (DL_FUNC) &_oce_do_amsr_composite, 3},
     {"_oce_do_approx3d", (DL_FUNC) &_oce_do_approx3d, 7},
     {"_oce_do_biosonics_ping", (DL_FUNC) &_oce_do_biosonics_ping, 4},
     {"_oce_do_curl1", (DL_FUNC) &_oce_do_curl1, 5},

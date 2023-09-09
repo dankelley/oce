@@ -174,7 +174,7 @@ setMethod(f="summary",
 #' Data within the `data` slot may be found directly (for
 #' both new-format and old-format objects) or indirectly (only
 #' for old-style objects).  For example, `SST` works by direct
-#' lookup for new-format objects, but it is computed using 
+#' lookup for new-format objects, but it is computed using
 #' `SSTNight` and `SSTDay` for old-format objects.  Use e.g.
 #' `a[["?"]]` for any given object, to see what can be retrieved.
 #'
@@ -1120,16 +1120,60 @@ setMethod("composite",
         filenames <- object[["filename"]]
         for (idot in 1:ndots)
             filenames <- paste(filenames, ",", dots[[idot]][["filename"]], sep="")
-        n <- 1 + ndots
-        dim <- c(dim(object@data[[1]]), n)
-        for (name in names(object@data)) {
-            a <- array(as.raw(0xff), dim=dim)
-            a[, , 1] <- object@data[[name]]
-            for (idot in 1:ndots)
-                a[, , 1+idot] <- dots[[idot]]@data[[name]]
-            A <- do_amsr_composite(a, dim(a))
-            res@data[[name]] <- A
+        n <- 1L + ndots # to hold object, along with each element of ...
+        dim <- dim(object@data[[1]])
+        # 2023-09-08 code was rewritten because the file format has changed
+        # significantly.  The new format permits the work to be done quickly
+        # in R, without having to drop down to C++ to examine every pixel
+        # at the byte level to see if it matches one of the bad-data codes.
+        dataNames <- names(object@data)
+        dataNames <- dataNames[!grepl("Mask$", dataNames)] # don't average masks
+        A <- array(numeric(), dim=dim)
+        for (name in dataNames) {
+            bad <- with(object@data, landMask | coastMask | seaIceMask | noObsMask)
+            sum <- array(0.0, dim=dim)
+            count <- array(0L, dim=dim)
+            # start filling arrays up
+            tmp <- object@data[[name]]
+            bad <- bad | is.na(tmp)
+            tmp[bad] <- 0.0
+            sum <- sum + tmp
+            count <- count + !bad
+            for (idot in seq_len(ndots)) {
+                bad <- with(dots[[idot]]@data, landMask | coastMask | seaIceMask |  noObsMask)
+                tmp <- dots[[idot]]@data[[name]]
+                bad <- bad | is.na(tmp)
+                tmp[bad] <- 0.0
+                sum <- sum + tmp
+                count <- count + !bad
+            }
+            # finally, compute average
+            sum <- sum / count
+            sum[!is.finite(sum)] <- NA
+            res@data[[name]] <- sum
         }
+        # Now handle masks.  If *any* of the images has a non-TRUE mask,
+        # then we have at least some valid data, so we turn the mask off.
+        # I handle all masks this way, including landMask, which seems
+        # (in my very limited tests) to be the same across images.  I would
+        # have guessed that the coastMask would be identical also, but
+        # that's not the case; perhaps clouds are being flagged as
+        # coast data.
+        landOK <- !object@data$landMask
+        coastOK <- !object@data$coastMask
+        noObsOK <- !object@data$noObsMask
+        seaIceOK <- !object@data$seaIceMask
+        for (dot in dots) {
+            landOK <- landOK | !dot@data$landMask
+            coastOK <- coastOK | !dot@data$coastMask
+            noObsOK <- noObsOK | !dot@data$noObsMask
+            seaIceOK <- seaIceOK | !dot@data$seaIceMask
+        }
+        res@data$landMask <- !landOK
+        res@data$coastMask <- !coastOK
+        res@data$noObsMask <- !noObsOK
+        res@data$seaIceMask <- !seaIceOK
+        # construct filename to indicate what the constituents were
         res@metadata$filename <- filenames
         res
     })

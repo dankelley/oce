@@ -97,40 +97,40 @@ RawVector do_amsr_average(RawVector a, RawVector b)
 */
 
 
-// a is an array with e.g. a[,,1] being a matrix of data in the first image
-// [[Rcpp::export]]
-RawVector do_amsr_composite(RawVector a, IntegerVector dim)
-{
-  //Rprintf("amsr_composite ...\n");
-  if (dim.size() != 3)
-    ::Rf_error("dim should be of length 3, but it is of length %d", dim.size());
-  unsigned int n1 = dim[0];
-  unsigned int n2 = dim[1];
-  unsigned int n3 = dim[2];
-  unsigned int n12 = n1 * n2;
-  //Rprintf("amsr_composite n1=%d n2=%d n3=%d n12=%d\n", n1, n2, n3, n12);
-  RawVector res(n12);
-  unsigned char A = 'a'; // assignment prevents compiler warning at line 145
-  for (unsigned int i = 0; i < n12; i++) {
-    double sum = 0.0;
-    int nsum = 0;
-    //if (i < 300) Rprintf("i=%d:\n", i);
-    for (unsigned int i3 = 0; i3 < n3; i3++) {
-      A = a[i + n12*i3];
-      if (A < 0xfb) {
-        sum += A;
-        nsum++;
-        //if (i < 300) Rprintf("    i3=%3d A=%3d=0x%02x sum=%5.1f nsum=%d\n", i3, (int)A, A, sum, nsum);
-      } else {
-        //if (i < 300) Rprintf("    i3=%3d A=%3d=0x%02x SKIPPED\n", i3, (int)A, A);
-      }
-    }
-    if (nsum)
-      res[i] = (unsigned char)floor(0.5 + sum/nsum);
-    else
-      res[i] = A; // will be >= 0xfb ... we inherit the NA type from last image
-    //if (i < 300) Rprintf("    res=%d=0x%02x\n", (int)res[i], res[i]);
-  }
-  return res;
-}
+//old // a is an array with e.g. a[,,1] being a matrix of data in the first image
+//old // [[Rcpp::export]]
+//old RawVector do_amsr_composite(RawVector a, IntegerVector dim)
+//old {
+//old   //Rprintf("amsr_composite ...\n");
+//old   if (dim.size() != 3)
+//old     ::Rf_error("dim should be of length 3, but it is of length %d", dim.size());
+//old   unsigned int n1 = dim[0];
+//old   unsigned int n2 = dim[1];
+//old   unsigned int n3 = dim[2];
+//old   unsigned int n12 = n1 * n2;
+//old   //Rprintf("amsr_composite n1=%d n2=%d n3=%d n12=%d\n", n1, n2, n3, n12);
+//old   RawVector res(n12);
+//old   unsigned char A = 'a'; // assignment prevents compiler warning at line 145
+//old   for (unsigned int i = 0; i < n12; i++) {
+//old     double sum = 0.0;
+//old     int nsum = 0;
+//old     //if (i < 300) Rprintf("i=%d:\n", i);
+//old     for (unsigned int i3 = 0; i3 < n3; i3++) {
+//old       A = a[i + n12*i3];
+//old       if (A < 0xfb) {
+//old         sum += A;
+//old         nsum++;
+//old         //if (i < 300) Rprintf("    i3=%3d A=%3d=0x%02x sum=%5.1f nsum=%d\n", i3, (int)A, A, sum, nsum);
+//old       } else {
+//old         //if (i < 300) Rprintf("    i3=%3d A=%3d=0x%02x SKIPPED\n", i3, (int)A, A);
+//old       }
+//old     }
+//old     if (nsum)
+//old       res[i] = (unsigned char)floor(0.5 + sum/nsum);
+//old     else
+//old       res[i] = A; // will be >= 0xfb ... we inherit the NA type from last image
+//old     //if (i < 300) Rprintf("    res=%d=0x%02x\n", (int)res[i], res[i]);
+//old   }
+//old   return res;
+//old }
 

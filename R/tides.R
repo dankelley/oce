@@ -996,19 +996,21 @@ tidemConstituentNameFix <- function(names, debug=1)
 #' print(tidedata$const)
 #' }
 #'
-#' @param t A `sealevel` object created with
-#' [read.sealevel()] or [as.sealevel()], or a vector of
-#' times. In the former case, time is part of the object, so `t` may not
-#' be given here.  In the latter case, `tidem` needs a way to determine
-#' time, so `t` must be given.
+#' @param t either a vector of times or a [sealevel-class] object
+#' (as created with [read.sealevel()] or [as.sealevel()]).
+#' In the first case, `x` must be provided.  In the second
+#' case, though, any `x` that is provided will be ignored,
+#' because sealevel objects contain both `time` and water
+#' `elevation`, and the latter is used for `x`.
 #'
 #' @param x an optional numerical vector holding something that varies with
 #' time.  This is ignored if `t` is a [sealevel-class] object,
-#' in which case it is inferred as `t[["elevation"]]`.
+#' because it is inferred automatically, using `t[["elevation"]]`.
 #'
 #' @param constituents an optional character vector holding the names
-#' of tidal constituents to which the fit is done (see \dQuote{Details}
-#' and \dQuote{Constituent Naming Convention}.)
+#' of tidal constituents to which the fit is done; see \dQuote{Details}
+#' and \dQuote{Constituent Naming Convention}.
+#'
 #' @template tideconst
 #'
 #' @param infer a list of constituents to be inferred from
@@ -1051,7 +1053,8 @@ tidemConstituentNameFix <- function(names, debug=1)
 #' results to RMS difference 0.04mm.)
 #'
 #' @param latitude if provided, the latitude of the observations.  If not
-#' provided, `tidem` will try to infer this from `sl`.
+#' provided, `tidem` will try to infer this from the first argument,
+#' if it is a [sealevel-class] object.
 #'
 #' @param rc the value of the coefficient in the Rayleigh criterion.
 #'

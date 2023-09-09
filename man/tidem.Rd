@@ -16,19 +16,20 @@ tidem(
 )
 }
 \arguments{
-\item{t}{A \code{sealevel} object created with
-\code{\link[=read.sealevel]{read.sealevel()}} or \code{\link[=as.sealevel]{as.sealevel()}}, or a vector of
-times. In the former case, time is part of the object, so \code{t} may not
-be given here.  In the latter case, \code{tidem} needs a way to determine
-time, so \code{t} must be given.}
+\item{t}{either a vector of times or a \linkS4class{sealevel} object
+(as created with \code{\link[=read.sealevel]{read.sealevel()}} or \code{\link[=as.sealevel]{as.sealevel()}}).
+In the first case, \code{x} must be provided.  In the second
+case, though, any \code{x} that is provided will be ignored,
+because sealevel objects contain both \code{time} and water
+\code{elevation}, and the latter is used for \code{x}.}
 
 \item{x}{an optional numerical vector holding something that varies with
 time.  This is ignored if \code{t} is a \linkS4class{sealevel} object,
-in which case it is inferred as \code{t[["elevation"]]}.}
+because it is inferred automatically, using \code{t[["elevation"]]}.}
 
 \item{constituents}{an optional character vector holding the names
-of tidal constituents to which the fit is done (see \dQuote{Details}
-and \dQuote{Constituent Naming Convention}.)}
+of tidal constituents to which the fit is done; see \dQuote{Details}
+and \dQuote{Constituent Naming Convention}.}
 
 \item{infer}{a list of constituents to be inferred from
 fitted constituents according to the method outlined
@@ -70,7 +71,8 @@ the results in Table 1 of Pawlowicz et al. (2002) agree with Foreman's
 results to RMS difference 0.04mm.)}
 
 \item{latitude}{if provided, the latitude of the observations.  If not
-provided, \code{tidem} will try to infer this from \code{sl}.}
+provided, \code{tidem} will try to infer this from the first argument,
+if it is a \linkS4class{sealevel} object.}
 
 \item{rc}{the value of the coefficient in the Rayleigh criterion.}
 
