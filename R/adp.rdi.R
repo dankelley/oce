@@ -1441,7 +1441,7 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
                 warning("the instrument orientation is not constant. The user is advised ",
                     "to determine the orientation during the relevant measurement phase, ",
                     "and to set this into the object with e.g.",
-                    "adp<-oceSetMetadata(adp,'orientation','upward') ",
+                    "adp <- oceSetMetadata(adp,'orientation',rep('upward', length(adp[['time']]))) ",
                     "in case conversion to ENU is to be done later.")
             }
             time <- as.POSIXct(ldc$time + 0.01 * as.numeric(ldc$sec100), origin="1970-01-01")
