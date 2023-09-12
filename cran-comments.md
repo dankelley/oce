@@ -8,7 +8,7 @@ A key reason for the submission is a requirement to adjust the order of
 'include' statements in the C++ code.  (We thank Brian Ripley for explaining the
 problem in an email dated 2023-06-26.)
 
-The NEWS.md file lists over a ten additional changes, mainly relating to support
+The NEWS.md file lists over ten additional changes, mainly relating to support
 for the analysis of measurements of water properties and velocities.
 
 ## Local Tests
