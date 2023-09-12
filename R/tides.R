@@ -1131,16 +1131,17 @@ tidemConstituentNameFix <- function(names, debug=1)
 #'
 #' The `tidem` amplitude and phase results, obtained with
 #'\preformatted{
-#'tidem(sealevelTuktoyaktuk, constituents=c("standard", "M10"),
-#'      infer=list(name=c("P1", "K2"),
-#'                 from=c("K1", "S2"),
-#'                 amp=c(0.33093, 0.27215),
-#'                 phase=c(-7.07, -22.40))),
+#' tidem(sealevelTuktoyaktuk, constituents=c("standard", "M10"),
+#'     infer=list(name=c("P1", "K2"),
+#'         from=c("K1", "S2"),
+#'         amp=c(0.33093, 0.27215),
+#'         phase=c(-7.07, -22.40)))
 #'}
-#' are identical the `T_TIDE` values listed in
+#' match the `T_TIDE` values listed in
 #' Table 1 of Pawlowicz et al. (2002),
 #' after rounding amplitude and phase to 4 and 2 digits past
-#' the decimal place, to match the format of the table.
+#' the decimal place, respectively, to match the format of
+#' that table.
 #'
 #' @author Dan Kelley
 #'
