@@ -11,24 +11,28 @@ rms <- function(x) sqrt(mean(x^2, na.rm=TRUE))
 # predictions from NOAA are given to 0.001 m resolution
 eps <- 0.001 # see above, re issue 2146
 
-# Honolulu
-# https://tidesandcurrents.noaa.gov/stationhome.html?id=1612340
-h <- read.delim("harmonics.tsv.gz", sep="\t")
-o <- read.csv("predictions.csv.gz")
-o$time <- as.POSIXct(o$Date.Time, tz="UTC")
-# https://tidesandcurrents.noaa.gov/stationhome.html?id=1612340
-latitude <- 21+18.2/60
-m <- as.tidem(tRef=mean(o$time), latitude=latitude,
-    name=h$Name, amplitude=h$Amplitude, phase=h$Phase)
-pp <- predict(m, o$time)
-zoffset <- mean(pp - o$Prediction)
-pp <- pp - zoffset
-rms(o$Prediction-pp)
-expect_true(rms(o$Prediction-pp) < eps)
+test_that("Honolulu NOAA predictions are recovered (approximately)", {
+    # Honolulu
+    # https://tidesandcurrents.noaa.gov/stationhome.html?id=1612340
+    h <- read.delim("harmonics.tsv.gz", sep="\t")
+    o <- read.csv("predictions.csv.gz")
+    o$time <- as.POSIXct(o$Date.Time, tz="UTC")
+    # https://tidesandcurrents.noaa.gov/stationhome.html?id=1612340
+    latitude <- 21+18.2/60
 
-if (FALSE) {
-    par(mfrow=c(2, 1))
-    oce.plot.ts(o$time, o$Prediction)
-    lines(o$time, pp, col=2, lty=2)
-    oce.plot.ts(o$time, o$Prediction - pp)
-}
+    expect_message(
+        expect_message(
+            expect_message(
+                expect_message(m <- as.tidem(tRef=mean(o$time), latitude=latitude,
+                    name=h$Name, amplitude=h$Amplitude, phase=h$Phase),
+                    "converted NOAA name \"LAM2\" to oce name \"LDA2\""),
+                "converted NOAA name \"M1\" to oce name \"NO1\""),
+            "converted NOAA name \"RHO\" to oce name \"RHO1\""),
+        "converted NOAA name \"2MK3\" to oce name \"MO3\"")
+
+    pp <- predict(m, o$time)
+    zoffset <- mean(pp - o$Prediction)
+    pp <- pp - zoffset
+    rms(o$Prediction-pp)
+    expect_true(rms(o$Prediction-pp) < eps)
+})
