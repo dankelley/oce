@@ -46,7 +46,6 @@ read.netcdf <- function(file, ..., encoding=NA, debug=getOption("oceDebug"))
     f <- ncdf4::nc_open(file)
     res <- new("oce")
     names <- names(f$var)
-    data <- list()
     for (name in names) {
         oceDebug(debug, "  name=\"", name, "\"\n")
         if (grepl("^history_", name, ignore.case=TRUE))

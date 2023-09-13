@@ -1480,9 +1480,8 @@ coastlineCut <- function(coastline, lon_0=0)
 {
     if (lon_0 == 0)
         return(coastline)
-    cleanAngle<-function(a) {
+    cleanAngle <- function(a)
         ifelse(a < -180, a+360, ifelse(a > 180, a-360, a))
-    }
     loncut <- cleanAngle(lon_0+180)
     lon <- coastline[["longitude"]]
     lat <- coastline[["latitude"]]

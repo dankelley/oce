@@ -1120,7 +1120,6 @@ setMethod("composite",
         filenames <- object[["filename"]]
         for (idot in 1:ndots)
             filenames <- paste(filenames, ",", dots[[idot]][["filename"]], sep="")
-        n <- 1L + ndots # to hold object, along with each element of ...
         dim <- dim(object@data[[1]])
         # 2023-09-08 code was rewritten because the file format has changed
         # significantly.  The new format permits the work to be done quickly
@@ -1128,7 +1127,6 @@ setMethod("composite",
         # at the byte level to see if it matches one of the bad-data codes.
         dataNames <- names(object@data)
         dataNames <- dataNames[!grepl("Mask$", dataNames)] # don't average masks
-        A <- array(numeric(), dim=dim)
         for (name in dataNames) {
             bad <- with(object@data, landMask | coastMask | seaIceMask | noObsMask)
             sum <- array(0.0, dim=dim)

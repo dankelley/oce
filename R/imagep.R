@@ -3,14 +3,10 @@
 PLEN <- 300 # palette has this many default levels
 
 prettyLocal <- function(x, n, digits=10)
-{
     if (is.numeric(x)) round(pretty(x, n), digits) else pretty(x, n)
-}
 
 clipmin <- function(x, min=0)
-{
     ifelse(x < min, min, x)
-}
 
 
 #' Abbreviate a Vector of Times by Removing Commonalities
@@ -54,8 +50,7 @@ abbreviateTimeLabels <- function(t, ...)
     # strip minutes, if all the same (this may be confusing)
     minutes <- substr(t, nchar(t)-2, nchar(t))
     for (i in 2:n) if (minutes[i] != minutes[1]) return(t)
-    t <- substr(t, 1, nchar(t)-3)
-    return(t)
+    substr(t, 1, nchar(t)-3)
 }
 
 
@@ -377,9 +372,8 @@ drawPalette <- function(zlim, zlab="", breaks, col, colormap, mai, cex=par("cex"
         # Trick the code below, to avoid auto-creating breaks
         breaksGiven <- TRUE
         #colGiven <- TRUE
-        if (!zlimGiven) {
+        if (!zlimGiven)
             zlim <- range(breaks, na.rm=TRUE)
-        }
         zlimGiven <- TRUE
         breaksOrig <- breaks
         contours <- breaks
@@ -1018,7 +1012,6 @@ imagep <- function(x, y, z,
     } else {
         stop("'add' must be a logical value")
     }
-
     xlimGiven <- !missing(xlim)
     ylimGiven <- !missing(ylim)
     zlimGiven <- !missing(zlim) && !is.null(zlim) # latter is used by plot,adp-method
@@ -1029,18 +1022,14 @@ imagep <- function(x, y, z,
         stop("length of ylim must be 2")
     if (zlimGiven && !(length(zlim) %in% 1:2))
         stop("length of zlim must be 1 or 2")
-
     breaksGiven <- !missing(breaks)
     if (zlimGiven && breaksGiven && length(breaks) > 1)
         stop("cannot specify both zlim and breaks, unless length(breaks)==1")
-
     xat <- NULL
     yat <- NULL
-
     # issue 674: permit POSIXlt in addition to POSIXct
     if (inherits(x, "POSIXt"))
         x <- as.POSIXct(x)
-
     #haveZlab <- !is.null(zlab) && sum(nchar(zlab)) > 0
     if (!missing(x) && is.list(x)) {
         names <- names(x)
