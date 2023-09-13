@@ -58,8 +58,6 @@ read.ctd.saiv <- function(file, encoding="latin1", debug=getOption("oceDebug"), 
 {
     if (missing(file))
         stop("must supply 'file'")
-    if (is.character(file)) {
-    }
     debug <- max(0L, as.integer(debug))
     oceDebug(debug, "read.ctd.saiv(file=\"", file, "\", ...) {\n", unindent=1, style="bold")
     filename <- ""
