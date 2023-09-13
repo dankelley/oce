@@ -81,7 +81,7 @@ read.ctd.saiv <- function(file, encoding="latin1", debug=getOption("oceDebug"), 
     # 4	1		1019.84
     # Ser	Meas	Sal.	Temp	F (µg/l)	T (FTU)	Density	S. vel.	Depth(u)	Date	Time		
     # 4	584	0.02	8.221	0.09	0.56	-0.147	1440.08	0.00	10/06/2023	09:46:22
-    header <- readLines(file, n=4L)
+    header <- readLines(file, n=4L, encoding=encoding)
     if (debug > 0L) {
         cat("header is:\n")
         print(header)
@@ -100,7 +100,7 @@ read.ctd.saiv <- function(file, encoding="latin1", debug=getOption("oceDebug"), 
     dataNames[dataNames == "T (FTU)"] <- "turbidity"
     dataNames[grep("^F [(]{1}", dataNames)] <- "fluorescence"
     oceDebug(debug, "data names: c(\"", paste(dataNames, collapse="\", \""), "\")\n")
-    data <- read.delim(file, sep="\t", col.names=dataNames)
+    data <- read.delim(file, sep="\t", col.names=dataNames, encoding=encoding)
     # NOTE: pressure needs latitude for accuracy
     res <- as.ctd(salinity=data$salinity, temperature=data$temperature, pressure=swPressure(data$depth), debug=debug-1L)
     res <- oceSetMetadata(res, "header", header)
