@@ -8,5 +8,4 @@ linters:linters_with_defaults(
     brace_linter=NULL,
     commented_code_linter=NULL,
     object_length_linter(length=40L),
-    cyclocomp_linter(complexity_limit=400L)
-)
+    cyclocomp_linter(complexity_limit=400L))
