@@ -60,26 +60,28 @@ read.ctd.saiv <- function(file, encoding="latin1", debug=getOption("oceDebug"), 
         stop("must supply 'file'")
     debug <- max(0L, as.integer(debug))
     oceDebug(debug, "read.ctd.saiv(file=\"", file, "\", ...) {\n", unindent=1, style="bold")
+    if (!is.character(file))
+        stop("'file' must be a character value")
     filename <- ""
-    if (is.character(file)) {
-        if (!file.exists(file))
-            stop("cannot find file '", file, "'")
-        if (0L == file.info(file)$size)
-            stop("empty file '", file, "'")
-        filename <- fullFilename(file)
-        file <- file(file, "r", encoding=encoding)
-        on.exit(close(file))
-    }
-    if (!inherits(file, "connection"))
-        stop("argument `file' must be a character string or connection")
-    if (!isOpen(file)) {
-        open(file, "r", encoding=encoding)
-        on.exit(close(file))
-    }
+    #<removed> if (is.character(file)) {
+    #<removed>     if (!file.exists(file))
+    #<removed>         stop("cannot find file '", file, "'")
+    #<removed>     if (0L == file.info(file)$size)
+    #<removed>         stop("empty file '", file, "'")
+    #<removed>     filename <- fullFilename(file)
+    #<removed>     file <- file(file, "r", encoding=encoding)
+    #<removed>     on.exit(close(file))
+    #<removed> }
+    #<removed> if (FALSE && !inherits(file, "connection"))
+    #<removed>     stop("argument `file' must be a character string or connection")
+    #<removed> if (!isOpen(file)) {
+    #<removed>     open(file, "r", encoding=encoding)
+    #<removed>     on.exit(close(file))
+    #<removed> }
     # From file: Tr1_all_stations	Instrument no.:	595
     # Ser	Interval (sec)	Integration	Air pressure	Salinity	Chart Datum (dbar)
     # 4	1		1019.84
-    # Ser	Meas	Sal.	Temp	F (µg/l)	T (FTU)	Density	S. vel.	Depth(u)	Date	Time		
+    # Ser	Meas	Sal.	Temp	F (µg/l)	T (FTU)	Density	S. vel.	Depth(u)	Date	Time
     # 4	584	0.02	8.221	0.09	0.56	-0.147	1440.08	0.00	10/06/2023	09:46:22
     header <- readLines(file, n=4L, encoding=encoding)
     if (debug > 0L) {
@@ -100,7 +102,16 @@ read.ctd.saiv <- function(file, encoding="latin1", debug=getOption("oceDebug"), 
     dataNames[dataNames == "T (FTU)"] <- "turbidity"
     dataNames[grep("^F [(]{1}", dataNames)] <- "fluorescence"
     oceDebug(debug, "data names: c(\"", paste(dataNames, collapse="\", \""), "\")\n")
-    data <- read.delim(file, sep="\t", col.names=dataNames, encoding=encoding)
+    data <- read.delim(file, skip=4L, sep="\t", col.names=dataNames, encoding=encoding)
+    # FIXME it doesn't find first line, but if I skip 3 lines, then
+    # it sees a problem in number of columns.  Maybe it is
+    # counting lines wrong because of the "mu" in line 4.
+    if (debug > 0) {
+        cat("First 3 lines of data:\n")
+        print(head(data, 3L))
+        cat("Last 3 lines of data:\n")
+        print(tail(data, 3L))
+    }
     # NOTE: pressure needs latitude for accuracy
     res <- as.ctd(salinity=data$salinity, temperature=data$temperature, pressure=swPressure(data$depth), debug=debug-1L)
     res <- oceSetMetadata(res, "header", header)
