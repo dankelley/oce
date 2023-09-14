@@ -104,23 +104,24 @@ was devised for hourly data; for other sampling schemes, please see
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>t</dt>
-<dd><p>A <code>sealevel</code> object created with
-<code><a href="read.sealevel.html">read.sealevel()</a></code> or <code><a href="as.sealevel.html">as.sealevel()</a></code>, or a vector of
-times. In the former case, time is part of the object, so <code>t</code> may not
-be given here.  In the latter case, <code>tidem</code> needs a way to determine
-time, so <code>t</code> must be given.</p></dd>
+<dd><p>either a vector of times or a <a href="sealevel-class.html">sealevel</a> object
+(as created with <code><a href="read.sealevel.html">read.sealevel()</a></code> or <code><a href="as.sealevel.html">as.sealevel()</a></code>).
+In the first case, <code>x</code> must be provided.  In the second
+case, though, any <code>x</code> that is provided will be ignored,
+because sealevel objects contain both <code>time</code> and water
+<code>elevation</code>, and the latter is used for <code>x</code>.</p></dd>
 
 
 <dt>x</dt>
 <dd><p>an optional numerical vector holding something that varies with
 time.  This is ignored if <code>t</code> is a <a href="sealevel-class.html">sealevel</a> object,
-in which case it is inferred as <code>t[["elevation"]]</code>.</p></dd>
+because it is inferred automatically, using <code>t[["elevation"]]</code>.</p></dd>
 
 
 <dt>constituents</dt>
 <dd><p>an optional character vector holding the names
-of tidal constituents to which the fit is done (see “Details”
-and “Constituent Naming Convention”.)</p></dd>
+of tidal constituents to which the fit is done; see “Details”
+and “Constituent Naming Convention”.</p></dd>
 
 
 <dt>infer</dt>
@@ -164,7 +165,8 @@ results to RMS difference 0.04mm.)</p></dd>
 
 <dt>latitude</dt>
 <dd><p>if provided, the latitude of the observations.  If not
-provided, <code>tidem</code> will try to infer this from <code>sl</code>.</p></dd>
+provided, <code>tidem</code> will try to infer this from the first argument,
+if it is a <a href="sealevel-class.html">sealevel</a> object.</p></dd>
 
 
 <dt>rc</dt>
@@ -339,16 +341,16 @@ Foreman names, issuing warnings when doing so.</p>
     
 
 
-<p>The <code>tidem</code> amplitude and phase results, obtained with</p><div class="sourceCode"><pre><code>
-tidem(sealevelTuktoyaktuk, constituents=c("standard", "M10"),
-     infer=list(name=c("P1", "K2"),
-                from=c("K1", "S2"),
-                amp=c(0.33093, 0.27215),
-                phase=c(-7.07, -22.40))),
-</code></pre></div><p>are identical the <code>T_TIDE</code> values listed in
+<p>The <code>tidem</code> amplitude and phase results, obtained with</p><div class="sourceCode"><pre><code><span></span>
+<span><span class="fu"><a href="../reference/tidem.html">tidem</a></span><span class="op">(</span><span class="va">sealevelTuktoyaktuk</span>, constituents<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"standard"</span>, <span class="st">"M10"</span><span class="op">)</span>,</span>
+<span>    infer<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>name<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"P1"</span>, <span class="st">"K2"</span><span class="op">)</span>,</span>
+<span>        from<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"K1"</span>, <span class="st">"S2"</span><span class="op">)</span>,</span>
+<span>        amp<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.33093</span>, <span class="fl">0.27215</span><span class="op">)</span>,</span>
+<span>        phase<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">7.07</span>, <span class="op">-</span><span class="fl">22.40</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></code></pre></div><p>match the <code>T_TIDE</code> values listed in
 Table 1 of Pawlowicz et al. (2002),
 after rounding amplitude and phase to 4 and 2 digits past
-the decimal place, to match the format of the table.</p>
+the decimal place, respectively, to match the format of
+that table.</p>
     </div>
     <div id="references">
     <h2>References</h2>
@@ -448,8 +450,8 @@ Computers and Geosciences, 28, 929-937.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> * Processing Log</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2023-08-23 17:12:46 UTC: `create 'tidem' object`</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2023-08-23 17:12:46 UTC: `tidem(t = sealevelTuktoyaktuk)`</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2023-09-14 15:08:13 UTC: `create 'tidem' object`</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2023-09-14 15:08:13 UTC: `tidem(t = sealevelTuktoyaktuk)`</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># AIC analysis</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/stats/extractAIC.html" class="external-link">extractAIC</a></span><span class="op">(</span><span class="va">tide</span><span class="op">[[</span><span class="st">"model"</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span></span>
@@ -488,8 +490,8 @@ Computers and Geosciences, 28, 929-937.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> * Processing Log</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2023-08-23 17:12:46 UTC: `create 'tidem' object`</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2023-08-23 17:12:46 UTC: `tidem(t = sl)`</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2023-09-14 15:08:13 UTC: `create 'tidem' object`</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2023-09-14 15:08:13 UTC: `tidem(t = sl)`</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

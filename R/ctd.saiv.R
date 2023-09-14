@@ -5,36 +5,42 @@
 #' [read.ctd.saiv()] reads files that hold data acquired with a
 #' SAIV model SD204 CTD profiler (reference 1). The function was
 #' written based on examination of a particular data file, and
-#' so its results ought to be treated with some caution (see
+#' so its results ought to be treated with caution (see
 #' \dQuote{Details}).
 #'
-#' any user has access to a manual describing the data format, the
-#' author would appreciate getting a copy.)
-#'
-#' The sample data provided to the author had some confusing points, including
-#' the following.  If any user has access to a manual describing the file
-#' format, the author would appreciate seeing a copy!
+#' Some quantities are renamed to match the oce convention, e.g.
+#' `"Sal."` is renamed to `"salinity"`, `"Temp"` is renamed to
+#' `"temperature"`, etc.  Note that the sample file upon which
+#' the code was based did not list units for several quantities,
+#' This problem is addressed in a risky way:
+#' [read.ctd.saiv()] simply assumes that common units are
+#' used in the file.  This is not the only problem with
+#' the sample file, and thus with this version of the function.
+#' Some other issues encountered with the sample file are as
+#' follows.
 #'
 #' 1. The header line that names the data columns ends with a tab,
 #' indicating the presence of 12 columns (the last unnamed), but the
 #' data contain only 11 columns.  Therefore, the last tab character is
 #' ignored by [read.ctd.saiv()].
 #'
-#' 2. The test file lacked longitude and latitude information, which
-#' users ought to insert later using [oceSetMetadata()], if they wish
-#' to employ the TEOS-10 equation of state in their analysis.
+#' 2. The test file lacked longitude and latitude information.  This
+#' means that modern quantities like Absolute Salinity and Conservative
+#' Temperature cannot be computed.  Users who know the location information
+#' ought to insert values into the object returned by [read.ctd.saiv()]
+#' using [oceSetMetadata()].
 #'
 #' 3. Further to the previous point, it is not possible to compute pressure
 #' accurately from depth (which is what the header suggests the file contains) unless
-#' the latitude is known.  Here, it is assumed that latitude is 45 degrees
+#' the latitude is known. In [read.ctd.saiv()], latitude is assumed to be 45 degrees
 #' north, which is the default used by [swPressure()].
 #'
-#' 4. The author does not know what the data columns named `"Ser"`
-#' and `"Meas"` represent, so they are simply added to the CTD object
-#' as data variables, leaving interpretation up to the user.
+#' 4. The data columns named `"Ser"` and `"Meas"` are inserted into
+#' the return value without renaming.  This is true of other quantities
+#' as well.  Since `[[` can access by *original* name and not just by
+#' oce name, this may not be too much of a problem.
 #'
-#' @param file a connection or a character string giving the name of
-#' the file to load.
+#' @param file a character string naming the file to be read.
 #'
 #' @template encodingTemplate
 #'
@@ -44,7 +50,7 @@
 #'
 #' @param ... ignored.
 #'
-#' @return [read.ctd.aml()] returns a [ctd-class] object.
+#' @return [read.ctd.saiv()] returns a [ctd-class] object.
 #'
 #' @author Dan Kelley
 #'

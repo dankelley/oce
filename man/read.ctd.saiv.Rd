@@ -13,8 +13,7 @@ read.ctd.saiv(
 )
 }
 \arguments{
-\item{file}{a connection or a character string giving the name of
-the file to load.}
+\item{file}{a character string naming the file to be read.}
 
 \item{encoding}{a character value that indicates the encoding to be used for
 this data file, if it is textual.  The default value for most functions is
@@ -34,37 +33,44 @@ by specifying higher \code{debug} values.}
 \item{...}{ignored.}
 }
 \value{
-\code{\link[=read.ctd.aml]{read.ctd.aml()}} returns a \linkS4class{ctd} object.
+\code{\link[=read.ctd.saiv]{read.ctd.saiv()}} returns a \linkS4class{ctd} object.
 }
 \description{
 \code{\link[=read.ctd.saiv]{read.ctd.saiv()}} reads files that hold data acquired with a
 SAIV model SD204 CTD profiler (reference 1). The function was
 written based on examination of a particular data file, and
-so its results ought to be treated with some caution (see
+so its results ought to be treated with caution (see
 \dQuote{Details}).
 }
 \details{
-any user has access to a manual describing the data format, the
-author would appreciate getting a copy.)
-
-The sample data provided to the author had some confusing points, including
-the following.  If any user has access to a manual describing the file
-format, the author would appreciate seeing a copy!
+Some quantities are renamed to match the oce convention, e.g.
+\code{"Sal."} is renamed to \code{"salinity"}, \code{"Temp"} is renamed to
+\code{"temperature"}, etc.  Note that the sample file upon which
+the code was based did not list units for several quantities,
+This problem is addressed in a risky way:
+\code{\link[=read.ctd.saiv]{read.ctd.saiv()}} simply assumes that common units are
+used in the file.  This is not the only problem with
+the sample file, and thus with this version of the function.
+Some other issues encountered with the sample file are as
+follows.
 \enumerate{
 \item The header line that names the data columns ends with a tab,
 indicating the presence of 12 columns (the last unnamed), but the
 data contain only 11 columns.  Therefore, the last tab character is
 ignored by \code{\link[=read.ctd.saiv]{read.ctd.saiv()}}.
-\item The test file lacked longitude and latitude information, which
-users ought to insert later using \code{\link[=oceSetMetadata]{oceSetMetadata()}}, if they wish
-to employ the TEOS-10 equation of state in their analysis.
+\item The test file lacked longitude and latitude information.  This
+means that modern quantities like Absolute Salinity and Conservative
+Temperature cannot be computed.  Users who know the location information
+ought to insert values into the object returned by \code{\link[=read.ctd.saiv]{read.ctd.saiv()}}
+using \code{\link[=oceSetMetadata]{oceSetMetadata()}}.
 \item Further to the previous point, it is not possible to compute pressure
 accurately from depth (which is what the header suggests the file contains) unless
-the latitude is known.  Here, it is assumed that latitude is 45 degrees
+the latitude is known. In \code{\link[=read.ctd.saiv]{read.ctd.saiv()}}, latitude is assumed to be 45 degrees
 north, which is the default used by \code{\link[=swPressure]{swPressure()}}.
-\item The author does not know what the data columns named \code{"Ser"}
-and \code{"Meas"} represent, so they are simply added to the CTD object
-as data variables, leaving interpretation up to the user.
+\item The data columns named \code{"Ser"} and \code{"Meas"} are inserted into
+the return value without renaming.  This is true of other quantities
+as well.  Since \code{[[} can access by \emph{original} name and not just by
+oce name, this may not be too much of a problem.
 }
 }
 \references{
