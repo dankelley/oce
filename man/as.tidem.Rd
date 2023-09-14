@@ -59,12 +59,16 @@ This function takes a set of tidal constituent amplitudes
 and phases, and constructs a return value of similar form
 to that returned by \code{\link[=tidem]{tidem()}}.  Its purpose is to enable
 predictions based on published constituent amplitudes
-and phases.
+and phases.  Since \code{\link[=as.tidem]{as.tidem()}} does not account for a
+reference height, it is the user's responsible to account
+for this after a prediction is made using \code{\link[=predict.tidem]{predict.tidem()}}.
 }
 \details{
-All the constituent names used by \code{\link[=tidem]{tidem()}} are permitted here.
-To get a list, consult Foreman (1978), or type the following
-in an R console:
+All the constituent names used by \code{\link[=tidem]{tidem()}} are permitted here,
+\emph{except} for \code{"Z0"} (see \sQuote{Description} regarding reference
+height).
+To get a list of constituent names, please consult Foreman (1978),
+or type the following in an R console:
 \preformatted{
 data(tidedata)
 data.frame(name=tidedata$const$name, freq=tidedata$const$freq)

@@ -457,11 +457,15 @@ setMethod(f="plot",
 #' and phases, and constructs a return value of similar form
 #' to that returned by [tidem()].  Its purpose is to enable
 #' predictions based on published constituent amplitudes
-#' and phases.
+#' and phases.  Since [as.tidem()] does not account for a
+#' reference height, it is the user's responsible to account
+#' for this after a prediction is made using [predict.tidem()].
 #'
-#' All the constituent names used by [tidem()] are permitted here.
-#' To get a list, consult Foreman (1978), or type the following
-#' in an R console:
+#' All the constituent names used by [tidem()] are permitted here,
+#' *except* for `"Z0"` (see \sQuote{Description} regarding reference
+#' height).
+#' To get a list of constituent names, please consult Foreman (1978),
+#' or type the following in an R console:
 #'\preformatted{
 #' data(tidedata)
 #' data.frame(name=tidedata$const$name, freq=tidedata$const$freq)
