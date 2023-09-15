@@ -31,7 +31,7 @@ A list containing \code{declination}, \code{inclination}, and
 Implements the 12th and 13th generations of the
 International Geomagnetic Reference Field
 (IGRF), based on a reworked version of a Fortran program downloaded from a
-NOAA website (see reference 1).
+NOAA website (see references 1 and 3).
 }
 \details{
 The code (subroutines \code{igrf12syn} and \code{igrf13syn}) seem to have
@@ -112,6 +112,10 @@ website (\verb{https://www.ngdc.noaa.gov/IAGA/vmod/igrf.html}) on June 7,
 \item Witze, Alexandra. \dQuote{Earth's Magnetic Field Is Acting up and Geologists Don't Know Why.}
 Nature 565 (January 9, 2019): 143.
 \doi{10.1038/d41586-019-00007-1}
+\item Alken, P., E. Thébault, C. D. Beggan, H. Amit, J. Aubert, J. Baerenzung, T. N. Bondar, et al.
+"International Geomagnetic Reference Field: The Thirteenth Generation."
+Earth, Planets and Space 73, no. 1 (December 2021): 49.
+\doi{10.1186/s40623-020-01288-x}.
 }
 }
 \seealso{
@@ -126,6 +130,7 @@ Other things related to magnetism:
 Dan Kelley wrote the R code and a fortran wrapper to the
 \code{igrf12.f} subroutine, which was written by Susan Macmillan of the
 British Geological Survey and distributed ``without limitation'' (email from
-SM to DK dated June 5, 2015).
+SM to DK dated June 5, 2015).  This version was updated subsequent
+to that date; see \sQuote{Historical Notes}.
 }
 \concept{things related to magnetism}

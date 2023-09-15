@@ -4147,7 +4147,7 @@ integerToAscii <- function(i)
 #' Implements the 12th and 13th generations of the
 #' International Geomagnetic Reference Field
 #' (IGRF), based on a reworked version of a Fortran program downloaded from a
-#' NOAA website (see reference 1).
+#' NOAA website (see references 1 and 3).
 #'
 #' The code (subroutines `igrf12syn` and `igrf13syn`) seem to have
 #' been written by Susan Macmillan of the British Geological Survey.  Comments
@@ -4179,7 +4179,8 @@ integerToAscii <- function(i)
 #' @author Dan Kelley wrote the R code and a fortran wrapper to the
 #' `igrf12.f` subroutine, which was written by Susan Macmillan of the
 #' British Geological Survey and distributed ``without limitation'' (email from
-#' SM to DK dated June 5, 2015).
+#' SM to DK dated June 5, 2015).  This version was updated subsequent
+#' to that date; see \sQuote{Historical Notes}.
 #'
 #' @section Historical Notes:
 #' For about a decade, `magneticField` used the version 12 formulae provided
@@ -4188,13 +4189,20 @@ integerToAscii <- function(i)
 #' (with 95 percent of the data lying between -1.7 and 0.7 degrees).
 #'
 #' @references
+#'
 #' 1. The underlying Fortran code for version 12 is from `igrf12.f`, downloaded the NOAA
 #' website (`https://www.ngdc.noaa.gov/IAGA/vmod/igrf.html`) on June 7,
 #' 2015. That for version 13 is `igrf13.f`, downloaded from the NOAA website
 #' (`https://www.ngdc.noaa.gov/IAGA/vmod/igrf.html` on March 3, 2020.
+#'
 #' 2. Witze, Alexandra. \dQuote{Earth's Magnetic Field Is Acting up and Geologists Don't Know Why.}
 #' Nature 565 (January 9, 2019): 143.
 #' \doi{10.1038/d41586-019-00007-1}
+#'
+#' 3. Alken, P., E. Thébault, C. D. Beggan, H. Amit, J. Aubert, J. Baerenzung, T. N. Bondar, et al.
+#' "International Geomagnetic Reference Field: The Thirteenth Generation."
+#' Earth, Planets and Space 73, no. 1 (December 2021): 49.
+#' \doi{10.1186/s40623-020-01288-x}.
 #'
 #' @examples
 #' library(oce)
