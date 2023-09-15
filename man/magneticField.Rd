@@ -31,7 +31,7 @@ A list containing \code{declination}, \code{inclination}, and
 Implements the 12th and 13th generations of the
 International Geomagnetic Reference Field
 (IGRF), based on a reworked version of a Fortran program downloaded from a
-NOAA website (see references 1 and 3).
+NOAA website (see \dQuote{References}).
 }
 \details{
 The code (subroutines \code{igrf12syn} and \code{igrf13syn}) seem to have

@@ -4147,7 +4147,7 @@ integerToAscii <- function(i)
 #' Implements the 12th and 13th generations of the
 #' International Geomagnetic Reference Field
 #' (IGRF), based on a reworked version of a Fortran program downloaded from a
-#' NOAA website (see references 1 and 3).
+#' NOAA website (see \dQuote{References}).
 #'
 #' The code (subroutines `igrf12syn` and `igrf13syn`) seem to have
 #' been written by Susan Macmillan of the British Geological Survey.  Comments
