@@ -37,10 +37,13 @@ by specifying higher \code{debug} values.}
 }
 \description{
 \code{\link[=read.ctd.saiv]{read.ctd.saiv()}} reads files that hold data acquired with a
-SAIV model SD204 CTD profiler (reference 1). The function was
-written based on examination of a particular data file, and
-so its results ought to be treated with caution (see
-\dQuote{Details}).
+SAIV model SD204 CTD profiler (reference 1). Since no
+documentation on the format was available to the author,
+this function was written based on examination of a particular
+data file.  This almost certainly will yield limitations
+for other files, in particular for those with data names
+that differ from those in the sample file (see
+\dQuote{Details} for this and other limitations).
 }
 \details{
 Some quantities are renamed to match the oce convention, e.g.
