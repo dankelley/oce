@@ -263,13 +263,12 @@ setMethod(f="summary",
 #' holding the names of things that can be accessed with `[[`.
 #' The `data` and `metadata` items hold the names of
 #' entries in the object's data and metadata
-#' slots, respectively. The
-#' `metadataDerived` holds only `""`, because
-#' no derived metadata values are defined for `cm` objects.
+#' slots, respectively. Note that `metadataDerived`
+#' holds only `""`, because no derived metadata values
+#' are defined for `tidem` objects.
 #'
 #' * If `i` is `"frequency"` or `"freq"`, then a vector of
-#' constituent frequencies (stored
-#' as `freq` in the data slot) is returned.
+#' constituent frequencies is returned.
 #'
 #' * If `i` is `"amplitude"` then a vector of constituent amplitudes
 #' is returned.
@@ -277,20 +276,37 @@ setMethod(f="summary",
 #' * If `i` is `"phase"` then a vector of constituent phases
 #' is returned.
 #'
+#' * If `i` is `"constituents"` then a data frame holding constituent
+#' name, frequency, amplitude and phase is returned.
+#'
+#' * If `i` is a vector of constituent names, then the return
+#' value is as for `"constituents"`, except that only the named
+#' those constituents are returned.
+#'
 #' @template sub_subTemplate
 #'
 #' @family things related to tides
 setMethod(f="[[",
     signature(x="tidem", i="ANY", j="ANY"),
     definition=function(x, i, j, ...) {
-        if (i == "?") {
+        const <- x@data$name
+        if (i[1] == "?") {
             return(list(metadata=sort(names(x@metadata)),
                 metadataDerived=NULL,
-                data=sort(names(x@data)),
+                data=c(sort(names(x@data)), x@data$name),
                 dataDerived="frequency"))
         }
-        if (i == "frequency") {
+        if (i[1] == "frequency") {
             return(x@data$freq)
+        } else if (i[1] == "constituents" || sum(i %in% x@data$name) > 0L) {
+            all <- with(x@data,
+                data.frame(name=name, freq=freq,
+                    amplitude=amplitude, phase=phase))
+            if (i[[1]] == "constituents") {
+                return(all)
+            } else {
+                return(all[all$name %in% i, ])
+            }
         }
         callNextMethod()         # [[
     })
