@@ -29,25 +29,6 @@ class and variety.
 \description{
 Infer an Item From a Nortek AD2CP File Header
 }
-\examples{
-\dontrun{
-if (file.exists("a.ad2cp")) {
-    d <- read.oce("a.ad2cp")
-    # The examples start with the line in x[["text"]][[1]]; note that in the second
-    # example, it would be insuficient to use a key of "BEAMCFGLIST", because that will
-    # yield 4 lines, and the function is not designed to handle that.
-
-    # ID,STR=\"Signature1000\",SN=123456
-    type <- ad2cpHeaderValue(d, "ID", "STR", numeric=FALSE)
-    serialNumber <- ad2cpHeaderValue(d, "ID", "SN")
-
-    # BEAMCFGLIST,BEAM=1,THETA=25.00,PHI=0.00,FREQ=1000,BW=25,BRD=1,HWBEAM=1,ZNOM=60.00
-    beam1Angle <- ad2cpHeaderValue(d, "BEAMCFGLIST,BEAM=1", "THETA")
-    frequency <- ad2cpHeaderValue(d, "BEAMCFGLIST,BEAM=1", "FREQ", default=NA)
-}
-}
-
-}
 \seealso{
 Other things related to adp data: 
 \code{\link{[[,adp-method}},

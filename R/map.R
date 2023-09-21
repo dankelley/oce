@@ -696,22 +696,23 @@ mapAxis <- function(side=1:2, longitude=TRUE, latitude=TRUE,
 #' Note that label placement in `mapContour` is handled differently
 #' than in [contour()].
 #'
-#' @examples
-#'\dontrun{
-#' library(oce)
-#' data(coastlineWorld)
-#' if (requireNamespace("ocedata", quietly=TRUE)) {
-#'     data(levitus, package="ocedata")
-#'     par(mar=rep(1, 4))
-#'     mapPlot(coastlineWorld, projection="+proj=robin", col="lightgray")
-#'     mapContour(levitus[['longitude']], levitus[['latitude']], levitus[['SST']])
-#' }
-#'}
-#'
-#' @author Dan Kelley
+## @examples
+##\dontrun{
+## library(oce)
+## data(coastlineWorld)
+## if (requireNamespace("ocedata", quietly=TRUE)) {
+##     data(levitus, package="ocedata")
+##     par(mar=rep(1, 4))
+##     mapPlot(coastlineWorld, projection="+proj=robin", col="lightgray")
+##     mapContour(levitus[['longitude']], levitus[['latitude']], levitus[['SST']])
+## }
+##}
 #'
 #' @seealso A map must first have been created with [mapPlot()].
+#'
 #' @family functions related to maps
+#'
+#' @author Dan Kelley
 mapContour <- function(longitude, latitude, z,
     nlevels=10, levels=pretty(range(z, na.rm=TRUE), nlevels),
     #labels=null,
@@ -896,23 +897,23 @@ mapContour <- function(longitude, latitude, z,
 #' @param ... plotting arguments, passed to [mapArrows()];
 #' see \dQuote{Examples} for how to control the arrow-head size.
 #'
-#' @examples
-#'\dontrun{
-#' library(oce)
-#' if (requireNamespace("ocedata", quietly=TRUE)) {
-#'     data(coastlineWorldFine, package='ocedata')
-#'     HfxLon <- -63.5752
-#'     HfxLat <- 44.6488
-#'     mapPlot(coastlineWorldFine, proj='+proj=merc',
-#'             longitudelim=HfxLon+c(-2,2), latitudelim=HfxLat+c(-2,2),
-#'             col='lightgrey')
-#'     mapCoordinateSystem(HfxLon, HfxLat, phi=45, length=0.05)
-#'    }
-#'}
-#'
-#' @author Chantelle Layton
+## @examples
+##\dontrun{
+## library(oce)
+## if (requireNamespace("ocedata", quietly=TRUE)) {
+##     data(coastlineWorldFine, package='ocedata')
+##     HfxLon <- -63.5752
+##     HfxLat <- 44.6488
+##     mapPlot(coastlineWorldFine, proj='+proj=merc',
+##             longitudelim=HfxLon+c(-2,2), latitudelim=HfxLat+c(-2,2),
+##             col='lightgrey')
+##     mapCoordinateSystem(HfxLon, HfxLat, phi=45, length=0.05)
+##    }
+##}
 #'
 #' @family functions related to maps
+#'
+#' @author Chantelle Layton
 mapCoordinateSystem <- function(longitude, latitude, L=100, phi=0, ...)
 {
     if (missing(longitude))
@@ -963,26 +964,26 @@ mapCoordinateSystem <- function(longitude, latitude, L=100, phi=0, ...)
 #'     `angle` and `lwd` can be useful in differentiating different
 #'     fields.
 #'
-#' @examples
-#'\dontrun{
-#' library(oce)
-#' data(coastlineWorld)
-#' par(mar=rep(2, 4))
-#' mapPlot(coastlineWorld, longitudelim=c(-120,-55), latitudelim=c(35, 50),
-#'         projection="+proj=laea +lat0=40 +lat1=60 +lon_0=-110")
-#' lon <- seq(-120, -60, 15)
-#' lat <- 45 + seq(-15, 15, 5)
-#' lonm <- matrix(expand.grid(lon, lat)[, 1], nrow=length(lon))
-#' latm <- matrix(expand.grid(lon, lat)[, 2], nrow=length(lon))
-#' # vectors pointed 45 degrees clockwise from north
-#' u <- matrix(1/sqrt(2), nrow=length(lon), ncol=length(lat))
-#' v <- matrix(1/sqrt(2), nrow=length(lon), ncol=length(lat))
-#' mapDirectionField(lon, lat, u, v, scale=3)
-#' mapDirectionField(lonm, latm, 0, 1, scale=3, col='red')
-#' # Color code by longitude, using thick lines
-#' col <- colormap(lonm)$zcol
-#' mapDirectionField(lonm, latm, 1, 0, scale=3, col=col, lwd=2)
-#'}
+## @examples
+##\dontrun{
+## library(oce)
+## data(coastlineWorld)
+## par(mar=rep(2, 4))
+## mapPlot(coastlineWorld, longitudelim=c(-120,-55), latitudelim=c(35, 50),
+##         projection="+proj=laea +lat0=40 +lat1=60 +lon_0=-110")
+## lon <- seq(-120, -60, 15)
+## lat <- 45 + seq(-15, 15, 5)
+## lonm <- matrix(expand.grid(lon, lat)[, 1], nrow=length(lon))
+## latm <- matrix(expand.grid(lon, lat)[, 2], nrow=length(lon))
+## # vectors pointed 45 degrees clockwise from north
+## u <- matrix(1/sqrt(2), nrow=length(lon), ncol=length(lat))
+## v <- matrix(1/sqrt(2), nrow=length(lon), ncol=length(lat))
+## mapDirectionField(lon, lat, u, v, scale=3)
+## mapDirectionField(lonm, latm, 0, 1, scale=3, col='red')
+## # Color code by longitude, using thick lines
+## col <- colormap(lonm)$zcol
+## mapDirectionField(lonm, latm, 1, 0, scale=3, col=col, lwd=2)
+##}
 #'
 #' @author Dan Kelley
 #'
@@ -3203,28 +3204,28 @@ mapPolygon <- function(longitude, latitude, density=NULL, angle=45,
 #' @references
 #' 1. `https://codedocean.wordpress.com/2014/02/03/anti-aliasing-and-image-plots/`
 #'
-#' @examples
-#'\dontrun{
-#' library(oce)
-#' data(coastlineWorld)
-#' data(topoWorld)
-#'
-#' # Northern polar region, with color-coded bathymetry
-#' par(mfrow=c(1,1), mar=c(2,2,1,1))
-#' cm <- colormap(zlim=c(-5000, 0), col=oceColorsGebco)
-#' drawPalette(colormap=cm)
-#' mapPlot(coastlineWorld, projection="+proj=stere +lat_0=90",
-#'         longitudelim=c(-180,180), latitudelim=c(70,110))
-#' mapImage(topoWorld, colormap=cm)
-#' mapGrid(15, 15, polarCircle=1, col=gray(0.2))
-#' mapPolygon(coastlineWorld[['longitude']], coastlineWorld[['latitude']], col="tan")
-#'}
-#'
-#' @author Dan Kelley
+## @examples
+##\dontrun{
+## library(oce)
+## data(coastlineWorld)
+## data(topoWorld)
+##
+## # Northern polar region, with color-coded bathymetry
+## par(mfrow=c(1,1), mar=c(2,2,1,1))
+## cm <- colormap(zlim=c(-5000, 0), col=oceColorsGebco)
+## drawPalette(colormap=cm)
+## mapPlot(coastlineWorld, projection="+proj=stere +lat_0=90",
+##         longitudelim=c(-180,180), latitudelim=c(70,110))
+## mapImage(topoWorld, colormap=cm)
+## mapGrid(15, 15, polarCircle=1, col=gray(0.2))
+## mapPolygon(coastlineWorld[['longitude']], coastlineWorld[['latitude']], col="tan")
+##}
 #'
 #' @seealso A map must first have been created with [mapPlot()].
 #'
 #' @family functions related to maps
+#'
+#' @author Dan Kelley
 mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
     breaks, col, colormap, border=NA,
     lwd=par("lwd"), lty=par("lty"), missingColor=NA,

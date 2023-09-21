@@ -732,14 +732,14 @@ setMethod(f="plot",
 #' @return `download.amsr` returns a character value holding the full pathname
 #' of the downloaded file.
 #'
-#' @examples
-#'\dontrun{
-#' # The download may take up to about a minute.
-#' f <- download.amsr(2023, 7, 27, destdir="~/data/amsr")
-#' d <- read.amsr(f)
-#' plot(d)
-#' mtext(d[["filename"]], side=3, line=0, adj=0)
-#'}
+## @examples
+##\dontrun{
+## # The download may take up to about a minute.
+## f <- download.amsr(2023, 7, 27, destdir="~/data/amsr")
+## d <- read.amsr(f)
+## plot(d)
+## mtext(d[["filename"]], side=3, line=0, adj=0)
+##}
 #'
 #' @family functions that download files
 #' @family functions that plot oce data

@@ -8,12 +8,6 @@
 \description{
 Sample ctd File in .cnv Format
 }
-\examples{
-\dontrun{
-read.oce(system.file("extdata", "ctd.cnv.gz", package="oce"))
-}
-
-}
 \seealso{
 Other raw datasets: 
 \code{\link{CTD_BCD2014666_008_1_DN.ODF.gz}},

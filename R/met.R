@@ -358,18 +358,16 @@ as.met <- function(time, temperature, pressure, u, v, filename="(constructed fro
 #'
 #' @return String indicating the full pathname to the downloaded file.
 #'
-#' @author Dan Kelley
-#'
-#' @examples
-#'\dontrun{
-#' library(oce)
-#' # Download data for Halifax International Airport, in September
-#' # of 2003. This dataset is used for data(met) provided with oce.
-#' # Note that requests for data after 2012 month 10 yield all
-#' # missing values, for reasons unknown to the author.
-#' metFile <- download.met(6358, 2003, 9, destdir=".")
-#' met <- read.met(metFile)
-#'}
+## @examples
+##\dontrun{
+## library(oce)
+## # Download data for Halifax International Airport, in September
+## # of 2003. This dataset is used for data(met) provided with oce.
+## # Note that requests for data after 2012 month 10 yield all
+## # missing values, for reasons unknown to the author.
+## metFile <- download.met(6358, 2003, 9, destdir=".")
+## met <- read.met(metFile)
+##}
 #'
 #' @seealso The work is done with [utils::download.file()].
 #'
@@ -382,6 +380,8 @@ as.met <- function(time, temperature, pressure, u, v, filename="(constructed fro
 #'
 #' @family functions that download files
 #' @family things related to met data
+#'
+#' @author Dan Kelley
 download.met <- function(id, year, month, deltat, type="xml",
     destdir=".", destfile, force=FALSE, quiet=FALSE,
     debug=getOption("oceDebug"))

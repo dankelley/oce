@@ -32,10 +32,7 @@ Typically, this is a fraction of a unit
 higher than practical salinity as defined in the UNESCO formulae.
 }
 \examples{
-\dontrun{
-sa <- swAbsoluteSalinity(35.5, 300, 260, 16)
-stopifnot(abs(35.671358392019094 - sa) < 00.000000000000010)
-}
+swAbsoluteSalinity(35.5, 300, 260, 16) # 35.67136
 
 }
 \references{

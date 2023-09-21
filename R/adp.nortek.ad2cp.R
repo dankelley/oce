@@ -26,13 +26,13 @@
 #' @family things related to adp data
 #' @family things related to ad2cp data
 #' @family functions that trim data files
-#' @examples
-#'\dontrun{
-#' # Can only be run by the developer, since it uses a private file.
-#' f  <- "/Users/kelley/Dropbox/oce_secret_data/ad2cp/byg_trimmed.ad2cp"
-#' if (file.exists(f))
-#'     adpAd2cpFileTrim(f, 100L) # this file is already trimmed to 200 chunks
-#'}
+## @examples
+##\dontrun{
+## # Can only be run by the developer, since it uses a private file.
+## f  <- "/Users/kelley/Dropbox/oce_secret_data/ad2cp/byg_trimmed.ad2cp"
+## if (file.exists(f))
+##     adpAd2cpFileTrim(f, 100L) # this file is already trimmed to 200 chunks
+##}
 #' @author Dan Kelley
 adpAd2cpFileTrim <- function(infile, n=100L, outfile, debug=getOption("oceDebug"))
 {
@@ -98,23 +98,23 @@ ad2cpDefaultDataItem <- function(x, j=NULL, order=c("burst", "average",
 #' if the desired item is not found there, or if `x` is not of the required
 #' class and variety.
 #'
-#' @examples
-#'\dontrun{
-#' if (file.exists("a.ad2cp")) {
-#'     d <- read.oce("a.ad2cp")
-#'     # The examples start with the line in x[["text"]][[1]]; note that in the second
-#'     # example, it would be insuficient to use a key of "BEAMCFGLIST", because that will
-#'     # yield 4 lines, and the function is not designed to handle that.
-#'
-#'     # ID,STR=\"Signature1000\",SN=123456
-#'     type <- ad2cpHeaderValue(d, "ID", "STR", numeric=FALSE)
-#'     serialNumber <- ad2cpHeaderValue(d, "ID", "SN")
-#'
-#'     # BEAMCFGLIST,BEAM=1,THETA=25.00,PHI=0.00,FREQ=1000,BW=25,BRD=1,HWBEAM=1,ZNOM=60.00
-#'     beam1Angle <- ad2cpHeaderValue(d, "BEAMCFGLIST,BEAM=1", "THETA")
-#'     frequency <- ad2cpHeaderValue(d, "BEAMCFGLIST,BEAM=1", "FREQ", default=NA)
-#' }
-#'}
+## @examples
+##\dontrun{
+## if (file.exists("a.ad2cp")) {
+##     d <- read.oce("a.ad2cp")
+##     # The examples start with the line in x[["text"]][[1]]; note that in the second
+##     # example, it would be insuficient to use a key of "BEAMCFGLIST", because that will
+##     # yield 4 lines, and the function is not designed to handle that.
+##
+##     # ID,STR=\"Signature1000\",SN=123456
+##     type <- ad2cpHeaderValue(d, "ID", "STR", numeric=FALSE)
+##     serialNumber <- ad2cpHeaderValue(d, "ID", "SN")
+##
+##     # BEAMCFGLIST,BEAM=1,THETA=25.00,PHI=0.00,FREQ=1000,BW=25,BRD=1,HWBEAM=1,ZNOM=60.00
+##     beam1Angle <- ad2cpHeaderValue(d, "BEAMCFGLIST,BEAM=1", "THETA")
+##     frequency <- ad2cpHeaderValue(d, "BEAMCFGLIST,BEAM=1", "FREQ", default=NA)
+## }
+##}
 #'
 #' @family things related to adp data
 #' @family things related to ad2cp data
@@ -436,10 +436,10 @@ ad2cpCodeToName <- function(code=NULL, prefix=TRUE)
 #' @param \dots ignored parameters that might be passed to `read.adp.ad2cp()`
 #' by [read.oce()].
 #'
-# @examples
-#\dontrun{
-# d <- read.adp.ad2cp("~/test.ad2cp", to=100) # or read.oce()
-#}
+## @examples
+##\dontrun{
+## d <- read.adp.ad2cp("~/test.ad2cp", to=100) # or read.oce()
+##}
 #'
 #' @return `read.adp.ad2cp()` returns either an [adp-class] object or
 #' the number of data sets within the file, according to the value

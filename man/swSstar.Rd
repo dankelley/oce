@@ -27,10 +27,7 @@ Compute seawater Preformed Salinity (S*), according to the GSW/TEOS-10
 formulation with \code{\link[gsw:gsw_Sstar_from_SA]{gsw::gsw_Sstar_from_SA()}} in the \CRANpkg{gsw} package.
 }
 \examples{
-\dontrun{
-sa <- swAbsoluteSalinity(35.5, 300, 260, 16)
-stopifnot(abs(35.671358392019094 - sa) < 00.000000000000010)
-}
+swSstar(35.5, 300, 260, 16) # 35.66601
 
 }
 \references{

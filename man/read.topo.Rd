@@ -42,14 +42,6 @@ is similar but for cell size, and lines after that hold the grid.
 \item A NetCDF format that was once described by NOAA as "NetCDF".
 }
 }
-\examples{
-\dontrun{
-library(oce)
-topoMaritimes <- read.topo("topoMaritimes.asc")
-plot(topographyMaritimes)
-}
-
-}
 \seealso{
 Other things related to topo data: 
 \code{\link{[[,topo-method}},

@@ -27,7 +27,6 @@ tidal model object that was created by \code{\link[=as.tidem]{as.tidem()}} or \c
 }
 \examples{
 
-\dontrun{
 library(oce)
 # 1. tidal anomaly
 data(sealevelTuktoyaktuk)
@@ -38,20 +37,6 @@ tide <- tidem(sealevelTuktoyaktuk)
 lines(time, elevation - predict(tide), col="red")
 abline(h=0, col="red")
 
-# 2. prediction at specified times
-data(sealevel)
-m <- tidem(sealevel)
-# Check fit over 2 days (interpolating to finer timescale)
-look <- 1:48
-time <- sealevel[["time"]]
-elevation <- sealevel[["elevation"]]
-oce.plot.ts(time[look], elevation[look])
-# 360s = 10 minute timescale
-t <- seq(from=time[1], to=time[max(look)], by=360)
-lines(t, predict(m, newdata=t), col='red')
-legend("topright", col=c("black","red"),
-legend=c("data","model"),lwd=1)
-}
 
 }
 \seealso{

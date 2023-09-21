@@ -25,10 +25,6 @@ library(oce)
 # Example 1: oceColorsViridis
 imagep(volcano, col=oceColorsViridis(128),
        zlab="oceColorsViridis")
-# Example 2: viridis::viridis
-\dontrun{
-imagep(volcano, col=viridis::viridis,
-       zlab="viridis::viridis")}
 
 }
 \references{

@@ -111,38 +111,40 @@ setMethod(f="[[<-",
 #'
 #' @return A [g1sst-class] object.
 #'
-#' @examples
-#'\dontrun{
-#' # Construct query, making it easier to understand and modify.
-#' day <- "2016-01-02"
-#' lon0 <- -66.5
-#' lon1 <- -64.0
-#' lat0 <- 44
-#' lat1 <- 46
-#' source <- paste("https://coastwatch.pfeg.noaa.gov/erddap/griddap/",
-#'                 "jplG1SST.nc?",
-#'                 "SST%5B(", day, "T12:00:00Z)",
-#'                 "%5D%5B(", lat0, "):(", lat1, ")",
-#'                 "%5D%5B(", lon0, "):(", lon1, ")",
-#'                 "%5D", sep="")
-#' if (!length(list.files(pattern="^a.nc$")))
-#'     download.file(source, "a.nc")
-#' d <- read.g1sst("a.nc")
-#' plot(d, "SST", col=oceColorsTemperature)
-#' if (requireNamespace("ocedata", quietly=TRUE)) {
-#'     data(coastlineWorldFine, package="ocedata")
-#'     lines(coastlineWorldFine[['longitude']],coastlineWorldFine[['latitude']])
-#' }
-#'}
-#'
-#' @author Dan Kelley
+## @examples
+##\dontrun{
+## # Construct query, making it easier to understand and modify.
+## day <- "2016-01-02"
+## lon0 <- -66.5
+## lon1 <- -64.0
+## lat0 <- 44
+## lat1 <- 46
+## source <- paste("https://coastwatch.pfeg.noaa.gov/erddap/griddap/",
+##                 "jplG1SST.nc?",
+##                 "SST%5B(", day, "T12:00:00Z)",
+##                 "%5D%5B(", lat0, "):(", lat1, ")",
+##                 "%5D%5B(", lon0, "):(", lon1, ")",
+##                 "%5D", sep="")
+## if (!length(list.files(pattern="^a.nc$")))
+##     download.file(source, "a.nc")
+## d <- read.g1sst("a.nc")
+## plot(d, "SST", col=oceColorsTemperature)
+## if (requireNamespace("ocedata", quietly=TRUE)) {
+##     data(coastlineWorldFine, package="ocedata")
+##     lines(coastlineWorldFine[['longitude']],coastlineWorldFine[['latitude']])
+## }
+##}
 #'
 #' @references
+#'
 #' 1. ERDDAP Portal `https://coastwatch.pfeg.noaa.gov/erddap/`
+#'
 #' 2. JPO OurOcean Portal `https://ourocean.jpl.nasa.gov/SST/`
-#' (link worked in 2016 but was seen to fail 2017 Feb 2).
+## (link worked in 2016 but was seen to fail 2017 Feb 2).
 #'
 #' @family things related to g1sst data
+#'
+#' @author Dan Kelley
 read.g1sst <- function(file, encoding=NA)
 {
     if (missing(file))

@@ -164,13 +164,13 @@ NULL
 #'
 #' @author Dan Kelley
 #'
-#' @examples
-#'\dontrun{
-#' library(oce)
-#' data(sealevel)
-#' tide <- tidem(sealevel)
-#' summary(tide)
-#'}
+## @examples
+##\dontrun{
+## library(oce)
+## data(sealevel)
+## tide <- tidem(sealevel)
+## summary(tide)
+##}
 #'
 #' @family things related to tides
 setMethod(f="summary",
@@ -362,13 +362,13 @@ setMethod(f="[[<-",
 #' of which are obeyed.  For example, if \dots contains `type`, that value will be
 #' ignored because it is set internally, according to the value of `which`.
 #'
-#' @examples
-#'\dontrun{
-#' library(oce)
-#' data(sealevel)
-#' tide <- tidem(sealevel)
-#' plot(tide)
-#'}
+## @examples
+##\dontrun{
+## library(oce)
+## data(sealevel)
+## tide <- tidem(sealevel)
+## plot(tide)
+##}
 #'
 #' @section Historical note:
 #' An argument named `labelIf` was removed in July 2016,
@@ -1757,7 +1757,6 @@ tidem <- function(t, x, constituents, infer=NULL, latitude=NULL,
 #'
 #' @examples
 #'
-#'\dontrun{
 #' library(oce)
 #' # 1. tidal anomaly
 #' data(sealevelTuktoyaktuk)
@@ -1768,20 +1767,21 @@ tidem <- function(t, x, constituents, infer=NULL, latitude=NULL,
 #' lines(time, elevation - predict(tide), col="red")
 #' abline(h=0, col="red")
 #'
-#' # 2. prediction at specified times
-#' data(sealevel)
-#' m <- tidem(sealevel)
-#' # Check fit over 2 days (interpolating to finer timescale)
-#' look <- 1:48
-#' time <- sealevel[["time"]]
-#' elevation <- sealevel[["elevation"]]
-#' oce.plot.ts(time[look], elevation[look])
-#' # 360s = 10 minute timescale
-#' t <- seq(from=time[1], to=time[max(look)], by=360)
-#' lines(t, predict(m, newdata=t), col='red')
-#' legend("topright", col=c("black","red"),
-#' legend=c("data","model"),lwd=1)
-#'}
+##\dontrun{
+## # 2. prediction at specified times
+## data(sealevel)
+## m <- tidem(sealevel)
+## # Check fit over 2 days (interpolating to finer timescale)
+## look <- 1:48
+## time <- sealevel[["time"]]
+## elevation <- sealevel[["elevation"]]
+## oce.plot.ts(time[look], elevation[look])
+## # 360s = 10 minute timescale
+## t <- seq(from=time[1], to=time[max(look)], by=360)
+## lines(t, predict(m, newdata=t), col='red')
+## legend("topright", col=c("black","red"),
+## legend=c("data","model"),lwd=1)
+##}
 #'
 #' @author Dan Kelley
 #'
@@ -1941,18 +1941,18 @@ predict.tidem <- function(object, newdata, ...)
 #' designed based on little more than guesses about the WebTide file structure.
 #' Users should be on the lookout for odd results.
 #'
-#' @examples
-#'\dontrun{
-#' # needs WebTide at the system level
-#' library(oce)
-#' # 1. prediction at Halifax NS
-#' longitude <- -63.57
-#' latitude <- 44.65
-#' prediction <- webtide("predict", longitude=longitude, latitude=latitude)
-#' mtext(sprintf("prediction at %fN %fE", latitude, longitude), line=0.75, side=3)
-#' # 2. map
-#' webtide(lon=-63.57,lat=44.65,xlim=c(-64,-63),ylim=c(43.0,46))
-#'}
+## @examples
+##\dontrun{
+## # needs WebTide at the system level
+## library(oce)
+## # 1. prediction at Halifax NS
+## longitude <- -63.57
+## latitude <- 44.65
+## prediction <- webtide("predict", longitude=longitude, latitude=latitude)
+## mtext(sprintf("prediction at %fN %fE", latitude, longitude), line=0.75, side=3)
+## # 2. map
+## webtide(lon=-63.57,lat=44.65,xlim=c(-64,-63),ylim=c(43.0,46))
+##}
 #'
 #' @author Dan Kelley
 #'

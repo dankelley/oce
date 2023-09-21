@@ -29,16 +29,6 @@ for reading with a spreadsheet, or
 with \code{\link[=read.csv]{read.csv()}}.  This output file will contain
 some of the metadata in \code{x}, if \code{metadata} is \code{TRUE}.
 }
-\examples{
-\dontrun{
-library(oce)
-data(ctd)
-write.ctd(ctd, "ctd.csv")
-d <- read.csv("ctd.csv")
-plot(as.ctd(d$salinity, d$temperature, d$pressure))
-}
-
-}
 \references{
 The following links used to work, but failed as of December 2020.
 \enumerate{

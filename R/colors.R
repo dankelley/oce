@@ -621,9 +621,9 @@ colormapGMT <- function(name, debug=getOption("oceDebug"))
 #' # at 4km depth, then blending in 0.5km increments
 #' # to white at the coast, with tan for land.
 #' cm <- colormap(x0=c(-8000, -4000,   0,  100),
-#'                x1=c(-4000,     0, 100, 5000),
-#'                col0=c("violet","blue","white","tan"),
-#'                col1=c("blue","white","tan","yellow"))
+#'      x1=c(-4000,     0, 100, 5000),
+#'      col0=c("violet","blue","white","tan"),
+#'      col1=c("blue","white","tan","yellow"))
 #' lon <- topoWorld[['longitude']]
 #' lat <- topoWorld[['latitude']]
 #' z <- topoWorld[['z']]

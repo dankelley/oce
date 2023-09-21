@@ -157,10 +157,7 @@ SCOR/IAPSO WG127, ISBN 978-0-646-55621-5.</p>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span></span>
-<span class="r-in"><span><span class="va">SR</span> <span class="op">&lt;-</span> <span class="fu"><a href="swAbsoluteSalinity.html">swAbsoluteSalinity</a></span><span class="op">(</span><span class="fl">35.0</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">abs</a></span><span class="op">(</span><span class="fl">35.16504000000</span>  <span class="op">-</span> <span class="va">SR</span><span class="op">)</span> <span class="op">&lt;</span> <span class="fl">0.000000000000010</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="op">}</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">SR</span> <span class="op">&lt;-</span> <span class="fu">swSR</span><span class="op">(</span><span class="fl">35.0</span><span class="op">)</span> <span class="co"># 35.16504</span></span></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

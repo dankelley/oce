@@ -59,15 +59,6 @@ because it was discovered never to have worked as documented, and
 because the more useful argument \code{constituents} had been added.
 }
 
-\examples{
-\dontrun{
-library(oce)
-data(sealevel)
-tide <- tidem(sealevel)
-plot(tide)
-}
-
-}
 \seealso{
 Other functions that plot oce data: 
 \code{\link{download.amsr}()},

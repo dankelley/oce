@@ -7,12 +7,6 @@
 \description{
 Sample adp File in RDI Format
 }
-\examples{
-\dontrun{
-read.oce(system.file("extdata", "adp_rdi.000", package="oce"))
-}
-
-}
 \seealso{
 Other raw datasets: 
 \code{\link{CTD_BCD2014666_008_1_DN.ODF.gz}},

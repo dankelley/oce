@@ -84,30 +84,6 @@ par(mfrow=c(2, 1))
 plotTS(ctdRaw)
 plotTS(handleFlags(qc, flags=c(1, 3:9)))
 
-# Example 2: Interactive flag assignment based on TS plot, using
-# WHP scheme to define 'acceptable' and 'bad' codes
-\dontrun{
-options(eos="gsw")
-data(ctd)
-qc <- ctd
-qc <- initializeFlagScheme(qc, "WHP CTD")
-qc <- initializeFlags(qc, "salinity", 2)
-Sspan <- diff(range(qc[["SA"]]))
-Tspan <- diff(range(qc[["CT"]]))
-n <- length(qc[["SA"]])
-par(mfrow=c(1, 1))
-plotTS(qc, type="o")
-message("Click on bad points; quit by clicking to right of plot")
-for (i in seq_len(n)) {
-    xy <- locator(1)
-    if (xy$x > par("usr")[2])
-        break
-    i <- which.min(abs(qc[["SA"]] - xy$x)/Sspan + abs(qc[["CT"]] - xy$y)/Tspan)
-    qc <- setFlags(qc, "salinity", i=i, value=4)
-    qc <- handleFlags(qc, flags=list(salinity=4))
-    plotTS(qc, type="o")
-}
-}
 
 }
 \seealso{
@@ -174,6 +150,9 @@ Other things related to ctd data:
 \code{\link{woceNames2oceNames}()},
 \code{\link{woceUnit2oceUnit}()},
 \code{\link{write.ctd}()}
+}
+\author{
+Dan Kelley
 }
 \concept{functions relating to data-quality flags}
 \concept{things related to ctd data}

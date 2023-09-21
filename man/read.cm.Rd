@@ -131,15 +131,6 @@ magnetic declination into account.
 }
 }
 
-\examples{
-\dontrun{
-  library(oce)
-  cm <- read.oce("cm_interocean_0811786.s4a.tab")
-  summary(cm)
-  plot(cm)
-}
-
-}
 \seealso{
 Other things related to cm data: 
 \code{\link{[[,cm-method}},

@@ -164,15 +164,15 @@ setMethod("handleFlags",
 #' @templateVar details This applies `initializeFlagScheme` for each `ctd` station within the `stations` element of the `data` slot.
 #' @template initializeFlagSchemeTemplate
 #'
-#' @examples
-#'\dontrun{
-#' data(section)
-#' section <- read.section("a03_hy1.csv", sectionId="a03", institute="SIO",
-#'                         ship="R/V Professor Multanovskiy", scientist="Vladimir Tereschenov")
-#' sectionWithFlags <- initializeFlagScheme(section, "WHP bottle")
-#' station1 <- sectionWithFlags[["station", 1]]
-#' str(station1[["flagScheme"]])
-#'}
+## @examples
+##\dontrun{
+## data(section)
+## section <- read.section("a03_hy1.csv", sectionId="a03", institute="SIO",
+##    ship="R/V Professor Multanovskiy", scientist="Vladimir Tereschenov")
+## sectionWithFlags <- initializeFlagScheme(section, "WHP bottle")
+## station1 <- sectionWithFlags[["station", 1]]
+## str(station1[["flagScheme"]])
+##}
 setMethod("initializeFlagScheme",
     c(object="section", name="ANY", mapping="ANY", default="ANY", update="ANY", debug="ANY"),
     function(object, name=NULL, mapping=NULL, default=NULL, update=NULL, debug=getOption("oceDebug"))
@@ -3279,11 +3279,9 @@ as.section <- function(salinity, temperature, pressure, longitude, latitude, sta
 #' spine <- list(longitude=c(-74.5, -69.2, -55),
 #'     latitude=c(38.6, 36.25, 36.25))
 #' easternWithSpine <- addSpine(eastern, spine)
-#'\dontrun{
 #' # plot(easternWithSpine, which="map")
 #' # plot(easternWithSpine, xtype="distance", which="temperature")
 #' # plot(easternWithSpine, xtype="spine", which="temperature")
-#'}
 #'
 #' @author Dan Kelley
 addSpine <- function(section, spine, debug=getOption("oceDebug"))

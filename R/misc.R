@@ -2985,7 +2985,6 @@ gravity <- function(latitude=45, degrees=TRUE)
 #' with [bandwidth.kernel()], and which has both print and plot
 #' methods.
 #'
-#' @author Dan Kelley
 #'
 #' @references F. J. Harris, 1978.  On the use of windows for harmonic analysis
 #' with the discrete Fourier Transform.  *Proceedings of the IEEE*, 66(1),
@@ -3011,32 +3010,34 @@ gravity <- function(latitude=45, degrees=TRUE)
 #' #    the latter is based on random white noise, and
 #' #    includes a particular value for the spans
 #' #    argument of spectrum(), etc.
-#'\dontrun{
-#' # need signal package for this example
-#' r <- rnorm(2048)
-#' rh <- stats::filter(r, H)
-#' rh <- rh[is.finite(rh)] # kludge to remove NA at start/end
-#' sR <- spectrum(r, plot=FALSE, spans=c(11, 5, 3))
-#' sRH <- spectrum(rh, plot=FALSE, spans=c(11, 5, 3))
-#' par(mfrow=c(2, 1), mar=c(3, 3, 1, 1), mgp=c(2, 0.7, 0))
-#' plot(sR$freq, sRH$spec/sR$spec, xlab="Frequency", ylab="Power Transfer",
-#'      type="l", lwd=5, col="gray")
-#' theory <- freqz(H, n=seq(0,pi,length.out=100))
-#' # Note we must square the modulus for the power spectrum
-#' lines(theory$f/pi/2, Mod(theory$h)^2, lwd=1, col="red")
-#' grid()
-#' legend("topright", col=c("gray", "red"), lwd=c(5, 1), cex=2/3,
-#'        legend=c("Practical", "Theory"), bg="white")
-#' plot(log10(sR$freq), log10(sRH$spec/sR$spec),
-#'      xlab="log10 Frequency", ylab="log10 Power Transfer",
-#'      type="l", lwd=5, col="gray")
-#' theory <- freqz(H, n=seq(0,pi,length.out=100))
-#' # Note we must square the modulus for the power spectrum
-#' lines(log10(theory$f/pi/2), log10(Mod(theory$h)^2), lwd=1, col="red")
-#' grid()
-#' legend("topright", col=c("gray", "red"), lwd=c(5, 1), cex=2/3,
-#'        legend=c("Practical", "Theory"), bg="white")
-#'}
+##\dontrun{
+## # need signal package for this example
+## r <- rnorm(2048)
+## rh <- stats::filter(r, H)
+## rh <- rh[is.finite(rh)] # kludge to remove NA at start/end
+## sR <- spectrum(r, plot=FALSE, spans=c(11, 5, 3))
+## sRH <- spectrum(rh, plot=FALSE, spans=c(11, 5, 3))
+## par(mfrow=c(2, 1), mar=c(3, 3, 1, 1), mgp=c(2, 0.7, 0))
+## plot(sR$freq, sRH$spec/sR$spec, xlab="Frequency", ylab="Power Transfer",
+##      type="l", lwd=5, col="gray")
+## theory <- freqz(H, n=seq(0,pi,length.out=100))
+## # Note we must square the modulus for the power spectrum
+## lines(theory$f/pi/2, Mod(theory$h)^2, lwd=1, col="red")
+## grid()
+## legend("topright", col=c("gray", "red"), lwd=c(5, 1), cex=2/3,
+##        legend=c("Practical", "Theory"), bg="white")
+## plot(log10(sR$freq), log10(sRH$spec/sR$spec),
+##      xlab="log10 Frequency", ylab="log10 Power Transfer",
+##      type="l", lwd=5, col="gray")
+## theory <- freqz(H, n=seq(0,pi,length.out=100))
+## # Note we must square the modulus for the power spectrum
+## lines(log10(theory$f/pi/2), log10(Mod(theory$h)^2), lwd=1, col="red")
+## grid()
+## legend("topright", col=c("gray", "red"), lwd=c(5, 1), cex=2/3,
+##        legend=c("Practical", "Theory"), bg="white")
+##}
+#'
+#' @author Dan Kelley
 makeFilter <- function(type=c("blackman-harris", "rectangular", "hamming", "hann"), m, asKernel=TRUE)
 {
     type <- match.arg(type)
@@ -3444,18 +3445,18 @@ coriolis <- function(latitude, degrees=TRUE)
 #' @return An object of the same class as `x`, with the `data` slot
 #' adjusted appropriately.
 #'
-#' @author Dan Kelley
+## @examples
+##\dontrun{
+## library(oce)
+## rbr011855 <- read.oce(
+##  "/data/archive/sleiwex/2008/moorings/m08/pt/rbr_011855/raw/pt_rbr_011855.dat")
+## d <- subset(rbr011855, time < as.POSIXct("2008-06-25 10:05:00"))
+## x <- undriftTime(d, 1)   # clock lost 1 second over whole experiment
+## summary(d)
+## summary(x)
+##}
 #'
-#' @examples
-#'\dontrun{
-#' library(oce)
-#' rbr011855 <- read.oce(
-#'  "/data/archive/sleiwex/2008/moorings/m08/pt/rbr_011855/raw/pt_rbr_011855.dat")
-#' d <- subset(rbr011855, time < as.POSIXct("2008-06-25 10:05:00"))
-#' x <- undriftTime(d, 1)   # clock lost 1 second over whole experiment
-#' summary(d)
-#' summary(x)
-#'}
+#' @author Dan Kelley
 undriftTime <- function(x, slowEnd = 0, tname="time")
 {
     if (!inherits(x, "oce"))

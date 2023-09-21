@@ -35,11 +35,9 @@ eastern <- subset(section, longitude < (-65))
 spine <- list(longitude=c(-74.5, -69.2, -55),
     latitude=c(38.6, 36.25, 36.25))
 easternWithSpine <- addSpine(eastern, spine)
-\dontrun{
 # plot(easternWithSpine, which="map")
 # plot(easternWithSpine, xtype="distance", which="temperature")
 # plot(easternWithSpine, xtype="spine", which="temperature")
-}
 
 }
 \author{

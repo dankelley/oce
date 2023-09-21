@@ -1495,36 +1495,36 @@ swZ <- function(pressure, latitude=45, eos=getOption("oceEOS", default="gsw"))
 #' @references Gill, A.E., 1982. *Atmosphere-ocean Dynamics*, Academic
 #' Press, New York, 662 pp.
 #'
-#' @examples
-#'\dontrun{
-#' library(oce)
-#' data(section)
-#'
-#' # Dynamic height and geostrophy
-#' par(mfcol=c(2,2))
-#' par(mar=c(4.5,4.5,2,1))
-#'
-#' # Left-hand column: whole section
-#' # (The smoothing lowers Gulf Stream speed greatly)
-#' westToEast <- subset(section, 1<=stationId&stationId<=123)
-#' dh <- swDynamicHeight(westToEast)
-#' plot(dh$distance, dh$height, type='p', xlab="", ylab="dyn. height [m]")
-#' ok <- !is.na(dh$height)
-#' smu <- supsmu(dh$distance, dh$height)
-#' lines(smu, col="blue")
-#' f <- coriolis(section[["station", 1]][["latitude"]])
-#' g <- gravity(section[["station", 1]][["latitude"]])
-#' v <- diff(smu$y)/diff(smu$x) * g / f / 1e3 # 1e3 converts to m
-#' plot(smu$x[-1], v, type='l', col="blue", xlab="distance [km]", ylab="velocity (m/s)")
-#'
-#' # right-hand column: gulf stream region, unsmoothed
-#' gs <- subset(section, 102<=stationId&stationId<=124)
-#' dh.gs <- swDynamicHeight(gs)
-#' plot(dh.gs$distance, dh.gs$height, type='b', xlab="", ylab="dyn. height [m]")
-#' v <- diff(dh.gs$height)/diff(dh.gs$distance) * g / f / 1e3
-#' plot(dh.gs$distance[-1], v, type='l', col="blue",
-#'   xlab="distance [km]", ylab="velocity (m/s)")
-#'}
+## @examples
+##\dontrun{
+## library(oce)
+## data(section)
+##
+## # Dynamic height and geostrophy
+## par(mfcol=c(2, 2))
+## par(mar=c(4.5, 4.5, 2, 1))
+##
+## # Left-hand column: whole section
+## # (The smoothing lowers Gulf Stream speed greatly)
+## westToEast <- subset(section, 1<=stationId&stationId<=123)
+## dh <- swDynamicHeight(westToEast)
+## plot(dh$distance, dh$height, type='p', xlab="", ylab="dyn. height [m]")
+## ok <- !is.na(dh$height)
+## smu <- supsmu(dh$distance, dh$height)
+## lines(smu, col="blue")
+## f <- coriolis(section[["station", 1]][["latitude"]])
+## g <- gravity(section[["station", 1]][["latitude"]])
+## v <- diff(smu$y)/diff(smu$x) * g / f / 1e3 # 1e3 converts to m
+## plot(smu$x[-1], v, type='l', col="blue", xlab="distance [km]", ylab="velocity (m/s)")
+##
+## # right-hand column: gulf stream region, unsmoothed
+## gs <- subset(section, 102<=stationId&stationId<=124)
+## dh.gs <- swDynamicHeight(gs)
+## plot(dh.gs$distance, dh.gs$height, type='b', xlab="", ylab="dyn. height [m]")
+## v <- diff(dh.gs$height)/diff(dh.gs$distance) * g / f / 1e3
+## plot(dh.gs$distance[-1], v, type='l', col="blue",
+##   xlab="distance [km]", ylab="velocity (m/s)")
+##}
 #'
 #' @family functions that calculate seawater properties
 swDynamicHeight <- function(x, referencePressure=2000,
@@ -2868,10 +2868,7 @@ swConservativeTemperature <- function(salinity, temperature=NULL, pressure=NULL,
 #' SCOR/IAPSO WG127, ISBN 978-0-646-55621-5.
 #'
 #' @examples
-#'\dontrun{
-#' sa <- swAbsoluteSalinity(35.5, 300, 260, 16)
-#' stopifnot(abs(35.671358392019094 - sa) < 00.000000000000010)
-#'}
+#' swAbsoluteSalinity(35.5, 300, 260, 16) # 35.67136
 #'
 #' @family functions that calculate seawater properties
 swAbsoluteSalinity <- function(salinity, pressure=NULL, longitude=NULL, latitude=NULL)
@@ -2943,10 +2940,7 @@ swAbsoluteSalinity <- function(salinity, pressure=NULL, longitude=NULL, latitude
 #' SCOR/IAPSO WG127, ISBN 978-0-646-55621-5.
 #'
 #' @examples
-#'\dontrun{
-#' sa <- swAbsoluteSalinity(35.5, 300, 260, 16)
-#' stopifnot(abs(35.671358392019094 - sa) < 00.000000000000010)
-#'}
+#' swSstar(35.5, 300, 260, 16) # 35.66601
 #'
 #' @family functions that calculate seawater properties
 swSstar <- function(salinity, pressure=NULL, longitude=NULL, latitude=NULL)
@@ -3030,10 +3024,7 @@ swSstar <- function(salinity, pressure=NULL, longitude=NULL, latitude=NULL)
 #' SCOR/IAPSO WG127, ISBN 978-0-646-55621-5.
 #'
 #' @examples
-#'\dontrun{
-#' SR <- swAbsoluteSalinity(35.0)
-#' stopifnot(abs(35.16504000000  - SR) < 0.000000000000010)
-#'}
+#' SR <- swSR(35.0) # 35.16504
 #'
 #' @family functions that calculate seawater properties
 swSR <- function(salinity)

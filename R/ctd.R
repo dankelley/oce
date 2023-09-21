@@ -202,12 +202,12 @@ ctdRepair <- function(x, debug=getOption("oceDebug"))
 #'
 #' @usage data(ctd)
 #'
-#' @examples
-#'\dontrun{
-#' library(oce)
-#' data(ctd)
-#' plot(ctd)
-#'}
+## @examples
+##\dontrun{
+## library(oce)
+## data(ctd)
+## plot(ctd)
+##}
 #'
 #' @seealso The full profile (not trimmed to the downcast) is available as
 #' `data(ctdRaw)`.
@@ -354,32 +354,34 @@ setMethod("handleFlags", signature=c(object="ctd", flags="ANY", actions="ANY", w
 #' plotTS(ctdRaw)
 #' plotTS(handleFlags(qc, flags=c(1, 3:9)))
 #'
-#' # Example 2: Interactive flag assignment based on TS plot, using
-#' # WHP scheme to define 'acceptable' and 'bad' codes
-#'\dontrun{
-#' options(eos="gsw")
-#' data(ctd)
-#' qc <- ctd
-#' qc <- initializeFlagScheme(qc, "WHP CTD")
-#' qc <- initializeFlags(qc, "salinity", 2)
-#' Sspan <- diff(range(qc[["SA"]]))
-#' Tspan <- diff(range(qc[["CT"]]))
-#' n <- length(qc[["SA"]])
-#' par(mfrow=c(1, 1))
-#' plotTS(qc, type="o")
-#' message("Click on bad points; quit by clicking to right of plot")
-#' for (i in seq_len(n)) {
-#'     xy <- locator(1)
-#'     if (xy$x > par("usr")[2])
-#'         break
-#'     i <- which.min(abs(qc[["SA"]] - xy$x)/Sspan + abs(qc[["CT"]] - xy$y)/Tspan)
-#'     qc <- setFlags(qc, "salinity", i=i, value=4)
-#'     qc <- handleFlags(qc, flags=list(salinity=4))
-#'     plotTS(qc, type="o")
-#' }
-#'}
+## # Example 2: Interactive flag assignment based on TS plot, using
+## # WHP scheme to define 'acceptable' and 'bad' codes
+##\dontrun{
+## options(eos="gsw")
+## data(ctd)
+## qc <- ctd
+## qc <- initializeFlagScheme(qc, "WHP CTD")
+## qc <- initializeFlags(qc, "salinity", 2)
+## Sspan <- diff(range(qc[["SA"]]))
+## Tspan <- diff(range(qc[["CT"]]))
+## n <- length(qc[["SA"]])
+## par(mfrow=c(1, 1))
+## plotTS(qc, type="o")
+## message("Click on bad points; quit by clicking to right of plot")
+## for (i in seq_len(n)) {
+##     xy <- locator(1)
+##     if (xy$x > par("usr")[2])
+##         break
+##     i <- which.min(abs(qc[["SA"]] - xy$x)/Sspan + abs(qc[["CT"]] - xy$y)/Tspan)
+##     qc <- setFlags(qc, "salinity", i=i, value=4)
+##     qc <- handleFlags(qc, flags=list(salinity=4))
+##     plotTS(qc, type="o")
+## }
+##}
 #'
 #' @family things related to ctd data
+#'
+#' @author Dan Kelley
 setMethod("setFlags",
     c(object="ctd", name="ANY", i="ANY", value="ANY", debug="ANY"),
     function(object, name=NULL, i=NULL, value=NULL, debug=getOption("oceDebug")) {
@@ -2090,41 +2092,41 @@ ctdDecimate <- function(x, p=1, method="boxcar", rule=1, e=1.5, debug=getOption(
 #' @seealso The documentation for [ctd-class] explains the structure
 #' of CTD objects, and also outlines the other functions dealing with them.
 #'
-#' @examples
-#' library(oce)
-# These examples cannot be tested, because they are based on
-# data objects that are not provided with oce.
-#'
-#'\dontrun{
-#' # Example 1. Find profiles within a towyo file, as can result
-#' # if the CTD is cycled within the water column as the ship
-#' # moves.
-#' profiles <- ctdFindProfiles(towyo)
-#'}
-#'
-#'\dontrun{
-#' # Example 2. Use a moving average to smooth pressure, instead of the
-#' # default smooth.spline() method. This might avoid a tendency of
-#' # the default scheme to miss some profiles in a long towyo.
-#' movingAverage <- function(x, n = 11, ...)
-#' {
-#'     f <- rep(1/n, n)
-#'     stats::filter(x, f, ...)
-#' }
-#' casts <- ctdFindProfiles(towyo, smoother=movingAverage)
-#'}
-#'
-#'\dontrun{
-#' # Example 3: glider data read into a ctd object. Chop
-#' # into profiles by looking for pressure jumps exceeding
-#' # 10 dbar.
-#' breaks <- which(diff(gliderAsCtd[["pressure"]]) > 10)
-#' profiles <- ctdFindProfiles(gliderAsCtd, breaks=breaks)
-#'}
-#'
-#' @author Dan Kelley and Clark Richards
+## @examples
+## library(oce)
+##These examples cannot be tested, because they are based on
+##data objects that are not provided with oce.
+##
+##\dontrun{
+## # Example 1. Find profiles within a towyo file, as can result
+## # if the CTD is cycled within the water column as the ship
+## # moves.
+## profiles <- ctdFindProfiles(towyo)
+##}
+##
+##\dontrun{
+## # Example 2. Use a moving average to smooth pressure, instead of the
+## # default smooth.spline() method. This might avoid a tendency of
+## # the default scheme to miss some profiles in a long towyo.
+## movingAverage <- function(x, n = 11, ...)
+## {
+##     f <- rep(1/n, n)
+##     stats::filter(x, f, ...)
+## }
+## casts <- ctdFindProfiles(towyo, smoother=movingAverage)
+##}
+##
+##\dontrun{
+## # Example 3: glider data read into a ctd object. Chop
+## # into profiles by looking for pressure jumps exceeding
+## # 10 dbar.
+## breaks <- which(diff(gliderAsCtd[["pressure"]]) > 10)
+## profiles <- ctdFindProfiles(gliderAsCtd, breaks=breaks)
+##}
 #'
 #' @family things related to ctd data
+#'
+#' @author Dan Kelley and Clark Richards
 ctdFindProfiles <- function(x, cutoff=0.5, minLength=10, minHeight,
     smoother=smooth.spline, direction=c("descending", "ascending"),
     breaks, arr.ind=FALSE, distinct, debug=getOption("oceDebug"), ...)
@@ -2506,20 +2508,20 @@ ctdFindProfilesRBR <- function(x, direction="descending", arr.ind=FALSE, debug=g
 #' files that hold data from RBR CTD instruments linked with phone/tablet
 #' devices equipped with GPS sensors.
 #'
-#' @examples
-#'
-#'\dontrun{
-#' library(oce)
-#' data(ctdRaw)
-#' # Example 1: focus on downcast
-#' plot(ctdTrim(ctdRaw))
-#' # Example 2: user-supplied function.
-#' trimByIndex<-function(data, parameters) {
-#'   parameters[1] < data$scan & data$scan < parameters[2]
-#' }
-#' trimmed <- ctdTrim(ctdRaw, trimByIndex, parameters=c(130, 380))
-#' plot(trimmed)
-#'}
+## @examples
+##
+##\dontrun{
+## library(oce)
+## data(ctdRaw)
+## # Example 1: focus on downcast
+## plot(ctdTrim(ctdRaw))
+## # Example 2: user-supplied function.
+## trimByIndex<-function(data, parameters) {
+##   parameters[1] < data$scan & data$scan < parameters[2]
+## }
+## trimmed <- ctdTrim(ctdRaw, trimByIndex, parameters=c(130, 380))
+## plot(trimmed)
+##}
 #'
 #' @references
 #' The Seabird CTD instrument is described at
@@ -2861,14 +2863,14 @@ ctdTrim <- function(x, method, removeDepthInversions=FALSE,
 #' @seealso The documentation for [ctd-class] explains the structure
 #' of CTD objects.
 #'
-#' @examples
-#'\dontrun{
-#' library(oce)
-#' data(ctd)
-#' write.ctd(ctd, "ctd.csv")
-#' d <- read.csv("ctd.csv")
-#' plot(as.ctd(d$salinity, d$temperature, d$pressure))
-#'}
+## @examples
+##\dontrun{
+## library(oce)
+## data(ctd)
+## write.ctd(ctd, "ctd.csv")
+## d <- read.csv("ctd.csv")
+## plot(as.ctd(d$salinity, d$temperature, d$pressure))
+##}
 #'
 #' @author Dan Kelley
 #'
