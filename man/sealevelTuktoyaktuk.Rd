@@ -32,21 +32,6 @@ to make for simpler comparison of amplitude and phase output with
 the results obtained by Foreman (1977) and Pawlowicz et al. (2002).
 }
 
-\examples{
-\donttest{
-library(oce)
-data(sealevelTuktoyaktuk)
-time <- sealevelTuktoyaktuk[["time"]]
-elevation <- sealevelTuktoyaktuk[["elevation"]]
-oce.plot.ts(time, elevation, type='l', ylab="Height [m]", ylim=c(-2, 6))
-legend("topleft", legend=c("Tuktoyaktuk (1975)","Detided"),
-       col=c("black","red"),lwd=1)
-tide <- tidem(sealevelTuktoyaktuk)
-detided <- elevation - predict(tide)
-lines(time, detided, col="red")
-}
-
-}
 \references{
 Foreman, M. G. G., 1977.  Manual for tidal heights analysis and
 prediction.  Pacific Marine Science Report 77-10, Institute of Ocean

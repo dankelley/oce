@@ -27,15 +27,14 @@ tidal model object that was created by \code{\link[=as.tidem]{as.tidem()}} or \c
 }
 \examples{
 
+# Show non-tidal sealevel signal in Halifax Harbour during
+# the year 2002. The spike resulted from Hurricane Juan.
 library(oce)
-# 1. tidal anomaly
-data(sealevelTuktoyaktuk)
-time <- sealevelTuktoyaktuk[["time"]]
-elevation <- sealevelTuktoyaktuk[["elevation"]]
-oce.plot.ts(time, elevation, type='l', ylab="Height [m]", ylim=c(-2, 6))
-tide <- tidem(sealevelTuktoyaktuk)
-lines(time, elevation - predict(tide), col="red")
-abline(h=0, col="red")
+data(sealevel)
+time <- sealevel[["time"]]
+elevation <- sealevel[["elevation"]]
+prediction <- tidem(sealevel) |> predict()
+oce.plot.ts(time, elevation - prediction)
 
 
 }

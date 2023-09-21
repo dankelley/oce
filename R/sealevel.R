@@ -31,6 +31,9 @@ setClass("sealevel", contains="oce")
 #' Nova Scotia, Canada.  For reasons that are not mentioned on the data archive
 #' website, the record ends on the 8th of October.
 #'
+#' See [predict.tidem()] for an example that reveals the storm surge
+#' that resulted from Hurricane Juan, in this year.
+#'
 #' @name sealevel
 #'
 #' @docType data
@@ -82,19 +85,19 @@ NULL
 #' file format, and then the `sealevelTuktoyaktuk` object was created
 #' using [as.sealevel()].
 #'
-#' @examples
-#'\donttest{
-#' library(oce)
-#' data(sealevelTuktoyaktuk)
-#' time <- sealevelTuktoyaktuk[["time"]]
-#' elevation <- sealevelTuktoyaktuk[["elevation"]]
-#' oce.plot.ts(time, elevation, type='l', ylab="Height [m]", ylim=c(-2, 6))
-#' legend("topleft", legend=c("Tuktoyaktuk (1975)","Detided"),
-#'        col=c("black","red"),lwd=1)
-#' tide <- tidem(sealevelTuktoyaktuk)
-#' detided <- elevation - predict(tide)
-#' lines(time, detided, col="red")
-#'}
+## @examples
+##\donttest{
+## library(oce)
+## data(sealevelTuktoyaktuk)
+## time <- sealevelTuktoyaktuk[["time"]]
+## elevation <- sealevelTuktoyaktuk[["elevation"]]
+## oce.plot.ts(time, elevation, type='l', ylab="Height [m]", ylim=c(-2, 6))
+## legend("topleft", legend=c("Tuktoyaktuk (1975)","Detided"),
+##        col=c("black","red"),lwd=1)
+## tide <- tidem(sealevelTuktoyaktuk)
+## detided <- elevation - predict(tide)
+## lines(time, detided, col="red")
+##}
 #'
 #' @section Historical note:
 #' Until Jan 6, 2018, the time in this dataset had been increased
