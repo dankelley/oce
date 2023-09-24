@@ -261,8 +261,8 @@ lookWithin <- function(list)
 #' u <- swRrho(ctd, eos="unesco")
 #' g <- swRrho(ctd, eos="gsw")
 #' p <- ctd[["p"]]
-#' plot(u, p, ylim=rev(range(p)), type='l', xlab=expression(R[rho]))
-#' lines(g, p, lty=2, col='red')
+#' plot(u, p, ylim=rev(range(p)), type="l", xlab=expression(R[rho]))
+#' lines(g, p, lty=2, col="red")
 #' legend("topright", lty=1:2, legend=c("unesco", "gsw"), col=c("black", "red"))
 #'
 #' @family functions that calculate seawater properties
@@ -400,7 +400,7 @@ swRrho <- function(ctd,
 #' p <- ctd[["pressure"]]
 #' ylim <- rev(range(p))
 #' par(mfrow=c(1, 2), mar=c(3, 3, 1, 1), mgp=c(2, 0.7, 0))
-#' plot(ctd[["sigmaTheta"]], p, ylim=ylim, type='l', xlab=expression(sigma[theta]))
+#' plot(ctd[["sigmaTheta"]], p, ylim=ylim, type="l", xlab=expression(sigma[theta]))
 #' # Right panel: N2, with default settings (black) and with df=2 (red)
 #' N2 <- swN2(ctd)
 #' plot(N2, p, ylim=ylim, xlab="N2 [1/s^2]", ylab="p", type="l")
@@ -435,7 +435,7 @@ swN2 <- function(pressure, sigmaTheta=NULL, derivs, df, debug=getOption("oceDebu
     #>    pref <- median(pressure[["pressure"]], na.rm=TRUE)
     #>    oceDebug(debug, "setting referencePressure to ", pref, "\n", sep="")
     #>    sigmaTheta <- swSigmaTheta(pressure, referencePressure=pref, eos="unesco") # NOTE: UNESCO used
-    #>    pressure <- pressure[['pressure']] # over-writes pressure
+    #>    pressure <- pressure[["pressure"]] # over-writes pressure
     #>}
     if (missing(derivs))
         derivs <- "smoothing"
@@ -1508,21 +1508,21 @@ swZ <- function(pressure, latitude=45, eos=getOption("oceEOS", default="gsw"))
 ## # (The smoothing lowers Gulf Stream speed greatly)
 ## westToEast <- subset(section, 1<=stationId&stationId<=123)
 ## dh <- swDynamicHeight(westToEast)
-## plot(dh$distance, dh$height, type='p', xlab="", ylab="dyn. height [m]")
+## plot(dh$distance, dh$height, type="p", xlab="", ylab="dyn. height [m]")
 ## ok <- !is.na(dh$height)
 ## smu <- supsmu(dh$distance, dh$height)
 ## lines(smu, col="blue")
 ## f <- coriolis(section[["station", 1]][["latitude"]])
 ## g <- gravity(section[["station", 1]][["latitude"]])
 ## v <- diff(smu$y)/diff(smu$x) * g / f / 1e3 # 1e3 converts to m
-## plot(smu$x[-1], v, type='l', col="blue", xlab="distance [km]", ylab="velocity (m/s)")
+## plot(smu$x[-1], v, type="l", col="blue", xlab="distance [km]", ylab="velocity (m/s)")
 ##
 ## # right-hand column: gulf stream region, unsmoothed
 ## gs <- subset(section, 102<=stationId&stationId<=124)
 ## dh.gs <- swDynamicHeight(gs)
-## plot(dh.gs$distance, dh.gs$height, type='b', xlab="", ylab="dyn. height [m]")
+## plot(dh.gs$distance, dh.gs$height, type="b", xlab="", ylab="dyn. height [m]")
 ## v <- diff(dh.gs$height)/diff(dh.gs$distance) * g / f / 1e3
-## plot(dh.gs$distance[-1], v, type='l', col="blue",
+## plot(dh.gs$distance[-1], v, type="l", col="blue",
 ##   xlab="distance [km]", ylab="velocity (m/s)")
 ##}
 #'
@@ -1549,7 +1549,7 @@ swDynamicHeight <- function(x, referencePressure=2000,
             # Scale both pressure and dz/dp to make integration work better (issue 499)
             max <- max(dzdp, na.rm=TRUE)
             integrand <- approxfun(p/p_ref, dzdp/max, rule=2)
-            #plot(dzdp/max, ctd@data$pressure/referencePressure, type='l')
+            #plot(dzdp/max, ctd@data$pressure/referencePressure, type="l")
             res <- integrate(integrand, 0, 1,
                 subdivisions=subdivisions, rel.tol=rel.tol)$value * p_ref * max
         } else {                       # "gsw"
@@ -2251,9 +2251,9 @@ swSigma4 <- function(salinity, temperature=NULL, pressure=NULL,
 #'
 #' # reproduce part of Fig 8 of Francois and Garrison (1982 Fig 8)
 #' f <- 1e3 * 10^(seq(-1,3,0.1)) # in KHz
-#' plot(f/1000, 1e3*swSoundAbsorption(f, 35, 10, 0, formulation='fr'),
-#'      xlab=" Freq [kHz]", ylab=" dB/km", type='l', log='xy')
-#' lines(f/1000, 1e3*swSoundAbsorption(f, 0, 10, 0, formulation='fr'), lty='dashed')
+#' plot(f/1000, 1e3*swSoundAbsorption(f, 35, 10, 0, formulation="fr"),
+#'      xlab=" Freq [kHz]", ylab=" dB/km", type="l", log="xy")
+#' lines(f/1000, 1e3*swSoundAbsorption(f, 0, 10, 0, formulation="fr"), lty="dashed")
 #' legend("topleft", lty=c("solid", "dashed"), legend=c("S=35", "S=0"))
 #'
 #' @family functions that calculate seawater properties

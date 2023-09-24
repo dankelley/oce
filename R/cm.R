@@ -163,7 +163,7 @@ setMethod(f="summary",
 #' library(oce)
 #' data(cm)
 #' plot(cm)
-#' plot(subset(cm, time < mean(range(cm[['time']]))))
+#' plot(subset(cm, time < mean(range(cm[["time"]]))))
 #'
 #' @family things related to cm data
 #' @family functions that subset oce objects
@@ -490,9 +490,9 @@ read.cm <- function(file, from=1, to, by=1, tz=getOption("oceTz"), type=c("s4"),
         stop("must supply 'file'")
     if (is.character(file)) {
         if (!file.exists(file))
-            stop("cannot find file '", file, "'")
+            stop("cannot find file \"", file, "\"")
         if (0L == file.info(file)$size)
-            stop("empty file '", file, "'")
+            stop("empty file \"", file, "\"")
     }
     oceDebug(debug, "read.cm(file=\"", file,
         "\", from=", format(from),
@@ -515,9 +515,9 @@ read.cm.s4 <- function(file, from=1, to, by=1, tz=getOption("oceTz"), longitude=
         stop("must supply 'file'")
     if (is.character(file)) {
         if (!file.exists(file))
-            stop("cannot find file '", file, "'")
+            stop("cannot find file \"", file, "\"")
         if (0L == file.info(file)$size)
-            stop("empty file '", file, "'")
+            stop("empty file \"", file, "\"")
     }
     if (debug > 1)
         debug <- 1L
@@ -559,7 +559,7 @@ read.cm.s4 <- function(file, from=1, to, by=1, tz=getOption("oceTz"), longitude=
         items <- strsplit(lines[i], "\t")[[1]]
         oceDebug(debug, "line", i, "contains: ", paste(items, collapse=" "), "\n")
         if (items[1] == "Sample #") {
-            # names <- sub('[ ]+$', '', sub('^[ ]+','', items))
+            # names <- sub("[ ]+$", "", sub("^[ ]+","", items))
             # names <- ifelse(0 == nchar(names), paste("column", seq_along(names), sep=""), names)
         } else if (items[1] == "1") {
             start.day <- items[2]
@@ -601,9 +601,9 @@ read.cm.s4 <- function(file, from=1, to, by=1, tz=getOption("oceTz"), longitude=
     time <- seq(t0, by=deltat, length.out=n)
     if (inherits(from, "POSIXt")) {
         if (!inherits(to, "POSIXt"))
-            stop("if 'from' is POSIXt, then 'to' must be, also")
+            stop("if \"from\" is POSIXt, then \"to\" must be, also")
         if (!is.numeric(by) || by != 1)
-            stop("sorry, 'by' must equal 1, in this version of read.cm.s4()")
+            stop("sorry, \"by\" must equal 1, in this version of read.cm.s4()")
         #from.to.POSIX <- TRUE
         from.index <- which(time >= from)[1]
         if (is.na(from.index))
@@ -616,10 +616,10 @@ read.cm.s4 <- function(file, from=1, to, by=1, tz=getOption("oceTz"), longitude=
         keep <- seq(from.index, to.index)
     } else {
         if (!is.numeric(from))
-            stop("'from' must be either POSIXt or numeric")
+            stop("\"from\" must be either POSIXt or numeric")
         to <- n
         if (!is.numeric(to))
-            stop("'to' must be either POSIXt or numeric")
+            stop("\"to\" must be either POSIXt or numeric")
         keep <- seq(from, to)
     }
     keep <- keep[1 <= keep]

@@ -17,9 +17,9 @@ read.adv.sontek.serial <- function(file, from=1, to, by=1, tz=getOption("oceTz")
         stop("must supply 'file'")
     if (is.character(file)) {
         if (!file.exists(file))
-            stop("cannot find file '", file, "'")
+            stop("cannot find file \"", file, "\"")
         if (0L == file.info(file)$size)
-            stop("empty file '", file, "'")
+            stop("empty file \"", file, "\"")
     }
     if (!interactive())
         monitor <- FALSE
@@ -180,9 +180,9 @@ read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oceTz"), h
         stop("must supply 'file'")
     if (is.character(file)) {
         if (!file.exists(file))
-            stop("cannot find file '", file, "'")
+            stop("cannot find file \"", file, "\"")
         if (0L == file.info(file)$size)
-            stop("empty file '", file, "'")
+            stop("empty file \"", file, "\"")
     }
     if (!interactive())
         monitor <- FALSE
@@ -647,9 +647,9 @@ read.adv.sontek.text <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         stop("must supply 'file'")
     if (is.character(file)) {
         if (!file.exists(file))
-            stop("cannot find file '", file, "'")
+            stop("cannot find file \"", file, "\"")
         if (0L == file.info(file)$size)
-            stop("empty file '", file, "'")
+            stop("empty file \"", file, "\"")
     }
     if (!interactive())
         monitor <- FALSE

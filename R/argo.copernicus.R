@@ -40,9 +40,9 @@ read.argo.copernicus <- function(file, encoding=NA, debug=getOption("oceDebug"),
         stop("must supply 'file'")
     if (is.character(file)) {
         if (!file.exists(file))
-            stop("cannot find file '", file, "'")
+            stop("cannot find file \"", file, "\"")
         if (0L == file.info(file)$size)
-            stop("empty file '", file, "'")
+            stop("empty file \"", file, "\"")
     }
     if (!requireNamespace("ncdf4", quietly=TRUE))
         stop("must install.packages(\"ncdf4\") to read argo data")

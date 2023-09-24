@@ -89,13 +89,13 @@
 #' for (i in 1:3) {
 #'     t <- ISOdatetime(y, m, days[i],0,0,0,tz="UTC") + seq(0, 24*3600, 3600/4)
 #'     ma <- moonAngle(t, longitude, latitude)
-#'     oce.plot.ts(t, ma$altitude, type='l', mar=c(2, 3, 1, 1), cex=1/2, ylab="Altitude")
+#'     oce.plot.ts(t, ma$altitude, type="l", mar=c(2, 3, 1, 1), cex=1/2, ylab="Altitude")
 #'     abline(h=0)
-#'     points(rises[i], 0, col='red', pch=3, lwd=2, cex=1.5)
-#'     points(sets[i], 0, col='blue', pch=3, lwd=2, cex=1.5)
-#'     oce.plot.ts(t, ma$azimuth, type='l', mar=c(2, 3, 1, 1), cex=1/2, ylab="Azimuth")
-#'     points(rises[i], -180+azrises[i], col='red', pch=3, lwd=2, cex=1.5)
-#'     points(sets[i], -180+azsets[i], col='blue', pch=3, lwd=2, cex=1.5)
+#'     points(rises[i], 0, col="red", pch=3, lwd=2, cex=1.5)
+#'     points(sets[i], 0, col="blue", pch=3, lwd=2, cex=1.5)
+#'     oce.plot.ts(t, ma$azimuth, type="l", mar=c(2, 3, 1, 1), cex=1/2, ylab="Azimuth")
+#'     points(rises[i], -180+azrises[i], col="red", pch=3, lwd=2, cex=1.5)
+#'     points(sets[i], -180+azsets[i], col="blue", pch=3, lwd=2, cex=1.5)
 #' }
 #'
 #' @family things related to astronomy

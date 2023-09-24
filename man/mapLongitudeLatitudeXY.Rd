@@ -32,7 +32,7 @@ data(coastlineWorld)
 par(mfrow=c(2, 1), mar=rep(2, 4))
 mapPlot(coastlineWorld, projection="+proj=moll") # sets a projection
 xy <- mapLongitudeLatitudeXY(coastlineWorld)
-plot(xy, type='l', asp=1)
+plot(xy, type="l", asp=1)
 }
 
 }

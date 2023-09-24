@@ -102,7 +102,7 @@ repairProjection <- function(projection, longlatProj, debug=getOption("oceDebug"
 oceProject <- function(xy, proj, inv=FALSE, debug=getOption("oceDebug"))
 {
     if (!requireNamespace("sf", quietly=TRUE))
-        stop('must install.packages("sf") to do map projections')
+        stop("must install.packages(\"sf\") to do map projections")
     oceDebug(debug, "oceProject(xy, proj=\"", proj, "\", inv=", inv, ", ...) {\n", sep="", unindent=1, style="bold")
     repairedProjection <- repairProjection(proj, longlatProjInitial, debug=debug)
     proj <- repairedProjection$projection
@@ -362,7 +362,7 @@ fixneg <- function(v)
 {
     res <- v
     for (i in seq_along(res)) {
-        #message("res[i]='", res[i], "' ...")
+        #message("res[i]=\"", res[i], "\" ...")
         if (grepl("^0[A-Z]$", res[i])) {
             res[i] <- "0"
         } else if ("-" == substr(res[i], 1, 1)) {
@@ -372,7 +372,7 @@ fixneg <- function(v)
             res[i] <- gsub("N", gettext("S", domain="R-oce"), res[i])
             #cat(" -> res[i]=", res[i], "\n")
         }
-        #message('  ... "', res[i], "'")
+        #message("  ... \"", res[i], "\"")
     }
     res
 }
@@ -704,7 +704,7 @@ mapAxis <- function(side=1:2, longitude=TRUE, latitude=TRUE,
 ##     data(levitus, package="ocedata")
 ##     par(mar=rep(1, 4))
 ##     mapPlot(coastlineWorld, projection="+proj=robin", col="lightgray")
-##     mapContour(levitus[['longitude']], levitus[['latitude']], levitus[['SST']])
+##     mapContour(levitus[["longitude"]], levitus[["latitude"]], levitus[["SST"]])
 ## }
 ##}
 #'
@@ -825,7 +825,8 @@ mapContour <- function(longitude, latitude, z,
                         if (angle > pi/2 || angle < -pi/2) {
                             angle <- angle + pi
                         }
-                        oceDebug(debug, sprintf("step 2: label='%s' x=%.2g y=%.2g angle=%.9g deg\n",
+                        oceDebug(debug,
+                            sprintf("step 2: label=\"%s\" x=%.2g y=%.2g angle=%.9g deg\n",
                             label, xc[labelj], yc[labelj], angle*180/pi))
                         S <- sin(-angle)
                         C <- cos(-angle)
@@ -893,12 +894,12 @@ mapContour <- function(longitude, latitude, z,
 ##\dontrun{
 ## library(oce)
 ## if (requireNamespace("ocedata", quietly=TRUE)) {
-##     data(coastlineWorldFine, package='ocedata')
+##     data(coastlineWorldFine, package="ocedata")
 ##     HfxLon <- -63.5752
 ##     HfxLat <- 44.6488
-##     mapPlot(coastlineWorldFine, proj='+proj=merc',
-##             longitudelim=HfxLon+c(-2,2), latitudelim=HfxLat+c(-2,2),
-##             col='lightgrey')
+##     mapPlot(coastlineWorldFine, proj="+proj=merc",
+##         longitudelim=HfxLon+c(-2,2), latitudelim=HfxLat+c(-2,2),
+##         col=lightgrey")
 ##     mapCoordinateSystem(HfxLon, HfxLat, phi=45, length=0.05)
 ##    }
 ##}
@@ -971,7 +972,7 @@ mapCoordinateSystem <- function(longitude, latitude, L=100, phi=0, ...)
 ## u <- matrix(1/sqrt(2), nrow=length(lon), ncol=length(lat))
 ## v <- matrix(1/sqrt(2), nrow=length(lon), ncol=length(lat))
 ## mapDirectionField(lon, lat, u, v, scale=3)
-## mapDirectionField(lonm, latm, 0, 1, scale=3, col='red')
+## mapDirectionField(lonm, latm, 0, 1, scale=3, col="red")
 ## # Color code by longitude, using thick lines
 ## col <- colormap(lonm)$zcol
 ## mapDirectionField(lonm, latm, 1, 0, scale=3, col=col, lwd=2)
@@ -1042,7 +1043,7 @@ mapDirectionField <- function(longitude, latitude, u, v,
 #' par(mfrow=c(2, 1), mar=rep(2, 4))
 #' mapPlot(coastlineWorld, projection="+proj=moll") # sets a projection
 #' xy <- mapLongitudeLatitudeXY(coastlineWorld)
-#' plot(xy, type='l', asp=1)
+#' plot(xy, type="l", asp=1)
 #'}
 #'
 #' @author Dan Kelley
@@ -1398,7 +1399,7 @@ mapLongitudeLatitudeXY <- function(longitude, latitude)
 #' 5 for signed numbers followed by a degree sign and letters indicating the hemisphere.
 #'
 #' @param cex character expansion factor for plot symbols,
-#' used if `type='p'` or any other value that yields symbols.
+#' used if `type="p"` or any other value that yields symbols.
 #'
 #' @param cex.axis axis-label expansion factor (see [par()]).
 #'
@@ -1492,7 +1493,7 @@ mapLongitudeLatitudeXY <- function(longitude, latitude)
 ## # Example 1.
 ## # Mollweide (referenc 1 page 54) is an equal-area projection that works well
 ## # for whole-globe views.
-## mapPlot(coastlineWorld, projection="+proj=moll", col='gray')
+## mapPlot(coastlineWorld, projection="+proj=moll", col="gray")
 ## mtext("Mollweide", adj=1)
 ##
 ## # Example 2.
@@ -1708,7 +1709,7 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
     yorig <- xy$y
     oce_uhl <- options()$oce_uhl
     if (!is.null(oce_uhl) && oce_uhl == "method 1") {
-        message("using test code to remove ugly horiz. lines, since options$oce_uhl=='method 1'")
+        message("using test code to remove ugly horiz. lines, since options$oce_uhl==\"method 1\"")
         # Insert NA to break long horizontal jumps, which can be caused by coastline
         # segments that "pass across" the edge of a plot.
         dx <- abs(diff(x))
@@ -1762,7 +1763,7 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
             oceDebug(debug, "latitudelim: ", paste(latitudelim, collapse=" "), "\n")
             oceDebug(debug, "longitudelim: ", paste(longitudelim, collapse=" "), "\n")
             # transform so can do e.g. latlim=c(70, 110) to centre on pole
-            # See https://github.com/dankelley/oce/issues/2098 for discussion of 
+            # See https://github.com/dankelley/oce/issues/2098 for discussion of
             # an issue that I noticed in June of 2023.  The commented-out line
             # you see below was causing latitude lines not to plot for e.g.
             # latitudelim=c(70,110), which is a way to centre the pole on the
@@ -1817,7 +1818,7 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
                     cex=if (missing(cex)) NULL else cex,
                     ...)
             }
-            # points(jitter(box$x), jitter(box$y), pch=1, col='red')
+            # points(jitter(box$x), jitter(box$y), pch=1, col="red")
         } else {
             oceDebug(debug, "neither latitudelim nor longitudelim was given\n")
             if (type == "polygon") {
@@ -2630,13 +2631,13 @@ mapTissot <- function(grid=rep(15, 2), scale=0.2, crosshairs=FALSE, ...)
 #'     # sf version 0.9-8 has a problem with this projection
 #'     library(oce)
 #'     data(coastlineWorld)
-#'     mapPlot(coastlineWorld, type='l',
+#'     mapPlot(coastlineWorld, type="l",
 #'             longitudelim=c(-80, 10), latitudelim=c(0, 120),
 #'             projection="+proj=ortho +lon_0=-40")
 #'     lon <- c(-63.5744, 0.1062)             # Halifax CA to London UK
 #'     lat <- c(44.6479, 51.5171)
-#'     mapPoints(lon, lat, col='red')
-#'     mapLines(lon, lat, col='red')
+#'     mapPoints(lon, lat, col="red")
+#'     mapLines(lon, lat, col="red")
 #' }
 #'}
 #'
@@ -3061,7 +3062,7 @@ map2lonlat <- function(x, y, init=NULL, debug=getOption("oceDebug"))
 #' mapPlot(coastlineWorld, longitudelim=lonlim,
 #' latitudelim=latlim, projection="+proj=merc", grid=FALSE)
 #' mapImage(topoWorld, colormap=cm)
-#' mapPolygon(coastlineWorld[['longitude']], coastlineWorld[['latitude']], col="lightgray")
+#' mapPolygon(coastlineWorld[["longitude"]], coastlineWorld[["latitude"]], col="lightgray")
 #'}
 #'
 #' @author Dan Kelley
@@ -3210,7 +3211,7 @@ mapPolygon <- function(longitude, latitude, density=NULL, angle=45,
 ##         longitudelim=c(-180,180), latitudelim=c(70,110))
 ## mapImage(topoWorld, colormap=cm)
 ## mapGrid(15, 15, polarCircle=1, col=gray(0.2))
-## mapPolygon(coastlineWorld[['longitude']], coastlineWorld[['latitude']], col="tan")
+## mapPolygon(coastlineWorld[["longitude"]], coastlineWorld[["latitude"]], col="tan")
 ##}
 #'
 #' @seealso A map must first have been created with [mapPlot()].

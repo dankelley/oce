@@ -586,7 +586,7 @@ colormapGMT <- function(name, debug=getOption("oceDebug"))
 #' x <- seq(0, 1, length.out=40)
 #' y <- sin(2 * pi * x)
 #' par(mar=c(3, 3, 1, 1))
-#' mar <- par('mar') # prevent margin creep by drawPalette()
+#' mar <- par("mar") # prevent margin creep by drawPalette()
 #' # First, default breaks
 #' c <- colormap(y)
 #' drawPalette(c$zlim, col=c$col, breaks=c$breaks)
@@ -611,8 +611,8 @@ colormapGMT <- function(name, debug=getOption("oceDebug"))
 #' # black for depths below 4km.
 #' cm <- colormap(name="gmt_globe")
 #' deep <- cm$x0 < -4000
-#' cm$col0[deep] <- 'black'
-#' cm$col1[deep] <- 'black'
+#' cm$col0[deep] <- "black"
+#' cm$col1[deep] <- "black"
 #' cm <- colormap(x0=cm$x0, x1=cm$x1, col0=cm$col0, col1=cm$col1)
 #' imagep(topoWorld, breaks=cm$breaks, col=cm$col)
 #'
@@ -624,9 +624,9 @@ colormapGMT <- function(name, debug=getOption("oceDebug"))
 #'      x1=c(-4000,     0, 100, 5000),
 #'      col0=c("violet","blue","white","tan"),
 #'      col1=c("blue","white","tan","yellow"))
-#' lon <- topoWorld[['longitude']]
-#' lat <- topoWorld[['latitude']]
-#' z <- topoWorld[['z']]
+#' lon <- topoWorld[["longitude"]]
+#' lat <- topoWorld[["latitude"]]
+#' z <- topoWorld[["z"]]
 #' imagep(lon, lat, z, breaks=cm$breaks, col=cm$col)
 #' contour(lon, lat, z, levels=0, add=TRUE)
 #'
@@ -851,14 +851,14 @@ colormap_colormap <- function(name, x0, x1, col0, col1, n=1, zclip=FALSE, debug=
     } else {
         oceDebug(debug, "name was not specified, so using x0, x1, etc., to compute colormap\n")
         if (missing(x0) || missing(x1) || missing(col0) || missing(col1))
-            stop('give either "name" or all of: "x0", "x1", "col0" and "col1"')
+            stop("give either \"name\" or all of: \"x0\", \"x1\", \"col0\" and \"col1\"")
         xlen <- length(x0)
         if (length(x1) != xlen)
-            stop('lengths of "x0" and "x1" must agree')
+            stop("lengths of \"x0\" and \"x1\" must agree")
         if (length(col0) != xlen)
-            stop('lengths of "x0" and "col0" must agree')
+            stop("lengths of \"x0\" and \"col0\" must agree")
         if (length(col1) != xlen)
-            stop('lengths of "x0" and "col1" must agree')
+            stop("lengths of \"x0\" and \"col1\" must agree")
         x0r <- x1r <- col0r <- col1r <- NULL
         if (length(n) != xlen - 1)
             n <- rep(n[1], length.out=xlen)

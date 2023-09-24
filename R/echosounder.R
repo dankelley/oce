@@ -250,7 +250,7 @@ setMethod(f="[[<-",
 #' data(echosounder)
 #' plot(echosounder)
 #' plot(subset(echosounder, depth < 10))
-#' plot(subset(echosounder, time < mean(range(echosounder[['time']]))))
+#' plot(subset(echosounder, time < mean(range(echosounder[["time"]]))))
 #'
 #' @family things related to echosounder data
 #' @family functions that subset oce objects
@@ -860,9 +860,9 @@ read.echosounder <- function(file,
         stop("must supply 'file'")
     if (is.character(file)) {
         if (!file.exists(file))
-            stop("cannot find file '", file, "'")
+            stop("cannot find file \"", file, "\"")
         if (0L == file.info(file)$size)
-            stop("empty file '", file, "'")
+            stop("empty file \"", file, "\"")
     }
     oceDebug(debug, "read.echosounder(file=\"", file, "\", tz=\"", tz, "\", debug=", debug, ") {\n", sep="", unindent=1, style="bold")
     filename <- NULL

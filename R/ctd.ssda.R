@@ -35,9 +35,9 @@ read.ctd.ssda <- function(file, encoding="latin1", debug=getOption("oceDebug"), 
         stop("must supply 'file'")
     if (is.character(file)) {
         if (!file.exists(file))
-            stop("cannot find file '", file, "'")
+            stop("cannot find file \"", file, "\"")
         if (0L == file.info(file)$size)
-            stop("empty file '", file, "'")
+            stop("empty file \"", file, "\"")
     }
     debug <- max(0L, as.integer(debug))
     oceDebug(debug, "read.ctd.ssda(file=\"", file, "\") {\n", sep="", style="bold", unindent=1)

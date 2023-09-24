@@ -879,7 +879,7 @@ setMethod(f="subset",
                             # since the length of the latter is 1, which means to copy
                             # the whole station.
                             for (field in names(res@data$station[[j]]@data)) {
-                                oceDebug(debug, "    field='", field, "', i=", i, ", j=", j, " (case A)\n", sep="")
+                                oceDebug(debug, "    field=\"", field, "\", i=", i, ", j=", j, " (case A)\n", sep="")
                                 res@data$station[[j]]@data[[field]] <- res@data$station[[j]]@data[[field]][r]
                             }
                         }
@@ -945,7 +945,8 @@ sectionSort <- function(section, by, decreasing=FALSE)
         byChoices <- c("stationId", "distance", "longitude", "latitude", "time", "spine")
         iby <- match(by, byChoices, nomatch=0)
         if (0 == iby)
-            stop('unknown by value "', by, '"; should be one of: ', paste(byChoices, collapse=" "))
+            stop("unknown by value \"", by, "\"; should be one of: \"",
+            paste(byChoices, collapse="\" \""))
         by <- byChoices[iby]
     }
     res <- section
@@ -1347,7 +1348,7 @@ setMethod(f="plot", signature=signature("section"),
     {
         debug <- if (debug > 4) 4 else floor(0.5 + debug)
         if (missing(eos)) eos <- getOption("oceEOS", default="gsw")
-        zlimOrig <- zlim
+        #UNUSED zlimOrig <- zlim
         xtype <- match.arg(xtype,
             c("distance", "track", "longitude", "latitude", "time", "spine"))
         ytype <- match.arg(ytype,
@@ -1950,7 +1951,7 @@ setMethod(f="plot", signature=signature("section"),
                             oxm <- order(xm)
                             oym <- order(ym)
                             #2092 message("DAN about to filled.contour")
-                            .filled.contour(x=xm[oxm], y=ym[oym], z=zm[oxm,oym], levels=zbreaksNEW, col=zcolNEW)
+                            .filled.contour(x=xm[oxm], y=ym[oym], z=zm[oxm, oym], levels=zbreaksNEW, col=zcolNEW)
                         } else if (ztype == "points") {
                             # nothing to do now
                         } else {
@@ -2035,7 +2036,7 @@ setMethod(f="plot", signature=signature("section"),
             on.exit(par(opar))
         which.xtype <- match(xtype, c("distance", "track", "longitude", "latitude", "time", "spine"), nomatch=0)
         if (0 == which.xtype)
-            stop('xtype must be one of: "distance", "track", "longitude", "latitude", "time", or "spine", not "', xtype, '" as provided')
+            stop("xtype must be one of: \"distance\", \"track\", \"longitude\", \"latitude\", \"time\", or \"spine\", not \"", xtype, "\" as provided")
         which.ytype <- pmatch(ytype, c("pressure", "depth"), nomatch=0)
         if (missing(stationIndices)) {
             numStations <- length(x@data$station)
@@ -2159,7 +2160,7 @@ setMethod(f="plot", signature=signature("section"),
         for (w in 1:lw) {
             oceDebug(debug, "handling which[", w, "]=\"", which[w], "\"\n", sep="")
             if (!which[w] %in% available)
-                stop("in plot(section) : which='", which[w], "' is not available; please try one of c(\"",
+                stop("in plot(section) : which=\"", which[w], "\" is not available; please try one of c(\"",
                     paste(available, collapse="\",\""),
                     "\")", call.=FALSE)
             station1 <- x[["station", 1]]
@@ -2291,9 +2292,9 @@ read.section <- function(file,
         stop("must supply 'file'")
     if (is.character(file)) {
         if (!file.exists(file))
-            stop("cannot find file '", file, "'")
+            stop("cannot find file \"", file, "\"")
         if (0L == file.info(file)$size)
-            stop("empty file '", file, "'")
+            stop("empty file \"", file, "\"")
     }
     oceDebug(debug, "read.section(file=\"", file, "\", ...) {\n", unindent=1)
     if (!missing(directory)) {
@@ -2789,7 +2790,7 @@ sectionSmooth <- function(section, method="spline",
     if (!inherits(section, "section"))
         stop("method is only for objects of class '", "section", "'")
     if (!is.function(method) && !(is.character(method) && (method %in% c("barnes", "kriging", "spline"))))
-        stop('method must be "barnes", "kriging", "spline", or an R function')
+        stop("method must be \"barnes\", \"kriging\", \"spline\", or an R function")
     # pin debug, since we only call one function, interpBarnes() that uses debug
     debug <- if (debug > 2) 2 else if (debug < 0) 0 else debug
     oceDebug(debug, "sectionSmooth(section,method=\"",
@@ -2985,17 +2986,17 @@ sectionSmooth <- function(section, method="spline",
                         }
                         smu <- list(z=krigFunction(X[ok], P[ok], v[ok], xg=xg, xr=xr, yg=yg, yr=yr), x=xg, y=yg)
                     } else {
-                        stop('method="kriging" requires packages "automap" and "sf" to be installed\n')
+                        stop("method=\"kriging\" requires packages \"automap\" and \"sf\" to be installed\n")
                     }
                 } else {
-                    stop('method must be "barnes", "kriging", "spline", or an R function.')
+                    stop("method must be \"barnes\", \"kriging\", \"spline\", or an R function.")
                 }
             } else {
                 # method is not a character. It must be a function, but let's check again, anyway.
                 if (is.function(method)) {
                     smu <- list(z=method(x=X[ok], y=P[ok], z=v[ok], xg=xg, xr=xr, yg=yg, yr=yr), x=xg, y=yg)
                 } else {
-                    stop('method must be "barnes", "kriging", "spline", or a function')
+                    stop("method must be \"barnes\", \"kriging\", \"spline\", or a function")
                 }
             }
             for (istn in seq_len(nxg)) {
@@ -3040,9 +3041,9 @@ sectionSmooth <- function(section, method="spline",
     for (i in seq_along(section[["station"]])) {
         oceDebug(debug > 3, "station i=", i, ", nstation=", nstation, ", length(section@data$section)=", length(section@data$station), "\n", sep="")
         for (unitName in names(section@data$station[[i]]@metadata$units)) {
-            oceDebug(debug > 3, "unitName='", unitName, "'\n", sep="")
+            oceDebug(debug > 3, "unitName=\"", unitName, "\"\n", sep="")
             if (!(unitName %in% names(units))) {
-                oceDebug(debug > 3, " ... installing unitName='", unitName, "'\n", sep="")
+                oceDebug(debug > 3, " ... installing unitName=\"", unitName, "\"\n", sep="")
                 units[unitName] <- section@data$station[[i]]@metadata$units[unitName]
                 oceDebug(debug > 3, " ... installation was ok\n")
             }

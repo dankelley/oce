@@ -643,9 +643,9 @@ read.met <- function(file,
         stop("must supply 'file'")
     if (is.character(file)) {
         if (!file.exists(file))
-            stop("cannot find file '", file, "'")
+            stop("cannot find file \"", file, "\"")
         if (0L == file.info(file)$size)
-            stop("empty file '", file, "'")
+            stop("empty file \"", file, "\"")
     }
     oceDebug(debug, "read.met(file=\"", file, "\", ...) {\n", sep="", unindent=1, style="bold")
     if (!is.character(file))
@@ -654,7 +654,7 @@ read.met <- function(file,
     if (length(someLines) == 0L)
         stop("no data in file")
     if (!is.null(type) && !(type %in% c("csv", "csv1", "csv2", "xml2")))
-        stop("type='", type, "' not allowed; try 'csv', 'csv1', 'csv2' or 'xml2'")
+        stop("type=\"", type, "\" not allowed; try \"csv\", \"csv1\", \"csv2\" or \"xml2\"")
     if (is.null(type)) {
         if (grepl("xml$", file) || 1 == grepl("xml version", someLines[1])) {
             # an xml file
@@ -662,12 +662,12 @@ read.met <- function(file,
                 type <- "xml2"
         } else {
             # must be a csv
-            if (1 == length(grep('"WMO Identifier",', someLines))) {
+            if (1 == length(grep("\"WMO Identifier\",", someLines))) {
                 type <- "csv1"
             } else if (grepl("Longitude.*Latitude.*Station Name.*Climate ID", someLines[1])) {
                 type <- if (grepl("Time \\(LST\\)", someLines[1])) "csv3" else "csv2"
             } else {
-                stop("can't determine file type; the first line is '", someLines[1], "'")
+                stop("cannot determine file type; the first line is \"", someLines[1], "\"")
             }
             oceDebug(debug, "file contents suggest type=\"", type, "\"\n", sep="")
         }
@@ -1136,7 +1136,7 @@ read.met.xml2 <- function(file, skip=NULL, tz=getOption("oceTz"),
 {
     oceDebug(debug, "read.met.xml2(file=\"", file, "\", ...) {\n", sep="", unindent=1, style="bold")
     if (!requireNamespace("XML", quietly=TRUE))
-        stop('must install.packages("XML") to read rsk data')
+        stop("must install.packages(\"XML\") to read rsk data")
     xml <- XML::xmlToList(XML::xmlParse(file)) # a list
     stationInformation <- xml$stationinformation
     # Isolate station data. (I bet there's a function for this.)

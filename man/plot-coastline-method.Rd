@@ -207,7 +207,7 @@ plot(coastlineWorld, clongitude=-63.6, clatitude=44.6, span=1000)
 
 # Canada in Lambert projection
 plot(coastlineWorld, clongitude=-95, clatitude=65, span=5500,
-     grid=10, projection='+proj=laea +lon_0=-100 +lat_0=55')
+    grid=10, projection="+proj=laea +lon_0=-100 +lat_0=55")
 }
 
 }

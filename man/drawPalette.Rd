@@ -139,7 +139,7 @@ omar <- par("mar")                 # save initial margin
 
 # 1a. top panel: simple case with Viridis scheme
 drawPalette(zlim=c(0, 1), col=oce.colorsViridis(10))
-plot(1:10, 1:10, col=oce.colorsViridis(10)[1:10],pch=20,cex=3,xlab='x', ylab='y')
+plot(1:10, 1:10, col=oce.colorsViridis(10)[1:10],pch=20,cex=3,xlab="x", ylab="y")
 par(mar=omar)                      # reset margin
 
 # 1b. middle panel: colormap
@@ -152,7 +152,7 @@ par(mar=omar)                      # reset margin
 
 # 1c. bottom panel: space for palette (to line up graphs)
 drawPalette(plot=FALSE)
-plot(1:10, 1:10, col=oce.colorsViridis(10)[1:10],pch=20,cex=3,xlab='x', ylab='y')
+plot(1:10, 1:10, col=oce.colorsViridis(10)[1:10],pch=20,cex=3,xlab="x", ylab="y")
 par(mar=omar)                      # reset margin
 
 # 2. Use layout to mimic the action of imagep(), with the width

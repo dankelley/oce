@@ -101,7 +101,7 @@ data(ctd)
 p <- ctd[["pressure"]]
 ylim <- rev(range(p))
 par(mfrow=c(1, 2), mar=c(3, 3, 1, 1), mgp=c(2, 0.7, 0))
-plot(ctd[["sigmaTheta"]], p, ylim=ylim, type='l', xlab=expression(sigma[theta]))
+plot(ctd[["sigmaTheta"]], p, ylim=ylim, type="l", xlab=expression(sigma[theta]))
 # Right panel: N2, with default settings (black) and with df=2 (red)
 N2 <- swN2(ctd)
 plot(N2, p, ylim=ylim, xlab="N2 [1/s^2]", ylab="p", type="l")

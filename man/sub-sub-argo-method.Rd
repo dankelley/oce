@@ -141,7 +141,7 @@ directs where to look.
 \examples{
 data(argo)
 # 1. show that dataset has 223 profiles, each with 56 levels
-dim(argo[['temperature']])
+dim(argo[["temperature"]])
 
 # 2. show importance of focussing on data flagged 'good'
 fivenum(argo[["salinity"]],na.rm=TRUE)

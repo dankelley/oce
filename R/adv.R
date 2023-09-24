@@ -305,7 +305,7 @@ setMethod(f="[[<-",
 #' library(oce)
 #' data(adv)
 #' plot(adv)
-#' plot(subset(adv, time < mean(range(adv[['time']]))))
+#' plot(subset(adv, time < mean(range(adv[["time"]]))))
 #'
 #' @author Dan Kelley
 #'
@@ -407,9 +407,9 @@ read.adv <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         stop("must supply 'file'")
     if (is.character(file)) {
         if (!file.exists(file))
-            stop("cannot find file '", file, "'")
+            stop("cannot find file \"", file, "\"")
         if (0L == file.info(file)$size)
-            stop("empty file '", file, "'")
+            stop("empty file \"", file, "\"")
     }
     if (!interactive())
         monitor <- FALSE
@@ -1460,7 +1460,7 @@ xyzToEnuAdv <- function(x, declination=0, cabled=FALSE, horizontalCase, sensorOr
             forward <- x@data$v[, 2]
             mast <- x@data$v[, 3]
         } else {
-            stop("need metadata$orientation='upward' or 'downward', not '", x@metadata$orientation, "'")
+            stop("need metadata$orientation=\"upward\" or \"downward\", not \"", x@metadata$orientation, "\"")
         }
     } else {
         stop("unknown type of instrument; x@metadata$manufacturer must contain either \"sontek\" or \"nortek\"")

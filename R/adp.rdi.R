@@ -142,7 +142,7 @@ decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceT
     # FLD[5] = SYSTEM CONFIGURATION LSB (Table 5.2, page 126, System Integrator Guide, Nov 2007)
     # FLD[6] = SYSTEM CONFIGURATION MSB
     systemConfiguration <- paste(byteToBinary(FLD[5], endian="big"), byteToBinary(FLD[6], endian="big"), sep="-")
-    oceDebug(debug, "systemConfiguration='", systemConfiguration, "'\n")
+    oceDebug(debug, "systemConfiguration=\"", systemConfiguration, "\"\n")
     oceDebug(debug, "FLD[4]=", byteToBinary(FLD[4], endian="big"), "(looking near the systemConfiguration bytes to find a problem)\n")
     oceDebug(debug, "FLD[5]=", byteToBinary(FLD[5], endian="big"), "(should be one of the systemConfiguration bytes)\n")
     oceDebug(debug, "FLD[6]=", byteToBinary(FLD[6], endian="big"), "(should be one of the systemConfiguration bytes)\n")
@@ -347,7 +347,7 @@ decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceT
         #>         'surveyor/observor' or 59 for 'workhorse'.")
         instrumentSubtype <- "unknown"
     }
-    oceDebug(debug, "instrumentSubtype='", instrumentSubtype, "'\n")
+    oceDebug(debug, "instrumentSubtype=\"", instrumentSubtype, "\"\n")
     nVLD <- 65 # FIXME: should use the proper length, but we won't use it all anyway
     VLD <- buf[dataOffset[2]+1:nVLD]
     oceDebug(debug, "Variable Leader Data (", length(VLD), "bytes):", paste(VLD, collapse=" "), "\n")
@@ -757,9 +757,9 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
         stop("must supply 'file'")
     if (is.character(file)) {
         if (!file.exists(file))
-            stop("cannot find file '", file, "'")
+            stop("cannot find file \"", file, "\"")
         if (0L == file.info(file)$size)
-            stop("empty file '", file, "'")
+            stop("empty file \"", file, "\"")
     }
     if (!interactive())
         monitor <- FALSE
@@ -1441,7 +1441,7 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
                 warning("the instrument orientation is not constant. The user is advised ",
                     "to determine the orientation during the relevant measurement phase, ",
                     "and to set this into the object with e.g.",
-                    "adp <- oceSetMetadata(adp,'orientation',rep('upward', length(adp[['time']]))) ",
+                    "adp <- oceSetMetadata(adp,\"orientation\",rep(\"upward\", length(adp[[\"time\"]]))) ",
                     "in case conversion to ENU is to be done later.")
             }
             time <- as.POSIXct(ldc$time + 0.01 * as.numeric(ldc$sec100), origin="1970-01-01")
@@ -1454,7 +1454,6 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
             # Identify "junk" profiles by NA times
             junkProfiles <- base::which(is.na(time))
             if (isVMDAS) {
-                #navTime <- as.POSIXct(navTime, origin='1970-01-01', tz=tz)
                 firstTime <- firstTime + as.POSIXct("1970-01-01 00:00:00", tz=tz)
                 lastTime <- lastTime + as.POSIXct("1970-01-01 00:00:00", tz=tz)
             }

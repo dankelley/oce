@@ -30,9 +30,9 @@ read.ctd.itp <- function(file, columns=NULL,
         stop("must supply 'file'")
     if (is.character(file)) {
         if (!file.exists(file))
-            stop("cannot find file '", file, "'")
+            stop("cannot find file \"", file, "\"")
         if (0L == file.info(file)$size)
-            stop("empty file '", file, "'")
+            stop("empty file \"", file, "\"")
     }
     oceDebug(debug, "read.ctd.itp() {\n", unindent=1)
     if (is.character(file)) {

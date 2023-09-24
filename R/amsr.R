@@ -368,7 +368,7 @@ setMethod(f="[[<-",
 #' sub <- subset(sub,   40 < latitude  &  latitude <  50)
 #' plot(sub)
 #' data(coastlineWorld)
-#' lines(coastlineWorld[['longitude']], coastlineWorld[['latitude']])
+#' lines(coastlineWorld[["longitude"]], coastlineWorld[["latitude"]])
 #'
 #' @author Dan Kelley
 #'
@@ -488,11 +488,11 @@ setMethod(f="subset",
 #'
 #' # Example 1: plot with default color scheme, oceColorsTemperature()
 #' plot(amsr, "SST")
-#' lines(coastlineWorld[['longitude']], coastlineWorld[['latitude']])
+#' lines(coastlineWorld[["longitude"]], coastlineWorld[["latitude"]])
 #'
 #' # Example 2: 'turbo' color scheme
 #' plot(amsr, "SST", col=oceColorsTurbo)
-#' lines(coastlineWorld[['longitude']], coastlineWorld[['latitude']])
+#' lines(coastlineWorld[["longitude"]], coastlineWorld[["latitude"]])
 #'
 #' @author Dan Kelley
 #'
@@ -752,7 +752,7 @@ download.amsr <- function(year=NULL, month, day, destdir=".",
 {
     oceDebug(debug, "download.amsr(type=\"", type, "\", ...) {\n", sep="", unindent=1)
     if (!type %in% c("3day", "daily", "weekly", "monthly"))
-        stop("type='", type, "' not permitted; try '3day', 'daily', 'weekly' or 'monthly'")
+        stop("type=\"", type, "\" not permitted; try \"3day\", \"daily\", \"weekly\" or \"monthly\"")
     # If year, month, day not given, default to 3 days ago.
     today <- as.POSIXlt(Sys.Date())
     usingDefaultTime <- is.null(year)
@@ -834,7 +834,7 @@ download.amsr <- function(year=NULL, month, day, destdir=".",
             server, type, type, year, month)
     } else {
         # check again (but should not be able to get here)
-        stop("type='", type, "' not permitted; try '3day', 'daily', 'weekly' or 'monthly'")
+        stop("type=\"", type, "\" not permitted; try \"3day\", \"daily\", \"weekly\" or \"monthly\"")
     }
     file <- gsub(".*/", "", url)
     oceDebug(debug, "url=\"", url, "\"\n", sep="")
@@ -930,9 +930,9 @@ read.amsr <- function(file, encoding=NA, debug=getOption("oceDebug"))
     if (!is.character(file))
         stop("file must be a filename")
     if (!file.exists(file))
-        stop("cannot find file '", file, "'")
+        stop("cannot find file \"", file, "\"")
     if (0L == file.info(file)$size)
-        stop("file '", file, "' is empty")
+        stop("file \"", file, "\" is empty")
     oceDebug(debug, "read.amsr(file=\"", file, "\",", ", debug=", debug, ") {\n", sep="", unindent=1)
     isgz <- grepl(".gz$", file)
     isncdf <- grepl(".nc$", file)
@@ -1023,7 +1023,7 @@ read.amsr <- function(file, encoding=NA, debug=getOption("oceDebug"))
         }
     } else if (isncdf) {
         if (!requireNamespace("ncdf4", quietly=TRUE))
-            stop('must install.packages("ncdf4") to read new-style amsr data')
+            stop("must install.packages(\"ncdf4\") to read new-style amsr data")
         # > sort(names(a1@data))
         #  [1] "cloudDay"    "cloudNight"  "LFwindDay"   "LFwindNight"
         #  [5] "MFwindDay"   "MFwindNight" "rainDay"     "rainNight"

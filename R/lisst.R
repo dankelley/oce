@@ -350,9 +350,9 @@ read.lisst <- function(file, year=0, tz="UTC",
         stop("must supply 'file'")
     if (is.character(file)) {
         if (!file.exists(file))
-            stop("cannot find file '", file, "'")
+            stop("cannot find file \"", file, "\"")
         if (0L == file.info(file)$size)
-            stop("empty file '", file, "'")
+            stop("empty file \"", file, "\"")
     }
     filename <- NULL
     if (is.character(file)) {

@@ -1,7 +1,7 @@
 library(oce)
 test_that("all read() functions give similar errors for missing files",
     {
-        msg <- "cannot find file 'no such file'"
+        msg <- "cannot find file \"no such file\""
         expect_error(read.adp("no such file"), msg)
         expect_error(read.adp.ad2cp("no such file"), msg)
         expect_error(read.adp.rdi("no such file"), msg)

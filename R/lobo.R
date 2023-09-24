@@ -398,9 +398,9 @@ read.lobo <- function(file, cols=7, encoding="latin1", processingLog)
         stop("must supply 'file'")
     if (is.character(file)) {
         if (!file.exists(file))
-            stop("cannot find file '", file, "'")
+            stop("cannot find file \"", file, "\"")
         if (0L == file.info(file)$size)
-            stop("empty file '", file, "'")
+            stop("empty file \"", file, "\"")
     }
     # header <- scan(file, what=character(), sep="\t", nlines=1, quiet=TRUE)
     # d <- scan(file, what=character(), sep="\t", skip=1,  quiet=TRUE)

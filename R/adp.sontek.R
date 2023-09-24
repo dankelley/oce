@@ -29,9 +29,9 @@ read.adp.sontek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         stop("must supply 'file'")
     if (is.character(file)) {
         if (!file.exists(file))
-            stop("cannot find file '", file, "'")
+            stop("cannot find file \"", file, "\"")
         if (0L == file.info(file)$size)
-            stop("empty file '", file, "'")
+            stop("empty file \"", file, "\"")
     }
     if (!interactive())
         monitor <- FALSE
@@ -463,9 +463,9 @@ read.adp.sontek.serial <- function(file,
         stop("must supply 'file'")
     if (is.character(file)) {
         if (!file.exists(file))
-            stop("cannot find file '", file, "'")
+            stop("cannot find file \"", file, "\"")
         if (0L == file.info(file)$size)
-            stop("empty file '", file, "'")
+            stop("empty file \"", file, "\"")
     }
     # Data format is described in
     #   SonTek/YSI
@@ -635,8 +635,8 @@ read.adp.sontek.serial <- function(file,
         }
     }
     np <- length(p)
-    pp <- sort(c(p, p+1)) # for 2-byte addressing ('int' in the Sontek docs)
-    #pppp <- sort(c(p, p+1, p+2, p+3)) # for 4-byte addressing ('long' in the Sontek docs)
+    pp <- sort(c(p, p+1)) # for 2-byte addressing ("int" in the Sontek docs)
+    #pppp <- sort(c(p, p+1, p+2, p+3)) # for 4-byte addressing ("long" in the Sontek docs)
     # read profile-specific things profile by profile
     #profile.number <- readBin(buf[pppp+14], "integer", n=np, size=4)
     # FIXME: should check that profile number is monotonic ... it may

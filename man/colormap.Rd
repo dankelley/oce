@@ -172,7 +172,7 @@ library(oce)
 x <- seq(0, 1, length.out=40)
 y <- sin(2 * pi * x)
 par(mar=c(3, 3, 1, 1))
-mar <- par('mar') # prevent margin creep by drawPalette()
+mar <- par("mar") # prevent margin creep by drawPalette()
 # First, default breaks
 c <- colormap(y)
 drawPalette(c$zlim, col=c$col, breaks=c$breaks)
@@ -197,8 +197,8 @@ imagep(topoWorld, breaks=cm$breaks, col=cm$col)
 # black for depths below 4km.
 cm <- colormap(name="gmt_globe")
 deep <- cm$x0 < -4000
-cm$col0[deep] <- 'black'
-cm$col1[deep] <- 'black'
+cm$col0[deep] <- "black"
+cm$col1[deep] <- "black"
 cm <- colormap(x0=cm$x0, x1=cm$x1, col0=cm$col0, col1=cm$col1)
 imagep(topoWorld, breaks=cm$breaks, col=cm$col)
 
@@ -210,9 +210,9 @@ cm <- colormap(x0=c(-8000, -4000,   0,  100),
      x1=c(-4000,     0, 100, 5000),
      col0=c("violet","blue","white","tan"),
      col1=c("blue","white","tan","yellow"))
-lon <- topoWorld[['longitude']]
-lat <- topoWorld[['latitude']]
-z <- topoWorld[['z']]
+lon <- topoWorld[["longitude"]]
+lat <- topoWorld[["latitude"]]
+z <- topoWorld[["z"]]
 imagep(lon, lat, z, breaks=cm$breaks, col=cm$col)
 contour(lon, lat, z, levels=0, add=TRUE)
 

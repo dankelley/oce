@@ -926,7 +926,7 @@ ODFListFromHeader <- function(header)
 #' # UNESCO-defined potential temperatures for the added points.)
 #' plotTS(ctd, type="o", eos="unesco") # use a line to show loops
 #' bad <- ctd[["QCFlag"]]!=0
-#' points(ctd[['salinity']][bad],ctd[['theta']][bad],col='red',pch=20)
+#' points(ctd[["salinity"]][bad],ctd[["theta"]][bad],col="red",pch=20)
 #'
 #' @param file the file containing the data.
 #'
@@ -1001,9 +1001,9 @@ read.odf <- function(file, columns=NULL, header="list", exclude=NULL, encoding="
         stop("must supply 'file'")
     if (is.character(file)) {
         if (!file.exists(file))
-            stop("cannot find file '", file, "'")
+            stop("cannot find file \"", file, "\"")
         if (0L == file.info(file)$size)
-            stop("empty file '", file, "'")
+            stop("empty file \"", file, "\"")
     }
     debug <- as.integer(min(max(debug, 0), 3))
     oceDebug(debug, "read.odf(\"", file, "\", exclude=",
@@ -1076,8 +1076,8 @@ read.odf <- function(file, columns=NULL, header="list", exclude=NULL, encoding="
                 header <- NULL
                 break
             }
-            # Use regexp to find lhs and rhs. This is better than using strsplit on '=' because some
-            # rhs have '=' in them.
+            # Use regexp to find lhs and rhs. This is better than using strsplit on "=" because some
+            # rhs have "=" in them.
             lhs <- gsub("^[ ]*([^=]*)=(.*)$", "\\1", h[i])
             if (!(lhs %in% names(lhsc))) {
                 lhsc[[lhs]] <- 1
@@ -1352,7 +1352,7 @@ read.odf <- function(file, columns=NULL, header="list", exclude=NULL, encoding="
     res@metadata$sampleInterval <- NA
     res@metadata$filename <- filename
     #> # fix issue 768
-    #> lines <- lines[grep('%[0-9.]*f', lines,invert=TRUE)]
+    #> lines <- lines[grep("%[0-9.]*f", lines,invert=TRUE)]
     # issue1226 data <- read.table(file, skip=dataStart, stringsAsFactors=FALSE)
     data <- scan(text=lines, what="character", skip=dataStart, quiet=TRUE)
     data <- matrix(data, ncol=length(oceNames2$names), byrow=TRUE)
@@ -1478,9 +1478,9 @@ read.ctd.odf <- function(file, columns=NULL, station=NULL, missingValue, deploym
         stop("must supply 'file'")
     if (is.character(file)) {
         if (!file.exists(file))
-            stop("cannot find file '", file, "'")
+            stop("cannot find file \"", file, "\"")
         if (0L == file.info(file)$size)
-            stop("empty file '", file, "'")
+            stop("empty file \"", file, "\"")
     }
     oceDebug(debug, "read.ctd.odf(\"", file, "\", ...) {\n", sep="", unindent=1, style="bold")
     if (!is.null(columns)) warning("'columns' is ignored by read.ctd.odf() at present")

@@ -232,7 +232,7 @@ cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
     nameOriginal <- name
     # If 'name' is mentioned in columns, then use columns and ignore the lookup table.
     if (!is.null(columns)) {
-        oceDebug(debug, "columns given. Look for name='", name, "' in it\n", sep="")
+        oceDebug(debug, "columns given. Look for name=\"", name, "\" in it\n", sep="")
         cnames <- names(columns)
         for (i in seq_along(cnames)) {
             if (name == columns[[i]]$name) {
@@ -830,9 +830,9 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
         stop("must supply 'file'")
     if (is.character(file)) {
         if (!file.exists(file))
-            stop("cannot find file '", file, "'")
+            stop("cannot find file \"", file, "\"")
         if (0L == file.info(file)$size)
-            stop("empty file '", file, "'")
+            stop("empty file \"", file, "\"")
     }
     # If 'file' is a wildcard, call this function on each indicated file.  Only
     # that filename, 'encoding' and 'debug' are passed along, so if you need
@@ -904,7 +904,7 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
     for (iline in seq_along(nameLines)) {
         nu <- cnvName2oceName(lines[nameLines[iline]], columns, debug=debug-1)
         #<> if (iline==23)
-        #<> message("iline=", iline, ", nu$name='", nu$name, "', nu$nameOriginal='", nu$nameOriginal, "'")
+        #<> message("iline=", iline, ", nu$name=\"", nu$name, "\", nu$nameOriginal=\"", nu$nameOriginal, "\"")
         if (nu$name %in% namesUsed) {
             trial <- 2
             while (paste(nu$name, trial, sep="") %in% namesUsed) {
@@ -937,7 +937,7 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
     fileType <- "unknown"
     for (iline in seq_along(lines)) {
         line <- lines[iline]
-        #line <- scan(file, what='char', sep="\n", n=1, quiet=TRUE)
+        #line <- scan(file, what=\"char\", sep="\n", n=1, quiet=TRUE)
         oceDebug(debug > 1L, paste("Examining header line ", iline, " '", line, "'\n", sep=""))
         header <- c(header, line)
         #if (length(grep("\*END\*", line))) #BUG# why is this regexp no good (new with R-2.1.0)
@@ -1099,19 +1099,19 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
     oceDebug(debug, "Finished reading header\n")
     if (debug > 0) {
         if (is.nan(sampleInterval))
-            warning("'* sample rate =' not found in header")
+            warning("\"* sample rate =\" not found in header")
         if (is.nan(latitude))
-            warning("'** Latitude:' not found in header")
+            warning("\"** Latitude:\" not found in header")
         if (is.na(longitude))
-            warning("'** Longitude:' not found in header")
+            warning("\"** Longitude:\" not found in header")
         if (is.na(date))
-            warning("'** Date:' not found in header")
+            warning("\"** Date:\" not found in header")
         if (is.na(recoveryTime))
-            warning("'** Recovery:' not found in header")
+            warning("\"** Recovery:\" not found in header")
     }
     # Require p,S,T data at least
     if (!btl && !("temperature" %in% colNamesInferred))
-        warning("cannot find temperature; try using the 'columns' argument")
+        warning("cannot find temperature; try using the \"columns\" argument")
     res@metadata$header <- header
     res@metadata$type <- "SBE"
     res@metadata$hexfilename <- hexfilename # from instrument
@@ -1202,7 +1202,7 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
     } else {
         pushBack(lines, file) # push back header so we can read from a file, not a text vector (for speed)
         oceDebug(debug, "About to read .cnv data with these names: c(\"",
-            paste(colNamesInferred, collapse='","'), "\")\n", sep="")
+            paste(colNamesInferred, collapse="\",\""), "\")\n", sep="")
         data <- as.list(read.table(file, skip=iline-1L, header=FALSE, encoding=encoding))
         if (length(data) != length(colNamesInferred)) {
             stop("Number of columns in .cnv data file (", length(data), ") must match number of variables named in the header (",

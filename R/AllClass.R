@@ -155,9 +155,6 @@ setMethod(f="summary",
             units <- unlist(lapply(seq_along(object@metadata$units),
                 function(i) {
                     u <- object@metadata$units[[i]]
-                    # message("AllClass.R:48  u: '", u, "'")
-                    # message("AllClass.R:48  name: '", names(object@metadata$units)[i], "'")
-                    # message("length(u[1][[1]]): ", length(u[1][[1]]))
                     if (0L == length(u[1][[1]]))
                         return(if (2 == length(u)) u[2] else "")
                     if (1L == length(u)) {
@@ -168,7 +165,6 @@ setMethod(f="summary",
                         res <- ""
                     }
                     res <- as.character(res)[1] # the [1] is in case the unit is mixed up
-                    #> message("1. res: '", res, "'")
                     # Clean up notation, by stages. (The order may matter.)
                     if (nchar(res)) res <- gsub("degree[ ]+[*][ ]+C", "\u00B0C", res)
                     if (nchar(res)) res <- gsub("degree[ ]+[*][ ]+F", "\u00B0F", res)
@@ -177,22 +173,13 @@ setMethod(f="summary",
                     if (nchar(res)) res <- gsub("degree[ ]+[*][ ]+N", "\u00B0N", res)
                     if (nchar(res)) res <- gsub("degree[ ]+[*][ ]+S", "\u00B0S", res)
                     if (nchar(res)) res <- gsub("percent", "%", res)
-                    #> message("res: '", res, "'")
                     if (nchar(res)) res <- gsub("degree", "\u00B0", res)
-                    #> message("res: '", res, "'")
-                    #> message("2. res: '", res, "'")
                     if (nchar(res)) res <- gsub("^,[ ]*", "", res)
-                    #> message("3. res: '", res, "'")
                     if (nchar(res)) res <- gsub("mu . ", "\u03BC", res)
-                    #> message("4. res: '", res, "'")
                     if (nchar(res)) res <- gsub("per . mil", "\u2030", res)
                     if (nchar(res)) res <- gsub("10\\^\\(-8\\)[ ]*\\*", "10\u207B\u2078", res)
-                    #> message("5. res: '", res, "'")
                     if (nchar(res)) res <- gsub("\\^2", "\u00B2", res)
-                    #> message("6. res: '", res, "'")
                     if (nchar(res)) res <- gsub("\\^3", "\u00B3", res)
-                    #> message("7. res: '", res, "'")
-                    #> message("res: '", res, "'")
                     res
                 }))
             names(units) <- unitsNames
@@ -358,9 +345,9 @@ setClass("satellite", contains="oce") # both amsr and landsat stem from this
 #' @examples
 #' library(oce)
 #' o <- new("oce")
-#' o <- oceSetData(o, 'x', rnorm(10))
-#' o <- oceSetData(o, 'y', rnorm(10))
-#' o <- oceSetData(o, 'z', rnorm(10))
+#' o <- oceSetData(o, "x", rnorm(10))
+#' o <- oceSetData(o, "y", rnorm(10))
+#' o <- oceSetData(o, "z", rnorm(10))
 #' plot(o)
 #' @aliases plot.oce
 setMethod(f="plot",
@@ -601,7 +588,7 @@ setMethod(f="[[",
                         }
                     }
                 } else {
-                    stop("the object's data slot lacks 'salinity', and it cannot be calculated since 'conductivity' is also missing")
+                    stop("the object's data slot lacks \"salinity\", and it cannot be calculated since \"conductivity\" is also missing")
                 }
             }
             return(S)
@@ -658,7 +645,7 @@ setMethod(f="[[",
         } else if (i == "z") {
             return(if ("z" %in% dataNames) x@data$z else swZ(x))
         } else {
-            #DEBUG oceDebug(debug, "[[ at base level. i='", i, "'\n", sep="", unindent=1, style="bold")
+            #DEBUG oceDebug(debug, "[[ at base level. i=\"", i, "\"\n", sep="", unindent=1, style="bold")
             if (missing(j) || j == "") {
                 #DEBUG oceDebug(debug, "j missing or empty ...\n")
                 # Since 'j' is not provided, we must search for 'i'. We look first
@@ -771,9 +758,9 @@ setMethod(f="show",
                 cat(class(object)[1], " object has nothing in its data slot.\n", sep="")
         } else {
             if (ncol > 0)
-                cat(class(object)[1], " object, from file '", filename, "', with data slot containing:\n", sep="")
+                cat(class(object)[1], " object, from file \"", filename, "\", with data slot containing:\n", sep="")
             else
-                cat(class(object)[1], " object, from file '", filename, "', with nothing in its data slot.\n", sep="")
+                cat(class(object)[1], " object, from file \"", filename, "\", with nothing in its data slot.\n", sep="")
         }
         odigits <- options("digits")$digits
         options(digits=9) # helps with e.g. CTD adjusted vs unadjusted values
@@ -886,7 +873,7 @@ setMethod(f="applyMagneticDeclination",
         } else if (inherits(object, "adv")) {
             callNextMethod()
         } else {
-            stop("method only works for 'adp', 'adv' and 'cm' objects")
+            stop("method only works for \"adp\", \"adv\" and \"cm\" objects")
         }
     })
 
@@ -975,7 +962,7 @@ setMethod(f="handleFlags",
         if (is.null(flags)) {
             flags <- defaultFlags(object)
             if (is.null(flags))
-                stop("must supply 'flags', or use initializeFlagScheme() on the ctd object first")
+                stop("must supply \"flags\", or use initializeFlagScheme() on the ctd object first")
         }
         if (is.null(actions)) {
             actions <- list("NA") # DEVELOPER 3: alter this line to suit a new data class
@@ -1024,7 +1011,7 @@ handleFlagsInternal <- function(object, flags, actions, where, debug=0) {
     if (debug > 0L) {
         cat("flags=c(", paste(flags, collapse=","), ")\n", sep="")
         cat("actions=c(", paste(actions, collapse=","), ")\n", sep="")
-        cat("where='", where, "'\n", sep="")
+        cat("where=\"", where, "\"\n", sep="")
     }
     if (missing(flags)) {
         warning("no flags supplied (internal error; report to developer)")
@@ -1239,9 +1226,8 @@ setMethod("setFlags",
 
 setFlagsInternal <- function(object, name=NULL, i=NULL, value=NULL, debug=getOption("oceDebug"))
 {
-    oceDebug(debug, "setFlagsInternal(object, name='", name, "', value=", value,
-        ", i=", paste(i, collapse=" "), ", debug=", debug, ") {\n", sep="",
-        unindent=1)
+    oceDebug(debug, "setFlagsInternal(object, name=\"", name, "\", value=", value,
+        ", i=", paste(i, collapse=" "), ", debug=", debug, ") {\n", sep="", unindent=1)
     res <- object
     # Ensure proper argument setup.
     if (is.null(name))

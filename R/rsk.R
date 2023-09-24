@@ -185,7 +185,7 @@ setMethod(f="[[<-",
 #' library(oce)
 #' data(rsk)
 #' plot(rsk)
-#' plot(subset(rsk, time < mean(range(rsk[['time']]))))
+#' plot(subset(rsk, time < mean(range(rsk[["time"]]))))
 #'
 #' @author Dan Kelley
 #'
@@ -706,9 +706,9 @@ read.rsk <- function(file, from=1, to, by=1, type, encoding=NA,
         stop("must supply 'file'")
     if (is.character(file)) {
         if (!file.exists(file))
-            stop("cannot find file '", file, "'")
+            stop("cannot find file \"", file, "\"")
         if (0L == file.info(file)$size)
-            stop("empty file '", file, "'")
+            stop("empty file \"", file, "\"")
     }
     from <- from[1]
     debug <- max(0, min(debug, 2))
@@ -750,9 +750,9 @@ read.rsk <- function(file, from=1, to, by=1, type, encoding=NA,
     res <- new("rsk", filename=filename)
     if (!missing(type) && type == "rsk") {
         if (!requireNamespace("RSQLite", quietly=TRUE))
-            stop('must install.packages("RSQLite") to read rsk data')
+            stop("must install.packages(\"RSQLite\") to read rsk data")
         if (!requireNamespace("DBI", quietly=TRUE))
-            stop('must install.packages("DBI") to read rsk data')
+            stop("must install.packages(\"DBI\") to read rsk data")
         con <- DBI::dbConnect(RSQLite::SQLite(), dbname=filename)
         # Advanced users might want to see what tables are in this file.
         tableNames <- RSQLite::dbListTables(con)

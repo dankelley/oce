@@ -25,7 +25,7 @@ subsetting is only permitted by time.
 library(oce)
 data(sealevel)
 plot(sealevel)
-plot(subset(sealevel, time < mean(range(sealevel[['time']]))))
+plot(subset(sealevel, time < mean(range(sealevel[["time"]]))))
 
 }
 \seealso{

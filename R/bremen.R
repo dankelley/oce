@@ -210,9 +210,9 @@ read.bremen <- function(file, encoding="latin1")
         stop("must supply 'file'")
     if (is.character(file)) {
         if (!file.exists(file))
-            stop("cannot find file '", file, "'")
+            stop("cannot find file \"", file, "\"")
         if (0L == file.info(file)$size)
-            stop("empty file '", file, "'")
+            stop("empty file \"", file, "\"")
     }
     if (is.character(file)) {
         filename <- fullFilename(file)

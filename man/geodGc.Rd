@@ -30,7 +30,7 @@ mapPlot(coastlineWorld, type="l",
         projection="+proj=merc")
 # Great circle from New York to Paris (Lindberg's flight)
 l <- geodGc(c(-73.94,2.35), c(40.67,48.86), 1)
-mapLines(l$longitude, l$latitude, col='red', lwd=2)
+mapLines(l$longitude, l$latitude, col="red", lwd=2)
 }
 
 }

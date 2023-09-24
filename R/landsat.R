@@ -1099,9 +1099,9 @@ read.landsat <- function(file,
         stop("must supply 'file'")
     if (is.character(file)) {
         if (!file.exists(file))
-            stop("cannot find file '", file, "'")
+            stop("cannot find file \"", file, "\"")
         if (0L == file.info(file)$size)
-            stop("empty file '", file, "'")
+            stop("empty file \"", file, "\"")
     }
     oceDebug(debug, "read.landsat(file=\"", file, "\",",
         if (length(band) > 1) {
@@ -1116,7 +1116,7 @@ read.landsat <- function(file,
     if (decimateGiven && decimate < 1)
         warning("invalid value of decimate (", decimate, ") being ignored")
     if (!requireNamespace("tiff", quietly=TRUE))
-        stop('must install.packages("tiff") to read landsat data')
+        stop("must install.packages(\"tiff\") to read landsat data")
     res <- new("landsat")
     file <- gsub("/$", "", file)
     actualfilename <- gsub("/$", "", file) # permit e.g. "LE71910202005194ASN00/"
@@ -1134,7 +1134,8 @@ read.landsat <- function(file,
             if (is.character(band[b])) {
                 m <- pmatch(band[b], header$bandnames, nomatch=0)
                 if (0 == m) {
-                    stop('band "', band[b], '" unknown; must be one of: ', paste(header$bandnames, collapse=", "))
+                    stop("band \"", band[b], "\" unknown; must be one of: \"",
+                        paste(header$bandnames, collapse="\" \""))
                 } else {
                     band2[b] <- m
                 }

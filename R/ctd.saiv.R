@@ -72,21 +72,6 @@ read.ctd.saiv <- function(file, encoding="latin1", debug=getOption("oceDebug"), 
     if (!is.character(file))
         stop("'file' must be a character value")
     filename <- ""
-    #<removed> if (is.character(file)) {
-    #<removed>     if (!file.exists(file))
-    #<removed>         stop("cannot find file '", file, "'")
-    #<removed>     if (0L == file.info(file)$size)
-    #<removed>         stop("empty file '", file, "'")
-    #<removed>     filename <- fullFilename(file)
-    #<removed>     file <- file(file, "r", encoding=encoding)
-    #<removed>     on.exit(close(file))
-    #<removed> }
-    #<removed> if (FALSE && !inherits(file, "connection"))
-    #<removed>     stop("argument `file' must be a character string or connection")
-    #<removed> if (!isOpen(file)) {
-    #<removed>     open(file, "r", encoding=encoding)
-    #<removed>     on.exit(close(file))
-    #<removed> }
     # From file: Tr1_all_stations	Instrument no.:	595
     # Ser	Interval (sec)	Integration	Air pressure	Salinity	Chart Datum (dbar)
     # 4	1		1019.84

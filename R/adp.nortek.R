@@ -410,9 +410,9 @@ read.aquadopp <- function(file,
         stop("must supply 'file'")
     if (is.character(file)) {
         if (!file.exists(file))
-            stop("cannot find file '", file, "'")
+            stop("cannot find file \"", file, "\"")
         if (0L == file.info(file)$size)
-            stop("empty file '", file, "'")
+            stop("empty file \"", file, "\"")
     }
     if (!interactive())
         monitor <- FALSE
@@ -488,9 +488,9 @@ read.aquadoppHR <- function(file,
         stop("must supply 'file'")
     if (is.character(file)) {
         if (!file.exists(file))
-            stop("cannot find file '", file, "'")
+            stop("cannot find file \"", file, "\"")
         if (0L == file.info(file)$size)
-            stop("empty file '", file, "'")
+            stop("empty file \"", file, "\"")
     }
     if (!interactive())
         monitor <- FALSE
@@ -567,9 +567,9 @@ read.aquadoppProfiler <- function(file,
         stop("must supply 'file'")
     if (is.character(file)) {
         if (!file.exists(file))
-            stop("cannot find file '", file, "'")
+            stop("cannot find file \"", file, "\"")
         if (0L == file.info(file)$size)
-            stop("empty file '", file, "'")
+            stop("empty file \"", file, "\"")
     }
     return(read.adp.nortek(file, from=from, to=to, by=by, tz=tz,
         longitude=longitude, latitude=latitude,
@@ -629,9 +629,9 @@ read.adp.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         stop("must supply 'file'")
     if (is.character(file)) {
         if (!file.exists(file))
-            stop("cannot find file '", file, "'")
+            stop("cannot find file \"", file, "\"")
         if (0L == file.info(file)$size)
-            stop("empty file '", file, "'")
+            stop("empty file \"", file, "\"")
     }
     if (!interactive())
         monitor <- FALSE
@@ -838,7 +838,7 @@ read.adp.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     oShift <- switch(type, aquadoppHR=54, aquadoppProfiler=30, aquadopp=30, aquadoppPlusMagnetometer=40)
     for (i in 1:profilesToRead) {
         o <- profileStart[i] + oShift
-        #oceDebug(debug, 'getting data chunk',i,' at file position',o,'\n')
+        #oceDebug(debug, "getting data chunk",i," at file position',o,"\n")
         v[i, , ] <- velocityScale * matrix(readBin(buf[o + seq(0, 2*items-1)], "integer", n=items, size=2,
             endian="little", signed=TRUE), ncol=numberOfBeams, byrow=FALSE)
         # BUG BUG BUG why difference in byrow for v vs a and q?

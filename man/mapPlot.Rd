@@ -112,7 +112,7 @@ on axes.  The choices are:
 5 for signed numbers followed by a degree sign and letters indicating the hemisphere.}
 
 \item{cex}{character expansion factor for plot symbols,
-used if \code{type='p'} or any other value that yields symbols.}
+used if \code{type="p"} or any other value that yields symbols.}
 
 \item{cex.axis}{axis-label expansion factor (see \code{\link[=par]{par()}}).}
 

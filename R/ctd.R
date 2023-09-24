@@ -2743,9 +2743,9 @@ ctdTrim <- function(x, method, removeDepthInversions=FALSE,
 
         } else if (method == "range") {
             if (!("item" %in% names(parameters))) {
-                stop("'parameters' must be a list containing 'item'")
+                stop("\"parameters\" must be a list containing \"item\"")
             }
-            oceDebug(debug, "method='range'; parameters are as follows:\n")
+            oceDebug(debug, "method=\"range\"; parameters are as follows:\n")
             if (debug > 0) {
                 print(parameters)
             }
@@ -4135,9 +4135,9 @@ read.ctd <- function(file, type=NULL, columns=NULL, station=NULL, missingValue, 
     if (is.character(file)) {
         filename <- file
         if (!file.exists(file))
-            stop("cannot find file '", file, "'")
+            stop("cannot find file \"", file, "\"")
         if (0L == file.info(file)$size)
-            stop("empty file '", file, "'")
+            stop("empty file \"", file, "\"")
     }
     if (is.na(file))
         stop("cannot read a NA file")
@@ -5259,7 +5259,6 @@ plotProfile <- function(x,
     debug <- max(0, min(debug, 3))
     oceDebug(debug, "plotProfile(x, xtype=",
         ifelse(is.character(xtype), paste0("\"", xtype, "\""), "NUMERIC"),
-        #", xlab=", if (is.null(xlab)) "NULL" else paste('"', xlab, '"', sep=""),
         ", Slim=", if (missing(Slim)) "MISSING" else paste("c(", paste(Slim, collapse=","), ")", sep=""),
         ", plim=", if (missing(plim)) "MISSING" else paste("c(", paste(plim, collapse=","), ")", sep=""),
         ", xlim=", if (missing(xlim)) "MISSING" else paste("c(", paste(xlim, collapse=","), ")", sep=""),

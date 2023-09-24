@@ -27,9 +27,9 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         stop("must supply 'file'")
     if (is.character(file)) {
         if (!file.exists(file))
-            stop("cannot find file '", file, "'")
+            stop("cannot find file \"", file, "\"")
         if (0L == file.info(file)$size)
-            stop("empty file '", file, "'")
+            stop("empty file \"", file, "\"")
     }
     if (!interactive())
         monitor <- FALSE
@@ -531,7 +531,7 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     # subset using 'by'
     #by.orig <- by
     if (is.character(by)) {
-        oceDebug(debug, "by='", by, "' given as argument to read.adv.nortek()\n", sep="")
+        oceDebug(debug, "by=\"", by, "\" given as argument to read.adv.nortek()\n", sep="")
         oceDebug(debug, " ... infer to be", ctimeToSeconds(by), "s\n")
         by <- ctimeToSeconds(by) / res@metadata$measurementDeltat
         oceDebug(debug, " ... so step by", by, "through the data\n")

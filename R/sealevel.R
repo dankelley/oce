@@ -91,7 +91,7 @@ NULL
 ## data(sealevelTuktoyaktuk)
 ## time <- sealevelTuktoyaktuk[["time"]]
 ## elevation <- sealevelTuktoyaktuk[["elevation"]]
-## oce.plot.ts(time, elevation, type='l', ylab="Height [m]", ylim=c(-2, 6))
+## oce.plot.ts(time, elevation, type="l", ylab="Height [m]", ylim=c(-2, 6))
 ## legend("topleft", legend=c("Tuktoyaktuk (1975)","Detided"),
 ##        col=c("black","red"),lwd=1)
 ## tide <- tidem(sealevelTuktoyaktuk)
@@ -181,7 +181,7 @@ setMethod(f="summary",
 #' library(oce)
 #' data(sealevel)
 #' plot(sealevel)
-#' plot(subset(sealevel, time < mean(range(sealevel[['time']]))))
+#' plot(subset(sealevel, time < mean(range(sealevel[["time"]]))))
 #'
 #' @family things related to sealevel data
 #' @family functions that subset oce objects
@@ -461,7 +461,7 @@ as.sealevel <- function(elevation, time, header=NULL,
 #' # local Halifax time is UTC + 4h
 #' juan <- as.POSIXct("2003-09-29 00:15:00", tz="UTC")+4*3600
 #' plot(sealevel, which=1, xlim=juan+86400*c(-7, 7))
-#' abline(v=juan, col='red')
+#' abline(v=juan, col="red")
 #'
 #' @family functions that plot oce data
 #' @family things related to sealevel data
@@ -682,9 +682,9 @@ read.sealevel <- function(file, tz=getOption("oceTz"), encoding="latin1",
         stop("must supply 'file'")
     if (is.character(file)) {
         if (!file.exists(file))
-            stop("cannot find file '", file, "'")
+            stop("cannot find file \"", file, "\"")
         if (0L == file.info(file)$size)
-            stop("empty file '", file, "'")
+            stop("empty file \"", file, "\"")
     }
     oceDebug(debug, "read.sealevel(file=\"", file, "\", ...) {\n", sep="", unindent=1)
     filename <- "?"
@@ -766,20 +766,20 @@ read.sealevel <- function(file, tz=getOption("oceTz"), encoding="latin1",
             # '275HALIFAX 189501012 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999'
             oceDebug(debug, "type 3 (format inferred/guessed from e.g. http://uhslc.soest.hawaii.edu/woce/h275.dat)\n")
             stationNumber <- strtrim(header, 3)
-            oceDebug(debug, "  stationNumber='", stationNumber, "'\n", sep="")
+            oceDebug(debug, "  stationNumber=\"", stationNumber, "\"\n", sep="")
             longitudeString <- gsub("^.*LONG=([ 0-9.]*[EWew]).*$", "\\1", header)
             latitudeString <- gsub("^.*LAT=([ 0-9.]*[NSns]).*$", "\\1", header)
-            oceDebug(debug, "  longitudeString='", longitudeString, "'\n", sep="")
-            oceDebug(debug, "  latitudeString='", latitudeString, "'\n", sep="")
+            oceDebug(debug, "  longitudeString=\"", longitudeString, "\"\n", sep="")
+            oceDebug(debug, "  latitudeString=\"", latitudeString, "\"\n", sep="")
             longitudeSplit <- strsplit(longitudeString, split="[ \t]+")[[1]]
             longitudeDegree <- longitudeSplit[1]
             longitudeMinute <- longitudeSplit[2]
-            oceDebug(debug, "  longitudeDegree='", longitudeDegree, "'\n", sep="")
-            oceDebug(debug, "  longitudeMinute='", longitudeMinute, "'\n", sep="")
+            oceDebug(debug, "  longitudeDegree=\"", longitudeDegree, "\"\n", sep="")
+            oceDebug(debug, "  longitudeMinute=\"", longitudeMinute, "\"\n", sep="")
             longitudeSign <- if (grepl("[wW]", longitudeMinute)) -1 else 1
             oceDebug(debug, "  longitudeSign=", longitudeSign, "\n")
             longitudeMinute <- gsub("[EWew]", "", longitudeMinute)
-            oceDebug(debug, "  longitudeMinute='", longitudeMinute, "' after removing EW suffix\n", sep="")
+            oceDebug(debug, "  longitudeMinute=\"", longitudeMinute, "\" after removing EW suffix\n", sep="")
             longitude <- longitudeSign * (as.numeric(longitudeDegree) + as.numeric(longitudeMinute)/60)
             oceDebug(debug, "  longitude=", longitude, "\n")
             latitudeSplit <- strsplit(latitudeString, split="[ \t]+")[[1]]
@@ -788,21 +788,21 @@ read.sealevel <- function(file, tz=getOption("oceTz"), encoding="latin1",
             latitudeSign <- if (grepl("[sS]", latitudeMinute)) -1 else 1
             oceDebug(debug, "  latitudeSign=", latitudeSign, "\n")
             latitudeMinute <- gsub("[SNsn]", "", latitudeMinute)
-            oceDebug(debug, "  latitudeMinute='", latitudeMinute, "' after removing NS suffix\n", sep="")
+            oceDebug(debug, "  latitudeMinute=\"", latitudeMinute, "\" after removing NS suffix\n", sep="")
             latitude <- latitudeSign * (as.numeric(latitudeDegree) + as.numeric(latitudeMinute)/60)
             oceDebug(debug, "  latitude=", latitude, "\n")
             # Remove interspersed year boundaries (which look like the first line).
             d2 <- d[!grepl("LAT=.*LONG=", d)]
             start <- 1 + which(strsplit(header, "")[[1]]==" ")[1]
             d3 <- substr(d2, start, 1000L)
-            # Fix problem where the month is sometimes e.g. ' 1' instead of '01'
+            # Fix problem where the month is sometimes e.g. " 1" instead of "01"
             d4 <- gsub("^([1-9][0-9]{3}) ", "\\10", d3)
-            # Fix problem where the day is sometimes e.g. ' 1' instead of '01'
+            # Fix problem where the day is sometimes e.g. " 1" instead of "01"
             d5 <- gsub("^([1-9][0-9]{3}[0-9]{2}) ", "\\10", d4)
             n <- length(d5)
-            # Now we have as below. But the second block sometimes has ' ' for '0', so we
+            # Now we have as below. But the second block sometimes has " " for "0", so we
             # need to fix that.
-            # '275HALIFAX 189501011 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999'
+            # 275HALIFAX 189501011 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
             twelve <- seq(1, 12, 1)
             elevation <- rep(NA, 12 * n)
             time <- rep(NA, 12 * n)
@@ -811,7 +811,7 @@ read.sealevel <- function(file, tz=getOption("oceTz"), encoding="latin1",
                 sp <- strsplit(d5[i], "[ ]+")[[1]]
                 target.index <- 12 * (i-1) + twelve
                 if (length(sp) != 13) {
-                    stop("cannot parse tokens on line '", d2[i], "'\n", sep="")
+                    stop("cannot parse tokens on line \"", d2[i], "\"\n", sep="")
                 }
                 elevation[target.index] <- as.numeric(sp[2:13])
                 dayPortion <- as.numeric(substr(sp[1], 9, 9))
@@ -858,10 +858,10 @@ read.sealevel <- function(file, tz=getOption("oceTz"), encoding="latin1",
             units            <- substr(header, 79, 80)
             oceDebug(debug, "units=", units, "\n")
             if (nchar(units) == 0) {
-                warning("no units can be inferred from the file, so assuming 'mm'")
+                warning("no units can be inferred from the file, so assuming \"mm\"")
             } else {
                 if (units != "mm" && units != "MM")
-                    stop("require units to be 'mm' or 'MM', not '", units, "'")
+                    stop("require units to be \"mm\" or \"MM\", not \"", units, "\"")
             }
             elevation <- array(NA_real_, 12 * (n-1))
             twelve <- seq(1, 12, 1)
@@ -917,6 +917,6 @@ read.sealevel <- function(file, tz=getOption("oceTz"), encoding="latin1",
     res@data$elevation <- elevation
     res@data$time <- time
     res@processingLog <- processingLogAppend(res@processingLog,
-        paste('read.sealevel(file="', filename, '", tz="', tz, '")', sep="", collapse=""))
+        paste("read.sealevel(file=\"", filename, "\", tz=\"", tz, "\")", sep="", collapse=""))
     res
 }

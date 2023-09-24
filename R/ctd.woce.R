@@ -261,9 +261,9 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missingValue,
         stop("must supply 'file'")
     if (is.character(file)) {
         if (!file.exists(file))
-            stop("cannot find file '", file, "'")
+            stop("cannot find file \"", file, "\"")
         if (0L == file.info(file)$size)
-            stop("empty file '", file, "'")
+            stop("empty file \"", file, "\"")
     }
     if (is.character(file) && length(grep("\\*", file))) {
         oceDebug(debug, "read.ctd.woce(file=\"", file, "\") { # will read a series of files\n", unindent=1)
@@ -414,9 +414,9 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missingValue,
                 #  #CTDFILE_NAME:     KB51D003.WCT
                 oceDebug(debug, "infer filename from:", line, "\n")
                 filename.orig <- sub("^.*NAME:[ ]*", "", line)
-                oceDebug(debug, " trim to '", filename.orig, "'\n", sep='')
+                oceDebug(debug, " trim to \"", filename.orig, "\"\n", sep="\"")
                 filename.orig <- sub("[ ]*$", "", filename.orig)
-                oceDebug(debug, " trim to '", filename.orig, "'\n", sep='')
+                oceDebug(debug, " trim to \"", filename.orig, "\"\n", sep="\"")
             }
             header <- c(header, line)
             # SAMPLE:
@@ -514,12 +514,12 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missingValue,
             unitsOriginal <- c(unitsOriginal, "")
         units <- list()
         for (i in seq_along(names)) {
-            oceDebug(debug, "names[", i, "]='", names[i], "', unitsOriginal[", i, "]='", unitsOriginal[i], "'\n", sep="")
+            oceDebug(debug, "names[", i, "]=\"", names[i], "\", unitsOriginal[", i, "]=\"", unitsOriginal[i], "\"\n", sep="")
             units[[names[i]]] <- woceUnit2oceUnit(unitsOriginal[i])
         }
         # Read the data into a buffer, since there will likely be
         # a trailer line at the end, and read.table() cannot handle that.
-        #> owarn <- options('warn')$warn
+        #> owarn <- options("warn")$warn
         #> options(warn=-1)
         lines <- readLines(file)
         #> options(warn=owarn)
@@ -634,9 +634,9 @@ read.ctd.woce.other <- function(file, columns=NULL, station=NULL, missingValue,
         stop("must supply 'file'")
     if (is.character(file)) {
         if (!file.exists(file))
-            stop("cannot find file '", file, "'")
+            stop("cannot find file \"", file, "\"")
         if (0L == file.info(file)$size)
-            stop("empty file '", file, "'")
+            stop("empty file \"", file, "\"")
     }
     #EXPOCODE 06MT18/1      WHP-ID A1E    DATE 090591
     #STNNBR    558 CASTNO   1 NO.RECORDS=   83

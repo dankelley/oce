@@ -142,9 +142,7 @@ ad2cpHeaderValue <- function(x, key, item, numeric=TRUE, default)
     if (is.null(header))
         return(if (missing(default)) NULL else default)
     key2 <- paste("^", key, ",", sep="")
-    # message("key2='", key2, "'")
     hline <- header[grep(key2, header)]
-    # message("hline='",hline,"'")
     if (length(hline) > 1)
         stop("header line is not distinct; try using a comma at the end of key")
     if (0 == length(hline))
@@ -532,9 +530,9 @@ read.adp.ad2cp <- function(file,
         stop("must supply 'file'")
     if (is.character(file)) {
         if (!file.exists(file))
-            stop("cannot find file '", file, "'")
+            stop("cannot find file \"", file, "\"")
         if (0L == file.info(file)$size)
-            stop("empty file '", file, "'")
+            stop("empty file \"", file, "\"")
     }
     debug <- min(3L, max(0L, as.integer(debug)))
     if (is.null(dataType) && !TOC)
@@ -1046,7 +1044,7 @@ read.adp.ad2cp <- function(file,
     # 2 bytes for current-profiler data but 4 bytes for bottom-track data.
     datasetDescription <- readBin(d$buf[pointer2 + 55], "integer", size=2, n=N, signed=FALSE, endian="little")
     transmitEnergy <- readBin(d$buf[pointer2 + 57], "integer", size=2, n=N, signed=FALSE, endian="little")
-    # FIXME: next, using offset 59, is true only for currents ('average' or 'burst').
+    # FIXME: next, using offset 59, is true only for currents ("average" or "burst").
     # Nortek (2022) page 82.
     velocityFactor <- 10^readBin(d$buf[pointer1 + 59], "integer", size=1, n=N, signed=TRUE, endian="little")
     oceDebug(debug, "velocityFactor=", velocityFactor[1], " (for current-profiler data ONLY)\n")

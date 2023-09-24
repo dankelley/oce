@@ -26,7 +26,7 @@ specified in terms of \code{time}.
 library(oce)
 data(adv)
 plot(adv)
-plot(subset(adv, time < mean(range(adv[['time']]))))
+plot(subset(adv, time < mean(range(adv[["time"]]))))
 
 }
 \seealso{

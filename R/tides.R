@@ -203,8 +203,8 @@ setMethod(f="summary",
                 }
             }
             if (length(bad)) {
-                warning("the following constituents are not handled: '",
-                    paste(constituent[bad], collapse="', '"), "'\n", sep="")
+                warning("the following constituents are not handled: \"",
+                    paste(constituent[bad], collapse="\", \""), "\"\n", sep="")
             }
             if (length(i) == 0)
                 stop("In summary,tidem-method() : no known constituents were provided", call.=FALSE)
@@ -289,7 +289,7 @@ setMethod(f="summary",
 setMethod(f="[[",
     signature(x="tidem", i="ANY", j="ANY"),
     definition=function(x, i, j, ...) {
-        const <- x@data$name
+        #UNUSED const <- x@data$name
         if (i[1] == "?") {
             return(list(metadata=sort(names(x@metadata)),
                 metadataDerived=NULL,
@@ -402,11 +402,10 @@ setMethod(f="plot",
         {
             w <- which(tidedata$const$name == name)
             if (!length(w)) {
-                warning("constituent '", name, "' is unknown")
+                warning("constituent \"", name, "\" is unknown")
                 return()
             }
             frequency <- tidedata$const$freq[w]
-            # message("constituent '", name, "' has frequency ", frequency, " cph")
             abline(v=frequency, col=col, lty="dotted")
             if (par("usr")[1] < frequency && frequency <= par("usr")[2]) {
                 if (is.null(adj)) {
@@ -644,7 +643,7 @@ as.tidem <- function(tRef, latitude, name, amplitude, phase, frequency, speed, d
         gaveFrequency <- TRUE
     }
     for (i in seq_along(name)) {
-        oceDebug(debug, "adjusting amplitude and phase for constituent '", name[i], "'\n", sep="")
+        oceDebug(debug, "adjusting amplitude and phase for constituent \"", name[i], "\"\n", sep="")
         j <- which(tidedata$const$name==name[i])
         oceDebug(debug, "  inferred j=", j, " from constituent name\n", sep="")
         if (length(j)) {
@@ -669,7 +668,8 @@ as.tidem <- function(tRef, latitude, name, amplitude, phase, frequency, speed, d
         }
     }
     if (length(ibad)) {
-        warning("the following constituents are not handled: '", paste(name[ibad], collapse="', '"), "'\n", sep="")
+        warning("the following constituents are not handled: \"",
+            paste(name[ibad], collapse="\", \""), "\"\n", sep="")
         indices <- indices[-ibad]
         name <- name[-ibad]
         amplitude <- amplitude[-ibad]
@@ -1218,7 +1218,7 @@ tidem <- function(t, x, constituents, infer=NULL, latitude=NULL,
         if (missing(constituents)) {
             "(missing)"
         } else {
-            paste("c('", paste(constituents, collapse="', '"), "')", sep="")
+            paste("c(\"", paste(constituents, collapse="\", \""), "\")", sep="")
         },
         ",\n", sep="", unindent=1)
     oceDebug(debug, "      latitude=", if (is.null(latitude)) "NULL" else latitude, ",\n", sep="", unindent=1)
@@ -1279,11 +1279,11 @@ tidem <- function(t, x, constituents, infer=NULL, latitude=NULL,
             stop("lengths of infer$name and infer$phase must be equal")
         for (n in infer$name) {
             if (!(n %in% tc$name))
-                stop("infer$name value '", n, "' is not a known tidal constituent; see const$name in ?tidedata")
+                stop("infer$name value \"", n, "\" is not a known tidal constituent; see const$name in ?tidedata")
         }
         for (n in infer$from) {
             if (!(n %in% tc$name))
-                stop("infer$from value '", n, "' is not a known tidal constituent; see const$name in ?tidedata")
+                stop("infer$from value \"", n, "\" is not a known tidal constituent; see const$name in ?tidedata")
         }
     }                                  # 'infer' sanity-check
     # The arguments seem to be OK, so start the actual analysis now.
@@ -1316,13 +1316,13 @@ tidem <- function(t, x, constituents, infer=NULL, latitude=NULL,
                     # Case 1: removal. Require a valid name, and warn if not in the list already.
                     nameRemove <- substr(constituents[i], 2, nchar(constituents[i]))
                     if (1 != sum(tc$name == nameRemove)) {
-                        stop("'", nameRemove, "' is not a known tidal constituent; try one of: ",
-                            paste(tc$name, collapse=" "))
+                        stop("\"", nameRemove, "\" is not a known tidal constituent; try one of: ",
+                            paste(tc$name, collapse="\" \""))
                     }
                     remove <- which(name == nameRemove)
-                    oceDebug(debug > 1, "removed '", nameRemove, "'\n", sep="")
+                    oceDebug(debug > 1, "removed \"", nameRemove, "\"\n", sep="")
                     if (0 == length(remove)) {
-                        warning("'", nameRemove, "' is not in the list of constituents currently under study", sep="")
+                        warning("\"", nameRemove, "\" is not in the list of constituents currently under study", sep="")
                     } else {
                         name <- name[-remove]
                     }
@@ -1330,7 +1330,7 @@ tidem <- function(t, x, constituents, infer=NULL, latitude=NULL,
                     # Case 2: addition. Require a valid name, and ignore repeat requests.
                     add <- which(tc$name == constituents[i])
                     if (1 != length(add))
-                        stop("'", constituents[i], "' is not a known tidal constituent (line 1093)")
+                        stop("\"", constituents[i], "\" is not a known tidal constituent (line 1093)")
                     if (!(constituents[i] %in% name)) {
                         name <- c(name, tc$name[add])
                         addedConstituents <- c(addedConstituents, add)
@@ -1398,9 +1398,9 @@ tidem <- function(t, x, constituents, infer=NULL, latitude=NULL,
             if (!(tc$name[a] %in% name)) {
                 if (debug > 0) {
                     message("ADDING:")
-                    message("  tc$name[a=", a, "]='", tc$name[a], "'", sep="")
-                    message("  tc$freq[a=", a, "]='", tc$freq[a], "'", sep="")
-                    message("  tc$kmpr[a=", a, "]='", tc$kmpr[a], "'", sep="")
+                    message("  tc$name[a=", a, "]=\"", tc$name[a], "\"", sep="")
+                    message("  tc$freq[a=", a, "]=\"", tc$freq[a], "\"", sep="")
+                    message("  tc$kmpr[a=", a, "]=\"", tc$kmpr[a], "\"", sep="")
                 }
                 indices <- c(indices, which(tc$name==name[a]))
                 name <- c(name, tc$name[a])
@@ -1582,7 +1582,7 @@ tidem <- function(t, x, constituents, infer=NULL, latitude=NULL,
             vuf <- tidemVuf(tRef, j=j, latitude=latitude)
             amplitude[i] <- amplitude[i] / vuf$f
             p[i] <- 0.5 * (p.all[ic+1] + p.all[ic])
-            #<<cat("i=", i, ", ic=", ic, ", name='", name[i], "', p.all[ic]=",
+            #<<cat("i=", i, ", ic=", ic, ", name=\"", name[i], "\", p.all[ic]=",
             #p.all[ic], ", p.all[ic+1]=", p.all[ic+1], ", we set p[i]=", p[i],
             #" (the mean)\n", sep="")
             oceDebug(debug, "processed coefs at i=", i, ", ic=", ic, ", name=", name[i],
@@ -1616,7 +1616,7 @@ tidem <- function(t, x, constituents, infer=NULL, latitude=NULL,
         for (n in seq_along(infer$name)) {
             oceDebug(debug, "n=", n, "; handling inferred constituent ", infer$name[n], "\n")
             iname <- which(tc$name == infer$name[n])[1]
-            oceDebug(debug, "infer$name[", n, "]='", infer$name[n], "' yields iname=", iname, "\n", sep="")
+            oceDebug(debug, "infer$name[\"", n, "\"]=\"", infer$name[n], "\" yields iname=", iname, "\n", sep="")
             oceDebug(debug, "iname=", iname, "\n")
             # NOTE: we know that infer$from has been fitted for, because we forced it to be,
             # irrespective of the Rayleight Criterion. Still, we test here, in case the code
@@ -1631,8 +1631,8 @@ tidem <- function(t, x, constituents, infer=NULL, latitude=NULL,
                     phase[iname] <- phase[ifrom] - infer$phase[n]
                     p[iname] <- p[ifrom]
                     oceDebug(debug, "replace existing ", name[iname], " based on ", name[ifrom], " (", freq[ifrom], " cph)\n", sep="")
-                    warning("inferring '", infer$name[n],
-                        "' which is already included in the regression. Foreman says to skip it; unsure on what T_TIDE does\n")
+                    warning("inferring \"", infer$name[n],
+                        "\" which is already included in the regression. Foreman says to skip it; unsure on what T_TIDE does\n")
                 } else {
                     # We append new values at the end, knowing that they will get
                     # shifted back to their proper positions when we reorder the
@@ -1777,7 +1777,7 @@ tidem <- function(t, x, constituents, infer=NULL, latitude=NULL,
 ## oce.plot.ts(time[look], elevation[look])
 ## # 360s = 10 minute timescale
 ## t <- seq(from=time[1], to=time[max(look)], by=360)
-## lines(t, predict(m, newdata=t), col='red')
+## lines(t, predict(m, newdata=t), col="red")
 ## legend("topright", col=c("black","red"),
 ## legend=c("data","model"),lwd=1)
 ##}
@@ -1978,10 +1978,10 @@ webtide <- function(action=c("map", "predict"),
     for (nodFile in nodFiles) {
         if (1 == length(list.files(path=path, pattern=nodFile))) {
             triangles <- read.table(paste(path, nodFile, sep="/"), col.names=c("triangle", "longitude", "latitude"), encoding="latin1")
-            oceDebug(debug, "found webtide information in '", nodFile, "'\n", sep="")
+            oceDebug(debug, "found webtide information in \"", nodFile, "\"\n", sep="")
             break
         } else {
-            oceDebug(debug, "looked for webtide information in '", nodFile, "' but this file does not exist\n", sep="")
+            oceDebug(debug, "looked for webtide information in \"", nodFile, "\" but this file does not exist\n", sep="")
         }
     }
     if (is.null(triangles))

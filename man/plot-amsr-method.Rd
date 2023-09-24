@@ -82,11 +82,11 @@ data(amsr) # see ?amsr for how to read and composite such objects
 
 # Example 1: plot with default color scheme, oceColorsTemperature()
 plot(amsr, "SST")
-lines(coastlineWorld[['longitude']], coastlineWorld[['latitude']])
+lines(coastlineWorld[["longitude"]], coastlineWorld[["latitude"]])
 
 # Example 2: 'turbo' color scheme
 plot(amsr, "SST", col=oceColorsTurbo)
-lines(coastlineWorld[['longitude']], coastlineWorld[['latitude']])
+lines(coastlineWorld[["longitude"]], coastlineWorld[["latitude"]])
 
 }
 \seealso{

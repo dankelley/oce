@@ -141,7 +141,7 @@ NULL
 #' @examples
 #' data(argo)
 #' # 1. show that dataset has 223 profiles, each with 56 levels
-#' dim(argo[['temperature']])
+#' dim(argo[["temperature"]])
 #'
 #' # 2. show importance of focussing on data flagged 'good'
 #' fivenum(argo[["salinity"]],na.rm=TRUE)
@@ -290,9 +290,9 @@ dim <- dim(salinity)
             fallback <- x@metadata$adjustedFallback
             iBase <- gsub("Unit$", "", gsub("Flag$", "", i)) # base name for i
             iBaseAdjusted <- paste0(iBase, "Adjusted")
-            oceDebug(debug, "i='", i,
-                "', iBase='", iBase, "', iBaseAdjusted='", iBaseAdjusted,
-                "', wantFlag=", wantFlag, ", wantUnit=", wantUnit, "\n", sep="")
+            oceDebug(debug, "i=\"", i,
+                "\", iBase=\"", iBase, "\", iBaseAdjusted=\"", iBaseAdjusted,
+                "\", wantFlag=", wantFlag, ", wantUnit=", wantUnit, "\n", sep="")
             unadjusted <- if (wantUnit) {
                 x@metadata$units[[iBase]]
             } else if (wantFlag) {
@@ -719,7 +719,7 @@ setMethod(f="subset",
                 # Handle things that are encoded as characters in a string, namely 'direction', 'juldQC', 'positionQC',
                 # and some other 'QC` things that are found by grepping.
                 if (name == "direction" || grepl("QC$", name)) {
-                    oceDebug(debug, "  \"", name, "\" is a special string ('direction' or '*QC'), being subsetted by character number\n", sep="")
+                    oceDebug(debug, "  \"", name, "\" is a special string (\"direction\" or \"*QC\"), being subsetted by character number\n", sep="")
                     res@metadata[[name]] <- paste(strsplit(item, "")[[1]][keep], collapse="")
                 } else if (is.list(item)) {
                     oceDebug(debug, "  \"", name, "\" is a list, with each element being subsetted\n", sep="")
@@ -962,8 +962,8 @@ ncdfFixMatrix <- function(x)
 #' t <- g[["time"]]
 #' z <- -g[["pressure"]][,1]
 #' # Set zlim because of spurious temperatures.
-#' imagep(t, z, t(g[['temperature']]), ylim=c(-100,0), zlim=c(0,20))
-#' imagep(t, z, t(g[['salinity']]), ylim=c(-100,0))
+#' imagep(t, z, t(g[["temperature"]]), ylim=c(-100,0), zlim=c(0,20))
+#' imagep(t, z, t(g[["salinity"]]), ylim=c(-100,0))
 #'
 #' @family things related to argo data
 #' @author Dan Kelley and Clark Richards
@@ -988,13 +988,13 @@ argoGrid <- function(argo, p, debug=getOption("oceDebug"), ...)
     } else if (is.numeric(p)) {
         if (length(p) == 1) {
             if (p < 1)
-                stop("'p' must exceed 1")
+                stop("\"p\" must exceed 1")
             pt <- seq(0, max(pressure, na.rm=TRUE), length.out=p)
         } else {
             pt <- p
         }
     } else {
-        stop("value of 'p' must be numeric, or \"levitus\"")
+        stop("\"p\" must be numeric, or \"levitus\"")
     }
     npt <- length(pt)
     res@data$pressure <- matrix(NA, ncol=nprofile, nrow=npt)
@@ -1236,13 +1236,13 @@ read.argo <- function(file, encoding=NA, debug=getOption("oceDebug"), processing
         stop("must supply 'file'")
     if (is.character(file)) {
         if (!file.exists(file))
-            stop("cannot find file '", file, "'")
+            stop("cannot find file \"", file, "\"")
         if (0L == file.info(file)$size)
-            stop("empty file '", file, "'")
+            stop("empty file \"", file, "\"")
     }
     debug <- max(0, min(2, floor(as.numeric(debug))))
     if (!requireNamespace("ncdf4", quietly=TRUE))
-        stop('must install.packages("ncdf4") to read argo data')
+        stop("must install.packages(\"ncdf4\") to read argo data")
     if (missing(processingLog)) processingLog <- paste(deparse(match.call()), sep="", collapse="")
     # ofile <- file
     filename <- ""
@@ -1272,7 +1272,7 @@ read.argo <- function(file, encoding=NA, debug=getOption("oceDebug"), processing
     {
         a <- ncdf4::ncatt_get(nc=file, varid=0, attname=attname)
         res <- if (a$hasatt) a$value else NULL
-        # message("'", attname, "' value='", res, "'")
+        # message("\"", attname, "\" value=\"", res, "\"")
         res
     }
     res@metadata$title <- getGlobalAttribute(file, "title")
@@ -1892,9 +1892,9 @@ as.argo <- function(time, longitude, latitude, salinity, temperature, pressure, 
 #' map, or `"best"` to pick the one with highest resolution, or
 #' `"none"` to avoid drawing the coastline.
 #'
-#' @param cex size of plotting symbols to be used if `type='p'`.
+#' @param cex size of plotting symbols to be used if `type="p"`.
 #'
-#' @param pch type of plotting symbols to be used if `type='p'`.
+#' @param pch type of plotting symbols to be used if `type="p"`.
 #'
 #' @param type plot type, either `"l"` or `"p"`.
 #'
@@ -1917,7 +1917,7 @@ as.argo <- function(time, longitude, latitude, salinity, temperature, pressure, 
 #' otherwise.  Otherwise, `projection` must be a character string specifying
 #' a projection in the notation used by [oceProject()] and [mapPlot()].
 #'
-#' @param mar value to be used with `par('mar')`.
+#' @param mar value to be used with `par("mar")`.
 #'
 #' @param tformat optional argument passed to [oce.plot.ts()], for plot
 #' types that call that function.  (See [strptime()] for the format
@@ -1937,19 +1937,20 @@ as.argo <- function(time, longitude, latitude, salinity, temperature, pressure, 
 #' plot(argo, pch=as.integer(tc))
 #' year <- substr(levels(tc), 1, 4)
 #' data(topoWorld)
-#' contour(topoWorld[['longitude']], topoWorld[['latitude']],
-#'         topoWorld[['z']], add=TRUE)
+#' contour(topoWorld[["longitude"]], topoWorld[["latitude"]],
+#'     topoWorld[["z"]], add=TRUE)
 #' legend("bottomleft", pch=seq_along(year), legend=year, bg="white", cex=3/4)
 #'
 #' # Example 2: plot map, TS, T(z) and S(z). Note the use
 #' # of handleFlags(), to skip over questionable data.
 #' plot(handleFlags(argo), which=c(1, 4, 6, 5))
 #'
-#' @author Dan Kelley
-#'
 #' @family things related to argo data
 #' @family functions that plot oce data
+#'
 #' @aliases plot.argo
+#'
+#' @author Dan Kelley
 setMethod(f="plot",
     signature=signature("argo"),
     definition=function(x, which=1, level,

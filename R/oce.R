@@ -773,7 +773,7 @@ plotPolar <- function(r, theta, debug=getOption("oceDebug"), ...)
 #'     a1 <- oce.approx(RRprofile$depth, RRprofile$temperature, zz, "rr")
 #'     a2 <- oce.approx(RRprofile$depth, RRprofile$temperature, zz, "unesco")
 #'     lines(a1, zz)
-#'     lines(a2, zz, col='red')
+#'     lines(a2, zz, col="red")
 #'     legend("bottomright",lwd=1,col=1:2, legend=c("rr","unesco"),cex=3/4)
 #'}
 oceApprox <- function(x, y, xout, method=c("rr", "unesco"))
@@ -943,19 +943,19 @@ plotSticks <- function(x, y, u, v, yscale=1, add=FALSE, length=1/20,
 #'
 #' data(sealevel)
 #' i <- oce.plot.ts(sealevel[["time"]], sealevel[["elevation"]])
-#' oce.grid(i, col='red')
+#' oce.grid(i, col="red")
 #'
 #' data(ctd)
 #' i <- plotTS(ctd)
-#' oce.grid(i, col='red')
+#' oce.grid(i, col="red")
 #'
 #' data(adp)
 #' i <- plot(adp, which=1)
-#' oce.grid(i, col='gray', lty=1)
+#' oce.grid(i, col="gray", lty=1)
 #'
 #' data(echosounder)
 #' i <- plot(echosounder)
-#' oce.grid(i, col='pink', lty=1)
+#' oce.grid(i, col="pink", lty=1)
 #'
 #' @param xat either a list of x values at which to draw the grid, or the return value from an oce plotting function
 #'
@@ -1133,12 +1133,12 @@ oce.grid <- function(xat, yat, col="lightgray", lty="dotted", lwd=par("lwd"))
 #' t0 <- as.POSIXct("2008-01-01", tz="UTC")
 #' t <- seq(t0, length.out=48, by="30 min")
 #' y <- sin(as.numeric(t - t0) * 2 * pi / (12 * 3600))
-#' oce.plot.ts(t, y, type='l', xaxs='i')
+#' oce.plot.ts(t, y, type="l", xaxs="i")
 #' # Show how col, pch and cex get recycled
-#' oce.plot.ts(t, y, type='p', xaxs='i',
-#'             col=1:3, pch=c(rep(1, 6), rep(20, 6)), cex=sqrt(1:6))
+#' oce.plot.ts(t, y, type="p", xaxs="i",
+#'     col=1:3, pch=c(rep(1, 6), rep(20, 6)), cex=sqrt(1:6))
 #' # Trimming x; note the narrowing of the y view
-#' oce.plot.ts(t, y, type='p', xlim=c(t[6], t[12]))
+#' oce.plot.ts(t, y, type="p", xlim=c(t[6], t[12]))
 #' # Flip the y axis
 #' oce.plot.ts(t, y, flipy=TRUE)
 oce.plot.ts <- function(x, y, type="l", xlim, ylim, log="", logStyle="r", flipy=FALSE, xlab, ylab,
@@ -1339,7 +1339,6 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, log="", logStyle="r", flipy=
                 }
             }
             box()
-            #cat("cex.axis=",cex.axis,"; par('cex.axis') is", par("cex.axis"), "; par('cex') is", par("cex"), "\n")
             if (drawyaxis) {
                 if (log != "y" || logStyle == "r") {
                     axis(2, cex.axis=cex.axis, cex=cex.axis)
@@ -1503,7 +1502,6 @@ oceEdit <- function(x, item, value, action, reason="", person="", debug=getOptio
     if (!missing(item)) {
         if (missing(value))
             stop("must supply a value")
-        #oceDebug(debug, "ORIG item='", item, "'\n", sep="")
         # Split out the slotname, if any.
         if (length(grep("@", item))) {
             slot <- gsub("@.*$", "", item)
@@ -1511,7 +1509,6 @@ oceEdit <- function(x, item, value, action, reason="", person="", debug=getOptio
                 stop("slot must be 'metadata' or 'data'")
             item <- gsub("^.*@", "", item)
         }
-        #oceDebug(debug, "LATER slot='", slot, "' and item='", item, "'\n", sep="")
         if (missing(value))
             stop("must supply a 'value' for this 'item'")
         if (inherits(x, "adv")) {
@@ -1574,7 +1571,7 @@ oceEdit <- function(x, item, value, action, reason="", person="", debug=getOptio
             }
             oceDebug(debug, "...AQUADOPP edited\n")
         } else {
-            oceDebug(debug, "general object; item='", item, "'; slot='", slot, "'\n", sep="")
+            oceDebug(debug, "general object; item=\"", item, "\"; slot=\"", slot, "\"\n", sep="")
             if (!is.null(slot)) {
                 slot(x, slot)[[item]] <- value
             } else if (item %in% names(x@metadata)) {
@@ -1692,7 +1689,7 @@ standardDepths <- function(n=0)
     res <- NULL
     for (i in seq_len(nrow(ul)))
         res <- c(res, approx(c(0, 1), ul[i, ], seq(0, 1, by=1 / (n+1)))$y)
-    unique(res) # remove duplicates from one 'l' being the next 'u'
+    unique(res) # remove duplicates from one "l" being the next "u"
 }
 
 #' Find the Type of an Oceanographic Data File
@@ -1806,7 +1803,7 @@ oceMagic <- function(file, encoding="latin1", debug=getOption("oceDebug"))
                     }
                 }
             } else {
-                stop('must install.packages("ncdf4") to read a NetCDF file')
+                stop("must install.packages(\"ncdf4\") to read a NetCDF file")
             }
         }
         if (grepl(".xml$", filename, ignore.case=TRUE)) {
@@ -1835,7 +1832,7 @@ oceMagic <- function(file, encoding="latin1", debug=getOption("oceDebug"))
             #print(someLines[1])
             if (grepl("^SSDA Sea & Sun Technology", someLines[1])) {
                 return("ctd/ssda")
-            } else if (1L == length(grep('^.*"WMO Identifier",', someLines))) {
+            } else if (1L == length(grep("^.*\"WMO Identifier\",", someLines))) {
                 oceDebug(debug, "} # oceMagic returning met/csv1\n", unindent=1, style="bold")
                 return("met/csv1") # FIXME: may be other things too ...
             } else if (grepl("^.*Longitude.*Latitude.*Station Name.*Climate ID.*Dew Point", someLines[1])) {
@@ -2064,9 +2061,9 @@ read.oce <- function(file, ..., encoding="latin1")
         stop("must supply 'file'")
     if (is.character(file)) {
         if (!file.exists(file))
-            stop("cannot find file '", file, "'")
+            stop("cannot find file \"", file, "\"")
         if (0L == file.info(file)$size)
-            stop("empty file '", file, "'")
+            stop("empty file \"", file, "\"")
     }
     dots <- list(...)
     debug <- if ("debug" %in% names(dots)) as.integer(dots$debug) else 0L
@@ -2083,10 +2080,7 @@ read.oce <- function(file, ..., encoding="latin1")
         stop("empty file")
     #> OLD: deparse is unhelpful if "file" is a variable in the calling code
     #> OLD: processingLog <- paste(deparse(match.call()), sep="", collapse="")
-    processingLog <- paste('read.oce("', file, '"', ifelse(length(list(...)), ", ...)", ")"), sep="")
-
-    # read.index if (type == "index")
-    # read.index     return(read.index(file))
+    processingLog <- paste("read.oce(\"", file, "\"", ifelse(length(list(...)), ", ...)", ")"), sep="")
     if (type == "shapefile") {
         res <- read.coastline.shapefile(file, encoding=encoding, processingLog=processingLog, ...)
     } else if (type == "openstreetmap") {
@@ -2388,7 +2382,7 @@ oceColorsGebco <- function(n=9, region=c("water", "land", "both"), type=c("fill"
         water <- c("#0F7CAB", "#1886AF", "#2090B4", "#2B9AB9", "#35A4BD", "#40AEC2", "#4BB7C7", "#56C0CC", "#62C9D1", "#6FD1D6",
             "#7BD9DB", "#89E0DF", "#96E4E2", "#A4E9E5", "#B3EEE9", "#C2F3ED", "#D2F7F2", "#E2FCF7", "#EBFDF9", "#F5FEFC")
     } else {
-        oceDebug(debug, "type='line'\n")
+        oceDebug(debug, "type=\"line\"\n")
         land <- c("#FBC784", "#F1C37A", "#E6B670", "#DCA865", "#D19A5C",
             "#C79652", "#BD9248", "#B38E3E", "#A98A34")
         water <- rev(c("#A4FCE3", "#72EFE9", "#4FE3ED", "#47DCF2", "#46D7F6",
@@ -2880,7 +2874,7 @@ oce.axis.POSIXct <- function(side, x, at, tformat, labels = TRUE,
         # BOOKMARK 1A
         if (missing(tformat)) {
             tformat <- "%.1S" # NOTE: this .1 is interpreted at BOOKMARK 1B
-            oceDebug(debug, "automatic tformat='", tformat, "'\n")
+            oceDebug(debug, "automatic tformat=\"", tformat, "\"\n")
         }
     } else if (d <= 20) {
         oceDebug(debug, "Time range is between 2 sec and 20 sec\n")
@@ -2890,7 +2884,7 @@ oce.axis.POSIXct <- function(side, x, at, tformat, labels = TRUE,
         oceDebug(debug, vectorShow(z))
         if (missing(tformat)) {
             tformat <- "%S"
-            oceDebug(debug, "automatic tformat='", tformat, "'\n")
+            oceDebug(debug, "automatic tformat=\"", tformat, "\"\n")
         }
      } else if (d <= 60) {
         oceDebug(debug, "Time range is between 20 sec and 1 min\n")
@@ -2900,7 +2894,7 @@ oce.axis.POSIXct <- function(side, x, at, tformat, labels = TRUE,
         oceDebug(debug, vectorShow(z))
         if (missing(tformat)) {
             tformat <- "%S"
-            oceDebug(debug, "automatic tformat='", tformat, "'\n")
+            oceDebug(debug, "automatic tformat=\"", tformat, "\"\n")
         }
     } else if (d <= 60 * 3) {
         oceDebug(debug, "Time range is between 1 min and 3 min\n")
@@ -2910,7 +2904,7 @@ oce.axis.POSIXct <- function(side, x, at, tformat, labels = TRUE,
         oceDebug(debug, vectorShow(z))
         if (missing(tformat)) {
             tformat <- "%M:%S"
-            oceDebug(debug, "automatic tformat='", tformat, "'\n")
+            oceDebug(debug, "automatic tformat=\"", tformat, "\"\n")
         }
     } else if (d <= 60 * 30) {
         oceDebug(debug, "Time range is between 3 min and 30 min\n")
@@ -2920,7 +2914,7 @@ oce.axis.POSIXct <- function(side, x, at, tformat, labels = TRUE,
         oceDebug(debug, vectorShow(z))
         if (missing(tformat)) {
             tformat <- "%M:%S"
-            oceDebug(debug, "automatic tformat='", tformat, "'\n")
+            oceDebug(debug, "automatic tformat=\"", tformat, "\"\n")
         }
     } else if (d <= 60 * 60) {
         oceDebug(debug, "Time range is between 30 min and 1 hour\n")
@@ -2930,7 +2924,7 @@ oce.axis.POSIXct <- function(side, x, at, tformat, labels = TRUE,
         oceDebug(debug, vectorShow(z))
         if (missing(tformat)) {
             tformat <- "%M:%S"
-            oceDebug(debug, "automatic tformat='", tformat, "'\n")
+            oceDebug(debug, "automatic tformat=\"", tformat, "\"\n")
         }
     } else if (d <= 60 * 60 * 2) {
         oceDebug(debug, "Time range is between 1 and 2 hours\n")
@@ -2940,7 +2934,7 @@ oce.axis.POSIXct <- function(side, x, at, tformat, labels = TRUE,
         oceDebug(debug, vectorShow(z))
         if (missing(tformat)) {
             tformat <- "%H:%M:%S"
-            oceDebug(debug, "automatic tformat='", tformat, "'\n")
+            oceDebug(debug, "automatic tformat=\"", tformat, "\"\n")
         }
     } else if (d <= 60 * 60 * 6) {
         oceDebug(debug, "Time range is between 2 and 6 hours\n")
@@ -2950,7 +2944,7 @@ oce.axis.POSIXct <- function(side, x, at, tformat, labels = TRUE,
         oceDebug(debug, vectorShow(z))
         if (missing(tformat)) {
             tformat <- "%H:%M:%S"
-            oceDebug(debug, "automatic tformat='", tformat, "'\n")
+            oceDebug(debug, "automatic tformat=\"", tformat, "\"\n")
         }
     } else if (d <= 60 * 60 * 24 * 1.5) {
         oceDebug(debug, "Time range is between 6 hours and 1.5 days\n")
@@ -2961,7 +2955,7 @@ oce.axis.POSIXct <- function(side, x, at, tformat, labels = TRUE,
         oceDebug(debug, vectorShow(z))
         if (missing(tformat)) {
             tformat <- "%H:%M:%S"
-            oceDebug(debug, "automatic tformat='", tformat, "'\n")
+            oceDebug(debug, "automatic tformat=\"", tformat, "\"\n")
         }
     } else if (d <= 60 * 60 * 24 * 5) {
         oceDebug(debug, "Time range is between 1.5 and 5 days\n")
@@ -2973,7 +2967,7 @@ oce.axis.POSIXct <- function(side, x, at, tformat, labels = TRUE,
         oceDebug(debug, vectorShow(z.sub))
         if (missing(tformat)) {
             tformat <- "%b %d"
-            oceDebug(debug, "automatic tformat='", tformat, "'\n")
+            oceDebug(debug, "automatic tformat=\"", tformat, "\"\n")
         }
     } else if (d <= 60 * 60 * 24 * 14) {
         oceDebug(debug, "Time range is between 4 days and 2 weeks\n")
@@ -2985,7 +2979,7 @@ oce.axis.POSIXct <- function(side, x, at, tformat, labels = TRUE,
         oceDebug(debug, vectorShow(z.sub))
         if (missing(tformat)) {
             tformat <- "%b %d"
-            oceDebug(debug, "automatic tformat='", tformat, "'\n")
+            oceDebug(debug, "automatic tformat=\"", tformat, "\"\n")
         }
     } else if (d <= 60 * 60 * 24 * 31) {
         oceDebug(debug, "Time range is between 2 weeks and 1 month (defined as 31 days)\n")
@@ -2997,7 +2991,7 @@ oce.axis.POSIXct <- function(side, x, at, tformat, labels = TRUE,
         oceDebug(debug, vectorShow(z.sub))
         if (missing(tformat)) {
             tformat <- "%b %d"
-            oceDebug(debug, "automatic tformat='", tformat, "'\n")
+            oceDebug(debug, "automatic tformat=\"", tformat, "\"\n")
         }
     } else if (d < 60 * 60 * 24 * 31 * 2) {
         oceDebug(debug, "Time range is between 1 and 2 months (defined as 31 days)\n")
@@ -3009,7 +3003,7 @@ oce.axis.POSIXct <- function(side, x, at, tformat, labels = TRUE,
         oceDebug(debug, vectorShow(z.sub))
         if (missing(tformat)) {
             tformat <- "%b %d"
-            oceDebug(debug, "automatic tformat='", tformat, "'\n")
+            oceDebug(debug, "automatic tformat=\"", tformat, "\"\n")
         }
     } else if (d < 60 * 60 * 24 * 31 * 4) {
         oceDebug(debug, "Time range is between 2 and 4 months (defined as 31 days)\n")
@@ -3019,7 +3013,7 @@ oce.axis.POSIXct <- function(side, x, at, tformat, labels = TRUE,
         oceDebug(debug, vectorShow(z))
         if (missing(tformat)) {
             tformat <- "%b %d"
-            oceDebug(debug, "automatic tformat='", tformat, "'\n")
+            oceDebug(debug, "automatic tformat=\"", tformat, "\"\n")
         }
     } else if (d < 1.1 * 60 * 60 * 24 * 365) {
         oceDebug(debug, "Time range is between 4 months and 1 year\n")
@@ -3033,7 +3027,7 @@ oce.axis.POSIXct <- function(side, x, at, tformat, labels = TRUE,
         oceDebug(debug, vectorShow(z))
         if (missing(tformat)) {
             tformat <- "%b %d"
-            oceDebug(debug, "automatic tformat='", tformat, "'\n")
+            oceDebug(debug, "automatic tformat=\"", tformat, "\"\n")
         }
     } else if (d < 3.1 * 60 * 60 * 24 * 365) {
         oceDebug(debug, "Time range is between 1 and 3 years\n")
@@ -3049,7 +3043,7 @@ oce.axis.POSIXct <- function(side, x, at, tformat, labels = TRUE,
         oceDebug(debug, vectorShow(z.sub))
         if (missing(tformat)) {
             tformat <- "%Y %b"
-            oceDebug(debug, "automatic tformat='", tformat, "'\n")
+            oceDebug(debug, "automatic tformat=\"", tformat, "\"\n")
         }
     } else {
         oceDebug(debug, "Time range is longer than 3 years\n")
@@ -3069,7 +3063,7 @@ oce.axis.POSIXct <- function(side, x, at, tformat, labels = TRUE,
         oceDebug(debug, vectorShow(z))
         if (missing(tformat)) {
             tformat <- "%Y"
-            oceDebug(debug, "automatic tformat='", tformat, "'\n")
+            oceDebug(debug, "automatic tformat=\"", tformat, "\"\n")
         }
         oceDebug(debug, vectorShow(z, "z="))
     }
@@ -3442,7 +3436,7 @@ numberAsPOSIXct <- function(t, type="unix", tz="UTC", leap=TRUE)
         #20171014 message("leaps A ", paste(leaps, collapse=" "))
         #20171014 message("leaps B ", paste(leaps, collapse=" "))
         #20171014 message("leaps C ", paste(leaps, collapse=" "))
-        week <- t[, 1] + 1024*(t[, 3] - 1)
+        week <- t[, 1] + 1024 * (t[, 3] - 1)
         second <- t[, 2]
         t <- as.POSIXct("1999-08-22 00:00:00", tz="UTC") + 86400*7*week + second
         if (leap) {
@@ -3506,16 +3500,16 @@ numberAsPOSIXct <- function(t, type="unix", tz="UTC", leap=TRUE)
 #' # power law in linear and log form
 #' x <- 1:10
 #' y <- x^2
-#' plot(x, y, log='xy',type='l')
+#' plot(x, y, log="xy", type="l")
 #' plotInset(3, 1, 10, 8,
-#'           expr=plot(x,y,type='l',cex.axis=3/4,mgp=c(3/2, 1/2, 0)),
+#'           expr=plot(x,y,type="l",cex.axis=3/4,mgp=c(3/2, 1/2, 0)),
 #'           mar=c(2.5, 2.5, 1, 1))
 #'
 #' # CTD data with location
 #' data(ctd)
 #' plot(ctd, which="TS")
 #' plotInset(29.9, 2.7, 31, 10,
-#'           expr=plot(ctd, which='map',
+#'           expr=plot(ctd, which="map",
 #'           coastline="coastlineWorld",
 #'           span=5000, mar=NULL, cex.axis=3/4))
 plotInset <- function(xleft, ybottom, xright, ytop, expr,
@@ -3562,10 +3556,10 @@ plotInset <- function(xleft, ybottom, xright, ytop, expr,
             ",  ...) {\n",
             sep="", unindent=1)
     }
-    oceDebug(debug, "par('mfg')=", par("mfg"), "\n")
-    oceDebug(debug, "par('mai')=", par("mai"), "\n")
-    oceDebug(debug, "par('usr')=", par("usr"), "\n")
-    oceDebug(debug, "par('fin')=", fin, "(figure width and height)\n")
+    oceDebug(debug, "par(\"mfg\")=", par("mfg"), "\n")
+    oceDebug(debug, "par(\"mai\")=", par("mai"), "\n")
+    oceDebug(debug, "par(\"usr\")=", par("usr"), "\n")
+    oceDebug(debug, "par(\"fin\")=", fin, "(figure width and height)\n")
     nmai <- c(y2in(ybottom), x2in(xleft), fin[2]-y2in(ytop), fin[1]-x2in(xright))
     oceDebug(debug, "nmai:", nmai, "\n")
     if (any(nmai < 0))
@@ -3929,7 +3923,7 @@ drawDirectionField <- function(x, y, u, v, scalex, scaley, skip, length=0.05, ad
 #' lat <- topoWorld[["latitude"]]
 #' z <- topoWorld[["z"]]
 #' oce.contour(lon, lat, z, levels=0, drawlabels=FALSE)
-#' oce.contour(lon, lat, z, levels=-130, drawlabels=FALSE, col='blue', add=TRUE)
+#' oce.contour(lon, lat, z, levels=-130, drawlabels=FALSE, col="blue", add=TRUE)
 oce.contour <- function(x, y, z, revx=FALSE, revy=FALSE, add=FALSE,
     tformat, drawTimeRange=getOption("oceDrawTimeRange"),
     debug=getOption("oceDebug"), ...)

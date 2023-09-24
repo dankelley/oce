@@ -313,8 +313,8 @@ setMethod(f="plot",
             }
             # Trim lat or lon, to avoid empty margin space
             asp.page <- par("fin")[2] / par("fin")[1] # dy / dx
-            oceDebug(debug, "par('pin')=", par("pin"), "\n")
-            oceDebug(debug, "par('fin')=", par("fin"), "\n")
+            oceDebug(debug, "par(\"pin\")=", par("pin"), "\n")
+            oceDebug(debug, "par(\"fin\")=", par("fin"), "\n")
             oceDebug(debug, "asp=", asp, "\n")
             oceDebug(debug, "asp.page=", asp.page, "\n")
             if (!is.finite(asp)) {
@@ -387,7 +387,7 @@ setMethod(f="plot",
                 usrTrimmed[3] <- max(-90, usrTrimmed[3])
                 usrTrimmed[4] <- min(90, usrTrimmed[4])
                 oceDebug(debug, "usrTrimmed", usrTrimmed, "\n")
-                oceDebug(debug, "par('usr')", par("usr"), "\n")
+                oceDebug(debug, "par(\"usr\")", par("usr"), "\n")
                 xlabels <- format(xr.pretty)
                 ylabels <- format(yr.pretty)
                 if (geographical >= 1) {
@@ -408,8 +408,8 @@ setMethod(f="plot",
                 oceDebug(debug, "putting right y axis at", usrTrimmed[2], "\n")
             }
             yaxp <- par("yaxp")
-            oceDebug(debug, "par('yaxp')", par("yaxp"), "\n")
-            oceDebug(debug, "par('pin')", par("pin"), "\n")
+            oceDebug(debug, "par(\"yaxp\")", par("yaxp"), "\n")
+            oceDebug(debug, "par(\"pin\")", par("pin"), "\n")
             if (yaxp[1] < -90 || yaxp[2] > 90) {
                 oceDebug(debug, "trimming latitude; pin=", par("pin"), "FIXME: not working\n")
                 oceDebug(debug, "trimming latitdue; yaxp=", yaxp, "FIXME: not working\n")
@@ -423,7 +423,7 @@ setMethod(f="plot",
             }
         }
         #box()
-        oceDebug(debug, "par('usr')=", par("usr"), "\n")
+        oceDebug(debug, "par(\"usr\")=", par("usr"), "\n")
         oceDebug(debug, "} # plot.gps()\n", unindent=1)
         invisible(NULL)
     })
@@ -493,9 +493,9 @@ read.gps <- function(file, type=NULL, encoding="latin1", debug=getOption("oceDeb
         stop("must supply 'file'")
     if (is.character(file)) {
         if (!file.exists(file))
-            stop("cannot find file '", file, "'")
+            stop("cannot find file \"", file, "\"")
         if (0L == file.info(file)$size)
-            stop("empty file '", file, "'")
+            stop("empty file \"", file, "\"")
     }
     oceDebug(debug, "read.gps(...) {\n", sep="", style="bold", unindent=1)
     filename <- NULL
@@ -505,7 +505,7 @@ read.gps <- function(file, type=NULL, encoding="latin1", debug=getOption("oceDeb
         on.exit(close(file))
     }
     if (!inherits(file, "connection"))
-        stop("argument `file' must be a character string or connection")
+        stop("\"file\" must be a character string or connection")
     if (!isOpen(file)) {
         open(file, "r", encoding=encoding)
         on.exit(close(file))
@@ -516,7 +516,7 @@ read.gps <- function(file, type=NULL, encoding="latin1", debug=getOption("oceDeb
         if (length(found) > 0) {
             type <- "gpx"
         } else {
-            warning("cannot determine file type; assuming 'gpx'")
+            warning("cannot determine file type; assuming \"gpx\"")
         }
     }
     type <- match.arg(type, c("gpx"))

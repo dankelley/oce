@@ -175,7 +175,7 @@ setMethod(f="subset",
             debug <- options("oceDebug")$debug
         if (is.null(debug))
             debug <- 0
-        # 's0' is a character string that we decompose to find W, E, S
+        # \"s0\" is a character string that we decompose to find W, E, S
         # and N.  This is done in small steps because that might help in
         # locating any bugs that might crop up. Note that the elements
         # of the string are broken down to get W, E, S and N, and so
@@ -185,30 +185,30 @@ setMethod(f="subset",
         s0 <- deparse(substitute(expr=subset, env=environment()), width.cutoff=500)
         oceDebug(debug, "subset,coastline-method(..., ", s0, ") {\n", unindent=1, sep="", style="bold")
         if (length(grep(">", s0)))
-            stop("the 'subset' may not contain the character '>'")
+            stop("the \"subset\" may not contain the character \">\"")
         s1 <- gsub(" ", "", s0) # remove all spaces
-        oceDebug(debug, "s1='", s1, "'\n", sep="")
+        oceDebug(debug, "s1=\"", s1, "\"\n", sep="")
         s2 <- gsub("&&", "&", gsub("=", "", gsub("[ ]*", "", s1))) # && becomes &
-        oceDebug(debug, "s2='", s2, "'\n", sep="")
+        oceDebug(debug, "s2=\"", s2, "\"\n", sep="")
         s3 <- gsub("<=", "<", s2) # <= becomes <
-        oceDebug(debug, "s3='", s3, "'\n", sep="")
+        oceDebug(debug, "s3=\"", s3, "\"\n", sep="")
         s4 <- strsplit(s3, "&")[[1]]
-        oceDebug(debug, "s4='", paste(s4, collapse="' '"), "'\n", sep="")
+        oceDebug(debug, "s4=\"", paste(s4, collapse="\" \""), "\"\n", sep="")
         E <- W <- S <- N <- NA
         for (ss in s4) {
             s4 <- gsub("<=", "<", ss)
-            oceDebug(debug, "ss='", ss, "'\n", sep="")
+            oceDebug(debug, "ss=\"", ss, "\"\n", sep="")
             if (length(grep("<lon", s4))) {
-                oceDebug(debug, "looking for W in '", s4, "'\n", sep="")
+                oceDebug(debug, "looking for W in \"", s4, "\"\n", sep="")
                 W <- as.numeric(strsplit(s4, "<")[[1]][1])
             } else if (length(grep("lon[a-z]*<", s4))) {
-                oceDebug(debug, "looking for E in '", s4, "'\n", sep="")
+                oceDebug(debug, "looking for E in \"", s4, "\"\n", sep="")
                 E <- as.numeric(strsplit(s4, "<")[[1]][2])
             } else if (length(grep("<lat", s4))) {
-                oceDebug(debug, "looking for S in '", s4, "'\n", sep="")
+                oceDebug(debug, "looking for S in \"", s4, "\"\n", sep="")
                 S <- as.numeric(strsplit(s4, "<")[[1]][1])
             } else if (length(grep("lat[a-z]*<", s4))) {
-                oceDebug(debug, "looking for N in '", s4, "'\n", sep="")
+                oceDebug(debug, "looking for N in \"", s4, "\"\n", sep="")
                 N <- as.numeric(strsplit(s4, "<")[[1]][2])
             }
         }
@@ -502,7 +502,7 @@ as.coastline <- function(longitude, latitude, fillable=FALSE)
 #'
 #' # Canada in Lambert projection
 #' plot(coastlineWorld, clongitude=-95, clatitude=65, span=5500,
-#'      grid=10, projection='+proj=laea +lon_0=-100 +lat_0=55')
+#'     grid=10, projection="+proj=laea +lon_0=-100 +lat_0=55")
 #'}
 #'
 #' @family functions that plot oce data
@@ -652,7 +652,7 @@ setMethod(f="plot",
                 par(mar=mar)
             par(mgp=mgp)
             if (add) {
-                # FIXME: handle 'type' values 'p', 'l' and 'o' here
+                # FIXME: handle "type" values "p", "l" and "o" here
                 warning("BUG: ignoring 'type' because add=TRUE (FIXME)\n")
                 polygon(longitude, latitude, border=border, col=col, ...)
                 if (axes) {
@@ -960,9 +960,9 @@ read.coastline <- function(file, type=c("R", "S", "mapgen", "shapefile", "openst
         stop("must supply 'file'")
     if (is.character(file)) {
         if (!file.exists(file))
-            stop("cannot find file '", file, "'")
+            stop("cannot find file \"", file, "\"")
         if (0L == file.info(file)$size)
-            stop("empty file '", file, "'")
+            stop("empty file \"", file, "\"")
     }
     type <- match.arg(type)
     oceDebug(debug, "read.coastline(file=\"", file, "\", type=\"", type, "\", ...) {\n", sep="", unindent=1, style="bold")
@@ -1088,9 +1088,9 @@ read.coastline.shapefile <- function(file, lonlim=c(-180, 180), latlim=c(-90, 90
         stop("must supply 'file'")
     if (is.character(file)) {
         if (!file.exists(file))
-            stop("cannot find file '", file, "'")
+            stop("cannot find file \"", file, "\"")
         if (0L == file.info(file)$size)
-            stop("empty file '", file, "'")
+            stop("empty file \"", file, "\"")
     }
     oceDebug(debug, "read.shapefile(file=\"", file, "\", ...) {\n", sep="", unindent=1, style="bold")
     shapeTypeList <- c("nullshape",    # 0
@@ -1139,11 +1139,11 @@ read.coastline.shapefile <- function(file, lonlim=c(-180, 180), latlim=c(-90, 90
             # filename <- fullFilename(zipfile)
             file <- gsub(".zip$", ".shp", file)
             file <- gsub(".*/", "", file) # remove directory path
-            oceDebug(debug, "   zip   file:     '", zipfile, "'\n", sep="")
-            oceDebug(debug, "   shape file:     '", file, "'\n", sep="")
-            oceDebug(debug, "metadata filename: '", file, "'\n", sep="")
+            oceDebug(debug, "   zip   file:     \"", zipfile, "\"\n", sep="")
+            oceDebug(debug, "   shape file:     \"", file, "\"\n", sep="")
+            oceDebug(debug, "metadata filename: \"", file, "\"\n", sep="")
             tdir <- tempdir()
-            oceDebug(debug, "             tdir: '", tdir, "'\n", sep="")
+            oceDebug(debug, "             tdir: \"", tdir, "\"\n", sep="")
             oceDebug(debug, "about to unzip ...\n")
             unzip(zipfile, exdir=tdir) # unzips all the files (we need .shp and .dbf)
             oceDebug(debug, "... the unzip completed without error\n")
@@ -1307,9 +1307,9 @@ read.coastline.openstreetmap <- function(file, lonlim=c(-180, 180), latlim=c(-90
         stop("must supply 'file'")
     if (is.character(file)) {
         if (!file.exists(file))
-            stop("cannot find file '", file, "'")
+            stop("cannot find file \"", file, "\"")
         if (0L == file.info(file)$size)
-            stop("empty file '", file, "'")
+            stop("empty file \"", file, "\"")
     }
     oceDebug(debug, "read.coastline.openstreetmap(file=\"", file, "\", ...) {\n", sep="", unindent=1, style="bold")
     # FIXME: ignoring lonlim and latlim
@@ -1335,7 +1335,7 @@ read.coastline.openstreetmap <- function(file, lonlim=c(-180, 180), latlim=c(-90
     # get all <way>
     wayStart <- grep("<way ", d)
     # wayEnd <- grep("</way ", d)
-    coastlineWayEnd <- grep('k="natural" v="coastline"', d)
+    coastlineWayEnd <- grep("k=\"natural\" v=\"coastline\"", d)
     ncoastline <- length(coastlineWayEnd)
     coastlineWayStart <- vector("integer", ncoastline)
     for (i in 1:ncoastline)

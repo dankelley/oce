@@ -73,7 +73,7 @@ if (require(ocedata)) {
     a1 <- oce.approx(RRprofile$depth, RRprofile$temperature, zz, "rr")
     a2 <- oce.approx(RRprofile$depth, RRprofile$temperature, zz, "unesco")
     lines(a1, zz)
-    lines(a2, zz, col='red')
+    lines(a2, zz, col="red")
     legend("bottomright",lwd=1,col=1:2, legend=c("rr","unesco"),cex=3/4)
 }
 }

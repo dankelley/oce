@@ -31,9 +31,9 @@ read.ctd.odv <- function(file, columns=NULL, station=NULL, missingValue,
         stop("must supply 'file'")
     if (is.character(file)) {
         if (!file.exists(file))
-            stop("cannot find file '", file, "'")
+            stop("cannot find file \"", file, "\"")
         if (0L == file.info(file)$size)
-            stop("empty file '", file, "'")
+            stop("empty file \"", file, "\"")
     }
     oceDebug(debug, "read.ctd.odv() {\n", unindent=1)
     filename <- ""

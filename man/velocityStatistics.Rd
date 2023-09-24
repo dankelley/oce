@@ -37,8 +37,8 @@ theta <- a$ellipseAngle * pi / 180
 y <- a$ellipseMajor * cos(t) * sin(theta) + a$ellipseMinor * sin(t) * cos(theta)
 x <- a$ellipseMajor * cos(t) * cos(theta) - a$ellipseMinor * sin(t) * sin(theta)
 plot(adp, which="uv+ellipse+arrow")
-lines(x, y, col='blue', lty="dashed", lwd=5)
-arrows(0, 0, a$uMean, a$vMean, lwd=5, length=1/10, col='blue', lty="dashed")
+lines(x, y, col="blue", lty="dashed", lwd=5)
+arrows(0, 0, a$uMean, a$vMean, lwd=5, length=1/10, col="blue", lty="dashed")
 
 }
 \seealso{

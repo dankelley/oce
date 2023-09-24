@@ -170,7 +170,7 @@ plot(ctd, span=500)
 # UNESCO-defined potential temperatures for the added points.)
 plotTS(ctd, type="o", eos="unesco") # use a line to show loops
 bad <- ctd[["QCFlag"]]!=0
-points(ctd[['salinity']][bad],ctd[['theta']][bad],col='red',pch=20)
+points(ctd[["salinity"]][bad],ctd[["theta"]][bad],col="red",pch=20)
 
 }
 \references{
