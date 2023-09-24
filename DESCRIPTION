@@ -21,7 +21,6 @@ Suggests:
     RSQLite,
     R.utils,
     sf,
-    sp,
     terra,
     testthat (>= 3.0.0),
     tiff,

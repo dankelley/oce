@@ -743,8 +743,8 @@ mapContour <- function(longitude, latitude, z,
         stop("must supply z")
     if (!underlay %in% c("erase", "interrupt"))
         stop("underlay must be \"erase\" or \"interrupt\"")
-    if (underlay == "interrupt" && !requireNamespace("sp", quietly=TRUE))
-        stop("must have \"sp\" package available for underlay=\"interupt\"")
+    if (underlay == "interrupt" && !requireNamespace("sf", quietly=TRUE))
+        stop("must have \"sf\" package available for underlay=\"interupt\"")
     if ("data" %in% slotNames(longitude) && # handle e.g. 'topo' class
         3 == sum(c("longitude", "latitude", "z") %in% names(longitude@data))) {
         z <- longitude@data$z
@@ -839,21 +839,13 @@ mapContour <- function(longitude, latitude, z,
                             polygon(xc[labelj]+XYrot[, 1], yc[labelj]+XYrot[, 2],
                                 col=colUnderLabel, border=colUnderLabel)
                         } else if (underlay == "interrupt") {
-                            erase <- 1==sp::point.in.polygon(xc, yc,
-                                xc[labelj]+XYrot[, 1], yc[labelj]+XYrot[, 2])
                             polyx <- xc[labelj] + XYrot[, 1]
                             polyy <- yc[labelj] + XYrot[, 2]
-                            polyNew <- sf::st_polygon(list(outer=cbind(c(polyx, polyx[1]), c(polyy, polyy[1]))))
-                            pointsNew <- sf::st_multipoint(cbind(xc, yc))
-                            insideNew <- sf::st_intersection(pointsNew, polyNew)
-                            tmpMatrix <- matrix(pointsNew %in% insideNew, ncol=2)
-                            eraseNew <- tmpMatrix[, 1] & tmpMatrix[, 2] # could also use an apply op, but this is simple
-                            #eraseOld <- erase
-                            if (!isTRUE(all.equal(eraseNew, erase))) {
-                                warning("mapContour() : 'erase' disagreement with trial 'sf' method. ",
-                                    "Please post an issue on www.github.com/dankelley/oce/issues\n",
-                                    immediate.=TRUE)
-                            }
+                            poly <- sf::st_polygon(list(outer=cbind(c(polyx, polyx[1]), c(polyy, polyy[1]))))
+                            points <- sf::st_multipoint(cbind(xc, yc))
+                            inside <- sf::st_intersection(points, poly)
+                            tmpMatrix <- matrix(points %in% inside, ncol=2)
+                            erase <- tmpMatrix[, 1] & tmpMatrix[, 2]
                             oceDebug(debug, "ignoring", sum(erase), "points under", label, "contour\n")
                             XC <- xc
                             YC <- yc
