@@ -44,7 +44,7 @@ read.ctd.ssda <- function(file, encoding="latin1", debug=getOption("oceDebug"), 
     if (is.character(file)) {
         filesize <- file.info(file)$size
         if (is.na(filesize) || 0L == filesize)
-            stop("empty file")
+            stop("empty file \"", file, "\"")
     }
     if (is.character(file)) {
         file <- file(file, "r", encoding=encoding)

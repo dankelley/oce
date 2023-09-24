@@ -798,7 +798,7 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
     fileSize <- seek(file, where=0)
     oceDebug(debug, "fileSize=", fileSize, "\n")
     if (fileSize < 1)
-        stop("empty data file")
+        stop("empty file \"", file, "\"")
     # FIXME 20170107
     # We process the header wholly in R, and we don't need more than probably 2000 bytes
     # but let's read 10000 just in case. It might be worth thinking about this in more
