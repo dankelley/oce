@@ -936,12 +936,26 @@ tidemConstituentNameFix <- function(names, debug=1)
 #' Fit a Tidal Model to a Timeseries
 #'
 #' The fit is done in terms of sine and cosine components at the indicated
-#' tidal frequencies, with the amplitude and phase being calculated from the
-#' resultant coefficients on the sine and cosine terms. The scheme
-#' was devised for hourly data; for other sampling schemes, please see
-#' \dQuote{Application to non-hourly data}.
+#' tidal frequencies (after possibly pruning to satisfy the Rayleigh criterion,
+#' as explained in phase 2 of the procedure outlined in
+#' '\sQuote{Details}), with the amplitude and phase being
+#' calculated from the resultant coefficients on the sine and cosine terms.
+#' The scheme was devised for hourly data; for other sampling schemes,
+#' see \dQuote{Application to non-hourly data}.
 #'
-#' The tidal constituents to be used in the analysis are specified as follows;
+#' A summary of constituents used by [tidem()] may be found with:
+#'\preformatted{
+#' data(tidedata)
+#' print(tidedata$const)
+#'}
+#'
+#' A multi-stage procedure is used to establish the list of tidal
+#' constituents to be used in the fit.
+#'
+#' *Phase 1: initial selection.*
+#'
+#' The initial list tidal constituents (prior to the pruning phase described
+#' below) to be used in the analysis are specified as follows;
 #' see \dQuote{Constituent Naming Convention}.
 #'
 #' 1. If `constituents` is not provided, then the constituent
@@ -963,8 +977,8 @@ tidemConstituentNameFix <- function(names, debug=1)
 #' `data(tidedata)` and then execute `cat(tideData$name)`.)  Each
 #' named constituent is added to the existing list, if it is not already there.
 #' But, if the constituent is preceded by a minus sign, then it is removed
-#' from the list (if it is already there).  Thus, for example,
-#' `constituents=c("standard", "-M2", "ST32")` would remove the M2
+#' from the list (if it is already there).  Thus, for example, a user
+#' might specify `constituents=c("standard", "-M2", "ST32")` to remove the M2
 #' constituent and add the ST32 constituent.
 #'
 #' 3. If the first item is not `"standard"`, then the list of
@@ -977,17 +991,23 @@ tidemConstituentNameFix <- function(names, debug=1)
 #' analysis, so that the results of [summary,tidem-method()] will be in a
 #' familiar form.
 #'
-#' Once the constituent list is determined, `tidem` prunes the elements of
-#' the list by using the Rayleigh criterion, according to which two
+#' *Phase 2: pruning based on Rayleigh's criterion.*
+#'
+#' Once the initial constituent list is determined during Phase 1,
+#' `tidem` applies the Rayleigh criterion, which holds that
 #' constituents of frequencies \eqn{f_1}{f1} and \eqn{f_2}{f2} cannot be
 #' resolved unless the time series spans a time interval of at least
-#' \eqn{rc/(f_1-f_2)}{rc/(f1-f2)}.
+#' \eqn{rc/(f_1-f_2)}{rc/(f1-f2)}.  The details of the decision of which
+#' constituent to prune is fairly complicated, involving decisions
+#' based on a comparison table.  The details of this process are provided
+#' by Foreman (1978).
 #'
-#' Finally, `tidem` looks in the remaining constituent list to check
-#' that the application of the Rayleigh criterion has not removed any of the
-#' constituents specified directly in the `constituents` argument. If
-#' any are found to have been removed, then they are added back. This last
-#' step was added on 2017-12-27, to make `tidem` behave the same
+#' *Phase 3: overrulling Rayleigh's criterion.*
+#'
+#' The pruning list from phase 2 can be overruled by the user. This
+#' is done by retaining any constitutents that the user has named
+#' in the `constituents` parameter.  This action
+#' was added on 2017-12-27, to make `tidem` behave the same
 #' way as the Foreman (1978) code, as illustrated in his
 #' Appendices 7.2 and 7.3. (As an aside, his Appendix 7.3 has some errors,
 #' e.g. the frequency for the 2SK5 constituent is listed there (p58) as
@@ -995,6 +1015,8 @@ tidemConstituentNameFix <- function(names, debug=1)
 #' For this reason, the frequency comparison is relaxed to a `tol`
 #' value of `1e-7` in a portion of the oce test suite
 #' (see `tests/testthat/test_tidem.R` in the source).
+#'
+#' *Comments on phases 2 and 3*
 #'
 #' A specific example may be of help in understanding the removal of unresolvable
 #' constituents. For example, the `data(sealevel)` dataset is of length
@@ -1009,12 +1031,6 @@ tidemConstituentNameFix <- function(names, debug=1)
 #' suggests that `GAM2` be subsumed into `H1`,
 #' then if `H1` is already being deleted, then
 #' `GAM2` will also be deleted.
-#'
-#' A summary of constituents may be found with:
-#' \preformatted{
-#' data(tidedata)
-#' print(tidedata$const)
-#' }
 #'
 #' @param t either a vector of times or a [sealevel-class] object
 #' (as created with [read.sealevel()] or [as.sealevel()]).
@@ -1741,6 +1757,15 @@ tidem <- function(t, x, constituents, infer=NULL, latitude=NULL,
 #'
 #' This creates a time-series of predicted tides, based on a
 #' tidal model object that was created by [as.tidem()] or [tidem()].
+#'
+#' All the tidal constituents that are stored in `object` are used,
+#' not just those that are statistically significant or that have amplitude
+#' exceeding any particular value.  In this respect, [predict.tidem()]
+#' follows a pattern established by e.g. [predict.lm()].  Note that
+#' the constituents in `object` are straightforward if it
+#' was constructed with [as.tidem()], but considerably more complicated
+#' for [tidem()], and so the documentation for the latter ought to
+#' be studied closely, especially with regard to the Rayleigh criterion.
 #'
 #' @param object a [tidem-class] object.
 #'

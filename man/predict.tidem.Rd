@@ -25,6 +25,16 @@ A vector of predictions.
 This creates a time-series of predicted tides, based on a
 tidal model object that was created by \code{\link[=as.tidem]{as.tidem()}} or \code{\link[=tidem]{tidem()}}.
 }
+\details{
+All the tidal constituents that are stored in \code{object} are used,
+not just those that are statistically significant or that have amplitude
+exceeding any particular value.  In this respect, \code{\link[=predict.tidem]{predict.tidem()}}
+follows a pattern established by e.g. \code{\link[=predict.lm]{predict.lm()}}.  Note that
+the constituents in \code{object} are straightforward if it
+was constructed with \code{\link[=as.tidem]{as.tidem()}}, but considerably more complicated
+for \code{\link[=tidem]{tidem()}}, and so the documentation for the latter ought to
+be studied closely, especially with regard to the Rayleigh criterion.
+}
 \examples{
 
 # Show non-tidal sealevel signal in Halifax Harbour during

@@ -104,13 +104,27 @@ an open question.}
 }
 \description{
 The fit is done in terms of sine and cosine components at the indicated
-tidal frequencies, with the amplitude and phase being calculated from the
-resultant coefficients on the sine and cosine terms. The scheme
-was devised for hourly data; for other sampling schemes, please see
-\dQuote{Application to non-hourly data}.
+tidal frequencies (after possibly pruning to satisfy the Rayleigh criterion,
+as explained in phase 2 of the procedure outlined in
+'\sQuote{Details}), with the amplitude and phase being
+calculated from the resultant coefficients on the sine and cosine terms.
+The scheme was devised for hourly data; for other sampling schemes,
+see \dQuote{Application to non-hourly data}.
 }
 \details{
-The tidal constituents to be used in the analysis are specified as follows;
+A summary of constituents used by \code{\link[=tidem]{tidem()}} may be found with:
+\preformatted{
+data(tidedata)
+print(tidedata$const)
+}
+
+A multi-stage procedure is used to establish the list of tidal
+constituents to be used in the fit.
+
+\emph{Phase 1: initial selection.}
+
+The initial list tidal constituents (prior to the pruning phase described
+below) to be used in the analysis are specified as follows;
 see \dQuote{Constituent Naming Convention}.
 \enumerate{
 \item If \code{constituents} is not provided, then the constituent
@@ -125,8 +139,8 @@ constituent in the Foreman (1978) notation.  (To get the list, execute
 \code{data(tidedata)} and then execute \code{cat(tideData$name)}.)  Each
 named constituent is added to the existing list, if it is not already there.
 But, if the constituent is preceded by a minus sign, then it is removed
-from the list (if it is already there).  Thus, for example,
-\code{constituents=c("standard", "-M2", "ST32")} would remove the M2
+from the list (if it is already there).  Thus, for example, a user
+might specify \code{constituents=c("standard", "-M2", "ST32")} to remove the M2
 constituent and add the ST32 constituent.
 \item If the first item is not \code{"standard"}, then the list of
 constituents is processed as in Case 2, but without starting with the
@@ -139,17 +153,23 @@ In each of the above cases, the list is reordered in frequency prior to the
 analysis, so that the results of \code{\link[=summary,tidem-method]{summary,tidem-method()}} will be in a
 familiar form.
 
-Once the constituent list is determined, \code{tidem} prunes the elements of
-the list by using the Rayleigh criterion, according to which two
+\emph{Phase 2: pruning based on Rayleigh's criterion.}
+
+Once the initial constituent list is determined during Phase 1,
+\code{tidem} applies the Rayleigh criterion, which holds that
 constituents of frequencies \eqn{f_1}{f1} and \eqn{f_2}{f2} cannot be
 resolved unless the time series spans a time interval of at least
-\eqn{rc/(f_1-f_2)}{rc/(f1-f2)}.
+\eqn{rc/(f_1-f_2)}{rc/(f1-f2)}.  The details of the decision of which
+constituent to prune is fairly complicated, involving decisions
+based on a comparison table.  The details of this process are provided
+by Foreman (1978).
 
-Finally, \code{tidem} looks in the remaining constituent list to check
-that the application of the Rayleigh criterion has not removed any of the
-constituents specified directly in the \code{constituents} argument. If
-any are found to have been removed, then they are added back. This last
-step was added on 2017-12-27, to make \code{tidem} behave the same
+\emph{Phase 3: overrulling Rayleigh's criterion.}
+
+The pruning list from phase 2 can be overruled by the user. This
+is done by retaining any constitutents that the user has named
+in the \code{constituents} parameter.  This action
+was added on 2017-12-27, to make \code{tidem} behave the same
 way as the Foreman (1978) code, as illustrated in his
 Appendices 7.2 and 7.3. (As an aside, his Appendix 7.3 has some errors,
 e.g. the frequency for the 2SK5 constituent is listed there (p58) as
@@ -157,6 +177,8 @@ e.g. the frequency for the 2SK5 constituent is listed there (p58) as
 For this reason, the frequency comparison is relaxed to a \code{tol}
 value of \code{1e-7} in a portion of the oce test suite
 (see \code{tests/testthat/test_tidem.R} in the source).
+
+\emph{Comments on phases 2 and 3}
 
 A specific example may be of help in understanding the removal of unresolvable
 constituents. For example, the \code{data(sealevel)} dataset is of length
@@ -171,12 +193,6 @@ Table 3 of Foreman (1978) dictates the removal of
 suggests that \code{GAM2} be subsumed into \code{H1},
 then if \code{H1} is already being deleted, then
 \code{GAM2} will also be deleted.
-
-A summary of constituents may be found with:
-\preformatted{
-data(tidedata)
-print(tidedata$const)
-}
 }
 \section{Application to non-hourly data}{
 
