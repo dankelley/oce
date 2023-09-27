@@ -278,7 +278,7 @@ decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceT
         readBin(FLD[48], "integer", n=1, size=1, signed=FALSE),
         readBin(FLD[49], "integer", n=1, size=1, signed=FALSE),
         readBin(FLD[50], "integer", n=1, size=1, signed=FALSE))
-    oceDebug(debug, paste("cpuBoardSerialNumber = '", paste(cpuBoardSerialNumber, collapse=""), "'\n"))
+    oceDebug(debug, paste("cpuBoardSerialNumber = \"", paste(cpuBoardSerialNumber, collapse=""), "\"\n"))
     systemBandwidth <- readBin(FLD[51:52], "integer", n=1, size=2, endian="little")
     #systemPower <- readBin(FLD[53], "integer", n=1, size=1)
     # FLD[54] spare

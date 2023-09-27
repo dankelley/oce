@@ -559,7 +559,7 @@ read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oceTz"), h
         iii <- from <= time & time <= to
         if (is.character(by)) {
             subsamplingRate <- floor(0.5 + ctimeToSeconds(by) * res@metadata$samplingRate)
-            oceDebug(debug, paste(" by = '", by, "' yields subsamplingRate=", subsamplingRate, "\n"), sep="")
+            oceDebug(debug, paste(" by = \"", by, "\" yields subsamplingRate=", subsamplingRate, "\n"), sep="")
             samples <- seq_along(iii)
             oceDebug(debug, "before interpreting 'by', iii true for", sum(iii), "cases\n")
             iii <- iii & !(samples %% subsamplingRate)
