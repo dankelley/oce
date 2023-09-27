@@ -127,9 +127,11 @@ read.ctd.itp <- function(file, columns=NULL,
             salinity <- ifelse(salinity==missingValue, NA, salinity)
             oxygen <- ifelse(oxygen==missingValue, NA, oxygen)
         }
+        startTime <- as.POSIXct(paste(year, floor(yearday)),
+            format="%Y %j", tz="UTC") + (yearday-floor(yearday))*86400.
         res <- as.ctd(salinity, temperature, pressure,
             longitude=longitude, latitude=latitude,
-            startTime=ISOdate(year, 1, 1) + yearday * 3600 * 24,
+            startTime=startTime,
             deploymentType=deploymentType,
             station=station)
         res <- oceSetData(res, name="oxygen", value=oxygen, unit=units$oxygen, originalName="oxygen")
