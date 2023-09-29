@@ -1800,8 +1800,12 @@ setMethod(f="plot", signature=signature("section"),
                     waterDepth <- c(waterDepth, wd)
                     #2092 message(sprintf("DAN i=%d x=%.2f depth=%.0f", i, xx[i], wd))
                 }
-                if (!grid && axes && stationTicks)
-                    Axis(side=3, at=xx, labels=FALSE, tcl=-1/3, lwd=0.5) # station locations
+                # The Axis() call was a problem (not sure why) so I changed to rug()
+                # to fix issue https://github.com/dankelley/oce/issues/2159
+                if (!grid && axes && stationTicks) {
+                    #Axis(side=3, at=xx, labels=FALSE, tcl=-1/3, lwd=0.5) # station locations
+                    rug(xx, side=3, tcl=-1/3, lwd=0.5) # station locations
+                }
                 #2092 message("DAN next is xx. Is it in order of station or axis?")
                 bottom.x <- c(xx[1], xx, xx[length(xx)])
                 bottom.y <- if (any(is.finite(waterDepth)))
