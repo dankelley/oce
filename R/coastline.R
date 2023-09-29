@@ -878,16 +878,16 @@ setMethod(f="plot",
 #'
 #' @seealso The work is done with [utils::download.file()].
 #'
-## @examples
-##\dontrun{
-## library(oce)
-## # User must create directory ~/data/coastline first.
-## # As of September 2016, the downloaded file, named
-## # "ne_50m_coastline.zip", occupies 443K bytes.
-## filename <- download.coastline(destdir="~/data/coastline")
-## coastline <- read.coastline(filename)
-## plot(coastline)
-##}
+#' @section Non-Executable Examples:
+#'\dontrun{
+#' library(oce)
+#' # User must create directory ~/data/coastline first.
+#' # As of September 2016, the downloaded file, named
+#' # "ne_50m_coastline.zip", occupies 443K bytes.
+#' filename <- download.coastline(destdir="~/data/coastline")
+#' coastline <- read.coastline(filename)
+#' plot(coastline)
+#'}
 #'
 #' @references
 #' 1. The NaturalEarth server is at `https://www.naturalearthdata.com`

@@ -63,6 +63,34 @@ See \dQuote{Details} for the particular case of \linkS4class{ctd} objects.
 \details{
 Since all the entries in the \code{data} slot of ctd objects are vectors, \code{i} must be a vector (either logical as in Example 1 or integer as in Example 2), or a function taking a \code{ctd} object and returning such a vector (see \dQuote{Indexing rules}).
 }
+\section{Sample of Usage}{
+
+\preformatted{
+# Example 2: Interactive flag assignment based on TS plot, using
+# WHP scheme to define 'acceptable' and 'bad' codes
+options(eos="gsw")
+data(ctd)
+qc <- ctd
+qc <- initializeFlagScheme(qc, "WHP CTD")
+qc <- initializeFlags(qc, "salinity", 2)
+Sspan <- diff(range(qc[["SA"]]))
+Tspan <- diff(range(qc[["CT"]]))
+n <- length(qc[["SA"]])
+par(mfrow=c(1, 1))
+plotTS(qc, type="o")
+message("Click on bad points; quit by clicking to right of plot")
+for (i in seq_len(n)) {
+    xy <- locator(1)
+    if (xy$x > par("usr")[2])
+        break
+    i <- which.min(abs(qc[["SA"]] - xy$x)/Sspan + abs(qc[["CT"]] - xy$y)/Tspan)
+    qc <- setFlags(qc, "salinity", i=i, value=4)
+    qc <- handleFlags(qc, flags=list(salinity=4))
+    plotTS(qc, type="o")
+}
+}
+}
+
 \examples{
 library(oce)
 # Example 1: Range-check salinity
@@ -83,7 +111,6 @@ qc <- setFlags(qc, name="temperature", i=oddT, value=4)
 par(mfrow=c(2, 1))
 plotTS(ctdRaw)
 plotTS(handleFlags(qc, flags=c(1, 3:9)))
-
 
 }
 \seealso{

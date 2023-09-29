@@ -23,6 +23,15 @@ using \code{\link[=oceEdit]{oceEdit()}}. The change was done because the origina
 incorrect, perhaps owing to the use of software that was designed to work in
 the twentieth century only.
 }
+\section{Sample of Usage}{
+
+\preformatted{
+library(oce)
+data(ctd)
+plot(ctd)
+}
+}
+
 \seealso{
 The full profile (not trimmed to the downcast) is available as
 \code{data(ctdRaw)}.

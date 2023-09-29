@@ -100,6 +100,36 @@ on the sampling protocol, it is often necessary to pass the resultant profiles t
 Generally, one is well-advised to use the present function for a quick look at the data,
 relying on e.g. \code{\link[=plotScan]{plotScan()}} to identify profiles visually, for a final product.
 }
+\section{Sample of Usage}{
+
+\preformatted{
+library(oce)
+# These examples cannot be tested, because they are based on
+# data objects that are not provided with oce.
+
+# Example 1. Find profiles within a towyo file, as can result
+# if the CTD is cycled within the water column as the ship
+# moves.
+profiles <- ctdFindProfiles(towyo)
+
+# Example 2. Use a moving average to smooth pressure, instead of the
+# default smooth.spline() method. This might avoid a tendency of
+# the default scheme to miss some profiles in a long towyo.
+movingAverage <- function(x, n = 11, ...)
+{
+    f <- rep(1/n, n)
+    stats::filter(x, f, ...)
+}
+casts <- ctdFindProfiles(towyo, smoother=movingAverage)
+
+# Example 3: glider data read into a ctd object. Chop
+# into profiles by looking for pressure jumps exceeding
+# 10 dbar.
+breaks <- which(diff(gliderAsCtd[["pressure"]]) > 10)
+profiles <- ctdFindProfiles(gliderAsCtd, breaks=breaks)
+}
+}
+
 \seealso{
 The documentation for \linkS4class{ctd} explains the structure
 of CTD objects, and also outlines the other functions dealing with them.

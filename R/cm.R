@@ -465,19 +465,19 @@ as.cm <- function(time, u=NULL, v=NULL,
 #' return value, but it is no longer stored, since it can be derived from the
 #' `u` and `v` values.
 #'
-## @examples
-##\dontrun{
-##   library(oce)
-##   cm <- read.oce("cm_interocean_0811786.s4a.tab")
-##   summary(cm)
-##   plot(cm)
-##}
-#'
 #' @section Changes:
 #' * On 2023-02-09 an item named `north` was added to the `metadata` slot.  This
 #' is initialized to `"magnetic"` by [read.cm()], but this is really just a
 #' guess, and users ought to consider using [applyMagneticDeclination()] to take
 #' magnetic declination into account.
+#'
+#' @section Sample of Usage:
+#'\preformatted{
+#' library(oce)
+#' cm <- read.oce("cm_interocean_0811786.s4a.tab")
+#' summary(cm)
+#' plot(cm)
+#'}
 #'
 #' @family things related to cm data
 #'
