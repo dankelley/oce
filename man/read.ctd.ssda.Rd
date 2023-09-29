@@ -30,7 +30,7 @@ is printed.}
 \code{\link[=read.ctd.ssda]{read.ctd.ssda()}} returns a \linkS4class{ctd} object.
 }
 \description{
-\code{\link[=read.ctd.ssda]{read.ctd.ssda()}} reads CTD files in Sea & Sun Technology´s Standard Data
+\code{\link[=read.ctd.ssda]{read.ctd.ssda()}} reads CTD files in Sea & Sun Technology's Standard Data
 Acquisition (SSDA) format. This function is somewhat preliminary, in the
 sense that header information is not scanned fully, and some guesses have
 been made about the meanings of variables and units.

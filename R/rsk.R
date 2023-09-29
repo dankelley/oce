@@ -250,8 +250,6 @@ unitFromStringRsk <- function(s)
     # because that seems to overly blunt the tool.
     #
     # Here's how to figure out special characters:
-    # print(s) # nolint
-    # [1] "µMol/m²/s"
     # Browse[1]> Encoding(s)<-"bytes" # nolint
     # Browse[2]> print(s) # nolint
     # [1] "\\xc2\\xb5Mol/m\\xc2\\xb2/s"
@@ -259,9 +257,10 @@ unitFromStringRsk <- function(s)
     # 2022-06-28 upcoming version of R will require elimination of \x sequences; see
     # https://developer.r-project.org/Blog/public/2022/06/27/why-to-avoid-%5Cx-in-regular-expressions/index.html
     # Below is a table of code, unicode, unicode-in-R, and old-method-in-R.
-    #    µ=U+03BC, new=\u03bc, old=\xc2\xb5
-    #    °=U+00B0, new=\u00b0, old=\xB0
-    #    ²=U+00B2, new=\u00b2, old=\xc2\xb2
+    # Note that MU is the Greek letter, DEG is the degree sign and TWO is subscript 2.
+    #    MU=U+03BC, new=\u03bc, old=\xc2\xb5
+    #    DEG=U+00B0, new=\u00b0, old=\xB0
+    #    TWO=U+00B2, new=\u00b2, old=\xc2\xb2
     if (grepl("mg/[lL]", s)) {
         list(unit=expression(mg/l), scale="")
     } else if (grepl("m[lL]/[lL]", s)) {
@@ -288,7 +287,7 @@ unitFromStringRsk <- function(s)
     # 2022-06-28 else if (grepl("\xB0", s))
     } else if (grepl("\u00b0", s)) {
         list(unit=expression(degree*C), scale="ITS-90") # guessing on scale
-    # 2022-06-28 else if (grepl("\\xc2\\xb5Mol/m\\xc2\\xb2/s", s)) # µMol/m²/s
+    # 2022-06-28 else if (grepl("\\xc2\\xb5Mol/m\\xc2\\xb2/s", s)) # micr Mol/m^2/s
     } else if (grepl("\u03bcMol/m\u00b2/s", s)) {
         list(unit=expression(mu*mol/m^2/s), scale="")
     } else if (is.na(s)) {
@@ -692,7 +691,7 @@ setMethod(f="plot",
 #' infinite frequency, as standard seawater of salinity 35.0000 ppt (Chlorinity
 #' 19.37394 ppt). *IEEE Journal of Oceanic Engineering*, **5**, pp 22-23.
 #'
-#' RBR-global.com, 2020. “Ruskin User Guide.” RBR, August 18, 2020.
+#' RBR-global.com, 2020. "Ruskin User Guide." RBR, August 18, 2020.
 #' Revision RBR#0006105revH.
 #'
 #' @author Dan Kelley and Clark Richards

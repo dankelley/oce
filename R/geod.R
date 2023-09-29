@@ -194,7 +194,7 @@ geodXyInverse <- function(x, y, longitudeRef, latitudeRef, debug=getOption("oceD
 #'
 #' @references Vincenty, T. "Direct and Inverse Solutions of Geodesics on the
 #' Ellipsoid with Application of Nested Equations." Survey Review 23, no. 176
-#' (April 1, 1975): 88–93. https://doi.org/10.1179/sre.1975.23.176.88.
+#' (April 1, 1975): 88-93. https://doi.org/10.1179/sre.1975.23.176.88.
 #'
 #' @examples
 #' library(oce)

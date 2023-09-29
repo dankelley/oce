@@ -2,7 +2,7 @@
 
 #' Read a ctd File in SSDA Format
 #'
-#' [read.ctd.ssda()] reads CTD files in Sea & Sun Technology´s Standard Data
+#' [read.ctd.ssda()] reads CTD files in Sea & Sun Technology's Standard Data
 #' Acquisition (SSDA) format. This function is somewhat preliminary, in the
 #' sense that header information is not scanned fully, and some guesses have
 #' been made about the meanings of variables and units.

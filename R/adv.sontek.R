@@ -167,9 +167,9 @@ read.adv.sontek.serial <- function(file, from=1, to, by=1, tz=getOption("oceTz")
 #'
 #' @section References:
 #'
-#' 1. SonTek/YSI Incorporated. “ADVField/Hydra Operation Manual,” September 1, 2001.
+#' 1. SonTek/YSI Incorporated. "ADVField/Hydra Operation Manual," September 1, 2001.
 #'
-#' 2. SonTek/YSI Incorporated. “Argonaut Acoustic Doppler Current Meter Operation Manual Firmware Version 7.9.”
+#' 2. SonTek/YSI Incorporated. "Argonaut Acoustic Doppler Current Meter Operation Manual Firmware Version 7.9."
 #' SonTek/YSI, May 1, 2001.
 #' https://eng.ucmerced.edu/snsjho/files/San_Joaquin/Sensors_and_Loggers/SonTek/SonTek_Argonaut/ArgonautXR.pdf.
 read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oceTz"), header=TRUE,

@@ -128,7 +128,6 @@
 #' `scan`        \tab `scan`                     \tab -                    \tab   \cr
 #' `seaTurbMtr~` \tab `turbidity`                \tab FTU; Seapoint        \tab   \cr
 #' `secS-priS`   \tab `salinityDifference`       \tab -, PSS-78            \tab   \cr
-# `sigma-é`     \tab `sigmaTheta`               \tab kg/m^3               \tab 5 \cr
 #' \code{sigma-}\enc{é}{e} \tab `sigmaTheta`     \tab kg/m^3               \tab 5 \cr
 #' `sigma-t`     \tab `sigmaT`                   \tab kg/m^3               \tab   \cr
 #' `sigma-theta` \tab `sigmaTheta`               \tab kg/m^3               \tab 5 \cr

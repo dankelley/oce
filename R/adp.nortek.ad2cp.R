@@ -1354,8 +1354,8 @@ read.adp.ad2cp <- function(file,
         oceDebug(debug, "vector-read 'burstAltimeterRaw' records (0x1a) {\n")
         # See CR's snapshot at
         # https://github.com/dankelley/oce/issues/1959#issuecomment-1141409542
-        # which is p89 of Nortek AS. “Signature Integration
-        # 55|250|500|1000kHz.” Nortek AS, March 31, 2022)
+        # which is p89 of Nortek AS. "Signature Integration
+        # 55|250|500|1000kHz." Nortek AS, March 31, 2022)
         i <<- d$index[look]            # pointers to "burstAltimeterRaw" chunks in buf
         oceDebug(debug, vectorShow(i, n=4))
         # nolint start object_usage_linter

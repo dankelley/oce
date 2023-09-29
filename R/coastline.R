@@ -879,7 +879,7 @@ setMethod(f="plot",
 #' @seealso The work is done with [utils::download.file()].
 #'
 #' @section Non-Executable Examples:
-#'\dontrun{
+#'\preformatted{
 #' library(oce)
 #' # User must create directory ~/data/coastline first.
 #' # As of September 2016, the downloaded file, named

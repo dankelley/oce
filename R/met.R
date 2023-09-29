@@ -950,12 +950,16 @@ read.met.csv2 <- function(file,
         filename <- "(a connection)"
     }
     # nolint start line_length_linter
-    # Sample first two lines of a csv2 type file (as of 2019 oct 12)
-    # "Longitude (x)","Latitude (y)","Station Name","Climate ID","Date/Time","Year","Month","Day","Time","Temp (°C)","Temp Flag","Dew Point Temp (°C)","Dew Point Temp Flag","Rel Hum (%)","Rel Hum Flag","Wind Dir (10s deg)","Wind Dir Flag","Wind Spd (km/h)","Wind Spd Flag","Visibility (km)","Visibility Flag","Stn Press (kPa)","Stn Press Flag","Hmdx","Hmdx Flag","Wind Chill","Wind Chill Flag","Weather"
+    # Sample first two lines of a csv2 type file (as of 2019 oct 12) where DEG
+    # is degree sign
+    # "Longitude (x)","Latitude (y)","Station Name","Climate ID","Date/Time",
+    # "Year","Month","Day","Time","Temp (DEGC)","Temp Flag","Dew Point Temp (DEGC)","Dew Point Temp Flag","Rel Hum (%)","Rel Hum Flag","Wind Dir (10s deg)","Wind Dir Flag","Wind Spd (km/h)","Wind Spd Flag","Visibility (km)","Visibility Flag","Stn Press (kPa)","Stn Press Flag","Hmdx","Hmdx Flag","Wind Chill","Wind Chill Flag","Weather"
     # "-94.97","74.72","RESOLUTE BAY A","2403497","2019-10-01 00:00","2019","10","01","00:00","-3.2","","-4.6","","90","","18","","36","","","M","100.35","","","","-11","","NA"
     #
     # Sample first two lines of a csv3 type file (as of 2022 jan 30)
-    #"Longitude (x)","Latitude (y)","Station Name","Climate ID","Date/Time (LST)","Year","Month","Day","Time (LST)","Temp (°C)","Temp Flag","Dew Point Temp (°C)","Dew Point Temp Flag","Rel Hum (%)","Rel Hum Flag","Precip. Amount (mm)","Precip. Amount Flag","Wind Dir (10s deg)","Wind Dir Flag","Wind Spd (km/h)","Wind Spd Flag","Visibility (km)","Visibility Flag","Stn Press (kPa)","Stn Press Flag","Hmdx","Hmdx Flag","Wind Chill","Wind Chill Flag","Weather"
+    #"Longitude (x)","Latitude (y)","Station Name","Climate ID","Date/Time (LST)
+    #","Year","Month","Day","Time (LST)","Temp (DEGC)","Temp Flag","Dew Point Temp
+    #(DEGC)","Dew Point Temp Flag","Rel Hum (%)","Rel Hum Flag","Precip. Amount (mm)","Precip. Amount Flag","Wind Dir (10s deg)","Wind Dir Flag","Wind Spd (km/h)","Wind Spd Flag","Visibility (km)","Visibility Flag","Stn Press (kPa)","Stn Press Flag","Hmdx","Hmdx Flag","Wind Chill","Wind Chill Flag","Weather"
     #"-63.51","44.88","HALIFAX STANFIELD INT'L A","8202251","2022-01-01 00:00","2022","01","01","00:00","1.7","","1.7","","100","","","","14","","10","","0.2","","99.83","","","","","","Rain,Drizzle,Fog"
     # nolint end line_length_linter
     res <- new("met", time=1)

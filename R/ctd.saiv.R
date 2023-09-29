@@ -75,7 +75,7 @@ read.ctd.saiv <- function(file, encoding="latin1", debug=getOption("oceDebug"), 
     # From file: Tr1_all_stations	Instrument no.:	595
     # Ser	Interval (sec)	Integration	Air pressure	Salinity	Chart Datum (dbar)
     # 4	1		1019.84
-    # Ser	Meas	Sal.	Temp	F (µg/l)	T (FTU)	Density	S. vel.	Depth(u)	Date	Time
+    # Ser	Meas	Sal.	Temp	F (ETC)
     # 4	584	0.02	8.221	0.09	0.56	-0.147	1440.08	0.00	10/06/2023	09:46:22
     header <- readLines(file, n=4L, encoding=encoding)
     if (debug > 0L) {

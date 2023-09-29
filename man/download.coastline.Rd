@@ -60,7 +60,7 @@ data (or lake data, river data, etc) in any of three resolutions.
 }
 \section{Non-Executable Examples}{
 
-\dontrun{
+\preformatted{
 library(oce)
 # User must create directory ~/data/coastline first.
 # As of September 2016, the downloaded file, named

@@ -271,8 +271,8 @@ test.
 \section{References}{
 
 \enumerate{
-\item SonTek/YSI Incorporated. “ADVField/Hydra Operation Manual,” September 1, 2001.
-\item SonTek/YSI Incorporated. “Argonaut Acoustic Doppler Current Meter Operation Manual Firmware Version 7.9.”
+\item SonTek/YSI Incorporated. "ADVField/Hydra Operation Manual," September 1, 2001.
+\item SonTek/YSI Incorporated. "Argonaut Acoustic Doppler Current Meter Operation Manual Firmware Version 7.9."
 SonTek/YSI, May 1, 2001.
 https://eng.ucmerced.edu/snsjho/files/San_Joaquin/Sensors_and_Loggers/SonTek/SonTek_Argonaut/ArgonautXR.pdf.
 }
