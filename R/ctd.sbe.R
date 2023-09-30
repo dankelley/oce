@@ -1291,7 +1291,8 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
         } else if (foundDepth && !foundPressure) {
             # BUG: this is a poor, nonrobust approximation of pressure
             g <- if (foundHeaderLatitude) gravity(latitude) else 9.8
-            rho0 <- 1000 + swSigmaTheta(median(res[["salinity"]]), median(res[["temperature"]]), 0)
+            # on use of eos, see https://github.com/dankelley/oce/issues/2161
+            rho0 <- 1000 + swSigmaTheta(median(res[["salinity"]]), median(res[["temperature"]]), 0, eos="unesco")
             # res <- ctdAddColumn(res, res@data$depth * g * rho0 / 1e4, name="pressure", label="Pressure",
             #                     unit=list(unit=expression("dbar"), scale=""), debug=debug-1)
             res <- oceSetData(res, name="pressure", value=res@data$depth * g * rho0 / 1e4,
