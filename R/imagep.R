@@ -981,7 +981,7 @@ imagep <- function(x, y, z,
                 zclip <- colormap$zclip
             }
             if (!zclip) {
-                oceDebug(debug, "using zlim=c(", zlim[1], ",", zlim[2], ") for out-of-range values\n", sep="")
+                oceDebug(debug, "using zlim=c(", zlim[1], ",", zlim[2], ") for out-of-range values.\n", sep="")
                 z[z < zlim[1]] <- zlim[1]
                 z[z > zlim[2]] <- zlim[2]
             } else {

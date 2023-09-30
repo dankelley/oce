@@ -1814,6 +1814,7 @@ setMethod(f="plot",
         }
         par(mgp=mgp, mar=mar, cex=cex)
         ytype <- match.arg(ytype)
+        oceDebug(debug, vectorShow(ytype))
         # user may specify a matrix for xlim and ylim
         if (ylimGiven) {
             if (is.matrix(ylim)) {
@@ -1951,7 +1952,10 @@ setMethod(f="plot",
             }
         }
         flipy <- ytype == "profile" && x@metadata$orientation[1] == "downward"
+        if (is.na(flipy))
+            flipy <- FALSE
         # message("numberOfBeams=", numberOfBeams)
+        oceDebug(debug, "flipy=", flipy, "\n")
         # message("numberOfCells=", numberOfCells)
         haveTimeImages <- any(which %in% images) && 1 < numberOfCells
         oceDebug(debug, "haveTimeImages=", haveTimeImages, "(if TRUE, it means any timeseries graphs get padding on RHS)\n")
@@ -2160,6 +2164,7 @@ setMethod(f="plot",
                         if (xlimGiven) {
                             oceDebug(debug, "about to call imagep() with xlim given and par(\"cex\")=", par("cex"), ", cex=", cex, "\n", sep="")
                             oceDebug(debug, "xlimGiven case\n")
+                            oceDebug(debug, "flipy=", flipy, "\n")
                             ats <- imagep(x=tt, y=x[["distance", j]], z=z,
                                 xlim=xlim[w, ],
                                 zlim=zlim,
