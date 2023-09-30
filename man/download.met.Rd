@@ -78,6 +78,19 @@ related functions) make it easy to read data. These data can then be
 converted to the \code{met} class with \code{\link[=as.met]{as.met()}}, although doing so leaves many
 important metadata blank.
 }
+\section{Sample of Usage}{
+
+\preformatted{
+library(oce)
+# Download data for Halifax International Airport, in September
+# of 2003. This dataset is used for data(met) provided with oce.
+# Note that requests for data after 2012 month 10 yield all
+# missing values, for reasons unknown to the author.
+metFile <- download.met(6358, 2003, 9, destdir=".")
+met <- read.met(metFile)
+}
+}
+
 \references{
 \enumerate{
 \item Environment Canada website for Historical Climate Data

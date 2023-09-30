@@ -164,15 +164,15 @@ setMethod("handleFlags",
 #' @templateVar details This applies `initializeFlagScheme` for each `ctd` station within the `stations` element of the `data` slot.
 #' @template initializeFlagSchemeTemplate
 #'
-## @examples
-##\dontrun{
-## data(section)
-## section <- read.section("a03_hy1.csv", sectionId="a03", institute="SIO",
-##    ship="R/V Professor Multanovskiy", scientist="Vladimir Tereschenov")
-## sectionWithFlags <- initializeFlagScheme(section, "WHP bottle")
-## station1 <- sectionWithFlags[["station", 1]]
-## str(station1[["flagScheme"]])
-##}
+#' @section Sample of Usage:
+#'\preformatted{
+#' data(section)
+#' section <- read.section("a03_hy1.csv", sectionId="a03", institute="SIO",
+#'    ship="R/V Professor Multanovskiy", scientist="Vladimir Tereschenov")
+#' sectionWithFlags <- initializeFlagScheme(section, "WHP bottle")
+#' station1 <- sectionWithFlags[["station", 1]]
+#' str(station1[["flagScheme"]])
+#'}
 setMethod("initializeFlagScheme",
     c(object="section", name="ANY", mapping="ANY", default="ANY", update="ANY", debug="ANY"),
     function(object, name=NULL, mapping=NULL, default=NULL, update=NULL, debug=getOption("oceDebug"))
@@ -697,11 +697,11 @@ setMethod(f="show",
 #' # Example 6. Similar to #4, but done in more detailed way
 #' long <- subset(section,
 #'    indices=unlist(lapply(section[["station"]],
-#'                   function(s)
-#'                     5 < length(s[["pressure"]]))))
+#'        function(s) 5 < length(s[["pressure"]]))))
 #'
+#' @section Sample of Usage:
+#'\preformatted{
 #' # Example 7. Subset by a polygon determined with locator()
-#'\dontrun{
 #' par(mfrow=c(2, 1))
 #' plot(section, which="map")
 #' bdy <- locator(4) # choose a polygon near N. America
@@ -2771,16 +2771,17 @@ sectionGrid <- function(section, p, method="approx", trim=TRUE, debug=getOption(
 #' plot(gsBarnes, which="temperature")
 #' mtext("sectionSmooth(..., method=\"barnes\")", line=0.5)
 #'
-#' # Kriging. This is commented-out because one of the CRAN
-#' # check machines produces an error (converted from a warning)
-#' # and I am really not clear on whether dontrun will be
-#' # sufficient to solve the problem.
-#' #> if (requireNamespace("automap", quietly=TRUE)
-#' #>        && requireNamespace("sf", quietly=TRUE)) {
-#' #>     gsKriging <- sectionSmooth(gs, "kriging", xr=50, yr=200)
-#' #>     plot(gsKriging, which="temperature")
-#' #>     mtext("sectionSmooth(..., method=\"kriging\")", line=0.5)
-#' #> }
+#' @section Sample of Usage:
+#'\preformatted{
+#' # I have seen problems with kriging as the automap package has
+#' # evolved, so please be aware that the following may fail.
+#' if (requireNamespace("automap", quietly=TRUE)
+#'        && requireNamespace("sf", quietly=TRUE)) {
+#'     gsKriging <- sectionSmooth(gs, "kriging", xr=50, yr=200)
+#'     plot(gsKriging, which="temperature")
+#'     mtext("sectionSmooth(..., method=\"kriging\")", line=0.5)
+#' }
+#'}
 #'
 #' @author Dan Kelley
 #'

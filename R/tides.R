@@ -164,13 +164,13 @@ NULL
 #'
 #' @author Dan Kelley
 #'
-## @examples
-##\dontrun{
-## library(oce)
-## data(sealevel)
-## tide <- tidem(sealevel)
-## summary(tide)
-##}
+#' @section Sample of Usage:
+#'\preformatted{
+#' library(oce)
+#' data(sealevel)
+#' tide <- tidem(sealevel)
+#' summary(tide)
+#'}
 #'
 #' @family things related to tides
 setMethod(f="summary",
@@ -362,13 +362,13 @@ setMethod(f="[[<-",
 #' of which are obeyed.  For example, if \dots contains `type`, that value will be
 #' ignored because it is set internally, according to the value of `which`.
 #'
-## @examples
-##\dontrun{
-## library(oce)
-## data(sealevel)
-## tide <- tidem(sealevel)
-## plot(tide)
-##}
+#' @section Sample of Usage:
+#'\preformatted{
+#' library(oce)
+#' data(sealevel)
+#' tide <- tidem(sealevel)
+#' plot(tide)
+#'}
 #'
 #' @section Historical note:
 #' An argument named `labelIf` was removed in July 2016,
@@ -524,7 +524,7 @@ setMethod(f="plot",
 #' be issued if the absolute value of the relative frequency mismatch for any
 #' given component exceeds 1e-6, and this will occur for any NOAA tables
 #' containing the SA component, for which this relative mismatch
-#' is approximately 4e-5 (see refernece 5).
+#' is approximately 4e-5 (see reference 5).
 #'
 #' @template debugTemplate
 #'
@@ -1002,10 +1002,10 @@ tidemConstituentNameFix <- function(names, debug=1)
 #' based on a comparison table.  The details of this process are provided
 #' by Foreman (1978).
 #'
-#' *Phase 3: overrulling Rayleigh's criterion.*
+#' *Phase 3: optionally overruling Rayleigh's criterion.*
 #'
 #' The pruning list from phase 2 can be overruled by the user. This
-#' is done by retaining any constitutents that the user has named
+#' is done by retaining any constituents that the user has named
 #' in the `constituents` parameter.  This action
 #' was added on 2017-12-27, to make `tidem` behave the same
 #' way as the Foreman (1978) code, as illustrated in his
@@ -1791,21 +1791,22 @@ tidem <- function(t, x, constituents, infer=NULL, latitude=NULL,
 #' prediction <- tidem(sealevel) |> predict()
 #' oce.plot.ts(time, elevation - prediction)
 #'
-##\dontrun{
-## # 2. prediction at specified times
-## data(sealevel)
-## m <- tidem(sealevel)
-## # Check fit over 2 days (interpolating to finer timescale)
-## look <- 1:48
-## time <- sealevel[["time"]]
-## elevation <- sealevel[["elevation"]]
-## oce.plot.ts(time[look], elevation[look])
-## # 360s = 10 minute timescale
-## t <- seq(from=time[1], to=time[max(look)], by=360)
-## lines(t, predict(m, newdata=t), col="red")
-## legend("topright", col=c("black","red"),
-## legend=c("data","model"),lwd=1)
-##}
+#' @section Sample of Usage:
+#'\preformatted{
+#' # prediction at specified times
+#' data(sealevel)
+#' m <- tidem(sealevel)
+#' # Check fit over 2 days (interpolating to finer timescale)
+#' look <- 1:48
+#' time <- sealevel[["time"]]
+#' elevation <- sealevel[["elevation"]]
+#' oce.plot.ts(time[look], elevation[look])
+#' # 360s = 10 minute timescale
+#' t <- seq(from=time[1], to=time[max(look)], by=360)
+#' lines(t, predict(m, newdata=t), col="red")
+#' legend("topright", col=c("black","red"),
+#' legend=c("data","model"),lwd=1)
+#'}
 #'
 #' @author Dan Kelley
 #'
@@ -1965,18 +1966,18 @@ predict.tidem <- function(object, newdata, ...)
 #' designed based on little more than guesses about the WebTide file structure.
 #' Users should be on the lookout for odd results.
 #'
-## @examples
-##\dontrun{
-## # needs WebTide at the system level
-## library(oce)
-## # 1. prediction at Halifax NS
-## longitude <- -63.57
-## latitude <- 44.65
-## prediction <- webtide("predict", longitude=longitude, latitude=latitude)
-## mtext(sprintf("prediction at %fN %fE", latitude, longitude), line=0.75, side=3)
-## # 2. map
-## webtide(lon=-63.57,lat=44.65,xlim=c(-64,-63),ylim=c(43.0,46))
-##}
+#' @section Sample of Usage:
+#'\preformatted{
+#' # needs WebTide at the system level
+#' library(oce)
+#' # 1. prediction at Halifax NS
+#' longitude <- -63.57
+#' latitude <- 44.65
+#' prediction <- webtide("predict", longitude=longitude, latitude=latitude)
+#' mtext(sprintf("prediction at %fN %fE", latitude, longitude), line=0.75, side=3)
+#' # 2. map
+#' webtide(lon=-63.57,lat=44.65,xlim=c(-64,-63),ylim=c(43.0,46))
+#'}
 #'
 #' @author Dan Kelley
 #'

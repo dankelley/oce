@@ -30,6 +30,23 @@ coordinates.
  This only works for 4-beam RDI ADP objects.
 }
 
+\section{Sample of Usage}{
+
+\preformatted{
+library(oce)
+file <- "~/data/archive/sleiwex/2008/moorings/m09/adp/rdi_2615/raw/adp_rdi_2615.000"
+beam <- read.oce(file,
+    from=as.POSIXct("2008-06-26", tz="UTC"),
+    to=as.POSIXct("2008-06-26 00:10:00", tz="UTC"),
+    longitude=-69.73433, latitude=47.88126)
+beam2 <- binmapAdp(beam)
+plot(enuToOther(toEnu(beam), heading=-31.5))
+plot(enuToOther(toEnu(beam2), heading=-31.5))
+plot(beam, which=5:8) # backscatter amplitude
+plot(beam2, which=5:8)
+}
+}
+
 \references{
 The method was devised by Clark Richards for use in his PhD work
 at Department of Oceanography at Dalhousie University.

@@ -27,6 +27,22 @@ to a coastline.
 This is a preliminary version of this function. It only
 works if the lines of constant latitude are horizontal on the plot.
 }
+\section{Sample of Usage}{
+
+\preformatted{
+library(oce)
+if (requireNamespace("ocedata", quietly=TRUE)) {
+    data(coastlineWorldFine, package="ocedata")
+    HfxLon <- -63.5752
+    HfxLat <- 44.6488
+    mapPlot(coastlineWorldFine, proj="+proj=merc",
+        longitudelim=HfxLon+c(-2,2), latitudelim=HfxLat+c(-2,2),
+        col=lightgrey")
+    mapCoordinateSystem(HfxLon, HfxLat, phi=45, length=0.05)
+   }
+}
+}
+
 \seealso{
 Other functions related to maps: 
 \code{\link{formatPosition}()},

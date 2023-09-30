@@ -166,27 +166,9 @@ for finding colors for data points is to use the \code{colfunction()}
 function in the return value.
 }
 }
-\examples{
-library(oce)
-# Example 1. color scheme for points on xy plot
-x <- seq(0, 1, length.out=40)
-y <- sin(2 * pi * x)
-par(mar=c(3, 3, 1, 1))
-mar <- par("mar") # prevent margin creep by drawPalette()
-# First, default breaks
-c <- colormap(y)
-drawPalette(c$zlim, col=c$col, breaks=c$breaks)
-plot(x, y, bg=c$zcol, pch=21, cex=1)
-grid()
-par(mar=mar)
-# Second, 100 breaks, yielding a smoother palette
-c <- colormap(y, breaks=100)
-drawPalette(c$zlim, col=c$col, breaks=c$breaks)
-plot(x, y, bg=c$zcol, pch=21, cex=1)
-grid()
-par(mar=mar)
+\section{Sample of Usage}{
 
-\dontrun{
+\preformatted{
 # Example 2. topographic image with a standard color scheme
 par(mfrow=c(1,1))
 data(topoWorld)
@@ -230,6 +212,27 @@ z <- seq(0, 1, length.out=length(x))
 drawPalette(colormap=cm)
 plot(x, y, pch=21, bg=cm$colfunction(z), cex=3)
 }
+}
+
+\examples{
+library(oce)
+# Example 1. color scheme for points on xy plot
+x <- seq(0, 1, length.out=40)
+y <- sin(2 * pi * x)
+par(mar=c(3, 3, 1, 1))
+mar <- par("mar") # prevent margin creep by drawPalette()
+# First, default breaks
+c <- colormap(y)
+drawPalette(c$zlim, col=c$col, breaks=c$breaks)
+plot(x, y, bg=c$zcol, pch=21, cex=1)
+grid()
+par(mar=mar)
+# Second, 100 breaks, yielding a smoother palette
+c <- colormap(y, breaks=100)
+drawPalette(c$zlim, col=c$col, breaks=c$breaks)
+plot(x, y, bg=c$zcol, pch=21, cex=1)
+grid()
+par(mar=mar)
 
 }
 \references{

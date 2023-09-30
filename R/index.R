@@ -48,21 +48,20 @@
 #' @references See `https://psl.noaa.gov/data/climateindices/list/`
 #' for a list of indices.
 #'
-## @examples
-##
-##\dontrun{
-## library(oce)
-## par(mfrow=c(2, 1))
-## # 1. AO, Arctic oscillation
-## #  Note that data used to be at https://www.esrl.noaa.gov/psd/data/correlation/ao.data
-## ao <- read.index("https://psl.noaa.gov/data/correlation/ao.data")
-## aorecent <- subset(ao, t > as.POSIXct("2000-01-01"))
-## oce.plot.ts(aorecent$t, aorecent$index)
-## # 2. SOI, probably more up-to-date then data(soi, package="ocedata")
-## soi <- read.index("https://www.cgd.ucar.edu/cas/catalog/climind/SOI.signal.ascii")
-## soirecent <- subset(soi, t > as.POSIXct("2000-01-01"))
-## oce.plot.ts(soirecent$t, soirecent$index)
-##}
+#' @section Sample of Usage:
+#'\preformatted{
+#' library(oce)
+#' par(mfrow=c(2, 1))
+#' # 1. AO, Arctic oscillation
+#' #  Note that data used to be at https://www.esrl.noaa.gov/psd/data/correlation/ao.data
+#' ao <- read.index("https://psl.noaa.gov/data/correlation/ao.data")
+#' aorecent <- subset(ao, t > as.POSIXct("2000-01-01"))
+#' oce.plot.ts(aorecent$t, aorecent$index)
+#' # 2. SOI, probably more up-to-date then data(soi, package="ocedata")
+#' soi <- read.index("https://www.cgd.ucar.edu/cas/catalog/climind/SOI.signal.ascii")
+#' soirecent <- subset(soi, t > as.POSIXct("2000-01-01"))
+#' oce.plot.ts(soirecent$t, soirecent$index)
+#'}
 #'
 #' @author Dan Kelley
 read.index <- function(file,

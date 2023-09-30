@@ -19,6 +19,21 @@ It is used within oce to create \code{\link[=oceColorsTemperature]{oceColorsTemp
 and its many cousins. Users may also find it helpful, for creating
 custom color schemes (see \dQuote{Examples}).
 }
+\section{Sample of Usage}{
+
+\preformatted{
+# Update oxygen color scheme to latest matplotlib value.
+library(oce)
+oxy <- "https://raw.githubusercontent.com/matplotlib/cmocean/master/cmocean/rgb/oxy-rgb.txt"
+oxyrgb <- read.table(oxy, header=FALSE)
+oceColorsOxygenUpdated <- oceColorsClosure(oxyrgb)
+par(mfrow=c(1, 2))
+m <- matrix(1:256)
+imagep(m, col=oceColorsOxygen, zlab="oxygen")
+imagep(m, col=oceColorsOxygenUpdated, zlab="oxygenUpdated")
+}
+}
+
 \seealso{
 Other things related to colors: 
 \code{\link{colormapGMT}()},

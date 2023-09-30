@@ -1395,14 +1395,14 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, log="", logStyle="r", flipy=
 #'
 #' @family functions that trim data files
 #'
-## @examples
-##\dontrun{
-## # Can only be run by the developer, since it uses a private file.
-## f  <- "/Users/kelley/Dropbox/oce_secret_data/ad2cp/byg_trimmed.ad2cp"
-## if (file.exists(f)) {
-##     oceFileTrim(f, 10L) # this file holds 100 data segments
-## }
-##}
+#' @section Sample of Usage:
+#'\preformatted{
+#' # Can only be run by the developer, since it uses a private file.
+#' f  <- "~/Dropbox/oce_secret_data/ad2cp/byg_trimmed.ad2cp"
+#' if (file.exists(f)) {
+#'     oceFileTrim(f, 10L) # this file holds 100 data segments
+#' }
+#'}
 #' @author Dan Kelley
 oceFileTrim <- function(infile, n=100L, outfile, debug=getOption("oceDebug"))
 {
@@ -2436,18 +2436,18 @@ oce.colorsGebco <- oceColorsGebco
 #' matrix, in which case the columns specify red, green and blue values
 #' (in range from 0 to 1).
 #'
-## @examples
-##\dontrun{
-## # Update oxygen color scheme to latest matplotlib value.
-## library(oce)
-## oxy <- "https://raw.githubusercontent.com/matplotlib/cmocean/master/cmocean/rgb/oxy-rgb.txt"
-## oxyrgb <- read.table(oxy, header=FALSE)
-## oceColorsOxygenUpdated <- oceColorsClosure(oxyrgb)
-## par(mfrow=c(1, 2))
-## m <- matrix(1:256)
-## imagep(m, col=oceColorsOxygen, zlab="oxygen")
-## imagep(m, col=oceColorsOxygenUpdated, zlab="oxygenUpdated")
-##}
+#' @section Sample of Usage:
+#'\preformatted{
+#' # Update oxygen color scheme to latest matplotlib value.
+#' library(oce)
+#' oxy <- "https://raw.githubusercontent.com/matplotlib/cmocean/master/cmocean/rgb/oxy-rgb.txt"
+#' oxyrgb <- read.table(oxy, header=FALSE)
+#' oceColorsOxygenUpdated <- oceColorsClosure(oxyrgb)
+#' par(mfrow=c(1, 2))
+#' m <- matrix(1:256)
+#' imagep(m, col=oceColorsOxygen, zlab="oxygen")
+#' imagep(m, col=oceColorsOxygenUpdated, zlab="oxygenUpdated")
+#'}
 #' @family things related to colors
 oceColorsClosure <- function(spec) {
     function(n) {

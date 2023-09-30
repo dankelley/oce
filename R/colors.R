@@ -600,7 +600,8 @@ colormapGMT <- function(name, debug=getOption("oceDebug"))
 #' grid()
 #' par(mar=mar)
 #'
-#'\dontrun{
+#' @section Sample of Usage:
+#'\preformatted{
 #' # Example 2. topographic image with a standard color scheme
 #' par(mfrow=c(1,1))
 #' data(topoWorld)

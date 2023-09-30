@@ -48,10 +48,8 @@ NULL
 #'
 #' @docType data
 #'
-## @examples
-##\dontrun{
-## read.oce(system.file("extdata", "adp_rdi.000", package="oce"))
-##}
+#' @examples
+#' read.oce(system.file("extdata", "adp_rdi.000", package="oce"))
 #'
 #' @family raw datasets
 #' @family things related to adp data
@@ -66,10 +64,8 @@ NULL
 #'
 #' @encoding UTF-8
 #'
-## @examples
-##\dontrun{
-## read.oce(system.file("extdata", "ctd.cnv.gz", package="oce"))
-##}
+#' @examples
+#' read.oce(system.file("extdata", "ctd.cnv.gz", package="oce"))
 #'
 #' @family raw datasets
 #' @family things related to ctd data
@@ -84,10 +80,8 @@ NULL
 #'
 #' @encoding UTF-8
 #'
-## @examples
-##\dontrun{
-## read.oce(system.file("extdata", "d200321-001.ctd.gz", package="oce"))
-##}
+#' @examples
+#' read.oce(system.file("extdata", "d200321-001.ctd.gz", package="oce"))
 #'
 #' @family raw datasets
 #' @family things related to ctd data
@@ -102,10 +96,8 @@ NULL
 #'
 #' @encoding UTF-8
 #'
-## @examples
-##\dontrun{
-## read.oce(system.file("extdata", "d201211_0011.cnv.gz", package="oce"))
-##}
+#' @examples
+#' read.oce(system.file("extdata", "d201211_0011.cnv.gz", package="oce"))
 #'
 #' @family raw datasets
 #' @family things related to ctd data
@@ -119,10 +111,8 @@ NULL
 #'
 #' @encoding UTF-8
 #'
-## @examples
-##\dontrun{
-## xbt <- read.oce(system.file("extdata", "xbt.edf", package="oce"))
-##}
+#' @examples
+#' xbt <- read.oce(system.file("extdata", "xbt.edf", package="oce"))
 #'
 #' @family raw datasets
 #' @family things related to xbt data

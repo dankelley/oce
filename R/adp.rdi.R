@@ -50,14 +50,14 @@
 #'
 #' @family things related to adp data
 #' @family functions that trim data files
-## @examples
-##\dontrun{
-## # Can only be run by the developer, since it uses a private file.
-## f  <- "/Users/kelley/Dropbox/data/archive/sleiwex/2008/moorings/m09/adp/rdi_2615/raw/adp_rdi_2615.000"
-## if (file.exists(f)) {
-##     adpRdiFileTrim(f, 9L, "test.000")
-## }
-##}
+#' @section Sample of Usage:
+#'\preformatted{
+#' # Can only be run by the developer, since it uses a private file.
+#' file  <- "~/data/archive/sleiwex/2008/moorings/m09/adp/rdi_2615/raw/adp_rdi_2615.000"
+#' if (file.exists(file)) {
+#'     adpRdiFileTrim(file, 9L, "test.000")
+#' }
+#'}
 #' @author Dan Kelley
 adpRdiFileTrim <- function(infile, n=100L, outfile, debug=getOption("oceDebug"))
 {

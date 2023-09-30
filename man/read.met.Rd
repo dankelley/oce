@@ -65,6 +65,39 @@ both file encoding and system encoding. Adjusting the \code{encoding} parameter
 of this function might help.  If not, try reading the data with
 \code{\link[=read.csv]{read.csv()}} and then using \code{\link[=as.met]{as.met()}} to create a \linkS4class{met} object.
 }
+\section{Sample of Usage}{
+
+\preformatted{
+# Example 1: "csv1" Environment Canada format (found to be obsolete as of Oct 2019)
+csv1 <- read.met(system.file("extdata", "test_met_vsn1.csv", package="oce"))
+csv1 <- oceSetData(csv1, "time", csv1[["time"]]+4*3600,
+    note="add 4h to local time to get UTC time")
+
+# Example 2: "csv2" Environment Canada format (found to be obsolete as of Jan 2022)
+csv2 <- read.met(system.file("extdata", "test_met_vsn2.csv", package="oce"))
+csv2 <- oceSetData(csv2, "time", csv2[["time"]]+4*3600,
+    note="add 4h to local time to get UTC time")
+
+# Example 3: "csv3" Environment Canada format. Note timezone correction
+csv3 <- read.met(system.file("extdata", "test_met_vsn3.csv", package="oce"))
+csv3 <- oceSetData(csv3, "time", csv3[["time"]]+4*3600,
+    note="add 4h to local time to get UTC time")
+
+# Example 4: "xml2" format. (Uncertain timezone, so not corrected.)
+if (requireNamespace("XML", quietly=TRUE))
+    xml2 <- read.met(system.file("extdata", "test_met_xml2.xml", package="oce"))
+
+# Example 5: download and plot
+library(oce)
+# Recreate data(met) and plot u(t) and v(t)
+metFile <- download.met(id=6358, year=2003, month=9, destdir=".")
+met <- read.met(metFile)
+met <- oceSetData(met, "time", met[["time"]]+4*3600,
+    note="add 4h to local time to get UTC time")
+plot(met)
+}
+}
+
 \references{
 \enumerate{
 \item Environment Canada website for Historical Climate Data

@@ -58,6 +58,36 @@ at \code{1/m} cycles per time unit, as shown in the \dQuote{Examples}
 section.  When using \code{\link[=filter]{filter()}} or \code{\link[=kernapply]{kernapply()}} with
 these filters, use \code{circular=TRUE}.
 }
+\section{Sample of Usage}{
+
+\preformatted{
+# need signal package for this example
+r <- rnorm(2048)
+rh <- stats::filter(r, H)
+rh <- rh[is.finite(rh)] # kludge to remove NA at start/end
+sR <- spectrum(r, plot=FALSE, spans=c(11, 5, 3))
+sRH <- spectrum(rh, plot=FALSE, spans=c(11, 5, 3))
+par(mfrow=c(2, 1), mar=c(3, 3, 1, 1), mgp=c(2, 0.7, 0))
+plot(sR$freq, sRH$spec/sR$spec, xlab="Frequency", ylab="Power Transfer",
+     type="l", lwd=5, col="gray")
+theory <- freqz(H, n=seq(0,pi,length.out=100))
+# Note we must square the modulus for the power spectrum
+lines(theory$f/pi/2, Mod(theory$h)^2, lwd=1, col="red")
+grid()
+legend("topright", col=c("gray", "red"), lwd=c(5, 1), cex=2/3,
+       legend=c("Practical", "Theory"), bg="white")
+plot(log10(sR$freq), log10(sRH$spec/sR$spec),
+     xlab="log10 Frequency", ylab="log10 Power Transfer",
+     type="l", lwd=5, col="gray")
+theory <- freqz(H, n=seq(0,pi,length.out=100))
+# Note we must square the modulus for the power spectrum
+lines(log10(theory$f/pi/2), log10(Mod(theory$h)^2), lwd=1, col="red")
+grid()
+legend("topright", col=c("gray", "red"), lwd=c(5, 1), cex=2/3,
+       legend=c("Practical", "Theory"), bg="white")
+}
+}
+
 \examples{
 library(oce)
 

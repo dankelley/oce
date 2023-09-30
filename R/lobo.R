@@ -378,16 +378,16 @@ setMethod(f="plot",
 #'
 #' @return A [lobo-class] object.
 #'
-## @examples
-##\dontrun{
-## library(oce)
-## uri <- paste("http://lobo.satlantic.com/cgi-bin/nph-data.cgi?",
-##   "min_date=20070220&max_date=20070305",
-##   "&x=date&",
-##   "y=current_across1,current_along1,nitrate,fluorescence,salinity,temperature&",
-##   "data_format=text",sep="")
-## lobo <- read.lobo(uri)
-##}
+#' @section Sample of Usage:
+#'\preformatted{
+#' library(oce)
+#' uri <- paste("http://lobo.satlantic.com/cgi-bin/nph-data.cgi?",
+#'     "min_date=20070220&max_date=20070305",
+#'     "&x=date&",
+#'     "y=current_across1,current_along1,nitrate,fluorescence,salinity,temperature&",
+#'     "data_format=text", sep="")
+#' lobo <- read.lobo(uri)
+#'}
 #'
 #' @family things related to lobo data
 #'

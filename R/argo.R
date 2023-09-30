@@ -639,28 +639,25 @@ argoNames2oceNames <- function(names, ignore.case=TRUE)
 #' plot(subset(argo, longitude > mean(longitude)))
 #' plot(subset(argoGrid(argo), pressure > 500 & pressure < 1000), which=5)
 #'
-## # Example 2: restrict attention to delayed-mode profiles.
-##\dontrun{
-## par(mfrow=c(1, 1))
-## plot(subset(argo, dataMode == "D"))
-##}
-##
-## # Example 3: contrast adjusted and unadjusted data
-##\dontrun{
-## par(mfrow=c(1, 2))
-## plotTS(argo)
-## plotTS(subset(argo, "adjusted"))
-##}
+#' @section Sample of Usage:
+#'\preformatted{
+#' # Example 2: restrict attention to delayed-mode profiles.
+#' par(mfrow=c(1, 1))
+#' plot(subset(argo, dataMode == "D"))
 #'
-## # Example 2. Subset by a polygon determined with locator()
-##\dontrun{
-## par(mfrow=c(1, 2))
-## plot(argo, which="map")
-## # Can get a boundary with e.g. locator(4)
-## boundary <- list(x=c(-65, -40, -40, -65), y=c(65, 65, 45, 45))
-## argoSubset <- subset(argo, within=boundary)
-## plot(argoSubset, which="map")
-##}
+#' # Example 3: contrast adjusted and unadjusted data
+#' par(mfrow=c(1, 2))
+#' plotTS(argo)
+#' plotTS(subset(argo, "adjusted"))
+#'
+#' # Example 2. Subset by a polygon determined with locator()
+#' par(mfrow=c(1, 2))
+#' plot(argo, which="map")
+#' # Can get a boundary with e.g. locator(4)
+#' boundary <- list(x=c(-65, -40, -40, -65), y=c(65, 65, 45, 45))
+#' argoSubset <- subset(argo, within=boundary)
+#' plot(argoSubset, which="map")
+#'}
 #
 #' @author Dan Kelley
 #'
@@ -1185,32 +1182,32 @@ argoDecodeFlags <- function(f) # local function
 #' @return
 #' An [argo-class] object.
 #'
-## @examples
-##\dontrun{
-## # Example 1: read from a local file
-## library(oce)
-## d <- read.argo("/data/OAR/6900388_prof.nc")
-## summary(d)
-## plot(d)
-##
-## # Example 2: construct URL for download (brittle)
-## id <- "6900388"
-## url <- "https://www.usgodae.org/ftp/outgoing/argo"
-## if (!length(list.files(pattern="argo_index.txt")))
-##     download.file(paste(url, "ar_index_global_meta.txt", sep="/"), "argo_index.txt")
-## index <- readLines("argo_index.txt")
-## line <- grep(id, index)
-## if (0 == length(line))
-##     stop("id ", id, " not found")
-## if (1 < length(line))
-##     stop("id ", id, " found multiple times")
-## dac <- strsplit(index[line], "/")[[1]][1]
-## profile <- paste(id, "_prof.nc", sep="")
-## float <- paste(url, "dac", dac, id, profile, sep="/")
-## download.file(float, profile)
-## argo <- read.argo(profile)
-## summary(argo)
-##}
+#' @section Sample of Usage:
+#'\preformatted{
+#' # Example 1: read from a local file
+#' library(oce)
+#' d <- read.argo("~/data/OAR/6900388_prof.nc")
+#' summary(d)
+#' plot(d)
+#'
+#' # Example 2: construct URL for download (brittle)
+#' id <- "6900388"
+#' url <- "https://www.usgodae.org/ftp/outgoing/argo"
+#' if (!length(list.files(pattern="argo_index.txt")))
+#'     download.file(paste(url, "ar_index_global_meta.txt", sep="/"), "argo_index.txt")
+#' index <- readLines("argo_index.txt")
+#' line <- grep(id, index)
+#' if (0 == length(line))
+#'     stop("id ", id, " not found")
+#' if (1 < length(line))
+#'     stop("id ", id, " found multiple times")
+#' dac <- strsplit(index[line], "/")[[1]][1]
+#' profile <- paste(id, "_prof.nc", sep="")
+#' float <- paste(url, "dac", dac, id, profile, sep="/")
+#' download.file(float, profile)
+#' argo <- read.argo(profile)
+#' summary(argo)
+#'}
 #'
 #'
 #' @seealso

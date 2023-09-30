@@ -38,6 +38,19 @@ files; the supplier makes no claims that the format will be fixed in time.
 It is also worth noting that there is no \code{\link[=read.oce]{read.oce()}} equivalent
 to \code{read.lobo}, because the file format has no recognizable header.
 }
+\section{Sample of Usage}{
+
+\preformatted{
+library(oce)
+uri <- paste("http://lobo.satlantic.com/cgi-bin/nph-data.cgi?",
+    "min_date=20070220&max_date=20070305",
+    "&x=date&",
+    "y=current_across1,current_along1,nitrate,fluorescence,salinity,temperature&",
+    "data_format=text", sep="")
+lobo <- read.lobo(uri)
+}
+}
+
 \seealso{
 Other things related to lobo data: 
 \code{\link{[[,lobo-method}},

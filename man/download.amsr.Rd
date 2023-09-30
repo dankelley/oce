@@ -99,6 +99,17 @@ format to a NetCDF format, and this will require a complete rewriting
 of \code{\link[=read.amsr]{read.amsr()}}.
 }
 
+\section{Sample of Usage}{
+
+\preformatted{
+# The download may take up to about a minute.
+f <- download.amsr(2023, 7, 27, destdir="~/data/amsr")
+d <- read.amsr(f)
+plot(d)
+mtext(d[["filename"]], side=3, line=0, adj=0)
+}
+}
+
 \seealso{
 Other functions that download files: 
 \code{\link{download.coastline}()},

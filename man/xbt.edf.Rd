@@ -8,6 +8,10 @@
 \description{
 Sample xbt File in .edf Format
 }
+\examples{
+xbt <- read.oce(system.file("extdata", "xbt.edf", package="oce"))
+
+}
 \seealso{
 Other raw datasets: 
 \code{\link{CTD_BCD2014666_008_1_DN.ODF.gz}},

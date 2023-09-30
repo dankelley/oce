@@ -42,6 +42,17 @@ then (optionally) the list is trimmed to the time interval indicated by
 the \code{UTC} time zone, because that time zone is used in decoding the lines
 in the \code{.TBL} file.
 }
+\section{Sample of Usage}{
+
+\preformatted{
+file <- "~/data/archive/sleiwex/2008/moorings/m05/adv/sontek_202h/raw"
+table <- rskToc(file,
+    from=as.POSIXct("2008-07-01 00:00:00", tz="UTC"),
+    to=as.POSIXct("2008-07-01 12:00:00", tz="UTC"))
+print(table)
+}
+}
+
 \seealso{
 Other things related to rsk data: 
 \code{\link{[[,rsk-method}},

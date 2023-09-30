@@ -47,6 +47,17 @@ versions appear identical when plotted at the global scale that is
 the recommended for such a coarse topographic file.
 }
 
+\section{Sample of Usage}{
+
+\preformatted{
+library(oce)
+data(topoWorld)
+par(mfrow=c(2, 1))
+plot(topoWorld, location=NULL)
+imagep(topoWorld)
+}
+}
+
 \seealso{
 Other datasets provided with oce: 
 \code{\link{adp}},

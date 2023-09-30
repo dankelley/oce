@@ -63,6 +63,18 @@ profile.
 \code{indices}, which may be a vector of integers that indicate sequence
 number, or a logical vector, again indicating which stations to keep.
 }
+\section{Sample of Usage}{
+
+\preformatted{
+# Example 7. Subset by a polygon determined with locator()
+par(mfrow=c(2, 1))
+plot(section, which="map")
+bdy <- locator(4) # choose a polygon near N. America
+GS <- subset(section, within=bdy)
+plot(GS, which="map")
+}
+}
+
 \examples{
 library(oce)
 data(section)
@@ -85,17 +97,7 @@ surfacing <- subset(section, min(pressure) < 50)
 # Example 6. Similar to #4, but done in more detailed way
 long <- subset(section,
    indices=unlist(lapply(section[["station"]],
-                  function(s)
-                    5 < length(s[["pressure"]]))))
-
-# Example 7. Subset by a polygon determined with locator()
-\dontrun{
-par(mfrow=c(2, 1))
-plot(section, which="map")
-bdy <- locator(4) # choose a polygon near N. America
-GS <- subset(section, within=bdy)
-plot(GS, which="map")
-}
+       function(s) 5 < length(s[["pressure"]]))))
 
 }
 \seealso{

@@ -166,6 +166,35 @@ over time.
 
 Similar steps can be followed on other servers.
 }
+\section{Sample of Usage}{
+
+\preformatted{
+# Example 1: read from a local file
+library(oce)
+d <- read.argo("~/data/OAR/6900388_prof.nc")
+summary(d)
+plot(d)
+
+# Example 2: construct URL for download (brittle)
+id <- "6900388"
+url <- "https://www.usgodae.org/ftp/outgoing/argo"
+if (!length(list.files(pattern="argo_index.txt")))
+    download.file(paste(url, "ar_index_global_meta.txt", sep="/"), "argo_index.txt")
+index <- readLines("argo_index.txt")
+line <- grep(id, index)
+if (0 == length(line))
+    stop("id ", id, " not found")
+if (1 < length(line))
+    stop("id ", id, " found multiple times")
+dac <- strsplit(index[line], "/")[[1]][1]
+profile <- paste(id, "_prof.nc", sep="")
+float <- paste(url, "dac", dac, id, profile, sep="/")
+download.file(float, profile)
+argo <- read.argo(profile)
+summary(argo)
+}
+}
+
 \references{
 \enumerate{
 \item \verb{https://argo.ucsd.edu}

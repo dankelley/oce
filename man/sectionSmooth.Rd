@@ -147,6 +147,20 @@ in \code{z}, which may be \code{temperature} on one call to the function,
 have the meanings as described below.
 }
 }
+\section{Sample of Usage}{
+
+\preformatted{
+# I have seen problems with kriging as the automap package has
+# evolved, so please be aware that the following may fail.
+if (requireNamespace("automap", quietly=TRUE)
+       && requireNamespace("sf", quietly=TRUE)) {
+    gsKriging <- sectionSmooth(gs, "kriging", xr=50, yr=200)
+    plot(gsKriging, which="temperature")
+    mtext("sectionSmooth(..., method=\"kriging\")", line=0.5)
+}
+}
+}
+
 \examples{
 # Unsmoothed (Gulf Stream)
 library(oce)
@@ -167,17 +181,6 @@ mtext("sectionSmooth(..., method=\"spline\")", line=0.5)
 gsBarnes <- sectionSmooth(gs, "barnes", xr=50, yr=200)
 plot(gsBarnes, which="temperature")
 mtext("sectionSmooth(..., method=\"barnes\")", line=0.5)
-
-# Kriging. This is commented-out because one of the CRAN
-# check machines produces an error (converted from a warning)
-# and I am really not clear on whether dontrun will be
-# sufficient to solve the problem.
-#> if (requireNamespace("automap", quietly=TRUE)
-#>        && requireNamespace("sf", quietly=TRUE)) {
-#>     gsKriging <- sectionSmooth(gs, "kriging", xr=50, yr=200)
-#>     plot(gsKriging, which="temperature")
-#>     mtext("sectionSmooth(..., method=\"kriging\")", line=0.5)
-#> }
 
 }
 \seealso{

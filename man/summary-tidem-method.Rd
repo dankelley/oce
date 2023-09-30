@@ -28,6 +28,16 @@ percent level.
 Note that the p values are estimated as the average of the p values for the
 sine and cosine components at a given frequency.
 }
+\section{Sample of Usage}{
+
+\preformatted{
+library(oce)
+data(sealevel)
+tide <- tidem(sealevel)
+summary(tide)
+}
+}
+
 \seealso{
 Other things related to tides: 
 \code{\link{[[,tidem-method}},

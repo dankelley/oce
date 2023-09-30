@@ -126,6 +126,18 @@ See reference 4 for a deeper explanation of the meanings of these codes.
 
 See reference 4 for a deeper explanation of the meanings of these codes.
 }
+\section{Sample of Usage}{
+
+\preformatted{
+data(section)
+section <- read.section("a03_hy1.csv", sectionId="a03", institute="SIO",
+   ship="R/V Professor Multanovskiy", scientist="Vladimir Tereschenov")
+sectionWithFlags <- initializeFlagScheme(section, "WHP bottle")
+station1 <- sectionWithFlags[["station", 1]]
+str(station1[["flagScheme"]])
+}
+}
+
 \references{
 \enumerate{
 \item The codes for \code{"argo"} are derived from information in Table 4.1

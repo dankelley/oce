@@ -696,17 +696,17 @@ mapAxis <- function(side=1:2, longitude=TRUE, latitude=TRUE,
 #' Note that label placement in `mapContour` is handled differently
 #' than in [contour()].
 #'
-## @examples
-##\dontrun{
-## library(oce)
-## data(coastlineWorld)
-## if (requireNamespace("ocedata", quietly=TRUE)) {
-##     data(levitus, package="ocedata")
-##     par(mar=rep(1, 4))
-##     mapPlot(coastlineWorld, projection="+proj=robin", col="lightgray")
-##     mapContour(levitus[["longitude"]], levitus[["latitude"]], levitus[["SST"]])
-## }
-##}
+#' @section Sample of Usage:
+#'\preformatted{
+#' library(oce)
+#' data(coastlineWorld)
+#' if (requireNamespace("ocedata", quietly=TRUE)) {
+#'     data(levitus, package="ocedata")
+#'     par(mar=rep(1, 4))
+#'     mapPlot(coastlineWorld, projection="+proj=robin", col="lightgray")
+#'     mapContour(levitus[["longitude"]], levitus[["latitude"]], levitus[["SST"]])
+#' }
+#'}
 #'
 #' @seealso A map must first have been created with [mapPlot()].
 #'
@@ -890,19 +890,19 @@ mapContour <- function(longitude, latitude, z,
 #' @param ... plotting arguments, passed to [mapArrows()];
 #' see \dQuote{Examples} for how to control the arrow-head size.
 #'
-## @examples
-##\dontrun{
-## library(oce)
-## if (requireNamespace("ocedata", quietly=TRUE)) {
-##     data(coastlineWorldFine, package="ocedata")
-##     HfxLon <- -63.5752
-##     HfxLat <- 44.6488
-##     mapPlot(coastlineWorldFine, proj="+proj=merc",
-##         longitudelim=HfxLon+c(-2,2), latitudelim=HfxLat+c(-2,2),
-##         col=lightgrey")
-##     mapCoordinateSystem(HfxLon, HfxLat, phi=45, length=0.05)
-##    }
-##}
+#' @section Sample of Usage:
+#'\preformatted{
+#' library(oce)
+#' if (requireNamespace("ocedata", quietly=TRUE)) {
+#'     data(coastlineWorldFine, package="ocedata")
+#'     HfxLon <- -63.5752
+#'     HfxLat <- 44.6488
+#'     mapPlot(coastlineWorldFine, proj="+proj=merc",
+#'         longitudelim=HfxLon+c(-2,2), latitudelim=HfxLat+c(-2,2),
+#'         col=lightgrey")
+#'     mapCoordinateSystem(HfxLon, HfxLat, phi=45, length=0.05)
+#'    }
+#'}
 #'
 #' @family functions related to maps
 #'
@@ -957,26 +957,26 @@ mapCoordinateSystem <- function(longitude, latitude, L=100, phi=0, ...)
 #'     `angle` and `lwd` can be useful in differentiating different
 #'     fields.
 #'
-## @examples
-##\dontrun{
-## library(oce)
-## data(coastlineWorld)
-## par(mar=rep(2, 4))
-## mapPlot(coastlineWorld, longitudelim=c(-120,-55), latitudelim=c(35, 50),
-##         projection="+proj=laea +lat0=40 +lat1=60 +lon_0=-110")
-## lon <- seq(-120, -60, 15)
-## lat <- 45 + seq(-15, 15, 5)
-## lonm <- matrix(expand.grid(lon, lat)[, 1], nrow=length(lon))
-## latm <- matrix(expand.grid(lon, lat)[, 2], nrow=length(lon))
-## # vectors pointed 45 degrees clockwise from north
-## u <- matrix(1/sqrt(2), nrow=length(lon), ncol=length(lat))
-## v <- matrix(1/sqrt(2), nrow=length(lon), ncol=length(lat))
-## mapDirectionField(lon, lat, u, v, scale=3)
-## mapDirectionField(lonm, latm, 0, 1, scale=3, col="red")
-## # Color code by longitude, using thick lines
-## col <- colormap(lonm)$zcol
-## mapDirectionField(lonm, latm, 1, 0, scale=3, col=col, lwd=2)
-##}
+#' @section Sample of Usage:
+#'\preformatted{
+#' library(oce)
+#' data(coastlineWorld)
+#' par(mar=rep(2, 4))
+#' mapPlot(coastlineWorld, longitudelim=c(-120,-55), latitudelim=c(35, 50),
+#'         projection="+proj=laea +lat0=40 +lat1=60 +lon_0=-110")
+#' lon <- seq(-120, -60, 15)
+#' lat <- 45 + seq(-15, 15, 5)
+#' lonm <- matrix(expand.grid(lon, lat)[, 1], nrow=length(lon))
+#' latm <- matrix(expand.grid(lon, lat)[, 2], nrow=length(lon))
+#' # vectors pointed 45 degrees clockwise from north
+#' u <- matrix(1/sqrt(2), nrow=length(lon), ncol=length(lat))
+#' v <- matrix(1/sqrt(2), nrow=length(lon), ncol=length(lat))
+#' mapDirectionField(lon, lat, u, v, scale=3)
+#' mapDirectionField(lonm, latm, 0, 1, scale=3, col="red")
+#' # Color code by longitude, using thick lines
+#' col <- colormap(lonm)$zcol
+#' mapDirectionField(lonm, latm, 1, 0, scale=3, col=col, lwd=2)
+#'}
 #'
 #' @author Dan Kelley
 #'
@@ -1490,79 +1490,79 @@ mapLongitudeLatitudeXY <- function(longitude, latitude)
 #'     c(30.98, 31.37, 34.35, 33.92, 30.98))
 #' mapLines(box[,1], box[,2], lwd=2)
 #'
-## # Example 1.
-## # Mollweide (referenc 1 page 54) is an equal-area projection that works well
-## # for whole-globe views.
-## mapPlot(coastlineWorld, projection="+proj=moll", col="gray")
-## mtext("Mollweide", adj=1)
-##
-## # Example 2.
-## # Note that filling is not employed (`col` is not
-## # given) when the prime meridian is shifted, because
-## # this causes a problem with Antarctica
-## cl180 <- coastlineCut(coastlineWorld, lon_0=-180)
-## mapPlot(cl180, projection="+proj=moll +lon_0=-180")
-## mtext("Mollweide with coastlineCut", adj=1)
-##
-## # Example 3.
-## # Orthographic projections resemble a globe, making them attractive for
-## # non-technical use, but they are neither conformal nor equal-area, so they
-## # are somewhat limited for serious use on large scales.  See Section 20 of
-## # reference 1. Note that filling is not employed because it causes a problem with
-## # Antarctica.
-## if (utils::packageVersion("sf") != "0.9.8") {
-##     # sf version 0.9-8 has a problem with this projection
-##     par(mar=c(3, 3, 1, 1))
-##     mapPlot(coastlineWorld, projection="+proj=ortho +lon_0=-180")
-##     mtext("Orthographic", adj=1)
-## }
-##
-## # Example 4.
-## # The Lambert conformal conic projection is an equal-area projection
-## # recommended by reference 1, page 95, for regions of large east-west extent
-## # away from the equator, here illustrated for the USA and Canada.
-## par(mar=c(3, 3, 1, 1))
-## mapPlot(coastlineCut(coastlineWorld, -100),
-##     longitudelim=c(-130,-55), latitudelim=c(35, 60),
-##     projection="+proj=lcc +lat_0=30 +lat_1=60 +lon_0=-100", col="gray")
-## mtext("Lambert conformal", adj=1)
-##
-## # Example 5.
-## # The stereographic projection (reference 1, page 120) in the standard
-## # form used NSIDC (National Snow and Ice Data Center) for the Arctic.
-## # (See "A Guide to NSIDC's Polar Stereographic Projection" at
-## # https://nsidc.org/data/user-resources/help-center.)
-## # Note how the latitude limit extends 20 degrees past the pole,
-## # symmetrically.
-## par(mar=c(3, 3, 1, 1))
-## mapPlot(coastlineWorld,
-##     longitudelim=c(-180, 180), latitudelim=c(70, 110),
-##     projection=sf::st_crs("EPSG:3413"), col="gray")
-## mtext("Stereographic", adj=1)
-##}
-##
-## \dontrun{
-## # Example 6.
-## # Spinning globe: create PNG files that can be assembled into a movie
-## if (utils::packageVersion("sf") != "0.9.8") {
-##     # sf version 0.9-8 has a problem with this projection
-##     png("globe-%03d.png")
-##     lons <- seq(360, 0, -15)
-##     par(mar=rep(0, 4))
-##     for (i in seq_along(lons)) {
-##         p <- paste("+proj=ortho +lat_0=30 +lon_0=", lons[i], sep="")
-##         if (i == 1) {
-##             mapPlot(coastlineCut(coastlineWorld, lons[i]), projection=p, col="gray")
-##             xlim <- par("usr")[1:2]
-##             ylim <- par("usr")[3:4]
-##         } else {
-##             mapPlot(coastlineCut(coastlineWorld, lons[i]), projection=p, col="gray",
-##                     xlim=xlim, ylim=ylim, xaxs="i", yaxs="i")
-##         }
-##     }
-##     dev.off()
-## }
-##}
+#' @section Sample of Usage:
+#'\preformatted{
+#' # Example 1.
+#' # Mollweide (referenc 1 page 54) is an equal-area projection that works well
+#' # for whole-globe views.
+#' mapPlot(coastlineWorld, projection="+proj=moll", col="gray")
+#' mtext("Mollweide", adj=1)
+#'
+#' # Example 2.
+#' # Note that filling is not employed (`col` is not
+#' # given) when the prime meridian is shifted, because
+#' # this causes a problem with Antarctica
+#' cl180 <- coastlineCut(coastlineWorld, lon_0=-180)
+#' mapPlot(cl180, projection="+proj=moll +lon_0=-180")
+#' mtext("Mollweide with coastlineCut", adj=1)
+#'
+#' # Example 3.
+#' # Orthographic projections resemble a globe, making them attractive for
+#' # non-technical use, but they are neither conformal nor equal-area, so they
+#' # are somewhat limited for serious use on large scales.  See Section 20 of
+#' # reference 1. Note that filling is not employed because it causes a problem with
+#' # Antarctica.
+#' if (utils::packageVersion("sf") != "0.9.8") {
+#'     # sf version 0.9-8 has a problem with this projection
+#'     par(mar=c(3, 3, 1, 1))
+#'     mapPlot(coastlineWorld, projection="+proj=ortho +lon_0=-180")
+#'     mtext("Orthographic", adj=1)
+#' }
+#'
+#' # Example 4.
+#' # The Lambert conformal conic projection is an equal-area projection
+#' # recommended by reference 1, page 95, for regions of large east-west extent
+#' # away from the equator, here illustrated for the USA and Canada.
+#' par(mar=c(3, 3, 1, 1))
+#' mapPlot(coastlineCut(coastlineWorld, -100),
+#'     longitudelim=c(-130,-55), latitudelim=c(35, 60),
+#'     projection="+proj=lcc +lat_0=30 +lat_1=60 +lon_0=-100", col="gray")
+#' mtext("Lambert conformal", adj=1)
+#'
+#' # Example 5.
+#' # The stereographic projection (reference 1, page 120) in the standard
+#' # form used NSIDC (National Snow and Ice Data Center) for the Arctic.
+#' # (See "A Guide to NSIDC's Polar Stereographic Projection" at
+#' # https://nsidc.org/data/user-resources/help-center.)
+#' # Note how the latitude limit extends 20 degrees past the pole,
+#' # symmetrically.
+#' par(mar=c(3, 3, 1, 1))
+#' mapPlot(coastlineWorld,
+#'     longitudelim=c(-180, 180), latitudelim=c(70, 110),
+#'     projection=sf::st_crs("EPSG:3413"), col="gray")
+#' mtext("Stereographic", adj=1)
+#'
+#' # Example 6.
+#' # Spinning globe: create PNG files that can be assembled into a movie
+#' if (utils::packageVersion("sf") != "0.9.8") {
+#'     # sf version 0.9-8 has a problem with this projection
+#'     png("globe-%03d.png")
+#'     lons <- seq(360, 0, -15)
+#'     par(mar=rep(0, 4))
+#'     for (i in seq_along(lons)) {
+#'         p <- paste("+proj=ortho +lat_0=30 +lon_0=", lons[i], sep="")
+#'         if (i == 1) {
+#'             mapPlot(coastlineCut(coastlineWorld, lons[i]), projection=p, col="gray")
+#'             xlim <- par("usr")[1:2]
+#'             ylim <- par("usr")[3:4]
+#'         } else {
+#'             mapPlot(coastlineCut(coastlineWorld, lons[i]), projection=p, col="gray",
+#'                     xlim=xlim, ylim=ylim, xaxs="i", yaxs="i")
+#'         }
+#'     }
+#'     dev.off()
+#' }
+#'}
 #'
 #' @author Dan Kelley and Clark Richards
 #'
@@ -3197,22 +3197,22 @@ mapPolygon <- function(longitude, latitude, density=NULL, angle=45,
 #' @references
 #' 1. `https://codedocean.wordpress.com/2014/02/03/anti-aliasing-and-image-plots/`
 #'
-## @examples
-##\dontrun{
-## library(oce)
-## data(coastlineWorld)
-## data(topoWorld)
-##
-## # Northern polar region, with color-coded bathymetry
-## par(mfrow=c(1,1), mar=c(2,2,1,1))
-## cm <- colormap(zlim=c(-5000, 0), col=oceColorsGebco)
-## drawPalette(colormap=cm)
-## mapPlot(coastlineWorld, projection="+proj=stere +lat_0=90",
-##         longitudelim=c(-180,180), latitudelim=c(70,110))
-## mapImage(topoWorld, colormap=cm)
-## mapGrid(15, 15, polarCircle=1, col=gray(0.2))
-## mapPolygon(coastlineWorld[["longitude"]], coastlineWorld[["latitude"]], col="tan")
-##}
+#' @section Sample of Usage:
+#'\preformatted{
+#' library(oce)
+#' data(coastlineWorld)
+#' data(topoWorld)
+#'
+#' # Northern polar region, with color-coded bathymetry
+#' par(mfrow=c(1,1), mar=c(2,2,1,1))
+#' cm <- colormap(zlim=c(-5000, 0), col=oceColorsGebco)
+#' drawPalette(colormap=cm)
+#' mapPlot(coastlineWorld, projection="+proj=stere +lat_0=90",
+#'         longitudelim=c(-180,180), latitudelim=c(70,110))
+#' mapImage(topoWorld, colormap=cm)
+#' mapGrid(15, 15, polarCircle=1, col=gray(0.2))
+#' mapPolygon(coastlineWorld[["longitude"]], coastlineWorld[["latitude"]], col="tan")
+#'}
 #'
 #' @seealso A map must first have been created with [mapPlot()].
 #'

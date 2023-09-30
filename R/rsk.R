@@ -1557,18 +1557,19 @@ rskPatm <- function(x, dp=0.5)
 #' @param debug optional integer to control debugging, with positive values
 #' indicating to print information about the processing.
 #'
-## @examples
-##\dontrun{
-## table <- rskToc("/data/archive/sleiwex/2008/moorings/m05/adv/sontek_202h/raw",
-## from=as.POSIXct("2008-07-01 00:00:00", tz="UTC"),
-##     to=as.POSIXct("2008-07-01 12:00:00", tz="UTC"))
-## print(table)
-##}
-#'
 #' @return
 #' A list with two elements: `filename`, a vector of file names, and
 #' `startTime`, a vector of [POSIXct()] times indicating the (real)
 #' times of the first datum in the corresponding files.
+#'
+#' @section Sample of Usage:
+#'\preformatted{
+#' file <- "~/data/archive/sleiwex/2008/moorings/m05/adv/sontek_202h/raw"
+#' table <- rskToc(file,
+#'     from=as.POSIXct("2008-07-01 00:00:00", tz="UTC"),
+#'     to=as.POSIXct("2008-07-01 12:00:00", tz="UTC"))
+#' print(table)
+#'}
 #'
 #' @author Dan Kelley
 #'

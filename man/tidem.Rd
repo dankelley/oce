@@ -164,10 +164,10 @@ constituent to prune is fairly complicated, involving decisions
 based on a comparison table.  The details of this process are provided
 by Foreman (1978).
 
-\emph{Phase 3: overrulling Rayleigh's criterion.}
+\emph{Phase 3: optionally overruling Rayleigh's criterion.}
 
 The pruning list from phase 2 can be overruled by the user. This
-is done by retaining any constitutents that the user has named
+is done by retaining any constituents that the user has named
 in the \code{constituents} parameter.  This action
 was added on 2017-12-27, to make \code{tidem} behave the same
 way as the Foreman (1978) code, as illustrated in his

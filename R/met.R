@@ -358,16 +358,16 @@ as.met <- function(time, temperature, pressure, u, v, filename="(constructed fro
 #'
 #' @return String indicating the full pathname to the downloaded file.
 #'
-## @examples
-##\dontrun{
-## library(oce)
-## # Download data for Halifax International Airport, in September
-## # of 2003. This dataset is used for data(met) provided with oce.
-## # Note that requests for data after 2012 month 10 yield all
-## # missing values, for reasons unknown to the author.
-## metFile <- download.met(6358, 2003, 9, destdir=".")
-## met <- read.met(metFile)
-##}
+#' @section Sample of Usage:
+#'\preformatted{
+#' library(oce)
+#' # Download data for Halifax International Airport, in September
+#' # of 2003. This dataset is used for data(met) provided with oce.
+#' # Note that requests for data after 2012 month 10 yield all
+#' # missing values, for reasons unknown to the author.
+#' metFile <- download.met(6358, 2003, 9, destdir=".")
+#' met <- read.met(metFile)
+#'}
 #'
 #' @seealso The work is done with [utils::download.file()].
 #'
@@ -591,41 +591,36 @@ metNames2oceNames <- function(names, scheme)
 #'
 #' @author Dan Kelley
 #'
-# @examples
-# # The examples do not run on some Windows machines, owing
-# # to encoding issues, and so all these examples are marked
-# # as "don't run".
-#\dontrun{
-# # Example 1: "csv1" Environment Canada format (found to be obsolete as of Oct 2019)
-# csv1 <- read.met(system.file("extdata", "test_met_vsn1.csv", package="oce"))
-# csv1 <- oceSetData(csv1, "time", csv1[["time"]]+4*3600,
-#     note="add 4h to local time to get UTC time")
-#
-# # Example 2: "csv2" Environment Canada format (found to be obsolete as of Jan 2022)
-# csv2 <- read.met(system.file("extdata", "test_met_vsn2.csv", package="oce"))
-# csv2 <- oceSetData(csv2, "time", csv2[["time"]]+4*3600,
-#     note="add 4h to local time to get UTC time")
-#
-# # Example 3: "csv3" Environment Canada format. Note timezone correction
-# csv3 <- read.met(system.file("extdata", "test_met_vsn3.csv", package="oce"))
-# csv3 <- oceSetData(csv3, "time", csv3[["time"]]+4*3600,
-#     note="add 4h to local time to get UTC time")
-#
-# # Example 4: "xml2" format. (Uncertain timezone, so not corrected.)
-# if (requireNamespace("XML", quietly=TRUE))
-#     xml2 <- read.met(system.file("extdata", "test_met_xml2.xml", package="oce"))
-#}
-#
-# # Example 5: download and plot
-# \dontrun{
-# library(oce)
-# # Recreate data(met) and plot u(t) and v(t)
-# metFile <- download.met(id=6358, year=2003, month=9, destdir=".")
-# met <- read.met(metFile)
-# met <- oceSetData(met, "time", met[["time"]]+4*3600,
-#     note="add 4h to local time to get UTC time")
-# plot(met)
-# }
+#' @section Sample of Usage:
+#'\preformatted{
+#' # Example 1: "csv1" Environment Canada format (found to be obsolete as of Oct 2019)
+#' csv1 <- read.met(system.file("extdata", "test_met_vsn1.csv", package="oce"))
+#' csv1 <- oceSetData(csv1, "time", csv1[["time"]]+4*3600,
+#'     note="add 4h to local time to get UTC time")
+#'
+#' # Example 2: "csv2" Environment Canada format (found to be obsolete as of Jan 2022)
+#' csv2 <- read.met(system.file("extdata", "test_met_vsn2.csv", package="oce"))
+#' csv2 <- oceSetData(csv2, "time", csv2[["time"]]+4*3600,
+#'     note="add 4h to local time to get UTC time")
+#'
+#' # Example 3: "csv3" Environment Canada format. Note timezone correction
+#' csv3 <- read.met(system.file("extdata", "test_met_vsn3.csv", package="oce"))
+#' csv3 <- oceSetData(csv3, "time", csv3[["time"]]+4*3600,
+#'     note="add 4h to local time to get UTC time")
+#'
+#' # Example 4: "xml2" format. (Uncertain timezone, so not corrected.)
+#' if (requireNamespace("XML", quietly=TRUE))
+#'     xml2 <- read.met(system.file("extdata", "test_met_xml2.xml", package="oce"))
+#'
+#' # Example 5: download and plot
+#' library(oce)
+#' # Recreate data(met) and plot u(t) and v(t)
+#' metFile <- download.met(id=6358, year=2003, month=9, destdir=".")
+#' met <- read.met(metFile)
+#' met <- oceSetData(met, "time", met[["time"]]+4*3600,
+#'     note="add 4h to local time to get UTC time")
+#' plot(met)
+#'}
 #'
 #' @references
 #' 1. Environment Canada website for Historical Climate Data

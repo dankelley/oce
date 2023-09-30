@@ -8,6 +8,10 @@
 \description{
 Sample ctd File in .ctd Format
 }
+\examples{
+read.oce(system.file("extdata", "d200321-001.ctd.gz", package="oce"))
+
+}
 \seealso{
 Other raw datasets: 
 \code{\link{CTD_BCD2014666_008_1_DN.ODF.gz}},

@@ -71,14 +71,14 @@ setClass("topo", contains="oce")
 #'    resolution=30, destdir=".")
 #'}
 #'
-## @examples
-##\dontrun{
-## library(oce)
-## data(topoWorld)
-## par(mfrow=c(2, 1))
-## plot(topoWorld, location=NULL)
-## imagep(topoWorld)
-##}
+#' @section Sample of Usage:
+#'\preformatted{
+#' library(oce)
+#' data(topoWorld)
+#' par(mfrow=c(2, 1))
+#' plot(topoWorld, location=NULL)
+#' imagep(topoWorld)
+#'}
 #'
 #' @family datasets provided with oce
 #' @family things related to topo data
@@ -289,18 +289,18 @@ setMethod(f="subset",
 #'
 #' @author Dan Kelley
 #'
-## @examples
-##\dontrun{
-## library(oce)
-## topoFile <- download.topo(west=-66, east=-60, south=43, north=47,
-##     resolution=1, destdir="~/data/topo")
-## topo <- read.topo(topoFile)
-## imagep(topo, zlim=c(-400, 400), col=oceColorsTwo, drawTriangles=TRUE)
-## if (requireNamespace("ocedata", quietly=TRUE)) {
-##     data(coastlineWorldFine, package="ocedata")
-##     lines(coastlineWorldFine[["longitude"]], coastlineWorldFine[["latitude"]])
-## }
-##}
+#' @section Sample of Usage:
+#'\preformatted{
+#' library(oce)
+#' topoFile <- download.topo(west=-66, east=-60, south=43, north=47,
+#'     resolution=1, destdir="~/data/topo")
+#' topo <- read.topo(topoFile)
+#' imagep(topo, zlim=c(-400, 400), col=oceColorsTwo, drawTriangles=TRUE)
+#' if (requireNamespace("ocedata", quietly=TRUE)) {
+#'     data(coastlineWorldFine, package="ocedata")
+#'     lines(coastlineWorldFine[["longitude"]], coastlineWorldFine[["latitude"]])
+#' }
+#'}
 #'
 #' @references
 #' * Amante, C. and B.W. Eakins, 2009. ETOPO1 1 Arc-Minute Global Relief
@@ -851,12 +851,12 @@ setMethod(f="plot",
 #' @return
 #' A [topo-class] object.
 #'
-## @examples
-##\dontrun{
-## library(oce)
-## topoMaritimes <- read.topo("topoMaritimes.asc")
-## plot(topographyMaritimes)
-##}
+#' @section Sample of Usage:
+#'\preformatted{
+#' library(oce)
+#' topoMaritimes <- read.topo("topoMaritimes.asc")
+#' plot(topographyMaritimes)
+#'}
 #'
 #' @author Dan Kelley
 #' @family things related to topo data

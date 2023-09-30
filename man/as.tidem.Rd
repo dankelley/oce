@@ -40,7 +40,7 @@ oce normally used, as defined in \code{data(tideconst)}. A warning will
 be issued if the absolute value of the relative frequency mismatch for any
 given component exceeds 1e-6, and this will occur for any NOAA tables
 containing the SA component, for which this relative mismatch
-is approximately 4e-5 (see refernece 5).}
+is approximately 4e-5 (see reference 5).}
 
 \item{debug}{an integer specifying whether debugging information is
 to be printed during the processing. This is a general parameter that

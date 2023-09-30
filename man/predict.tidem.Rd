@@ -35,6 +35,25 @@ was constructed with \code{\link[=as.tidem]{as.tidem()}}, but considerably more 
 for \code{\link[=tidem]{tidem()}}, and so the documentation for the latter ought to
 be studied closely, especially with regard to the Rayleigh criterion.
 }
+\section{Sample of Usage}{
+
+\preformatted{
+# prediction at specified times
+data(sealevel)
+m <- tidem(sealevel)
+# Check fit over 2 days (interpolating to finer timescale)
+look <- 1:48
+time <- sealevel[["time"]]
+elevation <- sealevel[["elevation"]]
+oce.plot.ts(time[look], elevation[look])
+# 360s = 10 minute timescale
+t <- seq(from=time[1], to=time[max(look)], by=360)
+lines(t, predict(m, newdata=t), col="red")
+legend("topright", col=c("black","red"),
+legend=c("data","model"),lwd=1)
+}
+}
+
 \examples{
 
 # Show non-tidal sealevel signal in Halifax Harbour during
@@ -45,7 +64,6 @@ time <- sealevel[["time"]]
 elevation <- sealevel[["elevation"]]
 prediction <- tidem(sealevel) |> predict()
 oce.plot.ts(time, elevation - prediction)
-
 
 }
 \seealso{

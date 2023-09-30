@@ -132,6 +132,13 @@ of the three columns in this table.\tabular{rrr}{
    \code{0xa0} \tab 160 \tab \code{text} \cr
 }
 }
+\section{Sample of Usage}{
+
+\preformatted{
+d <- read.adp.ad2cp("~/test.ad2cp", to=100) # or read.oce()
+}
+}
+
 \examples{
 library(oce)
 # You can run this within the oce directory, if you clone from github.

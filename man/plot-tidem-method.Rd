@@ -52,6 +52,16 @@ ignored because it is set internally, according to the value of \code{which}.}
 \description{
 Plot a summary diagram for a tidal fit.
 }
+\section{Sample of Usage}{
+
+\preformatted{
+library(oce)
+data(sealevel)
+tide <- tidem(sealevel)
+plot(tide)
+}
+}
+
 \section{Historical note}{
 
 An argument named \code{labelIf} was removed in July 2016,

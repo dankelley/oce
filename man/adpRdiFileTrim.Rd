@@ -30,6 +30,17 @@ Create an RDI adp file by copying the first \code{n} data chunks (starting with
 byte 0x7f 0x7f) of another such file. This can be useful in supplying small
 sample files for bug reports.
 }
+\section{Sample of Usage}{
+
+\preformatted{
+# Can only be run by the developer, since it uses a private file.
+file  <- "~/data/archive/sleiwex/2008/moorings/m09/adp/rdi_2615/raw/adp_rdi_2615.000"
+if (file.exists(file)) {
+    adpRdiFileTrim(file, 9L, "test.000")
+}
+}
+}
+
 \seealso{
 Other things related to adp data: 
 \code{\link{[[,adp-method}},
