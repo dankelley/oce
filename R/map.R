@@ -2027,7 +2027,7 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
             axisLabels$value[axisLabels$value == "0N"] <- "0"
         }
         if (debug) {
-            cat("After accounting for geographical (=", geographical, "), axisLabels is as follows\n")
+            cat("After accounting for geographical (which is ", geographical, "), axisLabels dataframe is", sep="")
             print(axisLabels)
         }
         # Draw axes
@@ -2052,6 +2052,26 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
                         oceDebug(debug, "next is raw skip for side 1:", paste(skip, collapse=" "), "\n")
                         skip[is.na(skip) | is.null(skip)] <- TRUE
                         oceDebug(debug, "next is NA-cleaned skip for side 1:", paste(skip, collapse=" "), "\n")
+                        # Prefer lon=0 to lon=-180 or lon=+180 (issue 2156)
+                        # https://github.com/dankelley/oce/issues/2156
+                        index0 <- which(axisLabels1$at == 0.0)
+                        if (length(index0)) {
+                            at0 <- axisLabels1$at[index0]
+                            oceDebug(debug, "longitude=0, index0=", index0, ", at0=", at0, "\n", sep="")
+                            atSpan <- diff(range(axisLabels1$at))
+                            criterion0 <- 1e-4 # FIXME: may need to adjust this
+                            overlapping <- abs(axisLabels1$at - at0) < atSpan * criterion0
+                            atDateline <- abs((abs(axisLabels1$value) - 180)) < criterion0 * diff(range(axisLabels1$value))
+                            axisLabels1$overlapping <- overlapping
+                            axisLabels1$atDateline <- atDateline
+                            delete <- overlapping & atDateline
+                            axisLabels1$delete <- delete
+                            oceDebug(debug, "originally, axisLabels1 is\n")
+                            if (debug > 0) print(axisLabels1)
+                            axisLabels1 <- axisLabels1[!delete, ]
+                            oceDebug(debug, "after -180/0/180 consideration (github issue 2156), axisLabels1 is\n")
+                            if (debug > 0) print(axisLabels1)
+                        }
                         if (any(!skip) || (is.logical(lonlabels) && !lonlabels)) {
                             if (is.logical(lonlabels) && !lonlabels) {
                                 axis(side=1, at=axisLabels1$at[!skip], labels=FALSE, mgp=mgp)
