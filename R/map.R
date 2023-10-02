@@ -2056,15 +2056,26 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
                         # https://github.com/dankelley/oce/issues/2156
                         index0 <- which(axisLabels1$at == 0.0)
                         if (length(index0)) {
+                            oceDebug(debug, "address prime-meridian vs dateline labelling (GH issue 2156)\n")
                             at0 <- axisLabels1$at[index0]
-                            oceDebug(debug, "longitude=0, index0=", index0, ", at0=", at0, "\n", sep="")
+                            oceDebug(debug, "  longitude=0, index0=", index0, ", at0=", at0, "\n", sep="")
                             atSpan <- diff(range(axisLabels1$at))
+                            oceDebug(debug, "  atSpan=", atSpan, " (in metres, I think)\n", sep="")
                             criterion0 <- 1e-4 # FIXME: may need to adjust this
+                            oceDebug(debug, "  criterion0=", criterion0, "\n", sep="")
                             overlapping <- abs(axisLabels1$at - at0) < atSpan * criterion0
-                            atDateline <- abs((abs(axisLabels1$value) - 180)) < criterion0 * diff(range(axisLabels1$value))
+                            oceDebug(debug, "  overlapping=", paste(overlapping, collapse=" "), "\n", sep="")
+                            # value may have EWNS and maybe degree signs in it
+                            valueNumeric <- as.numeric(gsub("[^0-9.]", "", axisLabels1$value))
+                            oceDebug(debug, "  valueNumeric=", paste(valueNumeric, collapse=" "), "\n", sep="")
+                            atDateline <- abs(abs(valueNumeric) - 180) < criterion0 * diff(range(valueNumeric))
+                            oceDebug(debug, "  atDateline=", paste(atDateline, collapse=" "), "\n", sep="")
+                            delete <- overlapping & atDateline
+                            oceDebug(debug, "  delete=", paste(delete, collapse=" "), "\n", sep="")
+                            # save working notes in the data frame, for future debugging
+                            axisLabels1$valueNumeric <- valueNumeric
                             axisLabels1$overlapping <- overlapping
                             axisLabels1$atDateline <- atDateline
-                            delete <- overlapping & atDateline
                             axisLabels1$delete <- delete
                             oceDebug(debug, "originally, axisLabels1 is\n")
                             if (debug > 0) print(axisLabels1)
