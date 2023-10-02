@@ -2031,12 +2031,12 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
             print(axisLabels)
         }
         # Draw axes
-        oceDebug(debug, "axes=", axes, "\n", sep="")
+        oceDebug(debug, "about to draw axes\n")
         if (axes) {
             oceDebug(debug, vectorShow(latlabels))
             oceDebug(debug, vectorShow(lonlabels))
+            oceDebug(debug, vectorShow(axisLabels))
             if (!is.null(axisLabels)) {
-                oceDebug(debug, "axisLabels is not null\n")
                 if (nrow(axisLabels) > 0) {
                     axisLabels1 <- subset(axisLabels, axisLabels$side==1)
                     if (debug) {
@@ -2054,9 +2054,10 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
                         oceDebug(debug, "next is NA-cleaned skip for side 1:", paste(skip, collapse=" "), "\n")
                         # Prefer lon=0 to lon=-180 or lon=+180 (issue 2156)
                         # https://github.com/dankelley/oce/issues/2156
-                        index0 <- which(axisLabels1$at == 0.0)
+                        valueNumeric <- as.numeric(gsub("[^0-9.]", "", axisLabels1$value))
+                        index0 <- which(valueNumeric == 0.0)
                         if (length(index0)) {
-                            oceDebug(debug, "address prime-meridian vs dateline labelling (GH issue 2156)\n")
+                            oceDebug(debug, "address prime-meridian,dateline label overlap (GH issue 2156)\n")
                             at0 <- axisLabels1$at[index0]
                             oceDebug(debug, "  longitude=0, index0=", index0, ", at0=", at0, "\n", sep="")
                             atSpan <- diff(range(axisLabels1$at))
