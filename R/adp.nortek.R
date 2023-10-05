@@ -1,5 +1,7 @@
 # vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
 
+testNewSerialNumberDecoder <- TRUE # see email exchange with CR dated 2023-10-05
+
 # Data format overview
 # hardware [a5 05 X1 X2]  48 bytes, 2*(short word made from X1 and X2)
 # head     [a5 04 X1 X2] 224 bytes, 2*(short word made from X1 and X2)
@@ -96,8 +98,22 @@ decodeHeaderNortek <- function(buf,
             if (2 * hardware$size != headerLengthHardware)
                 stop("size of hardware header expected to be ", headerLengthHardware, "but got ", hardware$size)
             oceDebug(debug, "hardware$size=", hardware$size, "\n")
-            hardware$serialNumber <- gsub(" *$", "", paste(readBin(buf[o+5:18], "character", n=14, size=1), collapse=""))
-            oceDebug(debug, "hardware$serialNumber", hardware$serialNumber, "\n")
+            # 2023-10-05: problem reading a CR file.  The serial number has an
+            # 0x80 in it (which is a control character in some encodings).
+            # Let's just trim anything that is not in the ASCII table.
+            if (testNewSerialNumberDecoder) {
+                tmp <- buf[o+5:18]
+                # Remove any non-printing char, and anything following it
+                if (any(tmp >= 0x80)) {
+                    w <- which(tmp >= 0x80)
+                    tmp <- if (w > 1L) tmp[1L:(w-1L)] else ""
+                    warning("removed control characters from serial number\n")
+                }
+                hardware$serialNumber <- gsub(" *$", "", paste(readBin(tmp, "character", n=nchar(tmp), size=1), collapse=""))
+            } else {
+                hardware$serialNumber <- gsub(" *$", "", paste(readBin(buf[o+5:18], "character", n=14, size=1), collapse=""))
+            }
+            oceDebug(debug, "hardware$serialNumber: ", hardware$serialNumber, "\n")
             hardware$config <- readBin(buf[o+19:20], "raw", n=2, size=1)
             oceDebug(debug, "hardware$config:", hardware$config, "\n")
             hardware$frequency <- readBin(buf[o+21:22], "integer", n=1, size=2, endian="little", signed=FALSE) # not used
@@ -785,7 +801,8 @@ read.adp.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
             by <- floor(0.5 + ctimeToSeconds(by) / dt)
         oceDebug(debug, "by=", by, "profiles (after change)\n")
         profileStart <- profileStart[seq(1, length(profileStart), by=by)]
-        oceDebug(debug, "dt=", dt, "\n", "by=", by, "profileStart[1:10] after indexing:", profileStart[1:10], "\n")
+        oceDebug(debug, "dt=", dt, "\n", "by=", by, "profileStart[1:10] after indexing:",
+            paste(profileStart[1:10], " "), "\n")
     } else {
         fromIndex <- from
         toIndex <- to
@@ -794,7 +811,7 @@ read.adp.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         if (is.character(by))
             stop("cannot have string for 'by' if 'from' and 'to' are integers")
         profileStart <- profileStart[seq(from=from, to=to, by=by)]
-        oceDebug(debug, "profileStart[1:10] after indexing:", profileStart[1:10], "\n")
+        oceDebug(debug, "profileStart[1:10] after indexing:", paste(profileStart[1:10], " "), "\n")
     }
     profilesToRead <- length(profileStart)
     oceDebug(debug, "profilesToRead=", profilesToRead, "\n")
