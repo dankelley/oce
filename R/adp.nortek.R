@@ -105,9 +105,9 @@ decodeHeaderNortek <- function(buf,
                 tmp <- buf[o+5:18]
                 # Remove any non-printing char, and anything following it
                 if (any(tmp >= 0x80)) {
-                    w <- which(tmp >= 0x80)
-                    tmp <- if (w > 1L) tmp[1L:(w-1L)] else ""
-                    warning("removed control characters from serial number\n")
+                    w <- which(tmp >= 0x80)[1]
+                    tmp <- if (w > 1L) tmp[seq(1L, w-1L)] else ""
+                    warning("serial number contains control characters, so only preceeding characters retained\n")
                 }
                 hardware$serialNumber <- gsub(" *$", "", paste(readBin(tmp, "character", n=nchar(tmp), size=1), collapse=""))
             } else {
