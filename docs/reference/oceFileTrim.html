@@ -120,6 +120,18 @@ very extensive output.</p></dd>
 <p><code>oceFileTrim()</code> returns the name of the output file, either provided
 in the <code>outfile</code> parameter or constructed by this function.</p>
     </div>
+    <div id="sample-of-usage">
+    <h2>Sample of Usage</h2>
+    
+
+<div class="sourceCode"><pre><code><span></span>
+<span><span class="co"># Can only be run by the developer, since it uses a private file.</span></span>
+<span><span class="va">f</span>  <span class="op">&lt;-</span> <span class="st">"~/Dropbox/oce_secret_data/ad2cp/byg_trimmed.ad2cp"</span></span>
+<span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/files.html" class="external-link">file.exists</a></span><span class="op">(</span><span class="va">f</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>    <span class="fu"><a href="../reference/oceFileTrim.html">oceFileTrim</a></span><span class="op">(</span><span class="va">f</span>, <span class="fl">10L</span><span class="op">)</span> <span class="co"># this file holds 100 data segments</span></span>
+<span><span class="op">}</span></span></code></pre></div>
+
+    </div>
     <div id="see-also">
     <h2>See also</h2>
     <div class="dont-index"><p>Other functions that trim data files: 

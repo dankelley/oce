@@ -145,6 +145,19 @@ profile.</p>
 <code>indices</code>, which may be a vector of integers that indicate sequence
 number, or a logical vector, again indicating which stations to keep.</p>
     </div>
+    <div id="sample-of-usage">
+    <h2>Sample of Usage</h2>
+    
+
+<div class="sourceCode"><pre><code><span></span>
+<span><span class="co"># Example 7. Subset by a polygon determined with locator()</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mfrow<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">section</span>, which<span class="op">=</span><span class="st">"map"</span><span class="op">)</span></span>
+<span><span class="va">bdy</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/graphics/locator.html" class="external-link">locator</a></span><span class="op">(</span><span class="fl">4</span><span class="op">)</span> <span class="co"># choose a polygon near N. America</span></span>
+<span><span class="va">GS</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset</a></span><span class="op">(</span><span class="va">section</span>, within<span class="op">=</span><span class="va">bdy</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">GS</span>, which<span class="op">=</span><span class="st">"map"</span><span class="op">)</span></span></code></pre></div>
+
+    </div>
     <div id="see-also">
     <h2>See also</h2>
     <div class="dont-index"><p>Other functions that subset oce objects: 
@@ -208,17 +221,7 @@ number, or a logical vector, again indicating which stations to keep.</p>
 <span class="r-in"><span><span class="co"># Example 6. Similar to #4, but done in more detailed way</span></span></span>
 <span class="r-in"><span><span class="va">long</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset</a></span><span class="op">(</span><span class="va">section</span>,</span></span>
 <span class="r-in"><span>   indices<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/unlist.html" class="external-link">unlist</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="va">section</span><span class="op">[[</span><span class="st">"station"</span><span class="op">]</span><span class="op">]</span>,</span></span>
-<span class="r-in"><span>                  <span class="kw">function</span><span class="op">(</span><span class="va">s</span><span class="op">)</span></span></span>
-<span class="r-in"><span>                    <span class="fl">5</span> <span class="op">&lt;</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">s</span><span class="op">[[</span><span class="st">"pressure"</span><span class="op">]</span><span class="op">]</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># Example 7. Subset by a polygon determined with locator()</span></span></span>
-<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mfrow<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">section</span>, which<span class="op">=</span><span class="st">"map"</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">bdy</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/graphics/locator.html" class="external-link">locator</a></span><span class="op">(</span><span class="fl">4</span><span class="op">)</span> <span class="co"># choose a polygon near N. America</span></span></span>
-<span class="r-in"><span><span class="va">GS</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset</a></span><span class="op">(</span><span class="va">section</span>, within<span class="op">=</span><span class="va">bdy</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">GS</span>, which<span class="op">=</span><span class="st">"map"</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="op">}</span></span></span>
+<span class="r-in"><span>       <span class="kw">function</span><span class="op">(</span><span class="va">s</span><span class="op">)</span> <span class="fl">5</span> <span class="op">&lt;</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">s</span><span class="op">[[</span><span class="st">"pressure"</span><span class="op">]</span><span class="op">]</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

@@ -118,6 +118,27 @@ that lacks the initial header information)</p></dd>
 if the desired item is not found there, or if <code>x</code> is not of the required
 class and variety.</p>
     </div>
+    <div id="sample-of-usage">
+    <h2>Sample of Usage</h2>
+    
+
+<div class="sourceCode"><pre><code><span></span>
+<span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/files.html" class="external-link">file.exists</a></span><span class="op">(</span><span class="st">"a.ad2cp"</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>    <span class="va">d</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/read.oce.html">read.oce</a></span><span class="op">(</span><span class="st">"a.ad2cp"</span><span class="op">)</span></span>
+<span>    <span class="co"># The examples start with the line in x[["text"]][[1]]; note that in the second</span></span>
+<span>    <span class="co"># example, it would be insuficient to use a key of "BEAMCFGLIST", because that will</span></span>
+<span>    <span class="co"># yield 4 lines, and the function is not designed to handle that.</span></span>
+<span></span>
+<span>    <span class="co"># ID,STR=\"Signature1000\",SN=123456</span></span>
+<span>    <span class="va">type</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/ad2cpHeaderValue.html">ad2cpHeaderValue</a></span><span class="op">(</span><span class="va">d</span>, <span class="st">"ID"</span>, <span class="st">"STR"</span>, numeric<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span></span>
+<span>    <span class="va">serialNumber</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/ad2cpHeaderValue.html">ad2cpHeaderValue</a></span><span class="op">(</span><span class="va">d</span>, <span class="st">"ID"</span>, <span class="st">"SN"</span><span class="op">)</span></span>
+<span></span>
+<span>    <span class="co"># BEAMCFGLIST,BEAM=1,THETA=25.00,PHI=0.00,FREQ=1000,BW=25,BRD=1,HWBEAM=1,ZNOM=60.00</span></span>
+<span>    <span class="va">beam1Angle</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/ad2cpHeaderValue.html">ad2cpHeaderValue</a></span><span class="op">(</span><span class="va">d</span>, <span class="st">"BEAMCFGLIST,BEAM=1"</span>, <span class="st">"THETA"</span><span class="op">)</span></span>
+<span>    <span class="va">frequency</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/ad2cpHeaderValue.html">ad2cpHeaderValue</a></span><span class="op">(</span><span class="va">d</span>, <span class="st">"BEAMCFGLIST,BEAM=1"</span>, <span class="st">"FREQ"</span>, default<span class="op">=</span><span class="cn">NA</span><span class="op">)</span></span>
+<span><span class="op">}</span></span></code></pre></div>
+
+    </div>
     <div id="see-also">
     <h2>See also</h2>
     <div class="dont-index"><p>Other things related to adp data: 

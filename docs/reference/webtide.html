@@ -221,6 +221,23 @@ the computer.</p>
 designed based on little more than guesses about the WebTide file structure.
 Users should be on the lookout for odd results.</p>
     </div>
+    <div id="sample-of-usage">
+    <h2>Sample of Usage</h2>
+    
+
+<div class="sourceCode"><pre><code>
+# needs WebTide at the system level
+library(oce)
+# 1. prediction at Halifax NS
+longitude &lt;- -63.57
+latitude &lt;- 44.65
+prediction &lt;- webtide("predict", longitude=longitude, latitude=latitude)
+mtext(sprintf("prediction at <!-- %fN %fE", latitude, longitude), line=0.75, side=3) -->
+# 2. map
+webtide(lon=-63.57,lat=44.65,xlim=c(-64,-63),ylim=c(43.0,46))
+</code></pre></div>
+
+    </div>
     <div id="see-also">
     <h2>See also</h2>
     <div class="dont-index"><p>Other things related to tides: 

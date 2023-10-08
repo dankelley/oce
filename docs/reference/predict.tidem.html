@@ -112,6 +112,37 @@ had been used to create <code>object</code>.</p></dd>
 
 <p>A vector of predictions.</p>
     </div>
+    <div id="details">
+    <h2>Details</h2>
+    <p>All the tidal constituents that are stored in <code>object</code> are used,
+not just those that are statistically significant or that have amplitude
+exceeding any particular value.  In this respect, <code>predict.tidem()</code>
+follows a pattern established by e.g. <code><a href="https://rdrr.io/r/stats/predict.lm.html" class="external-link">predict.lm()</a></code>.  Note that
+the constituents in <code>object</code> are straightforward if it
+was constructed with <code><a href="as.tidem.html">as.tidem()</a></code>, but considerably more complicated
+for <code><a href="tidem.html">tidem()</a></code>, and so the documentation for the latter ought to
+be studied closely, especially with regard to the Rayleigh criterion.</p>
+    </div>
+    <div id="sample-of-usage">
+    <h2>Sample of Usage</h2>
+    
+
+<div class="sourceCode"><pre><code><span></span>
+<span><span class="co"># prediction at specified times</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">sealevel</span><span class="op">)</span></span>
+<span><span class="va">m</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/tidem.html">tidem</a></span><span class="op">(</span><span class="va">sealevel</span><span class="op">)</span></span>
+<span><span class="co"># Check fit over 2 days (interpolating to finer timescale)</span></span>
+<span><span class="va">look</span> <span class="op">&lt;-</span> <span class="fl">1</span><span class="op">:</span><span class="fl">48</span></span>
+<span><span class="va">time</span> <span class="op">&lt;-</span> <span class="va">sealevel</span><span class="op">[[</span><span class="st">"time"</span><span class="op">]</span><span class="op">]</span></span>
+<span><span class="va">elevation</span> <span class="op">&lt;-</span> <span class="va">sealevel</span><span class="op">[[</span><span class="st">"elevation"</span><span class="op">]</span><span class="op">]</span></span>
+<span><span class="fu"><a href="../reference/oce.plot.ts.html">oce.plot.ts</a></span><span class="op">(</span><span class="va">time</span><span class="op">[</span><span class="va">look</span><span class="op">]</span>, <span class="va">elevation</span><span class="op">[</span><span class="va">look</span><span class="op">]</span><span class="op">)</span></span>
+<span><span class="co"># 360s = 10 minute timescale</span></span>
+<span><span class="va">t</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span>from<span class="op">=</span><span class="va">time</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>, to<span class="op">=</span><span class="va">time</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">look</span><span class="op">)</span><span class="op">]</span>, by<span class="op">=</span><span class="fl">360</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/lines.html" class="external-link">lines</a></span><span class="op">(</span><span class="va">t</span>, <span class="fu"><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict</a></span><span class="op">(</span><span class="va">m</span>, newdata<span class="op">=</span><span class="va">t</span><span class="op">)</span>, col<span class="op">=</span><span class="st">"red"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/legend.html" class="external-link">legend</a></span><span class="op">(</span><span class="st">"topright"</span>, col<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"black"</span>,<span class="st">"red"</span><span class="op">)</span>,</span>
+<span>legend<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"data"</span>,<span class="st">"model"</span><span class="op">)</span>,lwd<span class="op">=</span><span class="fl">1</span><span class="op">)</span></span></code></pre></div>
+
+    </div>
     <div id="see-also">
     <h2>See also</h2>
     <div class="dont-index"><p>Other things related to tides: 
@@ -146,7 +177,6 @@ had been used to create <code>object</code>.</p></dd>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Note: the tidal record is too short to fit for constituents: SA, PI1, S1, PSI1, GAM2, H1, H2, T2, R2</span>
 <span class="r-in"><span><span class="fu"><a href="oce.plot.ts.html">oce.plot.ts</a></span><span class="op">(</span><span class="va">time</span>, <span class="va">elevation</span> <span class="op">-</span> <span class="va">prediction</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="predict.tidem-1.png" alt="" width="700" height="433"></span>
-<span class="r-in"><span></span></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

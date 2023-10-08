@@ -202,6 +202,37 @@ on the sampling protocol, it is often necessary to pass the resultant profiles t
 Generally, one is well-advised to use the present function for a quick look at the data,
 relying on e.g. <code><a href="plotScan.html">plotScan()</a></code> to identify profiles visually, for a final product.</p>
     </div>
+    <div id="sample-of-usage">
+    <h2>Sample of Usage</h2>
+    
+
+<div class="sourceCode"><pre><code><span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dankelley.github.io/oce/" class="external-link">oce</a></span><span class="op">)</span></span>
+<span><span class="co"># These examples cannot be tested, because they are based on</span></span>
+<span><span class="co"># data objects that are not provided with oce.</span></span>
+<span></span>
+<span><span class="co"># Example 1. Find profiles within a towyo file, as can result</span></span>
+<span><span class="co"># if the CTD is cycled within the water column as the ship</span></span>
+<span><span class="co"># moves.</span></span>
+<span><span class="va">profiles</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/ctdFindProfiles.html">ctdFindProfiles</a></span><span class="op">(</span><span class="va">towyo</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Example 2. Use a moving average to smooth pressure, instead of the</span></span>
+<span><span class="co"># default smooth.spline() method. This might avoid a tendency of</span></span>
+<span><span class="co"># the default scheme to miss some profiles in a long towyo.</span></span>
+<span><span class="va">movingAverage</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span>, <span class="va">n</span> <span class="op">=</span> <span class="fl">11</span>, <span class="va">...</span><span class="op">)</span></span>
+<span><span class="op">{</span></span>
+<span>    <span class="va">f</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span><span class="op">/</span><span class="va">n</span>, <span class="va">n</span><span class="op">)</span></span>
+<span>    <span class="fu">stats</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/stats/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">f</span>, <span class="va">...</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span><span class="va">casts</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/ctdFindProfiles.html">ctdFindProfiles</a></span><span class="op">(</span><span class="va">towyo</span>, smoother<span class="op">=</span><span class="va">movingAverage</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Example 3: glider data read into a ctd object. Chop</span></span>
+<span><span class="co"># into profiles by looking for pressure jumps exceeding</span></span>
+<span><span class="co"># 10 dbar.</span></span>
+<span><span class="va">breaks</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/which.html" class="external-link">which</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/diff.html" class="external-link">diff</a></span><span class="op">(</span><span class="va">gliderAsCtd</span><span class="op">[[</span><span class="st">"pressure"</span><span class="op">]</span><span class="op">]</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">10</span><span class="op">)</span></span>
+<span><span class="va">profiles</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/ctdFindProfiles.html">ctdFindProfiles</a></span><span class="op">(</span><span class="va">gliderAsCtd</span>, breaks<span class="op">=</span><span class="va">breaks</span><span class="op">)</span></span></code></pre></div>
+
+    </div>
     <div id="see-also">
     <h2>See also</h2>
     <div class="dont-index"><p>The documentation for <a href="ctd-class.html">ctd</a> explains the structure

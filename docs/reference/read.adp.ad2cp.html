@@ -227,6 +227,14 @@ from within the AD2CP file or other files, in the normal R manner.</p>
 <p>The permitted values for <code>dataType</code> are shown in the table below;
 the <code>dataType</code> argument of <code>read.adp.ad2cp()</code> may be chosen from any
 of the three columns in this table.</p><table class="table table"><tr><td>code (raw)</td><td>code (integer)</td><td>oce name</td></tr><tr><td>----------</td><td>--------------</td><td>-----------------</td></tr><tr><td><code>0x15</code></td><td>21</td><td><code>burst</code></td></tr><tr><td><code>0x16</code></td><td>22</td><td><code>average</code></td></tr><tr><td><code>0x17</code></td><td>23</td><td><code>bottomTrack</code></td></tr><tr><td><code>0x18</code></td><td>24</td><td><code>interleavedBurst</code></td></tr><tr><td><code>0x1a</code></td><td>26</td><td><code>burstAltimeterRaw</code></td></tr><tr><td><code>0x1b</code></td><td>27</td><td><code>DVLBottomTrack</code></td></tr><tr><td><code>0x1c</code></td><td>28</td><td><code>echosounder</code></td></tr><tr><td><code>0x1d</code></td><td>29</td><td><code>DVLWaterTrack</code></td></tr><tr><td><code>0x1e</code></td><td>30</td><td><code>altimeter</code></td></tr><tr><td><code>0x1f</code></td><td>31</td><td><code>averageAltimeter</code></td></tr><tr><td><code>0x23</code></td><td>35</td><td><code>echosounderRaw</code></td></tr><tr><td><code>0xa0</code></td><td>160</td><td><code>text</code></td></tr></table></div>
+    <div id="sample-of-usage">
+    <h2>Sample of Usage</h2>
+    
+
+<div class="sourceCode"><pre><code><span></span>
+<span><span class="va">d</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/read.adp.ad2cp.html">read.adp.ad2cp</a></span><span class="op">(</span><span class="st">"~/test.ad2cp"</span>, to<span class="op">=</span><span class="fl">100</span><span class="op">)</span> <span class="co"># or read.oce()</span></span></code></pre></div>
+
+    </div>
     <div id="references">
     <h2>References</h2>
     <p>Nortek AS. “Signature Integration 55|250|500|1000kHz.” Nortek AS,

@@ -3120,9 +3120,10 @@ write.ctd <- function(object, file, metadata=TRUE, flags=TRUE, format="csv")
 #' supply the object as an argument, as opposed to the name of the object.
 #'
 #' @param Slim,Clim,Tlim,plim,densitylim,N2lim,Rrholim,dpdtlim,timelim optional
-#' numeric vectors of length 2, that give axis limits for salinity,
-#' conductivity, temperature, pressure, the square of buoyancy frequency,
-#' density ratio, dp/dt, and time, respectively.
+#' numeric vectors of length 2, that give axis limits for salinity (or Absolute
+#' Salinity, if `eos` is `"gsw"`), conductivity, in-situ or potential
+#' temperature (or Conservative Temperature, if `eos` is `"gsw"'), pressure, the
+#' square of buoyancy frequency, density ratio, dp/dt, and time, respectively.
 #'
 #' @param drawIsobaths logical value indicating whether to draw depth contours on
 #' maps, in addition to the coastline. The argument has no effect except

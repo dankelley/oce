@@ -118,6 +118,16 @@ to +180.</p></dd>
 <p>is true, then <code>longitude</code> will be converted to range from 0
 to 360, and the array will be shuffled accordingly.</p>
     </div>
+    <div id="sample-of-usage">
+    <h2>Sample of Usage</h2>
+    
+
+<div class="sourceCode"><pre><code><span></span>
+<span><span class="co"># Mean SST at 5-degree spatial resolution</span></span>
+<span><span class="va">tmn</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/read.woa.html">read.woa</a></span><span class="op">(</span><span class="st">"~/data/woa13/woa13_decav_t00_5dv2.nc"</span>, <span class="st">"t_mn"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/imagep.html">imagep</a></span><span class="op">(</span><span class="va">tmn</span><span class="op">$</span><span class="va">longitude</span>, <span class="va">tmn</span><span class="op">$</span><span class="va">latitude</span>, <span class="va">tmn</span><span class="op">$</span><span class="va">t_mn</span><span class="op">[</span>, , <span class="fl">1</span><span class="op">]</span>, zlab<span class="op">=</span><span class="st">"SST"</span><span class="op">)</span></span></code></pre></div>
+
+    </div>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

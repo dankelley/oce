@@ -119,6 +119,18 @@ for a simple CSV format, or <code>"whp"</code> for the World Hydrographic
 Program format, described in reference 1 and exemplified in reference 2.</p></dd>
 
 </dl></div>
+    <div id="sample-of-usage">
+    <h2>Sample of Usage</h2>
+    
+
+<div class="sourceCode"><pre><code><span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dankelley.github.io/oce/" class="external-link">oce</a></span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">ctd</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/write.ctd.html">write.ctd</a></span><span class="op">(</span><span class="va">ctd</span>, <span class="st">"ctd.csv"</span><span class="op">)</span></span>
+<span><span class="va">d</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></span><span class="op">(</span><span class="st">"ctd.csv"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu"><a href="../reference/as.ctd.html">as.ctd</a></span><span class="op">(</span><span class="va">d</span><span class="op">$</span><span class="va">salinity</span>, <span class="va">d</span><span class="op">$</span><span class="va">temperature</span>, <span class="va">d</span><span class="op">$</span><span class="va">pressure</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+
+    </div>
     <div id="references">
     <h2>References</h2>
     <p>The following links used to work, but failed as of December 2020.</p><ol><li><p><code>https://www.nodc.noaa.gov/woce/woce_v3/wocedata_1/whp/exchange/exchange_format_desc.htm</code></p></li>

@@ -116,6 +116,24 @@ by specifying higher <code>debug</code> values.</p></dd>
     <h2>Bugs</h2>
     <p>This only works for 4-beam RDI ADP objects.</p>
     </div>
+    <div id="sample-of-usage">
+    <h2>Sample of Usage</h2>
+    
+
+<div class="sourceCode"><pre><code><span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dankelley.github.io/oce/" class="external-link">oce</a></span><span class="op">)</span></span>
+<span><span class="va">file</span> <span class="op">&lt;-</span> <span class="st">"~/data/archive/sleiwex/2008/moorings/m09/adp/rdi_2615/raw/adp_rdi_2615.000"</span></span>
+<span><span class="va">beam</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/read.oce.html">read.oce</a></span><span class="op">(</span><span class="va">file</span>,</span>
+<span>    from<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/as.POSIXlt.html" class="external-link">as.POSIXct</a></span><span class="op">(</span><span class="st">"2008-06-26"</span>, tz<span class="op">=</span><span class="st">"UTC"</span><span class="op">)</span>,</span>
+<span>    to<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/as.POSIXlt.html" class="external-link">as.POSIXct</a></span><span class="op">(</span><span class="st">"2008-06-26 00:10:00"</span>, tz<span class="op">=</span><span class="st">"UTC"</span><span class="op">)</span>,</span>
+<span>    longitude<span class="op">=</span><span class="op">-</span><span class="fl">69.73433</span>, latitude<span class="op">=</span><span class="fl">47.88126</span><span class="op">)</span></span>
+<span><span class="va">beam2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/binmapAdp.html">binmapAdp</a></span><span class="op">(</span><span class="va">beam</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu"><a href="../reference/enuToOther.html">enuToOther</a></span><span class="op">(</span><span class="fu"><a href="../reference/toEnu.html">toEnu</a></span><span class="op">(</span><span class="va">beam</span><span class="op">)</span>, heading<span class="op">=</span><span class="op">-</span><span class="fl">31.5</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu"><a href="../reference/enuToOther.html">enuToOther</a></span><span class="op">(</span><span class="fu"><a href="../reference/toEnu.html">toEnu</a></span><span class="op">(</span><span class="va">beam2</span><span class="op">)</span>, heading<span class="op">=</span><span class="op">-</span><span class="fl">31.5</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">beam</span>, which<span class="op">=</span><span class="fl">5</span><span class="op">:</span><span class="fl">8</span><span class="op">)</span> <span class="co"># backscatter amplitude</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">beam2</span>, which<span class="op">=</span><span class="fl">5</span><span class="op">:</span><span class="fl">8</span><span class="op">)</span></span></code></pre></div>
+
+    </div>
     <div id="references">
     <h2>References</h2>
     <p>The method was devised by Clark Richards for use in his PhD work

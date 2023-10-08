@@ -42,3 +42,4 @@ if (FALSE) {
 # remotes::install_github("r-lib/revdepcheck")
 revdepcheck::revdep_reset()
 revdepcheck::revdep_check(num_workers=4)
+message("run following if desired: pkgdown::build_site()")

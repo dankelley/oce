@@ -120,6 +120,20 @@ correct time of the final sample.  This will be a positive number, for a
 <p>An object of the same class as <code>x</code>, with the <code>data</code> slot
 adjusted appropriately.</p>
     </div>
+    <div id="sample-of-usage">
+    <h2>Sample of Usage</h2>
+    
+
+<div class="sourceCode"><pre><code><span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dankelley.github.io/oce/" class="external-link">oce</a></span><span class="op">)</span></span>
+<span><span class="va">file</span> <span class="op">&lt;-</span> <span class="st">"~/data/archive/sleiwex/2008/moorings/m08/pt/rbr_011855/raw/pt_rbr_011855.dat"</span></span>
+<span><span class="va">rbr011855</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/read.oce.html">read.oce</a></span><span class="op">(</span><span class="va">file</span><span class="op">)</span></span>
+<span><span class="va">d</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset</a></span><span class="op">(</span><span class="va">rbr011855</span>, <span class="va">time</span> <span class="op">&lt;</span> <span class="fu"><a href="https://rdrr.io/r/base/as.POSIXlt.html" class="external-link">as.POSIXct</a></span><span class="op">(</span><span class="st">"2008-06-25 10:05:00"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/undriftTime.html">undriftTime</a></span><span class="op">(</span><span class="va">d</span>, <span class="fl">1</span><span class="op">)</span>   <span class="co"># clock lost 1 second over whole experiment</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">d</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span></code></pre></div>
+
+    </div>
     <div id="author">
     <h2>Author</h2>
     <p>Dan Kelley</p>

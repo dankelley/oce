@@ -116,6 +116,24 @@ see “Examples” for how to control the arrow-head size.</p></dd>
     <p>This is a preliminary version of this function. It only
 works if the lines of constant latitude are horizontal on the plot.</p>
     </div>
+    <div id="sample-of-usage">
+    <h2>Sample of Usage</h2>
+    
+
+<div class="sourceCode"><pre><code>
+library(oce)
+if (requireNamespace("ocedata", quietly=TRUE)) {
+    data(coastlineWorldFine, package="ocedata")
+    HfxLon &lt;- -63.5752
+    HfxLat &lt;- 44.6488
+    mapPlot(coastlineWorldFine, proj="+proj=merc",
+        longitudelim=HfxLon+c(-2,2), latitudelim=HfxLat+c(-2,2),
+        col=lightgrey")
+    mapCoordinateSystem(HfxLon, HfxLat, phi=45, length=0.05)
+   }
+</code></pre></div>
+
+    </div>
     <div id="see-also">
     <h2>See also</h2>
     <div class="dont-index"><p>Other functions related to maps: 
