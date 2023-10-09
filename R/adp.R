@@ -1646,6 +1646,9 @@ read.adp <- function(file, from, to, by, tz=getOption("oceTz"), longitude=NA, la
 #' @param main main title for plot, used just on the top panel, if there are
 #' several panels.
 #'
+#' @param xlab optional character value giving the label for the x axis.
+#' If NULL (the default) then the label is determined automatically.
+#'
 #' @param grid if `TRUE`, a grid will be drawn for each panel.  (This
 #' argument is needed, because calling [grid()] after doing a
 #' sequence of plots will not result in useful results for the individual
@@ -1656,6 +1659,7 @@ read.adp <- function(file, from, to, by, tz=getOption("oceTz"), longitude=NA, la
 #' @param grid.lty line type of grid
 #'
 #' @param grid.lwd line width of grid
+#'
 #' @template debugTemplate
 #'
 #' @param \dots optional arguments passed to plotting functions.  For example,
@@ -1704,6 +1708,7 @@ setMethod(f="plot",
         coastline="coastlineWorld", span=300,
         main="",
         grid=FALSE, grid.col="darkgray", grid.lty="dotted", grid.lwd=1,
+        xlab=NULL,
         debug=getOption("oceDebug"),
         ...)
     {
@@ -2175,7 +2180,7 @@ setMethod(f="plot",
                                 },
                                 breaks=breaks,
                                 ylab=resizableLabel("distance km"),
-                                xlab="Time",
+                                xlab=if (is.null(xlab)) "" else xlab,
                                 zlab=zlab,
                                 tformat=tformat,
                                 drawTimeRange=drawTimeRange,
@@ -2204,9 +2209,9 @@ setMethod(f="plot",
                                     }
                                 },
                                 breaks=breaks,
-                                ylab=resizableLabel("distance"),
+                                ylab="distance",
                                 xaxs="i",
-                                xlab="Time",
+                                xlab=if (is.null(xlab)) "" else xlab,
                                 zlab=zlab,
                                 tformat=tformat,
                                 drawTimeRange=drawTimeRange,

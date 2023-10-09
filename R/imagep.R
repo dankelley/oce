@@ -1398,6 +1398,8 @@ imagep <- function(x, y, z,
             # issue 489: use breaks/col instead of breaks2/col2
             .filled.contour(as.double(xorig), as.double(yorig), z, as.double(breaks), col=col)
             mtext(ylab, side=2, line=par("mgp")[1], cex=cex.lab*par("cex"))
+            if (!is.null(xlab))
+                mtext(xlab, side=1, line=par("mgp")[1], cex=cex.lab*par("cex"))
         } else {
             oceDebug(debug, "not doing filled contours [2]\n")
             if (zlimHistogram) {
@@ -1418,6 +1420,8 @@ imagep <- function(x, y, z,
             oceDebug(debug, "doing y axis with cex.axis\n")
             yat <- axis(2, cex.axis=cex.axis)
             mtext(side=2, ylab, line=mgp[1], cex=cex.lab*par("cex"))
+            if (!is.null(xlab))
+                mtext(xlab, side=1, line=par("mgp")[1], cex=cex.lab*par("cex"))
         }
     } else {
         # x is not a POSIXt
