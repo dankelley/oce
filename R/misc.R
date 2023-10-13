@@ -263,19 +263,18 @@ argShow <- function(x, nshow=4, last=FALSE, sep="=")
         } else {
             if (is.function(x)) {
                 res <- "(provided)"
-            } else if (nx==1) {
-                res <- if (is.character(x)) paste("\"", x[1], "\"", sep="") else x[1]
+            } else if (nx == 1L) {
+                res <- if (is.character(x)) paste0("\"", x[1], "\"") else x[1]
             } else {
-                look <- seq.int(1L, min(nshow, nx)-1)
-                res <- paste(format(x[look], digits=4), collapse=",")
-                res <- paste(res, if (nx > nshow) ", ..., " else ",", x[nx], sep="")
+                look <- seq.int(1L, min(nshow, nx) - 1L)
+                res <- paste0(format(x[look], digits=4), collapse=",")
+                res <- paste0(res, if (nx > nshow) ",...," else ",", x[nx])
             }
         }
     }
-    res <- if (nx == 1) paste(name, "=", res,  sep="") else paste(name, "=c(", res, ")", sep="")
-    if (!last) {
-        res <- paste(res, ",", sep="")
-    }
+    res <- if (nx == 1) paste0(name, sep, res) else paste0(name, sep, "c(", res, ")")
+    if (!last)
+        res <- paste0(res, ",")
     res
 }
 
