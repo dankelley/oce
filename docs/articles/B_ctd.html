@@ -100,7 +100,7 @@
                         <h4 data-toc-skip class="author">Dan Kelley (<a href="https://orcid.org/0000-0001-7808-5911" class="external-link uri">https://orcid.org/0000-0001-7808-5911</a>) and Clark
 Richards (<a href="https://orcid.org/0000-0002-7833-206X" class="external-link uri">https://orcid.org/0000-0002-7833-206X</a>)</h4>
             
-            <h4 data-toc-skip class="date">2023-10-08</h4>
+            <h4 data-toc-skip class="date">2023-10-14</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/dankelley/oce/blob/HEAD/vignettes/B_ctd.Rmd" class="external-link"><code>vignettes/B_ctd.Rmd</code></a></small>
       <div class="hidden name"><code>B_ctd.Rmd</code></div>
@@ -241,11 +241,135 @@ tend to work in the Seabird format, and partly because the WOCE format
 is odd. For example, the first line of a WOCE file is of the form
 <code>CTD,20060609WHPOSIODAM</code> (or <code>BOTTLE,...</code>).
 Scanning the item to the left of the comma is not difficult (although
-there are variants to the two shown, e.g.
-</p>
+there are variants to the two shown, e.g. <code>CTDO</code> sometimes
+occurs). The part to the right of the comma is more difficult. The first
+part is a date (<code>yyyymmdd</code>) so that is no problem. But then
+things start to get tricky. In the example provided, this text contains
+the division of the institute (WHPO), the institute itself (SIO), and
+initial of the investigator (DAM). The problem is that no dividers
+separate these items, and that there seem to be no standards for the
+item lengths. Rather than spend a great deal of time coding special
+cases (e.g. scanning to see if the string <code>WHOI</code> occurs in
+the header line), the approach taken with <code>oce</code> is to ignore
+such issues relating to quirky headers, on the assumption that users can
+scan human-written headers with high skill.</p>
+<p>Quite commonly, CTD profiles taken during a cruise are collected
+together in a sequence of files in a given directory. For a real-world
+example, one might visit the website mentioned in the code provided
+below, download and expand the zip file, enter the directory thus
+formed, and run the code to get an overall TS plot for all the CTD
+stations of this cruise. (Caution: the link seems to change from time to
+time.)</p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dankelley.github.io/oce/" class="external-link">oce</a></span><span class="op">)</span></span>
+<span><span class="co"># http://cchdo.ucsd.edu/data/7971/ar18_58JH19941029_ct1.zip</span></span>
+<span><span class="co"># setwd("~/Downloads/ar18_58JH19941029_ct1")</span></span>
+<span><span class="va">files</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.files.html" class="external-link">list.files</a></span><span class="op">(</span>pattern<span class="op">=</span><span class="st">"*.csv$"</span>, full.names<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_along</a></span><span class="op">(</span><span class="va">files</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>    <span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/read.ctd.html">read.ctd</a></span><span class="op">(</span><span class="va">files</span><span class="op">[</span><span class="va">i</span><span class="op">]</span><span class="op">)</span></span>
+<span>    <span class="kw">if</span> <span class="op">(</span><span class="va">i</span> <span class="op">==</span> <span class="fl">1</span><span class="op">)</span> <span class="op">{</span></span>
+<span>        <span class="fu"><a href="../reference/plotTS.html">plotTS</a></span><span class="op">(</span><span class="va">x</span>, Slim<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">31</span>, <span class="fl">35.5</span><span class="op">)</span>, Tlim<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">2</span>, <span class="fl">10</span><span class="op">)</span>, type<span class="op">=</span><span class="st">"o"</span><span class="op">)</span></span>
+<span>    <span class="op">}</span> <span class="kw">else</span> <span class="op">{</span></span>
+<span>        <span class="fu"><a href="https://rdrr.io/r/graphics/points.html" class="external-link">points</a></span><span class="op">(</span><span class="va">x</span><span class="op">[[</span><span class="st">"salinity"</span><span class="op">]</span><span class="op">]</span>, <span class="va">x</span><span class="op">[[</span><span class="st">"potential temperature"</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span>
+<span>        <span class="fu"><a href="https://rdrr.io/r/graphics/lines.html" class="external-link">lines</a></span><span class="op">(</span><span class="va">x</span><span class="op">[[</span><span class="st">"salinity"</span><span class="op">]</span><span class="op">]</span>, <span class="va">x</span><span class="op">[[</span><span class="st">"potential temperature"</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span>
+<span>    <span class="op">}</span></span>
+<span><span class="op">}</span></span></code></pre></div>
+<p>The <code>[[</code> notation is explained in Section 3, but this
+example conveys the gist, that it permits accessing data, or derived
+data, from within an object.</p>
+<p>In the above, lines connect the points within a given profile. This
+can be a useful method for a quick scan looking for outliers. Another is
+to colour-code the profiles, although this gets confusing with large
+datasets, in which case the method of the following exercise might be
+useful.</p>
+<p><strong>Exercise 2. (advanced)</strong> Make a multi-file plot
+summarizing the TS relationship in a collection of CTD datasets, with
+each plot file showing the overall relationship in gray and the
+individual profile in black.</p>
 </div>
+<div class="section level2">
+<h2 id="solutions-to-exercises">Solutions to exercises<a class="anchor" aria-label="anchor" href="#solutions-to-exercises"></a>
+</h2>
+<p><strong>Exercise 1.</strong> Plot a profile of <span class="math inline">\(\sigma_\theta\)</span> and <span class="math inline">\(N^2\)</span> within the pycnocline in the built-in
+<code>ctd</code> data set. (Hint: use <code><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset()</a></code>.)</p>
+<p>Although one may argue as to the limits of the pycnocline, for
+illustration let us say it is in 5 dbar to 12 dbar range. One way to do
+this is</p>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dankelley.github.io/oce/" class="external-link">oce</a></span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">ctd</span><span class="op">)</span></span>
+<span><span class="va">pycnocline</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/ctdTrim.html">ctdTrim</a></span><span class="op">(</span><span class="va">ctd</span>, <span class="st">"range"</span>,</span>
+<span>                      parameters<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>item<span class="op">=</span><span class="st">"pressure"</span>, from<span class="op">=</span><span class="fl">5</span>, to<span class="op">=</span><span class="fl">12</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/plotProfile.html">plotProfile</a></span><span class="op">(</span><span class="va">pycnocline</span>, which<span class="op">=</span><span class="st">"density+N2"</span><span class="op">)</span></span></code></pre></div>
+<p>Another is</p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dankelley.github.io/oce/" class="external-link">oce</a></span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">ctd</span><span class="op">)</span></span>
+<span><span class="va">pycnocline</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset</a></span><span class="op">(</span><span class="va">ctd</span>, <span class="fl">5</span> <span class="op">&lt;=</span> <span class="va">pressure</span> <span class="op">&amp;</span> <span class="va">pressure</span> <span class="op">&lt;=</span> <span class="fl">12</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/plotProfile.html">plotProfile</a></span><span class="op">(</span><span class="va">pycnocline</span>, which<span class="op">=</span><span class="st">"density+N2"</span><span class="op">)</span></span></code></pre></div>
+<p><strong>Exercise 2. (advanced)</strong> Make a multi-file plot
+summarizing the TS relationship in a collection of CTD datasets, with
+each plot file showing the overall relationship in gray and the
+individual profile in black.</p>
+<p>The code provided below creates 91 PNG files, with names
+<code>ar18_01.png</code>, <code>ar18_02.png</code>, etc. Loading these
+in a view that permits quick paging through this file list is an easy
+way to spot suspicious data, since each plot has the station number at
+the top. (Users trying this example should bear in mind that this is a
+fairly large dataset, so the processing will take up to a minute.)</p>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dankelley.github.io/oce/" class="external-link">oce</a></span><span class="op">)</span></span>
+<span><span class="co"># http://cchdo.ucsd.edu/data/7971/ar18_58JH19941029_ct1.zip</span></span>
+<span><span class="co"># setwd("~/Downloads/ar18_58JH19941029_ct1")</span></span>
+<span><span class="va">files</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.files.html" class="external-link">list.files</a></span><span class="op">(</span>pattern<span class="op">=</span><span class="st">"*.csv$"</span>, full.names<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="va">n</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">files</span><span class="op">)</span></span>
+<span><span class="va">ctds</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/vector.html" class="external-link">vector</a></span><span class="op">(</span><span class="st">"list"</span>, <span class="va">n</span><span class="op">)</span> <span class="co"># to hold the CTD objects</span></span>
+<span><span class="va">station</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/vector.html" class="external-link">vector</a></span><span class="op">(</span><span class="st">"list"</span>, <span class="va">n</span><span class="op">)</span></span>
+<span><span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="va">n</span><span class="op">)</span> <span class="op">{</span></span>
+<span>    <span class="va">ctds</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/read.ctd.html">read.ctd</a></span><span class="op">(</span><span class="va">files</span><span class="op">[</span><span class="va">i</span><span class="op">]</span><span class="op">)</span></span>
+<span>    <span class="va">station</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">ctds</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span><span class="op">[[</span><span class="st">"station"</span><span class="op">]</span><span class="op">]</span></span>
+<span><span class="op">}</span></span>
+<span><span class="va">sal</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/unlist.html" class="external-link">unlist</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="va">n</span>, <span class="kw">function</span><span class="op">(</span><span class="va">i</span><span class="op">)</span> <span class="va">ctds</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span><span class="op">[[</span><span class="st">"salinity"</span><span class="op">]</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">tem</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/unlist.html" class="external-link">unlist</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="va">n</span>, <span class="kw">function</span><span class="op">(</span><span class="va">i</span><span class="op">)</span> <span class="va">ctds</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span><span class="op">[[</span><span class="st">"temperature"</span><span class="op">]</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">pre</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/unlist.html" class="external-link">unlist</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="va">n</span>, <span class="kw">function</span><span class="op">(</span><span class="va">i</span><span class="op">)</span> <span class="va">ctds</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span><span class="op">[[</span><span class="st">"pressure"</span><span class="op">]</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">overall</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/as.ctd.html">as.ctd</a></span><span class="op">(</span><span class="va">sal</span>, <span class="va">tem</span>, <span class="va">pre</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/grDevices/png.html" class="external-link">png</a></span><span class="op">(</span><span class="st">"ar18_%02d.png"</span><span class="op">)</span></span>
+<span><span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="va">n</span><span class="op">)</span> <span class="op">{</span></span>
+<span>    <span class="fu"><a href="../reference/plotTS.html">plotTS</a></span><span class="op">(</span><span class="va">overall</span>, col<span class="op">=</span><span class="st">"gray"</span><span class="op">)</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/graphics/lines.html" class="external-link">lines</a></span><span class="op">(</span><span class="va">ctds</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span><span class="op">[[</span><span class="st">"salinity"</span><span class="op">]</span><span class="op">]</span>, <span class="va">ctds</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span><span class="op">[[</span><span class="st">"potential temperature"</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/graphics/mtext.html" class="external-link">mtext</a></span><span class="op">(</span><span class="va">station</span><span class="op">[</span><span class="va">i</span><span class="op">]</span>, side<span class="op">=</span><span class="fl">3</span>, line<span class="op">=</span><span class="fl">0</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/grDevices/dev.html" class="external-link">dev.off</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 </div>
+  </div>
+
+  <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
+
+        <nav id="toc" data-toggle="toc"><h2 data-toc-skip>Contents</h2>
+    </nav>
 </div>
+
 </div>
-</body>
+
+
+
+      <footer><div class="copyright">
+  <p></p>
+<p>Developed by Dan Kelley, Clark Richards.</p>
+</div>
+
+<div class="pkgdown">
+  <p></p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
+</div>
+
+      </footer>
+</div>
+
+  
+
+
+  
+
+  </body>
 </html>

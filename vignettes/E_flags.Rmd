@@ -95,39 +95,37 @@ name conflicts with the data and (b) they record their actions in the object's
 
 Creating flags is usually a three-step process:
 
-1. Use `initializeFlagScheme` to establish a
-   mapping between flag numerical value and flag meaning.  This step is not
-   strictly necessary, but it is useful because it stores the flag scheme
-   within the object's `metadata` slot, as a form of documentation. This step
-   may be done only once for a given object, because changing a flag scheme in
-   the middle of processing invites errors.
+1. Use `initializeFlagScheme` to establish a mapping between flag numerical
+   value and flag meaning.  This step is not strictly necessary, but it is
+   useful because it stores the flag scheme within the `metadata` slot of the
+   object, as a form of documentation. This step may be done only once for a
+   given object, because changing a flag scheme in the middle of processing
+   invites errors.
 
-2. Use `initializeFlags` to set up space for flag
-   storage, and to initialize values (normally to a code indicating either
-   unchecked data or acceptable data). This may be done only once per data
-   item.
+2. Use `initializeFlags` to set up space for flag storage, and to initialize
+   values (normally to a code indicating either unchecked data or acceptable
+   data). This may be done only once per data item.
 
-3. Use `setFlags` to assign individual flag values to
-   individual data. This may be used repeatedly for a given object. Indeed, as
-   illustrated later in this document, it is common to call this function
-   within a loop that displays a graph, invites the user to click on points to
-   be flagged, then displays the new graph, etc.
+3. Use `setFlags` to assign individual flag values to individual data. This may
+   be used repeatedly for a given object. Indeed, as illustrated later in this
+   document, it is common to call this function within a loop that displays a
+   graph, invites the user to click on points to be flagged, then displays the
+   new graph, etc.
 
 Note that some reading operations set up flags automatically, if the data file
-already holds flags. For example, `read.argo` can do this,
-because Argo data have a fixed flag scheme, and archived Argo data often come
-with flag values already inserted.
+already holds flags. For example, `read.argo` can do this, because Argo data
+have a fixed flag scheme, and archived Argo data often come with flag values
+already inserted.
 
 ## Handling flags
 
 As with setting flags, analysts are free to extract flag values and use them
 for any purpose that comes to mind. Simple cases may be handled with the oce
-function named `handleFlags`, which is set up to respond
-to particular flag values with particular actions.  It has reasonable defaults
-for different data types, and it can detect a flag scheme that has been set up
-with `setFlagScheme`. The default action of
-setting the data that have been flagged as bad to the `NA` value may suffice in
-many plotting or analysis situations.
+function named `handleFlags`, which is set up to respond to particular flag
+values with particular actions.  It has reasonable defaults for different data
+types, and it can detect a flag scheme that has been set up with
+`setFlagScheme`. The default action of setting the data that have been flagged
+as bad to the `NA` value may suffice in many plotting or analysis situations.
 
 # Sample working procedure
 
@@ -147,18 +145,18 @@ in a summary plot (Figure 1):
 plot(ctdRaw)
 ```
 
-As Figure 1 shows, `ctdTrim` removes most of the anomalous
-data by examining the variation of the pressure signal over time, it may also
-be of interest to see how well simple range checks can perform in cleaning up
-the data. Salinity certainly cannot be negative, but in an oceanographic
-setting it is common to relax that criterion somewhat, perhaps insisting that
-Absolute Salinity $S_A$ exceed $25$g/kg. This value might work in other
-situations as well, and the same could be said of an upper limit of $40$g/kg.
-Similarly, it might make sense to bound temperature between, say, $-2^\circ$C
-and $40^\circ$C for application throughout much of the world ocean.
+As Figure 1 shows, `ctdTrim` removes most of the anomalous data by examining
+the variation of the pressure signal over time, it may also be of interest to
+see how well simple range checks can perform in cleaning up the data. Salinity
+certainly cannot be negative, but in an oceanographic setting it is common to
+relax that criterion somewhat, perhaps insisting that Absolute Salinity $S_A$
+exceed $25$g/kg. This value might work in other situations as well, and the
+same could be said of an upper limit of $40$g/kg. Similarly, it might make
+sense to bound temperature between, say, $-2^\circ$C and $40^\circ$C for
+application throughout much of the world ocean.
 
-These criteria can be supplied to `setFlags` in various
-ways, but the simplest is to create logical vectors, e.g.
+These criteria can be supplied to `setFlags` in various ways, but the simplest
+is to create logical vectors, e.g.
 ```{r}
 badS <- with(ctdRaw[["data"]], salinity < 25 | 40 < salinity)
 badT <- with(ctdRaw[["data"]], temperature < -2 | 40 < temperature)
@@ -187,8 +185,8 @@ qc <- initializeFlagScheme(qc, "WHP CTD")
 
 stores a note on the scheme in the `metadata` slot of `qc`. Importantly,
 however, it does *not* store any flag values. The next step is to initialize
-flag values. For example, to set up flag storage for salinity and
-temperature, use e.g.
+flag values. For example, to set up flag storage for salinity and temperature,
+use e.g.
 ```{r}
 qc <- initializeFlags(qc, "salinity", 2)
 qc <- initializeFlags(qc, "temperature", 2)
@@ -196,29 +194,26 @@ qc <- initializeFlags(qc, "temperature", 2)
 
 to create storage, and initialize all entries to the `"acceptable"` value
 (which, for this flag scheme, is the number `2`).  Once storage has been
-initialized for a given variable, further calls to
-`initializeFlags` will have no effect, apart from a
-warning.
+initialized for a given variable, further calls to `initializeFlags` will have
+no effect, apart from a warning.
 
-Note that it is entirely possible to use
-`initializeFlags` with a numerical value for its
-third argument.  One advantage of using
-`initializeFlagScheme` is that it clarifies
-code, but the bigger advantage is that it embeds the scheme within the object,
-so that a second analyst could examine it later and be clear on the meanings of
-the numerical codes. This is very important, because there is not much
-agreement within the oceanographic community on which flag scheme to use, for
-many data types (Argo being an exception).
+Note that it is entirely possible to use `initializeFlags` with a numerical
+value for its third argument.  One advantage of using `initializeFlagScheme` is
+that it clarifies code, but the bigger advantage is that it embeds the scheme
+within the object, so that a second analyst could examine it later and be clear
+on the meanings of the numerical codes. This is very important, because there
+is not much agreement within the oceanographic community on which flag scheme
+to use, for many data types (Argo being an exception).
 
-At this stage, individual data can be flagged with
-`setFlags`. This function can be called any number of
-times. Continuing along with our example, we may mark bad salinities with
+At this stage, individual data can be flagged with `setFlags`. This function
+can be called any number of times. Continuing along with our example, we may
+mark bad salinities with
 ```{r}
 qc <- setFlags(qc, "salinity", badS, value="bad")
 ```
 
-We can see that the flag got inserted by using `summary(qc)`, but for brevity here
-another method is:
+We can see that the flag got inserted by using `summary(qc)`, but for brevity
+here another method is:
 ```{r}
 names(qc[["flags"]])
 ```
@@ -246,13 +241,13 @@ plot(qch)
 ```
 
 shows significant improvements. The downcast and the upcast can be seen quite
-clearly now, although salinity is suspiciously low at the
-turnaround point.  Setting a flag for pressure increase with time will isolate
-the downcast somewhat, although some smoothing will be required.  Another issue
-related to the path of the instrument is that it may have been held below the
-surface for a while to equilibrate. Again, a flag could be set up to remove
-such data. However, it ought to be noted that `ctdTrim` can
-be used to address issues relating to instrument movement.
+clearly now, although salinity is suspiciously low at the turnaround point.
+Setting a flag for pressure increase with time will isolate the downcast
+somewhat, although some smoothing will be required.  Another issue related to
+the path of the instrument is that it may have been held below the surface for
+a while to equilibrate. Again, a flag could be set up to remove such data.
+However, it ought to be noted that `ctdTrim` can be used to address issues
+relating to instrument movement.
 
 ## Interactive editing of CTD profiles
 
@@ -268,8 +263,8 @@ way to use a TS diagram to identify suspicious data. Pasting this into an R
 console will show a plot with lines between measurements made at successive
 depths. Clicking on any point will flag it, and so the point will then
 disappear on the plot.  Clicking to the right of the plot frame will exit the
-procedure, after which `qc` is a ctd object with flags as set, and data set
-to `NA` where these flags indicate bad data.
+procedure, after which `qc` is a ctd object with flags as set, and data set to
+`NA` where these flags indicate bad data.
 
 ```{r eval=FALSE}
 options(eos="gsw")
@@ -356,7 +351,6 @@ plot(subset(adp, distance > 35), which="u1")                 # original
 plot(subset(adpClean2, distance > 35), which="u1")           # altered
 ```
 
-Note, in the above, that `initializeFlagScheme`
-has not been used, because the author is unaware of any common notation for
-such data. The values used for `G` and `V4` were provided by colleagues at the
-Bedford Institute of Oceanography.
+Note, in the above, that `initializeFlagScheme` has not been used, because the
+author is unaware of any common notation for such data. The values used for `G`
+and `V4` were provided by colleagues at the Bedford Institute of Oceanography.
