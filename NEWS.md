@@ -11,6 +11,7 @@
 * Change `plot.adp()` to obey `xlab` if x axis represents time (issue 2162).
 * Change `plot.cm()` to obey `xlim`, `ylim`, `xaxs` and `yaxs` (issue 2121).
 * Change `plotTS()` and `plotProfile()` to accept `type="b"`.
+* Change `plot.windrose()` for `type="fivenum"` (issue 2164).
 
 # oce 1.8.1 (on CRAN)
 

@@ -222,21 +222,24 @@ as.windrose <- function(x, y, dtheta=15.0, debug=getOption("oceDebug"))
 #' `c("red", "pink", "blue", "lightgray")`.  For the first three types of
 #' plot, the first color in this list is used to fill in the rose, the third is
 #' used for the petals of the rose, and the fourth is used for grid lines. For the
-#' `"fivenum"` type, the first color is used for the inter-quartile range,
-#' the second is used outside this range, the third is used for the median, and
-#' the fourth is, again, used for the grid lines.
+#' `"fivenum"` type, the region from the lower hinge to the first quartile is
+#' coloured pink, the region from the first quartile to the third quartile
+#' is coloured red, and the region from the third quartile to the upper hinge
+#' is coloured pink.  Then the median is drawn in black.
 #'
-#' @param ... Optional arguments passed to plotting functions.
+#' @template debugTemplate
 #'
 #' @examples
 #' library(oce)
 #' opar <- par(no.readonly = TRUE)
-#' xcomp <- rnorm(360) + 1
-#' ycomp <- rnorm(360)
-#' wr <- as.windrose(xcomp, ycomp)
+#' set.seed(1234)
+#' theta <- seq(0, 360, 0.25)
+#' x <- 1 + cos(pi/180*theta) + rnorm(theta)
+#' y <- sin(pi/180*theta) + rnorm(theta)
+#' wr <- as.windrose(x, y)
 #' par(mfrow=c(1, 2))
 #' plot(wr)
-#' plot(wr, "fivenum")
+#' plot(wr, type="fivenum")
 #' par(opar)
 #'
 #' @author Dan Kelley
@@ -253,10 +256,11 @@ setMethod(f="plot",
         mgp=getOption("oceMgp"),
         mar=c(mgp[1], mgp[1], 1+mgp[1], mgp[1]),
         col,
-        ...)
+        debug=getOption("oceDebug"))
     {
         if (!inherits(x, "windrose"))
             stop("method is only for objects of class '", "windrose", "'")
+        oceDebug(debug, "plot.windrose() {\n", sep="", unindent=1)
         type <- match.arg(type)
         convention <- match.arg(convention)
         nt <- length(x@data$theta)
@@ -328,11 +332,12 @@ setMethod(f="plot",
             }
             title(paste("Medians (max ", sprintf(max, fmt="%.3g"), ")", sep=""))
         } else if (type == "fivenum") {
-            max <- max(x@data$fives[, 3], na.rm=TRUE)
+            max <- max(x@data$fives[, 5], na.rm=TRUE)
+            #browser()
             for (i in 1:nt) {
-                for (j in 2:3) {
-                    tm <- t[i] - dt2
-                    tp <- t[i] + dt2
+                tm <- t[i] - dt2
+                tp <- t[i] + dt2
+                for (j in 2:5) {
                     r0 <- x@data$fives[i, j-1] / max
                     r  <- x@data$fives[i, j] / max
                     xlist <- c(r0 * cos(tm), r * cos(tm), r * cos(tp), r0 * cos(tp))
@@ -340,10 +345,13 @@ setMethod(f="plot",
                     thiscol <- col[c(2, 1, 1, 2)][j-1]
                     polygon(xlist, ylist, col=thiscol, border=col[4])
                 }
-                r <- x@data$fivenum[i, 3] / max
-                lines(c(r * cos(tm), r * cos(tp)), c(r * sin(tm), r * sin(tp)), col="blue", lwd=2)
+                # Median in black
+                r <- x@data$fives[i, 3] / max
+                lines(c(r * cos(tm), r * cos(tp)),
+                    c(r * sin(tm), r * sin(tp)), lwd=2)
             }
             title(paste("Fiveum (max ", sprintf(max, fmt="%.3g"), ")", sep=""))
         }
+        oceDebug(debug, "} # plot.windrose() {\n", sep="", unindent=1)
         invisible(NULL)
     })
