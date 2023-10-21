@@ -100,7 +100,7 @@ setMethod(f="[[<-",
     })
 
 
-#' Create a Windrose Object
+#' Create a windrose Object
 #'
 #' Create a wind-rose object, typically for plotting with
 #' [plot,windrose-method()].
@@ -134,11 +134,12 @@ setMethod(f="[[<-",
 #'
 #' @examples
 #' library(oce)
-#' xcomp <- rnorm(360) + 1
-#' ycomp <- rnorm(360)
-#' wr <- as.windrose(xcomp, ycomp)
+#' set.seed(1234)
+#' theta <- seq(0, 360, 0.25)
+#' x <- 1 + cos(pi/180*theta) + rnorm(theta)
+#' y <- sin(pi/180*theta) + rnorm(theta)
+#' wr <- as.windrose(x, y)
 #' summary(wr)
-#' plot(wr)
 #'
 #' @author Dan Kelley, with considerable help from Alex Deckmyn.
 #'
@@ -231,16 +232,13 @@ as.windrose <- function(x, y, dtheta=15.0, debug=getOption("oceDebug"))
 #'
 #' @examples
 #' library(oce)
-#' opar <- par(no.readonly = TRUE)
 #' set.seed(1234)
 #' theta <- seq(0, 360, 0.25)
 #' x <- 1 + cos(pi/180*theta) + rnorm(theta)
 #' y <- sin(pi/180*theta) + rnorm(theta)
 #' wr <- as.windrose(x, y)
-#' par(mfrow=c(1, 2))
 #' plot(wr)
 #' plot(wr, type="fivenum")
-#' par(opar)
 #'
 #' @author Dan Kelley
 #'
@@ -264,7 +262,7 @@ setMethod(f="plot",
         type <- match.arg(type)
         convention <- match.arg(convention)
         nt <- length(x@data$theta)
-        pi <- 4 * atan2(1, 1)
+        pi <- 4.0 * atan2(1.0, 1.0)
         if (convention == "meteorological") {
             t <- x@data$theta * pi / 180   # in radians
         } else {
@@ -273,6 +271,8 @@ setMethod(f="plot",
         dt <- t[2] - t[1]
         dt2 <- dt / 2
         # Plot setup
+        opar <- par(no.readonly=TRUE)
+        on.exit(par(opar))
         par(mgp=mgp, mar=mar)
         plot.new()
         pin <- par("pin")
@@ -352,6 +352,6 @@ setMethod(f="plot",
             }
             title(paste("Fiveum (max ", sprintf(max, fmt="%.3g"), ")", sep=""))
         }
-        oceDebug(debug, "} # plot.windrose() {\n", sep="", unindent=1)
+        oceDebug(debug, "} # plot.windrose()\n", sep="", unindent=1)
         invisible(NULL)
     })

@@ -225,17 +225,16 @@ Users should be on the lookout for odd results.</p>
     <h2>Sample of Usage</h2>
     
 
-<div class="sourceCode"><pre><code>
-# needs WebTide at the system level
-library(oce)
-# 1. prediction at Halifax NS
-longitude &lt;- -63.57
-latitude &lt;- 44.65
-prediction &lt;- webtide("predict", longitude=longitude, latitude=latitude)
-mtext(sprintf("prediction at <!-- %fN %fE", latitude, longitude), line=0.75, side=3) -->
-# 2. map
-webtide(lon=-63.57,lat=44.65,xlim=c(-64,-63),ylim=c(43.0,46))
-</code></pre></div>
+<div class="sourceCode"><pre><code><span></span>
+<span><span class="co"># needs WebTide at the system level</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dankelley.github.io/oce/" class="external-link">oce</a></span><span class="op">)</span></span>
+<span><span class="co"># 1. prediction at Halifax NS</span></span>
+<span><span class="va">longitude</span> <span class="op">&lt;-</span> <span class="op">-</span><span class="fl">63.57</span></span>
+<span><span class="va">latitude</span> <span class="op">&lt;-</span> <span class="fl">44.65</span></span>
+<span><span class="va">prediction</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/webtide.html">webtide</a></span><span class="op">(</span><span class="st">"predict"</span>, longitude<span class="op">=</span><span class="va">longitude</span>, latitude<span class="op">=</span><span class="va">latitude</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/mtext.html" class="external-link">mtext</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"prediction at "</span>, <span class="va">latitude</span>, <span class="st">"N and "</span>, <span class="va">longitude</span>, <span class="st">"E"</span><span class="op">)</span>, line<span class="op">=</span><span class="fl">0.75</span>, side<span class="op">=</span><span class="fl">3</span><span class="op">)</span></span>
+<span><span class="co"># 2. map</span></span>
+<span><span class="fu"><a href="../reference/webtide.html">webtide</a></span><span class="op">(</span>lon<span class="op">=</span><span class="op">-</span><span class="fl">63.57</span>,lat<span class="op">=</span><span class="fl">44.65</span>,xlim<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">64</span>,<span class="op">-</span><span class="fl">63</span><span class="op">)</span>,ylim<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">43.0</span>,<span class="fl">46</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 
     </div>
     <div id="see-also">

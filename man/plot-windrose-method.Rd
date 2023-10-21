@@ -56,16 +56,13 @@ Plot a \linkS4class{windrose} object.
 }
 \examples{
 library(oce)
-opar <- par(no.readonly = TRUE)
 set.seed(1234)
 theta <- seq(0, 360, 0.25)
 x <- 1 + cos(pi/180*theta) + rnorm(theta)
 y <- sin(pi/180*theta) + rnorm(theta)
 wr <- as.windrose(x, y)
-par(mfrow=c(1, 2))
 plot(wr)
 plot(wr, type="fivenum")
-par(opar)
 
 }
 \seealso{
