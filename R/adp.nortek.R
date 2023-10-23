@@ -122,7 +122,7 @@ decodeHeaderNortek <- function(buf,
             oceDebug(debug, "hardware$picVersion=", hardware$picVersion, "\n")
             hardware$hwRevision <- readBin(buf[o+25:26], "integer", n=1, size=2, endian="little")
             oceDebug(debug, "hardware$hwRevision=", hardware$hwRevision, "\n")
-            hardware$recSize <- readBin(buf[o+27:28], "integer", n=1, size=2, endian="little")
+            hardware$recSize <- readBin(buf[o+27:28], "integer", n=1, size=2, signed=FALSE, endian="little")
             oceDebug(debug, "hardware$recSize=", hardware$recSize, "\n")
             hardware$velocityRange <- readBin(buf[o+29:30], "integer", n=1, size=2, signed=FALSE, endian="little")
             oceDebug(debug, "hardware$velocityRange=", hardware$velocityRange, "\n")
@@ -178,7 +178,7 @@ decodeHeaderNortek <- function(buf,
             # Since I don't trust any of this, I hard-wire beamAngle in at the end.
             head$beamAngles <- readBin(buf[o+23:30], "integer", n=4, size=2, endian="little", signed=TRUE)
 
-            oceDebug(debug, "head$beamAngles=", head$beamAngles, "(deg)\n")
+            oceDebug(debug, "head$beamAngles=", paste(head$beamAngles, collapse=", "), "(deg)\n")
             # Transformation matrix (before division by 4096)
             # FIXME: should we change the sign of rows 2 and 3 if pointed down??
             head$transformationMatrix <- matrix(readBin(buf[o+31:48], "integer", n=9, size=2, endian="little"), nrow=3, byrow=TRUE) / 4096
