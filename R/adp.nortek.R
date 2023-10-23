@@ -223,6 +223,15 @@ decodeHeaderNortek <- function(buf,
             user$timCtrlReg <- readBin(buf[o+21:22], "raw", n=2)
             oceDebug(debug, "user$timCtrlReg=", user$timCtrlReg, "\n")
 
+            # issue 2165 start new code
+            user$coordSystem <- readBin(buf[o+33:34], "integer", signed=FALSE, n=1, size=2, endian="little")
+            oceDebug(debug, "user$coordSystem=", user$coordSystem, " (issue 2165. 0=ENU, 1=XYZ, 2=BEAM?)\n")
+            user$nbins <- readBin(buf[o+35:36], "integer", signed=FALSE, n=1, size=2, endian="little")
+            oceDebug(debug, "user$nbins=", user$nbins, " (issue 2165: number of bins?)\n")
+            user$binLength <- readBin(buf[o+37:38], "integer", signed=FALSE, n=1, size=2, endian="little")
+            oceDebug(debug, "user$binLength=", user$binLength, " (issue 2165: cellSize??)\n")
+            # issue 2165 end new code
+
             user$measurementInterval <- readBin(buf[o+39:40], "integer", n=1, size=2, endian="little")
             oceDebug(debug, "user$measurementInterval=", user$measurementInterval, "\n")
             user$deploymentName <- readBin(buf[o+41:47], "character", n=1, size=6)
@@ -269,32 +278,41 @@ decodeHeaderNortek <- function(buf,
                 # CS = (1674/256)*0.00675*cos(25) = 0.04 m, for a 2 MHz instrument
                 # For a 1 MHz instrument you must multiply by twice the sampling distance, i.e. 0.0135 m
                 if (isTRUE(all.equal.numeric(head$frequency, 2000))) {
+                    oceDebug(debug, "computing user$cellSize and user$blankingDistance for type=\"aquadoppHR\" and frequency=2000\n")
                     user$cellSize <- user$hBinLength / 256 * 0.00675 * cos(25 * degToRad)
                     user$blankingDistance <- user$T2 * 0.00675 * cos(25 * degToRad) - user$cellSize
                 } else if (isTRUE(all.equal.numeric(head$frequency, 1000))) {
+                    oceDebug(debug, "computing user$cellSize and user$blankingDistance for type=\"aquadoppHR\" and frequency=1000\n")
                     user$cellSize <- user$hBinLength / 256 * 0.01350 * cos(25 * degToRad)
                     user$blankingDistance <- user$T2 * 0.01350 * cos(25 * degToRad) - user$cellSize
                 } else {
+                    oceDebug(debug, "computing user$cellSize and user$blankingDistance for type=\"aquadoppHR\" and frequency neither 1000 nor 2000\n")
                     warning("unknown frequency ", head$frequency, " (only understand 1MHz and 2MHz); using 2Mhz formula to calculate cell size")
                     user$cellSize <- user$hBinLength / 256 * 0.00675 * cos(25 * degToRad)
                     user$blankingDistance <- user$T2 * 0.00675 * cos(25 * degToRad) - user$cellSize
                 }
             } else if (type == "aquadoppProfiler") {
                 if (isTRUE(all.equal.numeric(head$frequency, 2000))) {
+                    oceDebug(debug, "computing user$cellSize and user$blankingDistance for type=\"aquadoppProfiler\" and frequency 2000\n")
                     user$cellSize <- user$hBinLength / 256 * 0.0239 * cos(25 * degToRad)
                 } else if (isTRUE(all.equal.numeric(head$frequency, 1000))) {
+                    oceDebug(debug, "computing user$cellSize and user$blankingDistance for type=\"aquadoppProfiler\" and frequency 1000\n")
                     user$cellSize <- user$hBinLength / 256 * 0.0478 * cos(25 * degToRad)
                 } else if (isTRUE(all.equal.numeric(head$frequency, 600))) {
+                    oceDebug(debug, "computing user$cellSize and user$blankingDistance for type=\"aquadoppProfiler\" and frequency 600\n")
                     user$cellSize <- user$hBinLength / 256 * 0.0797 * cos(25 * degToRad)
                 } else if (isTRUE(all.equal.numeric(head$frequency, 400))) {
+                    oceDebug(debug, "computing user$cellSize and user$blankingDistance for type=\"aquadoppProfiler\" and frequency 400\n")
                     user$cellSize <- user$hBinLength / 256 * 0.1195 * cos(25 * degToRad)
                 } else {
                     warning("unknown frequency", head$frequency, "(only understand 1MHz and 2MHz); using 1Mhz formula to calculate cell size")
+                    oceDebug(debug, "computing user$cellSize and user$blankingDistance for type=\"aquadoppProfiler\" and frequency not 400, 600, 1000 or 2000\n")
                     user$cellSize <- user$hBinLength / 256 * 0.0478 * cos(25 * degToRad)
                     #user$cellSize <- user$hBinLength / 256 * 0.00675 * cos(25 * degToRad)
                 }
                 user$blankingDistance <- user$T2 * 0.0229 * cos(25 * degToRad) - user$cellSize
             } else if (type == "aquadopp" || type == "aquadoppPlusMagnetometer") {
+                oceDebug(debug, "computing user$cellSize and user$blankingDistance for type=\"aquadoppPlusMagnetometer\"\n")
                 #user$cellSize <- user$hBinLength / 256 * 0.00675 * cos(25 * degToRad)
                 #user$blankingDistance <- user$T2 * 0.00675 * cos(25 * degToRad) - user$cellSize
                 warning("using fixed cell size and blanking distance for Aquadopp, since cannot infer these from the file")
@@ -303,11 +321,13 @@ decodeHeaderNortek <- function(buf,
             } else if (type == "vector") {
                 # Formula (revised) from Nortek https://www.nortekusa.com/en/knowledge-center/forum/hr-profilers/595666030
                 # Cell size (mm) = T3counts * 1000 * 750 / 480000
+                oceDebug(debug, "computing user$cellSize and user$blankingDistance for type=\"vector\"\n")
                 soundspeed <- 1500
                 user$cellSize <- user$receiveLength * (soundspeed / 2) / 480.0e3 # drop the 1000 to get m
                 user$blankingDistance <- 0 # ?
             } else {
                 warning("unknown instrument type \"", type, "\", so calculating cell size as though it is a 2MHz AquadoppHR")
+                oceDebug(debug, "computing user$cellSize and user$blankingDistance for unknown type=\"", type, "\"\n", sep="")
                 user$cellSize <- user$hBinLength / 256 * 0.00675 * cos(25 * degToRad)
                 user$blankingDistance <- user$T2 * 0.00675 * cos(25 * degToRad) - user$cellSize
             }
