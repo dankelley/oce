@@ -1723,7 +1723,7 @@ oceMagic <- function(file, encoding="latin1", debug=getOption("oceDebug"))
 {
     filename <- file
     oceDebug(debug, paste("oceMagic(file=\"", filename, "\") {\n", sep=""), unindent=1, style="bold", sep="")
-    isdir<- file.info(file)$isdir
+    isdir <- file.info(file)$isdir
     if (is.finite(isdir) && isdir) {
         tst <- file.info(paste(file, "/", file, "_MTL.txt", sep=""))$isdir
         if (!is.na(tst) && !tst) {
@@ -1864,7 +1864,7 @@ oceMagic <- function(file, encoding="latin1", debug=getOption("oceDebug"))
         file <- file(file, "r", encoding=encoding)
     }
     if (!inherits(file, "connection"))
-        stop("argument `file' must be a character string or connection")
+        stop("argument 'file' must be a character string or connection")
     oceDebug(debug, "'file' is a connection\n")
     if (!isOpen(file))
         open(file, "r", encoding=encoding)

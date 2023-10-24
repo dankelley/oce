@@ -12,7 +12,7 @@ read.adp.nortek(
   tz = getOption("oceTz"),
   longitude = NA,
   latitude = NA,
-  type = c("aquadoppHR", "aquadoppProfiler", "aquadopp", "aquadoppPlusMagnetometer"),
+  type = NULL,
   orientation,
   distance,
   encoding = NA,
@@ -54,7 +54,10 @@ East.}
 \item{latitude}{optional signed number indicating the latitude in degrees
 North.}
 
-\item{type}{a character string indicating the type of instrument.}
+\item{type}{a character string indicating the type of instrument.
+If NULL (the default), then \code{\link[=oceMagic]{oceMagic()}} is used to infer the type. If
+non-NULL, then the value must be one of: \code{"aquadoppHR"},
+\code{"aquadoppProfiler"}, \code{"aquadopp"}, or \code{"aquadoppPlusMagnetometer"}.}
 
 \item{orientation}{an optional character string specifying the orientation of
 the sensor, provided for those cases in which it cannot be inferred from the

@@ -622,6 +622,9 @@ read.aquadoppProfiler <- function(file,
 #' anomalous spikes in heading, etc.
 #'
 #' @param type a character string indicating the type of instrument.
+#' If NULL (the default), then [oceMagic()] is used to infer the type. If
+#' non-NULL, then the value must be one of: `"aquadoppHR"`,
+#' `"aquadoppProfiler"`, `"aquadopp"`, or `"aquadoppPlusMagnetometer"`.
 #'
 #' @param orientation an optional character string specifying the orientation of
 #' the sensor, provided for those cases in which it cannot be inferred from the
@@ -655,12 +658,14 @@ read.aquadoppProfiler <- function(file,
 #' @family functions that read adp data
 read.adp.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     longitude=NA, latitude=NA,
-    type=c("aquadoppHR", "aquadoppProfiler", "aquadopp", "aquadoppPlusMagnetometer"), orientation, distance,
+    type=NULL,
+    orientation, distance,
     encoding=NA,
     monitor=FALSE, despike=FALSE, processingLog,
     debug=getOption("oceDebug"),
     ...)
 {
+    oceDebug(debug, "read.adp.nortek(...)\n", sep="", unindent=1)
     if (missing(file))
         stop("must supply 'file'")
     if (is.character(file)) {
@@ -669,6 +674,18 @@ read.adp.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         if (0L == file.info(file)$size)
             stop("empty file \"", file, "\"")
     }
+    if (is.null(type)) {
+        oceDebug(debug, "inferring type using oceMagic()\n")
+        type <- gsub(".*/", "", oceMagic(file))
+        oceDebug(debug, "inferred type as \"", type, "\"\n")
+    }
+    typeAllowed <- c("aquadopp", "aquadoppHR", "aquadoppPlusMagnetometer", "aquadoppProfiler")
+    #message("typeAllowed= as follows\n");print(typeAllowed)
+    if (!type %in% typeAllowed) {
+        stop("type \"", type, "\" not permitted; try one of \"",
+            paste(typeAllowed, collapse="\" \""), "\"")
+    }
+    #message("DAN 1")
     if (!interactive())
         monitor <- FALSE
     #degToRad <- atan2(1, 1) / 45
@@ -720,9 +737,9 @@ read.adp.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     }
     if (missing(to))
         to <- NA                       # will catch this later
-    type <- match.arg(type)
-    if (type=="aquadoppPlusMagnetometer") oceDebug(debug, "Reading an aquadopp file which includes raw magnetometer data\n")
-    oceDebug(debug, "read.adp.nortek(...,from=", format(from), ",to=", format(to), "...)\n")
+    if (identical(type, "aquadoppPlusMagnetometer")) {
+        oceDebug(debug, "Reading an aquadopp file which includes raw magnetometer data\n")
+    }
     res <- new("adp")
     #fromKeep <- from
     #toKeep <- to
