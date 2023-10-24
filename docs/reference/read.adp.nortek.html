@@ -89,7 +89,7 @@
 <span>  tz <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"oceTz"</span><span class="op">)</span>,</span>
 <span>  longitude <span class="op">=</span> <span class="cn">NA</span>,</span>
 <span>  latitude <span class="op">=</span> <span class="cn">NA</span>,</span>
-<span>  type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"aquadoppHR"</span>, <span class="st">"aquadoppProfiler"</span>, <span class="st">"aquadopp"</span>, <span class="st">"aquadoppPlusMagnetometer"</span><span class="op">)</span>,</span>
+<span>  type <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  <span class="va">orientation</span>,</span>
 <span>  <span class="va">distance</span>,</span>
 <span>  encoding <span class="op">=</span> <span class="cn">NA</span>,</span>
@@ -148,7 +148,10 @@ North.</p></dd>
 
 
 <dt>type</dt>
-<dd><p>a character string indicating the type of instrument.</p></dd>
+<dd><p>a character string indicating the type of instrument.
+If NULL (the default), then <code><a href="oceMagic.html">oceMagic()</a></code> is used to infer the type. If
+non-NULL, then the value must be one of: <code>"aquadoppHR"</code>,
+<code>"aquadoppProfiler"</code>, <code>"aquadopp"</code>, or <code>"aquadoppPlusMagnetometer"</code>.</p></dd>
 
 
 <dt>orientation</dt>
