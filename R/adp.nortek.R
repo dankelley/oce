@@ -65,6 +65,10 @@ testNewSerialNumberDecoder <- TRUE # see email exchange with CR dated 2023-10-05
 #' 2. The Nortek Knowledge Center
 #' https://www.nortekusa.com/en/knowledge-center
 #' may be of help if problems arise in dealing with data from Nortek instruments.
+#'
+#' 3. Nortek,
+#' "Classic Integrators Guide: Aquadopp | Aquadopp DW | Aquadopp Profiler | HQ Aquadopp Profiler | Vector | AWAC."
+#' Nortek AS, 2022.
 decodeHeaderNortek <- function(buf,
     type=c("aquadoppHR", "aquadoppProfiler", "aquadopp", "aquadoppPlusMagnetometer", "vector"),
     debug=getOption("oceDebug"),
@@ -193,30 +197,44 @@ decodeHeaderNortek <- function(buf,
             # User Configuration [p30-32 of System Integrator Guide]
             oceDebug(debug, "USER CONFIGURATION\n", unindent=1)
             user$size <- readBin(buf[o+3:4], what="integer", n=1, size=2, endian="little")
-            if (2 * user$size != headerLengthUser)
-                stop("size of user header expected to be ", headerLengthUser, "but got ", user$size)
+            if (2 * user$size != headerLengthUser) {
+                stop("expected header length is ", headerLengthUser, "but got ", user$size)
+            }
             #buf <- readBin(file, "raw", headerLengthUser)
-            user$transmitPulseLength <- readBin(buf[o+5:6], "integer", n=1, size=2, endian="little", signed=FALSE)
-            oceDebug(debug, "user$transmitPulseLength=", user$transmitPulseLength, "\n")
-
+            # Keep both the 'T' names and also oce-type names. The latter
+            # have names taken from reference 3, but these names are not
+            # literal, since we know from personal communications with Nortek
+            # that the physical quantities are computed via equations using T1,
+            # T2 etc. Reference 3 (page 29) describes the T variables as
+            # follows.
+            oceDebug(debug, "T* variable meanings from Sec 5.1, page 29 of reference 3:\n",
+                "          T1: transmit pulse length (counts)\n",
+                "          T2: blanking distance (counts)\n",
+                "          T3: receive length (counts)\n",
+                "          T4: time between pings (counts)\n",
+                "          T5: time between burst sequences (counts)\n")
+            user$T1 <- readBin(buf[o+5:6], "integer", n=1, size=2, endian="little", signed=FALSE)
+            oceDebug(debug, "user$T1=", user$T1, "\n")
             user$T2 <- readBin(buf[o+7:8], "integer", n=1, size=2, endian="little", signed=FALSE)
-            oceDebug(debug, "user$T2=", user$T2, "(blanking distance, in counts)\n")
+            oceDebug(debug, "user$T2=", user$T2, "\n")
+            user$T3 <- readBin(buf[o+9:10], "integer", n=1, size=2, endian="little", signed=FALSE)
+            oceDebug(debug, "user$T3=", user$T3, "\n")
+            user$T4 <- readBin(buf[o+11:12], "integer", n=1, size=2, endian="little", signed=FALSE)
+            oceDebug(debug, "user$T4=", user$T4, "\n")
+            user$T5 <- readBin(buf[o+13:14], "integer", n=1, size=2, endian="little", signed=FALSE)
+            oceDebug(debug, "user$T5=", user$T5, "\n")
 
-            user$receiveLength <- readBin(buf[o+9:10], "integer", n=1, size=2, endian="little", signed=FALSE)
-            oceDebug(debug, "user$receiveLength=T3=", user$receiveLength, "counts\n")
-            oceDebug(debug, " ABOVE FROM buf[o+9]=0x", buf[o+9], " and buf[o+10]=0x", buf[0+10], "\n", sep="")
+            user$transmitPulseLength <- user$T1
+            user$receiveLength <- user$T3
+            user$timeBetweenPings <- user$T4
+            oceDebug(debug, "user$timeBetweenPings=", user$timeBetweenPings, " counts\n")
 
-            user$timeBetweenPings <- readBin(buf[o+11:12], "integer", n=1, size=2, endian="little", signed=FALSE)
-            oceDebug(debug, "user$timeBetweenPings=", user$timeBetweenPings, "in counts\n")
-
-            user$timeBetweenBurstSequences <- readBin(buf[o+13:14], "integer", n=1, size=2, endian="little", signed=FALSE)
-            oceDebug(debug, "user$timeBetweenBurstSequences=", user$timeBetweenBurstSequences, "in counts\n")
-
+            # next is called NPings in Sec 5.1, page 29 of reference 3
             user$numberOfBeamSequencesPerBurst <- readBin(buf[o+15:16], "integer", n=1, size=2, endian="little", signed=FALSE)
-            oceDebug(debug, "user$numberOfBeamSequencesPerBurst=", user$numberOfBeamSequencesPerBurst, "in counts\n")
+            oceDebug(debug, "user$numberOfBeamSequencesPerBurst=", user$numberOfBeamSequencesPerBurst, " counts\n")
 
             user$averagingInterval <- readBin(buf[o+17:18], "integer", n=1, size=2, endian="little")
-            oceDebug(debug, "user$averagingInterval=", user$averagingInterval, "in seconds\n")
+            oceDebug(debug, "user$averagingInterval=", user$averagingInterval, " seconds\n")
             user$numberOfBeams <- readBin(buf[o+19:20], "integer", n=1, size=2, endian="little")
             oceDebug(debug, "user$numberOfBeams=", user$numberOfBeams, "\n")
 
@@ -306,11 +324,15 @@ decodeHeaderNortek <- function(buf,
                     user$cellSize <- user$hBinLength / 256 * 0.1195 * cos(25 * degToRad)
                 } else {
                     warning("unknown frequency", head$frequency, "(only understand 1MHz and 2MHz); using 1Mhz formula to calculate cell size")
-                    oceDebug(debug, "computing user$cellSize and user$blankingDistance for type=\"aquadoppProfiler\" and frequency not 400, 600, 1000 or 2000\n")
+                    oceDebug(debug, "computing user$cellSize and user$blankingDistance for",
+                        "type=\"aquadoppProfiler\" and frequency not 400, 600, 1000 or 2000\n")
                     user$cellSize <- user$hBinLength / 256 * 0.0478 * cos(25 * degToRad)
                     #user$cellSize <- user$hBinLength / 256 * 0.00675 * cos(25 * degToRad)
                 }
                 user$blankingDistance <- user$T2 * 0.0229 * cos(25 * degToRad) - user$cellSize
+                oceDebug(debug, "blankingDistance from old formula:", user$blankingDistance, " m\n")
+                user$blankingDistanceTEST <- user$T2 * 100 * (750/32768) - user$T1 * 100 * ((750/(1000*head$frequency))*16)
+                oceDebug(debug, "blankingDistance from new formula (not used):", user$blankingDistanceTEST, " m?\n")
             } else if (type == "aquadopp" || type == "aquadoppPlusMagnetometer") {
                 oceDebug(debug, "computing user$cellSize and user$blankingDistance for type=\"aquadoppPlusMagnetometer\"\n")
                 #user$cellSize <- user$hBinLength / 256 * 0.00675 * cos(25 * degToRad)
@@ -367,7 +389,7 @@ decodeHeaderNortek <- function(buf,
             #    user$blankingDistance <- 0
             #}
             #cat("adp.nortek.R:245 user$blankingDistance", user$blankingDistance, "\n")
-            oceDebug(debug, "blankingDistance=", user$blankingDistance, "; user$T1=", user$T1, "and user$T2=", user$T2, "\n")
+            oceDebug(debug, "blankingDistance=", user$blankingDistance, "; user$T1=", user$T1, "; user$T2=", user$T2, "\n")
             user$swVersion <- readBin(buf[o+73:74], "integer", n=1, size=2, endian="little") / 10000
             oceDebug(debug, "swVersion=", user$swVersion, "\n")
             user$salinity <- readBin(buf[o+75:76], "integer", n=1, size=2, endian="little") * 0.1

@@ -442,17 +442,17 @@ setMethod(f="summary",
         #-isAD2CP <- is.ad2cp(object)
         cat("ADP Summary\n-----------\n\n", ...)
         if ("filename" %in% mnames)
-            cat(paste("* Filename:      \"", object@metadata$filename, "\"\n", sep=""), ...)
+            cat(paste("* Filename:          \"", object@metadata$filename, "\"\n", sep=""), ...)
         if ("instrumentType" %in% mnames)
-            cat(paste("* Instrument:    ", object@metadata$instrumentType, "\n", sep=""), ...)
+            cat(paste("* Instrument:        ", object@metadata$instrumentType, "\n", sep=""), ...)
         if ("manufacturer" %in% mnames)
-            cat(paste("* Manufacturer:  ", object@metadata$manufacturer, "\n", sep=""), ...)
+            cat(paste("* Manufacturer:      ", object@metadata$manufacturer, "\n", sep=""), ...)
         if ("type" %in% mnames)
-            cat(paste("* Model:         ", object@metadata$type, "\n", sep=""), ...)
+            cat(paste("* Model:             ", object@metadata$type, "\n", sep=""), ...)
         if ("serialNumber" %in% mnames)
-            cat(paste("* Serial number: ", object@metadata$serialNumber, "\n", sep=""), ...)
+            cat(paste("* Serial number:     ", object@metadata$serialNumber, "\n", sep=""), ...)
         if ("fileType" %in% mnames)
-            cat(paste("* File type:     ", object@metadata$fileType, "\n", sep=""), ...)
+            cat(paste("* File type:         ", object@metadata$fileType, "\n", sep=""), ...)
         #-if (isAD2CP) {
         #-    cat(paste("* Data type:     0x",
         #-        as.raw(object@metadata$dataType), "=",
@@ -460,7 +460,12 @@ setMethod(f="summary",
         #-        ad2cpCodeToName(object@metadata$dataType, prefix=FALSE), "\n", sep=""), ...)
         #-}
         if ("firmwareVersion" %in% mnames)
-            cat(paste("* Firmware:      ", object@metadata$firmwareVersion, "\n", sep=""), ...)
+            cat(paste("* Firmware:          ", object@metadata$firmwareVersion, "\n", sep=""), ...)
+        if ("cellSize" %in% mnames)
+            cat(paste("* Cell Size:         ", object@metadata$cellSize, "\n", sep=""), ...)
+        if ("blankingDistance" %in% mnames)
+            cat(paste("* Blanking Distance: ", object@metadata$blankingDistance, "\n", sep=""), ...)
+
         if ("latitude" %in% names(object@metadata)) {
             cat(paste("* Location:      ",
                 if (is.na(object@metadata$latitude)) "unknown latitude" else sprintf("%.5f N", object@metadata$latitude), ", ",

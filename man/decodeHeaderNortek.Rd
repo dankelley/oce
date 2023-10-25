@@ -50,6 +50,9 @@ at \verb{https://www.nortekusa.com/usa?set_language=usa} after login.
 \item The Nortek Knowledge Center
 https://www.nortekusa.com/en/knowledge-center
 may be of help if problems arise in dealing with data from Nortek instruments.
+\item Nortek,
+"Classic Integrators Guide: Aquadopp | Aquadopp DW | Aquadopp Profiler | HQ Aquadopp Profiler | Vector | AWAC."
+Nortek AS, 2022.
 }
 }
 \seealso{
