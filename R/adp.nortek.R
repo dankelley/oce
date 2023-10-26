@@ -214,15 +214,15 @@ decodeHeaderNortek <- function(buf,
                 "          T4: time between pings (counts)\n",
                 "          T5: time between burst sequences (counts)\n")
             user$T1 <- readBin(buf[o+5:6], "integer", n=1, size=2, endian="little", signed=FALSE)
-            oceDebug(debug, "user$T1=", user$T1, "\n")
+            oceDebug(debug, "user$T1=", user$T1, " (called System1 in .hdr files)\n")
             user$T2 <- readBin(buf[o+7:8], "integer", n=1, size=2, endian="little", signed=FALSE)
-            oceDebug(debug, "user$T2=", user$T2, "\n")
+            oceDebug(debug, "user$T2=", user$T2, " (called System2 in .hdr files)\n")
             user$T3 <- readBin(buf[o+9:10], "integer", n=1, size=2, endian="little", signed=FALSE)
-            oceDebug(debug, "user$T3=", user$T3, "\n")
+            oceDebug(debug, "user$T3=", user$T3, " (called System3 in .hdr files)\n")
             user$T4 <- readBin(buf[o+11:12], "integer", n=1, size=2, endian="little", signed=FALSE)
-            oceDebug(debug, "user$T4=", user$T4, "\n")
+            oceDebug(debug, "user$T4=", user$T4, " (called System4 in .hdr files)\n")
             user$T5 <- readBin(buf[o+13:14], "integer", n=1, size=2, endian="little", signed=FALSE)
-            oceDebug(debug, "user$T5=", user$T5, "\n")
+            oceDebug(debug, "user$T5=", user$T5, " (called System5 in .hdr files)\n")
 
             user$transmitPulseLength <- user$T1
             user$receiveLength <- user$T3
