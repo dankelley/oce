@@ -310,6 +310,21 @@ decodeHeaderNortek <- function(buf,
                     user$blankingDistance <- user$T2 * 0.00675 * cos(25 * degToRad) - user$cellSize
                 }
             } else if (type == "aquadoppProfiler") {
+                # email from Evan Price (Nortek) dated 2023-10-30T12:05 (Halifax time)
+                # CS in mm:
+                #    CS = (BinLength/256)*(750*17*15/(Frequency_in_kHz*4))*cosd(25) [mm]
+                # BD in mm:
+                #    BD = T2*1000*(750/32768)*cosd(25) - CS[mm]
+                if (TRUE) { # testing
+                    oceDebug(debug, "testing using Nortek formula from 2023-10-30T12:05 (Halifax time)\n")
+                    CS <- (user$binLength/256) * (750*17*15) / (head$frequency * 4) * cos(25*pi/180)
+                    oceDebug(debug, "    CS = ", CS, "[mm]", CS, " i.e. ", CS/1000, "m\n")
+                    BD <- user$T2 * 1000 * (750/32768) * cos(25*pi/180) - CS
+                    oceDebug(debug, "    BD = ", BD, "[mm]", BD, " i.e. ", BD/1000, "m\n")
+                    oceDebug(debug, "    NOTE: the above values are not saved in the object, because\n")
+                    oceDebug(debug, "    it is not clear whether these are for all frequencies, and\n")
+                    oceDebug(debug, "    the BD of 0.41m does not match the hdr value of 0.40m\n")
+                }
                 if (isTRUE(all.equal.numeric(head$frequency, 2000))) {
                     oceDebug(debug, "computing user$cellSize and user$blankingDistance for type=\"aquadoppProfiler\" and frequency 2000\n")
                     user$cellSize <- user$hBinLength / 256 * 0.0239 * cos(25 * degToRad)
