@@ -182,7 +182,7 @@ decodeHeaderNortek <- function(buf,
             # Since I don't trust any of this, I hard-wire beamAngle in at the end.
             head$beamAngles <- readBin(buf[o+23:30], "integer", n=4, size=2, endian="little", signed=TRUE)
 
-            oceDebug(debug, "head$beamAngles=", paste(head$beamAngles, collapse=", "), "(deg)\n")
+            oceDebug(debug, "head$beamAngles=", paste(head$beamAngles, collapse=", "), " deg\n")
             # Transformation matrix (before division by 4096)
             # FIXME: should we change the sign of rows 2 and 3 if pointed down??
             head$transformationMatrix <- matrix(readBin(buf[o+31:48], "integer", n=9, size=2, endian="little"), nrow=3, byrow=TRUE) / 4096
@@ -317,10 +317,15 @@ decodeHeaderNortek <- function(buf,
                 #    BD = T2*1000*(750/32768)*cosd(25) - CS[mm]
                 if (TRUE) { # testing
                     oceDebug(debug, "testing using Nortek formula from 2023-10-30T12:05 (Halifax time)\n")
-                    CS <- (user$binLength/256) * (750*17*15) / (head$frequency * 4) * cos(25*pi/180)
-                    oceDebug(debug, "    CS = ", CS, "[mm]", CS, " i.e. ", CS/1000, "m\n")
-                    BD <- user$T2 * 1000 * (750/32768) * cos(25*pi/180) - CS
-                    oceDebug(debug, "    BD = ", BD, "[mm]", BD, " i.e. ", BD/1000, "m\n")
+
+                    oceDebug(debug, "    the old cellSize formula used user$hBinLength but new uses user$binLength\n")
+                    oceDebug(debug, "    user$binLength=", user$binLength, "\n")
+                    oceDebug(debug, "    user$hBinLength=", user$hBinLength, "\n")
+                    cosAngle <- cos(25 * degToRad) # FIXME: is beam angle always 25deg for aquadopp?
+                    CS <- (user$binLength/256) * (750*17*15) / (head$frequency * 4) * cosAngle
+                    oceDebug(debug, "    CS = ", CS, "[mm], i.e. ", CS/1000, "m\n")
+                    BD <- user$T2 * 1000 * (750/32768) * cosAngle - CS
+                    oceDebug(debug, "    BD = ", BD, "[mm], i.e. ", BD/1000, "m\n")
                     oceDebug(debug, "    NOTE: the above values are not saved in the object, because\n")
                     oceDebug(debug, "    it is not clear whether these are for all frequencies, and\n")
                     oceDebug(debug, "    the BD of 0.41m does not match the hdr value of 0.40m\n")
@@ -346,8 +351,8 @@ decodeHeaderNortek <- function(buf,
                 }
                 user$blankingDistance <- user$T2 * 0.0229 * cos(25 * degToRad) - user$cellSize
                 oceDebug(debug, "blankingDistance from old formula:", user$blankingDistance, " m\n")
-                user$blankingDistanceTEST <- user$T2 * 100 * (750/32768) - user$T1 * 100 * ((750/(1000*head$frequency))*16)
-                oceDebug(debug, "blankingDistance from new formula (not used):", user$blankingDistanceTEST, " m?\n")
+                #user$blankingDistanceTEST <- user$T2 * 100 * (750/32768) - user$T1 * 100 * ((750/(1000*head$frequency))*16)
+                #oceDebug(debug, "blankingDistance from new formula (not used):", user$blankingDistanceTEST, " m?\n")
             } else if (type == "aquadopp" || type == "aquadoppPlusMagnetometer") {
                 oceDebug(debug, "computing user$cellSize and user$blankingDistance for type=\"aquadoppPlusMagnetometer\"\n")
                 #user$cellSize <- user$hBinLength / 256 * 0.00675 * cos(25 * degToRad)
