@@ -2503,7 +2503,7 @@ read.section <- function(file,
 #' If `p` is a single numerical value,
 #' it is taken as the number of subdivisions to use in a call to [seq()]
 #' that has range from 0 to the maximum pressure in `section`.  Finally, if a
-#' vector numerical values is provided, perhaps. constructed with [seq()]
+#' vector numerical values is provided, perhaps as constructed with [seq()]
 #' or [`standardDepths`]`(5)` (as in the examples),
 #' then it is used as is, after trimming any values that exceed the maximum
 #' pressure in the station data stored within `section`.
