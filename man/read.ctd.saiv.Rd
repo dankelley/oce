@@ -46,16 +46,19 @@ that differ from those in the sample file (see
 \dQuote{Details} for this and other limitations).
 }
 \details{
-Some quantities are renamed to match the oce convention, e.g.
-\code{"Sal."} is renamed to \code{"salinity"}, \code{"Temp"} is renamed to
-\code{"temperature"}, etc.  Note that the sample file upon which
-the code was based did not list units for several quantities,
-This problem is addressed in a risky way:
-\code{\link[=read.ctd.saiv]{read.ctd.saiv()}} simply assumes that common units are
-used in the file.  This is not the only problem with
-the sample file, and thus with this version of the function.
-Some other issues encountered with the sample file are as
-follows.
+Some variable names are change to the oce convention, e.g.
+\code{"Sal."} becomes \code{"salinity"}, \code{"Temp"} becomes
+\code{"temperature"}, etc.  In the first version of the code,
+this renaming was done based on examination of a single file.
+This list was expanded after a user kindly supplied a one-page
+document that explains the variable names and units.
+
+As with other \linkS4class{ctd} objects, the \code{[[} operator handles
+both the original name from the file, and the converted oce
+name.
+
+It is worth noting the following oddities that were present
+in the sample file upon which \code{\link[=read.ctd.saiv]{read.ctd.saiv()}} was based.
 \enumerate{
 \item The header line that names the data columns ends with a tab,
 indicating the presence of 12 columns (the last unnamed), but the
@@ -67,13 +70,10 @@ Temperature cannot be computed.  Users who know the location information
 ought to insert values into the object returned by \code{\link[=read.ctd.saiv]{read.ctd.saiv()}}
 using \code{\link[=oceSetMetadata]{oceSetMetadata()}}.
 \item Further to the previous point, it is not possible to compute pressure
-accurately from depth (which is what the header suggests the file contains) unless
-the latitude is known. In \code{\link[=read.ctd.saiv]{read.ctd.saiv()}}, latitude is assumed to be 45 degrees
-north, which is the default used by \code{\link[=swPressure]{swPressure()}}.
-\item The data columns named \code{"Ser"} and \code{"Meas"} are inserted into
-the return value without renaming.  This is true of other quantities
-as well.  Since \code{[[} can access by \emph{original} name and not just by
-oce name, this may not be too much of a problem.
+accurately from depth (which is what the header suggests the file
+contains) unless the latitude is known. In \code{\link[=read.ctd.saiv]{read.ctd.saiv()}},
+latitude is assumed to be 45 degrees north, which is the default
+used by \code{\link[=swPressure]{swPressure()}}.
 }
 }
 \references{
@@ -136,7 +136,9 @@ Other functions that read ctd data:
 \code{\link{read.ctd}()}
 }
 \author{
-Dan Kelley
+Dan Kelley, with help from Rdescoteaux on github,
+who supplied the sample file and the document about variable
+names.
 }
 \concept{functions that read ctd data}
 \concept{things related to ctd data}

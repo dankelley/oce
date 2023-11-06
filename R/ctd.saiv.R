@@ -11,16 +11,19 @@
 #' that differ from those in the sample file (see
 #' \dQuote{Details} for this and other limitations).
 #'
-#' Some quantities are renamed to match the oce convention, e.g.
-#' `"Sal."` is renamed to `"salinity"`, `"Temp"` is renamed to
-#' `"temperature"`, etc.  Note that the sample file upon which
-#' the code was based did not list units for several quantities,
-#' This problem is addressed in a risky way:
-#' [read.ctd.saiv()] simply assumes that common units are
-#' used in the file.  This is not the only problem with
-#' the sample file, and thus with this version of the function.
-#' Some other issues encountered with the sample file are as
-#' follows.
+#' Some variable names are change to the oce convention, e.g.
+#' `"Sal."` becomes `"salinity"`, `"Temp"` becomes
+#' `"temperature"`, etc.  In the first version of the code,
+#' this renaming was done based on examination of a single file.
+#' This list was expanded after a user kindly supplied a one-page
+#' document that explains the variable names and units.
+#'
+#' As with other [ctd-class] objects, the `[[` operator handles
+#' both the original name from the file, and the converted oce
+#' name.
+#'
+#' It is worth noting the following oddities that were present
+#' in the sample file upon which [read.ctd.saiv()] was based.
 #'
 #' 1. The header line that names the data columns ends with a tab,
 #' indicating the presence of 12 columns (the last unnamed), but the
@@ -34,14 +37,10 @@
 #' using [oceSetMetadata()].
 #'
 #' 3. Further to the previous point, it is not possible to compute pressure
-#' accurately from depth (which is what the header suggests the file contains) unless
-#' the latitude is known. In [read.ctd.saiv()], latitude is assumed to be 45 degrees
-#' north, which is the default used by [swPressure()].
-#'
-#' 4. The data columns named `"Ser"` and `"Meas"` are inserted into
-#' the return value without renaming.  This is true of other quantities
-#' as well.  Since `[[` can access by *original* name and not just by
-#' oce name, this may not be too much of a problem.
+#' accurately from depth (which is what the header suggests the file
+#' contains) unless the latitude is known. In [read.ctd.saiv()],
+#' latitude is assumed to be 45 degrees north, which is the default
+#' used by [swPressure()].
 #'
 #' @param file a character string naming the file to be read.
 #'
@@ -55,7 +54,9 @@
 #'
 #' @return [read.ctd.saiv()] returns a [ctd-class] object.
 #'
-#' @author Dan Kelley
+#' @author Dan Kelley, with help from Rdescoteaux on github,
+#' who supplied the sample file and the document about variable
+#' names.
 #'
 #' @references
 #'
@@ -87,14 +88,68 @@ read.ctd.saiv <- function(file, encoding="latin1", debug=getOption("oceDebug"), 
     dataNamesOriginal <- dataNamesOriginal[nchar(dataNamesOriginal) > 0L]
     # compute oce-style data names
     oceDebug(debug, "Original data names: c(\"", paste(dataNamesOriginal, collapse="\", \""), "\")\n")
+    units <- list()
     dataNames <- dataNamesOriginal
-    dataNames[dataNames == "Sal."] <- "salinity"
-    dataNames[dataNames == "Temp"] <- "temperature"
-    dataNames[dataNames == "Depth(u)"] <- "depth"
-    dataNames[dataNames == "Density"] <- "density"
-    dataNames[dataNames == "S. vel."] <- "soundVelocity"
-    dataNames[dataNames == "T (FTU)"] <- "turbidity"
-    dataNames[grep("^F [(]{1}", dataNames)] <- "fluorescence"
+    if ("Ser" %in% dataNames) {
+        dataNames[dataNames == "Ser"] <- "series"
+        units$series <- list(unit=expression(), scale="")
+    }
+    if ("Meas" %in% dataNames) {
+        dataNames[dataNames == "Meas"] <- "measurement"
+        units$measurement <- list(unit=expression(), scale="")
+    }
+    if ("Sal." %in% dataNames) {
+        dataNames[dataNames == "Sal."] <- "salinity"
+        units$salinity <- list(unit=expression(), scale="PSS-78") # FIXME: this is a guess
+    }
+    if ("Cond" %in% dataNames) {
+        dataNames[dataNames == "Cond"] <- "conductivity"
+        units$conductivity <- list(unit=expression(mS/cm), scale="")
+    }
+    if ("Temp" %in% dataNames) {
+        dataNames[dataNames == "Temp"] <- "temperature"
+        units$temperature <- list(unit=expression(degree*C), scale="")
+    }
+    # FIXME: there are a *lot* of different oxygens. Name
+    # them differently? And be sure to set units.
+    dataNames[dataNames == "Ox %"] <- "oxygenSAIV205"
+    dataNames[dataNames == "OpOx %"] <- "oxygenAanderaa"
+    dataNames[dataNames == "OSOx %"] <- "oxygenRinko"
+    dataNames[dataNames == "mg/l"] <- "oxygen_mg_per_l"
+    dataNames[dataNames == "ml/l"] <- "oxygen_ml_per_l"
+    dataNames[grep("^.*mol/l", dataNames)] <- "oxygen_umol_per_l"
+    dataNames[grep("^.*mol/kg", dataNames)] <- "oxygen_umol_per_kg"
+    if ("T (FTU)" %in% dataNames) {
+        dataNames[dataNames == "T (FTU)"] <- "turbidity"
+        units$turbidity <- list(unit=expression(FTU), scale="")
+    }
+    tmp <- grep("^F [(]{1}", dataNames)
+    if (length(tmp) == 1L) {
+        dataNames[tmp] <- "fluorescence"
+        units$fluorescence <- list(unit=expression(ug/l), scale="")
+    }
+    if ("Density" %in% dataNames) {
+        dataNames[dataNames == "Density"] <- "sigma"
+        units$sigma <- list(unit=expression(kg/m^3), scale="")
+    }
+    if ("S. vel." %in% dataNames) {
+        dataNames[dataNames == "S. vel."] <- "soundVelocity"
+        units$soundVelocity <- list(unit=expression(m/s), scale="")
+    }
+    if ("Pres" %in% dataNames) {
+        dataNames[dataNames == "Pres"] <- "pressure"
+        units$pressure <- list(unit=expression(dbar), scale="")
+    }
+    if ("Depth(u)" %in% dataNames) {
+        dataNames[dataNames == "Depth(u)"] <- "depth"
+        units$depth <- list(unit=expression(m), scale="unesco")
+    }
+    if ("Depth(d)" %in% dataNames) {
+        dataNames[dataNames == "Depth(d)"] <- "depth"
+        units$depth <- list(unit=expression(m), scale="hydrostatic")
+    }
+    dataNames[dataNames == "Date"] <- "date"
+    dataNames[dataNames == "Time"] <- "time"
     oceDebug(debug, "data names: c(\"", paste(dataNames, collapse="\", \""), "\")\n")
     data <- read.delim(file, skip=4L, sep="\t", col.names=dataNames, encoding=encoding)
     # FIXME it doesn't find first line, but if I skip 3 lines, then
@@ -107,15 +162,19 @@ read.ctd.saiv <- function(file, encoding="latin1", debug=getOption("oceDebug"), 
         print(tail(data, 3L))
     }
     # NOTE: pressure needs latitude for accuracy
-    res <- as.ctd(salinity=data$salinity, temperature=data$temperature, pressure=swPressure(data$depth), debug=debug-1L)
-    res <- oceSetMetadata(res, "header", header)
-    res <- oceSetMetadata(res, "filename", filename)
+    res <- new("ctd")
+    res@data <- data
+    #res <- as.ctd(salinity=data$salinity, temperature=data$temperature, pressure=swPressure(data$depth), debug=debug-1L)
+    res@metadata$header <- header
+    res@metadata$filename <- filename
     dno <- list()
     dno[dataNames] <- dataNamesOriginal
-    res <- oceSetMetadata(res, "dataNamesOriginal", dno)
-    res <- oceSetData(res, "fluorescence", data$fluorescence, unit=list(unit=expression(mu*g/L), scale=""))
-    res <- oceSetData(res, "turbidity", data$turbidity, unit=list(unit=expression(FTU), scale=""))
-    res <- oceSetData(res, "Meas", data$Meas)
-    res <- oceSetData(res, "Ser", data$Ser)
+    res@metadata$dataNamesOriginal <- dno
+    #res <- oceSetMetadata(res, "dataNamesOriginal", dno)
+    #res <- oceSetData(res, "fluorescence", data$fluorescence, unit=list(unit=expression(mu*g/L), scale=""))
+    #res <- oceSetData(res, "turbidity", data$turbidity, unit=list(unit=expression(FTU), scale=""))
+    #res <- oceSetData(res, "Meas", data$Meas)
+    #res <- oceSetData(res, "Ser", data$Ser)
+    res@metadata$units <- units
     return(res)
 }
