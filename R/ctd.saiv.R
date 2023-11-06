@@ -133,6 +133,12 @@ read.ctd.saiv <- function(file, encoding="latin1", debug=getOption("oceDebug"), 
         dataNames[dataNames == "ml/l"] <- "oxygen"
         units$oxygen <- list(unit=expression(ml/l), scale="")
     }
+    # Use grep because if comparing to a string requires writing that
+    # string in a way that does not get flagged as an encoding problem.
+    # Testing for encoding problems has proved a challenge in the past,
+    # with e.g. all CRAN machines but one declaring code problem-free,
+    # and that one machine causing a rejection. That's a bumpy road
+    # I prefer not to revisit.
     tmp <- grep("^.*mol/l", dataNames)
     if (length(tmp) == 1L) {
         dataNames[tmp] <- "oxygen"
@@ -152,6 +158,13 @@ read.ctd.saiv <- function(file, encoding="latin1", debug=getOption("oceDebug"), 
         dataNames[tmp] <- "fluorescence"
         units$fluorescence <- list(unit=expression(ug/l), scale="")
     }
+    # SAIV documents call this density, but the numbers in the
+    # test file indicate that it's clearly sigma, or sigma-theta,
+    # or sigma-t, or something.  Let's make a guess. I don't see
+    # this as much of an issue, because analysts can compute density
+    # in any desired form from salinity, etc., with the proviso that
+    # TEOS-10 values require longitude and latitude to be inserted
+    # into thectd-class object by the user.
     if ("Density" %in% dataNames) {
         dataNames[dataNames == "Density"] <- "sigma"
         units$sigma <- list(unit=expression(kg/m^3), scale="")
@@ -164,6 +177,10 @@ read.ctd.saiv <- function(file, encoding="latin1", debug=getOption("oceDebug"), 
         dataNames[dataNames == "Pres"] <- "pressure"
         units$pressure <- list(unit=expression(dbar), scale="")
     }
+    # As with sigma above, I don't see any point in worrying a lot
+    # about e.g. what density was used for the hydrostatic case,
+    # because we have pressure, and can compute depth using oce
+    # functions.
     if ("Depth(u)" %in% dataNames) {
         dataNames[dataNames == "Depth(u)"] <- "depth"
         units$depth <- list(unit=expression(m), scale="unesco")
@@ -175,16 +192,6 @@ read.ctd.saiv <- function(file, encoding="latin1", debug=getOption("oceDebug"), 
     dataNames <- unduplicateNames(dataNames)
     oceDebug(debug, "data names: c(\"", paste(dataNames, collapse="\", \""), "\")\n")
     data <- read.delim(file, skip=4L, sep="\t", col.names=dataNames, encoding=encoding)
-    #<development trial> # FIXME it doesn't find first line, but if I skip 3 lines, then
-    #<development trial> # it sees a problem in number of columns.  Maybe it is
-    #<development trial> # counting lines wrong because of the "mu" in line 4.
-    #<development trial> if (debug > 0) {
-    #<development trial>     cat("First 3 lines of data:\n")
-    #<development trial>     print(head(data, 3L))
-    #<development trial>     cat("Last 3 lines of data:\n")
-    #<development trial>     print(tail(data, 3L))
-    #<development trial> }
-    # NOTE: pressure needs latitude for accuracy
     res <- new("ctd")
     res@data <- data
     res@metadata$header <- header
