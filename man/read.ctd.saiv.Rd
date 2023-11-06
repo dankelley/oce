@@ -51,7 +51,10 @@ Some variable names are change to the oce convention, e.g.
 \code{"temperature"}, etc.  In the first version of the code,
 this renaming was done based on examination of a single file.
 This list was expanded after a user kindly supplied a one-page
-document that explains the variable names and units.
+document that explains the variable names and units. As with
+other functions for reading \linkS4class{oce} data, \code{\link[=read.ctd.saiv]{read.ctd.saiv()}}
+resolves duplicate variable names by appending 2 to the second
+instance, 3 to the third, etc.
 
 As with other \linkS4class{ctd} objects, the \code{[[} operator handles
 both the original name from the file, and the converted oce
@@ -136,9 +139,9 @@ Other functions that read ctd data:
 \code{\link{read.ctd}()}
 }
 \author{
-Dan Kelley, with help from Rdescoteaux on github,
-who supplied the sample file and the document about variable
-names.
+Dan Kelley, with help from the github member with
+the handle 'Rdescoteaux', who kindly supplied a sample file
+and a document listing SAIV variable names.
 }
 \concept{functions that read ctd data}
 \concept{things related to ctd data}

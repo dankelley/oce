@@ -16,7 +16,10 @@
 #' `"temperature"`, etc.  In the first version of the code,
 #' this renaming was done based on examination of a single file.
 #' This list was expanded after a user kindly supplied a one-page
-#' document that explains the variable names and units.
+#' document that explains the variable names and units. As with
+#' other functions for reading [oce-class] data, [read.ctd.saiv()]
+#' resolves duplicate variable names by appending 2 to the second
+#' instance, 3 to the third, etc.
 #'
 #' As with other [ctd-class] objects, the `[[` operator handles
 #' both the original name from the file, and the converted oce
@@ -54,9 +57,9 @@
 #'
 #' @return [read.ctd.saiv()] returns a [ctd-class] object.
 #'
-#' @author Dan Kelley, with help from Rdescoteaux on github,
-#' who supplied the sample file and the document about variable
-#' names.
+#' @author Dan Kelley, with help from the github member with
+#' the handle 'Rdescoteaux', who kindly supplied a sample file
+#' and a document listing SAIV variable names.
 #'
 #' @references
 #'
@@ -110,15 +113,36 @@ read.ctd.saiv <- function(file, encoding="latin1", debug=getOption("oceDebug"), 
         dataNames[dataNames == "Temp"] <- "temperature"
         units$temperature <- list(unit=expression(degree*C), scale="")
     }
-    # FIXME: there are a *lot* of different oxygens. Name
-    # them differently? And be sure to set units.
-    dataNames[dataNames == "Ox %"] <- "oxygenSAIV205"
-    dataNames[dataNames == "OpOx %"] <- "oxygenAanderaa"
-    dataNames[dataNames == "OSOx %"] <- "oxygenRinko"
-    dataNames[dataNames == "mg/l"] <- "oxygen_mg_per_l"
-    dataNames[dataNames == "ml/l"] <- "oxygen_ml_per_l"
-    dataNames[grep("^.*mol/l", dataNames)] <- "oxygen_umol_per_l"
-    dataNames[grep("^.*mol/kg", dataNames)] <- "oxygen_umol_per_kg"
+    if ("Ox %" %in% dataNames) {
+        dataNames[dataNames == "Ox %"] <- "oxygen"
+        units$oxygen <- list(unit=expression("%"), scale="SAIV 205")
+    }
+    if ("OpOx %" %in% dataNames) {
+        dataNames[dataNames == "OpOx %"] <- "oxygen"
+        units$oxygen <- list(unit=expression("%"), scale="Aanderaa optode")
+    }
+    if ("OSOx %" %in% dataNames) {
+        dataNames[dataNames == "OSOx %"] <- "oxygen"
+        units$oxygen <- list(unit=expression("%"), scale="Rinko III")
+    }
+    if ("mg/l" %in% dataNames) {
+        dataNames[dataNames == "mg/l"] <- "oxygen"
+        units$oxygen <- list(unit=expression(mg/l), scale="")
+    }
+    if ("ml/l" %in% dataNames) {
+        dataNames[dataNames == "ml/l"] <- "oxygen"
+        units$oxygen <- list(unit=expression(ml/l), scale="")
+    }
+    tmp <- grep("^.*mol/l", dataNames)
+    if (length(tmp) == 1L) {
+        dataNames[tmp] <- "oxygen"
+        units$oxygen <- list(unit=expression(umol/l), scale="")
+    }
+    tmp <- grep("^.*mol/kg", dataNames)
+    if (length(tmp) == 1L) {
+        dataNames[tmp] <- "oxygen"
+        units$oxygen <- list(unit=expression(umol/kg), scale="")
+    }
     if ("T (FTU)" %in% dataNames) {
         dataNames[dataNames == "T (FTU)"] <- "turbidity"
         units$turbidity <- list(unit=expression(FTU), scale="")
@@ -148,33 +172,26 @@ read.ctd.saiv <- function(file, encoding="latin1", debug=getOption("oceDebug"), 
         dataNames[dataNames == "Depth(d)"] <- "depth"
         units$depth <- list(unit=expression(m), scale="hydrostatic")
     }
-    dataNames[dataNames == "Date"] <- "date"
-    dataNames[dataNames == "Time"] <- "time"
+    dataNames <- unduplicateNames(dataNames)
     oceDebug(debug, "data names: c(\"", paste(dataNames, collapse="\", \""), "\")\n")
     data <- read.delim(file, skip=4L, sep="\t", col.names=dataNames, encoding=encoding)
-    # FIXME it doesn't find first line, but if I skip 3 lines, then
-    # it sees a problem in number of columns.  Maybe it is
-    # counting lines wrong because of the "mu" in line 4.
-    if (debug > 0) {
-        cat("First 3 lines of data:\n")
-        print(head(data, 3L))
-        cat("Last 3 lines of data:\n")
-        print(tail(data, 3L))
-    }
+    #<development trial> # FIXME it doesn't find first line, but if I skip 3 lines, then
+    #<development trial> # it sees a problem in number of columns.  Maybe it is
+    #<development trial> # counting lines wrong because of the "mu" in line 4.
+    #<development trial> if (debug > 0) {
+    #<development trial>     cat("First 3 lines of data:\n")
+    #<development trial>     print(head(data, 3L))
+    #<development trial>     cat("Last 3 lines of data:\n")
+    #<development trial>     print(tail(data, 3L))
+    #<development trial> }
     # NOTE: pressure needs latitude for accuracy
     res <- new("ctd")
     res@data <- data
-    #res <- as.ctd(salinity=data$salinity, temperature=data$temperature, pressure=swPressure(data$depth), debug=debug-1L)
     res@metadata$header <- header
     res@metadata$filename <- filename
     dno <- list()
     dno[dataNames] <- dataNamesOriginal
     res@metadata$dataNamesOriginal <- dno
-    #res <- oceSetMetadata(res, "dataNamesOriginal", dno)
-    #res <- oceSetData(res, "fluorescence", data$fluorescence, unit=list(unit=expression(mu*g/L), scale=""))
-    #res <- oceSetData(res, "turbidity", data$turbidity, unit=list(unit=expression(FTU), scale=""))
-    #res <- oceSetData(res, "Meas", data$Meas)
-    #res <- oceSetData(res, "Ser", data$Ser)
     res@metadata$units <- units
     return(res)
 }
