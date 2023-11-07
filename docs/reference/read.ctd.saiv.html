@@ -143,16 +143,20 @@ by specifying higher <code>debug</code> values.</p></dd>
     </div>
     <div id="details">
     <h2>Details</h2>
-    <p>Some quantities are renamed to match the oce convention, e.g.
-<code>"Sal."</code> is renamed to <code>"salinity"</code>, <code>"Temp"</code> is renamed to
-<code>"temperature"</code>, etc.  Note that the sample file upon which
-the code was based did not list units for several quantities,
-This problem is addressed in a risky way:
-<code>read.ctd.saiv()</code> simply assumes that common units are
-used in the file.  This is not the only problem with
-the sample file, and thus with this version of the function.
-Some other issues encountered with the sample file are as
-follows.</p><ol><li><p>The header line that names the data columns ends with a tab,
+    <p>Some variable names are change to the oce convention, e.g.
+<code>"Sal."</code> becomes <code>"salinity"</code>, <code>"Temp"</code> becomes
+<code>"temperature"</code>, etc.  In the first version of the code,
+this renaming was done based on examination of a single file.
+This list was expanded after a user kindly supplied a one-page
+document that explains the variable names and units. As with
+other functions for reading <a href="oce-class.html">oce</a> data, <code>read.ctd.saiv()</code>
+resolves duplicate variable names by appending 2 to the second
+instance, 3 to the third, etc.</p>
+<p>As with other <a href="ctd-class.html">ctd</a> objects, the <code>[[</code> operator handles
+both the original name from the file, and the converted oce
+name.</p>
+<p>It is worth noting the following oddities that were present
+in the sample file upon which <code>read.ctd.saiv()</code> was based.</p><ol><li><p>The header line that names the data columns ends with a tab,
 indicating the presence of 12 columns (the last unnamed), but the
 data contain only 11 columns.  Therefore, the last tab character is
 ignored by <code>read.ctd.saiv()</code>.</p></li>
@@ -162,13 +166,10 @@ Temperature cannot be computed.  Users who know the location information
 ought to insert values into the object returned by <code>read.ctd.saiv()</code>
 using <code><a href="oceSetMetadata.html">oceSetMetadata()</a></code>.</p></li>
 <li><p>Further to the previous point, it is not possible to compute pressure
-accurately from depth (which is what the header suggests the file contains) unless
-the latitude is known. In <code>read.ctd.saiv()</code>, latitude is assumed to be 45 degrees
-north, which is the default used by <code><a href="swPressure.html">swPressure()</a></code>.</p></li>
-<li><p>The data columns named <code>"Ser"</code> and <code>"Meas"</code> are inserted into
-the return value without renaming.  This is true of other quantities
-as well.  Since <code>[[</code> can access by <em>original</em> name and not just by
-oce name, this may not be too much of a problem.</p></li>
+accurately from depth (which is what the header suggests the file
+contains) unless the latitude is known. In <code>read.ctd.saiv()</code>,
+latitude is assumed to be 45 degrees north, which is the default
+used by <code><a href="swPressure.html">swPressure()</a></code>.</p></li>
 </ol></div>
     <div id="references">
     <h2>References</h2>
@@ -231,7 +232,9 @@ oce name, this may not be too much of a problem.</p></li>
     </div>
     <div id="author">
     <h2>Author</h2>
-    <p>Dan Kelley</p>
+    <p>Dan Kelley, with help from the github member with
+the handle 'Rdescoteaux', who kindly supplied a sample file
+and a document listing SAIV variable names.</p>
     </div>
 
   </div>
