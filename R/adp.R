@@ -453,38 +453,22 @@ setMethod(f="summary",
             cat(paste("* Serial number:     ", object@metadata$serialNumber, "\n", sep=""), ...)
         if ("fileType" %in% mnames)
             cat(paste("* File type:         ", object@metadata$fileType, "\n", sep=""), ...)
-        #-if (isAD2CP) {
-        #-    cat(paste("* Data type:     0x",
-        #-        as.raw(object@metadata$dataType), "=",
-        #-        as.integer(object@metadata$dataType), "=",
-        #-        ad2cpCodeToName(object@metadata$dataType, prefix=FALSE), "\n", sep=""), ...)
-        #-}
         if ("firmwareVersion" %in% mnames)
             cat(paste("* Firmware:          ", object@metadata$firmwareVersion, "\n", sep=""), ...)
         if ("cellSize" %in% mnames)
-            cat(paste("* Cell Size:         ", object@metadata$cellSize, "\n", sep=""), ...)
+            cat(paste("* Cell Size:         ", round(object@metadata$cellSize, 2), " m\n", sep=""), ...)
         if ("blankingDistance" %in% mnames)
-            cat(paste("* Blanking Distance: ", object@metadata$blankingDistance, "\n", sep=""), ...)
-
+            cat(paste("* Blanking Distance: ", round(object@metadata$blankingDistance, 2), " m\n", sep=""), ...)
+        if ("beamAngle" %in% mnames)
+            cat(paste("* Beam Angle:       ", paste(object@metadata$beamAngle, sep="", collapse=",")),
+            " deg\n", sep="", ...)
         if ("latitude" %in% names(object@metadata)) {
-            cat(paste("* Location:      ",
+            cat(paste("* Location:          ",
                 if (is.na(object@metadata$latitude)) "unknown latitude" else sprintf("%.5f N", object@metadata$latitude), ", ",
                 if (is.na(object@metadata$longitude)) "unknown longitude" else sprintf("%.5f E",
                     object@metadata$longitude),
                 "\n", sep=""))
         }
-        #-v.dim <- dim(object[["v"]])
-        #-if (!isAD2CP) {
-        #-    cat("* # of beams:    ", v.dim[3], "\n", sep="")
-        #-    cat("* # profiles:    ", v.dim[1], "\n", sep="")
-        #-    cat("* # cells:       ", v.dim[2], "\n", sep="")
-        #-    cat("* # beams:       ", v.dim[3], "\n", sep="")
-        #-    cat("* Cell size:     ", object[["cellSize"]], "m\n", sep="")
-        #-}
-        #?if ("time" %in% names(object@data)) {
-        #?    cat("* Summary of times between profiles:\n")
-        #?    print(summary(diff(as.numeric(object@data$time))))
-        #?}
         # nolint start object_usage_linter
         if (1 == length(agrep("nortek", object@metadata$manufacturer, ignore.case=TRUE))) {
             resSpecific <- list(internalCodeVersion=object@metadata$internalCodeVersion,
@@ -544,7 +528,7 @@ setMethod(f="summary",
         #             format(subsampleEnd),  attr(subsampleEnd, "tzone"),
         #             1 / subsampleDeltat))
         #-metadataNames <- names(object@metadata)
-        cat("* Frequency:    ", object[["frequency"]], "kHz\n", ...)
+        cat("* Frequency:        ", object[["frequency"]], "kHz\n", ...)
         if ("ensembleNumber" %in% names(object@metadata)) {
             en <- object@metadata$ensembleNumber
             nen <- length(en)

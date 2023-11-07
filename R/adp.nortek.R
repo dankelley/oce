@@ -69,7 +69,8 @@ testNewSerialNumberDecoder <- TRUE # see email exchange with CR dated 2023-10-05
 #' 3. Nortek,
 #' "Classic Integrators Guide: Aquadopp | Aquadopp DW | Aquadopp Profiler | HQ Aquadopp Profiler | Vector | AWAC."
 #' Nortek AS, 2022.
-decodeHeaderNortek <- function(buf,
+decodeHeaderNortek <- function(
+    buf,
     type=c("aquadoppHR", "aquadoppProfiler", "aquadopp", "aquadoppPlusMagnetometer", "vector"),
     debug=getOption("oceDebug"),
     ...)
@@ -315,42 +316,41 @@ decodeHeaderNortek <- function(buf,
                 #    CS = (BinLength/256)*(750*17*15/(Frequency_in_kHz*4))*cosd(25) [mm]
                 # BD in mm:
                 #    BD = T2*1000*(750/32768)*cosd(25) - CS[mm]
-                if (TRUE) { # testing
-                    oceDebug(debug, "testing using Nortek formula from 2023-10-30T12:05 (Halifax time)\n")
-
-                    oceDebug(debug, "    the old cellSize formula used user$hBinLength but new uses user$binLength\n")
-                    oceDebug(debug, "    user$binLength=", user$binLength, "\n")
-                    oceDebug(debug, "    user$hBinLength=", user$hBinLength, "\n")
-                    cosAngle <- cos(25 * degToRad) # FIXME: is beam angle always 25deg for aquadopp?
-                    CS <- (user$binLength/256) * (750*17*15) / (head$frequency * 4) * cosAngle
-                    oceDebug(debug, "    CS = ", CS, "[mm], i.e. ", CS/1000, "m\n")
-                    BD <- user$T2 * 1000 * (750/32768) * cosAngle - CS
-                    oceDebug(debug, "    BD = ", BD, "[mm], i.e. ", BD/1000, "m\n")
-                    oceDebug(debug, "    NOTE: the above values are not saved in the object, because\n")
-                    oceDebug(debug, "    it is not clear whether these are for all frequencies, and\n")
-                    oceDebug(debug, "    the BD of 0.41m does not match the hdr value of 0.40m\n")
-                }
-                if (isTRUE(all.equal.numeric(head$frequency, 2000))) {
-                    oceDebug(debug, "computing user$cellSize and user$blankingDistance for type=\"aquadoppProfiler\" and frequency 2000\n")
-                    user$cellSize <- user$hBinLength / 256 * 0.0239 * cos(25 * degToRad)
-                } else if (isTRUE(all.equal.numeric(head$frequency, 1000))) {
-                    oceDebug(debug, "computing user$cellSize and user$blankingDistance for type=\"aquadoppProfiler\" and frequency 1000\n")
-                    user$cellSize <- user$hBinLength / 256 * 0.0478 * cos(25 * degToRad)
-                } else if (isTRUE(all.equal.numeric(head$frequency, 600))) {
-                    oceDebug(debug, "computing user$cellSize and user$blankingDistance for type=\"aquadoppProfiler\" and frequency 600\n")
-                    user$cellSize <- user$hBinLength / 256 * 0.0797 * cos(25 * degToRad)
-                } else if (isTRUE(all.equal.numeric(head$frequency, 400))) {
-                    oceDebug(debug, "computing user$cellSize and user$blankingDistance for type=\"aquadoppProfiler\" and frequency 400\n")
-                    user$cellSize <- user$hBinLength / 256 * 0.1195 * cos(25 * degToRad)
-                } else {
-                    warning("unknown frequency", head$frequency, "(only understand 1MHz and 2MHz); using 1Mhz formula to calculate cell size")
-                    oceDebug(debug, "computing user$cellSize and user$blankingDistance for",
-                        "type=\"aquadoppProfiler\" and frequency not 400, 600, 1000 or 2000\n")
-                    user$cellSize <- user$hBinLength / 256 * 0.0478 * cos(25 * degToRad)
-                    #user$cellSize <- user$hBinLength / 256 * 0.00675 * cos(25 * degToRad)
-                }
-                user$blankingDistance <- user$T2 * 0.0229 * cos(25 * degToRad) - user$cellSize
-                oceDebug(debug, "blankingDistance from old formula:", user$blankingDistance, " m\n")
+                oceDebug(debug, "testing using Nortek formula from 2023-10-30T12:05 (Halifax time)\n")
+                oceDebug(debug, "    user$binLength=", user$binLength, "\n")
+                oceDebug(debug, "    user$hBinLength=", user$hBinLength, "\n")
+                cosAngle <- cos(25 * degToRad) # FIXME: is beam angle always 25deg for aquadopp?
+                CS <- (user$binLength/256) * (750*17*15) / (head$frequency * 4) * cosAngle
+                oceDebug(debug, "    CS = ", CS, "[mm], i.e. ", CS/1000, "m\n")
+                BD <- user$T2 * 1000 * (750/32768) * cosAngle - CS
+                oceDebug(debug, "    BD = ", BD, "[mm], i.e. ", BD/1000, "m\n")
+                oceDebug(debug, "    NOTE: BD is 0.41 for a particular test file, but the .hdr file\n",
+                    "    for for a test file states 0.40. We learned from Nortek on 2023-11-07\n",
+                    "    that our computed value is correct, i.e. that the value in the .hdr\n",
+                    "     file is wrong\n")
+                user$cellSize <- CS / 1000
+                user$blankingDistance <- BD / 1000
+                #<issue 2165>if (isTRUE(all.equal.numeric(head$frequency, 2000))) {
+                #<issue 2165>    oceDebug(debug, "computing user$cellSize and user$blankingDistance for type=\"aquadoppProfiler\" and frequency 2000\n")
+                #<issue 2165>    user$cellSize <- user$hBinLength / 256 * 0.0239 * cos(25 * degToRad)
+                #<issue 2165>} else if (isTRUE(all.equal.numeric(head$frequency, 1000))) {
+                #<issue 2165>    oceDebug(debug, "computing user$cellSize and user$blankingDistance for type=\"aquadoppProfiler\" and frequency 1000\n")
+                #<issue 2165>    user$cellSize <- user$hBinLength / 256 * 0.0478 * cos(25 * degToRad)
+                #<issue 2165>} else if (isTRUE(all.equal.numeric(head$frequency, 600))) {
+                #<issue 2165>    oceDebug(debug, "computing user$cellSize and user$blankingDistance for type=\"aquadoppProfiler\" and frequency 600\n")
+                #<issue 2165>    user$cellSize <- user$hBinLength / 256 * 0.0797 * cos(25 * degToRad)
+                #<issue 2165>} else if (isTRUE(all.equal.numeric(head$frequency, 400))) {
+                #<issue 2165>    oceDebug(debug, "computing user$cellSize and user$blankingDistance for type=\"aquadoppProfiler\" and frequency 400\n")
+                #<issue 2165>    user$cellSize <- user$hBinLength / 256 * 0.1195 * cos(25 * degToRad)
+                #<issue 2165>} else {
+                #<issue 2165>    warning("unknown frequency", head$frequency, "(only understand 1MHz and 2MHz); using 1Mhz formula to calculate cell size")
+                #<issue 2165>    oceDebug(debug, "computing user$cellSize and user$blankingDistance for",
+                #<issue 2165>        "type=\"aquadoppProfiler\" and frequency not 400, 600, 1000 or 2000\n")
+                #<issue 2165>    user$cellSize <- user$hBinLength / 256 * 0.0478 * cos(25 * degToRad)
+                #<issue 2165>    #user$cellSize <- user$hBinLength / 256 * 0.00675 * cos(25 * degToRad)
+                #<issue 2165>}
+                #<issue 2165>user$blankingDistance <- user$T2 * 0.0229 * cos(25 * degToRad) - user$cellSize
+                #<issue 2165>oceDebug(debug, "blankingDistance from old formula:", user$blankingDistance, " m\n")
                 #user$blankingDistanceTEST <- user$T2 * 100 * (750/32768) - user$T1 * 100 * ((750/(1000*head$frequency))*16)
                 #oceDebug(debug, "blankingDistance from new formula (not used):", user$blankingDistanceTEST, " m?\n")
             } else if (type == "aquadopp" || type == "aquadoppPlusMagnetometer") {
