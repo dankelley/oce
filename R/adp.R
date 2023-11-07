@@ -456,9 +456,9 @@ setMethod(f="summary",
         if ("firmwareVersion" %in% mnames)
             cat(paste("* Firmware:          ", object@metadata$firmwareVersion, "\n", sep=""), ...)
         if ("cellSize" %in% mnames)
-            cat(paste("* Cell Size:         ", round(object@metadata$cellSize, 2), " m\n", sep=""), ...)
+            cat(sprintf("* Cell Size:         %.2f m\n", round(object@metadata$cellSize, 2)), ...)
         if ("blankingDistance" %in% mnames)
-            cat(paste("* Blanking Distance: ", round(object@metadata$blankingDistance, 2), " m\n", sep=""), ...)
+            cat(sprintf("* Blanking Distance: %.2f m\n", round(object@metadata$blankingDistance, 2)), ...)
         if ("beamAngle" %in% mnames)
             cat(paste("* Beam Angle:       ", paste(object@metadata$beamAngle, sep="", collapse=",")),
             " deg\n", sep="", ...)
