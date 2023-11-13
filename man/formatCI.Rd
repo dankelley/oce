@@ -20,12 +20,12 @@ formatCI(
 \item{model}{optional regression model, e.g. returned by \code{\link[=lm]{lm()}} or
 \code{\link[=nls]{nls()}}.}
 
-\item{digits}{optional number of digits to use; if not supplied,
-[\code{getOption}[\code{("digits")} is used.}
+\item{digits}{optional number of digits to use.  This is ignored
+if \code{style} is \code{"parentheses"}.}
 
 \item{debug}{integer value indicating debugging level. If 0, then
 \code{\link[=formatCI]{formatCI()}} works silently.  If greater than 0, then some debugging
-messages are printed.}
+messages are printed during processing.}
 }
 \value{
 If \code{ci} is given, the result is a character string with the
