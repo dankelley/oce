@@ -22,6 +22,7 @@
   Tlim,
   plim,
   densitylim,
+  sigmalim,
   N2lim,
   Rrholim,
   dpdtlim,
@@ -169,10 +170,11 @@ the drawing of a coastline.  There is a speed penalty for providing
 coastline, it makes sense to load it in before the first call, and to
 supply the object as an argument, as opposed to the name of the object.}
 
-\item{Slim, Clim, Tlim, plim, densitylim, N2lim, Rrholim, dpdtlim, timelim}{optional
+\item{Slim, Clim, Tlim, plim, densitylim, sigmalim, N2lim, Rrholim, dpdtlim, timelim}{optional
 numeric vectors of length 2, that give axis limits for salinity (or Absolute
 Salinity, if \code{eos} is \code{"gsw"}), conductivity, in-situ or potential
-temperature (or Conservative Temperature, if \code{eos} is `"gsw"'), pressure, the
+temperature (or Conservative Temperature, if \code{eos} is `"gsw"'), pressure,
+density, density anomaly (either sigma-theta or sigma0),
 square of buoyancy frequency, density ratio, dp/dt, and time, respectively.}
 
 \item{drawIsobaths}{logical value indicating whether to draw depth contours on

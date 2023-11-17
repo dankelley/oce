@@ -3119,10 +3119,11 @@ write.ctd <- function(object, file, metadata=TRUE, flags=TRUE, format="csv")
 #' coastline, it makes sense to load it in before the first call, and to
 #' supply the object as an argument, as opposed to the name of the object.
 #'
-#' @param Slim,Clim,Tlim,plim,densitylim,N2lim,Rrholim,dpdtlim,timelim optional
+#' @param Slim,Clim,Tlim,plim,densitylim,sigmalim,N2lim,Rrholim,dpdtlim,timelim optional
 #' numeric vectors of length 2, that give axis limits for salinity (or Absolute
 #' Salinity, if `eos` is `"gsw"`), conductivity, in-situ or potential
-#' temperature (or Conservative Temperature, if `eos` is `"gsw"'), pressure, the
+#' temperature (or Conservative Temperature, if `eos` is `"gsw"'), pressure,
+#' density, density anomaly (either sigma-theta or sigma0),
 #' square of buoyancy frequency, density ratio, dp/dt, and time, respectively.
 #'
 #' @param drawIsobaths logical value indicating whether to draw depth contours on
@@ -3283,7 +3284,7 @@ setMethod(f="plot",
         eos=getOption("oceEOS", default="gsw"),
         ref.lat=NaN, ref.lon=NaN,
         grid=TRUE, coastline="best",
-        Slim, Clim, Tlim, plim, densitylim, N2lim, Rrholim, dpdtlim, timelim,
+        Slim, Clim, Tlim, plim, densitylim, sigmalim, N2lim, Rrholim, dpdtlim, timelim,
         drawIsobaths=FALSE, clongitude, clatitude, span, showHemi=TRUE,
         lonlabels=TRUE, latlabels=TRUE,
         latlon.pch=20, latlon.cex=1.5, latlon.col="red",
@@ -5236,7 +5237,7 @@ plotProfile <- function(x,
     grid=TRUE,
     col.grid="lightgray",
     lty.grid="dotted",
-    Slim, Clim, Tlim, densitylim, N2lim, Rrholim, dpdtlim, timelim, plim,
+    Slim, Clim, Tlim, densitylim, sigmalim, N2lim, Rrholim, dpdtlim, timelim, plim,
     xlim, ylim,
     lwd=par("lwd"),
     xaxs="r",
@@ -5314,6 +5315,7 @@ plotProfile <- function(x,
     xlimGiven <- !missing(xlim)
     ylimGiven <- !missing(ylim)
     densitylimGiven <- !missing(densitylim)
+    sigmalimGiven <- !missing(sigmalim)
     dots <- list(...)
     ytypeChoices <- c("pressure", "z", "depth", "sigmaTheta", "sigma0")
     ytypeIndex <- pmatch(ytype, ytypeChoices)
@@ -5721,7 +5723,7 @@ plotProfile <- function(x,
                 keepNA=keepNA, debug=debug-1)
         }
     } else if (xtype %in% c("oxygen", "nitrate", "nitrite", "phosphate", "silicate", "tritium",
-        "u", "v") || 0 < length(grep("^sigma[0-4]$", xtype))) {
+        "u", "v")) {
         oceDebug(debug, "case 8: xtype is \"oxygen\", \"nitrate\", \"nitrite\", \"phosphate\", \"silicate\", \"tritium\", \"u\", or \"v\"\n")
         unit <- x@metadata$units[[xtype]][[1]]
         xvar <- x[[xtype]]
@@ -5910,8 +5912,44 @@ plotProfile <- function(x,
                 col=col, pch=pch, pt.bg=pt.bg,
                 keepNA=keepNA, debug=debug-1)
         }
+    } else if (xtype %in% paste0("sigma", 0:4)) { # 2023-11-17 (preliminary; not checked beyond a single use)
+        oceDebug(debug, "case 12A: xtype is \"", xtype, "\"\n", sep="")
+        sigma <- x[[xtype]]
+        look <- if (keepNA) seq_along(y) else !is.na(sigma) & !is.na(y)
+        look <- look & (min(ylim) <= y & y <= max(ylim))
+        if (!add) {
+            if (sigmalimGiven) {
+                plot(sigma[look], y[look], xlim=sigmalim, ylim=ylim, type="n", xlab="", ylab=yname,
+                    axes=FALSE, xaxs=xaxs, yaxs=yaxs, lty=lty, cex=cex, pch=pch, ...)
+            } else if (xlimGiven) {
+                plot(sigma[look], y[look], xlim=xlim, ylim=ylim, type="n", xlab="", ylab=yname,
+                    axes=FALSE, xaxs=xaxs, yaxs=yaxs, lty=lty, cex=cex, pch=pch, ...)
+            } else {
+                plot(sigma[look], y[look], xlim=range(sigma0[look], na.rm=TRUE), ylim=ylim, type="n", xlab="", ylab=yname,
+                    axes=FALSE, xaxs=xaxs, yaxs=yaxs, lty=lty, cex=cex, pch=pch, ...)
+            }
+            if (getOption("oceUnitBracket") == "[") {
+                mtext(if (is.null(xlab)) expression(paste(sigma[0], " [", kg/m^3, "]")) else xlab,
+                    side=3, line=axisNameLoc, cex=par("cex"))
+            } else {
+                mtext(if (is.null(xlab)) expression(paste(sigma[0], " (", kg/m^3, ")")) else xlab,
+                    side=3, line=axisNameLoc, cex=par("cex"))
+            }
+            axis(2)
+            axis(3)
+            box()
+            if (grid) {
+                at <- par("yaxp")
+                abline(h=seq(at[1], at[2], length.out=at[3]+1), col=col.grid, lty=lty.grid)
+                at <- par("xaxp")
+                abline(v=seq(at[1], at[2], length.out=at[3]+1), col=col.grid, lty=lty.grid)
+            }
+        }
+        plotJustProfile(sigma, y, col=col, type=type, lwd=lwd, lty=lty,
+            cex=cex, pch=pch, pt.bg=pt.bg,
+            keepNA=keepNA, debug=debug-1)
     } else if (xtype == "sigmaTheta") {
-        oceDebug(debug, "case 12: xtype is \"sigmaTheta\"\n")
+        oceDebug(debug, "case 12B: xtype is \"sigmaTheta\"\n")
         # FIXME: do as theta above
         st <- swSigmaTheta(x)
         look <- if (keepNA) seq_along(y) else !is.na(st) & !is.na(y)

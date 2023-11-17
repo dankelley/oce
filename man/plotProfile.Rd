@@ -27,6 +27,7 @@ plotProfile(
   Clim,
   Tlim,
   densitylim,
+  sigmalim,
   N2lim,
   Rrholim,
   dpdtlim,
