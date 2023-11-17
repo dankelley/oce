@@ -5925,7 +5925,7 @@ plotProfile <- function(x,
                 plot(sigma[look], y[look], xlim=xlim, ylim=ylim, type="n", xlab="", ylab=yname,
                     axes=FALSE, xaxs=xaxs, yaxs=yaxs, lty=lty, cex=cex, pch=pch, ...)
             } else {
-                plot(sigma[look], y[look], xlim=range(sigma0[look], na.rm=TRUE), ylim=ylim, type="n", xlab="", ylab=yname,
+                plot(sigma[look], y[look], xlim=range(sigma[look], na.rm=TRUE), ylim=ylim, type="n", xlab="", ylab=yname,
                     axes=FALSE, xaxs=xaxs, yaxs=yaxs, lty=lty, cex=cex, pch=pch, ...)
             }
             if (getOption("oceUnitBracket") == "[") {
