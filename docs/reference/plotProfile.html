@@ -114,6 +114,7 @@ on a plot.</p>
 <span>  <span class="va">Clim</span>,</span>
 <span>  <span class="va">Tlim</span>,</span>
 <span>  <span class="va">densitylim</span>,</span>
+<span>  <span class="va">sigmalim</span>,</span>
 <span>  <span class="va">N2lim</span>,</span>
 <span>  <span class="va">Rrholim</span>,</span>
 <span>  <span class="va">dpdtlim</span>,</span>
@@ -254,58 +255,67 @@ units.  Setting <code>ylab=""</code> prevents labelling the axis.</p></dd>
 
 
 <dt>Slim</dt>
-<dd><p>Optional limit for S axis</p></dd>
+<dd><p>optional limit for the salinity axis, which can either
+represent Practical Salinity or Absolute Salinity.</p></dd>
 
 
 <dt>Clim</dt>
-<dd><p>Optional limit for conductivity axis</p></dd>
+<dd><p>optional limit for the conductivity axis.</p></dd>
 
 
 <dt>Tlim</dt>
-<dd><p>Optional limit for T axis</p></dd>
+<dd><p>optional limit for the temperature axis, which
+can represent in-situ temperature, potential temperature, or
+Conservative Temperature.</p></dd>
 
 
 <dt>densitylim</dt>
-<dd><p>Optional limit for density axis</p></dd>
+<dd><p>optional limit for density axis.</p></dd>
+
+
+<dt>sigmalim</dt>
+<dd><p>optional limit for the density-anomaly
+axis, which can represent <code>sigmaTheta</code>, <code>sigma0</code>, <code>sigma1</code>,
+<code>sigma2</code>, <code>sigma3</code> or <code>sigma4</code>.</p></dd>
 
 
 <dt>N2lim</dt>
-<dd><p>Optional limit for N2 axis</p></dd>
+<dd><p>optional limit for the N2 axis.</p></dd>
 
 
 <dt>Rrholim</dt>
-<dd><p>Optional limit for Rrho axis</p></dd>
+<dd><p>optional limit for the density ratio axis.</p></dd>
 
 
 <dt>dpdtlim</dt>
-<dd><p>Optional limit for dp/dt axis</p></dd>
+<dd><p>optional limit for the dp/dt axis.</p></dd>
 
 
 <dt>timelim</dt>
-<dd><p>Optional limit for delta-time axis</p></dd>
+<dd><p>optional limit for the delta-time axis.</p></dd>
 
 
 <dt>plim</dt>
-<dd><p>Optional limit for pressure axis, ignored unless
+<dd><p>optional limit for the pressure axis, ignored unless
 <code>ytype=="pressure"</code>, in which case it takes precedence over
 <code>ylim</code>.</p></dd>
 
 
 <dt>xlim</dt>
-<dd><p>Optional limit for x axis, which can apply to any plot type.
+<dd><p>optional limit for x axis, which can apply to any plot type.
 This is ignored if the plotted x variable is something for which a limit
 may be specified with an argument, e.g. <code>xlim</code> is ignored for a
 salinity profile, because <code>Slim</code> ought to be given in such a case.</p></dd>
 
 
 <dt>ylim</dt>
-<dd><p>Optional limit for y axis, which can apply to any plot type,
+<dd><p>optional limit for y axis, which can apply to any plot type,
 although is overridden by <code>plim</code> if <code>ytype</code> is <code>"pressure"</code>
 or by <code>densitylim</code> if <code>ytype</code> is <code>"sigmaTheta"</code>.</p></dd>
 
 
 <dt>lwd</dt>
-<dd><p>lwd value for data line</p></dd>
+<dd><p>linewidth value for data line</p></dd>
 
 
 <dt>xaxs</dt>
