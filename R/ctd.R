@@ -5132,36 +5132,43 @@ drawIsopycnals <- function(nlevels=6, levels, rotate=TRUE, rho1000=FALSE, digits
 #'
 #' @param lty.grid line type for grid.
 #'
-#' @param Slim Optional limit for S axis
+#' @param Slim optional limit for the salinity axis, which can either
+#' represent Practical Salinity or Absolute Salinity.
 #'
-#' @param Clim Optional limit for conductivity axis
+#' @param Clim optional limit for the conductivity axis.
 #'
-#' @param Tlim Optional limit for T axis
+#' @param Tlim optional limit for the temperature axis, which
+#' can represent in-situ temperature, potential temperature, or
+#' Conservative Temperature.
 #'
-#' @param densitylim Optional limit for density axis
+#' @param densitylim optional limit for density axis.
 #'
-#' @param N2lim Optional limit for N2 axis
+#' @param sigmalim optional limit for the density-anomaly
+#' axis, which can represent `sigmaTheta`, `sigma0`, `sigma1`,
+#' `sigma2`, `sigma3` or `sigma4`.
 #'
-#' @param Rrholim Optional limit for Rrho axis
+#' @param N2lim optional limit for the N2 axis.
 #'
-#' @param dpdtlim Optional limit for dp/dt axis
+#' @param Rrholim optional limit for the density ratio axis.
 #'
-#' @param timelim Optional limit for delta-time axis
+#' @param dpdtlim optional limit for the dp/dt axis.
 #'
-#' @param plim Optional limit for pressure axis, ignored unless
+#' @param timelim optional limit for the delta-time axis.
+#'
+#' @param plim optional limit for the pressure axis, ignored unless
 #' `ytype=="pressure"`, in which case it takes precedence over
 #' `ylim`.
 #'
-#' @param xlim Optional limit for x axis, which can apply to any plot type.
+#' @param xlim optional limit for x axis, which can apply to any plot type.
 #' This is ignored if the plotted x variable is something for which a limit
 #' may be specified with an argument, e.g. `xlim` is ignored for a
 #' salinity profile, because `Slim` ought to be given in such a case.
 #'
-#' @param ylim Optional limit for y axis, which can apply to any plot type,
+#' @param ylim optional limit for y axis, which can apply to any plot type,
 #' although is overridden by `plim` if `ytype` is `"pressure"`
 #' or by `densitylim` if `ytype` is `"sigmaTheta"`.
 #'
-#' @param lwd lwd value for data line
+#' @param lwd linewidth value for data line
 #'
 #' @param xaxs value of [par()] `xaxs` to use
 #'
