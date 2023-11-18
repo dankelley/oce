@@ -32,4 +32,8 @@ as.unit("IPTS-68")
 as.unit("ITS-90")
 as.unit("PSS-78")
 as.unit("UMOL/KG")
+
+}
+\author{
+Dan Kelley
 }
