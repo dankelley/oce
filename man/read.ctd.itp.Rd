@@ -154,11 +154,13 @@ Other functions that read ctd data:
 \author{
 Dan Kelley
 
-\code{read.ctd.itp} reads ice-tethered-profiler data that are stored
+\code{\link[=read.ctd.itp]{read.ctd.itp()}} reads ice-tethered-profiler data that are stored
 in a format files used by WHOI servers as of 2016-2017. Lacking
 documentation on the format, the author constructed this function
 to work with some files that were on-hand. Whether the function will
 prove robust is an open question.
+
+Dan Kelley
 }
 \concept{functions that read ctd data}
 \concept{things related to ctd data}

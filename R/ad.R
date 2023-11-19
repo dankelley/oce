@@ -18,37 +18,38 @@
 #' major axis anticlockwise of the horizontal axis (`ellipseAngle`), and
 #' the x and y components of the mean velocity (`uMean` and `vMean`).
 #'
-#' @author Dan Kelley
-#'
 #' @examples
 #' library(oce)
 #' data(adp)
 #' a <- velocityStatistics(adp)
 #' print(a)
-#' t <- seq(0, 2*pi, length.out=100)
+#' t <- seq(0, 2 * pi, length.out = 100)
 #' theta <- a$ellipseAngle * pi / 180
 #' y <- a$ellipseMajor * cos(t) * sin(theta) + a$ellipseMinor * sin(t) * cos(theta)
 #' x <- a$ellipseMajor * cos(t) * cos(theta) - a$ellipseMinor * sin(t) * sin(theta)
-#' plot(adp, which="uv+ellipse+arrow")
-#' lines(x, y, col="blue", lty="dashed", lwd=5)
-#' arrows(0, 0, a$uMean, a$vMean, lwd=5, length=1/10, col="blue", lty="dashed")
+#' plot(adp, which = "uv+ellipse+arrow")
+#' lines(x, y, col = "blue", lty = "dashed", lwd = 5)
+#' arrows(0, 0, a$uMean, a$vMean, lwd = 5, length = 1 / 10, col = "blue", lty = "dashed")
 #'
 #' @family things related to adp data
 #' @family things related to adv data
-velocityStatistics <- function(x, control, ...)
-{
+#'
+#' @author Dan Kelley
+velocityStatistics <- function(x, control, ...) {
     if (inherits(x, "adp")) {
         if (!missing(control) && !is.null(control$bin)) {
-            if (control$bin < 1)
+            if (control$bin < 1) {
                 stop("cannot have control$bin less than 1, but got ", control$bin)
+            }
             max.bin <- dim(x@data$v)[2]
-            if (control$bin > max.bin)
+            if (control$bin > max.bin) {
                 stop("cannot have control$bin larger than ", max.bin, " but got ", control$bin)
+            }
             u <- x@data$v[, control$bin, 1]
             v <- x@data$v[, control$bin, 2]
         } else {
-            u <- apply(x@data$v[, , 1], 1, mean, na.rm=TRUE) # depth mean
-            v <- apply(x@data$v[, , 2], 1, mean, na.rm=TRUE) # depth mean
+            u <- apply(x@data$v[, , 1], 1, mean, na.rm = TRUE) # depth mean
+            v <- apply(x@data$v[, , 2], 1, mean, na.rm = TRUE) # depth mean
         }
     } else if (inherits(x, "adv")) {
         u <- x@data$v[, 1]
@@ -63,8 +64,10 @@ velocityStatistics <- function(x, control, ...)
     ellipseAngle <- atan2(e$vectors[2, 1], e$vectors[1, 1]) * 45 / atan2(1, 1)
     uMean <- mean(u, ...)
     vMean <- mean(v, ...)
-    list(ellipseMajor=ellipseMajor, ellipseMinor=ellipseMinor, ellipseAngle=ellipseAngle,
-        uMean=uMean, vMean=vMean)
+    list(
+        ellipseMajor = ellipseMajor, ellipseMinor = ellipseMinor, ellipseAngle = ellipseAngle,
+        uMean = uMean, vMean = vMean
+    )
 }
 
 
@@ -85,8 +88,7 @@ velocityStatistics <- function(x, control, ...)
 #'
 #' @family things related to adp data
 #' @family things related to adv data
-beamToXyz <- function(x, ...)
-{
+beamToXyz <- function(x, ...) {
     if (inherits(x, "adp")) {
         beamToXyzAdp(x, ...)
     } else if (inherits(x, "adv")) {
@@ -109,12 +111,11 @@ beamToXyz <- function(x, ...)
 #'
 #' @family things related to adp data
 #' @family things related to adv data
-xyzToEnu <- function(x, ...)
-{
+xyzToEnu <- function(x, ...) {
     if (inherits(x, "adp")) {
-        xyzToEnuAdp(x=x, ...)
+        xyzToEnuAdp(x = x, ...)
     } else if (inherits(x, "adv")) {
-        xyzToEnuAdv(x=x, ...)
+        xyzToEnuAdv(x = x, ...)
     } else {
         stop("class of object must inherit from either 'adv' or 'adp'")
     }
@@ -133,8 +134,7 @@ xyzToEnu <- function(x, ...)
 #'
 #' @family things related to adp data
 #' @family things related to adv data
-enuToOther <- function(x, ...)
-{
+enuToOther <- function(x, ...) {
     if (inherits(x, "adp")) {
         enuToOtherAdp(x, ...)
     } else if (inherits(x, "adv")) {
@@ -156,8 +156,9 @@ enuToOther <- function(x, ...)
 #'
 #' @family things related to adp data
 #' @family things related to adv data
-toEnu <- function(x, ...)
-{
+#'
+#' @author Dan Kelley
+toEnu <- function(x, ...) {
     if (inherits(x, "adp")) {
         toEnuAdp(x, ...)
     } else if (inherits(x, "adv")) {

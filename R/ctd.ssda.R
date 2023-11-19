@@ -31,20 +31,24 @@
 #' @author Dan Kelley, with help from Liam MacNeil
 read.ctd.ssda <- function(file, encoding="latin1", debug=getOption("oceDebug"), processingLog)
 {
-    if (missing(file))
+    if (missing(file)) {
         stop("must supply 'file'")
+    }
     if (is.character(file)) {
-        if (!file.exists(file))
+        if (!file.exists(file)) {
             stop("cannot find file \"", file, "\"")
-        if (0L == file.info(file)$size)
+        }
+        if (0L == file.info(file)$size) {
             stop("empty file \"", file, "\"")
+        }
     }
     debug <- max(0L, as.integer(debug))
     oceDebug(debug, "read.ctd.ssda(file=\"", file, "\") {\n", sep="", style="bold", unindent=1)
     if (is.character(file)) {
         filesize <- file.info(file)$size
-        if (is.na(filesize) || 0L == filesize)
+        if (is.na(filesize) || 0L == filesize) {
             stop("empty file \"", file, "\"")
+        }
     }
     if (is.character(file)) {
         file <- file(file, "r", encoding=encoding)
@@ -53,8 +57,9 @@ read.ctd.ssda <- function(file, encoding="latin1", debug=getOption("oceDebug"), 
     lines <- readLines(file)
     dataStart <- grep("^Lines[ ]*:[ ]*[0-9]*$", lines)
     header <- lines[1L:dataStart]
-    if (1 != length(dataStart))
+    if (1 != length(dataStart)) {
         stop("cannot find 'Lines :' in the data file.")
+    }
     # how many lines might there be in between?
     names <- strsplit(gsub("^;[ ]*", "", lines[dataStart+2L]), "[ ]+")[[1]]
     #message("next are names:");print(names)
@@ -92,8 +97,9 @@ read.ctd.ssda <- function(file, encoding="latin1", debug=getOption("oceDebug"), 
     # Save header and original names
     res@metadata$header <- header
     dno <- list()
-    for (i in seq_along(names))
+    for (i in seq_along(names)) {
         dno[[names[i]]] <- namesOriginal[[i]]
+    }
     res@metadata$dataNamesOriginal <- dno
     # Now add in non-standard data
     for (n in names(d)) {
@@ -114,18 +120,24 @@ read.ctd.ssda <- function(file, encoding="latin1", debug=getOption("oceDebug"), 
         res@data$oxygenVoltage <- 0.001 * res@data$oxygenVoltage
         res@metadata$units$oxygenVoltage <- list(unit=expression(V), scale="")
     }
-    if ("oxygenSaturation" %in% names(res@data))
+    if ("oxygenSaturation" %in% names(res@data)) {
         res@metadata$units$oxygenSaturation<- list(unit=expression(percent), scale="")
-    if ("oxygenMg" %in% names(res@data))
+    }
+    if ("oxygenMg" %in% names(res@data)) {
         res@metadata$units$oxygenMg <- list(unit=expression(mg/L), scale="")
-    if ("oxygenMl" %in% names(res@data))
+    }
+    if ("oxygenMl" %in% names(res@data)) {
         res@metadata$units$oxygenMl <- list(unit=expression(mL/L), scale="")
-    if ("conductivity" %in% names(res@data))
+    }
+    if ("conductivity" %in% names(res@data)) {
         res@metadata$units$conductivity <- list(unit=expression(mS/cm), scale="")
-    if ("sigma" %in% names(res@data))
+    }
+    if ("sigma" %in% names(res@data)) {
         res@metadata$units$sigma <- list(unit=expression(kg/m^3), scale="")
-    if ("PAR" %in% names(res@data))
+    }
+    if ("PAR" %in% names(res@data)) {
         res@metadata$units$PAR <- list(unit=expression(pffr), scale="")
+    }
     res@processingLog <- processingLogAppend(res@processingLog,
         paste(deparse(match.call()), sep="", collapse=""))
     oceDebug(debug, "} # read.ctd.ssda()\n", sep="", style="bold", unindent=1)
