@@ -55,8 +55,7 @@ pluralize <- function(n, singular, plural) {
 #' elements of that sequence.
 #'
 #' @author Dan Kelley
-gappyIndex <- function(starts, offset=0L, length=4L)
-{
+gappyIndex <- function(starts, offset=0L, length=4L) {
     if (missing(starts)) {
         stop("must provide 'starts', an integer vector")
     }
@@ -315,8 +314,7 @@ argShow <- function(x, nshow=4, last=FALSE, sep="=") {
 #' @family functions that create labels
 #'
 #' @author Dan Kelley
-labelWithUnit <- function(name, unit=NULL)
-{
+labelWithUnit <- function(name, unit=NULL) {
     u <- if (!is.null(unit) && length(unit$unit) > 0L) unit$unit[[1]] else "unitless"
     L <- if (getOption("oceUnitBracket", "[") == "[") " [" else " ("
     R <- if (getOption("oceUnitBracket", "[") == "[")  "]" else  ")"
@@ -3004,8 +3002,7 @@ gravity <- function(latitude=45, degrees=TRUE) {
 #'}
 #'
 #' @author Dan Kelley
-makeFilter <- function(type=c("blackman-harris", "rectangular", "hamming", "hann"), m, asKernel=TRUE)
-{
+makeFilter <- function(type=c("blackman-harris", "rectangular", "hamming", "hann"), m, asKernel=TRUE) {
     type <- match.arg(type)
     if (missing(m)) {
         stop("must supply 'm'")
@@ -3150,8 +3147,7 @@ interpBarnes <- function(x, y, z, w,
     xg, yg, xgl, ygl,
     xr, yr, gamma=0.5, iterations=2, trim=0,
     pregrid=FALSE,
-    debug=getOption("oceDebug"))
-{
+    debug=getOption("oceDebug")) {
     debug <- max(0, debug)
     oceDebug(debug, "interpBarnes(",
         argShow(x),
@@ -3305,8 +3301,7 @@ interpBarnes <- function(x, y, z, w,
 #'
 #' @examples
 #' C <- coriolis(45) # 1e-4
-coriolis <- function(latitude, degrees=TRUE)
-{
+coriolis <- function(latitude, degrees=TRUE) {
     # Siderial day 86164.1 s.
     if (degrees) latitude <- latitude * 0.0174532925199433
     # http://www.iag-aig.org/attach/e354a3264d1e420ea0a9920fe762f2a0/51-groten.pdf 7292115e-11
@@ -3348,8 +3343,7 @@ coriolis <- function(latitude, degrees=TRUE)
 #'}
 #'
 #' @author Dan Kelley
-undriftTime <- function(x, slowEnd = 0, tname="time")
-{
+undriftTime <- function(x, slowEnd = 0, tname="time") {
     if (!inherits(x, "oce")) {
         stop("method is only for oce objects")
     }
@@ -3419,8 +3413,7 @@ undriftTime <- function(x, slowEnd = 0, tname="time")
 #' x <- x + 0.1
 #' y <- fillGap(x)
 #' print(data.frame(x, y))
-fillGap <- function(x, method=c("linear"), rule=1)
-{
+fillGap <- function(x, method=c("linear"), rule=1) {
     if (!is.numeric(x)) {
         stop("only works for numeric 'x'")
     }
@@ -3490,8 +3483,7 @@ fillGap <- function(x, method=c("linear"), rule=1)
 #' plot(adp)
 #' adpDec <- decimate(adp, by=2, filter=c(1/4, 1/2, 1/4))
 #' plot(adpDec)
-decimate <- function(x, by=10, to, filter, debug=getOption("oceDebug"))
-{
+decimate <- function(x, by=10, to, filter, debug=getOption("oceDebug")) {
     if (!inherits(x, "oce"))
         stop("method is only for oce objects")
     oceDebug(debug, "in decimate(x, by=", by, ", to=", if (missing(to)) "unspecified" else to, "...)\n")
@@ -3704,8 +3696,7 @@ decimate <- function(x, by=10, to, filter, debug=getOption("oceDebug"))
 #' library(oce)
 #' twenty.five <- bcdToInteger(as.raw(0x25))
 #' thirty.seven <- as.integer(as.raw(0x25))
-bcdToInteger <- function(x, endian=c("little", "big"))
-{
+bcdToInteger <- function(x, endian=c("little", "big")) {
     endian <- match.arg(endian)
     x <- as.integer(x)
     byte1 <- as.integer(floor(x / 16))
@@ -3742,8 +3733,7 @@ bcdToInteger <- function(x, endian=c("little", "big"))
 #' a <- as.raw(0x0a)
 #' byteToBinary(a, "big")        # "00001010"
 #' as.integer(rev(rawToBits(a))) # 0 0 0 0 1 0 1 0
-byteToBinary <- function(x, endian="big")
-{
+byteToBinary <- function(x, endian="big") {
     if (endian != "big") {
         .Defunct("rawToBits",
             msg="byteToBinary(.,'little') is disallowed and will be removed soon. See ?'oce-defunct'.")
@@ -3886,8 +3876,7 @@ byteToBinary <- function(x, endian="big")
 #' formatCI(model = m, style = "parentheses")
 #'
 #' @author Dan Kelley
-formatCI <- function(ci, style=c("+/-", "parentheses"), model, digits=2, debug=getOption("oceDebug", 0))
-{
+formatCI <- function(ci, style=c("+/-", "parentheses"), model, digits=2, debug=getOption("oceDebug", 0)) {
     formatCI.one <- function(ci, style, digits = 2, debug = 0)
     {
         if (missing(ci)) {
@@ -3975,8 +3964,7 @@ formatCI <- function(ci, style=c("+/-", "parentheses"), model, digits=2, debug=g
 #' library(oce)
 #' A <- integerToAscii(65)
 #' cat("A=", A, "\n")
-integerToAscii <- function(i)
-{
+integerToAscii <- function(i) {
     c("", "\001", "\002", "\003", "\004", "\005", "\006", "\a", "\b",
       "\t", "\n", "\v", "\f", "\r", "\016", "\017", "\020", "\021",
       "\022", "\023", "\024", "\025", "\026", "\027", "\030", "\031",
@@ -4123,8 +4111,7 @@ integerToAscii <- function(i)
 #' lines(coastlineWorld[["longitude"]], coastlineWorld[["latitude"]])
 #'}
 #' @family things related to magnetism
-magneticField <- function(longitude, latitude, time, version=13)
-{
+magneticField <- function(longitude, latitude, time, version=13) {
     if (missing(longitude) || missing(latitude) || missing(time)) {
         stop("must provide longitude, latitude, and time")
     }
@@ -4203,8 +4190,7 @@ magneticField <- function(longitude, latitude, time, version=13)
 #' match <- matchBytes(buf, 0xa5, 0x11)
 #' print(buf)
 #' print(match)
-matchBytes <- function(input, b1, ...)
-{
+matchBytes <- function(input, b1, ...) {
     if (missing(input)) {
         stop("must provide \"input\"")
     }
@@ -4240,8 +4226,7 @@ matchBytes <- function(input, b1, ...)
 #' @return A list containing `m` and `longitude`, both rearranged as appropriate.
 #'
 #' @seealso [shiftLongitude()] and [standardizeLongitude()].
-matrixShiftLongitude <- function(m, longitude)
-{
+matrixShiftLongitude <- function(m, longitude) {
     if (missing(m)) {
         stop("must supply m")
     }
@@ -4292,8 +4277,7 @@ matrixShiftLongitude <- function(m, longitude)
 #' image(m2, col=rainbow(100), zlim=c(0, 4), main="smoothed 2 times")
 #' image(m3, col=rainbow(100), zlim=c(0, 4), main="smoothed 3 times")
 #' par(opar)
-matrixSmooth <- function(m, passes=1)
-{
+matrixSmooth <- function(m, passes=1) {
     if (missing(m)) {
         stop("must provide matrix 'm'")
     }
@@ -4327,8 +4311,7 @@ matrixSmooth <- function(m, passes=1)
 #' cat("   61 s = ", secondsToCtime(61), "\n", sep="")
 #' cat("86400 s = ", secondsToCtime(86400), "\n", sep="")
 #' @family things related to time
-secondsToCtime <- function(sec)
-{
+secondsToCtime <- function(sec) {
     if (sec < 60) {
         return(sprintf("00:00:%02d", sec))
     }
@@ -4364,8 +4347,7 @@ secondsToCtime <- function(sec)
 #' cat("01:04   = ", ctimeToSeconds("01:04"), "s\n", sep="")
 #' cat("1:00:00 = ", ctimeToSeconds("1:00:00"), "s\n", sep="")
 #' @family things related to time
-ctimeToSeconds <- function(ctime)
-{
+ctimeToSeconds <- function(ctime) {
     if (length(grep(":", ctime)) > 0) {
         parts <- as.numeric(strsplit(ctime, ":")[[1]])
         l <- length(parts)
@@ -4401,8 +4383,7 @@ ctimeToSeconds <- function(ctime)
 #' library(oce)
 #' data(ctd)
 #' showMetadataItem(ctd, "ship", "ship")
-showMetadataItem <- function(object, name, label="", postlabel="", isdate=FALSE, quote=FALSE)
-{
+showMetadataItem <- function(object, name, label="", postlabel="", isdate=FALSE, quote=FALSE) {
     if (name %in% names(object@metadata)) {
         item <- object@metadata[[name]]
         if (is.null(item)) {
@@ -4471,8 +4452,7 @@ showMetadataItem <- function(object, name, label="", postlabel="", isdate=FALSE,
 #' print(tail(cA, 1))
 #' print(integrateTrapezoid(diff(x[1:2]), y))
 #' print(integrateTrapezoid(y))
-integrateTrapezoid <- function(x, y, type=c("A", "dA", "cA"), xmin, xmax)
-{
+integrateTrapezoid <- function(x, y, type=c("A", "dA", "cA"), xmin, xmax) {
     type <- match.arg(type)
     if (missing(x)) {
         stop("must supply 'x'")
@@ -4582,8 +4562,7 @@ integrateTrapezoid <- function(x, y, type=c("A", "dA", "cA"), xmin, xmax)
 #' contour(x, y, sqrt(u^2+v^2), asp=1, main=expression(speed))
 #'
 #' @family things relating to vector calculus
-grad <- function(h, x=seq(0, 1, length.out=nrow(h)), y=seq(0, 1, length.out=ncol(h)))
-{
+grad <- function(h, x=seq(0, 1, length.out=nrow(h)), y=seq(0, 1, length.out=ncol(h))) {
     if (missing(h)) {
         stop("must give h")
     }
