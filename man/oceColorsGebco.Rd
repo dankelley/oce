@@ -33,7 +33,7 @@ colours representing both mountains and the deep sea.
 }
 \examples{
 library(oce)
-imagep(volcano, col=oceColorsGebco(128, region="both"))
+imagep(volcano, col = oceColorsGebco(128, region = "both"))
 
 }
 \seealso{

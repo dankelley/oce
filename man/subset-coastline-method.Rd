@@ -45,10 +45,10 @@ library(oce)
 data(coastlineWorld)
 # Subset to a box centred on Nova Scotia, Canada
 if (requireNamespace("sf")) {
-    cl <- subset(coastlineWorld, -80<lon & lon<-50 & 30<lat & lat<60)
+    cl <- subset(coastlineWorld, -80 < lon & lon <- 50 & 30 < lat & lat < 60)
     # The plot demonstrates that the trimming is as requested.
-    plot(cl, clon=-65, clat=45, span=6000)
-    rect(-80, 30, -50, 60, bg="transparent", border="red")
+    plot(cl, clon = -65, clat = 45, span = 6000)
+    rect(-80, 30, -50, 60, bg = "transparent", border = "red")
 }
 }
 \seealso{

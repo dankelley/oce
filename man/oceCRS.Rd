@@ -33,18 +33,18 @@ guided by real-world usage.
 \donttest{
 library(oce)
 data(coastlineWorld)
-par(mar=c(2, 2, 1, 1))
-plot(coastlineWorld, projection=oceCRS("Atlantic"), span=12000)
-plot(coastlineWorld, projection=oceCRS("North Atlantic"), span=8000)
-plot(coastlineWorld, projection=oceCRS("South Atlantic"), span=8000)
-plot(coastlineWorld, projection=oceCRS("Arctic"), span=4000)
-plot(coastlineWorld, projection=oceCRS("Antarctic"), span=10000)
+par(mar = c(2, 2, 1, 1))
+plot(coastlineWorld, projection = oceCRS("Atlantic"), span = 12000)
+plot(coastlineWorld, projection = oceCRS("North Atlantic"), span = 8000)
+plot(coastlineWorld, projection = oceCRS("South Atlantic"), span = 8000)
+plot(coastlineWorld, projection = oceCRS("Arctic"), span = 4000)
+plot(coastlineWorld, projection = oceCRS("Antarctic"), span = 10000)
 # Avoid ugly horizontal lines, an artifact of longitude shifting.
 # Note: we cannot fill the land once we shift, either.
 pacific <- coastlineCut(coastlineWorld, -180)
-plot(pacific, proj=oceCRS("Pacific"), span=15000, col=NULL)
-plot(pacific, proj=oceCRS("North Pacific"), span=12000, col=NULL)
-plot(pacific, proj=oceCRS("South Pacific"), span=12000, col=NULL)
+plot(pacific, proj = oceCRS("Pacific"), span = 15000, col = NULL)
+plot(pacific, proj = oceCRS("North Pacific"), span = 12000, col = NULL)
+plot(pacific, proj = oceCRS("South Pacific"), span = 12000, col = NULL)
 }
 }
 \seealso{

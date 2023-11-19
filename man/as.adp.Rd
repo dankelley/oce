@@ -49,7 +49,7 @@ data(adp)
 t <- adp[["time"]]
 d <- adp[["distance"]]
 v <- adp[["v"]]
-a <- as.adp(time=t, distance=d, v=v)
+a <- as.adp(time = t, distance = d, v = v)
 \donttest{
 plot(a)
 }

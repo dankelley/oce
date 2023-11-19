@@ -21,12 +21,12 @@ returns spectral values that are adjusted so that the integral of those
 values equals the variance of the input \code{x}.
 }
 \examples{
-  x <- rnorm(1e3)
-  s <- spectrum(x, plot=FALSE)
-  ss <- oce.spectrum(x, plot=FALSE)
-  cat("variance of x=", var(x), "\n")
-  cat("integral of     spectrum=", sum(s$spec)*diff(s$freq[1:2]), "\n")
-  cat("integral of oce.spectrum=", sum(ss$spec)*diff(ss$freq[1:2]), "\n")
+x <- rnorm(1e3)
+s <- spectrum(x, plot = FALSE)
+ss <- oce.spectrum(x, plot = FALSE)
+cat("variance of x=", var(x), "\n")
+cat("integral of     spectrum=", sum(s$spec) * diff(s$freq[1:2]), "\n")
+cat("integral of oce.spectrum=", sum(ss$spec) * diff(ss$freq[1:2]), "\n")
 }
 \seealso{
 \code{\link[=spectrum]{spectrum()}}.

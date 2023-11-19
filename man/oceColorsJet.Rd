@@ -17,7 +17,7 @@ Create Colors Similar to the Matlab Jet Scheme
 }
 \examples{
 library(oce)
-imagep(volcano, col=oceColorsJet, zlab="oceColorsJet")
+imagep(volcano, col = oceColorsJet, zlab = "oceColorsJet")
 
 }
 \references{

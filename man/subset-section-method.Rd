@@ -86,7 +86,7 @@ starting <- subset(section, distance < 500)
 east <- subset(section, longitude > (-50))
 
 # Example 3. Gulf Stream
-GS <- subset(section, 113<=stationId&stationId<=129)
+GS <- subset(section, 113 <= stationId & stationId <= 129)
 
 # Example 4. Only stations with more than 5 pressure levels
 long <- subset(section, length(pressure) > 5)
@@ -96,8 +96,11 @@ surfacing <- subset(section, min(pressure) < 50)
 
 # Example 6. Similar to #4, but done in more detailed way
 long <- subset(section,
-   indices=unlist(lapply(section[["station"]],
-       function(s) 5 < length(s[["pressure"]]))))
+    indices = unlist(lapply(
+        section[["station"]],
+        function(s) 5 < length(s[["pressure"]])
+    ))
+)
 
 }
 \seealso{

@@ -243,7 +243,7 @@ Note that reading a file that contains IPTS-68 temperatures produces a warning.
 }
 
 \examples{
-f <- system.file("extdata", "ctd.cnv.gz", package="oce")
+f <- system.file("extdata", "ctd.cnv.gz", package = "oce")
 d <- read.ctd(f)
 
 }

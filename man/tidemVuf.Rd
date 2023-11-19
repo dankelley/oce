@@ -29,8 +29,8 @@ which inherits from the Fortran code described by Foreman (1978).
 # Look up values for the M2 constituent in Halifax Harbour, Canada.
 library(oce)
 data("tidedata")
-j <- with(tidedata$const, which(name=="M2"))
-tidemVuf(t=as.POSIXct("2008-01-22 18:50:24"), j=j, lat=44.63)
+j <- with(tidedata$const, which(name == "M2"))
+tidemVuf(t = as.POSIXct("2008-01-22 18:50:24"), j = j, lat = 44.63)
 
 }
 \references{

@@ -293,42 +293,46 @@ library(oce)
 imagep(volcano)
 
 # 2. something oceanographic (internal-wave speed)
-h <- seq(0, 50, length.out=100)
-drho <- seq(1, 3, length.out=200)
+h <- seq(0, 50, length.out = 100)
+drho <- seq(1, 3, length.out = 200)
 speed <- outer(h, drho, function(drho, h) sqrt(9.8 * drho * h / 1024))
-imagep(h, drho, speed, xlab="Equivalent depth [m]",
-ylab=expression(paste(Delta*rho, " [kg/m^3]")),
-zlab="Internal-wave speed [m/s]")
+imagep(h, drho, speed,
+    xlab = "Equivalent depth [m]",
+    ylab = expression(paste(Delta * rho, " [kg/m^3]")),
+    zlab = "Internal-wave speed [m/s]"
+)
 
 # 3. fancy labelling on atan() function
 x <- seq(0, 1, 0.01)
 y <- seq(0, 1, 0.01)
-angle <- outer(x,y,function(x,y) atan2(y,x))
-imagep(x, y, angle, filledContour=TRUE, breaks=c(0, pi/4, pi/2),
-       col=c("lightgray", "darkgray"),
-       at=c(0, pi/4, pi/2),
-       labels=c(0, expression(pi/4), expression(pi/2)))
+angle <- outer(x, y, function(x, y) atan2(y, x))
+imagep(x, y, angle,
+    filledContour = TRUE, breaks = c(0, pi / 4, pi / 2),
+    col = c("lightgray", "darkgray"),
+    at = c(0, pi / 4, pi / 2),
+    labels = c(0, expression(pi / 4), expression(pi / 2))
+)
 
 # 5. y-axis flipping
-par(mfrow=c(2,2))
+par(mfrow = c(2, 2))
 data(adp)
 d <- adp[["distance"]]
 t <- adp[["time"]]
-u <- adp[["v"]][ , ,1]
-imagep(t, d, u, drawTimeRange=FALSE)
+u <- adp[["v"]][, , 1]
+imagep(t, d, u, drawTimeRange = FALSE)
 mtext("normal")
-imagep(t, d, u, flipy=TRUE, drawTimeRange=FALSE)
+imagep(t, d, u, flipy = TRUE, drawTimeRange = FALSE)
 mtext("flipy")
-imagep(t, d, u, ylim=rev(range(d)), drawTimeRange=FALSE)
+imagep(t, d, u, ylim = rev(range(d)), drawTimeRange = FALSE)
 mtext("ylim")
-imagep(t, d, u, ylim=rev(range(d)), flipy=TRUE, drawTimeRange=FALSE)
+imagep(t, d, u, ylim = rev(range(d)), flipy = TRUE, drawTimeRange = FALSE)
 mtext("flipy and ylim")
-par(mfrow=c(1,1))
+par(mfrow = c(1, 1))
 
 # 6. a colormap case
 data(topoWorld)
-cm <- colormap(name="gmt_globe")
-imagep(topoWorld, colormap=cm)
+cm <- colormap(name = "gmt_globe")
+imagep(topoWorld, colormap = cm)
 
 }
 \seealso{

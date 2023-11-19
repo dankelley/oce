@@ -9,11 +9,11 @@
 #' available to the `oce` developers.
 #'
 #' A few sample header lines that have been encountered are:
-#'```
+#' ```
 #' # name 4 = t068: temperature, IPTS-68 [deg C]
 #' # name 3 = t090C: Temperature [ITS-90, deg C]
 #' # name 4 = t190C: Temperature, 2 [ITS-90, deg C]
-#'```
+#' ```
 #' Examination of several CNV files suggests that it is best to
 #' try to infer the name from the characters between the "`=`"
 #' and "`:`" characters, because the material after the colon
@@ -216,27 +216,28 @@
 #'
 #' @family things related to ctd data
 #' @family functions that interpret variable names and units from headers
-cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
-{
-    oceDebug(debug, "cnvName2oceName() {\n", unindent=1)
-    if (length(h) != 1)
+cnvName2oceName <- function(h, columns = NULL, debug = getOption("oceDebug")) {
+    oceDebug(debug, "cnvName2oceName() {\n", unindent = 1)
+    if (length(h) != 1) {
         stop("oceNameFromSBE() expects just 1 line of header")
+    }
     # An example, for which the grep is designed, is below.
     # '# name 4 = t190C: Temperature, 2 [ITS-90, deg C]' # nolint
-    if (1 != length(grep("^# name [0-9][0-9]* = .*:.*$", h, ignore.case=TRUE)))
+    if (1 != length(grep("^# name [0-9][0-9]* = .*:.*$", h, ignore.case = TRUE))) {
         stop("header line does not contain a variable name")
+    }
     # 2022-07-15: drop useBytes=TRUE, which is a problem for upcoming R.
-    name <- gsub("^# name [0-9][0-9]* = (.*):.*$", "\\1", h, ignore.case=TRUE)
-    nameAfterColon <- gsub("^# name [0-9][0-9]* = .*:(.*)$", "\\1", h, ignore.case=TRUE)
+    name <- gsub("^# name [0-9][0-9]* = (.*):.*$", "\\1", h, ignore.case = TRUE)
+    nameAfterColon <- gsub("^# name [0-9][0-9]* = .*:(.*)$", "\\1", h, ignore.case = TRUE)
     nameOriginal <- name
     # If 'name' is mentioned in columns, then use columns and ignore the lookup table.
     if (!is.null(columns)) {
-        oceDebug(debug, "columns given. Look for name=\"", name, "\" in it\n", sep="")
+        oceDebug(debug, "columns given. Look for name=\"", name, "\" in it\n", sep = "")
         cnames <- names(columns)
         for (i in seq_along(cnames)) {
             if (name == columns[[i]]$name) {
                 oceDebug(debug, "recognized this name in names(columns)[", i, "]\n")
-                return(list(name=cnames[i], nameOriginal=name, unit=columns[[i]]$unit))
+                return(list(name = cnames[i], nameOriginal = name, unit = columns[[i]]$unit))
             }
         }
     }
@@ -244,250 +245,250 @@ cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
     # tests are a bit subtle, and could be wrong.
     if (1 == length(grep("^alt[M]?$", name))) {
         name <- "altimeter"
-        unit <- list(unit=expression(m), scale="")
+        unit <- list(unit = expression(m), scale = "")
     } else if (1 == length(grep("^acc[M]?$", name))) {
         name <- "acceleration"
-        unit <- list(unit=expression(m/s^2), scale="")
+        unit <- list(unit = expression(m / s^2), scale = "")
     } else if (1 == length(grep("^bat[0-9]?$", name))) {
         name <- "beamAttenuation"
-        unit <- list(unit=expression(1/m), scale="Chelsea/Seatech")
+        unit <- list(unit = expression(1 / m), scale = "Chelsea/Seatech")
     } else if (1 == length(grep("^C2-C1S/m$", name))) {
         name <- "conductivityDifference"
-        unit <- list(unit=expression(S/m), scale="")
+        unit <- list(unit = expression(S / m), scale = "")
     } else if (1 == length(grep("^C2-C1mS/cm$", name))) {
         name <- "conductivityDifference"
-        unit <- list(unit=expression(mS/cm), scale="")
+        unit <- list(unit = expression(mS / cm), scale = "")
     } else if (1 == length(grep("^C2-C1uS/cm$", name))) {
         name <- "conductivityDifference"
-        unit <- list(unit=expression(mu*S/cm), scale="")
+        unit <- list(unit = expression(mu * S / cm), scale = "")
     } else if (1 == length(grep("^c(ond)?((_)|([0-2]))mS/cm$", name))) {
         name <- "conductivity"
-        unit <- list(unit=expression(mS/cm), scale="")
+        unit <- list(unit = expression(mS / cm), scale = "")
     } else if (1 == length(grep("^c(ond)?((_)|([0-2]))S/m$", name))) {
         name <- "conductivity"
-        unit <- list(unit=expression(S/m), scale="")
+        unit <- list(unit = expression(S / m), scale = "")
     } else if (1 == length(grep("^c(ond)?((_)|([0-2]))uS/cm$", name))) {
         name <- "conductivity"
-        unit <- list(unit=expression(mu*S/cm), scale="")
+        unit <- list(unit = expression(mu * S / cm), scale = "")
     } else if (1 == length(grep("^CStarTr[0-9]$", name))) {
         name <- "beamTransmission"
-        unit <- list(unit=expression(percent), scale="WET Labs C-Star")
+        unit <- list(unit = expression(percent), scale = "WET Labs C-Star")
     } else if (1 == length(grep("^CStarAt[0-9]$", name))) {
         name <- "beamAttenuation"
-        unit <- list(unit=expression(1/m), scale="")
+        unit <- list(unit = expression(1 / m), scale = "")
     } else if (1 == length(grep("^density[0-9]{2}$", name))) {
         name <- "density"
-        unit <- list(unit=expression(kg/m^3), scale="")
+        unit <- list(unit = expression(kg / m^3), scale = "")
     } else if (1 == length(grep("^dep[FS][M]?$", name))) {
         name <- "depth"
-        unit <- list(unit=expression(m), scale="")
+        unit <- list(unit = expression(m), scale = "")
     } else if (1 == length(grep("^dz/dt[M]?$", name))) {
         name <- "descentRate"
-        unit <- list(unit=expression(m/s), scale="")
+        unit <- list(unit = expression(m / s), scale = "")
     } else if (1 == length(grep("^f[0-9][0-9]?$", name))) {
         name <- "frequency"
-        unit <- list(unit=expression(Hz), scale="")
+        unit <- list(unit = expression(Hz), scale = "")
     } else if (1 == length(grep("^flag$", name))) {
         name <- "flag"
-        unit <- list(unit=expression(), scale="")
+        unit <- list(unit = expression(), scale = "")
     } else if (1 == length(grep("^flC[1]?$", name))) {
         name <- "fluorescence"
-        unit <- list(unit=expression(mu*g/l), scale="Chelsea")
+        unit <- list(unit = expression(mu * g / l), scale = "Chelsea")
     } else if (1 == length(grep("^flCM[1]?$", name))) {
         name <- "fluorescence"
-        unit <- list(unit=expression(mu*g/l), scale="Chelsea Mini Chl Con")
+        unit <- list(unit = expression(mu * g / l), scale = "Chelsea Mini Chl Con")
     } else if (1 == length(grep("^flCUVA[12]?$", name))) {
         name <- "fluorescence"
-        unit <- list(unit=expression(mu*g/l), scale="Chelsea UV Aquatracka")
+        unit <- list(unit = expression(mu * g / l), scale = "Chelsea UV Aquatracka")
     } else if (1 == length(grep("^flECO-AFL[0-9]?$", name))) {
         name <- "fluorescence"
-        unit <- list(unit=expression(mg/m^3), scale="WET Labs")
+        unit <- list(unit = expression(mg / m^3), scale = "WET Labs")
     } else if (1 == length(grep("^flflTC[0-1]{1}$", name))) {
         name <- "fluorescein"
-        unit <- list(unit=expression(ppb), scale="Turner Cyclops")
+        unit <- list(unit = expression(ppb), scale = "Turner Cyclops")
     } else if (1 == length(grep("^flflTCdiff$", name))) {
         name <- "fluoresceinDifference"
-        unit <- list(unit=expression(ppb), scale="Turner Cyclops")
+        unit <- list(unit = expression(ppb), scale = "Turner Cyclops")
     } else if (1 == length(grep("^flScufa[0-9]?$", name))) {
         name <- "fluorescence"
-        unit <- list(unit=expression(), scale="Turner SCUFA")
+        unit <- list(unit = expression(), scale = "Turner SCUFA")
     } else if (1 == length(grep("^flSP[0-9]?$", name))) {
         name <- "fluorescence"
-        unit <- list(unit=expression(), scale="Seapoint")
+        unit <- list(unit = expression(), scale = "Seapoint")
     } else if (1 == length(grep("^flSPR$", name))) {
         name <- "fluorescence"
-        unit <- list(unit=expression(), scale="Seapoint, Rhodamine")
+        unit <- list(unit = expression(), scale = "Seapoint, Rhodamine")
     } else if (1 == length(grep("^flSPuv[0-9]?$", name))) {
         name <- "fluorescence"
-        unit <- list(unit=expression(), scale="Seapoint, UV")
+        unit <- list(unit = expression(), scale = "Seapoint, UV")
     } else if (1 == length(grep("^flS$", name))) {
         name <- "fluorescence"
-        unit <- list(unit=expression(), scale="Seatech")
+        unit <- list(unit = expression(), scale = "Seatech")
     } else if (1 == length(grep("^flT$", name))) {
         name <- "fluorescence"
-        unit <- list(unit=expression(), scale="Turner")
+        unit <- list(unit = expression(), scale = "Turner")
     } else if (1 == length(grep("^gpa$", name))) {
         name <- "geopotentialAnomaly"
-        unit <- list(unit=expression(J/kg), scale="")
+        unit <- list(unit = expression(J / kg), scale = "")
     } else if (1 == length(grep("^latitude$", name))) {
         name <- "latitude"
-        unit <- list(unit=expression(degree*N), scale="")
+        unit <- list(unit = expression(degree * N), scale = "")
     } else if (1 == length(grep("^longitude$", name))) {
         name <- "longitude"
-        unit <- list(unit=expression(degree*E), scale="")
+        unit <- list(unit = expression(degree * E), scale = "")
     } else if (1 == length(grep("^n2satML/L$", name))) {
         name <- "nitrogenSaturation"
-        unit <- list(unit=expression(ml/l), scale="")
+        unit <- list(unit = expression(ml / l), scale = "")
     } else if (1 == length(grep("^n2satMg/L$", name))) {
         name <- "nitrogenSaturation"
-        unit <- list(unit=expression(mg/l), scale="")
+        unit <- list(unit = expression(mg / l), scale = "")
     } else if (1 == length(grep("^n2satumol/L$", name))) {
         name <- "nitrogenSaturation"
-        unit <- list(unit=expression(mu*mol/l), scale="")
+        unit <- list(unit = expression(mu * mol / l), scale = "")
     } else if (1 == length(grep("^n2satumol/kg$", name))) {
         name <- "nitrogenSaturation"
-        unit <- list(unit=expression(mu*mol/kg), scale="")
+        unit <- list(unit = expression(mu * mol / kg), scale = "")
     } else if (1 == length(grep("^nbin$", name))) {
         name <- "nbin"
-        unit <- list(unit=expression(), scale="")
+        unit <- list(unit = expression(), scale = "")
     } else if (1 == length(grep("^nbf$", name))) {
         name <- "bottlesFired"
-        unit <- list(unit=expression(), scale="")
+        unit <- list(unit = expression(), scale = "")
     } else if (1 == length(grep("^obsscufa[1-9]{0,1}$", name))) {
         name <- "backscatter"
-        unit <- list(unit=expression(NTU), scale="Turner SCUFA")
+        unit <- list(unit = expression(NTU), scale = "Turner SCUFA")
     } else if (1 == length(grep("^opoxMg/L$", name))) {
         name <- "oxygen"
-        unit <- list(unit=expression(mg/l), scale="Optode, Aanderaa")
+        unit <- list(unit = expression(mg / l), scale = "Optode, Aanderaa")
     } else if (1 == length(grep("^opoxML/L$", name))) {
         name <- "oxygen"
-        unit <- list(unit=expression(ml/l), scale="Optode, Aanderaa")
+        unit <- list(unit = expression(ml / l), scale = "Optode, Aanderaa")
     } else if (1 == length(grep("^opoxMm/L$", name))) {
         name <- "oxygen"
-        unit <- list(unit=expression(mu*mol/l), scale="Optode, Aanderaa")
+        unit <- list(unit = expression(mu * mol / l), scale = "Optode, Aanderaa")
     } else if (1 == length(grep("^opoxPS$", name))) {
         name <- "oxygenSaturation"
-        unit <- list(unit=expression(percent), scale="Optode, Aanderaa")
+        unit <- list(unit = expression(percent), scale = "Optode, Aanderaa")
     } else if (1 == length(grep("oxC", name))) {
         name <- "oxygenCurrent"
-        unit <- list(unit=expression(mu*amp), scale="Beckman/YSI")
+        unit <- list(unit = expression(mu * amp), scale = "Beckman/YSI")
     } else if (1 == length(grep("oxTC", name))) {
         name <- "oxygenTemperature"
-        unit <- list(unit=expression(degree*C), scale="Beckman/YSI")
+        unit <- list(unit = expression(degree * C), scale = "Beckman/YSI")
     } else if (1 == length(grep("oxMg/L", name))) {
         name <- "oxygen"
-        unit <- list(unit=expression(mg/l), scale="Beckman/YSI")
+        unit <- list(unit = expression(mg / l), scale = "Beckman/YSI")
     } else if (1 == length(grep("oxPS", name))) {
         name <- "oxygenSaturation"
-        unit <- list(unit=expression(percent), scale="Beckman/YSI")
+        unit <- list(unit = expression(percent), scale = "Beckman/YSI")
     } else if (1 == length(grep("^oxsatML/L$", name))) {
         name <- "oxygen"
-        unit <- list(unit=expression(ml/l), scale="Weiss")
+        unit <- list(unit = expression(ml / l), scale = "Weiss")
     } else if (1 == length(grep("^oxsatMg/L$", name))) {
         name <- "oxygen"
-        unit <- list(unit=expression(mg/l), scale="Weiss")
+        unit <- list(unit = expression(mg / l), scale = "Weiss")
     } else if (1 == length(grep("^oxsatMm/Kg$", name))) {
         name <- "oxygen"
-        unit <- list(unit=expression(mu*mol/kg), scale="Weiss")
+        unit <- list(unit = expression(mu * mol / kg), scale = "Weiss")
     } else if (1 == length(grep("^oxsolML/L$", name))) {
         name <- "oxygen"
-        unit <- list(unit=expression(ml/l), scale="Garcia-Gordon")
+        unit <- list(unit = expression(ml / l), scale = "Garcia-Gordon")
     } else if (1 == length(grep("^oxsolMg/L$", name))) {
         name <- "oxygen"
-        unit <- list(unit=expression(mg/l), scale="Garcia-Gordon")
+        unit <- list(unit = expression(mg / l), scale = "Garcia-Gordon")
     } else if (1 == length(grep("^oxsolMm/Kg$", name))) {
         name <- "oxygen"
-        unit <- list(unit=expression(umol/kg), scale="Garcia-Gordon")
+        unit <- list(unit = expression(umol / kg), scale = "Garcia-Gordon")
     } else if (1 == length(grep("^cpar$", name))) {
         name <- "CPAR/Corrected Irradience"
-        unit <- list(unit=expression(percent), scale="")
+        unit <- list(unit = expression(percent), scale = "")
     } else if (1 == length(grep("^par[0-9]?$", name))) {
         name <- "par"
-        unit <- list(unit=expression(), scale="Biospherical/Licor")
+        unit <- list(unit = expression(), scale = "Biospherical/Licor")
     } else if (1 == length(grep("^par/log$", name))) {
         name <- "par"
-        unit <- list(unit=expression(log), scale="Satlantic")
+        unit <- list(unit = expression(log), scale = "Satlantic")
     } else if (1 == length(grep("^ph$", name))) {
         name <- "pH"
-        unit <- list(unit=expression(), scale="")
+        unit <- list(unit = expression(), scale = "")
     } else if (1 == length(grep("^pr$", name))) {
         name <- "pressure"
-        unit <- list(unit=expression(dbar), scale="")
+        unit <- list(unit = expression(dbar), scale = "")
     } else if (1 == length(grep("^prdE$", name))) {
         # Caution: English unit
         name <- "pressurePSI"
-        unit <- list(unit=expression(psi), scale="")
+        unit <- list(unit = expression(psi), scale = "")
     } else if (1 == length(grep("^prDE$", name))) {
         # Caution: English unit
         name <- "pressurePSI"
-        unit <- list(unit=expression(psi), scale="")
+        unit <- list(unit = expression(psi), scale = "")
     } else if (1 == length(grep("^prM$", name))) {
         name <- "pressure"
-        unit <- list(unit=expression(dbar), scale="")
+        unit <- list(unit = expression(dbar), scale = "")
     } else if (1 == length(grep("^pr50M[0-9]?$", name))) {
         name <- "pressure"
-        unit <- list(unit=expression(dbar), scale="SBE50")
+        unit <- list(unit = expression(dbar), scale = "SBE50")
     } else if (1 == length(grep("^prDM$", name))) {
         name <- "pressure"
-        unit <- list(unit=expression(dbar), scale="Digiquartz")
+        unit <- list(unit = expression(dbar), scale = "Digiquartz")
     } else if (1 == length(grep("^pr[dS]M$", name))) {
         name <- "pressure"
-        unit <- list(unit=expression(dbar), scale="Strain Gauge")
+        unit <- list(unit = expression(dbar), scale = "Strain Gauge")
     } else if (1 == length(grep("^ptempC$", name))) {
         name <- "pressureTemperature"
-        unit <- list(unit=expression(degree*C), scale="ITS-90") # FIXME: guess on scale
+        unit <- list(unit = expression(degree * C), scale = "ITS-90") # FIXME: guess on scale
     } else if (1 == length(grep("^potemp[0-9]*68C$", name))) {
         name <- "theta"
-        unit <- list(unit=expression(degree*C), scale="ITS-68")
+        unit <- list(unit = expression(degree * C), scale = "ITS-68")
     } else if (1 == length(grep("^potemp[0-9]*90C$", name))) {
         name <- "theta"
-        unit <- list(unit=expression(degree*C), scale="ITS-90")
+        unit <- list(unit = expression(degree * C), scale = "ITS-90")
     } else if (1 == length(grep("^pumps$", name))) {
         name <- "pumpStatus"
-        unit <- list(unit=expression(), scale="")
+        unit <- list(unit = expression(), scale = "")
     } else if (1 == length(grep("^rhodflTC[0-1]{1}$", name))) {
         name <- "Rhodamine"
-        unit <- list(unit=expression(ppb), scale="Turner Cyclops")
+        unit <- list(unit = expression(ppb), scale = "Turner Cyclops")
     } else if (1 == length(grep("^rhodflTCdiff$", name))) {
         name <- "RhodamineDifference"
-        unit <- list(unit=expression(ppb), scale="Turner Cyclops")
+        unit <- list(unit = expression(ppb), scale = "Turner Cyclops")
     } else if (1 == length(grep("^sal[0-9]{2}$", name))) {
         name <- "salinity"
-        unit <- list(unit=expression(), scale="PSS-78") # FIXME: guess on scale
+        unit <- list(unit = expression(), scale = "PSS-78") # FIXME: guess on scale
     } else if (1 == length(grep("^sbe?ox[0-9]ML/L$", name))) {
         name <- "oxygen"
-        unit <- list(unit=expression(ml/l), scale="SBE43")
+        unit <- list(unit = expression(ml / l), scale = "SBE43")
     } else if (1 == length(grep("^sbe?ox[0-9]Mg/L$", name))) {
         name <- "oxygen"
-        unit <- list(unit=expression(mg/l), scale="SBE43")
+        unit <- list(unit = expression(mg / l), scale = "SBE43")
     } else if (1 == length(grep("^sbe?ox[0-9]Mm/Kg$", name))) {
         name <- "oxygen"
-        unit <- list(unit=expression(mu*mol/kg), scale="SBE43")
+        unit <- list(unit = expression(mu * mol / kg), scale = "SBE43")
     } else if (1 == length(grep("^sbe?ox[0-9]Mm/L$", name))) {
         name <- "oxygen"
-        unit <- list(unit=expression(mu*mol/l), scale="SBE43")
+        unit <- list(unit = expression(mu * mol / l), scale = "SBE43")
     } else if (1 == length(grep("^sbe?ox[0-9]PS$", name))) {
         name <- "oxygen"
-        unit <- list(unit=expression(percent), scale="SBE43")
+        unit <- list(unit = expression(percent), scale = "SBE43")
     } else if (1 == length(grep("^sbe?ox[0-9]V$", name))) {
         name <- "oxygenRaw"
-        unit <- list(unit=expression(V), scale="SBE43")
+        unit <- list(unit = expression(V), scale = "SBE43")
     } else if (1 == length(grep("^sbe?ox[0-9]dV/dT$", name))) {
         name <- "oxygen"
-        unit <- list(unit=expression(dov/dt), scale="SBE43")
+        unit <- list(unit = expression(dov / dt), scale = "SBE43")
     } else if (1 == length(grep("^scan$", name))) {
         name <- "scan"
-        unit <- list(unit=expression(), scale="")
+        unit <- list(unit = expression(), scale = "")
     } else if (1 == length(grep("^secS-priS$", name))) {
         name <- "salinityDifference"
-        unit <- list(unit=expression(), scale="PSS-78")
+        unit <- list(unit = expression(), scale = "PSS-78")
     } else if (1 == length(grep("^seaTurbMtr[1]?$", name))) {
         name <- "turbidity"
-        unit <- list(unit=expression(FTU), scale="Seapoint")
+        unit <- list(unit = expression(FTU), scale = "Seapoint")
     } else if (1 == length(grep("sigma-t[0-9]{2}", name))) {
         name <- "sigmaT"
-        unit <- list(unit=expression(kg/m^3), scale="")
-    #} else if (1 == length(grep("sigma-.*[0-9]*", name, ignore.case=TRUE))) {
+        unit <- list(unit = expression(kg / m^3), scale = "")
+        # } else if (1 == length(grep("sigma-.*[0-9]*", name, ignore.case=TRUE))) {
     } else if (1 == length(grep("^sigma", name))) {
         # there are several cases, and we match the sigma-theta case
         # by exclusion, because of limited understanding of how
@@ -502,8 +503,8 @@ cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
             name <- "sigma3"
         } else if (1 == length(grep("^sigma-4[0-9]{2}$", name))) {
             name <- "sigma4"
-        # 2022-06-28 } else if (1 == length(grep("^sigma-\x09[0-9]{2}$", name))) {
-        #} else if (1 == length(grep("^sigma-\u00e9[0-9]{2}$", name))) {
+            # 2022-06-28 } else if (1 == length(grep("^sigma-\x09[0-9]{2}$", name))) {
+            # } else if (1 == length(grep("^sigma-\u00e9[0-9]{2}$", name))) {
         } else if (grepl("^sigma-.*[0-9]{2}$", name) && grepl("sigma-theta", nameAfterColon)) {
             name <- "sigmaTheta"
             # 2016-12-22 DK
@@ -525,124 +526,126 @@ cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
             name <- "sigma" # give up; this is a default
         }
         # In all these cases, the unit is the same
-        unit <- list(unit=expression(kg/m^3), scale="")
+        unit <- list(unit = expression(kg / m^3), scale = "")
     } else if (1 == length(grep("^spar$", name))) {
         name <- "spar"
-        unit <- list(unit=expression(), scale="")
+        unit <- list(unit = expression(), scale = "")
     } else if (1 == length(grep("^specc$", name))) {
         name <- "conductivity"
-        unit <- list(unit=expression(uS/cm), scale="")
+        unit <- list(unit = expression(uS / cm), scale = "")
     } else if (1 == length(grep("^sva$", name))) {
         name <- "specificVolumeAnomaly"
-        unit <- list(unit=expression(10^-8*m^3/kg), scale="")
+        unit <- list(unit = expression(10^-8 * m^3 / kg), scale = "")
     } else if (1 == length(grep("^svCM[0-9]?$", name))) {
         name <- "soundSpeed"
-        unit <- list(unit=expression(m/s), scale="Chen-Millero")
+        unit <- list(unit = expression(m / s), scale = "Chen-Millero")
     } else if (1 == length(grep("^T2-T[01]68C$", name))) {
         name <- "temperatureDifference"
-        unit <- list(unit=expression(degree*C), scale="IPTS-68")
+        unit <- list(unit = expression(degree * C), scale = "IPTS-68")
     } else if (1 == length(grep("^T2-T[01]90C$", name))) {
         name <- "temperatureDifference"
-        unit <- list(unit=expression(degree*C), scale="ITS-90")
+        unit <- list(unit = expression(degree * C), scale = "ITS-90")
     } else if (1 == length(grep("^t[0-9]68((C)|(Cm))?$", name))) {
         name <- "temperature"
-        unit <- list(unit=expression(degree*C), scale="IPTS-68")
+        unit <- list(unit = expression(degree * C), scale = "IPTS-68")
     } else if (1 == length(grep("^t[0-9]90((C)|(Cm))?$", name))) {
         name <- "temperature"
-        unit <- list(unit=expression(degree*C), scale="ITS-90")
+        unit <- list(unit = expression(degree * C), scale = "ITS-90")
     } else if (name %in% c("t4968C", "tnc68C", "tv268C", "tnc268C", "t3868C", "t3836C1", "t38_68C")) {
         # [1] p169-170
         name <- "temperature"
-        unit <- list(unit=expression(degree*C), scale="IPTS-68")
+        unit <- list(unit = expression(degree * C), scale = "IPTS-68")
     } else if (name %in% c("t4990C", "tnc90C", "tv290C", "tnc290C", "t3890C", "t3890C1", "t38_90C")) {
         # [1] p169-170
         name <- "temperature"
-        unit <- list(unit=expression(degree*C), scale="ITS-90")
+        unit <- list(unit = expression(degree * C), scale = "ITS-90")
     } else if (1 == length(grep("^timeH$", name))) {
         name <- "timeH"
-        unit <- list(unit=expression(hour), scale="")
+        unit <- list(unit = expression(hour), scale = "")
     } else if (1 == length(grep("^timeJ$", name))) {
         name <- "timeJ"
-        unit <- list(unit=expression(day), scale="")
+        unit <- list(unit = expression(day), scale = "")
     } else if (1 == length(grep("^timeJV2$", name))) {
         name <- "timeJV2"
-        unit <- list(unit=expression(day), scale="")
+        unit <- list(unit = expression(day), scale = "")
     } else if (1 == length(grep("^timeK$", name))) {
         name <- "timeK"
-        unit <- list(unit=expression(s), scale="since Jan 1, 2000")
+        unit <- list(unit = expression(s), scale = "since Jan 1, 2000")
     } else if (1 == length(grep("^timeM$", name))) {
         name <- "timeM"
-        unit <- list(unit=expression(minute), scale="")
+        unit <- list(unit = expression(minute), scale = "")
     } else if (1 == length(grep("^timeN$", name))) {
         name <- "timeN"
-        unit <- list(unit=expression(s), scale="NMEA since Jan 1, 1970")
+        unit <- list(unit = expression(s), scale = "NMEA since Jan 1, 1970")
     } else if (1 == length(grep("^timeQ$", name))) {
         name <- "timeQ"
-        unit <- list(unit=expression(s), scale="NMEA since Jan 1, 2000")
+        unit <- list(unit = expression(s), scale = "NMEA since Jan 1, 2000")
     } else if (1 == length(grep("^timeS$", name))) {
         name <- "timeS"
-        unit <- list(unit=expression(s), scale="")
+        unit <- list(unit = expression(s), scale = "")
     } else if (1 == length(grep("^tsa$", name))) {
         name <- "thermostericAnomaly"
-        unit <- list(unit=expression(10^-8*m^3/kg), scale="")
+        unit <- list(unit = expression(10^-8 * m^3 / kg), scale = "")
     } else if (1 == length(grep("^turbflTC[0-1]$", name))) {
         name <- "turbidity"
-        unit <- list(unit=expression(NTU), scale="Turner Cyclops")
+        unit <- list(unit = expression(NTU), scale = "Turner Cyclops")
     } else if (1 == length(grep("^turbflTCdiff$", name))) {
         name <- "turbidityDifference"
-        unit <- list(unit=expression(NTU), scale="Turner Cyclops")
+        unit <- list(unit = expression(NTU), scale = "Turner Cyclops")
     } else if (1 == length(grep("^turbWETbb[0-4]$", name))) {
         name <- "turbidity"
-        unit <- list(unit=expression(1/m*sr), scale="WET Labs ECO")
+        unit <- list(unit = expression(1 / m * sr), scale = "WET Labs ECO")
     } else if (1 == length(grep("^turbWETbbdiff$", name))) {
         name <- "turbidityDifference"
-        unit <- list(unit=expression(1/m*sr), scale="WET Labs ECO")
+        unit <- list(unit = expression(1 / m * sr), scale = "WET Labs ECO")
     } else if (1 == length(grep("^turbWETntu[0-5]$", name))) {
         name <- "turbidity"
-        unit <- list(unit=expression(NTU), scale="WET Labs ECO")
+        unit <- list(unit = expression(NTU), scale = "WET Labs ECO")
     } else if (1 == length(grep("^turbWETntudiff$", name))) {
         name <- "turbidityDifference"
-        unit <- list(unit=expression(NTU), scale="WET Labs ECO")
+        unit <- list(unit = expression(NTU), scale = "WET Labs ECO")
     } else if (1 == length(grep("^upoly[0-2]$", name))) {
         name <- "upoly"
-        unit <- list(unit=expression(), scale="")
+        unit <- list(unit = expression(), scale = "")
     } else if (1 == length(grep("^user[1-5]$", name))) {
         name <- "user"
-        unit <- list(unit=expression(), scale="")
+        unit <- list(unit = expression(), scale = "")
     } else if (1 == length(grep("^v[0-9][0-9]?$", name))) {
-        unit <- list(unit=expression(V), scale="")
+        unit <- list(unit = expression(V), scale = "")
     } else if (1 == length(grep("^wetBAttn$", name))) {
         name <- "beamAttenuation"
-        unit <- list(unit=expression(1/m), scale="WET Labs AC3")
+        unit <- list(unit = expression(1 / m), scale = "WET Labs AC3")
     } else if (1 == length(grep("^wetBTrans$", name))) {
         name <- "beamTransmission"
-        unit <- list(unit=expression(percent), scale="WET Labs AC3")
+        unit <- list(unit = expression(percent), scale = "WET Labs AC3")
     } else if (1 == length(grep("^wetCDOM[0-5]{0,1}$", name))) {
         name <- "fluorescence"
-        unit <- list(unit=expression(mg/m^3), scale="WET Labs CDOM")
+        unit <- list(unit = expression(mg / m^3), scale = "WET Labs CDOM")
     } else if (1 == length(grep("^wetCDOMdiff$", name))) {
         name <- "fluorescenceDifference"
-        unit <- list(unit=expression(mg/m^3), scale="WET Labs CDOM")
+        unit <- list(unit = expression(mg / m^3), scale = "WET Labs CDOM")
     } else if (1 == length(grep("^wetChAbs$", name))) {
         name <- "fluorescence"
-        unit <- list(unit=expression(1/m), scale="WET Labs AC3 absorption")
+        unit <- list(unit = expression(1 / m), scale = "WET Labs AC3 absorption")
     } else if (1 == length(grep("^wetStar[0-9]?$", name))) {
         name <- "fluorescence"
-        unit <- list(unit=expression(mg/m^3), scale="WET Labs WETstar")
+        unit <- list(unit = expression(mg / m^3), scale = "WET Labs WETstar")
     } else if (1 == length(grep("^wetStardiff$", name))) {
         name <- "fluorescenceDifference"
-        unit <- list(unit=expression(mg/m^3), scale="WET Labs WETstar")
+        unit <- list(unit = expression(mg / m^3), scale = "WET Labs WETstar")
     } else if (1 == length(grep("^xmiss[0-9]?$", name))) {
         name <- "beamTransmission"
-        unit <- list(unit=expression(percent), scale="Chelsea/Seatech")
+        unit <- list(unit = expression(percent), scale = "Chelsea/Seatech")
     } else {
         warning("unrecognized SBE name '", name, "'; consider using 'columns' to define this name")
-        unit <- list(unit=expression(), scale="")
+        unit <- list(unit = expression(), scale = "")
     }
     oceDebug(debug, " SBE name '", nameOriginal, "' converted to oce name '", name,
-        "'; the scale is '", unit$scale, "'\n", sep="")
-    oceDebug(debug, "} # cnvName2oceName()\n", unindent=1)
-    list(name=name, nameOriginal=nameOriginal, unit=unit)
+        "'; the scale is '", unit$scale, "'\n",
+        sep = ""
+    )
+    oceDebug(debug, "} # cnvName2oceName()\n", unindent = 1)
+    list(name = name, nameOriginal = nameOriginal, unit = unit)
 }
 
 
@@ -698,17 +701,17 @@ cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
 #' For example, consider the `date` item in the `metadata` slot of the returned
 #' value.  `read.ctd.sbe()` infers this value in one of two ways.  First, if
 #' there is a header line staring with
-#'```
+#' ```
 #'* NMEA UTC (Time) =
-#'```
+#' ```
 #' then that value is decoded and used for `date`.  This header line, preceded
 #' by a single asterisk, is not human-entered, and so there is reason to hope
 #' for a uniform format that can be handled by `read.ctd.sbe()`.  However, if
 #' there is no NMEA header line, then `read.ctd.sbe()` will look for a line
 #' starting with
-#'```
+#' ```
 #'** Date:
-#'```
+#' ```
 #' which was human-entered. This is the second choice, because humans write
 #' dates in a bewildering variety of ways, and [as.POSIXct()], which
 #' `read.ctd.sbe` uses to parse the date, cannot handle them all. If there is a
@@ -716,13 +719,13 @@ cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
 #'
 #' A similar error-detection procedure is used for human-entered location data,
 #' which appear in lines starting with either
-#'```
+#' ```
 #'** Longitude:
-#'```
+#' ```
 #' or
-#'```
+#' ```
 #'** Latitude:
-#'```
+#' ```
 #' which often take forms that `read.ctd.sbe()` cannot parse.
 #'
 #' It is important to note that, even if no warnings are issued, there is a
@@ -741,7 +744,7 @@ cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
 #' perhaps even for a whole institution, then it might sense to set up a wrapper
 #' function to correct deficiencies in the CNV files. As an example, the
 #' following handles dates specified in a particular nonstandard way.
-#'```
+#' ```
 #' read.ctd.sbe.wrapper <- function(cnv)
 #' {
 #'     lines <- readLines(cnv)
@@ -749,7 +752,7 @@ cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
 #'     lines <- gsub("^\\*\\* Date: (.*)-(.*)-(.*)", "** Date: \\3-\\1-\\2", lines)
 #'     read.ctd.sbe(textConnection(lines))
 #' }
-#'```
+#' ```
 #'
 #' @section A note on sampling times:
 #'
@@ -776,7 +779,7 @@ cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
 #' `timeJV2` \tab as `timeJ`\cr
 #' `timeSCP` \tab as `timeJ`\cr
 #' `timeY`   \tab computer time, in seconds past Jan 1, 1970\cr
-#'}
+#' }
 #' NOTE: not all of these times have been tested properly, and so users
 #' are asked to report incorrect times, so that `read.ctd.sbe` can
 #' be improved.
@@ -801,7 +804,7 @@ cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
 #' Note that reading a file that contains IPTS-68 temperatures produces a warning.
 #'
 #' @examples
-#' f <- system.file("extdata", "ctd.cnv.gz", package="oce")
+#' f <- system.file("extdata", "ctd.cnv.gz", package = "oce")
 #' d <- read.ctd(f)
 #'
 #' @references
@@ -820,53 +823,59 @@ cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
 #' and this was the reference version used in coding `oce`.
 #'
 #' @family functions that read ctd data
-read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
-    deploymentType="unknown", btl=FALSE, monitor=FALSE,
-    encoding="latin1",
-    debug=getOption("oceDebug"), processingLog, ...)
-{
-    if (missing(file))
+read.ctd.sbe <- function(
+    file, columns = NULL, station = NULL, missingValue,
+    deploymentType = "unknown", btl = FALSE, monitor = FALSE,
+    encoding = "latin1",
+    debug = getOption("oceDebug"), processingLog, ...) {
+    if (missing(file)) {
         stop("must supply 'file'")
+    }
     if (is.character(file)) {
-        if (!file.exists(file))
+        if (!file.exists(file)) {
             stop("cannot find file \"", file, "\"")
-        if (0L == file.info(file)$size)
+        }
+        if (0L == file.info(file)$size) {
             stop("empty file \"", file, "\"")
+        }
     }
     # If 'file' is a wildcard, call this function on each indicated file.  Only
     # that filename, 'encoding' and 'debug' are passed along, so if you need
     # detailed customizaation, call the function on those files directly.
-    if (is.character(file) && grepl("\\*", file, ignore.case=TRUE)) {
-        oceDebug(debug, "read.ctd.sbe(file=\"", file, "\") { # will read a series of files\n", unindent=1)
-        files <- list.files(pattern=file)
+    if (is.character(file) && grepl("\\*", file, ignore.case = TRUE)) {
+        oceDebug(debug, "read.ctd.sbe(file=\"", file, "\") { # will read a series of files\n", unindent = 1)
+        files <- list.files(pattern = file)
         nfiles <- length(files)
         if (monitor) {
-            pb <- txtProgressBar(1, nfiles, style=3)
+            pb <- txtProgressBar(1, nfiles, style = 3)
         }
         res <- vector("list", nfiles)
         for (i in 1:nfiles) {
-            res[[i]] <- read.ctd.sbe(files[i], encoding=encoding, debug=debug-1)
-            if (monitor)
+            res[[i]] <- read.ctd.sbe(files[i], encoding = encoding, debug = debug - 1)
+            if (monitor) {
                 setTxtProgressBar(pb, i)
+            }
         }
         oceDebug(debug, "} # read.ctd.sbe() {\n")
-        if (monitor)
+        if (monitor) {
             close(pb)
+        }
         return(res)
     }
-    oceDebug(debug, "read.ctd.sbe(file=\"", file, "\") {\n", unindent=1)
+    oceDebug(debug, "read.ctd.sbe(file=\"", file, "\") {\n", unindent = 1)
     # Read Seabird data file.  Note on headers: '*' is machine-generated,
     # '**' is a user header, and '#' is a post-processing header.
     filename <- ""
     if (is.character(file)) {
         filename <- fullFilename(file)
-        file <- file(file, "r", encoding=encoding)
+        file <- file(file, "r", encoding = encoding)
         on.exit(close(file))
     }
-    if (!inherits(file, "connection"))
+    if (!inherits(file, "connection")) {
         stop("argument `file' must be a character string or connection")
+    }
     if (!isOpen(file)) {
-        open(file, "r", encoding=encoding)
+        open(file, "r", encoding = encoding)
         on.exit(close(file))
     }
     res <- new("ctd")
@@ -884,15 +893,15 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
     serialNumber <- serialNumberConductivity <- serialNumberTemperature <- ""
     # units$conductivity <- list(unit=expression(), scale="") # guess; other types are "mS/cm" and "S/m"
     # units$temperature <- list(unit=expression(degree*C), scale="ITS-90") # guess; other option is IPTS-68
-    pressureType <- "sea"              # guess; other option is "absolute"
+    pressureType <- "sea" # guess; other option is "absolute"
     # Silence warnings because binary files have 'NUL' characters that spew many warnings
     warn <- options("warn")$warn
-    options(warn=-1)
+    options(warn = -1)
     # 2022-07-15: drop encoding=, which is a problem for upcoming R.
     lines <- readLines(file)
-    options(warn=warn)
+    options(warn = warn)
     # Get names and units of columns in the SBE data file
-    nameLines  <- grep("^# name [0-9][0-9]* = .*:.*$", lines, ignore.case=TRUE)
+    nameLines <- grep("^# name [0-9][0-9]* = .*:.*$", lines, ignore.case = TRUE)
     colUnits <- vector("list", length(nameLines))
     colNamesInferred <- NULL
     dataNamesOriginal <- list()
@@ -901,19 +910,19 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
     #<> DAN<<-list(lines=lines,nameLines=nameLines)
     #<> message("try\na<-with(DAN, lines[nameLines[23]])\nEncoding(a)")
     for (iline in seq_along(nameLines)) {
-        nu <- cnvName2oceName(lines[nameLines[iline]], columns, debug=debug-1)
+        nu <- cnvName2oceName(lines[nameLines[iline]], columns, debug = debug - 1)
         #<> if (iline==23)
         #<> message("iline=", iline, ", nu$name=\"", nu$name, "\", nu$nameOriginal=\"", nu$nameOriginal, "\"")
         if (nu$name %in% namesUsed) {
             trial <- 2
-            while (paste(nu$name, trial, sep="") %in% namesUsed) {
+            while (paste(nu$name, trial, sep = "") %in% namesUsed) {
                 trial <- trial + 1
                 if (trial > 10L) {
                     warning("stopped renaming ", nu$name, "after got to 10 variants\n")
                     break
                 }
             }
-            nu$name <- paste(nu$name, trial, sep="")
+            nu$name <- paste(nu$name, trial, sep = "")
         }
         namesUsed <- c(namesUsed, nu$name)
         dataNamesOriginal[[nu$name]] <- nu$nameOriginal
@@ -924,11 +933,11 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
     names(colUnits) <- colNamesInferred
     # names(dataNamesOriginal) <- colNamesInferred
     res@metadata$dataNamesOriginal <- dataNamesOriginal
-    #found.scan <- "scan" %in% colNamesInferred
-    #found.temperature <- "temperature" %in% colNamesInferred
+    # found.scan <- "scan" %in% colNamesInferred
+    # found.temperature <- "temperature" %in% colNamesInferred
     foundPressure <- "pressure" %in% colNamesInferred
     foundSalinity <- "salinity" %in% colNamesInferred
-    #found.time <- "time" %in% colNamesInferred
+    # found.time <- "time" %in% colNamesInferred
     foundDepth <- "depth" %in% colNamesInferred
     foundConductivity <- "conductivity" %in% colNamesInferred
     foundConductivityRatio <- "conductivity.ratio" %in% colNamesInferred
@@ -936,29 +945,31 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
     fileType <- "unknown"
     for (iline in seq_along(lines)) {
         line <- lines[iline]
-        #line <- scan(file, what=\"char\", sep="\n", n=1, quiet=TRUE)
-        oceDebug(debug > 1L, paste("Examining header line ", iline, " '", line, "'\n", sep=""))
+        # line <- scan(file, what=\"char\", sep="\n", n=1, quiet=TRUE)
+        oceDebug(debug > 1L, paste("Examining header line ", iline, " '", line, "'\n", sep = ""))
         header <- c(header, line)
-        #if (length(grep("\*END\*", line))) #BUG# why is this regexp no good (new with R-2.1.0)
-        aline <- iconv(line, from="UTF-8", to="ASCII", sub="?")
-        if (length(grep("^\\s*\\*END\\*\\s*$", aline, perl=TRUE))) {
+        # if (length(grep("\*END\*", line))) #BUG# why is this regexp no good (new with R-2.1.0)
+        aline <- iconv(line, from = "UTF-8", to = "ASCII", sub = "?")
+        if (length(grep("^\\s*\\*END\\*\\s*$", aline, perl = TRUE))) {
             # Sometimes SBE files have a header line after the *END* line.
             iline <- iline + 1
-            if (length(grep("[a-cf-zA-CF-Z]", lines[iline])))
+            if (length(grep("[a-cf-zA-CF-Z]", lines[iline]))) {
                 iline <- iline + 1
+            }
             break
         }
         lline <- tolower(aline)
         # Use NMEA (if present) in preference to a hand-entered date.
         # See https://github.com/dankelley/oce/issues/1949#issuecomment-1133613831
         # * NMEA UTC (Time) = Aug 09 2012 06:34:34
-        if (grepl("^\\* NMEA.*Time.*=", aline)) {  # NMD
+        if (grepl("^\\* NMEA.*Time.*=", aline)) { # NMD
             rhs <- trimws(gsub("^\\* NMEA.*Time.*=(.*)", "\\1", aline))
             dateTry <- try(as.POSIXct(rhs,
-                tryFormats=c("%Y-%m-%d %H:%M:%S", "%b %d %Y %H:%M:%S"),
-                tz="UTC"), silent=TRUE)
+                tryFormats = c("%Y-%m-%d %H:%M:%S", "%b %d %Y %H:%M:%S"),
+                tz = "UTC"
+            ), silent = TRUE)
             if (inherits(dateTry, "try-error")) {
-                warning("cannot parse date in `", aline, "`, but will try a '** Date:' line, if there is one", sep="")
+                warning("cannot parse date in `", aline, "`, but will try a '** Date:' line, if there is one", sep = "")
             } else {
                 date <- dateTry
                 oceDebug(debug, "inferred date=", format(date), " from automatically-generated NMEA-time line\n")
@@ -976,93 +987,106 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
             #> message(dateString)
             dateString <- trimws(dateString)
             #> message(dateString)
-            dateTry <- try(as.POSIXct(dateString, tz="UTC"), silent=TRUE)
+            dateTry <- try(as.POSIXct(dateString, tz = "UTC"), silent = TRUE)
             if (inherits(dateTry, "try-error")) {
-                warning("cannot parse date in `", aline, "`; see 'A note on hand-entered headers' in ?read.ctd.sbe", sep="")
+                warning("cannot parse date in `", aline, "`; see 'A note on hand-entered headers' in ?read.ctd.sbe", sep = "")
             } else {
                 if (dateTry < as.POSIXct("1900-01-01")) {
-                    warning("impossible date in `", aline, "` is being ignored\n", sep="")
+                    warning("impossible date in `", aline, "` is being ignored\n", sep = "")
                 } else {
-                    oceDebug(debug, "inferred date=", format(date), " from `", aline, "`\n", sep="")
+                    oceDebug(debug, "inferred date=", format(date), " from `", aline, "`\n", sep = "")
                     date <- dateTry
                 }
             }
         }
-        if (0 < regexpr(".*seacat profiler.*", lline))
+        if (0 < regexpr(".*seacat profiler.*", lline)) {
             serialNumber <- trimws(gsub("[ ].*$", "", gsub(".*sn[ ]*", "", lline)))
-        if (length(grep("^\\* Temperature SN", lline, ignore.case=TRUE)))
+        }
+        if (length(grep("^\\* Temperature SN", lline, ignore.case = TRUE))) {
             serialNumberTemperature <- trimws(gsub("^.*=\\s", "", lline))
-        if (length(grep("^\\* Conductivity SN", lline, ignore.case=TRUE)))
+        }
+        if (length(grep("^\\* Conductivity SN", lline, ignore.case = TRUE))) {
             serialNumberConductivity <- trimws(gsub("^.*=\\s", "", lline))
-        if (length(grep("^#[ \t]*file_type[ \t]*=[ \t]*", lline)))
+        }
+        if (length(grep("^#[ \t]*file_type[ \t]*=[ \t]*", lline))) {
             fileType <- trimws(gsub("[ \t\n]+$", "", gsub(".*=[ \t]*", "", lline)))
-        if (length(grep("^\\* Sea-Bird SBE (.*) Data File:$", lline, ignore.case=TRUE))) {
+        }
+        if (length(grep("^\\* Sea-Bird SBE (.*) Data File:$", lline, ignore.case = TRUE))) {
             model <- gsub("^\\* sea-bird sbe (.*) data file:$", "\\1", lline)
             res@metadata$model <- model
         }
-        if (grepl("filename", lline))
-            hexfilename <- trimws(sub("(.*)FileName =([ ])*", "", ignore.case=TRUE, lline))
+        if (grepl("filename", lline)) {
+            hexfilename <- trimws(sub("(.*)FileName =([ ])*", "", ignore.case = TRUE, lline))
+        }
         if (grepl("system upload time", lline)) {
-            d <- sub("([^=]*)[ ]*=[ ]*", "", ignore.case=TRUE, lline)
+            d <- sub("([^=]*)[ ]*=[ ]*", "", ignore.case = TRUE, lline)
             systemUploadTime <- decodeTime(d)
-            oceDebug(debug, " systemUploadTime ", format(systemUploadTime), " inferred from substring '", d, "'\n", sep="")
+            oceDebug(debug, " systemUploadTime ", format(systemUploadTime), " inferred from substring '", d, "'\n", sep = "")
         }
         # Styles:
         # * NMEA Latitude = 47 54.760 N
         # ** Latitude:      47 53.27 N
-        if (!foundHeaderLatitude && grepl("latitude*[0-8]*", lline, ignore.case=TRUE)) {
-            latitude <- parseLatLon(lline, debug=debug-1)
+        if (!foundHeaderLatitude && grepl("latitude*[0-8]*", lline, ignore.case = TRUE)) {
+            latitude <- parseLatLon(lline, debug = debug - 1)
             foundHeaderLatitude <- TRUE
         }
-        if (!foundHeaderLongitude && grepl("longitude*[0-8]*", lline, ignore.case=TRUE)) {
-            longitude <- parseLatLon(lline, debug=debug-1)
+        if (!foundHeaderLongitude && grepl("longitude*[0-8]*", lline, ignore.case = TRUE)) {
+            longitude <- parseLatLon(lline, debug = debug - 1)
             foundHeaderLongitude <- TRUE
         }
         if (grepl("start_time =", lline)) {
             d <- sub("#[ ]*start_time[ ]*=[ ]*", "", lline)
             startTime <- decodeTime(d)
-            oceDebug(debug, " startTime ", format(startTime), "' inferred from substring '", d, "'\n", sep="")
+            oceDebug(debug, " startTime ", format(startTime), "' inferred from substring '", d, "'\n", sep = "")
         }
         if (grepl("ship:", lline)) {
-            ship <- sub("(.*)ship:([ \t])*", "", ignore.case=TRUE, line) # note: using full string
+            ship <- sub("(.*)ship:([ \t])*", "", ignore.case = TRUE, line) # note: using full string
             ship <- sub("[ \t]*$", "", ship)
         }
-        if (grepl("scientist:", lline))
-            scientist <- sub("(.*)scientist:([ ])*", "", ignore.case=TRUE, line) # full string
-        if (grepl("chef", lline))
-            scientist <- sub("(.*):([ ])*", "", ignore.case=TRUE, line) # full string
-        if (grepl("institute:", lline))
-            institute <- sub("(.*)institute:([ ])*", "", ignore.case=TRUE, line) # full string
-        if (grepl("address:", lline))
-            address <- sub("(.*)address:([ ])*", "", ignore.case=TRUE, line) # full string
+        if (grepl("scientist:", lline)) {
+            scientist <- sub("(.*)scientist:([ ])*", "", ignore.case = TRUE, line)
+        } # full string
+        if (grepl("chef", lline)) {
+            scientist <- sub("(.*):([ ])*", "", ignore.case = TRUE, line)
+        } # full string
+        if (grepl("institute:", lline)) {
+            institute <- sub("(.*)institute:([ ])*", "", ignore.case = TRUE, line)
+        } # full string
+        if (grepl("address:", lline)) {
+            address <- sub("(.*)address:([ ])*", "", ignore.case = TRUE, line)
+        } # full string
         if (grepl("cruise:", lline)) {
-            cruise <- sub("(.*)cruise:([ ])*", "", ignore.case=TRUE, line) # full string
-            cruise <- sub("[ ]*$", "", ignore.case=TRUE, cruise) # full string
+            cruise <- sub("(.*)cruise:([ ])*", "", ignore.case = TRUE, line) # full string
+            cruise <- sub("[ ]*$", "", ignore.case = TRUE, cruise) # full string
         }
         if (is.null(station)) {
-            if (grepl("station:", lline))
-                station <- sub("[ ]*$", "", sub("(.*)station:([ ])*", "", ignore.case=TRUE, line))
-            if (grepl("station_name:", lline))
-                station <- sub("[ ]*$", "", sub("(.*)station_name:([ ])*", "", ignore.case=TRUE, line))
+            if (grepl("station:", lline)) {
+                station <- sub("[ ]*$", "", sub("(.*)station:([ ])*", "", ignore.case = TRUE, line))
+            }
+            if (grepl("station_name:", lline)) {
+                station <- sub("[ ]*$", "", sub("(.*)station_name:([ ])*", "", ignore.case = TRUE, line))
+            }
         }
-        if (grepl("recovery:", lline))
+        if (grepl("recovery:", lline)) {
             recoveryTime <- sub("(.*)recovery:([ ])*", "", lline)
+        }
         if (grepl("^#[ \t]+bad_flag[ \t]*=", lline)) {
             # bad_flag = -9.990e-29
             bad_flag <- sub("#[ \t]*bad_flag[ \t]*=[ \t]*", "", lline)
-            if (missing(missingValue))
+            if (missing(missingValue)) {
                 missingValue <- as.numeric(bad_flag)
+            }
         }
         # Water depth
         # See https://github.com/dankelley/oce/issues/1950
-        if (grepl("^\\*\\* Depth.*:.*$", aline)
-            || grepl("^\\*\\* Water Depth.*:.*$", aline)
-            || grepl("^\\*\\* profondeur.*:.*$", aline, ignore.case=TRUE)) {
+        if (grepl("^\\*\\* Depth.*:.*$", aline) ||
+            grepl("^\\*\\* Water Depth.*:.*$", aline) ||
+            grepl("^\\*\\* profondeur.*:.*$", aline, ignore.case = TRUE)) {
             look <- gsub(".*:", "", lline)
             # Remove any non-numeric (e.g. sometimes a unit is here)
             look <- trimws(gsub("[-a-zA-Z]", "", look))
-            waterDepth<- as.numeric(look)
-            oceDebug(debug, "inferred waterDepth=", waterDepth, "[m] from '", aline, "'\n", sep="")
+            waterDepth <- as.numeric(look)
+            oceDebug(debug, "inferred waterDepth=", waterDepth, "[m] from '", aline, "'\n", sep = "")
         }
         # [1] "# interval = seconds: 1
         # [1] "# interval = decibars: 1
@@ -1097,20 +1121,26 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
     }
     oceDebug(debug, "Finished reading header\n")
     if (debug > 0) {
-        if (is.nan(sampleInterval))
+        if (is.nan(sampleInterval)) {
             warning("\"* sample rate =\" not found in header")
-        if (is.nan(latitude))
+        }
+        if (is.nan(latitude)) {
             warning("\"** Latitude:\" not found in header")
-        if (is.na(longitude))
+        }
+        if (is.na(longitude)) {
             warning("\"** Longitude:\" not found in header")
-        if (is.na(date))
+        }
+        if (is.na(date)) {
             warning("\"** Date:\" not found in header")
-        if (is.na(recoveryTime))
+        }
+        if (is.na(recoveryTime)) {
             warning("\"** Recovery:\" not found in header")
+        }
     }
     # Require p,S,T data at least
-    if (!btl && !("temperature" %in% colNamesInferred))
+    if (!btl && !("temperature" %in% colNamesInferred)) {
         warning("cannot find temperature; try using the \"columns\" argument")
+    }
     res@metadata$header <- header
     res@metadata$type <- "SBE"
     res@metadata$hexfilename <- hexfilename # from instrument
@@ -1129,11 +1159,13 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
     res@metadata$station <- station
     res@metadata$deploymentType <- deploymentType
     res@metadata$date <- date
-    if (!is.na(startTime) && startTime < as.POSIXct("1950-01-01"))
+    if (!is.na(startTime) && startTime < as.POSIXct("1950-01-01")) {
         warning("startTime (", startTime, ") is < 1950, suggesting a turn-of-the-century problem in this cnv file")
+    }
     res@metadata$startTime <- startTime
-    if (!is.na(recoveryTime) && recoveryTime < as.POSIXct("1950-01-01"))
+    if (!is.na(recoveryTime) && recoveryTime < as.POSIXct("1950-01-01")) {
         warning("recoveryTime < 1950, suggesting y2k problem in this cnv file")
+    }
     res@metadata$recoveryTime <- recoveryTime
     res@metadata$latitude <- latitude
     res@metadata$longitude <- longitude
@@ -1143,7 +1175,7 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
     res@metadata$filename <- filename
     if (fileType == "binary") {
         warning("can only handle non-binary .cnv files")
-        res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+        res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep = "", collapse = ""))
         return(res)
     }
     # Read the data as a table.
@@ -1154,33 +1186,38 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
         # of errors in this code.  See https://github.com/dankelley/oce/issues/1681
         oceDebug(debug, "About to read .btl data\n")
         dataHeaderStartLine <- grep("^[^#^*]", lines)[1]
-        if (!length(dataHeaderStartLine))
+        if (!length(dataHeaderStartLine)) {
             stop("cannot find the start of .btl data")
+        }
         colNames <- tail(strsplit(lines[dataHeaderStartLine], "[ ]+")[[1]], -1)
         colNames <- c(colNames, "type") # tack on col for "(avg)" or "(sdev)"
-        oceDebug(debug, "colNames=c(\"", paste(colNames, collapse="\", \""), "\")\n", sep="")
+        oceDebug(debug, "colNames=c(\"", paste(colNames, collapse = "\", \""), "\")\n", sep = "")
         lastLine <- length(lines)
         iodd <- seq(dataHeaderStartLine + 2, lastLine, 2)
         ieven <- seq(dataHeaderStartLine + 3, lastLine, 2)
         # Check that we have the rows interpreted correctly by examining the final column.
         if (any(!grepl("^.*\\(avg\\)$", lines[iodd]))) {
-            stop("odd-numbered data lines in .btl files must end with `(avg)`, but lines ", paste(grep("(avg)$", lines[iodd], invert=TRUE),
-                collapse=","), " do not")
+            stop("odd-numbered data lines in .btl files must end with `(avg)`, but lines ", paste(grep("(avg)$", lines[iodd], invert = TRUE),
+                collapse = ","
+            ), " do not")
         }
         if (any(!grepl("^.*\\(sdev\\)$", lines[ieven]))) {
-            stop("even-numbered data lines in .btl files must end with `(sdev)`, but lines ", paste(grep("(sdev)$", lines[ieven], invert=TRUE),
-                collapse=","), " do not")
+            stop("even-numbered data lines in .btl files must end with `(sdev)`, but lines ", paste(grep("(sdev)$", lines[ieven], invert = TRUE),
+                collapse = ","
+            ), " do not")
         }
         # It's a multistep process, working with this odd paired-line format.  We
         # divide it into steps, in hopes of making it easier to modify the code later,
         # in case this fails on some files, or there is a need to change the output
         # scheme.
-        dataInterwoven <- utils::read.fwf(file, widths=rep(11, length(colNames)), skip=1+dataHeaderStartLine,
-            col.names=colNames)
+        dataInterwoven <- utils::read.fwf(file,
+            widths = rep(11, length(colNames)), skip = 1 + dataHeaderStartLine,
+            col.names = colNames
+        )
         ndataInterwoven <- dim(dataInterwoven)[1]
         # Break up into two dataframes
-        iavgs <- seq(1, ndataInterwoven, by=2)
-        isdevs <- seq(2, ndataInterwoven, by=2)
+        iavgs <- seq(1, ndataInterwoven, by = 2)
+        isdevs <- seq(2, ndataInterwoven, by = 2)
         avg <- dataInterwoven[iavgs, ]
         sdev <- dataInterwoven[isdevs, ]
         # Get time-of-day from sdev, then trim out NA columns, and finally rename columns
@@ -1191,21 +1228,26 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
         # Recombine, then trim the "type" columns, which we kept only for testing, so far
         data <- cbind(avg, sdev)
         trimCols <- grep("^(type)|(typeSdev)$", names(data))
-        if (2 != length(trimCols))
+        if (2 != length(trimCols)) {
             stop("expecting 2 'type' columns to trim, but found ", length(trimCols))
+        }
         data <- data[, -trimCols]
-        data$time <- as.POSIXct(paste(data$Date, hms), format="%b %d %Y %H:%M:%S", tz="UTC")
+        data$time <- as.POSIXct(paste(data$Date, hms), format = "%b %d %Y %H:%M:%S", tz = "UTC")
         data <- data[, -which(names(data) == "Date")]
         haveData <- TRUE
         names <- colNames # used later (perhaps incorrectly, since we don't have flags etc for .btl files)
     } else {
         pushBack(lines, file) # push back header so we can read from a file, not a text vector (for speed)
         oceDebug(debug, "About to read .cnv data with these names: c(\"",
-            paste(colNamesInferred, collapse="\",\""), "\")\n", sep="")
-        data <- as.list(read.table(file, skip=iline-1L, header=FALSE, encoding=encoding))
+            paste(colNamesInferred, collapse = "\",\""), "\")\n",
+            sep = ""
+        )
+        data <- as.list(read.table(file, skip = iline - 1L, header = FALSE, encoding = encoding))
         if (length(data) != length(colNamesInferred)) {
-            stop("Number of columns in .cnv data file (", length(data), ") must match number of variables named in the header (",
-                length(colNamesInferred), ")")
+            stop(
+                "Number of columns in .cnv data file (", length(data), ") must match number of variables named in the header (",
+                length(colNamesInferred), ")"
+            )
         }
         names(data) <- colNamesInferred
         ndata <- length(data[[1]])
@@ -1215,16 +1257,17 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
         } else {
             haveData <- FALSE
             warning("no data in CTD file \"", filename, "\"")
-            data <- list(scan=NULL, salinity=NULL, temperature=NULL, pressure=NULL)
+            data <- list(scan = NULL, salinity = NULL, temperature = NULL, pressure = NULL)
         }
     }
     if (missing(processingLog)) {
-        processingLog <- paste(deparse(match.call()), sep="", collapse="")
+        processingLog <- paste(deparse(match.call()), sep = "", collapse = "")
     }
     # replace any missingValue with NA
     if (!missing(missingValue) && !is.null(missingValue)) {
-        for (item in names(data))
-            data[[item]] <- ifelse(data[[item]]==missingValue, NA, data[[item]])
+        for (item in names(data)) {
+            data[[item]] <- ifelse(data[[item]] == missingValue, NA, data[[item]])
+        }
     }
     res@data <- data
     # Add standard things, if missing
@@ -1233,9 +1276,11 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
             if (foundConductivityRatio) {
                 C <- data$conductivityratio
                 S <- swSCTp(C, data$temperature, data$pressure)
-                res <- oceSetData(res, name="salinity", value=S,
-                    unit=list(unit=expression(), scale="PSS-78"))
-                warning("created 'salinity' from 'temperature', 'conductivity' and 'pressure'", immediate.=TRUE)
+                res <- oceSetData(res,
+                    name = "salinity", value = S,
+                    unit = list(unit = expression(), scale = "PSS-78")
+                )
+                warning("created 'salinity' from 'temperature', 'conductivity' and 'pressure'", immediate. = TRUE)
             } else if (foundConductivity) {
                 C <- data$conductivity
                 if (!is.null(res@metadata$units$conductivity)) {
@@ -1243,7 +1288,7 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
                     # Conductivity Ratio is conductivity divided by 42.914 mS/cm (Culkin and Smith 1980
                     # see ?read.rsk for full citation)
                     if (length(unit)) {
-                        oceDebug(debug, "'columns' indicates that the conductivity unit is '", unit, "'\n", sep="")
+                        oceDebug(debug, "'columns' indicates that the conductivity unit is '", unit, "'\n", sep = "")
                         if ("uS/cm" == unit) {
                             C <- C / 429.14
                         } else if ("mS/cm" == unit) {
@@ -1252,32 +1297,41 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
                             C <- C / 4.2914
                         } else {
                             warning("unrecognized conductivity unit '", unit,
-                                "'; assuming unitless for salinity calculation -- results should be used with caution", immediate.=TRUE)
+                                "'; assuming unitless for salinity calculation -- results should be used with caution",
+                                immediate. = TRUE
+                            )
                         }
                     } else {
                         warning("missing conductivity unit, so assuming unitless for salinity calculation -- results should be used with caution",
-                            immediate.=TRUE)
+                            immediate. = TRUE
+                        )
                     }
                 } else {
-                    warning("missing conductivity unit; guessing a unit based on maximum value", immediate.=TRUE)
-                    cmax <- max(C, na.rm=TRUE)
+                    warning("missing conductivity unit; guessing a unit based on maximum value", immediate. = TRUE)
+                    cmax <- max(C, na.rm = TRUE)
                     if (cmax > 10) {
                         warning("max(conductivity) > 10, so using using conductivity/42.914 as a conductivity ratio for computation of salinity",
-                            immediate.=TRUE)
+                            immediate. = TRUE
+                        )
                         C <- C / 42.914
                     } else if (cmax > 1) {
                         warning("max(conductivity) between 1 and 10, so using using conductivity/4.2914 as ",
-                            "a conductivity ratio for computation of salinity", immediate.=TRUE)
+                            "a conductivity ratio for computation of salinity",
+                            immediate. = TRUE
+                        )
                         C <- C / 4.2914
                     }
                 }
                 S <- swSCTp(C, data$temperature, data$pressure)
-                res <- oceSetData(res, name="salinity", value=S,
-                    unit=list(unit=expression(), scale="PSS-78"))
-                warning("created 'salinity' from 'temperature', 'conductivity' and 'pressure'", immediate.=TRUE)
+                res <- oceSetData(res,
+                    name = "salinity", value = S,
+                    unit = list(unit = expression(), scale = "PSS-78")
+                )
+                warning("created 'salinity' from 'temperature', 'conductivity' and 'pressure'", immediate. = TRUE)
             } else {
                 warning("cannot find salinity or conductivity in .cnv file; try using columns argument if the file actually contains these items",
-                    immediate.=TRUE)
+                    immediate. = TRUE
+                )
             }
         }
         if ("pressurePSI" %in% names && !("pressure" %in% names)) {
@@ -1285,26 +1339,32 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
             # I am taking the wikipedia value.
             # 0.6894757293168  https://en.wikipedia.org/wiki/Pounds_per_square_inch
             # 0.689475728      http://www.convertunits.com/from/psi/to/decibar
-            res <- oceSetData(res, name="pressure", value=res@data$pressurePSI*0.6894757293168,
-                unit=list(unit=expression("dbar"), scale=""))
+            res <- oceSetData(res,
+                name = "pressure", value = res@data$pressurePSI * 0.6894757293168,
+                unit = list(unit = expression("dbar"), scale = "")
+            )
             warning("created 'pressure' from 'pressurePSI'")
         } else if (foundDepth && !foundPressure) {
             # BUG: this is a poor, nonrobust approximation of pressure
             g <- if (foundHeaderLatitude) gravity(latitude) else 9.8
             # on use of eos, see https://github.com/dankelley/oce/issues/2161
-            rho0 <- 1000 + swSigmaTheta(median(res[["salinity"]]), median(res[["temperature"]]), 0, eos="unesco")
+            rho0 <- 1000 + swSigmaTheta(median(res[["salinity"]]), median(res[["temperature"]]), 0, eos = "unesco")
             # res <- ctdAddColumn(res, res@data$depth * g * rho0 / 1e4, name="pressure", label="Pressure",
             #                     unit=list(unit=expression("dbar"), scale=""), debug=debug-1)
-            res <- oceSetData(res, name="pressure", value=res@data$depth * g * rho0 / 1e4,
-                unit=list(unit=expression("dbar"), scale=""))
+            res <- oceSetData(res,
+                name = "pressure", value = res@data$depth * g * rho0 / 1e4,
+                unit = list(unit = expression("dbar"), scale = "")
+            )
             # colNamesOriginal <- c(colNamesOriginal, "NA")
             warning("created 'pressure' from 'depth'")
         }
     }
-    res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+    res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep = "", collapse = ""))
     if (("temperature" %in% names(res@metadata$units)) && res@metadata$units$temperature$scale == "IPTS-68") {
-        warning("this CNV file has temperature in the IPTS-68 scale, and this is stored in object, but note ",
-            " that [[\"temperature\"]] and the sw* functions convert the numbers to ITS-90 values")
+        warning(
+            "this CNV file has temperature in the IPTS-68 scale, and this is stored in object, but note ",
+            " that [[\"temperature\"]] and the sw* functions convert the numbers to ITS-90 values"
+        )
     }
     # Note: previously, at this spot, there was code to switch from the IPTS-68 scale
     # to the ITS-90 scale. The old-scale data were saved in a column named

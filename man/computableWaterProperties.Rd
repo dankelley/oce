@@ -39,8 +39,10 @@ computableWaterProperties("salinity")
 # Example 3: quite a lot can be computed from this trio of values
 computableWaterProperties(c("salinity", "temperature", "pressure"))
 # Example 4: now we can get TEOS-10 values as well
-computableWaterProperties(c("salinity", "temperature", "pressure",
-    "longitude", "latitude"))
+computableWaterProperties(c(
+    "salinity", "temperature", "pressure",
+    "longitude", "latitude"
+))
 
 }
 \seealso{

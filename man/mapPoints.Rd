@@ -26,8 +26,10 @@ Plot points on an existing map, by analogy to \code{\link[=points]{points()}}.
 \donttest{
 library(oce)
 data(coastlineWorld)
-mapPlot(coastlineWorld, longitudelim=c(-80, 0), latitudelim=c(20, 50),
-        col="lightgray", projection="+proj=laea +lon_0=-35")
+mapPlot(coastlineWorld,
+    longitudelim = c(-80, 0), latitudelim = c(20, 50),
+    col = "lightgray", projection = "+proj=laea +lon_0=-35"
+)
 data(section)
 mapPoints(section)
 }

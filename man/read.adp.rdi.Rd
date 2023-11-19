@@ -382,7 +382,7 @@ See https://github.com/dankelley/oce/issues/2039 for discussion.
 }
 
 \examples{
-adp <- read.adp.rdi(system.file("extdata", "adp_rdi.000", package="oce"))
+adp <- read.adp.rdi(system.file("extdata", "adp_rdi.000", package = "oce"))
 summary(adp)
 
 }

@@ -58,18 +58,20 @@ the corresponding arguments to the present function are ignored.
 \examples{
 library(oce)
 # Example 1: test value from Fofonoff et al., 1983
-stopifnot(abs(36.8818748026 - swTheta(40, T90fromT68(40), 10000, 0, eos="unesco")) < 0.0000000001)
+stopifnot(abs(36.8818748026 - swTheta(40, T90fromT68(40), 10000, 0, eos = "unesco")) < 0.0000000001)
 
 # Example 2: a deep-water station. Note that theta and CT are
 # visually identical on this scale.
 data(section)
 stn <- section[["station", 70]]
-plotProfile(stn, "temperature", ylim=c(6000, 1000))
-lines(stn[["theta"]], stn[["pressure"]], col=2)
-lines(stn[["CT"]], stn[["pressure"]], col=4, lty=2)
-legend("bottomright", lwd=1, col=c(1, 2, 4), lty=c(1, 1, 2),
-    legend=c("in-situ", "theta", "CT"),
-    title=sprintf("MAD(theta-CT)=\%.4f", mean(abs(stn[["theta"]] - stn[["CT"]]))))
+plotProfile(stn, "temperature", ylim = c(6000, 1000))
+lines(stn[["theta"]], stn[["pressure"]], col = 2)
+lines(stn[["CT"]], stn[["pressure"]], col = 4, lty = 2)
+legend("bottomright",
+    lwd = 1, col = c(1, 2, 4), lty = c(1, 1, 2),
+    legend = c("in-situ", "theta", "CT"),
+    title = sprintf("MAD(theta-CT)=\%.4f", mean(abs(stn[["theta"]] - stn[["CT"]])))
+)
 
 }
 \references{

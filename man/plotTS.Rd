@@ -211,31 +211,33 @@ plotTS(handleFlags(argo))
 # 4. oxygen-based colormap
 marOrig <- par("mar") # so later plots with palettes have same margins
 cm <- colormap(section[["oxygen"]])
-drawPalette(colormap=cm, zlab="Oxygen")
-plotTS(section, pch=19, col=cm$zcol, mar=par("mar")) # the mar adjusts for the palette
+drawPalette(colormap = cm, zlab = "Oxygen")
+plotTS(section, pch = 19, col = cm$zcol, mar = par("mar")) # the mar adjusts for the palette
 
 # 5. waters near Gulf Stream, colour-coded for longitude.
 sec <- subset(section, abs(longitude + 71.6) < 1)
-cm <- colormap(sec[["longitude", "byStation"]], col=oceColors9B)
-par(mar=c(3.3, 3.3, 1, 1.5))
-drawPalette(colormap=cm, zlab="Longitude")
-plotTS(sec, type="n", xaxs="r", mar=par("mar"))
-jnk <- mapply(function(s, col)
-    {
-        plotTS(s, type="o", col="gray", pt.bg=col, pch=21, add=TRUE)
+cm <- colormap(sec[["longitude", "byStation"]], col = oceColors9B)
+par(mar = c(3.3, 3.3, 1, 1.5))
+drawPalette(colormap = cm, zlab = "Longitude")
+plotTS(sec, type = "n", xaxs = "r", mar = par("mar"))
+jnk <- mapply(
+    function(s, col) {
+        plotTS(s, type = "o", col = "gray", pt.bg = col, pch = 21, add = TRUE)
     },
-    sec[["station"]], col=cm$zcol)
+    sec[["station"]],
+    col = cm$zcol
+)
 
 # 6. with added spiciness contours
 data(ctd)
-plotTS(ctd, eos="gsw") # MANDATORY so x=SA and y=CT
+plotTS(ctd, eos = "gsw") # MANDATORY so x=SA and y=CT
 usr <- par("usr")
 n <- 100
-SAgrid <- seq(usr[1], usr[2], length.out=n)
-CTgrid <- seq(usr[3], usr[4], length.out=n)
-g <- expand.grid(SA=SAgrid, CT=CTgrid)
-spiciness <- matrix(gsw::gsw_spiciness0(g$SA, g$CT), nrow=n)
-contour(SAgrid, CTgrid, spiciness, col=2, labcex=1, add=TRUE)
+SAgrid <- seq(usr[1], usr[2], length.out = n)
+CTgrid <- seq(usr[3], usr[4], length.out = n)
+g <- expand.grid(SA = SAgrid, CT = CTgrid)
+spiciness <- matrix(gsw::gsw_spiciness0(g$SA, g$CT), nrow = n)
+contour(SAgrid, CTgrid, spiciness, col = 2, labcex = 1, add = TRUE)
 
 }
 \references{

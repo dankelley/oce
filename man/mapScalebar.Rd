@@ -43,9 +43,11 @@ but now it can be any diagram showing longitude and latitude in degrees.
 library(oce)
 data(coastlineWorld)
 # Arctic Ocean
-par(mar=c(2.5, 2.5, 1, 1))
-mapPlot(coastlineWorld, latitudelim=c(60, 120), longitudelim=c(-130,-50),
-        col="lightgray", projection="+proj=stere +lat_0=90")
+par(mar = c(2.5, 2.5, 1, 1))
+mapPlot(coastlineWorld,
+    latitudelim = c(60, 120), longitudelim = c(-130, -50),
+    col = "lightgray", projection = "+proj=stere +lat_0=90"
+)
 mapScalebar()
 }
 

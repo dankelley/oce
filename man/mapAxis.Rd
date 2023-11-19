@@ -100,7 +100,7 @@ with the defaults used by \code{\link[=mapPlot]{mapPlot()}}.
 \donttest{
 library(oce)
 data(coastlineWorld)
-par(mar=c(2, 2, 1, 1))
+par(mar = c(2, 2, 1, 1))
 lonlim <- c(-180, 180)
 latlim <- c(70, 110)
 # In mapPlot() call, note axes and grid args, to
@@ -109,11 +109,13 @@ latlim <- c(70, 110)
 # get agreement with the axis. This is why both
 # mapGrid() and mapAxis() are best avoided; it is
 # simpler to let mapPlot() handle these things.
-mapPlot(coastlineWorld, projection="+proj=stere +lat_0=90",
-    longitudelim=lonlim, latitudelim=latlim,
-    col="tan", axes=FALSE, grid=FALSE)
+mapPlot(coastlineWorld,
+    projection = "+proj=stere +lat_0=90",
+    longitudelim = lonlim, latitudelim = latlim,
+    col = "tan", axes = FALSE, grid = FALSE
+)
 mapGrid(15, 15)
-mapAxis(axisStyle=5)
+mapAxis(axisStyle = 5)
 }
 
 }

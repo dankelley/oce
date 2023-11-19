@@ -22,11 +22,11 @@ Here, \code{tidalCurrent} is data frame containing
 \examples{
 library(oce)
 data(tidalCurrent)
-par(mfrow=c(2, 1))
-oce.plot.ts(tidalCurrent$time, tidalCurrent$u, ylab="u [m/s]")
-abline(h=0, col=2)
-oce.plot.ts(tidalCurrent$time, tidalCurrent$v, ylab="v [m/s]")
-abline(h=0, col=2)
+par(mfrow = c(2, 1))
+oce.plot.ts(tidalCurrent$time, tidalCurrent$u, ylab = "u [m/s]")
+abline(h = 0, col = 2)
+oce.plot.ts(tidalCurrent$time, tidalCurrent$v, ylab = "v [m/s]")
+abline(h = 0, col = 2)
 
 }
 \references{

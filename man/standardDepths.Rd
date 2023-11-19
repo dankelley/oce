@@ -31,10 +31,10 @@ See the documentation for
 in gridding data for section plots.
 }
 \examples{
-depth  <- standardDepths()
+depth <- standardDepths()
 depth1 <- standardDepths(1)
 plot(depth, depth)
-points(depth1, depth1, col=2, pch=20, cex=1/2)
+points(depth1, depth1, col = 2, pch = 20, cex = 1 / 2)
 
 }
 \references{

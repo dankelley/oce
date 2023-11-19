@@ -35,8 +35,9 @@ ground between this and the \code{clipPolys} function in the
 \donttest{
 library(oce)
 data(coastlineWorld)
-mapPlot(coastlineCut(coastlineWorld, lon_0=100),
-        projection="+proj=moll +lon_0=100", col="gray")
+mapPlot(coastlineCut(coastlineWorld, lon_0 = 100),
+    projection = "+proj=moll +lon_0=100", col = "gray"
+)
 }
 
 }

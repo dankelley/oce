@@ -74,9 +74,10 @@ a flag system, for possible use in later processing steps.
 # Gulf Stream
 library(oce)
 data(section)
-GS <- subset(section, 113<=stationId&stationId<=129)
-GSg <- sectionGrid(GS, p=seq(0, 5000, 100))
-plot(GSg, which="temperature")
+GS <- subset(section, 113 <= stationId & stationId <= 129)
+GSg <- sectionGrid(GS, p = seq(0, 5000, 100))
+plot(GSg, which = "temperature")
+## Show effects of various depth schemes
 
 }
 \seealso{

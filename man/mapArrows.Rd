@@ -47,13 +47,15 @@ Adds arrows to an existing map, by analogy to \code{\link[=arrows]{arrows()}}.
 \donttest{
 library(oce)
 data(coastlineWorld)
-mapPlot(coastlineWorld, longitudelim=c(-120, -60), latitudelim=c(30, 60),
-        col="lightgray", projection="+proj=lcc +lat_1=45 +lon_0=-100")
+mapPlot(coastlineWorld,
+    longitudelim = c(-120, -60), latitudelim = c(30, 60),
+    col = "lightgray", projection = "+proj=lcc +lat_1=45 +lon_0=-100"
+)
 lon <- seq(-120, -75, 15)
 n <- length(lon)
 lat <- 45 + rep(0, n)
 # Draw meridional arrows in N America, from 45N to 60N.
-mapArrows(lon, lat, lon, lat+15, length=0.05, col="blue")
+mapArrows(lon, lat, lon, lat + 15, length = 0.05, col = "blue")
 }
 
 }

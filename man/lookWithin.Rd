@@ -32,16 +32,16 @@ The examples may clarify this somewhat.
 }
 \examples{
 # 1. If first item is not a CTD object, just return the input
-lookWithin(list(a=1, b=2)) # returns a list
+lookWithin(list(a = 1, b = 2)) # returns a list
 # 2. Extract salinity from a CTD object
 data(ctd)
-str(lookWithin(list(salinity=ctd)))
+str(lookWithin(list(salinity = ctd)))
 # 3. Extract salinity and temperature. Note that the
 # value specified for temperature is ignored; all that matters
 # is that temperature is named.
-str(lookWithin(list(salinity=ctd, temperature=NULL)))
+str(lookWithin(list(salinity = ctd, temperature = NULL)))
 # 4. How it is used by swRho()
-rho1 <- swRho(ctd, eos="unesco")
-rho2 <- swRho(ctd[["salinity"]], ctd[["temperature"]], ctd[["pressure"]], eos="unesco")
+rho1 <- swRho(ctd, eos = "unesco")
+rho2 <- swRho(ctd[["salinity"]], ctd[["temperature"]], ctd[["pressure"]], eos = "unesco")
 stopifnot(all.equal(rho1, rho2))
 }

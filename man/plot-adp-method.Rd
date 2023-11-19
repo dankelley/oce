@@ -338,8 +338,8 @@ site.
 \examples{
 library(oce)
 data(adp)
-plot(adp, which=1:3)
-plot(adp, which="temperature", tformat="\%H:\%M")
+plot(adp, which = 1:3)
+plot(adp, which = "temperature", tformat = "\%H:\%M")
 
 }
 \seealso{

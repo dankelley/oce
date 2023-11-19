@@ -101,14 +101,16 @@ data(sealevelTuktoyaktuk)
 # 'm0' is model fitted by tidem()
 m0 <- tidem(sealevelTuktoyaktuk)
 p0 <- predict(m0, sealevelTuktoyaktuk[["time"]])
-m1 <- as.tidem(mean(sealevelTuktoyaktuk[["time"]]), sealevelTuktoyaktuk[["latitude"]],
-    m0[["name"]], m0[["amplitude"]], m0[["phase"]])
+m1 <- as.tidem(
+    mean(sealevelTuktoyaktuk[["time"]]), sealevelTuktoyaktuk[["latitude"]],
+    m0[["name"]], m0[["amplitude"]], m0[["phase"]]
+)
 # Test agreement with tidem() result, by comparing predicted sealevels.
 p1 <- predict(m1, sealevelTuktoyaktuk[["time"]])
-stopifnot(max(abs(p1 - p0), na.rm=TRUE) < 1e-10)
+stopifnot(max(abs(p1 - p0), na.rm = TRUE) < 1e-10)
 
 # Example 2: See the effect of dropping weak constituents
-m0[["name"]][which(m0[["amplitude"]]>0.05)]
+m0[["name"]][which(m0[["amplitude"]] > 0.05)]
 h <- "
 name  amplitude      phase
   Z0 1.98061875   0.000000
@@ -120,16 +122,18 @@ name  amplitude      phase
   N2 0.08377108  44.521462
   M2 0.49041340  77.703594
   S2 0.22023705 137.475767"
-coef <- read.table(text=h, header=TRUE)
-m2 <- as.tidem(mean(sealevelTuktoyaktuk[["time"]]),
+coef <- read.table(text = h, header = TRUE)
+m2 <- as.tidem(
+    mean(sealevelTuktoyaktuk[["time"]]),
     sealevelTuktoyaktuk[["latitude"]],
-    coef$name, coef$amplitude, coef$phase)
+    coef$name, coef$amplitude, coef$phase
+)
 p2 <- predict(m2, sealevelTuktoyaktuk[["time"]])
-par(mfrow=c(3, 1))
+par(mfrow = c(3, 1))
 oce.plot.ts(sealevelTuktoyaktuk[["time"]], p0)
 ylim <- par("usr")[3:4] # to match scales in other panels
-oce.plot.ts(sealevelTuktoyaktuk[["time"]], p1, ylim=ylim)
-oce.plot.ts(sealevelTuktoyaktuk[["time"]], p2, ylim=ylim)
+oce.plot.ts(sealevelTuktoyaktuk[["time"]], p1, ylim = ylim)
+oce.plot.ts(sealevelTuktoyaktuk[["time"]], p2, ylim = ylim)
 
 }
 \references{

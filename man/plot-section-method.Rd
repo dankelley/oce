@@ -324,15 +324,17 @@ plot(GSg, which="salinity", ztype="image",
 \examples{
 library(oce)
 data(section)
-GS <- subset(section, 113<=stationId&stationId<=129)
-GSg <- sectionGrid(GS, p=seq(0, 2000, 100))
+GS <- subset(section, 113 <= stationId & stationId <= 129)
+GSg <- sectionGrid(GS, p = seq(0, 2000, 100))
 
 # Gulf Stream, salinity and temperature contours
-plot(GSg, which=c("salinity", "temperature"))
+plot(GSg, which = c("salinity", "temperature"))
 
 # Gulf Stream, Temperature image
-plot(GSg, which="temperature", ztype="image",
-    zbreaks=seq(0,25,2), zcol=oceColorsTemperature)
+plot(GSg,
+    which = "temperature", ztype = "image",
+    zbreaks = seq(0, 25, 2), zcol = oceColorsTemperature
+)
 
 }
 \seealso{

@@ -99,27 +99,27 @@ past 1859-11-17T00:00:00 UTC. See reference 5.
 numberAsPOSIXct(0)
 
 # Example 2. Matlab
-numberAsPOSIXct(1, type="matlab")
+numberAsPOSIXct(1, type = "matlab")
 
 # Example 3. GPS with default week rollover or with no rollover (Canada Day, year 2010)
-numberAsPOSIXct(cbind(566, 345615), type="gps")
-numberAsPOSIXct(cbind(566, 345615, 1), type="gps")
-numberAsPOSIXct(cbind(1024+566, 345615, 0), type="gps")
+numberAsPOSIXct(cbind(566, 345615), type = "gps")
+numberAsPOSIXct(cbind(566, 345615, 1), type = "gps")
+numberAsPOSIXct(cbind(1024 + 566, 345615, 0), type = "gps")
 # Show how to deal with leap seconds (15 of them, in this case)
 sum(as.POSIXct("1980-01-01") < .leap.seconds & .leap.seconds <= as.POSIXct("2010-07-01"))
--15 + numberAsPOSIXct(cbind(1024+566, 345615, 0), type="gps", leap=FALSE)
+-15 + numberAsPOSIXct(cbind(1024 + 566, 345615, 0), type = "gps", leap = FALSE)
 
 # Example 4. yearday
-numberAsPOSIXct(cbind(2013, 1), type="yearday") # start of 2013
+numberAsPOSIXct(cbind(2013, 1), type = "yearday") # start of 2013
 
 # Example 5. Epic time, one hour into Canada Day of year 2018. In computing the
 # Julian day, note that this starts at noon.
-jd <- julianDay(as.POSIXct("2018-07-01 12:00:00", tz="UTC"))
-numberAsPOSIXct(cbind(jd, 1e3 * 1 * 3600), type="epic", tz="UTC")
+jd <- julianDay(as.POSIXct("2018-07-01 12:00:00", tz = "UTC"))
+numberAsPOSIXct(cbind(jd, 1e3 * 1 * 3600), type = "epic", tz = "UTC")
 
 # Example 6. Julian day, note that this starts at noon.
-jd <- julianDay(as.POSIXct("2018-07-01 12:00:00", tz="UTC"))
-numberAsPOSIXct(cbind(jd, 1e3 * 1 * 3600), type="epic", tz="UTC")
+jd <- julianDay(as.POSIXct("2018-07-01 12:00:00", tz = "UTC"))
+numberAsPOSIXct(cbind(jd, 1e3 * 1 * 3600), type = "epic", tz = "UTC")
 
 }
 \references{

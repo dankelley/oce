@@ -40,8 +40,8 @@ points up or down, etc.
 
 library(oce)
 data(adp)
-o <- enuToOtherAdp(adp, heading=-31.5)
-plot(o, which=1:3)
+o <- enuToOtherAdp(adp, heading = -31.5)
+plot(o, which = 1:3)
 
 }
 \references{
