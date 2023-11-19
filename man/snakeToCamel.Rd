@@ -39,11 +39,11 @@ see the four examples).
 }
 \examples{
 library(oce)
-snakeToCamel("PARAMETER_DATA_MODE")   # "parameterDataMode"
-snakeToCamel("PARAMETER")             # "parameter"
-snakeToCamel("HISTORY_QCTEST")        # "historyQctest"
-snakeToCamel("HISTORY_QCTEST", "QC")  # "historyQCTest"
-snakeToCamel("PROFILE_DOXY_QC")       # "profileDoxyQc"
+snakeToCamel("PARAMETER_DATA_MODE") # "parameterDataMode"
+snakeToCamel("PARAMETER") # "parameter"
+snakeToCamel("HISTORY_QCTEST") # "historyQctest"
+snakeToCamel("HISTORY_QCTEST", "QC") # "historyQCTest"
+snakeToCamel("PROFILE_DOXY_QC") # "profileDoxyQc"
 snakeToCamel("PROFILE_DOXY_QC", "QC") # "profileDoxyQC"
 }
 \author{

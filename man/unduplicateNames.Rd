@@ -26,7 +26,7 @@ formats permit the reuse of variable names within a given file.
 }
 \examples{
 unduplicateNames(c("a", "b", "a", "c", "b"))
-unduplicateNames(c("a", "b", "a", "c", "b"), style=2)
+unduplicateNames(c("a", "b", "a", "c", "b"), style = 2)
 }
 \seealso{
 Used by \code{\link[=read.ctd.sbe]{read.ctd.sbe()}} with \code{style=1} to

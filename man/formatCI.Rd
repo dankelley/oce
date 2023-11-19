@@ -86,7 +86,7 @@ library(oce)
 formatCI(c(0.95, 1.05)) # "1+/-0.05"
 
 # Example 2: save mean and uncertainty, but in parentheses notation.
-formatCI(c(0.95, 1.05), style="parentheses") # "1.00(5)"
+formatCI(c(0.95, 1.05), style = "parentheses") # "1.00(5)"
 
 # example 3: using t.test to find a CI.
 a <- rnorm(100, mean = 10, sd = 1)
