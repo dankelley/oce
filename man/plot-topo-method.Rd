@@ -111,7 +111,7 @@ the length must match the length of the corresponding properties, e.g.
 \examples{
 library(oce)
 data(topoWorld)
-plot(topoWorld, clongitude=-60, clatitude=45, span=10000)
+plot(topoWorld, clongitude = -60, clatitude = 45, span = 10000)
 
 }
 \seealso{

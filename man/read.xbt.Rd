@@ -49,7 +49,7 @@ directly with \code{\link[=read.xbt.noaa1]{read.xbt.noaa1()}}.
 }
 \examples{
 library(oce)
-xbt <- read.oce(system.file("extdata", "xbt.edf", package="oce"))
+xbt <- read.oce(system.file("extdata", "xbt.edf", package = "oce"))
 summary(xbt)
 plot(xbt)
 

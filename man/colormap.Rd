@@ -217,22 +217,22 @@ plot(x, y, pch=21, bg=cm$colfunction(z), cex=3)
 \examples{
 library(oce)
 # Example 1. color scheme for points on xy plot
-x <- seq(0, 1, length.out=40)
+x <- seq(0, 1, length.out = 40)
 y <- sin(2 * pi * x)
-par(mar=c(3, 3, 1, 1))
+par(mar = c(3, 3, 1, 1))
 mar <- par("mar") # prevent margin creep by drawPalette()
 # First, default breaks
 c <- colormap(y)
-drawPalette(c$zlim, col=c$col, breaks=c$breaks)
-plot(x, y, bg=c$zcol, pch=21, cex=1)
+drawPalette(c$zlim, col = c$col, breaks = c$breaks)
+plot(x, y, bg = c$zcol, pch = 21, cex = 1)
 grid()
-par(mar=mar)
+par(mar = mar)
 # Second, 100 breaks, yielding a smoother palette
-c <- colormap(y, breaks=100)
-drawPalette(c$zlim, col=c$col, breaks=c$breaks)
-plot(x, y, bg=c$zcol, pch=21, cex=1)
+c <- colormap(y, breaks = 100)
+drawPalette(c$zlim, col = c$col, breaks = c$breaks)
+plot(x, y, bg = c$zcol, pch = 21, cex = 1)
 grid()
-par(mar=mar)
+par(mar = mar)
 
 }
 \references{

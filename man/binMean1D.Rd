@@ -48,9 +48,9 @@ library(oce)
 data(ctd)
 z <- ctd[["z"]]
 T <- ctd[["temperature"]]
-plot(T, z, cex=0.3)
+plot(T, z, cex = 0.3)
 TT <- binMean1D(z, T, seq(-100, 0, 1))
-lines(TT$result, TT$xmids, col=rgb(1, 0, 0, 0.9), lwd=2)
+lines(TT$result, TT$xmids, col = rgb(1, 0, 0, 0.9), lwd = 2)
 
 }
 \seealso{
