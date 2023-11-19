@@ -43,8 +43,8 @@ Create a wind-rose object, typically for plotting with
 library(oce)
 set.seed(1234)
 theta <- seq(0, 360, 0.25)
-x <- 1 + cos(pi/180*theta) + rnorm(theta)
-y <- sin(pi/180*theta) + rnorm(theta)
+x <- 1 + cos(pi / 180 * theta) + rnorm(theta)
+y <- sin(pi / 180 * theta) + rnorm(theta)
 wr <- as.windrose(x, y)
 summary(wr)
 

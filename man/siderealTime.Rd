@@ -22,7 +22,7 @@ that he discusses after his equation 7.1 is not applied here.
 }
 \examples{
 
-t <- ISOdatetime(1978, 11, 13, 0, 0, 0, tz="UTC")
+t <- ISOdatetime(1978, 11, 13, 0, 0, 0, tz = "UTC")
 print(siderealTime(t))
 
 }

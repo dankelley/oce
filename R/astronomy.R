@@ -32,8 +32,7 @@
 #' @author Dan Kelley
 #'
 #' @family things related to astronomy
-angle2hms <- function(angle)
-{
+angle2hms <- function(angle) {
     hourDecimal <- 24 * angle / 360
     hour <- floor(hourDecimal)
     minute <- floor(60 * (hourDecimal - hour))
@@ -41,7 +40,7 @@ angle2hms <- function(angle)
     floorSecond <- floor(second)
     centiSecond <- round(100 * (second - floorSecond))
     string <- sprintf("%.0fh%.0fm%.0fs.%.0f", hour, minute, floorSecond, centiSecond)
-    list(hourDecimal=hourDecimal, hour=hour, minute=minute, second=second, string=string)
+    list(hourDecimal = hourDecimal, hour = hour, minute = minute, second = second, string = string)
 }
 
 #' Convert Ecliptical Coordinate to Equatorial Coordinate
@@ -78,17 +77,16 @@ angle2hms <- function(angle)
 #' Richmond, Virginia, USA: Willmann-Bell, 1991.
 #'
 #' @family things related to astronomy
-eclipticalToEquatorial <- function(lambda, beta, epsilon)
-{
+eclipticalToEquatorial <- function(lambda, beta, epsilon) {
     if (is.data.frame(lambda)) {
         beta <- lambda$beta
         epsilon <- lambda$epsilon
         lambda <- lambda$lambda
     }
-    RPD <- atan2(1, 1) / 45            # radians per degree
+    RPD <- atan2(1, 1) / 45 # radians per degree
     alpha <- atan2(sin(RPD * lambda) * cos(RPD * epsilon) - tan(RPD * beta) * sin(RPD * epsilon), cos(RPD * lambda))
     delta <- asin(sin(RPD * beta) * cos(RPD * epsilon) + cos(RPD * beta) * sin(RPD * epsilon) * sin(RPD * lambda))
-    data.frame(rightAscension=alpha/RPD, declination=delta/RPD)
+    data.frame(rightAscension = alpha / RPD, declination = delta / RPD)
 }
 
 
@@ -125,9 +123,8 @@ eclipticalToEquatorial <- function(lambda, beta, epsilon)
 #' Richmond, Virginia, USA: Willmann-Bell, 1991.
 #'
 #' @family things related to astronomy
-equatorialToLocalHorizontal <- function(rightAscension, declination, t, longitude, latitude)
-{
-    RPD <- atan2(1, 1) / 45            # radians per degree
+equatorialToLocalHorizontal <- function(rightAscension, declination, t, longitude, latitude) {
+    RPD <- atan2(1, 1) / 45 # radians per degree
     # sidereal Greenwich time (in hours)
     theta0 <- siderealTime(t)
     H <- theta0 * 15 + longitude - rightAscension
@@ -135,7 +132,7 @@ equatorialToLocalHorizontal <- function(rightAscension, declination, t, longitud
     A <- atan2(sin(RPD * H), cos(RPD * H) * sin(RPD * latitude) - tan(RPD * declination) * cos(RPD * latitude))
     # the atan2() form matches websites on azimuth at Halifax in April 2012
     h <- asin(sin(RPD * latitude) * sin(RPD * declination) + cos(RPD * latitude) * cos(RPD * declination) * cos(RPD * H))
-    data.frame(azimuth=A/RPD, altitude=h/RPD)
+    data.frame(azimuth = A / RPD, altitude = h / RPD)
 }
 
 
@@ -160,12 +157,11 @@ equatorialToLocalHorizontal <- function(rightAscension, declination, t, longitud
 #'
 #' @examples
 #'
-#' t <- ISOdatetime(1978, 11, 13, 0, 0, 0, tz="UTC")
+#' t <- ISOdatetime(1978, 11, 13, 0, 0, 0, tz = "UTC")
 #' print(siderealTime(t))
 #'
 #' @family things related to astronomy
-siderealTime <- function(t)
-{
+siderealTime <- function(t) {
     tt <- as.POSIXlt(t)
     n <- length(tt$hour)
     tt$hour <- rep(0, n)
@@ -174,7 +170,7 @@ siderealTime <- function(t)
     jd <- julianDay(t)
     jd0 <- julianDay(tt)
     # reference 1 eq 7.1 (different in reference 2)
-    T <- (jd0 - 2415020.0) / 36525      # nolint
+    T <- (jd0 - 2415020.0) / 36525 # nolint
     hoursLeftOver <- 24 * (jd - jd0)
     res <- 6.6460656 + 2400.051262 * T + 0.00002581 * T * T # nolint
     res <- res + 1.002737908 * hoursLeftOver
@@ -236,19 +232,19 @@ siderealTime <- function(t)
 #' @examples
 #' library(oce)
 #' # example from Meeus
-#' t <- ISOdatetime(1977, 4, 26, hour=0, min=0, sec=0, tz="UTC")+0.4*86400
+#' t <- ISOdatetime(1977, 4, 26, hour = 0, min = 0, sec = 0, tz = "UTC") + 0.4 * 86400
 #' stopifnot(all.equal(julianDay(t), 2443259.9))
 #'
 #' @family things related to astronomy
 #' @family things related to time
-julianDay <- function(t, year=NA, month=NA, day=NA, hour=NA, min=NA, sec=NA, tz="UTC")
-{
-    if (missing(t))  {
-        if (is.na(year) || is.na(month) || is.na(day) || is.na(hour) || is.na(min) || is.na(sec))
+julianDay <- function(t, year = NA, month = NA, day = NA, hour = NA, min = NA, sec = NA, tz = "UTC") {
+    if (missing(t)) {
+        if (is.na(year) || is.na(month) || is.na(day) || is.na(hour) || is.na(min) || is.na(sec)) {
             stop("must supply year, month, day, hour, min, and sec")
-        t <- ISOdatetime(year, month, day, hour, min, sec, tz=tz)
+        }
+        t <- ISOdatetime(year, month, day, hour, min, sec, tz = tz)
     }
-    tt <- as.POSIXlt(t, tz=tz)
+    tt <- as.POSIXlt(t, tz = tz)
     year <- tt$year + 1900
     month <- tt$mon + 1
     day <- tt$mday + (tt$hour + tt$min / 60 + tt$sec / 3600) / 24
@@ -283,13 +279,12 @@ julianDay <- function(t, year=NA, month=NA, day=NA, hour=NA, min=NA, sec=NA, tz=
 #'
 #' @examples
 #'
-#' t <- ISOdatetime(1978, 11, 13, 4, 35, 0, tz="UTC")
+#' t <- ISOdatetime(1978, 11, 13, 4, 35, 0, tz = "UTC")
 #' jca <- julianCenturyAnomaly(julianDay(t))
-#' cat(format(t), "is Julian Century anomaly", format(jca, digits=8), "\n")
+#' cat(format(t), "is Julian Century anomaly", format(jca, digits = 8), "\n")
 #'
 #' @family things related to astronomy
 #' @family things related to time
-julianCenturyAnomaly <- function(jd)
-{
-    (jd - 2415020.0) / 36525         # reference 1 Meeus 1982 (eq 7.1 or 15.1)
+julianCenturyAnomaly <- function(jd) {
+    (jd - 2415020.0) / 36525 # reference 1 Meeus 1982 (eq 7.1 or 15.1)
 }

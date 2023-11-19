@@ -40,18 +40,19 @@ based on "The Astronomical Almanac".
 }
 \examples{
 
-rise <- as.POSIXct("2011-03-03 06:49:00", tz="UTC") + 4*3600
-set <- as.POSIXct("2011-03-03 18:04:00", tz="UTC") + 4*3600
-mismatch <- function(lonlat)
-{
+rise <- as.POSIXct("2011-03-03 06:49:00", tz = "UTC") + 4 * 3600
+set <- as.POSIXct("2011-03-03 18:04:00", tz = "UTC") + 4 * 3600
+mismatch <- function(lonlat) {
     sunAngle(rise, lonlat[1], lonlat[2])$altitude^2 + sunAngle(set, lonlat[1], lonlat[2])$altitude^2
 }
-result <- optim(c(1,1), mismatch)
+result <- optim(c(1, 1), mismatch)
 lonHfx <- (-63.55274)
 latHfx <- 44.65
 dist <- geodDist(result$par[1], result$par[2], lonHfx, latHfx)
-cat(sprintf("Infer Halifax latitude \%.2f and longitude \%.2f; distance mismatch \%.0f km",
-            result$par[2], result$par[1], dist))
+cat(sprintf(
+    "Infer Halifax latitude \%.2f and longitude \%.2f; distance mismatch \%.0f km",
+    result$par[2], result$par[1], dist
+))
 
 }
 \references{

@@ -79,19 +79,25 @@ lat <- tail(section[["latitude", "byStation"]], 26)
 lonR <- tail(lon, 1)
 latR <- tail(lat, 1)
 data(coastlineWorld)
-mapPlot(coastlineWorld, projection="+proj=merc",
-        longitudelim=c(-75,-65), latitudelim=c(35,43), col="gray")
+mapPlot(coastlineWorld,
+    projection = "+proj=merc",
+    longitudelim = c(-75, -65), latitudelim = c(35, 43), col = "gray"
+)
 mapPoints(lon, lat)
-XY <- geodXy(lon,lat,mean(lon), mean(lat))
-angle <- 180/pi*atan(coef(lm(y~x, data=XY))[2])
-mapCoordinateSystem(lonR, latR, 500, angle, col=2)
+XY <- geodXy(lon, lat, mean(lon), mean(lat))
+angle <- 180 / pi * atan(coef(lm(y ~ x, data = XY))[2])
+mapCoordinateSystem(lonR, latR, 500, angle, col = 2)
 # Compare UTM calculation
-UTM <- lonlat2utm(lon, lat, zone=18) # we need to set the zone for this task!
-angleUTM <- 180/pi*atan(coef(lm(northing~easting, data=UTM))[2])
-mapCoordinateSystem(lonR, latR, 500, angleUTM, col=3)
-legend("topright", lwd=1, col=2:3, bg="white", title="Axis Rotation Angle",
-       legend=c(sprintf("geod: \%.1f deg", angle),
-                sprintf("utm:  \%.1f deg", angleUTM)))
+UTM <- lonlat2utm(lon, lat, zone = 18) # we need to set the zone for this task!
+angleUTM <- 180 / pi * atan(coef(lm(northing ~ easting, data = UTM))[2])
+mapCoordinateSystem(lonR, latR, 500, angleUTM, col = 3)
+legend("topright",
+    lwd = 1, col = 2:3, bg = "white", title = "Axis Rotation Angle",
+    legend = c(
+        sprintf("geod: \%.1f deg", angle),
+        sprintf("utm:  \%.1f deg", angleUTM)
+    )
+)
 }
 }
 \seealso{

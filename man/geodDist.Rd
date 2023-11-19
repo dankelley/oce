@@ -70,7 +70,7 @@ library(oce)
 km <- geodDist(100, 45, 100, 46)
 data(section)
 geodDist(section)
-geodDist(section, alongPath=TRUE)
+geodDist(section, alongPath = TRUE)
 
 }
 \references{

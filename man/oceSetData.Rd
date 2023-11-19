@@ -61,7 +61,8 @@ and the scale set to \code{""}.
 data(ctd)
 Tf <- swTFreeze(ctd)
 ctd <- oceSetData(ctd, "freezing", Tf,
-    unit=list(unit=expression(degree*C), scale="ITS-90"))
+    unit = list(unit = expression(degree * C), scale = "ITS-90")
+)
 plotProfile(ctd, "freezing")
 
 }

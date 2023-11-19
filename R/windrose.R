@@ -24,16 +24,18 @@
 #'
 #' @family classes provided by oce
 #' @family things related to windrose data
-setClass("windrose", contains="oce")
+setClass("windrose", contains = "oce")
 
-setMethod(f="initialize",
-    signature="windrose",
-    definition=function(.Object, ...) {
+setMethod(
+    f = "initialize",
+    signature = "windrose",
+    definition = function(.Object, ...) {
         .Object <- callNextMethod(.Object, ...)
         .Object@processingLog$time <- presentTime()
         .Object@processingLog$value <- "create 'windrose' object"
         return(.Object)
-    })
+    }
+)
 
 #' Summarize a windrose Object
 #'
@@ -43,18 +45,20 @@ setMethod(f="initialize",
 #'
 #' @param ... Further arguments passed to or from other methods.
 #'
-#' @author Dan Kelley
-#'
 #' @family things related to windrose data
-setMethod(f="summary",
-    signature="windrose",
-    definition=function(object, ...) {
+#'
+#' @author Dan Kelley
+setMethod(
+    f = "summary",
+    signature = "windrose",
+    definition = function(object, ...) {
         cat("Windrose data\n-------------\n\n")
         n <- length(object@data$theta)
         dtheta <- abs(diff(object@data$theta[1:2]))
         cat("* Have n=", n, "angles, separated by dtheta=", dtheta, "\n\n")
         invisible(callNextMethod()) # summary
-    })
+    }
+)
 
 
 #' @title Extract Something From a windrose Object
@@ -74,17 +78,23 @@ setMethod(f="summary",
 #' @template sub_subTemplate
 #'
 #' @family things related to windrose data
-setMethod(f="[[",
-    signature(x="windrose", i="ANY", j="ANY"),
-    definition=function(x, i, j, ...) {
+#'
+#' @author Dan Kelley
+setMethod(
+    f = "[[",
+    signature(x = "windrose", i = "ANY", j = "ANY"),
+    definition = function(x, i, j, ...) {
         if (i == "?") {
-            return(list(metadata=sort(names(x@metadata)),
-                metadataDerived=NULL,
-                data=sort(names(x@data)),
-                dataDerived=NULL))
+            return(list(
+                metadata = sort(names(x@metadata)),
+                metadataDerived = NULL,
+                data = sort(names(x@data)),
+                dataDerived = NULL
+            ))
         }
-        callNextMethod()         # [[
-    })
+        callNextMethod() # [[
+    }
+)
 
 #' @title Replace Parts of a windrose Object
 #'
@@ -93,11 +103,13 @@ setMethod(f="[[",
 #' @template sub_subsetTemplate
 #'
 #' @family things related to windrose data
-setMethod(f="[[<-",
-    signature(x="windrose", i="ANY", j="ANY"),
-    definition=function(x, i, j, ..., value) {
-        callNextMethod(x=x, i=i, j=j, ...=..., value=value) # [[<-
-    })
+setMethod(
+    f = "[[<-",
+    signature(x = "windrose", i = "ANY", j = "ANY"),
+    definition = function(x, i, j, ..., value) {
+        callNextMethod(x = x, i = i, j = j, ... = ..., value = value) # [[<-
+    }
+)
 
 
 #' Create a windrose Object
@@ -136,17 +148,16 @@ setMethod(f="[[<-",
 #' library(oce)
 #' set.seed(1234)
 #' theta <- seq(0, 360, 0.25)
-#' x <- 1 + cos(pi/180*theta) + rnorm(theta)
-#' y <- sin(pi/180*theta) + rnorm(theta)
+#' x <- 1 + cos(pi / 180 * theta) + rnorm(theta)
+#' y <- sin(pi / 180 * theta) + rnorm(theta)
 #' wr <- as.windrose(x, y)
 #' summary(wr)
 #'
-#' @author Dan Kelley, with considerable help from Alex Deckmyn.
-#'
 #' @family things related to windrose data
-as.windrose <- function(x, y, dtheta=15.0, debug=getOption("oceDebug"))
-{
-    oceDebug(debug, "as.windrose(x, y, dtheta=", dtheta, ", debug=", debug, ") {\n", sep="", unindent=1)
+#'
+#' @author Dan Kelley, with considerable help from Alex Deckmyn.
+as.windrose <- function(x, y, dtheta = 15.0, debug = getOption("oceDebug")) {
+    oceDebug(debug, "as.windrose(x, y, dtheta=", dtheta, ", debug=", debug, ") {\n", sep = "", unindent = 1)
     if (inherits(x, "met")) {
         tmp <- x
         x <- tmp[["u"]]
@@ -165,35 +176,42 @@ as.windrose <- function(x, y, dtheta=15.0, debug=getOption("oceDebug"))
     nt <- round(2 * pi / dt)
     count <- mean <- vector("numeric", nt)
     fives <- matrix(0, nt, 5)
-    theta <- seq(-pi+dt2, pi-dt2, length.out=nt)
+    theta <- seq(-pi + dt2, pi - dt2, length.out = nt)
     # The bin-detection code was faulty until 2012-02-07.  This
     # was pointed out by Alex Deckmyn, who also suggested the
     # present solution.  His issue reports, available on
     # github.com/dankelley/oce/issues, are a model of
     # patience and insight.
-    ai <- 1 + floor((angle+pi)/dt)
-    ai <- (ai-1)%%nt + 1 # clean up problems (thanks, adeckmyn at github!!)
-    if (min(ai) < 1)
+    ai <- 1 + floor((angle + pi) / dt)
+    ai <- (ai - 1) %% nt + 1 # clean up problems (thanks, adeckmyn at github!!)
+    if (min(ai) < 1) {
         stop("problem setting up bins (ai<1)")
-    if (max(ai) > nt)
+    }
+    if (max(ai) > nt) {
         stop("problem setting up bins (ai>xlen)")
+    }
     for (i in 1:nt) {
-        inside <- ai==i
-        oceDebug(debug, sum(inside), "counts for angle category", i,
-            "(", round(180 / pi * (theta[i]-dt2), 4), "to",
-            round(180 / pi * (theta[i]+dt2), 4), "deg)\n")
+        inside <- ai == i
+        oceDebug(
+            debug, sum(inside), "counts for angle category", i,
+            "(", round(180 / pi * (theta[i] - dt2), 4), "to",
+            round(180 / pi * (theta[i] + dt2), 4), "deg)\n"
+        )
         count[i] <- sum(inside)
-        mean[i] <- mean(R[inside], na.rm=TRUE)
+        mean[i] <- mean(R[inside], na.rm = TRUE)
         fives[i, ] <- fivenum(R[inside])
     }
-    if (sum(count) != xlen)
+    if (sum(count) != xlen) {
         stop("miscount in angles")
+    }
     res <- new("windrose")
-    res@data <- list(n=length(x), x.mean=mean(x, na.rm=TRUE), y.mean=mean(y, na.rm=TRUE),
-        theta=theta*180/pi, count=count, mean=mean, fives=fives)
+    res@data <- list(
+        n = length(x), x.mean = mean(x, na.rm = TRUE), y.mean = mean(y, na.rm = TRUE),
+        theta = theta * 180 / pi, count = count, mean = mean, fives = fives
+    )
     res@metadata$dtheta <- dtheta
-    res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
-    oceDebug(debug, "} # as.windrose()\n", sep="", unindent=1)
+    res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep = "", collapse = ""))
+    oceDebug(debug, "} # as.windrose()\n", sep = "", unindent = 1)
     res
 }
 
@@ -234,11 +252,11 @@ as.windrose <- function(x, y, dtheta=15.0, debug=getOption("oceDebug"))
 #' library(oce)
 #' set.seed(1234)
 #' theta <- seq(0, 360, 0.25)
-#' x <- 1 + cos(pi/180*theta) + rnorm(theta)
-#' y <- sin(pi/180*theta) + rnorm(theta)
+#' x <- 1 + cos(pi / 180 * theta) + rnorm(theta)
+#' y <- sin(pi / 180 * theta) + rnorm(theta)
 #' wr <- as.windrose(x, y)
 #' plot(wr)
-#' plot(wr, type="fivenum")
+#' plot(wr, type = "fivenum")
 #'
 #' @author Dan Kelley
 #'
@@ -246,112 +264,118 @@ as.windrose <- function(x, y, dtheta=15.0, debug=getOption("oceDebug"))
 #' @family things related to windrose data
 #'
 #' @aliases plot.windrose
-setMethod(f="plot",
-    signature=signature("windrose"),
-    definition=function(x,
-        type=c("count", "mean", "median", "fivenum"),
-        convention=c("meteorological", "oceanographic"),
-        mgp=getOption("oceMgp"),
-        mar=c(mgp[1], mgp[1], 1+mgp[1], mgp[1]),
+setMethod(
+    f = "plot",
+    signature = signature("windrose"),
+    definition = function(
+        x,
+        type = c("count", "mean", "median", "fivenum"),
+        convention = c("meteorological", "oceanographic"),
+        mgp = getOption("oceMgp"),
+        mar = c(mgp[1], mgp[1], 1 + mgp[1], mgp[1]),
         col,
-        debug=getOption("oceDebug"))
-    {
-        if (!inherits(x, "windrose"))
+        debug = getOption("oceDebug")) {
+        if (!inherits(x, "windrose")) {
             stop("method is only for objects of class '", "windrose", "'")
-        oceDebug(debug, "plot.windrose() {\n", sep="", unindent=1)
+        }
+        oceDebug(debug, "plot.windrose() {\n", sep = "", unindent = 1)
         type <- match.arg(type)
         convention <- match.arg(convention)
         nt <- length(x@data$theta)
         pi <- 4.0 * atan2(1.0, 1.0)
         if (convention == "meteorological") {
-            t <- x@data$theta * pi / 180   # in radians
+            t <- x@data$theta * pi / 180 # in radians
         } else {
-            t <- pi + x@data$theta * pi / 180  # in radians
+            t <- pi + x@data$theta * pi / 180 # in radians
         }
         dt <- t[2] - t[1]
         dt2 <- dt / 2
         # Plot setup
-        opar <- par(no.readonly=TRUE)
+        opar <- par(no.readonly = TRUE)
         on.exit(par(opar))
-        par(mgp=mgp, mar=mar)
+        par(mgp = mgp, mar = mar)
         plot.new()
         pin <- par("pin")
         xlim <- c(-1.0, 1.0)
         ylim <- c(-1.0, 1.0)
         if (pin[1] > pin[2]) {
-            xlim <- (pin[1]/pin[2]) * xlim
+            xlim <- (pin[1] / pin[2]) * xlim
         } else {
-            ylim <- (pin[2]/pin[1]) * ylim
+            ylim <- (pin[2] / pin[1]) * ylim
         }
         plot.window(xlim, ylim, "", asp = 1)
         if (missing(col)) {
             col <- c("red", "pink", "blue", "darkgray")
         } else {
-            if (length(col) != 4)
+            if (length(col) != 4) {
                 stop("'col' should be a list of 4 colors")
+            }
         }
         # Draw circle and radii
-        tt <- seq(0, 2*pi, length.out=100)
+        tt <- seq(0, 2 * pi, length.out = 100)
         px <- cos(tt)
         py <- sin(tt)
-        lines(px, py, col=col[4])
+        lines(px, py, col = col[4])
         for (i in 1:nt) {
-            lines(c(0, cos(t[i] - dt2)), c(0, sin(t[i] - dt2)), lwd=0.5, col=col[4])
+            lines(c(0, cos(t[i] - dt2)), c(0, sin(t[i] - dt2)), lwd = 0.5, col = col[4])
         }
-        text(0, -1, "S", pos=1)
-        text(-1,  0, "W", pos=2)
-        text(0,  1, "N", pos=3)
-        text(1,  0, "E", pos=4)
+        text(0, -1, "S", pos = 1)
+        text(-1, 0, "W", pos = 2)
+        text(0, 1, "N", pos = 3)
+        text(1, 0, "E", pos = 4)
         # Draw rose in a given type
         if (type == "count") {
-            max <- max(x@data$count, na.rm=TRUE)
+            max <- max(x@data$count, na.rm = TRUE)
             for (i in 1:nt) {
                 r <- x@data$count[i] / max
                 xlist <- c(0, r * cos(t[i] - dt2), r * cos(t[i] + dt2), 0)
                 ylist <- c(0, r * sin(t[i] - dt2), r * sin(t[i] + dt2), 0)
-                polygon(xlist, ylist, col=col[1], border=col[3])
+                polygon(xlist, ylist, col = col[1], border = col[3])
             }
-            title(paste("Counts (max ", max, ")", sep=""))
+            title(paste("Counts (max ", max, ")", sep = ""))
         } else if (type == "mean") {
-            max <- max(x@data$mean, na.rm=TRUE)
+            max <- max(x@data$mean, na.rm = TRUE)
             for (i in 1:nt) {
                 r <- x@data$mean[i] / max
-                #cat("t=", t[i], " r=", r, "\n")
+                # cat("t=", t[i], " r=", r, "\n")
                 xlist <- c(0, r * cos(t[i] - dt2), r * cos(t[i] + dt2), 0)
                 ylist <- c(0, r * sin(t[i] - dt2), r * sin(t[i] + dt2), 0)
-                polygon(xlist, ylist, col=col[1], border=col[3])
+                polygon(xlist, ylist, col = col[1], border = col[3])
             }
-            title(paste("Means (max ", sprintf(max, fmt="%.3g"), ")", sep=""))
+            title(paste("Means (max ", sprintf(max, fmt = "%.3g"), ")", sep = ""))
         } else if (type == "median") {
-            max <- max(x@data$fives[, 5], na.rm=TRUE)
+            max <- max(x@data$fives[, 5], na.rm = TRUE)
             for (i in 1:nt) {
                 r <- x@data$fives[i, 3] / max
                 xlist <- c(0, r * cos(t[i] - dt2), r * cos(t[i] + dt2), 0)
                 ylist <- c(0, r * sin(t[i] - dt2), r * sin(t[i] + dt2), 0)
-                polygon(xlist, ylist, col=col[1], border=col[3])
+                polygon(xlist, ylist, col = col[1], border = col[3])
             }
-            title(paste("Medians (max ", sprintf(max, fmt="%.3g"), ")", sep=""))
+            title(paste("Medians (max ", sprintf(max, fmt = "%.3g"), ")", sep = ""))
         } else if (type == "fivenum") {
-            max <- max(x@data$fives[, 5], na.rm=TRUE)
-            #browser()
+            max <- max(x@data$fives[, 5], na.rm = TRUE)
+            # browser()
             for (i in 1:nt) {
                 tm <- t[i] - dt2
                 tp <- t[i] + dt2
                 for (j in 2:5) {
-                    r0 <- x@data$fives[i, j-1] / max
-                    r  <- x@data$fives[i, j] / max
+                    r0 <- x@data$fives[i, j - 1] / max
+                    r <- x@data$fives[i, j] / max
                     xlist <- c(r0 * cos(tm), r * cos(tm), r * cos(tp), r0 * cos(tp))
                     ylist <- c(r0 * sin(tm), r * sin(tm), r * sin(tp), r0 * sin(tp))
-                    thiscol <- col[c(2, 1, 1, 2)][j-1]
-                    polygon(xlist, ylist, col=thiscol, border=col[4])
+                    thiscol <- col[c(2, 1, 1, 2)][j - 1]
+                    polygon(xlist, ylist, col = thiscol, border = col[4])
                 }
                 # Median in black
                 r <- x@data$fives[i, 3] / max
                 lines(c(r * cos(tm), r * cos(tp)),
-                    c(r * sin(tm), r * sin(tp)), lwd=2)
+                    c(r * sin(tm), r * sin(tp)),
+                    lwd = 2
+                )
             }
-            title(paste("Fiveum (max ", sprintf(max, fmt="%.3g"), ")", sep=""))
+            title(paste("Fiveum (max ", sprintf(max, fmt = "%.3g"), ")", sep = ""))
         }
-        oceDebug(debug, "} # plot.windrose()\n", sep="", unindent=1)
+        oceDebug(debug, "} # plot.windrose()\n", sep = "", unindent = 1)
         invisible(NULL)
-    })
+    }
+)
