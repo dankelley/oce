@@ -3650,6 +3650,7 @@ setMethod(
                 plotProfile(x,
                     xtype = "salinity+temperature",
                     plim = plim, Slim = Slim, Tlim = Tlim,
+                    densitylim, sigmalim, N2lim, Rrholim, dpdtlim, timelm,
                     eos = eos,
                     useSmoothScatter = useSmoothScatter,
                     grid = grid, col.grid = "lightgray", lty.grid = "dotted",
