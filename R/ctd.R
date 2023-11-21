@@ -3475,7 +3475,6 @@ setMethod(f="plot",
                 oceDebug(debug, "handling which[", w, "]=\"", whichOrig[w], "\" as a special case\n", sep="")
                 plotProfile(x, xtype="salinity+temperature",
                     plim=plim, Slim=Slim, Tlim=Tlim,
-                    densitylim, sigmalim, N2lim, Rrholim, dpdtlim, timelim,
                     eos=eos,
                     useSmoothScatter=useSmoothScatter,
                     grid=grid, col.grid="lightgray", lty.grid="dotted",
