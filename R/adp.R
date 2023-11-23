@@ -1347,6 +1347,8 @@ beamName <- function(x, which) {
 #'
 #' @template adpTemplate
 #'
+#' @template adReadingMethodTemplate
+#'
 #' @author Dan Kelley and Clark Richards
 #'
 #' @family things related to adp data

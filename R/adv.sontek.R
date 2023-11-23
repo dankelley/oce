@@ -9,6 +9,8 @@
 #' if `filename` is a vector of file names.
 #'
 #' @param deltat the time between samples.
+#'
+#' @template adReadingMethodTemplate
 read.adv.sontek.serial <- function(
     file, from = 1, to, by = 1, tz = getOption("oceTz"), longitude = NA, latitude = NA,
     start = NULL, deltat = NULL, encoding = NA, monitor = FALSE,
@@ -185,6 +187,8 @@ read.adv.sontek.serial <- function(
 #' 2. SonTek/YSI Incorporated. "Argonaut Acoustic Doppler Current Meter Operation Manual Firmware Version 7.9."
 #' SonTek/YSI, May 1, 2001.
 #' https://eng.ucmerced.edu/snsjho/files/San_Joaquin/Sensors_and_Loggers/SonTek/SonTek_Argonaut/ArgonautXR.pdf.
+#'
+#' @template adReadingMethodTemplate
 read.adv.sontek.adr <- function(
     file, from = 1, to, by = 1, tz = getOption("oceTz"), header = TRUE,
     longitude = NA, latitude = NA, encoding = NA,
@@ -684,6 +688,8 @@ read.adv.sontek.adr <- function(
 #' The `file` argument does not actually name a file. It names a basename
 #' for a file. The actual file names are created by appending suffix
 #' `.hd1` for one file and `.ts1` for another.
+#'
+#' @template adReadingMethodTemplate
 read.adv.sontek.text <- function(
     file, from = 1, to, by = 1, tz = getOption("oceTz"),
     originalCoordinate = "xyz", transformationMatrix, longitude = NA, latitude = NA, encoding = "latin1",

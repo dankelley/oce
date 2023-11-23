@@ -783,6 +783,8 @@ decodeHeaderRDI <- function(buf, debug = getOption("oceDebug"), tz = getOption("
 #' * The `bq` (bottom-track quality) field was called `bc` until 2023-02-09.
 #' See https://github.com/dankelley/oce/issues/2039 for discussion.
 #'
+#' @template adReadingMethodTemplate
+#'
 #' @family things related to adp data
 #' @family functions that read adp data
 read.adp.rdi <- function(

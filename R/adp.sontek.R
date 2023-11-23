@@ -16,6 +16,8 @@
 #' @references
 #' 1. Information about Sontek profilers is available at https://www.sontek.com.
 #'
+#' @template adReadingMethodTemplate
+#'
 #' @author Dan Kelley and Clark Richards
 #'
 #' @family things related to adp data
@@ -507,6 +509,8 @@ sontek.time <- function(t, tz = getOption("oceTz")) {
 #' @template adpTemplate
 #'
 #' @template encodingIgnoredTemplate
+#'
+#' @template adReadingMethodTemplate
 #'
 #' @author Dan Kelley and Clark Richards
 #'

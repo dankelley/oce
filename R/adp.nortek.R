@@ -565,6 +565,8 @@ read.aquadopp <- function(
 #'
 #' @template encodingIgnoredTemplate
 #'
+#' @template adReadingMethodTemplate
+#'
 #' @author Dan Kelley
 #'
 #' @family things related to adp data
@@ -650,6 +652,8 @@ read.aquadoppHR <- function(
 #'
 #' @template encodingIgnoredTemplate
 #'
+#' @template adReadingMethodTemplate
+#'
 #' @author Dan Kelley
 #'
 #' @family things related to adp data
@@ -727,6 +731,8 @@ read.aquadoppProfiler <- function(
 #' @template adpTemplate
 #'
 #' @template encodingIgnoredTemplate
+#'
+#' @template adReadingMethodTemplate
 #'
 #' @author Dan Kelley
 #'

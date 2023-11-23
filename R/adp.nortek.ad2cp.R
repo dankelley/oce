@@ -486,6 +486,8 @@ ad2cpCodeToName <- function(code = NULL, prefix = TRUE) {
 #'
 #' @family functions that read adp data
 #'
+#' @template adReadingMethodTemplate
+#'
 #' @author Dan Kelley
 read.adp.ad2cp <- function(
     file,
