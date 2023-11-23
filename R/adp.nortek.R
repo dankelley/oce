@@ -478,6 +478,8 @@ decodeHeaderNortek <- function(
 #'
 #' @template encodingIgnoredTemplate
 #'
+#' @template adReadingMethodTemplate
+#'
 #' @author Dan Kelley and Clark Richards
 #'
 #' @family things related to adp data
