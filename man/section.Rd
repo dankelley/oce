@@ -39,9 +39,9 @@ for data taken thirty years ago.
 library(oce)
 # Gulf Stream
 data(section)
-GS <- subset(section, 113<=stationId&stationId<=129)
-GSg <- sectionGrid(GS, p=seq(0, 5000, 100))
-plot(GSg, span=1500) # increase span to show more coastline
+GS <- subset(section, 113 <= stationId & stationId <= 129)
+GSg <- sectionGrid(GS, p = seq(0, 5000, 100))
+plot(GSg, span = 1500) # increase span to show more coastline
 
 }
 \seealso{

@@ -55,11 +55,11 @@ vector, which can be quite helpful in debugging.
 }
 \examples{
 # List
-limits <- list(low=0, high=1)
+limits <- list(low = 0, high = 1)
 vectorShow(limits)
 
 # Vector of named items
-planktonCount <- c(phytoplankton=100, zooplankton=20)
+planktonCount <- c(phytoplankton = 100, zooplankton = 20)
 vectorShow(planktonCount)
 
 # Vector
@@ -70,8 +70,8 @@ vectorShow(volcano)
 
 # Other arguments
 knot2mps <- 0.5144444
-vectorShow(knot2mps, postscript="knots per m/s")
-vectorShow("January", msg="The first month is")
+vectorShow(knot2mps, postscript = "knots per m/s")
+vectorShow("January", msg = "The first month is")
 
 }
 \author{

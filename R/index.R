@@ -49,7 +49,7 @@
 #' for a list of indices.
 #'
 #' @section Sample of Usage:
-#'\preformatted{
+#' \preformatted{
 #' library(oce)
 #' par(mfrow=c(2, 1))
 #' # 1. AO, Arctic oscillation
@@ -61,38 +61,42 @@
 #' soi <- read.index("https://www.cgd.ucar.edu/cas/catalog/climind/SOI.signal.ascii")
 #' soirecent <- subset(soi, t > as.POSIXct("2000-01-01"))
 #' oce.plot.ts(soirecent$t, soirecent$index)
-#'}
+#' }
 #'
 #' @author Dan Kelley
-read.index <- function(file,
+read.index <- function(
+    file,
     format,
     missingValue,
-    tz=getOption("oceTz"),
-    encoding="latin1",
-    debug=getOption("oceDebug"))
-{
-    if (missing(file))
+    tz = getOption("oceTz"),
+    encoding = "latin1",
+    debug = getOption("oceDebug")) {
+    if (missing(file)) {
         stop("must supply 'file'")
+    }
     if (is.character(file)) {
-        if (!file.exists(file))
+        if (!file.exists(file)) {
             stop("cannot find file \"", file, "\"")
-        if (0L == file.info(file)$size)
+        }
+        if (0L == file.info(file)$size) {
             stop("empty file \"", file, "\"")
+        }
     }
     if (is.character(file)) {
-        #filename <- fullFilename(file)
-        file <- file(file, "r", encoding=encoding)
+        # filename <- fullFilename(file)
+        file <- file(file, "r", encoding = encoding)
         on.exit(close(file))
     }
-    if (!inherits(file, "connection"))
+    if (!inherits(file, "connection")) {
         stop("file must be a character string or connection")
+    }
     if (!isOpen(file)) {
-        open(file, "r", encoding=encoding)
+        open(file, "r", encoding = encoding)
         on.exit(close(file))
     }
-    lines <- readLines(file, warn=FALSE)
+    lines <- readLines(file, warn = FALSE)
     if (missing(format)) {
-        ntokens <- length(scan(text=lines[1], quiet=TRUE))
+        ntokens <- length(scan(text = lines[1], quiet = TRUE))
         if (2 == ntokens) {
             format <- "noaa"
         } else if (13 == ntokens) {
@@ -103,30 +107,34 @@ read.index <- function(file,
     }
     formatAllowed <- c("noaa", "ucar")
     formatIndex <- pmatch(format, formatAllowed)
-    if (is.na(formatIndex))
+    if (is.na(formatIndex)) {
         stop("unknown format; must be 'noaa' or 'ucar'")
+    }
     format <- formatAllowed[formatIndex]
     if (format == "noaa") {
         lines <- lines[-1] # drop first header line
         # the missing value is on a line by itself, and after that
         # is footer that we will ignore for now.
-        n <- unlist(lapply(seq_along(lines),
-            function(l) length(scan(text=lines[l], what="numeric", quiet=TRUE))))
-        onetoken <- which(n==1)[1]
-        if (is.na(onetoken))
+        n <- unlist(lapply(
+            seq_along(lines),
+            function(l) length(scan(text = lines[l], what = "numeric", quiet = TRUE))
+        ))
+        onetoken <- which(n == 1)[1]
+        if (is.na(onetoken)) {
             stop("cannot find missing-value token")
+        }
         missingValue <- as.numeric(lines[onetoken])
-        lines <- lines[seq.int(1L, onetoken-1)]
-        d <- as.matrix(read.table(text=lines, header=FALSE, encoding=encoding))
+        lines <- lines[seq.int(1L, onetoken - 1)]
+        d <- as.matrix(read.table(text = lines, header = FALSE, encoding = encoding))
         year <- d[, 1]
-        t <- seq(ISOdatetime(year[1], 1, 15, 0, 0, 0, tz="UTC"), by="month", length.out=12*length(year))
+        t <- seq(ISOdatetime(year[1], 1, 15, 0, 0, 0, tz = "UTC"), by = "month", length.out = 12 * length(year))
         data <- as.vector(t(d[, -1]))
         data[data == missingValue] <- NA
     } else if (format == "ucar") {
-        m <- read.table(text=lines, header=FALSE, encoding=encoding)
+        m <- read.table(text = lines, header = FALSE, encoding = encoding)
         year <- m[, 1]
         data <- as.vector(t(m[, -1]))
-        t <- seq(ISOdatetime(year[1], 1, 15, 0, 0, 0, tz="UTC"), by="month", length.out=12*length(year))
+        t <- seq(ISOdatetime(year[1], 1, 15, 0, 0, 0, tz = "UTC"), by = "month", length.out = 12 * length(year))
     } else {
         stop("unknown format '", format, "'; must be 'noaa' or 'ucar'")
     }
@@ -135,8 +143,8 @@ read.index <- function(file,
         data[data <= -99] <- NA
     } else {
         if (!is.null(missingValue)) {
-            data[data==missingValue] <- NA
+            data[data == missingValue] <- NA
         }
     }
-    data.frame(t=t, index=data)
+    data.frame(t = t, index = data)
 }

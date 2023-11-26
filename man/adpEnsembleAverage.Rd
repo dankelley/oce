@@ -41,7 +41,7 @@ velocity estimates (by averaging out Doppler noise).
 \examples{
 library(oce)
 data(adp)
-adpAvg <- adpEnsembleAverage(adp, n=2)
+adpAvg <- adpEnsembleAverage(adp, n = 2)
 plot(adpAvg)
 
 }

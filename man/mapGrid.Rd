@@ -78,11 +78,13 @@ if (utils::packageVersion("sf") != "0.9.8") {
     # sf version 0.9-8 has a problem with this projection
     library(oce)
     data(coastlineWorld)
-    par(mar=c(2, 2, 1, 1))
+    par(mar = c(2, 2, 1, 1))
     # In mapPlot() call, note axes and grid args, to
     # prevent over-plotting of defaults.
-    mapPlot(coastlineWorld, type="l", projection="+proj=ortho",
-            axes=FALSE, grid=FALSE)
+    mapPlot(coastlineWorld,
+        type = "l", projection = "+proj=ortho",
+        axes = FALSE, grid = FALSE
+    )
     mapGrid(15, 15)
 }
 }

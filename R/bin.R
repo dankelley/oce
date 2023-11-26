@@ -42,23 +42,27 @@
 #' S <- ctd[["salinity"]]
 #' pbreaks <- seq(0, max(p), 1)
 #' binned <- binApply1D(p, S, pbreaks, mean)
-#' lines(binned$result, binned$xmids, lwd=2, col=rgb(1, 0, 0, 0.9))
+#' lines(binned$result, binned$xmids, lwd = 2, col = rgb(1, 0, 0, 0.9))
 #'
 #' @author Dan Kelley
 #'
 #' @family bin-related functions
-binApply1D <- function(x, f, xbreaks, FUN, include.lowest=FALSE, ...)
-{
-    if (missing(x))
+binApply1D <- function(x, f, xbreaks, FUN, include.lowest = FALSE, ...) {
+    if (missing(x)) {
         stop("must supply 'x'")
-    if (missing(f))
+    }
+    if (missing(f)) {
         stop("must supply 'f'")
-    if (missing(xbreaks))
+    }
+    if (missing(xbreaks)) {
         xbreaks <- pretty(x, 20)
-    if (missing(FUN))
+    }
+    if (missing(FUN)) {
         stop("must supply 'FUN'")
-    if (!is.function(FUN))
+    }
+    if (!is.function(FUN)) {
         stop("'FUN' must be a function")
+    }
     # 2023-06-24 # Stop using C++ for this.
     # 2023-06-24 nbreaks <- length(xbreaks)
     # 2023-06-24 if (nbreaks < 2)
@@ -74,11 +78,11 @@ binApply1D <- function(x, f, xbreaks, FUN, include.lowest=FALSE, ...)
     # 2023-06-24         result[i] <- FUN(f[look])
     # 2023-06-24 }
     # Use cut, instead of old loopy code ... why re-invent the wheel?
-    xmids <- xbreaks[-1L] - 0.5*diff(xbreaks)
-    ysplit <- split(f, cut(x, xbreaks, include.lowest=include.lowest))
+    xmids <- xbreaks[-1L] - 0.5 * diff(xbreaks)
+    ysplit <- split(f, cut(x, xbreaks, include.lowest = include.lowest))
     result <- unname(sapply(ysplit, FUN))
     result[!is.finite(result)] <- NA
-    list(xbreaks=xbreaks, xmids=xmids, result=result)
+    list(xbreaks = xbreaks, xmids = xmids, result = result)
 } # binApply1D()
 
 #' Apply a Function to Matrix Data
@@ -123,7 +127,7 @@ binApply1D <- function(x, f, xbreaks, FUN, include.lowest=FALSE, ...)
 ##
 ## @examples
 ## library(oce)
-##\donttest{
+## \donttest{
 ## # secchi depths in lat and lon bins
 ## if (requireNamespace("ocedata", quietly=TRUE)) {
 ##     data(secchi, package="ocedata")
@@ -141,60 +145,71 @@ binApply1D <- function(x, f, xbreaks, FUN, include.lowest=FALSE, ...)
 ##     mapImage(bc$xmids, bc$ymids, bc$result, zlim=cm$zlim, col=cm$zcol)
 ##     mapPolygon(coastlineWorld, col="gray")
 ## }
-##}
+## }
 #'
 #' @family bin-related functions
-binApply2D <- function(x, y, f, xbreaks, ybreaks, FUN, include.lowest=FALSE, ...)
-{
-    if (missing(x))
+binApply2D <- function(x, y, f, xbreaks, ybreaks, FUN, include.lowest = FALSE, ...) {
+    if (missing(x)) {
         stop("must supply 'x'")
-    if (missing(y))
+    }
+    if (missing(y)) {
         stop("must supply 'y'")
-    if (missing(f))
+    }
+    if (missing(f)) {
         stop("must supply 'f'")
+    }
     nx <- length(x)
-    if (nx != length(y))
+    if (nx != length(y)) {
         stop("lengths of x and y must agree")
-    if (missing(xbreaks))
+    }
+    if (missing(xbreaks)) {
         xbreaks <- pretty(x, 20)
-    if (missing(ybreaks))
+    }
+    if (missing(ybreaks)) {
         ybreaks <- pretty(y, 20)
-    if (missing(FUN))
+    }
+    if (missing(FUN)) {
         stop("must supply 'FUN'")
-    if (!is.function(FUN))
+    }
+    if (!is.function(FUN)) {
         stop("'FUN' must be a function")
+    }
     nxbreaks <- length(xbreaks)
-    if (nxbreaks < 2)
+    if (nxbreaks < 2) {
         stop("must have more than 1 xbreak")
+    }
     nybreaks <- length(ybreaks)
-    if (nybreaks < 2)
+    if (nybreaks < 2) {
         stop("must have more than 1 ybreak")
-    res <- matrix(NA_real_, nrow=nxbreaks-1, ncol=nybreaks-1)
-    ycut <- cut(y, ybreaks, labels=FALSE, include.lowest=include.lowest)
+    }
+    res <- matrix(NA_real_, nrow = nxbreaks - 1, ncol = nybreaks - 1)
+    ycut <- cut(y, ybreaks, labels = FALSE, include.lowest = include.lowest)
     F <- split(f, ycut)
     X <- split(x, ycut)
-    #cat("next is F before loop\n");print(F)
-    #cat("next is X before loop\n");print(X)
+    # cat("next is F before loop\n");print(F)
+    # cat("next is X before loop\n");print(X)
     for (iF in seq_along(F)) {
-        xcut <- cut(X[[iF]], xbreaks, labels=FALSE, include.lowest=include.lowest)
+        xcut <- cut(X[[iF]], xbreaks, labels = FALSE, include.lowest = include.lowest)
         FF <- split(F[[iF]], xcut)
-        #browser()
+        # browser()
         ii <- as.integer(names(FF))
         jj <- as.integer(names(F)[[iF]])
         resiijj <- unlist(lapply(FF, FUN, ...))
-        #message(vectorShow(dim(res)))
-        #message("ii=", paste(ii, collapse=" "), ", jj=", paste(jj, collapse=" "),
+        # message(vectorShow(dim(res)))
+        # message("ii=", paste(ii, collapse=" "), ", jj=", paste(jj, collapse=" "),
         #    ", resiijj=", paste(resiijj, collapse=" "))
         res[ii, jj] <- resiijj
-        #message("set res[",
+        # message("set res[",
         #    paste(ii, collapse=" "), ", ",
         #    paste(jj, collapse=" "), "] to ",
         #    paste(resiijj, collapse=" "))
     }
     res[!is.finite(res)] <- NA
-    list(xbreaks=xbreaks, xmids=xbreaks[-1]-0.5*diff(xbreaks),
-        ybreaks=ybreaks, ymids=ybreaks[-1]-0.5*diff(ybreaks),
-        result=res)
+    list(
+        xbreaks = xbreaks, xmids = xbreaks[-1] - 0.5 * diff(xbreaks),
+        ybreaks = ybreaks, ymids = ybreaks[-1] - 0.5 * diff(ybreaks),
+        result = res
+    )
 } # binApply2D()
 
 
@@ -235,15 +250,17 @@ binApply2D <- function(x, y, f, xbreaks, ybreaks, FUN, include.lowest=FALSE, ...
 #' @author Dan Kelley
 #'
 #' @family bin-related functions
-binCount1D <- function(x, xbreaks, include.lowest=FALSE)
-{
-    if (missing(x))
+binCount1D <- function(x, xbreaks, include.lowest = FALSE) {
+    if (missing(x)) {
         stop("must supply 'x'")
-    if (missing(xbreaks))
+    }
+    if (missing(xbreaks)) {
         xbreaks <- pretty(x)
+    }
     nxbreaks <- length(xbreaks)
-    if (nxbreaks < 2)
+    if (nxbreaks < 2) {
         stop("must have more than 1 break")
+    }
     # 2023-06-24 # stop using C++ for this.
     # 2023-06-24 res <- .C("bin_count_1d",
     # 2023-06-24     nx=length(x),
@@ -253,11 +270,13 @@ binCount1D <- function(x, xbreaks, include.lowest=FALSE)
     # 2023-06-24     include_lowest=as.integer(include.lowest),
     # 2023-06-24     number=integer(nxbreaks-1L),
     # 2023-06-24     NAOK=TRUE, PACKAGE="oce")
-    C <- cut(x, xbreaks, include.lowest=include.lowest)
+    C <- cut(x, xbreaks, include.lowest = include.lowest)
     number <- unlist(unname(sapply(split(x, C), length)))
-    list(xbreaks=xbreaks,
-        xmids=xbreaks[-1L] - 0.5*diff(xbreaks),
-        number=number)
+    list(
+        xbreaks = xbreaks,
+        xmids = xbreaks[-1L] - 0.5 * diff(xbreaks),
+        number = number
+    )
 } # binCount1D
 
 
@@ -301,28 +320,32 @@ binCount1D <- function(x, xbreaks, include.lowest=FALSE)
 #' data(ctd)
 #' z <- ctd[["z"]]
 #' T <- ctd[["temperature"]]
-#' plot(T, z, cex=0.3)
+#' plot(T, z, cex = 0.3)
 #' TT <- binMean1D(z, T, seq(-100, 0, 1))
-#' lines(TT$result, TT$xmids, col=rgb(1, 0, 0, 0.9), lwd=2)
+#' lines(TT$result, TT$xmids, col = rgb(1, 0, 0, 0.9), lwd = 2)
 #'
 #' @author Dan Kelley
 #'
 #' @family bin-related functions
-binMean1D <- function(x, f, xbreaks, include.lowest=FALSE, na.rm=FALSE)
-{
-    if (missing(x))
+binMean1D <- function(x, f, xbreaks, include.lowest = FALSE, na.rm = FALSE) {
+    if (missing(x)) {
         stop("must supply 'x'")
+    }
     fGiven <- !missing(f)
-    if (!fGiven)
+    if (!fGiven) {
         f <- rep(1, length(x))
+    }
     nx <- length(x)
-    if (nx != length(f))
+    if (nx != length(f)) {
         stop("lengths of x and f must agree")
-    if (missing(xbreaks))
+    }
+    if (missing(xbreaks)) {
         xbreaks <- pretty(x)
+    }
     nxbreaks <- length(xbreaks)
-    if (nxbreaks < 2)
+    if (nxbreaks < 2) {
         stop("must have more than 1 break")
+    }
     # 2023-06-24 # Stop using C++ for this.
     # 2023-06-24 res <- .C("bin_mean_1d",
     # 2023-06-24     nx=length(x),
@@ -339,15 +362,17 @@ binMean1D <- function(x, f, xbreaks, include.lowest=FALSE, na.rm=FALSE)
         x <- x[ok]
         f <- f[ok]
     }
-    C <- cut(x, xbreaks, include.lowest=include.lowest)
+    C <- cut(x, xbreaks, include.lowest = include.lowest)
     S <- split(f, C)
     number <- unlist(unname(lapply(S, length)))
     result <- unlist(unname(lapply(S, mean)))
     result[!is.finite(result)] <- NA
-    list(xbreaks=xbreaks,
-        xmids=xbreaks[-1L] - 0.5*diff(xbreaks),
-        number=number,
-        result=result)
+    list(
+        xbreaks = xbreaks,
+        xmids = xbreaks[-1L] - 0.5 * diff(xbreaks),
+        number = number,
+        result = result
+    )
 } # binMean1D
 
 #' Bin-count Matrix Data
@@ -386,24 +411,30 @@ binMean1D <- function(x, f, xbreaks, include.lowest=FALSE, na.rm=FALSE)
 #' @author Dan Kelley
 #'
 #' @family bin-related functions
-binCount2D <- function(x, y, xbreaks, ybreaks, flatten=FALSE, include.lowest=FALSE)
-{
-    if (missing(x))
+binCount2D <- function(x, y, xbreaks, ybreaks, flatten = FALSE, include.lowest = FALSE) {
+    if (missing(x)) {
         stop("must supply 'x'")
-    if (missing(y))
+    }
+    if (missing(y)) {
         stop("must supply 'y'")
-    if (length(x) != length(y))
+    }
+    if (length(x) != length(y)) {
         stop("lengths of x and y must agree")
-    if (missing(xbreaks))
+    }
+    if (missing(xbreaks)) {
         xbreaks <- pretty(x)
-    if (missing(ybreaks))
+    }
+    if (missing(ybreaks)) {
         ybreaks <- pretty(y)
+    }
     nxbreaks <- length(xbreaks)
-    if (nxbreaks < 2)
+    if (nxbreaks < 2) {
         stop("must have more than 1 xbreak")
+    }
     nybreaks <- length(ybreaks)
-    if (nybreaks < 2)
+    if (nybreaks < 2) {
         stop("must have more than 1 ybreak")
+    }
     # 2023-06-24 # Stop using C++ for this.
     # 2023-06-24 M <- .C("bin_count_2d",
     # 2023-06-24     nx=length(x),
@@ -422,7 +453,7 @@ binCount2D <- function(x, y, xbreaks, ybreaks, flatten=FALSE, include.lowest=FAL
     # 2023-06-24     xmids=xbreaks[-1] - 0.5 * diff(xbreaks),
     # 2023-06-24     ymids=ybreaks[-1] - 0.5 * diff(ybreaks),
     # 2023-06-24     number=matrix(M$number, nrow=nxbreaks-1))
-    res <- binApply2D(x, y, rep(1, length(x)), xbreaks, ybreaks, length, include.lowest=include.lowest)
+    res <- binApply2D(x, y, rep(1, length(x)), xbreaks, ybreaks, length, include.lowest = include.lowest)
     names(res) <- gsub("result", "number", names(res))
     dim <- dim(res$number)
     res$number <- as.integer(res$number)
@@ -430,8 +461,8 @@ binCount2D <- function(x, y, xbreaks, ybreaks, flatten=FALSE, include.lowest=FAL
     res$number[is.na(res$number)] <- 0L
     if (flatten) {
         res2 <- list()
-        res2$x <- rep(res$xmids, times=nybreaks-1)
-        res2$y <- rep(res$ymids, each=nxbreaks-1)
+        res2$x <- rep(res$xmids, times = nybreaks - 1)
+        res2$y <- rep(res$ymids, each = nxbreaks - 1)
         res2$n <- as.vector(res$number)
         res <- res2
     }
@@ -497,43 +528,52 @@ binCount2D <- function(x, y, xbreaks, ybreaks, flatten=FALSE, include.lowest=FAL
 #' xb <- seq(0, 0.5, 0.1)
 #' yb <- seq(0, 0.5, 0.1)
 #' m <- binMean2D(x, y, f, xb, yb)
-#' cm <- colormap(f, col=oceColorsTurbo)
-#' opar <- par(no.readonly=TRUE)
-#' drawPalette(colormap=cm)
-#' plot(x, y, col=cm$zcol, pch=20, cex=1.4)
-#' contour(m$xmids, m$ymids, m$result, add=TRUE, labcex=1.4)
+#' cm <- colormap(f, col = oceColorsTurbo)
+#' opar <- par(no.readonly = TRUE)
+#' drawPalette(colormap = cm)
+#' plot(x, y, col = cm$zcol, pch = 20, cex = 1.4)
+#' contour(m$xmids, m$ymids, m$result, add = TRUE, labcex = 1.4)
 #' par(opar)
 #'
 #' @author Dan Kelley
 #'
 #' @family bin-related functions
-binMean2D <- function(x, y, f, xbreaks, ybreaks, flatten=FALSE, fill=FALSE, fillgap=-1, include.lowest=FALSE, na.rm=FALSE)
-{
-    if (missing(x))
+binMean2D <- function(x, y, f, xbreaks, ybreaks, flatten = FALSE, fill = FALSE, fillgap = -1, include.lowest = FALSE, na.rm = FALSE) {
+    if (missing(x)) {
         stop("must supply 'x'")
-    if (missing(y))
+    }
+    if (missing(y)) {
         stop("must supply 'y'")
-    if (fillgap == 0)
+    }
+    if (fillgap == 0) {
         stop("cannot have a negative 'fillgap' value")
+    }
     fGiven <- !missing(f)
-    if (!fGiven)
+    if (!fGiven) {
         f <- rep(1, length(x))
-    if (length(x) != length(y))
+    }
+    if (length(x) != length(y)) {
         stop("lengths of x and y must agree, but they are ", length(x), " and ", length(y))
-    if (length(x) != length(f))
+    }
+    if (length(x) != length(f)) {
         stop("lengths of x and f must agree, but they are ", length(x), " and ", length(f))
-    if (missing(xbreaks))
+    }
+    if (missing(xbreaks)) {
         xbreaks <- pretty(x)
-    if (missing(ybreaks))
+    }
+    if (missing(ybreaks)) {
         ybreaks <- pretty(y)
+    }
     nxbreaks <- length(xbreaks)
-    if (nxbreaks < 2)
+    if (nxbreaks < 2) {
         stop("must have more than 1 xbreak")
+    }
     nybreaks <- length(ybreaks)
-    if (nybreaks < 2)
+    if (nybreaks < 2) {
         stop("must have more than 1 ybreak")
-    resCount <- binCount2D(x=x, y=y, xbreaks=xbreaks, ybreaks=ybreaks, include.lowest=include.lowest)
-    resMean <- binApply2D(x=x, y=y, f=f, xbreaks=xbreaks, ybreaks=ybreaks, FUN=mean, include.lowest=include.lowest, na.rm=TRUE)
+    }
+    resCount <- binCount2D(x = x, y = y, xbreaks = xbreaks, ybreaks = ybreaks, include.lowest = include.lowest)
+    resMean <- binApply2D(x = x, y = y, f = f, xbreaks = xbreaks, ybreaks = ybreaks, FUN = mean, include.lowest = include.lowest, na.rm = TRUE)
     # 2023-06-25 M <- .C("bin_mean_2d", length(x), as.double(x), as.double(y), as.double(f),
     # 2023-06-25     length(xbreaks), as.double(xbreaks),
     # 2023-06-25     length(ybreaks), as.double(ybreaks),
@@ -541,18 +581,20 @@ binMean2D <- function(x, y, f, xbreaks, ybreaks, flatten=FALSE, fill=FALSE, fill
     # 2023-06-25     number=integer((nxbreaks-1) * (nybreaks-1)),
     # 2023-06-25     mean=double((nxbreaks-1) * (nybreaks-1)),
     # 2023-06-25     NAOK=TRUE, PACKAGE="oce")
-    res <- list(xbreaks=xbreaks,
-        ybreaks=ybreaks,
-        xmids=xbreaks[-1] - 0.5 * diff(xbreaks),
-        ymids=ybreaks[-1] - 0.5 * diff(ybreaks),
-        number=resCount$number,
-        result=resMean$result)
-        #number=matrix(M$number, nrow=nxbreaks-1),
-        #result=if (fGiven) matrix(M$mean, nrow=nxbreaks-1) else matrix(NA, ncol=nybreaks-1, nrow=nxbreaks-1))
+    res <- list(
+        xbreaks = xbreaks,
+        ybreaks = ybreaks,
+        xmids = xbreaks[-1] - 0.5 * diff(xbreaks),
+        ymids = ybreaks[-1] - 0.5 * diff(ybreaks),
+        number = resCount$number,
+        result = resMean$result
+    )
+    # number=matrix(M$number, nrow=nxbreaks-1),
+    # result=if (fGiven) matrix(M$mean, nrow=nxbreaks-1) else matrix(NA, ncol=nybreaks-1, nrow=nxbreaks-1))
     if (flatten) {
         res2 <- list()
-        res2$x <- rep(res$xmids, times=nybreaks-1)
-        res2$y <- rep(res$ymids, each=nxbreaks-1)
+        res2$x <- rep(res$xmids, times = nybreaks - 1)
+        res2$y <- rep(res$ymids, each = nxbreaks - 1)
         res2$f <- as.vector(res$result)
         res2$n <- as.vector(res$number)
         res <- res2
@@ -605,39 +647,43 @@ binMean2D <- function(x, y, f, xbreaks, ybreaks, flatten=FALSE, fill=FALSE, fill
 #' # A. fake linear data
 #' x <- seq(0, 100, 1)
 #' y <- 1 + 2 * x
-#' plot(x, y, pch=1)
+#' plot(x, y, pch = 1)
 #' ba <- binAverage(x, y)
-#' points(ba$x, ba$y, pch=3, col="red", cex=3)
+#' points(ba$x, ba$y, pch = 3, col = "red", cex = 3)
 #'
 #' # B. fake quadratic data
-#' y <- 1 + x ^2
-#' plot(x, y, pch=1)
+#' y <- 1 + x^2
+#' plot(x, y, pch = 1)
 #' ba <- binAverage(x, y)
-#' points(ba$x, ba$y, pch=3, col="red", cex=3)
+#' points(ba$x, ba$y, pch = 3, col = "red", cex = 3)
 #'
 #' # C. natural data
 #' data(co2)
 #' plot(co2)
 #' avg <- binAverage(time(co2), co2, 1950, 2000, 2)
-#' points(avg$x, avg$y, col="red")
+#' points(avg$x, avg$y, col = "red")
 #'
 #' @family bin-related functions
-binAverage <- function(x, y, xmin, xmax, xinc, include.lowest=FALSE, na.rm=FALSE)
-{
-    if (missing(y))
+binAverage <- function(x, y, xmin, xmax, xinc, include.lowest = FALSE, na.rm = FALSE) {
+    if (missing(y)) {
         stop("must supply 'y'")
-    if (missing(xmin))
-        xmin <- min(as.numeric(x), na.rm=TRUE)
-    if (missing(xmax))
-        xmax <- max(as.numeric(x), na.rm=TRUE)
-    if (missing(xinc))
-        xinc  <- (xmax - xmin) / 10
-    if (xmax <= xmin)
+    }
+    if (missing(xmin)) {
+        xmin <- min(as.numeric(x), na.rm = TRUE)
+    }
+    if (missing(xmax)) {
+        xmax <- max(as.numeric(x), na.rm = TRUE)
+    }
+    if (missing(xinc)) {
+        xinc <- (xmax - xmin) / 10
+    }
+    if (xmax <= xmin) {
         stop("must have xmax > xmin")
-    if (xinc <= 0)
+    }
+    if (xinc <= 0) {
         stop("must have xinc > 0")
+    }
     xbreaks <- seq(xmin, xmax, xinc)
-    res <- binMean1D(x, y, xbreaks, include.lowest=include.lowest, na.rm=na.rm)
-    list(x=res$xmids, y=res$result)
+    res <- binMean1D(x, y, xbreaks, include.lowest = include.lowest, na.rm = na.rm)
+    list(x = res$xmids, y = res$result)
 }
-

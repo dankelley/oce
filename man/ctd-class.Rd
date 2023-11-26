@@ -140,13 +140,15 @@ Archived CTD (and other) data may be found on servers such as
 \examples{
 
 # 1. Create a ctd object with fake data.
-a <- as.ctd(salinity=35+1:3/10, temperature=10-1:3/10, pressure=1:3)
+a <- as.ctd(salinity = 35 + 1:3 / 10, temperature = 10 - 1:3 / 10, pressure = 1:3)
 summary(a)
 
 # 2. Fix a typo in a station latitude (fake! it's actually okay)
 data(ctd)
-ctd <- oceSetMetadata(ctd, "latitude", ctd[["latitude"]]-0.001,
-                     "fix latitude typo in log book")
+ctd <- oceSetMetadata(
+    ctd, "latitude", ctd[["latitude"]] - 0.001,
+    "fix latitude typo in log book"
+)
 
 }
 \seealso{

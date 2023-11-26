@@ -56,7 +56,7 @@ If none of these conditions is met, a warning is issued.
 data(ctd)
 summary(ctd)
 # Move the CTD profile a nautical mile north.
-ctd[["latitude"]] <- 1/60 + ctd[["latitude"]] # acts in metadata
+ctd[["latitude"]] <- 1 / 60 + ctd[["latitude"]] # acts in metadata
 # Increase the salinity by 0.01.
 ctd[["salinity"]] <- 0.01 + ctd[["salinity"]] # acts in data
 summary(ctd)

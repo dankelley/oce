@@ -41,14 +41,14 @@ functions, so the effect is a nesting, with more space for deeper function
 level.
 }
 \examples{
-oceDebug(debug=1, "Example", 1, "Plain text")
-oceDebug(debug=1, "Example", 2, "Bold", style="bold")
-oceDebug(debug=1, "Example", 3, "Italic", style="italic")
-oceDebug(debug=1, "Example", 4, "Red", style="red")
-oceDebug(debug=1, "Example", 5, "Green", style="green")
-oceDebug(debug=1, "Example", 6, "Blue", style="blue")
-mycyan <- function(...) paste("\033[36m", paste(..., sep=" "), "\033[0m", sep="")
-oceDebug(debug=1, "Example", 7, "User-set cyan", style=mycyan)
+oceDebug(debug = 1, "Example", 1, "Plain text")
+oceDebug(debug = 1, "Example", 2, "Bold", style = "bold")
+oceDebug(debug = 1, "Example", 3, "Italic", style = "italic")
+oceDebug(debug = 1, "Example", 4, "Red", style = "red")
+oceDebug(debug = 1, "Example", 5, "Green", style = "green")
+oceDebug(debug = 1, "Example", 6, "Blue", style = "blue")
+mycyan <- function(...) paste("\033[36m", paste(..., sep = " "), "\033[0m", sep = "")
+oceDebug(debug = 1, "Example", 7, "User-set cyan", style = mycyan)
 }
 \author{
 Dan Kelley

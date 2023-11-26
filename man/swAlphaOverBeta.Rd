@@ -37,7 +37,7 @@ Value in psu/\eqn{^\circ}{deg}C.
 Compute \eqn{\alpha/\beta}{alpha/beta} using McDougall's (1987) algorithm.
 }
 \examples{
-swAlphaOverBeta(40, 10, 4000, eos="unesco") # 0.3476
+swAlphaOverBeta(40, 10, 4000, eos = "unesco") # 0.3476
 
 }
 \references{

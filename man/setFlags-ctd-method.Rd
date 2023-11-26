@@ -103,14 +103,14 @@ qc <- initializeFlags(qc, "salinity", 2)
 qc <- initializeFlags(qc, "temperature", 2)
 # Flag bad salinities as 4
 oddS <- with(qc[["data"]], salinity < 25 | 40 < salinity)
-qc <- setFlags(qc, name="salinity", i=oddS, value=4)
+qc <- setFlags(qc, name = "salinity", i = oddS, value = 4)
 # Flag bad temperatures as 4
 oddT <- with(qc[["data"]], temperature < -2 | 40 < temperature)
-qc <- setFlags(qc, name="temperature", i=oddT, value=4)
+qc <- setFlags(qc, name = "temperature", i = oddT, value = 4)
 # Compare results in TS space
-par(mfrow=c(2, 1))
+par(mfrow = c(2, 1))
 plotTS(ctdRaw)
-plotTS(handleFlags(qc, flags=c(1, 3:9)))
+plotTS(handleFlags(qc, flags = c(1, 3:9)))
 
 }
 \seealso{

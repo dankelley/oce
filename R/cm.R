@@ -21,7 +21,7 @@
 #' @family classes provided by oce
 #'
 #' @author Dan Kelley
-setClass("cm", contains="oce")
+setClass("cm", contains = "oce")
 
 #' Sample cm Data
 #'
@@ -66,17 +66,21 @@ NULL
 #' @author Dan Kelley
 #'
 #' @family things related to cm data
-setMethod(f="[[",
-    signature(x="cm", i="ANY", j="ANY"),
-    definition=function(x, i, j, ...) {
+setMethod(
+    f = "[[",
+    signature(x = "cm", i = "ANY", j = "ANY"),
+    definition = function(x, i, j, ...) {
         if (i == "?") {
-            return(list(metadata=sort(names(x@metadata)),
-                metadataDerived=NULL,
-                data=sort(names(x@data)),
-                dataDerived=NULL))
+            return(list(
+                metadata = sort(names(x@metadata)),
+                metadataDerived = NULL,
+                data = sort(names(x@data)),
+                dataDerived = NULL
+            ))
         }
-        callNextMethod()         # [[
-    })
+        callNextMethod() # [[
+    }
+)
 
 #' Replace Parts of a cm Object
 #'
@@ -85,20 +89,25 @@ setMethod(f="[[",
 #' @template sub_subsetTemplate
 #'
 #' @family things related to cm data
-setMethod(f="[[<-",
-    signature(x="cm", i="ANY", j="ANY"),
-    definition=function(x, i, j, ..., value) {
-        callNextMethod(x=x, i=i, j=j, ...=..., value=value) # [[<-
-    })
+setMethod(
+    f = "[[<-",
+    signature(x = "cm", i = "ANY", j = "ANY"),
+    definition = function(x, i, j, ..., value) {
+        callNextMethod(x = x, i = i, j = j, ... = ..., value = value) # [[<-
+    }
+)
 
-setMethod(f="initialize",
-    signature="cm",
-    definition=function(.Object, time=NULL, u=NULL, v=NULL, units, ...) {
+setMethod(
+    f = "initialize",
+    signature = "cm",
+    definition = function(.Object, time = NULL, u = NULL, v = NULL, units, ...) {
         .Object <- callNextMethod(.Object, ...)
         # sample, direction, conductivity, salinity, temperature, pressure) {
         if (missing(units)) {
-            .Object@metadata$units <- list(u=list(unit=expression(m/s), scale=""),
-                v=list(unit=expression(m/s), scale=""))
+            .Object@metadata$units <- list(
+                u = list(unit = expression(m / s), scale = ""),
+                v = list(unit = expression(m / s), scale = "")
+            )
         } else {
             .Object@metadata$units <- units # CAUTION: we are being quite trusting here
         }
@@ -109,7 +118,8 @@ setMethod(f="initialize",
         .Object@processingLog$time <- presentTime()
         .Object@processingLog$value <- "create 'cm' object"
         return(.Object)
-    })
+    }
+)
 
 #' Summarize a cm Object
 #'
@@ -131,19 +141,21 @@ setMethod(f="initialize",
 #' @family things related to cm data
 #'
 #' @author Dan Kelley
-setMethod(f="summary",
-    signature="cm",
-    definition=function(object, ...) {
+setMethod(
+    f = "summary",
+    signature = "cm",
+    definition = function(object, ...) {
         cat("Cm summary\n----------\n\n", ...)
-        showMetadataItem(object, "filename",     "File source:   ", quote=TRUE)
-        showMetadataItem(object, "type",         "Instr. type:   ")
-        showMetadataItem(object, "model",        "Instr. model:  ")
+        showMetadataItem(object, "filename", "File source:   ", quote = TRUE)
+        showMetadataItem(object, "type", "Instr. type:   ")
+        showMetadataItem(object, "model", "Instr. model:  ")
         showMetadataItem(object, "serialNumber", "Serial Num.:   ")
-        showMetadataItem(object, "version",      "Version:       ")
-        showMetadataItem(object, "north",        "North:         ")
-        showMetadataItem(object, "declination",  "Declination:   ")
+        showMetadataItem(object, "version", "Version:       ")
+        showMetadataItem(object, "north", "North:         ")
+        showMetadataItem(object, "declination", "Declination:   ")
         invisible(callNextMethod()) # summary
-    })
+    }
+)
 
 
 #' Subset a cm Object
@@ -169,43 +181,48 @@ setMethod(f="summary",
 #' @family functions that subset oce objects
 #'
 #' @author Dan Kelley
-setMethod(f="subset",
-    signature="cm",
-    definition=function(x, subset, ...) {
-        subsetString <- paste(deparse(substitute(expr=subset, env=environment())), collapse=" ")
+setMethod(
+    f = "subset",
+    signature = "cm",
+    definition = function(x, subset, ...) {
+        subsetString <- paste(deparse(substitute(expr = subset, env = environment())), collapse = " ")
         res <- x
         dots <- list(...)
         debug <- getOption("oceDebug")
-        if (length(dots) && ("debug" %in% names(dots)))
+        if (length(dots) && ("debug" %in% names(dots))) {
             debug <- dots$debug
-        if (missing(subset))
+        }
+        if (missing(subset)) {
             stop("must give 'subset'")
+        }
         if (grepl("time", subsetString)) {
             oceDebug(debug, "subsetting a cm by time\n")
-            keep <- eval(expr=substitute(expr=subset, env=environment()), envir=x@data, enclos=parent.frame(2))
+            keep <- eval(expr = substitute(expr = subset, env = environment()), envir = x@data, enclos = parent.frame(2))
             names <- names(x@data)
             oceDebug(debug, vectorShow(keep, "keeping bins:"))
             oceDebug(debug, "number of kept bins:", sum(keep), "\n")
-            if (sum(keep) < 2)
+            if (sum(keep) < 2) {
                 stop("must keep at least 2 profiles")
+            }
             res <- x
             # FIXME: are we handling slow timescale data?
             for (name in names(x@data)) {
                 if (name == "time" || is.vector(x@data[[name]])) {
-                    oceDebug(debug, "subsetting x@data$", name, ", which is a vector\n", sep="")
+                    oceDebug(debug, "subsetting x@data$", name, ", which is a vector\n", sep = "")
                     res@data[[name]] <- x@data[[name]][keep] # FIXME: what about fast/slow
                 } else if (is.matrix(x@data[[name]])) {
-                    oceDebug(debug, "subsetting x@data$", name, ", which is a matrix\n", sep="")
+                    oceDebug(debug, "subsetting x@data$", name, ", which is a matrix\n", sep = "")
                     res@data[[name]] <- x@data[[name]][keep, ]
                 } else if (is.array(x@data[[name]])) {
-                    oceDebug(debug, "subsetting x@data$", name, ", which is an array\n", sep="")
-                    res@data[[name]] <- x@data[[name]][keep, , , drop=FALSE]
+                    oceDebug(debug, "subsetting x@data$", name, ", which is an array\n", sep = "")
+                    res@data[[name]] <- x@data[[name]][keep, , , drop = FALSE]
                 }
             }
         }
-        res@processingLog <- processingLogAppend(res@processingLog, paste("subset.cm(x, subset=", subsetString, ")", sep=""))
+        res@processingLog <- processingLogAppend(res@processingLog, paste("subset.cm(x, subset=", subsetString, ")", sep = ""))
         res
-    })
+    }
+)
 
 #' Coerce Data Into a cm Object
 #'
@@ -230,8 +247,8 @@ setMethod(f="subset",
 #' library(oce)
 #' # Example 1: creation from scratch
 #' t <- Sys.time() + 0:50
-#' u <- sin(2*pi*0:50/5) + rnorm(51)
-#' v <- cos(2*pi*0:50/5) + rnorm(51)
+#' u <- sin(2 * pi * 0:50 / 5) + rnorm(51)
+#' v <- cos(2 * pi * 0:50 / 5) + rnorm(51)
 #' p <- 100 + rnorm(51)
 #' summary(as.cm(t, u, v, p))
 #'
@@ -240,35 +257,43 @@ setMethod(f="subset",
 #' summary(as.cm(adv))
 #'
 #' @family things related to cm data
-as.cm <- function(time, u=NULL, v=NULL,
-    pressure=NULL, conductivity=NULL, temperature=NULL, salinity=NULL,
-    longitude=NA, latitude=NA, filename="", debug=getOption("oceDebug"))
-{
-    oceDebug(debug, "as.ctd() {\n", unindent=1)
-    rpd <- atan2(1, 1) / 45            # radians per degree (avoid 'pi')
+as.cm <- function(
+    time, u = NULL, v = NULL,
+    pressure = NULL, conductivity = NULL, temperature = NULL, salinity = NULL,
+    longitude = NA, latitude = NA, filename = "", debug = getOption("oceDebug")) {
+    oceDebug(debug, "as.ctd() {\n", unindent = 1)
+    rpd <- atan2(1, 1) / 45 # radians per degree (avoid 'pi')
     # Catch special cases
     firstArgIsOce <- inherits(time, "oce")
     if (firstArgIsOce) {
         x <- time
         mnames <- names(x@metadata)
         dnames <- names(x@data)
-        if (!("time" %in% dnames))
+        if (!("time" %in% dnames)) {
             stop("first argument is an oce object, but it does not hold time")
+        }
         time <- x@data$time
-        if ("pressure" %in% dnames)
+        if ("pressure" %in% dnames) {
             pressure <- x@data$pressure
-        if ("conductivity" %in% dnames)
+        }
+        if ("conductivity" %in% dnames) {
             conductivity <- x@data$conductivity
-        if ("temperature" %in% dnames)
+        }
+        if ("temperature" %in% dnames) {
             temperature <- x@data$temperature
-        if ("salinity" %in% dnames)
+        }
+        if ("salinity" %in% dnames) {
             salinity <- x@data$salinity
-        if ("longitude" %in% mnames)
+        }
+        if ("longitude" %in% mnames) {
             longitude <- x@metadata$longitude
-        if ("latitude" %in% mnames)
+        }
+        if ("latitude" %in% mnames) {
             latitude <- x@metadata$latitude
-        if ("filename" %in% mnames)
+        }
+        if ("filename" %in% mnames) {
             filename <- x@metadata$filename
+        }
         if (inherits(x, "adp")) {
             if (1 == dim(x@data$v)[2]) {
                 oceDebug(debug, "x is an adp object with just 1 cell\n")
@@ -281,66 +306,76 @@ as.cm <- function(time, u=NULL, v=NULL,
             oceDebug(debug, "x is an adv object\n")
             u <- as.vector(x@data$v[, 1])
             v <- as.vector(x@data$v[, 2])
-        }  else {
+        } else {
             if ("u" %in% dnames && "v" %in% dnames) {
                 u <- x@data$u
                 v <- x@data$v
             } else if ("speedHorizontal" %in% dnames && "directionTrue" %in% dnames) {
                 # NOTE: this can be generalized later to take e.g. 'speed', if some objects have that
-                u <- x@data$speedHorizontal * cos(rpd * (90-x@data$directionTrue))
-                v <- x@data$speedHorizontal * sin(rpd * (90-x@data$directionTrue))
+                u <- x@data$speedHorizontal * cos(rpd * (90 - x@data$directionTrue))
+                v <- x@data$speedHorizontal * sin(rpd * (90 - x@data$directionTrue))
             } else if ("speedHorizontal" %in% dnames && "direction" %in% dnames) {
-                u <- x@data$speedHorizontal * cos(rpd * (90-x@data$direction))
-                v <- x@data$speedHorizontal * sin(rpd * (90-x@data$direction))
+                u <- x@data$speedHorizontal * cos(rpd * (90 - x@data$direction))
+                v <- x@data$speedHorizontal * sin(rpd * (90 - x@data$direction))
             } else {
                 stop("first argument must hold either 'u' plus 'v' or 'speed' plus 'directionTrue' or 'direction'")
             }
         }
     }
     direction <- 90 - atan2(v, u) / rpd
-    direction <- ifelse(direction < 0, 360+direction, direction) # put in range 0 to 360
-    res <- new("cm", time=time, u=u, v=v)
+    direction <- ifelse(direction < 0, 360 + direction, direction) # put in range 0 to 360
+    res <- new("cm", time = time, u = u, v = v)
     res@metadata$filename <- filename
     res@metadata$longitude <- longitude
     res@metadata$latitude <- latitude
     if (!is.null(conductivity)) {
         res@data$conductivity <- conductivity
-        res@metadata$units$conductivity <- list(unit=expression(mS/cm), scale="") # guessing on unit
+        res@metadata$units$conductivity <- list(unit = expression(mS / cm), scale = "") # guessing on unit
     }
     if (!is.null(salinity)) {
         res@data$salinity <- salinity
-        res@metadata$units$salinity <- list(unit=expression(), scale="PSS-78")
+        res@metadata$units$salinity <- list(unit = expression(), scale = "PSS-78")
     }
     if (!is.null(temperature)) {
         res@data$temperature <- temperature
-        res@metadata$units$temperature <- list(unit=expression(degree*C), scale="ITS-90")
+        res@metadata$units$temperature <- list(unit = expression(degree * C), scale = "ITS-90")
     }
     if (!is.null(pressure)) {
         res@data$pressure <- pressure
-        res@metadata$units$pressure <- list(unit=expression(dbar), scale="")
+        res@metadata$units$pressure <- list(unit = expression(dbar), scale = "")
     }
     if (firstArgIsOce) {
         # Copy some metadata that are used sometimes (esp. ODF files)
-        if ("type" %in% mnames)
+        if ("type" %in% mnames) {
             res@metadata$type <- x@metadata$type
-        if ("model" %in% mnames)
+        }
+        if ("model" %in% mnames) {
             res@metadata$model <- x@metadata$model
-        if ("serialNumber" %in% mnames)
+        }
+        if ("serialNumber" %in% mnames) {
             res@metadata$serialNumber <- x@metadata$serialNumber
-        if ("ship" %in% mnames)
+        }
+        if ("ship" %in% mnames) {
             res@metadata$ship <- x@metadata$ship
-        if ("scientist" %in% mnames)
+        }
+        if ("scientist" %in% mnames) {
             res@metadata$scientist <- x@metadata$scientist
-        if ("cruise" %in% mnames)
+        }
+        if ("cruise" %in% mnames) {
             res@metadata$cruise <- x@metadata$cruise
-        if ("station" %in% mnames)
+        }
+        if ("station" %in% mnames) {
             res@metadata$station <- x@metadata$station
-        if ("countryInstituteCode" %in% mnames)
+        }
+        if ("countryInstituteCode" %in% mnames) {
             res@metadata$countryInstituteCode <- x@metadata$countryInstituteCode
-        if ("cruiseNumber" %in% mnames)
+        }
+        if ("cruiseNumber" %in% mnames) {
             res@metadata$cruiseNumber <- x@metadata$cruiseNumber
-        if ("waterDepth" %in% mnames)
+        }
+        if ("waterDepth" %in% mnames) {
             res@metadata$waterDepth <- x@metadata$waterDepth
+        }
         # determine original names, where known
         if ("dataNamesOriginal" %in% mnames) {
             if (is.list(x@metadata$dataNamesOriginal)) {
@@ -348,19 +383,23 @@ as.cm <- function(time, u=NULL, v=NULL,
             } else {
                 nameMapping <- as.list(x@metadata$dataNamesOriginal)
                 names(nameMapping) <- names(x@data)
-                res@metadata$dataNamesOriginal <- lapply(names(res@data),
+                res@metadata$dataNamesOriginal <- lapply(
+                    names(res@data),
                     function(name) {
                         if (is.null(nameMapping[[name]])) "-" else nameMapping[[name]]
-                    })
+                    }
+                )
             }
         } else {
             res@metadata$dataNamesOriginal <- NULL
         }
         res@processingLog <- x@processingLog
     }
-    res@processingLog <- processingLogAppend(res@processingLog,
-        paste(deparse(match.call()), sep="", collapse=""))
-    oceDebug(debug, "} # as.cm()\n", unindent=1)
+    res@processingLog <- processingLogAppend(
+        res@processingLog,
+        paste(deparse(match.call()), sep = "", collapse = "")
+    )
+    oceDebug(debug, "} # as.cm()\n", unindent = 1)
     res
 }
 
@@ -472,92 +511,106 @@ as.cm <- function(time, u=NULL, v=NULL,
 #' magnetic declination into account.
 #'
 #' @section Sample of Usage:
-#'\preformatted{
+#' \preformatted{
 #' library(oce)
 #' cm <- read.oce("cm_interocean_0811786.s4a.tab")
 #' summary(cm)
 #' plot(cm)
-#'}
+#' }
 #'
 #' @family things related to cm data
 #'
 #' @author Dan Kelley
-read.cm <- function(file, from=1, to, by=1, tz=getOption("oceTz"), type=c("s4"),
-    longitude=NA, latitude=NA, debug=getOption("oceDebug"),
-    encoding="latin1", monitor=FALSE, processingLog)
-{
-    if (missing(file))
+read.cm <- function(
+    file, from = 1, to, by = 1, tz = getOption("oceTz"), type = c("s4"),
+    longitude = NA, latitude = NA, debug = getOption("oceDebug"),
+    encoding = "latin1", monitor = FALSE, processingLog) {
+    if (missing(file)) {
         stop("must supply 'file'")
+    }
     if (is.character(file)) {
-        if (!file.exists(file))
+        if (!file.exists(file)) {
             stop("cannot find file \"", file, "\"")
-        if (0L == file.info(file)$size)
+        }
+        if (0L == file.info(file)$size) {
             stop("empty file \"", file, "\"")
+        }
     }
     oceDebug(debug, "read.cm(file=\"", file,
         "\", from=", format(from),
-        ", to=", if (missing(to)) "(missing)" else format(to), ", by=", by, "type=", type, ", ...) {\n", sep="", unindent=1)
+        ", to=", if (missing(to)) "(missing)" else format(to), ", by=", by, "type=", type, ", ...) {\n",
+        sep = "", unindent = 1
+    )
     type <- match.arg(type)
     if (type == "s4") {
-        read.cm.s4(file=file, from=from, to=to, by=by, tz=tz,
-            longitude=longitude, latitude=latitude,
-            encoding=encoding, monitor=monitor, debug=debug-1,
-            processingLog=processingLog)
+        read.cm.s4(
+            file = file, from = from, to = to, by = by, tz = tz,
+            longitude = longitude, latitude = latitude,
+            encoding = encoding, monitor = monitor, debug = debug - 1,
+            processingLog = processingLog
+        )
     } else {
         stop("unknown type of current meter")
     }
 }
 
-read.cm.s4 <- function(file, from=1, to, by=1, tz=getOption("oceTz"), longitude=NA, latitude=NA,
-    monitor=FALSE, encoding="latin1", debug=getOption("oceDebug"), processingLog)
-{
-    if (missing(file))
+read.cm.s4 <- function(
+    file, from = 1, to, by = 1, tz = getOption("oceTz"), longitude = NA, latitude = NA,
+    monitor = FALSE, encoding = "latin1", debug = getOption("oceDebug"), processingLog) {
+    if (missing(file)) {
         stop("must supply 'file'")
-    if (is.character(file)) {
-        if (!file.exists(file))
-            stop("cannot find file \"", file, "\"")
-        if (0L == file.info(file)$size)
-            stop("empty file \"", file, "\"")
     }
-    if (debug > 1)
+    if (is.character(file)) {
+        if (!file.exists(file)) {
+            stop("cannot find file \"", file, "\"")
+        }
+        if (0L == file.info(file)$size) {
+            stop("empty file \"", file, "\"")
+        }
+    }
+    if (debug > 1) {
         debug <- 1L
+    }
     oceDebug(debug, "read.cm.s4(file=\"", file,
         "\", from=", format(from),
-        ", to=", if (missing(to)) "(missing)" else format(to), ", by=", by, ", ...) {\n", sep="", unindent=1)
+        ", to=", if (missing(to)) "(missing)" else format(to), ", by=", by, ", ...) {\n",
+        sep = "", unindent = 1
+    )
     if (is.character(file)) {
         filename <- fullFilename(file)
-        file <- file(file, "r", encoding=encoding)
+        file <- file(file, "r", encoding = encoding)
         on.exit(close(file))
     }
-    if (!inherits(file, "connection"))
+    if (!inherits(file, "connection")) {
         stop("argument `file' must be a character string or connection")
+    }
     if (!isOpen(file)) {
         filename <- "(connection)"
         open(file, "rb")
         on.exit(close(file))
     }
     # Examine the first line of the file, to get serial number, etc.
-    items <- scan(file, "character", nlines=1, sep="\t", quiet=TRUE) # slow, but just one line
-    oceDebug(debug, "line 1 contains: ", paste(items, collapse=" "), "\n")
+    items <- scan(file, "character", nlines = 1, sep = "\t", quiet = TRUE) # slow, but just one line
+    oceDebug(debug, "line 1 contains: ", paste(items, collapse = " "), "\n")
     serialNumber <- "unknown"
     version <- "unknown"
     type <- "unknown"
     for (i in 1:(-1 + length(items))) {
         if (length(grep("Serial", items[i]))) {
-            serialNumber <- items[i+1]
+            serialNumber <- items[i + 1]
         } else if (length(grep("Version", items[i]))) {
-            version <- items[i+1]
+            version <- items[i + 1]
         } else if (length(grep("Type", items[i]))) {
-            type <- items[i+1]
+            type <- items[i + 1]
         }
     }
     # Skip through the rest of the header, and start paying attention when
     # row number is 1, 2, and then 3.  These first rows give us the time
     # sequence.
-    lines <- readLines(file, n=20)
+    lines <- readLines(file, n = 20)
     for (i in 2:20) {
         items <- strsplit(lines[i], "\t")[[1]]
-        oceDebug(debug, "line", i, "contains: ", paste(items, collapse=" "), "\n")
+        oceDebug(debug, "line", i, "contains: ", paste(items, collapse = " "), "\n")
         if (items[1] == "Sample #") {
             # names <- sub("[ ]+$", "", sub("^[ ]+","", items))
             # names <- ifelse(0 == nchar(names), paste("column", seq_along(names), sep=""), names)
@@ -566,8 +619,8 @@ read.cm.s4 <- function(file, from=1, to, by=1, tz=getOption("oceTz"), longitude=
         } else if (items[1] == "2") {
             start.hms <- items[3]
         } else if (items[1] == "3") {
-            t0 <- strptime(paste(start.day, start.hms), format="%m/%d/%Y %H:%M:%S", tz=tz)
-            t1 <- strptime(paste(start.day, items[3]), format="%m/%d/%Y %H:%M:%S", tz=tz)
+            t0 <- strptime(paste(start.day, start.hms), format = "%m/%d/%Y %H:%M:%S", tz = tz)
+            t1 <- strptime(paste(start.day, items[3]), format = "%m/%d/%Y %H:%M:%S", tz = tz)
             deltat <- as.numeric(t1) - as.numeric(t0)
             break
         }
@@ -577,17 +630,17 @@ read.cm.s4 <- function(file, from=1, to, by=1, tz=getOption("oceTz"), longitude=
     dnames <- strsplit(lines[3], "\t")[[1]]
     dnames <- gsub(" *$", "", gsub("^ *", "", dnames)) # remove leading/trailing blanks
     namesOriginal <- dnames
-    dnames <- make.names(dnames, unique=TRUE)       # handle duplicated names
-    dnames[dnames=="decS"] <- "decS"
-    dnames[dnames=="Vnorth"] <- "v"
-    dnames[dnames=="Veast"] <- "u"
-    dnames[dnames=="Cond"] <- "conductivity"
-    dnames[dnames=="T.Temp"] <- "temperature"
-    dnames[dnames=="Sal"] <- "salinity"
+    dnames <- make.names(dnames, unique = TRUE) # handle duplicated names
+    dnames[dnames == "decS"] <- "decS"
+    dnames[dnames == "Vnorth"] <- "v"
+    dnames[dnames == "Veast"] <- "u"
+    dnames[dnames == "Cond"] <- "conductivity"
+    dnames[dnames == "T.Temp"] <- "temperature"
+    dnames[dnames == "Sal"] <- "salinity"
     # Finally, read the data and chop last 2 lines (which contain footer info
     pushBack(lines, file)
-    d <- read.delim(file, skip=5, sep="\t", col.names=dnames, stringsAsFactors=FALSE)
-    d <- d[seq.int(1L, dim(d)[1]-2), ]
+    d <- read.delim(file, skip = 5, sep = "\t", col.names = dnames, stringsAsFactors = FALSE)
+    d <- d[seq.int(1L, dim(d)[1] - 2), ]
     res <- new("cm") # will fill in later
     # namesOriginal[namesOriginal==""] <- "-"
     dataNamesOriginal <- as.list(namesOriginal)
@@ -595,31 +648,39 @@ read.cm.s4 <- function(file, from=1, to, by=1, tz=getOption("oceTz"), longitude=
     res@metadata$dataNamesOriginal <- dataNamesOriginal
     d$u <- d$u / 100
     d$v <- d$v / 100
-    d$pressure <- swPressure(d$Depth, eos="gsw") # gsw is faster than unesco with essentially same results
+    d$pressure <- swPressure(d$Depth, eos = "gsw") # gsw is faster than unesco with essentially same results
     res@metadata$dataNamesOriginal$pressure <- "-"
     n <- length(d$u)
-    time <- seq(t0, by=deltat, length.out=n)
+    time <- seq(t0, by = deltat, length.out = n)
     if (inherits(from, "POSIXt")) {
-        if (!inherits(to, "POSIXt"))
+        if (!inherits(to, "POSIXt")) {
             stop("if \"from\" is POSIXt, then \"to\" must be, also")
-        if (!is.numeric(by) || by != 1)
+        }
+        if (!is.numeric(by) || by != 1) {
             stop("sorry, \"by\" must equal 1, in this version of read.cm.s4()")
-        #from.to.POSIX <- TRUE
+        }
+        # from.to.POSIX <- TRUE
         from.index <- which(time >= from)[1]
-        if (is.na(from.index))
+        if (is.na(from.index)) {
             from.index <- 1
+        }
         to.index <- which(to <= time)[1]
-        if (is.na(to.index))
+        if (is.na(to.index)) {
             to.index <- n
-        oceDebug(debug, "Time-based trimming: from=", format(from),
-            "to=", format(to), "yield from.index=", from.index, "and to.index=", to.index, "\n")
+        }
+        oceDebug(
+            debug, "Time-based trimming: from=", format(from),
+            "to=", format(to), "yield from.index=", from.index, "and to.index=", to.index, "\n"
+        )
         keep <- seq(from.index, to.index)
     } else {
-        if (!is.numeric(from))
+        if (!is.numeric(from)) {
             stop("\"from\" must be either POSIXt or numeric")
+        }
         to <- n
-        if (!is.numeric(to))
+        if (!is.numeric(to)) {
             stop("\"to\" must be either POSIXt or numeric")
+        }
         keep <- seq(from, to)
     }
     keep <- keep[1 <= keep]
@@ -644,14 +705,14 @@ read.cm.s4 <- function(file, from=1, to, by=1, tz=getOption("oceTz"), longitude=
     res@metadata$latitude <- latitude
     # res@metadata$units$u <- list(unit=expression(m/s), scale="")
     # res@metadata$units$v <- list(unit=expression(m/s), scale="")
-    res@metadata$units$conductivity <- list(unit=expression(mS/cm), scale="")
-    res@metadata$units$salinity <- list(unit=expression(), scale="PSS-78")
-    res@metadata$units$temperature <- list(unit=expression(degree*C), scale="ITS-90")
-    res@metadata$units$pressure <- list(unit=expression(dbar), scale="")
-    if (missing(processingLog)) processingLog <- paste(deparse(match.call()), sep="", collapse="")
+    res@metadata$units$conductivity <- list(unit = expression(mS / cm), scale = "")
+    res@metadata$units$salinity <- list(unit = expression(), scale = "PSS-78")
+    res@metadata$units$temperature <- list(unit = expression(degree * C), scale = "ITS-90")
+    res@metadata$units$pressure <- list(unit = expression(dbar), scale = "")
+    if (missing(processingLog)) processingLog <- paste(deparse(match.call()), sep = "", collapse = "")
     res@processingLog <- processingLogAppend(res@processingLog, processingLog)
     warning("assuming the compass heading is magnetic; consider using applyMagneticDeclination()")
-    oceDebug(debug, "} # read.cm()\n", unindent=1)
+    oceDebug(debug, "} # read.cm()\n", unindent = 1)
     res
 }
 
@@ -741,10 +802,10 @@ read.cm.s4 <- function(file, from=1, to, by=1, tz=getOption("oceTz"), longitude=
 #' @param ... Optional arguments passed to plotting functions.
 #'
 #' @examples
-#'   library(oce)
-#'   data(cm)
-#'   summary(cm)
-#'   plot(cm)
+#' library(oce)
+#' data(cm)
+#' summary(cm)
+#' plot(cm)
 #'
 #' @family functions that plot oce data
 #' @family things related to cm data
@@ -752,50 +813,55 @@ read.cm.s4 <- function(file, from=1, to, by=1, tz=getOption("oceTz"), longitude=
 #' @aliases plot.cm
 #'
 #' @author Dan Kelley
-setMethod(f="plot",
-    signature=signature("cm"),
-    definition=function(x,
-        which=c(1:2),
-        type="l",
-        xlim, ylim, xaxs="r", yaxs="r",
-        drawTimeRange=getOption("oceDrawTimeRange"),
-        drawZeroLine=FALSE,
-        mgp=getOption("oceMgp"),
-        mar=c(mgp[1]+1.5, mgp[1]+1.5, 1.5, 1.5),
-        small=2000,
-        main="",
-        tformat,
-        debug=getOption("oceDebug"),
-        ...)
-    {
-        oceDebug(debug, "plot.cm() {\n", unindent=1)
-        oceDebug(debug, "  par(mar)=", paste(par("mar"), collapse=" "), "\n")
-        oceDebug(debug, "  par(mai)=", paste(par("mai"), collapse=" "), "\n")
+setMethod(
+    f = "plot",
+    signature = signature("cm"),
+    definition = function(x,
+                          which = c(1:2),
+                          type = "l",
+                          xlim, ylim, xaxs = "r", yaxs = "r",
+                          drawTimeRange = getOption("oceDrawTimeRange"),
+                          drawZeroLine = FALSE,
+                          mgp = getOption("oceMgp"),
+                          mar = c(mgp[1] + 1.5, mgp[1] + 1.5, 1.5, 1.5),
+                          small = 2000,
+                          main = "",
+                          tformat,
+                          debug = getOption("oceDebug"),
+                          ...) {
+        oceDebug(debug, "plot.cm() {\n", unindent = 1)
+        oceDebug(debug, "  par(mar)=", paste(par("mar"), collapse = " "), "\n")
+        oceDebug(debug, "  par(mai)=", paste(par("mai"), collapse = " "), "\n")
         if (3 != sum(c("time", "u", "v") %in% names(x@data))) {
-            warning("In plot,cm-method() :\n  cannot plot a cm object unless its 'data' slot contains 'time', 'u' and 'v'", call.=FALSE)
+            warning("In plot,cm-method() :\n  cannot plot a cm object unless its 'data' slot contains 'time', 'u' and 'v'", call. = FALSE)
             return(invisible(NULL))
         }
         opar <- par(no.readonly = TRUE)
         lw <- length(which)
         oceDebug(debug, "length(which) =", lw, "\n")
-        if (lw > 1)
+        if (lw > 1) {
             on.exit(par(opar))
-        par(mgp=mgp, mar=mar)
+        }
+        par(mgp = mgp, mar = mar)
         dots <- list(...)
         oceDebug(debug, "later on in plot,cm-method:\n")
-        oceDebug(debug, "  par(mar)=", paste(par("mar"), collapse=" "), "\n")
-        oceDebug(debug, "  par(mai)=", paste(par("mai"), collapse=" "), "\n")
+        oceDebug(debug, "  par(mar)=", paste(par("mar"), collapse = " "), "\n")
+        oceDebug(debug, "  par(mai)=", paste(par("mai"), collapse = " "), "\n")
         oceDebug(debug, "which:", which, "\n")
-        which <- oce.pmatch(which,
-            list(u=1, v=2, "progressive vector"=3,
-                "uv"=4, "uv+ellipse"=5, "uv+ellipse+arrow"=6,
-                pressure=7, salinity=8, temperature=9, TS=10, conductivity=11,
-                direction=20))
+        which <- oce.pmatch(
+            which,
+            list(
+                u = 1, v = 2, "progressive vector" = 3,
+                "uv" = 4, "uv+ellipse" = 5, "uv+ellipse+arrow" = 6,
+                pressure = 7, salinity = 8, temperature = 9, TS = 10, conductivity = 11,
+                direction = 20
+            )
+        )
         oceDebug(debug, "which:", which, "\n")
         tt <- x@data$time
-        class(tt) <- "POSIXct"              # otherwise image() gives warnings
+        class(tt) <- "POSIXct" # otherwise image() gives warnings
         if (lw > 1) {
-            par(mfrow=c(lw, 1))
+            par(mfrow = c(lw, 1))
             oceDebug(debug, "calling par(mfrow=c(", lw, ", 1)\n")
         }
         len <- length(x@data$u)
@@ -803,121 +869,142 @@ setMethod(f="plot",
             oceDebug(debug, "which[", w, "]=", which[w], "; drawTimeRange=", drawTimeRange, "\n")
             if (which[w] == 1) {
                 oce.plot.ts(x@data$time, x@data$u,
-                    type=type,
-                    xlim=xlim, ylim=ylim, xaxs=xaxs, yaxs=yaxs,
-                    xlab="", ylab=resizableLabel("u"),
-                    main=main, mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
-                    tformat=tformat)
+                    type = type,
+                    xlim = xlim, ylim = ylim, xaxs = xaxs, yaxs = yaxs,
+                    xlab = "", ylab = resizableLabel("u"),
+                    main = main, mgp = mgp, mar = c(mgp[1], mgp[1] + 1.5, 1.5, 1.5),
+                    tformat = tformat
+                )
             } else if (which[w] == 2) {
                 oce.plot.ts(x@data$time, x@data$v,
-                    type=type,
-                    xlim=xlim, ylim=ylim, xaxs=xaxs, yaxs=yaxs,
-                    xlab="", ylab=resizableLabel("v"),
-                    main=main, mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
-                    tformat=tformat)
+                    type = type,
+                    xlim = xlim, ylim = ylim, xaxs = xaxs, yaxs = yaxs,
+                    xlab = "", ylab = resizableLabel("v"),
+                    main = main, mgp = mgp, mar = c(mgp[1], mgp[1] + 1.5, 1.5, 1.5),
+                    tformat = tformat
+                )
             } else if (which[w] == 3) {
                 # or "progressive vector"
                 oceDebug(debug, "progressive vector plot\n")
-                dt <- as.numeric(difftime(x@data$time[2], x@data$time[1], units="sec")) # FIXME: assuming equal dt
+                dt <- as.numeric(difftime(x@data$time[2], x@data$time[1], units = "sec")) # FIXME: assuming equal dt
                 mPerKm <- 1000
                 u <- x@data$u
                 v <- x@data$v
-                u[is.na(u)] <- 0        # zero out missing
+                u[is.na(u)] <- 0 # zero out missing
                 v[is.na(v)] <- 0
                 x.dist <- cumsum(u) * dt / mPerKm
                 y.dist <- cumsum(v) * dt / mPerKm
                 plot(x.dist, y.dist,
-                    xlab=resizableLabel("distance km"), ylab=resizableLabel("distance km"),
-                    type="l", asp=1, ...)
+                    xlab = resizableLabel("distance km"), ylab = resizableLabel("distance km"),
+                    type = "l", asp = 1, ...
+                )
             } else if (which[w] %in% 4:6) {
                 # "uv" (if 4), "uv+ellipse" (if 5), or "uv+ellipse+arrow" (if 6)
                 oceDebug(debug, "\"uv\", \"uv+ellipse\", or \"uv+ellipse+arrow\" plot\n")
                 if (len <= small) {
-                    plot(x@data$u, x@data$v, type=type,
-                        xlab=resizableLabel("u"), ylab=resizableLabel("v"),
-                        asp=1, ...)
+                    plot(x@data$u, x@data$v,
+                        type = type,
+                        xlab = resizableLabel("u"), ylab = resizableLabel("v"),
+                        asp = 1, ...
+                    )
                 } else {
                     smoothScatter(x@data$u, x@data$v,
-                        xlab=resizableLabel("u"), ylab=resizableLabel("v"),
-                        asp=1, ...)
+                        xlab = resizableLabel("u"), ylab = resizableLabel("v"),
+                        asp = 1, ...
+                    )
                 }
                 if (which[w] >= 5) {
                     oceDebug(debug, "\"uv+ellipse\", or \"uv+ellipse+arrow\" plot\n")
                     ok <- !is.na(x@data$u) & !is.na(x@data$v)
-                    e <- eigen(cov(data.frame(u=x@data$u[ok], v=x@data$v[ok])))
+                    e <- eigen(cov(data.frame(u = x@data$u[ok], v = x@data$v[ok])))
                     major <- sqrt(e$values[1])
                     minor <- sqrt(e$values[2])
-                    theta <- seq(0, 2*pi, length.out=360/5)
+                    theta <- seq(0, 2 * pi, length.out = 360 / 5)
                     xx <- major * cos(theta)
                     yy <- minor * sin(theta)
                     theta0 <- atan2(e$vectors[2, 1], e$vectors[1, 1])
-                    rotate <- matrix(c(cos(theta0), -sin(theta0), sin(theta0), cos(theta0)), nrow=2, byrow=TRUE)
+                    rotate <- matrix(c(cos(theta0), -sin(theta0), sin(theta0), cos(theta0)), nrow = 2, byrow = TRUE)
                     xxyy <- rotate %*% rbind(xx, yy)
                     col <- if ("col" %in% names(dots)) col else "darkblue"
-                    lines(xxyy[1, ], xxyy[2, ], lwd=5, col="yellow")
-                    lines(xxyy[1, ], xxyy[2, ], lwd=2, col=col)
+                    lines(xxyy[1, ], xxyy[2, ], lwd = 5, col = "yellow")
+                    lines(xxyy[1, ], xxyy[2, ], lwd = 2, col = col)
                     if (which[w] >= 6) {
                         oceDebug(debug, "\"uv+ellipse+arrow\" plot\n")
-                        umean <- mean(x@data$u, na.rm=TRUE)
-                        vmean <- mean(x@data$v, na.rm=TRUE)
-                        arrows(0, 0, umean, vmean, lwd=5, length=1/10, col="yellow")
-                        arrows(0, 0, umean, vmean, lwd=2, length=1/10, col=col)
+                        umean <- mean(x@data$u, na.rm = TRUE)
+                        vmean <- mean(x@data$v, na.rm = TRUE)
+                        arrows(0, 0, umean, vmean, lwd = 5, length = 1 / 10, col = "yellow")
+                        arrows(0, 0, umean, vmean, lwd = 2, length = 1 / 10, col = col)
                     }
                 }
             } else if (which[w] == 7) {
                 # an older version had depth stored
-                p <- if ("pressure" %in% names(x@data)) x@data$pressure else
-                swPressure(x@data$depth, eos="gsw")
+                p <- if ("pressure" %in% names(x@data)) {
+                    x@data$pressure
+                } else {
+                    swPressure(x@data$depth, eos = "gsw")
+                }
                 oce.plot.ts(x@data$time, p,
-                    type=type,
-                    xlim=xlim, ylim=ylim, xaxs=xaxs, yaxs=yaxs,
-                    xlab="", ylab=resizableLabel("p", "y"),
-                    main=main, mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
-                    tformat=tformat)
+                    type = type,
+                    xlim = xlim, ylim = ylim, xaxs = xaxs, yaxs = yaxs,
+                    xlab = "", ylab = resizableLabel("p", "y"),
+                    main = main, mgp = mgp, mar = c(mgp[1], mgp[1] + 1.5, 1.5, 1.5),
+                    tformat = tformat
+                )
             } else if (which[w] == 8) {
                 oce.plot.ts(x@data$time, x[["salinity"]],
-                    type=type,
-                    xlim=xlim, ylim=ylim, xaxs=xaxs, yaxs=yaxs,
-                    xlab="", ylab=resizableLabel("S", "y"),
-                    main=main, mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
-                    tformat=tformat)
+                    type = type,
+                    xlim = xlim, ylim = ylim, xaxs = xaxs, yaxs = yaxs,
+                    xlab = "", ylab = resizableLabel("S", "y"),
+                    main = main, mgp = mgp, mar = c(mgp[1], mgp[1] + 1.5, 1.5, 1.5),
+                    tformat = tformat
+                )
             } else if (which[w] == 9) {
                 oce.plot.ts(x@data$time, x[["temperature"]],
-                    type=type,
-                    xlim=xlim, ylim=ylim, xaxs=xaxs, yaxs=yaxs,
-                    xlab="", ylab=resizableLabel("T", "y"),
-                    main=main, mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
-                    tformat=tformat)
+                    type = type,
+                    xlim = xlim, ylim = ylim, xaxs = xaxs, yaxs = yaxs,
+                    xlab = "", ylab = resizableLabel("T", "y"),
+                    main = main, mgp = mgp, mar = c(mgp[1], mgp[1] + 1.5, 1.5, 1.5),
+                    tformat = tformat
+                )
             } else if (which[w] == 10) {
-                plotTS(as.ctd(x[["salinity"]], x[["temperature"]], x[["pressure"]]), main=main, ...)
+                plotTS(as.ctd(x[["salinity"]], x[["temperature"]], x[["pressure"]]), main = main, ...)
             } else if (which[w] == 11) {
                 cu <- x[["conductivityUnit"]]
-                if (is.list(cu))
-                cu <- as.character(cu$unit)
+                if (is.list(cu)) {
+                    cu <- as.character(cu$unit)
+                }
                 oce.plot.ts(x@data$time, x@data$conductivity,
-                    type=type,
-                    xlim=xlim, ylim=ylim, xaxs=xaxs, yaxs=yaxs,
-                    xlab="",
-                    ylab=if (0 == length(cu)) resizableLabel("C", "y") else
-                    if (cu=="mS/cm") resizableLabel("conductivity mS/cm", "y") else
-                    if (cu=="S/m") resizableLabel("conductivity S/m", "y") else
-                    "conductivity (unknown unit",
-                    main=main, mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
-                    tformat=tformat)
+                    type = type,
+                    xlim = xlim, ylim = ylim, xaxs = xaxs, yaxs = yaxs,
+                    xlab = "",
+                    ylab = if (0 == length(cu)) {
+                        resizableLabel("C", "y")
+                    } else if (cu == "mS/cm") {
+                        resizableLabel("conductivity mS/cm", "y")
+                    } else if (cu == "S/m") {
+                        resizableLabel("conductivity S/m", "y")
+                    } else {
+                        "conductivity (unknown unit"
+                    },
+                    main = main, mgp = mgp, mar = c(mgp[1], mgp[1] + 1.5, 1.5, 1.5),
+                    tformat = tformat
+                )
             } else if (which[w] == 20) {
                 oce.plot.ts(x@data$time, x@data$direction,
-                    type=type,
-                    xlim=xlim, ylim=ylim, xaxs=xaxs, yaxs=yaxs,
-                    xlab="", ylab=resizableLabel("direction"),
-                    main=main, mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
-                    tformat=tformat)
+                    type = type,
+                    xlim = xlim, ylim = ylim, xaxs = xaxs, yaxs = yaxs,
+                    xlab = "", ylab = resizableLabel("direction"),
+                    main = main, mgp = mgp, mar = c(mgp[1], mgp[1] + 1.5, 1.5, 1.5),
+                    tformat = tformat
+                )
             } else {
                 stop("unknown value of which (", which[w], ")")
             }
         }
-        oceDebug(debug, "} # plot.cm()\n", unindent=1)
+        oceDebug(debug, "} # plot.cm()\n", unindent = 1)
         invisible(NULL)
-    })
+    }
+)
 
 #' Alter a cm Object to Account for Magnetic Declination
 #'
@@ -944,20 +1031,23 @@ setMethod(f="plot",
 #'
 #' @family things related to magnetism
 #' @family things related to cm data
-setMethod(f="applyMagneticDeclination",
-    signature(object="cm", declination="ANY", debug="ANY"),
-    definition=function(object, declination=0.0, debug=getOption("oceDebug")) {
-        oceDebug(debug, "applyMagneticDeclination,cm-method(object, declination=", declination, ") {\n", sep="", unindent=1)
-        if (length(declination) != 1L)
+setMethod(
+    f = "applyMagneticDeclination",
+    signature(object = "cm", declination = "ANY", debug = "ANY"),
+    definition = function(object, declination = 0.0, debug = getOption("oceDebug")) {
+        oceDebug(debug, "applyMagneticDeclination,cm-method(object, declination=", declination, ") {\n", sep = "", unindent = 1)
+        if (length(declination) != 1L) {
             stop("length of 'declination' must equal 1")
+        }
         # Note that, unlike the adp and adv methods, we do not check on
         # metadata$coordinate, because it does not exist for cm-class objects.
-        if (identical(object@metadata$north, "geographic"))
+        if (identical(object@metadata$north, "geographic")) {
             warning("a declination has already been applied, so expect odd results")
+        }
         res <- object
         S <- sin(-declination * pi / 180)
         C <- cos(-declination * pi / 180)
-        r <- matrix(c(C, S, -S, C), nrow=2)
+        r <- matrix(c(C, S, -S, C), nrow = 2)
         uvr <- r %*% rbind(object@data$u, object@data$v)
         res@data$u <- uvr[1, ]
         res@data$v <- uvr[2, ]
@@ -969,15 +1059,18 @@ setMethod(f="applyMagneticDeclination",
         for (headingName in c("Hdg", "Hdg.1")) {
             oceDebug(debug, "rotating ", headingName, "\n")
             if (headingName %in% dataNames) {
-                oceDebug(debug, "originally, ", headingName, "[1:3] =", object@data[headingName][1:3], "\n", sep="")
+                oceDebug(debug, "originally, ", headingName, "[1:3] =", object@data[headingName][1:3], "\n", sep = "")
                 res@data[[headingName]] <- object@data[[headingName]] + declination
-                oceDebug(debug, "    set ", headingName, "[1:3] to ", object@data[headingName][1:3], "\n", sep="")
+                oceDebug(debug, "    set ", headingName, "[1:3] to ", object@data[headingName][1:3], "\n", sep = "")
             }
         }
         res@metadata$north <- "geographic"
         res@metadata$declination <- declination[1]
-        res@processingLog <- processingLogAppend(res@processingLog,
-            paste0("applyMagneticDeclinationCm(x, declination=", declination[1], ")"))
-        oceDebug(debug, "} # applyMagneticDeclinationCm\n", unindent=1)
+        res@processingLog <- processingLogAppend(
+            res@processingLog,
+            paste0("applyMagneticDeclinationCm(x, declination=", declination[1], ")")
+        )
+        oceDebug(debug, "} # applyMagneticDeclinationCm\n", unindent = 1)
         res
-    })
+    }
+)

@@ -46,13 +46,17 @@ return value.
 library(oce)
 # 1. temperature has a predefined unit, but this can be overruled
 labelWithUnit("temperature")
-labelWithUnit("temperature",
-    list(unit=expression(m/s), scale="erroneous"))
+labelWithUnit(
+    "temperature",
+    list(unit = expression(m / s), scale = "erroneous")
+)
 # 2. phosphate lacks a predefined unit
 labelWithUnit("phosphate")
 data(section)
-labelWithUnit("phosphate",
-    section[["station",1]][["phosphateUnit"]])
+labelWithUnit(
+    "phosphate",
+    section[["station", 1]][["phosphateUnit"]]
+)
 
 }
 \seealso{

@@ -16,8 +16,10 @@ as described by Mikhailo (2019).
 }
 \examples{
 library(oce)
-imagep(volcano, col=oceColorsTurbo(128),
-       zlab="oceColorsTurbo")
+imagep(volcano,
+    col = oceColorsTurbo(128),
+    zlab = "oceColorsTurbo"
+)
 
 }
 \references{

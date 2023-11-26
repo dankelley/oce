@@ -48,7 +48,7 @@ is retained, unaltered.
 library(oce)
 data(ctd)
 # Insert location information into 'data' slot, although it belongs in 'metadata'.
-ctd@data$latitude <- ctd@metadata$latitude   # Done by experts only!
+ctd@data$latitude <- ctd@metadata$latitude # Done by experts only!
 ctd@data$longitude <- ctd@metadata$longitude # Done by experts only!
 repaired <- ctdRepair(ctd)
 

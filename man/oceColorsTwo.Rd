@@ -24,8 +24,10 @@ in the middle.
 }
 \examples{
 library(oce)
-imagep(volcano-mean(range(volcano)), col=oceColorsTwo(128),
-       zlim="symmetric", zlab="oceColorsTwo")
+imagep(volcano - mean(range(volcano)),
+    col = oceColorsTwo(128),
+    zlim = "symmetric", zlab = "oceColorsTwo"
+)
 }
 \seealso{
 Other things related to colors: 

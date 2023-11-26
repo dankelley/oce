@@ -76,11 +76,11 @@ library(oce)
 data(argo)
 
 # Example 1: subset by time, longitude, and pressure
-par(mfrow=c(2,2))
+par(mfrow = c(2, 2))
 plot(argo)
 plot(subset(argo, time > mean(time)))
 plot(subset(argo, longitude > mean(longitude)))
-plot(subset(argoGrid(argo), pressure > 500 & pressure < 1000), which=5)
+plot(subset(argoGrid(argo), pressure > 500 & pressure < 1000), which = 5)
 
 }
 \seealso{

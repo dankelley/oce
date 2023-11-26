@@ -26,7 +26,7 @@ library(oce)
 data(argo)
 summary(argo)
 data(coastlineWorld)
-plot(argo, which="trajectory")
+plot(argo, which = "trajectory")
 
 }
 \seealso{

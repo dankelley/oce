@@ -226,7 +226,7 @@ on a plot.
 \examples{
 library(oce)
 data(ctd)
-plotProfile(ctd, xtype="temperature")
+plotProfile(ctd, xtype = "temperature")
 
 }
 \seealso{

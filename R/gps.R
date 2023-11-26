@@ -22,11 +22,12 @@
 #' @author Dan Kelley
 #'
 #' @family things related to gps data
-setClass("gps", contains="oce")
+setClass("gps", contains = "oce")
 
-setMethod(f="initialize",
-    signature="gps",
-    definition=function(.Object, longitude, latitude, filename="", ...) {
+setMethod(
+    f = "initialize",
+    signature = "gps",
+    definition = function(.Object, longitude, latitude, filename = "", ...) {
         .Object <- callNextMethod(.Object, ...)
         if (!missing(longitude)) .Object@data$longitude <- as.numeric(longitude)
         if (!missing(latitude)) .Object@data$latitude <- as.numeric(latitude)
@@ -34,7 +35,8 @@ setMethod(f="initialize",
         .Object@processingLog$time <- presentTime()
         .Object@processingLog$value <- "create 'gps' object"
         return(.Object)
-    })
+    }
+)
 
 #' Summarize a gps Object
 #'
@@ -47,12 +49,14 @@ setMethod(f="initialize",
 #' @author Dan Kelley
 #'
 #' @family things related to gps data
-setMethod(f="summary",
-    signature="gps",
-    definition=function(object, ...) {
+setMethod(
+    f = "summary",
+    signature = "gps",
+    definition = function(object, ...) {
         cat("GPS Summary\n-----------------\n\n")
         invisible(callNextMethod()) # summary
-    })
+    }
+)
 
 #' Extract Something From a gps Object
 #'
@@ -81,17 +85,21 @@ setMethod(f="summary",
 #' @author Dan Kelley
 #'
 #' @family things related to gps data
-setMethod(f="[[",
-    signature(x="gps", i="ANY", j="ANY"),
-    definition=function(x, i, j, ...) {
+setMethod(
+    f = "[[",
+    signature(x = "gps", i = "ANY", j = "ANY"),
+    definition = function(x, i, j, ...) {
         if (i == "?") {
-            return(list(metadata=sort(names(x@metadata)),
-                metadataDerived=NULL,
-                data=sort(names(x@data)),
-                dataDerived=NULL))
+            return(list(
+                metadata = sort(names(x@metadata)),
+                metadataDerived = NULL,
+                data = sort(names(x@data)),
+                dataDerived = NULL
+            ))
         }
-        callNextMethod()         # [[
-    })
+        callNextMethod() # [[
+    }
+)
 
 #' Replace Parts of a gps Object
 #'
@@ -100,11 +108,13 @@ setMethod(f="[[",
 #' @template sub_subsetTemplate
 #'
 #' @family things related to gps data
-setMethod(f="[[<-",
-    signature(x="gps", i="ANY", j="ANY"),
-    definition=function(x, i, j, ..., value) {
-        callNextMethod(x=x, i=i, j=j, ...=..., value=value) # [[<-
-    })
+setMethod(
+    f = "[[<-",
+    signature(x = "gps", i = "ANY", j = "ANY"),
+    definition = function(x, i, j, ..., value) {
+        callNextMethod(x = x, i = i, j = j, ... = ..., value = value) # [[<-
+    }
+)
 
 
 #' Plot a gps Object
@@ -210,13 +220,13 @@ setMethod(f="[[<-",
 #' @family things related to gps data
 #'
 #' @aliases plot.gps
-setMethod(f="plot",
-    signature=signature("gps"),
-    definition=function(x, xlab="", ylab="", asp, clongitude, clatitude, span, projection,
-        expand=1, mgp=getOption("oceMgp"), mar=c(mgp[1]+1, mgp[1]+1, 1, 1), bg,
-        axes=TRUE, cex.axis=par("cex.axis"), add=FALSE, inset=FALSE, geographical=0,
-        debug=getOption("oceDebug"), ...)
-    {
+setMethod(
+    f = "plot",
+    signature = signature("gps"),
+    definition = function(x, xlab = "", ylab = "", asp, clongitude, clatitude, span, projection,
+                          expand = 1, mgp = getOption("oceMgp"), mar = c(mgp[1] + 1, mgp[1] + 1, 1, 1), bg,
+                          axes = TRUE, cex.axis = par("cex.axis"), add = FALSE, inset = FALSE, geographical = 0,
+                          debug = getOption("oceDebug"), ...) {
         oceDebug(debug, "plot.gps(...",
             ", clongitude=", if (missing(clongitude)) "(missing)" else clongitude,
             ", clatitude=", if (missing(clatitude)) "(missing)" else clatitude,
@@ -224,7 +234,9 @@ setMethod(f="plot",
             ", geographical=", geographical,
             ", cex.axis=", cex.axis,
             ", inset=", inset,
-            ", ...) {\n", sep="", unindent=1)
+            ", ...) {\n",
+            sep = "", unindent = 1
+        )
         if (!missing(projection)) {
             if (missing(span)) {
                 span <- 1000
@@ -240,57 +252,65 @@ setMethod(f="plot",
                 clatitude + c(-1, 1) * span / 111
             }
             return(mapPlot(x[["longitude"]], x[["latitude"]], longitudelim, latitudelim,
-                mgp=mgp, mar=mar,
-                bg="white", type="l", axes=TRUE,
-                projection=projection,
-                debug=debug, ...))
+                mgp = mgp, mar = mar,
+                bg = "white", type = "l", axes = TRUE,
+                projection = projection,
+                debug = debug, ...
+            ))
         }
         geographical <- round(geographical)
-        if (geographical < 0 || geographical > 2)
+        if (geographical < 0 || geographical > 2) {
             stop("argument geographical must be 0, 1, or 2")
+        }
         if (is.list(x) && "latitude" %in% names(x)) {
-            if (!("longitude" %in% names(x)))
+            if (!("longitude" %in% names(x))) {
                 stop("list must contain item named 'longitude'")
-            x <- as.gps(longitude=x$longitude, latitude=x$latitude)
+            }
+            x <- as.gps(longitude = x$longitude, latitude = x$latitude)
         } else {
-            if (!inherits(x, "gps"))
+            if (!inherits(x, "gps")) {
                 stop("method is only for gps objects, or lists that contain 'latitude' and 'longitude'")
+            }
         }
         longitude <- x[["longitude"]]
         latitude <- x[["latitude"]]
         dots <- list(...)
         dotsNames <- names(dots)
-        #gave.center <- !missing(clongitude) && !missing(clatitude)
-        if ("center" %in% dotsNames)
+        # gave.center <- !missing(clongitude) && !missing(clatitude)
+        if ("center" %in% dotsNames) {
             stop("use 'clongitude' and 'clatitude' instead of 'center'")
-        if ("xlim" %in% dotsNames)
+        }
+        if ("xlim" %in% dotsNames) {
             stop("cannot supply 'xlim'; use 'clongitude' and 'span' instead")
-        if ("ylim" %in% dotsNames)
+        }
+        if ("ylim" %in% dotsNames) {
             stop("cannot supply 'ylim'; use 'clatitude' and 'span' instead")
-        if (!inset)
-            par(mar=mar)
-        par(mgp=mgp)
+        }
+        if (!inset) {
+            par(mar = mar)
+        }
+        par(mgp = mgp)
         if (add) {
             lines(longitude, latitude, ...)
         } else {
-            #gaveSpan <- !missing(span)
+            # gaveSpan <- !missing(span)
             if (!missing(clatitude) && !missing(clongitude)) {
                 if (!missing(asp)) {
                     warning("argument 'asp' being ignored, because argument 'clatitude' and 'clongitude' were given")
                 }
                 asp <- 1 / cos(clatitude * atan2(1, 1) / 45) #  ignore any provided asp, because lat from center over-rides it
-                xr <- clongitude + span * c(-1/2, 1/2) / 111.11 / asp
-                yr <- clatitude + span * c(-1/2, 1/2) / 111.11
+                xr <- clongitude + span * c(-1 / 2, 1 / 2) / 111.11 / asp
+                yr <- clatitude + span * c(-1 / 2, 1 / 2) / 111.11
                 xr0 <- xr
                 yr0 <- yr
                 oceDebug(debug, "xr=", xr, " yr=", yr, " asp=", asp, "\n")
             } else {
-                xr0 <- range(longitude, na.rm=TRUE)
-                yr0 <- range(latitude, na.rm=TRUE)
+                xr0 <- range(longitude, na.rm = TRUE)
+                yr0 <- range(latitude, na.rm = TRUE)
                 oceDebug(debug, "xr0=", xr0, " yr0=", yr0, "\n")
                 if (missing(asp)) {
                     if ("ylim" %in% dotsNames) {
-                        asp <- 1 / cos(mean(range(dots$ylim, na.rm=TRUE)) * atan2(1, 1) / 45) # dy/dx
+                        asp <- 1 / cos(mean(range(dots$ylim, na.rm = TRUE)) * atan2(1, 1) / 45) # dy/dx
                     } else {
                         asp <- 1 / cos(mean(yr0) * atan2(1, 1) / 45) # dy/dx
                     }
@@ -299,15 +319,15 @@ setMethod(f="plot",
                 if (missing(span)) {
                     if (expand >= 0 && max(abs(xr0)) < 100 && max(abs(yr0) < 70)) {
                         # don't expand if full map
-                        xr <- mean(xr0) + expand * diff(xr0) * c(-1/2, 1/2)
-                        yr <- mean(yr0) + expand * diff(yr0) * c(-1/2, 1/2)
+                        xr <- mean(xr0) + expand * diff(xr0) * c(-1 / 2, 1 / 2)
+                        yr <- mean(yr0) + expand * diff(yr0) * c(-1 / 2, 1 / 2)
                     } else {
                         xr <- xr0
                         yr <- yr0
                     }
                 } else {
-                    xr <- mean(xr0) + span * c(-1/2, 1/2) / 111.11 / asp
-                    yr <- mean(yr0)+ span * c(-1/2, 1/2) / 111.11
+                    xr <- mean(xr0) + span * c(-1 / 2, 1 / 2) / 111.11 / asp
+                    yr <- mean(yr0) + span * c(-1 / 2, 1 / 2) / 111.11
                 }
                 oceDebug(debug, "xr=", xr, " yr=", yr, "\n")
             }
@@ -324,52 +344,50 @@ setMethod(f="plot",
                 oceDebug(debug, "type 1 (will narrow x range)\n")
                 d <- asp.page / asp * diff(xr)
                 oceDebug(debug, "  xr original:", xr, "\n")
-                xr <- mean(xr) + d * c(-1/2, 1/2)
+                xr <- mean(xr) + d * c(-1 / 2, 1 / 2)
                 oceDebug(debug, "  xr narrowed:", xr, "\n")
             } else {
                 oceDebug(debug, "type 2 (will narrow y range)\n")
                 d <- asp.page / asp * diff(yr)
                 oceDebug(debug, "  yr original:", yr, "\n")
-                yr <- mean(yr) + d * c(-1/2, 1/2)
+                yr <- mean(yr) + d * c(-1 / 2, 1 / 2)
                 oceDebug(debug, "  yr narrowed:", yr, "\n")
             }
             # Avoid looking beyond the poles, or the dateline
             if (xr[1] < (-180)) {
                 xr[1] <- (-180)
             }
-            if (xr[2] >  180) {
+            if (xr[2] > 180) {
                 xr[2] <- 180
             }
-            if (yr[1] <  (-90)) {
+            if (yr[1] < (-90)) {
                 yr[1] <- (-90)
             }
-            if (yr[2] >  90) {
+            if (yr[2] > 90) {
                 yr[2] <- 90
             }
             oceDebug(debug, "after range trimming, xr=", xr, " yr=", yr, "\n")
             # Draw underlay, if desired
-            plot(xr, yr, asp=asp, xlab=xlab, ylab=ylab, type="n", xaxs="i", yaxs="i", axes=FALSE, ...)
+            plot(xr, yr, asp = asp, xlab = xlab, ylab = ylab, type = "n", xaxs = "i", yaxs = "i", axes = FALSE, ...)
             if (!missing(bg)) {
-                plot.window(xr, yr, asp=asp, xlab=xlab, ylab=ylab, xaxs="i", yaxs="i", log="", ...)
+                plot.window(xr, yr, asp = asp, xlab = xlab, ylab = ylab, xaxs = "i", yaxs = "i", log = "", ...)
                 usr <- par("usr")
                 oceDebug(debug, "drawing background; usr=", par("usr"), "bg=", bg, "\n")
-                rect(usr[1], usr[3], usr[2], usr[4], col=bg)
-                par(new=TRUE)
+                rect(usr[1], usr[3], usr[2], usr[4], col = bg)
+                par(new = TRUE)
             }
             # Ranges
             usrTrimmed <- par("usr")
             # Construct axes "manually" because axis() does not know the physical range
             if (axes) {
-                prettyLat<-function(yr, ...)
-                {
+                prettyLat <- function(yr, ...) {
                     res <- pretty(yr, ...)
                     if (diff(yr) > 100) {
                         res <- seq(-90, 90, 45)
                     }
                     res
                 }
-                prettyLon<-function(xr, ...)
-                {
+                prettyLon <- function(xr, ...) {
                     res <- pretty(xr, ...)
                     if (diff(xr) > 100) {
                         res <- seq(-180, 180, 45)
@@ -377,8 +395,8 @@ setMethod(f="plot",
                     res
                 }
                 oceDebug(debug, "xr:", xr, ", yr:", yr, ", xr0:", xr0, ", yr0:", yr0, "\n")
-                xr.pretty <- prettyLon(par("usr")[1:2], n=if (geographical) 3 else 5, high.u.bias=20)
-                yr.pretty <- prettyLat(par("usr")[3:4], n=if (geographical) 3 else 5, high.u.bias=20)
+                xr.pretty <- prettyLon(par("usr")[1:2], n = if (geographical) 3 else 5, high.u.bias = 20)
+                yr.pretty <- prettyLat(par("usr")[3:4], n = if (geographical) 3 else 5, high.u.bias = 20)
                 oceDebug(debug, "xr.pretty=", xr.pretty, "\n")
                 oceDebug(debug, "yr.pretty=", yr.pretty, "\n")
                 oceDebug(debug, "usrTrimmed", usrTrimmed, "(original)\n")
@@ -394,17 +412,17 @@ setMethod(f="plot",
                     xlabels <- sub("-", "", xlabels)
                     ylabels <- sub("-", "", ylabels)
                 } else if (geographical == 2) {
-                    xr.pretty <- prettyPosition(xr.pretty, debug=debug-1)
-                    yr.pretty <- prettyPosition(yr.pretty, debug=debug-1)
-                    xlabels <- formatPosition(xr.pretty, type="expression")
-                    ylabels <- formatPosition(yr.pretty, type="expression")
+                    xr.pretty <- prettyPosition(xr.pretty, debug = debug - 1)
+                    yr.pretty <- prettyPosition(yr.pretty, debug = debug - 1)
+                    xlabels <- formatPosition(xr.pretty, type = "expression")
+                    ylabels <- formatPosition(yr.pretty, type = "expression")
                 }
-                axis(1, at=xr.pretty, labels=xlabels, pos=usrTrimmed[3], cex.axis=cex.axis)
+                axis(1, at = xr.pretty, labels = xlabels, pos = usrTrimmed[3], cex.axis = cex.axis)
                 oceDebug(debug, "putting bottom x axis at", usrTrimmed[3], "with labels:", xlabels, "\n")
-                axis(2, at=yr.pretty, labels=ylabels, pos=usrTrimmed[1], cex.axis=cex.axis, cex=cex.axis)
+                axis(2, at = yr.pretty, labels = ylabels, pos = usrTrimmed[1], cex.axis = cex.axis, cex = cex.axis)
                 oceDebug(debug, "putting left y axis at", usrTrimmed[1], "\n")
-                axis(3, at=xr.pretty, labels=rep("", length.out=length(xr.pretty)), pos=usrTrimmed[4], cex.axis=cex.axis)
-                axis(4, at=yr.pretty, pos=usrTrimmed[2], labels=FALSE, cex.axis=cex.axis)
+                axis(3, at = xr.pretty, labels = rep("", length.out = length(xr.pretty)), pos = usrTrimmed[4], cex.axis = cex.axis)
+                axis(4, at = yr.pretty, pos = usrTrimmed[2], labels = FALSE, cex.axis = cex.axis)
                 oceDebug(debug, "putting right y axis at", usrTrimmed[2], "\n")
             }
             yaxp <- par("yaxp")
@@ -422,11 +440,12 @@ setMethod(f="plot",
                 }
             }
         }
-        #box()
+        # box()
         oceDebug(debug, "par(\"usr\")=", par("usr"), "\n")
-        oceDebug(debug, "} # plot.gps()\n", unindent=1)
+        oceDebug(debug, "} # plot.gps()\n", unindent = 1)
         invisible(NULL)
-    })
+    }
+)
 
 
 #' Coerce Data Into a gps Object
@@ -454,14 +473,13 @@ setMethod(f="plot",
 #' @author Dan Kelley
 #'
 #' @family things related to gps data
-as.gps <- function(longitude, latitude, filename="")
-{
+as.gps <- function(longitude, latitude, filename = "") {
     names <- names(longitude)
     if ("longitude" %in% names && "latitude" %in% names) {
         latitude <- longitude[["latitude"]]
         longitude <- longitude[["longitude"]]
     }
-    new("gps", longitude=longitude, latitude=latitude, filename=filename)
+    new("gps", longitude = longitude, latitude = latitude, filename = filename)
 }
 
 
@@ -487,31 +505,34 @@ as.gps <- function(longitude, latitude, filename="")
 #' @author Dan Kelley
 #'
 #' @family things related to gps data
-read.gps <- function(file, type=NULL, encoding="latin1", debug=getOption("oceDebug"), processingLog)
-{
-    if (missing(file))
+read.gps <- function(file, type = NULL, encoding = "latin1", debug = getOption("oceDebug"), processingLog) {
+    if (missing(file)) {
         stop("must supply 'file'")
-    if (is.character(file)) {
-        if (!file.exists(file))
-            stop("cannot find file \"", file, "\"")
-        if (0L == file.info(file)$size)
-            stop("empty file \"", file, "\"")
     }
-    oceDebug(debug, "read.gps(...) {\n", sep="", style="bold", unindent=1)
+    if (is.character(file)) {
+        if (!file.exists(file)) {
+            stop("cannot find file \"", file, "\"")
+        }
+        if (0L == file.info(file)$size) {
+            stop("empty file \"", file, "\"")
+        }
+    }
+    oceDebug(debug, "read.gps(...) {\n", sep = "", style = "bold", unindent = 1)
     filename <- NULL
     if (is.character(file)) {
         filename <- fullFilename(file)
-        file <- file(file, "r", encoding=encoding)
+        file <- file(file, "r", encoding = encoding)
         on.exit(close(file))
     }
-    if (!inherits(file, "connection"))
+    if (!inherits(file, "connection")) {
         stop("\"file\" must be a character string or connection")
+    }
     if (!isOpen(file)) {
-        open(file, "r", encoding=encoding)
+        open(file, "r", encoding = encoding)
         on.exit(close(file))
     }
     if (is.null(type)) {
-        tokens <- scan(file, "character", n=5)
+        tokens <- scan(file, "character", n = 5)
         found <- grep("gpx", tokens)
         if (length(found) > 0) {
             type <- "gpx"
@@ -525,8 +546,8 @@ read.gps <- function(file, type=NULL, encoding="latin1", debug=getOption("oceDeb
     look <- grep("^<.* lat=", lines)
     latlon <- lines[look]
     latlonCleaned <- gsub("[a-zA-Z<>=\"/]*", "", latlon)
-    latlon <- read.table(text=latlonCleaned, encoding=encoding)
-    res <- new("gps", longitude=latlon[, 2], latitude=latlon[, 1], file=filename)
-    oceDebug(debug, "} # read.gps()\n", sep="", style="bold", unindent=1)
+    latlon <- read.table(text = latlonCleaned, encoding = encoding)
+    res <- new("gps", longitude = latlon[, 2], latitude = latlon[, 1], file = filename)
+    oceDebug(debug, "} # read.gps()\n", sep = "", style = "bold", unindent = 1)
     res
 }

@@ -472,14 +472,18 @@ library(oce)
 data(coastlineWorld)
 projection <- sf::st_crs("EPSG:3413")
 cat(projection$proj4string, "\n") # see the projection details
-par(mar=c(2, 2, 1, 1))            # tighten margins
-mapPlot(coastlineWorld, projection=projection,
-   col=gray(0.9), geographical=4,
-   longitudelim=c(-180, 180), latitudelim=c(10, 90))
+par(mar = c(2, 2, 1, 1)) # tighten margins
+mapPlot(coastlineWorld,
+    projection = projection,
+    col = gray(0.9), geographical = 4,
+    longitudelim = c(-180, 180), latitudelim = c(10, 90)
+)
 # Coordinates of box from Table 6 of the NSIDC document
-box <- cbind(-360+c(168.35,102.34,350.3,279.26,168.35),
-    c(30.98, 31.37, 34.35, 33.92, 30.98))
-mapLines(box[,1], box[,2], lwd=2)
+box <- cbind(
+    -360 + c(168.35, 102.34, 350.3, 279.26, 168.35),
+    c(30.98, 31.37, 34.35, 33.92, 30.98)
+)
+mapLines(box[, 1], box[, 2], lwd = 2)
 
 }
 \references{

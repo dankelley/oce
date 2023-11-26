@@ -34,20 +34,24 @@
 #' @family things related to argo data
 #'
 #' @author Dan Kelley
-read.argo.copernicus <- function(file, encoding=NA, debug=getOption("oceDebug"), processingLog, ...)
-{
-    if (missing(file))
+read.argo.copernicus <- function(file, encoding = NA, debug = getOption("oceDebug"), processingLog, ...) {
+    if (missing(file)) {
         stop("must supply 'file'")
-    if (is.character(file)) {
-        if (!file.exists(file))
-            stop("cannot find file \"", file, "\"")
-        if (0L == file.info(file)$size)
-            stop("empty file \"", file, "\"")
     }
-    if (!requireNamespace("ncdf4", quietly=TRUE))
+    if (is.character(file)) {
+        if (!file.exists(file)) {
+            stop("cannot find file \"", file, "\"")
+        }
+        if (0L == file.info(file)$size) {
+            stop("empty file \"", file, "\"")
+        }
+    }
+    if (!requireNamespace("ncdf4", quietly = TRUE)) {
         stop("must install.packages(\"ncdf4\") to read argo data")
-    if (missing(processingLog))
-        processingLog <- paste(deparse(match.call()), sep="", collapse="")
+    }
+    if (missing(processingLog)) {
+        processingLog <- paste(deparse(match.call()), sep = "", collapse = "")
+    }
     filename <- ""
     # NOTE: need to name ncdf4 package because otherwise R checks give warnings.
     if (is.character(file)) {
@@ -55,21 +59,21 @@ read.argo.copernicus <- function(file, encoding=NA, debug=getOption("oceDebug"),
         file <- ncdf4::nc_open(file)
         on.exit(ncdf4::nc_close(file))
     } else {
-        if (!inherits(file, "connection"))
+        if (!inherits(file, "connection")) {
             stop("argument `file' must be a character string or connection")
+        }
         if (!isOpen(file)) {
             file <- ncdf4::nc_open(file)
             on.exit(ncdf4::nc_close(file))
         }
     }
-    oceDebug(debug, "read.argo.copernicus(file=\"", filename, "\", ...) {\n", sep="", unindent=1, style="bold")
+    oceDebug(debug, "read.argo.copernicus(file=\"", filename, "\", ...) {\n", sep = "", unindent = 1, style = "bold")
     varNames <- names(file$var)
-    oceDebug(debug, "varNames=c(\"", paste(varNames, collapse="\", \""), "\")\n")
+    oceDebug(debug, "varNames=c(\"", paste(varNames, collapse = "\", \""), "\")\n")
     res <- new("argo")
 
-    getGlobalAttribute <- function(file, attname)
-    {
-        a <- ncdf4::ncatt_get(nc=file, varid=0, attname=attname)
+    getGlobalAttribute <- function(file, attname) {
+        a <- ncdf4::ncatt_get(nc = file, varid = 0, attname = attname)
         if (a$hasatt) a$value else NULL
     }
     # FIXME: look in docs to see if there are other interesting things
@@ -85,48 +89,49 @@ read.argo.copernicus <- function(file, encoding=NA, debug=getOption("oceDebug"),
     res@metadata$conventions <- getGlobalAttribute(file, "Conventions")
     res@metadata$featureType <- getGlobalAttribute(file, "featureType")
     res@metadata$citation <- getGlobalAttribute(file, "citation")
-    res@metadata$dateUpdate  <- getGlobalAttribute(file, "date_update")
-    res@metadata$WMOInstType  <- getGlobalAttribute(file, "wmo_inst_type")
+    res@metadata$dateUpdate <- getGlobalAttribute(file, "date_update")
+    res@metadata$WMOInstType <- getGlobalAttribute(file, "wmo_inst_type")
     res@metadata$DOI <- getGlobalAttribute(file, "doi")
     res@metadata$PI <- getGlobalAttribute(file, "pi_name")
     res@metadata$QCManual <- getGlobalAttribute(file, "qc_manual")
     res@metadata$id <- getGlobalAttribute(file, "platform_code") # or "id"???
     res@metadata$dataNamesOriginal <- list()
     res@metadata$flags <- list()
-    #print(sort(varNames))
+    # print(sort(varNames))
     nameMap <- list(
-        "BBP700"="backscatter700", # not listed in official docs
-        "BBP700_ADJUSTED"="backscatterA700djusted",
-        "BBP700_ADJUSTED_ERROR"="backscatterA700djustedError",
-        "CNDC"="conductivity",
-        "CNDC_ADJUSTED"="conductivityAdjusted",
-        "CNDC_ADJUSTED_ERROR"="conductivityAdjustedError",
-        "CPHL"="chlorophyll",
-        "CPHL_ADJUSTED"="chlorophyllAdjusted",
-        "CPHL_ADJUSTED_ERROR"="chlorophyllAdjustedError",
-        "DIRECTION"="direction",
-        "DOX2"="oxygen",
-        "DOX2_ADJUSTED"="oxygenAdjusted",
-        "DOX2_ADJUSTED_ERROR"="oxygenAdjustedError",
-        "DOXY"="oxygen",
-        "DOXY_ADJUSTED"="oxygenAdjusted",
-        "DOXY_ADJUSTED_ERROR"="oxygenAdjustedError",
-        "NTAW"="nitrate",
-        "NTAW_ADJUSTED"="nitrateAdjusted",
-        "NTAW_ADJUSTED_ERROR"="nitrateAdjustedError",
-        "PHPH"="pH",
-        "PHPH_ADJUSTED"="pHAdjusted",
-        "PHPH_ADJUSTED_ERROR"="pHAdjustedError",
-        "PSAL"="salinity",
-        "PSAL_ADJUSTED"="salinityAdjusted",
-        "PSAL_ADJUSTED_ERROR"="salinityAdjustedError",
-        "PRES"="pressure",
-        "PRES_ADJUSTED"="pressureAdjusted",
-        "PRES_ADJUSTED_ERROR"="pressureAdjustedError",
-        "TEMP"="temperature",
-        "TEMP_ADJUSTED"="temperatureAdjusted",
-        "TEMP_ADJUSTED_ERROR"="temperatureAdjustedError",
-        "VERTICAL_SAMPLING_SCHEME"="verticalSamplingScheme")
+        "BBP700" = "backscatter700", # not listed in official docs
+        "BBP700_ADJUSTED" = "backscatterA700djusted",
+        "BBP700_ADJUSTED_ERROR" = "backscatterA700djustedError",
+        "CNDC" = "conductivity",
+        "CNDC_ADJUSTED" = "conductivityAdjusted",
+        "CNDC_ADJUSTED_ERROR" = "conductivityAdjustedError",
+        "CPHL" = "chlorophyll",
+        "CPHL_ADJUSTED" = "chlorophyllAdjusted",
+        "CPHL_ADJUSTED_ERROR" = "chlorophyllAdjustedError",
+        "DIRECTION" = "direction",
+        "DOX2" = "oxygen",
+        "DOX2_ADJUSTED" = "oxygenAdjusted",
+        "DOX2_ADJUSTED_ERROR" = "oxygenAdjustedError",
+        "DOXY" = "oxygen",
+        "DOXY_ADJUSTED" = "oxygenAdjusted",
+        "DOXY_ADJUSTED_ERROR" = "oxygenAdjustedError",
+        "NTAW" = "nitrate",
+        "NTAW_ADJUSTED" = "nitrateAdjusted",
+        "NTAW_ADJUSTED_ERROR" = "nitrateAdjustedError",
+        "PHPH" = "pH",
+        "PHPH_ADJUSTED" = "pHAdjusted",
+        "PHPH_ADJUSTED_ERROR" = "pHAdjustedError",
+        "PSAL" = "salinity",
+        "PSAL_ADJUSTED" = "salinityAdjusted",
+        "PSAL_ADJUSTED_ERROR" = "salinityAdjustedError",
+        "PRES" = "pressure",
+        "PRES_ADJUSTED" = "pressureAdjusted",
+        "PRES_ADJUSTED_ERROR" = "pressureAdjustedError",
+        "TEMP" = "temperature",
+        "TEMP_ADJUSTED" = "temperatureAdjusted",
+        "TEMP_ADJUSTED_ERROR" = "temperatureAdjustedError",
+        "VERTICAL_SAMPLING_SCHEME" = "verticalSamplingScheme"
+    )
     varNamesKnown <- names(nameMap)
     QCNamesKnown <- paste0(names(nameMap), "_QC")
     res@metadata$units <- list()
@@ -137,59 +142,61 @@ read.argo.copernicus <- function(file, encoding=NA, debug=getOption("oceDebug"),
             res@metadata$dataNamesOriginal[oceName] <- name
             oceDebug(debug, "inferring ", oceName, " from ", name, "\n")
             if (grepl("^BBP700", name)) {
-                res@metadata$units[[oceName]] <- list(unit=expression(1/m), scale="")
+                res@metadata$units[[oceName]] <- list(unit = expression(1 / m), scale = "")
             } else if (grepl("^CNDC", name)) {
-                res@metadata$units[[oceName]] <- list(unit=expression(S/m), scale="")
+                res@metadata$units[[oceName]] <- list(unit = expression(S / m), scale = "")
             } else if (grepl("^CPHL", name)) {
-                res@metadata$units[[oceName]] <- list(unit=expression(mg/m^3), scale="")
+                res@metadata$units[[oceName]] <- list(unit = expression(mg / m^3), scale = "")
             } else if (grepl("^DOX2", name)) {
-                res@metadata$units[[oceName]] <- list(unit=expression(umol/kg), scale="")
+                res@metadata$units[[oceName]] <- list(unit = expression(umol / kg), scale = "")
             } else if (grepl("^DOXY", name)) {
-                res@metadata$units[[oceName]] <- list(unit=expression(mmol/m^3), scale="")
+                res@metadata$units[[oceName]] <- list(unit = expression(mmol / m^3), scale = "")
             } else if (grepl("^NTAW", name)) {
-                res@metadata$units[[oceName]] <- list(unit=expression(umol/kg), scale="")
+                res@metadata$units[[oceName]] <- list(unit = expression(umol / kg), scale = "")
             } else if (grepl("^PHPH", name)) {
-                res@metadata$units[[oceName]] <- list(unit=expression(), scale="")
+                res@metadata$units[[oceName]] <- list(unit = expression(), scale = "")
             } else if (grepl("^PRES", name)) {
-                res@metadata$units[[oceName]] <- list(unit=expression(dbar), scale="")
+                res@metadata$units[[oceName]] <- list(unit = expression(dbar), scale = "")
             } else if (grepl("^PSAL", name)) {
-                res@metadata$units[[oceName]] <- list(unit=expression(), scale="")
+                res@metadata$units[[oceName]] <- list(unit = expression(), scale = "")
             } else if (grepl("^TEMP", name)) {
-                res@metadata$units[[oceName]] <- list(unit=expression(degree*C), scale="")
+                res@metadata$units[[oceName]] <- list(unit = expression(degree * C), scale = "")
             } else if (name %in% QCNamesKnown) {
                 oceName <- nameMap[[gsub("_QC", "", name)]]
                 res@metadata$flags[[oceName]] <- ncdf4::ncvar_get(file, name)
             }
             oceDebug(debug, "inferring flags[", oceName, "] from ", name, "\n")
         } else if (!(name %in% c("TIME", "POSITION_QC", "TIME_QC"))) { # some special cases skipped
-            oceDebug(debug, "saving \"", name, "\" to data slot, without renaming\n", sep="")
+            oceDebug(debug, "saving \"", name, "\" to data slot, without renaming\n", sep = "")
             res@data[[name]] <- ncdf4::ncvar_get(file, name)
             res@metadata$dataNamesOriginal[[name]] <- name
         }
     }
     # Extract longitude, latitude and time, if they are present.
-    lat <- try(ncdf4::ncvar_get(file, "LATITUDE"), silent=TRUE)
+    lat <- try(ncdf4::ncvar_get(file, "LATITUDE"), silent = TRUE)
     if (!inherits(lat, "try-error")) {
         res@data$latitude <- lat
         res@metadata$dataNamesOriginal$latitude <- "LATITUDE"
     }
-    lon <- try(ncdf4::ncvar_get(file, "LONGITUDE"), silent=TRUE)
+    lon <- try(ncdf4::ncvar_get(file, "LONGITUDE"), silent = TRUE)
     if (!inherits(lon, "try-error")) {
         res@data$longitude <- lon
         res@metadata$dataNamesOriginal$longitude <- "LONGITUDE"
     }
     # time is measured in years since start of 1950.
-    time <- try(ncdf4::ncvar_get(file, "TIME"), silent=TRUE)
+    time <- try(ncdf4::ncvar_get(file, "TIME"), silent = TRUE)
     if (!inherits(time, "try-error")) {
-        time0 <- ISOdatetime(1950, 1, 1, 0.0, 0.0, 0.0, tz="UTC")
+        time0 <- ISOdatetime(1950, 1, 1, 0.0, 0.0, 0.0, tz = "UTC")
         res@data$time <- time0 + 86400.0 * time
     }
-    timeQc <- try(ncdf4::ncvar_get(file, "TIME_QC"), silent=TRUE)
-    if (!inherits(timeQc, "try-error"))
+    timeQc <- try(ncdf4::ncvar_get(file, "TIME_QC"), silent = TRUE)
+    if (!inherits(timeQc, "try-error")) {
         res@metadata$flags$time <- timeQc
-    positionQc <- try(ncdf4::ncvar_get(file, "POSITION_QC"), silent=TRUE)
-    if (!inherits(positionQc, "try-error"))
+    }
+    positionQc <- try(ncdf4::ncvar_get(file, "POSITION_QC"), silent = TRUE)
+    if (!inherits(positionQc, "try-error")) {
         res@metadata$flags$position <- positionQc
-    oceDebug(debug, "} # read.argo.copernicus()\n", sep="", unindent=1, style="bold")
+    }
+    oceDebug(debug, "} # read.argo.copernicus()\n", sep = "", unindent = 1, style = "bold")
     res
 }

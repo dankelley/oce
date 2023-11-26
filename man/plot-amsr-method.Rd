@@ -85,7 +85,7 @@ plot(amsr, "SST")
 lines(coastlineWorld[["longitude"]], coastlineWorld[["latitude"]])
 
 # Example 2: 'turbo' color scheme
-plot(amsr, "SST", col=oceColorsTurbo)
+plot(amsr, "SST", col = oceColorsTurbo)
 lines(coastlineWorld[["longitude"]], coastlineWorld[["latitude"]])
 
 }

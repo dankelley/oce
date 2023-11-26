@@ -49,8 +49,8 @@ Coerce Data Into a cm Object
 library(oce)
 # Example 1: creation from scratch
 t <- Sys.time() + 0:50
-u <- sin(2*pi*0:50/5) + rnorm(51)
-v <- cos(2*pi*0:50/5) + rnorm(51)
+u <- sin(2 * pi * 0:50 / 5) + rnorm(51)
+v <- cos(2 * pi * 0:50 / 5) + rnorm(51)
 p <- 100 + rnorm(51)
 summary(as.cm(t, u, v, p))
 

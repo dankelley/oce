@@ -94,15 +94,17 @@ library(oce)
 # 1. Demonstrate step-function response
 y <- c(rep(1, 10), rep(-1, 10))
 x <- seq_along(y)
-plot(x, y, type="o", ylim=c(-1.05, 1.05))
-BH <- makeFilter("blackman-harris", 11, asKernel=FALSE)
-H <- makeFilter("hamming", 11, asKernel=FALSE)
+plot(x, y, type = "o", ylim = c(-1.05, 1.05))
+BH <- makeFilter("blackman-harris", 11, asKernel = FALSE)
+H <- makeFilter("hamming", 11, asKernel = FALSE)
 yBH <- stats::filter(y, BH)
-points(x, yBH, col=2, type="o")
+points(x, yBH, col = 2, type = "o")
 yH <- stats::filter(y, H)
-points(yH, col=3, type="o")
-legend("topright", col=1:3, cex=2/3, pch=1,
-       legend=c("input", "Blackman Harris", "Hamming"))
+points(yH, col = 3, type = "o")
+legend("topright",
+    col = 1:3, cex = 2 / 3, pch = 1,
+    legend = c("input", "Blackman Harris", "Hamming")
+)
 
 # 2. Show theoretical and practical filter gain, where
 #    the latter is based on random white noise, and

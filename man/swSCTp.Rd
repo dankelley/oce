@@ -57,12 +57,12 @@ formulae provided by Hill et al. (1986; reference 2), modified to match the
 }
 \examples{
 # 1. Demonstrate agreement with test value in UNESCO documents
-swSCTp(1, T90fromT68(15), 0, eos="unesco") # expect 35
+swSCTp(1, T90fromT68(15), 0, eos = "unesco") # expect 35
 # 2. Demonstrate agreement of gsw and unesco, S>2 case
-swSCTp(1, T90fromT68(15), 0, eos="gsw") # again, expect 35
+swSCTp(1, T90fromT68(15), 0, eos = "gsw") # again, expect 35
 # 3. Demonstrate close values even in very brackish water
-swSCTp(0.02, 10, 100, eos="gsw")    # 0.6013981
-swSCTp(0.02, 10, 100, eos="unesco") # 0.6011721
+swSCTp(0.02, 10, 100, eos = "gsw") # 0.6013981
+swSCTp(0.02, 10, 100, eos = "unesco") # 0.6011721
 
 }
 \references{

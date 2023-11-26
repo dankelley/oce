@@ -85,7 +85,7 @@ sec2 <- as.section(ctds)
 summary(sec2)
 # argo data (a subset)
 data(argo)
-sec3 <- as.section(subset(argo, profile<5))
+sec3 <- as.section(subset(argo, profile < 5))
 summary(sec3)
 
 }

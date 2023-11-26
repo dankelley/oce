@@ -73,10 +73,10 @@ library(oce)
 n <- 16
 x <- rep(0, n)
 y <- rep(0, n)
-theta <- seq(0, 2*pi, length.out=n)
+theta <- seq(0, 2 * pi, length.out = n)
 u <- sin(theta)
 v <- cos(theta)
-plotSticks(x, y, u, v, xlim=c(-2, 2), ylim=c(-2, 2))
+plotSticks(x, y, u, v, xlim = c(-2, 2), ylim = c(-2, 2))
 rm(n, x, y, theta, u, v)
 
 # Oceanographic example
@@ -86,7 +86,7 @@ u <- met[["u"]]
 v <- met[["v"]]
 p <- met[["pressure"]]
 oce.plot.ts(t, p)
-plotSticks(t, 99, u, v, yscale=25, add=TRUE)
+plotSticks(t, 99, u, v, yscale = 25, add = TRUE)
 }
 \author{
 Dan Kelley

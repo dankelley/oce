@@ -46,18 +46,21 @@
 #'
 #' @family classes holding satellite data
 #' @family things related to amsr data
-setClass("amsr", contains="satellite")
+setClass("amsr", contains = "satellite")
 
-setMethod(f="initialize",
-    signature="amsr",
-    definition=function(.Object, filename, ...) {
+setMethod(
+    f = "initialize",
+    signature = "amsr",
+    definition = function(.Object, filename, ...) {
         .Object <- callNextMethod(.Object, ...)
-        if (!missing(filename))
+        if (!missing(filename)) {
             .Object@metadata$filename <- filename
+        }
         .Object@processingLog$time <- presentTime()
         .Object@processingLog$value <- "create 'amsr' object"
         return(.Object)
-    })
+    }
+)
 
 #<?> setMethod(f="show",
 #<?>     signature="amsr",
@@ -79,12 +82,12 @@ setMethod(f="initialize",
 #' section.
 #'
 #' The following code was used to create this dataset.
-#'\preformatted{
+#' \preformatted{
 #' library(oce)
 #' amsr <- read.amsr(download.amsr(2023, 7, 27, destdir="~/data/amsr"))
 #' amsr <- subset(amsr, -71 < longitude & longitude < -60, debug=2)
 #' amsr <- subset(amsr,  36 < latitude  &  latitude <  45, debug=2)
-#'}
+#' }
 #'
 #' @name amsr
 #' @docType data
@@ -106,10 +109,10 @@ NULL
 # Local function to determine amsr version.  An error results if x is not
 # an amsr object.  If the object does not contain metadata$version,
 # return 1L; otherwise, return metadata$version.
-amsrType <- function(x)
-{
-    if (!inherits(x, "amsr"))
+amsrType <- function(x) {
+    if (!inherits(x, "amsr")) {
         stop("x is not an amsr object")
+    }
     type <- x@metadata$type
     if (is.null(type)) 1L else type
 }
@@ -126,22 +129,25 @@ amsrType <- function(x)
 #' @author Dan Kelley
 #'
 #' @family things related to amsr data
-setMethod(f="summary",
-    signature="amsr",
-    definition=function(object, ...) {
+setMethod(
+    f = "summary",
+    signature = "amsr",
+    definition = function(object, ...) {
         cat("Amsr Summary\n------------\n\n")
-        showMetadataItem(object, "filename",   "Data file:       ")
+        showMetadataItem(object, "filename", "Data file:       ")
         cat(sprintf("* Longitude range: %.4fE to %.4fE\n", object@metadata$longitude[1], tail(object@metadata$longitude, 1)))
         cat(sprintf("* Latitude range:  %.4fN to %.4fN\n", object@metadata$latitude[1], tail(object@metadata$latitude, 1)))
         cat(sprintf("* Format type:     %d\n", amsrType(object)))
         # Version 1 data are in raw format, so use [[ to get scientific units
         type <- amsrType(object)
         if (type == 1L) {
-            for (name in names(object@data))
+            for (name in names(object@data)) {
                 object@data[[name]] <- object[[name]]
+            }
         }
-        invisible(callNextMethod())        # summary
-    })
+        invisible(callNextMethod()) # summary
+    }
+)
 
 #' Extract Something From an amsr Object
 #'
@@ -215,16 +221,19 @@ setMethod(f="summary",
 #' @author Dan Kelley
 #'
 #' @family things related to amsr data
-setMethod(f="[[",
-    signature(x="amsr", i="ANY", j="ANY"),
-    definition=function(x, i, j, ...) { # [[,amsr-method
+setMethod(
+    f = "[[",
+    signature(x = "amsr", i = "ANY", j = "ANY"),
+    definition = function(x, i, j, ...) { # [[,amsr-method
         debug <- getOption("oceDebug")
-        oceDebug(debug, "amsr [[ {\n", unindent=1)
-        if (missing(i))
-            stop("Must name a amsr item to retrieve, e.g. '[[\"SST\"]]'", call.=FALSE)
-        i <- i[1]                # drop extras if more than one given
-        if (!is.character(i))
-            stop("amsr item must be specified by name", call.=FALSE)
+        oceDebug(debug, "amsr [[ {\n", unindent = 1)
+        if (missing(i)) {
+            stop("Must name a amsr item to retrieve, e.g. '[[\"SST\"]]'", call. = FALSE)
+        }
+        i <- i[1] # drop extras if more than one given
+        if (!is.character(i)) {
+            stop("amsr item must be specified by name", call. = FALSE)
+        }
         # The storage for the new (netcdf) format is much simpler than that
         # for the old format, since the latter required the use of scale factors
         # on raw numbers, etc.  We handle both new and old formats here.
@@ -232,26 +241,30 @@ setMethod(f="[[",
         if (type == 1L) {
             dataDerived <- c("cloud", "LFwind", "MFwind", "rain", "SST", "time", "vapor")
             if (i == "?") {
-                return(list(metadata=sort(names(x@metadata)),
-                        metadataDerived=NULL,
-                        data=sort(names(x@data)),
-                        dataDerived=sort(dataDerived)))
+                return(list(
+                    metadata = sort(names(x@metadata)),
+                    metadataDerived = NULL,
+                    data = sort(names(x@data)),
+                    dataDerived = sort(dataDerived)
+                ))
             }
             if (is.character(i) && !is.na(pmatch(i, names(x@metadata)))) {
-                oceDebug(debug, "} # amsr [[\n", unindent=1)
+                oceDebug(debug, "} # amsr [[\n", unindent = 1)
                 return(x@metadata[[i]])
             }
             namesAllowed <- c(names(x@data), dataDerived)
             if (!(i %in% namesAllowed)) {
-                stop("band '", i, "' is not available in this object; try one of: ",
-                    paste(namesAllowed, collapse=" "))
+                stop(
+                    "band '", i, "' is not available in this object; try one of: ",
+                    paste(namesAllowed, collapse = " ")
+                )
             }
             # get numeric band, changing land, n-obs, bad-obs, sea-ice and windy to NA
-            getBand<-function(b) {
-                bad <- b == as.raw(0xff)| # land mass
-                    b == as.raw(0xfe)| # no observations
-                    b == as.raw(0xfd)| # bad observations
-                    b == as.raw(0xfc)| # sea ice
+            getBand <- function(b) {
+                bad <- b == as.raw(0xff) | # land mass
+                    b == as.raw(0xfe) | # no observations
+                    b == as.raw(0xfd) | # bad observations
+                    b == as.raw(0xfc) | # sea ice
                     b == as.raw(0xfb) # missing SST or wind due to rain, or missing water vapour due to heavy rain
                 b <- as.numeric(b)
                 b[bad] <- NA
@@ -262,74 +275,126 @@ setMethod(f="[[",
                 # Apply units; see http://www.remss.com/missions/amsre
                 # FIXME: the table at above link has two factors for time; I've no idea
                 # what that means, and am extracting what seems to be seconds in the day.
-                if      (i == "timeDay") res <- 60*6*getBand(x@data[[i]]) # FIXME: guessing on amsr time units
-                else if (i == "timeNight") res <- 60*6*getBand(x@data[[i]]) # FIXME: guessing on amsr time units
-                else if (i == "time") res <- 60*6*getBand(do_amsr_average(x@data[["timeDay"]], x@data[["timeNight"]]))
-                else if (i == "SSTDay") res <- -3 + 0.15 * getBand(x@data[[i]])
-                else if (i == "SSTNight") res <- -3 + 0.15 * getBand(x@data[[i]])
-                else if (i == "SST") res <- -3 + 0.15 * getBand(do_amsr_average(x@data[["SSTDay"]], x@data[["SSTNight"]]))
-                else if (i == "LFwindDay") res <- 0.2 * getBand(x@data[[i]])
-                else if (i == "LFwindNight") res <- 0.2 * getBand(x@data[[i]])
-                else if (i == "LFwind") res <- 0.2 * getBand(do_amsr_average(x@data[["LFwindDay"]], x@data[["LFwindNight"]]))
-                else if (i == "MFwindDay") res <- 0.2 * getBand(x@data[[i]])
-                else if (i == "MFwindNight") res <- 0.2 * getBand(x@data[[i]])
-                else if (i == "MFwind") res <- 0.2 * getBand(do_amsr_average(x@data[["MFwindDay"]], x@data[["MFwindNight"]]))
-                else if (i == "vaporDay") res <- 0.3 * getBand(x@data[[i]])
-                else if (i == "vaporNight") res <- 0.3 * getBand(x@data[[i]])
-                else if (i == "vapor") res <- 0.3 * getBand(do_amsr_average(x@data[["vaporDay"]], x@data[["vaporNight"]]))
-                else if (i == "cloudDay") res <- -0.05 + 0.01 * getBand(x@data[[i]])
-                else if (i == "cloudNight") res <- -0.05 + 0.01 * getBand(x@data[[i]])
-                else if (i == "cloud") res <- -0.05 + 0.01 * getBand(do_amsr_average(x@data[["cloudDay"]], x@data[["cloudNight"]]))
-                else if (i == "rainDay") res <- 0.01 * getBand(x@data[[i]])
-                else if (i == "rainNight") res <- 0.01 * getBand(x@data[[i]])
-                else if (i == "rain") res <- 0.01 * getBand(do_amsr_average(x@data[["rainDay"]], x@data[["rainNight"]]))
-                else if (i == "data") return(x@data)
+                if (i == "timeDay") {
+                    res <- 60 * 6 * getBand(x@data[[i]])
+                } # FIXME: guessing on amsr time units
+                else if (i == "timeNight") {
+                    res <- 60 * 6 * getBand(x@data[[i]])
+                } # FIXME: guessing on amsr time units
+                else if (i == "time") {
+                    res <- 60 * 6 * getBand(do_amsr_average(x@data[["timeDay"]], x@data[["timeNight"]]))
+                } else if (i == "SSTDay") {
+                    res <- -3 + 0.15 * getBand(x@data[[i]])
+                } else if (i == "SSTNight") {
+                    res <- -3 + 0.15 * getBand(x@data[[i]])
+                } else if (i == "SST") {
+                    res <- -3 + 0.15 * getBand(do_amsr_average(x@data[["SSTDay"]], x@data[["SSTNight"]]))
+                } else if (i == "LFwindDay") {
+                    res <- 0.2 * getBand(x@data[[i]])
+                } else if (i == "LFwindNight") {
+                    res <- 0.2 * getBand(x@data[[i]])
+                } else if (i == "LFwind") {
+                    res <- 0.2 * getBand(do_amsr_average(x@data[["LFwindDay"]], x@data[["LFwindNight"]]))
+                } else if (i == "MFwindDay") {
+                    res <- 0.2 * getBand(x@data[[i]])
+                } else if (i == "MFwindNight") {
+                    res <- 0.2 * getBand(x@data[[i]])
+                } else if (i == "MFwind") {
+                    res <- 0.2 * getBand(do_amsr_average(x@data[["MFwindDay"]], x@data[["MFwindNight"]]))
+                } else if (i == "vaporDay") {
+                    res <- 0.3 * getBand(x@data[[i]])
+                } else if (i == "vaporNight") {
+                    res <- 0.3 * getBand(x@data[[i]])
+                } else if (i == "vapor") {
+                    res <- 0.3 * getBand(do_amsr_average(x@data[["vaporDay"]], x@data[["vaporNight"]]))
+                } else if (i == "cloudDay") {
+                    res <- -0.05 + 0.01 * getBand(x@data[[i]])
+                } else if (i == "cloudNight") {
+                    res <- -0.05 + 0.01 * getBand(x@data[[i]])
+                } else if (i == "cloud") {
+                    res <- -0.05 + 0.01 * getBand(do_amsr_average(x@data[["cloudDay"]], x@data[["cloudNight"]]))
+                } else if (i == "rainDay") {
+                    res <- 0.01 * getBand(x@data[[i]])
+                } else if (i == "rainNight") {
+                    res <- 0.01 * getBand(x@data[[i]])
+                } else if (i == "rain") {
+                    res <- 0.01 * getBand(do_amsr_average(x@data[["rainDay"]], x@data[["rainNight"]]))
+                } else if (i == "data") {
+                    return(x@data)
+                }
             } else {
-                if      (i == "timeDay") res <- x@data[[i]]
-                else if (i == "timeNight") res <- x@data[[i]]
-                else if (i == "time") res <- getBand(do_amsr_average(x@data[["timeDay"]], x@data[["timeNight"]]))
-                else if (i == "SSTDay") res <- x@data[[i]]
-                else if (i == "SSTNight") res <- x@data[[i]]
-                else if (i == "SST") res <- do_amsr_average(x@data[["SSTDay"]], x@data[["SSTNight"]])
-                else if (i == "LFwindDay") res <- x@data[[i]]
-                else if (i == "LFwindNight") res <- x@data[[i]]
-                else if (i == "LFwind") res <- do_amsr_average(x@data[["LFwindDay"]], x@data[["LFwindNight"]])
-                else if (i == "MFwindDay") res <- x@data[[i]]
-                else if (i == "MFwindNight") res <- x@data[[i]]
-                else if (i == "MFwind") res <- do_amsr_average(x@data[["MFwindDay"]], x@data[["MFwindNight"]])
-                else if (i == "vaporDay") res <- x@data[[i]]
-                else if (i == "vaporNight") res <- x@data[[i]]
-                else if (i == "vapor") res <- do_amsr_average(x@data[["vaporDay"]], x@data[["vaporNight"]])
-                else if (i == "cloudDay") res <- x@data[[i]]
-                else if (i == "cloudNight") res <- x@data[[i]]
-                else if (i == "cloud") res <- do_amsr_average(x@data[["cloudDay"]], x@data[["cloudNight"]])
-                else if (i == "rainDay") res <- x@data[[i]]
-                else if (i == "rainNight") res <- x@data[[i]]
-                else if (i == "rain") res <- do_amsr_average(x@data[["rainDay"]], x@data[["rainNight"]])
-                else if (i == "data") return(x@data)
+                if (i == "timeDay") {
+                    res <- x@data[[i]]
+                } else if (i == "timeNight") {
+                    res <- x@data[[i]]
+                } else if (i == "time") {
+                    res <- getBand(do_amsr_average(x@data[["timeDay"]], x@data[["timeNight"]]))
+                } else if (i == "SSTDay") {
+                    res <- x@data[[i]]
+                } else if (i == "SSTNight") {
+                    res <- x@data[[i]]
+                } else if (i == "SST") {
+                    res <- do_amsr_average(x@data[["SSTDay"]], x@data[["SSTNight"]])
+                } else if (i == "LFwindDay") {
+                    res <- x@data[[i]]
+                } else if (i == "LFwindNight") {
+                    res <- x@data[[i]]
+                } else if (i == "LFwind") {
+                    res <- do_amsr_average(x@data[["LFwindDay"]], x@data[["LFwindNight"]])
+                } else if (i == "MFwindDay") {
+                    res <- x@data[[i]]
+                } else if (i == "MFwindNight") {
+                    res <- x@data[[i]]
+                } else if (i == "MFwind") {
+                    res <- do_amsr_average(x@data[["MFwindDay"]], x@data[["MFwindNight"]])
+                } else if (i == "vaporDay") {
+                    res <- x@data[[i]]
+                } else if (i == "vaporNight") {
+                    res <- x@data[[i]]
+                } else if (i == "vapor") {
+                    res <- do_amsr_average(x@data[["vaporDay"]], x@data[["vaporNight"]])
+                } else if (i == "cloudDay") {
+                    res <- x@data[[i]]
+                } else if (i == "cloudNight") {
+                    res <- x@data[[i]]
+                } else if (i == "cloud") {
+                    res <- do_amsr_average(x@data[["cloudDay"]], x@data[["cloudNight"]])
+                } else if (i == "rainDay") {
+                    res <- x@data[[i]]
+                } else if (i == "rainNight") {
+                    res <- x@data[[i]]
+                } else if (i == "rain") {
+                    res <- do_amsr_average(x@data[["rainDay"]], x@data[["rainNight"]])
+                } else if (i == "data") {
+                    return(x@data)
+                }
             }
         } else if (type == 2L) {
             if (i == "?") {
-                return(list(metadata=sort(names(x@metadata)),
-                        metadataDerived=NULL,
-                        data=sort(names(x@data)),
-                        dataDerived=NULL))
+                return(list(
+                    metadata = sort(names(x@metadata)),
+                    metadataDerived = NULL,
+                    data = sort(names(x@data)),
+                    dataDerived = NULL
+                ))
             }
             if (grepl("(Day|Night)$", i)) {
                 iorig <- i
                 i <- gsub("(Day|Night)$", "", i)
                 oceDebug(debug, "returning \"", i, "\" for \"", iorig, "\"\n")
             }
-            if (i %in% names(x@metadata))
+            if (i %in% names(x@metadata)) {
                 return(x@metadata[[i]])
-            else
+            } else {
                 return(x@data[[i]])
+            }
         } else {
             stop("type ", type, " not understood; only types 1 and 2 are handled")
         }
         dim(res) <- dim
         res
-    }) # [[,amsr-method
+    }
+) # [[,amsr-method
 
 #' Replace Parts of an amsr Object
 #'
@@ -338,11 +403,13 @@ setMethod(f="[[",
 #' @template sub_subsetTemplate
 #'
 #' @family things related to amsr data
-setMethod(f="[[<-",
-    signature(x="amsr", i="ANY", j="ANY"),
-    definition=function(x, i, j, ..., value) {
-        callNextMethod(x=x, i=i, j=j, ...=..., value=value) # [[<-
-    })
+setMethod(
+    f = "[[<-",
+    signature(x = "amsr", i = "ANY", j = "ANY"),
+    definition = function(x, i, j, ..., value) {
+        callNextMethod(x = x, i = i, j = j, ... = ..., value = value) # [[<-
+    }
+)
 
 #' Subset an amsr Object
 #'
@@ -365,7 +432,7 @@ setMethod(f="[[<-",
 #' library(oce)
 #' data(amsr) # see ?amsr for how to read and composite such objects
 #' sub <- subset(amsr, -75 < longitude & longitude < -45)
-#' sub <- subset(sub,   40 < latitude  &  latitude <  50)
+#' sub <- subset(sub, 40 < latitude & latitude < 50)
 #' plot(sub)
 #' data(coastlineWorld)
 #' lines(coastlineWorld[["longitude"]], coastlineWorld[["latitude"]])
@@ -374,20 +441,24 @@ setMethod(f="[[<-",
 #'
 #' @family things related to amsr data
 #' @family functions that subset oce objects
-setMethod(f="subset",
-    signature="amsr",
-    definition=function(x, subset, ...) { # subset,amsr-method
+setMethod(
+    f = "subset",
+    signature = "amsr",
+    definition = function(x, subset, ...) { # subset,amsr-method
         dots <- list(...)
         debug <- if ("debug" %in% names(dots)) dots$debug else 0
-        oceDebug(debug, "subset,amsr-method() {\n", style="bold", sep="", unindent=1)
+        oceDebug(debug, "subset,amsr-method() {\n", style = "bold", sep = "", unindent = 1)
         res <- x
-        subsetString <- paste(deparse(substitute(expr=subset, env=environment())), collapse=" ")
+        subsetString <- paste(deparse(substitute(expr = subset, env = environment())), collapse = " ")
         type <- amsrType(x)
         if (length(grep("longitude", subsetString))) {
-            if (length(grep("latitude", subsetString)))
+            if (length(grep("latitude", subsetString))) {
                 stop("the subset must not contain both longitude and latitude. Call this twice, to combine these")
-            keep <- eval(expr=substitute(expr=subset, env=environment()),
-                envir=data.frame(longitude=x@metadata$longitude), enclos=parent.frame(2))
+            }
+            keep <- eval(
+                expr = substitute(expr = subset, env = environment()),
+                envir = data.frame(longitude = x@metadata$longitude), enclos = parent.frame(2)
+            )
             oceDebug(debug, "keeping ", sum(keep), " of ", length(keep), " longitudes\n")
             if (type == 1L) {
                 for (name in names(res@data)) {
@@ -399,13 +470,18 @@ setMethod(f="subset",
                     oceDebug(debug, "processing ", name, " (type 2)\n")
                     res@data[[name]] <- res[[name]][keep, ]
                 }
-            } else stop("type ", type, " not understood; only types 1 and 2 are handled")
+            } else {
+                stop("type ", type, " not understood; only types 1 and 2 are handled")
+            }
             res@metadata$longitude <- x@metadata$longitude[keep]
         } else if (length(grep("latitude", subsetString))) {
-            if (length(grep("longitude", subsetString)))
+            if (length(grep("longitude", subsetString))) {
                 stop("the subset must not contain both longitude and latitude. Call this twice, to combine these")
-            keep <- eval(expr=substitute(expr=subset, env=environment()),
-                envir=data.frame(latitude=x@metadata$latitude), enclos=parent.frame(2))
+            }
+            keep <- eval(
+                expr = substitute(expr = subset, env = environment()),
+                envir = data.frame(latitude = x@metadata$latitude), enclos = parent.frame(2)
+            )
             oceDebug(debug, "keeping ", sum(keep), " of ", length(keep), " latitudes\n")
             if (type == 1L) {
                 for (name in names(res@data)) {
@@ -417,17 +493,19 @@ setMethod(f="subset",
                     oceDebug(debug, "processing ", name, " (type 2)\n")
                     res@data[[name]] <- x[[name]][, keep]
                 }
-
-            } else stop("type ", type, " not understood; only types 1 and 2 are handled")
+            } else {
+                stop("type ", type, " not understood; only types 1 and 2 are handled")
+            }
 
             res@metadata$latitude <- res@metadata$latitude[keep]
         } else {
             stop("may only subset by longitude or latitude")
         }
-        res@processingLog <- processingLogAppend(res@processingLog, paste("subset(x, subset=", subsetString, ")", sep=""))
-        oceDebug(debug, "} # subset,amsr-method()\n", style="bold", sep="", unindent=1)
+        res@processingLog <- processingLogAppend(res@processingLog, paste("subset(x, subset=", subsetString, ")", sep = ""))
+        oceDebug(debug, "} # subset,amsr-method()\n", style = "bold", sep = "", unindent = 1)
         res
-    })
+    }
+)
 
 #' Plot an amsr Object
 #'
@@ -491,7 +569,7 @@ setMethod(f="subset",
 #' lines(coastlineWorld[["longitude"]], coastlineWorld[["latitude"]])
 #'
 #' # Example 2: 'turbo' color scheme
-#' plot(amsr, "SST", col=oceColorsTurbo)
+#' plot(amsr, "SST", col = oceColorsTurbo)
 #' lines(coastlineWorld[["longitude"]], coastlineWorld[["latitude"]])
 #'
 #' @author Dan Kelley
@@ -500,24 +578,27 @@ setMethod(f="subset",
 #' @family functions that plot oce data
 #'
 #' @aliases plot.amsr
-setMethod(f="plot",
-    signature=signature("amsr"),
+setMethod(
+    f = "plot",
+    signature = signature("amsr"),
     # FIXME: how to let it default on band??
-    definition=function(x, y, asp=NULL, # plot,amsr-method
-        breaks, col, colormap, zlim,
-        # FIXME: how do the old-format categories map to new ones?  (They don't
-        # seem to.)  For now, the next argument is just for new-format.
-        missingColor,
-        debug=getOption("oceDebug"), ...)
-    {
+    definition = function(x, y, asp = NULL, # plot,amsr-method
+                          breaks, col, colormap, zlim,
+                          # FIXME: how do the old-format categories map to new ones?  (They don't
+                          # seem to.)  For now, the next argument is just for new-format.
+                          missingColor,
+                          debug = getOption("oceDebug"), ...) {
         dots <- list(...)
         oceDebug(debug, "plot.amsr(..., y=c(",
-            if (missing(y)) "(missing)" else y, ", ...) {\n", sep="", style="bold", unindent=1)
+            if (missing(y)) "(missing)" else y, ", ...) {\n",
+            sep = "", style = "bold", unindent = 1
+        )
         zlimGiven <- !missing(zlim)
         type <- amsrType(x)
         oceDebug(debug, "amsr type: ", type, "\n")
-        if (missing(y))
+        if (missing(y)) {
             y <- "SST"
+        }
         lon <- x[["longitude"]]
         lat <- x[["latitude"]]
         # Examine ylim (if asp is not NULL) and also at both xlim and ylim to
@@ -526,35 +607,35 @@ setMethod(f="plot",
         ylim <- dots$ylim
         if (is.null(asp)) {
             if (!is.null(ylim)) {
-                asp <- 1 / cos(pi/180*abs(mean(ylim, na.rm=TRUE)))
-                oceDebug(debug, "inferred asp=", asp, " from ylim argument\n", sep="")
+                asp <- 1 / cos(pi / 180 * abs(mean(ylim, na.rm = TRUE)))
+                oceDebug(debug, "inferred asp=", asp, " from ylim argument\n", sep = "")
             } else {
-                asp <- 1 / cos(pi/180*abs(mean(lat, na.rm=TRUE)))
-                oceDebug(debug, "inferred asp=", asp, " from ylim argument\n", sep="")
+                asp <- 1 / cos(pi / 180 * abs(mean(lat, na.rm = TRUE)))
+                oceDebug(debug, "inferred asp=", asp, " from ylim argument\n", sep = "")
             }
         } else {
-            oceDebug(debug, "using supplied asp=", asp, "\n", sep="")
+            oceDebug(debug, "using supplied asp=", asp, "\n", sep = "")
         }
         z <- x[[y]]
         # Compute zrange for world data, or data narrowed to xlim and ylim.
         if (!is.null(xlim)) {
             if (!is.null(ylim)) {
                 oceDebug(debug, "computing range based on z trimmed by xlim and ylim\n")
-                zrange <- range(z[xlim[1] <= lon & lon <= xlim[2], ylim[1] <= lat & lat <= ylim[2]], na.rm=TRUE)
+                zrange <- range(z[xlim[1] <= lon & lon <= xlim[2], ylim[1] <= lat & lat <= ylim[2]], na.rm = TRUE)
             } else {
                 oceDebug(debug, "computing range based on z trimmed by xlim alone\n")
-                zrange <- range(z[xlim[1] <= lon & lon <= xlim[2], ], na.rm=TRUE)
+                zrange <- range(z[xlim[1] <= lon & lon <= xlim[2], ], na.rm = TRUE)
             }
         } else {
             if (!is.null(ylim)) {
                 oceDebug(debug, "computing range based on z trimmed by ylim alone\n")
-                zrange <- range(z[, ylim[1] <= lat & lat <= ylim[2]], na.rm=TRUE)
+                zrange <- range(z[, ylim[1] <= lat & lat <= ylim[2]], na.rm = TRUE)
             } else {
                 oceDebug(debug, "computing range based on whole-world data\n")
-                zrange <- range(z, na.rm=TRUE)
+                zrange <- range(z, na.rm = TRUE)
             }
         }
-        oceDebug(debug, "zrange: ", paste(zrange, collapse=" to "), "\n")
+        oceDebug(debug, "zrange: ", paste(zrange, collapse = " to "), "\n")
         # Determine colormap, if not given as an argument.
         if (missing(colormap)) {
             oceDebug(debug, "case 1: 'colormap' not given, so will be computed here\n")
@@ -566,30 +647,30 @@ setMethod(f="plot",
                 }
                 if (!missing(col)) {
                     oceDebug(debug, "case 1.1.1: computing colormap from specified breaks and specified col\n")
-                    colormap <- oce::colormap(zlim=if (zlimGiven) zlim else range(breaks), col=col)
+                    colormap <- oce::colormap(zlim = if (zlimGiven) zlim else range(breaks), col = col)
                 } else {
                     oceDebug(debug, "case 1.1.2: computing colormap from specified breaks and computed col\n")
-                    colormap <- oce::colormap(zlim=if (zlimGiven) zlim else range(breaks), col=oceColorsTemperature)
+                    colormap <- oce::colormap(zlim = if (zlimGiven) zlim else range(breaks), col = oceColorsTemperature)
                 }
             } else {
                 oceDebug(debug, "case 1.2: 'breaks' was not specified\n")
                 if (!missing(col)) {
                     oceDebug(debug, "case 1.2.1: computing colormap from and computed breaks and specified col\n")
-                    colormap <- oce::colormap(zlim=if (zlimGiven) zlim else zrange, col=col)
+                    colormap <- oce::colormap(zlim = if (zlimGiven) zlim else zrange, col = col)
                 } else {
                     oceDebug(debug, "case 1.2.2: computing colormap from computed breaks and computed col\n")
-                    colormap <- oce::colormap(zlim=if (zlimGiven) zlim else zrange, col=oceColorsTemperature)
+                    colormap <- oce::colormap(zlim = if (zlimGiven) zlim else zrange, col = oceColorsTemperature)
                 }
             }
         } else {
             oceDebug(debug, "using specified colormap, ignoring breaks and col, whether they were supplied or not\n")
         }
         i <- if ("zlab" %in% names(dots)) {
-            oceDebug(debug, "calling imagep() with asp=", asp, ", and zlab=\"", dots$zlab, "\"\n", sep="")
-            imagep(lon, lat, z, colormap=colormap, asp=asp, debug=debug-1, ...)
+            oceDebug(debug, "calling imagep() with asp=", asp, ", and zlab=\"", dots$zlab, "\"\n", sep = "")
+            imagep(lon, lat, z, colormap = colormap, asp = asp, debug = debug - 1, ...)
         } else {
-            oceDebug(debug, "calling imagep() with asp=", asp, ", and no zlab argument\n", sep="")
-            imagep(lon, lat, z, colormap=colormap, zlab=y, asp=asp, debug=debug-1, ...)
+            oceDebug(debug, "calling imagep() with asp=", asp, ", and no zlab argument\n", sep = "")
+            imagep(lon, lat, z, colormap = colormap, zlab = y, asp = asp, debug = debug - 1, ...)
         }
         # Handle missing-data codes by redrawing the (possibly decimated) image. Perhaps
         # imagep() should be able to do this, but imagep() is a long function
@@ -598,62 +679,73 @@ setMethod(f="plot",
         type <- amsrType(x)
         if (missing(missingColor)) {
             if (type == 1L) {
-                missingColor <- list(land="papayaWhip", none="lightGray", bad="gray", rain="plum", ice="mediumVioletRed")
+                missingColor <- list(land = "papayaWhip", none = "lightGray", bad = "gray", rain = "plum", ice = "mediumVioletRed")
             } else if (type == 2L) {
-                missingColor <- list(coast="gray", land="papayaWhip", noObs="lightGray", seaIce="mediumVioletRed")
+                missingColor <- list(coast = "gray", land = "papayaWhip", noObs = "lightGray", seaIce = "mediumVioletRed")
             } else {
                 stop("unrecognized amsr type, ", type, " (only 1 and 2 are allowed)")
             }
         } else {
             missingColorLength <- length(missingColor)
             if (type == 1L) {
-                if (4 != missingColorLength)
+                if (4 != missingColorLength) {
                     stop("must have 4 elements in the missingColor argument for new-format data")
-                if (!identical(sort(names(missingColor)), c("coast", "land", "noObs", "seaIce")))
+                }
+                if (!identical(sort(names(missingColor)), c("coast", "land", "noObs", "seaIce"))) {
                     stop("missingColor names must be: 'coast', 'land', 'noObs', 'seaIce'")
+                }
             } else if (type == 2L) {
-                if (5 != missingColorLength)
+                if (5 != missingColorLength) {
                     stop("must have 5 elements in the missingColor argument for old-format data")
-                if (!all(sort(names(missingColor))==sort(c("land", "none", "bad", "ice", "rain"))))
+                }
+                if (!all(sort(names(missingColor)) == sort(c("land", "none", "bad", "ice", "rain")))) {
                     stop("missingColor names must be: 'land', 'none', 'bad', 'ice' and 'rain'")
+                }
             } else {
                 stop("unrecognized amsr format, ", type, " (only 1 and 2 are allowed)")
             }
         }
-        lonDecIndices <- seq(1L, length(lon), by=i$decimate[1])
-        latDecIndices <- seq(1L, length(lat), by=i$decimate[2])
+        lonDecIndices <- seq(1L, length(lon), by = i$decimate[1])
+        latDecIndices <- seq(1L, length(lat), by = i$decimate[2])
         lon <- lon[lonDecIndices]
         lat <- lat[latDecIndices]
         # Masks are stored very differently in type 1 and type 2.
         if (type == 1L) {
-            missingColor <- list(land="papayaWhip",
-                none="lightGray",
-                bad="gray",
-                rain="plum",
-                ice="mediumVioletRed")
-            codes <- list(land=as.raw(255), # land
-                none=as.raw(254), # missing data
-                bad=as.raw(253), # bad observation
-                ice=as.raw(252), # sea ice
-                rain=as.raw(251)) # heavy rain
+            missingColor <- list(
+                land = "papayaWhip",
+                none = "lightGray",
+                bad = "gray",
+                rain = "plum",
+                ice = "mediumVioletRed"
+            )
+            codes <- list(
+                land = as.raw(255), # land
+                none = as.raw(254), # missing data
+                bad = as.raw(253), # bad observation
+                ice = as.raw(252), # sea ice
+                rain = as.raw(251)
+            ) # heavy rain
             for (codeName in names(codes)) {
                 oceDebug(debug, "adding color for ", codeName, "\n")
                 bad <- x[[y, "raw"]][lonDecIndices, latDecIndices] == as.raw(codes[[codeName]])
                 image(lon, lat, bad,
-                    col=c("transparent", missingColor[[codeName]]), add=TRUE)
+                    col = c("transparent", missingColor[[codeName]]), add = TRUE
+                )
             }
         } else if (type == 2L) {
             for (mask in c("coastMask", "landMask", "noObsMask", "seaIceMask")) {
                 oceDebug(debug, "adding color for ", mask, "\n")
                 image(lon, lat, x@data[[mask]][lonDecIndices, latDecIndices],
-                    col=c("transparent", missingColor[[gsub("Mask$", "", mask)]]), add=TRUE)
+                    col = c("transparent", missingColor[[gsub("Mask$", "", mask)]]), add = TRUE
+                )
             }
         } else {
             stop("type ", type, " not understood; only types 1 and 2 are handled")
         }
         box()
-        oceDebug(debug, "} # plot.amsr()\n", sep="", style="bold", unindent=1)
-    }) # plot,amsr-method
+        oceDebug(debug, "} # plot.amsr()\n", sep = "", style = "bold", unindent = 1)
+    }
+) # plot,amsr-method
 
 
 #' Download and Cache an amsr File
@@ -733,26 +825,27 @@ setMethod(f="plot",
 #' of the downloaded file.
 #'
 #' @section Sample of Usage:
-#'\preformatted{
+#' \preformatted{
 #' # The download may take up to about a minute.
 #' f <- download.amsr(2023, 7, 27, destdir="~/data/amsr")
 #' d <- read.amsr(f)
 #' plot(d)
 #' mtext(d[["filename"]], side=3, line=0, adj=0)
-#'}
+#' }
 #'
 #' @family functions that download files
 #' @family functions that plot oce data
 #' @family things related to amsr data
 #'
 #' @author Dan Kelley
-download.amsr <- function(year=NULL, month, day, destdir=".",
-    server="https://data.remss.com/amsr2/ocean/L3/v08.2", type="3day",
-    debug=0)
-{
-    oceDebug(debug, "download.amsr(type=\"", type, "\", ...) {\n", sep="", unindent=1)
-    if (!type %in% c("3day", "daily", "weekly", "monthly"))
+download.amsr <- function(
+    year = NULL, month, day, destdir = ".",
+    server = "https://data.remss.com/amsr2/ocean/L3/v08.2", type = "3day",
+    debug = 0) {
+    oceDebug(debug, "download.amsr(type=\"", type, "\", ...) {\n", sep = "", unindent = 1)
+    if (!type %in% c("3day", "daily", "weekly", "monthly")) {
         stop("type=\"", type, "\" not permitted; try \"3day\", \"daily\", \"weekly\" or \"monthly\"")
+    }
     # If year, month, day not given, default to 3 days ago.
     today <- as.POSIXlt(Sys.Date())
     usingDefaultTime <- is.null(year)
@@ -766,13 +859,15 @@ download.amsr <- function(year=NULL, month, day, destdir=".",
             day <- tmp$mday
             oceDebug(debug, "computed year=", year, ", month=", month, ", day=", day, " from a Date object\n")
         } else {
-            if (missing(month))
+            if (missing(month)) {
                 stop("month must be provided, if year is provided")
+            }
             year <- as.integer(year)
             month <- as.integer(month)
             if (type %in% c("3day", "daily")) {
-                if (missing(day))
+                if (missing(day)) {
                     stop("day must be provided for type of '3day' or 'daily'")
+                }
                 day <- as.integer(day)
             } else {
                 day <- 1L # not used later, because weekly and monthly data don't need this
@@ -788,19 +883,28 @@ download.amsr <- function(year=NULL, month, day, destdir=".",
             year <- 1900L + focus$year
             month <- 1L + focus$mon
             day <- focus$mday
-            oceDebug(debug, "defaulting to year=", year, ", month=", month, " and day=", day, "\n", sep="")
+            oceDebug(debug, "defaulting to year=", year, ", month=", month, " and day=", day, "\n", sep = "")
         } else {
-            oceDebug(debug, "user-supplied year=", year, ", month=", month, " and day=", day, "\n", sep="")
+            oceDebug(debug, "user-supplied year=", year, ", month=", month, " and day=", day, "\n", sep = "")
         }
-        url <- sprintf("%s/%s/%d/RSS_AMSR2_ocean_L3_%s_%04d-%02d-%02d_v08.2.nc",
-            server, type, year, type, year, month, day)
+        url <- sprintf(
+            "%s/%s/%d/RSS_AMSR2_ocean_L3_%s_%04d-%02d-%02d_v08.2.nc",
+            server, type, year, type, year, month, day
+        )
     } else if (identical(type, "weekly")) {
         if (usingDefaultTime) {
             # use the Saturday previous to the most recent Saturday
             today <- Sys.Date()
             dayName <- weekdays(today)
             offset <- switch(dayName,
-                "Saturday"=0, "Sunday"=1, "Monday"=2, "Tuesday"=3, "Wednesday"=4, "Thursday"=5, "Friday"=6)
+                "Saturday" = 0,
+                "Sunday" = 1,
+                "Monday" = 2,
+                "Tuesday" = 3,
+                "Wednesday" = 4,
+                "Thursday" = 5,
+                "Friday" = 6
+            )
             ymd <- format(today - offset - 7L)
             oceDebug(debug, "defaulting to ymd=\"", ymd, "\"\n")
         } else {
@@ -810,8 +914,10 @@ download.amsr <- function(year=NULL, month, day, destdir=".",
         # https://data.remss.com/amsr2/ocean/L3/v08.2/weekly/RSS_AMSR2_ocean_L3_weekly_2023-07-15_v08.2.nc
         # ^                                           ^                            ^    ^
         # server                                      type                       type   ymd
-        url <- sprintf("%s/%s/RSS_AMSR2_ocean_L3_%s_%s_v08.2.nc",
-            server, type, type, ymd)
+        url <- sprintf(
+            "%s/%s/RSS_AMSR2_ocean_L3_%s_%s_v08.2.nc",
+            server, type, type, ymd
+        )
     } else if (identical(type, "monthly")) {
         # https://data.remss.com/amsr2/ocean/L3/v08.2/monthly/RSS_AMSR2_ocean_L3_monthly_2023-05_v08.2.nc
         # ^                                           ^                            ^    ^    ^
@@ -826,29 +932,32 @@ download.amsr <- function(year=NULL, month, day, destdir=".",
             } else {
                 month <- month - 2L
             }
-            oceDebug(debug, "defaulting to year=", year, ", month=", month, "\n", sep="")
+            oceDebug(debug, "defaulting to year=", year, ", month=", month, "\n", sep = "")
         } else {
-            oceDebug(debug, "user-supplied year=", year, ", month=", month, "\n", sep="")
+            oceDebug(debug, "user-supplied year=", year, ", month=", month, "\n", sep = "")
         }
-        url <- sprintf("%s/%s/RSS_AMSR2_ocean_L3_%s_%04d-%02d_v08.2.nc",
-            server, type, type, year, month)
+        url <- sprintf(
+            "%s/%s/RSS_AMSR2_ocean_L3_%s_%04d-%02d_v08.2.nc",
+            server, type, type, year, month
+        )
     } else {
         # check again (but should not be able to get here)
         stop("type=\"", type, "\" not permitted; try \"3day\", \"daily\", \"weekly\" or \"monthly\"")
     }
     file <- gsub(".*/", "", url)
-    oceDebug(debug, "url=\"", url, "\"\n", sep="")
-    oceDebug(debug, "file=\"", file, "\"\n", sep="")
-    destfile <- paste(destdir, file, sep="/")
+    oceDebug(debug, "url=\"", url, "\"\n", sep = "")
+    oceDebug(debug, "file=\"", file, "\"\n", sep = "")
+    destfile <- paste(destdir, file, sep = "/")
     if (file.exists(destfile)) {
-        oceDebug(debug, "using existing file \"", destfile, "\"\n", sep="")
-        oceDebug(debug, "} # download.amsr\n", sep="", style="bold", unindent=1)
+        oceDebug(debug, "using existing file \"", destfile, "\"\n", sep = "")
+        oceDebug(debug, "} # download.amsr\n", sep = "", style = "bold", unindent = 1)
         return(destfile)
     }
     ok <- try(download.file(url, destfile))
-    if (inherits(ok, "try-error"))
+    if (inherits(ok, "try-error")) {
         stop("could not download \"", url, "\" to local file \"", destfile, "\"")
-    oceDebug(debug, "} # download.amsr\n", sep="", unindent=1)
+    }
+    oceDebug(debug, "} # download.amsr\n", sep = "", unindent = 1)
     destfile
 }
 #<2023-07-29> download.amsr <- function(year, month, day, destdir=".", server="http://data.remss.com/amsr2/bmaps_v08")
@@ -923,21 +1032,25 @@ download.amsr <- function(year=NULL, month, day, destdir=".",
 #' @author Dan Kelley and Chantelle Layton
 #'
 #' @family things related to amsr data
-read.amsr <- function(file, encoding=NA, debug=getOption("oceDebug"))
-{
-    if (missing(file))
+read.amsr <- function(file, encoding = NA, debug = getOption("oceDebug")) {
+    if (missing(file)) {
         stop("must supply 'file'")
-    if (!is.character(file))
+    }
+    if (!is.character(file)) {
         stop("file must be a filename")
-    if (!file.exists(file))
+    }
+    if (!file.exists(file)) {
         stop("cannot find file \"", file, "\"")
-    if (0L == file.info(file)$size)
+    }
+    if (0L == file.info(file)$size) {
         stop("empty file \"", file, "\"")
-    oceDebug(debug, "read.amsr(file=\"", file, "\",", ", debug=", debug, ") {\n", sep="", unindent=1)
+    }
+    oceDebug(debug, "read.amsr(file=\"", file, "\",", ", debug=", debug, ") {\n", sep = "", unindent = 1)
     isgz <- grepl(".gz$", file)
     isncdf <- grepl(".nc$", file)
-    if (!any(c(isgz, isncdf))) # also rechecked later
+    if (!any(c(isgz, isncdf))) { # also rechecked later
         stop("file must end in either \".gz\" or \".nc\"")
+    }
     res <- new("amsr")
     filename <- file
     res@metadata$filename <- filename
@@ -946,12 +1059,13 @@ read.amsr <- function(file, encoding=NA, debug=getOption("oceDebug"))
         file <- if (length(grep(".*.gz$", filename))) gzfile(filename, "rb") else file(filename, "rb")
         on.exit(close(file))
         # we can hard-code a max size because the satellite data size is not variable
-        buf <- readBin(file, what="raw", n=50e6, endian="little")
+        buf <- readBin(file, what = "raw", n = 50e6, endian = "little")
         nbuf <- length(buf)
         dim <- c(1440, 720)
         nchunks <- nbuf / prod(dim)
-        if (nchunks != round(nchunks))
+        if (nchunks != round(nchunks)) {
             stop("error: the data length ", nbuf, " is not an integral multiple of ", dim[1], "*", dim[2])
+        }
         # From an amsr webpage --
         # Each binary data file available from our ftp site consists of fourteen (daily) or
         # six (averaged) 0.25 x 0.25 degree grid (1440,720) byte maps. For daily files,
@@ -966,11 +1080,11 @@ read.amsr <- function(file, encoding=NA, debug=getOption("oceDebug"))
             oceDebug(debug, "14-chunk amsr file\n")
             timeDay <- buf[select]
             SSTDay <- buf[prod(dim) + select]
-            LFwindDay <- buf[2*prod(dim) + select]
-            MFwindDay <- buf[3*prod(dim) + select]
-            vaporDay <- buf[4*prod(dim) + select]
-            cloudDay <- buf[5*prod(dim) + select]
-            rainDay <- buf[6*prod(dim) + select]
+            LFwindDay <- buf[2 * prod(dim) + select]
+            MFwindDay <- buf[3 * prod(dim) + select]
+            vaporDay <- buf[4 * prod(dim) + select]
+            cloudDay <- buf[5 * prod(dim) + select]
+            rainDay <- buf[6 * prod(dim) + select]
             dim(timeDay) <- dim
             dim(SSTDay) <- dim
             dim(LFwindDay) <- dim
@@ -979,13 +1093,13 @@ read.amsr <- function(file, encoding=NA, debug=getOption("oceDebug"))
             dim(cloudDay) <- dim
             dim(rainDay) <- dim
 
-            timeNight <- buf[7*prod(dim) + select]
-            SSTNight <- buf[8*prod(dim) + select]
-            LFwindNight <- buf[9*prod(dim) + select]
-            MFwindNight <- buf[10*prod(dim) + select]
-            vaporNight <- buf[11*prod(dim) + select]
-            cloudNight <- buf[12*prod(dim) + select]
-            rainNight <- buf[13*prod(dim) + select]
+            timeNight <- buf[7 * prod(dim) + select]
+            SSTNight <- buf[8 * prod(dim) + select]
+            LFwindNight <- buf[9 * prod(dim) + select]
+            MFwindNight <- buf[10 * prod(dim) + select]
+            vaporNight <- buf[11 * prod(dim) + select]
+            cloudNight <- buf[12 * prod(dim) + select]
+            rainNight <- buf[13 * prod(dim) + select]
             dim(timeNight) <- dim
             dim(SSTNight) <- dim
             dim(LFwindNight) <- dim
@@ -993,21 +1107,23 @@ read.amsr <- function(file, encoding=NA, debug=getOption("oceDebug"))
             dim(vaporNight) <- dim
             dim(cloudNight) <- dim
             dim(rainNight) <- dim
-            res@metadata$units$SSTDay <- list(unit=expression(degree*C), scale="ITS-90")
-            res@metadata$units$SSTNight <- list(unit=expression(degree*C), scale="ITS-90")
-            res@metadata$units$LFwindDay <- list(unit=expression(m/s), scale="")
-            res@metadata$units$LFwindNight <- list(unit=expression(m/s), scale="")
-            res@metadata$units$MFwindDay <- list(unit=expression(m/s), scale="")
-            res@metadata$units$MFwindNight <- list(unit=expression(m/s), scale="")
-            res@metadata$units$rainDay <- list(unit=expression(mm/h), scale="")
-            res@metadata$units$rainNight <- list(unit=expression(mm/h), scale="")
-            res@data <- list(timeDay=timeDay,
-                SSTDay=SSTDay, LFwindDay=LFwindDay, MFwindDay=MFwindDay,
-                vaporDay=vaporDay, cloudDay=cloudDay, rainDay=rainDay,
-                timeNight=timeNight,
-                SSTNight=SSTNight, LFwindNight=LFwindNight, MFwindNight=MFwindNight,
-                vaporNight=vaporNight, cloudNight=cloudNight, rainNight=rainNight)
-            res@metadata$longitude  <- 0.25 * 1:dim[1] - 0.125
+            res@metadata$units$SSTDay <- list(unit = expression(degree * C), scale = "ITS-90")
+            res@metadata$units$SSTNight <- list(unit = expression(degree * C), scale = "ITS-90")
+            res@metadata$units$LFwindDay <- list(unit = expression(m / s), scale = "")
+            res@metadata$units$LFwindNight <- list(unit = expression(m / s), scale = "")
+            res@metadata$units$MFwindDay <- list(unit = expression(m / s), scale = "")
+            res@metadata$units$MFwindNight <- list(unit = expression(m / s), scale = "")
+            res@metadata$units$rainDay <- list(unit = expression(mm / h), scale = "")
+            res@metadata$units$rainNight <- list(unit = expression(mm / h), scale = "")
+            res@data <- list(
+                timeDay = timeDay,
+                SSTDay = SSTDay, LFwindDay = LFwindDay, MFwindDay = MFwindDay,
+                vaporDay = vaporDay, cloudDay = cloudDay, rainDay = rainDay,
+                timeNight = timeNight,
+                SSTNight = SSTNight, LFwindNight = LFwindNight, MFwindNight = MFwindNight,
+                vaporNight = vaporNight, cloudNight = cloudNight, rainNight = rainNight
+            )
+            res@metadata$longitude <- 0.25 * 1:dim[1] - 0.125
             res@metadata$latitude <- 0.25 * 1:dim[2] - 90.125
             # rearrange matrices so that Greenwich is near the centre
             for (name in names(res@data)) {
@@ -1018,12 +1134,15 @@ read.amsr <- function(file, encoding=NA, debug=getOption("oceDebug"))
         } else if (nchunks == 6) {
             stop("Cannot (yet) read 6-chunk data. Please contact the developers if you need this file (and be sure to send the file to them).")
         } else {
-            stop("Can only handle 14-chunk data; this file has ",
-                nchunks, " chunks. Please contact the developers if you need to read this file.")
+            stop(
+                "Can only handle 14-chunk data; this file has ",
+                nchunks, " chunks. Please contact the developers if you need to read this file."
+            )
         }
     } else if (isncdf) {
-        if (!requireNamespace("ncdf4", quietly=TRUE))
+        if (!requireNamespace("ncdf4", quietly = TRUE)) {
             stop("must install.packages(\"ncdf4\") to read new-style amsr data")
+        }
         # > sort(names(a1@data))
         #  [1] "cloudDay"    "cloudNight"  "LFwindDay"   "LFwindNight"
         #  [5] "MFwindDay"   "MFwindNight" "rainDay"     "rainNight"
@@ -1042,7 +1161,7 @@ read.amsr <- function(file, encoding=NA, debug=getOption("oceDebug"))
         # [11] "wind_speed_MF"
         # Note that fixMatrix() uses the value of longitude, which is in 0-to-360
         # convention; we rewrite as -180-to-180 later, to match oce convention.
-        res@metadata$longitude  <- 0.25 * 1:dim[1] - 0.125
+        res@metadata$longitude <- 0.25 * 1:dim[1] - 0.125
         res@metadata$latitude <- 0.25 * 1:dim[2] - 90.125
         fixMatrix <- function(name) {
             val <- ncdf4::ncvar_get(nc, name)
@@ -1054,9 +1173,9 @@ read.amsr <- function(file, encoding=NA, debug=getOption("oceDebug"))
         res@data$rain <- fixMatrix("rain_rate")$m
         res@data$SST <- fixMatrix("SST")$m
         res@data$vapor <- fixMatrix("water_vapor")$m
-        res@data$AWwind  <- fixMatrix("wind_speed_AW")$m
-        res@data$LFwind  <- fixMatrix("wind_speed_LF")$m
-        res@data$MFwind  <- fixMatrix("wind_speed_MF")$m
+        res@data$AWwind <- fixMatrix("wind_speed_AW")$m
+        res@data$LFwind <- fixMatrix("wind_speed_LF")$m
+        res@data$MFwind <- fixMatrix("wind_speed_MF")$m
         res@data$coastMask <- fixMatrix("coast_mask")$m
         res@data$landMask <- fixMatrix("land_mask")$m
         res@data$noObsMask <- fixMatrix("noobs_mask")$m
@@ -1069,18 +1188,21 @@ read.amsr <- function(file, encoding=NA, debug=getOption("oceDebug"))
     res@metadata$spacecraft <- "amsr"
     res@metadata$type <- if ("SSTDay" %in% names(res@data)) 1L else 2L
     res@metadata$units <- list(
-        longitude=list(unit=expression(degree*E), scale=""),
-        latitude=list(unit=expression(degree*N), scale=""),
-        SST=list(unit=expression(degree*C), scale=""),
-        AWwind=list(unit=expression(m/s), scale=""), # all weater
-        LFwind=list(unit=expression(m/s), scale=""), # low-frequency 10.65 to 36.5 GHz
-        MFwind=list(unit=expression(m/s), scale=""), # medium-frequency 18.7 to 36.5 GHz
-        vapor=list(unit=expression(kg/m^2), scale=""),
-        cloud=list(unit=expression(kg/m^2), scale=""),
-        rain=list(unit=expression(mm/hr), scale=""))
-    res@processingLog <- processingLogAppend(res@processingLog,
-        paste0("read.amsr(file=\"", filename, "\")"))
-    oceDebug(debug, "} # read.amsr()\n", sep="", unindent=1)
+        longitude = list(unit = expression(degree * E), scale = ""),
+        latitude = list(unit = expression(degree * N), scale = ""),
+        SST = list(unit = expression(degree * C), scale = ""),
+        AWwind = list(unit = expression(m / s), scale = ""), # all weater
+        LFwind = list(unit = expression(m / s), scale = ""), # low-frequency 10.65 to 36.5 GHz
+        MFwind = list(unit = expression(m / s), scale = ""), # medium-frequency 18.7 to 36.5 GHz
+        vapor = list(unit = expression(kg / m^2), scale = ""),
+        cloud = list(unit = expression(kg / m^2), scale = ""),
+        rain = list(unit = expression(mm / hr), scale = "")
+    )
+    res@processingLog <- processingLogAppend(
+        res@processingLog,
+        paste0("read.amsr(file=\"", filename, "\")")
+    )
+    oceDebug(debug, "} # read.amsr()\n", sep = "", unindent = 1)
     res
 }
 
@@ -1104,22 +1226,26 @@ read.amsr <- function(file, encoding=NA, debug=getOption("oceDebug"))
 #' @family things related to amsr data
 #'
 #' @template compositeTemplate
-setMethod("composite",
-    c(object="amsr"),
+setMethod(
+    "composite",
+    c(object = "amsr"),
     function(object, ...) {
         dots <- list(...)
         ndots <- length(dots)
-        if (ndots < 1)
+        if (ndots < 1) {
             stop("need more than one argument")
+        }
         for (idot in 1:ndots) {
-            if (!inherits(dots[[idot]], "amsr"))
-                stop("argument ", 1+idot, " does not inherit from 'amsr'")
+            if (!inherits(dots[[idot]], "amsr")) {
+                stop("argument ", 1 + idot, " does not inherit from 'amsr'")
+            }
         }
         # inherit most of the metadata from the last argument
         res <- dots[[ndots]]
         filenames <- object[["filename"]]
-        for (idot in 1:ndots)
-            filenames <- paste(filenames, ",", dots[[idot]][["filename"]], sep="")
+        for (idot in 1:ndots) {
+            filenames <- paste(filenames, ",", dots[[idot]][["filename"]], sep = "")
+        }
         dim <- dim(object@data[[1]])
         # 2023-09-08 code was rewritten because the file format has changed
         # significantly.  The new format permits the work to be done quickly
@@ -1129,8 +1255,8 @@ setMethod("composite",
         dataNames <- dataNames[!grepl("Mask$", dataNames)] # don't average masks
         for (name in dataNames) {
             bad <- with(object@data, landMask | coastMask | seaIceMask | noObsMask)
-            sum <- array(0.0, dim=dim)
-            count <- array(0L, dim=dim)
+            sum <- array(0.0, dim = dim)
+            count <- array(0L, dim = dim)
             # start filling arrays up
             tmp <- object@data[[name]]
             bad <- bad | is.na(tmp)
@@ -1138,7 +1264,7 @@ setMethod("composite",
             sum <- sum + tmp
             count <- count + !bad
             for (idot in seq_len(ndots)) {
-                bad <- with(dots[[idot]]@data, landMask | coastMask | seaIceMask |  noObsMask)
+                bad <- with(dots[[idot]]@data, landMask | coastMask | seaIceMask | noObsMask)
                 tmp <- dots[[idot]]@data[[name]]
                 bad <- bad | is.na(tmp)
                 tmp[bad] <- 0.0
@@ -1174,4 +1300,5 @@ setMethod("composite",
         # construct filename to indicate what the constituents were
         res@metadata$filename <- filenames
         res
-    })
+    }
+)

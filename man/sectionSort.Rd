@@ -37,7 +37,7 @@ reordering the constituent stations in sensible ways.
 \examples{
 library(oce)
 data(section)
-sectionByLongitude <- sectionSort(section, by="longitude")
+sectionByLongitude <- sectionSort(section, by = "longitude")
 head(section)
 head(sectionByLongitude)
 

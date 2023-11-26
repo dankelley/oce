@@ -125,5 +125,8 @@ Other things related to windrose data:
 \code{\link{summary,windrose-method}},
 \code{\link{windrose-class}}
 }
+\author{
+Dan Kelley
+}
 \concept{functions that extract parts of oce objects}
 \concept{things related to windrose data}

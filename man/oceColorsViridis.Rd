@@ -23,8 +23,10 @@ in Example 2.
 \examples{
 library(oce)
 # Example 1: oceColorsViridis
-imagep(volcano, col=oceColorsViridis(128),
-       zlab="oceColorsViridis")
+imagep(volcano,
+    col = oceColorsViridis(128),
+    zlab = "oceColorsViridis"
+)
 
 }
 \references{

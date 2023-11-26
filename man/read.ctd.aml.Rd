@@ -96,7 +96,7 @@ other \linkS4class{ctd} objects.
 }
 \examples{
 library(oce)
-f <- system.file("extdata", "ctd_aml.csv.gz", package="oce")
+f <- system.file("extdata", "ctd_aml.csv.gz", package = "oce")
 d <- read.ctd.aml(f)
 summary(d)
 

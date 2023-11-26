@@ -165,22 +165,22 @@ if (requireNamespace("automap", quietly=TRUE)
 # Unsmoothed (Gulf Stream)
 library(oce)
 data(section)
-gs <- subset(section, 115<=stationId&stationId<=125)
-par(mfrow=c(2, 2))
+gs <- subset(section, 115 <= stationId & stationId <= 125)
+par(mfrow = c(2, 2))
 
-plot(gs, which="temperature")
-mtext("Original data, without smoothing", line=0.5)
+plot(gs, which = "temperature")
+mtext("Original data, without smoothing", line = 0.5)
 
 # Spline
-gsg <- sectionGrid(gs, p=seq(0, 5000, 100))
+gsg <- sectionGrid(gs, p = seq(0, 5000, 100))
 gsSpline <- sectionSmooth(gsg, "spline")
-plot(gsSpline, which="temperature")
-mtext("sectionSmooth(..., method=\"spline\")", line=0.5)
+plot(gsSpline, which = "temperature")
+mtext("sectionSmooth(..., method=\"spline\")", line = 0.5)
 
 # Barnes
-gsBarnes <- sectionSmooth(gs, "barnes", xr=50, yr=200)
-plot(gsBarnes, which="temperature")
-mtext("sectionSmooth(..., method=\"barnes\")", line=0.5)
+gsBarnes <- sectionSmooth(gs, "barnes", xr = 50, yr = 200)
+plot(gsBarnes, which = "temperature")
+mtext("sectionSmooth(..., method=\"barnes\")", line = 0.5)
 
 }
 \seealso{

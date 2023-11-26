@@ -38,7 +38,7 @@ plotting functions.
 }
 \examples{
 library(oce)
-oce.pmatch(c("s", "at", "te"), list(salinity=1, temperature=3.1))
+oce.pmatch(c("s", "at", "te"), list(salinity = 1, temperature = 3.1))
 }
 \seealso{
 Since \code{\link[=pmatch]{pmatch()}} is used for the actual matching, its

@@ -25,9 +25,9 @@ This will eventually be a proper equation of state, but for now it just
 uses a dry-air formula posted on wikipedia (i.e. not trustworthy).
 }
 \examples{
-degC <- seq(0,30,length.out=100)
-p <- seq(98,102,length.out=100) * 1e3
-contour(x=degC, y=p, z=outer(degC,p,airRho), labcex=1)
+degC <- seq(0, 30, length.out = 100)
+p <- seq(98, 102, length.out = 100) * 1e3
+contour(x = degC, y = p, z = outer(degC, p, airRho), labcex = 1)
 }
 \references{
 \enumerate{

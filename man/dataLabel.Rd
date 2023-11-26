@@ -18,8 +18,3 @@ a vector of strings, with blank entries for data with unknown units
 Note that the whole object is not being given as an argument;
 possibly this will reduce copying and thus storage impact.
 }
-\examples{
-library(oce)
-data(ctd)
-dataLabel(names(ctd@data), ctd@metadata$units)
-}

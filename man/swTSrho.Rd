@@ -34,7 +34,7 @@ and pressure.  The method is a bisection search with temperature tolerance
 0.001 \eqn{^\circ}{deg}C.
 }
 \examples{
-swTSrho(35, 23, 0, eos="unesco") # 26.11301
+swTSrho(35, 23, 0, eos = "unesco") # 26.11301
 
 }
 \references{
