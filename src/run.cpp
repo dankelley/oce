@@ -12,7 +12,7 @@ List do_runlm(NumericVector x, NumericVector y, NumericVector xout, NumericVecto
 {
   int nx = x.size();
   if (nx != y.size())
-    ::Rf_error("lengths of x and y must match, but they are %d and %ld\n", nx, y.size());
+    ::Rf_error("lengths of x and y must match, but they are %d and %lld\n", nx, y.size());
   int nxout = xout.size();
   NumericVector Y(nxout);
   NumericVector dYdx(nxout);

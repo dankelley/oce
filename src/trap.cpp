@@ -13,7 +13,7 @@ NumericVector do_trap(NumericVector x, NumericVector y, NumericVector type)
   int type_value = int(floor(0.5 + type[0]));
   int n = x.size();
   if ((n > 1) && n != y.size())
-    ::Rf_error("lengths of x (%d) and y (%ld) do not match", n, y.size());
+    ::Rf_error("lengths of x (%d) and y (%lld) do not match", n, y.size());
   if (0 == type_value) { // area
     NumericVector res(1);
     res[0] = 0.0;

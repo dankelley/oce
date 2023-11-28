@@ -24,8 +24,15 @@ using namespace Rcpp;
 NumericVector bilinearInterp(NumericVector x, NumericVector y, NumericVector gx, NumericVector gy, NumericMatrix g)
 {
   int n = y.size();
+  // As of 2023-11-28, with some recent changes in R (and its C compilers),
+  // there is some confusion about the right format in this (and all)
+  // Rf_error() calls.  See the following link for more. In the end,
+  // I decided to use devtools::check_win_devel() as my test of
+  // correctness. The question is: is a .size() result a long-int,
+  // or a long-long-int?  (And does this depend on platform?)
+  // https://github.com/dankelley/oce/issues/2172#issuecomment-1830700770
   if (n != x.size())
-    ::Rf_error("lengths of y (%d) and y (%ld) must match", n, x.size());
+    ::Rf_error("lengths of y (%d) and y (%lld) must match", n, x.size());
   NumericVector ans(n);
   int ngx = gx.size(), ngy = gy.size();
   int gncol = g.ncol(), gnrow = g.nrow();
