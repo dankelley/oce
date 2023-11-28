@@ -1384,6 +1384,18 @@ as.ctd <- function(
             if (!is.numeric(profile) || length(profile) != 1 || profile < 1) {
                 stop("profile must be a positive integer")
             }
+            # Pull out the startTime
+            if (length(res@metadata$startTime) > 1) {
+                res@metadata$startTime <- res@metadata$startTime[profile]
+            }
+            ## Have to handle lon and lat before going into @data because it was
+            ## already pulled out above:
+            if (length(longitude) > 1) {
+                longitude <- longitude[profile]
+            }
+            if (length(latitude) > 1) {
+                latitude <- latitude[profile]
+            }
             # Convert data items from array to vector
             for (field in names(d)) {
                 dataInField <- d[[field]]
@@ -1405,13 +1417,24 @@ as.ctd <- function(
                 #<old>        res@metadata$time <- d[[field]][profile]
                 #<old>    }
                 if (field == "mtime") {
-                    res@data$time <- res@metadata$time + 86400 * d$mtime
-                    res@data$mtime <- d$mtime
+                    if (is.matrix(dataInField)) {
+                        ncol <- ncol(d[[field]])
+                        if (profile > ncol) {
+                            stop("profile cannot exceed ", ncol, " for a data matrix with ", ncol, " columns")
+                        }
+                    res@data[[field]] <- d[[field]][, profile]
+                    } else {
+                        res@data[[field]] <- d[[field]]
+                    }
+                    res@data$time <- res@metadata$startTime + 86400 * res@data$mtime
                 } else if (is.vector(dataInField)) {
                     ncol <- length(d[[field]])
                     if (profile > ncol) {
                         stop("profile cannot exceed ", ncol, " for a data matrix with ", ncol, " columns")
                     }
+                    ## I'm not sure the below for lon/lat will ever be
+                    ## triggered, as lon and lat are pulled out separately above
+                    ## and should be in the `d` variable at this point
                     if (field %in% c("longitude", "latitude")) {
                         res@metadata[[field]] <- d[[field]][profile]
                     } else {

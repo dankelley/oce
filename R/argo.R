@@ -1594,7 +1594,7 @@ read.argo <- function(file, encoding = NA, debug = getOption("oceDebug"), proces
         }
     }
     if (maybeLC("MTIME", lc) %in% varNames) {
-        res@data$mtime <- as.vector(ncdf4::ncvar_get(file, maybeLC("MTIME", lc)))
+        res@data$mtime <- ncdf4::ncvar_get(file, maybeLC("MTIME", lc))
         res@metadata$dataNamesOriginal$mtime <- "MTIME"
         varNames <- varNamesOmit(varNames, "MTIME")
         res@metadata$units$mtime <- list(unit = expression(day), scale = "")
