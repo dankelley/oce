@@ -31,8 +31,12 @@ NumericVector bilinearInterp(NumericVector x, NumericVector y, NumericVector gx,
   // correctness. The question is: is a .size() result a long-int,
   // or a long-long-int?  (And does this depend on platform?)
   // https://github.com/dankelley/oce/issues/2172#issuecomment-1830700770
+  //
+  // Best practice seems to be as follows
+  // ::R_error("size %" R_PRIdXLEN_T ", a.size());
   if (n != x.size())
-    ::Rf_error("lengths of y (%d) and y (%lld) must match", n, x.size());
+    ::Rf_error("lengths of x and y do not match\n");
+    //::Rf_error("lengths of y=%d and y=%" R_PRIdXLEN_T " do not match", n, x.size());
   NumericVector ans(n);
   int ngx = gx.size(), ngy = gy.size();
   int gncol = g.ncol(), gnrow = g.nrow();
