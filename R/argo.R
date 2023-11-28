@@ -916,8 +916,7 @@ setMethod(
 #' @description Summarizes some of the data in an `argo` object.
 #'
 #' @details Pertinent summary information is presented.
-#' @param object}{an object of class `"argo"`, usually, a result of a
-#'     call to [read.argo()].
+#' @param object  an object of class `"argo"`, usually, a result of a call to [read.argo()].
 #' @param ... Further arguments passed to or from other methods.
 #'
 #' @return A matrix containing statistics of the elements of the `data` slot.
@@ -926,9 +925,11 @@ setMethod(
 #' data(argo)
 #' summary(argo)
 #'
-#' @author Dan Kelley
 #' @family things related to argo data
+#'
 #' @aliases summary.argo
+#'
+#' @author Dan Kelley
 setMethod(
     f = "summary",
     signature = "argo",

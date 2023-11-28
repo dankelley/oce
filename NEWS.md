@@ -7,6 +7,7 @@
 * Remove use of the deprecated `sp` package (issue 2154).
 * Change `amsr` dataset and functions to handle new format (issues 2124 to 2133, 2147).
 * Change `as.tidem()` to handle NOAA constituent names and frequencies (issues 2143, 2144 and 2146).
+* Change C/C++ `sprintf()` calls so all formats match arguments (issue 2172).
 * Change `computableWaterProperties` to handle a vector of variable names.
 * Change `plot.adp()` to obey `xlab` if x axis represents time (issue 2162).
 * Change `plot.cm()` to obey `xlim`, `ylim`, `xaxs` and `yaxs` (issue 2121).

@@ -167,7 +167,7 @@ salinity profile, because \code{Slim} ought to be given in such a case.}
 although is overridden by \code{plim} if \code{ytype} is \code{"pressure"}
 or by \code{densitylim} if \code{ytype} is \code{"sigmaTheta"}.}
 
-\item{lwd}{linewidth value for data line}
+\item{lwd}{line width value for data line}
 
 \item{xaxs}{value of \code{\link[=par]{par()}} \code{xaxs} to use}
 

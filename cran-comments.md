@@ -1,19 +1,20 @@
-# Submission of oce 1.8-1
+# Submission of oce 1.8-2
 
 As in previous CRAN submissions, we request an exception to the 10-minute rule,
 on account of the package size (300+ functions, covering 60k lines of R, 6k
 lines of C/C++ and 1k line of Fortran).
 
-A key reason for the submission is a requirement to adjust the order of
-'include' statements in the C++ code.  (We thank Brian Ripley for explaining the
-problem in an email dated 2023-06-26.)
+A key reason for the submission is a requirement to ensure that Rprintf() and
+similar functions use properly-matching format codes for the various integer
+formats. I was notified that this had become a problem on CRAN machines on Nov
+27.
 
-The NEWS.md file lists over ten additional changes, mainly relating to support
-for the analysis of measurements of water properties and velocities.
+The NEWS.md file lists over additional changes that improve oce by extending
+capabilities and removing bugs.
 
 ## Local Tests
 
-R 4.3.0 on macOS Ventura (13.5 Beta 22G5048d) revealed no ERRORs, no WARNINGs,
+R 4.3.2 on macOS Sonoma Beta 14.2 (23C5047e) revealed no ERRORs, no WARNINGs,
 and 2 NOTEs, one about the author name and the other about the package size.
 
 ## Remote Windows Checks
