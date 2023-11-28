@@ -25,7 +25,7 @@ NumericVector bilinearInterp(NumericVector x, NumericVector y, NumericVector gx,
 {
   int n = y.size();
   if (n != x.size())
-    ::Rf_error("lengths of y (%d) and y (%lld) must match", n, x.size());
+    ::Rf_error("lengths of y (%d) and y (%ld) must match", n, x.size());
   NumericVector ans(n);
   int ngx = gx.size(), ngy = gy.size();
   int gncol = g.ncol(), gnrow = g.nrow();

@@ -14,7 +14,7 @@ NumericVector do_geoddist_alongpath(NumericVector lon, NumericVector lat, Numeri
 {
   int n = lat.size();
   if (n != lon.size())
-    ::Rf_error("lengths of latitude and longitude vectors must match, but they are %d and %lld, respectively", n, lon.size());
+    ::Rf_error("lengths of latitude and longitude vectors must match, but they are %d and %ld, respectively", n, lon.size());
   NumericVector res(n);
   double last = 0.0;
   res[0] = ISNA(lon[0]) ? NA_REAL : 0.0;
@@ -37,11 +37,11 @@ NumericVector do_geoddist(NumericVector lon1, NumericVector lat1, NumericVector 
 {
   int n = lat1.size();
   if (n != lon1.size())
-    ::Rf_error("lengths of lat1 and lon1 must match, but they are %d and %lld respectively.", n, lon1.size());
+    ::Rf_error("lengths of lat1 and lon1 must match, but they are %d and %ld respectively.", n, lon1.size());
   if (n != lat2.size())
-    ::Rf_error("lengths of lat1 and lat2 must match, but they are %d and %lld respectively.", n, lat2.size());
+    ::Rf_error("lengths of lat1 and lat2 must match, but they are %d and %ld respectively.", n, lat2.size());
   if (n != lon2.size())
-    ::Rf_error("lengths of lon1 and lon2 must match, but they are %d and %lld respectively.", n, lon2.size());
+    ::Rf_error("lengths of lon1 and lon2 must match, but they are %d and %ld respectively.", n, lon2.size());
   NumericVector res(n);
   for (int i = 0; i < n; i++) {
     double faz, baz, s;
