@@ -5510,7 +5510,7 @@ drawIsopycnals <- function(
 #' although is overridden by `plim` if `ytype` is `"pressure"`
 #' or by `densitylim` if `ytype` is `"sigmaTheta"`.
 #'
-#' @param lwd linewidth value for data line
+#' @param lwd line width value for data line
 #'
 #' @param xaxs value of [par()] `xaxs` to use
 #'
