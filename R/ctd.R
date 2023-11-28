@@ -1422,7 +1422,7 @@ as.ctd <- function(
                         if (profile > ncol) {
                             stop("profile cannot exceed ", ncol, " for a data matrix with ", ncol, " columns")
                         }
-                    res@data[[field]] <- d[[field]][, profile]
+                        res@data[[field]] <- d[[field]][, profile]
                     } else {
                         res@data[[field]] <- d[[field]]
                     }
