@@ -49,7 +49,7 @@
   pch,
   lwd,
   labcex = par("cex"),
-  debug = getOption("oceDebug"),
+  debug = getOption("oceDebug", 0),
   ...
 )
 }

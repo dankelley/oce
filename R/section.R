@@ -235,9 +235,10 @@ setMethod(
     definition = function(object, ...) {
         numStations <- length(object@data$station)
         dots <- list(...)
-        debug <- getOption("oceDebug")
-        if (length(dots) && ("debug" %in% names(dots))) {
-            debug <- dots$debug
+        debug <- if (!is.null(dots$debug)) {
+            dots$debug
+        } else {
+            getOption("oceDebug", default=0)
         }
         cat("Section Summary\n---------------\n\n")
         cat("* Source: \"", object@metadata$filename, "\"\n", sep = "")
