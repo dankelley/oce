@@ -235,7 +235,10 @@ setMethod(
     definition = function(object, ...) {
         numStations <- length(object@data$station)
         dots <- list(...)
-        debug <- if (is.null(dots$debug)) getOption("oceDebug", 0) else 0
+        debug <- getOption("oceDebug")
+        if (length(dots) && ("debug" %in% names(dots))) {
+            debug <- dots$debug
+        }
         cat("Section Summary\n---------------\n\n")
         cat("* Source: \"", object@metadata$filename, "\"\n", sep = "")
         cat("* ID:     \"", object@metadata$sectionId, "\"\n", sep = "")
@@ -281,7 +284,7 @@ setMethod(
                     }
                     flagTable <- table(flags)
                     flagTableLength <- length(flagTable)
-                    #message(debug+1, "\n *** data name='", name, "' has flagTableLength=", flagTableLength, "***\n")
+                    oceDebug(debug, "\n *** data name='", name, "' has flagTableLength=", flagTableLength, "***\n")
                     if (flagTableLength) {
                         cat("    ", name, ":", padding, sep = "")
                         for (i in seq_len(flagTableLength)) {
@@ -760,7 +763,7 @@ setMethod(
         dotsNames <- names(dots)
         indicesGiven <- length(dots) && ("indices" %in% dotsNames)
         withinGiven <- length(dots) && ("within" %in% dotsNames)
-        debug <- getOption("oceDebug", 0)
+        debug <- getOption("oceDebug")
         if (length(dots) && ("debug" %in% names(dots))) {
             debug <- dots$debug
         }
