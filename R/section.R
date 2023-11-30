@@ -234,6 +234,8 @@ setMethod(
     signature = "section",
     definition = function(object, ...) {
         numStations <- length(object@data$station)
+        dots <- list(...)
+        debug <- if (is.null(dots$debug)) getOption("oceDebug", 0) else 0
         cat("Section Summary\n---------------\n\n")
         cat("* Source: \"", object@metadata$filename, "\"\n", sep = "")
         cat("* ID:     \"", object@metadata$sectionId, "\"\n", sep = "")
@@ -272,7 +274,6 @@ setMethod(
                 # assume all stations have identical flags
                 for (name in names) {
                     padding <- rep(" ", width - nchar(name))
-                    cat("    ", name, ":", padding, sep = "")
                     flags <- NULL
                     flagName <- paste0(name, "Flag")
                     for (i in seq_len(numStations)) {
@@ -280,7 +281,9 @@ setMethod(
                     }
                     flagTable <- table(flags)
                     flagTableLength <- length(flagTable)
+                    #message(debug+1, "\n *** data name='", name, "' has flagTableLength=", flagTableLength, "***\n")
                     if (flagTableLength) {
+                        cat("    ", name, ":", padding, sep = "")
                         for (i in seq_len(flagTableLength)) {
                             cat("\"", names(flagTable)[i], "\"", " ", flagTable[i], "", sep = "")
                             if (i != flagTableLength) cat(", ") else cat("\n")
@@ -757,7 +760,7 @@ setMethod(
         dotsNames <- names(dots)
         indicesGiven <- length(dots) && ("indices" %in% dotsNames)
         withinGiven <- length(dots) && ("within" %in% dotsNames)
-        debug <- getOption("oceDebug")
+        debug <- getOption("oceDebug", 0)
         if (length(dots) && ("debug" %in% names(dots))) {
             debug <- dots$debug
         }
@@ -874,7 +877,11 @@ setMethod(
                 n <- length(x@data$station)
                 keep <- vector(length = n)
                 for (i in 1:n) {
-                    keep[i] <- eval(expr = substitute(expr = subset, env = environment()), envir = x@data$station[[i]]@metadata, enclos = parent.frame(2))
+                    keep[i] <- eval(expr = substitute(
+                        expr = subset,
+                        env = environment()),
+                        envir = x@data$station[[i]]@metadata,
+                        enclos = parent.frame(2))
                 }
                 nn <- sum(keep)
                 station <- vector("list", nn)
@@ -1402,7 +1409,7 @@ setMethod(
                           showStations = FALSE, showStart = TRUE, stationTicks = TRUE, showBottom = TRUE,
                           showSpine = TRUE, drawPalette = TRUE,
                           axes = TRUE, mgp, mar, col, cex, pch, lwd, labcex = par("cex"),
-                          debug = getOption("oceDebug"),
+                          debug = getOption("oceDebug", 0),
                           ...) {
         debug <- if (debug > 4) 4 else floor(0.5 + debug)
         if (missing(eos)) eos <- getOption("oceEOS", default = "gsw")
@@ -2163,7 +2170,7 @@ setMethod(
         }
         which.xtype <- match(xtype, c("distance", "track", "longitude", "latitude", "time", "spine"), nomatch = 0)
         if (0 == which.xtype) {
-            stop("xtype must be one of: \"distance\", \"track\", \"longitude\", \"latitude\", \"time\", or \"spine\", not \"", xtype, "\" as provided")
+            stop("xtype must be one of: \"distance\", \"track\", \"longitude\", \"latitude\", \"time\", or \"spine\", not \"", xtype, "\"")
         }
         which.ytype <- pmatch(ytype, c("pressure", "depth"), nomatch = 0)
         if (missing(stationIndices)) {
