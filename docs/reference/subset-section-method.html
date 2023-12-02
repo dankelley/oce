@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.8-2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.8-3</span>
       </span>
     </div>
 
@@ -210,7 +210,7 @@ number, or a logical vector, again indicating which stations to keep.</p>
 <span class="r-in"><span><span class="va">east</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset</a></span><span class="op">(</span><span class="va">section</span>, <span class="va">longitude</span> <span class="op">&gt;</span> <span class="op">(</span><span class="op">-</span><span class="fl">50</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Example 3. Gulf Stream</span></span></span>
-<span class="r-in"><span><span class="va">GS</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset</a></span><span class="op">(</span><span class="va">section</span>, <span class="fl">113</span><span class="op">&lt;=</span><span class="va">stationId</span><span class="op">&amp;</span><span class="va">stationId</span><span class="op">&lt;=</span><span class="fl">129</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">GS</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset</a></span><span class="op">(</span><span class="va">section</span>, <span class="fl">113</span> <span class="op">&lt;=</span> <span class="va">stationId</span> <span class="op">&amp;</span> <span class="va">stationId</span> <span class="op">&lt;=</span> <span class="fl">129</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Example 4. Only stations with more than 5 pressure levels</span></span></span>
 <span class="r-in"><span><span class="va">long</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset</a></span><span class="op">(</span><span class="va">section</span>, <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">pressure</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">5</span><span class="op">)</span></span></span>
@@ -220,8 +220,11 @@ number, or a logical vector, again indicating which stations to keep.</p>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Example 6. Similar to #4, but done in more detailed way</span></span></span>
 <span class="r-in"><span><span class="va">long</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset</a></span><span class="op">(</span><span class="va">section</span>,</span></span>
-<span class="r-in"><span>   indices<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/unlist.html" class="external-link">unlist</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="va">section</span><span class="op">[[</span><span class="st">"station"</span><span class="op">]</span><span class="op">]</span>,</span></span>
-<span class="r-in"><span>       <span class="kw">function</span><span class="op">(</span><span class="va">s</span><span class="op">)</span> <span class="fl">5</span> <span class="op">&lt;</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">s</span><span class="op">[[</span><span class="st">"pressure"</span><span class="op">]</span><span class="op">]</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span>    indices <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/unlist.html" class="external-link">unlist</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>        <span class="va">section</span><span class="op">[[</span><span class="st">"station"</span><span class="op">]</span><span class="op">]</span>,</span></span>
+<span class="r-in"><span>        <span class="kw">function</span><span class="op">(</span><span class="va">s</span><span class="op">)</span> <span class="fl">5</span> <span class="op">&lt;</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">s</span><span class="op">[[</span><span class="st">"pressure"</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span></span>
+<span class="r-in"><span>    <span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

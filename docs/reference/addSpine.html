@@ -19,7 +19,7 @@ onto the spine.'><!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.8-2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.8-3</span>
       </span>
     </div>
 
@@ -125,8 +125,10 @@ by specifying higher <code>debug</code> values.</p></dd>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dankelley.github.io/oce/" class="external-link">oce</a></span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">section</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">eastern</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset</a></span><span class="op">(</span><span class="va">section</span>, <span class="va">longitude</span> <span class="op">&lt;</span> <span class="op">(</span><span class="op">-</span><span class="fl">65</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">spine</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>longitude<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">74.5</span>, <span class="op">-</span><span class="fl">69.2</span>, <span class="op">-</span><span class="fl">55</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>    latitude<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">38.6</span>, <span class="fl">36.25</span>, <span class="fl">36.25</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">spine</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>    longitude <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">74.5</span>, <span class="op">-</span><span class="fl">69.2</span>, <span class="op">-</span><span class="fl">55</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>    latitude <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">38.6</span>, <span class="fl">36.25</span>, <span class="fl">36.25</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">easternWithSpine</span> <span class="op">&lt;-</span> <span class="fu">addSpine</span><span class="op">(</span><span class="va">eastern</span>, <span class="va">spine</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="co"># plot(easternWithSpine, which="map")</span></span></span>
 <span class="r-in"><span><span class="co"># plot(easternWithSpine, xtype="distance", which="temperature")</span></span></span>

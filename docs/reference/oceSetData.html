@@ -18,7 +18,7 @@ data slot has been altered, or added."><!-- mathjax --><script src="https://cdnj
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.8-2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.8-3</span>
       </span>
     </div>
 
@@ -164,7 +164,8 @@ and the scale set to <code>""</code>.</p></li>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">ctd</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">Tf</span> <span class="op">&lt;-</span> <span class="fu"><a href="swTFreeze.html">swTFreeze</a></span><span class="op">(</span><span class="va">ctd</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">ctd</span> <span class="op">&lt;-</span> <span class="fu">oceSetData</span><span class="op">(</span><span class="va">ctd</span>, <span class="st">"freezing"</span>, <span class="va">Tf</span>,</span></span>
-<span class="r-in"><span>    unit<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>unit<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/expression.html" class="external-link">expression</a></span><span class="op">(</span><span class="va">degree</span><span class="op">*</span><span class="va">C</span><span class="op">)</span>, scale<span class="op">=</span><span class="st">"ITS-90"</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span>    unit <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>unit <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/expression.html" class="external-link">expression</a></span><span class="op">(</span><span class="va">degree</span> <span class="op">*</span> <span class="va">C</span><span class="op">)</span>, scale <span class="op">=</span> <span class="st">"ITS-90"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="plotProfile.html">plotProfile</a></span><span class="op">(</span><span class="va">ctd</span>, <span class="st">"freezing"</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="oceSetData-1.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>

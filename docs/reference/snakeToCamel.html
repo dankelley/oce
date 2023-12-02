@@ -19,7 +19,7 @@ use by read.argo(), but it also may prove helpful in other contexts.'><!-- mathj
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.8-2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.8-3</span>
       </span>
     </div>
 
@@ -130,15 +130,15 @@ see the four examples).</p>
     <div id="ref-examples">
     <h2>Examples</h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dankelley.github.io/oce/" class="external-link">oce</a></span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu">snakeToCamel</span><span class="op">(</span><span class="st">"PARAMETER_DATA_MODE"</span><span class="op">)</span>   <span class="co"># "parameterDataMode"</span></span></span>
+<span class="r-in"><span><span class="fu">snakeToCamel</span><span class="op">(</span><span class="st">"PARAMETER_DATA_MODE"</span><span class="op">)</span> <span class="co"># "parameterDataMode"</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "parameterDataMode"</span>
-<span class="r-in"><span><span class="fu">snakeToCamel</span><span class="op">(</span><span class="st">"PARAMETER"</span><span class="op">)</span>             <span class="co"># "parameter"</span></span></span>
+<span class="r-in"><span><span class="fu">snakeToCamel</span><span class="op">(</span><span class="st">"PARAMETER"</span><span class="op">)</span> <span class="co"># "parameter"</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "parameter"</span>
-<span class="r-in"><span><span class="fu">snakeToCamel</span><span class="op">(</span><span class="st">"HISTORY_QCTEST"</span><span class="op">)</span>        <span class="co"># "historyQctest"</span></span></span>
+<span class="r-in"><span><span class="fu">snakeToCamel</span><span class="op">(</span><span class="st">"HISTORY_QCTEST"</span><span class="op">)</span> <span class="co"># "historyQctest"</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "historyQctest"</span>
-<span class="r-in"><span><span class="fu">snakeToCamel</span><span class="op">(</span><span class="st">"HISTORY_QCTEST"</span>, <span class="st">"QC"</span><span class="op">)</span>  <span class="co"># "historyQCTest"</span></span></span>
+<span class="r-in"><span><span class="fu">snakeToCamel</span><span class="op">(</span><span class="st">"HISTORY_QCTEST"</span>, <span class="st">"QC"</span><span class="op">)</span> <span class="co"># "historyQCTest"</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "historyQCTest"</span>
-<span class="r-in"><span><span class="fu">snakeToCamel</span><span class="op">(</span><span class="st">"PROFILE_DOXY_QC"</span><span class="op">)</span>       <span class="co"># "profileDoxyQc"</span></span></span>
+<span class="r-in"><span><span class="fu">snakeToCamel</span><span class="op">(</span><span class="st">"PROFILE_DOXY_QC"</span><span class="op">)</span> <span class="co"># "profileDoxyQc"</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "profileDoxyQc"</span>
 <span class="r-in"><span><span class="fu">snakeToCamel</span><span class="op">(</span><span class="st">"PROFILE_DOXY_QC"</span>, <span class="st">"QC"</span><span class="op">)</span> <span class="co"># "profileDoxyQC"</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "profileDoxyQC"</span>

@@ -35,7 +35,7 @@ entry in object."><!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.8-2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.8-3</span>
       </span>
     </div>
 
@@ -235,9 +235,9 @@ handled for each data item. If not supplied, this defaults to the value of
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">argo</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">argoNew</span> <span class="op">&lt;-</span> <span class="fu"><a href="handleFlags.html">handleFlags</a></span><span class="op">(</span><span class="va">argo</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="co"># Demonstrate replacement, looking at the second profile</span></span></span>
-<span class="r-in"><span><span class="va">f</span> <span class="op">&lt;-</span> <span class="va">argo</span><span class="op">[[</span><span class="st">"salinityFlag"</span><span class="op">]</span><span class="op">]</span><span class="op">[</span>,<span class="fl">2</span><span class="op">]</span></span></span>
-<span class="r-in"><span><span class="va">df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>flag<span class="op">=</span><span class="va">f</span>, orig<span class="op">=</span><span class="va">argo</span><span class="op">[[</span><span class="st">"salinity"</span><span class="op">]</span><span class="op">]</span><span class="op">[</span>,<span class="fl">2</span><span class="op">]</span>, new<span class="op">=</span><span class="va">argoNew</span><span class="op">[[</span><span class="st">"salinity"</span><span class="op">]</span><span class="op">]</span><span class="op">[</span>,<span class="fl">2</span><span class="op">]</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">df</span><span class="op">[</span><span class="fl">11</span><span class="op">:</span><span class="fl">15</span>,<span class="op">]</span> <span class="co"># notice line 13</span></span></span>
+<span class="r-in"><span><span class="va">f</span> <span class="op">&lt;-</span> <span class="va">argo</span><span class="op">[[</span><span class="st">"salinityFlag"</span><span class="op">]</span><span class="op">]</span><span class="op">[</span>, <span class="fl">2</span><span class="op">]</span></span></span>
+<span class="r-in"><span><span class="va">df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>flag <span class="op">=</span> <span class="va">f</span>, orig <span class="op">=</span> <span class="va">argo</span><span class="op">[[</span><span class="st">"salinity"</span><span class="op">]</span><span class="op">]</span><span class="op">[</span>, <span class="fl">2</span><span class="op">]</span>, new <span class="op">=</span> <span class="va">argoNew</span><span class="op">[[</span><span class="st">"salinity"</span><span class="op">]</span><span class="op">]</span><span class="op">[</span>, <span class="fl">2</span><span class="op">]</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">df</span><span class="op">[</span><span class="fl">11</span><span class="op">:</span><span class="fl">15</span>, <span class="op">]</span> <span class="co"># notice line 13</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    flag   orig    new</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 11    1 35.207 35.207</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 12    1 35.207 35.207</span>

@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.8-2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.8-3</span>
       </span>
     </div>
 
@@ -153,27 +153,27 @@ by specifying higher <code>debug</code> values.</p></dd>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dankelley.github.io/oce/" class="external-link">oce</a></span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="co"># Example 1: creation from scratch</span></span></span>
 <span class="r-in"><span><span class="va">t</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.time</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> <span class="fl">0</span><span class="op">:</span><span class="fl">50</span></span></span>
-<span class="r-in"><span><span class="va">u</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Trig.html" class="external-link">sin</a></span><span class="op">(</span><span class="fl">2</span><span class="op">*</span><span class="va">pi</span><span class="op">*</span><span class="fl">0</span><span class="op">:</span><span class="fl">50</span><span class="op">/</span><span class="fl">5</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">51</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">v</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Trig.html" class="external-link">cos</a></span><span class="op">(</span><span class="fl">2</span><span class="op">*</span><span class="va">pi</span><span class="op">*</span><span class="fl">0</span><span class="op">:</span><span class="fl">50</span><span class="op">/</span><span class="fl">5</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">51</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">u</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Trig.html" class="external-link">sin</a></span><span class="op">(</span><span class="fl">2</span> <span class="op">*</span> <span class="va">pi</span> <span class="op">*</span> <span class="fl">0</span><span class="op">:</span><span class="fl">50</span> <span class="op">/</span> <span class="fl">5</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">51</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">v</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Trig.html" class="external-link">cos</a></span><span class="op">(</span><span class="fl">2</span> <span class="op">*</span> <span class="va">pi</span> <span class="op">*</span> <span class="fl">0</span><span class="op">:</span><span class="fl">50</span> <span class="op">/</span> <span class="fl">5</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">51</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">p</span> <span class="op">&lt;-</span> <span class="fl">100</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">51</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="fu">as.cm</span><span class="op">(</span><span class="va">t</span>, <span class="va">u</span>, <span class="va">v</span>, <span class="va">p</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Cm summary</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ----------</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> * North:         magnetic</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> * Time:          2023-11-17 14:41:41 to 2023-11-17 14:42:31 (51 samples, mean increment 1 s)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> * Time:          2023-12-02 06:08:01 to 2023-12-02 06:08:51 (51 samples, mean increment 1 s)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> * Data Overview</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                                    Min.                Mean                Max. Dim. NAs</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     time            2023-11-17 18:41:41 2023-11-17 18:42:06 2023-11-17 18:42:31   51   0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     u [m/s]                     -2.8997           -0.028081              2.1775   51   0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     v [m/s]                     -3.3316            -0.18324               2.194   51   0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     pressure [dbar]              97.398              99.915              102.48   51   0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     time            2023-12-02 10:08:01 2023-12-02 10:08:26 2023-12-02 10:08:51   51   0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     u [m/s]                      -2.206             0.20994              2.4506   51   0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     v [m/s]                     -2.0929             0.33801              2.6765   51   0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     pressure [dbar]              98.091              99.944              101.62   51   0</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> * Processing Log</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2023-11-17 18:41:41 UTC: `create 'cm' object`</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2023-11-17 18:41:41 UTC: `as.cm(time = t, u = u, v = v, pressure = p)`</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2023-12-02 10:08:01 UTC: `create 'cm' object`</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2023-12-02 10:08:01 UTC: `as.cm(time = t, u = u, v = v, pressure = p)`</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Example 2: creation from an adv object</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">adv</span><span class="op">)</span></span></span>
@@ -202,7 +202,7 @@ by specifying higher <code>debug</code> values.</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     - 2015-12-23 17:53:55 UTC: `use aquadoppHR heading; despike own pitch and roll`</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     - 2015-12-23 17:54:11 UTC: `beamToXyzAdv(x = x)`</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     - 2015-12-23 17:54:34 UTC: `xyzToEnu(x, declination=-18.099, horizontalCase=TRUE, sensorOrientiation=upward, debug=0)`</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2023-11-17 18:41:41 UTC: `as.cm(time = adv)`</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2023-12-02 10:08:01 UTC: `as.cm(time = adv)`</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

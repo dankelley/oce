@@ -22,7 +22,7 @@ known."><!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/math
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.8-2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.8-3</span>
       </span>
     </div>
 
@@ -359,6 +359,37 @@ time is in <code>IMUtime</code>. This data type has not been tested as of
 mid-March 2016, because the developers do not have a test file with which to
 test.</p></li>
 </ul></div>
+    <div id="how-the-binary-file-is-decoded">
+    <h2>How the binary file is decoded</h2>
+    
+
+
+<p>This file type, like other acoustic-Doppler types, is read
+with a hybrid R/C++ system, for efficiency.
+The processing steps are sketched below, for
+users who want to inspect the code or build upon it.</p><ol><li><p>In R, <code><a href="https://rdrr.io/r/base/readBin.html" class="external-link">readBin()</a></code> is used to insert the file contents into
+a <a href="https://rdrr.io/r/base/vector.html" class="external-link">vector</a> of type <code>raw</code>.</p></li>
+<li><p>In C++, this raw vector is scanned byte by byte,
+to find the starting indices of data "chunks", or subsections of
+the data that correspond to individual sampling times.
+Checksum computations are also done at this stage, to detect
+possible data corruption.  Warnings are issued for any bad chunks,
+and they are skipped in further processing. The valid
+starting points are then passed back to R as a <a href="https://rdrr.io/r/base/vector.html" class="external-link">vector</a> of
+type <code>integer</code>.</p></li>
+<li><p>In R, <code><a href="https://rdrr.io/r/base/readBin.html" class="external-link">readBin()</a></code> is used to read the components of each chunk.
+For speed, this is done in a vectorized fashion. For example,
+all the velocities in the whole file are read in a single call
+to <code><a href="https://rdrr.io/r/base/readBin.html" class="external-link">readBin()</a></code>. This process is done for each of the data
+fields that are to be handled.  Importantly, these <code><a href="https://rdrr.io/r/base/readBin.html" class="external-link">readBin()</a></code>
+calls are tailored to the data, using values of
+the <code>size</code>, <code>endian</code> and <code>signed</code> parameters that are tailored
+to the structure of the given component.
+Scaling factors are then applied as required, to convert the
+components to physical units.</p></li>
+<li><p>Finally, in R, the acquired items are inserted into the <code>data</code> or
+<code>metadata</code> slot of the return value, according to oce convention.</p></li>
+</ol></div>
     <div id="references">
     <h2>References</h2>
     <p>1A. Nortek AS.  System Integrator Guide (paradopp family of products). June

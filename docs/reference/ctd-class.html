@@ -34,7 +34,7 @@ the three basic quantities."><!-- mathjax --><script src="https://cdnjs.cloudfla
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.8-2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.8-3</span>
       </span>
     </div>
 
@@ -302,7 +302,7 @@ and sufficiently skilled users may even manipulate the contents directly.</p>
     <h2>Examples</h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># 1. Create a ctd object with fake data.</span></span></span>
-<span class="r-in"><span><span class="va">a</span> <span class="op">&lt;-</span> <span class="fu"><a href="as.ctd.html">as.ctd</a></span><span class="op">(</span>salinity<span class="op">=</span><span class="fl">35</span><span class="op">+</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">/</span><span class="fl">10</span>, temperature<span class="op">=</span><span class="fl">10</span><span class="op">-</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">/</span><span class="fl">10</span>, pressure<span class="op">=</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">a</span> <span class="op">&lt;-</span> <span class="fu"><a href="as.ctd.html">as.ctd</a></span><span class="op">(</span>salinity <span class="op">=</span> <span class="fl">35</span> <span class="op">+</span> <span class="fl">1</span><span class="op">:</span><span class="fl">3</span> <span class="op">/</span> <span class="fl">10</span>, temperature <span class="op">=</span> <span class="fl">10</span> <span class="op">-</span> <span class="fl">1</span><span class="op">:</span><span class="fl">3</span> <span class="op">/</span> <span class="fl">10</span>, pressure <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">a</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> CTD Summary</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> -----------</span>
@@ -317,13 +317,15 @@ and sufficiently skilled users may even manipulate the contents directly.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> * Processing Log</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2023-11-17 18:42:01 UTC: `create 'ctd' object`</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2023-11-17 18:42:01 UTC: `as.ctd(salinity = 35 + 1:3/10, temperature = 10 - 1:3/10, pressure = 1:3)`</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2023-12-02 10:08:24 UTC: `create 'ctd' object`</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2023-12-02 10:08:24 UTC: `as.ctd(salinity = 35 + 1:3/10, temperature = 10 - 1:3/10, pressure = 1:3)`</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># 2. Fix a typo in a station latitude (fake! it's actually okay)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">ctd</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">ctd</span> <span class="op">&lt;-</span> <span class="fu"><a href="oceSetMetadata.html">oceSetMetadata</a></span><span class="op">(</span><span class="va">ctd</span>, <span class="st">"latitude"</span>, <span class="va">ctd</span><span class="op">[[</span><span class="st">"latitude"</span><span class="op">]</span><span class="op">]</span><span class="op">-</span><span class="fl">0.001</span>,</span></span>
-<span class="r-in"><span>                     <span class="st">"fix latitude typo in log book"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">ctd</span> <span class="op">&lt;-</span> <span class="fu"><a href="oceSetMetadata.html">oceSetMetadata</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>    <span class="va">ctd</span>, <span class="st">"latitude"</span>, <span class="va">ctd</span><span class="op">[[</span><span class="st">"latitude"</span><span class="op">]</span><span class="op">]</span> <span class="op">-</span> <span class="fl">0.001</span>,</span></span>
+<span class="r-in"><span>    <span class="st">"fix latitude typo in log book"</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

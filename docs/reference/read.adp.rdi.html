@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.8-2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.8-3</span>
       </span>
     </div>
 
@@ -358,6 +358,37 @@ file.  For example, if <code>d</code> is an object read with <code>read.adp.rdi<
 <ul><li><p>The <code>bq</code> (bottom-track quality) field was called <code>bc</code> until 2023-02-09.
 See https://github.com/dankelley/oce/issues/2039 for discussion.</p></li>
 </ul></div>
+    <div id="how-the-binary-file-is-decoded">
+    <h2>How the binary file is decoded</h2>
+    
+
+
+<p>This file type, like other acoustic-Doppler types, is read
+with a hybrid R/C++ system, for efficiency.
+The processing steps are sketched below, for
+users who want to inspect the code or build upon it.</p><ol><li><p>In R, <code><a href="https://rdrr.io/r/base/readBin.html" class="external-link">readBin()</a></code> is used to insert the file contents into
+a <a href="https://rdrr.io/r/base/vector.html" class="external-link">vector</a> of type <code>raw</code>.</p></li>
+<li><p>In C++, this raw vector is scanned byte by byte,
+to find the starting indices of data "chunks", or subsections of
+the data that correspond to individual sampling times.
+Checksum computations are also done at this stage, to detect
+possible data corruption.  Warnings are issued for any bad chunks,
+and they are skipped in further processing. The valid
+starting points are then passed back to R as a <a href="https://rdrr.io/r/base/vector.html" class="external-link">vector</a> of
+type <code>integer</code>.</p></li>
+<li><p>In R, <code><a href="https://rdrr.io/r/base/readBin.html" class="external-link">readBin()</a></code> is used to read the components of each chunk.
+For speed, this is done in a vectorized fashion. For example,
+all the velocities in the whole file are read in a single call
+to <code><a href="https://rdrr.io/r/base/readBin.html" class="external-link">readBin()</a></code>. This process is done for each of the data
+fields that are to be handled.  Importantly, these <code><a href="https://rdrr.io/r/base/readBin.html" class="external-link">readBin()</a></code>
+calls are tailored to the data, using values of
+the <code>size</code>, <code>endian</code> and <code>signed</code> parameters that are tailored
+to the structure of the given component.
+Scaling factors are then applied as required, to convert the
+components to physical units.</p></li>
+<li><p>Finally, in R, the acquired items are inserted into the <code>data</code> or
+<code>metadata</code> slot of the return value, according to oce convention.</p></li>
+</ol></div>
     <div id="references">
     <h2>References</h2>
     
@@ -440,12 +471,12 @@ P/N 957-6171-00 (June 2001) <code>WinRiver User Guide International Version.pdf.
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">adp</span> <span class="op">&lt;-</span> <span class="fu">read.adp.rdi</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"adp_rdi.000"</span>, package<span class="op">=</span><span class="st">"oce"</span><span class="op">)</span><span class="op">)</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">adp</span> <span class="op">&lt;-</span> <span class="fu">read.adp.rdi</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"adp_rdi.000"</span>, package <span class="op">=</span> <span class="st">"oce"</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">adp</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ADP Summary</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> -----------</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> * Filename:          "/private/var/folders/8b/l4h64m1j22v5pb7vj049ff140000gn/T/RtmpBbd2nN/temp_libpath7b2d7e2e42ed/oce/extdata/adp_rdi.000"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> * Filename:          "/private/var/folders/8b/l4h64m1j22v5pb7vj049ff140000gn/T/Rtmpu1wbRj/temp_libpathd2b76c13bf35/oce/extdata/adp_rdi.000"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> * Instrument:        adcp</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> * Manufacturer:      teledyne rdi</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> * Serial number:     unknown</span>
@@ -493,7 +524,7 @@ P/N 957-6171-00 (June 2001) <code>WinRiver User Guide International Version.pdf.
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> * Processing Log</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2023-11-17 18:43:59 UTC: `read.adp.rdi(file = system.file("extdata", "adp_rdi.000", package = "oce"))`</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2023-12-02 10:10:43 UTC: `read.adp.rdi(file = system.file("extdata", "adp_rdi.000", package = "oce"))`</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

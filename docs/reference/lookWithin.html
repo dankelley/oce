@@ -21,7 +21,7 @@ object that is the first argument."><!-- mathjax --><script src="https://cdnjs.c
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.8-2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.8-3</span>
       </span>
     </div>
 
@@ -119,7 +119,7 @@ item in the <code>data</code> slot of <code>list[1]</code>.</p>
     <div id="ref-examples">
     <h2>Examples</h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># 1. If first item is not a CTD object, just return the input</span></span></span>
-<span class="r-in"><span><span class="fu">lookWithin</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>a<span class="op">=</span><span class="fl">1</span>, b<span class="op">=</span><span class="fl">2</span><span class="op">)</span><span class="op">)</span> <span class="co"># returns a list</span></span></span>
+<span class="r-in"><span><span class="fu">lookWithin</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>a <span class="op">=</span> <span class="fl">1</span>, b <span class="op">=</span> <span class="fl">2</span><span class="op">)</span><span class="op">)</span> <span class="co"># returns a list</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $a</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
@@ -128,19 +128,19 @@ item in the <code>data</code> slot of <code>list[1]</code>.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span><span class="co"># 2. Extract salinity from a CTD object</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">ctd</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/str.html" class="external-link">str</a></span><span class="op">(</span><span class="fu">lookWithin</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>salinity<span class="op">=</span><span class="va">ctd</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/str.html" class="external-link">str</a></span><span class="op">(</span><span class="fu">lookWithin</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>salinity <span class="op">=</span> <span class="va">ctd</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> List of 1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  $ salinity: num [1:181] 29.9 29.9 29.9 29.9 29.9 ...</span>
 <span class="r-in"><span><span class="co"># 3. Extract salinity and temperature. Note that the</span></span></span>
 <span class="r-in"><span><span class="co"># value specified for temperature is ignored; all that matters</span></span></span>
 <span class="r-in"><span><span class="co"># is that temperature is named.</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/str.html" class="external-link">str</a></span><span class="op">(</span><span class="fu">lookWithin</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>salinity<span class="op">=</span><span class="va">ctd</span>, temperature<span class="op">=</span><span class="cn">NULL</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/str.html" class="external-link">str</a></span><span class="op">(</span><span class="fu">lookWithin</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>salinity <span class="op">=</span> <span class="va">ctd</span>, temperature <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> List of 2</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  $ salinity   : num [1:181] 29.9 29.9 29.9 29.9 29.9 ...</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  $ temperature: num [1:181] 14.2 14.2 14.2 14.2 14.2 ...</span>
 <span class="r-in"><span><span class="co"># 4. How it is used by swRho()</span></span></span>
-<span class="r-in"><span><span class="va">rho1</span> <span class="op">&lt;-</span> <span class="fu"><a href="swRho.html">swRho</a></span><span class="op">(</span><span class="va">ctd</span>, eos<span class="op">=</span><span class="st">"unesco"</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">rho2</span> <span class="op">&lt;-</span> <span class="fu"><a href="swRho.html">swRho</a></span><span class="op">(</span><span class="va">ctd</span><span class="op">[[</span><span class="st">"salinity"</span><span class="op">]</span><span class="op">]</span>, <span class="va">ctd</span><span class="op">[[</span><span class="st">"temperature"</span><span class="op">]</span><span class="op">]</span>, <span class="va">ctd</span><span class="op">[[</span><span class="st">"pressure"</span><span class="op">]</span><span class="op">]</span>, eos<span class="op">=</span><span class="st">"unesco"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">rho1</span> <span class="op">&lt;-</span> <span class="fu"><a href="swRho.html">swRho</a></span><span class="op">(</span><span class="va">ctd</span>, eos <span class="op">=</span> <span class="st">"unesco"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">rho2</span> <span class="op">&lt;-</span> <span class="fu"><a href="swRho.html">swRho</a></span><span class="op">(</span><span class="va">ctd</span><span class="op">[[</span><span class="st">"salinity"</span><span class="op">]</span><span class="op">]</span>, <span class="va">ctd</span><span class="op">[[</span><span class="st">"temperature"</span><span class="op">]</span><span class="op">]</span>, <span class="va">ctd</span><span class="op">[[</span><span class="st">"pressure"</span><span class="op">]</span><span class="op">]</span>, eos <span class="op">=</span> <span class="st">"unesco"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/all.equal.html" class="external-link">all.equal</a></span><span class="op">(</span><span class="va">rho1</span>, <span class="va">rho2</span><span class="op">)</span><span class="op">)</span></span></span>
 </code></pre></div>
     </div>
