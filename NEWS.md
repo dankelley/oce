@@ -1,3 +1,7 @@
+# oce 1.8.3
+
+* No new features yet.
+
 # oce 1.8.2
 
 * Add `package?oce` documentation (had been missing with a Roxygen2 change).
