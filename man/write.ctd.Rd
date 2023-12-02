@@ -2,7 +2,7 @@
 % Please edit documentation in R/ctd.R
 \name{write.ctd}
 \alias{write.ctd}
-\title{Write a CTD Data Object as a CSV File}
+\title{Save a ctd Object in a CSV File}
 \usage{
 write.ctd(object, file, metadata = TRUE, flags = TRUE, format = "csv")
 }
@@ -29,16 +29,17 @@ for reading with a spreadsheet, or
 with \code{\link[=read.csv]{read.csv()}}.  This output file will contain
 some of the metadata in \code{x}, if \code{metadata} is \code{TRUE}.
 }
-\examples{
-\dontrun{
+\section{Sample of Usage}{
+
+\preformatted{
 library(oce)
 data(ctd)
 write.ctd(ctd, "ctd.csv")
 d <- read.csv("ctd.csv")
 plot(as.ctd(d$salinity, d$temperature, d$pressure))
 }
-
 }
+
 \references{
 The following links used to work, but failed as of December 2020.
 \enumerate{
@@ -81,6 +82,7 @@ Other things related to ctd data:
 \code{\link{read.ctd.itp}()},
 \code{\link{read.ctd.odf}()},
 \code{\link{read.ctd.odv}()},
+\code{\link{read.ctd.saiv}()},
 \code{\link{read.ctd.sbe}()},
 \code{\link{read.ctd.ssda}()},
 \code{\link{read.ctd.woce.other}()},

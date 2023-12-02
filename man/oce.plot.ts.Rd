@@ -187,17 +187,19 @@ The time axis is drawn with \code{\link[=oce.axis.POSIXct]{oce.axis.POSIXct()}}.
 }
 \examples{
 library(oce)
-t0 <- as.POSIXct("2008-01-01", tz="UTC")
-t <- seq(t0, length.out=48, by="30 min")
+t0 <- as.POSIXct("2008-01-01", tz = "UTC")
+t <- seq(t0, length.out = 48, by = "30 min")
 y <- sin(as.numeric(t - t0) * 2 * pi / (12 * 3600))
-oce.plot.ts(t, y, type='l', xaxs='i')
+oce.plot.ts(t, y, type = "l", xaxs = "i")
 # Show how col, pch and cex get recycled
-oce.plot.ts(t, y, type='p', xaxs='i',
-            col=1:3, pch=c(rep(1, 6), rep(20, 6)), cex=sqrt(1:6))
+oce.plot.ts(t, y,
+    type = "p", xaxs = "i",
+    col = 1:3, pch = c(rep(1, 6), rep(20, 6)), cex = sqrt(1:6)
+)
 # Trimming x; note the narrowing of the y view
-oce.plot.ts(t, y, type='p', xlim=c(t[6], t[12]))
+oce.plot.ts(t, y, type = "p", xlim = c(t[6], t[12]))
 # Flip the y axis
-oce.plot.ts(t, y, flipy=TRUE)
+oce.plot.ts(t, y, flipy = TRUE)
 }
 \author{
 Dan Kelley and Clark Richards

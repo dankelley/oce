@@ -16,19 +16,19 @@ resolvable <- standard[!(standard %in% unresolvable)]
 
 test_that("invalid constituent name is detected", {
     expect_error(m <- tidem(sealevel, constituents="unknown"),
-        "'unknown' is not a known tidal constituent")
+        "\"unknown\" is not a known tidal constituent")
     expect_silent(m <- tidem(sealevel, constituents=c("M2", "S2")))
     expect_output(summary(m, constituent="M2"), "Call:")
     expect_output(
         expect_warning(
             summary(m, constituent=c("M2", "unknown")),
-            "the following constituents are not handled: 'unknown'"),
+            "the following constituents are not handled: \"unknown\""),
         "Call:")
     expect_warning(
         expect_error(
             summary(m, constituent="unknown"),
             "no known constituents were provided"),
-        "the following constituents are not handled: 'unknown'")
+        "the following constituents are not handled: \"unknown\"")
 })
 
 test_that("tidemAstron() agrees with T_TIDE", {

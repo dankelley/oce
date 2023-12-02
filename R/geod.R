@@ -47,7 +47,7 @@
 #' @seealso [geodDist()]
 #'
 #' @examples
-#'\donttest{
+#' \donttest{
 #' # Develop a transect-based axis system for final data(section) stations
 #' library(oce)
 #' data(section)
@@ -56,36 +56,45 @@
 #' lonR <- tail(lon, 1)
 #' latR <- tail(lat, 1)
 #' data(coastlineWorld)
-#' mapPlot(coastlineWorld, projection="+proj=merc",
-#'         longitudelim=c(-75,-65), latitudelim=c(35,43), col="gray")
+#' mapPlot(coastlineWorld,
+#'     projection = "+proj=merc",
+#'     longitudelim = c(-75, -65), latitudelim = c(35, 43), col = "gray"
+#' )
 #' mapPoints(lon, lat)
-#' XY <- geodXy(lon,lat,mean(lon), mean(lat))
-#' angle <- 180/pi*atan(coef(lm(y~x, data=XY))[2])
-#' mapCoordinateSystem(lonR, latR, 500, angle, col=2)
+#' XY <- geodXy(lon, lat, mean(lon), mean(lat))
+#' angle <- 180 / pi * atan(coef(lm(y ~ x, data = XY))[2])
+#' mapCoordinateSystem(lonR, latR, 500, angle, col = 2)
 #' # Compare UTM calculation
-#' UTM <- lonlat2utm(lon, lat, zone=18) # we need to set the zone for this task!
-#' angleUTM <- 180/pi*atan(coef(lm(northing~easting, data=UTM))[2])
-#' mapCoordinateSystem(lonR, latR, 500, angleUTM, col=3)
-#' legend("topright", lwd=1, col=2:3, bg="white", title="Axis Rotation Angle",
-#'        legend=c(sprintf("geod: %.1f deg", angle),
-#'                 sprintf("utm:  %.1f deg", angleUTM)))
-#'}
+#' UTM <- lonlat2utm(lon, lat, zone = 18) # we need to set the zone for this task!
+#' angleUTM <- 180 / pi * atan(coef(lm(northing ~ easting, data = UTM))[2])
+#' mapCoordinateSystem(lonR, latR, 500, angleUTM, col = 3)
+#' legend("topright",
+#'     lwd = 1, col = 2:3, bg = "white", title = "Axis Rotation Angle",
+#'     legend = c(
+#'         sprintf("geod: %.1f deg", angle),
+#'         sprintf("utm:  %.1f deg", angleUTM)
+#'     )
+#' )
+#' }
 #' @family functions relating to geodesy
-geodXy <- function(longitude, latitude, longitudeRef, latitudeRef, debug=getOption("oceDebug"))
-{
-    a <- 6378137.00          # WGS84 major axis
-    f <- 1/298.257223563     # WGS84 flattening parameter
-    if (missing(longitude) || missing(latitude))
+geodXy <- function(longitude, latitude, longitudeRef, latitudeRef, debug = getOption("oceDebug")) {
+    a <- 6378137.00 # WGS84 major axis
+    f <- 1 / 298.257223563 # WGS84 flattening parameter
+    if (missing(longitude) || missing(latitude)) {
         stop("must provide longitude and latitude")
-    if (missing(longitudeRef))
+    }
+    if (missing(longitudeRef)) {
         stop("must provide longitudeRef")
-    if (missing(latitudeRef))
+    }
+    if (missing(latitudeRef)) {
         stop("must provide latitudeRef")
+    }
     n <- length(longitude)
-    if (length(latitude) != n)
+    if (length(latitude) != n) {
         stop("longitude and latitude vectors of unequal length")
-    xy  <- do_geod_xy(longitude, latitude, longitudeRef, latitudeRef, a, f)
-    data.frame(x=xy$x, y=xy$y)
+    }
+    xy <- do_geod_xy(longitude, latitude, longitudeRef, latitudeRef, a, f)
+    data.frame(x = xy$x, y = xy$y)
 }
 
 #' Inverse Geodesic Calculation
@@ -117,21 +126,24 @@ geodXy <- function(longitude, latitude, longitudeRef, latitudeRef, debug=getOpti
 #' @return a data frame containing `longitude` and `latitude`
 #'
 #' @family functions relating to geodesy
-geodXyInverse <- function(x, y, longitudeRef, latitudeRef, debug=getOption("oceDebug"))
-{
-    a <- 6378137.00          # WGS84 major axis
-    f <- 1/298.257223563     # WGS84 flattening parameter
-    if (missing(x) || missing(y))
+geodXyInverse <- function(x, y, longitudeRef, latitudeRef, debug = getOption("oceDebug")) {
+    a <- 6378137.00 # WGS84 major axis
+    f <- 1 / 298.257223563 # WGS84 flattening parameter
+    if (missing(x) || missing(y)) {
         stop("must provide x and y")
-    if (missing(longitudeRef))
+    }
+    if (missing(longitudeRef)) {
         stop("must provide longitudeRef")
-    if (missing(latitudeRef))
+    }
+    if (missing(latitudeRef)) {
         stop("must provide latitudeRef")
+    }
     n <- length(x)
-    if (length(y) != n)
+    if (length(y) != n) {
         stop("x and y vectors of unequal length")
+    }
     ll <- do_geod_xy_inverse(x, y, longitudeRef, latitudeRef, a, f)
-    data.frame(longitude=ll$longitude, latitude=ll$latitude)
+    data.frame(longitude = ll$longitude, latitude = ll$latitude)
 }
 
 
@@ -194,20 +206,19 @@ geodXyInverse <- function(x, y, longitudeRef, latitudeRef, debug=getOption("oceD
 #'
 #' @references Vincenty, T. "Direct and Inverse Solutions of Geodesics on the
 #' Ellipsoid with Application of Nested Equations." Survey Review 23, no. 176
-#' (April 1, 1975): 88–93. https://doi.org/10.1179/sre.1975.23.176.88.
+#' (April 1, 1975): 88-93. https://doi.org/10.1179/sre.1975.23.176.88.
 #'
 #' @examples
 #' library(oce)
 #' km <- geodDist(100, 45, 100, 46)
 #' data(section)
 #' geodDist(section)
-#' geodDist(section, alongPath=TRUE)
+#' geodDist(section, alongPath = TRUE)
 #'
 #' @family functions relating to geodesy
-geodDist <- function(longitude1, latitude1=NULL, longitude2=NULL, latitude2=NULL, alongPath=FALSE)
-{
-    a <- 6378137.00          # WGS84 major axis
-    f <- 1/298.257223563     # WGS84 flattening parameter
+geodDist <- function(longitude1, latitude1 = NULL, longitude2 = NULL, latitude2 = NULL, alongPath = FALSE) {
+    a <- 6378137.00 # WGS84 major axis
+    f <- 1 / 298.257223563 # WGS84 flattening parameter
     if (inherits(longitude1, "section")) {
         section <- longitude1
         longitude <- section[["longitude", "byStation"]]
@@ -216,23 +227,29 @@ geodDist <- function(longitude1, latitude1=NULL, longitude2=NULL, latitude2=NULL
             res <- do_geoddist_alongpath(longitude, latitude, a, f) / 1000
         } else {
             n <- length(section@data$station)
-            res <- do_geoddist(rep(longitude[1], length.out=n), rep(latitude[1], length.out=n),
-                longitude, latitude, a, f) / 1000
+            res <- do_geoddist(
+                rep(longitude[1], length.out = n), rep(latitude[1], length.out = n),
+                longitude, latitude, a, f
+            ) / 1000
         }
     } else {
         if (alongPath) {
             res <- do_geoddist_alongpath(longitude1, latitude1, a, f) / 1000
         } else {
             n1 <- length(latitude1)
-            if (length(longitude1) != n1)
+            if (length(longitude1) != n1) {
                 stop("latitude1 and longitude1 must be vectors of the same length")
-            if (is.null(longitude2))
+            }
+            if (is.null(longitude2)) {
                 longitude2 <- longitude1[1]
-            if (is.null(latitude2))
+            }
+            if (is.null(latitude2)) {
                 latitude2 <- latitude1[1]
+            }
             n2 <- length(latitude2)
-            if (length(longitude2) != n2)
+            if (length(longitude2) != n2) {
                 stop("latitude2 and longitude2 must be vectors of the same length")
+            }
             if (n2 < n1) {
                 latitude2 <- rep(latitude2[1], n1)
                 longitude2 <- rep(longitude2[1], n1)
@@ -269,50 +286,53 @@ geodDist <- function(longitude1, latitude1=NULL, longitude2=NULL, latitude2=NULL
 #' (link worked for years but failed 2017-01-16).
 #'
 #' @examples
-#'\donttest{
+#' \donttest{
 #' library(oce)
 #' data(coastlineWorld)
-#' mapPlot(coastlineWorld, type="l",
-#'         longitudelim=c(-80,10), latitudelim=c(35,80),
-#'         projection="+proj=merc")
+#' mapPlot(coastlineWorld,
+#'     type = "l",
+#'     longitudelim = c(-80, 10), latitudelim = c(35, 80),
+#'     projection = "+proj=merc"
+#' )
 #' # Great circle from New York to Paris (Lindberg's flight)
-#' l <- geodGc(c(-73.94,2.35), c(40.67,48.86), 1)
-#' mapLines(l$longitude, l$latitude, col='red', lwd=2)
-#'}
+#' l <- geodGc(c(-73.94, 2.35), c(40.67, 48.86), 1)
+#' mapLines(l$longitude, l$latitude, col = "red", lwd = 2)
+#' }
 #'
 #' @family functions relating to geodesy
-geodGc <- function(longitude, latitude, dmax)
-{
+geodGc <- function(longitude, latitude, dmax) {
     n <- length(latitude)
-    if (n != length(longitude))
+    if (n != length(longitude)) {
         stop("lengths of longitude and latude must match")
+    }
     d2r <- atan2(1, 1) / 45
     rlat <- d2r * latitude
     rlon <- d2r * longitude
     lon <- NULL
     lat <- NULL
-    for (i in seq.int(1, n-1)) {
-        d <- 2 * asin(sqrt((sin((rlat[i] - rlat[i+1])/2))^2
-            + cos(rlat[i]) * cos(rlat[i+1]) * (sin((rlon[i] - rlon[i+1])/2))^2))
+    for (i in seq.int(1, n - 1)) {
+        d <- 2 * asin(sqrt((sin((rlat[i] - rlat[i + 1]) / 2))^2
+            + cos(rlat[i]) * cos(rlat[i + 1]) * (sin((rlon[i] - rlon[i + 1]) / 2))^2))
         ddeg <- d / d2r
         if (ddeg < dmax) {
             lon <- c(lon, longitude[i])
             lat <- c(lat, latitude[i])
         } else {
-            f <- seq(0, 1, length.out=ceiling(1 + ddeg/dmax))
+            f <- seq(0, 1, length.out = ceiling(1 + ddeg / dmax))
             A <- sin((1 - f) * d) / sin(d) # nolint (no space before opening parenthesis)
             B <- sin(f * d) / sin(d)
-            x <- A * cos(rlat[i]) * cos(rlon[i]) + B * cos(rlat[i+1]) * cos(rlon[i+1])
-            y <- A * cos(rlat[i]) * sin(rlon[i]) + B * cos(rlat[i+1]) * sin(rlon[i+1])
-            z <- A * sin(rlat[i])              + B * sin(rlat[i+1])
-            lat <- atan2(z, sqrt(x^2+y^2)) / d2r
+            x <- A * cos(rlat[i]) * cos(rlon[i]) + B * cos(rlat[i + 1]) * cos(rlon[i + 1])
+            y <- A * cos(rlat[i]) * sin(rlon[i]) + B * cos(rlat[i + 1]) * sin(rlon[i + 1])
+            z <- A * sin(rlat[i]) + B * sin(rlat[i + 1])
+            lat <- atan2(z, sqrt(x^2 + y^2)) / d2r
             lon <- atan2(y, x) / d2r
         }
     }
     lon <- c(lon, longitude[n])
     lat <- c(lat, latitude[n])
     # use range 0 to 360 if input longitudes in that way
-    if (any(longitude > 180.0))
-        lon <- ifelse(lon < 0.0, lon+360.0, lon)
-    list(longitude=lon, latitude=lat)
+    if (any(longitude > 180.0)) {
+        lon <- ifelse(lon < 0.0, lon + 360.0, lon)
+    }
+    list(longitude = lon, latitude = lat)
 }

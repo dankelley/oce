@@ -2,7 +2,7 @@
 % Please edit documentation in R/argo.R
 \name{timeToArgoJuld}
 \alias{timeToArgoJuld}
-\title{Convert time to Argo Julian Day (juld)}
+\title{Convert Time to Argo Julian Day (juld)}
 \usage{
 timeToArgoJuld(t)
 }

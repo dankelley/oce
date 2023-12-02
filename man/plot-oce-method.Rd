@@ -27,8 +27,8 @@ elements, or a histogram if 1 element.
 \examples{
 library(oce)
 o <- new("oce")
-o <- oceSetData(o, 'x', rnorm(10))
-o <- oceSetData(o, 'y', rnorm(10))
-o <- oceSetData(o, 'z', rnorm(10))
+o <- oceSetData(o, "x", rnorm(10))
+o <- oceSetData(o, "y", rnorm(10))
+o <- oceSetData(o, "z", rnorm(10))
 plot(o)
 }

@@ -9,9 +9,7 @@
 Sample xbt File in .edf Format
 }
 \examples{
-\dontrun{
 xbt <- read.oce(system.file("extdata", "xbt.edf", package="oce"))
-}
 
 }
 \seealso{

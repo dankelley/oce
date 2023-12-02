@@ -41,16 +41,20 @@ containing four items, each of which is a character vector
 holding the names of things that can be accessed with \code{[[}.
 The \code{data} and \code{metadata} items hold the names of
 entries in the object's data and metadata
-slots, respectively. The
-\code{metadataDerived} holds only \code{""}, because
-no derived metadata values are defined for \code{cm} objects.
+slots, respectively. Note that \code{metadataDerived}
+holds only \code{""}, because no derived metadata values
+are defined for \code{tidem} objects.
 \item If \code{i} is \code{"frequency"} or \code{"freq"}, then a vector of
-constituent frequencies (stored
-as \code{freq} in the data slot) is returned.
+constituent frequencies is returned.
 \item If \code{i} is \code{"amplitude"} then a vector of constituent amplitudes
 is returned.
 \item If \code{i} is \code{"phase"} then a vector of constituent phases
 is returned.
+\item If \code{i} is \code{"constituents"} then a data frame holding constituent
+name, frequency, amplitude and phase is returned.
+\item If \code{i} is a vector of constituent names, then the return
+value is as for \code{"constituents"}, except that only the named
+those constituents are returned.
 }
 }
 

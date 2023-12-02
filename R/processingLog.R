@@ -11,11 +11,10 @@
 #' processingLogShow(ctd)
 #'
 #' @family things related to processing logs
-"processingLog<-" <- function(x, value)
-{
+"processingLog<-" <- function(x, value) {
     if (inherits(x, "oce")) {
         if (0 == length(x@processingLog)) {
-            x@processingLog <- list(time=presentTime(), value=value)
+            x@processingLog <- list(time = presentTime(), value = value)
         } else {
             x@processingLog$time <- c(x@processingLog$time, presentTime())
             x@processingLog$value <- c(x@processingLog$value, value)
@@ -39,11 +38,11 @@
 #' @param value A string indicating the text of the log entry.
 #'
 #' @family things related to processing logs
-processingLogAppend <- function(h, value="")
-{
-    if (inherits(h, "oce"))
+processingLogAppend <- function(h, value = "") {
+    if (inherits(h, "oce")) {
         h <- h@processingLog
-    res <- if (is.null(h)) list(time=NULL, value=NULL) else h
+    }
+    res <- if (is.null(h)) list(time = NULL, value = NULL) else h
     if (is.null(h$time[1])) {
         res$time <- presentTime()
         res$value <- value
@@ -68,9 +67,8 @@ processingLogAppend <- function(h, value="")
 #' `value`, a string that is set to the argument of the same name.
 #'
 #' @family things related to processing logs
-processingLogItem <- function(value="")
-{
-    list(time=c(presentTime()), value=value)
+processingLogItem <- function(value = "") {
+    list(time = c(presentTime()), value = value)
 }
 
 #' Show the Processing Log of an oce Object
@@ -78,11 +76,12 @@ processingLogItem <- function(value="")
 #' @param x an [oce-class] object.
 #'
 #' @family things related to processing logs
-processingLogShow <- function(x)
-{
+processingLogShow <- function(x) {
     cat("* Processing Log\n\n")
     for (i in seq_along(x@processingLog$value)) {
-        cat("    - ", format(x@processingLog$time[i], tz="UTC"), " UTC: `",
-            x@processingLog$value[i], "`\n", sep="")
+        cat("    - ", format(x@processingLog$time[i], tz = "UTC"), " UTC: `",
+            x@processingLog$value[i], "`\n",
+            sep = ""
+        )
     }
 }

@@ -18,10 +18,7 @@ Compute seawater Reference Salinity (SR), according to the GSW/TEOS-10
 formulation with \code{\link[gsw:gsw_SR_from_SP]{gsw::gsw_SR_from_SP()}} in the \CRANpkg{gsw} package.
 }
 \examples{
-\dontrun{
-SR <- swAbsoluteSalinity(35.0)
-stopifnot(abs(35.16504000000  - SR) < 0.000000000000010)
-}
+SR <- swSR(35.0) # 35.16504
 
 }
 \references{

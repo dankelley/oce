@@ -57,9 +57,9 @@ or it may be the string "all" which means to plot all data.}
 map, or \code{"best"} to pick the one with highest resolution, or
 \code{"none"} to avoid drawing the coastline.}
 
-\item{cex}{size of plotting symbols to be used if \code{type='p'}.}
+\item{cex}{size of plotting symbols to be used if \code{type="p"}.}
 
-\item{pch}{type of plotting symbols to be used if \code{type='p'}.}
+\item{pch}{type of plotting symbols to be used if \code{type="p"}.}
 
 \item{type}{plot type, either \code{"l"} or \code{"p"}.}
 
@@ -82,7 +82,7 @@ a projection in the notation used by \code{\link[=oceProject]{oceProject()}} and
 \code{par(mar)}, computed from this.  The default is tighter than the R
 default, in order to use more space for the data and less for the axes.}
 
-\item{mar}{value to be used with \code{par('mar')}.}
+\item{mar}{value to be used with \code{par("mar")}.}
 
 \item{tformat}{optional argument passed to \code{\link[=oce.plot.ts]{oce.plot.ts()}}, for plot
 types that call that function.  (See \code{\link[=strptime]{strptime()}} for the format
@@ -103,16 +103,18 @@ library(oce)
 data(argo)
 tc <- cut(argo[["time"]], "year")
 # Example 1: plot map, which reveals float trajectory.
-plot(argo, pch=as.integer(tc))
+plot(argo, pch = as.integer(tc))
 year <- substr(levels(tc), 1, 4)
 data(topoWorld)
-contour(topoWorld[['longitude']], topoWorld[['latitude']],
-        topoWorld[['z']], add=TRUE)
-legend("bottomleft", pch=seq_along(year), legend=year, bg="white", cex=3/4)
+contour(topoWorld[["longitude"]], topoWorld[["latitude"]],
+    topoWorld[["z"]],
+    add = TRUE
+)
+legend("bottomleft", pch = seq_along(year), legend = year, bg = "white", cex = 3 / 4)
 
 # Example 2: plot map, TS, T(z) and S(z). Note the use
 # of handleFlags(), to skip over questionable data.
-plot(handleFlags(argo), which=c(1, 4, 6, 5))
+plot(handleFlags(argo), which = c(1, 4, 6, 5))
 
 }
 \seealso{

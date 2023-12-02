@@ -63,9 +63,9 @@ In the \code{"ucar"} format, all data lines must contain the 13 tokens,
 the first of which is the year, with the following 12 being the values
 for January, February, etc.
 }
-\examples{
+\section{Sample of Usage}{
 
-\dontrun{
+\preformatted{
 library(oce)
 par(mfrow=c(2, 1))
 # 1. AO, Arctic oscillation
@@ -79,6 +79,7 @@ soirecent <- subset(soi, t > as.POSIXct("2000-01-01"))
 oce.plot.ts(soirecent$t, soirecent$index)
 }
 }
+
 \references{
 See \verb{https://psl.noaa.gov/data/climateindices/list/}
 for a list of indices.

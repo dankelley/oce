@@ -2,7 +2,7 @@
 % Please edit documentation in R/met.R
 \name{metNames2oceNames}
 \alias{metNames2oceNames}
-\title{Convert met Data Name to Oce Name}
+\title{Convert met Data Name to oce Name}
 \usage{
 metNames2oceNames(names, scheme)
 }

@@ -4,12 +4,22 @@
 \alias{as.tidem}
 \title{Create tidem Object From Fitted Harmonic Data}
 \usage{
-as.tidem(tRef, latitude, name, amplitude, phase, debug = getOption("oceDebug"))
+as.tidem(
+  tRef,
+  latitude,
+  name,
+  amplitude,
+  phase,
+  frequency,
+  speed,
+  debug = getOption("oceDebug")
+)
 }
 \arguments{
 \item{tRef}{a POSIXt value indicating the mean time of the
 observations used to develop the harmonic model. This is rounded
-to the nearest hour in \code{\link[=as.tidem]{as.tidem()}}, to match \code{\link[=tidem]{tidem()}}.}
+to the nearest hour in \code{\link[=as.tidem]{as.tidem()}}, to match the behaviour
+of \code{\link[=tidem]{tidem()}}.}
 
 \item{latitude}{numerical value indicating the latitude of the
 observations that were used to create the harmonic model. This
@@ -18,9 +28,19 @@ by \code{\link[=tidemVuf]{tidemVuf()}}.}
 
 \item{name}{character vector holding names of constituents.}
 
-\item{amplitude}{Numeric vector of constituent amplitudes.}
+\item{amplitude, phase}{numeric vectors of constituent amplitudes
+and phases. These must be of the same length as \code{name}.}
 
-\item{phase}{Numeric vector of constituent Greenwich phases.}
+\item{frequency, speed}{optional numeric vectors giving the frequencies
+of the constituents (in cycles per hour) or the analogous speeds
+(in degrees per hour).  Only one of these may be given, and a conversion
+is done from the latter to the former, if required.  If the frequencies
+are thus specified, then these are used instead of the frequencies that
+oce normally used, as defined in \code{data(tideconst)}. A warning will
+be issued if the absolute value of the relative frequency mismatch for any
+given component exceeds 1e-6, and this will occur for any NOAA tables
+containing the SA component, for which this relative mismatch
+is approximately 4e-5 (see reference 5).}
 
 \item{debug}{an integer specifying whether debugging information is
 to be printed during the processing. This is a general parameter that
@@ -35,47 +55,62 @@ An object of \linkS4class{tidem}, with only minimal
 contents.
 }
 \description{
-This function is intended to provide a bridge to
-\code{\link[=predict.tidem]{predict.tidem()}}, enabling tidal predictions based
-on published tables of harmonic fits.
+This function takes a set of tidal constituent amplitudes
+and phases, and constructs a return value of similar form
+to that returned by \code{\link[=tidem]{tidem()}}.  Its purpose is to enable
+predictions based on published constituent amplitudes
+and phases.  Since \code{\link[=as.tidem]{as.tidem()}} does not account for a
+reference height, it is the user's responsible to account
+for this after a prediction is made using \code{\link[=predict.tidem]{predict.tidem()}}.
 }
 \details{
-Note that only constituent names known to \code{\link[=tidem]{tidem()}} are handled.
-The permitted names are those listed in Foreman (1978), and
-tabulated with
+All the constituent names used by \code{\link[=tidem]{tidem()}} are permitted here,
+\emph{except} for \code{"Z0"} (see \sQuote{Description} regarding reference
+height).
+To get a list of constituent names, please consult Foreman (1978),
+or type the following in an R console:
 \preformatted{
 data(tidedata)
 data.frame(name=tidedata$const$name, freq=tidedata$const$freq)
 }
-Warnings are issued for any constituent name that is not in this list; as
-of the late summer of 2019, the only example seen in practice is
-\code{M1}, which according to Wikipedia (2019) has frequency 0.0402557, which
-is very close to that of \code{NO1}, i.e. 0.04026859, perhaps explaining
-why Foreman (1978) did not handle this constituent. A warning is
-issued if this or any other unhandled constituent is provided
-in the \code{name} argument to \code{as.tidem()}.
+
+In addition to the above, \code{\link[=as.tidem]{as.tidem()}} can handle NOAA names
+of constituents.  For the most part, these match oce names, but
+there are 4 exceptions: NOAA names
+\code{"LAM2"}, \code{"M1"}, \code{"RHO"}, and \code{"2MK3"} are converted to oce names
+\code{"LDA2"}, \code{"NO1"}, \code{"RHO1"}, and \code{"MO3"}. The name mapping was
+inferred by matching frequencies; for these constituents, the
+fractional mismatch in frequencies was under 4e-8;
+see Reference 5 for more details.
+A message is printed if these name conversions are required
+in the particular use of \code{\link[=as.tidem]{as.tidem()}}.
+
+Apart from the standard oce names and this set of NOAA synonyms,
+any other constituent name is reported in a warning message.
 }
 \section{Known issues}{
 
 There are two known differences between \code{\link[=tidem]{tidem()}} and the Matlab
-\code{T_TIDE} package, as listed in references 3 and 4. Work on these
-issues is planned for the summer of 2020.
+\code{T_TIDE} package, as listed in references 3 and 4.
 }
 
 \examples{
-# Simulate a tide table with output from tidem().
+
+# Example 1: show agreement with tidem()
 data(sealevelTuktoyaktuk)
 # 'm0' is model fitted by tidem()
 m0 <- tidem(sealevelTuktoyaktuk)
 p0 <- predict(m0, sealevelTuktoyaktuk[["time"]])
-m1 <- as.tidem(mean(sealevelTuktoyaktuk[["time"]]), sealevelTuktoyaktuk[["latitude"]],
-               m0[["name"]], m0[["amplitude"]], m0[["phase"]])
+m1 <- as.tidem(
+    mean(sealevelTuktoyaktuk[["time"]]), sealevelTuktoyaktuk[["latitude"]],
+    m0[["name"]], m0[["amplitude"]], m0[["phase"]]
+)
 # Test agreement with tidem() result, by comparing predicted sealevels.
 p1 <- predict(m1, sealevelTuktoyaktuk[["time"]])
-stopifnot(max(abs(p1 - p0), na.rm=TRUE) < 1e-10)
-# Simplified harmonic model, using large constituents
-# > m0[["name"]][which(m[["amplitude"]]>0.05)]
-# [1] "Z0"  "MM"  "MSF" "O1"  "K1"  "OO1" "N2"  "M2"  "S2"
+stopifnot(max(abs(p1 - p0), na.rm = TRUE) < 1e-10)
+
+# Example 2: See the effect of dropping weak constituents
+m0[["name"]][which(m0[["amplitude"]] > 0.05)]
 h <- "
 name  amplitude      phase
   Z0 1.98061875   0.000000
@@ -87,17 +122,18 @@ name  amplitude      phase
   N2 0.08377108  44.521462
   M2 0.49041340  77.703594
   S2 0.22023705 137.475767"
-coef <- read.table(text=h, header=TRUE)
-m2 <- as.tidem(mean(sealevelTuktoyaktuk[["time"]]),
-               sealevelTuktoyaktuk[["latitude"]],
-               coef$name, coef$amplitude, coef$phase)
+coef <- read.table(text = h, header = TRUE)
+m2 <- as.tidem(
+    mean(sealevelTuktoyaktuk[["time"]]),
+    sealevelTuktoyaktuk[["latitude"]],
+    coef$name, coef$amplitude, coef$phase
+)
 p2 <- predict(m2, sealevelTuktoyaktuk[["time"]])
-stopifnot(max(abs(p2 - p0), na.rm=TRUE) < 1)
-par(mfrow=c(3, 1))
+par(mfrow = c(3, 1))
 oce.plot.ts(sealevelTuktoyaktuk[["time"]], p0)
 ylim <- par("usr")[3:4] # to match scales in other panels
-oce.plot.ts(sealevelTuktoyaktuk[["time"]], p1, ylim=ylim)
-oce.plot.ts(sealevelTuktoyaktuk[["time"]], p2, ylim=ylim)
+oce.plot.ts(sealevelTuktoyaktuk[["time"]], p1, ylim = ylim)
+oce.plot.ts(sealevelTuktoyaktuk[["time"]], p2, ylim = ylim)
 
 }
 \references{
@@ -107,10 +143,12 @@ Pacific Marine Science Report. British Columbia, Canada: Institute of Ocean
 Sciences, Patricia Bay.
 \item Wikipedia, "Theory of Tides." https://en.wikipedia.org/wiki/Theory_of_tides
 Downloaded Aug 17, 2019.
-\item Github issue 1653: tidem() and t_tide do not produce identical results
-https://github.com/dankelley/oce/issues/1653
-\item Github issue 1654: predict(tidem()) uses all constituents, unlike T_TIDE
-https://github.com/dankelley/oce/issues/1654
+\item Github issue 1653 "tidem() and t_tide do not produce identical results"
+(https://github.com/dankelley/oce/issues/1653)
+\item Github issue 1654 "predict(tidem()) uses all constituents, unlike T_TIDE"
+(https://github.com/dankelley/oce/issues/1654)
+\item Github issue 2143 "mismatch in oce/NOAA frequency of SA tidal constituent"
+(https://github.com/dankelley/oce/issues/2143)
 }
 }
 \seealso{

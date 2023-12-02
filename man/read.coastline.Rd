@@ -2,7 +2,7 @@
 % Please edit documentation in R/coastline.R
 \name{read.coastline}
 \alias{read.coastline}
-\title{Read a Coastline File}
+\title{Read a coastline File}
 \usage{
 read.coastline(
   file,

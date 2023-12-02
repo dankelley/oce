@@ -52,8 +52,8 @@ If the first argument is an \linkS4class{oce} object, then salinity, etc., are
 extracted from it, and used for the calculation.
 }
 \examples{
-swSigmaT(35, 13, 1000, longitude=300, latitude=30, eos="gsw") # 26.39623
-swSigmaT(35, T90fromT68(13), 1000, eos="unesco") # 26.39354
+swSigmaT(35, 13, 1000, longitude = 300, latitude = 30, eos = "gsw") # 26.39623
+swSigmaT(35, T90fromT68(13), 1000, eos = "unesco") # 26.39354
 
 }
 \references{

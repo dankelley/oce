@@ -2,7 +2,7 @@
 % Please edit documentation in R/windrose.R
 \name{as.windrose}
 \alias{as.windrose}
-\title{Create a Windrose Object}
+\title{Create a windrose Object}
 \usage{
 as.windrose(x, y, dtheta = 15, debug = getOption("oceDebug"))
 }
@@ -41,11 +41,12 @@ Create a wind-rose object, typically for plotting with
 }
 \examples{
 library(oce)
-xcomp <- rnorm(360) + 1
-ycomp <- rnorm(360)
-wr <- as.windrose(xcomp, ycomp)
+set.seed(1234)
+theta <- seq(0, 360, 0.25)
+x <- 1 + cos(pi / 180 * theta) + rnorm(theta)
+y <- sin(pi / 180 * theta) + rnorm(theta)
+wr <- as.windrose(x, y)
 summary(wr)
-plot(wr)
 
 }
 \seealso{

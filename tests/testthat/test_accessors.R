@@ -180,7 +180,7 @@ test_that("accessor operations (adp)", {
 test_that("renaming items in the data slot", {
     data(ctd)
     bad <- oceRenameData(ctd, "salinity", "saltiness", note="a bad idea!")
-    expect_error(plot(bad), "data slot lacks 'salinity")
+    expect_error(plot(bad), "data slot lacks \"salinity\"")
 })
 
 test_that("argo original names (issue 1640)", {

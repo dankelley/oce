@@ -166,11 +166,12 @@ over time.
 
 Similar steps can be followed on other servers.
 }
-\examples{
-\dontrun{
+\section{Sample of Usage}{
+
+\preformatted{
 # Example 1: read from a local file
 library(oce)
-d <- read.argo("/data/OAR/6900388_prof.nc")
+d <- read.argo("~/data/OAR/6900388_prof.nc")
 summary(d)
 plot(d)
 
@@ -192,9 +193,8 @@ download.file(float, profile)
 argo <- read.argo(profile)
 summary(argo)
 }
-
-
 }
+
 \references{
 \enumerate{
 \item \verb{https://argo.ucsd.edu}

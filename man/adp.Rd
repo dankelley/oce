@@ -24,9 +24,8 @@ data(adp)
 plot(adp)
 
 # Note that tides have moved the mooring.
-plot(adp, which=15:18)
+plot(adp, which = 15:18)
 }
-
 
 }
 \seealso{

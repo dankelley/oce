@@ -24,7 +24,7 @@ This function is somewhat analogous to \code{\link[=subset.data.frame]{subset.da
 library(oce)
 data(cm)
 plot(cm)
-plot(subset(cm, time < mean(range(cm[['time']]))))
+plot(subset(cm, time < mean(range(cm[["time"]]))))
 
 }
 \seealso{

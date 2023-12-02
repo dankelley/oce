@@ -2,7 +2,7 @@
 % Please edit documentation in R/ctd.odv.R
 \name{read.ctd.odv}
 \alias{read.ctd.odv}
-\title{Read an ODV-type CTD File}
+\title{Read a "ctd" File in ODV Format}
 \usage{
 read.ctd.odv(
   file,
@@ -89,7 +89,7 @@ better for normal calls by a user.}
 This function returns a \linkS4class{ctd} object.
 }
 \description{
-Read an ODV-type CTD File
+Read a "ctd" File in ODV Format
 }
 \details{
 \code{\link[=read.ctd.odv]{read.ctd.odv()}} attempts to read files stored in ODV format,
@@ -142,6 +142,7 @@ Other things related to ctd data:
 \code{\link{read.ctd.aml}()},
 \code{\link{read.ctd.itp}()},
 \code{\link{read.ctd.odf}()},
+\code{\link{read.ctd.saiv}()},
 \code{\link{read.ctd.sbe}()},
 \code{\link{read.ctd.ssda}()},
 \code{\link{read.ctd.woce.other}()},

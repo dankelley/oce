@@ -22,6 +22,7 @@
   Tlim,
   plim,
   densitylim,
+  sigmalim,
   N2lim,
   Rrholim,
   dpdtlim,
@@ -169,10 +170,12 @@ the drawing of a coastline.  There is a speed penalty for providing
 coastline, it makes sense to load it in before the first call, and to
 supply the object as an argument, as opposed to the name of the object.}
 
-\item{Slim, Clim, Tlim, plim, densitylim, N2lim, Rrholim, dpdtlim, timelim}{optional
-numeric vectors of length 2, that give axis limits for salinity,
-conductivity, temperature, pressure, the square of buoyancy frequency,
-density ratio, dp/dt, and time, respectively.}
+\item{Slim, Clim, Tlim, plim, densitylim, sigmalim, N2lim, Rrholim, dpdtlim, timelim}{optional
+numeric vectors of length 2, that give axis limits for salinity (or Absolute
+Salinity, if \code{eos} is \code{"gsw"}), conductivity, in-situ or potential
+temperature (or Conservative Temperature, if \code{eos} is `"gsw"'), pressure,
+density, density anomaly (either sigma-theta or sigma0),
+square of buoyancy frequency, density ratio, dp/dt, and time, respectively.}
 
 \item{drawIsobaths}{logical value indicating whether to draw depth contours on
 maps, in addition to the coastline. The argument has no effect except
@@ -331,19 +334,23 @@ data(ctd)
 plot(ctd)
 
 # 2. how to customize depth contours
-par(mfrow=c(1, 2))
+par(mfrow = c(1, 2))
 data(section)
 stn <- section[["station", 105]]
-plot(stn, which="map", drawIsobaths=TRUE)
-plot(stn, which="map")
+plot(stn, which = "map", drawIsobaths = TRUE)
+plot(stn, which = "map")
 data(topoWorld)
 tlon <- topoWorld[["longitude"]]
 tlat <- topoWorld[["latitude"]]
 tdep <- -topoWorld[["z"]]
-contour(tlon, tlat, tdep, drawlabels=FALSE,
-        levels=seq(1000, 6000, 1000), col="lightblue", add=TRUE)
-contour(tlon, tlat, tdep, vfont=c("sans serif", "bold"),
-        levels=stn[["waterDepth"]], col="red", lwd=2, add=TRUE)
+contour(tlon, tlat, tdep,
+    drawlabels = FALSE,
+    levels = seq(1000, 6000, 1000), col = "lightblue", add = TRUE
+)
+contour(tlon, tlat, tdep,
+    vfont = c("sans serif", "bold"),
+    levels = stn[["waterDepth"]], col = "red", lwd = 2, add = TRUE
+)
 
 }
 \seealso{
@@ -409,6 +416,7 @@ Other things related to ctd data:
 \code{\link{read.ctd.itp}()},
 \code{\link{read.ctd.odf}()},
 \code{\link{read.ctd.odv}()},
+\code{\link{read.ctd.saiv}()},
 \code{\link{read.ctd.sbe}()},
 \code{\link{read.ctd.ssda}()},
 \code{\link{read.ctd.woce.other}()},

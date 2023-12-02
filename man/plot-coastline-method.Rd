@@ -200,14 +200,16 @@ used now, instead.
 \examples{
 \donttest{
 library(oce)
-par(mar=c(2, 2, 1, 1))
+par(mar = c(2, 2, 1, 1))
 data(coastlineWorld)
 plot(coastlineWorld)
-plot(coastlineWorld, clongitude=-63.6, clatitude=44.6, span=1000)
+plot(coastlineWorld, clongitude = -63.6, clatitude = 44.6, span = 1000)
 
 # Canada in Lambert projection
-plot(coastlineWorld, clongitude=-95, clatitude=65, span=5500,
-     grid=10, projection='+proj=laea +lon_0=-100 +lat_0=55')
+plot(coastlineWorld,
+    clongitude = -95, clatitude = 65, span = 5500,
+    grid = 10, projection = "+proj=laea +lon_0=-100 +lat_0=55"
+)
 }
 
 }

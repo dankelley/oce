@@ -92,5 +92,8 @@ Other things related to adv data:
 \code{\link{xyzToEnuAdv}()},
 \code{\link{xyzToEnu}()}
 }
+\author{
+Dan Kelley
+}
 \concept{things related to adp data}
 \concept{things related to adv data}

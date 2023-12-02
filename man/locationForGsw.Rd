@@ -2,7 +2,7 @@
 % Please edit documentation in R/sw.R
 \name{locationForGsw}
 \alias{locationForGsw}
-\title{Alter Longitude and Latitude for gsw Computations.}
+\title{Alter Longitude and Latitude for gsw Computations}
 \usage{
 locationForGsw(x)
 }

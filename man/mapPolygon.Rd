@@ -39,15 +39,17 @@ data(coastlineWorld)
 data(topoWorld)
 
 # Bathymetry near southeastern Canada
-par(mfrow=c(1,1), mar=c(2,2,1,1))
-cm <- colormap(zlim=c(-5000, 0), col=oceColorsGebco)
-drawPalette(colormap=cm)
-lonlim<- c(-60,-50)
-latlim<- c(40,60)
-mapPlot(coastlineWorld, longitudelim=lonlim,
-latitudelim=latlim, projection="+proj=merc", grid=FALSE)
-mapImage(topoWorld, colormap=cm)
-mapPolygon(coastlineWorld[['longitude']], coastlineWorld[['latitude']], col="lightgray")
+par(mfrow = c(1, 1), mar = c(2, 2, 1, 1))
+cm <- colormap(zlim = c(-5000, 0), col = oceColorsGebco)
+drawPalette(colormap = cm)
+lonlim <- c(-60, -50)
+latlim <- c(40, 60)
+mapPlot(coastlineWorld,
+    longitudelim = lonlim,
+    latitudelim = latlim, projection = "+proj=merc", grid = FALSE
+)
+mapImage(topoWorld, colormap = cm)
+mapPolygon(coastlineWorld[["longitude"]], coastlineWorld[["latitude"]], col = "lightgray")
 }
 
 }

@@ -2,7 +2,7 @@
 % Please edit documentation in R/adp.R
 \name{beamUnspreadAdp}
 \alias{beamUnspreadAdp}
-\title{Adjust ADP Signal for Spherical Spreading}
+\title{Adjust adp Object to Account for Spherical Spreading}
 \usage{
 beamUnspreadAdp(
   x,
@@ -46,18 +46,18 @@ given by \code{x[["distance"]]}.
 \examples{
 library(oce)
 data(adp)
-plot(adp, which=5) # beam 1 echo intensity
+plot(adp, which = 5) # beam 1 echo intensity
 adp.att <- beamUnspreadAdp(adp)
-plot(adp.att, which=5) # beam 1 echo intensity
+plot(adp.att, which = 5) # beam 1 echo intensity
 # Profiles
-par(mar=c(4, 4, 1, 1))
-a <- adp[["a", "numeric"]]             # second arg yields matrix return value
+par(mar = c(4, 4, 1, 1))
+a <- adp[["a", "numeric"]] # second arg yields matrix return value
 distance <- adp[["distance"]]
-plot(apply(a,2,mean), distance, type='l', xlim=c(0,256))
-lines(apply(a,2,median), distance, type='l',col='red')
-legend("topright",lwd=1,col=c("black","red"),legend=c("original","attenuated"))
+plot(apply(a, 2, mean), distance, type = "l", xlim = c(0, 256))
+lines(apply(a, 2, median), distance, type = "l", col = "red")
+legend("topright", lwd = 1, col = c("black", "red"), legend = c("original", "attenuated"))
 # Image
-plot(adp.att, which="amplitude",col=oce.colorsViridis(100))
+plot(adp.att, which = "amplitude", col = oce.colorsViridis(100))
 
 }
 \references{

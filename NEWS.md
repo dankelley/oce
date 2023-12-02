@@ -1,9 +1,19 @@
 # oce 1.8.2
 
-* Remove `trimString()` after a long deprecation (issue 2123).
-* Change `amsr` dataset and related functions for new format (issues 2124 to 2133).
+* Add `package?oce` documentation (had been missing with a Roxygen2 change).
+* Add `read.ctd.saiv()` to read data from SAIV instruments (issue 2141).
+* Remove many dontrun examples from the docs (issue 2152).
+* Remove `trimString()`, after it had been deprecated for a long time (issue 2123).
+* Remove use of the deprecated `sp` package (issue 2154).
+* Change `amsr` dataset and functions to handle new format (issues 2124 to 2133, 2147).
+* Change `as.ctd()` to handle multi-profile Argo better (issue 2173).
+* Change `as.tidem()` to handle NOAA constituent names and frequencies (issues 2143, 2144 and 2146).
+* Change C/C++ `sprintf()` calls so all formats match arguments (issue 2172).
+* Change `computableWaterProperties` to handle a vector of variable names.
+* Change `plot.adp()` to obey `xlab` if x axis represents time (issue 2162).
 * Change `plot.cm()` to obey `xlim`, `ylim`, `xaxs` and `yaxs` (issue 2121).
 * Change `plotTS()` and `plotProfile()` to accept `type="b"`.
+* Change `plot.windrose()` for `type="fivenum"` (issue 2164).
 
 # oce 1.8.1 (on CRAN)
 

@@ -146,22 +146,22 @@ files that hold data from RBR CTD instruments linked with phone/tablet
 devices equipped with GPS sensors.
 }
 
-\examples{
+\section{Sample of Usage}{
 
-\dontrun{
+\preformatted{
 library(oce)
 data(ctdRaw)
 # Example 1: focus on downcast
 plot(ctdTrim(ctdRaw))
 # Example 2: user-supplied function.
 trimByIndex<-function(data, parameters) {
-  parameters[1] < data$scan & data$scan < parameters[2]
+    parameters[1] < data$scan & data$scan < parameters[2]
 }
 trimmed <- ctdTrim(ctdRaw, trimByIndex, parameters=c(130, 380))
 plot(trimmed)
 }
-
 }
+
 \references{
 The Seabird CTD instrument is described at
 \verb{http://www.seabird.com/products/spec_sheets/19plusdata.htm}.
@@ -199,6 +199,7 @@ Other things related to ctd data:
 \code{\link{read.ctd.itp}()},
 \code{\link{read.ctd.odf}()},
 \code{\link{read.ctd.odv}()},
+\code{\link{read.ctd.saiv}()},
 \code{\link{read.ctd.sbe}()},
 \code{\link{read.ctd.ssda}()},
 \code{\link{read.ctd.woce.other}()},

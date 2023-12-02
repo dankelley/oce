@@ -58,8 +58,9 @@ string.
 Constructs a query to the NaturalEarth server (see reference 1) to download coastline
 data (or lake data, river data, etc) in any of three resolutions.
 }
-\examples{
-\dontrun{
+\section{Non-Executable Examples}{
+
+\preformatted{
 library(oce)
 # User must create directory ~/data/coastline first.
 # As of September 2016, the downloaded file, named
@@ -68,8 +69,8 @@ filename <- download.coastline(destdir="~/data/coastline")
 coastline <- read.coastline(filename)
 plot(coastline)
 }
-
 }
+
 \references{
 \enumerate{
 \item The NaturalEarth server is at \verb{https://www.naturalearthdata.com}

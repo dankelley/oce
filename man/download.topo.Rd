@@ -91,8 +91,9 @@ Thanks to Clark Richards for pointing this out!
 hints from \code{marmap::getNOAAbathy()}.
 }
 
-\examples{
-\dontrun{
+\section{Sample of Usage}{
+
+\preformatted{
 library(oce)
 topoFile <- download.topo(west=-66, east=-60, south=43, north=47,
     resolution=1, destdir="~/data/topo")
@@ -103,8 +104,8 @@ if (requireNamespace("ocedata", quietly=TRUE)) {
     lines(coastlineWorldFine[["longitude"]], coastlineWorldFine[["latitude"]])
 }
 }
-
 }
+
 \references{
 \itemize{
 \item Amante, C. and B.W. Eakins, 2009. ETOPO1 1 Arc-Minute Global Relief

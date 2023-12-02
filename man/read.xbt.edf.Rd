@@ -55,7 +55,7 @@ can find a way to otherwise silence the NOTE.
 }
 \examples{
 library(oce)
-xbt <- read.oce(system.file("extdata", "xbt.edf", package="oce"))
+xbt <- read.oce(system.file("extdata", "xbt.edf", package = "oce"))
 summary(xbt)
 plot(xbt)
 

@@ -130,16 +130,20 @@ containing four items, each of which is a character vector
 holding the names of things that can be accessed with <code>[[</code>.
 The <code>data</code> and <code>metadata</code> items hold the names of
 entries in the object's data and metadata
-slots, respectively. The
-<code>metadataDerived</code> holds only <code>""</code>, because
-no derived metadata values are defined for <code>cm</code> objects.</p></li>
+slots, respectively. Note that <code>metadataDerived</code>
+holds only <code>""</code>, because no derived metadata values
+are defined for <code>tidem</code> objects.</p></li>
 <li><p>If <code>i</code> is <code>"frequency"</code> or <code>"freq"</code>, then a vector of
-constituent frequencies (stored
-as <code>freq</code> in the data slot) is returned.</p></li>
+constituent frequencies is returned.</p></li>
 <li><p>If <code>i</code> is <code>"amplitude"</code> then a vector of constituent amplitudes
 is returned.</p></li>
 <li><p>If <code>i</code> is <code>"phase"</code> then a vector of constituent phases
 is returned.</p></li>
+<li><p>If <code>i</code> is <code>"constituents"</code> then a data frame holding constituent
+name, frequency, amplitude and phase is returned.</p></li>
+<li><p>If <code>i</code> is a vector of constituent names, then the return
+value is as for <code>"constituents"</code>, except that only the named
+those constituents are returned.</p></li>
 </ul></div>
     <div id="details-of-the-general-method">
     <h2>Details of the General Method</h2>

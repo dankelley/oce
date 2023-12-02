@@ -48,16 +48,15 @@ NULL
 #' although neither link has proven to be reliable.)
 #'
 #' @examples
-#' degC <- seq(0,30,length.out=100)
-#' p <- seq(98,102,length.out=100) * 1e3
-#' contour(x=degC, y=p, z=outer(degC,p,airRho), labcex=1)
-airRho <- function(temperature, pressure, humidity)
-{
+#' degC <- seq(0, 30, length.out = 100)
+#' p <- seq(98, 102, length.out = 100) * 1e3
+#' contour(x = degC, y = p, z = outer(degC, p, airRho), labcex = 1)
+airRho <- function(temperature, pressure, humidity) {
     Tkelvin <- temperature + 273.15
     # http://en.wikipedia.org/wiki/Density_of_air
-    M <- 0.0289644                      # kg/mol
+    M <- 0.0289644 # kg/mol
     R <- 287.058
     R <- 8.31447
-    #1.225
+    # 1.225
     M * pressure / R / Tkelvin
 }

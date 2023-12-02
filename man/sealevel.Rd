@@ -17,6 +17,10 @@ This sample sea-level dataset is the 2003 record from Halifax Harbour in
 Nova Scotia, Canada.  For reasons that are not mentioned on the data archive
 website, the record ends on the 8th of October.
 }
+\details{
+See \code{\link[=predict.tidem]{predict.tidem()}} for an example that reveals the storm surge
+that resulted from Hurricane Juan, in this year.
+}
 \references{
 \enumerate{
 \item Fisheries and Oceans Canada \code{http://www.meds-sdmm.dfo-mpo.gc.ca/isdm-gdsi/index-eng.html}

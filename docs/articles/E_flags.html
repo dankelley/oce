@@ -99,7 +99,7 @@
       <h1 data-toc-skip>5. Dealing with data-quality flags</h1>
                         <h4 data-toc-skip class="author">Dan Kelley (<a href="https://orcid.org/0000-0001-7808-5911" class="external-link uri">https://orcid.org/0000-0001-7808-5911</a>)</h4>
             
-            <h4 data-toc-skip class="date">2023-08-08</h4>
+            <h4 data-toc-skip class="date">2023-11-17</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/dankelley/oce/blob/HEAD/vignettes/E_flags.Rmd" class="external-link"><code>vignettes/E_flags.Rmd</code></a></small>
       <div class="hidden name"><code>E_flags.Rmd</code></div>
@@ -192,9 +192,9 @@ actions in the object’s <code>processingLog</code> slot.</p>
 <li><p>Use <code>initializeFlagScheme</code> to establish a mapping
 between flag numerical value and flag meaning. This step is not strictly
 necessary, but it is useful because it stores the flag scheme within the
-object’s <code>metadata</code> slot, as a form of documentation. This
-step may be done only once for a given object, because changing a flag
-scheme in the middle of processing invites errors.</p></li>
+<code>metadata</code> slot of the object, as a form of documentation.
+This step may be done only once for a given object, because changing a
+flag scheme in the middle of processing invites errors.</p></li>
 <li><p>Use <code>initializeFlags</code> to set up space for flag
 storage, and to initialize values (normally to a code indicating either
 unchecked data or acceptable data). This may be done only once per data

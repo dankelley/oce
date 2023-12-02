@@ -182,7 +182,7 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, IntegerVector from, IntegerV
     Rprintf("do_ldc_ad2cp_in_file(filename, from=%d, to=%d, by=%d, debug=%d) {\n", from[0], to[0], by[0], DEBUG[0]);
     Rprintf("  filename=\"%s\"\n", fn.c_str());
     //Rprintf("  ignoreChecksums[0]=%d\n", ignoreChecksums[0]);
-    Rprintf("  filesize=%d bytes\n", filesize);
+    Rprintf("  filesize=%lld bytes\n", filesize);
   }
   long long int chunk = 0;
   long long int cindex = 0;//, cindex_last_good = 0;
@@ -198,7 +198,7 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, IntegerVector from, IntegerV
   while (1) {
     c = getc(fp);
     if (c == EOF) {
-      ::Rf_error("this file does not contain a single 0x", SYNC, " byte");
+      ::Rf_error("this file does not contain a single 0x%02x byte", SYNC);
       break;
     }
     if (SYNC == c) {
@@ -208,7 +208,7 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, IntegerVector from, IntegerV
     cindex++;
   }
   if (debug)
-    Rprintf("First SYNC byte (0x%02x) at cindex=%d\n", SYNC, cindex);
+    Rprintf("First SYNC byte (0x%02x hex) at cindex=%lld\n", SYNC, cindex);
   // The table in [ref 1 sec 6.1, page 80-81] says header pieces are
   // 10 bytes long, so once we get an 0xA5, we'll read 9 more
   // bytes to assemble the header in bytes10.  (We grab all the
@@ -251,12 +251,12 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, IntegerVector from, IntegerV
     size_t bytes_read;
     // Return 2 of these bytes later, if the header length is 10.
     if (12 != fread(&header_bytes, 1, 12, fp))
-      ::Rf_error("cannot read header_bytes at cindex=%ld of %ld byte file\n", cindex, filesize);
+      ::Rf_error("cannot read header_bytes at cindex=%lld of %lld byte file\n", cindex, filesize);
     // if (1 != fread(&header.sync, 1, 1, fp))
     //   ::Rf_error("cannot read header.sync at cindex=%ld of %ld byte file\n", cindex, filesize);
     header.sync = header_bytes[0];
     if (header.sync != SYNC)
-      ::Rf_error("expected header.sync to be 0x%02x but it was 0x%02x at cindex=%ld (%7.4f%% through file) ... skipping to next 0x%02x character...\n", SYNC, header.sync, cindex, 100.0*cindex/filesize, SYNC);
+      ::Rf_error("expected header.sync to be 0x%02x but it was 0x%02x at cindex=%lld (%7.4f%% through file) ... skipping to next 0x%02x character...\n", SYNC, header.sync, cindex, 100.0*cindex/filesize, SYNC);
     header.header_size = header_bytes[1];
     header.id = header_bytes[2];
     header.family = header_bytes[3];
@@ -272,11 +272,11 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, IntegerVector from, IntegerV
       header.data_checksum = header_bytes[8] + 256 * header_bytes[9];
       header.header_checksum = header_bytes[10] + 256 * header_bytes[11];
     } else {
-      ::Rf_error("invalid header.header_size %d (must be 10 or 12) at cindex=%ld (%7.4f%% through file)\n",
+      ::Rf_error("invalid header.header_size %d (must be 10 or 12) at cindex=%lld (%7.4f%% through file)\n",
           header.header_size, cindex, 100.0*(cindex)/filesize);
     }
     if (debug > 1) {
-      Rprintf("Chunk %d at cindex=%ld, %.5f%% through file: header_size=%d, data_size=%d, id=0x%02x=",
+      Rprintf("Chunk %lld at cindex=%lld, %.5f%% through file: header_size=%d, data_size=%lu, id=0x%02x=",
           chunk, cindex, 100.0*cindex/filesize, header.header_size, header.data_size, header.id);
       if (header.id == 0xa0) Rprintf("String\n");
       else if (header.id == 0x15) Rprintf("Burst data record\n");
@@ -292,11 +292,10 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, IntegerVector from, IntegerV
       else if (header.id == 0x23) Rprintf("Echo Sounder raw sample data record\n");
       else if (header.id == 0x24) Rprintf("Echo Sounder raw synthetic transmit pulse data record\n");
       else Rprintf("Unrecognized ID (0x%02x)\n", header.id);
-      Rprintf("  header_size=0x%02x=%d id=0x%02x family=0x%02x data_size=%d\n",
-          header.header_size, header.header_size, header.id, header.family,
-          header.data_size);
+      Rprintf("  header_size=0x%02x=%d id=0x%02x family=0x%02x data_size=%lu\n",
+          header.header_size, header.header_size, header.id, header.family, header.data_size);
       if (cindex != ftell(fp) - header.header_size)
-        Rprintf("Bug: cindex (%ld) is not equal to ftell()-header_size (%d)\n",
+        Rprintf("Bug: cindex (%lld) is not equal to ftell()-header_size (%ld)\n",
             cindex, ftell(fp)-header.header_size);
     } // debug
     // See if header checksum is correct
@@ -306,14 +305,14 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, IntegerVector from, IntegerV
     if (computed_header_checksum == header.header_checksum) {
       if (debug > 1) {
         if (computed_header_checksum == header.header_checksum) {
-          Rprintf("    cindex=%ld: header checksum 0x%02x is correct\n", cindex, header.header_checksum);
+          Rprintf("    cindex=%lld: header checksum 0x%02x is correct\n", cindex, header.header_checksum);
         } else {
-          Rprintf("    cindex=%ld: header checksum 0x%02x disagrees with expectation 0x%02x\n", cindex, computed_header_checksum, header.header_checksum);
+          Rprintf("    cindex=%lld: header checksum 0x%02x disagrees with expectation 0x%02x\n", cindex, computed_header_checksum, header.header_checksum);
         }
       }
     } else {
       checksum_failures++;
-      Rprintf("ERROR: header checksum (0x%02x) disagrees with expectation (0x%02x) at cindex=%ld\n",
+      Rprintf("ERROR: header checksum (0x%02x) disagrees with expectation (0x%02x) at cindex=%lld\n",
           computed_header_checksum, header.header_checksum, cindex);
     }
     start_buf[chunk] = cindex;
@@ -330,16 +329,16 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, IntegerVector from, IntegerV
       }
     }
     if (found == 0)
-      Rf_warning("undocumented header ID 0x%02x at cindex %ld", header.id, cindex);
+      Rf_warning("undocumented header ID 0x%02x at cindex %lld", header.id, cindex);
     id_buf[chunk] = header.id;
     // Check the header checksum.
     // Increase size of data buffer, if required.
     if (header.data_size > dbuflen) { // expand the buffer if required
       if (debug)
-        Rprintf("Increasing 'dbuf' size from %d to %d at cindex:%ld (%.4f%%)\n",
+        Rprintf("Increasing 'dbuf' size from %d to %lu at cindex %lld (%.4f%%)\n",
             dbuflen, header.data_size, cindex, 100.0*cindex/filesize);
       if (cindex != ftell(fp))
-        Rprintf("  *BUG*: cindex=%ld is out of synch with ftell(fp)=%ld\n", cindex, ftell(fp));
+        Rprintf("  *BUG*: cindex %lld is out of synch with ftell(fp)=%ld\n", cindex, ftell(fp));
       dbuflen = header.data_size;
       dbuf = (unsigned char *)R_Realloc(dbuf, dbuflen, unsigned char);
     }
@@ -347,8 +346,7 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, IntegerVector from, IntegerV
     bytes_read = fread(dbuf, 1, header.data_size, fp);
     // Check that we got all the data
     if (bytes_read != header.data_size) {
-      Rf_warning("early EOF in chunk %ld at cindex=%ld",
-          chunk+1, cindex-header.header_size);
+      Rf_warning("early EOF in chunk %lld at cindex=%lld", chunk+1, cindex-header.header_size);
       break; // give up
     }
     cindex += header.data_size;
@@ -361,23 +359,23 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, IntegerVector from, IntegerV
       reset_cindex = 0;
       if (debug > 1) {
         if (dbufcs == header.data_checksum) {
-          Rprintf("    cindex=%d: data checksum 0x%02x equals expectation\n", cindex, dbufcs);
+          Rprintf("    cindex %lld: data checksum 0x%02x equals expectation\n", cindex, dbufcs);
         } else {
-          Rprintf("    cincex=%d: data checksum 0x%02x disagrees with expectation 0x%02x\n", cindex, dbufcs, header.data_checksum);
+          Rprintf("    cincex %lld: data checksum 0x%02x disagrees with expectation 0x%02x\n", cindex, dbufcs, header.data_checksum);
         }
       }
     } else {
       checksum_failures++;
-      Rprintf("ERROR: data checksum, 0x%02x, disagrees with expectation, 0x%02x, at cindex=%ld.\n",
+      Rprintf("ERROR: data checksum, 0x%02x, disagrees with expectation, 0x%02x, at cindex %lld.\n",
           dbufcs, header.data_checksum, cindex);
       if (cindex != ftell(fp))
-        Rprintf("  *BUG*: cindex=%ld is out of synch with ftell(fp)=%ld\n", cindex, ftell(fp));
+        Rprintf("  *BUG*: cindex %lld is out of synch with ftell(fp)=%ld\n", cindex, ftell(fp));
 
       while (1) {
         c = getc(fp);
         cindex++;
         if (debug)
-          Rprintf("cindex=%5d c=0x%02x\n", cindex, c);
+          Rprintf("cindex=%5lld c=0x%02x\n", cindex, c);
         if (c == EOF) {
           Rprintf("... got to end of file while searching for a sync character (0x%02x)\n", SYNC);
           early_EOF = 1;
@@ -385,13 +383,13 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, IntegerVector from, IntegerV
         }
         if (c == SYNC) {
           //unsigned int trial_cindex = cindex; // so we can reset to here if this trial works
-          Rprintf("... got a sync character (0x%02x) at cindex=%d (%7.4f%% through file)\n",
+          Rprintf("... got a sync character (0x%02x) at cindex %lld (%7.4f%% through file)\n",
               SYNC, cindex, 100.0*cindex/filesize);
           // header size (should be 10 or 12)
           int trial_header_size = getc(fp);
           cindex++;
           if (trial_header_size == EOF) {
-            Rprintf("    got to end of file while searching for a header-size character at cindex=%ld\n", cindex);
+            Rprintf("    got to end of file while searching for a header-size character at cindex %lld\n", cindex);
             early_EOF = 1;
             break;
           }
@@ -422,12 +420,12 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, IntegerVector from, IntegerV
             //. Rprintf("            family=%d is consistent with previous family\n", family, cindex);
             cindex -= 4;
             fseek(fp, -4, SEEK_CUR);
-            Rprintf("   ... skipped forward to a possible header at cindex=%ld\n", cindex);
+            Rprintf("   ... skipped forward to a possible header at cindex=%lld\n", cindex);
             if (cindex != ftell(fp))
-              Rprintf("  *BUG*: cindex=%ld is out of synch with ftell(fp)=%ld\n", cindex, ftell(fp));
+              Rprintf("  *BUG*: cindex %lld is out of synch with ftell(fp)=%ld\n", cindex, ftell(fp));
             break;
           } else {
-            Rprintf(" expecting family (0x%02x) but got 0x%02x at cindex=%d\n",
+            Rprintf(" expecting family (0x%02x) but got 0x%02x at cindex %lld\n",
                 family, c, cindex);
           }
         }

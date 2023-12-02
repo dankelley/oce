@@ -2,7 +2,7 @@
 % Please edit documentation in R/adp.nortek.R
 \name{read.adp.nortek}
 \alias{read.adp.nortek}
-\title{Read a Nortek ADP File}
+\title{Read an adp File in Nortek Format}
 \usage{
 read.adp.nortek(
   file,
@@ -12,7 +12,7 @@ read.adp.nortek(
   tz = getOption("oceTz"),
   longitude = NA,
   latitude = NA,
-  type = c("aquadoppHR", "aquadoppProfiler", "aquadopp", "aquadoppPlusMagnetometer"),
+  type = NULL,
   orientation,
   distance,
   encoding = NA,
@@ -54,7 +54,10 @@ East.}
 \item{latitude}{optional signed number indicating the latitude in degrees
 North.}
 
-\item{type}{a character string indicating the type of instrument.}
+\item{type}{a character string indicating the type of instrument.
+If NULL (the default), then \code{\link[=oceMagic]{oceMagic()}} is used to infer the type. If
+non-NULL, then the value must be one of: \code{"aquadoppHR"},
+\code{"aquadoppProfiler"}, \code{"aquadopp"}, or \code{"aquadoppPlusMagnetometer"}.}
 
 \item{orientation}{an optional character string specifying the orientation of
 the sensor, provided for those cases in which it cannot be inferred from the
@@ -96,8 +99,41 @@ NMEA strings, then navigational data will be stored in an item
 called \code{nmea} in the \code{data} slot).
 }
 \description{
-Read a Nortek ADP File
+Read an adp File in Nortek Format
 }
+\section{How the binary file is decoded}{
+
+
+This file type, like other acoustic-Doppler types, is read
+with a hybrid R/C++ system, for efficiency.
+The processing steps are sketched below, for
+users who want to inspect the code or build upon it.
+\enumerate{
+\item In R, \code{\link[=readBin]{readBin()}} is used to insert the file contents into
+a \link{vector} of type \code{raw}.
+\item In C++, this raw vector is scanned byte by byte,
+to find the starting indices of data "chunks", or subsections of
+the data that correspond to individual sampling times.
+Checksum computations are also done at this stage, to detect
+possible data corruption.  Warnings are issued for any bad chunks,
+and they are skipped in further processing. The valid
+starting points are then passed back to R as a \link{vector} of
+type \code{integer}.
+\item In R, \code{\link[=readBin]{readBin()}} is used to read the components of each chunk.
+For speed, this is done in a vectorized fashion. For example,
+all the velocities in the whole file are read in a single call
+to \code{\link[=readBin]{readBin()}}. This process is done for each of the data
+fields that are to be handled.  Importantly, these \code{\link[=readBin]{readBin()}}
+calls are tailored to the data, using values of
+the \code{size}, \code{endian} and \code{signed} parameters that are tailored
+to the structure of the given component.
+Scaling factors are then applied as required, to convert the
+components to physical units.
+\item Finally, in R, the acquired items are inserted into the \code{data} or
+\code{metadata} slot of the return value, according to oce convention.
+}
+}
+
 \references{
 \enumerate{
 \item Information on Nortek profilers (including the System Integrator Guide,

@@ -56,7 +56,7 @@ If none of these conditions is met, a warning is issued.
 data(ctd)
 summary(ctd)
 # Move the CTD profile a nautical mile north.
-ctd[["latitude"]] <- 1/60 + ctd[["latitude"]] # acts in metadata
+ctd[["latitude"]] <- 1 / 60 + ctd[["latitude"]] # acts in metadata
 # Increase the salinity by 0.01.
 ctd[["salinity"]] <- 0.01 + ctd[["salinity"]] # acts in data
 summary(ctd)
@@ -118,6 +118,7 @@ Other things related to ctd data:
 \code{\link{read.ctd.itp}()},
 \code{\link{read.ctd.odf}()},
 \code{\link{read.ctd.odv}()},
+\code{\link{read.ctd.saiv}()},
 \code{\link{read.ctd.sbe}()},
 \code{\link{read.ctd.ssda}()},
 \code{\link{read.ctd.woce.other}()},

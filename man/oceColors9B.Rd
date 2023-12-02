@@ -19,8 +19,10 @@ may be able to distinguish more colors with \code{oceColors9B}.
 }
 \examples{
 library(oce)
-imagep(volcano, col=oceColors9B(128),
-       zlab="oceColors9B")
+imagep(volcano,
+    col = oceColors9B(128),
+    zlab = "oceColors9B"
+)
 
 }
 \references{

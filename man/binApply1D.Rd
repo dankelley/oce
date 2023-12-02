@@ -50,7 +50,7 @@ p <- ctd[["pressure"]]
 S <- ctd[["salinity"]]
 pbreaks <- seq(0, max(p), 1)
 binned <- binApply1D(p, S, pbreaks, mean)
-lines(binned$result, binned$xmids, lwd=2, col=rgb(1, 0, 0, 0.9))
+lines(binned$result, binned$xmids, lwd = 2, col = rgb(1, 0, 0, 0.9))
 
 }
 \seealso{

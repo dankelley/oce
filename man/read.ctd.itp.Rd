@@ -2,7 +2,7 @@
 % Please edit documentation in R/ctd.itp.R
 \name{read.ctd.itp}
 \alias{read.ctd.itp}
-\title{Read an ITP-type ctd File}
+\title{Read a ctd File in ITP Format}
 \usage{
 read.ctd.itp(
   file,
@@ -89,7 +89,7 @@ better for normal calls by a user.}
 This function returns a \linkS4class{ctd} object.
 }
 \description{
-Read an ITP-type ctd File
+Read a ctd File in ITP Format
 }
 \references{
 Information about ice-tethered profile data is provided at
@@ -128,6 +128,7 @@ Other things related to ctd data:
 \code{\link{read.ctd.aml}()},
 \code{\link{read.ctd.odf}()},
 \code{\link{read.ctd.odv}()},
+\code{\link{read.ctd.saiv}()},
 \code{\link{read.ctd.sbe}()},
 \code{\link{read.ctd.ssda}()},
 \code{\link{read.ctd.woce.other}()},
@@ -143,6 +144,7 @@ Other things related to ctd data:
 Other functions that read ctd data: 
 \code{\link{read.ctd.aml}()},
 \code{\link{read.ctd.odf}()},
+\code{\link{read.ctd.saiv}()},
 \code{\link{read.ctd.sbe}()},
 \code{\link{read.ctd.ssda}()},
 \code{\link{read.ctd.woce.other}()},
@@ -152,11 +154,13 @@ Other functions that read ctd data:
 \author{
 Dan Kelley
 
-\code{read.ctd.itp} reads ice-tethered-profiler data that are stored
+\code{\link[=read.ctd.itp]{read.ctd.itp()}} reads ice-tethered-profiler data that are stored
 in a format files used by WHOI servers as of 2016-2017. Lacking
 documentation on the format, the author constructed this function
 to work with some files that were on-hand. Whether the function will
 prove robust is an open question.
+
+Dan Kelley
 }
 \concept{functions that read ctd data}
 \concept{things related to ctd data}

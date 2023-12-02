@@ -113,6 +113,7 @@ a map at bottom right.</p>
 <span>  <span class="va">Tlim</span>,</span>
 <span>  <span class="va">plim</span>,</span>
 <span>  <span class="va">densitylim</span>,</span>
+<span>  <span class="va">sigmalim</span>,</span>
 <span>  <span class="va">N2lim</span>,</span>
 <span>  <span class="va">Rrholim</span>,</span>
 <span>  <span class="va">dpdtlim</span>,</span>
@@ -281,11 +282,13 @@ coastline, it makes sense to load it in before the first call, and to
 supply the object as an argument, as opposed to the name of the object.</p></dd>
 
 
-<dt>Slim, Clim, Tlim, plim, densitylim, N2lim, Rrholim, dpdtlim, timelim</dt>
+<dt>Slim, Clim, Tlim, plim, densitylim, sigmalim, N2lim, Rrholim, dpdtlim, timelim</dt>
 <dd><p>optional
-numeric vectors of length 2, that give axis limits for salinity,
-conductivity, temperature, pressure, the square of buoyancy frequency,
-density ratio, dp/dt, and time, respectively.</p></dd>
+numeric vectors of length 2, that give axis limits for salinity (or Absolute
+Salinity, if <code>eos</code> is <code>"gsw"</code>), conductivity, in-situ or potential
+temperature (or Conservative Temperature, if <code>eos</code> is `"gsw"'), pressure,
+density, density anomaly (either sigma-theta or sigma0),
+square of buoyancy frequency, density ratio, dp/dt, and time, respectively.</p></dd>
 
 
 <dt>drawIsobaths</dt>
@@ -521,6 +524,7 @@ objects, and also outlines the other functions dealing with them.</p>
 <code><a href="read.ctd.itp.html">read.ctd.itp</a>()</code>,
 <code><a href="read.ctd.odf.html">read.ctd.odf</a>()</code>,
 <code><a href="read.ctd.odv.html">read.ctd.odv</a>()</code>,
+<code><a href="read.ctd.saiv.html">read.ctd.saiv</a>()</code>,
 <code><a href="read.ctd.sbe.html">read.ctd.sbe</a>()</code>,
 <code><a href="read.ctd.ssda.html">read.ctd.ssda</a>()</code>,
 <code><a href="read.ctd.woce.other.html">read.ctd.woce.other</a>()</code>,

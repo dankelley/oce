@@ -63,30 +63,11 @@ See \dQuote{Details} for the particular case of \linkS4class{ctd} objects.
 \details{
 Since all the entries in the \code{data} slot of ctd objects are vectors, \code{i} must be a vector (either logical as in Example 1 or integer as in Example 2), or a function taking a \code{ctd} object and returning such a vector (see \dQuote{Indexing rules}).
 }
-\examples{
-library(oce)
-# Example 1: Range-check salinity
-data(ctdRaw)
-# Salinity and temperature range checks
-qc <- ctdRaw
-# Initialize flags to 2, meaning good data in the default
-# scheme for handleFlags(ctd).
-qc <- initializeFlags(qc, "salinity", 2)
-qc <- initializeFlags(qc, "temperature", 2)
-# Flag bad salinities as 4
-oddS <- with(qc[["data"]], salinity < 25 | 40 < salinity)
-qc <- setFlags(qc, name="salinity", i=oddS, value=4)
-# Flag bad temperatures as 4
-oddT <- with(qc[["data"]], temperature < -2 | 40 < temperature)
-qc <- setFlags(qc, name="temperature", i=oddT, value=4)
-# Compare results in TS space
-par(mfrow=c(2, 1))
-plotTS(ctdRaw)
-plotTS(handleFlags(qc, flags=c(1, 3:9)))
+\section{Sample of Usage}{
 
+\preformatted{
 # Example 2: Interactive flag assignment based on TS plot, using
 # WHP scheme to define 'acceptable' and 'bad' codes
-\dontrun{
 options(eos="gsw")
 data(ctd)
 qc <- ctd
@@ -108,6 +89,28 @@ for (i in seq_len(n)) {
     plotTS(qc, type="o")
 }
 }
+}
+
+\examples{
+library(oce)
+# Example 1: Range-check salinity
+data(ctdRaw)
+# Salinity and temperature range checks
+qc <- ctdRaw
+# Initialize flags to 2, meaning good data in the default
+# scheme for handleFlags(ctd).
+qc <- initializeFlags(qc, "salinity", 2)
+qc <- initializeFlags(qc, "temperature", 2)
+# Flag bad salinities as 4
+oddS <- with(qc[["data"]], salinity < 25 | 40 < salinity)
+qc <- setFlags(qc, name = "salinity", i = oddS, value = 4)
+# Flag bad temperatures as 4
+oddT <- with(qc[["data"]], temperature < -2 | 40 < temperature)
+qc <- setFlags(qc, name = "temperature", i = oddT, value = 4)
+# Compare results in TS space
+par(mfrow = c(2, 1))
+plotTS(ctdRaw)
+plotTS(handleFlags(qc, flags = c(1, 3:9)))
 
 }
 \seealso{
@@ -163,6 +166,7 @@ Other things related to ctd data:
 \code{\link{read.ctd.itp}()},
 \code{\link{read.ctd.odf}()},
 \code{\link{read.ctd.odv}()},
+\code{\link{read.ctd.saiv}()},
 \code{\link{read.ctd.sbe}()},
 \code{\link{read.ctd.ssda}()},
 \code{\link{read.ctd.woce.other}()},
@@ -173,6 +177,9 @@ Other things related to ctd data:
 \code{\link{woceNames2oceNames}()},
 \code{\link{woceUnit2oceUnit}()},
 \code{\link{write.ctd}()}
+}
+\author{
+Dan Kelley
 }
 \concept{functions relating to data-quality flags}
 \concept{things related to ctd data}

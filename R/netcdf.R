@@ -30,33 +30,38 @@
 #'
 #' @return
 #' An [oce-class] object.
-read.netcdf <- function(file, ..., encoding=NA, debug=getOption("oceDebug"))
-{
-    if (missing(file))
+read.netcdf <- function(file, ..., encoding = NA, debug = getOption("oceDebug")) {
+    if (missing(file)) {
         stop("must supply 'file'")
-    if (is.character(file)) {
-        if (!file.exists(file))
-            stop("cannot find file '", file, "'")
-        if (0L == file.info(file)$size)
-            stop("empty file '", file, "'")
     }
-    if (!requireNamespace("ncdf4", quietly=TRUE))
-        stop('must install.packages("ncdf4") to read netcdf data')
-    oceDebug(debug, "read.netcdf() {\n", unindent=1)
+    if (is.character(file)) {
+        if (!file.exists(file)) {
+            stop("cannot find file \"", file, "\"")
+        }
+        if (0L == file.info(file)$size) {
+            stop("empty file \"", file, "\"")
+        }
+    }
+    if (!requireNamespace("ncdf4", quietly = TRUE)) {
+        stop("must install.packages(\"ncdf4\") to read netcdf data")
+    }
+    oceDebug(debug, "read.netcdf() {\n", unindent = 1)
     f <- ncdf4::nc_open(file)
     res <- new("oce")
     names <- names(f$var)
-    data <- list()
     for (name in names) {
         oceDebug(debug, "  name=\"", name, "\"\n")
-        if (grepl("^history_", name, ignore.case=TRUE))
+        if (grepl("^history_", name, ignore.case = TRUE)) {
             next
+        }
         units <- ncdf4::ncatt_get(f, name, "units")
-        if (units$hasatt)
+        if (units$hasatt) {
             res@metadata$units[[name]] <- oce::as.unit(units$value)
+        }
         item <- ncdf4::ncvar_get(f, name)
-        if (is.array(item) && 1 == length(dim(item))) # 1D array converted to 1 column matrix
+        if (is.array(item) && 1 == length(dim(item))) { # 1D array converted to 1 column matrix
             item <- as.vector(item)
+        }
         if (tolower(name) == "time") {
             if (units$hasatt && units$value == "seconds since 1970-01-01 UTC") {
                 res@metadata[["time"]] <- numberAsPOSIXct(item[1])
@@ -71,29 +76,40 @@ read.netcdf <- function(file, ..., encoding=NA, debug=getOption("oceDebug"))
     }
     # Try to get some global attributes.
     # Inelegantly permit first letter lower-case or upper-case
-    if (ncdf4::ncatt_get(f, 0, "Longitude")$hasatt)
+    if (ncdf4::ncatt_get(f, 0, "Longitude")$hasatt) {
         res@metadata$longitude <- ncdf4::ncatt_get(f, 0, "Longitude")$value
-    if (ncdf4::ncatt_get(f, 0, "longitude")$hasatt)
+    }
+    if (ncdf4::ncatt_get(f, 0, "longitude")$hasatt) {
         res@metadata$longitude <- ncdf4::ncatt_get(f, 0, "longitude")$value
-    if (ncdf4::ncatt_get(f, 0, "Latitude")$hasatt)
+    }
+    if (ncdf4::ncatt_get(f, 0, "Latitude")$hasatt) {
         res@metadata$latitude <- ncdf4::ncatt_get(f, 0, "Latitude")$value
-    if (ncdf4::ncatt_get(f, 0, "latitude")$hasatt)
+    }
+    if (ncdf4::ncatt_get(f, 0, "latitude")$hasatt) {
         res@metadata$latitude <- ncdf4::ncatt_get(f, 0, "latitude")$value
-    if (ncdf4::ncatt_get(f, 0, "Station")$hasatt)
+    }
+    if (ncdf4::ncatt_get(f, 0, "Station")$hasatt) {
         res@metadata$station <- ncdf4::ncatt_get(f, 0, "Station")$value
-    if (ncdf4::ncatt_get(f, 0, "station")$hasatt)
+    }
+    if (ncdf4::ncatt_get(f, 0, "station")$hasatt) {
         res@metadata$station <- ncdf4::ncatt_get(f, 0, "station")$value
-    if (ncdf4::ncatt_get(f, 0, "Ship")$hasatt)
+    }
+    if (ncdf4::ncatt_get(f, 0, "Ship")$hasatt) {
         res@metadata$ship <- ncdf4::ncatt_get(f, 0, "Ship")$value
-    if (ncdf4::ncatt_get(f, 0, "ship")$hasatt)
+    }
+    if (ncdf4::ncatt_get(f, 0, "ship")$hasatt) {
         res@metadata$ship <- ncdf4::ncatt_get(f, 0, "ship")$value
-    if (ncdf4::ncatt_get(f, 0, "Cruise")$hasatt)
+    }
+    if (ncdf4::ncatt_get(f, 0, "Cruise")$hasatt) {
         res@metadata$cruise <- ncdf4::ncatt_get(f, 0, "Cruise")$value
-    if (ncdf4::ncatt_get(f, 0, "cruise")$hasatt)
+    }
+    if (ncdf4::ncatt_get(f, 0, "cruise")$hasatt) {
         res@metadata$cruise <- ncdf4::ncatt_get(f, 0, "cruise")$value
-    if (ncdf4::ncatt_get(f, 0, "time")$hasatt)
+    }
+    if (ncdf4::ncatt_get(f, 0, "time")$hasatt) {
         res@metadata$time <- ncdf4::ncatt_get(f, 0, "time")$value
-    res@processingLog <- processingLogAppend(res@processingLog, paste("read.netcdf(\"", file, "\")", sep=""))
-    oceDebug(debug, "} # read.netcdf()\n", unindent=1)
+    }
+    res@processingLog <- processingLogAppend(res@processingLog, paste("read.netcdf(\"", file, "\")", sep = ""))
+    oceDebug(debug, "} # read.netcdf()\n", unindent = 1)
     res
 }

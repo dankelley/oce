@@ -35,7 +35,7 @@
 #' @family classes provided by oce
 #'
 #' @author Dan Kelley
-setClass("xbt", contains="oce")
+setClass("xbt", contains = "oce")
 
 #' Sample xbt Data
 #'
@@ -83,18 +83,21 @@ NULL
 #' @author Dan Kelley
 #'
 #' @family things related to xbt data
-setMethod(f="[[",
-    signature(x="xbt", i="ANY", j="ANY"),
-    definition=function(x, i, j, ...) {
+setMethod(
+    f = "[[",
+    signature(x = "xbt", i = "ANY", j = "ANY"),
+    definition = function(x, i, j, ...) {
         dataNames <- names(x@data)
         S0 <- 35
         metadataDerived <- NULL
         dataDerived <- c("z", "pressure")
         if (i == "?") {
-            return(list(metadata=sort(names(x@metadata)),
-                metadataDerived=sort(metadataDerived),
-                data=sort(names(x@data)),
-                dataDerived=sort(dataDerived)))
+            return(list(
+                metadata = sort(names(x@metadata)),
+                metadataDerived = sort(metadataDerived),
+                data = sort(names(x@data)),
+                dataDerived = sort(dataDerived)
+            ))
         }
         if (i == "depth") {
             if ("depth" %in% dataNames) {
@@ -102,7 +105,7 @@ setMethod(f="[[",
             } else if ("z" %in% dataNames) {
                 -x@data$depth
             } else if ("pressure" %in% dataNames) {
-                swDepth(x@data$pressure, latitude=x@metadata$latitude)
+                swDepth(x@data$pressure, latitude = x@metadata$latitude)
             }
         } else if (i == "z") {
             if ("depth" %in% dataNames) {
@@ -110,13 +113,13 @@ setMethod(f="[[",
             } else if ("z" %in% dataNames) {
                 x@data$z
             } else if ("pressure" %in% dataNames) {
-                -swDepth(x@data$pressure, latitude=x@metadata$latitude)
+                -swDepth(x@data$pressure, latitude = x@metadata$latitude)
             }
         } else if (i == "pressure") {
             if ("depth" %in% dataNames) {
-                swPressure(depth=x@data$depth, latitude=x[["latitude"]])
+                swPressure(depth = x@data$depth, latitude = x[["latitude"]])
             } else if ("z" %in% dataNames) {
-                swPressure(depth=-x@data$z, latitude=x[["latitude"]])
+                swPressure(depth = -x@data$z, latitude = x[["latitude"]])
             } else if ("pressure" %in% dataNames) {
                 x@data$pressure
             }
@@ -129,7 +132,8 @@ setMethod(f="[[",
         } else {
             callNextMethod()
         }
-    })
+    }
+)
 
 #' Replace Parts of an xbt Object
 #'
@@ -138,41 +142,49 @@ setMethod(f="[[",
 #' @template sub_subsetTemplate
 #'
 #' @family things related to xbt data
-setMethod(f="[[<-",
-    signature(x="xbt", i="ANY", j="ANY"),
-    definition=function(x, i, j, ..., value) {
-        callNextMethod(x=x, i=i, j=j, ...=..., value=value) # [[<-
-    })
+setMethod(
+    f = "[[<-",
+    signature(x = "xbt", i = "ANY", j = "ANY"),
+    definition = function(x, i, j, ..., value) {
+        callNextMethod(x = x, i = i, j = j, ... = ..., value = value) # [[<-
+    }
+)
 
-setMethod(f="initialize",
-    signature="xbt",
+setMethod(
+    f = "initialize",
+    signature = "xbt",
     # the only thing we know for sure is that temperature will be given
-    definition=function(.Object, z=NULL, depth=NULL, temperature=NULL, units, ...) {
+    definition = function(.Object, z = NULL, depth = NULL, temperature = NULL, units, ...) {
         .Object <- callNextMethod(.Object, ...)
-        if (!is.null(depth) && !is.null(z))
+        if (!is.null(depth) && !is.null(z)) {
             stop("cannot initialize XBT with both depth and z")
+        }
         if (missing(units)) {
             if (!is.null(temperature)) {
-                .Object@metadata$units$temperature <- list(unit=expression(degree*C), scale="ITS-90")
+                .Object@metadata$units$temperature <- list(unit = expression(degree * C), scale = "ITS-90")
             }
             if (!is.null(z)) {
-                .Object@metadata$units$z <- list(unit=expression(m), scale="")
+                .Object@metadata$units$z <- list(unit = expression(m), scale = "")
             } else if (!is.null(depth)) {
-                .Object@metadata$units$depth <- list(unit=expression(m), scale="")
+                .Object@metadata$units$depth <- list(unit = expression(m), scale = "")
             }
         } else {
             .Object@metadata$units <- units # CAUTION: we are being quite trusting here
         }
-        if (!is.null(depth))
+        if (!is.null(depth)) {
             .Object@data$depth <- depth
-        if (!is.null(z))
+        }
+        if (!is.null(z)) {
             .Object@data$z <- z
-        if (!is.null(temperature))
+        }
+        if (!is.null(temperature)) {
             .Object@data$temperature <- temperature
+        }
         .Object@processingLog$time <- presentTime()
         .Object@processingLog$value <- "create 'xbt' object"
         return(.Object)
-    })
+    }
+)
 
 #' Summarize an xbt Object
 #'
@@ -188,19 +200,21 @@ setMethod(f="initialize",
 #' @family things related to xbt data
 #'
 #' @author Dan Kelley
-setMethod(f="summary",
-    signature="xbt",
-    definition=function(object, ...) {
+setMethod(
+    f = "summary",
+    signature = "xbt",
+    definition = function(object, ...) {
         cat("xbt summary\n-----------\n\n", ...)
-        showMetadataItem(object, "filename",      "File source:        ", quote=TRUE)
-        showMetadataItem(object, "type",          "Instrument type:    ")
-        showMetadataItem(object, "model",         "Instrument model:   ")
-        showMetadataItem(object, "serialNumber",  "Serial Number:      ")
-        showMetadataItem(object, "longitude",     "Longitude:          ")
-        showMetadataItem(object, "latitude",      "Latitude:           ")
-        showMetadataItem(object, "time",          "Time:               ")
+        showMetadataItem(object, "filename", "File source:        ", quote = TRUE)
+        showMetadataItem(object, "type", "Instrument type:    ")
+        showMetadataItem(object, "model", "Instrument model:   ")
+        showMetadataItem(object, "serialNumber", "Serial Number:      ")
+        showMetadataItem(object, "longitude", "Longitude:          ")
+        showMetadataItem(object, "latitude", "Latitude:           ")
+        showMetadataItem(object, "time", "Time:               ")
         invisible(callNextMethod()) # summary
-    })
+    }
+)
 
 
 #' Subset an xbt Object
@@ -226,29 +240,34 @@ setMethod(f="summary",
 #' @family functions that subset oce objects
 #'
 #' @author Dan Kelley
-setMethod(f="subset",
-    signature="xbt",
-    definition=function(x, subset, ...) {
-        subsetString <- paste(deparse(substitute(expr=subset, env=environment())), collapse=" ")
+setMethod(
+    f = "subset",
+    signature = "xbt",
+    definition = function(x, subset, ...) {
+        subsetString <- paste(deparse(substitute(expr = subset, env = environment())), collapse = " ")
         res <- x
         dots <- list(...)
         debug <- getOption("oceDebug")
-        if (length(dots) && ("debug" %in% names(dots)))
+        if (length(dots) && ("debug" %in% names(dots))) {
             debug <- dots$debug
-        if (missing(subset))
+        }
+        if (missing(subset)) {
             stop("must give 'subset'")
+        }
         if (length(grep("depth", subsetString))) {
             oceDebug(debug, "subsetting an xbt by depth\n")
-            keep <- eval(expr=substitute(expr=subset, env=environment()), envir=x@data, enclos=parent.frame(2))
+            keep <- eval(expr = substitute(expr = subset, env = environment()), envir = x@data, enclos = parent.frame(2))
             names <- names(x@data)
             oceDebug(debug, vectorShow(keep, "keeping bins:"))
             res <- x
-            for (name in names(x@data))
+            for (name in names(x@data)) {
                 res@data[[name]] <- x@data[[name]][keep]
+            }
         }
-        res@processingLog <- processingLogAppend(res@processingLog, paste("subset.xbt(x, subset=", subsetString, ")", sep=""))
+        res@processingLog <- processingLogAppend(res@processingLog, paste("subset.xbt(x, subset=", subsetString, ")", sep = ""))
         res
-    })
+    }
+)
 
 #' Create an xbt Object
 #'
@@ -270,21 +289,24 @@ setMethod(f="subset",
 #' @family things related to xbt data
 #'
 #' @author Dan Kelley
-as.xbt <- function(z, temperature, longitude=NA, latitude=NA, filename="", sequenceNumber=NA,
-    serialNumber="")
-{
-    if (missing(z))
+as.xbt <- function(
+    z, temperature, longitude = NA, latitude = NA, filename = "", sequenceNumber = NA,
+    serialNumber = "") {
+    if (missing(z)) {
         stop("must provide z")
-    if (missing(temperature))
+    }
+    if (missing(temperature)) {
         stop("must provide temperture")
-    if (length(z) != length(temperature))
+    }
+    if (length(z) != length(temperature)) {
         stop("length of z (", length(z), ") does not match length of temperature (", length(temperature), ")")
-    res <- new("xbt", z=z, temperature=temperature)
+    }
+    res <- new("xbt", z = z, temperature = temperature)
     # res@data$z <- z
     # res@metadata$units$z <- list(unit=expression(m), scale="")
     # res@metadata$units$temperature <- list(unit=expression(degree*C), scale="ITS-90")
     # res@data$temperature <- temperature
-    res@metadata$dataNamesOriginal <- list(z="", temperature="")
+    res@metadata$dataNamesOriginal <- list(z = "", temperature = "")
     res@metadata$longitude <- longitude
     res@metadata$latitude <- longitude
     res@metadata$header <- ""
@@ -325,7 +347,7 @@ as.xbt <- function(z, temperature, longitude=NA, latitude=NA, filename="", seque
 #'
 #' @examples
 #' library(oce)
-#' xbt <- read.oce(system.file("extdata", "xbt.edf", package="oce"))
+#' xbt <- read.oce(system.file("extdata", "xbt.edf", package = "oce"))
 #' summary(xbt)
 #' plot(xbt)
 #'
@@ -337,40 +359,50 @@ as.xbt <- function(z, temperature, longitude=NA, latitude=NA, filename="", seque
 #' https://pages.uoregon.edu/drt/MGL0910_Science_Report/attachments/MK21_ISA_Manual_Rev_A.pdf.
 #'
 #' @author Dan Kelley
-read.xbt <- function(file,
-    type="sippican",
-    longitude=NA,
-    latitude=NA,
-    encoding="latin1",
-    debug=getOption("oceDebug"),
-    processingLog)
-{
-    if (missing(file))
+read.xbt <- function(
+    file,
+    type = "sippican",
+    longitude = NA,
+    latitude = NA,
+    encoding = "latin1",
+    debug = getOption("oceDebug"),
+    processingLog) {
+    if (missing(file)) {
         stop("must supply 'file'")
+    }
     if (is.character(file)) {
-        if (!file.exists(file))
-            stop("cannot find file '", file, "'")
-        if (0L == file.info(file)$size)
-            stop("empty file '", file, "'")
+        if (!file.exists(file)) {
+            stop("cannot find file \"", file, "\"")
+        }
+        if (0L == file.info(file)$size) {
+            stop("empty file \"", file, "\"")
+        }
     }
     oceDebug(debug, "read.xbt(file=\"", file, "\", type=\"",
-        type, "\", longitude=", longitude, ", latitude=", latitude, "...) {\n", sep="", unindent=1)
-    if (is.character(file) && "http://" != substr(file, 1, 7) && 0 == file.info(file)$size)
+        type, "\", longitude=", longitude, ", latitude=", latitude, "...) {\n",
+        sep = "", unindent = 1
+    )
+    if (is.character(file) && "http://" != substr(file, 1, 7) && 0 == file.info(file)$size) {
         stop("empty file (read.xbt)")
+    }
     type <- match.arg(type)
     res <- if (type == "sippican") {
-        read.xbt.edf(file=file, longitude=longitude, latitude=latitude,
-            encoding=encoding, debug=debug-1, processingLog=processingLog)
+        read.xbt.edf(
+            file = file, longitude = longitude, latitude = latitude,
+            encoding = encoding, debug = debug - 1, processingLog = processingLog
+        )
     } else if (type == "noaa1") {
-        if (!is.null(longitude))
+        if (!is.null(longitude)) {
             warning("longitude argument is ignored for type=\"noaa1\"\n")
-        if (!is.null(latitude))
+        }
+        if (!is.null(latitude)) {
             warning("latitude argument is ignored for type=\"noaa1\"\n")
-        read.xbt.noaa1(file=file, encoding=encoding, debug=debug-1, processingLog=processingLog)
+        }
+        read.xbt.noaa1(file = file, encoding = encoding, debug = debug - 1, processingLog = processingLog)
     } else {
         stop("unknown type of current meter")
     }
-    oceDebug(debug, "} # read.xbt()\n", sep="", unindent=1)
+    oceDebug(debug, "} # read.xbt()\n", sep = "", unindent = 1)
     res
 }
 
@@ -412,79 +444,87 @@ read.xbt <- function(file,
 #'
 #' @examples
 #' library(oce)
-#' xbt <- read.oce(system.file("extdata", "xbt.edf", package="oce"))
+#' xbt <- read.oce(system.file("extdata", "xbt.edf", package = "oce"))
 #' summary(xbt)
 #' plot(xbt)
 #'
 #' @author Dan Kelley
-read.xbt.edf <- function(file, longitude=NA, latitude=NA, encoding="latin1",
-    debug=getOption("oceDebug"), processingLog)
-{
+read.xbt.edf <- function(
+    file, longitude = NA, latitude = NA, encoding = "latin1",
+    debug = getOption("oceDebug"), processingLog) {
     getHeaderItem <- function(l, name) {
         res <- l[grep(name, l)]
-        gsub(paste(name, "[ ]*:[ ]*", sep=""), "", res)
+        gsub(paste(name, "[ ]*:[ ]*", sep = ""), "", res)
     }
-    if (missing(file))
+    if (missing(file)) {
         stop("must supply 'file'")
-    if (is.character(file)) {
-        if (!file.exists(file))
-            stop("cannot find file '", file, "'")
-        if (0L == file.info(file)$size)
-            stop("empty file '", file, "'")
     }
-    if (is.character(file) && "http://" != substr(file, 1, 7) && 0 == file.info(file)$size)
+    if (is.character(file)) {
+        if (!file.exists(file)) {
+            stop("cannot find file \"", file, "\"")
+        }
+        if (0L == file.info(file)$size) {
+            stop("empty file \"", file, "\"")
+        }
+    }
+    if (is.character(file) && "http://" != substr(file, 1, 7) && 0 == file.info(file)$size) {
         stop("empty file (read.xbt.edf)")
+    }
     oceDebug(debug, "read.xbt(file=\"", file, "\", longitude=", longitude, ", latitude=", latitude, "...) {\n",
-        sep="", unindent=1)
+        sep = "", unindent = 1
+    )
     filename <- ""
     if (is.character(file)) {
         filename <- fullFilename(file)
-        file <- file(file, "r", encoding=encoding)
+        file <- file(file, "r", encoding = encoding)
         on.exit(close(file))
     }
-    if (!inherits(file, "connection"))
+    if (!inherits(file, "connection")) {
         stop("argument `file' must be a character string or connection")
+    }
     if (!isOpen(file)) {
-        open(file, "r", encoding=encoding)
+        open(file, "r", encoding = encoding)
         on.exit(close(file))
     }
     l <- readLines(file, 200) # don't read whole file
     pushBack(l, file)
     # FIXME: is this detection of the end of the header robust?
     headerEnd <- grep("^Depth \\(", l)
-    if (0 == length(headerEnd))
+    if (0 == length(headerEnd)) {
         stop("programming error: increase #lines read for header")
+    }
     res <- new("xbt")
     # Convert from latin1 to UTF-8, so a degree sign does not cause problems
     # res@metadata$header <- l[1:headerEnd]
-    res@metadata$header <- iconv(l[1:headerEnd], from=encoding, to="ASCII", sub="?")
+    res@metadata$header <- iconv(l[1:headerEnd], from = encoding, to = "ASCII", sub = "?")
     date <- getHeaderItem(l, "Date of Launch")
     hms <- getHeaderItem(l, "Time of Launch")
-    res@metadata$time <- as.POSIXct(paste(date, hms, sep=" "),
-        format="%m/%d/%Y %H:%M:%S", tz="UTC")
+    res@metadata$time <- as.POSIXct(paste(date, hms, sep = " "),
+        format = "%m/%d/%Y %H:%M:%S", tz = "UTC"
+    )
     res@metadata$serialNumber <- getHeaderItem(l, "Serial #")
     res@metadata$sequenceNumber <- as.integer(getHeaderItem(l, "Sequence #"))
-    res@metadata$dataNamesOriginal <- list(depth="Depth", temperature="Temperature", soundSpeed="Sound Velocity")
+    res@metadata$dataNamesOriginal <- list(depth = "Depth", temperature = "Temperature", soundSpeed = "Sound Velocity")
     # Some steps needed for hemispheres.
     lat <- getHeaderItem(l, "Latitude")
     lats <- strsplit(lat, " ")[[1]]
     latdeg <- as.numeric(lats[1])
     latmin <- as.numeric(gsub("[NSns]", "", lats[2]))
-    res@metadata$latitude <- (latdeg + latmin/60) * ifelse(length(grep("S", lats[2])), -1, 1)
+    res@metadata$latitude <- (latdeg + latmin / 60) * ifelse(length(grep("S", lats[2])), -1, 1)
     lon <- getHeaderItem(l, "Longitude")
     lons <- strsplit(lon, " ")[[1]]
     londeg <- as.numeric(lons[1])
     lonmin <- as.numeric(gsub("[EWew]", "", lons[2]))
-    res@metadata$longitude <- (londeg + lonmin/60) * ifelse(length(grep("W", lons[2])), -1, 1)
+    res@metadata$longitude <- (londeg + lonmin / 60) * ifelse(length(grep("W", lons[2])), -1, 1)
     res@metadata$probeType <- getHeaderItem(l, "Probe Type")
     res@metadata$terminalDepth <- as.numeric(gsub("[ ]*m$", "", getHeaderItem(l, "Terminal Depth"))) # FIXME: assumes metric
-    res@data <- as.list(read.table(file, skip=headerEnd+1, col.names=c("depth", "temperature", "soundSpeed"), encoding=encoding))
+    res@data <- as.list(read.table(file, skip = headerEnd + 1, col.names = c("depth", "temperature", "soundSpeed"), encoding = encoding))
     res@metadata$filename <- filename
-    res@metadata$units$depth <- list(unit=expression(m), scale="")
-    res@metadata$units$temperature <- list(unit=expression(degree*C), scale="ITS-90")
-    res@metadata$units$soundSpeed <- list(unit=expression(m/s), scale="")
-    res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
-    oceDebug(debug, "} # read.xbt.edf()\n", unindent=1)
+    res@metadata$units$depth <- list(unit = expression(m), scale = "")
+    res@metadata$units$temperature <- list(unit = expression(degree * C), scale = "ITS-90")
+    res@metadata$units$soundSpeed <- list(unit = expression(m / s), scale = "")
+    res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep = "", collapse = ""))
+    oceDebug(debug, "} # read.xbt.edf()\n", unindent = 1)
     res
 }
 
@@ -498,7 +538,7 @@ read.xbt.edf <- function(file, longitude=NA, latitude=NA, encoding="latin1",
 #' 181.589 20100709 140820  -85.336  25.290 N42RF GL10 14    2010-190-15:49:18
 #'   -0.0 27.52 -9.99
 #'   -1.5 27.52 -9.99
-#'```
+#' ```
 #' where the items on the header line are (1) a year-day (ignored here), (2)
 #' YYYYMMDD, (3) HHMMSS, (4) longitude, (5) latitude, (6) aircraft wing
 #' number, (7) project name, (8) AXBT channel and (9) AXBT ID.  The other lines hold vertical
@@ -524,28 +564,32 @@ read.xbt.edf <- function(file, longitude=NA, latitude=NA, encoding="latin1",
 #' @family things related to xbt data
 #'
 #' @author Dan Kelley
-read.xbt.noaa1 <- function(file, debug=getOption("oceDebug"), missingValue=-9.99,
-    encoding="latin1", processingLog)
-{
-    if (missing(file))
+read.xbt.noaa1 <- function(
+    file, debug = getOption("oceDebug"), missingValue = -9.99,
+    encoding = "latin1", processingLog) {
+    if (missing(file)) {
         stop("must supply 'file'")
-    if (is.character(file)) {
-        if (!file.exists(file))
-            stop("cannot find file '", file, "'")
-        if (0L == file.info(file)$size)
-            stop("empty file '", file, "'")
     }
-    oceDebug(debug, "read.xbt(file=\"", file, "\", type=\"", "...) {\n", sep="", unindent=1)
+    if (is.character(file)) {
+        if (!file.exists(file)) {
+            stop("cannot find file \"", file, "\"")
+        }
+        if (0L == file.info(file)$size) {
+            stop("empty file \"", file, "\"")
+        }
+    }
+    oceDebug(debug, "read.xbt(file=\"", file, "\", type=\"", "...) {\n", sep = "", unindent = 1)
     filename <- "?"
     if (is.character(file)) {
         filename <- fullFilename(file)
-        file <- file(file, "r", encoding=encoding)
+        file <- file(file, "r", encoding = encoding)
         on.exit(close(file))
     }
-    if (!inherits(file, "connection"))
+    if (!inherits(file, "connection")) {
         stop("argument `file' must be a character string or connection")
+    }
     if (!isOpen(file)) {
-        open(file, "r", encoding=encoding)
+        open(file, "r", encoding = encoding)
         on.exit(close(file))
     }
     res <- new("xbt")
@@ -559,24 +603,25 @@ read.xbt.noaa1 <- function(file, debug=getOption("oceDebug"), missingValue=-9.99
         substr(headerTokens[2], 7, 8), # day
         substr(headerTokens[3], 1, 2), # hour
         substr(headerTokens[3], 3, 4), # minute
-        substr(headerTokens[3], 5, 6)) # second
+        substr(headerTokens[3], 5, 6)
+    ) # second
     res@metadata$longitude <- as.numeric(headerTokens[4])
     res@metadata$latitude <- as.numeric(headerTokens[5])
     res@metadata$aircraft <- headerTokens[6]
     res@metadata$project <- headerTokens[7]
     res@metadata$axbtChannel <- headerTokens[8]
     res@metadata$axbtId <- headerTokens[9]
-    data <- read.table(file, skip=1, header=FALSE, col.names=c("z", "temperature", "temperatureError"), encoding=encoding)
+    data <- read.table(file, skip = 1, header = FALSE, col.names = c("z", "temperature", "temperatureError"), encoding = encoding)
     res@metadata$header <- header
-    res@metadata$units$z <- list(unit=expression(m), scale="")
+    res@metadata$units$z <- list(unit = expression(m), scale = "")
     res@data <- as.list(data)
     if (!is.null(missingValue)) {
         for (name in names(res@data)) {
             res@data[[name]][res@data[[name]] == missingValue] <- NA
         }
     }
-    res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
-    oceDebug(debug, "} # read.xbt.noaa1()\n", sep="", unindent=1)
+    res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep = "", collapse = ""))
+    oceDebug(debug, "} # read.xbt.noaa1()\n", sep = "", unindent = 1)
     res
 }
 
@@ -619,23 +664,25 @@ read.xbt.noaa1 <- function(file, debug=getOption("oceDebug"), missingValue=-9.99
 #' @aliases plot.xbt
 #'
 #' @author Dan Kelley
-setMethod(f="plot",
-    signature=signature("xbt"),
-    definition=function(x, which=1, type="l", mgp=getOption("oceMgp"), mar,
-        debug=getOption("oceDebug"), ...)
-    {
-        oceDebug(debug, "plot.xbt() {\n", unindent=1)
-        if (missing(mar))
-            mar <- c(1, mgp[1]+1.5, mgp[1]+1.5, mgp[1])
+setMethod(
+    f = "plot",
+    signature = signature("xbt"),
+    definition = function(x, which = 1, type = "l", mgp = getOption("oceMgp"), mar,
+                          debug = getOption("oceDebug"), ...) {
+        oceDebug(debug, "plot.xbt() {\n", unindent = 1)
+        if (missing(mar)) {
+            mar <- c(1, mgp[1] + 1.5, mgp[1] + 1.5, mgp[1])
+        }
         opar <- par(no.readonly = TRUE)
         lw <- length(which)
         oceDebug(debug, "length(which) =", lw, "\n")
-        if (lw > 1)
-            on.exit(par(opar))
-        par(mgp=mgp, mar=mar)
-        oceDebug(debug, "which: c(", paste(which, collapse=", "), ")\n")
         if (lw > 1) {
-            par(mfrow=c(1, lw))
+            on.exit(par(opar))
+        }
+        par(mgp = mgp, mar = mar)
+        oceDebug(debug, "which: c(", paste(which, collapse = ", "), ")\n")
+        if (lw > 1) {
+            par(mfrow = c(1, lw))
             oceDebug(debug, "calling par(mfrow=c(", lw, ", 1)\n")
         }
         z <- x[["z"]]
@@ -644,21 +691,22 @@ setMethod(f="plot",
         for (w in 1:lw) {
             oceDebug(debug, "which[", w, "]=", which[w], "\n")
             if (which[w] == 1) {
-                plot(temperature, z, xlab="", ylab=resizableLabel("z"), type=type, axes=FALSE, ...)
+                plot(temperature, z, xlab = "", ylab = resizableLabel("z"), type = type, axes = FALSE, ...)
                 axis(2)
                 box()
                 axis(3)
-                mtext(resizableLabel("temperature"), side=3, line=mgp[1])
+                mtext(resizableLabel("temperature"), side = 3, line = mgp[1])
             } else if (which[w] == 2) {
-                plot(soundSpeed, z, xlab="", ylab=resizableLabel("z"), type=type, axes=FALSE, ...)
+                plot(soundSpeed, z, xlab = "", ylab = resizableLabel("z"), type = type, axes = FALSE, ...)
                 axis(2)
                 box()
                 axis(3)
-                mtext(resizableLabel("sound speed"), side=3, line=mgp[1])
+                mtext(resizableLabel("sound speed"), side = 3, line = mgp[1])
             } else {
                 stop("which values are limited to 1 and 2")
             }
         }
-        oceDebug(debug, "} # plot.xbt()\n", unindent=1)
+        oceDebug(debug, "} # plot.xbt()\n", unindent = 1)
         invisible(NULL)
-    })
+    }
+)

@@ -2,7 +2,7 @@
 % Please edit documentation in R/adv.R
 \name{xyzToEnuAdv}
 \alias{xyzToEnuAdv}
-\title{Convert an ADP from XYZ to ENU Coordinates}
+\title{Convert an adv Object From XYZ to ENU Coordinates}
 \usage{
 xyzToEnuAdv(
   x,

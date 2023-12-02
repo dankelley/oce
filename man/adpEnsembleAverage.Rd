@@ -2,7 +2,7 @@
 % Please edit documentation in R/adp.R
 \name{adpEnsembleAverage}
 \alias{adpEnsembleAverage}
-\title{Ensemble Average an ADP Object in Time}
+\title{Ensemble Average an adp Object in Time}
 \usage{
 adpEnsembleAverage(x, n = 5, leftover = FALSE, na.rm = TRUE, ...)
 }
@@ -41,7 +41,7 @@ velocity estimates (by averaging out Doppler noise).
 \examples{
 library(oce)
 data(adp)
-adpAvg <- adpEnsembleAverage(adp, n=2)
+adpAvg <- adpEnsembleAverage(adp, n = 2)
 plot(adpAvg)
 
 }

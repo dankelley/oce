@@ -2,7 +2,7 @@
 % Please edit documentation in R/adp.R
 \name{xyzToEnuAdpAD2CP}
 \alias{xyzToEnuAdpAD2CP}
-\title{Convert ADP2CP adp object From XYZ to ENU Coordinates}
+\title{Convert adp Object of AD2CP type From XYZ to ENU Coordinates}
 \usage{
 xyzToEnuAdpAD2CP(x, declination = 0, debug = getOption("oceDebug"))
 }
@@ -24,10 +24,10 @@ An object with \code{data$v[,,1:3]} altered appropriately, and
 \code{x[["oceCoordinate"]]} changed from \code{xyz} to \code{enu}.
 }
 \description{
-\strong{This function will b in active development through the early
-months of 2019, and both the methodology and user interface may change
+This function is in active development,
+and both the methodology and user interface may change
 without notice. Only developers (or invitees) should be trying to
-use this function.}
+use this function.
 }
 \section{Limitations}{
 

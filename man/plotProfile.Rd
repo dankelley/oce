@@ -2,7 +2,7 @@
 % Please edit documentation in R/ctd.R
 \name{plotProfile}
 \alias{plotProfile}
-\title{Plot a CTD Profile}
+\title{Plot a ctd Profile}
 \usage{
 plotProfile(
   x,
@@ -27,6 +27,7 @@ plotProfile(
   Clim,
   Tlim,
   densitylim,
+  sigmalim,
   N2lim,
   Rrholim,
   dpdtlim,
@@ -130,36 +131,43 @@ units.  Setting \code{ylab=""} prevents labelling the axis.}
 
 \item{lty.grid}{line type for grid.}
 
-\item{Slim}{Optional limit for S axis}
+\item{Slim}{optional limit for the salinity axis, which can either
+represent Practical Salinity or Absolute Salinity.}
 
-\item{Clim}{Optional limit for conductivity axis}
+\item{Clim}{optional limit for the conductivity axis.}
 
-\item{Tlim}{Optional limit for T axis}
+\item{Tlim}{optional limit for the temperature axis, which
+can represent in-situ temperature, potential temperature, or
+Conservative Temperature.}
 
-\item{densitylim}{Optional limit for density axis}
+\item{densitylim}{optional limit for density axis.}
 
-\item{N2lim}{Optional limit for N2 axis}
+\item{sigmalim}{optional limit for the density-anomaly
+axis, which can represent \code{sigmaTheta}, \code{sigma0}, \code{sigma1},
+\code{sigma2}, \code{sigma3} or \code{sigma4}.}
 
-\item{Rrholim}{Optional limit for Rrho axis}
+\item{N2lim}{optional limit for the N2 axis.}
 
-\item{dpdtlim}{Optional limit for dp/dt axis}
+\item{Rrholim}{optional limit for the density ratio axis.}
 
-\item{timelim}{Optional limit for delta-time axis}
+\item{dpdtlim}{optional limit for the dp/dt axis.}
 
-\item{plim}{Optional limit for pressure axis, ignored unless
+\item{timelim}{optional limit for the delta-time axis.}
+
+\item{plim}{optional limit for the pressure axis, ignored unless
 \code{ytype=="pressure"}, in which case it takes precedence over
 \code{ylim}.}
 
-\item{xlim}{Optional limit for x axis, which can apply to any plot type.
+\item{xlim}{optional limit for x axis, which can apply to any plot type.
 This is ignored if the plotted x variable is something for which a limit
 may be specified with an argument, e.g. \code{xlim} is ignored for a
 salinity profile, because \code{Slim} ought to be given in such a case.}
 
-\item{ylim}{Optional limit for y axis, which can apply to any plot type,
+\item{ylim}{optional limit for y axis, which can apply to any plot type,
 although is overridden by \code{plim} if \code{ytype} is \code{"pressure"}
 or by \code{densitylim} if \code{ytype} is \code{"sigmaTheta"}.}
 
-\item{lwd}{lwd value for data line}
+\item{lwd}{line width value for data line}
 
 \item{xaxs}{value of \code{\link[=par]{par()}} \code{xaxs} to use}
 
@@ -218,7 +226,7 @@ on a plot.
 \examples{
 library(oce)
 data(ctd)
-plotProfile(ctd, xtype="temperature")
+plotProfile(ctd, xtype = "temperature")
 
 }
 \seealso{
@@ -285,6 +293,7 @@ Other things related to ctd data:
 \code{\link{read.ctd.itp}()},
 \code{\link{read.ctd.odf}()},
 \code{\link{read.ctd.odv}()},
+\code{\link{read.ctd.saiv}()},
 \code{\link{read.ctd.sbe}()},
 \code{\link{read.ctd.ssda}()},
 \code{\link{read.ctd.woce.other}()},

@@ -23,7 +23,7 @@ This function is somewhat analogous to \code{\link[=subset.data.frame]{subset.da
 library(oce)
 data(met)
 # Few days surrounding Hurricane Juan
-plot(subset(met, time > as.POSIXct("2003-09-27", tz="UTC")))
+plot(subset(met, time > as.POSIXct("2003-09-27", tz = "UTC")))
 
 }
 \seealso{

@@ -2,7 +2,7 @@
 % Please edit documentation in R/ctd.R
 \name{plotScan}
 \alias{plotScan}
-\title{Plot CTD data in a Low-Level Fashion}
+\title{Plot a ctd Object  in a Low-Level Fashion}
 \usage{
 plotScan(
   x,
@@ -80,7 +80,7 @@ an undocumented multi-panel feature was removed.
 library(oce)
 data(ctdRaw)
 plotScan(ctdRaw)
-abline(v=c(130, 350), col="red") # useful for ctdTrim()
+abline(v = c(130, 350), col = "red") # useful for ctdTrim()
 
 }
 \seealso{
@@ -143,6 +143,7 @@ Other things related to ctd data:
 \code{\link{read.ctd.itp}()},
 \code{\link{read.ctd.odf}()},
 \code{\link{read.ctd.odv}()},
+\code{\link{read.ctd.saiv}()},
 \code{\link{read.ctd.sbe}()},
 \code{\link{read.ctd.ssda}()},
 \code{\link{read.ctd.woce.other}()},

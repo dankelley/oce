@@ -105,7 +105,7 @@ if (file.exists("local_data/ctd/CTD_98911_1P_1_DN.txt")) {
         #
         #20211121 expect_equal(length(d[["theta"]]), 127)
         #20211121 expect_equal(head(d[['theta']]), c(0.0346, 0.1563, 0.2153, 0.1970, 0.1916, 0.2141))
-        expect_error(d[["theta"]], "the object's data slot lacks 'salinity'")
+        expect_error(d[["theta"]], "the object's data slot lacks \"salinity\"")
 })}
 
 if (1 == length(list.files(path=".", pattern="local_data"))) {

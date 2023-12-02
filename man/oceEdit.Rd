@@ -81,10 +81,12 @@ brief note on the \code{reason} for the change, and the name of the
 library(oce)
 data(ctd)
 # Example 1: change latitude
-ctd2 <- oceEdit(ctd, item="latitude", value=47.8879,
-    reason="illustration", person="Dan Kelley")
+ctd2 <- oceEdit(ctd,
+    item = "latitude", value = 47.8879,
+    reason = "illustration", person = "Dan Kelley"
+)
 # Example 2: add 0.1 dbar to pressure
-ctd3 <- oceEdit(ctd,action="x@data$pressure<-x@data$pressure+0.1")
+ctd3 <- oceEdit(ctd, action = "x@data$pressure<-x@data$pressure+0.1")
 }
 \author{
 Dan Kelley

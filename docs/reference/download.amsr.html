@@ -195,6 +195,18 @@ Worse yet -- much worse -- the file format is now changed from a gzipped
 format to a NetCDF format, and this will require a complete rewriting
 of <code><a href="read.amsr.html">read.amsr()</a></code>.</p>
     </div>
+    <div id="sample-of-usage">
+    <h2>Sample of Usage</h2>
+    
+
+<div class="sourceCode"><pre><code><span></span>
+<span><span class="co"># The download may take up to about a minute.</span></span>
+<span><span class="va">f</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/download.amsr.html">download.amsr</a></span><span class="op">(</span><span class="fl">2023</span>, <span class="fl">7</span>, <span class="fl">27</span>, destdir<span class="op">=</span><span class="st">"~/data/amsr"</span><span class="op">)</span></span>
+<span><span class="va">d</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/read.amsr.html">read.amsr</a></span><span class="op">(</span><span class="va">f</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">d</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/mtext.html" class="external-link">mtext</a></span><span class="op">(</span><span class="va">d</span><span class="op">[[</span><span class="st">"filename"</span><span class="op">]</span><span class="op">]</span>, side<span class="op">=</span><span class="fl">3</span>, line<span class="op">=</span><span class="fl">0</span>, adj<span class="op">=</span><span class="fl">0</span><span class="op">)</span></span></code></pre></div>
+
+    </div>
     <div id="see-also">
     <h2>See also</h2>
     <div class="dont-index"><p>Other functions that download files: 
@@ -245,18 +257,6 @@ of <code><a href="read.amsr.html">read.amsr()</a></code>.</p>
     <p>Dan Kelley</p>
     </div>
 
-    <div id="ref-examples">
-    <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span></span>
-<span class="r-in"><span><span class="co"># The download may take up to about a minute.</span></span></span>
-<span class="r-in"><span><span class="va">f</span> <span class="op">&lt;-</span> <span class="fu">download.amsr</span><span class="op">(</span><span class="fl">2023</span>, <span class="fl">7</span>, <span class="fl">27</span>, destdir<span class="op">=</span><span class="st">"~/data/amsr"</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">d</span> <span class="op">&lt;-</span> <span class="fu"><a href="read.amsr.html">read.amsr</a></span><span class="op">(</span><span class="va">f</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">d</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/mtext.html" class="external-link">mtext</a></span><span class="op">(</span><span class="va">d</span><span class="op">[[</span><span class="st">"filename"</span><span class="op">]</span><span class="op">]</span>, side<span class="op">=</span><span class="fl">3</span>, line<span class="op">=</span><span class="fl">0</span>, adj<span class="op">=</span><span class="fl">0</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="op">}</span></span></span>
-<span class="r-in"><span></span></span>
-</code></pre></div>
-    </div>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top"><h2 data-toc-skip>Contents</h2>

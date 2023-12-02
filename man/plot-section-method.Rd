@@ -49,7 +49,7 @@
   pch,
   lwd,
   labcex = par("cex"),
-  debug = getOption("oceDebug"),
+  debug = getOption("oceDebug", 0),
   ...
 )
 }
@@ -57,6 +57,8 @@
 \item{x}{a \linkS4class{section} object.}
 
 \item{which}{a list of desired plot types, as explained in \dQuote{Details}.
+Plot types not listed in \dQuote{Details} can be generated using the
+name of the data in the \linkS4class{section} object.
 There may be up to four panels in total, and the desired plots are placed in
 these panels, in reading order.  If only one panel is plotted, \code{par} is
 not adjusted, which makes it easy to add to the plot with subsequent plotting
@@ -322,15 +324,17 @@ plot(GSg, which="salinity", ztype="image",
 \examples{
 library(oce)
 data(section)
-GS <- subset(section, 113<=stationId&stationId<=129)
-GSg <- sectionGrid(GS, p=seq(0, 2000, 100))
+GS <- subset(section, 113 <= stationId & stationId <= 129)
+GSg <- sectionGrid(GS, p = seq(0, 2000, 100))
 
 # Gulf Stream, salinity and temperature contours
-plot(GSg, which=c("salinity", "temperature"))
+plot(GSg, which = c("salinity", "temperature"))
 
 # Gulf Stream, Temperature image
-plot(GSg, which="temperature", ztype="image",
-    zbreaks=seq(0,25,2), zcol=oceColorsTemperature)
+plot(GSg,
+    which = "temperature", ztype = "image",
+    zbreaks = seq(0, 25, 2), zcol = oceColorsTemperature
+)
 
 }
 \seealso{

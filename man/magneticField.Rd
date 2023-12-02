@@ -31,7 +31,7 @@ A list containing \code{declination}, \code{inclination}, and
 Implements the 12th and 13th generations of the
 International Geomagnetic Reference Field
 (IGRF), based on a reworked version of a Fortran program downloaded from a
-NOAA website (see reference 1).
+NOAA website (see \dQuote{References}).
 }
 \details{
 The code (subroutines \code{igrf12syn} and \code{igrf13syn}) seem to have
@@ -53,13 +53,13 @@ by IAGA, but the code was updated on March 3, 2020, to version 13.  Example
 \examples{
 library(oce)
 # 1. Today's value at Halifax NS
-magneticField(-(63+36/60), 44+39/60, Sys.Date())
+magneticField(-(63 + 36 / 60), 44 + 39 / 60, Sys.Date())
 
 # 2. World map of declination in year 2000.
 \donttest{
 data(coastlineWorld)
-par(mar=rep(0.5, 4)) # no axes on whole-world projection
-mapPlot(coastlineWorld, projection="+proj=robin", col="lightgray")
+par(mar = rep(0.5, 4)) # no axes on whole-world projection
+mapPlot(coastlineWorld, projection = "+proj=robin", col = "lightgray")
 # Construct matrix holding declination
 lon <- seq(-180, 180)
 lat <- seq(-90, 90)
@@ -69,14 +69,18 @@ dec2000 <- function(lon, lat) {
 dec <- outer(lon, lat, dec2000) # hint: outer() is very handy!
 # Contour, unlabelled for small increments, labeled for
 # larger increments.
-mapContour(lon, lat, dec, col="blue", levels=seq(-180, -5, 5),
-           lty=3, drawlabels=FALSE)
-mapContour(lon, lat, dec, col="blue", levels=seq(-180, -20, 20))
-mapContour(lon, lat, dec, col="red", levels=seq(5, 180, 5),
-           lty=3, drawlabels=FALSE)
-mapContour(lon, lat, dec, col="red", levels=seq(20, 180, 20))
-mapContour(lon, lat, dec, levels=180, col="black", lwd=2, drawlabels=FALSE)
-mapContour(lon, lat, dec, levels=0, col="black", lwd=2)
+mapContour(lon, lat, dec,
+    col = "blue", levels = seq(-180, -5, 5),
+    lty = 3, drawlabels = FALSE
+)
+mapContour(lon, lat, dec, col = "blue", levels = seq(-180, -20, 20))
+mapContour(lon, lat, dec,
+    col = "red", levels = seq(5, 180, 5),
+    lty = 3, drawlabels = FALSE
+)
+mapContour(lon, lat, dec, col = "red", levels = seq(20, 180, 20))
+mapContour(lon, lat, dec, levels = 180, col = "black", lwd = 2, drawlabels = FALSE)
+mapContour(lon, lat, dec, levels = 0, col = "black", lwd = 2)
 }
 
 # 3. Declination differences between versions 12 and 13
@@ -84,8 +88,8 @@ mapContour(lon, lat, dec, levels=0, col="black", lwd=2)
 lon <- seq(-180, 180)
 lat <- seq(-90, 90)
 decDiff <- function(lon, lat) {
-    old <- magneticField(lon, lat, 2020, version=13)$declination
-    new <- magneticField(lon, lat, 2020, version=12)$declination
+    old <- magneticField(lon, lat, 2020, version = 13)$declination
+    new <- magneticField(lon, lat, 2020, version = 12)$declination
     new - old
 }
 decDiff <- outer(lon, lat, decDiff)
@@ -93,13 +97,15 @@ decDiff <- ifelse(decDiff > 180, decDiff - 360, decDiff)
 # Overall (mean) shift -0.1deg
 t.test(decDiff)
 # View histogram, narrowed to small differences
-par(mar=c(3.5, 3.5, 2, 2), mgp=c(2, 0.7, 0))
-hist(decDiff, breaks=seq(-180, 180, 0.05), xlim=c(-2, 2),
-     xlab="Declination difference [deg] from version=12 to version=13",
-     main="Predictions for year 2020")
+par(mar = c(3.5, 3.5, 2, 2), mgp = c(2, 0.7, 0))
+hist(decDiff,
+    breaks = seq(-180, 180, 0.05), xlim = c(-2, 2),
+    xlab = "Declination difference [deg] from version=12 to version=13",
+    main = "Predictions for year 2020"
+)
 print(quantile(decDiff, c(0.025, 0.975)))
 # Note that the large differences are at high latitudes
-imagep(lon,lat,decDiff, zlim=c(-1,1)*max(abs(decDiff)))
+imagep(lon, lat, decDiff, zlim = c(-1, 1) * max(abs(decDiff)))
 lines(coastlineWorld[["longitude"]], coastlineWorld[["latitude"]])
 }
 }
@@ -112,6 +118,10 @@ website (\verb{https://www.ngdc.noaa.gov/IAGA/vmod/igrf.html}) on June 7,
 \item Witze, Alexandra. \dQuote{Earth's Magnetic Field Is Acting up and Geologists Don't Know Why.}
 Nature 565 (January 9, 2019): 143.
 \doi{10.1038/d41586-019-00007-1}
+\item Alken, P., E. Thébault, C. D. Beggan, H. Amit, J. Aubert, J. Baerenzung, T. N. Bondar, et al.
+"International Geomagnetic Reference Field: The Thirteenth Generation."
+Earth, Planets and Space 73, no. 1 (December 2021): 49.
+\doi{10.1186/s40623-020-01288-x}.
 }
 }
 \seealso{
@@ -126,6 +136,7 @@ Other things related to magnetism:
 Dan Kelley wrote the R code and a fortran wrapper to the
 \code{igrf12.f} subroutine, which was written by Susan Macmillan of the
 British Geological Survey and distributed ``without limitation'' (email from
-SM to DK dated June 5, 2015).
+SM to DK dated June 5, 2015).  This version was updated subsequent
+to that date; see \sQuote{Historical Notes}.
 }
 \concept{things related to magnetism}

@@ -29,10 +29,10 @@ in the Example.
 library(oce)
 data(amsr) # see ?amsr for how to read and composite such objects
 sub <- subset(amsr, -75 < longitude & longitude < -45)
-sub <- subset(sub,   40 < latitude  &  latitude <  50)
+sub <- subset(sub, 40 < latitude & latitude < 50)
 plot(sub)
 data(coastlineWorld)
-lines(coastlineWorld[['longitude']], coastlineWorld[['latitude']])
+lines(coastlineWorld[["longitude"]], coastlineWorld[["latitude"]])
 
 }
 \seealso{

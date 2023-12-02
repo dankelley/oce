@@ -25,20 +25,20 @@ A vector of predictions.
 This creates a time-series of predicted tides, based on a
 tidal model object that was created by \code{\link[=as.tidem]{as.tidem()}} or \code{\link[=tidem]{tidem()}}.
 }
-\examples{
+\details{
+All the tidal constituents that are stored in \code{object} are used,
+not just those that are statistically significant or that have amplitude
+exceeding any particular value.  In this respect, \code{\link[=predict.tidem]{predict.tidem()}}
+follows a pattern established by e.g. \code{\link[=predict.lm]{predict.lm()}}.  Note that
+the constituents in \code{object} are straightforward if it
+was constructed with \code{\link[=as.tidem]{as.tidem()}}, but considerably more complicated
+for \code{\link[=tidem]{tidem()}}, and so the documentation for the latter ought to
+be studied closely, especially with regard to the Rayleigh criterion.
+}
+\section{Sample of Usage}{
 
-\dontrun{
-library(oce)
-# 1. tidal anomaly
-data(sealevelTuktoyaktuk)
-time <- sealevelTuktoyaktuk[["time"]]
-elevation <- sealevelTuktoyaktuk[["elevation"]]
-oce.plot.ts(time, elevation, type='l', ylab="Height [m]", ylim=c(-2, 6))
-tide <- tidem(sealevelTuktoyaktuk)
-lines(time, elevation - predict(tide), col="red")
-abline(h=0, col="red")
-
-# 2. prediction at specified times
+\preformatted{
+# prediction at specified times
 data(sealevel)
 m <- tidem(sealevel)
 # Check fit over 2 days (interpolating to finer timescale)
@@ -48,10 +48,22 @@ elevation <- sealevel[["elevation"]]
 oce.plot.ts(time[look], elevation[look])
 # 360s = 10 minute timescale
 t <- seq(from=time[1], to=time[max(look)], by=360)
-lines(t, predict(m, newdata=t), col='red')
+lines(t, predict(m, newdata=t), col="red")
 legend("topright", col=c("black","red"),
 legend=c("data","model"),lwd=1)
 }
+}
+
+\examples{
+
+# Show non-tidal sealevel signal in Halifax Harbour during
+# the year 2002. The spike resulted from Hurricane Juan.
+library(oce)
+data(sealevel)
+time <- sealevel[["time"]]
+elevation <- sealevel[["elevation"]]
+prediction <- tidem(sealevel) |> predict()
+oce.plot.ts(time, elevation - prediction)
 
 }
 \seealso{

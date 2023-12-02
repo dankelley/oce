@@ -2,7 +2,7 @@
 % Please edit documentation in R/adp.R
 \name{enuToOtherAdp}
 \alias{enuToOtherAdp}
-\title{Convert ADP ENU to Rotated Coordinate}
+\title{Convert adp Object from ENU Coordinate to Rotated Coordinate}
 \usage{
 enuToOtherAdp(x, heading = 0, pitch = 0, roll = 0)
 }
@@ -40,8 +40,8 @@ points up or down, etc.
 
 library(oce)
 data(adp)
-o <- enuToOtherAdp(adp, heading=-31.5)
-plot(o, which=1:3)
+o <- enuToOtherAdp(adp, heading = -31.5)
+plot(o, which = 1:3)
 
 }
 \references{

@@ -24,7 +24,7 @@ of the Levitus atlas, given by \code{\link[=standardDepths]{standardDepths()}}.
 If \code{p} is a single numerical value,
 it is taken as the number of subdivisions to use in a call to \code{\link[=seq]{seq()}}
 that has range from 0 to the maximum pressure in \code{section}.  Finally, if a
-vector numerical values is provided, perhaps. constructed with \code{\link[=seq]{seq()}}
+vector numerical values is provided, perhaps as constructed with \code{\link[=seq]{seq()}}
 or \code{\link{standardDepths}}\code{(5)} (as in the examples),
 then it is used as is, after trimming any values that exceed the maximum
 pressure in the station data stored within \code{section}.}
@@ -74,9 +74,10 @@ a flag system, for possible use in later processing steps.
 # Gulf Stream
 library(oce)
 data(section)
-GS <- subset(section, 113<=stationId&stationId<=129)
-GSg <- sectionGrid(GS, p=seq(0, 5000, 100))
-plot(GSg, which="temperature")
+GS <- subset(section, 113 <= stationId & stationId <= 129)
+GSg <- sectionGrid(GS, p = seq(0, 5000, 100))
+plot(GSg, which = "temperature")
+## Show effects of various depth schemes
 
 }
 \seealso{

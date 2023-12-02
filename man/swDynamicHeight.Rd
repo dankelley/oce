@@ -69,38 +69,39 @@ is repeated, only the first level is used.
 If there are under 4 remaining distinct
 pressures, \code{NA} is returned, with a warning.
 }
-\examples{
-\dontrun{
+\section{Sample of Usage}{
+
+\preformatted{
 library(oce)
 data(section)
 
 # Dynamic height and geostrophy
-par(mfcol=c(2,2))
-par(mar=c(4.5,4.5,2,1))
+par(mfcol=c(2, 2))
+par(mar=c(4.5, 4.5, 2, 1))
 
 # Left-hand column: whole section
 # (The smoothing lowers Gulf Stream speed greatly)
 westToEast <- subset(section, 1<=stationId&stationId<=123)
 dh <- swDynamicHeight(westToEast)
-plot(dh$distance, dh$height, type='p', xlab="", ylab="dyn. height [m]")
+plot(dh$distance, dh$height, type="p", xlab="", ylab="dyn. height [m]")
 ok <- !is.na(dh$height)
 smu <- supsmu(dh$distance, dh$height)
 lines(smu, col="blue")
 f <- coriolis(section[["station", 1]][["latitude"]])
 g <- gravity(section[["station", 1]][["latitude"]])
 v <- diff(smu$y)/diff(smu$x) * g / f / 1e3 # 1e3 converts to m
-plot(smu$x[-1], v, type='l', col="blue", xlab="distance [km]", ylab="velocity (m/s)")
+plot(smu$x[-1], v, type="l", col="blue", xlab="distance [km]", ylab="velocity (m/s)")
 
 # right-hand column: gulf stream region, unsmoothed
 gs <- subset(section, 102<=stationId&stationId<=124)
 dh.gs <- swDynamicHeight(gs)
-plot(dh.gs$distance, dh.gs$height, type='b', xlab="", ylab="dyn. height [m]")
+plot(dh.gs$distance, dh.gs$height, type="b", xlab="", ylab="dyn. height [m]")
 v <- diff(dh.gs$height)/diff(dh.gs$distance) * g / f / 1e3
-plot(dh.gs$distance[-1], v, type='l', col="blue",
+plot(dh.gs$distance[-1], v, type="l", col="blue",
   xlab="distance [km]", ylab="velocity (m/s)")
 }
-
 }
+
 \references{
 Gill, A.E., 1982. \emph{Atmosphere-ocean Dynamics}, Academic
 Press, New York, 662 pp.

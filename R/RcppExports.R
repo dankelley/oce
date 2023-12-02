@@ -13,10 +13,6 @@ do_amsr_average <- function(a, b) {
     .Call(`_oce_do_amsr_average`, a, b)
 }
 
-do_amsr_composite <- function(a, dim) {
-    .Call(`_oce_do_amsr_composite`, a, dim)
-}
-
 do_approx3d <- function(x, y, z, f, xout, yout, zout) {
     .Call(`_oce_do_approx3d`, x, y, z, f, xout, yout, zout)
 }

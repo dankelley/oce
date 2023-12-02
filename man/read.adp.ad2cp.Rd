@@ -2,7 +2,7 @@
 % Please edit documentation in R/adp.nortek.ad2cp.R
 \name{read.adp.ad2cp}
 \alias{read.adp.ad2cp}
-\title{Read a Nortek AD2CP File}
+\title{Read an adp File in Nortek AD2CP Format}
 \usage{
 read.adp.ad2cp(
   file,
@@ -132,6 +132,46 @@ of the three columns in this table.\tabular{rrr}{
    \code{0xa0} \tab 160 \tab \code{text} \cr
 }
 }
+\section{Sample of Usage}{
+
+\preformatted{
+d <- read.adp.ad2cp("~/test.ad2cp", to=100) # or read.oce()
+}
+}
+
+\section{How the binary file is decoded}{
+
+
+This file type, like other acoustic-Doppler types, is read
+with a hybrid R/C++ system, for efficiency.
+The processing steps are sketched below, for
+users who want to inspect the code or build upon it.
+\enumerate{
+\item In R, \code{\link[=readBin]{readBin()}} is used to insert the file contents into
+a \link{vector} of type \code{raw}.
+\item In C++, this raw vector is scanned byte by byte,
+to find the starting indices of data "chunks", or subsections of
+the data that correspond to individual sampling times.
+Checksum computations are also done at this stage, to detect
+possible data corruption.  Warnings are issued for any bad chunks,
+and they are skipped in further processing. The valid
+starting points are then passed back to R as a \link{vector} of
+type \code{integer}.
+\item In R, \code{\link[=readBin]{readBin()}} is used to read the components of each chunk.
+For speed, this is done in a vectorized fashion. For example,
+all the velocities in the whole file are read in a single call
+to \code{\link[=readBin]{readBin()}}. This process is done for each of the data
+fields that are to be handled.  Importantly, these \code{\link[=readBin]{readBin()}}
+calls are tailored to the data, using values of
+the \code{size}, \code{endian} and \code{signed} parameters that are tailored
+to the structure of the given component.
+Scaling factors are then applied as required, to convert the
+components to physical units.
+\item Finally, in R, the acquired items are inserted into the \code{data} or
+\code{metadata} slot of the return value, according to oce convention.
+}
+}
+
 \examples{
 library(oce)
 # You can run this within the oce directory, if you clone from github.

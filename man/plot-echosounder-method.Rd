@@ -141,7 +141,7 @@ used, and this may be added in the future.
 \examples{
 library(oce)
 data(echosounder)
-plot(echosounder, drawBottom=TRUE)
+plot(echosounder, drawBottom = TRUE)
 
 }
 \seealso{

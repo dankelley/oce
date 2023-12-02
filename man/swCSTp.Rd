@@ -42,9 +42,9 @@ pressure (see \code{\link[=swSCTp]{swSCTp()}}).  If it is \code{"gsw"} then the
 Gibbs-SeaWater formulation is used, via \code{\link[=gsw_C_from_SP]{gsw_C_from_SP()}}.
 }
 \examples{
-stopifnot(abs(1.0 - swCSTp(35, T90fromT68(15), 0, eos="unesco")) < 1e-7)
-stopifnot(abs(1.0 - swCSTp(34.25045, T90fromT68(15), 2000, eos="unesco")) < 1e-7)
-stopifnot(abs(1.0 - swCSTp(34.25045, T90fromT68(15), 2000, eos="gsw")) < 1e-7)
+stopifnot(abs(1.0 - swCSTp(35, T90fromT68(15), 0, eos = "unesco")) < 1e-7)
+stopifnot(abs(1.0 - swCSTp(34.25045, T90fromT68(15), 2000, eos = "unesco")) < 1e-7)
+stopifnot(abs(1.0 - swCSTp(34.25045, T90fromT68(15), 2000, eos = "gsw")) < 1e-7)
 
 }
 \references{

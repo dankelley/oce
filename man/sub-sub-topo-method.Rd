@@ -93,7 +93,7 @@ directs where to look.
 
 \examples{
 data(topoWorld)
-dim(topoWorld[['z']])
+dim(topoWorld[["z"]])
 
 }
 \seealso{

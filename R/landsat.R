@@ -1,6 +1,6 @@
 # vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
 
-#' Class to Store landsat Data
+#' Class to Store Landsat Satellite Data
 #'
 #' This class holds landsat data. Such are available at several
 #' websites (e.g. reference 1).
@@ -161,7 +161,7 @@
 #'
 #' @family classes holding satellite data
 #' @family things related to landsat data
-setClass("landsat", contains="satellite")
+setClass("landsat", contains = "satellite")
 
 
 #' Sample landsat Data
@@ -186,25 +186,28 @@ setClass("landsat", contains="satellite")
 NULL
 
 
-setMethod(f="show",
-    signature="landsat",
-    definition=function(object) {
+setMethod(
+    f = "show",
+    signature = "landsat",
+    definition = function(object) {
         cat("Landsat object, ID", object@metadata$header$landsat_scene_id, "\n")
         dataNames <- names(object@data)
         if (length(dataNames)) {
             cat("Data (bands or calculated):\n")
             for (b in seq_along(dataNames)) {
                 dim <- if (is.list(object@data[[b]])) dim(object@data[[b]]$lsb) else dim(object@data[[b]])
-                cat("  \"", dataNames[b], "\" has dimension c(", dim[1], ",", dim[2], ")\n", sep="")
+                cat("  \"", dataNames[b], "\" has dimension c(", dim[1], ",", dim[2], ")\n", sep = "")
             }
         } else {
             cat("Object contains no band data.\n")
         }
-    })
+    }
+)
 
-setMethod(f="initialize",
-    signature="landsat",
-    definition=function(.Object, filename, ...) {
+setMethod(
+    f = "initialize",
+    signature = "landsat",
+    definition = function(.Object, filename, ...) {
         .Object <- callNextMethod(.Object, ...)
         if (!missing(filename)) {
             .Object@metadata$filename <- filename
@@ -212,7 +215,8 @@ setMethod(f="initialize",
         .Object@processingLog$time <- presentTime()
         .Object@processingLog$value <- "create 'landsat' object"
         return(.Object)
-    })
+    }
+)
 
 #' Summarize a landsat Object
 #'
@@ -225,21 +229,26 @@ setMethod(f="initialize",
 #' @author Dan Kelley
 #'
 #' @family things related to landsat data
-setMethod(f="summary",
-    signature="landsat",
-    definition=function(object, ...) {
+setMethod(
+    f = "summary",
+    signature = "landsat",
+    definition = function(object, ...) {
         cat("Landsat Summary\n---------------\n\n")
-        showMetadataItem(object, "filename",   "Data file:           ")
-        showMetadataItem(object, "time",       "Time:                ")
+        showMetadataItem(object, "filename", "Data file:           ")
+        showMetadataItem(object, "time", "Time:                ")
         showMetadataItem(object, "spacecraft", "Spacecraft:          ")
         cat(sprintf("* Header file:         %s\n", object@metadata$headerfilename))
         cat(sprintf("* UTM zone:             %d (used for whole image)\n", object@metadata$zoneUTM))
-        cat(sprintf("* UTM lower left:      %7.0f easting %7.0f northing (m)\n",
+        cat(sprintf(
+            "* UTM lower left:      %7.0f easting %7.0f northing (m)\n",
             object@metadata$llUTM$easting,
-            object@metadata$llUTM$northing))
-        cat(sprintf("* UTM upper right:     %7.0f easting %7.0f northing (m)\n",
+            object@metadata$llUTM$northing
+        ))
+        cat(sprintf(
+            "* UTM upper right:     %7.0f easting %7.0f northing (m)\n",
             object@metadata$urUTM$easting,
-            object@metadata$urUTM$northing))
+            object@metadata$urUTM$northing
+        ))
         cat(sprintf("* Lower left:          %fE %fN\n", object@metadata$lllon, object@metadata$lllat))
         cat(sprintf("* Lower right:         %fE %fN\n", object@metadata$lrlon, object@metadata$lrlat))
         cat(sprintf("* Upper right:         %fE %fN\n", object@metadata$urlon, object@metadata$urlat))
@@ -248,7 +257,8 @@ setMethod(f="summary",
             object@data[[name]] <- object[[name]] # translate to science units
         }
         invisible(callNextMethod()) # summary
-    })
+    }
+)
 
 
 #' @title Extract Something From a landsat Object
@@ -322,74 +332,85 @@ setMethod(f="summary",
 #' @author Dan Kelley
 #'
 #' @family things related to landsat data
-setMethod(f="[[",
-    signature(x="landsat", i="ANY", j="ANY"),
-    definition=function(x, i, j, ...) {
+setMethod(
+    f = "[[",
+    signature(x = "landsat", i = "ANY", j = "ANY"),
+    definition = function(x, i, j, ...) {
         debug <- getOption("oceDebug")
-        oceDebug(debug, "landsat [[ {\n", unindent=1)
-        if (missing(i))
-            stop("Must name a landsat item to retrieve, e.g. '[[\"panchromatic\"]]'", call.=FALSE)
-        if (length(i) > 1L)
+        oceDebug(debug, "landsat [[ {\n", unindent = 1)
+        if (missing(i)) {
+            stop("Must name a landsat item to retrieve, e.g. '[[\"panchromatic\"]]'", call. = FALSE)
+        }
+        if (length(i) > 1L) {
             stop("[[,landsat-method requires length(i) to be of 1\n")
-        if (!is.character(i))
-            stop("landsat item must be specified by name", call.=FALSE)
+        }
+        if (!is.character(i)) {
+            stop("landsat item must be specified by name", call. = FALSE)
+        }
         dataDerived <- c("longitude", "latitude", "temperature", "panchromatic")
         if (i == "?") {
-            return(list(metadata=sort(names(x@metadata)),
-                metadataDerived=NULL,
-                data=sort(names(x@data)),
-                dataDerived=sort(dataDerived)))
+            return(list(
+                metadata = sort(names(x@metadata)),
+                metadataDerived = NULL,
+                data = sort(names(x@data)),
+                dataDerived = sort(dataDerived)
+            ))
         }
         # Handle cases one by one, starting with simplest.
         if (!(is.na(pmatch(i, "longitude")))) {
             # FIXME: ignoring decimation (may be best, anyway)
             b1 <- x@data[[1]]
             dim <- if (is.list(b1)) dim(b1$lsb) else dim(b1)
-            oceDebug(debug, "} # landsat [[\n", unindent=1)
-            return(x@metadata$lllon + seq(0, 1, length.out=dim[1]) * (x@metadata$urlon - x@metadata$lllon))
+            oceDebug(debug, "} # landsat [[\n", unindent = 1)
+            return(x@metadata$lllon + seq(0, 1, length.out = dim[1]) * (x@metadata$urlon - x@metadata$lllon))
         }
         if (!(is.na(pmatch(i, "latitude")))) {
             # FIXME: ignoring decimation (may be best, anyway)
             b1 <- x@data[[1]]
             dim <- if (is.list(b1)) dim(b1$lsb) else dim(b1)
-            oceDebug(debug, "} # landsat [[\n", unindent=1)
-            return(x@metadata$lllat + seq(0, 1, length.out=dim[2]) * (x@metadata$urlat - x@metadata$lllat))
+            oceDebug(debug, "} # landsat [[\n", unindent = 1)
+            return(x@metadata$lllat + seq(0, 1, length.out = dim[2]) * (x@metadata$urlat - x@metadata$lllat))
         }
         if (is.character(i) && !is.na(pmatch(i, names(x@metadata)))) {
-            oceDebug(debug, "} # landsat [[\n", unindent=1)
+            oceDebug(debug, "} # landsat [[\n", unindent = 1)
             return(x@metadata[[i]])
         }
-        d <- NULL                # check for this later to see found data
+        d <- NULL # check for this later to see found data
         if (!is.na(pmatch(i, "temperature"))) {
-            if (!("tirs1" %in% names(x@data)))
+            if (!("tirs1" %in% names(x@data))) {
                 stop("cannot compute temperature without \"tirs1\" band")
-            if (!is.list(x@data$tirs1))
+            }
+            if (!is.list(x@data$tirs1)) {
                 stop("the \"tirs1\" band is not stored in two-byte format")
+            }
             # First, determine whether decimation is needed.
-            decimate <- 1        # decimation step
+            decimate <- 1 # decimation step
             emissivity <- if ("emissivity" %in% names(x@metadata)) x@metadata$emissivity else 1
             dim <- dim(x@data$tirs1$lsb)
             maxdim <- max(dim)
-            ilook <- seq.int(1L, dim[1], by=1L)
-            jlook <- seq.int(1L, dim[2], by=1L)
+            ilook <- seq.int(1L, dim[1], by = 1L)
+            jlook <- seq.int(1L, dim[2], by = 1L)
             if (!missing(j)) {
                 if (is.logical(j)) {
                     decimate <- if (j) max(as.integer(round(maxdim / 800)), 1) else 1
                 } else {
-                    if (round(j) < 1)
+                    if (round(j) < 1) {
                         stop("cannot decimate by a step smaller than 1, but got ", j)
+                    }
                     decimate <- as.integer(round(j))
-                    if (decimate > min(dim))
+                    if (decimate > min(dim)) {
                         stop("cannot decimate by a step larger than image dimension")
+                    }
                 }
-                ilook <- seq.int(1, dim[1], by=decimate)
-                jlook <- seq.int(1, dim[2], by=decimate)
+                ilook <- seq.int(1, dim[1], by = decimate)
+                jlook <- seq.int(1, dim[2], by = decimate)
             }
             spacecraft <- if (is.null(x@metadata$spacecraft)) "LANDSAT_8" else x@metadata$spacecraft
             if (spacecraft == "LANDSAT_8") {
                 oceDebug(debug, "temperature for landsat-8\n")
-                if (!("tirs1" %in% names(x@data)))
-                stop("cannot calculate Landsat temperature because no \"tirs1\" band in object", call.=FALSE)
+                if (!("tirs1" %in% names(x@data))) {
+                    stop("cannot calculate Landsat temperature because no \"tirs1\" band in object", call. = FALSE)
+                }
                 ML <- x@metadata$header$radiance_mult_band_10
                 AL <- x@metadata$header$radiance_add_band_10
                 K1 <- x@metadata$header$k1_constant_band_10
@@ -398,59 +419,61 @@ setMethod(f="[[",
                 oceDebug(debug, "AL=", AL, "# @metadata$header$radiance_add_band_10\n")
                 oceDebug(debug, "K1=", K1, "# @metadata$header$k1_constant_band_10\n")
                 oceDebug(debug, "K2=", K2, "# @metadata$header$k2_constant_band_10\n")
-                if (is.matrix(emissivity))
-                emissivity <- emissivity[ilook, jlook]
+                if (is.matrix(emissivity)) {
+                    emissivity <- emissivity[ilook, jlook]
+                }
                 msb <- x@data$tirs1$msb[ilook, jlook]
                 lsb <- x@data$tirs1$lsb[ilook, jlook]
                 dim <- dim(msb)
-                d <- 256L*as.integer(msb) + as.integer(lsb)
+                d <- 256L * as.integer(msb) + as.integer(lsb)
                 na <- d == 0
                 Llambda <- ML * d + AL
                 # avoid warnings on the 0 Llambda values (from band gaps)
                 options <- options("warn")
-                options(warn=-1)
+                options(warn = -1)
                 d <- K2 / log(emissivity * K1 / Llambda + 1)
-                options(warn=options$warn)
+                options(warn = options$warn)
                 d <- d - 273.15
                 d[na] <- NA
                 dim(d) <- dim
-                oceDebug(debug, "} # landsat [[\n", unindent=1)
+                oceDebug(debug, "} # landsat [[\n", unindent = 1)
                 return(d)
             } else if (spacecraft == "LANDSAT_7") {
                 # band 6, tirs1
                 oceDebug(debug, "temperature for landsat-7\n")
                 ML <- x@metadata$header$radiance_mult_band_6_vcid_1
                 AL <- x@metadata$header$radiance_add_band_6_vcid_1
-                K1 <- 666.09  # Landsat7_Handbook.pdf Table 11.5
+                K1 <- 666.09 # Landsat7_Handbook.pdf Table 11.5
                 K2 <- 1282.71 # Landsat7_Handbook.pdf Table 11.5
                 oceDebug(debug, "ML=", ML, "# @metadata$header$radiance_mult_band_6_vcid_1\n")
                 oceDebug(debug, "AL=", AL, "# @metadata$header$radiance_add_band_6_vcid_1\n")
                 oceDebug(debug, "K1=", K1, "# Landsat7_Handbook.pdf Table 11.5\n")
                 oceDebug(debug, "K2=", K2, "# Landsat7_Handbook.pdf Table 11.5\n")
                 # d <- 256L*as.integer(x@data$tirs1$msb) + as.integer(x@data$tirs1$lsb)
-                if (is.matrix(emissivity))
-                emissivity <- emissivity[ilook, jlook]
+                if (is.matrix(emissivity)) {
+                    emissivity <- emissivity[ilook, jlook]
+                }
                 d <- x@data$tirs1$lsb[ilook, jlook]
-dim <- dim(d)
+                dim <- dim(d)
                 d <- as.integer(d)
                 na <- d == 0
                 # rm(x) # may help if space is tight
                 Llambda <- ML * d + AL
                 # avoid warnings on the 0 Llambda values (from band gaps)
                 options <- options("warn")
-                options(warn=-1)
+                options(warn = -1)
                 d <- K2 / log(emissivity * K1 / Llambda + 1)
-                options(warn=options$warn)
+                options(warn = options$warn)
                 d <- d - 273.15
                 d[na] <- NA
                 dim(d) <- dim
-                oceDebug(debug, "} # landsat [[\n", unindent=1)
+                oceDebug(debug, "} # landsat [[\n", unindent = 1)
                 return(d)
             } else if (spacecraft == "LANDSAT_5") {
                 # band 6, tirs1
                 message("FIXME: should handle temperature for landsat-5\n")
-                K1 <- 607.76     # Landsat7_Handbook.pdf Table 11.5
-                K2 <- 1260.56    # Landsat7_Handbook.pdf Table 11.5
+                K1 <- 607.76 # Landsat7_Handbook.pdf Table 11.5
+                K2 <- 1260.56 # Landsat7_Handbook.pdf Table 11.5
                 message("K1=", K1, " # Landsat7_Handbook.pdf Table 11.5")
                 message("K2=", K2, " # Landsat7_Handbook.pdf Table 11.5")
                 d <- as.integer(x@data$tirs1$lsb[ilook, jlook])
@@ -458,7 +481,7 @@ dim <- dim(d)
             } else {
                 stop("unknown satellite: ", x@metadata$spacecraft)
             }
-            oceDebug(debug, "} # landsat [[\n", unindent=1)
+            oceDebug(debug, "} # landsat [[\n", unindent = 1)
             return(d)
         }
         # message("i:", i, " before")
@@ -469,8 +492,9 @@ dim <- dim(d)
                 i <- ii
             }
         }
-        if (is.na(ii))
-            stop("this landsat object lacks a band named \"", i, "\"", call.=FALSE)
+        if (is.na(ii)) {
+            stop("this landsat object lacks a band named \"", i, "\"", call. = FALSE)
+        }
         oceDebug(getOption("oceDebug"), "band:", iorig, "\n")
         isList <- is.list(x@data[[i]])
         if (isList) {
@@ -479,28 +503,28 @@ dim <- dim(d)
         } else {
             d <- x@data[[i]]
         }
-        #rm(x)                    # may help if memory is tight
+        # rm(x)                    # may help if memory is tight
         dim <- if (isList) dim(lsb) else dim(d) # altered if decimation
-        #message("dim=c(", dim[1], ",", dim[2], ") originally")
+        # message("dim=c(", dim[1], ",", dim[2], ") originally")
         # e.g. image[["panchromatic", TRUE]]
         if (!missing(j) && is.logical(j) && j) {
             maxdim <- max(dim)
             if (maxdim > 800) {
                 decimate <- max(as.integer(round(maxdim / 800)), 1)
-                ilook <- seq.int(1, dim[1], by=decimate)
-                jlook <- seq.int(1, dim[2], by=decimate)
+                ilook <- seq.int(1, dim[1], by = decimate)
+                jlook <- seq.int(1, dim[2], by = decimate)
                 if (isList) {
                     lsb <- lsb[ilook, jlook] # rewrite in place, possibly saving memory
                     res <- if (is.null(dim(msb))) {
                         as.integer(lsb)
                     } else {
-                        256L*as.integer(msb[ilook, jlook]) + as.integer(lsb)
+                        256L * as.integer(msb[ilook, jlook]) + as.integer(lsb)
                     }
                     dim(res) <- dim(lsb)
-                    oceDebug(getOption("oceDebug"), "} # \"[[\"\n", unindent=1)
+                    oceDebug(getOption("oceDebug"), "} # \"[[\"\n", unindent = 1)
                     return(res)
                 } else {
-                    oceDebug(getOption("oceDebug"), "} # \"[[\"\n", unindent=1)
+                    oceDebug(getOption("oceDebug"), "} # \"[[\"\n", unindent = 1)
                     return(d[ilook, jlook])
                 }
             }
@@ -509,35 +533,36 @@ dim <- dim(d)
         if (!missing(j) && is.numeric(j)) {
             j <- as.integer(round(j))
             if (j > 1) {
-                ilook <- seq.int(1, dim[1], by=j)
-                jlook <- seq.int(1, dim[2], by=j)
+                ilook <- seq.int(1, dim[1], by = j)
+                jlook <- seq.int(1, dim[2], by = j)
                 if (isList) {
                     if (!is.null(dim(msb))) {
                         msb <- msb[ilook, jlook]
                     }
                     lsb <- lsb[ilook, jlook]
-                    res <- 256L*as.integer(msb) + as.integer(lsb)
+                    res <- 256L * as.integer(msb) + as.integer(lsb)
                     dim(res) <- dim(lsb)
-                    oceDebug(debug, "} # landsat [[\n", unindent=1)
+                    oceDebug(debug, "} # landsat [[\n", unindent = 1)
                     return(res)
                 } else {
                     d <- d[ilook, jlook]
-                    oceDebug(debug, "} # landsat [[\n", unindent=1)
+                    oceDebug(debug, "} # landsat [[\n", unindent = 1)
                     return(d)
                 }
             }
         }
         # OK, no decimation is requested, so just return the desired value.
         if (isList) {
-            res <- 256L*as.integer(msb) + as.integer(lsb)
+            res <- 256L * as.integer(msb) + as.integer(lsb)
             dim(res) <- dim(lsb)
-            oceDebug(debug, "} # landsat [[\n", unindent=1)
+            oceDebug(debug, "} # landsat [[\n", unindent = 1)
             return(res)
         } else {
-            oceDebug(debug, "} # landsat [[\n", unindent=1)
+            oceDebug(debug, "} # landsat [[\n", unindent = 1)
             return(d)
         }
-    })
+    }
+)
 
 
 #' @title Replace Parts of a landsat Object
@@ -547,11 +572,13 @@ dim <- dim(d)
 #' @template sub_subsetTemplate
 #'
 #' @family things related to landsat data
-setMethod(f="[[<-",
-          signature(x="landsat", i="ANY", j="ANY"),
-          definition=function(x, i, j, ..., value) {
-              callNextMethod(x=x, i=i, j=j, ..., value=value) # [[<-
-          })
+setMethod(
+    f = "[[<-",
+    signature(x = "landsat", i = "ANY", j = "ANY"),
+    definition = function(x, i, j, ..., value) {
+        callNextMethod(x = x, i = i, j = j, ..., value = value) # [[<-
+    }
+)
 
 
 #' Plot a landsat Object
@@ -684,23 +711,25 @@ setMethod(f="[[<-",
 #' @family functions that plot oce data
 #'
 #' @aliases plot.landsat
-setMethod(f="plot",
-    signature=signature("landsat"),
-    definition=function(x, band, which=1, decimate=TRUE, zlim, utm=FALSE,
-        col=oce.colorsPalette,
-        drawPalette=TRUE,
-        showBandName=TRUE,
-        alpha.f=1, red.f=1.7, green.f=1.5, blue.f=6,
-        offset=c(0, -0.05, -0.2, 0),
-        transform=diag(c(red.f, green.f, blue.f, alpha.f)),
-        debug=getOption("oceDebug"), ...)
-    {
-        oceDebug(debug, "plot,landsat-method(..., which=c(", paste(which, collapse=","),
+setMethod(
+    f = "plot",
+    signature = signature("landsat"),
+    definition = function(x, band, which = 1, decimate = TRUE, zlim, utm = FALSE,
+                          col = oce.colorsPalette,
+                          drawPalette = TRUE,
+                          showBandName = TRUE,
+                          alpha.f = 1, red.f = 1.7, green.f = 1.5, blue.f = 6,
+                          offset = c(0, -0.05, -0.2, 0),
+                          transform = diag(c(red.f, green.f, blue.f, alpha.f)),
+                          debug = getOption("oceDebug"), ...) {
+        oceDebug(debug, "plot,landsat-method(..., which=c(", paste(which, collapse = ","),
             "), decimate=", decimate,
             ", zlim=", if (missing(zlim)) "(missing)" else zlim,
-            ", ...) {\n", sep="", unindent=1)
+            ", ...) {\n",
+            sep = "", unindent = 1
+        )
         if (!length(x@data)) {
-            warning("In plot,landsat-method(): object contains no band data\n", call.=FALSE)
+            warning("In plot,landsat-method(): object contains no band data\n", call. = FALSE)
             return(invisible(NULL))
         }
         terralook <- FALSE
@@ -711,10 +740,12 @@ setMethod(f="plot",
         if (which == 1) {
             if (!missing(band) && is.character(band) && !is.na(pmatch(band, "kelley"))) {
                 kelley <- TRUE
-                if (missing(drawPalette))
+                if (missing(drawPalette)) {
                     drawPalette <- FALSE
-                if (!("red" %in% datanames && "green" %in% datanames && "blue" %in% datanames))
+                }
+                if (!("red" %in% datanames && "green" %in% datanames && "blue" %in% datanames)) {
                     stop("band=\"kelley\" requires landsat object to contain \"red\", \"green\" and \"blue\"")
+                }
                 message("'kelley' band -- TEMPORARY test; set debug=3 for more")
                 r <- x[["red", decimate]]
                 g <- x[["green", decimate]]
@@ -722,56 +753,61 @@ setMethod(f="plot",
                 dim <- dim(r)
                 if (spacecraft == "LANDSAT_8") {
                     oceDebug(debug, "colors for landsat 8 (range 0 to 2^16-1)\n")
-                    colors <- rgb(r, g, b, maxColorValue=2^16-1)
+                    colors <- rgb(r, g, b, maxColorValue = 2^16 - 1)
                 } else {
                     oceDebug(debug, "colors for landsat 7 (range 0 to 2^8-1)\n")
-                    colors <- rgb(r, g, b, maxColorValue=2^8-1)
+                    colors <- rgb(r, g, b, maxColorValue = 2^8 - 1)
                 }
-                rm(list=c("r", "g", "b")) # clean up asap
+                rm(list = c("r", "g", "b")) # clean up asap
                 col <- unique(colors)
-                d <- array(match(colors, col), dim=dim) # method of Clark Richards
-                oceDebug(debug, "color compaction: ", floor(prod(dim)/length(col)), "\n")
-                oceDebug(debug, "adjusting colors: orig=", paste(head(col), collapse=" "), "\n")
-                col <- adjustcolor(col, alpha.f=alpha.f, red.f=red.f, green.f=green.f, blue.f=blue.f,
-                    offset=offset, transform=transform)
-                oceDebug(debug, "adjusting colors: new=", paste(head(col), collapse=" "), "\n")
+                d <- array(match(colors, col), dim = dim) # method of Clark Richards
+                oceDebug(debug, "color compaction: ", floor(prod(dim) / length(col)), "\n")
+                oceDebug(debug, "adjusting colors: orig=", paste(head(col), collapse = " "), "\n")
+                col <- adjustcolor(col,
+                    alpha.f = alpha.f, red.f = red.f, green.f = green.f, blue.f = blue.f,
+                    offset = offset, transform = transform
+                )
+                oceDebug(debug, "adjusting colors: new=", paste(head(col), collapse = " "), "\n")
                 oceDebug(debug, "finished constucting image\n")
             } else if (!missing(band) && is.character(band) && !is.na(pmatch(band, "terralook"))) {
                 terralook <- TRUE
                 if (missing(drawPalette)) drawPalette <- FALSE
-                if (!("red" %in% datanames && "green" %in% datanames && "nir" %in% datanames))
+                if (!("red" %in% datanames && "green" %in% datanames && "nir" %in% datanames)) {
                     stop("band=\"terralook\" requires landsat object to contain \"red\", \"green\" and \"nir\"")
+                }
                 oceDebug(debug, "extracting red data\n")
                 r <- x[["red", decimate]]
-                oceDebug(debug, "range(red): ", paste(range(r), collapse=" to "), "\n")
+                oceDebug(debug, "range(red): ", paste(range(r), collapse = " to "), "\n")
                 dim <- dim(r)
                 oceDebug(debug, "extracting green data\n")
                 g23 <- 2 / 3 * x[["green", decimate]]
-                oceDebug(debug, "range(green): ", paste(range(g23), collapse=" to "), "\n")
+                oceDebug(debug, "range(green): ", paste(range(g23), collapse = " to "), "\n")
                 oceDebug(debug, "extracting nir data\n")
-                nir3 <- x[["nir", decimate]]/3
-                oceDebug(debug, "range(nir/3): ", paste(range(nir3), collapse=" to "), "\n")
+                nir3 <- x[["nir", decimate]] / 3
+                oceDebug(debug, "range(nir/3): ", paste(range(nir3), collapse = " to "), "\n")
                 # formula from what_is_terralook website
                 g <- g23 + nir3
                 b <- g23 - nir3
-                rm(list=c("g23", "nir3")) # clean up asap
-                g[g<0] <- 0
-                b[b<0] <- 0
+                rm(list = c("g23", "nir3")) # clean up asap
+                g[g < 0] <- 0
+                b[b < 0] <- 0
                 if (spacecraft == "LANDSAT_8") {
                     oceDebug(debug, "colors for landsat 8 (range 0 to 2^16-1)\n")
-                    colors <- rgb(r, g, b, maxColorValue=2^16-1)
+                    colors <- rgb(r, g, b, maxColorValue = 2^16 - 1)
                 } else {
                     oceDebug(debug, "colors for landsat 7 (range 0 to 2^8-1)\n")
-                    colors <- rgb(r, g, b, maxColorValue=2^8-1)
+                    colors <- rgb(r, g, b, maxColorValue = 2^8 - 1)
                 }
-                rm(list=c("r", "g", "b")) # clean up asap
+                rm(list = c("r", "g", "b")) # clean up asap
                 col <- unique(colors)
-                d <- array(match(colors, col), dim=dim) # method of Clark Richards
-                oceDebug(debug, "color compaction: ", floor(prod(dim)/length(col)), "\n")
-                oceDebug(debug, "adjusting colors: orig=", paste(head(col), collapse=" "), "\n")
-                col <- adjustcolor(col, alpha.f=alpha.f, red.f=red.f, green.f=green.f, blue.f=blue.f,
-                    offset=offset, transform=transform)
-                oceDebug(debug, "adjusting colors: new=", paste(head(col), collapse=" "), "\n")
+                d <- array(match(colors, col), dim = dim) # method of Clark Richards
+                oceDebug(debug, "color compaction: ", floor(prod(dim) / length(col)), "\n")
+                oceDebug(debug, "adjusting colors: orig=", paste(head(col), collapse = " "), "\n")
+                col <- adjustcolor(col,
+                    alpha.f = alpha.f, red.f = red.f, green.f = green.f, blue.f = blue.f,
+                    offset = offset, transform = transform
+                )
+                oceDebug(debug, "adjusting colors: new=", paste(head(col), collapse = " "), "\n")
                 oceDebug(debug, "finished constucting image\n")
                 # end of band="terralook"; plot below
             } else {
@@ -782,7 +818,7 @@ setMethod(f="plot",
                         oceDebug(debug, "using tirs1\n")
                         d <- x[["tirs1", decimate]]
                         band <- "tirs1"
-                    }  else {
+                    } else {
                         oceDebug(debug, "using band named", datanames[1], "\n")
                         d <- x[[datanames[1], decimate]]
                         band <- datanames[1]
@@ -793,64 +829,73 @@ setMethod(f="plot",
                     knownBands <- c("temperature", datanames)
                     band <- band[1]
                     i <- pmatch(band, knownBands)
-                    if (is.na(i))
-                        stop("this landsat object has no band named \"", band, "\"", call.=FALSE)
+                    if (is.na(i)) {
+                        stop("this landsat object has no band named \"", band, "\"", call. = FALSE)
+                    }
                     band <- knownBands[i]
                     d <- x[[band, decimate]]
                     if (!any(!is.na(d))) {
                         if (band[1] == "temperature") {
                             stop("cannot compute landsat temperature; see e.g. http://landsat.usgs.gov/mission_headlines2015.php",
-                                call.=FALSE)
+                                call. = FALSE
+                            )
                         } else {
-                            stop("landsat object has only missing values in the \"", band, "\" band", call.=FALSE)
+                            stop("landsat object has only missing values in the \"", band, "\" band", call. = FALSE)
                         }
                     }
-                    if (all(d == 0))
-                        stop("landsat object has only zero values in the \"", band, "\" band", call.=FALSE)
+                    if (all(d == 0)) {
+                        stop("landsat object has only zero values in the \"", band, "\" band", call. = FALSE)
+                    }
                     if (is.na(pmatch(band, "temperature"))) {
-                        d[d == 0] <- NA  # only makes sense for count data
+                        d[d == 0] <- NA # only makes sense for count data
                     }
                 }
             }
             dim <- dim(d)
-            lon <- x@metadata$lllon + seq(0, 1, length.out=dim[1]) * (x@metadata$urlon - x@metadata$lllon)
-            lat <- x@metadata$lllat + seq(0, 1, length.out=dim[2]) * (x@metadata$urlat - x@metadata$lllat)
-            oceDebug(debug, "old lon range: ", paste(range(lon), collapse=" to "), "\n")
-            oceDebug(debug, "old lat range: ", paste(range(lat), collapse=" to "), "\n")
+            lon <- x@metadata$lllon + seq(0, 1, length.out = dim[1]) * (x@metadata$urlon - x@metadata$lllon)
+            lat <- x@metadata$lllat + seq(0, 1, length.out = dim[2]) * (x@metadata$urlat - x@metadata$lllat)
+            oceDebug(debug, "old lon range: ", paste(range(lon), collapse = " to "), "\n")
+            oceDebug(debug, "old lat range: ", paste(range(lat), collapse = " to "), "\n")
             LON0 <- 0.5 * (x@metadata$lllon + x@metadata$ullon)
             LON1 <- 0.5 * (x@metadata$lrlon + x@metadata$urlon)
             LAT0 <- 0.5 * (x@metadata$lllat + x@metadata$lrlat)
             LAT1 <- 0.5 * (x@metadata$ullat + x@metadata$urlat)
-            lon <- LON0 + seq(0, 1, length.out=dim[1]) * (LON1 - LON0)
-            lat <- LAT0 + seq(0, 1, length.out=dim[2]) * (LAT1 - LAT0)
-            oceDebug(debug, "new lon range: ", paste(range(lon), collapse=" to "), "\n")
-            oceDebug(debug, "new lat range: ", paste(range(lat), collapse=" to "), "\n")
-            oceDebug(debug, "dim: ", paste(dim, collapse=" "), "\n")
+            lon <- LON0 + seq(0, 1, length.out = dim[1]) * (LON1 - LON0)
+            lat <- LAT0 + seq(0, 1, length.out = dim[2]) * (LAT1 - LAT0)
+            oceDebug(debug, "new lon range: ", paste(range(lon), collapse = " to "), "\n")
+            oceDebug(debug, "new lat range: ", paste(range(lat), collapse = " to "), "\n")
+            oceDebug(debug, "dim: ", paste(dim, collapse = " "), "\n")
             asp <- 1 / cos(0.5 * (x@metadata$lllat + x@metadata$urlat) * pi / 180)
-            if (missing(zlim) && !terralook && !kelley)  {
+            if (missing(zlim) && !terralook && !kelley) {
                 # FIXME:kelley
-                zlim <- quantile(d, c(0.01, 0.99), na.rm=TRUE)
+                zlim <- quantile(d, c(0.01, 0.99), na.rm = TRUE)
             }
             if (utm) {
                 if (!("llUTM" %in% names(x@metadata))) {
-                    x@metadata$llUTM <- lonlat2utm(x@metadata$lllon, x@metadata$lllat, zone=x@metadata$zoneUTM)
-                    x@metadata$urUTM <- lonlat2utm(x@metadata$urlon, x@metadata$urlat, zone=x@metadata$zoneUTM)
+                    x@metadata$llUTM <- lonlat2utm(x@metadata$lllon, x@metadata$lllat, zone = x@metadata$zoneUTM)
+                    x@metadata$urUTM <- lonlat2utm(x@metadata$urlon, x@metadata$urlat, zone = x@metadata$zoneUTM)
                 }
-                imagep(x=0.001*seq(x@metadata$llUTM$easting, x@metadata$urUTM$easting, length.out=dim[1]),
-                    y=0.001*seq(x@metadata$llUTM$northing, x@metadata$urUTM$northing, length.out=dim[2]),
-                    z=d, asp=1, zlim=zlim, col=col, decimate=FALSE,
-                    drawPalette=drawPalette, debug=debug-1, ...)
+                imagep(
+                    x = 0.001 * seq(x@metadata$llUTM$easting, x@metadata$urUTM$easting, length.out = dim[1]),
+                    y = 0.001 * seq(x@metadata$llUTM$northing, x@metadata$urUTM$northing, length.out = dim[2]),
+                    z = d, asp = 1, zlim = zlim, col = col, decimate = FALSE,
+                    drawPalette = drawPalette, debug = debug - 1, ...
+                )
             } else {
                 if ("breaks" %in% names(list(...))) {
-                    imagep(x=lon, y=lat, z=d, asp=asp, col=col, decimate=FALSE,
-                        drawPalette=drawPalette, debug=debug-1, ...)
+                    imagep(
+                        x = lon, y = lat, z = d, asp = asp, col = col, decimate = FALSE,
+                        drawPalette = drawPalette, debug = debug - 1, ...
+                    )
                 } else {
-                    imagep(x=lon, y=lat, z=d, asp=asp, zlim=zlim, col=col, decimate=FALSE,
-                        drawPalette=drawPalette, debug=debug-1, ...)
+                    imagep(
+                        x = lon, y = lat, z = d, asp = asp, zlim = zlim, col = col, decimate = FALSE,
+                        drawPalette = drawPalette, debug = debug - 1, ...
+                    )
                 }
             }
             if (showBandName && !terralook && !kelley) {
-                mtext(band, side=3, adj=1, line=0, cex=1)
+                mtext(band, side = 3, adj = 1, line = 0, cex = 1)
             }
         } else if (which == 2) {
             if (missing(band)) {
@@ -859,7 +904,7 @@ setMethod(f="plot",
                     oceDebug(debug, "using tirs1\n")
                     d <- x[["tirs1", decimate]]
                     band <- "tirs1"
-                }  else {
+                } else {
                     oceDebug(debug, "using band named", datanames[1], "\n")
                     d <- x[[datanames[1], decimate]]
                     band <- datanames[1]
@@ -869,25 +914,24 @@ setMethod(f="plot",
             }
             d[d == 0] <- NA # ignore 'data' outside footprint
             if ("breaks" %in% names(list(...))) {
-                hist(d, xlab="Value", main="", ...)
+                hist(d, xlab = "Value", main = "", ...)
             } else {
-                hist(d, xlab="Value", main="", breaks=100, ...)
+                hist(d, xlab = "Value", main = "", breaks = 100, ...)
             }
             if (showBandName) {
-                mtext(band, side=3, adj=1)
+                mtext(band, side = 3, adj = 1)
             }
         } else {
             stop("unknown value of 'which'")
         }
-        oceDebug(debug, "} # plot,landsat-method()\n", unindent=1)
-    })
+        oceDebug(debug, "} # plot,landsat-method()\n", unindent = 1)
+    }
+)
 
 
-read.landsatmeta <- function(file, encoding="latin1", debug=getOption("oceDebug"))
-{
-    getItem <- function(info, name, numeric=TRUE)
-    {
-        line <- grep(paste("^[ ]*", name, "[ ]*=[ ]*", sep=""), info)
+read.landsatmeta <- function(file, encoding = "latin1", debug = getOption("oceDebug")) {
+    getItem <- function(info, name, numeric = TRUE) {
+        line <- grep(paste("^[ ]*", name, "[ ]*=[ ]*", sep = ""), info)
         res <- NULL
         if (length(line)) {
             res <- strsplit(info[line[1]], "=")[[1]][2]
@@ -898,13 +942,13 @@ read.landsatmeta <- function(file, encoding="latin1", debug=getOption("oceDebug"
         oceDebug(debug, "read.landsatmeta()/getItem(info,name=\"", name, "\") returning ", res, "\n")
         res
     }
-    oceDebug(debug, "read.landsatmeta(file=\"", file, "\"\n", sep="", unindent=1)
-    info <- readLines(file, warn=FALSE)
-    date <- getItem(info, "DATE_ACQUIRED", numeric=FALSE)
-    centerTime <- getItem(info, "SCENE_CENTER_TIME", numeric=FALSE)
-    time <- as.POSIXct(paste(date, centerTime), tz="UTC")
-    spacecraft <- getItem(info, "SPACECRAFT_ID", numeric=FALSE)
-    id <- getItem(info, "LANDSAT_SCENE_ID", numeric=FALSE)
+    oceDebug(debug, "read.landsatmeta(file=\"", file, "\"\n", sep = "", unindent = 1)
+    info <- readLines(file, warn = FALSE)
+    date <- getItem(info, "DATE_ACQUIRED", numeric = FALSE)
+    centerTime <- getItem(info, "SCENE_CENTER_TIME", numeric = FALSE)
+    time <- as.POSIXct(paste(date, centerTime), tz = "UTC")
+    spacecraft <- getItem(info, "SPACECRAFT_ID", numeric = FALSE)
+    id <- getItem(info, "LANDSAT_SCENE_ID", numeric = FALSE)
     # Bounding region (not a latlon box!)
     ullat <- getItem(info, "CORNER_UL_LAT_PRODUCT")
     ullon <- getItem(info, "CORNER_UL_LON_PRODUCT")
@@ -915,12 +959,16 @@ read.landsatmeta <- function(file, encoding="latin1", debug=getOption("oceDebug"
     lrlat <- getItem(info, "CORNER_LR_LAT_PRODUCT")
     lrlon <- getItem(info, "CORNER_LR_LON_PRODUCT")
     zoneUTM <- getItem(info, "UTM_ZONE")
-    llUTM <- list(easting=getItem(info, "CORNER_LL_PROJECTION_X_PRODUCT"),
-        northing=getItem(info, "CORNER_LL_PROJECTION_Y_PRODUCT"),
-        zone=zoneUTM)
-    urUTM <- list(easting=getItem(info, "CORNER_UR_PROJECTION_X_PRODUCT"),
-        northing=getItem(info, "CORNER_UR_PROJECTION_Y_PRODUCT"),
-        zone=zoneUTM)
+    llUTM <- list(
+        easting = getItem(info, "CORNER_LL_PROJECTION_X_PRODUCT"),
+        northing = getItem(info, "CORNER_LL_PROJECTION_Y_PRODUCT"),
+        zone = zoneUTM
+    )
+    urUTM <- list(
+        easting = getItem(info, "CORNER_UR_PROJECTION_X_PRODUCT"),
+        northing = getItem(info, "CORNER_UR_PROJECTION_Y_PRODUCT"),
+        zone = zoneUTM
+    )
     # Cell sizes
     gridCellSizePanchromatic <- getItem(info, "GRID_CELL_SIZE_PANCHROMATIC")
     gridCellSizeReflective <- getItem(info, "GRID_CELL_SIZE_REFLECTIVE")
@@ -938,7 +986,7 @@ read.landsatmeta <- function(file, encoding="latin1", debug=getOption("oceDebug"
     # Select just certain lines.  The header is short, so doing it by
     # steps, just in case the data format changes later and adjustment
     # is required.
-    info2 <- info[grep("GROUP", info, invert=TRUE)] # delete grouping commands
+    info2 <- info[grep("GROUP", info, invert = TRUE)] # delete grouping commands
     info3 <- info2[grep("=", info2)] # select assignments
     info4 <- gsub("^\\s+", "", info3) # remove leading whitespace
     info5 <- gsub("\\s+$", "", info4) # remove trailing whitespace
@@ -949,39 +997,42 @@ read.landsatmeta <- function(file, encoding="latin1", debug=getOption("oceDebug"
     names(header) <- tolower(names)
     header <- as.list(header)
     # Make numeric if possible
-    for (i in seq_along(header))
-        try(header[[i]] <- scan(text=header[[i]], quiet=TRUE), silent=TRUE)
+    for (i in seq_along(header)) {
+        try(header[[i]] <- scan(text = header[[i]], quiet = TRUE), silent = TRUE)
+    }
     # Band (L4TM, L5TM, and L7ETM+) names from http://landsat.usgs.gov/best_spectral_bands_to_use.php
-    if ("LANDSAT_4" == spacecraft)  {
+    if ("LANDSAT_4" == spacecraft) {
         bandnames <- c("blue", "green", "red", "nir", "swir1", "tirs1", "tirs2", "swir2")
         filesuffices <- c("B1", "B2", "B3", "B4", "B5", "B6_VCID_1", "B6_VCID_2", "B7")
-    } else if ("LANDSAT_5" == spacecraft)  {
+    } else if ("LANDSAT_5" == spacecraft) {
         bandnames <- c("blue", "green", "red", "nir", "swir1", "tirs1", "tirs2", "swir2")
         filesuffices <- c("B1", "B2", "B3", "B4", "B5", "B6_VCID_1", "B6_VCID_2", "B7")
-    } else if ("LANDSAT_7" == spacecraft)  {
+    } else if ("LANDSAT_7" == spacecraft) {
         bandnames <- c("blue", "green", "red", "nir", "swir1", "tirs1", "tirs2", "swir2", "panchromatic")
         filesuffices <- c("B1", "B2", "B3", "B4", "B5", "B6_VCID_1", "B6_VCID_2", "B7", "B8")
-    } else if ("LANDSAT_8" == spacecraft)  {
+    } else if ("LANDSAT_8" == spacecraft) {
         bandnames <- c("aerosol", "blue", "green", "red", "nir", "swir1", "swir2", "panchromatic", "cirrus", "tirs1", "tirs2")
         filesuffices <- c("B1", "B2", "B3", "B4", "B5", "B6", "B7", "B8", "B9", "B10", "B11")
     } else {
         stop("spacecraft type ", spacecraft, " cannot be handled yet")
     }
-    filesuffices <- paste(filesuffices, ".TIF", sep="")
-    rval <- list(header=header,
-        time=time, spacecraft=spacecraft, id=id,
-        bandnames=bandnames, filesuffices=filesuffices,
-        ullat=ullat, ullon=ullon, urlat=urlat, urlon=urlon, # possibly not needed with UTM
-        lllat=lllat, lllon=lllon, lrlat=lrlat, lrlon=lrlon, # possibly not needed with UTM
-        llUTM=llUTM, urUTM=urUTM, zoneUTM=zoneUTM,
-        gridCellSizePanchromatic=gridCellSizePanchromatic,
-        gridCellSizeReflective=gridCellSizeReflective,
-        gridCellSizeThermal=gridCellSizeThermal)
-    oceDebug(debug, "} # read.landsatmeta()\n", sep="", unindent=1)
+    filesuffices <- paste(filesuffices, ".TIF", sep = "")
+    rval <- list(
+        header = header,
+        time = time, spacecraft = spacecraft, id = id,
+        bandnames = bandnames, filesuffices = filesuffices,
+        ullat = ullat, ullon = ullon, urlat = urlat, urlon = urlon, # possibly not needed with UTM
+        lllat = lllat, lllon = lllon, lrlat = lrlat, lrlon = lrlon, # possibly not needed with UTM
+        llUTM = llUTM, urUTM = urUTM, zoneUTM = zoneUTM,
+        gridCellSizePanchromatic = gridCellSizePanchromatic,
+        gridCellSizeReflective = gridCellSizeReflective,
+        gridCellSizeThermal = gridCellSizeThermal
+    )
+    oceDebug(debug, "} # read.landsatmeta()\n", sep = "", unindent = 1)
     rval
-    #dimPanchromatic=dimPanchromatic,
-    #dimReflective=dimReflective,
-    #dimThermal=dimThermal)
+    # dimPanchromatic=dimPanchromatic,
+    # dimReflective=dimReflective,
+    # dimThermal=dimThermal)
 }
 
 
@@ -1088,41 +1139,49 @@ read.landsatmeta <- function(file, encoding="latin1", debug=getOption("oceDebug"
 #' @author Dan Kelley
 #'
 #' @family things related to landsat data
-read.landsat <- function(file,
-    band="all",
-    emissivity=0.984,
+read.landsat <- function(
+    file,
+    band = "all",
+    emissivity = 0.984,
     decimate,
-    encoding="latin1",
-    debug=getOption("oceDebug"))
-{
-    if (missing(file))
+    encoding = "latin1",
+    debug = getOption("oceDebug")) {
+    if (missing(file)) {
         stop("must supply 'file'")
+    }
     if (is.character(file)) {
-        if (!file.exists(file))
-            stop("cannot find file '", file, "'")
-        if (0L == file.info(file)$size)
-            stop("empty file '", file, "'")
+        if (!file.exists(file)) {
+            stop("cannot find file \"", file, "\"")
+        }
+        if (0L == file.info(file)$size) {
+            stop("empty file \"", file, "\"")
+        }
     }
     oceDebug(debug, "read.landsat(file=\"", file, "\",",
         if (length(band) > 1) {
-            paste("band=c(\"", paste(band, collapse="\",\""), "\")", sep="")
+            paste("band=c(\"", paste(band, collapse = "\",\""), "\")", sep = "")
         } else {
-            paste("band=\"", band, "\"", sep="")
+            paste("band=\"", band, "\"", sep = "")
         },
-        ", debug=", debug, ") {\n", sep="", unindent=1)
-    if (band[1] == "terralook")
+        ", debug=", debug, ") {\n",
+        sep = "", unindent = 1
+    )
+    if (band[1] == "terralook") {
         band <- c("red", "green", "nir")
+    }
     decimateGiven <- !missing(decimate)
-    if (decimateGiven && decimate < 1)
+    if (decimateGiven && decimate < 1) {
         warning("invalid value of decimate (", decimate, ") being ignored")
-    if (!requireNamespace("tiff", quietly=TRUE))
-        stop('must install.packages("tiff") to read landsat data')
+    }
+    if (!requireNamespace("tiff", quietly = TRUE)) {
+        stop("must install.packages(\"tiff\") to read landsat data")
+    }
     res <- new("landsat")
     file <- gsub("/$", "", file)
     actualfilename <- gsub("/$", "", file) # permit e.g. "LE71910202005194ASN00/"
     actualfilename <- gsub(".*/", "", actualfilename)
-    headerfilename <- paste(file, "/", actualfilename, "_MTL.txt", sep="")
-    header <- read.landsatmeta(headerfilename, encoding=encoding, debug=debug-1)
+    headerfilename <- paste(file, "/", actualfilename, "_MTL.txt", sep = "")
+    header <- read.landsatmeta(headerfilename, encoding = encoding, debug = debug - 1)
     oceDebug(debug, "file type: ", header$spacecraft, "\n")
     # convert to numerical bands (checks also that named bands are OK)
     if (!is.null(band)) {
@@ -1132,9 +1191,12 @@ read.landsat <- function(file,
         band2 <- rep(NA, length(band))
         for (b in seq_along(band)) {
             if (is.character(band[b])) {
-                m <- pmatch(band[b], header$bandnames, nomatch=0)
+                m <- pmatch(band[b], header$bandnames, nomatch = 0)
                 if (0 == m) {
-                    stop('band "', band[b], '" unknown; must be one of: ', paste(header$bandnames, collapse=", "))
+                    stop(
+                        "band \"", band[b], "\" unknown; must be one of: \"",
+                        paste(header$bandnames, collapse = "\" \"")
+                    )
                 } else {
                     band2[b] <- m
                 }
@@ -1143,7 +1205,7 @@ read.landsat <- function(file,
             }
         }
         band <- band2
-        oceDebug(debug, "numerical version of band=c(", paste(band, collapse=","), ")\n", sep="")
+        oceDebug(debug, "numerical version of band=c(", paste(band, collapse = ","), ")\n", sep = "")
     }
     for (name in names(header)) {
         res@metadata[[name]] <- header[[name]]
@@ -1158,35 +1220,41 @@ read.landsat <- function(file,
     actualfilename <- gsub(".*/", "", file)
     # res@metadata[["bandfiles"]] <- paste(file,"/",actualfilename,"_B",band,".TIF",sep="")
     options <- options("warn") # avoid readTIFF() warnings about geo tags
-    options(warn=-1)
-    availableFiles <- list.files(file, pattern="TIF$", full.names=TRUE)
+    options(warn = -1)
+    availableFiles <- list.files(file, pattern = "TIF$", full.names = TRUE)
     for (b in seq_along(band)) {
         # 'band' is numeric
-        bandfilename <- paste(file, "/", actualfilename, "_", header$filesuffices[band[b]], sep="") # FIXME: 1 more layer of indexing?
+        bandfilename <- paste(file, "/", actualfilename, "_", header$filesuffices[band[b]], sep = "") # FIXME: 1 more layer of indexing?
         bandfilename <- availableFiles[grep(paste0(band[b], ".TIF"), availableFiles)]
-        oceDebug(debug, "about to tiff::readTIFF(\"", bandfilename, "\") ...\n", sep="")
+        oceDebug(debug, "about to tiff::readTIFF(\"", bandfilename, "\") ...\n", sep = "")
         d <- tiff::readTIFF(bandfilename)
         oceDebug(debug, "    ... ok\n")
         if (decimateGiven) {
             dim <- dim(d)
-            d <- d[seq.int(1, dim[1], by=decimate), seq.int(1, dim[2], by=decimate)]
+            d <- d[seq.int(1, dim[1], by = decimate), seq.int(1, dim[2], by = decimate)]
         }
         if ("LANDSAT_8" == header$spacecraft) {
             dd <- do_landsat_numeric_to_bytes(d, 16L)
-            res@data[[header$bandnames[band[b]]]] <- list(msb=do_landsat_transpose_flip(dd$msb),
-                lsb=do_landsat_transpose_flip(dd$lsb))
+            res@data[[header$bandnames[band[b]]]] <- list(
+                msb = do_landsat_transpose_flip(dd$msb),
+                lsb = do_landsat_transpose_flip(dd$lsb)
+            )
         } else {
             # FIXME: assume all others are 1-byte, like LANDSAT_7
             dd <- do_landsat_numeric_to_bytes(d, 8L)
-            res@data[[header$bandnames[band[b]]]] <- list(msb=0,
-                lsb=do_landsat_transpose_flip(dd$lsb))
+            res@data[[header$bandnames[band[b]]]] <- list(
+                msb = 0,
+                lsb = do_landsat_transpose_flip(dd$lsb)
+            )
         }
     }
-    options(warn=options$warn)
+    options(warn = options$warn)
     res@metadata$satellite <- "landsat"
-    res@processingLog <- processingLogAppend(res@processingLog,
-        paste(deparse(match.call()), sep="", collapse=""))
-    oceDebug(debug, "} # read.landsat()\n", unindent=1)
+    res@processingLog <- processingLogAppend(
+        res@processingLog,
+        paste(deparse(match.call()), sep = "", collapse = "")
+    )
+    oceDebug(debug, "} # read.landsat()\n", unindent = 1)
     res
 }
 
@@ -1219,16 +1287,18 @@ read.landsat <- function(file,
 #' @author Dan Kelley
 #'
 #' @family things related to landsat data
-landsatAdd <- function(x, data, name, debug=getOption("oceDebug"))
-{
-    if (!is.matrix(data))
+landsatAdd <- function(x, data, name, debug = getOption("oceDebug")) {
+    if (!is.matrix(data)) {
         stop("data must be a matrix")
-    if (missing(name))
+    }
+    if (missing(name)) {
         stop("must provide a name for the data")
+    }
     dimNew <- dim(data)
     dimOld <- dim(x@data[[1]]$msb)
-    if (any(dimNew != dimOld))
+    if (any(dimNew != dimOld)) {
         stop("dim(data) = c(", dimNew[1], ",", dimNew[2], ") must match existing dimension c(", dimOld[1], ",", dimOld[2], ")")
+    }
     res <- x
     res@data[[name]] <- data
     res
@@ -1279,29 +1349,35 @@ landsatAdd <- function(x, data, name, debug=getOption("oceDebug"))
 #' @author Dan Kelley and Clark Richards
 #'
 #' @family things related to landsat data
-landsatTrim <- function(x, ll, ur, box, debug=getOption("oceDebug"))
-{
-    if (!inherits(x, "landsat"))
+landsatTrim <- function(x, ll, ur, box, debug = getOption("oceDebug")) {
+    if (!inherits(x, "landsat")) {
         stop("method is only for landsat objects")
-    if (missing(ll) != missing(ur))
-        stop("must provide both ll and ur, or neither")
-    if (!missing(ll) && !missing(box))
-        stop("cannot provide both box and (ll, ur)")
-    if (missing(box)) {
-        if (is.null(names(ll)))
-            ll <- list(longitude=ll[1], latitude=ll[2])
-        if (is.null(names(ur)))
-            ur <- list(longitude=ur[1], latitude=ur[2])
-    } else {
-        ll <- list(longitude=box$x[1], latitude=box$y[1])
-        ur <- list(longitude=box$x[2], latitude=box$y[2])
     }
-    oceDebug(debug, "ll:", ll$longitude, "E, ", ll$latitude, "N\n", sep="")
-    oceDebug(debug, "ur:", ur$longitude, "E, ", ur$latitude, "N\n", sep="")
-    if (2 != sum(c("longitude", "latitude") %in% names(ll)))
+    if (missing(ll) != missing(ur)) {
+        stop("must provide both ll and ur, or neither")
+    }
+    if (!missing(ll) && !missing(box)) {
+        stop("cannot provide both box and (ll, ur)")
+    }
+    if (missing(box)) {
+        if (is.null(names(ll))) {
+            ll <- list(longitude = ll[1], latitude = ll[2])
+        }
+        if (is.null(names(ur))) {
+            ur <- list(longitude = ur[1], latitude = ur[2])
+        }
+    } else {
+        ll <- list(longitude = box$x[1], latitude = box$y[1])
+        ur <- list(longitude = box$x[2], latitude = box$y[2])
+    }
+    oceDebug(debug, "ll:", ll$longitude, "E, ", ll$latitude, "N\n", sep = "")
+    oceDebug(debug, "ur:", ur$longitude, "E, ", ur$latitude, "N\n", sep = "")
+    if (2 != sum(c("longitude", "latitude") %in% names(ll))) {
         stop("'ll' must have named items 'longitude' and 'latitude'")
-    if (2 != sum(c("longitude", "latitude") %in% names(ur)))
+    }
+    if (2 != sum(c("longitude", "latitude") %in% names(ur))) {
         stop("'ur' must have named items 'longitude' and 'latitude'")
+    }
     # Trim to box, either by lon-lat (old way) or UTM (new way)
     ll$longitude <- max(ll$longitude, x@metadata$lllon)
     ur$longitude <- min(ur$longitude, x@metadata$urlon)
@@ -1309,30 +1385,30 @@ landsatTrim <- function(x, ll, ur, box, debug=getOption("oceDebug"))
     ur$latitude <- min(ur$latitude, x@metadata$urlat)
     if (!("llUTM" %in% names(x@metadata))) {
         oceDebug(debug, "adding llUTM and urUTM to metadata\n")
-        x@metadata$llUTM <- lonlat2utm(x@metadata$lllon, x@metadata$lllat, zone=x@metadata$zoneUTM)
-        x@metadata$urUTM <- lonlat2utm(x@metadata$urlon, x@metadata$urlat, zone=x@metadata$zoneUTM)
+        x@metadata$llUTM <- lonlat2utm(x@metadata$lllon, x@metadata$lllat, zone = x@metadata$zoneUTM)
+        x@metadata$urUTM <- lonlat2utm(x@metadata$urlon, x@metadata$urlat, zone = x@metadata$zoneUTM)
     }
     oceDebug(debug, "metadata$zoneUTM:", x@metadata$zoneUTM, "\n")
-    llTrimUTM <- lonlat2utm(ll, zone=x@metadata$zoneUTM)
-    urTrimUTM <- lonlat2utm(ur, zone=x@metadata$zoneUTM)
+    llTrimUTM <- lonlat2utm(ll, zone = x@metadata$zoneUTM)
+    urTrimUTM <- lonlat2utm(ur, zone = x@metadata$zoneUTM)
     oldEastingRange <- c(x@metadata$llUTM$easting, x@metadata$urUTM$easting)
     oldNorthingRange <- c(x@metadata$llUTM$northing, x@metadata$urUTM$northing)
     trimmedEastingRange <- c(llTrimUTM$easting, urTrimUTM$easting)
     trimmedNorthingRange <- c(llTrimUTM$northing, urTrimUTM$northing)
-    eStart <- (trimmedEastingRange[1] - oldEastingRange[1])/diff(oldEastingRange)
-    eEnd <- (trimmedEastingRange[2] - oldEastingRange[1])/diff(oldEastingRange)
+    eStart <- (trimmedEastingRange[1] - oldEastingRange[1]) / diff(oldEastingRange)
+    eEnd <- (trimmedEastingRange[2] - oldEastingRange[1]) / diff(oldEastingRange)
     eStart <- min(max(eStart, 0), 1)
     eEnd <- min(max(eEnd, 0), 1)
-    nStart <- (trimmedNorthingRange[1] - oldNorthingRange[1])/diff(oldNorthingRange)
-    nEnd <- (trimmedNorthingRange[2] - oldNorthingRange[1])/diff(oldNorthingRange)
+    nStart <- (trimmedNorthingRange[1] - oldNorthingRange[1]) / diff(oldNorthingRange)
+    nEnd <- (trimmedNorthingRange[2] - oldNorthingRange[1]) / diff(oldNorthingRange)
     nStart <- min(max(nStart, 0), 1)
     nEnd <- min(max(nEnd, 0), 1)
-    oceDebug(debug, "llTrimUTM:", paste(llTrimUTM, collapse=" "), "\n")
-    oceDebug(debug, "urTrimUTM:", paste(urTrimUTM, collapse=" "), "\n")
-    oceDebug(debug, "oldEastingRange:     ", paste(oldEastingRange, collapse=" "), "\n")
-    oceDebug(debug, "oldNorthingRange:    ", paste(oldNorthingRange, collapse=" "), "\n")
-    oceDebug(debug, "trimmedEastingRange: ", paste(round(trimmedEastingRange), collapse=" "), "\n")
-    oceDebug(debug, "trimmedNorthingRange:", paste(round(trimmedNorthingRange), collapse=" "), "\n")
+    oceDebug(debug, "llTrimUTM:", paste(llTrimUTM, collapse = " "), "\n")
+    oceDebug(debug, "urTrimUTM:", paste(urTrimUTM, collapse = " "), "\n")
+    oceDebug(debug, "oldEastingRange:     ", paste(oldEastingRange, collapse = " "), "\n")
+    oceDebug(debug, "oldNorthingRange:    ", paste(oldNorthingRange, collapse = " "), "\n")
+    oceDebug(debug, "trimmedEastingRange: ", paste(round(trimmedEastingRange), collapse = " "), "\n")
+    oceDebug(debug, "trimmedNorthingRange:", paste(round(trimmedNorthingRange), collapse = " "), "\n")
     oceDebug(debug, "eStart:", eStart, ", eEnd:", eEnd, "before trimming to (0,1)\n")
     oceDebug(debug, "      :", eStart, ", eEnd:", eEnd, "after trimming\n")
     oceDebug(debug, "nStart:", nStart, ", nEnd:", nEnd, "before trimming to (0,1)\n")
@@ -1344,28 +1420,37 @@ landsatTrim <- function(x, ll, ur, box, debug=getOption("oceDebug"))
         oceDebug(debug, "Trimming band", x@metadata$bands[b], "\n")
         isList <- is.list(x@data[[b]])
         dim <- if (isList) dim(x@data[[b]]$lsb) else dim(x@data[[b]])
-        ilim <- round(c(1 + (dim[1]-1) / (x@metadata$urlon-x@metadata$lllon) * (ll$longitude-x@metadata$lllon),
-            1 + (dim[1]-1) / (x@metadata$urlon-x@metadata$lllon) * (ur$longitude-x@metadata$lllon)))
+        ilim <- round(c(
+            1 + (dim[1] - 1) / (x@metadata$urlon - x@metadata$lllon) * (ll$longitude - x@metadata$lllon),
+            1 + (dim[1] - 1) / (x@metadata$urlon - x@metadata$lllon) * (ur$longitude - x@metadata$lllon)
+        ))
         ilim[1] <- max(1, ilim[1])
         ilim[2] <- min(ilim[2], dim[1])
         oceDebug(debug, "ilim:", ilim[1], "to", ilim[2], "\n")
         ilimUTM <- 1 + round((dim[1] - 1) * c(eStart, eEnd))
         ilim <- ilimUTM # FIXME: clean up this code
         oceDebug(debug, "ilimUTM:", ilimUTM[1], "to", ilimUTM[2], "\n")
-        jlim <- round(c(1 + (dim[2]-1) / (x@metadata$urlat-x@metadata$lllat) * (ll$latitude-x@metadata$lllat),
-            1 + (dim[2]-1) / (x@metadata$urlat-x@metadata$lllat) * (ur$latitude-x@metadata$lllat)))
+        jlim <- round(c(
+            1 + (dim[2] - 1) / (x@metadata$urlat - x@metadata$lllat) * (ll$latitude - x@metadata$lllat),
+            1 + (dim[2] - 1) / (x@metadata$urlat - x@metadata$lllat) * (ur$latitude - x@metadata$lllat)
+        ))
         jlim[1] <- max(1, jlim[1])
         jlim[2] <- min(jlim[2], dim[2])
         oceDebug(debug, "jlim:", jlim[1], "to", jlim[2], "\n")
         jlimUTM <- 1 + round((dim[2] - 1) * c(nStart, nEnd))
         jlim <- jlimUTM # FIXME: clean up this code
         oceDebug(debug, "jlimUTM:", jlimUTM[1], "to", jlimUTM[2], "\n")
-        if (jlim[2] <= jlim[1] || ilim[2] <= ilim[1])
+        if (jlim[2] <= jlim[1] || ilim[2] <= ilim[1]) {
             stop("no intersection between landsat image and trimming box.")
+        }
         oceDebug(debug, "  trimming i to range ", ilim[1], ":", ilim[2], ", percent range ",
-                 ilim[1]/dim[1], " to ", ilim[2]/dim[1], sep="", "\n")
+            ilim[1] / dim[1], " to ", ilim[2] / dim[1],
+            sep = "", "\n"
+        )
         oceDebug(debug, "  trimming j to range ", jlim[1], ":", jlim[2], ", percent range ",
-            jlim[1]/dim[2], " to ", jlim[2]/dim[2], sep="", "\n")
+            jlim[1] / dim[2], " to ", jlim[2] / dim[2],
+            sep = "", "\n"
+        )
         if (isList) {
             if (!is.null(dim(x@data[[b]]$msb))) {
                 x@data[[b]]$msb <- x@data[[b]]$msb[seq.int(ilim[1], ilim[2]), seq.int(jlim[1], jlim[2])]
@@ -1384,7 +1469,8 @@ landsatTrim <- function(x, ll, ur, box, debug=getOption("oceDebug"))
     x@metadata$lrlat <- ll$latitude
     x@metadata$urlat <- ur$latitude
     x@metadata$ullat <- ur$latitude
-    oceDebug(debug, "OLD:",
+    oceDebug(
+        debug, "OLD:",
         "lllon=", x@metadata$lllon,
         "lrlon=", x@metadata$lrlon,
         "ullon=", x@metadata$ullon,
@@ -1392,7 +1478,8 @@ landsatTrim <- function(x, ll, ur, box, debug=getOption("oceDebug"))
         "lllat=", x@metadata$lllat,
         "lrlat=", x@metadata$lrlat,
         "ullat=", x@metadata$ullat,
-        "urlat=", x@metadata$urlat, "\n")
+        "urlat=", x@metadata$urlat, "\n"
+    )
 
     x@metadata$llUTM <- llTrimUTM
     x@metadata$urUTM <- urTrimUTM
@@ -1404,19 +1491,20 @@ landsatTrim <- function(x, ll, ur, box, debug=getOption("oceDebug"))
     # hemisphere <- llTrimUTM$hemisphere # this fails in S hemisphere.
     hemisphere <- "N"
     # Go around the rectangle (in UTM space) to calculate the polygon (in lon-lat space)
-    t <- utm2lonlat(easting=llE, northing=llN, zone=zone, hemisphere=hemisphere)
+    t <- utm2lonlat(easting = llE, northing = llN, zone = zone, hemisphere = hemisphere)
     x@metadata$lllon <- t$longitude
     x@metadata$lllat <- t$latitude
-    t <- utm2lonlat(easting=llE, northing=urN, zone=zone, hemisphere=hemisphere)
+    t <- utm2lonlat(easting = llE, northing = urN, zone = zone, hemisphere = hemisphere)
     x@metadata$ullon <- t$longitude
     x@metadata$ullat <- t$latitude
-    t <- utm2lonlat(easting=urE, northing=llN, zone=zone, hemisphere=hemisphere)
+    t <- utm2lonlat(easting = urE, northing = llN, zone = zone, hemisphere = hemisphere)
     x@metadata$lrlon <- t$longitude
     x@metadata$lrlat <- t$latitude
-    t <- utm2lonlat(easting=urE, northing=urN, zone=zone, hemisphere=hemisphere)
+    t <- utm2lonlat(easting = urE, northing = urN, zone = zone, hemisphere = hemisphere)
     x@metadata$urlon <- t$longitude
     x@metadata$urlat <- t$latitude
-    oceDebug(debug, "NEW:",
+    oceDebug(
+        debug, "NEW:",
         "lllon=", x@metadata$lllon,
         "lrlon=", x@metadata$lrlon,
         "ullon=", x@metadata$ullon,
@@ -1424,9 +1512,14 @@ landsatTrim <- function(x, ll, ur, box, debug=getOption("oceDebug"))
         "lllat=", x@metadata$lllat,
         "lrlat=", x@metadata$lrlat,
         "ullat=", x@metadata$ullat,
-        "urlat=", x@metadata$urlat, "\n")
-    x@processingLog <- processingLogAppend(x@processingLog,
-        sprintf("landsatTrim(x, ll=list(longitude=%f, latitude=%f), ur=list(longitude=%f, latitude=%f))",
-            ll$longitude, ll$latitude, ur$longitude, ur$latitude))
+        "urlat=", x@metadata$urlat, "\n"
+    )
+    x@processingLog <- processingLogAppend(
+        x@processingLog,
+        sprintf(
+            "landsatTrim(x, ll=list(longitude=%f, latitude=%f), ur=list(longitude=%f, latitude=%f))",
+            ll$longitude, ll$latitude, ur$longitude, ur$latitude
+        )
+    )
     x
 }

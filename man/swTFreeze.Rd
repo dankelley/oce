@@ -53,17 +53,21 @@ If the first argument is an \code{oce} object, and if the \code{pressure} argume
 # is in the 1968 temperature scale (IPTS-68), but swTFreeze reports
 # in the newer ITS-90 scale, so we must convert before checking.
 Tcheck <- -2.588567 # IPTS-68
-T <- swTFreeze(salinity=40, pressure=500, eos="unesco")
+T <- swTFreeze(salinity = 40, pressure = 500, eos = "unesco")
 stopifnot(abs(Tcheck - T68fromT90(T)) < 1e-6)
 
 # 2. Compare unesco and gsw formulations.
 data(ctd)
 p <- ctd[["pressure"]]
-par(mfrow=c(1, 2), mar=c(3, 3, 1, 2), mgp=c(2, 0.7, 0))
-plot(swTFreeze(ctd, eos="unesco"),
-     p, xlab="unesco", ylim=rev(range(p)))
-plot(swTFreeze(ctd, eos="unesco") - swTFreeze(ctd, eos="gsw"),
-     p, xlab="unesco-gsw", ylim=rev(range(p)))
+par(mfrow = c(1, 2), mar = c(3, 3, 1, 2), mgp = c(2, 0.7, 0))
+plot(swTFreeze(ctd, eos = "unesco"),
+    p,
+    xlab = "unesco", ylim = rev(range(p))
+)
+plot(swTFreeze(ctd, eos = "unesco") - swTFreeze(ctd, eos = "gsw"),
+    p,
+    xlab = "unesco-gsw", ylim = rev(range(p))
+)
 
 }
 \references{

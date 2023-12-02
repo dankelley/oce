@@ -34,11 +34,13 @@ analogous to the scheme used in reference 1.
 \donttest{
 library(oce)
 data(coastlineWorld)
-par(mfrow=c(1, 1), mar=c(2, 2, 1, 1))
-p  <- "+proj=aea +lat_1=10 +lat_2=60 +lon_0=-45"
-mapPlot(coastlineWorld, projection=p, col="gray",
-    longitudelim=c(-90,0), latitudelim=c(0, 50))
-mapTissot(c(15, 15), col="red")
+par(mfrow = c(1, 1), mar = c(2, 2, 1, 1))
+p <- "+proj=aea +lat_1=10 +lat_2=60 +lon_0=-45"
+mapPlot(coastlineWorld,
+    projection = p, col = "gray",
+    longitudelim = c(-90, 0), latitudelim = c(0, 50)
+)
+mapTissot(c(15, 15), col = "red")
 }
 
 }

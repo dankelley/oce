@@ -38,6 +38,7 @@
   grid.col = "darkgray",
   grid.lty = "dotted",
   grid.lwd = 1,
+  xlab = NULL,
   debug = getOption("oceDebug"),
   ...
 )
@@ -159,6 +160,9 @@ panels.}
 \item{grid.lty}{line type of grid}
 
 \item{grid.lwd}{line width of grid}
+
+\item{xlab}{optional character value giving the label for the x axis.
+If NULL (the default) then the label is determined automatically.}
 
 \item{debug}{an integer specifying whether debugging information is
 to be printed during the processing. This is a general parameter that
@@ -334,8 +338,8 @@ site.
 \examples{
 library(oce)
 data(adp)
-plot(adp, which=1:3)
-plot(adp, which='temperature', tformat='\%H:\%M')
+plot(adp, which = 1:3)
+plot(adp, which = "temperature", tformat = "\%H:\%M")
 
 }
 \seealso{

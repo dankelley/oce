@@ -2,7 +2,7 @@
 % Please edit documentation in R/coastline.R
 \name{read.coastline.shapefile}
 \alias{read.coastline.shapefile}
-\title{Read a Coastline File in Shapefile Format}
+\title{Read a coastline File in Shapefile Format}
 \usage{
 read.coastline.shapefile(
   file,

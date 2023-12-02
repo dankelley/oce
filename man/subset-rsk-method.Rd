@@ -25,7 +25,7 @@ Subset a rsk object.  This function is somewhat analogous to
 library(oce)
 data(rsk)
 plot(rsk)
-plot(subset(rsk, time < mean(range(rsk[['time']]))))
+plot(subset(rsk, time < mean(range(rsk[["time"]]))))
 
 }
 \seealso{

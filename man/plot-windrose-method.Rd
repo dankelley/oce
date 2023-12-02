@@ -12,7 +12,7 @@
   mgp = getOption("oceMgp"),
   mar = c(mgp[1], mgp[1], 1 + mgp[1], mgp[1]),
   col,
-  ...
+  debug = getOption("oceDebug")
 )
 }
 \arguments{
@@ -38,25 +38,31 @@ default, in order to use more space for the data and less for the axes.}
 \code{c("red", "pink", "blue", "lightgray")}.  For the first three types of
 plot, the first color in this list is used to fill in the rose, the third is
 used for the petals of the rose, and the fourth is used for grid lines. For the
-\code{"fivenum"} type, the first color is used for the inter-quartile range,
-the second is used outside this range, the third is used for the median, and
-the fourth is, again, used for the grid lines.}
+\code{"fivenum"} type, the region from the lower hinge to the first quartile is
+coloured pink, the region from the first quartile to the third quartile
+is coloured red, and the region from the third quartile to the upper hinge
+is coloured pink.  Then the median is drawn in black.}
 
-\item{...}{Optional arguments passed to plotting functions.}
+\item{debug}{an integer specifying whether debugging information is
+to be printed during the processing. This is a general parameter that
+is used by many \code{oce} functions. Generally, setting \code{debug=0}
+turns off the printing, while higher values suggest that more information
+be printed. If one function calls another, it usually reduces the value of
+\code{debug} first, so that a user can often obtain deeper debugging
+by specifying higher \code{debug} values.}
 }
 \description{
 Plot a \linkS4class{windrose} object.
 }
 \examples{
 library(oce)
-opar <- par(no.readonly = TRUE)
-xcomp <- rnorm(360) + 1
-ycomp <- rnorm(360)
-wr <- as.windrose(xcomp, ycomp)
-par(mfrow=c(1, 2))
+set.seed(1234)
+theta <- seq(0, 360, 0.25)
+x <- 1 + cos(pi / 180 * theta) + rnorm(theta)
+y <- sin(pi / 180 * theta) + rnorm(theta)
+wr <- as.windrose(x, y)
 plot(wr)
-plot(wr, "fivenum")
-par(opar)
+plot(wr, type = "fivenum")
 
 }
 \seealso{

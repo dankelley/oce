@@ -1,6 +1,6 @@
 # vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
 
-#' Alter Longitude and Latitude for gsw Computations.
+#' Alter Longitude and Latitude for gsw Computations
 #'
 #' This function is mainly intended for use within [swAbsoluteSalinity()] and
 #' similar functions that use the `gsw` package to compute seawater
@@ -31,93 +31,106 @@
 #' @author Dan Kelley
 #'
 #' @family functions that calculate seawater properties
-locationForGsw <- function(x)
-{
-    if (!inherits(x, "oce"))
+locationForGsw <- function(x) {
+    if (!inherits(x, "oce")) {
         stop("x must be an oce-class object")
+    }
     pressure <- x@data$pressure
-    if (is.null(pressure))
-        return(list(longitude=NULL, latitude=NULL))
+    if (is.null(pressure)) {
+        return(list(longitude = NULL, latitude = NULL))
+    }
     longitude <- x[["longitude"]]
     latitude <- x[["latitude"]]
-    if (is.null(longitude) || is.null(latitude))
-        return(list(longitude=NULL, latitude=NULL))
+    if (is.null(longitude) || is.null(latitude)) {
+        return(list(longitude = NULL, latitude = NULL))
+    }
     if (is.array(pressure)) {
         dim <- dim(pressure)
-        longitude <- rep(longitude, each=dim[1])
+        longitude <- rep(longitude, each = dim[1])
         dim(longitude) <- dim
-        latitude <- rep(latitude, each=dim[1])
+        latitude <- rep(latitude, each = dim[1])
         dim(latitude) <- dim
     } else {
         np <- length(pressure)
-        longitude <- rep(longitude[1], length.out=np)
-        latitude <- rep(latitude[1], length.out=np)
+        longitude <- rep(longitude[1], length.out = np)
+        latitude <- rep(latitude[1], length.out = np)
     }
     dim <- dim(pressure)
-    list(longitude=longitude, latitude=latitude)
+    list(longitude = longitude, latitude = latitude)
 }
 
 
 
-#' Show Available Derived Water Properties
+#' Determine Available Derived Water Properties
 #'
-#' This checks to see whether `x` is an `oce` object containing
-#' `salinity`, `temperature`, `pressure`, `latitude` and `longitude`.
-#' If this holds, then it returns a list of items that can be accessed
-#' with `[[`.
+#' This determines what things can be derived from the supplied
+#' variables.  For example, if `salinity`, `temperature`,
+#' and `pressure` are supplied, then potential temperature, sound
+#' speed, and several other things can be derived.  If, in addition,
+#' `longitude` and `latitude` are supplied, then Absolute Salinity,
+#' Conservative Temperature, and some other things can be derived.
+#' Similarly, `nitrate` can be computed from `NO2+NO3` together
+#' with `nitrate`, and `nitrite` can be computed from `NO2+NO3`
+#' together with `nitrate`.
+#' See the \dQuote{Examples} for a full listing.
 #'
-#' @param x An [oce-class] object.
+#' @param x a specification of the names of known variables.  This
+#' may be (a) an [oce-class] object, in which case the names are
+#' determined by calling [names()] on the `data` slot of `x`, or
+#' (b) a vector of character values indicating the names.
 #'
-#' @return A character vector listing the names of computable
-#' water properties, or NULL, if there are none.
+#' @return [computableWaterProperties()] returns a sorted
+#' character vector holding the names of computable
+#' water properties, or NULL, if there are no computable values.
 #'
 #' @author Dan Kelley
 #'
+#' @examples
+#' library(oce)
+#' # Example 1
+#' data(ctd)
+#' computableWaterProperties(ctd)
+#' # Example 2: nothing an be computed from just salinity
+#' computableWaterProperties("salinity")
+#' # Example 3: quite a lot can be computed from this trio of values
+#' computableWaterProperties(c("salinity", "temperature", "pressure"))
+#' # Example 4: now we can get TEOS-10 values as well
+#' computableWaterProperties(c(
+#'     "salinity", "temperature", "pressure",
+#'     "longitude", "latitude"
+#' ))
+#'
 #' @family functions that calculate seawater properties
-computableWaterProperties <- function(x)
-{
+computableWaterProperties <- function(x) {
     res <- NULL
-    if (inherits(x, "oce")) {
-        names <- unique(c(names(x@metadata), names(x@data)))
-        haveSTP <- all(c("salinity", "temperature", "pressure") %in% names)
-        haveLocation <- all(c("longitude", "latitude") %in% names)
-        if (haveSTP) {
-            res <- c(res, c("theta", paste("potential", "temperature"), "z",
-                    "depth", "spice", "Rrho", "RrhoSF", "sigmaTheta", "SP",
-                    "density", "N2", paste("sound", "speed")))
-            if (haveLocation) {
-                res <- c(res, "SR", "Sstar",
-                    paste0("sigma", 0:4),
-                    "SA", paste("Absolute", "Salinity"),
-                    "CT",  paste("Conservative", "Temperature"),
-                    paste0("spiciness", 0:2))
-            }
+    names <- if (inherits(x, "oce")) unique(c(names(x@metadata), names(x@data))) else x
+    haveSTP <- all(c("salinity", "temperature", "pressure") %in% names)
+    haveLocation <- all(c("longitude", "latitude") %in% names)
+    if (haveSTP) {
+        res <- c(res, c(
+            "theta", paste("potential", "temperature"), "z",
+            "depth", "spice", "Rrho", "RrhoSF", "sigmaTheta", "SP",
+            "density", "N2", paste("sound", "speed")
+        ))
+        if (haveLocation) {
+            res <- c(
+                res, "SR", "Sstar",
+                paste0("sigma", 0:4),
+                "SA", paste("Absolute", "Salinity"),
+                "CT", paste("Conservative", "Temperature"),
+                paste0("spiciness", 0:2)
+            )
         }
-        # It is possible to compute nitrate from NO2+NO3 and nitrite, if
-        # it's not stored in the object already.  This occurs in data(section).
-        # I also added a similar scheme for nitrite, although I don't know
-        # whether that condition ever happens, in practice.
-        if (!("nitrate" %in% names) && ("NO2+NO3" %in% names) && ("nitrite" %in% names)) {
-            res <- c(res, "nitrate")
-        }
-        if (!("nitrite" %in% names) && ("NO2+NO3" %in% names) && ("nitrate" %in% names)) {
-            res <- c(res, "nitrite")
-        }
-        # Below is a bad idea that I had for a while.  But it just gets
-        # confusing, dealing with synonyms, and it will mess things up terribly
-        # if e.g. the user has "nitrate" and wants to make a calibrated version,
-        # which they might call "NO4".
-        #<bad idea> # Add some synonyms.  This can yield duplicates but we use unique()
-        #<bad idea> # later, so that's not a problem.
-        #<bad idea> if ("nitrate" %in% names || "NO3" %in% names)
-        #<bad idea>     res <- c(res, "nitrate", "NO3")
-        #<bad idea> if ("nitrite" %in% names || "NO2" %in% names)
-        #<bad idea>     res <- c(res, "nitrite", "NO2")
-        #<bad idea> if ("phosphate" %in% names || "PO4" %in% names)
-        #<bad idea>     res <- c(res, "phosphate", "PO4")
-        #<bad idea> if ("silicate" %in% names || "SiO4" %in% names) {
-        #<bad idea>     res <- c(res, "silicate", "SiO4")
-        #<bad idea> }
+    }
+    # It is possible to compute nitrate from NO2+NO3 and nitrite, if
+    # it's not stored in the object already.  This occurs in data(section).
+    # I also added a similar scheme for nitrite, although I don't know
+    # whether that condition ever happens, in practice.
+    if (!("nitrate" %in% names) && ("NO2+NO3" %in% names) && ("nitrite" %in% names)) {
+        res <- c(res, "nitrate")
+    }
+    if (!("nitrite" %in% names) && ("NO2+NO3" %in% names) && ("nitrate" %in% names)) {
+        res <- c(res, "nitrite")
     }
     # Remove things that were in the original data.
     res <- res[!(res %in% names)]
@@ -144,7 +157,7 @@ T90fromT68 <- function(temperature) temperature / 1.00024
 #' @template temperatureConversionTemplate
 #' @param temperature Vector of temperatures in \eqn{^\circ}{deg}C on the IPTS-48 scale.
 #' @return Corresponding temperatures in \eqn{^\circ}{deg}C on the ITS-90 scale.
-T90fromT48 <- function(temperature) (temperature-4.4e-6*temperature * (100-temperature))/1.00024
+T90fromT48 <- function(temperature) (temperature - 4.4e-6 * temperature * (100 - temperature)) / 1.00024
 
 #' Look Within the First Element of a List for Replacement Values
 #'
@@ -170,20 +183,19 @@ T90fromT48 <- function(temperature) (temperature-4.4e-6*temperature * (100-tempe
 #'
 #' @examples
 #' # 1. If first item is not a CTD object, just return the input
-#' lookWithin(list(a=1, b=2)) # returns a list
+#' lookWithin(list(a = 1, b = 2)) # returns a list
 #' # 2. Extract salinity from a CTD object
 #' data(ctd)
-#' str(lookWithin(list(salinity=ctd)))
+#' str(lookWithin(list(salinity = ctd)))
 #' # 3. Extract salinity and temperature. Note that the
 #' # value specified for temperature is ignored; all that matters
 #' # is that temperature is named.
-#' str(lookWithin(list(salinity=ctd, temperature=NULL)))
+#' str(lookWithin(list(salinity = ctd, temperature = NULL)))
 #' # 4. How it is used by swRho()
-#' rho1 <- swRho(ctd, eos="unesco")
-#' rho2 <- swRho(ctd[["salinity"]], ctd[["temperature"]], ctd[["pressure"]], eos="unesco")
+#' rho1 <- swRho(ctd, eos = "unesco")
+#' rho2 <- swRho(ctd[["salinity"]], ctd[["temperature"]], ctd[["pressure"]], eos = "unesco")
 #' stopifnot(all.equal(rho1, rho2))
-lookWithin <- function(list)
-{
+lookWithin <- function(list) {
     n <- length(list)
     names <- names(list)
     list1 <- list[[1]]
@@ -193,24 +205,28 @@ lookWithin <- function(list)
                 # Note: the accessor [[]] will return temperature
                 # in ITS-90 regardless of how it is stored, and similarly pressure
                 # in dbar and salinity in FIXME: what unit to use??
-                try({
-                    list[[i]] <- list1[[names[i], "nowarn"]]
-                }, silent=TRUE)
+                try(
+                    {
+                        list[[i]] <- list1[[names[i], "nowarn"]]
+                    },
+                    silent = TRUE
+                )
             }
         }
         if (inherits(list1, "ctd")) {
             nrows <- length(list[[names[1]]])
             if (length(list[["longitude"]])) {
-                list[["longitude"]] <- rep(mean(list[["longitude"]], na.rm=TRUE), nrows)
+                list[["longitude"]] <- rep(mean(list[["longitude"]], na.rm = TRUE), nrows)
             }
             if (length(list[["latitude"]])) {
-                list[["latitude"]] <- rep(mean(list[["latitude"]], na.rm=TRUE), nrows)
+                list[["latitude"]] <- rep(mean(list[["latitude"]], na.rm = TRUE), nrows)
             }
         }
         # FIXME: should special-case some other object types
     }
-    if ("eos" %in% names)
+    if ("eos" %in% names) {
         list[["eos"]] <- match.arg(list[["eos"]], c("unesco", "gsw"))
+    }
     list
 }
 
@@ -254,21 +270,22 @@ lookWithin <- function(list)
 #' @examples
 #' library(oce)
 #' data(ctd)
-#' u <- swRrho(ctd, eos="unesco")
-#' g <- swRrho(ctd, eos="gsw")
+#' u <- swRrho(ctd, eos = "unesco")
+#' g <- swRrho(ctd, eos = "gsw")
 #' p <- ctd[["p"]]
-#' plot(u, p, ylim=rev(range(p)), type='l', xlab=expression(R[rho]))
-#' lines(g, p, lty=2, col='red')
-#' legend("topright", lty=1:2, legend=c("unesco", "gsw"), col=c("black", "red"))
+#' plot(u, p, ylim = rev(range(p)), type = "l", xlab = expression(R[rho]))
+#' lines(g, p, lty = 2, col = "red")
+#' legend("topright", lty = 1:2, legend = c("unesco", "gsw"), col = c("black", "red"))
 #'
 #' @family functions that calculate seawater properties
-swRrho <- function(ctd,
-    sense=c("diffusive", "finger"),
-    smoothingLength=10, df,
-    eos=getOption("oceEOS", default="gsw"))
-{
-    if (!inherits(ctd, "oce"))
+swRrho <- function(
+    ctd,
+    sense = c("diffusive", "finger"),
+    smoothingLength = 10, df,
+    eos = getOption("oceEOS", default = "gsw")) {
+    if (!inherits(ctd, "oce")) {
         stop("first argument must be of class \"oce\"")
+    }
     sense <- match.arg(sense)
     eos <- match.arg(eos, c("unesco", "gsw"))
     p <- ctd[["pressure"]]
@@ -280,39 +297,44 @@ swRrho <- function(ctd,
     # smooth.spline issues warnings if under 4 good data, and we
     # don't want that noise.
     if (nok < 4L) {
-        return(rep(NA, length.out=np))
+        return(rep(NA, length.out = np))
     }
-    A <- smoothingLength / mean(diff(p), na.rm=TRUE)
-    if (missing(df))
+    A <- smoothingLength / mean(diff(p), na.rm = TRUE)
+    if (missing(df)) {
         df <- nok / A
-    if (df > nok)
-        df <- nok/2
+    }
+    if (df > nok) {
+        df <- nok / 2
+    }
     if (eos == "unesco") {
         theta <- ctd[["theta"]]
         ok <- !is.na(p) & !is.na(salinity) & !is.na(temperature)
         # infer d(theta)/dp and d(salinity)/dp from smoothing splines
-        temperatureSpline <- smooth.spline(p[ok], temperature[ok], df=df)
-        salinitySpline <- smooth.spline(p[ok], salinity[ok], df=df)
+        temperatureSpline <- smooth.spline(p[ok], temperature[ok], df = df)
+        salinitySpline <- smooth.spline(p[ok], salinity[ok], df = df)
         # Smooth temperature and salinity to get smoothed alpha and beta
         CTD <- as.ctd(predict(salinitySpline, p)$y, predict(temperatureSpline, p)$y, p)
-        alpha <- swAlpha(CTD, eos="unesco")
-        beta <- swBeta(CTD, eos="unesco")
+        alpha <- swAlpha(CTD, eos = "unesco")
+        beta <- swBeta(CTD, eos = "unesco")
         # Using alpha ... is that right, since we have theta?
-        thetaSpline <- smooth.spline(p[ok], theta[ok], df=df)
-        dthetadp <- predict(thetaSpline, p, deriv=1)$y
-        dsalinitydp <- predict(salinitySpline, p, deriv=1)$y
-        Rrho <- if (sense == "diffusive") (beta * dsalinitydp)/ (alpha * dthetadp) else
+        thetaSpline <- smooth.spline(p[ok], theta[ok], df = df)
+        dthetadp <- predict(thetaSpline, p, deriv = 1)$y
+        dsalinitydp <- predict(salinitySpline, p, deriv = 1)$y
+        Rrho <- if (sense == "diffusive") {
+            (beta * dsalinitydp) / (alpha * dthetadp)
+        } else {
             (alpha * dthetadp) / (beta * dsalinitydp)
+        }
     } else if (eos == "gsw") {
         SA <- ctd[["SA"]]
         CT <- ctd[["CT"]]
         ok <- !is.na(p) & !is.na(SA) & !is.na(CT)
-        SA <- predict(smooth.spline(p[ok], SA[ok], df=df), p)$y
-        CT <- predict(smooth.spline(p[ok], CT[ok], df=df), p)$y
+        SA <- predict(smooth.spline(p[ok], SA[ok], df = df), p)$y
+        CT <- predict(smooth.spline(p[ok], CT[ok], df = df), p)$y
         a <- gsw::gsw_Turner_Rsubrho(SA, CT, p)
         Rrho <- a$Rsubrho
-        Rrho[Rrho==9e15] <- NA
-        Rrho <- approx(a$p_mid, Rrho, p, rule=2)$y
+        Rrho[Rrho == 9e15] <- NA
+        Rrho <- approx(a$p_mid, Rrho, p, rule = 2)$y
         if (sense == "diffusive") {
             Rrho <- 1 / Rrho
         }
@@ -395,12 +417,12 @@ swRrho <- function(ctd,
 #' # Left panel: density
 #' p <- ctd[["pressure"]]
 #' ylim <- rev(range(p))
-#' par(mfrow=c(1, 2), mar=c(3, 3, 1, 1), mgp=c(2, 0.7, 0))
-#' plot(ctd[["sigmaTheta"]], p, ylim=ylim, type='l', xlab=expression(sigma[theta]))
+#' par(mfrow = c(1, 2), mar = c(3, 3, 1, 1), mgp = c(2, 0.7, 0))
+#' plot(ctd[["sigmaTheta"]], p, ylim = ylim, type = "l", xlab = expression(sigma[theta]))
 #' # Right panel: N2, with default settings (black) and with df=2 (red)
 #' N2 <- swN2(ctd)
-#' plot(N2, p, ylim=ylim, xlab="N2 [1/s^2]", ylab="p", type="l")
-#' lines(swN2(ctd, df=3), p, col=2)
+#' plot(N2, p, ylim = ylim, xlab = "N2 [1/s^2]", ylab = "p", type = "l")
+#' lines(swN2(ctd, df = 3), p, col = 2)
 #'
 #' @section Deprecation Notice:
 #' Until 2019 April 11, `swN2` had an argument named `eos`. However,
@@ -413,15 +435,14 @@ swRrho <- function(ctd,
 #' by [gsw::gsw_Nsquared()] in the \CRANpkg{gsw} package.
 #'
 #' @family functions that calculate seawater properties
-swN2 <- function(pressure, sigmaTheta=NULL, derivs, df, debug=getOption("oceDebug"),  ...)
-{
-    oceDebug(debug, "swN2(...) {\n", sep="", unindent=1)
-    #cat("swN2(..., df=", df, ")\n",sep="")
-    #useSmoothing <- !missing(df) && is.finite(df)
+swN2 <- function(pressure, sigmaTheta = NULL, derivs, df, debug = getOption("oceDebug"), ...) {
+    oceDebug(debug, "swN2(...) {\n", sep = "", unindent = 1)
+    # cat("swN2(..., df=", df, ")\n",sep="")
+    # useSmoothing <- !missing(df) && is.finite(df)
     if (inherits(pressure, "oce")) {
         p <- pressure[["pressure"]]
-        pref <- median(p, na.rm=TRUE)
-        sigmaTheta <- swSigmaTheta(pressure, referencePressure=pref, eos="unesco")
+        pref <- median(p, na.rm = TRUE)
+        sigmaTheta <- swSigmaTheta(pressure, referencePressure = pref, eos = "unesco")
         pressure <- p
     }
     #>if (inherits(pressure, "ctd")) {
@@ -431,10 +452,11 @@ swN2 <- function(pressure, sigmaTheta=NULL, derivs, df, debug=getOption("oceDebu
     #>    pref <- median(pressure[["pressure"]], na.rm=TRUE)
     #>    oceDebug(debug, "setting referencePressure to ", pref, "\n", sep="")
     #>    sigmaTheta <- swSigmaTheta(pressure, referencePressure=pref, eos="unesco") # NOTE: UNESCO used
-    #>    pressure <- pressure[['pressure']] # over-writes pressure
+    #>    pressure <- pressure[["pressure"]] # over-writes pressure
     #>}
-    if (missing(derivs))
+    if (missing(derivs)) {
         derivs <- "smoothing"
+    }
     ok <- !is.na(pressure) & !is.na(sigmaTheta)
     if (is.character(derivs)) {
         if (derivs == "simple") {
@@ -443,17 +465,25 @@ swN2 <- function(pressure, sigmaTheta=NULL, derivs, df, debug=getOption("oceDebu
             depthsAll <- sum(ok)
             depths <- length(unique(pressure[ok]))
             if (missing(df)) {
-                df <- if (depths > 100) floor(depths / 10) # at least 10
-                else if (depths > 20) floor(depths / 3) # at least 7
-                else if (depths > 10) floor(depths / 2) # at least 5
-                else depths
-                oceDebug(debug, "df not supplied; set to ", df, ", given ", depthsAll, " depths, ", depths, " of which are distinct\n", sep="")
+                df <- if (depths > 100) {
+                    floor(depths / 10)
+                } # at least 10
+                else if (depths > 20) {
+                    floor(depths / 3)
+                } # at least 7
+                else if (depths > 10) {
+                    floor(depths / 2)
+                } # at least 5
+                else {
+                    depths
+                }
+                oceDebug(debug, "df not supplied; set to ", df, ", given ", depthsAll, " depths, ", depths, " of which are distinct\n", sep = "")
             }
             if (depths > 4 && df > 5) {
-                oceDebug(debug, "using smooth.spline with df=", df, "\n", sep="")
-                sigmaThetaSmooth <- smooth.spline(pressure[ok], sigmaTheta[ok], df=df)
+                oceDebug(debug, "using smooth.spline with df=", df, "\n", sep = "")
+                sigmaThetaSmooth <- smooth.spline(pressure[ok], sigmaTheta[ok], df = df)
                 sigmaThetaDeriv <- rep(NA, length(pressure))
-                sigmaThetaDeriv[ok] <- predict(sigmaThetaSmooth, pressure[ok], deriv=1)$y
+                sigmaThetaDeriv[ok] <- predict(sigmaThetaSmooth, pressure[ok], deriv = 1)$y
             } else {
                 oceDebug(debug, "using smooth.spline with df not specified\n")
                 sigmaThetaSmooth <- as.numeric(smooth(sigmaTheta[ok]))
@@ -464,15 +494,16 @@ swN2 <- function(pressure, sigmaTheta=NULL, derivs, df, debug=getOption("oceDebu
             stop("derivs must be 'simple', 'smoothing', or a function")
         }
     } else {
-        if (!is.function(derivs))
+        if (!is.function(derivs)) {
             stop("derivs must be 'smoothing', 'simple', or a function")
+        }
         sigmaThetaDeriv <- derivs(pressure, sigmaTheta)
     }
     # FIXME (DK 2016-05-04) I am not sure I like the following since it
     # uses a standardized rho_0. But it's from some official source I think.
     # Must check this. (UNESCO book?)
     res <- ifelse(ok, 9.8 * 9.8 * 1e-4 * sigmaThetaDeriv, NA)
-    oceDebug(debug, "} # swN2()\n", sep="", unindent=1)
+    oceDebug(debug, "} # swN2()\n", sep = "", unindent = 1)
     res
 }
 
@@ -503,18 +534,19 @@ swN2 <- function(pressure, sigmaTheta=NULL, derivs, df, debug=getOption("oceDebu
 #' 53 pp.
 #'
 #' @examples
-#' swPressure(9712.653, 30, eos="unesco") # 10000
-#' swPressure(9712.653, 30, eos="gsw")    #  9998.863
+#' swPressure(9712.653, 30, eos = "unesco") # 10000
+#' swPressure(9712.653, 30, eos = "gsw") #  9998.863
 #'
 #' @family functions that calculate seawater properties
-swPressure <- function(depth, latitude=45, eos=getOption("oceEOS", default="gsw"))
-{
-    if (missing(depth))
+swPressure <- function(depth, latitude = 45, eos = getOption("oceEOS", default = "gsw")) {
+    if (missing(depth)) {
         stop("must supply depth")
+    }
     # FIXME-gsw add gsw version
     ndepth <- length(depth)
-    if (length(latitude) < ndepth)
+    if (length(latitude) < ndepth) {
         latitude <- rep(latitude, ndepth)
+    }
     res <- vector("numeric", ndepth)
     eos <- match.arg(eos, c("unesco", "gsw"))
     # Takes 3.55s for 15225 points
@@ -524,7 +556,7 @@ swPressure <- function(depth, latitude=45, eos=getOption("oceEOS", default="gsw"
             res[i] <- if (depth[i] == 0) {
                 0
             } else {
-                uniroot(function(p) depth[i] - swDepth(p, latitude[i], eos), interval=depth[i]*c(0.9, 1.1))$root
+                uniroot(function(p) depth[i] - swDepth(p, latitude[i], eos), interval = depth[i] * c(0.9, 1.1))$root
             }
         }
     } else if (eos == "gsw") {
@@ -582,15 +614,15 @@ swPressure <- function(depth, latitude=45, eos=getOption("oceEOS", default="gsw"
 #' *5*, pp 22-23.
 #'
 #' @examples
-#' stopifnot(abs(1.0 - swCSTp(35, T90fromT68(15), 0, eos="unesco")) < 1e-7)
-#' stopifnot(abs(1.0 - swCSTp(34.25045, T90fromT68(15), 2000, eos="unesco")) < 1e-7)
-#' stopifnot(abs(1.0 - swCSTp(34.25045, T90fromT68(15), 2000, eos="gsw")) < 1e-7)
+#' stopifnot(abs(1.0 - swCSTp(35, T90fromT68(15), 0, eos = "unesco")) < 1e-7)
+#' stopifnot(abs(1.0 - swCSTp(34.25045, T90fromT68(15), 2000, eos = "unesco")) < 1e-7)
+#' stopifnot(abs(1.0 - swCSTp(34.25045, T90fromT68(15), 2000, eos = "gsw")) < 1e-7)
 #'
 #' @family functions that calculate seawater properties
-swCSTp <- function(salinity, temperature=15, pressure=0, eos=getOption("oceEOS", default="gsw"))
-{
-    if (missing(salinity))
+swCSTp <- function(salinity, temperature = 15, pressure = 0, eos = getOption("oceEOS", default = "gsw")) {
+    if (missing(salinity)) {
         stop("must provide salinity")
+    }
     if (inherits(salinity, "oce")) {
         ctd <- salinity
         salinity <- ctd[["salinity"]]
@@ -602,10 +634,12 @@ swCSTp <- function(salinity, temperature=15, pressure=0, eos=getOption("oceEOS",
     temperature <- as.vector(temperature)
     pressure <- as.vector(pressure)
     n <- length(salinity)
-    if (length(temperature) != n)
-        temperature <- rep(temperature, length.out=n)
-    if (length(pressure) != n)
-        pressure <- rep(pressure, length.out=n)
+    if (length(temperature) != n) {
+        temperature <- rep(temperature, length.out = n)
+    }
+    if (length(pressure) != n) {
+        pressure <- rep(pressure, length.out = n)
+    }
     eos <- match.arg(eos, c("unesco", "gsw"))
     if (eos == "unesco") {
         # cat("S= ", paste(salinity, collapse=" "), "\n")
@@ -613,11 +647,12 @@ swCSTp <- function(salinity, temperature=15, pressure=0, eos=getOption("oceEOS",
         # cat("p= ", paste(pressure, collapse=" "), "\n")
         res <- .C("sw_CSTp",
             as.integer(n), as.double(salinity), as.double(T68fromT90(temperature)), as.double(pressure),
-            C=double(n), NAOK=TRUE, PACKAGE="oce")$C
+            C = double(n), NAOK = TRUE, PACKAGE = "oce"
+        )$C
     } else {
         # for the use of a constant, as opposed to a function call with (35,15,0), see
         # https://github.com/dankelley/oce/issues/746
-        res <- gsw::gsw_C_from_SP(SP=salinity, t=temperature, p=pressure) / 42.9140
+        res <- gsw::gsw_C_from_SP(SP = salinity, t = temperature, p = pressure) / 42.9140
     }
     dim(res) <- dim
     res
@@ -686,33 +721,38 @@ swCSTp <- function(salinity, temperature=15, pressure=0, eos=getOption("oceEOS",
 #'
 #' @examples
 #' # 1. Demonstrate agreement with test value in UNESCO documents
-#' swSCTp(1, T90fromT68(15), 0, eos="unesco") # expect 35
+#' swSCTp(1, T90fromT68(15), 0, eos = "unesco") # expect 35
 #' # 2. Demonstrate agreement of gsw and unesco, S>2 case
-#' swSCTp(1, T90fromT68(15), 0, eos="gsw") # again, expect 35
+#' swSCTp(1, T90fromT68(15), 0, eos = "gsw") # again, expect 35
 #' # 3. Demonstrate close values even in very brackish water
-#' swSCTp(0.02, 10, 100, eos="gsw")    # 0.6013981
-#' swSCTp(0.02, 10, 100, eos="unesco") # 0.6011721
+#' swSCTp(0.02, 10, 100, eos = "gsw") # 0.6013981
+#' swSCTp(0.02, 10, 100, eos = "unesco") # 0.6011721
 #'
 #' @family functions that calculate seawater properties
-swSCTp <- function(conductivity, temperature=NULL, pressure=NULL,
-    conductivityUnit, eos=getOption("oceEOS", default="gsw"))
-{
+swSCTp <- function(
+    conductivity, temperature = NULL, pressure = NULL,
+    conductivityUnit, eos = getOption("oceEOS", default = "gsw")) {
     C0 <- 42.9140 # Culkin and Smith (1980)
     # FIXME-gsw add gsw version
-    if (missing(conductivity))
+    if (missing(conductivity)) {
         stop("must supply conductivity (which may be S or a CTD object)")
+    }
     if (missing(conductivityUnit)) {
         conductivityUnit <- ""
     } else {
-        if (is.list(conductivityUnit) && "unit" %in% names(conductivityUnit))
+        if (is.list(conductivityUnit) && "unit" %in% names(conductivityUnit)) {
             conductivityUnit <- conductivityUnit$unit
-        if (is.expression(conductivityUnit))
+        }
+        if (is.expression(conductivityUnit)) {
             conductivityUnit <- as.character(conductivityUnit)
-        if (conductivityUnit == "ratio")
+        }
+        if (conductivityUnit == "ratio") {
             conductivityUnit <- ""
+        }
     }
-    if (conductivityUnit != "" && conductivityUnit != "mS/cm" && conductivityUnit != "S/m")
+    if (conductivityUnit != "" && conductivityUnit != "mS/cm" && conductivityUnit != "S/m") {
         stop("conductivity unit must be \"\", \"mS/cm\", or \"S/m\"")
+    }
     if (inherits(conductivity, "oce")) {
         if (inherits(conductivity, "rsk")) {
             ctd <- as.ctd(conductivity)
@@ -721,19 +761,23 @@ swSCTp <- function(conductivity, temperature=NULL, pressure=NULL,
         }
         # cat("< ", paste(names(ctd@data), collapse=" "), " >\n", sep="")
         conductivity <- ctd[["conductivity"]]
-        if (is.null(conductivity))
+        if (is.null(conductivity)) {
             stop("this CTD object has no conductivity")
+        }
         # Use unit from within the object, but may be overridden after this block.
         tmp <- ctd[["conductivityUnit"]]
-        if (is.list(tmp) && "unit" %in% names(tmp))
+        if (is.list(tmp) && "unit" %in% names(tmp)) {
             conductivityUnit <- as.character(tmp$unit)
+        }
         temperature <- ctd[["temperature"]]
         pressure <- ctd[["pressure"]]
     }
-    if (is.list(conductivityUnit))
+    if (is.list(conductivityUnit)) {
         conductivityUnit <- as.character(conductivityUnit$unit)
-    if (!length(conductivityUnit))
+    }
+    if (!length(conductivityUnit)) {
         conductivityUnit <- ""
+    }
     if (conductivityUnit == "mS/cm") {
         conductivity <- conductivity / C0
     } else if (conductivityUnit == "S/m") {
@@ -745,13 +789,16 @@ swSCTp <- function(conductivity, temperature=NULL, pressure=NULL,
     dim <- dim(conductivity)
     nC <- length(conductivity)
     nT <- length(temperature)
-    if (nC != nT)
+    if (nC != nT) {
         stop("lengths of conductivity and temperature must agree, but they are ", nC, " and ", nT)
-    if (is.null(pressure))
+    }
+    if (is.null(pressure)) {
         pressure <- rep(0, nC)
+    }
     np <- length(pressure)
-    if (nC != np)
+    if (nC != np) {
         stop("lengths of conductivity and pressure must agree, but they are ", nC, " and ", np)
+    }
     if (eos == "unesco") {
         #> message("swSCTp() unesco; conductivity[1]=", conductivity[1], ", temperature[1]=", temperature[1], ", pressure[1]=", pressure[1])
         res <- .C("sw_salinity",
@@ -759,8 +806,9 @@ swSCTp <- function(conductivity, temperature=NULL, pressure=NULL,
             as.double(conductivity),
             as.double(T68fromT90(temperature)), # original formula is in IPTS-68 but we now use ITS-90
             as.double(pressure),
-            value=double(nC),
-            NAOK=TRUE, PACKAGE="oce")$value
+            value = double(nC),
+            NAOK = TRUE, PACKAGE = "oce"
+        )$value
     } else if (eos == "gsw") {
         # we don't need to convert to IPTS-68 for the gsw formulation, because it is already formulated
         # to work with ITS-90
@@ -821,14 +869,13 @@ swSCTp <- function(conductivity, temperature=NULL, pressure=NULL,
 #' ISBN 978-0-646-55621-5.
 #'
 #' @examples
-#' swSTrho(10, 22, 0, eos="gsw") # 28.76285
-#' swSTrho(10, 22, 0, eos="unesco") # 28.651625
+#' swSTrho(10, 22, 0, eos = "gsw") # 28.76285
+#' swSTrho(10, 22, 0, eos = "unesco") # 28.651625
 #'
 #' @family functions that calculate seawater properties
-swSTrho <- function(temperature, density, pressure, eos=getOption("oceEOS", default="gsw"))
-{
-    #cat(file=stderr(), "swSTrho(", temperature[1], ", ", density[1], ", ", pressure[1], ", ", eos, "\n", sep="")
-    #cat(file=stderr(), vectorShow(length(temperature)))
+swSTrho <- function(temperature, density, pressure, eos = getOption("oceEOS", default = "gsw")) {
+    # cat(file=stderr(), "swSTrho(", temperature[1], ", ", density[1], ", ", pressure[1], ", ", eos, "\n", sep="")
+    # cat(file=stderr(), vectorShow(length(temperature)))
     # FIXME-gsw add gsw version
     eos <- match.arg(eos, c("unesco", "gsw"))
     teos <- eos == "gsw" # FIXME still the best way?
@@ -841,16 +888,17 @@ swSTrho <- function(temperature, density, pressure, eos=getOption("oceEOS", defa
     if (nt == 1) temperature <- rep(temperature, nt)
     sigma <- ifelse(density > 500, density - 1000, density)
     if (eos == "unesco") {
-        #cat(file=stderr(), "  about to call C function sw_strho()\n")
+        # cat(file=stderr(), "  about to call C function sw_strho()\n")
         res <- .C("sw_strho",
             as.integer(nt),
             as.double(T68fromT90(temperature)),
             as.double(sigma),
             as.double(pressure),
             as.integer(teos),
-            S=double(nt),
-            NAOK=TRUE, PACKAGE="oce")$S
-        #NAOK=TRUE)$S # permits dyn.load() on changing .so
+            S = double(nt),
+            NAOK = TRUE, PACKAGE = "oce"
+        )$S
+        # NAOK=TRUE)$S # permits dyn.load() on changing .so
     } else if (eos == "gsw") {
         density <- ifelse(density < 900, density + 1000, density)
         res <- gsw::gsw_SA_from_rho(density, temperature, pressure) # assumes temperature=CT
@@ -892,43 +940,49 @@ swSTrho <- function(temperature, density, pressure, eos=getOption("oceEOS", defa
 #' York, 662 pp.
 #'
 #' @examples
-#' swTSrho(35, 23, 0, eos="unesco") # 26.11301
+#' swTSrho(35, 23, 0, eos = "unesco") # 26.11301
 #'
 #' @family functions that calculate seawater properties
-swTSrho <- function(salinity, density, pressure=NULL, eos=getOption("oceEOS", default="gsw"))
-{
-    #cat(file=stderr(), "swTSrho(", salinity[1],", ", density[1], ", ", pressure[1], ", ", eos, "\n")
-    #cat(file=stderr(), vectorShow(length(salinity)))
+swTSrho <- function(salinity, density, pressure = NULL, eos = getOption("oceEOS", default = "gsw")) {
+    # cat(file=stderr(), "swTSrho(", salinity[1],", ", density[1], ", ", pressure[1], ", ", eos, "\n")
+    # cat(file=stderr(), vectorShow(length(salinity)))
     # FIXME-gsw add gsw version
-    if (missing(salinity))
+    if (missing(salinity)) {
         stop("must provide salinity")
+    }
     eos <- match.arg(eos, c("unesco", "gsw"))
     teos <- eos == "gsw"
     dim <- dim(salinity)
     nS <- length(salinity)
     nrho <- length(density)
-    if (is.null(pressure))
+    if (is.null(pressure)) {
         pressure <- rep(0, nS)
-    if (length(pressure) == 1)
-        pressure <- rep(pressure[1], length.out=nS)
+    }
+    if (length(pressure) == 1) {
+        pressure <- rep(pressure[1], length.out = nS)
+    }
     np <- length(pressure)
-    if (nS != nrho)
-        stop("lengths of salinity and rho must agree, but they are ", nS, " and ", nrho,  ", respectively")
-    if (nS != np)
+    if (nS != nrho) {
+        stop("lengths of salinity and rho must agree, but they are ", nS, " and ", nrho, ", respectively")
+    }
+    if (nS != np) {
         stop("lengths of salinity and pressure must agree, but they are ", nS, " and ", np, ", respectively")
+    }
     for (i in 1:nS) {
         # FIXME: avoid loops
         sig <- density[i]
-        if (sig > 500)
+        if (sig > 500) {
             sig <- sig - 1000
+        }
         # FIXME: is this right for all equations of state? I doubt it
         this.T <- .C("sw_tsrho",
             as.double(salinity[i]),
             as.double(sig),
             as.double(pressure[i]),
             as.integer(teos),
-            temperature=double(1),
-            NAOK=TRUE, PACKAGE="oce")$t
+            temperature = double(1),
+            NAOK = TRUE, PACKAGE = "oce"
+        )$t
         this.T <- T90fromT68(this.T)
         if (i == 1) res <- this.T else res <- c(res, this.T)
     }
@@ -994,57 +1048,69 @@ swTSrho <- function(salinity, density, pressure=NULL, eos=getOption("oceEOS", de
 #' # is in the 1968 temperature scale (IPTS-68), but swTFreeze reports
 #' # in the newer ITS-90 scale, so we must convert before checking.
 #' Tcheck <- -2.588567 # IPTS-68
-#' T <- swTFreeze(salinity=40, pressure=500, eos="unesco")
+#' T <- swTFreeze(salinity = 40, pressure = 500, eos = "unesco")
 #' stopifnot(abs(Tcheck - T68fromT90(T)) < 1e-6)
 #'
 #' # 2. Compare unesco and gsw formulations.
 #' data(ctd)
 #' p <- ctd[["pressure"]]
-#' par(mfrow=c(1, 2), mar=c(3, 3, 1, 2), mgp=c(2, 0.7, 0))
-#' plot(swTFreeze(ctd, eos="unesco"),
-#'      p, xlab="unesco", ylim=rev(range(p)))
-#' plot(swTFreeze(ctd, eos="unesco") - swTFreeze(ctd, eos="gsw"),
-#'      p, xlab="unesco-gsw", ylim=rev(range(p)))
+#' par(mfrow = c(1, 2), mar = c(3, 3, 1, 2), mgp = c(2, 0.7, 0))
+#' plot(swTFreeze(ctd, eos = "unesco"),
+#'     p,
+#'     xlab = "unesco", ylim = rev(range(p))
+#' )
+#' plot(swTFreeze(ctd, eos = "unesco") - swTFreeze(ctd, eos = "gsw"),
+#'     p,
+#'     xlab = "unesco-gsw", ylim = rev(range(p))
+#' )
 #'
 #' @family functions that calculate seawater properties
-swTFreeze <- function(salinity, pressure=NULL, longitude=NULL, latitude=NULL,
-    saturation_fraction=1, eos=getOption("oceEOS", default="gsw"))
-{
-    if (missing(salinity))
+swTFreeze <- function(
+    salinity, pressure = NULL, longitude = NULL, latitude = NULL,
+    saturation_fraction = 1, eos = getOption("oceEOS", default = "gsw")) {
+    if (missing(salinity)) {
         stop("must supply salinity (which may be S or a CTD object)")
-    if (inherits(salinity, "oce")) {
-        if (is.null(pressure))
-            pressure <- salinity[["pressure"]]
     }
-    if (is.null(pressure))
+    if (inherits(salinity, "oce")) {
+        if (is.null(pressure)) {
+            pressure <- salinity[["pressure"]]
+        }
+    }
+    if (is.null(pressure)) {
         stop("must supply pressure")
+    }
     if (eos == "gsw") {
         if (inherits(salinity, "oce")) {
-            if (is.null(longitude))
+            if (is.null(longitude)) {
                 longitude <- salinity[["longitude"]]
-            if (is.null(latitude))
+            }
+            if (is.null(latitude)) {
                 latitude <- salinity[["latitude"]]
+            }
         }
-        if (is.null(longitude))
+        if (is.null(longitude)) {
             stop("must supply longitude")
-        if (is.null(latitude))
+        }
+        if (is.null(latitude)) {
             stop("must supply latitude")
+        }
         # Note: the pressure in the next line is for computing SA; see below.
-        l <- lookWithin(list(salinity=salinity, latitude=latitude, longitude=longitude, pressure=pressure))
+        l <- lookWithin(list(salinity = salinity, latitude = latitude, longitude = longitude, pressure = pressure))
     } else {
-        l <- lookWithin(list(salinity=salinity, pressure=pressure))
+        l <- lookWithin(list(salinity = salinity, pressure = pressure))
     }
     dim <- dim(l$salinity)
     if (eos == "gsw") {
         # Note that l$pressure is used for computing SA, but not for gsw_t_freezing().
-        SA <- gsw::gsw_SA_from_SP(SP=l$salinity, p=l$pressure, longitude=l$longitude, latitude=l$latitude)
-        res <- gsw::gsw_t_freezing(SA=SA, p=l$pressure, saturation_fraction=saturation_fraction)
+        SA <- gsw::gsw_SA_from_SP(SP = l$salinity, p = l$pressure, longitude = l$longitude, latitude = l$latitude)
+        res <- gsw::gsw_t_freezing(SA = SA, p = l$pressure, saturation_fraction = saturation_fraction)
     } else if (eos == "unesco") {
-        res <- (-.0575+1.710523e-3*sqrt(abs(l$salinity))-2.154996e-4*l$salinity)*l$salinity-7.53e-4*l$pressure
+        res <- (-.0575 + 1.710523e-3 * sqrt(abs(l$salinity)) - 2.154996e-4 * l$salinity) * l$salinity - 7.53e-4 * l$pressure
         res <- T90fromT68(res)
     }
-    if (!is.null(dim))
+    if (!is.null(dim)) {
         dim(res) <- dim
+    }
     res
 }
 
@@ -1082,41 +1148,50 @@ swTFreeze <- function(salinity, pressure=NULL, longitude=NULL, latitude=NULL,
 #' the [swRho()] documentation.
 #'
 #' @family functions that calculate seawater properties
-swAlpha <- function(salinity, temperature=NULL, pressure=0,
-    longitude=NULL, latitude=NULL, eos=getOption("oceEOS", default="gsw"))
-{
-    if (missing(salinity))
+swAlpha <- function(
+    salinity, temperature = NULL, pressure = 0,
+    longitude = NULL, latitude = NULL, eos = getOption("oceEOS", default = "gsw")) {
+    if (missing(salinity)) {
         stop("must provide salinity")
+    }
     if (eos == "gsw") {
         if (inherits(salinity, "oce")) {
-            if (is.null(longitude))
+            if (is.null(longitude)) {
                 longitude <- salinity[["longitude"]]
-            if (is.null(latitude))
+            }
+            if (is.null(latitude)) {
                 latitude <- salinity[["latitude"]]
+            }
         }
-        if (is.null(longitude))
+        if (is.null(longitude)) {
             stop("must supply longitude")
-        if (is.null(latitude))
+        }
+        if (is.null(latitude)) {
             stop("must supply latitude")
-        l <- lookWithin(list(salinity=salinity, temperature=temperature, pressure=pressure,
-            longitude=longitude, latitude=latitude, eos=eos))
+        }
+        l <- lookWithin(list(
+            salinity = salinity, temperature = temperature, pressure = pressure,
+            longitude = longitude, latitude = latitude, eos = eos
+        ))
     } else {
-        l <- lookWithin(list(salinity=salinity, temperature=temperature, pressure=pressure, eos=eos))
+        l <- lookWithin(list(salinity = salinity, temperature = temperature, pressure = pressure, eos = eos))
     }
     nS <- length(l$salinity)
     nt <- length(l$temperature)
-    if (nS != nt)
+    if (nS != nt) {
         stop("lengths of salinity and temperature must agree, but they are ", nS, " and ", nt, ", respectively")
-    if (length(l$pressure) == 1) l$pressure <- rep(l$pressure, length.out=nS)
+    }
+    if (length(l$pressure) == 1) l$pressure <- rep(l$pressure, length.out = nS)
     np <- length(l$pressure)
-    if (nS != np)
+    if (nS != np) {
         stop("lengths of salinity and pressure must agree, but they are ", nS, " and ", np, ", respectively")
+    }
     if (l$eos == "unesco") {
-        res <- swAlphaOverBeta(l$salinity, l$temperature, l$pressure, eos="unesco") * swBeta(l$salinity, l$temperature, l$pressure, eos="unesco")
+        res <- swAlphaOverBeta(l$salinity, l$temperature, l$pressure, eos = "unesco") * swBeta(l$salinity, l$temperature, l$pressure, eos = "unesco")
     } else if (l$eos == "gsw") {
-        SA <- gsw::gsw_SA_from_SP(SP=l$salinity, p=l$pressure, longitude=l$longitude, latitude=l$latitude)
-        CT <- gsw::gsw_CT_from_t(SA=SA, t=l$temperature, p=l$pressure)
-        res <- gsw::gsw_alpha(SA=SA, CT=CT, p=l$pressure)
+        SA <- gsw::gsw_SA_from_SP(SP = l$salinity, p = l$pressure, longitude = l$longitude, latitude = l$latitude)
+        CT <- gsw::gsw_CT_from_t(SA = SA, t = l$temperature, p = l$pressure)
+        res <- gsw::gsw_alpha(SA = SA, CT = CT, p = l$pressure)
     }
     res
 }
@@ -1153,54 +1228,65 @@ swAlpha <- function(salinity, temperature=NULL, pressure=0,
 #' the [swRho()] documentation.
 #'
 #' @examples
-#' swAlphaOverBeta(40, 10, 4000, eos="unesco") # 0.3476
+#' swAlphaOverBeta(40, 10, 4000, eos = "unesco") # 0.3476
 #'
 #' @family functions that calculate seawater properties
-swAlphaOverBeta <- function(salinity, temperature=NULL, pressure=NULL,
-    longitude=NULL, latitude=NULL, eos=getOption("oceEOS", default="gsw"))
-{
-    if (missing(salinity))
+swAlphaOverBeta <- function(
+    salinity, temperature = NULL, pressure = NULL,
+    longitude = NULL, latitude = NULL, eos = getOption("oceEOS", default = "gsw")) {
+    if (missing(salinity)) {
         stop("must provide salinity")
+    }
     if (eos == "gsw") {
         if (inherits(salinity, "oce")) {
             temperature <- salinity[["temperature"]]
             pressure <- salinity[["pressure"]]
-            if (is.null(longitude))
+            if (is.null(longitude)) {
                 longitude <- salinity[["longitude"]]
-            if (is.null(latitude))
+            }
+            if (is.null(latitude)) {
                 latitude <- salinity[["latitude"]]
+            }
         }
-        if (is.null(longitude))
+        if (is.null(longitude)) {
             stop("must supply longitude")
-        if (is.null(latitude))
+        }
+        if (is.null(latitude)) {
             stop("must supply latitude")
-        l <- lookWithin(list(salinity=salinity, temperature=temperature, pressure=pressure,
-            longitude=longitude, latitude=latitude, eos=eos))
+        }
+        l <- lookWithin(list(
+            salinity = salinity, temperature = temperature, pressure = pressure,
+            longitude = longitude, latitude = latitude, eos = eos
+        ))
     } else {
-        l <- lookWithin(list(salinity=salinity, temperature=temperature, pressure=pressure, eos=eos))
+        l <- lookWithin(list(salinity = salinity, temperature = temperature, pressure = pressure, eos = eos))
     }
     dim <- dim(l$salinity)
-    if (is.null(l$temperature))
+    if (is.null(l$temperature)) {
         stop("must provide temperature")
+    }
     nS <- length(l$salinity)
     nt <- length(l$temperature)
-    if (nS != nt)
+    if (nS != nt) {
         stop("lengths of salinity and temperature must agree, but they are ", nS, " and ", nt, ", respectively")
+    }
     if (is.null(l$pressure)) pressure <- 0
-    if (length(l$pressure) != nS) l$pressure <- rep(l$pressure, length.out=nS)
+    if (length(l$pressure) != nS) l$pressure <- rep(l$pressure, length.out = nS)
     if (l$eos == "gsw") {
         # not likely to be called since gsw has a direct function for alpha, but put this here anyway
-        SA <- gsw::gsw_SA_from_SP(SP=l$salinity, p=l$pressure, longitude=l$longitude, latitude=l$latitude)
-        CT <- gsw::gsw_CT_from_t(SA=SA, t=l$temperature, p=l$pressure)
-        res <- gsw::gsw_alpha_on_beta(SA=SA, CT=CT, p=l$pressure)
+        SA <- gsw::gsw_SA_from_SP(SP = l$salinity, p = l$pressure, longitude = l$longitude, latitude = l$latitude)
+        CT <- gsw::gsw_CT_from_t(SA = SA, t = l$temperature, p = l$pressure)
+        res <- gsw::gsw_alpha_on_beta(SA = SA, CT = CT, p = l$pressure)
     } else if (l$eos == "unesco") {
-        theta <- swTheta(l$salinity, l$temperature, l$pressure, eos="unesco")
+        theta <- swTheta(l$salinity, l$temperature, l$pressure, eos = "unesco")
         res <- .C("sw_alpha_over_beta", as.integer(nS),
             as.double(l$salinity), as.double(theta), as.double(l$pressure),
-            value=double(nS), NAOK=TRUE, PACKAGE="oce")$value
+            value = double(nS), NAOK = TRUE, PACKAGE = "oce"
+        )$value
     }
-    if (!is.null(dim))
+    if (!is.null(dim)) {
         dim(res) <- dim
+    }
     res
 }
 
@@ -1238,50 +1324,61 @@ swAlphaOverBeta <- function(salinity, temperature=NULL, pressure=NULL,
 #' the [swRho()] documentation.
 #'
 #' @family functions that calculate seawater properties
-swBeta <- function(salinity, temperature=NULL, pressure=0,
-    longitude=NULL, latitude=NULL, eos=getOption("oceEOS", default="gsw"))
-{
-    if (missing(salinity))
+swBeta <- function(
+    salinity, temperature = NULL, pressure = 0,
+    longitude = NULL, latitude = NULL, eos = getOption("oceEOS", default = "gsw")) {
+    if (missing(salinity)) {
         stop("must provide salinity")
+    }
     if (inherits(salinity, "oce")) {
         temperature <- salinity[["temperature"]]
         pressure <- salinity[["pressure"]]
-        if (is.null(longitude))
+        if (is.null(longitude)) {
             longitude <- salinity[["longitude"]]
-        if (is.null(latitude))
+        }
+        if (is.null(latitude)) {
             latitude <- salinity[["latitude"]]
+        }
     }
     if (eos == "gsw") {
-        if (is.null(longitude))
+        if (is.null(longitude)) {
             stop("must supply longitude")
-        if (is.null(latitude))
+        }
+        if (is.null(latitude)) {
             stop("must supply latitude")
-        l <- lookWithin(list(salinity=salinity, temperature=temperature, pressure=pressure,
-            longitude=longitude, latitude=latitude, eos=eos))
+        }
+        l <- lookWithin(list(
+            salinity = salinity, temperature = temperature, pressure = pressure,
+            longitude = longitude, latitude = latitude, eos = eos
+        ))
     } else {
-        l <- lookWithin(list(salinity=salinity, temperature=temperature, pressure=pressure, eos=eos))
+        l <- lookWithin(list(salinity = salinity, temperature = temperature, pressure = pressure, eos = eos))
     }
     dim <- dim(l$salinity)
     nS <- length(l$salinity)
     nt <- length(l$temperature)
-    if (nS != nt)
+    if (nS != nt) {
         stop("lengths of salinity and temperature must agree, but they are ", nS, " and ", nt, ", respectively")
-    if (length(l$pressure) == 1) l$pressure <- rep(l$pressure, length.out=nS)
+    }
+    if (length(l$pressure) == 1) l$pressure <- rep(l$pressure, length.out = nS)
     np <- length(l$pressure)
-    if (nS != np)
+    if (nS != np) {
         stop("lengths of salinity and pressure must agree, but they are ", nS, " and ", np, ", respectively")
+    }
     if (eos == "gsw") {
-        SA <- gsw::gsw_SA_from_SP(SP=l$salinity, p=l$pressure, longitude=l$longitude, latitude=l$latitude)
-        CT <- gsw::gsw_CT_from_t(SA=SA, t=l$temperature, p=l$pressure)
-        res <- gsw::gsw_beta(SA=SA, CT=CT, p=l$pressure)
+        SA <- gsw::gsw_SA_from_SP(SP = l$salinity, p = l$pressure, longitude = l$longitude, latitude = l$latitude)
+        CT <- gsw::gsw_CT_from_t(SA = SA, t = l$temperature, p = l$pressure)
+        res <- gsw::gsw_beta(SA = SA, CT = CT, p = l$pressure)
     } else if (eos == "unesco") {
-        theta <- swTheta(l$salinity, l$temperature, l$pressure, eos="unesco") # the formula is i.t.o. theta
+        theta <- swTheta(l$salinity, l$temperature, l$pressure, eos = "unesco") # the formula is i.t.o. theta
         res <- .C("sw_beta", as.integer(nS),
             as.double(l$salinity), as.double(theta), as.double(l$pressure),
-            value=double(nS), NAOK=TRUE, PACKAGE="oce")$value
+            value = double(nS), NAOK = TRUE, PACKAGE = "oce"
+        )$value
     }
-    if (!is.null(dim))
+    if (!is.null(dim)) {
         dim(res) <- dim
+    }
     res
 }
 
@@ -1322,34 +1419,34 @@ swBeta <- function(salinity, temperature=NULL, pressure=0,
 #' @examples
 #' library(oce)
 #' # Values in m^2/s, a unit that is often used instead of W/(m*degC).
-#' swThermalConductivity(35, 10, 100) / (swRho(35,10,100) * swSpecificHeat(35,10,100)) # ocean
+#' swThermalConductivity(35, 10, 100) / (swRho(35, 10, 100) * swSpecificHeat(35, 10, 100)) # ocean
 #' swThermalConductivity(0, 20, 0) / (swRho(0, 20, 0) * swSpecificHeat(0, 20, 0)) # lab
 #' # Caldwell Table 1 gives 1478e-6 cal/(cm*sec*degC) at 31.5 o/oo, 10degC, 1kbar
 #' joulePerCalorie <- 4.18400
 #' cmPerM <- 100
-#' swThermalConductivity(31.5,10,1000) / joulePerCalorie / cmPerM
+#' swThermalConductivity(31.5, 10, 1000) / joulePerCalorie / cmPerM
 #'
 #' @family functions that calculate seawater properties
-swThermalConductivity <- function(salinity, temperature=NULL, pressure=NULL)
-{
-    if (missing(salinity))
+swThermalConductivity <- function(salinity, temperature = NULL, pressure = NULL) {
+    if (missing(salinity)) {
         stop("must provide salinity")
-    l <- lookWithin(list(salinity=salinity, temperature=temperature, pressure=pressure))
+    }
+    l <- lookWithin(list(salinity = salinity, temperature = temperature, pressure = pressure))
     # below is formula used prior to 2015-jan-9
     # return(0.57057 * (1 + l$temperature * (0.003 - 1.025e-05 * l$temperature) + 0.000653 * l$pressure - 0.00029 * l$salinity))
     S <- l$salinity
     # nolint start T_and_F_symbol_linter
     T <- T68fromT90(l$temperature)
-    p <- l$pressure / 1e3              # Caldwell formula is for kbar, not dbar
+    p <- l$pressure / 1e3 # Caldwell formula is for kbar, not dbar
     if (TRUE) {
-        K <- 1.3507e-3 + 4.061e-6*T + (-1.412e-8)*T^2 # Caldwell eq 6
-        f <- 0.0690 + (-8e-5)*T + (-0.0020)*p + (-0.00010)*S # Caldwell eq 8
-        cond <- K * (1 + f)                # Caldwell eq 7
+        K <- 1.3507e-3 + 4.061e-6 * T + (-1.412e-8) * T^2 # Caldwell eq 6
+        f <- 0.0690 + (-8e-5) * T + (-0.0020) * p + (-0.00010) * S # Caldwell eq 8
+        cond <- K * (1 + f) # Caldwell eq 7
     } else {
-        cond <- 0.001365 * (1+0.003*T - 1.025e-5*T^2 + 0.0653 * p - 0.00029 * S)
+        cond <- 0.001365 * (1 + 0.003 * T - 1.025e-5 * T^2 + 0.0653 * p - 0.00029 * S)
     }
     # nolint end T_and_F_symbol_linter
-    418.400 * cond                     # convert from cal/(cm*sec*degC) to J/(m*sec*degC)
+    418.400 * cond # convert from cal/(cm*sec*degC) to J/(m*sec*degC)
 }
 
 
@@ -1395,21 +1492,22 @@ swThermalConductivity <- function(salinity, temperature=NULL, pressure=NULL)
 #' d <- swDepth(10, 45)
 #'
 #' @family functions that calculate seawater properties
-swDepth <- function(pressure, latitude=45, eos=getOption("oceEOS", default="gsw"))
-{
+swDepth <- function(pressure, latitude = 45, eos = getOption("oceEOS", default = "gsw")) {
     # FIXME-gsw need a gsw version but it is not in the C library as of Dec 2014
-    if (missing(pressure))
+    if (missing(pressure)) {
         stop("must provide pressure")
-    l <- lookWithin(list(pressure=pressure, latitude=latitude, eos=eos))
-    if (any(is.na(l$latitude)))
-        l$latitude <- 45 # default to mid latitudes
+    }
+    l <- lookWithin(list(pressure = pressure, latitude = latitude, eos = eos))
+    if (any(is.na(l$latitude))) {
+        l$latitude <- 45
+    } # default to mid latitudes
     if (l$eos == "unesco") {
         l$latitude <- l$latitude * atan2(1, 1) / 45
         x <- sin(l$latitude)^2
-        gr <- 9.780318 * (1.0 + (5.2788e-3+2.36e-5*x)*x) + 1.092e-6*l$pressure
-        res <- (((-1.82e-15*l$pressure+2.279e-10)*l$pressure-2.2512e-5)*l$pressure+9.72659)*l$pressure / gr
+        gr <- 9.780318 * (1.0 + (5.2788e-3 + 2.36e-5 * x) * x) + 1.092e-6 * l$pressure
+        res <- (((-1.82e-15 * l$pressure + 2.279e-10) * l$pressure - 2.2512e-5) * l$pressure + 9.72659) * l$pressure / gr
     } else if (l$eos == "gsw") {
-        res <- -gsw::gsw_z_from_p(p=l$pressure, latitude=l$latitude)
+        res <- -gsw::gsw_z_from_p(p = l$pressure, latitude = l$latitude)
     }
     res
 }
@@ -1422,12 +1520,12 @@ swDepth <- function(pressure, latitude=45, eos=getOption("oceEOS", default="gsw"
 #' @inheritParams swDepth
 #'
 #' @family functions that calculate seawater properties
-swZ <- function(pressure, latitude=45, eos=getOption("oceEOS", default="gsw"))
-{
+swZ <- function(pressure, latitude = 45, eos = getOption("oceEOS", default = "gsw")) {
     # FIXME-gsw need a gsw version but it is not in the C library as of Dec 2014
-    if (missing(pressure))
+    if (missing(pressure)) {
         stop("must provide pressure")
-    -swDepth(pressure=pressure, latitude=latitude, eos=eos)
+    }
+    -swDepth(pressure = pressure, latitude = latitude, eos = eos)
 }
 
 
@@ -1491,64 +1589,66 @@ swZ <- function(pressure, latitude=45, eos=getOption("oceEOS", default="gsw"))
 #' @references Gill, A.E., 1982. *Atmosphere-ocean Dynamics*, Academic
 #' Press, New York, 662 pp.
 #'
-#' @examples
-#'\dontrun{
+#' @section Sample of Usage:
+#' \preformatted{
 #' library(oce)
 #' data(section)
 #'
 #' # Dynamic height and geostrophy
-#' par(mfcol=c(2,2))
-#' par(mar=c(4.5,4.5,2,1))
+#' par(mfcol=c(2, 2))
+#' par(mar=c(4.5, 4.5, 2, 1))
 #'
 #' # Left-hand column: whole section
 #' # (The smoothing lowers Gulf Stream speed greatly)
 #' westToEast <- subset(section, 1<=stationId&stationId<=123)
 #' dh <- swDynamicHeight(westToEast)
-#' plot(dh$distance, dh$height, type='p', xlab="", ylab="dyn. height [m]")
+#' plot(dh$distance, dh$height, type="p", xlab="", ylab="dyn. height [m]")
 #' ok <- !is.na(dh$height)
 #' smu <- supsmu(dh$distance, dh$height)
 #' lines(smu, col="blue")
 #' f <- coriolis(section[["station", 1]][["latitude"]])
 #' g <- gravity(section[["station", 1]][["latitude"]])
 #' v <- diff(smu$y)/diff(smu$x) * g / f / 1e3 # 1e3 converts to m
-#' plot(smu$x[-1], v, type='l', col="blue", xlab="distance [km]", ylab="velocity (m/s)")
+#' plot(smu$x[-1], v, type="l", col="blue", xlab="distance [km]", ylab="velocity (m/s)")
 #'
 #' # right-hand column: gulf stream region, unsmoothed
 #' gs <- subset(section, 102<=stationId&stationId<=124)
 #' dh.gs <- swDynamicHeight(gs)
-#' plot(dh.gs$distance, dh.gs$height, type='b', xlab="", ylab="dyn. height [m]")
+#' plot(dh.gs$distance, dh.gs$height, type="b", xlab="", ylab="dyn. height [m]")
 #' v <- diff(dh.gs$height)/diff(dh.gs$distance) * g / f / 1e3
-#' plot(dh.gs$distance[-1], v, type='l', col="blue",
+#' plot(dh.gs$distance[-1], v, type="l", col="blue",
 #'   xlab="distance [km]", ylab="velocity (m/s)")
-#'}
+#' }
 #'
 #' @family functions that calculate seawater properties
-swDynamicHeight <- function(x, referencePressure=2000,
-    subdivisions=500, rel.tol=.Machine$double.eps^0.25,
-    eos=getOption("oceEOS", default="gsw"))
-{
+swDynamicHeight <- function(
+    x, referencePressure = 2000,
+    subdivisions = 500, rel.tol = .Machine$double.eps^0.25,
+    eos = getOption("oceEOS", default = "gsw")) {
     eos <- match.arg(eos, c("unesco", "gsw"))
-    height <- function(ctd, referencePressure, subdivisions, rel.tol, eos=getOption("oceEOS", default="gsw"))
-    {
-        if (sum(!is.na(ctd@data$pressure)) < 2)
+    height <- function(ctd, referencePressure, subdivisions, rel.tol, eos = getOption("oceEOS", default = "gsw")) {
+        if (sum(!is.na(ctd@data$pressure)) < 2) {
             return(NA)
+        }
         g <- if (is.na(ctd@metadata$latitude)) 9.8 else gravity(ctd@metadata$latitude)
         p <- ctd[["pressure"]]
         np <- length(p)
-        p_ref <- min(max(p, na.rm=TRUE), referencePressure)
+        p_ref <- min(max(p, na.rm = TRUE), referencePressure)
         if (eos == "unesco") {
-            rho <- swRho(ctd, eos=eos)
-            if (sum(!is.na(rho)) < 2)
+            rho <- swRho(ctd, eos = eos)
+            if (sum(!is.na(rho)) < 2) {
                 return(NA)
+            }
             # 1e4 converts decibar to Pa
-            dzdp <- ((1/rho - 1/swRho(rep(35, np), rep(0, np), p, eos=eos)) / g)*1e4
+            dzdp <- ((1 / rho - 1 / swRho(rep(35, np), rep(0, np), p, eos = eos)) / g) * 1e4
             # Scale both pressure and dz/dp to make integration work better (issue 499)
-            max <- max(dzdp, na.rm=TRUE)
-            integrand <- approxfun(p/p_ref, dzdp/max, rule=2)
-            #plot(dzdp/max, ctd@data$pressure/referencePressure, type='l')
+            max <- max(dzdp, na.rm = TRUE)
+            integrand <- approxfun(p / p_ref, dzdp / max, rule = 2)
+            # plot(dzdp/max, ctd@data$pressure/referencePressure, type="l")
             res <- integrate(integrand, 0, 1,
-                subdivisions=subdivisions, rel.tol=rel.tol)$value * p_ref * max
-        } else {                       # "gsw"
+                subdivisions = subdivisions, rel.tol = rel.tol
+            )$value * p_ref * max
+        } else { # "gsw"
             if (np > 3) {
                 o <- order(p)
                 p <- p[o]
@@ -1562,17 +1662,17 @@ swDynamicHeight <- function(x, referencePressure=2000,
                     p <- p[!dp0]
                     g <- 9.7963 # NOTE: do not use local gravity; the gsw is defined to use this value
                     if (length(p) < 4) {
-                        warning("In swDynamicHeight() : returning NA since < 4 levels", call.=FALSE)
+                        warning("In swDynamicHeight() : returning NA since < 4 levels", call. = FALSE)
                         res <- NA
                     } else {
-                        res <- gsw::gsw_geo_strf_dyn_height(SA=SA, CT=CT, p=p, p_ref=p_ref)[1] / g
+                        res <- gsw::gsw_geo_strf_dyn_height(SA = SA, CT = CT, p = p, p_ref = p_ref)[1] / g
                     }
                 } else {
-                    res <- gsw::gsw_geo_strf_dyn_height(SA=SA, CT=CT, p=p, p_ref=p_ref)[1] / g
+                    res <- gsw::gsw_geo_strf_dyn_height(SA = SA, CT = CT, p = p, p_ref = p_ref)[1] / g
                 }
                 res[is.nan(res)] <- NA
             } else {
-                warning("In swDynamicHeight() : returning NA since < 4 levels", call.=FALSE)
+                warning("In swDynamicHeight() : returning NA since < 4 levels", call. = FALSE)
                 res <- NA
             }
         }
@@ -1586,11 +1686,11 @@ swDynamicHeight <- function(x, referencePressure=2000,
         h <- vector("numeric", ns)
         for (i in 1:ns) {
             d[i] <- geodDist(x@data$station[[i]]@metadata$longitude, x@data$station[[i]]@metadata$latitude, lon0, lat0)
-            h[i] <- height(x@data$station[[i]], referencePressure, subdivisions=subdivisions, rel.tol=rel.tol, eos=eos)
+            h[i] <- height(x@data$station[[i]], referencePressure, subdivisions = subdivisions, rel.tol = rel.tol, eos = eos)
         }
-        return(list(distance=d, height=h))
+        return(list(distance = d, height = h))
     } else if (inherits(x, "ctd")) {
-        return(height(x, referencePressure, subdivisions=subdivisions, rel.tol=rel.tol, eos=eos))
+        return(height(x, referencePressure, subdivisions = subdivisions, rel.tol = rel.tol, eos = eos))
     } else {
         stop("method is only for objects of class '", "section", " or '", "ctd", "'")
     }
@@ -1638,56 +1738,70 @@ swDynamicHeight <- function(x, referencePressure=2000,
 #' lr <- swLapseRate(40, 40, 10000) # 3.255976e-4
 #'
 #' @family functions that calculate seawater properties
-swLapseRate <- function(salinity, temperature=NULL, pressure=NULL,
-    longitude=NULL, latitude=NULL, eos=getOption("oceEOS", default="gsw"))
-{
-    if (missing(salinity))
+swLapseRate <- function(
+    salinity, temperature = NULL, pressure = NULL,
+    longitude = NULL, latitude = NULL, eos = getOption("oceEOS", default = "gsw")) {
+    if (missing(salinity)) {
         stop("must provide salinity")
+    }
     if (eos == "gsw") {
         if (inherits(salinity, "oce")) {
-            if (is.null(longitude))
+            if (is.null(longitude)) {
                 longitude <- salinity[["longitude"]]
-            if (is.null(latitude))
+            }
+            if (is.null(latitude)) {
                 latitude <- salinity[["latitude"]]
+            }
         }
-        if (is.null(longitude))
+        if (is.null(longitude)) {
             stop("must supply longitude")
-        if (is.null(latitude))
+        }
+        if (is.null(latitude)) {
             stop("must supply latitude")
-        l <- lookWithin(list(salinity=salinity, temperature=temperature, pressure=pressure,
-            longitude=longitude, latitude=latitude, eos=eos))
+        }
+        l <- lookWithin(list(
+            salinity = salinity, temperature = temperature, pressure = pressure,
+            longitude = longitude, latitude = latitude, eos = eos
+        ))
     } else {
-        l <- lookWithin(list(salinity=salinity, temperature=temperature, pressure=pressure, eos=eos))
+        l <- lookWithin(list(salinity = salinity, temperature = temperature, pressure = pressure, eos = eos))
     }
     dim <- dim(l$salinity)
     nS <- length(l$salinity)
-    if (is.null(l$temperature))
+    if (is.null(l$temperature)) {
         stop("must provide temperature")
+    }
     nt <- length(l$temperature)
-    if (is.null(l$pressure))
-        l$pressure <- rep(0, length.out=nS)
-    if (length(l$pressure) == 1)
-        l$pressure <- rep(l$pressure[1], length.out=nS)
+    if (is.null(l$pressure)) {
+        l$pressure <- rep(0, length.out = nS)
+    }
+    if (length(l$pressure) == 1) {
+        l$pressure <- rep(l$pressure[1], length.out = nS)
+    }
     np <- length(l$pressure)
-    if (nS != nt)
+    if (nS != nt) {
         stop("lengths of salinity and temperature must agree, but they are ", nS, " and ", nt, ", respectively")
-    if (nS != np)
+    }
+    if (nS != np) {
         stop("lengths of salinity and pressure must agree, but they are ", nS, " and ", np, ", respectively")
+    }
     if (eos == "unesco") {
         res <- .C("sw_lapserate", as.integer(nS), as.double(l$salinity), as.double(T68fromT90(l$temperature)), as.double(l$pressure),
-            value=double(nS), NAOK=TRUE, PACKAGE="oce")$value
+            value = double(nS), NAOK = TRUE, PACKAGE = "oce"
+        )$value
     } else if (eos == "gsw") {
-        SA <- gsw::gsw_SA_from_SP(SP=l$salinity, p=l$pressure, longitude=l$longitude, latitude=l$latitude)
-        CT <- gsw::gsw_CT_from_t(SA=SA, t=l$temperature, p=l$pressure)
+        SA <- gsw::gsw_SA_from_SP(SP = l$salinity, p = l$pressure, longitude = l$longitude, latitude = l$latitude)
+        CT <- gsw::gsw_CT_from_t(SA = SA, t = l$temperature, p = l$pressure)
         # the 1e4 is to convert from 1/Pa to 1/dbar
-        res<- 1e4 * gsw::gsw_adiabatic_lapse_rate_from_CT(SA=SA, CT=CT, p=l$pressure)
+        res <- 1e4 * gsw::gsw_adiabatic_lapse_rate_from_CT(SA = SA, CT = CT, p = l$pressure)
     } else {
         stop("eos must be either \"unesco\" or \"eos\"")
     }
-    if (!is.null(dim))
+    if (!is.null(dim)) {
         dim(res) <- dim
+    }
     res
-}                                      # swLapseRate
+} # swLapseRate
 
 
 #' Seawater Density
@@ -1764,17 +1878,18 @@ swLapseRate <- function(salinity, temperature=NULL, pressure=NULL,
 #' # note that temperature in that reference was on the T68 scale, but that
 #' # the present function works with the ITS-90 scale, so a conversion
 #' # is required.
-#' swRho(35, T90fromT68(5),      0, eos="unesco") # 1027.67547
-#' swRho(35, T90fromT68(5),  10000, eos="unesco") # 1069.48914
-#' swRho(35, T90fromT68(25),     0, eos="unesco") # 1023.34306
-#' swRho(35, T90fromT68(25), 10000, eos="unesco") # 1062.53817
+#' swRho(35, T90fromT68(5), 0, eos = "unesco") # 1027.67547
+#' swRho(35, T90fromT68(5), 10000, eos = "unesco") # 1069.48914
+#' swRho(35, T90fromT68(25), 0, eos = "unesco") # 1023.34306
+#' swRho(35, T90fromT68(25), 10000, eos = "unesco") # 1062.53817
 #'
 #' @family functions that calculate seawater properties
-swRho <- function(salinity, temperature=NULL, pressure=NULL,
-    longitude=NULL, latitude=NULL, eos=getOption("oceEOS", default="gsw"))
-{
-    if (missing(salinity))
+swRho <- function(
+    salinity, temperature = NULL, pressure = NULL,
+    longitude = NULL, latitude = NULL, eos = getOption("oceEOS", default = "gsw")) {
+    if (missing(salinity)) {
         stop("must provide salinity")
+    }
     if (inherits(salinity, "oce")) {
         if (eos == "gsw") { # do not need these for UNESCO calculations
             longitude <- salinity[["longitude"]]
@@ -1785,38 +1900,47 @@ swRho <- function(salinity, temperature=NULL, pressure=NULL,
         salinity <- salinity[["salinity"]]
     }
     if (eos == "gsw") {
-        if (is.null(longitude))
+        if (is.null(longitude)) {
             stop("must supply longitude")
-        if (is.null(latitude))
+        }
+        if (is.null(latitude)) {
             stop("must supply latitude")
-        l <- lookWithin(list(salinity=salinity, temperature=temperature, pressure=pressure,
-            longitude=longitude, latitude=latitude, eos=eos))
+        }
+        l <- lookWithin(list(
+            salinity = salinity, temperature = temperature, pressure = pressure,
+            longitude = longitude, latitude = latitude, eos = eos
+        ))
     } else { # must be "unesco"
-        l <- lookWithin(list(salinity=salinity, temperature=temperature, pressure=pressure, eos=eos))
+        l <- lookWithin(list(salinity = salinity, temperature = temperature, pressure = pressure, eos = eos))
     }
-    if (is.null(l$temperature))
+    if (is.null(l$temperature)) {
         stop("must provide temperature")
-    if (is.null(l$pressure))
+    }
+    if (is.null(l$pressure)) {
         stop("must provide pressure")
+    }
     dim <- dim(l$salinity)
     nS <- length(l$salinity)
     nt <- length(l$temperature)
-    if (nS != nt)
+    if (nS != nt) {
         stop("lengths of salinity and temperature must agree, but they are ", nS, " and ", nt, ", respectively")
+    }
     if (is.null(l$pressure)) l$pressure <- 0
-    if (length(l$pressure) == 1) l$pressure <- rep(l$pressure, length.out=nS)
+    if (length(l$pressure) == 1) l$pressure <- rep(l$pressure, length.out = nS)
     np <- length(l$pressure)
-    if (nS != np)
+    if (nS != np) {
         stop("lengths of salinity and pressure must agree, but they are ", nS, " and ", np, ", respectively")
+    }
     if (eos == "unesco") {
         res <- .C("sw_rho", as.integer(nS), as.double(l$salinity),
             as.double(T68fromT90(l$temperature)),
             as.double(l$pressure),
-            value=double(nS), NAOK=TRUE, PACKAGE="oce")$value
+            value = double(nS), NAOK = TRUE, PACKAGE = "oce"
+        )$value
     } else if (eos == "gsw") {
-        SA <- gsw::gsw_SA_from_SP(SP=l$salinity, p=l$pressure, longitude=l$longitude, latitude=l$latitude)
-        CT <- gsw::gsw_CT_from_t(SA=SA, t=l$temperature, p=l$pressure)
-        res <- gsw::gsw_rho(SA, CT, p=l$pressure)
+        SA <- gsw::gsw_SA_from_SP(SP = l$salinity, p = l$pressure, longitude = l$longitude, latitude = l$latitude)
+        CT <- gsw::gsw_CT_from_t(SA = SA, t = l$temperature, p = l$pressure)
+        res <- gsw::gsw_rho(SA, CT, p = l$pressure)
     }
     if (!is.null(dim)) {
         dim(res) <- dim
@@ -1841,17 +1965,19 @@ swRho <- function(salinity, temperature=NULL, pressure=NULL,
 #'
 #' @examples
 #' library(oce)
-#' swSigma(35, 13, 1000, longitude=300, latitude=30, eos="gsw") # 30.82374
-#' swSigma(35, T90fromT68(13), 1000, eos="unesco")    # 30.8183
+#' swSigma(35, 13, 1000, longitude = 300, latitude = 30, eos = "gsw") # 30.82374
+#' swSigma(35, T90fromT68(13), 1000, eos = "unesco") # 30.8183
 #'
 #' @family functions that calculate seawater properties
-swSigma <- function(salinity, temperature=NULL, pressure=NULL,
-    longitude=NULL, latitude=NULL, eos=getOption("oceEOS", default="gsw"))
-{
-    if (missing(salinity))
+swSigma <- function(
+    salinity, temperature = NULL, pressure = NULL,
+    longitude = NULL, latitude = NULL, eos = getOption("oceEOS", default = "gsw")) {
+    if (missing(salinity)) {
         stop("must provide salinity")
+    }
     swRho(salinity, temperature, pressure,
-        longitude=longitude, latitude=latitude, eos=eos) - 1000
+        longitude = longitude, latitude = latitude, eos = eos
+    ) - 1000
 }
 
 
@@ -1873,34 +1999,45 @@ swSigma <- function(salinity, temperature=NULL, pressure=NULL,
 #' @references See citations provided in the [swRho()] documentation.
 #'
 #' @examples
-#' swSigmaT(35, 13, 1000, longitude=300, latitude=30, eos="gsw") # 26.39623
-#' swSigmaT(35, T90fromT68(13), 1000, eos="unesco") # 26.39354
+#' swSigmaT(35, 13, 1000, longitude = 300, latitude = 30, eos = "gsw") # 26.39623
+#' swSigmaT(35, T90fromT68(13), 1000, eos = "unesco") # 26.39354
 #'
 #' @family functions that calculate seawater properties
-swSigmaT <- function(salinity, temperature=NULL, pressure=NULL,
-    longitude=NULL, latitude=NULL, eos=getOption("oceEOS", default="gsw"))
-{
-    if (missing(salinity))
+swSigmaT <- function(
+    salinity, temperature = NULL, pressure = NULL,
+    longitude = NULL, latitude = NULL, eos = getOption("oceEOS", default = "gsw")) {
+    if (missing(salinity)) {
         stop("must provide salinity")
+    }
     if (eos == "gsw") {
         if (inherits(salinity, "oce")) {
-            if (is.null(longitude))
+            if (is.null(longitude)) {
                 longitude <- salinity[["longitude"]]
-            if (is.null(latitude))
+            }
+            if (is.null(latitude)) {
                 latitude <- salinity[["latitude"]]
+            }
         }
-        if (is.null(longitude))
+        if (is.null(longitude)) {
             stop("must supply longitude")
-        if (is.null(latitude))
+        }
+        if (is.null(latitude)) {
             stop("must supply latitude")
-        l <- lookWithin(list(salinity=salinity, temperature=temperature, pressure=pressure,
-            longitude=longitude, latitude=latitude, eos=eos))
-        swRho(l$salinity, l$temperature, pressure=rep(0, length(l$salinity)),
-            longitude=l$longitude, latitude=l$latitude, eos=l$eos) - 1000
+        }
+        l <- lookWithin(list(
+            salinity = salinity, temperature = temperature, pressure = pressure,
+            longitude = longitude, latitude = latitude, eos = eos
+        ))
+        swRho(l$salinity, l$temperature,
+            pressure = rep(0, length(l$salinity)),
+            longitude = l$longitude, latitude = l$latitude, eos = l$eos
+        ) - 1000
     } else {
-        l <- lookWithin(list(salinity=salinity, temperature=temperature, pressure=pressure, eos=eos))
-        swRho(l$salinity, l$temperature, pressure=rep(0, length(l$salinity)),
-            eos=l$eos) - 1000
+        l <- lookWithin(list(salinity = salinity, temperature = temperature, pressure = pressure, eos = eos))
+        swRho(l$salinity, l$temperature,
+            pressure = rep(0, length(l$salinity)),
+            eos = l$eos
+        ) - 1000
     }
 }
 
@@ -1932,64 +2069,79 @@ swSigmaT <- function(salinity, temperature=NULL, pressure=NULL,
 #' @references See citations provided in the [swRho()] documentation.
 #'
 #' @examples
-#' stopifnot(abs(26.4212790994 - swSigmaTheta(35, 13, 1000, eos="unesco")) < 1e-7)
+#' stopifnot(abs(26.4212790994 - swSigmaTheta(35, 13, 1000, eos = "unesco")) < 1e-7)
 #'
 #' @family functions that calculate seawater properties
-swSigmaTheta <- function(salinity, temperature=NULL, pressure=NULL, referencePressure=0,
-    longitude=NULL, latitude=NULL, eos=getOption("oceEOS", default="gsw"))
-{
-    #message("DEBUG: in swSigmaTheta with eos=", eos, ", referencePressure=", referencePressure)
-    if (missing(salinity))
-       stop("must provide salinity")
+swSigmaTheta <- function(
+    salinity, temperature = NULL, pressure = NULL, referencePressure = 0,
+    longitude = NULL, latitude = NULL, eos = getOption("oceEOS", default = "gsw")) {
+    # message("DEBUG: in swSigmaTheta with eos=", eos, ", referencePressure=", referencePressure)
+    if (missing(salinity)) {
+        stop("must provide salinity")
+    }
     if (inherits(salinity, "oce")) {
-        #message("DEBUG: it is an object")
+        # message("DEBUG: it is an object")
         temperature <- salinity[["temperature"]]
         pressure <- salinity[["pressure"]]
-        if (is.null(longitude))
+        if (is.null(longitude)) {
             longitude <- salinity[["longitude"]]
-        if (is.null(latitude))
+        }
+        if (is.null(latitude)) {
             latitude <- salinity[["latitude"]]
+        }
         # we're done extracting other things, so now it's safe to rewrite 'salinity'
         salinity <- salinity[["salinity"]]
     }
     if (eos == "gsw") {
-        if (is.null(longitude))
+        if (is.null(longitude)) {
             stop("must supply longitude")
-        if (is.null(latitude))
+        }
+        if (is.null(latitude)) {
             stop("must supply latitude")
+        }
     }
-    if (is.null(temperature))
+    if (is.null(temperature)) {
         stop("must provide temperature")
-    if (is.null(pressure))
+    }
+    if (is.null(pressure)) {
         stop("must provide pressure")
+    }
     dim <- dim(salinity)
     nS <- length(salinity)
     nt <- length(temperature)
-    if (nS != nt)
+    if (nS != nt) {
         stop("lengths of salinity and temperature must agree, but they are ", nS, " and ", nt, ", respectively")
+    }
     np <- length(pressure)
-    if (np == 1)
-        pressure <- rep(pressure, length.out=nS)
+    if (np == 1) {
+        pressure <- rep(pressure, length.out = nS)
+    }
     np <- length(pressure)
-    if (nS != np)
+    if (nS != np) {
         stop("lengths of salinity and pressure must agree, but they are ", nS, " and ", np, ", respectively")
-    referencePressure <- rep(referencePressure[1], length.out=nS)
+    }
+    referencePressure <- rep(referencePressure[1], length.out = nS)
     if (eos == "unesco") {
-        theta <- swTheta(salinity=salinity, temperature=temperature, pressure=pressure,
-            referencePressure=referencePressure,
-            longitude=longitude, latitude=latitude, eos=eos)
-        res <- swRho(salinity=salinity, temperature=theta, pressure=referencePressure,
-            longitude=longitude, latitude=latitude, eos=eos) - 1000.0
+        theta <- swTheta(
+            salinity = salinity, temperature = temperature, pressure = pressure,
+            referencePressure = referencePressure,
+            longitude = longitude, latitude = latitude, eos = eos
+        )
+        res <- swRho(
+            salinity = salinity, temperature = theta, pressure = referencePressure,
+            longitude = longitude, latitude = latitude, eos = eos
+        ) - 1000.0
     } else if (eos == "gsw") {
-        SA <- gsw::gsw_SA_from_SP(SP=salinity, p=pressure, longitude=longitude, latitude=latitude)
-        #CT <- gsw::gsw_CT_from_t(SA=SA, p=pressure, t=temperature)
-        res <- gsw::gsw_pot_rho_t_exact(SA=SA, t=temperature, p=pressure, p_ref=referencePressure) - 1000.0
-        #res <- gsw::gsw_sigma0(SA=SA, CT=CT)
+        SA <- gsw::gsw_SA_from_SP(SP = salinity, p = pressure, longitude = longitude, latitude = latitude)
+        # CT <- gsw::gsw_CT_from_t(SA=SA, p=pressure, t=temperature)
+        res <- gsw::gsw_pot_rho_t_exact(SA = SA, t = temperature, p = pressure, p_ref = referencePressure) - 1000.0
+        # res <- gsw::gsw_sigma0(SA=SA, CT=CT)
     } else {
         stop("eos must be either \"gsw\" or \"unesco\"; \"", eos, "\" is not acceptable.")
     }
-    if (!is.null(dim))
+    if (!is.null(dim)) {
         dim(res) <- dim
+    }
     res
 }
 
@@ -2010,33 +2162,42 @@ swSigmaTheta <- function(salinity, temperature=NULL, pressure=NULL, referencePre
 #' @references See citations provided in the [swRho()] documentation.
 #'
 #' @family functions that calculate seawater properties
-swSigma0 <- function(salinity, temperature=NULL, pressure=NULL,
-    longitude=NULL, latitude=NULL, eos=getOption("oceEOS", default="gsw"))
-{
-    if (missing(salinity))
+swSigma0 <- function(
+    salinity, temperature = NULL, pressure = NULL,
+    longitude = NULL, latitude = NULL, eos = getOption("oceEOS", default = "gsw")) {
+    if (missing(salinity)) {
         stop("must provide salinity")
+    }
     if (eos == "gsw") {
         if (inherits(salinity, "oce")) {
             temperature <- salinity[["temperature"]]
             pressure <- salinity[["pressure"]]
-            if (is.null(longitude))
+            if (is.null(longitude)) {
                 longitude <- salinity[["longitude"]]
-            if (is.null(latitude))
+            }
+            if (is.null(latitude)) {
                 latitude <- salinity[["latitude"]]
+            }
             salinity <- salinity[["salinity"]]
         }
-        if (is.null(longitude))
+        if (is.null(longitude)) {
             stop("must supply longitude")
-        if (is.null(latitude))
+        }
+        if (is.null(latitude)) {
             stop("must supply latitude")
-        l <- lookWithin(list(salinity=salinity, temperature=temperature, pressure=pressure,
-            longitude=longitude, latitude=latitude))
+        }
+        l <- lookWithin(list(
+            salinity = salinity, temperature = temperature, pressure = pressure,
+            longitude = longitude, latitude = latitude
+        ))
         SA <- gsw::gsw_SA_from_SP(l$salinity, l$pressure, l$longitude, l$latitude)
         CT <- gsw::gsw_CT_from_t(SA, l$temperature, l$pressure)
-        gsw::gsw_sigma0(SA=SA, CT=CT)
+        gsw::gsw_sigma0(SA = SA, CT = CT)
     } else if (eos == "unesco") {
-        swSigmaTheta(salinity=salinity, temperature=temperature, pressure=pressure, referencePressure=0,
-            longitude=longitude, latitude=latitude, eos=eos)
+        swSigmaTheta(
+            salinity = salinity, temperature = temperature, pressure = pressure, referencePressure = 0,
+            longitude = longitude, latitude = latitude, eos = eos
+        )
     } else {
         stop("eos must be either \"gsw\" or \"unesco\", but it is \"", eos, "\"")
     }
@@ -2051,33 +2212,42 @@ swSigma0 <- function(salinity, temperature=NULL, pressure=NULL,
 #' @author Dan Kelley
 #' @references See citations provided in the [swRho()] documentation.
 #' @family functions that calculate seawater properties
-swSigma1 <- function(salinity, temperature=NULL, pressure=NULL,
-    longitude=NULL, latitude=NULL, eos=getOption("oceEOS", default="gsw"))
-{
-    if (missing(salinity))
+swSigma1 <- function(
+    salinity, temperature = NULL, pressure = NULL,
+    longitude = NULL, latitude = NULL, eos = getOption("oceEOS", default = "gsw")) {
+    if (missing(salinity)) {
         stop("must provide salinity")
+    }
     if (eos == "gsw") {
         if (inherits(salinity, "oce")) {
             temperature <- salinity[["temperature"]]
             pressure <- salinity[["pressure"]]
-            if (is.null(longitude))
+            if (is.null(longitude)) {
                 longitude <- salinity[["longitude"]]
-            if (is.null(latitude))
+            }
+            if (is.null(latitude)) {
                 latitude <- salinity[["latitude"]]
+            }
             salinity <- salinity[["salinity"]]
         }
-        if (is.null(longitude))
+        if (is.null(longitude)) {
             stop("must supply longitude")
-        if (is.null(latitude))
+        }
+        if (is.null(latitude)) {
             stop("must supply latitude")
-        l <- lookWithin(list(salinity=salinity, temperature=temperature, pressure=pressure,
-            longitude=longitude, latitude=latitude))
+        }
+        l <- lookWithin(list(
+            salinity = salinity, temperature = temperature, pressure = pressure,
+            longitude = longitude, latitude = latitude
+        ))
         SA <- gsw::gsw_SA_from_SP(l$salinity, l$pressure, l$longitude, l$latitude)
         CT <- gsw::gsw_CT_from_t(SA, l$temperature, l$pressure)
-        gsw::gsw_sigma1(SA=SA, CT=CT)
+        gsw::gsw_sigma1(SA = SA, CT = CT)
     } else if (eos == "unesco") {
-        swSigmaTheta(salinity=salinity, temperature=temperature, pressure=pressure, referencePressure=1000,
-            longitude=longitude, latitude=latitude, eos=eos)
+        swSigmaTheta(
+            salinity = salinity, temperature = temperature, pressure = pressure, referencePressure = 1000,
+            longitude = longitude, latitude = latitude, eos = eos
+        )
     } else {
         stop("eos must be either \"gsw\" or \"unesco\", but it is \"", eos, "\"")
     }
@@ -2092,33 +2262,42 @@ swSigma1 <- function(salinity, temperature=NULL, pressure=NULL,
 #' @author Dan Kelley
 #' @references See citations provided in the [swRho()] documentation.
 #' @family functions that calculate seawater properties
-swSigma2 <- function(salinity, temperature=NULL, pressure=NULL,
-    longitude=NULL, latitude=NULL, eos=getOption("oceEOS", default="gsw"))
-{
-    if (missing(salinity))
+swSigma2 <- function(
+    salinity, temperature = NULL, pressure = NULL,
+    longitude = NULL, latitude = NULL, eos = getOption("oceEOS", default = "gsw")) {
+    if (missing(salinity)) {
         stop("must provide salinity")
+    }
     if (eos == "gsw") {
         if (inherits(salinity, "oce")) {
             temperature <- salinity[["temperature"]]
             pressure <- salinity[["pressure"]]
-            if (is.null(longitude))
+            if (is.null(longitude)) {
                 longitude <- salinity[["longitude"]]
-            if (is.null(latitude))
+            }
+            if (is.null(latitude)) {
                 latitude <- salinity[["latitude"]]
+            }
             salinity <- salinity[["salinity"]]
         }
-        if (is.null(longitude))
+        if (is.null(longitude)) {
             stop("must supply longitude")
-        if (is.null(latitude))
+        }
+        if (is.null(latitude)) {
             stop("must supply latitude")
-        l <- lookWithin(list(salinity=salinity, temperature=temperature, pressure=pressure,
-            longitude=longitude, latitude=latitude))
+        }
+        l <- lookWithin(list(
+            salinity = salinity, temperature = temperature, pressure = pressure,
+            longitude = longitude, latitude = latitude
+        ))
         SA <- gsw::gsw_SA_from_SP(l$salinity, l$pressure, l$longitude, l$latitude)
         CT <- gsw::gsw_CT_from_t(SA, l$temperature, l$pressure)
-        gsw::gsw_sigma2(SA=SA, CT=CT)
+        gsw::gsw_sigma2(SA = SA, CT = CT)
     } else if (eos == "unesco") {
-        swSigmaTheta(salinity=salinity, temperature=temperature, pressure=pressure, referencePressure=2000,
-            longitude=longitude, latitude=latitude, eos=eos)
+        swSigmaTheta(
+            salinity = salinity, temperature = temperature, pressure = pressure, referencePressure = 2000,
+            longitude = longitude, latitude = latitude, eos = eos
+        )
     } else {
         stop("eos must be either \"gsw\" or \"unesco\", but it is \"", eos, "\"")
     }
@@ -2133,33 +2312,42 @@ swSigma2 <- function(salinity, temperature=NULL, pressure=NULL,
 #' @author Dan Kelley
 #' @references See citations provided in the [swRho()] documentation.
 #' @family functions that calculate seawater properties
-swSigma3 <- function(salinity, temperature=NULL, pressure=NULL,
-    longitude=NULL, latitude=NULL, eos=getOption("oceEOS", default="gsw"))
-{
-    if (missing(salinity))
+swSigma3 <- function(
+    salinity, temperature = NULL, pressure = NULL,
+    longitude = NULL, latitude = NULL, eos = getOption("oceEOS", default = "gsw")) {
+    if (missing(salinity)) {
         stop("must provide salinity")
+    }
     if (eos == "gsw") {
         if (inherits(salinity, "oce")) {
             temperature <- salinity[["temperature"]]
             pressure <- salinity[["pressure"]]
-            if (is.null(longitude))
+            if (is.null(longitude)) {
                 longitude <- salinity[["longitude"]]
-            if (is.null(latitude))
+            }
+            if (is.null(latitude)) {
                 latitude <- salinity[["latitude"]]
+            }
             salinity <- salinity[["salinity"]]
         }
-        if (is.null(longitude))
+        if (is.null(longitude)) {
             stop("must supply longitude")
-        if (is.null(latitude))
+        }
+        if (is.null(latitude)) {
             stop("must supply latitude")
-        l <- lookWithin(list(salinity=salinity, temperature=temperature, pressure=pressure,
-            longitude=longitude, latitude=latitude))
+        }
+        l <- lookWithin(list(
+            salinity = salinity, temperature = temperature, pressure = pressure,
+            longitude = longitude, latitude = latitude
+        ))
         SA <- gsw::gsw_SA_from_SP(l$salinity, l$pressure, l$longitude, l$latitude)
         CT <- gsw::gsw_CT_from_t(SA, l$temperature, l$pressure)
-        gsw::gsw_sigma3(SA=SA, CT=CT)
+        gsw::gsw_sigma3(SA = SA, CT = CT)
     } else if (eos == "unesco") {
-        swSigmaTheta(salinity=salinity, temperature=temperature, pressure=pressure, referencePressure=3000,
-            longitude=longitude, latitude=latitude, eos=eos)
+        swSigmaTheta(
+            salinity = salinity, temperature = temperature, pressure = pressure, referencePressure = 3000,
+            longitude = longitude, latitude = latitude, eos = eos
+        )
     } else {
         stop("eos must be either \"gsw\" or \"unesco\", but it is \"", eos, "\"")
     }
@@ -2174,33 +2362,42 @@ swSigma3 <- function(salinity, temperature=NULL, pressure=NULL,
 #' @author Dan Kelley
 #' @references See citations provided in the [swRho()] documentation.
 #' @family functions that calculate seawater properties
-swSigma4 <- function(salinity, temperature=NULL, pressure=NULL,
-    longitude=NULL, latitude=NULL, eos=getOption("oceEOS", default="gsw"))
-{
-    if (missing(salinity))
+swSigma4 <- function(
+    salinity, temperature = NULL, pressure = NULL,
+    longitude = NULL, latitude = NULL, eos = getOption("oceEOS", default = "gsw")) {
+    if (missing(salinity)) {
         stop("must provide salinity")
+    }
     if (eos == "gsw") {
         if (inherits(salinity, "oce")) {
             temperature <- salinity[["temperature"]]
             pressure <- salinity[["pressure"]]
-            if (is.null(longitude))
+            if (is.null(longitude)) {
                 longitude <- salinity[["longitude"]]
-            if (is.null(latitude))
+            }
+            if (is.null(latitude)) {
                 latitude <- salinity[["latitude"]]
+            }
             salinity <- salinity[["salinity"]]
         }
-        if (is.null(longitude))
+        if (is.null(longitude)) {
             stop("must supply longitude")
-        if (is.null(latitude))
+        }
+        if (is.null(latitude)) {
             stop("must supply latitude")
-        l <- lookWithin(list(salinity=salinity, temperature=temperature, pressure=pressure,
-            longitude=longitude, latitude=latitude))
+        }
+        l <- lookWithin(list(
+            salinity = salinity, temperature = temperature, pressure = pressure,
+            longitude = longitude, latitude = latitude
+        ))
         SA <- gsw::gsw_SA_from_SP(l$salinity, l$pressure, l$longitude, l$latitude)
         CT <- gsw::gsw_CT_from_t(SA, l$temperature, l$pressure)
-        gsw::gsw_sigma4(SA=SA, CT=CT)
+        gsw::gsw_sigma4(SA = SA, CT = CT)
     } else if (eos == "unesco") {
-        swSigmaTheta(salinity=salinity, temperature=temperature, pressure=pressure, referencePressure=4000,
-            longitude=longitude, latitude=latitude, eos=eos)
+        swSigmaTheta(
+            salinity = salinity, temperature = temperature, pressure = pressure, referencePressure = 4000,
+            longitude = longitude, latitude = latitude, eos = eos
+        )
     } else {
         stop("eos must be either \"gsw\" or \"unesco\", but it is \"", eos, "\"")
     }
@@ -2246,39 +2443,40 @@ swSigma4 <- function(salinity, temperature=NULL, pressure=NULL,
 #' alpha <- swSoundAbsorption(35, 4, 4990, 10e3)
 #'
 #' # reproduce part of Fig 8 of Francois and Garrison (1982 Fig 8)
-#' f <- 1e3 * 10^(seq(-1,3,0.1)) # in KHz
-#' plot(f/1000, 1e3*swSoundAbsorption(f, 35, 10, 0, formulation='fr'),
-#'      xlab=" Freq [kHz]", ylab=" dB/km", type='l', log='xy')
-#' lines(f/1000, 1e3*swSoundAbsorption(f, 0, 10, 0, formulation='fr'), lty='dashed')
-#' legend("topleft", lty=c("solid", "dashed"), legend=c("S=35", "S=0"))
+#' f <- 1e3 * 10^(seq(-1, 3, 0.1)) # in KHz
+#' plot(f / 1000, 1e3 * swSoundAbsorption(f, 35, 10, 0, formulation = "fr"),
+#'     xlab = " Freq [kHz]", ylab = " dB/km", type = "l", log = "xy"
+#' )
+#' lines(f / 1000, 1e3 * swSoundAbsorption(f, 0, 10, 0, formulation = "fr"), lty = "dashed")
+#' legend("topleft", lty = c("solid", "dashed"), legend = c("S=35", "S=0"))
 #'
 #' @family functions that calculate seawater properties
-swSoundAbsorption <- function(frequency, salinity, temperature, pressure, pH=8,
-    formulation=c("fisher-simmons", "francois-garrison"))
-{
+swSoundAbsorption <- function(
+    frequency, salinity, temperature, pressure, pH = 8,
+    formulation = c("fisher-simmons", "francois-garrison")) {
     formulation <- match.arg(formulation)
     # nolint start T_and_F_symbol_linter
     if (formulation == "fisher-simmons") {
         # Equation numbers are from Fisher & Simmons (1977); see help page for ref
-        p <- 1 + pressure / 10  # add atmophere, then convert water part from dbar
+        p <- 1 + pressure / 10 # add atmophere, then convert water part from dbar
         S <- salinity
         T <- T68fromT90(temperature)
         f <- frequency
-        A1 <- 1.03e-8 + 2.36e-10*T - 5.22e-12*T^2                       # (5)
-        f1 <- 1.32e3 * (T + 273.1) * exp(-1700 / (T + 273.1))           # (6)
-        A2 <- 5.62e-8 + 7.52e-10 * T                                    # (7)
-        f2 <- 1.55e7 * (T + 273.1)*exp(-3052 / (T + 273.1))             # (8)
-        P2 <- 1 - 10.3e-4 * p + 3.7e-7 * p^2                            # (9)
-        A3 <- (55.9 - 2.37 * T + 4.77e-2 * T^2  - 3.48e-4*T^3) * 1e-15  # (10)
-        P3 <- 1 - 3.84e-4 * p + 7.57e-8 * p^2                           # (11)
-        alpha <- (A1*f1*f^2) / (f1^2 + f^2) + (A2*P2*f2*f^2) / (f2^2 + f^2) + A3*P3*f^2 # (3a)
-        alpha <- alpha * 8686 / 1000   # dB/m
+        A1 <- 1.03e-8 + 2.36e-10 * T - 5.22e-12 * T^2 # (5)
+        f1 <- 1.32e3 * (T + 273.1) * exp(-1700 / (T + 273.1)) # (6)
+        A2 <- 5.62e-8 + 7.52e-10 * T # (7)
+        f2 <- 1.55e7 * (T + 273.1) * exp(-3052 / (T + 273.1)) # (8)
+        P2 <- 1 - 10.3e-4 * p + 3.7e-7 * p^2 # (9)
+        A3 <- (55.9 - 2.37 * T + 4.77e-2 * T^2 - 3.48e-4 * T^3) * 1e-15 # (10)
+        P3 <- 1 - 3.84e-4 * p + 7.57e-8 * p^2 # (11)
+        alpha <- (A1 * f1 * f^2) / (f1^2 + f^2) + (A2 * P2 * f2 * f^2) / (f2^2 + f^2) + A3 * P3 * f^2 # (3a)
+        alpha <- alpha * 8686 / 1000 # dB/m
     } else if (formulation == "francois-garrison") {
         S <- salinity
         T <- T68fromT90(temperature)
         D <- pressure # FIXME: approximation
         c <- 1412 + 3.21 * T + 1.19 * S + 0.0167 * D # sound speed m/s
-        f <- frequency / 1000          # convert to kHz
+        f <- frequency / 1000 # convert to kHz
         theta <- 273 + T
         # f1 in kHz
         f1 <- 2.8 * sqrt(S / 35) * 10^(4 - 1245 / theta) # nolint (space before left parenthesis)
@@ -2326,48 +2524,60 @@ swSoundAbsorption <- function(frequency, salinity, temperature, pressure, pH=8,
 #' swSoundSpeed(40, T90fromT68(40), 10000) # 1731.995 (p48 of Fofonoff + Millard 1983)
 #'
 #' @family functions that calculate seawater properties
-swSoundSpeed <- function(salinity, temperature=NULL, pressure=NULL,
-    longitude=NULL, latitude=NULL, eos=getOption("oceEOS", default="gsw"))
-{
-    if (missing(salinity))
+swSoundSpeed <- function(
+    salinity, temperature = NULL, pressure = NULL,
+    longitude = NULL, latitude = NULL, eos = getOption("oceEOS", default = "gsw")) {
+    if (missing(salinity)) {
         stop("must provide salinity")
+    }
     if (eos == "gsw") {
         if (inherits(salinity, "oce")) {
-            if (is.null(longitude))
+            if (is.null(longitude)) {
                 longitude <- salinity[["longitude"]]
-            if (is.null(latitude))
+            }
+            if (is.null(latitude)) {
                 latitude <- salinity[["latitude"]]
+            }
         }
-        if (is.null(longitude))
+        if (is.null(longitude)) {
             stop("must supply longitude")
-        if (is.null(latitude))
+        }
+        if (is.null(latitude)) {
             stop("must supply latitude")
-        l <- lookWithin(list(salinity=salinity, temperature=temperature, pressure=pressure,
-            longitude=longitude, latitude=latitude, eos=eos))
+        }
+        l <- lookWithin(list(
+            salinity = salinity, temperature = temperature, pressure = pressure,
+            longitude = longitude, latitude = latitude, eos = eos
+        ))
     } else {
-        l <- lookWithin(list(salinity=salinity, temperature=temperature, pressure=pressure, eos=eos))
+        l <- lookWithin(list(salinity = salinity, temperature = temperature, pressure = pressure, eos = eos))
     }
     dim <- dim(l$salinity)
-    if (is.null(l$temperature))
+    if (is.null(l$temperature)) {
         stop("must provide temperature")
-    if (is.null(l$pressure))
+    }
+    if (is.null(l$pressure)) {
         stop("must provide pressure")
+    }
     nS <- length(l$salinity)
     nt <- length(l$temperature)
-    #np <- length(l$pressure)
-    if (nS != nt)
+    # np <- length(l$pressure)
+    if (nS != nt) {
         stop("lengths of salinity and temperature must agree, but they are ", nS, " and ", nt, ", respectively")
-    l$pressure <- rep(l$pressure, length.out=nS)
+    }
+    l$pressure <- rep(l$pressure, length.out = nS)
     if (eos == "unesco") {
         res <- .C("sw_svel", as.integer(nS), as.double(l$salinity), as.double(T68fromT90(l$temperature)), as.double(l$pressure),
-            value=double(nS), NAOK=TRUE, PACKAGE="oce")$value
+            value = double(nS), NAOK = TRUE, PACKAGE = "oce"
+        )$value
     } else if (eos == "gsw") {
-        SA <- gsw::gsw_SA_from_SP(SP=l$salinity, p=l$pressure, longitude=l$longitude, latitude=l$latitude)
-        CT <- gsw::gsw_CT_from_t(SA=SA, t=l$temperature, p=l$pressure)
-        res <- gsw::gsw_sound_speed(SA=SA, CT=CT, p=l$pressure)
+        SA <- gsw::gsw_SA_from_SP(SP = l$salinity, p = l$pressure, longitude = l$longitude, latitude = l$latitude)
+        CT <- gsw::gsw_CT_from_t(SA = SA, t = l$temperature, p = l$pressure)
+        res <- gsw::gsw_sound_speed(SA = SA, CT = CT, p = l$pressure)
     }
-    if (!is.null(dim))
+    if (!is.null(dim)) {
         dim(res) <- dim
+    }
     res
 }
 
@@ -2398,29 +2608,36 @@ swSoundSpeed <- function(salinity, temperature=NULL, pressure=NULL,
 #'
 #' Millero et. al., UNESCO report 38 (1981), 99-188.
 #' @examples
-#' swSpecificHeat(40, T90fromT68(40), 10000, eos="unesco") # 3949.499
+#' swSpecificHeat(40, T90fromT68(40), 10000, eos = "unesco") # 3949.499
 #'
 #' @family functions that calculate seawater properties
-swSpecificHeat <- function(salinity, temperature=NULL, pressure=0,
-    longitude=NULL, latitude=NULL, eos=getOption("oceEOS", default="gsw"))
-{
-    if (missing(salinity))
+swSpecificHeat <- function(
+    salinity, temperature = NULL, pressure = 0,
+    longitude = NULL, latitude = NULL, eos = getOption("oceEOS", default = "gsw")) {
+    if (missing(salinity)) {
         stop("must provide salinity")
+    }
     if (eos == "gsw") {
         if (inherits(salinity, "oce")) {
-            if (is.null(longitude))
+            if (is.null(longitude)) {
                 longitude <- salinity[["longitude"]]
-            if (is.null(latitude))
+            }
+            if (is.null(latitude)) {
                 latitude <- salinity[["latitude"]]
+            }
         }
-        if (is.null(longitude))
+        if (is.null(longitude)) {
             stop("must supply longitude")
-        if (is.null(latitude))
+        }
+        if (is.null(latitude)) {
             stop("must supply latitude")
-        l <- lookWithin(list(salinity=salinity, temperature=temperature, pressure=pressure,
-            longitude=longitude, latitude=latitude, eos=eos))
+        }
+        l <- lookWithin(list(
+            salinity = salinity, temperature = temperature, pressure = pressure,
+            longitude = longitude, latitude = latitude, eos = eos
+        ))
     } else {
-        l <- lookWithin(list(salinity=salinity, temperature=temperature, pressure=pressure, eos=eos))
+        l <- lookWithin(list(salinity = salinity, temperature = temperature, pressure = pressure, eos = eos))
     }
     if (is.null(l$temperature)) {
         stop("must provide temperature")
@@ -2428,21 +2645,26 @@ swSpecificHeat <- function(salinity, temperature=NULL, pressure=0,
     dim <- dim(l$salinity)
     nS <- length(l$salinity)
     nt <- length(l$temperature)
-    if (nS != nt)
+    if (nS != nt) {
         stop("lengths of salinity and temperature must agree, but they are ", nS, " and ", nt, ", respectively")
-    if (length(l$pressure) == 1) l$pressure <- rep(l$pressure, length.out=nS)
+    }
+    if (length(l$pressure) == 1) l$pressure <- rep(l$pressure, length.out = nS)
     np <- length(l$pressure)
-    if (nS != np)
+    if (nS != np) {
         stop("lengths of salinity and pressure must agree, but they are ", nS, " and ", np, ", respectively")
+    }
     if (eos == "unesco") {
         res <- .Fortran("cp_driver", as.double(l$salinity), as.double(T68fromT90(l$temperature)), as.double(l$pressure),
-            as.integer(nS), CP=double(nS))$CP
+            as.integer(nS),
+            CP = double(nS)
+        )$CP
     } else {
-        SA <- gsw::gsw_SA_from_SP(SP=l$salinity, p=l$pressure, longitude=l$longitude, latitude=l$latitude)
-        res <- gsw::gsw_cp_t_exact(SA=SA, t=l$temperature, p=l$pressure)
+        SA <- gsw::gsw_SA_from_SP(SP = l$salinity, p = l$pressure, longitude = l$longitude, latitude = l$latitude)
+        res <- gsw::gsw_cp_t_exact(SA = SA, t = l$temperature, p = l$pressure)
     }
-    if (!is.null(dim))
+    if (!is.null(dim)) {
         dim(res) <- dim
+    }
     res
 }
 
@@ -2504,10 +2726,11 @@ swSpecificHeat <- function(salinity, temperature=NULL, pressure=0,
 #' library(oce)
 #' data(ctd)
 #' p <- ctd[["pressure"]]
-#' plot(swSpice(ctd, eos="unesco"), p,
-#'      xlim=c(-2.7, -1.5), ylim=rev(range(p)),
-#'      xlab="Spice", ylab="Pressure (dbar)")
-#' points(swSpice(ctd, eos="gsw"), p,col=2)
+#' plot(swSpice(ctd, eos = "unesco"), p,
+#'     xlim = c(-2.7, -1.5), ylim = rev(range(p)),
+#'     xlab = "Spice", ylab = "Pressure (dbar)"
+#' )
+#' points(swSpice(ctd, eos = "gsw"), p, col = 2)
 #' mtext("black=unesco, red=gsw")
 #'
 #' @references
@@ -2522,49 +2745,59 @@ swSpecificHeat <- function(salinity, temperature=NULL, pressure=0,
 #' doi: \code{10.1357/002224015816665589}
 #'
 #' @family functions that calculate seawater properties
-swSpice <- function(salinity, temperature=NULL, pressure=NULL,
-    longitude=NULL, latitude=NULL, eos=getOption("oceEOS", default="gsw"))
-{
-    if (missing(salinity))
+swSpice <- function(
+    salinity, temperature = NULL, pressure = NULL,
+    longitude = NULL, latitude = NULL, eos = getOption("oceEOS", default = "gsw")) {
+    if (missing(salinity)) {
         stop("must provide salinity")
+    }
     if (inherits(salinity, "oce")) {
         temperature <- salinity[["temperature"]]
         pressure <- salinity[["pressure"]]
-        if (is.null(longitude))
+        if (is.null(longitude)) {
             longitude <- salinity[["longitude"]]
-        if (is.null(latitude))
+        }
+        if (is.null(latitude)) {
             latitude <- salinity[["latitude"]]
+        }
         salinity <- salinity[["salinity"]]
     }
     if (eos == "gsw") {
-        if (is.null(longitude))
+        if (is.null(longitude)) {
             stop("must supply longitude")
-        if (is.null(latitude))
+        }
+        if (is.null(latitude)) {
             stop("must supply latitude")
+        }
     }
-    if (eos == "gsw" && is.null(pressure))
+    if (eos == "gsw" && is.null(pressure)) {
         stop("must provide pressure")
+    }
     dim <- dim(salinity)
     nS <- length(salinity)
     nt <- length(temperature)
-    if (nS != nt)
+    if (nS != nt) {
         stop("lengths of salinity and temperature must agree, but they are ", nS, " and ", nt, ", respectively")
+    }
     if (is.null(pressure)) pressure <- rep(0, nS)
-    if (length(pressure) == 1) pressure <- rep(pressure, length.out=nS)
+    if (length(pressure) == 1) pressure <- rep(pressure, length.out = nS)
     np <- length(pressure)
-    if (nS != np)
+    if (nS != np) {
         stop("lengths of salinity and pressure must agree, but they are ", nS, " and ", np, ", respectively")
+    }
     if (eos == "unesco") {
         res <- .C("sw_spice", as.integer(nS), as.double(salinity),
             as.double(T68fromT90(temperature)), as.double(pressure),
-            value=double(nS), NAOK=TRUE, PACKAGE="oce")$value
+            value = double(nS), NAOK = TRUE, PACKAGE = "oce"
+        )$value
     } else if (eos == "gsw") {
-        SA <- gsw::gsw_SA_from_SP(SP=salinity, p=pressure, longitude=longitude, latitude=latitude)
-        CT <- gsw::gsw_CT_from_t(SA=SA, t=temperature, p=pressure)
+        SA <- gsw::gsw_SA_from_SP(SP = salinity, p = pressure, longitude = longitude, latitude = latitude)
+        CT <- gsw::gsw_CT_from_t(SA = SA, t = temperature, p = pressure)
         res <- gsw::gsw_spiciness0(SA, CT)
     }
-    if (!is.null(dim))
+    if (!is.null(dim)) {
         dim(res) <- dim
+    }
     res
 }
 
@@ -2630,61 +2863,73 @@ swSpice <- function(salinity, temperature=NULL, pressure=NULL,
 #' @examples
 #' library(oce)
 #' # Example 1: test value from Fofonoff et al., 1983
-#' stopifnot(abs(36.8818748026 - swTheta(40, T90fromT68(40), 10000, 0, eos="unesco")) < 0.0000000001)
+#' stopifnot(abs(36.8818748026 - swTheta(40, T90fromT68(40), 10000, 0, eos = "unesco")) < 0.0000000001)
 #'
 #' # Example 2: a deep-water station. Note that theta and CT are
 #' # visually identical on this scale.
 #' data(section)
 #' stn <- section[["station", 70]]
-#' plotProfile(stn, "temperature", ylim=c(6000, 1000))
-#' lines(stn[["theta"]], stn[["pressure"]], col=2)
-#' lines(stn[["CT"]], stn[["pressure"]], col=4, lty=2)
-#' legend("bottomright", lwd=1, col=c(1, 2, 4), lty=c(1, 1, 2),
-#'     legend=c("in-situ", "theta", "CT"),
-#'     title=sprintf("MAD(theta-CT)=%.4f", mean(abs(stn[["theta"]] - stn[["CT"]]))))
+#' plotProfile(stn, "temperature", ylim = c(6000, 1000))
+#' lines(stn[["theta"]], stn[["pressure"]], col = 2)
+#' lines(stn[["CT"]], stn[["pressure"]], col = 4, lty = 2)
+#' legend("bottomright",
+#'     lwd = 1, col = c(1, 2, 4), lty = c(1, 1, 2),
+#'     legend = c("in-situ", "theta", "CT"),
+#'     title = sprintf("MAD(theta-CT)=%.4f", mean(abs(stn[["theta"]] - stn[["CT"]])))
+#' )
 #'
 #' @family functions that calculate seawater properties
-swTheta <- function(salinity, temperature=NULL, pressure=NULL, referencePressure=0,
-    longitude=NULL, latitude=NULL, eos=getOption("oceEOS", default="gsw"))
-{
-    if (missing(salinity))
+swTheta <- function(
+    salinity, temperature = NULL, pressure = NULL, referencePressure = 0,
+    longitude = NULL, latitude = NULL, eos = getOption("oceEOS", default = "gsw")) {
+    if (missing(salinity)) {
         stop("must provide salinity")
+    }
     if (inherits(salinity, "oce")) {
         temperature <- salinity[["temperature"]]
         pressure <- salinity[["pressure"]]
         if (eos == "gsw") {
-            if (is.null(longitude))
+            if (is.null(longitude)) {
                 longitude <- salinity[["longitude"]]
-            if (is.null(latitude))
+            }
+            if (is.null(latitude)) {
                 latitude <- salinity[["latitude"]]
+            }
         }
         salinity <- salinity[["salinity"]]
     }
     if (eos == "gsw") {
-        if (is.null(longitude))
+        if (is.null(longitude)) {
             stop("must supply longitude")
-        if (is.null(latitude))
+        }
+        if (is.null(latitude)) {
             stop("must supply latitude")
-        l <- lookWithin(list(salinity=salinity, temperature=temperature, pressure=pressure,
-            longitude=longitude, latitude=latitude))
+        }
+        l <- lookWithin(list(
+            salinity = salinity, temperature = temperature, pressure = pressure,
+            longitude = longitude, latitude = latitude
+        ))
     } else {
-        l <- lookWithin(list(salinity=salinity, temperature=temperature, pressure=pressure))
+        l <- lookWithin(list(salinity = salinity, temperature = temperature, pressure = pressure))
     }
     dim <- dim(l$salinity)
     nS <- length(l$salinity)
     nt <- length(l$temperature)
-    if (nS != nt)
+    if (nS != nt) {
         stop("lengths of salinity and temperature must agree, but they are ", nS, " and ", nt, ", respectively")
+    }
     np <- length(l$pressure)
-    if (np == 1L)
-        l$pressure <- rep(l$pressure, length.out=nS)
+    if (np == 1L) {
+        l$pressure <- rep(l$pressure, length.out = nS)
+    }
     np <- length(l$pressure)
-    if (nS != np)
+    if (nS != np) {
         stop("lengths of salinity and pressure must agree, but they are ", nS, " and ", np, ", respectively")
-    referencePressure <- rep(referencePressure[1], length.out=nS)
+    }
+    referencePressure <- rep(referencePressure[1], length.out = nS)
     if (eos == "gsw") {
-        SA <- gsw::gsw_SA_from_SP(SP=l$salinity, p=l$pressure, longitude=l$longitude, latitude=l$latitude)
-        res <- gsw::gsw_pt_from_t(SA=SA, t=l$temperature, p=l$pressure, p_ref=referencePressure)
+        SA <- gsw::gsw_SA_from_SP(SP = l$salinity, p = l$pressure, longitude = l$longitude, latitude = l$latitude)
+        res <- gsw::gsw_pt_from_t(SA = SA, t = l$temperature, p = l$pressure, p_ref = referencePressure)
     } else if (eos == "unesco") {
         # Note the conversion to the T68 scale, because that's the scale
         # used by the UNESCO formula.
@@ -2692,11 +2937,13 @@ swTheta <- function(salinity, temperature=NULL, pressure=NULL, referencePressure
             as.integer(nS),
             as.double(l$salinity), as.double(T68fromT90(l$temperature)), as.double(l$pressure),
             as.double(referencePressure),
-            value=double(nS), NAOK=TRUE, PACKAGE="oce")$value
+            value = double(nS), NAOK = TRUE, PACKAGE = "oce"
+        )$value
         res <- T90fromT68(res)
     }
-    if (!is.null(dim))
+    if (!is.null(dim)) {
         dim(res) <- dim
+    }
     res
 }
 
@@ -2738,18 +2985,19 @@ swTheta <- function(salinity, temperature=NULL, pressure=NULL, referencePressure
 #' swViscosity(30, 10) # 0.001383779
 #'
 #' @family functions that calculate seawater properties
-swViscosity <- function(salinity, temperature)
-{
-    if (missing(salinity))
+swViscosity <- function(salinity, temperature) {
+    if (missing(salinity)) {
         stop("must provide salinity")
-    if (missing(temperature))
+    }
+    if (missing(temperature)) {
         stop("must provide temperature")
-    l <- lookWithin(list(salinity=salinity, temperature=temperature))
+    }
+    l <- lookWithin(list(salinity = salinity, temperature = temperature))
     0.001798525 + l$salinity * (2.634749e-06 - 7.088328e-10 *
         l$temperature^2 + l$salinity * (-4.702342e-09 + l$salinity *
-            (5.32178e-11))) + l$temperature * (-6.293088e-05 +
+        (5.32178e-11))) + l$temperature * (-6.293088e-05 +
         l$temperature * (1.716685e-06 + l$temperature * (-3.479273e-08
-            + l$temperature * (+3.566255e-10))))
+        + l$temperature * (+3.566255e-10))))
 }
 
 
@@ -2794,40 +3042,51 @@ swViscosity <- function(salinity, temperature)
 #' SCOR/IAPSO WG127, ISBN 978-0-646-55621-5.
 #'
 #' @examples
-#' swConservativeTemperature(35,10,1000,188,4) # 9.86883
+#' swConservativeTemperature(35, 10, 1000, 188, 4) # 9.86883
 #'
 #' @family functions that calculate seawater properties
-swConservativeTemperature <- function(salinity, temperature=NULL, pressure=NULL,
-    longitude=NULL, latitude=NULL)
-{
-    if (missing(salinity))
+swConservativeTemperature <- function(
+    salinity, temperature = NULL, pressure = NULL,
+    longitude = NULL, latitude = NULL) {
+    if (missing(salinity)) {
         stop("must provide salinity")
-    if (inherits(salinity, "oce")) {
-        if (is.null(longitude))
-            longitude <- salinity[["longitude"]]
-        if (is.null(latitude))
-            latitude <- salinity[["latitude"]]
     }
-    if (is.null(longitude) || is.null(latitude))
+    if (inherits(salinity, "oce")) {
+        if (is.null(longitude)) {
+            longitude <- salinity[["longitude"]]
+        }
+        if (is.null(latitude)) {
+            latitude <- salinity[["latitude"]]
+        }
+    }
+    if (is.null(longitude) || is.null(latitude)) {
         stop("need longitude and latitude to compute CT")
-    l <- lookWithin(list(salinity=salinity, temperature=temperature, pressure=pressure,
-        longitude=longitude, latitude=latitude))
+    }
+    l <- lookWithin(list(
+        salinity = salinity, temperature = temperature, pressure = pressure,
+        longitude = longitude, latitude = latitude
+    ))
     dim <- dim(l$salinity)
     nS <- length(l$salinity)
     nt <- length(l$temperature)
-    if (nS != nt)
+    if (nS != nt) {
         stop("lengths of salinity and temperature must agree, but they are ", nS, " and ", nt, ", respectively")
+    }
     np <- length(l$pressure)
-    if (nS != np)
+    if (nS != np) {
         stop("lengths of salinity and pressure must agree, but they are ", nS, " and ", np, ", respectively")
+    }
     bad <- is.na(l$salinity) | is.na(l$temperature) | is.na(l$pressure)
-    SA <- gsw::gsw_SA_from_SP(SP=l$salinity[!bad], p=l$pressure[!bad],
-        longitude=l$longitude[!bad], latitude=l$latitude[!bad])
-    good <- gsw::gsw_CT_from_t(SA=SA, t=l$temperature[!bad], p=l$pressure[!bad])
+    SA <- gsw::gsw_SA_from_SP(
+        SP = l$salinity[!bad], p = l$pressure[!bad],
+        longitude = l$longitude[!bad], latitude = l$latitude[!bad]
+    )
+    good <- gsw::gsw_CT_from_t(SA = SA, t = l$temperature[!bad], p = l$pressure[!bad])
     res <- rep(NA, nS)
     res[!bad] <- good
-    if (!is.null(dim))
+    if (!is.null(dim)) {
         dim(res) <- dim
+    }
     res
 }
 
@@ -2864,48 +3123,55 @@ swConservativeTemperature <- function(salinity, temperature=NULL, pressure=NULL,
 #' SCOR/IAPSO WG127, ISBN 978-0-646-55621-5.
 #'
 #' @examples
-#'\dontrun{
-#' sa <- swAbsoluteSalinity(35.5, 300, 260, 16)
-#' stopifnot(abs(35.671358392019094 - sa) < 00.000000000000010)
-#'}
+#' swAbsoluteSalinity(35.5, 300, 260, 16) # 35.67136
 #'
 #' @family functions that calculate seawater properties
-swAbsoluteSalinity <- function(salinity, pressure=NULL, longitude=NULL, latitude=NULL)
-{
-    if (missing(salinity))
+swAbsoluteSalinity <- function(salinity, pressure = NULL, longitude = NULL, latitude = NULL) {
+    if (missing(salinity)) {
         stop("must provide salinity")
-    if (inherits(salinity, "oce")) {
-        x <- salinity                  # store this for clarity
-        if (!"salinity" %in% names(x@data))
-            stop("this oce object lacks salinity, so SA cannot be computed")
-        location <- locationForGsw(x)
-        if (is.null(longitude))
-            longitude <- location$longitude
-        if (is.null(latitude))
-            latitude <- location$latitude
-        if (is.null(pressure))
-            pressure <- x[["pressure"]]
     }
-    if (is.null(longitude) || is.null(latitude))
+    if (inherits(salinity, "oce")) {
+        x <- salinity # store this for clarity
+        if (!"salinity" %in% names(x@data)) {
+            stop("this oce object lacks salinity, so SA cannot be computed")
+        }
+        location <- locationForGsw(x)
+        if (is.null(longitude)) {
+            longitude <- location$longitude
+        }
+        if (is.null(latitude)) {
+            latitude <- location$latitude
+        }
+        if (is.null(pressure)) {
+            pressure <- x[["pressure"]]
+        }
+    }
+    if (is.null(longitude) || is.null(latitude)) {
         stop("need longitude and latitude to compute SA")
-    if (is.null(pressure))
+    }
+    if (is.null(pressure)) {
         stop("need pressure to compute SA")
-    if (length(longitude) != length(pressure))
+    }
+    if (length(longitude) != length(pressure)) {
         stop("lengths of longitude (", length(longitude), ") and pressure (", length(pressure), ") do not match")
-    if (length(latitude) != length(pressure))
+    }
+    if (length(latitude) != length(pressure)) {
         stop("lengths of latitude (", length(latitude), ") and pressure (", length(pressure), ") do not match")
-    l <- lookWithin(list(salinity=salinity, pressure=pressure, longitude=longitude, latitude=latitude))
+    }
+    l <- lookWithin(list(salinity = salinity, pressure = pressure, longitude = longitude, latitude = latitude))
     dim <- dim(l$salinity)
     nS <- length(l$salinity)
     np <- length(l$pressure)
-    if (nS != np)
+    if (nS != np) {
         stop("lengths of salinity and pressure must agree, but they are ", nS, " and ", np, ", respectively")
+    }
     bad <- is.na(l$salinity) | is.na(l$pressure) | is.na(l$longitude) | is.na(l$latitude)
     good <- gsw::gsw_SA_from_SP(l$salinity[!bad], l$pressure[!bad], l$longitude[!bad], l$latitude[!bad])
     res <- rep(NA, nS)
     res[!bad] <- good
-    if (!is.null(dim))
+    if (!is.null(dim)) {
         dim(res) <- dim
+    }
     res
 }
 
@@ -2939,21 +3205,19 @@ swAbsoluteSalinity <- function(salinity, pressure=NULL, longitude=NULL, latitude
 #' SCOR/IAPSO WG127, ISBN 978-0-646-55621-5.
 #'
 #' @examples
-#'\dontrun{
-#' sa <- swAbsoluteSalinity(35.5, 300, 260, 16)
-#' stopifnot(abs(35.671358392019094 - sa) < 00.000000000000010)
-#'}
+#' swSstar(35.5, 300, 260, 16) # 35.66601
 #'
 #' @family functions that calculate seawater properties
-swSstar <- function(salinity, pressure=NULL, longitude=NULL, latitude=NULL)
-{
-    if (missing(salinity))
+swSstar <- function(salinity, pressure = NULL, longitude = NULL, latitude = NULL) {
+    if (missing(salinity)) {
         stop("must provide salinity")
+    }
     if (inherits(salinity, "oce")) {
-        x <- salinity                  # store this for clarity
+        x <- salinity # store this for clarity
         for (item in c("salinity", "pressure")) {
-            if (!item %in% names(x@data))
+            if (!item %in% names(x@data)) {
                 stop("this oce object lacks ", item, ", so SA cannot be computed")
+            }
         }
         # https://github.com/dankelley/oce/issues/1911
         # Create new longitude and latitude, to match the length or
@@ -2965,38 +3229,45 @@ swSstar <- function(salinity, pressure=NULL, longitude=NULL, latitude=NULL)
         # also perhaps any future-defined object that has this
         # characteristic.
         pressure <- x@data$pressure
-        #temperature <- x@data$temperature
+        # temperature <- x@data$temperature
         salinity <- x@data$salinity
-        if (is.null(longitude))
+        if (is.null(longitude)) {
             longitude <- x[["longitude"]]
-        if (is.null(latitude))
+        }
+        if (is.null(latitude)) {
             latitude <- x[["latitude"]]
-        if (is.null(longitude) || is.null(latitude))
+        }
+        if (is.null(longitude) || is.null(latitude)) {
             stop("need longitude and latitude to compute Sstar")
+        }
         if (is.array(pressure)) {
             nlevels <- dim(pressure)[1]
-            longitude <- rep(longitude, each=nlevels)
-            latitude <- rep(latitude, each=nlevels)
+            longitude <- rep(longitude, each = nlevels)
+            latitude <- rep(latitude, each = nlevels)
         } else {
             np <- length(pressure)
-            longitude <- rep(longitude[1], length.out=np)
-            latitude <- rep(latitude[1], length.out=np)
+            longitude <- rep(longitude[1], length.out = np)
+            latitude <- rep(latitude[1], length.out = np)
         }
     }
-    if (is.null(longitude) || is.null(latitude))
+    if (is.null(longitude) || is.null(latitude)) {
         stop("need longitude and latitude to compute Sstar")
-    if (length(longitude) != length(pressure))
+    }
+    if (length(longitude) != length(pressure)) {
         stop("lengths of longitude and pressure must match")
-    if (length(latitude) != length(pressure))
+    }
+    if (length(latitude) != length(pressure)) {
         stop("lengths of latitude and pressure must match")
-    l <- lookWithin(list(salinity=salinity, pressure=pressure, longitude=longitude, latitude=latitude))
+    }
+    l <- lookWithin(list(salinity = salinity, pressure = pressure, longitude = longitude, latitude = latitude))
     dim <- dim(l$salinity)
     nS <- length(l$salinity)
     np <- length(l$pressure)
-    if (nS != np)
+    if (nS != np) {
         stop("lengths of salinity (", nS, ") and pressure (", np, ") disagree")
+    }
     bad <- is.na(l$salinity) | is.na(l$pressure) | is.na(l$longitude) | is.na(l$latitude)
-    resGood <- gsw::gsw_Sstar_from_SP(SP=l$salinity[!bad], l$pressure[!bad], longitude=l$longitude[!bad], latitude=l$latitude[!bad])
+    resGood <- gsw::gsw_Sstar_from_SP(SP = l$salinity[!bad], l$pressure[!bad], longitude = l$longitude[!bad], latitude = l$latitude[!bad])
     res <- rep(NA, nS)
     res[!bad] <- resGood
     if (!is.null(dim)) {
@@ -3026,20 +3297,18 @@ swSstar <- function(salinity, pressure=NULL, longitude=NULL, latitude=NULL)
 #' SCOR/IAPSO WG127, ISBN 978-0-646-55621-5.
 #'
 #' @examples
-#'\dontrun{
-#' SR <- swAbsoluteSalinity(35.0)
-#' stopifnot(abs(35.16504000000  - SR) < 0.000000000000010)
-#'}
+#' SR <- swSR(35.0) # 35.16504
 #'
 #' @family functions that calculate seawater properties
-swSR <- function(salinity)
-{
-    if (missing(salinity))
+swSR <- function(salinity) {
+    if (missing(salinity)) {
         stop("must provide salinity")
+    }
     if (inherits(salinity, "oce")) {
-        x <- salinity                  # store this for clarity
-        if (!"salinity" %in% names(x@data))
+        x <- salinity # store this for clarity
+        if (!"salinity" %in% names(x@data)) {
             stop("this oce object lacks salinity, so SR cannot be computed")
+        }
         salinity <- x@data$salinity
     }
     gsw::gsw_SR_from_SP(salinity)

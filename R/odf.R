@@ -39,11 +39,12 @@
 #' @author Dan Kelley
 #' @family things related to odf data
 #' @family classes provided by oce
-setClass("odf", contains="oce")
+setClass("odf", contains = "oce")
 
-setMethod(f="initialize",
-    signature="odf",
-    definition=function(.Object, time, filename="", ...) {
+setMethod(
+    f = "initialize",
+    signature = "odf",
+    definition = function(.Object, time, filename = "", ...) {
         .Object <- callNextMethod(.Object, ...)
         # Assign to some columns so they exist if needed later (even if they are NULL)
         .Object@data$time <- if (missing(time)) NULL else time
@@ -52,7 +53,8 @@ setMethod(f="initialize",
         .Object@processingLog$time <- presentTime()
         .Object@processingLog$value <- "create 'odf' object"
         return(.Object)
-    })
+    }
+)
 
 #' Extract Something From an odf Object
 #'
@@ -73,17 +75,21 @@ setMethod(f="initialize",
 #' @template sub_subTemplate
 #'
 #' @family things related to odf data
-setMethod(f="[[",
-    signature(x="odf", i="ANY", j="ANY"),
-    definition=function(x, i, j, ...) {
+setMethod(
+    f = "[[",
+    signature(x = "odf", i = "ANY", j = "ANY"),
+    definition = function(x, i, j, ...) {
         if (i == "?") {
-            return(list(metadata=sort(names(x@metadata)),
-                metadataDerived=NULL,
-                data=sort(names(x@data)),
-                dataDerived=NULL))
+            return(list(
+                metadata = sort(names(x@metadata)),
+                metadataDerived = NULL,
+                data = sort(names(x@data)),
+                dataDerived = NULL
+            ))
         }
-        callNextMethod()         # [[
-    })
+        callNextMethod() # [[
+    }
+)
 
 #' @title Replace Parts of an odf Object
 #'
@@ -92,11 +98,13 @@ setMethod(f="[[",
 #' @template sub_subsetTemplate
 #'
 #' @family things related to odf data
-setMethod(f="[[<-",
-    signature(x="odf", i="ANY", j="ANY"),
-    definition=function(x, i, j, ..., value) {
-        callNextMethod(x=x, i=i, j=j, ...=..., value=value) # [[<-
-    })
+setMethod(
+    f = "[[<-",
+    signature(x = "odf", i = "ANY", j = "ANY"),
+    definition = function(x, i, j, ..., value) {
+        callNextMethod(x = x, i = i, j = j, ... = ..., value = value) # [[<-
+    }
+)
 
 #' Subset an odf Object
 #'
@@ -119,26 +127,34 @@ setMethod(f="[[<-",
 #'
 #' @family things related to odf data
 #' @family functions that subset oce objects
-setMethod(f="subset",
-    signature="odf",
-    definition=function(x, subset, ...) {
-        subsetString <- paste(deparse(substitute(expr=subset, env=environment())), collapse=" ")
+setMethod(
+    f = "subset",
+    signature = "odf",
+    definition = function(x, subset, ...) {
+        subsetString <- paste(deparse(substitute(expr = subset, env = environment())), collapse = " ")
         res <- x
-        #dots <- list(...)
-        if (missing(subset))
+        # dots <- list(...)
+        if (missing(subset)) {
             stop("must give 'subset'")
-        if (missing(subset))
+        }
+        if (missing(subset)) {
             stop("must specify a 'subset'")
-        keep <- eval(substitute(expr=subset, env=environment()), envir=x@data,
-            enclos=parent.frame(2)) # used for $ts and $ma, but $tsSlow gets another
+        }
+        keep <- eval(substitute(expr = subset, env = environment()),
+            envir = x@data,
+            enclos = parent.frame(2)
+        ) # used for $ts and $ma, but $tsSlow gets another
         res <- x
-        for (i in seq_along(x@data))
+        for (i in seq_along(x@data)) {
             res@data[[i]] <- x@data[[i]][keep]
-        for (i in seq_along(x@metadata$flags))
+        }
+        for (i in seq_along(x@metadata$flags)) {
             res@metadata$flags[[i]] <- x@metadata$flags[[i]][keep]
-        res@processingLog <- processingLogAppend(res@processingLog, paste("subset(x, subset=", subsetString, ")", sep=""))
+        }
+        res@processingLog <- processingLogAppend(res@processingLog, paste("subset(x, subset=", subsetString, ")", sep = ""))
         res
-    })
+    }
+)
 
 
 #' Plot an odf Object
@@ -169,11 +185,12 @@ setMethod(f="subset",
 #' @family things related to odf data
 #'
 #' @aliases plot.odf
-setMethod(f="plot",
-    signature=signature("odf"),
-    definition=function(x, blanks=TRUE,
-        debug=getOption("oceDebug")) {
-        oceDebug(debug, "plot,odf-method(..., blanks=", blanks, "...) {\n", sep="", unindent=1)
+setMethod(
+    f = "plot",
+    signature = signature("odf"),
+    definition = function(x, blanks = TRUE,
+                          debug = getOption("oceDebug")) {
+        oceDebug(debug, "plot,odf-method(..., blanks=", blanks, "...) {\n", sep = "", unindent = 1)
         data <- x@data
         dataNames <- names(data)
         # At the start, n is the number of non-time variables, but
@@ -181,7 +198,7 @@ setMethod(f="plot",
         # number of non-time variables that contain finite data.
         if (!("time" %in% dataNames)) {
             finite <- unlist(lapply(data, function(col) any(is.finite(col))))
-            pairs(data.frame(data)[, finite], labels=dataNames[finite])
+            pairs(data.frame(data)[, finite], labels = dataNames[finite])
         } else {
             # Define n as the number of non-time data items and nok as the
             # number of such columns that contain at least 1 finite value.
@@ -210,27 +227,28 @@ setMethod(f="plot",
                     while (N * M < n) {
                         M <- M + 1
                     }
-                    par(mfrow=c(N, M))
-                    oceDebug(debug, "N=", N, ", M=", M, ", prod=", N*M, ", n=", n, "\n", sep="")
+                    par(mfrow = c(N, M))
+                    oceDebug(debug, "N=", N, ", M=", M, ", prod=", N * M, ", n=", n, "\n", sep = "")
                 } else {
-                    par(mfrow=c(n, 1))
+                    par(mfrow = c(n, 1))
                 }
                 for (i in seq_along(dataNames)) {
                     if (dataNames[i] != "time") {
                         y <- data[[dataNames[i]]]
                         yok <- any(is.finite(y))
                         if (blanks || yok) {
-                            oce.plot.ts(time, y, ylab=dataNames[i], mar=c(2, 3, 0.5, 1), drawTimeRange=FALSE)
+                            oce.plot.ts(time, y, ylab = dataNames[i], mar = c(2, 3, 0.5, 1), drawTimeRange = FALSE)
                         }
                         if (!yok) {
-                            warning(paste("In plot,odf-method() : '", dataNames[i], "' has no finite data", sep=""), call.=FALSE)
+                            warning(paste("In plot,odf-method() : '", dataNames[i], "' has no finite data", sep = ""), call. = FALSE)
                         }
                     }
                 }
             }
         }
-        oceDebug(debug, "} # plot,odf-method\n", sep="", unindent=1)
-    })
+        oceDebug(debug, "} # plot,odf-method\n", sep = "", unindent = 1)
+    }
+)
 
 
 #' Summarize an odf Object
@@ -248,34 +266,37 @@ setMethod(f="plot",
 #' @author Dan Kelley
 #'
 #' @family things related to odf data
-setMethod(f="summary",
-    signature="odf",
-    definition=function(object, ...) {
+setMethod(
+    f = "summary",
+    signature = "odf",
+    definition = function(object, ...) {
         cat("ODF Summary\n-----------\n\n")
-        showMetadataItem(object, "type",                     "Instrument:          ")
-        showMetadataItem(object, "model",                    "Instrument model:    ")
-        showMetadataItem(object, "serialNumber",             "Instr. serial no.:   ")
-        showMetadataItem(object, "serialNumberTemperature",  "Temp. serial no.:    ")
+        showMetadataItem(object, "type", "Instrument:          ")
+        showMetadataItem(object, "model", "Instrument model:    ")
+        showMetadataItem(object, "serialNumber", "Instr. serial no.:   ")
+        showMetadataItem(object, "serialNumberTemperature", "Temp. serial no.:    ")
         showMetadataItem(object, "serialNumberConductivity", "Cond. serial no.:    ")
-        showMetadataItem(object, "filename",                 "File source:         ")
-        showMetadataItem(object, "hexfilename",              "Orig. hex file:      ")
-        showMetadataItem(object, "institute",                "Institute:           ")
-        showMetadataItem(object, "scientist",                "Chief scientist:     ")
-        showMetadataItem(object, "date",                     "Date:                ", isdate=TRUE)
-        showMetadataItem(object, "startTime",                "Start time:          ", isdate=TRUE)
-        showMetadataItem(object, "systemUploadTime",         "System upload time:  ", isdate=TRUE)
-        showMetadataItem(object, "cruise",                   "Cruise:              ")
-        showMetadataItem(object, "ship",                     "Vessel:              ")
-        showMetadataItem(object, "station",                  "Station:             ")
+        showMetadataItem(object, "filename", "File source:         ")
+        showMetadataItem(object, "hexfilename", "Orig. hex file:      ")
+        showMetadataItem(object, "institute", "Institute:           ")
+        showMetadataItem(object, "scientist", "Chief scientist:     ")
+        showMetadataItem(object, "date", "Date:                ", isdate = TRUE)
+        showMetadataItem(object, "startTime", "Start time:          ", isdate = TRUE)
+        showMetadataItem(object, "systemUploadTime", "System upload time:  ", isdate = TRUE)
+        showMetadataItem(object, "cruise", "Cruise:              ")
+        showMetadataItem(object, "ship", "Vessel:              ")
+        showMetadataItem(object, "station", "Station:             ")
         invisible(callNextMethod()) # summary
-    })
+    }
+)
 
 
 # find first match in header
-findInHeader <- function(key, lines, returnOnlyFirst=TRUE, numeric=FALSE, prefix=TRUE) # local function
+findInHeader <- function(key, lines, returnOnlyFirst = TRUE, numeric = FALSE, prefix = TRUE) # local function
 {
-    if (prefix)
-        key <- paste("^[ ]*", key, sep="")
+    if (prefix) {
+        key <- paste("^[ ]*", key, sep = "")
+    }
     i <- grep(key, lines)
     rval <- ""
     rval <- list()
@@ -520,10 +541,9 @@ findInHeader <- function(key, lines, returnOnlyFirst=TRUE, numeric=FALSE, prefix
 #' for the [odf-class].
 #'
 #' @family things related to odf data
-ODFNames2oceNames <- function(ODFnames, columns=NULL, PARAMETER_HEADER=NULL, debug=getOption("oceDebug"))
-{
-    oceDebug(debug, "ODFNames2oceNames() {\n", unindent=1, sep="", style="bold")
-    #unused? n <- length(ODFnames)
+ODFNames2oceNames <- function(ODFnames, columns = NULL, PARAMETER_HEADER = NULL, debug = getOption("oceDebug")) {
+    oceDebug(debug, "ODFNames2oceNames() {\n", unindent = 1, sep = "", style = "bold")
+    # unused? n <- length(ODFnames)
     names <- ODFnames
     # If 'name' is mentioned in columns, then use columns and ignore the lookup table.
     if (!is.null(columns)) {
@@ -539,7 +559,7 @@ ODFNames2oceNames <- function(ODFnames, columns=NULL, PARAMETER_HEADER=NULL, deb
     # mainly from reverse engineering of some files from BIO and DFO.  The reverse engineering
     # really is a kludge, and if things break (e.g. if data won't plot because of missing temperatures,
     # or whatever), this is a place to look.
-    oceDebug(debug, "STAGE 1 names: ", paste(names, collapse=" "), "\n")
+    oceDebug(debug, "STAGE 1 names: ", paste(names, collapse = " "), "\n")
     names <- gsub("ABSH", "humidityAbsolute", names)
     names <- gsub("ACO2", "CO2Atmosphere", names)
     names <- gsub("ALP0", "alpha0", names)
@@ -555,7 +575,7 @@ ODFNames2oceNames <- function(ODFnames, columns=NULL, PARAMETER_HEADER=NULL, deb
     names <- gsub("AUTH", "authority", names)
     names <- gsub("BATH", "waterDepth", names) # FIXME: is this water column depth or sensor depth?
     names <- gsub("BATT", "batteryVoltage", names)
-    names <- gsub("BEAM", "a", names)  # FIXME: is this sensible?
+    names <- gsub("BEAM", "a", names) # FIXME: is this sensible?
     names <- gsub("BNO7", "bestNODC7Number", names)
     names <- gsub("CALK", "carbonateAlkalinity", names)
     names <- gsub("CHLR", "chlorinity", names)
@@ -695,11 +715,11 @@ ODFNames2oceNames <- function(ODFnames, columns=NULL, PARAMETER_HEADER=NULL, deb
     names <- gsub("ZOO_", "zooplanktonCount", names)
     # Fix up suffixes.
     names <- gsub("_[0-9][0-9]", "", names)
-    oceDebug(debug, "STAGE 2 names: ", paste(names, collapse=" "), "\n")
+    oceDebug(debug, "STAGE 2 names: ", paste(names, collapse = " "), "\n")
     names <- unduplicateNames(names)
-    oceDebug(debug, "STAGE 3 names (i.e. after unduplicating): ", paste(names, collapse=" "), "\n")
-    oceDebug(debug, "} # ODFNames2oceNames()\n", unindent=1, sep="", style="bold")
-    list(names=names)
+    oceDebug(debug, "STAGE 3 names (i.e. after unduplicating): ", paste(names, collapse = " "), "\n")
+    oceDebug(debug, "} # ODFNames2oceNames()\n", unindent = 1, sep = "", style = "bold")
+    list(names = names)
 }
 
 
@@ -736,18 +756,17 @@ ODFNames2oceNames <- function(ODFnames, columns=NULL, PARAMETER_HEADER=NULL, deb
 #' @author Dan Kelley
 #'
 #' @family things related to odf data
-ODF2oce <- function(ODF, coerce=TRUE, debug=getOption("oceDebug"))
-{
+ODF2oce <- function(ODF, coerce = TRUE, debug = getOption("oceDebug")) {
     # Stage 1. insert metadata (with odfHeader holding entire ODF header info)
     # FIXME: add other types, starting with ADCP perhaps
     isCTD <- FALSE
-    isMCTD <- FALSE                    # nolint (variable not used)
+    isMCTD <- FALSE # nolint (variable not used)
     if (coerce) {
         if ("CTD" == ODF$EVENT_HEADER$DATA_TYPE) {
             isCTD <- TRUE
             res <- new("ctd")
         } else if ("MCTD" == ODF$EVENT_HEADER$DATA_TYPE) {
-            isMCTD <- TRUE             # nolint (variable not used)
+            isMCTD <- TRUE # nolint (variable not used)
             res <- new("ctd")
             res@metadata$deploymentType <- "moored"
         } else {
@@ -757,19 +776,21 @@ ODF2oce <- function(ODF, coerce=TRUE, debug=getOption("oceDebug"))
         res <- new("odf")
     }
     # Save the whole header as read by BIO routine read_ODF()
-    res@metadata$odfHeader <- list(ODF_HEADER=ODF$ODF_HEADER,
-        CRUISE_HEADER=ODF$CRUISE_HEADER,
-        EVENT_HEADER=ODF$EVENT_HEADER,
-        METEO_HEADER=ODF$METEO_HEADER,
-        INSTRUMENT_HEADER=ODF$INSTRUMENT_HEADER,
-        QUALITY_HEADER=ODF$QUALITY_HEADER,
-        GENERAL_CAL_HEADER=ODF$GENERAL_CAL_HEADER,
-        POLYNOMIAL_CAL_HEADER=ODF$POLYNOMIAL_CAL_HEADER,
-        COMPASS_CAL_HEADER=ODF$COMPASS_CAL_HEADER,
-        HISTORY_HEADER=ODF$HISTORY_HEADER,
-        PARAMETER_HEADER=ODF$PARAMETER_HEADER,
-        RECORD_HEADER=ODF$RECORD_HEADER,
-        INPUT_FILE=ODF$INPUT_FILE)
+    res@metadata$odfHeader <- list(
+        ODF_HEADER = ODF$ODF_HEADER,
+        CRUISE_HEADER = ODF$CRUISE_HEADER,
+        EVENT_HEADER = ODF$EVENT_HEADER,
+        METEO_HEADER = ODF$METEO_HEADER,
+        INSTRUMENT_HEADER = ODF$INSTRUMENT_HEADER,
+        QUALITY_HEADER = ODF$QUALITY_HEADER,
+        GENERAL_CAL_HEADER = ODF$GENERAL_CAL_HEADER,
+        POLYNOMIAL_CAL_HEADER = ODF$POLYNOMIAL_CAL_HEADER,
+        COMPASS_CAL_HEADER = ODF$COMPASS_CAL_HEADER,
+        HISTORY_HEADER = ODF$HISTORY_HEADER,
+        PARAMETER_HEADER = ODF$PARAMETER_HEADER,
+        RECORD_HEADER = ODF$RECORD_HEADER,
+        INPUT_FILE = ODF$INPUT_FILE
+    )
     # Define some standard items that are used in plotting and summaries
     if (isCTD) {
         res@metadata$type <- res@metadata$odfHeader$INSTRUMENT_HEADER$INST_TYPE
@@ -777,7 +798,9 @@ ODF2oce <- function(ODF, coerce=TRUE, debug=getOption("oceDebug"))
         res@metadata$serialNumber <- res@metadata$odfHeader$INSTRUMENT_HEADER$SERIAL_NUMBER
     }
     res@metadata$startTime <- strptime(res@metadata$odfHeader$EVENT_HEADER$START_DATE_TIME,
-        "%d-%B-%Y %H:%M:%S", tz="UTC")
+        "%d-%B-%Y %H:%M:%S",
+        tz = "UTC"
+    )
     res@metadata$filename <- res@metadata$odfHeader$ODF_HEADER$FILE_SPECIFICATION
     res@metadata$serialNumber <- res@metadata$odfHeader$INSTRUMENT_HEADER$SERIAL_NUMBER
     res@metadata$ship <- res@metadata$odfHeader$CRUISE_HEADER$PLATFORM
@@ -789,7 +812,7 @@ ODF2oce <- function(ODF, coerce=TRUE, debug=getOption("oceDebug"))
     # Stage 2. insert data (renamed to Oce convention)
     xnames <- names(ODF$DATA)
     res@data <- as.list(ODF$DATA)
-    resNames <- ODFNames2oceNames(xnames, columns=NULL, PARAMETER_HEADER=ODF$PARAMETER_HEADER, debug=debug)
+    resNames <- ODFNames2oceNames(xnames, columns = NULL, PARAMETER_HEADER = ODF$PARAMETER_HEADER, debug = debug)
     names(res@data) <- resNames
     # Obey missing values ... only for numerical things (which might be everything, for all I know)
     nd <- length(resNames)
@@ -802,9 +825,9 @@ ODF2oce <- function(ODF, coerce=TRUE, debug=getOption("oceDebug"))
     # Stage 3. rename QQQQ_* columns as flags on the previous column
     names <- names(res@data)
     for (i in seq_along(names)) {
-        if (substr(names[i], 1, 4) == "QQQQ" || (i > 1 && names[i] == paste0("Q", names[i-1]))) {
+        if (substr(names[i], 1, 4) == "QQQQ" || (i > 1 && names[i] == paste0("Q", names[i - 1]))) {
             if (i > 1) {
-                names[i] <- paste(names[i-1], "Flag", sep="")
+                names[i] <- paste(names[i - 1], "Flag", sep = "")
             }
         }
     }
@@ -821,19 +844,18 @@ ODF2oce <- function(ODF, coerce=TRUE, debug=getOption("oceDebug"))
 #' through the use of [unduplicateNames()].
 #'
 #' @family things related to odf data
-ODFListFromHeader <- function(header)
-{
+ODFListFromHeader <- function(header) {
     # remove trailing blanks
     header <- gsub("[ ]*$", "", header)
     A <- grep("^[A-Z].*,$", header)
-    h <- vector("list", length=length(A))
+    h <- vector("list", length = length(A))
     names(h) <- gsub(",.*$", "", header[A])
     names(h) <- unduplicateNames(names(h), 2)
     starts <- A + 1
     ends <- c(A[-1], length(header) + 1) - 1
     for (i in seq_along(starts)) {
         nitems <- 1 + ends[i] - starts[i]
-        h[[i]] <- vector("list", length=nitems)
+        h[[i]] <- vector("list", length = nitems)
         itemsNames <- NULL
         itemsI <- 1
         for (ii in starts[i]:ends[i]) {
@@ -841,16 +863,16 @@ ODFListFromHeader <- function(header)
             value <- gsub("^[ ]*([^=]*)[ ]*=[ ]*", "", header[ii])
             # Trim trailing comma (which seems to occur for all but last item in a list)
             if ("," == substr(value, nchar(value), nchar(value))) {
-                value <- substr(value, 1, nchar(value)-1)
+                value <- substr(value, 1, nchar(value) - 1)
             }
             # Trim leading single-quote, and its matching trailing single-quote; warn
             # if former is present but latter is missing.
             if ("'" == substr(value, 1, 1)) {
                 value <- substr(value, 2, nchar(value))
                 if ("'" == substr(value, nchar(value), nchar(value))) {
-                    value <- substr(value, 1, nchar(value)-1)
+                    value <- substr(value, 1, nchar(value) - 1)
                 } else {
-                    warning("malformed string in ODF header line <", header[ii], ">\n", sep="")
+                    warning("malformed string in ODF header line <", header[ii], ">\n", sep = "")
                 }
             }
             itemsNames <- c(itemsNames, name)
@@ -914,19 +936,19 @@ ODFListFromHeader <- function(header)
 #' # so we must alter the unit before converting to a CTD object. Note that
 #' # read.odf() on this data file produces a warning suggesting that the user
 #' # repair the unit, using the method outlined here.
-#' odf <- read.odf(system.file("extdata", "CTD_BCD2014666_008_1_DN.ODF.gz", package="oce"))
+#' odf <- read.odf(system.file("extdata", "CTD_BCD2014666_008_1_DN.ODF.gz", package = "oce"))
 #' ctd <- as.ctd(odf) # so we can e.g. extract potential temperature
-#' ctd[["conductivityUnit"]] <- list(unit=expression(), scale="")
+#' ctd[["conductivityUnit"]] <- list(unit = expression(), scale = "")
 #' #
 #' # 2. Make a CTD, and plot (with span to show NS)
-#' plot(ctd, span=500)
+#' plot(ctd, span = 500)
 #' #
 #' # 3. Highlight bad data on TS diagram. (Note that the eos
 #' # is specified, because we will extract practical-salinity and
 #' # UNESCO-defined potential temperatures for the added points.)
-#' plotTS(ctd, type="o", eos="unesco") # use a line to show loops
-#' bad <- ctd[["QCFlag"]]!=0
-#' points(ctd[['salinity']][bad],ctd[['theta']][bad],col='red',pch=20)
+#' plotTS(ctd, type = "o", eos = "unesco") # use a line to show loops
+#' bad <- ctd[["QCFlag"]] != 0
+#' points(ctd[["salinity"]][bad], ctd[["theta"]][bad], col = "red", pch = 20)
 #'
 #' @param file the file containing the data.
 #'
@@ -995,38 +1017,46 @@ ODFListFromHeader <- function(header)
 #' @author Dan Kelley, with help from Chantelle Layton
 #'
 #' @family things related to odf data
-read.odf <- function(file, columns=NULL, header="list", exclude=NULL, encoding="latin1", debug=getOption("oceDebug"))
-{
-    if (missing(file))
+read.odf <- function(file, columns = NULL, header = "list", exclude = NULL, encoding = "latin1", debug = getOption("oceDebug")) {
+    if (missing(file)) {
         stop("must supply 'file'")
+    }
     if (is.character(file)) {
-        if (!file.exists(file))
-            stop("cannot find file '", file, "'")
-        if (0L == file.info(file)$size)
-            stop("empty file '", file, "'")
+        if (!file.exists(file)) {
+            stop("cannot find file \"", file, "\"")
+        }
+        if (0L == file.info(file)$size) {
+            stop("empty file \"", file, "\"")
+        }
     }
     debug <- as.integer(min(max(debug, 0), 3))
     oceDebug(debug, "read.odf(\"", file, "\", exclude=",
-             if (is.null(exclude)) "NULL" else paste0("'", exclude, "'"), ", ...) {\n", unindent=1, sep="", style="bold")
+        if (is.null(exclude)) "NULL" else paste0("'", exclude, "'"), ", ...) {\n",
+        unindent = 1, sep = "", style = "bold"
+    )
     if (!is.null(header)) {
-        if (!is.character(header))
+        if (!is.character(header)) {
             stop("the header argument must be NULL, \"character\", or \"list\"")
-        if (!(header %in% c("character", "list")))
+        }
+        if (!(header %in% c("character", "list"))) {
             stop("the header argument must be NULL, \"character\" or \"list\"")
+        }
     }
     if (is.character(file)) {
-        if (nchar(file) == 0)
+        if (nchar(file) == 0) {
             stop("'file' cannot be an empty string")
+        }
         filename <- fullFilename(file)
-        file <- file(file, "r", encoding=encoding)
+        file <- file(file, "r", encoding = encoding)
         on.exit(close(file))
     } else {
         filename <- ""
     }
-    if (!inherits(file, "connection"))
+    if (!inherits(file, "connection")) {
         stop("argument `file' must be a character string or connection")
+    }
     if (!isOpen(file)) {
-        open(file, "r", encoding=encoding)
+        open(file, "r", encoding = encoding)
         on.exit(close(file))
     }
     # Read the full file.   (In a previous version, we only read the first 1000 lines
@@ -1035,13 +1065,14 @@ read.odf <- function(file, columns=NULL, header="list", exclude=NULL, encoding="
     # Trim excluded lines.
     if (!is.null(exclude)) {
         oldLength <- length(lines)
-        lines <- lines[grep(exclude, lines, invert=TRUE)]
+        lines <- lines[grep(exclude, lines, invert = TRUE)]
         oceDebug(debug, "the 'exclude' argument reduced the file line count from", oldLength, "to", length(lines), "lines\n")
     }
     # Locate the header/data separator
     dataStart <- grep("^[ ]*-- DATA --[ ]*$", lines) # issue 1430 re leading/trailing spaces
-    if (!length(dataStart))
+    if (!length(dataStart)) {
         stop("ODF files must contain a line with \"-- DATA --\"")
+    }
     res <- new("odf")
     nlines <- length(lines)
     # Make a list holding all the information in the header. Note that this is entirely
@@ -1051,20 +1082,22 @@ read.odf <- function(file, columns=NULL, header="list", exclude=NULL, encoding="
     # the first line, actually.) I have no idea whether this start-with-blank is part of the
     # ODF format, but I *can* say that quite a few of the ODF files on my computer have
     # this property.
-    if (length(grep("^ ", h)))
+    if (length(grep("^ ", h))) {
         h <- gsub("^ ", "", h)
+    }
     categoryIndex <- grep("^[a-zA-Z]", h)
     categoryNames <- h[categoryIndex]
     headerlist <- list()
-    if (length(categoryIndex > 0))
+    if (length(categoryIndex > 0)) {
         headerlist <- vector("list", length(categoryIndex))
+    }
     oceDebug(debug > 2, "headerlist will have", length(headerlist), "items\n")
     names(headerlist) <- categoryNames
     indexCategory <- 0
     lhsc <- list() # set up a list for counts of lhs patterns, used in renaming
     nh <- length(h)
     for (i in seq_len(nh)) {
-        oceDebug(debug>3, "examine header line ", i, " of ", nh, "\n", sep="")
+        oceDebug(debug > 3, "examine header line ", i, " of ", nh, "\n", sep = "")
         if (grepl("^[a-zA-Z]", h[i])) {
             indexCategory <- indexCategory + 1
             headerlist[[indexCategory]] <- list()
@@ -1076,8 +1109,8 @@ read.odf <- function(file, columns=NULL, header="list", exclude=NULL, encoding="
                 header <- NULL
                 break
             }
-            # Use regexp to find lhs and rhs. This is better than using strsplit on '=' because some
-            # rhs have '=' in them.
+            # Use regexp to find lhs and rhs. This is better than using strsplit on "=" because some
+            # rhs have "=" in them.
             lhs <- gsub("^[ ]*([^=]*)=(.*)$", "\\1", h[i])
             if (!(lhs %in% names(lhsc))) {
                 lhsc[[lhs]] <- 1
@@ -1086,34 +1119,40 @@ read.odf <- function(file, columns=NULL, header="list", exclude=NULL, encoding="
             }
             lhs <- paste0(lhs, "_", lhsc[[lhs]])
             rhs <- gsub("^[^=]*=[ ]*(.*)[,]*$", "\\1", h[i])
-            oceDebug(debug>3, "lhs=\"", lhs, "\",  rhs=\"", rhs, "\"\n", sep="")
+            oceDebug(debug > 3, "lhs=\"", lhs, "\",  rhs=\"", rhs, "\"\n", sep = "")
             headerlist[[indexCategory]][[lhs]] <- rhs
             lhsUsed <- c(lhsUsed, lhs)
         }
     }
-    if (length(headerlist))
+    if (length(headerlist)) {
         names(headerlist) <- unduplicateNames(names(headerlist))
+    }
     res@metadata$header <- headerlist
     # Learn about each parameter from its own header block
     linePARAMETER_HEADER <- grep("^\\s*PARAMETER_HEADER,\\s*$", lines)
     nPARAMETER_HEADER <- length(linePARAMETER_HEADER)
-    if (nPARAMETER_HEADER < 1)
+    if (nPARAMETER_HEADER < 1) {
         stop("cannot locate any lines containing 'PARAMETER_HEADER'")
+    }
     # namesWithin <- parameterStart[1]:dataStart[1]
     # extract column codes in a step-by-step way, to make it easier to adjust if the format changes
     if (TRUE) { # FIXME: delete this later, after recoding to get individualized NA codes
         # The mess below hides warnings on non-numeric missing-value codes.
         options <- options("warn")
-        options(warn=-1)
+        options(warn = -1)
         # nolint start object_usage_linter
         nullValue <- NA
         # nolint end object_usage_linter
-        t <- try({nullValue <- as.numeric(gsub("D\\+", "e+", findInHeader("NULL_VALUE", lines))[1])},
-            silent=TRUE)
+        t <- try(
+            {
+                nullValue <- as.numeric(gsub("D\\+", "e+", findInHeader("NULL_VALUE", lines))[1])
+            },
+            silent = TRUE
+        )
         if (inherits(t, "try-error")) {
             nullValue <- findInHeader("NULL_VALUE", lines)[1]
         }
-        options(warn=options$warn)
+        options(warn = options$warn)
     }
     # nolint start object_usage_linter
     ODForiginalNames <- NULL
@@ -1125,7 +1164,7 @@ read.odf <- function(file, columns=NULL, header="list", exclude=NULL, encoding="
     # read through the PARAMETER_HEADER blocks, and later transform it to handle name duplication
     # and the establishment of flag-data connections.  The data wll be read in with column names
     # equal to 'NAME', and then get moved and renamed according to 'oceName'.
-    parameterTable <- list(code=NULL, nameOrig=NULL, name=NULL, oceName=NULL, units=NULL, scale=NULL)
+    parameterTable <- list(code = NULL, nameOrig = NULL, name = NULL, oceName = NULL, units = NULL, scale = NULL)
     for (l in linePARAMETER_HEADER) {
         lstart <- l + 1
         # Isolate this block. Note that there seem to be two ways to end blocks.
@@ -1136,36 +1175,39 @@ read.odf <- function(file, columns=NULL, header="list", exclude=NULL, encoding="
                 break
             }
         }
-        if (lend < 0)
-            stop("cannot find the end of a PARAMETER_HEADER block starting at line ", lstart-1)
+        if (lend < 0) {
+            stop("cannot find the end of a PARAMETER_HEADER block starting at line ", lstart - 1)
+        }
         # Get CODE (mandatory)
         icode <- grep("^\\s*(WMO_)?CODE\\s*=\\s*'?", lines[lstart:lend])
-        if (length(icode) == 0)
-            stop("cannot locate a CODE line in PARAMETER_HEADER block starting at line ", lstart-1)
-        if (length(icode) > 1)
-            stop("cannot handle more than one code line in PARAMETER_HEADER block starting at line ", lstart-1)
-        code <- gsub("^\\s*(WMO_)?CODE\\s*=\\s*'?([^',]*)'?,?\\s*$", "\\2", lines[lstart+icode-1])
+        if (length(icode) == 0) {
+            stop("cannot locate a CODE line in PARAMETER_HEADER block starting at line ", lstart - 1)
+        }
+        if (length(icode) > 1) {
+            stop("cannot handle more than one code line in PARAMETER_HEADER block starting at line ", lstart - 1)
+        }
+        code <- gsub("^\\s*(WMO_)?CODE\\s*=\\s*'?([^',]*)'?,?\\s*$", "\\2", lines[lstart + icode - 1])
         parameterTable$code <- c(parameterTable$code, code)
         # Get NAME (mandatory), e.g. from
         # "  NAME= 'Sea Temperature (IPTS-68)',"
         # "  NAME= 'CNTR_01',"
         iname <- grep("^\\s*?NAME\\s*=\\s*'?", lines[lstart:lend])
         if (length(iname) == 0L) {
-            stop("cannot locate a NAME line in PARAMETER_HEADER block starting at line ", lstart-1)
+            stop("cannot locate a NAME line in PARAMETER_HEADER block starting at line ", lstart - 1)
         }
         if (length(iname) > 1L) {
-            stop("cannot handle more than one NAME line in PARAMETER_HEADER block starting at line ", lstart-1)
+            stop("cannot handle more than one NAME line in PARAMETER_HEADER block starting at line ", lstart - 1)
         }
         # nolint start object_usage_linter
-        nameOrig <- gsub("^\\s*NAME\\s*=\\s*'?([^']*)'?,?\\s*$", "\\1", lines[lstart+iname-1])
+        nameOrig <- gsub("^\\s*NAME\\s*=\\s*'?([^']*)'?,?\\s*$", "\\1", lines[lstart + iname - 1])
         # nolint end object_usage_linter
         parameterTable$nameOrig <- c(parameterTable$nameOrig, code)
         iunits <- grep("^\\s*UNITS\\s*=\\s*'?", lines[lstart:lend])
-        units <- if (length(iunits) == 0) "" else gsub("^\\s*UNITS\\s*=\\s*'?(.*)',?\\s*$", "\\1", lines[lstart+iunits[1]-1])
+        units <- if (length(iunits) == 0) "" else gsub("^\\s*UNITS\\s*=\\s*'?(.*)',?\\s*$", "\\1", lines[lstart + iunits[1] - 1])
         if (length(iunits) == 1) {
             if (grepl("IPTS\\-68", units)) {
                 scale <- "IPTS-68"
-            }  else if (grepl("ITS\\-90", units)) {
+            } else if (grepl("ITS\\-90", units)) {
                 scale <- "ITS-90"
             } else {
                 scale <- ""
@@ -1187,7 +1229,7 @@ read.odf <- function(file, columns=NULL, header="list", exclude=NULL, encoding="
     for (i in seq_along(parameterTable$code)) {
         if (grepl("^(QQQQ)|(QCFF)|(FFFF)", parameterTable$code[i])) {
             parameterTable$isFlag[i] <- TRUE
-        } else if (i > 1 && (parameterTable$code[i] == paste0("Q", parameterTable$code[i-1]))) {
+        } else if (i > 1 && (parameterTable$code[i] == paste0("Q", parameterTable$code[i - 1]))) {
             parameterTable$isFlag[i] <- TRUE
         }
     }
@@ -1198,20 +1240,20 @@ read.odf <- function(file, columns=NULL, header="list", exclude=NULL, encoding="
     # Remove "sigma-theta, " from start of a density unit (e.g. in sample file CTD_BCD2014666_008_1_DN.gz)
     parameterTable$units <- gsub("sigma\\-theta, ", "", parameterTable$units)
     # Add oce names
-    parameterTable$oceName <- ODFNames2oceNames(parameterTable$code, debug=debug)$name
+    parameterTable$oceName <- ODFNames2oceNames(parameterTable$code, debug = debug)$name
     # Rename flags (assuming, as in CIOSS code, that they refer to just-previous item)
     #- message("parameterTable$oceName 1");print(parameterTable$oceName)
     for (i in which(parameterTable$isFlag)) {
         #> message("rename: ", paste(irename, collapse=" "))
         #> message("old name: ", paste(parameterTable$name[irename], collapse=" "))
         if (i > 1L && !grepl("^overall", parameterTable$oceName[i])) {
-            newname <- paste0(parameterTable$oceName[i-1], "Flag")
+            newname <- paste0(parameterTable$oceName[i - 1], "Flag")
             #> message("new name: ", paste(newname, collapse=" "))
             parameterTable$oceName[i] <- newname
         }
     }
     # FIXME: get rid of next 3 items -- want everything in parameter table
-    ODFunits <- parameterTable$units   # FIXME: archaic
+    ODFunits <- parameterTable$units # FIXME: archaic
     ODForiginalNames <- parameterTable$code # FIXME: archaic
     ODFnames <- parameterTable$nameOrig # FIXME: archaic
     if (FALSE) {
@@ -1220,7 +1262,7 @@ read.odf <- function(file, columns=NULL, header="list", exclude=NULL, encoding="
         for (i in seq_along(parameterTable$code)) {
             # Find cross-references for flags.
             if (parameterTable$isFlag[i]) {
-                oceDebug(debug, "find variable name referred to by flag with description \"", parameterTable$name[i], "\"\n", sep="")
+                oceDebug(debug, "find variable name referred to by flag with description \"", parameterTable$name[i], "\"\n", sep = "")
                 # To accommodate both BIO and IML variants, we must check multiple variants of the syntax
                 # in the QQQQ name. And we must also check against both variable NAME and CODE, because
                 # the DFO file provided with this package sometimes has NAME==CODE but other times
@@ -1239,23 +1281,23 @@ read.odf <- function(file, columns=NULL, header="list", exclude=NULL, encoding="
                         parameterTable$oceName[i] <- paste0("flag$", parameterTable$oceName[iref])
                     }
                 } else {
-                    warning("cannot determine variable referred to by flag with description \"", parameterTable$name[i], "\"\n", sep="")
+                    warning("cannot determine variable referred to by flag with description \"", parameterTable$name[i], "\"\n", sep = "")
                 }
             }
         }
     }
     parameterTable <- data.frame(parameterTable)
-    options(warn=options$warn)
+    options(warn = options$warn)
     ODFunits <- trimws(ODFunits)
     # FIXME: document why we need to find names again (already in parameterTable)
     oceDebug(debug, "about to compute oceNames2\n")
-    oceNames2 <- ODFNames2oceNames(ODFnames, columns=columns, PARAMETER_HEADER=NULL, debug=debug)
-    res@metadata$depthOffBottom <- findInHeader("DEPTH_OFF_BOTTOM", lines, returnOnlyFirst=TRUE, numeric=TRUE)
-    res@metadata$initialLatitude <- findInHeader("INITIAL_LATITUDE", lines, returnOnlyFirst=TRUE, numeric=TRUE)
-    res@metadata$initialLongitude <- findInHeader("INITIAL_LONGITUDE", lines, returnOnlyFirst=TRUE, numeric=TRUE)
-    res@metadata$endLatitude <- findInHeader("END_LATITUDE", lines, returnOnlyFirst=TRUE, numeric=TRUE)
-    res@metadata$endLongitude <- findInHeader("END_LONGITUDE", lines, returnOnlyFirst=TRUE, numeric=TRUE)
-    res@metadata$samplingInterval <- findInHeader("SAMPLING_INTERVAL", lines, returnOnlyFirst=TRUE, numeric=TRUE)
+    oceNames2 <- ODFNames2oceNames(ODFnames, columns = columns, PARAMETER_HEADER = NULL, debug = debug)
+    res@metadata$depthOffBottom <- findInHeader("DEPTH_OFF_BOTTOM", lines, returnOnlyFirst = TRUE, numeric = TRUE)
+    res@metadata$initialLatitude <- findInHeader("INITIAL_LATITUDE", lines, returnOnlyFirst = TRUE, numeric = TRUE)
+    res@metadata$initialLongitude <- findInHeader("INITIAL_LONGITUDE", lines, returnOnlyFirst = TRUE, numeric = TRUE)
+    res@metadata$endLatitude <- findInHeader("END_LATITUDE", lines, returnOnlyFirst = TRUE, numeric = TRUE)
+    res@metadata$endLongitude <- findInHeader("END_LONGITUDE", lines, returnOnlyFirst = TRUE, numeric = TRUE)
+    res@metadata$samplingInterval <- findInHeader("SAMPLING_INTERVAL", lines, returnOnlyFirst = TRUE, numeric = TRUE)
     res@metadata$scientist <- findInHeader("CHIEF_SCIENTIST", lines)
     res@metadata$ship <- findInHeader("PLATFORM", lines) # maybe should rename, e.g. for helicopter
     res@metadata$institute <- findInHeader("ORGANIZATION", lines) # maybe should rename, e.g. for helicopter
@@ -1268,10 +1310,10 @@ read.odf <- function(file, columns=NULL, header="list", exclude=NULL, encoding="
     DATA_TYPE <- trimws(findInHeader("DATA_TYPE", lines))
     res@metadata$deploymentType <- if ("CTD" == DATA_TYPE) "profile" else if ("MCTD" == DATA_TYPE) "moored" else "unknown"
     # if any changes here, update ctd.R @ ODF_CTD_LINK {
-    res@metadata$startTime <- as.POSIXct(strptime(tolower(findInHeader("START_DATE_TIME", lines)), "%d-%b-%Y %H:%M:%S", tz="UTC"))
+    res@metadata$startTime <- as.POSIXct(strptime(tolower(findInHeader("START_DATE_TIME", lines)), "%d-%b-%Y %H:%M:%S", tz = "UTC"))
     res@metadata$date <- res@metadata$time
     res@metadata$eventNumber <- findInHeader("EVENT_NUMBER", lines) # synchronize with ctd.R at ODFMETADATA tag
-    res@metadata$eventQualifier <- findInHeader("EVENT_QUALIFIER", lines)# synchronize with ctd.R at ODFMETADATA tag
+    res@metadata$eventQualifier <- findInHeader("EVENT_QUALIFIER", lines) # synchronize with ctd.R at ODFMETADATA tag
     # } ODF_CTD_LINK
     # FIXME: The next block tries to infer a single numeric NA value, if
     # FIXME: possible; otherwise it returns the first value.  Perhaps we should be
@@ -1281,21 +1323,26 @@ read.odf <- function(file, columns=NULL, header="list", exclude=NULL, encoding="
     # FIXME: numerical NULL_VALUE and (c) what should we do if there are elements in
     # FIXME: the header, which are not in columns?
     NAvalue <- unlist(findInHeader("NULL_VALUE", lines, FALSE))
-    oceDebug(debug, "NAvalue (step 1): ", paste(deparse(NAvalue), collapse=""), "\n", sep="")
+    oceDebug(debug, "NAvalue (step 1): ", paste(deparse(NAvalue), collapse = ""), "\n", sep = "")
     NAvalue <- gsub("D([+-])+", "e\\1", NAvalue)
-    oceDebug(debug, "NAvalue (step 2): ", paste(deparse(NAvalue), collapse=""), "\n", sep="")
+    oceDebug(debug, "NAvalue (step 2): ", paste(deparse(NAvalue), collapse = ""), "\n", sep = "")
     NAvalue[NAvalue == "NA"] <- NA
-    oceDebug(debug, "NAvalue (step 3): ", paste(deparse(NAvalue), collapse=""), "\n", sep="")
+    oceDebug(debug, "NAvalue (step 3): ", paste(deparse(NAvalue), collapse = ""), "\n", sep = "")
     if (length(NAvalue) > 1) {
         NAvalue <- gsub("D", "e", NAvalue) # R does not like e.g. "-.99D+02"
         options <- options("warn")
-        options(warn=-1)
-        NAvalue <- try({as.numeric(unlist(NAvalue))}, silent=TRUE)
+        options(warn = -1)
+        NAvalue <- try(
+            {
+                as.numeric(unlist(NAvalue))
+            },
+            silent = TRUE
+        )
         NAvalueList <- NAvalue
         names(NAvalueList) <- parameterTable$oceName
-        options(warn=options$warn)
+        options(warn = options$warn)
     }
-    oceDebug(debug, "NAvalue (step 4): ", paste(deparse(NAvalue), collapse=""), "\n", sep="")
+    oceDebug(debug, "NAvalue (step 4): ", paste(deparse(NAvalue), collapse = ""), "\n", sep = "")
     res@metadata$depthMin <- as.numeric(findInHeader("MIN_DEPTH", lines))
     res@metadata$depthMax <- as.numeric(findInHeader("MAX_DEPTH", lines))
     res@metadata$sounding <- as.numeric(findInHeader("SOUNDING", lines))
@@ -1304,8 +1351,9 @@ read.odf <- function(file, columns=NULL, header="list", exclude=NULL, encoding="
     if (length(res@metadata$sounding)) {
         res@metadata$waterDepth <- res@metadata$sounding[1]
     } else {
-        if (length(res@metadata$depthMax))
+        if (length(res@metadata$depthMax)) {
             res@metadata$waterDepth <- res@metadata$depthMax[1]
+        }
     }
     res@metadata$type <- findInHeader("INST_TYPE", lines)
     res@metadata$serialNumber <- findInHeader("SERIAL_NUMBER", lines)
@@ -1313,7 +1361,7 @@ read.odf <- function(file, columns=NULL, header="list", exclude=NULL, encoding="
     if (is.null(header)) {
         res@metadata$header <- NULL
     } else if (header == "character") {
-        res@metadata$header <- lines[seq(1L, dataStart-1L)]
+        res@metadata$header <- lines[seq(1L, dataStart - 1L)]
     } else if (header == "list") {
         res@metadata$header <- headerlist # ODFListFromHeader(lines[seq(1L, dataStart-1L)])
     } else {
@@ -1321,18 +1369,20 @@ read.odf <- function(file, columns=NULL, header="list", exclude=NULL, encoding="
     }
     # catch erroneous units on CRAT, which should be in a ratio, and hence have no units.
     # This is necessary for the sample file inst/extdata/CTD_BCD2014666_008_1_DN.ODF.gz
-    wCRAT <- grep("CRAT", parameterTable$code, ignore.case=TRUE)
+    wCRAT <- grep("CRAT", parameterTable$code, ignore.case = TRUE)
     if (length(wCRAT)) {
         for (w in wCRAT) {
             ustring <- tolower(parameterTable$units[w])
             if (length(ustring) &&
                 ustring != "" &&
-            ustring != "ratio" && ustring != "(ratio)" &&
-            ustring != "none" && ustring != "(none)") {
-                warning("\"", parameterTable$oceName[w], "\" (code name \"",
+                ustring != "ratio" && ustring != "(ratio)" &&
+                ustring != "none" && ustring != "(none)") {
+                warning(
+                    "\"", parameterTable$oceName[w], "\" (code name \"",
                     parameterTable$code[w], "\") is a conductivity ratio, which has no units, ",
                     "but the file lists \"", ustring, "\" as a unit. ",
-                    "Consult ?read.odf to see how to rectify this error.")
+                    "Consult ?read.odf to see how to rectify this error."
+                )
             }
         }
     }
@@ -1342,9 +1392,11 @@ read.odf <- function(file, columns=NULL, header="list", exclude=NULL, encoding="
     res@metadata$units <- tmp
     # Store @metadata$namesOriginal
     namesOriginal <- list()
-    for (i in seq_len(nrow(parameterTable)))
-        if (!parameterTable$isFlag[i])
+    for (i in seq_len(nrow(parameterTable))) {
+        if (!parameterTable$isFlag[i]) {
             namesOriginal[parameterTable$oceName[i]] <- parameterTable$nameOrig[i]
+        }
+    }
     res@metadata$dataNamesOriginal <- namesOriginal
     # Store other things more directly
     res@metadata$address <- NULL
@@ -1352,25 +1404,28 @@ read.odf <- function(file, columns=NULL, header="list", exclude=NULL, encoding="
     res@metadata$sampleInterval <- NA
     res@metadata$filename <- filename
     #> # fix issue 768
-    #> lines <- lines[grep('%[0-9.]*f', lines,invert=TRUE)]
+    #> lines <- lines[grep("%[0-9.]*f", lines,invert=TRUE)]
     # issue1226 data <- read.table(file, skip=dataStart, stringsAsFactors=FALSE)
-    data <- scan(text=lines, what="character", skip=dataStart, quiet=TRUE)
-    data <- matrix(data, ncol=length(oceNames2$names), byrow=TRUE)
-    data <- as.data.frame(data, stringsAsFactors=FALSE)
+    data <- scan(text = lines, what = "character", skip = dataStart, quiet = TRUE)
+    data <- matrix(data, ncol = length(oceNames2$names), byrow = TRUE)
+    data <- as.data.frame(data, stringsAsFactors = FALSE)
     # some files have text string for e.g. dates, species lengths, etc.
-    colIsChar <- as.logical(lapply(seq_len(dim(data)[2]),
-        function(j) any(grep("[ a-zA-Z\\(\\)]", data[, j]))))
+    colIsChar <- as.logical(lapply(
+        seq_len(dim(data)[2]),
+        function(j) any(grep("[ a-zA-Z\\(\\)]", data[, j]))
+    ))
     for (j in seq_len(dim(data)[2])) {
         if (!colIsChar[j]) {
-            oceDebug(debug, "setting data[[,", j, "]] to numeric mode\n", sep="")
+            oceDebug(debug, "setting data[[,", j, "]] to numeric mode\n", sep = "")
             data[[j]] <- as.numeric(data[[j]])
         } else {
-            oceDebug(debug, "setting data[[,", j, "]] to character mode\n", sep="")
+            oceDebug(debug, "setting data[[,", j, "]] to character mode\n", sep = "")
             data[[j]] <- as.character(data[[j]])
         }
     }
-    if (length(data) != length(oceNames2$names))
+    if (length(data) != length(oceNames2$names)) {
         stop("mismatch between length of data names (", length(oceNames2$names), ") and number of columns in data matrix (", length(data), ")")
+    }
     names(data) <- parameterTable$oceName
     if (length(NAvalueList)) {
         for (name in names(data)) {
@@ -1379,28 +1434,30 @@ read.odf <- function(file, columns=NULL, header="list", exclude=NULL, encoding="
                 data[[name]][bad] <- NA
                 if (sum(bad) > 0) {
                     oceDebug(debug, "set ", sum(bad), " values in '", name,
-                        "' to NA, because they matched the NULL_VALUE (", NAvalueList[[name]], ")\n", sep="")
+                        "' to NA, because they matched the NULL_VALUE (", NAvalueList[[name]], ")\n",
+                        sep = ""
+                    )
                 }
             }
         }
     }
     if ("time" %in% oceNames2$names) {
-        data$time <- as.POSIXct(strptime(as.character(data$time), format="%d-%b-%Y %H:%M:%S", tz="UTC"))
+        data$time <- as.POSIXct(strptime(as.character(data$time), format = "%d-%b-%Y %H:%M:%S", tz = "UTC"))
     }
     res@data <- as.list(data)
     # Move flags into metadata.
     dnames <- names(res@data)
     iflags <- grep("Flag$", dnames)
     oceDebug(debug, "About to move flags from @data to @metadata\n")
-    oceDebug(debug, "iflags=", paste(iflags, collapse=" "), "\n")
-    oceDebug(debug, "names(@data) = c(\"", paste(names(res@data), collapse="\", \""), "\")\n", sep="")
-    oceDebug(debug, "names(@data)[iflags] = c(\"", paste(names(res@data)[iflags], collapse="\", \""), "\")\n", sep="")
+    oceDebug(debug, "iflags=", paste(iflags, collapse = " "), "\n")
+    oceDebug(debug, "names(@data) = c(\"", paste(names(res@data), collapse = "\", \""), "\")\n", sep = "")
+    oceDebug(debug, "names(@data)[iflags] = c(\"", paste(names(res@data)[iflags], collapse = "\", \""), "\")\n", sep = "")
     # Copy flag columns to res@metadata...
     for (iflag in which(parameterTable$isFlag)) {
-        oceDebug(debug, "iflag=", iflag, "(FLAG) parameterTable$oceName=", parameterTable$oceName[iflag], "\n", sep="")
+        oceDebug(debug, "iflag=", iflag, "(FLAG) parameterTable$oceName=", parameterTable$oceName[iflag], "\n", sep = "")
         flagName <- gsub("Flag$", "", parameterTable$oceName[iflag])
         res@metadata$flags[[flagName]] <- data[, iflag]
-        oceDebug(debug, "transferring data column ", iflag, " to @metadata$flags$", flagName, "\n", sep="")
+        oceDebug(debug, "transferring data column ", iflag, " to @metadata$flags$", flagName, "\n", sep = "")
     }
     # Remove the flag columns from res@data
     nflagged <- sum(parameterTable$isFlag)
@@ -1409,7 +1466,7 @@ read.odf <- function(file, columns=NULL, header="list", exclude=NULL, encoding="
         res@data <- res@data[which(!parameterTable$isFlag)]
     }
     # Remove flag units that are remnants from parameter-based QQQQ entries
-    res@metadata$units <- res@metadata$units[!grepl("Quality Flag", names(res@metadata$units), ignore.case=TRUE)]
+    res@metadata$units <- res@metadata$units[!grepl("Quality Flag", names(res@metadata$units), ignore.case = TRUE)]
     # Remove flag units that are remnants from overall flag (QCFF and FFFF) entries
     res@metadata$units <- res@metadata$units[!is.na(names(res@metadata$units))]
     # Rename units (DFO files are ok already, but IML files need renaming)
@@ -1420,22 +1477,27 @@ read.odf <- function(file, columns=NULL, header="list", exclude=NULL, encoding="
         if (length(w) > 0L) {
             w <- which(unitNames[i] == parameterTable$name)
             if (length(w) > 1L) {
-                warning("more than one match during renaming of units (", unitNames[i], ")\n", sep="")
+                warning("more than one match during renaming of units (", unitNames[i], ")\n", sep = "")
                 w <- w[1]
             }
-            oceDebug(debug, "unit renamed from \"", unitNames[i], "\" to \"", parameterTable$oceName[w], "\"\n", sep="")
+            oceDebug(debug, "unit renamed from \"", unitNames[i], "\" to \"", parameterTable$oceName[w], "\"\n", sep = "")
             # message("unit renamed from \"", unitNames[i], "\" to \"", parameterTable$oceName[w], "\"")
             unitNames[i] <- parameterTable$oceName[w]
         }
     }
     names(res@metadata$units) <- unitNames
-    if (exists("DATA_TYPE") && DATA_TYPE == "CTD")
+    if (exists("DATA_TYPE") && DATA_TYPE == "CTD") {
         res@metadata$pressureType <- "sea"
-    res@processingLog <- processingLogAppend(res@processingLog,
+    }
+    res@processingLog <- processingLogAppend(
+        res@processingLog,
         paste("read.odf(\"", filename, "\", ",
-            "columns=c(\"", paste(columns, collapse="\", \""), "\"), ",
-            "debug=", debug, ")", sep=""))
-    oceDebug(debug, "} # read.odf()\n", sep="", style="bold", unindent=1)
+            "columns=c(\"", paste(columns, collapse = "\", \""), "\"), ",
+            "debug=", debug, ")",
+            sep = ""
+        )
+    )
+    oceDebug(debug, "} # read.odf()\n", sep = "", style = "bold", unindent = 1)
     res
 }
 
@@ -1471,33 +1533,38 @@ read.odf <- function(file, columns=NULL, header="list", exclude=NULL, encoding="
 #' @family functions that read ctd data
 #'
 #' @author Dan Kelley
-read.ctd.odf <- function(file, columns=NULL, station=NULL, missingValue, deploymentType="unknown",
-    monitor=FALSE, exclude=NULL, encoding="latin1", debug=getOption("oceDebug"), processingLog, ...)
-{
-    if (missing(file))
+read.ctd.odf <- function(
+    file, columns = NULL, station = NULL, missingValue, deploymentType = "unknown",
+    monitor = FALSE, exclude = NULL, encoding = "latin1", debug = getOption("oceDebug"), processingLog, ...) {
+    if (missing(file)) {
         stop("must supply 'file'")
-    if (is.character(file)) {
-        if (!file.exists(file))
-            stop("cannot find file '", file, "'")
-        if (0L == file.info(file)$size)
-            stop("empty file '", file, "'")
     }
-    oceDebug(debug, "read.ctd.odf(\"", file, "\", ...) {\n", sep="", unindent=1, style="bold")
+    if (is.character(file)) {
+        if (!file.exists(file)) {
+            stop("cannot find file \"", file, "\"")
+        }
+        if (0L == file.info(file)$size) {
+            stop("empty file \"", file, "\"")
+        }
+    }
+    oceDebug(debug, "read.ctd.odf(\"", file, "\", ...) {\n", sep = "", unindent = 1, style = "bold")
     if (!is.null(columns)) warning("'columns' is ignored by read.ctd.odf() at present")
-    odf <- read.odf(file=file, columns=columns, exclude=exclude, debug=debug-1)
-    res <- as.ctd(odf, debug=debug-1)
+    odf <- read.odf(file = file, columns = columns, exclude = exclude, debug = debug - 1)
+    res <- as.ctd(odf, debug = debug - 1)
     # replace any missingValue with NA
     if (!missing(missingValue) && !is.null(missingValue)) {
         for (item in names(res@data)) {
-            res@data[[item]] <- ifelse(res@data[[item]]==missingValue, NA, res@data[[item]])
+            res@data[[item]] <- ifelse(res@data[[item]] == missingValue, NA, res@data[[item]])
         }
     }
-    if (!is.null(station))
+    if (!is.null(station)) {
         res@metadata$station <- station
-    for (mname in names(odf@metadata))
+    }
+    for (mname in names(odf@metadata)) {
         res@metadata[[mname]] <- odf@metadata[[mname]]
+    }
     res@metadata$pressureType <- "sea"
     res@metadata$deploymentType <- deploymentType
-    oceDebug(debug, "} # read.ctd.odf()\n", unindent=1, style="bold")
+    oceDebug(debug, "} # read.ctd.odf()\n", unindent = 1, style = "bold")
     res
 }

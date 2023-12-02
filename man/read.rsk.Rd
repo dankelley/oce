@@ -149,7 +149,7 @@ potassium chloride solution having the same electrical conductivity, at 15 C and
 infinite frequency, as standard seawater of salinity 35.0000 ppt (Chlorinity
 19.37394 ppt). \emph{IEEE Journal of Oceanic Engineering}, \strong{5}, pp 22-23.
 
-RBR-global.com, 2020. “Ruskin User Guide.” RBR, August 18, 2020.
+RBR-global.com, 2020. "Ruskin User Guide." RBR, August 18, 2020.
 Revision RBR#0006105revH.
 }
 \seealso{

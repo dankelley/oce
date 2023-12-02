@@ -31,15 +31,17 @@ Create an oce file by copying the first \code{n} data chunks of another such fil
 This can be useful in supplying small sample files for bug reports. Only
 a few file types (as inferred with \code{\link[=oceMagic]{oceMagic()}}) are permitted.
 }
-\examples{
-\dontrun{
+\section{Sample of Usage}{
+
+\preformatted{
 # Can only be run by the developer, since it uses a private file.
-f  <- "/Users/kelley/Dropbox/oce_secret_data/ad2cp/byg_trimmed.ad2cp"
+f  <- "~/Dropbox/oce_secret_data/ad2cp/byg_trimmed.ad2cp"
 if (file.exists(f)) {
     oceFileTrim(f, 10L) # this file holds 100 data segments
 }
 }
 }
+
 \seealso{
 Other functions that trim data files: 
 \code{\link{adpAd2cpFileTrim}()},

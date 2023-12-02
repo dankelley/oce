@@ -30,7 +30,7 @@ is printed.}
 \code{\link[=read.ctd.ssda]{read.ctd.ssda()}} returns a \linkS4class{ctd} object.
 }
 \description{
-\code{\link[=read.ctd.ssda]{read.ctd.ssda()}} reads CTD files in Sea & Sun Technology´s Standard Data
+\code{\link[=read.ctd.ssda]{read.ctd.ssda()}} reads CTD files in Sea & Sun Technology's Standard Data
 Acquisition (SSDA) format. This function is somewhat preliminary, in the
 sense that header information is not scanned fully, and some guesses have
 been made about the meanings of variables and units.
@@ -67,6 +67,7 @@ Other things related to ctd data:
 \code{\link{read.ctd.itp}()},
 \code{\link{read.ctd.odf}()},
 \code{\link{read.ctd.odv}()},
+\code{\link{read.ctd.saiv}()},
 \code{\link{read.ctd.sbe}()},
 \code{\link{read.ctd.woce.other}()},
 \code{\link{read.ctd.woce}()},
@@ -82,6 +83,7 @@ Other functions that read ctd data:
 \code{\link{read.ctd.aml}()},
 \code{\link{read.ctd.itp}()},
 \code{\link{read.ctd.odf}()},
+\code{\link{read.ctd.saiv}()},
 \code{\link{read.ctd.sbe}()},
 \code{\link{read.ctd.woce.other}()},
 \code{\link{read.ctd.woce}()},

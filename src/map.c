@@ -256,7 +256,7 @@ SEXP map_clip_xy_OLD_BROKEN(SEXP x, SEXP y, SEXP usr) // returns list with new x
     PROTECT(usr = AS_NUMERIC(usr));
     int nusr = LENGTH(usr);
     if (nusr != 4)
-        error("'usr' must hold 4 values, not ", nusr);
+        error("'usr' must hold 4 values, not %d", nusr);
     double *usrp = REAL(usr); // left right bottom top
     double *xp = REAL(x);
     double *yp = REAL(y);
@@ -376,7 +376,7 @@ SEXP map_clip_xy(SEXP x, SEXP y, SEXP usr) // returns list with new x and y vect
     PROTECT(usr = AS_NUMERIC(usr));
     int nusr = LENGTH(usr);
     if (nusr != 4)
-        error("'usr' must hold 4 values, not ", nusr);
+        error("'usr' must hold 4 values, not %d", nusr);
     double *usrp = REAL(usr); // left right bottom top
     double *xp = REAL(x);
     double *yp = REAL(y);

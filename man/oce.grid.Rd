@@ -38,22 +38,22 @@ e.g. the default plot from \code{\link[=plot,adp-method]{plot,adp-method()}}.
 \examples{
 library(oce)
 i <- imagep(volcano)
-oce.grid(i, lwd=2)
+oce.grid(i, lwd = 2)
 
 data(sealevel)
 i <- oce.plot.ts(sealevel[["time"]], sealevel[["elevation"]])
-oce.grid(i, col='red')
+oce.grid(i, col = "red")
 
 data(ctd)
 i <- plotTS(ctd)
-oce.grid(i, col='red')
+oce.grid(i, col = "red")
 
 data(adp)
-i <- plot(adp, which=1)
-oce.grid(i, col='gray', lty=1)
+i <- plot(adp, which = 1)
+oce.grid(i, col = "gray", lty = 1)
 
 data(echosounder)
 i <- plot(echosounder)
-oce.grid(i, col='pink', lty=1)
+oce.grid(i, col = "pink", lty = 1)
 
 }

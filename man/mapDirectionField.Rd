@@ -46,8 +46,9 @@ output from a numerical model.  In another, \code{longitude} and
 \code{latitude} are the coordinates along the matrices, and are thus stored in
 vectors with lengths that match appropriately.
 }
-\examples{
-\dontrun{
+\section{Sample of Usage}{
+
+\preformatted{
 library(oce)
 data(coastlineWorld)
 par(mar=rep(2, 4))
@@ -61,13 +62,13 @@ latm <- matrix(expand.grid(lon, lat)[, 2], nrow=length(lon))
 u <- matrix(1/sqrt(2), nrow=length(lon), ncol=length(lat))
 v <- matrix(1/sqrt(2), nrow=length(lon), ncol=length(lat))
 mapDirectionField(lon, lat, u, v, scale=3)
-mapDirectionField(lonm, latm, 0, 1, scale=3, col='red')
+mapDirectionField(lonm, latm, 0, 1, scale=3, col="red")
 # Color code by longitude, using thick lines
 col <- colormap(lonm)$zcol
 mapDirectionField(lonm, latm, 1, 0, scale=3, col=col, lwd=2)
 }
-
 }
+
 \seealso{
 A map must first have been created with \code{\link[=mapPlot]{mapPlot()}}.
 

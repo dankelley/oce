@@ -47,18 +47,18 @@ the value supplied to this function.
 # Transform beam coordinate to xyx, then to enu with respect to
 # magnetic north, and then to geographic north.
 library(oce)
-file <- system.file("extdata", "adp_rdi.000", package="oce")
+file <- system.file("extdata", "adp_rdi.000", package = "oce")
 lon <- -69.73433
 lat <- 47.88126
-beam <- read.oce(file, from=1, to=4, longitude=lon, latitude=lat)
+beam <- read.oce(file, from = 1, to = 4, longitude = lon, latitude = lat)
 dec <- magneticField(lon, lat, beam[["time"]][1])$declination
 xyz <- beamToXyzAdp(beam)
 # Here, we tell xyzToEnuAdp() not to set a declination,
 # so enuMag has metadata$north equal to "magnetic".  We could
 # also skip the use of applyMagneticDeclination() by supplying
 # the known declination to xyzToEnuAdp().
-enuMag <- xyzToEnuAdp(xyz, declination=NULL)
-enuGeo <- applyMagneticDeclination(enuMag, declination=dec)
+enuMag <- xyzToEnuAdp(xyz, declination = NULL)
+enuGeo <- applyMagneticDeclination(enuMag, declination = dec)
 
 }
 \seealso{

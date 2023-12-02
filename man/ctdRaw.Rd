@@ -3,7 +3,7 @@
 \docType{data}
 \name{ctdRaw}
 \alias{ctdRaw}
-\title{Seawater CTD Profile, Without Trimming of Extraneous Data}
+\title{Sample ctd Data, Not Trimmed of Extraneous Data}
 \usage{
 data(ctdRaw)
 }
@@ -59,6 +59,7 @@ Other things related to ctd data:
 \code{\link{read.ctd.itp}()},
 \code{\link{read.ctd.odf}()},
 \code{\link{read.ctd.odv}()},
+\code{\link{read.ctd.saiv}()},
 \code{\link{read.ctd.sbe}()},
 \code{\link{read.ctd.ssda}()},
 \code{\link{read.ctd.woce.other}()},

@@ -22,7 +22,7 @@ IntegerVector do_gappy_index(IntegerVector starts, IntegerVector offset, Integer
           minspan = span;
       }
       if (length[0] > minspan)
-        ::Rf_error("'length' %d exceeds minimum span between 'starts' elements (%d)", length[0], minspan);
+        ::Rf_error("'length' %d exceeds minimum span between 'starts' elements (%ld)", length[0], minspan);
     }
     for (long int i = 0; i < nstarts; i++) {
       long int off = offset[0];

@@ -40,44 +40,49 @@
 #'
 #' # Case 1: smooth a noisy signal
 #' x <- 1:100
-#' y <- 1 + x/100 + sin(x/5)
-#' yn <- y + rnorm(100, sd=0.1)
+#' y <- 1 + x / 100 + sin(x / 5)
+#' yn <- y + rnorm(100, sd = 0.1)
 #' L <- 4
-#' calc <- runlm(x, y, L=L)
-#' plot(x, y, type='l', lwd=7, col='gray')
-#' points(x, yn, pch=20, col='blue')
-#' lines(x, calc$y, lwd=2, col='red')
+#' calc <- runlm(x, y, L = L)
+#' plot(x, y, type = "l", lwd = 7, col = "gray")
+#' points(x, yn, pch = 20, col = "blue")
+#' lines(x, calc$y, lwd = 2, col = "red")
 #'
 #' # Case 2: square of buoyancy frequency
 #' data(ctd)
-#' par(mfrow=c(1,1))
-#' plot(ctd, which="N2")
+#' par(mfrow = c(1, 1))
+#' plot(ctd, which = "N2")
 #' rho <- swRho(ctd)
 #' z <- swZ(ctd)
 #' zz <- seq(min(z), max(z), 0.1)
-#' N2 <- -9.8 / mean(rho) * runlm(z, rho, zz, deriv=1)
-#' lines(N2, -zz, col='red')
-#' legend("bottomright", lwd=2, bg="white",
-#'        col=c("black", "red"),
-#'        legend=c("swN2()", "using runlm()"))
-runlm <- function(x, y, xout, window=c("hanning", "boxcar"), L, deriv)
-{
-    if (missing(x))
+#' N2 <- -9.8 / mean(rho) * runlm(z, rho, zz, deriv = 1)
+#' lines(N2, -zz, col = "red")
+#' legend("bottomright",
+#'     lwd = 2, bg = "white",
+#'     col = c("black", "red"),
+#'     legend = c("swN2()", "using runlm()")
+#' )
+runlm <- function(x, y, xout, window = c("hanning", "boxcar"), L, deriv) {
+    if (missing(x)) {
         stop("must supply 'x'")
-    if (missing(y))
+    }
+    if (missing(y)) {
         stop("must supply 'y'")
+    }
     x <- as.vector(x)
     y <- as.vector(y)
     nx <- length(x)
     ny <- length(y)
-    if (nx != ny)
+    if (nx != ny) {
         stop("lengths of x and y must match, but they are ", nx, " and ", ny, ", respectively\n")
-    if (!missing(deriv) && deriv != 0 && deriv != 1)
+    }
+    if (!missing(deriv) && deriv != 0 && deriv != 1) {
         stop("deriv must be 0 or 1\n")
+    }
     if (missing(xout)) xout <- x
     window <- match.arg(window)
     if (missing(L)) {
-        spacing <- median(abs(diff(x)), na.rm=TRUE)
+        spacing <- median(abs(diff(x)), na.rm = TRUE)
         if (nx > 20) {
             L <- spacing * floor(nx / 10)
         } else if (nx > 10) {
@@ -92,9 +97,12 @@ runlm <- function(x, y, xout, window=c("hanning", "boxcar"), L, deriv)
         if (window == "hanning") {
             L <- L * 1.5
         }
-        #cat("L:", L, ", spacing:", spacing, "\n")
+        # cat("L:", L, ", spacing:", spacing, "\n")
     }
-    res <- do_runlm(x, y, xout, switch(window, boxcar=0, hanning=1), L)
+    res <- do_runlm(x, y, xout, switch(window,
+        boxcar = 0,
+        hanning = 1
+    ), L)
     if (!missing(deriv) && deriv == 0) {
         res <- res$y
     } else if (!missing(deriv) && deriv == 1) {

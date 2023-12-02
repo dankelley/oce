@@ -2,7 +2,7 @@
 % Please edit documentation in R/adv.R
 \name{toEnuAdv}
 \alias{toEnuAdv}
-\title{Convert an ADV Object to ENU Coordinates}
+\title{Convert an adv Object to ENU Coordinates}
 \usage{
 toEnuAdv(x, declination = 0, debug = getOption("oceDebug"))
 }
@@ -21,7 +21,7 @@ be printed. If one function calls another, it usually reduces the value of
 by specifying higher \code{debug} values.}
 }
 \description{
-Convert an ADV Object to ENU Coordinates
+Convert an adv Object to ENU Coordinates
 }
 \references{
 \enumerate{

@@ -42,8 +42,8 @@ package is used
 to infer Absolute Salinity from Conservative Temperature.
 }
 \examples{
-swSTrho(10, 22, 0, eos="gsw") # 28.76285
-swSTrho(10, 22, 0, eos="unesco") # 28.651625
+swSTrho(10, 22, 0, eos = "gsw") # 28.76285
+swSTrho(10, 22, 0, eos = "unesco") # 28.651625
 
 }
 \references{

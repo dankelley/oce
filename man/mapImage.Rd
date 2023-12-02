@@ -118,8 +118,9 @@ so CRAN requested a change to \CRANpkg{interp}. Note that \code{drawImage()}
 intercepts the errors that sometimes get reported by \code{\link[interp:interp]{interp::interp()}}.
 }
 
-\examples{
-\dontrun{
+\section{Sample of Usage}{
+
+\preformatted{
 library(oce)
 data(coastlineWorld)
 data(topoWorld)
@@ -132,10 +133,10 @@ mapPlot(coastlineWorld, projection="+proj=stere +lat_0=90",
         longitudelim=c(-180,180), latitudelim=c(70,110))
 mapImage(topoWorld, colormap=cm)
 mapGrid(15, 15, polarCircle=1, col=gray(0.2))
-mapPolygon(coastlineWorld[['longitude']], coastlineWorld[['latitude']], col="tan")
+mapPolygon(coastlineWorld[["longitude"]], coastlineWorld[["latitude"]], col="tan")
+}
 }
 
-}
 \references{
 \enumerate{
 \item \verb{https://codedocean.wordpress.com/2014/02/03/anti-aliasing-and-image-plots/}

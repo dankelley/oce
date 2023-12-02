@@ -35,9 +35,9 @@ library(oce)
 data(ctd)
 plot(ctd)
 # Example 1
-plot(subset(ctd, pressure<10))
+plot(subset(ctd, pressure < 10))
 # Example 2
-plot(subset(ctd, indices=1:10))
+plot(subset(ctd, indices = 1:10))
 
 }
 \seealso{
@@ -72,6 +72,7 @@ Other things related to ctd data:
 \code{\link{read.ctd.itp}()},
 \code{\link{read.ctd.odf}()},
 \code{\link{read.ctd.odv}()},
+\code{\link{read.ctd.saiv}()},
 \code{\link{read.ctd.sbe}()},
 \code{\link{read.ctd.ssda}()},
 \code{\link{read.ctd.woce.other}()},

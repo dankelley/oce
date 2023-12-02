@@ -64,7 +64,7 @@
 #' @author Dan Kelley
 #'
 #' @family things related to echosounder data
-setClass("echosounder", contains="oce")
+setClass("echosounder", contains = "oce")
 
 
 #' Sample echosounder Data
@@ -85,15 +85,17 @@ setClass("echosounder", contains="oce")
 #' @family things related to echosounder data
 NULL
 
-setMethod(f="initialize",
-    signature="echosounder",
-    definition=function(.Object, filename="", ...) {
+setMethod(
+    f = "initialize",
+    signature = "echosounder",
+    definition = function(.Object, filename = "", ...) {
         .Object <- callNextMethod(.Object, ...)
         .Object@metadata$filename <- filename
         .Object@processingLog$time <- presentTime()
         .Object@processingLog$value <- "create 'echosounder' object"
         return(.Object)
-    })
+    }
+)
 
 
 #' Summarize an echosounder Object
@@ -109,31 +111,35 @@ setMethod(f="initialize",
 #' @author Dan Kelley
 #'
 #' @family things related to echosounder data
-setMethod(f="summary",
-    signature="echosounder",
-    definition=function(object, ...) {
+setMethod(
+    f = "summary",
+    signature = "echosounder",
+    definition = function(object, ...) {
         cat("Echosounder Summary\n-------------------\n\n")
-        showMetadataItem(object, "filename",               "File source:         ", quote=TRUE)
-        showMetadataItem(object, "transducerSerialNumber", "Transducer serial #: ", quote=FALSE)
+        showMetadataItem(object, "filename", "File source:         ", quote = TRUE)
+        showMetadataItem(object, "transducerSerialNumber", "Transducer serial #: ", quote = FALSE)
         metadataNames <- names(object@metadata)
         cat(sprintf("* File type:           %s\n", object[["fileType"]]))
-        if ("beamType" %in% metadataNames)
+        if ("beamType" %in% metadataNames) {
             cat(sprintf("* Beam type:           %s\n", object[["beamType"]]))
+        }
         time <- object[["time"]]
         tz <- attr(time[1], "tzone")
         nt <- length(time)
         cat(sprintf("* Channel:             %d\n", object[["channel"]]))
         cat(sprintf("* Measurements:        %s %s to %s %s\n", format(time[1]), tz, format(time[nt]), tz))
         cat(sprintf("* Sound speed:         %.2f m/s\n", object[["soundSpeed"]]))
-        #cat(sprintf("* Time between pings:  %.2e s\n", object[["samplingDeltat"]]))
-        if ("pulseDuration" %in% metadataNames)
-            cat(sprintf("* Pulse duration:      %g s\n", object[["pulseDuration"]]/1e6))
+        # cat(sprintf("* Time between pings:  %.2e s\n", object[["samplingDeltat"]]))
+        if ("pulseDuration" %in% metadataNames) {
+            cat(sprintf("* Pulse duration:      %g s\n", object[["pulseDuration"]] / 1e6))
+        }
         cat(sprintf("* Frequency:           %f\n", object[["frequency"]]))
         cat(sprintf("* Blanked samples:     %d\n", object[["blankedSamples"]]))
         cat(sprintf("* Pings in file:       %d\n", object[["pingsInFile"]]))
         cat(sprintf("* Samples per ping:    %d\n", object[["samplesPerPing"]]))
         invisible(callNextMethod()) # summary
-    })
+    }
+)
 
 
 #' Extract Something From an echosounder Object
@@ -161,7 +167,7 @@ setMethod(f="summary",
 #'   2*absorption*r -
 #'   x@@metadata$correction +
 #'   10*log10(soundSpeed*x@@metadata$pulseDuration/1e6*psi/2)
-#'}
+#' }
 #'
 #' * If `i` is `"TS"`, then the following is returned.
 #' \preformatted{
@@ -170,49 +176,54 @@ setMethod(f="summary",
 #'   40*log10(r) +
 #'   2*absorption*r +
 #'   x@@metadata$correction
-#'}
+#' }
 #'
 #' @template sub_subTemplate
 #'
 #' @author Dan Kelley
 #'
 #' @family things related to echosounder data
-setMethod(f="[[",
-    signature(x="echosounder", i="ANY", j="ANY"),
-    definition=function(x, i, j, ...) {
-        if (i == "?")
-            return(list(metadata=sort(names(x@metadata)), metadataDerived=NULL,
-                    data=sort(names(x@data)), dataDerived=c("Sv", "TS")))
+setMethod(
+    f = "[[",
+    signature(x = "echosounder", i = "ANY", j = "ANY"),
+    definition = function(x, i, j, ...) {
+        if (i == "?") {
+            return(list(
+                metadata = sort(names(x@metadata)), metadataDerived = NULL,
+                data = sort(names(x@data)), dataDerived = c("Sv", "TS")
+            ))
+        }
         if (i %in% c("Sv", "TS")) {
             range <- rev(x@data$depth)
             a <- x@data$a
             # biosonics has /20 because they have bwx in 0.1deg
             psi <- x@metadata$beamwidthX / 2 * x@metadata$beamwidthY / 2 / 10^3.16
-            r <- matrix(rev(range), nrow=nrow(a), ncol=length(range), byrow=TRUE)
+            r <- matrix(rev(range), nrow = nrow(a), ncol = length(range), byrow = TRUE)
             absorption <- swSoundAbsorption(x@metadata$frequency, 35, 10, mean(range))
             soundSpeed <- x@metadata$soundSpeed
             if (i == "Sv") {
-                Sv <- 20*log10(a) -
-                (x@metadata$sourceLevel+x@metadata$receiverSensitivity+x@metadata$transmitPower) +
-                20*log10(r) +
-                2*absorption*r -
-                x@metadata$correction +
-                10*log10(soundSpeed*x@metadata$pulseDuration/1e6*psi/2)
+                Sv <- 20 * log10(a) -
+                    (x@metadata$sourceLevel + x@metadata$receiverSensitivity + x@metadata$transmitPower) +
+                    20 * log10(r) +
+                    2 * absorption * r -
+                    x@metadata$correction +
+                    10 * log10(soundSpeed * x@metadata$pulseDuration / 1e6 * psi / 2)
                 Sv[!is.finite(Sv)] <- NA
                 Sv
             } else if (i == "TS") {
-                TS <- 20*log10(a) -
-                (x@metadata$sourceLevel+x@metadata$receiverSensitivity+x@metadata$transmitPower) +
-                40*log10(r) +
-                2*absorption*r +
-                x@metadata$correction
+                TS <- 20 * log10(a) -
+                    (x@metadata$sourceLevel + x@metadata$receiverSensitivity + x@metadata$transmitPower) +
+                    40 * log10(r) +
+                    2 * absorption * r +
+                    x@metadata$correction
                 TS[!is.finite(TS)] <- NA
                 TS
             }
         } else {
-            callNextMethod()     # [[
+            callNextMethod() # [[
         }
-    })
+    }
+)
 
 #' Replace Parts of an echosounder Object
 #'
@@ -221,11 +232,13 @@ setMethod(f="[[",
 #' @template sub_subsetTemplate
 #'
 #' @family things related to echosounder data
-setMethod(f="[[<-",
-    signature(x="echosounder", i="ANY", j="ANY"),
-    definition=function(x, i, j, ..., value) {
-        callNextMethod(x=x, i=i, j=j, ...=..., value=value) # [[<-
-    })
+setMethod(
+    f = "[[<-",
+    signature(x = "echosounder", i = "ANY", j = "ANY"),
+    definition = function(x, i, j, ..., value) {
+        callNextMethod(x = x, i = i, j = j, ... = ..., value = value) # [[<-
+    }
+)
 
 
 #' Subset an echosounder Object
@@ -250,45 +263,54 @@ setMethod(f="[[<-",
 #' data(echosounder)
 #' plot(echosounder)
 #' plot(subset(echosounder, depth < 10))
-#' plot(subset(echosounder, time < mean(range(echosounder[['time']]))))
+#' plot(subset(echosounder, time < mean(range(echosounder[["time"]]))))
 #'
 #' @family things related to echosounder data
 #' @family functions that subset oce objects
-setMethod(f="subset",
-    signature="echosounder",
-    definition=function(x, subset, ...) {
-        subsetString <- paste(deparse(substitute(expr=subset, env=environment())), collapse=" ")
+setMethod(
+    f = "subset",
+    signature = "echosounder",
+    definition = function(x, subset, ...) {
+        subsetString <- paste(deparse(substitute(expr = subset, env = environment())), collapse = " ")
         res <- x
         dots <- list(...)
         debug <- if (length(dots) && ("debug" %in% names(dots))) dots$debug else getOption("oceDebug")
-        if (missing(subset))
+        if (missing(subset)) {
             stop("must give 'subset'")
+        }
         if (length(grep("time", subsetString))) {
             oceDebug(debug, "subsetting an echosounder object by time\n")
-            keep <- eval(substitute(expr=subset, env=environment()), envir=x@data, enclos=parent.frame(2))
-            oceDebug(debug, "keeping", 100 * sum(keep)/length(keep), "% of the fast-sampled data\n")
+            keep <- eval(substitute(expr = subset, env = environment()), envir = x@data, enclos = parent.frame(2))
+            oceDebug(debug, "keeping", 100 * sum(keep) / length(keep), "% of the fast-sampled data\n")
             res <- x
             # trim fast variables, handling matrix 'a' differently, and skipping 'distance'
             dataNames <- names(res@data)
             res@data$a <- x@data$a[keep, ]
-            if ("b" %in% dataNames)
+            if ("b" %in% dataNames) {
                 res@data$b <- x@data$b[keep, ]
-            if ("c" %in% dataNames)
+            }
+            if ("c" %in% dataNames) {
                 res@data$c <- x@data$c[keep, ]
+            }
             # lots of debugging in here, in case other data types have other variable names
             oceDebug(debug, "dataNames (orig):", dataNames, "\n")
-            if (length(grep("^a$", dataNames)))
+            if (length(grep("^a$", dataNames))) {
                 dataNames <- dataNames[-grep("^a$", dataNames)]
-            if (length(grep("^b$", dataNames)))
+            }
+            if (length(grep("^b$", dataNames))) {
                 dataNames <- dataNames[-grep("^b$", dataNames)]
-            if (length(grep("^c$", dataNames)))
+            }
+            if (length(grep("^c$", dataNames))) {
                 dataNames <- dataNames[-grep("^c$", dataNames)]
+            }
             oceDebug(debug, "dataNames (step 2):", dataNames, "\n")
-            if (length(grep("^depth$", dataNames)))
+            if (length(grep("^depth$", dataNames))) {
                 dataNames <- dataNames[-grep("^depth$", dataNames)]
+            }
             oceDebug(debug, "dataNames (step 3):", dataNames, "\n")
-            if (length(grep("Slow", dataNames)))
+            if (length(grep("Slow", dataNames))) {
                 dataNames <- dataNames[-grep("Slow", dataNames)]
+            }
             oceDebug(debug, "dataNames (final), i.e. fast dataNames to be trimmed by time:", dataNames, "\n")
             for (dataName in dataNames) {
                 oceDebug(debug, "fast variable:", dataName, "orig length", length(x@data[[dataName]]), "\n")
@@ -298,8 +320,8 @@ setMethod(f="subset",
             # trim slow variables
             subsetStringSlow <- gsub("time", "timeSlow", subsetString)
             oceDebug(debug, "subsetting slow variables with string:", subsetStringSlow, "\n")
-            keepSlow <-eval(parse(text=subsetStringSlow), x@data, parent.frame(2))
-            oceDebug(debug, "keeping", 100 * sum(keepSlow)/length(keepSlow), "% of the slow-sampled data\n")
+            keepSlow <- eval(parse(text = subsetStringSlow), x@data, parent.frame(2))
+            oceDebug(debug, "keeping", 100 * sum(keepSlow) / length(keepSlow), "% of the slow-sampled data\n")
             for (slowName in names(x@data)[grep("Slow", names(x@data))]) {
                 oceDebug(debug, "slow variable:", slowName, "orig length", length(x@data[[slowName]]), "\n")
                 res@data[[slowName]] <- x@data[[slowName]][keepSlow]
@@ -307,21 +329,24 @@ setMethod(f="subset",
             }
         } else if (length(grep("depth", subsetString))) {
             oceDebug(debug, "subsetting an echosounder object by depth\n")
-            keep <- eval(expr=substitute(expr=subset, env=environment()), envir=x@data, enclos=parent.frame(2))
+            keep <- eval(expr = substitute(expr = subset, env = environment()), envir = x@data, enclos = parent.frame(2))
             res <- x
             res[["depth"]] <- res[["depth"]][keep]
             dataNames <- names(res@data)
             res[["a"]] <- res[["a"]][, keep]
-            if ("b" %in% dataNames)
+            if ("b" %in% dataNames) {
                 res@data$b <- x@data$b[, keep]
-            if ("c" %in% dataNames)
+            }
+            if ("c" %in% dataNames) {
                 res@data$c <- x@data$c[, keep]
+            }
         } else {
             stop("can only subset an echosounder object by 'time' or 'depth'")
         }
-        res@processingLog <- processingLogAppend(res@processingLog, paste("subset.echosounder(x, subset=", subsetString, ")", sep=""))
+        res@processingLog <- processingLogAppend(res@processingLog, paste("subset.echosounder(x, subset=", subsetString, ")", sep = ""))
         res
-    }) # subset,echosounder-method
+    }
+) # subset,echosounder-method
 
 
 #' Coerce Data Into an echosounder Object
@@ -383,13 +408,13 @@ setMethod(f="subset",
 #' @author Dan Kelley
 #'
 #' @family things related to echosounder data
-as.echosounder <- function(time, depth, a, src="",
-    sourceLevel=220, receiverSensitivity=-55.4, transmitPower=0, pulseDuration=400,
-    beamwidthX=6.5, beamwidthY=6.5, frequency=41800, correction=0)
-{
-    res <- new("echosounder", filename=src)
+as.echosounder <- function(
+    time, depth, a, src = "",
+    sourceLevel = 220, receiverSensitivity = -55.4, transmitPower = 0, pulseDuration = 400,
+    beamwidthX = 6.5, beamwidthY = 6.5, frequency = 41800, correction = 0) {
+    res <- new("echosounder", filename = src)
     res@metadata$channel <- 1
-    res@metadata$soundSpeed <- swSoundSpeed(35, 10, 1, eos="unesco") # don't bother with gsw
+    res@metadata$soundSpeed <- swSoundSpeed(35, 10, 1, eos = "unesco") # don't bother with gsw
     res@metadata$samplingDeltat <- as.numeric(time[2]) - as.numeric(time[1])
     dim <- dim(a)
     res@metadata$pingsInFile <- dim[1]
@@ -406,15 +431,16 @@ as.echosounder <- function(time, depth, a, src="",
     # FIXME: what about timeLocation, latitude, and longitude?
     res@data$time <- time
     res@data$depth <- depth
-    res@data$a<- a
+    res@data$a <- a
     names <- names(res@data)
-    if ("latitude" %in% names) res@metadata$units$latitude <- list(unit=expression(degree*N), scale="")
-    if ("longitude" %in% names) res@metadata$units$longitude <- list(unit=expression(degree*E), scale="")
-    if ("latitudeSlow" %in% names) res@metadata$units$latitudeSlow <- list(unit=expression(degree*N), scale="")
-    if ("longitudeSlow" %in% names) res@metadata$units$longitudeSlow <- list(unit=expression(degree*E), scale="")
-    if ("depth" %in% names)
-        res@metadata$units$depth <- list(unit=expression(m), scale="")
-    res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+    if ("latitude" %in% names) res@metadata$units$latitude <- list(unit = expression(degree * N), scale = "")
+    if ("longitude" %in% names) res@metadata$units$longitude <- list(unit = expression(degree * E), scale = "")
+    if ("latitudeSlow" %in% names) res@metadata$units$latitudeSlow <- list(unit = expression(degree * N), scale = "")
+    if ("longitudeSlow" %in% names) res@metadata$units$longitudeSlow <- list(unit = expression(degree * E), scale = "")
+    if ("depth" %in% names) {
+        res@metadata$units$depth <- list(unit = expression(m), scale = "")
+    }
+    res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep = "", collapse = ""))
     res
 }
 
@@ -442,13 +468,12 @@ as.echosounder <- function(time, depth, a, src="",
 #' functions dealing with them.
 #'
 #' @family things related to echosounder data
-findBottom <- function(x, ignore=5, clean=despike)
-{
+findBottom <- function(x, ignore = 5, clean = despike) {
     a <- x[["a"]]
     keep <- x[["depth"]] >= ignore
     wm <- clean(apply(a[, keep], 1, which.max))
     depth <- x[["depth"]][wm]
-    list(time=x[["time"]], depth=depth, index=wm)
+    list(time = x[["time"]], depth = depth, index = wm)
 }
 
 
@@ -560,68 +585,72 @@ findBottom <- function(x, ignore=5, clean=despike)
 #' @examples
 #' library(oce)
 #' data(echosounder)
-#' plot(echosounder, drawBottom=TRUE)
+#' plot(echosounder, drawBottom = TRUE)
 #'
 #' @family things related to echosounder data
 #' @aliases plot.echosounder
-setMethod(f="plot",
-    signature=signature("echosounder"),
-    definition=function(x, which = 1, # 1=z-t section 2=dist-t section 3=map
-        beam="a",
-        newx,
-        xlab, ylab,
-        xlim, ylim, zlim,
-        type="l", col, lwd=2,
-        despike=FALSE,
-        drawBottom, ignore=5,
-        drawTimeRange=FALSE, drawPalette=TRUE,
-        radius, coastline,
-        mgp=getOption("oceMgp"),
-        mar=c(mgp[1], mgp[1]+1.5, mgp[2]+1/2, 1/2),
-        atTop, labelsTop,
-        tformat,
-        debug=getOption("oceDebug"),
-        ...)
-    {
+setMethod(
+    f = "plot",
+    signature = signature("echosounder"),
+    definition = function(x, which = 1, # 1=z-t section 2=dist-t section 3=map
+                          beam = "a",
+                          newx,
+                          xlab, ylab,
+                          xlim, ylim, zlim,
+                          type = "l", col, lwd = 2,
+                          despike = FALSE,
+                          drawBottom, ignore = 5,
+                          drawTimeRange = FALSE, drawPalette = TRUE,
+                          radius, coastline,
+                          mgp = getOption("oceMgp"),
+                          mar = c(mgp[1], mgp[1] + 1.5, mgp[2] + 1 / 2, 1 / 2),
+                          atTop, labelsTop,
+                          tformat,
+                          debug = getOption("oceDebug"),
+                          ...) {
         dots <- list(...)
-        res <- list(xat=NULL, yat=NULL)
+        res <- list(xat = NULL, yat = NULL)
         dotsNames <- names(dots)
-        oceDebug(debug, "plot() { # for echosounder\n", unindent=1, style="bold")
+        oceDebug(debug, "plot() { # for echosounder\n", unindent = 1, style = "bold")
         lw <- length(which)
-        if (length(beam) < lw)
+        if (length(beam) < lw) {
             beam <- rep(beam, lw)
-        #opar <- par(no.readonly = TRUE)
-        par(mgp=mgp, mar=mar)
+        }
+        # opar <- par(no.readonly = TRUE)
+        par(mgp = mgp, mar = mar)
         if (lw > 1) {
-            #on.exit(par(opar))
+            # on.exit(par(opar))
             if (lw > 2) {
-                layout(matrix(1:4, nrow=2, byrow=TRUE))
+                layout(matrix(1:4, nrow = 2, byrow = TRUE))
             } else {
-                layout(matrix(1:2, nrow=2, byrow=TRUE))
+                layout(matrix(1:2, nrow = 2, byrow = TRUE))
             }
         }
-        oceDebug(debug, "which before converting to numbers: c(", paste(which, collapse=","), ")\n")
+        oceDebug(debug, "which before converting to numbers: c(", paste(which, collapse = ","), ")\n")
         whichOrig <- which
-        which <- oce.pmatch(which, list("zt image"=1, "zx image"=2, map=3))
-        oceDebug(debug, "which after converting to numbers: c(", paste(which, collapse=","), ")\n")
+        which <- oce.pmatch(which, list("zt image" = 1, "zx image" = 2, map = 3))
+        oceDebug(debug, "which after converting to numbers: c(", paste(which, collapse = ","), ")\n")
         for (w in seq_along(which)) {
             oceDebug(debug, "this which:", which[w], "\n")
             if (which[w] == 1) {
-                oceDebug(debug, "handling which[", w, "]==1\n", sep="")
+                oceDebug(debug, "handling which[", w, "]==1\n", sep = "")
                 time <- x[["time"]]
                 xInImage <- time
-                if (!length(time))
+                if (!length(time)) {
                     stop("plot.echosounder() cannot plot, because @data$time has zero length")
+                }
                 signal <- x[[beam[w]]]
                 newxGiven <- !missing(newx)
                 if (newxGiven) {
                     t <- as.numeric(time)
-                    if (length(newx) != length(t))
+                    if (length(newx) != length(t)) {
                         stop("length of 'newx' must match that of time within the object")
+                    }
                     xInImage <- newx
                 }
-                if (despike)
+                if (despike) {
                     signal <- apply(signal, 2, smooth)
+                }
                 if (beam[w] == "Sv" || beam[w] == "TS") {
                     oceDebug(debug, "using signal for z")
                     z <- signal
@@ -632,167 +661,183 @@ setMethod(f="plot",
                 z[!is.finite(z)] <- NA # prevent problem in computing range
                 if (!missing(drawBottom)) {
                     oceDebug(debug, "drawBottom is TRUE\n")
-                    if (is.logical(drawBottom) && drawBottom)
+                    if (is.logical(drawBottom) && drawBottom) {
                         drawBottom <- "lightgray"
-                    waterDepth <- findBottom(x, ignore=ignore)$depth
+                    }
+                    waterDepth <- findBottom(x, ignore = ignore)$depth
                     axisBottom <- par("usr")[3]
                     deepestWater <- max(abs(waterDepth))
-                    ats <- imagep(xInImage, y=-x[["depth"]], z=z,
-                        xlab=if (missing(xlab)) "" else xlab, # time
-                        ylab=if (missing(ylab)) "z [m]" else ylab, # depth
-                        xlim=xlim,
-                        ylim=if (missing(ylim)) c(-deepestWater, 0) else ylim,
-                        zlim=if (missing(zlim)) c(if (beam[w] %in% c("Sv", "TS")) min(z, na.rm=TRUE) else 0, max(z, na.rm=TRUE)) else zlim,
-                        col=col,
-                        mgp=mgp, mar=mar,
-                        tformat=tformat,
-                        drawPalette=drawPalette,
-                        debug=debug-1,
-                        zlab=beam[w],
-                        ...)
+                    ats <- imagep(xInImage,
+                        y = -x[["depth"]], z = z,
+                        xlab = if (missing(xlab)) "" else xlab, # time
+                        ylab = if (missing(ylab)) "z [m]" else ylab, # depth
+                        xlim = xlim,
+                        ylim = if (missing(ylim)) c(-deepestWater, 0) else ylim,
+                        zlim = if (missing(zlim)) c(if (beam[w] %in% c("Sv", "TS")) min(z, na.rm = TRUE) else 0, max(z, na.rm = TRUE)) else zlim,
+                        col = col,
+                        mgp = mgp, mar = mar,
+                        tformat = tformat,
+                        drawPalette = drawPalette,
+                        debug = debug - 1,
+                        zlab = beam[w],
+                        ...
+                    )
                     axisBottom <- par("usr")[3]
                     waterDepth <- c(axisBottom, -waterDepth, axisBottom)
-                    time <-  x[["time"]]
+                    time <- x[["time"]]
                     if (newxGiven) {
                         newx2 <- approx(as.numeric(time), newx, as.numeric(time))$y
                         newx2 <- c(newx2[1], newx2, newx2[length(newx2)])
-                        polygon(newx2, waterDepth, col=drawBottom)
+                        polygon(newx2, waterDepth, col = drawBottom)
                     } else {
                         time2 <- c(time[1], time, time[length(time)])
-                        polygon(time2, waterDepth, col=drawBottom)
+                        polygon(time2, waterDepth, col = drawBottom)
                     }
                 } else {
                     oceDebug(debug, "drawBottom is FALSE\n")
-                    ats <- imagep(xInImage, y=-x[["depth"]], z=z,
-                        xlab=if (missing(xlab)) "" else xlab, # time
-                        ylab=if (missing(ylab)) "z [m]" else ylab, # depth
-                        xlim=xlim,
-                        ylim=if (missing(ylim)) c(-max(abs(x[["depth"]])), 0) else ylim,
-                        zlim=if (missing(zlim)) c(if (beam[w] %in% c("Sv", "TS")) min(z, na.rm=TRUE) else 0, max(z, na.rm=TRUE)) else zlim,
-                        col=col,
-                        mgp=mgp, mar=mar,
-                        tformat=tformat,
-                        drawPalette=drawPalette,
-                        debug=debug-1,
-                        zlab=beam[w],
-                        ...)
+                    ats <- imagep(xInImage,
+                        y = -x[["depth"]], z = z,
+                        xlab = if (missing(xlab)) "" else xlab, # time
+                        ylab = if (missing(ylab)) "z [m]" else ylab, # depth
+                        xlim = xlim,
+                        ylim = if (missing(ylim)) c(-max(abs(x[["depth"]])), 0) else ylim,
+                        zlim = if (missing(zlim)) c(if (beam[w] %in% c("Sv", "TS")) min(z, na.rm = TRUE) else 0, max(z, na.rm = TRUE)) else zlim,
+                        col = col,
+                        mgp = mgp, mar = mar,
+                        tformat = tformat,
+                        drawPalette = drawPalette,
+                        debug = debug - 1,
+                        zlab = beam[w],
+                        ...
+                    )
                 }
                 res$xat <- ats$xat
                 res$yat <- ats$yat
                 if (newxGiven) {
                     if (!missing(atTop)) {
                         at <- approx(as.numeric(x[["time"]]), newx, as.numeric(atTop))$y
-                        if (missing(labelsTop))
-                            labelsTop <- format(atTop, format=if ("format" %in% dotsNames)  dots$format else "%H:%M:%S")
-                        axis(side=3, at=at, labels=labelsTop, cex.axis=par("cex"))
+                        if (missing(labelsTop)) {
+                            labelsTop <- format(atTop, format = if ("format" %in% dotsNames) dots$format else "%H:%M:%S")
+                        }
+                        axis(side = 3, at = at, labels = labelsTop, cex.axis = par("cex"))
                     } else {
                         pretty <- pretty(time)
-                        labels <- format(pretty, format="%H:%M:%S")
+                        labels <- format(pretty, format = "%H:%M:%S")
                         at <- approx(as.numeric(time), newx, as.numeric(pretty))$y
-                        axis(3, at=at, labels=labels, cex.axis=par("cex"))
+                        axis(3, at = at, labels = labels, cex.axis = par("cex"))
                     }
                 }
             } else if (which[w] == 2) {
-                oceDebug(debug, "handling which[", w, "]==2\n", sep="")
+                oceDebug(debug, "handling which[", w, "]==2\n", sep = "")
                 latitude <- x[["latitude"]]
                 longitude <- x[["longitude"]]
-                jitter <- rnorm(length(latitude), sd=1e-8) # jitter lat by equiv 1mm to avoid colocation
-                distance <- geodDist(longitude, jitter+latitude, alongPath=TRUE) # FIXME: jitter should be in imagep
+                jitter <- rnorm(length(latitude), sd = 1e-8) # jitter lat by equiv 1mm to avoid colocation
+                distance <- geodDist(longitude, jitter + latitude, alongPath = TRUE) # FIXME: jitter should be in imagep
                 depth <- x[["depth"]]
                 a <- x[["a"]]
-                if (despike)
+                if (despike) {
                     a <- apply(a, 2, smooth)
+                }
                 z <- log10(ifelse(a > 1, a, 1)) # FIXME: make an argument for this 1
                 deepestWater <- max(abs(depth))
                 if (!missing(drawBottom)) {
-                    if (is.logical(drawBottom) && drawBottom)
+                    if (is.logical(drawBottom) && drawBottom) {
                         drawBottom <- "lightgray"
-                    waterDepth <- findBottom(x, ignore=ignore)
+                    }
+                    waterDepth <- findBottom(x, ignore = ignore)
                     axisBottom <- par("usr")[3]
                     deepestWater <- max(abs(waterDepth$depth))
                 }
                 ats <- imagep(distance, -depth, z,
-                    xlab=if (missing(xlab)) "Distance [km]" else xlab,
-                    ylab=if (missing(ylab)) "z [m]" else ylab,
-                    ylim=if (missing(ylim)) c(-deepestWater, 0) else ylim,
-                    zlim=if (missing(zlim)) c(if (beam[w] %in% c("Sv", "TS")) min(z, na.rm=TRUE) else 0, max(z, na.rm=TRUE)) else zlim,
-                    mgp=mgp, mar=mar,
-                    tformat=tformat,
-                    col=col,
-                    drawPalette=drawPalette,
-                    debug=debug-1,
-                    zlab=beam[w])
+                    xlab = if (missing(xlab)) "Distance [km]" else xlab,
+                    ylab = if (missing(ylab)) "z [m]" else ylab,
+                    ylim = if (missing(ylim)) c(-deepestWater, 0) else ylim,
+                    zlim = if (missing(zlim)) c(if (beam[w] %in% c("Sv", "TS")) min(z, na.rm = TRUE) else 0, max(z, na.rm = TRUE)) else zlim,
+                    mgp = mgp, mar = mar,
+                    tformat = tformat,
+                    col = col,
+                    drawPalette = drawPalette,
+                    debug = debug - 1,
+                    zlab = beam[w]
+                )
                 if (!missing(drawBottom)) {
-                    if (is.logical(drawBottom) && drawBottom)
+                    if (is.logical(drawBottom) && drawBottom) {
                         drawBottom <- "white"
+                    }
                     ndistance <- length(distance)
                     distance2 <- c(distance[1], distance, distance[ndistance])
                     axisBottom <- par("usr")[3]
                     depth2 <- c(axisBottom, -depth[waterDepth$index], axisBottom)
-                    polygon(distance2, depth2, col=drawBottom)
+                    polygon(distance2, depth2, col = drawBottom)
                 }
                 if (!missing(atTop)) {
                     at <- approx(as.numeric(x[["time"]]), distance, as.numeric(atTop))$y
-                    if (missing(labelsTop))
-                        labelsTop <- format(atTop, format=if ("format" %in% dotsNames)  dots$format else "%H:%M:%S")
-                    axis(side=3, at=at, labels=labelsTop, cex.axis=par("cex"))
+                    if (missing(labelsTop)) {
+                        labelsTop <- format(atTop, format = if ("format" %in% dotsNames) dots$format else "%H:%M:%S")
+                    }
+                    axis(side = 3, at = at, labels = labelsTop, cex.axis = par("cex"))
                 }
                 if (drawTimeRange) {
                     timeRange <- range(x[["time"]])
-                    label <- paste(timeRange[1], timeRange[2], sep=" to ")
-                    mtext(label, side=3, cex=0.9*par("cex"), adj=0)
+                    label <- paste(timeRange[1], timeRange[2], sep = " to ")
+                    mtext(label, side = 3, cex = 0.9 * par("cex"), adj = 0)
                 }
                 res$xat <- ats$xat
                 res$yat <- ats$yat
             } else if (which[w] == 3) {
-                oceDebug(debug, "handling which[", w, "]==3\n", sep="")
+                oceDebug(debug, "handling which[", w, "]==3\n", sep = "")
                 lat <- x[["latitude"]]
                 lon <- x[["longitude"]]
-                asp <- 1 / cos(mean(range(lat, na.rm=TRUE))*pi/180)
-                latm <- mean(lat, na.rm=TRUE)
-                lonm <- mean(lon, na.rm=TRUE)
+                asp <- 1 / cos(mean(range(lat, na.rm = TRUE)) * pi / 180)
+                latm <- mean(lat, na.rm = TRUE)
+                lonm <- mean(lon, na.rm = TRUE)
                 if (missing(radius)) {
                     radius <- max(geodDist(lonm, latm, lon, lat))
                 } else {
                     radius <- max(radius, geodDist(lonm, latm, lon, lat))
                 }
-                km_per_lat_deg <- geodDist(lonm, latm, lonm, latm+1)
-                km_per_lon_deg <- geodDist(lonm, latm, lonm+1, latm)
+                km_per_lat_deg <- geodDist(lonm, latm, lonm, latm + 1)
+                km_per_lon_deg <- geodDist(lonm, latm, lonm + 1, latm)
                 lonr <- lonm + radius / km_per_lon_deg * c(-2, 2)
                 latr <- latm + radius / km_per_lat_deg * c(-2, 2)
-                plot(lonr, latr, asp=asp, type="n",
-                    xlab=if (missing(xlab)) "Longitude" else xlab,
-                    ylab=if (missing(ylab)) "Latitude" else ylab)
+                plot(lonr, latr,
+                    asp = asp, type = "n",
+                    xlab = if (missing(xlab)) "Longitude" else xlab,
+                    ylab = if (missing(ylab)) "Latitude" else ylab
+                )
                 xaxp <- par("xaxp")
-                xat <- seq(xaxp[1], xaxp[2], length.out=1+xaxp[3])
+                xat <- seq(xaxp[1], xaxp[2], length.out = 1 + xaxp[3])
                 yaxp <- par("yaxp")
-                yat <- seq(yaxp[1], yaxp[2], length.out=1+yaxp[3])
-                ats <- list(xat=xat, yat=yat)
+                yat <- seq(yaxp[1], yaxp[2], length.out = 1 + yaxp[3])
+                ats <- list(xat = xat, yat = yat)
 
                 if (!missing(coastline)) {
                     coastline <- coastline
                     if (!is.null(coastline@metadata$fillable) && coastline@metadata$fillable) {
-                        polygon(coastline[["longitude"]], coastline[["latitude"]], col="lightgray", lwd=3/4)
-                        polygon(coastline[["longitude"]]+360, coastline[["latitude"]], col="lightgray", lwd=3/4)
+                        polygon(coastline[["longitude"]], coastline[["latitude"]], col = "lightgray", lwd = 3 / 4)
+                        polygon(coastline[["longitude"]] + 360, coastline[["latitude"]], col = "lightgray", lwd = 3 / 4)
                         box()
                     } else {
-                        lines(coastline[["longitude"]], coastline[["latitude"]], col="darkgray")
-                        lines(coastline[["longitude"]]+360, coastline[["latitude"]], col="darkgray")
+                        lines(coastline[["longitude"]], coastline[["latitude"]], col = "darkgray")
+                        lines(coastline[["longitude"]] + 360, coastline[["latitude"]], col = "darkgray")
                     }
                 }
-                lines(lon, lat, col=if (!is.function(col)) col else "black", lwd=lwd)
+                lines(lon, lat, col = if (!is.function(col)) col else "black", lwd = lwd)
             } else {
                 stop("In plot,echosounder-method : unknown value of which (",
                     if (is.character(whichOrig[w])) {
-                        paste("\"", whichOrig[w], "\"", sep="")
-                    }  else {
+                        paste("\"", whichOrig[w], "\"", sep = "")
+                    } else {
                         whichOrig[w]
-                    }, "); try 1, 2 or 3, or, equivalently, \"zt image\", \"zx image\" or \"map\"", call.=FALSE)
+                    }, "); try 1, 2 or 3, or, equivalently, \"zt image\", \"zx image\" or \"map\"",
+                    call. = FALSE
+                )
             }
         }
-        oceDebug(debug, "} # plot.echosounder()\n", unindent=1, style="bold")
+        oceDebug(debug, "} # plot.echosounder()\n", unindent = 1, style = "bold")
         invisible(res)
-    })
+    }
+)
 
 
 #' Read an echosounder File
@@ -848,41 +893,45 @@ setMethod(f="plot",
 #' Advanced Digital Hydroacoustics. July, 2010.  SOFTWARE AND ENGINEERING
 #' LIBRARY REPORT BS&E-2004-07-0009-2.0.
 #' @family things related to echosounder data
-read.echosounder <- function(file,
-    channel=1,
+read.echosounder <- function(
+    file,
+    channel = 1,
     soundSpeed,
-    tz=getOption("oceTz"),
-    encoding=NA,
-    debug=getOption("oceDebug"),
-    processingLog)
-{
-    if (missing(file))
+    tz = getOption("oceTz"),
+    encoding = NA,
+    debug = getOption("oceDebug"),
+    processingLog) {
+    if (missing(file)) {
         stop("must supply 'file'")
-    if (is.character(file)) {
-        if (!file.exists(file))
-            stop("cannot find file '", file, "'")
-        if (0L == file.info(file)$size)
-            stop("empty file '", file, "'")
     }
-    oceDebug(debug, "read.echosounder(file=\"", file, "\", tz=\"", tz, "\", debug=", debug, ") {\n", sep="", unindent=1, style="bold")
+    if (is.character(file)) {
+        if (!file.exists(file)) {
+            stop("cannot find file \"", file, "\"")
+        }
+        if (0L == file.info(file)$size) {
+            stop("empty file \"", file, "\"")
+        }
+    }
+    oceDebug(debug, "read.echosounder(file=\"", file, "\", tz=\"", tz, "\", debug=", debug, ") {\n", sep = "", unindent = 1, style = "bold")
     filename <- NULL
     if (is.character(file)) {
         filename <- fullFilename(file)
         file <- file(file, "rb")
         on.exit(close(file))
     }
-    if (!inherits(file, "connection"))
+    if (!inherits(file, "connection")) {
         stop("argument `file' must be a character string or connection")
+    }
     if (!isOpen(file)) {
         open(file, "rb")
         on.exit(close(file))
     }
-    res <- new("echosounder", filename=filename)
+    res <- new("echosounder", filename = filename)
     seek(file, 0, "start")
-    seek(file, where=0, origin="end")
-    fileSize <- seek(file, where=0)
+    seek(file, where = 0, origin = "end")
+    fileSize <- seek(file, where = 0)
     oceDebug(debug, "fileSize=", fileSize, "\n")
-    buf <- readBin(file, what="raw", n=fileSize, endian="little")
+    buf <- readBin(file, what = "raw", n = fileSize, endian = "little")
 
     # [1 p9]: "After this comes the main data section of the file.
     # This will typically contain some or all of the following tuples:
@@ -929,13 +978,13 @@ read.echosounder <- function(file,
     offset <- 0
     timeSlow <- latitudeSlow <- longitudeSlow <- NULL # accumulate using c() because length unknown
     timeLast <- 0
-    #first <- TRUE
+    # first <- TRUE
     scan <- 1
-    #intensity <- list()
+    # intensity <- list()
     time <- list()
-    #samplingDeltat <- 2.4e-05 # a guess, to avoid being unknown if the header cannot be read
+    # samplingDeltat <- 2.4e-05 # a guess, to avoid being unknown if the header cannot be read
     channelNumber <- NULL
-    #channelID <- NULL
+    # channelID <- NULL
     channelDeltat <- NULL
     blankedSamples <- 0
     fileType <- "unknown"
@@ -943,9 +992,9 @@ read.echosounder <- function(file,
     beamType <- "unknown"
     # The next three lines are just to prevent code-diagnostic warnings;
     # These matrices are redefined later, when we know the geometry
-    a <- matrix(NA_real_, nrow=1, ncol=1)
-    b <- matrix(NA_real_, nrow=1, ncol=1)
-    c <- matrix(NA_real_, nrow=1, ncol=1)
+    a <- matrix(NA_real_, nrow = 1, ncol = 1)
+    b <- matrix(NA_real_, nrow = 1, ncol = 1)
+    c <- matrix(NA_real_, nrow = 1, ncol = 1)
     # FIXME: find out whether samplesPerPing is always defined prior to use in the code1==0x15 blocks.
     # The Rstudio code-diagnostic complains that this variable is used before being defined,
     # but when I run test code there is no problem, because the variable has been defined. What I
@@ -954,18 +1003,18 @@ read.echosounder <- function(file,
     # need to reorder some code, if problems arise.)
     samplesPerPing <- 0 # overriddent later; here just to prevent code-diagnostic warning
     while (offset < fileSize) {
-        #print <- debug && tuple < 200
-        N <- .C("uint16_le", buf[offset+1:2], 1L, res=integer(1), NAOK=TRUE, PACKAGE="oce")$res
-        code1 <- buf[offset+3]
-        code2 <- buf[offset+4]
+        # print <- debug && tuple < 200
+        N <- .C("uint16_le", buf[offset + 1:2], 1L, res = integer(1), NAOK = TRUE, PACKAGE = "oce")$res
+        code1 <- buf[offset + 3]
+        code2 <- buf[offset + 4]
         # Next line said 'endian="small"' prior to 2019-12-18, an error kindly pointed out
         # to Dan Kelley in a private email. However, this was not used here, except for an
         # erroneous use (where the test should have been on code2). But note that we do not
         # actually *use* the 'code' defined previously
         # See https://github.com/dankelley/oce/issues/1634
         # code <- readBin(buf[offset+3:4], "integer", size=2, n=1, endian="little", signed=FALSE)
-        if (debug > 3) cat("buf[", 3+offset, "] = code1 = 0x", code1, sep="")
-        if (debug > 3) cat("buf[", 4+offset, "] = code2 = 0x", code2, sep="")
+        if (debug > 3) cat("buf[", 3 + offset, "] = code1 = 0x", code1, sep = "")
+        if (debug > 3) cat("buf[", 4 + offset, "] = code2 = 0x", code2, sep = "")
         # Interpret code1 and code2, which signal beam type.  These are listed in [1 table 3.5],
         # as follows (note that the table lists in little-endian ordering, so the first two
         # digits are code2 here, and the second two digits are code1 here.
@@ -977,38 +1026,40 @@ read.echosounder <- function(file,
         # codes are placed first, but then it's a bit random.
         if (code2 == 0x00 && (code1 == 0x15 || code1 == 0x1c || code1 == 0x1d)) {
             # single-beam, dual-beam, or split-beam tuple
-            thisChannel <- .C("uint16_le", buf[offset+4+1:2], 1L, res=integer(1), NAOK=TRUE, PACKAGE="oce")$res
-            pingNumber <- readBin(buf[offset+6+1:4], "integer", size=4L, n=1L, endian="little")
-            pingElapsedTime <- 0.001 * readBin(buf[offset+10+1:4], "integer", size=4L, n=1L, endian="little")
-            #message("samplersPerPing=", samplesPerPing)
-            ns <- .C("uint16_le", buf[offset+14+1:2], 1L, res=integer(1), NAOK=TRUE, PACKAGE="oce")$res # number of samples
+            thisChannel <- .C("uint16_le", buf[offset + 4 + 1:2], 1L, res = integer(1), NAOK = TRUE, PACKAGE = "oce")$res
+            pingNumber <- readBin(buf[offset + 6 + 1:4], "integer", size = 4L, n = 1L, endian = "little")
+            pingElapsedTime <- 0.001 * readBin(buf[offset + 10 + 1:4], "integer", size = 4L, n = 1L, endian = "little")
+            # message("samplersPerPing=", samplesPerPing)
+            ns <- .C("uint16_le", buf[offset + 14 + 1:2], 1L, res = integer(1), NAOK = TRUE, PACKAGE = "oce")$res # number of samples
             if (thisChannel == channelNumber[channel]) {
                 if (debug > 3) {
-                    cat("buf[", 1+offset, ", ...] (0x", code1, " single-beam ping)",
+                    cat("buf[", 1 + offset, ", ...] (0x", code1, " single-beam ping)",
                         " scan=", scan,
                         " ping=", pingNumber,
                         " ns=", ns,
                         " channel=", thisChannel,
                         " elapsedTime=", pingElapsedTime,
-                        "\n", sep="")
+                        "\n",
+                        sep = ""
+                    )
                 }
                 # Note the time reversal in the assignment to the data matrix 'a'
                 # FIXME: is it faster to flip the data matrix later?
                 if (code1 == 0x15) {
                     # In [1 table 3.5] this case is listed as "0x0015 Single-Beam Ping"
-                    tmp <- do_biosonics_ping(buf[offset+16+1:(2*ns)], samplesPerPing, ns, 0)
+                    tmp <- do_biosonics_ping(buf[offset + 16 + 1:(2 * ns)], samplesPerPing, ns, 0)
                     beamType <- "single-beam"
                 } else if (code1 == 0x1c) {
                     # In [1 table 3.5] this case is listed as "0x001C Dual-Beam Ping"
-                    tmp <- do_biosonics_ping(buf[offset+16+1:(4*ns)], samplesPerPing, ns, 1)
+                    tmp <- do_biosonics_ping(buf[offset + 16 + 1:(4 * ns)], samplesPerPing, ns, 1)
                     beamType <- "dual-beam"
                 } else if (code1 == 0x1d) {
                     # In [1 table 3.5] this case is listed as "0x001D Split-Beam Ping"
                     # e.g. 01-Fish.dt4 sample file from Biosonics
-                    tmp <- do_biosonics_ping(buf[offset+16+1:(4*ns)], samplesPerPing, ns, 2)
+                    tmp <- do_biosonics_ping(buf[offset + 16 + 1:(4 * ns)], samplesPerPing, ns, 2)
                     beamType <- "split-beam"
                 } else {
-                    stop("unknown 'tuple' 0x", code1, sep="")
+                    stop("unknown 'tuple' 0x", code1, sep = "")
                 }
                 a[scan, ] <- rev(tmp$a)
                 b[scan, ] <- rev(tmp$b)
@@ -1018,24 +1069,26 @@ read.echosounder <- function(file,
                 if (debug > 3) cat("channel:", thisChannel, "ping:", pingNumber, "pingElapsedTime:", pingElapsedTime, "\n")
             } else {
                 if (debug > 0) {
-                    cat("buf[", 1+offset, ", ...] = 0x", code1,
-                        " ping=", pingNumber, " ns=", ns, " channel=", thisChannel, " IGNORED since wrong channel)\n", sep="")
+                    cat("buf[", 1 + offset, ", ...] = 0x", code1,
+                        " ping=", pingNumber, " ns=", ns, " channel=", thisChannel, " IGNORED since wrong channel)\n",
+                        sep = ""
+                    )
                 }
             }
         } else if (code2 == 0x00 && (code1 == 0x0f || code1 == 0x20)) {
             # In [1 table 3.5] these cases are listed as "0x000F or 0x0020 Time"
             # time
-            timeSec <- readBin(buf[offset+4 + 1:4], what="integer", endian="little", size=4, n=1)
-            timeSubSec <- .C("biosonics_ss", buf[offset+10], res=numeric(1), NAOK=TRUE, PACKAGE="oce")$res
+            timeSec <- readBin(buf[offset + 4 + 1:4], what = "integer", endian = "little", size = 4, n = 1)
+            timeSubSec <- .C("biosonics_ss", buf[offset + 10], res = numeric(1), NAOK = TRUE, PACKAGE = "oce")$res
             timeFull <- timeSec + timeSubSec
-            timeElapsedSec <- readBin(buf[offset+10+1:4], what="integer", endian="little", size=4, n=1)/1e3
+            timeElapsedSec <- readBin(buf[offset + 10 + 1:4], what = "integer", endian = "little", size = 4, n = 1) / 1e3
             # centisecond = ss & 0x7F [1 sec 4.7]
             timeLast <- timeSec + timeSubSec # used for positioning
-            if (debug > 3) cat(sprintf(" time calendar: %s   elapsed %.2f\n", timeFull+as.POSIXct("1970-01-01 00:00:00", tz="UTC"), timeElapsedSec))
+            if (debug > 3) cat(sprintf(" time calendar: %s   elapsed %.2f\n", timeFull + as.POSIXct("1970-01-01 00:00:00", tz = "UTC"), timeElapsedSec))
         } else if (code2 == 0x00 && code1 == 0x0e) {
             # In [1 table 3.5] this case is listed as "0x000E Position" position
-            lat <- readBin(buf[offset + 4 + 1:4], "integer", endian="little", size=4, n=1) / 6e6
-            lon <- readBin(buf[offset + 8 + 1:4], "integer", endian="little", size=4, n=1) / 6e6
+            lat <- readBin(buf[offset + 4 + 1:4], "integer", endian = "little", size = 4, n = 1) / 6e6
+            lon <- readBin(buf[offset + 8 + 1:4], "integer", endian = "little", size = 4, n = 1) / 6e6
             latitudeSlow <- c(latitudeSlow, lat)
             longitudeSlow <- c(longitudeSlow, lon)
             timeSlow <- c(timeSlow, timeLast)
@@ -1049,41 +1102,47 @@ read.echosounder <- function(file,
         } else if (code1 == 0x11) {
             if (debug > 3) cat(" navigation string IGNORED\n")
         } else if (code1 == 0x12) {
-            channelNumber <- c(channelNumber, .C("uint16_le", buf[offset+4+1:2], 1L, res=integer(1), NAOK=TRUE, PACKAGE="oce")$res)
-            ib <- .C("uint16_le", buf[offset+20+1:2], 1L, res=integer(1), NAOK=TRUE, PACKAGE="oce")$res
+            channelNumber <- c(channelNumber, .C("uint16_le", buf[offset + 4 + 1:2], 1L, res = integer(1), NAOK = TRUE, PACKAGE = "oce")$res)
+            ib <- .C("uint16_le", buf[offset + 20 + 1:2], 1L, res = integer(1), NAOK = TRUE, PACKAGE = "oce")$res
             blankedSamples <- ib
-            channelDeltat <- c(channelDeltat, 1e-9*.C("uint16_le", buf[offset+12+1:2], 1L, res=integer(1), NAOK=TRUE,
-                PACKAGE="oce")$res)
-            pingsInFile <- readBin(buf[offset+6+1:4], "integer", n=1, size=4, endian="little")
-            samplesPerPing <- .C("uint16_le", buf[offset+10+1:2], 1L, res=integer(1), NAOK=TRUE, PACKAGE="oce")$res # ssp [p13 1]
-            sp <- 1e-9 * readBin(buf[offset+12+1:2], "integer", n=1L, size=2L, endian="little") # [p13 1] time between samples (ns)
-            if (debug > 1) cat("sp: ", sp, " sample period in ns\n", sep="")
-            pud <- readBin(buf[offset+16+1:2], "integer", n=1L, size=2L, endian="little")
-            if (debug > 1) cat("pud: ", pud, " pulse duration in us (expect 400 for 01-Fish.dt4)\n", sep="")
-            pp <- .C("uint16_le", buf[offset+18+1:2], 1L, res=integer(1), NAOK=TRUE, PACKAGE="oce")$res # [p13 1] ping period (ms)
-            if (debug > 1) cat("pp: ", pp, "\n", sep="")
-            ib <- .C("uint16_le", buf[offset+20+1:2], 1L, res=integer(1), NAOK=TRUE, PACKAGE="oce")$res # [p13 1]
-            if (debug > 1) cat("ib: ", ib, "\n", sep="")
+            channelDeltat <- c(channelDeltat, 1e-9 * .C("uint16_le", buf[offset + 12 + 1:2], 1L,
+                res = integer(1), NAOK = TRUE,
+                PACKAGE = "oce"
+            )$res)
+            pingsInFile <- readBin(buf[offset + 6 + 1:4], "integer", n = 1, size = 4, endian = "little")
+            samplesPerPing <- .C("uint16_le", buf[offset + 10 + 1:2], 1L, res = integer(1), NAOK = TRUE, PACKAGE = "oce")$res # ssp [p13 1]
+            sp <- 1e-9 * readBin(buf[offset + 12 + 1:2], "integer", n = 1L, size = 2L, endian = "little") # [p13 1] time between samples (ns)
+            if (debug > 1) cat("sp: ", sp, " sample period in ns\n", sep = "")
+            pud <- readBin(buf[offset + 16 + 1:2], "integer", n = 1L, size = 2L, endian = "little")
+            if (debug > 1) cat("pud: ", pud, " pulse duration in us (expect 400 for 01-Fish.dt4)\n", sep = "")
+            pp <- .C("uint16_le", buf[offset + 18 + 1:2], 1L, res = integer(1), NAOK = TRUE, PACKAGE = "oce")$res # [p13 1] ping period (ms)
+            if (debug > 1) cat("pp: ", pp, "\n", sep = "")
+            ib <- .C("uint16_le", buf[offset + 20 + 1:2], 1L, res = integer(1), NAOK = TRUE, PACKAGE = "oce")$res # [p13 1]
+            if (debug > 1) cat("ib: ", ib, "\n", sep = "")
             # next 2 bytes contain u2, ignored
-            th <- 0.01 * readBin(buf[offset+24+1:2], "integer", n=1L, size=2L, endian="little") # [p13 1]
-            if (debug > 1) cat("th: ", th, " data collection threshold in dB (expect -65 for 01-Fish.dt4)\n", sep="")
-            rxee <- buf[offset+26+1:128] # [1 p13] # receiver EEPROM image (FIXME: why is serialnum out by 1? INDEX question)
-            #corr <- .C("int16_le", buf[offset+282+1:2], 1L, res=integer(1), NAOK=TRUE, PACKAGE="oce")$res # [p13 1]
-            corr <- 0.01 * readBin(buf[offset+282+1:2], "integer", n=1L, size=2L, endian="little") # [p13 1]
-            if (debug > 1) cat("corr: ", corr, " user-defined calibration correction in dB (expect 0 for 01-Fish.dt4)\n", sep="")
+            th <- 0.01 * readBin(buf[offset + 24 + 1:2], "integer", n = 1L, size = 2L, endian = "little") # [p13 1]
+            if (debug > 1) cat("th: ", th, " data collection threshold in dB (expect -65 for 01-Fish.dt4)\n", sep = "")
+            rxee <- buf[offset + 26 + 1:128] # [1 p13] # receiver EEPROM image (FIXME: why is serialnum out by 1? INDEX question)
+            # corr <- .C("int16_le", buf[offset+282+1:2], 1L, res=integer(1), NAOK=TRUE, PACKAGE="oce")$res # [p13 1]
+            corr <- 0.01 * readBin(buf[offset + 282 + 1:2], "integer", n = 1L, size = 2L, endian = "little") # [p13 1]
+            if (debug > 1) cat("corr: ", corr, " user-defined calibration correction in dB (expect 0 for 01-Fish.dt4)\n", sep = "")
             if (1 == length(channelNumber)) {
                 # get space
-                a <- matrix(NA_real_, nrow=pingsInFile, ncol=samplesPerPing)
-                b <- matrix(NA_real_, nrow=pingsInFile, ncol=samplesPerPing)
-                c <- matrix(NA_real_, nrow=pingsInFile, ncol=samplesPerPing)
+                a <- matrix(NA_real_, nrow = pingsInFile, ncol = samplesPerPing)
+                b <- matrix(NA_real_, nrow = pingsInFile, ncol = samplesPerPing)
+                c <- matrix(NA_real_, nrow = pingsInFile, ncol = samplesPerPing)
             }
-            if (debug > 3) cat(" channel descriptor ",
-                " number=", tail(channelNumber, 1),
-                " blankedSamples=", blankedSamples,
-                " dt=", tail(channelDeltat, 1),
-                " pingsInFile=", pingsInFile,
-                " samplesPerPing=", samplesPerPing,
-                "\n")
+            if (debug > 3) {
+                cat(
+                    " channel descriptor ",
+                    " number=", tail(channelNumber, 1),
+                    " blankedSamples=", blankedSamples,
+                    " dt=", tail(channelDeltat, 1),
+                    " pingsInFile=", pingsInFile,
+                    " samplesPerPing=", samplesPerPing,
+                    "\n"
+                )
+            }
         } else if (code1 == 0x30) {
             if (debug > 3) cat(" time-stamped navigation string IGNORED\n")
         } else if (code1 == 0xff && tuple > 1) {
@@ -1091,17 +1150,17 @@ read.echosounder <- function(file,
         } else if (code1 == 0x1e) {
             if (debug > 1) cat(" V3 file header\n")
             fileType <- if (buf[offset + 1] == 0x10 && buf[offset + 2] == 0x00) "DT4 v2.3" else "DT4 pre v2.3"
-            res@metadata$temperature <- 0.01*.C("uint16_le", buf[offset+8+1:2], 1L, res=integer(1), NAOK=TRUE, PACKAGE="oce")$res
+            res@metadata$temperature <- 0.01 * .C("uint16_le", buf[offset + 8 + 1:2], 1L, res = integer(1), NAOK = TRUE, PACKAGE = "oce")$res
             if (debug > 1) cat("temperature=", res@metadata$temperature, "degC (expect 14 for 1-Fish.dt4)\n")
-            res@metadata$salinity <- 0.01*.C("uint16_le", buf[offset+10+1:2], 1L, res=integer(1), NAOK=TRUE, PACKAGE="oce")$res
+            res@metadata$salinity <- 0.01 * .C("uint16_le", buf[offset + 10 + 1:2], 1L, res = integer(1), NAOK = TRUE, PACKAGE = "oce")$res
             if (debug > 1) cat("salinity=", res@metadata$salinity, "PSU (expect 30 for 1-Fish.dt4)\n")
             # res@metadata$soundSpeed <- swSoundSpeed(res@metadata$salinity, res@metadata$temperature, 30,
             #                                        eos="unesco")
-            res@metadata$transmitPower <- 0.01*.C("uint16_le", buf[offset+12+1:2], 1L, res=integer(1), NAOK=TRUE, PACKAGE="oce")$res
+            res@metadata$transmitPower <- 0.01 * .C("uint16_le", buf[offset + 12 + 1:2], 1L, res = integer(1), NAOK = TRUE, PACKAGE = "oce")$res
             if (debug > 1) cat("transmitPower=", res@metadata$transmitPower, "(expect 0 for 1-Fish.dt4; called mTransmitPower)\n")
-            res@metadata$tz <- readBin(buf[offset+16+1:2], "integer", size=2)
+            res@metadata$tz <- readBin(buf[offset + 16 + 1:2], "integer", size = 2)
             if (debug > 1) cat("tz=", res@metadata$tz, "(expect -420 for 1-Fish.dt4)\n")
-            dst <- readBin(buf[offset+18+1:2], "integer", size=2)
+            dst <- readBin(buf[offset + 18 + 1:2], "integer", size = 2)
             res@metadata$dst <- dst != 0
             if (debug > 1) cat("dst=", res@metadata$dst, "(daylight saings time) expect TRUE for 1-Fish.dt4)\n")
         } else if (code1 == 0x18) {
@@ -1112,11 +1171,11 @@ read.echosounder <- function(file,
             fileType <- "V1"
         } else if (code1 == 0x32) {
             if (debug > 3) cat(" bottom pick tuple [1 sec 4.12] ")
-            #thisChannel <- .C("uint16_le", buf[offset+4+1:2], 1L, res=integer(1))$res
-            #thisPing <- .C("uint16_le", buf[offset+4+1:2], 1L, res=integer(1))$res
-            foundBottom <- .C("uint16_le", buf[offset+14+1:2], 1L, res=integer(1), NAOK=TRUE, PACKAGE="oce")$res
+            # thisChannel <- .C("uint16_le", buf[offset+4+1:2], 1L, res=integer(1))$res
+            # thisPing <- .C("uint16_le", buf[offset+4+1:2], 1L, res=integer(1))$res
+            foundBottom <- .C("uint16_le", buf[offset + 14 + 1:2], 1L, res = integer(1), NAOK = TRUE, PACKAGE = "oce")$res
             if (foundBottom) {
-                thisRange <- readBin(buf[offset+20+1:4], "numeric", size=4, n=1, signed=TRUE, endian="little")
+                thisRange <- readBin(buf[offset + 20 + 1:4], "numeric", size = 4, n = 1, signed = TRUE, endian = "little")
             } else {
                 thisRange <- NA
             }
@@ -1129,14 +1188,15 @@ read.echosounder <- function(file,
         } else if (code1 == 0x34) {
             if (debug > 1) cat(" comment tuple [1 sec 4.14 p28]\n")
             # FIXME: other info could be gleaned from the comment, if needed
-            numbytes <- .C("uint16_le", buf[offset+34:35], 1L, res=integer(1), NAOK=TRUE, PACKAGE="oce")$res
+            numbytes <- .C("uint16_le", buf[offset + 34:35], 1L, res = integer(1), NAOK = TRUE, PACKAGE = "oce")$res
             if (debug > 1) cat("numbytes:", numbytes, " ... NOTHING ELSE DECODED in this version of oce.\n")
         } else {
             if (debug > 3) cat(" unknown code IGNORED\n")
         }
-        N6 <- .C("uint16_le", buf[offset+N+5:6], 1L, res=integer(1), NAOK=TRUE, PACKAGE="oce")$res
-        if (N6 != N + 6)
+        N6 <- .C("uint16_le", buf[offset + N + 5:6], 1L, res = integer(1), NAOK = TRUE, PACKAGE = "oce")$res
+        if (N6 != N + 6) {
             stop("error reading tuple number ", tuple, " (mismatch in redundant header-length flags)")
+        }
         offset <- offset + N + 6
         tuple <- tuple + 1
     }
@@ -1145,16 +1205,16 @@ read.echosounder <- function(file,
     res@metadata$fileType <- fileType
     res@metadata$blankedSamples <- blankedSamples
     if (missing(soundSpeed)) {
-        res@metadata$soundSpeed <- swSoundSpeed(35, 10, 30, eos="unesco")
+        res@metadata$soundSpeed <- swSoundSpeed(35, 10, 30, eos = "unesco")
     } else {
         res@metadata$soundSpeed <- soundSpeed
     }
-    res@metadata$soundSpeed <- if (missing(soundSpeed)) swSoundSpeed(35, 10, 30, eos="unesco") else soundSpeed
+    res@metadata$soundSpeed <- if (missing(soundSpeed)) swSoundSpeed(35, 10, 30, eos = "unesco") else soundSpeed
     res@metadata$samplingDeltat <- channelDeltat[1] # nanoseconds
     res@metadata$pingsInFile <- pingsInFile
     res@metadata$samplesPerPing <- samplesPerPing
     # channel info, with names matching [1 p13]
-    #res@metadata$samplingDeltat <- sp
+    # res@metadata$samplingDeltat <- sp
     res@metadata$pulseDuration <- pud
     res@metadata$pp <- pp
     res@metadata$ib <- ib
@@ -1176,60 +1236,70 @@ read.echosounder <- function(file,
     # interpolate to "fast" latitude and longitude, after extending to ensure spans
     # enclose the ping times.
     n <- length(latitudeSlow)
-    #t <- c(2*timeSlow[1]-timeSlow[2], timeSlow, 2*timeSlow[n] - timeSlow[n-1])
-    approx2 <- function(x, y, xout)
-    {
+    # t <- c(2*timeSlow[1]-timeSlow[2], timeSlow, 2*timeSlow[n] - timeSlow[n-1])
+    approx2 <- function(x, y, xout) {
         nxout <- length(xout)
         before <- y[1] + (y[2] - y[1]) * (xout[1] - x[1]) / (x[2] - x[1])
-        after <- y[n-1] + (y[n] - y[n-1]) * (xout[nxout] - x[n-1]) / (x[n] - x[n-1])
+        after <- y[n - 1] + (y[n] - y[n - 1]) * (xout[nxout] - x[n - 1]) / (x[n] - x[n - 1])
         approx(c(xout[1], x, xout[nxout]), c(before, y, after), xout)$y
     }
     latitude <- approx2(timeSlow, latitudeSlow, time)
     longitude <- approx2(timeSlow, longitudeSlow, time)
-    res@metadata$transducerSerialNumber <- readBin(rxee[2+1:8], "character") # [1 p16] offset=2 length 8
-    if (debug > 1) cat("transducerSerialNumber '", res@metadata$transducerSerialNumber, "' (expect DT600085 for 01-Fish.dt4)\n", sep="")
-    res@metadata$calibrationTime <- numberAsPOSIXct(readBin(rxee[36+1:4], "integer"), tz="UTC") # [1 p16] offset=36
-    if (debug > 1) cat("calibrationTime: ", format(res@metadata$calibrationTime), " (expect Thu Apr 13 02:36:38 2000 for 01-Fish.dt4)\n", sep="")
-    #res@metadata$sl <- 0.1 * .C("int16_le", rxee[58+1:2], 1L, res=integer(1), NAOK=TRUE, PACKAGE="oce")$res # [p16 1]
-    res@metadata$sourceLevel <- 0.1 * readBin(rxee[58+1:2], "integer", n=1L, size=2L, endian="little") # [p16 1]
-    if (debug > 1) cat("sl=", res@metadata$sourceLevel, " (expect 220 for 01-Fish.dt4 source level SourceLevel_dBuPa)\n", sep="")
-    #res@metadata$rs <- 0.1 * .C("int16_le", rxee[1+64+1:2], 1L, res=integer(1), NAOK=TRUE, PACKAGE="oce")$res # [p16 1]
-    res@metadata$receiverSensitivity <- 0.1 * readBin(rxee[64+1:2], "integer", n=1L, size=2) # [p16 1]
+    res@metadata$transducerSerialNumber <- readBin(rxee[2 + 1:8], "character") # [1 p16] offset=2 length 8
+    if (debug > 1) cat("transducerSerialNumber '", res@metadata$transducerSerialNumber, "' (expect DT600085 for 01-Fish.dt4)\n", sep = "")
+    res@metadata$calibrationTime <- numberAsPOSIXct(readBin(rxee[36 + 1:4], "integer"), tz = "UTC") # [1 p16] offset=36
+    if (debug > 1) cat("calibrationTime: ", format(res@metadata$calibrationTime), " (expect Thu Apr 13 02:36:38 2000 for 01-Fish.dt4)\n", sep = "")
+    # res@metadata$sl <- 0.1 * .C("int16_le", rxee[58+1:2], 1L, res=integer(1), NAOK=TRUE, PACKAGE="oce")$res # [p16 1]
+    res@metadata$sourceLevel <- 0.1 * readBin(rxee[58 + 1:2], "integer", n = 1L, size = 2L, endian = "little") # [p16 1]
+    if (debug > 1) cat("sl=", res@metadata$sourceLevel, " (expect 220 for 01-Fish.dt4 source level SourceLevel_dBuPa)\n", sep = "")
+    # res@metadata$rs <- 0.1 * .C("int16_le", rxee[1+64+1:2], 1L, res=integer(1), NAOK=TRUE, PACKAGE="oce")$res # [p16 1]
+    res@metadata$receiverSensitivity <- 0.1 * readBin(rxee[64 + 1:2], "integer", n = 1L, size = 2) # [p16 1]
     if (debug > 1) cat("rs=", res@metadata$receiverSensitivity, " receiver sensitivity in dB (counts/micro Pa) (expect -58.8 for 01-Fish.dt4)\n")
-    res@metadata$trtype <- .C("uint16_le", rxee[84+1:2], 1L, res=integer(1), NAOK=TRUE, PACKAGE="oce")$res # [p16 1]
-    if (debug > 1) cat("trtype=", res@metadata$trtype, " hardware [not deployment] transducer type ",
-        "(0 single, 3 dual, 4 split) expect 1 for 01-Fish.dt4\n")
-    res@metadata$frequency <- readBin(rxee[86+1:4], "integer", n=1L, size=4) # [p16 1]
-    if (debug > 1) cat("fq=", res@metadata$frequency, " transducer frequency, Hz (expect 208000 for 01-Fish.dt4)\n", sep="")
-    res@metadata$beamwidthX <- 0.1 * as.numeric(rxee[1+100]) # [1 p16] offset=100
-    res@metadata$beamwidthY <- 0.1 * as.numeric(rxee[1+101]) # [1 p16] offset=101
-    if (debug > 1) cat("beamwidthX=", res@metadata$beamwidthX, " (expect 6.5 for 01-Fish.dt4; called BeamWidthX_deg)\n", sep="")
-    if (debug > 1) cat("beamwidthY=", res@metadata$beamwidthY, " (expect 6.5 for 01-Fish.dt4; called BeamWidthY_deg)\n", sep="")
-    res@data <- list(timeSlow=timeSlow+as.POSIXct("1970-01-01 00:00:00", tz="UTC"),
-        latitudeSlow=latitudeSlow,
-        longitudeSlow=longitudeSlow,
-        depth=depth,
-        #range=range,
-        time=time+as.POSIXct("1970-01-01 00:00:00", tz="UTC"),
-        latitude=latitude,
-        longitude=longitude,
-        a=a, b=b, c=c)
+    res@metadata$trtype <- .C("uint16_le", rxee[84 + 1:2], 1L, res = integer(1), NAOK = TRUE, PACKAGE = "oce")$res # [p16 1]
+    if (debug > 1) {
+        cat(
+            "trtype=", res@metadata$trtype, " hardware [not deployment] transducer type ",
+            "(0 single, 3 dual, 4 split) expect 1 for 01-Fish.dt4\n"
+        )
+    }
+    res@metadata$frequency <- readBin(rxee[86 + 1:4], "integer", n = 1L, size = 4) # [p16 1]
+    if (debug > 1) cat("fq=", res@metadata$frequency, " transducer frequency, Hz (expect 208000 for 01-Fish.dt4)\n", sep = "")
+    res@metadata$beamwidthX <- 0.1 * as.numeric(rxee[1 + 100]) # [1 p16] offset=100
+    res@metadata$beamwidthY <- 0.1 * as.numeric(rxee[1 + 101]) # [1 p16] offset=101
+    if (debug > 1) cat("beamwidthX=", res@metadata$beamwidthX, " (expect 6.5 for 01-Fish.dt4; called BeamWidthX_deg)\n", sep = "")
+    if (debug > 1) cat("beamwidthY=", res@metadata$beamwidthY, " (expect 6.5 for 01-Fish.dt4; called BeamWidthY_deg)\n", sep = "")
+    res@data <- list(
+        timeSlow = timeSlow + as.POSIXct("1970-01-01 00:00:00", tz = "UTC"),
+        latitudeSlow = latitudeSlow,
+        longitudeSlow = longitudeSlow,
+        depth = depth,
+        # range=range,
+        time = time + as.POSIXct("1970-01-01 00:00:00", tz = "UTC"),
+        latitude = latitude,
+        longitude = longitude,
+        a = a, b = b, c = c
+    )
     if (res@metadata$beamType == "single-beam") {
         res@data$b <- NULL
         res@data$c <- NULL
     }
     names <- names(res@data)
-    if ("latitude" %in% names) res@metadata$units$latitude <- list(unit=expression(degree*N), scale="")
-    if ("longitude" %in% names) res@metadata$units$longitude <- list(unit=expression(degree*E), scale="")
-    if ("latitudeSlow" %in% names) res@metadata$units$latitudeSlow <- list(unit=expression(degree*N), scale="")
-    if ("longitudeSlow" %in% names) res@metadata$units$longitudeSlow <- list(unit=expression(degree*E), scale="")
-    if ("depth" %in% names) res@metadata$units$depth <- list(unit=expression(m), scale="")
-    if (!missing(processingLog))
+    if ("latitude" %in% names) res@metadata$units$latitude <- list(unit = expression(degree * N), scale = "")
+    if ("longitude" %in% names) res@metadata$units$longitude <- list(unit = expression(degree * E), scale = "")
+    if ("latitudeSlow" %in% names) res@metadata$units$latitudeSlow <- list(unit = expression(degree * N), scale = "")
+    if ("longitudeSlow" %in% names) res@metadata$units$longitudeSlow <- list(unit = expression(degree * E), scale = "")
+    if ("depth" %in% names) res@metadata$units$depth <- list(unit = expression(m), scale = "")
+    if (!missing(processingLog)) {
         res@processingLog <- processingLogItem(processingLog)
-    res@processingLog <- processingLogAppend(res@processingLog,
+    }
+    res@processingLog <- processingLogAppend(
+        res@processingLog,
         paste("read.echosounder(\"", filename, "\", channel=", channel, ", soundSpeed=",
-            if (missing(soundSpeed)) "(missing)" else soundSpeed, ", tz=\"", tz, "\", debug=", debug, ", processingLog)", sep=""))
-    .C("biosonics_free_storage", PACKAGE="oce") # clear temporary storage space
-    oceDebug(debug, "} read.echosounder()\n", sep="", unindent=1, style="bold")
+            if (missing(soundSpeed)) "(missing)" else soundSpeed, ", tz=\"", tz, "\", debug=", debug, ", processingLog)",
+            sep = ""
+        )
+    )
+    .C("biosonics_free_storage", PACKAGE = "oce") # clear temporary storage space
+    oceDebug(debug, "} read.echosounder()\n", sep = "", unindent = 1, style = "bold")
     res
 }

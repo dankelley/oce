@@ -29,8 +29,9 @@ class and variety.
 \description{
 Infer an Item From a Nortek AD2CP File Header
 }
-\examples{
-\dontrun{
+\section{Sample of Usage}{
+
+\preformatted{
 if (file.exists("a.ad2cp")) {
     d <- read.oce("a.ad2cp")
     # The examples start with the line in x[["text"]][[1]]; note that in the second
@@ -46,8 +47,8 @@ if (file.exists("a.ad2cp")) {
     frequency <- ad2cpHeaderValue(d, "BEAMCFGLIST,BEAM=1", "FREQ", default=NA)
 }
 }
-
 }
+
 \seealso{
 Other things related to adp data: 
 \code{\link{[[,adp-method}},

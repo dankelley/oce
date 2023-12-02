@@ -1,8 +1,8 @@
 # vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
 
-setClass("satellite", contains="oce")
+setClass("satellite", contains = "oce")
 
-#' Class to Store G1SST Satellite-model Data
+#' Class to Store G1SST Satellite/Model Data
 #'
 #' This class stores G1SST model-satellite products.
 #'
@@ -42,7 +42,7 @@ setClass("satellite", contains="oce")
 #'
 #' @family classes holding satellite data
 #' @family things related to g1sst data
-setClass("g1sst", contains="satellite")
+setClass("g1sst", contains = "satellite")
 
 
 #' @title Extract Something From a g1sst Object
@@ -65,17 +65,21 @@ setClass("g1sst", contains="satellite")
 #' @author Dan Kelley
 #'
 #' @family things related to g1sst data
-setMethod(f="[[",
-    signature(x="g1sst", i="ANY", j="ANY"),
-    definition=function(x, i, j, ...) {
+setMethod(
+    f = "[[",
+    signature(x = "g1sst", i = "ANY", j = "ANY"),
+    definition = function(x, i, j, ...) {
         if (i == "?") {
-            return(list(metadata=sort(names(x@metadata)),
-                metadataDerived=NULL,
-                data=sort(names(x@data)),
-                dataDerived=NULL))
+            return(list(
+                metadata = sort(names(x@metadata)),
+                metadataDerived = NULL,
+                data = sort(names(x@data)),
+                dataDerived = NULL
+            ))
         }
-        callNextMethod()         # [[
-    })
+        callNextMethod() # [[
+    }
+)
 
 #' @title Replace Parts of a g1sst Object
 #'
@@ -84,11 +88,13 @@ setMethod(f="[[",
 #' @template sub_subsetTemplate
 #'
 #' @family things related to g1sst data
-setMethod(f="[[<-",
-    signature(x="g1sst", i="ANY", j="ANY"),
-    definition=function(x, i, j, ..., value) {
-        callNextMethod(x=x, i=i, j=j, ...=..., value=value) # [[<-
-    })
+setMethod(
+    f = "[[<-",
+    signature(x = "g1sst", i = "ANY", j = "ANY"),
+    definition = function(x, i, j, ..., value) {
+        callNextMethod(x = x, i = i, j = j, ... = ..., value = value) # [[<-
+    }
+)
 
 #' @title Read a g1sst File
 #'
@@ -111,8 +117,8 @@ setMethod(f="[[<-",
 #'
 #' @return A [g1sst-class] object.
 #'
-#' @examples
-#'\dontrun{
+#' @section Sample of Usage:
+#' \preformatted{
 #' # Construct query, making it easier to understand and modify.
 #' day <- "2016-01-02"
 #' lon0 <- -66.5
@@ -120,50 +126,56 @@ setMethod(f="[[<-",
 #' lat0 <- 44
 #' lat1 <- 46
 #' source <- paste("https://coastwatch.pfeg.noaa.gov/erddap/griddap/",
-#'                 "jplG1SST.nc?",
-#'                 "SST%5B(", day, "T12:00:00Z)",
-#'                 "%5D%5B(", lat0, "):(", lat1, ")",
-#'                 "%5D%5B(", lon0, "):(", lon1, ")",
-#'                 "%5D", sep="")
+#'     "jplG1SST.nc?",
+#'     "SST%5B(", day, "T12:00:00Z)",
+#'     "%5D%5B(", lat0, "):(", lat1, ")",
+#'     "%5D%5B(", lon0, "):(", lon1, ")",
+#'     "%5D", sep="")
 #' if (!length(list.files(pattern="^a.nc$")))
 #'     download.file(source, "a.nc")
 #' d <- read.g1sst("a.nc")
 #' plot(d, "SST", col=oceColorsTemperature)
 #' if (requireNamespace("ocedata", quietly=TRUE)) {
 #'     data(coastlineWorldFine, package="ocedata")
-#'     lines(coastlineWorldFine[['longitude']],coastlineWorldFine[['latitude']])
+#'     lines(coastlineWorldFine[["longitude"]],coastlineWorldFine[["latitude"]])
 #' }
-#'}
-#'
-#' @author Dan Kelley
+#' }
 #'
 #' @references
+#'
 #' 1. ERDDAP Portal `https://coastwatch.pfeg.noaa.gov/erddap/`
+#'
 #' 2. JPO OurOcean Portal `https://ourocean.jpl.nasa.gov/SST/`
-#' (link worked in 2016 but was seen to fail 2017 Feb 2).
+## (link worked in 2016 but was seen to fail 2017 Feb 2).
 #'
 #' @family things related to g1sst data
-read.g1sst <- function(file, encoding=NA)
-{
-    if (missing(file))
+#'
+#' @author Dan Kelley
+read.g1sst <- function(file, encoding = NA) {
+    if (missing(file)) {
         stop("must supply 'file'")
-    if (is.character(file)) {
-        if (!file.exists(file))
-            stop("cannot find file '", file, "'")
-        if (0L == file.info(file)$size)
-            stop("empty file '", file, "'")
     }
-    if (!requireNamespace("ncdf4", quietly=TRUE))
-        stop('must install.packages("ncdf4") to read g1sst data')
-    if (!is.character(file))
+    if (is.character(file)) {
+        if (!file.exists(file)) {
+            stop("cannot find file \"", file, "\"")
+        }
+        if (0L == file.info(file)$size) {
+            stop("empty file \"", file, "\"")
+        }
+    }
+    if (!requireNamespace("ncdf4", quietly = TRUE)) {
+        stop("must install.packages(\"ncdf4\") to read g1sst data")
+    }
+    if (!is.character(file)) {
         stop("file must be a character string")
+    }
     f <- ncdf4::nc_open(file)
-    res <- new("g1sst", file=file)
+    res <- new("g1sst", file = file)
     # Change the 1-col ncdf4 output to a vector
     res@metadata$longitude <- as.vector(ncdf4::ncvar_get(f, "longitude"))
     res@metadata$latitude <- as.vector(ncdf4::ncvar_get(f, "latitude"))
     res@metadata$time <- numberAsPOSIXct(ncdf4::ncvar_get(f, "time"))
-    res@metadata$units$SST <- list(unit=expression(degree*C), scale="ITS-90")
+    res@metadata$units$SST <- list(unit = expression(degree * C), scale = "ITS-90")
     res@metadata$satellite <- "g1sst"
     res@data$SST <- ncdf4::ncvar_get(f, "SST")
     res

@@ -52,8 +52,8 @@ the graph indicates that the M2 model is much better than the S2 model.
 library(oce)
 data(sealevel)
 x <- sealevel[["elevation"]]
-M2 <- predict(tidem(sealevel, constituents="M2"))
-S2 <- predict(tidem(sealevel, constituents=c("S2")))
+M2 <- predict(tidem(sealevel, constituents = "M2"))
+S2 <- predict(tidem(sealevel, constituents = c("S2")))
 plotTaylor(x, cbind(M2, S2))
 }
 \references{

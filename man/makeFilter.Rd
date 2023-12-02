@@ -58,27 +58,9 @@ at \code{1/m} cycles per time unit, as shown in the \dQuote{Examples}
 section.  When using \code{\link[=filter]{filter()}} or \code{\link[=kernapply]{kernapply()}} with
 these filters, use \code{circular=TRUE}.
 }
-\examples{
-library(oce)
+\section{Sample of Usage}{
 
-# 1. Demonstrate step-function response
-y <- c(rep(1, 10), rep(-1, 10))
-x <- seq_along(y)
-plot(x, y, type="o", ylim=c(-1.05, 1.05))
-BH <- makeFilter("blackman-harris", 11, asKernel=FALSE)
-H <- makeFilter("hamming", 11, asKernel=FALSE)
-yBH <- stats::filter(y, BH)
-points(x, yBH, col=2, type="o")
-yH <- stats::filter(y, H)
-points(yH, col=3, type="o")
-legend("topright", col=1:3, cex=2/3, pch=1,
-       legend=c("input", "Blackman Harris", "Hamming"))
-
-# 2. Show theoretical and practical filter gain, where
-#    the latter is based on random white noise, and
-#    includes a particular value for the spans
-#    argument of spectrum(), etc.
-\dontrun{
+\preformatted{
 # need signal package for this example
 r <- rnorm(2048)
 rh <- stats::filter(r, H)
@@ -104,6 +86,31 @@ grid()
 legend("topright", col=c("gray", "red"), lwd=c(5, 1), cex=2/3,
        legend=c("Practical", "Theory"), bg="white")
 }
+}
+
+\examples{
+library(oce)
+
+# 1. Demonstrate step-function response
+y <- c(rep(1, 10), rep(-1, 10))
+x <- seq_along(y)
+plot(x, y, type = "o", ylim = c(-1.05, 1.05))
+BH <- makeFilter("blackman-harris", 11, asKernel = FALSE)
+H <- makeFilter("hamming", 11, asKernel = FALSE)
+yBH <- stats::filter(y, BH)
+points(x, yBH, col = 2, type = "o")
+yH <- stats::filter(y, H)
+points(yH, col = 3, type = "o")
+legend("topright",
+    col = 1:3, cex = 2 / 3, pch = 1,
+    legend = c("input", "Blackman Harris", "Hamming")
+)
+
+# 2. Show theoretical and practical filter gain, where
+#    the latter is based on random white noise, and
+#    includes a particular value for the spans
+#    argument of spectrum(), etc.
+
 }
 \references{
 F. J. Harris, 1978.  On the use of windows for harmonic analysis

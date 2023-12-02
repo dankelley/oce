@@ -30,14 +30,16 @@ Create an AD2CP file by copying the first \code{n} data chunks (regions starting
 with \code{0xa5}, etc) of another such file. This can be useful in supplying
 small sample files for bug reports.
 }
-\examples{
-\dontrun{
+\section{Sample of Usage}{
+
+\preformatted{
 # Can only be run by the developer, since it uses a private file.
-f  <- "/Users/kelley/Dropbox/oce_secret_data/ad2cp/byg_trimmed.ad2cp"
+f  <- "~/Dropbox/oce_secret_data/ad2cp/byg_trimmed.ad2cp"
 if (file.exists(f))
     adpAd2cpFileTrim(f, 100L) # this file is already trimmed to 200 chunks
 }
 }
+
 \seealso{
 Other things related to adp data: 
 \code{\link{[[,adp-method}},

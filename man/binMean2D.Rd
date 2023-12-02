@@ -76,11 +76,11 @@ f <- x^2 + y^2
 xb <- seq(0, 0.5, 0.1)
 yb <- seq(0, 0.5, 0.1)
 m <- binMean2D(x, y, f, xb, yb)
-cm <- colormap(f, col=oceColorsTurbo)
-opar <- par(no.readonly=TRUE)
-drawPalette(colormap=cm)
-plot(x, y, col=cm$zcol, pch=20, cex=1.4)
-contour(m$xmids, m$ymids, m$result, add=TRUE, labcex=1.4)
+cm <- colormap(f, col = oceColorsTurbo)
+opar <- par(no.readonly = TRUE)
+drawPalette(colormap = cm)
+plot(x, y, col = cm$zcol, pch = 20, cex = 1.4)
+contour(m$xmids, m$ymids, m$result, add = TRUE, labcex = 1.4)
 par(opar)
 
 }

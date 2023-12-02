@@ -108,7 +108,7 @@ directs where to look.
 
 \examples{
 data(adv)
-head(adv[["q"]])            # in raw form
+head(adv[["q"]]) # in raw form
 head(adv[["q", "numeric"]]) # in numeric form
 
 }

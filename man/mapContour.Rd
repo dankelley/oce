@@ -86,19 +86,20 @@ how this works may change through the summer months of that year.
 Note that label placement in \code{mapContour} is handled differently
 than in \code{\link[=contour]{contour()}}.
 }
-\examples{
-\dontrun{
+\section{Sample of Usage}{
+
+\preformatted{
 library(oce)
 data(coastlineWorld)
 if (requireNamespace("ocedata", quietly=TRUE)) {
     data(levitus, package="ocedata")
     par(mar=rep(1, 4))
     mapPlot(coastlineWorld, projection="+proj=robin", col="lightgray")
-    mapContour(levitus[['longitude']], levitus[['latitude']], levitus[['SST']])
+    mapContour(levitus[["longitude"]], levitus[["latitude"]], levitus[["SST"]])
+}
 }
 }
 
-}
 \seealso{
 A map must first have been created with \code{\link[=mapPlot]{mapPlot()}}.
 

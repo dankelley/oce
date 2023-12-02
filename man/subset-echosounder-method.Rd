@@ -27,7 +27,7 @@ library(oce)
 data(echosounder)
 plot(echosounder)
 plot(subset(echosounder, depth < 10))
-plot(subset(echosounder, time < mean(range(echosounder[['time']]))))
+plot(subset(echosounder, time < mean(range(echosounder[["time"]]))))
 
 }
 \seealso{
