@@ -6,10 +6,11 @@
 #' program, which (according to comments in the code) is in turn
 #' based on "The Astronomical Almanac".
 #'
-#' @param t time, a POSIXt object (converted to timezone `"UTC"`,
-#' if it is not already in that timezone), a character or numeric value that
-#' corresponds to such a time.  This may be a single value or a vector
-#' of values.  In the latter case, `longitude`, `latitude` and `useRefraction`
+#' @param t time, either a POSIXt object (converted to timezone `"UTC"`,
+#' if it is not already in that timezone), or a value (character or numeric)
+#' that can be converted to a time with [as.POSIXct()], assuming the
+#' timezone to be `"UTC"`. Note that `time` may be a single value or a vector
+#' of values; in the latter case, `longitude`, `latitude` and `useRefraction`
 #' are all made to be of the same length as `time`, by calling [rep()].
 #'
 #' @param longitude observer longitude in degrees east.

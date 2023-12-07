@@ -7,10 +7,11 @@
 sunAngle(t, longitude = 0, latitude = 0, useRefraction = FALSE)
 }
 \arguments{
-\item{t}{time, a POSIXt object (converted to timezone \code{"UTC"},
-if it is not already in that timezone), a character or numeric value that
-corresponds to such a time.  This may be a single value or a vector
-of values.  In the latter case, \code{longitude}, \code{latitude} and \code{useRefraction}
+\item{t}{time, either a POSIXt object (converted to timezone \code{"UTC"},
+if it is not already in that timezone), or a value (character or numeric)
+that can be converted to a time with \code{\link[=as.POSIXct]{as.POSIXct()}}, assuming the
+timezone to be \code{"UTC"}. Note that \code{time} may be a single value or a vector
+of values; in the latter case, \code{longitude}, \code{latitude} and \code{useRefraction}
 are all made to be of the same length as \code{time}, by calling \code{\link[=rep]{rep()}}.}
 
 \item{longitude}{observer longitude in degrees east.}
