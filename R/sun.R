@@ -113,7 +113,9 @@ sunAngle <- function(t, longitude = 0.0, latitude = 0.0, useRefraction = FALSE) 
         latitude <- rep(latitude, length.out = nt)
         useRefraction <- rep(useRefraction, length.out = nt)
     } else {
-        stop("lengths of longitude, latitude and useRefraction must be 1 or the length of time")
+        if (nt != nlongitude || nt != nlatitude || nt != nuseRefraction) {
+            stop("lengths of longitude, latitude and useRefraction must equal 1 or the length of time")
+        }
     }
     # Ensure that the timezone is UTC. Note that Sys.Date() gives a NULL tzone.
     tzone <- attr(as.POSIXct(t[1]), "tzone")

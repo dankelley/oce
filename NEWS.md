@@ -1,6 +1,6 @@
 # oce 1.8.3
 
-* No new features yet.
+* Change `sunAngle` to handle vector arguments better (issue 2178).
 
 # oce 1.8.2
 
