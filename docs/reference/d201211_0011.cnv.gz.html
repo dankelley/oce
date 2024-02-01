@@ -96,16 +96,16 @@
 <code>[[&lt;-,ctd-method</code>,
 <code><a href="as.ctd.html">as.ctd</a>()</code>,
 <code><a href="cnvName2oceName.html">cnvName2oceName</a>()</code>,
+<code><a href="ctd.html">ctd</a></code>,
 <code><a href="ctd-class.html">ctd-class</a></code>,
 <code><a href="ctd.cnv.gz.html">ctd.cnv.gz</a></code>,
 <code><a href="ctdDecimate.html">ctdDecimate</a>()</code>,
-<code><a href="ctdFindProfilesRBR.html">ctdFindProfilesRBR</a>()</code>,
 <code><a href="ctdFindProfiles.html">ctdFindProfiles</a>()</code>,
+<code><a href="ctdFindProfilesRBR.html">ctdFindProfilesRBR</a>()</code>,
 <code><a href="ctdRaw.html">ctdRaw</a></code>,
 <code><a href="ctdRepair.html">ctdRepair</a>()</code>,
 <code><a href="ctdTrim.html">ctdTrim</a>()</code>,
 <code><a href="ctd_aml.csv.gz.html">ctd_aml.csv.gz</a></code>,
-<code><a href="ctd.html">ctd</a></code>,
 <code><a href="d200321-001.ctd.gz.html">d200321-001.ctd.gz</a></code>,
 <code><a href="handleFlags-ctd-method.html">handleFlags,ctd-method</a></code>,
 <code><a href="initialize-ctd-method.html">initialize,ctd-method</a></code>,
@@ -116,6 +116,7 @@
 <code><a href="plotProfile.html">plotProfile</a>()</code>,
 <code><a href="plotScan.html">plotScan</a>()</code>,
 <code><a href="plotTS.html">plotTS</a>()</code>,
+<code><a href="read.ctd.html">read.ctd</a>()</code>,
 <code><a href="read.ctd.aml.html">read.ctd.aml</a>()</code>,
 <code><a href="read.ctd.itp.html">read.ctd.itp</a>()</code>,
 <code><a href="read.ctd.odf.html">read.ctd.odf</a>()</code>,
@@ -123,9 +124,8 @@
 <code><a href="read.ctd.saiv.html">read.ctd.saiv</a>()</code>,
 <code><a href="read.ctd.sbe.html">read.ctd.sbe</a>()</code>,
 <code><a href="read.ctd.ssda.html">read.ctd.ssda</a>()</code>,
-<code><a href="read.ctd.woce.other.html">read.ctd.woce.other</a>()</code>,
 <code><a href="read.ctd.woce.html">read.ctd.woce</a>()</code>,
-<code><a href="read.ctd.html">read.ctd</a>()</code>,
+<code><a href="read.ctd.woce.other.html">read.ctd.woce.other</a>()</code>,
 <code><a href="setFlags-ctd-method.html">setFlags,ctd-method</a></code>,
 <code><a href="subset-ctd-method.html">subset,ctd-method</a></code>,
 <code><a href="summary-ctd-method.html">summary,ctd-method</a></code>,
@@ -137,7 +137,7 @@
     <div id="ref-examples">
     <h2>Examples</h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="read.oce.html">read.oce</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"d201211_0011.cnv.gz"</span>, package<span class="op">=</span><span class="st">"oce"</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ctd object, from file "/private/var/folders/8b/l4h64m1j22v5pb7vj049ff140000gn/T/Rtmpu1wbRj/temp_libpathd2b76c13bf35/oce/extdata/d201211_0011.cnv.gz", with data slot containing:</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ctd object, from file "/private/var/folders/8b/l4h64m1j22v5pb7vj049ff140000gn/T/Rtmp5QXRdJ/temp_libpath29867637f025/oce/extdata/d201211_0011.cnv.gz", with data slot containing:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    scan[1:78]: 10569, 10673, ..., 15306, 17116</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    pressure[1:78]: 1, 2, ..., 77, 78</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    depth[1:78]: 0.99, 1.98, ..., 76.200, 77.189</span>
@@ -179,7 +179,7 @@
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.9000.</p>
 </div>
 
       </footer></div>
