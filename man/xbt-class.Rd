@@ -89,12 +89,12 @@ Other things related to xbt data:
 \code{\link{[[<-,xbt-method}},
 \code{\link{as.xbt}()},
 \code{\link{plot,xbt-method}},
-\code{\link{read.xbt.noaa1}()},
 \code{\link{read.xbt}()},
+\code{\link{read.xbt.noaa1}()},
 \code{\link{subset,xbt-method}},
 \code{\link{summary,xbt-method}},
-\code{\link{xbt.edf}},
-\code{\link{xbt}}
+\code{\link{xbt}},
+\code{\link{xbt.edf}}
 
 Other classes provided by oce: 
 \code{\link{adp-class}},

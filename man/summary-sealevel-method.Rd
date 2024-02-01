@@ -31,9 +31,9 @@ Other things related to sealevel data:
 \code{\link{as.sealevel}()},
 \code{\link{plot,sealevel-method}},
 \code{\link{read.sealevel}()},
+\code{\link{sealevel}},
 \code{\link{sealevel-class}},
 \code{\link{sealevelTuktoyaktuk}},
-\code{\link{sealevel}},
 \code{\link{subset,sealevel-method}}
 }
 \author{

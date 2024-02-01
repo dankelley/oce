@@ -109,24 +109,24 @@ The following link used to work, but was found to fail in December 2020.
 \seealso{
 Other functions relating to data-quality flags: 
 \code{\link{defaultFlags}()},
+\code{\link{handleFlags}()},
 \code{\link{handleFlags,adp-method}},
 \code{\link{handleFlags,argo-method}},
 \code{\link{handleFlags,ctd-method}},
 \code{\link{handleFlags,oce-method}},
-\code{\link{handleFlags}()},
+\code{\link{initializeFlagScheme}()},
 \code{\link{initializeFlagScheme,ctd-method}},
 \code{\link{initializeFlagScheme,oce-method}},
 \code{\link{initializeFlagScheme,section-method}},
 \code{\link{initializeFlagSchemeInternal}()},
-\code{\link{initializeFlagScheme}()},
+\code{\link{initializeFlags}()},
 \code{\link{initializeFlags,adp-method}},
 \code{\link{initializeFlags,oce-method}},
 \code{\link{initializeFlagsInternal}()},
-\code{\link{initializeFlags}()},
+\code{\link{setFlags}()},
 \code{\link{setFlags,adp-method}},
 \code{\link{setFlags,ctd-method}},
-\code{\link{setFlags,oce-method}},
-\code{\link{setFlags}()}
+\code{\link{setFlags,oce-method}}
 
 Other things related to section data: 
 \code{\link{[[,section-method}},
@@ -135,12 +135,12 @@ Other things related to section data:
 \code{\link{initializeFlagScheme,section-method}},
 \code{\link{plot,section-method}},
 \code{\link{read.section}()},
+\code{\link{section}},
 \code{\link{section-class}},
 \code{\link{sectionAddStation}()},
 \code{\link{sectionGrid}()},
 \code{\link{sectionSmooth}()},
 \code{\link{sectionSort}()},
-\code{\link{section}},
 \code{\link{subset,section-method}},
 \code{\link{summary,section-method}}
 }

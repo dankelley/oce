@@ -36,10 +36,10 @@ Other things related to rsk data:
 \code{\link{ctdFindProfilesRBR}()},
 \code{\link{plot,rsk-method}},
 \code{\link{read.rsk}()},
+\code{\link{rsk}},
 \code{\link{rsk-class}},
 \code{\link{rskPatm}()},
 \code{\link{rskToc}()},
-\code{\link{rsk}},
 \code{\link{summary,rsk-method}}
 
 Other functions that subset oce objects: 

@@ -223,8 +223,8 @@ Other functions that interpret variable names and units from headers:
 \code{\link{cnvName2oceName}()},
 \code{\link{oceNames2whpNames}()},
 \code{\link{oceUnits2whpUnits}()},
-\code{\link{unitFromStringRsk}()},
 \code{\link{unitFromString}()},
+\code{\link{unitFromStringRsk}()},
 \code{\link{woceNames2oceNames}()},
 \code{\link{woceUnit2oceUnit}()}
 

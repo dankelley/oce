@@ -31,8 +31,8 @@ imagep(volcano - mean(range(volcano)),
 }
 \seealso{
 Other things related to colors: 
-\code{\link{colormapGMT}()},
 \code{\link{colormap}()},
+\code{\link{colormapGMT}()},
 \code{\link{oceColors9B}()},
 \code{\link{oceColorsCDOM}()},
 \code{\link{oceColorsChlorophyll}()},

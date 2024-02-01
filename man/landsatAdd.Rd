@@ -35,9 +35,9 @@ with them.
 Other things related to landsat data: 
 \code{\link{[[,landsat-method}},
 \code{\link{[[<-,landsat-method}},
+\code{\link{landsat}},
 \code{\link{landsat-class}},
 \code{\link{landsatTrim}()},
-\code{\link{landsat}},
 \code{\link{plot,landsat-method}},
 \code{\link{read.landsat}()},
 \code{\link{summary,landsat-method}}

@@ -214,9 +214,9 @@ Other classes holding satellite data:
 Other things related to landsat data: 
 \code{\link{[[,landsat-method}},
 \code{\link{[[<-,landsat-method}},
+\code{\link{landsat}},
 \code{\link{landsatAdd}()},
 \code{\link{landsatTrim}()},
-\code{\link{landsat}},
 \code{\link{plot,landsat-method}},
 \code{\link{read.landsat}()},
 \code{\link{summary,landsat-method}}

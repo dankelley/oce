@@ -126,11 +126,11 @@ Earth, Planets and Space 73, no. 1 (December 2021): 49.
 }
 \seealso{
 Other things related to magnetism: 
+\code{\link{applyMagneticDeclination}()},
 \code{\link{applyMagneticDeclination,adp-method}},
 \code{\link{applyMagneticDeclination,adv-method}},
 \code{\link{applyMagneticDeclination,cm-method}},
-\code{\link{applyMagneticDeclination,oce-method}},
-\code{\link{applyMagneticDeclination}()}
+\code{\link{applyMagneticDeclination,oce-method}}
 }
 \author{
 Dan Kelley wrote the R code and a fortran wrapper to the

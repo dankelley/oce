@@ -18,10 +18,10 @@ Provides a summary of a some information about a \linkS4class{landsat} object.
 Other things related to landsat data: 
 \code{\link{[[,landsat-method}},
 \code{\link{[[<-,landsat-method}},
+\code{\link{landsat}},
 \code{\link{landsat-class}},
 \code{\link{landsatAdd}()},
 \code{\link{landsatTrim}()},
-\code{\link{landsat}},
 \code{\link{plot,landsat-method}},
 \code{\link{read.landsat}()}
 }

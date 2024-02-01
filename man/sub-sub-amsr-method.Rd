@@ -150,8 +150,8 @@ Other functions that extract parts of oce objects:
 
 Other things related to amsr data: 
 \code{\link{[[<-,amsr-method}},
-\code{\link{amsr-class}},
 \code{\link{amsr}},
+\code{\link{amsr-class}},
 \code{\link{composite,amsr-method}},
 \code{\link{download.amsr}()},
 \code{\link{plot,amsr-method}},

@@ -2,8 +2,8 @@
 % Please edit documentation in R/oce.R
 \docType{package}
 \name{oce}
-\alias{oce}
 \alias{oce-package}
+\alias{oce}
 \title{A Package for Oceanographic Analysis}
 \description{
 The oce package provides functions for working with

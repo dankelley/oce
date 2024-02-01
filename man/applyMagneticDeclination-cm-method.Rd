@@ -47,18 +47,18 @@ Use \code{\link[=magneticField]{magneticField()}} to determine the declination,
 inclination and intensity at a given spot on the world, at a given time.
 
 Other things related to magnetism: 
+\code{\link{applyMagneticDeclination}()},
 \code{\link{applyMagneticDeclination,adp-method}},
 \code{\link{applyMagneticDeclination,adv-method}},
 \code{\link{applyMagneticDeclination,oce-method}},
-\code{\link{applyMagneticDeclination}()},
 \code{\link{magneticField}()}
 
 Other things related to cm data: 
 \code{\link{[[,cm-method}},
 \code{\link{[[<-,cm-method}},
 \code{\link{as.cm}()},
-\code{\link{cm-class}},
 \code{\link{cm}},
+\code{\link{cm-class}},
 \code{\link{plot,cm-method}},
 \code{\link{read.cm}()},
 \code{\link{rotateAboutZ}()},

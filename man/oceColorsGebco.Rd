@@ -38,8 +38,8 @@ imagep(volcano, col = oceColorsGebco(128, region = "both"))
 }
 \seealso{
 Other things related to colors: 
-\code{\link{colormapGMT}()},
 \code{\link{colormap}()},
+\code{\link{colormapGMT}()},
 \code{\link{oceColors9B}()},
 \code{\link{oceColorsCDOM}()},
 \code{\link{oceColorsChlorophyll}()},

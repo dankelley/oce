@@ -82,8 +82,8 @@ DOI: 10.1029/2005EO200006
 }
 \seealso{
 Other things related to colors: 
-\code{\link{colormapGMT}()},
 \code{\link{colormap}()},
+\code{\link{colormapGMT}()},
 \code{\link{oceColors9B}()},
 \code{\link{oceColorsChlorophyll}()},
 \code{\link{oceColorsClosure}()},

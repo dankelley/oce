@@ -45,8 +45,8 @@ Coerce a dataset into a lobo dataset.
 Other things related to lobo data: 
 \code{\link{[[,lobo-method}},
 \code{\link{[[<-,lobo-method}},
-\code{\link{lobo-class}},
 \code{\link{lobo}},
+\code{\link{lobo-class}},
 \code{\link{plot,lobo-method}},
 \code{\link{read.lobo}()},
 \code{\link{subset,lobo-method}},

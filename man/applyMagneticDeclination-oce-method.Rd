@@ -47,10 +47,10 @@ Use \code{\link[=magneticField]{magneticField()}} to determine the declination,
 inclination and intensity at a given spot on the world, at a given time.
 
 Other things related to magnetism: 
+\code{\link{applyMagneticDeclination}()},
 \code{\link{applyMagneticDeclination,adp-method}},
 \code{\link{applyMagneticDeclination,adv-method}},
 \code{\link{applyMagneticDeclination,cm-method}},
-\code{\link{applyMagneticDeclination}()},
 \code{\link{magneticField}()}
 }
 \author{

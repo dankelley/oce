@@ -148,8 +148,8 @@ Other functions that plot oce data:
 Other things related to amsr data: 
 \code{\link{[[,amsr-method}},
 \code{\link{[[<-,amsr-method}},
-\code{\link{amsr-class}},
 \code{\link{amsr}},
+\code{\link{amsr-class}},
 \code{\link{composite,amsr-method}},
 \code{\link{plot,amsr-method}},
 \code{\link{read.amsr}()},

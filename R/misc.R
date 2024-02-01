@@ -1008,9 +1008,6 @@ titleCase <- function(w) {
 #' `curl`.  See \dQuote{Details} for the lengths and dimensions, for
 #' various values of `method`.
 #'
-#' @section Development status.: This function is under active development as
-#' of December 2014 and is unlikely to be stabilized until February 2015.
-#'
 #' @author Dan Kelley and Chantelle Layton
 #'
 #' @examples

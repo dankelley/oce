@@ -32,8 +32,8 @@ Other things related to met data:
 \code{\link{[[<-,met-method}},
 \code{\link{as.met}()},
 \code{\link{download.met}()},
-\code{\link{met-class}},
 \code{\link{met}},
+\code{\link{met-class}},
 \code{\link{plot,met-method}},
 \code{\link{read.met}()},
 \code{\link{summary,met-method}}
