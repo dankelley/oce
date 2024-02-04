@@ -1017,7 +1017,8 @@ imagep <- function(
         argShow(mar),
         argShow(mai.palette),
         argShow(breaks),
-        ")\n",
+        argShow(add, last = TRUE),
+        ", ...)\n",
         sep = "", style = "bold", unindent = 1
     )
     zlabPosition <- match.arg(zlabPosition)
@@ -1075,10 +1076,12 @@ imagep <- function(
             if (is.function(col)) {
                 col <- col(n = length(breaks) - 1)
             }
+            oceDebug(debug, "about to draw image on top of existing plot\n")
             image(x[ix], y[iy], z[ix, iy],
                 breaks = breaks, col = col, useRaster = useRaster, # why useRaster?
                 add = TRUE
             )
+            oceDebug(debug, "} # imagep()\n", unindent = 1, style = "bold", sep = "")
             return(invisible(list(xat = NULL, yat = NULL, decimate = decimate)))
         }
     } else {
@@ -1353,7 +1356,7 @@ imagep <- function(
                     if (missing(col)) {
                         breaks <- pretty(zlim, n = nbreaks)
                         oceDebug(debug, "zlim given but not breaks or col\n")
-                        oceDebug(debug, "inferred breaks:", head(breaks), "...\n")
+                        oceDebug(debug, "inferred breaks:", paste(head(breaks), collapse = " "), "...\n")
                     } else {
                         breaks <- seq(zlim[1], zlim[2],
                             length.out = if (is.function(col)) PLEN else 1 + length(col)
@@ -1361,11 +1364,11 @@ imagep <- function(
                         oceDebug(debug, "zlim and col given but not breaks; inferred head(breaks)=", head(breaks), "\n")
                     }
                     breaksOrig <- breaks
-                    oceDebug(debug, "range(z):", zrange, "\n")
-                    oceDebug(debug, "ORIG  range(breaks):", range(breaks), "\n")
+                    oceDebug(debug, "range(z):", paste(zrange, collapse = " to "), "\n")
+                    oceDebug(debug, "ORIG  range(breaks):", paste(range(breaks), collapse = " to "), "\n")
                     breaks[1] <- min(max(zlim[1], zrange[1]), breaks[1])
                     breaks[length(breaks)] <- max(breaks[length(breaks)], min(zlim[2], zrange[2]))
-                    oceDebug(debug, "later range(breaks):", range(breaks), "\n")
+                    oceDebug(debug, "later range(breaks):", paste(range(breaks), collapse = " to "), "\n")
                 }
             } else {
                 breaksOrig <- breaks
@@ -1479,7 +1482,7 @@ imagep <- function(
     }
     # trim image to limits, so endpoint colors will indicate outliers
     if (!zclip && !zlimHistogram) {
-        oceDebug(debug, "using zlim[1:2]=c(", zlim[1], ",", zlim[2], ") for out-of-range values\n")
+        oceDebug(debug, "using zlim[1:2]=c(", zlim[1], ",", zlim[2], ")\n")
         z[z < zlim[1]] <- zlim[1]
         z[z > zlim[2]] <- zlim[2]
     }
@@ -1561,7 +1564,8 @@ imagep <- function(
                 }
                 breaks2 <- seq(0, 1, length.out = length(col2) + 1)
             }
-            oceDebug(debug, "length(x)", length(x), "length(y)", length(y), "\n")
+            oceDebug(debug, "length(x) = ", length(x), "\n")
+            oceDebug(debug, "length(y) = ", length(y), "\n")
             # issue 489: use breaks/col instead of breaks2/col2
             image(
                 x = x, y = y, z = z, axes = FALSE, xlab = xlab, ylab = ylab, breaks = breaks, col = col,
