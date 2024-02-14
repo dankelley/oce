@@ -841,7 +841,7 @@ read.ctd.sbe <- function(
     }
     # If 'file' is a wildcard, call this function on each indicated file.  Only
     # that filename, 'encoding' and 'debug' are passed along, so if you need
-    # detailed customizaation, call the function on those files directly.
+    # detailed customization, call the function on those files directly.
     if (is.character(file) && grepl("\\*", file, ignore.case = TRUE)) {
         oceDebug(debug, "read.ctd.sbe(file=\"", file, "\") { # will read a series of files\n", unindent = 1)
         files <- list.files(pattern = file)
