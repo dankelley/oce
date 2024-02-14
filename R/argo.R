@@ -1989,12 +1989,13 @@ as.argo <- function(time, longitude, latitude, salinity, temperature, pressure, 
 #' indicated level(s)
 #'
 #' * `which=5` or `"salinity profile"` gives a salinity
-#' profile of all the data (with S and p trimmed to the 1 and 99
-#' percentiles)
+#' profile (with S and p trimmed to the 1 and 99 percentiles)
 #'
-#' * `which=6` or `"temperature profile"` gives a
-#' temperature profile (with T and p trimmed to the 1 and 99
-#' percentiles)
+#' * `which=6` or `"temperature profile"` gives a temperature
+#' profile (with T and p trimmed to the 1 and 99 percentiles)
+#'
+#' * `which=7` or `"sigma0 profile"` gives a sigma0
+#' profile (with sigma0 and p trimmed to the 1 and 99 percentiles)
 #
 #' @param level depth pseudo-level to plot, for `which=2` and higher.  May be an
 #' integer, in which case it refers to an index of depth (1 being the top)
@@ -2071,7 +2072,8 @@ setMethod(
     definition = function(x, which = 1, level,
                           coastline = c("best", "coastlineWorld", "coastlineWorldMedium", "coastlineWorldFine", "none"),
                           cex = 1, pch = 1, type = "p", col = 1, fill = FALSE,
-                          projection = NULL, mgp = getOption("oceMgp"), mar = c(mgp[1] + 1.5, mgp[1] + 1.5, 1.5, 1.5),
+                          projection = NULL, mgp = getOption("oceMgp"),
+                          mar = c(mgp[1] + 1.5, mgp[1] + 1.5, 1.5, 1.5),
                           tformat, debug = getOption("oceDebug"), ...) {
         debug <- min(3L, max(0L, as.integer(debug)))
         if (!inherits(x, "argo")) {
@@ -2121,7 +2123,8 @@ setMethod(
                 "temperature ts" = 3,
                 "TS" = 4,
                 "salinity profile" = 5,
-                "temperature profile" = 6
+                "temperature profile" = 6,
+                "sigma0 profile" = 7
             )
         )
         # if (any(is.na(which)))
@@ -2294,6 +2297,15 @@ setMethod(
                 plotProfile(ctd,
                     xtype = "temperature",
                     Tlim = quantile(x@data$temperature, c(0.01, 0.99), na.rm = TRUE),
+                    ylim = quantile(x@data$pressure, c(0.99, 0.01), na.rm = TRUE),
+                    cex = cex, pch = pch, col = col, type = type
+                )
+            } else if (which[w] == 7) {
+                # sigma profile
+                sigma0lim <- quantile(ctd[["sigma0"]], c(0.01, 0.99), na.rm = TRUE)
+                plotProfile(ctd,
+                    xtype = "sigma0",
+                    xlim = sigma0lim,
                     ylim = quantile(x@data$pressure, c(0.99, 0.01), na.rm = TRUE),
                     cex = cex, pch = pch, col = col, type = type
                 )

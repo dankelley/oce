@@ -1,8 +1,9 @@
 # oce 1.8.3
 
-* Change `sunAngle` to handle vector arguments better (issue 2178).
+* Change `plot.argo()` to handle `which="sigma0 profile"` (issue 2184).
+* Change `sunAngle()` to handle vector arguments better (issue 2178).
 
-# oce 1.8.2
+# oce 1.8.2 (on CRAN)
 
 * Add `package?oce` documentation (had been missing with a Roxygen2 change).
 * Add `read.ctd.saiv()` to read data from SAIV instruments (issue 2141).
