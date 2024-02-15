@@ -2454,15 +2454,15 @@ resizableLabel <- function(item, axis = "x", sep, unit = NULL, debug = getOption
     } else if (item == "spiciness0") {
         var <- gettext("Spiciness wrt surface", domain = "R-oce")
         full <- bquote(.(var) * .(L) * kg / m^3 * .(R))
-        abbreviated <- bquote(sigma[0] * .(L) * kg / m^3 * .(R))
+        abbreviated <- full
     } else if (item == "spiciness1") {
         var <- gettext("Spiciness wrt 1000 dbar", domain = "R-oce")
         full <- bquote(.(var) * .(L) * kg / m^3 * .(R))
-        abbreviated <- bquote(sigma[0] * .(L) * kg / m^3 * .(R))
+        abbreviated <- full
     } else if (item == "spiciness2") {
         var <- gettext("Spiciness wrt 2000 dbar", domain = "R-oce")
         full <- bquote(.(var) * .(L) * kg / m^3 * .(R))
-        abbreviated <- bquote(sigma[0] * .(L) * kg / m^3 * .(R))
+        abbreviated <- full
     } else if (item == "S") {
         full <- gettext("Salinity", domain = "R-oce")
         abbreviated <- expression(S)

@@ -2144,9 +2144,9 @@ setMethod(
                 "temperature profile" = 6,
                 "sigma0 profile" = 7,
                 "spice profile" = 8,
-                "spiceness0 profile" = 9,
-                "spiceness1 profile" = 10,
-                "spiceness2 profile" = 11
+                "spiciness0 profile" = 9,
+                "spiciness1 profile" = 10,
+                "spiciness2 profile" = 11
             )
         )
         # if (any(is.na(which)))
@@ -2165,7 +2165,7 @@ setMethod(
             rm(nnn)
         }
         for (w in 1:nw) {
-            oceDebug(debug, "handling which[", w, "]=\"", whichOrig[w], "\"\n", sep = "")
+            oceDebug(debug, "handling which[", w, "]=\"", which[w], "\"\n", sep = "")
             if (is.na(which[w])) {
                 oceDebug(debug, "not a special case, so passing 'which' to plot,ctd-method\n")
                 plot(ctd, which = whichOrig[w], debug = debug - 1, ...)
@@ -2338,17 +2338,20 @@ setMethod(
                     cex = cex, pch = pch, col = col, type = type
                 )
             } else if (which[w] == 9) {
-                plotProfile(ctd, xtype=ctd[["spiciness0"]],
+                plotProfile(ctd,
+                    xtype = ctd[["spiciness0"]],
                     xlab = resizableLabel("spiciness0"),
                     cex = cex, pch = pch, col = col, type = type
                 )
             } else if (which[w] == 10) {
-                plotProfile(ctd, xtype=ctd[["spiciness1"]],
+                plotProfile(ctd,
+                    xtype = ctd[["spiciness1"]],
                     xlab = resizableLabel("spiciness1"),
                     cex = cex, pch = pch, col = col, type = type
                 )
             } else if (which[w] == 11) {
-                plotProfile(ctd, xtype=ctd[["spiciness2"]],
+                plotProfile(ctd,
+                    xtype = ctd[["spiciness2"]],
                     xlab = resizableLabel("spiciness2"),
                     cex = cex, pch = pch, col = col, type = type
                 )

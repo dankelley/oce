@@ -334,7 +334,7 @@ A partial list of seawater functions is as follows:
     altered adiabatically
 -   `swSoundSpeed()` for speed of sound
 -   `swSpecificHeat()` for specific heat
--   `swSpice()` for a quantity used in double-diffusive research
+-   `swSpice()`, `spiciness0()`, `spiciness1()` and `spiciness2()` for quantities used in watermass research
 -   `swTFreeze()` for freezing temperature
 -   `swTSrho()` for temperature from salinity and density
 -   `swTheta()` for potential temperature $\theta$

@@ -3669,7 +3669,9 @@ setMethod(
                 which[i] <- "Tts"
             } else if (wi == "32") {
                 which[i] <- "pts"
-            } else if (wi == "33") which[i] <- "rhots"
+            } else if (wi == "33") {
+                which[i] <- "rhots"
+            }
         }
         # Permit plotting anything contained in the data slot, along with
         # some things that can be computed from those contents.
@@ -3677,7 +3679,7 @@ setMethod(
         available <- c(q$data, q$dataDerived)
         #> message("available: c(\"", paste(available, collapse="\", \""), "\")")
         for (w in seq_along(which)) {
-            oceDebug(debug, "which[", w, "]\"=", which[w], "\"\n", sep = "")
+            oceDebug(debug, "which[", w, "] = \"", which[w], "\"\n", sep = "")
             # Case 1: non-single-profile plots.
             if (which[w] == "salinity+temperature") {
                 oceDebug(debug, "handling which[", w, "]=\"", whichOrig[w], "\" as a special case\n", sep = "")
