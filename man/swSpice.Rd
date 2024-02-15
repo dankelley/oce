@@ -44,18 +44,20 @@ the latter provided by \code{\link[gsw:gsw_spiciness0]{gsw::gsw_spiciness0()}}, 
 at application within the top half-kilometre of the ocean.
 }
 \description{
-Compute seawater "spice", also called "spiciness" (a variable orthogonal
-to density in TS space), in either of two formulations, depending on
-the value of the \code{eos} argument. If \code{eos="unesco"} then
-Flament's (reference 1) formulation is used. If \code{eos="gsw"}
-then the Gibbs SeaWater formulation for "spiciness0" is used
-(see reference 2).
+Compute seawater "spice", a variable that is in some sense orthogonal to
+density in TS space.  Larger spice values correspond to relative warm and
+salty water, compared with smaller spice values. Two distinct variants exist.
+If \code{eos="unesco"} then Flament's (2002) formulation is used. If \code{eos="gsw"}
+then \code{\link[gsw:gsw_spiciness0]{gsw::gsw_spiciness0()}} is used to compute a newer variant that is part
+of the Gibbs SeaWater formulation (McDougall and Krzysik, 2015). See the
+\dQuote{Examples} section for a graphical illustration of the difference in a
+typical coastal case.
 }
 \details{
 If the first argument is a \code{ctd} object, then salinity, temperature and
-pressure values are extracted from it, and used for the calculation. (For
+pressure values are extracted from it, and used for the calculation. For
 the \code{eos="gsw"} case, longitude and latitude are also extracted, because
-these are required for the formulation of spiciness0.
+these are required by \code{\link[gsw:gsw_spiciness0]{gsw::gsw_spiciness0()}}.
 
 Roughly speaking, seawater with a high spiciness is relatively warm and
 salty compared with less spicy water. Another interpretation is that spice
@@ -65,16 +67,18 @@ degrees). Note that pressure, longitude and latitude are all
 ignored in the Flament definition.
 }
 \examples{
-# Contrast the two formulations.
+# Compare unesco and gsw formulations
 library(oce)
 data(ctd)
 p <- ctd[["pressure"]]
-plot(swSpice(ctd, eos = "unesco"), p,
-    xlim = c(-2.7, -1.5), ylim = rev(range(p)),
-    xlab = "Spice", ylab = "Pressure (dbar)"
-)
-points(swSpice(ctd, eos = "gsw"), p, col = 2)
-mtext("black=unesco, red=gsw")
+U <- swSpice(ctd, eos = "unesco")
+G <- swSpice(ctd, eos = "gsw")
+xlim <- range(c(U, G), na.rm = TRUE)
+ylim <- rev(range(p))
+plot(U, p, xlim = xlim, ylim = ylim,
+    xlab = "Measure of Spiciness", ylab = "Pressure (dbar)")
+points(G, p, col = 2)
+legend("topleft", col = 1:2, pch = 1, legend = c("unesco", "gsw"))
 
 }
 \references{
@@ -84,13 +88,16 @@ Diffusive Stability: Spiciness.} Progress in Oceanography, Observations of the
 1997-98 El Nino along the West Coast of North America, 54, no. 1
 (July 1, 2002):493-501.
 \doi{10.1016/S0079-6611(02)00065-4}
-}
-
-2.McDougall, Trevor J., and Oliver A. Krzysik. \dQuote{Spiciness.}
+\item McDougall, Trevor J., and Oliver A. Krzysik. \dQuote{Spiciness.}
 Journal of Marine Research 73, no. 5 (September 1, 2015): 141-52.
-doi: \code{10.1357/002224015816665589}
+}
 }
 \seealso{
+Other functions that calculate seawater spiciness: 
+\code{\link{swSpiciness0}()},
+\code{\link{swSpiciness1}()},
+\code{\link{swSpiciness2}()}
+
 Other functions that calculate seawater properties: 
 \code{\link{T68fromT90}()},
 \code{\link{T90fromT48}()},
@@ -124,6 +131,9 @@ Other functions that calculate seawater properties:
 \code{\link{swSoundAbsorption}()},
 \code{\link{swSoundSpeed}()},
 \code{\link{swSpecificHeat}()},
+\code{\link{swSpiciness0}()},
+\code{\link{swSpiciness1}()},
+\code{\link{swSpiciness2}()},
 \code{\link{swSstar}()},
 \code{\link{swTFreeze}()},
 \code{\link{swTSrho}()},
@@ -137,3 +147,4 @@ Dan Kelley coded this, merely an interface to the code described
 by references 1 and 2.
 }
 \concept{functions that calculate seawater properties}
+\concept{functions that calculate seawater spiciness}

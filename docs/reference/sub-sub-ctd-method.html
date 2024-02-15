@@ -218,10 +218,19 @@ referenced to a sea pressure of 4000dbar, computed with <a href="swSigma4.html">
 is returned.</p></li>
 <li><p>If <code>i</code> is <code>"SP"</code> then salinity on the Practical Salinity Scale, which is
 <code>salinity</code> in the <code>data</code> slot, is returned.</p></li>
-<li><p>If <code>i</code> is <code>"spice"</code> or <code>"spiciness0"</code> then a variable that is in some sense
-orthogonal to density, calculated with <a href="swSpice.html">swSpice</a><code>(x)</code>, is returned.
-Note that this is defined differently for <code>eos="unesco"</code> and
-<code>eos="gsw"</code>.</p></li>
+<li><p>If <code>i</code> is <code>"spice"</code> then <code><a href="swSpice.html">swSpice()</a></code> is called to compute a quantity that
+is in some sense orthogonal to density on a T-S diagram. This is done by
+calling <code><a href="swSpice.html">swSpice()</a></code> with the <code>eos</code> argument set to <code>"unesco"</code>. In an earlier
+version of oce, <code>[[</code> could be provided with a second argument to yield a
+return value for "spiciness", a variable that is described in the next item.
+On 2024-02-14, this possibility was removed because it could lead to user
+confusion and non-reproducible code. To get spiciness, use
+<code>[["spiciness0"]]</code>.</p></li>
+<li><p>If <code>i</code> is <code>"spiciness0"</code>, <code>"spiciness1"</code> or <code>"spiciness2"</code>, then the return
+value comes from the Gibbs SeaWater formulation of a variable that is in some
+sense orthogonal to density on a T-S diagram. The numbers refer to the
+reference pressure, in units of 1000 dbar. These results are computed with
+<code><a href="http://teos-10.github.io/GSW-R/reference/gsw_spiciness0.html" class="external-link">gsw::gsw_spiciness0()</a></code>, etc.</p></li>
 <li><p>If <code>i</code> is <code>"SR"</code> then Reference Salinity, computed with
 <code><a href="http://teos-10.github.io/GSW-R/reference/gsw_SR_from_SP.html" class="external-link">gsw::gsw_SR_from_SP()</a></code>, is returned.</p></li>
 <li><p>If <code>i</code> is <code>"Sstar"</code> then Preformed Salinity, computed with

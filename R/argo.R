@@ -1996,14 +1996,32 @@ as.argo <- function(time, longitude, latitude, salinity, temperature, pressure, 
 #'
 #' * `which=7` or `"sigma0 profile"` gives a sigma0
 #' profile (with sigma0 and p trimmed to the 1 and 99 percentiles)
-#
-#' @param level depth pseudo-level to plot, for `which=2` and higher.  May be an
-#' integer, in which case it refers to an index of depth (1 being the top)
-#' or it may be the string "all" which means to plot all data.
 #'
-#' @param coastline character string giving the coastline to be used in an Argo-location
-#' map, or `"best"` to pick the one with highest resolution, or
-#' `"none"` to avoid drawing the coastline.
+#' * `which=8` or `"spice profile"` gives a spiciness
+#' profile, referenced to the surface.  (This is the
+#' same as using `which=9`.)
+#'
+#' * `which=9` or `"spiciness0 profile"` gives
+#' a profile of spicininess referenced to a pressure
+#' of 0 dbar, i.e. the surface.  (This is the
+#' same as using `which=8`.)
+#'
+#' * `which=10` or `"spiciness1 profile"` gives
+#' a profile of spiciness referenced to a pressure
+#' of 1000 dbar.
+#'
+#' * `which=11` or `"spiciness2 profile"` gives
+#' a profile of spiciness referenced to a pressure
+#' of 2000 dbar.
+#'
+#' @param level depth pseudo-level to plot, for `which=2` and higher.
+#' May be an integer, in which case it refers to an index of depth (1
+#' being the top) or it may be the string "all" which means to plot
+#' all data.
+#'
+#' @param coastline character string giving the coastline to be used
+#' in an Argo-location map, or `"best"` to pick the one with highest
+#' resolution, or `"none"` to avoid drawing the coastline.
 #'
 #' @param cex size of plotting symbols to be used if `type="p"`.
 #'
@@ -2013,15 +2031,15 @@ as.argo <- function(time, longitude, latitude, salinity, temperature, pressure, 
 #'
 #' @param col optional list of colors for plotting.
 #'
-#' @param fill Either a logical, indicating whether to fill the land with
+#' @param fill either a logical, indicating whether to fill the land with
 #' light-gray, or a color name.  Owing to problems with some projections, the
 #' default is not to fill.
 #'
-#' @param mgp 3-element numerical vector to use for `par(mgp)`, and also for
+#' @param mgp a 3-element numerical vector to use for `par(mgp)`, and also for
 #' `par(mar)`, computed from this.  The default is tighter than the R
 #' default, in order to use more space for the data and less for the axes.
 #'
-#' @param projection indication of the projection to be used
+#' @param projection character value indicating the projection to be used
 #' in trajectory maps. If this is `NULL`, no projection is used, although
 #' the plot aspect ratio will be set to yield zero shape distortion at the
 #' mean float latitude.  If `projection="automatic"`, then one
@@ -2124,7 +2142,11 @@ setMethod(
                 "TS" = 4,
                 "salinity profile" = 5,
                 "temperature profile" = 6,
-                "sigma0 profile" = 7
+                "sigma0 profile" = 7,
+                "spice profile" = 8,
+                "spiceness0 profile" = 9,
+                "spiceness1 profile" = 10,
+                "spiceness2 profile" = 11
             )
         )
         # if (any(is.na(which)))
@@ -2307,6 +2329,27 @@ setMethod(
                     xtype = "sigma0",
                     xlim = sigma0lim,
                     ylim = quantile(x@data$pressure, c(0.99, 0.01), na.rm = TRUE),
+                    cex = cex, pch = pch, col = col, type = type
+                )
+            } else if (which[w] == 8) {
+                # spice profile
+                plotProfile(ctd,
+                    xtype = "spice",
+                    cex = cex, pch = pch, col = col, type = type
+                )
+            } else if (which[w] == 9) {
+                plotProfile(ctd, xtype=ctd[["spiciness0"]],
+                    xlab = resizableLabel("spiciness0"),
+                    cex = cex, pch = pch, col = col, type = type
+                )
+            } else if (which[w] == 10) {
+                plotProfile(ctd, xtype=ctd[["spiciness1"]],
+                    xlab = resizableLabel("spiciness1"),
+                    cex = cex, pch = pch, col = col, type = type
+                )
+            } else if (which[w] == 11) {
+                plotProfile(ctd, xtype=ctd[["spiciness2"]],
+                    xlab = resizableLabel("spiciness2"),
                     cex = cex, pch = pch, col = col, type = type
                 )
             } else {

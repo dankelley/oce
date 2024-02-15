@@ -85,7 +85,11 @@ be off by a scale factor; this should not be a problem if there is a
 \item \code{"sigma0"}, \code{"sigma1"}, \code{"sigma2"}, \code{"sigma3"}
 and \code{"sigma4"} Profile of potential density referenced
 to 0dbar (i.e. the surface), 1000dbar, 2000dbar, 3000dbar, and 4000dbar.
-\item \code{"spice"} Profile of spice.
+\item \code{"spice"}, \code{"spiciness0"} \code{"spiciness1"} or \code{"spiciness2"}
+Profile of named quantity.  For \code{spice}, \code{\link[=swSpice]{swSpice()}} is
+called with the \code{eos} argument set to \code{"unesco"}. Otherwise,
+\code{\link[gsw:gsw_spiciness0]{gsw::gsw_spiciness0()}}', \code{\link[gsw:gsw_spiciness1]{gsw::gsw_spiciness1()}}' or
+\code{\link[gsw:gsw_spiciness2]{gsw::gsw_spiciness2()}}' is called.
 \item \code{"Rrho"} Profile of Rrho, defined in the diffusive sense.
 \item \code{"RrhoSF"} Profile of Rrho, defined in the salt-finger sense.
 }}

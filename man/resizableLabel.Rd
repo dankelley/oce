@@ -24,7 +24,8 @@ resizableLabel(
 \code{"sigma0"}, \code{"sigma1"}, \code{"sigma2"}, \code{"sigma3"}, \code{"sigma4"},
 \code{"sigmaTheta"},
 \code{"silicate"}, \code{"sound speed"}, \code{"spectral density m2/cph"}, \code{"speed"},
-\code{"spice"}, \code{"T"}, \code{"theta"}, \code{"tritium"}, \code{"u"}, \code{"v"}, \code{"w"}, or \code{"z"}.
+\code{"spice"}, \code{"spiciness0"}, \code{"spiciness1"}, \code{"spiciness2"},
+\code{"T"}, \code{"theta"}, \code{"tritium"}, \code{"u"}, \code{"v"}, \code{"w"}, or \code{"z"}.
 Other values may also be recognized, and if an unrecognized item is
 given, then it is returned, unaltered.}
 

@@ -134,10 +134,19 @@ referenced to a sea pressure of 4000dbar, computed with \link{swSigma4}\code{(x)
 is returned.
 \item If \code{i} is \code{"SP"} then salinity on the Practical Salinity Scale, which is
 \code{salinity} in the \code{data} slot, is returned.
-\item If \code{i} is \code{"spice"} or \code{"spiciness0"} then a variable that is in some sense
-orthogonal to density, calculated with \link{swSpice}\code{(x)}, is returned.
-Note that this is defined differently for \code{eos="unesco"} and
-\code{eos="gsw"}.
+\item If \code{i} is \code{"spice"} then \code{\link[=swSpice]{swSpice()}} is called to compute a quantity that
+is in some sense orthogonal to density on a T-S diagram. This is done by
+calling \code{\link[=swSpice]{swSpice()}} with the \code{eos} argument set to \code{"unesco"}. In an earlier
+version of oce, \code{[[} could be provided with a second argument to yield a
+return value for "spiciness", a variable that is described in the next item.
+On 2024-02-14, this possibility was removed because it could lead to user
+confusion and non-reproducible code. To get spiciness, use
+\verb{[["spiciness0"]]}.
+\item If \code{i} is \code{"spiciness0"}, \code{"spiciness1"} or \code{"spiciness2"}, then the return
+value comes from the Gibbs SeaWater formulation of a variable that is in some
+sense orthogonal to density on a T-S diagram. The numbers refer to the
+reference pressure, in units of 1000 dbar. These results are computed with
+\code{\link[gsw:gsw_spiciness0]{gsw::gsw_spiciness0()}}, etc.
 \item If \code{i} is \code{"SR"} then Reference Salinity, computed with
 \code{\link[gsw:gsw_SR_from_SP]{gsw::gsw_SR_from_SP()}}, is returned.
 \item If \code{i} is \code{"Sstar"} then Preformed Salinity, computed with

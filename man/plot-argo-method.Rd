@@ -47,15 +47,29 @@ profile (with S and p trimmed to the 1 and 99 percentiles)
 profile (with T and p trimmed to the 1 and 99 percentiles)
 \item \code{which=7} or \code{"sigma0 profile"} gives a sigma0
 profile (with sigma0 and p trimmed to the 1 and 99 percentiles)
+\item \code{which=8} or \code{"spice profile"} gives a spiciness
+profile, referenced to the surface.  (This is the
+same as using \code{which=9}.)
+\item \code{which=9} or \code{"spiciness0 profile"} gives
+a profile of spicininess referenced to a pressure
+of 0 dbar, i.e. the surface.  (This is the
+same as using \code{which=8}.)
+\item \code{which=10} or \code{"spiciness1 profile"} gives
+a profile of spiciness referenced to a pressure
+of 1000 dbar.
+\item \code{which=11} or \code{"spiciness2 profile"} gives
+a profile of spiciness referenced to a pressure
+of 2000 dbar.
 }}
 
-\item{level}{depth pseudo-level to plot, for \code{which=2} and higher.  May be an
-integer, in which case it refers to an index of depth (1 being the top)
-or it may be the string "all" which means to plot all data.}
+\item{level}{depth pseudo-level to plot, for \code{which=2} and higher.
+May be an integer, in which case it refers to an index of depth (1
+being the top) or it may be the string "all" which means to plot
+all data.}
 
-\item{coastline}{character string giving the coastline to be used in an Argo-location
-map, or \code{"best"} to pick the one with highest resolution, or
-\code{"none"} to avoid drawing the coastline.}
+\item{coastline}{character string giving the coastline to be used
+in an Argo-location map, or \code{"best"} to pick the one with highest
+resolution, or \code{"none"} to avoid drawing the coastline.}
 
 \item{cex}{size of plotting symbols to be used if \code{type="p"}.}
 
@@ -65,11 +79,11 @@ map, or \code{"best"} to pick the one with highest resolution, or
 
 \item{col}{optional list of colors for plotting.}
 
-\item{fill}{Either a logical, indicating whether to fill the land with
+\item{fill}{either a logical, indicating whether to fill the land with
 light-gray, or a color name.  Owing to problems with some projections, the
 default is not to fill.}
 
-\item{projection}{indication of the projection to be used
+\item{projection}{character value indicating the projection to be used
 in trajectory maps. If this is \code{NULL}, no projection is used, although
 the plot aspect ratio will be set to yield zero shape distortion at the
 mean float latitude.  If \code{projection="automatic"}, then one
@@ -78,7 +92,7 @@ where \code{X} is the mean longitude), or Mercator (i.e. \code{"+proj=merc"})
 otherwise.  Otherwise, \code{projection} must be a character string specifying
 a projection in the notation used by \code{\link[=oceProject]{oceProject()}} and \code{\link[=mapPlot]{mapPlot()}}.}
 
-\item{mgp}{3-element numerical vector to use for \code{par(mgp)}, and also for
+\item{mgp}{a 3-element numerical vector to use for \code{par(mgp)}, and also for
 \code{par(mar)}, computed from this.  The default is tighter than the R
 default, in order to use more space for the data and less for the axes.}
 

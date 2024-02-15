@@ -2178,7 +2178,8 @@ fullFilename <- function(filename) {
 #' `"sigma0"`, `"sigma1"`, `"sigma2"`, `"sigma3"`, `"sigma4"`,
 #' `"sigmaTheta"`,
 #' `"silicate"`, `"sound speed"`, `"spectral density m2/cph"`, `"speed"`,
-#' `"spice"`, `"T"`, `"theta"`, `"tritium"`, `"u"`, `"v"`, `"w"`, or `"z"`.
+#' `"spice"`, `"spiciness0"`, `"spiciness1"`, `"spiciness2"`,
+#' `"T"`, `"theta"`, `"tritium"`, `"u"`, `"v"`, `"w"`, or `"z"`.
 #' Other values may also be recognized, and if an unrecognized item is
 #' given, then it is returned, unaltered.
 #'
@@ -2234,7 +2235,7 @@ resizableLabel <- function(item, axis = "x", sep, unit = NULL, debug = getOption
         ), "heading", "pitch", "roll", "u", "v", "w", "speed",
         "direction", "eastward", "northward", "depth", "elevation", "latitude",
         "longitude", paste("frequency", "cph"), paste("sound", "speed"),
-        "spiciness0",
+        "spiciness0", "spiciness1", "spiciness2",
         paste("spectral", "density", "m2/cph"), "sigma0", "sigma1", "sigma2",
         "sigma3", "sigma4", "Sstar", "SR"
     )
@@ -2452,6 +2453,14 @@ resizableLabel <- function(item, axis = "x", sep, unit = NULL, debug = getOption
         }
     } else if (item == "spiciness0") {
         var <- gettext("Spiciness wrt surface", domain = "R-oce")
+        full <- bquote(.(var) * .(L) * kg / m^3 * .(R))
+        abbreviated <- bquote(sigma[0] * .(L) * kg / m^3 * .(R))
+    } else if (item == "spiciness1") {
+        var <- gettext("Spiciness wrt 1000 dbar", domain = "R-oce")
+        full <- bquote(.(var) * .(L) * kg / m^3 * .(R))
+        abbreviated <- bquote(sigma[0] * .(L) * kg / m^3 * .(R))
+    } else if (item == "spiciness2") {
+        var <- gettext("Spiciness wrt 2000 dbar", domain = "R-oce")
         full <- bquote(.(var) * .(L) * kg / m^3 * .(R))
         abbreviated <- bquote(sigma[0] * .(L) * kg / m^3 * .(R))
     } else if (item == "S") {

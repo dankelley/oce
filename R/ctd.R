@@ -750,10 +750,20 @@ setMethod(
 #' * If `i` is `"SP"` then salinity on the Practical Salinity Scale, which is
 #' `salinity` in the `data` slot, is returned.
 #'
-#' * If `i` is `"spice"` or `"spiciness0"` then a variable that is in some sense
-#' orthogonal to density, calculated with [swSpice]`(x)`, is returned.
-#' Note that this is defined differently for `eos="unesco"` and
-#' `eos="gsw"`.
+#' * If `i` is `"spice"` then [swSpice()] is called to compute a quantity that
+#' is in some sense orthogonal to density on a T-S diagram. This is done by
+#' calling [swSpice()] with the `eos` argument set to `"unesco"`. In an earlier
+#' version of oce, `[[` could be provided with a second argument to yield a
+#' return value for "spiciness", a variable that is described in the next item.
+#' On 2024-02-14, this possibility was removed because it could lead to user
+#' confusion and non-reproducible code. To get spiciness, use
+#' `[["spiciness0"]]`.
+#'
+#' * If `i` is `"spiciness0"`, `"spiciness1"` or `"spiciness2"`, then the return
+#' value comes from the Gibbs SeaWater formulation of a variable that is in some
+#' sense orthogonal to density on a T-S diagram. The numbers refer to the
+#' reference pressure, in units of 1000 dbar. These results are computed with
+#' [gsw::gsw_spiciness0()], etc.
 #'
 #' * If `i` is `"SR"` then Reference Salinity, computed with
 #' [gsw::gsw_SR_from_SP()], is returned.
@@ -1198,7 +1208,7 @@ as.ctd <- function(
     # First argument is an oce object
     if (inherits(salinity, "oce")) {
         oceDebug(debug, "first argument is an oce object, so ignoring some other arguments\n")
-        dataNamesOriginal <- list()
+        #dataNamesOriginal <- list()
         o <- salinity
         d <- o@data
         m <- o@metadata
@@ -3205,7 +3215,8 @@ write.ctd <- function(object, file, metadata = TRUE, flags = TRUE, format = "csv
 #'
 #' * `which=12` or `which="N2"` gives an \eqn{N^2}{N^2} profile.
 #'
-#' * `which=13` or `which="spice"` gives a spiciness profile.
+#' * `which=13` or `which="spice"` gives a profile of the UNESCO-defined
+#' spice variable.
 #'
 #' * `which=14` or `which="tritium"` gives a tritium profile.
 #'
@@ -5426,7 +5437,11 @@ drawIsopycnals <- function(
 #' and `"sigma4"` Profile of potential density referenced
 #' to 0dbar (i.e. the surface), 1000dbar, 2000dbar, 3000dbar, and 4000dbar.
 #'
-#' * `"spice"` Profile of spice.
+#' * `"spice"`, `"spiciness0"` `"spiciness1"` or `"spiciness2"`
+#' Profile of named quantity.  For `spice`, [swSpice()] is
+#' called with the `eos` argument set to `"unesco"`. Otherwise,
+#' [gsw::gsw_spiciness0()]', [gsw::gsw_spiciness1()]' or
+#' [gsw::gsw_spiciness2()]' is called.
 #'
 #' * `"Rrho"` Profile of Rrho, defined in the diffusive sense.
 #'
@@ -6596,17 +6611,17 @@ plotProfile <- function(
             cex = cex, pch = pch, pt.bg = pt.bg,
             keepNA = keepNA, debug = debug - 1
         )
-    } else if (xtype == "spice") {
-        oceDebug(debug, "case 13: xtype is \"spice\"\n")
-        spice <- swSpice(x)
-        look <- if (keepNA) seq_along(y) else !is.na(spice) & !is.na(y)
+    } else if (xtype %in% c("spice", "spiciness0", "spiciness1", "spiciness2")) {
+        oceDebug(debug, "case 13: xtype is \"spice\", \"spiciness0\", etc\n")
+        xvar <- x[[xtype]]
+        look <- if (keepNA) seq_along(y) else !is.na(xvar) & !is.na(y)
         if (!add) {
-            plot(spice[look], y[look],
+            plot(xvar[look], y[look],
                 lty = lty,
                 ylim = ylim, cex = cex, pch = pch,
                 type = "n", xlab = "", ylab = yname, axes = FALSE
             )
-            mtext(if (is.null(xlab)) resizableLabel("spice", "x", debug = debug - 1) else xlab,
+            mtext(if (is.null(xlab)) resizableLabel(xtype, "x", debug = debug - 1) else xlab,
                 side = 3, line = axisNameLoc, cex = par("cex"), xaxs = xaxs, yaxs = yaxs
             )
             axis(2)
@@ -6620,7 +6635,7 @@ plotProfile <- function(
             }
         }
         plotJustProfile(
-            x = spice, y = y, type = type, lwd = lwd, lty = lty,
+            x = xvar, y = y, type = type, lwd = lwd, lty = lty,
             cex = cex, col = col, pch = pch, pt.bg = pt.bg,
             keepNA = keepNA, debug = debug - 1
         )

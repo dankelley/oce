@@ -686,7 +686,14 @@ setMethod(
         } else if (i == paste("sound", "speed")) {
             return(if (missing(j)) swSoundSpeed(x) else swSoundSpeed(x, eos = j))
         } else if (i == "spice") {
-            return(if (missing(j)) swSpice(x) else swSpice(x, eos = j))
+            # return(if (missing(j)) swSpice(x, eos = "unesco") else swSpice(x, eos = j))
+            if (!missing(j)) {
+                warning(paste0("[[\"spice\", \"", j, "\"]] ignoring second argument; ",
+                    "use [[\"spice\"]] for the Flament formulation or ",
+                    "[[\"spiciness0\"]] for the Gibbs SeaWater formulation"),
+                    call. = FALSE)
+            }
+            return(swSpice(x, eos = "unesco"))
         } else if (i == "SR") {
             return(swSR(x))
         } else if (i == "Sstar") {

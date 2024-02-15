@@ -109,7 +109,8 @@ in-situ temperature otherwise.
 of density as computed with \code{\link[=swRho]{swRho()}}, to which the \code{eos}
 parameter is passed.
 \item \code{which=12} or \code{which="N2"} gives an \eqn{N^2}{N^2} profile.
-\item \code{which=13} or \code{which="spice"} gives a spiciness profile.
+\item \code{which=13} or \code{which="spice"} gives a profile of the UNESCO-defined
+spice variable.
 \item \code{which=14} or \code{which="tritium"} gives a tritium profile.
 \item \code{which=15} or \code{which="Rrho"} gives a diffusive-case density
 ratio profile.

@@ -2671,17 +2671,19 @@ swSpecificHeat <- function(
 
 #' Seawater Spiciness
 #'
-#' Compute seawater "spice", also called "spiciness" (a variable orthogonal
-#' to density in TS space), in either of two formulations, depending on
-#' the value of the `eos` argument. If `eos="unesco"` then
-#' Flament's (reference 1) formulation is used. If `eos="gsw"`
-#' then the Gibbs SeaWater formulation for "spiciness0" is used
-#' (see reference 2).
+#' Compute seawater "spice", a variable that is in some sense orthogonal to
+#' density in TS space.  Larger spice values correspond to relative warm and
+#' salty water, compared with smaller spice values. Two distinct variants exist.
+#' If `eos="unesco"` then Flament's (2002) formulation is used. If `eos="gsw"`
+#' then [gsw::gsw_spiciness0()] is used to compute a newer variant that is part
+#' of the Gibbs SeaWater formulation (McDougall and Krzysik, 2015). See the
+#' \dQuote{Examples} section for a graphical illustration of the difference in a
+#' typical coastal case.
 #'
 #' If the first argument is a `ctd` object, then salinity, temperature and
-#' pressure values are extracted from it, and used for the calculation. (For
+#' pressure values are extracted from it, and used for the calculation. For
 #' the `eos="gsw"` case, longitude and latitude are also extracted, because
-#' these are required for the formulation of spiciness0.
+#' these are required by [gsw::gsw_spiciness0()].
 #'
 #' Roughly speaking, seawater with a high spiciness is relatively warm and
 #' salty compared with less spicy water. Another interpretation is that spice
@@ -2722,16 +2724,18 @@ swSpecificHeat <- function(
 #' by references 1 and 2.
 #'
 #' @examples
-#' # Contrast the two formulations.
+#' # Compare unesco and gsw formulations
 #' library(oce)
 #' data(ctd)
 #' p <- ctd[["pressure"]]
-#' plot(swSpice(ctd, eos = "unesco"), p,
-#'     xlim = c(-2.7, -1.5), ylim = rev(range(p)),
-#'     xlab = "Spice", ylab = "Pressure (dbar)"
-#' )
-#' points(swSpice(ctd, eos = "gsw"), p, col = 2)
-#' mtext("black=unesco, red=gsw")
+#' U <- swSpice(ctd, eos = "unesco")
+#' G <- swSpice(ctd, eos = "gsw")
+#' xlim <- range(c(U, G), na.rm = TRUE)
+#' ylim <- rev(range(p))
+#' plot(U, p, xlim = xlim, ylim = ylim,
+#'     xlab = "Measure of Spiciness", ylab = "Pressure (dbar)")
+#' points(G, p, col = 2)
+#' legend("topleft", col = 1:2, pch = 1, legend = c("unesco", "gsw"))
 #'
 #' @references
 #' 1. Flament, P. \dQuote{A State Variable for Characterizing Water Masses and Their
@@ -2740,14 +2744,17 @@ swSpecificHeat <- function(
 #' (July 1, 2002):493-501.
 #' \doi{10.1016/S0079-6611(02)00065-4}
 #'
-#' 2.McDougall, Trevor J., and Oliver A. Krzysik. \dQuote{Spiciness.}
+#' 2. McDougall, Trevor J., and Oliver A. Krzysik. \dQuote{Spiciness.}
 #' Journal of Marine Research 73, no. 5 (September 1, 2015): 141-52.
-#' doi: \code{10.1357/002224015816665589}
 #'
+#' @family functions that calculate seawater spiciness
 #' @family functions that calculate seawater properties
 swSpice <- function(
     salinity, temperature = NULL, pressure = NULL,
     longitude = NULL, latitude = NULL, eos = getOption("oceEOS", default = "gsw")) {
+    if (!eos %in% c("gsw", "unesco")) {
+        stop("eos must be \"gsw\" or \"unesco\", but \"", eos, "\" was given")
+    }
     if (missing(salinity)) {
         stop("must provide salinity")
     }
@@ -2799,6 +2806,150 @@ swSpice <- function(
         dim(res) <- dim
     }
     res
+}
+
+# Internal function used by swSpiciness0(), swSpiciness1() and swSpiciness2()
+swSpiciness <- function(
+    salinity = NULL, temperature = NULL, pressure = NULL,
+    longitude = NULL, latitude = NULL, referencePressure = NULL) {
+    if (is.null(salinity)) stop("must provide salinity")
+    if (inherits(salinity, "oce")) {
+        temperature <- salinity[["temperature"]]
+        pressure <- salinity[["pressure"]]
+        longitude <- salinity[["longitude"]]
+        latitude <- salinity[["latitude"]]
+        salinity <- salinity[["salinity"]]
+    }
+    if (is.null(temperature)) stop("must supply temperature")
+    if (is.null(longitude)) stop("must supply longitude")
+    if (is.null(latitude)) stop("must supply latitude")
+    if (is.null(pressure)) stop("must provide pressure")
+    if (is.null(referencePressure)) stop("must provide referencePressure")
+    if (length(referencePressure) != 1) stop("referencePressure must be of length 1")
+    if (referencePressure != 0 && referencePressure != 1000 && referencePressure != 2000) {
+        stop("referencePressure must be 0, 1000 or 2000, but it is ", referencePressure)
+    }
+    dim <- dim(salinity)
+    nS <- length(salinity)
+    nT <- length(temperature)
+    np <- length(pressure)
+    if (nS != nT) stop("lengths of salinity (", nS, ") and temperature (", nT, ") disagree")
+    if (nS != np) stop("lengths of salinity (", nS, ") and pressure (", np, ") disagree")
+    # FIXME: what if e.g. length(latitude) == length(salinity) etc?
+    SA <- gsw::gsw_SA_from_SP(SP = salinity, p = pressure, longitude = longitude, latitude = latitude)
+    CT <- gsw::gsw_CT_from_t(SA = SA, t = temperature, p = pressure)
+    res <- if (referencePressure[1] == 0) {
+        gsw::gsw_spiciness0(SA, CT)
+    } else if (referencePressure[1] == 1000) {
+        gsw::gsw_spiciness1(SA, CT)
+    } else if (referencePressure[1] == 2000) {
+        gsw::gsw_spiciness2(SA, CT)
+    }
+    if (!is.null(dim)) dim(res) <- dim
+    res
+}
+
+#' Spiciness in gsw System, Referenced to Surface Pressure
+#'
+#' Computes seawater spiciness using [gsw::gsw_spiciness0()] for surface
+#' referenced computation.
+#'
+#' @param salinity either salinity, or an oce object that contains salinity,
+#' temperature, pressure, longitude and latitude.
+#'
+#' @param temperature in-situ temperature (ignored if `salinity` is an oce object)
+#'
+#' @param pressure seawater pressure in dbar (ignored if `salinity` is an oce object)
+#'
+#' @param longitude,latitude observation location (ignored if `salinity` is an oce object).
+#'
+#' @return seawater spiciness with respect to a reference pressure of 0 dbar
+#' (that is, the sea surface), as defined in the `gsw` (TEOS-10)
+#' system (McDougall et al, 2011).
+#'
+#' @references
+#' McDougall, T.J. and P.M. Barker, 2011: Getting started with TEOS-10 and
+#' the Gibbs Seawater (GSW) Oceanographic Toolbox, 28pp., SCOR/IAPSO WG127,
+#' ISBN 978-0-646-55621-5.
+#'
+#' @family functions that calculate seawater spiciness
+#' @family functions that calculate seawater properties
+#'
+#' @author Dan Kelley
+swSpiciness0 <- function(salinity, temperature, pressure, longitude, latitude) {
+    swSpiciness(
+        salinity = salinity, temperature = temperature, pressure = pressure,
+        longitude = longitude, latitude = latitude, referencePressure = 0
+    )
+}
+
+
+#' Spiciness in gsw System, Referenced to 1000 dbar Pressure
+#'
+#' Computes seawater spiciness using [gsw::gsw_spiciness1()] for
+#' a reference pressure of 1000 dbar.
+#'
+#' @param salinity either salinity, or an oce object that contains salinity,
+#' temperature, pressure, longitude and latitude.
+#'
+#' @param temperature in-situ temperature (ignored if `salinity` is an oce object)
+#'
+#' @param pressure seawater pressure in dbar (ignored if `salinity` is an oce object)
+#'
+#' @param longitude,latitude observation location (ignored if `salinity` is an oce object).
+#'
+#' @return seawater spiciness with respect to a reference pressure of 1000 dbar,
+#' as defined in the `gsw` (TEOS-10)
+#' system (McDougall et al, 2011) and computed with [gsw::gsw_spiciness1()].
+#'
+#' @references
+#' McDougall, T.J. and P.M. Barker, 2011: Getting started with TEOS-10 and
+#' the Gibbs Seawater (GSW) Oceanographic Toolbox, 28pp., SCOR/IAPSO WG127,
+#' ISBN 978-0-646-55621-5.
+#'
+#' @family functions that calculate seawater spiciness
+#' @family functions that calculate seawater properties
+#'
+#' @author Dan Kelley
+swSpiciness1 <- function(salinity, temperature, pressure, longitude, latitude) {
+    swSpiciness(
+        salinity = salinity, temperature = temperature, pressure = pressure,
+        longitude = longitude, latitude = latitude, referencePressure = 1000
+    )
+}
+
+#' Spiciness in gsw System, Referenced to 2000 dbar Pressure
+#'
+#' Computes seawater spiciness using [gsw::gsw_spiciness2()] for
+#' a reference pressure of 2000 dbar.
+#'
+#' @param salinity either salinity, or an oce object that contains salinity,
+#' temperature, pressure, longitude and latitude.
+#'
+#' @param temperature in-situ temperature (ignored if `salinity` is an oce object)
+#'
+#' @param pressure seawater pressure in dbar (ignored if `salinity` is an oce object)
+#'
+#' @param longitude,latitude observation location (ignored if `salinity` is an oce object).
+#'
+#' @return seawater spiciness with respect to a reference pressure of 2000 dbar,
+#' as defined in the `gsw` (TEOS-10)
+#' system (McDougall et al, 2011) and computed with [gsw::gsw_spiciness2()].
+#'
+#' @references
+#' McDougall, T.J. and P.M. Barker, 2011: Getting started with TEOS-10 and
+#' the Gibbs Seawater (GSW) Oceanographic Toolbox, 28pp., SCOR/IAPSO WG127,
+#' ISBN 978-0-646-55621-5.
+#'
+#' @family functions that calculate seawater spiciness
+#' @family functions that calculate seawater properties
+#'
+#' @author Dan Kelley
+swSpiciness2 <- function(salinity, temperature, pressure, longitude, latitude) {
+    swSpiciness(
+        salinity = salinity, temperature = temperature, pressure = pressure,
+        longitude = longitude, latitude = latitude, referencePressure = 2000
+    )
 }
 
 

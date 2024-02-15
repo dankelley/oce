@@ -175,7 +175,11 @@ be off by a scale factor; this should not be a problem if there is a
 <li><p><code>"sigma0"</code>, <code>"sigma1"</code>, <code>"sigma2"</code>, <code>"sigma3"</code>
 and <code>"sigma4"</code> Profile of potential density referenced
 to 0dbar (i.e. the surface), 1000dbar, 2000dbar, 3000dbar, and 4000dbar.</p></li>
-<li><p><code>"spice"</code> Profile of spice.</p></li>
+<li><p><code>"spice"</code>, <code>"spiciness0"</code> <code>"spiciness1"</code> or <code>"spiciness2"</code>
+Profile of named quantity.  For <code>spice</code>, <code><a href="swSpice.html">swSpice()</a></code> is
+called with the <code>eos</code> argument set to <code>"unesco"</code>. Otherwise,
+<code><a href="http://teos-10.github.io/GSW-R/reference/gsw_spiciness0.html" class="external-link">gsw::gsw_spiciness0()</a></code>', <code><a href="http://teos-10.github.io/GSW-R/reference/gsw_spiciness1.html" class="external-link">gsw::gsw_spiciness1()</a></code>' or
+<code><a href="http://teos-10.github.io/GSW-R/reference/gsw_spiciness2.html" class="external-link">gsw::gsw_spiciness2()</a></code>' is called.</p></li>
 <li><p><code>"Rrho"</code> Profile of Rrho, defined in the diffusive sense.</p></li>
 <li><p><code>"RrhoSF"</code> Profile of Rrho, defined in the salt-finger sense.</p></li>
 </ul></dd>

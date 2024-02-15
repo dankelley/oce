@@ -127,19 +127,33 @@ profile (with S and p trimmed to the 1 and 99 percentiles)</p></li>
 profile (with T and p trimmed to the 1 and 99 percentiles)</p></li>
 <li><p><code>which=7</code> or <code>"sigma0 profile"</code> gives a sigma0
 profile (with sigma0 and p trimmed to the 1 and 99 percentiles)</p></li>
+<li><p><code>which=8</code> or <code>"spice profile"</code> gives a spiciness
+profile, referenced to the surface.  (This is the
+same as using <code>which=9</code>.)</p></li>
+<li><p><code>which=9</code> or <code>"spiciness0 profile"</code> gives
+a profile of spicininess referenced to a pressure
+of 0 dbar, i.e. the surface.  (This is the
+same as using <code>which=8</code>.)</p></li>
+<li><p><code>which=10</code> or <code>"spiciness1 profile"</code> gives
+a profile of spiciness referenced to a pressure
+of 1000 dbar.</p></li>
+<li><p><code>which=11</code> or <code>"spiciness2 profile"</code> gives
+a profile of spiciness referenced to a pressure
+of 2000 dbar.</p></li>
 </ul></dd>
 
 
 <dt>level</dt>
-<dd><p>depth pseudo-level to plot, for <code>which=2</code> and higher.  May be an
-integer, in which case it refers to an index of depth (1 being the top)
-or it may be the string "all" which means to plot all data.</p></dd>
+<dd><p>depth pseudo-level to plot, for <code>which=2</code> and higher.
+May be an integer, in which case it refers to an index of depth (1
+being the top) or it may be the string "all" which means to plot
+all data.</p></dd>
 
 
 <dt>coastline</dt>
-<dd><p>character string giving the coastline to be used in an Argo-location
-map, or <code>"best"</code> to pick the one with highest resolution, or
-<code>"none"</code> to avoid drawing the coastline.</p></dd>
+<dd><p>character string giving the coastline to be used
+in an Argo-location map, or <code>"best"</code> to pick the one with highest
+resolution, or <code>"none"</code> to avoid drawing the coastline.</p></dd>
 
 
 <dt>cex</dt>
@@ -159,13 +173,13 @@ map, or <code>"best"</code> to pick the one with highest resolution, or
 
 
 <dt>fill</dt>
-<dd><p>Either a logical, indicating whether to fill the land with
+<dd><p>either a logical, indicating whether to fill the land with
 light-gray, or a color name.  Owing to problems with some projections, the
 default is not to fill.</p></dd>
 
 
 <dt>projection</dt>
-<dd><p>indication of the projection to be used
+<dd><p>character value indicating the projection to be used
 in trajectory maps. If this is <code>NULL</code>, no projection is used, although
 the plot aspect ratio will be set to yield zero shape distortion at the
 mean float latitude.  If <code>projection="automatic"</code>, then one
@@ -176,7 +190,7 @@ a projection in the notation used by <code><a href="oceProject.html">oceProject(
 
 
 <dt>mgp</dt>
-<dd><p>3-element numerical vector to use for <code>par(mgp)</code>, and also for
+<dd><p>a 3-element numerical vector to use for <code>par(mgp)</code>, and also for
 <code>par(mar)</code>, computed from this.  The default is tighter than the R
 default, in order to use more space for the data and less for the axes.</p></dd>
 
