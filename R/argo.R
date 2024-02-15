@@ -1988,14 +1988,11 @@ as.argo <- function(time, longitude, latitude, salinity, temperature, pressure, 
 #' * `which=4` or `"TS"` gives a TS diagram at the
 #' indicated level(s)
 #'
-#' * `which=5` or `"salinity profile"` gives a salinity
-#' profile (with S and p trimmed to the 1 and 99 percentiles)
+#' * `which=5` or `"salinity profile"` gives a salinity profile
 #'
-#' * `which=6` or `"temperature profile"` gives a temperature
-#' profile (with T and p trimmed to the 1 and 99 percentiles)
+#' * `which=6` or `"temperature profile"` gives a temperature profile
 #'
-#' * `which=7` or `"sigma0 profile"` gives a sigma0
-#' profile (with sigma0 and p trimmed to the 1 and 99 percentiles)
+#' * `which=7` or `"sigma0 profile"` gives a sigma0 profile
 #'
 #' * `which=8` or `"spice profile"` gives a spiciness
 #' profile, referenced to the surface.  (This is the
@@ -2304,54 +2301,51 @@ setMethod(
                 } else {
                     warning("no non-missing salinity data")
                 }
-            } else if (which[w] == 5) {
-                # S profile
-                # FIXME: how to handle the noise; if as below, document it
+            } else if (which[w] == 5) { # "salinity profile"
                 plotProfile(ctd,
                     xtype = "salinity",
-                    Slim = quantile(x@data$salinity, c(0.01, 0.99), na.rm = TRUE),
-                    ylim = quantile(x@data$pressure, c(0.99, 0.01), na.rm = TRUE),
+                    ylim = rev(range(x@data$pressure, na.rm=TRUE)),
                     cex = cex, pch = pch, col = col, type = type
                 )
-            } else if (which[w] == 6) {
-                # T profile
-                # FIXME: how to handle the noise; if as below, document it
+            } else if (which[w] == 6) { # "temperature profile"
                 plotProfile(ctd,
                     xtype = "temperature",
-                    Tlim = quantile(x@data$temperature, c(0.01, 0.99), na.rm = TRUE),
-                    ylim = quantile(x@data$pressure, c(0.99, 0.01), na.rm = TRUE),
+                    ylim = rev(range(x@data$pressure, na.rm=TRUE)),
                     cex = cex, pch = pch, col = col, type = type
                 )
-            } else if (which[w] == 7) {
+            } else if (which[w] == 7) { "sigma0 profile"
                 # sigma profile
                 sigma0lim <- quantile(ctd[["sigma0"]], c(0.01, 0.99), na.rm = TRUE)
                 plotProfile(ctd,
                     xtype = "sigma0",
-                    xlim = sigma0lim,
-                    ylim = quantile(x@data$pressure, c(0.99, 0.01), na.rm = TRUE),
+                    ylim = rev(range(x@data$pressure, na.rm=TRUE)),
                     cex = cex, pch = pch, col = col, type = type
                 )
-            } else if (which[w] == 8) {
-                # spice profile
+            } else if (which[w] == 8) { "spice profile"
                 plotProfile(ctd,
                     xtype = "spice",
+                    ylim = rev(range(x@data$pressure, na.rm=TRUE)),
+                    xlab = resizableLabel("spice"),
                     cex = cex, pch = pch, col = col, type = type
                 )
-            } else if (which[w] == 9) {
+            } else if (which[w] == 9) { "spiciness0 profile"
                 plotProfile(ctd,
                     xtype = ctd[["spiciness0"]],
+                    ylim = rev(range(x@data$pressure, na.rm=TRUE)),
                     xlab = resizableLabel("spiciness0"),
                     cex = cex, pch = pch, col = col, type = type
                 )
-            } else if (which[w] == 10) {
+            } else if (which[w] == 10) { "spiciness1 profile"
                 plotProfile(ctd,
                     xtype = ctd[["spiciness1"]],
+                    ylim = rev(range(x@data$pressure, na.rm=TRUE)),
                     xlab = resizableLabel("spiciness1"),
                     cex = cex, pch = pch, col = col, type = type
                 )
-            } else if (which[w] == 11) {
+            } else if (which[w] == 11) { "spiciness2 profile"
                 plotProfile(ctd,
                     xtype = ctd[["spiciness2"]],
+                    ylim = rev(range(x@data$pressure, na.rm=TRUE)),
                     xlab = resizableLabel("spiciness2"),
                     cex = cex, pch = pch, col = col, type = type
                 )

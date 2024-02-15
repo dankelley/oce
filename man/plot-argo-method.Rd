@@ -41,12 +41,9 @@ salinity at the indicated level(s)
 of temperature at the indicated level(s)
 \item \code{which=4} or \code{"TS"} gives a TS diagram at the
 indicated level(s)
-\item \code{which=5} or \code{"salinity profile"} gives a salinity
-profile (with S and p trimmed to the 1 and 99 percentiles)
-\item \code{which=6} or \code{"temperature profile"} gives a temperature
-profile (with T and p trimmed to the 1 and 99 percentiles)
-\item \code{which=7} or \code{"sigma0 profile"} gives a sigma0
-profile (with sigma0 and p trimmed to the 1 and 99 percentiles)
+\item \code{which=5} or \code{"salinity profile"} gives a salinity profile
+\item \code{which=6} or \code{"temperature profile"} gives a temperature profile
+\item \code{which=7} or \code{"sigma0 profile"} gives a sigma0 profile
 \item \code{which=8} or \code{"spice profile"} gives a spiciness
 profile, referenced to the surface.  (This is the
 same as using \code{which=9}.)
