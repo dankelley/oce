@@ -515,7 +515,7 @@ List do_ldc_rdi_in_file(StringVector filename, IntegerVector from,
         cindex = ftell(fp); // synch up, just to be sure (cost is low since this
                             // rarely happens)
         Rprintf("Warning: bad checksum %d (expected %d) at byte %lu\n",
-                check_sum, cindex, desired_check_sum);
+                check_sum, desired_check_sum, cindex);
         // maybe the number of bytes to check was wrong (issue 1437)
         if (bytes_to_check_last != bytes_to_check) {
           if (bytes_to_check == 0) {
