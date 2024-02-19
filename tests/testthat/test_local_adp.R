@@ -138,7 +138,7 @@ if (1 == length(list.files(path=".", pattern="local_data"))) {
                                     expect_warning(
                                         expect_output(
                                             d <- read.oce("local_data/adp_sentinel_v.pd0"),
-                                            "Got to end of data"),
+                                            "EOF at cindex"),
                                         "skipping the first ensemble"),
                                     "A list of unhandled segment codes"),
                                 "A list of unhandled segment codes"),
@@ -168,7 +168,7 @@ if (1 == length(list.files(path=".", pattern="local_data"))) {
                                         expect_warning(
                                             expect_output(
                                                 d <- read.oce("local_data/adp_sentinel_v.pd0"),
-                                                "Got to end of data"),
+                                                "EOF at cindex"),
                                             "skipping the first ensemble"),
                                         "A list of unhandled segment codes"),
                                     "A list of unhandled segment codes"),

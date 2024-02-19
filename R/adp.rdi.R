@@ -852,23 +852,30 @@ read.adp.rdi <- function(
     if (fileSize < 1) {
         stop("empty file \"", file, "\"")
     }
-    # FIXME 20170107
-    # We process the header wholly in R, and we don't need more than probably 2000 bytes
-    # but let's read 10000 just in case. It might be worth thinking about this in more
-    # detail, in case a file might have a header that is much longer than any studied
-    # in writing this code.
     startIndex <- 1L # index of byte pair 0x7f 0x7f
-    buf <- readBin(file, what = "raw", n = min(fileSize, 10000), endian = "little")
+    # 2024-02-19: examine 200,000 bytes.  This was 2,000 in the early
+    # days of this code, but that switched to 10,000 bytes on 2017-01-07.
+    # I don't really want to check the whole file (because of time it
+    # might take) but potentially we'll have to do that.
+    NCHECK <- min(fileSize, 200000L)
+    buf <- readBin(file, what = "raw", n = NCHECK, endian = "little")
     if (buf[1] != byte1 || buf[2] != byte2) {
         message(
-            "This file does not start with a 0x", byte1, " 0x", byte2, "byte sequence (first two bytes are 0x",
-            buf[1], " 0x", buf[2], ")"
+            "Expecting file to start with bytes 0x", byte1, " and 0x", byte2, ", but got 0x",
+            buf[1], " and 0x", buf[2], ", so will try skipping ahead."
         )
         startIndex <- matchBytes(buf, byte1, byte2)[1]
-        if (!length(startIndex)) {
-            stop("cannot find a 0x", byte1, " 0x", byte2, " byte sequence near the start of this file")
+        if (0 == length(startIndex) || is.na(startIndex)) {
+            stop(
+                "cannot find a 0x", byte1, " 0x", byte2, " byte sequence in the first ",
+                NCHECK, " bytes of this file"
+            )
         }
-        message("This file does not start with a 0x", byte1, " 0x", byte2, "byte sequence, so skipping to byte ", startIndex)
+        message(
+            "This file does not start with a 0x", byte1, " 0x", byte2,
+            " byte sequence, so skipped to index ", startIndex,
+            ", where this sequence is first found."
+        )
         buf <- buf[seq(startIndex, length(buf))]
     }
     header <- decodeHeaderRDI(buf, debug = debug - 1)
@@ -1735,10 +1742,10 @@ read.adp.rdi <- function(
                 tm.d <- tm.a / sqrt(2)
                 res@metadata$transformationMatrix <- matrix(
                     c(
-                        tm.c * tm.a, -tm.c * tm.a,          0,         0,
-                        0,                  0, -tm.c * tm.a, tm.c * tm.a,
-                        tm.b,            tm.b,       tm.b,      tm.b,
-                        tm.d,            tm.d,      -tm.d,     -tm.d
+                        tm.c * tm.a, -tm.c * tm.a, 0, 0,
+                        0, 0, -tm.c * tm.a, tm.c * tm.a,
+                        tm.b, tm.b, tm.b, tm.b,
+                        tm.d, tm.d, -tm.d, -tm.d
                     ),
                     nrow = 4, byrow = TRUE
                 )
