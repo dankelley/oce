@@ -91,6 +91,7 @@ CTD/bottle profiles.</p>
 <span>  method <span class="op">=</span> <span class="st">"boxcar"</span>,</span>
 <span>  rule <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  e <span class="op">=</span> <span class="fl">1.5</span>,</span>
+<span>  na.rm <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  debug <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"oceDebug"</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -148,6 +149,18 @@ bin is of the same pressure range as the first inside bin.  For other values of
 <code>e</code>, the neighbourhood is expanded linearly in each direction.  If the
 <code>"lm"</code> method produces warnings about "prediction from a rank-deficient
 fit", a larger value of <code>"e"</code> should be used.</p></dd>
+
+
+<dt>na.rm</dt>
+<dd><p>logical value indicating whether to remove NA values
+before decimating.  This value is ignored unless <code>method</code> is
+<code>boxcar</code> in which case it is passed to <code><a href="binMean1D.html">binMean1D()</a></code> which does the
+averaging. This parameter was added in February 2024, and the
+behaviour of <code>ctdDecimate()</code> prior that date was equivalent
+to <code>na.rm=FALSE</code>, so that is the default value, even though
+it is expected that many uses will find using TRUE is more
+convenient. See <code>https://github.com/dankelley/oce/issues/2192</code>
+for more discussion.</p></dd>
 
 
 <dt>debug</dt>

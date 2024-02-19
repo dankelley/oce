@@ -1977,6 +1977,7 @@ ctdDecimate <- function(x, p = 1, method = "boxcar", rule = 1, e = 1.5, na.rm = 
         dataNew[["pressure"]] <- pt
     } else {
         if (method == "approxML") {
+            oceDebug(debug, "handling approxML method\n")
             numGoodPressures <- sum(!is.na(x[["pressure"]]))
             if (numGoodPressures > 0) {
                 tooDeep <- pt > max(x@data[["pressure"]], na.rm = TRUE)
@@ -2003,6 +2004,7 @@ ctdDecimate <- function(x, p = 1, method = "boxcar", rule = 1, e = 1.5, na.rm = 
                 }
             }
         } else if (method == "approx") {
+            oceDebug(debug, "handling approx method\n")
             numGoodPressures <- sum(!is.na(x[["pressure"]]))
             if (numGoodPressures > 0) {
                 tooDeep <- pt > max(x@data[["pressure"]], na.rm = TRUE)
@@ -2030,7 +2032,7 @@ ctdDecimate <- function(x, p = 1, method = "boxcar", rule = 1, e = 1.5, na.rm = 
                 }
             }
         } else if ("rr" == method || "unesco" == method) {
-            oceDebug(debug, "Reiniger-Ross method\n")
+            oceDebug(debug, "handling Reiniger-Ross or unesco method\n")
             xvar <- x@data[["pressure"]]
             for (datumName in dataNames) {
                 oceDebug(debug, "decimating \"", datumName, "\"\n", sep = "")
@@ -2049,6 +2051,7 @@ ctdDecimate <- function(x, p = 1, method = "boxcar", rule = 1, e = 1.5, na.rm = 
                 }
             }
         } else if ("boxcar" == method) {
+            oceDebug(debug, "handling boxcar method\n")
             dp <- diff(pt[1:2])
             pbreaks <- -dp / 2 + c(pt, tail(pt, 1) + dp)
             p <- x@data[["pressure"]]
@@ -2067,10 +2070,8 @@ ctdDecimate <- function(x, p = 1, method = "boxcar", rule = 1, e = 1.5, na.rm = 
                     }
                 }
             }
-        } else {
-            # FIXME: check to see whether we can set to this block,
-            # given the above, and an early check on the value of
-            # 'method'.
+        } else if ("lm" == method) {
+            # Previously, this was in an unnamed else block.
             for (i in 1:npt) {
                 if (i == 1) {
                     focus <- (x[["pressure"]] >= (pt[i] - e * (pt[i + 1] - pt[i]))) &
@@ -2082,40 +2083,25 @@ ctdDecimate <- function(x, p = 1, method = "boxcar", rule = 1, e = 1.5, na.rm = 
                     focus <- (x[["pressure"]] >= (pt[i] - e * (pt[i] - pt[i - 1]))) &
                         (x[["pressure"]] <= (pt[i] + e * (pt[i + 1] - pt[i])))
                 }
-                if (sum(focus, na.rm = TRUE) > 0) {
-                    if ("boxcar" == method) {
-                        for (datumName in dataNames) {
-                            if (!length(x[[datumName]])) {
-                                dataNew[[datumName]] <- NULL
-                            } else {
-                                if (datumName != "pressure") {
-                                    dataNew[[datumName]][i] <- mean(x@data[[datumName]][focus], na.rm = TRUE)
+                if (sum(focus, na.rm = TRUE) > 0) { # focus region hold data
+                    oceDebug(debug, "using lm method\n")
+                    xvar <- x@data[["pressure"]][focus]
+                    for (datumName in dataNames) {
+                        if (!length(x[[datumName]])) {
+                            dataNew[[datumName]] <- NULL
+                        } else {
+                            if (datumName != "pressure") {
+                                yvar <- x@data[[datumName]][focus]
+                                m <- try(lm(yvar ~ xvar), silent = TRUE)
+                                if (!inherits(m, "try-error")) {
+                                    dataNew[[datumName]][i] <- predict(m, newdata = list(xvar = pt[i]))
+                                } else {
+                                    dataNew[[datumName]][i] <- NA
                                 }
                             }
                         }
-                    } else if ("lm" == method) {
-                        # FIXME: this is far too slow
-                        xvar <- x@data[["pressure"]][focus]
-                        for (datumName in dataNames) {
-                            if (!length(x[[datumName]])) {
-                                dataNew[[datumName]] <- NULL
-                            } else {
-                                if (datumName != "pressure") {
-                                    yvar <- x@data[[datumName]][focus]
-                                    m <- try(lm(yvar ~ xvar), silent = TRUE)
-                                    if (!inherits(m, "try-error")) {
-                                        dataNew[[datumName]][i] <- predict(m, newdata = list(xvar = pt[i]))
-                                    } else {
-                                        dataNew[[datumName]][i] <- NA
-                                    }
-                                }
-                            }
-                        }
-                    } else {
-                        stop("impossible to get here -- developer error")
                     }
-                } else {
-                    # No data in the focus region
+                } else { # focus region is empty
                     for (datumName in dataNames) {
                         if (!length(x[[datumName]])) {
                             dataNew[[datumName]] <- NULL
@@ -2127,6 +2113,8 @@ ctdDecimate <- function(x, p = 1, method = "boxcar", rule = 1, e = 1.5, na.rm = 
                     }
                 }
             }
+        } else {
+            stop("programmer error: should not get here. Please report on https://github.com/dankelley/oce/issues")
         }
     }
     if ("flag" %in% names(dataNew)) {
