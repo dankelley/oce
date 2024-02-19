@@ -1,6 +1,7 @@
 # oce 1.8.3
 
 * Add `swSpiciness0()`, `swSpiciness1()`, and `swSpiciness2()` (issue 2188). 
+* Change `ctdDecimate()` to add a new `na.rm` argument (issue 2192).
 * Change `plot.argo()` to handle `which="sigma0 profile"` (issue 2184).
 * Change `sunAngle()` to handle vector arguments better (issue 2178).
 

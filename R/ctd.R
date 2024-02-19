@@ -1861,6 +1861,16 @@ as.ctd <- function(
 #' `"lm"` method produces warnings about "prediction from a rank-deficient
 #' fit", a larger value of `"e"` should be used.
 #'
+#' @param na.rm logical value indicating whether to remove NA values
+#' before decimating.  This value is ignored unless `method` is
+#' `boxcar` in which case it is passed to [binMean1D()] which does the
+#' averaging. This parameter was added in February 2024, and the
+#' behaviour of [ctdDecimate()] prior that date was equivalent
+#' to `na.rm=FALSE`, so that is the default value, even though
+#' it is expected that many uses will find using TRUE is more
+#' convenient. See `https://github.com/dankelley/oce/issues/2192`
+#' for more discussion.
+#'
 #' @template debugTemplate
 #'
 #' @return A [ctd-class] object, with pressures that are as set by
@@ -1895,7 +1905,7 @@ as.ctd <- function(
 #' @author Dan Kelley
 #'
 #' @family things related to ctd data
-ctdDecimate <- function(x, p = 1, method = "boxcar", rule = 1, e = 1.5, debug = getOption("oceDebug")) {
+ctdDecimate <- function(x, p = 1, method = "boxcar", rule = 1, e = 1.5, na.rm = FALSE, debug = getOption("oceDebug")) {
     methodFunction <- is.function(method)
     if (!methodFunction) {
         methods <- c("boxcar", "approx", "approxML", "lm", "rr", "unesco")
@@ -2051,12 +2061,16 @@ ctdDecimate <- function(x, p = 1, method = "boxcar", rule = 1, e = 1.5, debug = 
                         if (all(is.na(x@data[[datumName]]))) {
                             dataNew[[datumName]] <- rep(NA, npt)
                         } else {
-                            dataNew[[datumName]] <- binMean1D(p, x@data[[datumName]], xbreaks = pbreaks)$result
+                            dataNew[[datumName]] <- binMean1D(p, x@data[[datumName]],
+                                xbreaks = pbreaks, na.rm = na.rm)$result
                         }
                     }
                 }
             }
         } else {
+            # FIXME: check to see whether we can set to this block,
+            # given the above, and an early check on the value of
+            # 'method'.
             for (i in 1:npt) {
                 if (i == 1) {
                     focus <- (x[["pressure"]] >= (pt[i] - e * (pt[i + 1] - pt[i]))) &

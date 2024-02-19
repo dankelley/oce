@@ -10,6 +10,7 @@ ctdDecimate(
   method = "boxcar",
   rule = 1,
   e = 1.5,
+  na.rm = FALSE,
   debug = getOption("oceDebug")
 )
 }
@@ -60,6 +61,16 @@ bin is of the same pressure range as the first inside bin.  For other values of
 \code{e}, the neighbourhood is expanded linearly in each direction.  If the
 \code{"lm"} method produces warnings about "prediction from a rank-deficient
 fit", a larger value of \code{"e"} should be used.}
+
+\item{na.rm}{logical value indicating whether to remove NA values
+before decimating.  This value is ignored unless \code{method} is
+\code{boxcar} in which case it is passed to \code{\link[=binMean1D]{binMean1D()}} which does the
+averaging. This parameter was added in February 2024, and the
+behaviour of \code{\link[=ctdDecimate]{ctdDecimate()}} prior that date was equivalent
+to \code{na.rm=FALSE}, so that is the default value, even though
+it is expected that many uses will find using TRUE is more
+convenient. See \verb{https://github.com/dankelley/oce/issues/2192}
+for more discussion.}
 
 \item{debug}{an integer specifying whether debugging information is
 to be printed during the processing. This is a general parameter that
