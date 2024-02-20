@@ -125,3 +125,29 @@ test_that("Handle multiples correctly (issue 2178)", {
         }
     }
 })
+
+test_that("Meeuse Ex 45.a", {
+    # Test against example 45a (page 312) in Meeuse (1991). Note
+    # that those values are for an updated set of formulae, and
+    # this is not what we have in oce (which uses Meeuse 1982
+    # formulae.
+    #
+    # I set up these tests to help me to decide whether to recode
+    # oce to the new formulae.  I think the differences are too
+    # small to justify that effort, which is quite substantial,
+    # involving typing a lot of formulae and numbers in from a book.
+    #
+    # I am not using expect_equal() because I want to display
+    # the mismatch concretely.
+    #
+    # Summary: the worst differences are under 0.01 degrees,
+    # which I judge to be tolerable for simple tasks.
+    t <- as.POSIXct("1992-04-12 00:00:00", tz = "UTC")
+    ma <- moonAngle(t, longitude = 0, latitude = 0)
+    expect_true(abs(ma$rightAscension - 134.688473) < 0.017) # alpha='apparent right ascension'
+    expect_true(abs(ma$declination - 13.768366) < 0.0046) # delta='declinaiton'
+    expect_true(abs(ma$lambda - 133.162659) < 0.013) # longitude
+    expect_true(abs(ma$beta - (-3.229127)) < 0.00011)
+    expect_true(abs(ma$distance - 368409.7) < 7.5) # delta='distance [km]'
+    expect_true(abs(ma$diameter - 0.991990) < 0.000021) # pi
+})
