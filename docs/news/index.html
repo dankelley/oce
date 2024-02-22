@@ -77,27 +77,29 @@
 
     <div class="section level2">
 <h2 class="page-header" data-toc-text="1.8.3" id="oce-183">oce 1.8.3<a class="anchor" aria-label="anchor" href="#oce-183"></a></h2>
-<ul><li>Add <code><a href="../reference/swSpiciness0.html">swSpiciness0()</a></code>, <code><a href="../reference/swSpiciness1.html">swSpiciness1()</a></code>, and <code><a href="../reference/swSpiciness2.html">swSpiciness2()</a></code> (issue 2188).</li>
-<li>Change <code><a href="../reference/ctdDecimate.html">ctdDecimate()</a></code> to add a new <code>na.rm</code> argument (issue 2192).</li>
-<li>Change <code><a href="../reference/plot-argo-method.html">plot.argo()</a></code> to handle <code>which="sigma0 profile"</code> (issue 2184).</li>
-<li>Change <code><a href="../reference/sunAngle.html">sunAngle()</a></code> to handle vector arguments better (issue 2178).</li>
+<ul><li>Add <code><a href="../reference/swSpiciness0.html">swSpiciness0()</a></code>, <code><a href="../reference/swSpiciness1.html">swSpiciness1()</a></code>, and <code><a href="../reference/swSpiciness2.html">swSpiciness2()</a></code> (issue <a href="https://github.com/dankelley/oce/issues/2188" class="external-link">#2188</a>).</li>
+<li>Change <code><a href="../reference/ctdDecimate.html">ctdDecimate()</a></code> to add a new <code>na.rm</code> argument (issue <a href="https://github.com/dankelley/oce/issues/2192" class="external-link">#2192</a>).</li>
+<li>Change <code><a href="../reference/plot-argo-method.html">plot.argo()</a></code> to handle <code>which="sigma0 profile"</code> (issue <a href="https://github.com/dankelley/oce/issues/2184" class="external-link">#2184</a>).</li>
+<li>Change <code><a href="../reference/plot-section-method.html">plot.section()</a></code> to handle bottom traces better (issue <a href="https://github.com/dankelley/oce/issues/2194" class="external-link">#2194</a>).</li>
+<li>Change <code><a href="../reference/plot-section-method.html">plot.section()</a></code> to show data as points properly (issue <a href="https://github.com/dankelley/oce/issues/2195" class="external-link">#2195</a>).</li>
+<li>Change <code><a href="../reference/sunAngle.html">sunAngle()</a></code> to handle vector arguments better (issue <a href="https://github.com/dankelley/oce/issues/2178" class="external-link">#2178</a>).</li>
 </ul></div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="1.8.2" id="oce-182-on-cran">oce 1.8.2 (on CRAN)<a class="anchor" aria-label="anchor" href="#oce-182-on-cran"></a></h2>
 <ul><li>Add <code><a href="../reference/oce.html">package?oce</a></code> documentation (had been missing with a Roxygen2 change).</li>
-<li>Add <code><a href="../reference/read.ctd.saiv.html">read.ctd.saiv()</a></code> to read data from SAIV instruments (issue 2141).</li>
-<li>Remove many dontrun examples from the docs (issue 2152).</li>
-<li>Remove <code>trimString()</code>, after it had been deprecated for a long time (issue 2123).</li>
-<li>Remove use of the deprecated <code>sp</code> package (issue 2154).</li>
-<li>Change <code>amsr</code> dataset and functions to handle new format (issues 2124 to 2133, 2147).</li>
-<li>Change <code><a href="../reference/as.ctd.html">as.ctd()</a></code> to handle multi-profile Argo better (issue 2173).</li>
-<li>Change <code><a href="../reference/as.tidem.html">as.tidem()</a></code> to handle NOAA constituent names and frequencies (issues 2143, 2144 and 2146).</li>
-<li>Change C/C++ <code><a href="https://rdrr.io/r/base/sprintf.html" class="external-link">sprintf()</a></code> calls so all formats match arguments (issue 2172).</li>
+<li>Add <code><a href="../reference/read.ctd.saiv.html">read.ctd.saiv()</a></code> to read data from SAIV instruments (issue <a href="https://github.com/dankelley/oce/issues/2141" class="external-link">#2141</a>).</li>
+<li>Remove many dontrun examples from the docs (issue <a href="https://github.com/dankelley/oce/issues/2152" class="external-link">#2152</a>).</li>
+<li>Remove <code>trimString()</code>, after it had been deprecated for a long time (issue <a href="https://github.com/dankelley/oce/issues/2123" class="external-link">#2123</a>).</li>
+<li>Remove use of the deprecated <code>sp</code> package (issue <a href="https://github.com/dankelley/oce/issues/2154" class="external-link">#2154</a>).</li>
+<li>Change <code>amsr</code> dataset and functions to handle new format (issues <a href="https://github.com/dankelley/oce/issues/2124" class="external-link">#2124</a> to <a href="https://github.com/dankelley/oce/issues/2133" class="external-link">#2133</a>, <a href="https://github.com/dankelley/oce/issues/2147" class="external-link">#2147</a>).</li>
+<li>Change <code><a href="../reference/as.ctd.html">as.ctd()</a></code> to handle multi-profile Argo better (issue <a href="https://github.com/dankelley/oce/issues/2173" class="external-link">#2173</a>).</li>
+<li>Change <code><a href="../reference/as.tidem.html">as.tidem()</a></code> to handle NOAA constituent names and frequencies (issues <a href="https://github.com/dankelley/oce/issues/2143" class="external-link">#2143</a>, <a href="https://github.com/dankelley/oce/issues/2144" class="external-link">#2144</a> and <a href="https://github.com/dankelley/oce/issues/2146" class="external-link">#2146</a>).</li>
+<li>Change C/C++ <code><a href="https://rdrr.io/r/base/sprintf.html" class="external-link">sprintf()</a></code> calls so all formats match arguments (issue <a href="https://github.com/dankelley/oce/issues/2172" class="external-link">#2172</a>).</li>
 <li>Change <code>computableWaterProperties</code> to handle a vector of variable names.</li>
-<li>Change <code><a href="../reference/plot-adp-method.html">plot.adp()</a></code> to obey <code>xlab</code> if x axis represents time (issue 2162).</li>
-<li>Change <code><a href="../reference/plot-cm-method.html">plot.cm()</a></code> to obey <code>xlim</code>, <code>ylim</code>, <code>xaxs</code> and <code>yaxs</code> (issue 2121).</li>
+<li>Change <code><a href="../reference/plot-adp-method.html">plot.adp()</a></code> to obey <code>xlab</code> if x axis represents time (issue <a href="https://github.com/dankelley/oce/issues/2162" class="external-link">#2162</a>).</li>
+<li>Change <code><a href="../reference/plot-cm-method.html">plot.cm()</a></code> to obey <code>xlim</code>, <code>ylim</code>, <code>xaxs</code> and <code>yaxs</code> (issue <a href="https://github.com/dankelley/oce/issues/2121" class="external-link">#2121</a>).</li>
 <li>Change <code><a href="../reference/plotTS.html">plotTS()</a></code> and <code><a href="../reference/plotProfile.html">plotProfile()</a></code> to accept <code>type="b"</code>.</li>
-<li>Change <code><a href="../reference/plot-windrose-method.html">plot.windrose()</a></code> for <code>type="fivenum"</code> (issue 2164).</li>
+<li>Change <code><a href="../reference/plot-windrose-method.html">plot.windrose()</a></code> for <code>type="fivenum"</code> (issue <a href="https://github.com/dankelley/oce/issues/2164" class="external-link">#2164</a>).</li>
 </ul></div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="1.8.1" id="oce-181-on-cran">oce 1.8.1 (on CRAN)<a class="anchor" aria-label="anchor" href="#oce-181-on-cran"></a></h2>
@@ -1668,7 +1670,7 @@
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.9000.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>

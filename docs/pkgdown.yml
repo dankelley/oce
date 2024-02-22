@@ -1,6 +1,6 @@
 pandoc: 3.1.1
-pkgdown: 2.0.7.9000
-pkgdown_sha: 548a9493b72ff93d3ed8392d4ad30b77d8b15fa5
+pkgdown: 2.0.7
+pkgdown_sha: ~
 articles:
   A_oce: A_oce.html
   B_ctd: B_ctd.html
@@ -9,5 +9,5 @@ articles:
   E_flags: E_flags.html
   F_subclassing: F_subclassing.html
   G_altering_defaults: G_altering_defaults.html
-last_built: 2024-02-19T11:23Z
+last_built: 2024-02-22T13:21Z
 

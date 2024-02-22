@@ -238,7 +238,7 @@ setMethod(
         debug <- if (!is.null(dots$debug)) {
             dots$debug
         } else {
-            getOption("oceDebug", default=0)
+            getOption("oceDebug", default = 0)
         }
         cat("Section Summary\n---------------\n\n")
         cat("* Source: \"", object@metadata$filename, "\"\n", sep = "")
@@ -881,11 +881,14 @@ setMethod(
                 n <- length(x@data$station)
                 keep <- vector(length = n)
                 for (i in 1:n) {
-                    keep[i] <- eval(expr = substitute(
-                        expr = subset,
-                        env = environment()),
+                    keep[i] <- eval(
+                        expr = substitute(
+                            expr = subset,
+                            env = environment()
+                        ),
                         envir = x@data$station[[i]]@metadata,
-                        enclos = parent.frame(2))
+                        enclos = parent.frame(2)
+                    )
                 }
                 nn <- sum(keep)
                 station <- vector("list", nn)
@@ -1500,13 +1503,16 @@ setMethod(
             stop("cannot have NA values in which, but it is ", paste(which, collapse = ","))
         }
         # oceDebug(debug, "which=c(", paste(which, collapse=","), ")\n")
-        oceDebug(debug, "plot.section(, ..., which=c(",
-            paste(which, collapse = ","), "), eos=\"", eos, "\"",
+        oceDebug(debug, "plot.section(, ..., ",
+            ", which=c(", paste(which, collapse = ","), "),",
+            ", eos=", eos,
             ", xtype=", xtype,
+            ", ytype=", ytype,
             ", ztype=", ztype,
             ", xlim=c(", paste(xlim, collapse = ","), ")",
             ", ylim=c(", paste(ylim, collapse = ","), ")",
-            ", \", ...) {\n",
+            ", showBottom=", showBottom,
+            ", ...) {\n",
             sep = "", unindent = 1
         )
         # Contour and image plots, e.g. for which="temperature" and so forth, require
@@ -1584,6 +1590,7 @@ setMethod(
                 ", zcol=", if (missing(zcol)) "(missing)" else "(provided)",
                 ", span=", if (missing(span)) "(missing)" else span,
                 ", showStations=", showStations,
+                ", showBottom=", showBottom,
                 ", axes=", axes, ", ...) {\n",
                 sep = "", unindent = 1
             )
@@ -1837,10 +1844,11 @@ setMethod(
                         xlab = xlab, ylab = ylab, col = "white", axes = FALSE
                     )
                     if (axes) {
-                        oceDebug(debug, "drawing axes (before contouring etc)\n")
+                        oceDebug(debug, "drawing vertical axes\n")
                         axis(4L, labels = FALSE)
                         ytics <- axis(2L, labels = FALSE)
                         axis(2L, at = ytics, labels = ytics)
+                        oceDebug(debug, "drawing horizontal axes\n")
                         # If constructing labels for time, need to check xlim
                         if (xIsTime) {
                             if (!is.null(xlim)) {
@@ -1854,6 +1862,7 @@ setMethod(
                             axis(1L)
                         }
                     }
+                    oceDebug(debug, "drawing axis box\n")
                     box()
                 } else {
                     plot(xxrange, yyrange,
@@ -1870,11 +1879,15 @@ setMethod(
                     box()
                 }
                 # Bottom trace
+                oceDebug(debug, "drawing bottom trace (numStations=", numStations, ")\n", sep = "")
                 usr <- par("usr")
                 graph.bottom <- usr[3]
                 waterDepth <- NULL
                 # For ztype == "points", plot the points.  Otherwise, collect them in zz
                 # for the contour or image plot.
+                oceDebug(debug, "collecting station bottom information (FIXME: very slow)\n")
+
+                timer <- as.numeric(Sys.time())
                 for (i in seq_len(numStations)) {
                     # 2092 message("DAN 1758 i=", i)
                     thisStation <- x[["station", i]]
@@ -1896,8 +1909,8 @@ setMethod(
                             v <- rep(NA, length(p))
                         }
                         if (drawPoints) {
-                            p <- thisStation[["pressure"]]
-                            points(rep(xx[i], np), -p,
+                            # 2024-02-22: previously used pressure, leading to slight error
+                            points(rep(xx[i], np), thisStation[[ytype]],
                                 pch = pch, cex = cex,
                                 col = zcol[rescale(v, xlow = zlim[1], xhigh = zlim[2], rlow = 1, rhigh = nbreaks)]
                             )
@@ -1912,16 +1925,25 @@ setMethod(
                     }
                     # temp <- x@data$station[[stationIndices[i]]]@data$temperature
                     # len <- length(temp)
-                    wd <- if ("waterDepth" %in% names(x@data$station[[stationIndices[i]]]@metadata) &&
-                        is.finite(x@data$station[[stationIndices[i]]]@metadata$waterDepth)) {
-                        x@data$station[[stationIndices[i]]]@metadata$waterDepth
+                    STNii <- x@data$station[[stationIndices[i]]]
+                    wd <- if ("waterDepth" %in% names(STNii@metadata) && is.finite(STNii@metadata$waterDepth)) {
+                        STNii@metadata$waterDepth
                     } else {
                         NA
                     }
+
+                    # wd <- if ("waterDepth" %in% names(x@data$station[[stationIndices[i]]]@metadata) &&
+                    #    is.finite(x@data$station[[stationIndices[i]]]@metadata$waterDepth)) {
+                    #    x@data$station[[stationIndices[i]]]@metadata$waterDepth
+                    # } else {
+                    #    NA
+                    # }
                     # in.land <- which(is.na(x@data$station[[stationIndices[i]]]@data$temperature[-3])) # skip first 3 points
                     waterDepth <- c(waterDepth, wd)
                     # 2092 message(sprintf("DAN i=%d x=%.2f depth=%.0f", i, xx[i], wd))
                 }
+                oceDebug(debug, "last step took ", as.numeric(Sys.time()) - timer, "s\n")
+                oceDebug(debug, "calling rug() to show stations on top axis\n")
                 # The Axis() call was a problem (not sure why) so I changed to rug()
                 # to fix issue https://github.com/dankelley/oce/issues/2159
                 if (!grid && axes && stationTicks) {
@@ -1929,6 +1951,7 @@ setMethod(
                     rug(xx, side = 3, tcl = -1 / 3, lwd = 0.5) # station locations
                 }
                 # 2092 message("DAN next is xx. Is it in order of station or axis?")
+                oceDebug(debug, "assembling bottom information\n")
                 bottom.x <- c(xx[1], xx, xx[length(xx)])
                 bottom.y <- if (any(is.finite(waterDepth))) {
                     c(graph.bottom, waterDepth, graph.bottom)
@@ -2093,10 +2116,12 @@ setMethod(
                     }
                 }
                 if (is.character(showBottom) || (is.logical(showBottom) && showBottom)) {
-                    type <- "polygon"
+                    oceDebug(debug, "showBottom=", showBottom, " so using station depth as bottom\n")
+                    bottomStyle <- "polygon"
                     if (is.character(showBottom)) {
-                        type <- showBottom
+                        bottomStyle <- showBottom
                     }
+                    oceDebug(debug, "for drawing, set bottomStyle=", bottomStyle, "\n")
                     # 2092 message("DAN about to plot")
                     # 2092 print(head(data.frame(bottom.x=bottom.x, bottom.y=bottom.y), 2))
                     # 2092 print(tail(data.frame(bottom.x=bottom.x, bottom.y=bottom.y), 2))
@@ -2106,18 +2131,24 @@ setMethod(
                     # 2092 message("DAN LATER ", vectorShow(head(bottom.x)))
                     # 2092 message("DAN ", vectorShow(xtype))
                     if (length(bottom.x) == length(bottom.y)) {
+                        oceDebug(debug, "bottom.x and bottom.y have same length, so can plot\n")
                         bottom <- par("usr")[3]
-                        if (type == "polygon") {
+                        if (bottomStyle == "polygon") {
+                            oceDebug(debug, "showing bottom with a polygon\n")
                             polygon(bottom.x, bottom.y, col = gray(0.25, alpha = 0.2))
-                        } else if (type == "lines") {
+                        } else if (bottomStyle == "lines") {
+                            oceDebug(debug, "showing bottom with lines()\n")
                             for (s in seq_along(bottom.x)) {
-                                lines(rep(bottom.x[s], 2), c(bottom.y[s], bottom), col = "lightgray")
+                                lines(rep(bottom.x[s], 2), c(bottom.y[s], bottom))
                             }
-                        } else if (type == "points") {
+                        } else if (bottomStyle == "points") {
+                            oceDebug(debug, "showing bottom with points()\n")
                             for (s in seq_along(bottom.x)) {
-                                points(rep(bottom.x[s], 2), c(bottom.y[s], bottom), col = "lightgray")
+                                points(bottom.x[s], bottom.y[s], pch = 20)
                             }
                         }
+                    } else {
+                        warning("cannot show the bottom since bottom.x and bottom.y lengths differ\n")
                     }
                     box()
                 } else if (inherits(showBottom, "topo")) {
@@ -2144,9 +2175,14 @@ setMethod(
                     bx <- approx(seq_len(nin), xx, n = nout)$y
                     bx <- c(bx[1], bx, tail(bx, 1))
                     usr3 <- par("usr")[3]
-                    # cat(vectorShow(usr))
-                    by <- c(usr3, by, usr3)
+                    oceDebug(
+                        debug, "about to polygon for the bottom; ",
+                        vectorShow(usr3)
+                    )
+                    by <- c(usr3, -by, usr3)
+                    # lines(bx, by, col="magenta")
                     polygon(bx, by, col = "lightgray")
+                    # browser()
                 }
                 if (axes) {
                     if (xIsTime) {
