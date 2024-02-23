@@ -5,6 +5,7 @@
 * Change `plot.argo()` to handle `which="sigma0 profile"` (issue #2184).
 * Change `plot.section()` to handle bottom traces better (issue #2194).
 * Change `plot.section()` to show data as points properly (issue #2195).
+* Change `read.adp.rdi()` to handle large (> 2.147 GB) files (issue #2196).
 * Change `sunAngle()` to handle vector arguments better (issue #2178).
 
 # oce 1.8.2 (on CRAN)
