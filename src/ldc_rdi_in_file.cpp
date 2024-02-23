@@ -264,7 +264,7 @@ List do_ldc_rdi_in_file(StringVector filename, IntegerVector from,
   //
   // Note that we do not check the Calloc() results because the R docs say that
   // Calloc() performs its own tests, and that R will handle any problems.
-  unsigned long int nensembles = 100000; // BUFFER SIZE
+  unsigned long int nensembles = 500000; // BUFFER SIZE (increased if needed)
   unsigned int *ensemble_in_files =
       (unsigned int *)R_Calloc((size_t)nensembles, unsigned int);
   int *ensembles = (int *)R_Calloc((size_t)nensembles, int);
@@ -403,9 +403,7 @@ List do_ldc_rdi_in_file(StringVector filename, IntegerVector from,
           // them.
           nensembles = 3 * nensembles / 2;
           if (debug_value > -1) {
-            Rprintf("Increasing ensembles,times,sec100s storage to %lu "
-                    "elements ...\n",
-                    nensembles);
+            Rprintf("Increasing storage to hold up to %lu elements\n", nensembles);
           }
           ensemble_in_files = (unsigned int *)R_Realloc(
               ensemble_in_files, nensembles, unsigned int);
