@@ -137,6 +137,6 @@ Dan Kelley wrote the R code and a fortran wrapper to the
 \code{igrf12.f} subroutine, which was written by Susan Macmillan of the
 British Geological Survey and distributed ``without limitation'' (email from
 SM to DK dated June 5, 2015).  This version was updated subsequent
-to that date; see \sQuote{Historical Notes}.
+to that date; see \dQuote{Historical Notes}.
 }
 \concept{things related to magnetism}

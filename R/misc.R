@@ -271,7 +271,10 @@ argShow <- function(x, nshow = 4, last = FALSE, sep = "=") {
 #' display, e.g. by \code{\link{plot,section-method}}.
 #' The unit is enclosed in square brackets, although setting
 #' `options(oceUnitBracket="(")` will cause parentheses to be
-#' used, instead.
+#' used, instead. This function is intended mainly for use
+#' within the package, and users should not rely on its behaviour being
+#' unchangeable.
+
 #'
 #' If `name` is in a standard list, then alterations are made as appropriate,
 #' e.g. `"SA"` or `"Absolute Salinity"` yields an S with subscript A; `"CT"` or
@@ -2163,36 +2166,53 @@ fullFilename <- function(filename) {
 
 #' Variable Names in Adjustable Sizes
 #'
-#' Provide axis names in adjustable sizes, e.g. using T instead of Temperature,
-#' and including units as appropriate.
-#' Used by e.g. [plot,ctd-method()].
+#' Provide axis names in adjustable sizes, e.g. using T instead of Temperature
+#' if the latter would be unlikely to fit on an axis. The name will also
+#' include units as appropriate.  This function is intended mainly for use
+#' within the package, and users should not rely on its behaviour being
+#' unchangeable.
 #'
-#' @param item code for the label. The following common values are recognized:
+#' Partial matches to the `item` value are handled by calling [pmatch()]. This
+#' can be convenient, with `item="tem"` and `item="temperature"` having the same
+#' effect. However, it can also be confusing for labels that are similar.
+#' For example, there are 5 variants of oxygen concentration.
+#' It is best to unabbreviated values, especially in non-interactive work.
+#'
+#' The list of known values is:
 #' `"absolute salinity"`, `"along-spine distance km"`, `"along-track distance km"`,
 #' `"C"`, `"conductivity mS/cm"`, `"conductivity S/m"`, `"conservative temperature"`,
 #' `"CT"`, `"depth"`, `"direction"`, `"distance"`, `"distance km"`, `"eastward"`,
 #' `"elevation"`, `"fluorescence"`, `"frequency cph"`, `"heading"`, `"latitude"`,
-#' `"longitude"`, `"N2"`, `"nitrate"`, `"nitrite"`, `"northward"`, `"oxygen"`,
+#' `"longitude"`, `"N"`, `"N2"`, `"nitrate"`, `"nitrite"`, `"northward"`, `"oxygen"`,
 #' `"oxygen mL/L"`, `"oxygen saturation"`, `"oxygen umol/kg"`, `"oxygen umol/L"`,
 #' `"p"`, `"phosphate"`, `"pitch"`, `"roll"`, `"S"`, `"SA"`,
 #' `"sigma0"`, `"sigma1"`, `"sigma2"`, `"sigma3"`, `"sigma4"`,
 #' `"sigmaTheta"`,
 #' `"silicate"`, `"sound speed"`, `"spectral density m2/cph"`, `"speed"`,
 #' `"spice"`, `"spiciness0"`, `"spiciness1"`, `"spiciness2"`,
-#' `"T"`, `"theta"`, `"tritium"`, `"u"`, `"v"`, `"w"`, or `"z"`.
-#' Other values may also be recognized, and if an unrecognized item is
-#' given, then it is returned, unaltered.
+#' `"T"`, `"theta"`, `"tritium"`, `"u"`, `"v"`, `"w"`, and `"z"`.
+#'
+#' @param item code for the label. If this matches or partially matches
+#' to a known value (see \dQuote{Details}), then that value and
+#' associated unit are returned.  If not, `item` is returned, unaltered.
+#' See \dQuote{Details} for a list of known values, and a note
+#' on partial matching.
 #'
 #' @param axis a string indicating which axis to use; must be `x` or
 #' `y`.
 #'
 #' @param sep optional character string inserted between the unit and the
-#' parentheses or brackets that enclose it. If not provided, then
-#' [`getOption`]`("oceUnitSep")` is checked. If that exists, then it is
-#' used as the separator; if not, no separator is used.
+#' parentheses or brackets that enclose it. If not provided,
+#' [`getOption`]`("oceUnitSep"," ")` is called to get a value for `sep`.
+#' By default, the units are enclosed in square brackets; to change
+#' that to parenthese, use [options]`(oceUnitBracket="(")`, but
+#' note that this setting will last for the whole session.
 #'
-#' @param unit optional unit to use, if the default is not satisfactory. This
-#' might be the case if for example temperature was not measured in Celcius.
+#' @param unit optional unit to use. If not supplied, a sensible unit is used,
+#' depending on `item`. And, even if supplied, `unit` is ignored for many `item`
+#' values for which it make no sense, e.g. `"oxygen ml/l"`, `"Conductivity
+#' Ratio"` and `"Absolute Salinity"`. Only the oce developers should consider
+#' supplying a value for `unit`.
 #'
 #' @param debug optional debugging flag. Setting to 0 turns off debugging,
 #' while setting to 1 causes some debugging information to be printed.
@@ -2200,9 +2220,24 @@ fullFilename <- function(filename) {
 #' @return A character string or expression, in either a long or a shorter
 #' format, for use in the indicated axis at the present plot size.  Whether the
 #' unit is enclosed in parentheses or square brackets is determined by the
-#' value of `getOption("oceUnitBracket")`, which may be `"["` or
-#' `"("`.  Whether spaces are used between the unit and these deliminators
-#' is set by `psep` or [`getOption`]`("oceUnitSep")`.
+#' value of `getOption("oceUnitBracket")`, which may be `"["`, which is
+#' the default, or `"("`.  Whether spaces are used between the unit and
+#' these delimiters is controlled by `sep` or [`getOption`]`("oceUnitSep")`.
+#'
+#' @examples
+#' # 1. A matchable item name
+#' resizableLabel("temp")
+#' # 2. Not a matchable item name
+#' resizableLabel("tempJUNK")
+#' # 3. A silly example, since ylab=expression(...) is shorter.
+#' degC <- c(-2, 30)
+#' degF <- 9 / 5 * degC + 32
+#' plot(degC, degF,
+#'     xlab = resizableLabel("temp"),
+#'     ylab = resizableLabel("temp", unit = expression(degree * "F")),
+#'     xaxs = "i", type = "l"
+#' )
+#' grid()
 #'
 #' @family functions that create labels
 #'
@@ -2223,7 +2258,7 @@ resizableLabel <- function(item, axis = "x", sep, unit = NULL, debug = getOption
         "salinity", "S", "SA", "C", "CT", paste("conductivity", "mS/cm"),
         paste("conductivity", "S/m"), "T", "temperature", "theta", "sigmaTheta",
         paste("Conservative", "Temperature"), paste("Absolute", "Salinity"),
-        "N2", "nitrate", "nitrite", "oxygen", paste("oxygen", "saturation"),
+        "N", "N2", "nitrate", "nitrite", "oxygen", paste("oxygen", "saturation"),
         paste("oxygen", "mL/L"), paste("oxygen", "umol/L"), paste(
             "oxygen",
             "umol/kg"
@@ -2239,7 +2274,6 @@ resizableLabel <- function(item, axis = "x", sep, unit = NULL, debug = getOption
         paste("spectral", "density", "m2/cph"), "sigma0", "sigma1", "sigma2",
         "sigma3", "sigma4", "Sstar", "SR"
     )
-
     # FIXME: if anything is added, run the next, and paste results into roxygen.
     # > A<-paste0("'",paste(sort(itemAllowed), collapse="'`, `'"),"'");A
     # NOTE: some hand-tweaking must be done to fix linebreaks and (preferably) to
@@ -2265,32 +2299,37 @@ resizableLabel <- function(item, axis = "x", sep, unit = NULL, debug = getOption
         R <- ")"
     }
     if (missing(sep)) {
-        tmp <- getOption("oceUnitSep")
+        tmp <- getOption("oceUnitSep", " ")
         sep <- if (!is.null(tmp)) tmp else ""
     }
     L <- paste(L, sep, sep = "")
     R <- paste(sep, R, sep = "")
+    # cat("next is unit:\n");print(unit) # FIXME
     if (item == "T" || item == "temperature") {
         var <- gettext("Temperature", domain = "R-oce")
-        if (is.null(unit)) {
-            # message("no unit given for temperature")
+        if (is.null(unit)) { # FIXME: do this for other item choices START
             full <- bquote(.(var) * .(L) * degree * "C" * .(R))
             abbreviated <- bquote("T" * .(L) * degree * "C" * .(R))
         } else {
-            # message("unit given for temperature")
             full <- bquote(.(var) * .(L) * .(unit[[1]]) * .(R))
             abbreviated <- bquote("T" * .(L) * .(unit[[1]]) * .(R))
         }
     } else if (item == paste("conductivity", "mS/cm")) {
         var <- gettext("Conductivity", domain = "R-oce")
-        full <- bquote(.(var) * .(L) * mS / cm * .(R))
-        abbreviated <- bquote("C" * .(L) * mS / cm * .(R))
+        if (is.null(unit)) {
+            full <- bquote(.(var) * .(L) * mS / cm * .(R))
+            abbreviated <- bquote("C" * .(L) * mS / cm * .(R))
+        } else {
+            full <- bquote(.(var) * .(L) * .(unit[[1]]) * .(R))
+            abbreviated <- bquote("C" * .(L) * .(unit[[1]]) * .(R))
+        }
     } else if (item == paste("conductivity", "S/m")) {
         var <- gettext("Conductivity", domain = "R-oce")
+        # unit is ignored, since it is built into the name
         full <- bquote(.(var) * .(L) * S / m * .(R))
         abbreviated <- bquote("C" * .(L) * S / m * .(R))
     } else if (item == "C") {
-        # unitless form
+        # unit is ignored, since this is a unitless quantity
         var <- gettext("Conductivity Ratio", domain = "R-oce")
         unit <- gettext("unitless", domain = "R-oce")
         full <- bquote(.(var) * .(L) * .(unit[[1]]) * .(R))
@@ -2300,43 +2339,54 @@ resizableLabel <- function(item, axis = "x", sep, unit = NULL, debug = getOption
         paste("conservative", "temperature"),
         paste("Conservative", "Temperature")
     )) {
+        # unit is ignored, since this quantity has a fixed meaning
         var <- gettext("Conservative Temperature", domain = "R-oce")
         full <- bquote(.(var) * .(L) * degree * "C" * .(R))
         abbreviated <- bquote(Theta * .(L) * degree * "C" * .(R))
     } else if (item == "sigmaTheta") {
+        # unit is ignored, since this quantity has a fixed meaning
         var <- gettext("Potential density anomaly", domain = "R-oce")
         full <- bquote(.(var) * .(L) * kg / m^3 * .(R))
         abbreviated <- bquote(sigma[theta] * .(L) * kg / m^3 * .(R))
     } else if (item == "sigma0") {
+        # unit is ignored, since this quantity has a fixed meaning
         var <- gettext("Potential density anomaly wrt surface", domain = "R-oce")
         full <- bquote(.(var) * .(L) * kg / m^3 * .(R))
         abbreviated <- bquote(sigma[0] * .(L) * kg / m^3 * .(R))
     } else if (item == "sigma1") {
+        # unit is ignored, since this quantity has a fixed meaning
         var <- gettext("Potential density anomaly wrt 1000 dbar", domain = "R-oce")
         full <- bquote(.(var) * .(L) * kg / m^3 * .(R))
         abbreviated <- bquote(sigma[1] * .(L) * kg / m^3 * .(R))
     } else if (item == "sigma2") {
+        # unit is ignored, since this quantity has a fixed meaning
         var <- gettext("Potential density anomaly wrt 2000 dbar", domain = "R-oce")
         full <- bquote(.(var) * .(L) * kg / m^3 * .(R))
         abbreviated <- bquote(sigma[2] * .(L) * kg / m^3 * .(R))
     } else if (item == "sigma3") {
+        # unit is ignored, since this quantity has a fixed meaning
         var <- gettext("Potential density anomaly wrt 3000 dbar", domain = "R-oce")
         full <- bquote(.(var) * .(L) * kg / m^3 * .(R))
         abbreviated <- bquote(sigma[3] * .(L) * kg / m^3 * .(R))
     } else if (item == "sigma4") {
+        # unit is ignored, since this quantity has a fixed meaning
         var <- gettext("Potential density anomaly wrt 4000 dbar", domain = "R-oce")
         full <- bquote(.(var) * .(L) * kg / m^3 * .(R))
         abbreviated <- bquote(sigma[4] * .(L) * kg / m^3 * .(R))
     } else if (item %in% c("salinity", "SP")) {
+        # unit is ignored, since this quantity has a fixed meaning
         var <- "Salinity"
         abbreviated <- full <- bquote(.(var))
     } else if (item == "SR") {
+        # unit is ignored, since this quantity has a fixed meaning
         var <- "SR"
         abbreviated <- full <- bquote(S[R] * .(L) * kg / m^3 * .(R))
     } else if (item == "Sstar") {
+        # unit is ignored, since this quantity has a fixed meaning
         var <- "Sstar"
         abbreviated <- full <- bquote(S["*"] * .(L) * kg / m^3 * .(R))
     } else if (item == "theta") {
+        # unit is ignored, since this quantity has a fixed meaning
         var <- gettext("Potential Temperature", domain = "R-oce")
         full <- bquote(.(var) * .(L) * degree * "C" * .(R))
         abbreviated <- bquote(theta * .(L) * degree * "C" * .(R))
@@ -2349,11 +2399,16 @@ resizableLabel <- function(item, axis = "x", sep, unit = NULL, debug = getOption
             full <- bquote(.(var) * .(L) * .(unit[[1]]) * .(R))
             abbreviated <- bquote(phantom()^3 * H * .(L) * .(unit[[1]]) * .(R))
         }
+    } else if (item == "N") {
+        # unit is ignored, since this quantity has a fixed meaning
+        full <- bquote(N * .(L) * s^-1 * .(R))
+        abbreviated <- bquote(N * .(L) * s^-1 * .(R))
     } else if (item == "N2") {
-        # full <- bquote("Square of Buoyancy Frequency"*.(L)*s^-2*.(R))
+        # unit is ignored, since this quantity has a fixed meaning
         full <- bquote(N^2 * .(L) * s^-2 * .(R))
         abbreviated <- bquote(N^2 * .(L) * s^-2 * .(R))
     } else if (item == "nitrate") {
+        # users may supply a unit
         var <- gettext("Nitrate", domain = "R-oce")
         if (is.null(unit)) {
             full <- bquote(.(var) * .(L) * mu * mol / kg * .(R))
@@ -2363,6 +2418,7 @@ resizableLabel <- function(item, axis = "x", sep, unit = NULL, debug = getOption
             abbreviated <- bquote(N * O[3] * .(L) * .(unit[[1]]) * .(R))
         }
     } else if (item == "nitrite") {
+        # users may supply a unit
         var <- gettext("Nitrite", domain = "R-oce")
         if (is.null(unit)) {
             full <- bquote(.(var) * .(L) * mu * mol / kg * .(R))
@@ -2372,6 +2428,7 @@ resizableLabel <- function(item, axis = "x", sep, unit = NULL, debug = getOption
             abbreviated <- bquote(N * O[2] * .(L) * .(unit[[1]]) * .(R))
         }
     } else if (item == "oxygen") {
+        # users may supply a unit
         var <- gettext("Oxygen", domain = "R-oce")
         if (is.null(unit)) {
             full <- bquote(.(var))
@@ -2385,18 +2442,22 @@ resizableLabel <- function(item, axis = "x", sep, unit = NULL, debug = getOption
         full <- bquote(.(var))
         abbreviated <- bquote(O[2] * .(L) * percent * saturation * .(R))
     } else if (item == paste("oxygen", "mL/L")) {
+        # unit is ignored
         var <- gettext("Oxygen", domain = "R-oce")
         full <- bquote(.(var) * .(L) * mL / L * .(R))
         abbreviated <- bquote(O[2] * .(L) * mL / L * .(R))
     } else if (item == paste("oxygen", "umol/L")) {
+        # unit is ignored
         var <- gettext("Oxygen", domain = "R-oce")
         full <- bquote(.(var) * .(L) * mu * mol / L * .(R))
         abbreviated <- bquote(O[2] * .(L) * mu * mol / L * .(R))
     } else if (item == paste("oxygen", "umol/kg")) {
+        # unit is ignored
         var <- gettext("Oxygen", domain = "R-oce")
         full <- bquote(.(var) * .(L) * mu * mol / kg * .(R))
         abbreviated <- bquote(O[2] * .(L) * mu * mol / kg * .(R))
     } else if (item == "phosphate") {
+        # users may supply a unit
         var <- gettext("Phosphate", domain = "R-oce")
         if (is.null(unit)) {
             full <- bquote(.(var) * .(L) * mu * mol / kg * .(R))
@@ -2407,15 +2468,12 @@ resizableLabel <- function(item, axis = "x", sep, unit = NULL, debug = getOption
         }
     } else if (item == paste("potential", "temperature")) {
         var <- gettext("Potential Temperature", domain = "R-oce")
-        if (is.null(unit)) {
-            full <- bquote(.(var) * .(L) * degree * C * .(R))
-            abbreviated <- bquote(theta * .(L) * degree * C * .(R))
-        } else {
-            full <- bquote(.(var) * .(L) * .(unit[[1]]) * .(R))
-            abbreviated <- bquote(theta * .(L) * .(unit[[1]]) * .(R))
-        }
+        # unit is ignored
+        full <- bquote(.(var) * .(L) * degree * C * .(R))
+        abbreviated <- bquote(theta * .(L) * degree * C * .(R))
     } else if (item == "pressure") {
         var <- gettext("Pressure", domain = "R-oce")
+        # users may supply a unit
         if (is.null(unit)) {
             full <- bquote(.(var) * .(L) * dbar * .(R))
             abbreviated <- bquote(theta * .(L) * dbar * .(R))
@@ -2425,6 +2483,7 @@ resizableLabel <- function(item, axis = "x", sep, unit = NULL, debug = getOption
         }
     } else if (item == "silicate") {
         var <- gettext("Silicate", domain = "R-oce")
+        # users may supply a unit
         if (is.null(unit)) {
             full <- bquote(.(var) * .(L) * mu * mol / kg * .(R))
             abbreviated <- bquote(Si * O[4] * .(L) * mu * mol / kg * .(R))
@@ -2434,6 +2493,7 @@ resizableLabel <- function(item, axis = "x", sep, unit = NULL, debug = getOption
         }
     } else if (item == "fluorescence") {
         var <- gettext("Fluorescence", domain = "R-oce")
+        # users may supply a unit
         if (is.null(unit)) {
             # I've no idea what a 'standard' unit might be
             full <- bquote(.(var))
@@ -2444,6 +2504,7 @@ resizableLabel <- function(item, axis = "x", sep, unit = NULL, debug = getOption
         }
     } else if (item == "spice") {
         var <- gettext("Spice", domain = "R-oce")
+        # users may supply a unit
         if (is.null(unit)) {
             full <- bquote(.(var) * .(L) * kg / m^3 * .(R))
             abbreviated <- full
@@ -2453,90 +2514,116 @@ resizableLabel <- function(item, axis = "x", sep, unit = NULL, debug = getOption
         }
     } else if (item == "spiciness0") {
         var <- gettext("Spiciness wrt surface", domain = "R-oce")
+        # unit is ignored
         full <- bquote(.(var) * .(L) * kg / m^3 * .(R))
         abbreviated <- full
     } else if (item == "spiciness1") {
         var <- gettext("Spiciness wrt 1000 dbar", domain = "R-oce")
+        # unit is ignored
         full <- bquote(.(var) * .(L) * kg / m^3 * .(R))
         abbreviated <- full
     } else if (item == "spiciness2") {
         var <- gettext("Spiciness wrt 2000 dbar", domain = "R-oce")
+        # unit is ignored
         full <- bquote(.(var) * .(L) * kg / m^3 * .(R))
         abbreviated <- full
     } else if (item == "S") {
         full <- gettext("Salinity", domain = "R-oce")
+        # unit is ignored
         abbreviated <- expression(S)
     } else if (item %in% c(
         "SA",
         paste("absolute", "salinity"),
         paste("Absolute", "Salinity")
     )) {
+        # unit is ignored
         var <- gettext("Absolute Salinity", domain = "R-oce")
         full <- bquote(.(var) * .(L) * g / kg * .(R))
         abbreviated <- bquote(S[A] * .(L) * g / kg * .(R))
     } else if (item == "p") {
+        # unit is ignored
         var <- gettext("Pressure", domain = "R-oce")
         full <- bquote(.(var) * .(L) * dbar * .(R))
         abbreviated <- bquote("p" * .(L) * dbar * .(R))
     } else if (item == "z") {
+        # unit is ignored
         var <- "z"
         abbreviated <- full <- bquote("z" * .(L) * m * .(R))
     } else if (item == "distance") {
         var <- gettext("Distance", domain = "R-oce")
-        abbreviated <- full <- bquote(.(var) * .(L) * m * .(R))
+        # users may supply a unit
+        u <- if (missing(unit)) "m" else unit
+        abbreviated <- full <- bquote(.(var) * .(L) * .(u) * .(R))
     } else if (item == "distance km") {
         var <- gettext("Distance", domain = "R-oce")
+        # unit is ignored
         abbreviated <- full <- bquote(.(var) * .(L) * km * .(R))
     } else if (item == paste("along-spine", "distance", "km")) {
         var <- gettext("Along-spine Distance", domain = "R-oce")
+        # unit is ignored
         abbreviated <- full <- bquote(.(var) * .(L) * km * .(R))
     } else if (item == paste("along-track", "distance", "km")) {
         var <- gettext("Along-track Distance", domain = "R-oce")
+        # unit is ignored
         abbreviated <- full <- bquote(.(var) * .(L) * km * .(R))
     } else if (item == "heading") {
         var <- gettext("Heading", domain = "R-oce")
+        # unit is ignored
         abbreviated <- full <- bquote(.(var) * .(L) * degree * .(R))
     } else if (item == "pitch") {
         var <- gettext("Pitch", domain = "R-oce")
+        # unit is ignored
         abbreviated <- full <- bquote(.(var) * .(L) * degree * .(R))
     } else if (item == "roll") {
         var <- gettext("Roll", domain = "R-oce")
+        # unit is ignored
         abbreviated <- full <- bquote(.(var) * .(L) * degree * .(R))
     } else if (item == "u" || item == "v" || item == "w") {
+        # unit is ignored
         abbreviated <- full <- bquote(.(item) * .(L) * m / s * .(R))
     } else if (item == "eastward") {
+        # unit is ignored
         var <- gettext("Eastward", domain = "R-oce")
         abbreviated <- full <- bquote(.(var) * .(L) * m / s * .(R))
     } else if (item == "northward") {
+        # unit is ignored
         var <- gettext("Northward", domain = "R-oce")
         abbreviated <- full <- bquote(.(var) * .(L) * m / s * .(R))
     } else if (item == "depth") {
+        # unit is ignored
         var <- gettext("Depth", domain = "R-oce")
         abbreviated <- full <- bquote(.(var) * .(L) * m * .(R))
     } else if (item == "elevation") {
+        # unit is ignored
         var <- gettext("Elevation", domain = "R-oce")
         abbreviated <- full <- bquote(.(var) * .(L) * m * .(R))
     } else if (item == "speed") {
+        # unit is ignored
         var <- gettext("Speed", domain = "R-oce")
         abbreviated <- full <- bquote(.(var) * .(L) * m / s * .(R))
     } else if (item == "latitude") {
+        # unit is ignored
         var <- gettext("Latitude", domain = "R-oce")
         # maybe add deg "N" "S" etc here, but maybe not (aesthetics)
         abbreviated <- full <- var
     } else if (item == "longitude") {
         var <- gettext("Longitude", domain = "R-oce")
+        # unit is ignored
         # maybe add deg "E" "W" etc here, but maybe not (aesthetics)
         abbreviated <- full <- var
     } else if (item == paste("frequency", "cph")) {
         var <- gettext("Frequency", domain = "R-oce")
+        # unit is ignored
         unit <- gettext("cph", domain = "R-oce")
         abbreviated <- full <- bquote(.(var) * .(L) * .(unit[[1]]) * .(R))
     } else if (item == paste("sound", "speed")) {
         var <- gettext("Sound Speed", domain = "R-oce")
+        # unit is ignored
         unit <- gettext("m/s", domain = "R-oce")
         abbreviated <- full <- bquote(.(var) * .(L) * .(unit[[1]]) * .(R))
     } else if (item == paste("spectral", "density", "m2/cph")) {
         var <- gettext("Spectral density", domain = "R-oce")
+        # unit is ignored
         full <- bquote(.(var) * .(L) * m^2 / cph * .(R))
         var <- gettext("Spec. dens.", domain = "R-oce")
         abbreviated <- bquote(.(var) * .(L) * m^2 / cph * .(R))
@@ -4270,7 +4357,7 @@ integerToAscii <- function(i) {
 #' `igrf12.f` subroutine, which was written by Susan Macmillan of the
 #' British Geological Survey and distributed ``without limitation'' (email from
 #' SM to DK dated June 5, 2015).  This version was updated subsequent
-#' to that date; see \sQuote{Historical Notes}.
+#' to that date; see \dQuote{Historical Notes}.
 #'
 #' @section Historical Notes:
 #' For about a decade, `magneticField` used the version 12 formulae provided
