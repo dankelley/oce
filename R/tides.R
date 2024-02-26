@@ -504,7 +504,7 @@ setMethod(
 #' for this after a prediction is made using [predict.tidem()].
 #'
 #' All the constituent names used by [tidem()] are permitted here,
-#' *except* for `"Z0"` (see \sQuote{Description} regarding reference
+#' *except* for `"Z0"` (see \dQuote{Description} regarding reference
 #' height).
 #' To get a list of constituent names, please consult Foreman (1978),
 #' or type the following in an R console:
@@ -996,7 +996,7 @@ tidemConstituentNameFix <- function(names, debug = 1) {
 #' The fit is done in terms of sine and cosine components at the indicated
 #' tidal frequencies (after possibly pruning to satisfy the Rayleigh criterion,
 #' as explained in phase 2 of the procedure outlined in
-#' '\sQuote{Details}), with the amplitude and phase being
+#' \dQuote{Details}), with the amplitude and phase being
 #' calculated from the resultant coefficients on the sine and cosine terms.
 #' The scheme was devised for hourly data; for other sampling schemes,
 #' see \dQuote{Application to non-hourly data}.

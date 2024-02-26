@@ -755,7 +755,7 @@ setMethod(
 #' but it probably makes more sense to use something like `"~/data/amsr"`
 #' to make it easy for scripts in other directories to use the cached data.
 #' The file is downloaded with [download.file()].  Please read the
-#' \sQuote{History} section for important details on how [download.amsr()]
+#' \dQuote{History} section for important details on how [download.amsr()]
 #' and also [read.amsr()] have had be altered over the years, to deal
 #' with changes in the directory structure and file format on the
 #' server from which files are downloaded.

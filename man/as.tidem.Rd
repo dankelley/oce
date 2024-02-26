@@ -65,7 +65,7 @@ for this after a prediction is made using \code{\link[=predict.tidem]{predict.ti
 }
 \details{
 All the constituent names used by \code{\link[=tidem]{tidem()}} are permitted here,
-\emph{except} for \code{"Z0"} (see \sQuote{Description} regarding reference
+\emph{except} for \code{"Z0"} (see \dQuote{Description} regarding reference
 height).
 To get a list of constituent names, please consult Foreman (1978),
 or type the following in an R console:
