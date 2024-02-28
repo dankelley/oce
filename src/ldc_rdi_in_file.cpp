@@ -1,4 +1,4 @@
-/* vim: set expandtab shiftwidth=2 softtabstop=2 tw=200: */
+// vim: set expandtab shiftwidth=2 softtabstop=2 tw=200:
 
 #include <Rcpp.h>
 #include <stdio.h>
@@ -13,8 +13,8 @@ using namespace Rcpp;
 
 #define OUTLIM 10000000
 
-static int warningsBadYear = 20;
-static int warningsBytePair = 20;
+static int warningsBadYear = 0;
+static int warningsBytePair = 0;
 
 // If memory-fault problems occur, look at the Calloc() and Realloc()
 // calls, and at the spots where information is stored in the relevant
@@ -55,15 +55,12 @@ double oce_timegm(struct tm *t) {
 
   day = t->tm_mday - 1;
   year0 = year_base + t->tm_year;
-  // FIXME: is there a better way to decide when results are odd?
-  // FIXME: Should this be a user-controlled thing at the read.adp.rdi()
-  // FIXME: level, in R?
   if (year0 > 2050) {
-    if (warningsBadYear > 0) {
-      Rprintf("Warning: year %d>2050 so subtracting 100 (will stop warning "
-              "after 20 instances\n",
+    warningsBadYear++;
+    if (warningsBadYear < 6) {
+      Rprintf("Warning: year=%d exceeds 2050, so subtracting 100 (at most 5 "
+              "warnings will be issued)",
               year0);
-      warningsBadYear--;
     }
     year0 = year0 - 100;
   }
@@ -158,9 +155,9 @@ subtracts 1 from the debug level, before calling this C++ fucction. In other
 words, calling `read.adp.rdi(...,debug=1)` does not turn debuggin on,
 but calling `read.adp.rdi(...,debug=2)` does.
 
-@value a list containing "ensembleStart", "time", "sec100", and "buf",
-and "ensemble_in_file", which are used in the calling R
-function, read.adp.rdi().
+@value a list containing "ensembleStart", "ensembleStart64", "time", "sec100",
+and "buf", and "ensemble_in_file", which are used in the calling R function,
+read.adp.rdi().
 
 @examples
 
@@ -237,7 +234,7 @@ List do_ldc_rdi_in_file(StringVector filename, IntegerVector from,
   unsigned int bytes_to_check = 0;
   unsigned int bytes_to_check_last = 0; // permit bad chunk length (issue 1437)
   unsigned long int cindex = 0;
-  unsigned long outEnsemblePointer = 1;
+  unsigned long int outEnsemblePointer = 1;
   if (start_index > 1) {
     Rprintf("skipping %lu bytes at start of the file, seeking 7F7F byte pair\n",
             start_index - 1);
@@ -263,14 +260,18 @@ List do_ldc_rdi_in_file(StringVector filename, IntegerVector from,
   // at the moment.
   //
   // Note that we do not check the Calloc() results because the R docs say that
-  // Calloc() performs its won tests, and that R will handle any problems.
-  unsigned long int nensembles = 100000; // BUFFER SIZE
+  // Calloc() performs its own tests, and that R will handle any problems.
+  unsigned long int nensembles =
+      100000; // initial buffer size, increased if needed
   unsigned int *ensemble_in_files =
       (unsigned int *)R_Calloc((size_t)nensembles, unsigned int);
   int *ensembles = (int *)R_Calloc((size_t)nensembles, int);
+  double *ensembles64 = (double *)R_Calloc((size_t)nensembles, double);
   int *times = (int *)R_Calloc((size_t)nensembles, int);
   int *sec100s = (int *)R_Calloc((size_t)nensembles, int);
-  unsigned long int nebuf = 50000; // BUFFER SIZE
+  // ebuf is the buffer for storing a single ensembloe.  It is increased,
+  // if needed
+  unsigned long int nebuf = 50000;
   unsigned char *ebuf = (unsigned char *)R_Calloc((size_t)nebuf, unsigned char);
 
   unsigned long int in_ensemble = 1, out_ensemble = 0;
@@ -331,6 +332,7 @@ List do_ldc_rdi_in_file(StringVector filename, IntegerVector from,
       if (bytes_to_check < 5) { // only happens with error; we check so
                                 // bytes_to_read won't be crazy
         R_Free(ensembles);
+        R_Free(ensembles64);
         R_Free(times);
         R_Free(sec100s);
         R_Free(ebuf);
@@ -401,13 +403,13 @@ List do_ldc_rdi_in_file(StringVector filename, IntegerVector from,
           // them.
           nensembles = 3 * nensembles / 2;
           if (debug_value > -1) {
-            Rprintf("Increasing ensembles,times,sec100s storage to %lu "
-                    "elements ...\n",
+            Rprintf("Increasing storage to hold up to %lu elements\n",
                     nensembles);
           }
           ensemble_in_files = (unsigned int *)R_Realloc(
               ensemble_in_files, nensembles, unsigned int);
           ensembles = (int *)R_Realloc(ensembles, nensembles, int);
+          ensembles64 = (double *)R_Realloc(ensembles64, nensembles, double);
           times = (int *)R_Realloc(times, nensembles, int);
           sec100s = (int *)R_Realloc(sec100s, nensembles, int);
         }
@@ -454,6 +456,7 @@ List do_ldc_rdi_in_file(StringVector filename, IntegerVector from,
             ensemble_in_files[out_ensemble] =
                 1 + last7f7f; // use R index-from-1 notation
             ensembles[out_ensemble] = outEnsemblePointer;
+            ensembles64[out_ensemble] = double(outEnsemblePointer);
             outEnsemblePointer =
                 outEnsemblePointer + 6 +
                 bytes_to_read; // 6 bytes for: 0x7f,0x7f,b1,b2,cs1,cs2
@@ -472,7 +475,6 @@ List do_ldc_rdi_in_file(StringVector filename, IntegerVector from,
             sec100s[out_ensemble] = ebuf[timePointer + 6];
             out_ensemble++;
             // Save to output buffer.
-            // {{{
             if ((iobuf + 100 + bytes_to_read) >= nobuf) {
               nobuf = nobuf + 100 + bytes_to_read + nobuf / 2;
               if (debug_value > 0) {
@@ -493,7 +495,6 @@ List do_ldc_rdi_in_file(StringVector filename, IntegerVector from,
             }
             obuf[iobuf++] = cs1; // checksum  byte 1
             obuf[iobuf++] = cs2; // checksum  byte 2
-            // }}}
           } else {
             if (debug_value > 0) {
               Rprintf("Skipping at in_ensemble=%lu, counter=%lu, by=%lu\n",
@@ -594,10 +595,11 @@ List do_ldc_rdi_in_file(StringVector filename, IntegerVector from,
       // fgetc(fp));
       cindex = ftell(fp); // synch up, just to be sure (cost is low since this
                           // rarely happens)
-      if (warningsBytePair > 0) {
-        Rprintf("bad ensemble-start at index %lu (at most 20 warngins)\n",
+      warningsBytePair++;
+      if (warningsBytePair < 6) {
+        Rprintf("Warning: bad ensemble-start at index %lu (at most 5 warnings "
+                "will be issued)\n",
                 cindex);
-        warningsBytePair--;
       }
       if (debug_value > 0) {
         Rprintf("try skipping to get 0x7f 0x7f pair\n");
@@ -643,31 +645,43 @@ List do_ldc_rdi_in_file(StringVector filename, IntegerVector from,
   // using this all along, but I wasn't clear on how to reallocate it.
   IntegerVector ensemble_in_file(out_ensemble);
   IntegerVector ensemble(out_ensemble);
+  NumericVector ensemble64(out_ensemble);
   IntegerVector sec100(out_ensemble);
   IntegerVector time(out_ensemble);
   RawVector buf(iobuf);
-
+  // Copy data into return fields
   for (unsigned long int i = 0; i < out_ensemble; i++) {
     ensemble_in_file[i] = ensemble_in_files[i];
     ensemble[i] = ensembles[i];
+    ensemble64[i] = ensembles64[i];
     time[i] = times[i];
     sec100[i] = sec100s[i];
-    // Rprintf("i=%d ensemble=%d time=%d sec100=%d\n", i, ensemble[i], time[i],
-    // (int)sec100[i]);
   }
-  R_Free(ensemble_in_files);
-  R_Free(ensembles);
-  R_Free(times);
-  R_Free(sec100s);
-  R_Free(ebuf);
   for (unsigned long int i = 0; i < iobuf; i++) {
     buf[i] = obuf[i];
   }
+  // Clear up space.
+  R_Free(ensemble_in_files);
+  R_Free(ensembles);
+  R_Free(ensembles64);
+  R_Free(times);
+  R_Free(sec100s);
+  R_Free(ebuf);
   R_Free(obuf);
+  // Report warning counts.
+  if (warningsBadYear > 0) {
+    Rprintf("NOTE: year (>2050) encountered and addressed %d times\n",
+            warningsBadYear);
+  }
+  if (warningsBytePair > 0) {
+    Rprintf("NOTE: bad ensemble-start encountered %d times\n",
+            warningsBytePair);
+  }
   if (debug_value > 0) {
     Rprintf("Returning from C++ function named do_ldc_rdi_in_file.\n");
   }
-  return (List::create(Named("ensembleStart") = ensemble, Named("time") = time,
-                       Named("sec100") = sec100, Named("buf") = buf,
-                       Named("ensemble_in_file") = ensemble_in_file));
+  return (List::create(
+      Named("ensembleStart") = ensemble, Named("ensembleStart64") = ensemble64,
+      Named("time") = time, Named("sec100") = sec100, Named("buf") = buf,
+      Named("ensemble_in_file") = ensemble_in_file));
 }

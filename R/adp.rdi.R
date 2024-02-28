@@ -806,6 +806,12 @@ read.adp.rdi <- function(
             stop("empty file \"", file, "\"")
         }
     }
+    fileSize <- file.info(file)$size
+    oceDebug(debug, "fileSize=", fileSize, "\n")
+    largeFile <- fileSize >= .Machine$integer.max
+    if (largeFile) {
+        warning("This file is large; please report any errors you find\n")
+    }
     if (!interactive()) {
         monitor <- FALSE
     }
@@ -864,7 +870,7 @@ read.adp.rdi <- function(
             "Expecting file to start with bytes 0x", byte1, " and 0x", byte2, ", but got 0x",
             buf[1], " and 0x", buf[2], ", so will try skipping ahead."
         )
-        startIndex <- matchBytes(buf, byte1, byte2)[1]
+        startIndex <- matchBytes(buf, byte1, byte2)[1] # FIXME: what if file is large?
         if (0 == length(startIndex) || is.na(startIndex)) {
             stop(
                 "cannot find a 0x", byte1, " 0x", byte2, " byte sequence in the first ",
@@ -889,7 +895,6 @@ read.adp.rdi <- function(
         # message("1. isSentinel=", isSentinel)
         isSentinel <- header$instrumentSubtype == "sentinelV"
         oceDebug(debug, "isSentinel=", isSentinel, " near adp.rdi.R line 829\n")
-        oceDebug(debug, "about to call ldc_rdi_in_file\n")
         if (is.numeric(from) && is.numeric(to) && is.numeric(by)) {
             # check for large files
             byteMax <- 200e6 # for reasoning, see the help file
@@ -909,9 +914,10 @@ read.adp.rdi <- function(
                     }
                 }
             }
+            oceDebug(debug, "calling ldc_rdi_in_file() w/ numeric values of from etc\n")
             ldc <- do_ldc_rdi_in_file(filename = filename, from = from, to = to, by = by, startIndex = startIndex, mode = 0L, debug = debug - 1)
             # }
-            oceDebug(debug, "done with do_ldc_rdi_in_file() with numeric from and to, near adp.rdi.R line 683")
+            oceDebug(debug, "done with do_ldc_rdi_in_file()\n")
         } else {
             if (is.character(from)) {
                 from <- as.POSIXct(from, tz = "UTC")
@@ -922,36 +928,51 @@ read.adp.rdi <- function(
             if (is.character(by)) {
                 by <- ctimeToSeconds(by)
             }
+            oceDebug(debug, "calling ldc_rdi_in_file() w/ POSIXt values of from etc\n")
             ldc <- do_ldc_rdi_in_file(filename = filename, from = from, to = to, by = by, startIndex = startIndex, mode = 1L, debug = debug - 1)
-            oceDebug(debug, "done with do_ldc_rdi_in_file() with non-numeric from and to, near adp.rdi.R line 693")
+            oceDebug(debug, "done with do_ldc_rdi_in_file()\n")
         }
         if (!missing(which)) {
             if (which[1] == "??") {
-                oceDebug(debug, "handling ??\n")
+                oceDebug(debug, "handling which=\"??\"\n")
                 return(list(index = ldc$ensembleStart, time = numberAsPOSIXct(ldc$time)))
             } else {
                 stop("read.adp.rdi() cannot handle which=\"?\"")
             }
         }
         ensembleStart <- ldc$ensembleStart
-        buf <- ldc$buf
+        if (largeFile) {
+            ensembleStart <- ldc$ensembleStart64
+        }
+        buf <- ldc$buf # FIXME: this doubles memory pressure for no good reason
         bufSize <- length(buf)
+        time <- as.POSIXct(ldc$time + 0.01 * as.numeric(ldc$sec100), origin = "1970-01-01")
+        oceDebug(debug, "next is str(ldc).  I think we can shrink this after extracting things\n")
+        if (debug > 0) {
+            print(str(ldc))
+        }
         # Now, 'buf' contains *only* the profiles we want, so we may
         # redefine 'from', 'to' and 'by' to specify each and every profile.
         from <- 1
         to <- length(ensembleStart)
         by <- 1
-        oceDebug(debug, "NEW method from=", from, ", by=", by, ", to=", to, "\n")
+        oceDebug(debug, "setting from=", from, ", by=", by, ", to=", to, "\n")
         if (isSentinel) {
+            oceDebug(debug, "skipping first ensemble (trial ad-hoc measure for SentinelV files)\n")
             warning("skipping the first ensemble (a temporary solution that eases reading of SentinelV files)\n")
             ensembleStart <- ensembleStart[-1] # remove the first ensemble to simplify parsing
+            #ensembleStart64 <- ensembleStart64[-1] # remove the first ensemble to simplify parsing
             to <- to - 1
             header$numberOfDataTypes <- readBin(buf[ensembleStart[1] + 5], "integer", n = 1, size = 1)
             header$dataOffset <- readBin(buf[ensembleStart[1] + 6 + 0:(2 * header$numberOfDataTypes)],
                 "integer",
                 n = header$numberOfDataTypes, size = 2, endian = "little", signed = FALSE
             )
-            oceDebug(debug, "header$dataOffset=", paste(header$dataOffset, sep = " "), " (reread because a sentinelV file)\n")
+            oceDebug(
+                debug, "header$dataOffset=",
+                paste(header$dataOffset, collapse = " "),
+                " (reread because a sentinelV file)\n"
+            )
         }
         # Profiles start at the VARIABLE LEADER DATA, since there is no point in
         # re-interpreting the HEADER and the FIXED LEADER DATA over and over,
@@ -959,8 +980,36 @@ read.adp.rdi <- function(
         # location for these, based on the "Always Output" indication in Fig 46
         # on page 145 of teledyne2014ostm.
         profileStart <- ensembleStart + as.numeric(buf[ensembleStart[1] + 8]) + 256 * as.numeric(buf[ensembleStart[1] + 9])
+        oceDebug(debug, "check whether file is large FIXME: delete\n")
         if (any(profileStart < 1)) {
-            stop("difficulty detecting ensemble (profile) start indices")
+            cat("Next is table(profileStart<1):\n")
+            print(table(profileStart < 1))
+            cat("range(profileStart) = ", paste(range(profileStart), collapse = " to "), "\n")
+            firstBad <- base::which(profileStart < 1)[1]
+            cat("first bad profileStart (value < 1) is at index firstBad=", firstBad, "\n")
+            cat("profileStart[firstBad]=", profileStart[firstBad], "\n", sep = "")
+            cat("ensembleStart[firstBad]=", ensembleStart[firstBad], "\n", sep = "")
+            if (debug > 0) { # FIXME: remove when largeFile is supported
+                #x11()
+                #par(mfrow = c(3, 1))
+                #plot(ensembleStart < 1, type = "s", xlab = "index")
+                #mtext("is ensembleStart<1?", adj = 0)
+                #abline(v = firstBad, col = 2, lty = 2)
+                #mtext(firstBad, at = firstBad, col = 2)
+
+                #plot(ensembleStart64 == ensembleStart, type = "s", xlab = "index")
+                #mtext("does ensembleStart==ensembleStart64?", adj = 0)
+                #abline(v = firstBad, col = 2, lty = 2)
+                #mtext(firstBad, at = firstBad, col = 2)
+
+                #plot(diff(ensembleStart64), type = "s", xlab = "index")
+                #mtext("diff(ensembleStart64)", adj = 0)
+                #abline(v = firstBad, col = 2, lty = 2)
+                #mtext(firstBad, at = firstBad, col = 2)
+            }
+            #ensembleStart <- ensembleStart64
+            #profileStart <- ensembleStart + as.numeric(buf[ensembleStart[1] + 8]) + 256 * as.numeric(buf[ensembleStart[1] + 9])
+            warning("Caution: using provisional support for large RDI file; if problems arise, chop up your file\n")
         }
         # offset for data type 1 (velocity)
         oceDebug(debug, vectorShow(profileStart, "profileStart before trimming"))
@@ -1097,10 +1146,10 @@ read.adp.rdi <- function(
                     transformationMatrix <- matrix(c(tmx, tmy, tmz, tme), nrow = 4, byrow = TRUE)
                     if (debug > 0) {
                         cat("Transformation matrix:\n")
-                        oceDebug(debug, vectorShow(tmx, paste("tmx", sep = "")), "\n")
-                        oceDebug(debug, vectorShow(tmy, paste("tmy", sep = "")), "\n")
-                        oceDebug(debug, vectorShow(tmz, paste("tmz", sep = "")), "\n")
-                        oceDebug(debug, vectorShow(tme, paste("tme", sep = "")), "\n")
+                        oceDebug(debug, vectorShow(tmx, paste("tmx", sep = "")))
+                        oceDebug(debug, vectorShow(tmy, paste("tmy", sep = "")))
+                        oceDebug(debug, vectorShow(tmz, paste("tmz", sep = "")))
+                        oceDebug(debug, vectorShow(tme, paste("tme", sep = "")))
                     }
                 }
                 # Read the V beam data leader
@@ -1593,7 +1642,6 @@ read.adp.rdi <- function(
                     "in case conversion to ENU is to be done later."
                 )
             }
-            time <- as.POSIXct(ldc$time + 0.01 * as.numeric(ldc$sec100), origin = "1970-01-01")
             oceDebug(debug, "length(time)=", length(time), "\n")
             if (length(time) > length(profileStart)) {
                 warning("length(time)=", length(time), " exceeds length(profileStart)=", length(profileStart), " so trimming time\n")
