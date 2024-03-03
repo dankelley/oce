@@ -146,58 +146,71 @@ void bin_mean_2d(int *nx, double *x, double *y, double *f, int *nxbreaks,
     // Reminder: ij = j + i * nj, for column-order matrices, so i corresponds to
     // x
     // FIXME: is upper limit in the next loops correct?
+    int N = 0;
+    double SUM = 0.0;
     for (int i = 0; i < *nxbreaks - 1; i++) {
       for (int j = 0; j < *nybreaks - 1; j++) {
         if (ISNA(mean[ij(i, j)])) {
           // find im,ip (indices of good neighbours in i), and similarly jm,jp
-          for (im = i - 1; im > -1; im--)
-            if (!ISNA(mean[ij(im, j)]))
+          for (im = i - 1; im > -1; im--) {
+            if (!ISNA(mean[ij(im, j)])) {
               break;
-          for (jm = j - 1; jm > -1; jm--)
-            if (!ISNA(mean[ij(i, jm)]))
+            }
+          }
+          for (jm = j - 1; jm > -1; jm--) {
+            if (!ISNA(mean[ij(i, jm)])) {
               break;
+            }
+          }
           // FIXME: is the limit correct on next ... maybe nxbreaks-1 ???
-          for (ip = i + 1; ip < *nxbreaks - 1; ip++)
-            if (!ISNA(mean[ij(ip, j)]))
+          for (ip = i + 1; ip < *nxbreaks - 1; ip++) {
+            if (!ISNA(mean[ij(ip, j)])) {
               break;
-          for (jp = j + 1; jp < *nybreaks - 1; jp++)
-            if (!ISNA(mean[ij(i, jp)]))
+            }
+          }
+          for (jp = j + 1; jp < *nybreaks - 1; jp++) {
+            if (!ISNA(mean[ij(i, jp)])) {
               break;
-          int N = 0;
-          double SUM = 0.0;
+            }
+          }
           // can only fill if good neighbours exist (not at edges)
+          N = 0;
+          SUM = 0.0;
           if (0 <= im && ip < *(nxbreaks)-1) {
             if ((*fillgap) < 0 || (*fillgap) >= (ip - im)) {
-              if (*debug > 0) {
-                Rprintf("mean[%d,%d]=NA but mean[c(%d,%d),]=(%.4g,%.4g)\n", i,
-                        j, im, ip, mean[ij(im, j)], mean[ij(ip, j)]);
-              }
               double interpolant =
                   mean[ij(im, j)] +
                   (mean[ij(ip, j)] - mean[ij(im, j)]) * (i - im) / (ip - im);
               SUM += interpolant;
               N++;
+              if (*debug > 0) {
+                Rprintf("mean[%d,%d]=NA but mean[c(%d,%d),%d]=(%.4g,%.4g) "
+                        "yielding %.4g (sum=%.4g, N=%d)\n",
+                        i, j, im, ip, j, mean[ij(im, j)], mean[ij(ip, j)],
+                        interpolant, SUM, N);
+              }
             }
           }
           if (0 <= jm && jp < *(nybreaks)-1) {
             if ((*fillgap) < 0 || (*fillgap) >= (jp - jm)) {
-              if (*debug > 0) {
-                Rprintf("mean[%d,%d]=NA but mean[,c(%d,%d)]=(%.4g,%.4g)\n", i,
-                        j, jm, jp, mean[ij(i, jm)], mean[ij(i, jp)]);
-              }
               double interpolant =
                   mean[ij(i, jm)] +
                   (mean[ij(i, jp)] - mean[ij(i, jm)]) * (j - jm) / (jp - jm);
               SUM += interpolant;
               N++;
+              if (*debug > 0) {
+                Rprintf("mean[%d,%d]=NA but mean[%d,c(%d,%d)]=(%.4g,%.4g) "
+                        "yielding %.4g (sum=%.4g N=%d)\n",
+                        i, j, jm, jp, i, mean[ij(i, jm)], mean[ij(i, jp)],
+                        interpolant, SUM, N);
+              }
             }
           }
           if (N > 0) {
             mean[ij(i, j)] = SUM / N;
             number[ij(i, j)] = 1; // doesn't have much meaning
             if (*debug > 0) {
-              Rprintf("    set mean[%d,%d] to %.4g, using interpolation in %d direction(s)\n", i, j,
-                      mean[ij(i, j)], N);
+              Rprintf("    set mean[%d,%d] to %.4g\n", i, j, mean[ij(i, j)], N);
             }
             bad++;
           }
