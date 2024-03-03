@@ -4,10 +4,8 @@
 #include <algorithm>
 #include <vector>
 
-// #define DEBUG
-// #define DEBUGbc1d
-// #define DEBUGbm1d
-#define DEBUGbc2d
+// uncomment next to debug bin_count_2d
+// #define DEBUG_COUNT
 
 // 1D code: in R now; see
 // https://github.com/dankelley/oce/tree/37d0499803e6bbb30aa93c083ea07ef22b434dd8
@@ -21,7 +19,7 @@ extern "C" {
 void bin_count_2d(int *nx, double *x, double *y, int *nxbreaks, double *xbreaks,
                   int *nybreaks, double *ybreaks, int *include_lowest,
                   int *number) {
-#ifdef DEBUGbc2d
+#ifdef DEBUG_COUNT
   Rprintf("nxbreaks=%d, nybreaks=%d, include_lowest=%d\n", *nxbreaks, *nybreaks,
           *include_lowest);
 #endif
@@ -42,7 +40,7 @@ void bin_count_2d(int *nx, double *x, double *y, int *nxbreaks, double *xbreaks,
     int bi = std::lower_bound(bx.begin(), bx.end(), x[i]) - bx.begin();
     int bj = std::lower_bound(by.begin(), by.end(), y[i]) - by.begin();
     if (0 < bi && 0 < bj && bi < (*nxbreaks) && bj < (*nybreaks)) {
-#ifdef DEBUGbc2d
+#ifdef DEBUG_COUNT
       Rprintf("  interior: x=%6.3f, y=%6.3f, bi=%d, bj=%d, ij=%d\n", x[i], y[i],
               bi, bj, ij(bi - 1, bj - 1));
 #endif
@@ -50,7 +48,7 @@ void bin_count_2d(int *nx, double *x, double *y, int *nxbreaks, double *xbreaks,
     }
   }
   if (*include_lowest != 0) {
-#ifdef DEBUGbc2d
+#ifdef DEBUG_COUNT
     Rprintf("counting points along the left boundary ...\n");
 #endif
     for (int i = 0; i < (*nx); i++) {
@@ -58,14 +56,14 @@ void bin_count_2d(int *nx, double *x, double *y, int *nxbreaks, double *xbreaks,
         int bj = std::lower_bound(by.begin(), by.end(), y[i]) - by.begin();
         if (y[i] != ybreaks[0] && 0 < bj && bj < *nybreaks) {
           number[ij(0, bj - 1)]++;
-#ifdef DEBUGbc2d
+#ifdef DEBUG_COUNT
           Rprintf("  left edge: x=%6.3f, y=%6.3f, bi=%d, bj=%d, ij=%d\n", x[i],
                   y[i], 0, bj, ij(0, bj - 1));
 #endif
         }
       }
     }
-#ifdef DEBUGbc2d
+#ifdef DEBUG_COUNT
     Rprintf("checking points along the bottom boundary ...\n");
 #endif
     for (int i = 0; i < (*nx); i++) {
@@ -73,20 +71,20 @@ void bin_count_2d(int *nx, double *x, double *y, int *nxbreaks, double *xbreaks,
         int bi = std::upper_bound(bx.begin(), bx.end(), x[i]) - bx.begin();
         if (x[i] != xbreaks[0] && 0 < bi && bi < (*nxbreaks)) {
           number[ij(bi - 1, 0)]++;
-#ifdef DEBUGbc2d
+#ifdef DEBUG_COUNT
           Rprintf("  bottom edge: x=%6.3f, y=%6.3f, bi=%d, bj=%d, ij=%d\n",
                   x[i], y[i], bi, 0, ij(bi - 1, 0));
 #endif
         }
       }
     }
-#ifdef DEBUGbc2d
+#ifdef DEBUG_COUNT
     Rprintf("checking points at bottom-left corner ...\n");
 #endif
     for (int i = 0; i < (*nx); i++) {
       if (x[i] == xbreaks[0] && y[i] == ybreaks[0]) {
         number[ij(0, 0)]++;
-#ifdef DEBUGbc2d
+#ifdef DEBUG_COUNT
         Rprintf("  bottom-left corner: x=%6.3f, y=%6.3f, ij=%d\n", x[i], y[i],
                 ij(0, 0));
 #endif
@@ -101,10 +99,12 @@ void bin_count_2d(int *nx, double *x, double *y, int *nxbreaks, double *xbreaks,
 extern "C" {
 void bin_mean_2d(int *nx, double *x, double *y, double *f, int *nxbreaks,
                  double *xbreaks, int *nybreaks, double *ybreaks, int *fill,
-                 int *fillgap, int *number, double *mean) {
-#ifdef DEBUG
-  Rprintf("nxbreaks: %d, nybreaks: %d\n", *nxbreaks, *nybreaks);
-#endif
+                 int *fillgap, int *number, double *mean, int *debug) {
+  if (*debug > 0) {
+    Rprintf("in bin_mean_2d() with nx=%d nxbreaks=%d nybreaks=%d fill=%d "
+            "fillgap=%d\n",
+            *nx, *nxbreaks, *nybreaks, *fill, *fillgap);
+  }
   if (*nxbreaks < 2)
     error(
         "cannot have fewer than 1 xbreak"); // already checked in R but be safe
@@ -124,9 +124,9 @@ void bin_mean_2d(int *nx, double *x, double *y, double *f, int *nxbreaks,
       int bi = std::upper_bound(bx.begin(), bx.end(), x[i]) - bx.begin();
       int bj = std::upper_bound(by.begin(), by.end(), y[i]) - by.begin();
       if (bi > 0 && bj > 0 && bi < (*nxbreaks) && bj < (*nybreaks)) {
-#ifdef DEBUG
-        Rprintf("x: %6.3f, y: %6.3f, bi: %d, bj: %d\n", x[i], y[i], bi, bj);
-#endif
+        if (*debug > 1) {
+          Rprintf("x: %6.3f, y: %6.3f, bi: %d, bj: %d\n", x[i], y[i], bi, bj);
+        }
         number[ij(bi - 1, bj - 1)]++;
         mean[ij(bi - 1, bj - 1)] += f[i];
       }
@@ -139,10 +139,9 @@ void bin_mean_2d(int *nx, double *x, double *y, double *f, int *nxbreaks,
       mean[bij] = NA_REAL;
     }
   }
+  // fill gaps, if appropriate
   if (*fill && *fillgap != 0) { // a logical in R calling functions
-#ifdef DEBUG
     int bad = 0;
-#endif
     int im, ip, jm, jp;
     // Reminder: ij = j + i * nj, for column-order matrices, so i corresponds to
     // x
@@ -150,6 +149,7 @@ void bin_mean_2d(int *nx, double *x, double *y, double *f, int *nxbreaks,
     for (int i = 0; i < *nxbreaks - 1; i++) {
       for (int j = 0; j < *nybreaks - 1; j++) {
         if (ISNA(mean[ij(i, j)])) {
+          // find im,ip (indices of good neighbours in i), and similarly jm,jp
           for (im = i - 1; im > -1; im--)
             if (!ISNA(mean[ij(im, j)]))
               break;
@@ -165,8 +165,13 @@ void bin_mean_2d(int *nx, double *x, double *y, double *f, int *nxbreaks,
               break;
           int N = 0;
           double SUM = 0.0;
+          // can only fill if good neighbours exist (not at edges)
           if (0 <= im && ip < *(nxbreaks)-1) {
             if ((*fillgap) < 0 || (*fillgap) >= (ip - im)) {
+              if (*debug > 0) {
+                Rprintf("mean[%d,%d]=NA but mean[c(%d,%d),]=(%.4g,%.4g)\n", i,
+                        j, im, ip, mean[ij(im, j)], mean[ij(ip, j)]);
+              }
               double interpolant =
                   mean[ij(im, j)] +
                   (mean[ij(ip, j)] - mean[ij(im, j)]) * (i - im) / (ip - im);
@@ -176,6 +181,10 @@ void bin_mean_2d(int *nx, double *x, double *y, double *f, int *nxbreaks,
           }
           if (0 <= jm && jp < *(nybreaks)-1) {
             if ((*fillgap) < 0 || (*fillgap) >= (jp - jm)) {
+              if (*debug > 0) {
+                Rprintf("mean[%d,%d]=NA but mean[,c(%d,%d)]=(%.4g,%.4g)\n", i,
+                        j, jm, jp, mean[ij(i, jm)], mean[ij(i, jp)]);
+              }
               double interpolant =
                   mean[ij(i, jm)] +
                   (mean[ij(i, jp)] - mean[ij(i, jm)]) * (j - jm) / (jp - jm);
@@ -186,17 +195,18 @@ void bin_mean_2d(int *nx, double *x, double *y, double *f, int *nxbreaks,
           if (N > 0) {
             mean[ij(i, j)] = SUM / N;
             number[ij(i, j)] = 1; // doesn't have much meaning
+            if (*debug > 0) {
+              Rprintf("    set mean[%d,%d] to %.4g, using interpolation in %d direction(s)\n", i, j,
+                      mean[ij(i, j)], N);
+            }
+            bad++;
           }
-#ifdef DEBUG
-          bad++;
-#endif
         }
       }
     }
-#ifdef DEBUG
-    Rprintf("nxbreaks: %d, nybreaks: %d\n", *nxbreaks, *nybreaks);
-    Rprintf("number of gaps filled: %d\n", bad);
-#endif
+    if (*debug > 0) {
+      Rprintf("bin_mean_2d() encountered (and filled) %d internal gaps\n", bad);
+    }
   }
 }
 }

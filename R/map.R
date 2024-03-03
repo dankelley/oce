@@ -3635,18 +3635,22 @@ mapImage <- function(
             if (requireNamespace("interp", quietly = TRUE)) {
                 i <- try(interp::interp(x = xx, y = yy, z = zz, xo = xg, yo = yg))
                 if (inherits(i, "try-error")) {
-                    stop("gridder=\"", gridder,
-                        "\" failed. Try gridder=\"binMean2D\" instead")
+                    stop(
+                        "gridder=\"", gridder,
+                        "\" failed. Try gridder=\"binMean2D\" instead"
+                    )
                 }
             } else {
-                stop("must install.packages(\"interp\") for gridder=\"",
-                    gridder, "\"")
+                stop(
+                    "must install.packages(\"interp\") for gridder=\"",
+                    gridder, "\""
+                )
             }
         } else if (gridder == "binMean2D") {
             oceDebug(debug, "using binMean2D()\n")
             binned <- binMean2D(xx, yy, zz, xg, yg, fill = TRUE, debug = debug - 1)
-            #message("FIXME: saving xx,yy,zz,xg,yg,binned in file ~/binned.rda")
-            #save(xx,yy,zz,xg,yg,binned, file="~/binned.rda") # FIXME
+            # message("FIXME: saving xx,yy,zz,xg,yg,binned in file ~/binned.rda")
+            # save(xx,yy,zz,xg,yg,binned, file="~/binned.rda") # FIXME
             i <- list(x = binned$xmids, y = binned$ymids, z = binned$result)
         } else {
             stop("gridder=\"", gridder, "\" not allowed. Try \"binMean2D\" or \"interp\"")
@@ -3734,9 +3738,10 @@ mapImage <- function(
         } else {
             stop("unknown options(mapPolygonMethod)")
         }
-        polygon(xy$x[r$okPoint & !r$clippedPoint], xy$y[r$okPoint & !r$clippedPoint],
-            col = colPolygon[r$okPolygon & !r$clippedPolygon],
-            border = colPolygon[r$okPolygon & !r$clippedPolygon],
+        OK <- r$okPolygon & !r$clippedPolygon
+        col <- colPolygon[OK]
+        polygon(xy$x[OK], xy$y[OK],
+            col = col, border = col,
             lwd = lwd, lty = lty, fillOddEven = FALSE
         )
     }

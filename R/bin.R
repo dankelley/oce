@@ -511,6 +511,8 @@ binCount2D <- function(x, y, xbreaks, ybreaks, flatten = FALSE, include.lowest =
 #' doing the computation of the average. This is passed to [mean()], which
 #' does the work of the present function.
 #'
+#' @template debugTemplate
+#'
 #' @return By default, i.e. with `flatten` being FALSE, [binMean2D()]
 #' returns a list with the following elements: `xmids`, a vector
 #' holding the x-bin midpoints; `ymids`, a vector holding the y-bin
@@ -539,7 +541,9 @@ binCount2D <- function(x, y, xbreaks, ybreaks, flatten = FALSE, include.lowest =
 #' @author Dan Kelley
 #'
 #' @family bin-related functions
-binMean2D <- function(x, y, f, xbreaks, ybreaks, flatten = FALSE, fill = FALSE, fillgap = -1, include.lowest = FALSE, na.rm = FALSE, debug = getOption("oceDebug")) {
+binMean2D <- function(x, y, f, xbreaks, ybreaks, flatten = FALSE,
+                      fill = FALSE, fillgap = -1, include.lowest = FALSE, na.rm = FALSE,
+                      debug = getOption("oceDebug")) {
     oceDebug(debug, "binMean2D() ...\n", sep = "", unindent = 1, style = "bold")
     if (missing(x)) {
         stop("must supply 'x'")
@@ -581,8 +585,9 @@ binMean2D <- function(x, y, f, xbreaks, ybreaks, flatten = FALSE, fill = FALSE, 
         length(xbreaks), as.double(xbreaks),
         length(ybreaks), as.double(ybreaks),
         as.integer(fill), as.integer(fillgap),
-        number = integer((nxbreaks - 1) * (nybreaks - 1)),
-        mean = double((nxbreaks - 1) * (nybreaks - 1)),
+        number = integer((nxbreaks - 1L) * (nybreaks - 1L)),
+        mean = double((nxbreaks - 1L) * (nybreaks - 1L)),
+        debug = as.integer(debug),
         NAOK = TRUE, PACKAGE = "oce"
     )
     oceDebug(debug, "setting up return value\n")
