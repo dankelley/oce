@@ -14,7 +14,8 @@ binMean2D(
   fill = FALSE,
   fillgap = -1,
   include.lowest = FALSE,
-  na.rm = FALSE
+  na.rm = FALSE,
+  debug = getOption("oceDebug")
 )
 }
 \arguments{
@@ -54,14 +55,15 @@ doing the computation of the average. This is passed to \code{\link[=mean]{mean(
 does the work of the present function.}
 }
 \value{
-By default, i.e. with \code{flatten} being FALSE, \code{\link[=binMean2D]{binMean2D()}} returns a
-list with the following elements: \code{xmids}, a vector holding the x-bin midpoints;
-\code{ymids}, a vector holding the y-bin midpoints; \code{number}, a matrix holding the
-number the points in each bin; and \code{result}, a matrix holding the mean
-value in each bin. If \code{flatten} is TRUE, the \code{number} and \code{result}
-matrices are renamed as \code{n} and \code{f} and transformed to vectors, while
-the bin midpoints are renamed as \code{x} and \code{y} and extended to match the length
-of \code{n} and \code{f}.
+By default, i.e. with \code{flatten} being FALSE, \code{\link[=binMean2D]{binMean2D()}}
+returns a list with the following elements: \code{xmids}, a vector
+holding the x-bin midpoints; \code{ymids}, a vector holding the y-bin
+midpoints; \code{number}, a matrix holding the number the points in each
+bin; and \code{result}, a matrix holding the mean value in each bin. If
+\code{flatten} is TRUE, the \code{number} and \code{result} matrices are renamed
+as \code{n} and \code{f} and transformed to vectors, while the bin midpoints
+are renamed as \code{x} and \code{y} and extended to match the length of \code{n}
+and \code{f}.
 }
 \description{
 Average the values of a vector \code{f(x,y)} in bins defined on

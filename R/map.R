@@ -3311,41 +3311,49 @@ mapPolygon <- function(
 #'
 #' Plot an image on an existing map that was created with [mapPlot()].
 #'
-#' Image data are on a regular grid in lon-lat space, but not in the projected
-#' x-y space.  This means that [image()] cannot be used.  Instead,
-#' there are two approaches, depending on the value of `filledContour`.
+#' Image data are on a regular grid in lon-lat space, but not in the
+#' projected x-y space.  This means that [image()] cannot be used.
+#' Instead, there are two approaches, depending on the value of
+#' `filledContour`.
 #'
-#' If `filledContour` is `FALSE`, the image "pixels" are drawn with [polygon()].
-#' This can be prohibitively slow for fine grids.  However, if `filledContour`
-#' is `TRUE` or a numerical value, then the "pixels" are remapped into a regular
-#' grid and then displayed with [.filled.contour()].  The remapping starts by
-#' converting the regular lon-lat grid to an irregular x-y grid using
-#' [lonlat2map()].  This irregular grid is then interpolated onto a regular x-y
-#' grid  with either [binMean2D()] or [interp::interp()], as determined by the
-#' value of the `gridder` parameter. If `filledContour` is `TRUE`, the
-#' dimensions of the regular x-y grid is the same as that of the original
-#' lon-lat grid; otherwise, the number of rows and columns are multiplied by the
-#' numerical value of `filledContour`, e.g. the value 2 means to make the grid
-#' twice as fine.
+#' If `filledContour` is `FALSE`, the image "pixels" are drawn with
+#' [polygon()]. This can be prohibitively slow for fine grids.
 #'
-#' Filling contours can produce aesthetically-pleasing results, but the method
-#' involves interpolation, so the data are not represented exactly and
-#' analysts are advised to compare the results from the two methods (and
-#' perhaps various grid refinement values) to guard against misinterpretation.
+#' However, if `filledContour` is `TRUE` or a numerical value, then
+#' the "pixels" are remapped into a regular grid and then displayed
+#' with [.filled.contour()].  The remapping starts by converting the
+#' regular lon-lat grid to an irregular x-y grid using [lonlat2map()].
+#' This irregular grid is then interpolated onto a regular x-y grid
+#' with either [binMean2D()] or [interp::interp()], as determined by
+#' the value of the `gridder` parameter. If `filledContour` is `TRUE`,
+#' the dimensions of the regular x-y grid is the same as that of the
+#' original lon-lat grid; otherwise, the number of rows and columns
+#' are multiplied by the numerical value of `filledContour`, e.g. the
+#' value 2 means to make the grid twice as fine.
+#'
+#' Filling contours can produce aesthetically-pleasing results, but
+#' the method involves interpolation, so the data are not represented
+#' exactly and gaps can occur, depending on the projection and
+#' the matrix.  Analysts are advised to compare the results from the
+#' two methods (and perhaps various grid refinement values) to guard
+#' against misinterpretation.
 #'
 #' If a [png()] device is to be used, it is advised to supply
 #' arguments `type="cairo"` and `antialias="none"` (see reference 1).
 #'
 #' @section Historical Notes:
 #'
-#' Until oce 1.7.4, the `gridder` argument could be set to `"akima"`, which used
-#' the `akima` package.  However, that package is not released with a FOSS license,
-#' so CRAN requested a change to \CRANpkg{interp}. Note that `drawImage()`
-#' intercepts the errors that sometimes get reported by [interp::interp()].
+#' Until oce 1.7.4, the `gridder` argument could be set to `"akima"`,
+#' which used the `akima` package.  However, that package is not
+#' released with a FOSS license, so CRAN requested a change to
+#' \CRANpkg{interp}. Note that `drawImage()` intercepts the errors
+#' that sometimes get reported by [interp::interp()].
 #'
-#' @param longitude numeric vector of longitudes corresponding to `z` matrix.
+#' @param longitude numeric vector of longitudes corresponding to `z`
+#' matrix.
 #'
-#' @param latitude numeric vector of latitudes corresponding to `z` matrix.
+#' @param latitude numeric vector of latitudes corresponding to `z`
+#' matrix.
 #'
 #' @param z numeric matrix to be represented as an image.
 #'
@@ -3355,23 +3363,23 @@ mapPolygon <- function(
 #' `z` values should be painted with `missingColor` and `FALSE`
 #' indicating that these values should be painted with the nearest
 #' in-range color.  If `zlim` is given then its min and max set the
-#' range.  If `zlim` is not given but `breaks` is given, then
-#' the min and max of `breaks` sets the range used for z.  If neither
-#' `zlim` nor `breaks` is given, clipping is not done, i.e. the
-#' action is as if `zclip` were `FALSE`.
+#' range.  If `zlim` is not given but `breaks` is given, then the min
+#' and max of `breaks` sets the range used for z.  If neither `zlim`
+#' nor `breaks` is given, clipping is not done, i.e. the action is as
+#' if `zclip` were `FALSE`.
 #'
-#' @param breaks The z values for breaks in the color scheme.  If this is of
-#' length 1, the value indicates the desired number of breaks, which is
-#' supplied to [pretty()], in determining clean break points.
+#' @param breaks The z values for breaks in the color scheme.  If this
+#' is of length 1, the value indicates the desired number of breaks,
+#' which is supplied to [pretty()], in determining clean break points.
 #'
-#' @param col Either a vector of colors corresponding to the breaks, of length
-#' 1 plus the number of breaks, or a function specifying colors,
-#' e.g. [oce.colorsViridis()] for the Viridis scheme.
+#' @param col Either a vector of colors corresponding to the breaks,
+#' of length 1 plus the number of breaks, or a function specifying
+#' colors, e.g. [oce.colorsViridis()] for the Viridis scheme.
 #'
-#' @param colormap optional colormap, as created by [colormap()].
-#' If a `colormap` is provided, then its properties takes precedence
-#' over `breaks`, `col`, `missingColor`, and `zclip`
-#' specified to `mapImage`.
+#' @param colormap optional colormap, as created by [colormap()]. If a
+#' `colormap` is provided, then its properties takes precedence over
+#' `breaks`, `col`, `missingColor`, and `zclip` specified to
+#' `mapImage`.
 #'
 #' @param border Color used for borders of patches (passed to
 #' [polygon()]); the default `NA` means no border.
@@ -3384,24 +3392,26 @@ mapPolygon <- function(
 #' `NA` to skip the drawing of such regions (which will retain
 #' whatever material has already been drawn at the regions).
 #'
-#' @param filledContour either a logical value indicating whether to use
-#' filled contours to plot the image, or a numerical value indicating the
-#' resampling rate to be used in interpolating from lon-lat coordinates to
-#' x-y coordinates.  See \dQuote{Details} for how this interacts with
-#' `gridder`.
+#' @param filledContour either a logical value indicating whether to
+#' use filled contours to plot the image, or a numerical value
+#' indicating the resampling rate to be used in interpolating from
+#' lon-lat coordinates to x-y coordinates.  See \dQuote{Details} for
+#' how this interacts with `gridder`.
 #'
-#' @param gridder character value specifying the gridding function to be used
-#' if `filledContour` is `TRUE`. This can be either `"binMean2D"` to select
-#' [binMean2D()] or `"interp"` to select [interp::interp()].  The former
-#' produces cruder results, but the latter can be slow for large datasets.
-#' Note that `"akima"` is taken as a synonym for `"interp"`
-#' (see \dQuote{Historical Notes}).
+#' @param gridder character value specifying the gridding function to be used if
+#' `filledContour` is `TRUE`. The default is `"binMean2D"`, which means to use
+#' [binMean2D()] with its `fill` parameter set to TRUE. The other choice is
+#' `"interp"`, which means to use [interp::interp()].  The former produces
+#' cruder results, but the latter can be slow for large datasets. Deprecation
+#' note: in a previous version, `gridder` could be set to `"akima"` but now that
+#' is taken as a synonym for `"interp"`, and a warning is issued; see
+#' \dQuote{Historical Notes}.
 #'
-#' @param debug A flag that turns on debugging.  Set to 1 to get a
-#' moderate amount of debugging information, or to 2 to get more.
+#' @template debugTemplate
 #'
 #' @references
-#' 1. `https://codedocean.wordpress.com/2014/02/03/anti-aliasing-and-image-plots/`
+#' 1.
+#' `https://codedocean.wordpress.com/2014/02/03/anti-aliasing-and-image-plots/`
 #'
 #' @section Sample of Usage:
 #' \preformatted{
@@ -3619,17 +3629,24 @@ mapImage <- function(
         # chop to points within plot area
         if (gridder %in% c("interp", "akima")) {
             oceDebug(debug, "using interp::interp()\n")
+            if (gridder == "akima") {
+                warning("'akima' is no longer available; using 'interp' instead.")
+            }
             if (requireNamespace("interp", quietly = TRUE)) {
                 i <- try(interp::interp(x = xx, y = yy, z = zz, xo = xg, yo = yg))
                 if (inherits(i, "try-error")) {
-                    stop("gridder=\"", gridder, "\" failed. Try gridder=\"binMean2D\" instead")
+                    stop("gridder=\"", gridder,
+                        "\" failed. Try gridder=\"binMean2D\" instead")
                 }
             } else {
-                stop("must install.packages(\"interp\") for gridder=\"", gridder, "\"")
+                stop("must install.packages(\"interp\") for gridder=\"",
+                    gridder, "\"")
             }
         } else if (gridder == "binMean2D") {
             oceDebug(debug, "using binMean2D()\n")
-            binned <- binMean2D(xx, yy, zz, xg, yg, fill = TRUE)
+            binned <- binMean2D(xx, yy, zz, xg, yg, fill = TRUE, debug = debug - 1)
+            #message("FIXME: saving xx,yy,zz,xg,yg,binned in file ~/binned.rda")
+            #save(xx,yy,zz,xg,yg,binned, file="~/binned.rda") # FIXME
             i <- list(x = binned$xmids, y = binned$ymids, z = binned$result)
         } else {
             stop("gridder=\"", gridder, "\" not allowed. Try \"binMean2D\" or \"interp\"")

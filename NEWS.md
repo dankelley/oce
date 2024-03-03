@@ -2,11 +2,12 @@
 
 * Add `swSpiciness0()`, `swSpiciness1()`, and `swSpiciness2()` (issue #2188). 
 * Change `ctdDecimate()` to add a new `na.rm` argument (issue #2192).
+* Change `binMean2D()` to use previous (6-month-old) method (issue 2199).
 * Change `plot.argo()` to handle `which="sigma0 profile"` (issue #2184).
 * Change `plot.section()` to handle bottom traces better (issue #2194).
 * Change `plot.section()` to show data as points properly (issue #2195).
 * Change `read.adp.rdi()` to handle large (> 2.147 GB) files (issue #2196).
-* Change `resizableLabel()` to handle `item=`"N"`. Also, document partial-match
+* Change `resizableLabel()` to handle `item=`"N"`; document partial-match
   behaviour (issue #2197).
 * Change `sunAngle()` to handle vector arguments better (issue #2178).
 
