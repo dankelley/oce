@@ -3534,7 +3534,7 @@ interpBarnes <- function(
     if (is.logical(pregrid)) {
         if (pregrid) {
             pregrid <- c(4, 4)
-            oceDebug(debug, "pregrid: ", paste(pregrid, collapse = " "))
+            oceDebug(debug, "pregrid: ", paste(pregrid, collapse = " "), "\n")
             pg <- binMean2D(x, y, z,
                 xbreaks = seq(xg[1], tail(xg, 1), (xg[2] - xg[1]) / pregrid[1]),
                 ybreaks = seq(yg[1], tail(yg, 1), (yg[2] - yg[1]) / pregrid[2]),
@@ -3697,6 +3697,57 @@ undriftTime <- function(x, slowEnd = 0, tname = "time") {
     res
 }
 
+#' Fill a Gap in a Matrix
+#'
+#' Sequences of NA values are replaced with values computed by linear
+#' interpolation along rows and/or columns, provided that the neighbouring
+#' values are sufficiently close, as defined by the `span` parameter.  If
+#' interpolation can be done across both the row and column directions, then the
+#' two values are averaged.
+#'
+#' @param m a numeric matrix.
+#'
+#' @param span a vector containing 1 or 2 integers. In the first case, the value
+#' is repeated before processing continues.  The first element specifies the
+#' maximum span of neighbours in the along-row direction, i.e. the first index
+#' of the matrix. The second element does the same thing, but for the
+#' along-column direction (i.e. the second index). The default value of 2 means
+#' to interpolate only if the nearest neighbours are non-NA. Higher
+#' values will span larger gaps; see Example 3.
+#'
+#' @template debugTemplate
+#'
+#' @return [fillGapMatrix] returns matrix, with NA values replaced
+#' by interpolated values as dictated by the function parameters.
+#'
+#' @author Dan Kelley
+#'
+#' @examples
+#' library(oce)
+#' m <- matrix(1:20, nrow = 5)
+#' # Example 1: interpolate past across single points
+#' m[2, 3] <- NA
+#' m[3, 3] <- NA
+#' m[4, 2] <- NA
+#' m
+#' fillGapMatrix(m)
+#' # Example 2: cannot interpolate across larger groups by default
+#' m <- matrix(1:20, nrow = 5)
+#' m[2:3, 2:3] <- NA
+#' m
+#' fillGapMatrix(m)
+#' # Example 3: increasing span lets us cover gaps of size 1 or 2
+#' fillGapMatrix(m, span = 3)
+#'
+#' @author Dan Kelley
+fillGapMatrix <- function(m, span = 2, debug = getOption("oceDebug")) {
+    if (!is.numeric(m)) stop("only works for numeric 'm'")
+    if (!is.matrix(m)) stop("only works for matrix 'm'")
+    if (any(span < 1)) stop("span elements must be 1 or larger")
+    if (length(span) != 2) span <- rep(span[1], 2)
+    debug <- max(min(debug, 1), 0)
+    do_fill_gap_2d(m, as.integer(span), as.integer(debug))
+}
 
 #' Fill a Gap in an oce Object
 #'
