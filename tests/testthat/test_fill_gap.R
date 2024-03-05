@@ -26,11 +26,11 @@ test_that("fillGapMatrix on boundaries", {
     # i=1 side
     m <- m0
     m[1, 2] <- NA
-    mf <- fillGapMatrix(m) # bug 2,1 should be '2', not '3'
+    mf <- fillGapMatrix(m)
     expect_equal(mf, m0)
     m <- m0
     m[1, 2:3] <- NA
-    mf <- fillGapMatrix(m) # bug 2,1 should be '2', not '3'
+    mf <- fillGapMatrix(m)
     expect_equal(mf, m)
     mf <- fillGapMatrix(m, gap=2)
     expect_equal(mf, m0)
@@ -38,27 +38,27 @@ test_that("fillGapMatrix on boundaries", {
     # j=1 side
     m <- m0
     m[2, 1] <- NA
-    mf <- fillGapMatrix(m) # bug 2,1 should be '2', not '3'
+    mf <- fillGapMatrix(m)
     expect_equal(mf, m0)
     m <- m0
     m[2:3, 1] <- NA
-    mf <- fillGapMatrix(m) # bug 2,1 should be '2', not '3'
+    mf <- fillGapMatrix(m)
     expect_equal(mf, m)
-    mf <- fillGapMatrix(m, gap=2) # bug 2,1 should be '2', not '3'
+    mf <- fillGapMatrix(m, gap=2)
     expect_equal(mf, m0)
 
     # i=ni side
     m <- m0
     m[ni, 2] <- NA
-    mf <- fillGapMatrix(m) # bug 2,1 should be '2', not '3'
+    mf <- fillGapMatrix(m)
     expect_equal(mf, m0)
     mf <- fillGapMatrix(m, gap=2)
     expect_equal(mf, m0)
     m <- m0
     m[ni, 2:3] <- NA
-    mf <- fillGapMatrix(m) # bug 2,1 should be '2', not '3'
+    mf <- fillGapMatrix(m)
     expect_equal(mf, m)
-    mf <- fillGapMatrix(m, gap=2) # bug 2,1 should be '2', not '3'
+    mf <- fillGapMatrix(m, gap=2)
     expect_equal(mf, m0)
     mf <- fillGapMatrix(m, gap=2)
     expect_equal(mf, m0)
@@ -66,13 +66,13 @@ test_that("fillGapMatrix on boundaries", {
     # j=nj side
     m <- m0
     m[2, nj] <- NA
-    mf <- fillGapMatrix(m) # bug 2,1 should be '2', not '3'
+    mf <- fillGapMatrix(m)
     expect_equal(mf, m0)
     mf <- fillGapMatrix(m, gap=2)
     expect_equal(mf, m0)
     m <- m0
     m[2:3, nj] <- NA
-    mf <- fillGapMatrix(m) # bug 2,1 should be '2', not '3'
+    mf <- fillGapMatrix(m)
     expect_equal(mf, m)
     mf <- fillGapMatrix(m, gap=2)
     expect_equal(mf, m0)
