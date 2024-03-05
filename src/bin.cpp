@@ -154,33 +154,33 @@ void bin_mean_2d(int *nx, double *x, double *y, double *f, int *nxbreaks,
           // find im,ip (indices of good neighbours in i), and similarly jm,jp
           for (im = i - 1; im > -1; im--) {
             if (!ISNA(mean[ij(im, j)])) {
-              break;
+              break; // this defines im (<i)
             }
           }
           for (jm = j - 1; jm > -1; jm--) {
             if (!ISNA(mean[ij(i, jm)])) {
-              break;
+              break; // this defines jm (<j)
             }
           }
           // FIXME: is the limit correct on next ... maybe nxbreaks-1 ???
           for (ip = i + 1; ip < *nxbreaks - 1; ip++) {
             if (!ISNA(mean[ij(ip, j)])) {
-              break;
+              break; // this defines ip (>i)
             }
           }
           for (jp = j + 1; jp < *nybreaks - 1; jp++) {
             if (!ISNA(mean[ij(i, jp)])) {
-              break;
+              break; // this defines jp (>j)
             }
           }
           // can only fill if good neighbours exist (not at edges)
           N = 0;
           SUM = 0.0;
-          if (0 <= im && ip < *(nxbreaks)-1) {
+          if (0 <= im && ip < (*(nxbreaks)-1)) {
             if ((*fillgap) < 0 || (*fillgap) >= (ip - im)) {
               double interpolant =
-                  mean[ij(im, j)] +
-                  (mean[ij(ip, j)] - mean[ij(im, j)]) * (i - im) / (ip - im);
+                  mean[ij(im, j)] + (mean[ij(ip, j)] - mean[ij(im, j)]) *
+                                        ((double)(i - im)) / (ip - im);
               SUM += interpolant;
               N++;
               if (*debug > 0) {
@@ -191,11 +191,11 @@ void bin_mean_2d(int *nx, double *x, double *y, double *f, int *nxbreaks,
               }
             }
           }
-          if (0 <= jm && jp < *(nybreaks)-1) {
+          if (0 <= jm && jp < (*(nybreaks)-1)) {
             if ((*fillgap) < 0 || (*fillgap) >= (jp - jm)) {
               double interpolant =
-                  mean[ij(i, jm)] +
-                  (mean[ij(i, jp)] - mean[ij(i, jm)]) * (j - jm) / (jp - jm);
+                  mean[ij(i, jm)] + (mean[ij(i, jp)] - mean[ij(i, jm)]) *
+                                        ((double)(j - jm)) / (jp - jm);
               SUM += interpolant;
               N++;
               if (*debug > 0) {
@@ -214,6 +214,8 @@ void bin_mean_2d(int *nx, double *x, double *y, double *f, int *nxbreaks,
             }
             bad++;
           }
+          SUM = 0.0; // needed? why the smudges (issue 2199)
+          N = 0;
         }
       }
     }

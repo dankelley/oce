@@ -3450,7 +3450,7 @@ mapImage <- function(
     oceDebug(debug, "mapImage(..., ",
         " missingColor=", missingColor, ", ",
         " filledContour=", filledContour, ", ",
-        " gridder=", gridder, ", ",
+        " gridder=", if (is.function(gridder)) "(function)" else gridder,
         ", ...) {\n",
         sep = "", unindent = 1
     )
@@ -3627,9 +3627,9 @@ mapImage <- function(
         zz <- zz[inFrame]
         oceDebug(debug, "after trimming, length(xx): ", length(xx), "\n")
         # chop to points within plot area
-        if (gridder %in% c("interp", "akima")) {
+        if (is.character(gridder) && gridder %in% c("interp", "akima")) {
             oceDebug(debug, "using interp::interp()\n")
-            if (gridder == "akima") {
+            if (identical(gridder, "akima")) {
                 warning("'akima' is no longer available; using 'interp' instead.")
             }
             if (requireNamespace("interp", quietly = TRUE)) {
@@ -3642,18 +3642,33 @@ mapImage <- function(
                 }
             } else {
                 stop(
-                    "must install.packages(\"interp\") for gridder=\"",
+                    "must install.packages(\"interp\") to use gridder=\"",
                     gridder, "\""
                 )
             }
-        } else if (gridder == "binMean2D") {
+        } else if (identical(gridder, "binMean2D")) {
             oceDebug(debug, "using binMean2D()\n")
-            binned <- binMean2D(xx, yy, zz, xg, yg, fill = TRUE, debug = debug - 1)
+            # binned <- binMean2D(xx, yy, zz, xg, yg, fill = TRUE, debug = debug - 1)
+            binned <- binMean2D(xx, yy, zz, xg, yg, fill = !TRUE, debug = debug - 1)
+            if (FALSE) {
+                imagep(binned$xmids, binned$ymids[200:243], binned$result[, 200:243], col = oceColorsJet, asp = 1, xlim = c(-500000, 500000))
+                contour(binned$xmids, binned$ymids[200:243], binned$result[, 200:243], add = TRUE)
+                abline(h = binned$ymids[200:243], col = rgb(0, 1, 0, 0.2))
+                abline(v = binned$xmids, col = rgb(0, 1, 0, 0.2))
+            }
+
             # message("FIXME: saving xx,yy,zz,xg,yg,binned in file ~/binned.rda")
             # save(xx,yy,zz,xg,yg,binned, file="~/binned.rda") # FIXME
             i <- list(x = binned$xmids, y = binned$ymids, z = binned$result)
+        } else if (is.function(gridder)) {
+            oceDebug(debug, "gridder is a function\n")
+            warning("using a function for 'gridder' is not supported yet\n")
+            i <- gridder(
+                x = xx, y = yy, z = zz, xg = xg, yg = yg, pregrid = TRUE,
+                debug = debug - 1
+            )
         } else {
-            stop("gridder=\"", gridder, "\" not allowed. Try \"binMean2D\" or \"interp\"")
+            stop("'gridder' not permited; try \"binMean2D\", \"interp\" or a function")
         }
         if (any(is.finite(i$z))) {
             # issue726: add a tiny bit to breaks, to mimic filledContour=FALSE

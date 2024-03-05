@@ -3712,8 +3712,9 @@ undriftTime <- function(x, slowEnd = 0, tname = "time") {
 #' to create the pair.  The first element of the pair is the maximum
 #' fillable gap height (i.e. row separation in the matrix), and
 #' the second is the maximum fillable gap width. The default value of
-#' 1 means that only gaps of width or height 1 can be filled.
-#' See \dQuote{Examples}.
+#' 1 means that only gaps of width or height 1 can be filled. As
+#' an exception to these rules, a negative value means to fill gaps
+#' regardless of size. It is an error to specify a `gap` value of zero.
 #'
 #' @template debugTemplate
 #'
@@ -3743,8 +3744,12 @@ undriftTime <- function(x, slowEnd = 0, tname = "time") {
 fillGapMatrix <- function(m, gap = 1, debug = getOption("oceDebug")) {
     if (!is.numeric(m)) stop("only works for numeric 'm'")
     if (!is.matrix(m)) stop("only works for matrix 'm'")
-    if (any(gap  < 1)) stop("gap elements must be 1 or larger")
-    if (length(gap) != 2) gap <- rep(gap[1], 2)
+    if (any(gap == 0)) stop("gap elements cannot be 0")
+    if (length(gap) == 1) {
+        gap <- rep(gap[1], 2)
+    } else if (length(gap) > 2) {
+        stop("length of 'gap' must be 1 or 2")
+    }
     debug <- max(min(debug, 1), 0)
     do_fill_gap_2d(m, as.integer(gap), as.integer(debug))
 }

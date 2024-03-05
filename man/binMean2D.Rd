@@ -31,20 +31,15 @@ binMean2D(
 \item{ybreaks}{Vector of values of \code{y} at the boundaries between bins, calculated using
 \code{\link{pretty}}\code{(y)} if not supplied.}
 
-\item{flatten}{A logical value indicating whether
-the return value also contains equilength
-vectors \code{x}, \code{y}, \code{z} and \code{n}, a flattened
-representation of \code{xmids}, \code{ymids}, \code{result} and
-\code{number}.}
+\item{flatten}{a logical value indicating whether the return value
+also contains equilength vectors \code{x}, \code{y}, \code{z} and \code{n}, a flattened
+representation of \code{xmids}, \code{ymids}, \code{result} and \code{number}.}
 
-\item{fill}{Logical value indicating whether to fill \code{NA}-value gaps in
-the matrix. Gaps will be filled as the average of linear interpolations
-across rows and columns. See \code{fillgap}, which works together with this.}
-
-\item{fillgap}{Integer controlling the size of gap that can be filled
-across. If this is negative (as in the default), gaps will be filled
-regardless of their size. If it is positive, then gaps exceeding this
-number of indices will not be filled.}
+\item{fill, fillgap}{values controlling whether to attempt to fill
+gaps (that is, regions of NA values) in the matrix. This is done by
+calling \code{\link[=binMean2D]{binMean2D()}} if \code{fill} is TRUE. Note that the \code{gap}
+parameter of \code{\link[=binMean2D]{binMean2D()}} is specified as the value of \code{fillgap}
+in the present function.}
 
 \item{include.lowest}{logical value indicating whether to include
 \code{y} values for which the corresponding \code{x} is equal to \code{xmin}.

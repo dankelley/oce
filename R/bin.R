@@ -488,20 +488,15 @@ binCount2D <- function(x, y, xbreaks, ybreaks, flatten = FALSE, include.lowest =
 #' @param ybreaks Vector of values of `y` at the boundaries between bins, calculated using
 #' [`pretty`]`(y)` if not supplied.
 #'
-#' @param flatten A logical value indicating whether
-#' the return value also contains equilength
-#' vectors `x`, `y`, `z` and `n`, a flattened
-#' representation of `xmids`, `ymids`, `result` and
-#' `number`.
+#' @param flatten a logical value indicating whether the return value
+#' also contains equilength vectors `x`, `y`, `z` and `n`, a flattened
+#' representation of `xmids`, `ymids`, `result` and `number`.
 #'
-#' @param fill Logical value indicating whether to fill `NA`-value gaps in
-#' the matrix. Gaps will be filled as the average of linear interpolations
-#' across rows and columns. See `fillgap`, which works together with this.
-#'
-#' @param fillgap Integer controlling the size of gap that can be filled
-#' across. If this is negative (as in the default), gaps will be filled
-#' regardless of their size. If it is positive, then gaps exceeding this
-#' number of indices will not be filled.
+#' @param fill,fillgap values controlling whether to attempt to fill
+#' gaps (that is, regions of NA values) in the matrix. This is done by
+#' calling [binMean2D()] if `fill` is TRUE. Note that the `gap`
+#' parameter of [binMean2D()] is specified as the value of `fillgap`
+#' in the present function.
 #'
 #' @param include.lowest logical value indicating whether to include
 #' `y` values for which the corresponding `x` is equal to `xmin`.
@@ -578,30 +573,36 @@ binMean2D <- function(x, y, f, xbreaks, ybreaks, flatten = FALSE,
     if (nybreaks < 2) {
         stop("must have more than 1 ybreak")
     }
-    # resCount <- binCount2D(x = x, y = y, xbreaks = xbreaks, ybreaks = ybreaks, include.lowest = include.lowest)
-    # resMean <- binApply2D(x = x, y = y, f = f, xbreaks = xbreaks, ybreaks = ybreaks, FUN = mean, include.lowest = include.lowest, na.rm = TRUE)
-    oceDebug(debug, "calling C code bin_mean_2d\n")
-    M <- .C("bin_mean_2d", length(x), as.double(x), as.double(y), as.double(f),
-        length(xbreaks), as.double(xbreaks),
-        length(ybreaks), as.double(ybreaks),
-        as.integer(fill), as.integer(fillgap),
-        number = integer((nxbreaks - 1L) * (nybreaks - 1L)),
-        mean = double((nxbreaks - 1L) * (nybreaks - 1L)),
-        debug = as.integer(debug),
-        NAOK = TRUE, PACKAGE = "oce"
-    )
+    resCount <- binCount2D(x = x, y = y, xbreaks = xbreaks, ybreaks = ybreaks, include.lowest = include.lowest)
+    resMean <- binApply2D(x = x, y = y, f = f, xbreaks = xbreaks, ybreaks = ybreaks, FUN = mean, include.lowest = include.lowest, na.rm = TRUE)
+    # fill gaps (new after issue2199-wip-dropped)
+    if (fill) {
+        resMean$result <- fillGapMatrix(resMean$result, gap = fillgap)
+    }
+    #issue2199-wip-dropped oceDebug(debug, "calling C code bin_mean_2d\n")
+    #issue2199-wip-dropped M <- .C("bin_mean_2d", length(x), as.double(x), as.double(y), as.double(f),
+    #issue2199-wip-dropped     length(xbreaks), as.double(xbreaks),
+    #issue2199-wip-dropped     length(ybreaks), as.double(ybreaks),
+    #issue2199-wip-dropped     as.integer(fill), as.integer(fillgap),
+    #issue2199-wip-dropped     number = integer((nxbreaks - 1L) * (nybreaks - 1L)),
+    #issue2199-wip-dropped     mean = double((nxbreaks - 1L) * (nybreaks - 1L)),
+    #issue2199-wip-dropped     debug = as.integer(debug),
+    #issue2199-wip-dropped     NAOK = TRUE, PACKAGE = "oce"
+    #issue2199-wip-dropped )
     oceDebug(debug, "setting up return value\n")
     res <- list(
         xbreaks = xbreaks,
         ybreaks = ybreaks,
         xmids = xbreaks[-1] - 0.5 * diff(xbreaks),
         ymids = ybreaks[-1] - 0.5 * diff(ybreaks),
-        number = matrix(M$number, nrow = nxbreaks - 1L),
-        result = if (fGiven) {
-            matrix(M$mean, nrow = nxbreaks - 1)
-        } else {
-            matrix(NA, ncol = nybreaks - 1, nrow = nxbreaks - 1)
-        }
+        #issue2199-wip-dropped number = matrix(M$number, nrow = nxbreaks - 1L),
+        number = resCount$number,
+        result = resMean$result
+        #issue2199-wip-dropped if (fGiven) {
+        #issue2199-wip-dropped     matrix(M$mean, nrow = nxbreaks - 1)
+        #issue2199-wip-dropped } else {
+        #issue2199-wip-dropped     matrix(NA, ncol = nybreaks - 1, nrow = nxbreaks - 1)
+        #issue2199-wip-dropped }
     )
     if (flatten) {
         oceDebug(debug, "flattening\n")

@@ -10,14 +10,23 @@ using namespace Rcpp;
 // [[Rcpp::export]]
 NumericMatrix do_fill_gap_2d(NumericMatrix m, IntegerVector Gap,
                              IntegerVector Debug) {
+  int jnum = m.ncol();
+  int inum = m.nrow();
   int igap = Gap[0];
   int jgap = Gap[1];
   int debug = Debug[0];
-  if (debug) {
-    Rprintf("using igap=%d and jgap=%d\n", igap, jgap);
+  // For binMean2D(), fillgap=-1 means to fill all gaps that have
+  // non-NA neighbours, no matter how far away.
+  if (igap < 0) {
+    igap = inum;
   }
-  int jnum = m.ncol();
-  int inum = m.nrow();
+  if (jgap < 0) {
+    jgap = jnum;
+  }
+  if (debug) {
+    Rprintf("gap=c(%d,%d) so using igap=%d and jgap=%d\n", Gap[0], Gap[1], igap,
+            jgap);
+  }
   if (debug) {
     Rprintf("inum(=nrow)=%d jnum=(=ncol)=%d\n", inum, jnum);
   }

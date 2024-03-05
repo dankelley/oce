@@ -221,7 +221,7 @@ test_that("binMean2D()", {
     f <- c(1, 2, 3, 4, 5, 6, 7, 8)
     xb <- seq(-2, 2, 1)
     yb <- seq(-2, 2, 1)
-    if (!FALSE) { # for visual test
+    if (FALSE) { # for visual test
         plot(x, y, xlim = c(-2.5, 2.5), ylim = c(-2.5, 2.5))
         text(x + 0.1, y, f)
         abline(v = xb, col = "gray")
