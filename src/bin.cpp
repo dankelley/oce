@@ -210,7 +210,7 @@ void bin_mean_2d(int *nx, double *x, double *y, double *f, int *nxbreaks,
             mean[ij(i, j)] = SUM / N;
             number[ij(i, j)] = 1; // doesn't have much meaning
             if (*debug > 0) {
-              Rprintf("    set mean[%d,%d] to %.4g\n", i, j, mean[ij(i, j)], N);
+              Rprintf("    set mean[%d,%d] to %.4g\n", i, j, mean[ij(i, j)]);
             }
             bad++;
           }
