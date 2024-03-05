@@ -3341,6 +3341,27 @@ mapPolygon <- function(
 #' If a [png()] device is to be used, it is advised to supply
 #' arguments `type="cairo"` and `antialias="none"` (see reference 1).
 #'
+#' @section Specifying a Custom Gridding Function:
+#'
+#' Filled contours are drawn with [.filled.contour()], which requires a
+#' data gridded in x-y space, as opposed to longitude-latitude space. For
+#' this reason, [mapImage()] requires a gridding function, and this is
+#' supplied by the `gridder` parameter. If neither of the built-in
+#' choices (`"binMean2D"` or `"interp"`) produces satisfactory results,
+#' the user may supply a function that will be called by [mapImage()].
+#' This function must have as its first 5 arguments (1) an x vector, (2)
+#' a y vector, (3) a z matrix that corresponds to x and y in the usual
+#' way, (4) a vector containing the desired grid in the x direction, and
+#' (5) a vector containing the the desired grid in the y direction. The
+#' return value must be a list containing items named `xmids`, `ymids`
+#' and `result`. To understand the meaning of the parameters and return
+#' values, consult the documentation for [binMean2D()]. For example,
+#' the following will fill in data gaps, because it calls
+#' [binMean2D()] with `fill` set to TRUE:
+#'
+#'     g <- function(...) binMean2D(..., fill = TRUE)
+#'     mapImage(lon, lat, matrix, gridder=g)
+#'
 #' @section Historical Notes:
 #'
 #' Until oce 1.7.4, the `gridder` argument could be set to `"akima"`,
@@ -3395,17 +3416,17 @@ mapPolygon <- function(
 #' @param filledContour either a logical value indicating whether to
 #' use filled contours to plot the image, or a numerical value
 #' indicating the resampling rate to be used in interpolating from
-#' lon-lat coordinates to x-y coordinates.  See \dQuote{Details} for
-#' how this interacts with `gridder`.
+#' lon-lat coordinates to x-y coordinates.  See also `gridder`.
 #'
-#' @param gridder character value specifying the gridding function to be used if
-#' `filledContour` is `TRUE`. The default is `"binMean2D"`, which means to use
-#' [binMean2D()] with its `fill` parameter set to TRUE. The other choice is
-#' `"interp"`, which means to use [interp::interp()].  The former produces
-#' cruder results, but the latter can be slow for large datasets. Deprecation
-#' note: in a previous version, `gridder` could be set to `"akima"` but now that
-#' is taken as a synonym for `"interp"`, and a warning is issued; see
-#' \dQuote{Historical Notes}.
+#' @param gridder specification of how gridding is to be done, used only if
+#' `filledContour` is TRUE. The value of `gridder` may be a character value or a
+#' function. If the former, it must be either `"binMean2D"`, which is the
+#' default, or `"interp"`. These values cause binning to be done with
+#' [binMean2D()] or [interp::interp()], respectively, with the first
+#' choice being cruder but faster. If the image has some blank spots,
+#' you may try specifying a gap-filling function for `gridder`,
+#' as discussed in the \dQuote{Specifying a Custom Gridding Function}
+#' section.
 #'
 #' @template debugTemplate
 #'
@@ -3414,7 +3435,11 @@ mapPolygon <- function(
 #' `https://codedocean.wordpress.com/2014/02/03/anti-aliasing-and-image-plots/`
 #'
 #' @section Sample of Usage:
-#' \preformatted{
+#'
+#' These are informal examples, which are not run during the CRAN
+#' testing process, owing to speed issues.
+#'
+#'\preformatted{
 #' library(oce)
 #' data(coastlineWorld)
 #' data(topoWorld)
@@ -3424,11 +3449,12 @@ mapPolygon <- function(
 #' cm <- colormap(zlim=c(-5000, 0), col=oceColorsGebco)
 #' drawPalette(colormap=cm)
 #' mapPlot(coastlineWorld, projection="+proj=stere +lat_0=90",
-#'         longitudelim=c(-180,180), latitudelim=c(70,110))
+#'     longitudelim=c(-180,180), latitudelim=c(70,110))
 #' mapImage(topoWorld, colormap=cm)
 #' mapGrid(15, 15, polarCircle=1, col=gray(0.2))
-#' mapPolygon(coastlineWorld[["longitude"]], coastlineWorld[["latitude"]], col="tan")
-#' }
+#' mapPolygon(coastlineWorld[["longitude"]], coastlineWorld[["latitude"]],
+#'     col="tan")
+#'}
 #'
 #' @seealso A map must first have been created with [mapPlot()].
 #'
@@ -3649,26 +3675,22 @@ mapImage <- function(
         } else if (identical(gridder, "binMean2D")) {
             oceDebug(debug, "using binMean2D()\n")
             # binned <- binMean2D(xx, yy, zz, xg, yg, fill = TRUE, debug = debug - 1)
-            binned <- binMean2D(xx, yy, zz, xg, yg, fill = !TRUE, debug = debug - 1)
+            binned <- binMean2D(xx, yy, zz, xg, yg, debug = debug - 1)
             if (FALSE) {
                 imagep(binned$xmids, binned$ymids[200:243], binned$result[, 200:243], col = oceColorsJet, asp = 1, xlim = c(-500000, 500000))
                 contour(binned$xmids, binned$ymids[200:243], binned$result[, 200:243], add = TRUE)
                 abline(h = binned$ymids[200:243], col = rgb(0, 1, 0, 0.2))
                 abline(v = binned$xmids, col = rgb(0, 1, 0, 0.2))
             }
-
             # message("FIXME: saving xx,yy,zz,xg,yg,binned in file ~/binned.rda")
             # save(xx,yy,zz,xg,yg,binned, file="~/binned.rda") # FIXME
             i <- list(x = binned$xmids, y = binned$ymids, z = binned$result)
         } else if (is.function(gridder)) {
-            oceDebug(debug, "gridder is a function\n")
-            warning("using a function for 'gridder' is not supported yet\n")
-            i <- gridder(
-                x = xx, y = yy, z = zz, xg = xg, yg = yg, pregrid = TRUE,
-                debug = debug - 1
-            )
+            oceDebug(debug, "gridder is a user-supplied function\n")
+            G <- gridder(xx, yy, zz, xg, yg)
+            i <- list(x = G$xmids, y = G$ymids, z = G$result)
         } else {
-            stop("'gridder' not permited; try \"binMean2D\", \"interp\" or a function")
+            stop("inappropriate 'gridder' value; use \"binMean2D\", \"interp\" or a function")
         }
         if (any(is.finite(i$z))) {
             # issue726: add a tiny bit to breaks, to mimic filledContour=FALSE

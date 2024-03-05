@@ -69,17 +69,17 @@ whatever material has already been drawn at the regions).}
 \item{filledContour}{either a logical value indicating whether to
 use filled contours to plot the image, or a numerical value
 indicating the resampling rate to be used in interpolating from
-lon-lat coordinates to x-y coordinates.  See \dQuote{Details} for
-how this interacts with \code{gridder}.}
+lon-lat coordinates to x-y coordinates.  See also \code{gridder}.}
 
-\item{gridder}{character value specifying the gridding function to be used if
-\code{filledContour} is \code{TRUE}. The default is \code{"binMean2D"}, which means to use
-\code{\link[=binMean2D]{binMean2D()}} with its \code{fill} parameter set to TRUE. The other choice is
-\code{"interp"}, which means to use \code{\link[interp:interp]{interp::interp()}}.  The former produces
-cruder results, but the latter can be slow for large datasets. Deprecation
-note: in a previous version, \code{gridder} could be set to \code{"akima"} but now that
-is taken as a synonym for \code{"interp"}, and a warning is issued; see
-\dQuote{Historical Notes}.}
+\item{gridder}{specification of how gridding is to be done, used only if
+\code{filledContour} is TRUE. The value of \code{gridder} may be a character value or a
+function. If the former, it must be either \code{"binMean2D"}, which is the
+default, or \code{"interp"}. These values cause binning to be done with
+\code{\link[=binMean2D]{binMean2D()}} or \code{\link[interp:interp]{interp::interp()}}, respectively, with the first
+choice being cruder but faster. If the image has some blank spots,
+you may try specifying a gap-filling function for \code{gridder},
+as discussed in the \dQuote{Specifying a Custom Gridding Function}
+section.}
 
 \item{debug}{an integer specifying whether debugging information is
 to be printed during the processing. This is a general parameter that
@@ -123,6 +123,30 @@ against misinterpretation.
 If a \code{\link[=png]{png()}} device is to be used, it is advised to supply
 arguments \code{type="cairo"} and \code{antialias="none"} (see reference 1).
 }
+\section{Specifying a Custom Gridding Function}{
+
+
+Filled contours are drawn with \code{\link[=.filled.contour]{.filled.contour()}}, which requires a
+data gridded in x-y space, as opposed to longitude-latitude space. For
+this reason, \code{\link[=mapImage]{mapImage()}} requires a gridding function, and this is
+supplied by the \code{gridder} parameter. If neither of the built-in
+choices (\code{"binMean2D"} or \code{"interp"}) produces satisfactory results,
+the user may supply a function that will be called by \code{\link[=mapImage]{mapImage()}}.
+This function must have as its first 5 arguments (1) an x vector, (2)
+a y vector, (3) a z matrix that corresponds to x and y in the usual
+way, (4) a vector containing the desired grid in the x direction, and
+(5) a vector containing the the desired grid in the y direction. The
+return value must be a list containing items named \code{xmids}, \code{ymids}
+and \code{result}. To understand the meaning of the parameters and return
+values, consult the documentation for \code{\link[=binMean2D]{binMean2D()}}. For example,
+the following will fill in data gaps, because it calls
+\code{\link[=binMean2D]{binMean2D()}} with \code{fill} set to TRUE:
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{g <- function(...) binMean2D(..., fill = TRUE)
+mapImage(lon, lat, matrix, gridder=g)
+}\if{html}{\out{</div>}}
+}
+
 \section{Historical Notes}{
 
 
@@ -135,6 +159,10 @@ that sometimes get reported by \code{\link[interp:interp]{interp::interp()}}.
 
 \section{Sample of Usage}{
 
+
+These are informal examples, which are not run during the CRAN
+testing process, owing to speed issues.
+
 \preformatted{
 library(oce)
 data(coastlineWorld)
@@ -145,10 +173,11 @@ par(mfrow=c(1,1), mar=c(2,2,1,1))
 cm <- colormap(zlim=c(-5000, 0), col=oceColorsGebco)
 drawPalette(colormap=cm)
 mapPlot(coastlineWorld, projection="+proj=stere +lat_0=90",
-        longitudelim=c(-180,180), latitudelim=c(70,110))
+    longitudelim=c(-180,180), latitudelim=c(70,110))
 mapImage(topoWorld, colormap=cm)
 mapGrid(15, 15, polarCircle=1, col=gray(0.2))
-mapPolygon(coastlineWorld[["longitude"]], coastlineWorld[["latitude"]], col="tan")
+mapPolygon(coastlineWorld[["longitude"]], coastlineWorld[["latitude"]],
+    col="tan")
 }
 }
 
