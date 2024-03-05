@@ -140,15 +140,15 @@ BEGIN_RCPP
 END_RCPP
 }
 // do_fill_gap_2d
-NumericMatrix do_fill_gap_2d(NumericMatrix m, IntegerVector Span, IntegerVector Debug);
-RcppExport SEXP _oce_do_fill_gap_2d(SEXP mSEXP, SEXP SpanSEXP, SEXP DebugSEXP) {
+NumericMatrix do_fill_gap_2d(NumericMatrix m, IntegerVector Gap, IntegerVector Debug);
+RcppExport SEXP _oce_do_fill_gap_2d(SEXP mSEXP, SEXP GapSEXP, SEXP DebugSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< NumericMatrix >::type m(mSEXP);
-    Rcpp::traits::input_parameter< IntegerVector >::type Span(SpanSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type Gap(GapSEXP);
     Rcpp::traits::input_parameter< IntegerVector >::type Debug(DebugSEXP);
-    rcpp_result_gen = Rcpp::wrap(do_fill_gap_2d(m, Span, Debug));
+    rcpp_result_gen = Rcpp::wrap(do_fill_gap_2d(m, Gap, Debug));
     return rcpp_result_gen;
 END_RCPP
 }

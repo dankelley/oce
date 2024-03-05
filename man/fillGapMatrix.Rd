@@ -4,18 +4,18 @@
 \alias{fillGapMatrix}
 \title{Fill a Gap in a Matrix}
 \usage{
-fillGapMatrix(m, span = 2, debug = getOption("oceDebug"))
+fillGapMatrix(m, gap = 1, debug = getOption("oceDebug"))
 }
 \arguments{
 \item{m}{a numeric matrix.}
 
-\item{span}{a vector containing 1 or 2 integers. In the first case, the value
-is repeated before processing continues.  The first element specifies the
-maximum span of neighbours in the along-row direction, i.e. the first index
-of the matrix. The second element does the same thing, but for the
-along-column direction (i.e. the second index). The default value of 2 means
-to interpolate only if the nearest neighbours are non-NA. Higher
-values will span larger gaps; see Example 3.}
+\item{gap}{a vector containing 1 or 2 integers, indicating the maximum
+width of gaps to be filled.  If just one number is given, it is repeated
+to create the pair.  The first element of the pair is the maximum
+fillable gap height (i.e. row separation in the matrix), and
+the second is the maximum fillable gap width. The default value of
+1 means that only gaps of width or height 1 can be filled.
+See \dQuote{Examples}.}
 
 \item{debug}{an integer specifying whether debugging information is
 to be printed during the processing. This is a general parameter that
@@ -32,14 +32,14 @@ by interpolated values as dictated by the function parameters.
 \description{
 Sequences of NA values are replaced with values computed by linear
 interpolation along rows and/or columns, provided that the neighbouring
-values are sufficiently close, as defined by the \code{span} parameter.  If
+values are sufficiently close, as defined by the \code{gap} parameter.  If
 interpolation can be done across both the row and column directions, then the
 two values are averaged.
 }
 \examples{
 library(oce)
 m <- matrix(1:20, nrow = 5)
-# Example 1: interpolate past across single points
+# Example 1: interpolate past across gaps of width/height equal to 1
 m[2, 3] <- NA
 m[3, 3] <- NA
 m[4, 2] <- NA
@@ -50,8 +50,8 @@ m <- matrix(1:20, nrow = 5)
 m[2:3, 2:3] <- NA
 m
 fillGapMatrix(m)
-# Example 3: increasing span lets us cover gaps of size 1 or 2
-fillGapMatrix(m, span = 3)
+# Example 3: increasing gap lets us cover gaps of size 1 or 2
+fillGapMatrix(m, gap = 2)
 
 }
 \author{
