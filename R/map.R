@@ -3428,6 +3428,16 @@ mapPolygon <- function(
 #' as discussed in the \dQuote{Specifying a Custom Gridding Function}
 #' section.
 #'
+#' @param gridCoarseness number that controls the coarseness of the
+#' grid that is created if `filledContour` is TRUE. The default value
+#' of 10 may be suitable for many applications, but whether this is
+#' true depends on the projection and the extent of the plotted
+#' region.  If you see blanks in the image that do not correspond to
+#' blanks in your data, try coarsening the grid, by increasing
+#' `gridCoefficient` to perhaps 15.  Continue to larger values if
+#' required, but note that the larger the value, the coarser the grid
+#' and thus the coarser the contours.
+#'
 #' @template debugTemplate
 #'
 #' @references
@@ -3439,7 +3449,7 @@ mapPolygon <- function(
 #' These are informal examples, which are not run during the CRAN
 #' testing process, owing to speed issues.
 #'
-#'\preformatted{
+#' \preformatted{
 #' library(oce)
 #' data(coastlineWorld)
 #' data(topoWorld)
@@ -3454,7 +3464,7 @@ mapPolygon <- function(
 #' mapGrid(15, 15, polarCircle=1, col=gray(0.2))
 #' mapPolygon(coastlineWorld[["longitude"]], coastlineWorld[["latitude"]],
 #'     col="tan")
-#'}
+#' }
 #'
 #' @seealso A map must first have been created with [mapPlot()].
 #'
@@ -3465,7 +3475,7 @@ mapImage <- function(
     longitude, latitude, z, zlim, zclip = FALSE,
     breaks, col, colormap, border = NA,
     lwd = par("lwd"), lty = par("lty"), missingColor = NA,
-    filledContour = FALSE, gridder = "binMean2D",
+    filledContour = FALSE, gridder = "binMean2D", gridCoarseness = 10,
     debug = getOption("oceDebug")) {
     if ("none" == .Projection()$type) {
         stop("must create a map first, with mapPlot()\n")
@@ -3631,9 +3641,10 @@ mapImage <- function(
         # N is number of points in view
         usr <- par("usr")
         N <- sum(usr[1] <= xy$x & xy$x <= usr[2] & usr[3] <= xy$y & xy$y <= usr[4], na.rm = TRUE)
-        NN <- sqrt(N / 10)
+        NN <- sqrt(N / gridCoarseness)
         xg <- seq(usr[1], usr[2], length.out = NN)
         yg <- seq(usr[3], usr[4], length.out = NN)
+        # save(xg, yg, file = "dan.rda")
         xy <- lonlat2map(longitudeGrid, latitudeGrid)
         good <- is.finite(zz) & is.finite(xy$x) & is.finite(xy$y)
         if (!zclip) {

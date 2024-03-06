@@ -2,8 +2,9 @@
 
 * Add `swSpiciness0()`, `swSpiciness1()`, and `swSpiciness2()` (issue #2188). 
 * Change `binMean2D()` to use previous (6-month-old) method (issue 2199).
-* Change `ctdDecimate()` to add a new `na.rm` argument (issue #2192).
-* Change `mapImage()` to let users specify a gridder function (issue #2199).
+* Change `ctdDecimate()` to add the `na.rm` argument (issue #2192).
+* Change `mapImage()` to add the `gridCoarseness` parameter (issue # 2199).
+* Change `mapImage()` to permit specification of a gridder function (issue # 2199).
 * Change `plot.argo()` to handle `which="sigma0 profile"` (issue #2184).
 * Change `plot.section()` to handle bottom traces better (issue #2194).
 * Change `plot.section()` to show data as points properly (issue #2195).

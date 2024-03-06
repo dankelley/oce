@@ -19,6 +19,7 @@ mapImage(
   missingColor = NA,
   filledContour = FALSE,
   gridder = "binMean2D",
+  gridCoarseness = 10,
   debug = getOption("oceDebug")
 )
 }
@@ -80,6 +81,16 @@ choice being cruder but faster. If the image has some blank spots,
 you may try specifying a gap-filling function for \code{gridder},
 as discussed in the \dQuote{Specifying a Custom Gridding Function}
 section.}
+
+\item{gridCoarseness}{number that controls the coarseness of the
+grid that is created if \code{filledContour} is TRUE. The default value
+of 10 may be suitable for many applications, but whether this is
+true depends on the projection and the extent of the plotted
+region.  If you see blanks in the image that do not correspond to
+blanks in your data, try coarsening the grid, by increasing
+\code{gridCoefficient} to perhaps 15.  Continue to larger values if
+required, but note that the larger the value, the coarser the grid
+and thus the coarser the contours.}
 
 \item{debug}{an integer specifying whether debugging information is
 to be printed during the processing. This is a general parameter that
