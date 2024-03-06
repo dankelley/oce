@@ -3509,7 +3509,7 @@ mapImage <- function(
         zclip <- colormap$zclip
         colGiven <- TRUE
     }
-    if (!breaksGiven) {
+    if (!breaksGiven) { # no breaks given
         small <- .Machine$double.eps
         zrange <- range(z, na.rm = TRUE)
         if (missing(zlim)) {
@@ -3538,7 +3538,7 @@ mapImage <- function(
             breaks[1] <- min(zrange[1], breaks[1])
             breaks[length(breaks)] <- max(breaks[length(breaks)], zrange[2])
         }
-    } else {
+    } else { # 'breaks' was given
         breaksOrig <- breaks
         if (1 == length(breaks)) {
             oceDebug(debug, "only 1 break given, so taking that as number of breaks\n")
@@ -3620,7 +3620,7 @@ mapImage <- function(
     )
     breaksMin <- min(breaks, na.rm = TRUE)
     breaksMax <- max(breaks, na.rm = TRUE)
-    if (filledContour) {
+    if (filledContour) { # filled contours
         oceDebug(debug, "using filled contours\n")
         zz <- Z # as.vector(z)
         g <- expand.grid(longitude, latitude)
@@ -3699,7 +3699,7 @@ mapImage <- function(
         } else {
             warning("no valid z")
         }
-    } else {
+    } else { # not using filled contours
         oceDebug(debug, "using polygons, as opposed to filled contours\n")
         colFirst <- col[1]
         colLast <- tail(col, 1)
@@ -3775,10 +3775,9 @@ mapImage <- function(
         } else {
             stop("unknown options(mapPolygonMethod)")
         }
-        OK <- r$okPolygon & !r$clippedPolygon
-        col <- colPolygon[OK]
-        polygon(xy$x[OK], xy$y[OK],
-            col = col, border = col,
+        polygon(xy$x[r$okPoint & !r$clippedPoint], xy$y[r$okPoint & !r$clippedPoint],
+            col = colPolygon[r$okPolygon & !r$clippedPolygon],
+            border = colPolygon[r$okPolygon & !r$clippedPolygon],
             lwd = lwd, lty = lty, fillOddEven = FALSE
         )
     }
