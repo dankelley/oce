@@ -3322,18 +3322,21 @@ mapPolygon <- function(
 #' [.filled.contour()].  The remapping starts by converting the
 #' regular lon-lat grid to an irregular x-y grid using [lonlat2map()].
 #' This irregular grid is then interpolated onto a regular x-y grid in
-#' accordance with the `gridder` and `gridCoarseness` parameters.
-#' If `gridder` values of `"binMean2D"` and `"interp"` do not produce
-#' satisfactory results, advanced users might wish to supply a
-#' function to do the gridding according to their own criteria.
-#' Perhaps, for example, the function might be based on
-#' [interpBarnes()]. In any case, the function must have as its first
-#' 5 arguments (1) an x vector, (2) a y vector, (3) a z matrix that
-#' corresponds to x and y in the usual way, (4) a vector holding the
-#' desired x grid, and (5) a vector holding the desired y grid. The
-#' return value must be a list containing items named `xmids`, `ymids`
-#' and `result`. To understand the meaning of the parameters and
-#' return values, consult the documentation for [binMean2D()].
+#' accordance with the `gridder` parameter. If `gridder` values of
+#' `"binMean2D"` and `"interp"` do not produce satisfactory results,
+#' advanced users might wish to supply a function to do the gridding
+#' according to their own criteria. The function must have as its
+#' first 5 arguments (1) an x vector, (2) a y vector, (3) a z matrix
+#' that corresponds to x and y in the usual way, (4) a vector holding
+#' the desired x grid, and (5) a vector holding the desired y grid.
+#' The return value must be a list containing items named `xmids`,
+#' `ymids` and `result`. To understand the meaning of the parameters
+#' and return values, consult the documentation for [binMean2D()].
+#' Here is an example of a scheme that will fill data gaps of 1 or 2
+#' cells:
+#' ```
+#' g <- function(...) binMean2D(..., fill = TRUE, gap = 2)
+#' ```
 #'
 #' @section Historical Notes:
 #'
@@ -3386,13 +3389,22 @@ mapPolygon <- function(
 #' `NA` to skip the drawing of such regions (which will retain
 #' whatever material has already been drawn at the regions).
 #'
-#' @param filledContour a logical value indicating whether to
-#' use filled contours.  If this is TRUE, the provided longitude
-#' and latitude values are mapped to x and y values that will
-#' not be on a grid. The filled contours are drawn with
-#' [.filled.contour()], which requires a grid, and so the
-#' x and y values need to be gridded. How this is done is
-#' controlled by the `gridder` and `coarseness` parameters.
+#' @param filledContour an indication of whether to use filled
+#' contours.  This may be FALSE (the default), TRUE, or a positive
+#' numerical value. If FALSE, then polygons are used. Othewise, the
+#' longitude-latitude values are transformed to x-y values, which will
+#' not be on a grid and thus will require gridding so that
+#' [.filled.contour()] can plot the filled contours.  The method used
+#' for gridding is set by the `gridder` parameter (see next item). If
+#' `filledContour` is TRUE, then the grid is constructed with the aim
+#' of having approximately 3 of the projected x-y points in each cell.
+#' That can leave some cells unoccupied, yielding blanks in the drawn
+#' image.  There are two ways around that.  First, the `gridder` can
+#' be set up to fill gaps.  Second, a numerical value can be used for
+#' `filledContour`. For example, using `filledContour` equal to 1.5
+#' will increase grid width and height by a factor of 1.5, which may
+#' be enough to fill all the gaps, depending on the projection and the
+#' area shown.
 #'
 #' @param gridder specification of how gridding is to be done, used
 #' only if `filledContour` is TRUE. The value of `gridder` may
@@ -3400,18 +3412,6 @@ mapPolygon <- function(
 #' the first two cases, the gridding is done with either [binMean2D()]
 #' or [interp::interp()], respectively. For more on the last case, see
 #' \dQuote{Details}.
-#'
-#' @param gridCoarseness number that controls the coarseness of the
-#' grid, used only if `filledContour` is TRUE. The finer the grid, the
-#' more detailed filled contours will be, but has the downside
-#' of making it more likely that some grid cells will be blank,
-#' because the gridder found no x and y values in those cells.
-#' The default value of `gridCoarseness` is 1, which is designed
-#' so that the average cell will hold approximately three x and y values.
-#' However, depending on the projection and plot scale, it may
-#' be necessary to increase `gridCoarseness` to avoid some blank
-#' spots on the image. In such a case, try increasing `gridCoarseness`
-#' to 1.5 or higher values, until the blanks disappear.
 #'
 #' @template debugTemplate
 #'
@@ -3442,8 +3442,7 @@ mapImage <- function(longitude, latitude, z, zlim, zclip = FALSE,
                      breaks, col, colormap, border = NA, lwd =
                          par("lwd"), lty = par("lty"), missingColor = NA,
                      filledContour = FALSE, gridder = "binMean2D",
-                     gridCoarseness = 10, debug =
-                         getOption("oceDebug")) {
+                     debug = getOption("oceDebug")) {
     if ("none" == .Projection()$type) {
         stop("must create a map first, with mapPlot()\n")
     }
@@ -3598,17 +3597,19 @@ mapImage <- function(longitude, latitude, z, zlim, zclip = FALSE,
     )
     breaksMin <- min(breaks, na.rm = TRUE)
     breaksMax <- max(breaks, na.rm = TRUE)
+    if (is.logical(filledContour)) {
+        filledContour <- 1.0
+    }
     if (filledContour) { # filled contours
         oceDebug(debug, "using filled contours\n")
         zz <- Z # as.vector(z)
         g <- expand.grid(longitude, latitude)
         longitudeGrid <- g[, 1]
         latitudeGrid <- g[, 2]
-        # FIXME: gridCoarseness was added for issue 2199.
         # N is number of points in view
         usr <- par("usr")
         N <- sum(usr[1] <= xy$x & xy$x <= usr[2] & usr[3] <= xy$y & xy$y <= usr[4], na.rm = TRUE)
-        NN <- sqrt(N / (10 * gridCoarseness))
+        NN <- sqrt(N / (10 * filledContour))
         xg <- seq(usr[1], usr[2], length.out = NN)
         yg <- seq(usr[3], usr[4], length.out = NN)
         xy <- lonlat2map(longitudeGrid, latitudeGrid)

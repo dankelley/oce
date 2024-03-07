@@ -19,7 +19,6 @@ mapImage(
   missingColor = NA,
   filledContour = FALSE,
   gridder = "binMean2D",
-  gridCoarseness = 10,
   debug = getOption("oceDebug")
 )
 }
@@ -67,13 +66,22 @@ colors, e.g. \code{\link[=oce.colorsViridis]{oce.colorsViridis()}} for the Virid
 \code{NA} to skip the drawing of such regions (which will retain
 whatever material has already been drawn at the regions).}
 
-\item{filledContour}{a logical value indicating whether to
-use filled contours.  If this is TRUE, the provided longitude
-and latitude values are mapped to x and y values that will
-not be on a grid. The filled contours are drawn with
-\code{\link[=.filled.contour]{.filled.contour()}}, which requires a grid, and so the
-x and y values need to be gridded. How this is done is
-controlled by the \code{gridder} and \code{coarseness} parameters.}
+\item{filledContour}{an indication of whether to use filled
+contours.  This may be FALSE (the default), TRUE, or a positive
+numerical value. If FALSE, then polygons are used. Othewise, the
+longitude-latitude values are transformed to x-y values, which will
+not be on a grid and thus will require gridding so that
+\code{\link[=.filled.contour]{.filled.contour()}} can plot the filled contours.  The method used
+for gridding is set by the \code{gridder} parameter (see next item). If
+\code{filledContour} is TRUE, then the grid is constructed with the aim
+of having approximately 3 of the projected x-y points in each cell.
+That can leave some cells unoccupied, yielding blanks in the drawn
+image.  There are two ways around that.  First, the \code{gridder} can
+be set up to fill gaps.  Second, a numerical value can be used for
+\code{filledContour}. For example, using \code{filledContour} equal to 1.5
+will increase grid width and height by a factor of 1.5, which may
+be enough to fill all the gaps, depending on the projection and the
+area shown.}
 
 \item{gridder}{specification of how gridding is to be done, used
 only if \code{filledContour} is TRUE. The value of \code{gridder} may
@@ -81,18 +89,6 @@ only if \code{filledContour} is TRUE. The value of \code{gridder} may
 the first two cases, the gridding is done with either \code{\link[=binMean2D]{binMean2D()}}
 or \code{\link[interp:interp]{interp::interp()}}, respectively. For more on the last case, see
 \dQuote{Details}.}
-
-\item{gridCoarseness}{number that controls the coarseness of the
-grid, used only if \code{filledContour} is TRUE. The finer the grid, the
-more detailed filled contours will be, but has the downside
-of making it more likely that some grid cells will be blank,
-because the gridder found no x and y values in those cells.
-The default value of \code{gridCoarseness} is 1, which is designed
-so that the average cell will hold approximately three x and y values.
-However, depending on the projection and plot scale, it may
-be necessary to increase \code{gridCoarseness} to avoid some blank
-spots on the image. In such a case, try increasing \code{gridCoarseness}
-to 1.5 or higher values, until the blanks disappear.}
 
 \item{debug}{an integer specifying whether debugging information is
 to be printed during the processing. This is a general parameter that
@@ -119,18 +115,21 @@ remapped into a regular grid and then displayed with
 \code{\link[=.filled.contour]{.filled.contour()}}.  The remapping starts by converting the
 regular lon-lat grid to an irregular x-y grid using \code{\link[=lonlat2map]{lonlat2map()}}.
 This irregular grid is then interpolated onto a regular x-y grid in
-accordance with the \code{gridder} and \code{gridCoarseness} parameters.
-If \code{gridder} values of \code{"binMean2D"} and \code{"interp"} do not produce
-satisfactory results, advanced users might wish to supply a
-function to do the gridding according to their own criteria.
-Perhaps, for example, the function might be based on
-\code{\link[=interpBarnes]{interpBarnes()}}. In any case, the function must have as its first
-5 arguments (1) an x vector, (2) a y vector, (3) a z matrix that
-corresponds to x and y in the usual way, (4) a vector holding the
-desired x grid, and (5) a vector holding the desired y grid. The
-return value must be a list containing items named \code{xmids}, \code{ymids}
-and \code{result}. To understand the meaning of the parameters and
-return values, consult the documentation for \code{\link[=binMean2D]{binMean2D()}}.
+accordance with the \code{gridder} parameter. If \code{gridder} values of
+\code{"binMean2D"} and \code{"interp"} do not produce satisfactory results,
+advanced users might wish to supply a function to do the gridding
+according to their own criteria. The function must have as its
+first 5 arguments (1) an x vector, (2) a y vector, (3) a z matrix
+that corresponds to x and y in the usual way, (4) a vector holding
+the desired x grid, and (5) a vector holding the desired y grid.
+The return value must be a list containing items named \code{xmids},
+\code{ymids} and \code{result}. To understand the meaning of the parameters
+and return values, consult the documentation for \code{\link[=binMean2D]{binMean2D()}}.
+Here is an example of a scheme that will fill data gaps of 1 or 2
+cells:
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{g <- function(...) binMean2D(..., fill = TRUE, gap = 2)
+}\if{html}{\out{</div>}}
 }
 \section{Historical Notes}{
 
