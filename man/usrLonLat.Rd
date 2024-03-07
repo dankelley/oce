@@ -7,7 +7,7 @@
 usrLonLat(n = 25, debug = getOption("oceDebug"))
 }
 \arguments{
-\item{n}{number of points to check along each side of the plot box}
+\item{n}{number of points to check along each side of the plot box.}
 
 \item{debug}{an integer specifying whether debugging information is
 to be printed during the processing. This is a general parameter that
@@ -18,17 +18,16 @@ be printed. If one function calls another, it usually reduces the value of
 by specifying higher \code{debug} values.}
 }
 \value{
-A list containing numerical
-values \code{lonmin}, \code{lonmax}, \code{latmin}, and \code{latmax}, along
-with logical value \code{ok}. The last of these indicates
-whether at least one point on the plot box is invertible.
-Note that longitudes are in the range from -180 to 180 degrees.
+\code{usrLonLat} returns a list containing numerical values
+\code{lonmin}, \code{lonmax}, \code{latmin}, and \code{latmax}, along with logical
+value \code{ok}. The last of these indicates whether at least one point
+on the plot box is invertible. Note that longitudes are in the
+range from -180 to 180 degrees.
 }
 \description{
 Trace along the plot box, converting from xy coordinates to lonlat
-coordinates. The results are used by \code{\link[=mapGrid]{mapGrid()}}
-and \code{\link[=mapAxis]{mapAxis()}} to ignore out-of-frame grid
-lines and axis labels.
+coordinates. The results are used by \code{\link[=mapGrid]{mapGrid()}} and \code{\link[=mapAxis]{mapAxis()}} to
+ignore out-of-frame grid lines and axis labels.
 }
 \details{
 Some projections, such as \code{"wintri"}, have trouble inverting
@@ -59,6 +58,7 @@ Other functions related to maps:
 \code{\link{mapText}()},
 \code{\link{mapTissot}()},
 \code{\link{oceCRS}()},
+\code{\link{oceProject}()},
 \code{\link{shiftLongitude}()},
 \code{\link{utm2lonlat}()}
 }

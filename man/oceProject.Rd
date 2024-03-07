@@ -7,15 +7,18 @@
 oceProject(xy, proj, inv = FALSE, debug = getOption("oceDebug"))
 }
 \arguments{
-\item{xy}{two-column numeric matrix specifying locations.  If \code{inv} is False, then \code{xy[,1]} will hold
-longitude and \code{xy[,2]} will hold latitude, but if \code{inv} is True, then the columns will be easting
+\item{xy}{two-column numeric matrix specifying locations.  If \code{inv}
+is False, then \code{xy[,1]} will hold longitude and \code{xy[,2]} will hold
+latitude, but if \code{inv} is True, then the columns will be easting
 and northing values (in metres).}
 
-\item{proj}{a character value specifying the desired map projection.  See
-the \code{projection} parameter of \code{\link[=mapPlot]{mapPlot()}} for details, including a
-historical note dated 2023-04-11 about the now-deprecated \code{sp} package.}
+\item{proj}{a character value specifying the desired map
+projection.  See the \code{projection} parameter of \code{\link[=mapPlot]{mapPlot()}} for
+details, including a historical note dated 2023-04-11 about the
+now-deprecated \code{sp} package.}
 
-\item{inv}{logical value, False by default, indicating whether an inverse projection is requested.}
+\item{inv}{logical value, False by default, indicating whether an
+inverse projection is requested.}
 
 \item{debug}{an integer specifying whether debugging information is
 to be printed during the processing. This is a general parameter that
@@ -26,8 +29,8 @@ be printed. If one function calls another, it usually reduces the value of
 by specifying higher \code{debug} values.}
 }
 \value{
-A two-column matrix, with first column holding either
-\code{longitude} or \code{x}, and second column holding either
+\code{oceProject} returns a two-column matrix, with first column
+holding either \code{longitude} or \code{x}, and second column holding either
 \code{latitude} or \code{y}.
 }
 \description{
@@ -37,3 +40,34 @@ package.  (Until 2020 December, the \code{rgdal} package was used,
 after a year of tests ensuring that the results of the two packages were
 the same.)
 }
+\seealso{
+Other functions related to maps: 
+\code{\link{formatPosition}()},
+\code{\link{lonlat2map}()},
+\code{\link{lonlat2utm}()},
+\code{\link{map2lonlat}()},
+\code{\link{mapArrows}()},
+\code{\link{mapAxis}()},
+\code{\link{mapContour}()},
+\code{\link{mapCoordinateSystem}()},
+\code{\link{mapDirectionField}()},
+\code{\link{mapGrid}()},
+\code{\link{mapImage}()},
+\code{\link{mapLines}()},
+\code{\link{mapLocator}()},
+\code{\link{mapLongitudeLatitudeXY}()},
+\code{\link{mapPlot}()},
+\code{\link{mapPoints}()},
+\code{\link{mapPolygon}()},
+\code{\link{mapScalebar}()},
+\code{\link{mapText}()},
+\code{\link{mapTissot}()},
+\code{\link{oceCRS}()},
+\code{\link{shiftLongitude}()},
+\code{\link{usrLonLat}()},
+\code{\link{utm2lonlat}()}
+}
+\author{
+Dan Kelley
+}
+\concept{functions related to maps}

@@ -61,16 +61,17 @@ A default call to \code{\link[=mapPlot]{mapPlot()}} ensures agreement of grid an
 this return value in a call to \code{\link[=mapAxis]{mapAxis()}}.
 }
 \description{
-Plot longitude and latitude grid on an existing map.
-This is an advanced function, requiring
-coordination with \code{\link[=mapPlot]{mapPlot()}} and (possibly) also with \code{\link[=mapAxis]{mapAxis()}},
-and so it is best avoided by novices, who may be satisfied
-with the defaults used by \code{\link[=mapPlot]{mapPlot()}}.
+Plot longitude and latitude grid on an existing map. This is an
+advanced function, requiring coordination with \code{\link[=mapPlot]{mapPlot()}} and
+(possibly) also with \code{\link[=mapAxis]{mapAxis()}}, and so it is best avoided by
+novices, who may be satisfied with the defaults used by
+\code{\link[=mapPlot]{mapPlot()}}.
 }
 \details{
-This is somewhat analogous to \code{\link[=grid]{grid()}}, except that the
-first two arguments of the latter supply the number of lines in the grid,
-whereas the present function has increments for the first two arguments.
+This is somewhat analogous to \code{\link[=grid]{grid()}}, except that the first two
+arguments of the latter supply the number of lines in the grid,
+whereas the present function has increments for the first two
+arguments.
 }
 \examples{
 \donttest{
@@ -114,6 +115,7 @@ Other functions related to maps:
 \code{\link{mapText}()},
 \code{\link{mapTissot}()},
 \code{\link{oceCRS}()},
+\code{\link{oceProject}()},
 \code{\link{shiftLongitude}()},
 \code{\link{usrLonLat}()},
 \code{\link{utm2lonlat}()}

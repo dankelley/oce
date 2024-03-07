@@ -14,7 +14,8 @@ binMean2D(
   fill = FALSE,
   fillgap = -1,
   include.lowest = FALSE,
-  na.rm = FALSE
+  na.rm = FALSE,
+  debug = getOption("oceDebug")
 )
 }
 \arguments{
@@ -24,26 +25,23 @@ binMean2D(
 
 \item{f}{Matrix of numerical values, a matrix f=f(x,y).}
 
-\item{xbreaks}{Vector of values of \code{x} at the boundaries between bins, calculated using
-\code{\link{pretty}}\code{(x)} if not supplied.}
+\item{xbreaks}{Vector of values of \code{x} at the boundaries between
+bins, calculated using \code{\link{pretty}}\code{(x)} if not supplied.}
 
-\item{ybreaks}{Vector of values of \code{y} at the boundaries between bins, calculated using
-\code{\link{pretty}}\code{(y)} if not supplied.}
+\item{ybreaks}{Vector of values of \code{y} at the boundaries between
+bins, calculated using \code{\link{pretty}}\code{(y)} if not supplied.}
 
-\item{flatten}{A logical value indicating whether
-the return value also contains equilength
-vectors \code{x}, \code{y}, \code{z} and \code{n}, a flattened
-representation of \code{xmids}, \code{ymids}, \code{result} and
-\code{number}.}
+\item{flatten}{a logical value indicating whether the return value
+also contains equilength vectors \code{x}, \code{y}, \code{z} and \code{n}, a flattened
+representation of \code{xmids}, \code{ymids}, \code{result} and \code{number}.}
 
-\item{fill}{Logical value indicating whether to fill \code{NA}-value gaps in
-the matrix. Gaps will be filled as the average of linear interpolations
-across rows and columns. See \code{fillgap}, which works together with this.}
-
-\item{fillgap}{Integer controlling the size of gap that can be filled
-across. If this is negative (as in the default), gaps will be filled
-regardless of their size. If it is positive, then gaps exceeding this
-number of indices will not be filled.}
+\item{fill, fillgap}{values controlling whether to attempt to fill
+gaps (that is, regions of NA values) in the matrix. If \code{fill}
+is false, gaps, or regions with NA values, are not altered.
+If \code{fill} is TRUE, then gaps that are of size less than
+or equal to \code{fillgap} are interpolated across,
+by calling \code{\link[=fillGapMatrix]{fillGapMatrix()}} with the supplied value of
+\code{fillgap}.}
 
 \item{include.lowest}{logical value indicating whether to include
 \code{y} values for which the corresponding \code{x} is equal to \code{xmin}.
@@ -52,21 +50,30 @@ See \dQuote{Details}.}
 \item{na.rm}{logical value indicating whether to remove NA values before
 doing the computation of the average. This is passed to \code{\link[=mean]{mean()}}, which
 does the work of the present function.}
+
+\item{debug}{an integer specifying whether debugging information is
+to be printed during the processing. This is a general parameter that
+is used by many \code{oce} functions. Generally, setting \code{debug=0}
+turns off the printing, while higher values suggest that more information
+be printed. If one function calls another, it usually reduces the value of
+\code{debug} first, so that a user can often obtain deeper debugging
+by specifying higher \code{debug} values.}
 }
 \value{
-By default, i.e. with \code{flatten} being FALSE, \code{\link[=binMean2D]{binMean2D()}} returns a
-list with the following elements: \code{xmids}, a vector holding the x-bin midpoints;
-\code{ymids}, a vector holding the y-bin midpoints; \code{number}, a matrix holding the
-number the points in each bin; and \code{result}, a matrix holding the mean
-value in each bin. If \code{flatten} is TRUE, the \code{number} and \code{result}
-matrices are renamed as \code{n} and \code{f} and transformed to vectors, while
-the bin midpoints are renamed as \code{x} and \code{y} and extended to match the length
-of \code{n} and \code{f}.
+By default, i.e. with \code{flatten} being FALSE, \code{\link[=binMean2D]{binMean2D()}}
+returns a list with the following elements: \code{xmids}, a vector
+holding the x-bin midpoints; \code{ymids}, a vector holding the y-bin
+midpoints; \code{number}, a matrix holding the number the points in each
+bin; and \code{result}, a matrix holding the mean value in each bin. If
+\code{flatten} is TRUE, the \code{number} and \code{result} matrices are renamed
+as \code{n} and \code{f} and transformed to vectors, while the bin midpoints
+are renamed as \code{x} and \code{y} and extended to match the length of \code{n}
+and \code{f}.
 }
 \description{
-Average the values of a vector \code{f(x,y)} in bins defined on
-vectors \code{x} and \code{y}. A common example might be averaging
-spatial data into location bins.
+Average the values of a vector \code{f(x,y)} in bins defined on vectors
+\code{x} and \code{y}. A common example might be averaging spatial data into
+location bins.
 }
 \examples{
 library(oce)

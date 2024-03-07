@@ -48,6 +48,10 @@ do_fill_gap_1d <- function(x, rule) {
     .Call(`_oce_do_fill_gap_1d`, x, rule)
 }
 
+do_fill_gap_2d <- function(m, Gap, Debug) {
+    .Call(`_oce_do_fill_gap_2d`, m, Gap, Debug)
+}
+
 do_gappy_index <- function(starts, offset, length) {
     .Call(`_oce_do_gappy_index`, starts, offset, length)
 }
