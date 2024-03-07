@@ -128,7 +128,7 @@ and return values, consult the documentation for \code{\link[=binMean2D]{binMean
 Here is an example of a scheme that will fill data gaps of 1 or 2
 cells:
 
-\if{html}{\out{<div class="sourceCode">}}\preformatted{g <- function(...) binMean2D(..., fill = TRUE, gap = 2)
+\if{html}{\out{<div class="sourceCode">}}\preformatted{g <- function(...) binMean2D(..., fill = TRUE, fillgap = 2)
 }\if{html}{\out{</div>}}
 }
 \section{Historical Notes}{
