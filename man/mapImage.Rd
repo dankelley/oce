@@ -67,30 +67,32 @@ colors, e.g. \code{\link[=oce.colorsViridis]{oce.colorsViridis()}} for the Virid
 \code{NA} to skip the drawing of such regions (which will retain
 whatever material has already been drawn at the regions).}
 
-\item{filledContour}{either a logical value indicating whether to
-use filled contours to plot the image, or a numerical value
-indicating the resampling rate to be used in interpolating from
-lon-lat coordinates to x-y coordinates.  See also \code{gridder}.}
+\item{filledContour}{a logical value indicating whether to
+use filled contours.  If this is TRUE, the provided longitude
+and latitude values are mapped to x and y values that will
+not be on a grid. The filled contours are drawn with
+\code{\link[=.filled.contour]{.filled.contour()}}, which requires a grid, and so the
+x and y values need to be gridded. How this is done is
+controlled by the \code{gridder} and \code{coarseness} parameters.}
 
-\item{gridder}{specification of how gridding is to be done, used only if
-\code{filledContour} is TRUE. The value of \code{gridder} may be a character value or a
-function. If the former, it must be either \code{"binMean2D"}, which is the
-default, or \code{"interp"}. These values cause binning to be done with
-\code{\link[=binMean2D]{binMean2D()}} or \code{\link[interp:interp]{interp::interp()}}, respectively, with the first
-choice being cruder but faster. If the image has some blank spots,
-you may try specifying a gap-filling function for \code{gridder},
-as discussed in the \dQuote{Specifying a Custom Gridding Function}
-section.}
+\item{gridder}{specification of how gridding is to be done, used
+only if \code{filledContour} is TRUE. The value of \code{gridder} may
+\code{"binMean2D"}, which is the default, \code{"interp"}, or a function.  In
+the first two cases, the gridding is done with either \code{\link[=binMean2D]{binMean2D()}}
+or \code{\link[interp:interp]{interp::interp()}}, respectively. For more on the last case, see
+\dQuote{Details}.}
 
 \item{gridCoarseness}{number that controls the coarseness of the
-grid that is created if \code{filledContour} is TRUE. The default value
-of 10 may be suitable for many applications, but whether this is
-true depends on the projection and the extent of the plotted
-region.  If you see blanks in the image that do not correspond to
-blanks in your data, try coarsening the grid, by increasing
-\code{gridCoefficient} to perhaps 15.  Continue to larger values if
-required, but note that the larger the value, the coarser the grid
-and thus the coarser the contours.}
+grid, used only if \code{filledContour} is TRUE. The finer the grid, the
+more detailed filled contours will be, but has the downside
+of making it more likely that some grid cells will be blank,
+because the gridder found no x and y values in those cells.
+The default value of \code{gridCoarseness} is 1, which is designed
+so that the average cell will hold approximately three x and y values.
+However, depending on the projection and plot scale, it may
+be necessary to increase \code{gridCoarseness} to avoid some blank
+spots on the image. In such a case, try increasing \code{gridCoarseness}
+to 1.5 or higher values, until the blanks disappear.}
 
 \item{debug}{an integer specifying whether debugging information is
 to be printed during the processing. This is a general parameter that
@@ -112,52 +114,24 @@ Instead, there are two approaches, depending on the value of
 If \code{filledContour} is \code{FALSE}, the image "pixels" are drawn with
 \code{\link[=polygon]{polygon()}}. This can be prohibitively slow for fine grids.
 
-However, if \code{filledContour} is \code{TRUE} or a numerical value, then
-the "pixels" are remapped into a regular grid and then displayed
-with \code{\link[=.filled.contour]{.filled.contour()}}.  The remapping starts by converting the
+However, if \code{filledContour} is \code{TRUE}, then the "pixels" are
+remapped into a regular grid and then displayed with
+\code{\link[=.filled.contour]{.filled.contour()}}.  The remapping starts by converting the
 regular lon-lat grid to an irregular x-y grid using \code{\link[=lonlat2map]{lonlat2map()}}.
-This irregular grid is then interpolated onto a regular x-y grid
-with either \code{\link[=binMean2D]{binMean2D()}} or \code{\link[interp:interp]{interp::interp()}}, as determined by
-the value of the \code{gridder} parameter. If \code{filledContour} is \code{TRUE},
-the dimensions of the regular x-y grid is the same as that of the
-original lon-lat grid; otherwise, the number of rows and columns
-are multiplied by the numerical value of \code{filledContour}, e.g. the
-value 2 means to make the grid twice as fine.
-
-Filling contours can produce aesthetically-pleasing results, but
-the method involves interpolation, so the data are not represented
-exactly and gaps can occur, depending on the projection and
-the matrix.  Analysts are advised to compare the results from the
-two methods (and perhaps various grid refinement values) to guard
-against misinterpretation.
-
-If a \code{\link[=png]{png()}} device is to be used, it is advised to supply
-arguments \code{type="cairo"} and \code{antialias="none"} (see reference 1).
-}
-\section{Specifying a Custom Gridding Function}{
-
-
-Filled contours are drawn with \code{\link[=.filled.contour]{.filled.contour()}}, which requires a
-data gridded in x-y space, as opposed to longitude-latitude space. For
-this reason, \code{\link[=mapImage]{mapImage()}} requires a gridding function, and this is
-supplied by the \code{gridder} parameter. If neither of the built-in
-choices (\code{"binMean2D"} or \code{"interp"}) produces satisfactory results,
-the user may supply a function that will be called by \code{\link[=mapImage]{mapImage()}}.
-This function must have as its first 5 arguments (1) an x vector, (2)
-a y vector, (3) a z matrix that corresponds to x and y in the usual
-way, (4) a vector containing the desired grid in the x direction, and
-(5) a vector containing the the desired grid in the y direction. The
+This irregular grid is then interpolated onto a regular x-y grid in
+accordance with the \code{gridder} and \code{gridCoarseness} parameters.
+If \code{gridder} values of \code{"binMean2D"} and \code{"interp"} do not produce
+satisfactory results, advanced users might wish to supply a
+function to do the gridding according to their own criteria.
+Perhaps, for example, the function might be based on
+\code{\link[=interpBarnes]{interpBarnes()}}. In any case, the function must have as its first
+5 arguments (1) an x vector, (2) a y vector, (3) a z matrix that
+corresponds to x and y in the usual way, (4) a vector holding the
+desired x grid, and (5) a vector holding the desired y grid. The
 return value must be a list containing items named \code{xmids}, \code{ymids}
-and \code{result}. To understand the meaning of the parameters and return
-values, consult the documentation for \code{\link[=binMean2D]{binMean2D()}}. For example,
-the following will fill in data gaps, because it calls
-\code{\link[=binMean2D]{binMean2D()}} with \code{fill} set to TRUE:
-
-\if{html}{\out{<div class="sourceCode">}}\preformatted{g <- function(...) binMean2D(..., fill = TRUE)
-mapImage(lon, lat, matrix, gridder=g)
-}\if{html}{\out{</div>}}
+and \code{result}. To understand the meaning of the parameters and
+return values, consult the documentation for \code{\link[=binMean2D]{binMean2D()}}.
 }
-
 \section{Historical Notes}{
 
 
@@ -174,10 +148,7 @@ that sometimes get reported by \code{\link[interp:interp]{interp::interp()}}.
 These are informal examples, which are not run during the CRAN
 testing process, owing to speed issues.
 
-\preformatted{
-library(oce)
-data(coastlineWorld)
-data(topoWorld)
+\preformatted{ library(oce) data(coastlineWorld) data(topoWorld)
 
 # Northern polar region, with color-coded bathymetry
 par(mfrow=c(1,1), mar=c(2,2,1,1))
@@ -187,18 +158,10 @@ mapPlot(coastlineWorld, projection="+proj=stere +lat_0=90",
     longitudelim=c(-180,180), latitudelim=c(70,110))
 mapImage(topoWorld, colormap=cm)
 mapGrid(15, 15, polarCircle=1, col=gray(0.2))
-mapPolygon(coastlineWorld[["longitude"]], coastlineWorld[["latitude"]],
-    col="tan")
-}
-}
-
-\references{
-\enumerate{
-\item 
+mapPolygon(coastlineWorld[["longitude"]],
+    coastlineWorld[["latitude"]], col="tan") }
 }
 
-\verb{https://codedocean.wordpress.com/2014/02/03/anti-aliasing-and-image-plots/}
-}
 \seealso{
 A map must first have been created with \code{\link[=mapPlot]{mapPlot()}}.
 
@@ -223,6 +186,7 @@ Other functions related to maps:
 \code{\link{mapText}()},
 \code{\link{mapTissot}()},
 \code{\link{oceCRS}()},
+\code{\link{oceProject}()},
 \code{\link{shiftLongitude}()},
 \code{\link{usrLonLat}()},
 \code{\link{utm2lonlat}()}

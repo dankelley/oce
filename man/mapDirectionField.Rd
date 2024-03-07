@@ -19,8 +19,8 @@ mapDirectionField(
 \arguments{
 \item{longitude, latitude}{numeric vectors of the starting points for arrows.}
 
-\item{u, v}{numeric vectors of the components of a vector to be shown as a direction
-field.}
+\item{u, v}{numeric vectors of the components of a vector to be
+shown as a direction field.}
 
 \item{scale}{latitude degrees per unit of \code{u} or \code{v}.}
 
@@ -28,23 +28,22 @@ field.}
 
 \item{code}{code of arrows, passed to \code{\link[=arrows]{arrows()}}.}
 
-\item{col}{color of arrows.  This may be a single color, or a matrix
-of colors of the same dimension as \code{u}.}
+\item{col}{color of arrows.  This may be a single color, or a
+matrix of colors of the same dimension as \code{u}.}
 
-\item{\dots}{optional arguments passed to \code{\link[=arrows]{arrows()}}, e.g.
-\code{angle} and \code{lwd} can be useful in differentiating different
-fields.}
+\item{\dots}{optional arguments passed to \code{\link[=arrows]{arrows()}}, e.g. \code{angle}
+and \code{lwd} can be useful in differentiating different fields.}
 }
 \description{
 Plot a direction field on a existing map.
 }
 \details{
-Adds arrows for a direction field on an existing map.  There are different
-possibilities for how \code{longitude}, \code{latitude} and \code{u} and
-\code{v} match up.  In one common case, all four of these are matrices, e.g.
-output from a numerical model.  In another, \code{longitude} and
-\code{latitude} are the coordinates along the matrices, and are thus stored in
-vectors with lengths that match appropriately.
+Adds arrows for a direction field on an existing map.  There are
+different possibilities for how \code{longitude}, \code{latitude} and \code{u} and
+\code{v} match up.  In one common case, all four of these are matrices,
+e.g. output from a numerical model.  In another, \code{longitude} and
+\code{latitude} are the coordinates along the matrices, and are thus
+stored in vectors with lengths that match appropriately.
 }
 \section{Sample of Usage}{
 
@@ -93,6 +92,7 @@ Other functions related to maps:
 \code{\link{mapText}()},
 \code{\link{mapTissot}()},
 \code{\link{oceCRS}()},
+\code{\link{oceProject}()},
 \code{\link{shiftLongitude}()},
 \code{\link{usrLonLat}()},
 \code{\link{utm2lonlat}()}

@@ -13,7 +13,8 @@ mapCoordinateSystem(longitude, latitude, L = 100, phi = 0, ...)
 
 \item{L}{axis length in km.}
 
-\item{phi}{angle, in degrees counterclockwise, that the "x" axis makes to a line of latitude.}
+\item{phi}{angle, in degrees counterclockwise, that the "x" axis
+makes to a line of latitude.}
 
 \item{...}{plotting arguments, passed to \code{\link[=mapArrows]{mapArrows()}};
 see \dQuote{Examples} for how to control the arrow-head size.}
@@ -65,6 +66,7 @@ Other functions related to maps:
 \code{\link{mapText}()},
 \code{\link{mapTissot}()},
 \code{\link{oceCRS}()},
+\code{\link{oceProject}()},
 \code{\link{shiftLongitude}()},
 \code{\link{usrLonLat}()},
 \code{\link{utm2lonlat}()}
