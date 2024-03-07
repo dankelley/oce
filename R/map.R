@@ -3335,7 +3335,7 @@ mapPolygon <- function(
 #' Here is an example of a scheme that will fill data gaps of 1 or 2
 #' cells:
 #' ```
-#' g <- function(...) binMean2D(..., fill = TRUE, gap = 2)
+#' g <- function(...) binMean2D(..., fill = TRUE, fillgap = 2)
 #' ```
 #'
 #' @section Historical Notes:
