@@ -8,6 +8,7 @@
 [![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](http://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/)
 [![GitHub last commit](https://img.shields.io/github/last-commit/dankelley/oce)](https://img.shields.io/github/last-commit/dankelley/oce)
 [![R-CMD-check](https://github.com/dankelley/oce/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/dankelley/oce/actions/workflows/R-CMD-check.yaml)
+[![R-hub](https://github.com/dankelley/oce/actions/workflows/rhub.yaml/badge.svg)](https://github.com/dankelley/oce/actions/workflows/rhub.yaml)
 ![RStudio CRAN mirror downloads](https://cranlogs.r-pkg.org/badges/last-month/oce)
 ![RStudio CRAN mirror downloads](https://cranlogs.r-pkg.org/badges/last-week/oce)
 ![RStudio CRAN mirror downloads](https://cranlogs.r-pkg.org/badges/last-day/oce)
