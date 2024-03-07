@@ -161,9 +161,23 @@ mapPlot(coastlineWorld,
     projection = "+proj=stere +lat_0=90",
     longitudelim = c(-180, 180), latitudelim = c(70, 110)
 )
-# Uncomment one of the next two lines.
+# Uncomment one of the next four blocks.  See
+# https://dankelley.github.io/dek_blog/2024/03/07/mapimage.html
+# for illustrations.
+
+# Method 1: the default, using polygons for lon-lat patches
 mapImage(topoWorld, colormap = cm)
+
+# Method 2: filled contours, with ugly missing-data traces
+# mapImage(topoWorld, colormap = cm, filledContour = TRUE)
+
+# Method 3: filled contours, with a double-sized grid cells
 # mapImage(topoWorld, colormap = cm, filledContour = 2)
+
+# Method 4: filled contours, with a gap-filling gridder)
+# g <- function(...) binMean2D(..., fill = TRUE, fillgap = 2)
+# mapImage(topoWorld, colormap = cm, filledContour = TRUE, gridder = g)
+
 mapGrid(15, 15, polarCircle = 1, col = gray(0.2))
 mapPolygon(coastlineWorld[["longitude"]],
     coastlineWorld[["latitude"]],

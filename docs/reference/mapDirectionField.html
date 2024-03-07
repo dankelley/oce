@@ -101,8 +101,8 @@
 
 
 <dt>u, v</dt>
-<dd><p>numeric vectors of the components of a vector to be shown as a direction
-field.</p></dd>
+<dd><p>numeric vectors of the components of a vector to be
+shown as a direction field.</p></dd>
 
 
 <dt>scale</dt>
@@ -118,24 +118,23 @@ field.</p></dd>
 
 
 <dt>col</dt>
-<dd><p>color of arrows.  This may be a single color, or a matrix
-of colors of the same dimension as <code>u</code>.</p></dd>
+<dd><p>color of arrows.  This may be a single color, or a
+matrix of colors of the same dimension as <code>u</code>.</p></dd>
 
 
 <dt>...</dt>
-<dd><p>optional arguments passed to <code><a href="https://rdrr.io/r/graphics/arrows.html" class="external-link">arrows()</a></code>, e.g.
-<code>angle</code> and <code>lwd</code> can be useful in differentiating different
-fields.</p></dd>
+<dd><p>optional arguments passed to <code><a href="https://rdrr.io/r/graphics/arrows.html" class="external-link">arrows()</a></code>, e.g. <code>angle</code>
+and <code>lwd</code> can be useful in differentiating different fields.</p></dd>
 
 </dl></div>
     <div id="details">
     <h2>Details</h2>
-    <p>Adds arrows for a direction field on an existing map.  There are different
-possibilities for how <code>longitude</code>, <code>latitude</code> and <code>u</code> and
-<code>v</code> match up.  In one common case, all four of these are matrices, e.g.
-output from a numerical model.  In another, <code>longitude</code> and
-<code>latitude</code> are the coordinates along the matrices, and are thus stored in
-vectors with lengths that match appropriately.</p>
+    <p>Adds arrows for a direction field on an existing map.  There are
+different possibilities for how <code>longitude</code>, <code>latitude</code> and <code>u</code> and
+<code>v</code> match up.  In one common case, all four of these are matrices,
+e.g. output from a numerical model.  In another, <code>longitude</code> and
+<code>latitude</code> are the coordinates along the matrices, and are thus
+stored in vectors with lengths that match appropriately.</p>
     </div>
     <div id="sample-of-usage">
     <h2>Sample of Usage</h2>
@@ -185,6 +184,7 @@ vectors with lengths that match appropriately.</p>
 <code><a href="mapText.html">mapText</a>()</code>,
 <code><a href="mapTissot.html">mapTissot</a>()</code>,
 <code><a href="oceCRS.html">oceCRS</a>()</code>,
+<code><a href="oceProject.html">oceProject</a>()</code>,
 <code><a href="shiftLongitude.html">shiftLongitude</a>()</code>,
 <code><a href="usrLonLat.html">usrLonLat</a>()</code>,
 <code><a href="utm2lonlat.html">utm2lonlat</a>()</code></p></div>

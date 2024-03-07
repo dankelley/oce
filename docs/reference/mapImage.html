@@ -103,11 +103,13 @@
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>longitude</dt>
-<dd><p>numeric vector of longitudes corresponding to <code>z</code> matrix.</p></dd>
+<dd><p>numeric vector of longitudes corresponding to <code>z</code>
+matrix.</p></dd>
 
 
 <dt>latitude</dt>
-<dd><p>numeric vector of latitudes corresponding to <code>z</code> matrix.</p></dd>
+<dd><p>numeric vector of latitudes corresponding to <code>z</code>
+matrix.</p></dd>
 
 
 <dt>z</dt>
@@ -123,29 +125,29 @@
 <code>z</code> values should be painted with <code>missingColor</code> and <code>FALSE</code>
 indicating that these values should be painted with the nearest
 in-range color.  If <code>zlim</code> is given then its min and max set the
-range.  If <code>zlim</code> is not given but <code>breaks</code> is given, then
-the min and max of <code>breaks</code> sets the range used for z.  If neither
-<code>zlim</code> nor <code>breaks</code> is given, clipping is not done, i.e. the
-action is as if <code>zclip</code> were <code>FALSE</code>.</p></dd>
+range.  If <code>zlim</code> is not given but <code>breaks</code> is given, then the min
+and max of <code>breaks</code> sets the range used for z.  If neither <code>zlim</code>
+nor <code>breaks</code> is given, clipping is not done, i.e. the action is as
+if <code>zclip</code> were <code>FALSE</code>.</p></dd>
 
 
 <dt>breaks</dt>
-<dd><p>The z values for breaks in the color scheme.  If this is of
-length 1, the value indicates the desired number of breaks, which is
-supplied to <code><a href="https://rdrr.io/r/base/pretty.html" class="external-link">pretty()</a></code>, in determining clean break points.</p></dd>
+<dd><p>The z values for breaks in the color scheme.  If this
+is of length 1, the value indicates the desired number of breaks,
+which is supplied to <code><a href="https://rdrr.io/r/base/pretty.html" class="external-link">pretty()</a></code>, in determining clean break points.</p></dd>
 
 
 <dt>col</dt>
-<dd><p>Either a vector of colors corresponding to the breaks, of length
-1 plus the number of breaks, or a function specifying colors,
-e.g. <code><a href="oceColorsViridis.html">oce.colorsViridis()</a></code> for the Viridis scheme.</p></dd>
+<dd><p>Either a vector of colors corresponding to the breaks,
+of length 1 plus the number of breaks, or a function specifying
+colors, e.g. <code><a href="oceColorsViridis.html">oce.colorsViridis()</a></code> for the Viridis scheme.</p></dd>
 
 
 <dt>colormap</dt>
-<dd><p>optional colormap, as created by <code><a href="colormap.html">colormap()</a></code>.
-If a <code>colormap</code> is provided, then its properties takes precedence
-over <code>breaks</code>, <code>col</code>, <code>missingColor</code>, and <code>zclip</code>
-specified to <code>mapImage</code>.</p></dd>
+<dd><p>optional colormap, as created by <code><a href="colormap.html">colormap()</a></code>. If a
+<code>colormap</code> is provided, then its properties takes precedence over
+<code>breaks</code>, <code>col</code>, <code>missingColor</code>, and <code>zclip</code> specified to
+<code>mapImage</code>.</p></dd>
 
 
 <dt>border</dt>
@@ -168,86 +170,126 @@ whatever material has already been drawn at the regions).</p></dd>
 
 
 <dt>filledContour</dt>
-<dd><p>either a logical value indicating whether to use
-filled contours to plot the image, or a numerical value indicating the
-resampling rate to be used in interpolating from lon-lat coordinates to
-x-y coordinates.  See “Details” for how this interacts with
-<code>gridder</code>.</p></dd>
+<dd><p>an indication of whether to use filled
+contours.  This may be FALSE (the default), TRUE, or a positive
+numerical value. If FALSE, then polygons are used. Othewise, the
+longitude-latitude values are transformed to x-y values, which will
+not be on a grid and thus will require gridding so that
+<code><a href="https://rdrr.io/r/graphics/filled.contour.html" class="external-link">.filled.contour()</a></code> can plot the filled contours.  The method used
+for gridding is set by the <code>gridder</code> parameter (see next item). If
+<code>filledContour</code> is TRUE, then the grid is constructed with the aim
+of having approximately 3 of the projected x-y points in each cell.
+That can leave some cells unoccupied, yielding blanks in the drawn
+image.  There are two ways around that.  First, the <code>gridder</code> can
+be set up to fill gaps.  Second, a numerical value can be used for
+<code>filledContour</code>. For example, using <code>filledContour</code> equal to 1.5
+will increase grid width and height by a factor of 1.5, which may
+be enough to fill all the gaps, depending on the projection and the
+area shown.</p></dd>
 
 
 <dt>gridder</dt>
-<dd><p>character value specifying the gridding function to be used
-if <code>filledContour</code> is <code>TRUE</code>. This can be either <code>"binMean2D"</code> to select
-<code><a href="binMean2D.html">binMean2D()</a></code> or <code>"interp"</code> to select <code><a href="https://rdrr.io/pkg/interp/man/interp.html" class="external-link">interp::interp()</a></code>.  The former
-produces cruder results, but the latter can be slow for large datasets.
-Note that <code>"akima"</code> is taken as a synonym for <code>"interp"</code>
-(see “Historical Notes”).</p></dd>
+<dd><p>specification of how gridding is to be done, used
+only if <code>filledContour</code> is TRUE. The value of <code>gridder</code> may
+<code>"binMean2D"</code>, which is the default, <code>"interp"</code>, or a function.  In
+the first two cases, the gridding is done with either <code><a href="binMean2D.html">binMean2D()</a></code>
+or <code><a href="https://rdrr.io/pkg/interp/man/interp.html" class="external-link">interp::interp()</a></code>, respectively. For more on the last case, see
+“Details”.</p></dd>
 
 
 <dt>debug</dt>
-<dd><p>A flag that turns on debugging.  Set to 1 to get a
-moderate amount of debugging information, or to 2 to get more.</p></dd>
+<dd><p>an integer specifying whether debugging information is
+to be printed during the processing. This is a general parameter that
+is used by many <code>oce</code> functions. Generally, setting <code>debug=0</code>
+turns off the printing, while higher values suggest that more information
+be printed. If one function calls another, it usually reduces the value of
+<code>debug</code> first, so that a user can often obtain deeper debugging
+by specifying higher <code>debug</code> values.</p></dd>
 
 </dl></div>
     <div id="details">
     <h2>Details</h2>
-    <p>Image data are on a regular grid in lon-lat space, but not in the projected
-x-y space.  This means that <code><a href="https://rdrr.io/r/graphics/image.html" class="external-link">image()</a></code> cannot be used.  Instead,
-there are two approaches, depending on the value of <code>filledContour</code>.</p>
-<p>If <code>filledContour</code> is <code>FALSE</code>, the image "pixels" are drawn with <code><a href="https://rdrr.io/r/graphics/polygon.html" class="external-link">polygon()</a></code>.
-This can be prohibitively slow for fine grids.  However, if <code>filledContour</code>
-is <code>TRUE</code> or a numerical value, then the "pixels" are remapped into a regular
-grid and then displayed with <code><a href="https://rdrr.io/r/graphics/filled.contour.html" class="external-link">.filled.contour()</a></code>.  The remapping starts by
-converting the regular lon-lat grid to an irregular x-y grid using
-<code><a href="lonlat2map.html">lonlat2map()</a></code>.  This irregular grid is then interpolated onto a regular x-y
-grid  with either <code><a href="binMean2D.html">binMean2D()</a></code> or <code><a href="https://rdrr.io/pkg/interp/man/interp.html" class="external-link">interp::interp()</a></code>, as determined by the
-value of the <code>gridder</code> parameter. If <code>filledContour</code> is <code>TRUE</code>, the
-dimensions of the regular x-y grid is the same as that of the original
-lon-lat grid; otherwise, the number of rows and columns are multiplied by the
-numerical value of <code>filledContour</code>, e.g. the value 2 means to make the grid
-twice as fine.</p>
-<p>Filling contours can produce aesthetically-pleasing results, but the method
-involves interpolation, so the data are not represented exactly and
-analysts are advised to compare the results from the two methods (and
-perhaps various grid refinement values) to guard against misinterpretation.</p>
-<p>If a <code><a href="https://rdrr.io/r/grDevices/png.html" class="external-link">png()</a></code> device is to be used, it is advised to supply
-arguments <code>type="cairo"</code> and <code>antialias="none"</code> (see reference 1).</p>
+    <p>Image data are on a regular grid in lon-lat space, but not in the
+projected x-y space.  This means that <code><a href="https://rdrr.io/r/graphics/image.html" class="external-link">image()</a></code> cannot be used.
+Instead, there are two approaches, depending on the value of
+<code>filledContour</code>.</p>
+<p>If <code>filledContour</code> is <code>FALSE</code>, the image "pixels" are drawn with
+<code><a href="https://rdrr.io/r/graphics/polygon.html" class="external-link">polygon()</a></code>. This can be prohibitively slow for fine grids.</p>
+<p>However, if <code>filledContour</code> is <code>TRUE</code>, then the "pixels" are
+remapped into a regular grid and then displayed with
+<code><a href="https://rdrr.io/r/graphics/filled.contour.html" class="external-link">.filled.contour()</a></code>.  The remapping starts by converting the
+regular lon-lat grid to an irregular x-y grid using <code><a href="lonlat2map.html">lonlat2map()</a></code>.
+This irregular grid is then interpolated onto a regular x-y grid in
+accordance with the <code>gridder</code> parameter. If <code>gridder</code> values of
+<code>"binMean2D"</code> and <code>"interp"</code> do not produce satisfactory results,
+advanced users might wish to supply a function to do the gridding
+according to their own criteria. The function must have as its
+first 5 arguments (1) an x vector, (2) a y vector, (3) a z matrix
+that corresponds to x and y in the usual way, (4) a vector holding
+the desired x grid, and (5) a vector holding the desired y grid.
+The return value must be a list containing items named <code>xmids</code>,
+<code>ymids</code> and <code>result</code>. To understand the meaning of the parameters
+and return values, consult the documentation for <code><a href="binMean2D.html">binMean2D()</a></code>.
+Here is an example of a scheme that will fill data gaps of 1 or 2
+cells:</p>
+<p></p><div class="sourceCode"><pre><code><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a>g <span class="ot">&lt;-</span> <span class="cf">function</span>(...) <span class="fu">binMean2D</span>(..., <span class="at">fill =</span> <span class="cn">TRUE</span>, <span class="at">fillgap =</span> <span class="dv">2</span>)</span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="fu">mapImage</span>(..., <span class="at">gridder =</span> g, ...)</span></code></pre><p></p></div>
     </div>
     <div id="historical-notes">
     <h2>Historical Notes</h2>
     
 
 
-<p>Until oce 1.7.4, the <code>gridder</code> argument could be set to <code>"akima"</code>, which used
-the <code>akima</code> package.  However, that package is not released with a FOSS license,
-so CRAN requested a change to <a href="https://CRAN.R-project.org/package=interp" class="external-link"><span class="pkg">interp</span></a>. Note that <code>drawImage()</code>
-intercepts the errors that sometimes get reported by <code><a href="https://rdrr.io/pkg/interp/man/interp.html" class="external-link">interp::interp()</a></code>.</p>
+<p>Until oce 1.7.4, the <code>gridder</code> argument could be set to <code>"akima"</code>,
+which used the <code>akima</code> package.  However, that package is not
+released with a FOSS license, so CRAN requested a change to
+<a href="https://CRAN.R-project.org/package=interp" class="external-link"><span class="pkg">interp</span></a>. Note that <code>drawImage()</code> intercepts the errors
+that sometimes get reported by <code><a href="https://rdrr.io/pkg/interp/man/interp.html" class="external-link">interp::interp()</a></code>.</p>
     </div>
     <div id="sample-of-usage">
     <h2>Sample of Usage</h2>
     
 
+
+<p>This is an informal examples that is not run during the CRAN
+testing process, owing to speed issues.</p>
 <div class="sourceCode"><pre><code><span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dankelley.github.io/oce/" class="external-link">oce</a></span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">coastlineWorld</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">topoWorld</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Northern polar region, with color-coded bathymetry</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mfrow<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">1</span><span class="op">)</span>, mar<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>,<span class="fl">2</span>,<span class="fl">1</span>,<span class="fl">1</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="va">cm</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/colormap.html">colormap</a></span><span class="op">(</span>zlim<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">5000</span>, <span class="fl">0</span><span class="op">)</span>, col<span class="op">=</span><span class="va">oceColorsGebco</span><span class="op">)</span></span>
-<span><span class="fu"><a href="../reference/drawPalette.html">drawPalette</a></span><span class="op">(</span>colormap<span class="op">=</span><span class="va">cm</span><span class="op">)</span></span>
-<span><span class="fu"><a href="../reference/mapPlot.html">mapPlot</a></span><span class="op">(</span><span class="va">coastlineWorld</span>, projection<span class="op">=</span><span class="st">"+proj=stere +lat_0=90"</span>,</span>
-<span>        longitudelim<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">180</span>,<span class="fl">180</span><span class="op">)</span>, latitudelim<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">70</span>,<span class="fl">110</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="fu"><a href="../reference/mapImage.html">mapImage</a></span><span class="op">(</span><span class="va">topoWorld</span>, colormap<span class="op">=</span><span class="va">cm</span><span class="op">)</span></span>
-<span><span class="fu"><a href="../reference/mapGrid.html">mapGrid</a></span><span class="op">(</span><span class="fl">15</span>, <span class="fl">15</span>, polarCircle<span class="op">=</span><span class="fl">1</span>, col<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/grDevices/gray.html" class="external-link">gray</a></span><span class="op">(</span><span class="fl">0.2</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="fu"><a href="../reference/mapPolygon.html">mapPolygon</a></span><span class="op">(</span><span class="va">coastlineWorld</span><span class="op">[[</span><span class="st">"longitude"</span><span class="op">]</span><span class="op">]</span>, <span class="va">coastlineWorld</span><span class="op">[[</span><span class="st">"latitude"</span><span class="op">]</span><span class="op">]</span>, col<span class="op">=</span><span class="st">"tan"</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mfrow <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">1</span><span class="op">)</span>, mar <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">2</span>, <span class="fl">1</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">cm</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/colormap.html">colormap</a></span><span class="op">(</span>zlim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">5000</span>, <span class="fl">0</span><span class="op">)</span>, col <span class="op">=</span> <span class="va">oceColorsGebco</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/drawPalette.html">drawPalette</a></span><span class="op">(</span>colormap <span class="op">=</span> <span class="va">cm</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/mapPlot.html">mapPlot</a></span><span class="op">(</span><span class="va">coastlineWorld</span>,</span>
+<span>    projection <span class="op">=</span> <span class="st">"+proj=stere +lat_0=90"</span>,</span>
+<span>    longitudelim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">180</span>, <span class="fl">180</span><span class="op">)</span>, latitudelim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">70</span>, <span class="fl">110</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span><span class="co"># Uncomment one of the next four blocks.  See</span></span>
+<span><span class="co"># https://dankelley.github.io/dek_blog/2024/03/07/mapimage.html</span></span>
+<span><span class="co"># for illustrations.</span></span>
+<span></span>
+<span><span class="co"># Method 1: the default, using polygons for lon-lat patches</span></span>
+<span><span class="fu"><a href="../reference/mapImage.html">mapImage</a></span><span class="op">(</span><span class="va">topoWorld</span>, colormap <span class="op">=</span> <span class="va">cm</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Method 2: filled contours, with ugly missing-data traces</span></span>
+<span><span class="co"># mapImage(topoWorld, colormap = cm, filledContour = TRUE)</span></span>
+<span></span>
+<span><span class="co"># Method 3: filled contours, with a double-sized grid cells</span></span>
+<span><span class="co"># mapImage(topoWorld, colormap = cm, filledContour = 2)</span></span>
+<span></span>
+<span><span class="co"># Method 4: filled contours, with a gap-filling gridder)</span></span>
+<span><span class="co"># g &lt;- function(...) binMean2D(..., fill = TRUE, fillgap = 2)</span></span>
+<span><span class="co"># mapImage(topoWorld, colormap = cm, filledContour = TRUE, gridder = g)</span></span>
+<span></span>
+<span><span class="fu"><a href="../reference/mapGrid.html">mapGrid</a></span><span class="op">(</span><span class="fl">15</span>, <span class="fl">15</span>, polarCircle <span class="op">=</span> <span class="fl">1</span>, col <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/grDevices/gray.html" class="external-link">gray</a></span><span class="op">(</span><span class="fl">0.2</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/mapPolygon.html">mapPolygon</a></span><span class="op">(</span><span class="va">coastlineWorld</span><span class="op">[[</span><span class="st">"longitude"</span><span class="op">]</span><span class="op">]</span>,</span>
+<span>    <span class="va">coastlineWorld</span><span class="op">[[</span><span class="st">"latitude"</span><span class="op">]</span><span class="op">]</span>,</span>
+<span>    col <span class="op">=</span> <span class="st">"tan"</span></span>
+<span><span class="op">)</span></span></code></pre></div>
 
     </div>
-    <div id="references">
-    <h2>References</h2>
-    
-<ol><li><p><code>https://codedocean.wordpress.com/2014/02/03/anti-aliasing-and-image-plots/</code></p></li>
-</ol></div>
     <div id="see-also">
     <h2>See also</h2>
     <div class="dont-index"><p>A map must first have been created with <code><a href="mapPlot.html">mapPlot()</a></code>.</p>
@@ -272,6 +314,7 @@ intercepts the errors that sometimes get reported by <code><a href="https://rdrr
 <code><a href="mapText.html">mapText</a>()</code>,
 <code><a href="mapTissot.html">mapTissot</a>()</code>,
 <code><a href="oceCRS.html">oceCRS</a>()</code>,
+<code><a href="oceProject.html">oceProject</a>()</code>,
 <code><a href="shiftLongitude.html">shiftLongitude</a>()</code>,
 <code><a href="usrLonLat.html">usrLonLat</a>()</code>,
 <code><a href="utm2lonlat.html">utm2lonlat</a>()</code></p></div>
