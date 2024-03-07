@@ -25,21 +25,23 @@ binMean2D(
 
 \item{f}{Matrix of numerical values, a matrix f=f(x,y).}
 
-\item{xbreaks}{Vector of values of \code{x} at the boundaries between bins, calculated using
-\code{\link{pretty}}\code{(x)} if not supplied.}
+\item{xbreaks}{Vector of values of \code{x} at the boundaries between
+bins, calculated using \code{\link{pretty}}\code{(x)} if not supplied.}
 
-\item{ybreaks}{Vector of values of \code{y} at the boundaries between bins, calculated using
-\code{\link{pretty}}\code{(y)} if not supplied.}
+\item{ybreaks}{Vector of values of \code{y} at the boundaries between
+bins, calculated using \code{\link{pretty}}\code{(y)} if not supplied.}
 
 \item{flatten}{a logical value indicating whether the return value
 also contains equilength vectors \code{x}, \code{y}, \code{z} and \code{n}, a flattened
 representation of \code{xmids}, \code{ymids}, \code{result} and \code{number}.}
 
 \item{fill, fillgap}{values controlling whether to attempt to fill
-gaps (that is, regions of NA values) in the matrix. This is done by
-calling \code{\link[=binMean2D]{binMean2D()}} if \code{fill} is TRUE. Note that the \code{gap}
-parameter of \code{\link[=binMean2D]{binMean2D()}} is specified as the value of \code{fillgap}
-in the present function.}
+gaps (that is, regions of NA values) in the matrix. If \code{fill}
+is false, gaps, or regions with NA values, are not altered.
+If \code{fill} is TRUE, then gaps that are of size less than
+or equal to \code{fillgap} are interpolated across,
+by calling \code{\link[=fillGapMatrix]{fillGapMatrix()}} with the supplied value of
+\code{fillgap}.}
 
 \item{include.lowest}{logical value indicating whether to include
 \code{y} values for which the corresponding \code{x} is equal to \code{xmin}.
@@ -69,9 +71,9 @@ are renamed as \code{x} and \code{y} and extended to match the length of \code{n
 and \code{f}.
 }
 \description{
-Average the values of a vector \code{f(x,y)} in bins defined on
-vectors \code{x} and \code{y}. A common example might be averaging
-spatial data into location bins.
+Average the values of a vector \code{f(x,y)} in bins defined on vectors
+\code{x} and \code{y}. A common example might be averaging spatial data into
+location bins.
 }
 \examples{
 library(oce)

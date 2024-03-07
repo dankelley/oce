@@ -4,19 +4,20 @@
 \alias{fillGapMatrix}
 \title{Fill a Gap in a Matrix}
 \usage{
-fillGapMatrix(m, gap = 1, debug = getOption("oceDebug"))
+fillGapMatrix(m, fillgap = 1, debug = getOption("oceDebug"))
 }
 \arguments{
 \item{m}{a numeric matrix.}
 
-\item{gap}{a vector containing 1 or 2 integers, indicating the maximum
+\item{fillgap}{a vector containing 1 or 2 integers, indicating the maximum
 width of gaps to be filled.  If just one number is given, it is repeated
 to create the pair.  The first element of the pair is the maximum
 fillable gap height (i.e. row separation in the matrix), and
 the second is the maximum fillable gap width. The default value of
 1 means that only gaps of width or height 1 can be filled. As
 an exception to these rules, a negative value means to fill gaps
-regardless of size. It is an error to specify a \code{gap} value of zero.}
+regardless of size. It is an error to specify a \code{fillgap} value
+that is less than 1.}
 
 \item{debug}{an integer specifying whether debugging information is
 to be printed during the processing. This is a general parameter that
@@ -33,7 +34,7 @@ by interpolated values as dictated by the function parameters.
 \description{
 Sequences of NA values are replaced with values computed by linear
 interpolation along rows and/or columns, provided that the neighbouring
-values are sufficiently close, as defined by the \code{gap} parameter.  If
+values are sufficiently close, as defined by the \code{fillgap} parameter.  If
 interpolation can be done across both the row and column directions, then the
 two values are averaged.
 }
@@ -52,7 +53,7 @@ m[2:3, 2:3] <- NA
 m
 fillGapMatrix(m)
 # Example 3: increasing gap lets us cover gaps of size 1 or 2
-fillGapMatrix(m, gap = 2)
+fillGapMatrix(m, fillgap = 2)
 
 }
 \author{

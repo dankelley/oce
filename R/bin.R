@@ -472,9 +472,9 @@ binCount2D <- function(x, y, xbreaks, ybreaks, flatten = FALSE, include.lowest =
 
 #' Bin-average f=f(x,y)
 #'
-#' Average the values of a vector `f(x,y)` in bins defined on
-#' vectors `x` and `y`. A common example might be averaging
-#' spatial data into location bins.
+#' Average the values of a vector `f(x,y)` in bins defined on vectors
+#' `x` and `y`. A common example might be averaging spatial data into
+#' location bins.
 #'
 #' @param x vector of numerical values.
 #'
@@ -482,21 +482,23 @@ binCount2D <- function(x, y, xbreaks, ybreaks, flatten = FALSE, include.lowest =
 #'
 #' @param f Matrix of numerical values, a matrix f=f(x,y).
 #'
-#' @param xbreaks Vector of values of `x` at the boundaries between bins, calculated using
-#' [`pretty`]`(x)` if not supplied.
+#' @param xbreaks Vector of values of `x` at the boundaries between
+#' bins, calculated using [`pretty`]`(x)` if not supplied.
 #'
-#' @param ybreaks Vector of values of `y` at the boundaries between bins, calculated using
-#' [`pretty`]`(y)` if not supplied.
+#' @param ybreaks Vector of values of `y` at the boundaries between
+#' bins, calculated using [`pretty`]`(y)` if not supplied.
 #'
 #' @param flatten a logical value indicating whether the return value
 #' also contains equilength vectors `x`, `y`, `z` and `n`, a flattened
 #' representation of `xmids`, `ymids`, `result` and `number`.
 #'
 #' @param fill,fillgap values controlling whether to attempt to fill
-#' gaps (that is, regions of NA values) in the matrix. This is done by
-#' calling [binMean2D()] if `fill` is TRUE. Note that the `gap`
-#' parameter of [binMean2D()] is specified as the value of `fillgap`
-#' in the present function.
+#' gaps (that is, regions of NA values) in the matrix. If `fill`
+#' is false, gaps, or regions with NA values, are not altered.
+#' If `fill` is TRUE, then gaps that are of size less than
+#' or equal to `fillgap` are interpolated across,
+#' by calling [fillGapMatrix()] with the supplied value of
+#' `fillgap`.
 #'
 #' @param include.lowest logical value indicating whether to include
 #' `y` values for which the corresponding `x` is equal to `xmin`.
@@ -577,7 +579,7 @@ binMean2D <- function(x, y, f, xbreaks, ybreaks, flatten = FALSE,
     resMean <- binApply2D(x = x, y = y, f = f, xbreaks = xbreaks, ybreaks = ybreaks, FUN = mean, include.lowest = include.lowest, na.rm = TRUE)
     # fill gaps (new after issue2199-wip-dropped)
     if (fill) {
-        resMean$result <- fillGapMatrix(resMean$result, gap = fillgap)
+        resMean$result <- fillGapMatrix(resMean$result, fillgap = fillgap)
     }
     #issue2199-wip-dropped oceDebug(debug, "calling C code bin_mean_2d\n")
     #issue2199-wip-dropped M <- .C("bin_mean_2d", length(x), as.double(x), as.double(y), as.double(f),

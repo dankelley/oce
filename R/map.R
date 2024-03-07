@@ -3237,18 +3237,6 @@ map2lonlat <- function(x, y, init = NULL, debug = getOption("oceDebug")) {
 #' @param density,angle,border,col,lty,...,fillOddEven handled as
 #' [polygon()] handles the same arguments.
 #'
-# @param angle as for [polygon()].
-#
-# @param border as for [polygon()].
-#
-# @param col as for [polygon()].
-#
-# @param lty as for [polygon()].
-#
-# @param ... as for [polygon()].
-#
-# @param fillOddEven as for [polygon()].
-#'
 #' @examples
 #' \donttest{
 #' library(oce)
@@ -3336,6 +3324,7 @@ mapPolygon <- function(
 #' cells:
 #' ```
 #' g <- function(...) binMean2D(..., fill = TRUE, fillgap = 2)
+#' mapImage(..., gridder = g, ...)
 #' ```
 #'
 #' @section Historical Notes:
@@ -3417,21 +3406,31 @@ mapPolygon <- function(
 #'
 #' @section Sample of Usage:
 #'
-#' These are informal examples, which are not run during the CRAN
+#' This is an informal examples that is not run during the CRAN
 #' testing process, owing to speed issues.
 #'
-#' \preformatted{ library(oce) data(coastlineWorld) data(topoWorld)
-#'
+#'\preformatted{
+#' library(oce)
+#' data(coastlineWorld)
+#' data(topoWorld)
+#' 
 #' # Northern polar region, with color-coded bathymetry
-#' par(mfrow=c(1,1), mar=c(2,2,1,1))
-#' cm <- colormap(zlim=c(-5000, 0), col=oceColorsGebco)
-#' drawPalette(colormap=cm)
-#' mapPlot(coastlineWorld, projection="+proj=stere +lat_0=90",
-#'     longitudelim=c(-180,180), latitudelim=c(70,110))
-#' mapImage(topoWorld, colormap=cm)
-#' mapGrid(15, 15, polarCircle=1, col=gray(0.2))
+#' par(mfrow = c(1, 1), mar = c(2, 2, 1, 1))
+#' cm <- colormap(zlim = c(-5000, 0), col = oceColorsGebco)
+#' drawPalette(colormap = cm)
+#' mapPlot(coastlineWorld,
+#'     projection = "+proj=stere +lat_0=90",
+#'     longitudelim = c(-180, 180), latitudelim = c(70, 110)
+#' )
+#' # Uncomment one of the next two lines.
+#' mapImage(topoWorld, colormap = cm)
+#' # mapImage(topoWorld, colormap = cm, filledContour = 2)
+#' mapGrid(15, 15, polarCircle = 1, col = gray(0.2))
 #' mapPolygon(coastlineWorld[["longitude"]],
-#'     coastlineWorld[["latitude"]], col="tan") }
+#'     coastlineWorld[["latitude"]],
+#'     col = "tan"
+#' )
+#'}
 #'
 #' @seealso A map must first have been created with [mapPlot()].
 #'
@@ -3597,7 +3596,7 @@ mapImage <- function(longitude, latitude, z, zlim, zclip = FALSE,
     )
     breaksMin <- min(breaks, na.rm = TRUE)
     breaksMax <- max(breaks, na.rm = TRUE)
-    if (is.logical(filledContour)) {
+    if (is.logical(filledContour) && filledContour) {
         filledContour <- 1.0
     }
     if (filledContour) { # filled contours

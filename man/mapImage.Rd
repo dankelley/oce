@@ -129,6 +129,7 @@ Here is an example of a scheme that will fill data gaps of 1 or 2
 cells:
 
 \if{html}{\out{<div class="sourceCode">}}\preformatted{g <- function(...) binMean2D(..., fill = TRUE, fillgap = 2)
+mapImage(..., gridder = g, ...)
 }\if{html}{\out{</div>}}
 }
 \section{Historical Notes}{
@@ -144,21 +145,31 @@ that sometimes get reported by \code{\link[interp:interp]{interp::interp()}}.
 \section{Sample of Usage}{
 
 
-These are informal examples, which are not run during the CRAN
+This is an informal examples that is not run during the CRAN
 testing process, owing to speed issues.
 
-\preformatted{ library(oce) data(coastlineWorld) data(topoWorld)
+\preformatted{
+library(oce)
+data(coastlineWorld)
+data(topoWorld)
 
 # Northern polar region, with color-coded bathymetry
-par(mfrow=c(1,1), mar=c(2,2,1,1))
-cm <- colormap(zlim=c(-5000, 0), col=oceColorsGebco)
-drawPalette(colormap=cm)
-mapPlot(coastlineWorld, projection="+proj=stere +lat_0=90",
-    longitudelim=c(-180,180), latitudelim=c(70,110))
-mapImage(topoWorld, colormap=cm)
-mapGrid(15, 15, polarCircle=1, col=gray(0.2))
+par(mfrow = c(1, 1), mar = c(2, 2, 1, 1))
+cm <- colormap(zlim = c(-5000, 0), col = oceColorsGebco)
+drawPalette(colormap = cm)
+mapPlot(coastlineWorld,
+    projection = "+proj=stere +lat_0=90",
+    longitudelim = c(-180, 180), latitudelim = c(70, 110)
+)
+# Uncomment one of the next two lines.
+mapImage(topoWorld, colormap = cm)
+# mapImage(topoWorld, colormap = cm, filledContour = 2)
+mapGrid(15, 15, polarCircle = 1, col = gray(0.2))
 mapPolygon(coastlineWorld[["longitude"]],
-    coastlineWorld[["latitude"]], col="tan") }
+    coastlineWorld[["latitude"]],
+    col = "tan"
+)
+}
 }
 
 \seealso{

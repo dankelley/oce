@@ -3701,20 +3701,21 @@ undriftTime <- function(x, slowEnd = 0, tname = "time") {
 #'
 #' Sequences of NA values are replaced with values computed by linear
 #' interpolation along rows and/or columns, provided that the neighbouring
-#' values are sufficiently close, as defined by the `gap` parameter.  If
+#' values are sufficiently close, as defined by the `fillgap` parameter.  If
 #' interpolation can be done across both the row and column directions, then the
 #' two values are averaged.
 #'
 #' @param m a numeric matrix.
 #'
-#' @param gap a vector containing 1 or 2 integers, indicating the maximum
+#' @param fillgap a vector containing 1 or 2 integers, indicating the maximum
 #' width of gaps to be filled.  If just one number is given, it is repeated
 #' to create the pair.  The first element of the pair is the maximum
 #' fillable gap height (i.e. row separation in the matrix), and
 #' the second is the maximum fillable gap width. The default value of
 #' 1 means that only gaps of width or height 1 can be filled. As
 #' an exception to these rules, a negative value means to fill gaps
-#' regardless of size. It is an error to specify a `gap` value of zero.
+#' regardless of size. It is an error to specify a `fillgap` value
+#' that is less than 1.
 #'
 #' @template debugTemplate
 #'
@@ -3738,20 +3739,21 @@ undriftTime <- function(x, slowEnd = 0, tname = "time") {
 #' m
 #' fillGapMatrix(m)
 #' # Example 3: increasing gap lets us cover gaps of size 1 or 2
-#' fillGapMatrix(m, gap = 2)
+#' fillGapMatrix(m, fillgap = 2)
 #'
 #' @author Dan Kelley
-fillGapMatrix <- function(m, gap = 1, debug = getOption("oceDebug")) {
+fillGapMatrix <- function(m, fillgap = 1, debug = getOption("oceDebug")) {
     if (!is.numeric(m)) stop("only works for numeric 'm'")
     if (!is.matrix(m)) stop("only works for matrix 'm'")
-    if (any(gap == 0)) stop("gap elements cannot be 0")
-    if (length(gap) == 1) {
-        gap <- rep(gap[1], 2)
-    } else if (length(gap) > 2) {
-        stop("length of 'gap' must be 1 or 2")
+    fillgap <- as.integer(fillgap)
+    if (any(fillgap < 1L)) stop("fillgap elements cannot be < 1")
+    if (length(fillgap) == 1) {
+        fillgap <- rep(fillgap[1], 2)
+    } else if (length(fillgap) > 2) {
+        stop("length of 'fillgap' must be 1 or 2")
     }
     debug <- max(min(debug, 1), 0)
-    do_fill_gap_2d(m, as.integer(gap), as.integer(debug))
+    do_fill_gap_2d(m, as.integer(fillgap), as.integer(debug))
 }
 
 #' Fill a Gap in an oce Object
@@ -3798,13 +3800,14 @@ fillGap <- function(x, method = c("linear"), rule = 1) {
         # res <- .Call("fillgap1d", as.numeric(x), rule)
         res <- do_fill_gap_1d(x, rule)
     } else if (is.matrix(x)) {
-        res <- x
-        for (col in seq_len(ncol(x))) {
-            res[, col] <- do_fill_gap_1d(x[, col], rule)
-        }
-        for (row in seq_len(nrow(x))) {
-            res[row, ] <- do_fill_gap_1d(x[row, ], rule)
-        }
+        res <- fillGapMatrix(x)
+        #res <- x
+        #for (col in seq_len(ncol(x))) {
+        #    res[, col] <- do_fill_gap_1d(x[, col], rule)
+        #}
+        #for (row in seq_len(nrow(x))) {
+        #    res[row, ] <- do_fill_gap_1d(x[row, ], rule)
+        #}
     } else {
         stop("only works if 'x' is a vector or a matrix")
     }
