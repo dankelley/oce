@@ -10,7 +10,8 @@
 * Change `plot.section()` to show data as points properly (issue #2195).
 * Change `read.adp.rdi()` to handle large (> 2.147 GB) files (issue #2196).
 * Change `resizableLabel()` to document partial-match behaviour (issue #2197).
-* Change `resizableLabel()` to handle `item=`"N"`.
+* Change `resizableLabel()` to handle `item=`"N"` (issue 2197).
+* Change `summary()` to skip time in the threenum table (issue 2198).
 * Change `sunAngle()` to handle vector arguments better (issue #2178).
 
 # oce 1.8.2 (on CRAN)
