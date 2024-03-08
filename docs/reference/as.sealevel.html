@@ -230,17 +230,16 @@ with them.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> * Location:            Lat and lon unknown </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> * number of observations:   8761 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> *    "      non-missing:    8761 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> * Time:          0000-01-01 to 0000-12-31 (8761 samples, mean increment 1 hour)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> * Time: 0000-01-01 to 0000-12-31 (8761 samples, mean increment 1 hour)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> * Data Overview</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                         Min.                Mean       Max. Dim. NAs</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     elevation [m]         -2          0.00089588          2 8761   0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     time          0000-01-01 0000-07-01 12:00:00 0000-12-31 8761   0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   Min.       Mean Max. Dim. NAs</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1   -2 0.00089588    2 8761   0</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> * Processing Log</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2024-03-07 22:34:53 UTC: `create 'sealevel' object`</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2024-03-07 22:34:53 UTC: `as.sealevel(elevation = elevation)`</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2024-03-08 15:42:04 UTC: `create 'sealevel' object`</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2024-03-08 15:42:04 UTC: `as.sealevel(elevation = elevation)`</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># As above, but start at the Y2K time.</span></span></span>
 <span class="r-in"><span><span class="va">time</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/as.POSIXlt.html" class="external-link">as.POSIXct</a></span><span class="op">(</span><span class="st">"2000-01-01"</span><span class="op">)</span> <span class="op">+</span> <span class="va">h</span> <span class="op">*</span> <span class="fl">3600</span></span></span>
@@ -253,17 +252,16 @@ with them.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> * Location:            Lat and lon unknown </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> * number of observations:   8761 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> *    "      non-missing:    8761 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> * Time:          2000-01-01 04:00:00 to 2000-12-31 04:00:00 (8761 samples, mean increment 1 hour)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> * Time: 2000-01-01 04:00:00 to 2000-12-31 04:00:00 (8761 samples, mean increment 1 hour)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> * Data Overview</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                                  Min.                Mean                Max. Dim. NAs</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     elevation [m]                  -2          0.00089588                   2 8761   0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     time          2000-01-01 04:00:00 2000-07-01 16:00:00 2000-12-31 04:00:00 8761   0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   Min.       Mean Max. Dim. NAs</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1   -2 0.00089588    2 8761   0</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> * Processing Log</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2024-03-07 22:34:53 UTC: `create 'sealevel' object`</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2024-03-07 22:34:53 UTC: `as.sealevel(elevation = elevation, time = time)`</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2024-03-08 15:42:04 UTC: `create 'sealevel' object`</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2024-03-08 15:42:04 UTC: `as.sealevel(elevation = elevation, time = time)`</span>
 </code></pre></div>
     </div>
   </div>
