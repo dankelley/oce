@@ -95,25 +95,25 @@ setMethod(
                 nt <- length(time)
                 deltat <- mean(diff(as.numeric(time)), na.rm = TRUE)
                 if (is.na(deltat)) {
-                    cat("* Time:                ", format(from), "\n", sep = "")
+                    cat("* Time: ", format(from), "\n", sep = "")
                 } else {
                     if (deltat < 60) {
-                        cat("* Time:          ", format(from), " to ", format(to),
+                        cat("* Time: ", format(from), " to ", format(to),
                             " (", nt, " samples, mean increment ", deltat, " s)\n",
                             sep = ""
                         )
                     } else if (deltat < 3600) {
-                        cat("* Time:          ", format(from), " to ", format(to),
+                        cat("* Time: ", format(from), " to ", format(to),
                             " (", nt, " samples, mean increment ", deltat / 60, " min)\n",
                             sep = ""
                         )
                     } else if (deltat < 24 * 3600) {
-                        cat("* Time:          ", format(from), " to ", format(to),
+                        cat("* Time: ", format(from), " to ", format(to),
                             " (", nt, " samples, mean increment ", deltat / 3600, " hour)\n",
                             sep = ""
                         )
                     } else {
-                        cat("* Time:          ", format(from), " to ", format(to),
+                        cat("* Time: ", format(from), " to ", format(to),
                             " (", nt, " samples, mean increment ", deltat / 3600 / 24, " day)\n",
                             sep = ""
                         )
@@ -121,7 +121,7 @@ setMethod(
                 }
             }
         }
-        ndata <- length(object@data)
+        ndata <- length(object@data) # skip 'time' later, if it exists (issue 2198)
         threes <- NULL
         if (ndata > 0) {
             if (is.ad2cp(object)) {
@@ -231,7 +231,6 @@ setMethod(
                     ))
                 )
                 colnames(threes) <- c("Min.", "Mean", "Max.", "Dim.", "NAs")
-                # threes <- threes[-deleteLater] # we show time outside 3s block
                 cat("* Data Overview\n\n")
                 if ("dataNamesOriginal" %in% metadataNames) {
                     if (is.list(object@metadata$dataNamesOriginal)) {
@@ -273,11 +272,16 @@ setMethod(
                     # colnames(threes) <- c(colnames(threes), "OriginalName")
                 }
                 # message("threes step 6:");print(threes)
-                if ("time" %in% dataNames) {
-                    timeRow <- which("time" == dataNames)
-                    threes[[timeRow, 1L]] <- format(numberAsPOSIXct(threes[timeRow, 1L]))
-                    threes[[timeRow, 2L]] <- format(numberAsPOSIXct(threes[timeRow, 2L]))
-                    threes[[timeRow, 3L]] <- format(numberAsPOSIXct(threes[timeRow, 3L]))
+                #if ("time" %in% dataNames) {
+                #    timeRow <- which("time" == dataNames)
+                #    threes[[timeRow, 1L]] <- format(numberAsPOSIXct(threes[timeRow, 1L]))
+                #    threes[[timeRow, 2L]] <- format(numberAsPOSIXct(threes[timeRow, 2L]))
+                #    threes[[timeRow, 3L]] <- format(numberAsPOSIXct(threes[timeRow, 3L]))
+                #}
+                # Remove time (see https://github.com/dankelley/oce/issues/2198)
+                timeRow <- grep("[ ]*time$", rownames(threes))
+                if (length(timeRow) > 0L) {
+                    threes <- threes[-timeRow, ]
                 }
                 owidth <- options("width")
                 options(width = 150) # make wide to avoid line breaks
