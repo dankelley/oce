@@ -100,6 +100,18 @@ do_ldc_rdi_in_file <- function(filename, from, to, by, startIndex, mode, debug) 
     .Call(`_oce_do_ldc_rdi_in_file`, filename, from, to, by, startIndex, mode, debug)
 }
 
+map_assemble_polygons <- function(lon, lat, z) {
+    .Call(`_oce_map_assemble_polygons`, lon, lat, z)
+}
+
+map_check_polygons <- function(x, y, z, xokspan, usr) {
+    .Call(`_oce_map_check_polygons`, x, y, z, xokspan, usr)
+}
+
+map_clip_xy <- function(x, y, usr) {
+    .Call(`_oce_map_clip_xy`, x, y, usr)
+}
+
 do_matrix_smooth <- function(mat) {
     .Call(`_oce_do_matrix_smooth`, mat)
 }

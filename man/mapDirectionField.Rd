@@ -50,21 +50,24 @@ stored in vectors with lengths that match appropriately.
 \preformatted{
 library(oce)
 data(coastlineWorld)
-par(mar=rep(2, 4))
-mapPlot(coastlineWorld, longitudelim=c(-120,-55), latitudelim=c(35, 50),
-        projection="+proj=laea +lat0=40 +lat1=60 +lon_0=-110")
+par(mar = rep(2, 4))
+mapPlot(coastlineWorld,
+    longitudelim = c(-120, -55), latitudelim = c(35, 50),
+    projection = "+proj=laea +lat0=40 +lat1=60 +lon_0=-110"
+)
 lon <- seq(-120, -60, 15)
 lat <- 45 + seq(-15, 15, 5)
-lonm <- matrix(expand.grid(lon, lat)[, 1], nrow=length(lon))
-latm <- matrix(expand.grid(lon, lat)[, 2], nrow=length(lon))
-# vectors pointed 45 degrees clockwise from north
-u <- matrix(1/sqrt(2), nrow=length(lon), ncol=length(lat))
-v <- matrix(1/sqrt(2), nrow=length(lon), ncol=length(lat))
-mapDirectionField(lon, lat, u, v, scale=3)
-mapDirectionField(lonm, latm, 0, 1, scale=3, col="red")
-# Color code by longitude, using thick lines
+lonm <- matrix(expand.grid(lon, lat)[, 1], nrow = length(lon))
+latm <- matrix(expand.grid(lon, lat)[, 2], nrow = length(lon))
+# Black vectors pointed 45 degrees clockwise from north,
+u <- matrix(1 / sqrt(2), nrow = length(lon), ncol = length(lat))
+v <- matrix(1 / sqrt(2), nrow = length(lon), ncol = length(lat))
+mapDirectionField(lon, lat, u, v, scale = 3)
+# Red vectors for northward direction
+mapDirectionField(lonm, latm, 0, 1, scale = 3, col = "red")
+# Eastward direction coloured by longitude
 col <- colormap(lonm)$zcol
-mapDirectionField(lonm, latm, 1, 0, scale=3, col=col, lwd=2)
+mapDirectionField(lonm, latm, 1, 0, scale = 3, col = col, lwd = 2)
 }
 }
 

@@ -1,4 +1,5 @@
 // assemble_polygons(): construct lat-lon polygons, hopefully to speed up mapImage()
+#if 0
 #include <math.h>
 #include <R.h>
 #include <Rdefines.h>
@@ -26,9 +27,9 @@
 
 */
 
+
 // macro to index an array
 #define ij(i, j) ((i) + (nrow) * (j))
-
 SEXP map_assemble_polygons(SEXP lon, SEXP lat, SEXP z)
 {
     PROTECT(lon = AS_NUMERIC(lon));
@@ -110,8 +111,7 @@ SEXP map_assemble_polygons(SEXP lon, SEXP lat, SEXP z)
     return(res);
 }
 
-
-SEXP map_check_polygons(SEXP x, SEXP y, SEXP z, SEXP xokspan, SEXP usr) // returns new x vector
+SEXP map_check_polygons_old(SEXP x, SEXP y, SEXP z, SEXP xokspan, SEXP usr) // returns new x vector
 {
     //int nrow = INTEGER(GET_DIM(z))[0];
     //int ncol = INTEGER(GET_DIM(z))[1];
@@ -249,7 +249,7 @@ SEXP map_check_polygons(SEXP x, SEXP y, SEXP z, SEXP xokspan, SEXP usr) // retur
 
 
 // Eliminate any coastline segments that lie wholly outside par("usr")
-SEXP map_clip_xy_OLD_BROKEN(SEXP x, SEXP y, SEXP usr) // returns list with new x and y vectors
+SEXP map_clip_xy_OLD_LONG_BROKEN(SEXP x, SEXP y, SEXP usr) // returns list with new x and y vectors
 {
     PROTECT(x = AS_NUMERIC(x));
     PROTECT(y = AS_NUMERIC(y));
@@ -365,11 +365,8 @@ SEXP map_clip_xy_OLD_BROKEN(SEXP x, SEXP y, SEXP usr) // returns list with new x
     return(res);
 }
 
-
-
-
 // Eliminate any coastline segments that lie wholly outside par("usr")
-SEXP map_clip_xy(SEXP x, SEXP y, SEXP usr) // returns list with new x and y vectors
+SEXP map_clip_xy_old(SEXP x, SEXP y, SEXP usr) // returns list with new x and y vectors
 {
     PROTECT(x = AS_NUMERIC(x));
     PROTECT(y = AS_NUMERIC(y));
@@ -455,5 +452,5 @@ SEXP map_clip_xy(SEXP x, SEXP y, SEXP usr) // returns list with new x and y vect
     UNPROTECT(7);
     return(res);
 }
-
+#endif
 

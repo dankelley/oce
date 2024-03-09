@@ -28,12 +28,15 @@ extern SEXP _oce_do_ldc_ad2cp_in_file(SEXP, SEXP, SEXP, SEXP, SEXP);
 extern SEXP _oce_do_ldc_rdi_in_file(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
 extern SEXP _oce_do_ldc_sontek_adp(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
 extern SEXP _oce_do_oceApprox(SEXP, SEXP, SEXP, SEXP);
+extern SEXP _oce_do_matrix_smooth(SEXP);
 extern SEXP _oce_do_oce_convolve(SEXP, SEXP, SEXP);
 extern SEXP _oce_do_oce_filter(SEXP, SEXP, SEXP);
-extern SEXP _oce_do_matrix_smooth(SEXP);
 extern SEXP _oce_do_runlm(SEXP, SEXP, SEXP, SEXP, SEXP);
 extern SEXP _oce_do_sfm_enu(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
 extern SEXP _oce_do_trap(SEXP, SEXP, SEXP);
+extern SEXP _oce_map_assemble_polygons(SEXP, SEXP, SEXP);
+extern SEXP _oce_map_check_polygons(SEXP, SEXP, SEXP, SEXP, SEXP);
+extern SEXP _oce_map_clip_xy(SEXP, SEXP, SEXP);
 extern SEXP _oce_trim_ts(SEXP, SEXP, SEXP);
 
 static const R_CallMethodDef CallEntries[] = {
@@ -62,13 +65,16 @@ static const R_CallMethodDef CallEntries[] = {
     {"_oce_do_ldc_ad2cp_in_file", (DL_FUNC) &_oce_do_ldc_ad2cp_in_file, 5},
     {"_oce_do_ldc_rdi_in_file", (DL_FUNC) &_oce_do_ldc_rdi_in_file, 7},
     {"_oce_do_ldc_sontek_adp", (DL_FUNC) &_oce_do_ldc_sontek_adp, 6},
+    {"_oce_do_matrix_smooth", (DL_FUNC) &_oce_do_matrix_smooth, 1},
     {"_oce_do_oceApprox", (DL_FUNC) &_oce_do_oceApprox, 4},
     {"_oce_do_oce_filter", (DL_FUNC) &_oce_do_oce_filter, 3},
     {"_oce_do_oce_convolve", (DL_FUNC) &_oce_do_oce_convolve, 3},
-    {"_oce_do_matrix_smooth", (DL_FUNC) &_oce_do_matrix_smooth, 1},
     {"_oce_do_runlm", (DL_FUNC) &_oce_do_runlm, 5},
     {"_oce_do_sfm_enu", (DL_FUNC) &_oce_do_sfm_enu, 6},
     {"_oce_do_trap", (DL_FUNC) &_oce_do_trap, 3},
+    {"_oce_map_assemble_polygons", (DL_FUNC) &_oce_map_assemble_polygons, 3},
+    {"_oce_map_check_polygons", (DL_FUNC) &_oce_map_check_polygons, 5},
+    {"_oce_map_clip_xy", (DL_FUNC) &_oce_map_clip_xy, 3},
     {"_oce_trim_ts", (DL_FUNC) &_oce_trim_ts, 3},
     {NULL, NULL, 0}
 };

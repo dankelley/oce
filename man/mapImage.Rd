@@ -145,9 +145,6 @@ that sometimes get reported by \code{\link[interp:interp]{interp::interp()}}.
 \section{Sample of Usage}{
 
 
-This is an informal examples that is not run during the CRAN
-testing process, owing to speed issues.
-
 \preformatted{
 library(oce)
 data(coastlineWorld)

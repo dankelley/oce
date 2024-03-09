@@ -1030,21 +1030,24 @@ mapCoordinateSystem <- function(longitude, latitude, L = 100, phi = 0, ...) {
 #' \preformatted{
 #' library(oce)
 #' data(coastlineWorld)
-#' par(mar=rep(2, 4))
-#' mapPlot(coastlineWorld, longitudelim=c(-120,-55), latitudelim=c(35, 50),
-#'         projection="+proj=laea +lat0=40 +lat1=60 +lon_0=-110")
+#' par(mar = rep(2, 4))
+#' mapPlot(coastlineWorld,
+#'     longitudelim = c(-120, -55), latitudelim = c(35, 50),
+#'     projection = "+proj=laea +lat0=40 +lat1=60 +lon_0=-110"
+#' )
 #' lon <- seq(-120, -60, 15)
 #' lat <- 45 + seq(-15, 15, 5)
-#' lonm <- matrix(expand.grid(lon, lat)[, 1], nrow=length(lon))
-#' latm <- matrix(expand.grid(lon, lat)[, 2], nrow=length(lon))
-#' # vectors pointed 45 degrees clockwise from north
-#' u <- matrix(1/sqrt(2), nrow=length(lon), ncol=length(lat))
-#' v <- matrix(1/sqrt(2), nrow=length(lon), ncol=length(lat))
-#' mapDirectionField(lon, lat, u, v, scale=3)
-#' mapDirectionField(lonm, latm, 0, 1, scale=3, col="red")
-#' # Color code by longitude, using thick lines
+#' lonm <- matrix(expand.grid(lon, lat)[, 1], nrow = length(lon))
+#' latm <- matrix(expand.grid(lon, lat)[, 2], nrow = length(lon))
+#' # Black vectors pointed 45 degrees clockwise from north,
+#' u <- matrix(1 / sqrt(2), nrow = length(lon), ncol = length(lat))
+#' v <- matrix(1 / sqrt(2), nrow = length(lon), ncol = length(lat))
+#' mapDirectionField(lon, lat, u, v, scale = 3)
+#' # Red vectors for northward direction
+#' mapDirectionField(lonm, latm, 0, 1, scale = 3, col = "red")
+#' # Eastward direction coloured by longitude
 #' col <- colormap(lonm)$zcol
-#' mapDirectionField(lonm, latm, 1, 0, scale=3, col=col, lwd=2)
+#' mapDirectionField(lonm, latm, 1, 0, scale = 3, col = col, lwd = 2)
 #' }
 #'
 #' @seealso A map must first have been created with [mapPlot()].
@@ -1887,7 +1890,10 @@ mapPlot <- function(
                 }
                 if (clip) {
                     oceDebug(debug, "about to draw clipped polygon\n")
-                    cl <- .Call("map_clip_xy", x, y, par("usr"))
+                    #< issue 2201> clold <- .Call("map_clip_xy_old", x, y, par("usr"))
+                    #< issue 2201> cl <- map_clip_xy(x, y, par("usr"))
+                    #< issue 2201> stopifnot(identical(clold, cl))
+                    cl <- map_clip_xy(x, y, par("usr"))
                     polygon(cl$x, cl$y, border = border, col = col)
                 } else {
                     oceDebug(debug, "about to draw unclipped polygon\n")
@@ -3406,14 +3412,11 @@ mapPolygon <- function(
 #'
 #' @section Sample of Usage:
 #'
-#' This is an informal examples that is not run during the CRAN
-#' testing process, owing to speed issues.
-#'
-#'\preformatted{
+#' \preformatted{
 #' library(oce)
 #' data(coastlineWorld)
 #' data(topoWorld)
-#' 
+#'
 #' # Northern polar region, with color-coded bathymetry
 #' par(mfrow = c(1, 1), mar = c(2, 2, 1, 1))
 #' cm <- colormap(zlim = c(-5000, 0), col = oceColorsGebco)
@@ -3444,7 +3447,7 @@ mapPolygon <- function(
 #'     coastlineWorld[["latitude"]],
 #'     col = "tan"
 #' )
-#'}
+#' }
 #'
 #' @seealso A map must first have been created with [mapPlot()].
 #'
@@ -3587,26 +3590,36 @@ mapImage <- function(longitude, latitude, z, zlim, zclip = FALSE,
     # Each polygon has 5 points, four to trace the boundary and a fifth that is
     # (NA,NA), to signal the end of the polygon.  The z values (and hence the
     # colors) map one per polygon.
-    poly <- .Call("map_assemble_polygons", longitude, latitude, z,
-        NAOK = TRUE, PACKAGE = "oce"
-    )
-
+    # <issue 2201> polyold <- .Call("map_assemble_polygons", longitude, latitude, z,
+    # <issue 2201>     NAOK = TRUE, PACKAGE = "oce"
+    # <issue 2201> )
+    # <issue 2201> poly <- map_assemble_polygons_new(longitude, latitude, z)
+    # <issue 2201> stopifnot(identical(polyold, poly))
+    poly <- map_assemble_polygons(longitude, latitude, z)
     xy <- lonlat2map(poly$longitude, poly$latitude)
     xy$x[!is.finite(xy$x)] <- NA
     xy$y[!is.finite(xy$y)] <- NA
-    # issue #638 - kludge to get data into same longitue scheme as axes
+    # <issue 638> kludge to get data into same longitude scheme as axes
     usr12 <- par("usr")[1:2]
     xrange <- range(xy$x, na.rm = TRUE)
     if (xrange[1] > usr12[2]) {
         xy$x <- xy$x - 360
     }
+    Z <- as.vector(z)
     # map_check_polygons tries to fix up longitude cut-point problem, which
     # otherwise leads to lines crossing the graph horizontally because the x
     # value can sometimes alternate from one end of the domain to the other.
-    Z <- as.vector(z)
-    r <- .Call("map_check_polygons", xy$x, xy$y, poly$z,
-        diff(par("usr"))[1:2] / 5, par("usr"),
-        NAOK = TRUE, PACKAGE = "oce"
+    # <issue 2201> rold <- .Call("map_check_polygons_old", xy$x, xy$y, poly$z,
+    # <issue 2201>     diff(par("usr"))[1:2] / 5, par("usr"),
+    # <issue 2201>     NAOK = TRUE, PACKAGE = "oce"
+    # <issue 2201> )
+    # <issue 2201> r <- map_check_polygons(xy$x, xy$y, poly$z,
+    # <issue 2201>     diff(par("usr")[1:2]) / 5, par("usr"))
+    # <issue 2201> stopifnot(identical(rold, r))
+    # <issue 2201> message("did we get here?")
+    r <- map_check_polygons(
+        xy$x, xy$y, poly$z,
+        diff(par("usr")[1:2]) / 5, par("usr")
     )
     breaksMin <- min(breaks, na.rm = TRUE)
     breaksMax <- max(breaks, na.rm = TRUE)

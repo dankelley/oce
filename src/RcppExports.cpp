@@ -327,6 +327,47 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// map_assemble_polygons
+List map_assemble_polygons(NumericVector lon, NumericVector lat, NumericMatrix z);
+RcppExport SEXP _oce_map_assemble_polygons(SEXP lonSEXP, SEXP latSEXP, SEXP zSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type lon(lonSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type lat(latSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type z(zSEXP);
+    rcpp_result_gen = Rcpp::wrap(map_assemble_polygons(lon, lat, z));
+    return rcpp_result_gen;
+END_RCPP
+}
+// map_check_polygons
+List map_check_polygons(NumericVector x, NumericVector y, NumericVector z, NumericVector xokspan, NumericVector usr);
+RcppExport SEXP _oce_map_check_polygons(SEXP xSEXP, SEXP ySEXP, SEXP zSEXP, SEXP xokspanSEXP, SEXP usrSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type x(xSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type y(ySEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type z(zSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type xokspan(xokspanSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type usr(usrSEXP);
+    rcpp_result_gen = Rcpp::wrap(map_check_polygons(x, y, z, xokspan, usr));
+    return rcpp_result_gen;
+END_RCPP
+}
+// map_clip_xy
+List map_clip_xy(NumericVector x, NumericVector y, NumericVector usr);
+RcppExport SEXP _oce_map_clip_xy(SEXP xSEXP, SEXP ySEXP, SEXP usrSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type x(xSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type y(ySEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type usr(usrSEXP);
+    rcpp_result_gen = Rcpp::wrap(map_clip_xy(x, y, usr));
+    return rcpp_result_gen;
+END_RCPP
+}
 // do_matrix_smooth
 NumericMatrix do_matrix_smooth(NumericMatrix mat);
 RcppExport SEXP _oce_do_matrix_smooth(SEXP matSEXP) {
