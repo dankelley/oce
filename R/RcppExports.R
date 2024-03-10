@@ -112,6 +112,14 @@ map_clip_xy <- function(x, y, usr) {
     .Call(`_oce_map_clip_xy`, x, y, usr)
 }
 
+match2bytes <- function(buf, m1, m2, demand_sequential) {
+    .Call(`_oce_match2bytes`, buf, m1, m2, demand_sequential)
+}
+
+match3bytes <- function(buf, m1, m2, m3) {
+    .Call(`_oce_match3bytes`, buf, m1, m2, m3)
+}
+
 do_matrix_smooth <- function(mat) {
     .Call(`_oce_do_matrix_smooth`, mat)
 }

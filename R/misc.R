@@ -4570,16 +4570,16 @@ magneticField <- function(longitude, latitude, time, version = 13) {
 #'
 #' @param \dots additional bytes to match for (up to 2 permitted)
 #'
-#' @return List of the indices of `input` that match the start of the
-#' `bytes` sequence (see example).
-#'
-#' @author Dan Kelley
+#' @return `matchBytes` returns a double vector of the indices of `input` that
+#' match the start of the `bytes` sequence.  (A double vector is returned
+#' instead of an integer vector, to avoid problems with large files.)
 #'
 #' @examples
 #' buf <- as.raw(c(0xa5, 0x11, 0xaa, 0xa5, 0x11, 0x00))
-#' match <- matchBytes(buf, 0xa5, 0x11)
 #' print(buf)
-#' print(match)
+#' print(matchBytes(buf, 0xa5, 0x11))
+#'
+#' @author Dan Kelley
 matchBytes <- function(input, b1, ...) {
     if (missing(input)) {
         stop("must provide \"input\"")
@@ -4591,11 +4591,25 @@ matchBytes <- function(input, b1, ...) {
     dots <- list(...)
     lb <- 1 + length(dots)
     if (lb == 2) {
-        .Call("match2bytes", as.raw(input), as.raw(b1), as.raw(dots[[1]]), FALSE)
+        rval <- .Call("match2bytes_old", as.raw(input), as.raw(b1), as.raw(dots[[1]]), FALSE)
+        # FIXME <issue 2201> keep this test for a while
+        rvalnew <- match2bytes(as.raw(input), as.raw(b1), as.raw(dots[[1]]), FALSE)
+        if (!identical(rval, rvalnew)) {
+            message("IMPORTANT: match2bytes problem -- please report atgithub.com/dankelley/oce/issues")
+            warning("IMPORTANT: match2bytes problem -- please report atgithub.com/dankelley/oce/issues")
+        }
+        return(rval)
     } else if (lb == 3) {
-        .Call("match3bytes", as.raw(input), as.raw(b1), as.raw(dots[[1]]), as.raw(dots[[2]]))
+        rval <- .Call("match3bytes_old", as.raw(input), as.raw(b1), as.raw(dots[[1]]), as.raw(dots[[2]]))
+        rvalnew <- match3bytes(as.raw(input), as.raw(b1), as.raw(dots[[1]]), as.raw(dots[[2]]))
+        # FIXME <issue 2201> keep this test for a while
+        if (!identical(rval, rvalnew)) {
+            message("IMPORTANT: match3bytes problem -- please report atgithub.com/dankelley/oce/issues")
+            warning("IMPORTANT: match3bytes problem -- please report atgithub.com/dankelley/oce/issues")
+        }
+        return(rval)
     } else {
-        stop("must provide 2 or 3 bytes")
+        stop("must provide 2 or 3 bytes, but gave ", lb, " bytes")
     }
 }
 

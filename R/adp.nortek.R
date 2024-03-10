@@ -865,7 +865,7 @@ read.adp.nortek <- function(
     # profilesInFile <- readBin(buf[header$offset + 2:3], what="integer", n=1, size=2, endian="little")
     oceDebug(debug, "profile data at buf[", header$offset, "] et seq.\n")
     oceDebug(debug, "matching bytes: 0x", buf[header$offset], " 0x", buf[header$offset + 1], " 0x", buf[header$offset + 2], "\n", sep = "")
-    profileStart <- .Call("match3bytes", buf, buf[header$offset], buf[header$offset + 1], buf[header$offset + 2])
+    profileStart <- .Call("match3bytes_old", buf, buf[header$offset], buf[header$offset + 1], buf[header$offset + 2])
     profilesInFile <- length(profileStart)
     if (is.na(to)) {
         to <- profilesInFile
@@ -1031,7 +1031,7 @@ read.adp.nortek <- function(
 
     # get diagnostic data, if any, and trim them to same index range as conventional data
     if (type == "aquadopp") {
-        diaStart <- .Call("match3bytes", buf, 0xa5, 0x80, 0x15)
+        diaStart <- .Call("match3bytes_old", buf, 0xa5, 0x80, 0x15)
         oceDebug(debug, "diaStart range:", range(diaStart), "\n")
         diaStart <- subset(diaStart, diaStart >= profileStart[fromIndex])
         diaStart <- subset(diaStart, diaStart <= profileStart[toIndex])
@@ -1064,7 +1064,7 @@ read.adp.nortek <- function(
         aDia[, , 2] <- buf[diaStart + 37]
         aDia[, , 3] <- buf[diaStart + 38]
     } else if (type == "aquadoppPlusMagnetometer") {
-        diaStart <- .Call("match3bytes", buf, 0xa5, 0x80, 0x15)
+        diaStart <- .Call("match3bytes_old", buf, 0xa5, 0x80, 0x15)
         oceDebug(debug, "diaStart range:", range(diaStart), "\n")
         diaStart <- subset(diaStart, diaStart >= profileStart[fromIndex])
         diaStart <- subset(diaStart, diaStart <= profileStart[toIndex])

@@ -37,6 +37,8 @@ extern SEXP _oce_do_trap(SEXP, SEXP, SEXP);
 extern SEXP _oce_map_assemble_polygons(SEXP, SEXP, SEXP);
 extern SEXP _oce_map_check_polygons(SEXP, SEXP, SEXP, SEXP, SEXP);
 extern SEXP _oce_map_clip_xy(SEXP, SEXP, SEXP);
+extern SEXP _oce_match2bytes(SEXP, SEXP, SEXP, SEXP);
+extern SEXP _oce_match3bytes(SEXP, SEXP, SEXP, SEXP);
 extern SEXP _oce_trim_ts(SEXP, SEXP, SEXP);
 
 static const R_CallMethodDef CallEntries[] = {
@@ -75,6 +77,8 @@ static const R_CallMethodDef CallEntries[] = {
     {"_oce_map_assemble_polygons", (DL_FUNC) &_oce_map_assemble_polygons, 3},
     {"_oce_map_check_polygons", (DL_FUNC) &_oce_map_check_polygons, 5},
     {"_oce_map_clip_xy", (DL_FUNC) &_oce_map_clip_xy, 3},
+    {"_oce_match2bytes", (DL_FUNC) &_oce_match2bytes, 4},
+    {"_oce_match3bytes", (DL_FUNC) &_oce_match3bytes, 4},
     {"_oce_trim_ts", (DL_FUNC) &_oce_trim_ts, 3},
     {NULL, NULL, 0}
 };

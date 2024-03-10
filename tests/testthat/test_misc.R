@@ -188,9 +188,14 @@ test_that("magneticField version 13 (why not perfect?)", {
     expect_equal(51498, mf$intensity, tolerance=3) # Q: why does tol=1 fail?
 })
 
-test_that("matchBytes", {
+test_that("matchBytes with 2 bytes", {
     buf <- as.raw(c(0xa5, 0x11, 0xaa, 0xa5, 0x11, 0x00))
     expect_equal(c(1, 4), matchBytes(buf, 0xa5, 0x11))
+})
+
+test_that("matchBytes with 3 bytes", {
+    buf <- as.raw(c(0xa5, 0x11, 0xaa, 0x12, 0xa5, 0x11, 0xaa, 0x99))
+    expect_equal(c(1, 5), matchBytes(buf, 0xa5, 0x11, 0xaa))
 })
 
 test_that("matrixSmooth", {

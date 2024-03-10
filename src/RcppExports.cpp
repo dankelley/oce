@@ -368,6 +368,34 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// match2bytes
+NumericVector match2bytes(RawVector buf, RawVector m1, RawVector m2, IntegerVector demand_sequential);
+RcppExport SEXP _oce_match2bytes(SEXP bufSEXP, SEXP m1SEXP, SEXP m2SEXP, SEXP demand_sequentialSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< RawVector >::type buf(bufSEXP);
+    Rcpp::traits::input_parameter< RawVector >::type m1(m1SEXP);
+    Rcpp::traits::input_parameter< RawVector >::type m2(m2SEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type demand_sequential(demand_sequentialSEXP);
+    rcpp_result_gen = Rcpp::wrap(match2bytes(buf, m1, m2, demand_sequential));
+    return rcpp_result_gen;
+END_RCPP
+}
+// match3bytes
+NumericVector match3bytes(RawVector buf, RawVector m1, RawVector m2, RawVector m3);
+RcppExport SEXP _oce_match3bytes(SEXP bufSEXP, SEXP m1SEXP, SEXP m2SEXP, SEXP m3SEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< RawVector >::type buf(bufSEXP);
+    Rcpp::traits::input_parameter< RawVector >::type m1(m1SEXP);
+    Rcpp::traits::input_parameter< RawVector >::type m2(m2SEXP);
+    Rcpp::traits::input_parameter< RawVector >::type m3(m3SEXP);
+    rcpp_result_gen = Rcpp::wrap(match3bytes(buf, m1, m2, m3));
+    return rcpp_result_gen;
+END_RCPP
+}
 // do_matrix_smooth
 NumericMatrix do_matrix_smooth(NumericMatrix mat);
 RcppExport SEXP _oce_do_matrix_smooth(SEXP matSEXP) {

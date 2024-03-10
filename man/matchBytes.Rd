@@ -15,17 +15,18 @@ for 1-byte, use \code{\link[=which]{which()}}).}
 \item{\dots}{additional bytes to match for (up to 2 permitted)}
 }
 \value{
-List of the indices of \code{input} that match the start of the
-\code{bytes} sequence (see example).
+\code{matchBytes} returns a double vector of the indices of \code{input} that
+match the start of the \code{bytes} sequence.  (A double vector is returned
+instead of an integer vector, to avoid problems with large files.)
 }
 \description{
 Find spots in a raw vector that match a given byte sequence.
 }
 \examples{
 buf <- as.raw(c(0xa5, 0x11, 0xaa, 0xa5, 0x11, 0x00))
-match <- matchBytes(buf, 0xa5, 0x11)
 print(buf)
-print(match)
+print(matchBytes(buf, 0xa5, 0x11))
+
 }
 \author{
 Dan Kelley
