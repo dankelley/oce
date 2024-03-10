@@ -1894,8 +1894,8 @@ mapPlot <- function(
                     cl <- .Call("map_clip_xy_old", x, y, par("usr"))
                     clnew <- map_clip_xy(x, y, par("usr"))
                     if (!identical(cl, clnew)) {
-                        message("IMPORTANT: map_clip_xy problem -- please report at github.com/dankelley/oce/issues")
-                        warning("IMPORTANT: map_clip_xy problem -- please report at github.com/dankelley/oce/issues")
+                        message("IMPORTANT: mapPlot/map_clip_xy problem -- please report at github.com/dankelley/oce/issues")
+                        warning("IMPORTANT: mapPlot/map_clip_xy problem -- please report at github.com/dankelley/oce/issues")
                     }
                     # FIXME: what about col? shouldn't it be altered if some
                     # polygons are entirely missing?  Maybe the function needs
@@ -3603,8 +3603,8 @@ mapImage <- function(longitude, latitude, z, zlim, zclip = FALSE,
     )
     polynew <- map_assemble_polygons(longitude, latitude, z)
     if (!identical(poly, polynew)) {
-        message("IMPORTANT: map_assemble_polygons problem -- please report at github.com/dankelley/oce/issues")
-        warning("IMPORTANT: map_assemble_polygons problem -- please report at github.com/dankelley/oce/issues")
+        message("IMPORTANT: mapImage/map_assemble_polygons problem -- please report at github.com/dankelley/oce/issues")
+        warning("IMPORTANT: mapImage/map_assemble_polygons problem -- please report at github.com/dankelley/oce/issues")
     }
     xy <- lonlat2map(poly$longitude, poly$latitude)
     xy$x[!is.finite(xy$x)] <- NA
@@ -3630,8 +3630,8 @@ mapImage <- function(longitude, latitude, z, zlim, zclip = FALSE,
         diff(par("usr")[1:2]) / 5, par("usr")
     )
     if (!identical(r, rnew)) {
-        message("IMPORTANT: map_check_polygons problem -- please report at github.com/dankelley/oce/issues")
-        warning("IMPORTANT: map_check_polygons problem -- please report at github.com/dankelley/oce/issues")
+        message("IMPORTANT: mapImage/map_check_polygons problem -- please report at github.com/dankelley/oce/issues")
+        warning("IMPORTANT: mapImage/map_check_polygons problem -- please report at github.com/dankelley/oce/issues")
     }
     breaksMin <- min(breaks, na.rm = TRUE)
     breaksMax <- max(breaks, na.rm = TRUE)
