@@ -866,9 +866,9 @@ read.adp.nortek <- function(
     oceDebug(debug, "profile data at buf[", header$offset, "] et seq.\n")
     oceDebug(debug, "matching bytes: 0x", buf[header$offset], " 0x", buf[header$offset + 1], " 0x", buf[header$offset + 2], "\n", sep = "")
     profileStart <- .Call("match3bytes_old", buf, buf[header$offset], buf[header$offset + 1], buf[header$offset + 2])
-    profileStartnew <- match3bytes(buf, buf[header$offset], buf[header$offset + 1], buf[header$offset + 2])
+    profileStartNew <- match3bytes(buf, buf[header$offset], buf[header$offset + 1], buf[header$offset + 2])
     # FIXME <issue 2201> keep this test for a while
-    if (!identical(profileStart, profileStartnew)) {
+    if (!identical(profileStart, profileStartNew)) {
         message("IMPORTANT: read.adp.nortek/match3bytes/profileStart problem -- please report at github.com/dankelley/oce/issues")
         warning("IMPORTANT: read.adp.nortek/match3bytes/profileStart problem -- please report at github.com/dankelley/oce/issues")
     }
@@ -1037,9 +1037,9 @@ read.adp.nortek <- function(
     # get diagnostic data, if any, and trim them to same index range as conventional data
     if (type == "aquadopp") {
         diaStart <- .Call("match3bytes_old", buf, 0xa5, 0x80, 0x15)
-        diaStartnew <- match3bytes(buf, 0xa5, 0x80, 0x15)
+        diaStartNew <- match3bytes(buf, 0xa5, 0x80, 0x15)
         # FIXME <issue 2201> keep this test for a while
-        if (!identical(diaStart, diaStartnew)) {
+        if (!identical(diaStart, diaStartNew)) {
             message("IMPORTANT: read.adp.nortek/match3bytes/aquadopp/dia problem -- please report at github.com/dankelley/oce/issues")
             warning("IMPORTANT: read.adp.nortek/match3bytes/aquadopp/dia problem -- please report at github.com/dankelley/oce/issues")
         }
@@ -1076,9 +1076,9 @@ read.adp.nortek <- function(
         aDia[, , 3] <- buf[diaStart + 38]
     } else if (type == "aquadoppPlusMagnetometer") {
         diaStart <- .Call("match3bytes_old", buf, 0xa5, 0x80, 0x15)
-        diaStartnew <- match3bytes(as.raw(buf), as.raw(0xa5), as.raw(0x80), as.raw(0x15))
+        diaStartNew <- match3bytes(as.raw(buf), as.raw(0xa5), as.raw(0x80), as.raw(0x15))
         # FIXME <issue 2201> keep this test for a while
-        if (!identical(diaStart, diaStartnew)) {
+        if (!identical(diaStart, diaStartNew)) {
             message("IMPORTANT: read.adp.nortek/match3bytes/aquadoppPlusMagnetometer/dia problem -- please report at github.com/dankelley/oce/issues")
             warning("IMPORTANT: read.adp.nortek/match3bytes/aquadoppPlusMagnetometer/dia problem -- please report at github.com/dankelley/oce/issues")
         }

@@ -388,8 +388,8 @@ List do_ldc_rdi_in_file(StringVector filename, IntegerVector from,
       if (check_sum == desired_check_sum) {
         if (debug_value > 0)
           Rprintf("Good checksum at cindex %lu\n", cindex);
-        bytes_to_check_last =
-            bytes_to_check; // use later, if find bad checksum (issue 1437)
+        // use later, if find bad checksum (issue 1437)
+        bytes_to_check_last = bytes_to_check;
         // The check_sum is ok, so we may want to store the results for
         // this profile.
         //

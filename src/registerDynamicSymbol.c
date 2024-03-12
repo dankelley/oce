@@ -34,12 +34,16 @@ extern SEXP _oce_do_oce_filter(SEXP, SEXP, SEXP);
 extern SEXP _oce_do_runlm(SEXP, SEXP, SEXP, SEXP, SEXP);
 extern SEXP _oce_do_sfm_enu(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
 extern SEXP _oce_do_trap(SEXP, SEXP, SEXP);
-extern SEXP _oce_map_assemble_polygons(SEXP, SEXP, SEXP);
-extern SEXP _oce_map_check_polygons(SEXP, SEXP, SEXP, SEXP, SEXP);
-extern SEXP _oce_map_clip_xy(SEXP, SEXP, SEXP);
+extern SEXP _oce_ldcSontekAdv22(SEXP, SEXP);
+extern SEXP _oce_locateByteSequences(SEXP, SEXP, SEXP, SEXP, SEXP);
+extern SEXP _oce_locateVectorImuSequences(SEXP);
+extern SEXP _oce_mapAssemblePolygons(SEXP, SEXP, SEXP);
+extern SEXP _oce_mapCheckPolygons(SEXP, SEXP, SEXP, SEXP, SEXP);
+extern SEXP _oce_mapClipXy(SEXP, SEXP, SEXP);
 extern SEXP _oce_match2bytes(SEXP, SEXP, SEXP, SEXP);
 extern SEXP _oce_match3bytes(SEXP, SEXP, SEXP, SEXP);
-extern SEXP _oce_trim_ts(SEXP, SEXP, SEXP);
+extern SEXP _oce_trimTs(SEXP, SEXP, SEXP);
+extern SEXP _oce_unwrapSequenceNumbers(SEXP, SEXP);
 
 static const R_CallMethodDef CallEntries[] = {
     {"_oce_bilinearInterp", (DL_FUNC) &_oce_bilinearInterp, 5},
@@ -74,12 +78,16 @@ static const R_CallMethodDef CallEntries[] = {
     {"_oce_do_runlm", (DL_FUNC) &_oce_do_runlm, 5},
     {"_oce_do_sfm_enu", (DL_FUNC) &_oce_do_sfm_enu, 6},
     {"_oce_do_trap", (DL_FUNC) &_oce_do_trap, 3},
-    {"_oce_map_assemble_polygons", (DL_FUNC) &_oce_map_assemble_polygons, 3},
-    {"_oce_map_check_polygons", (DL_FUNC) &_oce_map_check_polygons, 5},
-    {"_oce_map_clip_xy", (DL_FUNC) &_oce_map_clip_xy, 3},
+    {"_oce_ldcSontekAdv22", (DL_FUNC) &_oce_ldcSontekAdv22, 2},
+    {"_oce_locateByteSequences", (DL_FUNC) &_oce_locateByteSequences, 5},
+    {"_oce_locateVectorImuSequences", (DL_FUNC) &_oce_locateVectorImuSequences, 1},
+    {"_oce_mapAssemblePolygons", (DL_FUNC) &_oce_mapAssemblePolygons, 3},
+    {"_oce_mapCheckPolygons", (DL_FUNC) &_oce_mapCheckPolygons, 5},
+    {"_oce_mapClipXy", (DL_FUNC) &_oce_mapClipXy, 3},
     {"_oce_match2bytes", (DL_FUNC) &_oce_match2bytes, 4},
     {"_oce_match3bytes", (DL_FUNC) &_oce_match3bytes, 4},
-    {"_oce_trim_ts", (DL_FUNC) &_oce_trim_ts, 3},
+    {"_oce_trimTs", (DL_FUNC) &_oce_trimTs, 3},
+    {"_oce_unwrapSequenceNumbers", (DL_FUNC) &_oce_unwrapSequenceNumbers, 2},
     {NULL, NULL, 0}
 };
 

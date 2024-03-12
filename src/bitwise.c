@@ -24,11 +24,10 @@
 
 */
 
-SEXP unwrap_sequence_numbers(SEXP seq, SEXP bytes) {
+SEXP unwrap_sequence_numbers_old(SEXP seq, SEXP bytes) {
   /* "unwrap" a vector of integers that are sequence numbers wrapping in 'bytes'
    * bytes, creating the sequence numbers that might have resulted, had 'seq'
    * not been created modulo 'bytes' bytes.
-   *
    */
   PROTECT(seq = AS_INTEGER(seq));
   int *pseq = INTEGER_POINTER(seq);
@@ -47,7 +46,7 @@ SEXP unwrap_sequence_numbers(SEXP seq, SEXP bytes) {
   long int last;
   long int cumulative = 0;
 #ifdef DEBUG
-  Rprintf("n=%ld\n", n);
+  Rprintf("OLD: n=%ld\n", n);
 #endif
   pres[0] = pseq[0];
   last = pseq[0];
@@ -55,13 +54,13 @@ SEXP unwrap_sequence_numbers(SEXP seq, SEXP bytes) {
     if (pseq[i] < last) {
       cumulative += pmod;
 #ifdef DEBUG
-      Rprintf("pseq[%d]=%d and last=%d, so updated to cumulative=%ld\n", i,
+      Rprintf("OLD: pseq[%d]=%d and last=%d, so updated to cumulative=%ld\n", i,
               pseq[i], last, cumulative);
 #endif
     }
     pres[i] = pseq[i] + cumulative;
 #ifdef DEBUG
-    Rprintf("i=%d seq=%d rval=%d\n", i, pseq[i], pres[i]);
+    Rprintf("OLD: i=%d seq=%d rval=%d\n", i, pseq[i], pres[i]);
 #endif
     last = pseq[i];
   }
@@ -69,18 +68,35 @@ SEXP unwrap_sequence_numbers(SEXP seq, SEXP bytes) {
   return (res);
 }
 
-SEXP ldc_sontek_adv_22(SEXP buf, SEXP max) {
+SEXP ldc_sontek_adv_22_old(SEXP buf, SEXP max) {
   /* ldc = locate data chunk; _sontek_adv = for a SonTek ADV (with temperature
-   * and/or pressure installed; see p95 of sontek-adv-op-man-2001.pdf) BYTE
-   * Contents 1    0x85 [call this key1 in code] 2    0x16 (length of record,
-   * 0x16 is 22 base 10) [ call this key2 in code] 3:4  SampleNum, a
-   * little-endian unsigned integer. This should increase by 1 from sample to
-   * sample, and it wraps at value 65535 5:6  x velocity component, signed
-   * 2-byte integer, in 0.1 mm/s [QUESTION: is there a scale factor issue?] 7:8
-   * y " 9:10  z " 11    beam 1 amplitude 12    beam 2 " 13    beam 3 " 14 beam
-   * 1 correlation 15    beam 2 " 16    beam 3 " 17:18 temperature (in 0.01
-   * degC), signed little-endian integer 19:20 pressure (in counts), signed
-   * little-endian integer 21:22 checksum of bytes 1 to 20
+   * and/or pressure installed; see p95 of sontek-adv-op-man-2001.pdf)
+   *
+   * BYTE Contents
+   *
+   *     1 0x85 [call this key1 in code]
+   *
+   *     2 0x16 (length of record, 0x16 is 22 base 10) [ call this key2 in code]
+   *
+   *   3:4 SampleNum, a little-endian unsigned integer. This should increase by
+   * 1 from sample to sample, and it wraps at value 65535
+   *
+   *   5:6 x velocity component, signed 2-byte integer, in 0.1 mm/s [QUESTION:
+   * is there a scale factor issue?]
+   *
+   *   7:8 y "
+   *
+   *  9:10 z "
+   *
+   * 11:13 beam 1 to 3 amplitude
+   *
+   * 14:16 beam 1 to 3 correlation
+   *
+   * 17:18 temperature (in 0.01 degC), signed little-endian integer
+   *
+   * 19:20 pressure (in counts), signed little-endian integer
+   *
+   * 21:22 checksum of bytes 1 to 20
    */
 
   /*
@@ -122,7 +138,7 @@ signed=TRUE, size=2, endian="little",n=np)
   int lbuf = LENGTH(buf);
   SEXP res;
 #ifdef DEBUG
-  Rprintf("lbuf=%d, max=%d\n", lbuf, max_lres);
+  Rprintf("OLD: lbuf=%d, max=%d\n", lbuf, max_lres);
 #endif
   /* Count matches, so we can allocate the right length */
   unsigned char byte1 = 0x85;
@@ -142,7 +158,7 @@ signed=TRUE, size=2, endian="little",n=np)
         pbuf[i + 1] ==
             byte2) { /* match first 2 bytes, now check the checksum */
 #ifdef DEBUG
-      Rprintf("tentative match %d at i = %d ... ", matches, i);
+      Rprintf("OLD: tentative match %d at i = %d ... ", matches, i);
 #endif
       for (int c = 0; c < 20; c++)
         check_sum += (unsigned short int)pbuf[i + c];
@@ -151,13 +167,13 @@ signed=TRUE, size=2, endian="little",n=np)
       if (check_sum == desired_check_sum) {
         matches++;
 #ifdef DEBUG
-        Rprintf("good match (check_sum=%d)\n", check_sum);
+        Rprintf("OLD: good match (check_sum=%d)\n", check_sum);
 #endif
         if (max_lres != 0 && matches >= max_lres)
           break;
       } else {
 #ifdef DEBUG
-        Rprintf("bad checksum\n");
+        Rprintf("OLD: bad checksum\n");
 #endif
       }
     }
@@ -168,7 +184,7 @@ signed=TRUE, size=2, endian="little",n=np)
     PROTECT(res = NEW_INTEGER(lres));
     int *pres = INTEGER_POINTER(res);
 #ifdef DEBUG
-    Rprintf("getting space for %d matches\n", lres);
+    Rprintf("OLD: getting space for %d matches\n", lres);
 #endif
     unsigned int ires = 0;
     for (int i = 0; i < lbuf - byte2;
@@ -224,33 +240,33 @@ SEXP nortek_checksum(SEXP buf, SEXP key) {
   bufp = (unsigned char *)RAW_POINTER(buf);
   keyp = (unsigned char *)RAW_POINTER(key);
 #ifdef DEBUG
-  Rprintf("buf[0]=0x%02x\n", bufp[0]);
-  Rprintf("buf[1]=0x%02x\n", bufp[1]);
-  Rprintf("buf[2]=0x%02x\n", bufp[2]);
-  Rprintf("key[0]=0x%02x\n", keyp[0]);
-  Rprintf("key[1]=0x%02x\n", keyp[1]);
+  Rprintf("OLD: buf[0]=0x%02x\n", bufp[0]);
+  Rprintf("OLD: buf[1]=0x%02x\n", bufp[1]);
+  Rprintf("OLD: buf[2]=0x%02x\n", bufp[2]);
+  Rprintf("OLD: key[0]=0x%02x\n", keyp[0]);
+  Rprintf("OLD: key[1]=0x%02x\n", keyp[1]);
 #endif
   n = LENGTH(buf);
   check_value = (((short)keyp[0]) << 8) | (short)keyp[1];
 #ifdef DEBUG
-  Rprintf("check_value= %d\n", check_value);
-  Rprintf("n=%d\n", n);
+  Rprintf("OLD: check_value= %d\n", check_value);
+  Rprintf("OLD: n=%d\n", n);
 #endif
   short *sbufp = (short *)bufp;
   for (i = 0; i < (n - 2) / 2; i++) {
 #ifdef DEBUG
-    Rprintf("i=%d buf=0x%02x\n", i, sbufp[i]);
+    Rprintf("OLD: i=%d buf=0x%02x\n", i, sbufp[i]);
 #endif
     check_value += sbufp[i];
 #ifdef DEBUG
-    Rprintf("after, check_value=%d\n", check_value);
+    Rprintf("OLD: after, check_value=%d\n", check_value);
 #endif
   }
   short checksum;
   checksum = (((short)bufp[n - 1]) << 8) | (short)bufp[n - 2];
 #ifdef DEBUG
-  Rprintf("CHECK AGAINST 0x%02x 0x%02x\n", bufp[n - 2], bufp[n - 1]);
-  Rprintf("CHECK AGAINST %d\n", checksum);
+  Rprintf("OLD: CHECK AGAINST 0x%02x 0x%02x\n", bufp[n - 2], bufp[n - 1]);
+  Rprintf("OLD: CHECK AGAINST %d\n", checksum);
 #endif
   PROTECT(res = NEW_LOGICAL(1));
   resp = LOGICAL_POINTER(res);
@@ -274,7 +290,7 @@ SEXP match2bytes_old(SEXP buf, SEXP m1, SEXP m2, SEXP demand_sequential) {
   ds = *INTEGER(demand_sequential);
   n = LENGTH(buf);
 #ifdef DEBUG
-  Rprintf("n=%d ds=%d\n", n, ds);
+  Rprintf("OLD: n=%d ds=%d\n", n, ds);
 #endif
   unsigned short seq_last = 0, seq_this;
   // Rprintf("demand_sequential=%d\n",ds);
@@ -364,7 +380,7 @@ SEXP match2bytes_old(SEXP buf, SEXP m1, SEXP m2, SEXP demand_sequential) {
 
 /* NEW */
 /*#define DEBUG 1*/
-SEXP locate_vector_imu_sequences(SEXP buf) {
+SEXP locate_vector_imu_sequences_old(SEXP buf) {
   /*
    * imu = Inertial Motion Unit (system-integrator-manual_Dec2014_jan.pdf
    * p30-32)
@@ -455,13 +471,22 @@ SEXP locate_vector_imu_sequences(SEXP buf) {
 }
 
 /*#define DEBUG 1*/
-SEXP locate_byte_sequences(SEXP buf, SEXP match, SEXP len, SEXP key, SEXP max) {
+SEXP locate_byte_sequences_old(SEXP buf, SEXP match, SEXP len, SEXP key,
+                               SEXP max) {
   /*
    * locate_byte_sequences() = function to be used for e.g. nortek adp / adv
-   * files buf = buffer to be scanned match = set of bytes that mark start of
-   * sequences len = length of sequence key = key added to checksum, and to be
-   * checked against last 2 bytes of sequence max = 0 to use whole buffer,
-   * positive integer to limit to that many matches
+   * files
+   *
+   * buf = buffer to be scanned
+   *
+   * match = set of bytes that mark start of sequences
+   *
+   * len = length of sequence
+   *
+   * key = a quantity added to the checksum, the result of which is
+   * checked against last 2 bytes of the sequence
+   *
+   * max = 0 to use whole buffer, positive integer to limit to that many matches
    */
 
   /*
@@ -497,8 +522,8 @@ SEXP locate_byte_sequences(SEXP buf, SEXP match, SEXP len, SEXP key, SEXP max) {
   int lkey = LENGTH(key);
   if (lkey != 2)
     error("key length must be 2");
-  int ires = 0, lres = (int)(lbuf / lsequence +
-                             3); /* get some extra space; fill some with NA */
+  /* get some extra space; fill some with NA */
+  int ires = 0, lres = (int)(lbuf / lsequence + 3);
   SEXP res;
 #ifdef DEBUG
   Rprintf("lsequence=%d, lres=%d\n", lsequence, lres);
@@ -512,24 +537,40 @@ SEXP locate_byte_sequences(SEXP buf, SEXP match, SEXP len, SEXP key, SEXP max) {
   short lsequence2 = lsequence / 2;
   for (int i = 0; i < lbuf - lsequence; i++) {
     short check_value = (((short)pkey[0]) << 8) | (short)pkey[1];
+#ifdef DEBUG
+    if (i == 0) {
+      Rprintf("OLD CODE -- initially check_value = %d\n", check_value);
+    }
+#endif
     int found = 0;
     for (int m = 0; m < lmatch; m++) {
-      if (pbuf[i + m] == pmatch[m])
+      if (pbuf[i + m] == pmatch[m]) {
         found++;
-      else
+      } else {
         break;
+      }
     }
     if (found == lmatch) {
       /* FIXME: should bit-twiddle this to work on all endian types */
       short *check = (short *)(pbuf + i);
       /*Rprintf(" %d", check_value);*/
-      for (int cc = 0; cc < lsequence2 - 1;
-           cc++) { /* last 2-byte chunk is the test value */
+      /* last 2-byte chunk is the test value */
+      for (int cc = 0; cc < lsequence2 - 1; cc++) {
         check_value += *check++;
+#ifdef DEBUG
+        if (ires == 0) {
+          Rprintf(" OLD CODE -- at cc=%d, check_value = %d\n", cc, check_value);
+        }
+#endif
         /*Rprintf(" %d", check_value);*/
       }
       short check_sum = (((short)pbuf[i + lsequence - 1]) << 8) |
                         (short)pbuf[i + lsequence - 2];
+#ifdef DEBUG
+      if (ires == 0) {
+        Rprintf("OLD CODE -- check_sum = %d\n", check_sum);
+      }
+#endif
 #ifdef DEBUG
       Rprintf("i=%d lbuf=%d ires=%d  lres=%d  check_value=%d vs check_sum %d "
               "match=%d\n",
@@ -537,11 +578,18 @@ SEXP locate_byte_sequences(SEXP buf, SEXP match, SEXP len, SEXP key, SEXP max) {
               check_value == check_sum);
 #endif
       if (check_value == check_sum) {
+#ifdef DEBUG
+        if (ires == 0) {
+          Rprintf("OLD CODE -- MATCH ires=%d check_value = check_sum = %d\n",
+                  ires, check_sum);
+        }
+#endif
         pres[ires++] = i + 1;
         i += lsequence - lmatch; /* no need to check within sequence */
       }
-      if (ires >= lres)
+      if (ires >= lres) {
         break;
+      }
     }
     i += lmatch - 1; /* skip over matched bytes */
     if (i > (lbuf - lsequence))
@@ -550,7 +598,7 @@ SEXP locate_byte_sequences(SEXP buf, SEXP match, SEXP len, SEXP key, SEXP max) {
   SET_LENGTH(res, ires);
   UNPROTECT(6);
   return (res);
-}
+} // locate_byte_sequences
 
 SEXP match3bytes_old(SEXP buf, SEXP m1, SEXP m2, SEXP m3) {
   int i, j, n, n_match;

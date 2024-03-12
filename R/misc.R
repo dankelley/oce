@@ -4593,17 +4593,17 @@ matchBytes <- function(input, b1, ...) {
     if (lb == 2) {
         rval <- .Call("match2bytes_old", as.raw(input), as.raw(b1), as.raw(dots[[1]]), FALSE)
         # FIXME <issue 2201> keep this test for a while
-        rvalnew <- match2bytes(as.raw(input), as.raw(b1), as.raw(dots[[1]]), FALSE)
-        if (!identical(rval, rvalnew)) {
+        rvalNew <- match2bytes(as.raw(input), as.raw(b1), as.raw(dots[[1]]), FALSE)
+        if (!identical(rval, rvalNew)) {
             message("IMPORTANT: matchBytes/match2bytes problem -- please report at github.com/dankelley/oce/issues")
             warning("IMPORTANT: matchBytes/match2bytes problem -- please report at github.com/dankelley/oce/issues")
         }
         return(rval)
     } else if (lb == 3) {
         rval <- .Call("match3bytes_old", as.raw(input), as.raw(b1), as.raw(dots[[1]]), as.raw(dots[[2]]))
-        rvalnew <- match3bytes(as.raw(input), as.raw(b1), as.raw(dots[[1]]), as.raw(dots[[2]]))
+        rvalNew <- match3bytes(as.raw(input), as.raw(b1), as.raw(dots[[1]]), as.raw(dots[[2]]))
         # FIXME <issue 2201> keep this test for a while
-        if (!identical(rval, rvalnew)) {
+        if (!identical(rval, rvalNew)) {
             message("IMPORTANT: matchbytes/match3bytes problem -- please report at github.com/dankelley/oce/issues")
             warning("IMPORTANT: matchbytes/match3bytes problem -- please report at github.com/dankelley/oce/issues")
         }

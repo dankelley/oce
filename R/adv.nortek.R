@@ -186,13 +186,35 @@ read.adv.nortek <- function(
     }
     # NOTE: system.time() indicates 0.2s to scan a 100Meg file [macpro desktop, circa 2009]
     # "vvd" stands for "Vector Velocity Data" [bottom of p35 of SIG]
-    vvdStart <- .Call("locate_byte_sequences", buf, c(0xa5, 0x10), 24, c(0xb5, 0x8c), 0)
+    vvdStart <- .Call("locate_byte_sequences_old", buf, c(0xa5, 0x10), 24, c(0xb5, 0x8c), 0)
+    vvdStartNew <- locateByteSequences(buf, c(0xa5, 0x10), 24, c(0xb5, 0x8c), 0)
+    # FIXME <issue 2201> keep this test for a while
+    if (!identical(vvdStart, as.integer(vvdStartNew))) {
+        message("IMPORTANT: read.adv.nortek/locateByteSequences/vvdStart problem -- please report at github.com/dankelley/oce/issues")
+        warning("IMPORTANT: read.adv.nortek/locateByteSequences/vvdStart problem -- please report at github.com/dankelley/oce/issues")
+    }
     # "vsd" stands for "Vector System Data" [p36 of SIG]
-    vsdStart <- .Call("locate_byte_sequences", buf, c(0xa5, 0x11), 28, c(0xb5, 0x8c), 0)
+    vsdStart <- .Call("locate_byte_sequences_old", buf, c(0xa5, 0x11), 28, c(0xb5, 0x8c), 0)
+    vsdStartNew <- locateByteSequences(buf, c(0xa5, 0x11), 28, c(0xb5, 0x8c), 0)
+    if (!identical(vsdStart, as.integer(vsdStartNew))) {
+        message("IMPORTANT: read.adv.nortek/locateByteSequences/vsdStart problem -- please report at github.com/dankelley/oce/issues")
+        warning("IMPORTANT: read.adv.nortek/locateByteSequences/vsdStart problem -- please report at github.com/dankelley/oce/issues")
+    }
     # "vvdh" stands for "Vector Velocity Data Header" [p35 of SIG]
-    vvdhStart <- .Call("locate_byte_sequences", buf, c(0xa5, 0x12), 42, c(0xb5, 0x8c), 0)
+    vvdhStart <- .Call("locate_byte_sequences_old", buf, c(0xa5, 0x12), 42, c(0xb5, 0x8c), 0)
+    vvdhStartNew <- locateByteSequences(buf, c(0xa5, 0x12), 42, c(0xb5, 0x8c), 0)
+    if (!identical(vvdhStart, as.integer(vvdhStartNew))) {
+        message("IMPORTANT: read.adv.nortek/locateByteSequences/vvdhStart problem -- please report at github.com/dankelley/oce/issues")
+        warning("IMPORTANT: read.adv.nortek/locateByteSequences/vvdhStart problem -- please report at github.com/dankelley/oce/issues")
+    }
     # "imu" stands for 'inertial motion unit' [p30 SIG2014]
-    imuStart <- .Call("locate_vector_imu_sequences", buf)
+    #<2201 FIXME FIXME CODE CODE> # FIXME <issue 2201> keep this test for a while
+    imuStart <- .Call("locate_vector_imu_sequences_old", buf)
+    imuStartNew <- locateVectorImuSequences(buf)
+    if (!identical(imuStart, as.integer(imuStartNew))) {
+        message("IMPORTANT: read.adv.nortek/locatorVectorImuSequences/imuStart problem -- please report at github.com/dankelley/oce/issues")
+        warning("IMPORTANT: read.adv.nortek/locatorVectorImuSequences/imuStart problem -- please report at github.com/dankelley/oce/issues")
+    }
     haveIMU <- length(imuStart) > 0
     if (haveIMU) {
         IMUtype <- "unknown"

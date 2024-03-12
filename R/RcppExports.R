@@ -100,16 +100,24 @@ do_ldc_rdi_in_file <- function(filename, from, to, by, startIndex, mode, debug) 
     .Call(`_oce_do_ldc_rdi_in_file`, filename, from, to, by, startIndex, mode, debug)
 }
 
-map_assemble_polygons <- function(lon, lat, z) {
-    .Call(`_oce_map_assemble_polygons`, lon, lat, z)
+locateByteSequences <- function(buf, match, len, key, max) {
+    .Call(`_oce_locateByteSequences`, buf, match, len, key, max)
 }
 
-map_check_polygons <- function(x, y, z, xokspan, usr) {
-    .Call(`_oce_map_check_polygons`, x, y, z, xokspan, usr)
+locateVectorImuSequences <- function(buf) {
+    .Call(`_oce_locateVectorImuSequences`, buf)
 }
 
-map_clip_xy <- function(x, y, usr) {
-    .Call(`_oce_map_clip_xy`, x, y, usr)
+mapAssemblePolygons <- function(lon, lat, z) {
+    .Call(`_oce_mapAssemblePolygons`, lon, lat, z)
+}
+
+mapCheckPolygons <- function(x, y, z, xokspan, usr) {
+    .Call(`_oce_mapCheckPolygons`, x, y, z, xokspan, usr)
+}
+
+mapClipXy <- function(x, y, usr) {
+    .Call(`_oce_mapClipXy`, x, y, usr)
 }
 
 match2bytes <- function(buf, m1, m2, demand_sequential) {
@@ -148,6 +156,14 @@ do_ldc_sontek_adp <- function(buf, have_ctd, have_gps, have_bottom_track, pcadp,
     .Call(`_oce_do_ldc_sontek_adp`, buf, have_ctd, have_gps, have_bottom_track, pcadp, max)
 }
 
+unwrapSequenceNumbers <- function(seq, bytes) {
+    .Call(`_oce_unwrapSequenceNumbers`, seq, bytes)
+}
+
+ldcSontekAdv22 <- function(buf, max) {
+    .Call(`_oce_ldcSontekAdv22`, buf, max)
+}
+
 do_epic_time_to_ymdhms <- function(julianDay, millisecond) {
     .Call(`_oce_do_epic_time_to_ymdhms`, julianDay, millisecond)
 }
@@ -156,7 +172,7 @@ do_trap <- function(x, y, type) {
     .Call(`_oce_do_trap`, x, y, type)
 }
 
-trim_ts <- function(x, xlim, extra) {
-    .Call(`_oce_trim_ts`, x, xlim, extra)
+trimTs <- function(x, xlim, extra) {
+    .Call(`_oce_trimTs`, x, xlim, extra)
 }
 

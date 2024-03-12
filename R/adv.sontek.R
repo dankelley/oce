@@ -95,12 +95,24 @@ read.adv.sontek.serial <- function(
         oceDebug(debug, "filesize=", fileSize, "\n")
         buf <- readBin(file, what = "raw", n = fileSize, endian = "little")
     }
-    p <- .Call("ldc_sontek_adv_22", buf, 0) # the 0 means to get all pointers to data chunks
+    p <- .Call("ldc_sontek_adv_22_old", buf, 0) # the 0 means to get all pointers to data chunks
+    # FIXME <issue 2201> keep this test for a while
+    pNew <- ldcSontekAdv22(buf, 0)
+    if (!identical(p, as.integer(pNew))) {
+        message("IMPORTANT: read.adv.sontek.serial/ldcSontekAdv22 problem -- please report at github.com/dankelley/oce/issues")
+        warning("IMPORTANT: read.adv.sontek.serial/ldcSontekAdv22 problem -- please report at github.com/dankelley/oce/issues")
+    }
     pp <- sort(c(p, p + 1))
     len <- length(p)
     oceDebug(debug, "dp:", paste(unique(diff(p)), collapse = ","), "\n")
     serialNumber <- readBin(buf[pp + 2], "integer", size = 2, n = len, signed = FALSE, endian = "little")
-    serialNumber <- .Call("unwrap_sequence_numbers", serialNumber, 2)
+    serialNumber <- .Call("unwrap_sequence_numbers_old", serialNumber, 2)
+    serialNumberNew <- unwrapSequenceNumbers(serialNumber, 2)
+    # FIXME <issue 2201> keep this test for a while
+    if (!identical(serialNumber, as.integer(serialNumberNew))) {
+        message("IMPORTANT: read.adv.sontek.serial/unwrapSequenceNumbers problem -- please report at github.com/dankelley/oce/issues")
+        warning("IMPORTANT: read.adv.sontek.serial/unwrapSequenceNumbers problem -- please report at github.com/dankelley/oce/issues")
+    }
     velocityScale <- 1e-4
     time <- start[1] + (serialNumber - serialNumber[1]) * deltat
     deltat <- mean(diff(as.numeric(time))) # FIXME: should rename this to avoid confusion

@@ -390,8 +390,7 @@ Columns     = z:u:v:ev
  test_that("trim_ts", {
      x <- seq(0, 10, 0.1)
      xlim <- c(2.0, 2.9)
-     oce:::trim_ts(x, xlim, 0)
-     expect_equal(oce:::trim_ts(x, xlim, 0), list(from=20, to=31))
+     expect_equal(oce:::trimTs(x, xlim, 0), list(from=20, to=31))
 })
 
  test_that("concatenate adp", {
