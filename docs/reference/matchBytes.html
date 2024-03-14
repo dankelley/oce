@@ -103,8 +103,9 @@ for 1-byte, use <code><a href="https://rdrr.io/r/base/which.html" class="externa
     <h2>Value</h2>
     
 
-<p>List of the indices of <code>input</code> that match the start of the
-<code>bytes</code> sequence (see example).</p>
+<p><code>matchBytes</code> returns a double vector of the indices of <code>input</code> that
+match the start of the <code>bytes</code> sequence.  (A double vector is returned
+instead of an integer vector, to avoid problems with large files.)</p>
     </div>
     <div id="author">
     <h2>Author</h2>
@@ -114,11 +115,11 @@ for 1-byte, use <code><a href="https://rdrr.io/r/base/which.html" class="externa
     <div id="ref-examples">
     <h2>Examples</h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">buf</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/raw.html" class="external-link">as.raw</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0xa5</span>, <span class="fl">0x11</span>, <span class="fl">0xaa</span>, <span class="fl">0xa5</span>, <span class="fl">0x11</span>, <span class="fl">0x00</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">match</span> <span class="op">&lt;-</span> <span class="fu">matchBytes</span><span class="op">(</span><span class="va">buf</span>, <span class="fl">0xa5</span>, <span class="fl">0x11</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">buf</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] a5 11 aa a5 11 00</span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">match</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="fu">matchBytes</span><span class="op">(</span><span class="va">buf</span>, <span class="fl">0xa5</span>, <span class="fl">0x11</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 1 4</span>
+<span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
   </div>
