@@ -303,7 +303,7 @@ List do_ldc_rdi_in_file_new(StringVector filename, IntegerVector from,
       // Catch two errors
       if (bytes_to_check < 5) {
         ::Rf_error("cannot decode the length of ensemble number %lu",
-                   ensembles.size());
+                   (long unsigned int)ensembles.size());
       }
       if (bytes_to_check < 4) {
         ::Rf_error("bytes_to_check should be >=4 but it is %d\n",
@@ -315,7 +315,7 @@ List do_ldc_rdi_in_file_new(StringVector filename, IntegerVector from,
       if (bytes_to_read > ebuf.size()) {
         if (debug_value > 0) {
           Rprintf("Increasing 'ebuf' buffer size from %lu bytes to %d bytes\n",
-                  ebuf.size(), bytes_to_read);
+                  (long unsigned int)ebuf.size(), bytes_to_read);
         }
         ebuf.resize(bytes_to_read);
       }
@@ -381,7 +381,7 @@ List do_ldc_rdi_in_file_new(StringVector filename, IntegerVector from,
           Rprintf("  NEW in_ensemble=%lu; from_value=%lu; counter=%lu; "
                   "counter_last=%lu ensemble_time=%lu\n",
                   in_ensemble, from_value, counter, counter_last,
-                  ensemble_time);
+                  (long unsigned int)ensemble_time);
         }
         // Have we got to the starting location yet?
         if ((mode_value == 0 && in_ensemble >= (from_value - 1)) ||
@@ -574,7 +574,7 @@ List do_ldc_rdi_in_file_new(StringVector filename, IntegerVector from,
     sec100[i] = sec100s[i];
   }
   if (debug_value > 0) {
-    Rprintf("about to copy %lu buf entries\n", obuf.size());
+    Rprintf("about to copy %lu buf entries\n", (long unsigned int)obuf.size());
   }
   for (unsigned long int i = 0; i < obuf.size(); i++) {
     buf[i] = obuf[i];

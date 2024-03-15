@@ -438,7 +438,8 @@ List do_ldc_rdi_in_file(StringVector filename, IntegerVector from,
                   in_ensemble, from_value, counter, counter_last);
           Rprintf("  OLD mode_value=%d in_ensemble=%lu from_value=%lu "
                   "ensemble_time=%lu\n",
-                  mode_value, in_ensemble, from_value, ensemble_time);
+                  mode_value, in_ensemble, from_value,
+                  (long unsigned int)ensemble_time);
         }
         // Have we got to the starting location yet?
         if ((mode_value == 0 && in_ensemble >= (from_value - 1)) ||
