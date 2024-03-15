@@ -327,6 +327,23 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// do_ldc_rdi_in_file_new
+List do_ldc_rdi_in_file_new(StringVector filename, IntegerVector from, IntegerVector to, IntegerVector by, IntegerVector startIndex, IntegerVector mode, IntegerVector debug);
+RcppExport SEXP _oce_do_ldc_rdi_in_file_new(SEXP filenameSEXP, SEXP fromSEXP, SEXP toSEXP, SEXP bySEXP, SEXP startIndexSEXP, SEXP modeSEXP, SEXP debugSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< StringVector >::type filename(filenameSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type from(fromSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type to(toSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type by(bySEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type startIndex(startIndexSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type mode(modeSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type debug(debugSEXP);
+    rcpp_result_gen = Rcpp::wrap(do_ldc_rdi_in_file_new(filename, from, to, by, startIndex, mode, debug));
+    return rcpp_result_gen;
+END_RCPP
+}
 // locateByteSequences
 NumericVector locateByteSequences(RawVector buf, RawVector match, IntegerVector len, RawVector key, IntegerVector max);
 RcppExport SEXP _oce_locateByteSequences(SEXP bufSEXP, SEXP matchSEXP, SEXP lenSEXP, SEXP keySEXP, SEXP maxSEXP) {

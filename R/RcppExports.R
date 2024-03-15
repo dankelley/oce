@@ -100,6 +100,10 @@ do_ldc_rdi_in_file <- function(filename, from, to, by, startIndex, mode, debug) 
     .Call(`_oce_do_ldc_rdi_in_file`, filename, from, to, by, startIndex, mode, debug)
 }
 
+do_ldc_rdi_in_file_new <- function(filename, from, to, by, startIndex, mode, debug) {
+    .Call(`_oce_do_ldc_rdi_in_file_new`, filename, from, to, by, startIndex, mode, debug)
+}
+
 locateByteSequences <- function(buf, match, len, key, max) {
     .Call(`_oce_locateByteSequences`, buf, match, len, key, max)
 }

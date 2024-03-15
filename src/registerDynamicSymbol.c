@@ -26,6 +26,7 @@ extern SEXP _oce_do_landsat_transpose_flip(SEXP);
 extern SEXP _oce_do_landsat_numeric_to_bytes(SEXP, SEXP);
 extern SEXP _oce_do_ldc_ad2cp_in_file(SEXP, SEXP, SEXP, SEXP, SEXP);
 extern SEXP _oce_do_ldc_rdi_in_file(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
+extern SEXP _oce_do_ldc_rdi_in_file_new(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
 extern SEXP _oce_do_ldc_sontek_adp(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
 extern SEXP _oce_do_oceApprox(SEXP, SEXP, SEXP, SEXP);
 extern SEXP _oce_do_matrix_smooth(SEXP);
@@ -70,6 +71,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_oce_do_landsat_numeric_to_bytes", (DL_FUNC) &_oce_do_landsat_numeric_to_bytes, 2},
     {"_oce_do_ldc_ad2cp_in_file", (DL_FUNC) &_oce_do_ldc_ad2cp_in_file, 5},
     {"_oce_do_ldc_rdi_in_file", (DL_FUNC) &_oce_do_ldc_rdi_in_file, 7},
+    {"_oce_do_ldc_rdi_in_file_new", (DL_FUNC) &_oce_do_ldc_rdi_in_file_new, 7},
     {"_oce_do_ldc_sontek_adp", (DL_FUNC) &_oce_do_ldc_sontek_adp, 6},
     {"_oce_do_matrix_smooth", (DL_FUNC) &_oce_do_matrix_smooth, 1},
     {"_oce_do_oceApprox", (DL_FUNC) &_oce_do_oceApprox, 4},

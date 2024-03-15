@@ -64,7 +64,7 @@ NumericVector locateByteSequences(RawVector buf, RawVector match,
   Rprintf("NEW: later len[0]=%d, max=%d lres=%d\n", len[0], max[0], lres);
 #endif
   // double *tmpres = (double *)R_Calloc((size_t)max[0], double);
-  std::vector<long long int> tmpres;
+  vector<long long int> tmpres;
   tmpres.reserve((size_t)max[0]);
 #ifdef DEBUG
   Rprintf(" NEW: reserved vector space for %d elements\n", tmpres.size());

@@ -111,8 +111,8 @@ decodeHeaderRDI <- function(buf, debug = getOption("oceDebug"), tz = getOption("
     if (dataOffset[1] != 6 + 2 * numberOfDataTypes) {
         warning("dataOffset and numberOfDataTypes are inconsistent -- this dataset seems damaged")
     }
-    oceDebug(debug, "dataOffset=", paste(dataOffset, sep = " "), "\n")
-    oceDebug(debug, "sort(diff(dataOffset))=", paste(sort(diff(dataOffset)), sep = " "), "\n")
+    oceDebug(debug, "head(dataOffset)=", paste(head(dataOffset), collapse = " "), "\n")
+    oceDebug(debug, "head(sort(diff(dataOffset)))=", paste(head(sort(diff(dataOffset))), collapse = " "), "\n")
     # Set up codes
     codes <- cbind(buf[1 + c(0, dataOffset)], buf[1 + c(0, dataOffset) + 1])
     oceDebug(debug, "set up codes starting at buf[1:10]=", paste("0x", paste(buf[1:10], sep = ", "), collapse = " ", sep = ""), "\n")
@@ -135,7 +135,7 @@ decodeHeaderRDI <- function(buf, debug = getOption("oceDebug"), tz = getOption("
     firmwareVersionMinor <- readBin(FLD[4], "integer", n = 1, size = 1, signed = FALSE)
     firmwareVersion <- paste(firmwareVersionMajor, firmwareVersionMinor, sep = ".")
     firmwareVersionNumeric <- as.numeric(firmwareVersion)
-    oceDebug(debug, "firmwareVersion=", firmwareVersion, "(numerically, it is", firmwareVersionNumeric, ")\n")
+    oceDebug(debug, "firmwareVersion=", firmwareVersion, " (numerically, it is ", firmwareVersionNumeric, ")\n")
     # if (firmwareVersion < 16.28) warning("firmwareVersion ", firmwareVersion, " is less than 16.28, and so read.adp.rdi() may not work properly")
     # If no actual data, return something minimal
     if (!haveActualData) {
@@ -196,7 +196,7 @@ decodeHeaderRDI <- function(buf, debug = getOption("oceDebug"), tz = getOption("
     bits <- substr(systemConfiguration, 16, 17)
     if (isSentinel) {
         oceDebug(debug, "systemConfiguration:", systemConfiguration, "\n")
-        oceDebug(debug, "bits:", bits, "Expect 111 for 25 degrees\n")
+        oceDebug(debug, "bits:", bits, " (Expect 111 for 25 degrees)\n")
         bits <- substr(systemConfiguration, 15, 17)
         if (bits != "111") message("Assuming beam angle of 25deg, but SysCon bits aren't 111")
         beamAngle <- 25
@@ -308,7 +308,7 @@ decodeHeaderRDI <- function(buf, debug = getOption("oceDebug"), tz = getOption("
         readBin(FLD[49], "integer", n = 1, size = 1, signed = FALSE),
         readBin(FLD[50], "integer", n = 1, size = 1, signed = FALSE)
     )
-    oceDebug(debug, paste("cpuBoardSerialNumber = \"", paste(cpuBoardSerialNumber, collapse = ""), "\"\n"))
+    oceDebug(debug, "cpuBoardSerialNumber=\"", paste(cpuBoardSerialNumber, collapse = ""), "\"\n", sep="")
     systemBandwidth <- readBin(FLD[51:52], "integer", n = 1, size = 2, endian = "little")
     # systemPower <- readBin(FLD[53], "integer", n=1, size=1)
     # FLD[54] spare
@@ -854,7 +854,6 @@ read.adp.rdi <- function(
     seek(file, 0, "start")
     seek(file, where = 0, origin = "end")
     fileSize <- seek(file, where = 0)
-    oceDebug(debug, "fileSize=", fileSize, "\n")
     if (fileSize < 1) {
         stop("empty file \"", file, "\"")
     }
@@ -916,8 +915,13 @@ read.adp.rdi <- function(
             }
             oceDebug(debug, "calling ldc_rdi_in_file() w/ numeric values of from etc\n")
             ldc <- do_ldc_rdi_in_file(filename = filename, from = from, to = to, by = by, startIndex = startIndex, mode = 0L, debug = debug - 1)
-            # }
-            oceDebug(debug, "done with do_ldc_rdi_in_file()\n")
+            ldcNew <- do_ldc_rdi_in_file_new(filename = filename, from = from, to = to, by = by, startIndex = startIndex, mode = 0L, debug = debug - 1)
+            if (!identical(ldc, ldcNew)) {
+                message("IMPORTANT: read.adp.rdi/ldc (numeric from, to) problem -- please report at github.com/dankelley/oce/issues")
+                warning("IMPORTANT: read.adp.rdi/ldc (numeric from, to) problem -- please report at github.com/dankelley/oce/issues")
+                #browser()
+            }
+            oceDebug(debug, "done with do_ldc_rdi_in_file() with numeric from, by, to\n")
         } else {
             if (is.character(from)) {
                 from <- as.POSIXct(from, tz = "UTC")
@@ -930,7 +934,12 @@ read.adp.rdi <- function(
             }
             oceDebug(debug, "calling ldc_rdi_in_file() w/ POSIXt values of from etc\n")
             ldc <- do_ldc_rdi_in_file(filename = filename, from = from, to = to, by = by, startIndex = startIndex, mode = 1L, debug = debug - 1)
-            oceDebug(debug, "done with do_ldc_rdi_in_file()\n")
+            ldcNew <- do_ldc_rdi_in_file_new(filename = filename, from = from, to = to, by = by, startIndex = startIndex, mode = 1L, debug = debug - 1)
+            if (!identical(ldc, ldcNew)) {
+                message("IMPORTANT: read.adp.rdi/ldc (non-numeric from, to) problem -- please report at github.com/dankelley/oce/issues")
+                warning("IMPORTANT: read.adp.rdi/ldc (non-numeric from, to) problem -- please report at github.com/dankelley/oce/issues")
+            }
+            oceDebug(debug, "done with do_ldc_rdi_in_file() with non-numeric from, by, to\n")
         }
         if (!missing(which)) {
             if (which[1] == "??") {
