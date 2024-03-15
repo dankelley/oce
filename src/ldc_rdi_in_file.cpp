@@ -437,16 +437,15 @@ List do_ldc_rdi_in_file(StringVector filename, IntegerVector from,
                   "counter_last=%lu\n",
                   in_ensemble, from_value, counter, counter_last);
           Rprintf("  OLD mode_value=%d in_ensemble=%lu from_value=%lu "
-                  "ensemble_time=%d\n",
-                  mode_value, in_ensemble, from_value, ensemble_time,
-                  from_value);
+                  "ensemble_time=%lu\n",
+                  mode_value, in_ensemble, from_value, ensemble_time);
         }
         // Have we got to the starting location yet?
         if ((mode_value == 0 && in_ensemble >= (from_value - 1)) ||
             (mode_value == 1 && ensemble_time >= (time_t)from_value)) {
           if (debug_value > 0) {
-            Rprintf("  OLD STAGE 2 in_ensemble=%lu; from_value=%lu; counter=%d; "
-                    "counter_last=%d\n",
+            Rprintf("  OLD STAGE 2 in_ensemble=%lu from_value=%lu counter=%lu "
+                    "counter_last=%lu\n",
                     in_ensemble, from_value, counter, counter_last);
           }
           //  Handle the 'by' value.
@@ -456,8 +455,8 @@ List do_ldc_rdi_in_file(StringVector filename, IntegerVector from,
                (ensemble_time - ensemble_time_last) >= (time_t)by_value)) {
             if (debug_value > 0) {
               Rprintf(
-                  "  OLD STAGE 3 in_ensemble=%lu; from_value=%lu; counter=%d; "
-                  "counter_last=%d\n",
+                  "  OLD STAGE 3 in_ensemble=%lu from_value=%lu counter=%lu "
+                  "counter_last=%lu\n",
                   in_ensemble, from_value, counter, counter_last);
             }
             // Copy ensemble to output buffer, after 6 bytes of header

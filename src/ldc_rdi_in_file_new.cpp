@@ -380,15 +380,16 @@ List do_ldc_rdi_in_file_new(StringVector filename, IntegerVector from,
         if (debug_value > 0) {
           Rprintf("  NEW in_ensemble=%lu; from_value=%lu; counter=%lu; "
                   "counter_last=%lu ensemble_time=%lu\n",
-                  in_ensemble, from_value, counter, counter_last, ensemble_time);
+                  in_ensemble, from_value, counter, counter_last,
+                  ensemble_time);
         }
         // Have we got to the starting location yet?
         if ((mode_value == 0 && in_ensemble >= (from_value - 1)) ||
             (mode_value == 1 && ensemble_time >= (time_t)from_value)) {
           if (debug_value > 0) {
             Rprintf(
-                "  NEW STAGE 2 in_ensemble=%lu; from_value = % d; counter = % "
-                "d; counter_last = % d\n ",
+                "  NEW STAGE 2 in_ensemble=%lu from_value = %lu counter = %lu"
+                "counter_last = %lu\n ",
                 in_ensemble, from_value, counter, counter_last);
           }
           //  Handle the 'by' value.
@@ -399,7 +400,7 @@ List do_ldc_rdi_in_file_new(StringVector filename, IntegerVector from,
             if (debug_value > 0) {
               Rprintf(
                   "  NEW STAGE 3 in_ensemble=%lu; from_value=%lu; counter=%lu; "
-                  "counter_last=%d\n",
+                  "counter_last=%lu\n",
                   in_ensemble, from_value, counter, counter_last);
             }
             // Copy ensemble to output buffer, after 6 bytes of header
@@ -563,7 +564,7 @@ List do_ldc_rdi_in_file_new(StringVector filename, IntegerVector from,
   IntegerVector time(out_ensemble);
   RawVector buf(obuf.size());
   if (debug_value > 0) {
-    Rprintf("about to copy %d ensembles\n", out_ensemble);
+    Rprintf("about to copy %lu ensembles\n", out_ensemble);
   }
   for (unsigned long int i = 0; i < out_ensemble; i++) {
     ensemble_in_file[i] = ensemble_in_files[i];
@@ -573,7 +574,7 @@ List do_ldc_rdi_in_file_new(StringVector filename, IntegerVector from,
     sec100[i] = sec100s[i];
   }
   if (debug_value > 0) {
-    Rprintf("about to copy %d buf entries\n", obuf.size());
+    Rprintf("about to copy %lu buf entries\n", obuf.size());
   }
   for (unsigned long int i = 0; i < obuf.size(); i++) {
     buf[i] = obuf[i];
