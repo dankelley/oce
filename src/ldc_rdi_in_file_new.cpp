@@ -379,19 +379,15 @@ List do_ldc_rdi_in_file_new(StringVector filename, IntegerVector from,
         // and the calling R code is (naturally) in R notation.
         if (debug_value > 0) {
           Rprintf("  NEW in_ensemble=%lu; from_value=%lu; counter=%lu; "
-                  "counter_last=%lu\n",
-                  in_ensemble, from_value, counter, counter_last);
-          Rprintf("  NEW mode_value=%d in_ensemble=%d from_value=%d "
-                  "ensemble_time=%d from_value=%d\n",
-                  mode_value, in_ensemble, from_value, ensemble_time,
-                  from_value);
+                  "counter_last=%lu ensemble_time=%lu\n",
+                  in_ensemble, from_value, counter, counter_last, ensemble_time);
         }
         // Have we got to the starting location yet?
         if ((mode_value == 0 && in_ensemble >= (from_value - 1)) ||
             (mode_value == 1 && ensemble_time >= (time_t)from_value)) {
           if (debug_value > 0) {
             Rprintf(
-                "  NEW STAGE 2 in_ensemble=%d; from_value = % d; counter = % "
+                "  NEW STAGE 2 in_ensemble=%lu; from_value = % d; counter = % "
                 "d; counter_last = % d\n ",
                 in_ensemble, from_value, counter, counter_last);
           }
@@ -402,7 +398,7 @@ List do_ldc_rdi_in_file_new(StringVector filename, IntegerVector from,
                (ensemble_time - ensemble_time_last) >= (time_t)by_value)) {
             if (debug_value > 0) {
               Rprintf(
-                  "  NEW STAGE 3 in_ensemble=%d; from_value=%d; counter=%d; "
+                  "  NEW STAGE 3 in_ensemble=%lu; from_value=%lu; counter=%lu; "
                   "counter_last=%d\n",
                   in_ensemble, from_value, counter, counter_last);
             }
@@ -445,7 +441,7 @@ List do_ldc_rdi_in_file_new(StringVector filename, IntegerVector from,
         in_ensemble++;
         // If 'max' is positive, check that we return only that many
         // ensemble pointers.
-        //> Rprintf("L417 in_ensemble=%d from_value=%d to_value=%d\n",
+        //> Rprintf("L417 in_ensemble=%lu from_value=%lu to_value=%lu\n",
         // in_ensemble, from_value, to_value);
         if ((mode_value == 0 && (to_value > 0 && in_ensemble > to_value)) ||
             (mode_value == 1 && (ensemble_time >= (time_t)to_value))) {

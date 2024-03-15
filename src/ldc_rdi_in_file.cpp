@@ -436,8 +436,8 @@ List do_ldc_rdi_in_file(StringVector filename, IntegerVector from,
           Rprintf("  OLD in_ensemble=%lu; from_value=%lu; counter=%lu; "
                   "counter_last=%lu\n",
                   in_ensemble, from_value, counter, counter_last);
-          Rprintf("  OLD mode_value=%d in_ensemble=%d from_value=%d "
-                  "ensemble_time=%d from_value=%d\n",
+          Rprintf("  OLD mode_value=%d in_ensemble=%lu from_value=%lu "
+                  "ensemble_time=%d\n",
                   mode_value, in_ensemble, from_value, ensemble_time,
                   from_value);
         }
@@ -445,7 +445,7 @@ List do_ldc_rdi_in_file(StringVector filename, IntegerVector from,
         if ((mode_value == 0 && in_ensemble >= (from_value - 1)) ||
             (mode_value == 1 && ensemble_time >= (time_t)from_value)) {
           if (debug_value > 0) {
-            Rprintf("  OLD STAGE 2 in_ensemble=%d; from_value=%d; counter=%d; "
+            Rprintf("  OLD STAGE 2 in_ensemble=%lu; from_value=%lu; counter=%d; "
                     "counter_last=%d\n",
                     in_ensemble, from_value, counter, counter_last);
           }
@@ -456,7 +456,7 @@ List do_ldc_rdi_in_file(StringVector filename, IntegerVector from,
                (ensemble_time - ensemble_time_last) >= (time_t)by_value)) {
             if (debug_value > 0) {
               Rprintf(
-                  "  OLD STAGE 3 in_ensemble=%d; from_value=%d; counter=%d; "
+                  "  OLD STAGE 3 in_ensemble=%lu; from_value=%lu; counter=%d; "
                   "counter_last=%d\n",
                   in_ensemble, from_value, counter, counter_last);
             }
@@ -473,7 +473,7 @@ List do_ldc_rdi_in_file(StringVector filename, IntegerVector from,
             } else {
               counter_last = counter;
             }
-            // Rprintf("saving at in_ensemble=%d, counter=%d, by=%d\n",
+            // Rprintf("saving at in_ensemble=%lu, counter=%d, by=%d\n",
             // in_ensemble, counter, by_value);
             //     ensembles[out_ensemble] = last_start;
             unsigned int timePointer =
@@ -513,7 +513,7 @@ List do_ldc_rdi_in_file(StringVector filename, IntegerVector from,
         in_ensemble++;
         // If 'max' is positive, check that we return only that many
         // ensemble pointers.
-        //> Rprintf("L417 in_ensemble=%d from_value=%d to_value=%d\n",
+        //> Rprintf("L417 in_ensemble=%lu from_value=%lu to_value=%lu\n",
         // in_ensemble, from_value, to_value);
         if ((mode_value == 0 && (to_value > 0 && in_ensemble > to_value)) ||
             (mode_value == 1 && (ensemble_time >= (time_t)to_value))) {
