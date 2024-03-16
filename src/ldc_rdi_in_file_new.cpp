@@ -203,8 +203,7 @@ List do_ldc_rdi_in_file_new(StringVector filename, IntegerVector from,
     ::Rf_error("'mode' must be 0 or 1");
   }
   if (debug_value > 0) {
-    Rprintf(
-        "\n\ndo_ldc_rdi_in_file_new() printing diagnostics since debug>0\n");
+    Rprintf("    do_ldc_rdi_in_file_new() {\n");
   }
   int c, clast = 0x00;
   int byte1 = 0x7f;
@@ -216,7 +215,8 @@ List do_ldc_rdi_in_file_new(StringVector filename, IntegerVector from,
   unsigned long int cindex = 0;
   unsigned long int outEnsemblePointer = 1;
   if (start_index > 1) {
-    Rprintf("skipping %lu bytes at start of the file, seeking 7F7F byte pair\n",
+    Rprintf("      skipping %lu bytes at start of the file, seeking 7F7F byte "
+            "pair\n",
             start_index - 1);
     for (unsigned int i = 1; i < start_index; i++) {
       fgetc(fp);
@@ -255,9 +255,10 @@ List do_ldc_rdi_in_file_new(StringVector filename, IntegerVector from,
     c = fgetc(fp);
     cindex++;
     if (c == EOF) {
-      Rprintf("Got to end of RDI file while trying to read the first header "
-              "byte (cindex=%lu; last7f7f=%lu)\n",
-              cindex, last7f7f);
+      Rprintf(
+          "      got to end of RDI file while trying to read the first header "
+          "byte (cindex=%lu; last7f7f=%lu)\n",
+          cindex, last7f7f);
       break;
     }
     // Locate "ensemble starts", spots where a 0x7f is followed by a second
@@ -269,24 +270,27 @@ List do_ldc_rdi_in_file_new(StringVector filename, IntegerVector from,
       // ensemble, and the data in the ensemble (sans the two bytes
       // at the end of the data, which store the checksum).
       if (debug_value > 0) {
-        Rprintf("0x7f 0x7f at position %ld (cindex=%lu last7f7f=%lu)\n",
-                ftell(fp), cindex, last7f7f);
+        Rprintf(
+            "      0x7f 0x7f at file position %ld (cindex=%lu last7f7f=%lu)\n",
+            ftell(fp), cindex, last7f7f);
       }
       check_sum = (unsigned short int)byte1;
       check_sum += (unsigned short int)byte2;
       b1 = fgetc(fp);
       cindex++;
       if (b1 == EOF) {
-        Rprintf("EOF while seeking first 0x7F (cindex %lu; last7f7f=%lu)\n",
-                cindex, last7f7f);
+        Rprintf(
+            "      EOF while seeking first 0x7F (cindex %lu; last7f7f=%lu)\n",
+            cindex, last7f7f);
         break;
       }
       check_sum += (unsigned short int)b1;
       b2 = fgetc(fp);
       cindex++;
       if (b2 == EOF) {
-        Rprintf("EOF while seeking second 0x7F (cindex=%lu; last7f7f=%lu)\n",
-                cindex, last7f7f);
+        Rprintf(
+            "      EOF while seeking second 0x7F (cindex=%lu; last7f7f=%lu)\n",
+            cindex, last7f7f);
         break;
       }
       check_sum += (unsigned short int)b2;
@@ -296,9 +300,9 @@ List do_ldc_rdi_in_file_new(StringVector filename, IntegerVector from,
       // in the bytes_to_check value that we now calculate).
       bytes_to_check = (unsigned int)b1 + 256 * (unsigned int)b2;
       if (debug_value > 0) {
-        Rprintf(
-            "\nbytes_to_check=%d based on b1=%d(0x%02x) and b2=%d(0x%02x)\n",
-            bytes_to_check, b1, b1, b2, b2);
+        Rprintf("        bytes_to_check=%d based on b1=%d(0x%02x) and "
+                "b2=%d(0x%02x)\n",
+                bytes_to_check, b1, b1, b2, b2);
       }
       // Catch two errors
       if (bytes_to_check < 5) {
@@ -309,13 +313,15 @@ List do_ldc_rdi_in_file_new(StringVector filename, IntegerVector from,
         ::Rf_error("bytes_to_check should be >=4 but it is %d\n",
                    bytes_to_check);
       }
-      unsigned int bytes_to_read =
-          bytes_to_check - 4; // byte1&byte2&check_sum used 4 bytes already
+      // byte1&byte2&check_sum used 4 bytes already
+      int bytes_to_read = bytes_to_check - 4;
       // Expand the ensemble buffer, ebuf, if need be.
       if (bytes_to_read > ebuf.size()) {
         if (debug_value > 0) {
-          Rprintf("Increasing 'ebuf' buffer size from %lu bytes to %d bytes\n",
-                  (long unsigned int)ebuf.size(), bytes_to_read);
+          Rprintf(
+              "          (increasing 'ebuf' buffer size from %lu bytes to %d "
+              "bytes)\n",
+              (long unsigned int)ebuf.size(), bytes_to_read);
         }
         ebuf.resize(bytes_to_read);
       }
@@ -323,7 +329,7 @@ List do_ldc_rdi_in_file_new(StringVector filename, IntegerVector from,
       unsigned int bytesRead;
       bytesRead = fread(&ebuf[0], bytes_to_read, sizeof(unsigned char), fp);
       if (feof(fp) || bytesRead == 0) {
-        Rprintf("EOF at cindex=%lu (last7f7f=%lu)\n", cindex, last7f7f);
+        Rprintf("      EOF at cindex=%lu (last7f7f=%lu)\n", cindex, last7f7f);
         break;
       }
       cindex += bytes_to_read;
@@ -334,24 +340,24 @@ List do_ldc_rdi_in_file_new(StringVector filename, IntegerVector from,
       cs1 = fgetc(fp);
       cindex++;
       if (cs1 == EOF) {
-        Rprintf(
-            "EOF while seeking 1st checksum byte (cindex %lu; last7f7f=%lu)\n",
-            cindex, last7f7f);
+        Rprintf("      EOF while seeking 1st checksum byte (cindex %lu; "
+                "last7f7f=%lu)\n",
+                cindex, last7f7f);
         break;
       }
       cs2 = fgetc(fp);
       cindex++;
       if (cs2 == EOF) {
-        Rprintf(
-            "EOF while seeking 2nd checksum byte (cindex %lu; last7f7f=%lu)\n",
-            cindex, last7f7f);
+        Rprintf("      EOF while seeking 2nd checksum byte (cindex %lu; "
+                "last7f7f=%lu)\n",
+                cindex, last7f7f);
         break;
       }
       desired_check_sum =
           ((unsigned short int)cs1) | ((unsigned short int)(cs2 << 8));
       if (check_sum == desired_check_sum) {
         if (debug_value > 0) {
-          Rprintf("  good checksum at cindex %lu\n", cindex);
+          Rprintf("        good checksum\n");
         }
         // use later, if find bad checksum (issue 1437)
         bytes_to_check_last = bytes_to_check;
@@ -377,8 +383,8 @@ List do_ldc_rdi_in_file_new(StringVector filename, IntegerVector from,
         // See whether we are past the 'from' condition. Note the "-1"
         // for the ensemble case, because R starts counts at 1, not 0,
         // and the calling R code is (naturally) in R notation.
-        if (debug_value > 0) {
-          Rprintf("  NEW in_ensemble=%lu; from_value=%lu; counter=%lu; "
+        if (debug_value > 1) {
+          Rprintf("        in_ensemble=%lu from_value=%lu counter=%lu "
                   "counter_last=%lu ensemble_time=%lu\n",
                   in_ensemble, from_value, counter, counter_last,
                   (long unsigned int)ensemble_time);
@@ -386,22 +392,13 @@ List do_ldc_rdi_in_file_new(StringVector filename, IntegerVector from,
         // Have we got to the starting location yet?
         if ((mode_value == 0 && in_ensemble >= (from_value - 1)) ||
             (mode_value == 1 && ensemble_time >= (time_t)from_value)) {
-          if (debug_value > 0) {
-            Rprintf(
-                "  NEW STAGE 2 in_ensemble=%lu from_value = %lu counter = %lu"
-                "counter_last = %lu\n ",
-                in_ensemble, from_value, counter, counter_last);
-          }
           //  Handle the 'by' value.
           if ((mode_value == 0 && (counter == from_value - 1 ||
                                    (counter - counter_last) >= by_value)) ||
               (mode_value == 1 &&
                (ensemble_time - ensemble_time_last) >= (time_t)by_value)) {
-            if (debug_value > 0) {
-              Rprintf(
-                  "  NEW STAGE 3 in_ensemble=%lu; from_value=%lu; counter=%lu; "
-                  "counter_last=%lu\n",
-                  in_ensemble, from_value, counter, counter_last);
+            if (debug_value > 1) {
+              Rprintf("        satisfies 'from', 'by' and 'to' criteria\n");
             }
             // Copy ensemble to output buffer, after 6 bytes of header
             ensemble_in_files.push_back(1 + last7f7f); // +1 for R notation
@@ -433,8 +430,7 @@ List do_ldc_rdi_in_file_new(StringVector filename, IntegerVector from,
           } else {
             if (debug_value > 0) {
               Rprintf(
-                  "  NEW skipping at in_ensemble=%lu, counter=%lu, by=%lu\n",
-                  in_ensemble, counter, by_value);
+                  "      does not satisfy 'from', 'by' and 'to' criteria\n");
             }
           }
           counter++;
@@ -450,16 +446,19 @@ List do_ldc_rdi_in_file_new(StringVector filename, IntegerVector from,
         }
       } else {
         cindex = ftell(fp); // synch up, just to be sure
-        Rprintf("Warning: bad checksum %d (expected %d) at byte %lu\n",
-                check_sum, desired_check_sum, cindex);
+        if (debug_value > 0) {
+          Rprintf("        bad checksum %d (expected %d)\n", check_sum,
+                  desired_check_sum);
+        }
         // maybe the number of bytes to check was wrong (issue 1437)
         if (bytes_to_check_last != bytes_to_check) {
           if (bytes_to_check == 0) {
             ::Rf_error("bad file: first ensemble has a checksum error\n");
           }
           if (debug_value > 0) {
-            Rprintf("length (%d bytes) disagrees with previous (%d bytes)\n",
-                    bytes_to_check, bytes_to_check_last);
+            Rprintf(
+                "      length (%d bytes) disagrees with previous (%d bytes)\n",
+                bytes_to_check, bytes_to_check_last);
           }
           // Skip to just past the last 7f7f, and then start looking
           // for the next valid 7f7f.
@@ -470,12 +469,12 @@ List do_ldc_rdi_in_file_new(StringVector filename, IntegerVector from,
             c = fgetc(fp);
             cindex++;
             if (debug_value > 0) {
-              Rprintf("realign iii=%d cindex=%lu c=0x%02x clast=0x%02x\n", iii,
-                      cindex, c, clast);
+              Rprintf("      realign iii=%d cindex=%lu c=0x%02x clast=0x%02x\n",
+                      iii, cindex, c, clast);
             }
             if (clast == byte1 && c == byte2) {
               if (debug_value > 0) {
-                Rprintf(" got 7f 7f again at byte %ld, after realigning\n",
+                Rprintf("      got 7f 7f again at byte %ld, after realigning\n",
                         ftell(fp));
               }
               // check if next two bytes give same length as before
@@ -488,23 +487,26 @@ List do_ldc_rdi_in_file_new(StringVector filename, IntegerVector from,
                 fseek(fp, -2L, SEEK_CUR);
                 // synch up, just to be sure
                 cindex = ftell(fp);
-                Rprintf(
-                    "recovered from bad checksum, restarting at index %lu\n",
-                    cindex);
+                Rprintf("      recovered from bad checksum, restarting at "
+                        "index %lu\n",
+                        cindex);
                 break;
               } else {
                 if (debug_value > 0)
-                  Rprintf(" ACCIDENTALLY MATCH since bytes_to_check=%d, not "
-                          "expected %d\n",
-                          bytes_to_check, bytes_to_check_last);
+                  Rprintf(
+                      "      ACCIDENTALLY MATCH since bytes_to_check=%d, not "
+                      "expected %d\n",
+                      bytes_to_check, bytes_to_check_last);
               }
             }
             clast = c;
           }
         }
         if (debug_value > 0) {
-          Rprintf("in_ensemble=%lu; from_value=%lu\n", in_ensemble, from_value);
-          Rprintf("counter=%lu; counter_last=%lu\n", counter, counter_last);
+          Rprintf("      in_ensemble=%lu; from_value=%lu\n", in_ensemble,
+                  from_value);
+          Rprintf("      counter=%lu; counter_last=%lu\n", counter,
+                  counter_last);
         }
       }
       R_CheckUserInterrupt(); // only check once per ensemble, for speed
@@ -513,26 +515,27 @@ List do_ldc_rdi_in_file_new(StringVector filename, IntegerVector from,
       cindex = ftell(fp); // synch up, just to be sure
       warningsBytePair++;
       if (warningsBytePair < 6) {
-        Rprintf("Warning: bad ensemble-start at index %lu (at most 5 warnings "
+        Rprintf("      Warning: bad ensemble-start at index %lu (at most 5 "
+                "warnings "
                 "will be issued)\n",
                 cindex);
       }
       if (debug_value > 0) {
-        Rprintf("try skipping to get 0x7f 0x7f pair\n");
+        Rprintf("      try skipping to get 0x7f 0x7f pair\n");
       }
       for (unsigned int iii = 0; iii < 2 * bytes_to_check_last; iii++) {
         c = fgetc(fp);
         cindex++;
         if (debug_value > 0) {
-          Rprintf("skipping iii=%d cindex=%lu c=0x%02x clast=0x%02x\n", iii,
-                  cindex, c, clast);
+          Rprintf("      skipping iii=%d cindex=%lu c=0x%02x clast=0x%02x\n",
+                  iii, cindex, c, clast);
         }
         if (clast == byte1 && c == byte2) {
           if (debug_value > 0) {
-            Rprintf(" got 7f 7f again at byte %ld, after skipping. FYI "
+            Rprintf("      got 7f 7f again at byte %ld, after skipping. FYI "
                     "bytes_to_check_last=%d\n",
                     ftell(fp), bytes_to_check_last);
-            Rprintf("    ... recovered from bad ensemble-start byte-pair by "
+            Rprintf("      recovered from bad ensemble-start byte-pair by "
                     "restarting at byte %lu in file\n",
                     cindex);
           }
@@ -544,7 +547,7 @@ List do_ldc_rdi_in_file_new(StringVector filename, IntegerVector from,
         clast = c;
       }
       if (debug_value > 0) {
-        Rprintf("n");
+        Rprintf("\n");
       }
     }
     c = fgetc(fp);
@@ -564,7 +567,7 @@ List do_ldc_rdi_in_file_new(StringVector filename, IntegerVector from,
   IntegerVector time(out_ensemble);
   RawVector buf(obuf.size());
   if (debug_value > 0) {
-    Rprintf("about to copy %lu ensembles\n", out_ensemble);
+    Rprintf("      about to copy %lu ensembles\n", out_ensemble);
   }
   for (unsigned long int i = 0; i < out_ensemble; i++) {
     ensemble_in_file[i] = ensemble_in_files[i];
@@ -574,7 +577,8 @@ List do_ldc_rdi_in_file_new(StringVector filename, IntegerVector from,
     sec100[i] = sec100s[i];
   }
   if (debug_value > 0) {
-    Rprintf("about to copy %lu buf entries\n", (long unsigned int)obuf.size());
+    Rprintf("      about to copy %lu buf entries\n",
+            (long unsigned int)obuf.size());
   }
   for (unsigned long int i = 0; i < obuf.size(); i++) {
     buf[i] = obuf[i];
@@ -588,7 +592,7 @@ List do_ldc_rdi_in_file_new(StringVector filename, IntegerVector from,
             warningsBytePair);
   }
   if (debug_value > 0) {
-    Rprintf("Returning from C++ function named do_ldc_rdi_in_file_new.\n");
+    Rprintf("    } do_ldc_rdi_in_file_new()\n");
     // Rprintf("Returning from C++ function named do_ldc_rdi_in_file_new.
     // FYI:\n"); Rprintf("  obuf.size() = %d; obuf.capacity() = %d\n",
     // obuf.size(), obuf.capacity());
