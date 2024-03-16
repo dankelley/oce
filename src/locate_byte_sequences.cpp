@@ -160,7 +160,7 @@ NumericVector locateByteSequences(RawVector buf, RawVector match,
   Rprintf("NEW: ires=%d\n", ires);
 #endif
   NumericVector res(tmpres.size());
-  for (long long int i = 0; i < tmpres.size(); i++) {
+  for (long long unsigned int i = 0; i < tmpres.size(); i++) {
     res[i] = tmpres[i];
   }
   return (res);
@@ -231,7 +231,7 @@ NumericVector locateVectorImuSequences(RawVector buf) {
     }
   }
   NumericVector res(tmpres.size());
-  for (long long int i = 0; i < tmpres.size(); i++) {
+  for (long long unsigned int i = 0; i < tmpres.size(); i++) {
     res[i] = tmpres[i];
   }
   return (res);

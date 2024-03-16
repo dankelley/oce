@@ -12,7 +12,7 @@ NumericVector unwrapSequenceNumbers(IntegerVector seq, IntegerVector bytes) {
   // "unwrap" a vector of integers that are sequence numbers wrapping in 'bytes'
   // bytes, creating the sequence numbers that might have resulted, had 'seq'
   // not been created modulo 'bytes' bytes.
-  long long int mod, i, n = seq.size(), last, cumulative = 0;
+  long long int mod, n = seq.size(), last, cumulative = 0;
   if (bytes[0] == 2) {
     mod = 65535 + 1;
   } else {
@@ -25,7 +25,7 @@ NumericVector unwrapSequenceNumbers(IntegerVector seq, IntegerVector bytes) {
   tmpres.reserve(n);
   tmpres.push_back(seq[0]);
   last = seq[0];
-  for (i = 1; i < n; i++) {
+  for (long long int i = 1; i < n; i++) {
     if (seq[i] < last) {
       cumulative += mod;
 #ifdef DEBUG
@@ -40,7 +40,7 @@ NumericVector unwrapSequenceNumbers(IntegerVector seq, IntegerVector bytes) {
     last = seq[i];
   }
   NumericVector res(tmpres.size());
-  for (int i = 0; i < tmpres.size(); i++) {
+  for (long long unsigned int i = 0; i < tmpres.size(); i++) {
     res[i] = tmpres[i];
   }
   return (res);
@@ -77,7 +77,8 @@ NumericVector ldcSontekAdv22(RawVector buf, IntegerVector max) {
    *
    * 21:22 checksum of bytes 1 to 20
    */
-  long long int i, lbuf = buf.size(), max_lres = max[0];
+  long long int i, lbuf = buf.size();
+  long long unsigned int max_lres = (long long unsigned int)max[0];
   if (max_lres <= 0) {
     max_lres = lbuf;
   }
@@ -121,7 +122,7 @@ NumericVector ldcSontekAdv22(RawVector buf, IntegerVector max) {
     }
   }
   NumericVector res(tmpres.size());
-  for (i = 0; i < tmpres.size(); i++) {
+  for (long long unsigned i = 0; i < tmpres.size(); i++) {
     res[i] = tmpres[i];
   }
   return (res);

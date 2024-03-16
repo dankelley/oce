@@ -210,8 +210,8 @@ List do_ldc_rdi_in_file_new(StringVector filename, IntegerVector from,
   int byte2 = 0x7f;
   // int byte2 = 0x79;
   unsigned short int check_sum, desired_check_sum;
-  unsigned int bytes_to_check = 0;
-  unsigned int bytes_to_check_last = 0; // permit bad chunk length (issue 1437)
+  int bytes_to_check = 0;
+  int bytes_to_check_last = 0; // permit bad chunk length (issue 1437)
   unsigned long int cindex = 0;
   unsigned long int outEnsemblePointer = 1;
   if (start_index > 1) {
@@ -316,12 +316,12 @@ List do_ldc_rdi_in_file_new(StringVector filename, IntegerVector from,
       // byte1&byte2&check_sum used 4 bytes already
       int bytes_to_read = bytes_to_check - 4;
       // Expand the ensemble buffer, ebuf, if need be.
-      if (bytes_to_read > ebuf.size()) {
+      if (bytes_to_read > (int)ebuf.size()) {
         if (debug_value > 0) {
           Rprintf(
-              "          (increasing 'ebuf' buffer size from %lu bytes to %d "
+              "          (increasing 'ebuf' buffer size from %d bytes to %d "
               "bytes)\n",
-              (long unsigned int)ebuf.size(), bytes_to_read);
+              (int)ebuf.size(), bytes_to_read);
         }
         ebuf.resize(bytes_to_read);
       }
@@ -333,7 +333,7 @@ List do_ldc_rdi_in_file_new(StringVector filename, IntegerVector from,
         break;
       }
       cindex += bytes_to_read;
-      for (unsigned int ib = 0; ib < bytes_to_read; ib++) {
+      for (int ib = 0; ib < bytes_to_read; ib++) {
         check_sum += (unsigned short int)ebuf[ib];
       }
       int cs1, cs2;
@@ -422,7 +422,7 @@ List do_ldc_rdi_in_file_new(StringVector filename, IntegerVector from,
             obuf.push_back(byte2); // 0x7f
             obuf.push_back(b1);    // length of ensemble, byte 1
             obuf.push_back(b2);    // length of ensemble, byte 1
-            for (unsigned int i = 0; i < bytes_to_read; i++) {
+            for (int i = 0; i < bytes_to_read; i++) {
               obuf.push_back(ebuf[i]); // data, not including the checksum
             }
             obuf.push_back(cs1); // checksum  byte 1
@@ -465,7 +465,7 @@ List do_ldc_rdi_in_file_new(StringVector filename, IntegerVector from,
           cindex = last7f7f;
           fseek(fp, last7f7f, SEEK_SET);
           clast = 0;
-          for (unsigned int iii = 0; iii < 2 * bytes_to_check_last; iii++) {
+          for (int iii = 0; iii < 2 * bytes_to_check_last; iii++) {
             c = fgetc(fp);
             cindex++;
             if (debug_value > 0) {
@@ -523,7 +523,7 @@ List do_ldc_rdi_in_file_new(StringVector filename, IntegerVector from,
       if (debug_value > 0) {
         Rprintf("      try skipping to get 0x7f 0x7f pair\n");
       }
-      for (unsigned int iii = 0; iii < 2 * bytes_to_check_last; iii++) {
+      for (int iii = 0; iii < 2 * bytes_to_check_last; iii++) {
         c = fgetc(fp);
         cindex++;
         if (debug_value > 0) {
