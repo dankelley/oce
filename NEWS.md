@@ -1,5 +1,6 @@
 # oce 1.8.3
 
+* Add `mapDirectionFieldNEW()` (temporary name) to allow wind barbs (issue 2191).
 * Add `swSpiciness0()`, `swSpiciness1()`, and `swSpiciness2()` (issue #2188). 
 * Change `binMean2D()` to use previous (6-month-old) method (issue #2199).
 * Change `ctdDecimate()` to add the `na.rm` argument (issue #2192).
