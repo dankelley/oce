@@ -101,8 +101,8 @@
 
 
 <dt>u, v</dt>
-<dd><p>numeric vectors of the components of a vector to be shown as a direction
-field.</p></dd>
+<dd><p>numeric vectors of the components of a vector to be
+shown as a direction field.</p></dd>
 
 
 <dt>scale</dt>
@@ -118,24 +118,23 @@ field.</p></dd>
 
 
 <dt>col</dt>
-<dd><p>color of arrows.  This may be a single color, or a matrix
-of colors of the same dimension as <code>u</code>.</p></dd>
+<dd><p>color of arrows.  This may be a single color, or a
+matrix of colors of the same dimension as <code>u</code>.</p></dd>
 
 
 <dt>...</dt>
-<dd><p>optional arguments passed to <code><a href="https://rdrr.io/r/graphics/arrows.html" class="external-link">arrows()</a></code>, e.g.
-<code>angle</code> and <code>lwd</code> can be useful in differentiating different
-fields.</p></dd>
+<dd><p>optional arguments passed to <code><a href="https://rdrr.io/r/graphics/arrows.html" class="external-link">arrows()</a></code>, e.g. <code>angle</code>
+and <code>lwd</code> can be useful in differentiating different fields.</p></dd>
 
 </dl></div>
     <div id="details">
     <h2>Details</h2>
-    <p>Adds arrows for a direction field on an existing map.  There are different
-possibilities for how <code>longitude</code>, <code>latitude</code> and <code>u</code> and
-<code>v</code> match up.  In one common case, all four of these are matrices, e.g.
-output from a numerical model.  In another, <code>longitude</code> and
-<code>latitude</code> are the coordinates along the matrices, and are thus stored in
-vectors with lengths that match appropriately.</p>
+    <p>Adds arrows for a direction field on an existing map.  There are
+different possibilities for how <code>longitude</code>, <code>latitude</code> and <code>u</code> and
+<code>v</code> match up.  In one common case, all four of these are matrices,
+e.g. output from a numerical model.  In another, <code>longitude</code> and
+<code>latitude</code> are the coordinates along the matrices, and are thus
+stored in vectors with lengths that match appropriately.</p>
     </div>
     <div id="sample-of-usage">
     <h2>Sample of Usage</h2>
@@ -144,21 +143,24 @@ vectors with lengths that match appropriately.</p>
 <div class="sourceCode"><pre><code><span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dankelley.github.io/oce/" class="external-link">oce</a></span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">coastlineWorld</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mar<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">4</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="fu"><a href="../reference/mapPlot.html">mapPlot</a></span><span class="op">(</span><span class="va">coastlineWorld</span>, longitudelim<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">120</span>,<span class="op">-</span><span class="fl">55</span><span class="op">)</span>, latitudelim<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">35</span>, <span class="fl">50</span><span class="op">)</span>,</span>
-<span>        projection<span class="op">=</span><span class="st">"+proj=laea +lat0=40 +lat1=60 +lon_0=-110"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mar <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">4</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/mapPlot.html">mapPlot</a></span><span class="op">(</span><span class="va">coastlineWorld</span>,</span>
+<span>    longitudelim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">120</span>, <span class="op">-</span><span class="fl">55</span><span class="op">)</span>, latitudelim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">35</span>, <span class="fl">50</span><span class="op">)</span>,</span>
+<span>    projection <span class="op">=</span> <span class="st">"+proj=laea +lat0=40 +lat1=60 +lon_0=-110"</span></span>
+<span><span class="op">)</span></span>
 <span><span class="va">lon</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="op">-</span><span class="fl">120</span>, <span class="op">-</span><span class="fl">60</span>, <span class="fl">15</span><span class="op">)</span></span>
 <span><span class="va">lat</span> <span class="op">&lt;-</span> <span class="fl">45</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="op">-</span><span class="fl">15</span>, <span class="fl">15</span>, <span class="fl">5</span><span class="op">)</span></span>
-<span><span class="va">lonm</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/expand.grid.html" class="external-link">expand.grid</a></span><span class="op">(</span><span class="va">lon</span>, <span class="va">lat</span><span class="op">)</span><span class="op">[</span>, <span class="fl">1</span><span class="op">]</span>, nrow<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">lon</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="va">latm</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/expand.grid.html" class="external-link">expand.grid</a></span><span class="op">(</span><span class="va">lon</span>, <span class="va">lat</span><span class="op">)</span><span class="op">[</span>, <span class="fl">2</span><span class="op">]</span>, nrow<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">lon</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co"># vectors pointed 45 degrees clockwise from north</span></span>
-<span><span class="va">u</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fl">1</span><span class="op">/</span><span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">sqrt</a></span><span class="op">(</span><span class="fl">2</span><span class="op">)</span>, nrow<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">lon</span><span class="op">)</span>, ncol<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">lat</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="va">v</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fl">1</span><span class="op">/</span><span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">sqrt</a></span><span class="op">(</span><span class="fl">2</span><span class="op">)</span>, nrow<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">lon</span><span class="op">)</span>, ncol<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">lat</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="fu"><a href="../reference/mapDirectionField.html">mapDirectionField</a></span><span class="op">(</span><span class="va">lon</span>, <span class="va">lat</span>, <span class="va">u</span>, <span class="va">v</span>, scale<span class="op">=</span><span class="fl">3</span><span class="op">)</span></span>
-<span><span class="fu"><a href="../reference/mapDirectionField.html">mapDirectionField</a></span><span class="op">(</span><span class="va">lonm</span>, <span class="va">latm</span>, <span class="fl">0</span>, <span class="fl">1</span>, scale<span class="op">=</span><span class="fl">3</span>, col<span class="op">=</span><span class="st">"red"</span><span class="op">)</span></span>
-<span><span class="co"># Color code by longitude, using thick lines</span></span>
+<span><span class="va">lonm</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/expand.grid.html" class="external-link">expand.grid</a></span><span class="op">(</span><span class="va">lon</span>, <span class="va">lat</span><span class="op">)</span><span class="op">[</span>, <span class="fl">1</span><span class="op">]</span>, nrow <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">lon</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">latm</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/expand.grid.html" class="external-link">expand.grid</a></span><span class="op">(</span><span class="va">lon</span>, <span class="va">lat</span><span class="op">)</span><span class="op">[</span>, <span class="fl">2</span><span class="op">]</span>, nrow <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">lon</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co"># Black vectors pointed 45 degrees clockwise from north,</span></span>
+<span><span class="va">u</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fl">1</span> <span class="op">/</span> <span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">sqrt</a></span><span class="op">(</span><span class="fl">2</span><span class="op">)</span>, nrow <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">lon</span><span class="op">)</span>, ncol <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">lat</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">v</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fl">1</span> <span class="op">/</span> <span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">sqrt</a></span><span class="op">(</span><span class="fl">2</span><span class="op">)</span>, nrow <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">lon</span><span class="op">)</span>, ncol <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">lat</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/mapDirectionField.html">mapDirectionField</a></span><span class="op">(</span><span class="va">lon</span>, <span class="va">lat</span>, <span class="va">u</span>, <span class="va">v</span>, scale <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span>
+<span><span class="co"># Red vectors for northward direction</span></span>
+<span><span class="fu"><a href="../reference/mapDirectionField.html">mapDirectionField</a></span><span class="op">(</span><span class="va">lonm</span>, <span class="va">latm</span>, <span class="fl">0</span>, <span class="fl">1</span>, scale <span class="op">=</span> <span class="fl">3</span>, col <span class="op">=</span> <span class="st">"red"</span><span class="op">)</span></span>
+<span><span class="co"># Eastward direction coloured by longitude</span></span>
 <span><span class="va">col</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/colormap.html">colormap</a></span><span class="op">(</span><span class="va">lonm</span><span class="op">)</span><span class="op">$</span><span class="va">zcol</span></span>
-<span><span class="fu"><a href="../reference/mapDirectionField.html">mapDirectionField</a></span><span class="op">(</span><span class="va">lonm</span>, <span class="va">latm</span>, <span class="fl">1</span>, <span class="fl">0</span>, scale<span class="op">=</span><span class="fl">3</span>, col<span class="op">=</span><span class="va">col</span>, lwd<span class="op">=</span><span class="fl">2</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="../reference/mapDirectionField.html">mapDirectionField</a></span><span class="op">(</span><span class="va">lonm</span>, <span class="va">latm</span>, <span class="fl">1</span>, <span class="fl">0</span>, scale <span class="op">=</span> <span class="fl">3</span>, col <span class="op">=</span> <span class="va">col</span>, lwd <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div>
 
     </div>
     <div id="see-also">
@@ -185,6 +187,7 @@ vectors with lengths that match appropriately.</p>
 <code><a href="mapText.html">mapText</a>()</code>,
 <code><a href="mapTissot.html">mapTissot</a>()</code>,
 <code><a href="oceCRS.html">oceCRS</a>()</code>,
+<code><a href="oceProject.html">oceProject</a>()</code>,
 <code><a href="shiftLongitude.html">shiftLongitude</a>()</code>,
 <code><a href="usrLonLat.html">usrLonLat</a>()</code>,
 <code><a href="utm2lonlat.html">utm2lonlat</a>()</code></p></div>

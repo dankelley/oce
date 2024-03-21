@@ -95,19 +95,22 @@ the same.)</p>
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>xy</dt>
-<dd><p>two-column numeric matrix specifying locations.  If <code>inv</code> is False, then <code>xy[,1]</code> will hold
-longitude and <code>xy[,2]</code> will hold latitude, but if <code>inv</code> is True, then the columns will be easting
+<dd><p>two-column numeric matrix specifying locations.  If <code>inv</code>
+is False, then <code>xy[,1]</code> will hold longitude and <code>xy[,2]</code> will hold
+latitude, but if <code>inv</code> is True, then the columns will be easting
 and northing values (in metres).</p></dd>
 
 
 <dt>proj</dt>
-<dd><p>a character value specifying the desired map projection.  See
-the <code>projection</code> parameter of <code><a href="mapPlot.html">mapPlot()</a></code> for details, including a
-historical note dated 2023-04-11 about the now-deprecated <code>sp</code> package.</p></dd>
+<dd><p>a character value specifying the desired map
+projection.  See the <code>projection</code> parameter of <code><a href="mapPlot.html">mapPlot()</a></code> for
+details, including a historical note dated 2023-04-11 about the
+now-deprecated <code>sp</code> package.</p></dd>
 
 
 <dt>inv</dt>
-<dd><p>logical value, False by default, indicating whether an inverse projection is requested.</p></dd>
+<dd><p>logical value, False by default, indicating whether an
+inverse projection is requested.</p></dd>
 
 
 <dt>debug</dt>
@@ -124,9 +127,41 @@ by specifying higher <code>debug</code> values.</p></dd>
     <h2>Value</h2>
     
 
-<p>A two-column matrix, with first column holding either
-<code>longitude</code> or <code>x</code>, and second column holding either
+<p><code>oceProject</code> returns a two-column matrix, with first column
+holding either <code>longitude</code> or <code>x</code>, and second column holding either
 <code>latitude</code> or <code>y</code>.</p>
+    </div>
+    <div id="see-also">
+    <h2>See also</h2>
+    <div class="dont-index"><p>Other functions related to maps: 
+<code><a href="formatPosition.html">formatPosition</a>()</code>,
+<code><a href="lonlat2map.html">lonlat2map</a>()</code>,
+<code><a href="lonlat2utm.html">lonlat2utm</a>()</code>,
+<code><a href="map2lonlat.html">map2lonlat</a>()</code>,
+<code><a href="mapArrows.html">mapArrows</a>()</code>,
+<code><a href="mapAxis.html">mapAxis</a>()</code>,
+<code><a href="mapContour.html">mapContour</a>()</code>,
+<code><a href="mapCoordinateSystem.html">mapCoordinateSystem</a>()</code>,
+<code><a href="mapDirectionField.html">mapDirectionField</a>()</code>,
+<code><a href="mapGrid.html">mapGrid</a>()</code>,
+<code><a href="mapImage.html">mapImage</a>()</code>,
+<code><a href="mapLines.html">mapLines</a>()</code>,
+<code><a href="mapLocator.html">mapLocator</a>()</code>,
+<code><a href="mapLongitudeLatitudeXY.html">mapLongitudeLatitudeXY</a>()</code>,
+<code><a href="mapPlot.html">mapPlot</a>()</code>,
+<code><a href="mapPoints.html">mapPoints</a>()</code>,
+<code><a href="mapPolygon.html">mapPolygon</a>()</code>,
+<code><a href="mapScalebar.html">mapScalebar</a>()</code>,
+<code><a href="mapText.html">mapText</a>()</code>,
+<code><a href="mapTissot.html">mapTissot</a>()</code>,
+<code><a href="oceCRS.html">oceCRS</a>()</code>,
+<code><a href="shiftLongitude.html">shiftLongitude</a>()</code>,
+<code><a href="usrLonLat.html">usrLonLat</a>()</code>,
+<code><a href="utm2lonlat.html">utm2lonlat</a>()</code></p></div>
+    </div>
+    <div id="author">
+    <h2>Author</h2>
+    <p>Dan Kelley</p>
     </div>
 
   </div>

@@ -17,9 +17,13 @@ supplied, a default is used, by adding \verb{_trimmed} to the base filename, e.g
 if \code{infile} is \code{"a.000"} then \code{outfile} will be \code{a_trimmed.000}.}
 
 \item{debug}{an integer value indicating the level of debugging. If
-this is 1L, then a brief indication is given of the processing steps. If it
-is > 1L, then information is given about each data chunk, which can yield
-very extensive output.}
+this is 0, then \code{\link[=read.adp.rdi]{read.adp.rdi()}} proceeds quietly, except for
+issuing warnings and errors if necessary.  If it is 1, then the R
+code of \code{\link[=read.adp.rdi]{read.adp.rdi()}} produces some messages.  If it is 2, then also
+the underlying C/C++ code produces a message each time a possible
+ensemble is detected.  If it is 3, then the C/C++ code also produces
+information on some details of the ensemble.  Levels 2 and 3 are
+mainly for use by the developers.}
 }
 \value{
 \code{adpRdiFileTrim()} returns the name of the output file, \code{outfile}, as

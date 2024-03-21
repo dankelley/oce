@@ -140,6 +140,7 @@ export(
     equatorialToLocalHorizontal,
     errorbars,
     fillGap,
+    fillGapMatrix,
     findBottom,
     firstFinite,
     formatCI,

@@ -48,6 +48,10 @@ do_fill_gap_1d <- function(x, rule) {
     .Call(`_oce_do_fill_gap_1d`, x, rule)
 }
 
+do_fill_gap_2d <- function(m, Gap, Debug) {
+    .Call(`_oce_do_fill_gap_2d`, m, Gap, Debug)
+}
+
 do_gappy_index <- function(starts, offset, length) {
     .Call(`_oce_do_gappy_index`, starts, offset, length)
 }
@@ -96,6 +100,38 @@ do_ldc_rdi_in_file <- function(filename, from, to, by, startIndex, mode, debug) 
     .Call(`_oce_do_ldc_rdi_in_file`, filename, from, to, by, startIndex, mode, debug)
 }
 
+do_ldc_rdi_in_file_new <- function(filename, from, to, by, startIndex, mode, debug) {
+    .Call(`_oce_do_ldc_rdi_in_file_new`, filename, from, to, by, startIndex, mode, debug)
+}
+
+locateByteSequences <- function(buf, match, len, key, max) {
+    .Call(`_oce_locateByteSequences`, buf, match, len, key, max)
+}
+
+locateVectorImuSequences <- function(buf) {
+    .Call(`_oce_locateVectorImuSequences`, buf)
+}
+
+mapAssemblePolygons <- function(lon, lat, z) {
+    .Call(`_oce_mapAssemblePolygons`, lon, lat, z)
+}
+
+mapCheckPolygons <- function(x, y, z, xokspan, usr) {
+    .Call(`_oce_mapCheckPolygons`, x, y, z, xokspan, usr)
+}
+
+mapClipXy <- function(x, y, usr) {
+    .Call(`_oce_mapClipXy`, x, y, usr)
+}
+
+match2bytes <- function(buf, m1, m2, demand_sequential) {
+    .Call(`_oce_match2bytes`, buf, m1, m2, demand_sequential)
+}
+
+match3bytes <- function(buf, m1, m2, m3) {
+    .Call(`_oce_match3bytes`, buf, m1, m2, m3)
+}
+
 do_matrix_smooth <- function(mat) {
     .Call(`_oce_do_matrix_smooth`, mat)
 }
@@ -124,6 +160,14 @@ do_ldc_sontek_adp <- function(buf, have_ctd, have_gps, have_bottom_track, pcadp,
     .Call(`_oce_do_ldc_sontek_adp`, buf, have_ctd, have_gps, have_bottom_track, pcadp, max)
 }
 
+unwrapSequenceNumbers <- function(seq, bytes) {
+    .Call(`_oce_unwrapSequenceNumbers`, seq, bytes)
+}
+
+ldcSontekAdv22 <- function(buf, max) {
+    .Call(`_oce_ldcSontekAdv22`, buf, max)
+}
+
 do_epic_time_to_ymdhms <- function(julianDay, millisecond) {
     .Call(`_oce_do_epic_time_to_ymdhms`, julianDay, millisecond)
 }
@@ -132,7 +176,7 @@ do_trap <- function(x, y, type) {
     .Call(`_oce_do_trap`, x, y, type)
 }
 
-trim_ts <- function(x, xlim, extra) {
-    .Call(`_oce_trim_ts`, x, xlim, extra)
+trimTs <- function(x, xlim, extra) {
+    .Call(`_oce_trimTs`, x, xlim, extra)
 }
 

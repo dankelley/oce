@@ -1,4 +1,4 @@
-# vim: tw=80 shiftwidth=4 softtabstop=4 expandtab:
+# vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
 
 # byte sequences at start of items
 # FLH 00 00; VLH 00 80; vel 00 01; Cor 00 02;  echo 00 03; percent 00 04; bottom-track 00 06
@@ -41,9 +41,13 @@
 #' if `infile` is `"a.000"` then `outfile` will be `a_trimmed.000`.
 #'
 #' @param debug an integer value indicating the level of debugging. If
-#' this is 1L, then a brief indication is given of the processing steps. If it
-#' is > 1L, then information is given about each data chunk, which can yield
-#' very extensive output.
+#' this is 0, then [read.adp.rdi()] proceeds quietly, except for
+#' issuing warnings and errors if necessary.  If it is 1, then the R
+#' code of [read.adp.rdi()] produces some messages.  If it is 2, then also
+#' the underlying C/C++ code produces a message each time a possible
+#' ensemble is detected.  If it is 3, then the C/C++ code also produces
+#' information on some details of the ensemble.  Levels 2 and 3 are
+#' mainly for use by the developers.
 #'
 #' @return `adpRdiFileTrim()` returns the name of the output file, `outfile`, as
 #' provided or constructed.
@@ -111,8 +115,8 @@ decodeHeaderRDI <- function(buf, debug = getOption("oceDebug"), tz = getOption("
     if (dataOffset[1] != 6 + 2 * numberOfDataTypes) {
         warning("dataOffset and numberOfDataTypes are inconsistent -- this dataset seems damaged")
     }
-    oceDebug(debug, "dataOffset=", paste(dataOffset, sep = " "), "\n")
-    oceDebug(debug, "sort(diff(dataOffset))=", paste(sort(diff(dataOffset)), sep = " "), "\n")
+    oceDebug(debug, "head(dataOffset)=", paste(head(dataOffset), collapse = " "), "\n")
+    oceDebug(debug, "head(sort(diff(dataOffset)))=", paste(head(sort(diff(dataOffset))), collapse = " "), "\n")
     # Set up codes
     codes <- cbind(buf[1 + c(0, dataOffset)], buf[1 + c(0, dataOffset) + 1])
     oceDebug(debug, "set up codes starting at buf[1:10]=", paste("0x", paste(buf[1:10], sep = ", "), collapse = " ", sep = ""), "\n")
@@ -135,7 +139,7 @@ decodeHeaderRDI <- function(buf, debug = getOption("oceDebug"), tz = getOption("
     firmwareVersionMinor <- readBin(FLD[4], "integer", n = 1, size = 1, signed = FALSE)
     firmwareVersion <- paste(firmwareVersionMajor, firmwareVersionMinor, sep = ".")
     firmwareVersionNumeric <- as.numeric(firmwareVersion)
-    oceDebug(debug, "firmwareVersion=", firmwareVersion, "(numerically, it is", firmwareVersionNumeric, ")\n")
+    oceDebug(debug, "firmwareVersion=", firmwareVersion, " (numerically, it is ", firmwareVersionNumeric, ")\n")
     # if (firmwareVersion < 16.28) warning("firmwareVersion ", firmwareVersion, " is less than 16.28, and so read.adp.rdi() may not work properly")
     # If no actual data, return something minimal
     if (!haveActualData) {
@@ -196,7 +200,7 @@ decodeHeaderRDI <- function(buf, debug = getOption("oceDebug"), tz = getOption("
     bits <- substr(systemConfiguration, 16, 17)
     if (isSentinel) {
         oceDebug(debug, "systemConfiguration:", systemConfiguration, "\n")
-        oceDebug(debug, "bits:", bits, "Expect 111 for 25 degrees\n")
+        oceDebug(debug, "bits:", bits, " (Expect 111 for 25 degrees)\n")
         bits <- substr(systemConfiguration, 15, 17)
         if (bits != "111") message("Assuming beam angle of 25deg, but SysCon bits aren't 111")
         beamAngle <- 25
@@ -308,7 +312,7 @@ decodeHeaderRDI <- function(buf, debug = getOption("oceDebug"), tz = getOption("
         readBin(FLD[49], "integer", n = 1, size = 1, signed = FALSE),
         readBin(FLD[50], "integer", n = 1, size = 1, signed = FALSE)
     )
-    oceDebug(debug, paste("cpuBoardSerialNumber = \"", paste(cpuBoardSerialNumber, collapse = ""), "\"\n"))
+    oceDebug(debug, "cpuBoardSerialNumber=\"", paste(cpuBoardSerialNumber, collapse = ""), "\"\n", sep = "")
     systemBandwidth <- readBin(FLD[51:52], "integer", n = 1, size = 2, endian = "little")
     # systemPower <- readBin(FLD[53], "integer", n=1, size=1)
     # FLD[54] spare
@@ -854,7 +858,6 @@ read.adp.rdi <- function(
     seek(file, 0, "start")
     seek(file, where = 0, origin = "end")
     fileSize <- seek(file, where = 0)
-    oceDebug(debug, "fileSize=", fileSize, "\n")
     if (fileSize < 1) {
         stop("empty file \"", file, "\"")
     }
@@ -915,9 +918,28 @@ read.adp.rdi <- function(
                 }
             }
             oceDebug(debug, "calling ldc_rdi_in_file() w/ numeric values of from etc\n")
-            ldc <- do_ldc_rdi_in_file(filename = filename, from = from, to = to, by = by, startIndex = startIndex, mode = 0L, debug = debug - 1)
-            # }
-            oceDebug(debug, "done with do_ldc_rdi_in_file()\n")
+            tC <- system.time({
+                ldc <- do_ldc_rdi_in_file(filename = filename, from = from, to = to, by = by, startIndex = startIndex, mode = 0L, debug = debug - 1)
+            })
+            tCpp <- system.time({
+                ldcNew <- do_ldc_rdi_in_file_new(filename = filename, from = from, to = to, by = by, startIndex = startIndex, mode = 0L, debug = debug - 1)
+            })
+            oceDebug(debug, sprintf(
+                "ensemble detection in old (C) code took %fs (user), %fs (system), %fs (total)\n",
+                tC[1], tC[2], tC[3]
+            ))
+            oceDebug(debug, sprintf(
+                "ensemble detection in new (C++) code took %fs (user), %fs (system), %fs (total)\n",
+                tCpp[1], tCpp[2], tCpp[3]
+            ))
+            if (!identical(ldc, ldcNew)) {
+                message("IMPORTANT: read.adp.rdi/ldc (numeric from, to) problem -- please report at github.com/dankelley/oce/issues")
+                warning("IMPORTANT: read.adp.rdi/ldc (numeric from, to) problem -- please report at github.com/dankelley/oce/issues")
+                # browser()
+            }
+            oceDebug(debug, "old (C) and new (C++) methods agree on ensemble-detection results\n")
+            rm(ldcNew)
+            oceDebug(debug, "completed ensemble detection with numeric from, by, to values\n")
         } else {
             if (is.character(from)) {
                 from <- as.POSIXct(from, tz = "UTC")
@@ -929,8 +951,27 @@ read.adp.rdi <- function(
                 by <- ctimeToSeconds(by)
             }
             oceDebug(debug, "calling ldc_rdi_in_file() w/ POSIXt values of from etc\n")
-            ldc <- do_ldc_rdi_in_file(filename = filename, from = from, to = to, by = by, startIndex = startIndex, mode = 1L, debug = debug - 1)
-            oceDebug(debug, "done with do_ldc_rdi_in_file()\n")
+            tC <- system.time({
+                ldc <- do_ldc_rdi_in_file(filename = filename, from = from, to = to, by = by, startIndex = startIndex, mode = 1L, debug = debug - 1)
+            })
+            tCpp <- system.time({
+                ldcNew <- do_ldc_rdi_in_file_new(filename = filename, from = from, to = to, by = by, startIndex = startIndex, mode = 1L, debug = debug - 1)
+            })
+            oceDebug(debug, sprintf(
+                "ensemble detection in old (C) code took %fs (user), %fs (system), %fs (total)\n",
+                tC[1], tC[2], tC[3]
+            ))
+            oceDebug(debug, sprintf(
+                "ensemble detection in new (C++) code took %fs (user), %fs (system), %fs (total)\n",
+                tCpp[1], tCpp[2], tCpp[3]
+            ))
+            if (!identical(ldc, ldcNew)) {
+                message("IMPORTANT: read.adp.rdi/ldc (non-numeric from, to) problem -- please report at github.com/dankelley/oce/issues")
+                warning("IMPORTANT: read.adp.rdi/ldc (non-numeric from, to) problem -- please report at github.com/dankelley/oce/issues")
+            }
+            oceDebug(debug, "old (C) and new (C++) methods agree on ensemble-detection results\n")
+            rm(ldcNew)
+            oceDebug(debug, "completed ensemble detection with non-numeric from, by, to values\n")
         }
         if (!missing(which)) {
             if (which[1] == "??") {
@@ -961,7 +1002,7 @@ read.adp.rdi <- function(
             oceDebug(debug, "skipping first ensemble (trial ad-hoc measure for SentinelV files)\n")
             warning("skipping the first ensemble (a temporary solution that eases reading of SentinelV files)\n")
             ensembleStart <- ensembleStart[-1] # remove the first ensemble to simplify parsing
-            #ensembleStart64 <- ensembleStart64[-1] # remove the first ensemble to simplify parsing
+            # ensembleStart64 <- ensembleStart64[-1] # remove the first ensemble to simplify parsing
             to <- to - 1
             header$numberOfDataTypes <- readBin(buf[ensembleStart[1] + 5], "integer", n = 1, size = 1)
             header$dataOffset <- readBin(buf[ensembleStart[1] + 6 + 0:(2 * header$numberOfDataTypes)],
@@ -990,25 +1031,25 @@ read.adp.rdi <- function(
             cat("profileStart[firstBad]=", profileStart[firstBad], "\n", sep = "")
             cat("ensembleStart[firstBad]=", ensembleStart[firstBad], "\n", sep = "")
             if (debug > 0) { # FIXME: remove when largeFile is supported
-                #x11()
-                #par(mfrow = c(3, 1))
-                #plot(ensembleStart < 1, type = "s", xlab = "index")
-                #mtext("is ensembleStart<1?", adj = 0)
-                #abline(v = firstBad, col = 2, lty = 2)
-                #mtext(firstBad, at = firstBad, col = 2)
+                # x11()
+                # par(mfrow = c(3, 1))
+                # plot(ensembleStart < 1, type = "s", xlab = "index")
+                # mtext("is ensembleStart<1?", adj = 0)
+                # abline(v = firstBad, col = 2, lty = 2)
+                # mtext(firstBad, at = firstBad, col = 2)
 
-                #plot(ensembleStart64 == ensembleStart, type = "s", xlab = "index")
-                #mtext("does ensembleStart==ensembleStart64?", adj = 0)
-                #abline(v = firstBad, col = 2, lty = 2)
-                #mtext(firstBad, at = firstBad, col = 2)
+                # plot(ensembleStart64 == ensembleStart, type = "s", xlab = "index")
+                # mtext("does ensembleStart==ensembleStart64?", adj = 0)
+                # abline(v = firstBad, col = 2, lty = 2)
+                # mtext(firstBad, at = firstBad, col = 2)
 
-                #plot(diff(ensembleStart64), type = "s", xlab = "index")
-                #mtext("diff(ensembleStart64)", adj = 0)
-                #abline(v = firstBad, col = 2, lty = 2)
-                #mtext(firstBad, at = firstBad, col = 2)
+                # plot(diff(ensembleStart64), type = "s", xlab = "index")
+                # mtext("diff(ensembleStart64)", adj = 0)
+                # abline(v = firstBad, col = 2, lty = 2)
+                # mtext(firstBad, at = firstBad, col = 2)
             }
-            #ensembleStart <- ensembleStart64
-            #profileStart <- ensembleStart + as.numeric(buf[ensembleStart[1] + 8]) + 256 * as.numeric(buf[ensembleStart[1] + 9])
+            # ensembleStart <- ensembleStart64
+            # profileStart <- ensembleStart + as.numeric(buf[ensembleStart[1] + 8]) + 256 * as.numeric(buf[ensembleStart[1] + 9])
             warning("Caution: using provisional support for large RDI file; if problems arise, chop up your file\n")
         }
         # offset for data type 1 (velocity)
@@ -1614,12 +1655,11 @@ read.adp.rdi <- function(
                 print(unhandled)
             }
             if (length(warningUnknownCode) > 0) {
-                msg <- paste(
-                    "A list of unhandled segment codes follows. Several Teledyne RDI manuals\n",
+                warning("Encountered some unhandled segment codes, as listed in the following warnings.\n",
+                    "Note that several Teledyne RDI manuals\n",
                     "describe such codes; see e.g. Table 33 of Teledyne RD Instruments, 2014.\n",
                     "Ocean Surveyor/Ocean Observer Technical Manual.\n",
-                    "P/N 95A-6012-00 April 2014 (OS_TM_Apr14.pdf)\n"
-                )
+                    "P/N 95A-6012-00 April 2014 (OS_TM_Apr14.pdf)\n")
                 for (name in names(warningUnknownCode)) {
                     # Recognize some cases:
                     # 0x40 0x30 through 0xFC 0x30: Binary Variable Attitude Data
@@ -1629,8 +1669,7 @@ read.adp.rdi <- function(
                         (as.raw(0x40) <= testBytes[1] && testBytes[1] <= as.raw(0xFC))) {
                         info <- " (a Variable Attitude ID; see Table 47 of Teledyne-RDI 'Ocean Surveyor Technical Manual_Dec20.pdf')"
                     }
-                    msg <- paste(msg, "    Code ", name, " occurred ", warningUnknownCode[[name]], " times", info, "\n", sep = "")
-                    warning(msg)
+                    warning("code ", name, " occurred ", warningUnknownCode[[name]], " times", info, "\n", sep = "")
                 }
             }
             if (1 != length(unique(orientation))) {

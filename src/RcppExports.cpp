@@ -139,6 +139,19 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// do_fill_gap_2d
+NumericMatrix do_fill_gap_2d(NumericMatrix m, IntegerVector Gap, IntegerVector Debug);
+RcppExport SEXP _oce_do_fill_gap_2d(SEXP mSEXP, SEXP GapSEXP, SEXP DebugSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type m(mSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type Gap(GapSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type Debug(DebugSEXP);
+    rcpp_result_gen = Rcpp::wrap(do_fill_gap_2d(m, Gap, Debug));
+    return rcpp_result_gen;
+END_RCPP
+}
 // do_gappy_index
 IntegerVector do_gappy_index(IntegerVector starts, IntegerVector offset, IntegerVector length);
 RcppExport SEXP _oce_do_gappy_index(SEXP startsSEXP, SEXP offsetSEXP, SEXP lengthSEXP) {
@@ -314,6 +327,118 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// do_ldc_rdi_in_file_new
+List do_ldc_rdi_in_file_new(StringVector filename, IntegerVector from, IntegerVector to, IntegerVector by, IntegerVector startIndex, IntegerVector mode, IntegerVector debug);
+RcppExport SEXP _oce_do_ldc_rdi_in_file_new(SEXP filenameSEXP, SEXP fromSEXP, SEXP toSEXP, SEXP bySEXP, SEXP startIndexSEXP, SEXP modeSEXP, SEXP debugSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< StringVector >::type filename(filenameSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type from(fromSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type to(toSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type by(bySEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type startIndex(startIndexSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type mode(modeSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type debug(debugSEXP);
+    rcpp_result_gen = Rcpp::wrap(do_ldc_rdi_in_file_new(filename, from, to, by, startIndex, mode, debug));
+    return rcpp_result_gen;
+END_RCPP
+}
+// locateByteSequences
+NumericVector locateByteSequences(RawVector buf, RawVector match, IntegerVector len, RawVector key, IntegerVector max);
+RcppExport SEXP _oce_locateByteSequences(SEXP bufSEXP, SEXP matchSEXP, SEXP lenSEXP, SEXP keySEXP, SEXP maxSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< RawVector >::type buf(bufSEXP);
+    Rcpp::traits::input_parameter< RawVector >::type match(matchSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type len(lenSEXP);
+    Rcpp::traits::input_parameter< RawVector >::type key(keySEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type max(maxSEXP);
+    rcpp_result_gen = Rcpp::wrap(locateByteSequences(buf, match, len, key, max));
+    return rcpp_result_gen;
+END_RCPP
+}
+// locateVectorImuSequences
+NumericVector locateVectorImuSequences(RawVector buf);
+RcppExport SEXP _oce_locateVectorImuSequences(SEXP bufSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< RawVector >::type buf(bufSEXP);
+    rcpp_result_gen = Rcpp::wrap(locateVectorImuSequences(buf));
+    return rcpp_result_gen;
+END_RCPP
+}
+// mapAssemblePolygons
+List mapAssemblePolygons(NumericVector lon, NumericVector lat, NumericMatrix z);
+RcppExport SEXP _oce_mapAssemblePolygons(SEXP lonSEXP, SEXP latSEXP, SEXP zSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type lon(lonSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type lat(latSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type z(zSEXP);
+    rcpp_result_gen = Rcpp::wrap(mapAssemblePolygons(lon, lat, z));
+    return rcpp_result_gen;
+END_RCPP
+}
+// mapCheckPolygons
+List mapCheckPolygons(NumericVector x, NumericVector y, NumericVector z, NumericVector xokspan, NumericVector usr);
+RcppExport SEXP _oce_mapCheckPolygons(SEXP xSEXP, SEXP ySEXP, SEXP zSEXP, SEXP xokspanSEXP, SEXP usrSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type x(xSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type y(ySEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type z(zSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type xokspan(xokspanSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type usr(usrSEXP);
+    rcpp_result_gen = Rcpp::wrap(mapCheckPolygons(x, y, z, xokspan, usr));
+    return rcpp_result_gen;
+END_RCPP
+}
+// mapClipXy
+List mapClipXy(NumericVector x, NumericVector y, NumericVector usr);
+RcppExport SEXP _oce_mapClipXy(SEXP xSEXP, SEXP ySEXP, SEXP usrSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type x(xSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type y(ySEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type usr(usrSEXP);
+    rcpp_result_gen = Rcpp::wrap(mapClipXy(x, y, usr));
+    return rcpp_result_gen;
+END_RCPP
+}
+// match2bytes
+NumericVector match2bytes(RawVector buf, RawVector m1, RawVector m2, IntegerVector demand_sequential);
+RcppExport SEXP _oce_match2bytes(SEXP bufSEXP, SEXP m1SEXP, SEXP m2SEXP, SEXP demand_sequentialSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< RawVector >::type buf(bufSEXP);
+    Rcpp::traits::input_parameter< RawVector >::type m1(m1SEXP);
+    Rcpp::traits::input_parameter< RawVector >::type m2(m2SEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type demand_sequential(demand_sequentialSEXP);
+    rcpp_result_gen = Rcpp::wrap(match2bytes(buf, m1, m2, demand_sequential));
+    return rcpp_result_gen;
+END_RCPP
+}
+// match3bytes
+NumericVector match3bytes(RawVector buf, RawVector m1, RawVector m2, RawVector m3);
+RcppExport SEXP _oce_match3bytes(SEXP bufSEXP, SEXP m1SEXP, SEXP m2SEXP, SEXP m3SEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< RawVector >::type buf(bufSEXP);
+    Rcpp::traits::input_parameter< RawVector >::type m1(m1SEXP);
+    Rcpp::traits::input_parameter< RawVector >::type m2(m2SEXP);
+    Rcpp::traits::input_parameter< RawVector >::type m3(m3SEXP);
+    rcpp_result_gen = Rcpp::wrap(match3bytes(buf, m1, m2, m3));
+    return rcpp_result_gen;
+END_RCPP
+}
 // do_matrix_smooth
 NumericMatrix do_matrix_smooth(NumericMatrix mat);
 RcppExport SEXP _oce_do_matrix_smooth(SEXP matSEXP) {
@@ -412,6 +537,30 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// unwrapSequenceNumbers
+NumericVector unwrapSequenceNumbers(IntegerVector seq, IntegerVector bytes);
+RcppExport SEXP _oce_unwrapSequenceNumbers(SEXP seqSEXP, SEXP bytesSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< IntegerVector >::type seq(seqSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type bytes(bytesSEXP);
+    rcpp_result_gen = Rcpp::wrap(unwrapSequenceNumbers(seq, bytes));
+    return rcpp_result_gen;
+END_RCPP
+}
+// ldcSontekAdv22
+NumericVector ldcSontekAdv22(RawVector buf, IntegerVector max);
+RcppExport SEXP _oce_ldcSontekAdv22(SEXP bufSEXP, SEXP maxSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< RawVector >::type buf(bufSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type max(maxSEXP);
+    rcpp_result_gen = Rcpp::wrap(ldcSontekAdv22(buf, max));
+    return rcpp_result_gen;
+END_RCPP
+}
 // do_epic_time_to_ymdhms
 List do_epic_time_to_ymdhms(IntegerVector julianDay, IntegerVector millisecond);
 RcppExport SEXP _oce_do_epic_time_to_ymdhms(SEXP julianDaySEXP, SEXP millisecondSEXP) {
@@ -437,16 +586,16 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// trim_ts
-List trim_ts(NumericVector x, NumericVector xlim, NumericVector extra);
-RcppExport SEXP _oce_trim_ts(SEXP xSEXP, SEXP xlimSEXP, SEXP extraSEXP) {
+// trimTs
+List trimTs(NumericVector x, NumericVector xlim, NumericVector extra);
+RcppExport SEXP _oce_trimTs(SEXP xSEXP, SEXP xlimSEXP, SEXP extraSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< NumericVector >::type x(xSEXP);
     Rcpp::traits::input_parameter< NumericVector >::type xlim(xlimSEXP);
     Rcpp::traits::input_parameter< NumericVector >::type extra(extraSEXP);
-    rcpp_result_gen = Rcpp::wrap(trim_ts(x, xlim, extra));
+    rcpp_result_gen = Rcpp::wrap(trimTs(x, xlim, extra));
     return rcpp_result_gen;
 END_RCPP
 }
