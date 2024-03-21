@@ -107,9 +107,13 @@ if <code>infile</code> is <code>"a.000"</code> then <code>outfile</code> will be
 
 <dt>debug</dt>
 <dd><p>an integer value indicating the level of debugging. If
-this is 1L, then a brief indication is given of the processing steps. If it
-is &gt; 1L, then information is given about each data chunk, which can yield
-very extensive output.</p></dd>
+this is 0, then <code><a href="read.adp.rdi.html">read.adp.rdi()</a></code> proceeds quietly, except for
+issuing warnings and errors if necessary.  If it is 1, then the R
+code of <code><a href="read.adp.rdi.html">read.adp.rdi()</a></code> produces some messages.  If it is 2, then also
+the underlying C/C++ code produces a message each time a possible
+ensemble is detected.  If it is 3, then the C/C++ code also produces
+information on some details of the ensemble.  Levels 2 and 3 are
+mainly for use by the developers.</p></dd>
 
 </dl></div>
     <div id="value">

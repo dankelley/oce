@@ -53,6 +53,7 @@ Other functions related to maps:
 \code{\link{mapContour}()},
 \code{\link{mapCoordinateSystem}()},
 \code{\link{mapDirectionField}()},
+\code{\link{mapDirectionFieldNEW}()},
 \code{\link{mapGrid}()},
 \code{\link{mapImage}()},
 \code{\link{mapLines}()},

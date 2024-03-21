@@ -112,6 +112,7 @@ Other functions related to maps:
 \code{\link{mapAxis}()},
 \code{\link{mapCoordinateSystem}()},
 \code{\link{mapDirectionField}()},
+\code{\link{mapDirectionFieldNEW}()},
 \code{\link{mapGrid}()},
 \code{\link{mapImage}()},
 \code{\link{mapLines}()},
