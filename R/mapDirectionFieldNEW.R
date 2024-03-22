@@ -281,17 +281,19 @@ mapDirectionFieldBarbs <- function(
 #' is indicated with barbs and pennants.
 #'
 #' @param length an indication of the size of arrow heads, for "arrow"
-#' style, or of the barbs, for "barb" style. If not provided, 0.05
-#' will be used for the "arrow" style, and 0.2 for the "barb" style.
+#' style, or of the barbs, for "barb" style. If this is NULL (which is
+#' the default), then 0.05 will be used for the "arrow" style, and 0.2
+#' for the "barb" style.
 #'
 #' @param code an indication of the style of arrow heads or barbs. For
 #' the arrow style, this is a number that is passed to [arrows()],
-#' with reasonable values being 0, 1 and 2. For the wind-barb style,
-#' this is the string `"barb"`.
+#' with 2 as the default, meaning to draw the arrow as a conventional
+#' vector.  For the wind-barb style, this is the string `"barb"`.
 #'
-#' @param lwd line width of symbols.
+#' @param lwd a numeric value indicating the width of the line
+#' segments that make up the speed indicators.
 #'
-#' @param col color of symbols.
+#' @param col color of the speed indicators.
 #'
 #' @template debugTemplate
 #'
@@ -331,7 +333,7 @@ mapDirectionFieldBarbs <- function(
 #' @author Dan Kelley
 mapDirectionFieldNEW <- function(
     longitude, latitude, u, v,
-    scale = 1, length, code = 2,
+    scale = 1, length = NULL, code = 2,
     lwd = par("lwd"), col = par("fg"),
     debug = getOption("oceDebug")) {
     if ("none" == .Projection()$type) {
@@ -344,6 +346,7 @@ mapDirectionFieldNEW <- function(
     if (!is.vector(latitude)) {
         stop("latitude must be a vector")
     }
+    oceDebug(debug, "mapDirectionFieldNEW() {\n", sep = "", unindent = 1)
     if (is.matrix(u) || is.matrix(v)) {
         if (!is.matrix(u) || !is.matrix(v)) {
             stop("if either of u or v is a matrix, then both must be")
@@ -351,6 +354,7 @@ mapDirectionFieldNEW <- function(
         if (!identical(dim(u), dim(v))) {
             stop("u and v must have identical dimensions")
         }
+        oceDebug(debug, "u and v are matrices with dim=c(", paste(dim(u), collapse = ","), ")\n")
         nlon <- length(longitude)
         nlat <- length(latitude)
         if (nlon != nrow(u)) {
@@ -366,17 +370,19 @@ mapDirectionFieldNEW <- function(
         u <- as.vector(u)
         v <- as.vector(v)
     }
-    # Handle "barb" case
     if (grep("barb", code)) {
+        # Handle "barb" case
         oceDebug(debug, "handing control to mapDirectionFieldBarbs()\n")
+        if (is.null(length)) {
+            length <- 0.2
+        }
         mapDirectionFieldBarbs(longitude, latitude, u, v,
-            scale = scale,
-            length = if (missing(length)) 0.2 else length,
+            scale = scale, length = length,
             lwd = lwd, col = col, step = 10, debug = debug
         )
     } else {
         # Handle "arrow" case
-        if (missing(length)) {
+        if (is.null(length)) {
             length <- 0.05
         }
         xy <- lonlat2map(as.vector(longitude), as.vector(latitude))
