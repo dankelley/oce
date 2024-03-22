@@ -226,55 +226,57 @@ mapDirectionFieldBarbs <- function(
 #' which is the oceanographic convention, or using wind barbs, which
 #' is a meteorological convention.
 #'
-#' As noted in the \dQuote{Description}, there are two styles.
-#' 1. *Arrow Style:* arrows are drawn from the stated locations in the
+#' As noted in the \dQuote{Description}, there are two styles. 1.
+#' *Arrow Style:* arrows are drawn from the stated locations in the
 #' direction of the flow defined by the (u,v) vector. This is the
-#' usual convention in oceanographic work.
-#' 2. '*Barb Style:* to create "wind barbs", according to
-#' a convention used in meteorological charts.
-#' Unlike arrows, which indicate speed by the arrow length,
-#' barbs indicate speed by angled lines and possibly triangles
-#' located at the upstream end. Note that the
-#' meanings of the function parameters vary across the
-#' two styles.
+#' usual convention in oceanographic work. 2. *Barb Style:* to create
+#' "wind barbs", according to a convention used in meteorological
+#' charts. Unlike arrows, which indicate speed by the arrow length,
+#' barbs indicate speed by angled lines and possibly triangles located
+#' at the upstream end. Note that the meanings of the function
+#' parameters vary across the two styles.
 #'
-#' The "arrow" notation is quite common in the oceanographic
-#' literature and needs little comment.  Arrows point downwind,
-#' and the length of arrows is proportional to the speed.
+#' The "arrow" style is quite common in the oceanographic literature.
+#' Arrows point in the direction of the velocity defined by `(u,v)`,
+#' and the length of those arrows is proportional to the speed,
+#' `sqrt(u^2+v^2)`.
 #'
-#' By contrast, in the "barb" notation, the lines are of equal
-#' length (compared with distance on the ground), with speed
-#' being indicated with barbs (see e.g.
-#' https://www.weather.gov/hfo/windbarbinfo).
-#' The main line starts
-#' at the given longitude and latitude, and extends
-#' in the upstream direction (i.e. the opposite direction to that
-#' used for the "arrow" style).  Velocities are indicated by
-#' barbs, which are line segments extending at an angle to the
-#' main line, and with pennants (triangles).  Short barbs correspond
-#' to 5 velocity units, long barbs to 10 units, and pennants to
-#' 50 units. See \dQuote{Sample of Usage}.
+#' By contrast, in the "barb" notation, the lines are of equal length
+#' (compared with distance on the ground), with speed being indicated
+#' with barbs. Many sources explain the notation, e.g.
+#' https://www.weather.gov/hfo/windbarbinfo. The lines extend from the
+#' observation longitude and latitude in the direction opposite to the
+#' velocity. Velocities are indicated by barbs, i.e. short line
+#' segments that extend at an angle to the main line and with pennants
+#' (triangles). Speed is given by a combination of pennants and barbs.
+#' A pennant represents 50 speed units, a long barb 10 units, and a
+#' short barb 5 units.  Summing these values gives the speed, rounded
+#' to 5 units.
+#'
+#' See \dQuote{Details} for a comparison of the "arrow" and "barb"
+#' styles for some made-up velocity data.
 #'
 #' There are two possibilities for how `longitude`, `latitude` are
 #' combined with `u` and `v`.
-#' 1. All four are vectors, and the matching is one-to-one.
-#' This is useful for showing velocities at particular individual
-#' locations, as in the \dQuote{Examples}.
-#' 2. `longitude` and `latitude` are
-#' vectors, while `u` and `v` are matrices.  In this case,
-#' the lengths of `longitude` and `latitude` must
-#' equal the number of rows and columns in `u` and `v`,
+#'
+#' 1. All four are vectors, and the matching is one-to-one. This is
+#' useful for showing velocities at particular individual locations,
+#' as in the \dQuote{Examples}.
+#'
+#' 2. `longitude` and `latitude` are vectors, while `u` and `v` are
+#' matrices.  In this case, the lengths of `longitude` and `latitude`
+#' must equal the number of rows and columns in `u` and `v`,
 #' respectively.
 #'
-#' @param longitude,latitude numeric vectors of the starting points for arrows,
-#' or the locations of grid cells.
+#' @param longitude,latitude numeric vectors of the starting points
+#' for arrows, or the locations of grid cells.
 #'
-#' @param u,v numeric vectors or matrices holding the components of a vector to be
-#' shown as a direction field.
+#' @param u,v numeric vectors or matrices holding the components of a
+#' vector to be shown as a direction field.
 #'
 #' @param scale an indication of the length of the arrows or lines.
-#' For the "arrow" style, this is arrow length in latitude degrees per unit
-#' of velocity.  For the "barb" style, this is the length of all
+#' For the "arrow" style, this is arrow length in latitude degrees per
+#' unit of velocity.  For the "barb" style, this is the length of all
 #' lines, regardless of the velocity, because in this style velocity
 #' is indicated with barbs and pennants.
 #'
@@ -323,7 +325,6 @@ mapDirectionFieldBarbs <- function(
 #' )
 #'
 #' @seealso A map must first have been created with [mapPlot()].
-#'
 #'
 #' @family functions related to maps
 #'
