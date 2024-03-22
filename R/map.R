@@ -775,13 +775,17 @@ mapContour <- function(
     # axes=TRUE, frame.plot=axes,
     col = par("fg"), lty = par("lty"), lwd = par("lwd"),
     debug = getOption("oceDebug")) {
-    oceDebug(debug, "mapContour() {\n", sep = "", unindent = 1, style = "bold")
+    oceDebug(debug, "mapContour(..., labcex=", labcex, ", drawlabels=", drawlabels,
+        ", ...) {\n",
+        sep = "", unindent = 1, style = "bold")
     if ("none" == .Projection()$type) {
         stop("must create a map first, with mapPlot()\n")
     }
     if (missing(longitude)) {
         stop("must supply longitude")
     }
+    oceDebug(debug, vectorShow(nlevels))
+    oceDebug(debug, vectorShow(levels))
     if ("data" %in% slotNames(longitude) && # handle e.g. 'topo' class
         3 == sum(c("longitude", "latitude", "z") %in% names(longitude@data))) {
         z <- longitude@data$z
@@ -791,7 +795,7 @@ mapContour <- function(
     if (missing(latitude)) {
         stop("must supply latitude")
     }
-    if (missing(z)) {
+    if (missing(z) || length(z) < 1) {
         stop("must supply z")
     }
     if (!underlay %in% c("erase", "interrupt")) {
@@ -826,10 +830,10 @@ mapContour <- function(
     }
     colUnderLabel <- "white" # use a variable in case we want to add as an arg
     for (ilevel in 1:nlevels) {
-        oceDebug(debug, "contouring at level ", levels[ilevel], "\n")
+        oceDebug(debug, "contouring at level[", ilevel, "] = ", levels[ilevel], "\n", sep="")
         label <- as.character(levels[ilevel]) # ignored unless drawlabels=TRUE
-        w <- 1.0 * strwidth(levels[ilevel], "user", cex = labcex) # ignored unless drawlabels=TRUE
-        h <- 1.0 * strheight(label, "user", cex = labcex) # ignored unless drawlabels=TRUE
+        w <- 1.0 * strwidth(levels[ilevel], "user", cex = labcex[1]) # ignored unless drawlabels=TRUE
+        h <- 1.0 * strheight(label, "user", cex = labcex[1]) # ignored unless drawlabels=TRUE
         oceDebug(debug > 1, "w=", w, ", h=", h, "\n")
         cl <- contourLines(
             x = longitude[xx],
