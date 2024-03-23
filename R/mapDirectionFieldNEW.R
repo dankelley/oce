@@ -370,7 +370,7 @@ mapDirectionFieldNEW <- function(
         u <- as.vector(u)
         v <- as.vector(v)
     }
-    if (grep("barb", code)) {
+    if (grepl("^barb", code)) { # later, may permit e.g. barb/5 etc
         # Handle "barb" case
         oceDebug(debug, "handing control to mapDirectionFieldBarbs()\n")
         if (is.null(length)) {
