@@ -1,11 +1,9 @@
 # oce 1.8.3
 
-* Add `mapDirectionFieldNEW()` (temporary name) to allow wind barbs (issue 2191).
 * Add `swSpiciness0()`, `swSpiciness1()`, and `swSpiciness2()` (issue #2188). 
 * Change `binMean2D()` to use previous (6-month-old) method (issue #2199).
 * Change `ctdDecimate()` to add the `na.rm` argument (issue #2192).
-* Change some byte-level work from C to C++ to improve maintainability (issue
-  #2201).
+* Change `mapDirectionField()` to allow wind barbs (issue 2191).
 * Change `mapImage()` to add the `gridCoarseness` parameter (issue #2199).
 * Change `mapImage()` to accept a gridder function (issue #2199).
 * Change `plot.argo()` to handle `which="sigma0 profile"` (issue #2184).
@@ -16,6 +14,8 @@
 * Change `resizableLabel()` to handle `item=`"N"` (issue #2197).
 * Change `summary()` to skip time in the threenum table (issue #2198).
 * Change `sunAngle()` to handle vector arguments better (issue #2178).
+* Change some byte-level work from C to C++ to improve maintainability (issue
+  #2201).
 
 # oce 1.8.2 (on CRAN)
 
