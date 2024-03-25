@@ -1224,7 +1224,7 @@ mapDirectionFieldBarbs <- function(
 }
 
 
-#' Add a Direction Field to an Existing Map (TRIAL VERSION as of 2024-03-21)
+#' Add a Direction Field to an Existing Map
 #'
 #' Plot a direction field on a existing map, either using arrows,
 #' which is the oceanographic convention, or using wind barbs, which
