@@ -2,7 +2,7 @@
 % Please edit documentation in R/map.R
 \name{mapDirectionField}
 \alias{mapDirectionField}
-\title{Add a Direction Field to an Existing Map (TRIAL VERSION as of 2024-03-21)}
+\title{Add a Direction Field to an Existing Map}
 \usage{
 mapDirectionField(
   longitude,
