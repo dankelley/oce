@@ -702,6 +702,9 @@ read.met <- function(
             oceDebug(debug, "file contents suggest type=\"", type, "\"\n", sep = "")
         }
     }
+    if (is.null(type)) {
+        stop("cannot infer file type")
+    }
     if (type == "csv" || type == "csv1") {
         res <- read.met.csv1(file, skip = skip, encoding = encoding, tz = tz, debug = debug - 1)
     } else if (type == "csv2" || type == "csv3") {
