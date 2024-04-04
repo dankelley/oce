@@ -123,31 +123,6 @@ NULL
 #' `trimString()`      \tab [trimws()]                     \tab 1.8-2      \cr
 #' }
 #'
-#' Several \CRANpkg{oce} function arguments are considered "deprecated", which
-#' means they will be marked "defunct" in the next CRAN release. These are normally
-#' listed in the help page for the function in question. A few that may be
-#' of general interest are also listed below.
-#'
-#' * The `adorn` argument was still being checked for (in the dots argument)
-#' until 2020 August 11.
-#'
-#' * The `eos` argument of [swN2()] was removed on 2019
-#' April 11; for details, see the \dQuote{Deprecation Notation} section
-#' of the documentation for [swN2()].
-#'
-# * The `endian` argument of [byteToBinary()] will be removed sometime
-# in the year 2017, and should be set to `"big"` in the meantime.
-#'
-#' * The `parameters` argument of [plot,ctd-method()]
-#' was deprecated on 2016-12-30.  It was once used by
-#' [plot,coastline-method()] but has been ignored by that
-#' function since February 2016.
-#'
-#' * The `orientation` argument of [plot,ctd-method()]
-#' was deprecated on 2016-12-30.  It was once used by
-#' [plot,coastline-method()] but has been ignored by that
-#' function since February 2016.
-#'
 #' Several \dQuote{oce} function arguments are considered "defunct", which
 #' means they will be removed in the next CRAN release. They are as follows.
 #'
