@@ -99,7 +99,7 @@
       <h1 data-toc-skip>3. Analysis of acoustic-Doppler data</h1>
                         <h4 data-toc-skip class="author">Dan Kelley (<a href="https://orcid.org/0000-0001-7808-5911" class="external-link uri">https://orcid.org/0000-0001-7808-5911</a>)</h4>
             
-            <h4 data-toc-skip class="date">2024-03-25</h4>
+            <h4 data-toc-skip class="date">2024-04-04</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/dankelley/oce/blob/HEAD/vignettes/C_adp.Rmd" class="external-link"><code>vignettes/C_adp.Rmd</code></a></small>
       <div class="hidden name"><code>C_adp.Rmd</code></div>
@@ -403,7 +403,7 @@ depth-averaged eastward velocities.</p>
 <span><span class="co"># Depth mean; note that na.rm, is passed by apply() to mean()</span></span>
 <span><span class="va">eastMean</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/apply.html" class="external-link">apply</a></span><span class="op">(</span><span class="va">v</span><span class="op">[</span>, , <span class="fl">1</span><span class="op">]</span>, <span class="fl">1</span>, <span class="va">mean</span>, na.rm<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/lines.html" class="external-link">lines</a></span><span class="op">(</span><span class="va">time</span>, <span class="va">eastMean</span>, col<span class="op">=</span><span class="fl">2</span><span class="op">)</span></span></code></pre></div>
-<p><img src="C_adp_files/figure-html/unnamed-chunk-21-1.png" width="700"></p>
+<p><img src="C_adp_files/figure-html/unnamed-chunk-21-1.png" width="700.0000032"></p>
 <p>Here, <code><a href="../reference/oce.plot.ts.html">oce.plot.ts()</a></code> is used instead of the basic R
 function <code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code>, because it provides a margin note on the
 detailed time interval.</p>
@@ -448,7 +448,7 @@ variations, to reveal tidal height.</p>
 <code class="sourceCode R"><span><span class="va">time</span> <span class="op">&lt;-</span> <span class="va">adp</span><span class="op">[[</span><span class="st">"time"</span><span class="op">]</span><span class="op">]</span></span>
 <span><span class="va">pressure</span> <span class="op">&lt;-</span> <span class="va">adp</span><span class="op">[[</span><span class="st">"pressure"</span><span class="op">]</span><span class="op">]</span></span>
 <span><span class="fu"><a href="../reference/oce.plot.ts.html">oce.plot.ts</a></span><span class="op">(</span><span class="va">time</span>, <span class="va">pressure</span><span class="op">)</span></span></code></pre></div>
-<p><img src="C_adp_files/figure-html/unnamed-chunk-25-1.png" width="700"></p>
+<p><img src="C_adp_files/figure-html/unnamed-chunk-25-1.png" width="700.0000032"></p>
 <p>As a matter of interest, a tidal analysis may be done with</p>
 <div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">m</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/tidem.html">tidem</a></span><span class="op">(</span><span class="fu"><a href="../reference/as.sealevel.html">as.sealevel</a></span><span class="op">(</span><span class="va">pressure</span>, <span class="va">time</span><span class="op">)</span><span class="op">)</span></span>
@@ -476,8 +476,8 @@ constituents are as follows</p>
 <span><span class="co">#&gt; Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span></span>
 <span><span class="co">#&gt; * Processing Log</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;     - 2024-03-25 14:32:05 UTC: `create 'tidem' object`</span></span>
-<span><span class="co">#&gt;     - 2024-03-25 14:32:05 UTC: `tidem(t = as.sealevel(pressure, time))`</span></span></code></pre></div>
+<span><span class="co">#&gt;     - 2024-04-04 13:08:58 UTC: `create 'tidem' object`</span></span>
+<span><span class="co">#&gt;     - 2024-04-04 13:08:58 UTC: `tidem(t = as.sealevel(pressure, time))`</span></span></code></pre></div>
 <p>(Note that it fitted for M2, but not S2, because the Rayleigh
 criterion prevents inferring both, and the conventional tidal analysis
 favours M2 over S2 if the time series is too short to fit for more than
@@ -490,7 +490,7 @@ the following (see <code><a href="../reference/predict.tidem.html">?predict.tide
 <span><span class="va">timePredict</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">min</a></span><span class="op">(</span><span class="va">time</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">time</span><span class="op">)</span>, length.out<span class="op">=</span><span class="fl">200</span><span class="op">)</span></span>
 <span><span class="va">pressurePredict</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict</a></span><span class="op">(</span><span class="va">m</span>, <span class="va">timePredict</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/lines.html" class="external-link">lines</a></span><span class="op">(</span><span class="va">timePredict</span>, <span class="va">pressurePredict</span>, col<span class="op">=</span><span class="st">"red"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="C_adp_files/figure-html/unnamed-chunk-28-1.png" width="700"></p>
+<p><img src="C_adp_files/figure-html/unnamed-chunk-28-1.png" width="700.0000032"></p>
 </div>
   </div>
 

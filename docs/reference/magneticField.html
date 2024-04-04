@@ -182,13 +182,13 @@ to that date; see “Historical Notes”.</p>
 <span class="r-in"><span><span class="co"># 1. Today's value at Halifax NS</span></span></span>
 <span class="r-in"><span><span class="fu">magneticField</span><span class="op">(</span><span class="op">-</span><span class="op">(</span><span class="fl">63</span> <span class="op">+</span> <span class="fl">36</span> <span class="op">/</span> <span class="fl">60</span><span class="op">)</span>, <span class="fl">44</span> <span class="op">+</span> <span class="fl">39</span> <span class="op">/</span> <span class="fl">60</span>, <span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.Date</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $declination</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] -16.40594</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] -16.40222</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $inclination</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 66.46371</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 66.46093</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $intensity</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 51239.94</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 51238.11</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># 2. World map of declination in year 2000.</span></span></span>
@@ -217,7 +217,7 @@ to that date; see “Historical Notes”.</p>
 <span class="r-in"><span><span class="fu"><a href="mapContour.html">mapContour</a></span><span class="op">(</span><span class="va">lon</span>, <span class="va">lat</span>, <span class="va">dec</span>, col <span class="op">=</span> <span class="st">"red"</span>, levels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">20</span>, <span class="fl">180</span>, <span class="fl">20</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="mapContour.html">mapContour</a></span><span class="op">(</span><span class="va">lon</span>, <span class="va">lat</span>, <span class="va">dec</span>, levels <span class="op">=</span> <span class="fl">180</span>, col <span class="op">=</span> <span class="st">"black"</span>, lwd <span class="op">=</span> <span class="fl">2</span>, drawlabels <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="mapContour.html">mapContour</a></span><span class="op">(</span><span class="va">lon</span>, <span class="va">lat</span>, <span class="va">dec</span>, levels <span class="op">=</span> <span class="fl">0</span>, col <span class="op">=</span> <span class="st">"black"</span>, lwd <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="magneticField-1.png" alt="" width="700" height="433"></span>
+<span class="r-plt img"><img src="magneticField-1.png" alt="" width="700" height="700"></span>
 <span class="r-in"><span><span class="co"># }</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># 3. Declination differences between versions 12 and 13</span></span></span>
@@ -252,14 +252,14 @@ to that date; see “Historical Notes”.</p>
 <span class="r-in"><span>    xlab <span class="op">=</span> <span class="st">"Declination difference [deg] from version=12 to version=13"</span>,</span></span>
 <span class="r-in"><span>    main <span class="op">=</span> <span class="st">"Predictions for year 2020"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="magneticField-2.png" alt="" width="700" height="433"></span>
+<span class="r-plt img"><img src="magneticField-2.png" alt="" width="700" height="700"></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/quantile.html" class="external-link">quantile</a></span><span class="op">(</span><span class="va">decDiff</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.025</span>, <span class="fl">0.975</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>       2.5%      97.5% </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> -1.6695352  0.7159345 </span>
 <span class="r-in"><span><span class="co"># Note that the large differences are at high latitudes</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="imagep.html">imagep</a></span><span class="op">(</span><span class="va">lon</span>, <span class="va">lat</span>, <span class="va">decDiff</span>, zlim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">1</span>, <span class="fl">1</span><span class="op">)</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">abs</a></span><span class="op">(</span><span class="va">decDiff</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/lines.html" class="external-link">lines</a></span><span class="op">(</span><span class="va">coastlineWorld</span><span class="op">[[</span><span class="st">"longitude"</span><span class="op">]</span><span class="op">]</span>, <span class="va">coastlineWorld</span><span class="op">[[</span><span class="st">"latitude"</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="magneticField-3.png" alt="" width="700" height="433"></span>
+<span class="r-plt img"><img src="magneticField-3.png" alt="" width="700" height="700"></span>
 <span class="r-in"><span><span class="co"># }</span></span></span>
 </code></pre></div>
     </div>

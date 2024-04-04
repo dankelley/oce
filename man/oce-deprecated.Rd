@@ -51,26 +51,6 @@ version to lack the named function.)
 \code{trimString()}      \tab \code{\link[=trimws]{trimws()}}                     \tab 1.8-2      \cr
 }
 
-Several \CRANpkg{oce} function arguments are considered "deprecated", which
-means they will be marked "defunct" in the next CRAN release. These are normally
-listed in the help page for the function in question. A few that may be
-of general interest are also listed below.
-\itemize{
-\item The \code{adorn} argument was still being checked for (in the dots argument)
-until 2020 August 11.
-\item The \code{eos} argument of \code{\link[=swN2]{swN2()}} was removed on 2019
-April 11; for details, see the \dQuote{Deprecation Notation} section
-of the documentation for \code{\link[=swN2]{swN2()}}.
-\item The \code{parameters} argument of \code{\link[=plot,ctd-method]{plot,ctd-method()}}
-was deprecated on 2016-12-30.  It was once used by
-\code{\link[=plot,coastline-method]{plot,coastline-method()}} but has been ignored by that
-function since February 2016.
-\item The \code{orientation} argument of \code{\link[=plot,ctd-method]{plot,ctd-method()}}
-was deprecated on 2016-12-30.  It was once used by
-\code{\link[=plot,coastline-method]{plot,coastline-method()}} but has been ignored by that
-function since February 2016.
-}
-
 Several \dQuote{oce} function arguments are considered "defunct", which
 means they will be removed in the next CRAN release. They are as follows.
 \itemize{
