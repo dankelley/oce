@@ -12,6 +12,7 @@
   mgp = getOption("oceMgp"),
   mar = c(mgp[1] + 0.5, mgp[1] + 1.5, mgp[2] + 1, mgp[2] + 3/4),
   marginsAsImage = FALSE,
+  grid = TRUE,
   debug = getOption("oceDebug"),
   ...
 )
@@ -36,9 +37,12 @@ default, in order to use more space for the data and less for the axes.}
 
 \item{mar}{value to be used with \code{\link{par}}\code{("mar")}.}
 
-\item{marginsAsImage}{boolean, \code{TRUE} to put a wide margin to the right
-of time-series plots, matching the space used up by a palette in an
-\code{\link[=imagep]{imagep()}} plot.}
+\item{marginsAsImage}{logical value indicating whether to put a
+wide margin to the right of time-series plots, matching the space
+used up by a palette in an \code{\link[=imagep]{imagep()}} plot.}
+
+\item{grid}{logical value, indicating whether to draw a grid with
+\code{\link[=grid]{grid()}}.}
 
 \item{debug}{a flag that turns on debugging, if it exceeds 0.}
 

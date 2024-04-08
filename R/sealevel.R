@@ -447,9 +447,12 @@ as.sealevel <- function(
 #'
 #' @param mar value to be used with [`par`]`("mar")`.
 #'
-#' @param marginsAsImage boolean, `TRUE` to put a wide margin to the right
-#' of time-series plots, matching the space used up by a palette in an
-#' [imagep()] plot.
+#' @param marginsAsImage logical value indicating whether to put a
+#' wide margin to the right of time-series plots, matching the space
+#' used up by a palette in an [imagep()] plot.
+#'
+#' @param grid logical value, indicating whether to draw a grid with
+#' [grid()].
 #'
 #' @param debug a flag that turns on debugging, if it exceeds 0.
 #'
@@ -498,25 +501,31 @@ setMethod(
                           mgp = getOption("oceMgp"),
                           mar = c(mgp[1] + 0.5, mgp[1] + 1.5, mgp[2] + 1, mgp[2] + 3 / 4),
                           marginsAsImage = FALSE,
+                          grid = TRUE,
                           debug = getOption("oceDebug"),
                           ...) {
         oceDebug(debug, "plot.sealevel(..., mar=c(", paste(mar, collapse = ", "), "), ...) {\n", sep = "", unindent = 1)
         titlePlot <- function(x) {
             title <- ""
             if (!is.null(x@metadata$stationNumber) || !is.null(x@metadata$stationName) || !is.null(x@metadata$region)) {
-                title <- paste(title, gettext("Station ", domain = "R-oce"),
+                # "Station"
+                # title <- paste(title, gettext("Station ", domain = "R-oce"),
+                title <- paste(
                     if (!is.na(x@metadata$stationNumber)) x@metadata$stationNumber else "",
-                    " ",
                     if (!is.null(x@metadata$stationName)) x@metadata$stationName else "",
-                    " ",
-                    if (!is.null(x@metadata$region)) x@metadata$region else "",
-                    sep = ""
+                    if (!is.null(x@metadata$region)) x@metadata$region else ""
                 )
+                oceDebug(debug, paste0("stage 1. title=\"", title, "\"\n"))
             }
             if (!is.na(x@metadata$latitude) && !is.na(x@metadata$longitude)) {
                 title <- paste(title, latlonFormat(x@metadata$latitude, x@metadata$longitude), sep = "")
             }
+            oceDebug(debug, paste0("stage 2. title=\"", title, "\"\n"))
+            title <- trimws(title)
+            oceDebug(debug, paste0("stage 3. title=\"", title, "\"\n"))
             if (nchar(title) > 0) {
+                title <- paste0(gettext("Station ", domain = "R-oce"), title)
+                oceDebug(debug, paste0("stage 4. title=\"", title, "\"\n"))
                 mtext(side = 3, title, adj = 1, cex = 2 / 3)
             }
         }
@@ -573,8 +582,10 @@ setMethod(
                 box()
                 titlePlot(x)
                 yax <- axis(2)
-                abline(h = yax, col = "darkgray", lty = "dotted")
-                abline(v = tics, col = "darkgray", lty = "dotted")
+                if (grid) {
+                    abline(h = yax, col = "darkgray", lty = "dotted")
+                    abline(v = tics, col = "darkgray", lty = "dotted")
+                }
             } else if (which2[w] == 2) {
                 # sample month
                 from <- trunc(x@data$time[1], "day")
@@ -595,10 +606,12 @@ setMethod(
                     )
                     oce.axis.POSIXct(1, xx@data$time, drawTimeRange = drawTimeRange, cex.axis = 1, debug = debug - 1)
                     yax <- axis(2)
-                    abline(h = yax, col = "lightgray", lty = "dotted")
                     box()
-                    abline(v = atWeek, col = "darkgray", lty = "dotted")
-                    abline(v = atDay, col = "lightgray", lty = "dotted")
+                    if (grid) {
+                        abline(h = yax, col = "lightgray", lty = "dotted")
+                        abline(v = atWeek, col = "darkgray", lty = "dotted")
+                        abline(v = atDay, col = "lightgray", lty = "dotted")
+                    }
                 } else {
                     plot(0:1, 0:1, type = "n", xlab = "", ylab = "", axes = FALSE)
                     box()
@@ -618,7 +631,9 @@ setMethod(
                         # [m^2/cph]",
                         type = "l", log = "y"
                     )
-                    grid()
+                    if (grid) {
+                        grid(col = "darkgray", lty = "dotted")
+                    }
                     drawConstituents()
                 } else {
                     plot(0:1, 0:1, type = "n", xlab = "", ylab = "", axes = FALSE)
@@ -638,7 +653,9 @@ setMethod(
                         ylab = expression(paste(integral(Gamma, 0, f), " df [m]")),
                         type = "l", xlim = c(0, 0.1)
                     )
-                    grid()
+                    if (grid) {
+                        grid(col = "darkgray", lty = "dotted")
+                    }
                     drawConstituents()
                 } else {
                     warning("cannot draw sealevel spectum, because the series contains missing values")

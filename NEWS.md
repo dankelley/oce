@@ -7,6 +7,8 @@
 * Change `mapImage()` to add the `gridCoarseness` parameter (issue #2199).
 * Change `mapImage()` to accept a gridder function (issue #2199).
 * Change `plot.argo()` to handle `which="sigma0 profile"` (issue #2184).
+* Change `plot.sealevel()` to add the `grid` parameter (issue #2204).
+* Change `plot.sealevel()` to improve labelling (issue #2203).
 * Change `plot.section()` to handle bottom traces better (issue #2194).
 * Change `plot.section()` to show data as points properly (issue #2195).
 * Change `read.adp.rdi()` to handle large (> 2.147 GB) files (issue #2196).
