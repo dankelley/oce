@@ -13,6 +13,10 @@
   mar = c(mgp[1] + 0.5, mgp[1] + 1.5, mgp[2] + 1, mgp[2] + 3/4),
   marginsAsImage = FALSE,
   grid = TRUE,
+  xlim,
+  ylim,
+  xaxs = "i",
+  yaxs = "r",
   debug = getOption("oceDebug"),
   ...
 )
@@ -43,6 +47,14 @@ used up by a palette in an \code{\link[=imagep]{imagep()}} plot.}
 
 \item{grid}{logical value, indicating whether to draw a grid with
 \code{\link[=grid]{grid()}}.}
+
+\item{xlim, ylim}{optional limits for axes. If not supplied,
+reasonable choices will be made}
+
+\item{xaxs, yaxs}{axis-limit parameters, as for standard graphics.
+The default is to make the time axis extend to the edges of
+the box, but to make the y axis have some space above and below
+the range of the data.}
 
 \item{debug}{a flag that turns on debugging, if it exceeds 0.}
 

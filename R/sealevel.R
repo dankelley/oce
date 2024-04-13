@@ -454,6 +454,14 @@ as.sealevel <- function(
 #' @param grid logical value, indicating whether to draw a grid with
 #' [grid()].
 #'
+#' @param xlim,ylim optional limits for axes. If not supplied,
+#' reasonable choices will be made
+#'
+#' @param xaxs,yaxs axis-limit parameters, as for standard graphics.
+#' The default is to make the time axis extend to the edges of
+#' the box, but to make the y axis have some space above and below
+#' the range of the data.
+#'
 #' @param debug a flag that turns on debugging, if it exceeds 0.
 #'
 #' @param \dots optional arguments passed to plotting functions.
@@ -502,9 +510,12 @@ setMethod(
                           mar = c(mgp[1] + 0.5, mgp[1] + 1.5, mgp[2] + 1, mgp[2] + 3 / 4),
                           marginsAsImage = FALSE,
                           grid = TRUE,
+                          xlim, ylim, xaxs = "i", yaxs = "r",
                           debug = getOption("oceDebug"),
                           ...) {
         oceDebug(debug, "plot.sealevel(..., mar=c(", paste(mar, collapse = ", "), "), ...) {\n", sep = "", unindent = 1)
+        xlimGiven <- !missing(xlim)
+        ylimGiven <- !missing(ylim)
         titlePlot <- function(x) {
             title <- ""
             if (!is.null(x@metadata$stationNumber) || !is.null(x@metadata$stationName) || !is.null(x@metadata$region)) {
@@ -572,11 +583,15 @@ setMethod(
         for (w in seq_along(which2)) {
             oceDebug(debug, "plotting for code which2[", w, "] = ", which2[w], "\n", sep = "")
             if (which2[w] == 1) {
+                xlim <- if (xlimGiven) xlim else (range(x@data$time, na.rm = TRUE))
+                ylim <- if (ylimGiven) ylim else (range(x@data$elevation, na.rm = TRUE))
                 plot(x@data$time, x@data$elevation,
                     xlab = "",
                     ylab = resizableLabel("elevation"),
-                    type = "l", xaxs = "i",
-                    lwd = 0.5, axes = FALSE, ...
+                    type = "l",
+                    lwd = 0.5, axes = FALSE,
+                    xlim = xlim, ylim = ylim, xaxs = xaxs, yaxs = yaxs,
+                    ...
                 )
                 tics <- oce.axis.POSIXct(1, x@data$time, drawTimeRange = drawTimeRange, cex.axis = 1, debug = debug - 1)
                 box()
@@ -596,12 +611,15 @@ setMethod(
                     xx@data[[i]] <- x@data[[i]][look]
                 }
                 if (any(is.finite(xx@data$elevation))) {
+                    xlim <- if (xlimGiven) xlim else (range(x@data$time, na.rm = TRUE))
+                    ylim <- if (ylimGiven) ylim else (range(x@data$elevation, na.rm = TRUE))
                     atWeek <- seq(from = from, to = to, by = "week")
                     atDay <- seq(from = from, to = to, by = "day")
                     plot(xx@data$time, xx@data$elevation,
                         xlab = "",
                         ylab = resizableLabel("elevation"),
                         type = "l", xaxs = "i",
+                        xlim = xlim, ylim = ylim, xaxs = xaxs, yaxs = yaxs,
                         axes = FALSE
                     )
                     oce.axis.POSIXct(1, xx@data$time, drawTimeRange = drawTimeRange, cex.axis = 1, debug = debug - 1)
@@ -622,14 +640,22 @@ setMethod(
                     Elevation <- ts(x@data$elevation, start = 1, deltat = x@metadata$deltat)
                     s <- spectrum(Elevation - mean(Elevation), plot = FALSE, log = "y", demean = TRUE, detrend = TRUE)
                     par(mar = c(mgp[1] + 1.25, mgp[1] + 1.5, mgp[2] + 0.25, mgp[2] + 3 / 4))
-                    xlim <- c(0, 0.1) # FIXME: should be able to set this
-                    ylim <- range(subset(s$spec, xlim[1] <= s$freq & s$freq <= xlim[2]))
+                    xlim <- if (xlimGiven) xlim else c(0, 0.1)
+                    ylim <- if (ylimGiven) {
+                        ylim
+                    } else {
+                        range(subset(
+                            s$spec,
+                            xlim[1] <= s$freq & s$freq <= xlim[2]
+                        ), na.rm = TRUE)
+                    }
                     plot(s$freq, s$spec,
-                        xlim = xlim, ylim = ylim,
                         xlab = resizableLabel("frequency cph"),
                         ylab = resizableLabel("spectral density m2/cph"),
                         # [m^2/cph]",
-                        type = "l", log = "y"
+                        xlim = xlim, ylim = ylim, xaxs = xaxs, yaxs = yaxs,
+                        type = "l", log = "y",
+                        ...
                     )
                     if (grid) {
                         grid(col = "darkgray", lty = "dotted")
@@ -648,10 +674,13 @@ setMethod(
                     nCumSpec <- length(s$spec)
                     cumSpec <- sqrt(cumsum(s$spec) / nCumSpec)
                     par(mar = c(mgp[1] + 1.25, mgp[1] + 2.5, mgp[2] + 0.25, mgp[2] + 0.25))
+                    xlim <- if (xlimGiven) xlim else c(0, 0.1)
+                    ylim <- if (ylimGiven) ylim else range(cumSpec, na.rm = TRUE)
                     plot(s$freq, cumSpec,
+                        type = "l",
                         xlab = resizableLabel("frequency cph"),
                         ylab = expression(paste(integral(Gamma, 0, f), " df [m]")),
-                        type = "l", xlim = c(0, 0.1)
+                        xlim = xlim, ylim = ylim, xaxs = xaxs, yaxs = yaxs
                     )
                     if (grid) {
                         grid(col = "darkgray", lty = "dotted")
