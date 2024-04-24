@@ -1,5 +1,5 @@
 pandoc: 3.1.1
-pkgdown: 2.0.8
+pkgdown: 2.0.9
 pkgdown_sha: ~
 articles:
   A_oce: A_oce.html
@@ -9,5 +9,5 @@ articles:
   E_flags: E_flags.html
   F_subclassing: F_subclassing.html
   G_altering_defaults: G_altering_defaults.html
-last_built: 2024-04-13T12:19Z
+last_built: 2024-04-24T22:14Z
 
