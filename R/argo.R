@@ -1853,11 +1853,15 @@ read.argo <- function(file, encoding = NA, debug = getOption("oceDebug"), proces
                 value <- as.vector(value)
             }
             # Trim leading/trailing whitespace, if it is a string
-            if (is.character(value)) {
+            if (is.character(value) && length(value) == 1) {
+                # for the iconv() call and the gsub() test, see
+                # https://github.com/dankelley/oce/issues/2206
                 origValue <- value
+                value <- iconv(value, from = "latin1", to = "UTF-8")
                 value <- try(
                     {
                         trimws(value)
+                        # gsub("^[ \t\r\n](.*)[ \t\r\n]$", "\\1", value, useBytes=TRUE)
                     },
                     silent = TRUE
                 )
@@ -2304,48 +2308,53 @@ setMethod(
             } else if (which[w] == 5) { # "salinity profile"
                 plotProfile(ctd,
                     xtype = "salinity",
-                    ylim = rev(range(x@data$pressure, na.rm=TRUE)),
+                    ylim = rev(range(x@data$pressure, na.rm = TRUE)),
                     cex = cex, pch = pch, col = col, type = type
                 )
             } else if (which[w] == 6) { # "temperature profile"
                 plotProfile(ctd,
                     xtype = "temperature",
-                    ylim = rev(range(x@data$pressure, na.rm=TRUE)),
+                    ylim = rev(range(x@data$pressure, na.rm = TRUE)),
                     cex = cex, pch = pch, col = col, type = type
                 )
-            } else if (which[w] == 7) { "sigma0 profile"
+            } else if (which[w] == 7) {
+                "sigma0 profile"
                 # sigma profile
                 sigma0lim <- quantile(ctd[["sigma0"]], c(0.01, 0.99), na.rm = TRUE)
                 plotProfile(ctd,
                     xtype = "sigma0",
-                    ylim = rev(range(x@data$pressure, na.rm=TRUE)),
+                    ylim = rev(range(x@data$pressure, na.rm = TRUE)),
                     cex = cex, pch = pch, col = col, type = type
                 )
-            } else if (which[w] == 8) { "spice profile"
+            } else if (which[w] == 8) {
+                "spice profile"
                 plotProfile(ctd,
                     xtype = "spice",
-                    ylim = rev(range(x@data$pressure, na.rm=TRUE)),
+                    ylim = rev(range(x@data$pressure, na.rm = TRUE)),
                     xlab = resizableLabel("spice"),
                     cex = cex, pch = pch, col = col, type = type
                 )
-            } else if (which[w] == 9) { "spiciness0 profile"
+            } else if (which[w] == 9) {
+                "spiciness0 profile"
                 plotProfile(ctd,
                     xtype = ctd[["spiciness0"]],
-                    ylim = rev(range(x@data$pressure, na.rm=TRUE)),
+                    ylim = rev(range(x@data$pressure, na.rm = TRUE)),
                     xlab = resizableLabel("spiciness0"),
                     cex = cex, pch = pch, col = col, type = type
                 )
-            } else if (which[w] == 10) { "spiciness1 profile"
+            } else if (which[w] == 10) {
+                "spiciness1 profile"
                 plotProfile(ctd,
                     xtype = ctd[["spiciness1"]],
-                    ylim = rev(range(x@data$pressure, na.rm=TRUE)),
+                    ylim = rev(range(x@data$pressure, na.rm = TRUE)),
                     xlab = resizableLabel("spiciness1"),
                     cex = cex, pch = pch, col = col, type = type
                 )
-            } else if (which[w] == 11) { "spiciness2 profile"
+            } else if (which[w] == 11) {
+                "spiciness2 profile"
                 plotProfile(ctd,
                     xtype = ctd[["spiciness2"]],
-                    ylim = rev(range(x@data$pressure, na.rm=TRUE)),
+                    ylim = rev(range(x@data$pressure, na.rm = TRUE)),
                     xlab = resizableLabel("spiciness2"),
                     cex = cex, pch = pch, col = col, type = type
                 )
