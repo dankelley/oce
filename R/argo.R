@@ -1853,10 +1853,11 @@ read.argo <- function(file, encoding = NA, debug = getOption("oceDebug"), proces
                 value <- as.vector(value)
             }
             # Trim leading/trailing whitespace, if it is a string
-            if (is.character(value) && length(value) == 1) {
+            if (is.character(value)) {
                 # for the iconv() call and the gsub() test, see
                 # https://github.com/dankelley/oce/issues/2206
                 origValue <- value
+                #cat("next is origValue:\n");print(origValue)
                 value <- iconv(value, from = "latin1", to = "UTF-8")
                 value <- try(
                     {
@@ -1865,6 +1866,7 @@ read.argo <- function(file, encoding = NA, debug = getOption("oceDebug"), proces
                     },
                     silent = TRUE
                 )
+                #cat("after trimws(), next is value:\n");print(value)
                 if (inherits(value, "try-error")) {
                     warning("cannot trim leading/trailing whitespace in metadata$", ocename, "")
                     value <- origValue
