@@ -166,6 +166,9 @@ setMethod(
                 dataDerived = NULL
             ))
         }
+        if (i == "z") {
+            return(x@data$z) # the generic [["z"]] computes as -depth and that requires latitude
+        }
         callNextMethod() # [[
     }
 )

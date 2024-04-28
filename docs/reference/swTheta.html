@@ -90,7 +90,8 @@ in the UNESCO system, and <code>pt</code> in the GSW system.</p>
 <span>  referencePressure <span class="op">=</span> <span class="fl">0</span>,</span>
 <span>  longitude <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  latitude <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  eos <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"oceEOS"</span>, default <span class="op">=</span> <span class="st">"gsw"</span><span class="op">)</span></span>
+<span>  eos <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"oceEOS"</span>, default <span class="op">=</span> <span class="st">"gsw"</span><span class="op">)</span>,</span>
+<span>  debug <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"oceDebug"</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -129,6 +130,16 @@ see “Details”).</p></dd>
 <dt>eos</dt>
 <dd><p>equation of state, either <code>"unesco"</code> (references 1 and 2) or <code>"gsw"</code>
 (references 3 and 4).</p></dd>
+
+
+<dt>debug</dt>
+<dd><p>an integer specifying whether debugging information is
+to be printed during the processing. This is a general parameter that
+is used by many <code>oce</code> functions. Generally, setting <code>debug=0</code>
+turns off the printing, while higher values suggest that more information
+be printed. If one function calls another, it usually reduces the value of
+<code>debug</code> first, so that a user can often obtain deeper debugging
+by specifying higher <code>debug</code> values.</p></dd>
 
 </dl></div>
     <div id="value">

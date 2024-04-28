@@ -798,6 +798,9 @@ setMethod(
     f = "[[",
     signature(x = "ctd", i = "ANY", j = "ANY"),
     definition = function(x, i, j, ...) {
+        dots <- list(...)
+        debug <- if ("debug" %in% names(dots)) dots$debug else 0
+        oceDebug(debug, "[[,ctd-method(\"", i, "\") ...\n", sep = "", style = "bold", unindent = 1)
         # message("i=\"", i, "\"")
         data <- x@data
         metadata <- x@metadata
@@ -904,6 +907,7 @@ setMethod(
                 NULL
             }
         } else {
+            oceDebug(debug, "calling lowest-level oce '[[' method (in AllClass.R)\n")
             callNextMethod() # [[ defined in R/AllClass.R
         }
     }
@@ -5737,6 +5741,7 @@ plotProfile <- function(
         } else {
             (min(ylim) - extra) <= yy & yy <= (max(ylim) + extra)
         }
+        #cat("examineIndices:\n")
     } else {
         warning("unknown \"ytype\"; must be one of \"pressure\", \"z\", \"depth\", \"sigmaTheta\" or \"sigma0\"")
         examineIndices <- seq_along(x[["pressure"]])
@@ -5799,6 +5804,8 @@ plotProfile <- function(
     if (!add) {
         par(mar = mar, mgp = mgp)
     }
+    #cat(vectorShow(xtype))
+    #cat(vectorShow(y))
     if (is.numeric(xtype) && length(xtype) == length(y) && length(y) > 1) {
         oceDebug(debug, "xtype is a numeric vector\n")
         # Actually, I don't see why I am allowing for no axes here. Maybe it's

@@ -272,12 +272,12 @@ setMethod(
                     # colnames(threes) <- c(colnames(threes), "OriginalName")
                 }
                 # message("threes step 6:");print(threes)
-                #if ("time" %in% dataNames) {
+                # if ("time" %in% dataNames) {
                 #    timeRow <- which("time" == dataNames)
                 #    threes[[timeRow, 1L]] <- format(numberAsPOSIXct(threes[timeRow, 1L]))
                 #    threes[[timeRow, 2L]] <- format(numberAsPOSIXct(threes[timeRow, 2L]))
                 #    threes[[timeRow, 3L]] <- format(numberAsPOSIXct(threes[timeRow, 3L]))
-                #}
+                # }
                 # Remove time (see https://github.com/dankelley/oce/issues/2198)
                 timeRow <- grep("[ ]*time$", rownames(threes))
                 if (length(timeRow) > 0L) {
@@ -491,6 +491,12 @@ setMethod(
     definition = function(x, i, j, ...) {
         metadataNames <- sort(names(x@metadata))
         dataNames <- sort(names(x@data))
+        # dots <- list(...)
+        # debug <- if ("debug" %in% names(dots)) dots$debug else 0
+        debug <- 0 # for whole file FIXME: how to transmit debug from higher-level [[ code?
+        # oceDebug(debug, "in lowest-level [[ method\n")
+        # message("AllClass.R:497")
+        # browser()
         if (i == "?") {
             return(list(
                 metadata = metadataNames,
@@ -574,7 +580,11 @@ setMethod(
         } else if (i == "density") {
             return(swRho(x))
         } else if (i == "depth") {
-            return(if ("depth" %in% dataNames) x@data$depth else swDepth(x))
+            return(if ("depth" %in% dataNames) {
+                x@data$depth
+            } else {
+                swDepth(x, debug = debug)
+            })
         } else if (i == "nitrate") {
             if ("nitrate" %in% dataNames) {
                 return(x@data$nitrate)
@@ -618,9 +628,11 @@ setMethod(
                 return(NULL)
             }
         } else if (i == "Rrho") {
-            return(swRrho(x, sense = "diffusive"))
+            oceDebug(debug, "lowest-level [[ about to call swRrho with sense='diffusive'\n")
+            return(swRrho(x, sense = "diffusive", debug = debug))
         } else if (i == "RrhoSF") {
-            return(swRrho(x, sense = "finger"))
+            oceDebug(debug, "lowest-level [[ about to call swRrho with sense='finger'\n")
+            return(swRrho(x, sense = "finger", debug = debug))
         } else if (i %in% c("salinity", "SP")) {
             if ("salinity" %in% dataNames) {
                 S <- x@data$salinity
@@ -656,7 +668,11 @@ setMethod(
         } else if (i %in% c("SA", "Absolute Salinity")) {
             return(swAbsoluteSalinity(x))
         } else if (i == "sigmaTheta") {
-            return(if (missing(j)) swSigmaTheta(x) else swSigmaTheta(x, eos = j))
+            return(if (missing(j)) {
+                swSigmaTheta(x)
+            } else {
+                swSigmaTheta(x, eos = j)
+            })
         } else if (i == "sigma0") {
             return(if (missing(j)) swSigma0(x) else swSigma0(x, eos = j))
         } else if (i == "sigma1") {
@@ -691,13 +707,13 @@ setMethod(
             return(if (missing(j)) swSoundSpeed(x) else swSoundSpeed(x, eos = j))
         } else if (i == "spice") {
             # return(if (missing(j)) swSpice(x, eos = "unesco") else swSpice(x, eos = j))
-            if (!missing(j)) {
-                warning(paste0("[[\"spice\", \"", j, "\"]] ignoring second argument; ",
-                    "use [[\"spice\"]] for the Flament formulation or ",
-                    "[[\"spiciness0\"]] for the Gibbs SeaWater formulation"),
-                    call. = FALSE)
+            if (missing(j)) {
+                j <- getOption("oceEOS", default = "gsw")
             }
-            return(swSpice(x, eos = "unesco"))
+            if (j != "gsw" && j != "unesco") {
+                stop("[[\"spice\", \"", j, "\"]] not understood; try \"gsw\" or \"unesco\" as second parameter")
+            }
+            return(swSpice(x, eos = j))
         } else if (i == "SR") {
             return(swSR(x))
         } else if (i == "Sstar") {
@@ -714,7 +730,11 @@ setMethod(
         } else if (i %in% c("theta", "potential temperature")) {
             return(swTheta(x))
         } else if (i == "z") {
-            return(if ("z" %in% dataNames) x@data$z else swZ(x))
+            if ("z" %in% names(x@data)) {
+                return(x@data$z)
+            } else {
+                return(swZ(x)) # requires latitude
+            }
         } else {
             # DEBUG oceDebug(debug, "[[ at base level. i=\"", i, "\"\n", sep="", unindent=1, style="bold")
             if (missing(j) || j == "") {

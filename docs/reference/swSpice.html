@@ -101,7 +101,8 @@ typical coastal case.</p>
 <span>  pressure <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  longitude <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  latitude <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  eos <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"oceEOS"</span>, default <span class="op">=</span> <span class="st">"gsw"</span><span class="op">)</span></span>
+<span>  eos <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"oceEOS"</span>, default <span class="op">=</span> <span class="st">"gsw"</span><span class="op">)</span>,</span>
+<span>  debug <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"oceDebug"</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -136,10 +137,19 @@ ITS-90 scale; see “Temperature units” in the documentation for
 
 
 <dt>eos</dt>
-<dd><p>Character value specifying the equation of state,
-either <code>"unesco"</code> (for the Flament formulation, although this
-is not actually part of UNESCO)
-or <code>"gsw"</code> for the Gibbs SeaWater formulation.</p></dd>
+<dd><p>Character value specifying the equation of state, either
+<code>"unesco"</code> (for the Flament formulation, although this is not actually part
+of UNESCO) or <code>"gsw"</code> for the Gibbs SeaWater formulation.</p></dd>
+
+
+<dt>debug</dt>
+<dd><p>an integer specifying whether debugging information is
+to be printed during the processing. This is a general parameter that
+is used by many <code>oce</code> functions. Generally, setting <code>debug=0</code>
+turns off the printing, while higher values suggest that more information
+be printed. If one function calls another, it usually reduces the value of
+<code>debug</code> first, so that a user can often obtain deeper debugging
+by specifying higher <code>debug</code> values.</p></dd>
 
 </dl></div>
     <div id="value">
@@ -243,8 +253,10 @@ by references 1 and 2.</p>
 <span class="r-in"><span><span class="va">G</span> <span class="op">&lt;-</span> <span class="fu">swSpice</span><span class="op">(</span><span class="va">ctd</span>, eos <span class="op">=</span> <span class="st">"gsw"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">xlim</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/range.html" class="external-link">range</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">U</span>, <span class="va">G</span><span class="op">)</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">ylim</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/rev.html" class="external-link">rev</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/range.html" class="external-link">range</a></span><span class="op">(</span><span class="va">p</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">U</span>, <span class="va">p</span>, xlim <span class="op">=</span> <span class="va">xlim</span>, ylim <span class="op">=</span> <span class="va">ylim</span>,</span></span>
-<span class="r-in"><span>    xlab <span class="op">=</span> <span class="st">"Measure of Spiciness"</span>, ylab <span class="op">=</span> <span class="st">"Pressure (dbar)"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">U</span>, <span class="va">p</span>,</span></span>
+<span class="r-in"><span>    xlim <span class="op">=</span> <span class="va">xlim</span>, ylim <span class="op">=</span> <span class="va">ylim</span>,</span></span>
+<span class="r-in"><span>    xlab <span class="op">=</span> <span class="st">"Measure of Spiciness"</span>, ylab <span class="op">=</span> <span class="st">"Pressure (dbar)"</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/points.html" class="external-link">points</a></span><span class="op">(</span><span class="va">G</span>, <span class="va">p</span>, col <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/legend.html" class="external-link">legend</a></span><span class="op">(</span><span class="st">"topleft"</span>, col <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">2</span>, pch <span class="op">=</span> <span class="fl">1</span>, legend <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"unesco"</span>, <span class="st">"gsw"</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="swSpice-1.png" alt="" width="700" height="700"></span>

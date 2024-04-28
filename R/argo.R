@@ -157,7 +157,7 @@ setMethod(
         res <- NULL
         dots <- list(...)
         debug <- if ("debug" %in% names(dots)) dots$debug else 0
-        oceDebug(debug, "[[,argo-method(\"", i, "\") {\n", sep = "", style = "bold", unindent = 1)
+        oceDebug(debug, "[[,argo-method(\"", i, "\") ...\n", sep = "", style = "bold", unindent = 1)
         metadataDerived <- c("ID", "cycle", "*Flag", "*Unit")
         dataDerived <- c(
             "profile", "CT", "N2", "SA", "sigmaTheta",
@@ -195,40 +195,61 @@ setMethod(
         }
         namesData <- names(x@data)
         # handle some computed items
+        # message("argo[[..., i=\"", i, "\"]]\n")
         if (i %in% c(
-            "CT", paste("conservative", "temperature"), "N2",
+            "CT", paste("Conservative", "Temperature"), "N2",
             "SA", paste("Absolute", "Salinity"), "sigmaTheta",
             "theta", "spice"
         )) {
+            # message("about to get S, T, p")
             salinity <- x[["salinity", debug = debug - 1]]
-            pressure <- x[["pressure", debug = debug - 1]]
             temperature <- x[["temperature", debug = debug - 1]]
-            dim <- dim(salinity)
+            pressure <- x[["pressure", debug = debug - 1]]
+            dim <- dim(pressure)
             # Do not need longitude and latitude if eos="unesco", but retain for code clarity
             longitude <- rep(x@data$longitude, each = dim[1])
+            dim(longitude) <- dim
             latitude <- rep(x@data$latitude, each = dim[1])
+            dim(latitude) <- dim
+            if (!identical(dim(salinity), dim)) stop("temperature and pressure have differing dimensions")
+            if (!identical(dim(temperature), dim)) stop("temperature and pressure have differing dimensions")
             if (i %in% c("CT", "Conservative Temperature")) {
+                # message("DAN 'CT' or 'Conservative Temperature'")
+                # cat(vectorShow(x[["SA"]]))
+                # cat(vectorShow(temperature))
+                # cat(vectorShow(pressure))
+                # cat(vectorShow(longitude))
+                # cat(vectorShow(latitude))
                 res <- gsw::gsw_CT_from_t(x[["SA"]], temperature, pressure)
             } else if (i == "N2") {
                 # nprofile <- dim[2]
+                oceDebug(debug, "argo[[\"N2\"]] ...\n")
                 res <- array(NA_real_, dim = dim)
                 for (i in seq_len(dim[2])) {
                     # message("i=",i, ", nprofile=", nprofile)
                     # if (i == 14) browser()
                     if (sum(!is.na(pressure[, i])) > 2) {
+                        oceDebug(debug - 1, "  OK i=", i, "\n")
                         ctd <- as.ctd(
                             salinity = salinity[, i],
                             temperature = temperature[, i],
                             pressure = pressure[, i],
-                            longitude = x@data$longitude[i],
-                            latitude = x@data$latitude[i]
+                            longitude = longitude[1, i],
+                            latitude = latitude[1, i]
                         )
                         res[, i] <- swN2(ctd)
                     } else {
+                        oceDebug(debug - 1, "  BAD i=", i, "\n")
                         res[, i] <- rep(NA, length(salinity[, i]))
                     }
                 }
             } else if (i %in% c("SA", "Absolute Salinity")) {
+                # message("DAN 'SA' or 'Absolute Salinity'")
+                # cat(vectorShow(salinity))
+                # cat(vectorShow(temperature))
+                # cat(vectorShow(pressure))
+                # cat(vectorShow(longitude))
+                # cat(vectorShow(latitude))
                 res <- gsw::gsw_SA_from_SP(salinity, pressure, longitude = longitude, latitude = latitude)
             } else if (i %in% paste("sigma", 0:4, sep = "")) {
                 SA <- gsw::gsw_SA_from_SP(salinity, pressure, longitude = longitude, latitude = latitude)
@@ -240,32 +261,39 @@ setMethod(
                     "sigma3" = gsw::gsw_sigma3(SA, CT),
                     "sigma4" = gsw::gsw_sigma4(SA, CT)
                 )
-            } else if (i %in% "spice") {
+            } else if (i == "spice") {
                 if (missing(j)) {
                     res <- swSpice(x)
                 } else {
-                    if (!j %in% c("gsw", "unesco")) {
+                    #message("DAN 1 (spice about to check j)")
+                    if (j != "gsw" && j != "unesco") {
                         stop("\"", j, "\" not allowed; use either \"gsw\" or \"unesco\"")
                     }
+                    #message("DAN 2")
                     res <- swSpice(x, eos = j)
                 }
             } else if (i == "sigmaTheta") {
+                oceDebug(debug, "  argo[[\"sigmaTheta\"]] is about to call swSigmaTheta()\n")
                 res <- swSigmaTheta(salinity,
                     temperature = temperature, pressure = pressure,
                     referencePressure = 0, longitude = longitude, latitude = latitude,
-                    eos = getOption("oceEOS", default = "gsw")
+                    eos = getOption("oceEOS", default = "gsw"), debug = debug
                 )
             } else if (i == "theta") {
+                #message("argo.R: 281")
                 res <- swTheta(salinity,
                     temperature = temperature, pressure = pressure,
                     referencePressure = 0, longitude = longitude, latitude = latitude,
-                    eos = getOption("oceEOS", default = "gsw")
+                    eos = getOption("oceEOS", default = "gsw"),
+                    debug = debug
                 )
+                #browser()
             } else {
                 stop("argo[[ coding error: unknown item '", i, "'")
             }
             dim(res) <- dim
         } else if (i == "z") {
+            return(-swDepth(x))
             # See note at "depth", below.
             if (is.matrix(x@data$pressure)) {
                 n <- dim(x@data$pressure)[1]
@@ -284,8 +312,15 @@ setMethod(
             # much.
             if (is.matrix(x@data$pressure)) {
                 n <- dim(x@data$pressure)[1]
-                latitude <- matrix(rep(x@data$latitude, each = n), nrow = n, byrow = TRUE)
-                res <- swDepth(x@data$pressure, latitude)
+                #message("DAN 1 n=", n, " levels")
+                pressure <- x@data$pressure
+                #message("DAN 2 next is latitude")
+                latitude <- matrix(rep(x@data$latitude, each = n), nrow = n, byrow = FALSE)
+                #print(latitude[1:10, 1])
+                #message("argo.R:313")
+                #browser()
+                res <- swDepth(pressure, latitude)
+                #message("DAN 4")
             } else {
                 res <- swDepth(x@data$pressure, x@data$latitude)
             }
@@ -363,9 +398,10 @@ setMethod(
                 res <- unadjusted
             }
         } else {
+            oceDebug(debug, "calling lowest-level oce '[[' method (in AllClass.R)\n")
             res <- callNextMethod() # [[ defined in R/AllClass.R
         }
-        oceDebug(debug, "} # [[,argo-method\n", sep = "", style = "bold", unindent = 1)
+        #oceDebug(debug, "# [[,argo-method\n", sep = "", style = "bold", unindent = 1)
         res
     }
 ) # [[
@@ -1857,7 +1893,7 @@ read.argo <- function(file, encoding = NA, debug = getOption("oceDebug"), proces
                 # for the iconv() call and the gsub() test, see
                 # https://github.com/dankelley/oce/issues/2206
                 origValue <- value
-                #cat("next is origValue:\n");print(origValue)
+                # cat("next is origValue:\n");print(origValue)
                 value <- iconv(value, from = "latin1", to = "UTF-8")
                 value <- try(
                     {
@@ -1866,7 +1902,7 @@ read.argo <- function(file, encoding = NA, debug = getOption("oceDebug"), proces
                     },
                     silent = TRUE
                 )
-                #cat("after trimws(), next is value:\n");print(value)
+                # cat("after trimws(), next is value:\n");print(value)
                 if (inherits(value, "try-error")) {
                     warning("cannot trim leading/trailing whitespace in metadata$", ocename, "")
                     value <- origValue

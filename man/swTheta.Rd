@@ -11,7 +11,8 @@ swTheta(
   referencePressure = 0,
   longitude = NULL,
   latitude = NULL,
-  eos = getOption("oceEOS", default = "gsw")
+  eos = getOption("oceEOS", default = "gsw"),
+  debug = getOption("oceDebug")
 )
 }
 \arguments{
@@ -35,6 +36,14 @@ see \dQuote{Details}).}
 
 \item{eos}{equation of state, either \code{"unesco"} (references 1 and 2) or \code{"gsw"}
 (references 3 and 4).}
+
+\item{debug}{an integer specifying whether debugging information is
+to be printed during the processing. This is a general parameter that
+is used by many \code{oce} functions. Generally, setting \code{debug=0}
+turns off the printing, while higher values suggest that more information
+be printed. If one function calls another, it usually reduces the value of
+\code{debug} first, so that a user can often obtain deeper debugging
+by specifying higher \code{debug} values.}
 }
 \value{
 Potential temperature (\eqn{^\circ}{deg}C) of seawater, referenced

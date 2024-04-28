@@ -83,24 +83,39 @@ and so is defined simply in terms of <code><a href="swDepth.html">swDepth()</a><
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">swZ</span><span class="op">(</span><span class="va">pressure</span>, latitude <span class="op">=</span> <span class="fl">45</span>, eos <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"oceEOS"</span>, default <span class="op">=</span> <span class="st">"gsw"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">swZ</span><span class="op">(</span></span>
+<span>  <span class="va">pressure</span>,</span>
+<span>  latitude <span class="op">=</span> <span class="fl">45</span>,</span>
+<span>  eos <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"oceEOS"</span>, default <span class="op">=</span> <span class="st">"gsw"</span><span class="op">)</span>,</span>
+<span>  debug <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"oceDebug"</span><span class="op">)</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>pressure</dt>
-<dd><p>either pressure (dbar), in which case <code>lat</code> must also
-be given, or a <code>ctd</code> object, in which case <code>lat</code> will be inferred
+<dd><p>either pressure (dbar), in which case <code>latitude</code> must also
+be given, or a <code>ctd</code> object, in which case <code>latitude</code> will be inferred
 from the object.</p></dd>
 
 
 <dt>latitude</dt>
-<dd><p>Latitude in \(^\circ\)N.</p></dd>
+<dd><p>numeric value for latitude in degrees North.</p></dd>
 
 
 <dt>eos</dt>
-<dd><p>indication of formulation to be used, either <code>"unesco"</code> or
-<code>"gsw"</code>.</p></dd>
+<dd><p>character value indicating the formulation to be used, either
+<code>"unesco"</code> or <code>"gsw"</code>.</p></dd>
+
+
+<dt>debug</dt>
+<dd><p>an integer specifying whether debugging information is
+to be printed during the processing. This is a general parameter that
+is used by many <code>oce</code> functions. Generally, setting <code>debug=0</code>
+turns off the printing, while higher values suggest that more information
+be printed. If one function calls another, it usually reduces the value of
+<code>debug</code> first, so that a user can often obtain deeper debugging
+by specifying higher <code>debug</code> values.</p></dd>
 
 </dl></div>
     <div id="see-also">
