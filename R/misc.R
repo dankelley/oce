@@ -1,5 +1,19 @@
 # vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
 
+# Internal function for comparing vector/matrix shapes
+shape <- function(x) {
+    if (is.vector(x)) length(x) else dim(x)
+}
+
+mimicShape <- function(x, shape) {
+    if (length(shape) == 1L) {
+        x <- as.vector(x)
+    } else {
+        dim(x) <- shape
+    }
+    x
+}
+
 # Internal function, mainly used in plotting raw images
 asNumeric <- function(x) {
     if (is.numeric(x)) {
