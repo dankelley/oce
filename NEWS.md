@@ -5,7 +5,7 @@
 * Change `[[` for many seawater properties to handle `argo` data (issue 2207 and 2208)
 * Change `ctdDecimate()` to add the `na.rm` argument (issue #2192).
 * Change `mapDirectionField()` to allow wind barbs (issue 2191).
-* Change `mapImage()` to accept a gridder function (issue #2199).
+* Change `mapImage()` to handle a user-provided gridding function (issue #2199).
 * Change `mapImage()` to add the `gridCoarseness` parameter (issue #2199).
 * Change `oceMagic()` to close netcdf files after checking them (issue #2209).
 * Change `plot.argo()` to handle `which="sigma0 profile"` (issue #2184).

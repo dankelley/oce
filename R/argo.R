@@ -2019,7 +2019,7 @@ as.argo <- function(time, longitude, latitude, salinity, temperature, pressure, 
 #' same as using `which=9`.)
 #'
 #' * `which=9` or `"spiciness0 profile"` gives
-#' a profile of spicininess referenced to a pressure
+#' a profile of spiciness referenced to a pressure
 #' of 0 dbar, i.e. the surface.  (This is the
 #' same as using `which=8`.)
 #'
