@@ -1840,20 +1840,26 @@ oceMagic <- function(file, encoding = "latin1", debug = getOption("oceDebug")) {
                 if ("DATA_TYPE" %in% names(f$var)) {
                     if (grepl("argo", ncdf4::ncvar_get(f, "DATA_TYPE"), ignore.case = TRUE)) {
                         oceDebug(debug, "} # oceMagic returning argo (upper-case style)\n", unindent = 1)
+                        ncdf4::nc_close(f)
                         return("argo")
                     } else {
                         oceDebug(debug, "} # oceMagic returning netcdf (upper-case style)\n", unindent = 1)
+                        ncdf4::nc_close(f)
                         return("netcdf")
                     }
                 } else if ("data_type" %in% names(f$var)) {
                     if (grepl("argo", ncdf4::ncvar_get(f, "data_type"), ignore.case = TRUE)) {
                         oceDebug(debug, "} # oceMagic returning argo (lower-case style)\n", unindent = 1)
+                        ncdf4::nc_close(f)
                         return("argo")
                     } else {
                         oceDebug(debug, "} # oceMagic returning netcdf (lower-case style)\n", unindent = 1)
+                        ncdf4::nc_close(f)
                         return("netcdf")
                     }
                 }
+                ncdf4::nc_close(f) # it's netcdf, but with no data_type
+                return("unknown")
             } else {
                 stop("must install.packages(\"ncdf4\") to read a NetCDF file")
             }
@@ -3914,11 +3920,15 @@ decodeTime <- function(time, timeFormats, tz = "UTC") {
 #' @examples
 #' library(oce)
 #' plot(c(-1.5, 1.5), c(-1.5, 1.5), xlab = "", ylab = "", type = "n")
-#' drawDirectionField(x = rep(0, 2), y = rep(0, 2),
-#'     u = c(1, 1), v = c(1, -1), scalex = 0.5, add = TRUE)
+#' drawDirectionField(
+#'     x = rep(0, 2), y = rep(0, 2),
+#'     u = c(1, 1), v = c(1, -1), scalex = 0.5, add = TRUE
+#' )
 #' plot(c(-1.5, 1.5), c(-1.5, 1.5), xlab = "", ylab = "", type = "n")
-#' drawDirectionField(x = rep(0, 2), y = rep(0, 2),
-#'     u = c(1, 1), v = c(1, -1), scalex = 0.5, add = TRUE, type = 2)
+#' drawDirectionField(
+#'     x = rep(0, 2), y = rep(0, 2),
+#'     u = c(1, 1), v = c(1, -1), scalex = 0.5, add = TRUE, type = 2
+#' )
 #'
 #' # 2D example
 #' x <- seq(-2, 2, 0.1)
