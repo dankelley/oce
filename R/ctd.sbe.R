@@ -132,7 +132,7 @@
 #' `sigma-t`     \tab `sigmaT`                   \tab kg/m^3               \tab   \cr
 #' `sigma-theta` \tab `sigmaTheta`               \tab kg/m^3               \tab 5 \cr
 #' `spar`        \tab `spar`                     \tab -                    \tab   \cr
-#' `specc`       \tab `conductivity`             \tab uS/cm                \tab   \cr
+#' `specc`       \tab `specificConductance`      \tab uS/cm                \tab   \cr
 #' `sva`         \tab `specificVolumeAnomaly`    \tab 1e-8 m^3/kg;         \tab   \cr
 #' `svCM~`       \tab `soundSpeed`               \tab m/s; Chen-Millero    \tab   \cr
 #' `t090Cm`      \tab `temperature`              \tab degC; ITS-90         \tab   \cr
@@ -531,7 +531,7 @@ cnvName2oceName <- function(h, columns = NULL, debug = getOption("oceDebug")) {
         name <- "spar"
         unit <- list(unit = expression(), scale = "")
     } else if (1 == length(grep("^specc$", name))) {
-        name <- "conductivity"
+        name <- "specificConductance"
         unit <- list(unit = expression(uS / cm), scale = "")
     } else if (1 == length(grep("^sva$", name))) {
         name <- "specificVolumeAnomaly"

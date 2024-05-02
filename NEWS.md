@@ -13,6 +13,7 @@
 * Change `plot.section()` to show data as points properly (issue #2195).
 * Change `read.adp.rdi()` to handle large (> 2.147 GB) files (issue #2196).
 * Change `read.argo()` to handle non-UTF characters in metadata (issue #2206).
+* Change `read.ctd.sbe()` to name `specc` as `specificConductance` (issue #2211).
 * Change `resizableLabel()` to document partial-match behaviour (issue #2197).
 * Change `resizableLabel()` to handle `item=`"N"` (issue #2197).
 * Change `summary()` to skip time in the threenum table (issue #2198).
