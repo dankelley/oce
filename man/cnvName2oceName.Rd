@@ -153,7 +153,7 @@ variants.)
 \code{sigma-t}     \tab \code{sigmaT}                   \tab kg/m^3               \tab   \cr
 \code{sigma-theta} \tab \code{sigmaTheta}               \tab kg/m^3               \tab 5 \cr
 \code{spar}        \tab \code{spar}                     \tab -                    \tab   \cr
-\code{specc}       \tab \code{conductivity}             \tab uS/cm                \tab   \cr
+\code{specc}       \tab \code{specificConductance}      \tab uS/cm                \tab   \cr
 \code{sva}         \tab \code{specificVolumeAnomaly}    \tab 1e-8 m^3/kg;         \tab   \cr
 \verb{svCM~}       \tab \code{soundSpeed}               \tab m/s; Chen-Millero    \tab   \cr
 \code{t090Cm}      \tab \code{temperature}              \tab degC; ITS-90         \tab   \cr

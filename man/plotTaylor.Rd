@@ -4,61 +4,71 @@
 \alias{plotTaylor}
 \title{Plot a Model-data Comparison Diagram}
 \usage{
-plotTaylor(x, y, scale, pch, col, labels, pos, ...)
+plotTaylor(x, y, scale, pch = 1, col = 1, labels, pos = 2, cex = 1)
 }
 \arguments{
-\item{x}{a vector of reference values of some quantity, e.g. measured over
-time or space.}
+\item{x}{a vector of reference values of some quantity, e.g.
+measured over time or space.}
 
-\item{y}{a matrix whose columns hold values of values to be compared with
-those in x.  (If \code{y} is a vector, it is converted first to a one-column
-matrix).}
+\item{y}{a matrix whose columns hold values of values to be
+compared with those in x.  (If \code{y} is a vector, it is converted
+first to a one-column matrix).}
 
-\item{scale}{optional scale, interpreted as the maximum value of standard
-deviation.}
+\item{scale}{optional scale, interpreted as the maximum value of
+the standard deviation.}
 
-\item{pch}{list of characters to plot, one for each column of \code{y}.}
+\item{pch}{vector of plot symbols, used for points on the plot. If
+this is of length less than the number of columns in \code{y}, then it
+it is repeated as needed to match those columns.}
 
-\item{col}{list of colors for points on the plot, one for each column of
-\code{y}.}
+\item{col}{vector of colors for points on the plot, repeated as
+necessary (see \code{pch}).}
 
-\item{labels}{optional vector of strings to use for labelling the points.}
+\item{labels}{optional vector of strings to use for labelling the
+points.}
 
-\item{pos}{optional vector of positions for labelling strings.  If not
-provided, labels will be to the left of the symbols.}
+\item{pos}{optional vector of positions for labelling strings,
+repeated as necessary (see \code{pch}).}
 
-\item{\dots}{optional arguments passed by \code{plotTaylor} to more child
-functions.}
+\item{cex}{character expansion factor, repeated if necessary
+(see \code{pch}).}
 }
 \description{
-Creates a diagram as described by Taylor (2001).  The graph is in the form
-of a semicircle, with radial lines and spokes connecting at a focus point on
-the flat (lower) edge.  The radius of a point on the graph indicates the
-standard deviation of the corresponding quantity, i.e. x and the columns in
-y.  The angle connecting a point on the graph to the focus provides an
-indication of correlation coefficient with respect to x.  The ``east'' side
-of the graph indicates \eqn{R=1}{R=1}, while \eqn{R=0}{R=0} is at the
-"north" edge and \eqn{R=-1}{R=-1} is at the "west" side.  The \code{x}
-data are indicated with a bullet on the graph, appearing on the lower edge
-to the right of the focus at a distance indicating the standard deviation of
-`x`.  The other points on the graph represent the columns of `y`,
-coded automatically or with the supplied values of `pch` and
-`col`.
-The example shows two tidal models of the Halifax sealevel data, computed
-with \code{\link[=tidem]{tidem()}} with just the M2 component and the S2 component;
-the graph indicates that the M2 model is much better than the S2 model.
+Creates a diagram as described by Taylor (2001).  The graph is in
+the form of a semicircle, with radial lines and spokes connecting
+at a focus point on the flat (lower) edge.  The radius of a point
+on the graph indicates the standard deviation of the corresponding
+quantity, i.e. x and the columns in y.  The angle connecting a
+point on the graph to the focus provides an indication of
+correlation coefficient with respect to x.
+}
+\details{
+The ``east'' side of the graph indicates \eqn{R=1}{R=1}, while
+\eqn{R=0}{R=0} is at the "north" edge and \eqn{R=-1}{R=-1} is at
+the "west" side.  The \code{x} data are indicated with a bullet on the
+graph, appearing on the lower edge to the right of the focus at a
+distance indicating the standard deviation of `x`.  The other
+points on the graph represent the columns of `y`, coded
+automatically or with the supplied values of `pch` and `col`. The
+example shows three tidal models of the Halifax sealevel data,
+computed with \code{\link[=tidem]{tidem()}} with only the M2 component, only the S2
+component, or all (auto-selected) components.
 }
 \examples{
 library(oce)
 data(sealevel)
 x <- sealevel[["elevation"]]
 M2 <- predict(tidem(sealevel, constituents = "M2"))
-S2 <- predict(tidem(sealevel, constituents = c("S2")))
-plotTaylor(x, cbind(M2, S2))
+S2 <- predict(tidem(sealevel, constituents = "S2"))
+all <- predict(tidem(sealevel))
+plotTaylor(x, cbind(M2, S2, all), labels = c("M2", "S2", "all"))
+
 }
 \references{
-Taylor, Karl E., 2001.  Summarizing multiple aspects of model
-performance in a single diagram, \emph{J. Geophys. Res.}, 106:D7, 7183--7192.
+Taylor, Karl E. "Summarizing Multiple Aspects of Model
+Performance in a Single Diagram." \emph{Journal of Geophysical Research:
+Atmospheres} 106, no. D7 (April 16, 2001): 7183–92.
+https://doi.org/10.1029/2000JD900719.
 }
 \author{
 Dan Kelley
