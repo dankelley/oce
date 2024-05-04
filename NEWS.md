@@ -11,6 +11,7 @@
 * Change `plot.sealevel()` to improve labelling (issue #2203).
 * Change `plot.section()` to handle bottom traces better (issue #2194).
 * Change `plot.section()` to show data as points properly (issue #2195).
+* Change `plotTaylor()` to handle a few more parameters.
 * Change `read.adp.rdi()` to handle large (> 2.147 GB) files (issue #2196).
 * Change `read.argo()` to handle non-UTF characters in metadata (issue #2206).
 * Change `read.ctd.sbe()` to name `specc` as `specificConductance` (issue #2211).

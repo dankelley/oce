@@ -1254,59 +1254,67 @@ filterSomething <- function(x, filter) {
 
 #' Plot a Model-data Comparison Diagram
 #'
-#' Creates a diagram as described by Taylor (2001).  The graph is in the form
-#' of a semicircle, with radial lines and spokes connecting at a focus point on
-#' the flat (lower) edge.  The radius of a point on the graph indicates the
-#' standard deviation of the corresponding quantity, i.e. x and the columns in
-#' y.  The angle connecting a point on the graph to the focus provides an
-#' indication of correlation coefficient with respect to x.  The ``east'' side
-#' of the graph indicates \eqn{R=1}{R=1}, while \eqn{R=0}{R=0} is at the
-#' "north" edge and \eqn{R=-1}{R=-1} is at the "west" side.  The `x`
-#' data are indicated with a bullet on the graph, appearing on the lower edge
-#' to the right of the focus at a distance indicating the standard deviation of
-#' `x`.  The other points on the graph represent the columns of `y`,
-#' coded automatically or with the supplied values of `pch` and
-#' `col`.
-#' The example shows two tidal models of the Halifax sealevel data, computed
-#' with [tidem()] with just the M2 component and the S2 component;
-#' the graph indicates that the M2 model is much better than the S2 model.
+#' Creates a diagram as described by Taylor (2001).  The graph is in
+#' the form of a semicircle, with radial lines and spokes connecting
+#' at a focus point on the flat (lower) edge.  The radius of a point
+#' on the graph indicates the standard deviation of the corresponding
+#' quantity, i.e. x and the columns in y.  The angle connecting a
+#' point on the graph to the focus provides an indication of
+#' correlation coefficient with respect to x.
 #'
-#' @param x a vector of reference values of some quantity, e.g. measured over
-#' time or space.
+#' The ``east'' side of the graph indicates \eqn{R=1}{R=1}, while
+#' \eqn{R=0}{R=0} is at the "north" edge and \eqn{R=-1}{R=-1} is at
+#' the "west" side.  The `x` data are indicated with a bullet on the
+#' graph, appearing on the lower edge to the right of the focus at a
+#' distance indicating the standard deviation of `x`.  The other
+#' points on the graph represent the columns of `y`, coded
+#' automatically or with the supplied values of `pch` and `col`. The
+#' example shows three tidal models of the Halifax sealevel data,
+#' computed with [tidem()] with only the M2 component, only the S2
+#' component, or all (auto-selected) components.
 #'
-#' @param y a matrix whose columns hold values of values to be compared with
-#' those in x.  (If `y` is a vector, it is converted first to a one-column
-#' matrix).
+#' @param x a vector of reference values of some quantity, e.g.
+#' measured over time or space.
 #'
-#' @param scale optional scale, interpreted as the maximum value of standard
-#' deviation.
+#' @param y a matrix whose columns hold values of values to be
+#' compared with those in x.  (If `y` is a vector, it is converted
+#' first to a one-column matrix).
 #'
-#' @param pch list of characters to plot, one for each column of `y`.
+#' @param scale optional scale, interpreted as the maximum value of
+#' the standard deviation.
 #'
-#' @param col list of colors for points on the plot, one for each column of
-#' `y`.
+#' @param pch vector of plot symbols, used for points on the plot. If
+#' this is of length less than the number of columns in `y`, then it
+#' it is repeated as needed to match those columns.
+
+#' @param col vector of colors for points on the plot, repeated as
+#' necessary (see `pch`).
 #'
-#' @param labels optional vector of strings to use for labelling the points.
+#' @param labels optional vector of strings to use for labelling the
+#' points.
 #'
-#' @param pos optional vector of positions for labelling strings.  If not
-#' provided, labels will be to the left of the symbols.
+#' @param pos optional vector of positions for labelling strings,
+#' repeated as necessary (see `pch`).
 #'
-#' @param \dots optional arguments passed by `plotTaylor` to more child
-#' functions.
+#' @param cex character expansion factor, repeated if necessary
+#' (see `pch`).
 #'
-#' @author Dan Kelley
-#'
-#' @references Taylor, Karl E., 2001.  Summarizing multiple aspects of model
-#' performance in a single diagram, *J. Geophys. Res.*, 106:D7, 7183--7192.
+#' @references Taylor, Karl E. "Summarizing Multiple Aspects of Model
+#' Performance in a Single Diagram." *Journal of Geophysical Research:
+#' Atmospheres* 106, no. D7 (April 16, 2001): 7183–92.
+#' https://doi.org/10.1029/2000JD900719.
 #'
 #' @examples
 #' library(oce)
 #' data(sealevel)
 #' x <- sealevel[["elevation"]]
 #' M2 <- predict(tidem(sealevel, constituents = "M2"))
-#' S2 <- predict(tidem(sealevel, constituents = c("S2")))
-#' plotTaylor(x, cbind(M2, S2))
-plotTaylor <- function(x, y, scale, pch, col, labels, pos, ...) {
+#' S2 <- predict(tidem(sealevel, constituents = "S2"))
+#' all <- predict(tidem(sealevel))
+#' plotTaylor(x, cbind(M2, S2, all), labels = c("M2", "S2", "all"))
+#'
+#' @author Dan Kelley
+plotTaylor <- function(x, y, scale, pch = 1, col = 1, labels, pos = 2, cex = 1) {
     if (missing(x)) {
         stop("must supply 'x'")
     }
@@ -1316,19 +1324,19 @@ plotTaylor <- function(x, y, scale, pch, col, labels, pos, ...) {
     if (is.vector(y)) {
         y <- matrix(y)
     }
-    ncol <- ncol(y)
-    if (missing(pch)) {
-        pch <- 1:ncol
+    ny <- ncol(y)
+    if (length(pch) < ny) {
+        pch <- rep(pch, length.out = ny)
     }
-    if (missing(col)) {
-        col <- rep("black", ncol)
+    if (length(col) < ny) {
+        col <- rep(col, length.out = ny)
+    }
+    if (length(cex) < ny) {
+        cex <- rep(cex, length.out = ny)
     }
     haveLabels <- !missing(labels)
-    if (missing(pos)) {
-        pos <- rep(2, ncol)
-    }
-    if (length(pos) < ncol) {
-        pos <- rep(pos[1], ncol)
+    if (length(pos) < ny) {
+        pos <- rep(pos, length.out = ny)
     }
     xSD <- sd(x, na.rm = TRUE)
     ySD <- sd(as.vector(y), na.rm = TRUE)
@@ -1366,16 +1374,19 @@ plotTaylor <- function(x, y, scale, pch, col, labels, pos, ...) {
     text(-m, 0, "R=-1", pos = 2)
     par(xpd = xpdOld)
     points(xSD, 0, pch = 20, cex = 1.5)
-    for (column in seq_len(ncol(y))) {
+    for (column in seq_len(ny)) {
         ySD <- sd(y[, column], na.rm = TRUE)
         R <- cor(x, y[, column])^2
         # cat("column=", column, "ySD=", ySD, "R=", R, "col=", col[column], "pch=", pch[column], "\n")
         xx <- ySD * cos((1 - R) * pi / 2)
         yy <- ySD * sin((1 - R) * pi / 2)
-        points(xx, yy, pch = pch[column], lwd = 2, col = col[column], cex = 2)
+        points(xx, yy, pch = pch[column], col = col[column], cex = cex[column])
         if (haveLabels) {
             # cat(labels[column], "at", pos[column], "\n")
-            text(xx, yy, labels[column], pos = pos[column], ...)
+            text(xx, yy, labels[column],
+                pos = pos[column], cex = cex[column],
+                col = col[column]
+            )
         }
     }
 }
@@ -3801,13 +3812,13 @@ fillGap <- function(x, method = c("linear"), rule = 1) {
         res <- do_fill_gap_1d(x, rule)
     } else if (is.matrix(x)) {
         res <- fillGapMatrix(x)
-        #res <- x
-        #for (col in seq_len(ncol(x))) {
+        # res <- x
+        # for (col in seq_len(ncol(x))) {
         #    res[, col] <- do_fill_gap_1d(x[, col], rule)
-        #}
-        #for (row in seq_len(nrow(x))) {
+        # }
+        # for (row in seq_len(nrow(x))) {
         #    res[row, ] <- do_fill_gap_1d(x[row, ], rule)
-        #}
+        # }
     } else {
         stop("only works if 'x' is a vector or a matrix")
     }
