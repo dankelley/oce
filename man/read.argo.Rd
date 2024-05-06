@@ -27,7 +27,7 @@ better for normal calls by a user.)}
 \item{...}{additional arguments, passed to called routines.}
 }
 \value{
-An \linkS4class{argo} object.
+\code{read.argo} returns an \linkS4class{argo} object.
 }
 \description{
 \code{read.argo} is used to read an Argo file, producing an \linkS4class{argo} object.

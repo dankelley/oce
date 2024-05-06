@@ -10,7 +10,8 @@ swSpice(
   pressure = NULL,
   longitude = NULL,
   latitude = NULL,
-  eos = getOption("oceEOS", default = "gsw")
+  eos = getOption("oceEOS", default = "gsw"),
+  debug = getOption("oceDebug")
 )
 }
 \arguments{
@@ -32,10 +33,17 @@ ITS-90 scale; see \dQuote{Temperature units} in the documentation for
 \item{latitude}{latitude of observation (only used if \code{eos} is
 \code{"gsw"}; see \dQuote{Details}).}
 
-\item{eos}{Character value specifying the equation of state,
-either \code{"unesco"} (for the Flament formulation, although this
-is not actually part of UNESCO)
-or \code{"gsw"} for the Gibbs SeaWater formulation.}
+\item{eos}{Character value specifying the equation of state, either
+\code{"unesco"} (for the Flament formulation, although this is not actually part
+of UNESCO) or \code{"gsw"} for the Gibbs SeaWater formulation.}
+
+\item{debug}{an integer specifying whether debugging information is
+to be printed during the processing. This is a general parameter that
+is used by many \code{oce} functions. Generally, setting \code{debug=0}
+turns off the printing, while higher values suggest that more information
+be printed. If one function calls another, it usually reduces the value of
+\code{debug} first, so that a user can often obtain deeper debugging
+by specifying higher \code{debug} values.}
 }
 \value{
 Flament-formulated spice \eqn{kg/m^3} if \code{eos} is \code{"unesco"}
@@ -75,8 +83,10 @@ U <- swSpice(ctd, eos = "unesco")
 G <- swSpice(ctd, eos = "gsw")
 xlim <- range(c(U, G), na.rm = TRUE)
 ylim <- rev(range(p))
-plot(U, p, xlim = xlim, ylim = ylim,
-    xlab = "Measure of Spiciness", ylab = "Pressure (dbar)")
+plot(U, p,
+    xlim = xlim, ylim = ylim,
+    xlab = "Measure of Spiciness", ylab = "Pressure (dbar)"
+)
 points(G, p, col = 2)
 legend("topleft", col = 1:2, pch = 1, legend = c("unesco", "gsw"))
 

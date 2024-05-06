@@ -157,7 +157,7 @@ setMethod(
         res <- NULL
         dots <- list(...)
         debug <- if ("debug" %in% names(dots)) dots$debug else 0
-        oceDebug(debug, "[[,argo-method(\"", i, "\") {\n", sep = "", style = "bold", unindent = 1)
+        oceDebug(debug, "[[,argo-method(\"", i, "\") ...\n", sep = "", style = "bold", unindent = 1)
         metadataDerived <- c("ID", "cycle", "*Flag", "*Unit")
         dataDerived <- c(
             "profile", "CT", "N2", "SA", "sigmaTheta",
@@ -195,40 +195,64 @@ setMethod(
         }
         namesData <- names(x@data)
         # handle some computed items
+        # message("argo[[..., i=\"", i, "\"]]\n")
         if (i %in% c(
-            "CT", paste("conservative", "temperature"), "N2",
+            "CT", paste("Conservative", "Temperature"), "N2",
             "SA", paste("Absolute", "Salinity"), "sigmaTheta",
             "theta", "spice"
         )) {
+            # message("about to get S, T, p")
             salinity <- x[["salinity", debug = debug - 1]]
-            pressure <- x[["pressure", debug = debug - 1]]
             temperature <- x[["temperature", debug = debug - 1]]
-            dim <- dim(salinity)
-            # Do not need longitude and latitude if eos="unesco", but retain for code clarity
-            longitude <- rep(x@data$longitude, each = dim[1])
-            latitude <- rep(x@data$latitude, each = dim[1])
+            pressure <- x[["pressure", debug = debug - 1]]
+            Sshape <- shape(salinity)
+            # Actually, do not need longitude and latitude if eos="unesco"
+            if (is.matrix(pressure)) {
+                Nrow <- nrow(pressure)
+                longitude <- rep(x@data$longitude, each = Nrow)
+                latitude <- rep(x@data$latitude, each = Nrow)
+                dim(longitude) <- Sshape
+                dim(latitude) <- Sshape
+            } else {
+                Nrow <- length(pressure)
+                longitude <- rep(x@data$longitude, each = Nrow)
+                latitude <- rep(x@data$latitude, each = Nrow)
+            }
+            if (!identical(Sshape, shape(temperature))) stop("salinity and temperature have different lengths or dimensions")
+            if (!identical(Sshape, shape(pressure))) stop("salinity and pressure have different lengths or dimensions")
+            if (!identical(Sshape, shape(longitude))) stop("salinity and longitude have differing lengths or dimensions")
+            if (!identical(Sshape, shape(latitude))) stop("salinity and latitude have differing lengths or dimensions")
             if (i %in% c("CT", "Conservative Temperature")) {
                 res <- gsw::gsw_CT_from_t(x[["SA"]], temperature, pressure)
             } else if (i == "N2") {
                 # nprofile <- dim[2]
-                res <- array(NA_real_, dim = dim)
-                for (i in seq_len(dim[2])) {
+                oceDebug(debug, "argo[[\"N2\"]] ...\n")
+                res <- array(NA_real_, dim = Sshape)
+                for (i in seq_len(Sshape[2])) {
                     # message("i=",i, ", nprofile=", nprofile)
                     # if (i == 14) browser()
                     if (sum(!is.na(pressure[, i])) > 2) {
+                        oceDebug(debug - 1, "  OK i=", i, "\n")
                         ctd <- as.ctd(
                             salinity = salinity[, i],
                             temperature = temperature[, i],
                             pressure = pressure[, i],
-                            longitude = x@data$longitude[i],
-                            latitude = x@data$latitude[i]
+                            longitude = longitude[1, i],
+                            latitude = latitude[1, i]
                         )
                         res[, i] <- swN2(ctd)
                     } else {
+                        oceDebug(debug - 1, "  BAD i=", i, "\n")
                         res[, i] <- rep(NA, length(salinity[, i]))
                     }
                 }
             } else if (i %in% c("SA", "Absolute Salinity")) {
+                # message("DAN 'SA' or 'Absolute Salinity'")
+                # cat(vectorShow(salinity))
+                # cat(vectorShow(temperature))
+                # cat(vectorShow(pressure))
+                # cat(vectorShow(longitude))
+                # cat(vectorShow(latitude))
                 res <- gsw::gsw_SA_from_SP(salinity, pressure, longitude = longitude, latitude = latitude)
             } else if (i %in% paste("sigma", 0:4, sep = "")) {
                 SA <- gsw::gsw_SA_from_SP(salinity, pressure, longitude = longitude, latitude = latitude)
@@ -240,55 +264,43 @@ setMethod(
                     "sigma3" = gsw::gsw_sigma3(SA, CT),
                     "sigma4" = gsw::gsw_sigma4(SA, CT)
                 )
-            } else if (i %in% "spice") {
+            } else if (i == "spice") {
                 if (missing(j)) {
                     res <- swSpice(x)
                 } else {
-                    if (!j %in% c("gsw", "unesco")) {
+                    # message("DAN 1 (spice about to check j)")
+                    if (j != "gsw" && j != "unesco") {
                         stop("\"", j, "\" not allowed; use either \"gsw\" or \"unesco\"")
                     }
+                    # message("DAN 2")
                     res <- swSpice(x, eos = j)
                 }
             } else if (i == "sigmaTheta") {
+                oceDebug(debug, "  argo[[\"sigmaTheta\"]] is about to call swSigmaTheta()\n")
                 res <- swSigmaTheta(salinity,
                     temperature = temperature, pressure = pressure,
                     referencePressure = 0, longitude = longitude, latitude = latitude,
-                    eos = getOption("oceEOS", default = "gsw")
+                    eos = getOption("oceEOS", default = "gsw"), debug = debug
                 )
             } else if (i == "theta") {
+                # message("argo.R: 281")
                 res <- swTheta(salinity,
                     temperature = temperature, pressure = pressure,
                     referencePressure = 0, longitude = longitude, latitude = latitude,
-                    eos = getOption("oceEOS", default = "gsw")
+                    eos = getOption("oceEOS", default = "gsw"),
+                    debug = debug
                 )
+                # browser()
             } else {
                 stop("argo[[ coding error: unknown item '", i, "'")
             }
-            dim(res) <- dim
+            if (length(Sshape > 1)) {
+                dim(res) <- Sshape
+            }
         } else if (i == "z") {
-            # See note at "depth", below.
-            if (is.matrix(x@data$pressure)) {
-                n <- dim(x@data$pressure)[1]
-                latitude <- matrix(rep(x@data$latitude, each = n), nrow = n, byrow = TRUE)
-                res <- -swDepth(x@data$pressure, latitude)
-            } else {
-                res <- -swDepth(x@data$pressure, x@data$latitude)
-            }
+            res <- swZ(x)
         } else if (i == "depth") {
-            # This accessor added for issue 1333. Note that the
-            # fix for that issue was sometimes calling with
-            # vector-form argo object. I don't know how that vector
-            # form is arising, but it is likely an index without
-            # a drop=FALSE condition ... if I find it, I'll fix it,
-            # but the following works fine, so I don't really care too
-            # much.
-            if (is.matrix(x@data$pressure)) {
-                n <- dim(x@data$pressure)[1]
-                latitude <- matrix(rep(x@data$latitude, each = n), nrow = n, byrow = TRUE)
-                res <- swDepth(x@data$pressure, latitude)
-            } else {
-                res <- swDepth(x@data$pressure, x@data$latitude)
-            }
+            res <- swDepth(x)
         } else if (i == "ID" || i == "id") {
             res <- x@metadata$id
         } else if (i == "cycleNumber" || i == "cycle") {
@@ -363,9 +375,10 @@ setMethod(
                 res <- unadjusted
             }
         } else {
+            oceDebug(debug, "calling lowest-level oce '[[' method (in AllClass.R)\n")
             res <- callNextMethod() # [[ defined in R/AllClass.R
         }
-        oceDebug(debug, "} # [[,argo-method\n", sep = "", style = "bold", unindent = 1)
+        # oceDebug(debug, "# [[,argo-method\n", sep = "", style = "bold", unindent = 1)
         res
     }
 ) # [[
@@ -1219,8 +1232,7 @@ argoDecodeFlags <- function(f) # local function
 #'
 #' @param ... additional arguments, passed to called routines.
 #'
-#' @return
-#' An [argo-class] object.
+#' @return `read.argo` returns an [argo-class] object.
 #'
 #' @section Sample of Usage:
 #' \preformatted{
@@ -1290,14 +1302,15 @@ read.argo <- function(file, encoding = NA, debug = getOption("oceDebug"), proces
     if (is.character(file)) {
         filename <- fullFilename(file)
         file <- ncdf4::nc_open(file)
-        on.exit(ncdf4::nc_close(file))
+        #on.exit(ncdf4::nc_close(file))
     } else {
         if (!inherits(file, "connection")) {
+            ncdf4::nc_close(file)
             stop("argument `file' must be a character string or connection")
         }
         if (!isOpen(file)) {
             file <- ncdf4::nc_open(file)
-            on.exit(ncdf4::nc_close(file))
+            #on.exit(ncdf4::nc_close(file))
         }
     }
     oceDebug(debug, "read.argo(file=\"", filename, "\", ...) {\n", sep = "", unindent = 1, style = "bold")
@@ -1857,7 +1870,7 @@ read.argo <- function(file, encoding = NA, debug = getOption("oceDebug"), proces
                 # for the iconv() call and the gsub() test, see
                 # https://github.com/dankelley/oce/issues/2206
                 origValue <- value
-                #cat("next is origValue:\n");print(origValue)
+                # cat("next is origValue:\n");print(origValue)
                 value <- iconv(value, from = "latin1", to = "UTF-8")
                 value <- try(
                     {
@@ -1866,7 +1879,7 @@ read.argo <- function(file, encoding = NA, debug = getOption("oceDebug"), proces
                     },
                     silent = TRUE
                 )
-                #cat("after trimws(), next is value:\n");print(value)
+                # cat("after trimws(), next is value:\n");print(value)
                 if (inherits(value, "try-error")) {
                     warning("cannot trim leading/trailing whitespace in metadata$", ocename, "")
                     value <- origValue
@@ -1877,6 +1890,7 @@ read.argo <- function(file, encoding = NA, debug = getOption("oceDebug"), proces
     }
     # Record a log item
     res@processingLog <- processingLogAppend(res@processingLog, paste("read.argo(file=\"", filename, "\")", sep = ""))
+    ncdf4::nc_close(file)
     oceDebug(debug, "} # read.argo()\n", sep = "", unindent = 1, style = "bold")
     res
 }
@@ -2005,7 +2019,7 @@ as.argo <- function(time, longitude, latitude, salinity, temperature, pressure, 
 #' same as using `which=9`.)
 #'
 #' * `which=9` or `"spiciness0 profile"` gives
-#' a profile of spicininess referenced to a pressure
+#' a profile of spiciness referenced to a pressure
 #' of 0 dbar, i.e. the surface.  (This is the
 #' same as using `which=8`.)
 #'

@@ -1656,7 +1656,9 @@ initializeFlagSchemeInternal <- function(object, name = NULL, mapping = NULL, de
 #'
 #' @param ... optional additional [oce-class] objects.
 #'
-#' @template debugTemplate
+#' @param debug integer indicating a debugging level. If this is 0,
+#' the work is done silently.  If it is a larger integer, some information
+#' may be printed during the processing.
 #'
 #' @return An object of class corresponding to that of `object`.
 #'
@@ -1671,6 +1673,8 @@ setGeneric(
 #' Concatenate oce Objects (oce-Specific)
 #'
 #' @templateVar class oce
+#'
+#' @template debugTemplate
 #'
 #' @template concatenateTemplate
 setMethod("concatenate",
@@ -1718,7 +1722,7 @@ setMethod("concatenate",
                 )
             }
             data <- dots[[i]]@data
-            oceDebug(debug, "  about to work on ni=c(", paste(ni, collapse=","), ")\n")
+            oceDebug(debug, "  about to work on ni=c(", paste(ni, collapse = ","), ")\n")
             for (n in ni) {
                 oceDebug(debug, "  processing n=\"", n, "\"\n")
                 if (is.vector(dots[[1]]@data[[n]]) || n == "time" || is.factor(n)) {

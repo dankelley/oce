@@ -26,7 +26,7 @@ on partial matching.}
 parentheses or brackets that enclose it. If not provided,
 \code{\link{getOption}}\verb{("oceUnitSep"," ")} is called to get a value for \code{sep}.
 By default, the units are enclosed in square brackets; to change
-that to parenthese, use \link{options}\code{(oceUnitBracket="(")}, but
+that to parentheses, use \link{options}\code{(oceUnitBracket="(")}, but
 note that this setting will last for the whole session.}
 
 \item{unit}{optional unit to use. If not supplied, a sensible unit is used,

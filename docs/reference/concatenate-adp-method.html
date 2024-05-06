@@ -108,7 +108,7 @@ the sampled-over-time category.</p>
 
     <div id="ref-usage">
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="co"># S4 method for adp</span></span>
-<span><span class="fu"><a href="concatenate.html">concatenate</a></span><span class="op">(</span><span class="va">object</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="concatenate.html">concatenate</a></span><span class="op">(</span><span class="va">object</span>, <span class="va">...</span>, debug <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"oceDebug"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -119,7 +119,12 @@ objects (in which case the remaining arguments are ignored).</p></dd>
 
 
 <dt>...</dt>
-<dd><p>Optional additional objects of <a href="adp-class.html">adp</a>.</p></dd>
+<dd><p>optional additional objects of <a href="adp-class.html">adp</a>.</p></dd>
+
+
+<dt>debug</dt>
+<dd><p>integer indicating debugging level. If this exceeds 1,
+some information may be printed during the processing.</p></dd>
 
 </dl></div>
     <div id="value">

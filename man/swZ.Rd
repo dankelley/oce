@@ -4,17 +4,30 @@
 \alias{swZ}
 \title{Vertical Coordinate}
 \usage{
-swZ(pressure, latitude = 45, eos = getOption("oceEOS", default = "gsw"))
+swZ(
+  pressure,
+  latitude = 45,
+  eos = getOption("oceEOS", default = "gsw"),
+  debug = getOption("oceDebug")
+)
 }
 \arguments{
-\item{pressure}{either pressure (dbar), in which case \code{lat} must also
-be given, or a \code{ctd} object, in which case \code{lat} will be inferred
+\item{pressure}{either pressure (dbar), in which case \code{latitude} must also
+be given, or a \code{ctd} object, in which case \code{latitude} will be inferred
 from the object.}
 
-\item{latitude}{Latitude in \eqn{^\circ}{deg}N.}
+\item{latitude}{numeric value for latitude in degrees North.}
 
-\item{eos}{indication of formulation to be used, either \code{"unesco"} or
-\code{"gsw"}.}
+\item{eos}{character value indicating the formulation to be used, either
+\code{"unesco"} or \code{"gsw"}.}
+
+\item{debug}{an integer specifying whether debugging information is
+to be printed during the processing. This is a general parameter that
+is used by many \code{oce} functions. Generally, setting \code{debug=0}
+turns off the printing, while higher values suggest that more information
+be printed. If one function calls another, it usually reduces the value of
+\code{debug} first, so that a user can often obtain deeper debugging
+by specifying higher \code{debug} values.}
 }
 \description{
 Compute height above the surface. This is the negative of depth,

@@ -654,13 +654,17 @@ setMethod(
 
 #' Concatenate adp Objects
 #'
+#' @param object an [adp-class] object.
+#'
+#' @param ... optional additional [adp-class] objects.
+#'
 #' @templateVar class adp
 #'
 #' @template concatenateTemplate
 setMethod(
     f = "concatenate",
     signature = "adp",
-    definition = function(object, ...) {
+    definition = function(object, ..., debug = getOption("oceDebug")) {
         rval <- callNextMethod() # do general work
         # Make the metadata profile count match the data array dimensions.
         rval@metadata$numberOfSamples <- dim(rval@data$v)[1]

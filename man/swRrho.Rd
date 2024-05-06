@@ -42,19 +42,18 @@ Density ratio defined in either the \code{"diffusive"} or
 \code{"finger"} sense.
 }
 \description{
-Compute density ratio
+Compute density ratio for a \code{ctd} object.  An error (perhaps with some hints)
+is issued for any other type of object.
 }
 \details{
-This computes Rrho (density ratio) from a \code{ctd} object.
-
-If \code{eos="unesco"}, this is done by calculating salinity and
+If \code{eos="unesco"}, the work is done by calculating salinity and
 potential-temperature derivatives from smoothing splines whose properties
 are governed by \code{smoothingLength} or \code{df}.  If
 \code{sense="diffusive"} the definition is
 \eqn{(beta*dS/dz)/(alpha*d(theta)/dz)}{(beta*dS/dz)/(alpha*d(theta)/dz)} and
 the reciprocal for \code{"finger"}.
 
-If \code{eos="gsw"}, this is done by extracting absolute salinity and
+If \code{eos="gsw"}, the work is done by extracting absolute salinity and
 conservative temperature, smoothing with a smoothing spline as in the
 \code{"unesco"} case, and then calling \code{\link[gsw:gsw_Turner_Rsubrho]{gsw::gsw_Turner_Rsubrho()}}
 on these smoothed fields. Since the gsw function works on mid-point

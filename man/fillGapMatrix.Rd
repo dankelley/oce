@@ -10,14 +10,13 @@ fillGapMatrix(m, fillgap = 1, debug = getOption("oceDebug"))
 \item{m}{a numeric matrix.}
 
 \item{fillgap}{a vector containing 1 or 2 integers, indicating the maximum
-width of gaps to be filled.  If just one number is given, it is repeated
-to create the pair.  The first element of the pair is the maximum
-fillable gap height (i.e. row separation in the matrix), and
-the second is the maximum fillable gap width. The default value of
-1 means that only gaps of width or height 1 can be filled. As
-an exception to these rules, a negative value means to fill gaps
-regardless of size. It is an error to specify a \code{fillgap} value
-that is less than 1.}
+width of gaps to be filled.  If just one number is given, it is repeated to
+create the pair.  The first element of the pair is the maximum gap height
+(i.e. row separation in the matrix) that can be filled, and the second is the
+maximum gap width. The default value of 1 means that only gaps of width or
+height 1 can be filled. As an exception to these rules, a negative value
+means to fill gaps regardless of size. It is an error to specify a \code{fillgap}
+value that is less than 1.}
 
 \item{debug}{an integer specifying whether debugging information is
 to be printed during the processing. This is a general parameter that

@@ -1,5 +1,19 @@
 # vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
 
+# Internal function for comparing vector/matrix shapes
+shape <- function(x) {
+    if (is.vector(x)) length(x) else dim(x)
+}
+
+mimicShape <- function(x, shape) {
+    if (length(shape) == 1L) {
+        x <- as.vector(x)
+    } else {
+        dim(x) <- shape
+    }
+    x
+}
+
 # Internal function, mainly used in plotting raw images
 asNumeric <- function(x) {
     if (is.numeric(x)) {
@@ -2216,7 +2230,7 @@ fullFilename <- function(filename) {
 #' parentheses or brackets that enclose it. If not provided,
 #' [`getOption`]`("oceUnitSep"," ")` is called to get a value for `sep`.
 #' By default, the units are enclosed in square brackets; to change
-#' that to parenthese, use [options]`(oceUnitBracket="(")`, but
+#' that to parentheses, use [options]`(oceUnitBracket="(")`, but
 #' note that this setting will last for the whole session.
 #'
 #' @param unit optional unit to use. If not supplied, a sensible unit is used,
@@ -3719,14 +3733,13 @@ undriftTime <- function(x, slowEnd = 0, tname = "time") {
 #' @param m a numeric matrix.
 #'
 #' @param fillgap a vector containing 1 or 2 integers, indicating the maximum
-#' width of gaps to be filled.  If just one number is given, it is repeated
-#' to create the pair.  The first element of the pair is the maximum
-#' fillable gap height (i.e. row separation in the matrix), and
-#' the second is the maximum fillable gap width. The default value of
-#' 1 means that only gaps of width or height 1 can be filled. As
-#' an exception to these rules, a negative value means to fill gaps
-#' regardless of size. It is an error to specify a `fillgap` value
-#' that is less than 1.
+#' width of gaps to be filled.  If just one number is given, it is repeated to
+#' create the pair.  The first element of the pair is the maximum gap height
+#' (i.e. row separation in the matrix) that can be filled, and the second is the
+#' maximum gap width. The default value of 1 means that only gaps of width or
+#' height 1 can be filled. As an exception to these rules, a negative value
+#' means to fill gaps regardless of size. It is an error to specify a `fillgap`
+#' value that is less than 1.
 #'
 #' @template debugTemplate
 #'

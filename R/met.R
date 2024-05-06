@@ -1088,13 +1088,13 @@ read.met.csv2 <- function(
         dataNames[dataNames == "Weather"] <- "weather"
     }
     names(data) <- dataNames
-    res@data <- data
+    res@data <- as.list(data)
     # climateIdentifier
     if ("Climate ID" %in% dataNames) {
         res@metadata$climateIdentifier <- data[["Climate ID"]][1]
         res@data[["Climate ID"]] <- NULL
     }
-    nsamples <- dim(data)[1]
+    nsamples <- nrow(data[[1]])
     oceDebug(debug, vectorShow(nsamples))
     # Time
     if ("Time" %in% dataNames) {

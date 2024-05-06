@@ -68,7 +68,7 @@ whatever material has already been drawn at the regions).}
 
 \item{filledContour}{an indication of whether to use filled
 contours.  This may be FALSE (the default), TRUE, or a positive
-numerical value. If FALSE, then polygons are used. Othewise, the
+numerical value. If FALSE, then polygons are used. Otherwise, the
 longitude-latitude values are transformed to x-y values, which will
 not be on a grid and thus will require gridding so that
 \code{\link[=.filled.contour]{.filled.contour()}} can plot the filled contours.  The method used

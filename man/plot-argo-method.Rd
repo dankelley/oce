@@ -48,7 +48,7 @@ indicated level(s)
 profile, referenced to the surface.  (This is the
 same as using \code{which=9}.)
 \item \code{which=9} or \code{"spiciness0 profile"} gives
-a profile of spicininess referenced to a pressure
+a profile of spiciness referenced to a pressure
 of 0 dbar, i.e. the surface.  (This is the
 same as using \code{which=8}.)
 \item \code{which=10} or \code{"spiciness1 profile"} gives

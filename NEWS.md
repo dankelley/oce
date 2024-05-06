@@ -2,10 +2,13 @@
 
 * Add `swSpiciness0()`, `swSpiciness1()`, and `swSpiciness2()` (issue #2188). 
 * Change `binMean2D()` to use previous (6-month-old) method (issue #2199).
+* Change `[[` for many seawater properties to handle `argo` data (issue 2207 and 2208)
+* Change `concatenate()` to handle `data` slots that are data frames (issue #2213).
 * Change `ctdDecimate()` to add the `na.rm` argument (issue #2192).
 * Change `mapDirectionField()` to allow wind barbs (issue 2191).
+* Change `mapImage()` to handle a user-provided gridding function (issue #2199).
 * Change `mapImage()` to add the `gridCoarseness` parameter (issue #2199).
-* Change `mapImage()` to accept a gridder function (issue #2199).
+* Change `oceMagic()` to close netcdf files after checking them (issue #2209).
 * Change `plot.argo()` to handle `which="sigma0 profile"` (issue #2184).
 * Change `plot.sealevel()` to add the `grid` parameter (issue #2204).
 * Change `plot.sealevel()` to improve labelling (issue #2203).
@@ -15,26 +18,25 @@
 * Change `read.adp.rdi()` to handle large (> 2.147 GB) files (issue #2196).
 * Change `read.argo()` to handle non-UTF characters in metadata (issue #2206).
 * Change `read.ctd.sbe()` to name `specc` as `specificConductance` (issue #2211).
+* Change `read.met()` to return `data` slots that are lists (issue #2213).
 * Change `resizableLabel()` to document partial-match behaviour (issue #2197).
 * Change `resizableLabel()` to handle `item=`"N"` (issue #2197).
 * Change `summary()` to skip time in the threenum table (issue #2198).
 * Change `sunAngle()` to handle vector arguments better (issue #2178).
-* Change some byte-level work from C to C++ to improve maintainability (issue
-  #2201).
+* Change some byte-level work from C to C++ to improve maintainability (issue #2201).
 
 # oce 1.8.2 (on CRAN)
 
 * Add `package?oce` documentation (had been missing with a Roxygen2 change).
 * Add `read.ctd.saiv()` to read data from SAIV instruments (issue #2141).
 * Remove many dontrun examples from the docs (issue #2152).
-* Remove `trimString()`, after it had been deprecated for a long time (issue
-  #2123).
+* Remove `trimString()`, after it had been deprecated for a long time (issue #2123).
 * Remove use of the deprecated `sp` package (issue #2154).
-* Change `amsr` dataset and functions to handle new format (issues #2124 to
-  #2133 plus issue #2147).
+* Change `amsr` dataset and functions to handle new format (issues #2124 to #2133 plus
+  issue #2147).
 * Change `as.ctd()` to handle multi-profile Argo better (issue #2173).
-* Change `as.tidem()` to handle NOAA constituent names and frequencies (issues
-  #2143, #2144 and #2146).
+* Change `as.tidem()` to handle NOAA constituent names and frequencies (issues #2143,
+  #2144 and #2146).
 * Change C/C++ `sprintf()` calls so all formats match arguments (issue #2172).
 * Change `computableWaterProperties` to handle a vector of variable names.
 * Change `plot.adp()` to obey `xlab` if x axis represents time (issue #2162).
@@ -45,7 +47,8 @@
 # oce 1.8.1 (on CRAN)
 
 * Change `as.ctd()` to handle `startTime`, `PRES`, `PSAL` and `TEMP` better.
-* Change `binCount1D()` + 6 related functions by adding `include.lowest` parameter (issue 2113).
+* Change `binCount1D()` + 6 related functions by adding `include.lowest` parameter (issue
+  2113).
 * Change C++ files to avoid an error relating to include statements (issue 2119).
 * Change `imagep()` to ensure `z` (if provided) is a matrix (issue 2091).
 * Change `plot.section()` to skip the kriging example (issue 2080).

@@ -10,7 +10,10 @@
 \item{object}{An object of \linkS4class{adp}, or a list containing such
 objects (in which case the remaining arguments are ignored).}
 
-\item{...}{Optional additional objects of \linkS4class{adp}.}
+\item{...}{optional additional objects of \linkS4class{adp}.}
+
+\item{debug}{integer indicating debugging level. If this exceeds 1,
+some information may be printed during the processing.}
 }
 \value{
 An object of \linkS4class{adp}.

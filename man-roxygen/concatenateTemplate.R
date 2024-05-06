@@ -16,7 +16,10 @@
 #' @param object An object of [<%=class%>-class], or a list containing such
 #' objects (in which case the remaining arguments are ignored).
 #'
-#' @param ... Optional additional objects of [<%=class%>-class].
+#' @param ... optional additional objects of [<%=class%>-class].
+#'
+#' @param debug integer indicating debugging level. If this exceeds 1,
+#' some information may be printed during the processing.
 #'
 #' @return An object of [<%=class%>-class].
 #'

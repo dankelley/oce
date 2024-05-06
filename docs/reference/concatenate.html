@@ -81,7 +81,7 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">concatenate</span><span class="op">(</span><span class="va">object</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">concatenate</span><span class="op">(</span><span class="va">object</span>, <span class="va">...</span>, debug <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"oceDebug"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -92,6 +92,12 @@
 
 <dt>...</dt>
 <dd><p>optional additional <a href="oce-class.html">oce</a> objects.</p></dd>
+
+
+<dt>debug</dt>
+<dd><p>integer indicating a debugging level. If this is 0,
+the work is done silently.  If it is a larger integer, some information
+may be printed during the processing.</p></dd>
 
 </dl></div>
     <div id="value">
