@@ -257,13 +257,20 @@ lookWithin <- function(list) {
 #' @param ctd an [oce-class] object that holds `salinity`, `temperature`, and
 #' `pressure`.  If `eos` is `"gsw"`, then it must also hold `longitude` and
 #' `latitude`.
+#'
 #' @param sense an indication of the sense of double diffusion under study and
 #' therefore of the definition of Rrho; see \dQuote{Details}
+#'
 #' @param smoothingLength ignored if `df` supplied, but otherwise the
 #' latter is calculated as the number of data points, divided by the number
 #' within a depth interval of `smoothingLength` metres.
+#'
 #' @param df if given, this is provided to [smooth.spline()].
+#'
 #' @param eos equation of state, either `"unesco"` or `"gsw"`.
+#'
+#' @template debugTemplate
+#'
 #' @return Density ratio defined in either the `"diffusive"` or
 #' `"finger"` sense.
 #' @author Dan Kelley and Chantelle Layton
@@ -282,7 +289,9 @@ swRrho <- function(
     ctd,
     sense = c("diffusive", "finger"),
     smoothingLength = 10, df,
-    eos = getOption("oceEOS", default = "gsw")) {
+    eos = getOption("oceEOS", default = "gsw"),
+    debug = getOption("oceDebug")
+) {
     if (!inherits(ctd, "oce")) {
         stop("first argument must be of class \"oce\"")
     }
@@ -400,6 +409,7 @@ swRrho <- function(
 #'
 #' @param \dots additional argument, passed to [smooth.spline()], in
 #' the case that `derivs="smoothing"`.  See \dQuote{Details}.
+#'
 #' @template debugTemplate
 #'
 #' @seealso The [gsw::gsw_Nsquared()] function of the \CRANpkg{gsw}
@@ -436,7 +446,7 @@ swRrho <- function(
 #'
 #' @family functions that calculate seawater properties
 swN2 <- function(pressure, sigmaTheta = NULL, derivs, df, debug = getOption("oceDebug"), ...) {
-    oceDebug(debug, "swN2(...) {\n", sep = "", unindent = 1)
+    oceDebug(debug, "swN2(...) ...\n", sep = "", unindent = 1)
     # cat("swN2(..., df=", df, ")\n",sep="")
     # useSmoothing <- !missing(df) && is.finite(df)
     if (inherits(pressure, "oce")) {
@@ -503,7 +513,7 @@ swN2 <- function(pressure, sigmaTheta = NULL, derivs, df, debug = getOption("oce
     # uses a standardized rho_0. But it's from some official source I think.
     # Must check this. (UNESCO book?)
     res <- ifelse(ok, 9.8 * 9.8 * 1e-4 * sigmaThetaDeriv, NA)
-    oceDebug(debug, "} # swN2()\n", sep = "", unindent = 1)
+    oceDebug(debug, "... # swN2()\n", sep = "", unindent = 1)
     res
 }
 
@@ -1471,6 +1481,8 @@ swThermalConductivity <- function(salinity, temperature = NULL, pressure = NULL)
 #' @param eos indication of formulation to be used, either `"unesco"` or
 #' `"gsw"`.
 #'
+#' @template debugTemplate
+#'
 #' @return Depth below the ocean surface, in metres.
 #'
 #' @author Dan Kelley
@@ -1492,8 +1504,10 @@ swThermalConductivity <- function(salinity, temperature = NULL, pressure = NULL)
 #' d <- swDepth(10, 45)
 #'
 #' @family functions that calculate seawater properties
-swDepth <- function(pressure, latitude = 45, eos = getOption("oceEOS", default = "gsw")) {
+swDepth <- function(pressure, latitude = 45, eos = getOption("oceEOS", default = "gsw"),
+                    debug = getOption("oceDebug")) {
     # FIXME-gsw need a gsw version but it is not in the C library as of Dec 2014
+    oceDebug(debug, "swDepth(...) ...\n", sep = "", unindent = 1)
     if (missing(pressure)) {
         stop("must provide pressure")
     }
@@ -1509,6 +1523,7 @@ swDepth <- function(pressure, latitude = 45, eos = getOption("oceEOS", default =
     } else if (l$eos == "gsw") {
         res <- -gsw::gsw_z_from_p(p = l$pressure, latitude = l$latitude)
     }
+    oceDebug(debug, "... # swDepth()\n", sep = "", unindent = 1)
     res
 }
 

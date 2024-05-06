@@ -4,7 +4,7 @@
 \alias{concatenate,oce-method}
 \title{Concatenate oce Objects (oce-Specific)}
 \usage{
-\S4method{concatenate}{oce}(object, ...)
+\S4method{concatenate}{oce}(object, ..., debug = getOption("oceDebug"))
 }
 \arguments{
 \item{object}{An object of \linkS4class{oce}, or a list containing such

@@ -4,7 +4,7 @@
 \alias{concatenate,adp-method}
 \title{Concatenate adp Objects}
 \usage{
-\S4method{concatenate}{adp}(object, ...)
+\S4method{concatenate}{adp}(object, ..., debug = getOption("oceDebug"))
 }
 \arguments{
 \item{object}{An object of \linkS4class{adp}, or a list containing such
