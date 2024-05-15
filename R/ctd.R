@@ -1212,7 +1212,7 @@ as.ctd <- function(
     # First argument is an oce object
     if (inherits(salinity, "oce")) {
         oceDebug(debug, "first argument is an oce object, so ignoring some other arguments\n")
-        #dataNamesOriginal <- list()
+        # dataNamesOriginal <- list()
         o <- salinity
         d <- o@data
         m <- o@metadata
@@ -2069,7 +2069,8 @@ ctdDecimate <- function(x, p = 1, method = "boxcar", rule = 1, e = 1.5, na.rm = 
                             dataNew[[datumName]] <- rep(NA, npt)
                         } else {
                             dataNew[[datumName]] <- binMean1D(p, x@data[[datumName]],
-                                xbreaks = pbreaks, na.rm = na.rm)$result
+                                xbreaks = pbreaks, na.rm = na.rm
+                            )$result
                         }
                     }
                 }
@@ -5628,8 +5629,9 @@ plotProfile <- function(
     ...) {
     debug <- max(0, min(debug, 3))
     oceDebug(debug, "plotProfile(x, xtype=",
-        ifelse(is.character(xtype), paste0("\"", xtype, "\""), "NUMERIC"),
-        ", Slim=", if (missing(Slim)) "MISSING" else paste("c(", paste(Slim, collapse = ","), ")", sep = ""),
+        ifelse(is.character(xtype), paste0("\"", xtype, "\""), "NUMERIC"), ", ",
+        argShow(ytype),
+        " Slim=", if (missing(Slim)) "MISSING" else paste("c(", paste(Slim, collapse = ","), ")", sep = ""),
         ", plim=", if (missing(plim)) "MISSING" else paste("c(", paste(plim, collapse = ","), ")", sep = ""),
         ", xlim=", if (missing(xlim)) "MISSING" else paste("c(", paste(xlim, collapse = ","), ")", sep = ""),
         ", ylim=", if (missing(ylim)) "MISSING" else paste("c(", paste(ylim, collapse = ","), ")", sep = ""),
@@ -5652,7 +5654,7 @@ plotProfile <- function(
     # then set xlab by parsing the call.
     if (is.null(xlab) && length(xtype) == length(x[["pressure"]])) {
         xlab <- deparse1(substitute(xtype))
-        oceDebug(debug, "auto-set xlab to \"", xlab, "\"\n", sep = "")
+        oceDebug(debug, "auto-set xlab to ", xlab, "\n", sep = "")
     }
     plotJustProfile <- function(x, y, col = "black", type = "l", lty = lty,
                                 xlim = NULL, ylim = NULL,
@@ -5661,6 +5663,7 @@ plotProfile <- function(
                                 cex = 1, pch = 1, pt.bg = "transparent",
                                 df = df, keepNA = FALSE, debug = getOption("oceDebug", 0)) {
         oceDebug(debug, "plotJustProfile(...,",
+            argShow(xtype),
             argShow(col), ", debug=", debug, ") {\n",
             sep = "", style = "bold", unindent = 1
         )
@@ -5722,11 +5725,12 @@ plotProfile <- function(
     if (missing(ylim)) {
         ylim <- switch(ytype,
             pressure = rev(range(x[["pressure"]], na.rm = TRUE)),
-            z = range(swZ(x[["pressure"]]), na.rm = TRUE),
+            z = range(x[["z"]], na.rm = TRUE), # changed to [[ for https://github.com/dankelley/oce/issues/2214
             depth = rev(range(x[["depth"]], na.rm = TRUE)),
             sigmaTheta = rev(range(x[["sigmaTheta"]], na.rm = TRUE)),
             sigma0 = rev(range(x[["sigma0"]], na.rm = TRUE))
         )
+        oceDebug(debug, "auto-set ylim=c(", ylim[1], ", ", ylim[2], ")\n", sep="")
     }
     # issue 1137 Dec 27, 2016
     # Below, we used to trim the data to ylim, but this made it
@@ -5735,13 +5739,12 @@ plotProfile <- function(
     # should be OK for the usual R convention of a 4% gap at axis ends.
     if (ytype %in% c("pressure", "z", "depth", "sigmaTheta", "sigma0")) {
         yy <- x[[ytype]]
-        extra <- 0.05 * diff(range(yy, na.rm = TRUE)) # note larger than 0.04, just in case
+        extra <- 0.05 * diff(range(yy, na.rm = TRUE)) # exceed usual R value of 0.04, just in case
         examineIndices <- if (is.na(extra)) {
             seq_along(yy)
         } else {
             (min(ylim) - extra) <= yy & yy <= (max(ylim) + extra)
         }
-        #cat("examineIndices:\n")
     } else {
         warning("unknown \"ytype\"; must be one of \"pressure\", \"z\", \"depth\", \"sigmaTheta\" or \"sigma0\"")
         examineIndices <- seq_along(x[["pressure"]])
@@ -5755,7 +5758,9 @@ plotProfile <- function(
         x@data <- as.list(x@data)
     }
     dataNames <- names(x@data)
-    if (length(xtype) == length(x[["pressure"]])) {
+    # The is.numeric() test is for issue https://github.com/dankelley/oce/issues/2214
+    #<> if (length(xtype) == length(x[["pressure"]])) {
+    if (is.numeric(xtype) && length(xtype) == length(x[["pressure"]])) {
         xtype <- xtype[examineIndices]
     }
     if (is.data.frame(x@data)) {
@@ -5804,8 +5809,8 @@ plotProfile <- function(
     if (!add) {
         par(mar = mar, mgp = mgp)
     }
-    #cat(vectorShow(xtype))
-    #cat(vectorShow(y))
+    oceDebug(debug, "xtype = ", paste(xtype, collapse = ", "), "\n")
+    # cat(vectorShow(y))
     if (is.numeric(xtype) && length(xtype) == length(y) && length(y) > 1) {
         oceDebug(debug, "xtype is a numeric vector\n")
         # Actually, I don't see why I am allowing for no axes here. Maybe it's
@@ -6625,6 +6630,10 @@ plotProfile <- function(
     } else if (xtype %in% c("spice", "spiciness0", "spiciness1", "spiciness2")) {
         oceDebug(debug, "case 13: xtype is \"spice\", \"spiciness0\", etc\n")
         xvar <- x[[xtype]]
+        if (length(xvar) < 1) {
+            warning("no data to plot")
+            return()
+        }
         look <- if (keepNA) seq_along(y) else !is.na(xvar) & !is.na(y)
         if (!add) {
             plot(xvar[look], y[look],
