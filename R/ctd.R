@@ -5657,7 +5657,6 @@ plotProfile <- function(
         oceDebug(debug, "auto-set xlab to ", xlab, "\n", sep = "")
     }
     plotJustProfile <- function(x, y, col = "black", type = "l", lty = lty,
-                                xlim = NULL, ylim = NULL,
                                 xlab = NULL,
                                 lwd = par("lwd"),
                                 cex = 1, pch = 1, pt.bg = "transparent",
@@ -5819,8 +5818,8 @@ plotProfile <- function(
         if ("axes" %in% names(list(...))) {
             oceDebug(debug, "  numeric vector, with 'axes' in ... arg\n")
             plot(xtype, y,
-                xlab = "", ylab = "", type = type, axes = FALSE,
-                xaxs = xaxs, yaxs = yaxs,
+                xlab = "", ylab = "", type = type,
+                axes = FALSE, xaxs = xaxs, yaxs = yaxs,
                 xlim = xlim, ylim = ylim,
                 col = col, lty = lty, cex = cex, pch = pch, ...
             )
@@ -5834,8 +5833,8 @@ plotProfile <- function(
         } else {
             oceDebug(debug, "  numeric vector, with no 'axes' in ... arg\n")
             plot(xtype, y,
-                xlab = "", ylab = "", type = type, axes = FALSE,
-                xaxs = xaxs, yaxs = yaxs,
+                xlab = "", ylab = "", type = type,
+                axes = FALSE, xaxs = xaxs, yaxs = yaxs,
                 xlim = if (!missing(xlim)) xlim, ylim = if (!missing(ylim)) ylim,
                 col = col, lty = lty, cex = cex, pch = pch, ...
             )
@@ -5856,7 +5855,8 @@ plotProfile <- function(
         index <- seq_along(x[["pressure"]])
         plot(index, x[["pressure"]],
             ylim = ylim, col = col, lty = lty, xlab = "", ylab = "",
-            type = type, xaxs = xaxs, yaxs = yaxs, cex = cex, pch = pch, axes = FALSE
+            axes = FALSE, xaxs = xaxs, yaxs = yaxs,
+            type = type, cex = cex, pch = pch
         )
         axis(3)
         mtext(if (is.null(xlab)) "index" else xlab, side = 3, line = axisNameLoc, cex = par("cex")) # no unit is provided
@@ -5886,7 +5886,8 @@ plotProfile <- function(
         look <- as.vector(look)
         plot(sig0[look], y[look],
             xlim = densitylim, ylim = ylim, cex = cex, pch = pch,
-            type = type, col = col.rho, lty = lty, xlab = "", ylab = "", axes = FALSE, xaxs = xaxs, yaxs = yaxs, ...
+            type = type, col = col.rho, lty = lty, xlab = "", ylab = "",
+            axes = FALSE, xaxs = xaxs, yaxs = yaxs, ...
         )
         axis(3, col = col.rho, col.axis = col.rho, col.lab = col.rho)
         mtext(resizableLabel(if (eos == "unesco") "sigmaTheta" else "sigma0"), side = 3, line = axisNameLoc, col = col.rho, cex = par("cex"))
@@ -5898,8 +5899,9 @@ plotProfile <- function(
             timelim <- range(time, na.rm = TRUE)
         }
         plot(time, y,
-            xlim = timelim, ylim = ylim, type = type, xlab = "", ylab = yname, axes = FALSE,
-            lwd = lwd, col = col.time, xaxs = xaxs, yaxs = yaxs, lty = lty, cex = cex, pch = pch
+            xlim = timelim, ylim = ylim, type = type, xlab = "", ylab = yname,
+            axes = FALSE, xaxs = xaxs, yaxs = yaxs,
+            lwd = lwd, col = col.time, lty = lty, cex = cex, pch = pch
         )
         axis(1, col = col.time, col.axis = col.time, col.lab = col.time)
         # lines(time, y, lwd=lwd, col=col.time)
@@ -5934,7 +5936,8 @@ plotProfile <- function(
         look <- as.vector(look)
         plot(st[look], y[look],
             xlim = densitylim, ylim = ylim, col = col.rho, lty = lty, cex = cex, pch = pch,
-            type = type, xlab = "", ylab = "", axes = FALSE, xaxs = xaxs, yaxs = yaxs, ...
+            type = type, xlab = "", ylab = "",
+            axes = FALSE, xaxs = xaxs, yaxs = yaxs, ...
         )
         axis(3, col = col.rho, col.axis = col.rho, col.lab = col.rho)
         if (getOption("oceUnitBracket") == "[") {
@@ -5955,8 +5958,9 @@ plotProfile <- function(
             dpdtlim <- range(dpdt.sm$y)
         }
         plot(dpdt.sm$y, dpdt.sm$x,
-            xlim = dpdtlim, ylim = ylim, type = type, xlab = "", ylab = yname, axes = FALSE, lwd = lwd, col = col.dpdt, cex = cex, pch = pch,
-            xaxs = xaxs, yaxs = yaxs, lty = lty, ...
+            xlim = dpdtlim, ylim = ylim, type = type, xlab = "", ylab = yname,
+            axes = FALSE, xaxs = xaxs, yaxs = yaxs,
+            lwd = lwd, col = col.dpdt, cex = cex, pch = pch, lty = lty, ...
         )
         axis(1, col = col.dpdt, col.axis = col.dpdt, col.lab = col.dpdt)
         # lines(dpdt.sm$y, dpdt.sm$x, lwd=lwd, col=col.dpdt)
@@ -6023,7 +6027,8 @@ plotProfile <- function(
             if (!add) {
                 plot(salinity[look], y[look],
                     xlim = Slim, ylim = ylim, lty = lty, cex = cex, pch = pch,
-                    type = "n", xlab = "", ylab = "", axes = FALSE, xaxs = xaxs, yaxs = yaxs, ...
+                    type = "n", xlab = "", ylab = "",
+                    axes = FALSE, xaxs = xaxs, yaxs = yaxs, ...
                 )
                 if (xtype == "SA") {
                     mtext(if (is.null(xlab)) resizableLabel("absolute salinity", "x", unit = NULL, debug = debug - 1) else xlab,
@@ -6111,7 +6116,8 @@ plotProfile <- function(
             if (!add) {
                 plot(conductivity[look], y[look],
                     xlim = Clim, ylim = ylim, lty = lty, cex = cex, pch = pch,
-                    type = "n", xlab = "", ylab = yname, axes = FALSE, xaxs = xaxs, yaxs = yaxs, ...
+                    type = "n", xlab = "", ylab = yname,
+                    axes = FALSE, xaxs = xaxs, yaxs = yaxs, ...
                 )
                 # Look up conductivity unit (issue 731)
                 unit <- x[["conductivityUnit"]]
@@ -6198,7 +6204,8 @@ plotProfile <- function(
                     }
                     plot(xvar[look], y[look],
                         xlim = xlim, ylim = ylim,
-                        lty = lty, type = "n", xlab = "", ylab = yname, axes = FALSE, xaxs = xaxs, yaxs = yaxs, ...
+                        axes = FALSE, xaxs = xaxs, yaxs = yaxs,
+                        lty = lty, type = "n", xlab = "", ylab = yname, ...
                     )
                 } else {
                     oceDebug(debug, "ylimGiven is FALSE\n")
@@ -6208,7 +6215,8 @@ plotProfile <- function(
                     plot(xvar[look], y[look],
                         xlab = if (is.null(xlab)) " " else xlab,
                         xlim = xlim, ylim = rev(range(y[look], na.rm = TRUE)),
-                        lty = lty, type = "n", ylab = yname, axes = FALSE, xaxs = xaxs, yaxs = yaxs, ...
+                        axes = FALSE, xaxs = xaxs, yaxs = yaxs,
+                        lty = lty, type = "n", ylab = yname, ...
                     )
                 }
                 mtext(if (is.null(xlab)) resizableLabel(xtype, "x", unit = unit, debug = debug - 1) else xlab,
@@ -6238,14 +6246,18 @@ plotProfile <- function(
             if (ylimGiven) {
                 plot(Rrho, y[look],
                     lty = lty,
-                    xlim = if (!missing(Rrholim)) Rrholim, ylim = ylim, cex = cex, pch = pch,
-                    type = "n", xlab = "", ylab = yname, axes = FALSE, xaxs = xaxs, yaxs = yaxs, ...
+                    xlim = if (!missing(Rrholim)) Rrholim,
+                    ylim = ylim, cex = cex, pch = pch,
+                    axes = FALSE, xaxs = xaxs, yaxs = yaxs,
+                    type = "n", xlab = "", ylab = yname, ...
                 )
             } else {
                 plot(Rrho, y[look],
                     lty = lty,
-                    xlim = if (!missing(Rrholim)) Rrholim, ylim = rev(range(y[look])), cex = cex, pch = pch,
-                    type = "n", xlab = "", ylab = yname, axes = FALSE, xaxs = xaxs, yaxs = yaxs, ...
+                    xlim = if (!missing(Rrholim)) Rrholim,
+                    ylim = rev(range(y[look])), cex = cex, pch = pch,
+                    axes = FALSE, xaxs = xaxs, yaxs = yaxs,
+                    type = "n", xlab = "", ylab = yname, ...
                 )
             }
             mtext(if (is.null(xlab)) expression(R[rho]) else xlab, side = 3, line = axisNameLoc, cex = par("cex"))
@@ -6298,9 +6310,10 @@ plotProfile <- function(
             look <- if (keepNA) seq_along(y) else !is.na(x[["temperature"]]) & !is.na(y)
             if (!add) {
                 plot(temperature[look], y[look],
-                    lty = lty,
-                    xlim = Tlim, ylim = ylim, cex = cex, pch = pch,
-                    type = "n", xlab = "", ylab = "", axes = FALSE, xaxs = xaxs, yaxs = yaxs, ...
+                    xlim = Tlim, ylim = ylim,
+                    axes = FALSE, xaxs = xaxs, yaxs = yaxs,
+                    cex = cex, pch = pch, lty = lty,
+                    type = "n", xlab = "", ylab = "", ...
                 )
                 if (xtype == "CT") {
                     mtext(
@@ -6396,17 +6409,20 @@ plotProfile <- function(
             if (sigmalimGiven) {
                 plot(sigma[look], y[look],
                     xlim = sigmalim, ylim = ylim, type = "n", xlab = "", ylab = yname,
-                    axes = FALSE, xaxs = xaxs, yaxs = yaxs, lty = lty, cex = cex, pch = pch, ...
+                    axes = FALSE, xaxs = xaxs, yaxs = yaxs,
+                    lty = lty, cex = cex, pch = pch, ...
                 )
             } else if (xlimGiven) {
                 plot(sigma[look], y[look],
                     xlim = xlim, ylim = ylim, type = "n", xlab = "", ylab = yname,
-                    axes = FALSE, xaxs = xaxs, yaxs = yaxs, lty = lty, cex = cex, pch = pch, ...
+                    axes = FALSE, xaxs = xaxs, yaxs = yaxs,
+                    lty = lty, cex = cex, pch = pch, ...
                 )
             } else {
                 plot(sigma[look], y[look],
                     xlim = range(sigma[look], na.rm = TRUE), ylim = ylim, type = "n", xlab = "", ylab = yname,
-                    axes = FALSE, xaxs = xaxs, yaxs = yaxs, lty = lty, cex = cex, pch = pch, ...
+                    axes = FALSE, xaxs = xaxs, yaxs = yaxs,
+                    lty = lty, cex = cex, pch = pch, ...
                 )
             }
             if (getOption("oceUnitBracket") == "[") {
@@ -6449,7 +6465,8 @@ plotProfile <- function(
             } else {
                 plot(st[look], y[look],
                     xlim = range(st[look], na.rm = TRUE), ylim = ylim, type = "n", xlab = "", ylab = yname,
-                    axes = FALSE, xaxs = xaxs, yaxs = yaxs, lty = lty, cex = cex, pch = pch, ...
+                    axes = FALSE, xaxs = xaxs, yaxs = yaxs,
+                    lty = lty, cex = cex, pch = pch, ...
                 )
             }
             if (getOption("oceUnitBracket") == "[") {
@@ -6490,8 +6507,11 @@ plotProfile <- function(
                 )
             } else {
                 plot(rho[look], y[look],
-                    xlim = range(rho[look], na.rm = TRUE), ylim = ylim, type = "n", xlab = "", ylab = yname,
-                    axes = FALSE, xaxs = xaxs, yaxs = yaxs, lty = lty, cex = cex, pch = pch, ...
+                    xlim = range(rho[look], na.rm = TRUE),
+                    ylim = ylim,
+                    type = "n", xlab = "", ylab = yname,
+                    axes = FALSE, xaxs = xaxs, yaxs = yaxs,
+                    lty = lty, cex = cex, pch = pch, ...
                 )
             }
             if (getOption("oceUnitBracket") == "[") {
@@ -6535,7 +6555,8 @@ plotProfile <- function(
         plot(sig0[look], y[look],
             lty = lty,
             xlim = densitylim, ylim = ylim, cex = cex, pch = pch,
-            type = "n", xlab = "", ylab = yname, axes = FALSE, xaxs = xaxs, yaxs = yaxs, ...
+            axes = FALSE, xaxs = xaxs, yaxs = yaxs,
+            type = "n", xlab = "", ylab = yname, ...
         )
         axis(3, col = col.rho, col.axis = col.rho, col.lab = col.rho)
         tmpsep <- getOption("oceUnitSep")
@@ -6579,7 +6600,8 @@ plotProfile <- function(
         plot(N2[look], y[look],
             lty = lty,
             xlim = N2lim, ylim = ylim, cex = cex, pch = pch,
-            type = "n", xlab = "", ylab = "", axes = FALSE, lwd = lwd, xaxs = xaxs, yaxs = yaxs
+            type = "n", xlab = "", ylab = "", lwd = lwd,
+            axes = FALSE, xaxs = xaxs, yaxs = yaxs
         )
         axis(1, col = col.N2, col.axis = col.N2, col.lab = col.N2)
         if (type == "l") {
@@ -6639,10 +6661,11 @@ plotProfile <- function(
             plot(xvar[look], y[look],
                 lty = lty,
                 ylim = ylim, cex = cex, pch = pch,
-                type = "n", xlab = "", ylab = yname, axes = FALSE
+                type = "n", xlab = "", ylab = yname,
+                axes = FALSE, xaxs = xaxs, yaxs = yaxs
             )
             mtext(if (is.null(xlab)) resizableLabel(xtype, "x", debug = debug - 1) else xlab,
-                side = 3, line = axisNameLoc, cex = par("cex"), xaxs = xaxs, yaxs = yaxs
+                side = 3, line = axisNameLoc, cex = par("cex")
             )
             axis(2)
             axis(3)
@@ -6679,7 +6702,8 @@ plotProfile <- function(
         look <- if (keepNA) seq_along(y) else !is.na(temperature) & !is.na(y)
         plot(temperature[look], y[look],
             xlim = Tlim, ylim = ylim, col = col.temperature, lty = lty, cex = cex, pch = pch,
-            type = type, xlab = "", ylab = yname, axes = FALSE, xaxs = xaxs, yaxs = yaxs
+            type = type, xlab = "", ylab = yname,
+            axes = FALSE, xaxs = xaxs, yaxs = yaxs
         )
         axis(3, col = col.temperature, col.axis = col.temperature, col.lab = col.temperature)
         if (is.null(getOption("plotProfileNoXLab"))) {
@@ -6700,7 +6724,8 @@ plotProfile <- function(
         look <- if (keepNA) seq_along(y) else !is.na(x[["salinity"]]) & !is.na(y)
         plot(salinity[look], y[look],
             xlim = Slim, ylim = ylim, col = col.salinity, lty = lty, cex = cex, pch = pch,
-            type = type, xlab = "", ylab = "", axes = FALSE, xaxs = xaxs, yaxs = yaxs
+            type = type, xlab = "", ylab = "",
+            axes = FALSE, xaxs = xaxs, yaxs = yaxs
         )
         axis(1, col = col.salinity, col.axis = col.salinity, col.lab = col.salinity)
         if (is.null(getOption("plotProfileNoXLab"))) {
@@ -6744,7 +6769,8 @@ plotProfile <- function(
             plot(xplot, y[look],
                 xlim = if (xlimGiven) xlim else range(xplot, na.rm = TRUE),
                 ylim = ylim, lty = lty, cex = cex, pch = pch,
-                type = "n", xlab = "", ylab = "", axes = FALSE, xaxs = xaxs, yaxs = yaxs
+                type = "n", xlab = "", ylab = "",
+                axes = FALSE, xaxs = xaxs, yaxs = yaxs
             )
             axis(3)
             # mtext(resizableLabel("pressure", "y"), side=2, line=axisNameLoc, cex=par("cex"))

@@ -2,7 +2,7 @@
 
 * Add `swSpiciness0()`, `swSpiciness1()`, and `swSpiciness2()` (issue #2188). 
 * Change `binMean2D()` to use previous (6-month-old) method (issue #2199).
-* Change `[[` for many seawater properties to handle `argo` data (issue 2207 and 2208)
+* Change `[[` for many seawater properties to handle `argo` data (issue 2207 and 2208).
 * Change `concatenate()` to handle `data` slots that are data frames (issue #2213).
 * Change `ctdDecimate()` to add the `na.rm` argument (issue #2192).
 * Change `mapDirectionField()` to allow wind barbs (issue 2191).
@@ -14,6 +14,7 @@
 * Change `plot.sealevel()` to improve labelling (issue #2203).
 * Change `plot.section()` to handle bottom traces better (issue #2194).
 * Change `plot.section()` to show data as points properly (issue #2195).
+* Change `plotProfile()` to handle `xaxs` and `yaxs` when `xtype="spiciness0"` (issue #2215).
 * Change `plotTaylor()` to handle a few more parameters.
 * Change `read.adp.rdi()` to handle large (> 2.147 GB) files (issue #2196).
 * Change `read.argo()` to handle non-UTF characters in metadata (issue #2206).
