@@ -1064,8 +1064,8 @@ read.adp.rdi <- function(
             oceDebug(debug, "numberOfCells:", numberOfCells, "\n")
             items <- numberOfBeams * numberOfCells
             codes <- header$codes
-            oceDebug(debug, "codes[,1]=", paste("0x", paste(codes[, 1], sep = ""), sep = ""), "\n")
-            oceDebug(debug, "codes[,2]=", paste("0x", paste(codes[, 2], sep = ""), sep = ""), "\n")
+            oceDebug(debug, "codes[,1]=", paste("0x", paste(codes[, 1], sep = ""), collapse = " "), "\n")
+            oceDebug(debug, "codes[,2]=", paste("0x", paste(codes[, 2], sep = ""), collapse = " "), "\n")
             oceDebug(debug, "NOTE: only the following codes are recognized. See e.g. Table 45 of the\n")
             oceDebug(debug, "Teledyn-RDI document entitled `Ocean Surveyor Technical Manual_Dec20.pdf`,\n")
             oceDebug(debug, "P/N 95A-6012-00 (December 2020)\n")
