@@ -686,18 +686,28 @@ mapAxis <- function(
 
 #' Add Contours on a Existing map
 #'
-#' Plot contours on an existing map.
+#' Draw contour lines to an existing map, using [mapLines()].
+#' Note that label placement in `mapContour` is handled differently
+#' than in [contour()].
 #'
-#' @param longitude numeric vector of longitudes of points to be plotted, or an object of
-#' class `topo` (see [topo-class]), in which case
-#' `longitude`, `latitude` and `z` are inferred from that object.
+#' @param longitude numeric vector of longitudes of points to be
+#' plotted, or an object of class `topo` (see [topo-class]), in which
+#' case `longitude`, `latitude` and `z` are inferred from that object.
+#' Importantly, the `longitude` system must match that of the
+#' [mapPlot()] call that made the underlying plot. If not, the
+#' contours can have spurious lines that run across the plot. See
+#' \sQuote{Dealing with longitude conventions} for a method
+#' of handling conflicting longitude conventions between [mapPlot()]
+#' and [mapContour()].
 #'
 #' @param latitude numeric vector of latitudes of points to be plotted.
 #'
-#' @param z matrix to be contoured. The number of rows and columns in `z`
-#' must equal the lengths of `longitude` and `latitude`, respectively.
+#' @param z matrix to be contoured. The number of rows and columns in
+#' `z` must equal the lengths of `longitude` and `latitude`,
+#' respectively.
 #'
-#' @param nlevels number of contour levels, if and only if `levels` is not supplied.
+#' @param nlevels number of contour levels, if and only if `levels` is
+#' not supplied.
 #'
 #' @param levels vector of contour levels.
 #'
@@ -705,25 +715,25 @@ mapAxis <- function(
 #' [contour()], this is an absolute size, not a multiple of
 #' [`par`]`("cex")`.
 #'
-#' @param drawlabels logical value or vector indicating whether to draw contour
-#' labels.  If the length of `drawlabels` is less than the number of
-#' levels specified, then [rep()] is used to increase the length,
-#' providing a value for each contour line. For those levels that are thus
-#' indicated, labels are added, at a spot where the contour line is
-#' closest to horizontal on the page. First, though, the region underneath
-#' the label is filled with the colour given by [`par`]`("bg")`.
-#' See \dQuote{Limitations} for notes on the status of contour
-#' labelling, and its limitations.
+#' @param drawlabels logical value or vector indicating whether to
+#' draw contour labels.  If the length of `drawlabels` is less than
+#' the number of levels specified, then [rep()] is used to increase
+#' the length, providing a value for each contour line. For those
+#' levels that are thus indicated, labels are added, at a spot where
+#' the contour line is closest to horizontal on the page. First,
+#' though, the region underneath the label is filled with the colour
+#' given by [`par`]`("bg")`. See \dQuote{Limitations} for notes on the
+#' status of contour labelling, and its limitations.
 #'
 #' @param underlay character value relating to handling labels. If
 #' this equals `"erase"` (which is the default), then the contour line
-#' is drawn  first, then the area under the label is erased (filled with
-#' white 'ink'), and then the label is drawn. This can be useful
-#' in drawing coarsely-spaced labelled contours on top of finely-spaced
-#' unlabelled contours. On the other hand, if `underlay` equals
-#' `"interrupt"`, then the contour line is interrupted in the
-#' region of the label, which is closer to the scheme used by the
-#' base [contour()] function.
+#' is drawn  first, then the area under the label is erased (filled
+#' with white 'ink'), and then the label is drawn. This can be useful
+#' in drawing coarsely-spaced labelled contours on top of
+#' finely-spaced unlabelled contours. On the other hand, if `underlay`
+#' equals `"interrupt"`, then the contour line is interrupted in the
+#' region of the label, which is closer to the scheme used by the base
+#' [contour()] function.
 #'
 #' @param col colour of the contour line, as for [`par`]`("col")`,
 #' except here `col` gets lengthened by calling [rep()],
@@ -737,25 +747,31 @@ mapAxis <- function(
 #'
 #' @template debugTemplate
 #'
-#' @details
-#' Adds contour lines to an existing map, using [mapLines()].
-#'
-#' The ability to label the contours was added in February, 2019, and
-#' how this works may change through the summer months of that year.
-#' Note that label placement in `mapContour` is handled differently
-#' than in [contour()].
-#'
 #' @section Sample of Usage:
 #' \preformatted{
 #' library(oce)
 #' data(coastlineWorld)
 #' if (requireNamespace("ocedata", quietly=TRUE)) {
-#'     data(levitus, package="ocedata")
-#'     par(mar=rep(1, 4))
-#'     mapPlot(coastlineWorld, projection="+proj=robin", col="lightgray")
-#'     mapContour(levitus[["longitude"]], levitus[["latitude"]], levitus[["SST"]])
+#'     data(levitus, package = "ocedata")
+#'     par(mar = rep(1, 4))
+#'     mapPlot(coastlineWorld, projection = "+proj=robin", col = "lightgray")
+#'     mapContour(levitus$longitude, levitus$latitude, levitus$SST)
 #' }
 #' }
+#'
+#' @section Dealing with longitude conventions:
+#'
+#' Suppose a map has been plotted using longitudes that are bound between -180
+#' and 180. To overlay contours defined with longitude bound between 0 and 360
+#' (as for the built-in `coastlineWorld` dataset), try Clark Richards' method
+#' (<https://github.com/dankelley/oce/issues/2217>, as below.
+#'
+#'\preformatted{
+#' # Start with z=z(lon,lat), with lon bound by 0 and 360
+#' z2 <- rbind(z[lon > 180, ], z[lon <= 180, ])
+#' lon2 <- lon + 180
+#' mapContour(lon2, lat, z2)
+#'}
 #'
 #' @seealso A map must first have been created with [mapPlot()].
 #'
