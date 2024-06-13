@@ -135,8 +135,17 @@ setMethod(
     definition = function(object, ...) {
         cat("Amsr Summary\n------------\n\n")
         showMetadataItem(object, "filename", "Data file:       ")
+        showMetadataItem(object, "platform", "Platform:        ")
+        showMetadataItem(object, "instrument", "Instrument:      ")
         cat(sprintf("* Longitude range: %.4fE to %.4fE\n", object@metadata$longitude[1], tail(object@metadata$longitude, 1)))
         cat(sprintf("* Latitude range:  %.4fN to %.4fN\n", object@metadata$latitude[1], tail(object@metadata$latitude, 1)))
+        if (!is.null(object@metadata$timeStart)) {
+            cat(sprintf(
+                "* Time interval:   %s to %s\n",
+                format(object@metadata$timeStart, "%Y-%m-%d %H:%M:%S UTC"),
+                format(object@metadata$timeEnd, "%Y-%m-%d %H:%M:%S UTC")
+            ))
+        }
         cat(sprintf("* Format type:     %d\n", amsrType(object)))
         # Version 1 data are in raw format, so use [[ to get scientific units
         type <- amsrType(object)
@@ -1150,6 +1159,22 @@ read.amsr <- function(file, encoding = NA, debug = getOption("oceDebug")) {
         # [13] "vaporDay"    "vaporNight"
         oceDebug(debug, "new-style file, with name ending in \".nc\"\n")
         nc <- ncdf4::nc_open(file)
+        # Get some metadata from global attributes
+        a <- ncdf4::ncatt_get(nc, varid = 0, attname = "time_coverage_start")
+        res@metadata$timeStart <- if (a$hasatt) as.POSIXct(a$value, format = "%Y-%m-%dT%H:%M:%SZ", tz = "UTC") else NULL
+        a <- ncdf4::ncatt_get(nc, varid = 0, attname = "time_coverage_end")
+        res@metadata$timeEnd <- if (a$hasatt) as.POSIXct(a$value, format = "%Y-%m-%dT%H:%M:%SZ", tz = "UTC") else NULL
+        a <- ncdf4::ncatt_get(nc, varid = 0, attname = "version")
+        res@metadata$version <- if (a$hasatt) a$value else NULL
+        a <- ncdf4::ncatt_get(nc, varid = 0, attname = "sensor")
+        res@metadata$sensor <- if (a$hasatt) a$value else NULL
+        a <- ncdf4::ncatt_get(nc, varid = 0, attname = "platform")
+        res@metadata$platform <- if (a$hasatt) a$value else NULL
+        a <- ncdf4::ncatt_get(nc, varid = 0, attname = "instrument")
+        res@metadata$instrument <- if (a$hasatt) a$value else NULL
+        a <- ncdf4::ncatt_get(nc, varid = 0, attname = "references")
+        res@metadata$references <- if (a$hasatt) a$value else NULL
+        # Get data
         SST <- ncdf4::ncvar_get(nc, "SST")
         dim <- dim(SST)
         # print(sort(names(nc$var)))

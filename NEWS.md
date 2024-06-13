@@ -18,6 +18,7 @@
 * Change `plotProfile()` to handle `xaxs` and `yaxs` when `xtype="spiciness0"` (issue #2215).
 * Change `plotTaylor()` to handle a few more parameters.
 * Change `read.adp.rdi()` to handle large (> 2.147 GB) files (issue #2196).
+* Change `read.amsr()` to read start/end times plus other metadata (issue #2219).
 * Change `read.argo()` to handle non-UTF characters in metadata (issue #2206).
 * Change `read.ctd.sbe()` to name `specc` as `specificConductance` (issue #2211).
 * Change `read.met()` to return `data` slots that are lists (issue #2213).
