@@ -90,6 +90,7 @@
 <span>  <span class="va">col</span>,</span>
 <span>  <span class="va">colormap</span>,</span>
 <span>  <span class="va">zlim</span>,</span>
+<span>  <span class="va">zlab</span>,</span>
 <span>  <span class="va">missingColor</span>,</span>
 <span>  debug <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"oceDebug"</span><span class="op">)</span>,</span>
 <span>  <span class="va">...</span></span>
@@ -103,8 +104,9 @@
 
 
 <dt>y</dt>
-<dd><p>character value indicating the name of the band to plot; if not provided,
-<code>SST</code> is used; see the documentation for the <a href="amsr-class.html">amsr</a> class for a list of bands.</p></dd>
+<dd><p>character value indicating the name of the band to plot;
+if not provided, <code>SST</code> (or a variant thereof) is used; see the
+documentation for the <a href="amsr-class.html">amsr</a> class for a list of bands.</p></dd>
 
 
 <dt>asp</dt>
@@ -115,25 +117,27 @@ and a value computed from <code>ylim</code>, if the latter is specified in the
 
 
 <dt>breaks</dt>
-<dd><p>optional numeric vector of the z values for breaks in the color scheme.
-If <code>colormap</code> is provided, it takes precedence over <code>breaks</code> and <code>col</code>.</p></dd>
+<dd><p>optional numeric vector of the z values for breaks in
+the color scheme. If <code>colormap</code> is provided, it takes precedence
+over <code>breaks</code> and <code>col</code>.</p></dd>
 
 
 <dt>col</dt>
-<dd><p>optional argument, either a vector of colors corresponding to the breaks, of length
-1 less than the number of breaks, or a function specifying colors.
-If neither <code>col</code> or <code>colormap</code> is provided, then <code>col</code> defaults to
-<code><a href="oceColorsTemperature.html">oceColorsTemperature()</a></code>.
-If <code>colormap</code> is provided, it takes precedence over <code>breaks</code> and <code>col</code>.</p></dd>
+<dd><p>optional argument, either a vector of colors
+corresponding to the breaks, of length 1 less than the number of
+breaks, or a function specifying colors. If neither <code>col</code> or
+<code>colormap</code> is provided, then <code>col</code> defaults to
+<code><a href="oceColorsTemperature.html">oceColorsTemperature()</a></code>. If <code>colormap</code> is provided, it takes
+precedence over <code>breaks</code> and <code>col</code>.</p></dd>
 
 
 <dt>colormap</dt>
 <dd><p>a specification of the colormap to use, as created
-with <code><a href="colormap.html">colormap()</a></code>.  If <code>colormap</code> is NULL, which is the default, then
-a colormap is created to cover the range of data values, using
-<a href="oceColorsTemperature.html">oceColorsTemperature</a> color scheme.
-If <code>colormap</code> is provided, it takes precedence over <code>breaks</code> and <code>col</code>.
-See “Examples” for an example of using the "turbo" color scheme.</p></dd>
+with <code><a href="colormap.html">colormap()</a></code>.  If <code>colormap</code> is NULL, which is the default,
+then a colormap is created to cover the range of data values, using
+<a href="oceColorsTemperature.html">oceColorsTemperature</a> color scheme. If <code>colormap</code> is provided, it
+takes precedence over <code>breaks</code> and <code>col</code>. See “Examples” for
+an example of using the "turbo" color scheme.</p></dd>
 
 
 <dt>zlim</dt>
@@ -142,13 +146,18 @@ of the plotted quantity.  A reasonable default is computed, if this
 is not given.</p></dd>
 
 
+<dt>zlab</dt>
+<dd><p>optional character value that is shown in the top-right
+margin of the plot. If not given, this defaults to the name of the
+plotted variable.</p></dd>
+
+
 <dt>missingColor</dt>
 <dd><p>optional list specifying colors to use for
-non-data categories.  If not provided, a default is used.  For
-type 1, that default is
-<code>list(land="papayaWhip", none="lightGray", bad="gray", rain="plum", ice="mediumVioletRed")</code>.  For type 2, it is
-<code>list(coast="gray", land="papayaWhip", noObs="lightGray", seaIce="mediumVioletRed")</code>.  Any colors may be used in place of these,
-but the names must match, and all names must be present.</p></dd>
+non-data categories.  If not provided, a default is used.  For type
+1, that default is <code>list(land="papayaWhip", none="lightGray", bad="gray", rain="plum", ice="mediumVioletRed")</code>.  For type 2, it
+is <code>list(coast="gray", land="papayaWhip", noObs="lightGray", seaIce="mediumVioletRed")</code>.  Any colors may be used in place of
+these, but the names must match, and all names must be present.</p></dd>
 
 
 <dt>debug</dt>

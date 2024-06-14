@@ -526,42 +526,48 @@ setMethod(
 #'
 #' @param x an [amsr-class] object.
 #'
-#' @param y character value indicating the name of the band to plot; if not provided,
-#' `SST` is used; see the documentation for the [amsr-class] class for a list of bands.
+#' @param y character value indicating the name of the band to plot;
+#' if not provided, `SST` (or a variant thereof) is used; see the
+#' documentation for the [amsr-class] class for a list of bands.
 #'
 #' @param asp optional numerical value giving the aspect ratio for plot.  The
 #' default value, `NULL`, means to use an aspect ratio of 1 for world views,
 #' and a value computed from `ylim`, if the latter is specified in the
 #' `...` argument.
 #'
-#' @param breaks optional numeric vector of the z values for breaks in the color scheme.
-#' If `colormap` is provided, it takes precedence over `breaks` and `col`.
+#' @param breaks optional numeric vector of the z values for breaks in
+#' the color scheme. If `colormap` is provided, it takes precedence
+#' over `breaks` and `col`.
 #'
-#' @param col optional argument, either a vector of colors corresponding to the breaks, of length
-#' 1 less than the number of breaks, or a function specifying colors.
-#' If neither `col` or `colormap` is provided, then `col` defaults to
-#' [oceColorsTemperature()].
-#' If `colormap` is provided, it takes precedence over `breaks` and `col`.
+#' @param col optional argument, either a vector of colors
+#' corresponding to the breaks, of length 1 less than the number of
+#' breaks, or a function specifying colors. If neither `col` or
+#' `colormap` is provided, then `col` defaults to
+#' [oceColorsTemperature()]. If `colormap` is provided, it takes
+#' precedence over `breaks` and `col`.
 #'
 #' @param colormap a specification of the colormap to use, as created
-#' with [colormap()].  If `colormap` is NULL, which is the default, then
-#' a colormap is created to cover the range of data values, using
-#' [oceColorsTemperature] color scheme.
-#' If `colormap` is provided, it takes precedence over `breaks` and `col`.
-#' See \dQuote{Examples} for an example of using the "turbo" color scheme.
+#' with [colormap()].  If `colormap` is NULL, which is the default,
+#' then a colormap is created to cover the range of data values, using
+#' [oceColorsTemperature] color scheme. If `colormap` is provided, it
+#' takes precedence over `breaks` and `col`. See \dQuote{Examples} for
+#' an example of using the "turbo" color scheme.
 #'
 #' @param zlim optional numeric vector of length 2, giving the limits
 #' of the plotted quantity.  A reasonable default is computed, if this
 #' is not given.
 #'
+#' @param zlab optional character value that is shown in the top-right
+#' margin of the plot. If not given, this defaults to the name of the
+#' plotted variable.
+#'
 #' @param missingColor optional list specifying colors to use for
-#' non-data categories.  If not provided, a default is used.  For
-#' type 1, that default is
-#' `list(land="papayaWhip", none="lightGray", bad="gray", rain="plum",
-#' ice="mediumVioletRed")`.  For type 2, it is
-#' `list(coast="gray", land="papayaWhip", noObs="lightGray",
-#' seaIce="mediumVioletRed")`.  Any colors may be used in place of these,
-#' but the names must match, and all names must be present.
+#' non-data categories.  If not provided, a default is used.  For type
+#' 1, that default is `list(land="papayaWhip", none="lightGray",
+#' bad="gray", rain="plum", ice="mediumVioletRed")`.  For type 2, it
+#' is `list(coast="gray", land="papayaWhip", noObs="lightGray",
+#' seaIce="mediumVioletRed")`.  Any colors may be used in place of
+#' these, but the names must match, and all names must be present.
 #'
 #' @template debugTemplate
 #'
@@ -592,7 +598,7 @@ setMethod(
     signature = signature("amsr"),
     # FIXME: how to let it default on band??
     definition = function(x, y, asp = NULL, # plot,amsr-method
-                          breaks, col, colormap, zlim,
+                          breaks, col, colormap, zlim, zlab,
                           # FIXME: how do the old-format categories map to new ones?  (They don't
                           # seem to.)  For now, the next argument is just for new-format.
                           missingColor,
@@ -674,13 +680,10 @@ setMethod(
         } else {
             oceDebug(debug, "using specified colormap, ignoring breaks and col, whether they were supplied or not\n")
         }
-        i <- if ("zlab" %in% names(dots)) {
-            oceDebug(debug, "calling imagep() with asp=", asp, ", and zlab=\"", dots$zlab, "\"\n", sep = "")
-            imagep(lon, lat, z, colormap = colormap, asp = asp, debug = debug - 1, ...)
-        } else {
-            oceDebug(debug, "calling imagep() with asp=", asp, ", and no zlab argument\n", sep = "")
-            imagep(lon, lat, z, colormap = colormap, zlab = y, asp = asp, debug = debug - 1, ...)
-        }
+        oceDebug(debug, "calling imagep() with asp=", asp, "\n", sep = "")
+        # the return value from imagep() has things we want below
+        i <- imagep(lon, lat, z, colormap = colormap, asp = asp,
+            zlab = if (missing(zlab)) y else zlab, debug = debug - 1, ...)
         # Handle missing-data codes by redrawing the (possibly decimated) image. Perhaps
         # imagep() should be able to do this, but imagep() is a long function
         # with a lot of interlocking arguments so I'll start by doing this

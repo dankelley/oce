@@ -10,6 +10,7 @@
 * Change `mapImage()` to handle a user-provided gridding function (issue #2199).
 * Change `mapImage()` to add the `gridCoarseness` parameter (issue #2199).
 * Change `oceMagic()` to close netcdf files after checking them (issue #2209).
+* Change `plot.amsr()` to add the `zlab` parameter (issue #2220).
 * Change `plot.argo()` to handle `which="sigma0 profile"` (issue #2184).
 * Change `plot.sealevel()` to add the `grid` parameter (issue #2204).
 * Change `plot.sealevel()` to improve labelling (issue #2203).
