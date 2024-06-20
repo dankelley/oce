@@ -131,11 +131,11 @@ and month on another.</p></dd>
 <dd><p>Optional indication of whether/how to draw the time range
 in the margin on the side of the the plot opposite the time axis. If this is
 not supplied, it defaults to the value returned by
-<code><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></code><code>("oceDrawTimeRange")</code>, and if that option is not set,
+<a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a><code>("oceDrawTimeRange")</code>, and if that option is not set,
 it defaults to <code>TRUE</code>. No time range is drawn if <code>drawTimeRange</code> is <code>FALSE</code>.
 If it is <code>TRUE</code>, the range will be shown. This range refers to
 range of the x axis (not the data). The format of the elements of that range is set by
-<code><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></code><code>("oceTimeFormat")</code> (or with the default value
+<a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a><code>("oceTimeFormat")</code> (or with the default value
 of an empty string, if this option has not been set). The timezone will
 be indicated if the time range is under a week.  For preliminary work, it makes
 sense to use <code>drawTimeRange=TRUE</code>, but for published work it can be better
