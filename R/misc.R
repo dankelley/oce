@@ -2228,7 +2228,7 @@ fullFilename <- function(filename) {
 #'
 #' @param sep optional character string inserted between the unit and the
 #' parentheses or brackets that enclose it. If not provided,
-#' [`getOption`]`("oceUnitSep"," ")` is called to get a value for `sep`.
+#' [getOption]`("oceUnitSep", " ")` is called to get a value for `sep`.
 #' By default, the units are enclosed in square brackets; to change
 #' that to parentheses, use [options]`(oceUnitBracket="(")`, but
 #' note that this setting will last for the whole session.
@@ -2245,9 +2245,9 @@ fullFilename <- function(filename) {
 #' @return A character string or expression, in either a long or a shorter
 #' format, for use in the indicated axis at the present plot size.  Whether the
 #' unit is enclosed in parentheses or square brackets is determined by the
-#' value of `getOption("oceUnitBracket")`, which may be `"["`, which is
+#' value of [getOption]`("oceUnitBracket")`, which may be `"["`, which is
 #' the default, or `"("`.  Whether spaces are used between the unit and
-#' these delimiters is controlled by `sep` or [`getOption`]`("oceUnitSep")`.
+#' these delimiters is controlled by `sep` or [getOption]`("oceUnitSep")`.
 #'
 #' @examples
 #' # 1. A matchable item name

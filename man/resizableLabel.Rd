@@ -24,7 +24,7 @@ on partial matching.}
 
 \item{sep}{optional character string inserted between the unit and the
 parentheses or brackets that enclose it. If not provided,
-\code{\link{getOption}}\verb{("oceUnitSep"," ")} is called to get a value for \code{sep}.
+\link{getOption}\verb{("oceUnitSep", " ")} is called to get a value for \code{sep}.
 By default, the units are enclosed in square brackets; to change
 that to parentheses, use \link{options}\code{(oceUnitBracket="(")}, but
 note that this setting will last for the whole session.}
@@ -41,9 +41,9 @@ while setting to 1 causes some debugging information to be printed.}
 A character string or expression, in either a long or a shorter
 format, for use in the indicated axis at the present plot size.  Whether the
 unit is enclosed in parentheses or square brackets is determined by the
-value of \code{getOption("oceUnitBracket")}, which may be \code{"["}, which is
+value of \link{getOption}\code{("oceUnitBracket")}, which may be \code{"["}, which is
 the default, or \code{"("}.  Whether spaces are used between the unit and
-these delimiters is controlled by \code{sep} or \code{\link{getOption}}\code{("oceUnitSep")}.
+these delimiters is controlled by \code{sep} or \link{getOption}\code{("oceUnitSep")}.
 }
 \description{
 Provide axis names in adjustable sizes, e.g. using T instead of Temperature

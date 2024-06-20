@@ -112,7 +112,7 @@ NULL
 #' potential density anomaly (referenced to zero
 #' pressure) is computed, with [swSigmaTheta()], where the
 #' equation of state is taken to be
-#' [`getOption`]`("oceEOS",default="gsw")`.
+#' [getOption]`("oceEOS", default="gsw")`.
 #'
 #' * If `i` is `"sigma0"`, `"sigma1"`, `"sigma2"`, `"sigma3"` or `"sigma4"`,
 #' then the associated function in the \CRANpkg{gsw} package.
@@ -124,7 +124,7 @@ NULL
 #' potential temperature (referenced to zero
 #' pressure) is computed, with [swTheta()], where the
 #' equation of state is taken to be
-#' [`getOption`]`("oceEOS",default="gsw")`.
+#' [getOption]`("oceEOS", default="gsw")`.
 #'
 #' * If `i` is `"depth"`, then
 #' a matrix of depths is returned.

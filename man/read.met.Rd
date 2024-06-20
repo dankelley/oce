@@ -40,7 +40,7 @@ this data file, if it is textual.  The default value for most functions is
 English and French.}
 
 \item{tz}{timezone assumed for time data.  This defaults to
-\code{getOption("oceTz")}, which is very likely to be wrong.  In
+\link{getOption}\code{("oceTz")}, which is very likely to be wrong.  In
 a scientific context, where UTC is typically used for oceanographic
 measurement, it makes sense to set \code{tz="UTC"}.  Note that these
 data files do not contain timezone information, instead giving

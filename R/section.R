@@ -1286,7 +1286,7 @@ sectionAddCtd <- sectionAddStation
 #'
 #' @param mgp A 3-element numerical vector to use for `par(mgp)`, and also for
 #' `par(mar)`, computed from this. If not provided, this defaults to
-#' [`getOption`]`("oceMgp")`.
+#' [getOption]`("oceMgp")`.
 #'
 #' @param mar Value to be used with [`par`]`("mar")`. If not provided,
 #' a default is set up.

@@ -274,7 +274,7 @@ useHeading <- function(b, g, add = 0) {
 #' integers, to indicate a portion of the time or distance range.  If
 #' `which` is `"time"`, then the `start` and `end` values
 #' may also be provided as POSIX times, or character strings indicating times
-#' (in time zone given by the value of `getOption("oceTz")`).
+#' (in time zone given by the value of [getOption]`("oceTz")`).
 #' Note that [subset()] may be more useful than this function.
 #'
 #' @param x an [oce-class] object.
@@ -2891,11 +2891,11 @@ oce.colorsPalette <- oceColorsPalette
 #' @param drawTimeRange Optional indication of whether/how to draw the time range
 #' in the margin on the side of the the plot opposite the time axis. If this is
 #' not supplied, it defaults to the value returned by
-#' [`getOption`]`("oceDrawTimeRange")`, and if that option is not set,
+#' [getOption]`("oceDrawTimeRange")`, and if that option is not set,
 #' it defaults to `TRUE`. No time range is drawn if `drawTimeRange` is `FALSE`.
 #' If it is `TRUE`, the range will be shown. This range refers to
 #' range of the x axis (not the data). The format of the elements of that range is set by
-#' [`getOption`]`("oceTimeFormat")` (or with the default value
+#' [getOption]`("oceTimeFormat")` (or with the default value
 #' of an empty string, if this option has not been set). The timezone will
 #' be indicated if the time range is under a week.  For preliminary work, it makes
 #' sense to use `drawTimeRange=TRUE`, but for published work it can be better

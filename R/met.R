@@ -603,7 +603,7 @@ metNames2oceNames <- function(names, scheme) {
 #' cannot find a line starting with `"Date/Time"` (or a similar string).
 #'
 #' @param tz timezone assumed for time data.  This defaults to
-#' `getOption("oceTz")`, which is very likely to be wrong.  In
+#' [getOption]`("oceTz")`, which is very likely to be wrong.  In
 #' a scientific context, where UTC is typically used for oceanographic
 #' measurement, it makes sense to set `tz="UTC"`.  Note that these
 #' data files do not contain timezone information, instead giving

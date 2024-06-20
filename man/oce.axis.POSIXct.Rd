@@ -39,11 +39,11 @@ and month on another.}
 \item{drawTimeRange}{Optional indication of whether/how to draw the time range
 in the margin on the side of the the plot opposite the time axis. If this is
 not supplied, it defaults to the value returned by
-\code{\link{getOption}}\code{("oceDrawTimeRange")}, and if that option is not set,
+\link{getOption}\code{("oceDrawTimeRange")}, and if that option is not set,
 it defaults to \code{TRUE}. No time range is drawn if \code{drawTimeRange} is \code{FALSE}.
 If it is \code{TRUE}, the range will be shown. This range refers to
 range of the x axis (not the data). The format of the elements of that range is set by
-\code{\link{getOption}}\code{("oceTimeFormat")} (or with the default value
+\link{getOption}\code{("oceTimeFormat")} (or with the default value
 of an empty string, if this option has not been set). The timezone will
 be indicated if the time range is under a week.  For preliminary work, it makes
 sense to use \code{drawTimeRange=TRUE}, but for published work it can be better
