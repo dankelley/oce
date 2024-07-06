@@ -5729,7 +5729,7 @@ plotProfile <- function(
             sigmaTheta = rev(range(x[["sigmaTheta"]], na.rm = TRUE)),
             sigma0 = rev(range(x[["sigma0"]], na.rm = TRUE))
         )
-        oceDebug(debug, "auto-set ylim=c(", ylim[1], ", ", ylim[2], ")\n", sep="")
+        oceDebug(debug, "auto-set ylim=c(", ylim[1], ", ", ylim[2], ")\n", sep = "")
     }
     # issue 1137 Dec 27, 2016
     # Below, we used to trim the data to ylim, but this made it
