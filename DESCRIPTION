@@ -39,7 +39,7 @@ Encoding: UTF-8
 URL: https://dankelley.github.io/oce/
 LazyData: false
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.3.1
+RoxygenNote: 7.3.2
 BuildVignettes: true
 VignetteBuilder: knitr
 NeedsCompilation: yes

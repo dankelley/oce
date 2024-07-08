@@ -23,9 +23,9 @@ Finds the depth in a Biosonics echosounder file, by finding the strongest
 reflector and smoothing its trace.
 }
 \seealso{
-The documentation for \linkS4class{echosounder} explains the
-structure of \code{echosounder} objects, and also outlines the other
-functions dealing with them.
+See the \linkS4class{echosounder} documentation to learn
+about the contents of such objects, and about other
+functions that deal with them.
 
 Other things related to echosounder data: 
 \code{\link{[[,echosounder-method}},
