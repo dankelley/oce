@@ -463,16 +463,17 @@ as.echosounder <- function(
 #'
 #' @author Dan Kelley
 #'
-#' @seealso The documentation for [echosounder-class] explains the
-#' structure of `echosounder` objects, and also outlines the other
-#' functions dealing with them.
+#' @seealso See the [echosounder-class] documentation to learn
+#' about the contents of such objects, and about other
+#' functions that deal with them.
 #'
 #' @family things related to echosounder data
 findBottom <- function(x, ignore = 5, clean = despike) {
     a <- x[["a"]]
-    keep <- x[["depth"]] >= ignore
+    depth <- x[["depth"]]
+    keep <- depth >= ignore
     wm <- clean(apply(a[, keep], 1, which.max))
-    depth <- x[["depth"]][wm]
+    depth <- depth[wm]
     list(time = x[["time"]], depth = depth, index = wm)
 }
 
